@@ -1,0 +1,10 @@
+{
+  "eo.form.input.null": "Your Mother",
+  "eo.quicksearch.label": "What are you looking for?",
+  "eo.bar.button.logout.title": "Log out",
+  "eo.bar.button.settings.title": "Settings",
+  "eo.state.login.msg.invalid": "The login details you provided are not correct. Please check your entry.",
+  "eo.state.login.submit": "Log in",
+  "eo.state.login.tenant": "Tenant",
+  "eo.state.settings.deputies": "Substitutes"
+}

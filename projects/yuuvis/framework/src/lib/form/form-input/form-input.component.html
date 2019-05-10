@@ -1,0 +1,11 @@
+<div class="fe-wrapper" yuvFocusWithin>
+  <div class="tag" *ngIf="tag" title="{{tag.title}}">{{tag.label}}</div>
+  <label class="form-input__label" (click)="toggle()">{{_label}}</label>
+  <div class="control">
+    <ng-content *ngIf="!toggled; else tplnull"></ng-content>
+
+    <ng-template #tplnull><span translate>eo.form.input.null</span></ng-template>
+  </div>
+</div>
+<div class="description" *ngIf="description">{{description}}</div>
+

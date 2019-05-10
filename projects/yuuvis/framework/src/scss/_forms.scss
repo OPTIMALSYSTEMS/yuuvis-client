@@ -1,0 +1,136 @@
+// styles for some form elements
+
+input, textarea {
+  outline: 0;
+}
+
+button {
+  border: 1px solid transparent;
+  background-color: transparent;
+  border-radius: 2px;
+  cursor: pointer;
+  padding: calc(var(--app-pane-padding) / 2) calc(var(--app-pane-padding) * 1.5);
+  font-size: 1rem;
+  line-height: 1rem;
+  color: var(--text-color-caption);
+  transition: all 200ms;
+  outline: 0;
+
+  &:focus {
+    border-color: var(--color-accent);
+    background-color: rgba(0, 0, 0, 0.06);
+    box-shadow: inset 0 0px 0 1px #fff;
+  }
+  &:not([disabled]):hover {
+    background-color: rgba(0, 0, 0, 0.06);
+  }
+
+  &.primary {
+    background-color: var(--color-accent);
+    color: #fff;
+
+    &:not([disabled]):hover {
+      background-color: var(--color-accent-1);
+    }
+    &:not([disabled]):focus {
+      box-shadow: inset 0 0px 0 1px #fff;
+    }
+  }
+  &.secondary {
+    background-color: rgba(0, 0, 0, 0.1);
+
+    &:not([disabled]):hover {
+      background-color: rgba(0, 0, 0, 0.15);
+    }
+  }
+  &[disabled] {
+    cursor: default;
+    opacity: 0.65;
+  }
+}
+
+// button styles on dark backgrounds
+.dark {
+  button {
+    color: rgba(255, 255, 255, 0.75);
+    &:focus {
+      border-color: rgba(255, 255, 255, 0.6);
+      &:not(.primary) {
+        box-shadow: inset 0 0px 0 1px var(--color-primary);
+        background-color: rgba(255, 255, 255, 0.06);
+      }
+      &.primary {
+        box-shadow: inset 0 0px 0 1px transparent;
+      }
+    }
+
+    &:not([disabled]):not(.primary):hover {
+      background-color: rgba(255, 255, 255, 0.06);
+    }
+
+    &.secondary {
+      color: rgba(255, 255, 255, 0.85);
+      background-color: rgba(255, 255, 255, 0.1);
+      &:not([disabled]):focus {
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+      &:not([disabled]):hover {
+        background-color: rgba(255, 255, 255, 0.2);
+      }
+    }
+  }
+}
+
+button.spinning {
+  position: relative;
+  &::after {
+    content: " ";
+    position: absolute;
+    transform: translateX(30px);
+    margin: auto;
+    top: calc(50% - 0.4em);
+    right: 0.5em;
+    width: 0.8em;
+    height: 0.8em;
+    display: inline-block;
+    background: center center no-repeat;
+    background-size: cover;
+    animation: button-spin 1s infinite;
+    box-sizing: border-box;
+    border-width: 1px;
+    border-color: currentColor currentColor currentColor transparent;
+
+    border-radius: 50%;
+    border-style: solid;
+  }
+  
+  @keyframes button-spin {
+    0% {
+      transform: rotate(0);
+      animation-timing-function: cubic-bezier(0.55, 0.055, 0.675, 0.19);
+    }
+    50% {
+      transform: rotate(180deg);
+      animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+}
+
+// container element for a set of buttons (e.g. below forms)
+.yuv-button-bar {
+  display: flex;
+  flex-flow: row;
+  align-items: center;
+  justify-content: flex-end;
+  padding-top: var(--app-pane-padding);
+  margin: -2px;
+
+  button {
+    margin: 0 2px;
+  }
+}
+
+

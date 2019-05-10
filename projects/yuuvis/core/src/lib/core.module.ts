@@ -1,0 +1,69 @@
+import { NgModule, ModuleWithProviders, APP_INITIALIZER, Optional, SkipSelf } from '@angular/core';
+import { CoreInit } from './service/core-init/core-init.service';
+import { HttpClientModule, HTTP_INTERCEPTORS, HttpClient } from '@angular/common/http';
+import { TranslateModule, TranslateLoader, MissingTranslationHandler } from '@ngx-translate/core';
+import { CoreConfig } from './service/config/core-config';
+import { Logger } from './service/logger/logger';
+import { LoggerConsoleService } from './service/logger/logger-console.service';
+import { AuthInterceptor } from './service/auth/auth.interceptor';
+import { CUSTOM_CONFIG, CORE_CONFIG } from './service/config/core-config.tokens';
+import { EoxTranslateJsonLoader } from './service/core-init/translate-json-loader';
+import { EoxMissingTranslationHandler } from './service/core-init/missing-translation-handler';
+import { YuvCoreSharedModule } from './core.shared.module';
+
+/**
+ * `YuvCoreModule` provides a bunch of services to interact with a yuuvis backend.
+ * It also sets up and re-exports the TranslateModule 
+ * @param coreInit 
+ */
+
+/**
+ * @ignore
+ * APP_INITIALIZER function
+ */
+export function init_module(coreInit: CoreInit) {
+  // Need to set to a const before returning due to:
+  // @see: https://github.com/angular/angular/issues/14485
+  const fnc: Function = () => coreInit.initialize();
+  return fnc;
+}
+
+@NgModule({
+  imports: [
+    HttpClientModule,
+    TranslateModule.forRoot()
+  ],
+  exports: [YuvCoreSharedModule]
+})
+export class YuvCoreModule {
+  static forRoot(config?: CoreConfig): ModuleWithProviders {
+
+    return {
+      ngModule: YuvCoreModule,
+      providers: [
+        CoreInit,
+        { provide: Logger, useClass: LoggerConsoleService },
+        { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
+        { provide: CUSTOM_CONFIG, useValue: config },
+        { provide: CORE_CONFIG, useClass: CoreConfig, deps: [CUSTOM_CONFIG] },
+        { provide: APP_INITIALIZER, useFactory: init_module, deps: [CoreInit], multi: true },
+        /**
+         * overriding translate modules defaults
+         * this works because providers are singletons
+         */
+        { provide: TranslateLoader, useClass: EoxTranslateJsonLoader, deps: [HttpClient, CORE_CONFIG] },
+        { provide: MissingTranslationHandler, useClass: EoxMissingTranslationHandler }
+      ]
+    };
+  }
+
+  /**
+   * @ignore
+   */
+  constructor(@Optional() @SkipSelf() parentModule: YuvCoreModule) {
+    if (parentModule) {
+      throw new Error(
+        'CloudCoreModule is already loaded. Import it in the AppModule only');
+    }
+  }
+}

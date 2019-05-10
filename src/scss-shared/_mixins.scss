@@ -1,0 +1,201 @@
+// mixin for transition of all style properties
+@mixin transition($duration: var(--app-default-transition-duration)) {
+    transition: all $duration ease-in-out;
+    -webkit-transition: all $duration ease-in-out;
+    -moz-transition: all $duration ease-in-out;
+    -o-transition: all $duration ease-in-out;
+  }
+  
+  @mixin no-transition() {
+    transition: none;
+    -webkit-transition: none;
+    -moz-transition: none;
+    -o-transition: none;
+  }
+  
+  // mixin for transition of selected style properties
+  @mixin property-transition($duration, $property) {
+    transition: $property $duration ease-in-out;
+    -webkit-transition: $property $duration ease-in-out;
+    -moz-transition: $property $duration ease-in-out;
+    -o-transition: $property $duration ease-in-out;
+  }
+  
+  @mixin border-radius($radius: 2px) {
+    border-radius: $radius;
+    -webkit-border-radius: $radius;
+  }
+  
+  // shadow to be applied to apps main panels
+  @mixin panel-shadow() {
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, .2);
+  }
+  
+  @mixin box-shadow($horizontalLength: 0, $verticalLength: 1px, $blurRadius: 0, $spread: 0, $color: $color-primary-3) {
+    box-shadow: $horizontalLength $verticalLength $blurRadius $spread $color;
+    -webkit-box-shadow: $horizontalLength $verticalLength $blurRadius $spread $color;
+  }
+  
+  @mixin linear-gradient($from, $to) {
+    background: $from;
+    background: -moz-linear-gradient(left, $from 0%, $to 100%); /* FF3.6-15 */
+    background: -webkit-linear-gradient(left, $from 0%, $to 100%); /* Chrome10-25,Safari5.1-6 */
+    background: linear-gradient(to right, $from 0%, $to 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+  }
+  
+  @mixin placeholder($color) {
+    input:-moz-placeholder {
+      color: $color;
+    }
+    ::-webkit-input-placeholder {
+      color: $color;
+    }
+    ::-moz-placeholder {
+      color: $color;
+    }
+    /* firefox 19+ */
+    :-ms-input-placeholder {
+      color: $color;
+    }
+    /* ie */
+  }
+  
+  // prevent text selection by the user (useful for avoiding selection flicker on double click)
+  @mixin prevent-text-selection {
+    user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    cursor: default;
+  }
+  
+  // media query mixins
+  // https://davidwalsh.name/write-media-queries-sass
+  $phone-width: 480px;
+  $tablet-width: 800px;
+  $desktop-width: 1024px;
+  
+  @mixin phone {
+    @media (min-width: #{$phone-width}) and (max-width: #{$phone-width - 1px}) {
+      @content;
+    }
+  }
+  
+  @mixin tablet {
+    @media (max-width: #{$tablet-width}) {
+      @content;
+    }
+  }
+  
+  @mixin desktop {
+    @media (min-width: #{$desktop-width}) {
+      @content;
+    }
+  }
+  
+  @mixin media($min:0px, $max:0px) {
+    @if $min > 0 and $max > 0 {
+  
+      @media (min-width: #{$min}) and (max-width: #{$max}) {
+        @content;
+      }
+    } @else if $min > 0 and $max == 0 {
+      @media (min-width: #{$min}) {
+        @content;
+      }
+    } @else if $max > 0 and $min == 0 {
+      @media (max-width: #{$max}) {
+        @content;
+      }
+    }
+  }
+  
+  @mixin full-size($top : 0) {
+    position: absolute;
+    left: 0;
+    top: $top;
+    right: 0;
+    bottom: 0;
+  }
+  
+  @mixin flex-row($flex:1) {
+    display: flex;
+    flex: $flex;
+    flex-direction: row;
+    min-height: 0; //support for overflow: auto (IE)
+    min-width: 0; //support for ellipsis
+  }
+  
+  @mixin flex-col($flex:1) {
+    display: flex;
+    flex: $flex;
+    flex-direction: column;
+    min-height: 0; //support for overflow: auto (IE)
+    min-width: 0; //support for ellipsis
+  }
+  
+  @mixin fade-in($duration: var(--app-default-transition-duration)) {
+    -webkit-animation: eoFadeIn $duration;
+    animation: eoFadeIn $duration;
+  }
+  
+  @mixin ellipsis($max-width: none) {
+    display: inline-block;
+    max-width: $max-width;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  @mixin frame($size: var(--app-pane-padding)) {
+    position: absolute;
+    left: $size;
+    right: $size;
+    top: $size;
+    bottom: $size;
+  }
+  
+  /* mixin definition ; sets margin/gap for all child elements */
+  @mixin gap($gap: var(--app-pane-padding), $margin: 0px) {
+    margin: $margin calc(#{$gap} / -2 + #{$margin});
+    & > * {
+      margin-left: calc(#{$gap} / 2);
+      margin-right: calc(#{$gap} / 2);
+    }
+  }
+  
+  /* mixin definition ; sets LTR and RTL within the same style call */
+  @mixin flip-style($prop, $value, $inverse-prop, $inverse-value : none) {
+    [ dir = ltr ] & {
+      #{$prop}: $value;
+      @if $inverse-value != none and $inverse-prop != $prop {
+        #{$inverse-prop}: $inverse-value;
+      }
+    }
+  
+    [dir=rtl] & {
+      @if $inverse-prop != $prop {
+        #{$inverse-prop}: $value;
+      }
+      @if $inverse-value != none {
+        #{$prop}: $inverse-value;
+      }
+    }
+  }
+  
+  /* mixin definition ; sets LTR and RTL within the same style call */
+  @mixin bidi-style($prop, $value, $inverse-prop, $default-value) {
+    #{$prop}: $value;
+  
+    [dir=rtl] & {
+      #{$inverse-prop}: $value;
+      #{$prop}: $default-value;
+    }
+  }
+  
+  @mixin shades-of-gray($alpa) {
+    background-color: rgba(0, 0, 0, $alpa);
+  }
+  

@@ -1,0 +1,53 @@
+:host {
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+
+  .login {
+    max-width: 350px;
+    position: relative;
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+
+    > div.invalid {
+      width: 100%;
+      box-sizing: border-box;
+      background-color: var(--color-error);
+      border-radius: 2px;
+      padding: calc(var(--app-pane-padding) / 2);
+      color: #fff;
+      opacity: 0;
+      margin: 1em 0;
+      line-height: 1.5em;
+    }
+
+    form {
+      background-color: #fff;
+      box-sizing: border-box;
+      width: 100%;
+      padding: var(--app-pane-padding);
+
+      .buttons {
+        display: flex;
+        flex-flow: row;
+        align-items: center;
+        justify-content: flex-end;
+        padding-top: var(--app-pane-padding);
+      }
+    }
+  }
+  yuv-icon {
+    color: #fff;
+    width: 300px;
+    height: auto;
+  }
+
+  &.invalid .login {
+    > div.invalid {
+      opacity: 1;
+    }
+  }
+}

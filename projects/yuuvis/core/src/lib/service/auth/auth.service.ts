@@ -1,0 +1,250 @@
+import { Injectable, NgZone, Inject } from '@angular/core';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
+import { LoginDeviceResult, StoredToken } from './auth.interface';
+import { Observable, Subject, interval, throwError, of, BehaviorSubject, forkJoin } from 'rxjs';
+import { switchMap, takeUntil, catchError, tap } from 'rxjs/operators';
+import { LocalStorage } from '@ngx-pwa/local-storage';
+import { BackendService } from '../backend/backend.service';
+import { UserService } from '../user/user.service';
+import { YuvUser } from '../../model/yuv-user.model';
+import { SystemService } from '../system/system.service';
+import { CORE_CONFIG } from '../config/core-config.tokens';
+import { CoreConfig } from '../config/core-config';
+import { ConfigService } from '../config/config.service';
+import { YuvEnvironment } from '../../core.environment';
+import { ApiBase } from '../backend/api.enum';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class AuthService {
+
+  private TOKEN_STORAGE_KEY = 'eo.auth.cloud.credentials';
+  private authenticated: boolean;
+  private authSource = new BehaviorSubject<boolean>(false);
+  authenticated$: Observable<boolean> = this.authSource.asObservable();
+
+  constructor(@Inject(CORE_CONFIG) public coreConfig: CoreConfig,
+    private config: ConfigService,
+    private ngZone: NgZone,
+    private userService: UserService,
+    private systemService: SystemService,
+    private backend: BackendService,
+    private storage: LocalStorage,
+    private http: HttpClient) { }
+
+  isLoggedIn() {
+    return this.authenticated;
+  }
+
+  login(tenant: string, host?: string): Observable<YuvUser> {
+    return new Observable(o => {
+      const stopTrigger$ = new Subject<void>();
+      const targetHost = host || '';
+      this.http.get(`${targetHost}/tenant/${tenant}/loginDevice`).subscribe((res: LoginDeviceResult) => {
+
+        // open new window for the authentication process ...
+        const targetUri = `${targetHost}/oauth/${tenant}?user_code=${res.user_code}`;
+        const win = window.open(targetUri, 'auth');
+        if (win) {
+          // @see: http://atashbahar.com/post/2010-04-27-detect-when-a-javascript-popup-window-gets-closed
+          this.ngZone.runOutsideAngular(() => {
+            const winTimer = setInterval(() => {
+              if (win.closed) {
+                clearInterval(winTimer);
+                this.ngZone.run(() => {
+                  stopTrigger$.next();
+                  stopTrigger$.complete();
+                });
+              }
+            }, 1000);
+          });
+        }
+
+        // ... and start polling for authentication results
+        this.cloudLoginPollForResult(`${targetHost}/auth/info/state?device_code=${res.device_code}`, 1000, stopTrigger$)
+          .pipe(
+            tap(accessToken => {
+              if (accessToken) {
+                this.cloudLoginSetHeaders(accessToken, tenant);
+                const storeToken: StoredToken = {
+                  tenant: tenant,
+                  accessToken: accessToken
+                };
+                this.storage.setItem(this.TOKEN_STORAGE_KEY, storeToken).subscribe();
+              }
+            }),
+            switchMap((authRes: any) => authRes ? this.initUser(targetHost) : throwError('not authenticated'))
+          ).subscribe((user: YuvUser) => {
+            win.close();
+            o.next(user);
+            o.complete();
+          }, err => {
+            win.close();
+            o.error(err);
+            o.complete();
+          }
+          )
+      }, (error) => {
+        o.error('unable to call device flow endpoint');
+        o.complete();
+      });
+    });
+  }
+
+  /**
+   * Gets called while app init
+   * @ignore
+   */
+  initUser(host?: string) {
+
+    return this.storage.getItem(this.TOKEN_STORAGE_KEY).pipe(
+      switchMap((res: any) => {
+        if (res) {
+          this.cloudLoginSetHeaders(res.accessToken, res.tenant);
+          this.backend.setHost(host);
+        }
+        return this.fetchUser();
+      })
+    )
+  }
+
+  private fetchUser(): Observable<YuvUser> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json'
+    });
+
+    return this.backend.get(this.userService.USER_FETCH_URI).pipe(
+      tap(() => {
+        this.authenticated = true;
+        this.authSource.next(this.authenticated);
+      }),
+      switchMap((userJson: any) => this.initApp(userJson))
+    );
+  }
+
+  /**
+   * Logs out the current user.
+   * @param gatewayLogout Flag indicating whether or not to perform a gateway logout as well
+   */
+  logout(gatewayLogout?: boolean) {
+
+    this.authenticated = false;
+    this.authSource.next(this.authenticated);
+
+    // remove stored access data
+    this.storage.removeItem(this.TOKEN_STORAGE_KEY).subscribe();
+    if (this.coreConfig.environment.production && YuvEnvironment.isWebEnvironment()) {
+      (window as any).location.href = '/logout';
+      return;
+    }
+
+    if (gatewayLogout) {
+      // by default we are just resetting internal state to 'logged out' and in
+      // some cases call gateways logout endpoint to do logout stuff there silently
+      this.http.get(`${this.backend.getHost()}/logout`).subscribe();
+    }
+    this.backend.setHost(null);
+    this.cloudLoginRemoveHeaders();
+    // TODO: enable again: this.eventService.trigger(EnaioEvent.LOGOUT);
+  }
+
+  /**
+   * Starts polling for login results in case of logging in to a cloud backend.
+   * @param uri URI to poll
+   * @param pollingInterval Polling intervall in milliseconds
+   * @param stopTrigger Subject acting as stop trigger
+   * @returns Access Token if logged in successfully or NULL otherwise
+   */
+  private cloudLoginPollForResult(uri: string, pollingInterval: number, stopTrigger: Subject<void> = new Subject<void>()): Observable<string> {
+
+    return Observable.create(o => {
+      let accessGranted = false;
+      let accessDenied = false;
+
+      this.ngZone.runOutsideAngular(() => {
+        interval(pollingInterval).pipe(
+          takeUntil(stopTrigger),
+          switchMap(() => this.http.get(uri).pipe(
+            catchError((err: HttpErrorResponse) => {
+              // OAuth standard we are using is returning with a status of 400 while logging in (no idea why???)
+              // so we got to fetch that to not break the parent pipe
+              if (err.status === 400) {
+                return of(err.error);
+              } else {
+                throwError(err);
+              }
+            })
+          ))
+        ).subscribe(
+          (res: any) => {
+            this.ngZone.run(() => {
+              accessGranted = !!res.access_token;
+              accessDenied = res.error === 'access_denied';
+
+              if (accessGranted || accessDenied) {
+                // logged in
+                stopTrigger.next();
+                stopTrigger.complete();
+                o.next(accessGranted ? res.access_token : null);
+                o.complete();
+              } else if (res.error === 'expired_token') {
+                // expired so skip polling
+                throwError('Token expired');
+              }
+            });
+          }, err => {
+            this.ngZone.run(() => {
+              o.error(err);
+              o.complete();
+            });
+          }, () => {
+            this.ngZone.run(() => {
+              o.next(accessGranted);
+              o.complete();
+            });
+          });
+      });
+    });
+  }
+
+  private cloudLoginSetHeaders(accessToken: string, tenant: string) {
+    this.backend.setHeader('Authorization', 'bearer ' + accessToken);
+    this.backend.setHeader('X-ID-TENANT-NAME', tenant);
+  }
+
+  private cloudLoginRemoveHeaders() {
+    this.backend.setHeader('Authorization', null);
+    this.backend.setHeader('X-ID-TENANT-NAME', null);
+  }
+
+  /**
+     * Initialize/setup the application for a given user. 
+     * @param user 
+     * @returns Observable<YuvUser>
+     */
+  private initApp(user: any): Observable<YuvUser> {
+
+    const currUser = new YuvUser(user);
+    this.userService.setCurrentUser(currUser);
+    this.backend.setHeader('Accept-Language', currUser.getSchemaLocale());
+
+    const initTasks = [
+      this.systemService.getSystemDefinition(currUser)
+      // this.bpmService.getExecutableProcesses(),
+    ];
+
+    return forkJoin(initTasks).pipe(
+      switchMap((res) => {
+
+        if (!res[0]) {
+          // no system definition available
+          return throwError('Unable to fetch system definition');
+        } else {
+          return of(currUser);
+        }
+
+      })
+    );
+  }
+}

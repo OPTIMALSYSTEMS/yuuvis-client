@@ -1,0 +1,112 @@
+import { Injectable } from '@angular/core';
+import { ReplaySubject, Observable, forkJoin, of } from 'rxjs';
+import { YuvUser } from '../../model/yuv-user.model';
+import { BackendService } from '../backend/backend.service';
+import { catchError, map, switchMap, tap } from 'rxjs/operators';
+import { Logger } from '../logger/logger';
+import { SystemDefinition } from './system.interface';
+import { ObjectType } from '../../model/object-type.model';
+import { AppCacheService } from '../cache/app-cache.service';
+import { ApiBase } from '../backend/api.enum';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class SystemService {
+
+  private STORAGE_KEY = 'yuv.core.system.definition';
+
+  private system: SystemDefinition;
+  private systemSource = new ReplaySubject<SystemDefinition>();
+  public system$: Observable<SystemDefinition> = this.systemSource.asObservable();
+
+  constructor(private backend: BackendService,
+    private appCache: AppCacheService,
+    private logger: Logger) { }
+
+
+  getObjectTypes(): ObjectType[] {
+    return this.system.objectTypes;
+  }
+
+  getLocalizedResource(key: string): string {
+    return this.system.i18n[key];
+  }
+
+  /**
+     * Fetches the backends system definition and updates system$ Observable.
+     * Subscribe to the system$ observable instead of calling this function, otherwise you'll trigger fetching the
+     * system definition every time.
+     *
+     * @param user The user to load the system definition for
+     */
+  getSystemDefinition(user: YuvUser): Observable<boolean> {
+    // try to fetch system definition from cache first
+    return this.appCache.getItem(this.STORAGE_KEY).pipe(
+      switchMap(res => {
+        if (res) {
+          // check if the system definition from the cache is up to date
+          // TODO: how to check if SD is up to date
+          this.system = res;
+          this.systemSource.next(this.system);
+          return of(true);
+        } else {
+          // nothing cached so far
+          return this.fetchSystemDefinition(user);
+        }
+      })
+    );
+  }
+
+  /**
+   * Actually fetch the system definition from the backend.
+   * @param user User to fetch definition for
+   */
+  private fetchSystemDefinition(user: YuvUser): Observable<boolean> {
+
+    const fetchTasks = [
+      this.backend.get('/dms/schema', ApiBase.core),
+      this.fetchLocalizations()
+    ];
+
+    return forkJoin(fetchTasks).pipe(
+      catchError((error) => {
+        this.logger.error('Error fetching recent version of system definition from server.', error);
+        this.systemSource.error('Error fetching recent version of system definition from server.');
+        return of(null);
+      }),
+      map((data) => {
+        if (data && data.length) {
+
+          // getting an array of system definitions
+          // TODO: support multiple system definitions???
+          const sysDef = data[0];
+          this.system = {
+            version: sysDef.version,
+            lastModificationDate: sysDef.lastModificationDate,
+            objectTypes: sysDef.objectTypes.map(ot => new ObjectType(ot)),
+            i18n: data[1]
+          }
+          this.appCache.setItem(this.STORAGE_KEY, this.system).subscribe();
+          this.systemSource.next(this.system);
+        }
+        return !!data;
+      })
+    );
+  }
+
+  
+  updateLocalizations(user: YuvUser): Observable<any> {
+    return this.fetchLocalizations().pipe(
+      tap(res => {
+        this.system.i18n = res;
+        this.appCache.setItem(this.STORAGE_KEY, this.system).subscribe();
+        this.systemSource.next(this.system);
+      })
+    );
+  }
+
+  private fetchLocalizations(): Observable<any> {
+    return this.backend.get('/localisation/resources');
+  }
+}

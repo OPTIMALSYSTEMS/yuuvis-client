@@ -1,0 +1,22 @@
+<yuv-icon [iconSrc]="'assets/default/theme/logo.svg'"></yuv-icon>
+
+<div class="login">
+  <div class="invalid" translate>eo.state.login.msg.invalid</div>
+
+  <form class="panel" (ngSubmit)="login()" #loginForm="ngForm">
+
+    <yuv-form-input label="host" *ngIf="useDeviceFlow">
+      <yuv-string name="host" [(ngModel)]="form.host"></yuv-string>
+    </yuv-form-input>
+
+    <yuv-form-input label="{{'eo.state.login.tenant'|translate}}">
+      <yuv-string name="tenant" [(ngModel)]="form.tenant" [required]="true"></yuv-string>
+    </yuv-form-input>
+
+    <div class="yuv-button-bar">
+      <button class="primary" [ngClass]="{spinning: loading}" [disabled]="loading"
+        translate>eo.state.login.submit</button>
+    </div>
+
+  </form>
+</div>

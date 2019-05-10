@@ -1,1 +1,27 @@
-/* You can add global styles to this file, and also import other style files */
+@import "~@yuuvis/framework/framework.css";
+@import "scss/main";
+
+:root {
+  --theme-transparent-app-bar-color: var(--color-primary);
+  --theme-background: url("assets/default/theme/bgr-dashboard.jpg");
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  position: relative;
+  font-size: var(--font-body);
+}
+
+.themeBackground {
+  background-image: var(--theme-background);
+  background-position: center center;
+  background-size: cover;
+}
+
+.panel {
+  background-color: #fff;
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, .2);
+}

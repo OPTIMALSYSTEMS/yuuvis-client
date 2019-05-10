@@ -1,0 +1,164 @@
+$user-panel-width: 180px;
+
+:host {
+  position: absolute;
+  overflow: hidden;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: var(--app-bar-height) 1fr;
+  grid-template-areas: "header" "content";
+
+  .app-bar {
+    grid-area: header;
+    order: 1;
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+    color: #fff;
+    background-color: var(--color-primary);
+
+    yuv-icon#drawer {
+      padding: 15px;
+      margin: 5px;
+    }
+    yuv-icon#logo {
+      width: 80px;
+      padding: 0;
+      height: auto;
+      background-color: transparent;
+    }
+
+    .main {
+      flex: 1;
+      display: flex;
+      flex-flow: row nowrap;
+      align-items: center;
+      padding: 0 calc(var(--app-pane-padding) * 2);
+      yuv-icon {
+        border-radius: 50%;
+        padding: calc(var(--app-pane-padding) / 2);
+
+        &:hover {
+          background-color: var(--color-accent);
+          color: #fff;
+        }
+      }
+    }
+    .right {
+      display: flex;
+      flex-flow: row nowrap;
+      align-items: center;
+      flex: 0 0 auto;
+
+      .user {
+        border-radius: 50%;
+        margin: 0 var(--app-pane-padding);
+        width: 40px;
+        height: 40px;
+        background-color: rgba(255, 255, 255, 0.1);
+
+        .overlay {
+          position: absolute;
+          right: 0;
+          top: var(--app-bar-height);
+          width: 180px;
+        }
+      }
+    }
+  }
+  .app-content {
+    order: 0;
+    grid-area: content;
+    background-color: var(--main-background);
+  }
+
+  .user-panel {
+    background-color: var(--color-primary);
+    width: $user-panel-width;
+
+    .avatar {
+      height: $user-panel-width;
+      display: flex;
+      position: relative;
+      background-color: rgba(255, 255, 255, 0.1);
+
+      &.enabled {
+        .user-title {
+          opacity: 1;
+          padding: calc(var(--app-pane-padding) / 2) calc(var(--app-pane-padding) / 2) calc(var(--app-pane-padding) / 2)  var(--app-pane-padding);
+          > yuv-icon {
+            display: none;
+          }
+        }
+      }
+
+      yuv-user-avatar {
+        flex: 1;
+      }
+
+      .user-title {
+        position: absolute;
+        opacity: .6;
+        bottom: 0;
+        right: 0;
+        left: 0;
+        background-color: rgba(0, 0, 0, 0.1);
+        padding: calc(var(--app-pane-padding) / 2)  calc(var(--app-pane-padding) / 2)  calc(var(--app-pane-padding) / 2) 0;
+        color: #fff;
+        display: flex;
+        align-items: center;
+
+        > yuv-icon { 
+          margin: 0 calc(var(--app-pane-padding) / 2);
+        }
+
+        > div {
+          display: flex;
+          flex: 1;
+          flex-flow: column;
+          min-height: 0;
+          min-width: 0;
+
+          span {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+
+            &.email {
+              opacity: 0.7;
+              margin-top: 4px;
+              font-size: var(--font-hint);
+            }
+          }
+        }
+      }
+    }
+
+    .nav-item a {
+      display: block;
+      color: #fff;
+      padding: calc(var(--app-pane-padding) / 2) var(--app-pane-padding);
+      text-decoration: none;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+  }
+
+  &.transparentAppBar {
+    .app-bar {
+      background-color: transparent;
+      color: var(--theme-transparent-app-bar-color);
+
+      .right .user {
+        background-color: rgba(255, 255, 255, 0.5);
+      }
+    }
+    .app-content {
+      grid-column: 1;
+      grid-row: 1 / span 2;
+    }
+  }
+}
