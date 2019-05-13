@@ -18,6 +18,7 @@ export class LoginComponent implements OnInit {
   @HostBinding('class.loading') loading: boolean;
   form: any = {};
   useDeviceFlow: boolean;
+  private loginCancelTrigger;
 
   constructor(@Inject(CORE_CONFIG) public coreConfig: CoreConfig,
     private route: ActivatedRoute,
@@ -62,20 +63,75 @@ export class LoginComponent implements OnInit {
   login() {
     this.loading = true;
     this.invalid = false;
-    
-    if (this.useDeviceFlow) { 
+
+    if (this.useDeviceFlow) {
       this.appCache.setItem(this.STORAGE_KEY, this.form.host).subscribe();
     }
-    this.authService.login(this.form.tenant, this.form.host).pipe(
+
+    const loginRes = this.authService.loginX(this.form.tenant, this.form.host);
+    this.loginCancelTrigger = loginRes.cancelTrigger;
+
+    loginRes.loginState.pipe(
       finalize(() => (this.loading = false))
-    ).subscribe(() => {
-      let url = this.returnUrl || '/';
-      this.router.navigateByUrl(url);
+    ).subscribe((loginState) => {
+
+
+      switch (loginState.name) {
+        case 'loginUri': {
+          // open login target uri in iframe
+          const ifr = document.createElement('iframe');
+          ifr.setAttribute('id', 'ifrlogin');
+          document.body.append(ifr);
+          ifr.setAttribute('src', loginState.data);
+
+          break
+        }
+        case 'done': {
+          this.finishLogin();
+          let url = this.returnUrl || '/';
+          this.router.navigateByUrl(url);
+          break
+        }
+      }
     }, Utils.throw(() => {
+      this.finishLogin();
       this.invalid = true;
     })
     );
   }
+
+  cancelLogin() {
+    if (this.loginCancelTrigger) {
+      this.loginCancelTrigger.next();
+      this.loginCancelTrigger.complete();
+    }
+    this.finishLogin();
+  }
+
+  private finishLogin() {
+    this.loginCancelTrigger = null;
+    document.getElementById('ifrlogin').remove();
+  }
+
+
+
+  // login() {
+  //   this.loading = true;
+  //   this.invalid = false;
+
+  //   if (this.useDeviceFlow) { 
+  //     this.appCache.setItem(this.STORAGE_KEY, this.form.host).subscribe();
+  //   }
+  //   this.authService.login(this.form.tenant, this.form.host).pipe(
+  //     finalize(() => (this.loading = false))
+  //   ).subscribe(() => {
+  //     let url = this.returnUrl || '/';
+  //     this.router.navigateByUrl(url);
+  //   }, Utils.throw(() => {
+  //     this.invalid = true;
+  //   })
+  //   );
+  // }
 
 
 }

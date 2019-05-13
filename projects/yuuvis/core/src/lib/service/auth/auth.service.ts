@@ -37,6 +37,60 @@ export class AuthService {
     return this.authenticated;
   }
 
+  loginX(tenant: string, host?: string): {cancelTrigger: Subject<void>, loginState: Observable<{name: string, data: any}>} {
+    
+    const stopTrigger$ = new Subject<void>();
+    return {
+      cancelTrigger: stopTrigger$,
+      loginState: new Observable(o => {
+      
+        const loginState = {
+          name: null,
+          data: null
+        } 
+        
+        const stopTrigger$ = new Subject<void>();
+        const targetHost = host || '';
+        this.http.get(`${targetHost}/tenant/${tenant}/loginDevice`).subscribe((res: LoginDeviceResult) => {
+  
+          const targetUri = `${targetHost}/oauth/${tenant}?user_code=${res.user_code}`;
+          
+          loginState.name = 'loginUri';
+          loginState.data = targetUri;
+          o.next(loginState)
+  
+          this.cloudLoginPollForResult(`${targetHost}/auth/info/state?device_code=${res.device_code}`, 1000, stopTrigger$)
+          .pipe(
+            tap(accessToken => {
+              if (accessToken) {
+                this.cloudLoginSetHeaders(accessToken, tenant);
+                const storeToken: StoredToken = {
+                  tenant: tenant,
+                  accessToken: accessToken
+                };
+                this.storage.setItem(this.TOKEN_STORAGE_KEY, storeToken).subscribe();
+              }
+            }),
+            switchMap((authRes: any) => authRes ? this.initUser(targetHost) : throwError('not authenticated'))
+          ).subscribe((user: YuvUser) => {
+            
+            loginState.name = 'done';
+            loginState.data = user;
+  
+            o.next(loginState);
+            o.complete();
+          }, err => {
+            o.error(err);
+            o.complete();
+          })
+        }, error => {
+          o.error('unable to call device flow endpoint');
+          o.complete();
+        });
+      })
+    }
+  }
+
   login(tenant: string, host?: string): Observable<YuvUser> {
     return new Observable(o => {
       const stopTrigger$ = new Subject<void>();
@@ -83,8 +137,7 @@ export class AuthService {
             win.close();
             o.error(err);
             o.complete();
-          }
-          )
+          })
       }, (error) => {
         o.error('unable to call device flow endpoint');
         o.complete();
