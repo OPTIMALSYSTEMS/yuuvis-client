@@ -39,7 +39,7 @@
       }
     }
   }
-  yuv-icon {
+  yuv-icon.logo {
     color: #fff;
     width: 300px;
     height: auto;
@@ -48,6 +48,59 @@
   &.invalid .login {
     > div.invalid {
       opacity: 1;
+    }
+  }
+
+  // device flow login
+  .device-flow-login {
+    position: absolute;
+    left:0; top:0; right:0; bottom:0;
+    background-color: rgba(0,0,0,.4);
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+    justify-content: center;
+    animation: loginDialogBackdropAppear 1000ms;
+
+    .dialog {
+      box-shadow: 0 0 10px 0 rgba(0,0,0,.4);
+      width: 90%;
+      min-width: 500px;
+      height: 90%;
+      display: flex;
+      flex-flow: column;
+      animation: loginDialogBoxAppear 300ms;
+
+      .head {
+        flex: 0;
+        background-color: var(--color-primary);
+        color: #fff;
+        padding: calc(var(--app-pane-padding)/2);
+        display: flex;
+        justify-content: flex-end;
+      }
+      iframe {
+        flex: 1
+      }
+    }
+  }
+
+  @keyframes loginDialogBackdropAppear {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes loginDialogBoxAppear {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
     }
   }
 }

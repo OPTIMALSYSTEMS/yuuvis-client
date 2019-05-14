@@ -13,4 +13,15 @@ export interface LoginDeviceResult {
     accessToken: string;
     tenant: string;
   }
-  
+
+  // State emitted by the login function when using the device flow
+  export interface LoginState {
+      name: LoginStateName;
+      data: any;
+  }
+
+  export enum LoginStateName {
+    STATE_LOGIN_URI = 'login.uri',
+    STATE_DONE = 'login.done',
+    STATE_CANCELED = 'login.canceled',
+  }

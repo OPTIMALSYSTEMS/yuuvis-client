@@ -1,6 +1,6 @@
 import { Injectable, NgZone, Inject } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
-import { LoginDeviceResult, StoredToken } from './auth.interface';
+import { LoginDeviceResult, StoredToken, LoginState, LoginStateName } from './auth.interface';
 import { Observable, Subject, interval, throwError, of, BehaviorSubject, forkJoin } from 'rxjs';
 import { switchMap, takeUntil, catchError, tap } from 'rxjs/operators';
 import { LocalStorage } from '@ngx-pwa/local-storage';
@@ -12,7 +12,6 @@ import { CORE_CONFIG } from '../config/core-config.tokens';
 import { CoreConfig } from '../config/core-config';
 import { ConfigService } from '../config/config.service';
 import { YuvEnvironment } from '../../core.environment';
-import { ApiBase } from '../backend/api.enum';
 
 @Injectable({
   providedIn: 'root'
@@ -37,25 +36,24 @@ export class AuthService {
     return this.authenticated;
   }
 
-  loginX(tenant: string, host?: string): {cancelTrigger: Subject<void>, loginState: Observable<{name: string, data: any}>} {
+  loginX(tenant: string, host?: string): {cancelTrigger: Subject<void>, loginState: Observable<LoginState>} {
     
     const stopTrigger$ = new Subject<void>();
     return {
       cancelTrigger: stopTrigger$,
       loginState: new Observable(o => {
       
-        const loginState = {
+        const loginState: LoginState = {
           name: null,
           data: null
         } 
         
-        const stopTrigger$ = new Subject<void>();
         const targetHost = host || '';
         this.http.get(`${targetHost}/tenant/${tenant}/loginDevice`).subscribe((res: LoginDeviceResult) => {
   
           const targetUri = `${targetHost}/oauth/${tenant}?user_code=${res.user_code}`;
           
-          loginState.name = 'loginUri';
+          loginState.name = LoginStateName.STATE_LOGIN_URI;
           loginState.data = targetUri;
           o.next(loginState)
   
@@ -74,13 +72,19 @@ export class AuthService {
             switchMap((authRes: any) => authRes ? this.initUser(targetHost) : throwError('not authenticated'))
           ).subscribe((user: YuvUser) => {
             
-            loginState.name = 'done';
+            loginState.name = LoginStateName.STATE_DONE;
             loginState.data = user;
   
             o.next(loginState);
             o.complete();
           }, err => {
             o.error(err);
+            o.complete();
+          }, () => {
+            // polling may complete without a result or error, when it was canceled
+            loginState.name = LoginStateName.STATE_CANCELED;
+            loginState.data = null;  
+            o.next(loginState);
             o.complete();
           })
         }, error => {
@@ -253,7 +257,6 @@ export class AuthService {
             });
           }, () => {
             this.ngZone.run(() => {
-              o.next(accessGranted);
               o.complete();
             });
           });

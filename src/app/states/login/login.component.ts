@@ -1,7 +1,8 @@
 import { Component, OnInit, Inject, HostBinding } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { TranslateService, AuthService, YuvEnvironment, Utils, AppCacheService, CORE_CONFIG, CoreConfig } from '@yuuvis/core';
+import { TranslateService, AuthService, YuvEnvironment, Utils, AppCacheService, CORE_CONFIG, CoreConfig, LoginStateName } from '@yuuvis/core';
 import { finalize, tap } from 'rxjs/operators';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'yuv-login',
@@ -17,21 +18,30 @@ export class LoginComponent implements OnInit {
   @HostBinding('class.invalid') invalid: boolean;
   @HostBinding('class.loading') loading: boolean;
   form: any = {};
-  useDeviceFlow: boolean;
+  deviceFlow = {
+    // whether or not device flow is used to login
+    active: false,
+    // login page received from the backends authentication service
+    loginPageUri: null,
+    // loginPageUri: this.sanitizer.bypassSecurityTrustResourceUrl('https://kolibri.enaioci.net'),
+  }
+
   private loginCancelTrigger;
 
   constructor(@Inject(CORE_CONFIG) public coreConfig: CoreConfig,
     private route: ActivatedRoute,
     private router: Router,
+    private sanitizer: DomSanitizer,
     private appCache: AppCacheService,
     private translate: TranslateService,
     private authService: AuthService) {
-    this.useDeviceFlow = !this.coreConfig.environment.production || !YuvEnvironment.isWebEnvironment();
+
+    this.deviceFlow.active = !this.coreConfig.environment.production || !YuvEnvironment.isWebEnvironment();
   }
 
   ngOnInit() {
 
-    if (this.useDeviceFlow) {
+    if (this.deviceFlow.active) {
       this.appCache.getItem(this.STORAGE_KEY).subscribe(res => {
         if (res) {
           this.form.host = res;
@@ -64,7 +74,7 @@ export class LoginComponent implements OnInit {
     this.loading = true;
     this.invalid = false;
 
-    if (this.useDeviceFlow) {
+    if (this.deviceFlow.active) {
       this.appCache.setItem(this.STORAGE_KEY, this.form.host).subscribe();
     }
 
@@ -75,18 +85,17 @@ export class LoginComponent implements OnInit {
       finalize(() => (this.loading = false))
     ).subscribe((loginState) => {
 
-
       switch (loginState.name) {
-        case 'loginUri': {
+        case LoginStateName.STATE_LOGIN_URI: {
           // open login target uri in iframe
-          const ifr = document.createElement('iframe');
-          ifr.setAttribute('id', 'ifrlogin');
-          document.body.append(ifr);
-          ifr.setAttribute('src', loginState.data);
-
+          this.deviceFlow.loginPageUri = this.sanitizer.bypassSecurityTrustResourceUrl(loginState.data);
           break
         }
-        case 'done': {
+        case LoginStateName.STATE_CANCELED: {
+          this.finishLogin();
+          break;
+        }
+        case LoginStateName.STATE_DONE: {
           this.finishLogin();
           let url = this.returnUrl || '/';
           this.router.navigateByUrl(url);
@@ -103,14 +112,13 @@ export class LoginComponent implements OnInit {
   cancelLogin() {
     if (this.loginCancelTrigger) {
       this.loginCancelTrigger.next();
-      this.loginCancelTrigger.complete();
     }
     this.finishLogin();
   }
 
   private finishLogin() {
     this.loginCancelTrigger = null;
-    document.getElementById('ifrlogin').remove();
+    this.deviceFlow.loginPageUri = null;
   }
 
 

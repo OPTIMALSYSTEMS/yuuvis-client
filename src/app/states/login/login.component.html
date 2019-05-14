@@ -1,11 +1,11 @@
-<yuv-icon [iconSrc]="'assets/default/theme/logo.svg'"></yuv-icon>
+<yuv-icon class="logo" [iconSrc]="'assets/default/theme/logo.svg'"></yuv-icon>
 
 <div class="login">
   <div class="invalid" translate>eo.state.login.msg.invalid</div>
 
   <form class="panel" (ngSubmit)="login()" #loginForm="ngForm">
 
-    <yuv-form-input label="host" *ngIf="useDeviceFlow">
+    <yuv-form-input label="host" *ngIf="deviceFlow.active">
       <yuv-string name="host" [(ngModel)]="form.host"></yuv-string>
     </yuv-form-input>
 
@@ -19,4 +19,14 @@
     </div>
 
   </form>
+</div>
+
+<!-- iframe to show the login page for the devoce flow login strategy -->
+<div class="device-flow-login" *ngIf="deviceFlow.loginPageUri">
+  <div class="dialog">
+    <div class="head">
+        <yuv-icon [iconSrc]="'assets/default/svg/ic_close.svg'" (click)="cancelLogin()"></yuv-icon>
+    </div>
+    <iframe [src]="deviceFlow.loginPageUri" frameborder="0"></iframe>
+  </div>
 </div>
