@@ -8,8 +8,8 @@ import { EnaioConfig } from './config.interface';
  */
 export class CoreConfig {
     
-    main?: EnaioConfig | string[] = ['assets/_default/config/main.json'];
-    translations?: string[] = ['assets/_default/i18n/'];  
+    main?: EnaioConfig | string[] = ['assets/default/config/main.json'];
+    translations?: string[] = ['assets/default/i18n/'];  
     environment?: { production: boolean } = {production: true};
   
     constructor(@Inject(CUSTOM_CONFIG) __config: CoreConfig) {

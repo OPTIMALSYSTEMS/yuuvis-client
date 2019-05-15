@@ -8,6 +8,7 @@ import { YuvCoreModule, CUSTOM_CONFIG, CORE_CONFIG, CoreConfig } from '@yuuvis/c
 import { OverlayPanelModule } from 'primeng/overlaypanel';
 import { YuvSearchModule } from './search/search.module';
 import { YuvUserModule } from './user/user.module';
+import { YuvObjectDetailsModule } from './object-details/object-details.module';
 
 /**
  * `YuvFrameworkModule` provides a set of UI components to be used
@@ -26,6 +27,7 @@ import { YuvUserModule } from './user/user.module';
     YuvFormModule,
     YuvSearchModule,
     YuvUserModule,
+    YuvObjectDetailsModule,
     OverlayPanelModule,
     YuvCommonUiModule,
     AngularSplitModule.forRoot(),
@@ -34,6 +36,7 @@ import { YuvUserModule } from './user/user.module';
   exports: [
     YuvFormModule,
     YuvSearchModule,
+    YuvObjectDetailsModule,
     YuvUserModule,
     YuvCommonUiModule,
     YuvCoreModule,

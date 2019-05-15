@@ -212,6 +212,11 @@
       "sourceRoot": "projects/yuuvis/framework/src",
       "projectType": "library",
       "prefix": "yuv",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-ng-packagr:build",

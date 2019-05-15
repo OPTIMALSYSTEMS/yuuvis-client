@@ -1,0 +1,12 @@
+
+:host {
+
+    .state {
+        padding: var(--app-pane-padding);
+
+        > * {
+            background-color: #fff;
+            display: block;
+        }
+    }
+}

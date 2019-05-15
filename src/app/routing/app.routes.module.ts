@@ -5,14 +5,13 @@ import { DashboardComponent } from '../states/dashboard/dashboard.component';
 import { AuthGuard } from './auth-guard/auth-guard.service';
 import { LoginComponent } from '../states/login/login.component';
 import { SettingsComponent } from '../states/settings/settings.component';
-import { ResultComponent } from '../states/result/result.component';
 import { NotFoundComponent } from '../states/not-found/not-found.component';
 
 const routes: Routes = [
     { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
     { path: 'enter', component: LoginComponent },
     { path: 'settings', component: SettingsComponent },
-    { path: 'result', component: ResultComponent },
+
     // default route
     { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
     // 404 route

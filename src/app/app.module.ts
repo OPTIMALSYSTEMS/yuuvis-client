@@ -8,9 +8,9 @@ import { LoginComponent } from './states/login/login.component';
 import { FrameComponent } from './components/frame/frame.component';
 import { FormsModule } from '@angular/forms';
 import { SettingsComponent } from './states/settings/settings.component';
-import { ResultComponent } from './states/result/result.component';
 import { NotFoundComponent } from './states/not-found/not-found.component';
 import { environment } from '../environments/environment';
+import { ResultStateModule } from './states/result/result.state.module';
 
 @NgModule({
   declarations: [
@@ -19,12 +19,12 @@ import { environment } from '../environments/environment';
     LoginComponent,
     FrameComponent,
     SettingsComponent,
-    ResultComponent,
     NotFoundComponent],
   imports: [
     BrowserModule,
     FormsModule,
     AppRoutingModule,
+    ResultStateModule,
     YuvFrameworkModule.forRoot({
 
       main: ['assets/default/config/main.json'],

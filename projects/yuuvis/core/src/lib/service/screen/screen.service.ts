@@ -27,6 +27,7 @@ export class ScreenService {
   private setScreen(evt?: Event) {
     const bounds = document.getElementsByTagName('body')[0].getBoundingClientRect();
     this.screen = {
+      usePhoneFlow: bounds.width <= 600,
       width: bounds.width,
       height: bounds.height,
     }

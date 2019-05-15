@@ -1,0 +1,20 @@
+<ng-container *ngIf="!screen?.usePhoneFlow; else tplPhone">
+
+    <!-- large screen size view -->
+    <as-split class="state" direction="horizontal" gutterSize="16">
+        <as-split-area class="panel" size="60">
+            <yuv-search-result (itemSelected)="select($event)"></yuv-search-result>
+        </as-split-area>
+        <as-split-area class="panel" size="40">
+            <yuv-object-details [dmsObject]="selected"></yuv-object-details>
+        </as-split-area>
+    </as-split>
+</ng-container>
+
+<!-- small screen sizes (phone flow) -->
+<ng-template #tplPhone>
+    <div class="state">
+        <yuv-search-result class="panel" (itemSelected)="select($event)"></yuv-search-result>
+        <yuv-object-details class="panel" [dmsObject]="selected"></yuv-object-details>
+    </div>
+</ng-template>
