@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService, AuthService, YuvEnvironment, Utils, AppCacheService, CORE_CONFIG, CoreConfig, LoginStateName } from '@yuuvis/core';
 import { finalize, tap } from 'rxjs/operators';
 import { DomSanitizer } from '@angular/platform-browser';
+import { BrowserService } from 'src/app/platform/browser/browser.service';
 
 @Component({
   selector: 'yuv-login',
@@ -31,6 +32,7 @@ export class LoginComponent implements OnInit {
   constructor(@Inject(CORE_CONFIG) public coreConfig: CoreConfig,
     private route: ActivatedRoute,
     private router: Router,
+    private browserService: BrowserService,
     private sanitizer: DomSanitizer,
     private appCache: AppCacheService,
     private translate: TranslateService,
@@ -89,6 +91,12 @@ export class LoginComponent implements OnInit {
         case LoginStateName.STATE_LOGIN_URI: {
           // open login target uri in iframe
           this.deviceFlow.loginPageUri = this.sanitizer.bypassSecurityTrustResourceUrl(loginState.data);
+
+const browserId = this.browserService.open(loginState.data);
+this.browserService.addEventListener(browserId, 'exit', () => {
+  this.cancelLogin();
+})
+
           break
         }
         case LoginStateName.STATE_CANCELED: {
