@@ -1,15 +1,15 @@
 import { NgModule } from '@angular/core';
-import { BrowserServiceCordova } from './browser/browser.service.cordova';
+import { AuthFlowServiceCordova } from './auth-flow/auth-flow.service.cordova';
 import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
-import { BrowserService } from './browser/browser.service';
+import { AuthFlowService } from './auth-flow/auth-flow.service';
 
 /**
  * Platform service implementations for cordova environment.
  */
 @NgModule({
     providers: [{
-        provide: BrowserService,
-        useClass: BrowserServiceCordova
+        provide: AuthFlowService,
+        useClass: AuthFlowServiceCordova
     },
         InAppBrowser
     ]

@@ -1,0 +1,13 @@
+.res-item {
+  padding: var(--app-pane-padding);
+  cursor: pointer;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+
+  &:not(.selected):hover {
+    background-color: rgba(0, 0, 0, .1);
+  }
+
+  &.selected {
+    background-color: red;
+  }
+}

@@ -1,9 +1,9 @@
 import { NgModule } from '@angular/core';
-import { BrowserService } from './browser/browser.service';
+import { AuthFlowService } from './auth-flow/auth-flow.service';
 
 @NgModule({
     providers: [
-        BrowserService
+        AuthFlowService
     ]
   })
   export class PlatformModule {

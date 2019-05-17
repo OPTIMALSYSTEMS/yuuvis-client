@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService, AuthService, YuvEnvironment, Utils, AppCacheService, CORE_CONFIG, CoreConfig, LoginStateName } from '@yuuvis/core';
 import { finalize, tap } from 'rxjs/operators';
 import { DomSanitizer } from '@angular/platform-browser';
-import { BrowserService } from 'src/app/platform/browser/browser.service';
+import { AuthFlowService } from 'src/app/platform/auth-flow/auth-flow.service';
 
 @Component({
   selector: 'yuv-login',
@@ -32,7 +32,7 @@ export class LoginComponent implements OnInit {
   constructor(@Inject(CORE_CONFIG) public coreConfig: CoreConfig,
     private route: ActivatedRoute,
     private router: Router,
-    private browserService: BrowserService,
+    private authFlowService: AuthFlowService,
     private sanitizer: DomSanitizer,
     private appCache: AppCacheService,
     private translate: TranslateService,
@@ -80,23 +80,23 @@ export class LoginComponent implements OnInit {
       this.appCache.setItem(this.STORAGE_KEY, this.form.host).subscribe();
     }
 
-    const loginRes = this.authService.loginX(this.form.tenant, this.form.host);
-    this.loginCancelTrigger = loginRes.cancelTrigger;
+    const loginFlow = this.authService.startLoginFlow(this.form.tenant, this.form.host);
 
-    loginRes.loginState.pipe(
+    // get a hold on the trigger to stop the login flow at any point
+    this.loginCancelTrigger = loginFlow.cancelTrigger;
+    let browserId;
+
+    // subscribe to the current state of the login flow
+    loginFlow.loginState.pipe(
       finalize(() => (this.loading = false))
     ).subscribe((loginState) => {
 
       switch (loginState.name) {
         case LoginStateName.STATE_LOGIN_URI: {
           // open login target uri in iframe
-          this.deviceFlow.loginPageUri = this.sanitizer.bypassSecurityTrustResourceUrl(loginState.data);
+          // this.deviceFlow.loginPageUri = this.sanitizer.bypassSecurityTrustResourceUrl(loginState.data);
 
-const browserId = this.browserService.open(loginState.data);
-this.browserService.addEventListener(browserId, 'exit', () => {
-  this.cancelLogin();
-})
-
+          this.authFlowService.openLoginUri(loginState.data, this.loginCancelTrigger);
           break
         }
         case LoginStateName.STATE_CANCELED: {
@@ -105,6 +105,7 @@ this.browserService.addEventListener(browserId, 'exit', () => {
         }
         case LoginStateName.STATE_DONE: {
           this.finishLogin();
+          this.authFlowService.close();
           let url = this.returnUrl || '/';
           this.router.navigateByUrl(url);
           break
@@ -117,12 +118,12 @@ this.browserService.addEventListener(browserId, 'exit', () => {
     );
   }
 
-  cancelLogin() {
-    if (this.loginCancelTrigger) {
-      this.loginCancelTrigger.next();
-    }
-    this.finishLogin();
-  }
+  // cancelLogin() {
+  //   if (this.loginCancelTrigger) {
+  //     this.loginCancelTrigger.next();
+  //   }
+  //   this.finishLogin();
+  // }
 
   private finishLogin() {
     this.loginCancelTrigger = null;

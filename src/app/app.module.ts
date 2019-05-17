@@ -23,15 +23,15 @@ import { ResultStateModule } from './states/result/result.state.module';
   imports: [
     BrowserModule,
     FormsModule,
-    AppRoutingModule,
-    ResultStateModule,
+    ResultStateModule,    
     YuvFrameworkModule.forRoot({
 
       main: ['assets/default/config/main.json'],
       translations: ['assets/default/i18n/'],
 
       environment: environment
-    })
+    }),
+    AppRoutingModule
   ],
   providers: [],
   bootstrap: [AppComponent]

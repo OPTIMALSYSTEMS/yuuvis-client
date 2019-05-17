@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
 
 @Component({
   selector: 'yuv-search-result',
@@ -7,7 +7,10 @@ import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 })
 export class SearchResultComponent implements OnInit {
 
+  @Input() items: any[];
+  @Input() selectedItemId: string;
   @Output() itemSelected = new EventEmitter();
+
 
   constructor() { }
 

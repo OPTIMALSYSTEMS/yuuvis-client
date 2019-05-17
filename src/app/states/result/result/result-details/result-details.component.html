@@ -1,0 +1,5 @@
+<yuv-object-details [dmsObject]="item" *ngIf="item; else empty"></yuv-object-details>
+
+<ng-template #empty>
+  Got nothing to show, Buddy.
+</ng-template>

@@ -1,4 +1,2 @@
-<h1>SearchResult</h1>
-<button (click)="select('1')">1</button>
-<button (click)="select('2')">2</button>
-<button (click)="select('3')">3</button>
+<div>SearchResult</div>
+<div class="res-item" *ngFor="let item of items" (click)="select(item)" [ngClass]="{selected: item.id === selectedItemId}">{{item.label}}</div>

@@ -1,5 +1,6 @@
 export interface Screen {
-    usePhoneFlow: boolean;
+    mode: string;
+    orientation: string;
     width: number;
     height: number;
 }
