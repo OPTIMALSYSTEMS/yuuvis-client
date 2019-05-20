@@ -11,5 +11,13 @@
             background-color: #fff;
             display: block;
         }
+
+        .details.panel {
+            display: none;
+
+            &.active {
+                display: block;
+            }
+        }
     }
 }

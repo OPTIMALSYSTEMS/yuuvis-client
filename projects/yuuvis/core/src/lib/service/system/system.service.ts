@@ -107,6 +107,6 @@ export class SystemService {
   }
 
   private fetchLocalizations(): Observable<any> {
-    return this.backend.get('/localisation/resources');
+    return this.backend.get('/resources/text');
   }
 }

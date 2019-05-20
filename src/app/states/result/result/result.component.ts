@@ -1,9 +1,8 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, AfterViewInit } from '@angular/core';
 import { ScreenService, Screen } from '@yuuvis/core';
 import { Subscription } from 'rxjs';
-import { ResultStateService } from './result.state.service';
-import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
-import { filter, tap } from 'rxjs/operators';
+import { ActivatedRoute } from '@angular/router';
+import { PlatformLocation } from '@angular/common';
 
 @Component({
   selector: 'yuv-result',
@@ -14,53 +13,77 @@ export class ResultComponent implements OnInit, OnDestroy {
 
   private subscriptions: Subscription[] = [];
 
-  screen: Screen;
+  showMaster: boolean;
+  showSlave: boolean;
   useSmallDeviceLayout: boolean;
-  selectedItemId;
-  private showDetails: boolean;
 
-  items = [
-    { id: '1', label: 'Eins' },
-    { id: '2', label: 'Zwei' },
-    { id: '3', label: 'Drei' },
-    { id: '4', label: 'Vier' },
-    { id: '5', label: 'Fünf' },
-    { id: '6', label: 'Sechs' },
-  ]
+  searchResultItems;
+  selectedItem;
 
   constructor(private screenService: ScreenService,
-    private router: Router,
-    private route: ActivatedRoute,
-    private resultStateService: ResultStateService) {
+    private location: PlatformLocation,
+    private route: ActivatedRoute) {
 
-    this.subscriptions.push(this.router.events.pipe(
-      filter(e => e instanceof NavigationEnd)
-    ).subscribe((e: NavigationEnd) => {
-      this.showDetails = e.urlAfterRedirects.indexOf('/details') !== -1;
-      if(!this.showDetails) {
-        // reset the selected item in the search state service
-        this.resultStateService.select(null);
-      }
-    }));
 
     this.subscriptions.push(this.screenService.screenChange$.subscribe((screen: Screen) => {
-      this.screen = screen;
       this.useSmallDeviceLayout = screen.mode === ScreenService.MODE.SMALL;
+      this.setPanelVisibility();
+
+      if (this.useSmallDeviceLayout) {
+        this.location.onPopState((x) => {
+          if (this.selectedItem) {
+            this.select(null);
+          }
+        });
+      }
     }));
   }
 
+  private setPanelVisibility() {
+    if (!this.useSmallDeviceLayout) {
+      // large screen mode
+      this.showSlave = true;
+      this.showMaster = true;
+    } else if (this.selectedItem) {
+      // small screen mode with selected item
+      this.showMaster = false;
+      this.showSlave = true;
+    } else {
+      this.showMaster = true;
+      this.showSlave = false;
+    }
+  }
 
   select(item) {
-    const replaceUrl = this.router.url.indexOf('/details') !== -1;
-    console.log(replaceUrl);
-    this.router.navigate(['details', item.id], { relativeTo: this.route, replaceUrl: replaceUrl });
+    if (this.useSmallDeviceLayout) {
+      if (this.selectedItem && item) {
+        this.location.replaceState({}, '', '');
+      } else if (!this.selectedItem && item) {
+        this.location.pushState({}, '', '');
+      }
+    }
+    this.selectedItem = item;
+    this.setPanelVisibility();
+  }
+
+  executeQuery(query: string) {
+
+    this.searchResultItems = [
+      { id: '1', label: 'Eins' },
+      { id: '2', label: 'Zwei' },
+      { id: '3', label: 'Drei' },
+      { id: '4', label: 'Vier' },
+      { id: '5', label: 'Fünf' },
+      { id: '6', label: 'Sechs' },
+    ];
   }
 
   ngOnInit() {
-    this.resultStateService.setResult(this.items);
-    this.subscriptions.push(this.resultStateService.selectedItem$.subscribe(item => {
-      this.selectedItemId = item ? item.id : null;
-    }))
+
+    // extract the query from the route params
+    this.subscriptions.push(this.route.queryParamMap.subscribe(params => {
+      this.executeQuery(params.get('query'));
+    }));
   }
 
   ngOnDestroy() {
