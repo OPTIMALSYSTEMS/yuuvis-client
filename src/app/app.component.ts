@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { ScreenService } from '@yuuvis/core';
 
 @Component({
   selector: 'yuv-root',
@@ -6,5 +7,7 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  title = 'yuuvis-web';
+
+
+
 }

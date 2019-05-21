@@ -1,9 +1,14 @@
+
+:host-context(.screen-s) {
+    justify-content: flex-start;
+}
+
 :host {
     display: flex;
     flex-flow: column;
     align-items: center;
     justify-content: center;
     height: 100%;
-    padding-top: var(--app-bar-height);
+    padding: calc(var(--app-bar-height) + var(--app-pane-padding)) var(--app-pane-padding) 0 var(--app-pane-padding);
     box-sizing: border-box;
 }

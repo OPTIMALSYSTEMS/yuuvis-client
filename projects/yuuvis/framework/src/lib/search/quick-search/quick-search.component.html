@@ -1,12 +1,13 @@
 <div class="count" *ngIf="resultCount !== null">{{resultCount}}</div>
-<form class="search-box panel" (ngSubmit)="executeSearch()" [ngClass]="{invalid: invalidTerm}" [formGroup]="searchForm">
+
+<form class="search-box" (ngSubmit)="executeSearch()" [ngClass]="{invalid: invalidTerm, agg: result.length}" [formGroup]="searchForm">
   <yuv-icon [svg]="icSearch"></yuv-icon>
   <div class="input">
-    <label translate>eo.quicksearch.label</label>
     <input autofocus="autofocus" formControlName="searchInput">
   </div>
 </form>
-<div class="agg panel" *ngIf="result.length" [ngStyle]="{width: width}">
+
+<div class="aggregations" *ngIf="result.length">
   <div class="type" *ngFor="let t of result">
     <span class="typecount">{{t.count}}</span>
     <span class="label">{{t.label}}</span>

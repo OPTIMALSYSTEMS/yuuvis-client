@@ -1,2 +1,9 @@
-<div>SearchResult</div>
-<div class="res-item" *ngFor="let item of items" (click)="select(item)" [ngClass]="{selected: item.id === selectedItemId}">{{item.label}}</div>
+<div class="filter-panel">
+    <input type="checkbox" name="" id="">
+    <input type="checkbox" name="" id="">
+    <input type="checkbox" name="" id="">
+    <input type="checkbox" name="" id="">
+</div>
+<div class="result-list">
+    <div class="res-item" *ngFor="let item of items" (click)="select(item)" [ngClass]="{selected: item.id === selectedItemId}">{{item.label}}</div>
+</div>

@@ -1,23 +1,10 @@
 
-:host {
-
-    .state.small {
-        height: 100%;
-        position: relative;
-
-        > * {
-            position: absolute;
-            left:0; top:0; right:0; bottom:0;
-            background-color: #fff;
-            display: block;
-        }
-
-        .details.panel {
-            display: none;
-
-            &.active {
-                display: block;
-            }
-        }
+:host-context(.screen-s) {
+    as-split.state {
+        padding: 0;
     }
+}
+
+:host {
+    
 }

@@ -1,9 +1,9 @@
-import { Component, OnInit, Input, HostBinding } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { debounceTime, switchMap, tap } from 'rxjs/operators';
 import { SVGIcons } from '../../svg.generated';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { SearchService, ScreenService, SystemService } from '@yuuvis/core';
-import { of, forkJoin } from 'rxjs';
+import { of } from 'rxjs';
 
 @Component({
   selector: 'yuv-quick-search',
@@ -13,8 +13,10 @@ import { of, forkJoin } from 'rxjs';
 })
 export class QuickSearchComponent implements OnInit {
 
-  @Input() width: string = '450px';
-  @HostBinding('style.width') hostWidth: string = this.width;
+  // @ViewChild('op') overlayPanel: OverlayPanel;
+  // @Input() width: string = '450px';
+
+  // @HostBinding('style.width') hostWidth: string = this.width;
 
   icSearch = SVGIcons.search;
   searchForm: FormGroup;
@@ -52,8 +54,8 @@ export class QuickSearchComponent implements OnInit {
               label: this.systemService.getLocalizedResource(`${o.properties['enaio:objectTypeId'].value}_label`),
               count: o.properties.OBJECT_COUNT.value
             });
-          })
-        } 
+          });
+        }
       })
   }
 

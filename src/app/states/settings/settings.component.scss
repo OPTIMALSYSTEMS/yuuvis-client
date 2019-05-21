@@ -1,5 +1,63 @@
 
 $avatar-size: 150px;
+$avatar-size-small: 80px;
+
+:host-context(.screen-s) {
+  .settings {
+    .head {
+      .user {
+        justify-content: flex-end;
+        padding-right: var(--app-pane-padding);
+
+        h1 {
+          font-size: var(--font-headline);
+        }
+        .meta {
+          margin: .5em 0;
+          font-size: var(--font-hint);
+        }
+      }
+      yuv-user-avatar.box { 
+        width: $avatar-size-small;
+        height: $avatar-size-small;
+      }
+    }
+  }
+}
+
+// small screens - Portrait
+:host-context(.screen-s.screen-portrait) {
+  .settings {
+    grid-template-rows: 25% 1fr;
+
+    .head {
+      .user {
+        padding-right: calc(#{$avatar-size-small} + calc(var(--app-pane-padding) * 2));
+      }
+    }
+    
+  }
+}
+
+// small screens - Landscape
+:host-context(.screen-s.screen-landscape) {
+  
+  .settings {    
+    display: flex;
+
+    .head {
+      flex: 0 0 36%;
+
+      yuv-user-avatar.box { 
+        right:var(--app-pane-padding);
+        top:var(--app-pane-padding);
+      }
+    }
+    .body {
+      flex: 1
+    }
+  }
+}
 
 :host {
   display: block;
@@ -18,7 +76,7 @@ $avatar-size: 150px;
     background: var(--panel-background);
     display: grid;
     grid-template-columns: 1fr;
-    grid-template-rows: 300px 1fr;
+    grid-template-rows: 33% 1fr;
     grid-template-areas: "head" "body";
 
     @media (max-width: 800px) {
@@ -46,12 +104,13 @@ $avatar-size: 150px;
         height: $avatar-size;
       }
       .user {
+        position: relative;
         display: flex;
         flex-flow: column;
       justify-content: center;
         background-color: rgba(0,0,0,.4);
         height: 100%;
-        padding: var(--app-pane-padding);
+        padding: var(--app-pane-padding) calc(#{$avatar-size} + calc(var(--app-pane-padding) * 2)) var(--app-pane-padding)  var(--app-pane-padding);
         box-sizing: border-box;
         color: #fff;
 

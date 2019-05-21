@@ -4,7 +4,7 @@
             (itemSelected)="select($event)"></yuv-search-result>
     </as-split-area>
     <as-split-area class="panel" size="40" order="1" [visible]="showSlave">
-        <button (click)="select(null)" *ngIf="useSmallDeviceLayout">XXX</button>
+        <button (click)="closeDetails()" *ngIf="useSmallDeviceLayout">XXX</button>
         <yuv-object-details [dmsObject]="selectedItem"></yuv-object-details>
     </as-split-area>
 </as-split>

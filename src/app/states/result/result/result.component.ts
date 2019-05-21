@@ -26,7 +26,15 @@ export class ResultComponent implements OnInit, OnDestroy {
 
 
     this.subscriptions.push(this.screenService.screenChange$.subscribe((screen: Screen) => {
-      this.useSmallDeviceLayout = screen.mode === ScreenService.MODE.SMALL;
+      
+      const useSmallDeviceLayout = screen.mode === ScreenService.MODE.SMALL;
+
+      // if we switch from large to small layout
+      if(!this.useSmallDeviceLayout && useSmallDeviceLayout && this.selectedItem){
+        this.location.pushState({}, '', '');
+      }
+            
+      this.useSmallDeviceLayout = useSmallDeviceLayout;
       this.setPanelVisibility();
 
       if (this.useSmallDeviceLayout) {
@@ -52,6 +60,10 @@ export class ResultComponent implements OnInit, OnDestroy {
       this.showMaster = true;
       this.showSlave = false;
     }
+  }
+
+  closeDetails() {
+    this.location.back();
   }
 
   select(item) {

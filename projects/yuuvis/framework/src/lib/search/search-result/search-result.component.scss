@@ -1,13 +1,26 @@
-.res-item {
-  padding: var(--app-pane-padding);
-  cursor: pointer;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+:host {
+  display: flex;
+  height: 100%;
 
-  &:not(.selected):hover {
-    background-color: rgba(0, 0, 0, .1);
+  .filter-panel {
+    background-color: black;
+    color: #fff;
   }
 
-  &.selected {
-    background-color: red;
+  .result-list {
+flex: 1;
+    .res-item {
+      padding: var(--app-pane-padding);
+      cursor: pointer;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+
+      &:not(.selected):hover {
+        background-color: rgba(0, 0, 0, 0.1);
+      }
+
+      &.selected {
+        background-color: var(--color-accent);
+      }
+    }
   }
 }

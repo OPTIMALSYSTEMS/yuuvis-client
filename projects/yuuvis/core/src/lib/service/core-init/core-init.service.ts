@@ -8,6 +8,7 @@ import { CORE_CONFIG } from '../config/core-config.tokens';
 import { CoreConfig } from '../config/core-config';
 import { AuthService } from '../auth/auth.service';
 import { EnaioConfig } from '../config/config.interface';
+import { ScreenService } from '../screen/screen.service';
 
 @Injectable({
   providedIn: 'root'
@@ -15,6 +16,8 @@ import { EnaioConfig } from '../config/config.interface';
 export class CoreInit {
 
   constructor(@Inject(CORE_CONFIG) private coreConfig: CoreConfig,
+  // DO NOT REMOVE: Otherwise service will not kcik in until referenced  
+  private screenService: ScreenService,
     private logger: Logger,
     private http: HttpClient,
     private configService: ConfigService,
