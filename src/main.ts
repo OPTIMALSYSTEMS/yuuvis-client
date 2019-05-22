@@ -30,21 +30,7 @@ if (version > 0 && version <= 11) {
   alert('Internet Explorer 11 and below is not supported. Please use a current version of Google Chrome, Firefox or Microsoft Edge instead.');
 } else {
 
-// platformBrowserDynamic()
-//   .bootstrapModule(AppModule)
-//   .catch(err => {
-//     alert('App could not be initialzed');
-//   });
-
-if (!!window['cordova']) {
-  document.addEventListener('deviceready', () => {
-    console.log('deviceready');
-    platformBrowserDynamic().bootstrapModule(AppModule)
-      .catch(err => console.log(err));
-  }, false);
-} else {
   platformBrowserDynamic().bootstrapModule(AppModule)
     .catch(err => console.log(err));
 }
 
-}

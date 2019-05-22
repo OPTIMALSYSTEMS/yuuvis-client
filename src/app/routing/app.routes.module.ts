@@ -10,7 +10,7 @@ import { NotFoundComponent } from '../states/not-found/not-found.component';
 const routes: Routes = [
     { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
     { path: 'enter', component: LoginComponent },
-    { path: 'settings', component: SettingsComponent },
+    { path: 'settings', component: SettingsComponent, canActivate: [AuthGuard] },
 
     // default route
     { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
