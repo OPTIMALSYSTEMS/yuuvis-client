@@ -11,34 +11,18 @@
     <div class="body">
         <div class="body-wrap">
 
+            <div class="setting">
+                <div class="label" translate>eo.state.settings.language</div>
+                <div class="value">
+                        <button class="toggle" (click)="changeClientLocale(locale.iso)"
+                        [ngClass]="{active: translate.currentLang === locale.iso}"
+                        *ngFor="let locale of clientLocales">{{locale.label}}</button>
+                </div>
+            </div>
 
-            <button (click)="lang('de')">de</button>
-            <button (click)="lang('en')">en</button>
+
+
             <h3 translate>eo.state.settings.deputies</h3>
-            <p>Lorem ipsum</p>
-            <p>Lorem ipsum</p>
-            <p>Lorem ipsum</p>
-            <p>Lorem ipsum</p>
-            <p>Lorem ipsum</p>
-            <p>Lorem ipsum</p>
-            <p>Lorem ipsum</p>
-            <p>Lorem ipsum</p>
-            <p>Lorem ipsum</p>
-            <p>Lorem ipsum</p>
-            <p>Lorem ipsum</p>
-            <p>Lorem ipsum</p>
-            <p>Lorem ipsum</p>
-            <p>Lorem ipsum</p>
-            <p>Lorem ipsum</p>
-            <p>Lorem ipsum</p>
-            <p>Lorem ipsum</p>
-            <p>Lorem ipsum</p>
-            <p>Lorem ipsum</p>
-            <p>Lorem ipsum</p>
-            <p>Lorem ipsum</p>
-            <p>Lorem ipsum</p>
-            <p>Lorem ipsum</p>
-            <p>Lorem ipsum</p>
         </div>
     </div>
 </div>

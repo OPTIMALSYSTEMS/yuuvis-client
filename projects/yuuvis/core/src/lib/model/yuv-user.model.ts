@@ -18,7 +18,7 @@ export class YuvUser {
     uiDirection: string;
     userSettings: UserSettings;
 
-    constructor(json: any) {
+    constructor(json: any, userSettings: UserSettings) {
         this.id = json.id;
         this.username = json.username;
         this.firstname = json.firstname;
@@ -31,13 +31,7 @@ export class YuvUser {
         this.substituteOf = json.substituteOf;
         this.enabled = json.enabled;
 
-        // TODO: set from user settings
-        this.userSettings = {
-            locales: {
-                client: 'en',
-                schema: 'en'
-            }
-        }
+        this.userSettings = userSettings;
     }
 
     /**
@@ -45,21 +39,10 @@ export class YuvUser {
      * @returns locale string
      */
     public getClientLocale(): string {
-        return this.userSettings.locales.client;
-    }
-
-    /**
-     * Gets the users configured schema locale
-     * @returns locale string
-     */
-    public getSchemaLocale(): string {
-        return this.userSettings.locales.schema;
+        return this.userSettings.locale;
     }
 }
 
 export interface UserSettings {
-    locales: {
-        client: string;
-        schema: string;
-    }
+    locale: string;
 }

@@ -1,14 +1,14 @@
 import { Inject } from '@angular/core';
 
 import { CUSTOM_CONFIG } from './core-config.tokens';
-import { EnaioConfig } from './config.interface';
+import { YuvConfig } from './config.interface';
 
 /**
  * @ignore
  */
 export class CoreConfig {
     
-    main?: EnaioConfig | string[] = ['assets/default/config/main.json'];
+    main?: YuvConfig | string[] = ['assets/default/config/main.json'];
     translations?: string[] = ['assets/default/i18n/'];  
     environment?: { production: boolean } = {production: true};
   

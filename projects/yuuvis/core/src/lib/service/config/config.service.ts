@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { EnaioConfig } from './config.interface';
+import { YuvConfig } from './config.interface';
 import { TranslateService } from '@ngx-translate/core';
 
 @Injectable({
@@ -7,7 +7,7 @@ import { TranslateService } from '@ngx-translate/core';
 })
 export class ConfigService {
 
-  private cfg: EnaioConfig = null;
+  private cfg: YuvConfig = null;
 
   constructor(private translate: TranslateService) { }
 
@@ -15,7 +15,7 @@ export class ConfigService {
    * Set during app init (see CoreInit)
    * @ignore
    */
-  set(cfg: EnaioConfig) {
+  set(cfg: YuvConfig) {
     this.cfg = cfg;
     const languages = this.getClientLocales().map(lang => lang.iso);
     this.translate.addLangs(languages);

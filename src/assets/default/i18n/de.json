@@ -6,5 +6,6 @@
   "eo.state.login.msg.invalid": "Die angegebenen Zugangsdaten sind nicht korrekt. Bitte überprüfen Sie Ihre Eingabe.",
   "eo.state.login.submit": "Anmelden",
   "eo.state.login.tenant": "Mandant",
-  "eo.state.settings.deputies": "Stellvertreter"
+  "eo.state.settings.deputies": "Stellvertreter",
+  "eo.state.settings.language": "Sprache"
 }

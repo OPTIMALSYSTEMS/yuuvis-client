@@ -2,7 +2,7 @@
  * Interface for the applications main config file
  * @ignore
  */
-export interface EnaioConfig {
+export interface YuvConfig {
     apiBase: string;
     languages: {
         iso: string,
