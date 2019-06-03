@@ -1,7 +1,7 @@
 import { Injectable, NgZone, Inject } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { LoginDeviceResult, StoredToken, LoginState, LoginStateName } from './auth.interface';
-import { Observable, Subject, interval, throwError, of, BehaviorSubject, forkJoin } from 'rxjs';
+import { Observable, Subject, interval, throwError, of, BehaviorSubject } from 'rxjs';
 import { switchMap, takeUntil, catchError, tap } from 'rxjs/operators';
 import { LocalStorage } from '@ngx-pwa/local-storage';
 import { BackendService } from '../backend/backend.service';
@@ -94,60 +94,6 @@ export class AuthService {
       })
     }
   }
-
-  // login(tenant: string, host?: string): Observable<YuvUser> {
-  //   return new Observable(o => {
-  //     const stopTrigger$ = new Subject<void>();
-  //     const targetHost = host || '';
-  //     this.http.get(`${targetHost}/tenant/${tenant}/loginDevice`).subscribe((res: LoginDeviceResult) => {
-
-  //       // open new window for the authentication process ...
-  //       const targetUri = `${targetHost}/oauth/${tenant}?user_code=${res.user_code}`;
-  //       const win = window.open(targetUri, 'auth');
-  //       if (win) {
-  //         // @see: http://atashbahar.com/post/2010-04-27-detect-when-a-javascript-popup-window-gets-closed
-  //         this.ngZone.runOutsideAngular(() => {
-  //           const winTimer = setInterval(() => {
-  //             if (win.closed) {
-  //               clearInterval(winTimer);
-  //               this.ngZone.run(() => {
-  //                 stopTrigger$.next();
-  //                 stopTrigger$.complete();
-  //               });
-  //             }
-  //           }, 1000);
-  //         });
-  //       }
-
-  //       // ... and start polling for authentication results
-  //       this.cloudLoginPollForResult(`${targetHost}/auth/info/state?device_code=${res.device_code}`, 1000, stopTrigger$)
-  //         .pipe(
-  //           tap(accessToken => {
-  //             if (accessToken) {
-  //               this.cloudLoginSetHeaders(accessToken, tenant);
-  //               const storeToken: StoredToken = {
-  //                 tenant: tenant,
-  //                 accessToken: accessToken
-  //               };
-  //               this.storage.setItem(this.TOKEN_STORAGE_KEY, storeToken).subscribe();
-  //             }
-  //           }),
-  //           switchMap((authRes: any) => authRes ? this.initUser(targetHost) : throwError('not authenticated'))
-  //         ).subscribe((user: YuvUser) => {
-  //           win.close();
-  //           o.next(user);
-  //           o.complete();
-  //         }, err => {
-  //           win.close();
-  //           o.error(err);
-  //           o.complete();
-  //         })
-  //     }, (error) => {
-  //       o.error('unable to call device flow endpoint');
-  //       o.complete();
-  //     });
-  //   });
-  // }
 
   /**
    * Gets called while app init
