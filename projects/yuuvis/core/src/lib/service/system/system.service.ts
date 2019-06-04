@@ -96,7 +96,7 @@ export class SystemService {
   }
 
   
-  updateLocalizations(user: YuvUser): Observable<any> {
+  updateLocalizations(): Observable<any> {
     return this.fetchLocalizations().pipe(
       tap(res => {
         this.system.i18n = res;

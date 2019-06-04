@@ -76,7 +76,7 @@ export class UserService {
             this.user.uiDirection = this.getUiDirection(iso);
             this.userSource.next(this.user);
             this.logger.debug('Loading system definitions i18n resources for new locale.');
-            return this.system.updateLocalizations(this.user);
+            return this.system.updateLocalizations();
           })
         ).subscribe(() => {
           this.eventService.trigger(YuvEventType.CLIENT_LOCALE_CHANGED, iso);

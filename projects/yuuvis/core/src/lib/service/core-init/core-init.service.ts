@@ -16,7 +16,7 @@ import { ScreenService } from '../screen/screen.service';
 export class CoreInit {
 
   constructor(@Inject(CORE_CONFIG) private coreConfig: CoreConfig,
-  // DO NOT REMOVE: Otherwise service will not kick in until referenced  
+  // DO NOT REMOVE: Otherwise service will not kcik in until referenced  
   private screenService: ScreenService,
     private logger: Logger,
     private http: HttpClient,
