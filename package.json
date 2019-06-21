@@ -4,7 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve --port 4400 --proxy-config proxy.config.js",
-    "build": "ng build",
+    "build": "ng build --prod",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
@@ -22,7 +22,8 @@
     "build:libs:all": "npm run build:core && npm run build:common && npm run build:framework",
     "build:cordova": "ng build cordova --baseHref=./ --outputPath=cordova/www",
     "build:android": "npm run build:cordova && cd cordova && cordova clean android && cordova build android",
-    "build:android:run": "npm run build:cordova && cd cordova && cordova clean android && cordova run android"
+    "build:android:run": "npm run build:cordova && cd cordova && cordova clean android && cordova run android",
+    "build:web": "npm run build:libs:all && npm run build"
   },
   "private": true,
   "dependencies": {
