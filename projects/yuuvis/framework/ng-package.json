@@ -4,7 +4,10 @@
   "whitelistedNonPeerDependencies": [
     "primeng",
     "angular-split",
-    "@angular/cdk"
+    "@angular/cdk",
+    "ag-grid-angular",
+    "ag-grid-community",
+    "angular-resize-event"
   ],
   "lib": {
     "entryFile": "src/public-api.ts"

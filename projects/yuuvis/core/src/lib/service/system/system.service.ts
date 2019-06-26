@@ -29,6 +29,10 @@ export class SystemService {
     return this.system.objectTypes;
   }
 
+  getObjectType(objectTypeId: string): ObjectType {
+    return this.system.objectTypes.find(ot => ot.id === objectTypeId);
+  }
+
   getLocalizedResource(key: string): string {
     return this.system.i18n[key];
   }
@@ -56,6 +60,18 @@ export class SystemService {
         }
       })
     );
+  }
+
+  getBaseParamsFields() {
+    return [
+      'enaio:objectId',
+      'enaio:objectTypeId',
+      'enaio:creationDate',
+      'enaio:createdBy',
+      'enaio:lastModificationDate',
+      'enaio:lastModifiedBy',
+      'enaio:versionNumber'
+    ]
   }
 
   /**

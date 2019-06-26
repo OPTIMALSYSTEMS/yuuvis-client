@@ -25,6 +25,7 @@ export * from './lib/service/config/core-config';
 export * from './lib/service/auth/auth.interface';
 export * from './lib/service/config/config.interface';
 export * from './lib/service/screen/screen.interface';
+export * from './lib/service/search/search.service.interface';
 
 // misc
 export * from './lib/service/event/events';

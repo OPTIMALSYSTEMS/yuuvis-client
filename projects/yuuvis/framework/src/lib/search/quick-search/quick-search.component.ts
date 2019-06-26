@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { debounceTime, switchMap, tap } from 'rxjs/operators';
 import { SVGIcons } from '../../svg.generated';
 import { FormGroup, FormBuilder } from '@angular/forms';
-import { SearchService, ScreenService, SystemService } from '@yuuvis/core';
+import { SearchService, ScreenService, SystemService, SearchResult } from '@yuuvis/core';
 import { of } from 'rxjs';
 
 @Component({
@@ -13,17 +13,15 @@ import { of } from 'rxjs';
 })
 export class QuickSearchComponent implements OnInit {
 
-  // @ViewChild('op') overlayPanel: OverlayPanel;
-  // @Input() width: string = '450px';
-
-  // @HostBinding('style.width') hostWidth: string = this.width;
-
   icSearch = SVGIcons.search;
   searchForm: FormGroup;
   invalidTerm: boolean;
   resultCount: number = null;
   result: any[] = [];
   private _term: string;
+
+  // emits the query that should be executed
+  @Output() query = new EventEmitter<string>();
 
 
   constructor(private fb: FormBuilder,
@@ -42,10 +40,10 @@ export class QuickSearchComponent implements OnInit {
         debounceTime(500),
         switchMap(term => {
           return (term && term.length) ?
-            this.searchService.search(`SELECT COUNT(*), enaio:objectTypeId FROM enaio:object WHERE CONTAINS('${term}') GROUP BY enaio:objectTypeId`) :
+            this.searchService.searchRaw(`SELECT COUNT(*), enaio:objectTypeId FROM enaio:object WHERE CONTAINS('${term}') GROUP BY enaio:objectTypeId`) :
             of(null);
         })
-      ).subscribe(res => {
+      ).subscribe((res: any) => {
         if (res) {
           this.resultCount = 0;
           res.objects.forEach(o => {
@@ -60,19 +58,7 @@ export class QuickSearchComponent implements OnInit {
   }
 
   executeSearch() {
-    this.searchService.search(`SELECT * FROM enaio:object WHERE CONTAINS('${this._term}')`).subscribe(
-      res => {
-
-        this.result = res.objects.map(o => {
-          return {
-            label: o.properties['enaio:objectTypeId'].value
-          }
-        })
-
-
-        console.log(res)
-      }
-    );
+    this.query.emit(`SELECT * FROM enaio:object WHERE CONTAINS('${this._term}')`);
   }
 
   ngOnInit() {

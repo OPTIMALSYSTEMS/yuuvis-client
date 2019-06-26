@@ -1,8 +1,9 @@
 import { Component, OnDestroy, OnInit, AfterViewInit } from '@angular/core';
-import { ScreenService, Screen } from '@yuuvis/core';
+import { ScreenService, Screen, SearchService } from '@yuuvis/core';
 import { Subscription } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
 import { PlatformLocation } from '@angular/common';
+import { SearchResult } from 'projects/yuuvis/core/src/lib/service/search/search.service.interface';
 
 @Component({
   selector: 'yuv-result',
@@ -17,10 +18,11 @@ export class ResultComponent implements OnInit, OnDestroy {
   showSlave: boolean;
   useSmallDeviceLayout: boolean;
 
-  searchResultItems;
+  searchResult: SearchResult;
   selectedItem;
 
   constructor(private screenService: ScreenService,
+    private searchService: SearchService,
     private location: PlatformLocation,
     private route: ActivatedRoute) {
 
@@ -79,15 +81,9 @@ export class ResultComponent implements OnInit, OnDestroy {
   }
 
   executeQuery(query: string) {
-
-    this.searchResultItems = [
-      { id: '1', label: 'Eins' },
-      { id: '2', label: 'Zwei' },
-      { id: '3', label: 'Drei' },
-      { id: '4', label: 'Vier' },
-      { id: '5', label: 'Fünf' },
-      { id: '6', label: 'Sechs' },
-    ];
+    this.searchService.search(query).subscribe((res: SearchResult) => {
+      this.searchResult = res;
+    })
   }
 
   ngOnInit() {

@@ -5,5 +5,11 @@
     <input type="checkbox" name="" id="">
 </div>
 <div class="result-list">
-    <div class="res-item" *ngFor="let item of items" (click)="select(item)" [ngClass]="{selected: item.id === selectedItemId}">{{item.label}}</div>
+
+        <yuv-responsive-data-table *ngIf="tableData" [data]="tableData" 
+        (selectionChanged)="onSelectionChanged($event)"></yuv-responsive-data-table>
+
+
+
+    <!-- <div class="res-item" *ngFor="let item of items" (click)="select(item)" [ngClass]="{selected: item.id === selectedItemId}">{{item.label}}</div> -->
 </div>

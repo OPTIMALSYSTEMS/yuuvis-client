@@ -6,6 +6,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { TranslateModule } from '@yuuvis/core';
 import { OverlayPanelModule } from 'primeng/overlaypanel';
 import { SearchResultComponent } from './search-result/search-result.component';
+import { YuvComponentsModule } from '../components';
 
 @NgModule({
   declarations: [QuickSearchComponent, SearchResultComponent],
@@ -14,6 +15,7 @@ import { SearchResultComponent } from './search-result/search-result.component';
     ReactiveFormsModule,
     TranslateModule,
     OverlayPanelModule,
+    YuvComponentsModule,
     YuvCommonUiModule
   ],
   exports: [QuickSearchComponent, SearchResultComponent]
