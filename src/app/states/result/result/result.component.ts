@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit, AfterViewInit } from '@angular/core';
-import { ScreenService, Screen, SearchService } from '@yuuvis/core';
+import { ScreenService, Screen, SearchService, DmsService, DmsObject } from '@yuuvis/core';
 import { Subscription } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
 import { PlatformLocation } from '@angular/common';
@@ -19,9 +19,10 @@ export class ResultComponent implements OnInit, OnDestroy {
   useSmallDeviceLayout: boolean;
 
   searchResult: SearchResult;
-  selectedItem;
+  selectedItems: DmsObject[] = [];
 
   constructor(private screenService: ScreenService,
+    private dmsService: DmsService,
     private searchService: SearchService,
     private location: PlatformLocation,
     private route: ActivatedRoute) {
@@ -32,7 +33,7 @@ export class ResultComponent implements OnInit, OnDestroy {
       const useSmallDeviceLayout = screen.mode === ScreenService.MODE.SMALL;
 
       // if we switch from large to small layout
-      if(!this.useSmallDeviceLayout && useSmallDeviceLayout && this.selectedItem){
+      if(!this.useSmallDeviceLayout && useSmallDeviceLayout && this.selectedItems.length){
         this.location.pushState({}, '', '');
       }
             
@@ -41,7 +42,7 @@ export class ResultComponent implements OnInit, OnDestroy {
 
       if (this.useSmallDeviceLayout) {
         this.location.onPopState((x) => {
-          if (this.selectedItem) {
+          if (this.selectedItems.length) {
             this.select(null);
           }
         });
@@ -54,7 +55,7 @@ export class ResultComponent implements OnInit, OnDestroy {
       // large screen mode
       this.showSlave = true;
       this.showMaster = true;
-    } else if (this.selectedItem) {
+    } else if (this.selectedItems.length) {
       // small screen mode with selected item
       this.showMaster = false;
       this.showSlave = true;
@@ -68,15 +69,21 @@ export class ResultComponent implements OnInit, OnDestroy {
     this.location.back();
   }
 
-  select(item) {
+  select(items: string[]) {
     if (this.useSmallDeviceLayout) {
-      if (this.selectedItem && item) {
+      if (this.selectedItems && items) {
         this.location.replaceState({}, '', '');
-      } else if (!this.selectedItem && item) {
+      } else if (!this.selectedItems && items) {
         this.location.pushState({}, '', '');
       }
     }
-    this.selectedItem = item;
+
+    this.dmsService.getDmsObjects(items).subscribe((dmsObjects: DmsObject[]) => {
+      this.selectedItems = dmsObjects;
+    });
+
+
+    // this.selectedItems = items;
     this.setPanelVisibility();
   }
 

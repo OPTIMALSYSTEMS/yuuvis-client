@@ -6,56 +6,61 @@
   height: 100%;
 
   .login {
-    max-width: 350px;
+    width: 20%;
+    max-width: 600px;
+    min-width: 400px;
     position: relative;
-    display: flex;
-    flex-flow: column;
-    align-items: center;
+
+    > div.header {
+      background-color: var(--color-primary);
+      padding: var(--app-pane-padding) var(--app-pane-padding) calc(var(--app-pane-padding) * 2) var(--app-pane-padding);
+    }
 
     > div.invalid {
-      width: 100%;
+      display: none;
       box-sizing: border-box;
       background-color: var(--color-error);
-      border-radius: 2px;
-      padding: calc(var(--app-pane-padding) / 2);
+      padding: calc(var(--app-pane-padding) / 2) var(--app-pane-padding);
       color: #fff;
-      opacity: 0;
-      margin: 1em 0;
       line-height: 1.5em;
     }
 
     form {
-      background-color: #fff;
       box-sizing: border-box;
       width: 100%;
-      padding: var(--app-pane-padding);
+      padding: calc(var(--app-pane-padding) * 2) var(--app-pane-padding) var(--app-pane-padding) var(--app-pane-padding);
 
-      .buttons {
-        display: flex;
-        flex-flow: row;
-        align-items: center;
-        justify-content: flex-end;
-        padding-top: var(--app-pane-padding);
+      .yuv-button-bar {
+        padding-top: calc(var(--app-pane-padding) * 2);
+        .buttons {
+          display: flex;
+          flex-flow: row;
+          align-items: center;
+          justify-content: flex-end;
+          padding-top: var(--app-pane-padding);
+        }
       }
     }
   }
   yuv-icon.logo {
-    color: #fff;
-    width: 300px;
+    width: 150px;
     height: auto;
   }
 
   &.invalid .login {
     > div.invalid {
-      opacity: 1;
+      display: block;
     }
   }
 
   // device flow login
   .device-flow-login {
     position: absolute;
-    left:0; top:0; right:0; bottom:0;
-    background-color: rgba(0,0,0,.4);
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.4);
     display: flex;
     flex-flow: column;
     align-items: center;
@@ -63,7 +68,6 @@
     animation: loginDialogBackdropAppear 1000ms;
 
     .dialog {
-      box-shadow: 0 0 10px 0 rgba(0,0,0,.4);
       width: 90%;
       min-width: 500px;
       height: 90%;
@@ -75,12 +79,12 @@
         flex: 0;
         background-color: var(--color-primary);
         color: #fff;
-        padding: calc(var(--app-pane-padding)/2);
+        padding: calc(var(--app-pane-padding) / 2);
         display: flex;
         justify-content: flex-end;
       }
       iframe {
-        flex: 1
+        flex: 1;
       }
     }
   }

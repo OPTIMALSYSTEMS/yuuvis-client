@@ -120,12 +120,12 @@ export class LoginComponent implements OnInit {
     );
   }
 
-  // cancelLogin() {
-  //   if (this.loginCancelTrigger) {
-  //     this.loginCancelTrigger.next();
-  //   }
-  //   this.finishLogin();
-  // }
+  cancelLogin() {
+    if (this.loginCancelTrigger) {
+      this.loginCancelTrigger.next();
+    }
+    this.finishLogin();
+  }
 
   private finishLogin() {
     this.loginCancelTrigger = null;

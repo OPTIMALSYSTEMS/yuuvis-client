@@ -1,26 +1,21 @@
-:host {
-  display: flex;
+.yuv-search-result {
   height: 100%;
 
-  .filter-panel {
-    background-color: black;
-    color: #fff;
+  .yuv-panel-content {
+    height: 100%;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr auto;
+    grid-template-areas: "table" "paging";
   }
 
-  .result-list {
-flex: 1;
-    .res-item {
-      padding: var(--app-pane-padding);
-      cursor: pointer;
-      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  yuv-responsive-data-table {
+    grid-area: table;
+  }
 
-      &:not(.selected):hover {
-        background-color: rgba(0, 0, 0, 0.1);
-      }
-
-      &.selected {
-        background-color: var(--color-accent);
-      }
-    }
+  .paging {
+    border-top: 1px solid var(--panel-divider-color);
+    padding: var(--app-pane-padding);
+    grid-area: paging;
   }
 }

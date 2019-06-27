@@ -4,6 +4,7 @@
 @import "~@yuuvis/common-ui/common-ui.css";
 @import "./animations";
 @import "./forms";
+@import "./panels";
 @import "./src/scss-shared/vars";
 @import "./libs";
 
@@ -50,3 +51,33 @@
   * {
     font-family: 'Roboto';
   }
+
+  // scrollbars
+::-webkit-scrollbar {
+  height: 10px;
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, .06);
+}
+
+::-webkit-scrollbar-button {
+  height: 0;
+  width: 0;
+}
+
+::-webkit-scrollbar-corner {
+  background-color: transparent;
+}
+
+// scrollbar color for dark backgrounds
+.dark {
+  ::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, .2);
+  }
+}

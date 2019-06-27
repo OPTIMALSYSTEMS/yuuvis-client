@@ -1,15 +1,18 @@
-<div class="filter-panel">
-    <input type="checkbox" name="" id="">
-    <input type="checkbox" name="" id="">
-    <input type="checkbox" name="" id="">
-    <input type="checkbox" name="" id="">
+<div class="yuv-panel-ico">
+    <yuv-icon [svg]="icSearch"></yuv-icon>
 </div>
-<div class="result-list">
+<div class="yuv-panel-title">
+    <h1 translate>eo.search.title</h1>
+</div>
 
-        <yuv-responsive-data-table *ngIf="tableData" [data]="tableData" 
-        (selectionChanged)="onSelectionChanged($event)"></yuv-responsive-data-table>
+<div class="yuv-panel-toolbar">
+        <yuv-icon [svg]="icSearchFilter"></yuv-icon>
+</div>
+<div class="yuv-panel-content">
+    <yuv-responsive-data-table *ngIf="tableData" [data]="tableData" (selectionChanged)="onSelectionChanged($event)">
+    </yuv-responsive-data-table>
 
-
-
-    <!-- <div class="res-item" *ngFor="let item of items" (click)="select(item)" [ngClass]="{selected: item.id === selectedItemId}">{{item.label}}</div> -->
+    <div class="paging">
+        
+    </div>
 </div>

@@ -8,7 +8,8 @@ import { ResponsiveTableData } from './responsive-data-table.interface';
 @Component({
   selector: 'yuv-responsive-data-table',
   templateUrl: './responsive-data-table.component.html',
-  styleUrls: ['./responsive-data-table.component.sass']
+  styleUrls: ['./responsive-data-table.component.scss'],
+  host: { 'class': 'yuv-responsive-data-table' }
 })
 export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
 
@@ -21,7 +22,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
 
   private settings = {
     headerHeight: { default: 30, small: 0 },
-    rowHeight: { default: 30, small: 70 }
+    rowHeight: { default: 48, small: 70 }
   }
 
   _gridOptions: GridOptions;
@@ -102,7 +103,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
       columnDefs: this._data.columns,
       headerHeight: this.settings.headerHeight.default,
       rowHeight: this.settings.rowHeight.default,
-      pagination: true,
+      // pagination: true,
       suppressCellSelection: false,
       rowSelection: this._data.selectType || 'single',
 

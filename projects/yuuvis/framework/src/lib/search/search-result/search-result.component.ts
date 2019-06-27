@@ -1,11 +1,13 @@
 import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
 import { SearchResult, SystemService, SearchService } from '@yuuvis/core';
 import { ResponsiveTableData, ResponsiveTableDataColumn } from '../../components';
+import { SVGIcons } from '../../svg.generated';
 
 @Component({
   selector: 'yuv-search-result',
   templateUrl: './search-result.component.html',
-  styleUrls: ['./search-result.component.scss']
+  styleUrls: ['./search-result.component.scss'],
+  host: { 'class': 'yuv-search-result yuv-panel toolbar' }
 })
 export class SearchResultComponent implements OnInit {
 
@@ -13,6 +15,8 @@ export class SearchResultComponent implements OnInit {
   private _columns: ResponsiveTableDataColumn[];
   private _rows: any[];
 
+  icSearch = SVGIcons['search'];
+  icSearchFilter = SVGIcons['search-filter'];
   tableData: ResponsiveTableData;
 
   @Input() set searchResult(searchResult: SearchResult) {
@@ -30,7 +34,8 @@ export class SearchResultComponent implements OnInit {
     }
   }
   @Input() selectedItemId: string;
-  @Output() itemSelected = new EventEmitter();
+  // emits the current selection as list of object IDs
+  @Output() itemsSelected = new EventEmitter<string[]>();
 
 
   constructor(private searchService: SearchService,
@@ -61,8 +66,8 @@ export class SearchResultComponent implements OnInit {
     this._rows = rows;
   }
 
-  onSelectionChanged(event) {
-    this.itemSelected.emit(event);
+  onSelectionChanged(selectedRows: any[]) {
+    this.itemsSelected.emit(selectedRows.map(r => r.id));
   }
 
   ngOnInit() {

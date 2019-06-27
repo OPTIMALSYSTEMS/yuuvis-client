@@ -1,10 +1,10 @@
 <as-split class="state" direction="horizontal" gutterSize="16">
     <as-split-area class="panel" size="60" order="0" [visible]="showMaster">
         <yuv-search-result [searchResult]="searchResult" [selectedItemId]="selectedItem?.id"
-            (itemSelected)="select($event)"></yuv-search-result>
+            (itemsSelected)="select($event)"></yuv-search-result>
     </as-split-area>
     <as-split-area class="panel" size="40" order="1" [visible]="showSlave">
         <button (click)="closeDetails()" *ngIf="useSmallDeviceLayout">XXX</button>
-        <yuv-object-details [dmsObject]="selectedItem"></yuv-object-details>
+        <yuv-object-details [dmsObjects]="selectedItems"></yuv-object-details>
     </as-split-area>
 </as-split>

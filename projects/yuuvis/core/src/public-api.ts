@@ -15,9 +15,12 @@ export * from './lib/service/user/user.service';
 export * from './lib/service/search/search.service';
 export * from './lib/service/screen/screen.service';
 export * from './lib/service/event/event.service';
+export * from './lib/service/dms/dms.service';
 
 // models
 export * from './lib/model/yuv-user.model';  
+export * from './lib/model/dms-object.model';  
+export * from './lib/model/object-type.model';  
 
 export * from './lib/service/config/core-config';  
 

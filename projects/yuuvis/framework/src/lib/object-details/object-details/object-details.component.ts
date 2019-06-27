@@ -1,4 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
+import { DmsObject } from '@yuuvis/core';
 
 @Component({
   selector: 'yuv-object-details',
@@ -7,7 +8,7 @@ import { Component, OnInit, Input } from '@angular/core';
 })
 export class ObjectDetailsComponent implements OnInit {
 
-  @Input() dmsObject: any;
+  @Input() dmsObjects: DmsObject[];
 
   constructor() { }
 

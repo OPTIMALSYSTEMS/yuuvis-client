@@ -1,0 +1,33 @@
+.yuv-responsive-data-table {
+  height: 100%;
+//   display: grid;
+//   grid-template-columns: 1fr;
+//   grid-template-rows: 1fr;
+//   grid-template-areas: "table";
+
+  .table {
+    grid-area: table;
+
+    .ag-theme-yuv {
+      * {
+        box-sizing: border-box;
+      }
+
+      .ag-header-cell {
+
+      }
+
+      .ag-row {
+          border-bottom: 1px solid var(--panel-divider-color);
+      }
+
+      .ag-row-hover {
+        background-color: #fafafa;
+      }
+      .ag-row-selected {
+        background-color: var(--color-accent);
+        color:#fff;
+      }
+    }
+  }
+}
