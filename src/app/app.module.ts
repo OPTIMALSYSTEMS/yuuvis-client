@@ -1,16 +1,16 @@
-import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { BrowserModule } from '@angular/platform-browser';
 import { YuvFrameworkModule } from '@yuuvis/framework';
+import { environment } from '../environments/environment';
 import { AppComponent } from './app.component';
+import { FrameComponent } from './components/frame/frame.component';
 import { AppRoutingModule } from './routing/app.routes.module';
 import { DashboardComponent } from './states/dashboard/dashboard.component';
 import { LoginComponent } from './states/login/login.component';
-import { FrameComponent } from './components/frame/frame.component';
-import { FormsModule } from '@angular/forms';
-import { SettingsComponent } from './states/settings/settings.component';
 import { NotFoundComponent } from './states/not-found/not-found.component';
-import { environment } from '../environments/environment';
 import { ResultStateModule } from './states/result/result.state.module';
+import { SettingsComponent } from './states/settings/settings.component';
 
 @NgModule({
   declarations: [
@@ -19,13 +19,13 @@ import { ResultStateModule } from './states/result/result.state.module';
     LoginComponent,
     FrameComponent,
     SettingsComponent,
-    NotFoundComponent],
+    NotFoundComponent
+  ],
   imports: [
     BrowserModule,
     FormsModule,
-    ResultStateModule,    
+    ResultStateModule,
     YuvFrameworkModule.forRoot({
-
       main: ['assets/default/config/main.json'],
       translations: ['assets/default/i18n/'],
 
@@ -36,4 +36,4 @@ import { ResultStateModule } from './states/result/result.state.module';
   providers: [],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {}

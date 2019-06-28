@@ -1,5 +1,4 @@
 @import "~ag-grid-community/dist/styles/ag-grid.css";
-@import "~ag-grid-community/dist/styles/ag-theme-balham.css";
 @import "~primeng/resources/primeng.min.css";
 @import "~@yuuvis/common-ui/common-ui.css";
 @import "./animations";
@@ -63,7 +62,7 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, .06);
+  background-color: #ddd;
 }
 
 ::-webkit-scrollbar-button {

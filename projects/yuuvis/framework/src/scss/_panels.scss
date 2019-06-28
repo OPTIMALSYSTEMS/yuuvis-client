@@ -28,6 +28,12 @@ $yuv-panel-header-height: 110px;
   .yuv-panel-title {
     grid-area: title;
     border-bottom: 1px solid var(--panel-divider-color);
+
+    h1 {
+      font-weight: var(--font-weight-normal);
+      font-size: var(--font-title);
+      color: var(--text-color-caption);
+    }
   }
   .yuv-panel-toolbar {
     grid-area: toolbar;

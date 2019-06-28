@@ -44,15 +44,18 @@
         margin: 0 4px;
 
         > div {
-          padding:2px 4px; 
+          padding:4px; 
+          font-size: var(--font-caption);
           background-color: var(--panel-background-grey);
+          user-select: none;
         }
         input {
           width: 3em;
-          padding:2px 4px; 
+          padding:4px; 
           line-height: 1em;
           text-align: right;
           border:0;
+          font-size: var(--font-caption);
           border-right: 1px solid rgba(0,0,0,.2);
 
           &.ng-invalid {
