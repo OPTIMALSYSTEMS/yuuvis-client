@@ -39,8 +39,20 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
 
 
   @Input() set data(data: ResponsiveTableData) {
-    this._data = data;
-    this.setupGridOptions();
+
+    
+    if(this._gridOptions) {
+      // already got a grid running
+      this._gridOptions.api.setRowData(data.rows);
+
+      if(JSON.stringify(this._data.columns) !== JSON.stringify(data.columns)) {
+        this._gridOptions.api.setColumnDefs(data.columns);
+      } 
+      this._data = data;
+    } else {
+      this._data = data;
+      this.setupGridOptions();
+    }    
   }
   // width (number in pixel) of the table below which it should switch to small view
   @Input() breakpoint: number = 600;

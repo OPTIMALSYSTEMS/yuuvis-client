@@ -14,8 +14,52 @@
   }
 
   .paging {
+    display: flex;
+    align-items: center;
     border-top: 1px solid var(--panel-divider-color);
-    padding: var(--app-pane-padding);
+    padding: var(--app-pane-padding) 0;
     grid-area: paging;
+
+    .status {
+      flex: 1;
+      padding: 0 var(--app-pane-padding);
+    }
+
+    .controls {
+      padding: 0 var(--app-pane-padding);
+      display: flex;
+      align-items: center;
+
+      button {
+        padding: 0;
+        .first,
+        .prev {
+          transform: rotate(180deg);
+        }
+      }
+
+      form {
+        display: flex;
+        border: 1px solid rgba(0,0,0,.2);
+        margin: 0 4px;
+
+        > div {
+          padding:2px 4px; 
+          background-color: var(--panel-background-grey);
+        }
+        input {
+          width: 3em;
+          padding:2px 4px; 
+          line-height: 1em;
+          text-align: right;
+          border:0;
+          border-right: 1px solid rgba(0,0,0,.2);
+
+          &.ng-invalid {
+            color: var(--color-error);
+          }
+        }
+      }
+    }
   }
 }

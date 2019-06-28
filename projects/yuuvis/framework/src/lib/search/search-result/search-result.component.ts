@@ -2,6 +2,7 @@ import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
 import { SearchResult, SystemService, SearchService } from '@yuuvis/core';
 import { ResponsiveTableData, ResponsiveTableDataColumn } from '../../components';
 import { SVGIcons } from '../../svg.generated';
+import { FormControl, Validators, ValidatorFn, AbstractControl, FormBuilder, FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'yuv-search-result',
@@ -11,12 +12,18 @@ import { SVGIcons } from '../../svg.generated';
 })
 export class SearchResultComponent implements OnInit {
 
-  private _searchResult: SearchResult;
+  _searchResult: SearchResult;
   private _columns: ResponsiveTableDataColumn[];
   private _rows: any[];
+  pagingForm: FormGroup;
 
-  icSearch = SVGIcons['search'];
-  icSearchFilter = SVGIcons['search-filter'];
+  // icons used within the template
+  icon = {
+    icSearch: SVGIcons['search'],
+    icSearchFilter: SVGIcons['search-filter'],
+    icArrowNext: SVGIcons['arrow-next'],
+    icArrowLast: SVGIcons['arrow-last'],
+  }
   tableData: ResponsiveTableData;
 
   @Input() set searchResult(searchResult: SearchResult) {
@@ -39,13 +46,28 @@ export class SearchResultComponent implements OnInit {
 
 
   constructor(private searchService: SearchService,
-    private systemService: SystemService) { }
+    private fb: FormBuilder,
+    private systemService: SystemService) {
+    this.pagingForm = this.fb.group({
+      page: ['']
+    });
+  }
 
+  // Create actual table data from the search result
   private createTableData(): void {
 
-    if(this._searchResult.objectTypes.length === 0) return;
+    if (this._searchResult.objectTypes.length === 0) return;
+
     // object type of the result list items, if NULL we got a mixed result
     const resultListObjectType = this._searchResult.objectTypes.length > 1 ? null : this._searchResult.objectTypes[0]
+
+    if (this._searchResult.pagination) {
+      this.pagingForm.get('page').setValue(this._searchResult.pagination.page);
+      this.pagingForm.get('page').setValidators([
+        Validators.min(0),
+        Validators.max(this._searchResult.pagination.pages)
+      ])
+    }
 
     const columnFields = this.searchService.getColumnConfiguration(resultListObjectType);
     const rows = [];
@@ -64,6 +86,18 @@ export class SearchResultComponent implements OnInit {
       sortable: false
     }));
     this._rows = rows;
+  }
+
+  onPagingFormSubmit() {
+    if (this.pagingForm.valid) {
+      this.goToPage(this.pagingForm.value.page);
+    }
+  }
+
+  goToPage(page: number) {
+    this.searchService.getPage(this._searchResult, page).subscribe((res: SearchResult) => {
+      this.searchResult = res;
+    })
   }
 
   onSelectionChanged(selectedRows: any[]) {
