@@ -1,0 +1,9 @@
+<div class="showList" (click)="showList = !showList">
+  <span class="toggle">
+    {{toggleText}}
+    <span class="toggle-indicator">{{showList ? '-' : '+'}}</span>
+  </span>
+</div>
+<div class="list" *ngIf="showList">
+ <ng-content></ng-content>
+</div>
