@@ -1,4 +1,11 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  HostBinding,
+  Input,
+  OnInit,
+  Output
+} from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { SearchResult, SearchService, SystemService } from '@yuuvis/core';
 import {
@@ -45,6 +52,9 @@ export class SearchResultComponent implements OnInit {
   @Input() selectedItemId: string;
   // emits the current selection as list of object IDs
   @Output() itemsSelected = new EventEmitter<string[]>();
+
+  // indicator that the component is busy loading data, so we are able to prevent user interaction
+  @HostBinding('class.busy') busy: boolean = false;
 
   constructor(
     private searchService: SearchService,
@@ -111,11 +121,18 @@ export class SearchResultComponent implements OnInit {
   }
 
   goToPage(page: number) {
-    this.searchService
-      .getPage(this._searchResult, page)
-      .subscribe((res: SearchResult) => {
+    this.busy = true;
+    this.searchService.getPage(this._searchResult, page).subscribe(
+      (res: SearchResult) => {
         this.searchResult = res;
-      });
+      },
+      err => {
+        // TODO: how should errors be handles in case hat loading pages fail
+      },
+      () => {
+        this.busy = false;
+      }
+    );
   }
 
   onSelectionChanged(selectedRows: any[]) {
