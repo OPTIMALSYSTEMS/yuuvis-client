@@ -13,5 +13,11 @@
       "label": "English",
       "fallback": true
     }
-  ]
+  ],
+  "about": {
+    "docu": {
+      "link": "https://help.enaio.com/redline5/redline5-user-help_###userLang###.html",
+      "label": "eo.sidebar.help.manual"
+    }
+  }
 }
