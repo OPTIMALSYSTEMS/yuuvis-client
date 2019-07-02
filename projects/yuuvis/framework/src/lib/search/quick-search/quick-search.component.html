@@ -1,15 +1,16 @@
+div.searc
 <div class="count" *ngIf="resultCount !== null">{{resultCount}}</div>
 
-<form class="search-box" (ngSubmit)="executeSearch()" [ngClass]="{invalid: invalidTerm, agg: result.length}" [formGroup]="searchForm">
+<form class="search-box" (ngSubmit)="executeSearch()" [ngClass]="{invalid: invalidTerm, agg: aggTypes.length}" [formGroup]="searchForm">
   <yuv-icon [svg]="icSearch"></yuv-icon>
   <div class="input">
     <input autofocus="autofocus" formControlName="searchInput">
   </div>
 </form>
 
-<div class="aggregations" *ngIf="result.length">
-  <div class="type" *ngFor="let t of result">
-    <span class="typecount">{{t.count}}</span>
-    <span class="label">{{t.label}}</span>
-  </div>
+<div class="aggregations" *ngIf="aggTypes.length">
+  <button class="type" *ngFor="let oa of aggTypes" (click)="onAggObjectTypeClick(oa)">
+    <span class="typecount">{{oa.count}}</span>
+    <span class="label">{{oa.label}}</span>
+  </button>
 </div>

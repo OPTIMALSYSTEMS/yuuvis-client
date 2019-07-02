@@ -3,9 +3,10 @@ import { NgModule } from '@angular/core';
 import { YuvObjectDetailsModule, YuvSearchModule, AngularSplitModule } from '@yuuvis/framework';
 import { CommonModule } from '@angular/common';
 import { ResultStateRoutingModule } from './result/result.state.routes';
+import { ResultDetailsComponent } from './result-details/result-details.component';
 
 @NgModule({
-    declarations: [ResultComponent],
+    declarations: [ResultComponent, ResultDetailsComponent],
     imports: [
       CommonModule,    
       ResultStateRoutingModule,

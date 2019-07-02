@@ -1,5 +1,21 @@
 .yuv-search-result {
   height: 100%;
+  position: relative;
+
+
+.busy-indicator {
+  position: absolute;
+  left:0; top:0; right:0; bottom:0;
+  z-index: 1;
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  justify-content: center;
+  background-color: antiquewhite;
+  &.ng-animating {
+    height: 100%
+  }
+}
 
   .yuv-panel-content {
     height: 100%;
@@ -17,11 +33,13 @@
     display: flex;
     align-items: center;
     border-top: 1px solid var(--panel-divider-color);
-    padding: var(--app-pane-padding) 0;
+    padding: calc(var(--app-pane-padding) / 4) 0;
     grid-area: paging;
+    color: var(--text-color-caption);
 
     .status {
       flex: 1;
+      min-height: 24px;
       padding: 0 var(--app-pane-padding);
     }
 

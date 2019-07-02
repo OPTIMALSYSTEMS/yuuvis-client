@@ -6,15 +6,15 @@
 </div>
 
 <div class="yuv-panel-toolbar">
-    <yuv-icon [svg]="icon.icSearchFilter"></yuv-icon>
+    <yuv-icon [svg]="icon.icSearchFilter" (click)="busy = !busy"></yuv-icon>
 </div>
-<div class="yuv-panel-content">
+<div class="yuv-panel-content" [yuvBusyOverlay]="busy">
     <yuv-responsive-data-table *ngIf="tableData" [data]="tableData" (selectionChanged)="onSelectionChanged($event)">
     </yuv-responsive-data-table>
 
     <div class="paging">
 
-        <div class="status">{{_searchResult?.totalNumItems}}</div>
+        <div class="status">{{_searchResult?.totalNumItems}}&nbsp;{{'eo.search.result.hits' | translate}}</div>
 
         <div class="controls" *ngIf="_searchResult?.pagination">
             <button [disabled]="_searchResult.pagination.page === 0" (click)="goToPage(1)">

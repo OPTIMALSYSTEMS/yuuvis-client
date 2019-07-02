@@ -1,5 +1,5 @@
-import { Component, OnInit, Input } from '@angular/core';
-import { DmsObject } from '@yuuvis/core';
+import { Component, Input, OnInit } from '@angular/core';
+import { DmsObject, DmsService } from '@yuuvis/core';
 
 @Component({
   selector: 'yuv-object-details',
@@ -7,12 +7,15 @@ import { DmsObject } from '@yuuvis/core';
   styleUrls: ['./object-details.component.scss']
 })
 export class ObjectDetailsComponent implements OnInit {
-
-  @Input() dmsObjects: DmsObject[];
-
-  constructor() { }
-
-  ngOnInit() {
+  _dmsObject: DmsObject;
+  @Input() set dmsObject(o: DmsObject) {
+    this._dmsObject = o;
+  }
+  @Input() set objectId(id: string) {
+    this.dmsService.getDmsObject(id).subscribe(o => (this.dmsObject = o));
   }
 
+  constructor(private dmsService: DmsService) {}
+
+  ngOnInit() {}
 }

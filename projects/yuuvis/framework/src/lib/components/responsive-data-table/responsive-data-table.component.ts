@@ -40,13 +40,13 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
     event: KeyboardEvent
   ) {
     // copy cell
-    console.log('copy cell');
+    this.copyToClipboard('cell');
   }
   @HostListener('keydown.control.shift.c', ['$event']) copyRowHandler(
     event: KeyboardEvent
   ) {
     // copy row
-    console.log('copy row');
+    this.copyToClipboard('row');
   }
 
   @Input() set data(data: ResponsiveTableData) {
@@ -146,6 +146,37 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
         this.selectionChanged.emit(this._gridOptions.api.getSelectedRows());
       }
     };
+  }
+
+  // copy content of either row or table cell to clipboard
+  private copyToClipboard(type: 'row' | 'cell') {
+    let content = '';
+    const focusedCell = this._gridOptions.api.getFocusedCell();
+    const row: RowNode = this._gridOptions.api.getDisplayedRowAtIndex(
+      focusedCell.rowIndex
+    );
+    switch (type) {
+      case 'row': {
+        // TODO: define how data should be formatted in clipboard.
+        const data = [];
+        Object.keys(row.data).forEach(k => {
+          data.push(row.data[k]);
+        });
+        content = data.join(',');
+        break;
+      }
+      case 'cell': {
+        content = this._gridOptions.api.getValue(focusedCell.column, row);
+        break;
+      }
+    }
+
+    let textArea = document.createElement('textarea');
+    textArea.value = content;
+    document.body.appendChild(textArea);
+    textArea.select();
+    let copySuccess = document.execCommand('copy');
+    document.body.removeChild(textArea);
   }
 
   onResized(e) {

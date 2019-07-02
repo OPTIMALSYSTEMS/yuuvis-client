@@ -1,17 +1,19 @@
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { QuickSearchComponent } from './quick-search/quick-search.component';
-import { YuvCommonUiModule } from '@yuuvis/common-ui';
+import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { YuvCommonUiModule } from '@yuuvis/common-ui';
 import { TranslateModule } from '@yuuvis/core';
 import { OverlayPanelModule } from 'primeng/overlaypanel';
-import { SearchResultComponent } from './search-result/search-result.component';
 import { YuvComponentsModule } from '../components';
+import { QuickSearchComponent } from './quick-search/quick-search.component';
+import { SearchResultComponent } from './search-result/search-result.component';
 
 @NgModule({
   declarations: [QuickSearchComponent, SearchResultComponent],
   imports: [
     CommonModule,
+    BrowserAnimationsModule,
     ReactiveFormsModule,
     TranslateModule,
     OverlayPanelModule,
@@ -20,4 +22,4 @@ import { YuvComponentsModule } from '../components';
   ],
   exports: [QuickSearchComponent, SearchResultComponent]
 })
-export class YuvSearchModule { }
+export class YuvSearchModule {}

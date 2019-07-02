@@ -6,6 +6,8 @@
     "@angular/core": "^7.2.0"
   },
   "dependencies": {
-    "primeng": "^7.1.0"
+    "primeng": "^7.1.0",
+    "@angular/common": "^8.0.0",
+    "@angular/core": "^8.0.0"
   }
 }
