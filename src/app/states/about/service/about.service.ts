@@ -95,7 +95,6 @@ export class AboutService {
 
   generateProductDetails(aboutDetails) {
     let details = [];
-
     Object.keys(aboutDetails).forEach(key =>
       details.push({
         name: key,
@@ -104,7 +103,6 @@ export class AboutService {
         entry: AboutInfo[key]
       })
     );
-    console.log(details);
     this.productDetailsSubject.next(details);
   }
 }

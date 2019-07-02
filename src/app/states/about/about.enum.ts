@@ -4,8 +4,8 @@ export enum About {
 }
 
 export enum AboutInfo {
-  'productName' = 'product',
-  'client.version' = 'component',
-  'releasedate' = 'product',
+  'product' = 'product',
+  'client.version' = 'component_version',
+  'releasedate' = 'product_version',
   'author' = 'company'
 }
