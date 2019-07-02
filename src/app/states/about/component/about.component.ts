@@ -30,10 +30,18 @@ export class AboutComponent {
     this.getDocumentation();
   }
 
+  private getUserLanguage() {
+    const { language } = this.config.get('about.docu');
+    return language.includes(this.userLang) ? this.userLang : 'en';
+  }
+
   getDocumentation() {
-    const docu = this.config.get('about.docu');
-    const link = docu.link.replace('###userLang###', this.userLang);
-    this.docu = { ...docu, link };
+    let { link, version, label } = this.config.get('about.docu');
+    const userLang = this.getUserLanguage();
+    link = link
+      .replace('###userLang###', userLang)
+      .replace('###version###', version);
+    this.docu = { link, label };
   }
 
   getUserLang() {

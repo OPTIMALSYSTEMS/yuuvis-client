@@ -1,3 +1,24 @@
 .list {
-    padding-top: var(--app-pane-padding);
+  padding-top: var(--app-pane-padding);
+  overflow: hidden;
+}
+
+::ng-deep {
+  .showList.ui-accordion {
+    .ui-accordion-header {
+      span {
+        &.fa {
+          display: none;
+        }
+        &.ui-accordion-header-text:after {
+          content: '+';
+        }
+      }
+      &.ui-state-active {
+        span.ui-accordion-header-text:after {
+          content: '-';
+        }
+      }
+    }
+  }
 }

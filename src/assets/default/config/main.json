@@ -16,8 +16,10 @@
   ],
   "about": {
     "docu": {
-      "link": "https://help.enaio.com/redline5/redline5-user-help_###userLang###.html",
-      "label": "eo.sidebar.help.manual"
+      "link": "https://help.optimal-systems.com/yuuvis/API/###version###/user/###userLang###/index.html",
+      "label": "eo.sidebar.help.manual",
+      "version": 1,
+      "language": ["de", "en"]
     }
   }
 }
