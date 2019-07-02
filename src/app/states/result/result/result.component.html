@@ -1,20 +1,15 @@
-<!-- <as-split class="state" direction="horizontal" gutterSize="16">
-    <as-split-area class="panel" size="60" order="0" [visible]="showMaster">
-        <yuv-search-result [searchResult]="searchResult" [selectedItemId]="selectedItem?.id"
-            (itemsSelected)="select($event)"></yuv-search-result>
-    </as-split-area>
-    <as-split-area class="panel" size="40" order="1" [visible]="showSlave">
-        <button (click)="closeDetails()" *ngIf="useSmallDeviceLayout">XXX</button>
-        <yuv-object-details [dmsObjects]="selectedItems"></yuv-object-details>
-    </as-split-area>
-</as-split> -->
 
-<as-split class="state" direction="horizontal" gutterSize="16">
-    <as-split-area class="panel" size="60" order="0">
-        <yuv-search-result [searchResult]="searchResult" [selectedItemId]="selectedItem?.id"
-            (itemsSelected)="select($event)"></yuv-search-result>
-    </as-split-area>
-    <as-split-area class="panel" size="40" order="1">        
-        <router-outlet></router-outlet>
-    </as-split-area>
-</as-split>
+<yuv-responsive-master-slave 
+(slaveClosed)="onSlaveClosed()"
+[detailsActive]="(selectedItems.length > 0)">
+  <yuv-search-result
+    class="yuv-master"
+    [searchResult]="searchResult"
+    [selectedItemId]="selectedItem?.id"
+    (itemsSelected)="select($event)"
+  ></yuv-search-result>
+  <yuv-object-details
+    class="yuv-slave"
+    [objectId]="selectedItems[0]"
+  ></yuv-object-details>
+</yuv-responsive-master-slave>

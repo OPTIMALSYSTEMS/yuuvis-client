@@ -1,4 +1,3 @@
-div.searc
 <div class="count" *ngIf="resultCount !== null">{{resultCount}}</div>
 
 <form class="search-box" (ngSubmit)="executeSearch()" [ngClass]="{invalid: invalidTerm, agg: aggTypes.length}" [formGroup]="searchForm">

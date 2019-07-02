@@ -1,17 +1,14 @@
 import { PlatformLocation } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute, ChildActivationEnd, Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import {
-  DmsObject,
   DmsService,
-  Screen,
   ScreenService,
   SearchQuery,
   SearchService
 } from '@yuuvis/core';
 import { SearchResult } from 'projects/yuuvis/core/src/lib/service/search/search.service.interface';
 import { Subscription } from 'rxjs';
-import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'yuv-result',
@@ -21,12 +18,12 @@ import { filter } from 'rxjs/operators';
 export class ResultComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription[] = [];
 
-  showMaster: boolean;
-  showSlave: boolean;
-  useSmallDeviceLayout: boolean;
+  // showMaster: boolean;
+  // showSlave: boolean;
+  // useSmallDeviceLayout: boolean;
 
   searchResult: SearchResult;
-  selectedItems: DmsObject[] = [];
+  selectedItems: string[] = [];
 
   constructor(
     private screenService: ScreenService,
@@ -36,67 +33,66 @@ export class ResultComponent implements OnInit, OnDestroy {
     private location: PlatformLocation,
     private route: ActivatedRoute
   ) {
-    this.subscriptions.push(
-      this.screenService.screenChange$.subscribe((screen: Screen) => {
-        const useSmallDeviceLayout = screen.mode === ScreenService.MODE.SMALL;
-
-        // if we switch from large to small layout
-        if (
-          !this.useSmallDeviceLayout &&
-          useSmallDeviceLayout &&
-          this.selectedItems.length
-        ) {
-          this.location.pushState({}, '', '');
-        }
-
-        this.useSmallDeviceLayout = useSmallDeviceLayout;
-        this.setPanelVisibility();
-
-        if (this.useSmallDeviceLayout) {
-          this.location.onPopState(x => {
-            if (this.selectedItems.length) {
-              this.select(null);
-            }
-          });
-        }
-      })
-    );
+    // this.subscriptions.push(
+    //   this.screenService.screenChange$.subscribe((screen: Screen) => {
+    //     const useSmallDeviceLayout = screen.mode === ScreenService.MODE.SMALL;
+    //     // if we switch from large to small layout
+    //     if (
+    //       !this.useSmallDeviceLayout &&
+    //       useSmallDeviceLayout &&
+    //       this.selectedItems.length
+    //     ) {
+    //       this.location.pushState({}, '', '');
+    //     }
+    //     this.useSmallDeviceLayout = useSmallDeviceLayout;
+    //     this.setPanelVisibility();
+    //     if (this.useSmallDeviceLayout) {
+    //       this.location.onPopState(x => {
+    //         if (this.selectedItems.length) {
+    //           this.select(null);
+    //         }
+    //       });
+    //     }
+    //   })
+    // );
   }
 
-  private setPanelVisibility() {
-    if (!this.useSmallDeviceLayout) {
-      // large screen mode
-      this.showSlave = true;
-      this.showMaster = true;
-    } else if (this.selectedItems.length) {
-      // small screen mode with selected item
-      this.showMaster = false;
-      this.showSlave = true;
-    } else {
-      this.showMaster = true;
-      this.showSlave = false;
-    }
-  }
+  // private setPanelVisibility() {
+  //   if (!this.useSmallDeviceLayout) {
+  //     // large screen mode
+  //     this.showSlave = true;
+  //     this.showMaster = true;
+  //   } else if (this.selectedItems.length) {
+  //     // small screen mode with selected item
+  //     this.showMaster = false;
+  //     this.showSlave = true;
+  //   } else {
+  //     this.showMaster = true;
+  //     this.showSlave = false;
+  //   }
+  // }
 
   closeDetails() {
     this.location.back();
   }
 
-  select(items: string[]) {
-    this.router.navigate([items[0]], {
-      relativeTo: this.route,
-      replaceUrl: true,
-      preserveQueryParams: true
-    });
+  onSlaveClosed() {
+    this.selectedItems = [];
   }
 
-  // select(items: string[]) {
+  select(items: string[]) {
+    this.selectedItems = items;
+
+    // this.router.navigate([items[0]], {
+    //   relativeTo: this.route,
+    //   replaceUrl: true,
+    //   preserveQueryParams: true
+    // });
+  }
+
+  // selectDetails(item: string) {
   //   if (this.useSmallDeviceLayout) {
-  //     if (this.selectedItems && items) {
-  //       this.location.replaceState({}, '', '');
-  //     } else if (!this.selectedItems && items) {
-  //       this.location.pushState({}, '', '');
-  //     }
+
   //   }
 
   //   this.dmsService
@@ -130,13 +126,13 @@ export class ResultComponent implements OnInit, OnDestroy {
       })
     );
 
-    this.subscriptions.push(
-      this.router.events
-        .pipe(filter(e => e instanceof ChildActivationEnd))
-        .subscribe(e => {
-          console.log(e);
-        })
-    );
+    // this.subscriptions.push(
+    //   this.router.events
+    //     // .pipe(filter(e => e instanceof ChildActivationEnd))
+    //     .subscribe(e => {
+    //       console.log(e);
+    //     })
+    // );
   }
 
   ngOnDestroy() {

@@ -10,9 +10,11 @@
   --color-primary-4: #b6b9bb;
 
   // accent color variations
-  --color-accent: rgb(0,154,174);
-  --color-accent-1: #9885ba;
-  --color-accent-2: #bcafd2;
+  --color-accent-rgb: 0,155,175;
+
+  --color-accent: rgb(var(--color-accent-rgb));
+  --color-accent-1: rgba(var(--color-accent-rgb), .8);
+  --color-accent-2: rgba(var(--color-accent-rgb), .6);
 
   --color-error: #ed5564;
   --color-success: #9abd1e;
