@@ -1,6 +1,6 @@
 
 
-<as-split class="state" direction="horizontal" gutterSize="16">
+<as-split class="state" [direction]="options.direction" [disabled]="!options.resizable" gutterSize="16">
   <as-split-area class="panel" [size]="options.masterSize" order="0" [visible]="visible.master">
     <ng-content select=".yuv-master"></ng-content>
   </as-split-area>

@@ -47,7 +47,9 @@ export class ResponsiveMasterSlaveComponent implements OnInit {
 
   @Input() options: ResponsiveMasterSlaveOptions = {
     masterSize: 60,
-    slaveSize: 40
+    slaveSize: 40,
+    direction: 'horizontal',
+    resizable: true
   };
 
   @Input() set detailsActive(a: boolean) {
