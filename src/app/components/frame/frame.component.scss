@@ -75,6 +75,7 @@ $user-panel-width: 180px;
     order: 0;
     grid-area: content;
     background-color: var(--main-background);
+    overflow-x: auto;
   }
 
   .user-panel {

@@ -1,32 +1,37 @@
-import { NgModule, ModuleWithProviders } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { AngularSplitModule } from 'angular-split';
-import { YuvFormModule } from './form';
+import { ModuleWithProviders, NgModule } from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { YuvCommonUiModule } from '@yuuvis/common-ui';
-import { YuvCoreModule, CUSTOM_CONFIG, CORE_CONFIG, CoreConfig } from '@yuuvis/core';
+import {
+  CoreConfig,
+  CORE_CONFIG,
+  CUSTOM_CONFIG,
+  YuvCoreModule,
+  YuvCoreSharedModule
+} from '@yuuvis/core';
+import { AngularSplitModule } from 'angular-split';
 import { OverlayPanelModule } from 'primeng/overlaypanel';
+import { YuvComponentsModule } from './components/components.module';
+import { YuvFormModule } from './form';
+import { YuvObjectDetailsModule } from './object-details/object-details.module';
 import { YuvSearchModule } from './search/search.module';
 import { YuvUserModule } from './user/user.module';
-import { YuvObjectDetailsModule } from './object-details/object-details.module';
-import { YuvComponentsModule } from './components/components.module';
 
 /**
  * `YuvFrameworkModule` provides a set of UI components to be used
- * when creating yuuvis client applications. It also re-exports the 
+ * when creating yuuvis client applications. It also re-exports the
  * `YuvCommonUiModule` containing more low level components like SVG icons.
  * `YuvCoreModule` is also part of this library, so the provided components
  * are able to communicate with the Yuuyis backend services. So if you import
  * `YuvFrameworkModule` you don't need to import either one of those modeules.
- * 
  * Other third-party modules that are used and re-exported as well:
- * - [AngularSplitModule](https://github.com/bertrandg/angular-split) 
+ * - [AngularSplitModule](https://github.com/bertrandg/angular-split)
  * - PrimeNG [OverlayPanelModule](https://www.primefaces.org/primeng/#/overlaypanel)
  */
 
 @NgModule({
   imports: [
-    CommonModule,    
+    CommonModule,
     BrowserAnimationsModule,
     YuvFormModule,
     YuvSearchModule,
@@ -35,8 +40,11 @@ import { YuvComponentsModule } from './components/components.module';
     YuvObjectDetailsModule,
     OverlayPanelModule,
     YuvCommonUiModule,
-    AngularSplitModule.forRoot(),    
-    YuvCoreModule.forRoot()
+    AngularSplitModule.forRoot(),
+    YuvCoreModule.forRoot(),
+    AngularSplitModule.forRoot(),
+    YuvCoreModule.forRoot(),
+    YuvCoreSharedModule
   ],
   exports: [
     YuvFormModule,
@@ -47,7 +55,8 @@ import { YuvComponentsModule } from './components/components.module';
     YuvCommonUiModule,
     YuvCoreModule,
     OverlayPanelModule,
-    AngularSplitModule
+    AngularSplitModule,
+    YuvCoreSharedModule
   ]
 })
 export class YuvFrameworkModule {
@@ -56,7 +65,7 @@ export class YuvFrameworkModule {
       ngModule: YuvFrameworkModule,
       providers: [
         { provide: CUSTOM_CONFIG, useValue: config },
-        { provide: CORE_CONFIG, useClass: CoreConfig, deps: [CUSTOM_CONFIG] },
+        { provide: CORE_CONFIG, useClass: CoreConfig, deps: [CUSTOM_CONFIG] }
       ]
     };
   }
