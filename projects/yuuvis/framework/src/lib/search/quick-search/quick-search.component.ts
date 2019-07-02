@@ -69,8 +69,8 @@ export class QuickSearchComponent implements OnInit {
   }
 
   onAggObjectTypeClick(agg: ObjectTypeAggregation) {
-    const objectType = this.systemService.getObjectType(agg.objectTypeId);
-    this.searchQuery.addType(objectType);
+    // const objectType = this.systemService.getObjectType(agg.objectTypeId);
+    this.searchQuery.addType(agg.objectTypeId);
     this.executeSearch();
 
     // this.searchQuery.this.query.emit(

@@ -95,7 +95,7 @@ export class SearchService {
   private queryToStatement(searchQuery: SearchQuery): string {
     let targetTypes = ['enaio:object'];
     if (searchQuery.types.length) {
-      targetTypes = searchQuery.types.map(t => t.id);
+      targetTypes = searchQuery.types;
     }
     return `SELECT * FROM ${targetTypes.join(',')} WHERE CONTAINS('${
       searchQuery.term
@@ -134,13 +134,13 @@ export class SearchService {
         };
       }
 
-      const objectTypeId = o.properties['enaio:objectTypeId'];
+      const objectTypeId = o.properties['enaio:objectTypeId'].value;
       if (objectTypes.indexOf(objectTypeId) === -1) {
         objectTypes.push(objectTypeId);
       }
 
       resultListItems.push({
-        objectTypeId: objectTypeId.value,
+        objectTypeId: objectTypeId,
         content: content,
         fields: fields
       });

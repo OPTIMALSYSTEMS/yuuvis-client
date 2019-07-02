@@ -1,4 +1,3 @@
-import { ObjectType } from '../../model/object-type.model';
 import { SearchFilter } from './search-query.model';
 
 export interface SearchResult {
@@ -36,6 +35,6 @@ export interface SearchResultContent {
 
 export interface SearchQueryProperties {
   term: string;
-  types: ObjectType[];
+  types: string[];
   filters: SearchFilter[];
 }

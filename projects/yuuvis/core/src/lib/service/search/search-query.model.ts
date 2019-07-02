@@ -1,9 +1,8 @@
-import { ObjectType } from '../../model/object-type.model';
 import { SearchQueryProperties } from './search.service.interface';
 
 export class SearchQuery {
   term: string;
-  types: ObjectType[] = [];
+  types: string[] = [];
   filters: SearchFilter[] = [];
 
   constructor(searchQueryProperties?: SearchQueryProperties) {
@@ -18,9 +17,9 @@ export class SearchQuery {
    *
    * @param type Object type to be added
    */
-  public addType(type: ObjectType) {
-    if (!this.types.find(t => t.id === type.id)) {
-      this.types.push(type);
+  public addType(objectTypeId: string) {
+    if (this.types.indexOf(objectTypeId) === -1) {
+      this.types.push(objectTypeId);
     }
   }
 
@@ -29,8 +28,8 @@ export class SearchQuery {
    *
    * @param type The object type to be removed
    */
-  public removeType(type: ObjectType) {
-    this.types = this.types.filter(t => t.id !== type.id);
+  public removeType(objectTypeId: string) {
+    this.types = this.types.filter(t => t !== objectTypeId);
   }
 
   /**
@@ -38,11 +37,11 @@ export class SearchQuery {
    *
    * @param type The object type to be toggled
    */
-  public toggleType(type: ObjectType) {
-    if (this.types.find(t => t.id === type.id)) {
-      this.removeType(type);
+  public toggleType(objectTypeId: string) {
+    if (this.types.find(t => t === objectTypeId)) {
+      this.removeType(objectTypeId);
     } else {
-      this.types.push(type);
+      this.types.push(objectTypeId);
     }
   }
 

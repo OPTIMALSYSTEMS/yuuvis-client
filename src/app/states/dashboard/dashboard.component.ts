@@ -12,6 +12,8 @@ export class DashboardComponent implements OnInit {
   constructor(private router: Router) {}
 
   onQuickSearchQuery(query: SearchQuery) {
+    const param = JSON.stringify(query.toJson());
+
     this.router.navigate(['/result'], {
       queryParams: { query: JSON.stringify(query.toJson()) }
     });
