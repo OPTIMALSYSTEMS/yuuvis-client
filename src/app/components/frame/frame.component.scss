@@ -10,7 +10,7 @@ $user-panel-width: 180px;
   display: grid;
   grid-template-columns: 1fr;
   grid-template-rows: var(--app-bar-height) 1fr;
-  grid-template-areas: "header" "content";
+  grid-template-areas: 'header' 'content';
 
   .app-bar {
     grid-area: header;
@@ -22,14 +22,15 @@ $user-panel-width: 180px;
     background-color: var(--color-primary);
 
     yuv-icon#drawer {
-      padding: 15px;
-      margin: 5px;
+      padding: calc((var(--app-bar-height) - 24px) / 2);
+      background-color: var(--color-accent);
     }
     yuv-icon#logo {
       width: 100px;
       padding: 0;
       height: auto;
       background-color: transparent;
+      margin: 0 calc(var(--app-pane-padding));
     }
 
     .main {
@@ -89,7 +90,9 @@ $user-panel-width: 180px;
       &.enabled {
         .user-title {
           opacity: 1;
-          padding: calc(var(--app-pane-padding) / 2) calc(var(--app-pane-padding) / 2) calc(var(--app-pane-padding) / 2)  var(--app-pane-padding);
+          padding: calc(var(--app-pane-padding) / 2)
+            calc(var(--app-pane-padding) / 2) calc(var(--app-pane-padding) / 2)
+            var(--app-pane-padding);
           > yuv-icon {
             display: none;
           }
@@ -102,17 +105,18 @@ $user-panel-width: 180px;
 
       .user-title {
         position: absolute;
-        opacity: .6;
+        opacity: 0.6;
         bottom: 0;
         right: 0;
         left: 0;
         background-color: rgba(0, 0, 0, 0.1);
-        padding: calc(var(--app-pane-padding) / 2)  calc(var(--app-pane-padding) / 2)  calc(var(--app-pane-padding) / 2) 0;
+        padding: calc(var(--app-pane-padding) / 2)
+          calc(var(--app-pane-padding) / 2) calc(var(--app-pane-padding) / 2) 0;
         color: #fff;
         display: flex;
         align-items: center;
 
-        > yuv-icon { 
+        > yuv-icon {
           margin: 0 calc(var(--app-pane-padding) / 2);
         }
 
@@ -154,6 +158,10 @@ $user-panel-width: 180px;
 
       .right .user {
         background-color: rgba(255, 255, 255, 0.5);
+      }
+
+      yuv-icon#drawer {
+        background-color: transparent;
       }
     }
     .app-content {

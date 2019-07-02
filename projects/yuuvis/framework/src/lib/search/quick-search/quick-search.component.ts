@@ -1,67 +1,107 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { FormBuilder, FormGroup } from '@angular/forms';
+import {
+  ScreenService,
+  SearchQuery,
+  SearchService,
+  SystemService
+} from '@yuuvis/core';
+import { of } from 'rxjs';
 import { debounceTime, switchMap, tap } from 'rxjs/operators';
 import { SVGIcons } from '../../svg.generated';
-import { FormGroup, FormBuilder } from '@angular/forms';
-import { SearchService, ScreenService, SystemService, SearchResult } from '@yuuvis/core';
-import { of } from 'rxjs';
 
 @Component({
   selector: 'yuv-quick-search',
   templateUrl: './quick-search.component.html',
   styleUrls: ['./quick-search.component.scss'],
-  host: { 'class': 'yuv-quick-search' }
+  host: { class: 'yuv-quick-search' }
 })
 export class QuickSearchComponent implements OnInit {
-
   icSearch = SVGIcons.search;
   searchForm: FormGroup;
   invalidTerm: boolean;
   resultCount: number = null;
-  result: any[] = [];
+  aggTypes: ObjectTypeAggregation[] = [];
+
+  private searchQuery: SearchQuery;
   private _term: string;
 
   // emits the query that should be executed
-  @Output() query = new EventEmitter<string>();
+  @Output() query = new EventEmitter<SearchQuery>();
 
-
-  constructor(private fb: FormBuilder,
+  constructor(
+    private fb: FormBuilder,
     private screenService: ScreenService,
     private systemService: SystemService,
-    private searchService: SearchService) {
-
+    private searchService: SearchService
+  ) {
     this.searchForm = this.fb.group({ searchInput: [''] });
     this.searchForm
-      .get('searchInput').valueChanges.pipe(
+      .get('searchInput')
+      .valueChanges.pipe(
         tap(term => {
-          this._term = term;
-          this.result = [];
+          // this._term = term;
+          this.searchQuery.term = term;
+          this.aggTypes = [];
           this.resultCount = null;
         }),
         debounceTime(500),
         switchMap(term => {
-          return (term && term.length) ?
-            this.searchService.searchRaw(`SELECT COUNT(*), enaio:objectTypeId FROM enaio:object WHERE CONTAINS('${term}') GROUP BY enaio:objectTypeId`) :
-            of(null);
+          return this.searchQuery.term && this.searchQuery.term.length
+            ? this.searchService.searchRaw(
+                `SELECT COUNT(*), enaio:objectTypeId FROM enaio:object WHERE CONTAINS('${
+                  this.searchQuery.term
+                }') GROUP BY enaio:objectTypeId`
+              )
+            : of(null);
         })
-      ).subscribe((res: any) => {
-        if (res) {
-          this.resultCount = 0;
-          res.objects.forEach(o => {
-            this.resultCount += o.properties.OBJECT_COUNT.value;
-            this.result.push({
-              label: this.systemService.getLocalizedResource(`${o.properties['enaio:objectTypeId'].value}_label`),
-              count: o.properties.OBJECT_COUNT.value
-            });
-          });
-        }
-      })
+      )
+      .subscribe((res: any) => {
+        this.processResult(res);
+      });
   }
 
   executeSearch() {
-    this.query.emit(`SELECT * FROM enaio:object WHERE CONTAINS('${this._term}')`);
+    this.query.emit(this.searchQuery);
+    // this.query.emit(
+    //   `SELECT * FROM enaio:object WHERE CONTAINS('${this._term}')`
+    // );
+  }
+
+  onAggObjectTypeClick(agg: ObjectTypeAggregation) {
+    const objectType = this.systemService.getObjectType(agg.objectTypeId);
+    this.searchQuery.addType(objectType);
+    this.executeSearch();
+
+    // this.searchQuery.this.query.emit(
+    //   `SELECT * FROM ${agg.objectTypeId} WHERE CONTAINS('${this._term}')`
+    // );
+  }
+
+  private processResult(res: any) {
+    if (res) {
+      this.resultCount = 0;
+
+      res.objects.forEach(o => {
+        this.resultCount += o.properties.OBJECT_COUNT.value;
+        const typeId = o.properties['enaio:objectTypeId'].value;
+        this.aggTypes.push({
+          objectTypeId: typeId,
+          label:
+            this.systemService.getLocalizedResource(`${typeId}_label`) || '???',
+          count: o.properties.OBJECT_COUNT.value
+        });
+      });
+    }
   }
 
   ngOnInit() {
+    this.searchQuery = new SearchQuery();
   }
+}
 
+interface ObjectTypeAggregation {
+  objectTypeId: string;
+  label: string;
+  count: number;
 }
