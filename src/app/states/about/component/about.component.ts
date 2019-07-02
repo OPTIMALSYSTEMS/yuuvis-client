@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
 import { ConfigService, UserService } from '@yuuvis/core';
 import { Observable } from 'rxjs';
-import { Libraries } from '../about.data.interface';
+import { Libraries, ProductDetails } from '../about.data.interface';
+import { About } from '../about.enum';
 import { AboutService } from '../service/about.service';
 
 @Component({
@@ -15,11 +16,7 @@ export class AboutComponent {
   userLang: string;
   docu: { link: string; label: string };
 
-  ctrl = {
-    productName: 'enaio® redline client',
-    clientVersion: '__coreversion__',
-    releaseDate: '__releasedate__'
-  };
+  ctrl: Observable<ProductDetails[]> = this.aboutService.productDetails$;
 
   constructor(
     private config: ConfigService,
@@ -31,12 +28,12 @@ export class AboutComponent {
   }
 
   private getUserLanguage() {
-    const { language } = this.config.get('about.docu');
-    return language.includes(this.userLang) ? this.userLang : 'en';
+    const { language } = this.config.get(About.docu);
+    return language.includes(this.userLang) ? this.userLang : About.defaultLang;
   }
 
   getDocumentation() {
-    let { link, version, label } = this.config.get('about.docu');
+    let { link, version, label } = this.config.get(About.docu);
     const userLang = this.getUserLanguage();
     link = link
       .replace('###userLang###', userLang)

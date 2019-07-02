@@ -6,6 +6,12 @@
 ::ng-deep {
   .showList.ui-accordion {
     .ui-accordion-header {
+      a {
+        padding: 0.5em 0;
+      }
+      *:focus {
+        outline: 0;
+      }
       span {
         &.fa {
           display: none;
@@ -19,6 +25,9 @@
           content: '-';
         }
       }
+    }
+    .ui-accordion-content {
+      padding: 1em 0;
     }
   }
 }

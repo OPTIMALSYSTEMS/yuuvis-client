@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { TranslateService } from '@yuuvis/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { AboutData, Libraries, ProductDetails } from '../about.data.interface';
+import { AboutInfo } from '../about.enum';
 
 @Injectable({
   providedIn: 'root'
@@ -93,21 +94,17 @@ export class AboutService {
   }
 
   generateProductDetails(aboutDetails) {
-    let details = [
-      {
-        name: 'productName',
-        label: this.translate.instant(`eoa.about.productName.label`),
-        value: 'enaio® redline agent'
-      }
-    ];
+    let details = [];
 
     Object.keys(aboutDetails).forEach(key =>
       details.push({
         name: key,
-        label: this.translate.instant(`eoa.about.${key}.label`),
-        value: aboutDetails[key]
+        label: this.translate.instant(`eo.about.${key}.label`),
+        value: aboutDetails[key],
+        entry: AboutInfo[key]
       })
     );
+    console.log(details);
     this.productDetailsSubject.next(details);
   }
 }

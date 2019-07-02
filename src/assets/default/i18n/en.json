@@ -1,5 +1,7 @@
 {
   "eo.form.input.null": "Your Mother",
+  "eo.search.result.hits": "hits",
+  "eo.search.title": "Search result",
   "eo.bar.button.logout.title": "Log out",
   "eo.bar.button.settings.title": "Settings",
   "eo.state.login.host": "Host",
@@ -7,5 +9,12 @@
   "eo.state.login.submit": "Log in",
   "eo.state.login.tenant": "Tenant",
   "eo.state.settings.deputies": "Substitutes",
-  "eo.state.settings.language": "Language"
+  "eo.state.settings.language": "Language",
+  "eo.about.claim": "enaio® redline is our content services platform, a framework for solution developers who wish to create specialist content-centric applications on open standards with short time to market. Create. Scalable. Framework.",
+  "eo.about.license.intro": "This document contains licensing information with supplementary conditions for third-party components integrated into enaio® client. The licensing information and supplementary conditions become a part of the OPTIMAL SYSTEMS software licensing agreement as a result of this reference.",
+  "eo.about.client.version.label": "Component version:",
+  "eo.about.author.label": "Manufacturer:",
+  "eo.about.autor.text": "OPTIMAL SYSTEMS GmbH, Berlin, Deutschland",
+  "eo.about.product.label": "Product:",
+  "eo.about.releasedate.label": "Product version:"
 }

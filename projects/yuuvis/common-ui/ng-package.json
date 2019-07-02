@@ -5,6 +5,8 @@
     "entryFile": "src/public-api.ts"
   },
   "whitelistedNonPeerDependencies": [
-    "primeng"
+    "primeng",
+    "@angular/core",
+    "@angular/common"
   ]
 }

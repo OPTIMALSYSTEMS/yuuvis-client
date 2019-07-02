@@ -8,6 +8,10 @@ const getReleaseDate = () => {
   return getPackageJson().releaseDate;
 };
 
+const getDescription = () => {
+  return getPackageJson().description;
+};
+
 const getCompany = () => {
   return getPackageJson().author;
 };
@@ -49,6 +53,7 @@ module.exports = {
   getPackageJson,
   getCompany,
   getProductName,
+  getDescription,
   dynamicSort,
   removeDuplicates
 };
