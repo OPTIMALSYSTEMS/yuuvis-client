@@ -25,9 +25,10 @@ const libraries = helper.removeDuplicates([...deps(packageUI)].sort(helper.dynam
 
 const aboutData = {
   libraries,
-  'agentversion': helper.getVersion(),
+  'client.version': helper.getVersion(),
   'releasedate': helper.getReleaseDate(),
   'author': helper.getCompany(),
+  'product': helper.getDescription()
 };
 
 writeStream.write(JSON.stringify(aboutData), (error) => error ? console.log(error) : null);

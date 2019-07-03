@@ -17,4 +17,5 @@ export interface ProductDetails {
   name: string;
   label: string;
   value: string;
+  entry: any;
 }

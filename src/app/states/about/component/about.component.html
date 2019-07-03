@@ -56,33 +56,38 @@
 
     <div class="body">
 
-      <div class="claim" translate>'eo.about.claim'
-          enaio® redline ist unsere Content Services Plattform, ein Framework für Lösungsentwickler, die auf offenen Standards basierende Content-zentrische Anwendung bei kurzer Time-to-Market erstellen wollen. Create. Scalable. Framework.
+      <div class="claim" translate>eo.about.claim</div>
 
-
-      </div>
       <div class="links">
           <a href="{{docu.link}}" target="_blank" translate>{{docu.label}}</a>
       </div>
-      <div class="info">
-        <div class="product_label label" translate>eo.about.product.label</div>
-        <div class="product_text text">{{ctrl.productName}}</div>
-        <div class="comp_version_label label" translate>eo.about.client.version.label</div>
-        <div class="comp_version_text text">{{ctrl.clientVersion}}</div>
-        <div class="prod_version_label label" translate>eo.about.releasedate.label</div>
-        <div class="prod_version_text text" translate>{{ctrl.releaseDate}}</div>
-        <div class="company_label label" translate>eo.about.producer.label</div>
-        <div class="company_text text" translate>eo.about.producer.text</div>
-      </div>
-      <div class="licenses">
-        <div class="licenses_headline" translate>Lizenzhinweise 'eo.about.license.title'</div>
-        <p class="licenses_intro" translate>'eo.about.license.intro'
-            Dieses Dokument enthält Lizenzinformationen mit ergänzenden Bestimmungen für die in enaio® client eingebundenen Fremdkomponenten. Diese Lizenzinformationen und ergänzenden Bestimmungen werden durch diese Referenzierung Teil der OPTIMAL SYSTEMS Software Lizenzvereinbarung.
 
-        </p>
+
+
+
+     <div class="info">
+        <ng-container class="details__product" *ngFor="let details of ctrl | async">
+            <div class="{{details.entry}}_label label">{{details.label}}</div>
+            <div class="{{details.entry}}_text text">{{details.value}}</div>
+        </ng-container>
+
+
+        <!-- <div class="product_label label" translate>eo.about.product.label</div>
+        <div class="product_text text">{{(ctrl | async)[0].productName}}</div>
+        <div class="component_version_label label" translate>eo.about.client.version.label</div>
+        <div class="component_version_text text">{{(ctrl | async)[0].clientVersion}}</div>
+        <div class="product_version_label label" translate>eo.about.releasedate.label</div>
+        <div class="product_version_text text" translate>{{(ctrl | async)[0].releaseDate}}</div>
+        <div class="company_label label" translate>eo.about.producer.label</div>
+        <div class="company_text text" translate>eo.about.producer.text</div> -->
+
+      </div> 
+      <div class="licenses">
+        <div class="licenses_headline" translate>eo.about.license.title</div>
+        <p class="licenses_intro" translate>eo.about.license.intro</p>
         <div class="licenses_content">
 
-            <yuv-simple-accordion [toggletxt]="'eo.about.license.title'">
+            <yuv-simple-accordion [header]="'eo.about.license.title'">
               <div class="licenses" *ngFor="let lib of (__libraries__ | async); trackBy: trackByFn">
                   <div class="name">{{lib.name}}</div>
                   <div class="licence" *ngIf="lib.license">

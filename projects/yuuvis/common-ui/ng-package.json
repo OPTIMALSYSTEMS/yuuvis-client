@@ -3,5 +3,10 @@
   "dest": "../../../dist/yuuvis/common-ui",
   "lib": {
     "entryFile": "src/public-api.ts"
-  }
+  },
+  "whitelistedNonPeerDependencies": [
+    "primeng",
+    "@angular/core",
+    "@angular/common"
+  ]
 }

@@ -1,3 +1,33 @@
 .list {
-    padding-top: var(--app-pane-padding);
+  padding-top: var(--app-pane-padding);
+  overflow: hidden;
+}
+
+::ng-deep {
+  .showList.ui-accordion {
+    .ui-accordion-header {
+      a {
+        padding: 0.5em 0;
+      }
+      *:focus {
+        outline: 0;
+      }
+      span {
+        &.fa {
+          display: none;
+        }
+        &.ui-accordion-header-text:after {
+          content: '+';
+        }
+      }
+      &.ui-state-active {
+        span.ui-accordion-header-text:after {
+          content: '-';
+        }
+      }
+    }
+    .ui-accordion-content {
+      padding: 1em 0;
+    }
+  }
 }

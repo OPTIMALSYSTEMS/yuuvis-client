@@ -3,55 +3,12 @@
 $app-pane-padding: 16px;
 $about-max-width: 800px;
 
-:host-context(.screen-s) {
-  .eo-about-state {
-    --about-header-height: 100px;
-    margin: 0;
-    width: 100vw;
-    justify-self: auto;
-    .about {
-      max-height: 100%;
-      margin: 0;
-      .body {
-        grid-template-columns: 1.2fr 0.8fr;
-        grid-template-rows: min-content;
-        grid-template-areas: 
-          "claim claim"
-          "info info"
-          "link link"
-          "licenses licenses";
-      }
-
-      .info {
-        margin: 0;
-        grid-template-areas: 
-          "product_label product_label"
-          "product_text product_text "
-          "comp_version_label comp_version_label"
-          "comp_version_text comp_version_text" 
-          "prod_version_label prod_version_label"
-          "prod_version_text prod_version_text" 
-          "company_label company_label"
-          "company_text company_text";
-
-          .label {
-            padding-bottom: 0;
-          }
-          .text {
-            padding-top: 0;
-            padding-bottom: 0;
-          }
-      }
-    }
-  }
-}
-
 :host {
   --about-header-height: 300px;
   height: 100%;
-  display: grid; 
-  grid-template-columns: 1fr; 
-  grid-template-rows: 1fr; 
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr;
   grid-column-gap: 0px;
   grid-row-gap: 0px;
 }
@@ -89,26 +46,34 @@ $about-max-width: 800px;
       }
     }
 
-
-
     .body {
       display: grid;
       grid-template-columns: 1.2fr 0.8fr;
       grid-template-rows: min-content;
-      grid-template-areas: 
-        "claim claim"
-        "info link"
-        "licenses licenses";
-      
+      grid-template-areas:
+        'claim claim'
+        'info link'
+        'licenses licenses';
+
       padding: var(--app-pane-padding);
+
+      :host-context(.screen-s) & {
+        grid-template-columns: 1.2fr 0.8fr;
+        grid-template-rows: min-content;
+        grid-template-areas:
+          'claim claim'
+          'info info'
+          'link link'
+          'licenses licenses';
+      }
     }
 
-    .claim { 
+    .claim {
       grid-area: claim;
       padding: var(--app-pane-padding) 0;
     }
-    
-    .links { 
+
+    .links {
       grid-area: link;
       justify-self: center;
       margin-top: var(--app-pane-padding);
@@ -116,49 +81,53 @@ $about-max-width: 800px;
         color: var(--color-accent);
       }
     }
-    
+
     .info {
       display: grid;
       grid-template-columns: 1fr 1fr;
       // grid-template-rows: 1fr 1fr 1fr 1fr;
       grid-template-rows: min-content;
-      grid-template-areas: 
-        "product_label product_text" 
-        "comp_version_label comp_version_text" 
-        "prod_version_label prod_version_text" 
-        "company_label company_text";
+      grid-template-areas:
+        'product_label product_text'
+        'component_version_label component_version_text'
+        'product_version_label product_version_text'
+        'company_label company_text';
       grid-area: info;
       margin: var(--app-pane-padding);
       padding: calc(var(--app-pane-padding) / 4) 0;
-      background-color: rgba(0,0,0, 0.06);
+      background-color: rgba(0, 0, 0, 0.06);
       border-radius: 2px;
       font-size: var(--font-hint);
       color: var(--text-color-caption);
-      padding: calc(var(--app-pane-padding) / 8) calc(var(--app-pane-padding) / 2);
+      padding: calc(var(--app-pane-padding) / 8)
+        calc(var(--app-pane-padding) / 2);
+
+      :host-context(.screen-s) & {
+        margin: 0;
+        .label {
+          padding-bottom: 0;
+        }
+      }
     }
-    
-    .product_label { grid-area: product_label; }
-    
-    .product_text { grid-area: product_text; }
-    
-    .comp_version_label { grid-area: comp_version_label; }
-    
-    .comp_version_text { grid-area: comp_version_text; }
-    
-    .prod_version_label { grid-area: prod_version_label; }
-    
-    .prod_version_text { grid-area: prod_version_text; }
-    
-    .company_label { grid-area: company_label; }
-    
-    .company_text { grid-area: company_text; }
-    
+
+    $versions: component_version product_version company product;
+    @each $version in $versions {
+      .#{$version}_text {
+        grid-area: #{$version}_text;
+      }
+      .#{$version}_label {
+        grid-area: #{$version}_label;
+      }
+    }
+
     .label {
-      padding: calc(var(--app-pane-padding)/ 2) calc(var(--app-pane-padding)/ 2);
+      padding: calc(var(--app-pane-padding) / 2)
+        calc(var(--app-pane-padding) / 2);
     }
 
     .text {
-      padding: calc(var(--app-pane-padding)/ 2) calc(var(--app-pane-padding)/ 2);
+      padding: calc(var(--app-pane-padding) / 2)
+        calc(var(--app-pane-padding) / 2);
       font-weight: bold;
     }
 
@@ -166,26 +135,28 @@ $about-max-width: 800px;
       display: grid;
       grid-template-columns: 1fr;
       grid-template-rows: min-content;
-      grid-template-areas: 
-        "licenses_headline"
-        "licenses_intro"
-        "licenses_content";
+      grid-template-areas:
+        'licenses_headline'
+        'licenses_intro'
+        'licenses_content';
       grid-area: licenses;
     }
-    
-    .licenses_headline { 
+
+    .licenses_headline {
       grid-area: licenses_headline;
       margin: 1.5em 0 0 0;
       color: var(--text-color-caption);
       font-weight: var(--font-weight-light);
       font-size: var(--font-title);
     }
-    
-    .licenses_intro { grid-area: licenses_intro; }
-    
+
+    .licenses_intro {
+      grid-area: licenses_intro;
+    }
+
     .licenses_content {
       grid-area: licenses_content;
-      ::ng-deep{
+      ::ng-deep {
         .showList {
           .toggle {
             color: var(--color-accent);
@@ -231,103 +202,17 @@ $about-max-width: 800px;
           border-top: none;
         }
       }
-      
+    }
+
+    :host-context(.screen-s) & {
+      max-height: 100%;
+      margin: 0;
     }
   }
-
-  // .about {
-
-  //   
-  //   .body {
-  //     padding: var(--app-pane-padding);
-
-  //     h2 {
-  //       
-  //     }
-
-  //     .wrap {
-  //       display: flex;
-  //       flex-flow: row wrap;
-  //     }
-
-  //     ul.links {
-  //       color: var(--color-accent);
-  //       list-style-type: none;
-  //       li {
-  //         padding: 2px 0;
-  //       }
-  //       a {
-  //         text-decoration: none;
-  //         color: var(--color-accent);
-
-  //         &:hover {
-  //           text-decoration: underline;
-  //         }
-  //       }
-  //     }
-
-  //     table {
-  //       margin: var(--app-pane-padding);
-  //       padding: calc(var(--app-pane-padding) / 4) 0;
-  //       background-color: rgba(var(--color-black-rgb), 0.06);
-  //       border-radius: 2px;
-
-  //       th {
-  //         display: flex;
-  //         flex-flow: column;
-  //         align-items: flex-start;
-  //         justify-content: center;
-  //         font-size: var(--font-hint);
-  //         color: var(--text-color-caption);
-  //       }
-  //       th, td {
-  //         padding: calc(var(--app-pane-padding) / 8) calc(var(--app-pane-padding) / 2);
-  //       }
-  //     }
-
-  //     .showLic {
-  //       span.toggle {
-  //         color: var(--color-accent);
-  //         display: inline-block;
-  //         padding: 0 4px 2px 4px;
-  //         border-radius: 4px;
-  //         border: 1px solid var(--color-accent);
-  //         cursor: pointer;
-  //       }
-  //       .toggle-indicator {
-  //         padding: 0 4px;
-  //       }
-  //     }
-
-  //     .licenses {
-  //       padding-top: var(--app-pane-padding);
-  //       .lib {
-
-  //         display: flex;
-  //         flex-flow: row nowrap;
-  //         padding: calc(var(--app-pane-padding) / 4);
-  //         border-top: 1px solid var(--list-item-border-color);
-
-  //         .name {
-  //           flex: 1 1 auto;
-  //         }
-  //         .lic {
-  //           flex: 0 0 auto;
-  //           font-size: var(--font-hint);
-  //           color: var(--text-color-caption);
-  //           a {
-  //             text-decoration: none;
-  //             border-radius: 2px;
-  //             border: 1px solid var(--color-accent);
-  //             color: var(--color-accent);
-  //             display: inline-block;
-  //             padding: 2px 4px;
-  //             background-color: rgba(var(--color-black-rgb), 0.06);
-  //             line-height: 1em;
-  //           }
-  //         }
-  //       }
-  //     }
-  //   }
-  // }
+  :host-context(.screen-s) & {
+    --about-header-height: 100px;
+    margin: 0;
+    width: 100vw;
+    justify-self: auto;
+  }
 }

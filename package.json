@@ -1,6 +1,9 @@
 {
   "name": "yuuvis-flokfugl",
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "releaseDate": "1",
+  "description": "yuuvis api",
+  "author": "OPTIMAL SYSTEMS GmbH",
   "scripts": {
     "ng": "ng",
     "prebuild:about": "node ./tools/scripts/common/about/prebuild-about-state",
