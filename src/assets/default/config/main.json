@@ -13,12 +13,5 @@
       "label": "English",
       "fallback": true
     }
-  ],
-  "about": {
-    "docu": {
-      "link": "https://help.optimal-systems.com/yuuvis/API/###version###/user/###userLang###/index.html",
-      "version": 1,
-      "language": ["de", "en"]
-    }
-  }
+  ]
 }

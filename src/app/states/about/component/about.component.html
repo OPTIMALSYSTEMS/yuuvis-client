@@ -4,35 +4,25 @@
     <div class="header">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 708.7 176.4"><path d="M708.7 20.6c0-11.3-9.2-20.6-20.6-20.6s-20.6 9.2-20.6 20.6c0 11.3 9.2 20.6 20.6 20.6s20.6-9.3 20.6-20.6zm-2.7 0c0 9.9-8 17.9-17.9 17.9-9.9 0-17.9-8-17.9-17.9 0-9.9 8-17.9 17.9-17.9 9.9 0 17.9 8 17.9 17.9zm-9.9-5.4c0-2.7 0-6.7-7-6.7h-7.7c-.7 0-1.3.6-1.3 1.3v21.4c0 .7.6 1.3 1.3 1.3.7 0 1.3-.6 1.3-1.3v-9.4h5.9l5 10c.2.5.7.7 1.2.7.2 0 .4 0 .6-.1.7-.3.9-1.1.6-1.8l-4.5-9c4.6-.8 4.6-4.6 4.6-6.4zm-2.6 0c0 2.5-.3 4-4 4h-6.7v-8h6.4c2.1 0 3.4.4 3.9 1.1.4.6.4 1.7.4 2.9zM589.4 73.7c0-4.8 10.4-7.7 27.8-7.7 12.5 0 28.4 3.3 41.6 8.6l4.2 1.7V52.2l-2-.7c-12.6-4.4-29-6.9-44.9-6.9-33.3 0-56.6 12.9-56.6 31.3 0 13.2 14.6 24.1 37.1 27.9l21.4 3.7c23.1 3.9 25.6 8.6 25.6 10.5 0 4.6-5.2 7.7-9.7 9.5-5.3 2.4-11.7 3.4-22 3.4-16.7 0-33.7-2.8-47.8-8l-4.1-1.5V144l2.1.6c15.2 4.7 31.9 7.2 48.4 7.2 14.9 0 27.7-1.9 38-5.8 15.7-5.8 25.5-16.4 25.5-27.7 0-7.5-4.4-15-11.6-19.8-7.3-4.7-19.2-8.9-30.3-10.8l-19.8-3.5c-6.3-1-8-1.5-10.8-2.4l-1.1-.3c-7.2-2.1-11-4.7-11-7.8zm-73.2 76.1h26.4V46h-26.4v103.8zm0-120.7h26.4V5.7h-26.4v23.4zm-52.6 120.6l35.6-57.3V46l-38.5 59.1c-6.7 10.5-11.5 19.6-11.5 19.6s-5.1-9.5-12.2-20.6L400.2 46h-30.7l63.8 103.7h30.3zm-94.2-49.1c0 11.3-1 15.3-4.9 20.5-3.6 4.7-13.4 7.6-25.6 7.6-14.5 0-26.5-5.4-29.3-13.1-1-3.3-1.7-11.2-1.7-20V46h-27.4v54.1c0 15.2 1.1 19.9 4.8 26.9 10 19.1 37.2 26.1 53.1 26.1 18.9 0 36.6-7.9 45.8-15.8 6-5.1 9.3-9.8 11-17.1l-25.8-41.8v22.2zm-105.8-.5V46h-27.4v54.6c0 11.3-1 15.3-4.9 20.5-3.6 4.7-13.4 7.6-25.6 7.6-14.5 0-26.5-5.4-29.3-13.1-1-3.3-1.7-11.2-1.7-20V46h-27.4v54.1c0 15.2 1.1 19.9 4.8 26.9 10 19.1 37.2 26.1 53.1 26.1 18.9 0 36.6-7.9 45.8-15.8 10.2-8.7 12.6-16 12.6-37.2zM97.7 148.9L130.4 94V46h-.1l-36.9 58.2c-7.1 11.1-12.2 20.6-12.2 20.6s-4.8-9.1-11.6-19.6L31 46H0l67.7 105.5v24.9h30v-27.5z"/></svg>
     </div>
-    
+
     <div class="body">
 
       <div class="claim" translate>eo.about.claim</div>
 
       <div class="links">
-          <a href="{{docu.link}}" target="_blank" translate>eo.about.documentation.link.loabel</a>
+          <a href="{{(docuLink | async )}}" target="_blank" translate>eo.about.documentation.link.label</a>
       </div>
 
 
 
 
-     <div class="info">
+    <div class="info">
         <ng-container class="details__product" *ngFor="let details of ctrl | async">
             <div class="{{details.entry}}_label label">{{details.label}}</div>
             <div class="{{details.entry}}_text text">{{details.value}}</div>
         </ng-container>
-
-
-        <!-- <div class="product_label label" translate>eo.about.product.label</div>
-        <div class="product_text text">{{(ctrl | async)[0].productName}}</div>
-        <div class="component_version_label label" translate>eo.about.client.version.label</div>
-        <div class="component_version_text text">{{(ctrl | async)[0].clientVersion}}</div>
-        <div class="product_version_label label" translate>eo.about.releasedate.label</div>
-        <div class="product_version_text text" translate>{{(ctrl | async)[0].releaseDate}}</div>
-        <div class="company_label label" translate>eo.about.producer.label</div>
-        <div class="company_text text" translate>eo.about.producer.text</div> -->
-
-      </div> 
+      
+    </div> 
       <div class="licenses">
         <div class="licenses_headline" translate>eo.about.license.title</div>
         <p class="licenses_intro" translate>eo.about.license.intro</p>

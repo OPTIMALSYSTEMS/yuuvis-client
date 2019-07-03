@@ -14,7 +14,7 @@ export class AboutComponent {
   licenseShow: boolean = true;
   __libraries__: Observable<Libraries[]> = this.aboutService.libraries$;
   userLang: string;
-  docu: { link: string; label: string };
+  docuLink: Observable<string> = this.aboutService.aboutConfig$;
 
   ctrl: Observable<ProductDetails[]> = this.aboutService.productDetails$;
 
@@ -24,21 +24,10 @@ export class AboutComponent {
     private aboutService: AboutService
   ) {
     this.getUserLang();
-    this.getDocumentation();
   }
 
-  private getUserLanguage() {
-    const { language } = this.config.get(About.docu);
+  private getUserLanguage(language: string[]): string {
     return language.includes(this.userLang) ? this.userLang : About.defaultLang;
-  }
-
-  getDocumentation() {
-    let { link, version, label } = this.config.get(About.docu);
-    const userLang = this.getUserLanguage();
-    link = link
-      .replace('###userLang###', userLang)
-      .replace('###version###', version);
-    this.docu = { link, label };
   }
 
   getUserLang() {
@@ -52,6 +41,7 @@ export class AboutComponent {
   }
 
   ngOnInit() {
+    this.aboutService.getAboutConfig(this.userLang);
     this.aboutService.getAboutData();
   }
 }
