@@ -1,13 +1,12 @@
 <div class="app-bar" *ngIf="!hideAppBar">
-    <yuv-icon class="btn" id="drawer" routerLink="/settings" [iconSrc]="'assets/default/svg/ic_drawer.svg'"></yuv-icon>
-    <yuv-icon class="btn" id="drawer" routerLink="/about" [iconSrc]="'assets/default/svg/ic_user_disabled.svg'"></yuv-icon>
+    <yuv-icon class="btn" id="drawer" routerLink="/about" [iconSrc]="'assets/default/svg/ic_drawer.svg'"></yuv-icon>
     <yuv-icon class="btn" id="logo" routerLink="/" [iconSrc]="'assets/default/theme/logo.svg'"></yuv-icon>
 
     <div class="main">
-        <yuv-icon class="btn" [iconSrc]="'assets/default/svg/ic_search.svg'"></yuv-icon>
+        <!-- <yuv-icon class="btn" [iconSrc]="'assets/default/svg/ic_search.svg'"></yuv-icon> -->
     </div>
     <div class="right">
-        <yuv-icon class="btn"routerLink="/result"  [iconSrc]="'assets/default/svg/ic_favorite.svg'"></yuv-icon>
+        <!-- <yuv-icon class="btn"routerLink="/result"  [iconSrc]="'assets/default/svg/ic_favorite.svg'"></yuv-icon> -->
         <div class="user" (click)="op.toggle($event)">
             <yuv-user-avatar [user]="user"></yuv-user-avatar>            
         </div>

@@ -82,7 +82,9 @@ export class SearchService {
       const objecttype: ObjectType = this.systemService.getObjectType(
         objectTypeId
       );
-      return objecttype.fields.map(f => f.id);
+      return objecttype.fields.map(f =>
+        this.systemService.getLocalizedResource(`${f.id}_label`)
+      );
     } else {
       return this.systemService.getBaseParamsFields();
     }
