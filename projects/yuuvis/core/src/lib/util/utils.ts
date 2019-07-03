@@ -1,8 +1,10 @@
-import {throwError as observableThrowError, EMPTY as observableEmpty, Observable} from 'rxjs';
+import {
+  EMPTY as observableEmpty,
+  throwError as observableThrowError
+} from 'rxjs';
 import { YuvError } from '../model/yuv-error.model';
 
 export class Utils {
-
   /**
    * Utility method for adding parameters to a given URI.
    *
@@ -13,7 +15,8 @@ export class Utils {
   public static buildUri(uri: string, params: {}): string {
     const q = Object.keys(params)
       .filter(k => params[k] || params[k] === 0)
-      .map(k => k + '=' + encodeURIComponent(params[k])).join('&');
+      .map(k => k + '=' + encodeURIComponent(params[k]))
+      .join('&');
     return uri + (q ? '?' + q : '');
   }
 
@@ -32,7 +35,9 @@ export class Utils {
    * @returns The quoted printable filename
    */
   public static encodeFileName(filename: string): string {
-    const fileName = Utils.encodeToQuotedPrintable(Utils.encodeToUtf8(filename)).replace(/_/g, '=5F')
+    const fileName = Utils.encodeToQuotedPrintable(
+      Utils.encodeToUtf8(filename)
+    ).replace(/_/g, '=5F');
     return `=?UTF-8?Q?${fileName}?=`;
   }
 
@@ -69,7 +74,7 @@ export class Utils {
          * All chars range 0-127 => 1byte
          */
         utfreturn += String.fromCharCode(c);
-      } else if ((c > 127) && (c < 2048)) {
+      } else if (c > 127 && c < 2048) {
         /**
          * All chars range from 127 to 2047 => 2byte
          */
@@ -92,7 +97,9 @@ export class Utils {
    **/
   private static quotedPrintable(symbol) {
     if (symbol > '\xFF') {
-      throw RangeError('`encodeToQuotedPrintable` expects extended ASCII input only. Missing prior UTF-8 encoding?');
+      throw RangeError(
+        '`encodeToQuotedPrintable` expects extended ASCII input only. Missing prior UTF-8 encoding?'
+      );
     }
     const codePoint = symbol.charCodeAt(0);
     const hexadecimal = codePoint.toString(16).toUpperCase();
@@ -106,7 +113,10 @@ export class Utils {
    * @returns The encoded string
    */
   private static encodeToQuotedPrintable(rawinput): string {
-    const encoded = rawinput.replace(/[\0-\b\n-\x1F=\x7F-\uD7FF\uDC00-\uFFFF]|[\uD800-\uDBFF][\uDC00-\uDFFF]|[\uD800-\uDBFF]/g, this.quotedPrintable);
+    const encoded = rawinput.replace(
+      /[\0-\b\n-\x1F=\x7F-\uD7FF\uDC00-\uFFFF]|[\uD800-\uDBFF][\uDC00-\uDFFF]|[\uD800-\uDBFF]/g,
+      this.quotedPrintable
+    );
     return encoded;
   }
 
@@ -120,7 +130,12 @@ export class Utils {
    * @param options
    * @returns (a: any, b: any) => number
    */
-  public static sortValues(key = '', order = 'asc', locales?: string | string[], options?: Intl.CollatorOptions) {
+  public static sortValues(
+    key = '',
+    order = 'asc',
+    locales?: string | string[],
+    options?: Intl.CollatorOptions
+  ) {
     const f = (a: any, b: any) => {
       const varA = Utils.getProperty(a, key);
       const varB = Utils.getProperty(b, key);
@@ -129,7 +144,7 @@ export class Utils {
       const stringB = varB || varB === 0 ? varB.toString() : '';
 
       const comparison = stringA.localeCompare(stringB, locales, options);
-      return (order === 'desc') ? (comparison * -1) : comparison;
+      return order === 'desc' ? comparison * -1 : comparison;
     };
     return f;
   }
@@ -142,7 +157,9 @@ export class Utils {
    * @returns any
    */
   public static getProperty(object: any, key = ''): any {
-    const f = key ? key.split('.').reduce((o, k) => (o || {})[k], object) : object;
+    const f = key
+      ? key.split('.').reduce((o, k) => (o || {})[k], object)
+      : object;
     return f;
   }
 
@@ -154,7 +171,7 @@ export class Utils {
    * @returns (error) => Observable<never>
    */
   public static empty(callback?: (error) => any) {
-    const f = (error) => {
+    const f = error => {
       return observableEmpty;
     };
     return f;
@@ -169,11 +186,23 @@ export class Utils {
    * @param name
    * @param message
    */
-  public static catchSkip(skipNotification?: (error) => any, callback?: (error) => any, name?: string, message?: string) {
-    const f = (error) => {
+  public static catchSkip(
+    skipNotification?: (error) => any,
+    callback?: (error) => any,
+    name?: string,
+    message?: string
+  ) {
+    const f = error => {
       const _error = callback && callback(error);
       const _skipNotification = skipNotification && skipNotification(error);
-      return observableThrowError(new YuvError(_error instanceof Error ? _error : error, name, message, _skipNotification));
+      return observableThrowError(
+        new YuvError(
+          _error instanceof Error ? _error : error,
+          name,
+          message,
+          _skipNotification
+        )
+      );
     };
     return f;
   }
@@ -188,10 +217,22 @@ export class Utils {
    * @param skipNotification
    * @return (error) => Observable<never>
    */
-  public static catch(callback?: (error) => any, name?: string, message?: string, skipNotification?: boolean) {
-    const f = (error) => {
+  public static catch(
+    callback?: (error) => any,
+    name?: string,
+    message?: string,
+    skipNotification?: boolean
+  ) {
+    const f = error => {
       const _error = callback && callback(error);
-      return observableThrowError(new YuvError(_error instanceof Error ? _error : error, name, message, skipNotification));
+      return observableThrowError(
+        new YuvError(
+          _error instanceof Error ? _error : error,
+          name,
+          message,
+          skipNotification
+        )
+      );
     };
     return f;
   }
@@ -206,10 +247,20 @@ export class Utils {
    * @param skipNotification
    * @return (error) => void
    */
-  public static throw(callback?: (error) => any, name?: string, message?: string, skipNotification?: boolean) {
-    const f = (error) => {
+  public static throw(
+    callback?: (error) => any,
+    name?: string,
+    message?: string,
+    skipNotification?: boolean
+  ) {
+    const f = error => {
       const _error = callback && callback(error);
-      throw new YuvError(_error instanceof Error ? _error : error, name, message, skipNotification);
+      throw new YuvError(
+        _error instanceof Error ? _error : error,
+        name,
+        message,
+        skipNotification
+      );
     };
     return f;
   }
@@ -223,7 +274,12 @@ export class Utils {
    * @param skipNotification
    * @return (error) => void
    */
-  public static logError(callback?: (error) => any, name?: string, message?: string, skipNotification = true) {
+  public static logError(
+    callback?: (error) => any,
+    name?: string,
+    message?: string,
+    skipNotification = true
+  ) {
     return Utils.throw(callback, name, message, skipNotification);
   }
 
@@ -234,7 +290,11 @@ export class Utils {
    * @return boolean
    */
   public static isVisible(elem: any): boolean {
-    return !!(elem.offsetWidth || elem.offsetHeight || elem.getClientRects().length);
+    return !!(
+      elem.offsetWidth ||
+      elem.offsetHeight ||
+      elem.getClientRects().length
+    );
   }
 
   public static getBaseHref() {
@@ -248,7 +308,6 @@ export class Utils {
    *
    * @param string str
    * @param number num
-   * @returns
    */
   public static truncateString(str, num, ending = '...') {
     if (str.length > num) {
@@ -258,12 +317,12 @@ export class Utils {
       str = `${str.substring(0, num)}${ending}`;
     }
     return str;
-  };
+  }
 
   /**
    * Get the TimeZone Offsest as ISO String.
    */
   public static getTimezoneOffset(): number {
-      return new Date().getTimezoneOffset();
+    return new Date().getTimezoneOffset();
   }
 }

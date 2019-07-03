@@ -61,11 +61,11 @@ export class LoginComponent implements OnInit {
       });
     }
 
-    if (this.route.snapshot.params['logout']) {
+    if (this.route.snapshot.paramMap.get('logout')) {
       this.authService.logout(true);
       this.router.navigate(['/']);
     }
-    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
+    this.returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') || '/';
     // because returnUrl was fetched from location, we need to grab the actual route
     const currentLoc = location.href.substr(location.origin.length);
 
@@ -99,7 +99,6 @@ export class LoginComponent implements OnInit {
 
     // get a hold on the trigger to stop the login flow at any point
     this.loginCancelTrigger = loginFlow.cancelTrigger;
-    let browserId;
 
     // subscribe to the current state of the login flow
     loginFlow.loginState.pipe(finalize(() => (this.loading = false))).subscribe(

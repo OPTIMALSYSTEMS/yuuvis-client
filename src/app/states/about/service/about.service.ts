@@ -94,7 +94,7 @@ export class AboutService {
   }
 
   generateProductDetails(aboutDetails) {
-    let details = [];
+    const details = [];
     Object.keys(aboutDetails).forEach(key =>
       details.push({
         name: key,

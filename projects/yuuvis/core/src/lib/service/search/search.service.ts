@@ -69,9 +69,9 @@ export class SearchService {
   ) {
     return {
       query: {
-        statement: statement,
-        skipCount: skipCount,
-        maxItems: maxItems
+        statement,
+        skipCount,
+        maxItems
         // "handleDeletedDocuments" : "DELETED_DOCUMENTS_EXCLUDE",         // optional DELETED_DOCUMENTS_INCLUDE | DELETED_DOCUMENTS_ONLY | DELETED_DOCUMENTS_EXCLUDE default: DELETED_DOCUMENTS_EXCLUDE
       }
     };
@@ -142,9 +142,9 @@ export class SearchService {
       }
 
       resultListItems.push({
-        objectTypeId: objectTypeId,
-        content: content,
-        fields: fields
+        objectTypeId,
+        content,
+        fields
       });
     });
 

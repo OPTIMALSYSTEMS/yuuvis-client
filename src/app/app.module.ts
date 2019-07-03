@@ -29,7 +29,7 @@ import { SettingsComponent } from './states/settings/settings.component';
     YuvFrameworkModule.forRoot({
       main: ['assets/default/config/main.json'],
       translations: ['assets/default/i18n/'],
-      environment: environment
+      environment
     }),
     AppRoutingModule,
     AboutModule

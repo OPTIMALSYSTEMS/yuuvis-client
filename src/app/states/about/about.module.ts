@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
-import { YuvCommonUiModule } from 'projects/yuuvis/common-ui/src/public-api';
+import { YuvCommonUiModule } from '@yuuvis/common-ui';
 import { AboutComponent } from './component/about.component';
 
 @NgModule({
