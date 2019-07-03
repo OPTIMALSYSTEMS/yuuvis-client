@@ -34,10 +34,11 @@ $about-max-width: 800px;
         top: 0;
         right: 0;
         bottom: 0;
-        background-color: rgba(187, 63, 90, 0.8);
+        background-color: var(--color-accent);
       }
 
       svg {
+        fill: white;
         right: 8%;
         bottom: 18%;
         position: absolute;
