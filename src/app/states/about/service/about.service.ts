@@ -95,10 +95,18 @@ export class AboutService {
 
   generateProductDetails(aboutDetails) {
     let details = [];
+
+    const productLabel = {
+      product: this.translate.instant('eo.about.product.label'),
+      version: this.translate.instant('eo.about.client.version.label'),
+      releasedate: this.translate.instant('eo.about.releasedate.label'),
+      author: this.translate.instant('eo.about.author.label')
+    };
+
     Object.keys(aboutDetails).forEach(key =>
       details.push({
         name: key,
-        label: this.translate.instant(`eo.about.${key}.label`),
+        label: productLabel[key],
         value: aboutDetails[key],
         entry: AboutInfo[key]
       })

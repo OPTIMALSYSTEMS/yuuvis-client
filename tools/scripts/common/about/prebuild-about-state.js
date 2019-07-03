@@ -25,7 +25,7 @@ const libraries = helper.removeDuplicates([...deps(packageUI)].sort(helper.dynam
 
 const aboutData = {
   libraries,
-  'client.version': helper.getVersion(),
+  'version': helper.getVersion(),
   'releasedate': helper.getReleaseDate(),
   'author': helper.getCompany(),
   'product': helper.getDescription()

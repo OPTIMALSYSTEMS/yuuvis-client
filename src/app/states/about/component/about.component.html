@@ -59,7 +59,7 @@
       <div class="claim" translate>eo.about.claim</div>
 
       <div class="links">
-          <a href="{{docu.link}}" target="_blank" translate>{{docu.label}}</a>
+          <a href="{{docu.link}}" target="_blank" translate>eo.about.documentation.link.loabel</a>
       </div>
 
 
@@ -87,7 +87,7 @@
         <p class="licenses_intro" translate>eo.about.license.intro</p>
         <div class="licenses_content">
 
-            <yuv-simple-accordion [header]="'eo.about.license.title'">
+            <yuv-simple-accordion [header]="('eo.about.license.title' | translate)">
               <div class="licenses" *ngFor="let lib of (__libraries__ | async); trackBy: trackByFn">
                   <div class="name">{{lib.name}}</div>
                   <div class="licence" *ngIf="lib.license">
