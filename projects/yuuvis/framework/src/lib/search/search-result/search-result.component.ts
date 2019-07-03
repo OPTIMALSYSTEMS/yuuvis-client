@@ -7,7 +7,12 @@ import {
   Output
 } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { SearchResult, SearchService, SystemService } from '@yuuvis/core';
+import {
+  SearchResult,
+  SearchService,
+  SystemService,
+  TranslateService
+} from '@yuuvis/core';
 import {
   ResponsiveTableData,
   ResponsiveTableDataColumn
@@ -49,6 +54,7 @@ export class SearchResultComponent implements OnInit {
       };
     }
   }
+  @Input() title: string;
   @Input() selectedItemId: string;
   // emits the current selection as list of object IDs
   @Output() itemsSelected = new EventEmitter<string[]>();
@@ -57,10 +63,12 @@ export class SearchResultComponent implements OnInit {
   @HostBinding('class.busy') busy: boolean = false;
 
   constructor(
+    private translate: TranslateService,
     private searchService: SearchService,
     private fb: FormBuilder,
     private systemService: SystemService
   ) {
+    this.title = this.translate.instant('eo.search.title');
     this.pagingForm = this.fb.group({
       page: ['']
     });

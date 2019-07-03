@@ -3,4 +3,5 @@ export interface ResponsiveMasterSlaveOptions {
   slaveSize?: number;
   direction?: 'horizontal' | 'vertical';
   resizable?: boolean;
+  useStateLayout?: boolean;
 }

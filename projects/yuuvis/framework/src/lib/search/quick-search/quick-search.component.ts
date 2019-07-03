@@ -63,19 +63,11 @@ export class QuickSearchComponent implements OnInit {
 
   executeSearch() {
     this.query.emit(this.searchQuery);
-    // this.query.emit(
-    //   `SELECT * FROM enaio:object WHERE CONTAINS('${this._term}')`
-    // );
   }
 
   onAggObjectTypeClick(agg: ObjectTypeAggregation) {
-    // const objectType = this.systemService.getObjectType(agg.objectTypeId);
     this.searchQuery.addType(agg.objectTypeId);
     this.executeSearch();
-
-    // this.searchQuery.this.query.emit(
-    //   `SELECT * FROM ${agg.objectTypeId} WHERE CONTAINS('${this._term}')`
-    // );
   }
 
   private processResult(res: any) {
