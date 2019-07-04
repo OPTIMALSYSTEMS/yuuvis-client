@@ -17,7 +17,6 @@
   "about": {
     "docu": {
       "link": "https://help.optimal-systems.com/yuuvis/API/###version###/user/###userLang###/index.html",
-      "label": "eo.sidebar.help.manual",
       "version": 1,
       "language": ["de", "en"]
     }
