@@ -65,7 +65,7 @@ export class ResponsiveMasterSlaveComponent implements OnInit {
     slave: true
   };
 
-  private options: ResponsiveMasterSlaveOptions = {
+  private _options: ResponsiveMasterSlaveOptions = {
     masterSize: 60,
     slaveSize: 40,
     direction: 'horizontal',

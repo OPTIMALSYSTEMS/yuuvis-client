@@ -325,4 +325,37 @@ export class Utils {
   public static getTimezoneOffset(): number {
     return new Date().getTimezoneOffset();
   }
+
+  public static isEdge(): boolean {
+    return !!navigator.userAgent && navigator.userAgent.indexOf('Edge') > -1;
+  }
+
+  public static isEmpty(obj) {
+    if (obj == null || obj === '') {
+      return true;
+    }
+
+    if (typeof obj === 'number') {
+      return isNaN(obj);
+    }
+
+    return typeof obj === 'boolean' ? false : !Object.keys(obj).length;
+  }
+
+  public static isEmptyOrFalse(val) {
+    return typeof val === 'boolean' ? !val : Utils.isEmpty(val);
+  }
+
+  public static escapeHtml(str) {
+    str = str ? str : '';
+    const entityMap = {
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#39;',
+      '/': '&#x2F;'
+    };
+    return String(str).replace(/[&<>"'\/]/g, s => entityMap[s]);
+  }
 }

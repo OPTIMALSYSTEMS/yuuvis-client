@@ -1,10 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { ObjectType } from '../../model/object-type.model';
 import { ApiBase } from '../backend/api.enum';
 import { BackendService } from '../backend/backend.service';
-import { SystemService } from '../system/system.service';
 import { SearchQuery } from './search-query.model';
 import {
   SearchResult,
@@ -19,10 +17,7 @@ export class SearchService {
   private maxItems = 50;
   private lastSearchQuery: SearchQuery;
 
-  constructor(
-    private backend: BackendService,
-    private systemService: SystemService
-  ) {}
+  constructor(private backend: BackendService) {}
 
   searchByQuery(q: SearchQuery): Observable<SearchResult> {
     this.lastSearchQuery = q;
@@ -75,19 +70,6 @@ export class SearchService {
         // "handleDeletedDocuments" : "DELETED_DOCUMENTS_EXCLUDE",         // optional DELETED_DOCUMENTS_INCLUDE | DELETED_DOCUMENTS_ONLY | DELETED_DOCUMENTS_EXCLUDE default: DELETED_DOCUMENTS_EXCLUDE
       }
     };
-  }
-
-  getColumnConfiguration(objectTypeId?: string): string[] {
-    if (objectTypeId) {
-      const objecttype: ObjectType = this.systemService.getObjectType(
-        objectTypeId
-      );
-      return objecttype.fields.map(f =>
-        this.systemService.getLocalizedResource(`${f.id}_label`)
-      );
-    } else {
-      return this.systemService.getBaseParamsFields();
-    }
   }
 
   /**

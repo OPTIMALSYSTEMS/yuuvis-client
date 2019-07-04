@@ -17,6 +17,7 @@ import {
   ResponsiveTableData,
   ResponsiveTableDataColumn
 } from '../../components';
+import { GridService } from '../../services/grid/grid.service';
 import { SVGIcons } from '../../svg.generated';
 
 @Component({
@@ -64,6 +65,7 @@ export class SearchResultComponent implements OnInit {
 
   constructor(
     private translate: TranslateService,
+    private gridService: GridService,
     private searchService: SearchService,
     private fb: FormBuilder,
     private systemService: SystemService
@@ -94,7 +96,7 @@ export class SearchResultComponent implements OnInit {
         ]);
     }
 
-    const columnFields = this.searchService.getColumnConfiguration(
+    const columnFields = this.gridService.getColumnConfiguration(
       resultListObjectType
     );
     const rows = [];
