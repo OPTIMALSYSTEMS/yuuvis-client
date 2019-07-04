@@ -12,6 +12,7 @@
     "@angular/cdk": "^7.3.7",
     "ag-grid-angular": "^21.0.1",
     "ag-grid-community": "^21.0.1",
-    "angular-resize-event": "^1.0.0"
+    "angular-resize-event": "^1.0.0",
+    "moment": "^2.24.0"
   }
 }

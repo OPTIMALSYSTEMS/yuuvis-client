@@ -65,7 +65,7 @@ export class ResponsiveMasterSlaveComponent implements OnInit {
     slave: true
   };
 
-  _options: ResponsiveMasterSlaveOptions = {
+  private _options: ResponsiveMasterSlaveOptions = {
     masterSize: 60,
     slaveSize: 40,
     direction: 'horizontal',
@@ -75,6 +75,9 @@ export class ResponsiveMasterSlaveComponent implements OnInit {
 
   @Input() set options(o: ResponsiveMasterSlaveOptions) {
     this._options = { ...this._options, ...o };
+  }
+  get options(): ResponsiveMasterSlaveOptions {
+    return this._options;
   }
   @Input() set detailsActive(a: boolean) {
     this._detailsActive = a;
