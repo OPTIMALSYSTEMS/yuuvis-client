@@ -1,29 +1,30 @@
 import { Injectable } from '@angular/core';
-import { ReplaySubject, Observable, forkJoin, of } from 'rxjs';
-import { YuvUser } from '../../model/yuv-user.model';
-import { BackendService } from '../backend/backend.service';
+import { forkJoin, Observable, of, ReplaySubject } from 'rxjs';
 import { catchError, map, switchMap, tap } from 'rxjs/operators';
+import { ObjectType } from '../../model/object-type.model';
+import { ApiBase } from '../backend/api.enum';
+import { BackendService } from '../backend/backend.service';
+import { AppCacheService } from '../cache/app-cache.service';
 import { Logger } from '../logger/logger';
 import { SystemDefinition } from './system.interface';
-import { ObjectType } from '../../model/object-type.model';
-import { AppCacheService } from '../cache/app-cache.service';
-import { ApiBase } from '../backend/api.enum';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SystemService {
-
   private STORAGE_KEY = 'yuv.core.system.definition';
 
   private system: SystemDefinition;
   private systemSource = new ReplaySubject<SystemDefinition>();
-  public system$: Observable<SystemDefinition> = this.systemSource.asObservable();
+  public system$: Observable<
+    SystemDefinition
+  > = this.systemSource.asObservable();
 
-  constructor(private backend: BackendService,
+  constructor(
+    private backend: BackendService,
     private appCache: AppCacheService,
-    private logger: Logger) { }
-
+    private logger: Logger
+  ) {}
 
   getObjectTypes(): ObjectType[] {
     return this.system.objectTypes;
@@ -38,12 +39,12 @@ export class SystemService {
   }
 
   /**
-     * Fetches the backends system definition and updates system$ Observable.
-     * Subscribe to the system$ observable instead of calling this function, otherwise you'll trigger fetching the
-     * system definition every time.
-     *
-     * @param user The user to load the system definition for
-     */
+   * Fetches the backends system definition and updates system$ Observable.
+   * Subscribe to the system$ observable instead of calling this function, otherwise you'll trigger fetching the
+   * system definition every time.
+   *
+   * @param user The user to load the system definition for
+   */
   getSystemDefinition(): Observable<boolean> {
     // try to fetch system definition from cache first
     return this.appCache.getItem(this.STORAGE_KEY).pipe(
@@ -71,7 +72,7 @@ export class SystemService {
       'enaio:lastModificationDate',
       'enaio:lastModifiedBy',
       'enaio:versionNumber'
-    ]
+    ];
   }
 
   /**
@@ -79,21 +80,24 @@ export class SystemService {
    * @param user User to fetch definition for
    */
   private fetchSystemDefinition(): Observable<boolean> {
-
     const fetchTasks = [
       this.backend.get('/dms/schema', ApiBase.core),
       this.fetchLocalizations()
     ];
 
     return forkJoin(fetchTasks).pipe(
-      catchError((error) => {
-        this.logger.error('Error fetching recent version of system definition from server.', error);
-        this.systemSource.error('Error fetching recent version of system definition from server.');
+      catchError(error => {
+        this.logger.error(
+          'Error fetching recent version of system definition from server.',
+          error
+        );
+        this.systemSource.error(
+          'Error fetching recent version of system definition from server.'
+        );
         return of(null);
       }),
-      map((data) => {
+      map(data => {
         if (data && data.length) {
-
           // getting an array of system definitions
           // TODO: support multiple system definitions???
           const sysDef = data[0];
@@ -102,7 +106,7 @@ export class SystemService {
             lastModificationDate: sysDef.lastModificationDate,
             objectTypes: sysDef.objectTypes.map(ot => new ObjectType(ot)),
             i18n: data[1]
-          }
+          };
           this.appCache.setItem(this.STORAGE_KEY, this.system).subscribe();
           this.systemSource.next(this.system);
         }
@@ -111,7 +115,6 @@ export class SystemService {
     );
   }
 
-  
   updateLocalizations(): Observable<any> {
     return this.fetchLocalizations().pipe(
       tap(res => {

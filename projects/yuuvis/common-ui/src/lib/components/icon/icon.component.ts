@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, ElementRef } from '@angular/core';
+import { Component, ElementRef, Input } from '@angular/core';
 import { IconService } from './icon.service';
 
 @Component({
@@ -6,17 +6,14 @@ import { IconService } from './icon.service';
   template: '',
   styleUrls: ['./icon.component.scss'],
   providers: [IconService],
-  host: {'class': 'yuv-icon'}
+  host: { class: 'yuv-icon' }
 })
 export class IconComponent {
-
   // path to the icon
   @Input('iconSrc')
   set iconSrc(iconSrc: string) {
-    this.iconService
-      .fetch(iconSrc)
-      .subscribe((svg) => this.render(svg));
-  };
+    this.iconService.fetch(iconSrc).subscribe(svg => this.render(svg));
+  }
 
   // actual svg markup to be rendered
   @Input('svg')
@@ -24,7 +21,10 @@ export class IconComponent {
     this.render(svg);
   }
 
-  constructor(private elementRef: ElementRef, private iconService: IconService) { }
+  constructor(
+    private elementRef: ElementRef,
+    private iconService: IconService
+  ) {}
 
   // renders the actual svg string by adding it to the DOM
   private render(svg: string) {
@@ -37,14 +37,13 @@ export class IconComponent {
     }
   }
   /**
-     * Transforms a string to an SVGElement.
-     * @param str - the string to be converted
-     * @return the SVGElement created from the input or NULL if conversion failed
-     */
+   * Transforms a string to an SVGElement.
+   * @param str - the string to be converted
+   * @return the SVGElement created from the input or NULL if conversion failed
+   */
   private svgElementFromString(str: string): SVGElement {
     const div = document.createElement('DIV');
     div.innerHTML = str;
     return div.querySelector('svg') as SVGElement;
   }
-
 }

@@ -1,26 +1,17 @@
-:host-context(.screen-s) {
-  .yuv-responsive-master-slave.state as-split {
-    padding: 0;
-  }
-}
-
 .yuv-responsive-master-slave {
   &.state {
-    
-    
-    
     as-split {
-    padding: var(--app-pane-padding);
-    box-sizing: border-box;
+      padding: var(--app-pane-padding);
+      box-sizing: border-box;
 
-
-        
-
-
-  }}
+      :host-context(.screen-s) & {
+        padding: 0;
+      }
+    }
+  }
 
   .yuv-master,
   .yuv-slave {
-      height: 100%;
+    height: 100%;
   }
 }
