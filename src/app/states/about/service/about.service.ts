@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { TranslateService } from '@yuuvis/core';
+import { ConfigService, TranslateService } from '@yuuvis/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import {
   AboutData,
@@ -77,19 +77,28 @@ export class AboutService {
     }
   ];
 
-  constructor(private http: HttpClient, private translate: TranslateService) {}
+  constructor(
+    private http: HttpClient,
+    private configService: ConfigService,
+    private translate: TranslateService
+  ) {}
 
   private getUserLanguage(language: string[], userLang: string): string {
     return language.includes(userLang) ? userLang : About.defaultLang;
   }
 
   getAboutConfig(userLang) {
-    return this.http.get('assets/about.config.json').subscribe(
-      (config: { docu: AboutDocuConfig }) => {
-        this.generateDocumentationLink(config.docu, userLang);
-      },
-      error => console.log({ error })
+    this.generateDocumentationLink(
+      this.configService.get('client.docu'),
+      userLang
     );
+
+    // return this.http.get('assets/about.config.json').subscribe(
+    //   (config: { docu: AboutDocuConfig }) => {
+    //     this.generateDocumentationLink(config.docu, userLang);
+    //   },
+    //   error => console.log({ error })
+    // );
   }
 
   getAboutData() {

@@ -3,13 +3,12 @@
  * @ignore
  */
 export interface YuvConfig {
-  apiBase: string;
-  languages: YuvConfigLanguages[];
-  about: {
-    docu: {
-      link: string;
-      label: string;
+  core: {
+    apiBase: {
+      core: string;
+      'api-web': string;
     };
+    languages: YuvConfigLanguages[];
   };
 }
 
