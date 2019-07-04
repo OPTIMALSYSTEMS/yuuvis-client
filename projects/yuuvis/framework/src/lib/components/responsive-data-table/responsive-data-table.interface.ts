@@ -1,13 +1,9 @@
+import { ColDef } from 'ag-grid-community';
+
 export interface ResponsiveTableData {
-  columns: ResponsiveTableDataColumn[];
+  columns: ColDef[];
   rows: any[];
   titleField: string;
   descriptionField: string;
   selectType?: 'single' | 'multiple';
-}
-export interface ResponsiveTableDataColumn {
-  field: string;
-  headerName: string;
-  resizable?: boolean;
-  sortable?: boolean;
 }

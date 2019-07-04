@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { forkJoin, Observable, of, ReplaySubject } from 'rxjs';
 import { catchError, map, switchMap, tap } from 'rxjs/operators';
-import { ObjectType } from '../../model/object-type.model';
+import { ObjectType, TypeField } from '../../model/object-type.model';
 import { ApiBase } from '../backend/api.enum';
 import { BackendService } from '../backend/backend.service';
 import { AppCacheService } from '../cache/app-cache.service';
@@ -63,15 +63,15 @@ export class SystemService {
     );
   }
 
-  getBaseParamsFields() {
+  getBaseParamsTypeFields(): TypeField[] {
     return [
-      'enaio:objectId',
-      'enaio:objectTypeId',
-      'enaio:creationDate',
-      'enaio:createdBy',
-      'enaio:lastModificationDate',
-      'enaio:lastModifiedBy',
-      'enaio:versionNumber'
+      { id: 'enaio:objectId', propertyType: 'id' },
+      { id: 'enaio:objectTypeId', propertyType: 'id' },
+      { id: 'enaio:creationDate', propertyType: 'datetime' },
+      { id: 'enaio:createdBy', propertyType: 'string' },
+      { id: 'enaio:lastModificationDate', propertyType: 'datetime' },
+      { id: 'enaio:lastModifiedBy', propertyType: 'string' },
+      { id: 'enaio:versionNumber', propertyType: 'number' }
     ];
   }
 

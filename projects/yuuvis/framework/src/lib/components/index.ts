@@ -3,8 +3,7 @@ export {
   ResponsiveDataTableComponent
 } from './responsive-data-table/responsive-data-table.component';
 export {
-  ResponsiveTableData,
-  ResponsiveTableDataColumn
+  ResponsiveTableData
 } from './responsive-data-table/responsive-data-table.interface';
 export {
   ResponsiveMasterSlaveComponent
