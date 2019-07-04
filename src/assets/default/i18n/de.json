@@ -17,5 +17,6 @@
   "eo.state.login.submit": "Anmelden",
   "eo.state.login.tenant": "Mandant",
   "eo.state.settings.deputies": "Stellvertreter",
-  "eo.state.settings.language": "Sprache"
+  "eo.state.settings.language": "Sprache",
+  "eo.sidebar.navigation.title": "Navigation"
 }

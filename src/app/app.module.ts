@@ -1,10 +1,12 @@
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
+import { YuvCommonUiModule } from '@yuuvis/common-ui';
 import { YuvFrameworkModule } from '@yuuvis/framework';
 import { environment } from '../environments/environment';
 import { AppComponent } from './app.component';
 import { FrameComponent } from './components/frame/frame.component';
+import { NavigationComponent } from './components/navigation/navigation.component';
 import { AppRoutingModule } from './routing/app.routes.module';
 import { AboutModule } from './states/about/about.module';
 import { DashboardComponent } from './states/dashboard/dashboard.component';
@@ -20,7 +22,8 @@ import { SettingsComponent } from './states/settings/settings.component';
     LoginComponent,
     FrameComponent,
     SettingsComponent,
-    NotFoundComponent
+    NotFoundComponent,
+    NavigationComponent
   ],
   imports: [
     BrowserModule,
@@ -32,7 +35,8 @@ import { SettingsComponent } from './states/settings/settings.component';
       environment: environment
     }),
     AppRoutingModule,
-    AboutModule
+    AboutModule,
+    YuvCommonUiModule
   ],
   providers: [],
   bootstrap: [AppComponent]

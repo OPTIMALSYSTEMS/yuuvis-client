@@ -1,5 +1,5 @@
 <div class="app-bar" *ngIf="!hideAppBar">
-    <yuv-icon class="btn" id="drawer" routerLink="/about" [iconSrc]="'assets/default/svg/ic_drawer.svg'"></yuv-icon>
+    <yuv-icon class="btn" id="drawer" [routerLink]="[ {outlets: { modal: 'navigation' } } ]" [iconSrc]="'assets/default/svg/ic_drawer.svg'"></yuv-icon>
     <yuv-icon class="btn" id="logo" routerLink="/" [iconSrc]="'assets/default/theme/logo.svg'"></yuv-icon>
 
     <div class="main">
@@ -35,4 +35,5 @@
 </div>
 <div class="app-content">
     <router-outlet></router-outlet>
+    <router-outlet name="modal"></router-outlet>
 </div>

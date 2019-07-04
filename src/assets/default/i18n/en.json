@@ -17,5 +17,6 @@
   "eo.state.login.submit": "Log in",
   "eo.state.login.tenant": "Tenant",
   "eo.state.settings.deputies": "Substitutes",
-  "eo.state.settings.language": "Language"
+  "eo.state.settings.language": "Language",
+  "eo.sidebar.navigation.title": "Navigation"
 }

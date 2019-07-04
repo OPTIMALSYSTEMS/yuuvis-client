@@ -1,0 +1,58 @@
+::ng-deep {
+  .ui-sidebar {
+    color: white;
+    padding: 0;
+    background-color: var(--main-background);
+  }
+}
+
+header {
+  width: 260px;
+  height: 200px;
+  background-color: var(--color-accent);
+  display: grid;
+  grid-template-columns: 0.9fr 1.1fr;
+  grid-template-rows: 1fr 1fr min-content;
+  grid-template-areas:
+    'top top'
+    'logo logo'
+    'label about';
+}
+
+.logo {
+  grid-area: logo;
+  align-self: end;
+  justify-self: end;
+  background: var(--theme-nav-header) no-repeat;
+  background-size: contain;
+  fill: white;
+  text-align: center;
+  width: 200px;
+  height: 60px;
+  margin-right: 5px;
+}
+
+.top {
+  grid-area: top;
+  margin-left: 5px;
+  margin-top: 5px;
+}
+
+.label {
+  grid-area: label;
+  align-self: end;
+  justify-self: start;
+  .content {
+    text-indent: 5px;
+    border-bottom: 3px white solid;
+    margin: 0;
+  }
+}
+
+.about {
+  grid-area: about;
+  margin-right: 5px;
+  margin-bottom: 5px;
+  align-self: end;
+  justify-self: end;
+}

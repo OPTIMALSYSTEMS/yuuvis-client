@@ -1,0 +1,6 @@
+<p-sidebar [(visible)]="display" (onHide)="hide()">
+  <ng-content select="header"></ng-content>
+  <section class="sidebar-content">
+    <ng-content></ng-content>
+  </section>
+</p-sidebar>

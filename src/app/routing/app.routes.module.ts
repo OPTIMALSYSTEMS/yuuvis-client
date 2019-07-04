@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { NavigationComponent } from '../components/navigation/navigation.component';
 import { AboutComponent } from '../states/about/component/about.component';
 import { DashboardComponent } from '../states/dashboard/dashboard.component';
 import { LoginComponent } from '../states/login/login.component';
@@ -17,7 +18,12 @@ const routes: Routes = [
   { path: 'enter', component: LoginComponent },
   { path: 'settings', component: SettingsComponent, canActivate: [AuthGuard] },
   { path: 'about', component: AboutComponent, canActivate: [AuthGuard] },
-
+  {
+    path: 'navigation',
+    component: NavigationComponent,
+    canActivate: [AuthGuard],
+    outlet: 'modal'
+  },
   // default route
   { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
   // 404 route

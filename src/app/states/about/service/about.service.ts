@@ -105,7 +105,6 @@ export class AboutService {
 
   generateDocumentationLink(docuConfig: AboutDocuConfig, userLang) {
     let { language, link, version } = docuConfig;
-    console.log({ language, link, version });
     userLang = this.getUserLanguage(language, userLang);
     link = link
       .replace('###userLang###', userLang)
