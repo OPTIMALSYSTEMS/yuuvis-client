@@ -34,10 +34,12 @@ $about-max-width: 800px;
         top: 0;
         right: 0;
         bottom: 0;
-        background-color: rgba(187, 63, 90, 0.8);
+        background-color: var(--color-accent);
+        opacity: 0.5;
       }
 
       svg {
+        fill: white;
         right: 8%;
         bottom: 18%;
         position: absolute;
@@ -70,6 +72,10 @@ $about-max-width: 800px;
 
     .claim {
       grid-area: claim;
+    }
+
+    p {
+      line-height: 1.7em;
       padding: var(--app-pane-padding) 0;
     }
 
@@ -156,19 +162,15 @@ $about-max-width: 800px;
 
     .licenses_content {
       grid-area: licenses_content;
+
       ::ng-deep {
-        .showList {
-          .toggle {
-            color: var(--color-accent);
-            display: inline-block;
-            padding: 4px;
-            border-radius: 4px;
-            border: 1px solid var(--color-accent);
-            cursor: pointer;
-          }
-          .toggle-indicator {
-            padding: 0 4px;
-          }
+        .ui-accordion-header-text {
+          color: var(--color-accent);
+          display: inline-block;
+          padding: 4px;
+          border-radius: 4px;
+          border: 1px solid var(--color-accent);
+          cursor: pointer;
         }
       }
 

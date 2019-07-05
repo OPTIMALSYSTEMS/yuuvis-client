@@ -5,6 +5,12 @@ export interface AboutData {
   author: string;
 }
 
+export interface AboutDocuConfig {
+  link: string;
+  version: string;
+  language: string[];
+}
+
 export interface Libraries {
   name: string;
   version: string;

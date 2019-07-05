@@ -31,11 +31,11 @@ export class ConfigService {
    * @returns available client locales
    */
   getClientLocales(): YuvConfigLanguages[] {
-    return this.cfg['languages'];
+    return this.getCoreConfig('languages');
   }
 
   getApiBase(api: string): string {
-    return this.cfg['apiBase'][api];
+    return this.getCoreConfig('apiBase')[api];
   }
 
   /**
@@ -45,5 +45,9 @@ export class ConfigService {
   getDefaultClientLocale() {
     const lang = this.getClientLocales().find(_ => _.fallback);
     return lang ? lang.iso : 'en';
+  }
+
+  private getCoreConfig(key: string): any {
+    return this.cfg.core[key];
   }
 }

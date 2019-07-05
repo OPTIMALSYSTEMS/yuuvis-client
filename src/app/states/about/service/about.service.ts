@@ -1,9 +1,14 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { TranslateService } from '@yuuvis/core';
+import { ConfigService, TranslateService } from '@yuuvis/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { AboutData, Libraries, ProductDetails } from '../about.data.interface';
-import { AboutInfo } from '../about.enum';
+import {
+  AboutData,
+  AboutDocuConfig,
+  Libraries,
+  ProductDetails
+} from '../about.data.interface';
+import { About, AboutInfo } from '../about.enum';
 
 @Injectable({
   providedIn: 'root'
@@ -22,6 +27,12 @@ export class AboutService {
   productDetails$: Observable<
     ProductDetails[]
   > = this.productDetailsSubject.asObservable();
+
+  private aboutConfig: string;
+  private aboutConfigSubject: BehaviorSubject<string> = new BehaviorSubject<
+    string
+  >(this.aboutConfig);
+  aboutConfig$: Observable<string> = this.aboutConfigSubject.asObservable();
 
   licenses = [
     {
@@ -66,7 +77,29 @@ export class AboutService {
     }
   ];
 
-  constructor(private http: HttpClient, private translate: TranslateService) {}
+  constructor(
+    private http: HttpClient,
+    private configService: ConfigService,
+    private translate: TranslateService
+  ) {}
+
+  private getUserLanguage(language: string[], userLang: string): string {
+    return language.includes(userLang) ? userLang : About.defaultLang;
+  }
+
+  getAboutConfig(userLang) {
+    this.generateDocumentationLink(
+      this.configService.get('client.docu'),
+      userLang
+    );
+
+    // return this.http.get('assets/about.config.json').subscribe(
+    //   (config: { docu: AboutDocuConfig }) => {
+    //     this.generateDocumentationLink(config.docu, userLang);
+    //   },
+    //   error => console.log({ error })
+    // );
+  }
 
   getAboutData() {
     this.http.get('assets/about.data.json').subscribe(
@@ -75,10 +108,19 @@ export class AboutService {
         this.generateLicenses(libraries);
         this.generateProductDetails(args);
       },
-      error => {
-        console.log(error);
-      }
+      error => console.log({ error })
     );
+  }
+
+  generateDocumentationLink(docuConfig: AboutDocuConfig, userLang) {
+    let { language, link, version } = docuConfig;
+    console.log({ language, link, version });
+    userLang = this.getUserLanguage(language, userLang);
+    link = link
+      .replace('###userLang###', userLang)
+      .replace('###version###', String(version));
+
+    this.aboutConfigSubject.next(link);
   }
 
   generateLicenses(data: Libraries[]) {
