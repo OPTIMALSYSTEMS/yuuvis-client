@@ -8,7 +8,7 @@ import {
   OnInit,
   Output
 } from '@angular/core';
-import { GridOptions, RowNode } from 'ag-grid-community';
+import { ColDef, GridOptions, RowNode } from 'ag-grid-community';
 import { ResizedEvent } from 'angular-resize-event';
 import { Observable, ReplaySubject, Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
@@ -81,7 +81,6 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
         ) {
           this.small = small;
           this.applyGridOption(small);
-          this._gridOptions.api.sizeColumnsToFit();
         }
       })
     );
@@ -91,15 +90,17 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
     if (small) {
       // gridOptions to be applied for the small view
       this._gridOptions.api.setHeaderHeight(this.settings.headerHeight.small);
-      this._gridOptions.api.setColumnDefs([{ field: 'title' }]);
+      this._gridOptions.api.setColumnDefs([this.getSmallSizeColDef()]);
       this._gridOptions.api.setRowData(
         this._data.rows.map(r => ({
           id: r.id,
-          title: `${r[this._data.titleField]} --- ${
-            r[this._data.descriptionField]
-          }`
+          titleProps: {
+            title: r[this._data.titleField],
+            description: r[this._data.descriptionField]
+          }
         }))
       );
+      this._gridOptions.columnApi.autoSizeAllColumns();
     } else {
       // gridOptions to be applied for the regular view
       this._gridOptions.api.setHeaderHeight(this.settings.headerHeight.default);
@@ -114,6 +115,21 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
         n.setSelected(true);
       });
     }
+  }
+
+  private getSmallSizeColDef(): ColDef {
+    let colDef = <ColDef>{
+      field: 'titleProps'
+    };
+    colDef.cellClass = 'cell-title-description';
+
+    colDef.cellRenderer = params => {
+      return `
+        <div class="title">${params.value.title}</div>
+        <div class="description">${params.value.description}</div>
+      `;
+    };
+    return colDef;
   }
 
   private setupGridOptions() {

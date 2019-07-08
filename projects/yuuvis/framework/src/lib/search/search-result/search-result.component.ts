@@ -47,8 +47,8 @@ export class SearchResultComponent implements OnInit {
       this.tableData = {
         columns: this._columns,
         rows: this._rows,
-        titleField: 'title',
-        descriptionField: 'description',
+        titleField: 'clienttitle',
+        descriptionField: 'clientdescription',
         selectType: 'single'
       };
     }

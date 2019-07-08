@@ -25,15 +25,13 @@ export class ObjectType {
   }
 }
 
-export interface TypeField {
+export interface ObjectTypeField {
   id: string;
   propertyType: string;
-}
-export interface ObjectTypeField extends TypeField {
-  localName: string;
-  displayName: string;
-  description: string;
   cardinality: string;
-  updatability: string;
-  required: boolean;
+  required?: boolean;
+  localName?: string;
+  displayName?: string;
+  description?: string;
+  updatability?: string;
 }
