@@ -2,7 +2,7 @@
   "name": "yuuvis-flokfugl",
   "version": "1.0.0",
   "releaseDate": "1",
-  "description": "yuuvis api",
+  "description": "yuuvis® API client",
   "author": "OPTIMAL SYSTEMS GmbH",
   "scripts": {
     "ng": "ng",

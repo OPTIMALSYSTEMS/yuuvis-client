@@ -5,7 +5,7 @@ export enum About {
 
 export enum AboutInfo {
   'product' = 'product',
-  'client.version' = 'component_version',
+  'version' = 'component_version',
   'releasedate' = 'product_version',
   'author' = 'company'
 }

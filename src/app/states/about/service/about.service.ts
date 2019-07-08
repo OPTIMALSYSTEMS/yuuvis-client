@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { TranslateService } from '@yuuvis/core';
+import { TranslateService, Utils } from '@yuuvis/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import {
   AboutData,
@@ -104,13 +104,13 @@ export class AboutService {
   }
 
   generateDocumentationLink(docuConfig: AboutDocuConfig, userLang) {
-    let { language, link, version } = docuConfig;
+    const { language, link, version } = docuConfig;
     userLang = this.getUserLanguage(language, userLang);
-    link = link
+    const docuLink = link
       .replace('###userLang###', userLang)
       .replace('###version###', String(version));
 
-    this.aboutConfigSubject.next(link);
+    this.aboutConfigSubject.next(docuLink);
   }
 
   generateLicenses(data: Libraries[]) {
@@ -126,7 +126,7 @@ export class AboutService {
   }
 
   generateProductDetails(aboutDetails) {
-    let details = [];
+    const details = [];
 
     const productLabel = {
       product: this.translate.instant('eo.about.product.label'),
@@ -143,6 +143,9 @@ export class AboutService {
         entry: AboutInfo[key]
       })
     );
+
+    details.sort(Utils.sortValues('label', 'desc'));
+    console.log(details);
     this.productDetailsSubject.next(details);
   }
 }

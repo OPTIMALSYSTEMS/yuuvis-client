@@ -9,14 +9,16 @@ import { Router } from '@angular/router';
 export class NavigationComponent implements OnInit {
   constructor(private router: Router) {}
 
+  private navigating() {
+    return this.router.navigate([{ outlets: { modal: null } }]);
+  }
+
   hide() {
-    this.router.navigate([{ outlets: { modal: null } }]);
+    this.navigating();
   }
 
   navigate(state: string) {
-    this.router
-      .navigate([{ outlets: { modal: null } }])
-      .then(() => this.router.navigate([state]));
+    this.navigating().then(() => this.router.navigate([state]));
   }
 
   ngOnInit() {}
