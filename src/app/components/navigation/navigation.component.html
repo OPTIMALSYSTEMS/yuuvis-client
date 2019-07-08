@@ -10,15 +10,22 @@
           <p class="content" translate>eo.sidebar.navigation.title</p>
         </div>
         <div class="about">
-          <yuv-icon (click)="navigate('about')" alt="Big scary monster" class="button white about" [iconSrc]="'assets/default/theme/ic_about.svg'">
+          <yuv-icon 
+            (click)="navigate('about')"
+            alt="Big scary monster" 
+            class="button white about" 
+            [iconSrc]="'assets/default/theme/ic_about.svg'">
           </yuv-icon>
         </div>
       </header>
   
-    <div>
-      <ul>
-        <li (click)="navigate('settings')">Settings</li>
-      </ul>
-    </div>
+    <section class="navigation-list">
+      <div class="nav-item">
+        <a (click)="navigate('favorites')">
+          Favoriten
+        </a>
+      </div>
+
+    </section>
 
 </yuv-sidebar>

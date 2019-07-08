@@ -22,9 +22,7 @@ export class FrameComponent implements OnInit {
     this.router.events
       .pipe(filter(e => e instanceof NavigationEnd))
       .subscribe((e: NavigationEnd) => {
-        this.tab =
-          e.urlAfterRedirects === '/dashboard' ||
-          e.urlAfterRedirects.startsWith('/enter');
+        this.tab = e.urlAfterRedirects.startsWith('/dashboard' || '/enter');
         this.hideAppBar = e.urlAfterRedirects.startsWith('/enter');
       });
   }

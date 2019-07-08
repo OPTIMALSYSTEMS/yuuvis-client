@@ -2,7 +2,7 @@
   .ui-sidebar {
     color: white;
     padding: 0;
-    background-color: var(--main-background);
+    background-color: var(--color-primary);
   }
 }
 
@@ -46,6 +46,8 @@ header {
     text-indent: 5px;
     border-bottom: 3px white solid;
     margin: 0;
+    line-height: 1.5;
+    padding-right: 5px;
   }
 }
 
@@ -55,4 +57,25 @@ header {
   margin-bottom: 5px;
   align-self: end;
   justify-self: end;
+}
+
+.navigation-list {
+  padding-top: var(--font-subhead);
+  background-color: var(--color-primary);
+
+  .nav-item {
+    border-bottom: 1px solid var(--panel-divider-color);
+    a {
+      color: var(--color-white);
+      padding: var(--app-pane-padding);
+      display: block;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all var(--app-default-transition-duration) ease-in-out;
+
+      &:hover {
+        background-color: var(--panel-divider-color);
+      }
+    }
+  }
 }

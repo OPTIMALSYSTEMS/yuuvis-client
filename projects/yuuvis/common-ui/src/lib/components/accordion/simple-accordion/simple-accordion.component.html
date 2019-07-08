@@ -1,14 +1,3 @@
-<!-- <div class="showList" (click)="toogleAccordion()">
-  <span class="toggle">
-    {{toggleText}}
-    <span class="toggle-indicator">{{showList ? '-' : '+'}}</span>
-  </span>
-</div>
-<div class="list" [@accordionanimation]="state">
- <ng-content></ng-content>
-</div> -->
-
-
 <p-accordion styleClass="showList {{styles}}" [activeIndex]="index" (onOpen)="onTabOpen($event)" (onClose)="onTabClose($event)">
   <p-accordionTab class="setting__change-password-header" header="{{header}}"[selected]="selected">
     <ng-content></ng-content>
