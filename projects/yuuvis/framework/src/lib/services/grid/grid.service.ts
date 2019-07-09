@@ -33,10 +33,10 @@ export class GridService {
       numberPipe: new LocaleNumberPipe(translate),
       datePipe: new LocaleDatePipe(translate),
       cr: CellRenderer,
-      baseHref: YuvEnvironment.isWebEnvironment() ? backend.getHost() : './'
+      baseHref: YuvEnvironment.isWebEnvironment() ? backend.getHost() : './',
       // fileSizeOpts: [],
       // mimetypegroupOpts: [],
-      // typeOpts: [],
+      typeOpts: []
       // contextTypeOpts: []
     };
   }
@@ -105,7 +105,7 @@ export class GridService {
       case 'integer': {
         const params = {
           scale: 0,
-          grouping: false,
+          grouping: true,
           pattern: undefined
         };
         colDef.width = 150;
@@ -118,7 +118,7 @@ export class GridService {
       case 'decimal': {
         const params = {
           scale: 2,
-          grouping: false,
+          grouping: true,
           pattern: undefined
         };
         colDef.width = 150;
