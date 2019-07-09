@@ -1,9 +1,10 @@
-@import "~@yuuvis/framework/framework.css";
-@import "scss/main";
+@import '~@yuuvis/framework/framework.css';
+@import 'scss/main';
 
 :root {
   --theme-transparent-app-bar-color: var(--color-primary);
-  --theme-background: url("assets/default/theme/bgr-dashboard.jpg");
+  --theme-background: url('assets/default/theme/bgr-dashboard.jpg');
+  --theme-nav-header: url('assets/default/theme/bgr_sidebar.jpg');
 }
 
 html,
@@ -23,5 +24,5 @@ body {
 
 .panel {
   background-color: #fff;
-  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, .2);
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.2);
 }

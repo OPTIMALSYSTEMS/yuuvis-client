@@ -17,14 +17,14 @@ header {
     'top top'
     'logo logo'
     'label about';
+  background: url('../../../assets/default/theme/bgr_sidebar.jpg') no-repeat;
+  background-size: cover;
 }
 
 .logo {
   grid-area: logo;
   align-self: end;
   justify-self: end;
-  background: var(--theme-nav-header) no-repeat;
-  background-size: contain;
   fill: white;
   text-align: center;
   width: 200px;
