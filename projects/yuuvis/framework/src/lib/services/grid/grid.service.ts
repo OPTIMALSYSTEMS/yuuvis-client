@@ -56,7 +56,7 @@ export class GridService {
 
   private getColumnDefinition(field: ObjectTypeField): ColDef {
     let colDef = <ColDef>{
-      field: field.id, // === 'enaio:objectId' ? 'id' : field.id,
+      field: field.id,
       headerName: this.system.getLocalizedResource(`${field.id}_label`)
     };
 
@@ -104,7 +104,7 @@ export class GridService {
 
       case 'integer': {
         const params = {
-          scale: 1,
+          scale: 0,
           grouping: false,
           pattern: undefined
         };
@@ -116,7 +116,16 @@ export class GridService {
         break;
       }
       case 'decimal': {
+        const params = {
+          scale: 2,
+          grouping: false,
+          pattern: undefined
+        };
         colDef.width = 150;
+        colDef.cellRenderer = this.customContext(
+          CellRenderer.numberCellRenderer,
+          params
+        );
         break;
       }
       // case 'NUMBER': {
