@@ -1,17 +1,26 @@
 {
-  "apiBase": {
-    "core": "/api",
-    "api-web": "/api-web"
-  },
-  "languages": [
-    {
-      "iso": "de",
-      "label": "Deutsch"
+  "core": {
+    "apiBase": {
+      "core": "/api",
+      "api-web": "/api-web"
     },
-    {
-      "iso": "en",
-      "label": "English",
-      "fallback": true
+    "languages": [
+      {
+        "iso": "de",
+        "label": "Deutsch"
+      },
+      {
+        "iso": "en",
+        "label": "English",
+        "fallback": true
+      }
+    ]
+  },
+  "client": {
+    "docu": {
+      "link": "https://help.optimal-systems.com/yuuvis/API/###version###/user/###userLang###/index.html",
+      "version": 1,
+      "language": ["de", "en"]
     }
-  ]
+  }
 }

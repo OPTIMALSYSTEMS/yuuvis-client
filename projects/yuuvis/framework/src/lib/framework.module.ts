@@ -14,6 +14,7 @@ import { OverlayPanelModule } from 'primeng/overlaypanel';
 import { YuvComponentsModule } from './components/components.module';
 import { YuvFormModule } from './form';
 import { YuvObjectDetailsModule } from './object-details/object-details.module';
+import { YuvPipesModule } from './pipes/pipes.module';
 import { YuvSearchModule } from './search/search.module';
 import { YuvUserModule } from './user/user.module';
 
@@ -38,6 +39,7 @@ import { YuvUserModule } from './user/user.module';
     YuvUserModule,
     YuvCommonUiModule,
     YuvObjectDetailsModule,
+    YuvPipesModule,
     OverlayPanelModule,
     YuvCommonUiModule,
     AngularSplitModule.forRoot(),
@@ -50,6 +52,7 @@ import { YuvUserModule } from './user/user.module';
     YuvFormModule,
     YuvSearchModule,
     YuvObjectDetailsModule,
+    YuvPipesModule,
     YuvUserModule,
     YuvComponentsModule,
     YuvCommonUiModule,

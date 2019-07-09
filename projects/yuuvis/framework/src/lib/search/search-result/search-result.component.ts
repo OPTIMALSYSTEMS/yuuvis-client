@@ -13,10 +13,8 @@ import {
   SystemService,
   TranslateService
 } from '@yuuvis/core';
-import {
-  ResponsiveTableData,
-  ResponsiveTableDataColumn
-} from '../../components';
+import { ColDef } from 'ag-grid-community';
+import { ResponsiveTableData } from '../../components';
 import { GridService } from '../../services/grid/grid.service';
 import { SVGIcons } from '../../svg.generated';
 
@@ -28,7 +26,7 @@ import { SVGIcons } from '../../svg.generated';
 })
 export class SearchResultComponent implements OnInit {
   _searchResult: SearchResult;
-  private _columns: ResponsiveTableDataColumn[];
+  private _columns: ColDef[];
   private _rows: any[];
   pagingForm: FormGroup;
 
@@ -49,8 +47,8 @@ export class SearchResultComponent implements OnInit {
       this.tableData = {
         columns: this._columns,
         rows: this._rows,
-        titleField: 'title',
-        descriptionField: 'description',
+        titleField: 'clienttitle',
+        descriptionField: 'clientdescription',
         selectType: 'single'
       };
     }
@@ -96,31 +94,19 @@ export class SearchResultComponent implements OnInit {
         ]);
     }
 
-    const columnFields = this.gridService.getColumnConfiguration(
+    this._columns = this.gridService.getColumnConfiguration(
       resultListObjectType
     );
     const rows = [];
     this._searchResult.items.forEach(i => {
       const r = {};
-      columnFields.forEach(key => {
-        r[key === 'enaio:objectId' ? 'id' : key] = i.fields.get(key);
+      this._columns.forEach((cd: ColDef) => {
+        r[cd.field === 'enaio:objectId' ? 'id' : cd.field] = i.fields.get(
+          cd.field
+        );
       });
       rows.push(r);
     });
-
-    const colDefDefaults = {
-      suppressMovable: true
-    };
-
-    this._columns = columnFields.map(key => ({
-      ...{
-        field: key === 'enaio:objectId' ? 'id' : key,
-        headerName: this.systemService.getLocalizedResource(key),
-        resizable: true,
-        sortable: false
-      },
-      ...colDefDefaults
-    }));
     this._rows = rows;
   }
 

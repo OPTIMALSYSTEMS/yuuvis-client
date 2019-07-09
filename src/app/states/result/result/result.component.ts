@@ -1,8 +1,7 @@
 import { PlatformLocation } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { SearchQuery, SearchService } from '@yuuvis/core';
-import { SearchResult } from 'projects/yuuvis/core/src/lib/service/search/search.service.interface';
+import { SearchQuery, SearchResult, SearchService } from '@yuuvis/core';
 import { Subscription } from 'rxjs';
 
 @Component({

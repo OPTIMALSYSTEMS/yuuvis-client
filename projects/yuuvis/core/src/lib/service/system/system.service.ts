@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { forkJoin, Observable, of, ReplaySubject } from 'rxjs';
 import { catchError, map, switchMap, tap } from 'rxjs/operators';
-import { ObjectType } from '../../model/object-type.model';
+import { ObjectType, ObjectTypeField } from '../../model/object-type.model';
 import { ApiBase } from '../backend/api.enum';
 import { BackendService } from '../backend/backend.service';
 import { AppCacheService } from '../cache/app-cache.service';
@@ -63,15 +63,43 @@ export class SystemService {
     );
   }
 
-  getBaseParamsFields() {
+  getBaseParamsTypeFields(): ObjectTypeField[] {
     return [
-      'enaio:objectId',
-      'enaio:objectTypeId',
-      'enaio:creationDate',
-      'enaio:createdBy',
-      'enaio:lastModificationDate',
-      'enaio:lastModifiedBy',
-      'enaio:versionNumber'
+      {
+        id: 'enaio:objectId',
+        cardinality: 'single',
+        propertyType: 'id'
+      },
+      {
+        id: 'enaio:objectTypeId',
+        cardinality: 'single',
+        propertyType: 'id'
+      },
+      {
+        id: 'enaio:creationDate',
+        cardinality: 'single',
+        propertyType: 'datetime'
+      },
+      {
+        id: 'enaio:createdBy',
+        cardinality: 'single',
+        propertyType: 'string'
+      },
+      {
+        id: 'enaio:lastModificationDate',
+        cardinality: 'single',
+        propertyType: 'datetime'
+      },
+      {
+        id: 'enaio:lastModifiedBy',
+        cardinality: 'single',
+        propertyType: 'string'
+      },
+      {
+        id: 'enaio:versionNumber',
+        cardinality: 'single',
+        propertyType: 'integer'
+      }
     ];
   }
 

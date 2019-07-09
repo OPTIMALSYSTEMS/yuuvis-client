@@ -1,4 +1,3 @@
-
 $icon-size: 18px !default;
 $primary-color: var(--color-accent);
 $range-selection-highlight-color: $primary-color;
@@ -12,8 +11,6 @@ $range-selection-highlight-color: $primary-color;
 
   .table {
     grid-area: table;
-
-    
 
     .ag-theme-yuv {
       * {
@@ -31,15 +28,27 @@ $range-selection-highlight-color: $primary-color;
       }
 
       .ag-row {
-          border-bottom: 1px solid var(--panel-divider-color);
+        border-bottom: 1px solid var(--panel-divider-color);
+
+        svg {
+          fill: var(--text-color-caption);
+
+          &.checkbox .null {
+            opacity: 0.4;
+          }
+        }
       }
 
       .ag-row-hover {
-        background-color: var(--panel-background-lighgrey);;
+        background-color: var(--panel-background-lighgrey);
       }
       .ag-row-selected {
         background-color: var(--color-accent);
-        color:#fff;
+        color: #fff;
+
+        svg {
+          fill: #fff;
+        }
       }
 
       .ag-cell {
@@ -51,7 +60,16 @@ $range-selection-highlight-color: $primary-color;
         &.ag-cell-focus {
           outline: 0;
           border-color: var(--color-accent);
-          background-color: rgba(255,255,255,.2);
+          background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        &.res-ico,
+        &.col-boolean {
+          justify-content: center;
+        }
+        &.col-decimal,
+        &.col-integer {
+          justify-content: flex-end;
         }
       }
     }

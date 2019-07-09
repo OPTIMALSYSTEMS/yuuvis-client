@@ -76,33 +76,36 @@ export class CellRenderer {
   }
 
   static typeCellRenderer(param) {
-    let val = '';
+    let val =
+      '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M19 4H5c-1.11 0-2 .9-2 2v12c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.89-2-2-2zm0 14H5V8h14v10z"/><path fill="none" d="M0 0h24v24H0z"/></svg>';
     if (param.value) {
       let objectType = param.context.system.getObjectType(param.value);
       if (!objectType) {
         return val;
       }
-      return CellRenderer.iconCellRenderer(
-        Object.assign({}, param, { value: objectType })
-      );
+      // TODO: Get object type icons from resources service
+      return val;
+      // return CellRenderer.iconCellRenderer(
+      //   Object.assign({}, param, { value: objectType })
+      // );
     }
     return val;
   }
 
-  static iconCellRenderer(param) {
-    let val = '';
-    if (param.value && (param.value.url || param.value.iconId)) {
-      let iconUrl = param.value.url
-        ? param.context.baseHref + param.value.url
-        : param.context.backend.getServiceBase() +
-          '/ui/icon/' +
-          param.value.iconId +
-          '.svg';
-      let label = param.value.label;
-      val = `<img class="object-type" src="${iconUrl}" title="${label}"><span class="object-type-label">${label}</span>`;
-    }
-    return val;
-  }
+  // static iconCellRenderer(param) {
+  //   let val = '';
+  //   if (param.value && (param.value.url || param.value.iconId)) {
+  //     let iconUrl = param.value.url
+  //       ? param.context.baseHref + param.value.url
+  //       : param.context.backend.getServiceBase() +
+  //         '/ui/icon/' +
+  //         param.value.iconId +
+  //         '.svg';
+  //     let label = param.value.label;
+  //     val = `<img class="object-type" src="${iconUrl}" title="${label}"><span class="object-type-label">${label}</span>`;
+  //   }
+  //   return val;
+  // }
 
   static emailCellRenderer(param) {
     return param.value
@@ -120,39 +123,11 @@ export class CellRenderer {
 
   static dateTimeCellRenderer(param) {
     if (param.value) {
-      // TODO: Reactive once ranges are supported ... or remove if they don't
-
-      //   if (param.value.operator) {
-      //     // range value from search form table
-      //     return param.value.operator ===
-      //       SearchFilter.OPERATOR.INTERVAL_INCLUDE_BOTH
-      //       ? CellRenderer.dateTimeCellRendererTemplate(
-      //           param.value.firstValue,
-      //           param.context,
-      //           param.pattern
-      //         ) +
-      //           ' ' +
-      //           RangeValue.getOperatorLabel(param.value.operator) +
-      //           ' ' +
-      //           CellRenderer.dateTimeCellRendererTemplate(
-      //             param.value.secondValue,
-      //             param.context,
-      //             param.pattern
-      //           )
-      //       : RangeValue.getOperatorLabel(param.value.operator) +
-      //           ' ' +
-      //           CellRenderer.dateTimeCellRendererTemplate(
-      //             param.value.firstValue,
-      //             param.context,
-      //             param.pattern
-      //           );
-      //   } else {
       return CellRenderer.dateTimeCellRendererTemplate(
         param.value,
         param.context,
         param.pattern
       );
-      //   }
     } else {
       return '';
     }
@@ -166,7 +141,7 @@ export class CellRenderer {
   }
 
   static booleanCellRenderer(param) {
-    let val = `<path class="background" d="M19,3H5C3.9,3,3,3.9,3,5v14c0,1.1,0.9,2,2,2h14c1.1,0,2-0.9,2-2V5C21,3.9,20.1,3,19,3z"/>`;
+    let val = `<path class="null" d="M19,3H5C3.9,3,3,3.9,3,5v14c0,1.1,0.9,2,2,2h14c1.1,0,2-0.9,2-2V5C21,3.9,20.1,3,19,3z"/>`;
 
     if (param.value === true || param.value === 'true') {
       val = `<path class="outline" d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14z"/>

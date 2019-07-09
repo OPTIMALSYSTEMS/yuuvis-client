@@ -7,12 +7,20 @@ import { DmsObject, DmsService } from '@yuuvis/core';
   styleUrls: ['./object-details.component.scss']
 })
 export class ObjectDetailsComponent implements OnInit {
-  _dmsObject: DmsObject;
+  private _dmsObject: DmsObject;
   @Input() set dmsObject(o: DmsObject) {
     this._dmsObject = o;
   }
+
+  get dmsObject() {
+    return this._dmsObject;
+  }
+
   @Input() set objectId(id: string) {
-    this.dmsService.getDmsObject(id).subscribe(o => (this.dmsObject = o));
+    this._dmsObject = null;
+    if (id) {
+      this.dmsService.getDmsObject(id).subscribe(o => (this.dmsObject = o));
+    }
   }
 
   constructor(private dmsService: DmsService) {}
