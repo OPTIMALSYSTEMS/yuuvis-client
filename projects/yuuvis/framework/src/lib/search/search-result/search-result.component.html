@@ -6,7 +6,7 @@
 </div>
 
 <div class="yuv-panel-toolbar">
-    <yuv-icon [svg]="icon.icSearchFilter" (click)="busy = !busy"></yuv-icon>
+    <yuv-icon [svg]="icon.icSearchFilter"></yuv-icon>
 </div>
 <div class="yuv-panel-content" [yuvBusyOverlay]="busy">
     <yuv-responsive-data-table *ngIf="tableData" [data]="tableData" (selectionChanged)="onSelectionChanged($event)">

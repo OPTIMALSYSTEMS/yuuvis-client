@@ -41,7 +41,10 @@ import { LoggerConsoleService } from './service/logger/logger-console.service';
 export function init_module(coreInit: CoreInit) {
   // Need to set to a const before returning due to:
   // @see: https://github.com/angular/angular/issues/14485
-  const fnc: Function = () => coreInit.initialize();
+  const fnc: Function = () => {
+    console.log('Init CORE');
+    return coreInit.initialize();
+  };
   return fnc;
 }
 
@@ -87,9 +90,7 @@ export class YuvCoreModule {
    */
   constructor(@Optional() @SkipSelf() parentModule: YuvCoreModule) {
     if (parentModule) {
-      throw new Error(
-        'CloudCoreModule is already loaded. Import it in the AppModule only'
-      );
+      throw new Error('CloudCoreModule is already loaded.');
     }
   }
 }
