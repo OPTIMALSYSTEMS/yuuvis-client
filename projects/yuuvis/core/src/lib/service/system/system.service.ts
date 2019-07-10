@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { forkJoin, Observable, of, ReplaySubject } from 'rxjs';
-import { catchError, map, switchMap, tap } from 'rxjs/operators';
+import { catchError, map, tap } from 'rxjs/operators';
 import { ObjectType, ObjectTypeField } from '../../model/object-type.model';
 import { ApiBase } from '../backend/api.enum';
 import { BackendService } from '../backend/backend.service';
@@ -46,21 +46,23 @@ export class SystemService {
    * @param user The user to load the system definition for
    */
   getSystemDefinition(): Observable<boolean> {
-    // try to fetch system definition from cache first
-    return this.appCache.getItem(this.STORAGE_KEY).pipe(
-      switchMap(res => {
-        if (res) {
-          // check if the system definition from the cache is up to date
-          // TODO: how to check if SD is up to date
-          this.system = res;
-          this.systemSource.next(this.system);
-          return of(true);
-        } else {
-          // nothing cached so far
-          return this.fetchSystemDefinition();
-        }
-      })
-    );
+    return this.fetchSystemDefinition();
+
+    // // try to fetch system definition from cache first
+    // return this.appCache.getItem(this.STORAGE_KEY).pipe(
+    //   switchMap(res => {
+    //     if (res) {
+    //       // check if the system definition from the cache is up to date
+    //       // TODO: how to check if SD is up to date
+    //       this.system = res;
+    //       this.systemSource.next(this.system);
+    //       return of(true);
+    //     } else {
+    //       // nothing cached so far
+    //       return this.fetchSystemDefinition();
+    //     }
+    //   })
+    // );
   }
 
   getBaseParamsTypeFields(): ObjectTypeField[] {

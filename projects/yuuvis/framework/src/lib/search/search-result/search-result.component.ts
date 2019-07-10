@@ -99,11 +99,11 @@ export class SearchResultComponent implements OnInit {
     );
     const rows = [];
     this._searchResult.items.forEach(i => {
-      const r = {};
+      const r = {
+        id: i.fields.get('enaio:objectId')
+      };
       this._columns.forEach((cd: ColDef) => {
-        r[cd.field === 'enaio:objectId' ? 'id' : cd.field] = i.fields.get(
-          cd.field
-        );
+        r[cd.field] = i.fields.get(cd.field);
       });
       rows.push(r);
     });

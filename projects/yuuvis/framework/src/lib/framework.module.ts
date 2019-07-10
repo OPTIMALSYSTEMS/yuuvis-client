@@ -45,7 +45,6 @@ import { YuvUserModule } from './user/user.module';
     AngularSplitModule.forRoot(),
     YuvCoreModule.forRoot(),
     AngularSplitModule.forRoot(),
-    YuvCoreModule.forRoot(),
     YuvCoreSharedModule
   ],
   exports: [
