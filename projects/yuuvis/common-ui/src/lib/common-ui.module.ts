@@ -2,9 +2,9 @@ import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { AccordionModule, SidebarModule } from 'primeng/primeng';
-import { SimpleAccordionComponent } from './components/accordion/simple-accordion/simple-accordion.component';
+import { AccordionComponent } from './components/accordion/accordion.component';
 import { IconComponent } from './components/icon/icon.component';
-import { SidebarComponent } from './components/navigation/component/sidebar.component';
+import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { FocusWithinDirective } from './directives/focus-within.directive';
 
 @NgModule({
@@ -12,13 +12,13 @@ import { FocusWithinDirective } from './directives/focus-within.directive';
   declarations: [
     IconComponent,
     FocusWithinDirective,
-    SimpleAccordionComponent,
+    AccordionComponent,
     SidebarComponent
   ],
   exports: [
     IconComponent,
     FocusWithinDirective,
-    SimpleAccordionComponent,
+    AccordionComponent,
     SidebarComponent
   ]
 })

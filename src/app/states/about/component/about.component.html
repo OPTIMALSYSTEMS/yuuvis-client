@@ -28,7 +28,7 @@
         <div class="licenses_headline" translate>eo.about.license.title</div>
         <p class="licenses_intro" translate>eo.about.license.intro</p>
         <div class="licenses_content">
-          <yuv-simple-accordion [header]="'eo.about.license.title' | translate">
+          <yuv-accordion [header]="'eo.about.license.title' | translate">
             <div
               class="licenses"
               *ngFor="let lib of __libraries__ | async; trackBy: trackByFn"
@@ -39,7 +39,7 @@
                 <span *ngIf="!lib.link">{{ lib.license }}</span>
               </div>
             </div>
-          </yuv-simple-accordion>
+          </yuv-accordion>
         </div>
       </div>
     </div>

@@ -1,0 +1,18 @@
+.sidebar {
+  color: white;
+  padding: 0;
+  background-color: var(--color-primary);
+}
+
+header {
+  height: 250px;
+  background-color: var(--color-accent);
+  background-image: var(--theme-nav-header);
+  background-size: cover;
+  padding: calc(var(--app-pane-padding) / 2);
+}
+
+.ui-sidebar-mask {
+  background-color: rgba(0, 0, 0, 0.5);
+  animation: yuvFadeIn 300ms;
+}

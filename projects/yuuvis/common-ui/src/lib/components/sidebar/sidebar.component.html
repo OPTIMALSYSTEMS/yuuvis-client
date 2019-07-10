@@ -1,0 +1,20 @@
+<p-sidebar [(visible)]="display" [modal]="true"
+[style]="{width: width + 'px'}"
+styleClass="sidebar"
+(onShow)="onShow()" 
+(onHide)="onHide()" 
+[position]="position">
+
+  <header>
+    <button class="icon light">
+      <yuv-icon
+        (click)="onHide()"
+        [svg]="closeIcon"
+      ></yuv-icon>
+    </button>
+  </header>
+
+  <section class="sidebar-content">
+    <ng-content></ng-content>
+  </section>
+</p-sidebar>

@@ -11,9 +11,15 @@ import { filter } from 'rxjs/operators';
 export class FrameComponent implements OnInit {
   @HostBinding('class.transparentAppBar') tab: boolean;
   hideAppBar = false;
+  showSideBar = false;
   user: YuvUser;
 
   constructor(private router: Router, private userService: UserService) {}
+
+  navigate(state: string) {
+    this.showSideBar = false;
+    this.router.navigate([state]);
+  }
 
   ngOnInit() {
     this.userService.user$.subscribe((user: YuvUser) => {
@@ -22,7 +28,9 @@ export class FrameComponent implements OnInit {
     this.router.events
       .pipe(filter(e => e instanceof NavigationEnd))
       .subscribe((e: NavigationEnd) => {
-        this.tab = e.urlAfterRedirects.startsWith('/dashboard' || '/enter');
+        this.tab =
+          e.urlAfterRedirects.startsWith('/dashboard') ||
+          e.urlAfterRedirects.startsWith('/enter');
         this.hideAppBar = e.urlAfterRedirects.startsWith('/enter');
       });
   }

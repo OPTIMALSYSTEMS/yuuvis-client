@@ -1,6 +1,7 @@
 // styles for some form elements
 
-input, textarea {
+input,
+textarea {
   outline: 0;
 }
 
@@ -15,6 +16,20 @@ button {
   color: var(--text-color-caption);
   transition: all 200ms;
   outline: 0;
+
+  // buttons on dark(er) backgrounds
+  &.light {
+    color: #fff;
+
+    &:not([disabled]):hover {
+      background-color: rgba(255, 255, 255, 0.15);
+    }
+  }
+
+  // buttons that contain icons only
+  &.icon {
+    padding: calc(var(--app-pane-padding) / 4);
+  }
 
   &:focus {
     border-color: var(--color-accent);
@@ -45,7 +60,7 @@ button {
   }
   &[disabled] {
     cursor: default;
-    filter: grayscale(.6);
+    filter: grayscale(0.6);
     opacity: 0.4;
   }
 }
@@ -85,7 +100,7 @@ button {
 button.spinning {
   position: relative;
   &::after {
-    content: " ";
+    content: ' ';
     position: absolute;
     transform: translateX(30px);
     margin: auto;
@@ -104,7 +119,7 @@ button.spinning {
     border-radius: 50%;
     border-style: solid;
   }
-  
+
   @keyframes button-spin {
     0% {
       transform: rotate(0);
@@ -133,5 +148,3 @@ button.spinning {
     margin: 0 2px;
   }
 }
-
-

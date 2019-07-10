@@ -1,5 +1,5 @@
 {
-  "eo.form.input.null": "Your Mother",
+  "eo.form.input.null": "No value",
   "eo.search.result.hits": "hits",
   "eo.search.title": "Search result",
   "eo.about.author.label": "Manufacturer:",
@@ -12,11 +12,12 @@
   "eo.about.releasedate.label": "Product version:",
   "eo.bar.button.logout.title": "Log out",
   "eo.bar.button.settings.title": "Settings",
+  "eo.sidebar.navigation.about": "About yuuvis® API",
+  "eo.sidebar.navigation.favorites": "Favorites",
   "eo.state.login.host": "Host",
   "eo.state.login.msg.invalid": "The login details you provided are not correct. Please check your entry.",
   "eo.state.login.submit": "Log in",
   "eo.state.login.tenant": "Tenant",
   "eo.state.settings.deputies": "Substitutes",
-  "eo.state.settings.language": "Language",
-  "eo.sidebar.navigation.title": "Navigation"
+  "eo.state.settings.language": "Language"
 }

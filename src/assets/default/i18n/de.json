@@ -1,22 +1,23 @@
 {
-  "eo.form.input.null": "Deine Mudda",
+  "eo.form.input.null": "Ohne Wert",
   "eo.search.result.hits": "Treffer",
   "eo.search.title": "Suchergebnis",
   "eo.about.author.label": "Hersteller:",
   "eo.about.claim": "yuuvis® API ist unsere Content Services Plattform, ein Framework für Lösungsentwickler, die auf offenen Standards basierende Content-zentrische Anwendung bei kurzer Time-to-Market erstellen wollen. Create. Scalable. Framework.",
   "eo.about.client.version.label": "Komponenten-Version:",
-  "eo.about.documentation.link.label": "Dokumentation",
+  "eo.about.documentation.link.label": "",
   "eo.about.license.intro": "Dieses Dokument enthält Lizenzinformationen mit ergänzenden Bestimmungen für die in yuuvis® API client eingebundenen Fremdkomponenten. Diese Lizenzinformationen und ergänzenden Bestimmungen werden durch diese Referenzierung Teil der OPTIMAL SYSTEMS Software Lizenzvereinbarung.",
   "eo.about.license.title": "Lizenzhinweise",
   "eo.about.product.label": "Produkt:",
   "eo.about.releasedate.label": "Produktversion:",
   "eo.bar.button.logout.title": "Abmelden",
   "eo.bar.button.settings.title": "Einstellungen",
+  "eo.sidebar.navigation.about": "Über yuuvis® API",
+  "eo.sidebar.navigation.favorites": "Favoriten",
   "eo.state.login.host": "Host",
   "eo.state.login.msg.invalid": "Die angegebenen Zugangsdaten sind nicht korrekt. Bitte überprüfen Sie Ihre Eingabe.",
   "eo.state.login.submit": "Anmelden",
   "eo.state.login.tenant": "Mandant",
   "eo.state.settings.deputies": "Stellvertreter",
-  "eo.state.settings.language": "Sprache",
-  "eo.sidebar.navigation.title": "Navigation"
+  "eo.state.settings.language": "Sprache"
 }

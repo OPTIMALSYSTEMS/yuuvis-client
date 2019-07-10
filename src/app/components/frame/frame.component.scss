@@ -78,6 +78,24 @@ $user-panel-width: 180px;
     overflow-x: auto;
   }
 
+  yuv-sidebar .navigation-list {
+    padding: var(--app-pane-padding) 0;
+    .nav-item a {
+      display: block;
+      color: #fff;
+      padding: var(--app-pane-padding);
+      text-decoration: none;
+      user-select: none;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      transition: background-color 200ms;
+      cursor: pointer;
+
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+    }
+  }
+
   .user-panel {
     background-color: var(--color-primary);
     width: $user-panel-width;

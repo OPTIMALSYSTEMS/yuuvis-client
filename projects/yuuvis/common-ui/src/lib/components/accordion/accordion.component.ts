@@ -1,11 +1,11 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
-  selector: 'yuv-simple-accordion',
-  templateUrl: './simple-accordion.component.html',
-  styleUrls: ['./simple-accordion.component.scss']
+  selector: 'yuv-accordion',
+  templateUrl: './accordion.component.html',
+  styleUrls: ['./accordion.component.scss']
 })
-export class SimpleAccordionComponent {
+export class AccordionComponent {
   _selected: boolean;
   @Input() header: string;
   @Input() styles: string;
