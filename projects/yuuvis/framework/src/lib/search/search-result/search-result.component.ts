@@ -9,6 +9,7 @@ import {
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import {
   SearchResult,
+  SearchResultItem,
   SearchService,
   SystemService,
   TranslateService
@@ -85,6 +86,7 @@ export class SearchResultComponent implements OnInit {
         : this._searchResult.objectTypes[0];
 
     if (this._searchResult.pagination) {
+      // setup pagination form in case of a paged search result chunk
       this.pagingForm.get('page').setValue(this._searchResult.pagination.page);
       this.pagingForm
         .get('page')
@@ -94,20 +96,64 @@ export class SearchResultComponent implements OnInit {
         ]);
     }
 
+    // create column definitions
     this._columns = this.gridService.getColumnConfiguration(
       resultListObjectType
     );
+
+    // create the rows
     const rows = [];
     this._searchResult.items.forEach(i => {
-      const r = {
-        id: i.fields.get('enaio:objectId')
-      };
-      this._columns.forEach((cd: ColDef) => {
-        r[cd.field] = i.fields.get(cd.field);
-      });
-      rows.push(r);
+      rows.push(this.getRow(i));
     });
     this._rows = rows;
+  }
+
+  /**
+   * Map search result item to a row data item
+   */
+  private getRow(searchResultItem: SearchResultItem): any {
+    const row = {
+      id: searchResultItem.fields.get('enaio:objectId')
+    };
+    this._columns.forEach((cd: ColDef) => {
+      // ContentStream fields needs to be resolved in a different way.
+
+      // Object type schema defines content related fields with a
+      // special pattern we can check for.
+
+      // Although defined in schema there may be no content attached.
+      if (
+        searchResultItem.content &&
+        cd.field.startsWith('enaio:contentStream')
+      ) {
+        switch (cd.field) {
+          case 'enaio:contentStreamLength': {
+            row[cd.field] = searchResultItem.content.size;
+            break;
+          }
+          case 'enaio:contentStreamFileName': {
+            row[cd.field] = searchResultItem.content.fileName;
+            break;
+          }
+          case 'enaio:contentStreamMimeType': {
+            row[cd.field] = searchResultItem.content.mimeType;
+            break;
+          }
+          case 'enaio:contentStreamRange': {
+            row[cd.field] = searchResultItem.content.range;
+            break;
+          }
+          case 'enaio:contentStreamRepositoryId': {
+            row[cd.field] = searchResultItem.content.repositoryId;
+            break;
+          }
+        }
+      } else {
+        row[cd.field] = searchResultItem.fields.get(cd.field);
+      }
+    });
+    return row;
   }
 
   onPagingFormSubmit() {

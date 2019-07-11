@@ -33,10 +33,10 @@ export class GridService {
       numberPipe: new LocaleNumberPipe(translate),
       datePipe: new LocaleDatePipe(translate),
       cr: CellRenderer,
-      baseHref: YuvEnvironment.isWebEnvironment() ? backend.getHost() : './',
+      baseHref: YuvEnvironment.isWebEnvironment() ? backend.getHost() : './'
       // fileSizeOpts: [],
       // mimetypegroupOpts: [],
-      typeOpts: []
+      // typeOpts: [],
       // contextTypeOpts: []
     };
   }
@@ -51,6 +51,7 @@ export class GridService {
     } else {
       objectTypeFields = this.system.getBaseParamsTypeFields();
     }
+
     return objectTypeFields.map(f => this.getColumnDefinition(f));
   }
 
@@ -177,7 +178,9 @@ export class GridService {
       case 'enaio:contentStreamLength': {
         colDef.width = 100;
         colDef.enableRowGroup = false;
-        colDef.cellRenderer = CellRenderer.filesizeCellRenderer;
+        colDef.cellRenderer = this.customContext(
+          CellRenderer.filesizeCellRenderer
+        );
         colDef.keyCreator = this.customContext(this.fileSizeKeyCreator);
         break;
       }

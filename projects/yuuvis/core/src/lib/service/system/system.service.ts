@@ -6,6 +6,7 @@ import { ApiBase } from '../backend/api.enum';
 import { BackendService } from '../backend/backend.service';
 import { AppCacheService } from '../cache/app-cache.service';
 import { Logger } from '../logger/logger';
+import { BASE_PARAM_FIELDS } from './baseparams.fields';
 import { SystemDefinition } from './system.interface';
 
 @Injectable({
@@ -46,14 +47,15 @@ export class SystemService {
    * @param user The user to load the system definition for
    */
   getSystemDefinition(): Observable<boolean> {
+    // TODO: Supposed to return 304 if nothing changes
     return this.fetchSystemDefinition();
 
+    // TODO: remove when 304 is there???
     // // try to fetch system definition from cache first
     // return this.appCache.getItem(this.STORAGE_KEY).pipe(
     //   switchMap(res => {
     //     if (res) {
     //       // check if the system definition from the cache is up to date
-    //       // TODO: how to check if SD is up to date
     //       this.system = res;
     //       this.systemSource.next(this.system);
     //       return of(true);
@@ -66,43 +68,8 @@ export class SystemService {
   }
 
   getBaseParamsTypeFields(): ObjectTypeField[] {
-    return [
-      {
-        id: 'enaio:objectId',
-        cardinality: 'single',
-        propertyType: 'id'
-      },
-      {
-        id: 'enaio:objectTypeId',
-        cardinality: 'single',
-        propertyType: 'id'
-      },
-      {
-        id: 'enaio:creationDate',
-        cardinality: 'single',
-        propertyType: 'datetime'
-      },
-      {
-        id: 'enaio:createdBy',
-        cardinality: 'single',
-        propertyType: 'string'
-      },
-      {
-        id: 'enaio:lastModificationDate',
-        cardinality: 'single',
-        propertyType: 'datetime'
-      },
-      {
-        id: 'enaio:lastModifiedBy',
-        cardinality: 'single',
-        propertyType: 'string'
-      },
-      {
-        id: 'enaio:versionNumber',
-        cardinality: 'single',
-        propertyType: 'integer'
-      }
-    ];
+    // TODO: Should return all fields from the secondary objecttype
+    return BASE_PARAM_FIELDS;
   }
 
   /**

@@ -104,17 +104,24 @@ export class SearchService {
 
     searchResult.objects.forEach(o => {
       const fields = new Map();
+
+      // process properties section of result
       Object.keys(o.properties).forEach(k => {
         fields.set(k, o.properties[k].value);
       });
 
+      // process contentStreams section of result if available.
+      // Objects that don't have files attached won't have this section
       let content: SearchResultContent = null;
-      if (o.contentStream) {
+      if (o.contentStreams && o.contentStreams.length > 0) {
+        // we assume that each result object only has ONE file attached, altough
+        // this is an array and there may be more
+        const contentStream = o.contentStreams[0];
         content = {
-          contentStreamId: o.contentStream.contentStreamId,
-          fileName: o.contentStream.fileName,
-          mimeType: o.contentStream.mimeType,
-          size: o.contentStream.length
+          contentStreamId: contentStream.contentStreamId,
+          fileName: contentStream.fileName,
+          mimeType: contentStream.mimeType,
+          size: contentStream.length
         };
       }
 
