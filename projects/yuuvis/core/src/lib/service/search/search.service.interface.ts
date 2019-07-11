@@ -28,8 +28,12 @@ export interface SearchResultItem {
 
 export interface SearchResultContent {
   contentStreamId: string;
+  repositoryId: string;
+  digest: string;
   fileName: string;
   size: number;
+  archivePath: string;
+  range: string;
   mimeType: string;
 }
 

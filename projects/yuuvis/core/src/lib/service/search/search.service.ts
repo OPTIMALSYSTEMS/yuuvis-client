@@ -119,6 +119,10 @@ export class SearchService {
         const contentStream = o.contentStreams[0];
         content = {
           contentStreamId: contentStream.contentStreamId,
+          repositoryId: contentStream.repositoryId,
+          range: contentStream.range,
+          digest: contentStream.digest,
+          archivePath: contentStream.archivePath,
           fileName: contentStream.fileName,
           mimeType: contentStream.mimeType,
           size: contentStream.length
