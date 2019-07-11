@@ -26,7 +26,6 @@ export class AboutComponent implements OnInit {
     private aboutService: AboutService
   ) {
     this.getUserLang();
-    this.titleService.setTitle(this.translate.instant('eo.search.title'));
   }
 
   private getUserLanguage(language: string[]): string {
@@ -44,6 +43,7 @@ export class AboutComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.titleService.setTitle(this.translate.instant('eo.state.about.title'));
     this.aboutService.getAboutConfig(this.userLang);
     this.aboutService.getAboutData();
   }

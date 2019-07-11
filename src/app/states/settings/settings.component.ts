@@ -1,5 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { TranslateService, UserService, YuvUser, ConfigService } from '@yuuvis/core';
+import { Title } from '@angular/platform-browser';
+import {
+  ConfigService,
+  TranslateService,
+  UserService,
+  YuvUser
+} from '@yuuvis/core';
 
 @Component({
   selector: 'yuv-settings',
@@ -7,13 +13,15 @@ import { TranslateService, UserService, YuvUser, ConfigService } from '@yuuvis/c
   styleUrls: ['./settings.component.scss']
 })
 export class SettingsComponent implements OnInit {
-
   user: YuvUser;
   clientLocales: any;
 
-  constructor(private translate: TranslateService,
+  constructor(
+    private translate: TranslateService,
+    private titleService: Title,
     public config: ConfigService,
-    private userService: UserService) {
+    private userService: UserService
+  ) {
     this.clientLocales = config.getClientLocales();
   }
 
@@ -22,9 +30,11 @@ export class SettingsComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.titleService.setTitle(
+      this.translate.instant('eo.state.settings.title')
+    );
     this.userService.user$.subscribe((user: YuvUser) => {
       this.user = user;
     });
   }
-
 }

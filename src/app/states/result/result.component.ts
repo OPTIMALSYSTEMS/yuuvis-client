@@ -1,7 +1,13 @@
 import { PlatformLocation } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
-import { SearchQuery, SearchResult, SearchService } from '@yuuvis/core';
+import {
+  SearchQuery,
+  SearchResult,
+  SearchService,
+  TranslateService
+} from '@yuuvis/core';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -16,6 +22,8 @@ export class ResultComponent implements OnInit, OnDestroy {
   selectedItems: string[] = [];
 
   constructor(
+    private titleService: Title,
+    public translate: TranslateService,
     private searchService: SearchService,
     private location: PlatformLocation,
     private route: ActivatedRoute
@@ -42,6 +50,7 @@ export class ResultComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.titleService.setTitle(this.translate.instant('eo.state.result.title'));
     // extract the query from the route params
     this.subscriptions.push(
       this.route.queryParamMap.subscribe(params => {

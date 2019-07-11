@@ -11,13 +11,16 @@
   "eo.about.product.label": "Produkt:",
   "eo.about.releasedate.label": "Produktversion:",
   "eo.bar.button.logout.title": "Abmelden",
-  "eo.bar.button.settings.title": "Einstellungen",
-  "eo.sidebar.navigation.about": "Über yuuvis® API",
-  "eo.sidebar.navigation.favorites": "Favoriten",
+  "eo.state.about.title": "Über yuuvis® API",
+  "eo.state.favorites.title": "Favoriten",
   "eo.state.login.host": "Host",
   "eo.state.login.msg.invalid": "Die angegebenen Zugangsdaten sind nicht korrekt. Bitte überprüfen Sie Ihre Eingabe.",
   "eo.state.login.submit": "Anmelden",
   "eo.state.login.tenant": "Mandant",
+  "eo.state.result.title": "Suchergebnis",
   "eo.state.settings.deputies": "Stellvertreter",
-  "eo.state.settings.language": "Sprache"
+  "eo.state.settings.language": "Sprache",
+  "eo.state.settings.title": "Einstellungen",
+  "eo.status.404.description": "Das Objekt konnte nicht geladen werden.",
+  "eo.status.404.title": "Nicht gefunden"
 }

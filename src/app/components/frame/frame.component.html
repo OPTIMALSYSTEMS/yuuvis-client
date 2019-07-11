@@ -39,7 +39,7 @@
           </div>
         </div>
         <div class="nav-item settings" (click)="op.hide()">
-          <a routerLink="/settings" translate>eo.bar.button.settings.title</a>
+          <a routerLink="/settings" translate>eo.state.settings.title</a>
         </div>
         <div class="nav-item logout">
           <a [routerLink]="['/enter', { logout: true }]" translate
@@ -57,8 +57,8 @@
 <yuv-sidebar [display]="showSideBar" (hide)="showSideBar = false">
   <section class="navigation-list">
     <div class="nav-item">
-      <a (click)="navigate('favorites')" translate>eo.sidebar.navigation.favorites</a>
-      <a (click)="navigate('about')" translate>eo.sidebar.navigation.about</a>
+      <a (click)="navigate('favorites')" translate>eo.state.favorites.title</a>
+      <a (click)="navigate('about')" translate>eo.state.about.title</a>
     </div>
   </section>
 </yuv-sidebar>
