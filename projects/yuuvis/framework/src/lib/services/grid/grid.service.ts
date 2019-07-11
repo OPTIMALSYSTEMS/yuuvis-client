@@ -64,7 +64,7 @@ export class GridService {
     this.addColDefAttrsByType(colDef, field);
     this.addColDefAttrsByField(colDef, field);
 
-    colDef.suppressMovable = true;
+    // colDef.suppressMovable = true;
     colDef.resizable = true;
     colDef.sortable = false;
 

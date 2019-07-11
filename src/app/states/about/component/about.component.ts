@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { ConfigService, UserService } from '@yuuvis/core';
+import { Title } from '@angular/platform-browser';
+import { TranslateService, UserService } from '@yuuvis/core';
 import { Observable } from 'rxjs';
 import { Libraries, ProductDetails } from '../about.data.interface';
 import { About } from '../about.enum';
@@ -19,11 +20,13 @@ export class AboutComponent implements OnInit {
   ctrl: Observable<ProductDetails[]> = this.aboutService.productDetails$;
 
   constructor(
-    private config: ConfigService,
+    private titleService: Title,
+    public translate: TranslateService,
     private userService: UserService,
     private aboutService: AboutService
   ) {
     this.getUserLang();
+    this.titleService.setTitle(this.translate.instant('eo.search.title'));
   }
 
   private getUserLanguage(language: string[]): string {

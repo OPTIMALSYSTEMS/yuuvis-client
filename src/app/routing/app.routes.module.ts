@@ -5,6 +5,7 @@ import { AboutComponent } from '../states/about/component/about.component';
 import { DashboardComponent } from '../states/dashboard/dashboard.component';
 import { LoginComponent } from '../states/login/login.component';
 import { NotFoundComponent } from '../states/not-found/not-found.component';
+import { ResultComponent } from '../states/result/result.component';
 import { SettingsComponent } from '../states/settings/settings.component';
 import { AuthGuard } from './auth-guard/auth-guard.service';
 
@@ -17,12 +18,7 @@ const routes: Routes = [
   { path: 'enter', component: LoginComponent },
   { path: 'settings', component: SettingsComponent, canActivate: [AuthGuard] },
   { path: 'about', component: AboutComponent, canActivate: [AuthGuard] },
-  // {
-  //   path: 'navigation',
-  //   component: NavigationComponent,
-  //   canActivate: [AuthGuard],
-  //   outlet: 'modal'
-  // },
+  { path: 'result', component: ResultComponent, canActivate: [AuthGuard] },
   // default route
   { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
   // 404 route

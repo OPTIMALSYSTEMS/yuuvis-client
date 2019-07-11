@@ -11,7 +11,7 @@ import { AboutModule } from './states/about/about.module';
 import { DashboardComponent } from './states/dashboard/dashboard.component';
 import { LoginComponent } from './states/login/login.component';
 import { NotFoundComponent } from './states/not-found/not-found.component';
-import { ResultStateModule } from './states/result/result.state.module';
+import { ResultComponent } from './states/result/result.component';
 import { SettingsComponent } from './states/settings/settings.component';
 
 @NgModule({
@@ -19,6 +19,7 @@ import { SettingsComponent } from './states/settings/settings.component';
     AppComponent,
     DashboardComponent,
     LoginComponent,
+    ResultComponent,
     FrameComponent,
     SettingsComponent,
     NotFoundComponent
@@ -26,7 +27,6 @@ import { SettingsComponent } from './states/settings/settings.component';
   imports: [
     BrowserModule,
     FormsModule,
-    ResultStateModule,
     YuvFrameworkModule.forRoot({
       main: ['assets/default/config/main.json'],
       translations: ['assets/default/i18n/'],

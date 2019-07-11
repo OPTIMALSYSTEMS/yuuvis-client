@@ -23,8 +23,11 @@ $range-selection-highlight-color: $primary-color;
       }
 
       .ag-header-cell {
-        padding: 0 var(--app-pane-padding);
         color: var(--text-color-caption);
+
+        .ag-cell-label-container {
+          padding: 0 calc(var(--app-pane-padding) / 2);
+        }
       }
 
       .ag-row {
