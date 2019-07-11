@@ -1,0 +1,21 @@
+
+<div [class]="className" *ngIf="showEntry && !enableVersions">
+  <ng-container *ngIf="innerValue; else value">
+    <span class="label">{{label}}</span>
+    <span class="value inner" [innerHTML]="innerValue | safeHtml" (click)="onValueClick($event, item)"></span>
+  </ng-container>
+</div>
+
+<ng-template #value>
+    <span class="label"translate>{{label}}</span>
+    <span class="value" >{{value}}</span>
+</ng-template>
+
+
+<div [class]="className" *ngIf="showEntry && enableVersions">
+  <div class="label" translate>eo.object.summary.version</div>
+  <div class="value" *ngIf="enableVersions ">value version</div>
+  <span class="value version" *ngIf="enableVersions">
+    <a [routerLink]="'/versions/' " [queryParams]="{type : '' }">value version</a>
+  </span>
+</div>

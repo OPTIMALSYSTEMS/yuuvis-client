@@ -1,16 +1,21 @@
 
 <yuv-responsive-master-slave class="state"
-[options]="{useStateLayout: true}"
-(slaveClosed)="onSlaveClosed()"
-[detailsActive]="(selectedItems.length > 0)">
+  [options]="{useStateLayout: true}"
+  (slaveClosed)="onSlaveClosed()"
+  [detailsActive]="(selectedItems.length > 0)">
+  
   <yuv-search-result
     class="yuv-master panel"
     [searchResult]="searchResult"
     [selectedItemId]="selectedItem?.id"
     (itemsSelected)="select($event)"
-  ></yuv-search-result>
+  >
+  </yuv-search-result>
+
   <yuv-object-details
     class="yuv-slave panel"
     [objectId]="selectedItems[0]"
-  ></yuv-object-details>
+  >
+  </yuv-object-details>
+
 </yuv-responsive-master-slave>

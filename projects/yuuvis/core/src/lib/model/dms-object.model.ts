@@ -9,10 +9,11 @@ export class DmsObject {
   data: any;
 
   constructor(searchResultItem: SearchResultItem) {
-    console.log(searchResultItem);
+    console.log({ searchResultItem });
     this.id = searchResultItem.fields.get('enaio:objectId');
     this.objectTypeId = searchResultItem.objectTypeId;
     this.title = searchResultItem.fields.get('tenKolibri:clienttitle');
     this.description = searchResultItem.fields.get('tenKolibri:description');
+    this.data = searchResultItem.fields.values();
   }
 }

@@ -1,6 +1,5 @@
-<h1>
-    OBJECT DETAILS
-</h1>
-<strong>{{dmsObject?.id}}</strong>
-<p>{{dmsObject?.objectTypeId}}</p>
+<yuv-object-details-header [title]="dmsObject?.objectTypeId" [description]="dmsObject?.description"></yuv-object-details-header>
+<h1>{{dmsObject?.id}}</h1>
+<span>{{dmsObject | json}}</span>
 
+    <yuv-summary></yuv-summary>
