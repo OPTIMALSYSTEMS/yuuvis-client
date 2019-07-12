@@ -9,7 +9,9 @@
     <yuv-icon [svg]="icon.icSearchFilter"></yuv-icon>
 </div>
 <div class="yuv-panel-content" [yuvBusyOverlay]="busy">
-    <yuv-responsive-data-table *ngIf="tableData" [data]="tableData" (selectionChanged)="onSelectionChanged($event)">
+    <yuv-responsive-data-table *ngIf="tableData" [data]="tableData" 
+    (columnResized)="onColumnResized($event)"
+    (selectionChanged)="onSelectionChanged($event)">
     </yuv-responsive-data-table>
 
     <div class="paging">

@@ -12,6 +12,7 @@ import { ColDef, GridOptions, RowNode } from 'ag-grid-community';
 import { ResizedEvent } from 'angular-resize-event';
 import { Observable, ReplaySubject, Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
+import { ColumnSizes } from '../../services/grid/grid.interface';
 import { ResponsiveTableData } from './responsive-data-table.interface';
 
 @Component({
@@ -22,8 +23,14 @@ import { ResponsiveTableData } from './responsive-data-table.interface';
 })
 export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription[] = [];
+  // internal subject for element size changes used for debouncing resize events
   private resizeSource = new ReplaySubject<ResizedEvent>();
   public resize$: Observable<ResizedEvent> = this.resizeSource.asObservable();
+  // internal subject column size changes used for debouncing column resize events
+  private columnResizeSource = new ReplaySubject<any>();
+  public columnResize$: Observable<
+    ResizedEvent
+  > = this.columnResizeSource.asObservable();
   private _data: ResponsiveTableData;
   // array of row IDs that are currently selected
   private _currentSelection: string[] = [];
@@ -68,9 +75,11 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
 
   // emits an array of the selected rows
   @Output() selectionChanged = new EventEmitter<any[]>();
+  @Output() columnResized = new EventEmitter<ColumnSizes>();
 
   constructor() {
     this.subscriptions.push(
+      // subscribe to the whole components size changing
       this.resize$.pipe(debounceTime(500)).subscribe((e: ResizedEvent) => {
         const small = e.newWidth < this.breakpoint;
 
@@ -84,6 +93,19 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
         }
       })
     );
+    // subscribe to columns beeing resized
+    this.columnResize$.pipe(debounceTime(1000)).subscribe((e: ResizedEvent) => {
+      if (!this.small) {
+        this.columnResized.emit({
+          columns: this._gridOptions.columnApi
+            .getColumnState()
+            .map(columnState => ({
+              id: columnState.colId,
+              width: columnState.width
+            }))
+        });
+      }
+    });
   }
 
   private applyGridOption(small?: boolean) {
@@ -152,14 +174,14 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
       rowSelection: this._data.selectType || 'single',
 
       // EVENTS - add event callback handlers
-      // onRowClicked: function (event) { console.log('a row was clicked'); },
-      // onColumnResized: function (event) { console.log('a column was resized'); },
-      // onGridReady: function (event) { console.log('the grid is now ready'); },
       onSelectionChanged: event => {
         this._currentSelection = this._gridOptions.api
           .getSelectedNodes()
           .map((rowNode: RowNode) => rowNode.id);
         this.selectionChanged.emit(this._gridOptions.api.getSelectedRows());
+      },
+      onColumnResized: event => {
+        this.columnResizeSource.next();
       }
     };
   }
