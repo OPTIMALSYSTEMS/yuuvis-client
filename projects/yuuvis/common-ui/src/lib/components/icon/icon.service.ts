@@ -4,9 +4,7 @@ import { tap, shareReplay, finalize } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { YuvCommonUiModule } from '../../common-ui.module';
 
-@Injectable({
-  providedIn: YuvCommonUiModule
-})
+@Injectable()
 export class IconService {
 
   private cache = new Map<string, any>();
