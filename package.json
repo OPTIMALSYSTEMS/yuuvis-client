@@ -8,6 +8,8 @@
     "ng": "ng",
     "prebuild:about": "node ./tools/scripts/common/about/prebuild-about-state",
     "start": "ng serve --port 4400 --proxy-config proxy.config.js",
+    "start:dist": "npm run start -- --configuration dist",
+    "start:dev": "npm run start -- --configuration dev",
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",

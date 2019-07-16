@@ -56,6 +56,12 @@
                   "maximumError": "5mb"
                 }
               ]
+            },
+            "dist": {
+              "tsConfig": "src/tsconfig.dist.json"
+            },
+            "dev": {
+              "tsConfig": "src/tsconfig.dev.json"
             }
           }
         },
@@ -67,6 +73,12 @@
           "configurations": {
             "production": {
               "browserTarget": "yuuvis-flokfugl:build:production"
+            },
+            "dist": {
+              "browserTarget": "yuuvis-flokfugl:build:dist"
+            },
+            "dev": {
+              "browserTarget": "yuuvis-flokfugl:build:dev"
             }
           }
         },
