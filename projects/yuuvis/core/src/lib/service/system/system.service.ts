@@ -40,7 +40,7 @@ export class SystemService {
      *
      * @param user The user to load the system definition for
      */
-  getSystemDefinition(user: YuvUser): Observable<boolean> {
+  getSystemDefinition(): Observable<boolean> {
     // try to fetch system definition from cache first
     return this.appCache.getItem(this.STORAGE_KEY).pipe(
       switchMap(res => {
@@ -52,7 +52,7 @@ export class SystemService {
           return of(true);
         } else {
           // nothing cached so far
-          return this.fetchSystemDefinition(user);
+          return this.fetchSystemDefinition();
         }
       })
     );
@@ -62,7 +62,7 @@ export class SystemService {
    * Actually fetch the system definition from the backend.
    * @param user User to fetch definition for
    */
-  private fetchSystemDefinition(user: YuvUser): Observable<boolean> {
+  private fetchSystemDefinition(): Observable<boolean> {
 
     const fetchTasks = [
       this.backend.get('/dms/schema', ApiBase.core),

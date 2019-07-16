@@ -6,5 +6,6 @@
   "eo.state.login.msg.invalid": "The login details you provided are not correct. Please check your entry.",
   "eo.state.login.submit": "Log in",
   "eo.state.login.tenant": "Tenant",
-  "eo.state.settings.deputies": "Substitutes"
+  "eo.state.settings.deputies": "Substitutes",
+  "eo.state.settings.language": "Language"
 }

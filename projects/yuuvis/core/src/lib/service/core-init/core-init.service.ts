@@ -7,7 +7,7 @@ import { ConfigService } from '../config/config.service';
 import { CORE_CONFIG } from '../config/core-config.tokens';
 import { CoreConfig } from '../config/core-config';
 import { AuthService } from '../auth/auth.service';
-import { EnaioConfig } from '../config/config.interface';
+import { YuvConfig } from '../config/config.interface';
 import { ScreenService } from '../screen/screen.service';
 
 @Injectable({
@@ -16,7 +16,7 @@ import { ScreenService } from '../screen/screen.service';
 export class CoreInit {
 
   constructor(@Inject(CORE_CONFIG) private coreConfig: CoreConfig,
-  // DO NOT REMOVE: Otherwise service will not kcik in until referenced  
+  // DO NOT REMOVE: Otherwise service will not kick in until referenced  
   private screenService: ScreenService,
     private logger: Logger,
     private http: HttpClient,
@@ -43,7 +43,7 @@ export class CoreInit {
           return acc;
         }, {})
         ),
-        mergeMap((res: EnaioConfig) => {
+        mergeMap((res: YuvConfig) => {
           this.configService.set(res);
           return this.authService.initUser()
             .pipe(catchError(e => of(true)));

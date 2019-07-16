@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { YuvUser } from '../../model/yuv-user.model';
+import { YuvUser, UserSettings } from '../../model/yuv-user.model';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { BackendService } from '../backend/backend.service';
 import { Logger } from '../logger/logger';
@@ -9,7 +9,7 @@ import { Direction } from '../config/config.interface';
 import { ConfigService } from '../config/config.service';
 import { EventService } from '../event/event.service';
 import { YuvEventType } from '../event/events';
-import { tap, switchMap } from 'rxjs/operators';
+import { switchMap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -28,6 +28,13 @@ export class UserService {
     private eventService: EventService,
     private config: ConfigService) { }
 
+
+  private getUiDirection(iso: string): string {
+    // languages that are read right to left
+    const rtlLanguages = ['ar', 'arc', 'dv', 'fa', 'ha', 'he', 'khw', 'ks', 'ku', 'ps', 'ur', 'yi'];
+    return (rtlLanguages.indexOf(iso) === -1) ? Direction.LTR : Direction.RTL;
+  }
+
   /**
      * Set a new current user
      * @param user The user to be set as current user
@@ -35,14 +42,14 @@ export class UserService {
   public setCurrentUser(user: YuvUser) {
     this.user = user;
     // this.user.setImageBase(this.backend.getServiceBase());
-    this.backend.setHeader('Accept-Language', this.user.getSchemaLocale());
+    this.backend.setHeader('Accept-Language', this.user.getClientLocale());
 
     const languages = this.config.getClientLocales().map(lang => lang.iso);
     const userLang = user.getClientLocale();
     if (languages.indexOf(userLang) !== -1) {
       this.logger.debug('Setting client locale to \'' + userLang + '\'');
       this.translate.use(userLang);
-      this.user.uiDirection = (this.config.getClientLocales().find(l => l.iso === userLang) || {}).dir || Direction.LTR;
+      this.user.uiDirection = this.getUiDirection(userLang);
     }
     this.userSource.next(this.user);
   }
@@ -56,43 +63,28 @@ export class UserService {
    * @param iso ISO locale string to be set as new client locale
    */
   changeClientLocale(iso: string): void {
-    this.user.userSettings.locales.client = iso;
-    // TODO: store user settings once this feature is available
-    of(true)
-    // this.backend.put('/user/config/web', this.user.userSettings)
-      .subscribe(() => {
-        this.logger.debug('Changed client locale to \'' + iso + '\'');
-        this.translate.use(iso);
-        this.user.uiDirection = (this.config.getClientLocales().find(l => l.iso === iso) || {}).dir || Direction.LTR;
-        this.userSource.next(this.user);
-        this.eventService.trigger(YuvEventType.CLIENT_LOCALE_CHANGED, iso);
-      });
-  }
 
-  /**
-   * Change the users schema locale
-   * @param iso ISO locale string to be set as new schema locale
-   */
-  changeSchemaLocale(iso: string): void {
-
-    if (this.user.userSettings.locales.schema !== iso) {
-
-      this.user.userSettings.locales.schema = iso;
-      // TODO: store user settings once this feature is available
-      // return this.backend.put('/user/locale/' + this.user.getSchemaLocale())
-      of(true)
+    if (this.user.userSettings.locale !== iso) {
+      this.user.userSettings.locale = iso;
+      
+      this.backend.post('/user/settings', this.user.userSettings)
         .pipe(
-          switchMap(() => {
-            this.logger.debug('Changed schema locale to \'' + iso + '\'');
+          switchMap(() => {            
+            this.backend.setHeader('Accept-Language', iso);
+            this.logger.debug('Changed client locale to \'' + iso + '\'');
+            this.translate.use(iso);
+            this.user.uiDirection = this.getUiDirection(iso);
             this.userSource.next(this.user);
-            this.backend.setHeader('Accept-Language', this.user.getSchemaLocale());
             this.logger.debug('Loading system definitions i18n resources for new locale.');
             return this.system.updateLocalizations(this.user);
-          }),
-          tap(() => {
-            this.eventService.trigger(YuvEventType.SCHEMA_LOCALE_CHANGED, iso);
           })
-        );
+        ).subscribe(() => {
+          this.eventService.trigger(YuvEventType.CLIENT_LOCALE_CHANGED, iso);
+        });
     }
+  }
+
+  fetchUserSettings(): Observable<UserSettings> {
+    return this.backend.get('/user/settings');
   }
 }

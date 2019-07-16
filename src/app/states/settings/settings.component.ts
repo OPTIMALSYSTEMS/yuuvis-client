@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { TranslateService, UserService, YuvUser } from '@yuuvis/core';
+import { TranslateService, UserService, YuvUser, ConfigService } from '@yuuvis/core';
 
 @Component({
   selector: 'yuv-settings',
@@ -9,12 +9,16 @@ import { TranslateService, UserService, YuvUser } from '@yuuvis/core';
 export class SettingsComponent implements OnInit {
 
   user: YuvUser;
+  clientLocales: any;
 
   constructor(private translate: TranslateService,
-    private userService: UserService) { }
+    public config: ConfigService,
+    private userService: UserService) {
+    this.clientLocales = config.getClientLocales();
+  }
 
-  lang(lang) {
-    this.translate.use(lang);
+  changeClientLocale(iso: string) {
+    this.userService.changeClientLocale(iso);
   }
 
   ngOnInit() {

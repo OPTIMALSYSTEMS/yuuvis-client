@@ -6,7 +6,7 @@ import { switchMap, takeUntil, catchError, tap } from 'rxjs/operators';
 import { LocalStorage } from '@ngx-pwa/local-storage';
 import { BackendService } from '../backend/backend.service';
 import { UserService } from '../user/user.service';
-import { YuvUser } from '../../model/yuv-user.model';
+import { YuvUser, UserSettings } from '../../model/yuv-user.model';
 import { SystemService } from '../system/system.service';
 import { CORE_CONFIG } from '../config/core-config.tokens';
 import { CoreConfig } from '../config/core-config';
@@ -36,57 +36,57 @@ export class AuthService {
     return this.authenticated;
   }
 
-  startLoginFlow(tenant: string, host?: string): {cancelTrigger: Subject<void>, loginState: Observable<LoginState>} {
-    
+  startLoginFlow(tenant: string, host?: string): { cancelTrigger: Subject<void>, loginState: Observable<LoginState> } {
+
     const stopTrigger$ = new Subject<void>();
     return {
       cancelTrigger: stopTrigger$,
       loginState: new Observable(o => {
-      
+
         const loginState: LoginState = {
           name: null,
           data: null
-        } 
-        
+        }
+
         const targetHost = host || '';
         this.http.get(`${targetHost}/tenant/${tenant}/loginDevice`).subscribe((res: LoginDeviceResult) => {
-  
+
           const targetUri = `${targetHost}/oauth/${tenant}?user_code=${res.user_code}`;
-          
+
           loginState.name = LoginStateName.STATE_LOGIN_URI;
           loginState.data = targetUri;
           o.next(loginState)
-  
+
           this.cloudLoginPollForResult(`${targetHost}/auth/info/state?device_code=${res.device_code}`, 1000, stopTrigger$)
-          .pipe(
-            tap(accessToken => {
-              if (accessToken) {
-                this.cloudLoginSetHeaders(accessToken, tenant);
-                const storeToken: StoredToken = {
-                  tenant: tenant,
-                  accessToken: accessToken
-                };
-                this.storage.setItem(this.TOKEN_STORAGE_KEY, storeToken).subscribe();
-              }
-            }),
-            switchMap((authRes: any) => authRes ? this.initUser(targetHost) : throwError('not authenticated'))
-          ).subscribe((user: YuvUser) => {
-            
-            loginState.name = LoginStateName.STATE_DONE;
-            loginState.data = user;
-  
-            o.next(loginState);
-            o.complete();
-          }, err => {
-            o.error(err);
-            o.complete();
-          }, () => {
-            // polling may complete without a result or error, when it was canceled
-            loginState.name = LoginStateName.STATE_CANCELED;
-            loginState.data = null;  
-            o.next(loginState);
-            o.complete();
-          })
+            .pipe(
+              tap(accessToken => {
+                if (accessToken) {
+                  this.cloudLoginSetHeaders(accessToken, tenant);
+                  const storeToken: StoredToken = {
+                    tenant: tenant,
+                    accessToken: accessToken
+                  };
+                  this.storage.setItem(this.TOKEN_STORAGE_KEY, storeToken).subscribe();
+                }
+              }),
+              switchMap((authRes: any) => authRes ? this.initUser(targetHost) : throwError('not authenticated'))
+            ).subscribe((user: YuvUser) => {
+
+              loginState.name = LoginStateName.STATE_DONE;
+              loginState.data = user;
+
+              o.next(loginState);
+              o.complete();
+            }, err => {
+              o.error(err);
+              o.complete();
+            }, () => {
+              // polling may complete without a result or error, when it was canceled
+              loginState.name = LoginStateName.STATE_CANCELED;
+              loginState.data = null;
+              o.next(loginState);
+              o.complete();
+            })
         }, error => {
           o.error('unable to call device flow endpoint');
           o.complete();
@@ -279,28 +279,16 @@ export class AuthService {
      * @param user 
      * @returns Observable<YuvUser>
      */
-  private initApp(user: any): Observable<YuvUser> {
+  private initApp(userJson: any): Observable<YuvUser> {
 
-    const currUser = new YuvUser(user);
-    this.userService.setCurrentUser(currUser);
-    this.backend.setHeader('Accept-Language', currUser.getSchemaLocale());
-
-    const initTasks = [
-      this.systemService.getSystemDefinition(currUser)
-      // this.bpmService.getExecutableProcesses(),
-    ];
-
-    return forkJoin(initTasks).pipe(
-      switchMap((res) => {
-
-        if (!res[0]) {
-          // no system definition available
-          return throwError('Unable to fetch system definition');
-        } else {
-          return of(currUser);
-        }
-
+    return this.systemService.getSystemDefinition().pipe(
+      switchMap(() => this.userService.fetchUserSettings()),
+      switchMap((userSettings: UserSettings) => {
+        const currentUser = new YuvUser(userJson, userSettings);
+        this.userService.setCurrentUser(currentUser);
+        this.backend.setHeader('Accept-Language', currentUser.getClientLocale());
+        return of(currentUser)
       })
-    );
+    )
   }
 }

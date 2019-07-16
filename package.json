@@ -25,7 +25,8 @@
     "build:libs:all:watch": "npm run build:core --watch && npm run build:common --watch && npm run build:framework --watch",
     "build:cordova": "ng build cordova --baseHref=./ --outputPath=cordova/www",
     "build:android": "npm run build:cordova && cd cordova && cordova clean android && cordova build android",
-    "build:android:run": "npm run build:cordova && cd cordova && cordova clean android && cordova run android"
+    "build:android:run": "npm run build:cordova && cd cordova && cordova clean android && cordova run android",
+    "build:web": "npm run build:libs:all && npm run build"
   },
   "private": true,
   "dependencies": {

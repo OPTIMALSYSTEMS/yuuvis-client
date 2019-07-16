@@ -96,9 +96,9 @@ export class LoginComponent implements OnInit {
           // open login target uri in iframe
 
           // running in iframe
-          // this.deviceFlow.loginPageUri = this.sanitizer.bypassSecurityTrustResourceUrl(loginState.data);
+          this.deviceFlow.loginPageUri = this.sanitizer.bypassSecurityTrustResourceUrl(loginState.data);
           
-          this.authFlowService.openLoginUri(loginState.data, this.loginCancelTrigger);
+          // this.authFlowService.openLoginUri(loginState.data, this.loginCancelTrigger);
           break
         }
         case LoginStateName.STATE_CANCELED: {
