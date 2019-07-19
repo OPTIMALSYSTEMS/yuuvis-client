@@ -1,25 +1,23 @@
-import { Injectable } from '@angular/core';
-import { of, Observable } from 'rxjs';
-import { tap, shareReplay, finalize } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
-import { YuvCommonUiModule } from '../../common-ui.module';
+import { Injectable } from '@angular/core';
+import { Observable, of } from 'rxjs';
+import { finalize, shareReplay, tap } from 'rxjs/operators';
 
 @Injectable()
 export class IconService {
-
   private cache = new Map<string, any>();
   private temp = new Map<string, any>();
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
   fetch(uri: string): Observable<any> {
     if (this.cache.has(uri)) {
       return of(this.cache.get(uri));
     } else {
-      return this.getViaTempCache(uri, () => this.http.get(uri, { responseType: 'text' })
-        .pipe(
-          tap(text => this.cache.set(uri, text))
-        )
+      return this.getViaTempCache(uri, () =>
+        this.http
+          .get(uri, { responseType: 'text' })
+          .pipe(tap(text => this.cache.set(uri, text)))
       );
     }
   }

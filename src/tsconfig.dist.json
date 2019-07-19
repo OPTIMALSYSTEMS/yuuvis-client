@@ -1,0 +1,25 @@
+{
+  "extends": "./tsconfig.app.json",
+  "compilerOptions": {
+    "paths": {
+      "@yuuvis/common-ui": [
+        "dist/yuuvis/common-ui"
+      ],
+      "@yuuvis/common-ui/*": [
+        "dist/yuuvis/common-ui/*"
+      ],
+      "@yuuvis/core": [
+        "dist/yuuvis/core"
+      ],
+      "@yuuvis/core/*": [
+        "dist/yuuvis/core/*"
+      ],
+      "@yuuvis/framework": [
+        "dist/yuuvis/framework"
+      ],
+      "@yuuvis/framework/*": [
+        "dist/yuuvis/framework/*"
+      ]
+    }
+  }
+}

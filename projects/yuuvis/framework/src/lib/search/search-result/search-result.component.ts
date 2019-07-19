@@ -16,6 +16,7 @@ import {
 } from '@yuuvis/core';
 import { ColDef } from 'ag-grid-community';
 import { ResponsiveTableData } from '../../components';
+import { ColumnSizes } from '../../services/grid/grid.interface';
 import { GridService } from '../../services/grid/grid.service';
 import { SVGIcons } from '../../svg.generated';
 
@@ -45,13 +46,6 @@ export class SearchResultComponent implements OnInit {
     if (searchResult) {
       // create data for responsive table from the search result
       this.createTableData();
-      this.tableData = {
-        columns: this._columns,
-        rows: this._rows,
-        titleField: 'clienttitle',
-        descriptionField: 'clientdescription',
-        selectType: 'single'
-      };
     }
   }
   @Input() title: string;
@@ -77,36 +71,43 @@ export class SearchResultComponent implements OnInit {
 
   // Create actual table data from the search result
   private createTableData(): void {
-    if (this._searchResult.objectTypes.length === 0) return;
-
     // object type of the result list items, if NULL we got a mixed result
     const resultListObjectType =
       this._searchResult.objectTypes.length > 1
         ? null
         : this._searchResult.objectTypes[0];
 
-    if (this._searchResult.pagination) {
-      // setup pagination form in case of a paged search result chunk
-      this.pagingForm.get('page').setValue(this._searchResult.pagination.page);
-      this.pagingForm
-        .get('page')
-        .setValidators([
-          Validators.min(0),
-          Validators.max(this._searchResult.pagination.pages)
-        ]);
-    }
+    this.gridService
+      .getColumnConfiguration(resultListObjectType)
+      .subscribe((colDefs: ColDef[]) => {
+        if (this._searchResult.pagination) {
+          // setup pagination form in case of a paged search result chunk
+          this.pagingForm
+            .get('page')
+            .setValue(this._searchResult.pagination.page);
+          this.pagingForm
+            .get('page')
+            .setValidators([
+              Validators.min(0),
+              Validators.max(this._searchResult.pagination.pages)
+            ]);
+        }
 
-    // create column definitions
-    this._columns = this.gridService.getColumnConfiguration(
-      resultListObjectType
-    );
+        this._columns = colDefs;
+        const rows = [];
+        this._searchResult.items.forEach(i => {
+          rows.push(this.getRow(i));
+        });
+        this._rows = rows;
 
-    // create the rows
-    const rows = [];
-    this._searchResult.items.forEach(i => {
-      rows.push(this.getRow(i));
-    });
-    this._rows = rows;
+        this.tableData = {
+          columns: this._columns,
+          rows: this._rows,
+          titleField: 'clienttitle',
+          descriptionField: 'clientdescription',
+          selectType: 'single'
+        };
+      });
   }
 
   /**
@@ -179,6 +180,14 @@ export class SearchResultComponent implements OnInit {
 
   onSelectionChanged(selectedRows: any[]) {
     this.itemsSelected.emit(selectedRows.map(r => r.id));
+  }
+
+  onColumnResized(colSizes: ColumnSizes) {
+    const resultListObjectType =
+      this._searchResult.objectTypes.length > 1
+        ? null
+        : this._searchResult.objectTypes[0];
+    this.gridService.persistColumnWidthSettings(colSizes, resultListObjectType);
   }
 
   ngOnInit() {}

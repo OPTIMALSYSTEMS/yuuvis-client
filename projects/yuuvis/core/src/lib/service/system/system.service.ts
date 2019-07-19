@@ -1,18 +1,24 @@
 import { Injectable } from '@angular/core';
 import { forkJoin, Observable, of, ReplaySubject } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
-import { ObjectType, ObjectTypeField } from '../../model/object-type.model';
+import { ObjectType } from '../../model/object-type.model';
 import { ApiBase } from '../backend/api.enum';
 import { BackendService } from '../backend/backend.service';
 import { AppCacheService } from '../cache/app-cache.service';
 import { Logger } from '../logger/logger';
-import { BASE_PARAM_FIELDS } from './baseparams.fields';
-import { SystemDefinition } from './system.interface';
+import {
+  SchemaResponse,
+  SchemaResponseDocumentTypeDefinition,
+  SchemaResponsePropertyDefinition,
+  SchemaResponseTypeDefinition,
+  SystemDefinition
+} from './system.interface';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SystemService {
+  private BASE_TYPE_ID = 'clientdefaults';
   private STORAGE_KEY = 'yuv.core.system.definition';
 
   private system: SystemDefinition;
@@ -33,6 +39,10 @@ export class SystemService {
 
   getObjectType(objectTypeId: string): ObjectType {
     return this.system.objectTypes.find(ot => ot.id === objectTypeId);
+  }
+
+  getBaseType(): ObjectType {
+    return this.system.baseType;
   }
 
   getLocalizedResource(key: string): string {
@@ -67,18 +77,13 @@ export class SystemService {
     // );
   }
 
-  getBaseParamsTypeFields(): ObjectTypeField[] {
-    // TODO: Should return all fields from the secondary objecttype
-    return BASE_PARAM_FIELDS;
-  }
-
   /**
    * Actually fetch the system definition from the backend.
    * @param user User to fetch definition for
    */
   private fetchSystemDefinition(): Observable<boolean> {
     const fetchTasks = [
-      this.backend.get('/dms/schema', ApiBase.core),
+      this.backend.get('/dms/schema/native.json', ApiBase.core),
       this.fetchLocalizations()
     ];
 
@@ -95,21 +100,120 @@ export class SystemService {
       }),
       map(data => {
         if (data && data.length) {
-          // getting an array of system definitions
-          // TODO: support multiple system definitions???
-          const sysDef = data[0];
-          this.system = {
-            version: sysDef.version,
-            lastModificationDate: sysDef.lastModificationDate,
-            objectTypes: sysDef.objectTypes.map(ot => new ObjectType(ot)),
-            i18n: data[1]
-          };
-          this.appCache.setItem(this.STORAGE_KEY, this.system).subscribe();
-          this.systemSource.next(this.system);
+          this.setSchema(data[0], data[1]);
         }
         return !!data;
       })
     );
+  }
+
+  /**
+   * Create the schema from the servers schema response
+   * @param schemaResponse Response from the backend
+   */
+  private setSchema(schemaResponse: SchemaResponse, localizedResource: any) {
+    // create map from properties acces them in a more performant way
+    const propertiesMap = new Map<string, SchemaResponsePropertyDefinition>();
+    schemaResponse.propertyDefinition.forEach(
+      (pd: SchemaResponsePropertyDefinition) => {
+        propertiesMap.set(pd.id, pd);
+      }
+    );
+
+    const secondaryObjectTypes: Map<string, ObjectType> = new Map<
+      string,
+      ObjectType
+    >();
+    schemaResponse.typeSecondaryDefinition.forEach(
+      (td: SchemaResponseTypeDefinition) => {
+        secondaryObjectTypes.set(
+          td.id,
+          new ObjectType({
+            id: td.id,
+            baseId: td.baseId,
+            creatable: td.creatable,
+            description: td.description,
+            localNamespace: td.localNamespace,
+            isFolder: false,
+            fields: td.propertyReference.map(pr => propertiesMap.get(pr.value))
+          })
+        );
+      }
+    );
+
+    // create object types
+    const documentTypes: ObjectType[] = schemaResponse.typeDocumentDefinition.map(
+      (td: SchemaResponseDocumentTypeDefinition) =>
+        this.createObjectType(td, false, propertiesMap, secondaryObjectTypes)
+    );
+
+    const folderTypes: ObjectType[] = schemaResponse.typeDocumentDefinition.map(
+      (td: SchemaResponseTypeDefinition) =>
+        this.createObjectType(td, false, propertiesMap, secondaryObjectTypes)
+    );
+
+    const typeSecondaryDef = schemaResponse.typeSecondaryDefinition.find(
+      td => td.id === this.BASE_TYPE_ID
+    );
+    if (typeSecondaryDef) {
+      const baseType: ObjectType = new ObjectType({
+        id: typeSecondaryDef.id,
+        baseId: typeSecondaryDef.baseId,
+        creatable: typeSecondaryDef.creatable,
+        description: typeSecondaryDef.description,
+        localNamespace: typeSecondaryDef.localNamespace,
+        isFolder: false,
+        fields: typeSecondaryDef.propertyReference.map(pr =>
+          propertiesMap.get(pr.value)
+        )
+      });
+
+      this.system = {
+        version: schemaResponse.version,
+        lastModificationDate: schemaResponse.lastModificationDate,
+        objectTypes: [...documentTypes, ...folderTypes],
+        baseType: baseType,
+        i18n: localizedResource
+      };
+      this.appCache.setItem(this.STORAGE_KEY, this.system).subscribe();
+      this.systemSource.next(this.system);
+    } else {
+      this.logger.error(
+        `Schema definition does not support required secondary object type '${
+          this.BASE_TYPE_ID
+        }'.`
+      );
+    }
+  }
+
+  private createObjectType(
+    schemaResType: SchemaResponseTypeDefinition,
+    isFolder: boolean,
+    propertiesMap: Map<string, SchemaResponsePropertyDefinition>,
+    secondaryObjectTypes: Map<string, ObjectType>
+  ): ObjectType {
+    // also add the fields of all secondary object types
+    let fields = schemaResType.propertyReference.map(pr =>
+      propertiesMap.get(pr.value)
+    );
+    if (
+      schemaResType.secondaryObjectTypeId &&
+      schemaResType.secondaryObjectTypeId.length
+    ) {
+      schemaResType.secondaryObjectTypeId.forEach(id => {
+        fields = fields.concat(secondaryObjectTypes.get(id).fields);
+      });
+    }
+
+    return new ObjectType({
+      id: schemaResType.id,
+      baseId: schemaResType.baseId,
+      creatable: schemaResType.creatable,
+      description: schemaResType.description,
+      localNamespace: schemaResType.localNamespace,
+      isFolder: isFolder,
+      fields: fields
+    });
   }
 
   updateLocalizations(): Observable<any> {

@@ -1,37 +1,24 @@
-export class ObjectType {
+import {
+  ObjectTypeField,
+  ObjectTypeProperties
+} from '../service/system/system.interface';
+
+export class ObjectType implements ObjectTypeProperties {
   id: string;
-  localName: string;
   localNamespace: string;
-  displayName: string;
-  baseId: string;
   description: string;
+  baseId: string;
   creatable: boolean;
-  fileable: boolean;
-  fulltextIndexed: boolean;
+  isFolder: boolean;
   fields: ObjectTypeField[];
 
-  constructor(json: any) {
-    this.id = json.id;
-    this.baseId = json.baseId;
-    this.creatable = json.creatable;
-    this.description = json.description;
-    this.displayName = json.displayName;
-    this.fileable = json.fileable;
-    this.fulltextIndexed = json.fulltextIndexed;
-    this.localName = json.localName;
-    this.localNamespace = json.localNamespace;
-
-    this.fields = json.fields;
+  constructor(public otp: ObjectTypeProperties) {
+    this.id = otp.id;
+    this.baseId = otp.baseId;
+    this.creatable = otp.creatable;
+    this.description = otp.description;
+    this.localNamespace = otp.localNamespace;
+    this.isFolder = otp.isFolder;
+    this.fields = otp.fields;
   }
-}
-
-export interface ObjectTypeField {
-  id: string;
-  propertyType: string;
-  cardinality: string;
-  required?: boolean;
-  localName?: string;
-  displayName?: string;
-  description?: string;
-  updatability?: string;
 }
