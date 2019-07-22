@@ -12,6 +12,21 @@
       "element",
       "lib",
       "kebab-case"
-    ]
+    ],
+    "variable-name": {
+      "options": [
+        "check-format",
+        "allow-leading-underscore"
+      ]
+    },
+    "no-implicit-dependencies": [
+      true,
+      {
+        "dev": true,
+        "optional": true,
+        "allow": ["rxjs"]
+      }
+    ],
+    "no-submodule-imports": [true, "rxjs"]
   }
 }

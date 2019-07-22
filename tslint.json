@@ -15,7 +15,8 @@
     },
     "import-blacklist": [
       true,
-      "rxjs/Rx"
+      "rxjs/Rx",
+      "../package"
     ],
     "interface-name": false,
     "max-classes-per-file": false,
