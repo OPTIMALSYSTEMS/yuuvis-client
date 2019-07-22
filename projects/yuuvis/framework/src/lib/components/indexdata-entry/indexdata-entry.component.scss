@@ -5,30 +5,30 @@
   grid-template-areas: 'label value';
   grid-gap: 12px;
   margin-bottom: 2px;
-}
 
-.label {
-  grid-area: label;
-  background-color: var(--color-primary-3);
-  color: white;
-  padding: calc(var(--app-pane-padding) / 4);
-  border-radius: 2px;
-  display: inline-block;
-  max-width: none;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: normal;
+  .label {
+    grid-area: label;
+    background-color: var(--color-primary-3);
+    color: white;
+    padding: calc(var(--app-pane-padding) / 4);
+    border-radius: 2px;
+    display: inline-block;
+    max-width: none;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: normal;
 
-  .inverted & {
-    background-color: var(--panel-background);
-    color: black;
+    .inverted & {
+      background-color: var(--panel-background);
+      color: black;
+    }
+
+    :host-context(.screen-s) & {
+      grid-template-columns: 1fr 1fr;
+    }
   }
 
-  :host-context(.screen-s) & {
-    grid-template-columns: 1fr 1fr;
+  .value {
+    grid-area: value;
   }
-}
-
-.value {
-  grid-area: value;
 }

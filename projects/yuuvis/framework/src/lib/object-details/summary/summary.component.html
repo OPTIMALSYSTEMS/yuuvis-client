@@ -1,4 +1,4 @@
 <section class="object-summary">
-
-    <yuv-indexdata-entry></yuv-indexdata-entry>
+    
+    <yuv-indexdata-entry [item]="item" *ngFor="let item of summary | keyvalue"></yuv-indexdata-entry>
 </section>

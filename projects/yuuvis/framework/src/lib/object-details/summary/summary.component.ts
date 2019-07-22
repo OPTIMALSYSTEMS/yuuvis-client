@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 
 @Component({
   selector: 'yuv-summary',
@@ -6,10 +6,14 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./summary.component.scss']
 })
 export class SummaryComponent implements OnInit {
+  summary: any;
 
-  constructor() { }
-
-  ngOnInit() {
+  @Input()
+  set summaryData(data: any) {
+    this.summary = data;
   }
 
+  constructor() {}
+
+  ngOnInit() {}
 }

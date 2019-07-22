@@ -8,9 +8,9 @@ import { DmsObject, DmsService } from '@yuuvis/core';
 })
 export class ObjectDetailsComponent implements OnInit {
   private _dmsObject: DmsObject;
+
   @Input()
   set dmsObject(o: DmsObject) {
-    console.log('SET: ', o);
     this._dmsObject = o;
   }
 
@@ -22,10 +22,9 @@ export class ObjectDetailsComponent implements OnInit {
   set objectId(id: string) {
     this._dmsObject = null;
     if (id) {
-      this.dmsService.getDmsObject(id).subscribe(dmsObject => {
-        console.log('SET by ID: ', dmsObject);
-        this.dmsObject = dmsObject;
-      });
+      this.dmsService
+        .getDmsObject(id)
+        .subscribe(dmsObject => (this.dmsObject = dmsObject));
     }
   }
 

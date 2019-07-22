@@ -2,14 +2,14 @@
   color: white;
   padding: 0;
   background-color: var(--color-primary);
-}
 
-header {
-  height: 250px;
-  background-color: var(--color-accent);
-  background-image: var(--theme-nav-header);
-  background-size: cover;
-  padding: calc(var(--app-pane-padding) / 2);
+  &-header {
+    height: 250px;
+    background-color: var(--color-accent);
+    background-image: var(--theme-nav-header);
+    background-size: cover;
+    padding: calc(var(--app-pane-padding) / 2);
+  }
 }
 
 .ui-sidebar-mask {

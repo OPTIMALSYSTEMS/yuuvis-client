@@ -20,9 +20,7 @@ export class DmsObject {
   generateData(fields) {
     const result = {};
     Array.from(fields).map((d: any) =>
-      d.reduce((val, item) => {
-        return (result[val] = item);
-      }, {})
+      d.reduce((key, value) => (result[key] = value), {})
     );
     return result;
   }

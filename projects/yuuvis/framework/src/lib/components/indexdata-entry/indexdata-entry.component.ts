@@ -7,11 +7,26 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 })
 export class IndexdataEntryComponent {
   _className = 'entry';
+  _versions: boolean;
+  data: any;
+
   @Input() label: string;
   @Input() value: any = { id: '', version: '', type: '' };
   @Input() innerValue: string;
-  @Input() item: any;
-  @Input() enableVersions = true; //false;
+  @Input()
+  set item(item: any) {
+    this.data = item;
+    this.enableVersions = this.data['enaio:versionNumber']
+      ? this.data['enaio:versionNumber']
+      : false;
+  }
+
+  set enableVersions(version: number | boolean) {
+    this._versions = !!version;
+  }
+  get enableVersions(): number | boolean {
+    return this._versions;
+  }
 
   @Input()
   set className(className) {
@@ -23,9 +38,9 @@ export class IndexdataEntryComponent {
   }
 
   @Input() showEntry = true;
-  @Output() onValueClicked: EventEmitter<any> = new EventEmitter<any>();
+  @Output() valueClicked: EventEmitter<any> = new EventEmitter<any>();
 
   onValueClick(event, item) {
-    this.onValueClicked.emit({ event, item });
+    this.valueClicked.emit({ event, item });
   }
 }

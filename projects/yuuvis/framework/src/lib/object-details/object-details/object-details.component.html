@@ -1,6 +1,4 @@
 <yuv-object-details-header [title]="dmsObject?.objectTypeId" [description]="dmsObject?.description"></yuv-object-details-header>
 
-<span>{{dmsObject | json}}</span>
-<div class="object-details__content">
-        <yuv-summary></yuv-summary>
-</div>
+<yuv-summary [summaryData]="dmsObject?.data"></yuv-summary>
+
