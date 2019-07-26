@@ -13,6 +13,9 @@ import { LoginComponent } from './states/login/login.component';
 import { NotFoundComponent } from './states/not-found/not-found.component';
 import { ResultComponent } from './states/result/result.component';
 import { SettingsComponent } from './states/settings/settings.component';
+import { HistoryComponent } from './history/history.component';
+import { TimelineEntryComponent } from './timeline-entry/timeline-entry.component';
+import { HistoryFilterComponent } from './history-filter/history-filter.component';
 
 @NgModule({
   declarations: [
@@ -22,7 +25,10 @@ import { SettingsComponent } from './states/settings/settings.component';
     ResultComponent,
     FrameComponent,
     SettingsComponent,
-    NotFoundComponent
+    NotFoundComponent,
+    HistoryComponent,
+    TimelineEntryComponent,
+    HistoryFilterComponent
   ],
   imports: [
     BrowserModule,
