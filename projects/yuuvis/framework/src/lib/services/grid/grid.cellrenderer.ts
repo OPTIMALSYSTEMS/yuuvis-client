@@ -2,9 +2,7 @@ import { Utils } from '@yuuvis/core';
 
 export class CellRenderer {
   static render(type: string, param: any, newParam?: any) {
-    return CellRenderer[type + 'CellRenderer'](
-      Object.assign({}, param, newParam)
-    );
+    return CellRenderer[type + 'CellRenderer'](...param, ...newParam);
   }
 
   static filesizeCellRenderer(param) {
@@ -76,11 +74,11 @@ export class CellRenderer {
   }
 
   static typeCellRenderer(param) {
-    let val =
+    const val =
       '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M19 4H5c-1.11 0-2 .9-2 2v12c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.89-2-2-2zm0 14H5V8h14v10z"/><path fill="none" d="M0 0h24v24H0z"/></svg>';
-    let tooltip;
+    let tooltip: string;
     if (param.value) {
-      let objectType = param.context.system.getObjectType(param.value);
+      const objectType = param.context.system.getObjectType(param.value);
       if (!objectType) {
         return val;
       }
@@ -209,7 +207,7 @@ export class CellRenderer {
           '/ui/icon/' +
           type.iconId +
           '.svg';
-        let title = Array.isArray(param.value)
+        const title = Array.isArray(param.value)
           ? param.value[index]
           : param.value;
 

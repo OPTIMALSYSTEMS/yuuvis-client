@@ -42,13 +42,41 @@
   </header>
 </div> -->
 
-
 <header class="header">
   <div class="header-icon"></div>
-  <yuv-icon class="header-icon" [svg]="icClear"></yuv-icon>
+  <yuv-icon class="header-icon" [svg]="icGlobe"></yuv-icon>
   <div class="header-info">
-    <div class="header-title">{{title}}</div>
-    <div class="header-description">{{description}}</div>
+    <div class="header-title">{{ title }}</div>
+    <div class="header-description">{{ description }}</div>
   </div>
-  <div class="header-actions"></div>
+  <yuv-action-menu-bar class="header-actions">
+
+    <yuv-icon class="button refresh-button" [svg]="refresh"></yuv-icon>
+
+    <yuv-icon class="button sync-tab-btn" [svg]="favorite"></yuv-icon>
+
+    <yuv-icon class="button oc-button" [svg]="edit"></yuv-icon>
+
+    <yuv-icon
+      (click)="showActions()"
+      [svg]="kebap"
+    ></yuv-icon>
+
+  </yuv-action-menu-bar>
 </header>
+
+<yuv-sidebar
+  [display]="showSideBar"
+  [position]="position"
+  [styles]="sidebarStyle"
+  [headerStyle]="headerStyle"
+  (hide)="showSideBar = false"
+>
+  <div class="header-content">
+    <h1>Action Menu</h1>
+  </div>
+
+  <section class="content navigation-list">
+    <div class="nav-item"></div>
+  </section>
+</yuv-sidebar>

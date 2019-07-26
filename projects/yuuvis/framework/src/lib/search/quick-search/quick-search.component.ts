@@ -80,7 +80,8 @@ export class QuickSearchComponent implements OnInit {
         this.aggTypes.push({
           objectTypeId: typeId,
           label:
-            this.systemService.getLocalizedResource(`${typeId}_label`) || '???',
+            this.systemService.getLocalizedResource(`${typeId}_label`) ||
+            `${typeId}`,
           count: o.properties.OBJECT_COUNT.value
         });
       });

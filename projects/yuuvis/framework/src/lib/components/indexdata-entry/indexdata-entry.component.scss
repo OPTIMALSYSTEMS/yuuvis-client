@@ -30,5 +30,13 @@
 
   .value {
     grid-area: value;
+    align-self: center;
+
+    :host-context(.screen-s) & {
+      width: 95%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
   }
 }

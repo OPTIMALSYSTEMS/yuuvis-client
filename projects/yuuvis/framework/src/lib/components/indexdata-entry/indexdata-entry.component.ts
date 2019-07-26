@@ -1,4 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { SystemService, TranslateService } from '@yuuvis/core';
+import { LocaleDatePipe } from '../../pipes';
 
 @Component({
   selector: 'yuv-indexdata-entry',
@@ -15,16 +17,14 @@ export class IndexdataEntryComponent {
   @Input() innerValue: string;
   @Input()
   set item(item: any) {
-    this.data = item;
-    this.enableVersions = this.data['enaio:versionNumber']
-      ? this.data['enaio:versionNumber']
-      : false;
+    this.data = this.formatData(item);
+    this.enableVersions = this.data['enaio:versionNumber'] ? true : false;
   }
 
-  set enableVersions(version: number | boolean) {
-    this._versions = !!version;
+  set enableVersions(version: boolean) {
+    this._versions = version;
   }
-  get enableVersions(): number | boolean {
+  get enableVersions(): boolean {
     return this._versions;
   }
 
@@ -39,6 +39,20 @@ export class IndexdataEntryComponent {
 
   @Input() showEntry = true;
   @Output() valueClicked: EventEmitter<any> = new EventEmitter<any>();
+
+  constructor(
+    private translate: TranslateService,
+    private systemService: SystemService
+  ) {}
+
+  private formatData(data: any) {
+    const datePipe = new LocaleDatePipe(this.translate);
+    data.key = this.systemService.getLocalizedResource(`${data.key}_label`);
+    if (this.systemService.isDateFormat(data.value)) {
+      data.value = datePipe.transform(data.value, 'eoShort');
+    }
+    return data;
+  }
 
   onValueClick(event, item) {
     this.valueClicked.emit({ event, item });

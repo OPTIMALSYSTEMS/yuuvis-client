@@ -19,10 +19,6 @@ export class DmsService {
     const where = ids.join("' OR enaio:objectId='");
     return this.searchService
       .search(`SELECT * FROM enaio:object WHERE enaio:objectId='${where}'`)
-      .pipe(
-        map((res: SearchResult) => {
-          return res.items.map(i => new DmsObject(i));
-        })
-      );
+      .pipe(map((res: SearchResult) => res.items.map(i => new DmsObject(i))));
   }
 }

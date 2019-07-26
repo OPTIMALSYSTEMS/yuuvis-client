@@ -3,7 +3,7 @@
   "rules": {
     "import-blacklist": [
       true,
-      "../package"
+      "package/"
     ],
     "directive-selector": [
       true,
@@ -28,9 +28,9 @@
       {
         "dev": true,
         "optional": true,
-        "allow": ["rxjs"]
+        "allow": ["rxjs", "@yuuvis/core"]
       }
     ],
-    "no-submodule-imports": [true, "rxjs", "@yuuvis/core"]
+    "no-submodule-imports": [true, "rxjs"]
   }
 }

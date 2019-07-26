@@ -9,7 +9,6 @@ export class DmsObject {
   data: any;
 
   constructor(searchResultItem: SearchResultItem) {
-    console.log('fields: ', searchResultItem);
     this.id = searchResultItem.fields.get('enaio:objectId');
     this.objectTypeId = searchResultItem.objectTypeId;
     this.title = searchResultItem.fields.get('tenKolibri:clienttitle');
@@ -19,9 +18,9 @@ export class DmsObject {
 
   generateData(fields) {
     const result = {};
-    Array.from(fields).map((d: any) =>
-      d.reduce((key, value) => (result[key] = value), {})
-    );
+    for (const [key, val] of fields.entries()) {
+      result[key] = val;
+    }
     return result;
   }
 }

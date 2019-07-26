@@ -64,15 +64,13 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
   @Output() columnResized = new EventEmitter<ColumnSizes>();
 
   @HostBinding('class.small') small = false;
-  @HostListener('keydown.control.c', ['$event']) copyCellHandler(
-    event: KeyboardEvent
-  ) {
+  @HostListener('keydown.control.c', ['$event'])
+  copyCellHandler(event: KeyboardEvent) {
     // copy cell
     this.copyToClipboard('cell');
   }
-  @HostListener('keydown.control.shift.c', ['$event']) copyRowHandler(
-    event: KeyboardEvent
-  ) {
+  @HostListener('keydown.control.shift.c', ['$event'])
+  copyRowHandler(event: KeyboardEvent) {
     // copy row
     this.copyToClipboard('row');
   }
@@ -136,7 +134,9 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
   }
 
   private getSmallSizeColDef(): ColDef {
-    const colDef: ColDef = { field: 'titleProps' };
+    const colDef: ColDef = {
+      field: 'titleProps'
+    };
     colDef.cellClass = 'cell-title-description';
 
     colDef.cellRenderer = params => {

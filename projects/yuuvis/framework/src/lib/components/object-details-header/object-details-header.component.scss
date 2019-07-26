@@ -5,7 +5,7 @@
 
 .header {
   display: grid;
-  grid-template-columns: 5% 75% 30%;
+  grid-template-columns: 5% 75% 20%;
   grid-template-rows: 1fr;
   grid-template-areas: 'header-icon header-info header-actions';
 
@@ -18,12 +18,19 @@
   min-width: 0;
 }
 
+::ng-deep {
+  .sidebar-header.hide {
+    background: none;
+  }
+}
+
 .header-icon {
   grid-area: header-icon;
 }
 
 .header-actions {
   grid-area: header-actions;
+  justify-self: end;
 }
 
 .header-info {

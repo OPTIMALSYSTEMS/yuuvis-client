@@ -49,6 +49,12 @@ export class SystemService {
     return this.system.i18n[key];
   }
 
+  isDateFormat(data: string): boolean {
+    return !!JSON.stringify(data).match(
+      /\b[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{3}Z\b/
+    );
+  }
+
   /**
    * Fetches the backends system definition and updates system$ Observable.
    * Subscribe to the system$ observable instead of calling this function, otherwise you'll trigger fetching the

@@ -75,7 +75,7 @@ export class GridService {
    * @param width The width the column should have. If not provided defaults apply
    */
   private getColumnDefinition(field: ObjectTypeField, width?: number): ColDef {
-    let colDef = <ColDef>{
+    const colDef: ColDef = {
       field: field.id,
       headerName: this.system.getLocalizedResource(`${field.id}_label`)
     };
@@ -241,16 +241,14 @@ export class GridService {
   }
 
   private customContext(fnc, mixin?) {
-    return param => {
-      return fnc(Object.assign({}, param, { context: this.context }, mixin));
-    };
+    return param => fnc({ ...param, context: this.context }, mixin);
   }
 
   public fileSizeKeyCreator(param) {
     if (!param.value) {
       return null;
     }
-    let match = param.context.fileSizeOpts.find(
+    const match = param.context.fileSizeOpts.find(
       f => f.from <= param.value && param.value < f.to
     );
     return match
