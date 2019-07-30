@@ -1,5 +1,9 @@
-import { Component, OnInit } from '@angular/core';
-import { IVisibleFilter } from '../history-filter/history-filter.component';
+import { Component, Input, OnInit } from '@angular/core';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { IVisibleFilter } from '../objectHistory/interface/history-filter.interface';
+import { DmsObjectHistoryEntry } from '../objectHistory/model/dms-object-history.model';
+import { ObjectHistoryService } from '../objectHistory/service/object-history.service';
 
 @Component({
   selector: 'yuv-history',
@@ -8,26 +12,38 @@ import { IVisibleFilter } from '../history-filter/history-filter.component';
 })
 export class HistoryComponent implements OnInit {
   _params: any; //DmsParams;
-  _history = []; //: DmsObjectHistoryEntry[] = [];
-  history = []; //: DmsObjectHistoryEntry[] = [];
+  _history: Observable<DmsObjectHistoryEntry[]>; //: DmsObjectHistoryEntry[] = [];
   filters: string[] = [];
   filterterm: string;
   visibleFilter: IVisibleFilter = { select: true, input: true };
 
-  constructor() {}
+  @Input()
+  set objectId(id) {
+    this.history = this.historyService.objectHistory(id);
+  }
+  set history(history: Observable<DmsObjectHistoryEntry[]>) {
+    this._history = history;
+  }
+  get history(): Observable<DmsObjectHistoryEntry[]> {
+    return this._history;
+  }
+
+  constructor(private historyService: ObjectHistoryService) {}
 
   ngOnInit() {}
 
-  toggleFilter(filter) {
-    const [type, hasFilter] = filter;
+  toggleFilter(filters) {
+    const [type, hasFilter] = filters;
     if (hasFilter) {
       this.filters = this.filters.filter(s => s !== type);
     } else {
       this.filters.push(type);
     }
     // todo: ChangeDetection should not work here, Hä?
-    this.history = this._history.filter(
-      entry => this.filters.indexOf(entry.group) === -1
+    this.history = this._history.pipe(
+      map((entrys: DmsObjectHistoryEntry[]) =>
+        entrys.filter(entry => this.filters.indexOf(entry.group) === -1)
+      )
     );
   }
 

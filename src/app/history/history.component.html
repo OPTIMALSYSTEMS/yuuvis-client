@@ -1,9 +1,14 @@
-<yuv-history-filter 
+<yuv-history-filter
   [filters]="filters"
   [history]="history"
   [(term)]="filterterm"
   [visibleFilter]="visibleFilter"
-  (onToggleFilter)="toggleFilter($event)">
+  (onToggleFilter)="toggleFilter($event)"
+>
 </yuv-history-filter>
 
-<yuv-timeline-entry></yuv-timeline-entry>
+<yuv-timeline-entry
+  [history]="history"
+  [filters]="filters"
+  [filterterm]="filterterm"
+></yuv-timeline-entry>

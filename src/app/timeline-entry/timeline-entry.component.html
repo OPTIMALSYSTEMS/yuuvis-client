@@ -1,4 +1,4 @@
-<div class="timeline-entry" *ngFor="let entry of history">
+<div class="timeline-entry" *ngFor="let entry of history | async | historyFilter: filterterm; trackBy: trackByIndex">
   <div class="when">
       <div class="date">{{ entry.time | localeDate: 'eoShortDate' }}</div>
       <div class="time">{{ entry.time | localeDate: 'eoShortTime' }}</div>

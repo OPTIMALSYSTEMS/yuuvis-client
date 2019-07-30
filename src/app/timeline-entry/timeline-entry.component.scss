@@ -80,58 +80,62 @@
     height: 50%;
     bottom: auto;
   }
-}
 
-.when {
-  grid-area: when;
-  align-self: center;
-}
-
-.marker {
-  grid-area: marker;
-
-  width: calc(var(--app-pane-padding) * 2);
-  position: relative;
-  display: flex;
-  flex-flow: column;
-  align-items: center;
-  justify-content: center;
-  flex: 0 0 auto;
-  margin: 0 var(--app-pane-padding);
-
-  &:before {
-    content: '';
-    width: var(--app-pane-padding);
-    height: var(--app-pane-padding);
-    border-radius: 50%;
-    background-color: var(--panel-background);
-    border: 2px solid var(--text-color-hint);
-    z-index: 1;
+  &:only-child .marker:after {
+    height: 0;
   }
 
-  &:after {
-    content: '';
-    position: absolute;
-    width: calc(var(--app-pane-padding) - 1px);
-    left: 0;
-    top: 0;
-    bottom: 0;
-    border-right: 2px solid rgba(var(--color-accent-rgb), 0.26);
+  .when {
+    grid-area: when;
+    align-self: center;
   }
 
-  &.bpm:before {
-    border-color: var(--color-warning);
-  }
-  &.mod:before {
-    border-color: var(--color-success);
-  }
-}
+  .marker {
+    grid-area: marker;
 
-.what {
-  grid-area: what;
-  background-color: var(--accent-color);
-  border-radius: 2px;
-  padding: calc(var(--app-pane-padding) / 2);
-  margin: calc(var(--app-pane-padding) / 2) calc(var(--app-pane-padding) / 2) 0
-    0;
+    width: calc(var(--app-pane-padding) * 2);
+    position: relative;
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    margin: 0 var(--app-pane-padding);
+
+    &:before {
+      content: '';
+      width: var(--app-pane-padding);
+      height: var(--app-pane-padding);
+      border-radius: 50%;
+      background-color: var(--panel-background);
+      border: 2px solid var(--text-color-hint);
+      z-index: 1;
+    }
+
+    &:after {
+      content: '';
+      position: absolute;
+      width: calc(var(--app-pane-padding) - 1px);
+      left: 0;
+      top: 0;
+      bottom: 0;
+      border-right: 2px solid rgba(var(--color-accent-rgb), 0.26);
+    }
+
+    &.bpm:before {
+      border-color: var(--color-warning);
+    }
+    &.mod:before {
+      border-color: var(--color-success);
+    }
+  }
+
+  .what {
+    grid-area: what;
+    background-color: var(--accent-color);
+    border-radius: 2px;
+    padding: calc(var(--app-pane-padding) / 2);
+    margin: calc(var(--app-pane-padding) / 2) calc(var(--app-pane-padding) / 2)
+      0 0;
+  }
 }

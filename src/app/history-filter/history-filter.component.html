@@ -34,16 +34,16 @@
   </div>
 
   <div class="filter" *ngIf="visibleFilter.select"> 
-      <div (click)="toggleFilter('MODIFICATION')" class="selection-filter modification"
-           [ngClass]="{inactive: hasFilter('MODIFICATION')}"
+      <div (click)="toggleFilter(filter.MODIFICATION)" class="selection-filter modification"
+           [ngClass]="{inactive: hasFilter(filter.MODIFICATION)}"
            translate>eo.object.history.filter.modification</div>
 
-    <div (click)="toggleFilter('PROCESS')" class="selection-filter process"
-           [ngClass]="{inactive: hasFilter('PROCESS')}"
+    <div (click)="toggleFilter(filter.PROCESS)" class="selection-filter process"
+           [ngClass]="{inactive: hasFilter(filter.PROCESS)}"
            translate>eo.object.history.filter.process</div>
 
-     <div (click)="toggleFilter('INFORMATIONAL')" class="selection-filter informational"
-           [ngClass]="{inactive: hasFilter('INFORMATIONAL')}"
+     <div (click)="toggleFilter(filter.INFORMATIONAL)" class="selection-filter informational"
+           [ngClass]="{inactive: hasFilter(filter.INFORMATIONAL)}"
            translate>eo.object.history.filter.informational</div>
   </div>
 </section>
