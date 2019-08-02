@@ -147,7 +147,7 @@ export class SystemService {
         this.createObjectType(td, false, propertiesMap, secondaryObjectTypes)
     );
 
-    const folderTypes: ObjectType[] = schemaResponse.typeDocumentDefinition.map(
+    const folderTypes: ObjectType[] = schemaResponse.typeFolderDefinition.map(
       (td: SchemaResponseTypeDefinition) =>
         this.createObjectType(td, false, propertiesMap, secondaryObjectTypes)
     );
