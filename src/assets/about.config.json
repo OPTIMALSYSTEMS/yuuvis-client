@@ -1,7 +1,7 @@
 {
     "docu": {
-        "link": "https://help.optimal-systems.com/yuuvis/API/###version###/user/###userLang###/index.html",
-        "version": 1,
+        "link": "https://help.optimal-systems.com/yuuvisAPI/v###version###/user/###userLang###/index.html",
+        "version": 10,
         "language": ["de", "en"]
     }
 }
