@@ -18,7 +18,7 @@
   },
   "client": {
     "docu": {
-      "link": "https://help.optimal-systems.com/yuuvis/API/###version###/user/###userLang###/index.html",
+      "link": "https://help.optimal-systems.com/yuuvisAPI/v10/user/client/###userLang###/index.html",
       "version": 1,
       "language": ["de", "en"]
     }
