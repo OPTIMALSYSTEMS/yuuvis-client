@@ -20,71 +20,19 @@ export class SearchService {
 
   constructor(private backend: BackendService) {}
 
-  searchByQuery(q: SearchQuery): Observable<SearchResult> {
+  search(q: SearchQuery): Observable<SearchResult> {
+    if (!q.maxItems) {
+      q.maxItems = this.maxItems;
+    }
     this.lastSearchQuery = q;
-    return this.search(this.queryToStatement(q));
-  }
 
-  search(
-    statement: string,
-    skipCount: number = 0,
-    maxItems: number = this.maxItems
-  ): Observable<SearchResult> {
     return this.backend
-      .post(
-        '/dms/objects/search',
-        this.getQueryJson(statement, skipCount, maxItems),
-        ApiBase.core
-      )
-      .pipe(
-        map(res => this.toSearchResult(statement, res, skipCount, maxItems))
-      );
-  }
-
-  searchRaw(
-    statement: string,
-    skipCount: number = 0,
-    maxItems: number = this.maxItems
-  ): Observable<any> {
-    return this.backend.post(
-      '/dms/objects/search',
-      this.getQueryJson(statement, skipCount, maxItems),
-      ApiBase.core
-    );
+      .post(`/search/search?size=${this.maxItems}`, q.toJson(), ApiBase.apiWeb)
+      .pipe(map(res => this.toSearchResult(q, res)));
   }
 
   getLastSearchQuery() {
     return this.lastSearchQuery;
-  }
-
-  // Generate the query JSON that will be send to the search endpont
-  private getQueryJson(
-    statement: string,
-    skipCount: number = 0,
-    maxItems?: number
-  ) {
-    return {
-      query: {
-        statement,
-        skipCount,
-        maxItems
-        // "handleDeletedDocuments" : "DELETED_DOCUMENTS_EXCLUDE",         // optional DELETED_DOCUMENTS_INCLUDE | DELETED_DOCUMENTS_ONLY | DELETED_DOCUMENTS_EXCLUDE default: DELETED_DOCUMENTS_EXCLUDE
-      }
-    };
-  }
-
-  /**
-   * Transform a search query to an executable statement
-   * @param searchQuery The query to be processed
-   */
-  private queryToStatement(searchQuery: SearchQuery): string {
-    let targetTypes = ['enaio:object'];
-    if (searchQuery.types.length) {
-      targetTypes = searchQuery.types;
-    }
-    return `SELECT * FROM ${targetTypes.join(',')} WHERE CONTAINS('${
-      searchQuery.term
-    }')`;
   }
 
   /**
@@ -95,10 +43,11 @@ export class SearchService {
    * @param maxItems  (optional) maximum number of result items (used for paging - page size)
    */
   private toSearchResult(
-    statement: string,
-    searchResult: any,
-    skipCount?: number,
-    maxItems?: number
+    // statement: string,
+    query: SearchQuery,
+    searchResult: any
+    // skipCount?: number,
+    // maxItems?: number
   ): SearchResult {
     const resultListItems: SearchResultItem[] = [];
     const objectTypes: string[] = [];
@@ -148,7 +97,7 @@ export class SearchService {
     });
 
     const result: SearchResult = {
-      statement: statement,
+      // statement: statement,
       hasMoreItems: searchResult.hasMoreItems,
       totalNumItems: searchResult.totalNumItems,
       items: resultListItems,
@@ -156,11 +105,11 @@ export class SearchService {
     };
 
     // does this result support pagination?
-    if (maxItems && searchResult.totalNumItems > maxItems) {
+    if (query.maxItems && searchResult.totalNumItems > query.maxItems) {
       result.pagination = {
-        pageSize: maxItems,
-        pages: Math.ceil(searchResult.totalNumItems / maxItems),
-        page: (!skipCount ? 0 : skipCount / maxItems) + 1
+        pageSize: query.maxItems,
+        pages: Math.ceil(searchResult.totalNumItems / query.maxItems),
+        page: (!query.from ? 0 : query.from / query.maxItems) + 1
       };
     }
 
@@ -172,7 +121,11 @@ export class SearchService {
    * @param searchResult The search result (that supports pagination)
    * @param page The number of the page to go to
    */
-  getPage(searchResult: SearchResult, page: number): Observable<SearchResult> {
+  getPage(
+    query: SearchQuery,
+    searchResult: SearchResult,
+    page: number
+  ): Observable<SearchResult> {
     if (!searchResult.pagination) return of(searchResult);
     if (searchResult.pagination.pages < page)
       page = searchResult.pagination.pages;

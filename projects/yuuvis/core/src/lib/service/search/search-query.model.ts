@@ -2,12 +2,17 @@ import { SearchQueryProperties } from './search.service.interface';
 
 export class SearchQuery {
   term: string;
+  maxItems: number;
+  from: number;
   types: string[] = [];
   filters: SearchFilter[] = [];
 
   constructor(searchQueryProperties?: SearchQueryProperties) {
     if (searchQueryProperties) {
       this.term = searchQueryProperties.term;
+      this.from = searchQueryProperties.from;
+      this.from = searchQueryProperties.from;
+      this.maxItems = searchQueryProperties.maxItems;
       this.filters = searchQueryProperties.filters;
       this.types = searchQueryProperties.types;
     }
@@ -102,6 +107,7 @@ export class SearchQuery {
   public toJson(): SearchQueryProperties {
     return {
       term: this.term,
+      from: this.from,
       filters: this.filters,
       types: this.types
     };

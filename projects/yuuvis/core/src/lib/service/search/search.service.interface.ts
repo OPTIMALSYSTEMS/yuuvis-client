@@ -1,9 +1,6 @@
 import { SearchFilter } from './search-query.model';
 
 export interface SearchResult {
-  // the statement that was executed to get the current result
-  // Use for fetching the next page for example
-  statement: string;
   hasMoreItems: boolean;
   totalNumItems: number;
   items: SearchResultItem[];
@@ -39,6 +36,8 @@ export interface SearchResultContent {
 
 export interface SearchQueryProperties {
   term: string;
+  from?: number;
+  maxItems?: number;
   types: string[];
   filters: SearchFilter[];
 }
