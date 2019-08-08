@@ -21,11 +21,11 @@ export interface ObjectTypeProperties {
 
 export interface ObjectTypeField {
   id: string;
-  description: string;
   propertyType: string;
-  cardinality: string;
-  required: boolean;
-  updatability: string;
+  description?: string;
+  cardinality?: string;
+  required?: boolean;
+  updatability?: string;
 }
 
 // base definition of the kind of data we'll receive

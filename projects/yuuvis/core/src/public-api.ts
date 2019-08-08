@@ -29,6 +29,7 @@ export * from './lib/service/screen/screen.service';
 export * from './lib/service/search/search-query.model';
 export * from './lib/service/search/search.service';
 export * from './lib/service/search/search.service.interface';
+export * from './lib/service/system/system.enum';
 export { ObjectTypeField } from './lib/service/system/system.interface';
 export * from './lib/service/system/system.service';
 export * from './lib/service/user/user.service';

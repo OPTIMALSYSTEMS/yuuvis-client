@@ -165,7 +165,7 @@ export class SystemService {
         this.createObjectType(td, false, propertiesMap, secondaryObjectTypes)
     );
 
-    const folderTypes: ObjectType[] = schemaResponse.typeDocumentDefinition.map(
+    const folderTypes: ObjectType[] = schemaResponse.typeFolderDefinition.map(
       (td: SchemaResponseTypeDefinition) =>
         this.createObjectType(td, false, propertiesMap, secondaryObjectTypes)
     );
@@ -211,7 +211,7 @@ export class SystemService {
     secondaryObjectTypes: Map<string, ObjectType>
   ): ObjectType {
     // also add the fields of all secondary object types
-    let fields = schemaResType.propertyReference.map(pr =>
+    let fields: ObjectTypeField[] = schemaResType.propertyReference.map(pr =>
       propertiesMap.get(pr.value)
     );
     if (
@@ -219,9 +219,21 @@ export class SystemService {
       schemaResType.secondaryObjectTypeId.length
     ) {
       schemaResType.secondaryObjectTypeId.forEach(id => {
-        fields = fields.concat(secondaryObjectTypes.get(id).fields);
+        fields.push(...secondaryObjectTypes.get(id).fields);
       });
     }
+
+    // add contentstream related fields as well
+    [].forEach(f => {
+      fields.push({
+        id: f,
+        cardinality: 'single',
+        description: '',
+        required: false,
+        propertyType: '',
+        updatability: ''
+      });
+    });
 
     return new ObjectType({
       id: schemaResType.id,
