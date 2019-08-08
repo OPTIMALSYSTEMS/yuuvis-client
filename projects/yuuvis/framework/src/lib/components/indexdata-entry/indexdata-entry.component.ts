@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { SystemService, TranslateService } from '@yuuvis/core';
-import { LocaleDatePipe } from '../../pipes';
+import { SystemService, TranslateService, UserService } from '@yuuvis/core';
+import { DisplayNamePipe, LocaleDatePipe } from '../../pipes';
 
 @Component({
   selector: 'yuv-indexdata-entry',
@@ -17,7 +17,7 @@ export class IndexdataEntryComponent {
   @Input() innerValue: string;
   @Input()
   set item(item: any) {
-    this.data = this.formatData(item);
+    this.data = item; //this.formatData(item);
     this.enableVersions = this.data['enaio:versionNumber'] ? true : false;
   }
 
@@ -42,14 +42,27 @@ export class IndexdataEntryComponent {
 
   constructor(
     private translate: TranslateService,
-    private systemService: SystemService
+    private systemService: SystemService,
+    private userService: UserService
   ) {}
 
-  private formatData(data: any) {
+  private formatData(data: any): any {
     const datePipe = new LocaleDatePipe(this.translate);
+    const displayNamePipe = new DisplayNamePipe(this.userService);
+
+    if (['enaio:lastModifiedBy', 'enaio:createdBy'].includes(data.key)) {
+      displayNamePipe
+        .transform(data.value, 'Organization')
+        .subscribe(val => (data.value = val));
+    }
+
     data.key = this.systemService.getLocalizedResource(`${data.key}_label`);
     if (this.systemService.isDateFormat(data.value)) {
       data.value = datePipe.transform(data.value, 'eoShort');
+    }
+
+    if (Array.isArray(data.value)) {
+      data.value = data.value.join();
     }
     return data;
   }

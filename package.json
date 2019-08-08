@@ -26,7 +26,7 @@
     "extract:app": "ngx-translate-extract --input ./src --output ./src/assets/default/i18n/de.json ./src/assets/default/i18n/en.json --clean --sort --format json && node ./tools/scripts/common/i18n-merge --run",
     "extract:merge:all": "npm run extract:framework && node ./tools/scripts/common/i18n --lib=framework && npm run extract:app",
     "sass:libs": "node ./tools/scripts/common/sass --lib=common-ui&& node ./tools/scripts/common/sass --lib=framework",
-    "build:libs:all": "npm run cleanup:dist && npm run build:core && npm run build:common && npm run build:framework",
+    "build:libs:all": "npm run build:core && npm run build:common && npm run build:framework",
     "build:cordova": "ng build cordova --baseHref=./ --outputPath=cordova/www",
     "build:android": "npm run build:cordova && cd cordova && cordova clean android && cordova build android",
     "build:android:run": "npm run build:cordova && cd cordova && cordova clean android && cordova run android",

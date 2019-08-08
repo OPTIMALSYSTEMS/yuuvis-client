@@ -30,6 +30,20 @@ export class LocaleDatePipe extends DatePipe implements PipeTransform {
     timezone?: string,
     locale?: string
   ): string {
+    if (Array.isArray(value)) {
+      return value
+        .map(val => this.timeTransform(val, format, timezone, locale))
+        .join(', ');
+    }
+    return this.timeTransform(value, format, timezone, locale);
+  }
+
+  private timeTransform(
+    value: any,
+    format: string = '',
+    timezone?: string,
+    locale?: string
+  ) {
     if (format === 'eoNiceShort') {
       let diff = moment(value).diff(moment(), 'day');
       format =

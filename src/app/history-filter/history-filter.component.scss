@@ -1,7 +1,7 @@
 .history-filter {
   display: grid;
-  grid-template-columns: 0.5fr 1fr;
-  grid-template-rows: 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(1fr, 1fr));
+  // grid-template-rows: 1fr;
   grid-template-areas: 'search filter';
   align-items: center;
 }
@@ -28,8 +28,8 @@
 
 .filter {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  grid-template-rows: 1fr;
+  grid-template-columns: fit-content(200px);
+  // grid-template-rows: 1fr;
   grid-template-areas: 'modification process informational';
   grid-area: filter;
 

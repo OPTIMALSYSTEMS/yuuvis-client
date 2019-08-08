@@ -10,8 +10,8 @@ export class ObjectDetailsComponent implements OnInit {
   private _dmsObject: DmsObject;
 
   @Input()
-  set dmsObject(o: DmsObject) {
-    this._dmsObject = o;
+  set dmsObject(object: DmsObject) {
+    this._dmsObject = object;
   }
 
   get dmsObject() {

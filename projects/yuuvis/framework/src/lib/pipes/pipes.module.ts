@@ -10,6 +10,7 @@ import {
   LocalePercentPipe
 } from './locale-number.pipe';
 import { SafeHtmlPipe } from './safe-html.pipe';
+import { DisplayNamePipe, FullNamePipe } from './user.pipe';
 
 @NgModule({
   imports: [CommonModule],
@@ -21,7 +22,9 @@ import { SafeHtmlPipe } from './safe-html.pipe';
     LocaleCurrencyPipe,
     LocaleNumberPipe,
     KeysPipe,
-    SafeHtmlPipe
+    SafeHtmlPipe,
+    DisplayNamePipe,
+    FullNamePipe
   ],
   exports: [
     FileSizePipe,
@@ -31,7 +34,9 @@ import { SafeHtmlPipe } from './safe-html.pipe';
     LocaleCurrencyPipe,
     LocaleNumberPipe,
     KeysPipe,
-    SafeHtmlPipe
+    SafeHtmlPipe,
+    DisplayNamePipe,
+    FullNamePipe
   ]
 })
 export class YuvPipesModule {}

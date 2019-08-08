@@ -7,6 +7,7 @@ import { BackendService } from '../backend/backend.service';
 import { AppCacheService } from '../cache/app-cache.service';
 import { Logger } from '../logger/logger';
 import {
+  ObjectTypeField,
   SchemaResponse,
   SchemaResponseDocumentTypeDefinition,
   SchemaResponsePropertyDefinition,
@@ -43,6 +44,17 @@ export class SystemService {
 
   getBaseType(): ObjectType {
     return this.system.baseType;
+  }
+
+  getBaseTypeById(objectTypeField: string): ObjectTypeField {
+    return this.getBaseType().fields.find(
+      field => field.id === objectTypeField
+    );
+  }
+
+  getBaseTypePropertyTypeById(objectTypeField: string): string {
+    return this.getBaseType().fields.find(field => field.id === objectTypeField)
+      .propertyType;
   }
 
   getLocalizedResource(key: string): string {
