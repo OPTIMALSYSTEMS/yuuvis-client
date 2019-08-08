@@ -34,3 +34,4 @@ export { ObjectTypeField } from './lib/service/system/system.interface';
 export * from './lib/service/system/system.service';
 export * from './lib/service/user/user.service';
 export * from './lib/util/utils';
+export * from './lib/util/utils.helper.enum';
