@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
+import { ChipPipe } from './chip.pipe';
 import { FileSizePipe } from './filesize.pipe';
 import { KeysPipe } from './keys.pipe';
 import { LocaleDatePipe } from './locale-date.pipe';
@@ -24,7 +25,8 @@ import { DisplayNamePipe, FullNamePipe } from './user.pipe';
     KeysPipe,
     SafeHtmlPipe,
     DisplayNamePipe,
-    FullNamePipe
+    FullNamePipe,
+    ChipPipe
   ],
   exports: [
     FileSizePipe,
@@ -36,7 +38,8 @@ import { DisplayNamePipe, FullNamePipe } from './user.pipe';
     KeysPipe,
     SafeHtmlPipe,
     DisplayNamePipe,
-    FullNamePipe
+    FullNamePipe,
+    ChipPipe
   ]
 })
 export class YuvPipesModule {}

@@ -3,6 +3,7 @@ import {
   throwError as observableThrowError
 } from 'rxjs';
 import { YuvError } from '../model/yuv-error.model';
+import { Sort } from './utils.helper.enum';
 
 export class Utils {
   /**
@@ -132,7 +133,7 @@ export class Utils {
    */
   public static sortValues(
     key = '',
-    order = 'asc',
+    order = Sort.ASC,
     locales?: string | string[],
     options?: Intl.CollatorOptions
   ) {
@@ -144,7 +145,7 @@ export class Utils {
       const stringB = varB || varB === 0 ? varB.toString() : '';
 
       const comparison = stringA.localeCompare(stringB, locales, options);
-      return order === 'desc' ? comparison * -1 : comparison;
+      return order === Sort.DESC ? comparison * -1 : comparison;
     };
     return f;
   }

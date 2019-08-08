@@ -23,6 +23,11 @@
       color: black;
     }
 
+    &.baseparams {
+      color: var(--color-black);
+      background-color: var(--panel-background-grey);
+    }
+
     :host-context(.screen-s) & {
       grid-template-columns: 1fr 1fr;
     }
@@ -39,4 +44,15 @@
       text-overflow: ellipsis;
     }
   }
+}
+
+.chip {
+  display: inline-block;
+  background: rgba(0, 0, 0, 0.03);
+  border-radius: 2px;
+  -webkit-border-radius: 2px;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  padding: 0 3px;
+  color: var(--text-color-caption);
+  margin: 1px 0;
 }

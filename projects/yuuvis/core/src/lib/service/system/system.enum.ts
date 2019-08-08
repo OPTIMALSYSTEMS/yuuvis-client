@@ -3,3 +3,8 @@ export enum ContentStreamField {
   FILENAME = 'enaio:contentStreamFileName',
   MIME_TYPE = 'enaio:contentStreamMimeType'
 }
+
+export enum UserField {
+  LAST_MODIFIED_BY = 'enaio:lastModifiedBy',
+  CREATED_BY = 'enaio:createdBy'
+}
