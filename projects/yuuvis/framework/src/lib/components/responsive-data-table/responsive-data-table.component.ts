@@ -75,6 +75,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
 
   // emits an array of the selected rows
   @Output() selectionChanged = new EventEmitter<any[]>();
+  @Output() sortChanged = new EventEmitter<any>();
   @Output() columnResized = new EventEmitter<ColumnSizes>();
 
   constructor() {
@@ -182,6 +183,9 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
       },
       onColumnResized: event => {
         this.columnResizeSource.next();
+      },
+      onSortChanged: event => {
+        this.sortChanged.emit(event);
       }
     };
   }

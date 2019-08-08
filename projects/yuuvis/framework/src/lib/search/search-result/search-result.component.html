@@ -12,6 +12,7 @@
     <yuv-responsive-data-table *ngIf="tableData" [data]="tableData" 
     (columnResized)="onColumnResized($event)"
     (selectionChanged)="onSelectionChanged($event)">
+    (sortChanged)="onSortChanged($event)">
     </yuv-responsive-data-table>
 
     <div class="paging">

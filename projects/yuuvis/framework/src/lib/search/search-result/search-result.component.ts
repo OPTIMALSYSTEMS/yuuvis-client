@@ -8,6 +8,7 @@ import {
 } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import {
+  ContentStreamField,
   SearchResult,
   SearchResultItem,
   SearchService,
@@ -94,6 +95,8 @@ export class SearchResultComponent implements OnInit {
         }
 
         this._columns = colDefs;
+        // TODO: setup sort state from the query
+        // this._gridOptions.api.setSortModel([{colId: "enaio:creationDate", sort: "desc"}]);
         const rows = [];
         this._searchResult.items.forEach(i => {
           rows.push(this.getRow(i));
@@ -129,26 +132,26 @@ export class SearchResultComponent implements OnInit {
         cd.field.startsWith('enaio:contentStream')
       ) {
         switch (cd.field) {
-          case 'enaio:contentStreamLength': {
+          case ContentStreamField.LENGTH: {
             row[cd.field] = searchResultItem.content.size;
             break;
           }
-          case 'enaio:contentStreamFileName': {
+          case ContentStreamField.FILENAME: {
             row[cd.field] = searchResultItem.content.fileName;
             break;
           }
-          case 'enaio:contentStreamMimeType': {
+          case ContentStreamField.MIME_TYPE: {
             row[cd.field] = searchResultItem.content.mimeType;
             break;
           }
-          case 'enaio:contentStreamRange': {
-            row[cd.field] = searchResultItem.content.range;
-            break;
-          }
-          case 'enaio:contentStreamRepositoryId': {
-            row[cd.field] = searchResultItem.content.repositoryId;
-            break;
-          }
+          // case 'enaio:contentStreamRange': {
+          //   row[cd.field] = searchResultItem.content.range;
+          //   break;
+          // }
+          // case 'enaio:contentStreamRepositoryId': {
+          //   row[cd.field] = searchResultItem.content.repositoryId;
+          //   break;
+          // }
         }
       } else {
         row[cd.field] = searchResultItem.fields.get(cd.field);
@@ -180,6 +183,9 @@ export class SearchResultComponent implements OnInit {
 
   onSelectionChanged(selectedRows: any[]) {
     this.itemsSelected.emit(selectedRows.map(r => r.id));
+  }
+  onSortChanged(sortChangedEvent: any) {
+    console.log('sort changed', sortChangedEvent);
   }
 
   onColumnResized(colSizes: ColumnSizes) {

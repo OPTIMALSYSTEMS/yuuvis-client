@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import {
   AppCacheService,
   BackendService,
+  ContentStreamField,
   ObjectType,
   ObjectTypeField,
   SystemService,
@@ -62,9 +63,21 @@ export class GridService {
         if (colSizes) {
           colSizes.columns.forEach(cs => colSizesMap.set(cs.id, cs.width));
         }
-        return objectType.fields.map(f =>
-          this.getColumnDefinition(f, colSizesMap.get(f.id))
+
+        const colDefs: ColDef[] = [];
+        // add column definitions for the object types fields
+        colDefs.push(
+          ...objectType.fields.map(f =>
+            this.getColumnDefinition(f, colSizesMap.get(f.id))
+          )
         );
+        // also apply contentstream related columns
+        colDefs.push(
+          ...this.getContentStreamTypeFields().map(f =>
+            this.getColumnDefinition(f, colSizesMap.get(f.id))
+          )
+        );
+        return colDefs;
       })
     );
   }
@@ -90,9 +103,21 @@ export class GridService {
 
     colDef.suppressMovable = true;
     colDef.resizable = true;
-    colDef.sortable = false;
+    colDef.sortable = true;
 
     return colDef;
+  }
+
+  /**
+   * Create `ContentStreamTypeField` objects for contentstream propeties, so they can be
+   * processed by the `getColumnDefinition()` function.
+   */
+  private getContentStreamTypeFields(): ObjectTypeField[] {
+    return [
+      { id: ContentStreamField.MIME_TYPE, propertyType: 'string' },
+      { id: ContentStreamField.LENGTH, propertyType: 'integer' },
+      { id: ContentStreamField.FILENAME, propertyType: 'string' }
+    ];
   }
 
   /**
@@ -219,7 +244,7 @@ export class GridService {
         colDef.cellClass = 'res-ico';
         break;
       }
-      case 'enaio:contentStreamMimeType': {
+      case ContentStreamField.MIME_TYPE: {
         colDef.width = 101;
         break;
       }
@@ -227,7 +252,7 @@ export class GridService {
         colDef.width = 80;
         break;
       }
-      case 'enaio:contentStreamLength': {
+      case ContentStreamField.LENGTH: {
         colDef.width = 100;
         colDef.enableRowGroup = false;
         colDef.cellRenderer = this.customContext(

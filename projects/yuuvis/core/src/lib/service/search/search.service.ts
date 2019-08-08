@@ -3,6 +3,7 @@ import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { ApiBase } from '../backend/api.enum';
 import { BackendService } from '../backend/backend.service';
+import { ContentStreamField } from '../system/system.enum';
 import { SearchQuery } from './search-query.model';
 import {
   SearchResult,
@@ -117,6 +118,11 @@ export class SearchService {
         // we assume that each result object only has ONE file attached, altough
         // this is an array and there may be more
         const contentStream = o.contentStreams[0];
+        // also add contentstream related fields to the result fields
+        fields.set(ContentStreamField.MIME_TYPE, contentStream.mimeType);
+        fields.set(ContentStreamField.LENGTH, contentStream.length);
+        fields.set(ContentStreamField.FILENAME, contentStream.fileName);
+
         content = {
           contentStreamId: contentStream.contentStreamId,
           repositoryId: contentStream.repositoryId,
