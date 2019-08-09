@@ -8,10 +8,13 @@ import {
 } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import {
+  BaseObjectTypeField,
   ContentStreamField,
+  SearchQuery,
   SearchResult,
   SearchResultItem,
   SearchService,
+  SecondaryObjectTypeField,
   SystemService,
   TranslateService
 } from '@yuuvis/core';
@@ -28,7 +31,7 @@ import { SVGIcons } from '../../svg.generated';
   host: { class: 'yuv-search-result yuv-panel toolbar' }
 })
 export class SearchResultComponent implements OnInit {
-  _searchResult: SearchResult;
+  private _searchQuery: SearchQuery;
   private _columns: ColDef[];
   private _rows: any[];
   pagingForm: FormGroup;
@@ -41,12 +44,20 @@ export class SearchResultComponent implements OnInit {
     icArrowLast: SVGIcons['arrow-last']
   };
   tableData: ResponsiveTableData;
+  // object type shown in the result list, will be null for mixed results
+  private resultListObjectTypeId: string;
+  totalNumItems: number;
+  // state of pagination
+  pagination: {
+    pages: number;
+    page: number;
+  };
 
-  @Input() set searchResult(searchResult: SearchResult) {
-    this._searchResult = searchResult;
-    if (searchResult) {
-      // create data for responsive table from the search result
-      this.createTableData();
+  @Input() set query(searchQuery: SearchQuery) {
+    this._searchQuery = searchQuery;
+    if (searchQuery) {
+      // execute the query and
+      this.executeQuery();
     }
   }
   @Input() title: string;
@@ -70,27 +81,49 @@ export class SearchResultComponent implements OnInit {
     });
   }
 
+  private executeQuery() {
+    this.busy = true;
+    this.searchService
+      .search(this._searchQuery)
+      .subscribe((res: SearchResult) => {
+        this.totalNumItems = res.totalNumItems;
+        this.createTableData(res);
+      });
+  }
+
   // Create actual table data from the search result
-  private createTableData(): void {
+  private createTableData(searchResult: SearchResult): void {
     // object type of the result list items, if NULL we got a mixed result
-    const resultListObjectType =
-      this._searchResult.objectTypes.length > 1
-        ? null
-        : this._searchResult.objectTypes[0];
+    this.resultListObjectTypeId =
+      searchResult.objectTypes.length > 1 ? null : searchResult.objectTypes[0];
 
     this.gridService
-      .getColumnConfiguration(resultListObjectType)
+      .getColumnConfiguration(this.resultListObjectTypeId)
       .subscribe((colDefs: ColDef[]) => {
-        if (this._searchResult.pagination) {
-          // setup pagination form in case of a paged search result chunk
-          this.pagingForm
-            .get('page')
-            .setValue(this._searchResult.pagination.page);
+        // setup pagination form in case of a paged search result chunk
+        this.pagination = null;
+        if (searchResult.hasMoreItems) {
+          if (
+            this._searchQuery.maxItems &&
+            searchResult.totalNumItems > this._searchQuery.maxItems
+          ) {
+            this.pagination = {
+              pages: Math.ceil(
+                searchResult.totalNumItems / this._searchQuery.maxItems
+              ),
+              page:
+                (!this._searchQuery.from
+                  ? 0
+                  : this._searchQuery.from / this._searchQuery.maxItems) + 1
+            };
+          }
+
+          this.pagingForm.get('page').setValue(this.pagination.page);
           this.pagingForm
             .get('page')
             .setValidators([
               Validators.min(0),
-              Validators.max(this._searchResult.pagination.pages)
+              Validators.max(this.pagination.pages)
             ]);
         }
 
@@ -98,7 +131,7 @@ export class SearchResultComponent implements OnInit {
         // TODO: setup sort state from the query
         // this._gridOptions.api.setSortModel([{colId: "enaio:creationDate", sort: "desc"}]);
         const rows = [];
-        this._searchResult.items.forEach(i => {
+        searchResult.items.forEach(i => {
           rows.push(this.getRow(i));
         });
         this._rows = rows;
@@ -106,10 +139,11 @@ export class SearchResultComponent implements OnInit {
         this.tableData = {
           columns: this._columns,
           rows: this._rows,
-          titleField: 'clienttitle',
-          descriptionField: 'clientdescription',
+          titleField: SecondaryObjectTypeField.TITLE,
+          descriptionField: SecondaryObjectTypeField.DESCRIPTION,
           selectType: 'single'
         };
+        this.busy = false;
       });
   }
 
@@ -118,7 +152,7 @@ export class SearchResultComponent implements OnInit {
    */
   private getRow(searchResultItem: SearchResultItem): any {
     const row = {
-      id: searchResultItem.fields.get('enaio:objectId')
+      id: searchResultItem.fields.get(BaseObjectTypeField.OBJECT_ID)
     };
     this._columns.forEach((cd: ColDef) => {
       // ContentStream fields needs to be resolved in a different way.
@@ -168,9 +202,9 @@ export class SearchResultComponent implements OnInit {
 
   goToPage(page: number) {
     this.busy = true;
-    this.searchService.getPage(this._searchResult, page).subscribe(
+    this.searchService.getPage(this._searchQuery, page).subscribe(
       (res: SearchResult) => {
-        this.searchResult = res;
+        this.createTableData(res);
       },
       err => {
         // TODO: how should errors be handles in case hat loading pages fail
@@ -189,11 +223,10 @@ export class SearchResultComponent implements OnInit {
   }
 
   onColumnResized(colSizes: ColumnSizes) {
-    const resultListObjectType =
-      this._searchResult.objectTypes.length > 1
-        ? null
-        : this._searchResult.objectTypes[0];
-    this.gridService.persistColumnWidthSettings(colSizes, resultListObjectType);
+    this.gridService.persistColumnWidthSettings(
+      colSizes,
+      this.resultListObjectTypeId
+    );
   }
 
   ngOnInit() {}

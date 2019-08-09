@@ -6,15 +6,6 @@ export interface SearchResult {
   items: SearchResultItem[];
   // object types within the result
   objectTypes: string[];
-  // property for paged results
-  pagination?: {
-    // number of items per page
-    pageSize: number;
-    // number of pages available
-    pages: number;
-    // current page of the result
-    page: number;
-  };
 }
 
 export interface SearchResultItem {

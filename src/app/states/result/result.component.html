@@ -5,7 +5,7 @@
 [detailsActive]="(selectedItems.length > 0)">
   <yuv-search-result
     class="yuv-master panel"
-    [searchResult]="searchResult"
+    [query]="searchQuery"
     [selectedItemId]="selectedItem?.id"
     (itemsSelected)="select($event)"
   ></yuv-search-result>

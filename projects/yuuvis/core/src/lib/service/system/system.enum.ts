@@ -9,6 +9,11 @@ export enum BaseObjectTypeField {
   PARENT_ID = 'enaio:parentId'
 }
 
+export enum SecondaryObjectTypeField {
+  TITLE = 'clienttitle',
+  DESCRIPTION = 'clientdescription'
+}
+
 export enum ContentStreamField {
   LENGTH = 'enaio:contentStreamLength',
   FILENAME = 'enaio:contentStreamFileName',

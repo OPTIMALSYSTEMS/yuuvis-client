@@ -47,13 +47,14 @@ export class QuickSearchComponent implements OnInit {
         }),
         debounceTime(500),
         switchMap(term => {
-          return this.searchQuery.term && this.searchQuery.term.length
-            ? this.searchService.searchRaw(
-                `SELECT COUNT(*), enaio:objectTypeId FROM enaio:object WHERE CONTAINS('${
-                  this.searchQuery.term
-                }') GROUP BY enaio:objectTypeId`
-              )
-            : of(null);
+          // return this.searchQuery.term && this.searchQuery.term.length
+          //   ? this.searchService.searchRaw(
+          //       `SELECT COUNT(*), enaio:objectTypeId FROM enaio:object WHERE CONTAINS('${
+          //         this.searchQuery.term
+          //       }') GROUP BY enaio:objectTypeId`
+          //     )
+          //   : of(null);
+          return of(null);
         })
       )
       .subscribe((res: any) => {

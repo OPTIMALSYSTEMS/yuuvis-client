@@ -17,28 +17,28 @@
 
     <div class="paging">
 
-        <div class="status">{{_searchResult?.totalNumItems}}&nbsp;{{'eo.search.result.hits' | translate}}</div>
+        <div class="status">{{totalNumItems}}&nbsp;{{'eo.search.result.hits' | translate}}</div>
 
-        <div class="controls" *ngIf="_searchResult?.pagination">
-            <button [disabled]="_searchResult.pagination.page === 0" (click)="goToPage(1)">
+        <div class="controls" *ngIf="pagination">
+            <button [disabled]="pagination.page === 0" (click)="goToPage(1)">
                 <yuv-icon class="first" [svg]="icon.icArrowLast"></yuv-icon>
             </button>
-            <button [disabled]="_searchResult.pagination.page === 0"
-                (click)="goToPage(_searchResult.pagination.page - 1)">
+            <button [disabled]="pagination.page === 0"
+                (click)="goToPage(pagination.page - 1)">
                 <yuv-icon class="prev" [svg]="icon.icArrowNext"></yuv-icon>
             </button>
 
                 <form (ngSubmit)="onPagingFormSubmit()" [formGroup]="pagingForm">
-                    <input type="text" formControlName="page"><div>{{_searchResult.pagination.pages}}</div>
+                    <input type="text" formControlName="page"><div>{{pagination.pages}}</div>
                 </form>
                 
 
-            <button [disabled]="_searchResult.pagination.page === _searchResult.pagination.pages"
-                (click)="goToPage(_searchResult.pagination.page + 1)">
+            <button [disabled]="pagination.page === pagination.pages"
+                (click)="goToPage(pagination.page + 1)">
                 <yuv-icon class="next" [svg]="icon.icArrowNext"></yuv-icon>
             </button>
-            <button [disabled]="_searchResult.pagination.page === _searchResult.pagination.pages"
-                (click)="goToPage(_searchResult.pagination.pages)">
+            <button [disabled]="pagination.page === pagination.pages"
+                (click)="goToPage(pagination.pages)">
                 <yuv-icon class="last" [svg]="icon.icArrowLast"></yuv-icon>
             </button>
         </div>
