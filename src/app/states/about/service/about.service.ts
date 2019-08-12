@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { ConfigService, TranslateService, Utils } from '@yuuvis/core';
+import { ConfigService, Sort, TranslateService, Utils } from '@yuuvis/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import {
   AboutData,
@@ -153,7 +153,7 @@ export class AboutService {
       })
     );
 
-    details.sort(Utils.sortValues('label', 'desc'));
+    details.sort(Utils.sortValues('label', Sort.DESC));
     console.log(details);
     this.productDetailsSubject.next(details);
   }
