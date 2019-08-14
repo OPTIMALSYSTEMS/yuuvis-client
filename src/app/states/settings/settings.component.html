@@ -1,10 +1,10 @@
 <div class="settings panel">
     <div class="head">
-        <yuv-user-avatar class="background" [user]="user"></yuv-user-avatar>
+        <yuv-user-avatar class="background" [user]="user$ | async"></yuv-user-avatar>
         <div class="user">
-            <div class="meta">{{user?.username}}</div>
-            <h1>{{user?.title}}</h1>
-            <div class="meta">{{user?.email}}</div>
+            <div class="meta">{{(user$ | async).username}}</div>
+            <h1>{{(user$ | async).title}}</h1>
+            <div class="meta">{{(user$ | async).email}}</div>
         </div>
         <yuv-user-avatar class="box panel" [user]="user"></yuv-user-avatar>
     </div>
@@ -20,9 +20,18 @@
                 </div>
             </div>
 
-
-
-            <h3 translate>eo.state.settings.deputies</h3>
+            <!-- permissions -->
+            <div class="permissions__settings">
+                <div class="label" translate>eo.state.settings.permission</div>
+                <div class="content">
+                    <yuv-accordion [header]="'eo.state.settings.roles' | translate">
+                        <div class="role" *ngFor="let role of (user$ | async).authorities">
+                            <yuv-icon class="icon" [iconSrc]="'assets/default/svg/ic_shield.svg'"></yuv-icon>
+                            <div class="name">{{role}}</div>
+                        </div>          
+                    </yuv-accordion>
+                </div>
+            </div>
         </div>
     </div>
 </div>

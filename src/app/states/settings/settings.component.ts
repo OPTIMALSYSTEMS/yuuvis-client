@@ -6,6 +6,7 @@ import {
   UserService,
   YuvUser
 } from '@yuuvis/core';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'yuv-settings',
@@ -13,7 +14,7 @@ import {
   styleUrls: ['./settings.component.scss']
 })
 export class SettingsComponent implements OnInit {
-  user: YuvUser;
+  user$: Observable<YuvUser>;
   clientLocales: any;
 
   constructor(
@@ -33,8 +34,6 @@ export class SettingsComponent implements OnInit {
     this.titleService.setTitle(
       this.translate.instant('eo.state.settings.title')
     );
-    this.userService.user$.subscribe((user: YuvUser) => {
-      this.user = user;
-    });
+    this.user$ = this.userService.user$;
   }
 }

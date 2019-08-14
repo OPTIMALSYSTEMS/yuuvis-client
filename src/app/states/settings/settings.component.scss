@@ -31,7 +31,9 @@ $avatar-size-small: 80px;
 
     .head {
       .user {
-        padding-right: calc(#{$avatar-size-small} + calc(var(--app-pane-padding) * 2));
+        padding-right: calc(
+          #{$avatar-size-small} + calc(var(--app-pane-padding) * 2)
+        );
       }
     }
   }
@@ -74,7 +76,7 @@ $avatar-size-small: 80px;
     display: grid;
     grid-template-columns: 1fr;
     grid-template-rows: 33% 1fr;
-    grid-template-areas: "head" "body";
+    grid-template-areas: 'head' 'body';
 
     @media (max-width: 800px) {
       margin: 0;
@@ -110,7 +112,8 @@ $avatar-size-small: 80px;
         justify-content: center;
         background-color: rgba(0, 0, 0, 0.4);
         height: 100%;
-        padding: var(--app-pane-padding) calc(#{$avatar-size} + calc(var(--app-pane-padding) * 2))
+        padding: var(--app-pane-padding)
+          calc(#{$avatar-size} + calc(var(--app-pane-padding) * 2))
           var(--app-pane-padding) var(--app-pane-padding);
         box-sizing: border-box;
         color: #fff;
@@ -140,12 +143,17 @@ $avatar-size-small: 80px;
         overflow-y: auto;
         padding: var(--app-pane-padding);
 
+        .label {
+          color: var(--text-color-caption);
+        }
+
         .setting {
           display: flex;
           align-items: center;
 
           .label {
             flex: 0 0 20%;
+            color: var(--text-color-caption);
           }
           .value {
             flex: 1;
@@ -154,6 +162,47 @@ $avatar-size-small: 80px;
                 background-color: var(--color-accent);
                 color: #fff;
               }
+            }
+          }
+        }
+
+        .permissions__settings {
+          display: grid;
+          grid-template-columns: 0.4fr 1.6fr;
+          grid-template-rows: 1fr;
+          grid-template-areas: 'label content';
+          grid-gap: 5px;
+          padding-top: var(--app-pane-padding);
+
+          .screen-s & {
+            grid-template-areas: 'label' 'content';
+          }
+
+          .label {
+            grid-area: label;
+          }
+
+          .content {
+            grid-area: content;
+
+            .role {
+              display: grid;
+              grid-template-columns: 0.1fr 1.6fr;
+              grid-template-rows: 1fr;
+              grid-template-areas: 'icon name';
+              margin-bottom: 5px;
+            }
+
+            .icon {
+              grid-area: icon;
+              width: 18px;
+              height: 18px;
+              color: var(--text-color-hint);
+            }
+
+            .name {
+              grid-area: name;
+              align-self: center;
             }
           }
         }

@@ -35,6 +35,8 @@
   "eo.state.result.title": "Suchergebnis",
   "eo.state.settings.deputies": "Stellvertreter",
   "eo.state.settings.language": "Sprache",
+  "eo.state.settings.permission": "Berechtigungen",
+  "eo.state.settings.roles": "Rollen",
   "eo.state.settings.title": "Einstellungen",
   "eo.status.404.description": "Das Objekt konnte nicht geladen werden.",
   "eo.status.404.title": "Nicht gefunden"
