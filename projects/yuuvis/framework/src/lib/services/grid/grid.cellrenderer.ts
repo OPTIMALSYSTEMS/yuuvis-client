@@ -63,14 +63,23 @@ export class CellRenderer {
     grouping?,
     pattern?,
     scale?
-  ) {
-    return context.numberPipe.transform(
+  ): string {
+    let numbers = context.numberPipe.transform(
       value,
       grouping,
       pattern,
       scale,
       `1.${scale || 0}-${scale || 0}`
     );
+    return numbers
+      .split(', ')
+      .map(number => this.chipValue(number))
+      .join()
+      .replace(/<\/div>,/g, '</div> ');
+  }
+
+  static chipValue(value) {
+    return `<div class="chip">${Utils.escapeHtml(value)}</div>`;
   }
 
   static typeCellRenderer(param) {

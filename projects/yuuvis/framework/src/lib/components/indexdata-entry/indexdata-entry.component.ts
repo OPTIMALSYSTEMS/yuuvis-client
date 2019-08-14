@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { SystemService, TranslateService, UserService } from '@yuuvis/core';
+import { ObjectField } from '@yuuvis/core';
 
 @Component({
   selector: 'yuv-indexdata-entry',
@@ -17,7 +17,9 @@ export class IndexdataEntryComponent {
   @Input()
   set item(item: any) {
     this.data = item; //this.formatData(item);
-    this.enableVersions = this.data['enaio:versionNumber'] ? true : false;
+    this.enableVersions = !!this.data[ObjectField.VERSION_NUMBER]
+      ? true
+      : false;
   }
 
   set enableVersions(version: boolean) {
@@ -39,11 +41,7 @@ export class IndexdataEntryComponent {
   @Input() showEntry = true;
   @Output() valueClicked: EventEmitter<any> = new EventEmitter<any>();
 
-  constructor(
-    private translate: TranslateService,
-    private systemService: SystemService,
-    private userService: UserService
-  ) {}
+  constructor() {}
 
   onValueClick(event, item) {
     this.valueClicked.emit({ event, item });

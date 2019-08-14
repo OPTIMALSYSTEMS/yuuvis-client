@@ -4,6 +4,7 @@ import {
   AppCacheService,
   BackendService,
   ContentStreamField,
+  ObjectField,
   ObjectType,
   ObjectTypeField,
   SystemService,
@@ -197,7 +198,8 @@ export class GridService {
         const params = {
           scale: 2,
           grouping: true,
-          pattern: undefined
+          pattern: undefined,
+          cips: true
         };
         colDef.width = 150;
         colDef.cellRenderer = this.customContext(
@@ -238,7 +240,7 @@ export class GridService {
    */
   private addColDefAttrsByField(colDef: ColDef, field: ObjectTypeField) {
     switch (field.id) {
-      case 'enaio:objectTypeId': {
+      case ObjectField.OBJECT_TYPE_ID: {
         colDef.cellRenderer = this.customContext(CellRenderer.typeCellRenderer);
         colDef.width = 80;
         colDef.cellClass = 'res-ico';
@@ -248,7 +250,7 @@ export class GridService {
         colDef.width = 101;
         break;
       }
-      case 'enaio:versionNumber': {
+      case ObjectField.VERSION_NUMBER: {
         colDef.width = 80;
         break;
       }
@@ -266,7 +268,8 @@ export class GridService {
   }
 
   private customContext(fnc, mixin?) {
-    return param => fnc({ ...param, context: this.context }, mixin);
+    return params =>
+      fnc({ ...params, context: this.context, ...(mixin && mixin) });
   }
 
   public fileSizeKeyCreator(param) {

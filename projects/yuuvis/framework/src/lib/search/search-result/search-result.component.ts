@@ -9,6 +9,7 @@ import {
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import {
   ContentStreamField,
+  ObjectField,
   SearchResult,
   SearchResultItem,
   SearchService,
@@ -118,7 +119,7 @@ export class SearchResultComponent implements OnInit {
    */
   private getRow(searchResultItem: SearchResultItem): any {
     const row = {
-      id: searchResultItem.fields.get('enaio:objectId')
+      id: searchResultItem.fields.get(ObjectField.OBJECT_ID)
     };
     this._columns.forEach((cd: ColDef) => {
       // ContentStream fields needs to be resolved in a different way.
@@ -127,6 +128,7 @@ export class SearchResultComponent implements OnInit {
       // special pattern we can check for.
 
       // Although defined in schema there may be no content attached.
+
       if (
         searchResultItem.content &&
         cd.field.startsWith('enaio:contentStream')

@@ -1,5 +1,4 @@
 import { Component, Input } from '@angular/core';
-import { Sort, Utils } from '@yuuvis/core';
 import { ObjectService } from '../../services/object-data/object.service';
 
 @Component({
@@ -12,13 +11,9 @@ export class SummaryComponent {
 
   @Input()
   set summaryData(data: any) {
-    this.summary = data
-      ? Object.keys(data)
-          .map((key: string, index: number) =>
-            this.objectService.formatData({ key, value: data[key] })
-          )
-          .sort(Utils.sortValues('baseparams', Sort.ASC))
-      : data;
+    this.summary = data ? this.objectService.prepareData(data) : data;
+
+    console.log('summary: ', this.summary);
   }
 
   constructor(private objectService: ObjectService) {}
