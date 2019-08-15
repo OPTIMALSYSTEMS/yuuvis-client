@@ -1,0 +1,49 @@
+<!-- <section class="history-filter">
+
+    <div class="filter history-filter__input" *ngIf="visibleFilter.input">
+      <div class="filter__input" [ngClass]="{inactive: !history?.length}">
+        <yuv-icon class="filter__input--icon"[svg]="'assets/_default/svg/ic_filter.svg'"></yuv-icon>
+        <input class="filter__input--field" type="text" (keyup)="typeinput($event)" [(ngModel)]="filterterm">
+  
+      </div>
+      <div class="history-filter__input--clear">
+        <yuv-icon class="history-filter__input--clear-icon" [svg]="'assets/_default/svg/ic_clear.svg'" (click)="resetFilter()" [ngClass]="{reset: filterterm}"></yuv-icon>
+      </div>
+    </div>
+  
+    <div class="filter history-filter__selection" *ngIf="visibleFilter.select">
+      <div (click)="toggleFilter('MODIFICATION')" class="selection-filter mod"
+           [ngClass]="{inactive: hasFilter('MODIFICATION')}"
+           translate>eo.object.history.filter.modification</div>
+      <div (click)="toggleFilter('PROCESS')" class="selection-filter bpm"
+           [ngClass]="{inactive: hasFilter('PROCESS')}"
+           translate>eo.object.history.filter.process</div>
+      <div (click)="toggleFilter('INFORMATIONAL')" class="selection-filter inf"
+           [ngClass]="{inactive: hasFilter('INFORMATIONAL')}"
+           translate>eo.object.history.filter.informational</div>
+    </div>
+  
+  </section> -->
+
+
+<section class="history-filter">
+  <div class="search" [ngClass]="{inactive: !history?.length}">
+    <yuv-icon class="filter_icon"[svg]="SvgIcons.filter"></yuv-icon>
+    <input class="filter_input" type="text" (keyup)="typeinput($event)" [(ngModel)]="filterterm">
+    <yuv-icon class="clear_icon" [svg]="SvgIcons.clear" (click)="resetFilter()" [ngClass]="{reset: filterterm}"></yuv-icon>
+  </div>
+
+  <div class="filter" *ngIf="visibleFilter.select"> 
+      <div (click)="toggleFilter(filter.MODIFICATION)" class="selection-filter modification"
+           [ngClass]="{inactive: hasFilter(filter.MODIFICATION)}"
+           translate>eo.object.history.filter.modification</div>
+
+    <div (click)="toggleFilter(filter.PROCESS)" class="selection-filter process"
+           [ngClass]="{inactive: hasFilter(filter.PROCESS)}"
+           translate>eo.object.history.filter.process</div>
+
+     <div (click)="toggleFilter(filter.INFORMATIONAL)" class="selection-filter informational"
+           [ngClass]="{inactive: hasFilter(filter.INFORMATIONAL)}"
+           translate>eo.object.history.filter.informational</div>
+  </div>
+</section>

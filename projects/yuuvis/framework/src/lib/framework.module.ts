@@ -41,7 +41,6 @@ import { YuvUserModule } from './user/user.module';
     YuvObjectDetailsModule,
     YuvPipesModule,
     OverlayPanelModule,
-    YuvCommonUiModule,
     AngularSplitModule.forRoot(),
     YuvCoreModule.forRoot(),
     AngularSplitModule.forRoot(),

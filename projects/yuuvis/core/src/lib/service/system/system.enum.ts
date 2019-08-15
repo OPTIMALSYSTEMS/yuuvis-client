@@ -26,3 +26,8 @@ export enum ContentStreamField {
   DIGEST = 'enaio:digest',
   ARCHIVE_PATH = 'enaio:archivePath'
 }
+
+export enum UserField {
+  LAST_MODIFIED_BY = 'enaio:lastModifiedBy',
+  CREATED_BY = 'enaio:createdBy'
+}

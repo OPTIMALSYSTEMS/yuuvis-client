@@ -40,29 +40,15 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
     rowHeight: { default: 48, small: 70 }
   };
 
-  _gridOptions: GridOptions;
-
-  @HostBinding('class.small') small: boolean = false;
-  @HostListener('keydown.control.c', ['$event']) copyCellHandler(
-    event: KeyboardEvent
-  ) {
-    // copy cell
-    this.copyToClipboard('cell');
-  }
-  @HostListener('keydown.control.shift.c', ['$event']) copyRowHandler(
-    event: KeyboardEvent
-  ) {
-    // copy row
-    this.copyToClipboard('row');
-  }
+  gridOptions: GridOptions;
 
   @Input() set data(data: ResponsiveTableData) {
-    if (this._gridOptions) {
+    if (this.gridOptions) {
       // already got a grid running
-      this._gridOptions.api.setRowData(data.rows);
+      this.gridOptions.api.setRowData(data.rows);
 
       if (JSON.stringify(this._data.columns) !== JSON.stringify(data.columns)) {
-        this._gridOptions.api.setColumnDefs(data.columns);
+        this.gridOptions.api.setColumnDefs(data.columns);
       }
       if (data.sortModel) {
         this._gridOptions.api.setSortModel(data.sortModel);
@@ -74,12 +60,24 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
     }
   }
   // width (number in pixel) of the table below which it should switch to small view
-  @Input() breakpoint: number = 600;
+  @Input() breakpoint = 600;
 
   // emits an array of the selected rows
   @Output() selectionChanged = new EventEmitter<any[]>();
   @Output() sortChanged = new EventEmitter<{ colId: string; sort: string }[]>();
   @Output() columnResized = new EventEmitter<ColumnSizes>();
+
+  @HostBinding('class.small') small = false;
+  @HostListener('keydown.control.c', ['$event'])
+  copyCellHandler(event: KeyboardEvent) {
+    // copy cell
+    this.copyToClipboard('cell');
+  }
+  @HostListener('keydown.control.shift.c', ['$event'])
+  copyRowHandler(event: KeyboardEvent) {
+    // copy row
+    this.copyToClipboard('row');
+  }
 
   constructor() {
     this.subscriptions.push(
@@ -87,11 +85,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
       this.resize$.pipe(debounceTime(500)).subscribe((e: ResizedEvent) => {
         const small = e.newWidth < this.breakpoint;
 
-        if (
-          this._gridOptions &&
-          this._gridOptions.api &&
-          this.small !== small
-        ) {
+        if (this.gridOptions && this.gridOptions.api && this.small !== small) {
           this.small = small;
           this.applyGridOption(small);
         }
@@ -101,7 +95,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
     this.columnResize$.pipe(debounceTime(1000)).subscribe((e: ResizedEvent) => {
       if (!this.small) {
         this.columnResized.emit({
-          columns: this._gridOptions.columnApi
+          columns: this.gridOptions.columnApi
             .getColumnState()
             .map(columnState => ({
               id: columnState.colId,
@@ -115,9 +109,9 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
   private applyGridOption(small?: boolean) {
     if (small) {
       // gridOptions to be applied for the small view
-      this._gridOptions.api.setHeaderHeight(this.settings.headerHeight.small);
-      this._gridOptions.api.setColumnDefs([this.getSmallSizeColDef()]);
-      this._gridOptions.api.setRowData(
+      this.gridOptions.api.setHeaderHeight(this.settings.headerHeight.small);
+      this.gridOptions.api.setColumnDefs([this.getSmallSizeColDef()]);
+      this.gridOptions.api.setRowData(
         this._data.rows.map(r => ({
           id: r.id,
           titleProps: {
@@ -126,25 +120,25 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
           }
         }))
       );
-      this._gridOptions.columnApi.autoSizeAllColumns();
+      this.gridOptions.columnApi.autoSizeAllColumns();
     } else {
       // gridOptions to be applied for the regular view
-      this._gridOptions.api.setHeaderHeight(this.settings.headerHeight.default);
-      this._gridOptions.api.setColumnDefs(this._data.columns);
-      this._gridOptions.api.setRowData(this._data.rows);
+      this.gridOptions.api.setHeaderHeight(this.settings.headerHeight.default);
+      this.gridOptions.api.setColumnDefs(this._data.columns);
+      this.gridOptions.api.setRowData(this._data.rows);
     }
     // if the small state changed, a different set of rowData is applied to the grid
     // so we need to reselect the items that were selected before
     if (this._currentSelection.length) {
       this._currentSelection.forEach((id: string) => {
-        const n = this._gridOptions.api.getRowNode(id);
+        const n = this.gridOptions.api.getRowNode(id);
         n.setSelected(true);
       });
     }
   }
 
   private getSmallSizeColDef(): ColDef {
-    let colDef = <ColDef>{
+    const colDef: ColDef = {
       field: 'titleProps'
     };
     colDef.cellClass = 'cell-title-description';
@@ -159,7 +153,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
   }
 
   private setupGridOptions() {
-    this._gridOptions = {
+    this.gridOptions = {
       getRowNodeId: data => {
         // defines what to use as ID for each row (important for reselecting a previous selection)
         return data.id;
@@ -179,10 +173,10 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
 
       // EVENTS - add event callback handlers
       onSelectionChanged: event => {
-        this._currentSelection = this._gridOptions.api
+        this._currentSelection = this.gridOptions.api
           .getSelectedNodes()
           .map((rowNode: RowNode) => rowNode.id);
-        this.selectionChanged.emit(this._gridOptions.api.getSelectedRows());
+        this.selectionChanged.emit(this.gridOptions.api.getSelectedRows());
       },
       onColumnResized: event => {
         this.columnResizeSource.next();
@@ -199,8 +193,8 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
   // copy content of either row or table cell to clipboard
   private copyToClipboard(type: 'row' | 'cell') {
     let content = '';
-    const focusedCell = this._gridOptions.api.getFocusedCell();
-    const row: RowNode = this._gridOptions.api.getDisplayedRowAtIndex(
+    const focusedCell = this.gridOptions.api.getFocusedCell();
+    const row: RowNode = this.gridOptions.api.getDisplayedRowAtIndex(
       focusedCell.rowIndex
     );
     switch (type) {
@@ -214,16 +208,16 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
         break;
       }
       case 'cell': {
-        content = this._gridOptions.api.getValue(focusedCell.column, row);
+        content = this.gridOptions.api.getValue(focusedCell.column, row);
         break;
       }
     }
 
-    let textArea = document.createElement('textarea');
+    const textArea = document.createElement('textarea');
     textArea.value = content;
     document.body.appendChild(textArea);
     textArea.select();
-    let copySuccess = document.execCommand('copy');
+    const copySuccess = document.execCommand('copy');
     document.body.removeChild(textArea);
   }
 

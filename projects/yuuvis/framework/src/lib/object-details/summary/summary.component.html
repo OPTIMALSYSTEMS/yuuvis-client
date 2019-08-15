@@ -1,0 +1,6 @@
+<section class="object-summary">
+    
+    <section *ngFor="let item of summary" [class.baseparams-entry]="item.baseparams">
+        <yuv-indexdata-entry [item]="item"></yuv-indexdata-entry>
+    </section>
+</section>

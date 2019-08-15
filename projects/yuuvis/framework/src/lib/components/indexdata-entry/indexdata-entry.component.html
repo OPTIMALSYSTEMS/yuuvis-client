@@ -1,0 +1,22 @@
+
+<div [class]="className" *ngIf="showEntry && !enableVersions">
+  <ng-container *ngIf="innerValue; else value">
+    <span class="label"  [class.baseparams]="data.baseparams">{{label}}</span>
+    <span class="value inner" [innerHTML]="innerValue | safeHtml" (click)="onValueClick($event, data)"></span>
+  </ng-container>
+</div>
+
+<ng-template #value>
+    <span class="label"  [class.baseparams]="data.baseparams" translate>{{data.key}}</span>
+    <span class="value"  *ngIf="!data.chip">{{data.value}}</span>
+    <span class="value" class="chips" *ngIf="data.chip" [innerHTML]="data.value | Chip"></span>
+</ng-template>
+
+<div [class]="className" *ngIf="showEntry && enableVersions">
+  <div class="label"  [class.baseparams]="data.baseparams" translate>{{data.key}}</div>
+  <div class="value" *ngIf="!enableVersions">{{data.value}}</div>
+  <span class="value version" *ngIf="enableVersions">
+    <a [routerLink]="'/versions/' " [queryParams]="{type : '' }">{{data.value}}</a>
+  </span>
+</div>
+

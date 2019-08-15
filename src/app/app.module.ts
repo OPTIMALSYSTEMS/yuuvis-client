@@ -6,6 +6,9 @@ import { YuvFrameworkModule } from '@yuuvis/framework';
 import { environment } from '../environments/environment';
 import { AppComponent } from './app.component';
 import { FrameComponent } from './components/frame/frame.component';
+import { HistoryFilterComponent } from './history-filter/history-filter.component';
+import { HistoryFilterPipe } from './history-filter/pipe/history-filter.pipe';
+import { HistoryComponent } from './history/history.component';
 import { AppRoutingModule } from './routing/app.routes.module';
 import { AboutModule } from './states/about/about.module';
 import { DashboardComponent } from './states/dashboard/dashboard.component';
@@ -13,7 +16,7 @@ import { LoginComponent } from './states/login/login.component';
 import { NotFoundComponent } from './states/not-found/not-found.component';
 import { ResultComponent } from './states/result/result.component';
 import { SettingsComponent } from './states/settings/settings.component';
-
+import { TimelineEntryComponent } from './timeline-entry/timeline-entry.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -22,7 +25,11 @@ import { SettingsComponent } from './states/settings/settings.component';
     ResultComponent,
     FrameComponent,
     SettingsComponent,
-    NotFoundComponent
+    NotFoundComponent,
+    HistoryComponent,
+    TimelineEntryComponent,
+    HistoryFilterComponent,
+    HistoryFilterPipe
   ],
   imports: [
     BrowserModule,

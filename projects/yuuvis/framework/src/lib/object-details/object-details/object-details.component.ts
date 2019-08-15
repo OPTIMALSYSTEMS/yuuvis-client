@@ -8,18 +8,23 @@ import { DmsObject, DmsService } from '@yuuvis/core';
 })
 export class ObjectDetailsComponent implements OnInit {
   private _dmsObject: DmsObject;
-  @Input() set dmsObject(o: DmsObject) {
-    this._dmsObject = o;
+
+  @Input()
+  set dmsObject(object: DmsObject) {
+    this._dmsObject = object;
   }
 
   get dmsObject() {
     return this._dmsObject;
   }
 
-  @Input() set objectId(id: string) {
+  @Input()
+  set objectId(id: string) {
     this._dmsObject = null;
     if (id) {
-      this.dmsService.getDmsObject(id).subscribe(o => (this.dmsObject = o));
+      this.dmsService
+        .getDmsObject(id)
+        .subscribe(dmsObject => (this.dmsObject = dmsObject));
     }
   }
 

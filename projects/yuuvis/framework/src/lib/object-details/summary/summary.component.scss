@@ -1,0 +1,8 @@
+.object-summary {
+  margin: var(--app-pane-padding);
+
+  .baseparams-entry:first-child,
+  :not(.baseparams-entry) + .baseparams-entry {
+    margin-top: calc(var(--app-pane-padding) / 2);
+  }
+}

@@ -1,0 +1,5 @@
+export enum HistoryFilter {
+  MODIFICATION = 'MODIFICATION',
+  PROCESS = 'PROCESS',
+  INFORMATIONAL = 'INFORMATIONAL'
+}

@@ -14,19 +14,6 @@ export class DmsService {
   constructor(private searchService: SearchService) {}
 
   getDmsObject(id: string): Observable<DmsObject> {
-    // const q = new SearchQuery();
-    // q.addFilter(
-    //   new SearchFilter(
-    //     BaseObjectTypeField.OBJECT_ID,
-    //     SearchFilter.OPERATOR.EQUAL,
-    //     id
-    //   )
-    // );
-    // return this.searchService.search(q).pipe(
-    //   map((res: SearchResult) => {
-    //     return res.items.map(i => new DmsObject(i))[0];
-    //   })
-    // );
     return this.getDmsObjects([id]).pipe(map(res => res[0]));
   }
 

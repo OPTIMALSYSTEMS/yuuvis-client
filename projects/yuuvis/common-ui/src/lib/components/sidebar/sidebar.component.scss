@@ -2,17 +2,36 @@
   color: white;
   padding: 0;
   background-color: var(--color-primary);
-}
 
-header {
-  height: 250px;
-  background-color: var(--color-accent);
-  background-image: var(--theme-nav-header);
-  background-size: cover;
-  padding: calc(var(--app-pane-padding) / 2);
+  &-header {
+    height: 250px;
+    background-color: var(--color-accent);
+    background-image: var(--theme-nav-header);
+    background-size: cover;
+    padding: calc(var(--app-pane-padding) / 2);
+  }
+
+  header {
+    display: grid;
+    grid-template-columns: 1fr 0.1fr;
+    grid-template-rows: 1fr;
+    grid-template-areas: 'content close';
+  }
 }
 
 .ui-sidebar-mask {
   background-color: rgba(0, 0, 0, 0.5);
   animation: yuvFadeIn 300ms;
+}
+
+.content {
+  grid-area: content;
+}
+
+.close {
+  grid-area: close;
+
+  button.icon {
+    padding: calc(var(--app-pane-padding) / 2);
+  }
 }

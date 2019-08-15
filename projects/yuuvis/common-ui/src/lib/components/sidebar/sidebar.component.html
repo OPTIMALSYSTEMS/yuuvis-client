@@ -1,20 +1,26 @@
-<p-sidebar [(visible)]="display" [modal]="true"
-[style]="{width: width + 'px'}"
-styleClass="sidebar"
-(onShow)="onShow()" 
-(onHide)="onHide()" 
-[position]="position">
-
-  <header>
-    <button class="icon light">
-      <yuv-icon
-        (click)="onHide()"
-        [svg]="closeIcon"
-      ></yuv-icon>
-    </button>
+<p-sidebar
+  styleClass="sidebar"
+  [(visible)]="display"
+  [modal]="true"
+  [style]="stylings"
+  (onShow)="onShow()"
+  (onHide)="onHide()"
+  [position]="position"
+>
+  <header
+    #wrapper
+    [class.sidebar-header]="!hasHeaderContent"
+    [ngStyle]="externalHeaderStyle"
+  >
+    <ng-content class="content" select=".header-content"></ng-content>
+    <div class="close">
+      <button class="icon light">
+        <yuv-icon (click)="onHide()" [svg]="closeIcon"></yuv-icon>
+      </button>
+    </div>
   </header>
 
-  <section class="sidebar-content">
-    <ng-content></ng-content>
+  <section class="sidebar-content" [ngStyle]="externalContentStyles">
+    <ng-content select=".content"></ng-content>
   </section>
 </p-sidebar>

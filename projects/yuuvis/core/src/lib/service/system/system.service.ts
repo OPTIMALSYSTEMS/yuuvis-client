@@ -48,8 +48,25 @@ export class SystemService {
     return this.getObjectType('enaio:folder');
   }
 
+  getBaseTypeById(objectTypeField: string): ObjectTypeField {
+    return this.getBaseType().fields.find(
+      field => field.id === objectTypeField
+    );
+  }
+
+  getBaseTypePropertyTypeById(objectTypeField: string): string {
+    return this.getBaseType().fields.find(field => field.id === objectTypeField)
+      .propertyType;
+  }
+
   getLocalizedResource(key: string): string {
     return this.system.i18n[key];
+  }
+
+  isDateFormat(data: string): boolean {
+    return !!JSON.stringify(data).match(
+      /\b[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{3}Z\b/
+    );
   }
 
   /**

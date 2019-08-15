@@ -17,6 +17,17 @@ export class LocaleDecimalPipe extends DecimalPipe implements PipeTransform {
     digits?: string,
     locale?: string
   ): string | null {
+    if (Array.isArray(value)) {
+      return value
+        .map(val =>
+          super.transform(
+            val,
+            digits,
+            locale || this.translate.currentLang || 'en'
+          )
+        )
+        .join(' //\\ ');
+    }
     return super.transform(
       value,
       digits,

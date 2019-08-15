@@ -19,7 +19,7 @@
   "client": {
     "docu": {
       "link": "https://help.optimal-systems.com/yuuvisAPI/v10/user/client/###userLang###/index.html",
-      "version": 1,
+      "version": 10,
       "language": ["de", "en"]
     }
   }
