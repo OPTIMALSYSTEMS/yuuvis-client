@@ -6,12 +6,16 @@ import { SearchFilter, SearchQuery } from '../search/search-query.model';
 import { SearchService } from '../search/search.service';
 import { SearchResult } from '../search/search.service.interface';
 import { BaseObjectTypeField } from '../system/system.enum';
+import { SystemService } from '../system/system.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DmsService {
-  constructor(private searchService: SearchService) {}
+  constructor(
+    private searchService: SearchService,
+    private systemService: SystemService
+  ) {}
 
   getDmsObject(id: string): Observable<DmsObject> {
     return this.getDmsObjects([id]).pipe(map(res => res[0]));
@@ -28,7 +32,13 @@ export class DmsService {
     );
     return this.searchService.search(q).pipe(
       map((res: SearchResult) => {
-        return res.items.map(i => new DmsObject(i));
+        return res.items.map(
+          i =>
+            new DmsObject(
+              i,
+              this.systemService.getObjectType(i.objectTypeId).isFolder
+            )
+        );
       })
     );
   }

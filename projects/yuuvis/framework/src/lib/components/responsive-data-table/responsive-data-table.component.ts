@@ -51,7 +51,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
         this.gridOptions.api.setColumnDefs(data.columns);
       }
       if (data.sortModel) {
-        this._gridOptions.api.setSortModel(data.sortModel);
+        this.gridOptions.api.setSortModel(data.sortModel);
       }
       this._data = data;
     } else {
@@ -182,11 +182,11 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
         this.columnResizeSource.next();
       },
       onSortChanged: event => {
-        this.sortChanged.emit(this._gridOptions.api.getSortModel());
+        this.sortChanged.emit(this.gridOptions.api.getSortModel());
       }
     };
     if (this._data.sortModel) {
-      this._gridOptions.api.setSortModel(this._data.sortModel);
+      this.gridOptions.api.setSortModel(this._data.sortModel);
     }
   }
 

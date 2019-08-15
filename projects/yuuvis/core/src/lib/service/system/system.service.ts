@@ -48,17 +48,6 @@ export class SystemService {
     return this.getObjectType('enaio:folder');
   }
 
-  getBaseTypeById(objectTypeField: string): ObjectTypeField {
-    return this.getBaseType().fields.find(
-      field => field.id === objectTypeField
-    );
-  }
-
-  getBaseTypePropertyTypeById(objectTypeField: string): string {
-    return this.getBaseType().fields.find(field => field.id === objectTypeField)
-      .propertyType;
-  }
-
   getLocalizedResource(key: string): string {
     return this.system.i18n[key];
   }
