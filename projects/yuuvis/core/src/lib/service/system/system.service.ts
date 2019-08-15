@@ -9,7 +9,6 @@ import { Logger } from '../logger/logger';
 import {
   ObjectTypeField,
   SchemaResponse,
-  SchemaResponseDocumentTypeDefinition,
   SchemaResponsePropertyDefinition,
   SchemaResponseTypeDefinition,
   SystemDefinition
@@ -144,13 +143,13 @@ export class SystemService {
 
     // create object types
     const documentTypes: ObjectType[] = schemaResponse.typeDocumentDefinition.map(
-      (td: SchemaResponseDocumentTypeDefinition) =>
+      (td: SchemaResponseTypeDefinition) =>
         this.createObjectType(td, false, propertiesMap, secondaryObjectTypes)
     );
 
     const folderTypes: ObjectType[] = schemaResponse.typeFolderDefinition.map(
       (td: SchemaResponseTypeDefinition) =>
-        this.createObjectType(td, false, propertiesMap, secondaryObjectTypes)
+        this.createObjectType(td, true, propertiesMap, secondaryObjectTypes)
     );
 
     const typeSecondaryDef = schemaResponse.typeSecondaryDefinition.find(
@@ -222,6 +221,7 @@ export class SystemService {
       id: schemaResType.id,
       baseId: schemaResType.baseId,
       creatable: schemaResType.creatable,
+      contentStreamAllowed: schemaResType.contentStreamAllowed,
       description: schemaResType.description,
       localNamespace: schemaResType.localNamespace,
       isFolder: isFolder,

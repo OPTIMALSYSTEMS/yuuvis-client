@@ -15,36 +15,49 @@ import {
   providedIn: 'root'
 })
 export class SearchService {
-  private maxItems = 50;
   private lastSearchQuery: SearchQuery;
 
   constructor(private backend: BackendService) {}
 
   search(q: SearchQuery): Observable<SearchResult> {
-    if (!q.maxItems) {
-      q.maxItems = this.maxItems;
-    }
     this.lastSearchQuery = q;
 
     return this.backend
-      .post(
-        `/search/search?size=${this.maxItems}`,
-        JSON.stringify(q.toJson()),
-        ApiBase.apiWeb
-      )
+      .post(`/dms/search`, q.toQueryJson(), ApiBase.apiWeb)
       .pipe(map(res => this.toSearchResult(res)));
+  }
+
+  /**
+   * Fetch aggragations for a given query.
+   * @param q The query
+   * @param aggregations List of aggregations to be fetched (e.g. `enaio:objectTypeId`
+   * to get an aggregation of object types)
+   */
+  aggregate(q: SearchQuery, aggregation: string) {
+    // TODO: enable multiple aggregations at once?
+    q.aggs = [aggregation];
+    return this.backend
+      .post(`/dms/search`, q.toQueryJson(), ApiBase.apiWeb)
+      .pipe(map(res => this.toAggregateResult(res, aggregation)));
   }
 
   getLastSearchQuery() {
     return this.lastSearchQuery;
   }
 
+  private toAggregateResult(
+    searchResponse: any,
+    aggregation: string
+  ): { value: string; count: number }[] {
+    return searchResponse.objects.map(o => ({
+      value: o.properties[aggregation].value,
+      count: o.properties['OBJECT_COUNT'].value
+    }));
+  }
+
   /**
    * Map search result from the backend to applications SearchResult object
-   * @param statement The query statement executed
-   * @param searchResult Sever sent result
-   * @param skipCount (optional) Offset (used for paging)
-   * @param maxItems  (optional) maximum number of result items (used for paging - page size)
+   * @param searchResponse The backend response
    */
   private toSearchResult(searchResponse: any): SearchResult {
     const resultListItems: SearchResultItem[] = [];
@@ -52,7 +65,7 @@ export class SearchService {
 
     searchResponse.objects.forEach(o => {
       const fields = new Map();
-
+      console.log(o[BaseObjectTypeField.OBJECT_ID]);
       // process properties section of result
       Object.keys(o.properties).forEach(k => {
         fields.set(k, o.properties[k].value);
@@ -109,12 +122,8 @@ export class SearchService {
    * @param searchResult The search result (that supports pagination)
    * @param page The number of the page to go to
    */
-  getPage(
-    query: SearchQuery,
-    // searchResult: SearchResult,
-    page: number
-  ): Observable<SearchResult> {
-    query.from = page * query.maxItems;
+  getPage(query: SearchQuery, page: number): Observable<SearchResult> {
+    query.from = (page - 1) * query.size;
     return this.search(query);
   }
 }

@@ -9,9 +9,11 @@
     <yuv-icon [svg]="icon.icSearchFilter"></yuv-icon>
 </div>
 <div class="yuv-panel-content" [yuvBusyOverlay]="busy">
-    <yuv-responsive-data-table *ngIf="tableData" [data]="tableData" 
+    <yuv-responsive-data-table *ngIf="tableData" 
+    [data]="tableData" 
+    [breakpoint]="400" 
     (columnResized)="onColumnResized($event)"
-    (selectionChanged)="onSelectionChanged($event)">
+    (selectionChanged)="onSelectionChanged($event)"
     (sortChanged)="onSortChanged($event)">
     </yuv-responsive-data-table>
 

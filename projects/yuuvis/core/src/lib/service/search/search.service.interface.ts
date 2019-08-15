@@ -1,5 +1,3 @@
-import { SearchFilter } from './search-query.model';
-
 export interface SearchResult {
   hasMoreItems: boolean;
   totalNumItems: number;
@@ -26,9 +24,12 @@ export interface SearchResultContent {
 }
 
 export interface SearchQueryProperties {
-  term: string;
+  term?: string;
+  size?: number;
   from?: number;
+  aggs?: string[];
   maxItems?: number;
-  types: string[];
-  filters: SearchFilter[];
+  types?: string[];
+  filters?: any;
+  sort?: any;
 }

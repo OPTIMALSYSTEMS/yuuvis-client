@@ -2,19 +2,32 @@ import { SearchQueryProperties } from './search.service.interface';
 
 export class SearchQuery {
   term: string;
-  maxItems: number;
+  size: number = 50;
+  aggs: string[];
   from: number;
   types: string[] = [];
   filters: SearchFilter[] = [];
+  sortOptions: SortOption[] = [];
 
   constructor(searchQueryProperties?: SearchQueryProperties) {
     if (searchQueryProperties) {
       this.term = searchQueryProperties.term;
       this.from = searchQueryProperties.from;
-      this.from = searchQueryProperties.from;
-      this.maxItems = searchQueryProperties.maxItems;
-      this.filters = searchQueryProperties.filters;
-      this.types = searchQueryProperties.types;
+      this.types = searchQueryProperties.types || [];
+
+      if (searchQueryProperties.size) {
+        this.size = searchQueryProperties.size;
+      }
+
+      if (searchQueryProperties.filters) {
+        this.filters = [];
+        Object.keys(searchQueryProperties.filters).forEach(k => {
+          const filterValue = searchQueryProperties.filters[k];
+          this.filters.push(
+            new SearchFilter(k, filterValue.o, filterValue.v1, filterValue.v2)
+          );
+        });
+      }
     }
   }
   /**
@@ -104,13 +117,72 @@ export class SearchQuery {
     return this.filters.find(f => f.property === propertyName);
   }
 
-  public toJson(): SearchQueryProperties {
-    return {
-      term: this.term,
-      from: this.from,
-      filters: this.filters,
-      types: this.types
+  /**
+   * Adding new Sort Options
+   * Sort Options are only added if they are not already present
+   *
+   * @param name
+   * @param order
+   * @param missing
+   */
+  public addSortOption(name: string, order: string, missing?: string) {
+    if (!this.sortOptions.find(s => s.field === name)) {
+      this.sortOptions.push(new SortOption(name, order, missing));
+    }
+  }
+
+  /**
+   *
+   * @param name
+   */
+  removeSortOption(name: string) {
+    this.sortOptions = this.sortOptions.filter(s => s.field !== name);
+  }
+
+  /**
+   * Create query JSON from current query that can be send to
+   * the search service
+   */
+  toQueryJson(): SearchQueryProperties {
+    const queryJson: SearchQueryProperties = {
+      size: this.size
     };
+
+    if (this.term) {
+      queryJson.term = this.term;
+    }
+
+    if (this.from) {
+      queryJson.from = this.from;
+    }
+
+    if (this.types.length) {
+      queryJson.types = this.types;
+    }
+
+    if (this.filters.length) {
+      queryJson.filters = {};
+      this.filters.forEach(f => {
+        queryJson.filters[f.property] = {
+          o: f.operator,
+          v1: f.firstValue,
+          v2: f.secondValue
+        };
+      });
+    }
+
+    if (this.aggs && this.aggs.length) {
+      queryJson.aggs = this.aggs;
+    }
+
+    if (this.sortOptions && this.sortOptions.length) {
+      queryJson.sort = this.sortOptions.map((o: SortOption) => ({
+        field: o.field,
+        order: o.order
+      }));
+    }
+
+    return queryJson;
   }
 }
 
@@ -169,4 +241,12 @@ export class SearchFilter {
         : this.firstValue === firstValue)
     );
   }
+}
+
+export class SortOption {
+  constructor(
+    public field: string,
+    public order: string,
+    public missing?: string
+  ) {}
 }

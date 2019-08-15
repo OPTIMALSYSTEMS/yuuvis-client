@@ -15,6 +15,7 @@ import {
   SearchResultItem,
   SearchService,
   SecondaryObjectTypeField,
+  SortOption,
   SystemService,
   TranslateService
 } from '@yuuvis/core';
@@ -103,22 +104,19 @@ export class SearchResultComponent implements OnInit {
         // setup pagination form in case of a paged search result chunk
         this.pagination = null;
         if (searchResult.hasMoreItems) {
-          if (
-            this._searchQuery.maxItems &&
-            searchResult.totalNumItems > this._searchQuery.maxItems
-          ) {
+          if (searchResult.totalNumItems > this._searchQuery.size) {
             this.pagination = {
               pages: Math.ceil(
-                searchResult.totalNumItems / this._searchQuery.maxItems
+                searchResult.totalNumItems / this._searchQuery.size
               ),
               page:
                 (!this._searchQuery.from
                   ? 0
-                  : this._searchQuery.from / this._searchQuery.maxItems) + 1
+                  : this._searchQuery.from / this._searchQuery.size) + 1
             };
+            this.pagingForm.get('page').setValue(this.pagination.page);
           }
 
-          this.pagingForm.get('page').setValue(this.pagination.page);
           this.pagingForm
             .get('page')
             .setValidators([
@@ -128,8 +126,7 @@ export class SearchResultComponent implements OnInit {
         }
 
         this._columns = colDefs;
-        // TODO: setup sort state from the query
-        // this._gridOptions.api.setSortModel([{colId: "enaio:creationDate", sort: "desc"}]);
+
         const rows = [];
         searchResult.items.forEach(i => {
           rows.push(this.getRow(i));
@@ -143,6 +140,19 @@ export class SearchResultComponent implements OnInit {
           descriptionField: SecondaryObjectTypeField.DESCRIPTION,
           selectType: 'single'
         };
+
+        // setup current sort state from the query
+        if (this._searchQuery.sortOptions.length) {
+          // this._searchQuery.sortOptions.forEach((so: SortOption) => {
+
+          //   // this._gridOptions.api.setSortModel([{colId: "enaio:creationDate", sort: "desc"}]);
+          // })
+          this.tableData.sortModel = this._searchQuery.sortOptions.map(o => ({
+            colId: o.field,
+            sort: o.order
+          }));
+        }
+
         this.busy = false;
       });
   }
@@ -218,8 +228,16 @@ export class SearchResultComponent implements OnInit {
   onSelectionChanged(selectedRows: any[]) {
     this.itemsSelected.emit(selectedRows.map(r => r.id));
   }
-  onSortChanged(sortChangedEvent: any) {
-    console.log('sort changed', sortChangedEvent);
+  onSortChanged(sortModel: { colId: string; sort: string }[]) {
+    if (
+      JSON.stringify(this.tableData.sortModel) !== JSON.stringify(sortModel)
+    ) {
+      // change query to reflect the sort setting from the grid
+      this._searchQuery.sortOptions = sortModel.map(
+        m => new SortOption(m.colId, m.sort)
+      );
+      this.executeQuery();
+    }
   }
 
   onColumnResized(colSizes: ColumnSizes) {

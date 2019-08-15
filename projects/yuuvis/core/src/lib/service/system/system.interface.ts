@@ -15,6 +15,7 @@ export interface ObjectTypeProperties {
   description: string;
   baseId: string;
   creatable: boolean;
+  contentStreamAllowed?: string;
   isFolder: boolean;
   fields: ObjectTypeField[];
 }
@@ -34,7 +35,7 @@ export interface SchemaResponse {
   version: number;
   lastModificationDate: string;
   propertyDefinition: SchemaResponsePropertyDefinition[];
-  typeDocumentDefinition: SchemaResponseDocumentTypeDefinition[];
+  typeDocumentDefinition: SchemaResponseTypeDefinition[];
   typeFolderDefinition: SchemaResponseTypeDefinition[];
   typeSecondaryDefinition: SchemaResponseTypeDefinition[];
 }
@@ -53,14 +54,10 @@ export interface SchemaResponseTypeDefinition {
   description: string;
   baseId: string;
   creatable: boolean;
+  contentStreamAllowed?: string;
   propertyReference: {
     value: string;
     queryableOnChildren: boolean;
   }[];
   secondaryObjectTypeId: string[];
-}
-
-export interface SchemaResponseDocumentTypeDefinition
-  extends SchemaResponseTypeDefinition {
-  contentStreamAllowed: boolean;
 }

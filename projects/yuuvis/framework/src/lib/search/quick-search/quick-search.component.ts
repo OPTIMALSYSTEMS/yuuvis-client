@@ -1,12 +1,12 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import {
+  BaseObjectTypeField,
   ScreenService,
   SearchQuery,
   SearchService,
   SystemService
 } from '@yuuvis/core';
-import { of } from 'rxjs';
 import { debounceTime, switchMap, tap } from 'rxjs/operators';
 import { SVGIcons } from '../../svg.generated';
 
@@ -47,18 +47,14 @@ export class QuickSearchComponent implements OnInit {
         }),
         debounceTime(500),
         switchMap(term => {
-          // return this.searchQuery.term && this.searchQuery.term.length
-          //   ? this.searchService.searchRaw(
-          //       `SELECT COUNT(*), enaio:objectTypeId FROM enaio:object WHERE CONTAINS('${
-          //         this.searchQuery.term
-          //       }') GROUP BY enaio:objectTypeId`
-          //     )
-          //   : of(null);
-          return of(null);
+          return this.searchService.aggregate(
+            this.searchQuery,
+            BaseObjectTypeField.OBJECT_TYPE_ID
+          );
         })
       )
-      .subscribe((res: any) => {
-        this.processResult(res);
+      .subscribe((res: { value: string; count: number }[]) => {
+        this.processAggregateResult(res);
       });
   }
 
@@ -71,18 +67,18 @@ export class QuickSearchComponent implements OnInit {
     this.executeSearch();
   }
 
-  private processResult(res: any) {
-    if (res) {
+  private processAggregateResult(res: { value: string; count: number }[]) {
+    if (res && res.length) {
       this.resultCount = 0;
 
-      res.objects.forEach(o => {
-        this.resultCount += o.properties.OBJECT_COUNT.value;
-        const typeId = o.properties['enaio:objectTypeId'].value;
+      res.forEach(item => {
+        this.resultCount += item.count;
         this.aggTypes.push({
-          objectTypeId: typeId,
+          objectTypeId: item.value,
           label:
-            this.systemService.getLocalizedResource(`${typeId}_label`) || '???',
-          count: o.properties.OBJECT_COUNT.value
+            this.systemService.getLocalizedResource(`${item.value}_label`) ||
+            '???',
+          count: item.count
         });
       });
     }
