@@ -66,6 +66,10 @@ export class AuthService {
           data: null
         };
 
+        // get rid of tailing slashes as this would confuse redirection flow
+        if (host.endsWith('/')) {
+          host = host.substring(0, host.length - 1);
+        }
         const targetHost = host || '';
         this.http.get(`${targetHost}/tenant/${tenant}/loginDevice`).subscribe(
           (res: LoginDeviceResult) => {
@@ -182,7 +186,20 @@ export class AuthService {
     if (gatewayLogout) {
       // by default we are just resetting internal state to 'logged out' and in
       // some cases call gateways logout endpoint to do logout stuff there silently
-      this.http.get(`${this.backend.getHost()}/logout`).subscribe();
+      this.http
+        .get(`${this.backend.getHost()}/logout`, {
+          observe: 'response',
+          responseType: 'arraybuffer'
+        })
+        .subscribe(
+          res => {
+            console.log(res);
+            this.http.get(res.url).subscribe();
+          },
+          err => {
+            console.error(err);
+          }
+        );
     }
     this.backend.setHost(null);
     this.cloudLoginRemoveHeaders();

@@ -51,10 +51,15 @@ export class GridService {
     };
   }
 
+  /**
+   * Generate column definitions.
+   * @param objectTypeId Object type to create the column definition for. Leave
+   * blank in case of a mixed result list
+   */
   getColumnConfiguration(objectTypeId?: string): Observable<ColDef[]> {
     const objectType: ObjectType = objectTypeId
       ? this.system.getObjectType(objectTypeId)
-      : this.system.getBaseType();
+      : this.system.getBaseDocumentType();
 
     return this.getPersistedColumnWidth(objectTypeId).pipe(
       map((colSizes: ColumnSizes) => {
@@ -68,15 +73,9 @@ export class GridService {
         const colDefs: ColDef[] = [];
         // add column definitions for the object types fields
         colDefs.push(
-          ...objectType.fields.map(f =>
-            this.getColumnDefinition(f, colSizesMap.get(f.id))
-          )
-        );
-        // also apply contentstream related columns
-        colDefs.push(
-          ...this.getContentStreamTypeFields().map(f =>
-            this.getColumnDefinition(f, colSizesMap.get(f.id))
-          )
+          ...objectType.fields
+            .filter(f => f.propertyType !== 'table')
+            .map(f => this.getColumnDefinition(f, colSizesMap.get(f.id)))
         );
         return colDefs;
       })
@@ -104,21 +103,18 @@ export class GridService {
 
     colDef.suppressMovable = true;
     colDef.resizable = true;
-    colDef.sortable = true;
+
+    // TODO: apply conditions whether or not the column should be sortable
+    const sortable = true;
+    if (sortable) {
+      colDef.sortable = true;
+      colDef.comparator = function(valueA, valueB, nodeA, nodeB, isInverted) {
+        // remove internal sorting behaviour as we will use backend side sort
+        return 1;
+      };
+    }
 
     return colDef;
-  }
-
-  /**
-   * Create `ContentStreamTypeField` objects for contentstream propeties, so they can be
-   * processed by the `getColumnDefinition()` function.
-   */
-  private getContentStreamTypeFields(): ObjectTypeField[] {
-    return [
-      { id: ContentStreamField.MIME_TYPE, propertyType: 'string' },
-      { id: ContentStreamField.LENGTH, propertyType: 'integer' },
-      { id: ContentStreamField.FILENAME, propertyType: 'string' }
-    ];
   }
 
   /**

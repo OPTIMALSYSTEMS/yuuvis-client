@@ -4,8 +4,6 @@ export interface SystemDefinition {
   version: number;
   lastModificationDate: any;
   objectTypes: ObjectType[];
-  // the secondary object type that all object types share
-  baseType: ObjectType;
   i18n: any;
 }
 
@@ -15,6 +13,7 @@ export interface ObjectTypeProperties {
   description: string;
   baseId: string;
   creatable: boolean;
+  contentStreamAllowed?: string;
   isFolder: boolean;
   fields: ObjectTypeField[];
 }
@@ -22,10 +21,10 @@ export interface ObjectTypeProperties {
 export interface ObjectTypeField {
   id: string;
   propertyType: string;
-  description?: string;
-  cardinality?: string;
-  required?: boolean;
-  updatability?: string;
+  description: string;
+  cardinality: string;
+  required: boolean;
+  updatability: string;
 }
 
 // base definition of the kind of data we'll receive
@@ -33,13 +32,10 @@ export interface ObjectTypeField {
 export interface SchemaResponse {
   version: number;
   lastModificationDate: string;
-  propertyDefinition: SchemaResponsePropertyDefinition[];
-  typeDocumentDefinition: SchemaResponseDocumentTypeDefinition[];
-  typeFolderDefinition: SchemaResponseTypeDefinition[];
-  typeSecondaryDefinition: SchemaResponseTypeDefinition[];
+  objectTypes: SchemaResponseTypeDefinition[];
 }
 
-export interface SchemaResponsePropertyDefinition {
+export interface SchemaResponseFieldDefinition {
   id: string;
   description: string;
   propertyType: string;
@@ -53,14 +49,7 @@ export interface SchemaResponseTypeDefinition {
   description: string;
   baseId: string;
   creatable: boolean;
-  propertyReference: {
-    value: string;
-    queryableOnChildren: boolean;
-  }[];
-  secondaryObjectTypeId: string[];
-}
-
-export interface SchemaResponseDocumentTypeDefinition
-  extends SchemaResponseTypeDefinition {
-  contentStreamAllowed: boolean;
+  fileable: boolean;
+  contentStreamAllowed?: string;
+  fields: SchemaResponseFieldDefinition[];
 }

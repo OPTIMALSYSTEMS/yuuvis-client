@@ -1,6 +1,14 @@
 <section class="object-summary">
     
-    <section *ngFor="let item of summary" [class.baseparams-entry]="item.baseparams">
-        <yuv-indexdata-entry [item]="item"></yuv-indexdata-entry>
+    <section *ngFor="let item of summary?.core" [class.baseparams-entry]="item.baseparams">
+        <div><strong>{{item.label}}</strong><span [innerHtml]="item.value | safeHtml"></span></div>
+    </section>
+    <hr>
+    <section *ngFor="let item of summary?.base" [class.baseparams-entry]="item.baseparams">
+        <div><strong>{{item.label}}</strong><span [innerHtml]="item.value | safeHtml"></span></div>
+    </section>
+    <hr>
+    <section *ngFor="let item of summary?.extras" [class.baseparams-entry]="item.baseparams">
+        <div><strong>{{item.label}}</strong><span [innerHtml]="item.value | safeHtml"></span></div>
     </section>
 </section>

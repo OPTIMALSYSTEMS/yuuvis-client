@@ -2,12 +2,7 @@ import { PlatformLocation } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
-import {
-  SearchQuery,
-  SearchResult,
-  SearchService,
-  TranslateService
-} from '@yuuvis/core';
+import { SearchQuery, TranslateService } from '@yuuvis/core';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -18,13 +13,12 @@ import { Subscription } from 'rxjs';
 export class ResultComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription[] = [];
 
-  searchResult: SearchResult;
+  searchQuery: SearchQuery;
   selectedItems: string[] = [];
 
   constructor(
     private titleService: Title,
     public translate: TranslateService,
-    private searchService: SearchService,
     private location: PlatformLocation,
     private route: ActivatedRoute
   ) {}
@@ -41,20 +35,15 @@ export class ResultComponent implements OnInit, OnDestroy {
     this.selectedItems = items;
   }
 
-  executeQuery(query: string) {
-    this.searchService
-      .searchByQuery(new SearchQuery(JSON.parse(query)))
-      .subscribe((res: SearchResult) => {
-        this.searchResult = res;
-      });
-  }
-
   ngOnInit() {
     this.titleService.setTitle(this.translate.instant('eo.state.result.title'));
     // extract the query from the route params
     this.subscriptions.push(
       this.route.queryParamMap.subscribe(params => {
-        this.executeQuery(params.get('query'));
+        // this.executeQuery(params.get('query'));
+        this.searchQuery = params.get('query')
+          ? new SearchQuery(JSON.parse(params.get('query')))
+          : null;
       })
     );
   }
