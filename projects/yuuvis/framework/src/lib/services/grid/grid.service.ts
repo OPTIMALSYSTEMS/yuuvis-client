@@ -3,7 +3,6 @@ import { Router } from '@angular/router';
 import {
   AppCacheService,
   BackendService,
-  ContentStreamAllowed,
   ContentStreamField,
   ObjectType,
   ObjectTypeField,
@@ -59,7 +58,7 @@ export class GridService {
   getColumnConfiguration(objectTypeId?: string): Observable<ColDef[]> {
     const objectType: ObjectType = objectTypeId
       ? this.system.getObjectType(objectTypeId)
-      : this.system.getBaseType();
+      : this.system.getBaseDocumentType();
 
     return this.getPersistedColumnWidth(objectTypeId).pipe(
       map((colSizes: ColumnSizes) => {
@@ -77,21 +76,6 @@ export class GridService {
             .filter(f => f.propertyType !== 'table')
             .map(f => this.getColumnDefinition(f, colSizesMap.get(f.id)))
         );
-        // also apply contentstream related columns in case we are not
-        // showing a list of folder types
-        if (
-          !objectTypeId ||
-          (!objectType.isFolder &&
-            (objectType.contentStreamAllowed === ContentStreamAllowed.ALLOWED ||
-              objectType.contentStreamAllowed ===
-                ContentStreamAllowed.REQUIRED))
-        ) {
-          colDefs.push(
-            ...this.getContentStreamTypeFields().map(f =>
-              this.getColumnDefinition(f, colSizesMap.get(f.id))
-            )
-          );
-        }
         return colDefs;
       })
     );
@@ -130,18 +114,6 @@ export class GridService {
     }
 
     return colDef;
-  }
-
-  /**
-   * Create `ContentStreamTypeField` objects for contentstream propeties, so they can be
-   * processed by the `getColumnDefinition()` function.
-   */
-  private getContentStreamTypeFields(): ObjectTypeField[] {
-    return [
-      { id: ContentStreamField.MIME_TYPE, propertyType: 'string' },
-      { id: ContentStreamField.LENGTH, propertyType: 'integer' },
-      { id: ContentStreamField.FILENAME, propertyType: 'string' }
-    ];
   }
 
   /**
