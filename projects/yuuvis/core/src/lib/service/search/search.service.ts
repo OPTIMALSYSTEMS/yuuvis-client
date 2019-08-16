@@ -65,7 +65,6 @@ export class SearchService {
 
     searchResponse.objects.forEach(o => {
       const fields = new Map();
-      console.log(o[BaseObjectTypeField.OBJECT_ID]);
       // process properties section of result
       Object.keys(o.properties).forEach(k => {
         fields.set(k, o.properties[k].value);
