@@ -7,10 +7,8 @@ import { BackendService } from '../backend/backend.service';
 import { AppCacheService } from '../cache/app-cache.service';
 import { Logger } from '../logger/logger';
 import {
-  ObjectTypeField,
   SchemaResponse,
-  SchemaResponseDocumentTypeDefinition,
-  SchemaResponsePropertyDefinition,
+  SchemaResponseFieldDefinition,
   SchemaResponseTypeDefinition,
   SystemDefinition
 } from './system.interface';
@@ -42,19 +40,12 @@ export class SystemService {
     return this.system.objectTypes.find(ot => ot.id === objectTypeId);
   }
 
-  getBaseType(): ObjectType {
-    return this.system.baseType;
+  getBaseDocumentType(): ObjectType {
+    return this.getObjectType('enaio:document');
   }
 
-  getBaseTypeById(objectTypeField: string): ObjectTypeField {
-    return this.getBaseType().fields.find(
-      field => field.id === objectTypeField
-    );
-  }
-
-  getBaseTypePropertyTypeById(objectTypeField: string): string {
-    return this.getBaseType().fields.find(field => field.id === objectTypeField)
-      .propertyType;
+  getBaseFolderType(): ObjectType {
+    return this.getObjectType('enaio:folder');
   }
 
   getLocalizedResource(key: string): string {
@@ -101,7 +92,7 @@ export class SystemService {
    */
   private fetchSystemDefinition(): Observable<boolean> {
     const fetchTasks = [
-      this.backend.get('/dms/schema/native.json', ApiBase.core),
+      this.backend.get('/dms/schema', ApiBase.core),
       this.fetchLocalizations()
     ];
 
@@ -130,121 +121,155 @@ export class SystemService {
    * @param schemaResponse Response from the backend
    */
   private setSchema(schemaResponse: SchemaResponse, localizedResource: any) {
-    // create map from properties acces them in a more performant way
-    const propertiesMap = new Map<string, SchemaResponsePropertyDefinition>();
-    schemaResponse.propertyDefinition.forEach(
-      (pd: SchemaResponsePropertyDefinition) => {
-        propertiesMap.set(pd.id, pd);
+    const objectTypes: ObjectType[] = schemaResponse.objectTypes.map(
+      (ot: SchemaResponseTypeDefinition) => {
+        return new ObjectType({
+          id: ot.id,
+          localNamespace: ot.localNamespace,
+          description: ot.description,
+          baseId: ot.baseId,
+          creatable: ot.creatable,
+          contentStreamAllowed: ot.contentStreamAllowed,
+          isFolder: ot.baseId === 'folder',
+          fields: ot.fields.map((otf: SchemaResponseFieldDefinition) => ({
+            id: otf.id,
+            propertyType: otf.propertyType,
+            description: otf.description,
+            cardinality: otf.cardinality,
+            required: otf.required,
+            updatability: otf.updatability
+          }))
+        });
       }
     );
 
-    const secondaryObjectTypes: Map<string, ObjectType> = new Map<
-      string,
-      ObjectType
-    >();
-    schemaResponse.typeSecondaryDefinition.forEach(
-      (td: SchemaResponseTypeDefinition) => {
-        secondaryObjectTypes.set(
-          td.id,
-          new ObjectType({
-            id: td.id,
-            baseId: td.baseId,
-            creatable: td.creatable,
-            description: td.description,
-            localNamespace: td.localNamespace,
-            isFolder: false,
-            fields: td.propertyReference.map(pr => propertiesMap.get(pr.value))
-          })
-        );
-      }
-    );
-
-    // create object types
-    const documentTypes: ObjectType[] = schemaResponse.typeDocumentDefinition.map(
-      (td: SchemaResponseDocumentTypeDefinition) =>
-        this.createObjectType(td, false, propertiesMap, secondaryObjectTypes)
-    );
-
-    const folderTypes: ObjectType[] = schemaResponse.typeFolderDefinition.map(
-      (td: SchemaResponseTypeDefinition) =>
-        this.createObjectType(td, false, propertiesMap, secondaryObjectTypes)
-    );
-
-    const typeSecondaryDef = schemaResponse.typeSecondaryDefinition.find(
-      td => td.id === this.BASE_TYPE_ID
-    );
-    if (typeSecondaryDef) {
-      const baseType: ObjectType = new ObjectType({
-        id: typeSecondaryDef.id,
-        baseId: typeSecondaryDef.baseId,
-        creatable: typeSecondaryDef.creatable,
-        description: typeSecondaryDef.description,
-        localNamespace: typeSecondaryDef.localNamespace,
-        isFolder: false,
-        fields: typeSecondaryDef.propertyReference.map(pr =>
-          propertiesMap.get(pr.value)
-        )
-      });
-
-      this.system = {
-        version: schemaResponse.version,
-        lastModificationDate: schemaResponse.lastModificationDate,
-        objectTypes: [...documentTypes, ...folderTypes],
-        baseType: baseType,
-        i18n: localizedResource
-      };
-      this.appCache.setItem(this.STORAGE_KEY, this.system).subscribe();
-      this.systemSource.next(this.system);
-    } else {
-      this.logger.error(
-        `Schema definition does not support required secondary object type '${
-          this.BASE_TYPE_ID
-        }'.`
-      );
-    }
+    this.system = {
+      version: schemaResponse.version,
+      lastModificationDate: schemaResponse.lastModificationDate,
+      objectTypes: objectTypes,
+      i18n: localizedResource
+    };
+    this.appCache.setItem(this.STORAGE_KEY, this.system).subscribe();
+    this.systemSource.next(this.system);
   }
 
-  private createObjectType(
-    schemaResType: SchemaResponseTypeDefinition,
-    isFolder: boolean,
-    propertiesMap: Map<string, SchemaResponsePropertyDefinition>,
-    secondaryObjectTypes: Map<string, ObjectType>
-  ): ObjectType {
-    // also add the fields of all secondary object types
-    let fields: ObjectTypeField[] = schemaResType.propertyReference.map(pr =>
-      propertiesMap.get(pr.value)
-    );
-    if (
-      schemaResType.secondaryObjectTypeId &&
-      schemaResType.secondaryObjectTypeId.length
-    ) {
-      schemaResType.secondaryObjectTypeId.forEach(id => {
-        fields.push(...secondaryObjectTypes.get(id).fields);
-      });
-    }
+  // private setSchemaX(schemaResponse: SchemaResponse, localizedResource: any) {
+  //   // create map from properties acces them in a more performant way
+  //   const propertiesMap = new Map<string, SchemaResponsePropertyDefinition>();
+  //   schemaResponse.propertyDefinition.forEach(
+  //     (pd: SchemaResponsePropertyDefinition) => {
+  //       propertiesMap.set(pd.id, pd);
+  //     }
+  //   );
 
-    // add contentstream related fields as well
-    [].forEach(f => {
-      fields.push({
-        id: f,
-        cardinality: 'single',
-        description: '',
-        required: false,
-        propertyType: '',
-        updatability: ''
-      });
-    });
+  //   const secondaryObjectTypes: Map<string, ObjectType> = new Map<
+  //     string,
+  //     ObjectType
+  //   >();
+  //   schemaResponse.typeSecondaryDefinition.forEach(
+  //     (td: SchemaResponseTypeDefinition) => {
+  //       secondaryObjectTypes.set(
+  //         td.id,
+  //         new ObjectType({
+  //           id: td.id,
+  //           baseId: td.baseId,
+  //           creatable: td.creatable,
+  //           description: td.description,
+  //           localNamespace: td.localNamespace,
+  //           isFolder: false,
+  //           fields: td.propertyReference.map(pr => propertiesMap.get(pr.value))
+  //         })
+  //       );
+  //     }
+  //   );
 
-    return new ObjectType({
-      id: schemaResType.id,
-      baseId: schemaResType.baseId,
-      creatable: schemaResType.creatable,
-      description: schemaResType.description,
-      localNamespace: schemaResType.localNamespace,
-      isFolder: isFolder,
-      fields: fields
-    });
-  }
+  //   // create object types
+  //   const documentTypes: ObjectType[] = schemaResponse.typeDocumentDefinition.map(
+  //     (td: SchemaResponseTypeDefinition) =>
+  //       this.createObjectType(td, false, propertiesMap, secondaryObjectTypes)
+  //   );
+
+  //   const folderTypes: ObjectType[] = schemaResponse.typeFolderDefinition.map(
+  //     (td: SchemaResponseTypeDefinition) =>
+  //       this.createObjectType(td, true, propertiesMap, secondaryObjectTypes)
+  //   );
+
+  //   const typeSecondaryDef = schemaResponse.typeSecondaryDefinition.find(
+  //     td => td.id === this.BASE_TYPE_ID
+  //   );
+  //   if (typeSecondaryDef) {
+  //     const baseType: ObjectType = new ObjectType({
+  //       id: typeSecondaryDef.id,
+  //       baseId: typeSecondaryDef.baseId,
+  //       creatable: typeSecondaryDef.creatable,
+  //       description: typeSecondaryDef.description,
+  //       localNamespace: typeSecondaryDef.localNamespace,
+  //       isFolder: false,
+  //       fields: typeSecondaryDef.propertyReference.map(pr =>
+  //         propertiesMap.get(pr.value)
+  //       )
+  //     });
+
+  //     this.system = {
+  //       version: schemaResponse.version,
+  //       lastModificationDate: schemaResponse.lastModificationDate,
+  //       objectTypes: [...documentTypes, ...folderTypes],
+  //       baseType: baseType,
+  //       i18n: localizedResource
+  //     };
+  //     this.appCache.setItem(this.STORAGE_KEY, this.system).subscribe();
+  //     this.systemSource.next(this.system);
+  //   } else {
+  //     this.logger.error(
+  //       `Schema definition does not support required secondary object type '${
+  //         this.BASE_TYPE_ID
+  //       }'.`
+  //     );
+  //   }
+  // }
+
+  // private createObjectType(
+  //   schemaResType: SchemaResponseTypeDefinition,
+  //   isFolder: boolean,
+  //   propertiesMap: Map<string, SchemaResponsePropertyDefinition>,
+  //   secondaryObjectTypes: Map<string, ObjectType>
+  // ): ObjectType {
+  //   // also add the fields of all secondary object types
+  //   let fields: ObjectTypeField[] = schemaResType.propertyReference.map(pr =>
+  //     propertiesMap.get(pr.value)
+  //   );
+  //   if (
+  //     schemaResType.secondaryObjectTypeId &&
+  //     schemaResType.secondaryObjectTypeId.length
+  //   ) {
+  //     schemaResType.secondaryObjectTypeId.forEach(id => {
+  //       fields.push(...secondaryObjectTypes.get(id).fields);
+  //     });
+  //   }
+
+  //   // add contentstream related fields as well
+  //   [].forEach(f => {
+  //     fields.push({
+  //       id: f,
+  //       cardinality: 'single',
+  //       description: '',
+  //       required: false,
+  //       propertyType: '',
+  //       updatability: ''
+  //     });
+  //   });
+
+  //   return new ObjectType({
+  //     id: schemaResType.id,
+  //     baseId: schemaResType.baseId,
+  //     creatable: schemaResType.creatable,
+  //     contentStreamAllowed: schemaResType.contentStreamAllowed,
+  //     description: schemaResType.description,
+  //     localNamespace: schemaResType.localNamespace,
+  //     isFolder: isFolder,
+  //     fields: fields
+  //   });
+  // }
 
   updateLocalizations(): Observable<any> {
     return this.fetchLocalizations().pipe(

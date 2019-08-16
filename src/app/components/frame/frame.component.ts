@@ -1,6 +1,6 @@
 import { Component, HostBinding, OnInit } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
-import { UserService, YuvUser } from '@yuuvis/core';
+import { AuthService, UserService, YuvUser } from '@yuuvis/core';
 import { filter } from 'rxjs/operators';
 
 @Component({
@@ -14,7 +14,11 @@ export class FrameComponent implements OnInit {
   showSideBar = false;
   user: YuvUser;
 
-  constructor(private router: Router, private userService: UserService) {}
+  constructor(
+    private router: Router,
+    private authService: AuthService,
+    private userService: UserService
+  ) {}
 
   navigate(state: string) {
     this.showSideBar = false;
@@ -25,6 +29,11 @@ export class FrameComponent implements OnInit {
     this.userService.user$.subscribe((user: YuvUser) => {
       this.user = user;
     });
+
+    this.authService.authenticated$.subscribe((authenticated: boolean) => {
+      this.router.navigate(['enter']);
+    });
+
     this.router.events
       .pipe(filter(e => e instanceof NavigationEnd))
       .subscribe((e: NavigationEnd) => {

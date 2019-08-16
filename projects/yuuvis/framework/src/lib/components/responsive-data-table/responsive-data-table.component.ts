@@ -50,6 +50,9 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
       if (JSON.stringify(this._data.columns) !== JSON.stringify(data.columns)) {
         this.gridOptions.api.setColumnDefs(data.columns);
       }
+      if (data.sortModel) {
+        this.gridOptions.api.setSortModel(data.sortModel);
+      }
       this._data = data;
     } else {
       this._data = data;
@@ -61,7 +64,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
 
   // emits an array of the selected rows
   @Output() selectionChanged = new EventEmitter<any[]>();
-  @Output() sortChanged = new EventEmitter<any>();
+  @Output() sortChanged = new EventEmitter<{ colId: string; sort: string }[]>();
   @Output() columnResized = new EventEmitter<ColumnSizes>();
 
   @HostBinding('class.small') small = false;
@@ -179,9 +182,12 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
         this.columnResizeSource.next();
       },
       onSortChanged: event => {
-        this.sortChanged.emit(event);
+        this.sortChanged.emit(this.gridOptions.api.getSortModel());
       }
     };
+    if (this._data.sortModel) {
+      this.gridOptions.api.setSortModel(this._data.sortModel);
+    }
   }
 
   // copy content of either row or table cell to clipboard

@@ -1,3 +1,4 @@
+j
 import {
   HttpClient,
   HttpErrorResponse,
@@ -293,6 +294,9 @@ export class AuthService {
     return this.systemService.getSystemDefinition().pipe(
       switchMap(() => this.userService.fetchUserSettings()),
       switchMap((userSettings: UserSettings) => {
+        userSettings.locale = this.userService.setUserLocale(
+          userSettings.locale
+        );
         const currentUser = new YuvUser(userJson, userSettings);
         this.userService.setCurrentUser(currentUser);
         this.backend.setHeader(
