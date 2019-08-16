@@ -1,23 +1,11 @@
 {
   "extends": "../../../tslint.json",
   "rules": {
-    "directive-selector": [
-      true,
-      "attribute",
-      "lib",
-      "camelCase"
-    ],
-    "component-selector": [
-      true,
-      "element",
-      "lib",
-      "kebab-case"
-    ],
+    "import-blacklist": [true, "rxjs/Rx", "@yuuvis/core", ["^.*/(projects|dist)/yuuvis/(core|commmon-ui|framework).*$", "^.*/src/(app|lib).*$"]],
+    "directive-selector": [true, "attribute", "lib", "camelCase"],
+    "component-selector": [true, "element", "lib", "kebab-case"],
     "variable-name": {
-      "options": [
-        "check-format",
-        "allow-leading-underscore"
-      ]
+      "options": ["check-format", "allow-leading-underscore"]
     },
     "no-implicit-dependencies": [
       true,

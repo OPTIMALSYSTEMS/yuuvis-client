@@ -43,6 +43,7 @@
     "@angular/platform-browser": "~8.0.0",
     "@angular/platform-browser-dynamic": "~8.0.0",
     "@angular/router": "~8.0.0",
+    "@beyerleinf/ngx-dnd": "^6.0.0-preview3",
     "@ionic-native/core": "^5.6.0",
     "@ionic-native/in-app-browser": "^5.6.0",
     "@ngx-pwa/local-storage": "^7.4.2",
@@ -86,7 +87,7 @@
     "ts-node": "~7.0.0",
     "tsickle": ">=0.34.0",
     "tslib": "^1.9.0",
-    "tslint": "~5.11.0",
+    "tslint": "~5.18.0",
     "tslint-config-prettier": "^1.18.0",
     "typescript": "~3.4.5"
   }
