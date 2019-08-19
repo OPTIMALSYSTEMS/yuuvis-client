@@ -1,0 +1,16 @@
+<div class="frame-container">
+    <div class="header">
+      <div class="icon">
+        <ng-content select="yuv-icon"></ng-content>
+      </div>
+      <header class="header_text">
+        <div class="title">{{ title }}</div>
+        <div class="description">{{ description }}</div>
+      </header>
+      <div class="extras">
+        <ng-content class="actions" select=".actions"></ng-content>
+        <ng-content class="status" select=".status"></ng-content>
+      </div>
+    </div>
+    <ng-content class="content" select=".content"></ng-content>
+  </div>

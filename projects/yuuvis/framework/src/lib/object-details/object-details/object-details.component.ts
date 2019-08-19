@@ -1,5 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { DmsObject, DmsService } from '@yuuvis/core';
+import { CellRenderer } from '../../services/grid/grid.cellrenderer';
+import { SVGIcons } from '../../svg.generated';
 
 @Component({
   selector: 'yuv-object-details',
@@ -7,11 +9,20 @@ import { DmsObject, DmsService } from '@yuuvis/core';
   styleUrls: ['./object-details.component.scss']
 })
 export class ObjectDetailsComponent implements OnInit {
+  objectIcon: string = '';
+  icons = SVGIcons;
+  favorite = SVGIcons.favorite;
+  refresh = SVGIcons.refresh;
+  edit = SVGIcons.edit;
+
+  showSideBar = false;
+
   private _dmsObject: DmsObject;
 
   @Input()
   set dmsObject(object: DmsObject) {
     this._dmsObject = object;
+    this.objectIcon = CellRenderer.typeCellRenderer(object.objectTypeId);
   }
 
   get dmsObject() {
@@ -27,6 +38,10 @@ export class ObjectDetailsComponent implements OnInit {
   }
 
   constructor(private dmsService: DmsService) {}
+
+  showActions() {
+    this.showSideBar = !this.showSideBar;
+  }
 
   ngOnInit() {}
 }

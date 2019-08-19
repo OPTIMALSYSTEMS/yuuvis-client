@@ -1,0 +1,71 @@
+.frame-container {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: repeat(auto-fit, var(--app-pane-header-heigh));
+  grid-template-areas: 'header' 'content';
+  margin: var(--app-pane-padding);
+  margin-bottom: 0;
+}
+
+.content {
+  grid-area: content;
+}
+
+.header {
+  display: grid;
+  grid-template-columns: 5% 75% 20%;
+  grid-template-rows: 1fr;
+  grid-template-areas: 'icon header_text extras';
+  grid-area: header;
+}
+
+.icon {
+  grid-area: icon;
+}
+
+.header_text {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: repeat(auto-fit, 30px);
+  grid-template-areas: 'title' 'description';
+  grid-area: header_text;
+}
+
+.title {
+  grid-area: title;
+  font-weight: var(--font-weight-normal);
+  font-size: var(--font-title);
+  color: var(--text-color-caption);
+}
+
+.description {
+  grid-area: description;
+  max-width: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--font-subhead);
+  color: var(--text-color-caption);
+  font-weight: var(--font-weight-normal);
+  line-height: 2em;
+  height: 2em;
+  margin: 0;
+}
+
+.extras {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: repeat(auto-fit, var(--font-display));
+  grid-template-areas: 'actions' 'status';
+  grid-area: extras;
+  justify-self: end;
+}
+
+.actions {
+  grid-area: actions;
+  justify-self: end;
+}
+
+.status {
+  grid-area: status;
+}
