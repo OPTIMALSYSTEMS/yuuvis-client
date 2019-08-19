@@ -33,3 +33,11 @@ export enum ObjectField {
   VERSION_NUMBER = 'enaio:versionNumber',
   OBJECT_ID = 'enaio:objectId'
 }
+
+export enum ParentField {
+  asvaktenzeichen = 'tenKolibri:asvaktenzeichen',
+  asvaktenzeichentext = 'tenKolibri:asvaktenzeichentext',
+  asvsichtrechte = 'tenKolibri:asvsichtrechte',
+  asvvorgangsname = 'tenKolibri:asvvorgangsname',
+  asvvorgangsnummer = 'tenKolibri:asvvorgangsnummer'
+}

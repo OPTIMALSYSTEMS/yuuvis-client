@@ -1,6 +1,12 @@
 <section class="object-summary">
     
     <section class="core-entry">
+        <section *ngFor="let item of summary?.parent" class="entry">
+            <ng-container [ngTemplateOutlet]="summaryEntry" [ngTemplateOutletContext]="{item: item}"></ng-container>
+        </section>
+    </section>
+
+    <section class="core-entry">
         <section *ngFor="let item of summary?.core" class="entry">
             <ng-container [ngTemplateOutlet]="summaryEntry" [ngTemplateOutletContext]="{item: item}"></ng-container>
         </section>

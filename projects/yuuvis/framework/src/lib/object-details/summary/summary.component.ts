@@ -1,6 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { BaseObjectTypeField, ContentStreamField, DmsObject, SystemService } from '@yuuvis/core';
 import { ColDef, ICellRendererFunc } from 'ag-grid-community';
+import { ParentField } from '../../../../../core/src/public-api';
 import { GridService } from '../../services/grid/grid.service';
 import { Summary } from './summary.interface';
 
@@ -25,7 +26,8 @@ export class SummaryComponent {
     const summary: Summary = {
       core: [],
       base: [],
-      extras: []
+      extras: [],
+      parent: []
     };
 
     const skipFields: string[] = [
@@ -35,7 +37,8 @@ export class SummaryComponent {
       BaseObjectTypeField.TENANT,
       BaseObjectTypeField.PARENT_ID,
       BaseObjectTypeField.PARENT_OBJECT_TYPE_ID,
-      BaseObjectTypeField.PARENT_VERSION_NUMBER
+      BaseObjectTypeField.PARENT_VERSION_NUMBER,
+      'tenKolibri:tableofnotices'
     ];
 
     const baseFields = dmsObject.isFolder
@@ -50,6 +53,14 @@ export class SummaryComponent {
     //   BaseObjectTypeField.VERSION_NUMBER
     // ];
 
+    const patentFields: string[] = [
+      ParentField.asvaktenzeichen,
+      ParentField.asvaktenzeichentext,
+      ParentField.asvsichtrechte,
+      ParentField.asvvorgangsname,
+      ParentField.asvvorgangsnummer
+    ];
+
     const extraFields: string[] = [
       BaseObjectTypeField.OBJECT_ID,
       ContentStreamField.FILENAME,
@@ -61,23 +72,37 @@ export class SummaryComponent {
     ];
 
     this.gridService.getColumnConfiguration(dmsObject.objectTypeId).subscribe((colDef: ColDef[]) => {
+      console.log({ dmsObject });
+
       Object.keys(dmsObject.data).forEach((key: string) => {
-        const def: ColDef = colDef.find(cd => cd.field === key);
-        const renderer: ICellRendererFunc = def.cellRenderer as ICellRendererFunc;
+        const prepKey = key.startsWith('parent.') ? key.replace('parent.', '') : key;
+
+        const label = this.systemService.getLocalizedResource(`${key}_label`);
+        const def: ColDef = colDef.find(cd => cd.field === prepKey);
+        const renderer: ICellRendererFunc = def ? (def.cellRenderer as ICellRendererFunc) : null;
         const si = {
-          label: this.systemService.getLocalizedResource(`${key}_label`),
+          label: label ? label : key,
           value: renderer ? renderer({ value: dmsObject.data[key] }) : dmsObject.data[key]
         };
 
-        if (extraFields.includes(key)) {
+        if (key === 'enaio:objectTypeId') {
+          si.value = this.systemService.getLocalizedResource(`${dmsObject.data[key]}_label`);
+        }
+
+        if (extraFields.includes(prepKey)) {
           summary.extras.push(si);
-        } else if (baseFields.includes(key)) {
+        } else if (baseFields.includes(prepKey)) {
           summary.base.push(si);
-        } else if (!skipFields.includes(key)) {
+        } else if (patentFields.includes(prepKey)) {
+          summary.parent.push(si);
+        } else if (!skipFields.includes(prepKey)) {
           summary.core.push(si);
         }
       });
     });
+
+    console.log({ summary });
+
     return summary;
   }
 }

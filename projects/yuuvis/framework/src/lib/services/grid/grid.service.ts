@@ -59,6 +59,8 @@ export class GridService {
   getColumnConfiguration(objectTypeId?: string): Observable<ColDef[]> {
     const objectType: ObjectType = objectTypeId ? this.system.getObjectType(objectTypeId) : this.system.getBaseDocumentType();
 
+    console.log({ objectType });
+
     return this.getPersistedColumnWidth(objectTypeId).pipe(
       map((colSizes: ColumnSizes) => {
         // create a map from column size data in order to get
