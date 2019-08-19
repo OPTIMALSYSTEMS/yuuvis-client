@@ -108,10 +108,10 @@ export class GridService {
     const sortable = true;
     if (sortable) {
       colDef.sortable = true;
-      colDef.comparator = function(valueA, valueB, nodeA, nodeB, isInverted) {
-        // remove internal sorting behaviour as we will use backend side sort
-        return 1;
-      };
+      // colDef.comparator = function(valueA, valueB, nodeA, nodeB, isInverted) {
+      //   // remove internal sorting behaviour as we will use backend side sort
+      //   return 1;
+      // };
     }
 
     return colDef;
