@@ -22,9 +22,7 @@ export class ObjectDetailsComponent implements OnInit {
   set objectId(id: string) {
     this._dmsObject = null;
     if (id) {
-      this.dmsService
-        .getDmsObject(id)
-        .subscribe(dmsObject => (this.dmsObject = dmsObject));
+      this.dmsService.getDmsObject(id).subscribe(dmsObject => (this.dmsObject = dmsObject));
     }
   }
 

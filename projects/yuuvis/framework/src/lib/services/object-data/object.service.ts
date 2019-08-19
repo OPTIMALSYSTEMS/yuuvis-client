@@ -1,12 +1,5 @@
 import { Injectable } from '@angular/core';
-import {
-  Sort,
-  SystemService,
-  TranslateService,
-  UserField,
-  UserService,
-  Utils
-} from '@yuuvis/core';
+import { Sort, SystemService, TranslateService, UserField, UserService, Utils } from '@yuuvis/core';
 import { DisplayNamePipe, LocaleDatePipe } from '../../pipes';
 import { Order } from './summeryOrder';
 
@@ -14,18 +7,12 @@ import { Order } from './summeryOrder';
   providedIn: 'root'
 })
 export class ObjectService {
-  constructor(
-    private translate: TranslateService,
-    private systemService: SystemService,
-    private userService: UserService
-  ) {}
+  constructor(private translate: TranslateService, private systemService: SystemService, private userService: UserService) {}
 
   prepareData(data) {
     return (
       Object.keys(data)
-        .map((key: string, index: number) =>
-          this.formatData({ key, value: data[key] })
-        )
+        .map((key: string, index: number) => this.formatData({ key, value: data[key] }))
         // .filter(data => !!data.key)
         .map(field => {
           console.log(this.systemService.getObjectTypeProperty(field.key));
@@ -49,9 +36,7 @@ export class ObjectService {
     const displayNamePipe = new DisplayNamePipe(this.userService);
 
     if (Object.values(UserField).includes(data.key)) {
-      displayNamePipe
-        .transform(data.value, 'Organization')
-        .subscribe(val => (data.value = val));
+      displayNamePipe.transform(data.value, 'Organization').subscribe(val => (data.value = val));
     }
 
     data.key = this.systemService.getLocalizedResource(`${data.key}_label`);

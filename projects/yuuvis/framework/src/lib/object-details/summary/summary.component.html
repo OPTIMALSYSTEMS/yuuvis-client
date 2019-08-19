@@ -1,14 +1,27 @@
 <section class="object-summary">
     
-    <section *ngFor="let item of summary?.core" [class.baseparams-entry]="item.baseparams">
-        <div><strong>{{item.label}}</strong><span [innerHtml]="item.value | safeHtml"></span></div>
+    <section class="core-entry">
+        <section *ngFor="let item of summary?.core" class="entry">
+            <ng-container [ngTemplateOutlet]="summaryEntry" [ngTemplateOutletContext]="{item: item}"></ng-container>
+        </section>
     </section>
-    <hr>
-    <section *ngFor="let item of summary?.base" [class.baseparams-entry]="item.baseparams">
-        <div><strong>{{item.label}}</strong><span [innerHtml]="item.value | safeHtml"></span></div>
+    
+    <section class="baseparams-entry">
+        <section *ngFor="let item of summary?.base" class="entry baseparams">
+            <ng-container [ngTemplateOutlet]="summaryEntry" [ngTemplateOutletContext]="{item: item}"></ng-container>
+        </section>
     </section>
-    <hr>
-    <section *ngFor="let item of summary?.extras" [class.baseparams-entry]="item.baseparams">
-        <div><strong>{{item.label}}</strong><span [innerHtml]="item.value | safeHtml"></span></div>
-    </section>
+        
+
+    <yuv-accordion class="extra-entry" [header]="'extras'" *ngIf="summary?.extras">
+        <section *ngFor="let item of summary?.extras" class="entry baseparams">
+            <ng-container [ngTemplateOutlet]="summaryEntry" [ngTemplateOutletContext]="{item: item}"></ng-container>
+        </section>
+    </yuv-accordion>
 </section>
+
+
+<ng-template #summaryEntry let-item="item">
+    <span class="label">{{item.label}}</span>
+    <span class="value" [innerHtml]="item.value | safeHtml"></span>
+</ng-template>

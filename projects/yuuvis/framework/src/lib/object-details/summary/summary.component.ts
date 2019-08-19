@@ -1,12 +1,8 @@
 import { Component, Input } from '@angular/core';
-import {
-  BaseObjectTypeField,
-  ContentStreamField,
-  DmsObject,
-  SystemService
-} from '@yuuvis/core';
+import { BaseObjectTypeField, ContentStreamField, DmsObject, SystemService } from '@yuuvis/core';
 import { ColDef, ICellRendererFunc } from 'ag-grid-community';
 import { GridService } from '../../services/grid/grid.service';
+import { Summary } from './summary.interface';
 
 @Component({
   selector: 'yuv-summary',
@@ -23,10 +19,7 @@ export class SummaryComponent {
     }
   }
 
-  constructor(
-    private systemService: SystemService,
-    private gridService: GridService
-  ) {}
+  constructor(private systemService: SystemService, private gridService: GridService) {}
 
   private generateSummary(dmsObject: DmsObject) {
     const summary: Summary = {
@@ -56,6 +49,7 @@ export class SummaryComponent {
     //   BaseObjectTypeField.MODIFIED_BY,
     //   BaseObjectTypeField.VERSION_NUMBER
     // ];
+
     const extraFields: string[] = [
       BaseObjectTypeField.OBJECT_ID,
       ContentStreamField.FILENAME,
@@ -66,40 +60,24 @@ export class SummaryComponent {
       ContentStreamField.REPOSITORY_ID
     ];
 
-    this.gridService
-      .getColumnConfiguration(dmsObject.objectTypeId)
-      .subscribe((colDef: ColDef[]) => {
-        Object.keys(dmsObject.data).forEach(k => {
-          const def: ColDef = colDef.find(cd => cd.field === k);
-          const renderer: ICellRendererFunc = def.cellRenderer as ICellRendererFunc;
-          const si = {
-            label: this.systemService.getLocalizedResource(`${k}_label`),
-            value: renderer
-              ? renderer({ value: dmsObject.data[k] })
-              : dmsObject.data[k]
-          };
+    this.gridService.getColumnConfiguration(dmsObject.objectTypeId).subscribe((colDef: ColDef[]) => {
+      Object.keys(dmsObject.data).forEach((key: string) => {
+        const def: ColDef = colDef.find(cd => cd.field === key);
+        const renderer: ICellRendererFunc = def.cellRenderer as ICellRendererFunc;
+        const si = {
+          label: this.systemService.getLocalizedResource(`${key}_label`),
+          value: renderer ? renderer({ value: dmsObject.data[key] }) : dmsObject.data[key]
+        };
 
-          if (extraFields.includes(k)) {
-            summary.extras.push(si);
-          } else if (baseFields.includes(k)) {
-            summary.base.push(si);
-          } else if (!skipFields.includes(k)) {
-            summary.core.push(si);
-          }
-        });
+        if (extraFields.includes(key)) {
+          summary.extras.push(si);
+        } else if (baseFields.includes(key)) {
+          summary.base.push(si);
+        } else if (!skipFields.includes(key)) {
+          summary.core.push(si);
+        }
       });
-
-    // console.log({ summary });
+    });
     return summary;
   }
-}
-
-interface Summary {
-  core: SummaryEntry[];
-  base: SummaryEntry[];
-  extras: SummaryEntry[];
-}
-interface SummaryEntry {
-  label: string;
-  value: any;
 }
