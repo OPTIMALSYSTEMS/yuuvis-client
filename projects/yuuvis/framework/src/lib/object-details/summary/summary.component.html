@@ -19,7 +19,7 @@
     </section>
         
 
-    <yuv-accordion class="extra-entry" [header]="'extras'" *ngIf="summary?.extras">
+    <yuv-accordion class="extra-entry" [header]="'extras'" *ngIf="summary?.extras.length && hasRights">
         <section *ngFor="let item of summary?.extras" class="entry baseparams">
             <ng-container [ngTemplateOutlet]="summaryEntry" [ngTemplateOutletContext]="{item: item}"></ng-container>
         </section>

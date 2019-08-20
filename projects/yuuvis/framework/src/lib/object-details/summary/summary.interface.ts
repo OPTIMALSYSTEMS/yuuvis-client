@@ -7,4 +7,5 @@ export interface Summary {
 export interface SummaryEntry {
   label: string;
   value: any;
+  order?: number;
 }

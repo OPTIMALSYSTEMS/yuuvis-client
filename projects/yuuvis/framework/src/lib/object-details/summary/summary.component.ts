@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { BaseObjectTypeField, ContentStreamField, DmsObject, SystemService } from '@yuuvis/core';
+import { BaseObjectTypeField, ContentStreamField, DmsObject, SystemService, UserService } from '@yuuvis/core';
 import { ColDef, ICellRendererFunc } from 'ag-grid-community';
 import { ParentField } from '../../../../../core/src/public-api';
 import { GridService } from '../../services/grid/grid.service';
@@ -20,7 +20,11 @@ export class SummaryComponent {
     }
   }
 
-  constructor(private systemService: SystemService, private gridService: GridService) {}
+  constructor(private systemService: SystemService, private gridService: GridService, private userService: UserService) {}
+
+  get hasRights(): boolean {
+    return this.userService.hasAdministrationRoles;
+  }
 
   private generateSummary(dmsObject: DmsObject) {
     const summary: Summary = {
@@ -41,17 +45,18 @@ export class SummaryComponent {
       'tenKolibri:tableofnotices'
     ];
 
-    const baseFields = dmsObject.isFolder
-      ? this.systemService.getBaseFolderType().fields.map(f => f.id)
-      : this.systemService.getBaseDocumentType().fields.map(f => f.id);
-
-    // const baseFields: string[] = [
-    //   BaseObjectTypeField.CREATION_DATE,
-    //   BaseObjectTypeField.CREATED_BY,
-    //   BaseObjectTypeField.MODIFICATION_DATE,
-    //   BaseObjectTypeField.MODIFIED_BY,
-    //   BaseObjectTypeField.VERSION_NUMBER
-    // ];
+    const defaultBaseFields: { key: string; order: number }[] = [
+      { key: BaseObjectTypeField.CREATION_DATE, order: 1 },
+      { key: BaseObjectTypeField.CREATED_BY, order: 2 },
+      { key: BaseObjectTypeField.MODIFICATION_DATE, order: 3 },
+      { key: BaseObjectTypeField.MODIFIED_BY, order: 4 },
+      { key: BaseObjectTypeField.VERSION_NUMBER, order: 5 },
+      { key: ContentStreamField.FILENAME, order: 6 },
+      { key: ContentStreamField.LENGTH, order: 7 },
+      { key: ContentStreamField.MIME_TYPE, order: 8 },
+      { key: BaseObjectTypeField.OBJECT_ID, order: 9 },
+      { key: BaseObjectTypeField.PARENT_ID, order: 10 }
+    ];
 
     const patentFields: string[] = [
       ParentField.asvaktenzeichen,
@@ -61,19 +66,14 @@ export class SummaryComponent {
       ParentField.asvvorgangsnummer
     ];
 
-    const extraFields: string[] = [
-      BaseObjectTypeField.OBJECT_ID,
-      ContentStreamField.FILENAME,
-      ContentStreamField.LENGTH,
-      ContentStreamField.MIME_TYPE,
-      ContentStreamField.DIGEST,
-      ContentStreamField.ARCHIVE_PATH,
-      ContentStreamField.REPOSITORY_ID
-    ];
+    let baseFields = dmsObject.isFolder
+      ? this.systemService.getBaseFolderType().fields.map(f => f.id)
+      : this.systemService.getBaseDocumentType().fields.map(f => f.id);
+    baseFields = baseFields.filter(fields => defaultBaseFields.filter(defFields => defFields.key === fields).length === 0);
 
+    const extraFields: string[] = [ContentStreamField.DIGEST, ContentStreamField.ARCHIVE_PATH, ContentStreamField.REPOSITORY_ID];
+    baseFields.map(fields => extraFields.push(fields));
     this.gridService.getColumnConfiguration(dmsObject.objectTypeId).subscribe((colDef: ColDef[]) => {
-      console.log({ dmsObject });
-
       Object.keys(dmsObject.data).forEach((key: string) => {
         const prepKey = key.startsWith('parent.') ? key.replace('parent.', '') : key;
 
@@ -82,7 +82,8 @@ export class SummaryComponent {
         const renderer: ICellRendererFunc = def ? (def.cellRenderer as ICellRendererFunc) : null;
         const si = {
           label: label ? label : key,
-          value: renderer ? renderer({ value: dmsObject.data[key] }) : dmsObject.data[key]
+          value: renderer ? renderer({ value: dmsObject.data[key] }) : dmsObject.data[key],
+          order: null
         };
 
         if (key === 'enaio:objectTypeId') {
@@ -91,17 +92,18 @@ export class SummaryComponent {
 
         if (extraFields.includes(prepKey)) {
           summary.extras.push(si);
-        } else if (baseFields.includes(prepKey)) {
+        } else if (defaultBaseFields.find(field => field.key.includes(prepKey))) {
+          defaultBaseFields.map(field => (field.key === prepKey ? (si.order = field.order) : null));
           summary.base.push(si);
         } else if (patentFields.includes(prepKey)) {
           summary.parent.push(si);
         } else if (!skipFields.includes(prepKey)) {
           summary.core.push(si);
         }
+
+        summary.base.sort((a, b) => a.order - b.order);
       });
     });
-
-    console.log({ summary });
 
     return summary;
   }

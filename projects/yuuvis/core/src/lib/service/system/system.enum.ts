@@ -1,3 +1,8 @@
+export enum AdministrationRoles {
+  ADMIN = 'YUUVIS_TENANT_ADMIN',
+  SYSTEM = 'YUUVIS_SYSTEM_INTEGRATOR'
+}
+
 export enum BaseObjectTypeField {
   OBJECT_ID = 'enaio:objectId',
   OBJECT_TYPE_ID = 'enaio:objectTypeId',
