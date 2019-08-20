@@ -129,9 +129,9 @@ export class CellRenderer {
     }
     let val = '';
     if (value) {
-      (Array.isArray(value) ? value : [value]).forEach(value => {
-        val += `<div class="chip">${Utils.escapeHtml(value)}</div>`;
-      });
+      (Array.isArray(value) ? value : [value]).forEach(
+        value => (val += typeof value === 'string' ? `<div class="chip">${Utils.escapeHtml(value)}</div>` : '  ')
+      );
     }
     return val;
   }
