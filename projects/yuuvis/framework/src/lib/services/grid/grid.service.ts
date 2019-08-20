@@ -58,9 +58,6 @@ export class GridService {
    */
   getColumnConfiguration(objectTypeId?: string): Observable<ColDef[]> {
     const objectType: ObjectType = objectTypeId ? this.system.getObjectType(objectTypeId) : this.system.getBaseDocumentType();
-
-    console.log({ objectType });
-
     return this.getPersistedColumnWidth(objectTypeId).pipe(
       map((colSizes: ColumnSizes) => {
         // create a map from column size data in order to get
@@ -155,9 +152,6 @@ export class GridService {
       }
       case 'datetime': {
         colDef.width = 150;
-
-        console.log({ field });
-
         colDef.cellRenderer = this.customContext(CellRenderer.dateTimeCellRenderer, { pattern: 'eoShort' });
         // { pattern: resultField.withtime ? 'eoShort' : 'eoShortDate' }
         break;
