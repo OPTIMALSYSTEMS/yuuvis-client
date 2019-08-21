@@ -1,0 +1,16 @@
+<as-split>
+  <as-split-area>
+    <p-tabView #mainTabView (onChange)="onChange($event)">
+      <span class="tab-navigation">
+        <button class="split-btn" (click)="splitPanelAdd()">&#x229F;</button>
+      </span>
+      <ng-content></ng-content>
+    </p-tabView>
+  </as-split-area>
+
+  <as-split-area *ngFor="let panel of splitPanels; let index = index">
+    <p-tabView class="split-tab-view" #splitTabView [controlClose]="true" (onClose)="splitPanelClose($event, panel, index)">
+      <p-tabPanel [header]="panel.header" [closable]="true"></p-tabPanel>
+    </p-tabView>
+  </as-split-area>
+</as-split>

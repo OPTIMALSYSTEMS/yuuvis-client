@@ -18,6 +18,13 @@ export class ObjectDetailsComponent implements OnInit {
   showSideBar = false;
 
   private _dmsObject: DmsObject;
+  private _dmsObject2: DmsObject;
+
+  @Input() enableCompare = true;
+  @Input() enableSync = false;
+  @Input() cacheLayout = false;
+
+  @Input() externalPanels = [];
 
   @Input()
   set dmsObject(object: DmsObject) {
@@ -27,6 +34,15 @@ export class ObjectDetailsComponent implements OnInit {
 
   get dmsObject() {
     return this._dmsObject;
+  }
+
+  @Input()
+  set dmsObject2(object: DmsObject) {
+    this._dmsObject2 = object;
+  }
+
+  get dmsObject2() {
+    return this._dmsObject2;
   }
 
   @Input()
