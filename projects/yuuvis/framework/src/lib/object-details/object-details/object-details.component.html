@@ -1,3 +1,28 @@
 <yuv-object-details-header [title]="dmsObject?.data?.clienttitle" [description]="dmsObject?.data?.clientdescription"></yuv-object-details-header>
-<yuv-summary [dmsObject]="dmsObject"></yuv-summary>
 
+<yuv-responsive-tab-container>
+  <p-tabPanel [id]="'preview'" header="Preview" #preview>
+    <ng-template pTemplate="content">
+      Preview ..................
+    </ng-template>
+  </p-tabPanel>
+
+  <p-tabPanel [id]="'summary'" header="Summary">
+    <ng-template pTemplate="content">
+      Summary ..................
+      <yuv-summary [dmsObject]="dmsObject"></yuv-summary>
+    </ng-template>
+  </p-tabPanel>
+
+  <p-tabPanel [id]="'history'" header="History">
+    <ng-template pTemplate="content">
+      History ..................
+    </ng-template>
+  </p-tabPanel>
+
+  <p-tabPanel [id]="'content'" header="Content">
+    <ng-template pTemplate="content">
+      Content ..................
+    </ng-template>
+  </p-tabPanel>
+</yuv-responsive-tab-container>
