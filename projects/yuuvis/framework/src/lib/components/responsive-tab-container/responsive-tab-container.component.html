@@ -1,8 +1,8 @@
 <as-split>
   <as-split-area>
-    <p-tabView #mainTabView (onChange)="onChange($event)">
+    <p-tabView #mainTabView (onChange)="onChange($event)" orientation="{{orientation}}">
       <span class="tab-navigation">
-        <button class="split-btn" (click)="splitPanelAdd()">&#x229F;</button>
+        <yuv-icon *ngIf="!isMobile" class="split-btn" (click)="splitPanelAdd()" [svg]="svgIcon.vertical_split"></yuv-icon>
       </span>
       <ng-content></ng-content>
     </p-tabView>

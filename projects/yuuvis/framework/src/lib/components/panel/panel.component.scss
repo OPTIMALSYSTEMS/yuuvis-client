@@ -4,6 +4,7 @@
   grid-template-rows: 110px 1fr;
   grid-template-areas: 'header' 'content';
   height: 100%;
+  overflow: hidden;
 }
 
 .content {
@@ -14,12 +15,16 @@
 
 .header {
   display: grid;
-  grid-template-columns: 5% 75% 20%;
+  grid-template-columns: 57px 3fr 0.5fr;
   grid-template-rows: 1fr;
   grid-template-areas: 'icon header_text extras';
   grid-area: header;
   padding: var(--app-pane-padding);
   padding-bottom: 0;
+
+  :host-context(.screen-s) & {
+    grid-template-columns: 57px 2fr 1fr;
+  }
 }
 
 .icon {
@@ -62,11 +67,21 @@
   grid-template-areas: 'actions' 'status';
   grid-area: extras;
   justify-self: end;
+
+  :host-context(.screen-s) & {
+    grid-template-rows: 1fr;
+    grid-template-columns: repeat(auto-fit, var(--font-display));
+    grid-template-areas: 'actions status';
+    justify-self: start;
+  }
 }
 
 .actions {
   grid-area: actions;
   justify-self: end;
+  :host-context(.screen-s) & {
+    justify-self: start;
+  }
 }
 
 .status {

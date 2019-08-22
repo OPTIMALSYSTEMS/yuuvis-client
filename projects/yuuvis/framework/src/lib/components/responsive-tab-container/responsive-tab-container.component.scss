@@ -1,8 +1,4 @@
 :host {
-  position: relative;
-  display: block;
-  height: 75%;
-
   as-split {
     padding: 0;
   }
@@ -10,24 +6,29 @@
   p-tabview {
     position: relative;
     display: block;
+    height: 100%;
+    overflow: hidden;
+
     .tab-navigation {
       position: absolute;
-      top: 4px;
-      right: 10px;
+      top: 1px;
+      right: 1px;
       display: flex;
       height: 35px;
-      width: 24px;
-      background: #fff;
-      button {
-        padding: 4px;
-        font-size: 20px;
-        font-weight: bold;
-      }
+      background: #f4f4f4;
+      border-top-left-radius: 3px;
+      border-top-right-radius: 3px;
+      border: 1px solid #c8c8c8;
     }
   }
 }
 
 :host ::ng-deep {
+  .ui-tabview {
+    padding: 0;
+    height: 100%;
+  }
+
   .ui-tabview-close:after {
     content: '\0000D7';
   }
@@ -46,6 +47,9 @@
     display: flex;
     margin-right: 34px;
   }
+  :host-context(.screen-s) .ui-tabview.ui-tabview-bottom .ui-tabview-nav {
+    margin-top: -35px;
+  }
 
   .ui-tabview-nav::-webkit-scrollbar {
     height: 0;
@@ -53,12 +57,24 @@
 
   .ui-tabview-panels {
     height: 100%;
+    overflow: auto;
+    border: none;
+    border-top: 1px solid #c8c8c8;
     .ui-tabview-panel {
       height: 500px;
+
+      :host-context(.screen-s) & {
+        height: 200px;
+      }
     }
   }
 
   .split-tab-view .ui-tabview-panel {
+    .ui-tabview {
+      padding: 0;
+      height: 100%;
+    }
+
     &:first-child {
       display: none !important;
     }

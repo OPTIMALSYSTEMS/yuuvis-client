@@ -1,32 +1,45 @@
 <yuv-panel [title]="title">
   <yuv-icon class="header-icon" [svg]="icon.icSearch"></yuv-icon>
 
+  <div class="content grid-container">
+    <div class="tollbar">
+      <yuv-icon [svg]="icon.icSearchFilter"></yuv-icon>
+    </div>
+    <div class="table" [yuvBusyOverlay]="busy">
+      <yuv-responsive-data-table
+        class="data-table"
+        *ngIf="tableData"
+        [data]="tableData"
+        [breakpoint]="400"
+        (columnResized)="onColumnResized($event)"
+        (selectionChanged)="onSelectionChanged($event)"
+        (sortChanged)="onSortChanged($event)"
+      >
+      </yuv-responsive-data-table>
+      <div class="footer paging">
+        <div class="status">{{ totalNumItems }}&nbsp;{{ 'eo.search.result.hits' | translate }}</div>
+
         <div class="controls" *ngIf="hasPages">
-            <button [disabled]="pagination.page === 0" (click)="goToPage(1)">
-                <yuv-icon class="first" [svg]="icon.icArrowLast"></yuv-icon>
-            </button>
-            <button [disabled]="pagination.page === 0"
-                (click)="goToPage(pagination.page - 1)">
-                <yuv-icon class="prev" [svg]="icon.icArrowNext"></yuv-icon>
-            </button>
+          <button [disabled]="pagination.page === 0" (click)="goToPage(1)">
+            <yuv-icon class="first" [svg]="icon.icArrowLast"></yuv-icon>
+          </button>
+          <button [disabled]="pagination.page === 0" (click)="goToPage(pagination.page - 1)">
+            <yuv-icon class="prev" [svg]="icon.icArrowNext"></yuv-icon>
+          </button>
 
-                <form (ngSubmit)="onPagingFormSubmit()" [formGroup]="pagingForm">
-                    <input type="text" formControlName="page"><div>{{pagination.pages}}</div>
-                </form>
-                
+          <form (ngSubmit)="onPagingFormSubmit()" [formGroup]="pagingForm">
+            <input type="text" formControlName="page" />
+            <div>{{ pagination.pages }}</div>
+          </form>
 
-            <button [disabled]="pagination.page === pagination.pages"
-                (click)="goToPage(pagination.page + 1)">
-                <yuv-icon class="next" [svg]="icon.icArrowNext"></yuv-icon>
-            </button>
-            <button [disabled]="pagination.page === pagination.pages"
-                (click)="goToPage(pagination.pages)">
-                <yuv-icon class="last" [svg]="icon.icArrowLast"></yuv-icon>
-            </button>
+          <button [disabled]="pagination.page === pagination.pages" (click)="goToPage(pagination.page + 1)">
+            <yuv-icon class="next" [svg]="icon.icArrowNext"></yuv-icon>
+          </button>
+          <button [disabled]="pagination.page === pagination.pages" (click)="goToPage(pagination.pages)">
+            <yuv-icon class="last" [svg]="icon.icArrowLast"></yuv-icon>
+          </button>
         </div>
       </div>
     </div>
   </div>
 </yuv-panel>
-
-

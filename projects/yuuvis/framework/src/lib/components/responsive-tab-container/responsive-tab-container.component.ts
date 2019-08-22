@@ -1,5 +1,7 @@
 import { AfterContentInit, AfterViewInit, Component, ContentChildren, Input, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { Screen, ScreenService } from '@yuuvis/core';
 import { TabPanel, TabView } from 'primeng/tabview';
+import { SVGIcons } from '../../svg.generated';
 
 @Component({
   selector: 'yuv-responsive-tab-container',
@@ -17,6 +19,9 @@ export class ResponsiveTabContainerComponent implements OnInit, AfterContentInit
 
   allPanels: TabPanel[] = [];
   splitPanels: TabPanel[] = [];
+  orientation = 'top';
+  svgIcon = SVGIcons;
+  isMobile: boolean;
 
   splitPanelAdd() {
     const panel = this.mainTabView.findSelectedTab();
@@ -43,9 +48,23 @@ export class ResponsiveTabContainerComponent implements OnInit, AfterContentInit
     tabView.el.nativeElement.firstElementChild.lastElementChild.appendChild(panel.viewContainer.element.nativeElement);
   }
 
-  constructor() {}
+  constructor(private screenService: ScreenService) {}
 
-  ngOnInit() {}
+  tabPositining() {
+    this.screenService.screenChange$.subscribe((screen: Screen) => {
+      if (screen.mode === ScreenService.MODE.SMALL) {
+        this.isMobile = true;
+        // this.orientation = 'bottom';
+      } else {
+        this.isMobile = false;
+        // this.orientation = 'top';
+      }
+    });
+  }
+
+  ngOnInit() {
+    this.tabPositining();
+  }
 
   ngAfterContentInit() {
     // timeout to run init after ngAfterContentInit of tab-container

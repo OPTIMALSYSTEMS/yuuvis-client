@@ -30,7 +30,6 @@ export class SearchResultComponent {
   private _rows: any[];
   private _hasPages = false;
   pagingForm: FormGroup;
-
   // icons used within the template
   icon = {
     icSearch: SVGIcons['search'],
@@ -63,8 +62,8 @@ export class SearchResultComponent {
   // indicator that the component is busy loading data, so we are able to prevent user interaction
   @HostBinding('class.busy') busy: boolean = false;
 
-  set hasPages(pages: boolean) {
-    this._hasPages = pages;
+  set hasPages(count) {
+    this._hasPages = count;
   }
 
   get hasPages(): boolean {
@@ -106,10 +105,10 @@ export class SearchResultComponent {
           pages: Math.ceil(searchResult.totalNumItems / this._searchQuery.size),
           page: (!this._searchQuery.from ? 0 : this._searchQuery.from / this._searchQuery.size) + 1
         };
-      }
 
-      this.pagingForm.get('page').setValue(pageNumber);
-      this.pagingForm.get('page').setValidators([Validators.min(0), Validators.max(this.pagination.pages)]);
+        this.pagingForm.get('page').setValue(pageNumber);
+        this.pagingForm.get('page').setValidators([Validators.min(0), Validators.max(this.pagination.pages)]);
+      }
 
       this._columns = colDefs;
 
