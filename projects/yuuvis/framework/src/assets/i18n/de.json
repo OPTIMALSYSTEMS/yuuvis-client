@@ -1,14 +1,15 @@
 {
-	"eo.form.input.null": "",
-	"eo.list.refresh": "",
-	"eo.object.contentlink": "",
-	"eo.object.contentlink.tooltip": "",
-	"eo.object.details.actions.title": "",
-	"eo.object.finalized.tooltip": "",
-	"eo.object.resubmission.tooltip": "",
-	"eo.object.subscription.tooltip": "",
-	"eo.search.result.hits": "",
-	"eo.search.title": "",
-	"eo.versions.detail.glue.tooltip": "",
-	"{{data.key}}": ""
+  "eo.form.input.null": "",
+  "eo.list.refresh": "",
+  "eo.object.contentlink": "",
+  "eo.object.contentlink.tooltip": "",
+  "eo.object.details.actions.title": "",
+  "eo.object.finalized.tooltip": "",
+  "eo.object.resubmission.tooltip": "",
+  "eo.object.subscription.tooltip": "",
+  "eo.search.result.hits": "",
+  "eo.search.title": "",
+  "eo.versions.detail.glue.tooltip": "",
+  "{{data.key}}": "",
+  "eo.summary.admin.info": "Administrative Information"
 }

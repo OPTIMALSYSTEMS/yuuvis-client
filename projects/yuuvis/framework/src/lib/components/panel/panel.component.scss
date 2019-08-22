@@ -1,14 +1,15 @@
-.frame-container {
+.yuv-panel-wrapper {
   display: grid;
   grid-template-columns: 1fr;
-  grid-template-rows: repeat(auto-fit, var(--app-pane-header-heigh));
+  grid-template-rows: 110px 1fr;
   grid-template-areas: 'header' 'content';
-  margin: var(--app-pane-padding);
-  margin-bottom: 0;
+  height: 100%;
 }
 
 .content {
   grid-area: content;
+  position: relative;
+  height: 100%;
 }
 
 .header {
@@ -17,6 +18,8 @@
   grid-template-rows: 1fr;
   grid-template-areas: 'icon header_text extras';
   grid-area: header;
+  padding: var(--app-pane-padding);
+  padding-bottom: 0;
 }
 
 .icon {

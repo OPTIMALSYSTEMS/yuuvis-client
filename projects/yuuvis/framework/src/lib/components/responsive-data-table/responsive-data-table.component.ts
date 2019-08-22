@@ -1,13 +1,4 @@
-import {
-  Component,
-  EventEmitter,
-  HostBinding,
-  HostListener,
-  Input,
-  OnDestroy,
-  OnInit,
-  Output
-} from '@angular/core';
+import { Component, EventEmitter, HostBinding, HostListener, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { ColDef, GridOptions, RowNode } from 'ag-grid-community';
 import { ResizedEvent } from 'angular-resize-event';
 import { Observable, ReplaySubject, Subscription } from 'rxjs';
@@ -28,9 +19,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
   public resize$: Observable<ResizedEvent> = this.resizeSource.asObservable();
   // internal subject column size changes used for debouncing column resize events
   private columnResizeSource = new ReplaySubject<any>();
-  public columnResize$: Observable<
-    ResizedEvent
-  > = this.columnResizeSource.asObservable();
+  public columnResize$: Observable<ResizedEvent> = this.columnResizeSource.asObservable();
   private _data: ResponsiveTableData;
   // array of row IDs that are currently selected
   private _currentSelection: string[] = [];
@@ -95,12 +84,10 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
     this.columnResize$.pipe(debounceTime(1000)).subscribe((e: ResizedEvent) => {
       if (!this.small) {
         this.columnResized.emit({
-          columns: this.gridOptions.columnApi
-            .getColumnState()
-            .map(columnState => ({
-              id: columnState.colId,
-              width: columnState.width
-            }))
+          columns: this.gridOptions.columnApi.getColumnState().map(columnState => ({
+            id: columnState.colId,
+            width: columnState.width
+          }))
         });
       }
     });
@@ -121,6 +108,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
         }))
       );
       this.gridOptions.columnApi.autoSizeAllColumns();
+      this.gridOptions.api.sizeColumnsToFit();
     } else {
       // gridOptions to be applied for the regular view
       this.gridOptions.api.setHeaderHeight(this.settings.headerHeight.default);
@@ -159,9 +147,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
         return data.id;
       },
       getRowHeight: () => {
-        return this.small
-          ? this.settings.rowHeight.small
-          : this.settings.rowHeight.default;
+        return this.small ? this.settings.rowHeight.small : this.settings.rowHeight.default;
       },
       rowData: this._data.rows,
       columnDefs: this._data.columns,
@@ -173,9 +159,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
 
       // EVENTS - add event callback handlers
       onSelectionChanged: event => {
-        this._currentSelection = this.gridOptions.api
-          .getSelectedNodes()
-          .map((rowNode: RowNode) => rowNode.id);
+        this._currentSelection = this.gridOptions.api.getSelectedNodes().map((rowNode: RowNode) => rowNode.id);
         this.selectionChanged.emit(this.gridOptions.api.getSelectedRows());
       },
       onColumnResized: event => {
@@ -194,9 +178,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
   private copyToClipboard(type: 'row' | 'cell') {
     let content = '';
     const focusedCell = this.gridOptions.api.getFocusedCell();
-    const row: RowNode = this.gridOptions.api.getDisplayedRowAtIndex(
-      focusedCell.rowIndex
-    );
+    const row: RowNode = this.gridOptions.api.getDisplayedRowAtIndex(focusedCell.rowIndex);
     switch (type) {
       case 'row': {
         // TODO: define how data should be formatted in clipboard.

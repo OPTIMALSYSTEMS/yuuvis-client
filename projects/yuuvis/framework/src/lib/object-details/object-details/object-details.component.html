@@ -1,28 +1,47 @@
-<yuv-object-details-header [title]="dmsObject?.data?.clienttitle" [description]="dmsObject?.data?.clientdescription"></yuv-object-details-header>
+<yuv-panel [title]="dmsObject?.data?.clienttitle" [description]="dmsObject?.data?.clientdescription">
+  <yuv-icon class="header-icon" [svg]="objectIcon"></yuv-icon>
 
-<yuv-responsive-tab-container>
-  <p-tabPanel [id]="'preview'" header="Preview" #preview>
-    <ng-template pTemplate="content">
-      Preview ..................
-    </ng-template>
-  </p-tabPanel>
+  <yuv-action-menu-bar class="actions">
+    <yuv-icon class="button refresh-button" [svg]="icons.refresh"></yuv-icon>
+    <yuv-icon class="button sync-tab-btn" [svg]="icons.favorite"></yuv-icon>
+    <yuv-icon class="button oc-button" [svg]="icons.edit"></yuv-icon>
+    <yuv-icon (click)="showActions()" [svg]="icons.kebap"></yuv-icon>
+  </yuv-action-menu-bar>
 
-  <p-tabPanel [id]="'summary'" header="Summary">
-    <ng-template pTemplate="content">
-      Summary ..................
-      <yuv-summary [dmsObject]="dmsObject"></yuv-summary>
-    </ng-template>
-  </p-tabPanel>
+  <yuv-action-menu-bar class="status">
+    <a class="content-link">
+      <span>eo.object.contentlink</span>
+    </a>
+    <yuv-icon class="subscription-icon" [svg]="icons.subscription"></yuv-icon>
+    <yuv-icon class="resubmission-icon" [svg]="icons.resubmission"></yuv-icon>
+    <yuv-icon class="lock" [svg]="icons.lock"></yuv-icon>
+    <yuv-icon class="finalized-icon" [svg]="icons.finalized"></yuv-icon>
+  </yuv-action-menu-bar>
 
-  <p-tabPanel [id]="'history'" header="History">
-    <ng-template pTemplate="content">
-      History ..................
-    </ng-template>
-  </p-tabPanel>
+  <yuv-responsive-tab-container class="content">
+    
+        <p-tabPanel [id]="'summary'" header="Summary">
+          <ng-template pTemplate="content">
+            <yuv-summary [dmsObject]="dmsObject"></yuv-summary>
+          </ng-template>
+        </p-tabPanel>
+        
+    <p-tabPanel [id]="'preview'" header="Preview" #preview>
+      <ng-template pTemplate="content">
+        Preview ..................
+      </ng-template>
+    </p-tabPanel>
 
-  <p-tabPanel [id]="'content'" header="Content">
-    <ng-template pTemplate="content">
-      Content ..................
-    </ng-template>
-  </p-tabPanel>
-</yuv-responsive-tab-container>
+    <p-tabPanel [id]="'history'" header="History">
+      <ng-template pTemplate="content">
+        <yuv-history class="yuv-slave panel" [objectId]="'12336987651321687'"></yuv-history>
+      </ng-template>
+    </p-tabPanel>
+
+    <p-tabPanel [id]="'content'" header="Content">
+      <ng-template pTemplate="content">
+        Content ..................
+      </ng-template>
+    </p-tabPanel>
+  </yuv-responsive-tab-container>
+</yuv-panel>

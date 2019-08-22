@@ -22,7 +22,7 @@ import { SVGIcons } from '../../svg.generated';
   selector: 'yuv-search-result',
   templateUrl: './search-result.component.html',
   styleUrls: ['./search-result.component.scss'],
-  host: { class: 'yuv-search-result yuv-panel toolbar' }
+  host: { class: 'yuv-search-result toolbar' }
 })
 export class SearchResultComponent {
   private _searchQuery: SearchQuery;

@@ -1,7 +1,6 @@
 import { Component, Input } from '@angular/core';
-import { BaseObjectTypeField, ContentStreamField, DmsObject, SystemService, UserService } from '@yuuvis/core';
+import { BaseObjectTypeField, ContentStreamField, DmsObject, ParentField, SystemService, UserService } from '@yuuvis/core';
 import { ColDef, ICellRendererFunc } from 'ag-grid-community';
-import { ParentField } from '../../../../../core/src/public-api';
 import { GridService } from '../../services/grid/grid.service';
 import { Summary } from './summary.interface';
 
@@ -92,7 +91,7 @@ export class SummaryComponent {
 
         if (extraFields.includes(prepKey)) {
           summary.extras.push(si);
-        } else if (defaultBaseFields.find(field => field.key.includes(prepKey))) {
+        } else if (defaultBaseFields.find(field => field.key.startsWith(prepKey))) {
           defaultBaseFields.map(field => (field.key === prepKey ? (si.order = field.order) : null));
           summary.base.push(si);
         } else if (patentFields.includes(prepKey)) {
