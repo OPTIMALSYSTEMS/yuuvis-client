@@ -28,6 +28,7 @@ export class SearchResultComponent {
   private _searchQuery: SearchQuery;
   private _columns: ColDef[];
   private _rows: any[];
+  private _hasPages = false;
   pagingForm: FormGroup;
 
   // icons used within the template
@@ -62,6 +63,14 @@ export class SearchResultComponent {
   // indicator that the component is busy loading data, so we are able to prevent user interaction
   @HostBinding('class.busy') busy: boolean = false;
 
+  set hasPages(pages: boolean) {
+    this._hasPages = pages;
+  }
+
+  get hasPages(): boolean {
+    return this._hasPages;
+  }
+
   constructor(
     private translate: TranslateService,
     private gridService: GridService,
@@ -84,23 +93,23 @@ export class SearchResultComponent {
   }
 
   // Create actual table data from the search result
-  private createTableData(searchResult: SearchResult): void {
+  private createTableData(searchResult: SearchResult, pageNumber = 1): void {
     // object type of the result list items, if NULL we got a mixed result
     this.resultListObjectTypeId = searchResult.objectTypes.length > 1 ? null : searchResult.objectTypes[0];
+
     this.gridService.getColumnConfiguration(this.resultListObjectTypeId).subscribe((colDefs: ColDef[]) => {
       // setup pagination form in case of a paged search result chunk
       this.pagination = null;
-      if (searchResult.hasMoreItems) {
-        if (searchResult.totalNumItems > this._searchQuery.size) {
-          this.pagination = {
-            pages: Math.ceil(searchResult.totalNumItems / this._searchQuery.size),
-            page: (!this._searchQuery.from ? 0 : this._searchQuery.from / this._searchQuery.size) + 1
-          };
-          this.pagingForm.get('page').setValue(this.pagination.page);
-        }
-
-        this.pagingForm.get('page').setValidators([Validators.min(0), Validators.max(this.pagination.pages)]);
+      this.hasPages = searchResult.items.length !== searchResult.totalNumItems;
+      if (searchResult.totalNumItems > this._searchQuery.size) {
+        this.pagination = {
+          pages: Math.ceil(searchResult.totalNumItems / this._searchQuery.size),
+          page: (!this._searchQuery.from ? 0 : this._searchQuery.from / this._searchQuery.size) + 1
+        };
       }
+
+      this.pagingForm.get('page').setValue(pageNumber);
+      this.pagingForm.get('page').setValidators([Validators.min(0), Validators.max(this.pagination.pages)]);
 
       this._columns = colDefs;
 
@@ -148,7 +157,6 @@ export class SearchResultComponent {
       // special pattern we can check for.
 
       // Although defined in schema there may be no content attached.
-
       if (searchResultItem.content && cd.field.startsWith('enaio:contentStream')) {
         switch (cd.field) {
           case ContentStreamField.LENGTH: {
@@ -189,7 +197,7 @@ export class SearchResultComponent {
     this.busy = true;
     this.searchService.getPage(this._searchQuery, page).subscribe(
       (res: SearchResult) => {
-        this.createTableData(res);
+        this.createTableData(res, page);
       },
       err => {
         // TODO: how should errors be handles in case hat loading pages fail
