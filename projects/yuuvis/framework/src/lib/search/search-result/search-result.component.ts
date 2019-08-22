@@ -106,10 +106,10 @@ export class SearchResultComponent implements OnInit {
           pages: Math.ceil(searchResult.totalNumItems / this._searchQuery.size),
           page: (!this._searchQuery.from ? 0 : this._searchQuery.from / this._searchQuery.size) + 1
         };
-      }
 
-      this.pagingForm.get('page').setValue(pageNumber);
-      this.pagingForm.get('page').setValidators([Validators.min(0), Validators.max(this.pagination.pages)]);
+        this.pagingForm.get('page').setValue(pageNumber);
+        this.pagingForm.get('page').setValidators([Validators.min(0), Validators.max(this.pagination.pages)]);
+      }
 
       this._columns = colDefs;
 
