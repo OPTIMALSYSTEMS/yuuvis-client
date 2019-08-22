@@ -28,9 +28,18 @@
           content: '-';
         }
       }
+      &:not(.ui-state-active):not(.ui-state-disabled):hover a,
+      &:not(.ui-state-disabled).ui-state-active:hover a,
+      &:not(.ui-state-disabled).ui-state-active a,
+      a {
+        border: none;
+        background-color: transparent;
+        color: var(--color-primary);
+      }
     }
     .ui-accordion-content {
       padding: 1em 0;
+      border: none;
     }
   }
 }
