@@ -1,0 +1,52 @@
+<div class="form-element" [formGroup]="element" *ngIf="element">
+  <div
+    class="form-field t-{{ formElementRef._eoFormElement.type }}"
+    #formField
+    [ngSwitch]="formElementRef._eoFormElement.type"
+    [ngClass]="{ disabled: !!formElementRef._eoFormElement.readonly }"
+  >
+    {{ formElementRef._eoFormElement.label }}
+
+    <!-- print out the type if it's not matching anything -->
+    <div *ngSwitchDefault>
+      <b>{{ formElementRef._eoFormElement.type }}</b>
+    </div>
+
+    <!-- the fields description -->
+    <div class="description" *ngIf="formElementRef._eoFormElement.description">{{ formElementRef._eoFormElement.description }}</div>
+
+    <!-- error/validation messages -->
+    <div
+      class="err-msg"
+      *ngIf="
+        (situation !== 'SEARCH' && situation !== 'CREATE' && formElementRef.errors) ||
+        ((situation === 'SEARCH' || situation === 'CREATE') && formElementRef.errors && (formElementRef.dirty || formElementRef.touched))
+      "
+    >
+      <div *ngIf="formElementRef.errors.daterange" translate>eo.form.property.daterange.invalid</div>
+      <div *ngIf="formElementRef.errors.numberrange" translate>eo.form.property.numberrange.invalid</div>
+      <div *ngIf="formElementRef.errors.number" translate>eo.form.property.number</div>
+      <div *ngIf="formElementRef.errors.precision" translate [translateParams]="formElementRef.errors.precision.translateValues">
+        {{ formElementRef.errors.precision.translateKey }}
+      </div>
+      <div *ngIf="formElementRef.errors.scale" translate [translateParams]="formElementRef.errors.scale.translateValues">
+        {{ formElementRef.errors.scale.translateKey }}
+      </div>
+
+      <div *ngIf="formElementRef.errors.regex || formElementRef.errors.pattern" translate>eo.form.property.string.regex.nomatch</div>
+      <div *ngIf="formElementRef.errors.classificationemail" translate>eo.form.property.string.error.classification.email</div>
+      <div *ngIf="formElementRef.errors.classificationurl" translate>eo.form.property.string.error.classification.url</div>
+      <div *ngIf="formElementRef.errors.onlyWhitespaces" translate>eo.form.property.string.error.whitespaces</div>
+      <div *ngIf="formElementRef.errors.datecontrol" translate>eo.form.property.date.invalid</div>
+      <div *ngIf="formElementRef.errors.codesystem" translate>eo.form.property.codesystem.value.invalid</div>
+      <div *ngIf="formElementRef.errors.eoformScript">{{ formElementRef._eoFormElement.error.msg }}</div>
+      <div *ngIf="formElementRef.errors.required" translate>eo.form.property.required</div>
+      <div *ngIf="formElementRef.errors.maxlength" translate [translateParams]="{ maxlength: formElementRef._eoFormElement.maxlen }">
+        eo.form.property.maxlength
+      </div>
+      <div *ngIf="formElementRef.errors.minlength" translate [translateParams]="{ minlength: formElementRef._eoFormElement.minlen }">
+        eo.form.property.minlength
+      </div>
+    </div>
+  </div>
+</div>

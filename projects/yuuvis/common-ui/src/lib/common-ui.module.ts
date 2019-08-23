@@ -10,18 +10,8 @@ import { FocusWithinDirective } from './directives/focus-within.directive';
 
 @NgModule({
   imports: [CommonModule, HttpClientModule, AccordionModule, SidebarModule],
-  declarations: [
-    IconComponent,
-    FocusWithinDirective,
-    AccordionComponent,
-    SidebarComponent
-  ],
-  exports: [
-    IconComponent,
-    FocusWithinDirective,
-    AccordionComponent,
-    SidebarComponent
-  ],
+  declarations: [IconComponent, FocusWithinDirective, AccordionComponent, SidebarComponent],
+  exports: [IconComponent, FocusWithinDirective, AccordionComponent, SidebarComponent],
   providers: [IconService]
 })
 export class YuvCommonUiModule {}

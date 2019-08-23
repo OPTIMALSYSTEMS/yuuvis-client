@@ -13,28 +13,8 @@ import { ResponsiveDataTableComponent } from './responsive-data-table/responsive
 import { ResponsiveMasterSlaveComponent } from './responsive-master-slave/responsive-master-slave.component';
 
 @NgModule({
-  declarations: [
-    ResponsiveDataTableComponent,
-    BusyOverlayDirective,
-    ResponsiveMasterSlaveComponent,
-    ObjectDetailsHeaderComponent,
-    ActionMenuBarComponent
-  ],
-  exports: [
-    ResponsiveDataTableComponent,
-    BusyOverlayDirective,
-    ResponsiveMasterSlaveComponent,
-    ObjectDetailsHeaderComponent,
-    ActionMenuBarComponent
-  ],
-  imports: [
-    CommonModule,
-    AngularResizedEventModule,
-    AngularSplitModule,
-    AgGridModule.withComponents([]),
-    RouterModule,
-    YuvPipesModule,
-    YuvCommonUiModule
-  ]
+  declarations: [ResponsiveDataTableComponent, BusyOverlayDirective, ResponsiveMasterSlaveComponent, ObjectDetailsHeaderComponent, ActionMenuBarComponent],
+  exports: [ResponsiveDataTableComponent, BusyOverlayDirective, ResponsiveMasterSlaveComponent, ObjectDetailsHeaderComponent, ActionMenuBarComponent],
+  imports: [CommonModule, AngularResizedEventModule, AngularSplitModule, AgGridModule.withComponents([]), RouterModule, YuvPipesModule, YuvCommonUiModule]
 })
 export class YuvComponentsModule {}

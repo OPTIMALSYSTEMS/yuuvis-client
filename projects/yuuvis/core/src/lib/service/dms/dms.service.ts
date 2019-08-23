@@ -12,33 +12,19 @@ import { SystemService } from '../system/system.service';
   providedIn: 'root'
 })
 export class DmsService {
-  constructor(
-    private searchService: SearchService,
-    private systemService: SystemService
-  ) {}
+  constructor(private searchService: SearchService, private systemService: SystemService) {}
 
-  getDmsObject(id: string): Observable<DmsObject> {
+  getDmsObject(id: string, version?: number, intent?: string): Observable<DmsObject> {
+    // TODO: Support version and intent params as well
     return this.getDmsObjects([id]).pipe(map(res => res[0]));
   }
 
   getDmsObjects(ids: string[]): Observable<DmsObject[]> {
     const q = new SearchQuery();
-    q.addFilter(
-      new SearchFilter(
-        BaseObjectTypeField.OBJECT_ID,
-        SearchFilter.OPERATOR.IN,
-        ids
-      )
-    );
+    q.addFilter(new SearchFilter(BaseObjectTypeField.OBJECT_ID, SearchFilter.OPERATOR.IN, ids));
     return this.searchService.search(q).pipe(
       map((res: SearchResult) => {
-        return res.items.map(
-          i =>
-            new DmsObject(
-              i,
-              this.systemService.getObjectType(i.objectTypeId).isFolder
-            )
-        );
+        return res.items.map(i => new DmsObject(i, this.systemService.getObjectType(i.objectTypeId).isFolder));
       })
     );
   }
