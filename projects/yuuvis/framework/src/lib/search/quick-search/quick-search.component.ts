@@ -1,9 +1,8 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { BaseObjectTypeField, ScreenService, SearchQuery, SearchService, SystemService } from '@yuuvis/core';
+import { BaseObjectTypeField, ScreenService, SearchQuery, SearchService, SystemService, Utils } from '@yuuvis/core';
 import { debounceTime, switchMap, tap } from 'rxjs/operators';
 import { SVGIcons } from '../../svg.generated';
-import { Utils } from './../../../../../core/src/lib/util/utils';
 
 @Component({
   selector: 'yuv-quick-search',
