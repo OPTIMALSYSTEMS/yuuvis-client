@@ -1,14 +1,9 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import {
-  BaseObjectTypeField,
-  ScreenService,
-  SearchQuery,
-  SearchService,
-  SystemService
-} from '@yuuvis/core';
+import { BaseObjectTypeField, ScreenService, SearchQuery, SearchService, SystemService } from '@yuuvis/core';
 import { debounceTime, switchMap, tap } from 'rxjs/operators';
 import { SVGIcons } from '../../svg.generated';
+import { Utils } from './../../../../../core/src/lib/util/utils';
 
 @Component({
   selector: 'yuv-quick-search',
@@ -29,12 +24,7 @@ export class QuickSearchComponent implements OnInit {
   // emits the query that should be executed
   @Output() query = new EventEmitter<SearchQuery>();
 
-  constructor(
-    private fb: FormBuilder,
-    private screenService: ScreenService,
-    private systemService: SystemService,
-    private searchService: SearchService
-  ) {
+  constructor(private fb: FormBuilder, private screenService: ScreenService, private systemService: SystemService, private searchService: SearchService) {
     this.searchForm = this.fb.group({ searchInput: [''] });
     this.searchForm
       .get('searchInput')
@@ -47,10 +37,7 @@ export class QuickSearchComponent implements OnInit {
         }),
         debounceTime(500),
         switchMap(term => {
-          return this.searchService.aggregate(
-            this.searchQuery,
-            BaseObjectTypeField.OBJECT_TYPE_ID
-          );
+          return this.searchService.aggregate(this.searchQuery, BaseObjectTypeField.OBJECT_TYPE_ID);
         })
       )
       .subscribe((res: { value: string; count: number }[]) => {
@@ -75,12 +62,11 @@ export class QuickSearchComponent implements OnInit {
         this.resultCount += item.count;
         this.aggTypes.push({
           objectTypeId: item.value,
-          label:
-            this.systemService.getLocalizedResource(`${item.value}_label`) ||
-            '???',
+          label: this.systemService.getLocalizedResource(`${item.value}_label`) || '???',
           count: item.count
         });
       });
+      this.aggTypes.sort(Utils.sortValues('label'));
     }
   }
 
