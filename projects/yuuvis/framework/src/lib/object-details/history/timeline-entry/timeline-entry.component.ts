@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { Observable } from 'rxjs';
-import { DmsObjectHistoryEntry } from '../objectHistory copy/model/dms-object-history.model';
+import { DmsObjectHistoryEntry } from '../object-history/model/dms-object-history.model';
 
 @Component({
   selector: 'yuv-timeline-entry',

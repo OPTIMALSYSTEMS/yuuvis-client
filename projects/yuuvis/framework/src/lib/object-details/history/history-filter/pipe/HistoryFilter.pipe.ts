@@ -1,6 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { WorkItemHistoryEntry } from '@yuuvis/core';
-import { DmsObjectHistoryEntry } from '../../objectHistory copy/model/dms-object-history.model';
+import { DmsObjectHistoryEntry } from '../../object-history/model/dms-object-history.model';
 
 @Pipe({
   name: 'historyFilter'

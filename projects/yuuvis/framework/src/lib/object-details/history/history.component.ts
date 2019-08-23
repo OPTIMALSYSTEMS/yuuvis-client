@@ -1,9 +1,9 @@
 import { Component, Input } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { IVisibleFilter } from './objectHistory copy/interface/history-filter.interface';
-import { DmsObjectHistoryEntry } from './objectHistory copy/model/dms-object-history.model';
-import { ObjectHistoryService } from './objectHistory copy/service/object-history.service';
+import { IVisibleFilter } from './object-history/interface/history-filter.interface';
+import { DmsObjectHistoryEntry } from './object-history/model/dms-object-history.model';
+import { ObjectHistoryService } from './object-history/service/object-history.service';
 
 @Component({
   selector: 'yuv-history',

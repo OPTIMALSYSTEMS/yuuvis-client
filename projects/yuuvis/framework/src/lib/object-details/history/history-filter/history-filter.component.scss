@@ -1,14 +1,16 @@
 .history-filter {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(1fr, 1fr));
-  // grid-template-rows: 1fr;
+  grid-template-columns: repeat(auto-fill, minmax(1fr, auto));
+  // grid-template-columns: repeat(auto-fit, 1fr);
+  grid-auto-flow: column;
+  grid-template-rows: 1fr;
   grid-template-areas: 'search filter';
   align-items: center;
 }
 
 .search {
   display: grid;
-  grid-template-columns: 0.5fr 1.5fr 1fr;
+  grid-template-columns: 36px 2fr 36px;
   grid-template-rows: 1fr;
   grid-template-areas: 'filter_icon filter_input clear_icon';
   grid-area: search;
@@ -32,6 +34,7 @@
   // grid-template-rows: 1fr;
   grid-template-areas: 'modification process informational';
   grid-area: filter;
+  justify-self: end;
 
   .selection-filter {
     min-height: 0;

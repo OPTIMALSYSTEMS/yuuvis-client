@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { HistoryFilter } from '../objectHistory copy/enum/history-filter.enum';
-import { IVisibleFilter } from '../objectHistory copy/interface/history-filter.interface';
+import { HistoryFilter } from '../object-history/enum/history-filter.enum';
+import { IVisibleFilter } from '../object-history/interface/history-filter.interface';
 
 @Component({
   selector: 'yuv-history-filter',

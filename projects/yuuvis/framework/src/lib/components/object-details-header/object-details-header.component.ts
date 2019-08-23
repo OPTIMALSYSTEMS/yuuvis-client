@@ -30,10 +30,3 @@ export class ObjectDetailsHeaderComponent {
     this.showSideBar = !this.showSideBar;
   }
 }
-
-// /* grid-template-columns: repeat(auto-fit, minmax(24px, 1fr)); */
-// /* grid-column-gap: 5px; */
-// grid-auto-flow: column dense;
-// /* grid-row-gap: 10px; */
-// grid-template: repeat(3, 1fr) / repeat(3, 1fr);
-// grid-gap: 20px 5px;
