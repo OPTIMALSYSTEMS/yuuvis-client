@@ -12,6 +12,8 @@
   "eo.versions.detail.glue.tooltip": "Switch synchronous view of object aspects",
   "{{data.key}}": "",
   "eo.summary.admin.info": "Administrative information",
+  "eo.search.term": "Search term",
+  "eo.quicksearch.reults.empty": "Your search request returned no hits.",
   "eo.about.author.label": "Manufacturer:",
   "eo.about.claim": "yuuvis® API is our content services platform, a framework for solution developers who wish to create specialist content-centric applications on open standards with short time to market. Create. Scalable. Framework.",
   "eo.about.client.version.label": "Component version:",

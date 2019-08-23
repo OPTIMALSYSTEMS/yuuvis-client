@@ -30,6 +30,7 @@ export class SearchResultComponent {
   private _rows: any[];
   private _hasPages = false;
   pagingForm: FormGroup;
+  _queryTerm: string;
   // icons used within the template
   icon = {
     icSearch: SVGIcons['search'],
@@ -49,6 +50,8 @@ export class SearchResultComponent {
 
   @Input() set query(searchQuery: SearchQuery) {
     this._searchQuery = searchQuery;
+    this.queryTerm = searchQuery.term;
+
     if (searchQuery) {
       // execute the query and
       this.executeQuery();
@@ -61,6 +64,15 @@ export class SearchResultComponent {
 
   // indicator that the component is busy loading data, so we are able to prevent user interaction
   @HostBinding('class.busy') busy: boolean = false;
+
+  set queryTerm(term) {
+    const pre = `${this.translate.instant('eo.search.term')}: `;
+    this._queryTerm = term.includes('*') ? pre : `${pre}${term}`;
+  }
+
+  get queryTerm(): string {
+    return this._queryTerm;
+  }
 
   set hasPages(count) {
     this._hasPages = count;

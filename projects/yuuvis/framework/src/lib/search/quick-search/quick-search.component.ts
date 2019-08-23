@@ -16,7 +16,7 @@ export class QuickSearchComponent implements OnInit {
   invalidTerm: boolean;
   resultCount: number = null;
   aggTypes: ObjectTypeAggregation[] = [];
-
+  searchHasResults: boolean = true;
   private searchQuery: SearchQuery;
   private _term: string;
 
@@ -35,9 +35,7 @@ export class QuickSearchComponent implements OnInit {
           this.resultCount = null;
         }),
         debounceTime(500),
-        switchMap(term => {
-          return this.searchService.aggregate(this.searchQuery, BaseObjectTypeField.OBJECT_TYPE_ID);
-        })
+        switchMap(term => this.searchService.aggregate(this.searchQuery, BaseObjectTypeField.OBJECT_TYPE_ID))
       )
       .subscribe((res: { value: string; count: number }[]) => {
         this.processAggregateResult(res);
@@ -55,6 +53,7 @@ export class QuickSearchComponent implements OnInit {
 
   private processAggregateResult(res: { value: string; count: number }[]) {
     if (res && res.length) {
+      this.searchHasResults = true;
       this.resultCount = 0;
 
       res.forEach(item => {
@@ -66,6 +65,8 @@ export class QuickSearchComponent implements OnInit {
         });
       });
       this.aggTypes.sort(Utils.sortValues('label'));
+    } else {
+      this.searchHasResults = false;
     }
   }
 
