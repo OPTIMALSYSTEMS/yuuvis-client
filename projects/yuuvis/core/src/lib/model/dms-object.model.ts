@@ -13,8 +13,8 @@ export class DmsObject {
   constructor(searchResultItem: SearchResultItem, isFolder: boolean) {
     this.id = searchResultItem.fields.get(BaseObjectTypeField.OBJECT_ID);
     this.objectTypeId = searchResultItem.objectTypeId;
-    this.title = searchResultItem.fields.get('tenKolibri:clienttitle');
-    this.description = searchResultItem.fields.get('tenKolibri:description');
+    this.title = searchResultItem.fields.get('clienttitle');
+    this.description = searchResultItem.fields.get('clientdescription');
     this.data = this.generateData(searchResultItem.fields);
     this.isFolder = isFolder;
   }
