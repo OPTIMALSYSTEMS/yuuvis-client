@@ -1,10 +1,15 @@
 <div class="count" *ngIf="resultCount !== null">{{resultCount}}</div>
+<div class="count no-results" *ngIf="!searchHasResults && searchForm.get('searchInput').value" (click)="executeSearch()">
+  <span class="label" translate>eo.quicksearch.reults.empty</span>
+</div>
+
 
 <form class="search-box" (ngSubmit)="executeSearch()" [ngClass]="{invalid: invalidTerm, agg: aggTypes.length}" [formGroup]="searchForm">
   <yuv-icon [svg]="icSearch"></yuv-icon>
   <div class="input">
     <input autofocus="autofocus" formControlName="searchInput">
   </div>
+
 </form>
 
 <div class="aggregations" *ngIf="aggTypes.length">

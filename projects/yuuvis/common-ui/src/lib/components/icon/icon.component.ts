@@ -21,10 +21,7 @@ export class IconComponent {
     this.render(svg);
   }
 
-  constructor(
-    private elementRef: ElementRef,
-    private iconService: IconService
-  ) {}
+  constructor(private elementRef: ElementRef, private iconService: IconService) {}
 
   // renders the actual svg string by adding it to the DOM
   private render(svg: string) {

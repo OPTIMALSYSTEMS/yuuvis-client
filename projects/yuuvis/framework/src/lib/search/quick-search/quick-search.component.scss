@@ -13,6 +13,11 @@
     font-size: var(--font-subhead);
     border-radius: 2px;
     top: calc(var(--app-pane-padding) * -1);
+
+    &.no-results:hover {
+      background-color: var(--color-accent);
+      cursor: pointer;
+    }
   }
 
   .search-box {
@@ -84,9 +89,9 @@
       cursor: pointer;
       padding: calc(var(--app-pane-padding) / 4) calc(var(--app-pane-padding) / 2) calc(var(--app-pane-padding) / 4) 0;
 
-&:hover {
-  border-color: rgba(0,0,0,.2);
-}
+      &:hover {
+        border-color: rgba(0, 0, 0, 0.2);
+      }
 
       .label {
         order: 0;

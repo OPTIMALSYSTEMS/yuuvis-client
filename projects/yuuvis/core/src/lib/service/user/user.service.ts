@@ -9,6 +9,7 @@ import { ConfigService } from '../config/config.service';
 import { EventService } from '../event/event.service';
 import { YuvEventType } from '../event/events';
 import { Logger } from '../logger/logger';
+import { AdministrationRoles } from '../system/system.enum';
 import { SystemService } from '../system/system.service';
 
 @Injectable({
@@ -31,20 +32,7 @@ export class UserService {
 
   private getUiDirection(iso: string): string {
     // languages that are read right to left
-    const rtlLanguages = [
-      'ar',
-      'arc',
-      'dv',
-      'fa',
-      'ha',
-      'he',
-      'khw',
-      'ks',
-      'ku',
-      'ps',
-      'ur',
-      'yi'
-    ];
+    const rtlLanguages = ['ar', 'arc', 'dv', 'fa', 'ha', 'he', 'khw', 'ks', 'ku', 'ps', 'ur', 'yi'];
     return rtlLanguages.indexOf(iso) === -1 ? Direction.LTR : Direction.RTL;
   }
 
@@ -71,6 +59,18 @@ export class UserService {
     return this.user;
   }
 
+  get hasAdminRole(): boolean {
+    return new RegExp(AdministrationRoles.ADMIN).test(this.user.authorities.join(','));
+  }
+
+  get hasSystemRole(): boolean {
+    return new RegExp(AdministrationRoles.SYSTEM).test(this.user.authorities.join(','));
+  }
+
+  get hasAdministrationRoles(): boolean {
+    return this.hasAdminRole || this.hasSystemRole;
+  }
+
   /**
    * Change the users client locale
    * @param iso ISO locale string to be set as new client locale
@@ -88,9 +88,7 @@ export class UserService {
             this.translate.use(iso);
             this.user.uiDirection = this.getUiDirection(iso);
             this.userSource.next(this.user);
-            this.logger.debug(
-              'Loading system definitions i18n resources for new locale.'
-            );
+            this.logger.debug('Loading system definitions i18n resources for new locale.');
             return this.system.updateLocalizations();
           })
         )
@@ -113,8 +111,6 @@ export class UserService {
   }
 
   getUserById(id: string): Observable<YuvUser> {
-    return this.backend
-      .get(`/user/${id}/info`)
-      .pipe(map(user => new YuvUser(user, this.user.userSettings)));
+    return this.backend.get(`/user/${id}/info`).pipe(map(user => new YuvUser(user, this.user.userSettings)));
   }
 }

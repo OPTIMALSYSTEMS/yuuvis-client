@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { DmsObject, DmsService } from '@yuuvis/core';
 import { ActionShowCommand } from '../../actions';
+import { CellRenderer } from '../../services/grid/grid.cellrenderer';
 import { SVGIcons } from '../../svg.generated';
 
 @Component({
@@ -9,15 +10,29 @@ import { SVGIcons } from '../../svg.generated';
   styleUrls: ['./object-details.component.scss']
 })
 export class ObjectDetailsComponent implements OnInit {
-  private _dmsObject: DmsObject;
+  objectIcon: string = '';
+  icons = SVGIcons;
+  favorite = SVGIcons.favorite;
+  refresh = SVGIcons.refresh;
+  edit = SVGIcons.edit;
 
-  icKebap = SVGIcons.kebap;
+  showSideBar = false;
+
+  private _dmsObject: DmsObject;
+  private _dmsObject2: DmsObject;
+
+  @Input() enableCompare = true;
+  @Input() enableSync = false;
+  @Input() cacheLayout = false;
+
+  @Input() externalPanels = [];
 
   actionCMD: ActionShowCommand = { show: false, selection: [] };
 
   @Input()
   set dmsObject(object: DmsObject) {
     this._dmsObject = object;
+    this.objectIcon = CellRenderer.typeCellRenderer(object.objectTypeId);
   }
 
   get dmsObject() {
@@ -25,12 +40,19 @@ export class ObjectDetailsComponent implements OnInit {
   }
 
   @Input()
+  set dmsObject2(object: DmsObject) {
+    this._dmsObject2 = object;
+  }
+
+  get dmsObject2() {
+    return this._dmsObject2;
+  }
+
+  @Input()
   set objectId(id: string) {
     this._dmsObject = null;
     if (id) {
-      this.dmsService
-        .getDmsObject(id)
-        .subscribe(dmsObject => (this.dmsObject = dmsObject));
+      this.dmsService.getDmsObject(id).subscribe(dmsObject => (this.dmsObject = dmsObject));
     }
   }
 
