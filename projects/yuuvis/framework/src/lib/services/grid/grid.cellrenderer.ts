@@ -44,33 +44,16 @@ export class CellRenderer {
       //             param.scale
       //           );
       //   } else {
-      return CellRenderer.numberCellRendererTemplate(
-        param.value,
-        param.context,
-        param.grouping,
-        param.pattern,
-        param.scale
-      );
+      return CellRenderer.numberCellRendererTemplate(param.value, param.context, param.grouping, param.pattern, param.scale);
       //   }
     } else {
       return '';
     }
   }
 
-  static numberCellRendererTemplate(
-    value,
-    context,
-    grouping?,
-    pattern?,
-    scale?
-  ) {
-    return context.numberPipe.transform(
-      value,
-      grouping,
-      pattern,
-      scale,
-      `1.${scale || 0}-${scale || 0}`
-    );
+  static numberCellRendererTemplate(value, context, grouping?, pattern?, scale?): string {
+    let numbers = context.numberPipe.transform(value, grouping, pattern, scale, `1.${scale || 0}-${scale || 0}`);
+    return this.multiSelectCellRenderer(numbers);
   }
 
   static typeCellRenderer(param) {
@@ -82,9 +65,7 @@ export class CellRenderer {
       if (!objectType) {
         return val;
       }
-      tooltip = param.context.system.getLocalizedResource(
-        `${objectType.id}_label`
-      );
+      tooltip = param.context.system.getLocalizedResource(`${objectType.id}_label`);
       // TODO: Get object type icons from resources service
       // return val;
       // return CellRenderer.iconCellRenderer(
@@ -110,36 +91,23 @@ export class CellRenderer {
   // }
 
   static emailCellRenderer(param) {
-    return param.value
-      ? `<a href="mailto:${param.value}">${Utils.escapeHtml(param.value)}</a>`
-      : '';
+    return param.value ? `<a href="mailto:${param.value}">${Utils.escapeHtml(param.value)}</a>` : '';
   }
 
   static urlCellRenderer(param) {
-    return param.value
-      ? `<a target="_blank " href="${param.value}">${Utils.escapeHtml(
-          param.value
-        )}</a>`
-      : '';
+    return param.value ? `<a target="_blank " href="${param.value}">${Utils.escapeHtml(param.value)}</a>` : '';
   }
 
   static dateTimeCellRenderer(param) {
     if (param.value) {
-      return CellRenderer.dateTimeCellRendererTemplate(
-        param.value,
-        param.context,
-        param.pattern
-      );
+      return CellRenderer.dateTimeCellRendererTemplate(param.value, param.context, param.pattern);
     } else {
       return '';
     }
   }
 
   static dateTimeCellRendererTemplate(value, context, pattern) {
-    return `<span date="${value}">${context.datePipe.transform(
-      value,
-      pattern
-    )}</span>`;
+    return `<span date="${value}">${context.datePipe.transform(value, pattern)}</span>`;
   }
 
   static booleanCellRenderer(param) {
@@ -155,12 +123,14 @@ export class CellRenderer {
   }
 
   static multiSelectCellRenderer(param) {
+    let value = param.value ? param.value : param;
+    if (typeof value === 'string') {
+      value = value.split(', ');
+    }
     let val = '';
-    if (param.value) {
-      (Array.isArray(param.value) ? param.value : [param.value]).forEach(
-        value => {
-          val += `<div class="chip">${Utils.escapeHtml(value)}</div>`;
-        }
+    if (value) {
+      (Array.isArray(value) ? value : [value]).forEach(
+        value => (val += typeof value === 'string' ? `<div class="chip">${Utils.escapeHtml(value)}</div>` : '  ')
       );
     }
     return val;
@@ -169,28 +139,26 @@ export class CellRenderer {
   static linkCellRenderer(param) {
     let val = '';
     if (param.value) {
-      (Array.isArray(param.value) ? param.value : [param.value]).forEach(
-        value => {
-          const query = {
-            types: [param.reference.type],
-            filters: {}
-          };
-          query.filters[param.reference.element] = {
-            o: 'eq',
-            v1: value
-          };
-          const link = Utils.buildUri('result', {
-            query: encodeURIComponent(JSON.stringify(query))
-          });
-          val += `<div class="chip">
-            <a class="link router-link" href="${link}" target="_blank" onclick="onRouterLinkClick()">
+      (Array.isArray(param.value) ? param.value : [param.value]).forEach(value => {
+        const query = {
+          types: [param.reference.type],
+          filters: {}
+        };
+        query.filters[param.reference.element] = {
+          o: 'eq',
+          v1: value
+        };
+        const link = Utils.buildUri('result', {
+          query: encodeURIComponent(JSON.stringify(query))
+        });
+        val += `<div class="chip">
+            <a class="link router-link" href="${link}" target="_blank" onclick="return false;">
             <svg focusable="false" class="ref-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
             <path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8
             13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"></path>
             </svg>
             </a><span>${Utils.escapeHtml(value)}</span></div>`;
-        }
-      );
+      });
     }
     return val;
   }
@@ -202,21 +170,15 @@ export class CellRenderer {
     if (!Utils.isEmpty(value) && type) {
       (Array.isArray(value) ? value : [value]).forEach((val, index) => {
         const link = 'object/' + val + '?type=' + param.reference.type;
-        const iconUrl =
-          param.context.backend.getServiceBase() +
-          '/ui/icon/' +
-          type.iconId +
-          '.svg';
-        const title = Array.isArray(param.value)
-          ? param.value[index]
-          : param.value;
+        const iconUrl = param.context.backend.getServiceBase() + '/ui/icon/' + type.iconId + '.svg';
+        const title = Array.isArray(param.value) ? param.value[index] : param.value;
 
         // If the user is not allowed to see the reference object or the object was deleted, we don't show the link.
         text += `<div class="chip">
           ${
             !title
               ? ''
-              : `<a class="link router-link" href="${link}" target="_blank" onclick="onRouterLinkClick()">
+              : `<a class="link router-link" href="${link}" target="_blank" onclick="return false;">
             <svg focusable="false" class="ref-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
             <path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8
             13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"></path>

@@ -1,13 +1,13 @@
-import {async, ComponentFixture, TestBed, fakeAsync} from '@angular/core/testing';
-import {LoggerStub, ConfigStub} from '../../../../../projects/eo-sdk/core/src/test/testStubs';
-import {StringComponent} from './string.component';
-import {FormsModule} from '@angular/forms';
-import {AutoCompleteModule, ChipsModule} from 'primeng/primeng';
-import {HttpClientTestingModule} from '@angular/common/http/testing';
-import {NO_ERRORS_SCHEMA} from '@angular/core';
-import {of as observableOf} from 'rxjs';
-import {Logger, Config, BackendService} from '@eo-sdk/core';
-
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { async, ComponentFixture, fakeAsync, TestBed } from '@angular/core/testing';
+import { FormsModule } from '@angular/forms';
+import { BackendService, Config, Logger } from '@eo-sdk/core';
+import { AutoCompleteModule } from 'primeng/autocomplete';
+import { ChipsModule } from 'primeng/chips';
+import { of as observableOf } from 'rxjs';
+import { ConfigStub, LoggerStub } from '../../../../../projects/eo-sdk/core/src/test/testStubs';
+import { StringComponent } from './string.component';
 
 describe('StringComponent', () => {
   let component: StringComponent;
@@ -19,12 +19,8 @@ describe('StringComponent', () => {
       schemas: [NO_ERRORS_SCHEMA],
       declarations: [StringComponent],
       imports: [FormsModule, AutoCompleteModule, ChipsModule, HttpClientTestingModule],
-      providers: [BackendService,
-        {provide: Logger, userClass: LoggerStub},
-        {provide: Config, userClass: ConfigStub},
-      ]
-    })
-      .compileComponents();
+      providers: [BackendService, { provide: Logger, userClass: LoggerStub }, { provide: Config, userClass: ConfigStub }]
+    }).compileComponents();
   }));
 
   beforeEach(() => {
@@ -43,7 +39,7 @@ describe('StringComponent', () => {
   });
 
   it('should react on enter with input', fakeAsync(() => {
-    const enterEvent = {target: {value: 'input'}}
+    const enterEvent = { target: { value: 'input' } };
 
     component.onKeyUpEnter(enterEvent);
     expect(component.value).toEqual(['input']);
@@ -51,7 +47,7 @@ describe('StringComponent', () => {
   }));
 
   it('should react on enter with filled input', () => {
-    const enterEvent = {target: {value: 'input'}}
+    const enterEvent = { target: { value: 'input' } };
     component.value = ['test das'];
 
     component.onKeyUpEnter(enterEvent);
@@ -60,33 +56,32 @@ describe('StringComponent', () => {
   });
 
   it('should react on enter without input', () => {
-    const enterEvent = {target: {value: ''}}
+    const enterEvent = { target: { value: '' } };
     component.onKeyUpEnter(enterEvent);
     expect(enterEvent.target.value).toEqual('');
     expect(component.value).toEqual([]);
   });
 
-
   it('should set the value from given value', () => {
     component.writeValue('test');
-    expect(component.value).toEqual('test')
+    expect(component.value).toEqual('test');
 
     component.writeValue('');
-    expect(component.value).toEqual(null)
+    expect(component.value).toEqual(null);
   });
 
   it('should set the autocomplete values', fakeAsync(() => {
-    const returnValue = [{'value': 'Test', 'score': 1.0}, {'value': 'test', 'score': 1.0}, {'value': 'testTemplate', 'score': 1.0}];
+    const returnValue = [{ value: 'Test', score: 1.0 }, { value: 'test', score: 1.0 }, { value: 'testTemplate', score: 1.0 }];
     spyOn(service, 'getSearchBase').and.returnValue('');
     spyOn(service, 'getJson').and.returnValue(observableOf(returnValue));
-    component.autocompleteFn({query: 'test'});
+    component.autocompleteFn({ query: 'test' });
 
     expect(component.autocompleteRes).toEqual(['Test', 'test', 'testTemplate']);
   }));
 
   it('should validate Classification seatuation SEARCH', () => {
-      component.situation = 'SEARCH'
-      expect((component as any).validateClassification('')).toBeTruthy();
+    component.situation = 'SEARCH';
+    expect((component as any).validateClassification('')).toBeTruthy();
   });
 
   it('should validate Classification email', () => {
@@ -102,5 +97,4 @@ describe('StringComponent', () => {
   it('should validate Classification', () => {
     expect((component as any).validateClassification('lorem ipsum')).toBeFalsy();
   });
-
 });

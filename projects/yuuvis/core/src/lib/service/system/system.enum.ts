@@ -1,3 +1,8 @@
+export enum AdministrationRoles {
+  ADMIN = 'YUUVIS_TENANT_ADMIN',
+  SYSTEM = 'YUUVIS_SYSTEM_INTEGRATOR'
+}
+
 export enum BaseObjectTypeField {
   OBJECT_ID = 'enaio:objectId',
   OBJECT_TYPE_ID = 'enaio:objectTypeId',
@@ -26,4 +31,18 @@ export enum ContentStreamField {
   REPOSITORY_ID = 'enaio:contentStreamRepositoryId',
   DIGEST = 'enaio:digest',
   ARCHIVE_PATH = 'enaio:archivePath'
+}
+
+export enum ObjectField {
+  OBJECT_TYPE_ID = 'enaio:objectTypeId',
+  VERSION_NUMBER = 'enaio:versionNumber',
+  OBJECT_ID = 'enaio:objectId'
+}
+
+export enum ParentField {
+  asvaktenzeichen = 'tenKolibri:asvaktenzeichen',
+  asvaktenzeichentext = 'tenKolibri:asvaktenzeichentext',
+  asvsichtrechte = 'tenKolibri:asvsichtrechte',
+  asvvorgangsname = 'tenKolibri:asvvorgangsname',
+  asvvorgangsnummer = 'tenKolibri:asvvorgangsnummer'
 }

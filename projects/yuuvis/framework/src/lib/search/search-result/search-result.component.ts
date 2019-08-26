@@ -1,34 +1,29 @@
-import { Component, EventEmitter, HostBinding, Input, OnInit, Output } from '@angular/core';
+<<<<<<< HEAD
+import { Component, EventEmitter, HostBinding, Input, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import {
-  BaseObjectTypeField,
-  SearchQuery,
-  SearchResult,
-  SearchResultItem,
-  SearchService,
-  SecondaryObjectTypeField,
-  SortOption,
-  SystemService,
-  TranslateService
-} from '@yuuvis/core';
+import { BaseObjectTypeField, SearchQuery, SearchResult, SearchResultItem, SearchService, SecondaryObjectTypeField, SortOption, SystemService, TranslateService } from '@yuuvis/core';
 import { ColDef } from 'ag-grid-community';
 import { ResponsiveTableData } from '../../components';
 import { ColumnSizes } from '../../services/grid/grid.interface';
 import { GridService } from '../../services/grid/grid.service';
 import { SVGIcons } from '../../svg.generated';
+=======
+import { Component, EventEmitter, HostBinding, Input, Output } from '@angular/core';
+>>>>>>> d70575563f9dca8e07e176880a850ce1ccb0dfdf
 
 @Component({
   selector: 'yuv-search-result',
   templateUrl: './search-result.component.html',
   styleUrls: ['./search-result.component.scss'],
-  host: { class: 'yuv-search-result yuv-panel toolbar' }
+  host: { class: 'yuv-search-result toolbar' }
 })
-export class SearchResultComponent implements OnInit {
+export class SearchResultComponent {
   private _searchQuery: SearchQuery;
   private _columns: ColDef[];
   private _rows: any[];
+  private _hasPages = false;
   pagingForm: FormGroup;
-
+  _queryTerm: string;
   // icons used within the template
   icon = {
     icSearch: SVGIcons['search'],
@@ -48,6 +43,8 @@ export class SearchResultComponent implements OnInit {
 
   @Input() set query(searchQuery: SearchQuery) {
     this._searchQuery = searchQuery;
+    this.queryTerm = searchQuery.term;
+
     if (searchQuery) {
       // execute the query and
       this.executeQuery();
@@ -60,6 +57,23 @@ export class SearchResultComponent implements OnInit {
 
   // indicator that the component is busy loading data, so we are able to prevent user interaction
   @HostBinding('class.busy') busy: boolean = false;
+
+  set queryTerm(term) {
+    const pre = `${this.translate.instant('eo.search.term')}: `;
+    this._queryTerm = term.includes('*') ? pre : `${pre}${term}`;
+  }
+
+  get queryTerm(): string {
+    return this._queryTerm;
+  }
+
+  set hasPages(count) {
+    this._hasPages = count;
+  }
+
+  get hasPages(): boolean {
+    return this._hasPages;
+  }
 
   constructor(
     private translate: TranslateService,
@@ -83,22 +97,21 @@ export class SearchResultComponent implements OnInit {
   }
 
   // Create actual table data from the search result
-  private createTableData(searchResult: SearchResult): void {
+  private createTableData(searchResult: SearchResult, pageNumber = 1): void {
     // object type of the result list items, if NULL we got a mixed result
     this.resultListObjectTypeId = searchResult.objectTypes.length > 1 ? null : searchResult.objectTypes[0];
 
     this.gridService.getColumnConfiguration(this.resultListObjectTypeId).subscribe((colDefs: ColDef[]) => {
       // setup pagination form in case of a paged search result chunk
       this.pagination = null;
-      if (searchResult.hasMoreItems) {
-        if (searchResult.totalNumItems > this._searchQuery.size) {
-          this.pagination = {
-            pages: Math.ceil(searchResult.totalNumItems / this._searchQuery.size),
-            page: (!this._searchQuery.from ? 0 : this._searchQuery.from / this._searchQuery.size) + 1
-          };
-          this.pagingForm.get('page').setValue(this.pagination.page);
-        }
+      this.hasPages = searchResult.items.length !== searchResult.totalNumItems;
+      if (searchResult.totalNumItems > this._searchQuery.size) {
+        this.pagination = {
+          pages: Math.ceil(searchResult.totalNumItems / this._searchQuery.size),
+          page: (!this._searchQuery.from ? 0 : this._searchQuery.from / this._searchQuery.size) + 1
+        };
 
+        this.pagingForm.get('page').setValue(pageNumber);
         this.pagingForm.get('page').setValidators([Validators.min(0), Validators.max(this.pagination.pages)]);
       }
 
@@ -142,7 +155,42 @@ export class SearchResultComponent implements OnInit {
       id: searchResultItem.fields.get(BaseObjectTypeField.OBJECT_ID)
     };
     this._columns.forEach((cd: ColDef) => {
+<<<<<<< HEAD
       row[cd.field] = searchResultItem.fields.get(cd.field);
+=======
+      // ContentStream fields needs to be resolved in a different way.
+
+      // Object type schema defines content related fields with a
+      // special pattern we can check for.
+
+      // Although defined in schema there may be no content attached.
+      if (searchResultItem.content && cd.field.startsWith('enaio:contentStream')) {
+        switch (cd.field) {
+          case ContentStreamField.LENGTH: {
+            row[cd.field] = searchResultItem.content.size;
+            break;
+          }
+          case ContentStreamField.FILENAME: {
+            row[cd.field] = searchResultItem.content.fileName;
+            break;
+          }
+          case ContentStreamField.MIME_TYPE: {
+            row[cd.field] = searchResultItem.content.mimeType;
+            break;
+          }
+          // case 'enaio:contentStreamRange': {
+          //   row[cd.field] = searchResultItem.content.range;
+          //   break;
+          // }
+          // case 'enaio:contentStreamRepositoryId': {
+          //   row[cd.field] = searchResultItem.content.repositoryId;
+          //   break;
+          // }
+        }
+      } else {
+        row[cd.field] = searchResultItem.fields.get(cd.field);
+      }
+>>>>>>> d70575563f9dca8e07e176880a850ce1ccb0dfdf
     });
     return row;
   }
@@ -157,7 +205,7 @@ export class SearchResultComponent implements OnInit {
     this.busy = true;
     this.searchService.getPage(this._searchQuery, page).subscribe(
       (res: SearchResult) => {
-        this.createTableData(res);
+        this.createTableData(res, page);
       },
       err => {
         // TODO: how should errors be handles in case hat loading pages fail
@@ -182,6 +230,4 @@ export class SearchResultComponent implements OnInit {
   onColumnResized(colSizes: ColumnSizes) {
     this.gridService.persistColumnWidthSettings(colSizes, this.resultListObjectTypeId);
   }
-
-  ngOnInit() {}
 }

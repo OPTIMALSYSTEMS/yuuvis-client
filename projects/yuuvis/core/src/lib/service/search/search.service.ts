@@ -55,9 +55,9 @@ export class SearchService {
     searchResponse.objects.forEach(o => {
       const fields = new Map();
       // process properties section of result
-      Object.keys(o.properties).forEach(k => {
-        fields.set(k, o.properties[k].value);
-      });
+      Object.keys(o.properties).forEach((key: string) =>
+        o.properties[key].title ? fields.set(key, o.properties[key].title) : fields.set(key, o.properties[key].value)
+      );
 
       // process contentStreams section of result if available.
       // Objects that don't have files attached won't have this section

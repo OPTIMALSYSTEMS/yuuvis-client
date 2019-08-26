@@ -2,12 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ConfigService, Sort, TranslateService, Utils } from '@yuuvis/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import {
-  AboutData,
-  AboutDocuConfig,
-  Libraries,
-  ProductDetails
-} from '../about.data.interface';
+import { AboutData, AboutDocuConfig, Libraries, ProductDetails } from '../about.data.interface';
 import { About, AboutInfo } from '../about.enum';
 
 @Injectable({
@@ -15,23 +10,15 @@ import { About, AboutInfo } from '../about.enum';
 })
 export class AboutService {
   private libraries: Libraries[] = [];
-  private librariesSubject: BehaviorSubject<Libraries[]> = new BehaviorSubject<
-    Libraries[]
-  >(this.libraries);
+  private librariesSubject: BehaviorSubject<Libraries[]> = new BehaviorSubject<Libraries[]>(this.libraries);
   libraries$: Observable<Libraries[]> = this.librariesSubject.asObservable();
 
   private productDetails: ProductDetails[] = [];
-  private productDetailsSubject: BehaviorSubject<
-    ProductDetails[]
-  > = new BehaviorSubject<ProductDetails[]>(this.productDetails);
-  productDetails$: Observable<
-    ProductDetails[]
-  > = this.productDetailsSubject.asObservable();
+  private productDetailsSubject: BehaviorSubject<ProductDetails[]> = new BehaviorSubject<ProductDetails[]>(this.productDetails);
+  productDetails$: Observable<ProductDetails[]> = this.productDetailsSubject.asObservable();
 
   private aboutConfig: string;
-  private aboutConfigSubject: BehaviorSubject<string> = new BehaviorSubject<
-    string
-  >(this.aboutConfig);
+  private aboutConfigSubject: BehaviorSubject<string> = new BehaviorSubject<string>(this.aboutConfig);
   aboutConfig$: Observable<string> = this.aboutConfigSubject.asObservable();
 
   licenses = [
@@ -72,26 +59,18 @@ export class AboutService {
     {
       id: 'ag-grid',
       label: 'ag-Grid-Enterprise Software Licence Agreement Version 1.7',
-      url:
-        'https://github.com/ceolter/ag-grid-enterprise/blob/master/LICENSE.md'
+      url: 'https://github.com/ceolter/ag-grid-enterprise/blob/master/LICENSE.md'
     }
   ];
 
-  constructor(
-    private http: HttpClient,
-    private configService: ConfigService,
-    private translate: TranslateService
-  ) {}
+  constructor(private http: HttpClient, private configService: ConfigService, private translate: TranslateService) {}
 
   private getUserLanguage(language: string[], userLang: string): string {
     return language.includes(userLang) ? userLang : About.defaultLang;
   }
 
   getAboutConfig(userLang) {
-    this.generateDocumentationLink(
-      this.configService.get('client.docu'),
-      userLang
-    );
+    this.generateDocumentationLink(this.configService.get('client.docu'), userLang);
 
     // return this.http.get('assets/about.config.json').subscribe(
     //   (config: { docu: AboutDocuConfig }) => {
@@ -115,9 +94,7 @@ export class AboutService {
   generateDocumentationLink(docuConfig: AboutDocuConfig, userLang) {
     const { language, link, version } = docuConfig;
     userLang = this.getUserLanguage(language, userLang);
-    const docuLink = link
-      .replace('###userLang###', userLang)
-      .replace('###version###', String(version));
+    const docuLink = link.replace('###userLang###', userLang).replace('###version###', String(version));
 
     this.aboutConfigSubject.next(docuLink);
   }
@@ -154,7 +131,6 @@ export class AboutService {
     );
 
     details.sort(Utils.sortValues('label', Sort.DESC));
-    console.log(details);
     this.productDetailsSubject.next(details);
   }
 }

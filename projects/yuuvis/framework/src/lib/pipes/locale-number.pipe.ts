@@ -26,7 +26,7 @@ export class LocaleDecimalPipe extends DecimalPipe implements PipeTransform {
             locale || this.translate.currentLang || 'en'
           )
         )
-        .join(' //\\ ');
+        .join(', ');
     }
     return super.transform(
       value,
