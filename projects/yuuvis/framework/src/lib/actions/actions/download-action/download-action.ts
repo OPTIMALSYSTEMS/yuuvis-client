@@ -2,6 +2,7 @@
 import { Component } from '@angular/core';
 import { DmsObject, TranslateService } from '@yuuvis/core';
 import { of as observableOf } from 'rxjs';
+import { SVGIcons } from '../../../svg.generated';
 import { DmsObjectTarget } from '../../action-target';
 import { ListAction } from '../../interfaces/action.interface';
 import { SelectionRange } from '../../selection-range.enum';
@@ -17,7 +18,7 @@ export class DownloadActionComponent extends DmsObjectTarget implements ListActi
   label: string;
   description: string;
   priority = 2;
-  iconSrc = 'assets/_default/svg/ic_content-download.svg';
+  iconSrc = SVGIcons['content-download'];
   group = 'common';
   range = SelectionRange.MULTI_SELECT;
   subActionComponents: any[];

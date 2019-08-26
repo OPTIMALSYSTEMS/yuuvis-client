@@ -2,7 +2,7 @@
 
   <div class="head">
     <div class="left">
-      <div class="title">{{'eo.actions.sticky.title' | translate}}</div>
+      <div class="menu-title">{{'eo.actions.sticky.title' | translate}}</div>
       <div class="sub-title" *ngIf="selection?.length > 1; else multi">
         {{'eo.actions.sticky.title.sub.selection' | translate}}</div>
       <ng-template #multi>
@@ -14,11 +14,11 @@
     </div>
     <div class="right">
       <span class="count">{{selection?.length || ''}}</span>
-      <yuv-icon class="button" [iconSrc]="'assets/svg/clear.svg'" (click)="hide()"></yuv-icon>
+      <yuv-icon class="button" [svg]="icons.clear" (click)="hide()"></yuv-icon>
     </div>
   </div>
 
-  <div class="actions" [hidden]="subActionsList || showComponent">
+  <div class="menu-actions" [hidden]="subActionsList || showComponent">
 
     <ng-template #action let-entry let-id>
 
@@ -30,13 +30,12 @@
 
       <ng-template #default>
         <div>
-          <yuv-icon *ngIf="entry.action.iconSrc && !entry.action?.iconId" [iconSrc]="entry.action.iconSrc"></yuv-icon>
+          <yuv-icon *ngIf="entry.action.iconSrc && !entry.action?.iconId" [svg]="entry.action.iconSrc"></yuv-icon>
           <!-- <yuv-icon *ngIf="entry.action.iconId" [iconId]="entry.action?.iconId"></yuv-icon> -->
           <div class="label">{{entry.action.label}}</div>
           <div class="available-count" *ngIf="entry.availableSelection?.length != selection?.length">
             {{entry.availableSelection?.length}}</div>
-          <!-- <yuv-icon class="info-icon" [iconSrc]="'assets/svg/info.svg'" -->
-          <yuv-icon class="info-icon" [iconSrc]="'assets/svg/edit.svg'" (click)="showActionDescription(id, $event)">
+          <yuv-icon class="info-icon" [svg]="icons.info" (click)="showActionDescription(id, $event)">
           </yuv-icon>
         </div>
         <div class="description" [hidden]="id !== actionDescription">{{entry.action.description}}</div>
@@ -49,7 +48,6 @@
         (click)="onClick(actionListEntry)">
 
         <ng-container *ngTemplateOutlet="action; context: {$implicit: actionListEntry, id: +i}"></ng-container>
-        6666
       </div>
     </div>
 

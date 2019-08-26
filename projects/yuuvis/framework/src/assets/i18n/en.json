@@ -13,5 +13,19 @@
   "{{data.key}}": "",
   "eo.summary.admin.info": "Administrative information",
   "eo.search.term": "Search term",
-  "eo.quicksearch.reults.empty": "Your search request returned no hits."
+  "eo.quicksearch.reults.empty": "Your search request returned no hits.",
+  "eo.actions.sticky.title": "Actions",
+  "eo.actions.sticky.title.sub.for": "for",
+  "eo.actions.sticky.title.sub.selection": "the current selection",
+  "eo.actions.group.common": "GENERAL",
+  "eo.actions.group.further_actions": "MORE ACTIONS",
+  "eo.action.not.available": "No action available.",
+  "eo.action.download.dms.object.content.label": "Download document file",
+  "eo.action.download.dms.object.content.description": "Downloads the document file of the object.",
+  "eo.export.title": "Download in the following format",
+  "eo.export.action.original.label": "Original",
+  "eo.export.action.pdf.label": "PDF",
+  "eo.export.action.original.description": "Downloads the document file in the original format",
+  "eo.export.action.pdf.description": "Downloads the document file as a PDF",
+  "eo.export.cancel": "Cancel"
 }

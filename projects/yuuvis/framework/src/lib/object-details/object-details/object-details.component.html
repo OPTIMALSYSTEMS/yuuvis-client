@@ -1,5 +1,4 @@
 <yuv-panel [title]="dmsObject?.data?.clienttitle" [description]="dmsObject?.data?.clientdescription">
-    <yuv-action-menu [(cmd)]="actionCMD" (finished)="onActionFinish()"></yuv-action-menu>
     <yuv-icon class="header-icon" [svg]="objectIcon"></yuv-icon>
 
     <yuv-action-menu-bar class="actions">
@@ -46,3 +45,4 @@
         </p-tabPanel>
     </yuv-responsive-tab-container>
 </yuv-panel>
+<yuv-action-menu [(cmd)]="actionCMD" (finished)="onActionFinish()"></yuv-action-menu>

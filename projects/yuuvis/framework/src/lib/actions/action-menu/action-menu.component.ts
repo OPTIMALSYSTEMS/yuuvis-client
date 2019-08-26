@@ -3,6 +3,7 @@ import { NavigationStart, Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { filter, take, takeUntil } from 'rxjs/operators';
 import { ComponentAction, ExternalComponentAction, ListAction, SimpleAction } from '../';
+import { SVGIcons } from '../../svg.generated';
 import { ActionService, ActionShowCommand } from '../action-service/action.service';
 import { ActionComponent } from '../interfaces/action-component.interface';
 import { ActionListEntry } from '../interfaces/action-list-entry';
@@ -56,6 +57,7 @@ export class ActionMenuComponent extends UnsubscribeOnDestroy {
   actionDescription: string;
   showMenu = false;
   loading = false;
+  icons = SVGIcons;
 
   private _actionCMD: ActionShowCommand;
 
