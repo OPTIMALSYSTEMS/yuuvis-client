@@ -1,15 +1,21 @@
-<<<<<<< HEAD
 import { Component, EventEmitter, HostBinding, Input, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { BaseObjectTypeField, SearchQuery, SearchResult, SearchResultItem, SearchService, SecondaryObjectTypeField, SortOption, SystemService, TranslateService } from '@yuuvis/core';
+import {
+  BaseObjectTypeField,
+  SearchQuery,
+  SearchResult,
+  SearchResultItem,
+  SearchService,
+  SecondaryObjectTypeField,
+  SortOption,
+  SystemService,
+  TranslateService
+} from '@yuuvis/core';
 import { ColDef } from 'ag-grid-community';
 import { ResponsiveTableData } from '../../components';
 import { ColumnSizes } from '../../services/grid/grid.interface';
 import { GridService } from '../../services/grid/grid.service';
 import { SVGIcons } from '../../svg.generated';
-=======
-import { Component, EventEmitter, HostBinding, Input, Output } from '@angular/core';
->>>>>>> d70575563f9dca8e07e176880a850ce1ccb0dfdf
 
 @Component({
   selector: 'yuv-search-result',
@@ -155,42 +161,7 @@ export class SearchResultComponent {
       id: searchResultItem.fields.get(BaseObjectTypeField.OBJECT_ID)
     };
     this._columns.forEach((cd: ColDef) => {
-<<<<<<< HEAD
       row[cd.field] = searchResultItem.fields.get(cd.field);
-=======
-      // ContentStream fields needs to be resolved in a different way.
-
-      // Object type schema defines content related fields with a
-      // special pattern we can check for.
-
-      // Although defined in schema there may be no content attached.
-      if (searchResultItem.content && cd.field.startsWith('enaio:contentStream')) {
-        switch (cd.field) {
-          case ContentStreamField.LENGTH: {
-            row[cd.field] = searchResultItem.content.size;
-            break;
-          }
-          case ContentStreamField.FILENAME: {
-            row[cd.field] = searchResultItem.content.fileName;
-            break;
-          }
-          case ContentStreamField.MIME_TYPE: {
-            row[cd.field] = searchResultItem.content.mimeType;
-            break;
-          }
-          // case 'enaio:contentStreamRange': {
-          //   row[cd.field] = searchResultItem.content.range;
-          //   break;
-          // }
-          // case 'enaio:contentStreamRepositoryId': {
-          //   row[cd.field] = searchResultItem.content.repositoryId;
-          //   break;
-          // }
-        }
-      } else {
-        row[cd.field] = searchResultItem.fields.get(cd.field);
-      }
->>>>>>> d70575563f9dca8e07e176880a850ce1ccb0dfdf
     });
     return row;
   }
