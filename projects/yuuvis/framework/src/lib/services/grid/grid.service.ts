@@ -98,16 +98,15 @@ export class GridService {
     colDef.resizable = true;
 
     // TODO: apply conditions whether or not the column should be sortable
-    const sortable = true;
-    if (sortable) {
+    if (this.isSortable(field)) {
       colDef.sortable = true;
-      // colDef.comparator = function(valueA, valueB, nodeA, nodeB, isInverted) {
-      //   // remove internal sorting behaviour as we will use backend side sort
-      //   return 1;
-      // };
     }
 
     return colDef;
+  }
+
+  private isSortable(field: ObjectTypeField): boolean {
+    return field.propertyType !== 'id';
   }
 
   /**
