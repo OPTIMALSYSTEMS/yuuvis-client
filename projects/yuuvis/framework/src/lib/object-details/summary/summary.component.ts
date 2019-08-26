@@ -89,9 +89,6 @@ export class SummaryComponent {
         if (key === 'enaio:objectTypeId') {
           si.value = this.systemService.getLocalizedResource(`${dmsObject.data[key]}_label`);
         }
-
-        console.log({ prepKey });
-
         if (extraFields.includes(prepKey)) {
           summary.extras.push(si);
         } else if (defaultBaseFields.find(field => field.key.startsWith(prepKey))) {

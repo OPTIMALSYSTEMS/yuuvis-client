@@ -1,5 +1,6 @@
 <yuv-panel *ngIf="dmsObject;else empty" class="object-details" [title]="dmsObject?.data?.clienttitle" [description]="dmsObject?.data?.clientdescription" [yuvBusyOverlay]="busy">
-  <yuv-icon class="header-icon" [svg]="objectIcon"></yuv-icon>
+  <div class="header-icon" [innerHtml]="objectIcon | safeHtml"></div>
+      
 
   <yuv-action-menu-bar class="actions">
     <yuv-icon class="button refresh-button" [svg]="icons.refresh"></yuv-icon>

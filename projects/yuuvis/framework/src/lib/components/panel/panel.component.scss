@@ -29,6 +29,10 @@
 
 .icon {
   grid-area: icon;
+
+  svg {
+    fill: var(--text-color-caption);
+  }
 }
 
 .header_text {
