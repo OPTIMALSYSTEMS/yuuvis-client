@@ -52,6 +52,10 @@ yarn-error.log
 testem.log
 /typings
 
+# e2e tests
+/e2e/cypress/screenshots/
+/e2e/cypress/videos/
+
 # System Files
 .DS_Store
 Thumbs.db
