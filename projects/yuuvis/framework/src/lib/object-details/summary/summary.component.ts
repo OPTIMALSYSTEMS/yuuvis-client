@@ -34,7 +34,6 @@ export class SummaryComponent {
     };
 
     const skipFields: string[] = [
-      ContentStreamField.RANGE,
       ContentStreamField.ID,
       BaseObjectTypeField.OBJECT_TYPE_ID,
       BaseObjectTypeField.TENANT,
