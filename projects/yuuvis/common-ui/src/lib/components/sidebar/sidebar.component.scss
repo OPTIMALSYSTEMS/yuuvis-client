@@ -1,8 +1,10 @@
 .sidebar {
-  color: white;
-  padding: 0;
-  background-color: var(--color-primary);
-
+  &.ui-sidebar {
+    color: white;
+    padding: 0;
+    background-color: var(--color-primary);
+    border: none;
+  }
   &-header {
     height: 250px;
     background-color: var(--color-accent);

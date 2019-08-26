@@ -1,16 +1,7 @@
 import { Component, HostBinding, Inject, OnInit } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
-import {
-  AppCacheService,
-  AuthService,
-  CoreConfig,
-  CORE_CONFIG,
-  LoginStateName,
-  TranslateService,
-  Utils,
-  YuvEnvironment
-} from '@yuuvis/core';
+import { AppCacheService, AuthService, CoreConfig, CORE_CONFIG, LoginStateName, TranslateService, Utils, YuvEnvironment } from '@yuuvis/core';
 import { finalize } from 'rxjs/operators';
 import { AuthFlowService } from 'src/app/platform/auth-flow/auth-flow.service';
 
@@ -47,9 +38,7 @@ export class LoginComponent implements OnInit {
     private translate: TranslateService,
     private authService: AuthService
   ) {
-    this.deviceFlow.active =
-      !this.coreConfig.environment.production ||
-      !YuvEnvironment.isWebEnvironment();
+    this.deviceFlow.active = !this.coreConfig.environment.production || !YuvEnvironment.isWebEnvironment();
   }
 
   ngOnInit() {
@@ -57,6 +46,7 @@ export class LoginComponent implements OnInit {
       this.appCache.getItem(this.STORAGE_KEY).subscribe(res => {
         if (res) {
           this.form.host = res;
+          this.form.tenant = 'kolibri';
         }
       });
     }
@@ -70,9 +60,7 @@ export class LoginComponent implements OnInit {
     const currentLoc = location.href.substr(location.origin.length);
 
     const prefix = currentLoc.substring(0, currentLoc.indexOf('/enter'));
-    this.returnUrl = this.returnUrl
-      .replace(prefix, '')
-      .replace('index.html', '');
+    this.returnUrl = this.returnUrl.replace(prefix, '').replace('index.html', '');
 
     // loading login state as the user is already authenticated will redirect to home
     if (this.authService.isLoggedIn()) {
@@ -92,10 +80,7 @@ export class LoginComponent implements OnInit {
       this.appCache.setItem(this.STORAGE_KEY, this.form.host).subscribe();
     }
 
-    const loginFlow = this.authService.startLoginFlow(
-      this.form.tenant,
-      this.form.host
-    );
+    const loginFlow = this.authService.startLoginFlow(this.form.tenant, this.form.host);
 
     // get a hold on the trigger to stop the login flow at any point
     this.loginCancelTrigger = loginFlow.cancelTrigger;
@@ -108,9 +93,7 @@ export class LoginComponent implements OnInit {
             // open login target uri in iframe
 
             // running in iframe
-            this.deviceFlow.loginPageUri = this.sanitizer.bypassSecurityTrustResourceUrl(
-              loginState.data
-            );
+            this.deviceFlow.loginPageUri = this.sanitizer.bypassSecurityTrustResourceUrl(loginState.data);
 
             // this.authFlowService.openLoginUri(loginState.data, this.loginCancelTrigger);
             break;

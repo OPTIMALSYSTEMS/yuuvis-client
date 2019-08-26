@@ -5,11 +5,7 @@ import { ApiBase } from '../backend/api.enum';
 import { BackendService } from '../backend/backend.service';
 import { BaseObjectTypeField, ContentStreamField } from '../system/system.enum';
 import { SearchQuery } from './search-query.model';
-import {
-  SearchResult,
-  SearchResultContent,
-  SearchResultItem
-} from './search.service.interface';
+import { SearchResult, SearchResultContent, SearchResultItem } from './search.service.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -22,9 +18,7 @@ export class SearchService {
   search(q: SearchQuery): Observable<SearchResult> {
     this.lastSearchQuery = q;
 
-    return this.backend
-      .post(`/dms/search`, q.toQueryJson(), ApiBase.apiWeb)
-      .pipe(map(res => this.toSearchResult(res)));
+    return this.backend.post(`/dms/search`, q.toQueryJson(), ApiBase.apiWeb).pipe(map(res => this.toSearchResult(res)));
   }
 
   /**
@@ -36,19 +30,14 @@ export class SearchService {
   aggregate(q: SearchQuery, aggregation: string) {
     // TODO: enable multiple aggregations at once?
     q.aggs = [aggregation];
-    return this.backend
-      .post(`/dms/search`, q.toQueryJson(), ApiBase.apiWeb)
-      .pipe(map(res => this.toAggregateResult(res, aggregation)));
+    return this.backend.post(`/dms/search`, q.toQueryJson(), ApiBase.apiWeb).pipe(map(res => this.toAggregateResult(res, aggregation)));
   }
 
   getLastSearchQuery() {
     return this.lastSearchQuery;
   }
 
-  private toAggregateResult(
-    searchResponse: any,
-    aggregation: string
-  ): { value: string; count: number }[] {
+  private toAggregateResult(searchResponse: any, aggregation: string): { value: string; count: number }[] {
     return searchResponse.objects.map(o => ({
       value: o.properties[aggregation].value,
       count: o.properties['OBJECT_COUNT'].value
@@ -66,9 +55,9 @@ export class SearchService {
     searchResponse.objects.forEach(o => {
       const fields = new Map();
       // process properties section of result
-      Object.keys(o.properties).forEach(k => {
-        fields.set(k, o.properties[k].value);
-      });
+      Object.keys(o.properties).forEach((key: string) =>
+        o.properties[key].title ? fields.set(key, o.properties[key].title) : fields.set(key, o.properties[key].value)
+      );
 
       // process contentStreams section of result if available.
       // Objects that don't have files attached won't have this section
@@ -78,9 +67,14 @@ export class SearchService {
         // this is an array and there may be more
         const contentStream = o.contentStreams[0];
         // also add contentstream related fields to the result fields
-        fields.set(ContentStreamField.MIME_TYPE, contentStream.mimeType);
         fields.set(ContentStreamField.LENGTH, contentStream.length);
+        fields.set(ContentStreamField.MIME_TYPE, contentStream.mimeType);
         fields.set(ContentStreamField.FILENAME, contentStream.fileName);
+        fields.set(ContentStreamField.ID, contentStream.contentStreamId);
+        fields.set(ContentStreamField.RANGE, contentStream.contentStreamRange);
+        fields.set(ContentStreamField.REPOSITORY_ID, contentStream.repositoryId);
+        fields.set(ContentStreamField.DIGEST, contentStream.digest);
+        fields.set(ContentStreamField.ARCHIVE_PATH, contentStream.archivePath);
 
         content = {
           contentStreamId: contentStream.contentStreamId,
@@ -94,8 +88,7 @@ export class SearchService {
         };
       }
 
-      const objectTypeId =
-        o.properties[BaseObjectTypeField.OBJECT_TYPE_ID].value;
+      const objectTypeId = o.properties[BaseObjectTypeField.OBJECT_TYPE_ID].value;
       if (objectTypes.indexOf(objectTypeId) === -1) {
         objectTypes.push(objectTypeId);
       }

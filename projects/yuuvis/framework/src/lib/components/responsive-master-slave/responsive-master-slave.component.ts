@@ -88,19 +88,12 @@ export class ResponsiveMasterSlaveComponent implements OnInit {
   }
   @Output() slaveClosed = new EventEmitter();
 
-  constructor(
-    private screenService: ScreenService,
-    private location: PlatformLocation
-  ) {
+  constructor(private screenService: ScreenService, private location: PlatformLocation) {
     this.subscriptions.push(
       this.screenService.screenChange$.subscribe((screen: Screen) => {
         const useSmallDeviceLayout = screen.mode === ScreenService.MODE.SMALL;
         // if we switch from large to small layout
-        if (
-          !this.useSmallDeviceLayout &&
-          useSmallDeviceLayout &&
-          this.detailsActive
-        ) {
+        if (!this.useSmallDeviceLayout && useSmallDeviceLayout && this.detailsActive) {
           this.location.pushState({}, '', '');
         }
         this.useSmallDeviceLayout = useSmallDeviceLayout;

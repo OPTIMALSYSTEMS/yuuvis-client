@@ -4,6 +4,7 @@ import {
   AppCacheService,
   BackendService,
   ContentStreamField,
+  ObjectField,
   ObjectType,
   ObjectTypeField,
   SystemService,
@@ -56,10 +57,7 @@ export class GridService {
    * blank in case of a mixed result list
    */
   getColumnConfiguration(objectTypeId?: string): Observable<ColDef[]> {
-    const objectType: ObjectType = objectTypeId
-      ? this.system.getObjectType(objectTypeId)
-      : this.system.getBaseDocumentType();
-
+    const objectType: ObjectType = objectTypeId ? this.system.getObjectType(objectTypeId) : this.system.getBaseDocumentType();
     return this.getPersistedColumnWidth(objectTypeId).pipe(
       map((colSizes: ColumnSizes) => {
         // create a map from column size data in order to get
@@ -71,11 +69,7 @@ export class GridService {
 
         const colDefs: ColDef[] = [];
         // add column definitions for the object types fields
-        colDefs.push(
-          ...objectType.fields
-            .filter(f => f.propertyType !== 'table')
-            .map(f => this.getColumnDefinition(f, colSizesMap.get(f.id)))
-        );
+        colDefs.push(...objectType.fields.filter(f => f.propertyType !== 'table').map(f => this.getColumnDefinition(f, colSizesMap.get(f.id))));
         return colDefs;
       })
     );
@@ -121,12 +115,8 @@ export class GridService {
    * If no type is provided, settings for a mixed result list will be loaded
    * @param objectTypeId The ID of the object type to fetch column settings for
    */
-  private getPersistedColumnWidth(
-    objectTypeId?: string
-  ): Observable<ColumnSizes> {
-    return this.appCacheService.getItem(
-      `${this.COLUMN_WIDTH_CACHE_KEY_BASE}.${objectTypeId || 'mixed'}`
-    );
+  private getPersistedColumnWidth(objectTypeId?: string): Observable<ColumnSizes> {
+    return this.appCacheService.getItem(`${this.COLUMN_WIDTH_CACHE_KEY_BASE}.${objectTypeId || 'mixed'}`);
   }
 
   /**
@@ -136,12 +126,7 @@ export class GridService {
    * @param objectTypeId The ID of the object type to save column settings for
    */
   persistColumnWidthSettings(colSizes: ColumnSizes, objectTypeId?: string) {
-    this.appCacheService
-      .setItem(
-        `${this.COLUMN_WIDTH_CACHE_KEY_BASE}.${objectTypeId || 'mixed'}`,
-        colSizes
-      )
-      .subscribe();
+    this.appCacheService.setItem(`${this.COLUMN_WIDTH_CACHE_KEY_BASE}.${objectTypeId || 'mixed'}`, colSizes).subscribe();
   }
 
   /**
@@ -159,20 +144,16 @@ export class GridService {
     switch (field.propertyType) {
       case 'string': {
         colDef.cellRenderer = params => Utils.escapeHtml(params.value);
-        if (field.cardinality === 'multiple') {
+        if (field.cardinality === 'multi') {
           colDef.cellRenderer = CellRenderer.multiSelectCellRenderer;
         }
-        colDef.cellClass =
-          field.cardinality === 'multiple' ? 'multiCell string' : 'string';
+        colDef.cellClass = field.cardinality === 'multi' ? 'multiCell string' : 'string';
         break;
       }
       case 'datetime': {
         colDef.width = 150;
-        colDef.cellRenderer = this.customContext(
-          CellRenderer.dateTimeCellRenderer,
-          { pattern: 'eoShort' }
-          // { pattern: resultField.withtime ? 'eoShort' : 'eoShortDate' }
-        );
+        colDef.cellRenderer = this.customContext(CellRenderer.dateTimeCellRenderer, { pattern: 'eoShort' });
+        // { pattern: resultField.withtime ? 'eoShort' : 'eoShortDate' }
         break;
       }
 
@@ -183,23 +164,18 @@ export class GridService {
           pattern: undefined
         };
         colDef.width = 150;
-        colDef.cellRenderer = this.customContext(
-          CellRenderer.numberCellRenderer,
-          params
-        );
+        colDef.cellRenderer = this.customContext(CellRenderer.numberCellRenderer, params);
         break;
       }
       case 'decimal': {
         const params = {
           scale: 2,
           grouping: true,
-          pattern: undefined
+          pattern: undefined,
+          cips: true
         };
         colDef.width = 150;
-        colDef.cellRenderer = this.customContext(
-          CellRenderer.numberCellRenderer,
-          params
-        );
+        colDef.cellRenderer = this.customContext(CellRenderer.numberCellRenderer, params);
         break;
       }
       // case 'NUMBER': {
@@ -234,7 +210,7 @@ export class GridService {
    */
   private addColDefAttrsByField(colDef: ColDef, field: ObjectTypeField) {
     switch (field.id) {
-      case 'enaio:objectTypeId': {
+      case ObjectField.OBJECT_TYPE_ID: {
         colDef.cellRenderer = this.customContext(CellRenderer.typeCellRenderer);
         colDef.width = 80;
         colDef.cellClass = 'res-ico';
@@ -244,16 +220,14 @@ export class GridService {
         colDef.width = 101;
         break;
       }
-      case 'enaio:versionNumber': {
+      case ObjectField.VERSION_NUMBER: {
         colDef.width = 80;
         break;
       }
       case ContentStreamField.LENGTH: {
         colDef.width = 100;
         colDef.enableRowGroup = false;
-        colDef.cellRenderer = this.customContext(
-          CellRenderer.filesizeCellRenderer
-        );
+        colDef.cellRenderer = this.customContext(CellRenderer.filesizeCellRenderer);
         colDef.keyCreator = this.customContext(this.fileSizeKeyCreator);
         break;
       }
@@ -262,18 +236,14 @@ export class GridService {
   }
 
   private customContext(fnc, mixin?) {
-    return param => fnc({ ...param, context: this.context }, mixin);
+    return params => fnc({ ...params, context: this.context, ...(mixin && mixin) });
   }
 
   public fileSizeKeyCreator(param) {
     if (!param.value) {
       return null;
     }
-    const match = param.context.fileSizeOpts.find(
-      f => f.from <= param.value && param.value < f.to
-    );
-    return match
-      ? match.label
-      : param.context.fileSizePipe.transform(param.value);
+    const match = param.context.fileSizeOpts.find(f => f.from <= param.value && param.value < f.to);
+    return match ? match.label : param.context.fileSizePipe.transform(param.value);
   }
 }

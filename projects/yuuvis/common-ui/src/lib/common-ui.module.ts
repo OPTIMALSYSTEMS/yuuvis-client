@@ -1,7 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
-import { AccordionModule, SidebarModule } from 'primeng/primeng';
+import { AccordionModule } from 'primeng/accordion';
+import { SidebarModule } from 'primeng/sidebar';
 import { AccordionComponent } from './components/accordion/accordion.component';
 import { IconComponent } from './components/icon/icon.component';
 import { IconService } from './components/icon/icon.service';
