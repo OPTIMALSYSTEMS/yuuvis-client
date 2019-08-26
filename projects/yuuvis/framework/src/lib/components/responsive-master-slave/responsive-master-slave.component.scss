@@ -1,12 +1,11 @@
-:host-context(.screen-s) {
-  .yuv-responsive-master-slave.state as-split {
+.as-horizontal.state {
+  :host-context(.screen-s) & {
     padding: 0;
   }
 }
-
 .yuv-responsive-master-slave {
   &.state {
-    as-split {
+    .as-horizontal.state {
       padding: var(--app-pane-padding);
       box-sizing: border-box;
     }

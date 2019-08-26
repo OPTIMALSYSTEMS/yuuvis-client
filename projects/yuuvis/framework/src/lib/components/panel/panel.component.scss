@@ -23,7 +23,7 @@
   padding-bottom: 0;
 
   :host-context(.screen-s) & {
-    grid-template-columns: 36px 3fr 1fr;
+    grid-template-columns: 40px 3fr 1fr;
   }
 }
 
@@ -43,14 +43,14 @@
   }
 }
 
-.title {
+.header_title {
   grid-area: title;
   font-weight: var(--font-weight-normal);
   font-size: var(--font-title);
   color: var(--text-color-caption);
 }
 
-.description {
+.header_description {
   grid-area: description;
   max-width: none;
   overflow: hidden;
