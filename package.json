@@ -57,7 +57,8 @@
     "primeng": "^7.1.2",
     "rxjs": "~6.5.2",
     "tslib": "^1.9.0",
-    "zone.js": "~0.9.1"
+    "zone.js": "~0.9.1",
+    "file-saver": "2.0.2"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "~0.800.0",

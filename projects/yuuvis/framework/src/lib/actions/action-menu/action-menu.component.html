@@ -1,0 +1,102 @@
+<div class="action-menu dark" *ngIf="showMenu" (eoOutsideClick)="hide()">
+
+  <div class="head">
+    <div class="left">
+      <div class="title">{{'eo.actions.sticky.title' | translate}}</div>
+      <div class="sub-title" *ngIf="selection?.length > 1; else multi">
+        {{'eo.actions.sticky.title.sub.selection' | translate}}</div>
+      <ng-template #multi>
+        <div class="sub-title" *ngIf="selection && selection.length">
+          <!-- <span>{{'eo.actions.sticky.title.sub.for' | translate}}</span> '{{selection[0].title}}' -->
+          <span>{{'eo.actions.sticky.title.sub.for' | translate}}</span>
+        </div>
+      </ng-template>
+    </div>
+    <div class="right">
+      <span class="count">{{selection?.length || ''}}</span>
+      <yuv-icon class="button" [iconSrc]="'assets/svg/clear.svg'" (click)="hide()"></yuv-icon>
+    </div>
+  </div>
+
+  <div class="actions" [hidden]="subActionsList || showComponent">
+
+    <ng-template #action let-entry let-id>
+
+      <a *ngIf="isLinkAction(entry.action); else default" class="link"
+        [routerLink]="entry.action.getLink(entry.availableSelection)"
+        [queryParams]="entry.action.getParams(entry.availableSelection, true)">
+        <ng-container *ngTemplateOutlet="default"></ng-container>
+      </a>
+
+      <ng-template #default>
+        <div>
+          <yuv-icon *ngIf="entry.action.iconSrc && !entry.action?.iconId" [iconSrc]="entry.action.iconSrc"></yuv-icon>
+          <!-- <yuv-icon *ngIf="entry.action.iconId" [iconId]="entry.action?.iconId"></yuv-icon> -->
+          <div class="label">{{entry.action.label}}</div>
+          <div class="available-count" *ngIf="entry.availableSelection?.length != selection?.length">
+            {{entry.availableSelection?.length}}</div>
+          <!-- <yuv-icon class="info-icon" [iconSrc]="'assets/svg/info.svg'" -->
+          <yuv-icon class="info-icon" [iconSrc]="'assets/svg/edit.svg'" (click)="showActionDescription(id, $event)">
+          </yuv-icon>
+        </div>
+        <div class="description" [hidden]="id !== actionDescription">{{entry.action.description}}</div>
+      </ng-template>
+    </ng-template>
+
+    <div class="group" *ngIf="actionLists?.common.length > 0">
+      <div class="group-title">{{'eo.actions.group.common' | translate}}</div>
+      <div class="action" *ngFor="let actionListEntry of actionLists.common; index as i"
+        (click)="onClick(actionListEntry)">
+
+        <ng-container *ngTemplateOutlet="action; context: {$implicit: actionListEntry, id: +i}"></ng-container>
+        6666
+      </div>
+    </div>
+
+    <div class="group" *ngIf="!loading; else loader">
+      <div *ngIf="actionLists?.further.length > 0">
+        <div class="group-title">{{'eo.actions.group.further_actions' | translate}}</div>
+        <div class="action" *ngFor="let actionListEntry of actionLists.further; index as i" eoPreventDoubleClick
+          (debounceClick)="onClick(actionListEntry)">
+
+          <ng-container *ngTemplateOutlet="action; context: {$implicit: actionListEntry, id: 'f'+i}"></ng-container>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="group" *ngIf="!loading && !actionLists?.further.length && !actionLists?.common.length"
+      [style.textAlign]="'center'">
+      {{ 'eo.action.not.available' | translate}}
+    </div>
+
+    <ng-template #loader>
+      <div class="loading-container" [yuvBusyOverlay]="true">
+        <!-- <eo-loading-spinner [size]="'medium'"></eo-loading-spinner> -->
+      </div>
+    </ng-template>
+  </div>
+
+  <!-- sub actions -->
+  <div class="group sub" *ngIf="subActionsList && !showComponent">
+    <div class="sub-actions">
+      <div class="group-title">{{subActionsListHeader}}</div>
+      <div class="action sub" *ngFor="let actionListEntry of subActionsList; index as i"
+        (click)="onClick(actionListEntry)">
+        <ng-container *ngTemplateOutlet="action; context: {$implicit: actionListEntry, id: 's'+i}"></ng-container>
+      </div>
+    </div>
+    <div class="group-buttons">
+      <button (click)="onCancel()">{{'eo.export.cancel' | translate}}</button>
+    </div>
+  </div>
+
+  <div>
+    <ng-template eoActionComponentAnchor></ng-template>
+  </div>
+
+  <div>
+    <ng-template eoExtActionComponentAnchor></ng-template>
+  </div>
+
+</div>

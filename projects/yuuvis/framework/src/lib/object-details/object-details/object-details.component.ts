@@ -1,5 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { DmsObject, DmsService } from '@yuuvis/core';
+import { ActionShowCommand } from '../../actions';
+import { SVGIcons } from '../../svg.generated';
 
 @Component({
   selector: 'yuv-object-details',
@@ -8,6 +10,10 @@ import { DmsObject, DmsService } from '@yuuvis/core';
 })
 export class ObjectDetailsComponent implements OnInit {
   private _dmsObject: DmsObject;
+
+  icKebap = SVGIcons.kebap;
+
+  actionCMD: ActionShowCommand = { show: false, selection: [] };
 
   @Input()
   set dmsObject(object: DmsObject) {
@@ -28,7 +34,15 @@ export class ObjectDetailsComponent implements OnInit {
     }
   }
 
-  constructor(private dmsService: DmsService) {}
+  constructor(private dmsService: DmsService) { }
 
-  ngOnInit() {}
+  openActionMenu() {
+    this.actionCMD = { show: true, selection: [this.dmsObject], target: 'DMS_OBJECT' }
+  }
+
+  onActionFinish() {
+    alert('HURZ');
+  }
+
+  ngOnInit() { }
 }

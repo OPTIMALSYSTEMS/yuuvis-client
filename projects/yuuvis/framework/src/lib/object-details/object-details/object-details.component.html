@@ -1,3 +1,6 @@
-<yuv-object-details-header [title]="dmsObject?.data?.clienttitle" [description]="dmsObject?.data?.clientdescription"></yuv-object-details-header>
+<yuv-object-details-header [title]="dmsObject?.data?.clienttitle" [description]="dmsObject?.data?.clientdescription">
+</yuv-object-details-header>
 <yuv-summary [dmsObject]="dmsObject"></yuv-summary>
-
+<!-- <yuv-icon class="button" [iconSrc]="'assets/svg/kebap.svg'" (click)="openActionMenu()"></yuv-icon> -->
+<yuv-icon class="button" [svg]="icKebap" (click)="openActionMenu()"></yuv-icon>
+<yuv-action-menu [(cmd)]="actionCMD" (finished)="onActionFinish()"></yuv-action-menu>
