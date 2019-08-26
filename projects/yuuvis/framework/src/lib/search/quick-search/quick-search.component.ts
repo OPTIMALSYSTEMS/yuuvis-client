@@ -1,7 +1,7 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { BaseObjectTypeField, ScreenService, SearchQuery, SearchService, SystemService, Utils } from '@yuuvis/core';
-import { debounceTime, switchMap, tap } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, filter, switchMap, tap } from 'rxjs/operators';
 import { SVGIcons } from '../../svg.generated';
 
 @Component({
@@ -18,7 +18,6 @@ export class QuickSearchComponent implements OnInit {
   aggTypes: ObjectTypeAggregation[] = [];
   searchHasResults: boolean = true;
   private searchQuery: SearchQuery;
-  private _term: string;
 
   // emits the query that should be executed
   @Output() query = new EventEmitter<SearchQuery>();
@@ -28,13 +27,14 @@ export class QuickSearchComponent implements OnInit {
     this.searchForm
       .get('searchInput')
       .valueChanges.pipe(
+        distinctUntilChanged(),
         tap(term => {
-          // this._term = term;
           this.searchQuery.term = term;
           this.aggTypes = [];
           this.resultCount = null;
         }),
-        debounceTime(500),
+        debounceTime(800),
+        filter(term => term.length),
         switchMap(term => this.searchService.aggregate(this.searchQuery, BaseObjectTypeField.OBJECT_TYPE_ID))
       )
       .subscribe((res: { value: string; count: number }[]) => {
@@ -43,7 +43,9 @@ export class QuickSearchComponent implements OnInit {
   }
 
   executeSearch() {
-    this.query.emit(this.searchQuery);
+    if (this.searchQuery.term) {
+      this.query.emit(this.searchQuery);
+    }
   }
 
   onAggObjectTypeClick(agg: ObjectTypeAggregation) {
