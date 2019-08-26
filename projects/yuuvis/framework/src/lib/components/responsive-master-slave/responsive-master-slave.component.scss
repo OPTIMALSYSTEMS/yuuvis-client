@@ -1,13 +1,17 @@
-.yuv-responsive-master-slave.state as-split {
-  padding: var(--app-pane-padding);
-  box-sizing: border-box;
-
-  :host-context(.screen-s) & {
-    padding: 0 !important;
+:host-context(.screen-s) {
+  .yuv-responsive-master-slave.state as-split {
+    padding: 0;
   }
 }
 
 .yuv-responsive-master-slave {
+  &.state {
+    as-split {
+      padding: var(--app-pane-padding);
+      box-sizing: border-box;
+    }
+  }
+
   .yuv-master,
   .yuv-slave {
     height: 100%;

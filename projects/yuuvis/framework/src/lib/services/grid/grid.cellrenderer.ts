@@ -99,7 +99,12 @@ export class CellRenderer {
   }
 
   static dateTimeCellRenderer(param) {
-    if (param.value) {
+    if (param.value && Array.isArray(param.value)) {
+      const val = CellRenderer.dateTimeCellRendererTemplate(param.value, param.context, param.pattern);
+      console.log(val);
+
+      return val;
+    } else if (param.value && !Array.isArray(param.value)) {
       return CellRenderer.dateTimeCellRendererTemplate(param.value, param.context, param.pattern);
     } else {
       return '';

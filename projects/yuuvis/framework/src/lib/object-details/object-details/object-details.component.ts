@@ -11,10 +11,6 @@ import { SVGIcons } from '../../svg.generated';
 export class ObjectDetailsComponent implements OnInit {
   objectIcon: string = '';
   icons = SVGIcons;
-  favorite = SVGIcons.favorite;
-  refresh = SVGIcons.refresh;
-  edit = SVGIcons.edit;
-
   showSideBar = false;
 
   private _dmsObject: DmsObject;
