@@ -1,19 +1,18 @@
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { HttpHeaders, HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ConfigService } from '../config/config.service';
+import { Logger } from '../logger/logger';
 import { ApiBase } from './api.enum';
 
 @Injectable({
   providedIn: 'root'
 })
 export class BackendService {
-
   private headers = this.setDefaultHeaders();
   private host: string = '';
 
-  constructor(private http: HttpClient,
-    private config: ConfigService) { }
+  constructor(private http: HttpClient, private logger: Logger, private config: ConfigService) {}
 
   /**
    * Setup a host. Used when not running behind a gateway.
@@ -30,7 +29,7 @@ export class BackendService {
   /**
    * Add a new header.
    * @param key The headers name
-   * @param value The value to be added to the headers. Setting this to null 
+   * @param value The value to be added to the headers. Setting this to null
    * will remove the header
    */
   setHeader(key: string, value: string) {
@@ -101,8 +100,33 @@ export class BackendService {
   }
 
   /**
+   * Downloads the content of dms objects.
+   *
+   * @param DmsObject[] dmsObjects Array of dms objects to be downloaded
+   */
+  public downloadContent(objectIDs: string[]) {
+    objectIDs.forEach(id => {
+      let uri = `${this.getApiBase(ApiBase.core)}/dms/objects/${id}/contents/file`;
+      this.download(uri);
+    });
+  }
+
+  public download(uri: string) {
+    if (document && document.body) {
+      const a = document.createElement('a');
+      a.setAttribute('href', uri);
+      a.style.display = 'none';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    } else {
+      this.logger.error('Environment not supported. Downloading contents relies on a DOM being available.');
+    }
+  }
+
+  /**
    * Gets the base URI for an API endpoint
-   * @param api The API to get the base URI for. Leaving this blank will return 
+   * @param api The API to get the base URI for. Leaving this blank will return
    * base URI for the web API
    * @returns Base URI for the given API.
    */
@@ -111,16 +135,22 @@ export class BackendService {
   }
 
   /**
-     * @ignore
-     */
-  getHttpOptions(requestOptions?: any): {
-    headers?: HttpHeaders | {
-      [header: string]: string | string[];
-    };
+   * @ignore
+   */
+  getHttpOptions(
+    requestOptions?: any
+  ): {
+    headers?:
+      | HttpHeaders
+      | {
+          [header: string]: string | string[];
+        };
     observe?: 'body';
-    params?: HttpParams | {
-      [param: string]: string | string[];
-    };
+    params?:
+      | HttpParams
+      | {
+          [param: string]: string | string[];
+        };
     reportProgress?: boolean;
     responseType: 'arraybuffer';
     withCredentials?: boolean;

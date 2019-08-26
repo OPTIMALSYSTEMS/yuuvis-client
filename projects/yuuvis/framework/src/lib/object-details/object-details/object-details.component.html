@@ -1,4 +1,5 @@
-<yuv-panel [title]="dmsObject?.data?.clienttitle" [description]="dmsObject?.data?.clientdescription">
+<yuv-panel *ngIf="dmsObject;else empty" class="object-details" [title]="dmsObject?.data?.clienttitle"
+    [description]="dmsObject?.data?.clientdescription" [yuvBusyOverlay]="busy">
     <yuv-icon class="header-icon" [svg]="objectIcon"></yuv-icon>
 
     <yuv-action-menu-bar class="actions">
@@ -19,7 +20,6 @@
     </yuv-action-menu-bar>
 
     <yuv-responsive-tab-container class="content">
-
         <p-tabPanel [id]="'summary'" header="Summary">
             <ng-template pTemplate="content">
                 <yuv-summary [dmsObject]="dmsObject"></yuv-summary>
@@ -44,5 +44,21 @@
             </ng-template>
         </p-tabPanel>
     </yuv-responsive-tab-container>
+
+    <yuv-sidebar [display]="showSideBar" [position]="position" [styles]="sidebarStyle" [headerStyle]="headerStyle"
+        (hide)="showSideBar = true">
+        <div class="header-content">
+            <h1>Action Menu</h1>
+        </div>
+
+        <section class="content navigation-list">
+            <div class="nav-item"></div>
+        </section>
+    </yuv-sidebar>
 </yuv-panel>
 <yuv-action-menu [(cmd)]="actionCMD" (finished)="onActionFinish()"></yuv-action-menu>
+
+
+<ng-template #empty>
+    <yuv-empty [icon]="icons.favorite"></yuv-empty>
+</ng-template>

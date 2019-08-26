@@ -34,14 +34,15 @@ export class SummaryComponent {
     };
 
     const skipFields: string[] = [
-      ContentStreamField.RANGE,
       ContentStreamField.ID,
       BaseObjectTypeField.OBJECT_TYPE_ID,
       BaseObjectTypeField.TENANT,
       BaseObjectTypeField.PARENT_ID,
       BaseObjectTypeField.PARENT_OBJECT_TYPE_ID,
       BaseObjectTypeField.PARENT_VERSION_NUMBER,
-      'tenKolibri:tableofnotices'
+      'tenKolibri:tableofnotices',
+      'clienttitle',
+      'clientdescription'
     ];
 
     const defaultBaseFields: { key: string; order: number }[] = [
@@ -88,6 +89,8 @@ export class SummaryComponent {
         if (key === 'enaio:objectTypeId') {
           si.value = this.systemService.getLocalizedResource(`${dmsObject.data[key]}_label`);
         }
+
+        console.log({ prepKey });
 
         if (extraFields.includes(prepKey)) {
           summary.extras.push(si);
