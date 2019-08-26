@@ -1,15 +1,7 @@
-import {
-  Component,
-  EventEmitter,
-  HostBinding,
-  Input,
-  OnInit,
-  Output
-} from '@angular/core';
+import { Component, EventEmitter, HostBinding, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import {
   BaseObjectTypeField,
-  ContentStreamField,
   SearchQuery,
   SearchResult,
   SearchResultItem,
@@ -84,77 +76,62 @@ export class SearchResultComponent implements OnInit {
 
   private executeQuery() {
     this.busy = true;
-    this.searchService
-      .search(this._searchQuery)
-      .subscribe((res: SearchResult) => {
-        this.totalNumItems = res.totalNumItems;
-        this.createTableData(res);
-      });
+    this.searchService.search(this._searchQuery).subscribe((res: SearchResult) => {
+      this.totalNumItems = res.totalNumItems;
+      this.createTableData(res);
+    });
   }
 
   // Create actual table data from the search result
   private createTableData(searchResult: SearchResult): void {
     // object type of the result list items, if NULL we got a mixed result
-    this.resultListObjectTypeId =
-      searchResult.objectTypes.length > 1 ? null : searchResult.objectTypes[0];
+    this.resultListObjectTypeId = searchResult.objectTypes.length > 1 ? null : searchResult.objectTypes[0];
 
-    this.gridService
-      .getColumnConfiguration(this.resultListObjectTypeId)
-      .subscribe((colDefs: ColDef[]) => {
-        // setup pagination form in case of a paged search result chunk
-        this.pagination = null;
-        if (searchResult.hasMoreItems) {
-          if (searchResult.totalNumItems > this._searchQuery.size) {
-            this.pagination = {
-              pages: Math.ceil(
-                searchResult.totalNumItems / this._searchQuery.size
-              ),
-              page:
-                (!this._searchQuery.from
-                  ? 0
-                  : this._searchQuery.from / this._searchQuery.size) + 1
-            };
-            this.pagingForm.get('page').setValue(this.pagination.page);
-          }
-
-          this.pagingForm
-            .get('page')
-            .setValidators([
-              Validators.min(0),
-              Validators.max(this.pagination.pages)
-            ]);
+    this.gridService.getColumnConfiguration(this.resultListObjectTypeId).subscribe((colDefs: ColDef[]) => {
+      // setup pagination form in case of a paged search result chunk
+      this.pagination = null;
+      if (searchResult.hasMoreItems) {
+        if (searchResult.totalNumItems > this._searchQuery.size) {
+          this.pagination = {
+            pages: Math.ceil(searchResult.totalNumItems / this._searchQuery.size),
+            page: (!this._searchQuery.from ? 0 : this._searchQuery.from / this._searchQuery.size) + 1
+          };
+          this.pagingForm.get('page').setValue(this.pagination.page);
         }
 
-        this._columns = colDefs;
+        this.pagingForm.get('page').setValidators([Validators.min(0), Validators.max(this.pagination.pages)]);
+      }
 
-        const rows = [];
-        searchResult.items.forEach(i => {
-          rows.push(this.getRow(i));
-        });
-        this._rows = rows;
+      this._columns = colDefs;
 
-        this.tableData = {
-          columns: this._columns,
-          rows: this._rows,
-          titleField: SecondaryObjectTypeField.TITLE,
-          descriptionField: SecondaryObjectTypeField.DESCRIPTION,
-          selectType: 'single'
-        };
-
-        // setup current sort state from the query
-        if (this._searchQuery.sortOptions.length) {
-          // this._searchQuery.sortOptions.forEach((so: SortOption) => {
-
-          //   // this._gridOptions.api.setSortModel([{colId: "enaio:creationDate", sort: "desc"}]);
-          // })
-          this.tableData.sortModel = this._searchQuery.sortOptions.map(o => ({
-            colId: o.field,
-            sort: o.order
-          }));
-        }
-
-        this.busy = false;
+      const rows = [];
+      searchResult.items.forEach(i => {
+        rows.push(this.getRow(i));
       });
+      this._rows = rows;
+
+      this.tableData = {
+        columns: this._columns,
+        rows: this._rows,
+        titleField: SecondaryObjectTypeField.TITLE,
+        descriptionField: SecondaryObjectTypeField.DESCRIPTION,
+        selectType: 'single'
+      };
+
+      // setup current sort state from the query
+      if (this._searchQuery.sortOptions.length) {
+        // this._searchQuery.sortOptions.forEach((so: SortOption) => {
+
+        //   // this._gridOptions.api.setSortModel([{colId: "enaio:creationDate", sort: "desc"}]);
+        // })
+        this.tableData.sortModel = this._searchQuery.sortOptions.map(o => ({
+          colId: o.field,
+          sort: o.order
+        }));
+      }
+
+      this.busy = false;
+    });
   }
 
   /**
@@ -165,41 +142,7 @@ export class SearchResultComponent implements OnInit {
       id: searchResultItem.fields.get(BaseObjectTypeField.OBJECT_ID)
     };
     this._columns.forEach((cd: ColDef) => {
-      // ContentStream fields needs to be resolved in a different way.
-
-      // Object type schema defines content related fields with a
-      // special pattern we can check for.
-
-      // Although defined in schema there may be no content attached.
-      if (
-        searchResultItem.content &&
-        cd.field.startsWith('enaio:contentStream')
-      ) {
-        switch (cd.field) {
-          case ContentStreamField.LENGTH: {
-            row[cd.field] = searchResultItem.content.size;
-            break;
-          }
-          case ContentStreamField.FILENAME: {
-            row[cd.field] = searchResultItem.content.fileName;
-            break;
-          }
-          case ContentStreamField.MIME_TYPE: {
-            row[cd.field] = searchResultItem.content.mimeType;
-            break;
-          }
-          // case 'enaio:contentStreamRange': {
-          //   row[cd.field] = searchResultItem.content.range;
-          //   break;
-          // }
-          // case 'enaio:contentStreamRepositoryId': {
-          //   row[cd.field] = searchResultItem.content.repositoryId;
-          //   break;
-          // }
-        }
-      } else {
-        row[cd.field] = searchResultItem.fields.get(cd.field);
-      }
+      row[cd.field] = searchResultItem.fields.get(cd.field);
     });
     return row;
   }
@@ -229,22 +172,15 @@ export class SearchResultComponent implements OnInit {
     this.itemsSelected.emit(selectedRows.map(r => r.id));
   }
   onSortChanged(sortModel: { colId: string; sort: string }[]) {
-    if (
-      JSON.stringify(this.tableData.sortModel) !== JSON.stringify(sortModel)
-    ) {
+    if (JSON.stringify(this.tableData.sortModel) !== JSON.stringify(sortModel)) {
       // change query to reflect the sort setting from the grid
-      this._searchQuery.sortOptions = sortModel.map(
-        m => new SortOption(m.colId, m.sort)
-      );
+      this._searchQuery.sortOptions = sortModel.map(m => new SortOption(m.colId, m.sort));
       this.executeQuery();
     }
   }
 
   onColumnResized(colSizes: ColumnSizes) {
-    this.gridService.persistColumnWidthSettings(
-      colSizes,
-      this.resultListObjectTypeId
-    );
+    this.gridService.persistColumnWidthSettings(colSizes, this.resultListObjectTypeId);
   }
 
   ngOnInit() {}
