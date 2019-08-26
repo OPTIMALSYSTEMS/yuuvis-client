@@ -1,10 +1,9 @@
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
-import {ObjectFormGroupComponent} from './object-form-group.component';
-import {NO_ERRORS_SCHEMA} from '@angular/core';
-import {KeysPipe} from '../../../../eo-framework-core/pipes/keys.pipe';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { KeysPipe } from '../../pipes';
+import { ObjectFormGroupComponent } from './object-form-group.component';
 
 describe('ObjectFormGroupComponent', () => {
-
   let component: ObjectFormGroupComponent;
   let fixture: ComponentFixture<ObjectFormGroupComponent>;
 
@@ -12,8 +11,7 @@ describe('ObjectFormGroupComponent', () => {
     TestBed.configureTestingModule({
       schemas: [NO_ERRORS_SCHEMA],
       declarations: [ObjectFormGroupComponent, KeysPipe]
-    })
-      .compileComponents();
+    }).compileComponents();
   }));
 
   beforeEach(() => {

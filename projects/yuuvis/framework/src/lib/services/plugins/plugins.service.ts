@@ -9,6 +9,7 @@ import {
   SearchFilter,
   SearchQuery,
   SearchResult,
+  SearchResultItem,
   SearchService,
   SystemService,
   TranslateService,
@@ -17,7 +18,6 @@ import {
   YuvUser
 } from '@yuuvis/core';
 import { map } from 'rxjs/operators';
-import { SearchResultItem } from './../../../../../core/src/lib/service/search/search.service.interface';
 
 @Injectable({
   providedIn: 'root'
