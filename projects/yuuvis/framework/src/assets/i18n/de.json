@@ -13,5 +13,9 @@
   "{{data.key}}": "",
   "eo.summary.admin.info": "Administrative Information",
   "eo.search.term": "Suchbegriff",
-  "eo.quicksearch.reults.empty": "Ihre Suchanfrage lieferte keine Treffer."
+  "eo.quicksearch.reults.empty": "Ihre Suchanfrage lieferte keine Treffer.",
+  "eo.object.summary.title": "Übersicht",
+  "eo.object.indexdata.title": "Indexdaten",
+  "eo.object.history.title": "Historie",
+  "eo.object.links.title": "Referenzen"
 }
