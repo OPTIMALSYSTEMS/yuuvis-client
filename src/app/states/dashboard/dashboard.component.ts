@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
+import { Title } from '@angular/platform-browser';
 import { Router } from '@angular/router';
-import { BackendService, SearchQuery } from '@yuuvis/core';
+import { SearchQuery } from '@yuuvis/core';
+import { APP_VARS } from '../../app.vars';
 import { formModel } from './formmodel.tmp';
 @Component({
   selector: 'yuv-dashboard',
@@ -9,7 +11,7 @@ import { formModel } from './formmodel.tmp';
   host: { class: 'themeBackground' }
 })
 export class DashboardComponent implements OnInit {
-  constructor(private router: Router, private backend: BackendService) {}
+  constructor(private router: Router, private titleService: Title) {}
 
   formOptions = {
     formModel: formModel,
@@ -22,5 +24,7 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.titleService.setTitle(APP_VARS.defaultPageTitle);
+  }
 }

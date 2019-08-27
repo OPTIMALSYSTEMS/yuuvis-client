@@ -7,3 +7,19 @@
 .finalized-icon {
   color: var(--color-success);
 }
+
+.object-details.yuv-panel-wrapper {
+  ::ng-deep {
+    .header {
+      :host-context(.screen-s) & {
+        grid-template-areas: 'header_text extras';
+        grid-template-columns: 5fr 1fr;
+      }
+    }
+    .icon {
+      :host-context(.screen-s) & {
+        display: none;
+      }
+    }
+  }
+}

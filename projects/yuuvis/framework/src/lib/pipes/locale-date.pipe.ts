@@ -1,10 +1,4 @@
-import {
-  DatePipe,
-  FormatWidth,
-  getLocaleDateFormat,
-  getLocaleDateTimeFormat,
-  getLocaleTimeFormat
-} from '@angular/common';
+import { DatePipe, FormatWidth, getLocaleDateFormat, getLocaleDateTimeFormat, getLocaleTimeFormat } from '@angular/common';
 import { Pipe, PipeTransform } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import * as moment_ from 'moment';
@@ -24,41 +18,22 @@ export class LocaleDatePipe extends DatePipe implements PipeTransform {
     return this.translate.currentLang;
   }
 
-  transform(
-    value: any,
-    format: string = '',
-    timezone?: string,
-    locale?: string
-  ): string {
+  transform(value: any, format: string = '', timezone?: string, locale?: string): string {
     if (Array.isArray(value)) {
       return value
         .map(val => this.timeTransform(val, format, timezone, locale))
-        .join(', ');
+        .map(val => `<div class="chip">${val}</div>`)
+        .join(' ');
     }
     return this.timeTransform(value, format, timezone, locale);
   }
 
-  private timeTransform(
-    value: any,
-    format: string = '',
-    timezone?: string,
-    locale?: string
-  ) {
+  private timeTransform(value: any, format: string = '', timezone?: string, locale?: string) {
     if (format === 'eoNiceShort') {
       let diff = moment(value).diff(moment(), 'day');
-      format =
-        diff === 0
-          ? 'eoShortTime'
-          : diff > -7 && diff < 0
-          ? 'eoShortDayTime'
-          : format;
+      format = diff === 0 ? 'eoShortTime' : diff > -7 && diff < 0 ? 'eoShortDayTime' : format;
     }
-    return super.transform(
-      value,
-      this.format(format || 'eoShort'),
-      timezone,
-      locale || this.lang
-    );
+    return super.transform(value, this.format(format || 'eoShort'), timezone, locale || this.lang);
   }
 
   format(format?: string) {

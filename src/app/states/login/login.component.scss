@@ -1,3 +1,9 @@
+.login {
+  :host-context(.screen-s) & {
+    min-width: 100vw;
+  }
+}
+
 :host {
   display: flex;
   flex-flow: column;

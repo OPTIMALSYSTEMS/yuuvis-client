@@ -1,0 +1,13 @@
+body {
+  .ui-overlaypanel {
+    border: none;
+
+    &:after {
+      border-bottom-color: var(--color-primary);
+    }
+
+    .ui-overlaypanel-content {
+      padding: 0;
+    }
+  }
+}

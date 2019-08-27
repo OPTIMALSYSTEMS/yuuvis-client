@@ -23,7 +23,7 @@
   }
 }
 
-:host ::ng-deep {
+::ng-deep {
   .ui-tabview {
     padding: 0;
     height: 100%;
@@ -66,6 +66,9 @@
       :host-context(.screen-s) & {
         height: 200px;
       }
+    }
+    :host-context(.screen-s) & {
+      position: absolute;
     }
   }
 
