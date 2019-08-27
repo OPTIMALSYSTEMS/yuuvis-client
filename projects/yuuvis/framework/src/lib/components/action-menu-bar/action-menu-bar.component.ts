@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 
 @Component({
   selector: 'yuv-action-menu-bar',
@@ -6,10 +6,9 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./action-menu-bar.component.scss']
 })
 export class ActionMenuBarComponent implements OnInit {
+  @Input() className = 'action';
 
-  constructor() { }
+  constructor() {}
 
-  ngOnInit() {
-  }
-
+  ngOnInit() {}
 }

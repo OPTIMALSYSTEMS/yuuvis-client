@@ -21,6 +21,7 @@ export class ObjectDetailsComponent implements OnInit {
   position = Position.RIGHT;
   private _dmsObject: DmsObject;
   private _dmsObject2: DmsObject;
+  private objId: string;
 
   @HostBinding('class.busy') busy = false;
   @Input() enableCompare = true;
@@ -51,16 +52,28 @@ export class ObjectDetailsComponent implements OnInit {
   @Input()
   set objectId(id: string) {
     if (id) {
+      this.objId = id;
       // this._dmsObject = null;
-      this.busy = true;
-      this.dmsService.getDmsObject(id).subscribe(dmsObject => {
-        this.dmsObject = dmsObject;
-        this.busy = false;
-      });
+      this.getDmsObject(id);
     }
   }
 
   constructor(private dmsService: DmsService, private systemService: SystemService) {}
+
+  private getDmsObject(id: string) {
+    this.busy = true;
+    this.dmsService.getDmsObject(id).subscribe(dmsObject => {
+      this.dmsObject = dmsObject;
+      this.busy = false;
+    });
+  }
+
+  refreshDetails() {
+    if (this.objId) {
+      this.getDmsObject(this.objId);
+    } else {
+    }
+  }
 
   showActions() {
     this.showSideBar = !this.showSideBar;
