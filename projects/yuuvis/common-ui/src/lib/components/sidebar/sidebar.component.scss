@@ -34,6 +34,6 @@
   grid-area: close;
 
   button.icon {
-    padding: calc(var(--app-pane-padding) / 2);
+    padding: 0; //calc(var(--app-pane-padding) / 2);
   }
 }

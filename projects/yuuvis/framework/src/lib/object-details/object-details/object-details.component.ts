@@ -1,4 +1,4 @@
-import { Component, HostBinding, Input, OnInit } from '@angular/core';
+import { Component, HostBinding, Input } from '@angular/core';
 import { Position } from '@yuuvis/common-ui';
 import { DmsObject, DmsService, SystemService } from '@yuuvis/core';
 import { CellRenderer } from '../../services/grid/grid.cellrenderer';
@@ -9,7 +9,7 @@ import { SVGIcons } from '../../svg.generated';
   templateUrl: './object-details.component.html',
   styleUrls: ['./object-details.component.scss']
 })
-export class ObjectDetailsComponent implements OnInit {
+export class ObjectDetailsComponent {
   objectIcon: string = '';
   icons = SVGIcons;
   showSideBar = false;
@@ -77,11 +77,5 @@ export class ObjectDetailsComponent implements OnInit {
 
   showActions() {
     this.showSideBar = !this.showSideBar;
-  }
-
-  ngOnInit() {}
-
-  ngOnDestroy() {
-    console.log('SEARCH AND DRESTROY');
   }
 }

@@ -9,3 +9,18 @@
   margin: 1px 0;
   margin-right: 2px;
 }
+
+.button {
+  &.refresh-button,
+  &.actions-button {
+    &:hover {
+      cursor: pointer;
+    }
+  }
+}
+
+.icon {
+  &.light svg {
+    fill: white;
+  }
+}
