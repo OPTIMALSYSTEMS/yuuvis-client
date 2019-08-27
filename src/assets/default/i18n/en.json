@@ -18,6 +18,8 @@
   "eo.object.indexdata.title": "Index data",
   "eo.object.history.title": "History",
   "eo.object.links.title": "References",
+  "yuv.object.split.tab": "Split selected aspect",
+  "yuv.object.split.tap": "Split selected aspect",
   "eo.about.author.label": "Manufacturer:",
   "eo.about.claim": "yuuvis® API is our content services platform, a framework for solution developers who wish to create specialist content-centric applications on open standards with short time to market. Create. Scalable. Framework.",
   "eo.about.client.version.label": "Component version:",

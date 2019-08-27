@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { YuvCommonUiModule } from '@yuuvis/common-ui';
+import { TranslateModule } from '@yuuvis/core';
 import { AgGridModule } from 'ag-grid-angular';
 import { AngularResizedEventModule } from 'angular-resize-event';
 import { AngularSplitModule } from 'angular-split';
@@ -43,7 +44,8 @@ import { ResponsiveTabContainerComponent } from './responsive-tab-container/resp
     RouterModule,
     TabViewModule,
     YuvPipesModule,
-    YuvCommonUiModule
+    YuvCommonUiModule,
+    TranslateModule
   ]
 })
 export class YuvComponentsModule {}
