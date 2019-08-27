@@ -14,7 +14,7 @@ import { FormInputComponent } from './form-input/form-input.component';
 
 @NgModule({
   declarations: [FormInputComponent, CheckboxComponent, StringComponent, DatetimeComponent],
-  exports: [FormInputComponent, CheckboxComponent, StringComponent],
+  exports: [FormInputComponent, CheckboxComponent, StringComponent, DatetimeComponent],
   imports: [CommonModule, FormsModule, CheckboxModule, CalendarModule, TriStateCheckboxModule, ChipsModule, AutoCompleteModule, YuvCommonUiModule]
 })
 export class YuvFormModule {}

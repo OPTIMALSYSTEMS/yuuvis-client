@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { BackendService, SearchQuery } from '@yuuvis/core';
-import { formModel } from '../../../../projects/yuuvis/framework/src/lib/object-form/object-form/formmodel';
-
+import { formModel } from './formmodel.tmp';
 @Component({
   selector: 'yuv-dashboard',
   templateUrl: './dashboard.component.html',
@@ -21,10 +20,6 @@ export class DashboardComponent implements OnInit {
     this.router.navigate(['/result'], {
       queryParams: { query: JSON.stringify(query.toQueryJson()) }
     });
-  }
-
-  _testSave() {
-    this.backend.downloadContent(['523d445f-bb49-4718-aee4-3d59b2d10d78']);
   }
 
   ngOnInit() {}

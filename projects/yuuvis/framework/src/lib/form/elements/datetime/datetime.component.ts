@@ -1,5 +1,5 @@
 import { Component, forwardRef, Input, OnInit } from '@angular/core';
-import { ControlValueAccessor, NG_VALIDATORS, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { ControlValueAccessor, FormControl, NG_VALIDATORS, NG_VALUE_ACCESSOR, Validator } from '@angular/forms';
 
 @Component({
   selector: 'yuv-datetime',
@@ -18,7 +18,7 @@ import { ControlValueAccessor, NG_VALIDATORS, NG_VALUE_ACCESSOR } from '@angular
     }
   ]
 })
-export class DatetimeComponent implements OnInit, ControlValueAccessor {
+export class DatetimeComponent implements OnInit, ControlValueAccessor, Validator {
   @Input() readonly: boolean;
   @Input() onylFutureDates: boolean;
   @Input() withTime: boolean;
@@ -37,6 +37,16 @@ export class DatetimeComponent implements OnInit, ControlValueAccessor {
   }
 
   registerOnTouched(fn: any): void {}
+
+  // returns null when valid else the validation object
+  public validate(c: FormControl) {
+    return null;
+    // return (this.isValid) ? null : {
+    //   datecontrol: {
+    //     valid: false,
+    //   },
+    // };
+  }
 
   ngOnInit() {}
 }
