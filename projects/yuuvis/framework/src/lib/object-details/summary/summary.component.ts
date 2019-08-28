@@ -1,5 +1,5 @@
-import { Component, Input } from '@angular/core';
-import { BaseObjectTypeField, ContentStreamField, DmsObject, ParentField, SystemService, UserService } from '@yuuvis/core';
+import { Component, Input, OnInit } from '@angular/core';
+import { AppCacheService, BaseObjectTypeField, ContentStreamField, DmsObject, ParentField, SystemService, UserService } from '@yuuvis/core';
 import { ColDef, ICellRendererFunc } from 'ag-grid-community';
 import { GridService } from '../../services/grid/grid.service';
 import { Summary } from './summary.interface';
@@ -9,8 +9,9 @@ import { Summary } from './summary.interface';
   templateUrl: './summary.component.html',
   styleUrls: ['./summary.component.scss']
 })
-export class SummaryComponent {
+export class SummaryComponent implements OnInit {
   summary: Summary;
+  selected: boolean = false;
 
   @Input()
   set dmsObject(dmsObject: DmsObject) {
@@ -19,10 +20,20 @@ export class SummaryComponent {
     }
   }
 
-  constructor(private systemService: SystemService, private gridService: GridService, private userService: UserService) {}
+  constructor(
+    private systemService: SystemService,
+    private gridService: GridService,
+    private userService: UserService,
+    private appCacheService: AppCacheService
+  ) {}
 
   get hasRights(): boolean {
     return this.userService.hasAdministrationRoles;
+  }
+
+  adminInfoOpen(status: boolean) {
+    this.appCacheService.setItem('object.details.admin.info', status).subscribe();
+    this.selected = status;
   }
 
   private generateSummary(dmsObject: DmsObject) {
@@ -105,5 +116,13 @@ export class SummaryComponent {
     });
 
     return summary;
+  }
+
+  ngOnInit(): void {
+    this.appCacheService.getItem('object.details.admin.info').subscribe((status: boolean) => {
+      if (status) {
+        this.selected = status;
+      }
+    });
   }
 }
