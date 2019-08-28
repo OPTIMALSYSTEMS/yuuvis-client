@@ -212,88 +212,365 @@ $desktop-width: 1024px;
 @mixin shades-of-gray($alpa) {
   background-color: rgba(0, 0, 0, $alpa);
 }
-:host {
-  display: block;
-  background: #fff;
+.yuv-quick-search {
+  position: relative;
+  border-radius: 2px;
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.2);
 
-  .yuv-object-form {
-    .core {
-      padding: var(--app-pane-padding) var(--app-pane-padding) calc(var(--app-pane-padding) * 2) var(--app-pane-padding);
-    }
-    .ui-tabview {
-      padding: 0;
-    }
-  }
-}
+  .count {
+    background-color: var(--color-primary);
+    color: #fff;
+    animation: yuvFadeInUp 200ms;
+    position: absolute;
+    right: calc(var(--app-pane-padding) / 2);
+    padding: calc(var(--app-pane-padding) / 4) calc(var(--app-pane-padding) / 2);
+    font-size: var(--font-subhead);
+    border-radius: 2px;
+    top: calc(var(--app-pane-padding) * -1);
 
-//noinspection CssInvalidPseudoSelector
-:host::ng-deep {
-  .yuv-object-form > .data > eo-form-group > .form-element.o2mGroupStack {
-    background: transparent;
-    border: 0;
-
-    & > eo-form-group > .o2mGroup {
-      background-color: var(--panel-background-lightgrey);
-      border-top: 1px solid rgba(var(--color-black-rgb), 0.1);
-      padding: var(--app-pane-padding);
-    }
-
-    & > p-tabview > .ui-tabview > .ui-tabview-panels {
-      background-color: var(--panel-background-lightgrey);
+    &.no-results:hover {
+      background-color: var(--color-accent);
+      cursor: pointer;
     }
   }
-}
-:host {
-  flex: 1 1 auto;
-  //noinspection CssInvalidPseudoSelector
-  &.label-toggled::ng-deep {
-    eo-form-input label {
-      text-decoration: line-through;
-    }
-  }
-}
 
-.form-element {
-  box-sizing: border-box;
+  .search-box {
+    display: flex;
+    flex: 0 0 auto;
+    flex-flow: row nowrap;
+    border-radius: 2px;
+    padding: calc(var(--app-pane-padding) / 4);
+    align-items: center;
+    background: rgba(255, 255, 255, 0.9);
 
-  .form-field {
-    margin: calc(var(--app-pane-padding) / 4) calc(var(--app-pane-padding) / 2);
-
-    .description {
-      border: 0;
-      font-size: var(--font-hint);
-      font-style: italic;
-      padding: calc(var(--app-pane-padding) / 8) calc(var(--app-pane-padding) / 8) 0 calc(var(--app-pane-padding) / 8);
+    &.agg {
+      border-radius: 2px 2px 0 0;
     }
 
-    .err-msg {
-      color: var(--color-error);
-      padding: calc(var(--app-pane-padding) / 4) 0;
-      border: 0;
+    &.invalid {
+      .input input {
+        color: var(--color-error);
+      }
     }
 
-    .table {
+    yuv-icon {
+      flex: 0 0 auto;
+      width: 40px;
+      height: 40px;
+      opacity: 0.2;
+      margin: 0 var(--app-pane-padding);
+    }
+
+    .input {
+      flex: 1 1 auto;
+      display: flex;
       flex-flow: column;
-      align-items: flex-start;
-      border-color: transparent;
+      align-items: stretch;
+
+      label {
+        color: var(--text-color-body);
+        opacity: 0.5;
+      }
+
+      input {
+        border: 0;
+        font-size: var(--font-display);
+        background: transparent;
+        margin: 4px 0;
+        width: 100%;
+        color: var(--text-color-body);
+      }
+    }
+  }
+
+  // aggregations panel
+  .aggregations {
+    display: flex;
+    padding: 1px;
+    flex-flow: row wrap;
+    background-color: var(--panel-background-grey);
+    border-top: 1px solid rgba(0, 0, 0, 0.04);
+    border-radius: 0 0 2px 2px;
+
+    .type {
+      padding: 0 2px;
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      margin: 1px;
+      background-color: #fff;
+      display: flex;
+      align-items: center;
+      border-radius: 2px;
+      cursor: pointer;
+      padding: calc(var(--app-pane-padding) / 4) calc(var(--app-pane-padding) / 2) calc(var(--app-pane-padding) / 4) 0;
+
+      &:hover {
+        border-color: rgba(0, 0, 0, 0.2);
+      }
 
       .label {
-        padding-bottom: calc(var(--app-pane-padding) / 4);
+        order: 0;
+        padding: 0 calc(var(--app-pane-padding) / 2);
       }
-    }
-  }
 
-  // dirty styles
-  &.ng-dirty:not(.ng-invalid) {
-    //noinspection CssInvalidPseudoSelector
-    > .form-field:not(.focused)::ng-deep {
-      label {
-        background-color: var(--color-dirty-background);
-        color: var(--color-dirty-font) !important;
+      .typecount {
+        order: 1;
+        display: inline-block;
+        font-size: var(--font-hint);
+        color: var(--text-color-hint);
       }
     }
   }
 }
+$yuv-panel-toolbar-width: 57px;
+$yuv-panel-header-height: 110px;
+
+.yuv-search-result {
+  height: 100%;
+  position: relative;
+  yuv-panel {
+    padding: 0;
+  }
+}
+
+.busy-indicator {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  justify-content: center;
+  background-color: antiquewhite;
+  &.ng-animating {
+    height: 100%;
+  }
+}
+
+.grid-container {
+  display: grid;
+  grid-template-columns: 57px 1fr;
+  grid-template-rows: 1fr;
+  grid-template-areas: 'tollbar table';
+  height: 100%;
+  border-top: 1px solid var(--panel-divider-color);
+}
+
+.tollbar {
+  grid-area: tollbar;
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  justify-content: flex-start;
+  background-color: var(--panel-background-grey);
+  border-right: 1px solid var(--panel-divider-color);
+
+  yuv-icon {
+    width: 100%;
+    height: auto;
+    padding: var(--app-pane-padding);
+    box-sizing: border-box;
+    color: var(--text-color-caption);
+    cursor: pointer;
+    transition: all 200ms;
+
+    &:hover {
+      background-color: var(--panel-divider-color);
+    }
+  }
+}
+
+.table {
+  display: grid;
+  grid-template-columns: 100%;
+  grid-template-rows: 1fr auto;
+  grid-template-areas: 'data-table' 'footer';
+  grid-area: table;
+}
+
+.footer {
+  grid-area: footer;
+  display: flex;
+  align-items: center;
+  border-top: 1px solid var(--panel-divider-color);
+  padding: calc(var(--app-pane-padding) / 4) 0;
+
+  min-height: 28px;
+  color: var(--text-color-caption);
+
+  .status {
+    flex: 1;
+    min-height: 24px;
+    padding: 0 var(--app-pane-padding);
+  }
+
+  .controls {
+    padding: 0 var(--app-pane-padding);
+    display: flex;
+    align-items: center;
+
+    button {
+      padding: 0;
+      .first,
+      .prev {
+        transform: rotate(180deg);
+      }
+    }
+
+    form {
+      display: flex;
+      border: 1px solid rgba(0, 0, 0, 0.2);
+      margin: 0 4px;
+
+      > div {
+        padding: 4px;
+        font-size: var(--font-caption);
+        background-color: var(--panel-background-grey);
+        user-select: none;
+      }
+      input {
+        width: 3em;
+        padding: 4px;
+        line-height: 1em;
+        text-align: right;
+        border: 0;
+        font-size: var(--font-caption);
+        border-right: 1px solid rgba(0, 0, 0, 0.2);
+
+        &.ng-invalid {
+          color: var(--color-error);
+        }
+      }
+    }
+  }
+}
+
+.data-table {
+  grid-area: data-table;
+}
+
+// .yuv-search-result {
+//   height: 100%;
+//   position: relative;
+
+//   .busy-indicator {
+//     position: absolute;
+//     left: 0;
+//     top: 0;
+//     right: 0;
+//     bottom: 0;
+//     z-index: 1;
+//     display: flex;
+//     flex-flow: column;
+//     align-items: center;
+//     justify-content: center;
+//     background-color: antiquewhite;
+//     &.ng-animating {
+//       height: 100%;
+//     }
+//   }
+
+//   .yuv-panel-content {
+//     height: 100%;
+//     display: grid;
+//     grid-template-columns: 1fr;
+//     grid-template-rows: 1fr auto;
+//     grid-template-areas: 'table' 'paging';
+//   }
+
+//   yuv-responsive-data-table {
+//     grid-area: table;
+//   }
+
+//   .paging {
+//     display: flex;
+//     align-items: center;
+//     border-top: 1px solid var(--panel-divider-color);
+//     padding: calc(var(--app-pane-padding) / 4) 0;
+//     grid-area: paging;
+//     min-height: 28px;
+//     color: var(--text-color-caption);
+
+//     .status {
+//       flex: 1;
+//       min-height: 24px;
+//       padding: 0 var(--app-pane-padding);
+//     }
+
+//     .controls {
+//       padding: 0 var(--app-pane-padding);
+//       display: flex;
+//       align-items: center;
+
+//       button {
+//         padding: 0;
+//         .first,
+//         .prev {
+//           transform: rotate(180deg);
+//         }
+//       }
+
+//       form {
+//         display: flex;
+//         border: 1px solid rgba(0, 0, 0, 0.2);
+//         margin: 0 4px;
+
+//         > div {
+//           padding: 4px;
+//           font-size: var(--font-caption);
+//           background-color: var(--panel-background-grey);
+//           user-select: none;
+//         }
+//         input {
+//           width: 3em;
+//           padding: 4px;
+//           line-height: 1em;
+//           text-align: right;
+//           border: 0;
+//           font-size: var(--font-caption);
+//           border-right: 1px solid rgba(0, 0, 0, 0.2);
+
+//           &.ng-invalid {
+//             color: var(--color-error);
+//           }
+//         }
+//       }
+//     }
+//   }
+// }
+
+// .yuv-panel-content {
+//   display: grid;
+//   grid-template-columns: 1fr;
+//   grid-template-rows: 1.9fr 0.1fr;
+//   grid-template-areas: 'table' 'footer';
+// }
+
+// .footer {
+//   grid-area: footer;
+// }
+
+// .table {
+//   display: grid;
+//   grid-template-columns: 0.1fr 2.1fr;
+//   grid-template-rows: 1fr;
+//   grid-template-areas: 'tollbar data-table';
+//   grid-area: table;
+// }
+
+// .tollbar {
+//   grid-area: tollbar;
+//   display: grid;
+//   grid-template-columns: $yuv-panel-toolbar-width 1fr;
+//   grid-template-rows: $yuv-panel-header-height 1fr;
+//   grid-template-areas: 'ico title' 'toolbar content';
+// }
+
+// .data-table {
+//   grid-area: data-table;
+// }
 
 
 .date-picker {
@@ -551,99 +828,33 @@ $desktop-width: 1024px;
   }
 }
 :host {
-  flex: 1 1 auto;
+  display: block;
+  background: #fff;
+
+  .yuv-object-form {
+    .core {
+      padding: var(--app-pane-padding) var(--app-pane-padding) calc(var(--app-pane-padding) * 2) var(--app-pane-padding);
+    }
+    .ui-tabview {
+      padding: 0;
+    }
+  }
 }
 
-.form-element {
-  box-sizing: border-box;
+//noinspection CssInvalidPseudoSelector
+:host::ng-deep {
+  .yuv-object-form > .data > eo-form-group > .form-element.o2mGroupStack {
+    background: transparent;
+    border: 0;
 
-  &.o2mGroupStack {
-    background: rgba(var(--color-black-rgb), 0.02);
-    border: 1px solid rgba(var(--color-black-rgb), 0.1);
-
-    // tab headers
-    .ui-tabview.ui-tabview-top > .ui-tabview-nav li.ui-state-active {
-      border-color: rgba(var(--color-black-rgb), 0.26);
-    }
-    .ui-tabview.ui-tabview-top > .ui-tabview-nav > li:not(.ui-state-active):not(.ui-state-disabled):hover {
-      border-color: rgba(var(--color-black-rgb), 0.16);
-    }
-    .ui-tabview.ui-tabview-top > .ui-tabview-nav li {
-      &.dirty-true:not(.invalid-true) {
-        a .ui-tabview-title {
-          background-color: var(--color-dirty-background);
-          color: var(--color-dirty-font);
-        }
-      }
-      &.invalid-true {
-        a .ui-tabview-title {
-          background-color: var(--color-error);
-          color: var(--color-white);
-
-          &:after {
-            content: '!';
-            margin-left: calc(var(--app-pane-padding) / 2);
-          }
-        }
-      }
+    & > eo-form-group > .o2mGroup {
+      background-color: var(--panel-background-lightgrey);
+      border-top: 1px solid rgba(var(--color-black-rgb), 0.1);
+      padding: var(--app-pane-padding);
     }
 
-    p-tabview {
-      width: 100%;
-    }
-
-    &.data {
-      border: 0;
-    }
-  }
-
-  &.align-column {
-    display: flex;
-    flex-flow: column nowrap;
-    justify-content: flex-start;
-    align-content: stretch;
-    align-items: stretch;
-
-    //.form-element-wrap {
-    > * {
-      flex: 1 1 auto;
-    }
-  }
-
-  &.align-row {
-    display: flex;
-    flex-flow: row wrap;
-    justify-content: flex-start;
-    align-content: flex-start;
-    align-items: flex-start;
-
-    > * {
-      flex: 1 0 200px;
-      max-width: 100%;
-    }
-
-    > .fieldset > :not(.legend) {
-      display: flex;
-      flex-flow: row wrap;
-      justify-content: flex-start;
-      align-content: flex-start;
-      align-items: flex-start;
-    }
-  }
-
-  .stackBase {
-    padding: var(--app-pane-padding);
-    // background: var(--panel-background-lightgrey);
-
-    > eo-form-group > .form-element > .fieldset {
-      margin: 0;
-      padding: 0;
-      border: 0;
-      background-color: transparent;
-
-      > .legend {
-        display: none;
-      }
+    & > p-tabview > .ui-tabview > .ui-tabview-panels {
+      background-color: var(--panel-background-lightgrey);
     }
   }
 }
@@ -726,111 +937,53 @@ p-dialog .ui-dialog.ui-widget {
     // }
   }
 }
-.yuv-quick-search {
-  position: relative;
-  border-radius: 2px;
-  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.2);
-
-  .count {
-    background-color: var(--color-primary);
-    color: #fff;
-    animation: yuvFadeInUp 200ms;
-    position: absolute;
-    right: calc(var(--app-pane-padding) / 2);
-    padding: calc(var(--app-pane-padding) / 4) calc(var(--app-pane-padding) / 2);
-    font-size: var(--font-subhead);
-    border-radius: 2px;
-    top: calc(var(--app-pane-padding) * -1);
-
-    &.no-results:hover {
-      background-color: var(--color-accent);
-      cursor: pointer;
+:host {
+  flex: 1 1 auto;
+  //noinspection CssInvalidPseudoSelector
+  &.label-toggled::ng-deep {
+    eo-form-input label {
+      text-decoration: line-through;
     }
   }
+}
 
-  .search-box {
-    display: flex;
-    flex: 0 0 auto;
-    flex-flow: row nowrap;
-    border-radius: 2px;
-    padding: calc(var(--app-pane-padding) / 4);
-    align-items: center;
-    background: rgba(255, 255, 255, 0.9);
+.form-element {
+  box-sizing: border-box;
 
-    &.agg {
-      border-radius: 2px 2px 0 0;
+  .form-field {
+    margin: calc(var(--app-pane-padding) / 4) calc(var(--app-pane-padding) / 2);
+
+    .description {
+      border: 0;
+      font-size: var(--font-hint);
+      font-style: italic;
+      padding: calc(var(--app-pane-padding) / 8) calc(var(--app-pane-padding) / 8) 0 calc(var(--app-pane-padding) / 8);
     }
 
-    &.invalid {
-      .input input {
-        color: var(--color-error);
-      }
+    .err-msg {
+      color: var(--color-error);
+      padding: calc(var(--app-pane-padding) / 4) 0;
+      border: 0;
     }
 
-    yuv-icon {
-      flex: 0 0 auto;
-      width: 40px;
-      height: 40px;
-      opacity: 0.2;
-      margin: 0 var(--app-pane-padding);
-    }
-
-    .input {
-      flex: 1 1 auto;
-      display: flex;
+    .table {
       flex-flow: column;
-      align-items: stretch;
-
-      label {
-        color: var(--text-color-body);
-        opacity: 0.5;
-      }
-
-      input {
-        border: 0;
-        font-size: var(--font-display);
-        background: transparent;
-        margin: 4px 0;
-        width: 100%;
-        color: var(--text-color-body);
-      }
-    }
-  }
-
-  // aggregations panel
-  .aggregations {
-    display: flex;
-    padding: 1px;
-    flex-flow: row wrap;
-    background-color: var(--panel-background-grey);
-    border-top: 1px solid rgba(0, 0, 0, 0.04);
-    border-radius: 0 0 2px 2px;
-
-    .type {
-      padding: 0 2px;
-      border: 1px solid rgba(0, 0, 0, 0.1);
-      margin: 1px;
-      background-color: #fff;
-      display: flex;
-      align-items: center;
-      border-radius: 2px;
-      cursor: pointer;
-      padding: calc(var(--app-pane-padding) / 4) calc(var(--app-pane-padding) / 2) calc(var(--app-pane-padding) / 4) 0;
-
-      &:hover {
-        border-color: rgba(0, 0, 0, 0.2);
-      }
+      align-items: flex-start;
+      border-color: transparent;
 
       .label {
-        order: 0;
-        padding: 0 calc(var(--app-pane-padding) / 2);
+        padding-bottom: calc(var(--app-pane-padding) / 4);
       }
+    }
+  }
 
-      .typecount {
-        order: 1;
-        display: inline-block;
-        font-size: var(--font-hint);
-        color: var(--text-color-hint);
+  // dirty styles
+  &.ng-dirty:not(.ng-invalid) {
+    //noinspection CssInvalidPseudoSelector
+    > .form-field:not(.focused)::ng-deep {
+      label {
+        background-color: var(--color-dirty-background);
+        color: var(--color-dirty-font) !important;
       }
     }
   }
@@ -931,256 +1084,103 @@ p-dialog .ui-dialog.ui-widget {
 .status {
   grid-area: status;
 }
-$yuv-panel-toolbar-width: 57px;
-$yuv-panel-header-height: 110px;
-
-.yuv-search-result {
-  height: 100%;
-  position: relative;
-  yuv-panel {
-    padding: 0;
-  }
+:host {
+  flex: 1 1 auto;
 }
 
-.busy-indicator {
-  position: absolute;
-  left: 0;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 1;
-  display: flex;
-  flex-flow: column;
-  align-items: center;
-  justify-content: center;
-  background-color: antiquewhite;
-  &.ng-animating {
-    height: 100%;
-  }
-}
+.form-element {
+  box-sizing: border-box;
 
-.grid-container {
-  display: grid;
-  grid-template-columns: 57px 1fr;
-  grid-template-rows: 1fr;
-  grid-template-areas: 'tollbar table';
-  height: 100%;
-  border-top: 1px solid var(--panel-divider-color);
-}
+  &.o2mGroupStack {
+    background: rgba(var(--color-black-rgb), 0.02);
+    border: 1px solid rgba(var(--color-black-rgb), 0.1);
 
-.tollbar {
-  grid-area: tollbar;
-  display: flex;
-  flex-flow: column;
-  align-items: center;
-  justify-content: flex-start;
-  background-color: var(--panel-background-grey);
-  border-right: 1px solid var(--panel-divider-color);
-
-  yuv-icon {
-    width: 100%;
-    height: auto;
-    padding: var(--app-pane-padding);
-    box-sizing: border-box;
-    color: var(--text-color-caption);
-    cursor: pointer;
-    transition: all 200ms;
-
-    &:hover {
-      background-color: var(--panel-divider-color);
+    // tab headers
+    .ui-tabview.ui-tabview-top > .ui-tabview-nav li.ui-state-active {
+      border-color: rgba(var(--color-black-rgb), 0.26);
     }
-  }
-}
-
-.table {
-  display: grid;
-  grid-template-columns: 100%;
-  grid-template-rows: 1fr auto;
-  grid-template-areas: 'data-table' 'footer';
-  grid-area: table;
-}
-
-.footer {
-  grid-area: footer;
-  display: flex;
-  align-items: center;
-  border-top: 1px solid var(--panel-divider-color);
-  padding: calc(var(--app-pane-padding) / 4) 0;
-
-  min-height: 28px;
-  color: var(--text-color-caption);
-
-  .status {
-    flex: 1;
-    min-height: 24px;
-    padding: 0 var(--app-pane-padding);
-  }
-
-  .controls {
-    padding: 0 var(--app-pane-padding);
-    display: flex;
-    align-items: center;
-
-    button {
-      padding: 0;
-      .first,
-      .prev {
-        transform: rotate(180deg);
-      }
+    .ui-tabview.ui-tabview-top > .ui-tabview-nav > li:not(.ui-state-active):not(.ui-state-disabled):hover {
+      border-color: rgba(var(--color-black-rgb), 0.16);
     }
-
-    form {
-      display: flex;
-      border: 1px solid rgba(0, 0, 0, 0.2);
-      margin: 0 4px;
-
-      > div {
-        padding: 4px;
-        font-size: var(--font-caption);
-        background-color: var(--panel-background-grey);
-        user-select: none;
+    .ui-tabview.ui-tabview-top > .ui-tabview-nav li {
+      &.dirty-true:not(.invalid-true) {
+        a .ui-tabview-title {
+          background-color: var(--color-dirty-background);
+          color: var(--color-dirty-font);
+        }
       }
-      input {
-        width: 3em;
-        padding: 4px;
-        line-height: 1em;
-        text-align: right;
-        border: 0;
-        font-size: var(--font-caption);
-        border-right: 1px solid rgba(0, 0, 0, 0.2);
+      &.invalid-true {
+        a .ui-tabview-title {
+          background-color: var(--color-error);
+          color: var(--color-white);
 
-        &.ng-invalid {
-          color: var(--color-error);
+          &:after {
+            content: '!';
+            margin-left: calc(var(--app-pane-padding) / 2);
+          }
         }
       }
     }
+
+    p-tabview {
+      width: 100%;
+    }
+
+    &.data {
+      border: 0;
+    }
+  }
+
+  &.align-column {
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: flex-start;
+    align-content: stretch;
+    align-items: stretch;
+
+    //.form-element-wrap {
+    > * {
+      flex: 1 1 auto;
+    }
+  }
+
+  &.align-row {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: flex-start;
+    align-content: flex-start;
+    align-items: flex-start;
+
+    > * {
+      flex: 1 0 200px;
+      max-width: 100%;
+    }
+
+    > .fieldset > :not(.legend) {
+      display: flex;
+      flex-flow: row wrap;
+      justify-content: flex-start;
+      align-content: flex-start;
+      align-items: flex-start;
+    }
+  }
+
+  .stackBase {
+    padding: var(--app-pane-padding);
+    // background: var(--panel-background-lightgrey);
+
+    > eo-form-group > .form-element > .fieldset {
+      margin: 0;
+      padding: 0;
+      border: 0;
+      background-color: transparent;
+
+      > .legend {
+        display: none;
+      }
+    }
   }
 }
-
-.data-table {
-  grid-area: data-table;
-}
-
-// .yuv-search-result {
-//   height: 100%;
-//   position: relative;
-
-//   .busy-indicator {
-//     position: absolute;
-//     left: 0;
-//     top: 0;
-//     right: 0;
-//     bottom: 0;
-//     z-index: 1;
-//     display: flex;
-//     flex-flow: column;
-//     align-items: center;
-//     justify-content: center;
-//     background-color: antiquewhite;
-//     &.ng-animating {
-//       height: 100%;
-//     }
-//   }
-
-//   .yuv-panel-content {
-//     height: 100%;
-//     display: grid;
-//     grid-template-columns: 1fr;
-//     grid-template-rows: 1fr auto;
-//     grid-template-areas: 'table' 'paging';
-//   }
-
-//   yuv-responsive-data-table {
-//     grid-area: table;
-//   }
-
-//   .paging {
-//     display: flex;
-//     align-items: center;
-//     border-top: 1px solid var(--panel-divider-color);
-//     padding: calc(var(--app-pane-padding) / 4) 0;
-//     grid-area: paging;
-//     min-height: 28px;
-//     color: var(--text-color-caption);
-
-//     .status {
-//       flex: 1;
-//       min-height: 24px;
-//       padding: 0 var(--app-pane-padding);
-//     }
-
-//     .controls {
-//       padding: 0 var(--app-pane-padding);
-//       display: flex;
-//       align-items: center;
-
-//       button {
-//         padding: 0;
-//         .first,
-//         .prev {
-//           transform: rotate(180deg);
-//         }
-//       }
-
-//       form {
-//         display: flex;
-//         border: 1px solid rgba(0, 0, 0, 0.2);
-//         margin: 0 4px;
-
-//         > div {
-//           padding: 4px;
-//           font-size: var(--font-caption);
-//           background-color: var(--panel-background-grey);
-//           user-select: none;
-//         }
-//         input {
-//           width: 3em;
-//           padding: 4px;
-//           line-height: 1em;
-//           text-align: right;
-//           border: 0;
-//           font-size: var(--font-caption);
-//           border-right: 1px solid rgba(0, 0, 0, 0.2);
-
-//           &.ng-invalid {
-//             color: var(--color-error);
-//           }
-//         }
-//       }
-//     }
-//   }
-// }
-
-// .yuv-panel-content {
-//   display: grid;
-//   grid-template-columns: 1fr;
-//   grid-template-rows: 1.9fr 0.1fr;
-//   grid-template-areas: 'table' 'footer';
-// }
-
-// .footer {
-//   grid-area: footer;
-// }
-
-// .table {
-//   display: grid;
-//   grid-template-columns: 0.1fr 2.1fr;
-//   grid-template-rows: 1fr;
-//   grid-template-areas: 'tollbar data-table';
-//   grid-area: table;
-// }
-
-// .tollbar {
-//   grid-area: tollbar;
-//   display: grid;
-//   grid-template-columns: $yuv-panel-toolbar-width 1fr;
-//   grid-template-rows: $yuv-panel-header-height 1fr;
-//   grid-template-areas: 'ico title' 'toolbar content';
-// }
-
-// .data-table {
-//   grid-area: data-table;
-// }
 .as-horizontal.state {
   :host-context(.screen-s) & {
     padding: 0;

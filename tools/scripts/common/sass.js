@@ -5,8 +5,8 @@ const bundleScss = require('bundle-scss');
 const { copyToNodeModules } = require('./node-copy');
 
 const processSass = async library => {
-  const destPath = path.resolve(__dirname, '..', '..', '..', 'dist', 'yuuvis', library);
-  const destScssPath = path.resolve(__dirname, 'dist', `${library}.scss`);
+  const destPath = path.resolve(__dirname, '..', '..', '..', 'dist', 'yuuvis', library, `${library}.css`);
+  const tmpScssPath = path.resolve(__dirname, 'dist', `${library}.scss`);
   try {
     const mainScss = path.resolve(__dirname, '..', '..', '..', 'projects', 'yuuvis', library, 'src', 'scss', 'styles.scss');
     let renderedMainScss;
@@ -15,9 +15,9 @@ const processSass = async library => {
         file: mainScss
       });
     }
-    await bundleScss(`./projects/yuuvis/${library}/src/lib/**/*.scss`, destScssPath);
+    await bundleScss(`./projects/yuuvis/${library}/src/lib/**/*.scss`, tmpScssPath);
     const rendered = sass.renderSync({
-      file: destScssPath
+      file: tmpScssPath
     });
     const css = renderedMainScss ? renderedMainScss.css + rendered.css : rendered.css;
     fs.writeFileSync(destPath, css);
