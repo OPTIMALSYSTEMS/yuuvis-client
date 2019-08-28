@@ -13,5 +13,10 @@
   "{{data.key}}": "",
   "eo.summary.admin.info": "Administrative information",
   "eo.search.term": "Search term",
-  "eo.quicksearch.reults.empty": "Your search request returned no hits."
+  "eo.quicksearch.reults.empty": "Your search request returned no hits.",
+  "eo.object.summary.title": "Summary",
+  "eo.object.indexdata.title": "Index data",
+  "eo.object.history.title": "History",
+  "eo.object.links.title": "References",
+  "yuv.object.split.tab": "Split selected aspect"
 }

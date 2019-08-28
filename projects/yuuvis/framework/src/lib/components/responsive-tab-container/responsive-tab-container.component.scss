@@ -24,11 +24,6 @@
 }
 
 ::ng-deep {
-  .ui-tabview {
-    padding: 0;
-    height: 100%;
-  }
-
   .ui-tabview-close:after {
     content: '\0000D7';
   }
