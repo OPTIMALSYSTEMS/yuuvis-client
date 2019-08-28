@@ -1,0 +1,9 @@
+<input
+  type="text"
+  [(ngModel)]="innerValue"
+  (focus)="unformat()"
+  (blur)="format()"
+  class="ui-inputtext input-number"
+  [readonly]="readonly"
+  (ngModelChange)="onValueChange($event)"
+/>

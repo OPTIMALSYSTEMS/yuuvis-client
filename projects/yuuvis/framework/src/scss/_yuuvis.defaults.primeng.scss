@@ -10,4 +10,11 @@ body {
       padding: 0;
     }
   }
+
+  .ui-dialog {
+    .ui-dialog-content {
+      padding: 0;
+      border: 0;
+    }
+  }
 }

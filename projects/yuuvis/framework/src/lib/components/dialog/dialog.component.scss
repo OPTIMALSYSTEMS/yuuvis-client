@@ -1,0 +1,79 @@
+@import './../../../../../../../src/scss-shared/_mixins';
+
+body > .ui-dialog:not(.ui-helper-hidden),
+p-dialog .ui-dialog:not(.ui-helper-hidden) {
+  @include transition();
+  &:not(.active) {
+    transform: perspective(600px) rotateY(10deg) translate3d(-100px, -100px, -100px);
+    .yuv-dialog-header {
+      background-color: var(--color-primary);
+    }
+  }
+}
+
+body > .ui-dialog.ui-widget,
+p-dialog .ui-dialog.ui-widget {
+  .ui-dialog-content {
+    padding: 0;
+    overflow: inherit;
+  }
+}
+
+.yuv-dialog {
+  @include flex-col();
+  max-height: 100%;
+  max-width: 100%;
+  animation: none;
+  &-close {
+    position: absolute;
+    right: 5px;
+    top: 5px;
+    z-index: 2;
+  }
+  &-header {
+    background-color: var(--color-accent);
+    color: var(--color-white);
+    padding: var(--app-pane-padding) calc(var(--app-pane-padding) * 2.5) calc(var(--app-pane-padding) * 2) var(--app-pane-padding);
+    font-weight: var(--font-weight-light);
+    font-size: var(--font-headline);
+    flex: 0 0 auto;
+    .headline {
+      font-size: 24px;
+      margin: 0;
+      font-weight: normal;
+      margin-right: 25px;
+    }
+    .subtitle {
+      font-size: 15px;
+      margin: 0;
+      font-weight: normal;
+    }
+  }
+  &-content {
+    position: relative;
+    @include flex-col();
+    overflow: auto;
+    height: 100%;
+    max-height: 500px;
+    // &.add--content {
+    //   max-height: 620px;
+    // }
+    // &>eo-tree {
+    //   margin: var(--app-pane-padding);
+    // }
+    // .empty {
+    //   padding: var(--app-pane-padding);
+    //   color: var(--text-color-caption);
+    //   @include flex-col();
+    //   align-items: center;
+    //   justify-content: center;
+    // }
+    // &.process-form-dialog--content {
+    //   overflow: auto;
+    //   max-height: 100%;
+    // }
+    // &.date-picker--content {
+    //   overflow: auto;
+    // }
+  }
+}

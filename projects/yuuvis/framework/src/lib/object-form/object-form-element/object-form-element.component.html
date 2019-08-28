@@ -7,7 +7,7 @@
   >
     <!-- STRING -->
     <yuv-form-input
-      *ngSwitchCase="'STRING'"
+      *ngSwitchCase="'string'"
       [tag]="tag"
       [label]="formElementRef._eoFormElement.label"
       [isNull]="isNull"
@@ -34,7 +34,7 @@
 
     <!-- BOOLEAN -->
     <yuv-form-input
-      *ngSwitchCase="'BOOLEAN'"
+      *ngSwitchCase="'boolean'"
       [tag]="tag"
       class="checkbox"
       [label]="formElementRef._eoFormElement.label"
@@ -53,7 +53,7 @@
 
     <!-- DATE AND DATETIME -->
     <yuv-form-input
-      *ngSwitchCase="'DATETIME'"
+      *ngSwitchCase="'datetime'"
       [tag]="tag"
       [label]="formElementRef._eoFormElement.label"
       [isNull]="isNull"
@@ -67,6 +67,50 @@
         [withTime]="formElementRef._eoFormElement.withtime"
         [formControlName]="element._eoFormControlWrapper.controlName"
       ></yuv-datetime>
+    </yuv-form-input>
+
+    <!-- INTERGER -->
+    <yuv-form-input
+      *ngSwitchCase="'integer'"
+      [tag]="tag"
+      [label]="formElementRef._eoFormElement.label"
+      [isNull]="isNull"
+      [skipToggle]="skipToggle || situation !== 'SEARCH'"
+      (onToggleLabel)="labelToggled($event)"
+      [required]="formElementRef._eoFormElement.required"
+      [invalid]="formElementRef.invalid"
+    >
+      <yuv-number
+        [readonly]="formElementRef._eoFormElement.readonly"
+        [precision]="formElementRef._eoFormElement.precision"
+        [scale]="formElementRef._eoFormElement.scale"
+        [grouping]="formElementRef._eoFormElement.grouping"
+        [pattern]="formElementRef._eoFormElement.pattern"
+        [formControlName]="element._eoFormControlWrapper.controlName"
+      >
+      </yuv-number>
+    </yuv-form-input>
+
+    <!-- DECIMAL -->
+    <yuv-form-input
+      *ngSwitchCase="'decimal'"
+      [tag]="tag"
+      [label]="formElementRef._eoFormElement.label"
+      [isNull]="isNull"
+      [skipToggle]="skipToggle || situation !== 'SEARCH'"
+      (onToggleLabel)="labelToggled($event)"
+      [required]="formElementRef._eoFormElement.required"
+      [invalid]="formElementRef.invalid"
+    >
+      <yuv-number
+        [readonly]="formElementRef._eoFormElement.readonly"
+        [precision]="formElementRef._eoFormElement.precision"
+        [scale]="formElementRef._eoFormElement.scale"
+        [grouping]="formElementRef._eoFormElement.grouping"
+        [pattern]="formElementRef._eoFormElement.pattern"
+        [formControlName]="element._eoFormControlWrapper.controlName"
+      >
+      </yuv-number>
     </yuv-form-input>
 
     <!-- print out the type if it's not matching anything -->
