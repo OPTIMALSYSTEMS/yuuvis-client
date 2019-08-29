@@ -51,9 +51,7 @@ export class SummaryComponent implements OnInit {
       BaseObjectTypeField.PARENT_ID,
       BaseObjectTypeField.PARENT_OBJECT_TYPE_ID,
       BaseObjectTypeField.PARENT_VERSION_NUMBER,
-      'tenKolibri:tableofnotices',
-      'clienttitle',
-      'clientdescription'
+      'tenKolibri:tableofnotices'
     ];
 
     const defaultBaseFields: { key: string; order: number }[] = [

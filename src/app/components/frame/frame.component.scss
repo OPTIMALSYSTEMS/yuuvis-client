@@ -24,6 +24,7 @@ $user-panel-width: 180px;
     yuv-icon#drawer {
       padding: calc((var(--app-bar-height) - 24px) / 2);
       background-color: var(--color-accent);
+      border: 1px solid var(--color-accent);
     }
     yuv-icon#logo {
       width: 100px;
@@ -109,9 +110,7 @@ $user-panel-width: 180px;
       &.enabled {
         .user-title {
           opacity: 1;
-          padding: calc(var(--app-pane-padding) / 2)
-            calc(var(--app-pane-padding) / 2) calc(var(--app-pane-padding) / 2)
-            var(--app-pane-padding);
+          padding: calc(var(--app-pane-padding) / 2) calc(var(--app-pane-padding) / 2) calc(var(--app-pane-padding) / 2) var(--app-pane-padding);
           > yuv-icon {
             display: none;
           }
@@ -129,8 +128,7 @@ $user-panel-width: 180px;
         right: 0;
         left: 0;
         background-color: rgba(0, 0, 0, 0.1);
-        padding: calc(var(--app-pane-padding) / 2)
-          calc(var(--app-pane-padding) / 2) calc(var(--app-pane-padding) / 2) 0;
+        padding: calc(var(--app-pane-padding) / 2) calc(var(--app-pane-padding) / 2) calc(var(--app-pane-padding) / 2) 0;
         color: #fff;
         display: flex;
         align-items: center;
@@ -181,6 +179,7 @@ $user-panel-width: 180px;
 
       yuv-icon#drawer {
         background-color: transparent;
+        border: none;
       }
     }
     .app-content {
