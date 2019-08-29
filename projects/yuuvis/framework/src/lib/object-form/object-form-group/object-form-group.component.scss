@@ -1,9 +1,25 @@
-:host {
-  flex: 1 1 auto;
-}
-
 .form-element {
   box-sizing: border-box;
+
+  .fieldset {
+    margin: calc(var(--app-pane-padding) / 4) calc(var(--app-pane-padding) / 2);
+    padding: calc(var(--app-pane-padding) / 4);
+    background: rgba(0, 0, 0, 0.025);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+
+    .legend {
+      margin-bottom: calc(var(--app-pane-padding) / 2);
+
+      > span {
+        display: inline-block;
+        font-size: var(--font-hint);
+        border-radius: 2px;
+        color: var(--color-white);
+        background-color: rgba(0, 0, 0, 0.22);
+        padding: calc(var(--app-pane-padding) / 8) calc(var(--app-pane-padding) / 4);
+      }
+    }
+  }
 
   &.o2mGroupStack {
     background: rgba(0, 0, 0, 0.02);

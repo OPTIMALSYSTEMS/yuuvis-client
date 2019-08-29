@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { booleanElements } from './data/form.boolean';
 import { datetimeElements } from './data/form.datetime';
+import { groupingModel } from './data/form.grouping';
+import { numberElements } from './data/form.numbers';
 import { stringElements } from './data/form.string';
 
 @Component({
@@ -25,6 +27,13 @@ export class TestObjectFormComponent implements OnInit {
     //   }
     // },
     {
+      label: 'Form groups',
+      model: {
+        formModel: groupingModel,
+        data: {}
+      }
+    },
+    {
       label: 'String component',
       model: {
         formModel: this.wrap(stringElements),
@@ -42,6 +51,13 @@ export class TestObjectFormComponent implements OnInit {
       label: 'Datetime component',
       model: {
         formModel: this.wrap(datetimeElements),
+        data: {}
+      }
+    },
+    {
+      label: 'Number components',
+      model: {
+        formModel: this.wrap(numberElements),
         data: {}
       }
     }

@@ -156,6 +156,19 @@ export class StringComponent implements ControlValueAccessor, Validator {
             valid: false
           };
         }
+      } else {
+        if (this.value.length > 0 && this.value.length < this.minLength) {
+          err = {};
+          err['minlength'] = {
+            valid: false
+          };
+        }
+        if (this.value.length > this.maxLength) {
+          err = {};
+          err['maxlength'] = {
+            valid: false
+          };
+        }
       }
     }
     // validate invalid if only whitespaces

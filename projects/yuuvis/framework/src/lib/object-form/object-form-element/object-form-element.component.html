@@ -1,115 +1,58 @@
 <div class="form-element" [formGroup]="element" *ngIf="element">
-  <div
-    class="form-field t-{{ formElementRef._eoFormElement.type }}"
-    #formField
-    [ngSwitch]="formElementRef._eoFormElement.type"
-    [ngClass]="{ disabled: !!formElementRef._eoFormElement.readonly }"
-  >
+  <div class="form-field t-{{ formElementRef._eoFormElement.type }}" #formField
+    [ngSwitch]="formElementRef._eoFormElement.type" [ngClass]="{ disabled: !!formElementRef._eoFormElement.readonly }">
     <!-- STRING -->
-    <yuv-form-input
-      *ngSwitchCase="'string'"
-      [tag]="tag"
-      [label]="formElementRef._eoFormElement.label"
-      [isNull]="isNull"
-      [skipToggle]="skipToggle || situation !== 'SEARCH'"
-      (onToggleLabel)="labelToggled($event)"
-      [required]="formElementRef._eoFormElement.required"
-      [invalid]="formElementRef.invalid"
-    >
+    <yuv-form-input *ngSwitchCase="'string'" [tag]="tag" [label]="formElementRef._eoFormElement.label" [isNull]="isNull"
+      [skipToggle]="skipToggle || situation !== 'SEARCH'" (onToggleLabel)="labelToggled($event)"
+      [required]="formElementRef._eoFormElement.required" [invalid]="formElementRef.invalid">
       <yuv-string
         *ngIf="!formElementRef._eoFormElement.reference && formElementRef._eoFormElement.classification !== 'selector'"
         [situation]="element._eoFormControlWrapper.situation"
         [formControlName]="element._eoFormControlWrapper.controlName"
-        [multiselect]="formElementRef._eoFormElement.multiselect"
-        [multiline]="formElementRef._eoFormElement.multiline"
-        [classification]="formElementRef._eoFormElement.classification"
-        [regex]="formElementRef._eoFormElement.regex"
-        [qname]="formElementRef._eoFormElement.qname"
-        [size]="formElementRef._eoFormElement.size"
-        [readonly]="formElementRef._eoFormElement.readonly"
-        [minLength]="formElementRef._eoFormElement.minlen"
-        [maxLength]="formElementRef._eoFormElement.maxlen"
-      ></yuv-string>
+        [multiselect]="formElementRef._eoFormElement.multiselect" [multiline]="formElementRef._eoFormElement.multiline"
+        [classification]="formElementRef._eoFormElement.classification" [regex]="formElementRef._eoFormElement.regex"
+        [qname]="formElementRef._eoFormElement.qname" [size]="formElementRef._eoFormElement.size"
+        [readonly]="formElementRef._eoFormElement.readonly" [minLength]="formElementRef._eoFormElement.minlen"
+        [maxLength]="formElementRef._eoFormElement.maxlen"></yuv-string>
     </yuv-form-input>
 
     <!-- BOOLEAN -->
-    <yuv-form-input
-      *ngSwitchCase="'boolean'"
-      [tag]="tag"
-      class="checkbox"
-      [label]="formElementRef._eoFormElement.label"
-      [isNull]="isNull"
-      [skipToggle]="skipToggle || situation !== 'SEARCH'"
-      [required]="formElementRef._eoFormElement.required"
-      (onToggleLabel)="labelToggled($event)"
-      [invalid]="formElementRef.invalid"
-    >
-      <yuv-checkbox
-        [formControlName]="element._eoFormControlWrapper.controlName"
-        [readonly]="formElementRef._eoFormElement.readonly"
-        [tristate]="true"
-      ></yuv-checkbox>
+    <yuv-form-input *ngSwitchCase="'boolean'" [tag]="tag" class="checkbox" [label]="formElementRef._eoFormElement.label"
+      [isNull]="isNull" [skipToggle]="skipToggle || situation !== 'SEARCH'"
+      [required]="formElementRef._eoFormElement.required" (onToggleLabel)="labelToggled($event)"
+      [invalid]="formElementRef.invalid">
+      <yuv-checkbox [formControlName]="element._eoFormControlWrapper.controlName"
+        [readonly]="formElementRef._eoFormElement.readonly" [tristate]="true"></yuv-checkbox>
     </yuv-form-input>
 
     <!-- DATE AND DATETIME -->
-    <yuv-form-input
-      *ngSwitchCase="'datetime'"
-      [tag]="tag"
-      [label]="formElementRef._eoFormElement.label"
-      [isNull]="isNull"
-      [skipToggle]="skipToggle || situation !== 'SEARCH'"
-      (onToggleLabel)="labelToggled($event)"
-      [required]="formElementRef._eoFormElement.required"
-      [invalid]="formElementRef.invalid"
-    >
-      <yuv-datetime
-        [readonly]="formElementRef._eoFormElement.readonly"
+    <yuv-form-input *ngSwitchCase="'datetime'" [tag]="tag" [label]="formElementRef._eoFormElement.label"
+      [isNull]="isNull" [skipToggle]="skipToggle || situation !== 'SEARCH'" (onToggleLabel)="labelToggled($event)"
+      [required]="formElementRef._eoFormElement.required" [invalid]="formElementRef.invalid">
+      <yuv-datetime [readonly]="formElementRef._eoFormElement.readonly"
         [withTime]="formElementRef._eoFormElement.withtime"
-        [formControlName]="element._eoFormControlWrapper.controlName"
-      ></yuv-datetime>
+        [formControlName]="element._eoFormControlWrapper.controlName"></yuv-datetime>
     </yuv-form-input>
 
     <!-- INTERGER -->
-    <yuv-form-input
-      *ngSwitchCase="'integer'"
-      [tag]="tag"
-      [label]="formElementRef._eoFormElement.label"
-      [isNull]="isNull"
-      [skipToggle]="skipToggle || situation !== 'SEARCH'"
-      (onToggleLabel)="labelToggled($event)"
-      [required]="formElementRef._eoFormElement.required"
-      [invalid]="formElementRef.invalid"
-    >
-      <yuv-number
-        [readonly]="formElementRef._eoFormElement.readonly"
-        [precision]="formElementRef._eoFormElement.precision"
-        [scale]="formElementRef._eoFormElement.scale"
-        [grouping]="formElementRef._eoFormElement.grouping"
-        [pattern]="formElementRef._eoFormElement.pattern"
-        [formControlName]="element._eoFormControlWrapper.controlName"
-      >
+    <yuv-form-input *ngSwitchCase="'integer'" [tag]="tag" [label]="formElementRef._eoFormElement.label"
+      [isNull]="isNull" [skipToggle]="skipToggle || situation !== 'SEARCH'" (onToggleLabel)="labelToggled($event)"
+      [required]="formElementRef._eoFormElement.required" [invalid]="formElementRef.invalid">
+      <yuv-number [readonly]="formElementRef._eoFormElement.readonly"
+        [precision]="formElementRef._eoFormElement.precision" [scale]="formElementRef._eoFormElement.scale"
+        [grouping]="formElementRef._eoFormElement.grouping" [pattern]="formElementRef._eoFormElement.pattern"
+        [formControlName]="element._eoFormControlWrapper.controlName">
       </yuv-number>
     </yuv-form-input>
 
     <!-- DECIMAL -->
-    <yuv-form-input
-      *ngSwitchCase="'decimal'"
-      [tag]="tag"
-      [label]="formElementRef._eoFormElement.label"
-      [isNull]="isNull"
-      [skipToggle]="skipToggle || situation !== 'SEARCH'"
-      (onToggleLabel)="labelToggled($event)"
-      [required]="formElementRef._eoFormElement.required"
-      [invalid]="formElementRef.invalid"
-    >
-      <yuv-number
-        [readonly]="formElementRef._eoFormElement.readonly"
-        [precision]="formElementRef._eoFormElement.precision"
-        [scale]="formElementRef._eoFormElement.scale"
-        [grouping]="formElementRef._eoFormElement.grouping"
-        [pattern]="formElementRef._eoFormElement.pattern"
-        [formControlName]="element._eoFormControlWrapper.controlName"
-      >
+    <yuv-form-input *ngSwitchCase="'decimal'" [tag]="tag" [label]="formElementRef._eoFormElement.label"
+      [isNull]="isNull" [skipToggle]="skipToggle || situation !== 'SEARCH'" (onToggleLabel)="labelToggled($event)"
+      [required]="formElementRef._eoFormElement.required" [invalid]="formElementRef.invalid">
+      <yuv-number [readonly]="formElementRef._eoFormElement.readonly"
+        [precision]="formElementRef._eoFormElement.precision" [scale]="formElementRef._eoFormElement.scale"
+        [grouping]="formElementRef._eoFormElement.grouping" [pattern]="formElementRef._eoFormElement.pattern"
+        [formControlName]="element._eoFormControlWrapper.controlName">
       </yuv-number>
     </yuv-form-input>
 
@@ -119,40 +62,41 @@
     </div>
 
     <!-- the fields description -->
-    <div class="description" *ngIf="formElementRef._eoFormElement.description">{{ formElementRef._eoFormElement.description }}</div>
+    <div class="description" *ngIf="formElementRef._eoFormElement.description">
+      {{ formElementRef._eoFormElement.description }}</div>
 
     <!-- error/validation messages -->
-    <div
-      class="err-msg"
-      *ngIf="
+    <div class="err-msg" *ngIf="
         (situation !== 'SEARCH' && situation !== 'CREATE' && formElementRef.errors) ||
         ((situation === 'SEARCH' || situation === 'CREATE') && formElementRef.errors && (formElementRef.dirty || formElementRef.touched))
-      "
-    >
+      ">
       <div *ngIf="formElementRef.errors.daterange" translate>eo.form.property.daterange.invalid</div>
       <div *ngIf="formElementRef.errors.numberrange" translate>eo.form.property.numberrange.invalid</div>
       <div *ngIf="formElementRef.errors.number" translate>eo.form.property.number</div>
-      <div *ngIf="formElementRef.errors.precision" translate [translateParams]="formElementRef.errors.precision.translateValues">
+      <div *ngIf="formElementRef.errors.precision" translate
+        [translateParams]="formElementRef.errors.precision.translateValues">
         {{ formElementRef.errors.precision.translateKey }}
       </div>
-      <div *ngIf="formElementRef.errors.scale" translate [translateParams]="formElementRef.errors.scale.translateValues">
+      <div *ngIf="formElementRef.errors.scale" translate
+        [translateParams]="formElementRef.errors.scale.translateValues">
         {{ formElementRef.errors.scale.translateKey }}
       </div>
 
-      <div *ngIf="formElementRef.errors.regex || formElementRef.errors.pattern" translate>eo.form.property.string.regex.nomatch</div>
-      <div *ngIf="formElementRef.errors.classificationemail" translate>eo.form.property.string.error.classification.email</div>
-      <div *ngIf="formElementRef.errors.classificationurl" translate>eo.form.property.string.error.classification.url</div>
+      <div *ngIf="formElementRef.errors.regex || formElementRef.errors.pattern" translate>
+        eo.form.property.string.regex.nomatch</div>
+      <div *ngIf="formElementRef.errors.classificationemail" translate>
+        eo.form.property.string.error.classification.email</div>
+      <div *ngIf="formElementRef.errors.classificationurl" translate>eo.form.property.string.error.classification.url
+      </div>
       <div *ngIf="formElementRef.errors.onlyWhitespaces" translate>eo.form.property.string.error.whitespaces</div>
       <div *ngIf="formElementRef.errors.datecontrol" translate>eo.form.property.date.invalid</div>
       <div *ngIf="formElementRef.errors.codesystem" translate>eo.form.property.codesystem.value.invalid</div>
       <div *ngIf="formElementRef.errors.eoformScript">{{ formElementRef._eoFormElement.error.msg }}</div>
       <div *ngIf="formElementRef.errors.required" translate>eo.form.property.required</div>
-      <div *ngIf="formElementRef.errors.maxlength" translate [translateParams]="{ maxlength: formElementRef._eoFormElement.maxlen }">
-        eo.form.property.maxlength
-      </div>
-      <div *ngIf="formElementRef.errors.minlength" translate [translateParams]="{ minlength: formElementRef._eoFormElement.minlen }">
-        eo.form.property.minlength
-      </div>
+      <div *ngIf="formElementRef.errors.maxlength" translate
+        [translateParams]="{ maxlength: formElementRef._eoFormElement.maxlen }">eo.form.property.maxlength</div>
+      <div *ngIf="formElementRef.errors.minlength" translate
+        [translateParams]="{ minlength: formElementRef._eoFormElement.minlen }">eo.form.property.minlength</div>
     </div>
   </div>
 </div>
