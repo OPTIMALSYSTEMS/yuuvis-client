@@ -24,24 +24,28 @@
 }
 
 ::ng-deep {
-  .ui-tabview-close:after {
-    content: '\0000D7';
-  }
-
-  li.ui-state-disabled {
-    display: none;
-  }
-
-  li.ui-state-active {
-    border: 1px solid var(--color-accent) !important;
-    background: var(--color-accent) !important;
-  }
-
-  .ui-tabview-nav {
+  .ui-tabview .ui-tabview-nav {
     overflow: auto hidden;
     display: flex;
-    margin-right: 34px;
+    margin-right: 28px;
+    :host-context(.screen-s) & {
+      margin-right: 0;
+    }
+
+    .ui-tabview-close:after {
+      content: '\0000D7';
+    }
+
+    li.ui-state-disabled {
+      display: none;
+    }
+
+    li.ui-state-active {
+      border: 1px solid var(--color-accent) !important;
+      background: var(--color-accent) !important;
+    }
   }
+
   :host-context(.screen-s) .ui-tabview.ui-tabview-bottom .ui-tabview-nav {
     margin-top: -35px;
   }
@@ -55,13 +59,6 @@
     overflow: auto;
     border: none;
     border-top: 1px solid #c8c8c8;
-    .ui-tabview-panel {
-      height: 500px;
-
-      :host-context(.screen-s) & {
-        height: 200px;
-      }
-    }
     :host-context(.screen-s) & {
       position: absolute;
     }
@@ -73,10 +70,12 @@
       height: 100%;
     }
 
+    // hide first empty/fake tab panel
     &:first-child {
       display: none !important;
     }
 
+    // display original tab panel (disabled by mainTabView)
     &.ui-helper-hidden {
       display: block !important;
     }

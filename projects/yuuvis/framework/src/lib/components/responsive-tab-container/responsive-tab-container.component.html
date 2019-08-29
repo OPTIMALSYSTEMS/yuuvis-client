@@ -1,16 +1,16 @@
 <as-split>
   <as-split-area>
-    <p-tabView #mainTabView (onChange)="onChange($event)" orientation="{{orientation}}">
-      <span class="tab-navigation" [title]="('yuv.object.split.tab' | translate)">
-        <yuv-icon *ngIf="!isMobile" class="split-btn" (click)="splitPanelAdd()" [svg]="svgIcon.vertical_split"></yuv-icon>
+    <p-tabView #mainTabView (onChange)="onChange($event)" orientation="{{ orientation }}">
+      <span class="tab-navigation" [title]="'yuv.object.split.tab' | translate">
+        <yuv-icon *ngIf="!(isSmallScreen$ | async)" class="split-btn" (click)="splitPanelAdd()" [svg]="svgIcon.vertical_split"></yuv-icon>
       </span>
       <ng-content></ng-content>
     </p-tabView>
   </as-split-area>
 
   <as-split-area *ngFor="let panel of splitPanels; let index = index">
-    <p-tabView class="split-tab-view" #splitTabView [controlClose]="true" (onClose)="splitPanelClose($event, panel, index)">
-      <p-tabPanel [header]="panel.header" [closable]="true"></p-tabPanel>
+    <p-tabView class="split-tab-view" #splitTabView [controlClose]="true" (onClose)="splitPanelClose(panel, index)">
+      <p-tabPanel [id]="pID(panel, '_empty')" [header]="panel.header" [closable]="true"></p-tabPanel>
     </p-tabView>
   </as-split-area>
 </as-split>
