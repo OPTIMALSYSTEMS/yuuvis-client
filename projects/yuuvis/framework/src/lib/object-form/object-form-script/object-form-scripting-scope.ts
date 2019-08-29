@@ -5,7 +5,6 @@ import * as _ from 'lodash';
 // MobX.observe to track changes on the scripting model.
 // @see: https://medium.com/@mweststrate/object-observe-is-dead-long-live-mobservable-observe-ad96930140c5
 export class ObjectFormScriptingScope {
-
   // List of all form fields (elements)
   public model: any = {};
 
@@ -19,8 +18,7 @@ export class ObjectFormScriptingScope {
   // to the script (READONLY)
   // may contain: FormScriptDmsObject, FileEntry
   public objects: any[] = [];
-  public context: { id: string, title: string, typeName: string } = {id: '', title: '', typeName: ''};
-
+  public context: { id: string; title: string; typeName: string } = { id: '', title: '', typeName: '' };
 
   /**
    * Constructor
@@ -33,11 +31,7 @@ export class ObjectFormScriptingScope {
    * @param isTableRowScope - set this to true if the current scripting scope is created for a
    * row editing form from a table element. It will then provide the right parameters for the scripting functions
    */
-  constructor(public situation: string,
-              private onScriptingModelChange,
-              public api: any,
-              private isTableRowScope?: boolean) {
-  }
+  constructor(public situation: string, private onScriptingModelChange: Function, public api: any, private isTableRowScope?: boolean) {}
 
   /**
    * Sets the internal model and wraps every model element with an observer to be
@@ -66,7 +60,6 @@ export class ObjectFormScriptingScope {
    * that changes and value of the new value
    */
   public modelChanged(change: any) {
-
     // find the changed element in the scopes model
     let propertyName = Object.keys(change)[0];
     if (change[propertyName] === undefined) {
@@ -81,7 +74,6 @@ export class ObjectFormScriptingScope {
 }
 
 class ScopeElement {
-
   constructor(private element: any, private onScriptingModelChange: Function) {
     if (this.element.value === undefined) {
       this.element.value = null;
@@ -92,11 +84,13 @@ class ScopeElement {
   }
 
   private isProxyable(value, key?: string) {
-    return (typeof value === 'object' || Array.isArray(value))
-      && value !== null
-      && !(value instanceof Date)
-      && !value.isProxy
-      && (key ? !key.includes('_meta') : true);
+    return (
+      (typeof value === 'object' || Array.isArray(value)) &&
+      value !== null &&
+      !(value instanceof Date) &&
+      !value.isProxy &&
+      (key ? !key.includes('_meta') : true)
+    );
   }
 
   private createProxy(value) {
@@ -109,7 +103,7 @@ class ScopeElement {
           target[key] = val;
         }
         if (this.hasValueChanged(this.element.value, previousValue) && !key.includes('_meta')) {
-          this.onScriptingModelChange(this.element.name, {newValue: _.cloneDeep(this.element.value), name: 'value'});
+          this.onScriptingModelChange(this.element.name, { newValue: _.cloneDeep(this.element.value), name: 'value' });
         }
         return true;
       },
@@ -155,7 +149,7 @@ class ScopeElement {
       } else {
         this.element.value = value;
       }
-      this.onScriptingModelChange(this.element.name, {newValue: _.cloneDeep(this.element.value), name: 'value'});
+      this.onScriptingModelChange(this.element.name, { newValue: _.cloneDeep(this.element.value), name: 'value' });
     }
   }
 
@@ -165,7 +159,7 @@ class ScopeElement {
 
   set onchange(onchange) {
     this.element.onchange = onchange;
-    this.onScriptingModelChange(this.element.name, {newValue: onchange, name: 'onchange'});
+    this.onScriptingModelChange(this.element.name, { newValue: onchange, name: 'onchange' });
   }
 
   get onchange() {
@@ -174,7 +168,7 @@ class ScopeElement {
 
   set required(required) {
     this.element.required = required;
-    this.onScriptingModelChange(this.element.name, {newValue: required, name: 'required'});
+    this.onScriptingModelChange(this.element.name, { newValue: required, name: 'required' });
   }
 
   get required() {
@@ -183,7 +177,7 @@ class ScopeElement {
 
   set readonly(readonly) {
     this.element.readonly = readonly;
-    this.onScriptingModelChange(this.element.name, {newValue: readonly, name: 'readonly'});
+    this.onScriptingModelChange(this.element.name, { newValue: readonly, name: 'readonly' });
   }
 
   get readonly() {
@@ -192,7 +186,7 @@ class ScopeElement {
 
   set error(error) {
     this.element.error = error;
-    this.onScriptingModelChange(this.element.name, {newValue: error, name: 'error'});
+    this.onScriptingModelChange(this.element.name, { newValue: error, name: 'error' });
   }
 
   get error() {
@@ -201,7 +195,7 @@ class ScopeElement {
 
   set onrowedit(onrowedit) {
     this.element.onrowedit = onrowedit;
-    this.onScriptingModelChange(this.element.name, {newValue: onrowedit, name: 'onrowedit'});
+    this.onScriptingModelChange(this.element.name, { newValue: onrowedit, name: 'onrowedit' });
   }
 
   get onrowedit() {

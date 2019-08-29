@@ -2,7 +2,7 @@
   flex: 1 1 auto;
   //noinspection CssInvalidPseudoSelector
   &.label-toggled::ng-deep {
-    eo-form-input label {
+    yuv-form-input label {
       text-decoration: line-through;
     }
   }

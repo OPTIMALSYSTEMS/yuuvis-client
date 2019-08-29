@@ -1,5 +1,5 @@
 <!-- non web environments use native pickers -->
-<div class="eo-datepicker native" lang="{{ locale }}" *ngIf="!isWebEnv; else web">
+<div class="yuv-datepicker native" lang="{{ locale }}" *ngIf="!isWebEnv; else web">
   <input type="date" [(ngModel)]="value" *ngIf="!withTime" [readonly]="readonly" />
   <input type="datetime-local" [(ngModel)]="value" [readonly]="readonly" *ngIf="withTime" />
 </div>

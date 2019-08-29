@@ -13,7 +13,7 @@ $about-max-width: 800px;
   grid-row-gap: 0px;
 }
 
-.eo-about-state {
+.yuv-about-state {
   box-sizing: border-box;
   width: $about-max-width;
   justify-self: center;
@@ -193,7 +193,7 @@ $about-max-width: 800px;
             color: var(--color-accent);
             display: inline-block;
             padding: 2px 4px;
-            background-color: rgba(var(--color-black-rgb), 0.06);
+            background-color: rgba(0, 0, 0, 0.06);
             line-height: 1em;
           }
         }

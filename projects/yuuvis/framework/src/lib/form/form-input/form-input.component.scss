@@ -27,7 +27,7 @@
         font-size: var(--font-hint);
         background-color: var(--color-accent);
         padding: 0 calc(var(--app-pane-padding) / 4);
-        color: var(--color-white);
+        color: #fff;
       }
     }
     > .form-input__label {
@@ -84,7 +84,7 @@
     border-color: var(--color-error);
     > label {
       background-color: var(--color-error);
-      color: var(--color-white);
+      color: #fff;
       margin: 0 4px;
       &:after {
         content: '!';
@@ -164,14 +164,14 @@
     &:enabled:focus {
       border: 0;
       background: var(--color-accent);
-      color: var(--color-white);
+      color: #fff;
     }
     &.ui-spinner-button:enabled:hover,
     &:enabled:active,
     &:enabled:hover {
       border: 0;
       background: var(--color-accent);
-      color: var(--color-white);
+      color: #fff;
     }
     .fa {
       color: currentColor !important;

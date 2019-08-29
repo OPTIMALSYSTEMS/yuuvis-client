@@ -16,6 +16,10 @@ import { NumberComponent } from './elements/number/number.component';
 import { StringComponent } from './elements/string/string.component';
 import { FormInputComponent } from './form-input/form-input.component';
 
+/**
+ * `YuvFormModule` bundles form controls like inputs, checkboxes, datepickers and so on.
+ * To get a label for each form control, you can wrap it using `<yuv-form-input>`.
+ */
 @NgModule({
   declarations: [FormInputComponent, CheckboxComponent, StringComponent, DatetimeComponent, NumberComponent, DatepickerComponent],
   exports: [FormInputComponent, CheckboxComponent, StringComponent, DatetimeComponent, NumberComponent],

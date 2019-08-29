@@ -14,13 +14,13 @@
 
 //noinspection CssInvalidPseudoSelector
 :host::ng-deep {
-  .yuv-object-form > .data > eo-form-group > .form-element.o2mGroupStack {
+  .yuv-object-form > .data > yuv-form-group > .form-element.o2mGroupStack {
     background: transparent;
     border: 0;
 
-    & > eo-form-group > .o2mGroup {
+    & > yuv-form-group > .o2mGroup {
       background-color: var(--panel-background-lightgrey);
-      border-top: 1px solid rgba(var(--color-black-rgb), 0.1);
+      border-top: 1px solid rgba(0, 0, 0, 0.1);
       padding: var(--app-pane-padding);
     }
 

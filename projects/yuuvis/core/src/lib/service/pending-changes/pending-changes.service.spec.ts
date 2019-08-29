@@ -1,15 +1,11 @@
-import {TestBed} from '@angular/core/testing';
-import {NO_ERRORS_SCHEMA} from '@angular/core';
-import {Test1Component} from '../../../../test/mocks/test-routes.mock';
-import {PendingChangesComponent} from './pending-changes-component.interface';
-
-import {PendingChangesService} from './pending-changes.service';
-import {TranslateLoader, TranslateModule, TranslateService} from '@eo-sdk/core';
-import {Logger} from '@eo-sdk/core';
-import {TranslateServiceStub, LoggerStub} from '../../../../test/mocks/test-stubs.mock';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { TestBed } from '@angular/core/testing';
+import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core';
+import { Logger } from './../logger/logger';
+import { PendingChangesComponent } from './pending-changes-component.interface';
+import { PendingChangesService } from './pending-changes.service';
 
 describe('PendingChangesService', () => {
-
   let component: Test1Component;
 
   let service: PendingChangesService;
@@ -20,12 +16,10 @@ describe('PendingChangesService', () => {
       schemas: [NO_ERRORS_SCHEMA],
       imports: [
         TranslateModule.forRoot({
-          loader: {provide: TranslateService, useClass: TranslateServiceStub}
+          loader: { provide: TranslateService, useClass: TranslateServiceStub }
         })
       ],
-      providers: [TranslateLoader, PendingChangesService,
-        {provide: Logger, useClass: LoggerStub},
-      ]
+      providers: [TranslateLoader, PendingChangesService, { provide: Logger, useClass: LoggerStub }]
     });
 
     translate = TestBed.get(TranslateService);
@@ -73,4 +67,3 @@ describe('PendingChangesService', () => {
     expect(service.check(pdComp)).toBeFalsy();
   });
 });
-
