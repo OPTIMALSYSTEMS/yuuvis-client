@@ -13,7 +13,7 @@
     .header {
       :host-context(.screen-s) & {
         grid-template-areas: 'header_text extras';
-        grid-template-columns: 3fr 1fr;
+        grid-template-columns: 1fr 30px;
       }
     }
     .icon {

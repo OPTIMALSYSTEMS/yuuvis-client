@@ -1,3 +1,30 @@
+.yuv-icon {
+  width: auto;
+  height: auto;
+  display: inline-block;
+  font-size: 1px;
+  color: currentColor;
+
+  svg {
+    pointer-events: none;
+    height: 100%;
+    width: 100%;
+    fill: currentColor;
+  }
+
+  // icons that act as buttons
+  &.btn {
+    border-radius: 2px;
+    padding: calc(var(--app-pane-padding) / 4);
+    cursor: pointer;
+    outline: none;
+    transition: color 200ms, background-color 200ms;
+
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.06);
+    }
+  }
+}
 .sidebar {
   &.ui-sidebar {
     color: white;
@@ -35,33 +62,6 @@
 
   button.icon {
     padding: 0; //calc(var(--app-pane-padding) / 2);
-  }
-}
-.yuv-icon {
-  width: auto;
-  height: auto;
-  display: inline-block;
-  font-size: 1px;
-  color: currentColor;
-
-  svg {
-    pointer-events: none;
-    height: 100%;
-    width: 100%;
-    fill: currentColor;
-  }
-
-  // icons that act as buttons
-  &.btn {
-    border-radius: 2px;
-    padding: calc(var(--app-pane-padding) / 4);
-    cursor: pointer;
-    outline: none;
-    transition: color 200ms, background-color 200ms;
-
-    &:hover {
-      background-color: rgba(0, 0, 0, 0.06);
-    }
   }
 }
 :host {

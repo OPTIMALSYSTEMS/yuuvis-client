@@ -36,14 +36,7 @@ export class SummaryComponent implements OnInit {
     this.selected = status;
   }
 
-  private generateSummary(dmsObject: DmsObject) {
-    const summary: Summary = {
-      core: [],
-      base: [],
-      extras: [],
-      parent: []
-    };
-
+  private getSummaryConfiguration(dmsObject: DmsObject) {
     const skipFields: string[] = [
       ContentStreamField.ID,
       BaseObjectTypeField.OBJECT_TYPE_ID,
@@ -82,6 +75,19 @@ export class SummaryComponent implements OnInit {
 
     const extraFields: string[] = [ContentStreamField.DIGEST, ContentStreamField.ARCHIVE_PATH, ContentStreamField.REPOSITORY_ID];
     baseFields.map(fields => extraFields.push(fields));
+
+    return { skipFields, extraFields, patentFields, defaultBaseFields };
+  }
+
+  private generateSummary(dmsObject: DmsObject) {
+    const summary: Summary = {
+      core: [],
+      base: [],
+      extras: [],
+      parent: []
+    };
+
+    const { skipFields, patentFields, extraFields, defaultBaseFields } = this.getSummaryConfiguration(dmsObject);
     this.gridService.getColumnConfiguration(dmsObject.objectTypeId).subscribe((colDef: ColDef[]) => {
       Object.keys(dmsObject.data).forEach((key: string) => {
         const prepKey = key.startsWith('parent.') ? key.replace('parent.', '') : key;
@@ -91,6 +97,7 @@ export class SummaryComponent implements OnInit {
         const renderer: ICellRendererFunc = def ? (def.cellRenderer as ICellRendererFunc) : null;
         const si = {
           label: label ? label : key,
+          key,
           value: renderer ? renderer({ value: dmsObject.data[key] }) : dmsObject.data[key],
           order: null
         };

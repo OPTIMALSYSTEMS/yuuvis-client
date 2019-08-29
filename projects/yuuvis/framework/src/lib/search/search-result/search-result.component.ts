@@ -164,7 +164,11 @@ export class SearchResultComponent {
   }
 
   generateQueryDescription(term: string, types?: string[]) {
-    const querytype = types.length > 1 ? ' ' : `${this.systemService.getLocalizedResource(`${types[0]}_label`)}, `;
+    const querytype: string = types.length ? `${this.systemService.getLocalizedResource(`${types[0]}_label`)}, ` : '';
+
+    console.log({ types });
+    console.log({ querytype });
+
     this.queryTerm = `${querytype}${this.translate.instant('eo.search.term')}: '${term}'`;
   }
 
