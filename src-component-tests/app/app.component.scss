@@ -1,0 +1,21 @@
+:host {
+  height: 100vh;
+  display: flex;
+  flex-flow: column;
+  .head {
+    background-color: black;
+    color: #fff;
+    font-family: monospace;
+    padding: 10px;
+    flex: 0;
+  }
+  .body {
+    flex: 1;
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+    justify-content: center;
+    background: #eee;
+    overflow: auto;
+  }
+}

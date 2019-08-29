@@ -1,4 +1,4 @@
-export const formModel = {
+export const formMultiModel = {
   label: 'QA-DocAllMultiFields',
   name: 'tenKolibri:qadocallmultifields',
   situation: 'EDIT',

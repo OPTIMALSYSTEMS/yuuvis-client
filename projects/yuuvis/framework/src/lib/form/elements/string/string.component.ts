@@ -26,6 +26,9 @@ export class StringComponent implements ControlValueAccessor, Validator {
     globe: SVGIcons.globe
   };
 
+  /**
+   * lala ding dong
+   */
   @Input() multiselect: boolean;
   @Input() multiline: boolean;
   @Input() readonly: boolean;

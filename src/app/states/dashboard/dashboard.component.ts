@@ -3,7 +3,6 @@ import { Title } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { SearchQuery } from '@yuuvis/core';
 import { APP_VARS } from '../../app.vars';
-import { formModel } from './formmodel.tmp';
 @Component({
   selector: 'yuv-dashboard',
   templateUrl: './dashboard.component.html',
@@ -12,11 +11,6 @@ import { formModel } from './formmodel.tmp';
 })
 export class DashboardComponent implements OnInit {
   constructor(private router: Router, private titleService: Title) {}
-
-  formOptions = {
-    formModel: formModel,
-    data: {}
-  };
 
   onQuickSearchQuery(query: SearchQuery) {
     this.router.navigate(['/result'], {
