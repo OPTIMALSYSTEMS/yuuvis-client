@@ -1,3 +1,5 @@
-<yuv-object-form id="single" [formOptions]="formSingleOptions"></yuv-object-form>
-<hr />
-<yuv-object-form id="multi" [formOptions]="formMultiOptions"></yuv-object-form>
+<div class="modelselect">
+  <button *ngFor="let m of formModels" (click)="setModel(m.model)" [ngClass]="{ current: currentModel === m.model }">{{ m.label }}</button>
+</div>
+
+<yuv-object-form id="single" [formOptions]="currentModel"></yuv-object-form>

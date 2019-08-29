@@ -22,6 +22,7 @@
     }
 
     .err-msg {
+      font-size: var(--font-hint);
       color: var(--color-error);
       padding: calc(var(--app-pane-padding) / 4) 0;
       border: 0;

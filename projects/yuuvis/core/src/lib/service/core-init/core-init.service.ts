@@ -16,7 +16,7 @@ import { ScreenService } from '../screen/screen.service';
 export class CoreInit {
   constructor(
     @Inject(CORE_CONFIG) private coreConfig: CoreConfig,
-    // DO NOT REMOVE: Otherwise service will not kcik in until referenced
+    // DO NOT REMOVE: Otherwise service will not kick in until referenced
     private screenService: ScreenService,
     private logger: Logger,
     private http: HttpClient,
@@ -47,11 +47,7 @@ export class CoreInit {
           map(res =>
             res.reduce((acc, x) => {
               // merge object values on 2nd level
-              Object.keys(x).forEach(k =>
-                !acc[k] || Array.isArray(x[k]) || typeof x[k] !== 'object'
-                  ? (acc[k] = x[k])
-                  : Object.assign(acc[k], x[k])
-              );
+              Object.keys(x).forEach(k => (!acc[k] || Array.isArray(x[k]) || typeof x[k] !== 'object' ? (acc[k] = x[k]) : Object.assign(acc[k], x[k])));
               return acc;
             }, {})
           ),
