@@ -53,7 +53,7 @@ export class CellRenderer {
 
   static numberCellRendererTemplate(value, context, grouping?, pattern?, scale?): string {
     let numbers = context.numberPipe.transform(value, grouping, pattern, scale, `1.${scale || 0}-${scale || 0}`);
-    return this.multiSelectCellRenderer(numbers);
+    return Array.isArray(value) ? this.multiSelectCellRenderer(numbers) : numbers;
   }
 
   static typeCellRenderer(param, customTooltip?) {

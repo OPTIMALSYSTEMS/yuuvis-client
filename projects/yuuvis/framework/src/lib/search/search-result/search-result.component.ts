@@ -35,7 +35,8 @@ export class SearchResultComponent {
     icSearch: SVGIcons['search'],
     icSearchFilter: SVGIcons['search-filter'],
     icArrowNext: SVGIcons['arrow-next'],
-    icArrowLast: SVGIcons['arrow-last']
+    icArrowLast: SVGIcons['arrow-last'],
+    refresh: SVGIcons['refresh']
   };
   tableData: ResponsiveTableData;
   // object type shown in the result list, will be null for mixed results
@@ -49,7 +50,7 @@ export class SearchResultComponent {
 
   @Input() set query(searchQuery: SearchQuery) {
     this._searchQuery = searchQuery;
-    this.queryTerm = `${this.translate.instant('eo.search.term')}: '${searchQuery.term}'`;
+    this.generateQueryDescription(searchQuery.term, searchQuery.types);
 
     if (searchQuery) {
       // execute the query and
@@ -158,6 +159,15 @@ export class SearchResultComponent {
     return row;
   }
 
+  refreshDetails() {
+    this.executeQuery();
+  }
+
+  generateQueryDescription(term: string, types?: string[]) {
+    const querytype = types.length > 1 ? ' ' : `${this.systemService.getLocalizedResource(`${types[0]}_label`)}, `;
+    this.queryTerm = `${querytype}${this.translate.instant('eo.search.term')}: '${term}'`;
+  }
+
   onPagingFormSubmit() {
     if (this.pagingForm.valid) {
       this.goToPage(this.pagingForm.value.page);
@@ -182,6 +192,7 @@ export class SearchResultComponent {
   onSelectionChanged(selectedRows: any[]) {
     this.itemsSelected.emit(selectedRows.map(r => r.id));
   }
+
   onSortChanged(sortModel: { colId: string; sort: string }[]) {
     if (JSON.stringify(this.tableData.sortModel) !== JSON.stringify(sortModel)) {
       // change query to reflect the sort setting from the grid

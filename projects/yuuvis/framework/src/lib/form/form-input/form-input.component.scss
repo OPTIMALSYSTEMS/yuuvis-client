@@ -1,4 +1,4 @@
-@import "./src/scss-shared/_mixins";
+@import './../../../../../../../src/scss-shared/_mixins';
 
 .yuv-form-input {
   .fe-wrapper {
@@ -69,10 +69,10 @@
 
   &.required .fe-wrapper {
     > label {
-      background-color: rgba(0,0,0, 0.06);
+      background-color: rgba(0, 0, 0, 0.06);
 
       &:after {
-        content: "*";
+        content: '*';
         padding: 0 4px;
         font-weight: bold;
       }
@@ -87,7 +87,7 @@
       color: var(--color-white);
       margin: 0 4px;
       &:after {
-        content: "!";
+        content: '!';
         margin-left: calc(var(--app-pane-padding) / 2);
       }
     }
@@ -112,9 +112,9 @@
 // styles for dark forms
 .dark .yuv-form-input {
   .fe-wrapper {
-    border-color: rgba(255,255,255, 0.54);
+    border-color: rgba(255, 255, 255, 0.54);
     > label {
-      color: rgba(255,255,255, 0.84);
+      color: rgba(255, 255, 255, 0.84);
     }
     &.focusWithin {
       border-color: #fff;
@@ -124,7 +124,7 @@
     }
   }
   .ui-dropdown.range {
-    background-color: rgba(255,255,255, 0.1);
+    background-color: rgba(255, 255, 255, 0.1);
   }
 }
 
@@ -152,7 +152,7 @@
     background-color: transparent;
   }
   button.ui-button {
-    background: rgba(0,0,0, 0.08);
+    background: rgba(0, 0, 0, 0.08);
     border: 0;
     border-radius: 2px;
     color: var(--text-color-caption);
@@ -188,7 +188,7 @@
   .ui-dropdown.range {
     width: 20px !important;
     margin: 0 4px;
-    background: rgba(0,0,0, 0.1);
+    background: rgba(0, 0, 0, 0.1);
     border: 0;
     border-radius: 2px;
     @include transition();
@@ -201,7 +201,7 @@
     }
 
     &:not(.ui-state-disabled):hover {
-      background: rgba(0,0,0, 0.2);
+      background: rgba(0, 0, 0, 0.2);
     }
 
     .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item {
