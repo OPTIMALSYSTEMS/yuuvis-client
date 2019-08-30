@@ -1,16 +1,2 @@
 :host {
-  .modelselect {
-    position: absolute;
-    left: 0;
-    top: 0;
-    padding: 10px;
-
-    button {
-      font-family: monospace;
-      &.current {
-        background-color: black;
-        color: white;
-      }
-    }
-  }
 }

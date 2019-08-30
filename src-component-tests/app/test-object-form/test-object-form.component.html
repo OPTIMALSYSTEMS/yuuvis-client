@@ -1,5 +1,6 @@
-<div class="modelselect">
-  <button *ngFor="let m of formModels" (click)="setModel(m.model)" [ngClass]="{ current: currentModel === m.model }">{{ m.label }}</button>
+<div class="testing-controls">
+  <button *ngFor="let m of formModels" (click)="setModel(m.model)"
+    [ngClass]="{ current: currentModel === m.model }">{{ m.label }}</button>
 </div>
 
 <yuv-object-form id="single" [formOptions]="currentModel"></yuv-object-form>

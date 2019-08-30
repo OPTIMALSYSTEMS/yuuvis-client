@@ -1225,6 +1225,14 @@ $yuv-panel-header-height: 110px;
     background-position: center center;
 }
 
+:host-context(.disabled) {
+  .fe-wrapper {
+    border-radius: 2px;
+    background-color: rgba(0, 0, 0, 0.06);
+    border-width: 0;
+  }
+}
+
 .yuv-form-input {
   .fe-wrapper {
     display: flex;

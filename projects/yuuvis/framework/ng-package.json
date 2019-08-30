@@ -3,6 +3,7 @@
   "dest": "../../../dist/yuuvis/framework",
   "whitelistedNonPeerDependencies": [
     "primeng",
+    "primeicons",
     "angular-split",
     "@angular/cdk",
     "ag-grid-angular",

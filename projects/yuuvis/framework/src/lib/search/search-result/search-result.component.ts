@@ -49,10 +49,9 @@ export class SearchResultComponent {
 
   @Input() set query(searchQuery: SearchQuery) {
     this._searchQuery = searchQuery;
-    this.queryTerm = `${this.translate.instant('eo.search.term')}: '${searchQuery.term}'`;
 
     if (searchQuery) {
-      // execute the query and
+      this.queryTerm = `${this.translate.instant('eo.search.term')}: '${searchQuery.term}'`;
       this.executeQuery();
     }
   }

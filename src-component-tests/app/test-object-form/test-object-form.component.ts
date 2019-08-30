@@ -3,6 +3,7 @@ import { booleanElements } from './data/form.boolean';
 import { datetimeElements } from './data/form.datetime';
 import { groupingModel } from './data/form.grouping';
 import { numberElements } from './data/form.numbers';
+import { formScriptingModel } from './data/form.scripting';
 import { stringElements } from './data/form.string';
 
 @Component({
@@ -58,6 +59,13 @@ export class TestObjectFormComponent implements OnInit {
       label: 'Number components',
       model: {
         formModel: this.wrap(numberElements),
+        data: {}
+      }
+    },
+    {
+      label: 'Form Scripting',
+      model: {
+        formModel: formScriptingModel,
         data: {}
       }
     }

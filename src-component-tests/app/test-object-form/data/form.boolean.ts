@@ -1,26 +1,35 @@
 export const booleanElements = [
   {
     readonly: false,
-    name: 'boolean:one',
-    label: 'Checkbox No. 1',
-    description: 'checkbox with a description',
-    type: 'boolean',
-    required: true
-  },
-  {
-    readonly: false,
-    name: 'boolean:two',
-    label: 'Checkbox No. 2 without description',
+    name: 'boolean:default',
+    label: 'default',
     description: '',
     type: 'boolean',
     required: false
   },
   {
-    readonly: true,
-    name: 'boolean:three',
-    label: 'Checkbox No. 3',
-    description: 'a description',
+    readonly: false,
+    name: 'boolean:one',
+    label: 'checkbox',
+    description: 'a checkbox with a description',
     type: 'boolean',
     required: true
+  },
+  {
+    readonly: true,
+    name: 'boolean:readonly',
+    label: 'readonly checkbox',
+    description: '',
+    type: 'boolean',
+    required: false
+  },
+  {
+    readonly: false,
+    name: 'boolean:tristate',
+    label: 'tristate checkbox',
+    tristate: true,
+    description: '',
+    type: 'boolean',
+    required: false
   }
 ];

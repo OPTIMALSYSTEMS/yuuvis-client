@@ -1,3 +1,5 @@
+@import './../../../../../src/scss-shared/vars';
+
 body {
   .ui-overlaypanel {
     border: none;
@@ -15,6 +17,21 @@ body {
     .ui-dialog-content {
       padding: 0;
       border: 0;
+    }
+  }
+
+  // chips
+  .ui-chips {
+    > ul.ui-inputtext {
+      padding: 0;
+      .ui-chips-token {
+        font-size: var(--font-caption);
+        padding: 2px;
+        margin: 2px 2px 0 0;
+        background: rgba(0, 0, 0, 0.03);
+        color: var(--text-color-caption);
+        border: 1px solid rgba(0, 0, 0, 0.15);
+      }
     }
   }
 }

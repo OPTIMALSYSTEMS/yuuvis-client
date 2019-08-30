@@ -70,33 +70,32 @@
         (situation !== 'SEARCH' && situation !== 'CREATE' && formElementRef.errors) ||
         ((situation === 'SEARCH' || situation === 'CREATE') && formElementRef.errors && (formElementRef.dirty || formElementRef.touched))
       ">
-      <div *ngIf="formElementRef.errors.daterange" translate>eo.form.property.daterange.invalid</div>
-      <div *ngIf="formElementRef.errors.numberrange" translate>eo.form.property.numberrange.invalid</div>
-      <div *ngIf="formElementRef.errors.number" translate>eo.form.property.number</div>
-      <div *ngIf="formElementRef.errors.precision" translate
-        [translateParams]="formElementRef.errors.precision.translateValues">
-        {{ formElementRef.errors.precision.translateKey }}
+      <div *ngIf="formElementRef.errors.daterange">{{'eo.form.property.daterange.invalid' | translate}}</div>
+      <div *ngIf="formElementRef.errors.numberrange">{{'eo.form.property.numberrange.invalid' | translate}}</div>
+      <div *ngIf="formElementRef.errors.number">{{'eo.form.property.number' | translate}}</div>
+      <div *ngIf="formElementRef.errors.precision">
+        {{ formElementRef.errors.precision.translateKey | translate: formElementRef.errors.precision.translateValues }}
       </div>
-      <div *ngIf="formElementRef.errors.scale" translate
-        [translateParams]="formElementRef.errors.scale.translateValues">
-        {{ formElementRef.errors.scale.translateKey }}
+      <div *ngIf="formElementRef.errors.scale">
+        {{ formElementRef.errors.scale.translateKey | translate: formElementRef.errors.scale.translateValues}}
       </div>
 
-      <div *ngIf="formElementRef.errors.regex || formElementRef.errors.pattern" translate>
-        eo.form.property.string.regex.nomatch</div>
-      <div *ngIf="formElementRef.errors.classificationemail" translate>
-        eo.form.property.string.error.classification.email</div>
-      <div *ngIf="formElementRef.errors.classificationurl" translate>eo.form.property.string.error.classification.url
+      <div *ngIf="formElementRef.errors.regex || formElementRef.errors.pattern">
+        {{'eo.form.property.string.regex.nomatch' | translate}}</div>
+      <div *ngIf="formElementRef.errors.classificationemail">
+        {{'eo.form.property.string.error.classification.email' | translate}}</div>
+      <div *ngIf="formElementRef.errors.classificationurl">
+        {{'eo.form.property.string.error.classification.url' | translate}}</div>
+      <div *ngIf="formElementRef.errors.onlyWhitespaces">{{'eo.form.property.string.error.whitespaces' | translate}}
       </div>
-      <div *ngIf="formElementRef.errors.onlyWhitespaces" translate>eo.form.property.string.error.whitespaces</div>
-      <div *ngIf="formElementRef.errors.datecontrol" translate>eo.form.property.date.invalid</div>
-      <div *ngIf="formElementRef.errors.codesystem" translate>eo.form.property.codesystem.value.invalid</div>
+      <div *ngIf="formElementRef.errors.datecontrol">{{'eo.form.property.date.invalid' | translate}}</div>
+      <div *ngIf="formElementRef.errors.codesystem">{{'eo.form.property.codesystem.value.invalid' | translate}}</div>
       <div *ngIf="formElementRef.errors.eoformScript">{{ formElementRef._eoFormElement.error.msg }}</div>
-      <div *ngIf="formElementRef.errors.required" translate>eo.form.property.required</div>
-      <div *ngIf="formElementRef.errors.maxlength" translate
-        [translateParams]="{ maxlength: formElementRef._eoFormElement.maxlen }">eo.form.property.maxlength</div>
-      <div *ngIf="formElementRef.errors.minlength" translate
-        [translateParams]="{ minlength: formElementRef._eoFormElement.minlen }">eo.form.property.minlength</div>
+      <div *ngIf="formElementRef.errors.required">{{'eo.form.property.required' | translate}}</div>
+      <div *ngIf="formElementRef.errors.maxlength">
+        {{'eo.form.property.maxlength' | translate: ({ maxlength: formElementRef._eoFormElement.maxlen })}}</div>
+      <div *ngIf="formElementRef.errors.minlength">
+        {{'eo.form.property.minlength' | translate: ({ minlength: formElementRef._eoFormElement.minlen })}}</div>
     </div>
   </div>
 </div>

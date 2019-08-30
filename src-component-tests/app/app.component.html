@@ -1,4 +1,8 @@
-<div class="head">yuuvis component playground</div>
+<div class="head"><span (click)="showNav = !showNav" class="hamburger"></span>yuuvis component playground</div>
+
+<nav>
+  <a [routerLink]="[route]" routerLinkActive="active" *ngFor="let route of routes">{{route}}</a>
+</nav>
 
 <div class="body">
   <router-outlet></router-outlet>

@@ -17,6 +17,7 @@
     .description {
       border: 0;
       font-size: var(--font-hint);
+      color: var(--text-color-caption);
       font-style: italic;
       padding: calc(var(--app-pane-padding) / 8) calc(var(--app-pane-padding) / 8) 0 calc(var(--app-pane-padding) / 8);
     }

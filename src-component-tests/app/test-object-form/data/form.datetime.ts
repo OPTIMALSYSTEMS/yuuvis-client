@@ -8,19 +8,28 @@ export const datetimeElements = [
     required: true
   },
   {
-    readonly: false,
-    name: 'datetime:two',
-    label: 'Checkbox No. 2 without description',
+    readonly: true,
+    name: 'datetime:disabled',
+    label: 'disabled datetim',
     description: '',
     type: 'datetime',
     required: false
   },
   {
-    readonly: true,
+    readonly: false,
+    name: 'datetime:two',
+    label: 'default datetime',
+    description: '',
+    type: 'datetime',
+    required: false
+  },
+  {
+    readonly: false,
     name: 'datetime:three',
-    label: 'Checkbox No. 3',
+    label: 'datetime with time',
+    withTime: true,
     description: 'a description',
     type: 'datetime',
-    required: true
+    required: false
   }
 ];
