@@ -18,19 +18,53 @@
   .head {
     background-color: black;
     color: #fff;
-    font-family: monospace;
-    grid-area: header;
 
+    > * {
+      font-family: monospace;
+      font-size: 1em;
+    }
+    grid-area: header;
+    padding-right: 10px;
     display: flex;
     align-items: center;
 
     .hamburger {
       background: hotpink;
       margin-right: 15px;
+      font-family: monospace;
       padding: 10px 15px;
       cursor: pointer;
       &:before {
         content: '\2630';
+      }
+    }
+
+    .title {
+      font-family: monospace;
+      flex: 1;
+    }
+    form {
+      input {
+        font-family: monospace;
+        border: 0;
+        background-color: rgba(255, 255, 255, 0.2);
+        margin-right: 4px;
+        padding: 4px;
+        color: #fff;
+        width: 90px;
+      }
+    }
+
+    button {
+      background: hotpink;
+      font-family: monospace;
+      padding: 4px;
+      color: #fff;
+    }
+
+    .user {
+      &.off {
+        text-decoration: line-through;
       }
     }
   }

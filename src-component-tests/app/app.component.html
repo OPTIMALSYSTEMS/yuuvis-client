@@ -1,4 +1,24 @@
-<div class="head"><span (click)="showNav = !showNav" class="hamburger"></span>yuuvis component playground</div>
+<div class="head">
+  <span (click)="showNav = !showNav" class="hamburger"></span>
+  <div class="title">
+    yuuvis component playground
+  </div>
+
+  <div class="login">
+
+    <form [formGroup]="loginForm" novalidate *ngIf="!credentialsSet && !credentialsOff; else tplClear">
+      <input type="text" formControlName="tenant" placeholder="tenant">
+      <input type="text" formControlName="username" placeholder="username">
+      <input type="password" formControlName="password" placeholder="password">
+      <button (click)="login()">login</button>
+    </form>
+
+    <ng-template #tplClear>
+      <div class="user" (click)="toggleAuth()" [ngClass]="{off: this.credentialsOff}">{{user?.username}}</div>
+      <button (click)="clear()">clear credentials</button>
+    </ng-template>
+  </div>
+</div>
 
 <nav>
   <a [routerLink]="[route]" routerLinkActive="active" *ngFor="let route of routes">{{route}}</a>

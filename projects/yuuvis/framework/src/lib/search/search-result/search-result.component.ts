@@ -1,16 +1,6 @@
 import { Component, EventEmitter, HostBinding, Input, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import {
-  BaseObjectTypeField,
-  SearchQuery,
-  SearchResult,
-  SearchResultItem,
-  SearchService,
-  SecondaryObjectTypeField,
-  SortOption,
-  SystemService,
-  TranslateService
-} from '@yuuvis/core';
+import { BaseObjectTypeField, SearchQuery, SearchResult, SearchResultItem, SearchService, SecondaryObjectTypeField, SortOption } from '@yuuvis/core';
 import { ColDef } from 'ag-grid-community';
 import { ResponsiveTableData } from '../../components';
 import { ColumnSizes } from '../../services/grid/grid.interface';
@@ -29,14 +19,12 @@ export class SearchResultComponent {
   private _rows: any[];
   private _hasPages = false;
   pagingForm: FormGroup;
-  queryTerm: string;
+
   // icons used within the template
   icon = {
-    icSearch: SVGIcons['search'],
     icSearchFilter: SVGIcons['search-filter'],
     icArrowNext: SVGIcons['arrow-next'],
-    icArrowLast: SVGIcons['arrow-last'],
-    refresh: SVGIcons['refresh']
+    icArrowLast: SVGIcons['arrow-last']
   };
   tableData: ResponsiveTableData;
   // object type shown in the result list, will be null for mixed results
@@ -50,14 +38,18 @@ export class SearchResultComponent {
 
   @Input() set query(searchQuery: SearchQuery) {
     this._searchQuery = searchQuery;
-    this.generateQueryDescription(searchQuery.term, searchQuery.types);
-
     if (searchQuery) {
-      this.queryTerm = `${this.translate.instant('eo.search.term')}: '${searchQuery.term}'`;
       this.executeQuery();
+    } else {
+      // reset
+      this.createTableData({
+        hasMoreItems: false,
+        totalNumItems: 0,
+        items: [],
+        objectTypes: []
+      });
     }
   }
-  @Input() title: string;
   @Input() selectedItemId: string;
   // emits the current selection as list of object IDs
   @Output() itemsSelected = new EventEmitter<string[]>();
@@ -73,18 +65,17 @@ export class SearchResultComponent {
     return this._hasPages;
   }
 
-  constructor(
-    private translate: TranslateService,
-    private gridService: GridService,
-    private searchService: SearchService,
-    private fb: FormBuilder,
-    private systemService: SystemService
-  ) {
-    const pre = `${this.translate.instant('eo.search.term')}: `;
-    this.title = this.translate.instant('eo.search.title');
+  constructor(private gridService: GridService, private searchService: SearchService, private fb: FormBuilder) {
     this.pagingForm = this.fb.group({
       page: ['']
     });
+  }
+
+  /**
+   * re-run the current query
+   */
+  refresh() {
+    this.executeQuery();
   }
 
   private executeQuery() {
@@ -104,7 +95,7 @@ export class SearchResultComponent {
       // setup pagination form in case of a paged search result chunk
       this.pagination = null;
       this.hasPages = searchResult.items.length !== searchResult.totalNumItems;
-      if (searchResult.totalNumItems > this._searchQuery.size) {
+      if (this._searchQuery && searchResult.totalNumItems > this._searchQuery.size) {
         this.pagination = {
           pages: Math.ceil(searchResult.totalNumItems / this._searchQuery.size),
           page: (!this._searchQuery.from ? 0 : this._searchQuery.from / this._searchQuery.size) + 1
@@ -131,7 +122,7 @@ export class SearchResultComponent {
       };
 
       // setup current sort state from the query
-      if (this._searchQuery.sortOptions.length) {
+      if (this._searchQuery && this._searchQuery.sortOptions.length) {
         // this._searchQuery.sortOptions.forEach((so: SortOption) => {
 
         //   // this._gridOptions.api.setSortModel([{colId: "enaio:creationDate", sort: "desc"}]);
@@ -157,19 +148,6 @@ export class SearchResultComponent {
       row[cd.field] = searchResultItem.fields.get(cd.field);
     });
     return row;
-  }
-
-  refreshDetails() {
-    this.executeQuery();
-  }
-
-  generateQueryDescription(term: string, types?: string[]) {
-    const querytype: string = types.length ? `${this.systemService.getLocalizedResource(`${types[0]}_label`)}, ` : '';
-
-    console.log({ types });
-    console.log({ querytype });
-
-    this.queryTerm = `${querytype}${this.translate.instant('eo.search.term')}: '${term}'`;
   }
 
   onPagingFormSubmit() {

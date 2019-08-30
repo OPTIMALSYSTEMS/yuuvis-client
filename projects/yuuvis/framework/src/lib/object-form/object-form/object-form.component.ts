@@ -300,16 +300,14 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
     //   }
     //   case 'CODESYSTEM': {
     //     if (!fc._eoFormElement.codesystem.entries) {
-    //       this.getDataMeta(fc._eoFormElement, newVal).subscribe(m => {
-    //         fc._eoFormElement.codesystem = m;
-    //       });
+    //        fc._eoFormElement.codesystem = this.systemService.getCodesystem(fc._eoFormElement.codesystem.id);
     //     }
     //     break;
     //   }
     //   case 'TABLE': {
     //     const dataToBeProcessed = {};
     //     fc._eoFormElement.elements.forEach(e => {
-    //       if (e.type === 'ORGANIZATION') {
+    //        if (e.type === 'ORGANIZATION' || e.type === 'CODESYSTEM') {
     //         dataToBeProcessed[e.name] = e;
     //       }
     //     });
@@ -349,9 +347,9 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
   //         return this.systemService.getOrganizationObject(newValue);
   //       }
   //       case 'CODESYSTEM': {
-  //         if (!formElement.codesystem.entries) {
-  //           return observableOf(this.systemService.getCodesystem(formElement.codesystem.id));
-  //         }
+  //         return observableOf(this.systemService.getCodesystem(formElement.codesystem.id).entries.find((entry)=>{
+  //   return entry.defaultrepresentation === newValue;
+  // }));
   //         break;
   //       }
   //     }

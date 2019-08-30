@@ -1,8 +1,7 @@
 <div class="testing-controls">
   <button (click)="setQuery()">Set Query</button>
-  <button (click)="clearDmsObjectInput()">NULL dmsObject input</button>
-  <button (click)="clearDmsObjectInput()">Invalid dmsObject input</button>
+  <button (click)="clearQuery()">Clear Query</button>
 </div>
 
 
-<yuv-search-result [query]="query"></yuv-search-result>
+<yuv-search-result class="cmp" [query]="query"></yuv-search-result>

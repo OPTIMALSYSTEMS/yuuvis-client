@@ -17,5 +17,8 @@ export class TestSearchResultComponent implements OnInit {
     });
   }
 
+  clearQuery() {
+    this.query = null;
+  }
   ngOnInit() {}
 }
