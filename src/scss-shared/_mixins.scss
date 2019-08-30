@@ -31,31 +31,16 @@
   box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.2);
 }
 
-@mixin box-shadow(
-  $horizontalLength: 0,
-  $verticalLength: 1px,
-  $blurRadius: 0,
-  $spread: 0,
-  $color: $color-primary-3
-) {
+@mixin box-shadow($horizontalLength: 0, $verticalLength: 1px, $blurRadius: 0, $spread: 0, $color: $color-primary-3) {
   box-shadow: $horizontalLength $verticalLength $blurRadius $spread $color;
-  -webkit-box-shadow: $horizontalLength $verticalLength $blurRadius $spread
-    $color;
+  -webkit-box-shadow: $horizontalLength $verticalLength $blurRadius $spread $color;
 }
 
 @mixin linear-gradient($from, $to) {
   background: $from;
   background: -moz-linear-gradient(left, $from 0%, $to 100%); /* FF3.6-15 */
-  background: -webkit-linear-gradient(
-    left,
-    $from 0%,
-    $to 100%
-  ); /* Chrome10-25,Safari5.1-6 */
-  background: linear-gradient(
-    to right,
-    $from 0%,
-    $to 100%
-  ); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+  background: -webkit-linear-gradient(left, $from 0%, $to 100%); /* Chrome10-25,Safari5.1-6 */
+  background: linear-gradient(to right, $from 0%, $to 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
 }
 
 @mixin placeholder($color) {
@@ -211,4 +196,15 @@ $desktop-width: 1024px;
 
 @mixin shades-of-gray($alpa) {
   background-color: rgba(0, 0, 0, $alpa);
+}
+
+@mixin lineWrapper($lines: 2, $lineHight: 23px, $maxHeight: 61px) {
+  line-height: $lineHight;
+  max-height: $maxHeight;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: $lines;
+  /* autoprefixer: off */
+  -webkit-box-orient: vertical;
+  /* autoprefixer: on */
 }

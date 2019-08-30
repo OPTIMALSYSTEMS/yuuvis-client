@@ -37,7 +37,7 @@ export class YuvUser {
    * @returns locale string
    */
   public getClientLocale(): string {
-    return this.userSettings.locale;
+    return this.userSettings.locale || 'en';
   }
 
   public getFullName(): string {

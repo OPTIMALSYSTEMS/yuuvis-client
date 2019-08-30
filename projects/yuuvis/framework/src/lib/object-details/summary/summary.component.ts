@@ -1,5 +1,5 @@
-import { Component, Input } from '@angular/core';
-import { BaseObjectTypeField, ContentStreamField, DmsObject, ParentField, SystemService, UserService } from '@yuuvis/core';
+import { Component, Input, OnInit } from '@angular/core';
+import { AppCacheService, BaseObjectTypeField, ContentStreamField, DmsObject, ParentField, SystemService, UserService } from '@yuuvis/core';
 import { ColDef, ICellRendererFunc } from 'ag-grid-community';
 import { GridService } from '../../services/grid/grid.service';
 import { Summary } from './summary.interface';
@@ -9,8 +9,9 @@ import { Summary } from './summary.interface';
   templateUrl: './summary.component.html',
   styleUrls: ['./summary.component.scss']
 })
-export class SummaryComponent {
+export class SummaryComponent implements OnInit {
   summary: Summary;
+  selected: boolean = false;
 
   @Input()
   set dmsObject(dmsObject: DmsObject) {
@@ -19,20 +20,23 @@ export class SummaryComponent {
     }
   }
 
-  constructor(private systemService: SystemService, private gridService: GridService, private userService: UserService) {}
+  constructor(
+    private systemService: SystemService,
+    private gridService: GridService,
+    private userService: UserService,
+    private appCacheService: AppCacheService
+  ) {}
 
   get hasRights(): boolean {
     return this.userService.hasAdministrationRoles;
   }
 
-  private generateSummary(dmsObject: DmsObject) {
-    const summary: Summary = {
-      core: [],
-      base: [],
-      extras: [],
-      parent: []
-    };
+  adminInfoOpen(status: boolean) {
+    this.appCacheService.setItem('object.details.admin.info', status).subscribe();
+    this.selected = status;
+  }
 
+  private getSummaryConfiguration(dmsObject: DmsObject) {
     const skipFields: string[] = [
       ContentStreamField.ID,
       BaseObjectTypeField.OBJECT_TYPE_ID,
@@ -40,9 +44,7 @@ export class SummaryComponent {
       BaseObjectTypeField.PARENT_ID,
       BaseObjectTypeField.PARENT_OBJECT_TYPE_ID,
       BaseObjectTypeField.PARENT_VERSION_NUMBER,
-      'tenKolibri:tableofnotices',
-      'clienttitle',
-      'clientdescription'
+      'tenKolibri:tableofnotices'
     ];
 
     const defaultBaseFields: { key: string; order: number }[] = [
@@ -73,6 +75,19 @@ export class SummaryComponent {
 
     const extraFields: string[] = [ContentStreamField.DIGEST, ContentStreamField.ARCHIVE_PATH, ContentStreamField.REPOSITORY_ID];
     baseFields.map(fields => extraFields.push(fields));
+
+    return { skipFields, extraFields, patentFields, defaultBaseFields };
+  }
+
+  private generateSummary(dmsObject: DmsObject) {
+    const summary: Summary = {
+      core: [],
+      base: [],
+      extras: [],
+      parent: []
+    };
+
+    const { skipFields, patentFields, extraFields, defaultBaseFields } = this.getSummaryConfiguration(dmsObject);
     this.gridService.getColumnConfiguration(dmsObject.objectTypeId).subscribe((colDef: ColDef[]) => {
       Object.keys(dmsObject.data).forEach((key: string) => {
         const prepKey = key.startsWith('parent.') ? key.replace('parent.', '') : key;
@@ -82,6 +97,7 @@ export class SummaryComponent {
         const renderer: ICellRendererFunc = def ? (def.cellRenderer as ICellRendererFunc) : null;
         const si = {
           label: label ? label : key,
+          key,
           value: renderer ? renderer({ value: dmsObject.data[key] }) : dmsObject.data[key],
           order: null
         };
@@ -105,5 +121,13 @@ export class SummaryComponent {
     });
 
     return summary;
+  }
+
+  ngOnInit(): void {
+    this.appCacheService.getItem('object.details.admin.info').subscribe((status: boolean) => {
+      if (status) {
+        this.selected = status;
+      }
+    });
   }
 }

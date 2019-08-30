@@ -22,10 +22,8 @@ export class DmsService {
   getDmsObjects(ids: string[]): Observable<DmsObject[]> {
     const q = new SearchQuery();
     q.addFilter(new SearchFilter(BaseObjectTypeField.OBJECT_ID, SearchFilter.OPERATOR.IN, ids));
-    return this.searchService.search(q).pipe(
-      map((res: SearchResult) => {
-        return res.items.map(i => new DmsObject(i, this.systemService.getObjectType(i.objectTypeId).isFolder));
-      })
-    );
+    return this.searchService
+      .search(q)
+      .pipe(map((res: SearchResult) => res.items.map(i => new DmsObject(i, this.systemService.getObjectType(i.objectTypeId).isFolder))));
   }
 }

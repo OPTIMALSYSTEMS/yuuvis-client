@@ -1,11 +1,30 @@
 $yuv-panel-toolbar-width: 57px;
 $yuv-panel-header-height: 110px;
-
 .yuv-search-result {
   height: 100%;
   position: relative;
   yuv-panel {
     padding: 0;
+  }
+}
+
+.search-result.yuv-panel-wrapper {
+  ::ng-deep {
+    .header_text {
+      :host-context(.screen-s) & {
+        grid-template-rows: repeat(auto-fit, 25px);
+
+        .header_description {
+          overflow: unset;
+          display: block;
+        }
+      }
+    }
+    .extras {
+      :host-context(.screen-s) & {
+        justify-self: end;
+      }
+    }
   }
 }
 
