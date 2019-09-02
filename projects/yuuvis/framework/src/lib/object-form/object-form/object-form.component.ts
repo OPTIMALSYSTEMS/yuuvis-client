@@ -153,6 +153,7 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
   // Create a reactive form from the enaio form model
   private buildReactiveForm(formOptions) {
     this.scriptingScope = null;
+    this.scriptModel = {};
     const formModel = this.dataToForm(formOptions.formModel, formOptions.data);
 
     if (!formModel) {
