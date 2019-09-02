@@ -6,7 +6,6 @@ import { ObjectFormGroup } from '../object-form.model';
   selector: 'yuv-object-form-group',
   templateUrl: './object-form-group.component.html',
   styleUrls: ['./object-form-group.component.scss'],
-  // changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None
 })
 export class ObjectFormGroupComponent {

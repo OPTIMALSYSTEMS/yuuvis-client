@@ -11,9 +11,10 @@ import { TestObjectFormComponent } from './test-object-form/test-object-form.com
 import { TestSearchResultPanelComponent } from './test-search-result-panel/test-search-result-panel.component';
 import { TestSearchResultComponent } from './test-search-result/test-search-result.component';
 import { TestSummaryComponent } from './test-summary/test-summary.component';
+import { TestResponsiveTabContainerComponent } from './test-responsive-tab-container/test-responsive-tab-container.component';
 
 @NgModule({
-  declarations: [AppComponent, TestObjectFormComponent, TestSummaryComponent, TestSearchResultComponent, TestSearchResultPanelComponent],
+  declarations: [AppComponent, TestObjectFormComponent, TestSummaryComponent, TestSearchResultComponent, TestSearchResultPanelComponent, TestResponsiveTabContainerComponent],
   imports: [
     HttpClientModule,
     BrowserModule,

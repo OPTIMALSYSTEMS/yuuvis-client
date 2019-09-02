@@ -8,7 +8,7 @@ export interface SearchResult {
 
 export interface SearchResultItem {
   objectTypeId: string;
-  content: SearchResultContent;
+  content?: SearchResultContent;
   fields: Map<string, any>;
 }
 

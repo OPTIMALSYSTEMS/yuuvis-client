@@ -14,7 +14,7 @@
         display: inline-block;
         font-size: var(--font-hint);
         border-radius: 2px;
-        color: var(--color-white);
+        color: #fff;
         background-color: rgba(0, 0, 0, 0.22);
         padding: calc(var(--app-pane-padding) / 8) calc(var(--app-pane-padding) / 4);
       }
@@ -42,7 +42,7 @@
       &.invalid-true {
         a .ui-tabview-title {
           background-color: var(--color-error);
-          color: var(--color-white);
+          color: #fff;
 
           &:after {
             content: '!';

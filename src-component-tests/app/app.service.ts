@@ -8,7 +8,6 @@ import { Observable, ReplaySubject } from 'rxjs';
 export class AppService {
   private STORAGE_KEY = 'cmp.cred';
   private credentials: Credentials;
-  private off: boolean;
 
   private credentialsSource = new ReplaySubject<Credentials>();
   public credentials$: Observable<Credentials> = this.credentialsSource.asObservable();
@@ -35,20 +34,8 @@ export class AppService {
     this.storage.setItem(this.STORAGE_KEY, this.credentials).subscribe();
   }
 
-  toggleCredentials(): boolean {
-    if (!this.off) {
-      this.credentialsSource.next(null);
-      this.off = true;
-    } else {
-      this.credentialsSource.next(this.credentials);
-      this.off = false;
-    }
-    return this.off;
-  }
-
   getCurrentCredentials() {
-    // return this.credentials;
-    return this.off ? null : this.credentials;
+    return this.credentials;
   }
 }
 

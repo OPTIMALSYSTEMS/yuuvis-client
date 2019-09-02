@@ -1,9 +1,47 @@
+@import './../styles.vars.scss';
+
 :host {
   height: 100vh;
   display: grid;
   grid-template-columns: auto 1fr;
   grid-template-rows: auto 1fr;
   grid-template-areas: 'header header' 'nav content';
+
+  button {
+    background: $color-accent;
+    font-family: monospace;
+    padding: 2px;
+    color: #fff;
+  }
+
+  .login {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background-color: $color-primary;
+    display: grid;
+    align-items: center;
+    justify-content: center;
+
+    form {
+      display: flex;
+      flex-flow: column;
+      align-items: center;
+
+      input {
+        font-family: monospace;
+        border: 0;
+        background-color: rgba(255, 255, 255, 0.2);
+        margin-right: 4px;
+        padding: 4px;
+        color: #fff;
+        margin-bottom: 4px;
+        // width: 120px;
+      }
+    }
+  }
 
   &.showNav {
     nav {
@@ -16,23 +54,18 @@
   }
 
   .head {
-    background-color: black;
+    background-color: $color-primary;
     color: #fff;
-
-    > * {
-      font-family: monospace;
-      font-size: 1em;
-    }
     grid-area: header;
     padding-right: 10px;
     display: flex;
     align-items: center;
 
     .hamburger {
-      background: hotpink;
-      margin-right: 15px;
+      background: $color-accent;
+      margin-right: $app-pane-padding;
       font-family: monospace;
-      padding: 10px 15px;
+      padding: 10px $app-pane-padding;
       cursor: pointer;
       &:before {
         content: '\2630';
@@ -43,35 +76,16 @@
       font-family: monospace;
       flex: 1;
     }
-    form {
-      input {
-        font-family: monospace;
-        border: 0;
-        background-color: rgba(255, 255, 255, 0.2);
-        margin-right: 4px;
-        padding: 4px;
-        color: #fff;
-        width: 90px;
-      }
-    }
-
-    button {
-      background: hotpink;
-      font-family: monospace;
-      padding: 4px;
-      color: #fff;
-    }
 
     .user {
-      &.off {
-        text-decoration: line-through;
-      }
+      font-family: monospace;
+      margin-right: $app-pane-padding;
     }
   }
 
   nav {
     display: none;
-    background-color: black;
+    background-color: $color-primary;
     flex-flow: column;
     border-top: 1px solid rgba(255, 255, 255, 0.3);
     padding: 2em 0;
@@ -82,7 +96,7 @@
       color: #fff;
 
       &.active {
-        background-color: hotpink;
+        background-color: $color-accent;
       }
     }
   }

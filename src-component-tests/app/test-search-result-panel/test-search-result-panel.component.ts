@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { SearchQuery } from '@yuuvis/core';
 
 @Component({
   selector: 'yuv-test-search-result-panel',
@@ -6,10 +7,18 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./test-search-result-panel.component.scss']
 })
 export class TestSearchResultPanelComponent implements OnInit {
+  query: SearchQuery;
+  constructor() {}
 
-  constructor() { }
-
-  ngOnInit() {
+  setQuery() {
+    this.query = new SearchQuery({
+      term: '*'
+    });
   }
 
+  onItemsSelected(e) {
+    console.log(e);
+  }
+
+  ngOnInit() {}
 }

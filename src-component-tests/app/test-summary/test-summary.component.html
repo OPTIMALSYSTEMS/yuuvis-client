@@ -1,7 +1,8 @@
 <div class="testing-controls">
   <button (click)="setDmsObjectInput()">Set dmsObject input</button>
+  <button (click)="contentDmsObjectInput()">with content</button>
   <button (click)="clearDmsObjectInput()">NULL dmsObject input</button>
   <button (click)="clearDmsObjectInput()">Invalid dmsObject input</button>
 </div>
 
-<yuv-summary [dmsObject]="summaryObject"></yuv-summary>
+<yuv-summary class="cmp" [dmsObject]="summaryObject"></yuv-summary>

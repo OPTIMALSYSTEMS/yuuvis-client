@@ -277,7 +277,7 @@ $desktop-width: 1024px;
         display: inline-block;
         font-size: var(--font-hint);
         border-radius: 2px;
-        color: var(--color-white);
+        color: #fff;
         background-color: rgba(0, 0, 0, 0.22);
         padding: calc(var(--app-pane-padding) / 8) calc(var(--app-pane-padding) / 4);
       }
@@ -305,7 +305,7 @@ $desktop-width: 1024px;
       &.invalid-true {
         a .ui-tabview-title {
           background-color: var(--color-error);
-          color: var(--color-white);
+          color: #fff;
 
           &:after {
             content: '!';
@@ -773,7 +773,7 @@ p-dialog .ui-dialog.ui-widget {
   }
   &-header {
     background-color: var(--color-accent);
-    color: var(--color-white);
+    color: #fff;
     padding: var(--app-pane-padding) calc(var(--app-pane-padding) * 2.5) calc(var(--app-pane-padding) * 2) var(--app-pane-padding);
     font-weight: var(--font-weight-light);
     font-size: var(--font-headline);
@@ -1533,21 +1533,18 @@ $yuv-panel-header-height: 110px;
   }
 }
 
-//noinspection CssInvalidPseudoSelector
-:host::ng-deep {
-  .yuv-object-form > .data > yuv-form-group > .form-element.o2mGroupStack {
-    background: transparent;
-    border: 0;
+.yuv-object-form > .data > yuv-object-form-group > .form-element.o2mGroupStack {
+  background: transparent;
+  border: 0;
 
-    & > yuv-form-group > .o2mGroup {
-      background-color: var(--panel-background-lightgrey);
-      border-top: 1px solid rgba(0, 0, 0, 0.1);
-      padding: var(--app-pane-padding);
-    }
+  & > yuv-object-form-group > .o2mGroup {
+    background-color: var(--panel-background-lightgrey);
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    padding: var(--app-pane-padding);
+  }
 
-    & > p-tabview > .ui-tabview > .ui-tabview-panels {
-      background-color: var(--panel-background-lightgrey);
-    }
+  & > p-tabview > .ui-tabview > .ui-tabview-panels {
+    background-color: var(--panel-background-lightgrey);
   }
 }
 // .eo-head.eo-head-tabs {
@@ -1822,7 +1819,7 @@ $yuv-panel-header-height: 110px;
       width: 10px;
       height: 10px;
       border-radius: 50%;
-      background-color: var(--color-white);
+      background-color: #fff;
       border: 2px solid var(--text-color-hint);
       z-index: 1;
     }
@@ -2008,7 +2005,7 @@ $range-selection-highlight-color: $primary-color;
     }
 
     &.baseparams .label {
-      color: var(--color-black);
+      color: #000;
       background-color: var(--panel-background-grey);
     }
   }
@@ -2032,11 +2029,19 @@ $range-selection-highlight-color: $primary-color;
       top: 1px;
       right: 1px;
       display: flex;
-      height: 35px;
-      background: #f4f4f4;
-      border-top-left-radius: 3px;
-      border-top-right-radius: 3px;
-      border: 1px solid #c8c8c8;
+      cursor: pointer;
+      color: var(--text-color-hint);
+
+      &:hover {
+        color: var(--text-color-caption);
+      }
+
+      yuv-icon {
+        width: 24px;
+        height: 24px;
+        padding: 7px;
+        box-sizing: content-box;
+      }
     }
   }
 }
@@ -2050,17 +2055,12 @@ $range-selection-highlight-color: $primary-color;
       margin-right: 0;
     }
 
-    .ui-tabview-close:after {
-      content: '\0000D7';
-    }
+    // .ui-tabview-close:after {
+    //   content: '\0000D7';
+    // }
 
     li.ui-state-disabled {
       display: none;
-    }
-
-    li.ui-state-active {
-      border: 1px solid var(--color-accent) !important;
-      background: var(--color-accent) !important;
     }
   }
 

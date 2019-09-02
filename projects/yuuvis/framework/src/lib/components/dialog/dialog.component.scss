@@ -32,7 +32,7 @@ p-dialog .ui-dialog.ui-widget {
   }
   &-header {
     background-color: var(--color-accent);
-    color: var(--color-white);
+    color: #fff;
     padding: var(--app-pane-padding) calc(var(--app-pane-padding) * 2.5) calc(var(--app-pane-padding) * 2) var(--app-pane-padding);
     font-weight: var(--font-weight-light);
     font-size: var(--font-headline);

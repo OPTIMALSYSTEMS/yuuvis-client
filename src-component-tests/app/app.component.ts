@@ -14,7 +14,6 @@ export class AppComponent implements OnInit {
   loginForm: FormGroup;
   defaultTenant = 'kolibri';
   credentialsSet: boolean;
-  credentialsOff: boolean;
   user: YuvUser;
 
   @HostBinding('class.showNav') showNav: boolean;
@@ -28,6 +27,9 @@ export class AppComponent implements OnInit {
 
     this.appService.credentials$.subscribe(c => {
       this.credentialsSet = !!c;
+      if (c) {
+        this.userService.fetchUserSettings().subscribe();
+      }
     });
     this.userService.user$.subscribe(u => {
       this.user = u;
@@ -38,11 +40,7 @@ export class AppComponent implements OnInit {
     this.appService.setCredentials(this.loginForm.value.tenant, this.loginForm.value.username, this.loginForm.value.password);
   }
 
-  toggleAuth() {
-    this.credentialsOff = this.appService.toggleCredentials();
-  }
-
-  clear() {
+  logout() {
     this.appService.clearCredentials();
   }
 
