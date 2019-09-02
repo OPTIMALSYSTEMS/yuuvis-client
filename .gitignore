@@ -3,6 +3,8 @@
 # generated documentation
 /documentation
 
+/tools/scripts/common/dist
+
 # cordova
 /cordova/www/*
 /cordova/node_modules
