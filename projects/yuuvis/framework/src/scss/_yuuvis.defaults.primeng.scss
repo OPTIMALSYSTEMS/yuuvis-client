@@ -114,6 +114,61 @@ body {
     }
   }
 
+  // checkbox
+  p-tristatecheckbox {
+    &.undefined {
+      .ui-chkbox .ui-chkbox-box {
+        border-color: transparent;
+      }
+    }
+  }
+
+  $ui-checkbox-border-color: rgba(0, 0, 0, 0.2);
+  $ui-checkbox-background-color: rgba(0, 0, 0, 0.06);
+  .ui-chkbox {
+    margin: 0;
+    .ui-chkbox-box {
+      background-color: $ui-checkbox-background-color;
+      width: 18px;
+      height: 18px;
+      outline: 0;
+      border-radius: 0;
+      line-height: 16px;
+      border: 2px solid $ui-checkbox-border-color;
+      color: var(--text-color-caption);
+
+      .fa {
+        transition: none;
+      }
+      .fa-close {
+        display: none;
+      }
+
+      &.ui-state-active {
+        background-color: $ui-checkbox-background-color;
+        color: $ui-checkbox-border-color;
+        border-color: $ui-checkbox-border-color;
+
+        &:not(.ui-state-disabled):hover {
+          border-color: $ui-checkbox-border-color;
+          background-color: $ui-checkbox-background-color;
+        }
+      }
+
+      // focused state
+      &.ui-state-focus {
+        box-shadow: none;
+
+        // focus while also active
+        .ui-state-active {
+          background-color: $ui-checkbox-background-color;
+          color: var(--color-accent);
+          border-color: var(--color-accent);
+        }
+      }
+    }
+  }
+
   // ag-grid related overrides
   .ag-theme-yuv .ag-cell {
     .title,
