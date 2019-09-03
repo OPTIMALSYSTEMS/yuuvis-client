@@ -379,6 +379,108 @@
           }
         }
       }
+    },
+    "documentation": {
+      "root": "",
+      "sourceRoot": "src-docs",
+      "projectType": "application",
+      "prefix": "doc",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "dist/documentation",
+            "index": "src-docs/index.html",
+            "main": "src-docs/main.ts",
+            "polyfills": "src-docs/polyfills.ts",
+            "tsConfig": "src-docs/tsconfig.test.json",
+            "assets": ["src-docs/favicon.ico", "src-docs/assets"],
+            "styles": ["src-docs/styles.scss"],
+            "scripts": [],
+            "es5BrowserSupport": true
+          },
+          "configurations": {
+            "dev": {
+              "fileReplacements": [
+                {
+                  "replace": "src-docs/environments/environment.ts",
+                  "with": "src-docs/environments/environment.prod.ts"
+                },
+                {
+                  "replace": "src-docs/assets/default/i18n/en.json",
+                  "with": "src/assets/default/i18n/en.json"
+                },
+                {
+                  "replace": "src-docs/assets/default/i18n/de.json",
+                  "with": "src/assets/default/i18n/de.json"
+                },
+                {
+                  "replace": "src-docs/assets/default/config/main.json",
+                  "with": "src/assets/default/config/main.json"
+                }
+              ]
+            },
+            "production": {
+              "fileReplacements": [
+                {
+                  "replace": "src-docs/environments/environment.ts",
+                  "with": "src-docs/environments/environment.prod.ts"
+                },
+                {
+                  "replace": "src-docs/assets/default/i18n/en.json",
+                  "with": "src/assets/default/i18n/en.json"
+                },
+                {
+                  "replace": "src-docs/assets/default/i18n/de.json",
+                  "with": "src/assets/default/i18n/de.json"
+                },
+                {
+                  "replace": "src-docs/assets/default/config/main.json",
+                  "with": "src/assets/default/config/main.json"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "extractCss": true,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "browserTarget": "component-tests:build"
+          },
+          "configurations": {
+            "test": {
+              "browserTarget": "component-tests:build:test"
+            }
+          }
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "component-tests:build"
+          }
+        }
+      }
     }
   },
   "defaultProject": "yuuvis-flokfugl"

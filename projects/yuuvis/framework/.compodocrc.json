@@ -1,45 +1,17 @@
 {
   "name": "@yuuvis/framework library",
-  "output": "./../../../documentation/yuuvis/framework",
+  "output": "./../../../src-docs/assets/yuuvis/framework",
   "tsconfig": "./tsconfig.lib.json",
-  "customFavicon": "./../../../src/favicon.ico",
   "disableLifeCycleHooks": true,
   "disablePrivate": true,
   "disableProtected": true,
   "disableInternal": true,
   "disableGraph": true,
-  "disableCoverage": false,
-  "coverageTestThresholdFail": false,
-  "hideGenerator": true,
-
+  "disableCoverage": true,
   "disableDomTree": true,
   "disableSourceCode": true,
   "disableTemplateTab": true,
   "disableStyleTab": true,
   "disableRoutesGraph": true,
-  "exportFormat": "json",
-
-  "extTheme": "./../../doc-styles",
-  "navTabConfig": [
-    {
-      "id": "readme",
-      "label": "Implementation"
-    },
-    {
-      "id": "example",
-      "label": "Overview"
-    },
-    {
-      "id": "info",
-      "label": "API"
-    },
-    {
-      "id": "source",
-      "label": "Source"
-    },
-    {
-      "id": "tree",
-      "label": "DOM Tree"
-    }
-  ]
+  "exportFormat": "json"
 }
