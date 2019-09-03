@@ -11,6 +11,14 @@
   "disableCoverage": false,
   "coverageTestThresholdFail": false,
   "hideGenerator": true,
+
+  "disableDomTree": true,
+  "disableSourceCode": true,
+  "disableTemplateTab": true,
+  "disableStyleTab": true,
+  "disableRoutesGraph": true,
+  "exportFormat": "json",
+
   "extTheme": "./../../doc-styles",
   "navTabConfig": [
     {

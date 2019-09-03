@@ -2,7 +2,7 @@
 
 Creates form input for strings. Based on the input values different kinds of inputs will be generated.
 
-| property       | type    | description                                                                                                                                                                                                    |
+<!-- | property       | type    | description                                                                                                                                                                                                    |
 | -------------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | multiselect    | boolean | indicator that multiple strings could be inserted                                                                                                                                                              |
 | multiline      | boolean | Use multiline input (textarea instead of input)                                                                                                                                                                |
@@ -12,7 +12,7 @@ Creates form input for strings. Based on the input values different kinds of inp
 | regex          | string  | Regular expression to validate the input value against                                                                                                                                                         |
 | minLength      | number  | minimal number of characters                                                                                                                                                                                   |
 | maxLength      | number  | maximum number of characters                                                                                                                                                                                   |
-| classification | string  | possible values are `email` (validates and creates a link to send an email once there is a valid email address) and `url` (validates and creates a link to an URL typed into the form element).                |
+| classification | string  | possible values are `email` (validates and creates a link to send an email once there is a valid email address) and `url` (validates and creates a link to an URL typed into the form element).                | -->
 
 ## Examples
 
@@ -31,6 +31,6 @@ Creates form input for strings. Based on the input values different kinds of inp
 <yuv-string [multiline]="true" [size]="'large'"></yuv-string>
 ```
 
-## `<yuv-form-input>` wrapper
+## yuv-form-input wrapper
 
 In order to add a proper label to this component you may wrap it using `<yuv-form-input>` component.
