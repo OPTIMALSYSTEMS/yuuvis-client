@@ -1,0 +1,12 @@
+<yuv-panel class="search-result" [title]="title" [description]="queryTerm">
+  <yuv-icon class="header-icon" [svg]="icon.icSearch"></yuv-icon>
+
+  <yuv-action-menu-bar class="actions">
+    <yuv-icon (click)="refresh()" [title]="('eo.list.refresh' | translate)" class="button refresh-button"
+      [svg]="icon.refresh"></yuv-icon>
+  </yuv-action-menu-bar>
+
+  <yuv-search-result class="content" [query]="_searchQuery" [selectedItemId]="selectedItemId"
+    (itemsSelected)="onItemsSelected($event)">
+  </yuv-search-result>
+</yuv-panel>

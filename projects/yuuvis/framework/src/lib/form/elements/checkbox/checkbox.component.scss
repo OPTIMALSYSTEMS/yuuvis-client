@@ -7,7 +7,7 @@
     align-items: center;
   }
 
-  eo-icon {
+  yuv-icon {
     height: 16px;
     width: 16px;
     color: var(--text-color-hint);
@@ -16,9 +16,8 @@
   }
 }
 
-
 .dark .yuv-checkbox {
-  eo-icon {
-    color: rgba(var(--color-white-rgb), 0.8);
+  yuv-icon {
+    color: rgba(255, 255, 255, 0.8);
   }
 }

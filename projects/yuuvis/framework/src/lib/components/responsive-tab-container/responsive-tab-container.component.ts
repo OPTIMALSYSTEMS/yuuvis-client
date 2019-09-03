@@ -5,6 +5,9 @@ import { Observable } from 'rxjs';
 import { filter, map, take, tap } from 'rxjs/operators';
 import { SVGIcons } from '../../svg.generated';
 
+/**
+ *
+ */
 @Component({
   selector: 'yuv-responsive-tab-container',
   templateUrl: './responsive-tab-container.component.html',

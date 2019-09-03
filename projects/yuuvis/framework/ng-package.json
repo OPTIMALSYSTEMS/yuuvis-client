@@ -3,12 +3,14 @@
   "dest": "../../../dist/yuuvis/framework",
   "whitelistedNonPeerDependencies": [
     "primeng",
+    "primeicons",
     "angular-split",
     "@angular/cdk",
     "ag-grid-angular",
     "ag-grid-community",
     "angular-resize-event",
     "moment",
+    "lodash",
     "take-until-destroy"
   ],
   "lib": {

@@ -2,11 +2,11 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, fakeAsync, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
-import { BackendService, Config, Logger } from '@eo-sdk/core';
+// import { BackendService, Config, Logger } from '@eo-sdk/core';
 import { AutoCompleteModule } from 'primeng/autocomplete';
 import { ChipsModule } from 'primeng/chips';
 import { of as observableOf } from 'rxjs';
-import { ConfigStub, LoggerStub } from '../../../../../projects/eo-sdk/core/src/test/testStubs';
+// import { ConfigStub, LoggerStub } from '../../../../../projects/eo-sdk/core/src/test/testStubs';
 import { StringComponent } from './string.component';
 
 describe('StringComponent', () => {

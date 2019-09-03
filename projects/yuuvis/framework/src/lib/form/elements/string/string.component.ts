@@ -1,19 +1,12 @@
 import { Component, forwardRef, Input } from '@angular/core';
-import {
-  FormControl,
-  ControlValueAccessor,
-  Validator,
-  NG_VALUE_ACCESSOR,
-  NG_VALIDATORS
-} from '@angular/forms';
-import { Observable } from 'rxjs';
+import { ControlValueAccessor, FormControl, NG_VALIDATORS, NG_VALUE_ACCESSOR, Validator } from '@angular/forms';
 import { SVGIcons } from '../../../svg.generated';
 
 @Component({
   selector: 'yuv-string',
   templateUrl: './string.component.html',
   styleUrls: ['./string.component.scss'],
-  host: {'class': 'yuv-string'},
+  host: { class: 'yuv-string' },
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
@@ -28,14 +21,14 @@ import { SVGIcons } from '../../../svg.generated';
   ]
 })
 export class StringComponent implements ControlValueAccessor, Validator {
-
   icons = {
     envelope: SVGIcons.envelope,
     globe: SVGIcons.globe
   };
 
-  @Input() onAutoCompleteChanged: (value: string) => Observable<string[]>;
-
+  /**
+   * lala ding dong
+   */
   @Input() multiselect: boolean;
   @Input() multiline: boolean;
   @Input() readonly: boolean;
@@ -50,17 +43,13 @@ export class StringComponent implements ControlValueAccessor, Validator {
   @Input() minLength: number;
   @Input() maxLength: number;
 
-  autocompleteSuggestions: string[];
-
   // model value
   value;
   valid: boolean;
 
-  constructor() {
-  }
+  constructor() {}
 
-  propagateChange = (_: any) => {
-  };
+  propagateChange = (_: any) => {};
 
   onKeyUpEnter(event) {
     const input = event.target.value.trim();
@@ -80,8 +69,7 @@ export class StringComponent implements ControlValueAccessor, Validator {
     this.propagateChange = fn;
   }
 
-  registerOnTouched(fn: any): void {
-  }
+  registerOnTouched(fn: any): void {}
 
   onValueChange(evt) {
     this.value = evt.length ? evt : null;
@@ -98,14 +86,7 @@ export class StringComponent implements ControlValueAccessor, Validator {
     }
   }
 
-  autocompleteFn(evt) {
-    this.onAutoCompleteChanged(evt).subscribe((suggestions: string[]) => {
-      this.autocompleteSuggestions = suggestions;
-    });
-  }
-
   private validateClassification(string): boolean {
-
     if (this.situation === 'SEARCH') {
       return true;
     } else {
@@ -121,8 +102,7 @@ export class StringComponent implements ControlValueAccessor, Validator {
 
   // returns null when valid else the validation object
   public validate(c: FormControl) {
-
-    let err; 
+    let err;
     // validate regular expression
     if (this.value && this.regex) {
       if (this.multiselect) {
@@ -130,14 +110,14 @@ export class StringComponent implements ControlValueAccessor, Validator {
           err = {};
           err['regex'] = {
             valid: false
-          }
+          };
         }
       } else {
         if (!RegExp(this.regex).test(this.value)) {
           err = {};
           err['regex'] = {
             valid: false
-          }
+          };
         }
       }
     }
@@ -168,13 +148,26 @@ export class StringComponent implements ControlValueAccessor, Validator {
           err = {};
           err['minlength'] = {
             valid: false
-          }
+          };
         }
         if (this.value.length > 0 && !!this.value.find(v => v.length > this.maxLength)) {
           err = {};
           err['maxlength'] = {
             valid: false
-          }
+          };
+        }
+      } else {
+        if (this.value.length > 0 && this.value.length < this.minLength) {
+          err = {};
+          err['minlength'] = {
+            valid: false
+          };
+        }
+        if (this.value.length > this.maxLength) {
+          err = {};
+          err['maxlength'] = {
+            valid: false
+          };
         }
       }
     }
@@ -186,7 +179,7 @@ export class StringComponent implements ControlValueAccessor, Validator {
             err = {};
             err['onlyWhitespaces'] = {
               valid: false
-            }
+            };
           }
         }
       } else {
@@ -194,10 +187,10 @@ export class StringComponent implements ControlValueAccessor, Validator {
           err = {};
           err['onlyWhitespaces'] = {
             valid: false
-          }
+          };
         }
       }
-    }    
+    }
     this.valid = !err;
     return err ? err : null;
   }

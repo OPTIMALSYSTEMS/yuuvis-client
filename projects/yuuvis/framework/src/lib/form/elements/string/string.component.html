@@ -1,32 +1,32 @@
-<input *ngIf="!multiline && !multiselect && !onAutoCompleteChanged" type="text" pInputText (blur)="onBlur()"
-  [disabled]="readonly" [(ngModel)]="value" (ngModelChange)="onValueChange($event)" />
-
-<!-- single line input with autocomplete -->
-<p-autoComplete *ngIf="!multiline && !multiselect && onAutoCompleteChanged" #autocomplete [(ngModel)]="value"
-  [minLength]="3" [delay]="500" [disabled]="readonly" [suggestions]="autocompleteSuggestions" (onBlur)="onBlur()"
-  (onSelect)="onValueChange($event)" (ngModelChange)="onValueChange($event)" (completeMethod)="autocompleteFn($event)">
-</p-autoComplete>
+<input
+  *ngIf="!multiline && !multiselect"
+  type="text"
+  pInputText
+  (blur)="onBlur()"
+  [disabled]="readonly"
+  [(ngModel)]="value"
+  (ngModelChange)="onValueChange($event)"
+/>
 
 <!-- single line input with multiselect-->
-<p-chips *ngIf="!multiline && multiselect && !onAutoCompleteChanged" [(ngModel)]="value" [disabled]="readonly"
-  (onBlur)="onBlur()" (ngModelChange)="onValueChange($event)">
-</p-chips>
-
-<p-autoComplete *ngIf="!multiline && multiselect && onAutoCompleteChanged" [(ngModel)]="value"
-  [suggestions]="autocompleteSuggestions" [minLength]="1" [multiple]="true" [multiple]="true" [minLength]="3"
-  [delay]="500" [disabled]="readonly" (onBlur)="onBlur()" (ngModelChange)="onValueChange($event)"
-  (completeMethod)="autocompleteFn($event)" (keyup.enter)="onKeyUpEnter($event)">
-</p-autoComplete>
+<p-chips *ngIf="!multiline && multiselect" [(ngModel)]="value" [disabled]="readonly" (onBlur)="onBlur()" (ngModelChange)="onValueChange($event)"> </p-chips>
 
 <!-- multi line text inputs -->
-<textarea class="input-textarea size-{{size}}" pInputTextarea *ngIf="multiline" (blur)="onBlur()" [(ngModel)]="value"
-  [disabled]="readonly" (ngModelChange)="onValueChange($event)"></textarea>
+<textarea
+  class="input-textarea size-{{ size }}"
+  pInputTextarea
+  *ngIf="multiline"
+  (blur)="onBlur()"
+  [(ngModel)]="value"
+  [disabled]="readonly"
+  (ngModelChange)="onValueChange($event)"
+></textarea>
 
-<div class="classify" [ngClass]="{empty: !value || situation === 'SEARCH'}">
-  <a href="mailto:{{value}}" *ngIf="classification === 'email' && valid">
+<div class="classify" [ngClass]="{ empty: !value || situation === 'SEARCH' }">
+  <a href="mailto:{{ value }}" *ngIf="classification === 'email' && valid">
     <yuv-icon [svg]="icons.envelope"></yuv-icon>
   </a>
-  <a target="_blank" href="{{value}}" *ngIf="classification === 'url' && valid">
+  <a target="_blank" href="{{ value }}" *ngIf="classification === 'url' && valid">
     <yuv-icon [svg]="icons.globe"></yuv-icon>
   </a>
 </div>

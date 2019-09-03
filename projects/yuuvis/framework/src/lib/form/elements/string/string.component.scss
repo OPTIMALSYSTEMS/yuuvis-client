@@ -1,5 +1,4 @@
 .yuv-string {
-
   font-family: 'Roboto';
   display: flex;
   flex-flow: row nowrap;
@@ -10,11 +9,11 @@
   }
 
   .classify {
-
     a {
       color: var(--text-color-hint);
 
-      &:hover, &:focus {
+      &:hover,
+      &:focus {
         color: var(--text-color-caption);
       }
     }
@@ -22,9 +21,15 @@
     &.empty {
       display: none;
     }
+
+    yuv-icon {
+      padding: calc(var(--app-pane-padding) / 2);
+    }
   }
 
   .input-textarea {
+    border: 0;
+    width: 100%;
     resize: vertical;
     &.size-small {
       height: 4em;
@@ -37,9 +42,10 @@
     }
   }
 
-  .ui-inputtext, input {
+  .ui-inputtext,
+  input {
     padding: 0;
-    border: 0!important;
+    border: 0 !important;
     display: flex;
     flex-wrap: wrap;
     align-items: center;

@@ -3,7 +3,6 @@ import { Title } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { SearchQuery } from '@yuuvis/core';
 import { APP_VARS } from '../../app.vars';
-
 @Component({
   selector: 'yuv-dashboard',
   templateUrl: './dashboard.component.html',

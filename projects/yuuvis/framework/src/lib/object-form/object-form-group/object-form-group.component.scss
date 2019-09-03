@@ -1,0 +1,113 @@
+.form-element {
+  box-sizing: border-box;
+
+  .fieldset {
+    margin: calc(var(--app-pane-padding) / 4) calc(var(--app-pane-padding) / 2);
+    padding: calc(var(--app-pane-padding) / 4);
+    background: rgba(0, 0, 0, 0.025);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+
+    .legend {
+      margin-bottom: calc(var(--app-pane-padding) / 2);
+
+      > span {
+        display: inline-block;
+        font-size: var(--font-hint);
+        border-radius: 2px;
+        color: #fff;
+        background-color: rgba(0, 0, 0, 0.22);
+        padding: calc(var(--app-pane-padding) / 8) calc(var(--app-pane-padding) / 4);
+      }
+    }
+  }
+
+  &.o2mGroupStack {
+    background: rgba(0, 0, 0, 0.02);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+
+    // tab headers
+    .ui-tabview.ui-tabview-top > .ui-tabview-nav li.ui-state-active {
+      border-color: rgba(0, 0, 0, 0.26);
+    }
+    .ui-tabview.ui-tabview-top > .ui-tabview-nav > li:not(.ui-state-active):not(.ui-state-disabled):hover {
+      border-color: rgba(0, 0, 0, 0.16);
+    }
+    .ui-tabview.ui-tabview-top > .ui-tabview-nav li {
+      &.dirty-true:not(.invalid-true) {
+        a .ui-tabview-title {
+          background-color: var(--color-dirty-background);
+          color: var(--color-dirty-font);
+        }
+      }
+      &.invalid-true {
+        a .ui-tabview-title {
+          background-color: var(--color-error);
+          color: #fff;
+
+          &:after {
+            content: '!';
+            margin-left: calc(var(--app-pane-padding) / 2);
+          }
+        }
+      }
+    }
+
+    p-tabview {
+      width: 100%;
+    }
+
+    &.data {
+      border: 0;
+    }
+  }
+
+  &.align-column {
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: flex-start;
+    align-content: stretch;
+    align-items: stretch;
+
+    //.form-element-wrap {
+    > * {
+      flex: 1 1 auto;
+    }
+  }
+
+  &.align-row {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: flex-start;
+    align-content: flex-start;
+    align-items: flex-start;
+
+    > * {
+      flex: 1 0 200px;
+      max-width: 100%;
+    }
+
+    > .fieldset > :not(.legend) {
+      display: flex;
+      flex-flow: row wrap;
+      justify-content: flex-start;
+      align-content: flex-start;
+      align-items: flex-start;
+    }
+  }
+
+  .stackBase {
+    padding: var(--app-pane-padding);
+    // background: var(--panel-background-lightgrey);
+
+    > yuv-form-group > .form-element > .fieldset {
+      margin: 0;
+      padding: 0;
+      border: 0;
+      background-color: transparent;
+
+      > .legend {
+        display: none;
+      }
+    }
+  }
+}

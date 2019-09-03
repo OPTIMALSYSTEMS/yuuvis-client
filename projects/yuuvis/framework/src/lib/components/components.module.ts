@@ -6,10 +6,12 @@ import { TranslateModule } from '@yuuvis/core';
 import { AgGridModule } from 'ag-grid-angular';
 import { AngularResizedEventModule } from 'angular-resize-event';
 import { AngularSplitModule } from 'angular-split';
+import { DialogModule } from 'primeng/dialog';
 import { TabViewModule } from 'primeng/tabview';
 import { YuvPipesModule } from '../pipes/pipes.module';
 import { ActionMenuBarComponent } from './action-menu-bar/action-menu-bar.component';
 import { BusyOverlayDirective } from './busy-overlay/busy-overlay.directive';
+import { DialogComponent } from './dialog/dialog.component';
 import { ObjectDetailsHeaderComponent } from './object-details-header/object-details-header.component';
 import { PanelComponent } from './panel/panel.component';
 import { ResponsiveDataTableComponent } from './responsive-data-table/responsive-data-table.component';
@@ -24,7 +26,8 @@ import { ResponsiveTabContainerComponent } from './responsive-tab-container/resp
     ObjectDetailsHeaderComponent,
     ActionMenuBarComponent,
     ResponsiveTabContainerComponent,
-    PanelComponent
+    PanelComponent,
+    DialogComponent
   ],
   exports: [
     ResponsiveDataTableComponent,
@@ -34,7 +37,9 @@ import { ResponsiveTabContainerComponent } from './responsive-tab-container/resp
     ActionMenuBarComponent,
     ResponsiveTabContainerComponent,
     TabViewModule,
-    PanelComponent
+    PanelComponent,
+    ActionMenuBarComponent,
+    DialogComponent
   ],
   imports: [
     CommonModule,
@@ -43,6 +48,7 @@ import { ResponsiveTabContainerComponent } from './responsive-tab-container/resp
     AgGridModule.withComponents([]),
     RouterModule,
     TabViewModule,
+    DialogModule,
     YuvPipesModule,
     YuvCommonUiModule,
     TranslateModule

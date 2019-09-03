@@ -1,6 +1,16 @@
 :host {
   as-split {
     padding: 0;
+    as-split-area.secondary {
+      ::ng-deep {
+        .ui-tabview.ui-tabview-top .ui-tabview-nav {
+          margin-right: 0;
+          li.ui-state-active {
+            border-color: rgba(0, 0, 0, 0.1);
+          }
+        }
+      }
+    }
   }
 
   p-tabview {
@@ -14,11 +24,19 @@
       top: 1px;
       right: 1px;
       display: flex;
-      height: 35px;
-      background: #f4f4f4;
-      border-top-left-radius: 3px;
-      border-top-right-radius: 3px;
-      border: 1px solid #c8c8c8;
+      cursor: pointer;
+      color: var(--text-color-hint);
+
+      &:hover {
+        color: var(--text-color-caption);
+      }
+
+      yuv-icon {
+        width: 24px;
+        height: 24px;
+        padding: 7px;
+        box-sizing: content-box;
+      }
     }
   }
 }
@@ -32,17 +50,12 @@
       margin-right: 0;
     }
 
-    .ui-tabview-close:after {
-      content: '\0000D7';
-    }
+    // .ui-tabview-close:after {
+    //   content: '\0000D7';
+    // }
 
     li.ui-state-disabled {
       display: none;
-    }
-
-    li.ui-state-active {
-      border: 1px solid var(--color-accent) !important;
-      background: var(--color-accent) !important;
     }
   }
 

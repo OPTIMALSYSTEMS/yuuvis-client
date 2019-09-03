@@ -14,7 +14,8 @@ import { SystemService } from '../system/system.service';
 export class DmsService {
   constructor(private searchService: SearchService, private systemService: SystemService) {}
 
-  getDmsObject(id: string): Observable<DmsObject> {
+  getDmsObject(id: string, version?: number, intent?: string): Observable<DmsObject> {
+    // TODO: Support version and intent params as well
     return this.getDmsObjects([id]).pipe(map(res => res[0]));
   }
 

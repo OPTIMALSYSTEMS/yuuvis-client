@@ -1,0 +1,256 @@
+@import '../../../../../../../../../src/scss-shared/_mixins';
+
+.date-picker {
+  background: #fff;
+  @include flex-col();
+  box-sizing: border-box;
+
+  .controls {
+    @include flex-col(none);
+
+    button {
+      padding: 4px;
+      margin: 4px;
+      border-radius: 2px;
+
+      &.icon {
+        background: rgba(0, 0, 0, 0);
+        color: #fff;
+        padding: 0;
+
+        &:focus {
+          border-color: rgba(0, 0, 0, 0);
+        }
+
+        yuv-icon {
+          border-radius: 2px;
+          @include transition();
+          background: rgba(255, 255, 255, 0.1);
+
+          svg {
+            fill: var(--text-color-hint);
+          }
+        }
+
+        &:first-child {
+          transform: rotate(180deg);
+        }
+      }
+    }
+  }
+
+  .select {
+    flex: 0 0 auto;
+    background: var(--color-accent);
+    color: #fff;
+
+    .year {
+      padding: 0 var(--app-pane-padding);
+      margin-bottom: var(--app-pane-padding);
+      @include flex-row(none);
+      flex-wrap: nowrap;
+      justify-content: flex-end;
+      align-items: center;
+
+      .back {
+        @include flex-col();
+        align-items: flex-start;
+
+        .d {
+          font-size: 40px;
+          line-height: 1em;
+          margin: 0 4px;
+        }
+
+        .current {
+          border-radius: 2px;
+          padding: 0 4px 0 0;
+          @include flex-row(none);
+          align-items: center;
+          cursor: pointer;
+          @include transition();
+
+          &:hover {
+            background: rgba(255, 255, 255, 0.1);
+          }
+
+          > div {
+            @include flex-col(none);
+            align-items: flex-start;
+          }
+        }
+      }
+
+      input {
+        font-size: 50px;
+        font-family: eoRoboto, sans-serif;
+        font-weight: var(--font-weight-light);
+        color: #fff;
+        border: 0;
+        background: rgba(0, 0, 0, 0);
+        width: 3em;
+        text-align: right;
+        line-height: 1em;
+        margin: 0 calc(var(--app-pane-padding) / 2);
+        border-bottom: 1px solid rgba(0, 0, 0, 0);
+
+        &::selection {
+          background: rgba(255, 255, 255, 0.3);
+        }
+
+        &:focus {
+          border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+        }
+      }
+    }
+
+    .month {
+      padding: 0 var(--app-pane-padding);
+
+      span {
+        font-size: var(--font-hint);
+        color: rgba(255, 255, 255, 0.5);
+        font-weight: var(--font-weight-bold);
+        display: inline-block;
+        @include transition();
+        width: 3em;
+        box-sizing: border-box;
+        text-align: center;
+        padding: 4px 0;
+        margin-bottom: 1px;
+        cursor: pointer;
+        border-bottom: 2px solid rgba(0, 0, 0, 0);
+
+        &:hover {
+          color: #fff;
+          border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        &.current {
+          color: #fff;
+          border-color: #fff;
+        }
+      }
+    }
+  }
+
+  .calendar {
+    flex: 1 1 auto;
+    padding: var(--app-pane-padding);
+    box-sizing: content-box;
+  }
+
+  .time {
+    @include flex-row(none);
+    justify-content: flex-start;
+    align-items: center;
+    padding: var(--app-pane-padding);
+
+    .value {
+      font-size: 64px;
+      font-weight: var(--font-weight-light);
+      color: var(--text-color-caption);
+      line-height: 1em;
+      cursor: default;
+
+      &.val-h,
+      &.val-min {
+        min-width: 1.2em;
+      }
+    }
+
+    .controls {
+      button.icon {
+        &:focus {
+          border: 1px solid var(--color-primary-3);
+        }
+        yuv-icon {
+          background: rgba(0, 0, 0, 0.05);
+          color: var(--text-color-hint);
+
+          &:hover {
+            background: rgba(0, 0, 0, 0.1);
+            color: var(--text-color-caption);
+          }
+        }
+      }
+    }
+  }
+
+  .actions {
+    @include flex-row(none);
+    justify-content: flex-end;
+    padding: var(--app-pane-padding);
+  }
+}
+
+.week.names span:hover {
+  background: rgba(0, 0, 0, 0);
+  border-color: rgba(0, 0, 0, 0);
+
+  cursor: default;
+}
+
+.week {
+  @include flex-row(none);
+  flex-wrap: nowrap;
+  justify-content: space-around;
+  margin-bottom: 3px;
+
+  > div {
+    text-align: center;
+    width: 2.5em;
+  }
+
+  span {
+    color: var(--text-color-body);
+    display: inline-block;
+    box-sizing: border-box;
+    border-bottom: 1px solid rgba(0, 0, 0, 0);
+    @include transition(var(--app-default-transition-duration));
+    width: 2em;
+    text-align: center;
+    padding: 0.25em 0;
+    cursor: pointer;
+  }
+
+  .day.disabled {
+    color: white;
+    cursor: default;
+    @include shades-of-gray(0.1);
+    border-radius: 2px;
+
+    &:hover {
+      border-bottom: 0;
+    }
+  }
+
+  span:hover {
+    color: var(--color-accent);
+    border-bottom: 1px solid var(--color-accent);
+  }
+
+  span.today {
+    color: var(--color-accent);
+    font-weight: var(--font-weight-bold);
+    border-bottom: 1px solid var(--color-accent);
+  }
+
+  span.selected,
+  span.selected:hover {
+    background: var(--color-accent);
+    color: #fff !important;
+    @include border-radius(2px);
+  }
+
+  span.different-month {
+    color: var(--text-color-hint);
+  }
+}
+
+.week.names {
+  span {
+    //text-transform: uppercase;
+    color: var(--color-accent);
+  }
+}

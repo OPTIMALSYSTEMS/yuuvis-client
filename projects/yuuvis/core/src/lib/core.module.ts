@@ -1,27 +1,10 @@
-import {
-  HttpClient,
-  HttpClientModule,
-  HTTP_INTERCEPTORS
-} from '@angular/common/http';
-import {
-  APP_INITIALIZER,
-  ModuleWithProviders,
-  NgModule,
-  Optional,
-  SkipSelf
-} from '@angular/core';
-import {
-  MissingTranslationHandler,
-  TranslateLoader,
-  TranslateModule
-} from '@ngx-translate/core';
+import { HttpClient, HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { APP_INITIALIZER, ModuleWithProviders, NgModule, Optional, SkipSelf } from '@angular/core';
+import { MissingTranslationHandler, TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { YuvCoreSharedModule } from './core.shared.module';
 import { AuthInterceptor } from './service/auth/auth.interceptor';
 import { CoreConfig } from './service/config/core-config';
-import {
-  CORE_CONFIG,
-  CUSTOM_CONFIG
-} from './service/config/core-config.tokens';
+import { CORE_CONFIG, CUSTOM_CONFIG } from './service/config/core-config.tokens';
 import { CoreInit } from './service/core-init/core-init.service';
 import { EoxMissingTranslationHandler } from './service/core-init/missing-translation-handler';
 import { EoxTranslateJsonLoader } from './service/core-init/translate-json-loader';
@@ -90,7 +73,7 @@ export class YuvCoreModule {
    */
   constructor(@Optional() @SkipSelf() parentModule: YuvCoreModule) {
     if (parentModule) {
-      throw new Error('CloudCoreModule is already loaded.');
+      throw new Error('YuvCoreModule is already loaded.');
     }
   }
 }

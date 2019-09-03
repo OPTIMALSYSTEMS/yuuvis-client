@@ -1,0 +1,53 @@
+:host {
+  flex: 1 1 auto;
+  //noinspection CssInvalidPseudoSelector
+  &.label-toggled::ng-deep {
+    yuv-form-input label {
+      text-decoration: line-through;
+    }
+  }
+}
+
+.form-element {
+  box-sizing: border-box;
+
+  .form-field {
+    margin: calc(var(--app-pane-padding) / 4) calc(var(--app-pane-padding) / 2);
+
+    .description {
+      border: 0;
+      font-size: var(--font-hint);
+      color: var(--text-color-caption);
+      font-style: italic;
+      padding: calc(var(--app-pane-padding) / 8) calc(var(--app-pane-padding) / 8) 0 calc(var(--app-pane-padding) / 8);
+    }
+
+    .err-msg {
+      font-size: var(--font-hint);
+      color: var(--color-error);
+      padding: calc(var(--app-pane-padding) / 4) 0;
+      border: 0;
+    }
+
+    .table {
+      flex-flow: column;
+      align-items: flex-start;
+      border-color: transparent;
+
+      .label {
+        padding-bottom: calc(var(--app-pane-padding) / 4);
+      }
+    }
+  }
+
+  // dirty styles
+  &.ng-dirty:not(.ng-invalid) {
+    //noinspection CssInvalidPseudoSelector
+    > .form-field:not(.focused)::ng-deep {
+      label {
+        background-color: var(--color-dirty-background);
+        color: var(--color-dirty-font) !important;
+      }
+    }
+  }
+}

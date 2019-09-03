@@ -2,10 +2,11 @@
 @import '~ag-grid-community/dist/styles/ag-theme-balham.css';
 
 @import '~primeng/resources/primeng.min.css';
-// @import '~primeicons/primeicons.css';
+@import '~primeicons/primeicons.css';
 @import '~primeng/resources/themes/nova-light/theme.css';
 @import '~primeng/resources/primeng.min.css';
 @import '~@yuuvis/common-ui/common-ui.css';
+
 @import './general';
 @import './grid';
 @import './animations';
@@ -66,6 +67,7 @@
 
 * {
   font-family: 'Roboto';
+  font-size: var(--font-body);
 }
 
 // scrollbars
