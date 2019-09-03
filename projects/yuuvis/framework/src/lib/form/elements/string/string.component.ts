@@ -37,7 +37,7 @@ export class StringComponent implements ControlValueAccessor, Validator {
   @Input() classification: string;
   @Input() situation: string;
   @Input() regex: string;
-  @Input() qname: string;
+  // @Input() qname: string;
   // could be small, medium, large
   @Input() size: string;
   @Input() minLength: number;
