@@ -1,7 +1,16 @@
 {
   "$schema": "../../../node_modules/ng-packagr/ng-package.schema.json",
   "dest": "../../../dist/yuuvis/framework",
-  "whitelistedNonPeerDependencies": ["primeng", "angular-split", "@angular/cdk", "ag-grid-angular", "ag-grid-community", "angular-resize-event", "moment"],
+  "whitelistedNonPeerDependencies": [
+    "primeng",
+    "angular-split",
+    "@angular/cdk",
+    "ag-grid-angular",
+    "ag-grid-community",
+    "angular-resize-event",
+    "moment",
+    "take-until-destroy"
+  ],
   "lib": {
     "entryFile": "src/public-api.ts"
   }

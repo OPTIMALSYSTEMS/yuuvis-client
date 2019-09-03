@@ -225,7 +225,6 @@ export class GridService {
       }
       case ContentStreamField.LENGTH: {
         colDef.width = 100;
-        colDef.enableRowGroup = false;
         colDef.cellRenderer = this.customContext(CellRenderer.filesizeCellRenderer);
         colDef.keyCreator = this.customContext(this.fileSizeKeyCreator);
         break;

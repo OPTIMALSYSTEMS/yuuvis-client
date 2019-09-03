@@ -1,8 +1,10 @@
 import { Component, EventEmitter, HostBinding, HostListener, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { BaseObjectTypeField } from '@yuuvis/core';
 import { ColDef, GridOptions, RowNode } from 'ag-grid-community';
 import { ResizedEvent } from 'angular-resize-event';
-import { Observable, ReplaySubject, Subscription } from 'rxjs';
+import { Observable, ReplaySubject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
+import { takeUntilDestroy } from 'take-until-destroy';
 import { ColumnSizes } from '../../services/grid/grid.interface';
 import { ResponsiveTableData } from './responsive-data-table.interface';
 
@@ -13,7 +15,6 @@ import { ResponsiveTableData } from './responsive-data-table.interface';
   host: { class: 'yuv-responsive-data-table' }
 })
 export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
-  private subscriptions: Subscription[] = [];
   // internal subject for element size changes used for debouncing resize events
   private resizeSource = new ReplaySubject<ResizedEvent>();
   public resize$: Observable<ResizedEvent> = this.resizeSource.asObservable();
@@ -32,19 +33,10 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
   gridOptions: GridOptions;
 
   @Input() set data(data: ResponsiveTableData) {
+    this._data = data;
     if (this.gridOptions) {
-      // already got a grid running
-      this.gridOptions.api.setRowData(data.rows);
-
-      if (JSON.stringify(this._data.columns) !== JSON.stringify(data.columns)) {
-        this.gridOptions.api.setColumnDefs(data.columns);
-      }
-      if (data.sortModel) {
-        this.gridOptions.api.setSortModel(data.sortModel);
-      }
-      this._data = data;
+      this.applyGridOption(this.small);
     } else {
-      this._data = data;
       this.setupGridOptions();
     }
   }
@@ -69,75 +61,84 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
   }
 
   constructor() {
-    this.subscriptions.push(
-      // subscribe to the whole components size changing
-      this.resize$.pipe(debounceTime(500)).subscribe((e: ResizedEvent) => {
+    // subscribe to the whole components size changing
+    this.resize$
+      .pipe(
+        takeUntilDestroy(this),
+        debounceTime(500)
+      )
+      .subscribe((e: ResizedEvent) => {
         const small = e.newWidth < this.breakpoint;
 
         if (this.gridOptions && this.gridOptions.api && this.small !== small) {
           this.small = small;
           this.applyGridOption(small);
         }
-      })
-    );
+      });
     // subscribe to columns beeing resized
-    this.columnResize$.pipe(debounceTime(1000)).subscribe((e: ResizedEvent) => {
-      if (!this.small) {
-        this.columnResized.emit({
-          columns: this.gridOptions.columnApi.getColumnState().map(columnState => ({
-            id: columnState.colId,
-            width: columnState.width
-          }))
-        });
-      }
-    });
+    this.columnResize$
+      .pipe(
+        takeUntilDestroy(this),
+        debounceTime(1000)
+      )
+      .subscribe((e: ResizedEvent) => {
+        if (!this.small) {
+          this.columnResized.emit({
+            columns: this.gridOptions.columnApi.getColumnState().map(columnState => ({
+              id: columnState.colId,
+              width: columnState.width
+            }))
+          });
+        }
+      });
   }
 
   private applyGridOption(small?: boolean) {
+    this.gridOptions.api.setRowData(this._data.rows);
+    this.gridOptions.api.setHeaderHeight(small ? this.settings.headerHeight.small : this.settings.headerHeight.default);
+
+    const columns = small ? [this.getSmallSizeColDef()] : this._data.columns;
+    if (JSON.stringify(this.gridOptions.columnDefs) !== JSON.stringify(columns)) {
+      this.gridOptions.columnDefs = columns;
+      this.gridOptions.api.setColumnDefs(columns);
+    }
+
+    if (this._data.sortModel) {
+      setTimeout(() => this.gridOptions.api.setSortModel([...this._data.sortModel]));
+    }
+
     if (small) {
       // gridOptions to be applied for the small view
-      this.gridOptions.api.setHeaderHeight(this.settings.headerHeight.small);
-      this.gridOptions.api.setColumnDefs([this.getSmallSizeColDef()]);
-      this.gridOptions.api.setRowData(
-        this._data.rows.map(r => ({
-          id: r.id,
-          titleProps: {
-            title: r[this._data.titleField],
-            description: r[this._data.descriptionField]
-          }
-        }))
-      );
       this.gridOptions.columnApi.autoSizeAllColumns();
       this.gridOptions.api.sizeColumnsToFit();
-    } else {
-      // gridOptions to be applied for the regular view
-      this.gridOptions.api.setHeaderHeight(this.settings.headerHeight.default);
-      this.gridOptions.api.setColumnDefs(this._data.columns);
-      this.gridOptions.api.setRowData(this._data.rows);
     }
     // if the small state changed, a different set of rowData is applied to the grid
     // so we need to reselect the items that were selected before
-    if (this._currentSelection.length) {
-      this._currentSelection.forEach((id: string) => {
-        const n = this.gridOptions.api.getRowNode(id);
-        n.setSelected(true);
-      });
-    }
+    this.selectRows(this._currentSelection);
   }
 
   private getSmallSizeColDef(): ColDef {
     const colDef: ColDef = {
-      field: 'titleProps'
+      field: BaseObjectTypeField.OBJECT_ID
     };
     colDef.cellClass = 'cell-title-description';
 
     colDef.cellRenderer = params => {
       return `
-        <div class="title">${params.value.title}</div>
-        <div class="description">${params.value.description}</div>
+        <div class="title">${params.data[this._data.titleField] || params.value || ''}</div>
+        <div class="description">${params.data[this._data.descriptionField] || ''}</div>
       `;
     };
     return colDef;
+  }
+
+  selectRows(selection?: string[]) {
+    (selection || [this._data.rows[0].id]).forEach((id: string) => {
+      const n = this.gridOptions.api.getRowNode(id);
+      if (n) {
+        n.setSelected(true);
+      }
+    });
   }
 
   private setupGridOptions() {
@@ -169,9 +170,11 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
         this.sortChanged.emit(this.gridOptions.api.getSortModel());
       }
     };
+
     if (this._data.sortModel) {
-      this.gridOptions.api.setSortModel(this._data.sortModel);
+      setTimeout(() => this.gridOptions.api.setSortModel(this._data.sortModel));
     }
+    setTimeout(() => this.selectRows());
   }
 
   // copy content of either row or table cell to clipboard
@@ -182,11 +185,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
     switch (type) {
       case 'row': {
         // TODO: define how data should be formatted in clipboard.
-        const data = [];
-        Object.keys(row.data).forEach(k => {
-          data.push(row.data[k]);
-        });
-        content = data.join(',');
+        content = Object.values(row.data).join(',');
         break;
       }
       case 'cell': {
@@ -208,7 +207,5 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
   }
   ngOnInit() {}
 
-  ngOnDestroy() {
-    this.subscriptions.forEach(s => s.unsubscribe());
-  }
+  ngOnDestroy() {}
 }

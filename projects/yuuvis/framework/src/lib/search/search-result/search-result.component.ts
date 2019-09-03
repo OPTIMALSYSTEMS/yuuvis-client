@@ -12,6 +12,7 @@ import {
   TranslateService
 } from '@yuuvis/core';
 import { ColDef } from 'ag-grid-community';
+import { of } from 'rxjs';
 import { ResponsiveTableData } from '../../components';
 import { ColumnSizes } from '../../services/grid/grid.interface';
 import { GridService } from '../../services/grid/grid.service';
@@ -63,7 +64,7 @@ export class SearchResultComponent {
   @Output() itemsSelected = new EventEmitter<string[]>();
 
   // indicator that the component is busy loading data, so we are able to prevent user interaction
-  @HostBinding('class.busy') busy: boolean = false;
+  @HostBinding('class.busy') busy = false;
 
   set hasPages(count) {
     this._hasPages = count;
@@ -98,9 +99,10 @@ export class SearchResultComponent {
   // Create actual table data from the search result
   private createTableData(searchResult: SearchResult, pageNumber = 1): void {
     // object type of the result list items, if NULL we got a mixed result
-    this.resultListObjectTypeId = searchResult.objectTypes.length > 1 ? null : searchResult.objectTypes[0];
+    // const id = searchResult.objectTypes.length > 1 ? null : searchResult.objectTypes[0];
+    const id = this._searchQuery.types.length > 1 ? null : this._searchQuery.types[0] || null;
 
-    this.gridService.getColumnConfiguration(this.resultListObjectTypeId).subscribe((colDefs: ColDef[]) => {
+    (id !== this.resultListObjectTypeId || !this._columns ? this.gridService.getColumnConfiguration(id) : of(this._columns)).subscribe((colDefs: ColDef[]) => {
       // setup pagination form in case of a paged search result chunk
       this.pagination = null;
       this.hasPages = searchResult.items.length !== searchResult.totalNumItems;
@@ -114,33 +116,21 @@ export class SearchResultComponent {
         this.pagingForm.get('page').setValidators([Validators.min(0), Validators.max(this.pagination.pages)]);
       }
 
+      this.resultListObjectTypeId = id;
       this._columns = colDefs;
-
-      const rows = [];
-      searchResult.items.forEach(i => {
-        rows.push(this.getRow(i));
-      });
-      this._rows = rows;
+      this._rows = searchResult.items.map(i => this.getRow(i));
 
       this.tableData = {
         columns: this._columns,
         rows: this._rows,
         titleField: SecondaryObjectTypeField.TITLE,
         descriptionField: SecondaryObjectTypeField.DESCRIPTION,
-        selectType: 'single'
-      };
-
-      // setup current sort state from the query
-      if (this._searchQuery.sortOptions.length) {
-        // this._searchQuery.sortOptions.forEach((so: SortOption) => {
-
-        //   // this._gridOptions.api.setSortModel([{colId: "enaio:creationDate", sort: "desc"}]);
-        // })
-        this.tableData.sortModel = this._searchQuery.sortOptions.map(o => ({
+        selectType: 'single',
+        sortModel: (this._searchQuery.sortOptions || []).map(o => ({
           colId: o.field,
           sort: o.order
-        }));
-      }
+        }))
+      };
 
       this.busy = false;
     });
@@ -201,6 +191,7 @@ export class SearchResultComponent {
     if (JSON.stringify(this.tableData.sortModel) !== JSON.stringify(sortModel)) {
       // change query to reflect the sort setting from the grid
       this._searchQuery.sortOptions = sortModel.map(m => new SortOption(m.colId, m.sort));
+      this._searchQuery.from = 0;
       this.executeQuery();
     }
   }
