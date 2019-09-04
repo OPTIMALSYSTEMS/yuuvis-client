@@ -10,7 +10,8 @@
     "ag-grid-community",
     "angular-resize-event",
     "moment",
-    "lodash"
+    "lodash",
+    "take-until-destroy"
   ],
   "lib": {
     "entryFile": "src/public-api.ts"
