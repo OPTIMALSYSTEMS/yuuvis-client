@@ -4,9 +4,11 @@
   <yuv-action-menu-bar class="actions">
     <yuv-icon (click)="refresh()" [title]="('eo.list.refresh' | translate)" class="button refresh-button"
       [svg]="icon.refresh"></yuv-icon>
+    <yuv-icon class="header-icon" (click)="openActionMenu()" [svg]="icon.icKebap"></yuv-icon>
   </yuv-action-menu-bar>
 
   <yuv-search-result class="content" [query]="_searchQuery" [selectedItemId]="selectedItemId"
     (itemsSelected)="onItemsSelected($event)">
   </yuv-search-result>
 </yuv-panel>
+<yuv-action-menu [(cmd)]="actionCMD" (finished)="onActionFinish()"></yuv-action-menu>
