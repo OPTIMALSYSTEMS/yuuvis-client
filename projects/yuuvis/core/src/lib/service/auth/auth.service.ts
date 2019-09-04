@@ -14,6 +14,13 @@ import { SystemService } from '../system/system.service';
 import { UserService } from '../user/user.service';
 import { LoginDeviceResult, LoginState, LoginStateName, StoredToken } from './auth.interface';
 
+/**
+ * Got some code here
+ *
+ * ```html
+ * <h1>Thats my stuff</h1>
+ * ```
+ */
 @Injectable({
   providedIn: 'root'
 })

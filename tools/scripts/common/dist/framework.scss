@@ -2016,6 +2016,16 @@ $range-selection-highlight-color: $primary-color;
 :host {
   as-split {
     padding: 0;
+    as-split-area.secondary {
+      ::ng-deep {
+        .ui-tabview.ui-tabview-top .ui-tabview-nav {
+          margin-right: 0;
+          li.ui-state-active {
+            border-color: rgba(0, 0, 0, 0.1);
+          }
+        }
+      }
+    }
   }
 
   p-tabview {
