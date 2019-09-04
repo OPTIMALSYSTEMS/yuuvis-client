@@ -9,6 +9,7 @@ import { ActionModule } from './actions';
 import { YuvComponentsModule } from './components/components.module';
 import { YuvFormModule } from './form';
 import { YuvObjectDetailsModule } from './object-details/object-details.module';
+import { YuvObjectFormModule } from './object-form';
 import { YuvPipesModule } from './pipes/pipes.module';
 import { YuvSearchModule } from './search/search.module';
 import { YuvUserModule } from './user/user.module';
@@ -49,6 +50,7 @@ import { YuvUserModule } from './user/user.module';
     YuvPipesModule,
     YuvUserModule,
     YuvComponentsModule,
+    YuvObjectFormModule,
     YuvCommonUiModule,
     YuvCoreModule,
     OverlayPanelModule,
@@ -61,10 +63,7 @@ export class YuvFrameworkModule {
   static forRoot(config?: CoreConfig): ModuleWithProviders {
     return {
       ngModule: YuvFrameworkModule,
-      providers: [
-        { provide: CUSTOM_CONFIG, useValue: config },
-        { provide: CORE_CONFIG, useClass: CoreConfig, deps: [CUSTOM_CONFIG] }
-      ]
+      providers: [{ provide: CUSTOM_CONFIG, useValue: config }, { provide: CORE_CONFIG, useClass: CoreConfig, deps: [CUSTOM_CONFIG] }]
     };
   }
 }

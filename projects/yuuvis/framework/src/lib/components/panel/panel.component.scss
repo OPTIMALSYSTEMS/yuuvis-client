@@ -1,21 +1,45 @@
+@import '../../../../../../../src/scss-shared/_mixins';
+
+$yuv-panel-toolbar-width: 57px;
+$yuv-panel-header-height: 110px;
+
 .yuv-panel-wrapper {
   display: grid;
   grid-template-columns: 1fr;
   grid-template-rows: 110px 1fr;
   grid-template-areas: 'header' 'content';
   height: 100%;
+  background-color: #fff;
   overflow: hidden;
+  ::ng-deep {
+    .header_text {
+      :host-context(.screen-s) & {
+        grid-template-rows: repeat(auto-fit, 25px);
+
+        .header_description {
+          overflow: unset;
+          display: block;
+        }
+      }
+    }
+    .extras {
+      :host-context(.screen-s) & {
+        justify-self: end;
+      }
+    }
+  }
 }
 
 .content {
   grid-area: content;
-  position: relative;
+  // position: relative;
   height: 100%;
+  overflow-x: auto;
 }
 
 .header {
   display: grid;
-  grid-template-columns: 57px 3fr 0.5fr;
+  grid-template-columns: 44px 3fr 0.5fr;
   grid-template-rows: 1fr;
   grid-template-areas: 'icon header_text extras';
   grid-area: header;
@@ -29,14 +53,20 @@
 
 .icon {
   grid-area: icon;
+
+  svg {
+    fill: var(--text-color-caption);
+  }
 }
 
 .header_text {
+  grid-area: header_text;
   display: grid;
   grid-template-columns: 1fr;
-  grid-template-rows: repeat(auto-fit, 30px);
+  grid-template-rows: repeat(auto-fit, 46px);
   grid-template-areas: 'title' 'description';
-  grid-area: header_text;
+  grid-gap: 5px;
+  margin-right: 5px;
 
   :host-context(.screen-s) & {
     grid-template-rows: repeat(auto-fit, 45px);
@@ -48,20 +78,23 @@
   font-weight: var(--font-weight-normal);
   font-size: var(--font-title);
   color: var(--text-color-caption);
+
+  @include lineWrapper();
+  :host-context(.screen-s) & {
+    @include lineWrapper(2, 23px, 47px);
+  }
 }
 
 .header_description {
   grid-area: description;
-  max-width: none;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  font-weight: var(--font-weight-normal);
   font-size: var(--font-subhead);
   color: var(--text-color-caption);
-  font-weight: var(--font-weight-normal);
-  line-height: 2em;
-  height: 2em;
-  margin: 0;
+
+  @include lineWrapper(1, 20px, 20px);
+  :host-context(.screen-s) & {
+    @include lineWrapper(1, 20px, 20px);
+  }
 }
 
 .extras {
@@ -76,6 +109,7 @@
     grid-template-rows: 1fr;
     grid-template-columns: repeat(auto-fit, var(--font-display));
     grid-template-areas: 'actions status';
+    justify-self: auto;
   }
 }
 
@@ -89,4 +123,9 @@
 
 .status {
   grid-area: status;
+
+  .yuv-icon {
+    width: 18px;
+    height: 18px;
+  }
 }

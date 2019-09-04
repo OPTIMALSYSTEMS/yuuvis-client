@@ -1,0 +1,28 @@
+:host {
+  display: block;
+  background: #fff;
+
+  .yuv-object-form {
+    .core {
+      padding: var(--app-pane-padding) var(--app-pane-padding) calc(var(--app-pane-padding) * 2) var(--app-pane-padding);
+    }
+    .ui-tabview {
+      padding: 0;
+    }
+  }
+}
+
+.yuv-object-form > .data > yuv-object-form-group > .form-element.o2mGroupStack {
+  background: transparent;
+  border: 0;
+
+  & > yuv-object-form-group > .o2mGroup {
+    background-color: var(--panel-background-lightgrey);
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    padding: var(--app-pane-padding);
+  }
+
+  & > p-tabview > .ui-tabview > .ui-tabview-panels {
+    background-color: var(--panel-background-lightgrey);
+  }
+}

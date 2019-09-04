@@ -1,4 +1,4 @@
-<div class="eo-about-state">
+<div class="yuv-about-state">
   <div class="about">
     <div class="header themeBackground">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 708.7 212.6">
@@ -16,10 +16,10 @@
         <a href="{{ docuLink | async }}" target="_blank" translate>eo.about.documentation.link.label</a>
       </div>
 
-    <div class="info">
+      <div class="info">
         <ng-container class="details__product" *ngFor="let details of ctrl | async">
-            <div class="{{details.entry}}_label label">{{details.label}}</div>
-            <div class="{{details.entry}}_text text">{{details.value}}</div>
+          <div class="{{ details.entry }}_label label">{{ details.label }}</div>
+          <div class="{{ details.entry }}_text text">{{ details.value }}</div>
         </ng-container>
       </div>
       <div class="licenses">
@@ -27,10 +27,7 @@
         <p class="licenses_intro" translate>eo.about.license.intro</p>
         <div class="licenses_content">
           <yuv-accordion [header]="'eo.about.license.title' | translate">
-            <div
-              class="licenses"
-              *ngFor="let lib of __libraries__ | async; trackBy: trackByFn"
-            >
+            <div class="licenses" *ngFor="let lib of __libraries__ | async; trackBy: trackByFn">
               <div class="name">{{ lib.name }}</div>
               <div class="licence" *ngIf="lib.license">
                 <a [href]="lib.link" *ngIf="lib.link">{{ lib.label }}</a>

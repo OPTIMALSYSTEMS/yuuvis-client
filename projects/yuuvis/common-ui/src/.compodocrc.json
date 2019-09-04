@@ -1,0 +1,37 @@
+{
+  "name": "@yuuvis/common-ui library",
+  "output": "./../../../documentation/yuuvis/common-ui",
+  "tsconfig": "./tsconfig.lib.json",
+  "customFavicon": "./../../../src/favicon.ico",
+  "disableLifeCycleHooks": true,
+  "disablePrivate": true,
+  "disableProtected": true,
+  "disableInternal": true,
+  "disableGraph": true,
+  "disableCoverage": false,
+  "coverageTestThresholdFail": false,
+  "hideGenerator": true,
+  "extTheme": "./../../doc-styles",
+  "navTabConfig": [
+    {
+      "id": "readme",
+      "label": "Implementation"
+    },
+    {
+      "id": "example",
+      "label": "Overview"
+    },
+    {
+      "id": "info",
+      "label": "API"
+    },
+    {
+      "id": "source",
+      "label": "Source"
+    },
+    {
+      "id": "tree",
+      "label": "DOM Tree"
+    }
+  ]
+}

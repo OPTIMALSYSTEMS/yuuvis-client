@@ -65,10 +65,6 @@ export class LoginComponent implements OnInit {
     // loading login state as the user is already authenticated will redirect to home
     if (this.authService.isLoggedIn()) {
       this.router.navigateByUrl(this.returnUrl || '/');
-    } else {
-      // if there is no logged in user, select the browsers language for the login dialog
-      let browserLang = this.translate.getBrowserLang();
-      this.translate.use(browserLang.match(/en|de/) ? browserLang : 'en');
     }
   }
 

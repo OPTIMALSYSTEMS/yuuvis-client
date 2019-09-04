@@ -1,3 +1,5 @@
+@import './../../../../../src/scss-shared/vars';
+
 body {
   .ui-overlaypanel {
     border: none;
@@ -8,6 +10,117 @@ body {
 
     .ui-overlaypanel-content {
       padding: 0;
+    }
+  }
+
+  .ui-dialog {
+    .ui-dialog-content {
+      padding: 0;
+      border: 0;
+    }
+  }
+
+  // chips
+  .ui-chips {
+    > ul.ui-inputtext {
+      padding: 0;
+      .ui-chips-token {
+        font-size: var(--font-caption);
+        padding: 2px;
+        margin: 2px 2px 0 0;
+        background: rgba(0, 0, 0, 0.03);
+        color: var(--text-color-caption);
+        border: 1px solid rgba(0, 0, 0, 0.15);
+      }
+    }
+  }
+
+  // tabs
+  $ui-tabs-border-size: 4px;
+  .ui-tabview.ui-tabview-top {
+    padding: 0;
+    height: 100%;
+
+    .ui-tabview-title {
+      padding: calc(var(--app-pane-padding) / 8) calc(var(--app-pane-padding) / 4);
+      border-radius: $ui-tabs-border-size;
+    }
+
+    .ui-tabview-nav {
+      margin-bottom: 1px;
+      border-radius: 0;
+
+      li {
+        border-color: transparent;
+        border-width: 0 0 $ui-tabs-border-size 0;
+        border-style: solid;
+        background-color: transparent;
+        outline: 0;
+        transition: border-color 200ms ease-in-out;
+
+        a {
+          padding: calc(var(--app-pane-padding) / 2) var(--app-pane-padding);
+          font-weight: normal;
+          color: var(--text-color-caption);
+        }
+
+        // body .ui-tabview.ui-tabview-top .ui-tabview-nav li.ui-state-active .ui-tabview-close
+
+        // active tab style
+        &.ui-state-active {
+          background-color: transparent;
+          border-color: var(--color-accent);
+          border-width: 0 0 $ui-tabs-border-size 0;
+
+          &:hover {
+            background-color: transparent;
+            border-width: 0 0 $ui-tabs-border-size 0;
+            border-color: var(--color-accent);
+
+            a {
+              color: var(--text-color-body);
+            }
+          }
+
+          a {
+            color: var(--text-color-body);
+          }
+        }
+
+        &:focus {
+          .ui-tabview-title {
+            background-color: rgba(0, 0, 0, 0.06);
+          }
+        }
+
+        // hover/focus state for inactive tabs
+        &:not(.ui-state-active):not(.ui-state-disabled) {
+          &:hover {
+            border-color: rgba(0, 0, 0, 0.16);
+            border-width: 0 0 $ui-tabs-border-size 0;
+            background-color: transparent;
+          }
+        }
+
+        .ui-tabview-close {
+          color: var(--text-color-caption) !important;
+        }
+      }
+    }
+
+    .ui-tabview-panels {
+      border-width: 1px 0 0 0;
+      border-color: rgba(0, 0, 0, 0.1);
+    }
+  }
+
+  // ag-grid related overrides
+  .ag-theme-yuv .ag-cell {
+    .title,
+    .description {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      width: 70vw;
     }
   }
 }

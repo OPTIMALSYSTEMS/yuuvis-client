@@ -53,14 +53,14 @@ export class CellRenderer {
 
   static numberCellRendererTemplate(value, context, grouping?, pattern?, scale?): string {
     let numbers = context.numberPipe.transform(value, grouping, pattern, scale, `1.${scale || 0}-${scale || 0}`);
-    return this.multiSelectCellRenderer(numbers);
+    return Array.isArray(value) ? this.multiSelectCellRenderer(numbers) : numbers;
   }
 
-  static typeCellRenderer(param) {
+  static typeCellRenderer(param, customTooltip?) {
     const val =
       '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M19 4H5c-1.11 0-2 .9-2 2v12c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.89-2-2-2zm0 14H5V8h14v10z"/><path fill="none" d="M0 0h24v24H0z"/></svg>';
     let tooltip: string;
-    if (param.value) {
+    if (param && param.value && !customTooltip) {
       const objectType = param.context.system.getObjectType(param.value);
       if (!objectType) {
         return val;
@@ -71,6 +71,8 @@ export class CellRenderer {
       // return CellRenderer.iconCellRenderer(
       //   Object.assign({}, param, { value: objectType })
       // );
+    } else if (customTooltip) {
+      tooltip = customTooltip;
     }
     return `<span title="${tooltip}">${val}</span>`;
   }

@@ -1,12 +1,6 @@
-$yuv-panel-toolbar-width: 57px;
-$yuv-panel-header-height: 110px;
-
 .yuv-search-result {
   height: 100%;
-  position: relative;
-  yuv-panel {
-    padding: 0;
-  }
+  background-color: #fff;
 }
 
 .busy-indicator {

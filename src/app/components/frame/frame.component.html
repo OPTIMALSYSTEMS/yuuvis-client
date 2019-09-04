@@ -1,17 +1,6 @@
 <div class="app-bar" *ngIf="!hideAppBar">
-  <yuv-icon
-    class="btn"
-    id="drawer"
-    (click)="showSideBar = true"
-    replaceUrl
-    [iconSrc]="'assets/default/svg/ic_drawer.svg'"
-  ></yuv-icon>
-  <yuv-icon
-    class="btn"
-    id="logo"
-    routerLink="/"
-    [iconSrc]="'assets/default/theme/logo.svg'"
-  ></yuv-icon>
+  <yuv-icon class="btn" id="drawer" (click)="showSideBar = true" replaceUrl [iconSrc]="'assets/default/svg/ic_drawer.svg'"></yuv-icon>
+  <yuv-icon class="btn" id="logo" routerLink="/" [iconSrc]="'assets/default/theme/logo.svg'"></yuv-icon>
 
   <div class="main">
     <!-- <yuv-icon class="btn" [iconSrc]="'assets/default/svg/ic_search.svg'"></yuv-icon> -->
@@ -27,14 +16,10 @@
         <div class="avatar" [ngClass]="{ enabled: user?.enabled }">
           <yuv-user-avatar [user]="user"></yuv-user-avatar>
           <div class="user-title">
-            <yuv-icon
-              [iconSrc]="'assets/default/svg/ic_user_disabled.svg'"
-            ></yuv-icon>
+            <yuv-icon [iconSrc]="'assets/default/svg/ic_user_disabled.svg'"></yuv-icon>
             <div>
               <span>{{ user?.title }}</span>
-              <span class="email" title="{{ user?.email }}">{{
-                user?.email
-              }}</span>
+              <span class="email" title="{{ user?.email }}">{{ user?.email }}</span>
             </div>
           </div>
         </div>
@@ -42,9 +27,7 @@
           <a routerLink="/settings" translate>eo.state.settings.title</a>
         </div>
         <div class="nav-item logout">
-          <a [routerLink]="['/enter', { logout: true }]" translate
-            >eo.bar.button.logout.title</a
-          >
+          <a [routerLink]="['/enter', { logout: true }]" translate>eo.bar.button.logout.title</a>
         </div>
       </div>
     </p-overlayPanel>

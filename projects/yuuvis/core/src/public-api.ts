@@ -1,8 +1,4 @@
-export {
-  TranslateLoader,
-  TranslateModule,
-  TranslateService
-} from '@ngx-translate/core';
+export { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core';
 export * from './lib/core.environment';
 export * from './lib/core.module';
 export * from './lib/core.shared.module';
@@ -25,6 +21,8 @@ export * from './lib/service/dms/dms.service';
 export * from './lib/service/event/event.service';
 export * from './lib/service/event/events';
 export * from './lib/service/logger/logger';
+export * from './lib/service/pending-changes/pending-changes-guard.service';
+export * from './lib/service/pending-changes/pending-changes.service';
 export * from './lib/service/screen/screen.interface';
 export * from './lib/service/screen/screen.service';
 export * from './lib/service/search/search-query.model';

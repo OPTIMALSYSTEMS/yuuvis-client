@@ -1,0 +1,175 @@
+@import "./reset.css";
+@import "./bootstrap.min.css";
+@import "./bootstrap-card.css";
+@import "./font-awesome.min.css";
+@import "./compodoc.css";
+@import "./prism.css";
+@import "./tablesort.css";
+
+body {
+  font-family: sans-serif;
+}
+pre[class*="language-"] {
+  background: #484f54;
+}
+.content {
+  background-color: #f4f4f4;
+}
+
+.modifier {
+  background: #b6b9bb;
+  padding: 1px 3px;
+  color: white;
+  border-radius: 2px;
+  font-size: 11px;
+  font-weight: normal;
+}
+
+.content section > table {
+  background-color: #fff;
+}
+
+.navbar-default .navbar-brand {
+  background: #bb3f5a;
+  color: white;
+}
+
+.menu, .menu .list {
+  background: #6d7276;
+}
+
+#book-search-input {
+  background: #bb3f5a;
+  color: white;
+  border-bottom: 1px solid rgba(255, 255, 255, .5);
+  border-top: 1px solid rgba(255, 255, 255, .5);
+}
+
+#book-search-input input::-webkit-input-placeholder { /* Chrome/Opera/Safari */
+  color: rgba(255,255,255,.5);
+}
+#book-search-input input::-moz-placeholder { /* Firefox 19+ */
+  color: rgba(255,255,255,.5);
+}
+#book-search-input input:-ms-input-placeholder { /* IE 10+ */
+  color: rgba(255,255,255,.5);
+}
+#book-search-input input:-moz-placeholder { /* Firefox 18- */
+  color: rgba(255,255,255,.5);
+}
+
+.menu ul.list li.title {
+  background: #bb3f5a;
+  padding-bottom: 5px;
+  color: white;
+}
+.menu ul.list li.title a {
+  color: white;
+  padding: 10px 15px;
+}
+
+.menu ul.list li.title a, .navbar a {
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: 300;
+}
+
+.menu .chapter {
+  padding: 0 20px;
+}
+
+.menu ul.list li a[data-type="chapter-link"], .menu ul.list li.chapter .simple {
+  color: white;
+  text-transform: uppercase;
+  border-bottom: 1px solid rgba(255,255,255,0.4);
+}
+
+.content h1, .content h2, .content h3, .content h4, .content h5 {
+  color: #292e31;
+  font-weight: normal;
+}
+
+.content {
+  color: #4c555a;
+}
+
+a {
+  color: #bb3f5a;
+  text-decoration: underline;
+}
+a:hover {
+  color: #bb3f5a;
+}
+
+.menu ul.list li:nth-child(2) {
+  margin-top: 0;
+}
+
+.menu ul.list li:nth-last-child(2) {
+  background: none;
+}
+
+
+.menu ul.list li a {
+  color: white;
+  padding: 10px;
+  font-weight: 300;
+  text-decoration: none;
+}
+.menu ul.list li a.active {
+  color: white;
+  font-weight: bold;
+}
+
+.copyright {
+  color: white;
+  background: #000;
+}
+
+code {
+  box-sizing: border-box;
+  display: inline-block;
+  padding: 0 5px;
+  background: rgba(187, 63, 90,0.1);
+  border-radius: 3px;
+  color: #bb3f5a;
+  font-size: 13px;
+  line-height: 20px;
+}
+
+pre {
+  margin: 0;
+  padding: 12px 12px;
+  background: rgba(238,238,238,.35);
+  border-radius: 3px;
+  font-size: 13px;
+  line-height: 1.5em;
+  font-weight: 500;
+}
+
+/** NAV BAR **/
+
+.nav {
+  padding-bottom: 2px;
+}
+.nav-tabs > li > a {
+  border: 0;
+  border-bottom: 3px solid transparent;
+  color: rgba(0, 0, 0, 0.54);
+  margin-right: 0;
+  text-decoration: none;
+}
+.nav-tabs>li.active>a, .nav-tabs>li.active>a:focus, .nav-tabs>li.active>a:hover {
+  color: rgba(0, 0, 0, 0.54);
+  border-top: 0;
+
+  border-left: 0;
+  border-right: 0;
+  border-bottom: 3px solid transparent;
+  border-color: #bb3f5a;
+  background: none;
+  font-weight: bold;
+}
+.nav>li>a:focus, .nav>li>a:hover {
+  background: none;
+}

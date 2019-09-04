@@ -47,7 +47,7 @@ export class BackendService {
    * @param requestOptions Additional request options
    * @returns The data retrieved from the given endpoint
    */
-  get(uri: string, base?: ApiBase, requestOptions?: any): Observable<any> {
+  get(uri: string, base?: string, requestOptions?: any): Observable<any> {
     return this.http.get(this.getApiBase(base) + uri, this.getHttpOptions(requestOptions));
   }
 
@@ -59,7 +59,7 @@ export class BackendService {
    * @param requestOptions Additional request options
    * @returns The return value of the target POST endpoint
    */
-  public post(uri: string, data?, base?: ApiBase, requestOptions?: any): Observable<any> {
+  public post(uri: string, data?, base?: string, requestOptions?: any): Observable<any> {
     const baseUri = this.getApiBase(base);
     const payload = data ? JSON.stringify(data) : '';
     return this.http.post(`${baseUri}${uri}`, payload, this.getHttpOptions(requestOptions));
@@ -73,7 +73,7 @@ export class BackendService {
    * @param requestOptions Additional request options
    * @returns The return value of the target POST endpoint
    */
-  public postMultiPart(uri: string, formData: FormData, base?: ApiBase, requestOptions?: any): Observable<any> {
+  public postMultiPart(uri: string, formData: FormData, base?: string, requestOptions?: any): Observable<any> {
     return this.http.post(`${this.getApiBase(base)}${uri}`, formData, this.getHttpOptions(requestOptions));
   }
 
@@ -84,7 +84,7 @@ export class BackendService {
    * @param base The Base URI (backend service) to be used
    * @returns The return value of the target PUT endpoint
    */
-  public put(uri: string, data?: any, base?: ApiBase): Observable<any> {
+  public put(uri: string, data?: any, base?: string): Observable<any> {
     return this.http.put(this.getApiBase(base) + uri, data, this.getHttpOptions());
   }
 
@@ -95,7 +95,7 @@ export class BackendService {
    * @param requestOptions Additional request options
    * @returns The return value of the target DELETE endpoint
    */
-  public delete(uri: string, base?: ApiBase, requestOptions?: any): Observable<any> {
+  public delete(uri: string, base?: string, requestOptions?: any): Observable<any> {
     return this.http.delete(this.getApiBase(base) + uri, this.getHttpOptions(requestOptions));
   }
 
@@ -130,7 +130,7 @@ export class BackendService {
    * base URI for the web API
    * @returns Base URI for the given API.
    */
-  private getApiBase(api?: ApiBase): string {
+  private getApiBase(api?: string): string {
     return this.getHost() + this.config.getApiBase(api || ApiBase.apiWeb);
   }
 

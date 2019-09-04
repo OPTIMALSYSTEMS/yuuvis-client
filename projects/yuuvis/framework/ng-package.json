@@ -3,13 +3,15 @@
   "dest": "../../../dist/yuuvis/framework",
   "whitelistedNonPeerDependencies": [
     "primeng",
+    "primeicons",
     "angular-split",
     "@angular/cdk",
     "ag-grid-angular",
     "ag-grid-community",
     "angular-resize-event",
     "moment",
-    "file-saver"
+    "lodash",
+    "take-until-destroy"
   ],
   "lib": {
     "entryFile": "src/public-api.ts"

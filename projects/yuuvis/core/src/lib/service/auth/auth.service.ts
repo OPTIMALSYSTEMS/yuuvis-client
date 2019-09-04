@@ -1,18 +1,8 @@
-import {
-  HttpClient,
-  HttpErrorResponse,
-  HttpHeaders
-} from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Inject, Injectable, NgZone } from '@angular/core';
 import { LocalStorage } from '@ngx-pwa/local-storage';
-import {
-  BehaviorSubject,
-  interval,
-  Observable,
-  of,
-  Subject,
-  throwError
-} from 'rxjs';
+import { TranslateService } from '@ngx-translate/core';
+import { BehaviorSubject, interval, Observable, of, Subject, throwError } from 'rxjs';
 import { catchError, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { YuvEnvironment } from '../../core.environment';
 import { UserSettings, YuvUser } from '../../model/yuv-user.model';
@@ -22,12 +12,7 @@ import { CoreConfig } from '../config/core-config';
 import { CORE_CONFIG } from '../config/core-config.tokens';
 import { SystemService } from '../system/system.service';
 import { UserService } from '../user/user.service';
-import {
-  LoginDeviceResult,
-  LoginState,
-  LoginStateName,
-  StoredToken
-} from './auth.interface';
+import { LoginDeviceResult, LoginState, LoginStateName, StoredToken } from './auth.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -41,6 +26,7 @@ export class AuthService {
   constructor(
     @Inject(CORE_CONFIG) public coreConfig: CoreConfig,
     private config: ConfigService,
+    private translate: TranslateService,
     private ngZone: NgZone,
     private userService: UserService,
     private systemService: SystemService,
@@ -53,10 +39,7 @@ export class AuthService {
     return this.authenticated;
   }
 
-  startLoginFlow(
-    tenant: string,
-    host?: string
-  ): { cancelTrigger: Subject<void>; loginState: Observable<LoginState> } {
+  startLoginFlow(tenant: string, host?: string): { cancelTrigger: Subject<void>; loginState: Observable<LoginState> } {
     const stopTrigger$ = new Subject<void>();
     return {
       cancelTrigger: stopTrigger$,
@@ -73,19 +56,13 @@ export class AuthService {
         const targetHost = host || '';
         this.http.get(`${targetHost}/tenant/${tenant}/loginDevice`).subscribe(
           (res: LoginDeviceResult) => {
-            const targetUri = `${targetHost}/oauth/${tenant}?user_code=${
-              res.user_code
-            }`;
+            const targetUri = `${targetHost}/oauth/${tenant}?user_code=${res.user_code}`;
 
             loginState.name = LoginStateName.STATE_LOGIN_URI;
             loginState.data = targetUri;
             o.next(loginState);
 
-            this.cloudLoginPollForResult(
-              `${targetHost}/auth/info/state?device_code=${res.device_code}`,
-              1000,
-              stopTrigger$
-            )
+            this.cloudLoginPollForResult(`${targetHost}/auth/info/state?device_code=${res.device_code}`, 1000, stopTrigger$)
               .pipe(
                 tap(accessToken => {
                   if (accessToken) {
@@ -94,16 +71,10 @@ export class AuthService {
                       tenant: tenant,
                       accessToken: accessToken
                     };
-                    this.storage
-                      .setItem(this.TOKEN_STORAGE_KEY, storeToken)
-                      .subscribe();
+                    this.storage.setItem(this.TOKEN_STORAGE_KEY, storeToken).subscribe();
                   }
                 }),
-                switchMap((authRes: any) =>
-                  authRes
-                    ? this.initUser(targetHost)
-                    : throwError('not authenticated')
-                )
+                switchMap((authRes: any) => (authRes ? this.initUser(targetHost) : throwError('not authenticated')))
               )
               .subscribe(
                 (user: YuvUser) => {
@@ -140,6 +111,10 @@ export class AuthService {
    * @ignore
    */
   initUser(host?: string) {
+    // setup default language for translate module
+    let browserLang = this.translate.getBrowserLang();
+    this.translate.use(browserLang.match(/en|de/) ? browserLang : 'en');
+
     return this.storage.getItem(this.TOKEN_STORAGE_KEY).pipe(
       switchMap((res: any) => {
         if (res) {
@@ -175,10 +150,7 @@ export class AuthService {
 
     // remove stored access data
     this.storage.removeItem(this.TOKEN_STORAGE_KEY).subscribe();
-    if (
-      this.coreConfig.environment.production &&
-      YuvEnvironment.isWebEnvironment()
-    ) {
+    if (this.coreConfig.environment.production && YuvEnvironment.isWebEnvironment()) {
       (window as any).location.href = '/logout';
       return;
     }
@@ -213,11 +185,7 @@ export class AuthService {
    * @param stopTrigger Subject acting as stop trigger
    * @returns Access Token if logged in successfully or NULL otherwise
    */
-  private cloudLoginPollForResult(
-    uri: string,
-    pollingInterval: number,
-    stopTrigger: Subject<void> = new Subject<void>()
-  ): Observable<string> {
+  private cloudLoginPollForResult(uri: string, pollingInterval: number, stopTrigger: Subject<void> = new Subject<void>()): Observable<string> {
     return Observable.create(o => {
       let accessGranted = false;
       let accessDenied = false;
@@ -295,10 +263,7 @@ export class AuthService {
       switchMap((userSettings: UserSettings) => {
         const currentUser = new YuvUser(userJson, userSettings);
         this.userService.setCurrentUser(currentUser);
-        this.backend.setHeader(
-          'Accept-Language',
-          currentUser.getClientLocale()
-        );
+        this.backend.setHeader('Accept-Language', currentUser.getClientLocale());
         return of(currentUser);
       })
     );

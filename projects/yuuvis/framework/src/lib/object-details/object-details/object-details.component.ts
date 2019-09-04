@@ -1,6 +1,6 @@
-import { Component, HostBinding, Input, OnInit } from '@angular/core';
+import { Component, HostBinding, Input } from '@angular/core';
 import { Position } from '@yuuvis/common-ui';
-import { DmsObject, DmsService } from '@yuuvis/core';
+import { DmsObject, DmsService, SystemService } from '@yuuvis/core';
 import { ActionShowCommand } from '../../actions';
 import { CellRenderer } from '../../services/grid/grid.cellrenderer';
 import { SVGIcons } from '../../svg.generated';
@@ -10,7 +10,7 @@ import { SVGIcons } from '../../svg.generated';
   templateUrl: './object-details.component.html',
   styleUrls: ['./object-details.component.scss']
 })
-export class ObjectDetailsComponent implements OnInit {
+export class ObjectDetailsComponent {
   objectIcon: string = '';
   icons = SVGIcons;
   showSideBar = false;
@@ -22,6 +22,7 @@ export class ObjectDetailsComponent implements OnInit {
   position = Position.RIGHT;
   private _dmsObject: DmsObject;
   private _dmsObject2: DmsObject;
+  private objId: string;
 
   @HostBinding('class.busy') busy = false;
   @Input() enableCompare = true;
@@ -35,7 +36,7 @@ export class ObjectDetailsComponent implements OnInit {
   @Input()
   set dmsObject(object: DmsObject) {
     this._dmsObject = object;
-    this.objectIcon = CellRenderer.typeCellRenderer(object.objectTypeId);
+    this.objectIcon = CellRenderer.typeCellRenderer(null, this.systemService.getLocalizedResource(`${object.objectTypeId}_label`));
   }
 
   get dmsObject() {
@@ -54,19 +55,30 @@ export class ObjectDetailsComponent implements OnInit {
   @Input()
   set objectId(id: string) {
     if (id) {
+      this.objId = id;
       // this._dmsObject = null;
-      this.busy = true;
-      this.dmsService.getDmsObject(id).subscribe(dmsObject => {
-        this.dmsObject = dmsObject;
-        this.busy = false;
-      });
+      this.getDmsObject(id);
     }
   }
 
-  constructor(private dmsService: DmsService) { }
-
   openActionMenu() {
-    this.actionCMD = { show: true, selection: [this.dmsObject], target: 'DMS_OBJECT' }
+    this.actionCMD = { show: true, selection: [this.dmsObject], target: 'DMS_OBJECT' };
+  }
+  constructor(private dmsService: DmsService, private systemService: SystemService) { }
+
+  private getDmsObject(id: string) {
+    this.busy = true;
+    this.dmsService.getDmsObject(id).subscribe(dmsObject => {
+      this.dmsObject = dmsObject;
+      this.busy = false;
+    });
+  }
+
+  refreshDetails() {
+    if (this.objId) {
+      this.getDmsObject(this.objId);
+    } else {
+    }
   }
 
   onActionFinish() {

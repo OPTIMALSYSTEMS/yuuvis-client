@@ -1,0 +1,63 @@
+<div
+  *ngIf="group"
+  [ngSwitch]="groupType"
+  class="form-element {{ group._eoFormGroup ? group._eoFormGroup.type : 'o2mControlWrap' }} align-{{
+    group._eoFormGroup && group._eoFormGroup.layout ? group._eoFormGroup.layout.align : ''
+  }}"
+  [formGroup]="group"
+>
+  <!-- group stacks (tabs) -->
+  <p-tabView *ngSwitchCase="'stack'">
+    <p-tabPanel
+      header="{{ getObjectFormGroup(group.controls[key]).label }}"
+      headerStyleClass="dirty-{{ group.controls[key].dirty }} invalid-{{ group.controls[key].invalid }} "
+      *ngFor="let key of group.controls | keys; index as i"
+      [selected]="i === 0"
+    >
+      <div class="stack" [ngClass]="{ stackBase: group._eoFormGroup.label === 'data' }">
+        <yuv-object-form-element
+          [element]="group.controls[key]"
+          *ngIf="getObjectFormControlWrapper(group.controls[key]); else stkgroup"
+          [situation]="situation"
+        ></yuv-object-form-element>
+        <ng-template #stkgroup>
+          <yuv-object-form-group [group]="group.controls[key]" [noGroupLabels]="true" [situation]="situation"></yuv-object-form-group>
+        </ng-template>
+      </div>
+    </p-tabPanel>
+  </p-tabView>
+
+  <!-- group with legend -->
+  <div *ngSwitchCase="'fieldset'" class="om-group fieldset">
+    <div class="legend">
+      <span>{{ group._eoFormGroup.label }}</span>
+    </div>
+
+    <div>
+      <ng-container *ngFor="let key of group.controls | keys">
+        <yuv-object-form-element
+          [element]="group.controls[key]"
+          *ngIf="getObjectFormControlWrapper(group.controls[key]); else fsgroup"
+          [situation]="situation"
+        ></yuv-object-form-element>
+        <ng-template #fsgroup>
+          <yuv-object-form-group [group]="group.controls[key]" [situation]="situation"></yuv-object-form-group>
+        </ng-template>
+      </ng-container>
+    </div>
+  </div>
+
+  <!-- group -->
+  <ng-container class="om-group" *ngSwitchCase="'group'">
+    <ng-container *ngFor="let key of group.controls | keys">
+      <yuv-object-form-element
+        [element]="group.controls[key]"
+        *ngIf="getObjectFormControlWrapper(group.controls[key]); else omgroup"
+        [situation]="situation"
+      ></yuv-object-form-element>
+      <ng-template #omgroup>
+        <yuv-object-form-group [group]="group.controls[key]" [situation]="situation"></yuv-object-form-group>
+      </ng-template>
+    </ng-container>
+  </ng-container>
+</div>

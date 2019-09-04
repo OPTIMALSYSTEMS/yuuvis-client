@@ -1,15 +1,5 @@
 import { PlatformLocation } from '@angular/common';
-import {
-  AfterViewInit,
-  ChangeDetectorRef,
-  Component,
-  ElementRef,
-  EventEmitter,
-  HostListener,
-  Input,
-  Output,
-  ViewChild
-} from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, EventEmitter, HostListener, Input, Output, ViewChild } from '@angular/core';
 import { Position } from './sidebar.enum';
 
 @Component({
@@ -38,10 +28,7 @@ export class SidebarComponent implements AfterViewInit {
   @Input() position = Position.LEFT;
   @Output() hide = new EventEmitter<any>();
 
-  constructor(
-    private location: PlatformLocation,
-    private cdRef: ChangeDetectorRef
-  ) {}
+  constructor(private location: PlatformLocation, private cdRef: ChangeDetectorRef) {}
 
   get externalHeaderStyle() {
     return { ...this.headerStyle };

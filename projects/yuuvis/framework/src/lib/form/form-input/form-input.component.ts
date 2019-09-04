@@ -1,13 +1,15 @@
-import { Component, OnInit, Input, HostBinding, Output, EventEmitter } from '@angular/core';
+import { Component, EventEmitter, HostBinding, Input, Output } from '@angular/core';
 
+/**
+ * Component for wrapping a form element. Provides a label and focus behaviour.
+ */
 @Component({
   selector: 'yuv-form-input',
   templateUrl: './form-input.component.html',
   styleUrls: ['./form-input.component.scss'],
-  host: {'class': 'yuv-form-input'},
+  host: { class: 'yuv-form-input' }
 })
 export class FormInputComponent {
-
   toggled = false;
   _label: string;
 
@@ -16,14 +18,14 @@ export class FormInputComponent {
     this._label = val;
   }
 
-  @Input() tag: { label: string, title: string };
+  @Input() tag: { label: string; title: string };
   @Input() description: string;
   @Input() skipToggle: boolean;
 
   @Input('isNull')
   set isNull(n: boolean) {
     this.toggled = n;
-  };
+  }
 
   @Input('invalid')
   set invalid(iv: boolean) {

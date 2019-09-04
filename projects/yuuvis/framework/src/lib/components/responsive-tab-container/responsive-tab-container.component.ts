@@ -1,14 +1,19 @@
-import { AfterContentInit, AfterViewInit, Component, ContentChildren, Input, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { AfterContentInit, Component, ContentChildren, Input, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { Screen, ScreenService } from '@yuuvis/core';
 import { TabPanel, TabView } from 'primeng/tabview';
+import { Observable } from 'rxjs';
+import { filter, map, take, tap } from 'rxjs/operators';
 import { SVGIcons } from '../../svg.generated';
 
+/**
+ *
+ */
 @Component({
   selector: 'yuv-responsive-tab-container',
   templateUrl: './responsive-tab-container.component.html',
   styleUrls: ['./responsive-tab-container.component.scss']
 })
-export class ResponsiveTabContainerComponent implements OnInit, AfterContentInit, AfterViewInit {
+export class ResponsiveTabContainerComponent implements OnInit, AfterContentInit {
   @Input() pluginPanels = new QueryList<TabPanel>();
 
   @ContentChildren(TabPanel) tabPanels: QueryList<TabPanel>;
@@ -21,49 +26,52 @@ export class ResponsiveTabContainerComponent implements OnInit, AfterContentInit
   splitPanels: TabPanel[] = [];
   orientation = 'top';
   svgIcon = SVGIcons;
-  isMobile: boolean;
+  isSmallScreen$: Observable<boolean>;
+  isBigScreen: Observable<boolean>;
 
-  splitPanelAdd() {
-    const panel = this.mainTabView.findSelectedTab();
+  splitPanelAdd(id?: string) {
+    const panel = id ? this.allPanels.find(p => this.pID(p) === id) : this.mainTabView.findSelectedTab();
     if (panel && this.allPanels.length > this.splitPanels.length + 1) {
-      panel.selected = false;
+      panel.loaded = true;
       panel.disabled = true;
       this.splitPanels.push(panel);
-      setTimeout(() => this.movePanelContent(panel, this.splitTabViews.last), 100);
-      const select = this.mainTabView.tabPanels.find(p => !p.selected && !p.disabled);
-      if (select) {
-        select.selected = true;
+      setTimeout(() => this.movePanelContent(panel, this.splitTabViews.find(v => this.pID(v.tabPanels.first) === this.pID(panel, '_empty'))), 100);
+      if (!id) {
+        this.open(this.allPanels.find(p => !p.selected && !p.disabled));
       }
     }
   }
 
-  splitPanelClose(evt, panel: TabPanel, index: any) {
+  splitPanelClose(panel: TabPanel, index = 0) {
     this.movePanelContent(panel);
-    evt.close();
     panel.disabled = false;
     this.splitPanels.splice(index, 1);
+    this.savePanelOrder();
   }
 
   movePanelContent(panel: TabPanel, tabView: TabView = this.mainTabView) {
     tabView.el.nativeElement.firstElementChild.lastElementChild.appendChild(panel.viewContainer.element.nativeElement);
   }
 
-  constructor(private screenService: ScreenService) {}
-
-  tabPositining() {
-    this.screenService.screenChange$.subscribe((screen: Screen) => {
-      if (screen.mode === ScreenService.MODE.SMALL) {
-        this.isMobile = true;
-        // this.orientation = 'bottom';
-      } else {
-        this.isMobile = false;
-        // this.orientation = 'top';
-      }
-    });
+  onChange(e: any) {
+    if (e && e.originalEvent) {
+      e.originalEvent.target.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
+    }
+    this.savePanelOrder();
   }
 
+  constructor(private screenService: ScreenService) {}
+
   ngOnInit() {
-    this.tabPositining();
+    this.isSmallScreen$ = this.screenService.screenChange$.pipe(
+      map((screen: Screen) => screen.mode === ScreenService.MODE.SMALL),
+      tap(isSmall => isSmall && [...this.splitPanels].forEach(p => this.splitPanelClose(p)))
+    );
+
+    this.isBigScreen = this.isSmallScreen$.pipe(
+      take(1),
+      filter(isSmall => !isSmall)
+    );
   }
 
   ngAfterContentInit() {
@@ -71,20 +79,44 @@ export class ResponsiveTabContainerComponent implements OnInit, AfterContentInit
     setTimeout(() => this.init(), 100);
   }
 
-  ngAfterViewInit() {
-    // this.splitTabViews.changes.subscribe((queryList: QueryList<TabView>) => {});
-  }
-
-  init(panelOrder?: any) {
+  init() {
     this.allPanels = this.tabPanels.toArray().concat(this.pluginPanels.toArray());
 
     this.mainTabView.tabPanels = new QueryList<TabPanel>();
     this.mainTabView.tabPanels.reset(this.allPanels);
 
     this.mainTabView.initTabs();
+    this.loadPanelOrder();
   }
 
-  onChange(e: any) {
-    e.originalEvent.target.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
+  open(panel: TabPanel) {
+    if (panel) {
+      const target = this.mainTabView.el.nativeElement.querySelector(`a#${panel.id}-label`);
+      if (target) {
+        // use native event to trigger onChange
+        target.click();
+      }
+    }
+  }
+
+  pID(panel: TabPanel, postfix = '') {
+    return panel && panel.viewContainer.element.nativeElement.id + postfix;
+  }
+
+  savePanelOrder() {
+    this.isBigScreen.subscribe(() => {
+      const panelOrder = [this.pID(this.mainTabView.findSelectedTab()), ...this.splitPanels.map(p => this.pID(p))];
+      console.log(panelOrder.join());
+    });
+  }
+
+  loadPanelOrder() {
+    this.isBigScreen.subscribe(() => {
+      const panelOrder = ['summary', 'content'];
+      if (panelOrder && panelOrder.length) {
+        panelOrder.slice(1).forEach(id => this.splitPanelAdd(id));
+        this.open(this.allPanels.find(p => this.pID(p) === panelOrder[0]));
+      }
+    });
   }
 }

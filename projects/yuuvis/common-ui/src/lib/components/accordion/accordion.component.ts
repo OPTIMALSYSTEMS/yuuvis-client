@@ -6,7 +6,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
   styleUrls: ['./accordion.component.scss']
 })
 export class AccordionComponent {
-  _selected: boolean;
+  _selected: boolean = false;
   @Input() header: string;
   @Input() styles: string;
 
@@ -19,19 +19,19 @@ export class AccordionComponent {
     return this._selected;
   }
 
-  @Output() onOpen: EventEmitter<any> = new EventEmitter();
+  @Output() open: EventEmitter<any> = new EventEmitter();
   index: number = null;
   lastIndex = -1;
 
   onTabOpen(e) {
     const index = e.index;
     this.selected = true;
-    this.onOpen.emit(this.selected);
+    this.open.emit(this.selected);
   }
 
   onTabClose(e = false) {
     this.index = this.lastIndex--;
     this.selected = false;
-    this.onOpen.emit(this.selected);
+    this.open.emit(this.selected);
   }
 }
