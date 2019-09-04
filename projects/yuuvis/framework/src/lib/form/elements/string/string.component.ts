@@ -7,14 +7,10 @@ import { SVGIcons } from '../../../svg.generated';
  *
  * Creates form input for strings. Based on the input values different kinds of inputs will be generated.
  *
- * ## Examples
+ * ```html
+<yuv-string [minLength]="5" [maxLength]="10"></yuv-string>
+```
  *
- ```html
-  <!-- string input validating input to be between 5 and 10 characters -->
-  <yuv-string [minLength]="5" [maxLength]="10"></yuv-string>
- ```
- *
- * {@link FormInputComponent}
  */
 @Component({
   selector: 'yuv-string',

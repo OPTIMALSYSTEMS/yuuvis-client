@@ -398,7 +398,7 @@
             "index": "src-docs/index.html",
             "main": "src-docs/main.ts",
             "polyfills": "src-docs/polyfills.ts",
-            "tsConfig": "src-docs/tsconfig.test.json",
+            "tsConfig": "src-docs/tsconfig.dev.json",
             "assets": ["src-docs/favicon.ico", "src-docs/assets"],
             "styles": ["src-docs/styles.scss"],
             "scripts": [],
@@ -466,18 +466,18 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "component-tests:build"
+            "browserTarget": "documentation:build"
           },
           "configurations": {
-            "test": {
-              "browserTarget": "component-tests:build:test"
+            "dev": {
+              "browserTarget": "documentation:build:dev"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "component-tests:build"
+            "browserTarget": "documentation:build"
           }
         }
       }

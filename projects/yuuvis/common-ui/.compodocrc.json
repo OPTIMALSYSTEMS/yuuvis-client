@@ -1,0 +1,17 @@
+{
+  "name": "@yuuvis/common-ui library",
+  "output": "./../../../src-docs/assets/yuuvis/common-ui",
+  "tsconfig": "./tsconfig.lib.json",
+  "disableLifeCycleHooks": true,
+  "disablePrivate": true,
+  "disableProtected": true,
+  "disableInternal": true,
+  "disableGraph": true,
+  "disableCoverage": true,
+  "disableDomTree": true,
+  "disableSourceCode": true,
+  "disableTemplateTab": true,
+  "disableStyleTab": true,
+  "disableRoutesGraph": true,
+  "exportFormat": "json"
+}
