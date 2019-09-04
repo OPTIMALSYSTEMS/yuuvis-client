@@ -112,7 +112,7 @@ export class ResponsiveTabContainerComponent implements OnInit, AfterContentInit
 
   loadPanelOrder() {
     this.isBigScreen.subscribe(() => {
-      const panelOrder = ['summary', 'content'];
+      const panelOrder = [];
       if (panelOrder && panelOrder.length) {
         panelOrder.slice(1).forEach(id => this.splitPanelAdd(id));
         this.open(this.allPanels.find(p => this.pID(p) === panelOrder[0]));
