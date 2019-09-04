@@ -48,6 +48,7 @@
   "eo.export.action.pdf.description": "Lädt die Dokumentdatei als PDF herunter",
   "eo.export.cancel": "Abbrechen",
   "eo.versions.detail.glue.tooltip": "Synchrone Ansicht von Objektaspekten umschalten",
+  "{{ formElementRef.errors.precision.translateKey }}": "",
   "{{ formElementRef.errors.scale.translateKey }}": "",
   "eo.object.summary.title": "Übersicht",
   "eo.object.indexdata.title": "Indexdaten",
