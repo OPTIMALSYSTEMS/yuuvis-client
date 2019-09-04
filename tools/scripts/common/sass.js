@@ -21,6 +21,7 @@ const processSass = async library => {
     });
     const css = renderedMainScss ? renderedMainScss.css + rendered.css : rendered.css;
     fs.writeFileSync(destPath, css);
+    fs.unlinkSync(tmpScssPath);
   } catch (e) {
     throw e;
   }
