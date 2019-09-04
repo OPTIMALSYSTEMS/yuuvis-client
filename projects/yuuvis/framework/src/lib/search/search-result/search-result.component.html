@@ -1,6 +1,7 @@
 <div class="content grid-container">
   <div class="tollbar">
     <yuv-icon [svg]="icon.icSearchFilter"></yuv-icon>
+    <yuv-icon class="header-icon" (click)="openActionMenu()" [svg]="icon.icKebap"></yuv-icon>
   </div>
   <div class="table" [yuvBusyOverlay]="busy">
     <yuv-responsive-data-table class="data-table" *ngIf="tableData" [data]="tableData" [breakpoint]="400"
@@ -33,3 +34,4 @@
     </div>
   </div>
 </div>
+<yuv-action-menu [(cmd)]="actionCMD" (finished)="onActionFinish()"></yuv-action-menu>

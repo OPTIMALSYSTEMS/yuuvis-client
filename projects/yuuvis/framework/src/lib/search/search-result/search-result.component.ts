@@ -1,8 +1,9 @@
 import { Component, EventEmitter, HostBinding, Input, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { BaseObjectTypeField, SearchQuery, SearchResult, SearchResultItem, SearchService, SecondaryObjectTypeField, SortOption } from '@yuuvis/core';
+import { BaseObjectTypeField, DmsService, SearchQuery, SearchResult, SearchResultItem, SearchService, SecondaryObjectTypeField, SortOption, SystemService, TranslateService } from '@yuuvis/core';
 import { ColDef } from 'ag-grid-community';
 import { of } from 'rxjs';
+import { ActionShowCommand } from '../../actions';
 import { ResponsiveTableData } from '../../components';
 import { ColumnSizes } from '../../services/grid/grid.interface';
 import { GridService } from '../../services/grid/grid.service';
@@ -25,7 +26,8 @@ export class SearchResultComponent {
   icon = {
     icSearchFilter: SVGIcons['search-filter'],
     icArrowNext: SVGIcons['arrow-next'],
-    icArrowLast: SVGIcons['arrow-last']
+    icArrowLast: SVGIcons['arrow-last'],
+    icKebap: SVGIcons['kebap']
   };
   tableData: ResponsiveTableData;
   // object type shown in the result list, will be null for mixed results
@@ -36,6 +38,8 @@ export class SearchResultComponent {
     pages: number;
     page: number;
   };
+
+  actionCMD: ActionShowCommand = { show: false, selection: [] };
 
   @Input() set query(searchQuery: SearchQuery) {
     this._searchQuery = searchQuery;
@@ -66,7 +70,15 @@ export class SearchResultComponent {
     return this._hasPages;
   }
 
-  constructor(private gridService: GridService, private searchService: SearchService, private fb: FormBuilder) {
+
+  constructor(
+    private translate: TranslateService,
+    private gridService: GridService,
+    private searchService: SearchService,
+    private fb: FormBuilder,
+    private dmsService: DmsService,
+    private systemService: SystemService
+  ) {
     this.pagingForm = this.fb.group({
       page: ['']
     });
@@ -77,6 +89,16 @@ export class SearchResultComponent {
    */
   refresh() {
     this.executeQuery();
+  }
+
+  openActionMenu() {
+    this.dmsService.getDmsObject(this.selectedItemId).subscribe((item) => {
+      this.actionCMD = { show: true, selection: [item], target: 'DMS_OBJECT' };
+    });
+  }
+
+  onActionFinish() {
+    alert('HURZ');
   }
 
   private executeQuery() {
@@ -162,6 +184,7 @@ export class SearchResultComponent {
   }
 
   onSelectionChanged(selectedRows: any[]) {
+    this.selectedItemId = selectedRows[0].id;
     this.itemsSelected.emit(selectedRows.map(r => r.id));
   }
 
