@@ -137,7 +137,9 @@ export class SearchResultComponent {
    */
   private getRow(searchResultItem: SearchResultItem): any {
     const row = {
-      id: searchResultItem.fields.get(BaseObjectTypeField.OBJECT_ID)
+      id: searchResultItem.fields.get(BaseObjectTypeField.OBJECT_ID),
+      [SecondaryObjectTypeField.TITLE]: searchResultItem.fields.get(SecondaryObjectTypeField.TITLE),
+      [SecondaryObjectTypeField.DESCRIPTION]: searchResultItem.fields.get(SecondaryObjectTypeField.DESCRIPTION)
     };
     this._columns.forEach((cd: ColDef) => {
       row[cd.field] = searchResultItem.fields.get(cd.field);
