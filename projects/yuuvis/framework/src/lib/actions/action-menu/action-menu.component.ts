@@ -1,4 +1,15 @@
-import { Component, ComponentFactoryResolver, EventEmitter, Input, OnDestroy, Output, Type, ViewChild, ViewContainerRef, ViewEncapsulation } from '@angular/core';
+import {
+  Component,
+  ComponentFactoryResolver,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  Output,
+  Type,
+  ViewChild,
+  ViewContainerRef,
+  ViewEncapsulation
+} from '@angular/core';
 import { NavigationStart, Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { filter, take, takeUntil } from 'rxjs/operators';
@@ -10,7 +21,6 @@ import { ActionListEntry } from '../interfaces/action-list-entry';
 import { ActionComponentAnchorDirective } from './action-component-anchor/action-component-anchor.directive';
 
 export abstract class UnsubscribeOnDestroy implements OnDestroy {
-
   protected componentDestroyed$: Subject<void>;
 
   constructor() {
@@ -29,7 +39,6 @@ export abstract class UnsubscribeOnDestroy implements OnDestroy {
   }
 }
 
-
 @Component({
   selector: 'yuv-action-menu',
   templateUrl: './action-menu.component.html',
@@ -37,18 +46,18 @@ export abstract class UnsubscribeOnDestroy implements OnDestroy {
   encapsulation: ViewEncapsulation.None
 })
 export class ActionMenuComponent extends UnsubscribeOnDestroy {
-
   @ViewChild(ActionComponentAnchorDirective, { static: false }) eoActionComponentAnchor: ActionComponentAnchorDirective;
   @ViewChild(ActionComponentAnchorDirective, { static: false }) externalDialog: ActionComponentAnchorDirective;
 
   @Output() finished = new EventEmitter();
 
   actionLists: {
-    common: ActionListEntry[],
-    further: ActionListEntry[]
+    common: ActionListEntry[];
+    further: ActionListEntry[];
   } = {
-      common: [], further: []
-    };
+    common: [],
+    further: []
+  };
   subActionsListHeader = '';
   subActionsList: ActionListEntry[];
   selection: any[];
@@ -80,46 +89,29 @@ export class ActionMenuComponent extends UnsubscribeOnDestroy {
   @Output()
   cmdChange = new EventEmitter<ActionShowCommand>();
 
-  constructor(private actionService: ActionService,
+  constructor(
+    private actionService: ActionService,
     private router: Router,
     public viewContainerRef: ViewContainerRef,
-    private componentFactoryResolver: ComponentFactoryResolver) {
+    private componentFactoryResolver: ComponentFactoryResolver
+  ) {
     super();
-
-    // subscribe for visibility observable indicating whether to show or hide the actions
-    // this.actionService
-    //   .actionsShowing$.pipe(
-    //     takeUntil(this.componentDestroyed$))
-    //   .subscribe((cmd: ActionShowCommand) => {
-    //     if (!this.showMenu && cmd.show) {
-    //       this.selection = cmd.selection;
-    //       this.target = cmd.target;
-    //       this.showActionMenu();
-    //     } else if (this.showMenu && !cmd.show) {
-    //       this.hideActionMenu();
-    //     }
-    //   });
 
     this.router.events
       .pipe(
         takeUntil(this.componentDestroyed$),
-        filter(evt => evt instanceof NavigationStart),
+        filter(evt => evt instanceof NavigationStart)
       )
       .subscribe(() => this.hide());
-
   }
 
   private getActions() {
-    this.actionService
-      .getActionsList(this.selection, this.viewContainerRef)
-      .subscribe(actionsList => {
-        this.actionLists.common = actionsList;
-      });
-
+    this.actionService.getActionsList(this.selection, this.viewContainerRef).subscribe(actionsList => {
+      this.actionLists.common = actionsList;
+    });
   }
 
   hide() {
-    // this.actionService.hideActions();
     this.cmd = { show: false, selection: [] };
   }
 
@@ -152,13 +144,15 @@ export class ActionMenuComponent extends UnsubscribeOnDestroy {
 
     if (isSimpleAction) {
       const simpleAction = actionListEntry.action as SimpleAction;
-      simpleAction.run(actionListEntry.availableSelection).pipe(take(1)).subscribe(() => {
-
-        // hide action menu if nothing else is to be shown/done
-        if (isSimpleActionOnly) {
-          this.onFinish();
-        }
-      });
+      simpleAction
+        .run(actionListEntry.availableSelection)
+        .pipe(take(1))
+        .subscribe(() => {
+          // hide action menu if nothing else is to be shown/done
+          if (isSimpleActionOnly) {
+            this.onFinish();
+          }
+        });
     }
 
     if (isListAction) {
@@ -166,7 +160,7 @@ export class ActionMenuComponent extends UnsubscribeOnDestroy {
       this.subActionsListHeader = listAction.header;
       this.actionService
         .getExecutableActionsListFromGivenActions(listAction.subActionComponents, this.selection, this.viewContainerRef)
-        .subscribe((actionsList: ActionListEntry[]) => this.subActionsList = actionsList);
+        .subscribe((actionsList: ActionListEntry[]) => (this.subActionsList = actionsList));
     } else if (isComponentAction) {
       const componentAction = actionListEntry.action as ComponentAction;
       this.showActionComponent(componentAction.component, this.eoActionComponentAnchor, this.componentFactoryResolver, true);
@@ -186,7 +180,7 @@ export class ActionMenuComponent extends UnsubscribeOnDestroy {
     (<ActionComponent>componentRef.instance).canceled.pipe(take(1)).subscribe(() => this.onCancel());
     (<ActionComponent>componentRef.instance).finished.pipe(take(1)).subscribe(() => this.onFinish());
     if (inputs) {
-      Object.keys(inputs).forEach(function (key) {
+      Object.keys(inputs).forEach(function(key) {
         componentRef.instance[key] = inputs[key];
       });
     }
