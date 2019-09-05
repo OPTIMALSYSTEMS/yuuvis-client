@@ -8,7 +8,7 @@
   width: 25vw;
   min-width: 300px;
   z-index: 1000;
-  background-color: rgba(var(--color-primary-rgb), .95);
+  background-color: rgba(var(--color-primary-rgb), 0.95);
   animation: eoFadeInRight var(--app-default-transition-duration);
   box-shadow: 0 0 10px 0 rgba(var(--color-black-rgb), 0.3);
   color: var(--color-white);
@@ -50,8 +50,9 @@
       }
 
       .close {
-        margin: 0;
-        z-index: 10;
+        height: 24px;
+        width: 24px;
+        cursor: pointer;
       }
     }
   }
@@ -69,7 +70,7 @@
     padding: var(--app-pane-padding);
     min-width: 200px;
     display: inline-block;
-    width: 90%;
+    width: 100%;
 
     .group-title {
       background: rgba(var(--color-white-rgb), 0.1);
@@ -101,11 +102,11 @@
       cursor: pointer;
       padding: calc(var(--app-pane-padding) / 2) var(--app-pane-padding) calc(var(--app-pane-padding) / 2) 0;
       display: flex;
-      align-items: center
-
+      align-items: center;
     }
 
-    &.sub > div:first-child {
+    &.sub > div:first-child,
+    &.sub > a.link > div:first-child {
       padding-left: calc(var(--app-pane-padding) / 2);
     }
 
@@ -126,7 +127,10 @@
       padding: 3px;
       box-sizing: border-box;
       border-radius: 50%;
+      height: 24px;
+      width: 24px;
       color: rgba(var(--color-white-rgb), 0.3);
+      @include transition();
 
       &:hover {
         background-color: var(--color-primary);
@@ -140,14 +144,14 @@
       font-style: italic;
       padding: calc(var(--app-pane-padding) / 4) var(--app-pane-padding) calc(var(--app-pane-padding) / 2) var(--app-pane-padding);
     }
-
   }
 
   .action:last-child {
     border: 0;
   }
 
-  .action:hover, .action:focus {
+  .action:hover,
+  .action:focus {
     background: rgba(var(--color-white-rgb), 0.1);
   }
   .group-buttons {
@@ -156,9 +160,10 @@
     padding-top: var(--app-pane-padding);
 
     button {
-      background-color: transparent;
+      background-color: rgba(var(--color-white-rgb), 0.1);
       &:hover {
-        background-color: rgba(var(--color-white-rgb), 0.1);
+        border: 1px solid var(--color-primary-3);
+        background-color: rgba(var(--color-white-rgb), 0.1) !important;
       }
     }
   }
