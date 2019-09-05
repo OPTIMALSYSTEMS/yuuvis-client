@@ -96,7 +96,10 @@ export class SearchResultComponent {
   private createTableData(searchResult: SearchResult, pageNumber = 1): void {
     // object type of the result list items, if NULL we got a mixed result
     // const id = searchResult.objectTypes.length > 1 ? null : searchResult.objectTypes[0];
-    const id = this._searchQuery.types.length > 1 ? null : this._searchQuery.types[0] || null;
+    let id;
+    if (this._searchQuery) {
+      id = this._searchQuery.types.length > 1 ? null : this._searchQuery.types[0] || null;
+    }
 
     (id !== this.resultListObjectTypeId || !this._columns ? this.gridService.getColumnConfiguration(id) : of(this._columns)).subscribe((colDefs: ColDef[]) => {
       // setup pagination form in case of a paged search result chunk
@@ -131,6 +134,8 @@ export class SearchResultComponent {
       this.busy = false;
     });
   }
+
+  private resetTableData() {}
 
   /**
    * Map search result item to a row data item

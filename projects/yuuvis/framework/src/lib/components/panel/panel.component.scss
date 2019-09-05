@@ -2,10 +2,11 @@
 
 .yuv-panel-wrapper {
   display: grid;
+  background-color: var(--panel-background-grey);
   grid-template-columns: 1fr;
   grid-template-rows: var(--app-pane-header-height) 1fr;
   grid-template-areas: 'header' 'content';
-  background-color: var(--panel-background);
+
   height: 100%;
   overflow: hidden;
 
@@ -17,6 +18,7 @@
 
   .header {
     display: grid;
+    background-color: var(--panel-background);
     grid-template-columns: auto 1fr auto;
     grid-template-rows: 1fr auto;
     grid-template-areas: 'icon header_text actions' 'status status status';

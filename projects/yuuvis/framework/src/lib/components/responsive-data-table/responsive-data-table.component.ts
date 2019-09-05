@@ -26,7 +26,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
   private _currentSelection: string[] = [];
 
   private settings = {
-    headerHeight: { default: 30, small: 0 },
+    headerHeight: { default: 37, small: 0 },
     rowHeight: { default: 48, small: 70 }
   };
 
