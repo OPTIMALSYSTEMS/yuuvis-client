@@ -1,6 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { DmsService, SearchQuery, SystemService, TranslateService } from '@yuuvis/core';
-import { ActionShowCommand } from '../../actions';
 import { SVGIcons } from '../../svg.generated';
 import { SearchResultComponent } from '../search-result/search-result.component';
 
@@ -31,7 +30,7 @@ export class SearchResultPanelComponent implements OnInit {
   @Input() title: string;
   @Input() selectedItemId: string;
   @Output() itemsSelected = new EventEmitter<string[]>();
-  actionCMD: ActionShowCommand = { show: false, selection: [] };
+  actionCMD: any = { show: false, selection: [] };
   private selectedItemIDs: any[];
 
   constructor(private translate: TranslateService, private systemService: SystemService, private dmsService: DmsService) {
@@ -54,11 +53,11 @@ export class SearchResultPanelComponent implements OnInit {
     this.queryTerm = `${querytype}${this.translate.instant('eo.search.term')}: '${term}'`;
   }
 
-  ngOnInit() { }
+  ngOnInit() {}
 
   openActionMenu() {
-    this.dmsService.getDmsObjects(this.selectedItemIDs).subscribe((items) => {
-      this.actionCMD = { show: true, selection: items, target: 'DMS_OBJECT' };
+    this.dmsService.getDmsObjects(this.selectedItemIDs).subscribe(items => {
+      this.actionCMD = { show: true, selection: items };
     });
   }
 

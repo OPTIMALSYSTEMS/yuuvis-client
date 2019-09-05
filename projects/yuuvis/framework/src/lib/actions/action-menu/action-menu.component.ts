@@ -39,6 +39,17 @@ export abstract class UnsubscribeOnDestroy implements OnDestroy {
   }
 }
 
+/**
+ * # yuv-action-menu
+ *
+ * Creates a menu of available actions for a selection of items.
+ * The component will be positioned absolutely, so a parent has to be positioned relatively.
+ *
+ * ```html
+<yuv-action-menu [(visible)]="showActionMenu" [selection]="selection"></yuv-action-menu>
+```
+ *
+ */
 @Component({
   selector: 'yuv-action-menu',
   templateUrl: './action-menu.component.html',
@@ -49,8 +60,14 @@ export class ActionMenuComponent extends UnsubscribeOnDestroy {
   @ViewChild(ActionComponentAnchorDirective, { static: false }) eoActionComponentAnchor: ActionComponentAnchorDirective;
   @ViewChild(ActionComponentAnchorDirective, { static: false }) externalDialog: ActionComponentAnchorDirective;
 
+  /**
+   * Specifies the items for which the actions should be provided.
+   */
   @Input() selection: any[] = [];
-  @Input() target: string = '';
+
+  /**
+   * Specifies the visibility of the menu.
+   */
   @Input() set visible(visible: boolean) {
     if (!this.showMenu && visible) {
       this.showActionMenu();
@@ -58,10 +75,19 @@ export class ActionMenuComponent extends UnsubscribeOnDestroy {
       this.hideActionMenu();
     }
   }
-
   @Output() visibleChange = new EventEmitter();
+
+  /**
+   * Callback to invoke when the action is finished.
+   */
   @Output() onFinish = new EventEmitter();
+  /**
+   * Callback to invoke when the menu is shown.
+   */
   @Output() onShow = new EventEmitter();
+  /**
+   * Callback to invoke when the menu is hidden.
+   */
   @Output() onHide = new EventEmitter();
 
   actionLists: {

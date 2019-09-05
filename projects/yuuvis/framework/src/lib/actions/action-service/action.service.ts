@@ -1,46 +1,29 @@
 import { ComponentFactoryResolver, Inject, Injectable, InjectionToken, ViewContainerRef } from '@angular/core';
 import * as _ from 'lodash';
-import { merge as observableMerge, Observable, of as observableOf, ReplaySubject } from 'rxjs';
+import { merge as observableMerge, Observable, of as observableOf } from 'rxjs';
 import { combineAll, map } from 'rxjs/operators';
 import { ActionListEntry } from '../interfaces/action-list-entry';
 import { Action } from '../interfaces/action.interface';
 import { SelectionRange } from '../selection-range.enum';
 
-
 export const ACTIONS = new InjectionToken<any[]>('ACTIONS');
 export const CUSTOM_ACTIONS = new InjectionToken<any[]>('CUSTOM_ACTIONS');
 
-// command broadcasted to listening components
-export interface ActionShowCommand {
-  show: boolean,
-  target?: string,
-  selection: any[]
-}
-
 @Injectable()
 export class ActionService {
-
   private allActionComponents: any[] = [];
 
-  private actionsShowingSource = new ReplaySubject<ActionShowCommand>(1);
-  public actionsShowing$: Observable<ActionShowCommand> = this.actionsShowingSource.asObservable();
-
-  constructor(@Inject(ACTIONS) actions: any[] = [],
+  constructor(
+    @Inject(ACTIONS) actions: any[] = [],
     @Inject(CUSTOM_ACTIONS) custom_actions: any[] = [],
-    private _componentFactoryResolver: ComponentFactoryResolver) {
-
-    this.allActionComponents = actions.concat(custom_actions)
-      .filter(entry => entry.target && !entry.isSubAction && !entry.disabled);
+    private _componentFactoryResolver: ComponentFactoryResolver
+  ) {
+    this.allActionComponents = actions.concat(custom_actions).filter(entry => entry.target && !entry.isSubAction && !entry.disabled);
   }
 
   getActionsList(selection: any[], viewContainerRef: ViewContainerRef): Observable<ActionListEntry[]> {
-
     // todo: find better solution to exclude components for actions that need to be initialized later
-    return this.getExecutableActionsListFromGivenActions(
-      this.allActionComponents,
-      selection,
-      viewContainerRef
-    );
+    return this.getExecutableActionsListFromGivenActions(this.allActionComponents, selection, viewContainerRef);
   }
 
   private createExecutableActionListEntry(actionComponent: any, selection: any[], viewContainerRef: ViewContainerRef): ActionListEntry {
@@ -54,10 +37,8 @@ export class ActionService {
     return entry;
   }
 
-
   getExecutableActionsListFromGivenActions(allActionComponents: any[], selection: any[], viewContainerRef: ViewContainerRef): Observable<ActionListEntry[]> {
     if (selection && selection.length) {
-
       const allActionsList: ActionListEntry[] = allActionComponents
         .filter(actionComponent => selection[0] instanceof actionComponent.target)
         .map((actionComponent: any) => this.createExecutableActionListEntry(actionComponent, [], viewContainerRef));
@@ -73,17 +54,16 @@ export class ActionService {
               actionListEntry.availableSelection.push(item);
             }
           });
-        })
+        });
       });
 
-      return observableMerge(observables)
-        .pipe(
-          combineAll(),
-          map(() => {
-            const actions = targetActionsList.filter((actionListEntry) => this.isRangeAllowed(actionListEntry.action, actionListEntry.availableSelection.length));
-            return _.sortBy(actions, 'action.priority');
-          }
-          ));
+      return observableMerge(observables).pipe(
+        combineAll(),
+        map(() => {
+          const actions = targetActionsList.filter(actionListEntry => this.isRangeAllowed(actionListEntry.action, actionListEntry.availableSelection.length));
+          return _.sortBy(actions, 'action.priority');
+        })
+      );
     } else {
       return observableOf([]);
     }
@@ -111,19 +91,5 @@ export class ActionService {
         break;
     }
     return isRangeAllowed;
-  }
-
-  /**
-   * Show global actions panel
-   */
-  public showActions(selection: any[], target = 'DMS_OBJECT') {
-    this.actionsShowingSource.next({ show: true, selection, target });
-  }
-
-  /**
-   * Hide global actions panel
-   */
-  public hideActions() {
-    this.actionsShowingSource.next({ show: false, selection: [] });
   }
 }

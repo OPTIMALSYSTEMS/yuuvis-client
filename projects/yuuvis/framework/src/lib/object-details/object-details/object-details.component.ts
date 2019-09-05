@@ -1,7 +1,6 @@
 import { Component, HostBinding, Input } from '@angular/core';
 import { Position } from '@yuuvis/common-ui';
 import { DmsObject, DmsService, SystemService } from '@yuuvis/core';
-import { ActionShowCommand } from '../../actions';
 import { CellRenderer } from '../../services/grid/grid.cellrenderer';
 import { SVGIcons } from '../../svg.generated';
 
@@ -31,7 +30,7 @@ export class ObjectDetailsComponent {
 
   @Input() externalPanels = [];
 
-  actionCMD: ActionShowCommand = { show: false, selection: [] };
+  actionCMD: any = { show: false, selection: [] };
 
   @Input()
   set dmsObject(object: DmsObject) {
@@ -62,9 +61,9 @@ export class ObjectDetailsComponent {
   }
 
   openActionMenu() {
-    this.actionCMD = { show: true, selection: [this.dmsObject], target: 'DMS_OBJECT' };
+    this.actionCMD = { show: true, selection: [this.dmsObject] };
   }
-  constructor(private dmsService: DmsService, private systemService: SystemService) { }
+  constructor(private dmsService: DmsService, private systemService: SystemService) {}
 
   private getDmsObject(id: string) {
     this.busy = true;
@@ -85,5 +84,5 @@ export class ObjectDetailsComponent {
     alert('HURZ');
   }
 
-  ngOnInit() { }
+  ngOnInit() {}
 }
