@@ -30,7 +30,8 @@ export class SearchResultPanelComponent implements OnInit {
   @Input() title: string;
   @Input() selectedItemId: string;
   @Output() itemsSelected = new EventEmitter<string[]>();
-  actionCMD: any = { show: false, selection: [] };
+  actionMenuVisible = false;
+  actionMenuSelection = [];
   private selectedItemIDs: any[];
 
   constructor(private translate: TranslateService, private systemService: SystemService, private dmsService: DmsService) {
@@ -57,11 +58,8 @@ export class SearchResultPanelComponent implements OnInit {
 
   openActionMenu() {
     this.dmsService.getDmsObjects(this.selectedItemIDs).subscribe(items => {
-      this.actionCMD = { show: true, selection: items };
+      this.actionMenuSelection = items;
+      this.actionMenuVisible = true;
     });
-  }
-
-  onActionFinish() {
-    alert('HURZ');
   }
 }

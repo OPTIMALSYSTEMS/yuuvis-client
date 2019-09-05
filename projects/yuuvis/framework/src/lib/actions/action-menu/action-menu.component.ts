@@ -75,6 +75,9 @@ export class ActionMenuComponent extends UnsubscribeOnDestroy {
       this.hideActionMenu();
     }
   }
+  /**
+   * @ignore
+   */
   @Output() visibleChange = new EventEmitter();
 
   /**

@@ -30,7 +30,8 @@ export class ObjectDetailsComponent {
 
   @Input() externalPanels = [];
 
-  actionCMD: any = { show: false, selection: [] };
+  actionMenuVisible = false;
+  actionMenuSelection = [];
 
   @Input()
   set dmsObject(object: DmsObject) {
@@ -61,7 +62,8 @@ export class ObjectDetailsComponent {
   }
 
   openActionMenu() {
-    this.actionCMD = { show: true, selection: [this.dmsObject] };
+    this.actionMenuSelection = [this.dmsObject];
+    this.actionMenuVisible = true;
   }
   constructor(private dmsService: DmsService, private systemService: SystemService) {}
 
@@ -78,10 +80,6 @@ export class ObjectDetailsComponent {
       this.getDmsObject(this.objId);
     } else {
     }
-  }
-
-  onActionFinish() {
-    alert('HURZ');
   }
 
   ngOnInit() {}
