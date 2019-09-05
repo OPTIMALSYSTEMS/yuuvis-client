@@ -1,6 +1,6 @@
 {
-  "name": "@yuuvis/framework library",
-  "output": "./../../../src-docs/assets/yuuvis/framework",
+  "name": "@yuuvis/common-ui library",
+  "output": "./../../../src-docs/assets/yuuvis/common-ui",
   "tsconfig": "./tsconfig.lib.json",
   "disableLifeCycleHooks": true,
   "disablePrivate": true,

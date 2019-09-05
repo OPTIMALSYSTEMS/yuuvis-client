@@ -106,7 +106,7 @@ export class GridService {
   }
 
   private isSortable(field: ObjectTypeField): boolean {
-    return field.propertyType !== 'id';
+    return field.propertyType !== 'id' && !field.id.match(/^enaio:createdBy$|^enaio:lastModifiedBy$/);
   }
 
   /**

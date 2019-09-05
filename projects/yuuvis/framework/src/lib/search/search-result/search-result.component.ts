@@ -63,8 +63,13 @@ export class SearchResultComponent {
       });
     }
   }
+  /**
+   * The ID of the item to be selected
+   */
   @Input() selectedItemId: string;
-  // emits the current selection as list of object IDs
+  /**
+   * Emits the current selection as list of object IDs
+   */
   @Output() itemsSelected = new EventEmitter<string[]>();
 
   // indicator that the component is busy loading data, so we are able to prevent user interaction
@@ -151,7 +156,9 @@ export class SearchResultComponent {
    */
   private getRow(searchResultItem: SearchResultItem): any {
     const row = {
-      id: searchResultItem.fields.get(BaseObjectTypeField.OBJECT_ID)
+      id: searchResultItem.fields.get(BaseObjectTypeField.OBJECT_ID),
+      [SecondaryObjectTypeField.TITLE]: searchResultItem.fields.get(SecondaryObjectTypeField.TITLE),
+      [SecondaryObjectTypeField.DESCRIPTION]: searchResultItem.fields.get(SecondaryObjectTypeField.DESCRIPTION)
     };
     this._columns.forEach((cd: ColDef) => {
       row[cd.field] = searchResultItem.fields.get(cd.field);

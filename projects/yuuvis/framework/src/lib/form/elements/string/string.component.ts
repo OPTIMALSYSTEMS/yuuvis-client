@@ -2,6 +2,16 @@ import { Component, forwardRef, Input } from '@angular/core';
 import { ControlValueAccessor, FormControl, NG_VALIDATORS, NG_VALUE_ACCESSOR, Validator } from '@angular/forms';
 import { SVGIcons } from '../../../svg.generated';
 
+/**
+ * # yuv-string
+ *
+ * Creates form input for strings. Based on the input values different kinds of inputs will be generated.
+ *
+ * ```html
+<yuv-string [minLength]="5" [maxLength]="10"></yuv-string>
+```
+ *
+ */
 @Component({
   selector: 'yuv-string',
   templateUrl: './string.component.html',
@@ -21,26 +31,54 @@ import { SVGIcons } from '../../../svg.generated';
   ]
 })
 export class StringComponent implements ControlValueAccessor, Validator {
+  /**
+   * @ignore
+   */
   icons = {
     envelope: SVGIcons.envelope,
     globe: SVGIcons.globe
   };
 
   /**
-   * lala ding dong
+   * Indicator that multiple strings could be inserted, they will be rendered as chips (default: false).
    */
   @Input() multiselect: boolean;
+  /**
+   * Set to true to render a textarea instead of input (default: false)
+   */
   @Input() multiline: boolean;
-  @Input() readonly: boolean;
-  @Input() autofocus: boolean;
-
-  @Input() classification: string;
-  @Input() situation: string;
-  @Input() regex: string;
-  @Input() qname: string;
-  // could be small, medium, large
+  /**
+   * Use in combination with `multiline` to define the size (height) of the textarea. Valid values are 'small','medium','large'
+   */
   @Input() size: string;
+  /**
+   * Will prevent the input from being changed (default: false)
+   */
+  @Input() readonly: boolean;
+  /**
+   * Enable autofucus for the input (default: false)
+   */
+  @Input() autofocus: boolean;
+  /**
+   * Possible values are `email` (validates and creates a link to send an email once there is a valid email address) and `url` (validates and creates a link to an URL typed into the form element).
+   */
+  @Input() classification: string;
+  /**
+   * Possibles values are `EDIT` (default),`SEARCH`,`CREATE`. In search situation validation of the form element will be turned off, so you are able to enter search terms that do not meet the elements validators.
+   */
+  @Input() situation: string;
+
+  /**
+   * Regular expression to validate the input value against
+   */
+  @Input() regex: string;
+  /**
+   * Minimal number of characters
+   */
   @Input() minLength: number;
+  /**
+   * Maximum number of characters
+   */
   @Input() maxLength: number;
 
   // model value
@@ -48,8 +86,14 @@ export class StringComponent implements ControlValueAccessor, Validator {
   valid: boolean;
 
   constructor() {}
-
+  /**
+   * @ignore
+   */
   propagateChange = (_: any) => {};
+
+  /**
+   * @ignore
+   */
 
   onKeyUpEnter(event) {
     const input = event.target.value.trim();
@@ -60,22 +104,32 @@ export class StringComponent implements ControlValueAccessor, Validator {
       event.target.value = '';
     }
   }
-
+  /**
+   * @ignore
+   */
   writeValue(value: any): void {
     this.value = value || null;
   }
-
+  /**
+   * @ignore
+   */
   registerOnChange(fn: any): void {
     this.propagateChange = fn;
   }
-
+  /**
+   * @ignore
+   */
   registerOnTouched(fn: any): void {}
-
+  /**
+   * @ignore
+   */
   onValueChange(evt) {
     this.value = evt.length ? evt : null;
     this.propagateChange(this.value);
   }
-
+  /**
+   * @ignore
+   */
   onBlur() {
     if (this.value) {
       if (this.multiselect) {
@@ -100,7 +154,10 @@ export class StringComponent implements ControlValueAccessor, Validator {
     }
   }
 
-  // returns null when valid else the validation object
+  /**
+   * @ignore
+   * returns null when valid else the validation object
+   */
   public validate(c: FormControl) {
     let err;
     // validate regular expression
