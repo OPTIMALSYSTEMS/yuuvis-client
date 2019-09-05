@@ -1,16 +1,4 @@
 @import './../../../../../../../src/scss-shared/_mixins';
-
-body > .ui-dialog:not(.ui-helper-hidden),
-p-dialog .ui-dialog:not(.ui-helper-hidden) {
-  @include transition();
-  &:not(.active) {
-    transform: perspective(600px) rotateY(10deg) translate3d(-100px, -100px, -100px);
-    .yuv-dialog-header {
-      background-color: var(--color-primary);
-    }
-  }
-}
-
 body > .ui-dialog.ui-widget,
 p-dialog .ui-dialog.ui-widget {
   .ui-dialog-content {

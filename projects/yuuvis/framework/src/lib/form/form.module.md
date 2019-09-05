@@ -1,3 +1,0 @@
-# YuvFormModule
-
-Lorem ipsum

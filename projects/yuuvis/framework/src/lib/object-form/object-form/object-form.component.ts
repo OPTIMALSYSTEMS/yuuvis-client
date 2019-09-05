@@ -481,6 +481,10 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
         };
       }
 
+      if (formElement.type === 'decimal' && !formControl._eoFormElement.scale) {
+        formControl._eoFormElement.scale = 2;
+      }
+
       if (this.formOptions.formModel.situation === 'SEARCH') {
         // in search situation even readonly fields should be editable ...
         formControl._eoFormElement.readonly = false;

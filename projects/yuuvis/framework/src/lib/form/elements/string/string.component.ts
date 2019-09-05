@@ -3,12 +3,23 @@ import { ControlValueAccessor, FormControl, NG_VALIDATORS, NG_VALUE_ACCESSOR, Va
 import { SVGIcons } from '../../../svg.generated';
 
 /**
- * # yuv-string
- *
  * Creates form input for strings. Based on the input values different kinds of inputs will be generated.
  *
+ * Implements `ControlValueAccessor` so it can be used within Angular forms.
+ * 
  * ```html
+<!-- string input validating input to be between 5 and 10 characters -->
 <yuv-string [minLength]="5" [maxLength]="10"></yuv-string>
+```
+ *
+ * ```html
+<!-- string input that only allow digits -->
+<yuv-string  [regex]="[0-9]*"></yuv-string>
+```
+ *
+ * ```html
+<!-- string input rendering a large textarea -->
+<yuv-string [multiline]="true" [size]="'large'"></yuv-string>
 ```
  *
  */
@@ -31,9 +42,6 @@ import { SVGIcons } from '../../../svg.generated';
   ]
 })
 export class StringComponent implements ControlValueAccessor, Validator {
-  /**
-   * @ignore
-   */
   icons = {
     envelope: SVGIcons.envelope,
     globe: SVGIcons.globe
@@ -86,14 +94,8 @@ export class StringComponent implements ControlValueAccessor, Validator {
   valid: boolean;
 
   constructor() {}
-  /**
-   * @ignore
-   */
-  propagateChange = (_: any) => {};
 
-  /**
-   * @ignore
-   */
+  propagateChange = (_: any) => {};
 
   onKeyUpEnter(event) {
     const input = event.target.value.trim();
@@ -104,32 +106,22 @@ export class StringComponent implements ControlValueAccessor, Validator {
       event.target.value = '';
     }
   }
-  /**
-   * @ignore
-   */
+
   writeValue(value: any): void {
     this.value = value || null;
   }
-  /**
-   * @ignore
-   */
+
   registerOnChange(fn: any): void {
     this.propagateChange = fn;
   }
-  /**
-   * @ignore
-   */
+
   registerOnTouched(fn: any): void {}
-  /**
-   * @ignore
-   */
+
   onValueChange(evt) {
     this.value = evt.length ? evt : null;
     this.propagateChange(this.value);
   }
-  /**
-   * @ignore
-   */
+
   onBlur() {
     if (this.value) {
       if (this.multiselect) {
@@ -155,7 +147,6 @@ export class StringComponent implements ControlValueAccessor, Validator {
   }
 
   /**
-   * @ignore
    * returns null when valid else the validation object
    */
   public validate(c: FormControl) {

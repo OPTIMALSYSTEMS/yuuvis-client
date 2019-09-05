@@ -30,7 +30,7 @@
       [isNull]="isNull" [skipToggle]="skipToggle || situation !== 'SEARCH'" (onToggleLabel)="labelToggled($event)"
       [required]="formElementRef._eoFormElement.required" [invalid]="formElementRef.invalid">
       <yuv-datetime [readonly]="formElementRef._eoFormElement.readonly"
-        [withTime]="formElementRef._eoFormElement.withtime"
+        [withTime]="formElementRef._eoFormElement.withtime" [pickerTitle]="formElementRef._eoFormElement.label"
         [formControlName]="element._eoFormControlWrapper.controlName"></yuv-datetime>
     </yuv-form-input>
 
@@ -39,8 +39,8 @@
       [isNull]="isNull" [skipToggle]="skipToggle || situation !== 'SEARCH'" (onToggleLabel)="labelToggled($event)"
       [required]="formElementRef._eoFormElement.required" [invalid]="formElementRef.invalid">
       <yuv-number [readonly]="formElementRef._eoFormElement.readonly"
-        [precision]="formElementRef._eoFormElement.precision" [scale]="formElementRef._eoFormElement.scale"
-        [grouping]="formElementRef._eoFormElement.grouping" [pattern]="formElementRef._eoFormElement.pattern"
+        [precision]="formElementRef._eoFormElement.precision" [scale]="0"
+        [grouping]="formElementRef._eoFormElement.grouping"
         [formControlName]="element._eoFormControlWrapper.controlName">
       </yuv-number>
     </yuv-form-input>

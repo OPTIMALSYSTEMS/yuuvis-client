@@ -7,6 +7,21 @@ import { LocaleDatePipe } from '../../../pipes';
 import { SVGIcons } from '../../../svg.generated';
 const moment = moment_;
 
+/**
+ * Creates form input for date values. Input can be typed using a localized masked 
+ * input or done by using a datepicker component.
+ *
+ * Implements `ControlValueAccessor` so it can be used within Angular forms.
+ * 
+ * ```html
+<yuv-datetime [pickerTitle]="'Please select a date'"></yuv-datetime>
+```
+ * 
+ * ```html
+<yuv-datetime [withTime]="true"></yuv-datetime>
+```
+ *
+ */
 @Component({
   selector: 'yuv-datetime',
   templateUrl: './datetime.component.html',
@@ -40,10 +55,22 @@ export class DatetimeComponent implements OnInit, ControlValueAccessor, Validato
   _withTime: boolean;
   withAmPm: boolean;
 
-  @Input() readonly: boolean;
+  /**
+   * Title for the datepicker
+   */
   @Input() pickerTitle: string;
+  /**
+   * Whether or not to allow only values in the future (default: false)
+   */
   @Input() onylFutureDates: boolean;
+  /**
+   * Will prevent the input from being changed (default: false)
+   */
+  @Input() readonly: boolean;
 
+  /**
+   * Enables setting time as well (default: false)
+   */
   @Input()
   set withTime(value) {
     this._withTime = value;
