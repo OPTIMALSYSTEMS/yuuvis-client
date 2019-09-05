@@ -15,7 +15,7 @@ import { Subject } from 'rxjs';
 import { filter, take, takeUntil } from 'rxjs/operators';
 import { ComponentAction, ExternalComponentAction, ListAction, SimpleAction } from '../';
 import { SVGIcons } from '../../svg.generated';
-import { ActionService, ActionShowCommand } from '../action-service/action.service';
+import { ActionService } from '../action-service/action.service';
 import { ActionComponent } from '../interfaces/action-component.interface';
 import { ActionListEntry } from '../interfaces/action-list-entry';
 import { ActionComponentAnchorDirective } from './action-component-anchor/action-component-anchor.directive';
@@ -49,7 +49,20 @@ export class ActionMenuComponent extends UnsubscribeOnDestroy {
   @ViewChild(ActionComponentAnchorDirective, { static: false }) eoActionComponentAnchor: ActionComponentAnchorDirective;
   @ViewChild(ActionComponentAnchorDirective, { static: false }) externalDialog: ActionComponentAnchorDirective;
 
-  @Output() finished = new EventEmitter();
+  @Input() selection: any[] = [];
+  @Input() target: string = '';
+  @Input() set visible(visible: boolean) {
+    if (!this.showMenu && visible) {
+      this.showActionMenu();
+    } else if (this.showMenu && !visible) {
+      this.hideActionMenu();
+    }
+  }
+
+  @Output() visibleChange = new EventEmitter();
+  @Output() onFinish = new EventEmitter();
+  @Output() onShow = new EventEmitter();
+  @Output() onHide = new EventEmitter();
 
   actionLists: {
     common: ActionListEntry[];
@@ -60,34 +73,11 @@ export class ActionMenuComponent extends UnsubscribeOnDestroy {
   };
   subActionsListHeader = '';
   subActionsList: ActionListEntry[];
-  selection: any[];
-  target: string;
   showComponent = false;
   actionDescription: string;
   showMenu = false;
   loading = false;
   icons = SVGIcons;
-
-  private _actionCMD: ActionShowCommand;
-
-  set cmd(cmd: ActionShowCommand) {
-    this._actionCMD = cmd;
-    this.cmdChange.emit(this._actionCMD);
-    if (!this.showMenu && cmd.show) {
-      this.selection = cmd.selection;
-      this.target = cmd.target;
-      this.showActionMenu();
-    } else if (this.showMenu && !cmd.show) {
-      this.hideActionMenu();
-    }
-  }
-
-  @Input() get cmd() {
-    return this._actionCMD;
-  }
-
-  @Output()
-  cmdChange = new EventEmitter<ActionShowCommand>();
 
   constructor(
     private actionService: ActionService,
@@ -112,7 +102,7 @@ export class ActionMenuComponent extends UnsubscribeOnDestroy {
   }
 
   hide() {
-    this.cmd = { show: false, selection: [] };
+    this.visible = false;
   }
 
   showActionDescription(i, event) {
@@ -124,12 +114,15 @@ export class ActionMenuComponent extends UnsubscribeOnDestroy {
   private showActionMenu() {
     this.getActions();
     this.showMenu = true;
+    this.onShow.emit();
   }
 
   private hideActionMenu() {
     this.clear();
     this.showMenu = false;
     this.actionLists = { common: [], further: [] };
+    this.visibleChange.emit(false);
+    this.onHide.emit();
   }
 
   onClick(actionListEntry: ActionListEntry) {
@@ -150,7 +143,7 @@ export class ActionMenuComponent extends UnsubscribeOnDestroy {
         .subscribe(() => {
           // hide action menu if nothing else is to be shown/done
           if (isSimpleActionOnly) {
-            this.onFinish();
+            this.finish();
           }
         });
     }
@@ -177,8 +170,8 @@ export class ActionMenuComponent extends UnsubscribeOnDestroy {
     anchorViewContainerRef.clear();
     let componentRef = anchorViewContainerRef.createComponent(componentFactory);
     (<ActionComponent>componentRef.instance).selection = this.selection;
-    (<ActionComponent>componentRef.instance).canceled.pipe(take(1)).subscribe(() => this.onCancel());
-    (<ActionComponent>componentRef.instance).finished.pipe(take(1)).subscribe(() => this.onFinish());
+    (<ActionComponent>componentRef.instance).canceled.pipe(take(1)).subscribe(() => this.cancel());
+    (<ActionComponent>componentRef.instance).finished.pipe(take(1)).subscribe(() => this.finish());
     if (inputs) {
       Object.keys(inputs).forEach(function(key) {
         componentRef.instance[key] = inputs[key];
@@ -201,12 +194,12 @@ export class ActionMenuComponent extends UnsubscribeOnDestroy {
     }
   }
 
-  onCancel() {
+  cancel() {
     this.clear();
   }
 
-  onFinish() {
-    this.finished.emit();
+  finish() {
+    this.onFinish.emit();
     this.hideActionMenu();
   }
 }

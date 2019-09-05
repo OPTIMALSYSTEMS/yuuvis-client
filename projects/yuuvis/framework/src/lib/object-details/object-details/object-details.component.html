@@ -45,7 +45,8 @@
   </yuv-responsive-tab-container>
 
 </yuv-panel>
-<yuv-action-menu [(cmd)]="actionCMD" (finished)="onActionFinish()"></yuv-action-menu>
+<yuv-action-menu [(visible)]="actionCMD.show" [target]="actionCMD.target" [selection]="actionCMD.selection"
+  (onFinish)="onActionFinish()"></yuv-action-menu>
 
 <yuv-sidebar [display]="showSideBar" (hide)="showSideBar = false" [position]="position" [styles]="sidebarStyle"
   [headerStyle]="headerStyle">
