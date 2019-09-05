@@ -15,6 +15,7 @@
   // icons that act as buttons
   &.btn {
     border-radius: 2px;
+    box-sizing: content-box;
     padding: calc(var(--app-pane-padding) / 4);
     cursor: pointer;
     outline: none;

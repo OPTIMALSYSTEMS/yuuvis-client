@@ -1,13 +1,34 @@
-import { Component, HostBinding, Input } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { Position } from '@yuuvis/common-ui';
 import { DmsObject, DmsService, SystemService } from '@yuuvis/core';
 import { CellRenderer } from '../../services/grid/grid.cellrenderer';
 import { SVGIcons } from '../../svg.generated';
 
+/**
+ * High level component displaying detail aspects for a given DmsObject.
+ * 
+ * 
+ * ```html
+<!-- string input validating input to be between 5 and 10 characters -->
+<yuv-string [minLength]="5" [maxLength]="10"></yuv-string>
+```
+ *
+ * ```html
+<!-- string input that only allow digits -->
+<yuv-string  [regex]="[0-9]*"></yuv-string>
+```
+ *
+ * ```html
+<!-- string input rendering a large textarea -->
+<yuv-string [multiline]="true" [size]="'large'"></yuv-string>
+```
+ *
+ */
 @Component({
   selector: 'yuv-object-details',
   templateUrl: './object-details.component.html',
-  styleUrls: ['./object-details.component.scss']
+  styleUrls: ['./object-details.component.scss'],
+  host: { class: 'yuv-object-details' }
 })
 export class ObjectDetailsComponent {
   objectIcon: string = '';
@@ -19,40 +40,43 @@ export class ObjectDetailsComponent {
     'grid-template-areas': 'close content'
   };
   position = Position.RIGHT;
+  busy: boolean;
   private _dmsObject: DmsObject;
-  private _dmsObject2: DmsObject;
-  private objId: string;
+  // private _dmsObject2: DmsObject;
+  private _objectId: string;
 
-  @HostBinding('class.busy') busy = false;
-  @Input() enableCompare = true;
-  @Input() enableSync = false;
-  @Input() cacheLayout = false;
+  // @HostBinding('class.busy') busy = false;
+  // @Input() enableCompare = true;
+  // @Input() enableSync = false;
+  // @Input() cacheLayout = false;
 
-  @Input() externalPanels = [];
+  // @Input() externalPanels = [];
 
   @Input()
   set dmsObject(object: DmsObject) {
     this._dmsObject = object;
-    this.objectIcon = CellRenderer.typeCellRenderer(null, this.systemService.getLocalizedResource(`${object.objectTypeId}_label`));
+    if (object) {
+      this.objectIcon = CellRenderer.typeCellRenderer(null, this.systemService.getLocalizedResource(`${object.objectTypeId}_label`));
+    }
   }
 
   get dmsObject() {
     return this._dmsObject;
   }
 
-  @Input()
-  set dmsObject2(object: DmsObject) {
-    this._dmsObject2 = object;
-  }
+  // @Input()
+  // set dmsObject2(object: DmsObject) {
+  //   this._dmsObject2 = object;
+  // }
 
-  get dmsObject2() {
-    return this._dmsObject2;
-  }
+  // get dmsObject2() {
+  //   return this._dmsObject2;
+  // }
 
   @Input()
   set objectId(id: string) {
     if (id) {
-      this.objId = id;
+      this._objectId = id;
       // this._dmsObject = null;
       this.getDmsObject(id);
     }
@@ -69,8 +93,8 @@ export class ObjectDetailsComponent {
   }
 
   refreshDetails() {
-    if (this.objId) {
-      this.getDmsObject(this.objId);
+    if (this._objectId) {
+      this.getDmsObject(this._objectId);
     } else {
     }
   }

@@ -25,7 +25,7 @@
     "doc:common": "npm run build:common && cd projects/yuuvis/common-ui && npm run doc",
     "doc:core": "npm run build:core && cd projects/yuuvis/core && npm run doc",
     "doc:all": "npm run doc:core && npm run doc:common && npm run doc:framework",
-    "style:libs": "node ./tools/scripts/common/sass --lib=common-ui && node ./tools/scripts/lib/framework-postbuild",
+    "style:libs": "node ./tools/scripts/common/sass --lib=common-ui && node ./tools/scripts/common/node-copy --lib=common-ui && node ./tools/scripts/lib/framework-postbuild",
     "build:core": "ng build @yuuvis/core && node ./tools/scripts/common/node-copy --lib=core",
     "build:common": "ng build @yuuvis/common-ui && node ./tools/scripts/common/sass --lib=common-ui && node ./tools/scripts/common/node-copy --lib=common-ui",
     "build:framework": "node ./tools/scripts/lib/framework-prebuild && ng build @yuuvis/framework && node ./tools/scripts/lib/framework-postbuild",

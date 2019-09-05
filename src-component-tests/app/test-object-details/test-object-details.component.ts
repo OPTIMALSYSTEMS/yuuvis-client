@@ -2,11 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { AppDataService } from '../add.data.service';
 
 @Component({
-  selector: 'yuv-test-summary',
-  templateUrl: './test-summary.component.html',
-  styleUrls: ['./test-summary.component.scss']
+  selector: 'yuv-test-object-details',
+  templateUrl: './test-object-details.component.html',
+  styleUrls: ['./test-object-details.component.scss']
 })
-export class TestSummaryComponent implements OnInit {
+export class TestObjectDetailsComponent implements OnInit {
   summaryObject;
 
   constructor(private data: AppDataService) {}
@@ -21,12 +21,6 @@ export class TestSummaryComponent implements OnInit {
 
   contentDmsObjectInput() {
     this.summaryObject = this.data.getDmsObjectWithContent();
-  }
-
-  invalidDmsObjectInput() {
-    this.summaryObject = {
-      p: 'something'
-    };
   }
 
   ngOnInit() {}

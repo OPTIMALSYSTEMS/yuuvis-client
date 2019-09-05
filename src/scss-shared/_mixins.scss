@@ -198,13 +198,13 @@ $desktop-width: 1024px;
   background-color: rgba(0, 0, 0, $alpa);
 }
 
-@mixin lineWrapper($lines: 2, $lineHight: 23px, $maxHeight: 61px) {
-  line-height: $lineHight;
-  max-height: $maxHeight;
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-line-clamp: $lines;
-  /* autoprefixer: off */
-  -webkit-box-orient: vertical;
-  /* autoprefixer: on */
-}
+// @mixin lineWrapper($lines: 2, $lineHight: 23px, $maxHeight: 61px) {
+//   line-height: $lineHight;
+//   max-height: $maxHeight;
+//   overflow: hidden;
+//   display: -webkit-box;
+//   -webkit-line-clamp: $lines;
+//   /* autoprefixer: off */
+//   -webkit-box-orient: vertical;
+//   /* autoprefixer: on */
+// }
