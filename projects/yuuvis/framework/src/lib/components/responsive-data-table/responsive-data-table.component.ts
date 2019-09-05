@@ -104,7 +104,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
     }
 
     if (this._data.sortModel) {
-      setTimeout(() => this.gridOptions.api.setSortModel([...this._data.sortModel]));
+      this.gridOptions.api.setSortModel([...this._data.sortModel]);
     }
 
     if (small) {
@@ -168,13 +168,12 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
       },
       onSortChanged: event => {
         this.sortChanged.emit(this.gridOptions.api.getSortModel());
+      },
+      onGridReady: event => {
+        this.gridOptions.api.setSortModel(this._data.sortModel || []);
+        this.gridOptions.api.setFocusedCell(0, this._data.columns[0].field);
       }
     };
-
-    if (this._data.sortModel) {
-      setTimeout(() => this.gridOptions.api.setSortModel(this._data.sortModel));
-    }
-    setTimeout(() => this.selectRows());
   }
 
   // copy content of either row or table cell to clipboard
