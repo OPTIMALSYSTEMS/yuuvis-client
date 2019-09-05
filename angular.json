@@ -401,7 +401,7 @@
             "tsConfig": "src-docs/tsconfig.dev.json",
             "assets": ["src-docs/favicon.ico", "src-docs/assets"],
             "styles": ["src-docs/styles.scss"],
-            "scripts": [],
+            "scripts": ["src-docs/assets/prism.js"],
             "es5BrowserSupport": true
           },
           "configurations": {

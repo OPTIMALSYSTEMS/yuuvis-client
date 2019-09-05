@@ -8,10 +8,5 @@
   "disableInternal": true,
   "disableGraph": true,
   "disableCoverage": true,
-  "disableDomTree": true,
-  "disableSourceCode": true,
-  "disableTemplateTab": true,
-  "disableStyleTab": true,
-  "disableRoutesGraph": true,
   "exportFormat": "json"
 }

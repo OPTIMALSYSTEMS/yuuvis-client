@@ -4,6 +4,16 @@ import { TranslateService } from '@yuuvis/core';
 import { LocaleNumberPipe } from '../../../pipes/locale-number.pipe';
 import { Utils } from '../../../util/utils';
 
+/**
+ * Creates form input for number values.
+ *
+ * Implements `ControlValueAccessor` so it can be used within Angular forms.
+ * 
+ * ```html
+<yuv-number [scale]="2"></yuv-number>
+```
+ *
+ */
 @Component({
   selector: 'yuv-number',
   templateUrl: './number.component.html',
@@ -33,37 +43,48 @@ export class NumberComponent implements ControlValueAccessor, Validator {
   validationErrors = [];
   numberPipe: LocaleNumberPipe;
 
-  @Input() set scale(val) {
+  /**
+   * Number of decimal places
+   */
+  @Input() set scale(val: number) {
     this._scale = Math.min(val || 0, 30);
   }
-
-  @Input() set precision(val) {
+  /**
+   * Overall amount of digits allowed (including decimal places)
+   */
+  @Input() set precision(val: number) {
     this._precision = Math.min(val || 100, 100);
   }
-
-  @Input() set grouping(val) {
+  /**
+   *  Set to true to group number by pattern
+   */
+  @Input() set grouping(val: boolean) {
     this._grouping = val;
   }
-
+  /**
+   * The pattern to group number value by
+   */
   @Input() set pattern(val) {
     this._pattern = val;
   }
-
+  /**
+   * Will prevent the input from being changed (default: false)
+   */
   @Input() readonly: boolean;
 
   constructor(private translate: TranslateService) {
     this.numberPipe = new LocaleNumberPipe(this.translate);
   }
 
-  get scale() {
+  get scale(): number {
     return this._scale;
   }
 
-  get precision() {
+  get precision(): number {
     return this._precision;
   }
 
-  get grouping() {
+  get grouping(): boolean {
     return this._grouping;
   }
 

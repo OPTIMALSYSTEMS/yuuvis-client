@@ -27,9 +27,9 @@
           @include transition();
           background: rgba(255, 255, 255, 0.1);
 
-          svg {
-            fill: var(--text-color-hint);
-          }
+          // svg {
+          //   fill: var(--text-color-hint);
+          // }
         }
 
         &:first-child {
@@ -97,7 +97,11 @@
         &::selection {
           background: rgba(255, 255, 255, 0.3);
         }
-
+        &::-webkit-outer-spin-button,
+        &::-webkit-inner-spin-button {
+          -webkit-appearance: none;
+          margin: 0;
+        }
         &:focus {
           border-bottom: 1px solid rgba(255, 255, 255, 0.5);
         }

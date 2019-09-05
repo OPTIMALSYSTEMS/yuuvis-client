@@ -28,104 +28,104 @@ $yuv-panel-header-height: 110px;
       }
     }
   }
-}
 
-.content {
-  grid-area: content;
-  // position: relative;
-  height: 100%;
-  overflow-x: auto;
-}
-
-.header {
-  display: grid;
-  grid-template-columns: 44px 3fr 0.5fr;
-  grid-template-rows: 1fr;
-  grid-template-areas: 'icon header_text extras';
-  grid-area: header;
-  padding: var(--app-pane-padding);
-  padding-bottom: 0;
-
-  :host-context(.screen-s) & {
-    grid-template-columns: 40px 3fr 1fr;
+  .content {
+    grid-area: content;
+    // position: relative;
+    height: 100%;
+    overflow-x: auto;
   }
-}
 
-.icon {
-  grid-area: icon;
-
-  svg {
-    fill: var(--text-color-caption);
-  }
-}
-
-.header_text {
-  grid-area: header_text;
-  display: grid;
-  grid-template-columns: 1fr;
-  grid-template-rows: repeat(auto-fit, 46px);
-  grid-template-areas: 'title' 'description';
-  grid-gap: 5px;
-  margin-right: 5px;
-
-  :host-context(.screen-s) & {
-    grid-template-rows: repeat(auto-fit, 45px);
-  }
-}
-
-.header_title {
-  grid-area: title;
-  font-weight: var(--font-weight-normal);
-  font-size: var(--font-title);
-  color: var(--text-color-caption);
-
-  @include lineWrapper();
-  :host-context(.screen-s) & {
-    @include lineWrapper(2, 23px, 47px);
-  }
-}
-
-.header_description {
-  grid-area: description;
-  font-weight: var(--font-weight-normal);
-  font-size: var(--font-subhead);
-  color: var(--text-color-caption);
-
-  @include lineWrapper(1, 20px, 20px);
-  :host-context(.screen-s) & {
-    @include lineWrapper(1, 20px, 20px);
-  }
-}
-
-.extras {
-  display: grid;
-  grid-template-columns: 1fr;
-  grid-template-rows: repeat(auto-fit, var(--font-display));
-  grid-template-areas: 'actions' 'status';
-  grid-area: extras;
-  justify-self: end;
-
-  :host-context(.screen-s) & {
+  .header {
+    display: grid;
+    grid-template-columns: 44px 3fr 0.5fr;
     grid-template-rows: 1fr;
-    grid-template-columns: repeat(auto-fit, var(--font-display));
-    grid-template-areas: 'actions status';
-    justify-self: auto;
+    grid-template-areas: 'icon header_text extras';
+    grid-area: header;
+    padding: var(--app-pane-padding);
+    padding-bottom: 0;
+
+    :host-context(.screen-s) & {
+      grid-template-columns: 40px 3fr 1fr;
+    }
   }
-}
 
-.actions {
-  grid-area: actions;
-  justify-self: end;
-  :host-context(.screen-s) & {
-    justify-self: start;
+  .icon {
+    grid-area: icon;
+
+    svg {
+      fill: var(--text-color-caption);
+    }
   }
-}
 
-.status {
-  grid-area: status;
+  .header_text {
+    grid-area: header_text;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(auto-fit, 46px);
+    grid-template-areas: 'title' 'description';
+    grid-gap: 5px;
+    margin-right: 5px;
 
-  .yuv-icon {
-    width: 18px;
-    height: 18px;
+    :host-context(.screen-s) & {
+      grid-template-rows: repeat(auto-fit, 45px);
+    }
+  }
+
+  .header_title {
+    grid-area: title;
+    font-weight: var(--font-weight-normal);
+    font-size: var(--font-title);
+    color: var(--text-color-caption);
+
+    @include lineWrapper();
+    :host-context(.screen-s) & {
+      @include lineWrapper(2, 23px, 47px);
+    }
+  }
+
+  .header_description {
+    grid-area: description;
+    font-weight: var(--font-weight-normal);
+    font-size: var(--font-subhead);
+    color: var(--text-color-caption);
+
+    @include lineWrapper(1, 20px, 20px);
+    :host-context(.screen-s) & {
+      @include lineWrapper(1, 20px, 20px);
+    }
+  }
+
+  .extras {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(auto-fit, var(--font-display));
+    grid-template-areas: 'actions' 'status';
+    grid-area: extras;
+    justify-self: end;
+
+    :host-context(.screen-s) & {
+      grid-template-rows: 1fr;
+      grid-template-columns: repeat(auto-fit, var(--font-display));
+      grid-template-areas: 'actions status';
+      justify-self: auto;
+    }
+  }
+
+  .actions {
+    grid-area: actions;
+    justify-self: end;
+    :host-context(.screen-s) & {
+      justify-self: start;
+    }
+  }
+
+  .status {
+    grid-area: status;
+
+    .yuv-icon {
+      width: 18px;
+      height: 18px;
+    }
   }
 }
