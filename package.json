@@ -67,8 +67,7 @@
     "rxjs": "~6.5.2",
     "take-until-destroy": "^2.1.0",
     "tslib": "^1.9.0",
-    "zone.js": "~0.9.1",
-    "file-saver": "2.0.2"
+    "zone.js": "~0.9.1"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "~0.800.0",

@@ -1,4 +1,3 @@
-
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { BackendService, DmsObject, TranslateService } from '@yuuvis/core';
@@ -8,7 +7,7 @@ import { SimpleAction } from '../../interfaces/action.interface';
 import { SelectionRange } from '../../selection-range.enum';
 
 @Component({
-  selector: 'eo-download-content-original',
+  selector: 'yuv-download-content-original',
   template: ``
 })
 export class DownloadOriginalActionComponent extends DmsObjectTarget implements SimpleAction {
@@ -26,9 +25,8 @@ export class DownloadOriginalActionComponent extends DmsObjectTarget implements 
   }
 
   isExecutable(item: DmsObject) {
-    // return observableOf(!!item.content && !!item.content.id);
-    return observableOf(true);
-  };
+    return observableOf(!!item.content);
+  }
 
   run(selection: DmsObject[]): Observable<boolean> {
     this.backend.downloadContent(selection.map(o => o.id));

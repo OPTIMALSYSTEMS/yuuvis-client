@@ -1,9 +1,19 @@
 import { Component, EventEmitter, HostBinding, Input, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { BaseObjectTypeField, DmsService, SearchQuery, SearchResult, SearchResultItem, SearchService, SecondaryObjectTypeField, SortOption, SystemService, TranslateService } from '@yuuvis/core';
+import {
+  BaseObjectTypeField,
+  DmsService,
+  SearchQuery,
+  SearchResult,
+  SearchResultItem,
+  SearchService,
+  SecondaryObjectTypeField,
+  SortOption,
+  SystemService,
+  TranslateService
+} from '@yuuvis/core';
 import { ColDef } from 'ag-grid-community';
 import { of } from 'rxjs';
-import { ActionShowCommand } from '../../actions';
 import { ResponsiveTableData } from '../../components';
 import { ColumnSizes } from '../../services/grid/grid.interface';
 import { GridService } from '../../services/grid/grid.service';
@@ -39,8 +49,6 @@ export class SearchResultComponent {
     page: number;
   };
 
-  actionCMD: ActionShowCommand = { show: false, selection: [] };
-
   @Input() set query(searchQuery: SearchQuery) {
     this._searchQuery = searchQuery;
     if (searchQuery) {
@@ -70,7 +78,6 @@ export class SearchResultComponent {
     return this._hasPages;
   }
 
-
   constructor(
     private translate: TranslateService,
     private gridService: GridService,
@@ -89,16 +96,6 @@ export class SearchResultComponent {
    */
   refresh() {
     this.executeQuery();
-  }
-
-  openActionMenu() {
-    this.dmsService.getDmsObject(this.selectedItemId).subscribe((item) => {
-      this.actionCMD = { show: true, selection: [item], target: 'DMS_OBJECT' };
-    });
-  }
-
-  onActionFinish() {
-    alert('HURZ');
   }
 
   private executeQuery() {
@@ -138,7 +135,7 @@ export class SearchResultComponent {
         rows: this._rows,
         titleField: SecondaryObjectTypeField.TITLE,
         descriptionField: SecondaryObjectTypeField.DESCRIPTION,
-        selectType: 'single',
+        selectType: 'multiple',
         sortModel: (this._searchQuery.sortOptions || []).map(o => ({
           colId: o.field,
           sort: o.order
