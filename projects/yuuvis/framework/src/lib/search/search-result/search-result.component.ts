@@ -52,6 +52,11 @@ export class SearchResultComponent {
       });
     }
   }
+
+  get query() {
+    return this._searchQuery;
+  }
+
   /**
    * The ID of the item to be selected
    */

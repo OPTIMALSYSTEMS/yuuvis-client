@@ -6,7 +6,7 @@
   <div class="table" [yuvBusyOverlay]="busy">
 
     <ng-template #tplEmpty>
-      <div class="empty" *ngIf="_query" translate>yuv.framework.search-result.empty</div>
+      <div class="empty" *ngIf="query" translate>yuv.framework.search-result.empty</div>
     </ng-template>
 
     <ng-container *ngIf="tableData?.rows.length; else tplEmpty">
