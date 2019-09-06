@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { YuvCommonUiModule } from '@yuuvis/common-ui';
+import { TranslateModule } from '@yuuvis/core';
 import { AutoCompleteModule } from 'primeng/autocomplete';
 import { CalendarModule } from 'primeng/calendar';
 import { CheckboxModule } from 'primeng/checkbox';
@@ -26,6 +27,7 @@ import { FormInputComponent } from './form-input/form-input.component';
   imports: [
     CommonModule,
     FormsModule,
+    TranslateModule,
     CheckboxModule,
     CalendarModule,
     TriStateCheckboxModule,

@@ -1,30 +1,35 @@
-<section class="object-summary">
-    
-    <section class="core-entry">
-        <section *ngFor="let item of summary?.parent" class="entry" [attr.data-summary-item]="item.key">
+<div class="object-summary" *ngIf="summary">
+
+    <section class="parent-entry" *ngIf="summary?.parent.length">
+        <h2 translate>yuv.framework.object-details.summary.section.parent</h2>
+        <div *ngFor="let item of summary?.parent" class="entry" [attr.data-summary-item]="item.key">
             <ng-container [ngTemplateOutlet]="summaryEntry" [ngTemplateOutletContext]="{item: item}"></ng-container>
-        </section>
+        </div>
     </section>
 
     <section class="core-entry">
-        <section *ngFor="let item of summary?.core" class="entry" [attr.data-summary-item]="item.key">
+        <h2 translate>yuv.framework.object-details.summary.section.core</h2>
+        <div *ngFor="let item of summary?.core" class="entry" [attr.data-summary-item]="item.key">
             <ng-container [ngTemplateOutlet]="summaryEntry" [ngTemplateOutletContext]="{item: item}"></ng-container>
-        </section>
+        </div>
     </section>
-    
+
     <section class="baseparams-entry">
-        <section *ngFor="let item of summary?.base" class="entry baseparams" [attr.data-summary-item]="item.key">
+        <h2 translate>yuv.framework.object-details.summary.section.baseparams</h2>
+        <div *ngFor="let item of summary?.base" class="entry" [attr.data-summary-item]="item.key">
             <ng-container [ngTemplateOutlet]="summaryEntry" [ngTemplateOutletContext]="{item: item}"></ng-container>
-        </section>
+        </div>
     </section>
-        
 
-    <yuv-accordion class="extra-entry" (open)="adminInfoOpen($event)" [selected]="selected" [header]="('eo.summary.admin.info' | translate)" *ngIf="summary?.extras.length && hasRights">
-        <section *ngFor="let item of summary?.extras" class="entry baseparams" [attr.data-summary-item]="item.key" >
+
+    <yuv-accordion class="extra-entry" (open)="adminInfoOpen($event)" [selected]="selected"
+        [header]="('yuv.framework.object-details.summary.section.admin' | translate)"
+        *ngIf="summary?.extras.length && hasRights">
+        <div *ngFor="let item of summary?.extras" class="entry baseparams" [attr.data-summary-item]="item.key">
             <ng-container [ngTemplateOutlet]="summaryEntry" [ngTemplateOutletContext]="{item: item}"></ng-container>
-        </section>
+        </div>
     </yuv-accordion>
-</section>
+</div>
 
 
 <ng-template #summaryEntry let-item="item">

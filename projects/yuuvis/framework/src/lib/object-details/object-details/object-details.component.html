@@ -4,11 +4,11 @@
 
 
   <yuv-action-menu-bar class="actions">
-    <yuv-icon (click)="refreshDetails()" [title]="('eo.list.refresh' | translate)" class="button refresh-button"
-      [svg]="icons.refresh"></yuv-icon>
-    <!-- <yuv-icon class="button sync-tab-btn" [title]="('eo.favorite.icon.tooltip.add' | translate)" [svg]="icons.favorite"></yuv-icon>
-    <yuv-icon class="button oc-button" [title]="('eo.action.menu.edit.document.label' | translate)" [svg]="icons.edit"></yuv-icon> -->
-    <yuv-icon (click)="showSideBar = true" [title]="('eo.object.details.actions.title' | translate)"
+    <yuv-icon (click)="refreshDetails()" [title]="('yuv.framework.list.refresh' | translate)"
+      class="button refresh-button" [svg]="icons.refresh"></yuv-icon>
+    <!-- <yuv-icon class="button sync-tab-btn" [title]="('yuv.framework.object-details.tooltip.icon.favorite' | translate)" [svg]="icons.favorite"></yuv-icon>
+    <yuv-icon class="button oc-button" [title]="('yuv.framework.object-details.tooltip.icon.edit' | translate)" [svg]="icons.edit"></yuv-icon> -->
+    <yuv-icon (click)="showSideBar = true" [title]="('yuv.framework.object-details.tooltip.icon.actions' | translate)"
       class="button actions-button" [svg]="icons.kebap"></yuv-icon>
   </yuv-action-menu-bar>
 
@@ -23,19 +23,19 @@
   </yuv-action-menu-bar>
 
   <yuv-responsive-tab-container class="content">
-    <p-tabPanel [id]="'summary'" [header]="('eo.object.summary.title'| translate)">
+    <p-tabPanel [id]="'summary'" [header]="('yuv.framework.object-details.tabs.summary.title'| translate)">
       <ng-template pTemplate="content">
         <yuv-summary [dmsObject]="dmsObject"></yuv-summary>
       </ng-template>
     </p-tabPanel>
 
-    <p-tabPanel [id]="'preview'" [header]="('eo.object.indexdata.title'| translate)" #preview>
+    <p-tabPanel [id]="'preview'" [header]="('yuv.framework.object-details.tabs.indexdata.title'| translate)" #preview>
       <ng-template pTemplate="content">
         Preview ..................
       </ng-template>
     </p-tabPanel>
 
-    <p-tabPanel [id]="'history'" [header]="('eo.object.history.title' | translate)">
+    <p-tabPanel [id]="'history'" [header]="('yuv.framework.object-details.tabs.history.title' | translate)">
       <ng-template pTemplate="content">
         <yuv-history class="yuv-slave panel" [objectId]="'12336987651321687'"></yuv-history>
       </ng-template>

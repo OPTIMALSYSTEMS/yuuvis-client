@@ -31,7 +31,7 @@ export class SearchResultPanelComponent implements OnInit {
   @Output() itemsSelected = new EventEmitter<string[]>();
 
   constructor(private translate: TranslateService, private systemService: SystemService) {
-    this.title = this.translate.instant('eo.search.title');
+    this.title = this.translate.instant('yuv.framework.search-result-panel.header.title');
   }
 
   refresh() {
@@ -46,7 +46,7 @@ export class SearchResultPanelComponent implements OnInit {
 
   generateQueryDescription(term: string, types?: string[]) {
     const querytype: string = types.length ? `${this.systemService.getLocalizedResource(`${types[0]}_label`)}, ` : '';
-    this.queryTerm = `${querytype}${this.translate.instant('eo.search.term')}: '${term}'`;
+    this.queryTerm = `${querytype}${this.translate.instant('yuv.framework.search-result-panel.header.term')}: '${term}'`;
   }
 
   ngOnInit() {}

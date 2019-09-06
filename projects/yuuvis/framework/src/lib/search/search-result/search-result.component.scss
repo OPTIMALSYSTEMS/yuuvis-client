@@ -2,34 +2,17 @@
   height: 100%;
   background-color: var(--panel-background);
 
-  .busy-indicator {
-    position: absolute;
-    left: 0;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 1;
-    display: flex;
-    flex-flow: column;
-    align-items: center;
-    justify-content: center;
-    background-color: antiquewhite;
-    &.ng-animating {
-      height: 100%;
-    }
-  }
-
   .grid-container {
     display: grid;
     grid-template-columns: 57px 1fr;
     grid-template-rows: 1fr;
-    grid-template-areas: 'tollbar table';
+    grid-template-areas: 'toolbar table';
     height: 100%;
     border-top: 1px solid var(--panel-divider-color);
   }
 
-  .tollbar {
-    grid-area: tollbar;
+  .toolbar {
+    grid-area: toolbar;
     display: flex;
     flex-flow: column;
     align-items: center;
@@ -58,6 +41,14 @@
     grid-template-rows: 1fr auto;
     grid-template-areas: 'data-table' 'footer';
     grid-area: table;
+  }
+
+  .empty {
+    height: 100%;
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+    justify-content: center;
   }
 
   .footer {

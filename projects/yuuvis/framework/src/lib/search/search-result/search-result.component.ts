@@ -1,4 +1,4 @@
-import { Component, EventEmitter, HostBinding, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { BaseObjectTypeField, SearchQuery, SearchResult, SearchResultItem, SearchService, SecondaryObjectTypeField, SortOption } from '@yuuvis/core';
 import { ColDef } from 'ag-grid-community';
@@ -20,6 +20,7 @@ export class SearchResultComponent {
   private _rows: any[];
   private _hasPages = false;
   pagingForm: FormGroup;
+  busy: boolean;
 
   // icons used within the template
   icon = {
@@ -60,9 +61,6 @@ export class SearchResultComponent {
    */
   @Output() itemsSelected = new EventEmitter<string[]>();
 
-  // indicator that the component is busy loading data, so we are able to prevent user interaction
-  @HostBinding('class.busy') busy = false;
-
   set hasPages(count) {
     this._hasPages = count;
   }
@@ -96,46 +94,47 @@ export class SearchResultComponent {
   private createTableData(searchResult: SearchResult, pageNumber = 1): void {
     // object type of the result list items, if NULL we got a mixed result
     // const id = searchResult.objectTypes.length > 1 ? null : searchResult.objectTypes[0];
-    let id;
+    let objecttypeId;
     if (this._searchQuery) {
-      id = this._searchQuery.types.length > 1 ? null : this._searchQuery.types[0] || null;
+      objecttypeId = this._searchQuery.types.length > 1 ? null : this._searchQuery.types[0] || null;
     }
 
-    (id !== this.resultListObjectTypeId || !this._columns ? this.gridService.getColumnConfiguration(id) : of(this._columns)).subscribe((colDefs: ColDef[]) => {
-      // setup pagination form in case of a paged search result chunk
-      this.pagination = null;
-      this.hasPages = searchResult.items.length !== searchResult.totalNumItems;
-      if (this._searchQuery && searchResult.totalNumItems > this._searchQuery.size) {
-        this.pagination = {
-          pages: Math.ceil(searchResult.totalNumItems / this._searchQuery.size),
-          page: (!this._searchQuery.from ? 0 : this._searchQuery.from / this._searchQuery.size) + 1
+    (objecttypeId !== this.resultListObjectTypeId || !this._columns ? this.gridService.getColumnConfiguration(objecttypeId) : of(this._columns)).subscribe(
+      (colDefs: ColDef[]) => {
+        // setup pagination form in case of a paged search result chunk
+        this.pagination = null;
+        this.hasPages = searchResult.items.length !== searchResult.totalNumItems;
+        if (this._searchQuery && searchResult.totalNumItems > this._searchQuery.size) {
+          this.pagination = {
+            pages: Math.ceil(searchResult.totalNumItems / this._searchQuery.size),
+            page: (!this._searchQuery.from ? 0 : this._searchQuery.from / this._searchQuery.size) + 1
+          };
+
+          this.pagingForm.get('page').setValue(pageNumber);
+          this.pagingForm.get('page').setValidators([Validators.min(0), Validators.max(this.pagination.pages)]);
+        }
+
+        this.resultListObjectTypeId = objecttypeId;
+        this._columns = colDefs;
+        this._rows = searchResult.items.map(i => this.getRow(i));
+        const sortOptions = this._searchQuery ? this._searchQuery.sortOptions || [] : [];
+
+        this.tableData = {
+          columns: this._columns,
+          rows: this._rows,
+          titleField: SecondaryObjectTypeField.TITLE,
+          descriptionField: SecondaryObjectTypeField.DESCRIPTION,
+          selectType: 'single',
+          sortModel: sortOptions.map(o => ({
+            colId: o.field,
+            sort: o.order
+          }))
         };
 
-        this.pagingForm.get('page').setValue(pageNumber);
-        this.pagingForm.get('page').setValidators([Validators.min(0), Validators.max(this.pagination.pages)]);
+        this.busy = false;
       }
-
-      this.resultListObjectTypeId = id;
-      this._columns = colDefs;
-      this._rows = searchResult.items.map(i => this.getRow(i));
-
-      this.tableData = {
-        columns: this._columns,
-        rows: this._rows,
-        titleField: SecondaryObjectTypeField.TITLE,
-        descriptionField: SecondaryObjectTypeField.DESCRIPTION,
-        selectType: 'single',
-        sortModel: (this._searchQuery.sortOptions || []).map(o => ({
-          colId: o.field,
-          sort: o.order
-        }))
-      };
-
-      this.busy = false;
-    });
+    );
   }
-
-  private resetTableData() {}
 
   /**
    * Map search result item to a row data item

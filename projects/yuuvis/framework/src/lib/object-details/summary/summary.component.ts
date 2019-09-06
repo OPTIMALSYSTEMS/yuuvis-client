@@ -102,7 +102,7 @@ export class SummaryComponent implements OnInit {
           order: null
         };
 
-        if (key === 'enaio:objectTypeId') {
+        if (key === BaseObjectTypeField.OBJECT_TYPE_ID) {
           si.value = this.systemService.getLocalizedResource(`${dmsObject.data[key]}_label`);
         }
         if (extraFields.includes(prepKey)) {

@@ -61,11 +61,11 @@ export class ObjectFormElementComponent {
         this.formElementRef._eoFormElement.defaultvaluefunction === 'EXTRACTION'
           ? {
               label: 'ex',
-              title: this.translate.instant('eo.form.element.tag.ex')
+              title: this.translate.instant('yuv.framework.object-form-element.tag.ex')
             }
           : {
               label: 'df',
-              title: this.translate.instant('eo.form.element.tag.df')
+              title: this.translate.instant('yuv.framework.object-form-element.tag.df')
             };
     }
   }
