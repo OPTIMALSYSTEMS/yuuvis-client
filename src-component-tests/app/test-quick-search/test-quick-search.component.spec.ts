@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { TestAccordionComponent } from './test-accordion.component';
+import { TestQuickSearchComponent } from './test-quick-search.component';
 
-describe('TestAccordionComponent', () => {
-  let component: TestAccordionComponent;
-  let fixture: ComponentFixture<TestAccordionComponent>;
+describe('TestQuickSearchComponent', () => {
+  let component: TestQuickSearchComponent;
+  let fixture: ComponentFixture<TestQuickSearchComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ TestAccordionComponent ]
+      declarations: [ TestQuickSearchComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(TestAccordionComponent);
+    fixture = TestBed.createComponent(TestQuickSearchComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

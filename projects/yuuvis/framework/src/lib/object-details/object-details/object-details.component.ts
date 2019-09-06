@@ -5,22 +5,6 @@ import { SVGIcons } from '../../svg.generated';
 
 /**
  * High level component displaying detail aspects for a given DmsObject.
- * 
- * 
- * ```html
-<!-- string input validating input to be between 5 and 10 characters -->
-<yuv-string [minLength]="5" [maxLength]="10"></yuv-string>
-```
- *
- * ```html
-<!-- string input that only allow digits -->
-<yuv-string  [regex]="[0-9]*"></yuv-string>
-```
- *
- * ```html
-<!-- string input rendering a large textarea -->
-<yuv-string [multiline]="true" [size]="'large'"></yuv-string>
-```
  *
  */
 @Component({
@@ -32,13 +16,6 @@ import { SVGIcons } from '../../svg.generated';
 export class ObjectDetailsComponent {
   objectIcon: string = '';
   icons = SVGIcons;
-  // showSideBar = false;
-  // sidebarStyle = { background: 'rgba(0, 0, 0, 0.8)' };
-  // headerStyle = {
-  //   'grid-template-columns': '0.1fr 1fr',
-  //   'grid-template-areas': 'close content'
-  // };
-  // position = Position.RIGHT;
   busy: boolean;
   userIsAdmin: boolean;
 
@@ -46,7 +23,7 @@ export class ObjectDetailsComponent {
   private _objectId: string;
 
   /**
-   *
+   * DmsObject to show the details for.
    */
   @Input()
   set dmsObject(object: DmsObject) {
@@ -60,11 +37,13 @@ export class ObjectDetailsComponent {
     return this._dmsObject;
   }
 
+  /**
+   * You can also just provide the component with an ID of a DmsObject. It will then fetch it upfront.
+   */
   @Input()
   set objectId(id: string) {
     if (id) {
       this._objectId = id;
-      // this._dmsObject = null;
       this.getDmsObject(id);
     }
   }
@@ -88,7 +67,7 @@ export class ObjectDetailsComponent {
     }
   }
 
-  // showActions() {
-  //   this.showSideBar = !this.showSideBar;
-  // }
+  openActions() {
+    // TODO: implement when final action manu is available
+  }
 }
