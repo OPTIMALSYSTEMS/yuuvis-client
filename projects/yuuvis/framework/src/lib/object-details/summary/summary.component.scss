@@ -1,11 +1,46 @@
 @import './../../../../../../../src/scss-shared/_mixins';
 
 .object-summary {
-  section {
-    background-color: #fff;
-    margin-bottom: var(--app-pane-padding);
-    padding: calc(var(--app-pane-padding) / 2);
-    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.1);
+  ::ng-deep {
+    .ui-accordion {
+      p-accordiontab {
+        display: block;
+        box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1);
+        margin-bottom: var(--app-pane-padding);
+      }
+
+      .ui-accordion-header {
+        margin: 0;
+
+        a {
+          border: 0 !important;
+          background: rgba(0, 0, 0, 0.06);
+          color: var(--text-color-caption) !important;
+          display: flex;
+          flex-flow: row-reverse;
+          outline: 0 !important;
+          padding: calc(var(--app-pane-padding) / 2);
+
+          .ui-accordion-header-text {
+            flex: 1;
+          }
+          .ui-accordion-toggle-icon {
+            color: var(--text-color-caption) !important;
+          }
+        }
+
+        &:not(.ui-state-disabled).ui-state-active a {
+          background-color: #fff;
+          color: var(--text-color-caption);
+        }
+      }
+      .ui-accordion-content-wrapper {
+        .ui-accordion-content {
+          border: 0;
+          background-color: #fff;
+        }
+      }
+    }
   }
 
   .entry {
@@ -19,8 +54,8 @@
     @include transition();
 
     &:hover {
-      background-color: rgba(0, 0, 0, 0.06);
-      border-bottom-color: transparent;
+      background-color: rgba(0, 0, 0, 0.03);
+      background: linear-gradient(to right, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.03) 10%, rgba(0, 0, 0, 0.03) 90%, rgba(0, 0, 0, 0) 100%);
     }
 
     &:last-child {
@@ -36,21 +71,12 @@
       text-overflow: ellipsis;
       white-space: normal;
       color: var(--text-color-caption);
-
-      :host-context(.screen-s) & {
-        grid-template-columns: 1fr 1fr;
-      }
     }
 
     .value {
       grid-area: value;
       align-self: center;
-
-      :host-context(.screen-s) & {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
+      @include ellipsis();
     }
   }
 }

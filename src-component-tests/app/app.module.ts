@@ -14,9 +14,10 @@ import { TestSummaryComponent } from './test-summary/test-summary.component';
 import { TestResponsiveTabContainerComponent } from './test-responsive-tab-container/test-responsive-tab-container.component';
 import { TestObjectDetailsComponent } from './test-object-details/test-object-details.component';
 import { TestPanelComponent } from './test-panel/test-panel.component';
+import { TestAccordionComponent } from './test-accordion/test-accordion.component';
 
 @NgModule({
-  declarations: [AppComponent, TestObjectFormComponent, TestSummaryComponent, TestSearchResultComponent, TestSearchResultPanelComponent, TestResponsiveTabContainerComponent, TestObjectDetailsComponent, TestPanelComponent],
+  declarations: [AppComponent, TestObjectFormComponent, TestSummaryComponent, TestSearchResultComponent, TestSearchResultPanelComponent, TestResponsiveTabContainerComponent, TestObjectDetailsComponent, TestPanelComponent, TestAccordionComponent],
   imports: [
     HttpClientModule,
     BrowserModule,

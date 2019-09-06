@@ -1,6 +1,13 @@
 @import './../../../../../src/scss-shared/vars';
 
 body {
+  .ui-widget {
+    font-family: 'Roboto';
+    font-size: var(--font-body);
+  }
+
+  // -------------------------------------------------------------------
+  // primeng overlays
   .ui-overlaypanel {
     border: none;
 

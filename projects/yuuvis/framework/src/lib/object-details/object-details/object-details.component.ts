@@ -1,6 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { Position } from '@yuuvis/common-ui';
-import { DmsObject, DmsService, SystemService } from '@yuuvis/core';
+import { DmsObject, DmsService, SystemService, UserService } from '@yuuvis/core';
 import { CellRenderer } from '../../services/grid/grid.cellrenderer';
 import { SVGIcons } from '../../svg.generated';
 
@@ -33,25 +32,22 @@ import { SVGIcons } from '../../svg.generated';
 export class ObjectDetailsComponent {
   objectIcon: string = '';
   icons = SVGIcons;
-  showSideBar = false;
-  sidebarStyle = { background: 'rgba(0, 0, 0, 0.8)' };
-  headerStyle = {
-    'grid-template-columns': '0.1fr 1fr',
-    'grid-template-areas': 'close content'
-  };
-  position = Position.RIGHT;
+  // showSideBar = false;
+  // sidebarStyle = { background: 'rgba(0, 0, 0, 0.8)' };
+  // headerStyle = {
+  //   'grid-template-columns': '0.1fr 1fr',
+  //   'grid-template-areas': 'close content'
+  // };
+  // position = Position.RIGHT;
   busy: boolean;
+  userIsAdmin: boolean;
+
   private _dmsObject: DmsObject;
-  // private _dmsObject2: DmsObject;
   private _objectId: string;
 
-  // @HostBinding('class.busy') busy = false;
-  // @Input() enableCompare = true;
-  // @Input() enableSync = false;
-  // @Input() cacheLayout = false;
-
-  // @Input() externalPanels = [];
-
+  /**
+   *
+   */
   @Input()
   set dmsObject(object: DmsObject) {
     this._dmsObject = object;
@@ -64,15 +60,6 @@ export class ObjectDetailsComponent {
     return this._dmsObject;
   }
 
-  // @Input()
-  // set dmsObject2(object: DmsObject) {
-  //   this._dmsObject2 = object;
-  // }
-
-  // get dmsObject2() {
-  //   return this._dmsObject2;
-  // }
-
   @Input()
   set objectId(id: string) {
     if (id) {
@@ -82,7 +69,9 @@ export class ObjectDetailsComponent {
     }
   }
 
-  constructor(private dmsService: DmsService, private systemService: SystemService) {}
+  constructor(private dmsService: DmsService, private userService: UserService, private systemService: SystemService) {
+    this.userIsAdmin = this.userService.hasAdministrationRoles;
+  }
 
   private getDmsObject(id: string) {
     this.busy = true;
@@ -99,7 +88,7 @@ export class ObjectDetailsComponent {
     }
   }
 
-  showActions() {
-    this.showSideBar = !this.showSideBar;
-  }
+  // showActions() {
+  //   this.showSideBar = !this.showSideBar;
+  // }
 }
