@@ -53,8 +53,8 @@
   --app-pane-header-height: 112px;
 
   // colors for dirty form fields
-  --color-dirty-background: #ebf7d2;
-  --color-dirty-font: #8fad1c;
+  --color-dirty-background: rgba(var(--color-accent-rgb), 0.15);
+  --color-dirty-font: var(--color-accent);
 
   --app-default-transition-duration: 200ms;
 

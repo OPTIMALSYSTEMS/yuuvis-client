@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { TestObjectDetailsComponent } from './test-object-details/test-object-details.component';
+import { TestObjectFormEditComponent } from './test-object-form-edit/test-object-form-edit.component';
 import { TestObjectFormComponent } from './test-object-form/test-object-form.component';
 import { TestPanelComponent } from './test-panel/test-panel.component';
 import { TestQuickSearchComponent } from './test-quick-search/test-quick-search.component';
@@ -11,6 +12,7 @@ import { TestSummaryComponent } from './test-summary/test-summary.component';
 
 const routes: Routes = [
   { path: 'object-form', component: TestObjectFormComponent },
+  { path: 'object-form-edit', component: TestObjectFormEditComponent },
   { path: 'search-result', component: TestSearchResultComponent },
   { path: 'search-result-panel', component: TestSearchResultPanelComponent },
   { path: 'responsive-tab-container', component: TestResponsiveTabContainerComponent },

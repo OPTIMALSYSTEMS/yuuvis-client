@@ -28,9 +28,15 @@
       </ng-template>
     </p-tabPanel>
 
-    <p-tabPanel [id]="'preview'" [header]="'yuv.framework.object-details.tabs.indexdata.title' | translate" #preview>
+    <p-tabPanel [id]="'indexdata'" [header]="'yuv.framework.object-details.tabs.indexdata.title' | translate">
       <ng-template pTemplate="content">
-        Preview ..................
+        <yuv-object-form-edit [dmsObject]="dmsObject"></yuv-object-form-edit>
+      </ng-template>
+    </p-tabPanel>
+
+    <p-tabPanel [id]="'preview'" [header]="'yuv.framework.object-details.tabs.content.title' | translate">
+      <ng-template pTemplate="content">
+        Content Preview ..................
       </ng-template>
     </p-tabPanel>
 

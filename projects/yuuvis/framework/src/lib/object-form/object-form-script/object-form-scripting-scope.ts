@@ -18,7 +18,7 @@ export class ObjectFormScriptingScope {
   // to the script (READONLY)
   // may contain: FormScriptDmsObject, FileEntry
   public objects: any[] = [];
-  public context: { id: string; title: string; typeName: string } = { id: '', title: '', typeName: '' };
+  public context: { id: string; title: string; objectTypeId: string } = { id: '', title: '', objectTypeId: '' };
 
   /**
    * Constructor

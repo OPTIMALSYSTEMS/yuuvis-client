@@ -1,27 +1,31 @@
 import { SearchResultItem } from '../service/search/search.service.interface';
 import { BaseObjectTypeField } from '../service/system/system.enum';
-
-export interface DmsObjectContent {
-  contentStreamId: string;
-  fileName: string;
-  mimeType: string;
-}
+import { SecondaryObjectTypeField } from './../service/system/system.enum';
+import { DmsObjectContent, DmsObjectContext, DmsObjectRights } from './dms-object.interface';
 
 export class DmsObject {
   id: string;
   title: string;
   description: string;
-  version: number;
+  content: DmsObjectContent;
+  data: any;
+  contextFolder: DmsObjectContext;
   isFolder: boolean;
   objectTypeId: string;
-  data: any;
-  content: DmsObjectContent;
+  rights: DmsObjectRights = {
+    select: false,
+    edit: false,
+    delete: false,
+    finalize: false,
+    recycle: false
+  };
+  version: number;
 
   constructor(searchResultItem: SearchResultItem, isFolder: boolean) {
     this.id = searchResultItem.fields.get(BaseObjectTypeField.OBJECT_ID);
     this.objectTypeId = searchResultItem.objectTypeId;
-    this.title = searchResultItem.fields.get('tenKolibri:clienttitle');
-    this.description = searchResultItem.fields.get('tenKolibri:description');
+    this.title = searchResultItem.fields.get(SecondaryObjectTypeField.TITLE);
+    this.description = searchResultItem.fields.get(SecondaryObjectTypeField.DESCRIPTION);
     this.data = this.generateData(searchResultItem.fields);
     this.isFolder = isFolder;
 
@@ -32,6 +36,8 @@ export class DmsObject {
         mimeType: searchResultItem.content.mimeType
       };
     }
+
+    // TODO: setup contextfolder
   }
 
   private generateData(fields) {

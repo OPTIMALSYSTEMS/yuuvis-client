@@ -19,6 +19,8 @@ export class DmsService {
     return this.getDmsObjects([id]).pipe(map(res => res[0]));
   }
 
+  updateObject(id: string, data: any, objectT) {}
+
   getDmsObjects(ids: string[]): Observable<DmsObject[]> {
     const q = new SearchQuery();
     q.addFilter(new SearchFilter(BaseObjectTypeField.OBJECT_ID, SearchFilter.OPERATOR.IN, ids));
