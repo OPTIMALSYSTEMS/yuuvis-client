@@ -29,7 +29,7 @@ export class DownloadOriginalActionComponent extends DmsObjectTarget implements 
   }
 
   run(selection: DmsObject[]): Observable<boolean> {
-    this.backend.downloadContent(selection.map(o => o.id));
+    this.backend.downloadContent(selection);
     return of(true);
   }
 }

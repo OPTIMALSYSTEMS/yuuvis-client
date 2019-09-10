@@ -1,5 +1,6 @@
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { DmsObject } from '@yuuvis/core';
 import { Observable } from 'rxjs';
 import { ConfigService } from '../config/config.service';
 import { Logger } from '../logger/logger';
@@ -104,9 +105,12 @@ export class BackendService {
    *
    * @param DmsObject[] dmsObjects Array of dms objects to be downloaded
    */
-  public downloadContent(objectIDs: string[]) {
-    objectIDs.forEach(id => {
-      let uri = `${this.getApiBase(ApiBase.core)}/dms/objects/${id}/contents/file`;
+  public downloadContent(objects: DmsObject[], withVersion?: boolean) {
+    objects.forEach(object => {
+      let uri = `${this.getApiBase(ApiBase.apiWeb)}/dms/${object.id}/content`;
+      if (withVersion && object.version) {
+        uri += '?version=' + object.version;
+      }
       this.download(uri);
     });
   }
@@ -116,6 +120,7 @@ export class BackendService {
       const a = document.createElement('a');
       a.setAttribute('href', uri);
       a.style.display = 'none';
+      a.setAttribute('download', 'download');
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
