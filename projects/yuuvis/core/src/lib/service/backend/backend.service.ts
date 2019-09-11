@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { DmsObject } from '@yuuvis/core';
 import { Observable } from 'rxjs';
+import { DmsObject } from '../../model/dms-object.model';
 import { ConfigService } from '../config/config.service';
 import { Logger } from '../logger/logger';
 import { ApiBase } from './api.enum';
