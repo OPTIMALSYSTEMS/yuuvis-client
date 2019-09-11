@@ -1,0 +1,11 @@
+<div class="testing-controls">
+  <form (ngSubmit)="setDmsObject()" [formGroup]="form">
+    <input type="text" formControlName="objectId" placeholder="DMS Object ID">
+    <button type="submit" [disabled]="form.invalid">Load Object</button>
+  </form>
+  <button (click)="toggleDisabled()">toggle disabled</button>
+</div>
+
+
+<yuv-object-form-edit class="cmp" [dmsObject]="dmsObject" (indexDataSaved)="onIndexDataSaved($event)"
+  [formDisabled]="disableWholeForm"></yuv-object-form-edit>

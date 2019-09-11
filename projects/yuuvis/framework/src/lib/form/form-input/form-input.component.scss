@@ -171,6 +171,7 @@
     &:enabled:active,
     &:enabled:focus {
       border: 0;
+      box-shadow: none;
       background: var(--color-accent);
       color: #fff;
     }

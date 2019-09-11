@@ -13,20 +13,6 @@ import { stringElements } from './data/form.string';
 })
 export class TestObjectFormComponent implements OnInit {
   formModels = [
-    // {
-    //   label: 'formSingleModel',
-    //   model: {
-    //     formModel: formSingleModel,
-    //     data: {}
-    //   }
-    // },
-    // {
-    //   label: 'formMultiModel',
-    //   model: {
-    //     formModel: formMultiModel,
-    //     data: {}
-    //   }
-    // },
     {
       label: 'Form groups',
       model: {
@@ -45,7 +31,9 @@ export class TestObjectFormComponent implements OnInit {
       label: 'Checkbox component',
       model: {
         formModel: this.wrap(booleanElements),
-        data: {}
+        data: {
+          'boolean:readonlyvalue': true
+        }
       }
     },
     {

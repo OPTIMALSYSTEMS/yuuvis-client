@@ -10,15 +10,8 @@
           </div>
         </div>
       </div>
-      <input
-        (keydown)="onInputKeydown($event)"
-        type="number"
-        eoYearRange
-        [(ngModel)]="year"
-        [max]="maxYear"
-        (ngModelChange)="setYear($event)"
-        [ngModelOptions]="{ standalone: true }"
-      />
+      <input (keydown)="onInputKeydown($event)" type="number" [(ngModel)]="year" [max]="maxYear"
+        (ngModelChange)="setYear($event)" [ngModelOptions]="{ standalone: true }" />
       <div class="controls">
         <button class="icon white year-up" (click)="increment(year)" [disabled]="year === maxYear">
           <yuv-icon [svg]="arrowDownIcon"></yuv-icon>
@@ -30,7 +23,8 @@
     </div>
 
     <div class="month">
-      <span *ngFor="let _month of monthsShort; let _i = index" (click)="setMonth(_i)" [ngClass]="{ current: monthInfo.month == _i }">{{ _month }}</span>
+      <span *ngFor="let _month of monthsShort; let _i = index" (click)="setMonth(_i)"
+        [ngClass]="{ current: monthInfo.month == _i }">{{ _month }}</span>
     </div>
   </div>
 
@@ -43,20 +37,11 @@
 
     <div class="week" *ngFor="let week of weeks; trackBy: trackByFn">
       <div *ngFor="let day of week.days; trackBy: trackByFn">
-        <span
-          class="day"
-          *ngIf="!day.disabled"
+        <span class="day" *ngIf="!day.disabled"
           [ngClass]="{ today: day.isToday, 'different-month': !day.isCurrentMonth, selected: isSelectedDay(day.date) }"
-          (click)="select(day.date)"
-          (dblclick)="select(day.date)"
-          >{{ day.number }}</span
-        >
-        <span
-          class="day disabled"
-          *ngIf="day.disabled"
-          [ngClass]="{ today: day.isToday, 'different-month': !day.isCurrentMonth, selected: isSelectedDay(day.date) }"
-          >{{ day.number }}</span
-        >
+          (click)="select(day.date)" (dblclick)="select(day.date)">{{ day.number }}</span>
+        <span class="day disabled" *ngIf="day.disabled"
+          [ngClass]="{ today: day.isToday, 'different-month': !day.isCurrentMonth, selected: isSelectedDay(day.date) }">{{ day.number }}</span>
       </div>
     </div>
   </div>
@@ -84,12 +69,14 @@
     </div>
 
     <div class="controls ctrl-am-pm" *ngIf="withAmPm">
-      <button class="" [ngClass]="{ primary: inRange(time.h) }" (click)="setTime({ h: inRange(time.h) ? time.h : time.h - 12, m: time.m })">AM</button>
-      <button class="" [ngClass]="{ primary: !inRange(time.h) }" (click)="setTime({ h: inRange(time.h) ? time.h + 12 : time.h, m: time.m })">PM</button>
+      <button class="" [ngClass]="{ primary: inRange(time.h) }"
+        (click)="setTime({ h: inRange(time.h) ? time.h : time.h - 12, m: time.m })">AM</button>
+      <button class="" [ngClass]="{ primary: !inRange(time.h) }"
+        (click)="setTime({ h: inRange(time.h) ? time.h + 12 : time.h, m: time.m })">PM</button>
     </div>
   </div>
 
   <div class="actions">
-    <button class="primary" (click)="selectValue()" translate>eo.datepicker.calendar.select</button>
+    <button class="primary" (click)="selectValue()" translate>yuv.framework.form.datepicker.select</button>
   </div>
 </div>

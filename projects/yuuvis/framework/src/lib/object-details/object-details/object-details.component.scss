@@ -1,29 +1,37 @@
-:host{
-  position: relative;
-  display: block;
-}
-.actions,
-.status,
-.header-icon {
-  color: var(--text-color-caption);
-}
-
-.finalized-icon {
-  color: var(--color-success);
-}
-
-.object-details.yuv-panel-wrapper {
+:host {
   ::ng-deep {
-    .header {
-      :host-context(.screen-s) & {
-        grid-template-areas: 'header_text extras';
-        grid-template-columns: 1fr 30px;
+    .ui-tabview .ui-tabview-panels {
+      background-color: var(--panel-background-grey);
+
+      #summary > .ui-tabview-panel,
+      #preview > .ui-tabview-panel,
+      #history > .ui-tabview-panel {
+        padding: var(--app-pane-padding);
       }
     }
-    .icon {
-      :host-context(.screen-s) & {
-        display: none;
-      }
-    }
+  }
+}
+
+.yuv-object-details {
+  .actions,
+  .status,
+  .header-icon {
+    color: var(--text-color-caption);
+  }
+
+  .finalized-icon {
+    color: var(--color-success);
+  }
+
+  .ui-tabview .ui-tabview-panels {
+    background-color: var(--panel-background-grey);
+  }
+  yuv-responsive-tab-container.content {
+    background-color: var(--panel-background);
+  }
+
+  yuv-object-form-edit {
+    margin: var(--app-pane-padding);
+    box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1);
   }
 }

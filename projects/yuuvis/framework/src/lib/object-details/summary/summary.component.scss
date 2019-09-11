@@ -1,12 +1,46 @@
-.object-summary {
-  display: grid;
-  grid-template-columns: 1fr;
-  grid-template-rows: 1fr;
-  grid-template-areas: 'summary';
-  grid-gap: calc(var(--app-pane-padding) / 2);
+@import './../../../../../../../src/scss-shared/_mixins';
 
-  .entry.core-entry:last-of-type {
-    margin-bottom: 100px !important;
+.object-summary {
+  ::ng-deep {
+    .ui-accordion {
+      p-accordiontab {
+        display: block;
+        box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1);
+        margin-bottom: var(--app-pane-padding);
+      }
+
+      .ui-accordion-header {
+        margin: 0;
+
+        a {
+          border: 0 !important;
+          background: rgba(0, 0, 0, 0.06);
+          color: var(--text-color-caption) !important;
+          display: flex;
+          flex-flow: row-reverse;
+          outline: 0 !important;
+          padding: calc(var(--app-pane-padding) / 2);
+
+          .ui-accordion-header-text {
+            flex: 1;
+          }
+          .ui-accordion-toggle-icon {
+            color: var(--text-color-caption) !important;
+          }
+        }
+
+        &:not(.ui-state-disabled).ui-state-active a {
+          background-color: #fff;
+          color: var(--text-color-caption);
+        }
+      }
+      .ui-accordion-content-wrapper {
+        .ui-accordion-content {
+          border: 0;
+          background-color: #fff;
+        }
+      }
+    }
   }
 
   .entry {
@@ -15,55 +49,34 @@
     grid-template-columns: minmax(20%, 40%) minmax(50%, 80%);
     grid-template-rows: 100%;
     grid-template-areas: 'label value';
-    grid-gap: 12px;
-    margin-bottom: 2px;
+    padding: calc(var(--app-pane-padding) / 4);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    @include transition();
+
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.03);
+      background: linear-gradient(to right, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.03) 10%, rgba(0, 0, 0, 0.03) 90%, rgba(0, 0, 0, 0) 100%);
+    }
+
+    &:last-child {
+      border: 0;
+    }
 
     .label {
       grid-area: label;
-      background-color: var(--color-primary-3);
-      color: white;
       padding: calc(var(--app-pane-padding) / 4);
-      border-radius: 2px;
       display: inline-block;
       max-width: none;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: normal;
-      .inverted & {
-        background-color: var(--panel-background);
-        color: black;
-      }
-
-      :host-context(.screen-s) & {
-        grid-template-columns: 1fr 1fr;
-      }
+      color: var(--text-color-caption);
     }
 
     .value {
       grid-area: value;
       align-self: center;
-
-      :host-context(.screen-s) & {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
+      @include ellipsis();
     }
-    &[data-summary-item='clienttitle'] .value,
-    &[data-summary-item='clientdescription'] .value {
-      :host-context(.screen-s) & {
-        white-space: normal;
-        overflow: auto;
-        text-overflow: unset;
-      }
-    }
-
-    &.baseparams .label {
-      color: #000;
-      background-color: var(--panel-background-grey);
-    }
-  }
-  .extra-entry {
-    margin-bottom: 40px;
   }
 }

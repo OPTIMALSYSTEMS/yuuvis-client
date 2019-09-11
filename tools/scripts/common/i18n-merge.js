@@ -8,13 +8,13 @@ const mergeTranslations = async () => {
   await _merge('en');
   console.log('Merged translations from libraraies with app');
   // check for translations from good old brummfugl
-  checkForBrummfuglTranslations('de');
-  checkForBrummfuglTranslations('en');
+  saveTranslations('de');
+  saveTranslations('en');
 };
 
 const _merge = async lang => {
-  const nodeModulesFolder = path.resolve(__dirname, '..', '..', '..', 'node_modules', '@yuuvis');
-  const resDe = await _readLanguageFiles(nodeModulesFolder, lang);
+  const lisJsonPath = path.resolve(__dirname, '..', '..', '..', 'dist', 'yuuvis');
+  const resDe = await _readLanguageFiles(lisJsonPath, lang);
   const appJsonPath = path.resolve(__dirname, '..', '..', '..', 'src', 'assets', 'default', 'i18n', lang + '.json');
   let merged,
     __merged = {};
@@ -55,18 +55,18 @@ const _readLanguageFiles = (path, lang) => {
   });
 };
 
-const checkForBrummfuglTranslations = lang => {
-  const brummfuglResourcePath = path.resolve(__dirname, 'i18n-brummfugl', lang + '.json');
+const saveTranslations = lang => {
+  // const brummfuglResourcePath = path.resolve(__dirname, 'i18n-brummfugl', lang + '.json');
   const flokfuglResourcePath = path.resolve(__dirname, '..', '..', '..', 'src', 'assets', 'default', 'i18n', lang + '.json');
 
-  const brummfugl = JSON.parse(fs.readFileSync(brummfuglResourcePath, { encoding: 'utf8' }));
+  // const brummfugl = JSON.parse(fs.readFileSync(brummfuglResourcePath, { encoding: 'utf8' }));
   const flokfugl = JSON.parse(fs.readFileSync(flokfuglResourcePath, { encoding: 'utf8' }));
 
-  Object.keys(flokfugl).forEach(k => {
-    if (flokfugl[k].length === 0 && brummfugl[k]) {
-      flokfugl[k] = brummfugl[k];
-    }
-  });
+  // Object.keys(flokfugl).forEach(k => {
+  //   if (flokfugl[k].length === 0 && brummfugl[k]) {
+  //     flokfugl[k] = brummfugl[k];
+  //   }
+  // });
 
   fs.writeFileSync(flokfuglResourcePath, JSON.stringify(flokfugl, null, 2), {
     encoding: 'utf8'

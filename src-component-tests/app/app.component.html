@@ -1,32 +1,18 @@
-<ng-container *ngIf="loggedIn; else tplLogin">
-  <div class="head">
-    <span (click)="showNav = !showNav" class="hamburger"></span>
-    <div class="title">
-      yuuvis component playground
-    </div>
-
-
-    <div class="user">{{user?.username}}</div>
-    <button (click)="clear()">logout</button>
-
+<div class="head">
+  <span (click)="showNav = !showNav" class="hamburger"></span>
+  <div class="title">
+    yuuvis component playground
   </div>
+  <div class="user" *ngIf="!!user; else tplNotLoggedIn">Logged in as '{{user?.username}}'</div>
+  <ng-template #tplNotLoggedIn>
+    <div class="user">Not logged in</div>
+  </ng-template>
+</div>
 
-  <nav>
-    <a [routerLink]="[route]" routerLinkActive="active" *ngFor="let route of routes">{{route}}</a>
-  </nav>
+<nav>
+  <a [routerLink]="[route]" routerLinkActive="active" *ngFor="let route of routes">{{route}}</a>
+</nav>
 
-  <div class="body">
-    <router-outlet></router-outlet>
-  </div>
-</ng-container>
-
-<ng-template #tplLogin>
-  <div class="login">
-    <form [formGroup]="loginForm" novalidate>
-      <input type="text" formControlName="tenant" placeholder="tenant">
-      <input type="text" formControlName="username" placeholder="username">
-      <input type="password" formControlName="password" placeholder="password">
-      <button (click)="login()">login</button>
-    </form>
-  </div>
-</ng-template>
+<div class="body">
+  <router-outlet></router-outlet>
+</div>

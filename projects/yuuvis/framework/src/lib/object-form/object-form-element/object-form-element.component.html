@@ -30,7 +30,7 @@
       [isNull]="isNull" [skipToggle]="skipToggle || situation !== 'SEARCH'" (onToggleLabel)="labelToggled($event)"
       [required]="formElementRef._eoFormElement.required" [invalid]="formElementRef.invalid">
       <yuv-datetime [readonly]="formElementRef._eoFormElement.readonly"
-        [withTime]="formElementRef._eoFormElement.withtime"
+        [withTime]="formElementRef._eoFormElement.withtime" [pickerTitle]="formElementRef._eoFormElement.label"
         [formControlName]="element._eoFormControlWrapper.controlName"></yuv-datetime>
     </yuv-form-input>
 
@@ -39,8 +39,8 @@
       [isNull]="isNull" [skipToggle]="skipToggle || situation !== 'SEARCH'" (onToggleLabel)="labelToggled($event)"
       [required]="formElementRef._eoFormElement.required" [invalid]="formElementRef.invalid">
       <yuv-number [readonly]="formElementRef._eoFormElement.readonly"
-        [precision]="formElementRef._eoFormElement.precision" [scale]="formElementRef._eoFormElement.scale"
-        [grouping]="formElementRef._eoFormElement.grouping" [pattern]="formElementRef._eoFormElement.pattern"
+        [precision]="formElementRef._eoFormElement.precision" [scale]="0"
+        [grouping]="formElementRef._eoFormElement.grouping"
         [formControlName]="element._eoFormControlWrapper.controlName">
       </yuv-number>
     </yuv-form-input>
@@ -70,9 +70,7 @@
         (situation !== 'SEARCH' && situation !== 'CREATE' && formElementRef.errors) ||
         ((situation === 'SEARCH' || situation === 'CREATE') && formElementRef.errors && (formElementRef.dirty || formElementRef.touched))
       ">
-      <div *ngIf="formElementRef.errors.daterange">{{'eo.form.property.daterange.invalid' | translate}}</div>
-      <div *ngIf="formElementRef.errors.numberrange">{{'eo.form.property.numberrange.invalid' | translate}}</div>
-      <div *ngIf="formElementRef.errors.number">{{'eo.form.property.number' | translate}}</div>
+      <div *ngIf="formElementRef.errors.number">{{'yuv.framework.object-form-element.error.number' | translate}}</div>
       <div *ngIf="formElementRef.errors.precision">
         {{ formElementRef.errors.precision.translateKey | translate: formElementRef.errors.precision.translateValues }}
       </div>
@@ -81,21 +79,25 @@
       </div>
 
       <div *ngIf="formElementRef.errors.regex || formElementRef.errors.pattern">
-        {{'eo.form.property.string.regex.nomatch' | translate}}</div>
+        {{'yuv.framework.object-form-element.error.string.regex.nomatch' | translate}}</div>
       <div *ngIf="formElementRef.errors.classificationemail">
-        {{'eo.form.property.string.error.classification.email' | translate}}</div>
+        {{'yuv.framework.object-form-element.error.string,classification.email' | translate}}</div>
       <div *ngIf="formElementRef.errors.classificationurl">
-        {{'eo.form.property.string.error.classification.url' | translate}}</div>
-      <div *ngIf="formElementRef.errors.onlyWhitespaces">{{'eo.form.property.string.error.whitespaces' | translate}}
+        {{'yuv.framework.object-form-element.error.string.classification.url' | translate}}</div>
+      <div *ngIf="formElementRef.errors.onlyWhitespaces">
+        {{'yuv.framework.object-form-element.error.string.whitespaces' | translate}}
       </div>
-      <div *ngIf="formElementRef.errors.datecontrol">{{'eo.form.property.date.invalid' | translate}}</div>
-      <div *ngIf="formElementRef.errors.codesystem">{{'eo.form.property.codesystem.value.invalid' | translate}}</div>
+      <div *ngIf="formElementRef.errors.datecontrol">
+        {{'yuv.framework.object-form-element.error.date.invalid' | translate}}</div>
       <div *ngIf="formElementRef.errors.eoformScript">{{ formElementRef._eoFormElement.error.msg }}</div>
-      <div *ngIf="formElementRef.errors.required">{{'eo.form.property.required' | translate}}</div>
+      <div *ngIf="formElementRef.errors.required">{{'yuv.framework.object-form-element.error.required' | translate}}
+      </div>
       <div *ngIf="formElementRef.errors.maxlength">
-        {{'eo.form.property.maxlength' | translate: ({ maxlength: formElementRef._eoFormElement.maxlen })}}</div>
+        {{'yuv.framework.object-form-element.error.maxlength' | translate: ({ maxlength: formElementRef._eoFormElement.maxlen })}}
+      </div>
       <div *ngIf="formElementRef.errors.minlength">
-        {{'eo.form.property.minlength' | translate: ({ minlength: formElementRef._eoFormElement.minlen })}}</div>
+        {{'yuv.framework.object-form-element.error.minlength' | translate: ({ minlength: formElementRef._eoFormElement.minlen })}}
+      </div>
     </div>
   </div>
 </div>

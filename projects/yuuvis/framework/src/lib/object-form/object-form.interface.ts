@@ -21,7 +21,7 @@ export interface ObjectFormOptions {
   // object form may also provide a collection of objects to be passed to the
   // form script (e.g. BPM forms provide data from attached dms objects)
   objects?: any[];
-  context?: { id: string; title: string; typeName: string };
+  context?: { id: string; title: string; objectTypeId: string };
 }
 
 export interface YuvFormGroupWrapper {

@@ -51,7 +51,7 @@ export class SearchResultPanelComponent implements OnInit {
 
   generateQueryDescription(term: string, types?: string[]) {
     const querytype: string = types.length ? `${this.systemService.getLocalizedResource(`${types[0]}_label`)}, ` : '';
-    this.queryTerm = `${querytype}${this.translate.instant('eo.search.term')}: '${term}'`;
+    this.queryTerm = `${querytype}${this.translate.instant('yuv.framework.search-result-panel.header.term')}: '${term}'`;
   }
 
   ngOnInit() {}

@@ -1,39 +1,61 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { AppCacheService, BaseObjectTypeField, ContentStreamField, DmsObject, ParentField, SystemService, UserService } from '@yuuvis/core';
+import { AppCacheService, BaseObjectTypeField, ContentStreamField, DmsObject, ParentField, SystemService } from '@yuuvis/core';
 import { ColDef, ICellRendererFunc } from 'ag-grid-community';
 import { GridService } from '../../services/grid/grid.service';
 import { Summary } from './summary.interface';
 
+/**
+ * Component that reders a summary for a given `DmsObject`. It will list the index data set for the
+ * object devided into sections.
+ */
 @Component({
   selector: 'yuv-summary',
   templateUrl: './summary.component.html',
   styleUrls: ['./summary.component.scss']
 })
 export class SummaryComponent implements OnInit {
+  private STORAGE_KEY_ACTIVE_INDEX = 'yuv.framework.summary.active-index';
   summary: Summary;
-  selected: boolean = false;
+  activeIndex: number[] = null;
 
+  /**
+   * `DmsObject` to show the summary for
+   */
   @Input()
   set dmsObject(dmsObject: DmsObject) {
     if (dmsObject) {
       this.summary = this.generateSummary(dmsObject);
+
+      if (this.activeIndex === null) {
+        this.activeIndex = [0, 1];
+        if (this.showExtrasSection) {
+          this.activeIndex.push(2);
+        }
+        if (this.summary.parent.length > 0) {
+          this.activeIndex.push(3);
+        }
+      }
     }
   }
+  /**
+   * Whether or not to show the extras section that holds the more technical data for the object
+   */
+  @Input() showExtrasSection: boolean;
 
-  constructor(
-    private systemService: SystemService,
-    private gridService: GridService,
-    private userService: UserService,
-    private appCacheService: AppCacheService
-  ) {}
+  constructor(private systemService: SystemService, private gridService: GridService, private appCacheService: AppCacheService) {}
 
-  get hasRights(): boolean {
-    return this.userService.hasAdministrationRoles;
+  sectionOpen(e) {
+    const activeIndex = this.activeIndex.filter(i => i !== e.index);
+    activeIndex.push(e.index);
+    this.setState(activeIndex);
+  }
+  sectionClose(e) {
+    this.setState(this.activeIndex.filter(i => i !== e.index));
   }
 
-  adminInfoOpen(status: boolean) {
-    this.appCacheService.setItem('object.details.admin.info', status).subscribe();
-    this.selected = status;
+  private setState(activeIndex: number[]) {
+    this.activeIndex = activeIndex;
+    this.appCacheService.setItem(this.STORAGE_KEY_ACTIVE_INDEX, this.activeIndex).subscribe();
   }
 
   private getSummaryConfiguration(dmsObject: DmsObject) {
@@ -44,6 +66,7 @@ export class SummaryComponent implements OnInit {
       BaseObjectTypeField.PARENT_ID,
       BaseObjectTypeField.PARENT_OBJECT_TYPE_ID,
       BaseObjectTypeField.PARENT_VERSION_NUMBER,
+      // TODO: find  a better way to exclude tables
       'tenKolibri:tableofnotices'
     ];
 
@@ -102,7 +125,7 @@ export class SummaryComponent implements OnInit {
           order: null
         };
 
-        if (key === 'enaio:objectTypeId') {
+        if (key === BaseObjectTypeField.OBJECT_TYPE_ID) {
           si.value = this.systemService.getLocalizedResource(`${dmsObject.data[key]}_label`);
         }
         if (extraFields.includes(prepKey)) {
@@ -124,9 +147,10 @@ export class SummaryComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.appCacheService.getItem('object.details.admin.info').subscribe((status: boolean) => {
-      if (status) {
-        this.selected = status;
+    // TODO: store component state using a general service
+    this.appCacheService.getItem(this.STORAGE_KEY_ACTIVE_INDEX).subscribe((activeIndex: number[]) => {
+      if (activeIndex !== null) {
+        this.activeIndex = activeIndex;
       }
     });
   }

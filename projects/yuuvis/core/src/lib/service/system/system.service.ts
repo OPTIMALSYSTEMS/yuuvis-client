@@ -6,12 +6,8 @@ import { ApiBase } from '../backend/api.enum';
 import { BackendService } from '../backend/backend.service';
 import { AppCacheService } from '../cache/app-cache.service';
 import { Logger } from '../logger/logger';
-import {
-  SchemaResponse,
-  SchemaResponseFieldDefinition,
-  SchemaResponseTypeDefinition,
-  SystemDefinition
-} from './system.interface';
+import { Utils } from './../../util/utils';
+import { SchemaResponse, SchemaResponseFieldDefinition, SchemaResponseTypeDefinition, SystemDefinition } from './system.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -22,15 +18,9 @@ export class SystemService {
 
   private system: SystemDefinition;
   private systemSource = new ReplaySubject<SystemDefinition>();
-  public system$: Observable<
-    SystemDefinition
-  > = this.systemSource.asObservable();
+  public system$: Observable<SystemDefinition> = this.systemSource.asObservable();
 
-  constructor(
-    private backend: BackendService,
-    private appCache: AppCacheService,
-    private logger: Logger
-  ) {}
+  constructor(private backend: BackendService, private appCache: AppCacheService, private logger: Logger) {}
 
   getObjectTypes(): ObjectType[] {
     return this.system.objectTypes;
@@ -52,10 +42,23 @@ export class SystemService {
     return this.system.i18n[key];
   }
 
-  isDateFormat(data: string): boolean {
-    return !!JSON.stringify(data).match(
-      /\b[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{3}Z\b/
+  /**
+   * Get the form model of an object type.
+   *
+   * @param objectTypeId ID of the object type to fetch the form for
+   * @param situation The form situation to be fetched
+   * @param mode Form mode to fetch (e.g. CONTEXT)
+   */
+  getObjectTypeForm(objectTypeId: string, situation: string, mode?: string): Observable<any> {
+    return this.backend.get(
+      Utils.buildUri(`/dms/form/${objectTypeId}`, {
+        situation: situation
+      })
     );
+  }
+
+  isDateFormat(data: string): boolean {
+    return !!JSON.stringify(data).match(/\b[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{3}Z\b/);
   }
 
   /**
@@ -91,20 +94,12 @@ export class SystemService {
    * @param user User to fetch definition for
    */
   private fetchSystemDefinition(): Observable<boolean> {
-    const fetchTasks = [
-      this.backend.get('/dms/schema', ApiBase.core),
-      this.fetchLocalizations()
-    ];
+    const fetchTasks = [this.backend.get('/dms/schema', ApiBase.core), this.fetchLocalizations()];
 
     return forkJoin(fetchTasks).pipe(
       catchError(error => {
-        this.logger.error(
-          'Error fetching recent version of system definition from server.',
-          error
-        );
-        this.systemSource.error(
-          'Error fetching recent version of system definition from server.'
-        );
+        this.logger.error('Error fetching recent version of system definition from server.', error);
+        this.systemSource.error('Error fetching recent version of system definition from server.');
         return of(null);
       }),
       map(data => {
@@ -121,27 +116,25 @@ export class SystemService {
    * @param schemaResponse Response from the backend
    */
   private setSchema(schemaResponse: SchemaResponse, localizedResource: any) {
-    const objectTypes: ObjectType[] = schemaResponse.objectTypes.map(
-      (ot: SchemaResponseTypeDefinition) => {
-        return new ObjectType({
-          id: ot.id,
-          localNamespace: ot.localNamespace,
-          description: ot.description,
-          baseId: ot.baseId,
-          creatable: ot.creatable,
-          contentStreamAllowed: ot.contentStreamAllowed,
-          isFolder: ot.baseId === 'folder',
-          fields: ot.fields.map((otf: SchemaResponseFieldDefinition) => ({
-            id: otf.id,
-            propertyType: otf.propertyType,
-            description: otf.description,
-            cardinality: otf.cardinality,
-            required: otf.required,
-            updatability: otf.updatability
-          }))
-        });
-      }
-    );
+    const objectTypes: ObjectType[] = schemaResponse.objectTypes.map((ot: SchemaResponseTypeDefinition) => {
+      return new ObjectType({
+        id: ot.id,
+        localNamespace: ot.localNamespace,
+        description: ot.description,
+        baseId: ot.baseId,
+        creatable: ot.creatable,
+        contentStreamAllowed: ot.contentStreamAllowed,
+        isFolder: ot.baseId === 'folder',
+        fields: ot.fields.map((otf: SchemaResponseFieldDefinition) => ({
+          id: otf.id,
+          propertyType: otf.propertyType,
+          description: otf.description,
+          cardinality: otf.cardinality,
+          required: otf.required,
+          updatability: otf.updatability
+        }))
+      });
+    });
 
     this.system = {
       version: schemaResponse.version,

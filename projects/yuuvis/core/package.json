@@ -13,6 +13,5 @@
   "dependencies": {
     "@ngx-pwa/local-storage": "^7.4.2",
     "@ngx-translate/core": "^11.0.1"
-    
   }
 }

@@ -6,10 +6,8 @@
     <div class="header_title">{{ title }}</div>
     <div class="header_description">{{ description }}</div>
   </header>
-  <div class="extras">
-    <ng-content class="actions" select=".actions"></ng-content>
-    <ng-content class="status" select=".status"></ng-content>
-  </div>
+
+  <ng-content class="actions" select=".actions"></ng-content>
+  <ng-content class="status" select=".status"></ng-content>
 </div>
 <ng-content class="content" select=".content"></ng-content>
-

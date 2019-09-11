@@ -3,6 +3,9 @@
   <button (click)="contentDmsObjectInput()">with content</button>
   <button (click)="clearDmsObjectInput()">NULL dmsObject input</button>
   <button (click)="clearDmsObjectInput()">Invalid dmsObject input</button>
+  <button (click)="showExtras = !showExtras">toggle extras</button>
 </div>
 
-<yuv-summary class="cmp" [dmsObject]="summaryObject"></yuv-summary>
+<div class="cmp">
+  <yuv-summary [dmsObject]="summaryObject" [showExtrasSection]="showExtras"></yuv-summary>
+</div>

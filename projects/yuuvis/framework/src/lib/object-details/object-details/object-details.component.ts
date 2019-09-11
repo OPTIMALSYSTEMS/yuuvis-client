@@ -1,71 +1,63 @@
-import { Component, HostBinding, Input } from '@angular/core';
-import { Position } from '@yuuvis/common-ui';
-import { DmsObject, DmsService, SystemService } from '@yuuvis/core';
+import { Component, Input } from '@angular/core';
+import { DmsObject, DmsService, SystemService, UserService } from '@yuuvis/core';
 import { CellRenderer } from '../../services/grid/grid.cellrenderer';
 import { SVGIcons } from '../../svg.generated';
 
+/**
+ * High level component displaying detail aspects for a given DmsObject.
+ *
+ */
 @Component({
   selector: 'yuv-object-details',
   templateUrl: './object-details.component.html',
-  styleUrls: ['./object-details.component.scss']
+  styleUrls: ['./object-details.component.scss'],
+  host: { class: 'yuv-object-details' }
 })
 export class ObjectDetailsComponent {
   objectIcon: string = '';
   icons = SVGIcons;
-  showSideBar = false;
-  sidebarStyle = { background: 'rgba(0, 0, 0, 0.8)' };
-  headerStyle = {
-    'grid-template-columns': '0.1fr 1fr',
-    'grid-template-areas': 'close content'
-  };
-  position = Position.RIGHT;
-  private _dmsObject: DmsObject;
-  private _dmsObject2: DmsObject;
-  private objId: string;
-
-  @HostBinding('class.busy') busy = false;
-  @Input() enableCompare = true;
-  @Input() enableSync = false;
-  @Input() cacheLayout = false;
-
-  @Input() externalPanels = [];
-
+  busy: boolean;
+  userIsAdmin: boolean;
   actionMenuVisible = false;
   actionMenuSelection = [];
 
+  private _dmsObject: DmsObject;
+  private _objectId: string;
+
+  /**
+   * DmsObject to show the details for.
+   */
   @Input()
   set dmsObject(object: DmsObject) {
     this._dmsObject = object;
-    this.objectIcon = CellRenderer.typeCellRenderer(null, this.systemService.getLocalizedResource(`${object.objectTypeId}_label`));
+    if (object) {
+      this.objectIcon = CellRenderer.typeCellRenderer(null, this.systemService.getLocalizedResource(`${object.objectTypeId}_label`));
+    }
   }
 
   get dmsObject() {
     return this._dmsObject;
   }
 
-  @Input()
-  set dmsObject2(object: DmsObject) {
-    this._dmsObject2 = object;
-  }
-
-  get dmsObject2() {
-    return this._dmsObject2;
-  }
-
+  /**
+   * You can also just provide the component with an ID of a DmsObject. It will then fetch it upfront.
+   */
   @Input()
   set objectId(id: string) {
     if (id) {
-      this.objId = id;
-      // this._dmsObject = null;
+      this._objectId = id;
       this.getDmsObject(id);
     }
+  }
+
+  constructor(private dmsService: DmsService, private userService: UserService, private systemService: SystemService) {
+    this.userIsAdmin = this.userService.hasAdministrationRoles;
   }
 
   openActionMenu() {
     this.actionMenuSelection = [this.dmsObject];
     this.actionMenuVisible = true;
   }
-  constructor(private dmsService: DmsService, private systemService: SystemService) {}
 
   private getDmsObject(id: string) {
     this.busy = true;
@@ -76,11 +68,9 @@ export class ObjectDetailsComponent {
   }
 
   refreshDetails() {
-    if (this.objId) {
-      this.getDmsObject(this.objId);
+    if (this._objectId) {
+      this.getDmsObject(this._objectId);
     } else {
     }
   }
-
-  ngOnInit() {}
 }

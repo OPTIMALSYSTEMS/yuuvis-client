@@ -429,7 +429,7 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
         disabled: controlDisabled
       });
 
-      formElement.readonly = controlDisabled;
+      // formElement.readonly = controlDisabled;
 
       formControl._eoFormElement = formElement;
       this.formControls[formElement.name] = formControl;
@@ -479,6 +479,10 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
         formControl._eoFormElement.setFilter = (filterObject: any) => {
           formControl._eoFormElement.filter = filterObject;
         };
+      }
+
+      if (formElement.type === 'decimal' && !formControl._eoFormElement.scale) {
+        formControl._eoFormElement.scale = 2;
       }
 
       if (this.formOptions.formModel.situation === 'SEARCH') {

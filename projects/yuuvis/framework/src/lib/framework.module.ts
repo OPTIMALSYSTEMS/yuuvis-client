@@ -4,6 +4,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { YuvCommonUiModule } from '@yuuvis/common-ui';
 import { CoreConfig, CORE_CONFIG, CUSTOM_CONFIG, YuvCoreModule, YuvCoreSharedModule } from '@yuuvis/core';
 import { AngularSplitModule } from 'angular-split';
+import { ToastrModule } from 'ngx-toastr';
 import { OverlayPanelModule } from 'primeng/overlaypanel';
 import { ActionModule } from './actions';
 import { YuvComponentsModule } from './components/components.module';
@@ -40,8 +41,9 @@ import { YuvUserModule } from './user/user.module';
     AngularSplitModule.forRoot(),
     YuvCoreModule.forRoot(),
     AngularSplitModule.forRoot(),
-    YuvCoreSharedModule,
-    ActionModule
+    ToastrModule.forRoot(),
+    ActionModule,
+    YuvCoreSharedModule
   ],
   exports: [
     YuvFormModule,

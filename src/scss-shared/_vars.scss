@@ -50,31 +50,35 @@
   // app related sizing
   --app-pane-padding: 16px;
   --app-bar-height: 64px;
-  --app-pane-header-height: 140px;
+  --app-pane-header-height: 112px;
 
-//   --color-black: #000;
+  //   --color-black: #000;
   --color-black-rgb: 0, 0, 0;
-//   --color-light-gray: #9b9fa2;
-//   --color-light-blue: #00b0e8;
-//   --color-white-smoke: #f4f4f4;
-//   --color-gainsboro: #d9d9d9;
-//   --color-nobel: #999999;
+  //   --color-light-gray: #9b9fa2;
+  //   --color-light-blue: #00b0e8;
+  //   --color-white-smoke: #f4f4f4;
+  //   --color-gainsboro: #d9d9d9;
+  //   --color-nobel: #999999;
   --color-primary-rgb: 72, 79, 84;
   --color-white: #fff;
   --color-white-rgb: 255, 255, 255;
-//   --color-accent-rgb: 187, 63, 90;
+  //   --color-accent-rgb: 187, 63, 90;
   // colors for dirty form fields
-  --color-dirty-background: #ebf7d2;
-  --color-dirty-font: #8fad1c;
+  --color-dirty-background: rgba(var(--color-accent-rgb), 0.15);
+  --color-dirty-font: var(--color-accent);
+
+  --app-default-transition-duration: 200ms;
 
   //   --state-green: #8bc34a;
   //   --state-orange: #ffc107;
   //   --state-purple: #9c27b0;
 
-//   --app-split-pane-divider-size: --app-pane-padding;
-  --app-default-transition-duration: 200ms;
+  //   --app-split-pane-divider-size: --app-pane-padding;
+  //  --app-default-transition-duration: 200ms;
   //   --panel-header-border-bottom-color: rgba(0, 0, 0, 0.12);
   //   --list-item-hover-background: #eee;
   //   --list-item-selected-background: #f5f5f5;
   //   --list-item-border-color: rgba(0, 0, 0, 0.12);
+
+  //   --app-split-pane-divider-size: --app-pane-padding;
 }

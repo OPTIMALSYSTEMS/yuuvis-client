@@ -1,7 +1,9 @@
 <div class="app-bar" *ngIf="!hideAppBar">
-  <yuv-icon class="btn" id="drawer" (click)="showSideBar = true" replaceUrl [iconSrc]="'assets/default/svg/ic_drawer.svg'"></yuv-icon>
-  <yuv-icon class="btn" id="logo" routerLink="/" [iconSrc]="'assets/default/theme/logo.svg'"></yuv-icon>
-
+  <yuv-icon class="btn" id="drawer" (click)="showSideBar = true" replaceUrl
+    [iconSrc]="'assets/default/svg/ic_drawer.svg'"></yuv-icon>
+  <a routerLink="/" id="logo">
+    <yuv-icon class="btn" [iconSrc]="'assets/default/theme/logo.svg'"></yuv-icon>
+  </a>
   <div class="main">
     <!-- <yuv-icon class="btn" [iconSrc]="'assets/default/svg/ic_search.svg'"></yuv-icon> -->
   </div>
