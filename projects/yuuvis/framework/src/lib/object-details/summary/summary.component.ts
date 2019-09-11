@@ -16,7 +16,6 @@ import { Summary } from './summary.interface';
 export class SummaryComponent implements OnInit {
   private STORAGE_KEY_ACTIVE_INDEX = 'yuv.framework.summary.active-index';
   summary: Summary;
-  // selected: boolean = false;
   activeIndex: number[] = null;
 
   /**
@@ -45,11 +44,6 @@ export class SummaryComponent implements OnInit {
 
   constructor(private systemService: SystemService, private gridService: GridService, private appCacheService: AppCacheService) {}
 
-  // adminInfoOpen(status: boolean) {
-  //   this.appCacheService.setItem('object.details.admin.info', status).subscribe();
-  //   this.selected = status;
-  // }
-
   sectionOpen(e) {
     const activeIndex = this.activeIndex.filter(i => i !== e.index);
     activeIndex.push(e.index);
@@ -72,6 +66,7 @@ export class SummaryComponent implements OnInit {
       BaseObjectTypeField.PARENT_ID,
       BaseObjectTypeField.PARENT_OBJECT_TYPE_ID,
       BaseObjectTypeField.PARENT_VERSION_NUMBER,
+      // TODO: find  a better way to exclude tables
       'tenKolibri:tableofnotices'
     ];
 
@@ -152,6 +147,7 @@ export class SummaryComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // TODO: store component state using a general service
     this.appCacheService.getItem(this.STORAGE_KEY_ACTIVE_INDEX).subscribe((activeIndex: number[]) => {
       if (activeIndex !== null) {
         this.activeIndex = activeIndex;
