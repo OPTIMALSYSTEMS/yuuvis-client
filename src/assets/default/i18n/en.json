@@ -23,7 +23,7 @@
   "yuv.framework.object-form-element.error.minlength": "The entry must contain a minimum of {{minlength}} characters.",
   "yuv.framework.object-form-element.error.number": "Please enter a numerical value.",
   "yuv.framework.object-form-element.error.required": "Mandatory field",
-  "yuv.framework.object-form-element.error.string,classification.email": "",
+  "yuv.framework.object-form-element.error.string.classification.email": "Enter a valid e-mail address.",
   "yuv.framework.object-form-element.error.string.classification.url": "Please enter a valid URL.",
   "yuv.framework.object-form-element.error.string.regex.nomatch": "The entry does not follow the specifications",
   "yuv.framework.object-form-element.error.string.whitespaces": "The entry contains only whitespaces.",
