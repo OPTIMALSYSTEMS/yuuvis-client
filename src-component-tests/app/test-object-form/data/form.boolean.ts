@@ -10,7 +10,7 @@ export const booleanElements = [
   {
     readonly: false,
     name: 'boolean:one',
-    label: 'checkbox',
+    label: 'required checkbox',
     description: 'mandatory checkbox',
     type: 'boolean',
     required: true
@@ -26,7 +26,7 @@ export const booleanElements = [
   {
     readonly: true,
     name: 'boolean:readonlyvalue',
-    label: 'readonly checkbox',
+    label: 'readonly checkbox with value',
     description: 'readonly with value',
     type: 'boolean',
     required: false
