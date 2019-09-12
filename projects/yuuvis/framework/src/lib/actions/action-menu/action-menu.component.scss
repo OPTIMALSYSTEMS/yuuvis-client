@@ -1,178 +1,180 @@
 @import './../../../../../../../src/scss-shared/_mixins';
 
-.action-menu {
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  width: 25vw;
-  min-width: 300px;
-  z-index: 1000;
-  background-color: rgba(var(--color-primary-rgb), 0.95);
-  animation: eoFadeInRight var(--app-default-transition-duration);
-  box-shadow: 0 0 10px 0 rgba(var(--color-black-rgb), 0.3);
-  color: var(--color-white);
+:host {
+  .action-menu {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 25vw;
+    min-width: 300px;
+    z-index: 1000;
+    background-color: rgba(var(--color-primary-rgb), 0.95);
+    animation: eoFadeInRight var(--app-default-transition-duration);
+    box-shadow: 0 0 10px 0 rgba(var(--color-black-rgb), 0.3);
+    color: var(--color-white);
 
-  .head {
-    display: flex;
-    flex: 0 0 auto;
-    flex-flow: row nowrap;
-    order: 0;
-    padding: var(--app-pane-padding);
-
-    .left {
-      flex: 1 1 auto;
-      order: 0;
-
-      .menu-title {
-        font-size: var(--font-headline);
-        font-weight: var(--font-weight-light);
-      }
-
-      .sub-title {
-        font-size: var(--font-body);
-        font-weight: var(--font-weight-light);
-      }
-    }
-
-    .right {
+    .head {
       display: flex;
       flex: 0 0 auto;
       flex-flow: row nowrap;
-      order: 1;
+      order: 0;
+      padding: var(--app-pane-padding);
 
-      .count {
-        color: rgba(var(--color-white-rgb), 0.3);
-        font-size: 5em;
-        font-weight: var(--font-weight-light);
-        line-height: 1em;
-        padding-right: var(--app-pane-padding);
+      .left {
+        flex: 1 1 auto;
+        order: 0;
+
+        .menu-title {
+          font-size: var(--font-headline);
+          font-weight: var(--font-weight-light);
+        }
+
+        .sub-title {
+          font-size: var(--font-body);
+          font-weight: var(--font-weight-light);
+        }
       }
 
-      .close {
+      .right {
+        display: flex;
+        flex: 0 0 auto;
+        flex-flow: row nowrap;
+        order: 1;
+
+        .count {
+          color: rgba(var(--color-white-rgb), 0.3);
+          font-size: 5em;
+          font-weight: var(--font-weight-light);
+          line-height: 1em;
+          padding-right: var(--app-pane-padding);
+        }
+
+        .close {
+          height: 24px;
+          width: 24px;
+          cursor: pointer;
+        }
+      }
+    }
+
+    .menu-actions {
+      height: 100%;
+      overflow: scroll;
+
+      .group:last-child {
+        margin-bottom: 100px;
+      }
+    }
+
+    .group {
+      padding: var(--app-pane-padding);
+      min-width: 200px;
+      display: inline-block;
+      width: 100%;
+
+      .group-title {
+        background: rgba(var(--color-white-rgb), 0.1);
+        margin-bottom: calc(var(--app-pane-padding) / 4);
+        padding: calc(var(--app-pane-padding) / 4) calc(var(--app-pane-padding) / 2);
+        @include transition(var(--app-default-transition-duration));
+      }
+
+      &:not(.sub):hover {
+        .group-title {
+          background: rgba(var(--color-white-rgb), 0.3);
+        }
+      }
+    }
+
+    .action {
+      border-bottom: 1px solid rgba(var(--color-white-rgb), 0.2);
+
+      a.link {
+        text-decoration: none;
+        color: inherit;
+        display: block;
+        opacity: 1;
+      }
+
+      > a.link > div:first-child,
+      > div:first-child {
+        @include transition(var(--app-default-transition-duration));
+        cursor: pointer;
+        padding: calc(var(--app-pane-padding) / 2) var(--app-pane-padding) calc(var(--app-pane-padding) / 2) 0;
+        display: flex;
+        align-items: center;
+      }
+
+      &.sub > div:first-child,
+      &.sub > a.link > div:first-child {
+        padding-left: calc(var(--app-pane-padding) / 2);
+      }
+
+      .label {
+        flex: 1 1 auto;
+      }
+
+      .available-count {
+        margin: 0 calc(var(--app-pane-padding) / 2);
+        color: rgba(var(--color-white-rgb), 0.3);
+      }
+
+      yuv-icon {
+        margin: 0 calc(var(--app-pane-padding) / 2);
+      }
+      yuv-icon.info-icon {
+        margin: 0;
+        padding: 3px;
+        box-sizing: border-box;
+        border-radius: 50%;
         height: 24px;
         width: 24px;
-        cursor: pointer;
+        color: rgba(var(--color-white-rgb), 0.3);
+        @include transition();
+
+        &:hover {
+          background-color: var(--color-primary);
+        }
+      }
+
+      .description {
+        @include border-radius(2px);
+        @include transition(var(--app-default-transition-duration));
+        color: rgba(var(--color-white-rgb), 0.54);
+        font-style: italic;
+        padding: calc(var(--app-pane-padding) / 4) var(--app-pane-padding) calc(var(--app-pane-padding) / 2) var(--app-pane-padding);
       }
     }
-  }
 
-  .menu-actions {
-    height: 100%;
-    overflow: scroll;
-
-    .group:last-child {
-      margin-bottom: 100px;
+    .action:last-child {
+      border: 0;
     }
-  }
 
-  .group {
-    padding: var(--app-pane-padding);
-    min-width: 200px;
-    display: inline-block;
-    width: 100%;
-
-    .group-title {
+    .action:hover,
+    .action:focus {
       background: rgba(var(--color-white-rgb), 0.1);
-      margin-bottom: calc(var(--app-pane-padding) / 4);
-      padding: calc(var(--app-pane-padding) / 4) calc(var(--app-pane-padding) / 2);
-      @include transition(var(--app-default-transition-duration));
     }
-
-    &:not(.sub):hover {
-      .group-title {
-        background: rgba(var(--color-white-rgb), 0.3);
-      }
-    }
-  }
-
-  .action {
-    border-bottom: 1px solid rgba(var(--color-white-rgb), 0.2);
-
-    a.link {
-      text-decoration: none;
-      color: inherit;
-      display: block;
-      opacity: 1;
-    }
-
-    > a.link > div:first-child,
-    > div:first-child {
-      @include transition(var(--app-default-transition-duration));
-      cursor: pointer;
-      padding: calc(var(--app-pane-padding) / 2) var(--app-pane-padding) calc(var(--app-pane-padding) / 2) 0;
+    .group-buttons {
       display: flex;
+      justify-content: flex-end;
+      padding-top: var(--app-pane-padding);
+
+      button {
+        background-color: rgba(var(--color-white-rgb), 0.1);
+        &:hover {
+          border: 1px solid var(--color-primary-3);
+          background-color: rgba(var(--color-white-rgb), 0.1) !important;
+        }
+      }
+    }
+
+    .loading-container {
+      display: flex;
+      justify-content: center;
       align-items: center;
+      padding: 16px;
+      margin: 50% auto;
     }
-
-    &.sub > div:first-child,
-    &.sub > a.link > div:first-child {
-      padding-left: calc(var(--app-pane-padding) / 2);
-    }
-
-    .label {
-      flex: 1 1 auto;
-    }
-
-    .available-count {
-      margin: 0 calc(var(--app-pane-padding) / 2);
-      color: rgba(var(--color-white-rgb), 0.3);
-    }
-
-    yuv-icon {
-      margin: 0 calc(var(--app-pane-padding) / 2);
-    }
-    yuv-icon.info-icon {
-      margin: 0;
-      padding: 3px;
-      box-sizing: border-box;
-      border-radius: 50%;
-      height: 24px;
-      width: 24px;
-      color: rgba(var(--color-white-rgb), 0.3);
-      @include transition();
-
-      &:hover {
-        background-color: var(--color-primary);
-      }
-    }
-
-    .description {
-      @include border-radius(2px);
-      @include transition(var(--app-default-transition-duration));
-      color: rgba(var(--color-white-rgb), 0.54);
-      font-style: italic;
-      padding: calc(var(--app-pane-padding) / 4) var(--app-pane-padding) calc(var(--app-pane-padding) / 2) var(--app-pane-padding);
-    }
-  }
-
-  .action:last-child {
-    border: 0;
-  }
-
-  .action:hover,
-  .action:focus {
-    background: rgba(var(--color-white-rgb), 0.1);
-  }
-  .group-buttons {
-    display: flex;
-    justify-content: flex-end;
-    padding-top: var(--app-pane-padding);
-
-    button {
-      background-color: rgba(var(--color-white-rgb), 0.1);
-      &:hover {
-        border: 1px solid var(--color-primary-3);
-        background-color: rgba(var(--color-white-rgb), 0.1) !important;
-      }
-    }
-  }
-
-  .loading-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 16px;
-    margin: 50% auto;
   }
 }

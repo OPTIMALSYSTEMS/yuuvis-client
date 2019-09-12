@@ -1,0 +1,13 @@
+<div class="testing-controls">
+  <button (click)="actionMenuVisible = !actionMenuVisible">toggle visible</button>
+</div>
+
+<div class="cmp">
+
+  Parent Component
+
+
+
+  <yuv-action-menu [(visible)]="actionMenuVisible" [selection]="actionMenuSelection">
+  </yuv-action-menu>
+</div>

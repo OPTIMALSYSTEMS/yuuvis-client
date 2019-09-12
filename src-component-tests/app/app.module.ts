@@ -16,6 +16,7 @@ import { TestSearchResultComponent } from './test-search-result/test-search-resu
 import { TestSummaryComponent } from './test-summary/test-summary.component';
 import { TestQuickSearchComponent } from './test-quick-search/test-quick-search.component';
 import { TestObjectFormEditComponent } from './test-object-form-edit/test-object-form-edit.component';
+import { TestActionMenuComponent } from './test-action-menu/test-action-menu.component';
 
 @NgModule({
   declarations: [
@@ -28,7 +29,8 @@ import { TestObjectFormEditComponent } from './test-object-form-edit/test-object
     TestObjectDetailsComponent,
     TestPanelComponent,
     TestQuickSearchComponent,
-    TestObjectFormEditComponent
+    TestObjectFormEditComponent,
+    TestActionMenuComponent
   ],
   imports: [
     HttpClientModule,

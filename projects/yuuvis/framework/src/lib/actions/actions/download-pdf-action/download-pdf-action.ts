@@ -20,8 +20,8 @@ export class DownloadPdfActionComponent extends DmsObjectTarget implements Simpl
 
   constructor(private translate: TranslateService, private backend: BackendService, private router: Router) {
     super();
-    this.label = this.translate.instant('eo.export.action.pdf.label');
-    this.description = this.translate.instant('eo.export.action.pdf.description');
+    this.label = this.translate.instant('yuv.framework.action-menu.action.export.pdf.label');
+    this.description = this.translate.instant('yuv.framework.action-menu.action.export.pdf.description');
   }
 
   isExecutable(item: DmsObject) {

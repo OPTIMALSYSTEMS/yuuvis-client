@@ -23,9 +23,9 @@ export class DownloadActionComponent extends DmsObjectTarget implements ListActi
 
   constructor(private translate: TranslateService) {
     super();
-    this.label = this.translate.instant('eo.action.download.dms.object.content.label');
-    this.description = this.translate.instant('eo.action.download.dms.object.content.description');
-    this.header = this.translate.instant('eo.export.title');
+    this.label = this.translate.instant('yuv.framework.action-menu.action.download.dms.object.content.label');
+    this.description = this.translate.instant('yuv.framework.action-menu.action.download.dms.object.content.description');
+    this.header = this.translate.instant('yuv.framework.action-menu.action.export.title');
     // this.subActionComponents = [DownloadOriginalActionComponent, DownloadPdfActionComponent];
     this.subActionComponents = [DownloadOriginalActionComponent];
   }

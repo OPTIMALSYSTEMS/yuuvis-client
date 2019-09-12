@@ -1,6 +1,39 @@
+:host-context(.screen-s) {
+  .login {
+    min-width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-flow: column;
+
+    form {
+      flex: 1;
+      display: flex;
+      flex-flow: column;
+      justify-content: center;
+    }
+  }
+  .device-flow-login .dialog {
+    min-width: 100vw;
+    height: 100vh;
+  }
+}
 .login {
   :host-context(.screen-s) & {
     min-width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-flow: column;
+
+    form {
+      flex: 1;
+      display: flex;
+      flex-flow: column;
+      justify-content: center;
+    }
+    .dialog {
+      min-width: 100vw;
+      height: 100vh;
+    }
   }
 }
 

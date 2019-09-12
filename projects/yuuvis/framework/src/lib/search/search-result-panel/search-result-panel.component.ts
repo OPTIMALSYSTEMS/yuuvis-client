@@ -27,16 +27,13 @@ export class SearchResultPanelComponent implements OnInit {
       this.generateQueryDescription(searchQuery.term, searchQuery.types);
     }
   }
-  @Input() title: string;
   @Input() selectedItemId: string;
   @Output() itemsSelected = new EventEmitter<string[]>();
   actionMenuVisible = false;
   actionMenuSelection = [];
   private selectedItemIDs: any[];
 
-  constructor(private translate: TranslateService, private systemService: SystemService, private dmsService: DmsService) {
-    this.title = this.translate.instant('eo.search.title');
-  }
+  constructor(private translate: TranslateService, private systemService: SystemService, private dmsService: DmsService) {}
 
   refresh() {
     if (this.searchResultComponent) {
@@ -57,9 +54,11 @@ export class SearchResultPanelComponent implements OnInit {
   ngOnInit() {}
 
   openActionMenu() {
-    this.dmsService.getDmsObjects(this.selectedItemIDs).subscribe(items => {
-      this.actionMenuSelection = items;
-      this.actionMenuVisible = true;
-    });
+    if (this.selectedItemIDs) {
+      this.dmsService.getDmsObjects(this.selectedItemIDs).subscribe(items => {
+        this.actionMenuSelection = items;
+        this.actionMenuVisible = true;
+      });
+    }
   }
 }

@@ -20,8 +20,8 @@ export class DownloadOriginalActionComponent extends DmsObjectTarget implements 
 
   constructor(private translate: TranslateService, private backend: BackendService, private router: Router) {
     super();
-    this.label = this.translate.instant('eo.export.action.original.label');
-    this.description = this.translate.instant('eo.export.action.original.description');
+    this.label = this.translate.instant('yuv.framework.action-menu.action.export.original.label');
+    this.description = this.translate.instant('yuv.framework.action-menu.action.export.original.description');
   }
 
   isExecutable(item: DmsObject) {

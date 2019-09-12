@@ -1,15 +1,4 @@
-import {
-  Component,
-  ComponentFactoryResolver,
-  EventEmitter,
-  Input,
-  OnDestroy,
-  Output,
-  Type,
-  ViewChild,
-  ViewContainerRef,
-  ViewEncapsulation
-} from '@angular/core';
+import { Component, ComponentFactoryResolver, EventEmitter, Input, OnDestroy, Output, Type, ViewChild, ViewContainerRef } from '@angular/core';
 import { NavigationStart, Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { filter, take, takeUntil } from 'rxjs/operators';
@@ -54,7 +43,7 @@ export abstract class UnsubscribeOnDestroy implements OnDestroy {
   selector: 'yuv-action-menu',
   templateUrl: './action-menu.component.html',
   styleUrls: ['./action-menu.component.scss'],
-  encapsulation: ViewEncapsulation.None
+  host: { class: 'yuv-action-menu' }
 })
 export class ActionMenuComponent extends UnsubscribeOnDestroy {
   @ViewChild(ActionComponentAnchorDirective, { static: false }) eoActionComponentAnchor: ActionComponentAnchorDirective;
