@@ -1,32 +1,14 @@
-import { Component, ComponentFactoryResolver, EventEmitter, Input, OnDestroy, Output, Type, ViewChild, ViewContainerRef } from '@angular/core';
+import { Component, ComponentFactoryResolver, EventEmitter, Input, Output, Type, ViewChild, ViewContainerRef } from '@angular/core';
 import { NavigationStart, Router } from '@angular/router';
-import { Subject } from 'rxjs';
-import { filter, take, takeUntil } from 'rxjs/operators';
+import { DmsObject } from '@yuuvis/core';
+import { filter, take } from 'rxjs/operators';
+import { takeUntilDestroy } from 'take-until-destroy';
 import { ComponentAction, ExternalComponentAction, ListAction, SimpleAction } from '../';
 import { SVGIcons } from '../../svg.generated';
 import { ActionService } from '../action-service/action.service';
 import { ActionComponent } from '../interfaces/action-component.interface';
 import { ActionListEntry } from '../interfaces/action-list-entry';
 import { ActionComponentAnchorDirective } from './action-component-anchor/action-component-anchor.directive';
-
-export abstract class UnsubscribeOnDestroy implements OnDestroy {
-  protected componentDestroyed$: Subject<void>;
-
-  constructor() {
-    this.componentDestroyed$ = new Subject<void>();
-
-    let f = this.ngOnDestroy;
-    this.ngOnDestroy = () => {
-      f.bind(this)();
-      this.componentDestroyed$.next();
-      this.componentDestroyed$.complete();
-    };
-  }
-
-  ngOnDestroy() {
-    // no-op
-  }
-}
 
 /**
  * # yuv-action-menu
@@ -45,14 +27,14 @@ export abstract class UnsubscribeOnDestroy implements OnDestroy {
   styleUrls: ['./action-menu.component.scss'],
   host: { class: 'yuv-action-menu' }
 })
-export class ActionMenuComponent extends UnsubscribeOnDestroy {
+export class ActionMenuComponent {
   @ViewChild(ActionComponentAnchorDirective, { static: false }) eoActionComponentAnchor: ActionComponentAnchorDirective;
   @ViewChild(ActionComponentAnchorDirective, { static: false }) externalDialog: ActionComponentAnchorDirective;
 
   /**
    * Specifies the items for which the actions should be provided.
    */
-  @Input() selection: any[] = [];
+  @Input() selection: DmsObject[] = [];
 
   /**
    * Specifies the visibility of the menu.
@@ -103,11 +85,9 @@ export class ActionMenuComponent extends UnsubscribeOnDestroy {
     public viewContainerRef: ViewContainerRef,
     private componentFactoryResolver: ComponentFactoryResolver
   ) {
-    super();
-
     this.router.events
       .pipe(
-        takeUntil(this.componentDestroyed$),
+        takeUntilDestroy(this),
         filter(evt => evt instanceof NavigationStart)
       )
       .subscribe(() => this.hide());
