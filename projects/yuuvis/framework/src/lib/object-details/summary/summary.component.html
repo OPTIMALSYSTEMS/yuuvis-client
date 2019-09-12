@@ -4,7 +4,7 @@
     <p-accordion [activeIndex]="activeIndex" [multiple]="true" [expandIcon]="'pi pi-fw pi-chevron-down'"
         [collapseIcon]="'pi pi-fw pi-chevron-up'" (onOpen)="sectionOpen($event)" (onClose)="sectionClose($event)">
 
-        <p-accordionTab [transitionOptions]="'0ms'"
+        <p-accordionTab [transitionOptions]="'0ms'" data-group="summary.section.parent"
             header="{{'yuv.framework.object-details.summary.section.parent'|translate}}" *ngIf="summary?.parent.length">
             <div *ngFor="let item of summary?.parent" class="entry" [attr.data-summary-item]="item.key">
                 <ng-container [ngTemplateOutlet]="summaryEntry" [ngTemplateOutletContext]="{ item: item }">
@@ -12,7 +12,7 @@
             </div>
         </p-accordionTab>
 
-        <p-accordionTab [transitionOptions]="'0ms'"
+        <p-accordionTab [transitionOptions]="'0ms'" data-group="summary.section.core"
             header="{{'yuv.framework.object-details.summary.section.core'|translate}}">
             <div *ngFor="let item of summary?.core" class="entry" [attr.data-summary-item]="item.key">
                 <ng-container [ngTemplateOutlet]="summaryEntry" [ngTemplateOutletContext]="{ item: item }">
@@ -20,7 +20,7 @@
             </div>
         </p-accordionTab>
 
-        <p-accordionTab [transitionOptions]="'0ms'"
+        <p-accordionTab [transitionOptions]="'0ms'" data-group="summary.section.baseparams"
             header="{{'yuv.framework.object-details.summary.section.baseparams'|translate}}">
             <div *ngFor="let item of summary?.base" class="entry" [attr.data-summary-item]="item.key">
                 <ng-container [ngTemplateOutlet]="summaryEntry" [ngTemplateOutletContext]="{ item: item }">
@@ -28,7 +28,7 @@
             </div>
         </p-accordionTab>
 
-        <p-accordionTab [transitionOptions]="'0ms'"
+        <p-accordionTab [transitionOptions]="'0ms'" data-group="summary.section.admin"
             header="{{'yuv.framework.object-details.summary.section.admin'|translate}}"
             *ngIf="summary?.extras.length && showExtrasSection">
             <div *ngFor="let item of summary?.extras" class="entry baseparams" [attr.data-summary-item]="item.key">
