@@ -3,11 +3,11 @@ import { NavigationStart, Router } from '@angular/router';
 import { DmsObject } from '@yuuvis/core';
 import { filter, take } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
-import { ComponentAction, ExternalComponentAction, ListAction, SimpleAction } from '../';
 import { SVGIcons } from '../../svg.generated';
 import { ActionService } from '../action-service/action.service';
 import { ActionComponent } from '../interfaces/action-component.interface';
 import { ActionListEntry } from '../interfaces/action-list-entry';
+import { ComponentAction, ExternalComponentAction, ListAction, SimpleAction } from '../interfaces/action.interface';
 import { ActionComponentAnchorDirective } from './action-component-anchor/action-component-anchor.directive';
 
 /**

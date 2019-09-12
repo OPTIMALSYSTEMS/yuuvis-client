@@ -13,6 +13,7 @@ import { LoginComponent } from './states/login/login.component';
 import { NotFoundComponent } from './states/not-found/not-found.component';
 import { ResultComponent } from './states/result/result.component';
 import { SettingsComponent } from './states/settings/settings.component';
+import { ServiceWorkerModule } from '@angular/service-worker';
 
 @NgModule({
   declarations: [AppComponent, DashboardComponent, LoginComponent, ResultComponent, FrameComponent, SettingsComponent, NotFoundComponent],
@@ -26,7 +27,8 @@ import { SettingsComponent } from './states/settings/settings.component';
     }),
     AppRoutingModule,
     AboutModule,
-    YuvCommonUiModule
+    YuvCommonUiModule,
+    ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production })
   ],
   providers: [],
   bootstrap: [AppComponent]
