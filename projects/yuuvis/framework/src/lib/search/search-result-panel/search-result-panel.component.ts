@@ -31,7 +31,7 @@ export class SearchResultPanelComponent implements OnInit {
   @Output() itemsSelected = new EventEmitter<string[]>();
   actionMenuVisible = false;
   actionMenuSelection = [];
-  private selectedItemIDs: any[];
+  selectedItemIDs: any[];
 
   constructor(private translate: TranslateService, private systemService: SystemService, private dmsService: DmsService) {}
 
