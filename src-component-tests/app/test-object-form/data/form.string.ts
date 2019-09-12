@@ -46,7 +46,7 @@ export const stringElements = [
     readonly: false,
     name: 'string:email',
     label: 'String Classification email',
-    description: '',
+    description: 'enter valid email address',
     classification: 'email',
     type: 'string',
     required: false
@@ -55,7 +55,7 @@ export const stringElements = [
     readonly: false,
     name: 'string:url',
     label: 'String Classification url',
-    description: '',
+    description: 'enter valid url address',
     classification: 'url',
     type: 'string',
     required: false
@@ -64,7 +64,7 @@ export const stringElements = [
     readonly: false,
     name: 'string:multiline',
     label: 'String multiline',
-    description: '',
+    description: 'enter multiline string',
     classification: 'url',
     multiline: true,
     type: 'string',
@@ -74,7 +74,7 @@ export const stringElements = [
     readonly: false,
     name: 'string:chips',
     label: 'String multiple entries',
-    description: '',
+    description: 'enter multiple entries',
     multiselect: true,
     type: 'string',
     required: false
