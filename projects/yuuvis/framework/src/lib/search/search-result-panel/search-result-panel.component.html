@@ -5,7 +5,9 @@
   <yuv-action-menu-bar class="actions">
     <yuv-icon (click)="refresh()" [title]="('yuv.framework.list.refresh' | translate)" class="button refresh-button"
       [svg]="icon.refresh"></yuv-icon>
-    <yuv-icon class="header-icon" (click)="openActionMenu()" [svg]="icon.icKebap"></yuv-icon>
+    <yuv-icon class="header-icon" (click)="openActionMenu()" [svg]="icon.icKebap"
+      [ngClass]="{disabled: !selectedItemIDs?.length}">
+    </yuv-icon>
   </yuv-action-menu-bar>
 
   <yuv-search-result class="content" [query]="_searchQuery" [selectedItemId]="selectedItemId"

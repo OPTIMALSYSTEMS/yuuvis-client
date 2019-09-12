@@ -8,6 +8,7 @@ import { ToastrModule } from 'ngx-toastr';
 import { OverlayPanelModule } from 'primeng/overlaypanel';
 import { ActionModule } from './actions';
 import { YuvComponentsModule } from './components/components.module';
+import { YuvDirectivesModule } from './directives/directives.module';
 import { YuvFormModule } from './form';
 import { YuvObjectDetailsModule } from './object-details/object-details.module';
 import { YuvObjectFormModule } from './object-form';
@@ -50,6 +51,7 @@ import { YuvUserModule } from './user/user.module';
     YuvSearchModule,
     YuvObjectDetailsModule,
     YuvPipesModule,
+    YuvDirectivesModule,
     YuvUserModule,
     YuvComponentsModule,
     YuvObjectFormModule,
@@ -59,7 +61,8 @@ import { YuvUserModule } from './user/user.module';
     AngularSplitModule,
     YuvCoreSharedModule,
     ActionModule
-  ]
+  ],
+  declarations: []
 })
 export class YuvFrameworkModule {
   static forRoot(config?: CoreConfig): ModuleWithProviders {

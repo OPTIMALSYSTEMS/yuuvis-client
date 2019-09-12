@@ -2,6 +2,7 @@
 
 :host {
   .action-menu {
+    animation: yuvFadeInRight var(--app-default-transition-duration);
     position: absolute;
     top: 0;
     right: 0;
@@ -14,64 +15,25 @@
     box-shadow: 0 0 10px 0 rgba(var(--color-black-rgb), 0.3);
     color: var(--color-white);
 
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+    grid-template-areas: 'head' 'content';
+
     .head {
+      grid-area: head;
       display: flex;
-      flex: 0 0 auto;
-      flex-flow: row nowrap;
-      order: 0;
-      padding: var(--app-pane-padding);
-
-      .left {
-        flex: 1 1 auto;
-        order: 0;
-
-        .menu-title {
-          font-size: var(--font-headline);
-          font-weight: var(--font-weight-light);
-        }
-
-        .sub-title {
-          font-size: var(--font-body);
-          font-weight: var(--font-weight-light);
-        }
-      }
-
-      .right {
-        display: flex;
-        flex: 0 0 auto;
-        flex-flow: row nowrap;
-        order: 1;
-
-        .count {
-          color: rgba(var(--color-white-rgb), 0.3);
-          font-size: 5em;
-          font-weight: var(--font-weight-light);
-          line-height: 1em;
-          padding-right: var(--app-pane-padding);
-        }
-
-        .close {
-          height: 24px;
-          width: 24px;
-          cursor: pointer;
-        }
-      }
+      justify-content: flex-end;
+      padding: calc(var(--app-pane-padding) / 2);
     }
 
     .menu-actions {
-      height: 100%;
-      overflow: scroll;
-
-      .group:last-child {
-        margin-bottom: 100px;
-      }
+      grid-area: content;
+      overflow: auto;
     }
 
     .group {
       padding: var(--app-pane-padding);
-      min-width: 200px;
-      display: inline-block;
-      width: 100%;
 
       .group-title {
         background: rgba(var(--color-white-rgb), 0.1);

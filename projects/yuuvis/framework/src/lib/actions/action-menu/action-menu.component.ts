@@ -1,4 +1,4 @@
-import { Component, ComponentFactoryResolver, EventEmitter, Input, Output, Type, ViewChild, ViewContainerRef } from '@angular/core';
+import { Component, ComponentFactoryResolver, EventEmitter, Input, OnDestroy, Output, Type, ViewChild, ViewContainerRef } from '@angular/core';
 import { NavigationStart, Router } from '@angular/router';
 import { DmsObject } from '@yuuvis/core';
 import { filter, take } from 'rxjs/operators';
@@ -27,7 +27,7 @@ import { ActionComponentAnchorDirective } from './action-component-anchor/action
   styleUrls: ['./action-menu.component.scss'],
   host: { class: 'yuv-action-menu' }
 })
-export class ActionMenuComponent {
+export class ActionMenuComponent implements OnDestroy {
   @ViewChild(ActionComponentAnchorDirective, { static: false }) eoActionComponentAnchor: ActionComponentAnchorDirective;
   @ViewChild(ActionComponentAnchorDirective, { static: false }) externalDialog: ActionComponentAnchorDirective;
 
@@ -48,6 +48,7 @@ export class ActionMenuComponent {
   }
   /**
    * @ignore
+   * Part of two-way-databinding
    */
   @Output() visibleChange = new EventEmitter();
 
@@ -55,14 +56,6 @@ export class ActionMenuComponent {
    * Callback to invoke when the action is finished.
    */
   @Output() onFinish = new EventEmitter();
-  /**
-   * Callback to invoke when the menu is shown.
-   */
-  @Output() onShow = new EventEmitter();
-  /**
-   * Callback to invoke when the menu is hidden.
-   */
-  @Output() onHide = new EventEmitter();
 
   actionLists: {
     common: ActionListEntry[];
@@ -112,7 +105,6 @@ export class ActionMenuComponent {
   private showActionMenu() {
     this.getActions();
     this.showMenu = true;
-    this.onShow.emit();
   }
 
   private hideActionMenu() {
@@ -120,7 +112,6 @@ export class ActionMenuComponent {
     this.showMenu = false;
     this.actionLists = { common: [], further: [] };
     this.visibleChange.emit(false);
-    this.onHide.emit();
   }
 
   onClick(actionListEntry: ActionListEntry) {
@@ -200,4 +191,6 @@ export class ActionMenuComponent {
     this.onFinish.emit();
     this.hideActionMenu();
   }
+
+  ngOnDestroy() {}
 }

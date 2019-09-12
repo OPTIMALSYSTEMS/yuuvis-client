@@ -1,12 +1,14 @@
-<div class="action-menu dark" *ngIf="showMenu">
+<div class="action-menu dark" *ngIf="showMenu" (yuvOutsideClick)="hide()">
 
-  <yuv-icon class="close" [svg]="icons.clear" (click)="hide()"></yuv-icon>
+  <div class="head">
+    <yuv-icon class="btn close" [svg]="icons.clear" (click)="hide()"></yuv-icon>
+  </div>
 
   <div class="menu-actions" [hidden]="subActionsList || showComponent">
 
     <ng-template #action let-entry let-id>
 
-      <a *ngIf="isLinkAction(entry.action); else default" class="link"
+      <a *ngIf=" isLinkAction(entry.action); else default" class="link"
         [routerLink]="entry.action.getLink(entry.availableSelection)"
         [queryParams]="entry.action.getParams(entry.availableSelection, true)">
         <ng-container *ngTemplateOutlet="default"></ng-container>
@@ -47,8 +49,7 @@
       </div>
     </div>
 
-    <div class="group" *ngIf="!loading && !actionLists?.further.length && !actionLists?.common.length"
-      [style.textAlign]="'center'">
+    <div class="group" *ngIf="!loading && !actionLists?.further.length && !actionLists?.common.length">
       {{ 'yuv.framework.action-menu.actions.not.available' | translate}}
     </div>
 

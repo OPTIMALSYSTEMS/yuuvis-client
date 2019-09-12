@@ -5,6 +5,8 @@ import { RouterModule } from '@angular/router';
 import { YuvCommonUiModule } from '@yuuvis/common-ui';
 import { TranslateModule } from '@yuuvis/core';
 import { YuvComponentsModule } from '../components';
+import { YuvDirectivesModule } from '../directives/directives.module';
+import { YuvFormModule } from './../form/form.module';
 import { ActionComponentAnchorDirective } from './action-menu/action-component-anchor/action-component-anchor.directive';
 import { ActionMenuComponent } from './action-menu/action-menu.component';
 import { ACTIONS, ActionService, CUSTOM_ACTIONS } from './action-service/action.service';
@@ -20,7 +22,17 @@ export const entryComponents = [DownloadActionComponent, DownloadOriginalActionC
  * Module for the action menu
  */
 @NgModule({
-  imports: [CommonModule, RouterModule, FormsModule, ReactiveFormsModule, TranslateModule, YuvComponentsModule, YuvCommonUiModule],
+  imports: [
+    CommonModule,
+    YuvFormModule,
+    YuvDirectivesModule,
+    RouterModule,
+    FormsModule,
+    ReactiveFormsModule,
+    TranslateModule,
+    YuvComponentsModule,
+    YuvCommonUiModule
+  ],
   exports: [ActionMenuComponent],
   providers: [
     ActionService,

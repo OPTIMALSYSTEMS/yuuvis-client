@@ -1,8 +1,8 @@
-import { Component, EventEmitter, HostListener, Input, OnDestroy, Output, Renderer2, ViewChild } from '@angular/core';
-import { UnsubscribeOnDestroy } from '@yuuvis/common-ui';
+import { Component, EventEmitter, HostListener, Input, Output, Renderer2, ViewChild } from '@angular/core';
 import { EventService, PendingChangesService, Utils, YuvEventType } from '@yuuvis/core';
 import { Dialog } from 'primeng/dialog';
-import { filter, takeUntil } from 'rxjs/operators';
+import { filter } from 'rxjs/operators';
+import { takeUntilDestroy } from 'take-until-destroy';
 import { SVGIcons } from '../../svg.generated';
 
 @Component({
@@ -10,7 +10,7 @@ import { SVGIcons } from '../../svg.generated';
   templateUrl: './dialog.component.html',
   styleUrls: ['./dialog.component.scss']
 })
-export class DialogComponent extends UnsubscribeOnDestroy implements OnDestroy {
+export class DialogComponent {
   icClose = SVGIcons.clear;
 
   private _visible = false;
@@ -64,12 +64,11 @@ export class DialogComponent extends UnsubscribeOnDestroy implements OnDestroy {
   }
 
   constructor(private eventService: EventService, private pendingChanges: PendingChangesService, private renderer: Renderer2) {
-    super();
     this._lastFocused = document.activeElement;
     this.eventService
       .on(YuvEventType.DIALOG_STACK_CHANGED)
       .pipe(
-        takeUntil(this.componentDestroyed$),
+        takeUntilDestroy(this),
         filter((evt: any) => (this.active || evt.data.id === this.parentId) && evt.data.id !== this.id)
       )
       .subscribe((event: any) => {
