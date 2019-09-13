@@ -1,17 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import {
-  BaseObjectTypeField,
-  DmsService,
-  SearchQuery,
-  SearchResult,
-  SearchResultItem,
-  SearchService,
-  SecondaryObjectTypeField,
-  SortOption,
-  SystemService,
-  TranslateService
-} from '@yuuvis/core';
+import { BaseObjectTypeField, SearchQuery, SearchResult, SearchResultItem, SearchService, SecondaryObjectTypeField, SortOption } from '@yuuvis/core';
 import { ColDef } from 'ag-grid-community';
 import { of } from 'rxjs';
 import { ResponsiveTableData } from '../../components';
@@ -70,9 +59,9 @@ export class SearchResultComponent {
   }
 
   /**
-   * The ID of the item to be selected
+   * The IDs of the items to be selected
    */
-  @Input() selectedItemId: string;
+  @Input() selectedItemIDs: string[];
   /**
    * Emits the current selection as list of object IDs
    */
@@ -86,14 +75,7 @@ export class SearchResultComponent {
     return this._hasPages;
   }
 
-  constructor(
-    private translate: TranslateService,
-    private gridService: GridService,
-    private searchService: SearchService,
-    private fb: FormBuilder,
-    private dmsService: DmsService,
-    private systemService: SystemService
-  ) {
+  constructor(private gridService: GridService, private searchService: SearchService, private fb: FormBuilder) {
     this.pagingForm = this.fb.group({
       page: ['']
     });
@@ -197,8 +179,8 @@ export class SearchResultComponent {
   }
 
   onSelectionChanged(selectedRows: any[]) {
-    this.selectedItemId = selectedRows[0].id;
-    this.itemsSelected.emit(selectedRows.map(r => r.id));
+    this.selectedItemIDs = selectedRows.map(r => r.id);
+    this.itemsSelected.emit(this.selectedItemIDs);
   }
 
   onSortChanged(sortModel: { colId: string; sort: string }[]) {

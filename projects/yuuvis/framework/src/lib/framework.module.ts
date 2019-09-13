@@ -6,12 +6,12 @@ import { CoreConfig, CORE_CONFIG, CUSTOM_CONFIG, YuvCoreModule, YuvCoreSharedMod
 import { AngularSplitModule } from 'angular-split';
 import { ToastrModule } from 'ngx-toastr';
 import { OverlayPanelModule } from 'primeng/overlaypanel';
-import { ActionModule } from './actions';
+import { ActionModule } from './actions/action.module';
 import { YuvComponentsModule } from './components/components.module';
 import { YuvDirectivesModule } from './directives/directives.module';
-import { YuvFormModule } from './form';
+import { YuvFormModule } from './form/form.module';
 import { YuvObjectDetailsModule } from './object-details/object-details.module';
-import { YuvObjectFormModule } from './object-form';
+import { YuvObjectFormModule } from './object-form/object-form.module';
 import { YuvPipesModule } from './pipes/pipes.module';
 import { YuvSearchModule } from './search/search.module';
 import { YuvUserModule } from './user/user.module';
