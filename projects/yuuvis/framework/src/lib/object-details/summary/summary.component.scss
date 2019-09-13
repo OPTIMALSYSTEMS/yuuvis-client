@@ -77,6 +77,10 @@
       grid-area: value;
       align-self: center;
       @include ellipsis();
+
+      svg {
+        fill: var(--text-color-caption);
+      }
     }
   }
 }
