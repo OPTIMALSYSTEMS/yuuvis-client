@@ -40,4 +40,13 @@ export const booleanElements = [
     type: 'boolean',
     required: false
   },
+  {
+    readonly: false,
+    name: 'boolean:requiredtristate',
+    label: 'required tristate checkbox',
+    tristate: true,
+    description: 'mandatory checkbox',
+    type: 'boolean',
+    required: true
+  }
 ];
