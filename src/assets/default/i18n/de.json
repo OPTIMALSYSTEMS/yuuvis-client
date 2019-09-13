@@ -9,6 +9,7 @@
   "yuv.framework.action-menu.actions.group.common": "ALLGEMEIN",
   "yuv.framework.action-menu.actions.group.further_actions": "WEITERE AKTIONEN",
   "yuv.framework.action-menu.actions.not.available": "Keine Aktion verfügbar.",
+  "yuv.framework.action-menu.settings.descriptions": "Beschreibungen anzeigen",
   "yuv.framework.form.datepicker.select": "Auswählen",
   "yuv.framework.form.form-input.null": "Ohne Wert",
   "yuv.framework.list.refresh": "Aktualisieren",
