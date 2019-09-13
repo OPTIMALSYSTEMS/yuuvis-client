@@ -31,7 +31,6 @@ export class SearchResultPanelComponent implements OnInit {
   @Output() itemsSelected = new EventEmitter<string[]>();
   actionMenuVisible = false;
   actionMenuSelection = [];
-  // selectedItemIDs: any[];
 
   constructor(private translate: TranslateService, private systemService: SystemService, private dmsService: DmsService) {}
 

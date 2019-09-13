@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { LocalStorage } from '@ngx-pwa/local-storage';
 import { AppDataService } from '../add.data.service';
 
 @Component({
@@ -9,7 +10,7 @@ import { AppDataService } from '../add.data.service';
 export class TestSummaryComponent implements OnInit {
   summaryObject;
 
-  constructor(private data: AppDataService) {}
+  constructor(private data: AppDataService, private localStorage: LocalStorage) {}
 
   setDmsObjectInput() {
     this.summaryObject = this.data.getDmsObject();
@@ -27,6 +28,10 @@ export class TestSummaryComponent implements OnInit {
     this.summaryObject = {
       p: 'something'
     };
+  }
+
+  clearStorage() {
+    this.localStorage.removeItem('yuv.framework.summary.active-index').subscribe();
   }
 
   ngOnInit() {}

@@ -67,7 +67,8 @@ export class ActionMenuComponent implements OnDestroy {
   subActionsListHeader = '';
   subActionsList: ActionListEntry[];
   showComponent = false;
-  actionDescription: string;
+  // actionDescription: string;
+  showDescriptions: boolean;
   showMenu = false;
   loading = false;
   icons = SVGIcons;
@@ -87,24 +88,31 @@ export class ActionMenuComponent implements OnDestroy {
   }
 
   private getActions() {
-    this.actionService.getActionsList(this.selection, this.viewContainerRef).subscribe(actionsList => {
-      this.actionLists.common = actionsList;
-    });
+    this.loading = true;
+    this.actionService.getActionsList(this.selection, this.viewContainerRef).subscribe(
+      actionsList => {
+        this.actionLists.common = actionsList;
+        this.loading = false;
+      },
+      err => {
+        this.loading = false;
+      }
+    );
   }
 
   hide() {
     this.visible = false;
   }
 
-  showActionDescription(i, event) {
-    event.stopPropagation();
-    event.preventDefault();
-    this.actionDescription = i === this.actionDescription ? null : i;
-  }
+  // showActionDescription(i, event) {
+  //   event.stopPropagation();
+  //   event.preventDefault();
+  //   this.actionDescription = i === this.actionDescription ? null : i;
+  // }
 
   private showActionMenu() {
-    this.getActions();
     this.showMenu = true;
+    this.getActions();
   }
 
   private hideActionMenu() {
@@ -176,7 +184,7 @@ export class ActionMenuComponent implements OnDestroy {
   private clear() {
     this.showComponent = false;
     this.subActionsList = null;
-    this.actionDescription = null;
+    // this.actionDescription = null;
     this.viewContainerRef.clear();
     if (this.eoActionComponentAnchor) {
       this.eoActionComponentAnchor.viewContainerRef.clear();

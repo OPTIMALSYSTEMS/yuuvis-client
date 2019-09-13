@@ -35,6 +35,8 @@ export class SummaryComponent implements OnInit {
           this.activeIndex.push(3);
         }
       }
+    } else {
+      this.summary = null;
     }
   }
   /**

@@ -3,14 +3,14 @@ export const booleanElements = [
     readonly: false,
     name: 'boolean:default',
     label: 'default',
-    description: '',
+    description: 'default checkbox',
     type: 'boolean',
     required: false
   },
   {
     readonly: false,
     name: 'boolean:one',
-    label: 'checkbox',
+    label: 'required checkbox',
     description: 'mandatory checkbox',
     type: 'boolean',
     required: true
@@ -19,14 +19,14 @@ export const booleanElements = [
     readonly: true,
     name: 'boolean:readonly',
     label: 'readonly checkbox',
-    description: '',
+    description: 'readonly without value',
     type: 'boolean',
     required: false
   },
   {
     readonly: true,
     name: 'boolean:readonlyvalue',
-    label: 'readonly checkbox',
+    label: 'readonly checkbox with value',
     description: 'readonly with value',
     type: 'boolean',
     required: false
@@ -39,5 +39,5 @@ export const booleanElements = [
     description: '',
     type: 'boolean',
     required: false
-  }
+  },
 ];

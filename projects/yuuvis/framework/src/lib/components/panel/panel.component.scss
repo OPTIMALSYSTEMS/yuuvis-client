@@ -53,8 +53,12 @@
 
     > .icon {
       grid-area: icon;
+      padding-top: calc(var(--app-pane-padding) / 4);
       padding-right: var(--app-pane-padding);
       color: var(--text-color-caption);
+      svg {
+        fill: currentColor;
+      }
 
       :host-context(.screen-s) & {
         display: none;

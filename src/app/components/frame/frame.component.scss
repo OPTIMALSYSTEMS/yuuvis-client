@@ -24,7 +24,7 @@ $user-panel-width: 180px;
     yuv-icon#drawer {
       padding: calc((var(--app-bar-height) - 24px) / 2);
       background-color: var(--color-accent);
-      border: 1px solid var(--color-accent);
+      border-radius: 0;
     }
     a#logo {
       color: currentColor;

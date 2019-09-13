@@ -132,6 +132,9 @@ body {
   // primeng checkbox
   $ui-checkbox-border-color: rgba(0, 0, 0, 0.5);
   $ui-checkbox-background-color: rgba(0, 0, 0, 0.1);
+  $ui-checkbox-border-color-dark: rgba(255, 255, 255, 0.5);
+  $ui-checkbox-background-color-dark: rgba(255, 255, 255, 0.1);
+
   .ui-chkbox {
     margin: 0;
     width: 1em;
@@ -147,6 +150,10 @@ body {
       line-height: 16px;
       border: 2px solid transparent;
       color: var(--text-color-caption);
+
+      // .dark & {
+      //   background-color: $ui-checkbox-background-color-dark !important;
+      // }
 
       .ui-chkbox-icon {
         display: flex;
@@ -195,6 +202,27 @@ body {
           color: var(--color-accent);
           border-color: var(--color-accent);
         }
+      }
+    }
+  }
+  // darkmode overrides
+  .dark {
+    .ui-chkbox .ui-chkbox-box {
+      background-color: $ui-checkbox-background-color-dark;
+
+      &.ui-state-active {
+        background-color: $ui-checkbox-background-color-dark;
+        color: $ui-checkbox-border-color-dark;
+        border-color: $ui-checkbox-border-color-dark;
+
+        &:not(.ui-state-disabled):hover {
+          border-color: $ui-checkbox-border-color-dark;
+          background-color: $ui-checkbox-background-color-dark;
+          color: $ui-checkbox-border-color-dark;
+        }
+      }
+      &.ui-state-focus.ui-state-active {
+        background-color: $ui-checkbox-background-color-dark;
       }
     }
   }
