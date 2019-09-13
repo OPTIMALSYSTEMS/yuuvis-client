@@ -1,23 +1,23 @@
-.yuv-checkbox {
-  display: flex;
-  align-items: center;
-
-  .tristate {
+:host {
+  .yuv-checkbox {
     display: flex;
     align-items: center;
-  }
 
-  yuv-icon {
-    height: 16px;
-    width: 16px;
-    color: var(--text-color-hint);
-    cursor: pointer;
-    margin: 1px 0 0 4px;
-  }
-}
+    .tristate {
+      display: flex;
+      align-items: center;
+    }
 
-.dark .yuv-checkbox {
-  yuv-icon {
-    color: rgba(255, 255, 255, 0.8);
+    yuv-icon {
+      height: 16px;
+      width: 16px;
+      color: var(--text-color-hint);
+      cursor: pointer;
+      margin: 1px 0 0 4px;
+
+      :host-context(.dark) & {
+        color: rgba(255, 255, 255, 0.8);
+      }
+    }
   }
 }

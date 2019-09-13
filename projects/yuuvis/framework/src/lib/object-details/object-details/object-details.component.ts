@@ -18,6 +18,8 @@ export class ObjectDetailsComponent {
   icons = SVGIcons;
   busy: boolean;
   userIsAdmin: boolean;
+  actionMenuVisible = false;
+  actionMenuSelection = [];
 
   private _dmsObject: DmsObject;
   private _objectId: string;
@@ -52,6 +54,11 @@ export class ObjectDetailsComponent {
     this.userIsAdmin = this.userService.hasAdministrationRoles;
   }
 
+  openActionMenu() {
+    this.actionMenuSelection = [this.dmsObject];
+    this.actionMenuVisible = true;
+  }
+
   private getDmsObject(id: string) {
     this.busy = true;
     this.dmsService.getDmsObject(id).subscribe(dmsObject => {
@@ -65,9 +72,5 @@ export class ObjectDetailsComponent {
       this.getDmsObject(this._objectId);
     } else {
     }
-  }
-
-  openActions() {
-    // TODO: implement when final action manu is available
   }
 }

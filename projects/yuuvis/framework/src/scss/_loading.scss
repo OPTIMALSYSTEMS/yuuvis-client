@@ -7,6 +7,11 @@
   transform: translateZ(0);
   animation: load8 1.1s infinite linear;
 
+  .dark & {
+    border-color: rgba(255, 255, 255, 0.1);
+    border-left-color: var(--color-accent);
+  }
+
   &.large {
     width: 10em;
     height: 10em;

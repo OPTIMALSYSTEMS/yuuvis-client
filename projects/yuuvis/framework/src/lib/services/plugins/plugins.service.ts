@@ -59,7 +59,7 @@ export class PluginsService {
       dms: {
         getObject: (id, type, version) => this.getDmsObject(id, type, version),
         getResult: (fields, type) => this.getResult(fields, type),
-        downloadContent: (dmsObjects: DmsObject[]) => this.backend.downloadContent(dmsObjects.map(o => o.id))
+        downloadContent: (dmsObjects: DmsObject[]) => this.backend.downloadContent(dmsObjects)
       },
       http: {
         get: (uri, base) => this.get(uri, base),

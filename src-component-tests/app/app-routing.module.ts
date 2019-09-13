@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { TestActionMenuComponent } from './test-action-menu/test-action-menu.component';
 import { TestObjectDetailsComponent } from './test-object-details/test-object-details.component';
 import { TestObjectFormEditComponent } from './test-object-form-edit/test-object-form-edit.component';
 import { TestObjectFormComponent } from './test-object-form/test-object-form.component';
@@ -19,6 +20,7 @@ const routes: Routes = [
   { path: 'object-details', component: TestObjectDetailsComponent },
   { path: 'panel', component: TestPanelComponent },
   { path: 'quick-search', component: TestQuickSearchComponent },
+  { path: 'action-menu', component: TestActionMenuComponent },
   { path: 'summary', component: TestSummaryComponent }
 ];
 

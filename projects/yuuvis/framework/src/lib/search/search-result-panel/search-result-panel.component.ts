@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
-import { SearchQuery, SystemService, TranslateService } from '@yuuvis/core';
+import { DmsService, SearchQuery, SystemService, TranslateService } from '@yuuvis/core';
 import { SVGIcons } from '../../svg.generated';
 import { SearchResultComponent } from '../search-result/search-result.component';
 
@@ -12,7 +12,8 @@ export class SearchResultPanelComponent implements OnInit {
   // icons used within the template
   icon = {
     icSearch: SVGIcons['search'],
-    refresh: SVGIcons['refresh']
+    refresh: SVGIcons['refresh'],
+    icKebap: SVGIcons['kebap']
   };
 
   _searchQuery: SearchQuery;
@@ -26,13 +27,12 @@ export class SearchResultPanelComponent implements OnInit {
       this.generateQueryDescription(searchQuery.term, searchQuery.types);
     }
   }
-  @Input() title: string;
-  @Input() selectedItemId: string;
+  @Input() selectedItemIDs: string[];
   @Output() itemsSelected = new EventEmitter<string[]>();
+  actionMenuVisible = false;
+  actionMenuSelection = [];
 
-  constructor(private translate: TranslateService, private systemService: SystemService) {
-    this.title = this.translate.instant('yuv.framework.search-result-panel.header.title');
-  }
+  constructor(private translate: TranslateService, private systemService: SystemService, private dmsService: DmsService) {}
 
   refresh() {
     if (this.searchResultComponent) {
@@ -40,8 +40,9 @@ export class SearchResultPanelComponent implements OnInit {
     }
   }
 
-  onItemsSelected(event) {
-    this.itemsSelected.emit(event);
+  onItemsSelected(itemIDs) {
+    this.itemsSelected.emit(itemIDs);
+    this.selectedItemIDs = itemIDs;
   }
 
   generateQueryDescription(term: string, types?: string[]) {
@@ -50,4 +51,13 @@ export class SearchResultPanelComponent implements OnInit {
   }
 
   ngOnInit() {}
+
+  openActionMenu() {
+    if (this.selectedItemIDs) {
+      this.dmsService.getDmsObjects(this.selectedItemIDs).subscribe(items => {
+        this.actionMenuSelection = items;
+        this.actionMenuVisible = true;
+      });
+    }
+  }
 }

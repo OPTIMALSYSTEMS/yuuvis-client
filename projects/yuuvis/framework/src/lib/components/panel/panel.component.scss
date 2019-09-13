@@ -53,8 +53,12 @@
 
     > .icon {
       grid-area: icon;
+      padding-top: calc(var(--app-pane-padding) / 4);
       padding-right: var(--app-pane-padding);
       color: var(--text-color-caption);
+      svg {
+        fill: currentColor;
+      }
 
       :host-context(.screen-s) & {
         display: none;
@@ -63,6 +67,23 @@
 
     > .actions {
       grid-area: actions;
+
+      .yuv-icon {
+        color: var(--text-color-caption);
+        padding: calc(var(--app-pane-padding) / 4);
+        box-sizing: content-box;
+        border-radius: 2px;
+
+        &:not(.disabled):hover {
+          @include transition();
+          cursor: pointer;
+          background-color: rgba(0, 0, 0, 0.06);
+        }
+
+        &.disabled {
+          opacity: 0.5;
+        }
+      }
     }
 
     > .status {

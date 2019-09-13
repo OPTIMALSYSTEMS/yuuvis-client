@@ -26,7 +26,8 @@ export class SearchResultComponent {
   icon = {
     icSearchFilter: SVGIcons['search-filter'],
     icArrowNext: SVGIcons['arrow-next'],
-    icArrowLast: SVGIcons['arrow-last']
+    icArrowLast: SVGIcons['arrow-last'],
+    icKebap: SVGIcons['kebap']
   };
   tableData: ResponsiveTableData;
   // object type shown in the result list, will be null for mixed results
@@ -58,9 +59,9 @@ export class SearchResultComponent {
   }
 
   /**
-   * The ID of the item to be selected
+   * The IDs of the items to be selected
    */
-  @Input() selectedItemId: string;
+  @Input() selectedItemIDs: string[];
   /**
    * Emits the current selection as list of object IDs
    */
@@ -178,7 +179,8 @@ export class SearchResultComponent {
   }
 
   onSelectionChanged(selectedRows: any[]) {
-    this.itemsSelected.emit(selectedRows.map(r => r.id));
+    this.selectedItemIDs = selectedRows.map(r => r.id);
+    this.itemsSelected.emit(this.selectedItemIDs);
   }
 
   onSortChanged(sortModel: { colId: string; sort: string }[]) {

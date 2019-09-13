@@ -12,7 +12,8 @@ export class TestSearchResultPanelComponent implements OnInit {
 
   setQuery() {
     this.query = new SearchQuery({
-      term: '*'
+      term: '*',
+      types: ['email:email']
     });
   }
 
