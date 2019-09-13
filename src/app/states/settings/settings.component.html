@@ -6,7 +6,7 @@
             <h1>{{(user$ | async).title}}</h1>
             <div class="meta">{{(user$ | async).email}}</div>
         </div>
-        <yuv-user-avatar class="box panel" [user]="user"></yuv-user-avatar>
+        <yuv-user-avatar class="box panel" [user]="user$ | async"></yuv-user-avatar>
     </div>
     <div class="body">
         <div class="body-wrap">
@@ -14,7 +14,7 @@
             <div class="setting">
                 <div class="label" translate>eo.state.settings.language</div>
                 <div class="value">
-                        <button class="toggle" (click)="changeClientLocale(locale.iso)"
+                    <button class="toggle" (click)="changeClientLocale(locale.iso)"
                         [ngClass]="{active: translate.currentLang === locale.iso}"
                         *ngFor="let locale of clientLocales">{{locale.label}}</button>
                 </div>
@@ -28,7 +28,7 @@
                         <div class="role" *ngFor="let role of (user$ | async).authorities">
                             <yuv-icon class="icon" [iconSrc]="'assets/default/svg/ic_shield.svg'"></yuv-icon>
                             <div class="name">{{role}}</div>
-                        </div>          
+                        </div>
                     </yuv-accordion>
                 </div>
             </div>

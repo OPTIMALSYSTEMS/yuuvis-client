@@ -70,9 +70,9 @@ export class SearchResultComponent {
   }
 
   /**
-   * The ID of the item to be selected
+   * The IDs of the items to be selected
    */
-  @Input() selectedItemId: string;
+  @Input() selectedItemIDs: string[];
   /**
    * Emits the current selection as list of object IDs
    */
@@ -197,7 +197,7 @@ export class SearchResultComponent {
   }
 
   onSelectionChanged(selectedRows: any[]) {
-    this.selectedItemId = selectedRows[0].id;
+    this.selectedItemIDs = selectedRows.map(r => r.id);
     this.itemsSelected.emit(selectedRows.map(r => r.id));
   }
 

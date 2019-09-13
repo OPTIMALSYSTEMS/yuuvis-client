@@ -27,11 +27,11 @@ export class SearchResultPanelComponent implements OnInit {
       this.generateQueryDescription(searchQuery.term, searchQuery.types);
     }
   }
-  @Input() selectedItemId: string;
+  @Input() selectedItemIDs: string[];
   @Output() itemsSelected = new EventEmitter<string[]>();
   actionMenuVisible = false;
   actionMenuSelection = [];
-  selectedItemIDs: any[];
+  // selectedItemIDs: any[];
 
   constructor(private translate: TranslateService, private systemService: SystemService, private dmsService: DmsService) {}
 

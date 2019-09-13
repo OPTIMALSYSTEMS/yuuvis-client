@@ -51,7 +51,7 @@
     "@angular/platform-browser-dynamic": "~8.0.0",
     "@angular/pwa": "^0.803.4",
     "@angular/router": "~8.0.0",
-    "@angular/service-worker": "~8.0.0",
+    "@angular/service-worker": "^8.0.0",
     "@ionic-native/core": "^5.6.0",
     "@ionic-native/in-app-browser": "^5.6.0",
     "@ngx-pwa/local-storage": "^7.4.2",

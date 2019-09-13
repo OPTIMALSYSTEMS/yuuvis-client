@@ -9,7 +9,7 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { ChipsModule } from 'primeng/chips';
 import { InputMaskModule } from 'primeng/inputmask';
 import { TriStateCheckboxModule } from 'primeng/tristatecheckbox';
-import { YuvComponentsModule } from '../components';
+import { YuvComponentsModule } from '../components/components.module';
 import { CheckboxComponent } from './elements/checkbox/checkbox.component';
 import { DatepickerComponent } from './elements/datetime/datepicker/datepicker.component';
 import { DatetimeComponent } from './elements/datetime/datetime.component';

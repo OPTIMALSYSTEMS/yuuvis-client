@@ -1,7 +1,7 @@
 <yuv-responsive-master-slave class="state" [options]="{useStateLayout: true}" (slaveClosed)="onSlaveClosed()"
   [detailsActive]="(selectedItems.length > 0)">
 
-  <yuv-search-result-panel class="yuv-master panel" [query]="searchQuery" [selectedItemId]="selectedItem?.id"
+  <yuv-search-result-panel class="yuv-master panel" [query]="searchQuery" [selectedItemIDs]="selectedItems"
     (itemsSelected)="select($event)">
   </yuv-search-result-panel>
 
