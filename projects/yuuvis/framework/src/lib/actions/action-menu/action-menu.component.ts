@@ -87,9 +87,16 @@ export class ActionMenuComponent implements OnDestroy {
   }
 
   private getActions() {
-    this.actionService.getActionsList(this.selection, this.viewContainerRef).subscribe(actionsList => {
-      this.actionLists.common = actionsList;
-    });
+    this.loading = true;
+    this.actionService.getActionsList(this.selection, this.viewContainerRef).subscribe(
+      actionsList => {
+        this.actionLists.common = actionsList;
+        this.loading = false;
+      },
+      err => {
+        this.loading = false;
+      }
+    );
   }
 
   hide() {
@@ -103,8 +110,8 @@ export class ActionMenuComponent implements OnDestroy {
   }
 
   private showActionMenu() {
-    this.getActions();
     this.showMenu = true;
+    this.getActions();
   }
 
   private hideActionMenu() {

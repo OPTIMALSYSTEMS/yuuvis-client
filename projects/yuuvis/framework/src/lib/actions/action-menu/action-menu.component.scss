@@ -2,7 +2,6 @@
 
 :host {
   .action-menu {
-    animation: yuvFadeInRight var(--app-default-transition-duration);
     position: absolute;
     top: 0;
     right: 0;
@@ -11,7 +10,7 @@
     min-width: 300px;
     z-index: 1000;
     background-color: rgba(var(--color-primary-rgb), 0.95);
-    animation: eoFadeInRight var(--app-default-transition-duration);
+    animation: yuvFadeInRight var(--app-default-transition-duration);
     box-shadow: 0 0 10px 0 rgba(var(--color-black-rgb), 0.3);
     color: var(--color-white);
 
