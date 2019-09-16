@@ -190,7 +190,7 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
 
   initValidators(form) {
     if (this.form) {
-      for (let key in form.controls) {
+      for (const key of Object.keys(form.controls)) {
         const control = form.controls[key];
         if (control.controls) {
           this.initValidators(control);
@@ -525,7 +525,7 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
    * @param formElement - form element object
    */
   private getValidators(formElement: any): ValidatorFn[] {
-    let elmValidators = FormValidation.getValidators(formElement, this.formOptions.formModel.situation);
+    const elmValidators = FormValidation.getValidators(formElement, this.formOptions.formModel.situation);
 
     // add custom validator for script enabled forms
     if (this.scriptingScope) {

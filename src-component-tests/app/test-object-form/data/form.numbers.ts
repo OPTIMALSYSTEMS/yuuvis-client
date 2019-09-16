@@ -11,7 +11,7 @@ export const numberElements = [
   {
     readonly: false,
     name: 'integer:two',
-    label: 'integer No.2',
+    label: 'integer No. 2',
     description: '',
     type: 'integer',
     required: false
@@ -37,7 +37,7 @@ export const numberElements = [
   {
     readonly: false,
     name: 'decimal:two',
-    label: 'decimal No.2',
+    label: 'decimal No. 2',
     description: '',
     type: 'decimal',
     required: false

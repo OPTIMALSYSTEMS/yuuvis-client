@@ -37,7 +37,9 @@
     "build:cordova": "ng build cordova --baseHref=./ --outputPath=cordova/www",
     "build:android": "npm run build:cordova && cd cordova && cordova clean android && cordova build android",
     "build:android:run": "npm run build:cordova && cd cordova && cordova clean android && cordova run android",
-    "build:web": "npm run prebuild:about && npm run build:libs:all && npm run build -- --prod --base-href /client/"
+    "build:web": "npm run prebuild:about && npm run build:libs:all && npm run build -- --prod --base-href /client/",
+    "build:pwa": "npm run prebuild:about && npm run build:libs:all && npm run build -- --prod",
+    "serve:dist": "node ./tools/scripts/dist-serve"
   },
   "private": true,
   "dependencies": {
@@ -84,7 +86,9 @@
     "bundle-scss": "^1.4.6",
     "codelyzer": "^5.0.1",
     "cpx": "^1.5.0",
+    "express": "^4.17.1",
     "fs-extra": "^7.0.1",
+    "http-proxy-middleware": "^0.20.0",
     "jasmine-core": "~2.99.1",
     "jasmine-spec-reporter": "~4.2.1",
     "karma": "~4.0.0",

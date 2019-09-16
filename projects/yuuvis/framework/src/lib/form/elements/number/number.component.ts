@@ -127,7 +127,7 @@ export class NumberComponent implements ControlValueAccessor, Validator {
       if (val.toFixed(0).length > prePointDigits) {
         this.validationErrors.push({
           key: 'precision',
-          translateKey: 'eo.form.property.number.precision',
+          translateKey: 'yuv.framework.object-form-element.error.number.precision',
           translateValues: {
             prepointdigits: prePointDigits
           }
@@ -137,7 +137,7 @@ export class NumberComponent implements ControlValueAccessor, Validator {
       if (val % 1 && val.toString().split('.')[1].length > this.scale) {
         this.validationErrors.push({
           key: 'scale',
-          translateKey: 'eo.form.property.number.scale',
+          translateKey: 'yuv.framework.object-form-element.error.number.scale',
           translateValues: {
             scale: this.scale
           }

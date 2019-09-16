@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { AppCacheService, BaseObjectTypeField, ContentStreamField, DmsObject, ParentField, SystemService } from '@yuuvis/core';
+import { AppCacheService, BaseObjectTypeField, ContentStreamField, DmsObject, ObjectTypeField, ParentField, SystemService } from '@yuuvis/core';
 import { ColDef, ICellRendererFunc } from 'ag-grid-community';
 import { GridService } from '../../services/grid/grid.service';
 import { Summary } from './summary.interface';
@@ -60,6 +60,13 @@ export class SummaryComponent implements OnInit {
     this.appCacheService.setItem(this.STORAGE_KEY_ACTIVE_INDEX, this.activeIndex).subscribe();
   }
 
+  private excludeTables(objectTypeId): string[] {
+    return this.systemService
+      .getObjectType(objectTypeId)
+      .fields.filter((fields: ObjectTypeField) => fields.propertyType === 'table')
+      .map((field: ObjectTypeField) => field.id);
+  }
+
   private getSummaryConfiguration(dmsObject: DmsObject) {
     const skipFields: string[] = [
       ContentStreamField.ID,
@@ -68,8 +75,7 @@ export class SummaryComponent implements OnInit {
       BaseObjectTypeField.PARENT_ID,
       BaseObjectTypeField.PARENT_OBJECT_TYPE_ID,
       BaseObjectTypeField.PARENT_VERSION_NUMBER,
-      // TODO: find  a better way to exclude tables
-      'tenKolibri:tableofnotices'
+      ...this.excludeTables(dmsObject.objectTypeId)
     ];
 
     const defaultBaseFields: { key: string; order: number }[] = [
