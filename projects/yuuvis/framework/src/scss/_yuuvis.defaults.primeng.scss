@@ -29,9 +29,16 @@ body {
 
   // -------------------------------------------------------------------
   // primeng chips
+  // body .ui-chips > ul.ui-inputtext .ui-chips-input-token input
   .ui-chips {
     > ul.ui-inputtext {
       padding: 0;
+
+      .ui-chips-input-token input {
+        font-family: 'Roboto';
+        font-size: var(--font-body);
+      }
+
       .ui-chips-token {
         font-size: var(--font-caption);
         padding: 2px;
