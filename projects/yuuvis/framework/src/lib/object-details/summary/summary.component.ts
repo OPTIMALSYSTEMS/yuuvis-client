@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { AppCacheService, BaseObjectTypeField, ContentStreamField, DmsObject, ObjectType, ObjectTypeField, ParentField, SystemService } from '@yuuvis/core';
+import { AppCacheService, BaseObjectTypeField, ContentStreamField, DmsObject, ObjectTypeField, ParentField, SystemService } from '@yuuvis/core';
 import { ColDef, ICellRendererFunc } from 'ag-grid-community';
 import { GridService } from '../../services/grid/grid.service';
 import { Summary } from './summary.interface';
@@ -61,8 +61,9 @@ export class SummaryComponent implements OnInit {
   }
 
   private excludeTables(objectTypeId): string[] {
-    return Array.from(this.systemService.getObjectTypes().filter((objType: ObjectType) => objType.id === objectTypeId)[0].fields)
-      .filter((fields: ObjectTypeField) => fields.propertyType === 'table')
+    return this.systemService
+      .getObjectType(objectTypeId)
+      .fields.filter((fields: ObjectTypeField) => fields.propertyType === 'table')
       .map((field: ObjectTypeField) => field.id);
   }
 
