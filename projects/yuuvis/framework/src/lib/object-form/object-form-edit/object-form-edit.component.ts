@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
-import { DmsObject, DmsService, PendingChangesService, SystemService, TranslateService } from '@yuuvis/core';
+import { DmsObject, DmsService, PendingChangesService, SystemService, TranslateService, Utils } from '@yuuvis/core';
+import { finalize } from 'rxjs/operators';
 import { NotificationService } from './../../services/notification/notification.service';
 import { FormStatusChangedEvent, ObjectFormOptions } from './../object-form.interface';
 import { ObjectFormComponent } from './../object-form/object-form.component';
@@ -13,6 +14,7 @@ export class ObjectFormEditComponent {
   // ID set by pendingChanges service when editing indexdata
   // Used to finish the pending task when editing is done
   private pendingTaskId: string;
+  private _dmsObject: DmsObject;
 
   // fetch a reference to the opbject form component to be able to
   // get the form data
@@ -21,6 +23,7 @@ export class ObjectFormEditComponent {
   @Input() formDisabled: boolean;
   @Input('dmsObject')
   set dmsObject(dmsObject: DmsObject) {
+    this._dmsObject = dmsObject;
     if (dmsObject) {
       // this._dmsObject = dmsObject;
 
@@ -86,34 +89,34 @@ export class ObjectFormEditComponent {
 
   // save the current dms object
   save() {
-    // setTimeout(() => {
-    //   if (this.formState.dirty && !this.formState.invalid) {
-    //     this.controls.saving = true;
-    //     const formData = this.objectForm.getFormData();
-    //     const { id, typeName } = this._dmsObject;
-    //     this.dmsService
-    //       .updateObject(id, formData, typeName)
-    //       .pipe(finalize(() => this.finishPending()))
-    //       .subscribe(
-    //         updatedObject => {
-    //           this._dmsObject = updatedObject;
-    //           this.formOptions.data = updatedObject.data;
-    //           this.controls.saving = false;
-    //           this.controls.visible = false;
-    //           this.objectForm.setFormPristine();
-    //           this.notification.success(this._dmsObject.title, this.messages.formSuccess);
-    //           this.indexDataSaved.emit(formData);
-    //         },
-    //         Utils.throw(
-    //           () => {
-    //             this.controls.saving = false;
-    //           },
-    //           this._dmsObject.title,
-    //           this.messages.formError
-    //         )
-    //       );
-    //   }
-    // }, 500);
+    setTimeout(() => {
+      if (this.formState.dirty && !this.formState.invalid) {
+        this.controls.saving = true;
+
+        const formData = this.objectForm.getFormData();
+        this.dmsService
+          .updateObject(this._dmsObject.id, formData)
+          .pipe(finalize(() => this.finishPending()))
+          .subscribe(
+            updatedObject => {
+              this._dmsObject = updatedObject;
+              this.formOptions.data = updatedObject.data;
+              this.controls.saving = false;
+              this.controls.disabled = true;
+              this.objectForm.setFormPristine();
+              this.notification.success(this._dmsObject.title, this.messages.formSuccess);
+              this.indexDataSaved.emit(formData);
+            },
+            Utils.throw(
+              () => {
+                this.controls.saving = false;
+              },
+              this._dmsObject.title,
+              this.messages.formError
+            )
+          );
+      }
+    }, 500);
   }
 
   // reset the form to its initial state
