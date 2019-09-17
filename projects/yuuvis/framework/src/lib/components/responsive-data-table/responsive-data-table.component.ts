@@ -156,7 +156,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
       rowHeight: this.settings.rowHeight.default,
       // pagination: true,
       suppressCellSelection: false,
-      rowSelection: this._data.selectType || 'single',
+      rowSelection: this._data.selectType || 'multiple',
 
       // EVENTS - add event callback handlers
       onSelectionChanged: event => {
