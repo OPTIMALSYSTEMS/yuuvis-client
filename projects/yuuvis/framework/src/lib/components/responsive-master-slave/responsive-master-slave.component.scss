@@ -1,9 +1,21 @@
 .as-horizontal.state {
   :host-context(.screen-s) & {
     padding: 0;
+    &.detailsActive {
+      as-split {
+        position: absolute;
+        top: var(--app-bar-height);
+        left: 0;
+        right: 0;
+      }
+    }
   }
 }
 .yuv-responsive-master-slave {
+  as-split-area.as-hidden {
+    width: 0;
+  }
+
   &.state {
     .as-horizontal.state {
       padding: var(--app-pane-padding);
@@ -14,5 +26,24 @@
   .yuv-master,
   .yuv-slave {
     height: 100%;
+  }
+
+  .small-slave-close {
+    position: absolute;
+    background-color: var(--color-accent);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    left: 0;
+    top: 0;
+    right: 0;
+    height: var(--app-bar-height);
+
+    yuv-icon {
+      padding: var(--app-pane-padding);
+      height: var(--app-bar-height);
+      width: var(--app-bar-height);
+    }
   }
 }

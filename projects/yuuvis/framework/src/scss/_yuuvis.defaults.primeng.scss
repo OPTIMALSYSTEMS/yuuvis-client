@@ -8,11 +8,12 @@ body {
 
   // -------------------------------------------------------------------
   // primeng overlays
+  // body .ui-overlaypanel:before
   .ui-overlaypanel {
     border: none;
-
-    &:after {
-      border-bottom-color: var(--color-primary);
+    &::before,
+    &::after {
+      display: none;
     }
 
     .ui-overlaypanel-content {

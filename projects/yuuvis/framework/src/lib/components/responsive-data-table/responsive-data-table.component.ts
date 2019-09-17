@@ -160,8 +160,11 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
 
       // EVENTS - add event callback handlers
       onSelectionChanged: event => {
-        this._currentSelection = this.gridOptions.api.getSelectedNodes().map((rowNode: RowNode) => rowNode.id);
-        this.selectionChanged.emit(this.gridOptions.api.getSelectedRows());
+        const selection = this.gridOptions.api.getSelectedNodes().map((rowNode: RowNode) => rowNode.id);
+        if (JSON.stringify(selection) !== JSON.stringify(this._currentSelection)) {
+          this._currentSelection = selection;
+          this.selectionChanged.emit(this.gridOptions.api.getSelectedRows());
+        }
       },
       onColumnResized: event => {
         this.columnResizeSource.next();

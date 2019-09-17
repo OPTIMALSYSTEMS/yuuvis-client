@@ -13,26 +13,24 @@ import { Subscription } from 'rxjs';
 export class ResultComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription[] = [];
 
+  objectDetailsID: string;
   searchQuery: SearchQuery;
   selectedItems: string[] = [];
 
-  constructor(
-    private titleService: Title,
-    public translate: TranslateService,
-    private location: PlatformLocation,
-    private route: ActivatedRoute
-  ) {}
+  constructor(private titleService: Title, public translate: TranslateService, private location: PlatformLocation, private route: ActivatedRoute) {}
 
   closeDetails() {
     this.location.back();
   }
 
   onSlaveClosed() {
-    this.selectedItems = [];
+    // this.selectedItems = [];
+    this.objectDetailsID = null;
   }
 
   select(items: string[]) {
     this.selectedItems = items;
+    this.objectDetailsID = this.selectedItems[0];
   }
 
   ngOnInit() {
@@ -41,9 +39,7 @@ export class ResultComponent implements OnInit, OnDestroy {
     this.subscriptions.push(
       this.route.queryParamMap.subscribe(params => {
         // this.executeQuery(params.get('query'));
-        this.searchQuery = params.get('query')
-          ? new SearchQuery(JSON.parse(params.get('query')))
-          : null;
+        this.searchQuery = params.get('query') ? new SearchQuery(JSON.parse(params.get('query'))) : null;
       })
     );
   }

@@ -1,7 +1,8 @@
 import { PlatformLocation } from '@angular/common';
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, HostBinding, Input, OnInit, Output } from '@angular/core';
 import { Screen, ScreenService } from '@yuuvis/core';
 import { Subscription } from 'rxjs';
+import { SVGIcons } from '../../svg.generated';
 import { ResponsiveMasterSlaveOptions } from './responsive-master-slave.interface';
 
 /**
@@ -58,7 +59,7 @@ import { ResponsiveMasterSlaveOptions } from './responsive-master-slave.interfac
 })
 export class ResponsiveMasterSlaveComponent implements OnInit {
   private subscriptions: Subscription[] = [];
-  private _detailsActive: boolean;
+  backButton = SVGIcons.navBack;
   useSmallDeviceLayout: boolean;
   visible = {
     master: true,
@@ -75,6 +76,8 @@ export class ResponsiveMasterSlaveComponent implements OnInit {
     useStateLayout: false
   };
 
+  @HostBinding('class.detailsActive') _detailsActive: boolean;
+
   @Input() set options(o: ResponsiveMasterSlaveOptions) {
     this._options = { ...this._options, ...o };
   }
@@ -83,10 +86,10 @@ export class ResponsiveMasterSlaveComponent implements OnInit {
   }
   @Input() set detailsActive(a: boolean) {
     this._detailsActive = a;
-    if (this.useSmallDeviceLayout && a === true) {
-      this.location.pushState({}, '', '');
-    }
     this.setPanelVisibility();
+  }
+  get detailsActive() {
+    return this._detailsActive;
   }
   @Output() slaveClosed = new EventEmitter();
 
@@ -94,17 +97,8 @@ export class ResponsiveMasterSlaveComponent implements OnInit {
     this.subscriptions.push(
       this.screenService.screenChange$.subscribe((screen: Screen) => {
         const useSmallDeviceLayout = screen.mode === ScreenService.MODE.SMALL;
-        // if we switch from large to small layout
-        if (!this.useSmallDeviceLayout && useSmallDeviceLayout && this.detailsActive) {
-          this.location.pushState({}, '', '');
-        }
         this.useSmallDeviceLayout = useSmallDeviceLayout;
         this.setPanelVisibility();
-        if (this.useSmallDeviceLayout) {
-          this.location.onPopState(x => {
-            this.slaveClosed.emit();
-          });
-        }
       })
     );
   }
@@ -122,6 +116,10 @@ export class ResponsiveMasterSlaveComponent implements OnInit {
       this.visible.master = true;
       this.visible.slave = false;
     }
+  }
+
+  closeSlave() {
+    this.slaveClosed.emit();
   }
 
   ngOnInit() {}

@@ -2,6 +2,16 @@ $icon-size: 18px !default;
 $primary-color: var(--color-accent);
 $range-selection-highlight-color: $primary-color;
 
+:host {
+  &.small {
+    ::ng-deep {
+      .ag-theme-yuv .ag-header {
+        border: 0;
+      }
+    }
+  }
+}
+
 .yuv-responsive-data-table {
   height: 100%;
   //   display: grid;
