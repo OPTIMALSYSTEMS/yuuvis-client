@@ -20,13 +20,16 @@ app.get('*', function(request, response) {
   response.sendFile(destPath + '/index.html');
 });
 
-https
-  .createServer(
-    {
-      key: fs.readFileSync(pathSSLKey),
-      cert: fs.readFileSync(pathSSLCert),
-      passphrase: 'optimal'
-    },
-    app
-  )
-  .listen(3000);
+// Enable for SSL
+// https
+//   .createServer(
+//     {
+//       key: fs.readFileSync(pathSSLKey),
+//       cert: fs.readFileSync(pathSSLCert),
+//       passphrase: 'optimal'
+//     },
+//     app
+//   )
+//   .listen(3000);
+
+app.listen(3000);
