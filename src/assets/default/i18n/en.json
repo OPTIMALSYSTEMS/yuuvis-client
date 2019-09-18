@@ -76,6 +76,7 @@
   "eo.state.settings.permission": "Permissions",
   "eo.state.settings.roles": "Roles",
   "eo.state.settings.title": "Settings",
-  "eo.status.404.description": "Unable to load the object.",
-  "eo.status.404.title": "Not found"
+  "eo.status.404.title": "Not found",
+  "eo.status.404.objectsDescription": "Unable to load the object.",
+  "eo.status.404.statesDescription": "This URL doesn't exisist."
 }
