@@ -34,7 +34,7 @@ export class ResultComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.titleService.setTitle(this.translate.instant('eo.state.result.title'));
+    this.titleService.setTitle(this.translate.instant('yuv.client.state.result.title'));
     // extract the query from the route params
     this.subscriptions.push(
       this.route.queryParamMap.subscribe(params => {

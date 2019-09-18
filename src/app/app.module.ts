@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
+import { ServiceWorkerModule } from '@angular/service-worker';
 import { YuvCommonUiModule } from '@yuuvis/common-ui';
 import { YuvFrameworkModule } from '@yuuvis/framework';
 import { environment } from '../environments/environment';
@@ -9,14 +10,13 @@ import { FrameComponent } from './components/frame/frame.component';
 import { AppRoutingModule } from './routing/app.routes.module';
 import { AboutModule } from './states/about/about.module';
 import { DashboardComponent } from './states/dashboard/dashboard.component';
-import { LoginComponent } from './states/login/login.component';
+import { EnterComponent } from './states/enter/enter.component';
 import { NotFoundComponent } from './states/not-found/not-found.component';
 import { ResultComponent } from './states/result/result.component';
 import { SettingsComponent } from './states/settings/settings.component';
-import { ServiceWorkerModule } from '@angular/service-worker';
 
 @NgModule({
-  declarations: [AppComponent, DashboardComponent, LoginComponent, ResultComponent, FrameComponent, SettingsComponent, NotFoundComponent],
+  declarations: [AppComponent, DashboardComponent, ResultComponent, FrameComponent, SettingsComponent, NotFoundComponent, EnterComponent],
   imports: [
     BrowserModule,
     FormsModule,

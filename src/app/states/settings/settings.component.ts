@@ -1,11 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
-import {
-  ConfigService,
-  TranslateService,
-  UserService,
-  YuvUser
-} from '@yuuvis/core';
+import { ConfigService, TranslateService, UserService, YuvUser } from '@yuuvis/core';
 import { Observable } from 'rxjs';
 
 @Component({
@@ -17,12 +12,7 @@ export class SettingsComponent implements OnInit {
   user$: Observable<YuvUser>;
   clientLocales: any;
 
-  constructor(
-    private translate: TranslateService,
-    private titleService: Title,
-    public config: ConfigService,
-    private userService: UserService
-  ) {
+  constructor(private translate: TranslateService, private titleService: Title, public config: ConfigService, private userService: UserService) {
     this.clientLocales = config.getClientLocales();
   }
 
@@ -31,9 +21,7 @@ export class SettingsComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.titleService.setTitle(
-      this.translate.instant('eo.state.settings.title')
-    );
+    this.titleService.setTitle(this.translate.instant('yuv.client.state.settings.title'));
     this.user$ = this.userService.user$;
   }
 }

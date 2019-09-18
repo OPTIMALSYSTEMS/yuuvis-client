@@ -115,10 +115,10 @@ export class AboutService {
     const details = [];
 
     const productLabel = {
-      product: this.translate.instant('eo.about.product.label'),
-      version: this.translate.instant('eo.about.client.version.label'),
-      releasedate: this.translate.instant('eo.about.releasedate.label'),
-      author: this.translate.instant('eo.about.author.label')
+      product: this.translate.instant('yuv.client.state.about.product.label'),
+      version: this.translate.instant('yuv.client.state.about.client.version.label'),
+      releasedate: this.translate.instant('yuv.client.state.about.releasedate.label'),
+      author: this.translate.instant('yuv.client.state.about.author.label')
     };
 
     Object.keys(aboutDetails).forEach(key =>

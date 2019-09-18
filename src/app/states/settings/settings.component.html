@@ -12,7 +12,7 @@
         <div class="body-wrap">
 
             <div class="setting">
-                <div class="label" translate>eo.state.settings.language</div>
+                <div class="label" translate>yuv.client.state.settings.language</div>
                 <div class="value">
                     <button class="toggle" (click)="changeClientLocale(locale.iso)"
                         [ngClass]="{active: translate.currentLang === locale.iso}"
@@ -22,9 +22,9 @@
 
             <!-- permissions -->
             <div class="permissions__settings">
-                <div class="label" translate>eo.state.settings.permission</div>
+                <div class="label" translate>yuv.client.state.settings.permission</div>
                 <div class="content">
-                    <yuv-accordion [header]="'eo.state.settings.roles' | translate">
+                    <yuv-accordion [header]="'yuv.client.state.settings.roles' | translate">
                         <div class="role" *ngFor="let role of (user$ | async).authorities">
                             <yuv-icon class="icon" [iconSrc]="'assets/default/svg/ic_shield.svg'"></yuv-icon>
                             <div class="name">{{role}}</div>
