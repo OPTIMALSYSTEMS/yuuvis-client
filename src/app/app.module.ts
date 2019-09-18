@@ -11,11 +11,12 @@ import { AboutModule } from './states/about/about.module';
 import { DashboardComponent } from './states/dashboard/dashboard.component';
 import { LoginComponent } from './states/login/login.component';
 import { NotFoundComponent } from './states/not-found/not-found.component';
+import { ObjectStateComponent } from './states/object-state/object-state.component';
 import { ResultComponent } from './states/result/result.component';
 import { SettingsComponent } from './states/settings/settings.component';
 
 @NgModule({
-  declarations: [AppComponent, DashboardComponent, LoginComponent, ResultComponent, FrameComponent, SettingsComponent, NotFoundComponent],
+  declarations: [AppComponent, DashboardComponent, LoginComponent, ResultComponent, FrameComponent, SettingsComponent, NotFoundComponent, ObjectStateComponent],
   imports: [
     BrowserModule,
     FormsModule,
