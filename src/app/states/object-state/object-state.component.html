@@ -1,0 +1,5 @@
+<section *ngIf="objectEnable; else notFound">Object found</section>
+
+<ng-template #notFound>
+  <yuv-not-found [description]="'eo.status.404.objectsDescription'"></yuv-not-found>
+</ng-template>
