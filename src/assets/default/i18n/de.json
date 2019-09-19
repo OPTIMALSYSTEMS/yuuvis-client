@@ -33,8 +33,10 @@
   "yuv.framework.object-form-element.error.maxlength": "Die Eingabe darf max. {{maxlength}} Zeichen enthalten.",
   "yuv.framework.object-form-element.error.minlength": "Die Eingabe muss min. {{minlength}} Zeichen enthalten.",
   "yuv.framework.object-form-element.error.number": "Bitte geben Sie einen numerischen Wert ein.",
+  "yuv.framework.object-form-element.error.number.precision": "Die Anzahl der Vorkommastellen ist nicht korrekt. max. {{prepointdigits}}",
+  "yuv.framework.object-form-element.error.number.scale": "Die Anzahl der Nachkommastellen ist nicht korrekt. max. {{scale}}",
   "yuv.framework.object-form-element.error.required": "Pflichtfeld",
-  "yuv.framework.object-form-element.error.string,classification.email": "Bitte geben Sie eine gültige eMail-Adresse ein.",
+  "yuv.framework.object-form-element.error.string.classification.email": "Bitte geben Sie eine gültige E-Mail-Adresse ein.",
   "yuv.framework.object-form-element.error.string.classification.url": "Bitte geben Sie eine gültige URL ein.",
   "yuv.framework.object-form-element.error.string.regex.nomatch": "Die Eingabe entspricht nicht den Vorgaben",
   "yuv.framework.object-form-element.error.string.whitespaces": "Die Eingabe enthält nur Leerzeichen.",
@@ -47,9 +49,6 @@
   "yuv.framework.search-result.empty": "Keine Treffer",
   "yuv.framework.search-result.footer.hits": "{{count}} Treffer",
   "yuv.framework.shared.cancel": "Abbrechen",
-  "yuv.framework.object-form-element.error.number.precision": "Die Anzahl der Vorkommastellen ist nicht korrekt. max. {{prepointdigits}}",
-  "yuv.framework.object-form-element.error.number.scale": "Die Anzahl der Nachkommastellen ist nicht korrekt. max. {{scale}}",
-  "yuv.framework.object-form-element.error.string.classification.email": "Bitte geben Sie eine gültige E-Mail-Adresse ein.",
   "eo.object.history.activity": "",
   "eo.object.history.filter.informational": "",
   "eo.object.history.filter.modification": "",
@@ -76,6 +75,6 @@
   "eo.state.settings.permission": "Berechtigungen",
   "eo.state.settings.roles": "Rollen",
   "eo.state.settings.title": "Einstellungen",
-  "eo.status.404.description": "Das Objekt konnte nicht geladen werden.",
-  "eo.status.404.title": "Nicht gefunden"
+  "eo.status.404.title": "Nicht gefunden",
+  "eo.status.404.description": "Die angeforderte Seite <URL> konnte nicht gefunden werden."
 }

@@ -33,6 +33,8 @@
   "yuv.framework.object-form-element.error.maxlength": "The entry can contain a maximum of {{maxlength}} characters.",
   "yuv.framework.object-form-element.error.minlength": "The entry must contain a minimum of {{minlength}} characters.",
   "yuv.framework.object-form-element.error.number": "Please enter a numerical value.",
+  "yuv.framework.object-form-element.error.number.precision": "The number of places before the decimal point is not correct (max. of {{prepointdigits}}).",
+  "yuv.framework.object-form-element.error.number.scale": "The number of decimal places is not correct (max. of {{scale}}).",
   "yuv.framework.object-form-element.error.required": "Mandatory field",
   "yuv.framework.object-form-element.error.string,classification.email": "Please enter a valid email address.",
   "yuv.framework.object-form-element.error.string.classification.url": "Please enter a valid URL.",
@@ -47,8 +49,6 @@
   "yuv.framework.search-result.empty": "No hits",
   "yuv.framework.search-result.footer.hits": "{{count}} hits",
   "yuv.framework.shared.cancel": "Cancel",
-  "yuv.framework.object-form-element.error.number.precision": "The number of places before the decimal point is not correct (max. of {{prepointdigits}}).",
-  "yuv.framework.object-form-element.error.number.scale": "The number of decimal places is not correct (max. of {{scale}}).",
   "yuv.framework.object-form-element.error.string.classification.email": "Enter a valid e-mail address.",
   "eo.object.history.activity": "",
   "eo.object.history.filter.informational": "",
@@ -76,6 +76,6 @@
   "eo.state.settings.permission": "Permissions",
   "eo.state.settings.roles": "Roles",
   "eo.state.settings.title": "Settings",
-  "eo.status.404.description": "Unable to load the object.",
-  "eo.status.404.title": "Not found"
+  "eo.status.404.title": "Not found",
+  "eo.status.404.description": "The requested page <URL> could not be found."
 }
