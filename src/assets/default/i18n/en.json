@@ -77,6 +77,5 @@
   "eo.state.settings.roles": "Roles",
   "eo.state.settings.title": "Settings",
   "eo.status.404.title": "Not found",
-  "eo.status.404.objectsDescription": "Unable to load the object.",
-  "eo.status.404.statesDescription": "This URL doesn't exisist."
+  "eo.status.404.description": "The requested page <URL> could not be found."
 }
