@@ -40,7 +40,10 @@ export class TestObjectFormComponent implements OnInit {
       label: 'Datetime component',
       model: {
         formModel: this.wrap(datetimeElements),
-        data: {}
+        data: {
+          'datetime:three': '2019-04-17T14:59:00.000Z',
+          'datetime:four': '2019-04-17T14:59:00.000Z'
+        }
       }
     },
     {
