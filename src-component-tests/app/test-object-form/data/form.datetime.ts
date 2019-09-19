@@ -2,7 +2,15 @@ export const datetimeElements = [
   {
     readonly: true,
     name: 'datetime:disabled',
-    label: 'disabled datetim',
+    label: 'disabled datetime',
+    description: '',
+    type: 'datetime',
+    required: false
+  },
+  {
+    readonly: true,
+    name: 'datetime:disabled:with:value',
+    label: 'disabled datetime width value',
     description: '',
     type: 'datetime',
     required: false
@@ -32,5 +40,23 @@ export const datetimeElements = [
     description: 'a description',
     type: 'date',
     required: false
+  },
+  {
+    readonly: false,
+    name: 'datetime:four:width:value',
+    label: 'date width value',
+    withtime: true,
+    description: 'a description',
+    type: 'date',
+    required: false
+  },
+  {
+    readonly: false,
+    name: 'datetime:five:required',
+    label: 'date required',
+    withtime: true,
+    description: 'required date field',
+    type: 'date',
+    required: true
   }
 ];
