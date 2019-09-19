@@ -1,5 +1,6 @@
 <yuv-panel *ngIf="dmsObject; else empty" class="object-details" [title]="dmsObject?.data?.clienttitle"
-  [description]="dmsObject?.data?.clientdescription" [yuvBusyOverlay]="busy">
+  [description]="dmsObject?.data?.clientdescription" [yuvBusyOverlay]="busy" [enableStandaloneBackButton]="true"
+  [standaloneFullscreen]="standaloneFullscreen" (backButtonClick)="standaloneBackButtonClicked()">
   <div class="header-icon" [innerHtml]="objectIcon | safeHtml"></div>
 
   <yuv-action-menu-bar class="actions">

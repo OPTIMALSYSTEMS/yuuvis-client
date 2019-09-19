@@ -1,7 +1,7 @@
 import { PlatformLocation } from '@angular/common';
-import { Component, EventEmitter, HostBinding, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, HostBinding, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { Screen, ScreenService } from '@yuuvis/core';
-import { Subscription } from 'rxjs';
+import { takeUntilDestroy } from 'take-until-destroy';
 import { SVGIcons } from '../../svg.generated';
 import { ResponsiveMasterSlaveOptions } from './responsive-master-slave.interface';
 
@@ -57,8 +57,7 @@ import { ResponsiveMasterSlaveOptions } from './responsive-master-slave.interfac
   styleUrls: ['./responsive-master-slave.component.scss'],
   host: { class: 'yuv-responsive-master-slave' }
 })
-export class ResponsiveMasterSlaveComponent implements OnInit {
-  private subscriptions: Subscription[] = [];
+export class ResponsiveMasterSlaveComponent implements OnInit, OnDestroy {
   backButton = SVGIcons.navBack;
   useSmallDeviceLayout: boolean;
   visible = {
@@ -94,21 +93,19 @@ export class ResponsiveMasterSlaveComponent implements OnInit {
   @Output() slaveClosed = new EventEmitter();
 
   constructor(private screenService: ScreenService, private location: PlatformLocation) {
-    this.subscriptions.push(
-      this.screenService.screenChange$.subscribe((screen: Screen) => {
-        const useSmallDeviceLayout = screen.mode === ScreenService.MODE.SMALL;
-        this.useSmallDeviceLayout = useSmallDeviceLayout;
-        this.setPanelVisibility();
-      })
-    );
+    this.screenService.screenChange$.pipe(takeUntilDestroy(this)).subscribe((screen: Screen) => {
+      const useSmallDeviceLayout = screen.mode === ScreenService.MODE.SMALL;
+      this.useSmallDeviceLayout = useSmallDeviceLayout;
+      this.setPanelVisibility();
+    });
   }
 
   private setPanelVisibility() {
     if (!this.useSmallDeviceLayout) {
       // large screen mode
-      this.visible.slave = true;
       this.visible.master = true;
-    } else if (this._detailsActive) {
+      this.visible.slave = !!this._detailsActive;
+    } else if (!!this._detailsActive) {
       // small screen mode with selected item
       this.visible.master = false;
       this.visible.slave = true;
@@ -123,4 +120,5 @@ export class ResponsiveMasterSlaveComponent implements OnInit {
   }
 
   ngOnInit() {}
+  ngOnDestroy() {}
 }

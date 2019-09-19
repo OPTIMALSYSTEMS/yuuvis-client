@@ -130,7 +130,7 @@ export class SearchResultComponent {
           rows: this._rows,
           titleField: SecondaryObjectTypeField.TITLE,
           descriptionField: SecondaryObjectTypeField.DESCRIPTION,
-          selectType: 'single',
+          selectType: 'multiple',
           sortModel: sortOptions.map(o => ({
             colId: o.field,
             sort: o.order

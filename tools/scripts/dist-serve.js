@@ -21,15 +21,15 @@ app.get('*', function(request, response) {
 });
 
 // Enable for SSL
-// https
-//   .createServer(
-//     {
-//       key: fs.readFileSync(pathSSLKey),
-//       cert: fs.readFileSync(pathSSLCert),
-//       passphrase: 'optimal'
-//     },
-//     app
-//   )
-//   .listen(3000);
+https
+  .createServer(
+    {
+      key: fs.readFileSync(pathSSLKey),
+      cert: fs.readFileSync(pathSSLCert),
+      passphrase: 'optimal'
+    },
+    app
+  )
+  .listen(3000);
 
-app.listen(3000);
+// app.listen(3000);
