@@ -1,12 +1,23 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { BaseObjectTypeField, SearchQuery, SearchResult, SearchResultItem, SearchService, SecondaryObjectTypeField, SortOption } from '@yuuvis/core';
+import {
+  BaseObjectTypeField,
+  EventService,
+  SearchQuery,
+  SearchResult,
+  SearchResultItem,
+  SearchService,
+  SecondaryObjectTypeField,
+  SortOption
+} from '@yuuvis/core';
 import { ColDef } from 'ag-grid-community';
 import { of } from 'rxjs';
+import { takeUntilDestroy } from 'take-until-destroy';
 import { ResponsiveTableData } from '../../components';
 import { ColumnSizes } from '../../services/grid/grid.interface';
 import { GridService } from '../../services/grid/grid.service';
 import { SVGIcons } from '../../svg.generated';
+import { YuvEventType } from './../../../../../core/src/lib/service/event/events';
 
 @Component({
   selector: 'yuv-search-result',
@@ -14,7 +25,7 @@ import { SVGIcons } from '../../svg.generated';
   styleUrls: ['./search-result.component.scss'],
   host: { class: 'yuv-search-result toolbar' }
 })
-export class SearchResultComponent {
+export class SearchResultComponent implements OnDestroy {
   private _searchQuery: SearchQuery;
   private _columns: ColDef[];
   private _rows: any[];
@@ -75,10 +86,19 @@ export class SearchResultComponent {
     return this._hasPages;
   }
 
-  constructor(private gridService: GridService, private searchService: SearchService, private fb: FormBuilder) {
+  constructor(private gridService: GridService, private eventService: EventService, private searchService: SearchService, private fb: FormBuilder) {
     this.pagingForm = this.fb.group({
       page: ['']
     });
+
+    this.eventService
+      .on(YuvEventType.DMS_OBJECT_UPDATED)
+      .pipe(takeUntilDestroy(this))
+      .subscribe(e => {
+        console.log('UPDATED ', e);
+
+        // TODO: update table data without reloading the whole grid
+      });
   }
 
   /**
@@ -195,4 +215,6 @@ export class SearchResultComponent {
   onColumnResized(colSizes: ColumnSizes) {
     this.gridService.persistColumnWidthSettings(colSizes, this.resultListObjectTypeId);
   }
+
+  ngOnDestroy() {}
 }

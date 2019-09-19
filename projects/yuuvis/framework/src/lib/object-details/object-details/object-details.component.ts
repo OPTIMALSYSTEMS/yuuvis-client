@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { DmsObject, DmsService, SystemService, UserService } from '@yuuvis/core';
 import { CellRenderer } from '../../services/grid/grid.cellrenderer';
 import { SVGIcons } from '../../svg.generated';
+import { SecondaryObjectTypeField } from './../../../../../core/src/lib/service/system/system.enum';
 
 /**
  * High level component displaying detail aspects for a given DmsObject.
@@ -21,6 +22,9 @@ export class ObjectDetailsComponent {
   actionMenuVisible = false;
   actionMenuSelection = [];
 
+  title: string;
+  description: string;
+
   private _dmsObject: DmsObject;
   private _objectId: string;
 
@@ -30,6 +34,8 @@ export class ObjectDetailsComponent {
   @Input()
   set dmsObject(object: DmsObject) {
     this._dmsObject = object;
+    this.title = object.data[SecondaryObjectTypeField.TITLE];
+    this.description = object.data[SecondaryObjectTypeField.DESCRIPTION];
     if (object) {
       this.objectIcon = CellRenderer.typeCellRenderer(null, this.systemService.getLocalizedResource(`${object.objectTypeId}_label`));
     }
@@ -58,6 +64,11 @@ export class ObjectDetailsComponent {
 
   standaloneBackButtonClicked() {
     this.standaloneFullscreenBackButtonClick.emit();
+  }
+
+  onIndexdataChanged(event) {
+    this.title = event[SecondaryObjectTypeField.TITLE];
+    this.description = event[SecondaryObjectTypeField.DESCRIPTION];
   }
 
   openActionMenu() {

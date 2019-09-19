@@ -48,7 +48,7 @@ export class SearchService {
    * Map search result from the backend to applications SearchResult object
    * @param searchResponse The backend response
    */
-  private toSearchResult(searchResponse: any): SearchResult {
+  toSearchResult(searchResponse: any): SearchResult {
     const resultListItems: SearchResultItem[] = [];
     const objectTypes: string[] = [];
 
