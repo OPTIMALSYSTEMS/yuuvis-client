@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { DmsObject } from '@yuuvis/core';
 import { Observable } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
+import { DmsObject } from '../../model/dms-object.model';
 import { BackendService } from '../backend/backend.service';
 import { EventService } from '../event/event.service';
 import { YuvEventType } from '../event/events';

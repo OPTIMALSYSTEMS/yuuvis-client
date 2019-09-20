@@ -93,6 +93,27 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
       });
   }
 
+  /**
+   * Updates a row within the current row data. Will check if there is an entry matching the given ID
+   * and update the fields inside the columns with matching values from the data input.
+   * @param id The rows ID
+   * @param data Updated row data. Only fields that match the rows column values will be updated,
+   * although data may contain more fields. Data is supposed to be an object where the object
+   * properties represent the fields keys holding and their value.
+   */
+  updateRow(id: string, data: any) {
+    // check if ID is part of the current rows
+    const matchRow = this._data.rows.find(r => r.id === id);
+    if (matchRow) {
+      Object.keys(matchRow).forEach(k => {
+        matchRow[k] = data[k];
+      });
+      matchRow.id = id;
+      const rowNode = this.gridOptions.api.getRowNode(id);
+      rowNode.setData(matchRow);
+    }
+  }
+
   private applyGridOption(small?: boolean) {
     this.gridOptions.api.setRowData(this._data.rows);
     this.gridOptions.api.setHeaderHeight(small ? this.settings.headerHeight.small : this.settings.headerHeight.default);
@@ -132,7 +153,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
     return colDef;
   }
 
-  selectRows(selection?: string[]) {
+  private selectRows(selection?: string[]) {
     (selection || [this._data.rows[0].id]).forEach((id: string) => {
       const n = this.gridOptions.api.getRowNode(id);
       if (n) {

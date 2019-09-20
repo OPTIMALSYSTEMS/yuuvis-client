@@ -1,19 +1,21 @@
-import { Component, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import {
   BaseObjectTypeField,
+  DmsObject,
   EventService,
   SearchQuery,
   SearchResult,
   SearchResultItem,
   SearchService,
   SecondaryObjectTypeField,
-  SortOption
+  SortOption,
+  YuvEvent
 } from '@yuuvis/core';
 import { ColDef } from 'ag-grid-community';
 import { of } from 'rxjs';
 import { takeUntilDestroy } from 'take-until-destroy';
-import { ResponsiveTableData } from '../../components';
+import { ResponsiveDataTableComponent, ResponsiveTableData } from '../../components';
 import { ColumnSizes } from '../../services/grid/grid.interface';
 import { GridService } from '../../services/grid/grid.service';
 import { SVGIcons } from '../../svg.generated';
@@ -49,6 +51,8 @@ export class SearchResultComponent implements OnDestroy {
     pages: number;
     page: number;
   };
+
+  @ViewChild('dataTable', { static: false }) dataTable: ResponsiveDataTableComponent;
 
   @Input() set query(searchQuery: SearchQuery) {
     this._searchQuery = searchQuery;
@@ -94,10 +98,12 @@ export class SearchResultComponent implements OnDestroy {
     this.eventService
       .on(YuvEventType.DMS_OBJECT_UPDATED)
       .pipe(takeUntilDestroy(this))
-      .subscribe(e => {
-        console.log('UPDATED ', e);
-
-        // TODO: update table data without reloading the whole grid
+      .subscribe((e: YuvEvent) => {
+        const dmsObject = e.data as DmsObject;
+        if (this.dataTable) {
+          // Update table data without reloading the whole grid
+          this.dataTable.updateRow(dmsObject.id, dmsObject.data);
+        }
       });
   }
 
