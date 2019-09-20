@@ -29,7 +29,7 @@ $user-panel-width: 180px;
     a#logo {
       color: currentColor;
       yuv-icon {
-        width: 100px;
+        width: 75px;
         padding: 0;
         height: auto;
         background-color: transparent;
@@ -62,8 +62,8 @@ $user-panel-width: 180px;
       .user {
         border-radius: 50%;
         margin: 0 var(--app-pane-padding);
-        width: 40px;
-        height: 40px;
+        width: 32px;
+        height: 32px;
         background-color: rgba(255, 255, 255, 0.1);
 
         .overlay {

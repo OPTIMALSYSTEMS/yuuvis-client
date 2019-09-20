@@ -9,8 +9,7 @@ import {
   ObjectTypeField,
   SystemService,
   TranslateService,
-  Utils,
-  YuvEnvironment
+  Utils
 } from '@yuuvis/core';
 import { ColDef } from 'ag-grid-community';
 import { Observable } from 'rxjs';
@@ -42,8 +41,7 @@ export class GridService {
       fileSizePipe: new FileSizePipe(translate),
       numberPipe: new LocaleNumberPipe(translate),
       datePipe: new LocaleDatePipe(translate),
-      cr: CellRenderer,
-      baseHref: YuvEnvironment.isWebEnvironment() ? backend.getHost() : './'
+      cr: CellRenderer
       // fileSizeOpts: [],
       // mimetypegroupOpts: [],
       // typeOpts: [],

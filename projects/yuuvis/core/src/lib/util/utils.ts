@@ -1,7 +1,4 @@
-import {
-  EMPTY as observableEmpty,
-  throwError as observableThrowError
-} from 'rxjs';
+import { EMPTY as observableEmpty, throwError as observableThrowError } from 'rxjs';
 import { YuvError } from '../model/yuv-error.model';
 import { Sort } from './utils.helper.enum';
 
@@ -36,9 +33,7 @@ export class Utils {
    * @returns The quoted printable filename
    */
   public static encodeFileName(filename: string): string {
-    const fileName = Utils.encodeToQuotedPrintable(
-      Utils.encodeToUtf8(filename)
-    ).replace(/_/g, '=5F');
+    const fileName = Utils.encodeToQuotedPrintable(Utils.encodeToUtf8(filename)).replace(/_/g, '=5F');
     return `=?UTF-8?Q?${fileName}?=`;
   }
 
@@ -98,9 +93,7 @@ export class Utils {
    **/
   private static quotedPrintable(symbol) {
     if (symbol > '\xFF') {
-      throw RangeError(
-        '`encodeToQuotedPrintable` expects extended ASCII input only. Missing prior UTF-8 encoding?'
-      );
+      throw RangeError('`encodeToQuotedPrintable` expects extended ASCII input only. Missing prior UTF-8 encoding?');
     }
     const codePoint = symbol.charCodeAt(0);
     const hexadecimal = codePoint.toString(16).toUpperCase();
@@ -114,10 +107,7 @@ export class Utils {
    * @returns The encoded string
    */
   private static encodeToQuotedPrintable(rawinput): string {
-    const encoded = rawinput.replace(
-      /[\0-\b\n-\x1F=\x7F-\uD7FF\uDC00-\uFFFF]|[\uD800-\uDBFF][\uDC00-\uDFFF]|[\uD800-\uDBFF]/g,
-      this.quotedPrintable
-    );
+    const encoded = rawinput.replace(/[\0-\b\n-\x1F=\x7F-\uD7FF\uDC00-\uFFFF]|[\uD800-\uDBFF][\uDC00-\uDFFF]|[\uD800-\uDBFF]/g, this.quotedPrintable);
     return encoded;
   }
 
@@ -131,12 +121,7 @@ export class Utils {
    * @param options
    * @returns (a: any, b: any) => number
    */
-  public static sortValues(
-    key = '',
-    order = Sort.ASC,
-    locales?: string | string[],
-    options?: Intl.CollatorOptions
-  ) {
+  public static sortValues(key = '', order = Sort.ASC, locales?: string | string[], options?: Intl.CollatorOptions) {
     const f = (a: any, b: any) => {
       const varA = Utils.getProperty(a, key);
       const varB = Utils.getProperty(b, key);
@@ -158,9 +143,7 @@ export class Utils {
    * @returns any
    */
   public static getProperty(object: any, key = ''): any {
-    const f = key
-      ? key.split('.').reduce((o, k) => (o || {})[k], object)
-      : object;
+    const f = key ? key.split('.').reduce((o, k) => (o || {})[k], object) : object;
     return f;
   }
 
@@ -187,23 +170,11 @@ export class Utils {
    * @param name
    * @param message
    */
-  public static catchSkip(
-    skipNotification?: (error) => any,
-    callback?: (error) => any,
-    name?: string,
-    message?: string
-  ) {
+  public static catchSkip(skipNotification?: (error) => any, callback?: (error) => any, name?: string, message?: string) {
     const f = error => {
       const _error = callback && callback(error);
       const _skipNotification = skipNotification && skipNotification(error);
-      return observableThrowError(
-        new YuvError(
-          _error instanceof Error ? _error : error,
-          name,
-          message,
-          _skipNotification
-        )
-      );
+      return observableThrowError(new YuvError(_error instanceof Error ? _error : error, name, message, _skipNotification));
     };
     return f;
   }
@@ -218,22 +189,10 @@ export class Utils {
    * @param skipNotification
    * @return (error) => Observable<never>
    */
-  public static catch(
-    callback?: (error) => any,
-    name?: string,
-    message?: string,
-    skipNotification?: boolean
-  ) {
+  public static catch(callback?: (error) => any, name?: string, message?: string, skipNotification?: boolean) {
     const f = error => {
       const _error = callback && callback(error);
-      return observableThrowError(
-        new YuvError(
-          _error instanceof Error ? _error : error,
-          name,
-          message,
-          skipNotification
-        )
-      );
+      return observableThrowError(new YuvError(_error instanceof Error ? _error : error, name, message, skipNotification));
     };
     return f;
   }
@@ -248,20 +207,10 @@ export class Utils {
    * @param skipNotification
    * @return (error) => void
    */
-  public static throw(
-    callback?: (error) => any,
-    name?: string,
-    message?: string,
-    skipNotification?: boolean
-  ) {
+  public static throw(callback?: (error) => any, name?: string, message?: string, skipNotification?: boolean) {
     const f = error => {
       const _error = callback && callback(error);
-      throw new YuvError(
-        _error instanceof Error ? _error : error,
-        name,
-        message,
-        skipNotification
-      );
+      throw new YuvError(_error instanceof Error ? _error : error, name, message, skipNotification);
     };
     return f;
   }
@@ -275,12 +224,7 @@ export class Utils {
    * @param skipNotification
    * @return (error) => void
    */
-  public static logError(
-    callback?: (error) => any,
-    name?: string,
-    message?: string,
-    skipNotification = true
-  ) {
+  public static logError(callback?: (error) => any, name?: string, message?: string, skipNotification = true) {
     return Utils.throw(callback, name, message, skipNotification);
   }
 
@@ -291,11 +235,7 @@ export class Utils {
    * @return boolean
    */
   public static isVisible(elem: any): boolean {
-    return !!(
-      elem.offsetWidth ||
-      elem.offsetHeight ||
-      elem.getClientRects().length
-    );
+    return !!(elem.offsetWidth || elem.offsetHeight || elem.getClientRects().length);
   }
 
   public static getBaseHref() {
@@ -303,7 +243,6 @@ export class Utils {
   }
 
   /**
-   *
    * Truncate a string (first argument) if it is longer than the given maximum string length (second argument).
    * Return the truncated string with a ... ending ot whats provided.
    *

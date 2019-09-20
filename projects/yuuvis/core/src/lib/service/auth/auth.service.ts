@@ -123,10 +123,10 @@ export class AuthService {
 
     return this.storage.getItem(this.TOKEN_STORAGE_KEY).pipe(
       switchMap((res: any) => {
-        if (res) {
-          // this.cloudLoginSetHeaders(res.accessToken, res.tenant);
-          this.backend.setHost(host);
-        }
+        // if (res) {
+        //   // this.cloudLoginSetHeaders(res.accessToken, res.tenant);
+        //   this.backend.setHost(host);
+        // }
         return this.fetchUser();
       })
     );
@@ -161,7 +161,8 @@ export class AuthService {
       // by default we are just resetting internal state to 'logged out' and in
       // some cases call gateways logout endpoint to do logout stuff there silently
       this.http
-        .get(`${this.backend.getHost()}/logout`, {
+        // .get(`${this.backend.getHost()}/logout`, {
+        .get(`/logout`, {
           observe: 'response',
           responseType: 'arraybuffer'
         })
@@ -175,7 +176,7 @@ export class AuthService {
           }
         );
     }
-    this.backend.setHost(null);
+    // this.backend.setHost(null);
     // this.cloudLoginRemoveHeaders();
     // TODO: enable again: this.eventService.trigger(EnaioEvent.LOGOUT);
   }
