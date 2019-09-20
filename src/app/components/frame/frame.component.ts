@@ -1,6 +1,6 @@
 import { Component, HostBinding, HostListener, OnInit } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
-import { SwPush, SwUpdate } from '@angular/service-worker';
+import { SwUpdate } from '@angular/service-worker';
 import { AuthService, UserService, YuvUser } from '@yuuvis/core';
 import { filter } from 'rxjs/operators';
 
@@ -29,7 +29,7 @@ export class FrameComponent implements OnInit {
   showSideBar = false;
   user: YuvUser;
 
-  constructor(private router: Router, private update: SwUpdate, private push: SwPush, private authService: AuthService, private userService: UserService) {
+  constructor(private router: Router, private update: SwUpdate, private authService: AuthService, private userService: UserService) {
     this.update.available.subscribe(update => {
       this.swUpdateAvailable = true;
     });
