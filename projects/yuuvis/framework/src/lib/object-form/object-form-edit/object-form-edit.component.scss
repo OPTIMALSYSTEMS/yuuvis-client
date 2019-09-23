@@ -4,7 +4,7 @@
   display: block;
 }
 .object-form-edit {
-  background: #fff;
+  background: var(--panel-background);
   min-width: 300px;
   min-height: 300px;
   display: grid;

@@ -1,0 +1,20 @@
+.dark {
+  // main backgrounds
+  --main-background: #5a6065;
+
+  // form
+  --color-dirty-background: rgba(var(--color-accent-rgb), 0.4);
+  --color-dirty-font: #fff;
+
+  // panel background colors DARK MODE
+  --panel-background: var(--color-primary);
+  --panel-background-grey: #4f565b;
+  --panel-background-lightgrey: var(--color-primary-3);
+  --panel-divider-color: rgba(255, 255, 255, 0.1);
+  --app-bar-background: var(--panel-background);
+
+  // text colors DARK MODE
+  --text-color-body: #fff;
+  --text-color-caption: rgba(255, 255, 255, 0.75);
+  --text-color-hint: rgba(255, 255, 255, 0.5);
+}

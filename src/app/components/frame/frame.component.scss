@@ -18,22 +18,24 @@ $user-panel-width: 180px;
     display: flex;
     flex-flow: row nowrap;
     align-items: center;
-    color: #fff;
-    background-color: var(--color-primary);
+    padding: calc((var(--app-bar-height) - 32px) / 4);
+    color: var(--text-color-caption);
+    background-color: var(--app-bar-background);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 
     yuv-icon#drawer {
-      padding: calc((var(--app-bar-height) - 24px) / 2);
-      background-color: var(--color-accent);
-      border-radius: 0;
+      padding: calc(((var(--app-bar-height) - 24px) / 2) - ((var(--app-bar-height) - 32px) / 4));
+      // background-color: var(--color-accent);
+      // border-radius: 0;
     }
     a#logo {
       color: currentColor;
+      margin: 0 calc(var(--app-pane-padding) / 2);
       yuv-icon {
-        width: 75px;
-        padding: 0;
+        width: 32px;
+        padding: calc(((var(--app-bar-height) - 32px) / 2) - ((var(--app-bar-height) - 32px) / 4));
         height: auto;
         background-color: transparent;
-        margin: 0 calc(var(--app-pane-padding));
       }
     }
 
@@ -175,13 +177,14 @@ $user-panel-width: 180px;
     .app-bar {
       background-color: transparent;
       color: var(--theme-transparent-app-bar-color);
+      border-color: transparent;
 
       .right .user {
         background-color: rgba(255, 255, 255, 0.5);
       }
 
       yuv-icon#drawer {
-        background-color: transparent;
+        // background-color: transparent;
         border: none;
       }
     }

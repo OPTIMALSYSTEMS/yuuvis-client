@@ -30,14 +30,15 @@
         }
 
         &:not(.ui-state-disabled).ui-state-active a {
-          background-color: #fff;
+          background-color: var(--panel-background);
           color: var(--text-color-caption);
         }
       }
       .ui-accordion-content-wrapper {
         .ui-accordion-content {
           border: 0;
-          background-color: #fff;
+          color: var(--text-color-caption);
+          background-color: var(--panel-background);
         }
       }
     }

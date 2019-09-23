@@ -1,6 +1,6 @@
 :host {
   display: block;
-  background: #fff;
+  background: var(--panel-background);
 
   .yuv-object-form {
     .core {
