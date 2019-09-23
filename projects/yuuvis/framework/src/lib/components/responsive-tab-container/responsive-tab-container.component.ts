@@ -6,7 +6,7 @@ import { filter, map, take, tap } from 'rxjs/operators';
 import { SVGIcons } from '../../svg.generated';
 
 /**
- *
+ * Responsive Split TabContainer + plugin support
  */
 @Component({
   selector: 'yuv-responsive-tab-container',
@@ -14,6 +14,9 @@ import { SVGIcons } from '../../svg.generated';
   styleUrls: ['./responsive-tab-container.component.scss']
 })
 export class ResponsiveTabContainerComponent implements OnInit, AfterContentInit {
+  /**
+   * TabPanel plugins
+   */
   @Input() pluginPanels = new QueryList<TabPanel>();
 
   @ContentChildren(TabPanel) tabPanels: QueryList<TabPanel>;
@@ -29,6 +32,10 @@ export class ResponsiveTabContainerComponent implements OnInit, AfterContentInit
   isSmallScreen$: Observable<boolean>;
   isBigScreen: Observable<boolean>;
 
+  /**
+   * add SplitPanel with specific TabPanel
+   * @param id TabPanel id
+   */
   splitPanelAdd(id?: string) {
     const panel = id ? this.allPanels.find(p => this.pID(p) === id) : this.mainTabView.findSelectedTab();
     if (panel && this.allPanels.length > this.splitPanels.length + 1) {
@@ -42,6 +49,11 @@ export class ResponsiveTabContainerComponent implements OnInit, AfterContentInit
     }
   }
 
+  /**
+   * remove SplitPanel with specific TabPanel
+   * @param panel TabPanel
+   * @param index SplitPanel index
+   */
   splitPanelClose(panel: TabPanel, index = 0) {
     this.movePanelContent(panel);
     panel.disabled = false;
@@ -49,10 +61,14 @@ export class ResponsiveTabContainerComponent implements OnInit, AfterContentInit
     this.savePanelOrder();
   }
 
-  movePanelContent(panel: TabPanel, tabView: TabView = this.mainTabView) {
+  private movePanelContent(panel: TabPanel, tabView: TabView = this.mainTabView) {
     tabView.el.nativeElement.firstElementChild.lastElementChild.appendChild(panel.viewContainer.element.nativeElement);
   }
 
+  /**
+   * custom event handler
+   * @param e
+   */
   onChange(e: any) {
     if (e && e.originalEvent) {
       e.originalEvent.target.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
@@ -79,6 +95,9 @@ export class ResponsiveTabContainerComponent implements OnInit, AfterContentInit
     setTimeout(() => this.init(), 100);
   }
 
+  /**
+   * initialize default TabPanels & TabPanel plugins
+   */
   init() {
     this.allPanels = this.tabPanels.toArray().concat(this.pluginPanels.toArray());
 
@@ -89,6 +108,10 @@ export class ResponsiveTabContainerComponent implements OnInit, AfterContentInit
     this.loadPanelOrder();
   }
 
+  /**
+   * opens specific TabPanel via native click event
+   * @param panel
+   */
   open(panel: TabPanel) {
     if (panel) {
       const target = this.mainTabView.el.nativeElement.querySelector(`a#${panel.id}-label`);
@@ -99,10 +122,18 @@ export class ResponsiveTabContainerComponent implements OnInit, AfterContentInit
     }
   }
 
+  /**
+   * returns TabPanel container ID
+   * @param panel
+   * @param postfix
+   */
   pID(panel: TabPanel, postfix = '') {
     return panel && panel.viewContainer.element.nativeElement.id + postfix;
   }
 
+  /**
+   * Persist panel order state to cache
+   */
   savePanelOrder() {
     this.isBigScreen.subscribe(() => {
       const panelOrder = [this.pID(this.mainTabView.findSelectedTab()), ...this.splitPanels.map(p => this.pID(p))];
@@ -110,6 +141,9 @@ export class ResponsiveTabContainerComponent implements OnInit, AfterContentInit
     });
   }
 
+  /**
+   * Setup panel order based on cached value
+   */
   loadPanelOrder() {
     this.isBigScreen.subscribe(() => {
       const panelOrder = [];

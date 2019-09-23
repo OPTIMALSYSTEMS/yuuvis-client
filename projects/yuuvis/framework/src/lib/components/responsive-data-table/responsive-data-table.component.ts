@@ -8,11 +8,13 @@ import { takeUntilDestroy } from 'take-until-destroy';
 import { ColumnSizes } from '../../services/grid/grid.interface';
 import { ResponsiveTableData } from './responsive-data-table.interface';
 
+/**
+ * Responsive DataTable
+ */
 @Component({
   selector: 'yuv-responsive-data-table',
   templateUrl: './responsive-data-table.component.html',
-  styleUrls: ['./responsive-data-table.component.scss'],
-  host: { class: 'yuv-responsive-data-table' }
+  styleUrls: ['./responsive-data-table.component.scss']
 })
 export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
   // internal subject for element size changes used for debouncing resize events
@@ -32,6 +34,9 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
 
   gridOptions: GridOptions;
 
+  /**
+   * ResponsiveTableData setter
+   */
   @Input() set data(data: ResponsiveTableData) {
     this._data = data;
     if (this.gridOptions) {
@@ -40,14 +45,26 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
       this.setupGridOptions();
     }
   }
-  // width (number in pixel) of the table below which it should switch to small view
+  /**
+   * width (number in pixel) of the table below which it should switch to small view
+   */
   @Input() breakpoint = 600;
 
-  // emits an array of the selected rows
+  /**
+   * emits an array of the selected rows
+   */
   @Output() selectionChanged = new EventEmitter<any[]>();
+
+  /**
+   * emits a sort information
+   */
   @Output() sortChanged = new EventEmitter<{ colId: string; sort: string }[]>();
+  /**
+   * emits an array of the column sizes
+   */
   @Output() columnResized = new EventEmitter<ColumnSizes>();
 
+  @HostBinding('class.yuv-responsive-data-table') _hostClass = true;
   @HostBinding('class.small') small = false;
   @HostListener('keydown.control.c', ['$event'])
   copyCellHandler(event: KeyboardEvent) {
@@ -132,6 +149,10 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
     return colDef;
   }
 
+  /**
+   * select rows based on list of IDs
+   * @param selection default is first row
+   */
   selectRows(selection?: string[]) {
     (selection || [this._data.rows[0].id]).forEach((id: string) => {
       const n = this.gridOptions.api.getRowNode(id);
@@ -201,7 +222,11 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
     document.body.removeChild(textArea);
   }
 
-  onResized(e) {
+  /**
+   * custom event handler
+   * @param e
+   */
+  onResized(e: ResizedEvent) {
     this.resizeSource.next(e);
   }
   ngOnInit() {}

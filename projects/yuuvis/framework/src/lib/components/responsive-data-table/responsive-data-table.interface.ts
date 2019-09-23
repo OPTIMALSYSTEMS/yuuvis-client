@@ -1,5 +1,8 @@
 import { ColDef } from 'ag-grid-community';
 
+/**
+ * Responsive TableData
+ */
 export interface ResponsiveTableData {
   columns: ColDef[];
   rows: any[];
