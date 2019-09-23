@@ -26,11 +26,11 @@
     </yuv-form-input>
 
     <!-- DATE -->
-    <yuv-form-input *ngSwitchCase="'date'" [tag]="tag" [label]="formElementRef._eoFormElement.label"
-      [isNull]="isNull" [skipToggle]="skipToggle || situation !== 'SEARCH'" (onToggleLabel)="labelToggled($event)"
+    <yuv-form-input *ngSwitchCase="'date'" [tag]="tag" [label]="formElementRef._eoFormElement.label" [isNull]="isNull"
+      [skipToggle]="skipToggle || situation !== 'SEARCH'" (onToggleLabel)="labelToggled($event)"
       [required]="formElementRef._eoFormElement.required" [invalid]="formElementRef.invalid">
-      <yuv-datetime [readonly]="formElementRef._eoFormElement.readonly"
-        [withTime]="false" [pickerTitle]="formElementRef._eoFormElement.label"
+      <yuv-datetime [readonly]="formElementRef._eoFormElement.readonly" [withTime]="false"
+        [pickerTitle]="formElementRef._eoFormElement.label"
         [formControlName]="element._eoFormControlWrapper.controlName"></yuv-datetime>
     </yuv-form-input>
 
@@ -38,8 +38,8 @@
     <yuv-form-input *ngSwitchCase="'datetime'" [tag]="tag" [label]="formElementRef._eoFormElement.label"
       [isNull]="isNull" [skipToggle]="skipToggle || situation !== 'SEARCH'" (onToggleLabel)="labelToggled($event)"
       [required]="formElementRef._eoFormElement.required" [invalid]="formElementRef.invalid">
-      <yuv-datetime [readonly]="formElementRef._eoFormElement.readonly"
-        [withTime]="true" [pickerTitle]="formElementRef._eoFormElement.label"
+      <yuv-datetime [readonly]="formElementRef._eoFormElement.readonly" [withTime]="true"
+        [pickerTitle]="formElementRef._eoFormElement.label"
         [formControlName]="element._eoFormControlWrapper.controlName"></yuv-datetime>
     </yuv-form-input>
 
@@ -81,10 +81,10 @@
       ">
       <div *ngIf="formElementRef.errors.number">{{'yuv.framework.object-form-element.error.number' | translate}}</div>
       <div *ngIf="formElementRef.errors.precision">
-        {{ formElementRef.errors.precision.translateKey | translate: formElementRef.errors.precision.translateValues }}
+        {{ 'yuv.framework.object-form-element.error.number.precision' | translate: formElementRef.errors.precision.params }}
       </div>
       <div *ngIf="formElementRef.errors.scale">
-        {{ formElementRef.errors.scale.translateKey | translate: formElementRef.errors.scale.translateValues}}
+        {{ 'yuv.framework.object-form-element.error.number.scale' | translate: formElementRef.errors.scale.params }}
       </div>
 
       <div *ngIf="formElementRef.errors.regex || formElementRef.errors.pattern">
