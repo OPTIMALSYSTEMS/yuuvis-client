@@ -24,7 +24,7 @@ export class AuthInterceptor implements HttpInterceptor {
 
             if (error.status === 401) {
               // this.auth.logout();
-              (window as any).location.reload();
+              (window as any).location.href = `${(window as any).location.href}?${Date.now()}`;
             }
           }
         }
