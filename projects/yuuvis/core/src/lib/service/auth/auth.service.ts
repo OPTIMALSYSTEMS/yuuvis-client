@@ -4,7 +4,6 @@ import { LocalStorage } from '@ngx-pwa/local-storage';
 import { TranslateService } from '@ngx-translate/core';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { switchMap, tap } from 'rxjs/operators';
-import { YuvEnvironment } from '../../core.environment';
 import { UserSettings, YuvUser } from '../../model/yuv-user.model';
 import { BackendService } from '../backend/backend.service';
 import { ConfigService } from '../config/config.service';
@@ -150,32 +149,34 @@ export class AuthService {
     this.authenticated = false;
     this.authSource.next(this.authenticated);
 
-    // remove stored access data
-    this.storage.removeItem(this.TOKEN_STORAGE_KEY).subscribe();
-    if (this.coreConfig.environment.production && YuvEnvironment.isWebEnvironment()) {
-      (window as any).location.href = '/logout';
-      return;
-    }
+    (window as any).location.href = '/logout';
 
-    if (gatewayLogout) {
-      // by default we are just resetting internal state to 'logged out' and in
-      // some cases call gateways logout endpoint to do logout stuff there silently
-      this.http
-        // .get(`${this.backend.getHost()}/logout`, {
-        .get(`/logout`, {
-          observe: 'response',
-          responseType: 'arraybuffer'
-        })
-        .subscribe(
-          res => {
-            console.log(res);
-            this.http.get(res.url).subscribe();
-          },
-          err => {
-            console.error(err);
-          }
-        );
-    }
+    // // remove stored access data
+    // this.storage.removeItem(this.TOKEN_STORAGE_KEY).subscribe();
+    // if (this.coreConfig.environment.production && YuvEnvironment.isWebEnvironment()) {
+    //   (window as any).location.href = '/logout';
+    //   return;
+    // }
+
+    // if (gatewayLogout) {
+    //   // by default we are just resetting internal state to 'logged out' and in
+    //   // some cases call gateways logout endpoint to do logout stuff there silently
+    //   this.http
+    //     // .get(`${this.backend.getHost()}/logout`, {
+    //     .get(`/logout`, {
+    //       observe: 'response',
+    //       responseType: 'arraybuffer'
+    //     })
+    //     .subscribe(
+    //       res => {
+    //         console.log(res);
+    //         this.http.get(res.url).subscribe();
+    //       },
+    //       err => {
+    //         console.error(err);
+    //       }
+    //     );
+    // }
     // this.backend.setHost(null);
     // this.cloudLoginRemoveHeaders();
     // TODO: enable again: this.eventService.trigger(EnaioEvent.LOGOUT);
