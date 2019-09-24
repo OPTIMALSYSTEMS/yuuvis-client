@@ -6,31 +6,27 @@ const path = require('path');
 const mergeTranslations = async () => {
   await _merge('de');
   await _merge('en');
-  console.log('Merged translations from libraraies with app');
-  // check for translations from good old brummfugl
-  saveTranslations('de');
-  saveTranslations('en');
+
+  console.log('i18n succesfull!');
 };
 
 const _merge = async lang => {
   const lisJsonPath = path.resolve(__dirname, '..', '..', '..', 'dist', 'yuuvis');
   const resDe = await _readLanguageFiles(lisJsonPath, lang);
   const appJsonPath = path.resolve(__dirname, '..', '..', '..', 'src', 'assets', 'default', 'i18n', lang + '.json');
-  let merged,
+  let merged = JSON.parse(resDe),
     __merged = {};
   if (fs.existsSync(appJsonPath)) {
     __merged = JSON.parse(fs.readFileSync(appJsonPath, { encoding: 'utf8' }));
-    merged = { ...JSON.parse(resDe), ...__merged };
-  } else {
-    merged = JSON.parse(resDe);
+    merged = { ...merged, ...__merged };
   }
 
   // copy the merged data to the apps language file
-  if (Object.keys(merged).length !== Object.keys(__merged) || Object.keys(merged).some(k => merged[k] !== __merged[k])) {
-    fs.writeFileSync(appJsonPath, JSON.stringify(merged, 2, 2), {
-      encoding: 'utf8'
-    });
-  }
+  fs.writeFileSync(appJsonPath, JSON.stringify(merged, null, 2), {
+    encoding: 'utf8'
+  });
+
+  console.log('Merged translations for ' + lang);
 };
 
 const _readLanguageFiles = (path, lang) => {
@@ -52,24 +48,6 @@ const _readLanguageFiles = (path, lang) => {
         resolve(contents.join('\r\n'));
       }
     );
-  });
-};
-
-const saveTranslations = lang => {
-  // const brummfuglResourcePath = path.resolve(__dirname, 'i18n-brummfugl', lang + '.json');
-  const flokfuglResourcePath = path.resolve(__dirname, '..', '..', '..', 'src', 'assets', 'default', 'i18n', lang + '.json');
-
-  // const brummfugl = JSON.parse(fs.readFileSync(brummfuglResourcePath, { encoding: 'utf8' }));
-  const flokfugl = JSON.parse(fs.readFileSync(flokfuglResourcePath, { encoding: 'utf8' }));
-
-  // Object.keys(flokfugl).forEach(k => {
-  //   if (flokfugl[k].length === 0 && brummfugl[k]) {
-  //     flokfugl[k] = brummfugl[k];
-  //   }
-  // });
-
-  fs.writeFileSync(flokfuglResourcePath, JSON.stringify(flokfugl, null, 2), {
-    encoding: 'utf8'
   });
 };
 

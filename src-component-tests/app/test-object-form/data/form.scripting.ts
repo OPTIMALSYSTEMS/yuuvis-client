@@ -8,12 +8,12 @@ export const formScriptingModel = {
 
   console.log(scope.model);
 
-  function togglereadonly() {
-    scope.model["yuuvis:test"].readonly = !scope.model["yuuvis:test"].readonly;
+  function togglereadonly(value) {
+    scope.model["yuuvis:test"].readonly = value.element.value === null ? false : !scope.model["yuuvis:test"].readonly;
   }
-
-  function togglerequired() {
-    scope.model["yuuvis:test"].required = !scope.model["yuuvis:test"].required;
+  
+  function togglerequired(value) {
+    scope.model["yuuvis:test"].required = value.element.value === null ? false : !scope.model["yuuvis:test"].required;
   }
   `,
   layout: {

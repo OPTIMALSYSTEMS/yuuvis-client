@@ -81,6 +81,7 @@ export class DatetimeComponent implements OnInit, ControlValueAccessor, Validato
       .replace(/y/g, 'Y')
       .replace(/d/g, 'D')
       .replace(/aa/g, 'A');
+
     this.maskPattern = this._datePattern.replace(/[mMdDyYhH]/g, '9');
   }
 
@@ -102,7 +103,7 @@ export class DatetimeComponent implements OnInit, ControlValueAccessor, Validato
 
   writeValue(value: any): void {
     this.value = value
-      ? moment(value, this.datePattern)
+      ? moment(new Date(value), this.datePattern)
           .seconds(0)
           .millisecond(0)
           .toDate()
