@@ -42,15 +42,16 @@ body {
       .ui-chips-input-token input {
         font-family: 'Roboto';
         font-size: var(--font-body);
+        color: var(--text-color-body);
       }
 
       .ui-chips-token {
         font-size: var(--font-caption);
         padding: 2px;
         margin: 2px 2px 0 0;
-        background: rgba(0, 0, 0, 0.03);
+        background: var(--item-focus-color);
         color: var(--text-color-caption);
-        border: 1px solid rgba(0, 0, 0, 0.15);
+        border: 1px solid var(--item-focus-color);
       }
     }
   }

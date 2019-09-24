@@ -1,7 +1,7 @@
 @import '../../../../../../../../../src/scss-shared/_mixins';
 
 .date-picker {
-  background: #fff;
+  background: var(--panel-background);
   @include flex-col();
   box-sizing: border-box;
 

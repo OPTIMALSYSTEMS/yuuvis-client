@@ -2,6 +2,7 @@ import { Component, HostBinding, HostListener, OnInit } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { SwUpdate } from '@angular/service-worker';
 import { AuthService, UserService, YuvUser } from '@yuuvis/core';
+import { LayoutService, LayoutSettings } from '@yuuvis/framework';
 import { filter } from 'rxjs/operators';
 
 @Component({
@@ -29,9 +30,25 @@ export class FrameComponent implements OnInit {
   showSideBar = false;
   user: YuvUser;
 
-  constructor(private router: Router, private update: SwUpdate, private authService: AuthService, private userService: UserService) {
+  constructor(
+    private router: Router,
+    private layoutService: LayoutService,
+    private update: SwUpdate,
+    private authService: AuthService,
+    private userService: UserService
+  ) {
     this.update.available.subscribe(update => {
       this.swUpdateAvailable = true;
+    });
+
+    this.layoutService.layoutSettings$.subscribe((settings: LayoutSettings) => {
+      const darkModeClass = 'dark';
+      const bodyClassList = document.getElementsByTagName('body')[0].classList;
+      if (bodyClassList.contains(darkModeClass) && !settings.darkMode) {
+        bodyClassList.remove(darkModeClass);
+      } else if (!bodyClassList.contains(darkModeClass) && settings.darkMode) {
+        bodyClassList.add(darkModeClass);
+      }
     });
   }
 

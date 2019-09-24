@@ -37,7 +37,8 @@
             <div class="setting">
                 <div class="label">UI</div>
                 <div class="value">
-                    <button class="toggle" (click)="toggleDarkMode()">DARK MODE</button>
+                    <button class="toggle" [ngClass]="{primary: darkMode}" (click)="toggleDarkMode(!darkMode)">DARK
+                        MODE</button>
                 </div>
             </div>
 

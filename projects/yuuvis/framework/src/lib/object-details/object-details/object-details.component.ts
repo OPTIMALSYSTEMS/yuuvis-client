@@ -1,8 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { DmsObject, DmsService, SystemService, UserService } from '@yuuvis/core';
+import { DmsObject, DmsService, SecondaryObjectTypeField, SystemService, UserService } from '@yuuvis/core';
 import { CellRenderer } from '../../services/grid/grid.cellrenderer';
 import { SVGIcons } from '../../svg.generated';
-import { SecondaryObjectTypeField } from './../../../../../core/src/lib/service/system/system.enum';
 
 /**
  * High level component displaying detail aspects for a given DmsObject.

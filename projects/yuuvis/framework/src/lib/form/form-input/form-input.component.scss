@@ -77,7 +77,7 @@
 
   &.required .fe-wrapper {
     > label {
-      background-color: var(--panel-divider-color);
+      background-color: var(--item-focus-color);
 
       &:after {
         content: '*';

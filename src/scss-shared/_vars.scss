@@ -3,8 +3,6 @@
 
   // main backgrounds
   --main-background: #f5f5f5;
-  // main backgrounds DARK MODE
-  --main-background-dark: #5a6065;
 
   // primary color variations
   --color-primary: #484f54;
@@ -33,6 +31,9 @@
   --panel-background-grey: #eee;
   --panel-background-lightgrey: #fafafa;
   --panel-divider-color: rgba(0, 0, 0, 0.1);
+
+  --item-focus-color: rgba(0, 0, 0, 0.1);
+
   --app-bar-background: var(--panel-background);
 
   --scrollbar-thumb-color: #ddd;

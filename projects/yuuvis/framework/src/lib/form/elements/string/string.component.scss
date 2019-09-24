@@ -42,6 +42,9 @@
     }
   }
 
+  p-chips {
+    width: 100%;
+  }
   .ui-inputtext,
   input {
     padding: 0;
@@ -50,12 +53,6 @@
     flex-wrap: wrap;
     align-items: center;
     width: 100%;
+    background: transparent;
   }
 }
-
-// //noinspection CssInvalidPseudoSelector
-// :host ::ng-deep {
-//   input {
-//     width: 100%;
-//   }
-// }

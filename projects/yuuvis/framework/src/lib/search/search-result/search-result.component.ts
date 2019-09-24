@@ -10,7 +10,8 @@ import {
   SearchService,
   SecondaryObjectTypeField,
   SortOption,
-  YuvEvent
+  YuvEvent,
+  YuvEventType
 } from '@yuuvis/core';
 import { ColDef } from 'ag-grid-community';
 import { of } from 'rxjs';
@@ -19,7 +20,6 @@ import { ResponsiveDataTableComponent, ResponsiveTableData } from '../../compone
 import { ColumnSizes } from '../../services/grid/grid.interface';
 import { GridService } from '../../services/grid/grid.service';
 import { SVGIcons } from '../../svg.generated';
-import { YuvEventType } from './../../../../../core/src/lib/service/event/events';
 
 @Component({
   selector: 'yuv-search-result',

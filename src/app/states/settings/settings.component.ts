@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ConfigService, TranslateService, UserService, YuvUser } from '@yuuvis/core';
+import { LayoutService, LayoutSettings } from '@yuuvis/framework';
 import { Observable } from 'rxjs';
-import { AppCacheService } from './../../../../projects/yuuvis/core/src/lib/service/cache/app-cache.service';
 
 @Component({
   selector: 'yuv-settings',
@@ -10,29 +10,33 @@ import { AppCacheService } from './../../../../projects/yuuvis/core/src/lib/serv
   styleUrls: ['./settings.component.scss']
 })
 export class SettingsComponent implements OnInit {
-  // private STORAGE_KEY = 'yuv.tmp.settings'
   user$: Observable<YuvUser>;
+  darkMode: boolean;
   clientLocales: any;
 
   constructor(
     private translate: TranslateService,
-    private appCache: AppCacheService,
+    private layoutService: LayoutService,
     private titleService: Title,
     public config: ConfigService,
     private userService: UserService
   ) {
     this.clientLocales = config.getClientLocales();
-    // this.appCache.getItem(this.STORAGE_KEY).subscribe
   }
 
   changeClientLocale(iso: string) {
     this.userService.changeClientLocale(iso);
   }
 
-  toggleDarkMode() {}
+  toggleDarkMode(darkMode: boolean) {
+    this.layoutService.setDarkMode(darkMode);
+  }
 
   ngOnInit() {
     this.titleService.setTitle(this.translate.instant('yuv.client.state.settings.title'));
     this.user$ = this.userService.user$;
+    this.layoutService.layoutSettings$.subscribe((settings: LayoutSettings) => {
+      this.darkMode = settings.darkMode;
+    });
   }
 }
