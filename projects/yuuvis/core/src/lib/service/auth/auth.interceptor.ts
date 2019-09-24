@@ -23,10 +23,8 @@ export class AuthInterceptor implements HttpInterceptor {
             console.log(error.status);
 
             if (error.status === 401) {
-              this.auth.logout();
-            }
-            if (error.status === 302) {
-              console.log('302');
+              // this.auth.logout();
+              (window as any).location.reload();
             }
           }
         }
