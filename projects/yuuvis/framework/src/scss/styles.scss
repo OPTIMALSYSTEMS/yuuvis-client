@@ -82,7 +82,7 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: #ddd;
+  background-color: var(--scrollbar-thumb-color);
 }
 
 ::-webkit-scrollbar-button {
@@ -94,9 +94,10 @@
   background-color: transparent;
 }
 
-// scrollbar color for dark backgrounds
-.dark {
-  ::-webkit-scrollbar-thumb {
-    background-color: rgba(255, 255, 255, 0.2);
-  }
+.panel {
+  @include panel-shadow();
+}
+
+svg .accent {
+  fill: var(--color-accent);
 }

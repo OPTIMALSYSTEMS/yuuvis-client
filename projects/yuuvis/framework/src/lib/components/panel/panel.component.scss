@@ -12,12 +12,12 @@
 
   // styles for running in standalone fullscreen mode (small device layout)
   &.standalone-fullscreen {
-    position: absolute !important;
+    // position: absolute !important;
     grid-template-rows: auto 1fr;
-    top: 0;
-    right: 0;
-    left: 0;
-    bottom: 0;
+    // top: 0;
+    // right: 0;
+    // left: 0;
+    // bottom: 0;
     .header {
       > .icon {
         &.default {

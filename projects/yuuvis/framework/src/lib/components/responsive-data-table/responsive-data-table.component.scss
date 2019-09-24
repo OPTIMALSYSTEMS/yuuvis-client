@@ -14,10 +14,7 @@ $range-selection-highlight-color: $primary-color;
 
 .yuv-responsive-data-table {
   height: 100%;
-  //   display: grid;
-  //   grid-template-columns: 1fr;
-  //   grid-template-rows: 1fr;
-  //   grid-template-areas: "table";
+  background-color: var(--panel-background);
 
   .table {
     grid-area: table;

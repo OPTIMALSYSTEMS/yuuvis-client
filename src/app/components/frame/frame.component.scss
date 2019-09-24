@@ -21,7 +21,7 @@ $user-panel-width: 180px;
     padding: calc((var(--app-bar-height) - 32px) / 4);
     color: var(--text-color-caption);
     background-color: var(--app-bar-background);
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid var(--panel-divider-color);
 
     yuv-icon#drawer {
       padding: calc(((var(--app-bar-height) - 24px) / 2) - ((var(--app-bar-height) - 32px) / 4));
