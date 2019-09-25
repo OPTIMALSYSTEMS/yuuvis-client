@@ -54,6 +54,14 @@
                 </div>
             </div>
 
+            <div class="setting">
+                <div class="label">BG</div>
+                <div class="value">
+                    <input type="file" (change)="setBackgroundImage($event)">
+                    <button *ngIf="customDashboardBackground" (click)="setBackgroundImage(null)">clear</button>
+                </div>
+            </div>
+
         </div>
     </div>
 </div>

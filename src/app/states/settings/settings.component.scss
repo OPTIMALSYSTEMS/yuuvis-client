@@ -146,6 +146,7 @@ $avatar-size-small: 80px;
         .setting {
           display: flex;
           align-items: center;
+          padding: calc(var(--app-pane-padding) / 2) 0;
 
           .label {
             flex: 0 0 20%;
@@ -153,6 +154,7 @@ $avatar-size-small: 80px;
           }
           .value {
             color: var(--text-color-caption);
+            display: flex;
             flex: 1;
             button {
               &.active {
@@ -162,14 +164,23 @@ $avatar-size-small: 80px;
             }
 
             span.color {
-              display: inline-block;
+              display: flex;
+              flex-flow: column;
+              align-items: center;
+              justify-content: center;
               width: 24px;
               height: 24px;
               border-radius: 2px;
               margin: 2px;
               cursor: pointer;
 
-              &.active {
+              &.active::before {
+                content: '';
+                height: 12px;
+
+                width: 12px;
+                border-radius: 50%;
+                background-color: rgba(255, 255, 255, 0.5);
               }
             }
           }

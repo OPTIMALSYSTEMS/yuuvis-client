@@ -11,9 +11,10 @@
   --panel-background-grey: #42484d;
   --panel-background-lightgrey: var(--color-primary-3);
   --panel-divider-color: rgba(255, 255, 255, 0.1);
-  --item-focus-color: rgba(255, 255, 255, 0.1);
+  --item-focus-background-color: rgba(255, 255, 255, 0.1);
+  --item-focus-border-color: rgba(255, 255, 255, 0.2);
   --app-bar-background: var(--panel-background);
-  --scrollbar-thumb-color: rgba(255, 255, 255, 0.06);
+  --scrollbar-thumb-color: rgba(255, 255, 255, 0.04);
 
   // text colors DARK MODE
   --text-color-body: #fff;

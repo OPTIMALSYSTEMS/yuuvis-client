@@ -141,11 +141,19 @@ export class AuthService {
     );
   }
 
+  intercepted401() {
+    this.authenticated = false;
+    this.authSource.next(this.authenticated);
+    const reload = `${(window as any).location.href}?${Date.now()}`;
+    alert('Got 401, reloading ' + reload);
+    (window as any).location.href = reload;
+  }
+
   /**
    * Logs out the current user.
    * @param gatewayLogout Flag indicating whether or not to perform a gateway logout as well
    */
-  logout(gatewayLogout?: boolean) {
+  logout(fromInterce?: boolean) {
     this.authenticated = false;
     this.authSource.next(this.authenticated);
 

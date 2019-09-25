@@ -49,9 +49,9 @@ body {
         font-size: var(--font-caption);
         padding: 2px;
         margin: 2px 2px 0 0;
-        background: var(--item-focus-color);
+        background: var(--item-focus-background-color);
         color: var(--text-color-caption);
-        border: 1px solid var(--item-focus-color);
+        border: 1px solid var(--item-focus-background-color);
       }
     }
   }

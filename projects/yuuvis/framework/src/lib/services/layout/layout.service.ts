@@ -37,6 +37,11 @@ export class LayoutService {
     this.saveSettings();
   }
 
+  setDashboardBackground(dataUrl: string) {
+    this.layoutSettings.dashboardBackground = dataUrl;
+    this.saveSettings();
+  }
+
   private saveSettings() {
     this.appCache.setItem(this.STORAGE_KEY, this.layoutSettings).subscribe();
     this.layoutSettingsSource.next(this.layoutSettings);
@@ -46,4 +51,5 @@ export class LayoutService {
 export interface LayoutSettings {
   darkMode?: boolean;
   accentColor?: string;
+  dashboardBackground?: string;
 }

@@ -1,4 +1,4 @@
-<input *ngIf="!multiline && !multiselect" type="text" pInputText (blur)="onBlur()" [disabled]="readonly"
+<input *ngIf="!multiline && !multiselect" type="text" pInputText (blur)="onBlur()" [readonly]="readonly"
   [(ngModel)]="value" (ngModelChange)="onValueChange($event)" />
 
 <!-- single line input with multiselect-->
@@ -7,7 +7,7 @@
 
 <!-- multi line text inputs -->
 <textarea class="input-textarea size-{{ size }}" pInputTextarea *ngIf="multiline" (blur)="onBlur()" [(ngModel)]="value"
-  [disabled]="readonly" (ngModelChange)="onValueChange($event)"></textarea>
+  [readonly]="readonly" (ngModelChange)="onValueChange($event)"></textarea>
 
 <div class="classify" [ngClass]="{ empty: !value || situation === 'SEARCH' }">
   <a href="mailto:{{ value }}" *ngIf="classification === 'email' && valid">

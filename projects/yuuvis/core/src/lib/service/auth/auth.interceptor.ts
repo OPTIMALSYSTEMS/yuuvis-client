@@ -20,13 +20,8 @@ export class AuthInterceptor implements HttpInterceptor {
         },
         (error: any) => {
           if (error instanceof HttpErrorResponse || error.isHttpErrorResponse) {
-            console.log(error.status);
-
             if (error.status === 401) {
-              // this.auth.logout();
-              const reload = `${(window as any).location.href}?${Date.now()}`;
-              alert('Got 401, reloading ' + reload);
-              (window as any).location.href = reload;
+              this.auth.intercepted401();
             }
           }
         }

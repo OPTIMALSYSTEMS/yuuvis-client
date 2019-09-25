@@ -48,7 +48,8 @@ export class FrameComponent implements OnInit {
 
   private applyLayoutSettings(settings: LayoutSettings) {
     const darkModeClass = 'dark';
-    const bodyClassList = document.getElementsByTagName('body')[0].classList;
+    const body = document.getElementsByTagName('body')[0];
+    const bodyClassList = body.classList;
     if (bodyClassList.contains(darkModeClass) && !settings.darkMode) {
       bodyClassList.remove(darkModeClass);
     } else if (!bodyClassList.contains(darkModeClass) && settings.darkMode) {
@@ -60,6 +61,13 @@ export class FrameComponent implements OnInit {
       document.documentElement.style.setProperty(acProperty, settings.accentColor);
     } else {
       document.documentElement.style.removeProperty(acProperty);
+    }
+
+    const dbProperty = '--theme-background';
+    if (settings.dashboardBackground) {
+      body.style.setProperty(dbProperty, 'url("' + settings.dashboardBackground + '")', 'important');
+    } else {
+      body.style.removeProperty(dbProperty);
     }
   }
 
