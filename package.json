@@ -46,7 +46,8 @@
     "docker:create:tag": "node ./tools/scripts/misc/create-random-tag",
     "docker:create:image": "npm run docker:create:tag && cd docker && create-image.bat",
     "k8s:prepare": "node ./tools/scripts/misc/copy-k8s-descriptors",
-    "deploy:dev": "npm run build:webdev && npm run docker:create:image && npm run k8s:prepare && cd dist/k8s && kubectl apply -f namespace.yaml -f deployment.yaml -f service.yaml"
+    "k8s:deploy": "cd dist/k8s && kubectl apply -f namespace.yaml -f deployment.yaml -f service.yaml",
+    "deploy:dev": "npm run build:webdev && npm run docker:create:image && npm run k8s:prepare && npm run k8s:deploy"
   },
   "private": true,
   "dependencies": {
