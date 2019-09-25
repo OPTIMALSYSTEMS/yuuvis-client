@@ -25,7 +25,7 @@ export class AuthInterceptor implements HttpInterceptor {
             if (error.status === 401) {
               // this.auth.logout();
               const reload = `${(window as any).location.href}?${Date.now()}`;
-              console.log('Got 401, reloading ' + reload);
+              alert('Got 401, reloading ' + reload);
               (window as any).location.href = reload;
             }
           }

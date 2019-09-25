@@ -12,7 +12,10 @@ import { Observable } from 'rxjs';
 export class SettingsComponent implements OnInit {
   user$: Observable<YuvUser>;
   darkMode: boolean;
+  accentColor: string;
   clientLocales: any;
+
+  accentColorRGB = ['255, 152, 0', '120, 144, 156', '124, 179, 66', '3,169,244', '126,87,194', '236,64,122'];
 
   constructor(
     private translate: TranslateService,
@@ -32,11 +35,16 @@ export class SettingsComponent implements OnInit {
     this.layoutService.setDarkMode(darkMode);
   }
 
+  setAccentColor(rgb: string) {
+    this.layoutService.setAccentColor(rgb);
+  }
+
   ngOnInit() {
     this.titleService.setTitle(this.translate.instant('yuv.client.state.settings.title'));
     this.user$ = this.userService.user$;
     this.layoutService.layoutSettings$.subscribe((settings: LayoutSettings) => {
       this.darkMode = settings.darkMode;
+      this.accentColor = settings.accentColor;
     });
   }
 }

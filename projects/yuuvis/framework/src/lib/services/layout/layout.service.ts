@@ -32,6 +32,11 @@ export class LayoutService {
     this.saveSettings();
   }
 
+  setAccentColor(rgb: string) {
+    this.layoutSettings.accentColor = rgb;
+    this.saveSettings();
+  }
+
   private saveSettings() {
     this.appCache.setItem(this.STORAGE_KEY, this.layoutSettings).subscribe();
     this.layoutSettingsSource.next(this.layoutSettings);
@@ -40,4 +45,5 @@ export class LayoutService {
 
 export interface LayoutSettings {
   darkMode?: boolean;
+  accentColor?: string;
 }

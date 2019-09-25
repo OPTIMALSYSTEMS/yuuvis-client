@@ -160,6 +160,18 @@ $avatar-size-small: 80px;
                 color: #fff;
               }
             }
+
+            span.color {
+              display: inline-block;
+              width: 24px;
+              height: 24px;
+              border-radius: 2px;
+              margin: 2px;
+              cursor: pointer;
+
+              &.active {
+              }
+            }
           }
         }
 
