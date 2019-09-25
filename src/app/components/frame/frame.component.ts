@@ -52,6 +52,10 @@ export class FrameComponent implements OnInit {
     });
   }
 
+  logout() {
+    (window as any).location.href = '/logout';
+  }
+
   navigate(state: string) {
     this.showSideBar = false;
     this.router.navigate([state]);
