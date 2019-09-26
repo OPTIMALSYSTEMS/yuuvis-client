@@ -1,3 +1,9 @@
+export enum SystemType {
+  DOCUMENT = 'enaio:document',
+  FOLDER = 'enaio:folder',
+  AUDIT = 'enaio:audit'
+}
+
 export enum AdministrationRoles {
   ADMIN = 'YUUVIS_TENANT_ADMIN',
   SYSTEM = 'YUUVIS_SYSTEM_INTEGRATOR'

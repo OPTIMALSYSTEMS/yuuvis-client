@@ -7,6 +7,7 @@ import { BackendService } from '../backend/backend.service';
 import { AppCacheService } from '../cache/app-cache.service';
 import { Logger } from '../logger/logger';
 import { Utils } from './../../util/utils';
+import { SystemType } from './system.enum';
 import { SchemaResponse, SchemaResponseFieldDefinition, SchemaResponseTypeDefinition, SystemDefinition } from './system.interface';
 
 @Injectable({
@@ -31,11 +32,11 @@ export class SystemService {
   }
 
   getBaseDocumentType(): ObjectType {
-    return this.getObjectType('enaio:document');
+    return this.getObjectType(SystemType.DOCUMENT);
   }
 
   getBaseFolderType(): ObjectType {
-    return this.getObjectType('enaio:folder');
+    return this.getObjectType(SystemType.FOLDER);
   }
 
   getLocalizedResource(key: string): string {

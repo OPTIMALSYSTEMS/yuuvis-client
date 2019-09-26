@@ -44,7 +44,7 @@
 
     <p-tabPanel [id]="'history'" [header]="'yuv.framework.object-details.tabs.history.title' | translate">
       <ng-template pTemplate="content">
-        History ..................
+        <yuv-audit [objectID]="dmsObject?.id"></yuv-audit>
       </ng-template>
     </p-tabPanel>
   </yuv-responsive-tab-container>

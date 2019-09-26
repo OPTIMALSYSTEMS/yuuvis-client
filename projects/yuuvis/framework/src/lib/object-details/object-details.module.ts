@@ -8,6 +8,7 @@ import { ActionModule } from '../actions/action.module';
 import { YuvComponentsModule } from '../components/components.module';
 import { YuvObjectFormModule } from '../object-form/object-form.module';
 import { YuvPipesModule } from '../pipes/pipes.module';
+import { AuditComponent } from './audit/audit.component';
 import { ObjectDetailsComponent } from './object-details/object-details.component';
 import { SummaryComponent } from './summary/summary.component';
 
@@ -23,7 +24,7 @@ import { SummaryComponent } from './summary/summary.component';
     YuvObjectFormModule,
     ActionModule
   ],
-  declarations: [ObjectDetailsComponent, SummaryComponent],
-  exports: [ObjectDetailsComponent, SummaryComponent]
+  declarations: [ObjectDetailsComponent, SummaryComponent, AuditComponent],
+  exports: [ObjectDetailsComponent, SummaryComponent, AuditComponent]
 })
 export class YuvObjectDetailsModule {}
