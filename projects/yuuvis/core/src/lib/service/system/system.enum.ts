@@ -1,54 +1,54 @@
-export enum SystemType {
-  DOCUMENT = 'enaio:document',
-  FOLDER = 'enaio:folder',
-  AUDIT = 'enaio:audit'
-}
+export const SystemType = {
+  DOCUMENT: 'system:document',
+  FOLDER: 'system:folder',
+  AUDIT: 'system:audit'
+};
 
-export enum AdministrationRoles {
-  ADMIN = 'YUUVIS_TENANT_ADMIN',
-  SYSTEM = 'YUUVIS_SYSTEM_INTEGRATOR'
-}
+export const AdministrationRoles = {
+  ADMIN: 'YUUVIS_TENANT_ADMIN',
+  SYSTEM: 'YUUVIS_SYSTEM_INTEGRATOR'
+};
 
-export enum BaseObjectTypeField {
-  OBJECT_ID = 'enaio:objectId',
-  OBJECT_TYPE_ID = 'enaio:objectTypeId',
-  CREATION_DATE = 'enaio:creationDate',
-  MODIFICATION_DATE = 'enaio:lastModificationDate',
-  TENANT = 'enaio:tenant',
-  VERSION_NUMBER = 'enaio:versionNumber',
-  CREATED_BY = 'enaio:createdBy',
-  MODIFIED_BY = 'enaio:lastModifiedBy',
-  PARENT_ID = 'enaio:parentId',
-  PARENT_OBJECT_TYPE_ID = 'enaio:parentObjectTypeId',
-  PARENT_VERSION_NUMBER = 'enaio:parentVersionNumber'
-}
+export const BaseObjectTypeField = {
+  OBJECT_ID: 'system:objectId',
+  OBJECT_TYPE_ID: 'system:objectTypeId',
+  CREATION_DATE: 'system:creationDate',
+  MODIFICATION_DATE: 'system:lastModificationDate',
+  TENANT: 'system:tenant',
+  VERSION_NUMBER: 'system:versionNumber',
+  CREATED_BY: 'system:createdBy',
+  MODIFIED_BY: 'system:lastModifiedBy',
+  PARENT_ID: 'system:parentId',
+  PARENT_OBJECT_TYPE_ID: 'system:parentObjectTypeId',
+  PARENT_VERSION_NUMBER: 'system:parentVersionNumber'
+};
 
-export enum SecondaryObjectTypeField {
-  TITLE = 'clienttitle',
-  DESCRIPTION = 'clientdescription'
-}
+export const SecondaryObjectTypeField = {
+  TITLE: 'clienttitle',
+  DESCRIPTION: 'clientdescription'
+};
 
-export enum ContentStreamField {
-  LENGTH = 'enaio:contentStreamLength',
-  MIME_TYPE = 'enaio:contentStreamMimeType',
-  FILENAME = 'enaio:contentStreamFileName',
-  ID = 'enaio:contentStreamId',
-  RANGE = 'enaio:contentStreamRange',
-  REPOSITORY_ID = 'enaio:contentStreamRepositoryId',
-  DIGEST = 'enaio:digest',
-  ARCHIVE_PATH = 'enaio:archivePath'
-}
+export const ContentStreamField = {
+  LENGTH: 'system:contentStreamLength',
+  MIME_TYPE: 'system:contentStreamMimeType',
+  FILENAME: 'system:contentStreamFileName',
+  ID: 'system:contentStreamId',
+  RANGE: 'system:contentStreamRange',
+  REPOSITORY_ID: 'system:contentStreamRepositoryId',
+  DIGEST: 'system:digest',
+  ARCHIVE_PATH: 'system:archivePath'
+};
 
-export enum ObjectField {
-  OBJECT_TYPE_ID = 'enaio:objectTypeId',
-  VERSION_NUMBER = 'enaio:versionNumber',
-  OBJECT_ID = 'enaio:objectId'
-}
+export const ObjectField = {
+  OBJECT_TYPE_ID: 'system:objectTypeId',
+  VERSION_NUMBER: 'system:versionNumber',
+  OBJECT_ID: 'system:objectId'
+};
 
-export enum ParentField {
-  asvaktenzeichen = 'tenKolibri:asvaktenzeichen',
-  asvaktenzeichentext = 'tenKolibri:asvaktenzeichentext',
-  asvsichtrechte = 'tenKolibri:asvsichtrechte',
-  asvvorgangsname = 'tenKolibri:asvvorgangsname',
-  asvvorgangsnummer = 'tenKolibri:asvvorgangsnummer'
-}
+export const ParentField = {
+  asvaktenzeichen: 'tenKolibri:asvaktenzeichen',
+  asvaktenzeichentext: 'tenKolibri:asvaktenzeichentext',
+  asvsichtrechte: 'tenKolibri:asvsichtrechte',
+  asvvorgangsname: 'tenKolibri:asvvorgangsname',
+  asvvorgangsnummer: 'tenKolibri:asvvorgangsnummer'
+};

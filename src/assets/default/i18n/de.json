@@ -66,5 +66,7 @@
   "yuv.client.state.settings.language": "Sprache",
   "yuv.client.state.settings.permission": "Berechtigungen",
   "yuv.client.state.settings.roles": "Rollen",
+  "yuv.client.state.settings.theme": "Theme",
+  "yuv.client.state.settings.theme.darkmode": "DarkMode",
   "yuv.client.state.settings.title": "Einstellungen"
 }

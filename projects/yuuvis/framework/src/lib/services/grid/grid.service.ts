@@ -15,6 +15,7 @@ import { ColDef } from 'ag-grid-community';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { FileSizePipe, LocaleDatePipe, LocaleNumberPipe } from '../../pipes';
+import { BaseObjectTypeField } from './../../../../../core/src/lib/service/system/system.enum';
 import { CellRenderer } from './grid.cellrenderer';
 import { ColumnSizes } from './grid.interface';
 
@@ -104,7 +105,8 @@ export class GridService {
   }
 
   private isSortable(field: ObjectTypeField): boolean {
-    return field.propertyType !== 'id' && !field.id.match(/^enaio:createdBy$|^enaio:lastModifiedBy$/);
+    const skipSort = [BaseObjectTypeField.CREATED_BY, BaseObjectTypeField.MODIFIED_BY];
+    return field.propertyType !== 'id' && !skipSort.includes(field.id);
   }
 
   /**
