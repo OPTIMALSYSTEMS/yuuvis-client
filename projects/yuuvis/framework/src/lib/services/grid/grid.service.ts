@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import {
   AppCacheService,
   BackendService,
+  BaseObjectTypeField,
   ContentStreamField,
   ObjectField,
   ObjectType,
@@ -15,7 +16,6 @@ import { ColDef } from 'ag-grid-community';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { FileSizePipe, LocaleDatePipe, LocaleNumberPipe } from '../../pipes';
-import { BaseObjectTypeField } from './../../../../../core/src/lib/service/system/system.enum';
 import { CellRenderer } from './grid.cellrenderer';
 import { ColumnSizes } from './grid.interface';
 
