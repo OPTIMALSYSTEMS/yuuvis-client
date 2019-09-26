@@ -11,6 +11,7 @@ import { filter } from 'rxjs/operators';
   styleUrls: ['./frame.component.scss']
 })
 export class FrameComponent implements OnInit {
+  private _authenticated: boolean;
   deferredPrompt: any;
   showButton = false;
 
@@ -107,7 +108,8 @@ export class FrameComponent implements OnInit {
 
     this.authService.authenticated$.subscribe((authenticated: boolean) => {
       if (!authenticated) {
-        this.router.navigate(['enter'], { preserveQueryParams: true });
+        // this.router.navigate(['enter'], { preserveQueryParams: true });
+        (window as any).location.href = `/oauth/${this.authService.getTenant()}`;
       }
     });
 
