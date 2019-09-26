@@ -43,7 +43,7 @@
   "yuv.framework.quick-search.result.empty": "Your search request returned no hits.",
   "yuv.framework.responsive-tab-container.button.split": "Split aspect",
   "yuv.framework.search-result-panel.header.term": "Search term",
-  "yuv.framework.search-result-panel.header.title": "",
+  "yuv.framework.search-result-panel.header.title": "Search result",
   "yuv.framework.search-result.empty": "No hits",
   "yuv.framework.search-result.footer.hits": "{{count}} hits",
   "yuv.framework.shared.cancel": "Cancel",

@@ -43,7 +43,7 @@
   "yuv.framework.quick-search.result.empty": "Ihre Suchanfrage lieferte keine Treffer.",
   "yuv.framework.responsive-tab-container.button.split": "Aspekt teilen",
   "yuv.framework.search-result-panel.header.term": "Suchbegriff",
-  "yuv.framework.search-result-panel.header.title": "",
+  "yuv.framework.search-result-panel.header.title": "Suchergebnis",
   "yuv.framework.search-result.empty": "Keine Treffer",
   "yuv.framework.search-result.footer.hits": "{{count}} Treffer",
   "yuv.framework.shared.cancel": "Abbrechen",
