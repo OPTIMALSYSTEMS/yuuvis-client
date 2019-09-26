@@ -28,9 +28,7 @@ export class TestObjectFormEditComponent implements OnInit {
       this.dmsObject = null;
     } else {
       this.dmsService.getDmsObject(id).subscribe(
-        (o: DmsObject) => {
-          this.dmsObject = o;
-        },
+        (o: DmsObject) => (this.dmsObject = o),
         err => {
           this.dmsObject = null;
           console.error(err);

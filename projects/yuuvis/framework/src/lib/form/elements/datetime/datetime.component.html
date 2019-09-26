@@ -26,7 +26,7 @@
       [slotChar]="_datePattern"
     ></p-inputMask>
 
-    <button class="ui-button" (click)="showPicker = true" (keyup.arrowDown)="showPicker = true" *ngIf="!readonly">
+    <button class="ui-button" data-datepicker="icon" (click)="showPicker = true" (keyup.arrowDown)="showPicker = true" *ngIf="!readonly">
       <yuv-icon [svg]="datepickerIcon"></yuv-icon>
     </button>
   </div>

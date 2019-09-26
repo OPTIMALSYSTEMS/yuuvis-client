@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { APP_VARS } from '../../app.vars';
 
@@ -8,6 +8,9 @@ import { APP_VARS } from '../../app.vars';
   styleUrls: ['./not-found.component.scss']
 })
 export class NotFoundComponent implements OnInit {
+  @Input() description = 'eo.status.404.statesDescription';
+  @Input() title = 'eo.status.404.title';
+
   constructor(private titleService: Title) {}
 
   ngOnInit() {

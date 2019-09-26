@@ -2,7 +2,7 @@
   [(ngModel)]="value" (ngModelChange)="onValueChange($event)" />
 
 <!-- single line input with multiselect-->
-<p-chips *ngIf="!multiline && multiselect" [(ngModel)]="value" [addOnBlur]="true" [disabled]="readonly"
+<p-chips *ngIf="!multiline && multiselect" [addOnTab]="true" [(ngModel)]="value" [disabled]="readonly"
   (onBlur)="onBlur()" (ngModelChange)="onValueChange($event)"> </p-chips>
 
 <!-- multi line text inputs -->

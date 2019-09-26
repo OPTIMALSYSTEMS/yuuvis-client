@@ -1,12 +1,7 @@
 :host {
-  .yuv-checkbox {
+  .tristate {
     display: flex;
     align-items: center;
-
-    .tristate {
-      display: flex;
-      align-items: center;
-    }
 
     yuv-icon {
       height: 16px;
