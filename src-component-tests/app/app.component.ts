@@ -12,6 +12,7 @@ export class AppComponent implements OnInit {
   user: YuvUser;
 
   @HostBinding('class.showNav') showNav: boolean;
+  @HostBinding('class.dark') darkMode: boolean;
 
   constructor(private router: Router, private userService: UserService) {
     this.userService.user$.subscribe(u => {
