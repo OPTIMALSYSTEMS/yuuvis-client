@@ -13,8 +13,7 @@ import {
   SortOption,
   SystemService,
   TranslateService,
-  Utils,
-  YuvEnvironment
+  Utils
 } from '@yuuvis/core';
 import { ColDef } from 'ag-grid-community';
 import { forkJoin, Observable } from 'rxjs';
@@ -47,8 +46,7 @@ export class GridService {
       fileSizePipe: new FileSizePipe(translate),
       numberPipe: new LocaleNumberPipe(translate),
       datePipe: new LocaleDatePipe(translate),
-      cr: CellRenderer,
-      baseHref: YuvEnvironment.isWebEnvironment() ? backend.getHost() : './'
+      cr: CellRenderer
       // fileSizeOpts: [],
       // mimetypegroupOpts: [],
       // typeOpts: [],
@@ -102,7 +100,8 @@ export class GridService {
   }
 
   private isSortable(field: ObjectTypeField): boolean {
-    return field.propertyType !== 'id' && !field.id.match(new RegExp(`^${BaseObjectTypeField.CREATED_BY}$|^${BaseObjectTypeField.MODIFIED_BY}$`));
+    const skipSort = [BaseObjectTypeField.CREATED_BY, BaseObjectTypeField.MODIFIED_BY].map(s => s.toString());
+    return field.propertyType !== 'id' && !skipSort.includes(field.id);
   }
 
   /**

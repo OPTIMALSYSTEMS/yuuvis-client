@@ -11,21 +11,9 @@ import { ApiBase } from './api.enum';
 })
 export class BackendService {
   private headers = this.setDefaultHeaders();
-  private host: string = '';
+  private persistedHeaders: any = {};
 
   constructor(private http: HttpClient, private logger: Logger, private config: ConfigService) {}
-
-  /**
-   * Setup a host. Used when not running behind a gateway.
-   * @param host The host to be set up for backend connections
-   */
-  setHost(host: string) {
-    this.host = host || '';
-  }
-
-  getHost(): string {
-    return this.host;
-  }
 
   /**
    * Add a new header.
@@ -136,7 +124,8 @@ export class BackendService {
    * @returns Base URI for the given API.
    */
   private getApiBase(api?: string): string {
-    return this.getHost() + this.config.getApiBase(api || ApiBase.apiWeb);
+    // return this.getHost() + this.config.getApiBase(api || ApiBase.apiWeb);
+    return this.config.getApiBase(api || ApiBase.apiWeb);
   }
 
   /**

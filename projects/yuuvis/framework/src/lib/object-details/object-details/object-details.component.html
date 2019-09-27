@@ -1,5 +1,6 @@
-<yuv-panel *ngIf="dmsObject; else empty" class="object-details" [title]="dmsObject?.data?.clienttitle"
-  [description]="dmsObject?.data?.clientdescription" [yuvBusyOverlay]="busy">
+<yuv-panel *ngIf="dmsObject; else empty" class="object-details" [title]="dmsObject.title"
+  [description]="dmsObject.description" [yuvBusyOverlay]="busy" [enableStandaloneBackButton]="true"
+  [standaloneFullscreen]="standaloneFullscreen" (backButtonClick)="standaloneBackButtonClicked()">
   <div class="header-icon" [innerHtml]="objectIcon | safeHtml"></div>
 
   <yuv-action-menu-bar class="actions">
@@ -28,7 +29,8 @@
 
     <p-tabPanel [id]="'indexdata'" [header]="'yuv.framework.object-details.tabs.indexdata.title' | translate">
       <ng-template pTemplate="content">
-        <yuv-object-form-edit [dmsObject]="dmsObject"></yuv-object-form-edit>
+        <yuv-object-form-edit [dmsObject]="dmsObject" (indexDataSaved)="onIndexdataSaved($event)">
+        </yuv-object-form-edit>
       </ng-template>
     </p-tabPanel>
 
@@ -40,7 +42,7 @@
 
     <p-tabPanel [id]="'history'" [header]="'yuv.framework.object-details.tabs.history.title' | translate">
       <ng-template pTemplate="content">
-        History ..................
+        <yuv-audit [objectID]="dmsObject?.id"></yuv-audit>
       </ng-template>
     </p-tabPanel>
   </yuv-responsive-tab-container>

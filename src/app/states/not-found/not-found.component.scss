@@ -1,47 +1,27 @@
 :host {
   display: flex;
   flex-flow: column;
-  position: fixed;
-  left: 0;
-  right: 0;
-  top: var(--app-bar-height);
-  bottom: 0;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--text-color-caption);
+  padding: var(--app-pane-padding);
 
-  .header {
-    background: var(--color-primary);
-    color: #fff;
-    flex: 0 0 33vh;
-    display: flex;
-    align-items: flex-end;
+  yuv-icon {
+    opacity: 0.1;
+    height: 20vh;
+    width: 20vh;
+  }
 
-    .title {
-      flex: 1 1 auto;
-      padding: var(--app-pane-padding);
-      font-size: var(--font-display);
-      color: var(--main-background);
-      opacity: 0.84;
-      display: flex;
-      font-weight: var(--font-weight-light);
-      flex-direction: column;
-      padding-bottom: 0;
-      margin-bottom: var(--app-pane-padding);
-    }
-    .description {
-      margin: calc(var(--app-pane-padding) / 2) 0;
-      font-size: var(--font-title);
-      font-weight: var(--font-weight-light);
-      opacity: 0.84;
-      white-space: unset;
-    }
-
-    yuv-icon {
-      position: absolute;
-      height: initial;
-      right: 0;
-      width: 400px;
-      transform: translateY(10vh);
-      opacity: 0.1;
-      color: var(--main-background);
-    }
+  .title {
+    font-size: var(--font-display);
+    font-weight: var(--font-weight-light);
+  }
+  .description {
+    margin: calc(var(--app-pane-padding) / 2) 0;
+    font-size: var(--font-title);
+    font-weight: var(--font-weight-light);
+    opacity: 0.84;
+    white-space: unset;
   }
 }

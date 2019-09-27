@@ -35,8 +35,10 @@ export class ObjectFormEditComponent {
       this.createObjectForm(dmsObject);
     }
   }
-
-  @Output() indexDataSaved = new EventEmitter<any>();
+  /**
+   * Emits the updated `DmsObject` when a form has been saved.
+   */
+  @Output() indexDataSaved = new EventEmitter<DmsObject>();
 
   formOptions: ObjectFormOptions;
   formState: FormStatusChangedEvent;
@@ -105,7 +107,7 @@ export class ObjectFormEditComponent {
               this.controls.disabled = true;
               this.objectForm.setFormPristine();
               this.notification.success(this._dmsObject.title, this.messages.formSuccess);
-              this.indexDataSaved.emit(formData);
+              this.indexDataSaved.emit(this._dmsObject);
             },
             Utils.throw(
               () => {

@@ -2,6 +2,7 @@ export { TranslateLoader, TranslateModule, TranslateService } from '@ngx-transla
 export * from './lib/core.environment';
 export * from './lib/core.module';
 export * from './lib/core.shared.module';
+export * from './lib/model/audit-entry.interface';
 export * from './lib/model/dms-object-history.model';
 export * from './lib/model/dms-object.model';
 export * from './lib/model/object-type.model';
@@ -18,6 +19,7 @@ export * from './lib/service/config/core-config';
 export * from './lib/service/config/core-config.tokens';
 export * from './lib/service/core-init/core-init.service';
 export * from './lib/service/dms/dms.service';
+export * from './lib/service/event/event.interface';
 export * from './lib/service/event/event.service';
 export * from './lib/service/event/events';
 export * from './lib/service/logger/logger';

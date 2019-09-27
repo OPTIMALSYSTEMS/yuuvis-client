@@ -31,9 +31,7 @@ $avatar-size-small: 80px;
 
     .head {
       .user {
-        padding-right: calc(
-          #{$avatar-size-small} + calc(var(--app-pane-padding) * 2)
-        );
+        padding-right: calc(#{$avatar-size-small} + calc(var(--app-pane-padding) * 2));
       }
     }
   }
@@ -112,9 +110,7 @@ $avatar-size-small: 80px;
         justify-content: center;
         background-color: rgba(0, 0, 0, 0.4);
         height: 100%;
-        padding: var(--app-pane-padding)
-          calc(#{$avatar-size} + calc(var(--app-pane-padding) * 2))
-          var(--app-pane-padding) var(--app-pane-padding);
+        padding: var(--app-pane-padding) calc(#{$avatar-size} + calc(var(--app-pane-padding) * 2)) var(--app-pane-padding) var(--app-pane-padding);
         box-sizing: border-box;
         color: #fff;
 
@@ -150,17 +146,41 @@ $avatar-size-small: 80px;
         .setting {
           display: flex;
           align-items: center;
+          padding: calc(var(--app-pane-padding) / 2) 0;
 
           .label {
             flex: 0 0 20%;
             color: var(--text-color-caption);
           }
           .value {
+            color: var(--text-color-caption);
+            display: flex;
             flex: 1;
             button {
               &.active {
                 background-color: var(--color-accent);
                 color: #fff;
+              }
+            }
+
+            span.color {
+              display: flex;
+              flex-flow: column;
+              align-items: center;
+              justify-content: center;
+              width: 24px;
+              height: 24px;
+              border-radius: 2px;
+              margin: 2px;
+              cursor: pointer;
+
+              &.active::before {
+                content: '';
+                height: 12px;
+
+                width: 12px;
+                border-radius: 50%;
+                background-color: rgba(255, 255, 255, 0.5);
               }
             }
           }

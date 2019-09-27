@@ -10,7 +10,7 @@
   button {
     background: $color-accent;
     font-family: monospace;
-    padding: 2px;
+    padding: 2px 8px;
     color: #fff;
   }
 
@@ -77,6 +77,17 @@
       flex: 1;
     }
 
+    .settings {
+      margin: 0 $app-pane-padding;
+
+      button.toggle {
+        background-color: rgba(255, 255, 255, 0.2);
+        &.on {
+          background-color: $color-accent;
+        }
+      }
+    }
+
     .user {
       font-family: monospace;
       margin-right: $app-pane-padding;
@@ -107,7 +118,7 @@
     flex-flow: column;
     align-items: center;
     justify-content: center;
-    background: #eee;
+    background: var(--main-background);
     overflow: auto;
 
     position: relative;

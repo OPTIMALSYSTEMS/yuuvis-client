@@ -81,7 +81,7 @@ export class CellRenderer {
   //   let val = '';
   //   if (param.value && (param.value.url || param.value.iconId)) {
   //     let iconUrl = param.value.url
-  //       ? param.context.baseHref + param.value.url
+  //       ? Utils.getBaseHref() + param.value.url
   //       : param.context.backend.getServiceBase() +
   //         '/ui/icon/' +
   //         param.value.iconId +

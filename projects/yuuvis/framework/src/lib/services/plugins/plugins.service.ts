@@ -96,7 +96,7 @@ export class PluginsService {
 
   public get(uri, base = '') {
     return this.backend
-      .get(uri, this.backend.getHost() + base, { observe: 'response' })
+      .get(uri, base, { observe: 'response' })
       .pipe(
         map((res: any) => {
           const { status, body } = res;
@@ -110,15 +110,15 @@ export class PluginsService {
   }
 
   public put(uri, data, base = '') {
-    return this.backend.put(uri, data, this.backend.getHost() + base).toPromise();
+    return this.backend.put(uri, data, base).toPromise();
   }
 
   public post(uri, data, base = '') {
-    return this.backend.post(uri, data, this.backend.getHost() + base).toPromise();
+    return this.backend.post(uri, data, base).toPromise();
   }
 
   public del(uri, base = '') {
-    return this.backend.delete(uri, this.backend.getHost() + base).toPromise();
+    return this.backend.delete(uri, base).toPromise();
   }
 
   public getCurrentUser(): YuvUser {

@@ -32,26 +32,29 @@ import { YuvUserModule } from './user/user.module';
   imports: [
     CommonModule,
     BrowserAnimationsModule,
+
     YuvFormModule,
+
     YuvSearchModule,
     YuvUserModule,
     YuvCommonUiModule,
     YuvObjectDetailsModule,
     YuvPipesModule,
     OverlayPanelModule,
+    ActionModule,
+    YuvCoreSharedModule,
+    YuvComponentsModule,
     AngularSplitModule.forRoot(),
     YuvCoreModule.forRoot(),
-    AngularSplitModule.forRoot(),
-    ToastrModule.forRoot(),
-    ActionModule,
-    YuvCoreSharedModule
+    ToastrModule.forRoot()
   ],
   exports: [
+    YuvDirectivesModule,
     YuvFormModule,
-    YuvSearchModule,
+    YuvComponentsModule,
     YuvObjectDetailsModule,
     YuvPipesModule,
-    YuvDirectivesModule,
+    YuvSearchModule,
     YuvUserModule,
     YuvComponentsModule,
     YuvObjectFormModule,
@@ -60,7 +63,8 @@ import { YuvUserModule } from './user/user.module';
     OverlayPanelModule,
     AngularSplitModule,
     YuvCoreSharedModule,
-    ActionModule
+    ActionModule,
+    ToastrModule
   ],
   declarations: []
 })

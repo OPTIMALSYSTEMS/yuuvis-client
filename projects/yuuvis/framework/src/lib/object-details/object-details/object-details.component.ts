@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { DmsObject, DmsService, SystemService, UserService } from '@yuuvis/core';
 import { CellRenderer } from '../../services/grid/grid.cellrenderer';
 import { SVGIcons } from '../../svg.generated';
@@ -49,9 +49,19 @@ export class ObjectDetailsComponent {
       this.getDmsObject(id);
     }
   }
+  @Input() standaloneFullscreen: boolean;
+  @Output() standaloneFullscreenBackButtonClick = new EventEmitter();
 
   constructor(private dmsService: DmsService, private userService: UserService, private systemService: SystemService) {
     this.userIsAdmin = this.userService.hasAdministrationRoles;
+  }
+
+  standaloneBackButtonClicked() {
+    this.standaloneFullscreenBackButtonClick.emit();
+  }
+
+  onIndexdataSaved(updatedObject: DmsObject) {
+    this.dmsObject = updatedObject;
   }
 
   openActionMenu() {

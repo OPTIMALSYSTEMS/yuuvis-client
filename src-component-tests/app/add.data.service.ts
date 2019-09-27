@@ -8,23 +8,23 @@ export class AppDataService {
     const fields = new Map<string, any>();
     fields.set(BaseObjectTypeField.OBJECT_ID, '12345');
 
-    fields.set('enaio:baseTypeId', 'enaio:document');
+    fields.set('system:baseTypeId', 'enaio:document');
     fields.set(SecondaryObjectTypeField.TITLE, '51.4');
     fields.set(SecondaryObjectTypeField.DESCRIPTION, 'Jugendarbeit');
-    fields.set('enaio:tenant', 'kolibri');
-    fields.set('enaio:lastModificationDate', '2019-08-19T12:16:55.210Z');
+    fields.set(BaseObjectTypeField.TENANT, 'kolibri');
+    fields.set(BaseObjectTypeField.MODIFICATION_DATE, '2019-08-19T12:16:55.210Z');
+    fields.set(BaseObjectTypeField.CREATION_DATE, '2019-08-19T12:16:55.210Z');
+    fields.set(BaseObjectTypeField.VERSION_NUMBER, 1);
     fields.set('tenKolibri:asvdescription', 'Jugendarbeit 3');
     fields.set('tenKolibri:asvvalue', '51.4');
-    fields.set('enaio:creationDate', '2019-08-19T12:16:55.210Z');
-    fields.set('enaio:versionNumber', 1);
     fields.set('tenKolibri:asvcreatable', true);
-    fields.set('enaio:lastModifiedBy', 'Tool Cuckoo');
-    fields.set('enaio:createdBy', 'Tool Cuckoo');
-    fields.set('enaio:objectTypeId', 'tenKolibri:asvkatalogaktenplan');
-    fields.set('enaio:secondaryObjectTypeIds', Array(1));
+    fields.set(BaseObjectTypeField.MODIFIED_BY, 'Tool Cuckoo');
+    fields.set(BaseObjectTypeField.CREATED_BY, 'Tool Cuckoo');
+    fields.set(BaseObjectTypeField.OBJECT_TYPE_ID, 'tenKolibri:asvkatalogaktenplan');
+    fields.set('system:secondaryObjectTypeIds', Array(1));
     fields.set('tenKolibri:asveditable', true);
-    fields.set('enaio:traceId', 'dd2d9338ac02c7ee');
-    fields.set('enaio:objectId', 'a1d86147-4333-43be-a0f4-00d6a265befb');
+    fields.set('system:traceId', 'dd2d9338ac02c7ee');
+    fields.set('system:objectId', 'a1d86147-4333-43be-a0f4-00d6a265befb');
 
     return new DmsObject(
       {

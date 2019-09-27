@@ -6,7 +6,7 @@
         .ui-tabview.ui-tabview-top .ui-tabview-nav {
           margin-right: 0;
           li.ui-state-active {
-            border-color: rgba(0, 0, 0, 0.1);
+            border-color: var(--panel-divider-color);
           }
         }
       }

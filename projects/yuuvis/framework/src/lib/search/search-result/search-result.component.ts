@@ -1,9 +1,22 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { BaseObjectTypeField, SearchQuery, SearchResult, SearchResultItem, SearchService, SecondaryObjectTypeField, SortOption } from '@yuuvis/core';
+import {
+  BaseObjectTypeField,
+  DmsObject,
+  EventService,
+  SearchQuery,
+  SearchResult,
+  SearchResultItem,
+  SearchService,
+  SecondaryObjectTypeField,
+  SortOption,
+  YuvEvent,
+  YuvEventType
+} from '@yuuvis/core';
 import { ColDef } from 'ag-grid-community';
 import { of } from 'rxjs';
-import { ResponsiveTableData } from '../../components';
+import { takeUntilDestroy } from 'take-until-destroy';
+import { ResponsiveDataTableComponent, ResponsiveTableData } from '../../components';
 import { ColumnSizes } from '../../services/grid/grid.interface';
 import { GridService } from '../../services/grid/grid.service';
 import { SVGIcons } from '../../svg.generated';
@@ -14,7 +27,7 @@ import { SVGIcons } from '../../svg.generated';
   styleUrls: ['./search-result.component.scss'],
   host: { class: 'yuv-search-result toolbar' }
 })
-export class SearchResultComponent {
+export class SearchResultComponent implements OnDestroy {
   private _searchQuery: SearchQuery;
   private _columns: ColDef[];
   private _rows: any[];
@@ -38,6 +51,8 @@ export class SearchResultComponent {
     pages: number;
     page: number;
   };
+
+  @ViewChild('dataTable', { static: false }) dataTable: ResponsiveDataTableComponent;
 
   @Input() set query(searchQuery: SearchQuery) {
     this._searchQuery = searchQuery;
@@ -75,10 +90,21 @@ export class SearchResultComponent {
     return this._hasPages;
   }
 
-  constructor(private gridService: GridService, private searchService: SearchService, private fb: FormBuilder) {
+  constructor(private gridService: GridService, private eventService: EventService, private searchService: SearchService, private fb: FormBuilder) {
     this.pagingForm = this.fb.group({
       page: ['']
     });
+
+    this.eventService
+      .on(YuvEventType.DMS_OBJECT_UPDATED)
+      .pipe(takeUntilDestroy(this))
+      .subscribe((e: YuvEvent) => {
+        const dmsObject = e.data as DmsObject;
+        if (this.dataTable) {
+          // Update table data without reloading the whole grid
+          this.dataTable.updateRow(dmsObject.id, dmsObject.data);
+        }
+      });
   }
 
   /**
@@ -130,7 +156,7 @@ export class SearchResultComponent {
           rows: this._rows,
           titleField: SecondaryObjectTypeField.TITLE,
           descriptionField: SecondaryObjectTypeField.DESCRIPTION,
-          selectType: 'single',
+          selectType: 'multiple',
           sortModel: sortOptions.map(o => ({
             colId: o.field,
             sort: o.order
@@ -196,4 +222,6 @@ export class SearchResultComponent {
   onColumnResized(colSizes: ColumnSizes) {
     this.gridService.persistColumnWidthSettings(colSizes, this.resultListObjectTypeId);
   }
+
+  ngOnDestroy() {}
 }

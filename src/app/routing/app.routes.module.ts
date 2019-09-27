@@ -3,7 +3,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AboutComponent } from '../states/about/component/about.component';
 import { DashboardComponent } from '../states/dashboard/dashboard.component';
-import { LoginComponent } from '../states/login/login.component';
+import { EnterComponent } from '../states/enter/enter.component';
 import { NotFoundComponent } from '../states/not-found/not-found.component';
 import { ResultComponent } from '../states/result/result.component';
 import { SettingsComponent } from '../states/settings/settings.component';
@@ -15,7 +15,7 @@ const routes: Routes = [
     component: DashboardComponent,
     canActivate: [AuthGuard]
   },
-  { path: 'enter', component: LoginComponent },
+  { path: 'enter', component: EnterComponent },
   { path: 'settings', component: SettingsComponent, canActivate: [AuthGuard] },
   { path: 'about', component: AboutComponent, canActivate: [AuthGuard] },
   { path: 'result', component: ResultComponent, canActivate: [AuthGuard] },

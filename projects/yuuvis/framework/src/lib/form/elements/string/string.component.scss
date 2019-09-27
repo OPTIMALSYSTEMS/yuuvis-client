@@ -31,6 +31,8 @@
     border: 0;
     width: 100%;
     resize: vertical;
+    background-color: transparent;
+
     &.size-small {
       height: 4em;
     }
@@ -42,6 +44,9 @@
     }
   }
 
+  p-chips {
+    width: 100%;
+  }
   .ui-inputtext,
   input {
     padding: 0;
@@ -50,12 +55,6 @@
     flex-wrap: wrap;
     align-items: center;
     width: 100%;
+    background: transparent;
   }
 }
-
-// //noinspection CssInvalidPseudoSelector
-// :host ::ng-deep {
-//   input {
-//     width: 100%;
-//   }
-// }

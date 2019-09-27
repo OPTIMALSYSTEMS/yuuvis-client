@@ -2,7 +2,7 @@
   <yuv-icon class="btn" id="drawer" (click)="showSideBar = true" replaceUrl
     [iconSrc]="'assets/default/svg/ic_drawer.svg'"></yuv-icon>
   <a routerLink="/" id="logo">
-    <yuv-icon class="btn" [iconSrc]="'assets/default/theme/logo.svg'"></yuv-icon>
+    <yuv-icon class="btn" [iconSrc]="'assets/default/theme/app.icon.svg'"></yuv-icon>
   </a>
   <div class="main">
     <!-- <yuv-icon class="btn" [iconSrc]="'assets/default/svg/ic_search.svg'"></yuv-icon> -->
@@ -15,6 +15,10 @@
 
     <p-overlayPanel #op>
       <div class="user-panel">
+
+        <div class="update" *ngIf="swUpdateAvailable" (click)="updateWorker()">Update available</div>
+
+
         <div class="avatar" [ngClass]="{ enabled: user?.enabled }">
           <yuv-user-avatar [user]="user"></yuv-user-avatar>
           <div class="user-title">
@@ -26,10 +30,11 @@
           </div>
         </div>
         <div class="nav-item settings" (click)="op.hide()">
-          <a routerLink="/settings" translate>eo.state.settings.title</a>
+          <a routerLink="/settings" translate>yuv.client.state.settings.title</a>
         </div>
         <div class="nav-item logout">
-          <a [routerLink]="['/enter', { logout: true }]" translate>eo.bar.button.logout.title</a>
+          <!-- <a [routerLink]="['/enter', { logout: true }]" translate>yuv.client.frame.app-bar.logout</a> -->
+          <a (click)="logout()" translate>yuv.client.frame.app-bar.logout</a>
         </div>
       </div>
     </p-overlayPanel>
@@ -42,8 +47,7 @@
 <yuv-sidebar [display]="showSideBar" (hide)="showSideBar = false">
   <section class="content navigation-list">
     <div class="nav-item">
-      <a (click)="navigate('favorites')" translate>eo.state.favorites.title</a>
-      <a (click)="navigate('about')" translate>eo.state.about.title</a>
+      <a (click)="navigate('about')" translate>yuv.client.state.about.title</a>
     </div>
   </section>
 </yuv-sidebar>
