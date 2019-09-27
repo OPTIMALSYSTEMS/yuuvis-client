@@ -7,6 +7,11 @@
     background: rgba(0, 0, 0, 0.025);
     border: 1px solid rgba(0, 0, 0, 0.1);
 
+    .dark & {
+      background: rgba(255, 255, 255, 0.025);
+      border-color: rgba(255, 255, 255, 0.1);
+    }
+
     .legend {
       margin-bottom: calc(var(--app-pane-padding) / 2);
 
@@ -17,20 +22,43 @@
         color: #fff;
         background-color: rgba(0, 0, 0, 0.22);
         padding: calc(var(--app-pane-padding) / 8) calc(var(--app-pane-padding) / 4);
+        .dark & {
+          background-color: rgba(255, 255, 255, 0.22);
+        }
       }
     }
   }
 
+  // body .ui-tabview.ui-tabview-top .ui-tabview-panels
   &.o2mGroupStack {
     background: rgba(0, 0, 0, 0.02);
     border: 1px solid rgba(0, 0, 0, 0.1);
 
+    .dark & {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .ui-tabview.ui-tabview-top .ui-tabview-panels {
+      background: #fff;
+
+      .dark & {
+        background: rgba(255, 255, 255, 0.04);
+      }
+    }
+
     // tab headers
     .ui-tabview.ui-tabview-top > .ui-tabview-nav li.ui-state-active {
       border-color: rgba(0, 0, 0, 0.26);
+      .dark & {
+        border-color: rgba(255, 255, 255, 0.26);
+      }
     }
     .ui-tabview.ui-tabview-top > .ui-tabview-nav > li:not(.ui-state-active):not(.ui-state-disabled):hover {
       border-color: rgba(0, 0, 0, 0.16);
+      .dark & {
+        border-color: rgba(255, 255, 255, 0.16);
+      }
     }
     .ui-tabview.ui-tabview-top > .ui-tabview-nav li {
       &.dirty-true:not(.invalid-true) {

@@ -3,7 +3,7 @@
   <div class="title">
     yuuvis component playground
   </div>
-  <div class="settings"><button class="toggle" (click)="darkMode =! darkMode"
+  <div class="settings"><button class="toggle" (click)="toggleDarkMode()"
       [ngClass]="{on: darkMode}">{{darkMode ? 'disable' : 'enable'}} DarkMode</button>
   </div>
   <div class="user" *ngIf="!!user; else tplNotLoggedIn">Logged in as '{{user?.username}}'</div>

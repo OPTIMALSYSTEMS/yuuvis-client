@@ -31,6 +31,8 @@
     border: 0;
     width: 100%;
     resize: vertical;
+    background-color: transparent;
+
     &.size-small {
       height: 4em;
     }
