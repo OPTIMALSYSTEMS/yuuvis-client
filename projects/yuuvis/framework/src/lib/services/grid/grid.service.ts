@@ -3,17 +3,21 @@ import { Router } from '@angular/router';
 import {
   AppCacheService,
   BackendService,
+  BaseObjectTypeField,
   ContentStreamField,
+  FieldDefinition,
   ObjectField,
   ObjectType,
   ObjectTypeField,
+  SearchService,
+  SortOption,
   SystemService,
   TranslateService,
   Utils,
   YuvEnvironment
 } from '@yuuvis/core';
 import { ColDef } from 'ag-grid-community';
-import { Observable } from 'rxjs';
+import { forkJoin, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { FileSizePipe, LocaleDatePipe, LocaleNumberPipe } from '../../pipes';
 import { CellRenderer } from './grid.cellrenderer';
@@ -30,6 +34,7 @@ export class GridService {
   constructor(
     private appCacheService: AppCacheService,
     private system: SystemService,
+    private searchSvc: SearchService,
     private translate: TranslateService,
     private router: Router,
     private backend: BackendService
@@ -58,19 +63,16 @@ export class GridService {
    */
   getColumnConfiguration(objectTypeId?: string): Observable<ColDef[]> {
     const objectType: ObjectType = objectTypeId ? this.system.getObjectType(objectTypeId) : this.system.getBaseDocumentType();
-    return this.getPersistedColumnWidth(objectTypeId).pipe(
-      map((colSizes: ColumnSizes) => {
-        // create a map from column size data in order to get
-        // a better (more performant) access to the properties
-        const colSizesMap = new Map<string, number>();
-        if (colSizes) {
-          colSizes.columns.forEach(cs => colSizesMap.set(cs.id, cs.width));
-        }
+    return forkJoin([this.searchSvc.getFieldDefinition(objectType), this.getPersistedColumnWidth(objectTypeId)]).pipe(
+      map((data: any[]) => {
+        const fieldDef = data[0] as FieldDefinition;
+        const colSizes = data[1] as ColumnSizes;
 
-        const colDefs: ColDef[] = [];
-        // add column definitions for the object types fields
-        colDefs.push(...objectType.fields.filter(f => f.propertyType !== 'table').map(f => this.getColumnDefinition(f, colSizesMap.get(f.id))));
-        return colDefs;
+        const columns = fieldDef.elements
+          .filter(f => f.propertyType !== 'table')
+          .map(f => this.getColumnDefinition(f, fieldDef.getOptions(f.id, (colSizes && colSizes.columns) || [])));
+
+        return columns;
       })
     );
   }
@@ -78,9 +80,8 @@ export class GridService {
   /**
    * Creates a column definition for a given object type field.
    * @param field The field to create the column definition for
-   * @param width The width the column should have. If not provided defaults apply
    */
-  private getColumnDefinition(field: ObjectTypeField, width?: number): ColDef {
+  private getColumnDefinition(field: ObjectTypeField, options?: ColDef): ColDef {
     const colDef: ColDef = {
       field: field.id,
       headerName: this.system.getLocalizedResource(`${field.id}_label`)
@@ -88,11 +89,6 @@ export class GridService {
 
     this.addColDefAttrsByType(colDef, field);
     this.addColDefAttrsByField(colDef, field);
-
-    // override default width setting if required
-    if (width) {
-      colDef.width = width;
-    }
 
     colDef.suppressMovable = true;
     colDef.resizable = true;
@@ -102,11 +98,21 @@ export class GridService {
       colDef.sortable = true;
     }
 
-    return colDef;
+    return { ...colDef, ...options };
   }
 
   private isSortable(field: ObjectTypeField): boolean {
-    return field.propertyType !== 'id' && !field.id.match(/^enaio:createdBy$|^enaio:lastModifiedBy$/);
+    return field.propertyType !== 'id' && !field.id.match(new RegExp(`^${BaseObjectTypeField.CREATED_BY}$|^${BaseObjectTypeField.MODIFIED_BY}$`));
+  }
+
+  /**
+   * Saves column sort settings for a given object type.
+   * @param sortModel Sort settings for columns
+   * @param objectTypeId The ID of the object type to save column settings for
+   */
+  persistSortSettings(sortModel: SortOption[], objectTypeId?: string) {
+    const objectType: ObjectType = objectTypeId ? this.system.getObjectType(objectTypeId) : this.system.getBaseDocumentType();
+    this.searchSvc.updateFieldDefinition(objectType, sortModel, []);
   }
 
   /**
