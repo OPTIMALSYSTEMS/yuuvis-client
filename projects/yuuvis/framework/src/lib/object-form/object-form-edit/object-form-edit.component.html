@@ -2,12 +2,11 @@
   <yuv-object-form [formOptions]="formOptions" *ngIf="formOptions" (statusChanged)="onFormStatusChanged($event)">
   </yuv-object-form>
 
-  <div class="form-controls">
+  <div class="form-controls" [ngClass]="{disabled: controls.disabled}">
 
     <div class="err-msg" *ngIf="formState?.invalid" translate>yuv.framework.object-form-edit.invalid</div>
 
-    <div class="buttons" [ngClass]="{disabled: controls.disabled}">
-
+    <div class="buttons">
       <button class="secondary" (click)="reset()" [disabled]="controls.saving || controls.disabled"
         translate>yuv.framework.object-form-edit.reset</button>
       <button class="primary" [ngClass]="{spinner: controls.saving}"

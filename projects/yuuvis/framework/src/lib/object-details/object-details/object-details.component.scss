@@ -24,11 +24,16 @@
             .yuv-object-form {
               margin: var(--app-pane-padding);
               background: var(--panel-background);
+              box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1);
             }
           }
           .form-controls {
-            border-top: 1px solid var(--panel-divider-color);
+            border: 4px solid var(--panel-background-grey);
             background: var(--panel-background);
+            animation: yuvFadeInUp 200ms;
+            &.disabled {
+              display: none;
+            }
 
             .buttons {
               padding: calc(var(--app-pane-padding) / 2) var(--app-pane-padding);
