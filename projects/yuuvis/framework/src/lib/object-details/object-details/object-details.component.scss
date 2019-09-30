@@ -8,6 +8,34 @@
       #history > .ui-tabview-panel {
         padding: var(--app-pane-padding);
       }
+
+      #indexdata > .ui-tabview-panel {
+        height: 100%;
+        overflow: hidden;
+
+        .object-form-edit {
+          height: 100%;
+          background: transparent;
+
+          yuv-object-form {
+            overflow: auto;
+            background: transparent;
+
+            .yuv-object-form {
+              margin: var(--app-pane-padding);
+              background: var(--panel-background);
+            }
+          }
+          .form-controls {
+            border-top: 1px solid var(--panel-divider-color);
+            background: var(--panel-background);
+
+            .buttons {
+              padding: calc(var(--app-pane-padding) / 2) var(--app-pane-padding);
+            }
+          }
+        }
+      }
     }
   }
 }
@@ -31,7 +59,8 @@
   }
 
   yuv-object-form-edit {
-    margin: var(--app-pane-padding);
+    // margin: var(--app-pane-padding);
     box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1);
+    height: 100%;
   }
 }
