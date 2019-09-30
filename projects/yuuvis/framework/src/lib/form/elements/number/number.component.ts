@@ -40,56 +40,80 @@ export class NumberComponent implements ControlValueAccessor, Validator {
   _precision: number;
   _pattern: string;
   _grouping: boolean;
+  _min: number;
+  _max: number;
   validationErrors = [];
   numberPipe: LocaleNumberPipe;
 
   /**
    * Number of decimal places
    */
-  @Input() set scale(val: number) {
+  @Input()
+  set scale(val: number) {
     this._scale = Math.min(val || 0, 30);
+  }
+  get scale(): number {
+    return this._scale;
   }
   /**
    * Overall amount of digits allowed (including decimal places)
    */
-  @Input() set precision(val: number) {
+  @Input()
+  set precision(val: number) {
     this._precision = Math.min(val || 100, 100);
+  }
+  get precision(): number {
+    return this._precision;
   }
   /**
    *  Set to true to group number by pattern
    */
-  @Input() set grouping(val: boolean) {
+  @Input()
+  set grouping(val: boolean) {
     this._grouping = val;
+  }
+  get grouping(): boolean {
+    return this._grouping;
   }
   /**
    * The pattern to group number value by
    */
-  @Input() set pattern(val) {
+  @Input()
+  set pattern(val) {
     this._pattern = val;
+  }
+  get pattern() {
+    return this._pattern;
   }
   /**
    * Will prevent the input from being changed (default: false)
    */
   @Input() readonly: boolean;
+  /**
+   * set minimum input value
+   */
+  @Input()
+  set min(min: number) {
+    this._min = min;
+  }
+  get min() {
+    return this._min;
+  }
+
+  /**
+   * set maximum input value
+   *
+   */
+  @Input()
+  set max(max: number) {
+    this._max = max;
+  }
+  get max() {
+    return this._max;
+  }
 
   constructor(private translate: TranslateService) {
     this.numberPipe = new LocaleNumberPipe(this.translate);
-  }
-
-  get scale(): number {
-    return this._scale;
-  }
-
-  get precision(): number {
-    return this._precision;
-  }
-
-  get grouping(): boolean {
-    return this._grouping;
-  }
-
-  get pattern() {
-    return this._pattern;
   }
 
   propagateChange = (_: any) => {};
@@ -140,6 +164,11 @@ export class NumberComponent implements ControlValueAccessor, Validator {
             scale: this.scale
           }
         });
+      }
+
+      // min max
+      if (this.min && this.max && !Utils.betweenTwoNumbers(val, this.min, this.max)) {
+        this.validationErrors.push({ key: 'minmax' });
       }
 
       if (!this.validationErrors.length) {

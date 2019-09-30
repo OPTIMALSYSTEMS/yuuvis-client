@@ -51,11 +51,7 @@ export class SystemService {
    * @param mode Form mode to fetch (e.g. CONTEXT)
    */
   getObjectTypeForm(objectTypeId: string, situation: string, mode?: string): Observable<any> {
-    return this.backend.get(
-      Utils.buildUri(`/dms/form/${objectTypeId}`, {
-        situation: situation
-      })
-    );
+    return this.backend.get(Utils.buildUri(`/dms/form/${objectTypeId}`, { situation }));
   }
 
   isDateFormat(data: string): boolean {
