@@ -1,12 +1,27 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { ApiBase } from '../backend/api.enum';
 import { BackendService } from '../backend/backend.service';
-import { BaseObjectTypeField, ContentStreamField } from '../system/system.enum';
-import { SearchQuery } from './search-query.model';
+import { BaseObjectTypeField, ContentStreamField, SecondaryObjectTypeField } from '../system/system.enum';
+import { ObjectType } from './../../model/object-type.model';
+import { SearchQuery, SortOption } from './search-query.model';
 import { SearchResult, SearchResultContent, SearchResultItem } from './search.service.interface';
 
+/**
+ * @ignore
+ * Creates the Model of Field Definitions
+ */
+export class FieldDefinition {
+  constructor(public elements: any[] = [], public sortorder: any[] = [], public pinned: any[] = [], public mode?: string) {}
+
+  getOptions(id = '', sizes = []) {
+    const sort = (this.sortorder.find(s => s.field === id) || {}).order;
+    const pinned = !!this.pinned.find(_id => _id === id);
+    const width = (sizes.find(s => s.id === id) || {}).width;
+    return { ...(sort && { sort }), ...(pinned && { pinned }), ...(width && { width }) };
+  }
+}
 @Injectable({
   providedIn: 'root'
 })
@@ -104,7 +119,7 @@ export class SearchService {
       hasMoreItems: searchResponse.hasMoreItems,
       totalNumItems: searchResponse.totalNumItems,
       items: resultListItems,
-      objectTypes: objectTypes
+      objectTypes
     };
     return result;
   }
@@ -117,5 +132,40 @@ export class SearchService {
   getPage(query: SearchQuery, page: number): Observable<SearchResult> {
     query.from = (page - 1) * query.size;
     return this.search(query);
+  }
+
+  /**
+   * Fake field definition service
+   * @param objectType default is null (represents mixed result)
+   */
+  getFieldDefinition(objectType: ObjectType): Observable<FieldDefinition> {
+    // TODO: use real service
+    const start = [BaseObjectTypeField.OBJECT_TYPE_ID, SecondaryObjectTypeField.TITLE, SecondaryObjectTypeField.DESCRIPTION].map(e => e.toString());
+    const end = [
+      ContentStreamField.LENGTH,
+      ContentStreamField.MIME_TYPE,
+      ContentStreamField.FILENAME,
+      BaseObjectTypeField.VERSION_NUMBER,
+      BaseObjectTypeField.MODIFICATION_DATE,
+      BaseObjectTypeField.MODIFIED_BY,
+      BaseObjectTypeField.CREATION_DATE,
+      BaseObjectTypeField.CREATED_BY,
+      BaseObjectTypeField.OBJECT_ID
+    ].map(e => e.toString());
+    const fd = new FieldDefinition([
+      ...objectType.fields.filter(f => start.includes(f.id)).sort((a, b) => start.indexOf(a.id) - start.indexOf(b.id)),
+      ...objectType.fields.filter(f => !start.includes(f.id) && !end.includes(f.id)),
+      ...objectType.fields.filter(f => end.includes(f.id)).sort((a, b) => end.indexOf(a.id) - end.indexOf(b.id))
+    ]);
+    return of(fd);
+  }
+
+  /**
+   * Fake field definition service
+   * @param objectType default is null (represents mixed result)
+   */
+  updateFieldDefinition(objectType: ObjectType, sortModel: SortOption[], pinModel: string[]): Observable<FieldDefinition> {
+    // TODO: use real service
+    return of(new FieldDefinition([], sortModel, pinModel));
   }
 }

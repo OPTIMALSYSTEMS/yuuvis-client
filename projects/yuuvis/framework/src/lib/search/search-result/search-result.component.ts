@@ -215,6 +215,7 @@ export class SearchResultComponent implements OnDestroy {
       this._searchQuery.sortOptions = sortModel.map(m => new SortOption(m.colId, m.sort));
       this._searchQuery.from = 0;
       this.executeQuery();
+      this.gridService.persistSortSettings(this._searchQuery.sortOptions, this.resultListObjectTypeId);
     }
   }
 

@@ -140,7 +140,7 @@ export class SystemService {
     this.system = {
       version: schemaResponse.version,
       lastModificationDate: schemaResponse.lastModificationDate,
-      objectTypes: objectTypes,
+      objectTypes,
       i18n: localizedResource
     };
     this.appCache.setItem(this.STORAGE_KEY, this.system).subscribe();
