@@ -62,7 +62,9 @@
 
     &:hover {
       background-color: rgba(0, 0, 0, 0.03);
-      background: linear-gradient(to right, rgba(0, 0, 0, 0) 0%, var(--panel-divider-color) 10%, var(--panel-divider-color) 90%, rgba(0, 0, 0, 0) 100%);
+      :host-context(.dark) & {
+        background-color: rgba(255, 255, 255, 0.03);
+      }
     }
 
     &:last-child {

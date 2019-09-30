@@ -43,6 +43,7 @@
 
   .content {
     grid-area: content;
+    color: var(--text-color-body);
     background-color: var(--panel-background-grey);
     overflow: auto;
   }
