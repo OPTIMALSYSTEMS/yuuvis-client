@@ -24,6 +24,16 @@ export const numberElements = [
     type: 'integer',
     required: true
   },
+  {
+    readonly: false,
+    name: 'integer:four',
+    label: 'integer between 10 and 155',
+    description: 'integer between 10 and 155',
+    type: 'integer',
+    min: 10,
+    max: 155,
+    required: false
+  },
 
   // decimals
   {
@@ -49,5 +59,15 @@ export const numberElements = [
     description: 'readonly decimal',
     type: 'decimal',
     required: true
+  },
+  {
+    readonly: false,
+    name: 'decimal:four',
+    label: 'decimal between 10 and 155',
+    description: 'decimal between 10 and 155',
+    type: 'decimal',
+    min: 10,
+    max: 155,
+    required: false
   }
 ];
