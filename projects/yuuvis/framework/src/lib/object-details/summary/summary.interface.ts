@@ -6,6 +6,7 @@ export interface Summary {
 }
 export interface SummaryEntry {
   label: string;
+  key: string;
   value: any;
   order?: number;
 }

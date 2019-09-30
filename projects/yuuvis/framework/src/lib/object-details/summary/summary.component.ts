@@ -1,8 +1,17 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { AppCacheService, BaseObjectTypeField, ContentStreamField, DmsObject, ObjectTypeField, ParentField, SystemService } from '@yuuvis/core';
+import {
+  AppCacheService,
+  BaseObjectTypeField,
+  ContentStreamField,
+  DmsObject,
+  ObjectTypeField,
+  ParentField,
+  SecondaryObjectTypeField,
+  SystemService
+} from '@yuuvis/core';
 import { ColDef, ICellRendererFunc } from 'ag-grid-community';
 import { GridService } from '../../services/grid/grid.service';
-import { Summary } from './summary.interface';
+import { Summary, SummaryEntry } from './summary.interface';
 
 /**
  * Component that reders a summary for a given `DmsObject`. It will list the index data set for the
@@ -126,7 +135,7 @@ export class SummaryComponent implements OnInit {
         const label = this.systemService.getLocalizedResource(`${key}_label`);
         const def: ColDef = colDef.find(cd => cd.field === prepKey);
         const renderer: ICellRendererFunc = def ? (def.cellRenderer as ICellRendererFunc) : null;
-        const si = {
+        const si: SummaryEntry = {
           label: label ? label : key,
           key,
           value: renderer ? renderer({ value: dmsObject.data[key] }) : dmsObject.data[key],
@@ -148,6 +157,9 @@ export class SummaryComponent implements OnInit {
         }
 
         summary.base.sort((a, b) => a.order - b.order);
+        summary.core
+          .sort((a, b) => (a.key === SecondaryObjectTypeField.DESCRIPTION ? -1 : b.key === SecondaryObjectTypeField.DESCRIPTION ? 1 : 0))
+          .sort((a, b) => (a.key === SecondaryObjectTypeField.TITLE ? -1 : b.key === SecondaryObjectTypeField.TITLE ? 1 : 0));
       });
     });
 
