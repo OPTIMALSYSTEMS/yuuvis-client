@@ -63,11 +63,11 @@ export const numberElements = [
   {
     readonly: false,
     name: 'decimal:four',
-    label: 'decimal between 10 and 155',
-    description: 'decimal between 10 and 155',
+    label: 'decimal between 10.11 and 155.55',
+    description: 'decimal between 10.11 and 155.55',
     type: 'decimal',
-    min: 10,
-    max: 155,
+    min: 10.11,
+    max: 155.55,
     required: false
   }
 ];

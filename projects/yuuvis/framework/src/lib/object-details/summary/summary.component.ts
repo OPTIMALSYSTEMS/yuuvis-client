@@ -128,6 +128,9 @@ export class SummaryComponent implements OnInit {
     };
 
     const { skipFields, patentFields, extraFields, defaultBaseFields } = this.getSummaryConfiguration(dmsObject);
+
+    console.log({ dmsObject });
+
     this.gridService.getColumnConfiguration(dmsObject.objectTypeId).subscribe((colDef: ColDef[]) => {
       Object.keys(dmsObject.data).forEach((key: string) => {
         const prepKey = key.startsWith('parent.') ? key.replace('parent.', '') : key;
