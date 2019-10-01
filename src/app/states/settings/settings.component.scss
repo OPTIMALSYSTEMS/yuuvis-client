@@ -204,6 +204,7 @@ $avatar-size-small: 80px;
 
           .content {
             grid-area: content;
+            background-color: var(--panel-background);
 
             .role {
               display: grid;
@@ -223,6 +224,7 @@ $avatar-size-small: 80px;
             .name {
               grid-area: name;
               align-self: center;
+              color: var(--text-color-body);
             }
           }
         }

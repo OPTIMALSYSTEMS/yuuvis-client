@@ -33,13 +33,14 @@
                 </div>
             </div>
 
-            <h3 translate>yuv.client.state.settings.theme</h3>
-
+            
             <div class="setting">
-                <div class="label">{{'yuv.client.state.settings.theme.darkmode'|translate}}</div>
+                <h3 class="label" translate>yuv.client.state.settings.theme</h3>
                 <div class="value">
+                    <button class="toggle" [ngClass]="{primary: !darkMode}"
+                        (click)="toggleTheme(false)">{{'yuv.client.state.settings.theme.light'|translate}}</button>
                     <button class="toggle" [ngClass]="{primary: darkMode}"
-                        (click)="toggleDarkMode(!darkMode)">{{'yuv.client.state.settings.theme.darkmode'|translate}}</button>
+                        (click)="toggleTheme(true)">{{'yuv.client.state.settings.theme.darkmode'|translate}}</button>
                 </div>
             </div>
 

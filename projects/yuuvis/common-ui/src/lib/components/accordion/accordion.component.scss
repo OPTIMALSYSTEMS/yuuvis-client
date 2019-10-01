@@ -8,6 +8,7 @@
     .ui-accordion-header {
       &-text {
         padding: 0;
+        color: var(--text-color-body);
       }
       a {
         padding: 0;
@@ -19,13 +20,17 @@
         &.fa {
           display: none;
         }
-        &.ui-accordion-header-text:after {
-          content: '+';
-        }
       }
-      &.ui-state-active {
-        span.ui-accordion-header-text:after {
-          content: '-';
+
+      a .ui-accordion-toggle-icon {
+        color: var(--text-color-body);
+      }
+      &:not(.ui-state-disabled).ui-state-active {
+        &:hover a .ui-accordion-toggle-icon {
+          color: var(--item-focus-background-color);
+        }
+        a .ui-accordion-toggle-icon {
+          color: var(--text-color-caption);
         }
       }
       &:not(.ui-state-active):not(.ui-state-disabled):hover a,
@@ -37,9 +42,11 @@
         color: var(--color-primary);
       }
     }
+
     .ui-accordion-content {
       padding: 1em 0;
       border: none;
+      background-color: var(--panel-background);
     }
   }
 }
