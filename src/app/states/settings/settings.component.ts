@@ -32,7 +32,7 @@ export class SettingsComponent implements OnInit {
     this.userService.changeClientLocale(iso);
   }
 
-  toggleDarkMode(darkMode: boolean) {
+  toggleTheme(darkMode: boolean) {
     this.layoutService.setDarkMode(darkMode);
   }
 
