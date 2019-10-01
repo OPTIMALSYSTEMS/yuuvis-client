@@ -60,7 +60,7 @@ export class GridService {
    * blank in case of a mixed result list
    */
   getColumnConfiguration(objectTypeId?: string): Observable<ColDef[]> {
-    const objectType: ObjectType = objectTypeId ? this.system.getObjectType(objectTypeId) : this.system.getBaseDocumentType();
+    const objectType: ObjectType = objectTypeId ? this.system.getObjectType(objectTypeId) : this.system.getBaseType();
     return forkJoin([this.searchSvc.getFieldDefinition(objectType), this.getPersistedColumnWidth(objectTypeId)]).pipe(
       map((data: any[]) => {
         const fieldDef = data[0] as FieldDefinition;

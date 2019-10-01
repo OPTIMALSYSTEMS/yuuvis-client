@@ -298,4 +298,13 @@ export class Utils {
     };
     return String(str).replace(/[&<>"'\/]/g, s => entityMap[s]);
   }
+
+  public static arrayToObject(arr = [], keyProperty?: string | ((o: any) => string), valueProperty?: string | ((o: any) => string)) {
+    const key = typeof keyProperty === 'string' ? (o: any) => o[keyProperty] : keyProperty;
+    const value = typeof valueProperty === 'string' ? (o: any) => o[valueProperty] : valueProperty;
+    return arr.reduce((acc, cur, i) => {
+      acc[key ? key(cur) : i] = value ? value(cur) : cur;
+      return acc;
+    }, {});
+  }
 }

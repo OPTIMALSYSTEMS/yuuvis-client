@@ -10,17 +10,20 @@ export const AdministrationRoles = {
 };
 
 export const BaseObjectTypeField = {
-  OBJECT_ID: 'system:objectId',
   OBJECT_TYPE_ID: 'system:objectTypeId',
-  CREATION_DATE: 'system:creationDate',
-  MODIFICATION_DATE: 'system:lastModificationDate',
-  TENANT: 'system:tenant',
   VERSION_NUMBER: 'system:versionNumber',
+  CREATION_DATE: 'system:creationDate',
   CREATED_BY: 'system:createdBy',
+  MODIFICATION_DATE: 'system:lastModificationDate',
   MODIFIED_BY: 'system:lastModifiedBy',
   PARENT_ID: 'system:parentId',
   PARENT_OBJECT_TYPE_ID: 'system:parentObjectTypeId',
-  PARENT_VERSION_NUMBER: 'system:parentVersionNumber'
+  PARENT_VERSION_NUMBER: 'system:parentVersionNumber',
+  TENANT: 'system:tenant',
+  TRACE_ID: 'system:traceId',
+  SECONDARY_OBJECT_TYPE_IDS: 'system:secondaryObjectTypeIds',
+  BASE_TYPE_ID: 'system:baseTypeId',
+  OBJECT_ID: 'system:objectId'
 };
 
 export const SecondaryObjectTypeField = {
