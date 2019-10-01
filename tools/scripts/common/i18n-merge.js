@@ -22,7 +22,7 @@ const _merge = async lang => {
   }
 
   // copy the merged data to the apps language file
-  fs.writeFileSync(appJsonPath, JSON.stringify(merged, null, 2), {
+  fs.writeFileSync(appJsonPath, JSON.stringify(merged, null, 2).replace(/\n/g, '\r\n'), {
     encoding: 'utf8'
   });
 
@@ -45,7 +45,7 @@ const _readLanguageFiles = (path, lang) => {
       },
       (err, files) => {
         if (err) reject(err);
-        resolve(contents.join('\r\n'));
+        resolve(contents.join('\n'));
       }
     );
   });
