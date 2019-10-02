@@ -32,6 +32,9 @@ export class SearchResultPanelComponent implements OnInit {
   actionMenuVisible = false;
   actionMenuSelection = [];
 
+  @Input() options;
+  @Output() optionsChanged = new EventEmitter();
+
   constructor(private translate: TranslateService, private systemService: SystemService, private dmsService: DmsService) {}
 
   refresh() {

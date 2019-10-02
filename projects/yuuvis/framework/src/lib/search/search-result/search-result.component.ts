@@ -17,7 +17,6 @@ import { ColDef } from 'ag-grid-community';
 import { of } from 'rxjs';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { ResponsiveDataTableComponent, ResponsiveTableData } from '../../components';
-import { ColumnSizes } from '../../services/grid/grid.interface';
 import { GridService } from '../../services/grid/grid.service';
 import { SVGIcons } from '../../svg.generated';
 
@@ -51,6 +50,9 @@ export class SearchResultComponent implements OnDestroy {
     pages: number;
     page: number;
   };
+
+  @Input() options: any;
+  @Output() optionsChanged = new EventEmitter();
 
   @ViewChild('dataTable', { static: false }) dataTable: ResponsiveDataTableComponent;
 
@@ -146,6 +148,11 @@ export class SearchResultComponent implements OnDestroy {
           this.pagingForm.get('page').setValidators([Validators.min(0), Validators.max(this.pagination.pages)]);
         }
 
+        // setup column width
+        if (this.options) {
+          colDefs.forEach(col => (col.width = this.options[col.field] || col.width));
+        }
+
         this.resultListObjectTypeId = objecttypeId;
         this._columns = colDefs;
         this._rows = searchResult.items.map(i => this.getRow(i));
@@ -217,10 +224,6 @@ export class SearchResultComponent implements OnDestroy {
       this.executeQuery();
       this.gridService.persistSortSettings(this._searchQuery.sortOptions, this.resultListObjectTypeId);
     }
-  }
-
-  onColumnResized(colSizes: ColumnSizes) {
-    this.gridService.persistColumnWidthSettings(colSizes, this.resultListObjectTypeId);
   }
 
   ngOnDestroy() {}

@@ -11,8 +11,8 @@
 
     <ng-container *ngIf="tableData?.rows.length; else tplEmpty">
       <yuv-responsive-data-table #dataTable class="data-table" [data]="tableData" [breakpoint]="400"
-        (columnResized)="onColumnResized($event)" (selectionChanged)="onSelectionChanged($event)"
-        (sortChanged)="onSortChanged($event)">
+        (optionsChanged)="optionsChanged.emit($event)" [options]="options"
+        (selectionChanged)="onSelectionChanged($event)" (sortChanged)="onSortChanged($event)">
       </yuv-responsive-data-table>
 
       <div class="footer paging">

@@ -20,7 +20,7 @@
     <yuv-icon class="finalized-icon" [svg]="icons.finalized"></yuv-icon> -->
   </yuv-action-menu-bar>
 
-  <yuv-responsive-tab-container class="content">
+  <yuv-responsive-tab-container class="content" (optionsChanged)="optionsChanged.emit($event)" [options]="options">
     <p-tabPanel [id]="'summary'" [header]="'yuv.framework.object-details.tabs.summary.title' | translate">
       <ng-template pTemplate="content">
         <yuv-summary [dmsObject]="dmsObject" [showExtrasSection]="userIsAdmin"></yuv-summary>

@@ -15,11 +15,10 @@ import { SearchResult, SearchResultContent, SearchResultItem } from './search.se
 export class FieldDefinition {
   constructor(public elements: any[] = [], public sortorder: any[] = [], public pinned: any[] = [], public mode?: string) {}
 
-  getOptions(id = '', sizes = []) {
+  getOptions(id = '') {
     const sort = (this.sortorder.find(s => s.field === id) || {}).order;
     const pinned = !!this.pinned.find(_id => _id === id);
-    const width = (sizes.find(s => s.id === id) || {}).width;
-    return { ...(sort && { sort }), ...(pinned && { pinned }), ...(width && { width }) };
+    return { ...(sort && { sort }), ...(pinned && { pinned }) };
   }
 }
 @Injectable({

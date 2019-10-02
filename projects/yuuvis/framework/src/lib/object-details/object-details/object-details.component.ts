@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, HostBinding, Input, Output } from '@angular/core';
 import { DmsObject, DmsService, SystemService, UserService } from '@yuuvis/core';
 import { CellRenderer } from '../../services/grid/grid.cellrenderer';
 import { SVGIcons } from '../../svg.generated';
@@ -10,10 +10,10 @@ import { SVGIcons } from '../../svg.generated';
 @Component({
   selector: 'yuv-object-details',
   templateUrl: './object-details.component.html',
-  styleUrls: ['./object-details.component.scss'],
-  host: { class: 'yuv-object-details' }
+  styleUrls: ['./object-details.component.scss']
 })
 export class ObjectDetailsComponent {
+  @HostBinding('class.yuv-object-details') _hostClass = true;
   objectIcon: string = '';
   icons = SVGIcons;
   busy: boolean;
@@ -51,6 +51,9 @@ export class ObjectDetailsComponent {
   }
   @Input() standaloneFullscreen: boolean;
   @Output() standaloneFullscreenBackButtonClick = new EventEmitter();
+
+  @Input() options;
+  @Output() optionsChanged = new EventEmitter();
 
   constructor(private dmsService: DmsService, private userService: UserService, private systemService: SystemService) {
     this.userIsAdmin = this.userService.hasAdministrationRoles;
