@@ -56,7 +56,7 @@ export class SettingsComponent implements OnInit {
     }
   }
 
-  toogleBtnActive(mode: boolean) {
+  toggleBtnActive(mode: boolean) {
     return mode ? 'primary active' : '';
   }
 

@@ -15,7 +15,7 @@
                 <h3 class="label" translate>yuv.client.state.settings.language</h3>
                 <div class="value">
                     <button class="toggle" (click)="changeClientLocale(locale.iso)"
-                        [ngClass]="toogleBtnActive(translate.currentLang === locale.iso)"
+                        [ngClass]="toggleBtnActive(translate.currentLang === locale.iso)"
                         *ngFor="let locale of clientLocales">{{locale.label}}</button>
                 </div>
             </div>
