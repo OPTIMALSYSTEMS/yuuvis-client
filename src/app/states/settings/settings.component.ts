@@ -36,6 +36,10 @@ export class SettingsComponent implements OnInit {
     this.layoutService.setDarkMode(darkMode);
   }
 
+  toggleBtnActive(mode: boolean) {
+    return mode ? 'primary active' : '';
+  }
+
   setAccentColor(rgb: string) {
     this.layoutService.setAccentColor(rgb);
   }
@@ -54,10 +58,6 @@ export class SettingsComponent implements OnInit {
       };
       myReader.readAsDataURL(file);
     }
-  }
-
-  toggleBtnActive(mode: boolean) {
-    return mode ? 'primary active' : '';
   }
 
   ngOnInit() {

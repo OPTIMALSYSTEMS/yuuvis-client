@@ -39,7 +39,7 @@
                 <div class="value">
                     <button class="toggle" [ngClass]="toogleBtnActive(!darkMode)"
                         (click)="toggleTheme(false)">{{'yuv.client.state.settings.theme.light'|translate}}</button>
-                    <button class="toggle" [ngClass]="toogleBtnActive(darkMode)"
+                    <button class="toggle" [ngClass]="toggleBtnActive(darkMode)"
                         (click)="toggleTheme(true)">{{'yuv.client.state.settings.theme.dark'|translate}}</button>
                 </div>
             </div>
