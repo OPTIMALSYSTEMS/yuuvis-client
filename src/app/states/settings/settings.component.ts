@@ -56,6 +56,10 @@ export class SettingsComponent implements OnInit {
     }
   }
 
+  toogleBtnActive(mode: boolean) {
+    return mode ? 'primary active' : '';
+  }
+
   ngOnInit() {
     this.titleService.setTitle(this.translate.instant('yuv.client.state.settings.title'));
     this.user$ = this.userService.user$;

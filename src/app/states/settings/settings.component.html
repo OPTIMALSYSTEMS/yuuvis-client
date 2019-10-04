@@ -11,19 +11,19 @@
     <div class="body">
         <div class="body-wrap">
 
-            <div class="setting">
-                <div class="label" translate>yuv.client.state.settings.language</div>
+            <div class="setting settings__row">
+                <h3 class="label" translate>yuv.client.state.settings.language</h3>
                 <div class="value">
                     <button class="toggle" (click)="changeClientLocale(locale.iso)"
-                        [ngClass]="{active: translate.currentLang === locale.iso}"
+                        [ngClass]="toogleBtnActive(translate.currentLang === locale.iso)"
                         *ngFor="let locale of clientLocales">{{locale.label}}</button>
                 </div>
             </div>
 
             <!-- permissions -->
-            <div class="permissions__settings">
-                <div class="label" translate>yuv.client.state.settings.permission</div>
-                <div class="content">
+            <div class="permissions__settings settings__row">
+                <h3 class="label" translate>yuv.client.state.settings.permission</h3>
+                <div class="value">
                     <yuv-accordion [header]="'yuv.client.state.settings.roles' | translate">
                         <div class="role" *ngFor="let role of (user$ | async).authorities">
                             <yuv-icon class="icon" [iconSrc]="'assets/default/svg/ic_shield.svg'"></yuv-icon>
@@ -34,18 +34,18 @@
             </div>
 
             
-            <div class="setting">
+            <div class="setting settings__row">
                 <h3 class="label" translate>yuv.client.state.settings.theme</h3>
                 <div class="value">
-                    <button class="toggle" [ngClass]="{primary: !darkMode}"
+                    <button class="toggle" [ngClass]="toogleBtnActive(!darkMode)"
                         (click)="toggleTheme(false)">{{'yuv.client.state.settings.theme.light'|translate}}</button>
-                    <button class="toggle" [ngClass]="{primary: darkMode}"
-                        (click)="toggleTheme(true)">{{'yuv.client.state.settings.theme.darkmode'|translate}}</button>
+                    <button class="toggle" [ngClass]="toogleBtnActive(darkMode)"
+                        (click)="toggleTheme(true)">{{'yuv.client.state.settings.theme.dark'|translate}}</button>
                 </div>
             </div>
 
             <!-- <div class="setting">
-                <div class="label">AC</div>
+                <h3 class="label">AC</h3>
                 <div class="value">
                     <span class="color accent" *ngFor="let ac of accentColorRGB"
                         [ngClass]="{active: ac === accentColor}" [ngStyle]="{'background-color': 'rgb(' + ac + ')'}"
@@ -54,8 +54,8 @@
                 </div>
             </div>
 
-            <div class="setting">
-                <div class="label">BG</div>
+            <h class="setting">
+                <h3 class="label">BG<h3>
                 <div class="value">
                     <input type="file" (change)="setBackgroundImage($event)">
                     <button *ngIf="customDashboardBackground" (click)="setBackgroundImage(null)">clear</button>

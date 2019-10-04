@@ -68,7 +68,7 @@
   "yuv.client.state.settings.permission": "Permissions",
   "yuv.client.state.settings.roles": "Roles",
   "yuv.client.state.settings.theme": "Theme",
-  "yuv.client.state.settings.theme.darkmode": "DarkMode",
-  "yuv.client.state.settings.theme.light": "LightMode",
+  "yuv.client.state.settings.theme.dark": "Dark",
+  "yuv.client.state.settings.theme.light": "Light",
   "yuv.client.state.settings.title": "Settings"
 }

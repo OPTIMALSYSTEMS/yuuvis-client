@@ -156,11 +156,8 @@ $avatar-size-small: 80px;
             color: var(--text-color-caption);
             display: flex;
             flex: 1;
-            button {
-              &.active {
-                background-color: var(--color-accent);
-                color: #fff;
-              }
+            button.active {
+              color: #fff;
             }
 
             span.color {
@@ -186,7 +183,7 @@ $avatar-size-small: 80px;
           }
         }
 
-        .permissions__settings {
+        .settings__row {
           display: grid;
           grid-template-columns: 0.4fr 1.6fr;
           grid-template-rows: 1fr;
@@ -196,13 +193,28 @@ $avatar-size-small: 80px;
 
           .screen-s & {
             grid-template-areas: 'label' 'content';
+            grid-template-columns: 1fr;
+            grid-template-rows: auto 1fr;
           }
 
           .label {
             grid-area: label;
           }
 
-          .content {
+          .value {
+            grid-area: content;
+            background-color: var(--panel-background);
+            .screen-s & {
+              display: grid;
+              grid-template-columns: auto;
+              grid-template-rows: 1fr;
+              grid-template-areas: '. .';
+            }
+          }
+        }
+
+        .permissions__settings {
+          .value {
             grid-area: content;
             background-color: var(--panel-background);
 
@@ -225,6 +237,10 @@ $avatar-size-small: 80px;
               grid-area: name;
               align-self: center;
               color: var(--text-color-body);
+
+              .screen-s & {
+                margin-left: 5px;
+              }
             }
           }
         }
