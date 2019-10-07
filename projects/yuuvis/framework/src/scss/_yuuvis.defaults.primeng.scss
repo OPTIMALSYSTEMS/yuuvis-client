@@ -11,6 +11,79 @@ body {
   }
 
   // -------------------------------------------------------------------
+  // primeng accordion
+  .ui-accordion {
+    // section head
+    .ui-accordion-header {
+      margin: 0;
+      outline: 0;
+      a {
+        outline: 0;
+        color: var(--text-color-body);
+        border: 1px solid var(--panel-background-grey);
+        background: var(--panel-background-grey);
+        display: flex;
+
+        &:focus {
+          border-color: var(--color-accent);
+          box-shadow: inset 0 0px 0 1px var(--panel-background);
+        }
+
+        .ui-accordion-toggle-icon {
+          order: 2;
+          color: var(--text-color-body);
+        }
+        .ui-accordion-header-text {
+          flex: 1;
+          font-weight: normal;
+          color: var(--text-color-body);
+        }
+      }
+      &:not(.ui-state-active):not(.ui-state-disabled):hover a {
+        background-color: var(--main-background);
+        color: var(--text-color-body);
+        border-color: transparent;
+
+        .ui-accordion-toggle-icon {
+          color: var(--text-color-body);
+        }
+      }
+
+      // accordion open
+      &:not(.ui-state-disabled).ui-state-active a {
+        background-color: var(--panel-background-grey);
+        color: var(--text-color-body);
+        border: 1px solid var(--panel-background-grey);
+
+        &:focus {
+          border-color: var(--color-accent);
+        }
+
+        .ui-accordion-toggle-icon {
+          color: var(--text-color-body);
+        }
+      }
+      // accordion open hover
+      &:not(.ui-state-disabled).ui-state-active:hover a {
+        border: 1px solid var(--panel-background-grey);
+        background-color: var(--panel-background-grey);
+        color: var(--text-color-body);
+
+        .ui-accordion-toggle-icon {
+          color: var(--text-color-body);
+        }
+      }
+    }
+
+    .ui-accordion-content {
+      border: 1px solid var(--panel-background-grey);
+      background-color: var(--panel-background);
+      color: var(--text-color-body);
+      padding: var(--app-pane-padding);
+    }
+  }
+
+  // -------------------------------------------------------------------
   // primeng overlays
   // body .ui-overlaypanel:before
   .ui-overlaypanel {

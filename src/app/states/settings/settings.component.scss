@@ -184,45 +184,20 @@ $avatar-size-small: 80px;
               }
             }
           }
-        }
 
-        .permissions__settings {
-          display: grid;
-          grid-template-columns: 0.4fr 1.6fr;
-          grid-template-rows: 1fr;
-          grid-template-areas: 'label content';
-          grid-gap: 5px;
-          padding-top: var(--app-pane-padding);
-
-          .screen-s & {
-            grid-template-areas: 'label' 'content';
-          }
-
-          .label {
-            grid-area: label;
-          }
-
-          .content {
-            grid-area: content;
-
+          .content.permissions {
             .role {
-              display: grid;
-              grid-template-columns: 0.1fr 1.6fr;
-              grid-template-rows: 1fr;
-              grid-template-areas: 'icon name';
-              margin-bottom: 5px;
-            }
+              display: flex;
+              align-items: center;
+              padding: calc(var(--app-pane-padding) / 4) 0;
 
-            .icon {
-              grid-area: icon;
-              width: 18px;
-              height: 18px;
-              color: var(--text-color-hint);
-            }
-
-            .name {
-              grid-area: name;
-              align-self: center;
+              yuv-icon {
+                width: 18px;
+                height: 18px;
+              }
+              .name {
+                padding: 0 calc(var(--app-pane-padding) / 2);
+              }
             }
           }
         }

@@ -21,15 +21,20 @@
             </div>
 
             <!-- permissions -->
-            <div class="permissions__settings">
+            <div class="setting">
                 <div class="label" translate>yuv.client.state.settings.permission</div>
-                <div class="content">
-                    <yuv-accordion [header]="'yuv.client.state.settings.roles' | translate">
-                        <div class="role" *ngFor="let role of (user$ | async).authorities">
-                            <yuv-icon class="icon" [iconSrc]="'assets/default/svg/ic_shield.svg'"></yuv-icon>
-                            <div class="name">{{role}}</div>
-                        </div>
-                    </yuv-accordion>
+                <div class="content permissions">
+
+                    <p-accordion [expandIcon]="'pi pi-fw pi-chevron-down'" [collapseIcon]="'pi pi-fw pi-chevron-up'">
+                        <p-accordionTab [transitionOptions]="'0ms'"
+                            header="{{'yuv.client.state.settings.roles'|translate}}">
+
+                            <div class="role" *ngFor="let role of (user$ | async).authorities">
+                                <yuv-icon [iconSrc]="'assets/default/svg/ic_shield.svg'"></yuv-icon>
+                                <div class="name">{{role}}</div>
+                            </div>
+                        </p-accordionTab>
+                    </p-accordion>
                 </div>
             </div>
 

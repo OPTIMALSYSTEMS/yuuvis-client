@@ -160,23 +160,12 @@ $about-max-width: 800px;
     .licenses_content {
       grid-area: licenses_content;
 
-      ::ng-deep {
-        .ui-accordion-header-text {
-          color: var(--color-accent);
-          display: inline-block;
-          padding: 4px;
-          border-radius: 4px;
-          border: 1px solid var(--color-accent);
-          cursor: pointer;
-        }
-      }
-
-      .licenses {
+      .lic-row {
         padding-top: var(--app-pane-padding);
         display: flex;
         flex-flow: row nowrap;
         padding: calc(var(--app-pane-padding) / 4);
-        border-top: 1px solid var(--color-primary-4);
+        border-top: 1px solid var(--panel-divider-color);
 
         .name {
           flex: 1 1 auto;
