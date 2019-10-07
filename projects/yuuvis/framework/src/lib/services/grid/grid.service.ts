@@ -16,11 +16,10 @@ import {
   Utils
 } from '@yuuvis/core';
 import { ColDef } from 'ag-grid-community';
-import { forkJoin, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { FileSizePipe, LocaleDatePipe, LocaleNumberPipe } from '../../pipes';
 import { CellRenderer } from './grid.cellrenderer';
-import { ColumnSizes } from './grid.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -60,15 +59,10 @@ export class GridService {
    * blank in case of a mixed result list
    */
   getColumnConfiguration(objectTypeId?: string): Observable<ColDef[]> {
-    const objectType: ObjectType = objectTypeId ? this.system.getObjectType(objectTypeId) : this.system.getBaseDocumentType();
-    return forkJoin([this.searchSvc.getFieldDefinition(objectType), this.getPersistedColumnWidth(objectTypeId)]).pipe(
-      map((data: any[]) => {
-        const fieldDef = data[0] as FieldDefinition;
-        const colSizes = data[1] as ColumnSizes;
-
-        const columns = fieldDef.elements
-          .filter(f => f.propertyType !== 'table')
-          .map(f => this.getColumnDefinition(f, fieldDef.getOptions(f.id, (colSizes && colSizes.columns) || [])));
+    const objectType: ObjectType = objectTypeId ? this.system.getObjectType(objectTypeId) : this.system.getBaseType();
+    return this.searchSvc.getFieldDefinition(objectType).pipe(
+      map((fieldDef: FieldDefinition) => {
+        const columns = fieldDef.elements.filter(f => f.propertyType !== 'table').map(f => this.getColumnDefinition(f, fieldDef.getOptions(f.id)));
 
         return columns;
       })
@@ -112,25 +106,6 @@ export class GridService {
   persistSortSettings(sortModel: SortOption[], objectTypeId?: string) {
     const objectType: ObjectType = objectTypeId ? this.system.getObjectType(objectTypeId) : this.system.getBaseDocumentType();
     this.searchSvc.updateFieldDefinition(objectType, sortModel, []);
-  }
-
-  /**
-   * Fetches the persisted column width settings for a given object type.
-   * If no type is provided, settings for a mixed result list will be loaded
-   * @param objectTypeId The ID of the object type to fetch column settings for
-   */
-  private getPersistedColumnWidth(objectTypeId?: string): Observable<ColumnSizes> {
-    return this.appCacheService.getItem(`${this.COLUMN_WIDTH_CACHE_KEY_BASE}.${objectTypeId || 'mixed'}`);
-  }
-
-  /**
-   * Saves column width settings for a given object type.
-   * If no type is provided, settings for a mixed result list will be loaded
-   * @param colSizes Size settings for columns
-   * @param objectTypeId The ID of the object type to save column settings for
-   */
-  persistColumnWidthSettings(colSizes: ColumnSizes, objectTypeId?: string) {
-    this.appCacheService.setItem(`${this.COLUMN_WIDTH_CACHE_KEY_BASE}.${objectTypeId || 'mixed'}`, colSizes).subscribe();
   }
 
   /**

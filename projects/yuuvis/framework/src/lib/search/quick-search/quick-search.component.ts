@@ -62,7 +62,7 @@ export class QuickSearchComponent implements OnInit {
         this.resultCount += item.count;
         this.aggTypes.push({
           objectTypeId: item.value,
-          label: this.systemService.getLocalizedResource(`${item.value}_label`) || '???',
+          label: this.systemService.getLocalizedResource(`${item.value}_label`) || item.value,
           count: item.count
         });
       });

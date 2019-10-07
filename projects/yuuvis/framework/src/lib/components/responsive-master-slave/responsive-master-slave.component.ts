@@ -54,8 +54,7 @@ import { ResponsiveMasterSlaveOptions } from './responsive-master-slave.interfac
 @Component({
   selector: 'yuv-responsive-master-slave',
   templateUrl: './responsive-master-slave.component.html',
-  styleUrls: ['./responsive-master-slave.component.scss'],
-  host: { class: 'yuv-responsive-master-slave' }
+  styleUrls: ['./responsive-master-slave.component.scss']
 })
 export class ResponsiveMasterSlaveComponent implements OnInit, OnDestroy {
   backButton = SVGIcons.navBack;
@@ -75,6 +74,7 @@ export class ResponsiveMasterSlaveComponent implements OnInit, OnDestroy {
     useStateLayout: false
   };
 
+  @HostBinding('class.yuv-responsive-master-slave') _hostClass = true;
   @HostBinding('class.detailsActive') _detailsActive: boolean;
 
   @Input() set options(o: ResponsiveMasterSlaveOptions) {
@@ -91,6 +91,7 @@ export class ResponsiveMasterSlaveComponent implements OnInit, OnDestroy {
     return this._detailsActive;
   }
   @Output() slaveClosed = new EventEmitter();
+  @Output() optionsChanged = new EventEmitter();
 
   constructor(private screenService: ScreenService, private location: PlatformLocation) {
     this.screenService.screenChange$.pipe(takeUntilDestroy(this)).subscribe((screen: Screen) => {
@@ -117,6 +118,12 @@ export class ResponsiveMasterSlaveComponent implements OnInit, OnDestroy {
 
   closeSlave() {
     this.slaveClosed.emit();
+  }
+
+  dragEnd(evt: any) {
+    const options = { masterSize: evt.sizes[0], slaveSize: evt.sizes[1] };
+    this.options = options;
+    this.optionsChanged.emit(options);
   }
 
   ngOnInit() {}

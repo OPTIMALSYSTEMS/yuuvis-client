@@ -50,6 +50,7 @@
       <yuv-number [readonly]="formElementRef._eoFormElement.readonly"
         [precision]="formElementRef._eoFormElement.precision" [scale]="0"
         [grouping]="formElementRef._eoFormElement.grouping"
+        [min]="formElementRef._eoFormElement.min" [max]="formElementRef._eoFormElement.max"
         [formControlName]="element._eoFormControlWrapper.controlName">
       </yuv-number>
     </yuv-form-input>
@@ -61,6 +62,7 @@
       <yuv-number [readonly]="formElementRef._eoFormElement.readonly"
         [precision]="formElementRef._eoFormElement.precision" [scale]="formElementRef._eoFormElement.scale"
         [grouping]="formElementRef._eoFormElement.grouping" [pattern]="formElementRef._eoFormElement.pattern"
+        [min]="formElementRef._eoFormElement.min" [max]="formElementRef._eoFormElement.max"
         [formControlName]="element._eoFormControlWrapper.controlName">
       </yuv-number>
     </yuv-form-input>
@@ -106,6 +108,9 @@
       </div>
       <div *ngIf="formElementRef.errors.minlength">
         {{'yuv.framework.object-form-element.error.minlength' | translate: ({ minlength: formElementRef._eoFormElement.minlen })}}
+      </div>
+      <div *ngIf="formElementRef.errors.minmax">
+        {{'yuv.framework.object-form-element.error.minmax' | translate: ({ min: formElementRef._eoFormElement.min, max: formElementRef._eoFormElement.max })}}
       </div>
     </div>
   </div>

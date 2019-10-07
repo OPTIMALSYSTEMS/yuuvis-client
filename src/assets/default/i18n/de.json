@@ -30,6 +30,7 @@
   "yuv.framework.object-form-element.error.date.invalid": "Bitte geben Sie ein gültiges Datum ein",
   "yuv.framework.object-form-element.error.maxlength": "Die Eingabe darf max. {{maxlength}} Zeichen enthalten.",
   "yuv.framework.object-form-element.error.minlength": "Die Eingabe muss min. {{minlength}} Zeichen enthalten.",
+  "yuv.framework.object-form-element.error.minmax": "Die Eingabe muss zwichen {{min}} und {{max}} liegen.",
   "yuv.framework.object-form-element.error.number": "Bitte geben Sie einen numerischen Wert ein.",
   "yuv.framework.object-form-element.error.number.precision": "Die Anzahl der Vorkommastellen ist nicht korrekt. max. {{prepointdigits}}",
   "yuv.framework.object-form-element.error.number.scale": "Die Anzahl der Nachkommastellen ist nicht korrekt. max. {{scale}}",
@@ -67,6 +68,7 @@
   "yuv.client.state.settings.permission": "Berechtigungen",
   "yuv.client.state.settings.roles": "Rollen",
   "yuv.client.state.settings.theme": "Theme",
-  "yuv.client.state.settings.theme.darkmode": "DarkMode",
+  "yuv.client.state.settings.theme.dark": "Dark",
+  "yuv.client.state.settings.theme.light": "Light",
   "yuv.client.state.settings.title": "Einstellungen"
 }

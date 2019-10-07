@@ -1,5 +1,5 @@
 import { Component, EventEmitter, HostBinding, HostListener, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { BaseObjectTypeField } from '@yuuvis/core';
+import { BaseObjectTypeField, Utils } from '@yuuvis/core';
 import { ColDef, GridOptions, RowNode } from 'ag-grid-community';
 import { ResizedEvent } from 'angular-resize-event';
 import { Observable, ReplaySubject } from 'rxjs';
@@ -33,6 +33,9 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
   };
 
   gridOptions: GridOptions;
+
+  @Input() options: any;
+  @Output() optionsChanged = new EventEmitter();
 
   /**
    * ResponsiveTableData setter
@@ -106,6 +109,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
               width: columnState.width
             }))
           });
+          this.optionsChanged.emit(Utils.arrayToObject(this.gridOptions.columnApi.getColumnState(), 'colId', 'width'));
         }
       });
   }

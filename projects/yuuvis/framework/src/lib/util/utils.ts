@@ -30,4 +30,11 @@ export class Utils {
     }
     return result;
   }
+
+  public static betweenTwoNumbers(val: number, minVal: number, maxVal: number, inclusive = true) {
+    const min = Math.min(minVal, maxVal);
+    const max = Math.max(minVal, maxVal);
+
+    return inclusive ? val >= min && val <= max : val > min && val < max;
+  }
 }

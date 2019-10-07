@@ -15,11 +15,10 @@ import { SearchResult, SearchResultContent, SearchResultItem } from './search.se
 export class FieldDefinition {
   constructor(public elements: any[] = [], public sortorder: any[] = [], public pinned: any[] = [], public mode?: string) {}
 
-  getOptions(id = '', sizes = []) {
+  getOptions(id = '') {
     const sort = (this.sortorder.find(s => s.field === id) || {}).order;
     const pinned = !!this.pinned.find(_id => _id === id);
-    const width = (sizes.find(s => s.id === id) || {}).width;
-    return { ...(sort && { sort }), ...(pinned && { pinned }), ...(width && { width }) };
+    return { ...(sort && { sort }), ...(pinned && { pinned }) };
   }
 }
 @Injectable({
@@ -140,18 +139,8 @@ export class SearchService {
    */
   getFieldDefinition(objectType: ObjectType): Observable<FieldDefinition> {
     // TODO: use real service
-    const start = [BaseObjectTypeField.OBJECT_TYPE_ID, SecondaryObjectTypeField.TITLE, SecondaryObjectTypeField.DESCRIPTION].map(e => e.toString());
-    const end = [
-      ContentStreamField.LENGTH,
-      ContentStreamField.MIME_TYPE,
-      ContentStreamField.FILENAME,
-      BaseObjectTypeField.VERSION_NUMBER,
-      BaseObjectTypeField.MODIFICATION_DATE,
-      BaseObjectTypeField.MODIFIED_BY,
-      BaseObjectTypeField.CREATION_DATE,
-      BaseObjectTypeField.CREATED_BY,
-      BaseObjectTypeField.OBJECT_ID
-    ].map(e => e.toString());
+    const start = [BaseObjectTypeField.OBJECT_TYPE_ID, ...Object.values(SecondaryObjectTypeField)];
+    const end = [...Object.values(ContentStreamField), ...Object.values(BaseObjectTypeField).filter(f => f !== BaseObjectTypeField.OBJECT_TYPE_ID)];
     const fd = new FieldDefinition([
       ...objectType.fields.filter(f => start.includes(f.id)).sort((a, b) => start.indexOf(a.id) - start.indexOf(b.id)),
       ...objectType.fields.filter(f => !start.includes(f.id) && !end.includes(f.id)),
