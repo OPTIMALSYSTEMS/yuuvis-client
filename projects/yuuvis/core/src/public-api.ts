@@ -7,6 +7,7 @@ export * from './lib/model/dms-object-history.model';
 export * from './lib/model/dms-object.model';
 export * from './lib/model/object-type.model';
 export * from './lib/model/work-item-history.model';
+export * from './lib/model/yuv-error.model';
 export * from './lib/model/yuv-user.model';
 export * from './lib/service/auth/auth.interface';
 export * from './lib/service/auth/auth.service';

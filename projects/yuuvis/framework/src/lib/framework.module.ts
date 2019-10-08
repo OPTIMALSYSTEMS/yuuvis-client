@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { ModuleWithProviders, NgModule } from '@angular/core';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { ErrorHandler, ModuleWithProviders, NgModule } from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { YuvCommonUiModule } from '@yuuvis/common-ui';
 import { CoreConfig, CORE_CONFIG, CUSTOM_CONFIG, YuvCoreModule, YuvCoreSharedModule } from '@yuuvis/core';
@@ -14,6 +15,7 @@ import { YuvObjectDetailsModule } from './object-details/object-details.module';
 import { YuvObjectFormModule } from './object-form/object-form.module';
 import { YuvPipesModule } from './pipes/pipes.module';
 import { YuvSearchModule } from './search/search.module';
+import { ErrorHandlerService } from './services/error-handler/error-handler.service';
 import { YuvUserModule } from './user/user.module';
 
 /**
@@ -65,6 +67,18 @@ import { YuvUserModule } from './user/user.module';
     YuvCoreSharedModule,
     ActionModule,
     ToastrModule
+  ],
+  providers: [
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: ErrorHandlerService,
+      multi: true
+    },
+    {
+      // provide a error handling for the current platform
+      provide: ErrorHandler,
+      useClass: ErrorHandlerService
+    }
   ],
   declarations: []
 })
