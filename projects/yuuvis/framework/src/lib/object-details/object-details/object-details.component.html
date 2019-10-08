@@ -36,7 +36,7 @@
 
     <p-tabPanel [id]="'preview'" [header]="'yuv.framework.object-details.tabs.content.title' | translate">
       <ng-template pTemplate="content">
-        Content Preview ..................
+        <yuv-content-preview [dmsObject]="dmsObject"></yuv-content-preview>
       </ng-template>
     </p-tabPanel>
 

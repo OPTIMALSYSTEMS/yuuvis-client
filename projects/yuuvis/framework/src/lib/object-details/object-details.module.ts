@@ -11,6 +11,7 @@ import { YuvPipesModule } from '../pipes/pipes.module';
 import { AuditComponent } from './audit/audit.component';
 import { ObjectDetailsComponent } from './object-details/object-details.component';
 import { SummaryComponent } from './summary/summary.component';
+import { ContentPreviewComponent } from './content-preview/content-preview.component';
 
 @NgModule({
   imports: [
@@ -24,7 +25,7 @@ import { SummaryComponent } from './summary/summary.component';
     YuvObjectFormModule,
     ActionModule
   ],
-  declarations: [ObjectDetailsComponent, SummaryComponent, AuditComponent],
+  declarations: [ObjectDetailsComponent, SummaryComponent, AuditComponent, ContentPreviewComponent],
   exports: [ObjectDetailsComponent, SummaryComponent, AuditComponent]
 })
 export class YuvObjectDetailsModule {}

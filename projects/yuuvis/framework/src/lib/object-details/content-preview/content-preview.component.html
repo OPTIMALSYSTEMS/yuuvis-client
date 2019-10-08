@@ -1,0 +1,16 @@
+<ng-container *ngIf="dmsObject">
+  <iframe *ngIf="previewSrc; else tplNoPreview" [src]="previewSrc" frameborder="0"></iframe>
+
+  <ng-template #tplNoPreview>
+    <div class="no-preview">
+
+      <ng-container *ngIf="dmsObject.isFolder; else tplNoContent">
+        <yuv-icon [svg]="icons.folder"></yuv-icon>
+      </ng-container>
+      <ng-template #tplNoContent>
+        <yuv-icon [svg]="icons.noFile"></yuv-icon>
+      </ng-template>
+
+    </div>
+  </ng-template>
+</ng-container>
