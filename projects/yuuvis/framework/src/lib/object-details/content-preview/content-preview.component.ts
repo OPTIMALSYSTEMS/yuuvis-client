@@ -1,7 +1,6 @@
 import { Component, ElementRef, Input, OnInit } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
-import { DmsObject } from '@yuuvis/core';
-import { ApiBase } from './../../../../../core/src/lib/service/backend/api.enum';
+import { ApiBase, DmsObject } from '@yuuvis/core';
 import { SVGIcons } from './../../svg.generated';
 
 @Component({
