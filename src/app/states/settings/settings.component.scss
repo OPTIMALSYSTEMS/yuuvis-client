@@ -156,8 +156,19 @@ $avatar-size-small: 80px;
             color: var(--text-color-caption);
             display: flex;
             flex: 1;
-            button.active {
-              color: #fff;
+
+            &.buttons {
+              margin: 0 calc(var(--app-pane-padding) / 8 * -1);
+            }
+
+            button {
+              background-color: var(--panel-background-grey);
+              margin: 0 calc(var(--app-pane-padding) / 8);
+
+              &.active {
+                background-color: var(--color-accent);
+                color: #fff;
+              }
             }
 
             span.color {
@@ -191,6 +202,7 @@ $avatar-size-small: 80px;
               yuv-icon {
                 width: 18px;
                 height: 18px;
+                opacity: 0.5;
               }
               .name {
                 padding: 0 calc(var(--app-pane-padding) / 2);

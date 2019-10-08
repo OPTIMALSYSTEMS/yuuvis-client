@@ -36,10 +36,6 @@ export class SettingsComponent implements OnInit {
     this.layoutService.setDarkMode(darkMode);
   }
 
-  toggleBtnActive(mode: boolean) {
-    return mode ? 'primary active' : '';
-  }
-
   setAccentColor(rgb: string) {
     this.layoutService.setAccentColor(rgb);
   }

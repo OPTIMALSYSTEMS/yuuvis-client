@@ -11,11 +11,12 @@
     <div class="body">
         <div class="body-wrap">
 
+            <!-- language -->
             <div class="setting settings__row">
-                <h3 class="label" translate>yuv.client.state.settings.language</h3>
-                <div class="value">
+                <div class="label" translate>yuv.client.state.settings.language</div>
+                <div class="value buttons">
                     <button class="toggle" (click)="changeClientLocale(locale.iso)"
-                        [ngClass]="toggleBtnActive(translate.currentLang === locale.iso)"
+                        [ngClass]="{active: translate.currentLang === locale.iso}"
                         *ngFor="let locale of clientLocales">{{locale.label}}</button>
                 </div>
             </div>
@@ -38,19 +39,19 @@
                 </div>
             </div>
 
-
+            <!-- theming -->
             <div class="setting settings__row">
-                <h3 class="label" translate>yuv.client.state.settings.theme</h3>
-                <div class="value">
-                    <button class="toggle" [ngClass]="toggleBtnActive(!darkMode)"
+                <div class="label" translate>yuv.client.state.settings.theme</div>
+                <div class="value buttons">
+                    <button [ngClass]="{active: !darkMode}"
                         (click)="toggleTheme(false)">{{'yuv.client.state.settings.theme.light'|translate}}</button>
-                    <button class="toggle" [ngClass]="toggleBtnActive(darkMode)"
+                    <button [ngClass]="{active: darkMode}"
                         (click)="toggleTheme(true)">{{'yuv.client.state.settings.theme.dark'|translate}}</button>
                 </div>
             </div>
 
             <!-- <div class="setting">
-                <h3 class="label">AC</h3>
+                <div class="label">AC</div>
                 <div class="value">
                     <span class="color accent" *ngFor="let ac of accentColorRGB"
                         [ngClass]="{active: ac === accentColor}" [ngStyle]="{'background-color': 'rgb(' + ac + ')'}"
@@ -60,7 +61,7 @@
             </div>
 
             <h class="setting">
-                <h3 class="label">BG<h3>
+                <div class="label">BG<div>
                 <div class="value">
                     <input type="file" (change)="setBackgroundImage($event)">
                     <button *ngIf="customDashboardBackground" (click)="setBackgroundImage(null)">clear</button>

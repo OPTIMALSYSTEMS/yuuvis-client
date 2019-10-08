@@ -31,7 +31,7 @@ body {
 
         .ui-accordion-toggle-icon {
           order: 2;
-          color: var(--text-color-body);
+          color: var(--text-color-caption);
         }
         .ui-accordion-header-text {
           flex: 1;
@@ -45,7 +45,7 @@ body {
         border-color: transparent;
 
         .ui-accordion-toggle-icon {
-          color: var(--text-color-body);
+          color: var(--text-color-caption);
         }
       }
 
@@ -60,7 +60,7 @@ body {
         }
 
         .ui-accordion-toggle-icon {
-          color: var(--text-color-body);
+          color: var(--text-color-caption);
         }
       }
       // accordion open hover
@@ -70,13 +70,14 @@ body {
         color: var(--text-color-body);
 
         .ui-accordion-toggle-icon {
-          color: var(--text-color-body);
+          color: var(--text-color-caption);
         }
       }
     }
 
     .ui-accordion-content {
       border: 1px solid var(--panel-background-grey);
+      border-top: 0;
       background-color: var(--panel-background);
       color: var(--text-color-body);
       padding: var(--app-pane-padding);
