@@ -1,0 +1,25 @@
+:host {
+  background-color: var(--panel-background);
+  padding: 4px;
+  display: block;
+  border: 1px solid var(--panel-divider-color);
+
+  form {
+    display: flex;
+  }
+
+  input {
+    background-color: transparent;
+    border: 0;
+    padding: 0 1em;
+    color: var(--text-color-body);
+    font-family: monospace;
+  }
+  .error {
+    font-family: monospace;
+    background: var(--color-error);
+    color: #fff;
+    margin-top: 4px;
+    padding: 4px;
+  }
+}

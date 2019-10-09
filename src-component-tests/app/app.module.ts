@@ -16,6 +16,8 @@ import { TestResponsiveTabContainerComponent } from './test-responsive-tab-conta
 import { TestSearchResultPanelComponent } from './test-search-result-panel/test-search-result-panel.component';
 import { TestSearchResultComponent } from './test-search-result/test-search-result.component';
 import { TestSummaryComponent } from './test-summary/test-summary.component';
+import { TestAuditComponent } from './test-audit/test-audit.component';
+import { DmsObjectPickerComponent } from './components/dms-object-picker/dms-object-picker.component';
 
 @NgModule({
   declarations: [
@@ -29,7 +31,9 @@ import { TestSummaryComponent } from './test-summary/test-summary.component';
     TestPanelComponent,
     TestQuickSearchComponent,
     TestObjectFormEditComponent,
-    TestActionMenuComponent
+    TestActionMenuComponent,
+    TestAuditComponent,
+    DmsObjectPickerComponent
   ],
   imports: [
     HttpClientModule,

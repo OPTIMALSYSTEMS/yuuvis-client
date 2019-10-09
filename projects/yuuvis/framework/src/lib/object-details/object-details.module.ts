@@ -4,14 +4,15 @@ import { FormsModule } from '@angular/forms';
 import { YuvCommonUiModule } from '@yuuvis/common-ui';
 import { TranslateModule } from '@yuuvis/core';
 import { AccordionModule } from 'primeng/accordion';
+import { CalendarModule } from 'primeng/calendar';
 import { ActionModule } from '../actions/action.module';
 import { YuvComponentsModule } from '../components/components.module';
 import { YuvObjectFormModule } from '../object-form/object-form.module';
 import { YuvPipesModule } from '../pipes/pipes.module';
 import { AuditComponent } from './audit/audit.component';
+import { ContentPreviewComponent } from './content-preview/content-preview.component';
 import { ObjectDetailsComponent } from './object-details/object-details.component';
 import { SummaryComponent } from './summary/summary.component';
-import { ContentPreviewComponent } from './content-preview/content-preview.component';
 
 @NgModule({
   imports: [
@@ -23,7 +24,8 @@ import { ContentPreviewComponent } from './content-preview/content-preview.compo
     TranslateModule,
     FormsModule,
     YuvObjectFormModule,
-    ActionModule
+    ActionModule,
+    CalendarModule
   ],
   declarations: [ObjectDetailsComponent, SummaryComponent, AuditComponent, ContentPreviewComponent],
   exports: [ObjectDetailsComponent, SummaryComponent, AuditComponent]

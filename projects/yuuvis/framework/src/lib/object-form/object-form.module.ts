@@ -14,6 +14,6 @@ import { ObjectFormComponent } from './object-form/object-form.component';
 @NgModule({
   declarations: [ObjectFormComponent, ObjectFormElementComponent, ObjectFormGroupComponent, ObjectFormEditComponent],
   imports: [CommonModule, ReactiveFormsModule, YuvPipesModule, YuvFormModule, TabViewModule, TranslateModule, YuvComponentsModule],
-  exports: [ObjectFormComponent, ObjectFormEditComponent]
+  exports: [ObjectFormComponent, ObjectFormEditComponent, ObjectFormElementComponent]
 })
 export class YuvObjectFormModule {}

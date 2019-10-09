@@ -1,3 +1,19 @@
-<p>
-  audit works!
-</p>
+<div class="audit" [yuvBusyOverlay]="busy">
+
+  lala
+
+  <ng-container *ngIf="objectID">
+
+    <form (ngSubmit)="query()">
+      <p-calendar [(ngModel)]="range" [ngModelOptions]="{standalone:true}" hideOnDateTimeSelect="true"
+        selectionMode="range"></p-calendar>
+      <button type="submit">Go</button>
+    </form>
+    <div *ngFor="let a of audits">
+      {{a.creationDate | localeDate}} {{a.detail}}
+    </div>
+    <div class="paging">
+      paging ...
+    </div>
+  </ng-container>
+</div>

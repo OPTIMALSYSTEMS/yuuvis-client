@@ -17,7 +17,7 @@ export class ContentPreviewComponent implements OnInit {
     } else if (!this._dmsObject || object.id !== this._dmsObject.id) {
       if (object.content) {
         const mimeType = encodeURIComponent(object.content.mimeType);
-        const path = encodeURIComponent(`${ApiBase.apiWeb}/dms/${object.id}/content`);
+        const path = encodeURIComponent(`${ApiBase.apiWeb}/dms/${object.id}/content?asdownload=false`);
         this.previewSrc = this.sanitizer.bypassSecurityTrustResourceUrl(`/preview?mimeType=${mimeType}&path=${path}`);
       } else {
         this.previewSrc = null;

@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { AuditEntry, DmsService } from '@yuuvis/core';
+import { AuditEntry, AuditQueryOptions, AuditService } from '@yuuvis/core';
 
 /**
  * Component listing audits for a given `DmsObject`.
@@ -11,6 +11,9 @@ import { AuditEntry, DmsService } from '@yuuvis/core';
 })
 export class AuditComponent implements OnInit {
   private _objectID: string;
+  audits: AuditEntry[] = [];
+  busy: boolean;
+  range;
 
   /**
    * ID of the `DmsObject` to list the audits for
@@ -25,10 +28,36 @@ export class AuditComponent implements OnInit {
     }
   }
 
-  constructor(private dmsService: DmsService) {}
+  get objectID() {
+    return this._objectID;
+  }
 
-  private fetchAuditEntries() {
-    this.dmsService.getAuditEntries(this._objectID).subscribe((res: AuditEntry[]) => {});
+  constructor(private auditService: AuditService) {}
+
+  private fetchAuditEntries(options?: AuditQueryOptions) {
+    this.busy = true;
+    this.auditService.getAuditEntries(this._objectID, options).subscribe(
+      (res: AuditEntry[]) => {
+        this.audits = res;
+        this.busy = false;
+      },
+      err => {
+        this.busy = false;
+      }
+    );
+  }
+
+  query() {
+    console.log(this.range);
+    const options =
+      this.range && this.range.length
+        ? {
+            from: this.range[0],
+            to: this.range[1]
+          }
+        : null;
+
+    this.fetchAuditEntries(options);
   }
 
   ngOnInit() {}

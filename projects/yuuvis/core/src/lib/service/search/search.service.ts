@@ -35,6 +35,11 @@ export class SearchService {
     return this.backend.post(`/dms/search`, q.toQueryJson(), ApiBase.apiWeb).pipe(map(res => this.toSearchResult(res)));
   }
 
+  searchRaw(q: SearchQuery): Observable<any> {
+    this.lastSearchQuery = q;
+    return this.backend.post(`/dms/search`, q.toQueryJson(), ApiBase.apiWeb);
+  }
+
   /**
    * Fetch aggragations for a given query.
    * @param q The query
