@@ -20,6 +20,7 @@ export class DmsObjectPickerComponent implements OnInit {
   }
 
   fetchDmsObject() {
+    this.error = null;
     const id = this.form.value.objectId;
     if (!id || id.length === 0) {
       this.dmsObject = null;
@@ -35,7 +36,7 @@ export class DmsObjectPickerComponent implements OnInit {
         },
         err => {
           this.dmsObject.emit(null);
-          this.error = err;
+          this.error = err.message;
         }
       );
     }

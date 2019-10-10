@@ -51,6 +51,7 @@ export const ObjectField = {
 export const AuditField = {
   REFERRED_OBJECT_ID: 'system:referredObjectId',
   CREATION_DATE: 'system:creationDate',
+  VERSION: 'system:versionNumber',
   DETAIL: 'system:detail',
   CREATED_BY: 'system:createdBy',
   ACTION: 'system:action'

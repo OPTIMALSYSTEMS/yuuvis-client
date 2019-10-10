@@ -10,7 +10,11 @@ import { AppCacheService, UserService, YuvUser } from '@yuuvis/core';
 export class AppComponent implements OnInit {
   routes = [];
   user: YuvUser;
-  darkMode: boolean;
+
+  uiSettings = {
+    darkMode: false,
+    rtl: false
+  };
 
   private STORAGE_KEY = 'yuv.cmp-test.settings';
 
@@ -22,27 +26,39 @@ export class AppComponent implements OnInit {
       this.user = u;
     });
     this.appCache.getItem(this.STORAGE_KEY).subscribe(res => {
-      this.darkMode = res.darkMode;
-      this.setDarkMode();
+      this.uiSettings = res;
+      this.applyUiSettings();
     });
   }
 
-  toggleDarkMode() {
-    this.darkMode = !this.darkMode;
-    this.setDarkMode();
-    this.appCache
-      .setItem(this.STORAGE_KEY, {
-        darkMode: this.darkMode
-      })
-      .subscribe();
+  toggleDirection() {
+    this.uiSettings.rtl = !this.uiSettings.rtl;
+    this.applyUiSettings();
+    this.saveUiSettings();
   }
 
-  private setDarkMode() {
+  toggleDarkMode() {
+    this.uiSettings.darkMode = !this.uiSettings.darkMode;
+    this.applyUiSettings();
+    this.saveUiSettings();
+  }
+
+  private saveUiSettings() {
+    this.appCache.setItem(this.STORAGE_KEY, this.uiSettings).subscribe();
+  }
+
+  private applyUiSettings() {
     const bodyClasses = document.getElementsByTagName('body')[0].classList;
-    if (this.darkMode) {
+    const outlet = document.getElementById('outlet');
+    if (this.uiSettings.darkMode) {
       bodyClasses.add('dark');
     } else {
       bodyClasses.remove('dark');
+    }
+    if (this.uiSettings.rtl) {
+      outlet.setAttribute('dir', 'rtl');
+    } else {
+      outlet.setAttribute('dir', 'ltr');
     }
   }
 

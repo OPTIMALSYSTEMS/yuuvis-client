@@ -3,8 +3,12 @@
   <div class="title">
     yuuvis component playground
   </div>
-  <div class="settings"><button class="toggle" (click)="toggleDarkMode()"
-      [ngClass]="{on: darkMode}">{{darkMode ? 'disable' : 'enable'}} DarkMode</button>
+  <div class="settings">
+    <button class="toggle" (click)="toggleDirection()"
+      [ngClass]="{on: uiSettings.rtl}">{{uiSettings.rtl ? 'RTL' : 'LTR'}}</button>
+    <button class="toggle" (click)="toggleDarkMode()"
+      [ngClass]="{on: uiSettings.darkMode}">{{uiSettings.darkMode ? 'disable' : 'enable'}}
+      DarkMode</button>
   </div>
   <div class="user" *ngIf="!!user; else tplNotLoggedIn">Logged in as '{{user?.username}}'</div>
   <ng-template #tplNotLoggedIn>
@@ -16,6 +20,6 @@
   <a [routerLink]="[route]" routerLinkActive="active" *ngFor="let route of routes">{{route}}</a>
 </nav>
 
-<div class="body">
+<div class="body" id="outlet">
   <router-outlet></router-outlet>
 </div>
