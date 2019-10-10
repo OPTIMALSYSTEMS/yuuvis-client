@@ -1,19 +1,65 @@
-<div class="audit" [yuvBusyOverlay]="busy">
+<div class="yuv-audit" [ngClass]="{singleEntry: auditsRes?.items?.length === 1}" [yuvBusyOverlay]="busy">
 
-  lala
+  <div class="error" *ngIf="error">
+    <div translate>yuv.framework.audit.fetch.error</div>
+  </div>
 
-  <ng-container *ngIf="objectID">
+  <ng-container *ngIf="auditsRes">
 
-    <form (ngSubmit)="query()">
-      <p-calendar [(ngModel)]="range" [ngModelOptions]="{standalone:true}" hideOnDateTimeSelect="true"
-        selectionMode="range"></p-calendar>
-      <button type="submit">Go</button>
+    <!-- query / filter form -->
+
+
+    <form (ngSubmit)="query()" [formGroup]="searchForm" class="search" *ngIf="searchPanelShow"
+      (yuvOutsideClick)="closeSearchPanel()">
+      <h3 translate>yuv.framework.audit.search.title</h3>
+      <div class="controls">
+        <!-- <p-calendar formControlName="dateRange" hideOnDateTimeSelect="true" showTime="true" selectionMode="range">
+        </p-calendar> -->
+
+        <yuv-form-input class="checkbox" [label]="auditLabels[c]" *ngFor="let c of searchActions">
+          <yuv-checkbox [formControlName]="c"></yuv-checkbox>
+        </yuv-form-input>
+      </div>
+      <div class="buttons">
+        <button type="button" (click)="closeSearchPanel()" translate>yuv.framework.audit.search.button.close</button>
+        <button class="primary" type="submit" translate>yuv.framework.audit.search.button.submit</button>
+      </div>
     </form>
-    <div *ngFor="let a of audits">
-      {{a.creationDate | localeDate}} {{a.detail}}
+
+    <!-- list of audits -->
+    <div class="audits">
+      <div class="audit-entry" *ngFor="let a of auditsRes.items">
+        <div class="created">
+          <div class="date">{{a.creationDate | localeDate: 'eoShortDate'}}</div>
+          <div class="time meta">{{a.creationDate | localeDate: 'eoShortTime'}}</div>
+        </div>
+        <div class="timeline"></div>
+        <div class="content">
+          <div class="entry">
+            <div class="title">{{auditLabels['a' + a.action]}}</div>
+            <div class="creator meta">{{a.createdBy.title}}</div>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="paging">
-      paging ...
+
+    <!-- controls -->
+    <div class="footer">
+
+      <button class="btn-search" (click)="openSearchPanel()">
+        <yuv-icon [svg]="icon.search"></yuv-icon>
+      </button>
+
+
+      <div class="paging" *ngIf="auditsRes.hasMoreItems || auditsRes.page > 1">
+        <button [disabled]="auditsRes.page === 1" (click)="goToPage(auditsRes.page - 1)">
+          <yuv-icon class="prev" [svg]="icon.arrowNext"></yuv-icon>
+        </button>
+        {{auditsRes.page}}
+        <button [disabled]="!auditsRes.hasMoreItems" (click)="goToPage(auditsRes.page + 1)">
+          <yuv-icon class="next" [svg]="icon.arrowNext"></yuv-icon>
+        </button>
+      </div>
     </div>
   </ng-container>
 </div>
