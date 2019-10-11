@@ -82,6 +82,7 @@
         display: flex;
         align-items: center;
         justify-content: flex-end;
+        color: var(--text-color-caption);
         .prev {
           transform: rotate(180deg);
         }
