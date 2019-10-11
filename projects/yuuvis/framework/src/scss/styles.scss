@@ -67,6 +67,10 @@
   /* Legacy iOS */
 }
 
+body.rtl * {
+  direction: rtl;
+}
+
 * {
   font-family: 'Roboto';
   font-size: var(--font-body);

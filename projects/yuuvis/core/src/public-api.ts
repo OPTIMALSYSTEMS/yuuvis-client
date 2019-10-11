@@ -2,13 +2,12 @@ export { TranslateLoader, TranslateModule, TranslateService } from '@ngx-transla
 export * from './lib/core.environment';
 export * from './lib/core.module';
 export * from './lib/core.shared.module';
-export * from './lib/model/audit-entry.interface';
-export * from './lib/model/dms-object-history.model';
 export * from './lib/model/dms-object.model';
 export * from './lib/model/object-type.model';
-export * from './lib/model/work-item-history.model';
 export * from './lib/model/yuv-error.model';
 export * from './lib/model/yuv-user.model';
+export * from './lib/service/audit/audit.interface';
+export * from './lib/service/audit/audit.service';
 export * from './lib/service/auth/auth.interface';
 export * from './lib/service/auth/auth.service';
 export * from './lib/service/backend/api.enum';

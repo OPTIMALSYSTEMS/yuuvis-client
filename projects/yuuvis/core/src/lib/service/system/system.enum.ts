@@ -50,6 +50,15 @@ export const ContentStreamField = {
   ARCHIVE_PATH: 'system:archivePath'
 };
 
+export const AuditField = {
+  REFERRED_OBJECT_ID: 'system:referredObjectId',
+  CREATION_DATE: 'system:creationDate',
+  VERSION: 'system:versionNumber',
+  DETAIL: 'system:detail',
+  CREATED_BY: 'system:createdBy',
+  ACTION: 'system:action'
+};
+
 export const ParentField = {
   asvaktenzeichen: 'tenKolibri:asvaktenzeichen',
   asvaktenzeichentext: 'tenKolibri:asvaktenzeichentext',
