@@ -7,9 +7,19 @@
 
 <form class="search-box" (ngSubmit)="executeSearch()" [ngClass]="{invalid: invalidTerm, agg: aggTypes.length}"
   [formGroup]="searchForm">
+
+
   <yuv-icon [svg]="icSearch"></yuv-icon>
+  <!-- object type selector -->
+  <p-multiSelect [options]="objectTypeSelect" [maxSelectedLabels]="1"
+    [defaultLabel]="'yuv.framework.quick-search.type.all' | translate"
+    [selectedItemsLabel]="'yuv.framework.quick-search.type.many' | translate: {size: searchQuery.types.length}"
+    formControlName="objectTypes">
+  </p-multiSelect>
+
+
   <div class="input">
-    <input autofocus="autofocus" formControlName="searchInput">
+    <input autofocus="autofocus" formControlName="term">
   </div>
 
 </form>

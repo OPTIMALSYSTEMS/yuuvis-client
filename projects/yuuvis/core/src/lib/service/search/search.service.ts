@@ -6,7 +6,7 @@ import { BackendService } from '../backend/backend.service';
 import { BaseObjectTypeField, ContentStreamField, SecondaryObjectTypeField } from '../system/system.enum';
 import { ObjectType } from './../../model/object-type.model';
 import { SearchQuery, SortOption } from './search-query.model';
-import { SearchResult, SearchResultContent, SearchResultItem } from './search.service.interface';
+import { AggregateResult, SearchResult, SearchResultContent, SearchResultItem } from './search.service.interface';
 
 /**
  * @ignore
@@ -56,11 +56,13 @@ export class SearchService {
     return this.lastSearchQuery;
   }
 
-  private toAggregateResult(searchResponse: any, aggregation: string): { value: string; count: number }[] {
-    return searchResponse.objects.map(o => ({
-      value: o.properties[aggregation].value,
-      count: o.properties['OBJECT_COUNT'].value
-    }));
+  private toAggregateResult(searchResponse: any, aggregation: string): AggregateResult {
+    return {
+      aggregations: searchResponse.objects.map(o => ({
+        key: o.properties[aggregation].value,
+        count: o.properties['OBJECT_COUNT'].value
+      }))
+    };
   }
 
   /**

@@ -4,7 +4,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { YuvCommonUiModule } from '@yuuvis/common-ui';
 import { TranslateModule } from '@yuuvis/core';
-import { OverlayPanelModule } from 'primeng/overlaypanel';
+import { MultiSelectModule } from 'primeng/multiselect';
 import { ActionModule } from '../actions/action.module';
 import { YuvComponentsModule } from '../components/components.module';
 import { QuickSearchComponent } from './quick-search/quick-search.component';
@@ -18,10 +18,10 @@ import { SearchResultComponent } from './search-result/search-result.component';
     BrowserAnimationsModule,
     ReactiveFormsModule,
     TranslateModule,
-    OverlayPanelModule,
     YuvComponentsModule,
     YuvCommonUiModule,
-    ActionModule
+    ActionModule,
+    MultiSelectModule
   ],
   exports: [QuickSearchComponent, SearchResultComponent, SearchResultPanelComponent]
 })
