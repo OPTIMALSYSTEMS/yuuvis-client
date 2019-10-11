@@ -25,6 +25,7 @@ export interface AuditQueryOptions {
   size?: number;
   from?: Date;
   to?: Date;
+  createdBy?: string;
   actions?: AuditQueryOptionAction[];
 }
 

@@ -38,8 +38,11 @@ export class AuditService {
         // just one date
         q.addFilter(new SearchFilter(AuditField.CREATION_DATE, SearchFilter.OPERATOR.EQUAL, options.from));
       }
+      if (options.createdBy) {
+        q.addFilter(new SearchFilter(AuditField.CREATED_BY, SearchFilter.OPERATOR.EQUAL, options.createdBy));
+      }
       if (options.actions && options.actions.length) {
-        q.addFilter(new SearchFilter(AuditField.ACTION, SearchFilter.OPERATOR.IN, options.actions.filter(a => a.value).map(a => a.action)));
+        q.addFilter(new SearchFilter(AuditField.ACTION, SearchFilter.OPERATOR.IN, options.actions));
       }
     }
     return this.fetchAudits(q);

@@ -15,9 +15,10 @@ export class AuditComponent implements OnInit {
   private _objectID: string;
   searchForm: FormGroup;
   auditsRes: AuditQueryResult;
+  searchPanelShow: boolean;
+  filtered: boolean;
   error: boolean;
   busy: boolean;
-  searchPanelShow: boolean;
   searchActions: string[] = [];
 
   icon = {
@@ -65,17 +66,19 @@ export class AuditComponent implements OnInit {
       a404: this.translate.instant('yuv.framework.audit.label.get.rendition.thumbnail')
     };
 
-    let x = {
-      dateRange: []
+    let fbInput = {
+      dateRange: [],
+      createdBy: ['']
     };
     Object.keys(this.auditLabels).forEach(k => {
       this.searchActions.push(k);
-      x[k] = [false];
+      fbInput[k] = [false];
     });
-    this.searchForm = this.fb.group(x);
+    this.searchForm = this.fb.group(fbInput);
   }
 
   private fetchAuditEntries(options?: AuditQueryOptions) {
+    this.error = false;
     this.busy = true;
     this.auditService.getAuditEntries(this._objectID, options).subscribe(
       (res: AuditQueryResult) => {
@@ -92,17 +95,29 @@ export class AuditComponent implements OnInit {
     this.searchForm.value;
 
     const range = this.searchForm.value.dateRange;
+    const createdBy = this.searchForm.value.createdBy;
 
     let options: AuditQueryOptions = {};
     if (Array.isArray(range) && range.length) {
-      (options.from = range[0]), (options.to = range[1]);
+      options.from = range[0];
+      options.to = range[1];
     }
-    options.actions = this.searchActions.map(a => ({
-      action: parseInt(a.substr(1)),
-      value: this.searchForm.value[a]
-    }));
+    if (createdBy && createdBy.length) {
+      options.createdBy = createdBy;
+    }
+    const actions = [];
+    this.searchActions.forEach(a => {
+      if (this.searchForm.value[a]) {
+        actions.push(parseInt(a.substr(1)));
+      }
+    });
 
+    if (actions.length) {
+      options.actions = actions;
+    }
+    this.filtered = Object.keys(options).length > 0;
     this.fetchAuditEntries(options);
+    this.closeSearchPanel();
   }
 
   openSearchPanel() {

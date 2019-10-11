@@ -49,6 +49,10 @@
       .controls {
         flex: 1;
         overflow-y: auto;
+
+        .form-control {
+          margin-top: var(--app-pane-padding);
+        }
       }
       .buttons {
         display: flex;
@@ -58,12 +62,20 @@
     .audits {
       grid-area: items;
     }
+    .empty {
+      grid-area: items;
+      display: flex;
+      flex-flow: column;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-color-caption);
+    }
     .footer {
       grid-area: footer;
       background-color: var(--panel-background);
       border-top: 1px solid var(--panel-divider-color);
       display: flex;
-      padding: calc(var(--app-pane-padding) / 4);
+      padding: calc(var(--app-pane-padding) / 4) var(--app-pane-padding);
 
       .paging {
         flex: 1;
@@ -72,6 +84,23 @@
         justify-content: flex-end;
         .prev {
           transform: rotate(180deg);
+        }
+      }
+
+      button {
+        padding: calc(var(--app-pane-padding) / 2);
+      }
+
+      .btn-search.badge {
+        position: relative;
+        &::after {
+          content: '';
+          position: absolute;
+          height: 4px;
+          background-color: var(--color-accent);
+          bottom: 0;
+          right: 0;
+          left: 0;
         }
       }
     }

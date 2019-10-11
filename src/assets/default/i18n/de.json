@@ -26,6 +26,7 @@
   "yuv.framework.audit.label.update.metadata.withcontent": "Indexdaten und Dokumentdatei wurden geändert",
   "yuv.framework.audit.search.button.close": "Schliessen",
   "yuv.framework.audit.search.button.submit": "Suchen",
+  "yuv.framework.audit.search.creator": "Benutzer",
   "yuv.framework.audit.search.title": "Suchen in Historie",
   "yuv.framework.form.datepicker.select": "Auswählen",
   "yuv.framework.form.form-input.null": "Ohne Wert",
