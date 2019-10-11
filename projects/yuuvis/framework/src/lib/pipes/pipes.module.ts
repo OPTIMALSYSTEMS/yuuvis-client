@@ -5,7 +5,7 @@ import { FileSizePipe } from './filesize.pipe';
 import { KeysPipe } from './keys.pipe';
 import { LocaleDatePipe } from './locale-date.pipe';
 import { LocaleCurrencyPipe, LocaleDecimalPipe, LocaleNumberPipe, LocalePercentPipe } from './locale-number.pipe';
-import { SafeHtmlPipe, SaveIframePipe } from './safe-html.pipe';
+import { SafeHtmlPipe, SafeUrlPipe } from './safe-html.pipe';
 import { DisplayNamePipe, FullNamePipe } from './user.pipe';
 
 const pipes = [
@@ -20,12 +20,12 @@ const pipes = [
   DisplayNamePipe,
   FullNamePipe,
   ChipPipe,
-  SaveIframePipe
+  SafeUrlPipe
 ];
 
 @NgModule({
   imports: [CommonModule],
-  declarations: [LocaleCurrencyPipe, ...pipes],
+  declarations: [...pipes],
   exports: [...pipes]
 })
 export class YuvPipesModule {}

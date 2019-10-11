@@ -10,8 +10,8 @@ export class SafeHtmlPipe implements PipeTransform {
   }
 }
 
-@Pipe({ name: 'saveIframe' })
-export class SaveIframePipe implements PipeTransform {
+@Pipe({ name: 'safeUrl' })
+export class SafeUrlPipe implements PipeTransform {
   constructor(private sanitizer: DomSanitizer) {}
 
   transform(url) {
