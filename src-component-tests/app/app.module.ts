@@ -6,7 +6,10 @@ import { YuvFrameworkModule } from '@yuuvis/framework';
 import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { DmsObjectPickerComponent } from './components/dms-object-picker/dms-object-picker.component';
 import { TestActionMenuComponent } from './test-action-menu/test-action-menu.component';
+import { TestAuditComponent } from './test-audit/test-audit.component';
+import { TestContentPreviewComponent } from './test-content-preview/test-content-preview.component';
 import { TestObjectDetailsComponent } from './test-object-details/test-object-details.component';
 import { TestObjectFormEditComponent } from './test-object-form-edit/test-object-form-edit.component';
 import { TestObjectFormComponent } from './test-object-form/test-object-form.component';
@@ -16,8 +19,6 @@ import { TestResponsiveTabContainerComponent } from './test-responsive-tab-conta
 import { TestSearchResultPanelComponent } from './test-search-result-panel/test-search-result-panel.component';
 import { TestSearchResultComponent } from './test-search-result/test-search-result.component';
 import { TestSummaryComponent } from './test-summary/test-summary.component';
-import { TestAuditComponent } from './test-audit/test-audit.component';
-import { DmsObjectPickerComponent } from './components/dms-object-picker/dms-object-picker.component';
 
 @NgModule({
   declarations: [
@@ -33,7 +34,8 @@ import { DmsObjectPickerComponent } from './components/dms-object-picker/dms-obj
     TestObjectFormEditComponent,
     TestActionMenuComponent,
     TestAuditComponent,
-    DmsObjectPickerComponent
+    DmsObjectPickerComponent,
+    TestContentPreviewComponent
   ],
   imports: [
     HttpClientModule,
