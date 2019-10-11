@@ -9,7 +9,8 @@
   [formGroup]="searchForm">
 
 
-  <yuv-icon [svg]="icSearch"></yuv-icon>
+  <!-- <yuv-icon [svg]="icSearch"></yuv-icon> -->
+
   <!-- object type selector -->
   <p-multiSelect [options]="objectTypeSelect" [maxSelectedLabels]="1"
     [defaultLabel]="'yuv.framework.quick-search.type.all' | translate"
@@ -17,16 +18,31 @@
     formControlName="objectTypes">
   </p-multiSelect>
 
+  <div class="chips" *ngFor="let e of formFields">
+    <yuv-object-form-element [element]="e"></yuv-object-form-element>
+  </div>
 
   <div class="input">
     <input autofocus="autofocus" formControlName="term">
   </div>
 
+  <!-- <p-dropdown *ngIf="searchQuery.types.length === 1" [options]="objectTypeFieldSelect" [virtualScroll]="true"
+    itemSize="30">
+  </p-dropdown> -->
+  <button *ngIf="searchQuery.types.length === 1" type="text" (click)="op.toggle($event)">+</button>
+  <button type="submit">go</button>
 </form>
 
-<div class="aggregations" *ngIf="aggTypes.length">
+<p-overlayPanel #op>
+  <div *ngFor="let f of objectTypeFieldSelect" (click)="addFieldEntry(f.field.id)">{{f.label}}</div>
+</p-overlayPanel>
+
+
+
+
+<!-- <div class="aggregations" *ngIf="aggTypes.length">
   <button class="type" *ngFor="let oa of aggTypes" (click)="onAggObjectTypeClick(oa)">
     <span class="typecount">{{oa.count}}</span>
     <span class="label">{{oa.label}}</span>
   </button>
-</div>
+</div> -->

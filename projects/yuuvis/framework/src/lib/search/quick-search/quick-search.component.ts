@@ -2,7 +2,11 @@ import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { AggregateResult, BaseObjectTypeField, ScreenService, SearchQuery, SearchService, SystemService, Utils } from '@yuuvis/core';
 import { debounceTime, distinctUntilChanged, filter, switchMap, tap } from 'rxjs/operators';
+import { ObjectFormControlWrapper } from '../../object-form';
+import { ObjectFormControl } from '../../object-form/object-form.model';
 import { SVGIcons } from '../../svg.generated';
+import { ObjectType } from './../../../../../core/src/lib/model/object-type.model';
+import { ObjectTypeField } from './../../../../../core/src/lib/service/system/system.interface';
 
 @Component({
   selector: 'yuv-quick-search',
@@ -20,6 +24,9 @@ export class QuickSearchComponent implements OnInit {
   private searchQuery: SearchQuery;
 
   objectTypeSelect: { label: string; value: string }[];
+  objectTypeFieldSelect: { label: string; field: ObjectTypeField }[];
+
+  formFields: any[] = [];
 
   // emits the query that should be executed
   @Output() query = new EventEmitter<SearchQuery>();
@@ -35,7 +42,13 @@ export class QuickSearchComponent implements OnInit {
         tap(v => {
           this.searchQuery.term = v.term;
           this.searchQuery.types = v.objectTypes;
-          // this.aggTypes = [];
+          if (v.objectTypes.length === 1) {
+            const type: ObjectType = this.systemService.getObjectType(this.searchQuery.types[0]);
+            this.objectTypeFieldSelect = type.fields.map(f => ({
+              label: this.systemService.getLocalizedResource(`${f.id}_label`),
+              field: f
+            }));
+          }
           this.resultCount = null;
         }),
         debounceTime(500),
@@ -60,10 +73,10 @@ export class QuickSearchComponent implements OnInit {
     }
   }
 
-  onAggObjectTypeClick(agg: ObjectTypeAggregation) {
-    this.searchQuery.addType(agg.objectTypeId);
-    this.executeSearch();
-  }
+  // onAggObjectTypeClick(agg: ObjectTypeAggregation) {
+  //   this.searchQuery.addType(agg.objectTypeId);
+  //   this.executeSearch();
+  // }
 
   private processAggregateResult(res: AggregateResult) {
     if (res.aggregations && res.aggregations.length) {
@@ -82,6 +95,32 @@ export class QuickSearchComponent implements OnInit {
     } else {
       this.searchHasResults = false;
     }
+  }
+
+  addFieldEntry(id: string) {
+    const field = this.objectTypeFieldSelect.find(f => f.field.id === id);
+    const ctrl = new ObjectFormControlWrapper({});
+    ctrl._eoFormControlWrapper = {
+      controlName: field.field.id,
+      situation: ''
+    };
+
+    let formControl = new ObjectFormControl({
+      value: null,
+      disabled: false
+    });
+
+    // formElement.readonly = controlDisabled;
+    const formElement = {
+      label: field.label,
+      name: field.field.id,
+      type: field.field.propertyType
+    };
+
+    formControl._eoFormElement = formElement;
+    ctrl.addControl(field.field.id, formControl);
+
+    this.formFields.push(ctrl);
   }
 
   ngOnInit() {

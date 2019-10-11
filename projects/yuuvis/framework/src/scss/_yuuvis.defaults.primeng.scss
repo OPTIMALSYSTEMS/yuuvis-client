@@ -1,5 +1,9 @@
 @import './../../../../../src/scss-shared/vars';
 
+body .ui-multiselect {
+  background-color: red;
+}
+
 body {
   .ui-inputtext {
     color: var(--text-color-body);
@@ -11,8 +15,11 @@ body {
   }
 
   // -------------------------------------------------------------------
-  // primeng accordion
+  // primeng multiselect
   .ui-multiselect {
+    display: none;
+    background: var(--panel-background-grey);
+    border: 1px solid transparent;
   }
 
   // -------------------------------------------------------------------
