@@ -20,9 +20,11 @@ export class ContentPreviewComponent implements AfterViewInit {
       this.previewSrc = null;
     } else if (!this._dmsObject || object.id !== this._dmsObject.id) {
       if (object.content) {
+        let root = `${this.location.protocol}//${this.location.hostname}`;
+        root = this.location.port.length ? `${root}:${this.location.port}` : root;
         const mimeType = encodeURIComponent(object.content.mimeType);
-        const path = encodeURIComponent(`${ApiBase.apiWeb}/dms/${object.id}/content`);
-        this.previewSrc = `${this.location.protocol}//${this.location.hostname}:${this.location.port}/preview?mimeType=${mimeType}&path=${path}`;
+        const path = encodeURIComponent(`${root}/${ApiBase.apiWeb}/dms/${object.id}/content`);
+        this.previewSrc = `${root}/preview?mimeType=${mimeType}&path=${path}`;
       } else {
         this.previewSrc = null;
       }
