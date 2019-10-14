@@ -1,12 +1,22 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, ElementRef, EventEmitter, HostListener, OnInit, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { AggregateResult, BaseObjectTypeField, ScreenService, SearchQuery, SearchService, SystemService, Utils } from '@yuuvis/core';
+import {
+  AggregateResult,
+  BaseObjectTypeField,
+  ObjectType,
+  ObjectTypeField,
+  ScreenService,
+  SearchQuery,
+  SearchService,
+  SystemService,
+  TranslateService,
+  Utils
+} from '@yuuvis/core';
+import { MultiSelect } from 'primeng/multiselect';
 import { debounceTime, distinctUntilChanged, filter, switchMap, tap } from 'rxjs/operators';
 import { ObjectFormControlWrapper } from '../../object-form';
 import { ObjectFormControl } from '../../object-form/object-form.model';
 import { SVGIcons } from '../../svg.generated';
-import { ObjectType } from './../../../../../core/src/lib/model/object-type.model';
-import { ObjectTypeField } from './../../../../../core/src/lib/service/system/system.interface';
 
 @Component({
   selector: 'yuv-quick-search',
@@ -15,7 +25,11 @@ import { ObjectTypeField } from './../../../../../core/src/lib/service/system/sy
   host: { class: 'yuv-quick-search' }
 })
 export class QuickSearchComponent implements OnInit {
-  icSearch = SVGIcons.search;
+  @ViewChild('termEl', { static: false }) termInput: ElementRef;
+  @ViewChild('fieldSelector', { static: false }) fieldSelector: MultiSelect;
+  @ViewChild('typeSelector', { static: false }) typeSelector: MultiSelect;
+
+  icClear = SVGIcons.clear;
   searchForm: FormGroup;
   invalidTerm: boolean;
   resultCount: number = null;
@@ -24,29 +38,59 @@ export class QuickSearchComponent implements OnInit {
   private searchQuery: SearchQuery;
 
   objectTypeSelect: { label: string; value: string }[];
-  objectTypeFieldSelect: { label: string; field: ObjectTypeField }[];
+  // objectTypeFields: ObjectTypeField[] = [];
+  objectTypeFieldSelect: { label: string; value: ObjectTypeField }[];
 
   formFields: any[] = [];
 
   // emits the query that should be executed
   @Output() query = new EventEmitter<SearchQuery>();
 
-  constructor(private fb: FormBuilder, private screenService: ScreenService, private systemService: SystemService, private searchService: SearchService) {
+  @HostListener('keydown.alt.+', ['$event']) onAddField(event) {
+    if (this.searchQuery.types.length === 1) {
+      // this.overlayPanel.toggle(event, this.termInput.nativeElement);
+      this.fieldSelector.show();
+    }
+  }
+
+  constructor(
+    private fb: FormBuilder,
+    private translate: TranslateService,
+    private screenService: ScreenService,
+    private systemService: SystemService,
+    private searchService: SearchService
+  ) {
     this.searchForm = this.fb.group({
       term: [''],
-      objectTypes: [[]]
+      objectTypes: [[]],
+      objectTypeFieldSelect: [[]]
     });
+
+    this.searchForm.get('objectTypeFieldSelect').valueChanges.subscribe(v => {
+      if (v.length) {
+        this.addFieldEntry(v[0]);
+        this.searchForm.patchValue(
+          {
+            objectTypeFieldSelect: []
+          },
+          { emitEvent: false }
+        );
+      }
+      this.fieldSelector.hide();
+    });
+
     this.searchForm.valueChanges // .get('searchInput')
       .pipe(
         distinctUntilChanged(),
         tap(v => {
           this.searchQuery.term = v.term;
           this.searchQuery.types = v.objectTypes;
-          if (v.objectTypes.length === 1) {
+          this.objectTypeFieldSelect = [];
+          if (v.objectTypes.length === 1 && v.objectTypes[0] !== 'all') {
             const type: ObjectType = this.systemService.getObjectType(this.searchQuery.types[0]);
             this.objectTypeFieldSelect = type.fields.map(f => ({
               label: this.systemService.getLocalizedResource(`${f.id}_label`),
-              field: f
+              value: f
             }));
           }
           this.resultCount = null;
@@ -60,10 +104,21 @@ export class QuickSearchComponent implements OnInit {
       });
 
     this.systemService.system$.subscribe(_ => {
-      this.objectTypeSelect = this.systemService.getObjectTypes().map(ot => ({
-        label: this.systemService.getLocalizedResource(`${ot.id}_label`),
-        value: ot.id
-      }));
+      this.objectTypeSelect = [
+        ...[
+          {
+            label: this.translate.instant('yuv.framework.quick-search.type.all'),
+            value: 'all'
+          }
+        ],
+        ...this.systemService
+          .getObjectTypes()
+          .map(ot => ({
+            label: this.systemService.getLocalizedResource(`${ot.id}_label`),
+            value: ot.id
+          }))
+          .sort(Utils.sortValues('label'))
+      ];
     });
   }
 
@@ -73,10 +128,9 @@ export class QuickSearchComponent implements OnInit {
     }
   }
 
-  // onAggObjectTypeClick(agg: ObjectTypeAggregation) {
-  //   this.searchQuery.addType(agg.objectTypeId);
-  //   this.executeSearch();
-  // }
+  objectTypeSelectClosed() {
+    this.termInput.nativeElement.focus();
+  }
 
   private processAggregateResult(res: AggregateResult) {
     if (res.aggregations && res.aggregations.length) {
@@ -97,12 +151,12 @@ export class QuickSearchComponent implements OnInit {
     }
   }
 
-  addFieldEntry(id: string) {
-    const field = this.objectTypeFieldSelect.find(f => f.field.id === id);
+  addFieldEntry(field: ObjectTypeField) {
+    // const field = this.objectTypeFieldSelect.find(f => f.value.id === id);
     const ctrl = new ObjectFormControlWrapper({});
     ctrl._eoFormControlWrapper = {
-      controlName: field.field.id,
-      situation: ''
+      controlName: field.id,
+      situation: 'SEARCH'
     };
 
     let formControl = new ObjectFormControl({
@@ -112,15 +166,23 @@ export class QuickSearchComponent implements OnInit {
 
     // formElement.readonly = controlDisabled;
     const formElement = {
-      label: field.label,
-      name: field.field.id,
-      type: field.field.propertyType
+      label: this.systemService.getLocalizedResource(`${field.id}_label`),
+      name: field.id,
+      type: field.propertyType
     };
 
     formControl._eoFormElement = formElement;
-    ctrl.addControl(field.field.id, formControl);
+    ctrl.addControl(field.id, formControl);
 
     this.formFields.push(ctrl);
+  }
+
+  removeFieldEntry(formElement: ObjectFormControlWrapper) {
+    this.formFields = this.formFields.filter(f => f._eoFormControlWrapper.controlName !== formElement._eoFormControlWrapper.controlName);
+  }
+
+  objectTypeFieldSelected(objectTypeField) {
+    console.log(objectTypeField);
   }
 
   ngOnInit() {
