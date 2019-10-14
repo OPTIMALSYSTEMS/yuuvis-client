@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { LocalStorage } from '@ngx-pwa/local-storage';
-import { Observable } from 'rxjs';
+import { forkJoin, Observable } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
+import { Utils } from '../../util/utils';
 
 /**
  * Service for saving or caching data on the users device. It uses the most efficient storage
@@ -27,5 +29,13 @@ export class AppCacheService {
 
   clear(): Observable<boolean> {
     return this.storage.clear();
+  }
+
+  getStorage(): Observable<any> {
+    return this.storage.keys().pipe(switchMap(keys => forkJoin(Utils.arrayToObject(keys, o => o, k => this.getItem(k)))));
+  }
+
+  setStorage(options: any): Observable<any> {
+    return forkJoin(Object.keys(options || {}).map(k => this.setItem(k, options[k])));
   }
 }

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
-import { AppCacheService } from '@yuuvis/core';
+import { AppCacheService, BackendService } from '@yuuvis/core';
 import { Observable, ReplaySubject } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -11,16 +12,14 @@ export class LayoutService {
   private layoutSettingsSource = new ReplaySubject<LayoutSettings>();
   public layoutSettings$: Observable<LayoutSettings> = this.layoutSettingsSource.asObservable();
 
-  constructor(private appCache: AppCacheService) {
+  constructor(private appCache: AppCacheService, private backend: BackendService) {
     // load saved settings
-    this.appCache.getItem(this.STORAGE_KEY).subscribe(settings => {
-      this.layoutSettings = settings || {};
-      this.processLayoutSettings();
-    });
+    this.appCache.getItem(this.STORAGE_KEY).subscribe(settings => this.processLayoutSettings(settings));
   }
 
-  private processLayoutSettings() {
-    this.setDarkMode(this.layoutSettings.darkMode);
+  private processLayoutSettings(settings: any) {
+    this.layoutSettings = settings || {};
+    this.layoutSettingsSource.next(this.layoutSettings);
   }
 
   getLayoutSettings() {
@@ -44,7 +43,37 @@ export class LayoutService {
 
   private saveSettings() {
     this.appCache.setItem(this.STORAGE_KEY, this.layoutSettings).subscribe();
-    this.layoutSettingsSource.next(this.layoutSettings);
+    this.processLayoutSettings(this.layoutSettings);
+  }
+
+  private generateStorageJsonUri() {
+    return this.appCache.getStorage().pipe(
+      map(data => {
+        // remove core value
+        Object.keys(data).forEach(k => k.match(new RegExp('^yuv.core.')) && delete data[k]);
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'text/json' });
+        return URL.createObjectURL(blob);
+      })
+    );
+  }
+
+  downloadLayout(filename = 'settings.json') {
+    this.generateStorageJsonUri().subscribe(uri => this.backend.download(uri, filename));
+  }
+
+  uploadLayout(data: string) {
+    const layout = JSON.parse(data);
+    console.log(layout);
+    // remove non yuuvis options
+    Object.keys(layout).forEach(k => !k.match(new RegExp('^yuv.')) && delete data[k]);
+    if (layout.hasOwnProperty(this.STORAGE_KEY)) {
+      this.processLayoutSettings(layout[this.STORAGE_KEY]);
+    }
+    return this.appCache.setStorage(layout);
+  }
+
+  clearLayout() {
+    return this.appCache.clear();
   }
 }
 
