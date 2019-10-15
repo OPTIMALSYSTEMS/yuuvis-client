@@ -1,72 +1,55 @@
 <div class="count" *ngIf="resultCount !== null">{{resultCount}}</div>
-<div class="count no-results" *ngIf="!searchHasResults && searchForm.get('term').value" (click)="executeSearch()">
+<!-- <div class="count no-results" *ngIf="!searchHasResults && searchForm.get('term').value" (click)="executeSearch()"> -->
+<div class="count no-results" *ngIf="resultCount === 0">
   <span class="label" translate>yuv.framework.quick-search.result.empty</span>
 </div>
 
+<div class="search-box" [ngClass]="{invalid: invalidTerm, extrasEnabled: formFields.length}">
 
-<form class="search-box" (ngSubmit)="executeSearch()"
-  [ngClass]="{invalid: invalidTerm, extrasEnabled: formFields.length}" [formGroup]="searchForm">
+  <form [formGroup]="searchForm">
 
-
-  <div class="main">
-    <!-- <yuv-icon [svg]="icSearch"></yuv-icon> -->
-
-    <!-- object type selector -->
-    <p-multiSelect #typeSelector [options]="objectTypeSelect" [selectionLimit]="1" [maxSelectedLabels]="1"
-      (onPanelHide)="objectTypeSelectClosed()" [defaultLabel]="'yuv.framework.quick-search.type.all' | translate"
-      [selectedItemsLabel]="'yuv.framework.quick-search.type.many' | translate: {size: searchQuery.types.length}"
-      formControlName="objectTypes">
-    </p-multiSelect>
-
-    <div class="input">
-      <input #termEl autofocus="autofocus" [placeholder]="'yuv.framework.quick-search.term.placeholder'|translate"
-        formControlName="term">
-    </div>
-
-
-    <!-- <button *ngIf="objectTypeFieldSelect?.length" type="text" (click)="op.toggle($event, termEl)">+</button> -->
-
-  </div>
-
-  <div class="extras">
-    <div class="fe-chip" *ngFor="let e of formFields">
-      <yuv-object-form-element [element]="e"></yuv-object-form-element>
-      <!-- <button (click)="removeFieldEntry(e)">x</button> -->
-
-      <button (click)="removeFieldEntry(e)">
-        <yuv-icon [svg]="icClear"></yuv-icon>
-      </button>
-    </div>
-
-    <div class="field-select" #addFieldButton *ngIf="objectTypeFieldSelect?.length">
-      <!-- <button>+</button> -->
-      <!-- <p-dropdown formControlName="objectTypeFieldSelect" [options]="objectTypeFieldSelect" [virtualScroll]="true"
-        itemSize="30">
-      </p-dropdown> -->
-
-      <p-multiSelect #fieldSelector [options]="objectTypeFieldSelect" [maxSelectedLabels]="1" [selectionLimit]="1"
-        [defaultLabel]="'+'" [selectedItemsLabel]="'++'" formControlName="objectTypeFieldSelect">
+    <div class="main">
+      <!-- object type selector -->
+      <p-multiSelect #typeSelector [filter]="false" [showToggleAll]="false" [showHeader]="false"
+        [options]="objectTypeSelect" [maxSelectedLabels]="1" (onPanelHide)="objectTypeSelectClosed()"
+        [defaultLabel]="'yuv.framework.quick-search.type.all' | translate"
+        [selectedItemsLabel]="'yuv.framework.quick-search.type.many' | translate: {size: searchQuery.types.length}"
+        formControlName="objectTypes">
       </p-multiSelect>
 
+      <div class="input">
+        <input #termEl autofocus="autofocus" [placeholder]="'yuv.framework.quick-search.term.placeholder'|translate"
+          formControlName="term">
+      </div>
 
-
+      <!-- object type field selector -->
+      <p-multiSelect #fieldSelector [filter]="false" *ngIf="objectTypeFieldSelect?.length" [showHeader]="false"
+        [options]="objectTypeFieldSelect" [maxSelectedLabels]="1" [selectionLimit]="1" [defaultLabel]="'+'"
+        [selectedItemsLabel]="'++'" formControlName="objectTypeFieldSelect">
+      </p-multiSelect>
     </div>
-  </div>
+  </form>
+
+  <!-- form elements from object type fields -->
+  <form class="extras" #extrasForm [formGroup]="searchFieldsForm" *ngIf="formFields.length">
+    <ng-container *ngFor="let key of searchFieldsForm?.controls | keys">
+
+      <div class="fe-chip">
+        <yuv-object-form-element [element]="searchFieldsForm.controls[key]"></yuv-object-form-element>
+        <button (click)="removeFieldEntry(key)">
+          <yuv-icon [svg]="icClear"></yuv-icon>
+        </button>
+      </div>
+      <button (click)="op">{{operator === 'AND' ? 'AND' : 'OR'}}</button>
+    </ng-container>
+
+
+  </form>
+  <!-- </div> -->
+
   <div class="buttons">
-    <button class="primary" type="submit">{{'yuv.framework.quick-search.submit'|translate}}</button>
+    <button type="button" (click)="reset()">{{'yuv.framework.quick-search.reset'|translate}}</button>
+    <button class="primary" (click)="executeSearch()">{{'yuv.framework.quick-search.submit'|translate}}</button>
   </div>
-</form>
 
-<!-- <p-overlayPanel #op>
-  <div *ngFor="let f of objectTypeFieldSelect" (click)="addFieldEntry(f.field.id)">{{f.label}}</div>
-</p-overlayPanel> -->
-
-
-
-
-<!-- <div class="aggregations" *ngIf="aggTypes.length">
-  <button class="type" *ngFor="let oa of aggTypes" (click)="onAggObjectTypeClick(oa)">
-    <span class="typecount">{{oa.count}}</span>
-    <span class="label">{{oa.label}}</span>
-  </button>
-</div> -->
+</div>
