@@ -20,6 +20,6 @@
   <a [routerLink]="[route]" routerLinkActive="active" *ngFor="let route of routes">{{route}}</a>
 </nav>
 
-<div class="body" id="outlet">
+<div class="body" id="outlet" [yuvDirection]="uiSettings.direction">
   <router-outlet></router-outlet>
 </div>

@@ -35,6 +35,7 @@ export interface SearchQueryProperties {
 }
 
 export interface AggregateResult {
+  totalNumItems: number;
   aggregations: {
     key: string;
     count: number;

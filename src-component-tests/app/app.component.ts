@@ -1,6 +1,6 @@
 import { Component, HostBinding, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { AppCacheService, UserService, YuvUser } from '@yuuvis/core';
+import { AppCacheService, Direction, UserService, YuvUser } from '@yuuvis/core';
 
 @Component({
   selector: 'app-root',
@@ -13,13 +13,11 @@ export class AppComponent implements OnInit {
 
   uiSettings = {
     darkMode: false,
-    rtl: false
+    direction: Direction.LTR
   };
 
   private STORAGE_KEY = 'yuv.cmp-test.settings';
-
   @HostBinding('class.showNav') showNav: boolean;
-  // @HostBinding('class.dark') darkMode: boolean;
 
   constructor(private router: Router, private appCache: AppCacheService, private userService: UserService) {
     this.userService.user$.subscribe(u => {
@@ -32,7 +30,7 @@ export class AppComponent implements OnInit {
   }
 
   toggleDirection() {
-    this.uiSettings.rtl = !this.uiSettings.rtl;
+    this.uiSettings.direction = this.uiSettings.direction === Direction.RTL ? Direction.LTR : Direction.RTL;
     this.applyUiSettings();
     this.saveUiSettings();
   }
@@ -54,11 +52,6 @@ export class AppComponent implements OnInit {
       bodyClasses.add('dark');
     } else {
       bodyClasses.remove('dark');
-    }
-    if (this.uiSettings.rtl) {
-      outlet.setAttribute('dir', 'rtl');
-    } else {
-      outlet.setAttribute('dir', 'ltr');
     }
   }
 

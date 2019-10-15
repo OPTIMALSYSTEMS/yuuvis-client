@@ -46,22 +46,30 @@ export class SearchService {
    * @param aggregations List of aggregations to be fetched (e.g. `enaio:objectTypeId`
    * to get an aggregation of object types)
    */
-  aggregate(q: SearchQuery, aggregation: string) {
-    // TODO: enable multiple aggregations at once?
-    q.aggs = [aggregation];
-    return this.backend.post(`/dms/search`, q.toQueryJson(), ApiBase.apiWeb).pipe(map(res => this.toAggregateResult(res, aggregation)));
+  aggregate(q: SearchQuery, aggregations?: string[]) {
+    q.aggs = aggregations || [];
+    return this.backend.post(`/dms/search`, q.toQueryJson(), ApiBase.apiWeb).pipe(map(res => this.toAggregateResult(res, aggregations)));
   }
 
   getLastSearchQuery() {
     return this.lastSearchQuery;
   }
 
-  private toAggregateResult(searchResponse: any, aggregation: string): AggregateResult {
+  private toAggregateResult(searchResponse: any, aggregations?: string[]): AggregateResult {
+    const agg = [];
+    if (aggregations) {
+      aggregations.forEach(a =>
+        agg.push(
+          searchResponse.objects.map(o => ({
+            key: o.properties[a].value,
+            count: o.properties['OBJECT_COUNT'].value
+          }))
+        )
+      );
+    }
     return {
-      aggregations: searchResponse.objects.map(o => ({
-        key: o.properties[aggregation].value,
-        count: o.properties['OBJECT_COUNT'].value
-      }))
+      totalNumItems: searchResponse.totalNumItems,
+      aggregations: agg
     };
   }
 

@@ -60,6 +60,7 @@
 	"yuv.framework.object-form-element.error.string.whitespaces": "Die Eingabe enthält nur Leerzeichen.",
 	"yuv.framework.object-form-element.tag.df": "Standardwert",
 	"yuv.framework.object-form-element.tag.ex": "Extrahiert aus Dokument",
+	"yuv.framework.quick-search.reset": "Zurücksetzen",
 	"yuv.framework.quick-search.result.empty": "Ihre Suchanfrage lieferte keine Treffer.",
 	"yuv.framework.quick-search.submit": "Suchen",
 	"yuv.framework.quick-search.term.placeholder": "Suchbegriff",

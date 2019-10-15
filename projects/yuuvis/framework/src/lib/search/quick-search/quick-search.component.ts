@@ -1,17 +1,6 @@
 import { Component, ElementRef, EventEmitter, HostListener, OnInit, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import {
-  AggregateResult,
-  BaseObjectTypeField,
-  ObjectType,
-  ObjectTypeField,
-  ScreenService,
-  SearchQuery,
-  SearchService,
-  SystemService,
-  TranslateService,
-  Utils
-} from '@yuuvis/core';
+import { AggregateResult, ObjectType, ObjectTypeField, ScreenService, SearchQuery, SearchService, SystemService, TranslateService, Utils } from '@yuuvis/core';
 import { MultiSelect } from 'primeng/multiselect';
 import { debounceTime, distinctUntilChanged, filter, switchMap, tap } from 'rxjs/operators';
 import { ObjectFormControlWrapper } from '../../object-form';
@@ -26,22 +15,26 @@ import { SVGIcons } from '../../svg.generated';
 })
 export class QuickSearchComponent implements OnInit {
   @ViewChild('termEl', { static: false }) termInput: ElementRef;
+  @ViewChild('extrasForm', { static: false }) extrasForm: ElementRef;
   @ViewChild('fieldSelector', { static: false }) fieldSelector: MultiSelect;
   @ViewChild('typeSelector', { static: false }) typeSelector: MultiSelect;
 
   icClear = SVGIcons.clear;
   searchForm: FormGroup;
+  searchFieldsForm: FormGroup;
   invalidTerm: boolean;
+  operator = 'AND';
   resultCount: number = null;
   aggTypes: ObjectTypeAggregation[] = [];
   searchHasResults: boolean = true;
-  private searchQuery: SearchQuery;
+  searchQuery: SearchQuery;
 
   objectTypeSelect: { label: string; value: string }[];
   // objectTypeFields: ObjectTypeField[] = [];
   objectTypeFieldSelect: { label: string; value: ObjectTypeField }[];
 
-  formFields: any[] = [];
+  // list of form element IDs
+  formFields: string[] = [];
 
   // emits the query that should be executed
   @Output() query = new EventEmitter<SearchQuery>();
@@ -65,6 +58,7 @@ export class QuickSearchComponent implements OnInit {
       objectTypes: [[]],
       objectTypeFieldSelect: [[]]
     });
+    this.searchFieldsForm = this.fb.group({});
 
     this.searchForm.get('objectTypeFieldSelect').valueChanges.subscribe(v => {
       if (v.length) {
@@ -76,7 +70,17 @@ export class QuickSearchComponent implements OnInit {
           { emitEvent: false }
         );
       }
-      this.fieldSelector.hide();
+      setTimeout(() => {
+        if (this.fieldSelector) {
+          this.fieldSelector.hide();
+        }
+
+        const inputs = this.extrasForm.nativeElement.querySelectorAll('input:not([readonly])');
+        console.log(inputs);
+        if (inputs.length) {
+          inputs[inputs.length - 1].focus();
+        }
+      }, 300);
     });
 
     this.searchForm.valueChanges // .get('searchInput')
@@ -84,6 +88,9 @@ export class QuickSearchComponent implements OnInit {
         distinctUntilChanged(),
         tap(v => {
           this.searchQuery.term = v.term;
+          if (this.formFields.length && v.objectTypes.length !== 1) {
+            this.formFields = [];
+          }
           this.searchQuery.types = v.objectTypes;
           this.objectTypeFieldSelect = [];
           if (v.objectTypes.length === 1 && v.objectTypes[0] !== 'all') {
@@ -97,7 +104,7 @@ export class QuickSearchComponent implements OnInit {
         }),
         debounceTime(500),
         filter(v => v.objectTypes.length || v.term.length),
-        switchMap(_ => this.searchService.aggregate(this.searchQuery, BaseObjectTypeField.OBJECT_TYPE_ID))
+        switchMap(_ => this.searchService.aggregate(this.searchQuery))
       )
       .subscribe((res: AggregateResult) => {
         this.processAggregateResult(res);
@@ -123,9 +130,7 @@ export class QuickSearchComponent implements OnInit {
   }
 
   executeSearch() {
-    if (this.searchQuery.term) {
-      this.query.emit(this.searchQuery);
-    }
+    this.query.emit(this.searchQuery);
   }
 
   objectTypeSelectClosed() {
@@ -133,26 +138,32 @@ export class QuickSearchComponent implements OnInit {
   }
 
   private processAggregateResult(res: AggregateResult) {
+    this.resultCount = res.totalNumItems;
+
     if (res.aggregations && res.aggregations.length) {
       this.searchHasResults = true;
-      this.resultCount = 0;
 
-      res.aggregations.forEach(item => {
-        this.resultCount += item.count;
-        this.aggTypes.push({
-          objectTypeId: item.key,
-          label: this.systemService.getLocalizedResource(`${item.key}_label`) || item.key,
-          count: item.count
-        });
-      });
-      this.aggTypes.sort(Utils.sortValues('label'));
+      // res.aggregations.forEach(item => {
+      //   this.resultCount += item.count;
+      //   this.aggTypes.push({
+      //     objectTypeId: item.key,
+      //     label: this.systemService.getLocalizedResource(`${item.key}_label`) || item.key,
+      //     count: item.count
+      //   });
+      // });
+      // this.aggTypes.sort(Utils.sortValues('label'));
     } else {
       this.searchHasResults = false;
     }
   }
 
+  /**
+   * Adds a new form field to the query
+   * @param field The object type field to be added
+   */
   addFieldEntry(field: ObjectTypeField) {
-    // const field = this.objectTypeFieldSelect.find(f => f.value.id === id);
+    // create form element from object type field to be served
+    // to an ObjectFormElementComponent
     const ctrl = new ObjectFormControlWrapper({});
     ctrl._eoFormControlWrapper = {
       controlName: field.id,
@@ -164,7 +175,6 @@ export class QuickSearchComponent implements OnInit {
       disabled: false
     });
 
-    // formElement.readonly = controlDisabled;
     const formElement = {
       label: this.systemService.getLocalizedResource(`${field.id}_label`),
       name: field.id,
@@ -173,16 +183,34 @@ export class QuickSearchComponent implements OnInit {
 
     formControl._eoFormElement = formElement;
     ctrl.addControl(field.id, formControl);
-
-    this.formFields.push(ctrl);
+    this.searchFieldsForm.addControl(`fc_${field.id}`, ctrl);
+    this.formFields.push(`fc_${field.id}`);
   }
 
-  removeFieldEntry(formElement: ObjectFormControlWrapper) {
-    this.formFields = this.formFields.filter(f => f._eoFormControlWrapper.controlName !== formElement._eoFormControlWrapper.controlName);
+  /**
+   * Remove a form element from the query form
+   * @param formElement The form element to be removed
+   */
+  // removeFieldEntry(formElement: ObjectFormControlWrapper) {
+  //   this.formFields = this.formFields.filter(f => f._eoFormControlWrapper.controlName !== formElement._eoFormControlWrapper.controlName);
+  // }
+  removeFieldEntry(formControlName: string) {
+    this.formFields = this.formFields.filter(f => f !== formControlName);
+    this.searchFieldsForm.removeControl(formControlName);
   }
 
-  objectTypeFieldSelected(objectTypeField) {
-    console.log(objectTypeField);
+  reset() {
+    this.searchQuery = new SearchQuery();
+    this.formFields = [];
+    this.searchForm.patchValue({
+      term: '',
+      objectTypes: [],
+      objectTypeFieldSelect: []
+    });
+  }
+
+  toggleOperator() {
+    this.operator === 'AND' ? 'OR' : 'AND';
   }
 
   ngOnInit() {

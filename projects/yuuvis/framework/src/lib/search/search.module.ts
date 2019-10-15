@@ -10,6 +10,7 @@ import { OverlayPanelModule } from 'primeng/overlaypanel';
 import { ActionModule } from '../actions/action.module';
 import { YuvComponentsModule } from '../components/components.module';
 import { YuvObjectFormModule } from '../object-form';
+import { YuvPipesModule } from '../pipes';
 import { QuickSearchComponent } from './quick-search/quick-search.component';
 import { SearchResultPanelComponent } from './search-result-panel/search-result-panel.component';
 import { SearchResultComponent } from './search-result/search-result.component';
@@ -23,6 +24,7 @@ import { SearchResultComponent } from './search-result/search-result.component';
     ReactiveFormsModule,
     FormsModule,
     YuvObjectFormModule,
+    YuvPipesModule,
     TranslateModule,
     YuvComponentsModule,
     DropdownModule,

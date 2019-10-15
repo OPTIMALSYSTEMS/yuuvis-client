@@ -2,7 +2,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
-import { YuvFrameworkModule } from '@yuuvis/framework';
+import { YuvDirectivesModule, YuvFrameworkModule } from '@yuuvis/framework';
 import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -47,7 +47,8 @@ import { TestSummaryComponent } from './test-summary/test-summary.component';
       main: ['assets/default/config/main.json'],
       translations: ['assets/default/i18n/'],
       environment
-    })
+    }),
+    YuvDirectivesModule
   ],
   providers: [],
   bootstrap: [AppComponent]
