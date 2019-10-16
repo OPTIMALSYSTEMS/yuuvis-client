@@ -242,6 +242,7 @@
           font-size: var(--font-hint);
           font-family: monospace;
           padding: 0 0.25em;
+          align-self: center;
           @include bidi-style(margin-left, var(--app-pane-padding), margin-right, var(--app-pane-padding));
         }
       }
