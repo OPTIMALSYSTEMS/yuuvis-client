@@ -44,16 +44,27 @@ export class SettingsComponent implements OnInit {
     if (!e) {
       this.layoutService.setDashboardBackground(null);
     } else {
-      const inputValue = e.target;
-      var file: File = inputValue.files[0];
-      var myReader: FileReader = new FileReader();
-      // var fileType = inputValue.parentElement.id;
-      myReader.onloadend = e => {
-        console.log(myReader.result);
-        this.layoutService.setDashboardBackground(myReader.result as string);
-      };
-      myReader.readAsDataURL(file);
+      this.myReader(result => this.layoutService.setDashboardBackground(result)).readAsDataURL(e.target.files[0]);
     }
+  }
+
+  downloadLayout() {
+    this.layoutService.downloadLayout();
+  }
+
+  uploadLayout(e: any) {
+    this.myReader(result => this.layoutService.uploadLayout(result).subscribe()).readAsText(e.target.files[0]);
+  }
+
+  clearLayout(e: any) {
+    this.layoutService.clearLayout().subscribe();
+  }
+
+  private myReader(success?: (result: string) => void, error?: (err: any) => void) {
+    const myReader: FileReader = new FileReader();
+    myReader.onloadend = e => success && success(myReader.result as string);
+    myReader.onerror = e => error && error(e);
+    return myReader;
   }
 
   ngOnInit() {
