@@ -24,8 +24,10 @@ export class AppComponent implements OnInit {
       this.user = u;
     });
     this.appCache.getItem(this.STORAGE_KEY).subscribe(res => {
-      this.uiSettings = res;
-      this.applyUiSettings();
+      if (res) {
+        this.uiSettings = res;
+        this.applyUiSettings();
+      }
     });
   }
 

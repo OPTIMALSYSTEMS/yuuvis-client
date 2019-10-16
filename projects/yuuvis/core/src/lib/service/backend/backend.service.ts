@@ -103,12 +103,12 @@ export class BackendService {
     });
   }
 
-  public download(uri: string) {
+  public download(uri: string, filename?: string) {
     if (document && document.body) {
       const a = document.createElement('a');
       a.setAttribute('href', uri);
       a.style.display = 'none';
-      a.setAttribute('download', 'download');
+      a.setAttribute('download', filename || 'download');
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);

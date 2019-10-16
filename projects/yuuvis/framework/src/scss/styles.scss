@@ -13,9 +13,9 @@
 @import './loading';
 @import './forms';
 @import './notifications';
-@import './src/scss-shared/vars';
-@import './src/scss-shared/vars.dark';
-@import './src/scss-shared/mixins';
+@import './src/scss-shared/_vars';
+@import './src/scss-shared/_vars.dark';
+@import './src/scss-shared/_mixins';
 @import './libs';
 @import './yuuvis.defaults.primeng';
 

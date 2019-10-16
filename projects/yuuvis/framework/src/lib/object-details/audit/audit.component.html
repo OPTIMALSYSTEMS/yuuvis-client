@@ -1,4 +1,5 @@
-<div class="yuv-audit" [ngClass]="{singleEntry: auditsRes?.items?.length === 1}" [yuvBusyOverlay]="busy">
+<div class="yuv-audit" [ngClass]="{singleEntry: auditsRes?.items?.length === 1, onPage: auditsRes?.page > 1}"
+  [yuvBusyOverlay]="busy">
 
   <div class="error" *ngIf="error">
     <div translate>yuv.framework.audit.fetch.error</div>
@@ -38,7 +39,8 @@
 
     <!-- list of audits -->
     <div class="audits" *ngIf="auditsRes.items.length; else tplEmpty">
-      <div class="audit-entry" *ngFor="let a of auditsRes.items">
+      <div class="audit-entry" *ngFor="let a of auditsRes.items"
+        [ngClass]="{versionEnabled: ((a.action >= 300 && a.action < 400) || a.action === 201)}">
         <div class="created">
           <div class="date">{{a.creationDate | localeDate: 'eoShortDate'}}</div>
           <div class="time meta">{{a.creationDate | localeDate: 'eoShortTime'}}</div>
@@ -46,8 +48,13 @@
         <div class="timeline"></div>
         <div class="content">
           <div class="entry">
-            <div class="title">{{auditLabels['a' + a.action]}}</div>
-            <div class="creator meta">{{a.createdBy.title}}</div>
+            <div class="title">
+              <span>{{auditLabels['a' + a.action]}}</span>
+              <span class="version" title="{{'yuv.framework.audit.version'|translate}}">{{a.version}}</span>
+            </div>
+            <div class="creator meta">
+              {{a.createdBy.title}}
+            </div>
           </div>
         </div>
       </div>

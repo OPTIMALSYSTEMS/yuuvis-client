@@ -7,8 +7,9 @@ const PROXY_CONFIG = [
     logLevel: 'debug'
   },
   {
-    context: ['/preview**'],
-    target: 'http://127.0.0.1:9000',
+    context: ['/viewer/**'],
+    // target: 'http://127.0.0.1:9000',
+    target: 'http://127.0.0.1:4300/',
     changeOrigin: true,
     secure: false,
     logLevel: 'debug'
