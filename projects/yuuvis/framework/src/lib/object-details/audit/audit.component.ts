@@ -1,6 +1,7 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { AuditQueryOptions, AuditQueryResult, AuditService, TranslateService } from '@yuuvis/core';
+import { AuditQueryOptions, AuditQueryResult, AuditService, DmsObject, EventService, TranslateService, YuvEvent, YuvEventType } from '@yuuvis/core';
+import { takeUntilDestroy } from 'take-until-destroy';
 import { SVGIcons } from '../../svg.generated';
 
 /**
@@ -11,7 +12,7 @@ import { SVGIcons } from '../../svg.generated';
   templateUrl: './audit.component.html',
   styleUrls: ['./audit.component.scss']
 })
-export class AuditComponent implements OnInit {
+export class AuditComponent implements OnInit, OnDestroy {
   private _objectID: string;
   searchForm: FormGroup;
   auditsRes: AuditQueryResult;
@@ -46,13 +47,13 @@ export class AuditComponent implements OnInit {
     return this._objectID;
   }
 
-  constructor(private auditService: AuditService, private fb: FormBuilder, private translate: TranslateService) {
+  constructor(private auditService: AuditService, private eventService: EventService, private fb: FormBuilder, private translate: TranslateService) {
     this.auditLabels = {
       a100: this.translate.instant('yuv.framework.audit.label.create.metadata'),
       a101: this.translate.instant('yuv.framework.audit.label.create.metadata.withcontent'),
 
       a200: this.translate.instant('yuv.framework.audit.label.delete'),
-      a201: this.translate.instant('yuv.framework.audit.label.delete.content'),
+      a201: this.translate.instant('yuv.framework.audit.label.delete.content'), // #v
       a202: this.translate.instant('yuv.framework.audit.label.delete.marked'),
 
       a300: this.translate.instant('yuv.framework.audit.label.update.metadata'),
@@ -75,6 +76,17 @@ export class AuditComponent implements OnInit {
       fbInput[k] = [false];
     });
     this.searchForm = this.fb.group(fbInput);
+
+    this.eventService
+      .on(YuvEventType.DMS_OBJECT_UPDATED)
+      .pipe(takeUntilDestroy(this))
+      .subscribe((e: YuvEvent) => {
+        const dmsObject = e.data as DmsObject;
+        // reload audit entries when update belongs to the current dms object
+        if (dmsObject.id === this.objectID) {
+          this.fetchAuditEntries();
+        }
+      });
   }
 
   private fetchAuditEntries(options?: AuditQueryOptions) {
@@ -147,4 +159,5 @@ export class AuditComponent implements OnInit {
   }
 
   ngOnInit() {}
+  ngOnDestroy() {}
 }
