@@ -14,9 +14,11 @@ import { YuvPipesModule } from '../pipes';
 import { QuickSearchComponent } from './quick-search/quick-search.component';
 import { SearchResultPanelComponent } from './search-result-panel/search-result-panel.component';
 import { SearchResultComponent } from './search-result/search-result.component';
+import { ValuePickerComponent } from './quick-search/value-picker/value-picker.component';
+import { ValuePickerItemComponent } from './quick-search/value-picker/value-picker-item/value-picker-item.component';
 
 @NgModule({
-  declarations: [QuickSearchComponent, SearchResultComponent, SearchResultPanelComponent],
+  declarations: [QuickSearchComponent, SearchResultComponent, SearchResultPanelComponent, ValuePickerComponent, ValuePickerItemComponent],
   imports: [
     CommonModule,
     BrowserAnimationsModule,

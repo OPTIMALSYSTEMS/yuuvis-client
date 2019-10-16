@@ -1,4 +1,5 @@
 export * from './filesize.pipe';
+export * from './filter.pipe';
 export * from './keys.pipe';
 export * from './locale-date.pipe';
 export * from './locale-number.pipe';

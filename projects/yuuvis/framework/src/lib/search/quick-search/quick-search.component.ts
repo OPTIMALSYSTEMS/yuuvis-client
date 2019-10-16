@@ -2,7 +2,7 @@ import { Component, ElementRef, EventEmitter, HostListener, OnInit, Output, View
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { AggregateResult, ObjectType, ObjectTypeField, ScreenService, SearchQuery, SearchService, SystemService, TranslateService, Utils } from '@yuuvis/core';
 import { MultiSelect } from 'primeng/multiselect';
-import { debounceTime, distinctUntilChanged, filter, switchMap, tap } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, filter, tap } from 'rxjs/operators';
 import { ObjectFormControlWrapper } from '../../object-form';
 import { ObjectFormControl } from '../../object-form/object-form.model';
 import { SVGIcons } from '../../svg.generated';
@@ -28,10 +28,15 @@ export class QuickSearchComponent implements OnInit {
   aggTypes: ObjectTypeAggregation[] = [];
   searchHasResults: boolean = true;
   searchQuery: SearchQuery;
-
-  objectTypeSelect: { label: string; value: string }[];
+  // objectTypeSelectLabel: string;
+  // objectTypeSelect: { label: string; value: string }[];
   // objectTypeFields: ObjectTypeField[] = [];
-  objectTypeFieldSelect: { label: string; value: ObjectTypeField }[];
+  // objectTypeFieldSelect: { label: string; value: ObjectTypeField }[];
+
+  availableObjectTypes: { label: string; value: string }[];
+  availableObjectTypeFields: { label: string; value: ObjectTypeField }[];
+
+  selectedObjectTypes: string[];
 
   // list of form element IDs
   formFields: string[] = [];
@@ -53,6 +58,7 @@ export class QuickSearchComponent implements OnInit {
     private systemService: SystemService,
     private searchService: SearchService
   ) {
+    this.searchQuery = new SearchQuery();
     this.searchForm = this.fb.group({
       term: [''],
       objectTypes: [[]],
@@ -60,28 +66,28 @@ export class QuickSearchComponent implements OnInit {
     });
     this.searchFieldsForm = this.fb.group({});
 
-    this.searchForm.get('objectTypeFieldSelect').valueChanges.subscribe(v => {
-      if (v.length) {
-        this.addFieldEntry(v[0]);
-        this.searchForm.patchValue(
-          {
-            objectTypeFieldSelect: []
-          },
-          { emitEvent: false }
-        );
-      }
-      setTimeout(() => {
-        if (this.fieldSelector) {
-          this.fieldSelector.hide();
-        }
+    // this.searchForm.get('objectTypeFieldSelect').valueChanges.subscribe(v => {
+    //   if (v.length) {
+    //     this.addFieldEntry(v[0]);
+    //     this.searchForm.patchValue(
+    //       {
+    //         objectTypeFieldSelect: []
+    //       },
+    //       { emitEvent: false }
+    //     );
+    //   }
+    //   setTimeout(() => {
+    //     if (this.fieldSelector) {
+    //       this.fieldSelector.hide();
+    //     }
 
-        const inputs = this.extrasForm.nativeElement.querySelectorAll('input:not([readonly])');
-        console.log(inputs);
-        if (inputs.length) {
-          inputs[inputs.length - 1].focus();
-        }
-      }, 300);
-    });
+    //     const inputs = this.extrasForm.nativeElement.querySelectorAll('input:not([readonly])');
+    //     console.log(inputs);
+    //     if (inputs.length) {
+    //       inputs[inputs.length - 1].focus();
+    //     }
+    //   }, 300);
+    // });
 
     this.searchForm.valueChanges // .get('searchInput')
       .pipe(
@@ -91,42 +97,101 @@ export class QuickSearchComponent implements OnInit {
           if (this.formFields.length && v.objectTypes.length !== 1) {
             this.formFields = [];
           }
-          this.searchQuery.types = v.objectTypes;
-          this.objectTypeFieldSelect = [];
-          if (v.objectTypes.length === 1 && v.objectTypes[0] !== 'all') {
-            const type: ObjectType = this.systemService.getObjectType(this.searchQuery.types[0]);
-            this.objectTypeFieldSelect = type.fields.map(f => ({
-              label: this.systemService.getLocalizedResource(`${f.id}_label`),
-              value: f
-            }));
-          }
+          // this.searchQuery.types = v.objectTypes;
+
+          // this.objectTypeFieldSelect = [];
+          // if (v.objectTypes.length === 1 && v.objectTypes[0] !== 'all') {
+          //   const type: ObjectType = this.systemService.getObjectType(this.searchQuery.types[0]);
+          //   this.objectTypeFieldSelect = type.fields.map(f => ({
+          //     label: this.systemService.getLocalizedResource(`${f.id}_label`),
+          //     value: f
+          //   }));
+
+          // }
+
+          // this.objectTypeSelectLabel =
+          //   v.objectTypes.length === this.objectTypeSelect.length
+          //     ? this.translate.instant('yuv.framework.quick-search.type.all')
+          //     : this.translate.instant('yuv.framework.quick-search.type.many', { size: v.objectTypes.length });
+
+          // this.setAvailableObjectTypesFields(v);
           this.resultCount = null;
         }),
         debounceTime(500),
-        filter(v => v.objectTypes.length || v.term.length),
-        switchMap(_ => this.searchService.aggregate(this.searchQuery))
+        filter(v => v.objectTypes.length || v.term.length)
+        // switchMap(_ => this.searchService.aggregate(this.searchQuery))
       )
       .subscribe((res: AggregateResult) => {
         this.processAggregateResult(res);
       });
 
     this.systemService.system$.subscribe(_ => {
-      this.objectTypeSelect = [
-        ...[
-          {
-            label: this.translate.instant('yuv.framework.quick-search.type.all'),
-            value: 'all'
-          }
-        ],
-        ...this.systemService
-          .getObjectTypes()
-          .map(ot => ({
-            label: this.systemService.getLocalizedResource(`${ot.id}_label`),
-            value: ot.id
-          }))
-          .sort(Utils.sortValues('label'))
-      ];
+      const types = this.systemService
+        .getObjectTypes()
+        .map(ot => ({
+          label: this.systemService.getLocalizedResource(`${ot.id}_label`),
+          value: ot.id
+        }))
+        .sort(Utils.sortValues('label'));
+      this.availableObjectTypes = types;
+
+      // this.objectTypeSelect = [
+      //   // ...[
+      //   //   {
+      //   //     label: this.translate.instant('yuv.framework.quick-search.type.all'),
+      //   //     value: 'all'
+      //   //   }
+      //   // ],
+      //   ...this.systemService
+      //     .getObjectTypes()
+      //     .map(ot => ({
+      //       label: this.systemService.getLocalizedResource(`${ot.id}_label`),
+      //       value: ot.id
+      //     }))
+      //     .sort(Utils.sortValues('label'))
+      // ];
+      this.searchForm.patchValue({
+        objectTypes: types.map(t => t.value)
+      });
     });
+  }
+
+  // getObjectTypeSelectorLabel(): string {
+
+  // }
+
+  onObjectTypeFieldSelected(field: ObjectTypeField) {
+    console.log('EMITTED FIELD', field);
+
+    this.addFieldEntry(field);
+
+    // this.searchForm.patchValue({
+    //   objectTypes: res
+    // });
+  }
+
+  onObjectTypesSelected(types: string[]) {
+    console.log('EMITTED', types);
+    this.selectedObjectTypes = types;
+    this.setAvailableObjectTypesFields();
+
+    // this.searchForm.patchValue({
+    //   objectTypes: types
+    // });
+  }
+
+  private setAvailableObjectTypesFields() {
+    this.availableObjectTypeFields = [];
+    // formValue.objectTypes[0] !== 'all'
+    // if()
+
+    if (this.selectedObjectTypes.length === 1 && this.selectedObjectTypes[0] !== 'all') {
+      const type: ObjectType = this.systemService.getObjectType(this.searchQuery.types[0]);
+      this.availableObjectTypeFields = type.fields.map(f => ({
+        label: this.systemService.getLocalizedResource(`${f.id}_label`),
+        value: f
+      }));
+    }
   }
 
   executeSearch() {
@@ -213,9 +278,7 @@ export class QuickSearchComponent implements OnInit {
     this.operator === 'AND' ? 'OR' : 'AND';
   }
 
-  ngOnInit() {
-    this.searchQuery = new SearchQuery();
-  }
+  ngOnInit() {}
 }
 
 interface ObjectTypeAggregation {

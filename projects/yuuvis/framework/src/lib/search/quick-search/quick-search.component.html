@@ -10,12 +10,13 @@
 
     <div class="main">
       <!-- object type selector -->
-      <p-multiSelect #typeSelector [filter]="false" [showToggleAll]="false" [showHeader]="false"
-        [options]="objectTypeSelect" [maxSelectedLabels]="1" (onPanelHide)="objectTypeSelectClosed()"
-        [defaultLabel]="'yuv.framework.quick-search.type.all' | translate"
-        [selectedItemsLabel]="'yuv.framework.quick-search.type.many' | translate: {size: searchQuery.types.length}"
+      <!-- <p-multiSelect #typeSelector [filter]="false" [showToggleAll]="true" [options]="objectTypeSelect"
+        [maxSelectedLabels]="1" (onPanelHide)="objectTypeSelectClosed()"
+        [defaultLabel]="'yuv.framework.quick-search.type.all' | translate" [selectedItemsLabel]="objectTypeSelectLabel"
         formControlName="objectTypes">
-      </p-multiSelect>
+      </p-multiSelect> -->
+
+
 
       <div class="input">
         <input #termEl autofocus="autofocus" [placeholder]="'yuv.framework.quick-search.term.placeholder'|translate"
@@ -23,10 +24,26 @@
       </div>
 
       <!-- object type field selector -->
-      <p-multiSelect #fieldSelector [filter]="false" *ngIf="objectTypeFieldSelect?.length" [showHeader]="false"
+      <!-- <p-multiSelect #fieldSelector [filter]="false" *ngIf="objectTypeFieldSelect?.length" [showHeader]="false"
         [options]="objectTypeFieldSelect" [maxSelectedLabels]="1" [selectionLimit]="1" [defaultLabel]="'+'"
         [selectedItemsLabel]="'++'" formControlName="objectTypeFieldSelect">
-      </p-multiSelect>
+      </p-multiSelect> -->
+
+
+
+      <div class="popover">
+        <yuv-value-picker [items]="availableObjectTypes" [multiselect]="true" (select)="onObjectTypesSelected($event)">
+        </yuv-value-picker>
+      </div>
+      <div class="popover" *ngIf="availableObjectTypeFields?.length">
+        <yuv-value-picker [items]="availableObjectTypeFields" (select)="onObjectTypeFieldSelected($event)">
+        </yuv-value-picker>
+      </div>
+
+
+
+
+
     </div>
   </form>
 
