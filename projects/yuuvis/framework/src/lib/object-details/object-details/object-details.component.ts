@@ -30,6 +30,7 @@ export class ObjectDetailsComponent {
   @Input()
   set dmsObject(object: DmsObject) {
     this._dmsObject = object;
+    this._objectId = object ? object.id : null;
     if (object) {
       this.objectIcon = CellRenderer.typeCellRenderer(null, this.systemService.getLocalizedResource(`${object.objectTypeId}_label`));
     }
@@ -49,6 +50,11 @@ export class ObjectDetailsComponent {
       this.getDmsObject(id);
     }
   }
+
+  get objectId() {
+    return this._objectId;
+  }
+
   @Input() standaloneFullscreen: boolean;
   @Output() standaloneFullscreenBackButtonClick = new EventEmitter();
 

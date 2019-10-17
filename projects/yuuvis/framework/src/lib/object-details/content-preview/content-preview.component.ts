@@ -23,7 +23,7 @@ export class ContentPreviewComponent implements AfterViewInit {
         let root = `${this.location.protocol}//${this.location.hostname}`;
         root = this.location.port.length ? `${root}:${this.location.port}` : root;
         const mimeType = encodeURIComponent(object.content.mimeType);
-        const path = encodeURIComponent(`${root}/${ApiBase.apiWeb}/dms/${object.id}/content`);
+        const path = encodeURIComponent(`${root}/${ApiBase.apiWeb}/dms/${object.id}/content?asdownload=false`);
         this.previewSrc = `${root}/viewer/?mimeType=${mimeType}&path=${path}`;
       } else {
         this.previewSrc = null;
