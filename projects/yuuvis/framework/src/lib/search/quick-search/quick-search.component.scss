@@ -84,6 +84,16 @@
       flex: 0 0 auto;
       flex-flow: row nowrap;
       flex: 1;
+
+      button.type-select {
+        background-color: var(--main-background);
+        &::after {
+          content: '\203A';
+          font-size: 3em;
+          display: inline-block;
+          transform: rotate(90deg);
+        }
+      }
     }
     .extras {
       display: flex;

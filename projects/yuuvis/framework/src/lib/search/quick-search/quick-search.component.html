@@ -9,40 +9,19 @@
   <form [formGroup]="searchForm">
 
     <div class="main">
-      <!-- object type selector -->
-      <!-- <p-multiSelect #typeSelector [filter]="false" [showToggleAll]="true" [options]="objectTypeSelect"
-        [maxSelectedLabels]="1" (onPanelHide)="objectTypeSelectClosed()"
-        [defaultLabel]="'yuv.framework.quick-search.type.all' | translate" [selectedItemsLabel]="objectTypeSelectLabel"
-        formControlName="objectTypes">
-      </p-multiSelect> -->
 
-
+      <button class="type-select" #typeSelectTrigger (click)="showObjectTypePicker()">
+        {{objectTypeSelectLabel}}
+      </button>
 
       <div class="input">
         <input #termEl autofocus="autofocus" [placeholder]="'yuv.framework.quick-search.term.placeholder'|translate"
           formControlName="term">
       </div>
 
-      <!-- object type field selector -->
-      <!-- <p-multiSelect #fieldSelector [filter]="false" *ngIf="objectTypeFieldSelect?.length" [showHeader]="false"
-        [options]="objectTypeFieldSelect" [maxSelectedLabels]="1" [selectionLimit]="1" [defaultLabel]="'+'"
-        [selectedItemsLabel]="'++'" formControlName="objectTypeFieldSelect">
-      </p-multiSelect> -->
-
-
-
-      <div class="popover">
-        <yuv-value-picker [items]="availableObjectTypes" [multiselect]="true" (select)="onObjectTypesSelected($event)">
-        </yuv-value-picker>
-      </div>
-      <div class="popover" *ngIf="availableObjectTypeFields?.length">
-        <yuv-value-picker [items]="availableObjectTypeFields" (select)="onObjectTypeFieldSelected($event)">
-        </yuv-value-picker>
-      </div>
-
-
-
-
+      <button #fieldSelectTrigger (click)="showObjectTypeFieldPicker()" *ngIf="availableObjectTypeFields?.length">
+        +
+      </button>
 
     </div>
   </form>
@@ -70,3 +49,9 @@
   </div>
 
 </div>
+
+<ng-template #tplValuePicker let-data let-popover="popover">
+  <yuv-value-picker [items]="data.items" [selectedItemIds]="data.selected" [multiselect]="data.multiselect"
+    (select)="onValuePickerResult(data.type, $event, popover)">
+  </yuv-value-picker>
+</ng-template>

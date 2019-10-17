@@ -1,15 +1,18 @@
 :host {
   display: block;
+  padding: calc(var(--app-pane-padding) / 2) var(--app-pane-padding);
+  cursor: pointer;
 
   //   &:focus {
   //     background-color: var(--color-accent);
   //     color: #fff;
   //   }
 
-  &.active {
+  &:not(.selected):hover,
+  &:not(.selected).active {
     background-color: var(--item-focus-border-color);
   }
-  &:not(.active).selected {
+  &.selected {
     color: #fff;
     background-color: var(--color-accent);
   }

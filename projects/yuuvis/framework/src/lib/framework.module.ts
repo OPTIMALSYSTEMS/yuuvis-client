@@ -14,6 +14,7 @@ import { YuvFormModule } from './form/form.module';
 import { YuvObjectDetailsModule } from './object-details/object-details.module';
 import { YuvObjectFormModule } from './object-form/object-form.module';
 import { YuvPipesModule } from './pipes/pipes.module';
+import { YuvPopoverModule } from './popover/popover.module';
 import { YuvSearchModule } from './search/search.module';
 import { ErrorHandlerService } from './services/error-handler/error-handler.service';
 import { YuvUserModule } from './user/user.module';
@@ -36,7 +37,7 @@ import { YuvUserModule } from './user/user.module';
     BrowserAnimationsModule,
 
     YuvFormModule,
-
+    YuvPopoverModule,
     YuvSearchModule,
     YuvUserModule,
     YuvCommonUiModule,
@@ -53,6 +54,7 @@ import { YuvUserModule } from './user/user.module';
   exports: [
     YuvDirectivesModule,
     YuvFormModule,
+    YuvPopoverModule,
     YuvComponentsModule,
     YuvObjectDetailsModule,
     YuvPipesModule,
@@ -79,8 +81,7 @@ import { YuvUserModule } from './user/user.module';
       provide: ErrorHandler,
       useClass: ErrorHandlerService
     }
-  ],
-  declarations: []
+  ]
 })
 export class YuvFrameworkModule {
   static forRoot(config?: CoreConfig): ModuleWithProviders {

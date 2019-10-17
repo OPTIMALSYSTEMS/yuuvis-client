@@ -11,11 +11,12 @@ import { ActionModule } from '../actions/action.module';
 import { YuvComponentsModule } from '../components/components.module';
 import { YuvObjectFormModule } from '../object-form';
 import { YuvPipesModule } from '../pipes';
+import { YuvPopoverModule } from '../popover/popover.module';
 import { QuickSearchComponent } from './quick-search/quick-search.component';
+import { ValuePickerItemComponent } from './quick-search/value-picker/value-picker-item/value-picker-item.component';
+import { ValuePickerComponent } from './quick-search/value-picker/value-picker.component';
 import { SearchResultPanelComponent } from './search-result-panel/search-result-panel.component';
 import { SearchResultComponent } from './search-result/search-result.component';
-import { ValuePickerComponent } from './quick-search/value-picker/value-picker.component';
-import { ValuePickerItemComponent } from './quick-search/value-picker/value-picker-item/value-picker-item.component';
 
 @NgModule({
   declarations: [QuickSearchComponent, SearchResultComponent, SearchResultPanelComponent, ValuePickerComponent, ValuePickerItemComponent],
@@ -30,6 +31,7 @@ import { ValuePickerItemComponent } from './quick-search/value-picker/value-pick
     TranslateModule,
     YuvComponentsModule,
     DropdownModule,
+    YuvPopoverModule,
     YuvCommonUiModule,
     ActionModule,
     MultiSelectModule
