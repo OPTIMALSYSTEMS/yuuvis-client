@@ -2,12 +2,14 @@
   <input class="form-control" placeholder="Search..." (keyup)="onKeydown($event)" #input>
 </div> -->
 
-<section class="list-group" tabindex="0" cdkTrapFocus (keyup)="onKeydown($event)">
+<section class="list" cdkTrapFocus (keyup)="onKeydown($event)">
   <!-- <yuv-value-picker-item *ngFor="let item of _items | filter: 'label' : input.value; index as index" [item]="item" -->
   <yuv-value-picker-item *ngFor="let item of items; index as index" [item]="item" class="list-group-item"
     [ngClass]="{selected: !!selection[item.id]}" (click)="clickSelect(item)">
     {{item.label}}
   </yuv-value-picker-item>
 </section>
-
-<button (click)="emitSelection()" *ngIf="multiselect">{{'yuv.framework.valuepicker.button.select'|translate}}</button>
+<section class="buttons">
+  <button class="primary" (click)="emitSelection()"
+    *ngIf="multiselect">{{'yuv.framework.valuepicker.button.select'|translate}}</button>
+</section>

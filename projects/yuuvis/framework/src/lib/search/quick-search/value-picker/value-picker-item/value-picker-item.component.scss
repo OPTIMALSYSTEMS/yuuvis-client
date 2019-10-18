@@ -2,6 +2,7 @@
   display: block;
   padding: calc(var(--app-pane-padding) / 2) var(--app-pane-padding);
   cursor: pointer;
+  display: flex;
 
   //   &:focus {
   //     background-color: var(--color-accent);

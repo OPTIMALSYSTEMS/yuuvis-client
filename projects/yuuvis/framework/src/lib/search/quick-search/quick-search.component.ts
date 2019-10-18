@@ -1,9 +1,10 @@
-import { Component, ElementRef, EventEmitter, HostListener, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, EventEmitter, HostListener, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import {
   AggregateResult,
   BaseObjectTypeField,
   ContentStreamField,
+  ObjectType,
   ObjectTypeField,
   RetentionField,
   ScreenService,
@@ -14,13 +15,12 @@ import {
   TranslateService,
   Utils
 } from '@yuuvis/core';
-import { debounceTime, distinctUntilChanged, filter, tap } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, filter } from 'rxjs/operators';
 import { ObjectFormControlWrapper } from '../../object-form';
 import { ObjectFormControl } from '../../object-form/object-form.model';
 import { PopoverRef } from '../../popover/popover.ref';
 import { PopoverService } from '../../popover/popover.service';
 import { SVGIcons } from '../../svg.generated';
-import { ObjectType } from './../../../../../core/src/lib/model/object-type.model';
 import { ValuePickerItem } from './value-picker/value-picker.component';
 
 @Component({
@@ -29,19 +29,22 @@ import { ValuePickerItem } from './value-picker/value-picker.component';
   styleUrls: ['./quick-search.component.scss'],
   host: { class: 'yuv-quick-search' }
 })
-export class QuickSearchComponent implements OnInit {
+export class QuickSearchComponent implements OnInit, AfterViewInit {
   @ViewChild('termEl', { static: false }) termInput: ElementRef;
   @ViewChild('typeSelectTrigger', { static: false }) typeSelectTrigger: ElementRef;
   @ViewChild('fieldSelectTrigger', { static: false }) fieldSelectTrigger: ElementRef;
   @ViewChild('extrasForm', { static: false }) extrasForm: ElementRef;
   @ViewChild('tplValuePicker', { static: false }) tplValuePicker: TemplateRef<any>;
-  // @ViewChild('fieldSelector', { static: false }) fieldSelector: MultiSelect;
-  // @ViewChild('typeSelector', { static: false }) typeSelector: MultiSelect;
 
-  icClear = SVGIcons.clear;
+  icons = {
+    clear: SVGIcons['clear'],
+    arrowDown: SVGIcons['arrow-down'],
+    addCircle: SVGIcons['addCircle']
+  };
   searchForm: FormGroup;
   searchFieldsForm: FormGroup;
   invalidTerm: boolean;
+  busy: boolean;
   operator = 'AND';
   resultCount: number = null;
   aggTypes: ObjectTypeAggregation[] = [];
@@ -49,9 +52,6 @@ export class QuickSearchComponent implements OnInit {
   searchQuery: SearchQuery;
 
   objectTypeSelectLabel: string;
-  // objectTypeSelect: { label: string; value: string }[];
-  // objectTypeFields: ObjectTypeField[] = [];
-  // objectTypeFieldSelect: { label: string; value: ObjectTypeField }[];
 
   availableObjectTypes: { id: string; label: string; value: string }[];
   availableObjectTypeFields: { id: string; label: string; value: ObjectTypeField }[];
@@ -67,6 +67,8 @@ export class QuickSearchComponent implements OnInit {
   private skipFields = [
     ...Object.keys(RetentionField).map(k => RetentionField[k]),
     BaseObjectTypeField.OBJECT_ID,
+    BaseObjectTypeField.CREATED_BY,
+    BaseObjectTypeField.MODIFIED_BY,
     BaseObjectTypeField.OBJECT_TYPE_ID,
     BaseObjectTypeField.PARENT_ID,
     BaseObjectTypeField.PARENT_OBJECT_TYPE_ID,
@@ -97,6 +99,10 @@ export class QuickSearchComponent implements OnInit {
     }
   }
 
+  @HostListener('keydown.ENTER', ['$event']) onEnter(event) {
+    this.executeSearch();
+  }
+
   constructor(
     private fb: FormBuilder,
     private popoverService: PopoverService,
@@ -117,19 +123,12 @@ export class QuickSearchComponent implements OnInit {
     this.searchForm.valueChanges
       .pipe(
         distinctUntilChanged(),
-        tap(v => {
-          this.searchQuery.term = v.term;
-          if (this.formFields.length && v.objectTypes.length !== 1) {
-            this.formFields = [];
-          }
-          this.resultCount = null;
-        }),
         debounceTime(500),
-        filter(v => v.objectTypes.length || v.term.length)
-        // switchMap(_ => this.searchService.aggregate(this.searchQuery))
+        filter(v => v.term.length)
       )
-      .subscribe((res: AggregateResult) => {
-        this.processAggregateResult(res);
+      .subscribe(v => {
+        this.searchQuery.term = v.term;
+        this.aggregate();
       });
 
     this.systemService.system$.subscribe(_ => {
@@ -143,7 +142,16 @@ export class QuickSearchComponent implements OnInit {
         }))
         .sort(Utils.sortValues('label'));
       this.availableObjectTypes = types;
-      this.onObjectTypesSelected([]);
+      this.onObjectTypesSelected([], false);
+    });
+  }
+
+  aggregate() {
+    this.resultCount = null;
+    this.busy = true;
+    this.searchService.aggregate(this.searchQuery).subscribe((res: AggregateResult) => {
+      this.processAggregateResult(res);
+      this.busy = false;
     });
   }
 
@@ -184,10 +192,8 @@ export class QuickSearchComponent implements OnInit {
     this.addFieldEntry(field);
   }
 
-  private onObjectTypesSelected(types: string[]) {
-    // if (this.selectedObjectTypes && this.selectedObjectTypes.length > 0) {
+  private onObjectTypesSelected(types: string[], aggregate?: boolean) {
     this.reset();
-    // }
     this.selectedObjectTypes = types;
     this.setAvailableObjectTypesFields();
 
@@ -197,6 +203,13 @@ export class QuickSearchComponent implements OnInit {
       this.objectTypeSelectLabel = this.translate.instant('yuv.framework.quick-search.type.all');
     } else {
       this.objectTypeSelectLabel = this.translate.instant('yuv.framework.quick-search.type.multiple', { size: this.selectedObjectTypes.length });
+    }
+    this.searchQuery.types = this.selectedObjectTypes;
+    if (aggregate) {
+      this.aggregate();
+    }
+    if (this.termInput) {
+      this.termInput.nativeElement.focus();
     }
   }
 
@@ -230,12 +243,13 @@ export class QuickSearchComponent implements OnInit {
   }
 
   executeSearch() {
+    console.log(this.searchQuery);
     this.query.emit(this.searchQuery);
   }
 
-  objectTypeSelectClosed() {
-    this.termInput.nativeElement.focus();
-  }
+  // objectTypeSelectClosed() {
+  //   this.termInput.nativeElement.focus();
+  // }
 
   private processAggregateResult(res: AggregateResult) {
     this.resultCount = res.totalNumItems;
@@ -285,6 +299,18 @@ export class QuickSearchComponent implements OnInit {
     ctrl.addControl(field.id, formControl);
     this.searchFieldsForm.addControl(`fc_${field.id}`, ctrl);
     this.formFields.push(`fc_${field.id}`);
+
+    // focus the generated field
+    setTimeout(() => {
+      this.focusLastExtrasField();
+    }, 500);
+  }
+
+  private focusLastExtrasField() {
+    const focusables = this.extrasForm.nativeElement.querySelectorAll('input, textarea');
+    if (focusables.length) {
+      focusables[focusables.length - 1].focus();
+    }
   }
 
   /**
@@ -313,6 +339,9 @@ export class QuickSearchComponent implements OnInit {
   }
 
   ngOnInit() {}
+  ngAfterViewInit() {
+    this.termInput.nativeElement.focus();
+  }
 }
 
 interface ObjectTypeAggregation {

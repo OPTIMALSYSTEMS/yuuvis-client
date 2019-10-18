@@ -1,5 +1,22 @@
+@import '../../../../../../../src/scss-shared/_mixins';
+
 :host {
   position: relative;
+  width: 100%;
   background-color: var(--panel-background);
   color: var(--text-color-body);
+
+  yuv-icon.popover-close {
+    display: none;
+
+    .screen-s & {
+      display: block;
+      position: absolute;
+      top: var(--app-pane-padding);
+      @include bidi-style(right, var(--app-pane-padding), left, var(--app-pane-padding));
+    }
+  }
+}
+:host-context(.screen-s) {
+  padding-top: calc(var(--app-pane-padding) * 2);
 }

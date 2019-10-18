@@ -48,15 +48,7 @@ export class FrameComponent implements OnInit {
   }
 
   private applyLayoutSettings(settings: LayoutSettings) {
-    const darkModeClass = 'dark';
     const body = document.getElementsByTagName('body')[0];
-    const bodyClassList = body.classList;
-    if (bodyClassList.contains(darkModeClass) && !settings.darkMode) {
-      bodyClassList.remove(darkModeClass);
-    } else if (!bodyClassList.contains(darkModeClass) && settings.darkMode) {
-      bodyClassList.add(darkModeClass);
-    }
-
     const acProperty = '--color-accent-rgb';
     if (settings.accentColor) {
       document.documentElement.style.setProperty(acProperty, settings.accentColor);

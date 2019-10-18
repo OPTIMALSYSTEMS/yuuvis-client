@@ -1,5 +1,6 @@
-import { Injectable } from '@angular/core';
-import { AppCacheService, BackendService } from '@yuuvis/core';
+import { DOCUMENT } from '@angular/common';
+import { Inject, Injectable } from '@angular/core';
+import { AppCacheService, BackendService, Direction, UserService, YuvUser } from '@yuuvis/core';
 import { Observable, ReplaySubject } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -12,14 +13,40 @@ export class LayoutService {
   private layoutSettingsSource = new ReplaySubject<LayoutSettings>();
   public layoutSettings$: Observable<LayoutSettings> = this.layoutSettingsSource.asObservable();
 
-  constructor(private appCache: AppCacheService, private backend: BackendService) {
+  constructor(@Inject(DOCUMENT) private document: any, private appCache: AppCacheService, private userService: UserService, private backend: BackendService) {
     // load saved settings
     this.appCache.getItem(this.STORAGE_KEY).subscribe(settings => this.processLayoutSettings(settings));
+    this.userService.user$.subscribe((user: YuvUser) => {
+      this.applyDirection(user.uiDirection);
+    });
   }
 
   private processLayoutSettings(settings: any) {
     this.layoutSettings = settings || {};
     this.layoutSettingsSource.next(this.layoutSettings);
+    this.applyLayoutSettings(this.layoutSettings);
+  }
+
+  private applyDirection(direction: string) {
+    const body = this.document.getElementsByTagName('body')[0];
+    const bodyClassList = body.classList;
+    body.setAttribute('dir', direction);
+    if (direction === Direction.RTL) {
+      bodyClassList.add('yuv-rtl');
+    } else {
+      bodyClassList.add('yuv-rtl');
+    }
+  }
+
+  private applyLayoutSettings(settings: LayoutSettings) {
+    const darkModeClass = 'dark';
+    const body = this.document.getElementsByTagName('body')[0];
+    const bodyClassList = body.classList;
+    if (bodyClassList.contains(darkModeClass) && !settings.darkMode) {
+      bodyClassList.remove(darkModeClass);
+    } else if (!bodyClassList.contains(darkModeClass) && settings.darkMode) {
+      bodyClassList.add(darkModeClass);
+    }
   }
 
   getLayoutSettings() {

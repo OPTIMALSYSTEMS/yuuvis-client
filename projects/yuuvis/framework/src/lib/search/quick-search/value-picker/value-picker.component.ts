@@ -1,4 +1,4 @@
-import { FocusKeyManager } from '@angular/cdk/a11y';
+import { ActiveDescendantKeyManager } from '@angular/cdk/a11y';
 import { ENTER, SPACE } from '@angular/cdk/keycodes';
 import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnInit, Output, QueryList, ViewChildren } from '@angular/core';
 import { ValuePickerItemComponent } from './value-picker-item/value-picker-item.component';
@@ -22,14 +22,17 @@ export class ValuePickerComponent implements OnInit, AfterViewInit {
   @Input() selectedItemIds: string[];
   @Input() multiselect: boolean;
   @Output() select = new EventEmitter<any>();
-  // private keyManager: ActiveDescendantKeyManager<ValuePickerItemComponent>;
-  private keyManager: FocusKeyManager<ValuePickerItemComponent>;
+  private keyManager: ActiveDescendantKeyManager<ValuePickerItemComponent>;
+  // private keyManager: FocusKeyManager<ValuePickerItemComponent>;
 
   selection = {};
 
   constructor(private elRef: ElementRef) {}
 
   onKeydown(event) {
+    event.preventDefault();
+    event.stopPropagation();
+
     if (this.multiselect) {
       if (event.keyCode === ENTER) {
         if (!Object.keys(this.selection).length) {
@@ -89,9 +92,10 @@ export class ValuePickerComponent implements OnInit, AfterViewInit {
     }
   }
   ngAfterViewInit() {
-    // this.keyManager = new ActiveDescendantKeyManager(this.itemElements).withWrap().withTypeAhead();
-    this.keyManager = new FocusKeyManager(this.itemElements).withWrap();
-    // this.elRef.nativeElement.focus();
+    this.keyManager = new ActiveDescendantKeyManager(this.itemElements).withWrap().withTypeAhead();
+    // this.keyManager = new FocusKeyManager(this.itemElements).withWrap();
+    console.log('FOCUS');
+    this.itemElements.first.focus();
   }
 }
 

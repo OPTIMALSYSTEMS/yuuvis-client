@@ -1,6 +1,7 @@
 import { ComponentType, ConnectionPositionPair, Overlay } from '@angular/cdk/overlay';
 import { ComponentPortal, PortalInjector, TemplatePortal } from '@angular/cdk/portal';
 import { ElementRef, Injectable, InjectionToken, Injector, TemplateRef } from '@angular/core';
+import { Direction, Screen, ScreenService, UserService, YuvUser } from '@yuuvis/core';
 import { PopoverConfig } from './popover.interface';
 import { PopoverRef } from './popover.ref';
 import { PopoverComponent } from './popover/popover.component';
@@ -13,15 +14,23 @@ export const POPOVER_DATA = new InjectionToken('yuv.framework.popover.data');
 const defaultConfig: PopoverConfig = {
   backdropClass: '',
   disableClose: false,
-  panelClass: '',
-  arrowOffset: 30,
-  arrowSize: 20
+  panelClass: ''
 };
 @Injectable({
   providedIn: 'root'
 })
 export class PopoverService {
-  constructor(private overlay: Overlay, private injector: Injector) {}
+  private useSmallDeviceLayout: boolean;
+  private direction: string;
+
+  constructor(private overlay: Overlay, private userService: UserService, private injector: Injector, private screenService: ScreenService) {
+    this.screenService.screenChange$.subscribe((screen: Screen) => {
+      this.useSmallDeviceLayout = screen.mode === ScreenService.MODE.SMALL;
+    });
+    this.userService.user$.subscribe((user: YuvUser) => {
+      this.direction = user.uiDirection;
+    });
+  }
 
   open<D = any>(
     componentOrTemplate: ComponentType<any> | TemplateRef<any>,
@@ -30,78 +39,33 @@ export class PopoverService {
   ): PopoverRef<D> {
     const popoverConfig: PopoverConfig = Object.assign({}, defaultConfig, config);
 
-    const arrowSize = popoverConfig.arrowSize;
-    const arrowOffset = popoverConfig.arrowOffset;
-    const panelOffset = arrowSize / 2;
-
     // preferred positions, in order of priority
     const positions: ConnectionPositionPair[] = [
-      // top center
-      {
-        overlayX: 'center',
-        overlayY: 'bottom',
-        originX: 'center',
-        originY: 'top',
-        panelClass: ['bottom', 'center'],
-        offsetY: -1 * panelOffset
-      },
-      // top left
-      {
-        overlayX: 'start',
-        overlayY: 'bottom',
-        originX: 'center',
-        originY: 'top',
-        panelClass: ['bottom', 'left'],
-        offsetX: -1 * arrowOffset,
-        offsetY: -1 * panelOffset
-      },
-      // top right
-      {
-        overlayX: 'end',
-        overlayY: 'bottom',
-        originX: 'center',
-        originY: 'top',
-        panelClass: ['bottom', 'right'],
-        offsetX: arrowOffset,
-        offsetY: -1 * panelOffset
-      },
-      // bottom center
-      {
-        overlayX: 'center',
-        overlayY: 'top',
-        originX: 'center',
-        originY: 'bottom',
-        panelClass: ['top', 'center'],
-        offsetY: panelOffset
-      },
-      // bottom left
       {
         overlayX: 'start',
         overlayY: 'top',
-        originX: 'center',
+        originX: 'start',
         originY: 'bottom',
         panelClass: ['top', 'left'],
-        offsetX: -1 * arrowOffset,
-        offsetY: panelOffset
-      },
-      // bottom right
-      {
-        overlayX: 'end',
-        overlayY: 'top',
-        originX: 'center',
-        originY: 'bottom',
-        panelClass: ['top', 'right'],
-        offsetX: arrowOffset,
-        offsetY: panelOffset
+        offsetY: 4
       }
     ];
 
-    const positionStrategy = this.overlay
-      .position()
-      .flexibleConnectedTo(target)
-      .withPush(false)
-      .withFlexibleDimensions(false)
-      .withPositions(positions);
+    const positionStrategy = this.useSmallDeviceLayout
+      ? this.overlay
+          .position()
+          .global()
+          .width('90%')
+          .height('90%')
+          .centerHorizontally()
+          .centerVertically()
+      : this.overlay
+          .position()
+          .flexibleConnectedTo(target)
+          .withPush(true)
+          .withViewportMargin(16)
+          .withFlexibleDimensions(false)
+          .withPositions(positions);
 
     const overlayRef = this.overlay.create({
       hasBackdrop: true,
@@ -110,8 +74,8 @@ export class PopoverService {
       positionStrategy,
       scrollStrategy: this.overlay.scrollStrategies.reposition()
     });
-
-    const popoverRef = new PopoverRef(overlayRef, positionStrategy, popoverConfig);
+    overlayRef.setDirection(this.direction === Direction.RTL ? 'rtl' : 'ltr');
+    const popoverRef = new PopoverRef(overlayRef, popoverConfig);
 
     const popover = overlayRef.attach(
       new ComponentPortal(PopoverComponent, null, new PortalInjector(this.injector, new WeakMap<any, any>([[PopoverRef, popoverRef]])))

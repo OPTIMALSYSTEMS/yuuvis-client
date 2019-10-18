@@ -1,4 +1,4 @@
-<div class="head">
+<div class="head" dir="ltr">
   <span (click)="showNav = !showNav" class="hamburger"></span>
   <div class="title">
     yuuvis component playground
@@ -20,6 +20,6 @@
   <a [routerLink]="[route]" routerLinkActive="active" *ngFor="let route of routes">{{route}}</a>
 </nav>
 
-<div class="body" id="outlet" [yuvDirection]="uiSettings.direction">
+<div class="body" id="outlet">
   <router-outlet></router-outlet>
 </div>

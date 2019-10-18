@@ -49,11 +49,17 @@ export class AppComponent implements OnInit {
 
   private applyUiSettings() {
     const bodyClasses = document.getElementsByTagName('body')[0].classList;
-    const outlet = document.getElementById('outlet');
     if (this.uiSettings.darkMode) {
       bodyClasses.add('dark');
     } else {
       bodyClasses.remove('dark');
+    }
+    const body = document.getElementsByTagName('body')[0];
+    body.setAttribute('dir', this.uiSettings.direction);
+    if (this.uiSettings.direction === Direction.RTL) {
+      bodyClasses.add('yuv-rtl');
+    } else {
+      bodyClasses.remove('yuv-rtl');
     }
   }
 

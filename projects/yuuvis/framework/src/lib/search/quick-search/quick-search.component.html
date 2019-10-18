@@ -4,25 +4,27 @@
   <span class="label" translate>yuv.framework.quick-search.result.empty</span>
 </div>
 
-<div class="search-box" [ngClass]="{invalid: invalidTerm, extrasEnabled: formFields.length}">
+<div class="search-box" [ngClass]="{invalid: invalidTerm, extrasEnabled: formFields.length, busy: busy}">
+
+  <div class="busy-bar"></div>
 
   <form [formGroup]="searchForm">
 
     <div class="main">
 
-      <button class="type-select" #typeSelectTrigger (click)="showObjectTypePicker()">
-        {{objectTypeSelectLabel}}
+      <button type="button" class="type-select" #typeSelectTrigger (click)="showObjectTypePicker()">
+        <div class="label">{{objectTypeSelectLabel}}</div>
+        <yuv-icon [svg]="icons.arrowDown"></yuv-icon>
       </button>
 
       <div class="input">
-        <input #termEl autofocus="autofocus" [placeholder]="'yuv.framework.quick-search.term.placeholder'|translate"
-          formControlName="term">
+        <input #termEl [placeholder]="'yuv.framework.quick-search.term.placeholder'|translate" formControlName="term">
       </div>
 
-      <button #fieldSelectTrigger (click)="showObjectTypeFieldPicker()" *ngIf="availableObjectTypeFields?.length">
-        +
+      <button type="button" class="field-select" #fieldSelectTrigger (click)="showObjectTypeFieldPicker()"
+        *ngIf="availableObjectTypeFields?.length">
+        <yuv-icon [svg]="icons.addCircle"></yuv-icon>
       </button>
-
     </div>
   </form>
 
@@ -33,10 +35,10 @@
       <div class="fe-chip">
         <yuv-object-form-element [element]="searchFieldsForm.controls[key]"></yuv-object-form-element>
         <button (click)="removeFieldEntry(key)">
-          <yuv-icon [svg]="icClear"></yuv-icon>
+          <yuv-icon [svg]="icons.clear"></yuv-icon>
         </button>
       </div>
-      <button (click)="op">{{operator === 'AND' ? 'AND' : 'OR'}}</button>
+      <!-- <button>{{operator === 'AND' ? 'AND' : 'OR'}}</button> -->
     </ng-container>
 
 

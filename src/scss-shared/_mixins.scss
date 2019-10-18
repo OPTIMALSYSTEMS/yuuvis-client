@@ -188,9 +188,19 @@ $desktop-width: 1024px;
 @mixin bidi-style($prop, $value, $inverse-prop, $default-value) {
   #{$prop}: $value;
 
-  [dir='rtl'] & {
+  .yuv-rtl & {
+    // [dir='rtl'] & {
     #{$inverse-prop}: $value;
     #{$prop}: $default-value;
+  }
+}
+
+/* set style alternative property for dark mode  */
+@mixin dark-style($prop, $value, $dark-value) {
+  #{$prop}: $value;
+
+  .dark & {
+    #{$prop}: $dark-value;
   }
 }
 
