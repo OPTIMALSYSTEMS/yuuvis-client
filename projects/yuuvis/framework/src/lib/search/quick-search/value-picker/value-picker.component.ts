@@ -10,20 +10,11 @@ import { ValuePickerItemComponent } from './value-picker-item/value-picker-item.
 })
 export class ValuePickerComponent implements OnInit, AfterViewInit {
   @ViewChildren(ValuePickerItemComponent) itemElements: QueryList<ValuePickerItemComponent>;
-  // _items;
   @Input() items: ValuePickerItem[];
-  // @Input() set items(items: ValuePickerItem[]) {
-  //   this._items = items.map(i => ({
-  //     id: Utils.uuid(),
-  //     label: i.label,
-  //     value: i.value
-  //   }));
-  // }
   @Input() selectedItemIds: string[];
   @Input() multiselect: boolean;
   @Output() select = new EventEmitter<any>();
   private keyManager: ActiveDescendantKeyManager<ValuePickerItemComponent>;
-  // private keyManager: FocusKeyManager<ValuePickerItemComponent>;
 
   selection = {};
 
@@ -48,7 +39,7 @@ export class ValuePickerComponent implements OnInit, AfterViewInit {
       if (event.keyCode === ENTER) {
         this.addToSelection(this.keyManager.activeItem.item);
         this.emitSelection();
-      } else {
+      } else if (event.keyCode !== SPACE) {
         this.keyManager.onKeydown(event);
       }
     }
@@ -93,8 +84,6 @@ export class ValuePickerComponent implements OnInit, AfterViewInit {
   }
   ngAfterViewInit() {
     this.keyManager = new ActiveDescendantKeyManager(this.itemElements).withWrap().withTypeAhead();
-    // this.keyManager = new FocusKeyManager(this.itemElements).withWrap();
-    console.log('FOCUS');
     this.itemElements.first.focus();
   }
 }

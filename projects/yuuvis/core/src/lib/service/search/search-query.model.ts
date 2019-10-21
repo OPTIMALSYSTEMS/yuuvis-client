@@ -23,9 +23,7 @@ export class SearchQuery {
         this.filters = [];
         Object.keys(searchQueryProperties.filters).forEach(k => {
           const filterValue = searchQueryProperties.filters[k];
-          this.filters.push(
-            new SearchFilter(k, filterValue.o, filterValue.v1, filterValue.v2)
-          );
+          this.filters.push(new SearchFilter(k, filterValue.o, filterValue.v1, filterValue.v2));
         });
       }
     }
@@ -92,9 +90,17 @@ export class SearchQuery {
   }
 
   /**
+   * Removes all filters from the query.
+   */
+  public clearFilters() {
+    this.filters = [];
+  }
+
+  /**
    * Adds or removes the given filter based on the current settings
    *
    * @param filter The filter to be toggled
+   * @param override If set to true, will override an existing filter
    */
   public toggleFilter(filter: SearchFilter, override?: boolean) {
     if (this.getFilter(filter.property)) {
@@ -216,37 +222,21 @@ export class SearchFilter {
    * @param firstValue The filters value
    * @param secondValue Optional second value for filters that for example define ranges of values
    */
-  constructor(
-    public property: string,
-    public operator: string,
-    public firstValue: any,
-    public secondValue?: any
-  ) {}
+  constructor(public property: string, public operator: string, public firstValue: any, public secondValue?: any) {}
 
   /**
    * @ignore
    */
-  match(
-    property: string,
-    operator: string,
-    firstValue: any,
-    secondValue?: any
-  ) {
+  match(property: string, operator: string, firstValue: any, secondValue?: any) {
     return (
       this.property === property &&
       this.operator === operator &&
       this.secondValue === secondValue &&
-      (this.firstValue instanceof Array
-        ? !!this.firstValue.find(v => v === firstValue)
-        : this.firstValue === firstValue)
+      (this.firstValue instanceof Array ? !!this.firstValue.find(v => v === firstValue) : this.firstValue === firstValue)
     );
   }
 }
 
 export class SortOption {
-  constructor(
-    public field: string,
-    public order: string,
-    public missing?: string
-  ) {}
+  constructor(public field: string, public order: string, public missing?: string) {}
 }

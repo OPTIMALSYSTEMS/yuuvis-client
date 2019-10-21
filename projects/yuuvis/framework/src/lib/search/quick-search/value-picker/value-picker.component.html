@@ -9,7 +9,6 @@
     {{item.label}}
   </yuv-value-picker-item>
 </section>
-<section class="buttons">
-  <button class="primary" (click)="emitSelection()"
-    *ngIf="multiselect">{{'yuv.framework.valuepicker.button.select'|translate}}</button>
+<section class="buttons" *ngIf="multiselect">
+  <button class="primary" (click)="emitSelection()">{{'yuv.framework.valuepicker.button.select'|translate}}</button>
 </section>
