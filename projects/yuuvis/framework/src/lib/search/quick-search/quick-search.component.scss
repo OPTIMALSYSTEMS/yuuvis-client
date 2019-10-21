@@ -6,49 +6,32 @@
   border-radius: 2px;
   box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.2);
 
-  ::ng-deep {
-    .ui-multiselect {
-      background-color: var(--panel-background-grey);
-      border: 1px solid transparent;
-      display: flex;
-      align-items: center;
-      height: 100%;
-      box-sizing: border-box;
-      .ui-multiselect-trigger {
-        background-color: transparent;
-        color: var(--text-color-hint);
-      }
-      .ui-multiselect-label-container {
-        display: flex;
-        .ui-multiselect-label {
-          padding: var(--app-pane-padding);
-          color: var(--text-color-caption);
-          padding-right: calc(var(--app-pane-padding) + 1.5em);
-        }
-      }
-    }
-  }
-
-  .count {
-    background-color: var(--color-accent);
+  .upper {
+    background-color: var(--color-primary);
     color: #fff;
     animation: yuvFadeInUp 200ms;
     position: absolute;
-    right: 0;
-    padding: calc(var(--app-pane-padding) / 4) calc(var(--app-pane-padding) / 2);
+    left: 0;
+    padding: calc(var(--app-pane-padding) / 4) 0;
     font-size: var(--font-subhead);
     border-radius: 2px;
     top: calc(2em * -1);
+    align-items: center;
+    display: flex;
 
-    &.no-results:hover {
-      background-color: var(--color-accent);
+    yuv-icon {
+      width: 18px;
+      height: 18px;
+      margin: 0 calc(var(--app-pane-padding) / 2);
       cursor: pointer;
+    }
+
+    .count {
+      margin: 0 calc(var(--app-pane-padding) / 2);
     }
   }
 
   .search-box {
-    // display: flex;
-    // flex-flow: row;
     border-radius: 2px;
     padding: calc(var(--app-pane-padding) / 4);
     background: var(--panel-background);
@@ -57,19 +40,8 @@
       flex-flow: column;
       .extras {
         padding: calc(var(--app-pane-padding) / 4);
-        margin: calc(var(--app-pane-padding) / 4) 0;
+        margin-top: calc(var(--app-pane-padding) / 4);
         background-color: var(--panel-background-grey);
-
-        ::ng-deep {
-          // add form field trigger while there are already fields added (inline)
-          .ui-multiselect {
-            .ui-multiselect-label {
-              padding: calc(var(--app-pane-padding) / 4) calc(var(--app-pane-padding) / 2);
-              background-color: var(--color-primary);
-              color: #fff;
-            }
-          }
-        }
       }
       .buttons {
         display: flex;
@@ -107,8 +79,11 @@
       flex: 1;
 
       button {
-        padding: calc(var(--app-pane-padding) / 2) calc(var(--app-pane-padding) / 4);
+        padding: calc(var(--app-pane-padding) / 2) calc(var(--app-pane-padding) / 2);
+
         &.field-select {
+          margin: 0 4px;
+          color: var(--text-color-hint);
         }
         &.type-select {
           background-color: var(--main-background);
@@ -137,19 +112,6 @@
           .yuv-form-input .fe-wrapper {
             border: 0;
             padding: 0;
-          }
-        }
-
-        // add form field trigger
-        .ui-multiselect {
-          .ui-multiselect-trigger {
-            display: none;
-          }
-
-          .ui-multiselect-label {
-            background-color: var(--panel-background-grey);
-
-            padding: var(--app-pane-padding);
           }
         }
       }
