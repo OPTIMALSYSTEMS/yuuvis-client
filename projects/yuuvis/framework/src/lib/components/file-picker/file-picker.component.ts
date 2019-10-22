@@ -23,7 +23,7 @@ export class FilePickerComponent {
   @Input() output: 'text' | 'dataurl' | 'arraybuffer' = 'arraybuffer';
   @Output() fileSelected = new EventEmitter<FileInputResult>();
 
-  constructor(private notify: NotificationService, private fileSizePipe: FileSizePipe, private translate: TranslateService) {}
+  constructor(private notify: NotificationService, private translate: TranslateService) {}
 
   choose() {
     this.fileInputEl.nativeElement.click();
@@ -36,7 +36,7 @@ export class FilePickerComponent {
       if (this.maxSize && file.size > this.maxSize) {
         this.notify.warning(
           this.translate.instant('yuv.framework.filepicker.maxsize.exceeded.title'),
-          this.translate.instant('yuv.framework.filepicker.maxsize.exceeded.message', { max: this.fileSizePipe.transform(this.maxSize) })
+          this.translate.instant('yuv.framework.filepicker.maxsize.exceeded.message', { max: new FileSizePipe(this.translate).transform(this.maxSize) })
         );
       } else {
         let read: Observable<any>;
