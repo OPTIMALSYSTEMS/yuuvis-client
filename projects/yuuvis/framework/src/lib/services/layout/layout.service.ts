@@ -2,13 +2,14 @@ import { DOCUMENT } from '@angular/common';
 import { Inject, Injectable } from '@angular/core';
 import { AppCacheService, BackendService, Direction, UserService, YuvUser } from '@yuuvis/core';
 import { Observable, ReplaySubject } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, switchMap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
 })
 export class LayoutService {
-  private STORAGE_KEY = 'yuv.framework.layout';
+  private STORAGE_KEY = 'yuv.app.framework.layout';
+  private STORAGE_KEY_REGEXP = new RegExp('^yuv.app.');
   private layoutSettings: LayoutSettings = {};
   private layoutSettingsSource = new ReplaySubject<LayoutSettings>();
   public layoutSettings$: Observable<LayoutSettings> = this.layoutSettingsSource.asObservable();
@@ -73,13 +74,19 @@ export class LayoutService {
     this.processLayoutSettings(this.layoutSettings);
   }
 
+  private cleanupData(data: any, filter?: (key: string) => boolean) {
+    filter = filter || ((key: string) => !key.match(this.STORAGE_KEY_REGEXP));
+    Object.keys(data).forEach(k => filter(k) && delete data[k]);
+    return data;
+  }
+
   private generateStorageJsonUri() {
     return this.appCache.getStorage().pipe(
       map(data => {
-        // remove core value
-        Object.keys(data).forEach(k => k.match(new RegExp('^yuv.core.')) && delete data[k]);
-        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'text/json' });
-        return URL.createObjectURL(blob);
+        const blob = new Blob([JSON.stringify(this.cleanupData(data), null, 2)], { type: 'text/json' });
+        const uri = URL.createObjectURL(blob);
+        // setTimeout(() => URL.revokeObjectURL(uri), 10000);
+        return uri;
       })
     );
   }
@@ -88,18 +95,19 @@ export class LayoutService {
     this.generateStorageJsonUri().subscribe(uri => this.backend.download(uri, filename));
   }
 
-  uploadLayout(data: string) {
-    const layout = JSON.parse(data);
-    console.log(layout);
-    // remove non yuuvis options
-    Object.keys(layout).forEach(k => !k.match(new RegExp('^yuv.')) && delete data[k]);
-    if (layout.hasOwnProperty(this.STORAGE_KEY)) {
+  uploadLayout(data: string | any, filter?: (key: string) => boolean, force = false) {
+    const layout = this.cleanupData(typeof data === 'string' ? JSON.parse(data) : data, filter);
+    if (layout.hasOwnProperty(this.STORAGE_KEY) || force) {
       this.processLayoutSettings(layout[this.STORAGE_KEY]);
     }
-    return this.appCache.setStorage(layout);
+    return force ? this.clearAll().pipe(switchMap(() => this.appCache.setStorage(layout))) : this.appCache.setStorage(layout);
   }
 
   clearLayout() {
+    return this.appCache.getStorage().pipe(switchMap(data => this.uploadLayout(data, (key: string) => !!key.match(this.STORAGE_KEY_REGEXP), true)));
+  }
+
+  clearAll() {
     return this.appCache.clear();
   }
 }
