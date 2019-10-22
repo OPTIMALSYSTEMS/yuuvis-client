@@ -52,7 +52,7 @@ export class SettingsComponent implements OnInit {
     this.layoutService.uploadLayout(e).subscribe();
   }
 
-  clearLayout(e: any) {
+  clearLayout() {
     this.layoutService.clearLayout().subscribe();
   }
 
