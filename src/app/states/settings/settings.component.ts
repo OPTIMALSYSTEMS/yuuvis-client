@@ -41,11 +41,7 @@ export class SettingsComponent implements OnInit {
   }
 
   setBackgroundImage(e) {
-    if (!e) {
-      this.layoutService.setDashboardBackground(null);
-    } else {
-      this.myReader(result => this.layoutService.setDashboardBackground(result)).readAsDataURL(e.target.files[0]);
-    }
+    this.layoutService.setDashboardBackground(!!e ? e : null);
   }
 
   downloadLayout() {
@@ -53,18 +49,11 @@ export class SettingsComponent implements OnInit {
   }
 
   uploadLayout(e: any) {
-    this.myReader(result => this.layoutService.uploadLayout(result).subscribe()).readAsText(e.target.files[0]);
+    this.layoutService.uploadLayout(e);
   }
 
   clearLayout(e: any) {
     this.layoutService.clearLayout().subscribe();
-  }
-
-  private myReader(success?: (result: string) => void, error?: (err: any) => void) {
-    const myReader: FileReader = new FileReader();
-    myReader.onloadend = e => success && success(myReader.result as string);
-    myReader.onerror = e => error && error(e);
-    return myReader;
   }
 
   ngOnInit() {

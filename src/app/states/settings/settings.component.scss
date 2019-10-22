@@ -161,13 +161,15 @@ $avatar-size-small: 80px;
               margin: 0 calc(var(--app-pane-padding) / 8 * -1);
             }
 
-            button {
-              background-color: var(--panel-background-grey);
-              margin: 0 calc(var(--app-pane-padding) / 8);
+            ::ng-deep {
+              button {
+                background-color: var(--panel-background-grey);
+                margin: 0 calc(var(--app-pane-padding) / 8);
 
-              &.active {
-                background-color: var(--color-accent);
-                color: #fff;
+                &.active {
+                  background-color: var(--color-accent);
+                  color: #fff;
+                }
               }
             }
 

@@ -107,11 +107,11 @@
     }
 
     &.singleEntry {
-      &:not(.onPage) {
-        .footer {
-          display: none;
-        }
-      }
+      // &:not(.onPage) {
+      //   .footer {
+      //     display: none;
+      //   }
+      // }
       .audit-entry {
         .timeline::after {
           display: none;

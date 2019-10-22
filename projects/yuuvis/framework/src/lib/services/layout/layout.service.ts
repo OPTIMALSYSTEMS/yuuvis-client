@@ -34,7 +34,7 @@ export class LayoutService {
     if (direction === Direction.RTL) {
       bodyClassList.add('yuv-rtl');
     } else {
-      bodyClassList.add('yuv-rtl');
+      bodyClassList.remove('yuv-rtl');
     }
   }
 
