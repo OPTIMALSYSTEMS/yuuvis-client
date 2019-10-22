@@ -30,6 +30,8 @@
   "yuv.framework.audit.search.creator": "Benutzer",
   "yuv.framework.audit.search.title": "Suchen in Historie",
   "yuv.framework.audit.version": "Version",
+  "yuv.framework.filepicker.maxsize.exceeded.message": "Die Datei darf maximal {{max}} groß sein",
+  "yuv.framework.filepicker.maxsize.exceeded.title": "Zu groß",
   "yuv.framework.form.datepicker.select": "Auswählen",
   "yuv.framework.form.form-input.null": "Ohne Wert",
   "yuv.framework.list.refresh": "Aktualisieren",

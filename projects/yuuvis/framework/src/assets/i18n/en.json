@@ -30,6 +30,8 @@
 	"yuv.framework.audit.search.creator": "User",
 	"yuv.framework.audit.search.title": "Search history",
 	"yuv.framework.audit.version": "Version",
+	"yuv.framework.filepicker.maxsize.exceeded.message": "",
+	"yuv.framework.filepicker.maxsize.exceeded.title": "",
 	"yuv.framework.form.datepicker.select": "Select",
 	"yuv.framework.form.form-input.null": "No value",
 	"yuv.framework.list.refresh": "Update",

@@ -71,8 +71,8 @@
       <div class="setting">
         <div class="label">{{'yuv.client.state.settings.theme.background'|translate}}</div>
         <div class="value buttons">
-          <yuv-file-picker [label]="'yuv.client.state.settings.theme.background.choose'|translate" [accept]="'image/*'"
-            [output]="'dataurl'" (fileSelected)="setBackgroundImage($event)"></yuv-file-picker>
+          <yuv-file-picker [label]="'yuv.client.state.settings.theme.background.choose'|translate" [maxSize]="500000"
+            [accept]="'image/*'" [output]="'dataurl'" (fileSelected)="setBackgroundImage($event)"></yuv-file-picker>
           <button *ngIf="customDashboardBackground"
             (click)="setBackgroundImage(null)">{{'yuv.client.state.settings.section.layout.reset'|translate}}</button>
         </div>

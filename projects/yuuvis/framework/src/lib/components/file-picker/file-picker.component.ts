@@ -54,6 +54,7 @@ export class FilePickerComponent {
           }
         }
         read.subscribe(res => this.fileSelected.emit(res));
+        this.fileInputEl.nativeElement.value = null;
       }
     }
   }
