@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, EventEmitter, HostListener, Input, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, EventEmitter, HostBinding, HostListener, Input, Output, TemplateRef, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import {
   AggregateResult,
@@ -7,6 +7,7 @@ import {
   ObjectType,
   ObjectTypeField,
   RetentionField,
+  SearchFilter,
   SearchQuery,
   SearchService,
   SystemService,
@@ -19,7 +20,6 @@ import { ObjectFormControl } from '../../object-form/object-form.model';
 import { PopoverRef } from '../../popover/popover.ref';
 import { PopoverService } from '../../popover/popover.service';
 import { SVGIcons } from '../../svg.generated';
-import { SearchFilter } from './../../../../../core/src/lib/service/search/search-query.model';
 import { ValuePickerItem } from './value-picker/value-picker.component';
 
 /**
@@ -33,7 +33,7 @@ import { ValuePickerItem } from './value-picker/value-picker.component';
   styleUrls: ['./quick-search.component.scss'],
   host: { class: 'yuv-quick-search' }
 })
-export class QuickSearchComponent implements OnInit, AfterViewInit {
+export class QuickSearchComponent implements AfterViewInit {
   @ViewChild('termEl', { static: false }) termInput: ElementRef;
   @ViewChild('typeSelectTrigger', { static: false }) typeSelectTrigger: ElementRef;
   @ViewChild('fieldSelectTrigger', { static: false }) fieldSelectTrigger: ElementRef;
@@ -49,7 +49,7 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
   searchForm: FormGroup;
   searchFieldsForm: FormGroup;
   invalidTerm: boolean;
-  busy: boolean;
+  // busy: boolean;
   operator = 'AND';
   resultCount: number = null;
   // aggTypes: ObjectTypeAggregation[] = [];
@@ -104,6 +104,7 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
    */
   @Output() querySubmit = new EventEmitter<SearchQuery>();
 
+  @HostBinding('class.busy') busy: boolean;
   @HostListener('keydown.alt.+', ['$event']) onAddField(event) {
     if (this.availableObjectTypeFields.length) {
       this.showObjectTypeFieldPicker();
@@ -116,7 +117,6 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
     }
   }
 
-  // TODO: Make sure this is not messing with ENTERs from other form controls
   @HostListener('keydown.ENTER', ['$event']) onEnter(event) {
     if (!this.searchFieldsForm) {
       this.executeSearch();
@@ -264,10 +264,9 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
     this.addFieldEntry(field);
   }
 
-  private onObjectTypesSelected(types: string[], aggregate?: boolean) {
+  private onObjectTypesSelected(types: string[], aggregate: boolean = true) {
     // get rid of existing object type field form
     this.resetObjectTypeFields();
-
     this.selectedObjectTypes = types;
     this.setAvailableObjectTypesFields();
 
@@ -358,19 +357,8 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
 
   private processAggregateResult(res: AggregateResult) {
     this.resultCount = res.totalNumItems;
-
     if (res.aggregations && res.aggregations.length) {
       this.searchHasResults = true;
-
-      // res.aggregations.forEach(item => {
-      //   this.resultCount += item.count;
-      //   this.aggTypes.push({
-      //     objectTypeId: item.key,
-      //     label: this.systemService.getLocalizedResource(`${item.key}_label`) || item.key,
-      //     count: item.count
-      //   });
-      // });
-      // this.aggTypes.sort(Utils.sortValues('label'));
     } else {
       this.searchHasResults = false;
     }
@@ -431,6 +419,9 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
     this.searchFieldsForm.removeControl(formControlName);
   }
 
+  /**
+   * Reset the whole search form
+   */
   reset() {
     this.searchQuery = new SearchQuery();
     this.resultCount = null;
@@ -448,12 +439,6 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
   private resetObjectTypes() {
     this.onObjectTypesSelected([]);
   }
-
-  toggleOperator() {
-    this.operator === 'AND' ? 'OR' : 'AND';
-  }
-
-  ngOnInit() {}
 
   ngAfterViewInit() {
     this.termInput.nativeElement.focus();

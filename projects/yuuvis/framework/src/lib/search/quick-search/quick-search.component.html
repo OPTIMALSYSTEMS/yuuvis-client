@@ -1,11 +1,11 @@
-<div class="upper" *ngIf="searchQuery.term || searchQuery.types?.length || searchQuery.filters?.length">
+<div class="upper" [ngClass]="{zero: resultCount === 0}"
+  *ngIf="searchQuery.term || searchQuery.types?.length || searchQuery.filters?.length">
   <yuv-icon [svg]="icons.clear" (click)="reset()"></yuv-icon>
-  <div class="count" [ngClass]="{zero: resultCount === 0}" *ngIf="resultCount !== null">{{resultCount}}</div>
+  <div class="yuv-loader-straight"></div>
+  <div class="count" *ngIf="resultCount !== null">{{resultCount}}</div>
 </div>
 
-<div class="search-box" [ngClass]="{invalid: invalidTerm, extrasEnabled: formFields.length, busy: busy}">
-
-  <div class="busy-bar"></div>
+<div class="search-box" [ngClass]="{invalid: invalidTerm, extrasEnabled: formFields.length}">
 
   <form [formGroup]="searchForm">
 
@@ -33,14 +33,15 @@
 
   <!-- form elements from object type fields -->
   <form class="extras" #extrasForm [formGroup]="searchFieldsForm" *ngIf="formFields.length">
-    <ng-container *ngFor="let key of searchFieldsForm?.controls | keys">
+    <div class="condition" *ngFor="let key of searchFieldsForm?.controls | keys">
       <div class="fe-chip">
         <yuv-object-form-element [element]="searchFieldsForm.controls[key]"></yuv-object-form-element>
         <button (click)="removeFieldEntry(key)">
           <yuv-icon [svg]="icons.clear"></yuv-icon>
         </button>
       </div>
-    </ng-container>
+      <div class="operator">&</div>
+    </div>
   </form>
 </div>
 

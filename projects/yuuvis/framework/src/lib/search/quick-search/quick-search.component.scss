@@ -6,6 +6,10 @@
   border-radius: 2px;
   box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.2);
 
+  &.busy .upper .yuv-loader-straight {
+    display: inherit;
+  }
+
   .upper {
     background-color: var(--color-primary);
     color: #fff;
@@ -19,15 +23,23 @@
     align-items: center;
     display: flex;
 
+    // 0 items result
+    &.zero {
+      background-color: var(--color-error);
+    }
+
     yuv-icon {
       width: 18px;
       height: 18px;
       margin: 0 calc(var(--app-pane-padding) / 2);
       cursor: pointer;
     }
-
+    .yuv-loader-straight,
     .count {
       margin: 0 calc(var(--app-pane-padding) / 2);
+    }
+    .yuv-loader-straight {
+      display: none;
     }
   }
 
@@ -39,7 +51,7 @@
     &.extrasEnabled {
       flex-flow: column;
       .extras {
-        padding: calc(var(--app-pane-padding) / 4);
+        padding: calc(var(--app-pane-padding) / 8);
         margin-top: calc(var(--app-pane-padding) / 4);
         background-color: var(--panel-background-grey);
       }
@@ -51,39 +63,31 @@
       }
     }
 
-    // &.busy {
-    //   .busy-bar {
-    //     margin-top: -4px;
-    //     background-color: rgba(var(--color-accent-rgb), 0.4);
-    //     display: flex;
-
-    //     &:before {
-    //       content: '';
-    //       height: 100%;
-    //       width: 100%;
-    //       background-color: var(--color-accent);
-    //       animation: running-progress 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-    //     }
-    //   }
-    // }
-
-    // .busy-bar {
-    //   opacity: 0;
-    //   height: 2px;
-    // }
-
     .main {
       display: flex;
       flex: 0 0 auto;
+      align-items: center;
       flex-flow: row nowrap;
       flex: 1;
 
       button {
-        padding: calc(var(--app-pane-padding) / 2) calc(var(--app-pane-padding) / 2);
+        padding: calc(var(--app-pane-padding) / 2);
+
+        &.primary {
+          padding: calc(var(--app-pane-padding) / 2) var(--app-pane-padding);
+        }
 
         &.field-select {
           margin: 0 4px;
           color: var(--text-color-hint);
+          border-radius: 50%;
+          width: 32px;
+          height: 32px;
+          display: flex;
+          flex-flow: column;
+          padding: 0;
+          align-items: center;
+          justify-content: center;
         }
         &.type-select {
           background-color: var(--main-background);
@@ -104,6 +108,11 @@
       align-items: center;
       flex-flow: row wrap;
 
+      .screen-s & {
+        flex-flow: column;
+        align-items: stretch;
+      }
+
       ::ng-deep {
         .form-element {
           .form-field {
@@ -115,27 +124,44 @@
           }
         }
       }
-
-      .fe-chip {
+      .condition {
         display: flex;
-        background-color: var(--panel-background);
         align-items: center;
-        margin: calc(var(--app-pane-padding) / 8);
 
-        button {
-          padding: 0;
-          yuv-icon {
-            padding: 4px;
+        &:last-child {
+          .operator {
+            opacity: 0;
           }
         }
-      }
-    }
-    .buttons {
-      display: none;
-    }
+        .fe-chip {
+          display: flex;
+          flex: 1;
+          background-color: var(--panel-background);
+          align-items: center;
+          margin: calc(var(--app-pane-padding) / 8);
 
-    &.agg {
-      border-radius: 2px 2px 0 0;
+          button {
+            padding: 0;
+            border-radius: 50%;
+            display: flex;
+            flex-flow: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1px;
+            margin: 2px;
+            yuv-icon {
+              width: 18px;
+              height: 18px;
+            }
+          }
+        }
+
+        .operator {
+          padding: calc(var(--app-pane-padding) / 4) calc(var(--app-pane-padding) / 2);
+          line-height: 1em;
+          color: var(--text-color-caption);
+        }
+      }
     }
 
     &.invalid {
@@ -170,20 +196,5 @@
         color: var(--text-color-body);
       }
     }
-  }
-}
-
-@keyframes running-progress {
-  0% {
-    margin-left: 0px;
-    margin-right: 100%;
-  }
-  50% {
-    margin-left: 25%;
-    margin-right: 0%;
-  }
-  100% {
-    margin-left: 100%;
-    margin-right: 0;
   }
 }
