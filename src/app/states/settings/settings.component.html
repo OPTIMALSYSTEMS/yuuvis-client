@@ -38,6 +38,15 @@
         </div>
       </div>
 
+      <!-- SECTION LAYOUT -->
+      <div class="settings-section">
+        <h3>{{'yuv.client.state.settings.section.layout'|translate}}</h3>
+        <button (click)="downloadLayout()">{{'yuv.client.state.settings.section.layout.export'|translate}}</button>
+        <yuv-file-picker [label]="'yuv.client.state.settings.section.layout.import'|translate" [accept]="'.json'"
+          [output]="'text'" (fileSelected)="uploadLayout($event)"></yuv-file-picker>
+        <button (click)="clearLayout()">{{'yuv.client.state.settings.section.layout.reset'|translate}}</button>
+      </div>
+
       <!-- theming -->
       <div class="setting settings__row">
         <div class="label" translate>yuv.client.state.settings.theme</div>
@@ -49,30 +58,13 @@
         </div>
       </div>
 
-      <!-- layout settings -->
-      <div class="setting settings__row">
-        <div class="label">Settings</div>
-        <div class="value buttons">
-          <button [ngClass]="{active: true}"
-            (click)="downloadLayout()">{{'yuv.client.state.settings.layout.export'|translate}}</button>
-
-          <yuv-file-picker [label]="'yuv.client.state.settings.layout.import'|translate" [accept]="'.json'"
-            [output]="'text'" (fileSelected)="uploadLayout($event)"></yuv-file-picker>
-
-
-
-
-          <!-- <input type="file" accept=".json" (change)="uploadLayout($event)"> -->
-          <button *ngIf="false" (click)="clearLayout()">clear</button>
-        </div>
-      </div>
-
       <div class="setting">
         <div class="label">{{'yuv.client.state.settings.theme.accentcolor'|translate}}</div>
         <div class="value">
-          <span class="color accent" *ngFor="let ac of accentColorRGB" [ngClass]="{active: ac === accentColor}"
-            [ngStyle]="{'background-color': 'rgb(' + ac + ')'}" (click)="setAccentColor(ac)"></span>
-          <span class="color clear" *ngIf="accentColor" (click)="setAccentColor(null)">x</span>
+          <button class="color accent" *ngFor="let ac of accentColorRGB" [ngClass]="{active: ac === accentColor}"
+            [ngStyle]="{'background-color': 'rgb(' + ac + ')'}" (click)="setAccentColor(ac)"></button>
+          <button class="color clear" *ngIf="accentColor"
+            (click)="setAccentColor(null)">{{'yuv.client.state.settings.section.layout.reset'|translate}}</button>
         </div>
       </div>
 
@@ -81,10 +73,8 @@
         <div class="value buttons">
           <yuv-file-picker [label]="'yuv.client.state.settings.theme.background.choose'|translate" [accept]="'image/*'"
             [output]="'dataurl'" (fileSelected)="setBackgroundImage($event)"></yuv-file-picker>
-
-          <!-- <input type ="file" (change)="setBackgroundImage($event)"> -->
           <button *ngIf="customDashboardBackground"
-            (click)="setBackgroundImage(null)">{{'yuv.client.state.settings.theme.background.remove'|translate}}</button>
+            (click)="setBackgroundImage(null)">{{'yuv.client.state.settings.section.layout.reset'|translate}}</button>
         </div>
       </div>
 

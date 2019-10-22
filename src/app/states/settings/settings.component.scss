@@ -139,6 +139,30 @@ $avatar-size-small: 80px;
         overflow-y: auto;
         padding: var(--app-pane-padding);
 
+        .settings-section {
+          display: flex;
+          align-items: center;
+          margin-top: calc(var(--app-pane-padding) * 2);
+          margin-bottom: calc(var(--app-pane-padding) / 2);
+          border-bottom: 1px solid var(--panel-divider-color);
+
+          h3 {
+            flex: 1;
+            font-size: var(--font-title);
+            font-weight: normal;
+            color: var(--text-color-hint);
+            margin: 0;
+          }
+          ::ng-deep {
+            button {
+              background-color: var(--panel-background-grey);
+              margin: calc(var(--app-pane-padding) / 4) calc(var(--app-pane-padding) / 8);
+              padding: calc(var(--app-pane-padding) / 4) calc(var(--app-pane-padding) / 2);
+              font-size: var(--font-caption);
+            }
+          }
+        }
+
         .label {
           color: var(--text-color-caption);
         }
@@ -149,7 +173,7 @@ $avatar-size-small: 80px;
           padding: calc(var(--app-pane-padding) / 2) 0;
 
           .label {
-            flex: 0 0 20%;
+            flex: 0 0 30%;
             color: var(--text-color-caption);
           }
           .value {
@@ -165,6 +189,7 @@ $avatar-size-small: 80px;
               button {
                 background-color: var(--panel-background-grey);
                 margin: 0 calc(var(--app-pane-padding) / 8);
+                padding: calc(var(--app-pane-padding) / 4) calc(var(--app-pane-padding) / 2);
 
                 &.active {
                   background-color: var(--color-accent);
@@ -173,15 +198,16 @@ $avatar-size-small: 80px;
               }
             }
 
-            span.color {
+            button.color {
               display: flex;
               flex-flow: column;
               align-items: center;
               justify-content: center;
-              width: 24px;
+              min-width: 24px;
               height: 24px;
               border-radius: 2px;
               margin: 2px;
+              padding: 0;
               cursor: pointer;
 
               &.active::before {
@@ -191,6 +217,10 @@ $avatar-size-small: 80px;
                 width: 12px;
                 border-radius: 50%;
                 background-color: rgba(255, 255, 255, 0.5);
+              }
+
+              &.clear {
+                padding: 0 calc(var(--app-pane-padding) / 4);
               }
             }
           }
