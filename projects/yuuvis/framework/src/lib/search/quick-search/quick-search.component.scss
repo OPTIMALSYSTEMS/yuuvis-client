@@ -3,11 +3,21 @@
 :host {
   position: relative;
   display: block;
+  background: var(--panel-background);
   border-radius: 2px;
   box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.2);
 
   &.busy .upper .yuv-loader-straight {
     display: inherit;
+  }
+
+  .error {
+    background: var(--color-error);
+    color: #fff;
+    padding: calc(var(--app-pane-padding) / 2);
+    margin: calc(var(--app-pane-padding) / 4);
+    margin-top: 0;
+    border-radius: 2px;
   }
 
   .upper {
@@ -23,7 +33,6 @@
     align-items: center;
     display: flex;
 
-    // 0 items result
     &.zero {
       background-color: var(--color-error);
     }
@@ -46,7 +55,6 @@
   .search-box {
     border-radius: 2px;
     padding: calc(var(--app-pane-padding) / 4);
-    background: var(--panel-background);
 
     &.extrasEnabled {
       flex-flow: column;
@@ -75,6 +83,11 @@
 
         &.primary {
           padding: calc(var(--app-pane-padding) / 2) var(--app-pane-padding);
+
+          // &:not(.active) {
+          //   filter: grayscale(1);
+          //   opacity: 0.3;
+          // }
         }
 
         &.field-select {
@@ -88,6 +101,12 @@
           padding: 0;
           align-items: center;
           justify-content: center;
+          opacity: 0.4;
+
+          &:focus,
+          &:hover {
+            opacity: 1;
+          }
         }
         &.type-select {
           background-color: var(--main-background);
@@ -149,6 +168,13 @@
             justify-content: center;
             padding: 1px;
             margin: 2px;
+            opacity: 0.4;
+
+            &:focus,
+            &:hover {
+              opacity: 1;
+            }
+
             yuv-icon {
               width: 18px;
               height: 18px;

@@ -46,7 +46,6 @@ export class ValuePickerComponent implements OnInit, AfterViewInit {
   }
 
   onClick(item) {
-    console.log('click');
     this.addToSelection(item);
     if (!this.multiselect) {
       this.emitSelection();

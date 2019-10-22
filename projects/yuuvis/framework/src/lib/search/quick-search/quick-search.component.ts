@@ -14,7 +14,7 @@ import {
   TranslateService,
   Utils
 } from '@yuuvis/core';
-import { debounceTime, distinctUntilChanged, filter } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { ObjectFormControlWrapper } from '../../object-form';
 import { ObjectFormControl } from '../../object-form/object-form.model';
 import { PopoverRef } from '../../popover/popover.ref';
@@ -49,11 +49,10 @@ export class QuickSearchComponent implements AfterViewInit {
   searchForm: FormGroup;
   searchFieldsForm: FormGroup;
   invalidTerm: boolean;
-  // busy: boolean;
-  operator = 'AND';
+  error: boolean;
   resultCount: number = null;
-  // aggTypes: ObjectTypeAggregation[] = [];
   searchHasResults: boolean = true;
+  settingUpQuery: boolean;
   searchQuery: SearchQuery;
 
   objectTypeSelectLabel: string;
@@ -138,8 +137,7 @@ export class QuickSearchComponent implements AfterViewInit {
     this.searchForm.valueChanges
       .pipe(
         distinctUntilChanged(),
-        debounceTime(500),
-        filter(v => v.term && v.term.length)
+        debounceTime(500)
       )
       .subscribe(formValue => {
         this.searchQuery.term = formValue.term;
@@ -219,12 +217,21 @@ export class QuickSearchComponent implements AfterViewInit {
    * estimated result of the current query.
    */
   aggregate() {
-    this.resultCount = null;
-    this.busy = true;
-    this.searchService.aggregate(this.searchQuery).subscribe((res: AggregateResult) => {
-      this.processAggregateResult(res);
-      this.busy = false;
-    });
+    if (!this.settingUpQuery) {
+      this.resultCount = null;
+      this.error = false;
+      this.busy = true;
+      this.searchService.aggregate(this.searchQuery).subscribe(
+        (res: AggregateResult) => {
+          this.processAggregateResult(res);
+          this.busy = false;
+        },
+        err => {
+          this.error = true;
+          this.busy = false;
+        }
+      );
+    }
   }
 
   showObjectTypePicker() {
@@ -316,17 +323,21 @@ export class QuickSearchComponent implements AfterViewInit {
   }
 
   setQuery(q: SearchQuery) {
+    this.settingUpQuery = true;
     this.resetObjectTypes();
     this.resetObjectTypeFields();
-    this.searchQuery = q;
-    this.searchForm.patchValue({
-      term: q.term
-    });
+    this.searchForm.patchValue(
+      {
+        term: q.term
+      },
+      { emitEvent: false }
+    );
 
     // setup target object types
     if (q.types && q.types.length) {
-      this.onObjectTypesSelected(q.types);
+      this.onObjectTypesSelected(q.types, false);
     }
+    this.searchQuery = q;
     // setup object type field form from filters
     if (q.filters && q.filters.length) {
       const filterIDs = [];
@@ -348,7 +359,10 @@ export class QuickSearchComponent implements AfterViewInit {
       // patch form value
       this.searchFieldsForm.patchValue(formPatch);
     }
+    this.settingUpQuery = false;
+    // setTimeout(() => {
     this.aggregate();
+    // }, 100);
   }
 
   executeSearch() {
@@ -435,6 +449,7 @@ export class QuickSearchComponent implements AfterViewInit {
   private resetObjectTypeFields() {
     this.formFields = [];
     this.searchFieldsForm = null;
+    this.searchQuery.clearFilters();
   }
   private resetObjectTypes() {
     this.onObjectTypesSelected([]);

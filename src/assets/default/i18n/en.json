@@ -61,6 +61,8 @@
   "yuv.framework.object-form-element.error.string.whitespaces": "The entry contains only whitespaces.",
   "yuv.framework.object-form-element.tag.df": "Default value",
   "yuv.framework.object-form-element.tag.ex": "Extracted from document",
+  "yuv.framework.quick-search.aggregate.error": "Query could not be executed.",
+  "yuv.framework.quick-search.field-select.tooltip": "Add search condition",
   "yuv.framework.quick-search.term.placeholder": "Search term",
   "yuv.framework.quick-search.type.all": "All",
   "yuv.framework.quick-search.type.multiple": "In {{size}} types",

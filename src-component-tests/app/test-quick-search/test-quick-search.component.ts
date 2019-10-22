@@ -21,5 +21,9 @@ export class TestQuickSearchComponent implements OnInit {
     this.query = new SearchQuery(q ? q : {});
   }
 
+  onSubmit(evt) {
+    console.log(evt);
+  }
+
   ngOnInit() {}
 }
