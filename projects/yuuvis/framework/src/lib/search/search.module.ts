@@ -4,13 +4,10 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { YuvCommonUiModule } from '@yuuvis/common-ui';
 import { TranslateModule } from '@yuuvis/core';
-import { DropdownModule } from 'primeng/dropdown';
-import { MultiSelectModule } from 'primeng/multiselect';
-import { OverlayPanelModule } from 'primeng/overlaypanel';
 import { ActionModule } from '../actions/action.module';
 import { YuvComponentsModule } from '../components/components.module';
-import { YuvObjectFormModule } from '../object-form';
-import { YuvPipesModule } from '../pipes';
+import { YuvObjectFormModule } from '../object-form/object-form.module';
+import { YuvPipesModule } from '../pipes/pipes.module';
 import { YuvPopoverModule } from '../popover/popover.module';
 import { QuickSearchComponent } from './quick-search/quick-search.component';
 import { ValuePickerItemComponent } from './quick-search/value-picker/value-picker-item/value-picker-item.component';
@@ -23,18 +20,15 @@ import { SearchResultComponent } from './search-result/search-result.component';
   imports: [
     CommonModule,
     BrowserAnimationsModule,
-    OverlayPanelModule,
     ReactiveFormsModule,
     FormsModule,
     YuvObjectFormModule,
     YuvPipesModule,
     TranslateModule,
     YuvComponentsModule,
-    DropdownModule,
     YuvPopoverModule,
     YuvCommonUiModule,
-    ActionModule,
-    MultiSelectModule
+    ActionModule
   ],
   exports: [QuickSearchComponent, SearchResultComponent, SearchResultPanelComponent]
 })
