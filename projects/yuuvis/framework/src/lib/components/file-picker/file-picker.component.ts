@@ -1,5 +1,8 @@
 import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { TranslateService } from '@yuuvis/core';
 import { Observable } from 'rxjs';
+import { FileSizePipe } from '../../pipes/filesize.pipe';
+import { NotificationService } from '../../services/notification/notification.service';
 
 @Component({
   selector: 'yuv-file-picker',
@@ -8,12 +11,19 @@ import { Observable } from 'rxjs';
 })
 export class FilePickerComponent {
   @ViewChild('fileInput', { static: true }) fileInputEl: ElementRef;
+  /**
+   * Label to be used for picker button
+   */
   @Input() label: string;
   @Input() accept: string;
+  /**
+   * Maximum size of the file
+   */
+  @Input() maxSize: number;
   @Input() output: 'text' | 'dataurl' | 'arraybuffer' = 'arraybuffer';
   @Output() fileSelected = new EventEmitter<FileInputResult>();
 
-  constructor() {}
+  constructor(private notify: NotificationService, private fileSizePipe: FileSizePipe, private translate: TranslateService) {}
 
   choose() {
     this.fileInputEl.nativeElement.click();
@@ -23,22 +33,28 @@ export class FilePickerComponent {
     const files = event.target.files;
     if (files.length) {
       const file = event.target.files[0];
-
-      let read: Observable<any>;
-      switch (this.output) {
-        case 'text': {
-          read = this.readAsText(file);
-          break;
+      if (this.maxSize && file.size > this.maxSize) {
+        this.notify.warning(
+          this.translate.instant('yuv.framework.filepicker.maxsize.exceeded.title'),
+          this.translate.instant('yuv.framework.filepicker.maxsize.exceeded.message', { max: this.fileSizePipe.transform(this.maxSize) })
+        );
+      } else {
+        let read: Observable<any>;
+        switch (this.output) {
+          case 'text': {
+            read = this.readAsText(file);
+            break;
+          }
+          case 'dataurl': {
+            read = this.readAsDataUrl(file);
+            break;
+          }
+          default: {
+            read = this.readAsArrayBuffer(file);
+          }
         }
-        case 'dataurl': {
-          read = this.readAsDataUrl(file);
-          break;
-        }
-        default: {
-          read = this.readAsArrayBuffer(file);
-        }
+        read.subscribe(res => this.fileSelected.emit(res));
       }
-      read.subscribe(res => this.fileSelected.emit(res));
     }
   }
 
