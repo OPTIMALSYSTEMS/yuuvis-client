@@ -28,7 +28,7 @@ export class DmsService {
   }
 
   updateObject(id: string, data: any) {
-    return this.backend.post(`/dms/update/${id}`, data).pipe(
+    return this.backend.patch(`/dms/update/${id}`, data).pipe(
       map(res => this.searchService.toSearchResult(res)),
       map((res: SearchResult) => this.searchResultToDmsObject(res.items[0])),
       tap((_dmsObject: DmsObject) => this.eventService.trigger(YuvEventType.DMS_OBJECT_UPDATED, _dmsObject))
