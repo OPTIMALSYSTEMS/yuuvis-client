@@ -1,8 +1,8 @@
-import { PlatformLocation } from '@angular/common';
 import { AfterViewInit, Component, ElementRef, Input } from '@angular/core';
 import { SafeResourceUrl } from '@angular/platform-browser';
-import { ApiBase, DmsObject } from '@yuuvis/core';
+import { DmsObject } from '@yuuvis/core';
 import { fromEvent } from 'rxjs';
+import { ContentPreviewService } from '../../services/content-preview/content-preview.service';
 import { SVGIcons } from '../../svg.generated';
 
 @Component({
@@ -20,11 +20,7 @@ export class ContentPreviewComponent implements AfterViewInit {
       this.previewSrc = null;
     } else if (!this._dmsObject || object.id !== this._dmsObject.id) {
       if (object.content) {
-        let root = `${this.location.protocol}//${this.location.hostname}`;
-        root = this.location.port.length ? `${root}:${this.location.port}` : root;
-        const mimeType = encodeURIComponent(object.content.mimeType);
-        const path = encodeURIComponent(`${root}/${ApiBase.apiWeb}/dms/${object.id}/content?asdownload=false`);
-        this.previewSrc = `${root}/viewer/?mimeType=${mimeType}&path=${path}`;
+        this.previewSrc = this.contentPreviewService.createPreviewUrl(object.id, object.content.mimeType);
       } else {
         this.previewSrc = null;
       }
@@ -39,31 +35,12 @@ export class ContentPreviewComponent implements AfterViewInit {
   icons = SVGIcons;
   previewSrc: SafeResourceUrl;
 
-  constructor(private elRef: ElementRef, private location: PlatformLocation) {}
+  constructor(private elRef: ElementRef, private contentPreviewService: ContentPreviewService) {}
 
   refresh() {
     if (this.previewSrc) {
       this.elRef.nativeElement.querySelector('iframe').contentWindow.location.reload(true);
     }
-  }
-
-  randomSource() {
-    const urls = [
-      'http://localhost:9000/preview?mimeType=application%2Fjson&path=http%3A%2F%2Flocalhost%3A9000%2Fassets%2Ftest%2Ftest.json',
-      'http://localhost:9000/preview?mimeType=mail%2Fjson&path=http%3A%2F%2Flocalhost%3A9000%2Fassets%2Ftest%2Ftest.eml',
-      'http://localhost:9000/preview?mimeType=mail%2Fjson&path=http%3A%2F%2Flocalhost%3A9000%2Fassets%2Ftest%2Ftest_attachment.eml',
-      'http://localhost:9000/preview?mimeType=mail%2Fjson&path=http%3A%2F%2Flocalhost%3A9000%2Fassets%2Ftest%2Ftest_pdf_mail.eml',
-      'http://localhost:9000/preview?mimeType=mail%2Fjson&path=http%3A%2F%2Flocalhost%3A9000%2Fassets%2Ftest%2Ftest_multi_upload.eml',
-      'http://localhost:9000/preview?mimeType=text%2Fmarkdown&path=http%3A%2F%2Flocalhost%3A9000%2Fassets%2Ftest%2Ftest.md',
-      'http://localhost:9000/preview?mimeType=application%2Fpdf&path=http%3A%2F%2Flocalhost%3A9000%2Fassets%2Ftest%2Ftest.pdf',
-      'http://localhost:9000/preview?mimeType=video%2Fmp4&path=%2F%2Fvjs.zencdn.net%2Fv%2Foceans.mp4',
-      'http://localhost:9000/preview?mimeType=audio%2Fmp3&path=http%3A%2F%2Flocalhost%3A9000%2Fassets%2Fsample.mp3',
-      'http://localhost:9000/preview?mimeType=image%2Fmp4&path=http%3A%2F%2Finterfacelift.com%2Fwallpaper%2Fpreviews%2F03818_posinghummingbird_672x420.jpg',
-      'http://localhost:9000/preview?mimeType=mail%2Fjson&path=http%3A%2F%2Flocalhost%3A9000%2Fassets%2Ftest%2Ftest_multi_.eml',
-      'http://localhost:9000/preview?mimeType=blaaaaa&path=http%3A%2F%2Flocalhost%3A9000%2Fassets%2Ftest%2Ftest_multi_.eml'
-    ];
-
-    return urls[Math.floor(Math.random() * urls.length)];
   }
 
   ngAfterViewInit() {
@@ -72,7 +49,16 @@ export class ContentPreviewComponent implements AfterViewInit {
 
     fromEvent(iframe, 'load').subscribe(res => {
       try {
-        console.log(iframe.contentWindow.location.href);
+        console.log('DONE....');
+        window['iframe'] = iframe;
+        const styles = document.createElement('link');
+        styles.setAttribute('href', 'http://localhost:4400/assets/default/theme/theme.css');
+        styles.setAttribute('rel', 'stylesheet');
+        // styles.innerText = 'body { background: hotpink;}';
+
+        iframe.contentDocument.head.appendChild(styles);
+        iframe.contentDocument.body.appendChild(styles);
+        console.log(iframe.contentDocument.head);
       } catch (error) {
         console.log(error);
       }
