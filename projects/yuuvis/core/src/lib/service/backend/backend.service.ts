@@ -67,6 +67,20 @@ export class BackendService {
   }
 
   /**
+   * Wrapped HTTP PATCH method
+   * @param uri The target REST URI
+   * @param data Data to be 'patched'
+   * @param base The Base URI (backend service) to be used
+   * @param requestOptions Additional request options
+   * @returns The return value of the target PATCH endpoint
+   */
+  public patch(uri: string, data?, base?: string, requestOptions?: any): Observable<any> {
+    const baseUri = this.getApiBase(base);
+    const payload = data ? JSON.stringify(data) : '';
+    return this.http.patch(`${baseUri}${uri}`, payload, this.getHttpOptions(requestOptions));
+  }
+
+  /**
    * Wrapped HTTP PUT method
    * @param uri The target REST URI
    * @param data Data to be 'posted'
