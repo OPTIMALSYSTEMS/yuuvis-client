@@ -2,8 +2,8 @@ import { AfterViewInit, Component, ElementRef, Input } from '@angular/core';
 import { SafeResourceUrl } from '@angular/platform-browser';
 import { DmsObject } from '@yuuvis/core';
 import { fromEvent } from 'rxjs';
-import { ContentPreviewService } from '../../services/content-preview/content-preview.service';
 import { SVGIcons } from '../../svg.generated';
+import { ContentPreviewService } from './service/content-preview.service';
 
 @Component({
   selector: 'yuv-content-preview',

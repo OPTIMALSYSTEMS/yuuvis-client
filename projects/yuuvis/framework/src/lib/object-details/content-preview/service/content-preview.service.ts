@@ -1,7 +1,7 @@
 import { PlatformLocation } from '@angular/common';
 import { Injectable } from '@angular/core';
 import { ApiBase, UserService, Utils } from '@yuuvis/core';
-import { LayoutService } from '../layout/layout.service';
+import { LayoutService } from '../../../services';
 
 @Injectable({
   providedIn: 'root'
