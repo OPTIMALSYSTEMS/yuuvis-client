@@ -1,0 +1,16 @@
+.yuv-number-range {
+  display: flex;
+  align-items: center;
+
+  yuv-number {
+    flex: 1 1 auto;
+
+    &.first {
+      ::ng-deep {
+        .input-number {
+          text-align: right;
+        }
+      }
+    }
+  }
+}

@@ -52,6 +52,12 @@
     }
   }
 
+  ::ng-deep {
+    .ui-autocomplete {
+      width: 100%;
+    }
+  }
+
   .search-box {
     border-radius: 2px;
     padding: calc(var(--app-pane-padding) / 4);
@@ -216,7 +222,6 @@
         border: 0;
         font-size: var(--font-title);
         background: transparent;
-        margin: 4px 0;
         width: 100%;
         height: 100%;
         color: var(--text-color-body);

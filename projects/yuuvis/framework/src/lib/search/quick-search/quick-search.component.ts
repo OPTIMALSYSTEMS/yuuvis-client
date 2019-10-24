@@ -6,6 +6,7 @@ import {
   ContentStreamField,
   ObjectType,
   ObjectTypeField,
+  RangeValue,
   RetentionField,
   SearchFilter,
   SearchQuery,
@@ -212,14 +213,27 @@ export class QuickSearchComponent implements AfterViewInit {
     // setup filters from form controls
     this.searchQuery.clearFilters();
     formControls.forEach(fc => {
-      if (fc.value !== null) {
+      if (fc.value instanceof RangeValue) {
+        this.addRangeFilter(fc._eoFormElement.name, fc.value);
+      } else if (fc.value !== null) {
         this.searchQuery.addFilter(new SearchFilter(fc._eoFormElement.name, SearchFilter.OPERATOR.EQUAL, fc.value));
       }
     });
     const filterCompareNew = this.getFilterComparator(this.searchQuery.filters);
     // only execute aggregate call if filter settings have actually been changed
+    console.log(this.searchQuery.filters);
     if (filterCompareCurrent !== filterCompareNew) {
       this.aggregate();
+    }
+  }
+
+  private addRangeFilter(property: string, range: RangeValue) {
+    if (range.operator === SearchFilter.OPERATOR.INTERVAL_INCLUDE_BOTH) {
+      if (range.firstValue && range.secondValue) {
+        this.searchQuery.addFilter(new SearchFilter(property, range.operator, range.firstValue, range.secondValue));
+      }
+    } else if (range.firstValue) {
+      this.searchQuery.addFilter(new SearchFilter(property, range.operator, range.firstValue));
     }
   }
 

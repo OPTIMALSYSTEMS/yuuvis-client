@@ -48,9 +48,22 @@ export class TestObjectFormComponent implements OnInit {
       }
     },
     {
+      label: 'DatetimeRange component (SEARCH)',
+      model: {
+        formModel: this.wrap(datetimeElements, 'SEARCH')
+      }
+    },
+    {
       label: 'Number components',
       model: {
         formModel: this.wrap(numberElements),
+        data: {}
+      }
+    },
+    {
+      label: 'NumberRange components (SEARCH)',
+      model: {
+        formModel: this.wrap(numberElements, 'SEARCH'),
         data: {}
       }
     },
@@ -71,11 +84,11 @@ export class TestObjectFormComponent implements OnInit {
     this.currentModel = model;
   }
 
-  private wrap(elements: any[]) {
+  private wrap(elements: any[], situation?: string) {
     return {
       label: '',
       name: '',
-      situation: 'EDIT',
+      situation: situation || 'EDIT',
       layout: {
         align: 'column'
       },

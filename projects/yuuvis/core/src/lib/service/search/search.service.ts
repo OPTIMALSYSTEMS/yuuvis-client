@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { RangeValue } from '../../model/range-value.model';
 import { ApiBase } from '../backend/api.enum';
 import { BackendService } from '../backend/backend.service';
 import { BaseObjectTypeField, ContentStreamField, SecondaryObjectTypeField } from '../system/system.enum';
@@ -28,6 +29,23 @@ export class SearchService {
   private lastSearchQuery: SearchQuery;
 
   constructor(private backend: BackendService) {}
+
+  /**
+   * Creates a RangeValue instance from the given value object.
+   *
+   * @param value The object to be
+   * @returns RangeValue
+   */
+  public static toRangeValue(value: any): RangeValue {
+    if (value) {
+      if (value instanceof RangeValue) {
+        return value;
+      } else if (value.hasOwnProperty('operator') && value.hasOwnProperty('firstValue')) {
+        return new RangeValue(value.operator, value.firstValue, value.secondValue);
+      }
+    }
+    return null;
+  }
 
   search(q: SearchQuery): Observable<SearchResult> {
     this.lastSearchQuery = q;

@@ -41,7 +41,8 @@
   <form class="extras" #extrasForm [formGroup]="searchFieldsForm" *ngIf="formFields.length">
     <div class="condition" *ngFor="let key of searchFieldsForm?.controls | keys">
       <div class="fe-chip">
-        <yuv-object-form-element [element]="searchFieldsForm.controls[key]"></yuv-object-form-element>
+        <yuv-object-form-element [situation]="'SEARCH'" [element]="searchFieldsForm.controls[key]">
+        </yuv-object-form-element>
         <button (click)="removeFieldEntry(key)">
           <yuv-icon [svg]="icons.clear"></yuv-icon>
         </button>
