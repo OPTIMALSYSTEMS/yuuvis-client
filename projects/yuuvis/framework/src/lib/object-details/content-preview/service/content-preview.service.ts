@@ -26,7 +26,26 @@ export class ContentPreviewService {
     const { darkMode, accentColor } = this.layoutService.getLayoutSettings();
     const user = this.userService.getCurrentUser();
     const direction = user.uiDirection;
-    const lang = user.getClientLocale();
+    const lang = this.mapLang(user.getClientLocale());
     return { darkMode, accentColor, direction, lang };
+  }
+
+  mapLang(lang: string) {
+    switch (lang) {
+      case 'en':
+        return 'en-US';
+      case 'es':
+        return 'es-ES';
+      case 'pt':
+        return 'pt-PT';
+      case 'zh':
+        return 'zh-CN';
+      case 'hi':
+        return 'hi-IN';
+      case 'bn':
+        return 'bn-BD';
+      default:
+        return lang;
+    }
   }
 }
