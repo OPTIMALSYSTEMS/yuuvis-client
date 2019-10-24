@@ -4,6 +4,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { YuvCommonUiModule } from '@yuuvis/common-ui';
 import { TranslateModule } from '@yuuvis/core';
+import { AutoCompleteModule } from 'primeng/autocomplete';
 import { ActionModule } from '../actions/action.module';
 import { YuvComponentsModule } from '../components/components.module';
 import { YuvObjectFormModule } from '../object-form/object-form.module';
@@ -14,7 +15,6 @@ import { ValuePickerItemComponent } from './quick-search/value-picker/value-pick
 import { ValuePickerComponent } from './quick-search/value-picker/value-picker.component';
 import { SearchResultPanelComponent } from './search-result-panel/search-result-panel.component';
 import { SearchResultComponent } from './search-result/search-result.component';
-
 @NgModule({
   declarations: [QuickSearchComponent, SearchResultComponent, SearchResultPanelComponent, ValuePickerComponent, ValuePickerItemComponent],
   imports: [
@@ -28,7 +28,8 @@ import { SearchResultComponent } from './search-result/search-result.component';
     YuvComponentsModule,
     YuvPopoverModule,
     YuvCommonUiModule,
-    ActionModule
+    ActionModule,
+    AutoCompleteModule
   ],
   exports: [QuickSearchComponent, SearchResultComponent, SearchResultPanelComponent]
 })

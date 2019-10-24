@@ -14,6 +14,7 @@ import {
   TranslateService,
   Utils
 } from '@yuuvis/core';
+import { AutoComplete } from 'primeng/autocomplete';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { ObjectFormControlWrapper } from '../../object-form';
 import { ObjectFormControl } from '../../object-form/object-form.model';
@@ -35,6 +36,7 @@ import { ValuePickerItem } from './value-picker/value-picker.component';
 })
 export class QuickSearchComponent implements AfterViewInit {
   @ViewChild('termEl', { static: false }) termInput: ElementRef;
+  @ViewChild('autoTermEl', { static: false }) autoTerm: AutoComplete;
   @ViewChild('typeSelectTrigger', { static: false }) typeSelectTrigger: ElementRef;
   @ViewChild('fieldSelectTrigger', { static: false }) fieldSelectTrigger: ElementRef;
   @ViewChild('extrasForm', { static: false }) extrasForm: ElementRef;
@@ -54,6 +56,7 @@ export class QuickSearchComponent implements AfterViewInit {
   searchHasResults: boolean = true;
   settingUpQuery: boolean;
   searchQuery: SearchQuery;
+  autoSuggestions = [];
 
   objectTypeSelectLabel: string;
 
@@ -159,6 +162,32 @@ export class QuickSearchComponent implements AfterViewInit {
     });
   }
 
+  autocomplete(event) {
+    const q = event.query.toLowerCase();
+    if (q === '#') {
+      this.setAvailableObjectTypesFields();
+    }
+    const suggestions: any[] = (q.startsWith('@') ? this.availableObjectTypes : this.availableObjectTypeFields) || [];
+    this.autoSuggestions = !q.match(/^@|^#/)
+      ? []
+      : suggestions.filter(t => t.label.toLowerCase().startsWith(q.slice(1))).map(t => ({ ...t, autoLabel: q.slice(0, 1) + t.label }));
+  }
+
+  autocompleteSelect(selection) {
+    this.searchForm.patchValue({
+      term: ''
+    });
+    this.onValuePickerResult(selection.autoLabel.startsWith('@') ? 'type' : 'field', selection.value);
+  }
+
+  autoKeyDown(event: KeyboardEvent) {
+    // TODO: find better way to handle overlay Enter event
+    if (event.code === 'Enter' && !this.searchForm.get('term').value) {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+    }
+  }
+
   private initSearchFieldsForm() {
     // object type field form (form holding the query fields)
     this.searchFieldsForm = this.fb.group({});
@@ -253,7 +282,7 @@ export class QuickSearchComponent implements AfterViewInit {
     });
   }
 
-  onValuePickerResult(type: 'type' | 'field', res: any, popoverRef: PopoverRef) {
+  onValuePickerResult(type: 'type' | 'field', res: any, popoverRef?: PopoverRef) {
     switch (type) {
       case 'field': {
         this.onObjectTypeFieldSelected(res);
@@ -264,17 +293,19 @@ export class QuickSearchComponent implements AfterViewInit {
         break;
       }
     }
-    popoverRef.close();
+    if (popoverRef) {
+      popoverRef.close();
+    }
   }
 
   private onObjectTypeFieldSelected(field: ObjectTypeField) {
     this.addFieldEntry(field);
   }
 
-  private onObjectTypesSelected(types: string[], aggregate: boolean = true) {
+  private onObjectTypesSelected(types: string | string[], aggregate: boolean = true) {
     // get rid of existing object type field form
     this.resetObjectTypeFields();
-    this.selectedObjectTypes = types;
+    this.selectedObjectTypes = typeof types === 'string' ? [types] : types;
     this.setAvailableObjectTypesFields();
 
     if (this.selectedObjectTypes.length === 1) {
@@ -288,9 +319,7 @@ export class QuickSearchComponent implements AfterViewInit {
     if (aggregate) {
       this.aggregate();
     }
-    if (this.termInput) {
-      this.termInput.nativeElement.focus();
-    }
+    this.focusInput();
   }
 
   private setAvailableObjectTypesFields() {
@@ -455,8 +484,15 @@ export class QuickSearchComponent implements AfterViewInit {
     this.onObjectTypesSelected([]);
   }
 
+  focusInput() {
+    if (this.autoTerm) {
+      // this.termInput.nativeElement.focus();
+      this.autoTerm.inputEL.nativeElement.focus();
+    }
+  }
+
   ngAfterViewInit() {
-    this.termInput.nativeElement.focus();
+    this.focusInput();
   }
 }
 

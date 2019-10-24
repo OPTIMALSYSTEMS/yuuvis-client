@@ -17,7 +17,12 @@
       </button>
 
       <div class="input">
-        <input #termEl [placeholder]="'yuv.framework.quick-search.term.placeholder'|translate" formControlName="term">
+        <!-- <input #termEl [placeholder]="'yuv.framework.quick-search.term.placeholder'|translate" formControlName="term"> -->
+        <p-autoComplete #autoTermEl [placeholder]="'yuv.framework.quick-search.term.placeholder'|translate"
+          formControlName="term" [suggestions]="autoSuggestions" [field]="'autoLabel'"
+          (completeMethod)="autocomplete($event)" (onSelect)="autocompleteSelect($event)"
+          (keydown)="autoKeyDown($event)">
+        </p-autoComplete>
       </div>
 
       <button type="button" class="field-select" #fieldSelectTrigger (click)="showObjectTypeFieldPicker()"

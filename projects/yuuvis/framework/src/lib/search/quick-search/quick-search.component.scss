@@ -191,12 +191,12 @@
     }
 
     &.invalid {
-      .input input {
+      ::ng-deep .input input {
         color: var(--color-error);
       }
     }
 
-    .input {
+    ::ng-deep .input {
       flex: 1 1 auto;
       display: flex;
       flex-flow: column;
