@@ -45,6 +45,12 @@
         font-size: var(--font-title);
         font-weight: var(--font-weight-light);
       }
+      h4 {
+        color: var(--text-color-caption);
+        margin: 0 0 var(--app-pane-padding) 0;
+        font-size: var(--font-subhead);
+        font-weight: var(--font-weight-normal);
+      }
 
       .controls {
         flex: 1;
@@ -57,6 +63,7 @@
       .buttons {
         display: flex;
         justify-content: flex-end;
+        @include gap(calc(var(--app-pane-padding) / 4));
       }
     }
     .audits {
@@ -107,11 +114,6 @@
     }
 
     &.singleEntry {
-      // &:not(.onPage) {
-      //   .footer {
-      //     display: none;
-      //   }
-      // }
       .audit-entry {
         .timeline::after {
           display: none;
@@ -132,15 +134,41 @@
     width: 100%;
     line-height: 1.7em;
 
+    // group 300+ (edit)
+    &.g3 .timeline::before {
+      box-shadow: 0 0 0 3px var(--color-accent);
+    }
+    // group 200+ (edit)
+    &.g2 .timeline::before {
+      box-shadow: 0 0 0 3px var(--color-error);
+    }
+    // group 100+ (create)
+    &.g1 .timeline::before {
+      box-shadow: 0 0 0 3px var(--color-success);
+    }
+
     &.versionEnabled {
       .content .entry {
         .version {
           display: block;
+          line-height: 1em;
+          border-radius: 2px;
+          background-color: rgba(var(--color-accent-rgb), 0.15);
+          color: var(--color-accent);
+          font-size: var(--font-hint);
+          font-family: monospace;
+          padding: 4px 6px;
+          align-self: center;
+          @include bidi-style(margin-left, var(--app-pane-padding), margin-right, var(--app-pane-padding));
         }
       }
-      .timeline::before {
-        border-color: red;
-        box-shadow: 0 0 0 3px var(--color-accent);
+
+      // group 200+ (delete)
+      &.g2 {
+        .content .entry .version {
+          background-color: var(--color-error);
+          color: #fff;
+        }
       }
     }
 
@@ -230,20 +258,13 @@
             flex: 1;
             &.version {
               flex: 0 0 auto;
+              @include bidi-style(margin-right, calc(var(--app-pane-padding) / 2 * -1), margin-left, calc(var(--app-pane-padding) / 2 * -1));
             }
           }
         }
 
         .version {
           display: none;
-          border-radius: 2px;
-          background-color: rgba(var(--color-accent-rgb), 0.15);
-          color: var(--color-accent);
-          font-size: var(--font-hint);
-          font-family: monospace;
-          padding: 0 0.25em;
-          align-self: center;
-          @include bidi-style(margin-left, var(--app-pane-padding), margin-right, var(--app-pane-padding));
         }
       }
     }

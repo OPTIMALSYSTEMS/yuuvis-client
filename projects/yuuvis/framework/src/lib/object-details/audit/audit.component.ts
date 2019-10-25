@@ -20,13 +20,14 @@ export class AuditComponent implements OnInit, OnDestroy {
   filtered: boolean;
   error: boolean;
   busy: boolean;
-  searchActions: string[] = [];
+  searchActions: { label: string; actions: string[] }[] = [];
 
   icon = {
     search: SVGIcons['search'],
     arrowNext: SVGIcons['arrow-next'],
     arrowLast: SVGIcons['arrow-last']
   };
+  actionGroups: any = {};
   auditLabels: any = {};
 
   /**
@@ -66,15 +67,34 @@ export class AuditComponent implements OnInit, OnDestroy {
       a403: this.translate.instant('yuv.framework.audit.label.get.rendition.pdf'),
       a404: this.translate.instant('yuv.framework.audit.label.get.rendition.thumbnail')
     };
+    const actionKeys = Object.keys(this.auditLabels);
+    this.actionGroups = [
+      { label: this.translate.instant('yuv.framework.audit.label.group.update'), actions: actionKeys.filter(k => k.startsWith('a3')) },
+      { label: this.translate.instant('yuv.framework.audit.label.group.get'), actions: actionKeys.filter(k => k.startsWith('a4')) },
+      { label: this.translate.instant('yuv.framework.audit.label.group.delete'), actions: actionKeys.filter(k => k.startsWith('a2')) },
+      { label: this.translate.instant('yuv.framework.audit.label.group.create'), actions: actionKeys.filter(k => k.startsWith('a1')) }
+    ];
 
     let fbInput = {
       dateRange: [],
       createdBy: ['']
     };
-    Object.keys(this.auditLabels).forEach(k => {
-      this.searchActions.push(k);
-      fbInput[k] = [false];
+
+    this.actionGroups.forEach(g => {
+      const groupEntry = {
+        label: g.label,
+        actions: g.actions.map(a => {
+          fbInput[a] = [false];
+          return a;
+        })
+      };
+      this.searchActions.push(groupEntry);
     });
+
+    // Object.keys(this.auditLabels).forEach(k => {
+    //   this.searchActions.push(k);
+    //   fbInput[k] = [false];
+    // });
     this.searchForm = this.fb.group(fbInput);
 
     this.eventService
@@ -118,7 +138,8 @@ export class AuditComponent implements OnInit, OnDestroy {
       options.createdBy = createdBy;
     }
     const actions = [];
-    this.searchActions.forEach(a => {
+    // this.searchActions.forEach(a => {
+    Object.keys(this.auditLabels).forEach(a => {
       if (this.searchForm.value[a]) {
         actions.push(parseInt(a.substr(1)));
       }
@@ -137,6 +158,15 @@ export class AuditComponent implements OnInit, OnDestroy {
   }
   closeSearchPanel() {
     this.searchPanelShow = false;
+  }
+  resetSearchPanel() {
+    const patch = {};
+    Object.keys(this.auditLabels).forEach(a => {
+      patch[a] = false;
+    });
+
+    this.searchForm.patchValue(patch);
+    this.query();
   }
 
   goToPage(page: number) {

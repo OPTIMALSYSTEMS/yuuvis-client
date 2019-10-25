@@ -65,6 +65,7 @@ export class AuditService {
         query: q,
         items: res.objects.map(o => ({
           action: o.properties[AuditField.ACTION].value,
+          actionGroup: this.getActionGroup(o.properties[AuditField.ACTION].value),
           detail: o.properties[AuditField.DETAIL].value,
           version: o.properties[AuditField.VERSION].value,
           creationDate: o.properties[AuditField.CREATION_DATE].value,
@@ -77,5 +78,13 @@ export class AuditService {
         page: !q.from ? 1 : q.from / q.size + 1
       }))
     );
+  }
+
+  private getActionGroup(action: number): number {
+    try {
+      return parseInt(`${action}`.substr(0, 1));
+    } catch {
+      return -1;
+    }
   }
 }
