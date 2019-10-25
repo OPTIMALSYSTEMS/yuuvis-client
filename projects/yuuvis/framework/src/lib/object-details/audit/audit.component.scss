@@ -45,11 +45,20 @@
         font-size: var(--font-title);
         font-weight: var(--font-weight-light);
       }
-      h4 {
+      button.group {
         color: var(--text-color-caption);
         margin: 0 0 var(--app-pane-padding) 0;
         font-size: var(--font-subhead);
         font-weight: var(--font-weight-normal);
+        padding: 0;
+        cursor: pointer;
+
+        &:focus {
+          color: var(--color-accent);
+          outline: 0;
+          background-color: transparent;
+          border-color: transparent;
+        }
       }
 
       .controls {
@@ -82,7 +91,7 @@
       background-color: var(--panel-background);
       border-top: 1px solid var(--panel-divider-color);
       display: flex;
-      padding: calc(var(--app-pane-padding) / 4) var(--app-pane-padding);
+      padding: calc(var(--app-pane-padding) / 4);
 
       .paging {
         flex: 1;
@@ -90,6 +99,10 @@
         align-items: center;
         justify-content: flex-end;
         color: var(--text-color-caption);
+
+        .page {
+          padding: 0 calc(var(--app-pane-padding) / 2);
+        }
         .prev {
           transform: rotate(180deg);
         }

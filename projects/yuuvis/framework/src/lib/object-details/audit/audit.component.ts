@@ -1,6 +1,6 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { AuditQueryOptions, AuditQueryResult, AuditService, DmsObject, EventService, TranslateService, YuvEvent, YuvEventType } from '@yuuvis/core';
+import { AuditQueryOptions, AuditQueryResult, AuditService, DmsObject, EventService, RangeValue, TranslateService, YuvEvent, YuvEventType } from '@yuuvis/core';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { SVGIcons } from '../../svg.generated';
 
@@ -76,8 +76,7 @@ export class AuditComponent implements OnInit, OnDestroy {
     ];
 
     let fbInput = {
-      dateRange: [],
-      createdBy: ['']
+      dateRange: []
     };
 
     this.actionGroups.forEach(g => {
@@ -90,11 +89,6 @@ export class AuditComponent implements OnInit, OnDestroy {
       };
       this.searchActions.push(groupEntry);
     });
-
-    // Object.keys(this.auditLabels).forEach(k => {
-    //   this.searchActions.push(k);
-    //   fbInput[k] = [false];
-    // });
     this.searchForm = this.fb.group(fbInput);
 
     this.eventService
@@ -126,16 +120,11 @@ export class AuditComponent implements OnInit, OnDestroy {
   query() {
     this.searchForm.value;
 
-    const range = this.searchForm.value.dateRange;
-    const createdBy = this.searchForm.value.createdBy;
+    const range: RangeValue = this.searchForm.value.dateRange;
 
     let options: AuditQueryOptions = {};
-    if (Array.isArray(range) && range.length) {
-      options.from = range[0];
-      options.to = range[1];
-    }
-    if (createdBy && createdBy.length) {
-      options.createdBy = createdBy;
+    if (range && range.firstValue) {
+      options.dateRange = range;
     }
     const actions = [];
     // this.searchActions.forEach(a => {
@@ -160,13 +149,34 @@ export class AuditComponent implements OnInit, OnDestroy {
     this.searchPanelShow = false;
   }
   resetSearchPanel() {
-    const patch = {};
+    const patch = {
+      dateRange: null
+    };
     Object.keys(this.auditLabels).forEach(a => {
-      patch[a] = false;
+      patch[a] = null;
     });
-
     this.searchForm.patchValue(patch);
-    this.query();
+  }
+
+  /**
+   * Toggle selection of a whole group
+   * @param actions affected actions
+   */
+  toggleGroupActions(actions: string[]) {
+    let isTrue = 0;
+    let isFalse = 0;
+    actions.forEach(a => {
+      if (this.searchForm.value[a] === false) {
+        isFalse++;
+      } else {
+        isTrue++;
+      }
+    });
+    const patch = {};
+    actions.forEach(a => {
+      patch[a] = isTrue < isFalse;
+    });
+    this.searchForm.patchValue(patch);
   }
 
   goToPage(page: number) {

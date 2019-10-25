@@ -1,3 +1,4 @@
+import { RangeValue } from '../../model/range-value.model';
 import { SearchQuery } from '../search/search-query.model';
 
 export interface AuditEntry {
@@ -24,9 +25,7 @@ export interface AuditQueryResult {
 export interface AuditQueryOptions {
   // max number of items to be fetched (default: 50)
   size?: number;
-  from?: Date;
-  to?: Date;
-  createdBy?: string;
+  dateRange?: RangeValue;
   actions?: AuditQueryOptionAction[];
 }
 
