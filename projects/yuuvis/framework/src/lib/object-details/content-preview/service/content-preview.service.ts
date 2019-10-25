@@ -1,7 +1,7 @@
 import { PlatformLocation } from '@angular/common';
 import { Injectable } from '@angular/core';
 import { ApiBase, UserService, Utils } from '@yuuvis/core';
-import { LayoutService } from '../layout/layout.service';
+import { LayoutService } from './../../../services/layout/layout.service';
 
 @Injectable({
   providedIn: 'root'
@@ -26,7 +26,26 @@ export class ContentPreviewService {
     const { darkMode, accentColor } = this.layoutService.getLayoutSettings();
     const user = this.userService.getCurrentUser();
     const direction = user.uiDirection;
-    const lang = user.getClientLocale();
+    const lang = this.mapLang(user.getClientLocale());
     return { darkMode, accentColor, direction, lang };
+  }
+
+  mapLang(lang: string) {
+    switch (lang) {
+      case 'en':
+        return 'en-US';
+      case 'es':
+        return 'es-ES';
+      case 'pt':
+        return 'pt-PT';
+      case 'zh':
+        return 'zh-CN';
+      case 'hi':
+        return 'hi-IN';
+      case 'bn':
+        return 'bn-BD';
+      default:
+        return lang;
+    }
   }
 }

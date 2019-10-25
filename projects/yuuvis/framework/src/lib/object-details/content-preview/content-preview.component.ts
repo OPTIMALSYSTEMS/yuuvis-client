@@ -2,8 +2,8 @@ import { AfterViewInit, Component, ElementRef, Input } from '@angular/core';
 import { SafeResourceUrl } from '@angular/platform-browser';
 import { DmsObject } from '@yuuvis/core';
 import { fromEvent } from 'rxjs';
-import { ContentPreviewService } from '../../services/content-preview/content-preview.service';
 import { SVGIcons } from '../../svg.generated';
+import { ContentPreviewService } from './service/content-preview.service';
 
 @Component({
   selector: 'yuv-content-preview',
@@ -13,17 +13,15 @@ import { SVGIcons } from '../../svg.generated';
 export class ContentPreviewComponent implements AfterViewInit {
   private _dmsObject: DmsObject;
 
+  @Input() searchTerm = '';
+
   @Input()
   set dmsObject(object: DmsObject) {
-    // genberate preview URI
-    if (!object) {
+    // generate preview URI
+    if (!object || !object.content) {
       this.previewSrc = null;
     } else if (!this._dmsObject || object.id !== this._dmsObject.id) {
-      if (object.content) {
-        this.previewSrc = this.contentPreviewService.createPreviewUrl(object.id, object.content.mimeType);
-      } else {
-        this.previewSrc = null;
-      }
+      this.previewSrc = this.contentPreviewService.createPreviewUrl(object.id, object.content.mimeType);
     }
     this._dmsObject = object;
   }
@@ -43,25 +41,34 @@ export class ContentPreviewComponent implements AfterViewInit {
     }
   }
 
+  /**
+   * Custom search inside PDF.JS based on search term
+   * @param term search term
+   * @param pdfjs iframe element
+   */
+  private searchPDF(term = '', pdfjs: any) {
+    // remove all special characters
+    term = (term || '').replace(/[\"|\*]/g, '').trim();
+    if (term && pdfjs && pdfjs.contentWindow && pdfjs.contentWindow.PDFViewerApplication && pdfjs.contentWindow.PDFViewerApplication.findController) {
+      pdfjs.contentWindow.PDFViewerApplication.findController.executeCommand('find', {
+        caseSensitive: false,
+        findPrevious: undefined,
+        highlightAll: true,
+        phraseSearch: true,
+        query: term
+      });
+      pdfjs.contentWindow.PDFViewerApplication.appConfig.findBar.findField.value = term;
+      pdfjs.contentWindow.PDFViewerApplication.appConfig.findBar.highlightAllCheckbox.checked = true;
+      pdfjs.contentWindow.PDFViewerApplication.appConfig.findBar.caseSensitiveCheckbox.checked = false;
+    }
+  }
+
   ngAfterViewInit() {
     const iframe = this.elRef.nativeElement.querySelector('iframe');
-    console.log(iframe);
-
-    fromEvent(iframe, 'load').subscribe(res => {
-      try {
-        console.log('DONE....');
-        window['iframe'] = iframe;
-        const styles = document.createElement('link');
-        styles.setAttribute('href', 'http://localhost:4400/assets/default/theme/theme.css');
-        styles.setAttribute('rel', 'stylesheet');
-        // styles.innerText = 'body { background: hotpink;}';
-
-        iframe.contentDocument.head.appendChild(styles);
-        iframe.contentDocument.body.appendChild(styles);
-        console.log(iframe.contentDocument.head);
-      } catch (error) {
-        console.log(error);
-      }
-    });
+    if (iframe) {
+      fromEvent(iframe, 'load').subscribe(res => {
+        this.searchPDF(this.searchTerm, iframe);
+      });
+    }
   }
 }

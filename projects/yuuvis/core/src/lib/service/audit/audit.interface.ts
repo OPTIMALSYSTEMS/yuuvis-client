@@ -2,6 +2,7 @@ import { SearchQuery } from '../search/search-query.model';
 
 export interface AuditEntry {
   action: number;
+  actionGroup: number;
   detail: string;
   creationDate: Date;
   version: number;
