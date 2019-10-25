@@ -14,12 +14,14 @@ import { SVGIcons } from '../../svg.generated';
 })
 export class ObjectDetailsComponent {
   @HostBinding('class.yuv-object-details') _hostClass = true;
-  objectIcon: string = '';
+  objectIcon = '';
   icons = SVGIcons;
   busy: boolean;
   userIsAdmin: boolean;
   actionMenuVisible = false;
   actionMenuSelection = [];
+
+  @Input() searchTerm = '';
 
   private _dmsObject: DmsObject;
   private _objectId: string;

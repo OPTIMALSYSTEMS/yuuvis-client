@@ -16,6 +16,8 @@ import { ContentPreviewComponent } from './content-preview/content-preview.compo
 import { ObjectDetailsComponent } from './object-details/object-details.component';
 import { SummaryComponent } from './summary/summary.component';
 
+const objectDetails = [ObjectDetailsComponent, SummaryComponent, AuditComponent, ContentPreviewComponent];
+
 @NgModule({
   imports: [
     CommonModule,
@@ -32,7 +34,7 @@ import { SummaryComponent } from './summary/summary.component';
     ActionModule,
     CalendarModule
   ],
-  declarations: [ObjectDetailsComponent, SummaryComponent, AuditComponent, ContentPreviewComponent],
-  exports: [ObjectDetailsComponent, SummaryComponent, AuditComponent]
+  declarations: [...objectDetails],
+  exports: [...objectDetails]
 })
 export class YuvObjectDetailsModule {}

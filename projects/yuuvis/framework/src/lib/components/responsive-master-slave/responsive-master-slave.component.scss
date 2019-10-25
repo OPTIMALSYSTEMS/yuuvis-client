@@ -1,3 +1,13 @@
+@import './../../../../../../../src/scss-shared/_mixins';
+
+.as-split-area {
+  position: relative;
+  .as-dragging &::after {
+    content: '';
+    @include frame(0);
+  }
+}
+
 .as-horizontal.state {
   :host-context(.screen-s) & {
     padding: 0;
