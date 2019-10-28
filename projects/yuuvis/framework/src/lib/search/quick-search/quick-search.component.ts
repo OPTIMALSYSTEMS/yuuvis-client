@@ -221,7 +221,6 @@ export class QuickSearchComponent implements AfterViewInit {
     });
     const filterCompareNew = this.getFilterComparator(this.searchQuery.filters);
     // only execute aggregate call if filter settings have actually been changed
-    console.log(this.searchQuery.filters);
     if (filterCompareCurrent !== filterCompareNew) {
       this.aggregate();
     }
@@ -260,7 +259,7 @@ export class QuickSearchComponent implements AfterViewInit {
    * estimated result of the current query.
    */
   aggregate() {
-    if (!this.settingUpQuery) {
+    if (!this.settingUpQuery && this.searchForm.valid && (!this.searchFieldsForm || this.searchFieldsForm.valid)) {
       this.resultCount = null;
       this.error = false;
       this.busy = true;
