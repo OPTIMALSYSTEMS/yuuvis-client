@@ -120,10 +120,10 @@ export class QuickSearchComponent implements AfterViewInit {
     }
   }
 
-  @HostListener('keydown.ENTER', ['$event']) onEnter(event) {
-    if (!this.searchFieldsForm) {
-      this.executeSearch();
-    }
+  @HostListener('keydown.enter', ['$event']) onEnter(event) {
+    // if (!this.searchFieldsForm) {
+    this.executeSearch();
+    // }
   }
 
   constructor(
