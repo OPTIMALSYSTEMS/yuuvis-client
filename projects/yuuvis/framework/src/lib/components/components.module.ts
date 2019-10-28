@@ -1,3 +1,4 @@
+import { CdkStepperModule } from '@angular/cdk/stepper';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
@@ -17,6 +18,7 @@ import { PanelComponent } from './panel/panel.component';
 import { ResponsiveDataTableComponent } from './responsive-data-table/responsive-data-table.component';
 import { ResponsiveMasterSlaveComponent } from './responsive-master-slave/responsive-master-slave.component';
 import { ResponsiveTabContainerComponent } from './responsive-tab-container/responsive-tab-container.component';
+import { StepperPanelComponent } from './stepper-panel/stepper-panel.component';
 
 @NgModule({
   declarations: [
@@ -27,7 +29,8 @@ import { ResponsiveTabContainerComponent } from './responsive-tab-container/resp
     ResponsiveTabContainerComponent,
     PanelComponent,
     DialogComponent,
-    FilePickerComponent
+    FilePickerComponent,
+    StepperPanelComponent
   ],
   exports: [
     ResponsiveDataTableComponent,
@@ -39,11 +42,13 @@ import { ResponsiveTabContainerComponent } from './responsive-tab-container/resp
     PanelComponent,
     ActionMenuBarComponent,
     DialogComponent,
-    FilePickerComponent
+    FilePickerComponent,
+    StepperPanelComponent
   ],
   imports: [
     CommonModule,
     AngularResizedEventModule,
+    CdkStepperModule,
     AngularSplitModule,
     AgGridModule.withComponents([]),
     RouterModule,

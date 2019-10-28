@@ -10,6 +10,7 @@ import { DmsObjectPickerComponent } from './components/dms-object-picker/dms-obj
 import { TestActionMenuComponent } from './test-action-menu/test-action-menu.component';
 import { TestAuditComponent } from './test-audit/test-audit.component';
 import { TestContentPreviewComponent } from './test-content-preview/test-content-preview.component';
+import { TestObjectCreateComponent } from './test-object-create/test-object-create.component';
 import { TestObjectDetailsComponent } from './test-object-details/test-object-details.component';
 import { TestObjectFormEditComponent } from './test-object-form-edit/test-object-form-edit.component';
 import { TestObjectFormComponent } from './test-object-form/test-object-form.component';
@@ -35,7 +36,8 @@ import { TestSummaryComponent } from './test-summary/test-summary.component';
     TestActionMenuComponent,
     TestAuditComponent,
     DmsObjectPickerComponent,
-    TestContentPreviewComponent
+    TestContentPreviewComponent,
+    TestObjectCreateComponent
   ],
   imports: [
     HttpClientModule,

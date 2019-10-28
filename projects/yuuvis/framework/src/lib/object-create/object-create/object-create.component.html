@@ -1,0 +1,19 @@
+<yuv-stepper-panel linear>
+  <!-- select target object type -->
+  <cdk-step editable="false" [label]="'yuv.framework.object-create.step.type'|translate" [completed]="completed.type">
+    <h1>Type</h1>
+    <button (click)="completed.type = !completed.type">Complete</button>
+  </cdk-step>
+  <!-- file -->
+  <cdk-step editable="false" [label]="'yuv.framework.object-create.step.file'|translate" [completed]="completed.file">
+    <h1>File</h1>
+    <button (click)="completed.file = !completed.file">Complete</button>
+  </cdk-step>
+  <!-- indexdata -->
+  <cdk-step editable="false" [label]="'yuv.framework.object-create.step.indexdata'|translate"
+    [completed]="completed.indexdata">
+    <h1>Indexdata</h1>
+    <button (click)="completed.indexdata = !completed.indexdata">Complete</button>
+  </cdk-step>
+
+</yuv-stepper-panel>
