@@ -142,6 +142,10 @@
         .form-element {
           .form-field {
             margin: calc(var(--app-pane-padding) / 4);
+
+            .err-msg {
+              padding: calc(var(--app-pane-padding) / 4) 0 0 0;
+            }
           }
           .yuv-form-input .fe-wrapper {
             border: 0;

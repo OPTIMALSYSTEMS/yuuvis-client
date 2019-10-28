@@ -26,10 +26,12 @@ export class ValuePickerComponent implements OnInit, AfterViewInit {
 
     if (this.multiselect) {
       if (event.keyCode === ENTER) {
-        if (!Object.keys(this.selection).length) {
-          this.addToSelection(this.keyManager.activeItem.item);
+        if (this.keyManager.activeItem) {
+          if (!Object.keys(this.selection).length) {
+            this.addToSelection(this.keyManager.activeItem.item);
+          }
+          this.emitSelection();
         }
-        this.emitSelection();
       } else if (event.keyCode === SPACE) {
         this.addToSelection(this.keyManager.activeItem.item);
       } else {
@@ -37,8 +39,10 @@ export class ValuePickerComponent implements OnInit, AfterViewInit {
       }
     } else {
       if (event.keyCode === ENTER) {
-        this.addToSelection(this.keyManager.activeItem.item);
-        this.emitSelection();
+        if (this.keyManager.activeItem) {
+          this.addToSelection(this.keyManager.activeItem.item);
+          this.emitSelection();
+        }
       } else if (event.keyCode !== SPACE) {
         this.keyManager.onKeydown(event);
       }

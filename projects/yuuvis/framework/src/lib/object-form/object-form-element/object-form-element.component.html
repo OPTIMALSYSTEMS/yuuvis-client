@@ -114,6 +114,17 @@
         (situation !== 'SEARCH' && situation !== 'CREATE' && formElementRef.errors) ||
         ((situation === 'SEARCH' || situation === 'CREATE') && formElementRef.errors && (formElementRef.dirty || formElementRef.touched))
       ">
+
+      <div *ngIf="formElementRef.errors.daterange">
+        {{'yuv.framework.object-form-element.error.daterange.invalid'|translate}}
+      </div>
+      <div *ngIf="formElementRef.errors.daterangeorder">
+        {{'yuv.framework.object-form-element.error.daterangeorder.invalid'|translate}}</div>
+      <div *ngIf="formElementRef.errors.numberrange">
+        {{'yuv.framework.object-form-element.error.numberrange.invalid'|translate}}</div>
+      <div *ngIf="formElementRef.errors.numberrangeorder">
+        {{'yuv.framework.object-form-element.error.numberrangeorder.invalid'|translate}}</div>
+
       <div *ngIf="formElementRef.errors.number">{{'yuv.framework.object-form-element.error.number' | translate}}</div>
       <div *ngIf="formElementRef.errors.precision">
         {{ 'yuv.framework.object-form-element.error.number.precision' | translate: formElementRef.errors.precision.params }}

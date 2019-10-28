@@ -104,11 +104,21 @@ export class NumberRangeComponent implements ControlValueAccessor, Validator {
         }
       };
     } else {
-      err = {
-        numberrange: {
-          valid: false
-        }
-      };
+      // make sure that on ranges, the first value is earlier than the last
+      if (this.searchOption === SearchFilter.OPERATOR.INTERVAL_INCLUDE_BOTH && this.value.firstValue && this.value.secondValue) {
+        this.isValid = this.value.firstValue < this.value.secondValue;
+        err = {
+          numberrangeorder: {
+            valid: false
+          }
+        };
+      } else {
+        err = {
+          numberrange: {
+            valid: false
+          }
+        };
+      }
     }
     return this.isValid ? null : err;
   }
