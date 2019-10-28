@@ -1,6 +1,6 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { AuditQueryOptions, AuditQueryResult, AuditService, DmsObject, EventService, TranslateService, YuvEvent, YuvEventType } from '@yuuvis/core';
+import { AuditQueryOptions, AuditQueryResult, AuditService, DmsObject, EventService, RangeValue, TranslateService, YuvEvent, YuvEventType } from '@yuuvis/core';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { SVGIcons } from '../../svg.generated';
 
@@ -20,13 +20,14 @@ export class AuditComponent implements OnInit, OnDestroy {
   filtered: boolean;
   error: boolean;
   busy: boolean;
-  searchActions: string[] = [];
+  searchActions: { label: string; actions: string[] }[] = [];
 
   icon = {
     search: SVGIcons['search'],
     arrowNext: SVGIcons['arrow-next'],
     arrowLast: SVGIcons['arrow-last']
   };
+  actionGroups: any = {};
   auditLabels: any = {};
 
   /**
@@ -66,14 +67,27 @@ export class AuditComponent implements OnInit, OnDestroy {
       a403: this.translate.instant('yuv.framework.audit.label.get.rendition.pdf'),
       a404: this.translate.instant('yuv.framework.audit.label.get.rendition.thumbnail')
     };
+    const actionKeys = Object.keys(this.auditLabels);
+    this.actionGroups = [
+      { label: this.translate.instant('yuv.framework.audit.label.group.update'), actions: actionKeys.filter(k => k.startsWith('a3')) },
+      { label: this.translate.instant('yuv.framework.audit.label.group.get'), actions: actionKeys.filter(k => k.startsWith('a4')) },
+      { label: this.translate.instant('yuv.framework.audit.label.group.delete'), actions: actionKeys.filter(k => k.startsWith('a2')) },
+      { label: this.translate.instant('yuv.framework.audit.label.group.create'), actions: actionKeys.filter(k => k.startsWith('a1')) }
+    ];
 
     let fbInput = {
-      dateRange: [],
-      createdBy: ['']
+      dateRange: []
     };
-    Object.keys(this.auditLabels).forEach(k => {
-      this.searchActions.push(k);
-      fbInput[k] = [false];
+
+    this.actionGroups.forEach(g => {
+      const groupEntry = {
+        label: g.label,
+        actions: g.actions.map(a => {
+          fbInput[a] = [false];
+          return a;
+        })
+      };
+      this.searchActions.push(groupEntry);
     });
     this.searchForm = this.fb.group(fbInput);
 
@@ -106,19 +120,15 @@ export class AuditComponent implements OnInit, OnDestroy {
   query() {
     this.searchForm.value;
 
-    const range = this.searchForm.value.dateRange;
-    const createdBy = this.searchForm.value.createdBy;
+    const range: RangeValue = this.searchForm.value.dateRange;
 
     let options: AuditQueryOptions = {};
-    if (Array.isArray(range) && range.length) {
-      options.from = range[0];
-      options.to = range[1];
-    }
-    if (createdBy && createdBy.length) {
-      options.createdBy = createdBy;
+    if (range && range.firstValue) {
+      options.dateRange = range;
     }
     const actions = [];
-    this.searchActions.forEach(a => {
+    // this.searchActions.forEach(a => {
+    Object.keys(this.auditLabels).forEach(a => {
       if (this.searchForm.value[a]) {
         actions.push(parseInt(a.substr(1)));
       }
@@ -137,6 +147,36 @@ export class AuditComponent implements OnInit, OnDestroy {
   }
   closeSearchPanel() {
     this.searchPanelShow = false;
+  }
+  resetSearchPanel() {
+    const patch = {
+      dateRange: null
+    };
+    Object.keys(this.auditLabels).forEach(a => {
+      patch[a] = null;
+    });
+    this.searchForm.patchValue(patch);
+  }
+
+  /**
+   * Toggle selection of a whole group
+   * @param actions affected actions
+   */
+  toggleGroupActions(actions: string[]) {
+    let isTrue = 0;
+    let isFalse = 0;
+    actions.forEach(a => {
+      if (this.searchForm.value[a] === false) {
+        isFalse++;
+      } else {
+        isTrue++;
+      }
+    });
+    const patch = {};
+    actions.forEach(a => {
+      patch[a] = isTrue < isFalse;
+    });
+    this.searchForm.patchValue(patch);
   }
 
   goToPage(page: number) {

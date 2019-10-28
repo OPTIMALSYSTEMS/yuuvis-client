@@ -1,6 +1,6 @@
 import { DatePipe } from '@angular/common';
 import { Injectable } from '@angular/core';
-import { Logger, SystemService } from '@yuuvis/core';
+import { Logger, RangeValue, SystemService } from '@yuuvis/core';
 import { ObjectFormControlWrapper, ObjectFormModel } from './object-form.interface';
 import { ObjectFormControl, ObjectFormGroup } from './object-form.model';
 import { FormValidation } from './object-form.validation';
@@ -156,17 +156,17 @@ export class ObjectFormService {
   }
 
   formatValue(value, formElement) {
-    // if (formElement.type === 'DATETIME' && !formElement.withtime) {
-    //   if (typeof value === 'string' || value instanceof Date) {
-    //     return this.datePipe.transform(value, 'yyyy-MM-dd');
-    //   } else if (value instanceof RangeValue) {
-    //     return new RangeValue(
-    //       value.operator,
-    //       value.firstValue && this.datePipe.transform(value.firstValue, 'yyyy-MM-dd'),
-    //       value.secondValue && this.datePipe.transform(value.secondValue, 'yyyy-MM-dd')
-    //     );
-    //   }
-    // }
+    if (formElement.type === 'DATE') {
+      if (typeof value === 'string' || value instanceof Date) {
+        return this.datePipe.transform(value, 'yyyy-MM-dd');
+      } else if (value instanceof RangeValue) {
+        return new RangeValue(
+          value.operator,
+          value.firstValue && this.datePipe.transform(value.firstValue, 'yyyy-MM-dd'),
+          value.secondValue && this.datePipe.transform(value.secondValue, 'yyyy-MM-dd')
+        );
+      }
+    }
 
     // if (formElement.type === 'TABLE') {
     //   (formElement.elements || []).forEach(el => {

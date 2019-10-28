@@ -31,16 +31,20 @@ export class AuditService {
       if (options.size) {
         q.size = options.size;
       }
-      if (options.from && options.to) {
-        // range query
-        q.addFilter(new SearchFilter(AuditField.CREATION_DATE, SearchFilter.OPERATOR.INTERVAL_INCLUDE_BOTH, options.from, options.to));
-      } else if (options.from) {
-        // just one date
-        q.addFilter(new SearchFilter(AuditField.CREATION_DATE, SearchFilter.OPERATOR.EQUAL, options.from));
+      if (options.dateRange) {
+        q.addFilter(new SearchFilter(AuditField.CREATION_DATE, options.dateRange.operator, options.dateRange.firstValue, options.dateRange.secondValue));
       }
-      if (options.createdBy) {
-        q.addFilter(new SearchFilter(AuditField.CREATED_BY, SearchFilter.OPERATOR.EQUAL, options.createdBy));
-      }
+
+      // if (options.from && options.to) {
+      //   // range query
+      //   q.addFilter(new SearchFilter(AuditField.CREATION_DATE, SearchFilter.OPERATOR.INTERVAL_INCLUDE_BOTH, options.from, options.to));
+      // } else if (options.from) {
+      //   // just one date
+      //   q.addFilter(new SearchFilter(AuditField.CREATION_DATE, SearchFilter.OPERATOR.EQUAL, options.from));
+      // }
+      // if (options.createdBy) {
+      //   q.addFilter(new SearchFilter(AuditField.CREATED_BY, SearchFilter.OPERATOR.EQUAL, options.createdBy));
+      // }
       if (options.actions && options.actions.length) {
         q.addFilter(new SearchFilter(AuditField.ACTION, SearchFilter.OPERATOR.IN, options.actions));
       }
@@ -65,6 +69,7 @@ export class AuditService {
         query: q,
         items: res.objects.map(o => ({
           action: o.properties[AuditField.ACTION].value,
+          actionGroup: this.getActionGroup(o.properties[AuditField.ACTION].value),
           detail: o.properties[AuditField.DETAIL].value,
           version: o.properties[AuditField.VERSION].value,
           creationDate: o.properties[AuditField.CREATION_DATE].value,
@@ -77,5 +82,13 @@ export class AuditService {
         page: !q.from ? 1 : q.from / q.size + 1
       }))
     );
+  }
+
+  private getActionGroup(action: number): number {
+    try {
+      return parseInt(`${action}`.substr(0, 1));
+    } catch {
+      return -1;
+    }
   }
 }
