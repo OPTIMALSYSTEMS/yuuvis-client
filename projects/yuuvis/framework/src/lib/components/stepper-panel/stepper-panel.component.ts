@@ -1,5 +1,5 @@
 import { CdkStepper } from '@angular/cdk/stepper';
-import { Component } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 
 /**
  * Component for rendering a stepper panel.
@@ -10,8 +10,14 @@ import { Component } from '@angular/core';
   styleUrls: ['./stepper-panel.component.scss'],
   providers: [{ provide: CdkStepper, useExisting: StepperPanelComponent }]
 })
-export class StepperPanelComponent extends CdkStepper {
+export class StepperPanelComponent extends CdkStepper implements OnInit {
+  @Input() title: string;
+
   onClick(index: number): void {
     this.selectedIndex = index;
+  }
+
+  ngOnInit() {
+    this.linear = true;
   }
 }

@@ -1,5 +1,85 @@
+@import '../../../../../../../src/scss-shared/_mixins';
+
 :host {
-  .step.active {
-    background-color: pink;
+  display: grid;
+  background-color: var(--panel-background);
+  grid-template-columns: 1fr;
+  grid-template-rows: auto auto 1fr;
+  grid-template-areas: 'header' 'steps' 'content';
+
+  height: 100%;
+  overflow: hidden;
+
+  header {
+    display: flex;
+    flex-flow: column;
+    grid-area: header;
+    color: var(--text-color-caption);
+
+    padding: var(--app-pane-padding);
+    // padding-bottom: 0;
+
+    .title {
+      font-weight: var(--font-weight-normal);
+      font-size: var(--font-title);
+      @include ellipsis();
+    }
+    .description {
+      font-weight: var(--font-weight-normal);
+      font-size: var(--font-subhead);
+      margin-top: 0.5em;
+      @include ellipsis();
+    }
+  }
+  .steps {
+    grid-area: steps;
+    display: flex;
+    padding: var(--app-pane-padding);
+
+    .step {
+      display: flex;
+      align-items: center;
+
+      &::after {
+        // &::before {
+        content: '';
+        display: block;
+        height: 2px;
+        width: var(--app-pane-padding);
+        background-color: var(--text-color-hint);
+      }
+
+      // &:first-child::before,
+      &:last-child::after {
+        display: none;
+      }
+
+      button {
+        background-color: var(--panel-background);
+        border: 2px solid var(--text-color-hint);
+        border-radius: var(--app-pane-padding);
+        font-weight: var(--font-weight-bold);
+        padding: calc(var(--app-pane-padding) / 2);
+      }
+      &.active button {
+        border-color: var(--color-accent);
+        color: var(--color-accent);
+        &:focus,
+        &:active {
+          box-shadow: 0 0 0 4px rgba(var(--color-accent-rgb), 0.3);
+        }
+      }
+      &.done {
+        opacity: 0.5;
+      }
+    }
+  }
+
+  .content {
+    grid-area: content;
+    overflow-y: auto;
+    border: 1px solid var(--panel-divider-color);
+    border-width: 1px 0 1px 0;
+    background-color: var(--panel-background-grey);
   }
 }
