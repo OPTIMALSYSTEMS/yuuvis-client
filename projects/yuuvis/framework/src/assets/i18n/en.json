@@ -6,6 +6,8 @@
 	"yuv.framework.action-menu.action.export.pdf.description": "Downloads the document file as a PDF",
 	"yuv.framework.action-menu.action.export.pdf.label": "PDF",
 	"yuv.framework.action-menu.action.export.title": "Download in the following format",
+	"yuv.framework.action-menu.action.upload.dms.object.content.description": "Uploads the document file of the object.",
+	"yuv.framework.action-menu.action.upload.dms.object.content.label": "Upload document file",
 	"yuv.framework.action-menu.actions.group.common": "GENERAL",
 	"yuv.framework.action-menu.actions.group.further_actions": "MORE ACTIONS",
 	"yuv.framework.action-menu.actions.not.available": "No action available.",

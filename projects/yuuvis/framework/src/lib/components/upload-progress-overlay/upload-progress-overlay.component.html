@@ -1,0 +1,7 @@
+<div class="uploadProgress" *ngIf="showOverlay">
+  <button class="bla" (click)="showOverlay = false">Close</button>
+  <div *ngFor="let item of progressStatus | keyvalue">
+    <span>{{ item.key }}</span>
+    <p-progressBar [value]="item.value.progress | async"></p-progressBar>
+  </div>
+</div>

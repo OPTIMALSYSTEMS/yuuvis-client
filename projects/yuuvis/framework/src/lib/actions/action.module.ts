@@ -13,8 +13,10 @@ import { ACTIONS, ActionService, CUSTOM_ACTIONS } from './action-service/action.
 import { DownloadActionComponent } from './actions/download-action/download-action';
 import { DownloadOriginalActionComponent } from './actions/download-original-action/download-original-action';
 import { DownloadPdfActionComponent } from './actions/download-pdf-action/download-pdf-action';
+import { UploadActionComponent } from './actions/upload-action/upload-action';
+import { UploadComponent } from './actions/upload-action/upload/upload.component';
 
-export const entryComponents = [DownloadActionComponent, DownloadOriginalActionComponent, DownloadPdfActionComponent];
+export const entryComponents = [DownloadActionComponent, DownloadOriginalActionComponent, DownloadPdfActionComponent, UploadComponent, UploadActionComponent];
 
 /**
  * @module
@@ -45,7 +47,15 @@ export const entryComponents = [DownloadActionComponent, DownloadOriginalActionC
       useValue: []
     }
   ],
-  declarations: [ActionMenuComponent, ActionComponentAnchorDirective, DownloadActionComponent, DownloadOriginalActionComponent, DownloadPdfActionComponent],
+  declarations: [
+    ActionMenuComponent,
+    ActionComponentAnchorDirective,
+    DownloadActionComponent,
+    DownloadOriginalActionComponent,
+    DownloadPdfActionComponent,
+    UploadComponent,
+    UploadActionComponent
+  ],
   entryComponents
 })
 export class ActionModule {
