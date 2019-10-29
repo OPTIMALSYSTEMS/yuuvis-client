@@ -23,6 +23,6 @@
     "moment": "^2.24.0",
     "lodash": "^4.17.15",
     "take-until-destroy": "^2.1.0",
-    "ngx-toastr": "^10.2.0"
+    "ngx-toastr": "^11.1.0"
   }
 }

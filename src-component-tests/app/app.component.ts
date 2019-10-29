@@ -1,6 +1,6 @@
 import { Component, HostBinding, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { AppCacheService, UserService, YuvUser } from '@yuuvis/core';
+import { AppCacheService, Direction, UserService, YuvUser } from '@yuuvis/core';
 
 @Component({
   selector: 'app-root',
@@ -10,39 +10,56 @@ import { AppCacheService, UserService, YuvUser } from '@yuuvis/core';
 export class AppComponent implements OnInit {
   routes = [];
   user: YuvUser;
-  darkMode: boolean;
+
+  uiSettings = {
+    darkMode: false,
+    direction: Direction.LTR
+  };
 
   private STORAGE_KEY = 'yuv.cmp-test.settings';
-
   @HostBinding('class.showNav') showNav: boolean;
-  // @HostBinding('class.dark') darkMode: boolean;
 
   constructor(private router: Router, private appCache: AppCacheService, private userService: UserService) {
     this.userService.user$.subscribe(u => {
       this.user = u;
     });
     this.appCache.getItem(this.STORAGE_KEY).subscribe(res => {
-      this.darkMode = res.darkMode;
-      this.setDarkMode();
+      if (res) {
+        this.uiSettings = res;
+        this.applyUiSettings();
+      }
     });
   }
 
-  toggleDarkMode() {
-    this.darkMode = !this.darkMode;
-    this.setDarkMode();
-    this.appCache
-      .setItem(this.STORAGE_KEY, {
-        darkMode: this.darkMode
-      })
-      .subscribe();
+  toggleDirection() {
+    this.uiSettings.direction = this.uiSettings.direction === Direction.RTL ? Direction.LTR : Direction.RTL;
+    this.applyUiSettings();
+    this.saveUiSettings();
   }
 
-  private setDarkMode() {
+  toggleDarkMode() {
+    this.uiSettings.darkMode = !this.uiSettings.darkMode;
+    this.applyUiSettings();
+    this.saveUiSettings();
+  }
+
+  private saveUiSettings() {
+    this.appCache.setItem(this.STORAGE_KEY, this.uiSettings).subscribe();
+  }
+
+  private applyUiSettings() {
     const bodyClasses = document.getElementsByTagName('body')[0].classList;
-    if (this.darkMode) {
+    if (this.uiSettings.darkMode) {
       bodyClasses.add('dark');
     } else {
       bodyClasses.remove('dark');
+    }
+    const body = document.getElementsByTagName('body')[0];
+    body.setAttribute('dir', this.uiSettings.direction);
+    if (this.uiSettings.direction === Direction.RTL) {
+      bodyClasses.add('yuv-rtl');
+    } else {
+      bodyClasses.remove('yuv-rtl');
     }
   }
 

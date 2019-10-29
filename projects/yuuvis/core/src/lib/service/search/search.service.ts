@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { RangeValue } from '../../model/range-value.model';
 import { ApiBase } from '../backend/api.enum';
 import { BackendService } from '../backend/backend.service';
 import { BaseObjectTypeField, ContentStreamField, SecondaryObjectTypeField } from '../system/system.enum';
 import { ObjectType } from './../../model/object-type.model';
 import { SearchQuery, SortOption } from './search-query.model';
-import { SearchResult, SearchResultContent, SearchResultItem } from './search.service.interface';
+import { AggregateResult, SearchResult, SearchResultContent, SearchResultItem } from './search.service.interface';
 
 /**
  * @ignore
@@ -29,10 +30,32 @@ export class SearchService {
 
   constructor(private backend: BackendService) {}
 
+  /**
+   * Creates a RangeValue instance from the given value object.
+   *
+   * @param value The object to be
+   * @returns RangeValue
+   */
+  public static toRangeValue(value: any): RangeValue {
+    if (value) {
+      if (value instanceof RangeValue) {
+        return value;
+      } else if (value.hasOwnProperty('operator') && value.hasOwnProperty('firstValue')) {
+        return new RangeValue(value.operator, value.firstValue, value.secondValue);
+      }
+    }
+    return null;
+  }
+
   search(q: SearchQuery): Observable<SearchResult> {
     this.lastSearchQuery = q;
 
     return this.backend.post(`/dms/search`, q.toQueryJson(), ApiBase.apiWeb).pipe(map(res => this.toSearchResult(res)));
+  }
+
+  searchRaw(q: SearchQuery): Observable<any> {
+    this.lastSearchQuery = q;
+    return this.backend.post(`/dms/search`, q.toQueryJson(), ApiBase.apiWeb);
   }
 
   /**
@@ -41,21 +64,31 @@ export class SearchService {
    * @param aggregations List of aggregations to be fetched (e.g. `enaio:objectTypeId`
    * to get an aggregation of object types)
    */
-  aggregate(q: SearchQuery, aggregation: string) {
-    // TODO: enable multiple aggregations at once?
-    q.aggs = [aggregation];
-    return this.backend.post(`/dms/search`, q.toQueryJson(), ApiBase.apiWeb).pipe(map(res => this.toAggregateResult(res, aggregation)));
+  aggregate(q: SearchQuery, aggregations?: string[]) {
+    q.aggs = aggregations || [];
+    return this.backend.post(`/dms/search`, q.toQueryJson(), ApiBase.apiWeb).pipe(map(res => this.toAggregateResult(res, aggregations)));
   }
 
   getLastSearchQuery() {
     return this.lastSearchQuery;
   }
 
-  private toAggregateResult(searchResponse: any, aggregation: string): { value: string; count: number }[] {
-    return searchResponse.objects.map(o => ({
-      value: o.properties[aggregation].value,
-      count: o.properties['OBJECT_COUNT'].value
-    }));
+  private toAggregateResult(searchResponse: any, aggregations?: string[]): AggregateResult {
+    const agg = [];
+    if (aggregations) {
+      aggregations.forEach(a =>
+        agg.push(
+          searchResponse.objects.map(o => ({
+            key: o.properties[a].value,
+            count: o.properties['OBJECT_COUNT'].value
+          }))
+        )
+      );
+    }
+    return {
+      totalNumItems: searchResponse.totalNumItems,
+      aggregations: agg
+    };
   }
 
   /**

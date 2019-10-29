@@ -6,7 +6,6 @@ import {
   BaseObjectTypeField,
   ContentStreamField,
   FieldDefinition,
-  ObjectField,
   ObjectType,
   ObjectTypeField,
   SearchService,
@@ -129,13 +128,16 @@ export class GridService {
         colDef.cellClass = field.cardinality === 'multi' ? 'multiCell string' : 'string';
         break;
       }
+      case 'date': {
+        colDef.width = 150;
+        colDef.cellRenderer = this.customContext(CellRenderer.dateTimeCellRenderer, { pattern: 'eoShortDate' });
+        break;
+      }
       case 'datetime': {
         colDef.width = 150;
         colDef.cellRenderer = this.customContext(CellRenderer.dateTimeCellRenderer, { pattern: 'eoShort' });
-        // { pattern: resultField.withtime ? 'eoShort' : 'eoShortDate' }
         break;
       }
-
       case 'integer': {
         const params = {
           scale: 0,
@@ -189,7 +191,7 @@ export class GridService {
    */
   private addColDefAttrsByField(colDef: ColDef, field: ObjectTypeField) {
     switch (field.id) {
-      case ObjectField.OBJECT_TYPE_ID: {
+      case BaseObjectTypeField.OBJECT_TYPE_ID: {
         colDef.cellRenderer = this.customContext(CellRenderer.typeCellRenderer);
         colDef.width = 80;
         colDef.cellClass = 'res-ico';
@@ -199,7 +201,7 @@ export class GridService {
         colDef.width = 101;
         break;
       }
-      case ObjectField.VERSION_NUMBER: {
+      case BaseObjectTypeField.VERSION_NUMBER: {
         colDef.width = 80;
         break;
       }

@@ -1,3 +1,37 @@
+// Small straight loading spinner
+.yuv-loader-straight {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  &::after,
+  &::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    margin: 0 1px;
+    border-radius: 50%;
+    display: block;
+    background-color: currentColor;
+    animation: bouncedelay 1.4s infinite ease-in-out both;
+  }
+
+  &::before {
+    animation-delay: -0.16s;
+  }
+
+  @keyframes bouncedelay {
+    0%,
+    80%,
+    100% {
+      transform: scale(0);
+    }
+    40% {
+      transform: scale(1);
+    }
+  }
+}
+
+// circlura loading spinner
 .yuv-loader {
   font-size: 10px;
   position: relative;

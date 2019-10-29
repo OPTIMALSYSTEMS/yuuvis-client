@@ -33,3 +33,11 @@ export interface SearchQueryProperties {
   filters?: any;
   sort?: any;
 }
+
+export interface AggregateResult {
+  totalNumItems: number;
+  aggregations: {
+    key: string;
+    count: number;
+  }[];
+}

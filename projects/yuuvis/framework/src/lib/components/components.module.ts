@@ -13,6 +13,7 @@ import { YuvPipesModule } from '../pipes/pipes.module';
 import { ActionMenuBarComponent } from './action-menu-bar/action-menu-bar.component';
 import { BusyOverlayDirective } from './busy-overlay/busy-overlay.directive';
 import { DialogComponent } from './dialog/dialog.component';
+import { FilePickerComponent } from './file-picker/file-picker.component';
 import { PanelComponent } from './panel/panel.component';
 import { ResponsiveDataTableComponent } from './responsive-data-table/responsive-data-table.component';
 import { ResponsiveMasterSlaveComponent } from './responsive-master-slave/responsive-master-slave.component';
@@ -28,7 +29,8 @@ import { UploadProgressOverlayComponent } from './upload-progress-overlay/upload
     ResponsiveTabContainerComponent,
     PanelComponent,
     DialogComponent,
-    UploadProgressOverlayComponent
+    UploadProgressOverlayComponent,
+    FilePickerComponent
   ],
   exports: [
     ResponsiveDataTableComponent,
@@ -40,7 +42,8 @@ import { UploadProgressOverlayComponent } from './upload-progress-overlay/upload
     PanelComponent,
     ActionMenuBarComponent,
     DialogComponent,
-    UploadProgressOverlayComponent
+    UploadProgressOverlayComponent,
+    FilePickerComponent
   ],
   imports: [
     CommonModule,

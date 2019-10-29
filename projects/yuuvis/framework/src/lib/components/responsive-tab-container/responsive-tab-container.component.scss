@@ -1,3 +1,13 @@
+@import './../../../../../../../src/scss-shared/_mixins';
+
+.as-split-area {
+  position: relative;
+  .as-dragging &::after {
+    content: '';
+    @include frame(0);
+  }
+}
+
 :host {
   as-split {
     padding: 0;

@@ -1,0 +1,25 @@
+:host {
+  display: block;
+  padding: calc(var(--app-pane-padding) / 2) var(--app-pane-padding);
+  cursor: pointer;
+  outline: 0;
+  display: flex;
+
+  //   &:focus {
+  //     background-color: var(--color-accent);
+  //     color: #fff;
+  //   }
+
+  &:not(.selected):hover,
+  &:not(.selected).active {
+    background-color: var(--item-focus-border-color);
+  }
+  &.selected {
+    color: #fff;
+    background-color: var(--color-accent);
+  }
+
+  &.disabled {
+    opacity: 0.3;
+  }
+}

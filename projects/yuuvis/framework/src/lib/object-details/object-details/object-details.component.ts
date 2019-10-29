@@ -14,12 +14,14 @@ import { SVGIcons } from '../../svg.generated';
 })
 export class ObjectDetailsComponent {
   @HostBinding('class.yuv-object-details') _hostClass = true;
-  objectIcon: string = '';
+  objectIcon = '';
   icons = SVGIcons;
   busy: boolean;
   userIsAdmin: boolean;
   actionMenuVisible = false;
   actionMenuSelection = [];
+
+  @Input() searchTerm = '';
 
   private _dmsObject: DmsObject;
   private _objectId: string;
@@ -30,6 +32,7 @@ export class ObjectDetailsComponent {
   @Input()
   set dmsObject(object: DmsObject) {
     this._dmsObject = object;
+    this._objectId = object ? object.id : null;
     if (object) {
       this.objectIcon = CellRenderer.typeCellRenderer(null, this.systemService.getLocalizedResource(`${object.objectTypeId}_label`));
     }
@@ -49,6 +52,11 @@ export class ObjectDetailsComponent {
       this.getDmsObject(id);
     }
   }
+
+  get objectId() {
+    return this._objectId;
+  }
+
   @Input() standaloneFullscreen: boolean;
   @Output() standaloneFullscreenBackButtonClick = new EventEmitter();
 

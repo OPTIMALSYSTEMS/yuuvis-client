@@ -1,4 +1,4 @@
-import { Utils } from '@yuuvis/core';
+import { RangeValue, SearchFilter, Utils } from '@yuuvis/core';
 
 export class CellRenderer {
   static render(type: string, param: any, newParam?: any) {
@@ -11,41 +11,20 @@ export class CellRenderer {
 
   static numberCellRenderer(param) {
     if (param.value || param.value === 0) {
-      // TODO: Reactive once ranges are supported ... or remove if they don't
-
-      //   if (param.value.operator) {
-      //     // range value from search form table
-      //     return param.value.operator ===
-      //       SearchFilter.OPERATOR.INTERVAL_INCLUDE_BOTH
-      //       ? CellRenderer.numberCellRendererTemplate(
-      //           param.value.firstValue,
-      //           param.context,
-      //           param.grouping,
-      //           param.pattern,
-      //           param.scale
-      //         ) +
-      //           ' ' +
-      //           RangeValue.getOperatorLabel(param.value.operator) +
-      //           ' ' +
-      //           CellRenderer.numberCellRendererTemplate(
-      //             param.value.secondValue,
-      //             param.context,
-      //             param.grouping,
-      //             param.pattern,
-      //             param.scale
-      //           )
-      //       : RangeValue.getOperatorLabel(param.value.operator) +
-      //           ' ' +
-      //           CellRenderer.numberCellRendererTemplate(
-      //             param.value.firstValue,
-      //             param.context,
-      //             param.grouping,
-      //             param.pattern,
-      //             param.scale
-      //           );
-      //   } else {
-      return CellRenderer.numberCellRendererTemplate(param.value, param.context, param.grouping, param.pattern, param.scale);
-      //   }
+      if (param.value.operator) {
+        // range value from search form table
+        return param.value.operator === SearchFilter.OPERATOR.INTERVAL_INCLUDE_BOTH
+          ? CellRenderer.numberCellRendererTemplate(param.value.firstValue, param.context, param.grouping, param.pattern, param.scale) +
+              ' ' +
+              RangeValue.getOperatorLabel(param.value.operator) +
+              ' ' +
+              CellRenderer.numberCellRendererTemplate(param.value.secondValue, param.context, param.grouping, param.pattern, param.scale)
+          : RangeValue.getOperatorLabel(param.value.operator) +
+              ' ' +
+              CellRenderer.numberCellRendererTemplate(param.value.firstValue, param.context, param.grouping, param.pattern, param.scale);
+      } else {
+        return CellRenderer.numberCellRendererTemplate(param.value, param.context, param.grouping, param.pattern, param.scale);
+      }
     } else {
       return '';
     }

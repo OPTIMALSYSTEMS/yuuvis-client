@@ -23,10 +23,7 @@ export class ObjectFormEditComponent {
   @Input() formDisabled: boolean;
   @Input('dmsObject')
   set dmsObject(dmsObject: DmsObject) {
-    this._dmsObject = dmsObject;
-    if (dmsObject) {
-      // this._dmsObject = dmsObject;
-
+    if (dmsObject && (!this._dmsObject || this._dmsObject.id !== dmsObject.id)) {
       // reset the state of the form
       this.formState = null;
       this.controls.saving = false;
@@ -34,6 +31,7 @@ export class ObjectFormEditComponent {
 
       this.createObjectForm(dmsObject);
     }
+    this._dmsObject = dmsObject;
   }
   /**
    * Emits the updated `DmsObject` when a form has been saved.

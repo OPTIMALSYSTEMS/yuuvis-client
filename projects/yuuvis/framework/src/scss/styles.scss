@@ -1,6 +1,8 @@
 @import '~ag-grid-community/dist/styles/ag-grid.css';
 @import '~ag-grid-community/dist/styles/ag-theme-balham.css';
 
+@import '~@angular/cdk/overlay-prebuilt.css';
+
 @import '~primeng/resources/primeng.min.css';
 @import '~primeicons/primeicons.css';
 @import '~primeng/resources/themes/nova-light/theme.css';
@@ -12,9 +14,10 @@
 @import './animations';
 @import './loading';
 @import './forms';
-@import './src/scss-shared/vars';
-@import './src/scss-shared/vars.dark';
-@import './src/scss-shared/mixins';
+@import './notifications';
+@import './src/scss-shared/_vars';
+@import './src/scss-shared/_vars.dark';
+@import './src/scss-shared/_mixins';
 @import './libs';
 @import './yuuvis.defaults.primeng';
 
@@ -64,6 +67,10 @@
     /* Modern Browsers */ url('fonts/roboto-v19-vietnamese_greek_latin_greek-ext_cyrillic-ext_cyrillic_latin-ext-700.ttf') format('truetype'),
     /* Safari, Android, iOS */ url('fonts/roboto-v19-vietnamese_greek_latin_greek-ext_cyrillic-ext_cyrillic_latin-ext-700.svg#Roboto') format('svg');
   /* Legacy iOS */
+}
+
+body.rtl * {
+  direction: rtl;
 }
 
 * {

@@ -36,28 +36,24 @@ export class SettingsComponent implements OnInit {
     this.layoutService.setDarkMode(darkMode);
   }
 
-  toggleBtnActive(mode: boolean) {
-    return mode ? 'primary active' : '';
-  }
-
   setAccentColor(rgb: string) {
     this.layoutService.setAccentColor(rgb);
   }
 
   setBackgroundImage(e) {
-    if (!e) {
-      this.layoutService.setDashboardBackground(null);
-    } else {
-      const inputValue = e.target;
-      var file: File = inputValue.files[0];
-      var myReader: FileReader = new FileReader();
-      // var fileType = inputValue.parentElement.id;
-      myReader.onloadend = e => {
-        console.log(myReader.result);
-        this.layoutService.setDashboardBackground(myReader.result as string);
-      };
-      myReader.readAsDataURL(file);
-    }
+    this.layoutService.setDashboardBackground(!!e ? e : null);
+  }
+
+  downloadLayout() {
+    this.layoutService.downloadLayout();
+  }
+
+  uploadLayout(e: any) {
+    this.layoutService.uploadLayout(e).subscribe();
+  }
+
+  clearLayout() {
+    this.layoutService.clearLayout().subscribe();
   }
 
   ngOnInit() {

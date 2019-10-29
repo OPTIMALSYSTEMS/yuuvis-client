@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { DmsObject } from '@yuuvis/core';
 import { AppDataService } from '../add.data.service';
 
 @Component({
@@ -11,8 +12,8 @@ export class TestObjectDetailsComponent implements OnInit {
 
   constructor(private data: AppDataService) {}
 
-  setDmsObjectInput() {
-    this.summaryObject = this.data.getDmsObject();
+  setDmsObjectInput(dmsObject: DmsObject) {
+    this.summaryObject = dmsObject || this.data.getDmsObject();
   }
 
   clearDmsObjectInput() {

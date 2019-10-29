@@ -3,10 +3,12 @@
     .ui-tabview .ui-tabview-panels {
       background-color: var(--panel-background-grey);
 
-      #summary > .ui-tabview-panel,
-      #preview > .ui-tabview-panel,
-      #history > .ui-tabview-panel {
+      #summary > .ui-tabview-panel {
         padding: var(--app-pane-padding);
+      }
+      #history > .ui-tabview-panel,
+      #preview > .ui-tabview-panel {
+        height: 100%;
       }
 
       #indexdata > .ui-tabview-panel {
