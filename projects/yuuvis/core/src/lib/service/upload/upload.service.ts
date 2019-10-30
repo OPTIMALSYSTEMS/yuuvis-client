@@ -2,21 +2,28 @@ import { HttpClient, HttpEventType, HttpRequest, HttpResponse } from '@angular/c
 import { Injectable } from '@angular/core';
 import { Observable, ReplaySubject, Subject } from 'rxjs';
 import { tap } from 'rxjs/operators';
-import { BackendService } from './../backend/backend.service';
+
+export interface ProgressStatus {
+  [key: string]: { progress: Observable<number> };
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class UploadService {
-  private status: { [key: string]: { progress: Observable<number> } } = {};
-  private statusSource = new ReplaySubject<any>();
-  public status$: Observable<any> = this.statusSource.asObservable();
+  private status: ProgressStatus = {};
+  private statusSource = new ReplaySubject<ProgressStatus>();
+  public status$: Observable<ProgressStatus> = this.statusSource.asObservable();
 
-  constructor(private http: HttpClient, private backend: BackendService) {}
+  constructor(private http: HttpClient) {}
 
-  public upload(url: string, file: File): Observable<any> {
+  public upload(url: string, file: File, payload?: { key: string; data: string }): Observable<any> {
     const formData: FormData = new FormData();
     formData.append('file', file, file.name);
+
+    if (payload) {
+      formData.append(payload.key, payload.data);
+    }
 
     const req = new HttpRequest('POST', url, formData, {
       reportProgress: true
