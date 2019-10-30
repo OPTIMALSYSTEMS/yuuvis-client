@@ -57,9 +57,8 @@
       button {
         background-color: var(--panel-background);
         border: 2px solid var(--text-color-hint);
-        border-radius: var(--app-pane-padding);
-        font-weight: var(--font-weight-bold);
-        padding: calc(var(--app-pane-padding) / 2);
+        border-radius: calc(var(--app-pane-padding) / 2);
+        padding: calc(var(--app-pane-padding) * 0.4) calc(var(--app-pane-padding) / 2);
       }
       &.active button {
         border-color: var(--color-accent);
@@ -77,6 +76,7 @@
 
   .content {
     grid-area: content;
+    display: flex;
     overflow-y: auto;
     border: 1px solid var(--panel-divider-color);
     border-width: 1px 0 1px 0;

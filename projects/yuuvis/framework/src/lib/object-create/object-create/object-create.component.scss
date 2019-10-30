@@ -9,30 +9,90 @@
     grid-area: stepper;
   }
 
-  .type-select-step {
-    display: flex;
-    flex-flow: column;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
+  .step {
+    position: relative;
+    width: 100%;
 
-    .type-select {
-      background-color: var(--panel-background);
-      box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1);
-      .type {
-        padding: calc(var(--app-pane-padding) / 2) var(--app-pane-padding);
-        border-bottom: 1px solid var(--panel-divider-color);
-        cursor: pointer;
-        @include transition();
+    h1 {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      @include ellipsis();
+      font-size: 5em;
+      margin: 0;
+      padding: var(--app-pane-padding);
+      opacity: 0.1;
+      color: var(--text-color-caption);
+      pointer-events: none;
+    }
 
-        &:hover {
-          background-color: var(--item-focus-background-color);
+    &.select {
+      display: grid;
+      align-items: center;
+      justify-content: center;
+      justify-self: stretch;
+
+      .screen-s & {
+        justify-content: stretch;
+      }
+
+      .select-container {
+        display: flex;
+        flex-flow: row wrap;
+        align-items: flex-start;
+        z-index: 1;
+
+        .screen-s & {
+          flex-flow: column;
+          align-items: stretch;
+          padding: calc(var(--app-pane-padding) / 2);
+        }
+      }
+
+      .select-list {
+        background-color: var(--panel-background);
+        margin: calc(var(--app-pane-padding) / 2);
+        box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1);
+
+        h2 {
+          margin: 0;
+          color: var(--color-accent);
+          padding: calc(var(--app-pane-padding) / 2) calc(var(--app-pane-padding) * 2);
+        }
+
+        .select-item {
+          color: var(--text-color-body);
+          padding: calc(var(--app-pane-padding) / 2) calc(var(--app-pane-padding) * 2);
+          border-top: 1px solid var(--panel-divider-color);
+          cursor: pointer;
+          @include transition();
+
+          > div {
+            opacity: 0.54;
+            font-size: var(--font-hint);
+            font-style: italic;
+            margin-top: calc(var(--app-pane-padding) / 4);
+          }
+
+          &.selected,
+          &:hover {
+            background-color: var(--color-accent);
+            color: #fff;
+          }
+
+          &.file {
+            display: flex;
+            align-items: center;
+          }
         }
       }
     }
   }
 
   yuv-object-form {
+    position: relative;
+    z-index: 1;
     box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1);
     margin: var(--app-pane-padding);
   }

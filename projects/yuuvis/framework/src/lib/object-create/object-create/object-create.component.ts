@@ -1,8 +1,9 @@
 import { Component, ViewChild } from '@angular/core';
-import { ObjectType, PendingChangesService, SystemService } from '@yuuvis/core';
+import { ObjectType, PendingChangesService, SystemService, TranslateService, Utils } from '@yuuvis/core';
 import { StepperPanelComponent } from '../../components/stepper-panel/stepper-panel.component';
 import { FormStatusChangedEvent, ObjectFormOptions } from '../../object-form/object-form.interface';
 import { ObjectFormComponent } from '../../object-form/object-form/object-form.component';
+import { SVGIcons } from '../../svg.generated';
 
 @Component({
   selector: 'yuv-object-create',
@@ -12,6 +13,10 @@ import { ObjectFormComponent } from '../../object-form/object-form/object-form.c
 export class ObjectCreateComponent {
   @ViewChild('stepper', { static: true }) stepper: StepperPanelComponent;
   @ViewChild(ObjectFormComponent, { static: false }) objectForm: ObjectFormComponent;
+
+  icon = {
+    clear: SVGIcons['clear']
+  };
 
   // state of creation progress
   completed = {
@@ -23,22 +28,40 @@ export class ObjectCreateComponent {
   createAnother: boolean;
 
   selectedIndex: number = 0;
-  availableTypes: { type: ObjectType; label: string }[];
+  availableDocumentTypes: { type: ObjectType; label: string }[] = [];
+  availableFolderTypes: { type: ObjectType; label: string }[] = [];
 
   selectedObjectType: ObjectType;
   selectedObjectTypeFormOptions: ObjectFormOptions;
   formState: FormStatusChangedEvent;
+  files: File[] = [];
+
+  labels;
 
   private pendingTaskId: string;
 
-  constructor(private system: SystemService, private pendingChanges: PendingChangesService) {
-    this.availableTypes = this.system
+  constructor(private system: SystemService, private translate: TranslateService, private pendingChanges: PendingChangesService) {
+    this.system
       .getObjectTypes()
       .filter(ot => ot.creatable)
       .map(ot => ({
         type: ot,
         label: this.system.getLocalizedResource(`${ot.id}_label`)
-      }));
+      }))
+      .sort(Utils.sortValues('label'))
+      .forEach(ot => {
+        if (ot.type.isFolder) {
+          this.availableFolderTypes.push(ot);
+        } else {
+          this.availableDocumentTypes.push(ot);
+        }
+      });
+
+    this.labels = {
+      allowed: this.translate.instant('yuv.framework.object-create.step.type.content.allowed'),
+      notallowed: this.translate.instant('yuv.framework.object-create.step.type.content.notallowed'),
+      required: this.translate.instant('yuv.framework.object-create.step.type.content.required')
+    };
   }
 
   selectObjectType(objectType: ObjectType) {
@@ -53,9 +76,9 @@ export class ObjectCreateComponent {
           formModel: model,
           data: {}
         };
-
         // does selected type support contents?
-        if (!objectType.contentStreamAllowed) {
+        if (objectType.isFolder || objectType.contentStreamAllowed === 'notallowed') {
+          this.files = [];
           this.completed.file = true;
           this.stepper.selectedIndex = 2;
         } else {
@@ -68,12 +91,47 @@ export class ObjectCreateComponent {
     );
   }
 
+  fileChosen(files: File[]) {
+    this.files = [...this.files, ...files];
+    this.completed.file = true;
+    // setTimeout(() => {
+    //   this.stepper.next();
+    // });
+  }
+
+  filesClear() {
+    this.files = [];
+    this.completed.file = true;
+  }
+
+  removeFile(file: File) {
+    this.files = this.files.filter(f => f.name !== file.name);
+  }
+
+  onFilesDroppedOnType(files: File[], type: ObjectType) {
+    this.files = [...this.files, ...files];
+    this.completed.file = true;
+    if (type) {
+      this.selectObjectType(type);
+    }
+    // else {
+    //   setTimeout(() => {
+    //     this.stepper.next();
+    //   });
+    // }
+  }
+
+  fileSelectContinue() {
+    this.stepper.next();
+  }
+
   create() {
     // TODO: actually create the object
 
+    this.files = [];
     this.finishPending();
     if (this.createAnother) {
-      this.stepper.selectedIndex = 0;
+      this.stepper.reset();
     }
   }
 
@@ -83,7 +141,7 @@ export class ObjectCreateComponent {
 
   onFormStatusChanged(evt) {
     this.formState = evt;
-    this.done = !this.formState.invalid;
+    this.done = this.completed.file && !this.formState.invalid;
   }
 
   private startPending() {

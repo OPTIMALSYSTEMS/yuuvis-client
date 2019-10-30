@@ -26,6 +26,24 @@
   }
 }
 
+.yuv-file-drop {
+  &.yuv-file-drop-active {
+    transition: box-shadow 300ms;
+
+    // TODO: Enable to show available child dropzones on dragenter
+    // .yuv-file-drop:not(.yuv-file-drop-disabled) {
+    //   box-shadow: inset 0 0 0 1px rgba(var(--color-accent-rgb), 0.4) !important;
+    // }
+
+    &:not(.yuv-file-drop-disabled) {
+      box-shadow: inset 0 0 200px 0 rgba(var(--color-accent-rgb), 0.4) !important;
+    }
+    &.yuv-file-drop-disabled {
+      box-shadow: inset 0 0 200px 0 rgba(var(--color-accent-rgb), 0.1) !important;
+    }
+  }
+}
+
 .yuv-busy-overlay {
   position: absolute;
   transition: opacity 200ms;
