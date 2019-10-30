@@ -26,7 +26,6 @@ export class UploadComponent implements OnInit, ActionComponent {
 
   onChange() {
     this.file = this.fileInput.nativeElement.files[0];
-    // this.fileInput.nativeElement.value = null;
   }
 
   openFileDialog() {

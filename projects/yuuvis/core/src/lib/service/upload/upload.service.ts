@@ -18,13 +18,6 @@ export class UploadService {
     const formData: FormData = new FormData();
     formData.append('file', file, file.name);
 
-    // const req = new HttpRequest('POST', url, formData, {
-    //   reportProgress: true,
-    //   headers: new HttpHeaders({
-    //     'Content-Disposition': `attachment; filename="${file.name}"`,
-    //     'Content-Type': 'application/octet-stream'
-    //   })
-    // });
     const req = new HttpRequest('POST', url, formData, {
       reportProgress: true
     });
