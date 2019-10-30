@@ -171,7 +171,7 @@ export class QuickSearchComponent implements AfterViewInit {
     const suggestions: any[] = (q.startsWith('@') ? this.availableObjectTypes : this.availableObjectTypeFields) || [];
     this.autoSuggestions = !q.match(/^@|^#/)
       ? []
-      : suggestions.filter(t => t.label.toLowerCase().startsWith(q.slice(1))).map(t => ({ ...t, autoLabel: q.slice(0, 1) + t.label }));
+      : suggestions.filter(t => t.label.toLowerCase().includes(q.slice(1))).map(t => ({ ...t, autoLabel: q.slice(0, 1) + t.label }));
   }
 
   autocompleteSelect(selection) {
