@@ -48,6 +48,12 @@
           align-items: stretch;
           padding: calc(var(--app-pane-padding) / 2);
         }
+
+        &.files {
+          .buttons {
+            padding: calc(var(--app-pane-padding) / 2);
+          }
+        }
       }
 
       .select-list {
@@ -84,6 +90,15 @@
           &.file {
             display: flex;
             align-items: center;
+            .name {
+              flex: 1;
+            }
+            yuy-icon {
+              width: 18px;
+              height: 18px;
+              box-sizing: content-box;
+              padding: calc(var(--app-pane-padding) / 2);
+            }
           }
         }
       }

@@ -40,7 +40,10 @@
 
         <div class="files select-list">
           <div>
-            <div class="file select-item" *ngFor="let file of files">{{file.name}}
+            <div class="file select-item" *ngFor="let file of files">
+              <div class="name">
+                {{file.name}}
+              </div>
 
               <yuv-icon [svg]="icon.clear" (click)="removeFile(file)"></yuv-icon>
             </div>
