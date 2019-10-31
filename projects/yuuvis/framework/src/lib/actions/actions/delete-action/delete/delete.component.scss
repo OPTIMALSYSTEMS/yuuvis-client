@@ -1,0 +1,27 @@
+@import './../../../../../../../../../src/scss-shared/_mixins';
+
+.yuv-delete {
+  display: flex;
+  flex-flow: column;
+  justify-content: center;
+  margin: var(--app-pane-padding);
+
+  h2 {
+    font-weight: var(--font-weight-light);
+    font-size: var(--font-subhead);
+  }
+
+  .form-buttons {
+    padding: 5px 0;
+    text-align: right;
+
+    button:nth-child(even):not(:last-child) {
+      margin: 0 calc(var(--app-pane-padding) / 2);
+    }
+
+    button:nth-child(even):last-child {
+      margin-left: calc(var(--app-pane-padding) / 2);
+      margin-right: 0;
+    }
+  }
+}

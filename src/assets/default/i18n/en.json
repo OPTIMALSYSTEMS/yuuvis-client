@@ -1,4 +1,11 @@
 {
+  "yuv.framework.action-menu.action.delete.dms.object.confirm.message": "Are you sure you want to delete '{{item}}'?",
+  "yuv.framework.action-menu.action.delete.dms.object.description": "Deletes the object.",
+  "yuv.framework.action-menu.action.delete.dms.object.done.message": "Deleting objects.",
+  "yuv.framework.action-menu.action.delete.dms.object.done.title": "Delete",
+  "yuv.framework.action-menu.action.delete.dms.object.error.403": "You are not authorized to delete the object.",
+  "yuv.framework.action-menu.action.delete.dms.object.error.409": "The object could not be deleted due to conflicts.",
+  "yuv.framework.action-menu.action.delete.dms.object.label": "Delete",
   "yuv.framework.action-menu.action.download.dms.object.content.description": "Downloads the document file of the object.",
   "yuv.framework.action-menu.action.download.dms.object.content.label": "Download document file",
   "yuv.framework.action-menu.action.export.original.description": "Downloads the document file in the original format",
