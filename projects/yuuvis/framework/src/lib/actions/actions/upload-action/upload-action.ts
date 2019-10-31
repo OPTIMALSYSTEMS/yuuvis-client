@@ -33,6 +33,6 @@ export class UploadActionComponent extends DmsObjectTarget implements ComponentA
       this.label = this.translate.instant('yuv.framework.action-menu.action.update.dms.object.content.label');
       this.description = this.translate.instant('yuv.framework.action-menu.action.update.dms.object.content.description');
     }
-    return observableOf(objectType.contentStreamAllowed && objectType.contentStreamAllowed !== ContentStreamAllowed.NOT_ALLOWED && element.rights.edit);
+    return observableOf(objectType.contentStreamAllowed && objectType.contentStreamAllowed !== ContentStreamAllowed.NOT_ALLOWED);
   }
 }
