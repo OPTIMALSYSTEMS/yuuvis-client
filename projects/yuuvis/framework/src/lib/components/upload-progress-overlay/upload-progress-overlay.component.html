@@ -1,26 +1,20 @@
 <ng-container *ngIf="progressStatus$ | async as ps">
-  <div class="uploadProgress" *ngIf="ps?.length" [ngClass]="{'mini': minimized}">
+  <div class="uploadProgress" *ngIf="ps.items.length"
+    [ngClass]="{'mini': minimized, err: ps.err > 0, allErr: ps.err === ps.items.length}">
 
     <header [title]="overallProgress(ps)">
       <div class="title">{{'yuv.framework.upload-progress-overlay.title'|translate}}</div>
-      <yuv-icon [svg]="minimizeIcon" (click)="minimized = !minimized"></yuv-icon>
+      <yuv-icon [svg]="icon.minimize" (click)="minimized = !minimized"></yuv-icon>
     </header>
     <section class="files">
-
-
-      <div class="progress-item" *ngFor="let item of ps; trackBy: trackByFn">
+      <div class="progress-item" *ngFor="let item of ps.items; trackBy: trackByFn" [ngClass]="{err: !!item.err}">
+        <yuv-icon [svg]="icon.remove" (click)="remove(item.id)"></yuv-icon>
         <div class="name">{{ item.filename }}</div>
         <ng-container *ngIf="item.progress | async as progress">
           <div class="percentage">{{ progress }}</div>
           <div class="progress" [style.width]="(progress) + '%'"></div>
         </ng-container>
       </div>
-
-
-
-
-      <!-- <yuv-upload-progress-item *ngFor="let item of ps; trackBy: trackByFn" [filename]="item.filename"
-        [progress]="item.progress | async"></yuv-upload-progress-item> -->
     </section>
 
   </div>

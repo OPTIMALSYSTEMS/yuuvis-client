@@ -10,10 +10,18 @@
   animation: yuvFadeInUp 300ms;
   @include panel-shadow();
 
+  yuv-icon {
+    cursor: pointer;
+  }
+
   &.mini {
     width: auto;
     background-color: var(--color-accent);
     border-radius: 50%;
+
+    &.allErr header:after {
+      display: none;
+    }
 
     header {
       background-color: transparent;
@@ -57,11 +65,21 @@
     .title {
       flex: 1;
       padding: 0 var(--app-pane-padding);
+      @include ellipsis();
     }
     yuv-icon {
       padding: calc(var(--app-pane-padding) / 2);
       box-sizing: content-box;
-      cursor: pointer;
+    }
+  }
+
+  &.err {
+    background-color: var(--color-error);
+    color: #fff;
+
+    .progress,
+    .percentage {
+      display: none;
     }
   }
 
@@ -69,19 +87,26 @@
     display: flex;
     align-items: center;
     position: relative;
-    padding: var(--app-pane-padding);
+    padding: calc(var(--app-pane-padding) / 2) 0;
     border-bottom: 1px solid var(--panel-divider-color);
-
-    &.done {
-      display: none;
-    }
 
     .name {
       flex: 1;
       color: var(--text-color-body);
+      padding: 0 calc(var(--app-pane-padding) / 2);
+    }
+
+    yuv-icon {
+      padding: calc(var(--app-pane-padding) / 2);
+      flex: 0 0 auto;
+      box-sizing: content-box;
+      width: 18px;
+      height: 18px;
+      color: var(--text-color-hint);
     }
 
     .percentage {
+      padding: 0 calc(var(--app-pane-padding) / 2);
       font-family: monospace;
       font-size: var(--font-hint);
       color: var(--text-color-caption);

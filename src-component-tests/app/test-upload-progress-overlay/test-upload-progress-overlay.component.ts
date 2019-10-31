@@ -9,7 +9,7 @@ import { takeWhile, tap } from 'rxjs/operators';
   styleUrls: ['./test-upload-progress-overlay.component.scss']
 })
 export class TestUploadProgressOverlayComponent implements OnInit {
-  progress: ProgressStatus[];
+  progress: ProgressStatus;
 
   constructor() {}
 
@@ -20,11 +20,11 @@ export class TestUploadProgressOverlayComponent implements OnInit {
       const id = Utils.uuid();
       p.push({
         id: id,
-        filename: `filname_nr_${i}.txt`,
+        filename: `filname_with a long filename_nr_${i}.txt`,
         progress: this.getProgressItem(i, id)
       });
     }
-    this.progress = p;
+    this.progress = { err: 0, items: p };
   }
 
   private getProgressItem(i: number, id: string): Observable<number> {
@@ -34,7 +34,7 @@ export class TestUploadProgressOverlayComponent implements OnInit {
       tap(() => {
         t++;
         if (t === 100) {
-          this.progress = this.progress.filter(s => s.id !== id);
+          this.progress.items = this.progress.items.filter(s => s.id !== id);
         }
       })
     );
