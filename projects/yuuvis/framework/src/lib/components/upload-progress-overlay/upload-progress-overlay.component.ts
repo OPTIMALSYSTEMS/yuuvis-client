@@ -12,6 +12,7 @@ export class UploadProgressOverlayComponent {
     minimize: SVGIcons['arrow-down'],
     remove: SVGIcons['clear']
   };
+  minimized: boolean;
   progressStatus$: Observable<ProgressStatus>;
   // besides listening to the upload service you may want to use
   // the input to provide the component with data (also nice for testing :)
