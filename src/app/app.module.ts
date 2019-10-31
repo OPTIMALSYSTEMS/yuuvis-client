@@ -15,9 +15,10 @@ import { EnterComponent } from './states/enter/enter.component';
 import { NotFoundComponent } from './states/not-found/not-found.component';
 import { ResultComponent } from './states/result/result.component';
 import { SettingsComponent } from './states/settings/settings.component';
+import { ObjectComponent } from './states/object/object.component';
 
 @NgModule({
-  declarations: [AppComponent, DashboardComponent, ResultComponent, FrameComponent, SettingsComponent, NotFoundComponent, EnterComponent],
+  declarations: [AppComponent, DashboardComponent, ResultComponent, FrameComponent, SettingsComponent, NotFoundComponent, EnterComponent, ObjectComponent],
   imports: [
     BrowserModule,
     FormsModule,
