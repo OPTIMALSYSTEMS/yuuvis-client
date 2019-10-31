@@ -17,7 +17,7 @@ export class DeleteActionComponent extends DmsObjectTarget implements ComponentA
   label: string;
   description: string;
   priority = 7;
-  iconSrc = SVGIcons['content-download'];
+  iconSrc = SVGIcons['delete'];
   group = 'further';
   range = SelectionRange.SINGLE_SELECT;
   component = DeleteComponent;

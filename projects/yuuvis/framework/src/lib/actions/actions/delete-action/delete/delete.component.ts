@@ -1,5 +1,4 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { Router } from '@angular/router';
 import { BackendService, DmsObject, DmsService, EventService, TranslateService, YuvEventType } from '@yuuvis/core';
 import { NotificationService } from '../../../../services/notification/notification.service';
 import { ActionComponent } from '../../../interfaces/action-component.interface';
@@ -21,16 +20,10 @@ export class DeleteComponent implements OnInit, ActionComponent {
   constructor(
     private translate: TranslateService,
     private backend: BackendService,
-    private router: Router,
     private dmsService: DmsService,
     private eventService: EventService,
     private notificationService: NotificationService
   ) {}
-
-  private isAllowedState(): boolean {
-    const disabledStates = ['/result'];
-    return !disabledStates.some(s => this.router.url.startsWith(s));
-  }
 
   deleteDmsObject(dmsObject: DmsObject) {
     this.dmsService.deleteDmsObject(dmsObject.id).subscribe(
@@ -41,10 +34,6 @@ export class DeleteComponent implements OnInit, ActionComponent {
         );
 
         this.eventService.trigger(YuvEventType.DMS_OBJECT_DELETED, this.selection[0]);
-
-        if ((dmsObject.isFolder || !dmsObject.contextFolder) && this.isAllowedState()) {
-          this.router.navigate(['/']);
-        }
 
         this.finished.emit();
       },
