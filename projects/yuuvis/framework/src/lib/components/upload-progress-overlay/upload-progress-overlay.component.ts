@@ -1,27 +1,34 @@
-import { Component } from '@angular/core';
-import { UploadService } from '@yuuvis/core';
+import { Component, Input } from '@angular/core';
+import { ProgressStatus, UploadService } from '@yuuvis/core';
+import { Observable, of } from 'rxjs';
+import { SVGIcons } from './../../svg.generated';
 @Component({
   selector: 'yuv-upload-progress-overlay',
   templateUrl: './upload-progress-overlay.component.html',
   styleUrls: ['./upload-progress-overlay.component.scss']
 })
 export class UploadProgressOverlayComponent {
-  progressStatus: any = {};
-  showOverlay = false;
-  lastRunningUploadsCount = 0;
-
-  constructor(private uploadService: UploadService) {
-    this.uploadService.status$.subscribe(status => this.handleNewProgressStatus(status));
+  minimizeIcon = SVGIcons['arrow-down'];
+  progressStatus$: Observable<ProgressStatus[]>;
+  // besides listening to the upload service you may want to use
+  // the input to provide the component with data (also nice for testing :)
+  @Input() set progress(ps: ProgressStatus[]) {
+    this.progressStatus$ = ps ? of(ps) : null;
   }
 
-  private handleNewProgressStatus(status) {
-    const runningUploadsCount = Object.keys(status).length;
-    if (runningUploadsCount === 0) {
-      this.showOverlay = false;
-    } else if (runningUploadsCount > this.lastRunningUploadsCount) {
-      this.showOverlay = true;
-    }
-    this.lastRunningUploadsCount = runningUploadsCount;
-    this.progressStatus = status;
+  constructor(private uploadService: UploadService) {
+    this.progressStatus$ = this.uploadService.status$;
+  }
+
+  overallProgress(ps: ProgressStatus[]) {
+    // ps.map(p => p.progress).
+    //   .pipe(mergeAll())
+    //   .subscribe(res => {
+    //     console.log(res);
+    //   });
+  }
+
+  trackByFn(index, item) {
+    return item.id;
   }
 }

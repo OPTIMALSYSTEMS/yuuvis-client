@@ -16,7 +16,8 @@ import {
 import { ColDef } from 'ag-grid-community';
 import { of } from 'rxjs';
 import { takeUntilDestroy } from 'take-until-destroy';
-import { ResponsiveDataTableComponent, ResponsiveTableData } from '../../components';
+import { ResponsiveDataTableComponent } from '../../components/responsive-data-table/responsive-data-table.component';
+import { ResponsiveTableData } from '../../components/responsive-data-table/responsive-data-table.interface';
 import { GridService } from '../../services/grid/grid.service';
 import { SVGIcons } from '../../svg.generated';
 

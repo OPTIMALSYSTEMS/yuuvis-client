@@ -19,6 +19,7 @@ import { TestResponsiveTabContainerComponent } from './test-responsive-tab-conta
 import { TestSearchResultPanelComponent } from './test-search-result-panel/test-search-result-panel.component';
 import { TestSearchResultComponent } from './test-search-result/test-search-result.component';
 import { TestSummaryComponent } from './test-summary/test-summary.component';
+import { TestUploadProgressOverlayComponent } from './test-upload-progress-overlay/test-upload-progress-overlay.component';
 
 @NgModule({
   declarations: [
@@ -35,7 +36,8 @@ import { TestSummaryComponent } from './test-summary/test-summary.component';
     TestActionMenuComponent,
     TestAuditComponent,
     DmsObjectPickerComponent,
-    TestContentPreviewComponent
+    TestContentPreviewComponent,
+    TestUploadProgressOverlayComponent
   ],
   imports: [
     HttpClientModule,

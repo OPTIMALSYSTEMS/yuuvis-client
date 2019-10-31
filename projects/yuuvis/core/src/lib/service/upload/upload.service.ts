@@ -2,22 +2,27 @@ import { HttpClient, HttpEventType, HttpRequest, HttpResponse } from '@angular/c
 import { Injectable } from '@angular/core';
 import { Observable, ReplaySubject, Subject } from 'rxjs';
 import { tap } from 'rxjs/operators';
+import { Utils } from '../../util/utils';
 
 export interface ProgressStatus {
-  [key: string]: { progress: Observable<number> };
+  id: string;
+  filename: string;
+  progress: Observable<number>;
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class UploadService {
-  private status: ProgressStatus = {};
-  private statusSource = new ReplaySubject<ProgressStatus>();
-  public status$: Observable<ProgressStatus> = this.statusSource.asObservable();
+  private status: ProgressStatus[] = [];
+  private statusSource = new ReplaySubject<ProgressStatus[]>();
+  public status$: Observable<ProgressStatus[]> = this.statusSource.asObservable();
 
   constructor(private http: HttpClient) {}
 
   public upload(url: string, file: File, payload?: { key: string; data: string }): Observable<any> {
+    const id = Utils.uuid();
+
     const formData: FormData = new FormData();
     formData.append('file', file, file.name);
 
@@ -31,9 +36,11 @@ export class UploadService {
 
     const progress = new Subject<number>();
 
-    this.status[file.name] = {
+    this.status.push({
+      id: id,
+      filename: file.name,
       progress: progress.asObservable()
-    };
+    });
     this.statusSource.next(this.status);
 
     return this.http.request(req).pipe(
@@ -43,7 +50,7 @@ export class UploadService {
           progress.next(percentDone);
         } else if (event instanceof HttpResponse) {
           progress.complete();
-          delete this.status[file.name];
+          this.status = this.status.filter(s => s.id !== id);
           this.statusSource.next(this.status);
         }
       })
