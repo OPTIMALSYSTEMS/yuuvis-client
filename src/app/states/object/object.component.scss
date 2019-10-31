@@ -1,0 +1,11 @@
+:host {
+  .object-state {
+    position: absolute;
+    top: var(--app-bar-height);
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: var(--app-pane-padding);
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.2);
+  }
+}

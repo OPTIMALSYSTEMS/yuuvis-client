@@ -11,6 +11,7 @@ import { SearchService } from '../search/search.service';
 import { SearchResult, SearchResultItem } from '../search/search.service.interface';
 import { BaseObjectTypeField } from '../system/system.enum';
 import { SystemService } from '../system/system.service';
+import { UploadService } from '../upload/upload.service';
 
 @Injectable({
   providedIn: 'root'
@@ -20,12 +21,18 @@ export class DmsService {
     private searchService: SearchService,
     private backend: BackendService,
     private eventService: EventService,
+    private uploadService: UploadService,
     private systemService: SystemService
   ) {}
 
   deleteDmsObject(id: string): Observable<any> {
     const url = `/dms/objects/${id}`;
     return this.backend.delete(url, ApiBase.core);
+  }
+
+  uploadContent(objectId: string, file: File) {
+    const url = `api-web/dms/update/${objectId}/content`;
+    return this.uploadService.upload(url, file);
   }
 
   getDmsObject(id: string, version?: number, intent?: string): Observable<DmsObject> {

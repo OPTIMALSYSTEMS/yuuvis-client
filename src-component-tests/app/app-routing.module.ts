@@ -12,6 +12,7 @@ import { TestResponsiveTabContainerComponent } from './test-responsive-tab-conta
 import { TestSearchResultPanelComponent } from './test-search-result-panel/test-search-result-panel.component';
 import { TestSearchResultComponent } from './test-search-result/test-search-result.component';
 import { TestSummaryComponent } from './test-summary/test-summary.component';
+import { TestUploadProgressOverlayComponent } from './test-upload-progress-overlay/test-upload-progress-overlay.component';
 
 const routes: Routes = [
   { path: 'object-form', component: TestObjectFormComponent },
@@ -25,7 +26,8 @@ const routes: Routes = [
   { path: 'panel', component: TestPanelComponent },
   { path: 'quick-search', component: TestQuickSearchComponent },
   { path: 'action-menu', component: TestActionMenuComponent },
-  { path: 'summary', component: TestSummaryComponent }
+  { path: 'summary', component: TestSummaryComponent },
+  { path: 'upload-progress-overlay', component: TestUploadProgressOverlayComponent }
 ];
 
 @NgModule({

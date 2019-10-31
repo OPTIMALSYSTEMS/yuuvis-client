@@ -3,7 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { YuvCommonUiModule } from '@yuuvis/common-ui';
-import { YuvDirectivesModule, YuvFrameworkModule } from '@yuuvis/framework';
+import { YuvComponentsModule, YuvDirectivesModule, YuvFrameworkModule } from '@yuuvis/framework';
 import { AccordionModule } from 'primeng/accordion';
 import { environment } from '../environments/environment';
 import { AppComponent } from './app.component';
@@ -15,9 +15,10 @@ import { EnterComponent } from './states/enter/enter.component';
 import { NotFoundComponent } from './states/not-found/not-found.component';
 import { ResultComponent } from './states/result/result.component';
 import { SettingsComponent } from './states/settings/settings.component';
+import { ObjectComponent } from './states/object/object.component';
 
 @NgModule({
-  declarations: [AppComponent, DashboardComponent, ResultComponent, FrameComponent, SettingsComponent, NotFoundComponent, EnterComponent],
+  declarations: [AppComponent, DashboardComponent, ResultComponent, FrameComponent, SettingsComponent, NotFoundComponent, EnterComponent, ObjectComponent],
   imports: [
     BrowserModule,
     FormsModule,
@@ -29,6 +30,7 @@ import { SettingsComponent } from './states/settings/settings.component';
     }),
     AppRoutingModule,
     AboutModule,
+    YuvComponentsModule,
     YuvCommonUiModule,
     YuvDirectivesModule,
     ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production })

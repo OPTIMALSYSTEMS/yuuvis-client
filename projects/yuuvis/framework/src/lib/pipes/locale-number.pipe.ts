@@ -1,7 +1,8 @@
 import { CurrencyPipe, DecimalPipe, PercentPipe } from '@angular/common';
-import { OnDestroy, Pipe, PipeTransform } from '@angular/core';
+import { Pipe, PipeTransform } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { Subscription } from 'rxjs';
+import { UnsubscribeOnDestroy } from '@yuuvis/common-ui';
+import { takeUntil } from 'rxjs/operators';
 
 @Pipe({
   name: 'localeDecimal',
@@ -12,27 +13,8 @@ export class LocaleDecimalPipe extends DecimalPipe implements PipeTransform {
     super(translate.currentLang || 'en');
   }
 
-  public transform(
-    value: any,
-    digits?: string,
-    locale?: string
-  ): string | null {
-    if (Array.isArray(value)) {
-      return value
-        .map(val =>
-          super.transform(
-            val,
-            digits,
-            locale || this.translate.currentLang || 'en'
-          )
-        )
-        .join(', ');
-    }
-    return super.transform(
-      value,
-      digits,
-      locale || this.translate.currentLang || 'en'
-    );
+  public transform(value: any, digits?: string, locale?: string): string | null {
+    return super.transform(value, digits, locale || this.translate.currentLang || 'en');
   }
 }
 
@@ -45,16 +27,8 @@ export class LocalePercentPipe extends PercentPipe implements PipeTransform {
     super(translate.currentLang || 'en');
   }
 
-  public transform(
-    value: any,
-    digits?: string,
-    locale?: string
-  ): string | null {
-    return super.transform(
-      value,
-      digits,
-      locale || this.translate.currentLang || 'en'
-    );
+  public transform(value: any, digits?: string, locale?: string): string | null {
+    return super.transform(value, digits, locale || this.translate.currentLang || 'en');
   }
 }
 
@@ -74,13 +48,7 @@ export class LocaleCurrencyPipe extends CurrencyPipe implements PipeTransform {
     digits?: string,
     locale?: string
   ): string | null {
-    return super.transform(
-      value,
-      currencyCode,
-      display,
-      digits,
-      locale || this.translate.currentLang || 'en'
-    );
+    return super.transform(value, currencyCode, display, digits, locale || this.translate.currentLang || 'en');
   }
 }
 
@@ -88,33 +56,25 @@ export class LocaleCurrencyPipe extends CurrencyPipe implements PipeTransform {
   name: 'localeNumber',
   pure: false
 })
-export class LocaleNumberPipe implements PipeTransform, OnDestroy {
+export class LocaleNumberPipe extends UnsubscribeOnDestroy implements PipeTransform {
   decimalPipe;
   decimalSeparator = '.';
   separator = ',';
-  private langChangeSubscription: Subscription;
 
   constructor(public translate: TranslateService) {
+    super();
     this.decimalPipe = new LocaleDecimalPipe(this.translate);
     this.updateSeparators(this.translate.currentLang);
-    this.langChangeSubscription = this.translate.onLangChange.subscribe(
-      currLang => this.updateSeparators(currLang.lang)
-    );
+    this.translate.onLangChange.pipe(takeUntil(this.componentDestroyed$)).subscribe(currLang => this.updateSeparators(currLang.lang));
   }
 
-  public transform(
-    value: any,
-    grouping?: boolean,
-    pattern?: string,
-    scale?: number,
-    digits?: string,
-    locale?: string
-  ): string | null {
-    let str = this.decimalPipe.transform(value, digits, locale);
-    if (!grouping) {
-      str = str.replace(new RegExp('\\' + this.separator, 'g'), '');
+  public transform(value: any, grouping?: boolean, pattern?: string, scale?: number, digits?: string, locale?: string): string | null {
+    value = Array.isArray(value) ? value[0] : value;
+    let number = this.decimalPipe.transform(value, digits, locale);
+    if (number && !grouping) {
+      number = number.replace(new RegExp('\\' + this.separator, 'g'), '');
     }
-    return (pattern || '{{number}}').replace('{{number}}', str);
+    return number ? (pattern || '{{number}}').replace('{{number}}', number) : number;
   }
 
   private updateSeparators(lang: string) {
@@ -126,35 +86,16 @@ export class LocaleNumberPipe implements PipeTransform, OnDestroy {
   }
 
   stringToNumber(value: string) {
-    value = (value || '')
-      .replace(new RegExp('\\' + this.separator, 'g'), '')
-      .replace(this.decimalSeparator, '.');
-    if (
-      typeof value === 'string' &&
-      !isNaN(Number(value) - parseFloat(value))
-    ) {
+    value = (value || '').replace(new RegExp('\\' + this.separator, 'g'), '').replace(this.decimalSeparator, '.');
+    if (typeof value === 'string' && !isNaN(Number(value) - parseFloat(value))) {
       return Number(value);
     }
     return NaN;
   }
 
-  numberToString(
-    value: number,
-    grouping?: boolean,
-    pattern?: string,
-    scale?: number
-  ) {
+  numberToString(value: number, grouping?: boolean, pattern?: string, scale?: number) {
+    value = Array.isArray(value) ? value[0] : value;
     scale = typeof scale === 'number' ? scale : 2;
-    return this.transform(
-      value,
-      grouping,
-      pattern,
-      scale,
-      `1.${scale}-${scale}`
-    );
-  }
-
-  ngOnDestroy() {
-    this.langChangeSubscription.unsubscribe();
+    return this.transform(value, grouping, pattern, scale, `1.${scale}-${scale}`);
   }
 }

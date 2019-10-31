@@ -15,8 +15,18 @@ import { DeleteComponent } from './actions/delete-action/delete/delete.component
 import { DownloadActionComponent } from './actions/download-action/download-action';
 import { DownloadOriginalActionComponent } from './actions/download-original-action/download-original-action';
 import { DownloadPdfActionComponent } from './actions/download-pdf-action/download-pdf-action';
+import { UploadActionComponent } from './actions/upload-action/upload-action';
+import { UploadComponent } from './actions/upload-action/upload/upload.component';
 
-export const entryComponents = [DownloadActionComponent, DownloadOriginalActionComponent, DownloadPdfActionComponent, DeleteActionComponent, DeleteComponent];
+export const entryComponents = [
+  DownloadActionComponent,
+  DownloadOriginalActionComponent,
+  DownloadPdfActionComponent,
+  DeleteActionComponent,
+  DeleteComponent,
+  UploadComponent,
+  UploadActionComponent
+];
 
 /**
  * @module
@@ -54,7 +64,9 @@ export const entryComponents = [DownloadActionComponent, DownloadOriginalActionC
     DownloadOriginalActionComponent,
     DownloadPdfActionComponent,
     DeleteActionComponent,
-    DeleteComponent
+    DeleteComponent,
+    UploadComponent,
+    UploadActionComponent
   ],
   entryComponents
 })

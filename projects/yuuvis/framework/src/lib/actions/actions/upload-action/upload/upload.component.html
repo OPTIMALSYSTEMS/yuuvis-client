@@ -1,0 +1,9 @@
+<div>
+  <input type="file" #fileInput style="display: none" (change)="onChange()" />
+  <div *ngIf="file" class="filename" (click)="openFileDialog()">{{ file.name }}</div>
+  <div *ngIf="!file" class="filename" (click)="openFileDialog()">{{ 'yuv.framework.action-menu.action.upload.dms.object.content.noFile' | translate }}</div>
+  <div class="buttons">
+    <button class="secondary" (click)="cancel()">{{ 'yuv.framework.shared.cancel' | translate }}</button>
+    <button class="primary" (click)="save()" [disabled]="!file">{{ 'yuv.framework.object-form-edit.save' | translate }}</button>
+  </div>
+</div>
