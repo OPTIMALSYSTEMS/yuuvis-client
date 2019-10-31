@@ -19,7 +19,7 @@ export class TestUploadProgressOverlayComponent implements OnInit {
     for (let i = 1; i <= count; i++) {
       const id = Utils.uuid();
       p.push({
-        id: id,
+        id,
         filename: `filname_with a long filename_nr_${i}.txt`,
         progress: this.getProgressItem(i, id)
       });
@@ -29,7 +29,7 @@ export class TestUploadProgressOverlayComponent implements OnInit {
 
   private getProgressItem(i: number, id: string): Observable<number> {
     let t = 0;
-    return timer(i * 100, i * 1000).pipe(
+    return timer(i * 100, i * 100).pipe(
       takeWhile(() => t <= 100),
       tap(() => {
         t++;

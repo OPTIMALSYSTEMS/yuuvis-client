@@ -28,14 +28,6 @@ export class UploadProgressOverlayComponent {
     this.uploadService.cancelItem(id);
   }
 
-  overallProgress(ps: ProgressStatus[]) {
-    // ps.map(p => p.progress).
-    //   .pipe(mergeAll())
-    //   .subscribe(res => {
-    //     console.log(res);
-    //   });
-  }
-
   trackByFn(index, item) {
     return item.id;
   }

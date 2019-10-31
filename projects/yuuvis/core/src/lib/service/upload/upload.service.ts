@@ -66,7 +66,7 @@ export class UploadService {
 
     return new Observable(o => {
       this.status.items.push({
-        id: id,
+        id,
         filename: file.name,
         progress: progress.asObservable(),
         err: null,

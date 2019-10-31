@@ -2,7 +2,7 @@
   <div class="uploadProgress" *ngIf="ps.items.length"
     [ngClass]="{'mini': minimized, err: ps.err > 0, allErr: ps.err === ps.items.length}">
 
-    <header [title]="overallProgress(ps)">
+    <header>
       <div class="title">{{'yuv.framework.upload-progress-overlay.title'|translate}}</div>
       <yuv-icon [svg]="icon.minimize" (click)="minimized = !minimized"></yuv-icon>
     </header>

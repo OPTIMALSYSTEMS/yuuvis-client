@@ -1,7 +1,7 @@
 import { PlatformLocation } from '@angular/common';
 import { Injectable } from '@angular/core';
 import { ApiBase, UserService, Utils } from '@yuuvis/core';
-import { LayoutService } from './../../../services/layout/layout.service';
+import { LayoutService } from '../../../services/layout/layout.service';
 
 @Injectable({
   providedIn: 'root'
@@ -18,7 +18,7 @@ export class ContentPreviewService {
     let root = `${this.location.protocol}//${this.location.hostname}`;
     root = this.location.port.length ? `${root}:${this.location.port}` : root;
     const mimeType = contentMimeType;
-    const path = `${root}/${ApiBase.apiWeb}/dms/${id}/content?download=false`;
+    const path = `${root}/${ApiBase.apiWeb}/dms/${id}/content?asdownload=false`;
     return { root, mimeType, path };
   }
 
