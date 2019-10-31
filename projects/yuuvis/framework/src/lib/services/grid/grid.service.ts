@@ -123,7 +123,7 @@ export class GridService {
       case 'string': {
         colDef.cellRenderer = params => Utils.escapeHtml(params.value);
         if (field.cardinality === 'multi') {
-          colDef.cellRenderer = CellRenderer.multiSelectCellRenderer;
+          colDef.cellRenderer = this.customContext(CellRenderer.multiSelectCellRenderer);
         }
         colDef.cellClass = field.cardinality === 'multi' ? 'multiCell string' : 'string';
         break;
@@ -173,7 +173,7 @@ export class GridService {
       //   break;
       // }
       case 'boolean': {
-        colDef.cellRenderer = CellRenderer.booleanCellRenderer;
+        colDef.cellRenderer = this.customContext(CellRenderer.booleanCellRenderer);
         colDef.width = 100;
         break;
       }
