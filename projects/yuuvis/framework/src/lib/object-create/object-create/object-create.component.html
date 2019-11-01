@@ -1,16 +1,30 @@
-<yuv-stepper-panel #stepper [yuvBusyOverlay]="busy" [title]="'yuv.framework.object-create.header.title'|translate">
+<div class="yuv-object-create" [yuvBusyOverlay]="state.busy">
 
-  <cdk-step editable="true" [label]="'yuv.framework.object-create.step.type'|translate"
-    [completed]="!!selectedObjectType">
+  <header>
+    <h1>{{'yuv.framework.object-create.header.title'|translate}}</h1>
 
-    <div class="step select">
+    <div class="breadcrumb">
+      <ng-container *ngFor="let b of breadcrumb">
+        <div class="item" *ngIf="b.visible" (click)="goToStep(b.step)"
+          [ngClass]="{current: b.step === state.currentStep}">
+          <span>{{b.label}}</span>
+        </div>
+      </ng-container>
+    </div>
+  </header>
+
+  <ng-container [ngSwitch]="state?.currentStep">
+
+    <!-- STEP 1: Select an object type-->
+    <div class="step select" *ngSwitchCase="'objecttype'">
       <h1>{{'yuv.framework.object-create.step.type'|translate}}</h1>
 
       <div class="select-container">
 
-        <div class="select-list">
+        <!-- object type documents -->
+        <div class="type-select-list">
           <h2>{{'yuv.framework.object-create.step.type.document'|translate}}</h2>
-          <div class="select-item" *ngFor="let t of availableDocumentTypes"
+          <div class="object-type" *ngFor="let t of availableDocumentTypes"
             (yuvFileDrop)="onFilesDroppedOnType($event, t.type)"
             [yuvFileDropDisabled]="t.type.contentStreamAllowed === 'notallowed'"
             [ngClass]="{selected: selectedObjectType?.id === t.type.id}" (click)="selectObjectType(t.type)">
@@ -18,80 +32,77 @@
           </div>
         </div>
 
-        <div class="select-list">
+        <!-- object type folders -->
+        <div class="type-select-list">
           <h2>{{'yuv.framework.object-create.step.type.folder'|translate}}</h2>
-          <div class="select-item" *ngFor="let t of availableFolderTypes"
+          <div class="object-type" *ngFor="let t of availableFolderTypes"
             [ngClass]="{selected: selectedObjectType?.id === t.type.id}" (click)="selectObjectType(t.type)">
             {{t.label}}
           </div>
         </div>
-
       </div>
 
     </div>
 
-  </cdk-step>
-  <cdk-step editable="true" [label]="'yuv.framework.object-create.step.file'|translate" [completed]="completed.file">
-    <div class="step select" *ngIf="selectedObjectType" (yuvFileDrop)="onFilesDroppedOnType($event)"
+    <!-- STEP 2: Choose file(s) -->
+    <div class="step select" *ngSwitchCase="'files'" (yuvFileDrop)="onFilesDroppedOnType($event)"
       [yuvFileDropDisabled]="selectedObjectType.contentStreamAllowed === 'notallowed'">
       <h1>{{'yuv.framework.object-create.step.file'|translate}}</h1>
-      <div class="select-container files">
 
+      <div class="content-select">
 
-        <div class="files select-list">
-          <div>
-            <div class="file select-item" *ngFor="let file of files">
-              <div class="name">
-                {{file.name}}
-              </div>
-
-              <yuv-icon [svg]="icon.clear" (click)="removeFile(file)"></yuv-icon>
-            </div>
-          </div>
-
-
-
-          <!-- upload a file -->
-          <div class="buttons">
-
-            <button *ngIf="files.length"
-              (click)="filesClear()">{{'yuv.framework.object-create.step.file.clear'|translate}}</button>
-
-            <yuv-file-picker [label]="'yuv.framework.object-create.step.file.choose'|translate" [output]="'file'"
-              [multiple]="true" (fileSelected)="fileChosen($event)"></yuv-file-picker>
-
-            <button class="primary" (click)="fileSelectContinue()"
-              [disabled]="selectedObjectType.contentStreamAllowed === 'required' && files.length === 0">{{'yuv.framework.object-create.step.file.continue'|translate}}</button>
-
-          </div>
-
-
+        <div class="not-supported"
+          *ngIf="selectedObjectType.isFolder || selectedObjectType.contentStreamAllowed === 'notallowed'; else tplSupported">
+          {{'yuv.framework.object-create.step.file.not-supported'|translate}}
         </div>
+
+        <ng-template #tplSupported>
+
+          <div class="content-select-list">
+
+            <div class="files">
+              <div class="file" *ngFor="let file of files">
+                <div class="name">
+                  {{file.name}}
+                </div>
+                <yuv-icon class="btn" [svg]="icon.clear" (click)="removeFile(file)"></yuv-icon>
+              </div>
+            </div>
+
+            <!-- upload a file -->
+            <div class="buttons">
+              <button *ngIf="files.length"
+                (click)="filesClear()">{{'yuv.framework.object-create.step.file.clear'|translate}}</button>
+              <yuv-file-picker [label]="'yuv.framework.object-create.step.file.choose'|translate" [output]="'file'"
+                [multiple]="true" (fileSelected)="fileChosen($event)"></yuv-file-picker>
+              <button class="primary" (click)="fileSelectContinue()"
+                [disabled]="selectedObjectType.contentStreamAllowed === 'required' && files.length === 0">{{'yuv.framework.object-create.step.file.continue'|translate}}</button>
+            </div>
+
+          </div>
+        </ng-template>
+
       </div>
     </div>
-  </cdk-step>
 
-  <!-- indexdata -->
-  <cdk-step editable="true" [label]="'yuv.framework.object-create.step.indexdata'|translate"
-    [completed]="completed.indexdata">
-    <div class="step">
+    <!-- STEP 3: Add indexdata -->
+    <div class="step" *ngSwitchCase="'indexdata'">
       <h1>{{'yuv.framework.object-create.step.indexdata'|translate}}</h1>
       <yuv-object-form [formOptions]="selectedObjectTypeFormOptions" *ngIf="selectedObjectTypeFormOptions"
         (statusChanged)="onFormStatusChanged($event)">
       </yuv-object-form>
     </div>
-  </cdk-step>
 
-</yuv-stepper-panel>
+  </ng-container>
 
-<footer>
+  <footer>
 
-  <yuv-form-input class="checkbox" [label]="'yuv.framework.object-create.footer.another'|translate" [skipToggle]="true">
-    <yuv-checkbox [(ngModel)]="createAnother"></yuv-checkbox>
-  </yuv-form-input>
+    <yuv-form-input class="checkbox" [label]="'yuv.framework.object-create.footer.another'|translate"
+      [skipToggle]="true">
+      <yuv-checkbox [(ngModel)]="createAnother"></yuv-checkbox>
+    </yuv-form-input>
 
-
-
-  <button class="primary" [disabled]="!done" (click)="create()"
-    translate>yuv.framework.object-create.footer.create</button>
-</footer>
+    <button class="primary" [disabled]="!state.done" (click)="create()"
+      translate>yuv.framework.object-create.footer.create</button>
+  </footer>
+</div>

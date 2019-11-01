@@ -46,6 +46,7 @@
 	"yuv.framework.object-create.step.file.choose": "Add files",
 	"yuv.framework.object-create.step.file.clear": "Clear",
 	"yuv.framework.object-create.step.file.continue": "Continue",
+	"yuv.framework.object-create.step.file.not-supported": "",
 	"yuv.framework.object-create.step.indexdata": "Add indexdata",
 	"yuv.framework.object-create.step.type": "Choose object type",
 	"yuv.framework.object-create.step.type.content.allowed": "Mit oder ohne Dokumentdatei",

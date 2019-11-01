@@ -19,15 +19,13 @@ export class ObjectCreateComponent {
   };
 
   // state of creation progress
-  completed = {
-    file: false,
-    indexdata: false
+  state: {
+    currentStep: 'objecttype' | 'files' | 'indexdata';
+    busy: boolean;
+    done: boolean;
   };
-  busy: boolean;
-  done: boolean;
   createAnother: boolean;
-
-  selectedIndex: number = 0;
+  // selectedIndex: number = 0;
   availableDocumentTypes: { type: ObjectType; label: string }[] = [];
   availableFolderTypes: { type: ObjectType; label: string }[] = [];
 
@@ -35,12 +33,14 @@ export class ObjectCreateComponent {
   selectedObjectTypeFormOptions: ObjectFormOptions;
   formState: FormStatusChangedEvent;
   files: File[] = [];
-
+  breadcrumb;
   labels;
 
   private pendingTaskId: string;
 
   constructor(private system: SystemService, private translate: TranslateService, private pendingChanges: PendingChangesService) {
+    this.resetState();
+
     this.system
       .getObjectTypes()
       .filter(ot => ot.creatable)
@@ -62,77 +62,96 @@ export class ObjectCreateComponent {
       notallowed: this.translate.instant('yuv.framework.object-create.step.type.content.notallowed'),
       required: this.translate.instant('yuv.framework.object-create.step.type.content.required')
     };
+    this.initBreadcrumb();
   }
 
+  goToStep(step: 'objecttype' | 'files' | 'indexdata') {
+    this.state.currentStep = step;
+    if (step === 'indexdata' && this.formState) {
+      this.selectedObjectTypeFormOptions.data = this.formState.data;
+    }
+  }
+
+  /**
+   * Select an object type for the object to be created.
+   * @param objectType The object type to be selected
+   */
   selectObjectType(objectType: ObjectType) {
     this.selectedObjectType = objectType;
-    this.busy = true;
+    this.files = [];
+    this.state.busy = true;
     this.startPending();
 
     this.system.getObjectTypeForm(objectType.id, 'CREATE').subscribe(
       model => {
-        this.busy = false;
+        this.state.busy = false;
         this.selectedObjectTypeFormOptions = {
           formModel: model,
           data: {}
         };
         // does selected type support contents?
         if (objectType.isFolder || objectType.contentStreamAllowed === 'notallowed') {
-          this.files = [];
-          this.completed.file = true;
-          this.stepper.selectedIndex = 2;
+          this.state.currentStep = 'indexdata';
+          this.breadcrumb[1].visible = false;
+          this.breadcrumb[2].visible = true;
         } else {
-          this.stepper.selectedIndex = 1;
+          this.state.currentStep = 'files';
+          this.breadcrumb[2].visible = false;
+          this.breadcrumb[1].visible = true;
         }
       },
       err => {
-        this.busy = false;
+        this.state.busy = false;
       }
     );
   }
 
   fileChosen(files: File[]) {
     this.files = [...this.files, ...files];
-    this.completed.file = true;
-    // setTimeout(() => {
-    //   this.stepper.next();
-    // });
+    this.state.done = this.isReady();
   }
 
   filesClear() {
     this.files = [];
-    this.completed.file = true;
+    this.state.done = this.isReady();
   }
 
   removeFile(file: File) {
     this.files = this.files.filter(f => f.name !== file.name);
+    this.state.done = this.isReady();
   }
 
   onFilesDroppedOnType(files: File[], type: ObjectType) {
-    this.files = [...this.files, ...files];
-    this.completed.file = true;
     if (type) {
       this.selectObjectType(type);
     }
-    // else {
-    //   setTimeout(() => {
-    //     this.stepper.next();
-    //   });
-    // }
+    this.files = [...this.files, ...files];
+    this.state.done = this.isReady();
   }
 
   fileSelectContinue() {
-    this.stepper.next();
+    this.goToStep('indexdata');
+    this.breadcrumb[2].visible = true;
   }
 
   create() {
     // TODO: actually create the object
 
-    this.files = [];
     this.finishPending();
     if (this.createAnother) {
+      this.selectedObjectType = null;
+      this.files = [];
       this.stepper.reset();
     }
+  }
+
+  resetState() {
+    this.state = {
+      currentStep: 'objecttype',
+      busy: false,
+      done: false
+    };
+    this.initBreadcrumb();
   }
 
   reset() {
@@ -141,7 +160,51 @@ export class ObjectCreateComponent {
 
   onFormStatusChanged(evt) {
     this.formState = evt;
-    this.done = this.completed.file && !this.formState.invalid;
+    this.state.done = this.isReady();
+  }
+
+  private initBreadcrumb() {
+    this.breadcrumb = [
+      {
+        step: 'objecttype',
+        label: this.translate.instant('yuv.framework.object-create.step.type'),
+        visible: true
+      },
+      {
+        step: 'files',
+        label: this.translate.instant('yuv.framework.object-create.step.file'),
+        visible: false
+      },
+      {
+        step: 'indexdata',
+        label: this.translate.instant('yuv.framework.object-create.step.indexdata'),
+        visible: false
+      }
+    ];
+  }
+
+  /**
+   * Checks whether or not all requirements are met to create a
+   * new object.
+   */
+  private isReady() {
+    const typeSelected = !!this.selectedObjectType;
+    let fileSelected = false;
+    switch (this.selectedObjectType.contentStreamAllowed) {
+      case 'required': {
+        fileSelected = this.files.length > 0;
+        break;
+      }
+      case 'notallowed': {
+        fileSelected = this.files.length === 0;
+        break;
+      }
+      case 'allowed': {
+        fileSelected = true;
+        break;
+      }
+    }
+    return typeSelected && fileSelected && !!this.formState && !this.formState.invalid;
   }
 
   private startPending() {

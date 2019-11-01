@@ -1,17 +1,57 @@
 @import '../../../../../../../src/scss-shared/_mixins';
 
-:host {
+.yuv-object-create {
   display: grid;
+  height: 100%;
   grid-template-columns: 1fr;
-  grid-template-rows: 1fr auto;
-  grid-template-areas: 'stepper' 'footer';
-  yuv-stepper-panel {
-    grid-area: stepper;
+  grid-template-rows: auto 1fr auto;
+  grid-template-areas: 'header' 'steps' 'footer';
+  background-color: var(--panel-background-grey);
+
+  header {
+    grid-area: header;
+    background-color: var(--panel-background);
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: var(--app-pane-padding) 0;
+    border-bottom: 1px solid var(--panel-divider-color);
+
+    h1 {
+      font-size: var(--font-headline);
+      margin: 0 var(--app-pane-padding);
+      font-weight: normal;
+      color: var(--text-color-caption);
+    }
+
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      padding: 0 var(--app-pane-padding);
+
+      > div {
+        color: var(--text-color-caption);
+        span {
+          cursor: pointer;
+          // border-radius: 4px;
+        }
+        &:not(:last-child):after {
+          content: '\00BB';
+          font-weight: bold;
+          padding: 0 4px;
+        }
+        &.current span {
+          border-color: var(--color-accent);
+          color: var(--color-accent);
+        }
+      }
+    }
   }
 
   .step {
     position: relative;
-    width: 100%;
+    grid-area: steps;
+    overflow-y: auto;
 
     h1 {
       position: absolute;
@@ -25,6 +65,11 @@
       opacity: 0.1;
       color: var(--text-color-caption);
       pointer-events: none;
+      z-index: 0;
+    }
+
+    > div {
+      z-index: 1;
     }
 
     &.select {
@@ -41,22 +86,16 @@
         display: flex;
         flex-flow: row wrap;
         align-items: flex-start;
-        z-index: 1;
+        padding: var(--app-pane-padding);
 
         .screen-s & {
           flex-flow: column;
           align-items: stretch;
           padding: calc(var(--app-pane-padding) / 2);
         }
-
-        &.files {
-          .buttons {
-            padding: calc(var(--app-pane-padding) / 2);
-          }
-        }
       }
 
-      .select-list {
+      .type-select-list {
         background-color: var(--panel-background);
         margin: calc(var(--app-pane-padding) / 2);
         box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1);
@@ -67,7 +106,7 @@
           padding: calc(var(--app-pane-padding) / 2) calc(var(--app-pane-padding) * 2);
         }
 
-        .select-item {
+        .object-type {
           color: var(--text-color-body);
           padding: calc(var(--app-pane-padding) / 2) calc(var(--app-pane-padding) * 2);
           border-top: 1px solid var(--panel-divider-color);
@@ -86,20 +125,47 @@
             background-color: var(--color-accent);
             color: #fff;
           }
+        }
+      }
 
-          &.file {
-            display: flex;
-            align-items: center;
-            .name {
-              flex: 1;
-            }
-            yuy-icon {
-              width: 18px;
-              height: 18px;
-              box-sizing: content-box;
-              padding: calc(var(--app-pane-padding) / 2);
-            }
+      .content-select {
+        .not-supported {
+          color: var(--text-color-body);
+        }
+      }
+
+      .content-select-list {
+        margin: var(--app-pane-padding);
+        background-color: var(--panel-background);
+        box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1);
+        z-index: 1;
+
+        .files {
+          overflow-y: auto;
+        }
+        .file {
+          display: flex;
+          align-items: center;
+          border-bottom: 1px solid var(--panel-divider-color);
+          padding: calc(var(--app-pane-padding) / 2);
+
+          .name {
+            flex: 1;
+            color: var(--text-color-body);
+            padding: 0 calc(var(--app-pane-padding) / 2);
           }
+          yuv-icon {
+            width: 18px;
+            height: 18px;
+            color: var(--text-color-hint);
+          }
+        }
+
+        .buttons {
+          display: flex;
+          justify-content: flex-end;
+          @include gap(4px);
+          padding: calc(var(--app-pane-padding) / 2);
         }
       }
     }
@@ -113,7 +179,10 @@
   }
 
   footer {
+    border-top: 1px solid var(--panel-divider-color);
+
     grid-area: footer;
+    position: relative;
     background-color: var(--panel-background);
     padding: var(--app-pane-padding);
     display: flex;
