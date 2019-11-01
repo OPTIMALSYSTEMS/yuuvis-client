@@ -1,7 +1,11 @@
 :host {
+  width: 100%;
+  height: 100%;
+  display: flex;
   iframe {
     width: 100%;
     height: 100%;
+    display: flex;
   }
   .no-preview {
     width: 100%;
