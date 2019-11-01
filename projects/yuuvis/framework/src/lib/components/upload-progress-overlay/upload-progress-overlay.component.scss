@@ -94,6 +94,7 @@
       flex: 1;
       color: var(--text-color-body);
       padding: 0 calc(var(--app-pane-padding) / 2);
+      word-wrap: break-word;
     }
 
     yuv-icon {

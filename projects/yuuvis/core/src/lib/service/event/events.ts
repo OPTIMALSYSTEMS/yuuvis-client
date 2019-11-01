@@ -7,7 +7,7 @@ export const YuvEventType = {
   CLIENT_LOCALE_CHANGED: 'yuv.user.locale.client.changed',
   // SCHEMA_LOCALE_CHANGED: 'yuv.user.locale.schema.changed',
   // DMS_OBJECT_LOADED: 'eo.dms.object.loaded',
-  // DMS_OBJECT_DELETED: 'eo.dms.object.deleted',
+  DMS_OBJECT_DELETED: 'eo.dms.object.deleted',
   // DMS_OBJECT_VERSION_RESTORED: 'eo.dms.object.version.restored',
   // DMS_OBJECT_FAVORITE_ON: 'eo.dms.object.favorite.on',
   // DMS_OBJECT_FAVORITE_OFF: 'eo.dms.object.favorite.off',

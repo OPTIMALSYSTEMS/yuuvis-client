@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { DmsObject, DmsService } from '@yuuvis/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { DmsObject, DmsService, EventService, YuvEventType } from '@yuuvis/core';
 import { takeUntilDestroy } from 'take-until-destroy';
 
 @Component({
@@ -11,7 +11,7 @@ import { takeUntilDestroy } from 'take-until-destroy';
 export class ObjectComponent implements OnInit, OnDestroy {
   item: DmsObject;
 
-  constructor(private route: ActivatedRoute, private dmsService: DmsService) {}
+  constructor(private route: ActivatedRoute, private dmsService: DmsService, private router: Router, private eventService: EventService) {}
 
   ngOnInit() {
     this.route.params.pipe(takeUntilDestroy(this)).subscribe((params: any) => {
@@ -21,6 +21,15 @@ export class ObjectComponent implements OnInit, OnDestroy {
         });
       }
     });
+
+    this.eventService
+      .on(YuvEventType.DMS_OBJECT_DELETED)
+      .pipe(takeUntilDestroy(this))
+      .subscribe(event => {
+        if (this.item.id === event.data.id) {
+          this.router.navigate(['/']);
+        }
+      });
   }
 
   ngOnDestroy() {}
