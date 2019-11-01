@@ -16,7 +16,8 @@ import {
 import { ColDef } from 'ag-grid-community';
 import { of } from 'rxjs';
 import { takeUntilDestroy } from 'take-until-destroy';
-import { ResponsiveDataTableComponent, ResponsiveTableData } from '../../components';
+import { ResponsiveDataTableComponent } from '../../components/responsive-data-table/responsive-data-table.component';
+import { ResponsiveTableData } from '../../components/responsive-data-table/responsive-data-table.interface';
 import { GridService } from '../../services/grid/grid.service';
 import { SVGIcons } from '../../svg.generated';
 
@@ -105,6 +106,16 @@ export class SearchResultComponent implements OnDestroy {
         if (this.dataTable) {
           // Update table data without reloading the whole grid
           this.dataTable.updateRow(dmsObject.id, dmsObject.data);
+        }
+      });
+
+    this.eventService
+      .on(YuvEventType.DMS_OBJECT_DELETED)
+      .pipe(takeUntilDestroy(this))
+      .subscribe(event => {
+        const deleted = this.dataTable.deleteRow(event.data.id);
+        if (deleted) {
+          this.totalNumItems--;
         }
       });
   }

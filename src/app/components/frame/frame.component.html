@@ -1,6 +1,5 @@
 <div class="app-bar" *ngIf="!hideAppBar">
-  <yuv-icon class="btn" id="drawer" (click)="showSideBar = true" replaceUrl
-    [iconSrc]="'assets/default/svg/ic_drawer.svg'"></yuv-icon>
+  <yuv-icon class="btn" id="drawer" (click)="showSideBar = true" replaceUrl [iconSrc]="'assets/default/svg/ic_drawer.svg'"></yuv-icon>
   <a routerLink="/" id="logo">
     <yuv-icon class="btn" [iconSrc]="'assets/default/theme/app.icon.svg'"></yuv-icon>
   </a>
@@ -15,9 +14,7 @@
 
     <p-overlayPanel #op>
       <div class="user-panel">
-
         <div class="update" *ngIf="swUpdateAvailable" (click)="updateWorker()">Update available</div>
-
 
         <div class="avatar" [ngClass]="{ enabled: user?.enabled }">
           <yuv-user-avatar [user]="user"></yuv-user-avatar>
@@ -51,3 +48,5 @@
     </div>
   </section>
 </yuv-sidebar>
+
+<yuv-upload-progress-overlay></yuv-upload-progress-overlay>

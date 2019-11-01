@@ -10,11 +10,23 @@ import { YuvFormModule } from './../form/form.module';
 import { ActionComponentAnchorDirective } from './action-menu/action-component-anchor/action-component-anchor.directive';
 import { ActionMenuComponent } from './action-menu/action-menu.component';
 import { ACTIONS, ActionService, CUSTOM_ACTIONS } from './action-service/action.service';
+import { DeleteActionComponent } from './actions/delete-action/delete-action';
+import { DeleteComponent } from './actions/delete-action/delete/delete.component';
 import { DownloadActionComponent } from './actions/download-action/download-action';
 import { DownloadOriginalActionComponent } from './actions/download-original-action/download-original-action';
 import { DownloadPdfActionComponent } from './actions/download-pdf-action/download-pdf-action';
+import { UploadActionComponent } from './actions/upload-action/upload-action';
+import { UploadComponent } from './actions/upload-action/upload/upload.component';
 
-export const entryComponents = [DownloadActionComponent, DownloadOriginalActionComponent, DownloadPdfActionComponent];
+export const entryComponents = [
+  DownloadActionComponent,
+  DownloadOriginalActionComponent,
+  DownloadPdfActionComponent,
+  DeleteActionComponent,
+  DeleteComponent,
+  UploadComponent,
+  UploadActionComponent
+];
 
 /**
  * @module
@@ -45,7 +57,17 @@ export const entryComponents = [DownloadActionComponent, DownloadOriginalActionC
       useValue: []
     }
   ],
-  declarations: [ActionMenuComponent, ActionComponentAnchorDirective, DownloadActionComponent, DownloadOriginalActionComponent, DownloadPdfActionComponent],
+  declarations: [
+    ActionMenuComponent,
+    ActionComponentAnchorDirective,
+    DownloadActionComponent,
+    DownloadOriginalActionComponent,
+    DownloadPdfActionComponent,
+    DeleteActionComponent,
+    DeleteComponent,
+    UploadComponent,
+    UploadActionComponent
+  ],
   entryComponents
 })
 export class ActionModule {

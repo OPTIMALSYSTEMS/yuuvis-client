@@ -34,6 +34,7 @@ export * from './lib/service/search/search.service.interface';
 export * from './lib/service/system/system.enum';
 export { ObjectTypeField } from './lib/service/system/system.interface';
 export * from './lib/service/system/system.service';
+export * from './lib/service/upload/upload.service';
 export * from './lib/service/user/user.service';
 export * from './lib/util/utils';
 export * from './lib/util/utils.helper.enum';

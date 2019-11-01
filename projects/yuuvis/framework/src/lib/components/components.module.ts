@@ -8,6 +8,7 @@ import { AgGridModule } from 'ag-grid-angular';
 import { AngularResizedEventModule } from 'angular-resize-event';
 import { AngularSplitModule } from 'angular-split';
 import { DialogModule } from 'primeng/dialog';
+import { ProgressBarModule } from 'primeng/progressbar';
 import { TabViewModule } from 'primeng/tabview';
 import { YuvPipesModule } from '../pipes/pipes.module';
 import { ActionMenuBarComponent } from './action-menu-bar/action-menu-bar.component';
@@ -19,6 +20,7 @@ import { ResponsiveDataTableComponent } from './responsive-data-table/responsive
 import { ResponsiveMasterSlaveComponent } from './responsive-master-slave/responsive-master-slave.component';
 import { ResponsiveTabContainerComponent } from './responsive-tab-container/responsive-tab-container.component';
 import { StepperPanelComponent } from './stepper-panel/stepper-panel.component';
+import { UploadProgressOverlayComponent } from './upload-progress-overlay/upload-progress-overlay.component';
 
 @NgModule({
   declarations: [
@@ -29,8 +31,9 @@ import { StepperPanelComponent } from './stepper-panel/stepper-panel.component';
     ResponsiveTabContainerComponent,
     PanelComponent,
     DialogComponent,
-    FilePickerComponent,
-    StepperPanelComponent
+    StepperPanelComponent,
+    UploadProgressOverlayComponent,
+    FilePickerComponent
   ],
   exports: [
     ResponsiveDataTableComponent,
@@ -43,7 +46,8 @@ import { StepperPanelComponent } from './stepper-panel/stepper-panel.component';
     ActionMenuBarComponent,
     DialogComponent,
     FilePickerComponent,
-    StepperPanelComponent
+    StepperPanelComponent,
+    UploadProgressOverlayComponent
   ],
   imports: [
     CommonModule,
@@ -54,6 +58,7 @@ import { StepperPanelComponent } from './stepper-panel/stepper-panel.component';
     RouterModule,
     TabViewModule,
     DialogModule,
+    ProgressBarModule,
     YuvPipesModule,
     YuvCommonUiModule,
     TranslateModule
