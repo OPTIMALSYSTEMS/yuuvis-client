@@ -113,8 +113,10 @@ export class SearchResultComponent implements OnDestroy {
       .on(YuvEventType.DMS_OBJECT_DELETED)
       .pipe(takeUntilDestroy(this))
       .subscribe(event => {
-        this.dataTable.deleteRow(event.data.id);
-        this.totalNumItems--;
+        const deleted = this.dataTable.deleteRow(event.data.id);
+        if (deleted) {
+          this.totalNumItems--;
+        }
       });
   }
 

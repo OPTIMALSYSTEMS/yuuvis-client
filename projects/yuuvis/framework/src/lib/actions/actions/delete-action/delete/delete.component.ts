@@ -63,7 +63,6 @@ export class DeleteComponent implements OnInit, ActionComponent {
   ngOnInit() {
     if (this.selection[0].isFolder) {
       this.folder = this.selection[0].title;
-      // this.backend.get(`/count/${this.selection[0].id}`, this.backend.getContextBase()).subscribe(data => (this.count = data.total));
     }
   }
 }

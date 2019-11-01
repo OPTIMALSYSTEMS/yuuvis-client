@@ -29,6 +29,7 @@ export class DeleteActionComponent extends DmsObjectTarget implements ComponentA
   }
 
   isExecutable(element: DmsObject) {
+    //todo: add condition when properties exists
     // const isLocked = element.lock && element.lock.by.other;
     // return observableOf(element && !element.isFinalized && element.rights && element.rights.recycle && !isLocked && this.isAllowedState());
     return observableOf(true);
