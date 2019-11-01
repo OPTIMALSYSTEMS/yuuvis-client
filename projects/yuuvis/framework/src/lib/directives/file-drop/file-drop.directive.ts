@@ -1,6 +1,6 @@
 import { Directive, ElementRef, EventEmitter, HostListener, Input, OnDestroy, Output, Renderer2 } from '@angular/core';
+import { Utils } from '@yuuvis/core';
 import { takeUntilDestroy } from 'take-until-destroy';
-import { Utils } from './../../../../../core/src/lib/util/utils';
 import { FileDropService } from './file-drop.service';
 
 @Directive({
@@ -14,11 +14,14 @@ export class FileDropDirective implements OnDestroy {
   private dragEventCount = 1;
   private fileOver: boolean;
   private _disabled: boolean;
+  private _multiple: boolean;
 
-  @Output() yuvFileDrop = new EventEmitter<any>();
-  @Input() set yuvFileDropDisabled(disabled: boolean) {
-    this._disabled = disabled;
-    if (disabled) {
+  @Output() yuvFileDrop = new EventEmitter<File | File[]>();
+  @Input() set yuvFileDropOptions(options: FileDropOptions) {
+    this._disabled = options.disabled;
+    this._multiple = options.multiple;
+
+    if (this._disabled) {
       this.renderer.addClass(this.elementRef.nativeElement, this.CLASS_DISABLED);
     } else {
       this.renderer.removeClass(this.elementRef.nativeElement, this.CLASS_DISABLED);
@@ -26,7 +29,9 @@ export class FileDropDirective implements OnDestroy {
   }
 
   @HostListener('dragenter', ['$event']) onDragEnter(evt: DragEvent) {
-    if (!this.fileOver && this.dragContainsFiles(evt)) {
+    const draggedFiles = this.dragContainsFiles(evt);
+    const validDragEvent = !this._multiple ? draggedFiles === 1 : draggedFiles > 0;
+    if (!this.fileOver && validDragEvent) {
       this.dragEventCount = 1;
       this.fileOver = true;
       this.fileDropService.add(this.id);
@@ -90,7 +95,7 @@ export class FileDropDirective implements OnDestroy {
   }
 
   private onFilesDropped(files: File[]) {
-    this.yuvFileDrop.emit(files);
+    this.yuvFileDrop.emit(this._multiple ? files : files[0]);
   }
 
   /**
@@ -98,26 +103,33 @@ export class FileDropDirective implements OnDestroy {
    * Microsoft Edge 42.17134.1.0 will always includes 'File' there for we need to check for Edge and dataTransfer length.
    *
    * @param event - the drag event to be checked
-   * @returns true if files are contained, otherwise false
+   * @returns the number of files dragged
    */
-  private dragContainsFiles(event: DragEvent): boolean {
+  private dragContainsFiles(event: DragEvent): number {
     const { types } = event.dataTransfer;
     if (types) {
-      for (let i = 0; i < types.length; i++) {
-        if (types[i] === 'Files') {
-          if (this.isOldEdge()) {
-            return types.length === 1 && types[0] === 'Files';
-          }
-          return true;
-        }
+      if (types.includes('Files')) {
+        // if (this.isOldEdge()) {
+        //   return types.length === 1 && types[0] === 'Files';
+        // }
+        return event.dataTransfer.items.length;
       }
+
+      // for (let i = 0; i < types.length; i++) {
+      //   if (types[i] === 'Files') {
+      //     if (this.isOldEdge()) {
+      //       return types.length === 1 && types[0] === 'Files';
+      //     }
+      //     return true;
+      //   }
+      // }
     }
-    return false;
+    return 0;
   }
 
-  private isOldEdge() {
-    return !!navigator.userAgent && navigator.userAgent.indexOf('Edge') > -1;
-  }
+  // private isOldEdge() {
+  //   return !!navigator.userAgent && navigator.userAgent.indexOf('Edge') > -1;
+  // }
 
   private preventAndStop(event: any): any {
     event.preventDefault();
@@ -129,4 +141,11 @@ export class FileDropDirective implements OnDestroy {
   }
 
   ngOnDestroy() {}
+}
+
+export interface FileDropOptions {
+  // if set to true drop target will be disabled and not accept any files dropped
+  disabled?: boolean;
+  // if set to true supports multiple files being dropped
+  multiple?: boolean;
 }

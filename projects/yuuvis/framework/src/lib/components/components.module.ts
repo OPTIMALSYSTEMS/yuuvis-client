@@ -19,7 +19,6 @@ import { PanelComponent } from './panel/panel.component';
 import { ResponsiveDataTableComponent } from './responsive-data-table/responsive-data-table.component';
 import { ResponsiveMasterSlaveComponent } from './responsive-master-slave/responsive-master-slave.component';
 import { ResponsiveTabContainerComponent } from './responsive-tab-container/responsive-tab-container.component';
-import { StepperPanelComponent } from './stepper-panel/stepper-panel.component';
 import { UploadProgressOverlayComponent } from './upload-progress-overlay/upload-progress-overlay.component';
 
 @NgModule({
@@ -31,7 +30,6 @@ import { UploadProgressOverlayComponent } from './upload-progress-overlay/upload
     ResponsiveTabContainerComponent,
     PanelComponent,
     DialogComponent,
-    StepperPanelComponent,
     UploadProgressOverlayComponent,
     FilePickerComponent
   ],
@@ -46,7 +44,6 @@ import { UploadProgressOverlayComponent } from './upload-progress-overlay/upload
     ActionMenuBarComponent,
     DialogComponent,
     FilePickerComponent,
-    StepperPanelComponent,
     UploadProgressOverlayComponent
   ],
   imports: [

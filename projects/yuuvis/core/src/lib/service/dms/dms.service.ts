@@ -30,7 +30,7 @@ export class DmsService {
     return this.backend.delete(url, ApiBase.core);
   }
 
-  uploadContent(objectId: string, file: File) {
+  uploadContent(objectId: string, file: File): Observable<any> {
     const url = `api-web/dms/update/${objectId}/content`;
     return this.uploadService.upload(url, file);
   }

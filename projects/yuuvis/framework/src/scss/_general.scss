@@ -28,7 +28,7 @@
 
 .yuv-file-drop {
   &.yuv-file-drop-active {
-    transition: box-shadow 300ms;
+    transition: outline 0ms;
 
     // TODO: Enable to show available child dropzones on dragenter
     // .yuv-file-drop:not(.yuv-file-drop-disabled) {
@@ -36,10 +36,12 @@
     // }
 
     &:not(.yuv-file-drop-disabled) {
-      box-shadow: inset 0 0 200px 0 rgba(var(--color-accent-rgb), 0.4) !important;
+      // box-shadow: inset 0 0 200px 0 rgba(var(--color-accent-rgb), 0.4) !important;
+      outline: 4px solid rgba(var(--color-accent-rgb), 0.4);
     }
     &.yuv-file-drop-disabled {
-      box-shadow: inset 0 0 200px 0 rgba(var(--color-accent-rgb), 0.1) !important;
+      // box-shadow: inset 0 0 200px 0 rgba(var(--color-accent-rgb), 0.1) !important;
+      outline: 4px solid rgba(var(--color-accent-rgb), 0.1);
     }
   }
 }

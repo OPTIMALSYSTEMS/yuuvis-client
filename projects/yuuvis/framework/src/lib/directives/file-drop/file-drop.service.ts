@@ -16,12 +16,10 @@ export class FileDropService {
     if (!this.dropzones.includes(id)) {
       this.dropzones.push(id);
     }
-    console.log(this.dropzones);
     this.setActive(id);
   }
   remove(id) {
     this.dropzones = this.dropzones.filter(d => d !== id);
-    console.log(this.dropzones);
     this.setActive(this.dropzones[this.dropzones.length - 1]);
   }
 

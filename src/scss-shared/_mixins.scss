@@ -1,9 +1,9 @@
 // mixin for transition of all style properties
-@mixin transition($duration: var(--app-default-transition-duration)) {
-  transition: all $duration ease-in-out;
-  -webkit-transition: all $duration ease-in-out;
-  -moz-transition: all $duration ease-in-out;
-  -o-transition: all $duration ease-in-out;
+@mixin transition($property: all, $duration: var(--app-default-transition-duration)) {
+  transition: $property $duration ease-in-out;
+  -webkit-transition: $property $duration ease-in-out;
+  -moz-transition: $property $duration ease-in-out;
+  -o-transition: $property $duration ease-in-out;
 }
 
 @mixin no-transition() {
@@ -11,14 +11,6 @@
   -webkit-transition: none;
   -moz-transition: none;
   -o-transition: none;
-}
-
-// mixin for transition of selected style properties
-@mixin property-transition($duration, $property) {
-  transition: $property $duration ease-in-out;
-  -webkit-transition: $property $duration ease-in-out;
-  -moz-transition: $property $duration ease-in-out;
-  -o-transition: $property $duration ease-in-out;
 }
 
 @mixin border-radius($radius: 2px) {

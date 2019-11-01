@@ -1,6 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
 import { ObjectType, PendingChangesService, SystemService, TranslateService, Utils } from '@yuuvis/core';
-import { StepperPanelComponent } from '../../components/stepper-panel/stepper-panel.component';
 import { FormStatusChangedEvent, ObjectFormOptions } from '../../object-form/object-form.interface';
 import { ObjectFormComponent } from '../../object-form/object-form/object-form.component';
 import { SVGIcons } from '../../svg.generated';
@@ -11,7 +10,6 @@ import { SVGIcons } from '../../svg.generated';
   styleUrls: ['./object-create.component.scss']
 })
 export class ObjectCreateComponent {
-  @ViewChild('stepper', { static: true }) stepper: StepperPanelComponent;
   @ViewChild(ObjectFormComponent, { static: false }) objectForm: ObjectFormComponent;
 
   icon = {
@@ -121,7 +119,7 @@ export class ObjectCreateComponent {
     this.state.done = this.isReady();
   }
 
-  onFilesDroppedOnType(files: File[], type: ObjectType) {
+  onFilesDroppedOnType(files: File[], type?: ObjectType) {
     if (type) {
       this.selectObjectType(type);
     }
@@ -141,7 +139,7 @@ export class ObjectCreateComponent {
     if (this.createAnother) {
       this.selectedObjectType = null;
       this.files = [];
-      this.stepper.reset();
+      this.resetState();
     }
   }
 
