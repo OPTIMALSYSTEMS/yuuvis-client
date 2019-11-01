@@ -135,6 +135,15 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   * Deletes a row with a given row id.
+   * @param id The rows ID
+   */
+  deleteRow(id: string) {
+    const rowNode = this.gridOptions.api.getRowNode(id);
+    this.gridOptions.api.updateRowData({ remove: [rowNode] });
+  }
+
   private applyGridOption(small?: boolean) {
     this.gridOptions.api.setRowData(this._data.rows);
     this.gridOptions.api.setHeaderHeight(small ? this.settings.headerHeight.small : this.settings.headerHeight.default);
