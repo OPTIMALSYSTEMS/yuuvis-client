@@ -108,6 +108,16 @@ export class SearchResultComponent implements OnDestroy {
           this.dataTable.updateRow(dmsObject.id, dmsObject.data);
         }
       });
+
+    this.eventService
+      .on(YuvEventType.DMS_OBJECT_DELETED)
+      .pipe(takeUntilDestroy(this))
+      .subscribe(event => {
+        const deleted = this.dataTable.deleteRow(event.data.id);
+        if (deleted) {
+          this.totalNumItems--;
+        }
+      });
   }
 
   /**

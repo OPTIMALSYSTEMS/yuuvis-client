@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import { DmsObject } from '../../model/dms-object.model';
+import { ApiBase } from '../backend/api.enum';
 import { BackendService } from '../backend/backend.service';
 import { EventService } from '../event/event.service';
 import { YuvEventType } from '../event/events';
@@ -23,6 +24,11 @@ export class DmsService {
     private uploadService: UploadService,
     private systemService: SystemService
   ) {}
+
+  deleteDmsObject(id: string): Observable<any> {
+    const url = `/dms/objects/${id}`;
+    return this.backend.delete(url, ApiBase.core);
+  }
 
   uploadContent(objectId: string, file: File) {
     const url = `api-web/dms/update/${objectId}/content`;
