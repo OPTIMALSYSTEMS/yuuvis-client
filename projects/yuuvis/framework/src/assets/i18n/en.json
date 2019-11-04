@@ -13,8 +13,6 @@
 	"yuv.framework.action-menu.action.export.pdf.description": "Downloads the document file as a PDF",
 	"yuv.framework.action-menu.action.export.pdf.label": "PDF",
 	"yuv.framework.action-menu.action.export.title": "Download in the following format",
-	"yuv.framework.action-menu.action.update.dms.object.content.description": "Updates the document file of the object.",
-	"yuv.framework.action-menu.action.update.dms.object.content.label": "Update document file",
 	"yuv.framework.action-menu.action.upload.dms.object.content.description": "Uploads the document file of the object.",
 	"yuv.framework.action-menu.action.upload.dms.object.content.label": "Upload document file",
 	"yuv.framework.action-menu.action.upload.dms.object.content.noFile": "No file selected",

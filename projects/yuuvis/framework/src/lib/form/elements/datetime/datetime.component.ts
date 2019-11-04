@@ -106,6 +106,10 @@ export class DatetimeComponent implements OnInit, ControlValueAccessor, Validato
 
   propagateChange = (_: any) => {};
 
+  private propagate() {
+    this.propagateChange(this.withTime ? this.value : this.datePipe.transform(this.value, 'yyyy-MM-dd'));
+  }
+
   writeValue(value: any): void {
     this.value = value
       ? moment(new Date(value), this.datePattern)
@@ -128,7 +132,7 @@ export class DatetimeComponent implements OnInit, ControlValueAccessor, Validato
     if (this.isValid) {
       this.value = m.toDate();
     }
-    this.propagateChange(this.value);
+    this.propagate();
   }
 
   setValueFromPicker(event) {
@@ -139,14 +143,14 @@ export class DatetimeComponent implements OnInit, ControlValueAccessor, Validato
           .toDate()
       : null;
     this.setInnerValue();
-    this.propagateChange(this.value);
+    this.propagate();
     this.showPicker = false;
   }
 
   onMaskValueChange(event) {
     if (event === this._datePattern) {
       this.value = null;
-      this.propagateChange(this.value);
+      this.propagate();
     }
   }
 

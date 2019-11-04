@@ -2,8 +2,8 @@ import { DatePipe } from '@angular/common';
 import { Injectable } from '@angular/core';
 import { Logger, RangeValue, SystemService } from '@yuuvis/core';
 import { ObjectFormControlWrapper, ObjectFormModel } from './object-form.interface';
-import { ObjectFormControl, ObjectFormGroup } from './object-form.model';
-import { FormValidation } from './object-form.validation';
+import { ObjectFormGroup } from './object-form.model';
+import { ObjectFormUtils } from './object-form.utils';
 
 @Injectable()
 export class ObjectFormService {
@@ -30,40 +30,7 @@ export class ObjectFormService {
     } else {
       formElement = element;
     }
-
-    if (!formElement) {
-      return null;
-    }
-
-    // Create the ObjectFormControlWrapper
-    let wrapper = new ObjectFormControlWrapper({});
-    let formSituation = situation ? situation : 'EDIT';
-
-    wrapper._eoFormControlWrapper = {
-      controlName: formElement.name,
-      situation: formSituation
-    };
-
-    // create the actual form control
-    let controlDisabled = !!formElement.readonly;
-    let formControl = new ObjectFormControl(
-      {
-        value: formElement.value,
-        disabled: controlDisabled
-      },
-      FormValidation.getValidators(formElement, formSituation)
-    );
-
-    // Form elements in SEARCH situation may arrive with a value set to NULL (explicit search for
-    // fields that are NOT set). In that case we need to prepare the form control
-    if (formSituation === 'SEARCH' && formElement.value === null) {
-      formElement.isNotSetValue = true;
-    }
-
-    formControl._eoFormElement = formElement;
-    wrapper.addControl(formElement.name, formControl);
-
-    return wrapper;
+    return !!formElement ? ObjectFormUtils.elementToFormControl(element, situation) : null;
   }
 
   /**
@@ -156,7 +123,7 @@ export class ObjectFormService {
   }
 
   formatValue(value, formElement) {
-    if (formElement.type === 'DATE') {
+    if (formElement.type === 'datetime' && formElement.resolution === 'date') {
       if (typeof value === 'string' || value instanceof Date) {
         return this.datePipe.transform(value, 'yyyy-MM-dd');
       } else if (value instanceof RangeValue) {

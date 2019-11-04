@@ -1,8 +1,8 @@
 <div class="testing-controls">
-  <yuv-dms-object-picker (dmsObject)="setDmsObject($event)"></yuv-dms-object-picker>
+  <yuv-dms-object-picker [defaultId]="'69bb0643-e40e-42cd-ae8b-6acda37c4574'" (dmsObject)="setDmsObject($event)">
+  </yuv-dms-object-picker>
   <button (click)="toggleDisabled()">toggle disabled</button>
 </div>
-
 
 <yuv-object-form-edit class="cmp" [dmsObject]="dmsObject" (indexDataSaved)="onIndexDataSaved($event)"
   [formDisabled]="disableWholeForm"></yuv-object-form-edit>

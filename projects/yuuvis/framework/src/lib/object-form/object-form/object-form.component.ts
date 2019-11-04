@@ -628,7 +628,7 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
         //   this.searchFilterToValue(data.find((filter) => filter.property === element.id));
       }
     } else {
-      if (['datetime', 'date'].includes(element.type) && data[element.name]) {
+      if (['datetime'].includes(element.type) && data[element.name]) {
         value = new Date(data[element.name]);
       } else {
         value = data[element.name];

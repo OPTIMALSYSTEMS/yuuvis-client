@@ -13,7 +13,7 @@ import {
   YuvEvent,
   YuvEventType
 } from '@yuuvis/core';
-import { ColDef } from 'ag-grid-community';
+import { ColDef, RowEvent } from 'ag-grid-community';
 import { of } from 'rxjs';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { ResponsiveDataTableComponent } from '../../components/responsive-data-table/responsive-data-table.component';
@@ -25,7 +25,7 @@ import { SVGIcons } from '../../svg.generated';
   selector: 'yuv-search-result',
   templateUrl: './search-result.component.html',
   styleUrls: ['./search-result.component.scss'],
-  host: { class: 'yuv-search-result toolbar' }
+  host: { class: 'yuv-search-result' }
 })
 export class SearchResultComponent implements OnDestroy {
   private _searchQuery: SearchQuery;
@@ -34,6 +34,7 @@ export class SearchResultComponent implements OnDestroy {
   private _hasPages = false;
   pagingForm: FormGroup;
   busy: boolean;
+  toolbarOpen: boolean;
 
   // icons used within the template
   icon = {
@@ -54,6 +55,7 @@ export class SearchResultComponent implements OnDestroy {
 
   @Input() options: any;
   @Output() optionsChanged = new EventEmitter();
+  @Output() onRowDoubleClicked = new EventEmitter<RowEvent>();
 
   @ViewChild('dataTable', { static: false }) dataTable: ResponsiveDataTableComponent;
 
@@ -124,6 +126,11 @@ export class SearchResultComponent implements OnDestroy {
    * re-run the current query
    */
   refresh() {
+    this.executeQuery();
+  }
+
+  onQuickSearchQuery(query: SearchQuery) {
+    this.query = query;
     this.executeQuery();
   }
 

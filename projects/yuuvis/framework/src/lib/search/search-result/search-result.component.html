@@ -1,10 +1,13 @@
-<div class="content grid-container">
+<div class="content grid-container" [ngClass]="{'toolbar-open': toolbarOpen}">
 
   <div class="toolbar">
     <yuv-icon [svg]="icon.icSearchFilter"></yuv-icon>
+    <!-- <yuv-icon [svg]="icon.icSearchFilter" (click)="toolbarOpen = !toolbarOpen"></yuv-icon>
+    <ng-container *ngIf="toolbarOpen">
+      <yuv-quick-search [query]="query" (querySubmit)="onQuickSearchQuery($event)"></yuv-quick-search>
+    </ng-container> -->
   </div>
   <div class="table" [yuvBusyOverlay]="busy">
-
     <ng-template #tplEmpty>
       <div class="empty" *ngIf="query" translate>yuv.framework.search-result.empty</div>
     </ng-template>
@@ -12,12 +15,13 @@
     <ng-container *ngIf="tableData?.rows.length; else tplEmpty">
       <yuv-responsive-data-table #dataTable class="data-table" [data]="tableData" [breakpoint]="400"
         (optionsChanged)="optionsChanged.emit($event)" [options]="options"
-        (selectionChanged)="onSelectionChanged($event)" (sortChanged)="onSortChanged($event)">
+        (selectionChanged)="onSelectionChanged($event)" (sortChanged)="onSortChanged($event)"
+        (onRowDoubleClicked)="onRowDoubleClicked.emit($event)">
       </yuv-responsive-data-table>
 
       <div class="footer paging">
         <div class="status">
-          {{'yuv.framework.search-result.footer.hits' | translate: ({count: totalNumItems})}}
+          {{ 'yuv.framework.search-result.footer.hits' | translate: { count: totalNumItems } }}
         </div>
 
         <div class="controls" *ngIf="hasPages">
