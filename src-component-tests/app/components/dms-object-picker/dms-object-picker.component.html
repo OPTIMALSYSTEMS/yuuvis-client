@@ -1,0 +1,5 @@
+<form (ngSubmit)="fetchDmsObject()" [formGroup]="form">
+  <input type="text" formControlName="objectId" placeholder="DMS Object ID">
+  <button class="primary" type="submit" [disabled]="form.invalid">Load Object</button>
+</form>
+<div class="error" *ngIf="error">{{error}}</div>

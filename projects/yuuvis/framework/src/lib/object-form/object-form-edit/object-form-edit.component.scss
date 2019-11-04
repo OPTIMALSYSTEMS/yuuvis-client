@@ -4,9 +4,9 @@
   display: block;
 }
 .object-form-edit {
-  background: #fff;
+  background: var(--panel-background);
   min-width: 300px;
-  min-height: 300px;
+  // min-height: 300px;
   display: grid;
   grid-template-columns: 1fr;
   grid-template-rows: 1fr auto;
@@ -19,11 +19,17 @@
   .form-controls {
     grid-area: buttons;
 
+    &.disabled .buttons {
+      opacity: 0.4;
+      filter: grayscale(1);
+      pointer-events: none;
+    }
+
     .err-msg {
       order: 0;
       background-color: var(--color-error);
       color: #fff;
-      padding: var(--app-pane-padding);
+      padding: calc(var(--app-pane-padding) / 2) var(--app-pane-padding);
       display: none;
     }
     .buttons {
@@ -35,12 +41,6 @@
       @include gap(4px);
       align-items: center;
       justify-content: flex-end;
-
-      &.disabled {
-        opacity: 0.4;
-        filter: grayscale(1);
-        pointer-events: none;
-      }
 
       button {
         flex: 0 0 auto;

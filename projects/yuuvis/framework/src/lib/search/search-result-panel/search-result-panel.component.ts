@@ -32,6 +32,9 @@ export class SearchResultPanelComponent implements OnInit {
   actionMenuVisible = false;
   actionMenuSelection = [];
 
+  @Input() options;
+  @Output() optionsChanged = new EventEmitter();
+
   constructor(private translate: TranslateService, private systemService: SystemService, private dmsService: DmsService) {}
 
   refresh() {
@@ -47,7 +50,7 @@ export class SearchResultPanelComponent implements OnInit {
 
   generateQueryDescription(term: string, types?: string[]) {
     const querytype: string = types.length ? `${this.systemService.getLocalizedResource(`${types[0]}_label`)}, ` : '';
-    this.queryTerm = `${querytype}${this.translate.instant('yuv.framework.search-result-panel.header.term')}: '${term}'`;
+    this.queryTerm = `${querytype}${this.translate.instant('yuv.framework.search-result-panel.header.term')}: '${term || ''}'`;
   }
 
   ngOnInit() {}

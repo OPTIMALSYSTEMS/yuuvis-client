@@ -7,7 +7,8 @@ import { BackendService } from '../backend/backend.service';
 import { AppCacheService } from '../cache/app-cache.service';
 import { Logger } from '../logger/logger';
 import { Utils } from './../../util/utils';
-import { SchemaResponse, SchemaResponseFieldDefinition, SchemaResponseTypeDefinition, SystemDefinition } from './system.interface';
+import { SecondaryObjectTypeField, SystemType } from './system.enum';
+import { ObjectTypeField, SchemaResponse, SchemaResponseFieldDefinition, SchemaResponseTypeDefinition, SystemDefinition } from './system.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -31,11 +32,19 @@ export class SystemService {
   }
 
   getBaseDocumentType(): ObjectType {
-    return this.getObjectType('enaio:document');
+    return this.getObjectType(SystemType.DOCUMENT);
+  }
+
+  getBaseType(): ObjectType {
+    const sysDocument = this.getObjectType(SystemType.DOCUMENT);
+    // TODO: get fields for SecondaryObjectTypeField from schema
+    const props: ObjectTypeField = { id: '', propertyType: 'string', description: '', cardinality: 'single', required: true, updatability: 'readwrite' };
+    const secondaryFields: ObjectTypeField[] = [{ ...props, id: SecondaryObjectTypeField.TITLE }, { ...props, id: SecondaryObjectTypeField.DESCRIPTION }];
+    return { ...sysDocument, fields: [...sysDocument.fields, ...secondaryFields] };
   }
 
   getBaseFolderType(): ObjectType {
-    return this.getObjectType('enaio:folder');
+    return this.getObjectType(SystemType.FOLDER);
   }
 
   getLocalizedResource(key: string): string {
@@ -50,11 +59,7 @@ export class SystemService {
    * @param mode Form mode to fetch (e.g. CONTEXT)
    */
   getObjectTypeForm(objectTypeId: string, situation: string, mode?: string): Observable<any> {
-    return this.backend.get(
-      Utils.buildUri(`/dms/form/${objectTypeId}`, {
-        situation: situation
-      })
-    );
+    return this.backend.get(Utils.buildUri(`/dms/form/${objectTypeId}`, { situation }));
   }
 
   isDateFormat(data: string): boolean {
@@ -139,7 +144,7 @@ export class SystemService {
     this.system = {
       version: schemaResponse.version,
       lastModificationDate: schemaResponse.lastModificationDate,
-      objectTypes: objectTypes,
+      objectTypes,
       i18n: localizedResource
     };
     this.appCache.setItem(this.STORAGE_KEY, this.system).subscribe();

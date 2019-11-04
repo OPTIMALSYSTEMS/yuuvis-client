@@ -11,21 +11,9 @@ import { ApiBase } from './api.enum';
 })
 export class BackendService {
   private headers = this.setDefaultHeaders();
-  private host: string = '';
+  private persistedHeaders: any = {};
 
   constructor(private http: HttpClient, private logger: Logger, private config: ConfigService) {}
-
-  /**
-   * Setup a host. Used when not running behind a gateway.
-   * @param host The host to be set up for backend connections
-   */
-  setHost(host: string) {
-    this.host = host || '';
-  }
-
-  getHost(): string {
-    return this.host;
-  }
 
   /**
    * Add a new header.
@@ -79,6 +67,20 @@ export class BackendService {
   }
 
   /**
+   * Wrapped HTTP PATCH method
+   * @param uri The target REST URI
+   * @param data Data to be 'patched'
+   * @param base The Base URI (backend service) to be used
+   * @param requestOptions Additional request options
+   * @returns The return value of the target PATCH endpoint
+   */
+  public patch(uri: string, data?, base?: string, requestOptions?: any): Observable<any> {
+    const baseUri = this.getApiBase(base);
+    const payload = data ? JSON.stringify(data) : '';
+    return this.http.patch(`${baseUri}${uri}`, payload, this.getHttpOptions(requestOptions));
+  }
+
+  /**
    * Wrapped HTTP PUT method
    * @param uri The target REST URI
    * @param data Data to be 'posted'
@@ -115,12 +117,12 @@ export class BackendService {
     });
   }
 
-  public download(uri: string) {
+  public download(uri: string, filename?: string) {
     if (document && document.body) {
       const a = document.createElement('a');
       a.setAttribute('href', uri);
       a.style.display = 'none';
-      a.setAttribute('download', 'download');
+      a.setAttribute('download', filename || 'download');
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -136,7 +138,8 @@ export class BackendService {
    * @returns Base URI for the given API.
    */
   private getApiBase(api?: string): string {
-    return this.getHost() + this.config.getApiBase(api || ApiBase.apiWeb);
+    // return this.getHost() + this.config.getApiBase(api || ApiBase.apiWeb);
+    return this.config.getApiBase(api || ApiBase.apiWeb);
   }
 
   /**

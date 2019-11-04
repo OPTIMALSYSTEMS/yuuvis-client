@@ -7,15 +7,18 @@ import { AgGridModule } from 'ag-grid-angular';
 import { AngularResizedEventModule } from 'angular-resize-event';
 import { AngularSplitModule } from 'angular-split';
 import { DialogModule } from 'primeng/dialog';
+import { ProgressBarModule } from 'primeng/progressbar';
 import { TabViewModule } from 'primeng/tabview';
 import { YuvPipesModule } from '../pipes/pipes.module';
 import { ActionMenuBarComponent } from './action-menu-bar/action-menu-bar.component';
 import { BusyOverlayDirective } from './busy-overlay/busy-overlay.directive';
 import { DialogComponent } from './dialog/dialog.component';
+import { FilePickerComponent } from './file-picker/file-picker.component';
 import { PanelComponent } from './panel/panel.component';
 import { ResponsiveDataTableComponent } from './responsive-data-table/responsive-data-table.component';
 import { ResponsiveMasterSlaveComponent } from './responsive-master-slave/responsive-master-slave.component';
 import { ResponsiveTabContainerComponent } from './responsive-tab-container/responsive-tab-container.component';
+import { UploadProgressOverlayComponent } from './upload-progress-overlay/upload-progress-overlay.component';
 
 @NgModule({
   declarations: [
@@ -25,7 +28,9 @@ import { ResponsiveTabContainerComponent } from './responsive-tab-container/resp
     ActionMenuBarComponent,
     ResponsiveTabContainerComponent,
     PanelComponent,
-    DialogComponent
+    DialogComponent,
+    UploadProgressOverlayComponent,
+    FilePickerComponent
   ],
   exports: [
     ResponsiveDataTableComponent,
@@ -36,7 +41,9 @@ import { ResponsiveTabContainerComponent } from './responsive-tab-container/resp
     TabViewModule,
     PanelComponent,
     ActionMenuBarComponent,
-    DialogComponent
+    DialogComponent,
+    UploadProgressOverlayComponent,
+    FilePickerComponent
   ],
   imports: [
     CommonModule,
@@ -46,6 +53,7 @@ import { ResponsiveTabContainerComponent } from './responsive-tab-container/resp
     RouterModule,
     TabViewModule,
     DialogModule,
+    ProgressBarModule,
     YuvPipesModule,
     YuvCommonUiModule,
     TranslateModule

@@ -1,7 +1,7 @@
 import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
 import { ValidatorFn, Validators } from '@angular/forms';
 import { UnsubscribeOnDestroy } from '@yuuvis/common-ui';
-import { Logger, SystemService } from '@yuuvis/core';
+import { Logger, RangeValue, SearchFilter, SearchService, SystemService } from '@yuuvis/core';
 import * as _ from 'lodash';
 import { Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
@@ -594,7 +594,7 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
   private hasValue(data, element) {
     // differ between array of SearchFilters and a form data object
     if (Array.isArray(data)) {
-      return !!data.find(filter => filter.property === element.qname);
+      return !!data.find(filter => filter.property === element.id);
     } else {
       return data.hasOwnProperty(element.name);
     }
@@ -603,32 +603,32 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
   private getValue(data, element) {
     let value;
     if (this.formOptions.formModel.situation === 'SEARCH') {
-      // // Differ between fields that support ranges and the ones that don't.
-      // // In search situation fields get their values from SearchFilters. The so called
-      // // inner table forms are the ones used by the table lement to edit its rows. They
-      // // have to be treated differently to provide the right value.
-      // if (element.type === 'DATETIME' || element.type === 'NUMBER') {
-      //   value = this.isInnerTableForm
-      //     ? SearchService.toRangeValue(data[element.name])
-      //     : this.searchFilterToRangeValue(data.find(filter => filter.property === element.qname));
-      // } else {
-      //   if (this.isInnerTableForm) {
-      //     value = data[element.name];
-      //   } else {
-      //     const filter: SearchFilter = data.find(f => f.property === element.qname);
-      //     // take care of searches for explicit NULL values
-      //     if (filter.operator === SearchFilter.OPERATOR.EQUAL && filter.firstValue === null) {
-      //       element.isNotSetValue = true;
-      //     }
-      //     value = this.searchFilterToValue(filter);
-      //   }
-      //   //
-      //   // value = this.isInnerTableForm ?
-      //   //   data[element.name] :
-      //   //   this.searchFilterToValue(data.find((filter) => filter.property === element.qname));
-      // }
+      // Differ between fields that support ranges and the ones that don't.
+      // In search situation fields get their values from SearchFilters. The so called
+      // inner table forms are the ones used by the table lement to edit its rows. They
+      // have to be treated differently to provide the right value.
+      if (['datetime', 'date', 'integer', 'decimal'].includes(element.type)) {
+        value = this.isInnerTableForm
+          ? SearchService.toRangeValue(data[element.name])
+          : this.searchFilterToRangeValue(data.find(filter => filter.property === element.id));
+      } else {
+        if (this.isInnerTableForm) {
+          value = data[element.name];
+        } else {
+          const filter: SearchFilter = data.find(f => f.property === element.id);
+          // take care of searches for explicit NULL values
+          if (filter.operator === SearchFilter.OPERATOR.EQUAL && filter.firstValue === null) {
+            element.isNotSetValue = true;
+          }
+          value = this.searchFilterToValue(filter);
+        }
+        //
+        // value = this.isInnerTableForm ?
+        //   data[element.name] :
+        //   this.searchFilterToValue(data.find((filter) => filter.property === element.id));
+      }
     } else {
-      if (element.type === 'DATETIME' && data[element.name]) {
+      if (['datetime', 'date'].includes(element.type) && data[element.name]) {
         value = new Date(data[element.name]);
       } else {
         value = data[element.name];
@@ -637,24 +637,24 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
     return value;
   }
 
-  // // transforms a searchFilter into a value consumable by the form elements that not support ranges
-  // private searchFilterToValue(searchFilter: SearchFilter): any {
-  //   if (searchFilter) {
-  //     return searchFilter.firstValue;
-  //   } else {
-  //     return undefined;
-  //   }
-  // }
+  // transforms a searchFilter into a value consumable by the form elements that not support ranges
+  private searchFilterToValue(searchFilter: SearchFilter): any {
+    if (searchFilter) {
+      return searchFilter.firstValue;
+    } else {
+      return undefined;
+    }
+  }
 
-  // // transforms a searchFilter int a rangeValue instance which then can be used
-  // // as value for form controls that support ranges
-  // private searchFilterToRangeValue(searchFilter: SearchFilter): RangeValue {
-  //   if (searchFilter) {
-  //     return new RangeValue(searchFilter.operator, searchFilter.firstValue, searchFilter.secondValue);
-  //   } else {
-  //     return undefined;
-  //   }
-  // }
+  // transforms a searchFilter int a rangeValue instance which then can be used
+  // as value for form controls that support ranges
+  private searchFilterToRangeValue(searchFilter: SearchFilter): RangeValue {
+    if (searchFilter) {
+      return new RangeValue(searchFilter.operator, searchFilter.firstValue, searchFilter.secondValue);
+    } else {
+      return undefined;
+    }
+  }
 
   ngOnDestroy() {
     this.unsubscribeAll();

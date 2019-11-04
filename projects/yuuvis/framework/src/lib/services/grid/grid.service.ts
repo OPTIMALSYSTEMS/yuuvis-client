@@ -3,21 +3,22 @@ import { Router } from '@angular/router';
 import {
   AppCacheService,
   BackendService,
+  BaseObjectTypeField,
   ContentStreamField,
-  ObjectField,
+  FieldDefinition,
   ObjectType,
   ObjectTypeField,
+  SearchService,
+  SortOption,
   SystemService,
   TranslateService,
-  Utils,
-  YuvEnvironment
+  Utils
 } from '@yuuvis/core';
 import { ColDef } from 'ag-grid-community';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { FileSizePipe, LocaleDatePipe, LocaleNumberPipe } from '../../pipes';
 import { CellRenderer } from './grid.cellrenderer';
-import { ColumnSizes } from './grid.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -30,6 +31,7 @@ export class GridService {
   constructor(
     private appCacheService: AppCacheService,
     private system: SystemService,
+    private searchSvc: SearchService,
     private translate: TranslateService,
     private router: Router,
     private backend: BackendService
@@ -42,8 +44,7 @@ export class GridService {
       fileSizePipe: new FileSizePipe(translate),
       numberPipe: new LocaleNumberPipe(translate),
       datePipe: new LocaleDatePipe(translate),
-      cr: CellRenderer,
-      baseHref: YuvEnvironment.isWebEnvironment() ? backend.getHost() : './'
+      cr: CellRenderer
       // fileSizeOpts: [],
       // mimetypegroupOpts: [],
       // typeOpts: [],
@@ -57,20 +58,12 @@ export class GridService {
    * blank in case of a mixed result list
    */
   getColumnConfiguration(objectTypeId?: string): Observable<ColDef[]> {
-    const objectType: ObjectType = objectTypeId ? this.system.getObjectType(objectTypeId) : this.system.getBaseDocumentType();
-    return this.getPersistedColumnWidth(objectTypeId).pipe(
-      map((colSizes: ColumnSizes) => {
-        // create a map from column size data in order to get
-        // a better (more performant) access to the properties
-        const colSizesMap = new Map<string, number>();
-        if (colSizes) {
-          colSizes.columns.forEach(cs => colSizesMap.set(cs.id, cs.width));
-        }
+    const objectType: ObjectType = objectTypeId ? this.system.getObjectType(objectTypeId) : this.system.getBaseType();
+    return this.searchSvc.getFieldDefinition(objectType).pipe(
+      map((fieldDef: FieldDefinition) => {
+        const columns = fieldDef.elements.filter(f => f.propertyType !== 'table').map(f => this.getColumnDefinition(f, fieldDef.getOptions(f.id)));
 
-        const colDefs: ColDef[] = [];
-        // add column definitions for the object types fields
-        colDefs.push(...objectType.fields.filter(f => f.propertyType !== 'table').map(f => this.getColumnDefinition(f, colSizesMap.get(f.id))));
-        return colDefs;
+        return columns;
       })
     );
   }
@@ -78,9 +71,8 @@ export class GridService {
   /**
    * Creates a column definition for a given object type field.
    * @param field The field to create the column definition for
-   * @param width The width the column should have. If not provided defaults apply
    */
-  private getColumnDefinition(field: ObjectTypeField, width?: number): ColDef {
+  private getColumnDefinition(field: ObjectTypeField, options?: ColDef): ColDef {
     const colDef: ColDef = {
       field: field.id,
       headerName: this.system.getLocalizedResource(`${field.id}_label`)
@@ -88,11 +80,6 @@ export class GridService {
 
     this.addColDefAttrsByType(colDef, field);
     this.addColDefAttrsByField(colDef, field);
-
-    // override default width setting if required
-    if (width) {
-      colDef.width = width;
-    }
 
     colDef.suppressMovable = true;
     colDef.resizable = true;
@@ -102,30 +89,22 @@ export class GridService {
       colDef.sortable = true;
     }
 
-    return colDef;
+    return { ...colDef, ...options };
   }
 
   private isSortable(field: ObjectTypeField): boolean {
-    return field.propertyType !== 'id' && !field.id.match(/^enaio:createdBy$|^enaio:lastModifiedBy$/);
+    const skipSort = [BaseObjectTypeField.CREATED_BY, BaseObjectTypeField.MODIFIED_BY].map(s => s.toString());
+    return field.propertyType !== 'id' && !skipSort.includes(field.id);
   }
 
   /**
-   * Fetches the persisted column width settings for a given object type.
-   * If no type is provided, settings for a mixed result list will be loaded
-   * @param objectTypeId The ID of the object type to fetch column settings for
-   */
-  private getPersistedColumnWidth(objectTypeId?: string): Observable<ColumnSizes> {
-    return this.appCacheService.getItem(`${this.COLUMN_WIDTH_CACHE_KEY_BASE}.${objectTypeId || 'mixed'}`);
-  }
-
-  /**
-   * Saves column width settings for a given object type.
-   * If no type is provided, settings for a mixed result list will be loaded
-   * @param colSizes Size settings for columns
+   * Saves column sort settings for a given object type.
+   * @param sortModel Sort settings for columns
    * @param objectTypeId The ID of the object type to save column settings for
    */
-  persistColumnWidthSettings(colSizes: ColumnSizes, objectTypeId?: string) {
-    this.appCacheService.setItem(`${this.COLUMN_WIDTH_CACHE_KEY_BASE}.${objectTypeId || 'mixed'}`, colSizes).subscribe();
+  persistSortSettings(sortModel: SortOption[], objectTypeId?: string) {
+    const objectType: ObjectType = objectTypeId ? this.system.getObjectType(objectTypeId) : this.system.getBaseDocumentType();
+    this.searchSvc.updateFieldDefinition(objectType, sortModel, []);
   }
 
   /**
@@ -144,18 +123,21 @@ export class GridService {
       case 'string': {
         colDef.cellRenderer = params => Utils.escapeHtml(params.value);
         if (field.cardinality === 'multi') {
-          colDef.cellRenderer = CellRenderer.multiSelectCellRenderer;
+          colDef.cellRenderer = this.customContext(CellRenderer.multiSelectCellRenderer);
         }
         colDef.cellClass = field.cardinality === 'multi' ? 'multiCell string' : 'string';
+        break;
+      }
+      case 'date': {
+        colDef.width = 150;
+        colDef.cellRenderer = this.customContext(CellRenderer.dateTimeCellRenderer, { pattern: 'eoShortDate' });
         break;
       }
       case 'datetime': {
         colDef.width = 150;
         colDef.cellRenderer = this.customContext(CellRenderer.dateTimeCellRenderer, { pattern: 'eoShort' });
-        // { pattern: resultField.withtime ? 'eoShort' : 'eoShortDate' }
         break;
       }
-
       case 'integer': {
         const params = {
           scale: 0,
@@ -191,7 +173,7 @@ export class GridService {
       //   break;
       // }
       case 'boolean': {
-        colDef.cellRenderer = CellRenderer.booleanCellRenderer;
+        colDef.cellRenderer = this.customContext(CellRenderer.booleanCellRenderer);
         colDef.width = 100;
         break;
       }
@@ -209,7 +191,7 @@ export class GridService {
    */
   private addColDefAttrsByField(colDef: ColDef, field: ObjectTypeField) {
     switch (field.id) {
-      case ObjectField.OBJECT_TYPE_ID: {
+      case BaseObjectTypeField.OBJECT_TYPE_ID: {
         colDef.cellRenderer = this.customContext(CellRenderer.typeCellRenderer);
         colDef.width = 80;
         colDef.cellClass = 'res-ico';
@@ -219,7 +201,7 @@ export class GridService {
         colDef.width = 101;
         break;
       }
-      case ObjectField.VERSION_NUMBER: {
+      case BaseObjectTypeField.VERSION_NUMBER: {
         colDef.width = 80;
         break;
       }

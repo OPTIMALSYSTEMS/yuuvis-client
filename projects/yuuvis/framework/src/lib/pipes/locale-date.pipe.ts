@@ -19,16 +19,7 @@ export class LocaleDatePipe extends DatePipe implements PipeTransform {
   }
 
   transform(value: any, format: string = '', timezone?: string, locale?: string): string {
-    if (Array.isArray(value)) {
-      return value
-        .map(val => this.timeTransform(val, format, timezone, locale))
-        .map(val => `<div class="chip">${val}</div>`)
-        .join(' ');
-    }
-    return this.timeTransform(value, format, timezone, locale);
-  }
-
-  private timeTransform(value: any, format: string = '', timezone?: string, locale?: string) {
+    value = Array.isArray(value) ? value[0] : value;
     if (format === 'eoNiceShort') {
       let diff = moment(value).diff(moment(), 'day');
       format = diff === 0 ? 'eoShortTime' : diff > -7 && diff < 0 ? 'eoShortDayTime' : format;

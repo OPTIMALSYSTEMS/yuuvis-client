@@ -1,8 +1,8 @@
 export interface ResponsiveMasterSlaveOptions {
   masterSize?: number;
-  masterMinSize: number;
+  masterMinSize?: number;
   slaveSize?: number;
-  slaveMinSize: number;
+  slaveMinSize?: number;
   direction?: 'horizontal' | 'vertical';
   resizable?: boolean;
   useStateLayout?: boolean;

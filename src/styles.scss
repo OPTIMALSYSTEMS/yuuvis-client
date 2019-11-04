@@ -6,6 +6,10 @@
   --theme-background: url('assets/default/theme/bgr-dashboard.jpg');
   --theme-nav-header: url('assets/default/theme/bgr_sidebar.jpg');
 }
+body.dark {
+  --theme-transparent-app-bar-color: var(--text-color-caption);
+  --theme-background: url('assets/default/theme/bgr-dashboard.dark.jpg');
+}
 
 html,
 body {
@@ -14,15 +18,11 @@ body {
   height: 100%;
   position: relative;
   font-size: var(--font-body);
+  color: var(--text-color-body);
 }
 
 .themeBackground {
   background-image: var(--theme-background);
   background-position: center center;
   background-size: cover;
-}
-
-.panel {
-  background-color: #fff;
-  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.2);
 }

@@ -28,7 +28,7 @@
 
 // shadow to be applied to apps main panels
 @mixin panel-shadow() {
-  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.2);
+  box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.15);
 }
 
 @mixin box-shadow($horizontalLength: 0, $verticalLength: 1px, $blurRadius: 0, $spread: 0, $color: $color-primary-3) {
@@ -188,9 +188,19 @@ $desktop-width: 1024px;
 @mixin bidi-style($prop, $value, $inverse-prop, $default-value) {
   #{$prop}: $value;
 
-  [dir='rtl'] & {
+  .yuv-rtl & {
+    // [dir='rtl'] & {
     #{$inverse-prop}: $value;
     #{$prop}: $default-value;
+  }
+}
+
+/* set style alternative property for dark mode  */
+@mixin dark-style($prop, $value, $dark-value) {
+  #{$prop}: $value;
+
+  .dark & {
+    #{$prop}: $dark-value;
   }
 }
 

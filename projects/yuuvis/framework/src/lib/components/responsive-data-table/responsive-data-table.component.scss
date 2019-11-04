@@ -2,12 +2,19 @@ $icon-size: 18px !default;
 $primary-color: var(--color-accent);
 $range-selection-highlight-color: $primary-color;
 
+:host {
+  &.small {
+    ::ng-deep {
+      .ag-theme-yuv .ag-header {
+        border: 0;
+      }
+    }
+  }
+}
+
 .yuv-responsive-data-table {
   height: 100%;
-  //   display: grid;
-  //   grid-template-columns: 1fr;
-  //   grid-template-rows: 1fr;
-  //   grid-template-areas: "table";
+  background-color: var(--panel-background);
 
   .table {
     grid-area: table;

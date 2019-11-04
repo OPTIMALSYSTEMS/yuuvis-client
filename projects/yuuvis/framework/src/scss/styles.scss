@@ -1,6 +1,8 @@
 @import '~ag-grid-community/dist/styles/ag-grid.css';
 @import '~ag-grid-community/dist/styles/ag-theme-balham.css';
 
+@import '~@angular/cdk/overlay-prebuilt.css';
+
 @import '~primeng/resources/primeng.min.css';
 @import '~primeicons/primeicons.css';
 @import '~primeng/resources/themes/nova-light/theme.css';
@@ -12,9 +14,10 @@
 @import './animations';
 @import './loading';
 @import './forms';
-@import './panels';
-@import './src/scss-shared/vars';
-@import './src/scss-shared/mixins';
+@import './notifications';
+@import './src/scss-shared/_vars';
+@import './src/scss-shared/_vars.dark';
+@import './src/scss-shared/_mixins';
 @import './libs';
 @import './yuuvis.defaults.primeng';
 
@@ -66,6 +69,10 @@
   /* Legacy iOS */
 }
 
+body.rtl * {
+  direction: rtl;
+}
+
 * {
   font-family: 'Roboto';
   font-size: var(--font-body);
@@ -82,7 +89,7 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: #ddd;
+  background-color: var(--scrollbar-thumb-color);
 }
 
 ::-webkit-scrollbar-button {
@@ -94,9 +101,10 @@
   background-color: transparent;
 }
 
-// scrollbar color for dark backgrounds
-.dark {
-  ::-webkit-scrollbar-thumb {
-    background-color: rgba(255, 255, 255, 0.2);
-  }
+.panel {
+  @include panel-shadow();
+}
+
+svg .accent {
+  fill: var(--color-accent);
 }

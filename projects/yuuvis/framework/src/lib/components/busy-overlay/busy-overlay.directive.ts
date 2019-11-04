@@ -33,24 +33,9 @@ export class BusyOverlayDirective {
   private addBusyOverlay() {
     this.stylePosition = 'relative';
     const overlay = document.createElement('div');
-    const overlayStyles = [
-      'position: absolute',
-      'transition: opacity 200ms',
-      'opacity: 0',
-      'top: 0',
-      'bottom: 0',
-      'left: 0',
-      'right: 0',
-      'background-color: rgba(255,255,255, .8)',
-      'display: flex',
-      'flex-flow: column',
-      'align-items: center',
-      'justify-content: center'
-    ];
+    overlay.setAttribute('class', 'yuv-busy-overlay');
     this._overlayId = `p${Utils.uuid()}`;
     overlay.setAttribute('id', this._overlayId);
-    overlay.setAttribute('style', overlayStyles.join(';'));
-
     const spinner = document.createElement('div');
     spinner.setAttribute('class', 'yuv-loader');
     overlay.append(spinner);

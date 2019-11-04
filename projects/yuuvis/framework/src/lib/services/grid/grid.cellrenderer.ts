@@ -1,4 +1,4 @@
-import { Utils } from '@yuuvis/core';
+import { RangeValue, SearchFilter, Utils } from '@yuuvis/core';
 
 export class CellRenderer {
   static render(type: string, param: any, newParam?: any) {
@@ -11,49 +11,18 @@ export class CellRenderer {
 
   static numberCellRenderer(param) {
     if (param.value || param.value === 0) {
-      // TODO: Reactive once ranges are supported ... or remove if they don't
-
-      //   if (param.value.operator) {
-      //     // range value from search form table
-      //     return param.value.operator ===
-      //       SearchFilter.OPERATOR.INTERVAL_INCLUDE_BOTH
-      //       ? CellRenderer.numberCellRendererTemplate(
-      //           param.value.firstValue,
-      //           param.context,
-      //           param.grouping,
-      //           param.pattern,
-      //           param.scale
-      //         ) +
-      //           ' ' +
-      //           RangeValue.getOperatorLabel(param.value.operator) +
-      //           ' ' +
-      //           CellRenderer.numberCellRendererTemplate(
-      //             param.value.secondValue,
-      //             param.context,
-      //             param.grouping,
-      //             param.pattern,
-      //             param.scale
-      //           )
-      //       : RangeValue.getOperatorLabel(param.value.operator) +
-      //           ' ' +
-      //           CellRenderer.numberCellRendererTemplate(
-      //             param.value.firstValue,
-      //             param.context,
-      //             param.grouping,
-      //             param.pattern,
-      //             param.scale
-      //           );
-      //   } else {
-      return CellRenderer.numberCellRendererTemplate(param.value, param.context, param.grouping, param.pattern, param.scale);
-      //   }
-    } else {
-      return '';
+      const { value, context, scale, grouping, pattern } = param;
+      const transform = val => context.numberPipe.transform(val, grouping, pattern, scale, `1.${scale || 0}-${scale || 0}`);
+      if (value.operator) {
+        // range value from search form table
+        const both = value.operator === SearchFilter.OPERATOR.INTERVAL_INCLUDE_BOTH;
+        const op = RangeValue.getOperatorLabel(value.operator);
+        return `${both ? transform(value.firstValue) + ' ' : ''}${op} ${both ? transform(value.secondValue) : transform(value.firstValue)}`;
+      } else {
+        return Array.isArray(value) ? CellRenderer.multiSelectCellRenderer(value.map(val => transform(val))) : transform(value);
+      }
     }
-  }
-
-  static numberCellRendererTemplate(value, context, grouping?, pattern?, scale?): string {
-    let numbers = context.numberPipe.transform(value, grouping, pattern, scale, `1.${scale || 0}-${scale || 0}`);
-    return Array.isArray(value) ? this.multiSelectCellRenderer(numbers) : numbers;
+    return '';
   }
 
   static typeCellRenderer(param, customTooltip?) {
@@ -81,7 +50,7 @@ export class CellRenderer {
   //   let val = '';
   //   if (param.value && (param.value.url || param.value.iconId)) {
   //     let iconUrl = param.value.url
-  //       ? param.context.baseHref + param.value.url
+  //       ? Utils.getBaseHref() + param.value.url
   //       : param.context.backend.getServiceBase() +
   //         '/ui/icon/' +
   //         param.value.iconId +
@@ -101,20 +70,12 @@ export class CellRenderer {
   }
 
   static dateTimeCellRenderer(param) {
-    if (param.value && Array.isArray(param.value)) {
-      const val = CellRenderer.dateTimeCellRendererTemplate(param.value, param.context, param.pattern);
-      console.log(val);
-
-      return val;
-    } else if (param.value && !Array.isArray(param.value)) {
-      return CellRenderer.dateTimeCellRendererTemplate(param.value, param.context, param.pattern);
-    } else {
-      return '';
+    if (param.value) {
+      const { value, context, pattern } = param;
+      const transform = val => context.datePipe.transform(val, pattern);
+      return `<span date="${value}">${Array.isArray(value) ? CellRenderer.multiSelectCellRenderer(value.map(val => transform(val))) : transform(value)}</span>`;
     }
-  }
-
-  static dateTimeCellRendererTemplate(value, context, pattern) {
-    return `<span date="${value}">${context.datePipe.transform(value, pattern)}</span>`;
+    return '';
   }
 
   static booleanCellRenderer(param) {
@@ -129,18 +90,17 @@ export class CellRenderer {
     return `<svg class="checkbox" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">${val}</svg>`;
   }
 
-  static multiSelectCellRenderer(param) {
-    let value = param.value ? param.value : param;
-    if (typeof value === 'string') {
-      value = value.split(', ');
+  static multiSelectCellRenderer(param: any) {
+    let value = Array.isArray(param) ? param : param && param.value;
+    if (value || value === 0) {
+      if (typeof value === 'string') {
+        value = value.split(', ');
+      }
+      return (Array.isArray(value) ? value : [value])
+        .map(val => `<div class="chip">${Utils.escapeHtml(val && val.toString ? val.toString() : ' ')}</div>`)
+        .join('');
     }
-    let val = '';
-    if (value) {
-      (Array.isArray(value) ? value : [value]).forEach(
-        value => (val += typeof value === 'string' ? `<div class="chip">${Utils.escapeHtml(value)}</div>` : '  ')
-      );
-    }
-    return val;
+    return '';
   }
 
   static linkCellRenderer(param) {

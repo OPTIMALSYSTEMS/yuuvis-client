@@ -1,10 +1,23 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { BaseObjectTypeField, SearchQuery, SearchResult, SearchResultItem, SearchService, SecondaryObjectTypeField, SortOption } from '@yuuvis/core';
+import {
+  BaseObjectTypeField,
+  DmsObject,
+  EventService,
+  SearchQuery,
+  SearchResult,
+  SearchResultItem,
+  SearchService,
+  SecondaryObjectTypeField,
+  SortOption,
+  YuvEvent,
+  YuvEventType
+} from '@yuuvis/core';
 import { ColDef } from 'ag-grid-community';
 import { of } from 'rxjs';
-import { ResponsiveTableData } from '../../components';
-import { ColumnSizes } from '../../services/grid/grid.interface';
+import { takeUntilDestroy } from 'take-until-destroy';
+import { ResponsiveDataTableComponent } from '../../components/responsive-data-table/responsive-data-table.component';
+import { ResponsiveTableData } from '../../components/responsive-data-table/responsive-data-table.interface';
 import { GridService } from '../../services/grid/grid.service';
 import { SVGIcons } from '../../svg.generated';
 
@@ -14,7 +27,7 @@ import { SVGIcons } from '../../svg.generated';
   styleUrls: ['./search-result.component.scss'],
   host: { class: 'yuv-search-result toolbar' }
 })
-export class SearchResultComponent {
+export class SearchResultComponent implements OnDestroy {
   private _searchQuery: SearchQuery;
   private _columns: ColDef[];
   private _rows: any[];
@@ -38,6 +51,11 @@ export class SearchResultComponent {
     pages: number;
     page: number;
   };
+
+  @Input() options: any;
+  @Output() optionsChanged = new EventEmitter();
+
+  @ViewChild('dataTable', { static: false }) dataTable: ResponsiveDataTableComponent;
 
   @Input() set query(searchQuery: SearchQuery) {
     this._searchQuery = searchQuery;
@@ -75,10 +93,31 @@ export class SearchResultComponent {
     return this._hasPages;
   }
 
-  constructor(private gridService: GridService, private searchService: SearchService, private fb: FormBuilder) {
+  constructor(private gridService: GridService, private eventService: EventService, private searchService: SearchService, private fb: FormBuilder) {
     this.pagingForm = this.fb.group({
       page: ['']
     });
+
+    this.eventService
+      .on(YuvEventType.DMS_OBJECT_UPDATED)
+      .pipe(takeUntilDestroy(this))
+      .subscribe((e: YuvEvent) => {
+        const dmsObject = e.data as DmsObject;
+        if (this.dataTable) {
+          // Update table data without reloading the whole grid
+          this.dataTable.updateRow(dmsObject.id, dmsObject.data);
+        }
+      });
+
+    this.eventService
+      .on(YuvEventType.DMS_OBJECT_DELETED)
+      .pipe(takeUntilDestroy(this))
+      .subscribe(event => {
+        const deleted = this.dataTable.deleteRow(event.data.id);
+        if (deleted) {
+          this.totalNumItems--;
+        }
+      });
   }
 
   /**
@@ -120,6 +159,11 @@ export class SearchResultComponent {
           this.pagingForm.get('page').setValidators([Validators.min(0), Validators.max(this.pagination.pages)]);
         }
 
+        // setup column width
+        if (this.options) {
+          colDefs.forEach(col => (col.width = this.options[col.field] || col.width));
+        }
+
         this.resultListObjectTypeId = objecttypeId;
         this._columns = colDefs;
         this._rows = searchResult.items.map(i => this.getRow(i));
@@ -130,7 +174,7 @@ export class SearchResultComponent {
           rows: this._rows,
           titleField: SecondaryObjectTypeField.TITLE,
           descriptionField: SecondaryObjectTypeField.DESCRIPTION,
-          selectType: 'single',
+          selectType: 'multiple',
           sortModel: sortOptions.map(o => ({
             colId: o.field,
             sort: o.order
@@ -189,10 +233,9 @@ export class SearchResultComponent {
       this._searchQuery.sortOptions = sortModel.map(m => new SortOption(m.colId, m.sort));
       this._searchQuery.from = 0;
       this.executeQuery();
+      this.gridService.persistSortSettings(this._searchQuery.sortOptions, this.resultListObjectTypeId);
     }
   }
 
-  onColumnResized(colSizes: ColumnSizes) {
-    this.gridService.persistColumnWidthSettings(colSizes, this.resultListObjectTypeId);
-  }
+  ngOnDestroy() {}
 }

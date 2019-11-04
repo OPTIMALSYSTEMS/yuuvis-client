@@ -75,6 +75,7 @@ export class PendingChangesService {
     if (component ? !component.hasPendingChanges() : !this.hasPendingTask()) {
       return false;
     } else {
+      // TODO: We got no language resources in core -> Find another way to get confirm message
       const confirmed = confirm(this.translate.instant('eo.object.indexdata.save.browsernav'));
       if (confirmed) {
         this.clear();
@@ -85,6 +86,7 @@ export class PendingChangesService {
 
   checkForPendingTasks(taskIds: string | string[]): boolean {
     if (this.hasPendingTask(taskIds)) {
+      // TODO: We got no language resources in core -> Find another way to get confirm message
       const confirmed = confirm(this.translate.instant('eo.object.indexdata.save.browsernav'));
       if (confirmed) {
         this.clear();

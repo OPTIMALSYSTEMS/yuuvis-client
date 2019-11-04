@@ -1,4 +1,4 @@
-import { Component, forwardRef, Input, OnInit } from '@angular/core';
+import { Component, forwardRef, HostListener, Input, OnInit } from '@angular/core';
 import { ControlValueAccessor, FormControl, NG_VALIDATORS, NG_VALUE_ACCESSOR, Validator } from '@angular/forms';
 import { TranslateService, YuvEnvironment } from '@yuuvis/core';
 import * as moment_ from 'moment';
@@ -54,6 +54,11 @@ export class DatetimeComponent implements OnInit, ControlValueAccessor, Validato
   isWebEnv: boolean = YuvEnvironment.isWebEnvironment();
   _withTime: boolean;
   withAmPm: boolean;
+
+  @HostListener('document:keydown.enter', ['$event'])
+  onKeydownHandler(event: KeyboardEvent) {
+    event.stopPropagation();
+  }
 
   /**
    * Title for the datepicker

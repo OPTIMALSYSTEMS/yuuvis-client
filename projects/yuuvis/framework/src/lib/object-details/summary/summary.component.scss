@@ -9,12 +9,14 @@
         margin-bottom: var(--app-pane-padding);
       }
 
+      // body .ui-accordion .ui-accordion-header:not(.ui-state-active):not(.ui-state-disabled):hover a
       .ui-accordion-header {
         margin: 0;
 
         a {
           border: 0 !important;
-          background: rgba(0, 0, 0, 0.06);
+          // background: rgba(0, 0, 0, 0.06);
+          background-color: var(--panel-background);
           color: var(--text-color-caption) !important;
           display: flex;
           flex-flow: row-reverse;
@@ -29,15 +31,20 @@
           }
         }
 
+        &:not(.ui-state-active):not(.ui-state-disabled):hover a {
+          background-color: var(--panel-background);
+        }
+
         &:not(.ui-state-disabled).ui-state-active a {
-          background-color: #fff;
+          background-color: var(--panel-background);
           color: var(--text-color-caption);
         }
       }
       .ui-accordion-content-wrapper {
         .ui-accordion-content {
           border: 0;
-          background-color: #fff;
+          color: var(--text-color-caption);
+          background-color: var(--panel-background);
         }
       }
     }
@@ -50,12 +57,14 @@
     grid-template-rows: 100%;
     grid-template-areas: 'label value';
     padding: calc(var(--app-pane-padding) / 4);
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid var(--panel-divider-color);
     @include transition();
 
     &:hover {
       background-color: rgba(0, 0, 0, 0.03);
-      background: linear-gradient(to right, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.03) 10%, rgba(0, 0, 0, 0.03) 90%, rgba(0, 0, 0, 0) 100%);
+      :host-context(.dark) & {
+        background-color: rgba(255, 255, 255, 0.03);
+      }
     }
 
     &:last-child {

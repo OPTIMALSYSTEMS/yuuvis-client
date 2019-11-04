@@ -1,9 +1,10 @@
 .chip {
   display: inline-block;
-  background: rgba(0, 0, 0, 0.03);
+  line-height: 1.5em;
   border-radius: 2px;
   -webkit-border-radius: 2px;
-  border: 1px solid rgba(0, 0, 0, 0.15);
+  background: var(--item-focus-background-color);
+  border: 1px solid var(--item-focus-border-color);
   padding: 0 3px;
   color: var(--text-color-caption);
   margin: 1px 0;
@@ -22,5 +23,26 @@
 .icon {
   &.light svg {
     fill: white;
+  }
+}
+
+.yuv-busy-overlay {
+  position: absolute;
+  transition: opacity 200ms;
+  opacity: 0;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: rgba(255, 255, 255, 0.8);
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  z-index: 500;
+  justify-content: center;
+
+  // dark mode
+  .dark & {
+    background-color: rgba(var(--color-primary-rgb), 0.85);
   }
 }

@@ -1,12 +1,27 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { RangeValue } from '../../model/range-value.model';
 import { ApiBase } from '../backend/api.enum';
 import { BackendService } from '../backend/backend.service';
-import { BaseObjectTypeField, ContentStreamField } from '../system/system.enum';
-import { SearchQuery } from './search-query.model';
-import { SearchResult, SearchResultContent, SearchResultItem } from './search.service.interface';
+import { BaseObjectTypeField, ContentStreamField, SecondaryObjectTypeField } from '../system/system.enum';
+import { ObjectType } from './../../model/object-type.model';
+import { SearchQuery, SortOption } from './search-query.model';
+import { AggregateResult, SearchResult, SearchResultContent, SearchResultItem } from './search.service.interface';
 
+/**
+ * @ignore
+ * Creates the Model of Field Definitions
+ */
+export class FieldDefinition {
+  constructor(public elements: any[] = [], public sortorder: any[] = [], public pinned: any[] = [], public mode?: string) {}
+
+  getOptions(id = '') {
+    const sort = (this.sortorder.find(s => s.field === id) || {}).order;
+    const pinned = !!this.pinned.find(_id => _id === id);
+    return { ...(sort && { sort }), ...(pinned && { pinned }) };
+  }
+}
 @Injectable({
   providedIn: 'root'
 })
@@ -15,10 +30,32 @@ export class SearchService {
 
   constructor(private backend: BackendService) {}
 
+  /**
+   * Creates a RangeValue instance from the given value object.
+   *
+   * @param value The object to be
+   * @returns RangeValue
+   */
+  public static toRangeValue(value: any): RangeValue {
+    if (value) {
+      if (value instanceof RangeValue) {
+        return value;
+      } else if (value.hasOwnProperty('operator') && value.hasOwnProperty('firstValue')) {
+        return new RangeValue(value.operator, value.firstValue, value.secondValue);
+      }
+    }
+    return null;
+  }
+
   search(q: SearchQuery): Observable<SearchResult> {
     this.lastSearchQuery = q;
 
     return this.backend.post(`/dms/search`, q.toQueryJson(), ApiBase.apiWeb).pipe(map(res => this.toSearchResult(res)));
+  }
+
+  searchRaw(q: SearchQuery): Observable<any> {
+    this.lastSearchQuery = q;
+    return this.backend.post(`/dms/search`, q.toQueryJson(), ApiBase.apiWeb);
   }
 
   /**
@@ -27,28 +64,38 @@ export class SearchService {
    * @param aggregations List of aggregations to be fetched (e.g. `enaio:objectTypeId`
    * to get an aggregation of object types)
    */
-  aggregate(q: SearchQuery, aggregation: string) {
-    // TODO: enable multiple aggregations at once?
-    q.aggs = [aggregation];
-    return this.backend.post(`/dms/search`, q.toQueryJson(), ApiBase.apiWeb).pipe(map(res => this.toAggregateResult(res, aggregation)));
+  aggregate(q: SearchQuery, aggregations?: string[]) {
+    q.aggs = aggregations || [];
+    return this.backend.post(`/dms/search`, q.toQueryJson(), ApiBase.apiWeb).pipe(map(res => this.toAggregateResult(res, aggregations)));
   }
 
   getLastSearchQuery() {
     return this.lastSearchQuery;
   }
 
-  private toAggregateResult(searchResponse: any, aggregation: string): { value: string; count: number }[] {
-    return searchResponse.objects.map(o => ({
-      value: o.properties[aggregation].value,
-      count: o.properties['OBJECT_COUNT'].value
-    }));
+  private toAggregateResult(searchResponse: any, aggregations?: string[]): AggregateResult {
+    const agg = [];
+    if (aggregations) {
+      aggregations.forEach(a =>
+        agg.push(
+          searchResponse.objects.map(o => ({
+            key: o.properties[a].value,
+            count: o.properties['OBJECT_COUNT'].value
+          }))
+        )
+      );
+    }
+    return {
+      totalNumItems: searchResponse.totalNumItems,
+      aggregations: agg
+    };
   }
 
   /**
    * Map search result from the backend to applications SearchResult object
    * @param searchResponse The backend response
    */
-  private toSearchResult(searchResponse: any): SearchResult {
+  toSearchResult(searchResponse: any): SearchResult {
     const resultListItems: SearchResultItem[] = [];
     const objectTypes: string[] = [];
 
@@ -104,7 +151,7 @@ export class SearchService {
       hasMoreItems: searchResponse.hasMoreItems,
       totalNumItems: searchResponse.totalNumItems,
       items: resultListItems,
-      objectTypes: objectTypes
+      objectTypes
     };
     return result;
   }
@@ -117,5 +164,30 @@ export class SearchService {
   getPage(query: SearchQuery, page: number): Observable<SearchResult> {
     query.from = (page - 1) * query.size;
     return this.search(query);
+  }
+
+  /**
+   * Fake field definition service
+   * @param objectType default is null (represents mixed result)
+   */
+  getFieldDefinition(objectType: ObjectType): Observable<FieldDefinition> {
+    // TODO: use real service
+    const start = [BaseObjectTypeField.OBJECT_TYPE_ID, ...Object.values(SecondaryObjectTypeField)];
+    const end = [...Object.values(ContentStreamField), ...Object.values(BaseObjectTypeField).filter(f => f !== BaseObjectTypeField.OBJECT_TYPE_ID)];
+    const fd = new FieldDefinition([
+      ...objectType.fields.filter(f => start.includes(f.id)).sort((a, b) => start.indexOf(a.id) - start.indexOf(b.id)),
+      ...objectType.fields.filter(f => !start.includes(f.id) && !end.includes(f.id)),
+      ...objectType.fields.filter(f => end.includes(f.id)).sort((a, b) => end.indexOf(a.id) - end.indexOf(b.id))
+    ]);
+    return of(fd);
+  }
+
+  /**
+   * Fake field definition service
+   * @param objectType default is null (represents mixed result)
+   */
+  updateFieldDefinition(objectType: ObjectType, sortModel: SortOption[], pinModel: string[]): Observable<FieldDefinition> {
+    // TODO: use real service
+    return of(new FieldDefinition([], sortModel, pinModel));
   }
 }

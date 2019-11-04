@@ -1,1 +1,6 @@
-<yuv-quick-search></yuv-quick-search>
+<div class="testing-controls">
+    <button (click)="setQuery(storedQuery)">load query</button>
+    <button (click)="setQuery(null)">clear query</button>
+</div>
+
+<yuv-quick-search [query]="query" (querySubmit)="onSubmit($event)"></yuv-quick-search>

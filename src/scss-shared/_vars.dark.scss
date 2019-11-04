@@ -1,0 +1,23 @@
+.dark {
+  // main backgrounds
+  --main-background: #5a6065;
+
+  // form
+  --color-dirty-background: rgba(var(--color-accent-rgb), 0.4);
+  --color-dirty-font: #fff;
+
+  // panel background colors DARK MODE
+  --panel-background: var(--color-primary);
+  --panel-background-grey: #42484d;
+  --panel-background-lightgrey: #454c51;
+  --panel-divider-color: rgba(255, 255, 255, 0.1);
+  --item-focus-background-color: rgba(255, 255, 255, 0.1);
+  --item-focus-border-color: rgba(255, 255, 255, 0.2);
+  --app-bar-background: var(--panel-background);
+  --scrollbar-thumb-color: rgba(255, 255, 255, 0.04);
+
+  // text colors DARK MODE
+  --text-color-body: #fff;
+  --text-color-caption: rgba(255, 255, 255, 0.75);
+  --text-color-hint: rgba(255, 255, 255, 0.5);
+}

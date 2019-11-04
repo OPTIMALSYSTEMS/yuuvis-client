@@ -4,6 +4,10 @@
     padding: 0;
     background-color: var(--color-primary);
     border: none;
+
+    .ui-sidebar-close {
+      display: none;
+    }
   }
   &-header {
     height: 250px;

@@ -5,44 +5,45 @@
   <meta charset="utf-8" />
   <title>yuuvis® flex Client</title>
   <base href="/" />
-  <script src="cordova.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="icon" type="image/x-icon" href="favicon.ico" />
-  
-  <style>
 
-      html, body {
-        height: 100%;
-        width: 100%;
-        margin: 0;
-        padding: 0;
-      }
-  
-      #splash {
-        position: absolute;
-        left: 0;
-        right: 0;
-        top: 0;
-        bottom: 0;
-        background: rgb(244, 244, 244);
-        background: radial-gradient(ellipse at center, rgba(244, 244, 244, 1) 0%, rgba(238, 238, 238, 1) 100%);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-  
-      #splash img {
-        width: 50%;
-      }
-  
-    </style>
+  <style>
+    html,
+    body {
+      height: 100%;
+      width: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    #splash {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      background: rgb(244, 244, 244);
+      background: radial-gradient(ellipse at center, rgba(244, 244, 244, 1) 0%, rgba(238, 238, 238, 1) 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #splash img {
+      width: 50%;
+    }
+  </style>
+  <link rel="manifest" href="manifest.json" crossOrigin="use-credentials">
+  <meta name="theme-color" content="#484f54">
 </head>
 
 <body>
   <link rel="stylesheet" href="assets/default/theme/theme.css">
   <yuv-root>
-      <div id="splash"><img src="assets/default/theme/splash.svg"></div>
+    <div id="splash"><img src="assets/default/theme/splash.svg"></div>
   </yuv-root>
+  <noscript>Please enable JavaScript to continue using this application.</noscript>
 </body>
 
 </html>

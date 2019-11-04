@@ -7,11 +7,4 @@
   &.status {
     grid-template-columns: repeat(auto-fit, minmax(18px, 1fr));
   }
-
-  :host-context(.screen-s) & {
-    grid-template-columns: 1fr;
-    grid-template-rows: repeat(auto-fit, minmax(24px, 1fr));
-    grid-gap: 0;
-    grid-auto-flow: row;
-  }
 }

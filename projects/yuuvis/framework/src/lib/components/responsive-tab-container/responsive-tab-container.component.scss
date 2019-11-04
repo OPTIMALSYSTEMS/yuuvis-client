@@ -1,3 +1,13 @@
+@import './../../../../../../../src/scss-shared/_mixins';
+
+.as-split-area {
+  position: relative;
+  .as-dragging &::after {
+    content: '';
+    @include frame(0);
+  }
+}
+
 :host {
   as-split {
     padding: 0;
@@ -6,7 +16,7 @@
         .ui-tabview.ui-tabview-top .ui-tabview-nav {
           margin-right: 0;
           li.ui-state-active {
-            border-color: rgba(0, 0, 0, 0.1);
+            border-color: var(--panel-divider-color);
           }
         }
       }

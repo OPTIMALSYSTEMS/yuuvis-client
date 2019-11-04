@@ -1,5 +1,7 @@
 .ag-theme-yuv {
   font-size: var(--font-body);
+  background-color: transparent;
+  color: var(--text-color-body);
 
   .ag-root {
     border: 0;
@@ -26,8 +28,14 @@
   .ag-row {
     border-color: var(--panel-divider-color);
 
+    &.ag-row-odd:not(.ag-row-selected),
+    &.ag-row-even:not(.ag-row-selected) {
+      background-color: transparent;
+    }
+
     svg {
-      fill: var(--text-color-caption);
+      fill: currentColor;
+      opacity: 0.54;
 
       &.checkbox .null {
         opacity: 0.4;
@@ -46,6 +54,12 @@
     background-color: var(--color-accent);
     color: #fff;
 
+    .chip {
+      background-color: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.4);
+      color: #fff;
+    }
+
     svg {
       fill: #fff;
     }
@@ -58,9 +72,9 @@
     border: 1px solid transparent;
 
     &.ag-cell-focus {
-      background-color: rgba(255, 255, 255, 0.2);
+      background-color: rgba(255, 255, 255, 0.1);
       outline: 0 !important;
-      border-color: var(--color-accent) !important;
+      border-color: transparent !important;
     }
 
     &.res-ico,

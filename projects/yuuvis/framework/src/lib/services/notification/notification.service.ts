@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ToastrService } from 'ngx-toastr';
+import { IndividualConfig, ToastrService } from 'ngx-toastr';
 
 @Injectable({
   providedIn: 'root'
@@ -9,9 +9,10 @@ export class NotificationService {
    * Default Notofication Options
    *
    */
-  private options: any = {
+  private options: Partial<IndividualConfig> = {
     closeButton: true,
     positionClass: 'toast-bottom-right',
+    onActivateTick: true, // triggers change detection
     timeOut: 15000
   };
 

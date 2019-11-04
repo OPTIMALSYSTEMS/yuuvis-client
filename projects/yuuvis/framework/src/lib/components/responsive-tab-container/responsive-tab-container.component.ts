@@ -1,4 +1,4 @@
-import { AfterContentInit, Component, ContentChildren, Input, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { AfterContentInit, Component, ContentChildren, EventEmitter, Input, OnInit, Output, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { Screen, ScreenService } from '@yuuvis/core';
 import { TabPanel, TabView } from 'primeng/tabview';
 import { Observable } from 'rxjs';
@@ -19,11 +19,23 @@ export class ResponsiveTabContainerComponent implements OnInit, AfterContentInit
    */
   @Input() pluginPanels = new QueryList<TabPanel>();
 
+  private _options = { panelOrder: [], panelSizes: [] };
+
+  @Input() set options(opt) {
+    this._options = { ...this._options, ...opt };
+  }
+
+  get options() {
+    return this._options;
+  }
+
   @ContentChildren(TabPanel) tabPanels: QueryList<TabPanel>;
   @ViewChildren(TabPanel) viewTabPanels: QueryList<TabPanel>;
 
   @ViewChild('mainTabView', { static: true }) mainTabView: TabView;
   @ViewChildren('splitTabView') splitTabViews: QueryList<TabView>;
+
+  @Output() optionsChanged = new EventEmitter();
 
   allPanels: TabPanel[] = [];
   splitPanels: TabPanel[] = [];
@@ -136,8 +148,11 @@ export class ResponsiveTabContainerComponent implements OnInit, AfterContentInit
    */
   savePanelOrder() {
     this.isBigScreen.subscribe(() => {
-      const panelOrder = [this.pID(this.mainTabView.findSelectedTab()), ...this.splitPanels.map(p => this.pID(p))];
-      console.log(panelOrder.join());
+      this.options.panelOrder = [this.pID(this.mainTabView.findSelectedTab()), ...this.splitPanels.map(p => this.pID(p))];
+      if (this.options.panelOrder.length !== this.options.panelSizes.length) {
+        this.options.panelSizes = [];
+      }
+      this.optionsChanged.emit(this.options);
     });
   }
 
@@ -146,11 +161,17 @@ export class ResponsiveTabContainerComponent implements OnInit, AfterContentInit
    */
   loadPanelOrder() {
     this.isBigScreen.subscribe(() => {
-      const panelOrder = [];
+      const panelOrder = this.options.panelOrder || [];
       if (panelOrder && panelOrder.length) {
         panelOrder.slice(1).forEach(id => this.splitPanelAdd(id));
-        this.open(this.allPanels.find(p => this.pID(p) === panelOrder[0]));
+        const tab = this.allPanels.find(p => this.pID(p) === panelOrder[0]);
+        setTimeout(() => this.open(tab), 0);
       }
     });
+  }
+
+  dragEnd(evt: any) {
+    this.options.panelSizes = evt.sizes;
+    this.optionsChanged.emit(this.options);
   }
 }

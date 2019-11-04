@@ -1,5 +1,6 @@
-<yuv-panel *ngIf="dmsObject; else empty" class="object-details" [title]="dmsObject?.data?.clienttitle"
-  [description]="dmsObject?.data?.clientdescription" [yuvBusyOverlay]="busy">
+<yuv-panel *ngIf="dmsObject; else empty" class="object-details" [title]="dmsObject.title"
+  [description]="dmsObject.description" [yuvBusyOverlay]="busy" [enableStandaloneBackButton]="true"
+  [standaloneFullscreen]="standaloneFullscreen" (backButtonClick)="standaloneBackButtonClicked()">
   <div class="header-icon" [innerHtml]="objectIcon | safeHtml"></div>
 
   <yuv-action-menu-bar class="actions">
@@ -19,7 +20,7 @@
     <yuv-icon class="finalized-icon" [svg]="icons.finalized"></yuv-icon> -->
   </yuv-action-menu-bar>
 
-  <yuv-responsive-tab-container class="content">
+  <yuv-responsive-tab-container class="content" (optionsChanged)="optionsChanged.emit($event)" [options]="options">
     <p-tabPanel [id]="'summary'" [header]="'yuv.framework.object-details.tabs.summary.title' | translate">
       <ng-template pTemplate="content">
         <yuv-summary [dmsObject]="dmsObject" [showExtrasSection]="userIsAdmin"></yuv-summary>
@@ -28,19 +29,20 @@
 
     <p-tabPanel [id]="'indexdata'" [header]="'yuv.framework.object-details.tabs.indexdata.title' | translate">
       <ng-template pTemplate="content">
-        <yuv-object-form-edit [dmsObject]="dmsObject"></yuv-object-form-edit>
+        <yuv-object-form-edit [dmsObject]="dmsObject" (indexDataSaved)="onIndexdataSaved($event)">
+        </yuv-object-form-edit>
       </ng-template>
     </p-tabPanel>
 
     <p-tabPanel [id]="'preview'" [header]="'yuv.framework.object-details.tabs.content.title' | translate">
       <ng-template pTemplate="content">
-        Content Preview ..................
+        <yuv-content-preview [dmsObject]="dmsObject" [searchTerm]="searchTerm"></yuv-content-preview>
       </ng-template>
     </p-tabPanel>
 
     <p-tabPanel [id]="'history'" [header]="'yuv.framework.object-details.tabs.history.title' | translate">
       <ng-template pTemplate="content">
-        History ..................
+        <yuv-audit [objectID]="objectId"></yuv-audit>
       </ng-template>
     </p-tabPanel>
   </yuv-responsive-tab-container>

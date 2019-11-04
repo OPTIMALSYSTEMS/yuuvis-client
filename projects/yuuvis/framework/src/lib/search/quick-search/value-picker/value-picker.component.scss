@@ -1,0 +1,20 @@
+:host {
+  height: 100%;
+  min-width: 200px;
+  display: grid;
+  grid-template-rows: 1fr auto;
+  grid-template-columns: 1fr;
+  grid-template-areas: 'list' 'buttons';
+
+  section.list {
+    grid-area: list;
+    overflow-y: auto;
+  }
+
+  section.buttons {
+    grid-area: buttons;
+    padding: calc(var(--app-pane-padding) / 2);
+    display: flex;
+    justify-content: flex-end;
+  }
+}

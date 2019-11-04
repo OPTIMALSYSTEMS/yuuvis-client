@@ -1,18 +1,15 @@
-import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
-import { Inject, Injectable, NgZone } from '@angular/core';
-import { LocalStorage } from '@ngx-pwa/local-storage';
+import { Inject, Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { BehaviorSubject, interval, Observable, of, Subject, throwError } from 'rxjs';
-import { catchError, switchMap, takeUntil, tap } from 'rxjs/operators';
-import { YuvEnvironment } from '../../core.environment';
+import { BehaviorSubject, Observable, of } from 'rxjs';
+import { switchMap, tap } from 'rxjs/operators';
 import { UserSettings, YuvUser } from '../../model/yuv-user.model';
 import { BackendService } from '../backend/backend.service';
+import { AppCacheService } from '../cache/app-cache.service';
 import { ConfigService } from '../config/config.service';
 import { CoreConfig } from '../config/core-config';
 import { CORE_CONFIG } from '../config/core-config.tokens';
 import { SystemService } from '../system/system.service';
 import { UserService } from '../user/user.service';
-import { LoginDeviceResult, LoginState, LoginStateName, StoredToken } from './auth.interface';
 
 /**
  * Got some code here
@@ -25,92 +22,36 @@ import { LoginDeviceResult, LoginState, LoginStateName, StoredToken } from './au
   providedIn: 'root'
 })
 export class AuthService {
-  private TOKEN_STORAGE_KEY = 'eo.auth.cloud.credentials';
+  private STORAGE_KEY = 'yuv.core.auth.data';
   private authenticated: boolean;
   private authSource = new BehaviorSubject<boolean>(false);
   authenticated$: Observable<boolean> = this.authSource.asObservable();
+
+  private authData: AuthData;
 
   constructor(
     @Inject(CORE_CONFIG) public coreConfig: CoreConfig,
     private config: ConfigService,
     private translate: TranslateService,
-    private ngZone: NgZone,
     private userService: UserService,
     private systemService: SystemService,
     private backend: BackendService,
-    private storage: LocalStorage,
-    private http: HttpClient
-  ) {}
+    private appCache: AppCacheService
+  ) {
+    this.appCache.getItem(this.STORAGE_KEY).subscribe((data: AuthData) => {
+      this.authData = data;
+      if (data && data.language) {
+        this.translate.use(data.language ? data.language : 'en');
+        this.backend.setHeader('Accept-Language', data.language);
+      }
+      if (data && data.tenant) {
+        this.backend.setHeader('X-ID-TENANT-NAME', data.tenant);
+      }
+    });
+  }
 
   isLoggedIn() {
     return this.authenticated;
-  }
-
-  startLoginFlow(tenant: string, host?: string): { cancelTrigger: Subject<void>; loginState: Observable<LoginState> } {
-    const stopTrigger$ = new Subject<void>();
-    return {
-      cancelTrigger: stopTrigger$,
-      loginState: new Observable(o => {
-        const loginState: LoginState = {
-          name: null,
-          data: null
-        };
-
-        // get rid of tailing slashes as this would confuse redirection flow
-        if (host.endsWith('/')) {
-          host = host.substring(0, host.length - 1);
-        }
-        const targetHost = host || '';
-        this.http.get(`${targetHost}/tenant/${tenant}/loginDevice`).subscribe(
-          (res: LoginDeviceResult) => {
-            const targetUri = `${targetHost}/oauth/${tenant}?user_code=${res.user_code}`;
-
-            loginState.name = LoginStateName.STATE_LOGIN_URI;
-            loginState.data = targetUri;
-            o.next(loginState);
-
-            this.cloudLoginPollForResult(`${targetHost}/auth/info/state?device_code=${res.device_code}`, 1000, stopTrigger$)
-              .pipe(
-                tap(accessToken => {
-                  if (accessToken) {
-                    this.cloudLoginSetHeaders(accessToken, tenant);
-                    const storeToken: StoredToken = {
-                      tenant: tenant,
-                      accessToken: accessToken
-                    };
-                    this.storage.setItem(this.TOKEN_STORAGE_KEY, storeToken).subscribe();
-                  }
-                }),
-                switchMap((authRes: any) => (authRes ? this.initUser(targetHost) : throwError('not authenticated')))
-              )
-              .subscribe(
-                (user: YuvUser) => {
-                  loginState.name = LoginStateName.STATE_DONE;
-                  loginState.data = user;
-
-                  o.next(loginState);
-                  o.complete();
-                },
-                err => {
-                  o.error(err);
-                  o.complete();
-                },
-                () => {
-                  // polling may complete without a result or error, when it was canceled
-                  loginState.name = LoginStateName.STATE_CANCELED;
-                  loginState.data = null;
-                  o.next(loginState);
-                  o.complete();
-                }
-              );
-          },
-          error => {
-            o.error('unable to call device flow endpoint');
-            o.complete();
-          }
-        );
-      })
-    };
   }
 
   /**
@@ -121,23 +62,27 @@ export class AuthService {
     // setup default language for translate module
     let browserLang = this.translate.getBrowserLang();
     this.translate.use(browserLang.match(/en|de/) ? browserLang : 'en');
+    return this.fetchUser();
 
-    return this.storage.getItem(this.TOKEN_STORAGE_KEY).pipe(
-      switchMap((res: any) => {
-        if (res) {
-          this.cloudLoginSetHeaders(res.accessToken, res.tenant);
-          this.backend.setHost(host);
-        }
-        return this.fetchUser();
-      })
-    );
+    // return this.storage.getItem(this.TOKEN_STORAGE_KEY).pipe(
+    //   switchMap((res: any) => {
+    //     // if (res) {
+    //     //   // this.cloudLoginSetHeaders(res.accessToken, res.tenant);
+    //     //   this.backend.setHost(host);
+    //     // }
+    //     return this.fetchUser();
+    //   })
+    // );
   }
 
-  private fetchUser(): Observable<YuvUser> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json'
-    });
+  /**
+   * Get the current tenant or the previous one persisted locally
+   */
+  getTenant(): string {
+    return this.authData ? this.authData.tenant : null;
+  }
 
+  fetchUser(): Observable<YuvUser> {
     return this.backend.get(this.userService.USER_FETCH_URI).pipe(
       tap(() => {
         this.authenticated = true;
@@ -151,112 +96,10 @@ export class AuthService {
    * Logs out the current user.
    * @param gatewayLogout Flag indicating whether or not to perform a gateway logout as well
    */
-  logout(gatewayLogout?: boolean) {
+  logout() {
     this.authenticated = false;
     this.authSource.next(this.authenticated);
-
-    // remove stored access data
-    this.storage.removeItem(this.TOKEN_STORAGE_KEY).subscribe();
-    if (this.coreConfig.environment.production && YuvEnvironment.isWebEnvironment()) {
-      (window as any).location.href = '/logout';
-      return;
-    }
-
-    if (gatewayLogout) {
-      // by default we are just resetting internal state to 'logged out' and in
-      // some cases call gateways logout endpoint to do logout stuff there silently
-      this.http
-        .get(`${this.backend.getHost()}/logout`, {
-          observe: 'response',
-          responseType: 'arraybuffer'
-        })
-        .subscribe(
-          res => {
-            console.log(res);
-            this.http.get(res.url).subscribe();
-          },
-          err => {
-            console.error(err);
-          }
-        );
-    }
-    this.backend.setHost(null);
-    this.cloudLoginRemoveHeaders();
     // TODO: enable again: this.eventService.trigger(EnaioEvent.LOGOUT);
-  }
-
-  /**
-   * Starts polling for login results in case of logging in to a cloud backend.
-   * @param uri URI to poll
-   * @param pollingInterval Polling intervall in milliseconds
-   * @param stopTrigger Subject acting as stop trigger
-   * @returns Access Token if logged in successfully or NULL otherwise
-   */
-  private cloudLoginPollForResult(uri: string, pollingInterval: number, stopTrigger: Subject<void> = new Subject<void>()): Observable<string> {
-    return Observable.create(o => {
-      let accessGranted = false;
-      let accessDenied = false;
-
-      this.ngZone.runOutsideAngular(() => {
-        interval(pollingInterval)
-          .pipe(
-            takeUntil(stopTrigger),
-            switchMap(() =>
-              this.http.get(uri).pipe(
-                catchError((err: HttpErrorResponse) => {
-                  // OAuth standard we are using is returning with a status of 400 while logging in (no idea why???)
-                  // so we got to fetch that to not break the parent pipe
-                  if (err.status === 400) {
-                    return of(err.error);
-                  } else {
-                    throwError(err);
-                  }
-                })
-              )
-            )
-          )
-          .subscribe(
-            (res: any) => {
-              this.ngZone.run(() => {
-                accessGranted = !!res.access_token;
-                accessDenied = res.error === 'access_denied';
-
-                if (accessGranted || accessDenied) {
-                  // logged in
-                  stopTrigger.next();
-                  stopTrigger.complete();
-                  o.next(accessGranted ? res.access_token : null);
-                  o.complete();
-                } else if (res.error === 'expired_token') {
-                  // expired so skip polling
-                  throwError('Token expired');
-                }
-              });
-            },
-            err => {
-              this.ngZone.run(() => {
-                o.error(err);
-                o.complete();
-              });
-            },
-            () => {
-              this.ngZone.run(() => {
-                o.complete();
-              });
-            }
-          );
-      });
-    });
-  }
-
-  private cloudLoginSetHeaders(accessToken: string, tenant: string) {
-    this.backend.setHeader('Authorization', 'bearer ' + accessToken);
-    this.backend.setHeader('X-ID-TENANT-NAME', tenant);
-  }
-
-  private cloudLoginRemoveHeaders() {
-    this.backend.setHeader('Authorization', null);
-    this.backend.setHeader('X-ID-TENANT-NAME', null);
   }
 
   /**
@@ -271,8 +114,21 @@ export class AuthService {
         const currentUser = new YuvUser(userJson, userSettings);
         this.userService.setCurrentUser(currentUser);
         this.backend.setHeader('Accept-Language', currentUser.getClientLocale());
+        this.backend.setHeader('X-ID-TENANT-NAME', currentUser.tenant);
+
+        this.authData = {
+          tenant: currentUser.tenant,
+          language: currentUser.getClientLocale()
+        };
+        this.appCache.setItem(this.STORAGE_KEY, this.authData).subscribe();
+
         return of(currentUser);
       })
     );
   }
+}
+
+interface AuthData {
+  tenant: string;
+  language: string;
 }

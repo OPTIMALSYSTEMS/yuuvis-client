@@ -19,12 +19,7 @@ export class AboutComponent implements OnInit {
 
   ctrl: Observable<ProductDetails[]> = this.aboutService.productDetails$;
 
-  constructor(
-    private titleService: Title,
-    public translate: TranslateService,
-    private userService: UserService,
-    private aboutService: AboutService
-  ) {
+  constructor(private titleService: Title, public translate: TranslateService, private userService: UserService, private aboutService: AboutService) {
     this.getUserLang();
   }
 
@@ -33,9 +28,7 @@ export class AboutComponent implements OnInit {
   }
 
   getUserLang() {
-    this.userService.user$.subscribe(
-      data => (this.userLang = data.userSettings.locale)
-    );
+    this.userService.user$.subscribe(data => (this.userLang = data.userSettings.locale));
   }
 
   trackByFn(index, item): number {
@@ -43,7 +36,7 @@ export class AboutComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.titleService.setTitle(this.translate.instant('eo.state.about.title'));
+    this.titleService.setTitle(this.translate.instant('yuv.client.state.about.title'));
     this.aboutService.getAboutConfig(this.userLang);
     this.aboutService.getAboutData();
   }

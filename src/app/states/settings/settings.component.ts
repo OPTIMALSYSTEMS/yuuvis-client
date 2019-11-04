@@ -1,11 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
-import {
-  ConfigService,
-  TranslateService,
-  UserService,
-  YuvUser
-} from '@yuuvis/core';
+import { ConfigService, TranslateService, UserService, YuvUser } from '@yuuvis/core';
+import { LayoutService, LayoutSettings } from '@yuuvis/framework';
 import { Observable } from 'rxjs';
 
 @Component({
@@ -15,10 +11,16 @@ import { Observable } from 'rxjs';
 })
 export class SettingsComponent implements OnInit {
   user$: Observable<YuvUser>;
+  darkMode: boolean;
+  accentColor: string;
+  customDashboardBackground: boolean;
   clientLocales: any;
+
+  accentColorRGB = ['255, 152, 0', '120, 144, 156', '124, 179, 66', '3,169,244', '126,87,194', '236,64,122'];
 
   constructor(
     private translate: TranslateService,
+    private layoutService: LayoutService,
     private titleService: Title,
     public config: ConfigService,
     private userService: UserService
@@ -30,10 +32,37 @@ export class SettingsComponent implements OnInit {
     this.userService.changeClientLocale(iso);
   }
 
+  toggleTheme(darkMode: boolean) {
+    this.layoutService.setDarkMode(darkMode);
+  }
+
+  setAccentColor(rgb: string) {
+    this.layoutService.setAccentColor(rgb);
+  }
+
+  setBackgroundImage(e) {
+    this.layoutService.setDashboardBackground(!!e ? e : null);
+  }
+
+  downloadLayout() {
+    this.layoutService.downloadLayout();
+  }
+
+  uploadLayout(e: any) {
+    this.layoutService.uploadLayout(e).subscribe();
+  }
+
+  clearLayout() {
+    this.layoutService.clearLayout().subscribe();
+  }
+
   ngOnInit() {
-    this.titleService.setTitle(
-      this.translate.instant('eo.state.settings.title')
-    );
+    this.titleService.setTitle(this.translate.instant('yuv.client.state.settings.title'));
     this.user$ = this.userService.user$;
+    this.layoutService.layoutSettings$.subscribe((settings: LayoutSettings) => {
+      this.darkMode = settings.darkMode;
+      this.accentColor = settings.accentColor;
+      this.customDashboardBackground = !!settings.dashboardBackground;
+    });
   }
 }

@@ -29,40 +29,75 @@
     <yuv-form-input *ngSwitchCase="'date'" [tag]="tag" [label]="formElementRef._eoFormElement.label" [isNull]="isNull"
       [skipToggle]="skipToggle || situation !== 'SEARCH'" (onToggleLabel)="labelToggled($event)"
       [required]="formElementRef._eoFormElement.required" [invalid]="formElementRef.invalid">
-      <yuv-datetime [readonly]="formElementRef._eoFormElement.readonly" [withTime]="false"
+
+      <yuv-datetime *ngIf="situation !== 'SEARCH'; else tplDateRange"
+        [readonly]="formElementRef._eoFormElement.readonly" [withTime]="false"
         [pickerTitle]="formElementRef._eoFormElement.label"
         [formControlName]="element._eoFormControlWrapper.controlName"></yuv-datetime>
+
+      <ng-template #tplDateRange>
+        <yuv-datetime-range [pickerTitle]="formElementRef._eoFormElement.label" [withTime]="false"
+          [formControlName]="element._eoFormControlWrapper.controlName"></yuv-datetime-range>
+      </ng-template>
+
     </yuv-form-input>
 
     <!-- DATETIME -->
     <yuv-form-input *ngSwitchCase="'datetime'" [tag]="tag" [label]="formElementRef._eoFormElement.label"
       [isNull]="isNull" [skipToggle]="skipToggle || situation !== 'SEARCH'" (onToggleLabel)="labelToggled($event)"
       [required]="formElementRef._eoFormElement.required" [invalid]="formElementRef.invalid">
-      <yuv-datetime [readonly]="formElementRef._eoFormElement.readonly" [withTime]="true"
+
+      <yuv-datetime *ngIf="situation !== 'SEARCH'; else tplDateTimeRange"
+        [readonly]="formElementRef._eoFormElement.readonly" [withTime]="true"
         [pickerTitle]="formElementRef._eoFormElement.label"
         [formControlName]="element._eoFormControlWrapper.controlName"></yuv-datetime>
+
+      <ng-template #tplDateTimeRange>
+        <yuv-datetime-range [pickerTitle]="formElementRef._eoFormElement.label" [withTime]="true"
+          [formControlName]="element._eoFormControlWrapper.controlName"></yuv-datetime-range>
+      </ng-template>
+
     </yuv-form-input>
 
     <!-- INTERGER -->
     <yuv-form-input *ngSwitchCase="'integer'" [tag]="tag" [label]="formElementRef._eoFormElement.label"
       [isNull]="isNull" [skipToggle]="skipToggle || situation !== 'SEARCH'" (onToggleLabel)="labelToggled($event)"
       [required]="formElementRef._eoFormElement.required" [invalid]="formElementRef.invalid">
-      <yuv-number [readonly]="formElementRef._eoFormElement.readonly"
-        [precision]="formElementRef._eoFormElement.precision" [scale]="0"
-        [grouping]="formElementRef._eoFormElement.grouping"
-        [formControlName]="element._eoFormControlWrapper.controlName">
+
+      <yuv-number *ngIf="situation !== 'SEARCH'; else tplIntegerRange"
+        [readonly]="formElementRef._eoFormElement.readonly" [precision]="formElementRef._eoFormElement.precision"
+        [scale]="0" [grouping]="formElementRef._eoFormElement.grouping" [min]="formElementRef._eoFormElement.min"
+        [max]="formElementRef._eoFormElement.max" [formControlName]="element._eoFormControlWrapper.controlName">
       </yuv-number>
+
+      <ng-template #tplIntegerRange>
+        <yuv-number-range [readonly]="formElementRef._eoFormElement.readonly"
+          [precision]="formElementRef._eoFormElement.precision" [scale]="0"
+          [grouping]="formElementRef._eoFormElement.grouping"
+          [formControlName]="element._eoFormControlWrapper.controlName"></yuv-number-range>
+      </ng-template>
+
     </yuv-form-input>
 
     <!-- DECIMAL -->
     <yuv-form-input *ngSwitchCase="'decimal'" [tag]="tag" [label]="formElementRef._eoFormElement.label"
       [isNull]="isNull" [skipToggle]="skipToggle || situation !== 'SEARCH'" (onToggleLabel)="labelToggled($event)"
       [required]="formElementRef._eoFormElement.required" [invalid]="formElementRef.invalid">
-      <yuv-number [readonly]="formElementRef._eoFormElement.readonly"
-        [precision]="formElementRef._eoFormElement.precision" [scale]="formElementRef._eoFormElement.scale"
-        [grouping]="formElementRef._eoFormElement.grouping" [pattern]="formElementRef._eoFormElement.pattern"
-        [formControlName]="element._eoFormControlWrapper.controlName">
+
+      <yuv-number *ngIf="situation !== 'SEARCH'; else tplDecimalRange"
+        [readonly]="formElementRef._eoFormElement.readonly" [precision]="formElementRef._eoFormElement.precision"
+        [scale]="formElementRef._eoFormElement.scale" [grouping]="formElementRef._eoFormElement.grouping"
+        [pattern]="formElementRef._eoFormElement.pattern" [min]="formElementRef._eoFormElement.min"
+        [max]="formElementRef._eoFormElement.max" [formControlName]="element._eoFormControlWrapper.controlName">
       </yuv-number>
+
+      <ng-template #tplDecimalRange>
+        <yuv-number-range [readonly]="formElementRef._eoFormElement.readonly"
+          [precision]="formElementRef._eoFormElement.precision" [scale]="formElementRef._eoFormElement.scale"
+          [pattern]="formElementRef._eoFormElement.pattern" [grouping]="formElementRef._eoFormElement.grouping"
+          [formControlName]="element._eoFormControlWrapper.controlName"></yuv-number-range>
+      </ng-template>
+
     </yuv-form-input>
 
     <!-- print out the type if it's not matching anything -->
@@ -79,6 +114,17 @@
         (situation !== 'SEARCH' && situation !== 'CREATE' && formElementRef.errors) ||
         ((situation === 'SEARCH' || situation === 'CREATE') && formElementRef.errors && (formElementRef.dirty || formElementRef.touched))
       ">
+
+      <div *ngIf="formElementRef.errors.daterange">
+        {{'yuv.framework.object-form-element.error.daterange.invalid'|translate}}
+      </div>
+      <div *ngIf="formElementRef.errors.daterangeorder">
+        {{'yuv.framework.object-form-element.error.daterangeorder.invalid'|translate}}</div>
+      <div *ngIf="formElementRef.errors.numberrange">
+        {{'yuv.framework.object-form-element.error.numberrange.invalid'|translate}}</div>
+      <div *ngIf="formElementRef.errors.numberrangeorder">
+        {{'yuv.framework.object-form-element.error.numberrangeorder.invalid'|translate}}</div>
+
       <div *ngIf="formElementRef.errors.number">{{'yuv.framework.object-form-element.error.number' | translate}}</div>
       <div *ngIf="formElementRef.errors.precision">
         {{ 'yuv.framework.object-form-element.error.number.precision' | translate: formElementRef.errors.precision.params }}
@@ -106,6 +152,9 @@
       </div>
       <div *ngIf="formElementRef.errors.minlength">
         {{'yuv.framework.object-form-element.error.minlength' | translate: ({ minlength: formElementRef._eoFormElement.minlen })}}
+      </div>
+      <div *ngIf="formElementRef.errors.minmax">
+        {{'yuv.framework.object-form-element.error.minmax' | translate: ({ min: formElementRef._eoFormElement.min, max: formElementRef._eoFormElement.max })}}
       </div>
     </div>
   </div>

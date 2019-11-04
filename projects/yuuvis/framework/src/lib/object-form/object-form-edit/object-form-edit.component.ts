@@ -23,10 +23,7 @@ export class ObjectFormEditComponent {
   @Input() formDisabled: boolean;
   @Input('dmsObject')
   set dmsObject(dmsObject: DmsObject) {
-    this._dmsObject = dmsObject;
-    if (dmsObject) {
-      // this._dmsObject = dmsObject;
-
+    if (dmsObject && (!this._dmsObject || this._dmsObject.id !== dmsObject.id)) {
       // reset the state of the form
       this.formState = null;
       this.controls.saving = false;
@@ -34,9 +31,12 @@ export class ObjectFormEditComponent {
 
       this.createObjectForm(dmsObject);
     }
+    this._dmsObject = dmsObject;
   }
-
-  @Output() indexDataSaved = new EventEmitter<any>();
+  /**
+   * Emits the updated `DmsObject` when a form has been saved.
+   */
+  @Output() indexDataSaved = new EventEmitter<DmsObject>();
 
   formOptions: ObjectFormOptions;
   formState: FormStatusChangedEvent;
@@ -105,7 +105,7 @@ export class ObjectFormEditComponent {
               this.controls.disabled = true;
               this.objectForm.setFormPristine();
               this.notification.success(this._dmsObject.title, this.messages.formSuccess);
-              this.indexDataSaved.emit(formData);
+              this.indexDataSaved.emit(this._dmsObject);
             },
             Utils.throw(
               () => {
