@@ -1,6 +1,6 @@
 import { Component, EventEmitter, HostBinding, HostListener, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { BaseObjectTypeField, Utils } from '@yuuvis/core';
-import { ColDef, GridOptions, RowNode } from 'ag-grid-community';
+import { ColDef, GridOptions, RowEvent, RowNode } from 'ag-grid-community';
 import { ResizedEvent } from 'angular-resize-event';
 import { Observable, ReplaySubject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
@@ -36,11 +36,13 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
 
   @Input() options: any;
   @Output() optionsChanged = new EventEmitter();
+  @Output() onRowDoubleClicked = new EventEmitter<RowEvent>();
 
   /**
    * ResponsiveTableData setter
    */
   @Input() set data(data: ResponsiveTableData) {
+    66;
     this._data = data;
     if (this.gridOptions) {
       this.applyGridOption(this.small);

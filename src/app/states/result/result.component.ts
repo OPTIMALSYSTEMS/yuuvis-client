@@ -1,8 +1,9 @@
 import { PlatformLocation } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AppCacheService, Screen, ScreenService, SearchQuery, TranslateService } from '@yuuvis/core';
+import { RowEvent } from 'ag-grid-community';
 import { takeUntilDestroy } from 'take-until-destroy';
 
 @Component({
@@ -28,7 +29,8 @@ export class ResultComponent implements OnInit, OnDestroy {
     private appCacheService: AppCacheService,
     public translate: TranslateService,
     private location: PlatformLocation,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private router: Router
   ) {
     this.screenService.screenChange$.pipe(takeUntilDestroy(this)).subscribe((screen: Screen) => {
       this.smallScreen = screen.mode === ScreenService.MODE.SMALL;
@@ -57,6 +59,12 @@ export class ResultComponent implements OnInit, OnDestroy {
   select(items: string[]) {
     this.selectedItems = items;
     this.objectDetailsID = this.selectedItems[0];
+  }
+
+  onRowDoubleClicked(rowEvent: RowEvent) {
+    if (rowEvent) {
+      this.router.navigate(['/object/' + rowEvent.data.id]);
+    }
   }
 
   ngOnInit() {
