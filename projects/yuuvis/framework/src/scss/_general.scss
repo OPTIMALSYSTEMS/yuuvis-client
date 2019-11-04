@@ -42,7 +42,7 @@ $yfd-outline-size: 4px;
     transition: outline 0ms;
     outline-offset: $yfd-outline-size * -1;
 
-    // TODO: Enable to show available child dropzones on dragenter
+    // Enable to show available child dropzones on dragenter
     .yuv-file-drop:not(.yuv-file-drop-disabled) {
       outline-offset: ($yfd-outline-size / 2) * -1;
       outline: ($yfd-outline-size / 2) dashed rgba(var(--color-accent-rgb), 0.4);
