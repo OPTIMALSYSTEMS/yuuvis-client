@@ -39,25 +39,39 @@ export class UploadService {
     }
   }
 
+  upload(url: string, file: File): Observable<any> {
+    return this.executeUpload(url, file);
+  }
+
+  uploadMultipart(url: string, file: File, data: any): Observable<any> {
+    return this.executeUpload(url, file, { key: 'data', data: data });
+  }
+
   /**
    * Upload a file ...
    * @param url
    * @param file
    * @param payload
    */
-  upload(url: string, file: File, payload?: { key: string; data: string }): Observable<any> {
+  private executeUpload(url: string, file: File, payload?: { key: string; data: string }): Observable<any> {
     const id = Utils.uuid();
 
-    const formData: FormData = new FormData();
-    formData.append('file', file, file.name);
-
+    let request;
     if (payload) {
+      // multipart request
+      const formData: FormData = new FormData();
+      formData.append('file', file, file.name);
       formData.append(payload.key, payload.data);
-    }
 
-    const req = new HttpRequest('POST', url, formData, {
-      reportProgress: true
-    });
+      request = new HttpRequest('POST', url, formData, {
+        reportProgress: true
+      });
+    } else {
+      // regular post request
+      request = new HttpRequest('POST', url, file, {
+        reportProgress: true
+      });
+    }
 
     const progress = new Subject<number>();
 
@@ -71,7 +85,7 @@ export class UploadService {
         progress: progress.asObservable(),
         err: null,
         subscription: this.http
-          .request(req)
+          .request(request)
           .pipe(
             catchError(err => {
               const statusItem = this.status.items.find(s => s.id === id);
