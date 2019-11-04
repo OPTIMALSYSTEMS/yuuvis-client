@@ -1,4 +1,10 @@
 <div class="table" style="overflow: hidden; height: 100%" (resized)="onResized($event)">
-  <ag-grid-angular *ngIf="gridOptions" style="height: 100%" [gridOptions]="gridOptions" class="ag-theme-yuv ag-theme-balham">
+  <ag-grid-angular
+    *ngIf="gridOptions"
+    style="height: 100%"
+    [gridOptions]="gridOptions"
+    class="ag-theme-yuv ag-theme-balham"
+    (rowDoubleClicked)="onRowDoubleClicked.emit($event)"
+  >
   </ag-grid-angular>
 </div>

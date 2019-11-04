@@ -13,7 +13,7 @@ import {
   YuvEvent,
   YuvEventType
 } from '@yuuvis/core';
-import { ColDef } from 'ag-grid-community';
+import { ColDef, RowEvent } from 'ag-grid-community';
 import { of } from 'rxjs';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { ResponsiveDataTableComponent } from '../../components/responsive-data-table/responsive-data-table.component';
@@ -54,6 +54,7 @@ export class SearchResultComponent implements OnDestroy {
 
   @Input() options: any;
   @Output() optionsChanged = new EventEmitter();
+  @Output() onRowDoubleClicked = new EventEmitter<RowEvent>();
 
   @ViewChild('dataTable', { static: false }) dataTable: ResponsiveDataTableComponent;
 

@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { DmsService, SearchQuery, SystemService, TranslateService } from '@yuuvis/core';
+import { RowEvent } from 'ag-grid-community';
 import { SVGIcons } from '../../svg.generated';
 import { SearchResultComponent } from '../search-result/search-result.component';
 
@@ -29,6 +30,7 @@ export class SearchResultPanelComponent implements OnInit {
   }
   @Input() selectedItemIDs: string[];
   @Output() itemsSelected = new EventEmitter<string[]>();
+  @Output() onRowDoubleClicked = new EventEmitter<RowEvent>();
   actionMenuVisible = false;
   actionMenuSelection = [];
 
