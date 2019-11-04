@@ -1,7 +1,11 @@
-<div class="content grid-container">
+<div class="content grid-container" [ngClass]="{'toolbar-open': toolbarOpen}">
 
   <div class="toolbar">
     <yuv-icon [svg]="icon.icSearchFilter"></yuv-icon>
+    <!-- <yuv-icon [svg]="icon.icSearchFilter" (click)="toolbarOpen = !toolbarOpen"></yuv-icon>
+    <ng-container *ngIf="toolbarOpen">
+      <yuv-quick-search [query]="query" (querySubmit)="onQuickSearchQuery($event)"></yuv-quick-search>
+    </ng-container> -->
   </div>
   <div class="table" [yuvBusyOverlay]="busy">
 

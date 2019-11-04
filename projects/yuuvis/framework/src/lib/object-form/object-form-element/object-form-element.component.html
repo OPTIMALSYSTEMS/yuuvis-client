@@ -25,35 +25,20 @@
         [readonly]="formElementRef._eoFormElement.readonly" [tristate]="true"></yuv-checkbox>
     </yuv-form-input>
 
-    <!-- DATE -->
-    <yuv-form-input *ngSwitchCase="'date'" [tag]="tag" [label]="formElementRef._eoFormElement.label" [isNull]="isNull"
-      [skipToggle]="skipToggle || situation !== 'SEARCH'" (onToggleLabel)="labelToggled($event)"
-      [required]="formElementRef._eoFormElement.required" [invalid]="formElementRef.invalid">
-
-      <yuv-datetime *ngIf="situation !== 'SEARCH'; else tplDateRange"
-        [readonly]="formElementRef._eoFormElement.readonly" [withTime]="false"
-        [pickerTitle]="formElementRef._eoFormElement.label"
-        [formControlName]="element._eoFormControlWrapper.controlName"></yuv-datetime>
-
-      <ng-template #tplDateRange>
-        <yuv-datetime-range [pickerTitle]="formElementRef._eoFormElement.label" [withTime]="false"
-          [formControlName]="element._eoFormControlWrapper.controlName"></yuv-datetime-range>
-      </ng-template>
-
-    </yuv-form-input>
-
-    <!-- DATETIME -->
+    <!-- DATE / DATETIME -->
     <yuv-form-input *ngSwitchCase="'datetime'" [tag]="tag" [label]="formElementRef._eoFormElement.label"
       [isNull]="isNull" [skipToggle]="skipToggle || situation !== 'SEARCH'" (onToggleLabel)="labelToggled($event)"
       [required]="formElementRef._eoFormElement.required" [invalid]="formElementRef.invalid">
 
       <yuv-datetime *ngIf="situation !== 'SEARCH'; else tplDateTimeRange"
-        [readonly]="formElementRef._eoFormElement.readonly" [withTime]="true"
+        [readonly]="formElementRef._eoFormElement.readonly"
+        [withTime]="formElementRef._eoFormElement.resolution !== 'date'"
         [pickerTitle]="formElementRef._eoFormElement.label"
         [formControlName]="element._eoFormControlWrapper.controlName"></yuv-datetime>
 
       <ng-template #tplDateTimeRange>
-        <yuv-datetime-range [pickerTitle]="formElementRef._eoFormElement.label" [withTime]="true"
+        <yuv-datetime-range [pickerTitle]="formElementRef._eoFormElement.label"
+          [withTime]="formElementRef._eoFormElement.resolution !== 'date'"
           [formControlName]="element._eoFormControlWrapper.controlName"></yuv-datetime-range>
       </ng-template>
 

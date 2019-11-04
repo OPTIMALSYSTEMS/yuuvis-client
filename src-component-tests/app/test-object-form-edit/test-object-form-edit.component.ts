@@ -20,9 +20,5 @@ export class TestObjectFormEditComponent implements OnInit {
     this.dmsObject = o;
   }
 
-  onIndexDataSaved(formData: any) {
-    console.log('IndexDataSaved', event);
-  }
-
   ngOnInit() {}
 }

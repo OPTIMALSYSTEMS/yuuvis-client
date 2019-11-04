@@ -25,7 +25,7 @@ import { SVGIcons } from '../../svg.generated';
   selector: 'yuv-search-result',
   templateUrl: './search-result.component.html',
   styleUrls: ['./search-result.component.scss'],
-  host: { class: 'yuv-search-result toolbar' }
+  host: { class: 'yuv-search-result' }
 })
 export class SearchResultComponent implements OnDestroy {
   private _searchQuery: SearchQuery;
@@ -34,6 +34,7 @@ export class SearchResultComponent implements OnDestroy {
   private _hasPages = false;
   pagingForm: FormGroup;
   busy: boolean;
+  toolbarOpen: boolean;
 
   // icons used within the template
   icon = {
@@ -124,6 +125,11 @@ export class SearchResultComponent implements OnDestroy {
    * re-run the current query
    */
   refresh() {
+    this.executeQuery();
+  }
+
+  onQuickSearchQuery(query: SearchQuery) {
+    this.query = query;
     this.executeQuery();
   }
 

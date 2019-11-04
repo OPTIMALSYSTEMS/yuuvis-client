@@ -42,6 +42,7 @@ export interface SchemaResponseFieldDefinition {
   cardinality: string;
   required: boolean;
   updatability: string;
+  resolution: string;
 }
 export interface SchemaResponseTypeDefinition {
   id: string;
