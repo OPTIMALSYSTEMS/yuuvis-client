@@ -26,8 +26,8 @@ export class DmsService {
   ) {}
 
   deleteDmsObject(id: string): Observable<any> {
-    const url = `/dms/objects/${id}`;
-    return this.backend.delete(url, ApiBase.core);
+    const url = `/dms/${id}`;
+    return this.backend.delete(url, ApiBase.apiWeb);
   }
 
   uploadContent(objectId: string, file: File): Observable<any> {
