@@ -6,7 +6,10 @@ import { takeUntilDestroy } from 'take-until-destroy';
 @Component({
   selector: 'yuv-object',
   templateUrl: './object.component.html',
-  styleUrls: ['./object.component.scss']
+  styleUrls: ['./object.component.scss'],
+  host: {
+    class: 'state-content-default'
+  }
 })
 export class ObjectComponent implements OnInit, OnDestroy {
   item: DmsObject;

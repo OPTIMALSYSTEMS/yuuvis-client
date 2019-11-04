@@ -97,6 +97,7 @@ export class ObjectCreateComponent {
           this.breadcrumb[2].visible = false;
           this.breadcrumb[1].visible = true;
         }
+        this.state.done = this.isReady();
       },
       err => {
         this.state.busy = false;

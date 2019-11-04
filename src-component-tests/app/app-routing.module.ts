@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { TestActionMenuComponent } from './test-action-menu/test-action-menu.component';
 import { TestAuditComponent } from './test-audit/test-audit.component';
 import { TestContentPreviewComponent } from './test-content-preview/test-content-preview.component';
+import { TestFileDropComponent } from './test-file-drop/test-file-drop.component';
 import { TestObjectCreateComponent } from './test-object-create/test-object-create.component';
 import { TestObjectDetailsComponent } from './test-object-details/test-object-details.component';
 import { TestObjectFormEditComponent } from './test-object-form-edit/test-object-form-edit.component';
@@ -29,6 +30,7 @@ const routes: Routes = [
   { path: 'quick-search', component: TestQuickSearchComponent },
   { path: 'action-menu', component: TestActionMenuComponent },
   { path: 'summary', component: TestSummaryComponent },
+  { path: 'file-drop', component: TestFileDropComponent },
   { path: 'upload-progress-overlay', component: TestUploadProgressOverlayComponent }
 ];
 
