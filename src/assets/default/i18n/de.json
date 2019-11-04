@@ -13,8 +13,6 @@
   "yuv.framework.action-menu.action.export.pdf.description": "Lädt die Dokumentdatei als PDF herunter",
   "yuv.framework.action-menu.action.export.pdf.label": "PDF",
   "yuv.framework.action-menu.action.export.title": "Herunterladen im Format",
-  "yuv.framework.action-menu.action.update.dms.object.content.description": "Ersetzt die Dokumentdatei des Objekts.",
-  "yuv.framework.action-menu.action.update.dms.object.content.label": "Dokumentdatei ersetzen",
   "yuv.framework.action-menu.action.upload.dms.object.content.description": "Fügt dem Objekt eine Dokumentdatei hinzu.",
   "yuv.framework.action-menu.action.upload.dms.object.content.label": "Dokumentdatei hinzufügen",
   "yuv.framework.action-menu.action.upload.dms.object.content.noFile": "Keine Datei ausgewählt",

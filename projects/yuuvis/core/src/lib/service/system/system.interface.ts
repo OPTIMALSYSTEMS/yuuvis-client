@@ -25,6 +25,7 @@ export interface ObjectTypeField {
   cardinality: string;
   required: boolean;
   updatability: string;
+  resolution?: string;
 }
 
 // base definition of the kind of data we'll receive

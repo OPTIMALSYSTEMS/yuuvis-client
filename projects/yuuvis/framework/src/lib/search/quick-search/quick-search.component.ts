@@ -392,14 +392,6 @@ export class QuickSearchComponent implements AfterViewInit {
         const cv = {};
         cv[f.property] = !isRange ? f.firstValue : new RangeValue(f.operator, f.firstValue, f.secondValue);
         formPatch[`fc_${f.property}`] = cv;
-
-        // if (f.operator === SearchFilter.OPERATOR.INTERVAL_INCLUDE_BOTH) {
-        //   formPatch[`fc_${f.property}`] = new RangeValue(f.operator, f.firstValue, f.secondValue);
-        // } else {
-        //   const cv = {};
-        //   cv[f.property] = f.firstValue;
-        //   formPatch[`fc_${f.property}`] = cv;
-        // }
       });
 
       this.availableObjectTypeFields
