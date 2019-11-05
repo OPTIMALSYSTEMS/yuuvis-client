@@ -31,7 +31,7 @@ export class DmsService {
   }
 
   uploadContent(objectId: string, file: File): Observable<any> {
-    const url = `api-web/dms/update/${objectId}/content`;
+    const url = `${this.backend.getApiBase(ApiBase.apiWeb)}/dms/update/${objectId}/content`;
     return this.uploadService.upload(url, file);
   }
 
