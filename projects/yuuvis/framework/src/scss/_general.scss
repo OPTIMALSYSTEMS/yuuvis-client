@@ -32,6 +32,10 @@
   box-sizing: border-box;
   height: 100%;
   display: block;
+
+  .screen-s & {
+    padding: 0;
+  }
 }
 
 // styles for yuv-file-drop directive

@@ -34,7 +34,7 @@
   "yuv.framework.audit.label.group.create": "Created",
   "yuv.framework.audit.label.group.delete": "Deleted",
   "yuv.framework.audit.label.group.get": "Requested",
-  "yuv.framework.audit.label.group.update": "Updated",
+  "yuv.framework.audit.label.group.update": "Changed",
   "yuv.framework.audit.label.update.content": "Document file has been changed",
   "yuv.framework.audit.label.update.metadata": "Index data has been changed",
   "yuv.framework.audit.label.update.metadata.withcontent": "Index data and document file have been changed",
