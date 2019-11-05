@@ -87,7 +87,6 @@
 
     <!-- STEP 3: Add indexdata -->
     <div class="step" *ngSwitchCase="'indexdata'">
-      <h1>{{'yuv.framework.object-create.step.indexdata'|translate}}</h1>
       <yuv-object-form [formOptions]="selectedObjectTypeFormOptions" *ngIf="selectedObjectTypeFormOptions"
         (statusChanged)="onFormStatusChanged($event)">
       </yuv-object-form>

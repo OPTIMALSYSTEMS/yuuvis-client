@@ -1,4 +1,4 @@
-import { HttpClient, HttpEventType, HttpRequest, HttpResponse } from '@angular/common/http';
+import { HttpClient, HttpEventType, HttpHeaders, HttpRequest, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, ReplaySubject, Subject, Subscription, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
@@ -69,6 +69,9 @@ export class UploadService {
     } else {
       // regular post request
       request = new HttpRequest('POST', url, file, {
+        headers: new HttpHeaders({
+          'Content-Disposition': `attachment; filename=${file.name}`
+        }),
         reportProgress: true
       });
     }

@@ -1,11 +1,13 @@
 <div class="content grid-container" [ngClass]="{'toolbar-open': toolbarOpen}">
 
   <div class="toolbar">
-    <yuv-icon [svg]="icon.icSearchFilter"></yuv-icon>
-    <!-- <yuv-icon [svg]="icon.icSearchFilter" (click)="toolbarOpen = !toolbarOpen"></yuv-icon>
-    <ng-container *ngIf="toolbarOpen">
-      <yuv-quick-search [query]="query" (querySubmit)="onQuickSearchQuery($event)"></yuv-quick-search>
-    </ng-container> -->
+    <!-- <yuv-icon [svg]="icon.icSearchFilter"></yuv-icon> -->
+    <div class="toggle">
+      <yuv-icon [svg]="icon.icArrowNext" (click)="toolbarOpen = !toolbarOpen"></yuv-icon>
+    </div>
+    <div class="toolbar-content" *ngIf="toolbarOpen">
+      <yuv-quick-search class="tiny" [query]="query" (querySubmit)="onQuickSearchQuery($event)"></yuv-quick-search>
+    </div>
   </div>
   <div class="table" [yuvBusyOverlay]="busy">
     <ng-template #tplEmpty>
