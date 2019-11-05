@@ -137,7 +137,7 @@ export class BackendService {
    * base URI for the web API
    * @returns Base URI for the given API.
    */
-  private getApiBase(api?: string): string {
+  getApiBase(api?: string): string {
     // return this.getHost() + this.config.getApiBase(api || ApiBase.apiWeb);
     return this.config.getApiBase(api || ApiBase.apiWeb);
   }

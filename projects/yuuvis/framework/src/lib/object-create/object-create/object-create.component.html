@@ -1,7 +1,9 @@
 <div class="yuv-object-create" [yuvBusyOverlay]="state.busy">
 
   <header>
-    <h1>{{'yuv.framework.object-create.header.title'|translate}}</h1>
+    <h1>
+      {{title}}
+    </h1>
 
     <div class="breadcrumb">
       <ng-container *ngFor="let b of breadcrumb">

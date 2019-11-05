@@ -128,11 +128,6 @@ export class GridService {
         colDef.cellClass = field.cardinality === 'multi' ? 'multiCell string' : 'string';
         break;
       }
-      case 'date': {
-        colDef.width = 150;
-        colDef.cellRenderer = this.customContext(CellRenderer.dateTimeCellRenderer, { pattern: 'eoShortDate' });
-        break;
-      }
       case 'datetime': {
         colDef.width = 150;
         colDef.cellRenderer = this.customContext(CellRenderer.dateTimeCellRenderer, { pattern: 'eoShort' });

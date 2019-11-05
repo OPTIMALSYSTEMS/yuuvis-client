@@ -397,7 +397,7 @@ export class QuickSearchComponent implements AfterViewInit {
         .forEach(otf => {
           this.onObjectTypeFieldSelected(otf.value);
           // setup values based on whether or not the type supports ranges
-          const isRange = ['date', 'integer', 'decimal'].includes(otf.value.propertyType);
+          const isRange = ['datetime', 'integer', 'decimal'].includes(otf.value.propertyType);
           const cv = {};
           cv[otf.id] = !isRange
             ? filters[otf.id].firstValue
