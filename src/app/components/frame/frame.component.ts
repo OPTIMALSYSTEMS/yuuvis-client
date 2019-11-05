@@ -11,13 +11,23 @@ import { filter } from 'rxjs/operators';
   styleUrls: ['./frame.component.scss']
 })
 export class FrameComponent implements OnInit {
-  private _authenticated: boolean;
   deferredPrompt: any;
   showButton = false;
 
+  @HostListener('window:dragover', ['$event']) onDragOver(e) {
+    let transfer = e.dataTransfer;
+    if (!transfer) {
+      return;
+    }
+    transfer.dropEffect = 'none';
+    e.preventDefault();
+  }
+  @HostListener('window:drop', ['$event']) onDrop(e) {
+    e.preventDefault();
+  }
+
   @HostListener('window:beforeinstallprompt', ['$event'])
   onbeforeinstallprompt(e) {
-    console.log(e);
     // Prevent Chrome 67 and earlier from automatically showing the prompt
     e.preventDefault();
     // Stash the event so it can be triggered later.
