@@ -1,6 +1,6 @@
 <div class="fe-wrapper" yuvFocusWithin>
   <div class="tag" *ngIf="tag" title="{{tag.title}}">{{tag.label}}</div>
-  <label class="form-input__label" (click)="toggle()">{{_label}}</label>
+  <label class="form-input__label" #label (click)="toggle()">{{_label}}</label>
   <div class="control">
     <ng-content *ngIf="!toggled; else tplnull"></ng-content>
 

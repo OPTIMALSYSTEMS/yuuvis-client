@@ -384,20 +384,25 @@ export class QuickSearchComponent implements AfterViewInit {
     // setup object type field form from filters
     if (q.filters && q.filters.length) {
       const filterIDs = [];
+      const filters: any = {};
       const formPatch = {};
+
       q.filters.forEach(f => {
         filterIDs.push(f.property);
-        const isRange = f.operator === SearchFilter.OPERATOR.INTERVAL_INCLUDE_BOTH;
-
-        const cv = {};
-        cv[f.property] = !isRange ? f.firstValue : new RangeValue(f.operator, f.firstValue, f.secondValue);
-        formPatch[`fc_${f.property}`] = cv;
+        filters[f.property] = f;
       });
 
       this.availableObjectTypeFields
-        .filter(f => filterIDs.includes(f.id))
-        .forEach(f => {
-          this.onObjectTypeFieldSelected(f.value);
+        .filter(otf => filterIDs.includes(otf.id))
+        .forEach(otf => {
+          this.onObjectTypeFieldSelected(otf.value);
+          // setup values based on whether or not the type supports ranges
+          const isRange = ['date', 'integer', 'decimal'].includes(otf.value.propertyType);
+          const cv = {};
+          cv[otf.id] = !isRange
+            ? filters[otf.id].firstValue
+            : new RangeValue(filters[otf.id].operator, filters[otf.id].firstValue, filters[otf.id].secondValue);
+          formPatch[`fc_${otf.id}`] = cv;
         });
       this.searchFieldsForm.patchValue(formPatch);
     }
@@ -429,6 +434,9 @@ export class QuickSearchComponent implements AfterViewInit {
     const formElement = this.systemService.toFormElement(field);
     // required fields make no sense for search
     formElement.required = false;
+    // disable descriptions as well in order to keep the UI clean
+    formElement.description = null;
+
     const formControl = ObjectFormUtils.elementToFormControl(formElement);
     this.searchFieldsForm.addControl(`fc_${field.id}`, formControl);
     this.formFields.push(`fc_${field.id}`);

@@ -1,5 +1,7 @@
-import { Component, ElementRef, Input, Renderer2 } from '@angular/core';
+import { Component, ElementRef, Input, OnDestroy, Renderer2 } from '@angular/core';
 import { TranslateService } from '@yuuvis/core';
+import { takeUntilDestroy } from 'take-until-destroy';
+import { ObjectFormTranslateService } from '../object-form-translate.service';
 import { ObjectFormControlWrapper } from '../object-form.interface';
 
 @Component({
@@ -7,7 +9,7 @@ import { ObjectFormControlWrapper } from '../object-form.interface';
   templateUrl: './object-form-element.component.html',
   styleUrls: ['./object-form-element.component.scss']
 })
-export class ObjectFormElementComponent {
+export class ObjectFormElementComponent implements OnDestroy {
   formElementRef: any;
   element: ObjectFormControlWrapper;
   errors: string[];
@@ -19,6 +21,7 @@ export class ObjectFormElementComponent {
 
   @Input() situation: string;
   @Input() skipToggle: boolean;
+  @Input() inlineError: boolean;
 
   // element is supposed to be a special FormGroup holding a single form element
   @Input('element')
@@ -30,12 +33,18 @@ export class ObjectFormElementComponent {
         this.labelToggled(true);
       }
       this.fetchTags();
+      this.formElementRef.valueChanges.pipe(takeUntilDestroy(this)).subscribe(_ => {
+        this.setupErrors();
+      });
     }
   }
 
-  constructor(private translate: TranslateService, private renderer: Renderer2, private el: ElementRef) {
-    // setup error messages for the different types of errors that may appear
-  }
+  constructor(
+    private translate: TranslateService,
+    private formTranslateService: ObjectFormTranslateService,
+    private renderer: Renderer2,
+    private el: ElementRef
+  ) {}
 
   labelToggled(toggled: boolean) {
     if (!this.skipToggle && this.element._eoFormControlWrapper.situation === 'SEARCH') {
@@ -69,4 +78,19 @@ export class ObjectFormElementComponent {
             };
     }
   }
+
+  private setupErrors() {
+    this.errors = null;
+    if (
+      (this.situation !== 'SEARCH' && this.situation !== 'CREATE' && this.formElementRef.errors) ||
+      ((this.situation === 'SEARCH' || this.situation === 'CREATE') && this.formElementRef.errors && (this.formElementRef.dirty || this.formElementRef.touched))
+    ) {
+      this.errors = [];
+      Object.keys(this.formElementRef.errors).forEach(e => {
+        this.errors.push(e === 'eoformScript' ? this.formElementRef._eoFormElement.error.msg : this.formTranslateService.getErrorLabel(e));
+      });
+    }
+  }
+
+  ngOnDestroy() {}
 }
