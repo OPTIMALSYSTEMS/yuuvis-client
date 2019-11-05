@@ -78,9 +78,6 @@ export class UploadService {
 
     const progress = new Subject<number>();
 
-    this.status.items.push();
-    this.statusSource.next(this.status);
-
     return new Observable(o => {
       this.status.items.push({
         id,
