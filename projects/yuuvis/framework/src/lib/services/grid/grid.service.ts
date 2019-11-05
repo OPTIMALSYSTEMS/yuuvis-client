@@ -130,7 +130,7 @@ export class GridService {
       }
       case 'datetime': {
         colDef.width = 150;
-        colDef.cellRenderer = this.customContext(CellRenderer.dateTimeCellRenderer, { pattern: 'eoShort' });
+        colDef.cellRenderer = this.customContext(CellRenderer.dateTimeCellRenderer, { pattern: field.resolution === 'date' ? 'eoShortDate' : 'eoShort' });
         break;
       }
       case 'integer': {
