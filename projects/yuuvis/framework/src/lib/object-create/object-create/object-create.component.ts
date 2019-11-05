@@ -33,6 +33,7 @@ export class ObjectCreateComponent {
   files: File[] = [];
   breadcrumb;
   labels;
+  title;
 
   private pendingTaskId: string;
 
@@ -56,10 +57,12 @@ export class ObjectCreateComponent {
       });
 
     this.labels = {
+      defaultTitle: this.translate.instant('yuv.framework.object-create.header.title'),
       allowed: this.translate.instant('yuv.framework.object-create.step.type.content.allowed'),
       notallowed: this.translate.instant('yuv.framework.object-create.step.type.content.notallowed'),
       required: this.translate.instant('yuv.framework.object-create.step.type.content.required')
     };
+    this.title = this.labels.defaultTitle;
     this.initBreadcrumb();
   }
 
@@ -76,6 +79,7 @@ export class ObjectCreateComponent {
    */
   selectObjectType(objectType: ObjectType) {
     this.selectedObjectType = objectType;
+    this.title = objectType ? this.system.getLocalizedResource(`${objectType.id}_label`) : this.labels.defaultTitle;
     this.files = [];
     this.state.busy = true;
     this.startPending();
