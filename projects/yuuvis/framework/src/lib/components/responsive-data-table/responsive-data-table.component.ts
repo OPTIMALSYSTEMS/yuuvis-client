@@ -35,6 +35,9 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
   gridOptions: GridOptions;
 
   @Input() options: any;
+  /**
+   * Emitted when column sizes have been changed.
+   */
   @Output() optionsChanged = new EventEmitter();
   @Output() onRowDoubleClicked = new EventEmitter<RowEvent>();
 
@@ -86,8 +89,8 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
     // subscribe to the whole components size changing
     this.resize$
       .pipe(
-        takeUntilDestroy(this),
-        debounceTime(500)
+        takeUntilDestroy(this)
+        // debounceTime(500)
       )
       .subscribe((e: ResizedEvent) => {
         const small = e.newWidth < this.breakpoint;

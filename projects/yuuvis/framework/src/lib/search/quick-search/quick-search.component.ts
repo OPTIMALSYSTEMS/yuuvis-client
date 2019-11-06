@@ -366,48 +366,50 @@ export class QuickSearchComponent implements AfterViewInit {
   }
 
   setQuery(q: SearchQuery) {
-    this.settingUpQuery = true;
-    this.resetObjectTypes();
-    this.resetObjectTypeFields();
-    this.searchForm.patchValue(
-      {
-        term: q.term
-      },
-      { emitEvent: false }
-    );
+    if (q && JSON.stringify(q) !== JSON.stringify(this.searchQuery)) {
+      this.settingUpQuery = true;
+      this.resetObjectTypes();
+      this.resetObjectTypeFields();
+      this.searchForm.patchValue(
+        {
+          term: q.term
+        },
+        { emitEvent: false }
+      );
 
-    // setup target object types
-    if (q.types && q.types.length) {
-      this.onObjectTypesSelected(q.types, false);
-    }
-    this.searchQuery = q;
-    // setup object type field form from filters
-    if (q.filters && q.filters.length) {
-      const filterIDs = [];
-      const filters: any = {};
-      const formPatch = {};
+      // setup target object types
+      if (q.types && q.types.length) {
+        this.onObjectTypesSelected(q.types, false);
+      }
+      this.searchQuery = q;
+      // setup object type field form from filters
+      if (q.filters && q.filters.length) {
+        const filterIDs = [];
+        const filters: any = {};
+        const formPatch = {};
 
-      q.filters.forEach(f => {
-        filterIDs.push(f.property);
-        filters[f.property] = f;
-      });
-
-      this.availableObjectTypeFields
-        .filter(otf => filterIDs.includes(otf.id))
-        .forEach(otf => {
-          this.onObjectTypeFieldSelected(otf.value);
-          // setup values based on whether or not the type supports ranges
-          const isRange = ['datetime', 'integer', 'decimal'].includes(otf.value.propertyType);
-          const cv = {};
-          cv[otf.id] = !isRange
-            ? filters[otf.id].firstValue
-            : new RangeValue(filters[otf.id].operator, filters[otf.id].firstValue, filters[otf.id].secondValue);
-          formPatch[`fc_${otf.id}`] = cv;
+        q.filters.forEach(f => {
+          filterIDs.push(f.property);
+          filters[f.property] = f;
         });
-      this.searchFieldsForm.patchValue(formPatch);
+
+        this.availableObjectTypeFields
+          .filter(otf => filterIDs.includes(otf.id))
+          .forEach(otf => {
+            this.onObjectTypeFieldSelected(otf.value);
+            // setup values based on whether or not the type supports ranges
+            const isRange = ['datetime', 'integer', 'decimal'].includes(otf.value.propertyType);
+            const cv = {};
+            cv[otf.id] = !isRange
+              ? filters[otf.id].firstValue
+              : new RangeValue(filters[otf.id].operator, filters[otf.id].firstValue, filters[otf.id].secondValue);
+            formPatch[`fc_${otf.id}`] = cv;
+          });
+        this.searchFieldsForm.patchValue(formPatch);
+      }
+      this.settingUpQuery = false;
+      this.aggregate();
     }
-    this.settingUpQuery = false;
-    this.aggregate();
   }
 
   executeSearch() {
