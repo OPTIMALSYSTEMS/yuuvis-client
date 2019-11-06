@@ -305,6 +305,10 @@
         .entry {
           width: 100%;
           padding: calc(var(--app-pane-padding) / 2);
+
+          .title span.version {
+            margin: 0;
+          }
         }
       }
     }

@@ -1,15 +1,15 @@
-
 :host-context(.screen-s) {
-    justify-content: flex-start;
-    width: 100vw;
+  justify-content: flex-start;
+  width: 100vw;
+  padding-top: calc(var(--app-bar-height) + calc(var(--app-pane-padding) * 3));
 }
 
 :host {
-    display: flex;
-    flex-flow: column;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    padding: calc(var(--app-bar-height) + var(--app-pane-padding)) var(--app-pane-padding) 0 var(--app-pane-padding);
-    box-sizing: border-box;
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: calc(var(--app-bar-height) + var(--app-pane-padding)) var(--app-pane-padding) 0 var(--app-pane-padding);
+  box-sizing: border-box;
 }
