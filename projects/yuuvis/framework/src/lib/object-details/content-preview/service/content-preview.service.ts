@@ -9,9 +9,9 @@ import { LayoutService } from '../../../services/layout/layout.service';
 export class ContentPreviewService {
   constructor(private location: PlatformLocation, private userService: UserService, private layoutService: LayoutService) {}
 
-  createPreviewUrl(id: string, contentMimeType: string): string {
+  createPreviewUrl(id: string, contentMimeType: string, streamID = ''): string {
     const { root, mimeType, path } = this.createPath(id, contentMimeType);
-    return Utils.buildUri(`${root}/viewer/`, { mimeType, path, ...this.createSettings() });
+    return id ? Utils.buildUri(`${root}/viewer/`, { mimeType, path, streamID, ...this.createSettings() }) : '';
   }
 
   private createPath(id, contentMimeType): { root: string; mimeType: string; path: string } {
