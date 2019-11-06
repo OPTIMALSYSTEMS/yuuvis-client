@@ -1,9 +1,11 @@
 import { Injectable } from '@angular/core';
-import { BaseObjectTypeField, DmsObject, SecondaryObjectTypeField } from '@yuuvis/core';
+import { BaseObjectTypeField, DmsObject, SecondaryObjectTypeField, SystemService } from '@yuuvis/core';
 @Injectable({
   providedIn: 'root'
 })
 export class AppDataService {
+  constructor(private systemService: SystemService) {}
+
   getDmsObject(): DmsObject {
     const fields = new Map<string, any>();
     fields.set(BaseObjectTypeField.OBJECT_ID, '12345');
@@ -31,7 +33,7 @@ export class AppDataService {
         objectTypeId: 'email:email',
         fields: fields
       },
-      false
+      this.systemService.getObjectType('email:email')
     );
   }
 
@@ -70,7 +72,7 @@ export class AppDataService {
         objectTypeId: 'email:email',
         fields: fields
       },
-      false
+      this.systemService.getObjectType('email:email')
     );
   }
 }

@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable, ReplaySubject, Subject, Subscription, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { Utils } from '../../util/utils';
+import { Logger } from '../logger/logger';
 
 export interface ProgressStatus {
   items: ProgressStatusItem[];
@@ -13,7 +14,10 @@ export interface ProgressStatusItem {
   filename: string;
   progress: Observable<number>;
   subscription: Subscription;
-  err?: string;
+  err?: {
+    code: number;
+    message: string;
+  };
 }
 
 @Injectable({
@@ -24,7 +28,7 @@ export class UploadService {
   private statusSource = new ReplaySubject<ProgressStatus>();
   public status$: Observable<ProgressStatus> = this.statusSource.asObservable();
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private logger: Logger) {}
 
   /**
    * Cancels an upload request and removes it from the list of files being uploaded.
@@ -70,7 +74,8 @@ export class UploadService {
       // regular post request
       request = new HttpRequest('POST', url, file, {
         headers: new HttpHeaders({
-          'Content-Disposition': `attachment; filename=${file.name}`
+          'Content-Disposition': `attachment; filename=${file.name}`,
+          'ngsw-bypass': 'ngsw-bypass'
         }),
         reportProgress: true
       });
@@ -89,7 +94,11 @@ export class UploadService {
           .pipe(
             catchError(err => {
               const statusItem = this.status.items.find(s => s.id === id);
-              statusItem.err = err.message;
+              statusItem.err = {
+                code: err.status,
+                message: err.error ? err.error.errorMessage : err.message
+              };
+              this.logger.error('upload failed', statusItem);
               this.status.err++;
               progress.next(0);
               return throwError(err);
