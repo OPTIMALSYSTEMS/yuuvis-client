@@ -7,31 +7,24 @@ import { FileDropService } from './file-drop.service';
   selector: '[yuvFileDrop]'
 })
 export class FileDropDirective implements OnDestroy {
-  private CLASS_ACTIVE = 'yuv-file-drop-active';
-  private CLASS_DISABLED = 'yuv-file-drop-disabled';
-
   private id: string;
   private dragEventCount = 1;
   private fileOver: boolean;
   private _disabled: boolean;
+  private _invalid: boolean;
   private _multiple: boolean;
+  private overlay: string;
 
   @Output() yuvFileDrop = new EventEmitter<File | File[]>();
   @Input() set yuvFileDropOptions(options: FileDropOptions) {
     this._disabled = options.disabled;
     this._multiple = options.multiple;
-
-    if (this._disabled) {
-      this.renderer.addClass(this.elementRef.nativeElement, this.CLASS_DISABLED);
-    } else {
-      this.renderer.removeClass(this.elementRef.nativeElement, this.CLASS_DISABLED);
-    }
   }
 
   @HostListener('dragenter', ['$event']) onDragEnter(evt: DragEvent) {
     const draggedFiles = this.dragContainsFiles(evt);
-    const validDragEvent = !this._multiple ? draggedFiles === 1 : draggedFiles > 0;
-    if (!this.fileOver && validDragEvent) {
+    this._invalid = !this._multiple && draggedFiles > 1;
+    if (!this.fileOver) {
       this.dragEventCount = 1;
       this.fileOver = true;
       this.fileDropService.add(this.id);
@@ -44,7 +37,7 @@ export class FileDropDirective implements OnDestroy {
     if (!transfer) {
       return;
     }
-    transfer.dropEffect = this._disabled ? 'none' : 'copy';
+    transfer.dropEffect = this._disabled || this._invalid ? 'none' : 'copy';
     this.preventAndStop(evt);
   }
   @HostListener('dragleave', ['$event']) onDragLeave(evt: DragEvent) {
@@ -64,12 +57,12 @@ export class FileDropDirective implements OnDestroy {
     let invalidInput: boolean;
     for (let i = 0; i < transfer.items.length; i++) {
       const fe = transfer.items[i].webkitGetAsEntry();
-      if (fe.isDirectory || this._disabled) {
+      if (fe.isDirectory || this._disabled || this._invalid) {
         invalidInput = true;
       }
     }
     if (!invalidInput) {
-      this.onFilesDropped(transfer.files);
+      this.onFilesDropped(Array.from(transfer.files));
     }
     this.fileDropService.clear();
   }
@@ -88,9 +81,26 @@ export class FileDropDirective implements OnDestroy {
 
   private setActive(a: boolean) {
     if (a) {
-      this.renderer.addClass(this.elementRef.nativeElement, this.CLASS_ACTIVE);
+      this.addOverlay();
     } else {
-      this.renderer.removeClass(this.elementRef.nativeElement, this.CLASS_ACTIVE);
+      this.removeOverlay();
+    }
+  }
+
+  private addOverlay() {
+    const rect: DOMRect = this.elementRef.nativeElement.getBoundingClientRect();
+    const ov: HTMLElement = document.createElement('div');
+    const background = this._disabled || this._invalid ? 'rgba(0,0,0,.1)' : 'rgba(var(--color-accent-rgb), 0.4)';
+    this.overlay = Utils.uuid();
+    ov.setAttribute('id', this.overlay);
+    ov.style.cssText = `animation: yuvFadeIn 200ms; position: absolute; pointer-events: none; top: ${rect.top}px; left: ${rect.left}px; width: ${rect.width}px; height: ${rect.height}px; background: ${background}`;
+    document.body.appendChild(ov);
+  }
+
+  private removeOverlay() {
+    if (this.overlay) {
+      document.body.removeChild(document.getElementById(this.overlay));
+      this.overlay = null;
     }
   }
 

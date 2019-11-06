@@ -55,6 +55,6 @@ export class DmsService {
   }
 
   private searchResultToDmsObject(resItem: SearchResultItem): DmsObject {
-    return new DmsObject(resItem, this.systemService.getObjectType(resItem.objectTypeId).isFolder);
+    return new DmsObject(resItem, this.systemService.getObjectType(resItem.objectTypeId));
   }
 }

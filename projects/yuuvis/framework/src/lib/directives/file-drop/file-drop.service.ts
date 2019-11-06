@@ -29,7 +29,9 @@ export class FileDropService {
   }
 
   private setActive(id) {
-    this.activeDropzone = id;
-    this.activeDropzoneSource.next(this.activeDropzone);
+    if (this.activeDropzone !== id) {
+      this.activeDropzone = id;
+      this.activeDropzoneSource.next(this.activeDropzone);
+    }
   }
 }
