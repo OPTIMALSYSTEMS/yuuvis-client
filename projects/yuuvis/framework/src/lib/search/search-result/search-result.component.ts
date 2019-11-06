@@ -82,6 +82,10 @@ export class SearchResultComponent implements OnDestroy {
     }
   }
 
+  get query() {
+    return this._searchQuery;
+  }
+
   /**
    * The IDs of the items to be selected
    */
