@@ -38,7 +38,7 @@ export const datetimeElements = [
     label: 'date',
     withtime: true,
     description: 'a description',
-    type: 'date',
+    type: 'datetime',
     required: false
   },
   {
@@ -47,7 +47,7 @@ export const datetimeElements = [
     label: 'date width value',
     withtime: true,
     description: 'a description',
-    type: 'date',
+    type: 'datetime',
     required: false
   },
   {
@@ -56,7 +56,7 @@ export const datetimeElements = [
     label: 'date required',
     withtime: true,
     description: 'required date field',
-    type: 'date',
+    type: 'datetime',
     required: true
   }
 ];

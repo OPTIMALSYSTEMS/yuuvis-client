@@ -71,6 +71,11 @@ export class ObjectDetailsComponent {
     this.standaloneFullscreenBackButtonClick.emit();
   }
 
+  onFileDropped(file: File) {
+    console.log(file);
+    this.dmsService.uploadContent(this.dmsObject.id, file).subscribe();
+  }
+
   onIndexdataSaved(updatedObject: DmsObject) {
     this.dmsObject = updatedObject;
   }

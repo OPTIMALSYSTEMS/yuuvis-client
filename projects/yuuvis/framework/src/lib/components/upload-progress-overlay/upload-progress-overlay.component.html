@@ -1,6 +1,6 @@
 <ng-container *ngIf="progressStatus$ | async as ps">
   <div class="uploadProgress" *ngIf="ps.items.length"
-    [ngClass]="{'mini': minimized, err: ps.err > 0, allErr: ps.err === ps.items.length}">
+    [ngClass]="{'mini': minimized, panelError: ps.err > 0, allErr: ps.err === ps.items.length}">
 
     <header>
       <div class="title">{{'yuv.framework.upload-progress-overlay.title'|translate}}</div>

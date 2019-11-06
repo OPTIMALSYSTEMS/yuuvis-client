@@ -22,6 +22,7 @@ import { ObjectFormControl } from '../../object-form/object-form.model';
 import { PopoverRef } from '../../popover/popover.ref';
 import { PopoverService } from '../../popover/popover.service';
 import { SVGIcons } from '../../svg.generated';
+import { ObjectFormUtils } from './../../object-form/object-form.utils';
 import { ValuePickerItem } from './value-picker/value-picker.component';
 
 /**
@@ -365,46 +366,50 @@ export class QuickSearchComponent implements AfterViewInit {
   }
 
   setQuery(q: SearchQuery) {
-    this.settingUpQuery = true;
-    this.resetObjectTypes();
-    this.resetObjectTypeFields();
-    this.searchForm.patchValue(
-      {
-        term: q.term
-      },
-      { emitEvent: false }
-    );
+    if (q && JSON.stringify(q) !== JSON.stringify(this.searchQuery)) {
+      this.settingUpQuery = true;
+      this.resetObjectTypes();
+      this.resetObjectTypeFields();
+      this.searchForm.patchValue(
+        {
+          term: q.term
+        },
+        { emitEvent: false }
+      );
 
-    // setup target object types
-    if (q.types && q.types.length) {
-      this.onObjectTypesSelected(q.types, false);
-    }
-    this.searchQuery = q;
-    // setup object type field form from filters
-    if (q.filters && q.filters.length) {
-      const filterIDs = [];
-      const formPatch = {};
-      q.filters.forEach(f => {
-        filterIDs.push(f.property);
-        // TODO: Be aware of ranges once they are available
-        const cv = {};
-        cv[f.property] = f.firstValue;
-        formPatch[`fc_${f.property}`] = cv;
-      });
+      // setup target object types
+      if (q.types && q.types.length) {
+        this.onObjectTypesSelected(q.types, false);
+      }
+      this.searchQuery = q;
+      // setup object type field form from filters
+      if (q.filters && q.filters.length) {
+        const filterIDs = [];
+        const filters: any = {};
+        const formPatch = {};
 
-      this.availableObjectTypeFields
-        .filter(f => filterIDs.includes(f.id))
-        .forEach(f => {
-          this.onObjectTypeFieldSelected(f.value);
+        q.filters.forEach(f => {
+          filterIDs.push(f.property);
+          filters[f.property] = f;
         });
 
-      // patch form value
-      this.searchFieldsForm.patchValue(formPatch);
+        this.availableObjectTypeFields
+          .filter(otf => filterIDs.includes(otf.id))
+          .forEach(otf => {
+            this.onObjectTypeFieldSelected(otf.value);
+            // setup values based on whether or not the type supports ranges
+            const isRange = ['datetime', 'integer', 'decimal'].includes(otf.value.propertyType);
+            const cv = {};
+            cv[otf.id] = !isRange
+              ? filters[otf.id].firstValue
+              : new RangeValue(filters[otf.id].operator, filters[otf.id].firstValue, filters[otf.id].secondValue);
+            formPatch[`fc_${otf.id}`] = cv;
+          });
+        this.searchFieldsForm.patchValue(formPatch);
+      }
+      this.settingUpQuery = false;
+      this.aggregate();
     }
-    this.settingUpQuery = false;
-    // setTimeout(() => {
-    this.aggregate();
-    // }, 100);
   }
 
   executeSearch() {
@@ -428,29 +433,14 @@ export class QuickSearchComponent implements AfterViewInit {
     if (!this.searchFieldsForm) {
       this.initSearchFieldsForm();
     }
+    const formElement = this.systemService.toFormElement(field);
+    // required fields make no sense for search
+    formElement.required = false;
+    // disable descriptions as well in order to keep the UI clean
+    formElement.description = null;
 
-    // create form element from object type field to be served
-    // to an ObjectFormElementComponent
-    const ctrl = new ObjectFormControlWrapper({});
-    ctrl._eoFormControlWrapper = {
-      controlName: field.id,
-      situation: 'SEARCH'
-    };
-
-    let formControl = new ObjectFormControl({
-      value: null,
-      disabled: false
-    });
-
-    const formElement = {
-      label: this.systemService.getLocalizedResource(`${field.id}_label`),
-      name: field.id,
-      type: field.propertyType
-    };
-
-    formControl._eoFormElement = formElement;
-    ctrl.addControl(field.id, formControl);
-    this.searchFieldsForm.addControl(`fc_${field.id}`, ctrl);
+    const formControl = ObjectFormUtils.elementToFormControl(formElement);
+    this.searchFieldsForm.addControl(`fc_${field.id}`, formControl);
     this.formFields.push(`fc_${field.id}`);
 
     // focus the generated field

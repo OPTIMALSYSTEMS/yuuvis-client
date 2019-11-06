@@ -50,13 +50,13 @@ export class ContentPreviewComponent implements AfterViewInit {
     // remove all special characters
     term = (term || '').replace(/[\"|\*]/g, '').trim();
     if (term && pdfjs && pdfjs.contentWindow && pdfjs.contentWindow.PDFViewerApplication && pdfjs.contentWindow.PDFViewerApplication.findController) {
-      pdfjs.contentWindow.PDFViewerApplication.findController.executeCommand('find', {
-        caseSensitive: false,
-        findPrevious: undefined,
-        highlightAll: true,
-        phraseSearch: true,
-        query: term
-      });
+      // pdfjs.contentWindow.PDFViewerApplication.findController.executeCommand('find', {
+      //   caseSensitive: false,
+      //   findPrevious: undefined,
+      //   highlightAll: true,
+      //   phraseSearch: true,
+      //   query: term
+      // });
       pdfjs.contentWindow.PDFViewerApplication.appConfig.findBar.findField.value = term;
       pdfjs.contentWindow.PDFViewerApplication.appConfig.findBar.highlightAllCheckbox.checked = true;
       pdfjs.contentWindow.PDFViewerApplication.appConfig.findBar.caseSensitiveCheckbox.checked = false;
@@ -67,7 +67,7 @@ export class ContentPreviewComponent implements AfterViewInit {
     const iframe = this.elRef.nativeElement.querySelector('iframe');
     if (iframe) {
       fromEvent(iframe, 'load').subscribe(res => {
-        this.searchPDF(this.searchTerm, iframe);
+        setTimeout(() => this.searchPDF(this.searchTerm, iframe), 100);
       });
     }
   }

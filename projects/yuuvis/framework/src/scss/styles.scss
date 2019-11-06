@@ -103,6 +103,7 @@ body.rtl * {
 
 .panel {
   @include panel-shadow();
+  height: 100%;
 }
 
 svg .accent {

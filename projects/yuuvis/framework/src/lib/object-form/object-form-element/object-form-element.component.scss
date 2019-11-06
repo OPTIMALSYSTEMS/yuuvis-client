@@ -38,6 +38,12 @@
         padding-bottom: calc(var(--app-pane-padding) / 4);
       }
     }
+
+    &.inlineError {
+      .err-msg {
+        display: none;
+      }
+    }
   }
 
   // dirty styles

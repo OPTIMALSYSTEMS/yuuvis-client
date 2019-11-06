@@ -1,18 +1,18 @@
-<yuv-panel class="search-result" [title]="('yuv.framework.search-result-panel.header.title'|translate)"
-  [description]="queryTerm">
+<yuv-panel class="search-result" [title]="'yuv.framework.search-result-panel.header.title' | translate"
+  [description]="queryDescription">
   <yuv-icon class="header-icon" [svg]="icon.icSearch"></yuv-icon>
 
   <yuv-action-menu-bar class="actions">
-    <yuv-icon (click)="refresh()" [title]="('yuv.framework.list.refresh' | translate)" class="button refresh-button"
+    <yuv-icon (click)="refresh()" [title]="'yuv.framework.list.refresh' | translate" class="button refresh-button"
       [svg]="icon.refresh"></yuv-icon>
     <yuv-icon class="header-icon" (click)="openActionMenu()" [svg]="icon.icKebap"
-      [ngClass]="{disabled: !selectedItemIDs?.length}">
-    </yuv-icon>
+      [ngClass]="{ disabled: !selectedItemIDs?.length }"> </yuv-icon>
   </yuv-action-menu-bar>
 
   <yuv-search-result class="content" [query]="_searchQuery" [selectedItemIDs]="selectedItemIDs"
-    (itemsSelected)="onItemsSelected($event)" (optionsChanged)="optionsChanged.emit($event)" [options]="options">
+    (itemsSelected)="onItemsSelected($event)" (onQueryChanged)="onQueryChangedFromWithin($event)"
+    (optionsChanged)="optionsChanged.emit($event)" [options]="options"
+    (onRowDoubleClicked)="onRowDoubleClicked.emit($event)">
   </yuv-search-result>
 </yuv-panel>
-<yuv-action-menu [(visible)]="actionMenuVisible" [selection]="actionMenuSelection">
-</yuv-action-menu>
+<yuv-action-menu [(visible)]="actionMenuVisible" [selection]="actionMenuSelection"> </yuv-action-menu>

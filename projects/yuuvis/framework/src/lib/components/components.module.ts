@@ -1,3 +1,4 @@
+import { CdkStepperModule } from '@angular/cdk/stepper';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
@@ -42,12 +43,13 @@ import { UploadProgressOverlayComponent } from './upload-progress-overlay/upload
     PanelComponent,
     ActionMenuBarComponent,
     DialogComponent,
-    UploadProgressOverlayComponent,
-    FilePickerComponent
+    FilePickerComponent,
+    UploadProgressOverlayComponent
   ],
   imports: [
     CommonModule,
     AngularResizedEventModule,
+    CdkStepperModule,
     AngularSplitModule,
     AgGridModule.withComponents([]),
     RouterModule,

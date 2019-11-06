@@ -1,3 +1,2 @@
-<div class="object-state">
-  <yuv-object-details [dmsObject]="item"> </yuv-object-details>
-</div>
+<yuv-object-details class="panel" [dmsObject]="item" (optionsChanged)="onOptionsChanged($event, 'yuv-object-details')"
+  [options]="getOptions('yuv-object-details')"> </yuv-object-details>

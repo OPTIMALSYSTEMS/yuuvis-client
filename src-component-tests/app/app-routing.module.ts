@@ -3,6 +3,8 @@ import { RouterModule, Routes } from '@angular/router';
 import { TestActionMenuComponent } from './test-action-menu/test-action-menu.component';
 import { TestAuditComponent } from './test-audit/test-audit.component';
 import { TestContentPreviewComponent } from './test-content-preview/test-content-preview.component';
+import { TestFileDropComponent } from './test-file-drop/test-file-drop.component';
+import { TestObjectCreateComponent } from './test-object-create/test-object-create.component';
 import { TestObjectDetailsComponent } from './test-object-details/test-object-details.component';
 import { TestObjectFormEditComponent } from './test-object-form-edit/test-object-form-edit.component';
 import { TestObjectFormComponent } from './test-object-form/test-object-form.component';
@@ -21,12 +23,14 @@ const routes: Routes = [
   { path: 'search-result-panel', component: TestSearchResultPanelComponent },
   { path: 'responsive-tab-container', component: TestResponsiveTabContainerComponent },
   { path: 'object-details', component: TestObjectDetailsComponent },
+  { path: 'object-create', component: TestObjectCreateComponent },
   { path: 'audit', component: TestAuditComponent },
   { path: 'content-preview', component: TestContentPreviewComponent },
   { path: 'panel', component: TestPanelComponent },
   { path: 'quick-search', component: TestQuickSearchComponent },
   { path: 'action-menu', component: TestActionMenuComponent },
   { path: 'summary', component: TestSummaryComponent },
+  { path: 'file-drop', component: TestFileDropComponent },
   { path: 'upload-progress-overlay', component: TestUploadProgressOverlayComponent }
 ];
 

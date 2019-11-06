@@ -153,7 +153,7 @@ export class PluginsService {
       .then((res: SearchResult) => {
         return Promise.resolve(
           res.items.map((resItem: SearchResultItem) => {
-            new DmsObject(resItem, this.systemService.getObjectType(type).isFolder);
+            new DmsObject(resItem, this.systemService.getObjectType(type));
           })
         );
       })

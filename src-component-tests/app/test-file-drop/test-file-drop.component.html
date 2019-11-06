@@ -1,0 +1,39 @@
+<div class="targets">
+
+  <div class="target" *ngFor="let t of targets" (yuvFileDrop)="onFilesDropped($event, t)">
+    {{t}}
+  </div>
+
+  <div class="target nested" (yuvFileDrop)="onFilesDropped($event, 'nested parent')">
+    <div class="label">Nested parent</div>
+    <div class="target nested" (yuvFileDrop)="onFilesDropped($event, 'nested child#1')">
+      <div class="label">Nested child#1</div>
+      <div class="target" *ngFor="let t of targets" (yuvFileDrop)="onFilesDropped($event, 'child#1 - ' + t)">
+        {{t}}
+      </div>
+    </div>
+    <div class="target nested" (yuvFileDrop)="onFilesDropped($event, 'nested child#2')">
+      <div class="label">Nested child#2</div>
+      <div class="target" *ngFor="let t of targets" (yuvFileDrop)="onFilesDropped($event, 'child#2 - ' + t)">
+        {{t}}
+      </div>
+    </div>
+  </div>
+
+  <!-- with options -->
+  <div class="target" (yuvFileDrop)="onFilesDropped($event, 'multiple')" [yuvFileDropOptions]="{multiple: true}">
+    <div class="label">multiple</div>
+  </div>
+
+  <div class="target" (yuvFileDrop)="onFilesDropped($event, 'disabled')" [yuvFileDropOptions]="{disabled: true}">
+    <div class="label">disabled</div>
+  </div>
+
+</div>
+<div class="result">
+  <h2>Drop Result</h2>
+  <ng-container *ngIf="drop">
+    <div>Drop onto target '{{drop.target}}'</div>
+    <div class="file" *ngFor="let f of drop.files">{{f.name}}</div>
+  </ng-container>
+</div>

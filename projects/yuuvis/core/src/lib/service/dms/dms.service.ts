@@ -26,12 +26,12 @@ export class DmsService {
   ) {}
 
   deleteDmsObject(id: string): Observable<any> {
-    const url = `/dms/objects/${id}`;
-    return this.backend.delete(url, ApiBase.core);
+    const url = `/dms/${id}`;
+    return this.backend.delete(url, ApiBase.apiWeb);
   }
 
-  uploadContent(objectId: string, file: File) {
-    const url = `api-web/dms/update/${objectId}/content`;
+  uploadContent(objectId: string, file: File): Observable<any> {
+    const url = `${this.backend.getApiBase(ApiBase.apiWeb)}/dms/update/${objectId}/content`;
     return this.uploadService.upload(url, file);
   }
 
@@ -55,6 +55,6 @@ export class DmsService {
   }
 
   private searchResultToDmsObject(resItem: SearchResultItem): DmsObject {
-    return new DmsObject(resItem, this.systemService.getObjectType(resItem.objectTypeId).isFolder);
+    return new DmsObject(resItem, this.systemService.getObjectType(resItem.objectTypeId));
   }
 }

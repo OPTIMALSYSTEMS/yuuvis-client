@@ -11,6 +11,7 @@ import { ActionModule } from './actions/action.module';
 import { YuvComponentsModule } from './components/components.module';
 import { YuvDirectivesModule } from './directives/directives.module';
 import { YuvFormModule } from './form/form.module';
+import { YuvObjectCreateModule } from './object-create/object-create.module';
 import { YuvObjectDetailsModule } from './object-details/object-details.module';
 import { YuvObjectFormModule } from './object-form/object-form.module';
 import { YuvPipesModule } from './pipes/pipes.module';
@@ -42,6 +43,7 @@ import { YuvUserModule } from './user/user.module';
     YuvUserModule,
     YuvCommonUiModule,
     YuvObjectDetailsModule,
+    YuvObjectCreateModule,
     YuvPipesModule,
     OverlayPanelModule,
     ActionModule,
@@ -67,6 +69,7 @@ import { YuvUserModule } from './user/user.module';
     OverlayPanelModule,
     AngularSplitModule,
     YuvCoreSharedModule,
+    YuvObjectCreateModule,
     ActionModule,
     ToastrModule
   ],

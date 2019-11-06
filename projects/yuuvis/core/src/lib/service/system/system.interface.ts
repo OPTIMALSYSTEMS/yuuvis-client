@@ -25,6 +25,7 @@ export interface ObjectTypeField {
   cardinality: string;
   required: boolean;
   updatability: string;
+  resolution?: string;
 }
 
 // base definition of the kind of data we'll receive
@@ -42,6 +43,7 @@ export interface SchemaResponseFieldDefinition {
   cardinality: string;
   required: boolean;
   updatability: string;
+  resolution: string;
 }
 export interface SchemaResponseTypeDefinition {
   id: string;

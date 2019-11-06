@@ -26,6 +26,18 @@
   }
 }
 
+// default styles to be applied to anything that goes to a states content-section
+.state-content-default {
+  padding: var(--app-pane-padding);
+  box-sizing: border-box;
+  height: 100%;
+  display: block;
+
+  .screen-s & {
+    padding: 0;
+  }
+}
+
 .yuv-busy-overlay {
   position: absolute;
   transition: opacity 200ms;

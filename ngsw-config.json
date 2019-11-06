@@ -3,8 +3,8 @@
   "index": "/index.html",
   "dataGroups": [
     {
-      "name": "oauth",
-      "urls": ["/oauth"],
+      "name": "api",
+      "urls": ["/web-api/**"],
       "cacheConfig": {
         "maxSize": 0,
         "maxAge": "0u",
@@ -17,7 +17,7 @@
       "name": "app",
       "installMode": "lazy",
       "resources": {
-        "files": ["/favicon.ico", "/index.html", "/*.css", "/*.js"]
+        "files": ["/favicon.ico", "/*.css", "/*.js"]
       }
     },
     {

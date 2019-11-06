@@ -13,7 +13,7 @@ import {
   YuvEvent,
   YuvEventType
 } from '@yuuvis/core';
-import { ColDef } from 'ag-grid-community';
+import { ColDef, RowEvent } from 'ag-grid-community';
 import { of } from 'rxjs';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { ResponsiveDataTableComponent } from '../../components/responsive-data-table/responsive-data-table.component';
@@ -25,7 +25,7 @@ import { SVGIcons } from '../../svg.generated';
   selector: 'yuv-search-result',
   templateUrl: './search-result.component.html',
   styleUrls: ['./search-result.component.scss'],
-  host: { class: 'yuv-search-result toolbar' }
+  host: { class: 'yuv-search-result' }
 })
 export class SearchResultComponent implements OnDestroy {
   private _searchQuery: SearchQuery;
@@ -34,6 +34,7 @@ export class SearchResultComponent implements OnDestroy {
   private _hasPages = false;
   pagingForm: FormGroup;
   busy: boolean;
+  toolbarOpen: boolean;
 
   // icons used within the template
   icon = {
@@ -53,7 +54,16 @@ export class SearchResultComponent implements OnDestroy {
   };
 
   @Input() options: any;
+  /**
+   * Emitted when column sizes of the result list table have been changed.
+   */
   @Output() optionsChanged = new EventEmitter();
+  @Output() onRowDoubleClicked = new EventEmitter<RowEvent>();
+  /**
+   * Emitted when the query has been chnaged from within the search result component.
+   * This happens when the user uses the toolbar to alter the current query.
+   */
+  @Output() onQueryChanged = new EventEmitter<SearchQuery>();
 
   @ViewChild('dataTable', { static: false }) dataTable: ResponsiveDataTableComponent;
 
@@ -125,6 +135,12 @@ export class SearchResultComponent implements OnDestroy {
    */
   refresh() {
     this.executeQuery();
+  }
+
+  onQuickSearchQuery(query: SearchQuery) {
+    this.query = query;
+    this.executeQuery();
+    this.onQueryChanged.emit(this._searchQuery);
   }
 
   private executeQuery() {

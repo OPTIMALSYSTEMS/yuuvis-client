@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { DmsObject, SystemService } from '@yuuvis/core';
+import { FormStatusChangedEvent } from '@yuuvis/framework';
 import { booleanElements } from './data/form.boolean';
 import { datetimeElements } from './data/form.datetime';
 import { groupingModel } from './data/form.grouping';
@@ -77,11 +79,29 @@ export class TestObjectFormComponent implements OnInit {
   ];
 
   currentModel = this.formModels[0].model;
+  busy: boolean;
+  data = {};
 
-  constructor() {}
+  constructor(private systemService: SystemService) {}
 
   setModel(model) {
     this.currentModel = model;
+  }
+
+  setDmsObject(dmsObject: DmsObject) {
+    this.busy = true;
+    this.systemService.getObjectTypeForm(dmsObject.objectTypeId, 'EDIT').subscribe(
+      model => {
+        this.currentModel = {
+          formModel: model,
+          data: dmsObject.data
+        };
+        this.busy = false;
+      },
+      err => {
+        this.busy = false;
+      }
+    );
   }
 
   private wrap(elements: any[], situation?: string) {
@@ -113,6 +133,10 @@ export class TestObjectFormComponent implements OnInit {
         }
       ]
     };
+  }
+
+  onFormStatusChanged(formState: FormStatusChangedEvent) {
+    this.data = JSON.stringify(formState.data, null, 2);
   }
 
   ngOnInit() {}

@@ -7,6 +7,23 @@
   border-radius: 2px;
   box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.2);
 
+  // smaller version of the control
+  &.tiny {
+    // box-shadow: none;
+
+    .search-box {
+      .input input {
+        font-size: var(--font-body);
+      }
+      .main button {
+        padding: calc(var(--app-pane-padding) / 8);
+        &.primary {
+          padding: calc(var(--app-pane-padding) / 8) calc(var(--app-pane-padding) / 2);
+        }
+      }
+    }
+  }
+
   &.busy .upper .yuv-loader-straight {
     display: inherit;
   }

@@ -73,7 +73,7 @@
     }
   }
 
-  &.err {
+  &.mini.panelError {
     background-color: var(--color-error);
     color: #fff;
 
@@ -90,10 +90,17 @@
     padding: calc(var(--app-pane-padding) / 2) 0;
     border-bottom: 1px solid var(--panel-divider-color);
 
+    &.err {
+      background-color: var(--color-error);
+      color: #fff;
+    }
+
     .name {
       flex: 1;
       color: var(--text-color-body);
       padding: 0 calc(var(--app-pane-padding) / 2);
+      word-wrap: break-word;
+      overflow: hidden;
     }
 
     yuv-icon {

@@ -1,5 +1,6 @@
-import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { DmsService, SearchQuery, SystemService, TranslateService } from '@yuuvis/core';
+import { RowEvent } from 'ag-grid-community';
 import { SVGIcons } from '../../svg.generated';
 import { SearchResultComponent } from '../search-result/search-result.component';
 
@@ -8,7 +9,7 @@ import { SearchResultComponent } from '../search-result/search-result.component'
   templateUrl: './search-result-panel.component.html',
   styleUrls: ['./search-result-panel.component.scss']
 })
-export class SearchResultPanelComponent implements OnInit {
+export class SearchResultPanelComponent {
   // icons used within the template
   icon = {
     icSearch: SVGIcons['search'],
@@ -17,23 +18,42 @@ export class SearchResultPanelComponent implements OnInit {
   };
 
   _searchQuery: SearchQuery;
-  queryTerm: string;
-
-  @ViewChild(SearchResultComponent, { static: false }) searchResultComponent: SearchResultComponent;
-
-  @Input() set query(searchQuery: SearchQuery) {
-    this._searchQuery = searchQuery;
-    if (searchQuery) {
-      this.generateQueryDescription(searchQuery.term, searchQuery.types);
-    }
-  }
-  @Input() selectedItemIDs: string[];
-  @Output() itemsSelected = new EventEmitter<string[]>();
+  queryDescription: string;
   actionMenuVisible = false;
   actionMenuSelection = [];
 
+  @ViewChild(SearchResultComponent, { static: false }) searchResultComponent: SearchResultComponent;
+
+  /**
+   * Search query to be executed and rendered in the result list.
+   */
+  @Input() set query(searchQuery: SearchQuery) {
+    this._searchQuery = searchQuery;
+    if (searchQuery) {
+      this.generateQueryDescription();
+    }
+  }
+  /**
+   * List of result list item IDs supposed to be selected.
+   */
+  @Input() selectedItemIDs: string[];
+  /**
+   * Options to be applied to the contained result list table.
+   * Currently these options will control the tables column sizes.
+   */
   @Input() options;
+  /**
+   * Emitted when column sizes of the contained result list table have been changed.
+   */
   @Output() optionsChanged = new EventEmitter();
+  /**
+   * Emits a list of IDs of items that has been selected.
+   */
+  @Output() itemsSelected = new EventEmitter<string[]>();
+  /**
+   * Emitted once a result list item has been double-clicked.
+   */
+  @Output() onRowDoubleClicked = new EventEmitter<RowEvent>();
 
   constructor(private translate: TranslateService, private systemService: SystemService, private dmsService: DmsService) {}
 
@@ -48,12 +68,23 @@ export class SearchResultPanelComponent implements OnInit {
     this.selectedItemIDs = itemIDs;
   }
 
-  generateQueryDescription(term: string, types?: string[]) {
-    const querytype: string = types.length ? `${this.systemService.getLocalizedResource(`${types[0]}_label`)}, ` : '';
-    this.queryTerm = `${querytype}${this.translate.instant('yuv.framework.search-result-panel.header.term')}: '${term || ''}'`;
+  generateQueryDescription() {
+    const translateParams = {
+      term: this._searchQuery.term,
+      types: this._searchQuery.types.length ? this._searchQuery.types.map(t => this.systemService.getLocalizedResource(`${t}_label`)).join(', ') : null
+    };
+    if (translateParams.term && !translateParams.types) {
+      this.queryDescription = this.translate.instant('yuv.framework.search-result-panel.header.description', translateParams);
+    } else if (translateParams.term && translateParams.types) {
+      this.queryDescription = this.translate.instant('yuv.framework.search-result-panel.header.description.types', translateParams);
+    } else {
+      this.queryDescription = '';
+    }
   }
 
-  ngOnInit() {}
+  onQueryChangedFromWithin(searchQuery: SearchQuery) {
+    this.query = searchQuery;
+  }
 
   openActionMenu() {
     if (this.selectedItemIDs) {

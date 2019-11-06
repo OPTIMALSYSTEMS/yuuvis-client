@@ -607,7 +607,7 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
       // In search situation fields get their values from SearchFilters. The so called
       // inner table forms are the ones used by the table lement to edit its rows. They
       // have to be treated differently to provide the right value.
-      if (['datetime', 'date', 'integer', 'decimal'].includes(element.type)) {
+      if (['datetime', 'integer', 'decimal'].includes(element.type)) {
         value = this.isInnerTableForm
           ? SearchService.toRangeValue(data[element.name])
           : this.searchFilterToRangeValue(data.find(filter => filter.property === element.id));
@@ -628,7 +628,7 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
         //   this.searchFilterToValue(data.find((filter) => filter.property === element.id));
       }
     } else {
-      if (['datetime', 'date'].includes(element.type) && data[element.name]) {
+      if (['datetime'].includes(element.type) && data[element.name]) {
         value = new Date(data[element.name]);
       } else {
         value = data[element.name];

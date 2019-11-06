@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, Output, Renderer2, ViewChild } from '@angular/core';
 import { TranslateService } from '@yuuvis/core';
 import { Observable } from 'rxjs';
 import { FileSizePipe } from '../../pipes/filesize.pipe';
@@ -16,16 +16,22 @@ export class FilePickerComponent {
    */
   @Input() label: string;
   @Input() accept: string;
+  @Input() multiple: boolean;
   /**
    * Maximum size of the file
    */
   @Input() maxSize: number;
-  @Input() output: 'text' | 'dataurl' | 'arraybuffer' = 'arraybuffer';
+  @Input() output: 'text' | 'dataurl' | 'arraybuffer' | 'file' = 'file';
   @Output() fileSelected = new EventEmitter<FileInputResult>();
 
-  constructor(private notify: NotificationService, private translate: TranslateService) {}
+  constructor(private notify: NotificationService, private renderer: Renderer2, private translate: TranslateService) {}
 
   choose() {
+    if (this.multiple) {
+      this.renderer.setAttribute(this.fileInputEl.nativeElement, 'multiple', 'multiple');
+    } else {
+      this.renderer.removeAttribute(this.fileInputEl.nativeElement, 'multiple');
+    }
     this.fileInputEl.nativeElement.click();
   }
 
@@ -39,23 +45,31 @@ export class FilePickerComponent {
           this.translate.instant('yuv.framework.filepicker.maxsize.exceeded.message', { max: new FileSizePipe(this.translate).transform(this.maxSize) })
         );
       } else {
-        let read: Observable<any>;
-        switch (this.output) {
-          case 'text': {
-            read = this.readAsText(file);
-            break;
+        if (this.multiple) {
+          this.fileSelected.emit(files);
+        } else {
+          let read: Observable<any>;
+          switch (this.output) {
+            case 'arraybuffer': {
+              read = this.readAsArrayBuffer(file);
+              break;
+            }
+            case 'text': {
+              read = this.readAsText(file);
+              break;
+            }
+            case 'dataurl': {
+              read = this.readAsDataUrl(file);
+              break;
+            }
+            default: {
+              this.fileSelected.emit(file);
+            }
           }
-          case 'dataurl': {
-            read = this.readAsDataUrl(file);
-            break;
-          }
-          default: {
-            read = this.readAsArrayBuffer(file);
-          }
+          read.subscribe(res => this.fileSelected.emit(res));
         }
-        read.subscribe(res => this.fileSelected.emit(res));
-        this.fileInputEl.nativeElement.value = null;
       }
+      this.fileInputEl.nativeElement.value = null;
     }
   }
 

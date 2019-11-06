@@ -1,4 +1,6 @@
 <yuv-panel *ngIf="dmsObject; else empty" class="object-details" [title]="dmsObject.title"
+  (yuvFileDrop)="onFileDropped($event)"
+  [yuvFileDropOptions]="{disabled: dmsObject.contentStreamAllowed === 'notallowed'}"
   [description]="dmsObject.description" [yuvBusyOverlay]="busy" [enableStandaloneBackButton]="true"
   [standaloneFullscreen]="standaloneFullscreen" (backButtonClick)="standaloneBackButtonClicked()">
   <div class="header-icon" [innerHtml]="objectIcon | safeHtml"></div>
