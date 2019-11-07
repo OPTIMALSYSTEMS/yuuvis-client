@@ -1,6 +1,6 @@
 import { PlatformLocation } from '@angular/common';
 import { Injectable } from '@angular/core';
-import { ApiBase, UserService, Utils } from '@yuuvis/core';
+import { ApiBase, DmsObjectContent, UserService, Utils } from '@yuuvis/core';
 import { LayoutService } from '../../../services/layout/layout.service';
 
 @Injectable({
@@ -9,17 +9,17 @@ import { LayoutService } from '../../../services/layout/layout.service';
 export class ContentPreviewService {
   constructor(private location: PlatformLocation, private userService: UserService, private layoutService: LayoutService) {}
 
-  createPreviewUrl(id: string, contentMimeType: string, streamID = ''): string {
-    const { root, mimeType, path } = this.createPath(id, contentMimeType);
-    return id ? Utils.buildUri(`${root}/viewer/`, { mimeType, path, streamID, ...this.createSettings() }) : '';
+  createPreviewUrl(id: string, content: DmsObjectContent): string {
+    const { mimeType, size, contentStreamId } = content;
+    const { root, path } = this.createPath(id);
+    return id ? Utils.buildUri(`${root}/viewer/`, { mimeType, path, size, contentStreamId, ...this.createSettings() }) : '';
   }
 
-  private createPath(id, contentMimeType): { root: string; mimeType: string; path: string } {
+  private createPath(id: string): { root: string; path: string } {
     let root = `${this.location.protocol}//${this.location.hostname}`;
     root = this.location.port.length ? `${root}:${this.location.port}` : root;
-    const mimeType = contentMimeType;
     const path = `${root}/${ApiBase.apiWeb}/dms/${id}/content?asdownload=false`;
-    return { root, mimeType, path };
+    return { root, path };
   }
 
   private createSettings() {
