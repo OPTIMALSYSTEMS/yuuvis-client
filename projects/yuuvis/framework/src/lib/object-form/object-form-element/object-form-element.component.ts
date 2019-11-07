@@ -47,7 +47,7 @@ export class ObjectFormElementComponent implements OnDestroy {
   ) {}
 
   labelToggled(toggled: boolean) {
-    if (!this.skipToggle && this.element._eoFormControlWrapper.situation === 'SEARCH') {
+    if (!this.skipToggle && this.situation === 'SEARCH') {
       const toggleClass = 'label-toggled';
       this.isNull = toggled;
       if (toggled) {

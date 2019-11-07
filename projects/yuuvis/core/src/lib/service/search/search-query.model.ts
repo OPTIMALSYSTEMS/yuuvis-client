@@ -1,3 +1,5 @@
+import { RangeValue } from './../../model/range-value.model';
+import { Utils } from './../../util/utils';
 import { SearchQueryProperties } from './search.service.interface';
 
 export class SearchQuery {
@@ -222,7 +224,13 @@ export class SearchFilter {
    * @param firstValue The filters value
    * @param secondValue Optional second value for filters that for example define ranges of values
    */
-  constructor(public property: string, public operator: string, public firstValue: any, public secondValue?: any) {}
+  constructor(public property: string, public operator: string, public firstValue: any, public secondValue?: any) {
+    if (firstValue instanceof RangeValue) {
+      this.operator = firstValue.operator;
+      this.firstValue = firstValue.firstValue;
+      this.secondValue = firstValue.secondValue;
+    }
+  }
 
   /**
    * @ignore
@@ -234,6 +242,18 @@ export class SearchFilter {
       this.secondValue === secondValue &&
       (this.firstValue instanceof Array ? !!this.firstValue.find(v => v === firstValue) : this.firstValue === firstValue)
     );
+  }
+
+  isEmpty() {
+    return Utils.isEmpty(this.firstValue) || (this.operator.match(/gt(e)?lt(e)?/) ? Utils.isEmpty(this.secondValue) : false);
+  }
+
+  toQuery() {
+    return { [this.property]: { op: this.operator, v: this.firstValue, v2: this.secondValue } };
+  }
+
+  toString() {
+    return JSON.stringify(this.toQuery());
   }
 }
 

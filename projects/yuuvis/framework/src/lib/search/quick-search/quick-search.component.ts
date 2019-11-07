@@ -214,10 +214,9 @@ export class QuickSearchComponent implements AfterViewInit {
     // setup filters from form controls
     this.searchQuery.clearFilters();
     formControls.forEach(fc => {
-      if (fc.value instanceof RangeValue) {
-        this.addRangeFilter(fc._eoFormElement.name, fc.value);
-      } else if (fc.value !== null) {
-        this.searchQuery.addFilter(new SearchFilter(fc._eoFormElement.name, SearchFilter.OPERATOR.EQUAL, fc.value));
+      const filter = new SearchFilter(fc._eoFormElement.name, SearchFilter.OPERATOR.EQUAL, fc.value);
+      if (!filter.isEmpty() || fc._eoFormElement.isNotSetValue) {
+        this.searchQuery.addFilter(filter);
       }
     });
     const filterCompareNew = this.getFilterComparator(this.searchQuery.filters);
@@ -227,32 +226,16 @@ export class QuickSearchComponent implements AfterViewInit {
     }
   }
 
-  private addRangeFilter(property: string, range: RangeValue) {
-    if (range.operator === SearchFilter.OPERATOR.INTERVAL_INCLUDE_BOTH) {
-      if (range.firstValue && range.secondValue) {
-        this.searchQuery.addFilter(new SearchFilter(property, range.operator, range.firstValue, range.secondValue));
-      }
-    } else if (range.firstValue) {
-      this.searchQuery.addFilter(new SearchFilter(property, range.operator, range.firstValue));
-    }
-  }
-
   /**
    * Generates an object from a filters array and returns its JSON string (stringified).
    * Used for checking equality of filter arrays.
    * @param filters
    */
   private getFilterComparator(filters: SearchFilter[]): string {
-    const fc = {};
-    filters.forEach(
-      f =>
-        (fc[f.property] = {
-          o: f.operator,
-          v: f.firstValue,
-          v2: f.secondValue
-        })
-    );
-    return JSON.stringify(fc);
+    return filters
+      .map(f => f.toString())
+      .sort()
+      .join();
   }
 
   /**
