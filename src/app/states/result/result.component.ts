@@ -5,6 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AppCacheService, Screen, ScreenService, SearchQuery, TranslateService } from '@yuuvis/core';
 import { RowEvent } from 'ag-grid-community';
 import { takeUntilDestroy } from 'take-until-destroy';
+import { AppSearchService } from '../../service/app-search.service';
 
 @Component({
   selector: 'yuv-result',
@@ -29,6 +30,7 @@ export class ResultComponent implements OnInit, OnDestroy {
     private appCacheService: AppCacheService,
     public translate: TranslateService,
     private location: PlatformLocation,
+    private appSearch: AppSearchService,
     private route: ActivatedRoute,
     private router: Router
   ) {
@@ -42,12 +44,14 @@ export class ResultComponent implements OnInit, OnDestroy {
   }
 
   onSlaveClosed() {
-    // this.selectedItems = [];
     this.objectDetailsID = null;
   }
 
+  onQueryChanged(query: SearchQuery) {
+    this.appSearch.setQuery(query);
+  }
+
   onOptionsChanged(options: any, component: string) {
-    // console.log(options, component);
     this.options[component] = options;
     this.appCacheService.setItem(this.getStorageKey(), this.options).subscribe();
   }
@@ -70,9 +74,7 @@ export class ResultComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.titleService.setTitle(this.translate.instant('yuv.client.state.result.title'));
     // extract the query from the route params
-
     this.route.queryParamMap.pipe(takeUntilDestroy(this)).subscribe(params => {
-      // this.executeQuery(params.get('query'));
       this.searchQuery = params.get('query') ? new SearchQuery(JSON.parse(params.get('query'))) : null;
       this.appCacheService.getItem(this.getStorageKey()).subscribe(o => (this.options = { ...this.options, ...o }));
     });

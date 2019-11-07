@@ -13,7 +13,7 @@ const processSVG = () => {
     const name = f.substr(0, splitIndex);
     const extension = f.substr(splitIndex + 1);
     if (extension === 'svg') {
-      ts += `'${name}': '${fs.readFileSync(`${svgFolder}/${f}`, { encoding: 'utf8' })}',\r\n`;
+      ts += `'${name}': '${fs.readFileSync(`${svgFolder}/${f}`, { encoding: 'utf8' }).replace(/\r?\n|\r/g, '')}',\r\n`;
     }
   });
   ts += '}';

@@ -135,11 +135,20 @@
           background-color: var(--main-background);
           display: flex;
           align-items: center;
+          align-self: stretch;
+
           .label {
             margin: 0 calc(var(--app-pane-padding) / 4);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            max-width: 100px;
           }
+
           yuv-icon {
             margin: 0 calc(var(--app-pane-padding) / 4);
+            width: 18px;
+            height: 18px;
           }
         }
       }

@@ -95,7 +95,7 @@ export class ObjectFormEditComponent {
 
         const formData = this.objectForm.getFormData();
         this.dmsService
-          .updateObject(this._dmsObject.id, formData)
+          .updateDmsObject(this._dmsObject.id, formData)
           .pipe(finalize(() => this.finishPending()))
           .subscribe(
             updatedObject => {

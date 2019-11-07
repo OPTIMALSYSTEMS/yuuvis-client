@@ -25,22 +25,57 @@ export class DmsService {
     private systemService: SystemService
   ) {}
 
+  /**
+   * Create new dms object(s). Providing an array of files here instead of one will create
+   * a new dms object for every file. In this case indexdata will shared across all files.
+   * @param objectTypeId The ID of the object type to be created
+   * @param indexdata Indexdata for the new object(s)
+   * @param files File(s) to create dms objects content(s) with
+   * @param label A label that will show up in the upload overlay dialog while uploading
+   */
+  createDmsObject(objectTypeId: string, indexdata: any, files: File[], label?: string): Observable<any> {
+    const url = `${this.backend.getApiBase(ApiBase.apiWeb)}/dms/create`;
+    const data = indexdata;
+    data[BaseObjectTypeField.OBJECT_TYPE_ID] = objectTypeId;
+    return this.uploadService.uploadMultipart(url, files, data, label);
+  }
+
+  /**
+   * Delete a dms object.
+   * @param id ID of the object to be deleted
+   */
   deleteDmsObject(id: string): Observable<any> {
     const url = `/dms/${id}`;
     return this.backend.delete(url, ApiBase.apiWeb);
   }
 
+  /**
+   * Upload (add/replace) content to a dms object.
+   * @param objectId ID of the dms object to upload the file to
+   * @param file The file to be uploaded
+   */
   uploadContent(objectId: string, file: File): Observable<any> {
     const url = `${this.backend.getApiBase(ApiBase.apiWeb)}/dms/update/${objectId}/content`;
     return this.uploadService.upload(url, file);
   }
 
+  /**
+   * Fetch a dms object.
+   * @param id ID of the object to be retrieved
+   * @param version Desired version of the object
+   * @param intent
+   */
   getDmsObject(id: string, version?: number, intent?: string): Observable<DmsObject> {
     // TODO: Support version and intent params as well
     return this.getDmsObjects([id]).pipe(map(res => res[0]));
   }
 
-  updateObject(id: string, data: any) {
+  /**
+   * Update indexdata of a dms object.
+   * @param id ID of the object to apply the data to
+   * @param data Indexdata to be applied
+   */
+  updateDmsObject(id: string, data: any) {
     return this.backend.patch(`/dms/update/${id}`, data).pipe(
       map(res => this.searchService.toSearchResult(res)),
       map((res: SearchResult) => this.searchResultToDmsObject(res.items[0])),
@@ -48,6 +83,10 @@ export class DmsService {
     );
   }
 
+  /**
+   * Get a bunch of dms objects.
+   * @param ids List of IDs of objects to be retrieved
+   */
   getDmsObjects(ids: string[]): Observable<DmsObject[]> {
     const q = new SearchQuery();
     q.addFilter(new SearchFilter(BaseObjectTypeField.OBJECT_ID, SearchFilter.OPERATOR.IN, ids));

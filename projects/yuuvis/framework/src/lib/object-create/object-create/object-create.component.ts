@@ -1,7 +1,8 @@
 import { Component, ViewChild } from '@angular/core';
-import { ObjectType, PendingChangesService, SystemService, TranslateService, Utils } from '@yuuvis/core';
+import { DmsService, ObjectType, PendingChangesService, SystemService, TranslateService, Utils } from '@yuuvis/core';
 import { FormStatusChangedEvent, ObjectFormOptions } from '../../object-form/object-form.interface';
 import { ObjectFormComponent } from '../../object-form/object-form/object-form.component';
+import { NotificationService } from '../../services/notification/notification.service';
 import { SVGIcons } from '../../svg.generated';
 
 @Component({
@@ -37,7 +38,13 @@ export class ObjectCreateComponent {
 
   private pendingTaskId: string;
 
-  constructor(private system: SystemService, private translate: TranslateService, private pendingChanges: PendingChangesService) {
+  constructor(
+    private system: SystemService,
+    private notify: NotificationService,
+    private dmsService: DmsService,
+    private translate: TranslateService,
+    private pendingChanges: PendingChangesService
+  ) {
     this.resetState();
 
     this.system
@@ -139,13 +146,22 @@ export class ObjectCreateComponent {
 
   create() {
     // TODO: actually create the object
-
-    this.finishPending();
-    if (this.createAnother) {
-      this.selectedObjectType = null;
-      this.files = [];
-      this.resetState();
-    }
+    this.dmsService.createDmsObject(this.selectedObjectType.id, this.formState.data, this.files, 'label?: string').subscribe(
+      res => {
+        this.finishPending();
+        this.notify.success(this.translate.instant('yuv.framework.object-create.notify.success'));
+        if (this.createAnother) {
+          this.selectedObjectType = null;
+          this.files = [];
+          this.resetState();
+        } else {
+          // TODO: open the new object
+        }
+      },
+      err => {
+        this.notify.error(this.translate.instant('yuv.framework.object-create.notify.error'));
+      }
+    );
   }
 
   resetState() {

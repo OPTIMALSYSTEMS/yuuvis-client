@@ -53,7 +53,11 @@ export class SearchResultPanelComponent {
   /**
    * Emitted once a result list item has been double-clicked.
    */
-  @Output() onRowDoubleClicked = new EventEmitter<RowEvent>();
+  @Output() rowDoubleClicked = new EventEmitter<RowEvent>();
+  /**
+   * Emitted when the query has been changed from within the component
+   */
+  @Output() queryChanged = new EventEmitter<SearchQuery>();
 
   constructor(private translate: TranslateService, private systemService: SystemService, private dmsService: DmsService) {}
 
@@ -84,6 +88,7 @@ export class SearchResultPanelComponent {
 
   onQueryChangedFromWithin(searchQuery: SearchQuery) {
     this.query = searchQuery;
+    this.queryChanged.emit(searchQuery);
   }
 
   openActionMenu() {
