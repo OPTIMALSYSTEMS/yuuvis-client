@@ -37,6 +37,7 @@ export class DmsObject {
       this.content = {
         contentStreamId: searchResultItem.content.contentStreamId,
         fileName: searchResultItem.content.fileName,
+        size: searchResultItem.content.size,
         mimeType: searchResultItem.content.mimeType
       };
     }

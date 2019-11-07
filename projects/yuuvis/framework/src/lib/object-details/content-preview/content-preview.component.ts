@@ -19,7 +19,9 @@ export class ContentPreviewComponent implements AfterViewInit {
   set dmsObject(object: DmsObject) {
     // generate preview URI with streamID to enable refresh if file was changed
     this.previewSrc =
-      !object || !object.content ? null : this.contentPreviewService.createPreviewUrl(object.id, object.content.mimeType, object.content.contentStreamId);
+      !object || !object.content || !object.content.size
+        ? null
+        : this.contentPreviewService.createPreviewUrl(object.id, object.content.mimeType, object.content.contentStreamId);
     this._dmsObject = object;
   }
 
