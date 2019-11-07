@@ -52,14 +52,16 @@
       <yuv-number *ngIf="situation !== 'SEARCH'; else tplIntegerRange"
         [readonly]="formElementRef._eoFormElement.readonly" [precision]="formElementRef._eoFormElement.precision"
         [scale]="0" [grouping]="formElementRef._eoFormElement.grouping" [min]="formElementRef._eoFormElement.min"
-        [max]="formElementRef._eoFormElement.max" [formControlName]="element._eoFormControlWrapper.controlName">
+        [max]="formElementRef._eoFormElement.max" [formControlName]="element._eoFormControlWrapper.controlName"
+        [classification]="formElementRef._eoFormElement.classification">
       </yuv-number>
 
       <ng-template #tplIntegerRange>
         <yuv-number-range [readonly]="formElementRef._eoFormElement.readonly"
           [precision]="formElementRef._eoFormElement.precision" [scale]="0"
           [grouping]="formElementRef._eoFormElement.grouping"
-          [formControlName]="element._eoFormControlWrapper.controlName"></yuv-number-range>
+          [formControlName]="element._eoFormControlWrapper.controlName"
+          [classification]="formElementRef._eoFormElement.classification"></yuv-number-range>
       </ng-template>
 
     </yuv-form-input>

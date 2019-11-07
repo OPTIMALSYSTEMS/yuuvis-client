@@ -10,6 +10,7 @@ import { ObjectFormScriptingScope } from '../object-form-script/object-form-scri
 import { FormStatusChangedEvent, ObjectFormControlWrapper, ObjectFormOptions } from '../object-form.interface';
 import { ObjectFormControl, ObjectFormGroup } from '../object-form.model';
 import { ObjectFormService } from '../object-form.service';
+import { ObjectFormUtils } from '../object-form.utils';
 import { FormValidation } from '../object-form.validation';
 import { PluginsService } from './../../services/plugins/plugins.service';
 
@@ -481,9 +482,7 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
         };
       }
 
-      if (formElement.type === 'decimal' && !formControl._eoFormElement.scale) {
-        formControl._eoFormElement.scale = 2;
-      }
+      ObjectFormUtils.updateFormElement(formElement);
 
       if (this.formOptions.formModel.situation === 'SEARCH') {
         // in search situation even readonly fields should be editable ...

@@ -1,12 +1,13 @@
 <form class="yuv-number-range" [formGroup]="rangeForm">
 
   <yuv-number *ngIf="searchOption === 'gtelte'" class="first" [readonly]="readonly" [scale]="scale"
-    [precision]="precision" [grouping]="grouping" [pattern]="pattern" formControlName="numberValueFrom"></yuv-number>
+    [precision]="precision" [grouping]="grouping" [pattern]="pattern" formControlName="numberValueFrom"
+    [classification]="classification"></yuv-number>
 
   <p-dropdown class="no-trigger" [styleClass]="'range'" [(ngModel)]="searchOption" (ngModelChange)="onValueChange()"
     [ngModelOptions]="{standalone: true}" [options]="availableSearchOptions"></p-dropdown>
 
   <yuv-number [scale]="scale" [readonly]="readonly" [precision]="precision" [grouping]="grouping" [pattern]="pattern"
-    formControlName="numberValue"></yuv-number>
+    formControlName="numberValue" [classification]="classification"></yuv-number>
 
 </form>

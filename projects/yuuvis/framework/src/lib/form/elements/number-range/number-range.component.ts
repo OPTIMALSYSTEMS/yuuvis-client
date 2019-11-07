@@ -25,6 +25,7 @@ export class NumberRangeComponent implements ControlValueAccessor, Validator {
   @Input() grouping;
   @Input() pattern;
   @Input() readonly: boolean;
+  @Input() classification: string;
 
   public rangeForm = new FormGroup({
     numberValue: new FormControl(),
@@ -42,7 +43,7 @@ export class NumberRangeComponent implements ControlValueAccessor, Validator {
     { label: RangeValue.getOperatorLabel(SearchFilter.OPERATOR.INTERVAL_INCLUDE_BOTH), value: SearchFilter.OPERATOR.INTERVAL_INCLUDE_BOTH }
   ];
   // the selected search option
-  public searchOption = this.availableSearchOptions[0].value;
+  public searchOption = this.availableSearchOptions[2].value;
 
   constructor() {
     this.rangeForm.valueChanges.forEach(() => {

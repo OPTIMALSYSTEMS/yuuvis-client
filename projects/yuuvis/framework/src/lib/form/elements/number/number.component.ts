@@ -3,6 +3,7 @@ import { ControlValueAccessor, FormControl, NG_VALIDATORS, NG_VALUE_ACCESSOR, Va
 import { TranslateService } from '@yuuvis/core';
 import { LocaleNumberPipe } from '../../../pipes/locale-number.pipe';
 import { Utils } from '../../../util/utils';
+import { FileSizePipe } from './../../../pipes/filesize.pipe';
 
 /**
  * Creates form input for number values.
@@ -43,7 +44,7 @@ export class NumberComponent implements ControlValueAccessor, Validator {
   _min: number;
   _max: number;
   validationErrors = [];
-  numberPipe: LocaleNumberPipe;
+  numberPipe: LocaleNumberPipe | FileSizePipe;
 
   /**
    * Number of decimal places
@@ -110,6 +111,10 @@ export class NumberComponent implements ControlValueAccessor, Validator {
   }
   get max() {
     return this._max;
+  }
+
+  @Input() set classification(classification: string) {
+    this.numberPipe = classification === 'filesize' ? new FileSizePipe(this.translate) : new LocaleNumberPipe(this.translate);
   }
 
   constructor(private translate: TranslateService) {
