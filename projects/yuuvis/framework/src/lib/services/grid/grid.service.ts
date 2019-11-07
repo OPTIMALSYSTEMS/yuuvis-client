@@ -74,6 +74,7 @@ export class GridService {
    */
   private getColumnDefinition(field: ObjectTypeField, options?: ColDef): ColDef {
     const colDef: ColDef = {
+      colId: field.id, // grid needs unique ID
       field: field.id,
       headerName: this.system.getLocalizedResource(`${field.id}_label`)
     };
