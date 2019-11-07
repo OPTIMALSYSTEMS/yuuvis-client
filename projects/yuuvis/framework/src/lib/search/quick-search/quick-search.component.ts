@@ -295,8 +295,8 @@ export class QuickSearchComponent implements AfterViewInit {
     }
   }
 
-  private onObjectTypeFieldSelected(field: ObjectTypeField) {
-    this.addFieldEntry(field);
+  private onObjectTypeFieldSelected(field: ObjectTypeField, isEmpty = false) {
+    this.addFieldEntry(field, isEmpty);
   }
 
   private onObjectTypesSelected(types: string | string[], aggregate: boolean = true) {
@@ -379,7 +379,7 @@ export class QuickSearchComponent implements AfterViewInit {
         this.availableObjectTypeFields
           .filter(otf => filterIDs.includes(otf.id))
           .forEach(otf => {
-            this.onObjectTypeFieldSelected(otf.value);
+            this.onObjectTypeFieldSelected(otf.value, filters[otf.id].isEmpty());
             // setup values based on whether or not the type supports ranges
             const isRange = ['datetime', 'integer', 'decimal'].includes(otf.value.propertyType);
             const cv = {};
@@ -412,7 +412,7 @@ export class QuickSearchComponent implements AfterViewInit {
    * Adds a new form field to the query
    * @param field The object type field to be added
    */
-  addFieldEntry(field: ObjectTypeField) {
+  addFieldEntry(field: ObjectTypeField, isEmpty = false) {
     if (!this.searchFieldsForm) {
       this.initSearchFieldsForm();
     }
@@ -421,8 +421,9 @@ export class QuickSearchComponent implements AfterViewInit {
     formElement.required = false;
     // disable descriptions as well in order to keep the UI clean
     formElement.description = null;
+    formElement.isNotSetValue = isEmpty;
 
-    const formControl = ObjectFormUtils.elementToFormControl(formElement);
+    const formControl = ObjectFormUtils.elementToFormControl(formElement, 'SEARCH');
     this.searchFieldsForm.addControl(`fc_${field.id}`, formControl);
     this.formFields.push(`fc_${field.id}`);
 
