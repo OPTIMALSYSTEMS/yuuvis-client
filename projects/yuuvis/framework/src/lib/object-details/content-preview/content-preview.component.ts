@@ -17,12 +17,11 @@ export class ContentPreviewComponent implements AfterViewInit {
 
   @Input()
   set dmsObject(object: DmsObject) {
-    // generate preview URI
-    if (!object || !object.content) {
-      this.previewSrc = null;
-    } else if (!this._dmsObject || object.id !== this._dmsObject.id) {
-      this.previewSrc = this.contentPreviewService.createPreviewUrl(object.id, object.content.mimeType);
-    }
+    // generate preview URI with streamID to enable refresh if file was changed
+    this.previewSrc =
+      !object || !object.content || !object.content.size
+        ? null
+        : this.contentPreviewService.createPreviewUrl(object.id, object.content.mimeType, object.content.contentStreamId);
     this._dmsObject = object;
   }
 
@@ -50,13 +49,13 @@ export class ContentPreviewComponent implements AfterViewInit {
     // remove all special characters
     term = (term || '').replace(/[\"|\*]/g, '').trim();
     if (term && pdfjs && pdfjs.contentWindow && pdfjs.contentWindow.PDFViewerApplication && pdfjs.contentWindow.PDFViewerApplication.findController) {
-      pdfjs.contentWindow.PDFViewerApplication.findController.executeCommand('find', {
-        caseSensitive: false,
-        findPrevious: undefined,
-        highlightAll: true,
-        phraseSearch: true,
-        query: term
-      });
+      // pdfjs.contentWindow.PDFViewerApplication.findController.executeCommand('find', {
+      //   caseSensitive: false,
+      //   findPrevious: undefined,
+      //   highlightAll: true,
+      //   phraseSearch: true,
+      //   query: term
+      // });
       pdfjs.contentWindow.PDFViewerApplication.appConfig.findBar.findField.value = term;
       pdfjs.contentWindow.PDFViewerApplication.appConfig.findBar.highlightAllCheckbox.checked = true;
       pdfjs.contentWindow.PDFViewerApplication.appConfig.findBar.caseSensitiveCheckbox.checked = false;
@@ -67,7 +66,7 @@ export class ContentPreviewComponent implements AfterViewInit {
     const iframe = this.elRef.nativeElement.querySelector('iframe');
     if (iframe) {
       fromEvent(iframe, 'load').subscribe(res => {
-        this.searchPDF(this.searchTerm, iframe);
+        setTimeout(() => this.searchPDF(this.searchTerm, iframe), 100);
       });
     }
   }
