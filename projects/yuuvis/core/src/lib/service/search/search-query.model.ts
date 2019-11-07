@@ -217,6 +217,27 @@ export class SearchFilter {
   };
 
   /**
+   * available operator labels for a search filter
+   */
+  public static OPERATOR_LABEL = {
+    /** equal */
+    EQUAL: '=',
+    /** match at least one of the provided values (value has to be an array)  */
+    IN: '~',
+    /** greater than */
+    GREATER_THAN: '>',
+    /** greater than or equal */
+    GREATER_OR_EQUAL: '>=', //
+    LESS_THAN: '<', // less than
+    LESS_OR_EQUAL: '<=', // less than or equal
+    INTERVAL: '<>', // interval
+    INTERVAL_INCLUDE_BOTH: '-', // interval include left and right
+    INTERVAL_INCLUDE_TO: '>-', // interval include right
+    INTERVAL_INCLUDE_FROM: '-<', // interval include left
+    RANGE: '=' // aggegation ranges
+  };
+
+  /**
    * Constructor for creating a new SearchFilter.
    *
    * @param property The qualified name of the field this filter should apply to.

@@ -37,10 +37,10 @@ export class NumberRangeComponent implements ControlValueAccessor, Validator {
 
   // options for search situation
   public availableSearchOptions = [
-    { label: RangeValue.getOperatorLabel(SearchFilter.OPERATOR.EQUAL), value: SearchFilter.OPERATOR.EQUAL },
-    { label: RangeValue.getOperatorLabel(SearchFilter.OPERATOR.GREATER_OR_EQUAL), value: SearchFilter.OPERATOR.GREATER_OR_EQUAL },
-    { label: RangeValue.getOperatorLabel(SearchFilter.OPERATOR.LESS_OR_EQUAL), value: SearchFilter.OPERATOR.LESS_OR_EQUAL },
-    { label: RangeValue.getOperatorLabel(SearchFilter.OPERATOR.INTERVAL_INCLUDE_BOTH), value: SearchFilter.OPERATOR.INTERVAL_INCLUDE_BOTH }
+    { label: SearchFilter.OPERATOR_LABEL.EQUAL, value: SearchFilter.OPERATOR.EQUAL },
+    { label: SearchFilter.OPERATOR_LABEL.GREATER_OR_EQUAL, value: SearchFilter.OPERATOR.GREATER_OR_EQUAL },
+    { label: SearchFilter.OPERATOR_LABEL.LESS_OR_EQUAL, value: SearchFilter.OPERATOR.LESS_OR_EQUAL },
+    { label: SearchFilter.OPERATOR_LABEL.INTERVAL_INCLUDE_BOTH, value: SearchFilter.OPERATOR.INTERVAL_INCLUDE_BOTH }
   ];
   // the selected search option
   public searchOption = this.availableSearchOptions[2].value;
