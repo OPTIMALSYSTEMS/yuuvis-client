@@ -28,7 +28,8 @@
       <div class="buttons">
         <!-- <button type="button" (click)="closeSearchPanel()" translate>yuv.framework.audit.search.button.close</button> -->
         <button type="button" (click)="resetSearchPanel()" translate>yuv.framework.audit.search.button.reset</button>
-        <button class="primary" type="submit" translate>yuv.framework.audit.search.button.submit</button>
+        <button class="primary" type="submit" [disabled]="searchForm.invalid"
+          translate>yuv.framework.audit.search.button.submit</button>
       </div>
     </form>
 

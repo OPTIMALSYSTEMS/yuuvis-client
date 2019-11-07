@@ -116,7 +116,7 @@ export class DatetimeRangeComponent implements OnInit, ControlValueAccessor, Val
       };
     } else {
       // make sure that on ranges, the first value is earlier than the last
-      if (this.searchOption === SearchFilter.OPERATOR.INTERVAL_INCLUDE_BOTH && this.value.firstValue && this.value.secondValue) {
+      if (this.searchOption === SearchFilter.OPERATOR.INTERVAL_INCLUDE_BOTH && this.value && this.value.firstValue && this.value.secondValue) {
         this.isValid = new Date(this.value.firstValue).getTime() < new Date(this.value.secondValue).getTime();
         err = {
           daterangeorder: {
