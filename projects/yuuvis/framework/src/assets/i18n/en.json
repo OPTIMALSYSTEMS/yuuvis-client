@@ -53,6 +53,8 @@
 	"yuv.framework.object-create.footer.another": "Create further object",
 	"yuv.framework.object-create.footer.create": "File object",
 	"yuv.framework.object-create.header.title": "Create object",
+	"yuv.framework.object-create.notify.error": "Failed creating object",
+	"yuv.framework.object-create.notify.success": "Object has been created",
 	"yuv.framework.object-create.step.file": "Add content",
 	"yuv.framework.object-create.step.file.choose": "Add files",
 	"yuv.framework.object-create.step.file.clear": "Clear",

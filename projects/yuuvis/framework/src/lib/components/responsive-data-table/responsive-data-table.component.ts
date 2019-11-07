@@ -39,7 +39,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
    * Emitted when column sizes have been changed.
    */
   @Output() optionsChanged = new EventEmitter();
-  @Output() onRowDoubleClicked = new EventEmitter<RowEvent>();
+  @Output() rowDoubleClicked = new EventEmitter<RowEvent>();
 
   /**
    * ResponsiveTableData setter
