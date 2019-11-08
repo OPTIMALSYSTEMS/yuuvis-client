@@ -91,7 +91,7 @@ export class UploadService {
   private executeMultipartUpload(url: string, file: File[], label: string, data?: any): Observable<any> {
     const formData: FormData = new FormData();
     file.forEach(f => {
-      formData.append('files', f, Utils.encodeFileName(f.name));
+      formData.append('files', f, f.name);
     });
 
     if (data) {
