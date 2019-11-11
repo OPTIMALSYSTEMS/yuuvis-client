@@ -56,6 +56,12 @@ export class ValuePickerComponent implements OnInit, AfterViewInit {
     }
   }
 
+  onDoubleClick(item) {
+    this.selection = {};
+    this.addToSelection(item);
+    this.emitSelection();
+  }
+
   addToSelection(item) {
     if (!this.selection[item.id]) {
       this.selection[item.id] = item;
