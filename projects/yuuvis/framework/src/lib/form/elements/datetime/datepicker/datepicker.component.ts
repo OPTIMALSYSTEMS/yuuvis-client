@@ -177,8 +177,8 @@ export class DatepickerComponent implements OnInit {
    * @param Date | string date
    * @param boolean select - if set to true the given day will be set selected
    */
-  setCalenderDate(date: Date | string, select?: boolean) {
-    let m = moment(date);
+  setCalenderDate(date: Date | string | Moment, select?: boolean) {
+    const m = moment(date);
 
     if (m.isValid()) {
       this.month = m;
@@ -229,6 +229,29 @@ export class DatepickerComponent implements OnInit {
     this.month.month(index);
     this.datepickerService.buildMonth();
     this.createInfo();
+  }
+
+  public setDateByType(type: 'now' | 'today' | 'yesterday' | 'thisweek' | 'thismonth' | 'thisyear') {
+    this.setCalenderDate(this.getDateFromType(type), true);
+  }
+
+  public getDateFromType(type: string) {
+    switch (type) {
+      case 'now':
+        return moment();
+      case 'today':
+        return moment().startOf('day');
+      case 'yesterday':
+        return moment()
+          .startOf('day')
+          .add(-1, 'day');
+      case 'thisweek':
+        return moment().startOf('week');
+      case 'thismonth':
+        return moment().startOf('month');
+      case 'thisyear':
+        return moment().startOf('year');
+    }
   }
 
   public isSelectedDay(day: Moment) {
