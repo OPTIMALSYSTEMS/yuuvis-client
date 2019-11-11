@@ -1,20 +1,6 @@
-<p-dialog
-  *ngIf="visible"
-  modal="modal"
-  [responsive]="true"
-  [closeOnEscape]="false"
-  [dismissableMask]="true"
-  [closable]="false"
-  [resizable]="resizable"
-  [showHeader]="false"
-  [header]="title"
-  [(visible)]="visible"
-  [appendTo]="appendTo"
-  [ngClass]="styleClass || ''"
-  [minWidth]="minWidth"
-  [minHeight]="minHeight"
-  [contentStyle]="{ 'max-height': '100%' }"
->
+<p-dialog *ngIf="visible" modal="modal" [responsive]="true" [closeOnEscape]="false" [dismissableMask]="true"
+  [closable]="false" [resizable]="resizable" [showHeader]="false" [header]="title" [(visible)]="visible"
+  [appendTo]="appendTo" [ngClass]="styleClass || ''" [contentStyle]="contentStyle">
   <div class="yuv-dialog" [ngClass]="styleClass || ''">
     <header class="yuv-dialog-header" [ngClass]="styleClass ? styleClass + '--header ' : ''">
       <h5 class="headline">{{ title }}</h5>

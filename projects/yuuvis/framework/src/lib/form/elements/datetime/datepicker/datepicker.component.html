@@ -46,6 +46,16 @@
     </div>
   </div>
 
+  <div class="date-chips">
+    <button class="chip" *ngIf="withTime" (click)="setDateByType('now')"
+      translate>yuv.framework.search.agg.time.now</button>
+    <button class="chip" (click)="setDateByType('today')" translate>yuv.framework.search.agg.time.today</button>
+    <button class="chip" (click)="setDateByType('yesterday')" translate>yuv.framework.search.agg.time.yesterday</button>
+    <button class="chip" (click)="setDateByType('thisweek')" translate>yuv.framework.search.agg.time.thisweek</button>
+    <button class="chip" (click)="setDateByType('thismonth')" translate>yuv.framework.search.agg.time.thismonth</button>
+    <button class="chip" (click)="setDateByType('thisyear')" translate>yuv.framework.search.agg.time.thisyear</button>
+  </div>
+
   <div class="time" *ngIf="withTime">
     <div class="value val-h">{{ timeToString(withAmPm && !inRange(time.h, 1, 12) ? time.h - 12 : time.h) }}</div>
     <div class="controls ctrl-h">

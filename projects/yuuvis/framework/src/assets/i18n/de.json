@@ -112,6 +112,12 @@
 	"yuv.framework.search-result-panel.header.title": "Suchergebnis",
 	"yuv.framework.search-result.empty": "Keine Treffer",
 	"yuv.framework.search-result.footer.hits": "{{count}} Treffer",
+	"yuv.framework.search.agg.time.now": "Jetzt",
+	"yuv.framework.search.agg.time.thismonth": "Diesen Monat",
+	"yuv.framework.search.agg.time.thisweek": "Diese Woche",
+	"yuv.framework.search.agg.time.thisyear": "Dieses Jahr",
+	"yuv.framework.search.agg.time.today": "Heute",
+	"yuv.framework.search.agg.time.yesterday": "Gestern",
 	"yuv.framework.shared.cancel": "Abbrechen",
 	"yuv.framework.upload-progress-overlay.title": "Hochladen",
 	"yuv.framework.valuepicker.button.select": "Auswählen"

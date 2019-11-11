@@ -112,6 +112,12 @@
 	"yuv.framework.search-result-panel.header.title": "Search result",
 	"yuv.framework.search-result.empty": "No hits",
 	"yuv.framework.search-result.footer.hits": "{{count}} hits",
+	"yuv.framework.search.agg.time.now": "Now",
+	"yuv.framework.search.agg.time.thismonth": "This month",
+	"yuv.framework.search.agg.time.thisweek": "This week",
+	"yuv.framework.search.agg.time.thisyear": "This year",
+	"yuv.framework.search.agg.time.today": "Today",
+	"yuv.framework.search.agg.time.yesterday": "Yesterday",
 	"yuv.framework.shared.cancel": "Cancel",
 	"yuv.framework.upload-progress-overlay.title": "Upload",
 	"yuv.framework.valuepicker.button.select": "Select"
