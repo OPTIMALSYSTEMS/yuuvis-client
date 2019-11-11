@@ -1,14 +1,20 @@
 import { Component, ViewChild } from '@angular/core';
+import { FadeInAnimations } from '@yuuvis/common-ui';
 import { DmsService, ObjectType, PendingChangesService, SystemService, TranslateService, Utils } from '@yuuvis/core';
+import { Observable } from 'rxjs';
 import { FormStatusChangedEvent, ObjectFormOptions } from '../../object-form/object-form.interface';
 import { ObjectFormComponent } from '../../object-form/object-form/object-form.component';
 import { NotificationService } from '../../services/notification/notification.service';
 import { SVGIcons } from '../../svg.generated';
+import { ObjectCreateService } from '../object-create.service';
+import { Breadcrumb, CreateState, CurrentStep, Labels } from './../object-create.interface';
 
 @Component({
   selector: 'yuv-object-create',
   templateUrl: './object-create.component.html',
-  styleUrls: ['./object-create.component.scss']
+  styleUrls: ['./object-create.component.scss'],
+  animations: [FadeInAnimations.fadeIn],
+  providers: [ObjectCreateService]
 })
 export class ObjectCreateComponent {
   @ViewChild(ObjectFormComponent, { static: false }) objectForm: ObjectFormComponent;
@@ -16,13 +22,11 @@ export class ObjectCreateComponent {
   icon = {
     clear: SVGIcons['clear']
   };
-
+  animationTimer = { value: true, params: { time: '400ms' } };
   // state of creation progress
-  state: {
-    currentStep: 'objecttype' | 'files' | 'indexdata';
-    busy: boolean;
-    done: boolean;
-  };
+  state$: Observable<CreateState> = this.objCreateServcice.state$;
+  breadcrumb$: Observable<Breadcrumb[]> = this.objCreateServcice.breadcrumb$;
+
   createAnother: boolean;
   // selectedIndex: number = 0;
   availableDocumentTypes: { type: ObjectType; label: string }[] = [];
@@ -32,13 +36,13 @@ export class ObjectCreateComponent {
   selectedObjectTypeFormOptions: ObjectFormOptions;
   formState: FormStatusChangedEvent;
   files: File[] = [];
-  breadcrumb;
-  labels;
-  title;
+  labels: Labels;
+  title: string;
 
   private pendingTaskId: string;
 
   constructor(
+    private objCreateServcice: ObjectCreateService,
     private system: SystemService,
     private notify: NotificationService,
     private dmsService: DmsService,
@@ -55,13 +59,7 @@ export class ObjectCreateComponent {
         label: this.system.getLocalizedResource(`${ot.id}_label`)
       }))
       .sort(Utils.sortValues('label'))
-      .forEach(ot => {
-        if (ot.type.isFolder) {
-          this.availableFolderTypes.push(ot);
-        } else {
-          this.availableDocumentTypes.push(ot);
-        }
-      });
+      .forEach(ot => (ot.type.isFolder ? this.availableFolderTypes.push(ot) : this.availableDocumentTypes.push(ot)));
 
     this.labels = {
       defaultTitle: this.translate.instant('yuv.framework.object-create.header.title'),
@@ -70,12 +68,11 @@ export class ObjectCreateComponent {
       required: this.translate.instant('yuv.framework.object-create.step.type.content.required')
     };
     this.title = this.labels.defaultTitle;
-    this.initBreadcrumb();
   }
 
-  goToStep(step: 'objecttype' | 'files' | 'indexdata') {
-    this.state.currentStep = step;
-    if (step === 'indexdata' && this.formState) {
+  goToStep(step: CurrentStep) {
+    this.objCreateServcice.setNewState({ currentStep: step });
+    if (step === CurrentStep.INDEXDATA && this.formState) {
       this.selectedObjectTypeFormOptions.data = this.formState.data;
     }
   }
@@ -88,47 +85,45 @@ export class ObjectCreateComponent {
     this.selectedObjectType = objectType;
     this.title = objectType ? this.system.getLocalizedResource(`${objectType.id}_label`) : this.labels.defaultTitle;
     this.files = [];
-    this.state.busy = true;
+    this.objCreateServcice.setNewState({ busy: true });
     this.startPending();
 
     this.system.getObjectTypeForm(objectType.id, 'CREATE').subscribe(
       model => {
-        this.state.busy = false;
+        this.objCreateServcice.setNewState({ busy: false });
         this.selectedObjectTypeFormOptions = {
           formModel: model,
           data: {}
         };
         // does selected type support contents?
         if (objectType.isFolder || objectType.contentStreamAllowed === 'notallowed') {
-          this.state.currentStep = 'indexdata';
-          this.breadcrumb[1].visible = false;
-          this.breadcrumb[2].visible = true;
+          this.objCreateServcice.setNewState({ currentStep: CurrentStep.INDEXDATA });
+          this.objCreateServcice.setNewBreadcrumb(CurrentStep.INDEXDATA, CurrentStep.FILES);
         } else {
-          this.state.currentStep = 'files';
-          this.breadcrumb[2].visible = false;
-          this.breadcrumb[1].visible = true;
+          this.objCreateServcice.setNewState({ currentStep: CurrentStep.FILES });
+          this.objCreateServcice.setNewBreadcrumb(CurrentStep.FILES, CurrentStep.INDEXDATA);
         }
-        this.state.done = this.isReady();
+        this.objCreateServcice.setNewState({ done: this.isReady() });
       },
       err => {
-        this.state.busy = false;
+        this.objCreateServcice.setNewState({ done: false });
       }
     );
   }
 
   fileChosen(files: File[]) {
     this.files = [...this.files, ...files];
-    this.state.done = this.isReady();
+    this.objCreateServcice.setNewState({ done: this.isReady() });
   }
 
   filesClear() {
     this.files = [];
-    this.state.done = this.isReady();
+    this.objCreateServcice.setNewState({ done: this.isReady() });
   }
 
   removeFile(file: File) {
     this.files = this.files.filter(f => f.name !== file.name);
-    this.state.done = this.isReady();
+    this.objCreateServcice.setNewState({ done: this.isReady() });
   }
 
   onFilesDroppedOnType(files: File[], type?: ObjectType) {
@@ -136,17 +131,17 @@ export class ObjectCreateComponent {
       this.selectObjectType(type);
     }
     this.files = [...this.files, ...files];
-    this.state.done = this.isReady();
+    this.objCreateServcice.setNewState({ done: this.isReady() });
   }
 
   fileSelectContinue() {
-    this.goToStep('indexdata');
-    this.breadcrumb[2].visible = true;
+    this.goToStep(CurrentStep.INDEXDATA);
+    this.objCreateServcice.setNewBreadcrumb(CurrentStep.INDEXDATA);
   }
 
   create() {
-    // TODO: actually create the object
-    this.dmsService.createDmsObject(this.selectedObjectType.id, this.formState.data, this.files, 'label?: string').subscribe(
+    // TODO: actually create the object;
+    this.dmsService.createDmsObject(this.selectedObjectType.id, this.formState.data, this.files, this.files.map(file => file.name).join(', ')).subscribe(
       res => {
         this.finishPending();
         this.notify.success(this.translate.instant('yuv.framework.object-create.notify.success'));
@@ -165,12 +160,8 @@ export class ObjectCreateComponent {
   }
 
   resetState() {
-    this.state = {
-      currentStep: 'objecttype',
-      busy: false,
-      done: false
-    };
-    this.initBreadcrumb();
+    this.objCreateServcice.resetState();
+    this.objCreateServcice.resetBreadcrumb();
   }
 
   reset() {
@@ -179,27 +170,7 @@ export class ObjectCreateComponent {
 
   onFormStatusChanged(evt) {
     this.formState = evt;
-    this.state.done = this.isReady();
-  }
-
-  private initBreadcrumb() {
-    this.breadcrumb = [
-      {
-        step: 'objecttype',
-        label: this.translate.instant('yuv.framework.object-create.step.type'),
-        visible: true
-      },
-      {
-        step: 'files',
-        label: this.translate.instant('yuv.framework.object-create.step.file'),
-        visible: false
-      },
-      {
-        step: 'indexdata',
-        label: this.translate.instant('yuv.framework.object-create.step.indexdata'),
-        visible: false
-      }
-    ];
+    this.objCreateServcice.setNewState({ done: this.isReady() });
   }
 
   /**

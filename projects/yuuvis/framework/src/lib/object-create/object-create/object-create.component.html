@@ -1,4 +1,4 @@
-<div class="yuv-object-create" [yuvBusyOverlay]="state.busy">
+<div class="yuv-object-create" [yuvBusyOverlay]="state.busy" *ngIf="state$ | async as state">
 
   <header>
     <h1>
@@ -6,7 +6,7 @@
     </h1>
 
     <div class="breadcrumb">
-      <ng-container *ngFor="let b of breadcrumb">
+      <ng-container *ngFor="let b of breadcrumb$ | async">
         <div class="item" *ngIf="b.visible" (click)="goToStep(b.step)"
           [ngClass]="{current: b.step === state.currentStep}">
           <span>{{b.label}}</span>
@@ -15,10 +15,10 @@
     </div>
   </header>
 
-  <ng-container [ngSwitch]="state?.currentStep">
+  <ng-container [ngSwitch]="state.currentStep">
 
     <!-- STEP 1: Select an object type-->
-    <div class="step select" *ngSwitchCase="'objecttype'">
+    <div class="step select" *ngSwitchCase="'objecttype'"  [@fadeIn]="animationTimer">
       <h1>{{'yuv.framework.object-create.step.type'|translate}}</h1>
 
       <div class="select-container">
@@ -48,7 +48,7 @@
 
     <!-- STEP 2: Choose file(s) -->
     <div class="step select" *ngSwitchCase="'files'" (yuvFileDrop)="onFilesDroppedOnType($event)"
-      [yuvFileDropOptions]="{disabled: selectedObjectType.contentStreamAllowed === 'notallowed', multiple: true}">
+      [yuvFileDropOptions]="{disabled: selectedObjectType.contentStreamAllowed === 'notallowed', multiple: true}" [@fadeIn]="animationTimer">
       <h1>{{'yuv.framework.object-create.step.file'|translate}}</h1>
 
       <div class="content-select">
@@ -88,7 +88,7 @@
     </div>
 
     <!-- STEP 3: Add indexdata -->
-    <div class="step form" *ngSwitchCase="'indexdata'">
+    <div class="step form" *ngSwitchCase="'indexdata'"  [@fadeIn]="animationTimer">
       <h1>{{'yuv.framework.object-create.step.indexdata'|translate}}</h1>
 
       <yuv-object-form [formOptions]="selectedObjectTypeFormOptions" *ngIf="selectedObjectTypeFormOptions"

@@ -16,7 +16,8 @@ export class UploadProgressOverlayComponent {
   progressStatus$: Observable<ProgressStatus>;
   // besides listening to the upload service you may want to use
   // the input to provide the component with data (also nice for testing :)
-  @Input() set progress(ps: ProgressStatus) {
+  @Input()
+  set progress(ps: ProgressStatus) {
     this.progressStatus$ = ps ? of(ps) : null;
   }
 
