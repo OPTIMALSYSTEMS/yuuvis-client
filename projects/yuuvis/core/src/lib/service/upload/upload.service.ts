@@ -1,24 +1,10 @@
 import { HttpClient, HttpEventType, HttpHeaders, HttpRequest, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, ReplaySubject, Subject, Subscription, throwError } from 'rxjs';
+import { Observable, ReplaySubject, Subject, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { Utils } from '../../util/utils';
 import { Logger } from '../logger/logger';
-
-export interface ProgressStatus {
-  items: ProgressStatusItem[];
-  err: number;
-}
-export interface ProgressStatusItem {
-  id: string;
-  filename: string;
-  progress: Observable<number>;
-  subscription: Subscription;
-  err?: {
-    code: number;
-    message: string;
-  };
-}
+import { ProgressStatus } from './upload.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -64,6 +50,11 @@ export class UploadService {
     }
   }
 
+  removeResultItem(id: string) {
+    this.status.result = this.status.result.filter(i => i.contentStreams[0].contentStreamId !== id);
+    this.statusSource.next(this.status);
+  }
+
   /**
    * Prepares single file POST upload.
    * @param url The URL to upload the file to
@@ -95,12 +86,7 @@ export class UploadService {
     });
 
     if (data) {
-      formData.append(
-        'data',
-        new Blob([JSON.stringify(data)], {
-          type: 'application/json'
-        })
-      );
+      formData.append('data', new Blob([JSON.stringify(data)], { type: 'application/json' }));
     }
 
     const request = new HttpRequest('POST', url, formData, {
@@ -161,6 +147,8 @@ export class UploadService {
           },
           () => {
             o.next(result);
+            this.status.result = result.body.objects;
+            this.statusSource.next({ ...this.status, result: result.body.objects });
             o.complete();
           }
         );
@@ -169,7 +157,7 @@ export class UploadService {
         id,
         filename: label,
         progress: progress.asObservable(),
-        subscription: subscription,
+        subscription,
         err: null
       });
       this.statusSource.next(this.status);

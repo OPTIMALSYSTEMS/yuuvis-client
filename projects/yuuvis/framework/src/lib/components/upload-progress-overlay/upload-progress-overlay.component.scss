@@ -83,7 +83,8 @@
     }
   }
 
-  .progress-item {
+  .progress-item,
+  .result-item {
     display: flex;
     align-items: center;
     position: relative;
@@ -131,6 +132,14 @@
       left: 0;
       width: attr(data-progress) '%';
       // transition: width 200ms;
+    }
+  }
+
+  .result-item {
+    background-color: var(--color-success);
+
+    :hover {
+      cursor: pointer;
     }
   }
 

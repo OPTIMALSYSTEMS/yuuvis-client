@@ -1,5 +1,6 @@
+
 <ng-container *ngIf="progressStatus$ | async as ps">
-  <div class="uploadProgress" *ngIf="ps.items.length"
+  <div class="uploadProgress" *ngIf="ps.items.length || ps.result?.length"
     [ngClass]="{'mini': minimized, panelError: ps.err > 0, allErr: ps.err === ps.items.length}">
 
     <header>
@@ -7,7 +8,7 @@
       <yuv-icon [svg]="icon.minimize" (click)="minimized = !minimized"></yuv-icon>
     </header>
     <section class="files">
-      <div class="progress-item" *ngFor="let item of ps.items; trackBy: trackByFn" [ngClass]="{err: !!item.err}">
+      <div class="progress-item" *ngFor="let item of ps.items; trackBy: trackByFn" [ngClass]="{err: !!item.err}">   
         <yuv-icon [svg]="icon.remove" (click)="remove(item.id)"></yuv-icon>
         <div class="name">{{ item.filename }}</div>
         <ng-container *ngIf="item.progress | async as progress">
@@ -15,7 +16,13 @@
           <div class="progress" [style.width]="(progress) + '%'"></div>
         </ng-container>
       </div>
+      <ng-container *ngIf="true">
+        <div class="result-item" *ngFor="let item of ps.result; trackBy: trackByFn" [ngClass]="{err: !!item.err}">
+          
+          <yuv-icon [svg]="icon.remove" (click)="removeResult(item)"></yuv-icon>
+          <div class="name" (click)="openObject(item)">{{ item.contentStreams[0].fileName }}</div>
+          </div>
+      </ng-container>
     </section>
-
   </div>
-</ng-container>
+</ng-container> 
