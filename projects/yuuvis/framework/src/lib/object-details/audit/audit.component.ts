@@ -98,7 +98,12 @@ export class AuditComponent implements OnInit, OnDestroy {
         const dmsObject = e.data as DmsObject;
         // reload audit entries when update belongs to the current dms object
         if (dmsObject.id === this.objectID) {
-          this.fetchAuditEntries();
+          // check if a search is set
+          if (this.filtered) {
+            this.query();
+          } else {
+            this.fetchAuditEntries();
+          }
         }
       });
   }
@@ -117,9 +122,11 @@ export class AuditComponent implements OnInit, OnDestroy {
     );
   }
 
+  /**
+   * Execute a query from the search panel.
+   */
   query() {
     this.searchForm.value;
-
     const range: RangeValue = this.searchForm.value.dateRange;
 
     let options: AuditQueryOptions = {};
@@ -156,6 +163,7 @@ export class AuditComponent implements OnInit, OnDestroy {
       patch[a] = null;
     });
     this.searchForm.patchValue(patch);
+    this.filtered = false;
   }
 
   /**
