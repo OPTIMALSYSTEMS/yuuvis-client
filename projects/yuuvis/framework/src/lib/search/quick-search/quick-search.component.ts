@@ -16,6 +16,7 @@ import {
   Utils
 } from '@yuuvis/core';
 import { AutoComplete } from 'primeng/autocomplete';
+import { timer } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { ObjectFormControlWrapper } from '../../object-form';
 import { ObjectFormControl } from '../../object-form/object-form.model';
@@ -59,11 +60,15 @@ export class QuickSearchComponent implements AfterViewInit {
   settingUpQuery: boolean;
   searchQuery: SearchQuery;
   autoSuggestions = [];
+  autoSelectTimer: any;
 
   objectTypeSelectLabel: string;
 
   availableObjectTypes: { id: string; label: string; value: string }[];
   availableObjectTypeFields: { id: string; label: string; value: ObjectTypeField }[];
+  private TYPES = '@';
+  private TYPE_FIELDS = '#';
+  lastAutoQuery: any = {};
 
   selectedObjectTypes: string[];
 
@@ -144,9 +149,12 @@ export class QuickSearchComponent implements AfterViewInit {
         distinctUntilChanged(),
         debounceTime(500)
       )
-      .subscribe(formValue => {
-        this.searchQuery.term = formValue.term;
-        this.aggregate();
+      .subscribe(({ term }) => {
+        const _term = typeof term === 'string' ? term : (term && term.label) || '';
+        if (this.searchQuery.term !== _term) {
+          this.searchQuery.term = _term;
+          this.aggregate();
+        }
       });
 
     this.systemService.system$.subscribe(_ => {
@@ -164,27 +172,31 @@ export class QuickSearchComponent implements AfterViewInit {
     });
   }
 
-  autocomplete(event) {
-    const q = event.query.toLowerCase();
-    if (q === '#') {
+  private parseQuery(query: string): any {
+    const q = (query || '').toLowerCase();
+    const match = q.match(new RegExp(`(.*)(${this.TYPE_FIELDS}|${this.TYPES})([a-zA-Z0-9\- ]*)$`)) || [];
+    return { term: match[1], text: match[3], symbol: match[2], isTypeFields: match[2] === this.TYPE_FIELDS, isTypes: match[2] === this.TYPES };
+  }
+
+  autocomplete(event: any) {
+    const q = (this.lastAutoQuery = this.parseQuery(event.query));
+    if (q.isTypeFields) {
       this.setAvailableObjectTypesFields();
     }
-    const suggestions: any[] = (q.startsWith('@') ? this.availableObjectTypes : this.availableObjectTypeFields) || [];
-    this.autoSuggestions = !q.match(/^@|^#/)
-      ? []
-      : suggestions.filter(t => t.label.toLowerCase().includes(q.slice(1))).map(t => ({ ...t, autoLabel: q.slice(0, 1) + t.label }));
+    const suggestions: any[] = (q.isTypes ? this.availableObjectTypes : this.availableObjectTypeFields) || [];
+    this.autoSuggestions = !q.isTypes && !q.isTypeFields ? [] : suggestions.filter(t => (t.label || '').toLowerCase().includes(q.text)).map(t => ({ ...t }));
   }
 
   autocompleteSelect(selection) {
-    this.searchForm.patchValue({
-      term: ''
-    });
-    this.onValuePickerResult(selection.autoLabel.startsWith('@') ? 'type' : 'field', selection.value);
+    const { term } = this.lastAutoQuery;
+    this.searchQuery.term = term;
+    this.searchForm.patchValue({ term: { label: term } });
+    this.onValuePickerResult(this.lastAutoQuery.isTypes ? 'type' : 'field', selection.value);
+    this.autoSelectTimer = timer(1).subscribe(t => (this.autoSelectTimer = null));
   }
 
   autoKeyDown(event: KeyboardEvent) {
-    // TODO: find better way to handle overlay Enter event
-    if (event.code === 'Enter' && !this.searchForm.get('term').value) {
+    if (event.code === 'Enter' && this.autoSelectTimer) {
       event.preventDefault();
       event.stopImmediatePropagation();
     }
@@ -300,10 +312,11 @@ export class QuickSearchComponent implements AfterViewInit {
   }
 
   private onObjectTypesSelected(types: string | string[], aggregate: boolean = true) {
-    // get rid of existing object type field form
-    this.resetObjectTypeFields();
     this.selectedObjectTypes = typeof types === 'string' ? [types] : types;
     this.setAvailableObjectTypesFields();
+
+    // get rid of existing object type fields that not match availableObjectTypeFields
+    this.formFields.filter(id => !this.availableObjectTypeFields.find(field => `fc_${field.id}` === id)).forEach(f => this.removeFieldEntry(f));
 
     if (this.selectedObjectTypes.length === 1) {
       this.objectTypeSelectLabel = this.systemService.getLocalizedResource(`${this.selectedObjectTypes[0]}_label`);
@@ -353,12 +366,7 @@ export class QuickSearchComponent implements AfterViewInit {
       this.settingUpQuery = true;
       this.resetObjectTypes();
       this.resetObjectTypeFields();
-      this.searchForm.patchValue(
-        {
-          term: q.term
-        },
-        { emitEvent: false }
-      );
+      this.searchForm.patchValue({ term: { label: q.term } }, { emitEvent: false });
 
       // setup target object types
       if (q.types && q.types.length) {
@@ -457,9 +465,7 @@ export class QuickSearchComponent implements AfterViewInit {
     this.resultCount = null;
     this.resetObjectTypes();
     this.resetObjectTypeFields();
-    this.searchForm.patchValue({
-      term: ''
-    });
+    this.searchForm.patchValue({ term: null }, { emitEvent: false });
   }
 
   private resetObjectTypeFields() {
