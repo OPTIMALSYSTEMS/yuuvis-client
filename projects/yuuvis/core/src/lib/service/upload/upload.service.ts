@@ -4,6 +4,7 @@ import { Observable, ReplaySubject, Subject, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { Utils } from '../../util/utils';
 import { Logger } from '../logger/logger';
+import { BaseObjectTypeField, SecondaryObjectTypeField } from '../system/system.enum';
 import { ProgressStatus } from './upload.interface';
 
 @Injectable({
@@ -48,11 +49,6 @@ export class UploadService {
       this.status.items = this.status.items.filter(i => i.id !== id);
       this.statusSource.next(this.status);
     }
-  }
-
-  removeResultItem(id: string) {
-    this.status.result = this.status.result.filter(i => i.contentStreams[0].contentStreamId !== id);
-    this.statusSource.next(this.status);
   }
 
   /**
@@ -130,11 +126,23 @@ export class UploadService {
               progress.next(percentDone);
             } else if (event instanceof HttpResponse) {
               progress.complete();
-              this.status.items = this.status.items.filter(s => s.id !== id);
-              this.statusSource.next(this.status);
+              // add upload response
+              console.log('response', event);
+              // this.status.items = this.status.items.filter(s => s.id !== id);
+              const idx = this.status.items.findIndex(s => s.id === id);
+              if (idx !== -1) {
+                this.status.items[idx].result = (event.body as any).objects.map(o => ({
+                  objectId: o.properties[BaseObjectTypeField.OBJECT_ID].value,
+                  contentStreamId: o.contentStreams[0]['contentStreamId'],
+                  filename: o.contentStreams[0]['fileName'],
+                  label: o.properties[SecondaryObjectTypeField.TITLE] ? o.properties[SecondaryObjectTypeField.TITLE].value : null
+                }));
+                this.statusSource.next(this.status);
+              }
             }
           })
         )
+        // actual return value of this function
         .subscribe(
           (res: any) => {
             if (res.status) {
@@ -147,8 +155,8 @@ export class UploadService {
           },
           () => {
             o.next(result);
-            this.status.result = result.body.objects;
-            this.statusSource.next({ ...this.status, result: result.body.objects });
+            // this.status.result = result.body.objects;
+            // this.statusSource.next({ ...this.status, result: result.body.objects });
             o.complete();
           }
         );

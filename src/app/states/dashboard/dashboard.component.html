@@ -1,1 +1,14 @@
-<yuv-quick-search [query]="appQuery" (querySubmit)="onQuickSearchQuery($event)"></yuv-quick-search>
+<div class="aggs" *ngIf="aggs">
+    <div *ngFor="let a of aggs" (click)="applyAggregation(a)">
+        <div class="label">
+            {{a.label}}
+        </div>
+        <div class="count">
+            {{a.count}}
+        </div>
+    </div>
+</div>
+
+
+<yuv-quick-search #quickSearch [query]="appQuery" (typeAggregation)="onTypeAggregation($event)"
+    (querySubmit)="onQuickSearchQuery($event)"></yuv-quick-search>

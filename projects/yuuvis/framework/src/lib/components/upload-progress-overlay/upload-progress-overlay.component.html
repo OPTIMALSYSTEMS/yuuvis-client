@@ -1,28 +1,32 @@
-
 <ng-container *ngIf="progressStatus$ | async as ps">
   <div class="uploadProgress" *ngIf="ps.items.length || ps.result?.length"
-    [ngClass]="{'mini': minimized, panelError: ps.err > 0, allErr: ps.err === ps.items.length}">
+    [ngClass]="{'mini': minimized, panelError: ps.err > 0, allErr: ps.err === ps.items.length, finished: allDone}">
 
     <header>
       <div class="title">{{'yuv.framework.upload-progress-overlay.title'|translate}}</div>
       <yuv-icon [svg]="icon.minimize" (click)="minimized = !minimized"></yuv-icon>
     </header>
     <section class="files">
-      <div class="progress-item" *ngFor="let item of ps.items; trackBy: trackByFn" [ngClass]="{err: !!item.err}">   
+      <div class="progress-item" *ngFor="let item of ps.items; trackBy: trackByFn"
+        [ngClass]="{err: !!item.err, done: item.result}">
         <yuv-icon [svg]="icon.remove" (click)="remove(item.id)"></yuv-icon>
-        <div class="name">{{ item.filename }}</div>
-        <ng-container *ngIf="item.progress | async as progress">
-          <div class="percentage">{{ progress }}</div>
-          <div class="progress" [style.width]="(progress) + '%'"></div>
+
+        <ng-container *ngIf="!item.result; else tplResult">
+          <div class="name">{{ item.filename }}</div>
+          <ng-container *ngIf="item.progress | async as progress">
+            <div class="percentage">{{ progress }}</div>
+            <div class="progress" [style.width]="(progress) + '%'"></div>
+          </ng-container>
         </ng-container>
-      </div>
-      <ng-container *ngIf="true">
-        <div class="result-item" *ngFor="let item of ps.result; trackBy: trackByFn" [ngClass]="{err: !!item.err}">
-          
-          <yuv-icon [svg]="icon.remove" (click)="removeResult(item)"></yuv-icon>
-          <div class="name" (click)="openObject(item)">{{ item.contentStreams[0].fileName }}</div>
+
+        <ng-template #tplResult>
+          <div class="result-items">
+            <div class="name" *ngFor="let res of item.result; trackBy: trackByFn" (click)="openObject(res)">
+              {{ res.label }}</div>
           </div>
-      </ng-container>
+          <yuv-icon class="done" [svg]="icon.done"></yuv-icon>
+        </ng-template>
+      </div>
     </section>
   </div>
-</ng-container> 
+</ng-container>

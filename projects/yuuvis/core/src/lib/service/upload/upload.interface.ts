@@ -2,7 +2,7 @@ import { Observable, Subscription } from 'rxjs';
 
 export interface ProgressStatus {
   items: ProgressStatusItem[];
-  result?: CreateObjectResult[];
+  // result?: CreateObjectResult[];
   err: number;
 }
 export interface ProgressStatusItem {
@@ -10,6 +10,7 @@ export interface ProgressStatusItem {
   filename: string;
   progress: Observable<number>;
   subscription: Subscription;
+  result?: UploadResult[];
   err?: {
     code: number;
     message: string;
@@ -26,7 +27,12 @@ interface ContentStream {
   mimeType: string;
 }
 
-export interface CreateObjectResult {
-  contentStreams: ContentStream[];
-  properties: any;
+export interface UploadResult {
+  objectId: string;
+  contentStreamId: string;
+  filename: string;
+  label?: string;
+
+  // contentStreams: ContentStream[];
+  // properties: any;
 }

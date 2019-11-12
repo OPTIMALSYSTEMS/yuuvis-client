@@ -12,4 +12,36 @@
   height: 100%;
   padding: calc(var(--app-bar-height) + var(--app-pane-padding)) var(--app-pane-padding) 0 var(--app-pane-padding);
   box-sizing: border-box;
+
+  .aggs {
+    position: absolute;
+    left: 0;
+    top: var(--app-bar-height);
+    bottom: 0;
+    animation: yuvFadeInLeft 200ms;
+    display: flex;
+    flex-flow: column;
+    justify-content: space-around;
+
+    > div {
+      display: flex;
+      align-items: center;
+      padding: var(--app-pane-padding);
+      .label {
+        order: 1;
+        padding: var(--app-pane-padding);
+        font-size: var(--font-title);
+        opacity: 0.5;
+      }
+      .count {
+        font-size: var(--font-display);
+        order: 0;
+      }
+
+      &:hover {
+        color: var(--color-accent);
+        cursor: pointer;
+      }
+    }
+  }
 }
