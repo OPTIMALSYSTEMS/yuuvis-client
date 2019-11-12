@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProgressStatus, UploadResult, UploadService } from '@yuuvis/core';
 import { forkJoin, Observable, of } from 'rxjs';
-import { switchMap, tap } from 'rxjs/operators';
+import { tap } from 'rxjs/operators';
 import { SVGIcons } from './../../svg.generated';
 
 @Component({
@@ -26,15 +26,20 @@ export class UploadProgressOverlayComponent {
   @Input()
   set progress(ps: ProgressStatus) {
     this.progressStatus$ = ps ? of(ps) : null;
-    this.progressStatus$.pipe(switchMap(ps => forkJoin(ps.items.map(i => i.progress))));
+    this.runningProcess(ps);
     // this.running$ = forkJoin(ps.items.map(p => p.progress)).pipe(
 
     // )
   }
+
   @Output() resultItemClick = new EventEmitter<UploadResult>();
 
   constructor(private uploadService: UploadService, private router: Router, private route: ActivatedRoute) {
-    this.progressStatus$ = this.uploadService.status$.pipe(tap(r => console.log(r)));
+    this.progressStatus$ = this.uploadService.status$.pipe(tap(r => this.runningProcess(r)));
+  }
+
+  private runningProcess(ps: ProgressStatus) {
+    forkJoin(ps.items.map(p => p.progress)).subscribe(results => (this.running$ = of(true)), err => (this.running$ = of(false)));
   }
 
   openObject(item: UploadResult) {

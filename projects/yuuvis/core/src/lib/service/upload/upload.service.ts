@@ -1,7 +1,7 @@
 import { HttpClient, HttpEventType, HttpHeaders, HttpRequest, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, ReplaySubject, Subject, throwError } from 'rxjs';
-import { catchError, tap } from 'rxjs/operators';
+import { catchError, scan, tap } from 'rxjs/operators';
 import { Utils } from '../../util/utils';
 import { Logger } from '../logger/logger';
 import { BaseObjectTypeField, SecondaryObjectTypeField } from '../system/system.enum';
@@ -13,7 +13,7 @@ import { ProgressStatus } from './upload.interface';
 export class UploadService {
   private status: ProgressStatus = { err: 0, items: [] };
   private statusSource = new ReplaySubject<ProgressStatus>();
-  public status$: Observable<ProgressStatus> = this.statusSource.asObservable();
+  public status$: Observable<ProgressStatus> = this.statusSource.pipe(scan((acc, newVal) => ({ ...acc, ...newVal }), this.status));
 
   constructor(private http: HttpClient, private logger: Logger) {}
 
@@ -155,8 +155,6 @@ export class UploadService {
           },
           () => {
             o.next(result);
-            // this.status.result = result.body.objects;
-            // this.statusSource.next({ ...this.status, result: result.body.objects });
             o.complete();
           }
         );

@@ -97,6 +97,10 @@
       padding: 0 calc(var(--app-pane-padding) / 2);
       word-wrap: break-word;
       overflow: hidden;
+
+      :hover {
+        cursor: pointer;
+      }
     }
 
     yuv-icon {
@@ -136,6 +140,12 @@
       bottom: 1px;
       left: 0;
       width: attr(data-progress) '%';
+    }
+
+    .processing {
+      width: 16px;
+      height: 16px;
+      margin-right: 12px;
     }
   }
 

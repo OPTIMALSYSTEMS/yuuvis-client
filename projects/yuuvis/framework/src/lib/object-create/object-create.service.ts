@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import { TranslateService } from '@yuuvis/core';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { scan } from 'rxjs/operators';
 import { Breadcrumb, CreateState, CurrentStep } from './object-create.interface';
 
 @Injectable()
 export class ObjectCreateService {
   private state = new BehaviorSubject<CreateState>(this.defaultState);
-  state$: Observable<CreateState> = this.state.asObservable();
+  state$: Observable<CreateState> = this.state.pipe(scan((acc, newVal) => ({ ...acc, ...newVal }), this.defaultState));
 
   private breadcrumb = new BehaviorSubject<Breadcrumb[]>(this.defaultBreadcrumb);
   breadcrumb$: Observable<Breadcrumb[]> = this.breadcrumb.asObservable();
