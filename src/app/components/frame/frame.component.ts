@@ -104,7 +104,7 @@ export class FrameComponent implements OnInit {
   }
 
   onResultItemClick(res: UploadResult) {
-    console.log(res);
+    this.router.navigate(['/object', res.objectId]);
   }
 
   ngOnInit() {
