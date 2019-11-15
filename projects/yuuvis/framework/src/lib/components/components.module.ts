@@ -7,6 +7,7 @@ import { TranslateModule } from '@yuuvis/core';
 import { AgGridModule } from 'ag-grid-angular';
 import { AngularResizedEventModule } from 'angular-resize-event';
 import { AngularSplitModule } from 'angular-split';
+import { DragScrollModule } from 'ngx-drag-scroll';
 import { DialogModule } from 'primeng/dialog';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { TabViewModule } from 'primeng/tabview';
@@ -16,10 +17,12 @@ import { BusyOverlayDirective } from './busy-overlay/busy-overlay.directive';
 import { DialogComponent } from './dialog/dialog.component';
 import { FilePickerComponent } from './file-picker/file-picker.component';
 import { PanelComponent } from './panel/panel.component';
+import { RecentActivitiesComponent } from './recent-activities/recent-activities.component';
 import { ResponsiveDataTableComponent } from './responsive-data-table/responsive-data-table.component';
 import { ResponsiveMasterSlaveComponent } from './responsive-master-slave/responsive-master-slave.component';
 import { ResponsiveTabContainerComponent } from './responsive-tab-container/responsive-tab-container.component';
 import { UploadProgressOverlayComponent } from './upload-progress-overlay/upload-progress-overlay.component';
+import { RecentAcitivitiesItemComponent } from './recent-activities/recent-acitivities-item/recent-acitivities-item.component';
 
 @NgModule({
   declarations: [
@@ -31,7 +34,9 @@ import { UploadProgressOverlayComponent } from './upload-progress-overlay/upload
     PanelComponent,
     DialogComponent,
     UploadProgressOverlayComponent,
-    FilePickerComponent
+    FilePickerComponent,
+    RecentActivitiesComponent,
+    RecentAcitivitiesItemComponent
   ],
   exports: [
     ResponsiveDataTableComponent,
@@ -44,7 +49,8 @@ import { UploadProgressOverlayComponent } from './upload-progress-overlay/upload
     ActionMenuBarComponent,
     DialogComponent,
     FilePickerComponent,
-    UploadProgressOverlayComponent
+    UploadProgressOverlayComponent,
+    RecentActivitiesComponent
   ],
   imports: [
     CommonModule,
@@ -58,7 +64,8 @@ import { UploadProgressOverlayComponent } from './upload-progress-overlay/upload
     ProgressBarModule,
     YuvPipesModule,
     YuvCommonUiModule,
-    TranslateModule
+    TranslateModule,
+    DragScrollModule
   ]
 })
 export class YuvComponentsModule {}

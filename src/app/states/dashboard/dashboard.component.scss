@@ -7,11 +7,20 @@
 :host {
   display: flex;
   flex-flow: column;
-  align-items: center;
-  justify-content: center;
   height: 100%;
   padding: calc(var(--app-bar-height) + var(--app-pane-padding)) var(--app-pane-padding) 0 var(--app-pane-padding);
   box-sizing: border-box;
+
+  .top {
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+  }
+  .bottom {
+    flex: 0;
+  }
 
   .aggs {
     position: absolute;

@@ -22,6 +22,7 @@ import { TestSearchResultComponent } from './test-search-result/test-search-resu
 import { TestSummaryComponent } from './test-summary/test-summary.component';
 import { TestUploadProgressOverlayComponent } from './test-upload-progress-overlay/test-upload-progress-overlay.component';
 import { TestFileDropComponent } from './test-file-drop/test-file-drop.component';
+import { TestRecentActivitiesComponent } from './test-recent-activities/test-recent-activities.component';
 
 @NgModule({
   declarations: [
@@ -41,7 +42,8 @@ import { TestFileDropComponent } from './test-file-drop/test-file-drop.component
     TestContentPreviewComponent,
     TestObjectCreateComponent,
     TestUploadProgressOverlayComponent,
-    TestFileDropComponent
+    TestFileDropComponent,
+    TestRecentActivitiesComponent
   ],
   imports: [
     HttpClientModule,

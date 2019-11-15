@@ -1,0 +1,19 @@
+<div class="testing-controls">
+    <!-- <button (click)="created = !created">Toggle created</button>
+    <button (click)="modified = !modified">Toggle modified</button> -->
+</div>
+
+
+<yuv-recent-activities class="cmp" (itemClick)="onRecentItemClicked($event)" (showAll)="onShowAll($event)">
+</yuv-recent-activities>
+
+<yuv-recent-activities class="cmp" [modified]="false" (itemClick)="onRecentItemClicked($event)"
+    (showAll)="onShowAll($event)">
+</yuv-recent-activities>
+
+<yuv-recent-activities class="cmp" [created]="false" (itemClick)="onRecentItemClicked($event)"
+    (showAll)="onShowAll($event)">
+</yuv-recent-activities>
+
+
+<pre class="res">{{res}}</pre>
