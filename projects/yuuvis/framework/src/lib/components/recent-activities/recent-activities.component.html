@@ -9,6 +9,7 @@
 </div>
 
 <div class="outer">
+
   <ng-container *ngIf="created && selected === 'created'">
     <drag-scroll [scroll-x-wheel-enabled]="true">
       <yuv-recent-acitivities-item drag-scroll-item *ngFor="let i of recentlyCreated" [recentItem]="i"

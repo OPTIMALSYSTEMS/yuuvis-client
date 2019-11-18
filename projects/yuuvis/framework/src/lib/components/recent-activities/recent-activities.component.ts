@@ -12,6 +12,8 @@ import {
   UserService,
   YuvUser
 } from '@yuuvis/core';
+import { Observable, throwError } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
 /**
  * Component showing recent activities for the current user. This means listing the objects
@@ -47,6 +49,7 @@ export class RecentActivitiesComponent implements OnInit {
   @Output() itemClick = new EventEmitter<RecentItem>();
 
   @HostBinding('class.tabbed') isTabbed: boolean;
+  @HostBinding('class.error') fetchError: boolean;
 
   recentlyCreated: RecentItem[];
   recentlyModified: RecentItem[];
@@ -62,7 +65,7 @@ export class RecentActivitiesComponent implements OnInit {
     this.createdQuery.addFilter(new SearchFilter(BaseObjectTypeField.CREATED_BY, SearchFilter.OPERATOR.EQUAL, userId));
     this.createdQuery.sortOptions = [new SortOption(BaseObjectTypeField.CREATION_DATE, 'desc')];
     this.createdQuery.size = this.size;
-    this.searchService.search(this.createdQuery).subscribe((res: SearchResult) => {
+    this.fetchItems(this.createdQuery).subscribe((res: SearchResult) => {
       this.recentlyCreated = res.items.map(i => this.toRecentItem(i, i.fields.get(BaseObjectTypeField.CREATION_DATE)));
     });
   }
@@ -71,9 +74,20 @@ export class RecentActivitiesComponent implements OnInit {
     this.modifiedQuery.addFilter(new SearchFilter(BaseObjectTypeField.MODIFIED_BY, SearchFilter.OPERATOR.EQUAL, userId));
     this.modifiedQuery.sortOptions = [new SortOption(BaseObjectTypeField.MODIFICATION_DATE, 'desc')];
     this.modifiedQuery.size = this.size;
-    this.searchService.search(this.modifiedQuery).subscribe((res: SearchResult) => {
+    this.fetchItems(this.modifiedQuery).subscribe((res: SearchResult) => {
       this.recentlyModified = res.items.map(i => this.toRecentItem(i, i.fields.get(BaseObjectTypeField.MODIFICATION_DATE)));
     });
+  }
+
+  private fetchItems(query: SearchQuery): Observable<SearchResult> {
+    this.fetchError = false;
+
+    return this.searchService.search(query).pipe(
+      catchError(e => {
+        this.fetchError = true;
+        return throwError(e);
+      })
+    );
   }
 
   private toRecentItem(resItem: SearchResultItem, date: Date): RecentItem {
@@ -94,29 +108,32 @@ export class RecentActivitiesComponent implements OnInit {
 
   triggerShowAll() {
     const query = this.selected === 'created' ? this.createdQuery : this.modifiedQuery;
-    // remove size from list to fall back to the default
-    query.size = null;
-    this.showAll.emit(query);
+    if (query) {
+      // remove size from list to fall back to the default
+      query.size = null;
+      this.showAll.emit(query);
+    }
   }
 
   triggerItemClicked(item: RecentItem) {
-    console.log(item);
     this.itemClick.emit(item);
   }
 
   ngOnInit() {
     this.userService.user$.subscribe((user: YuvUser) => {
-      if (this.created) {
-        this.getCreated(user.id);
+      if (user) {
+        if (this.created) {
+          this.getCreated(user.id);
+        }
+        if (this.modified) {
+          this.getModified(user.id);
+        }
+        if (this.modified && !this.created) {
+          this.selected = 'modified';
+        }
+        this.isTabbed = this.created && this.modified;
+        this.hasAnyItems = (this.recentlyCreated && this.recentlyCreated.length > 0) || (this.recentlyModified && this.recentlyModified.length > 0);
       }
-      if (this.modified) {
-        this.getModified(user.id);
-      }
-      if (this.modified && !this.created) {
-        this.selected = 'modified';
-      }
-      this.isTabbed = this.created && this.modified;
-      this.hasAnyItems = (this.recentlyCreated && this.recentlyCreated.length > 0) || (this.recentlyModified && this.recentlyModified.length > 0);
     });
   }
 }
