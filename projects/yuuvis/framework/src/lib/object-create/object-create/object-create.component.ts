@@ -152,9 +152,10 @@ export class ObjectCreateComponent {
           this.files = [];
           this.resetState();
         } else {
-          // TODO: open the new object
-          if (res) {
-            this.router.navigate(['object', res[0]['system:objectId'].value]);
+          const id = Utils.getProperty(res, '0.system:objectId.value');
+          if (id) {
+            // TODO: remove timeout when backend is synced
+            setTimeout(() => this.router.navigate(['object', id]), 700);
           }
         }
       },

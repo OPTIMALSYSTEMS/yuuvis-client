@@ -1,7 +1,7 @@
 import { HttpClient, HttpEventType, HttpHeaders, HttpRequest, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, ReplaySubject, Subject, throwError } from 'rxjs';
-import { catchError, map, scan, tap } from 'rxjs/operators';
+import { catchError, filter, map, scan, tap } from 'rxjs/operators';
 import { Utils } from '../../util/utils';
 import { Logger } from '../logger/logger';
 import { BaseObjectTypeField, SecondaryObjectTypeField } from '../system/system.enum';
@@ -42,6 +42,7 @@ export class UploadService {
     const formData: FormData = this.createFormData({ data });
     const request = this.createHttpRequest(url, { formData }, false);
     return this.http.request(request).pipe(
+      filter((obj: any) => obj && obj.body),
       map((obj: any) => (obj ? ((obj.body as any) ? (obj.body as any).objects.map(val => val.properties) : null) : obj)),
       catchError(err => throwError(err))
     );
