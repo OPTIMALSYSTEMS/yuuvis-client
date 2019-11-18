@@ -103,11 +103,11 @@ export class NumberComponent implements ControlValueAccessor, Validator {
     this.numberPipe = classification === 'filesize' ? new FileSizePipe(this.translate) : new LocaleNumberPipe(this.translate);
   }
 
-  static betweenTwoNumbers(val: number, minVal: number, maxVal: number, inclusive = true) {
-    const min = Math.min(minVal, maxVal);
-    const max = Math.max(minVal, maxVal);
+  static betweenTwoNumbers(val: number, minVal: number, maxVal: number) {
+    const min = !Utils.isEmpty(minVal) ? minVal : -Infinity;
+    const max = !Utils.isEmpty(maxVal) ? maxVal : Infinity;
 
-    return inclusive ? val >= min && val <= max : val > min && val < max;
+    return val >= min && val <= max;
   }
 
   constructor(private translate: TranslateService) {
@@ -153,8 +153,14 @@ export class NumberComponent implements ControlValueAccessor, Validator {
       }
 
       // min max
-      if (!Utils.isEmpty(this.minValue) && !Utils.isEmpty(this.maxValue) && !NumberComponent.betweenTwoNumbers(val, this.minValue, this.maxValue)) {
-        this.validationErrors.push({ key: 'minmax', params: { minValue: this.minValue, maxValue: this.maxValue } });
+      if (!NumberComponent.betweenTwoNumbers(val, this.minValue, this.maxValue)) {
+        if (Utils.isEmpty(this.minValue)) {
+          this.validationErrors.push({ key: 'maxvalue', params: { maxValue: this.maxValue } });
+        } else if (Utils.isEmpty(this.maxValue)) {
+          this.validationErrors.push({ key: 'minvalue', params: { minValue: this.minValue } });
+        } else {
+          this.validationErrors.push({ key: 'minmax', params: { minValue: this.minValue, maxValue: this.maxValue } });
+        }
       }
 
       if (!this.validationErrors.length) {
