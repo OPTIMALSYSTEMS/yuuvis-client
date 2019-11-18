@@ -27,9 +27,6 @@ export class UploadProgressOverlayComponent {
   set progress(ps: ProgressStatus) {
     this.progressStatus$ = ps ? of(ps) : null;
     this.runningProcess(ps);
-    // this.running$ = forkJoin(ps.items.map(p => p.progress)).pipe(
-
-    // )
   }
 
   @Output() resultItemClick = new EventEmitter<UploadResult>();
@@ -39,7 +36,10 @@ export class UploadProgressOverlayComponent {
   }
 
   private runningProcess(ps: ProgressStatus) {
-    forkJoin(ps.items.map(p => p.progress)).subscribe(results => (this.running$ = of(true)), err => (this.running$ = of(false)));
+    forkJoin(ps.items.map(p => p.progress)).subscribe(
+      results => (this.running$ = of(true)),
+      err => (this.running$ = of(false))
+    );
   }
 
   openObject(item: UploadResult) {

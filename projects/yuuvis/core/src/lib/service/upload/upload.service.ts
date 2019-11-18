@@ -1,10 +1,10 @@
 import { HttpClient, HttpEventType, HttpHeaders, HttpRequest, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, ReplaySubject, Subject, throwError } from 'rxjs';
-import { catchError, scan, tap } from 'rxjs/operators';
+import { catchError, map, scan, tap } from 'rxjs/operators';
+import { BaseObjectTypeField, SecondaryObjectTypeField } from '../../../public-api';
 import { Utils } from '../../util/utils';
 import { Logger } from '../logger/logger';
-import { BaseObjectTypeField, SecondaryObjectTypeField } from '../system/system.enum';
 import { ProgressStatus } from './upload.interface';
 
 @Injectable({
@@ -13,7 +13,7 @@ import { ProgressStatus } from './upload.interface';
 export class UploadService {
   private status: ProgressStatus = { err: 0, items: [] };
   private statusSource = new ReplaySubject<ProgressStatus>();
-  public status$: Observable<ProgressStatus> = this.statusSource.pipe(scan((acc, newVal) => ({ ...acc, ...newVal }), this.status));
+  public status$: Observable<ProgressStatus> = this.statusSource.pipe(scan((acc: ProgressStatus, newVal) => ({ ...acc, ...newVal }), this.status));
 
   constructor(private http: HttpClient, private logger: Logger) {}
 
@@ -38,6 +38,15 @@ export class UploadService {
     return this.executeMultipartUpload(url, files, label || 'Upload', data);
   }
 
+  createDocument(url: string, data: any): Observable<any> {
+    const formData: FormData = this.createFormData({ data });
+    const request = this.createHttpRequest(url, { formData }, false);
+    return this.http.request(request).pipe(
+      map((obj: any) => (obj ? ((obj.body as any) ? (obj.body as any).objects.map(val => val.properties) : null) : obj)),
+      catchError(err => throwError(err))
+    );
+  }
+
   /**
    * Cancels an upload request and removes it from the list of files being uploaded.
    * @param id ID of the UploadItem to be canceled
@@ -52,20 +61,45 @@ export class UploadService {
   }
 
   /**
+   * Prepares Formdata for multipart upload.
+   * @param from contains form and or file
+   */
+  private createFormData({ file, data }: { data?: any; file?: File[] }): FormData {
+    const formData: FormData = new FormData();
+    (file || []).forEach(f => formData.append('files', f, f.name));
+    data ? formData.append('data', new Blob([JSON.stringify(data)], { type: 'application/json' })) : null;
+    return formData;
+  }
+
+  /**
+   * Prepares Http Request.
+   * @param url The URL to upload the file to
+   * @param content formdata or single file
+   * @param reportProgress Request should report upload progress
+   * @param method Request method
+   */
+  private createHttpRequest(url: string, content: Partial<{ formData: FormData; file: File }>, reportProgress: boolean, method = 'POST'): HttpRequest<any> {
+    const { formData, file } = content;
+    let headers: any = { 'ngsw-bypass': 'ngsw-bypass' };
+
+    if (file) {
+      headers = { ...headers, 'Content-Disposition': `attachment; filename=${file.name}` };
+    }
+    return new HttpRequest(method, url, file || formData, {
+      headers: new HttpHeaders(headers),
+      reportProgress
+    });
+  }
+
+  /**
    * Prepares single file POST upload.
    * @param url The URL to upload the file to
    * @param file The file to be uploaded
    * @param label A label that will show up in the upload overlay dialog while uploading
    */
-  private executeUpload(url: string, file: File, label: string): Observable<any> {
-    const request = new HttpRequest('POST', url, file, {
-      headers: new HttpHeaders({
-        'Content-Disposition': `attachment; filename=${file.name}`,
-        'ngsw-bypass': 'ngsw-bypass'
-      }),
-      reportProgress: true
-    });
-    return this.startUpload(request, label);
+  private executeUpload(url: string, file, label: string): Observable<any> {
+    const request = this.createHttpRequest(url, { file }, true);
+    return this.startUploadWithFile(request, label);
   }
 
   /**
@@ -76,22 +110,9 @@ export class UploadService {
    * @param data Data to be send along with the files
    */
   private executeMultipartUpload(url: string, file: File[], label: string, data?: any): Observable<any> {
-    const formData: FormData = new FormData();
-    file.forEach(f => {
-      formData.append('files', f, f.name);
-    });
-
-    if (data) {
-      formData.append('data', new Blob([JSON.stringify(data)], { type: 'application/json' }));
-    }
-
-    const request = new HttpRequest('POST', url, formData, {
-      headers: new HttpHeaders({
-        'ngsw-bypass': 'ngsw-bypass'
-      }),
-      reportProgress: true
-    });
-    return this.startUpload(request, label);
+    const formData: FormData = this.createFormData({ file, data });
+    const request = this.createHttpRequest(url, { formData }, true);
+    return this.startUploadWithFile(request, label);
   }
 
   /**
@@ -99,13 +120,14 @@ export class UploadService {
    * @param request Request to be executed
    * @param label A label that will show up in the upload overlay dialog while uploading
    */
-  private startUpload(request: any, label: string): Observable<any> {
+  private startUploadWithFile(request: any, label: string): Observable<any> {
     return new Observable(o => {
       const id = Utils.uuid();
       const progress = new Subject<number>();
       let result;
       // Create a subscription from the http request that will be applied to the upload
       // status item in order to be able to cancel the request later on.
+
       const subscription = this.http
         .request(request)
         .pipe(

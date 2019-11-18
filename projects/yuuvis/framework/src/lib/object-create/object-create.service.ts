@@ -7,7 +7,7 @@ import { Breadcrumb, CreateState, CurrentStep } from './object-create.interface'
 @Injectable()
 export class ObjectCreateService {
   private state = new BehaviorSubject<CreateState>(this.defaultState);
-  state$: Observable<CreateState> = this.state.pipe(scan((acc, newVal) => ({ ...acc, ...newVal }), this.defaultState));
+  state$: Observable<CreateState> = this.state.pipe(scan((acc: CreateState, newVal: Partial<CreateState>) => ({ ...acc, ...newVal }), this.defaultState));
 
   private breadcrumb = new BehaviorSubject<Breadcrumb[]>(this.defaultBreadcrumb);
   breadcrumb$: Observable<Breadcrumb[]> = this.breadcrumb.asObservable();
@@ -27,7 +27,7 @@ export class ObjectCreateService {
   }
 
   setNewState(newState) {
-    this.state.next({ ...this.state.value, ...newState });
+    this.state.next(newState);
   }
 
   get defaultBreadcrumb(): Breadcrumb[] {
@@ -37,7 +37,7 @@ export class ObjectCreateService {
       [CurrentStep.INDEXDATA]: this.translate.instant('yuv.framework.object-create.step.indexdata')
     };
 
-    return Object.keys(CurrentStep).map((step, index) => ({
+    return Object.keys(CurrentStep).map((step: CurrentStep) => ({
       step: CurrentStep[step],
       label: labels[CurrentStep[step]],
       visible: CurrentStep[step] === CurrentStep.OBJECTTYPE
@@ -49,7 +49,7 @@ export class ObjectCreateService {
   }
 
   setNewBreadcrumb(showStep: CurrentStep, hideStep?: CurrentStep) {
-    const bread = this.breadcrumb.value;
+    const bread = [...this.breadcrumb.value];
     bread.map((crumb: Breadcrumb) => (crumb.step === showStep ? (crumb.visible = true) : crumb.step === hideStep ? (crumb.visible = false) : crumb));
     this.breadcrumb.next(bread);
   }

@@ -1,4 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
+import { Router } from '@angular/router';
 import { FadeInAnimations } from '@yuuvis/common-ui';
 import { DmsService, ObjectType, PendingChangesService, SystemService, TranslateService, Utils } from '@yuuvis/core';
 import { Observable } from 'rxjs';
@@ -47,7 +48,8 @@ export class ObjectCreateComponent {
     private notify: NotificationService,
     private dmsService: DmsService,
     private translate: TranslateService,
-    private pendingChanges: PendingChangesService
+    private pendingChanges: PendingChangesService,
+    private router: Router
   ) {
     this.resetState();
 
@@ -151,6 +153,9 @@ export class ObjectCreateComponent {
           this.resetState();
         } else {
           // TODO: open the new object
+          if (res) {
+            this.router.navigate(['object', res[0]['system:objectId'].value]);
+          }
         }
       },
       err => {
