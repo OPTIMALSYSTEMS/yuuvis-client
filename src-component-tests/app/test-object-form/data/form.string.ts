@@ -37,8 +37,8 @@ export const stringElements = [
     name: 'string:minmax',
     label: 'String with Min/Max',
     description: 'enter string between 3 and 10 characters',
-    maxlen: 10,
-    minlen: 3,
+    maxLength: 10,
+    minLength: 3,
     type: 'string',
     required: false
   },
