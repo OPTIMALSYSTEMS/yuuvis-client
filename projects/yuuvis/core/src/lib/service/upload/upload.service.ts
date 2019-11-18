@@ -2,9 +2,9 @@ import { HttpClient, HttpEventType, HttpHeaders, HttpRequest, HttpResponse } fro
 import { Injectable } from '@angular/core';
 import { Observable, ReplaySubject, Subject, throwError } from 'rxjs';
 import { catchError, map, scan, tap } from 'rxjs/operators';
-import { BaseObjectTypeField, SecondaryObjectTypeField } from '../../../public-api';
 import { Utils } from '../../util/utils';
 import { Logger } from '../logger/logger';
+import { BaseObjectTypeField, SecondaryObjectTypeField } from '../system/system.enum';
 import { ProgressStatus } from './upload.interface';
 
 @Injectable({
