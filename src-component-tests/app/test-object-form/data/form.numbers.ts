@@ -30,8 +30,8 @@ export const numberElements = [
     label: 'integer between 10 and 155',
     description: 'integer between 10 and 155',
     type: 'integer',
-    min: 10,
-    max: 155,
+    minValue: 10,
+    maxValue: 155,
     required: false
   },
 

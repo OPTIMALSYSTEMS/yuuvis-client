@@ -1,5 +1,6 @@
 import { Component, forwardRef, Input } from '@angular/core';
 import { ControlValueAccessor, FormControl, NG_VALIDATORS, NG_VALUE_ACCESSOR, Validator } from '@angular/forms';
+import { Utils } from '@yuuvis/core';
 import { SVGIcons } from '../../../svg.generated';
 
 /**
@@ -92,6 +93,7 @@ export class StringComponent implements ControlValueAccessor, Validator {
   // model value
   value;
   valid: boolean;
+  validationErrors = [];
 
   constructor() {}
 
@@ -117,18 +119,52 @@ export class StringComponent implements ControlValueAccessor, Validator {
 
   registerOnTouched(fn: any): void {}
 
-  onValueChange(evt) {
-    this.value = evt.length ? evt : null;
+  onValueChange(val) {
+    this.validationErrors = [];
+
+    if (Utils.isEmpty(val)) {
+      this.value = null;
+      this.propagateChange(this.value);
+      return;
+    }
+
+    const multiCheck = check => !!(this.multiselect ? val : [val]).find(v => check(v));
+
+    // validate regular expression
+    if (this.regex && multiCheck(v => !RegExp(this.regex).test(v))) {
+      this.validationErrors.push({ key: 'regex' });
+    }
+
+    // validate classification settings
+    if (this.classification && multiCheck(v => !this.validateClassification(v))) {
+      this.validationErrors.push({ key: 'classification' + this.classification });
+    }
+
+    // validate min length
+    if (!Utils.isEmpty(this.minLength) && multiCheck(v => v.length < this.minLength)) {
+      this.validationErrors.push({ key: 'minlength', params: { minLength: this.minLength } });
+    }
+
+    // validate max length
+    if (!Utils.isEmpty(this.maxLength) && multiCheck(v => v.length > this.maxLength)) {
+      this.validationErrors.push({ key: 'maxlength', params: { maxLength: this.maxLength } });
+    }
+
+    // validate invalid if only whitespaces
+    if (multiCheck(v => v.length && !v.trim().length)) {
+      this.validationErrors.push({ key: 'onlyWhitespaces' });
+    }
+
+    if (!this.validationErrors.length) {
+      this.value = val;
+    }
+
     this.propagateChange(this.value);
   }
 
   onBlur() {
     if (this.value) {
-      if (this.multiselect) {
-        this.value = this.value.map(v => v.trim());
-      } else {
-        this.value = this.value.trim();
-      }
+      this.value = this.multiselect ? this.value.map(v => v.trim()) : this.value.trim();
     }
   }
 
@@ -150,96 +186,6 @@ export class StringComponent implements ControlValueAccessor, Validator {
    * returns null when valid else the validation object
    */
   public validate(c: FormControl) {
-    let err;
-    // validate regular expression
-    if (this.value && this.regex) {
-      if (this.multiselect) {
-        if (this.value.length > 0 && !!this.value.find(v => !RegExp(this.regex).test(v))) {
-          err = {};
-          err['regex'] = {
-            valid: false
-          };
-        }
-      } else {
-        if (!RegExp(this.regex).test(this.value)) {
-          err = {};
-          err['regex'] = {
-            valid: false
-          };
-        }
-      }
-    }
-    // validate classification settings
-    if (this.value && this.classification) {
-      if (this.multiselect) {
-        for (let v of this.value) {
-          if (!this.validateClassification(v)) {
-            err = {};
-            err['classification' + this.classification] = {
-              valid: false
-            };
-          }
-        }
-      } else {
-        if (!this.validateClassification(this.value)) {
-          err = {};
-          err['classification' + this.classification] = {
-            valid: false
-          };
-        }
-      }
-    }
-    // validate length here when multiselect
-    if (this.value && this.value !== null) {
-      if (this.multiselect) {
-        if (this.value.length > 0 && !!this.value.find(v => v.length < this.minLength)) {
-          err = {};
-          err['minlength'] = {
-            valid: false
-          };
-        }
-        if (this.value.length > 0 && !!this.value.find(v => v.length > this.maxLength)) {
-          err = {};
-          err['maxlength'] = {
-            valid: false
-          };
-        }
-      } else {
-        if (this.value.length > 0 && this.value.length < this.minLength) {
-          err = {};
-          err['minlength'] = {
-            valid: false
-          };
-        }
-        if (this.value.length > this.maxLength) {
-          err = {};
-          err['maxlength'] = {
-            valid: false
-          };
-        }
-      }
-    }
-    // validate invalid if only whitespaces
-    if (this.value && this.value !== null) {
-      if (this.multiselect) {
-        for (let v of this.value) {
-          if (v.length && !v.trim().length) {
-            err = {};
-            err['onlyWhitespaces'] = {
-              valid: false
-            };
-          }
-        }
-      } else {
-        if (this.value.length && !this.value.trim().length) {
-          err = {};
-          err['onlyWhitespaces'] = {
-            valid: false
-          };
-        }
-      }
-    }
-    this.valid = !err;
-    return err ? err : null;
+    return this.validationErrors.length ? Utils.arrayToObject(this.validationErrors, 'key', err => ({ valid: false, ...err })) : null;
   }
 }
