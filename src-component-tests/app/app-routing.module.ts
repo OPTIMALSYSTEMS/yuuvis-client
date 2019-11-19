@@ -10,6 +10,7 @@ import { TestObjectFormEditComponent } from './test-object-form-edit/test-object
 import { TestObjectFormComponent } from './test-object-form/test-object-form.component';
 import { TestPanelComponent } from './test-panel/test-panel.component';
 import { TestQuickSearchComponent } from './test-quick-search/test-quick-search.component';
+import { TestRecentActivitiesComponent } from './test-recent-activities/test-recent-activities.component';
 import { TestResponsiveTabContainerComponent } from './test-responsive-tab-container/test-responsive-tab-container.component';
 import { TestSearchResultPanelComponent } from './test-search-result-panel/test-search-result-panel.component';
 import { TestSearchResultComponent } from './test-search-result/test-search-result.component';
@@ -17,20 +18,21 @@ import { TestSummaryComponent } from './test-summary/test-summary.component';
 import { TestUploadProgressOverlayComponent } from './test-upload-progress-overlay/test-upload-progress-overlay.component';
 
 const routes: Routes = [
-  { path: 'object-form', component: TestObjectFormComponent },
-  { path: 'object-form-edit', component: TestObjectFormEditComponent },
-  { path: 'search-result', component: TestSearchResultComponent },
-  { path: 'search-result-panel', component: TestSearchResultPanelComponent },
-  { path: 'responsive-tab-container', component: TestResponsiveTabContainerComponent },
-  { path: 'object-details', component: TestObjectDetailsComponent },
-  { path: 'object-create', component: TestObjectCreateComponent },
+  { path: 'action-menu', component: TestActionMenuComponent },
   { path: 'audit', component: TestAuditComponent },
   { path: 'content-preview', component: TestContentPreviewComponent },
+  { path: 'file-drop', component: TestFileDropComponent },
+  { path: 'responsive-tab-container', component: TestResponsiveTabContainerComponent },
+  { path: 'object-create', component: TestObjectCreateComponent },
+  { path: 'object-details', component: TestObjectDetailsComponent },
+  { path: 'object-form', component: TestObjectFormComponent },
+  { path: 'object-form-edit', component: TestObjectFormEditComponent },
   { path: 'panel', component: TestPanelComponent },
   { path: 'quick-search', component: TestQuickSearchComponent },
-  { path: 'action-menu', component: TestActionMenuComponent },
+  { path: 'search-result', component: TestSearchResultComponent },
+  { path: 'search-result-panel', component: TestSearchResultPanelComponent },
+  { path: 'recent-activities', component: TestRecentActivitiesComponent },
   { path: 'summary', component: TestSummaryComponent },
-  { path: 'file-drop', component: TestFileDropComponent },
   { path: 'upload-progress-overlay', component: TestUploadProgressOverlayComponent }
 ];
 

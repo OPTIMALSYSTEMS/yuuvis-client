@@ -10,5 +10,13 @@
 </div>
 
 
-<yuv-quick-search #quickSearch [query]="appQuery" (typeAggregation)="onTypeAggregation($event)"
-    (querySubmit)="onQuickSearchQuery($event)"></yuv-quick-search>
+<div class="top">
+    <yuv-quick-search #quickSearch [query]="appQuery" (typeAggregation)="onTypeAggregation($event)"
+        (querySubmit)="onQuickSearchQuery($event)"></yuv-quick-search>
+</div>
+
+<div class="bottom">
+    <yuv-recent-activities class="transparent flipped" (itemClick)="onRecentItemClicked($event)"
+        (showAll)="onShowAll($event)">
+    </yuv-recent-activities>
+</div>

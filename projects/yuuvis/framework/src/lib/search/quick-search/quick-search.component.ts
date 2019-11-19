@@ -392,7 +392,9 @@ export class QuickSearchComponent implements AfterViewInit {
               : new RangeValue(filters[otf.id].operator, filters[otf.id].firstValue, filters[otf.id].secondValue);
             formPatch[`fc_${otf.id}`] = cv;
           });
-        this.searchFieldsForm.patchValue(formPatch);
+        if (this.searchFieldsForm) {
+          this.searchFieldsForm.patchValue(formPatch);
+        }
       }
       this.settingUpQuery = false;
       this.aggregate();
@@ -405,16 +407,16 @@ export class QuickSearchComponent implements AfterViewInit {
   }
 
   private processAggregateResult(res: AggregateResult) {
-    this.resultCount = res.totalNumItems;
+    this.resultCount = 0;
     if (res.aggregations && res.aggregations.length) {
       this.searchHasResults = true;
       // type aggregations
       this.typeAggregation.emit(
-        res.aggregations[0].entries.map(r => ({
-          objectTypeId: r.key,
-          label: this.systemService.getLocalizedResource(`${r.key}_label`),
-          count: r.count
-        }))
+        res.aggregations[0].entries.map(r => {
+          this.resultCount += r.count;
+
+          return { objectTypeId: r.key, label: this.systemService.getLocalizedResource(`${r.key}_label`), count: r.count };
+        })
       );
     } else {
       this.searchHasResults = false;

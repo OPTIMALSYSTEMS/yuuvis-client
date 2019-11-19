@@ -84,13 +84,17 @@ import { YuvUserModule } from './user/user.module';
       provide: ErrorHandler,
       useClass: ErrorHandlerService
     }
-  ]
+  ],
+  declarations: []
 })
 export class YuvFrameworkModule {
   static forRoot(config?: CoreConfig): ModuleWithProviders {
     return {
       ngModule: YuvFrameworkModule,
-      providers: [{ provide: CUSTOM_CONFIG, useValue: config }, { provide: CORE_CONFIG, useClass: CoreConfig, deps: [CUSTOM_CONFIG] }]
+      providers: [
+        { provide: CUSTOM_CONFIG, useValue: config },
+        { provide: CORE_CONFIG, useClass: CoreConfig, deps: [CUSTOM_CONFIG] }
+      ]
     };
   }
 }

@@ -31,6 +31,14 @@ export class SystemService {
     return this.system.objectTypes.find(ot => ot.id === objectTypeId);
   }
 
+  getObjectTypeIcon(objectTypeId: string): string {
+    const type = this.getObjectType(objectTypeId);
+    // TODO: point to actual icon URI
+    return type.isFolder
+      ? '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/><path d="M0 0h24v24H0z" fill="none"/></svg>'
+      : '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M6 2c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6H6zm7 7V3.5L18.5 9H13z"/><path d="M0 0h24v24H0z" fill="none"/></svg>';
+  }
+
   getBaseDocumentType(): ObjectType {
     return this.getObjectType(SystemType.DOCUMENT);
   }
@@ -39,7 +47,10 @@ export class SystemService {
     const sysDocument = this.getObjectType(SystemType.DOCUMENT);
     // TODO: get fields for SecondaryObjectTypeField from schema
     const props: ObjectTypeField = { id: '', propertyType: 'string', description: '', cardinality: 'single', required: true, updatability: 'readwrite' };
-    const secondaryFields: ObjectTypeField[] = [{ ...props, id: SecondaryObjectTypeField.TITLE }, { ...props, id: SecondaryObjectTypeField.DESCRIPTION }];
+    const secondaryFields: ObjectTypeField[] = [
+      { ...props, id: SecondaryObjectTypeField.TITLE },
+      { ...props, id: SecondaryObjectTypeField.DESCRIPTION }
+    ];
     return { ...sysDocument, fields: [...sysDocument.fields, ...secondaryFields] };
   }
 
@@ -48,7 +59,11 @@ export class SystemService {
   }
 
   getLocalizedResource(key: string): string {
-    return this.system.i18n[key];
+    const v = this.system.i18n[key];
+    if (!v) {
+      this.logger.error(`No translation for '${key}'`);
+    }
+    return v;
   }
 
   /**
