@@ -26,6 +26,8 @@ export class NumberRangeComponent implements ControlValueAccessor, Validator {
   @Input() pattern;
   @Input() readonly: boolean;
   @Input() classification: string;
+  @Input() minValue: number;
+  @Input() maxValue: number;
 
   public rangeForm = new FormGroup({
     numberValue: new FormControl(),
@@ -55,7 +57,7 @@ export class NumberRangeComponent implements ControlValueAccessor, Validator {
 
   writeValue(value: RangeValue): void {
     if (value && value instanceof RangeValue && (value.firstValue != null || value.secondValue != null)) {
-      let match = this.availableSearchOptions.find(o => o.value === value.operator);
+      const match = this.availableSearchOptions.find(o => o.value === value.operator);
       this.searchOption = match ? match.value : this.availableSearchOptions[0].value;
 
       this.value = value;
@@ -97,29 +99,15 @@ export class NumberRangeComponent implements ControlValueAccessor, Validator {
 
   // returns null when valid else the validation object
   public validate(c: FormControl) {
-    let err;
+    let err: any;
     if (this.searchOption === SearchFilter.OPERATOR.EQUAL) {
-      err = {
-        number: {
-          valid: false
-        }
-      };
-    } else {
+      err = { number: { valid: false } };
+    } else if (this.searchOption === SearchFilter.OPERATOR.INTERVAL_INCLUDE_BOTH && this.value.firstValue && this.value.secondValue) {
       // make sure that on ranges, the first value is earlier than the last
-      if (this.searchOption === SearchFilter.OPERATOR.INTERVAL_INCLUDE_BOTH && this.value.firstValue && this.value.secondValue) {
-        this.isValid = this.value.firstValue < this.value.secondValue;
-        err = {
-          numberrangeorder: {
-            valid: false
-          }
-        };
-      } else {
-        err = {
-          numberrange: {
-            valid: false
-          }
-        };
-      }
+      this.isValid = this.value.firstValue < this.value.secondValue;
+      err = { numberrangeorder: { valid: false } };
+    } else {
+      err = { numberrange: { valid: false } };
     }
     return this.isValid ? null : err;
   }

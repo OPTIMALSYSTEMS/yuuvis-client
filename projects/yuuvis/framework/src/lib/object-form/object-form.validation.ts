@@ -10,8 +10,8 @@ export class FormValidation {
    * @param situation - form situation to fetch validators for
    */
   static getValidators(formElement: any, situation: string): ValidatorFn[] {
-    let elmValidators: ValidatorFn[] = [];
-    let { minlen, maxlen, required, regex } = formElement;
+    const elmValidators: ValidatorFn[] = [];
+    const { required, regex } = formElement;
 
     // apply situation based validations
     switch (situation) {
