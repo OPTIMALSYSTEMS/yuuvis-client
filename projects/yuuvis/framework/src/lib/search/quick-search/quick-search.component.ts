@@ -392,7 +392,9 @@ export class QuickSearchComponent implements AfterViewInit {
               : new RangeValue(filters[otf.id].operator, filters[otf.id].firstValue, filters[otf.id].secondValue);
             formPatch[`fc_${otf.id}`] = cv;
           });
-        this.searchFieldsForm.patchValue(formPatch);
+        if (this.searchFieldsForm) {
+          this.searchFieldsForm.patchValue(formPatch);
+        }
       }
       this.settingUpQuery = false;
       this.aggregate();

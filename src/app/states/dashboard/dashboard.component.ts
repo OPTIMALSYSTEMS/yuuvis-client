@@ -20,19 +20,23 @@ export class DashboardComponent implements OnInit {
   constructor(private router: Router, private appSearch: AppSearchService, private titleService: Title) {}
 
   onShowAll(q: SearchQuery) {
-    this.onQuickSearchQuery(q);
+    this.onQuickSearchQuery(q, true);
   }
 
   onRecentItemClicked(recentItem: RecentItem) {
     this.router.navigate(['/object/' + recentItem.objectId]);
   }
 
-  onQuickSearchQuery(query: SearchQuery) {
+  onQuickSearchQuery(query: SearchQuery, preventAppSearchSet: boolean = false) {
     this.router
       .navigate(['/result'], {
         queryParams: { query: JSON.stringify(query.toQueryJson()) }
       })
-      .then(_ => this.appSearch.setQuery(query));
+      .then(_ => {
+        if (!preventAppSearchSet) {
+          this.appSearch.setQuery(query);
+        }
+      });
   }
 
   onTypeAggregation(aggs: ObjectTypeAggregation[]) {
