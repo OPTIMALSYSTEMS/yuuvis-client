@@ -19,6 +19,10 @@ import { catchError } from 'rxjs/operators';
  * Component showing recent activities for the current user. This means listing the objects
  * that has been recently created or modified by the user. You may disable created or modified
  * list by setting the related input parameter to `false`.
+ *
+ * There are some css classes that affect the look and feel of the component.
+ * `<yuv-recent-activities class="transparent">` Transparent background
+ * `<yuv-recent-activities class="flipped">` Flip controls to be on the bottom instaed of on the top
  */
 @Component({
   selector: 'yuv-recent-activities',
