@@ -102,6 +102,7 @@ export class RecentActivitiesComponent implements OnInit {
       objectId: resItem.fields.get(BaseObjectTypeField.OBJECT_ID),
       objectTypeId: objectTypeId,
       objectTypeIcon: this.systemService.getObjectTypeIcon(objectTypeId),
+      objectTypeLabel: this.systemService.getLocalizedResource(`${objectTypeId}_label`),
       date: date
     };
   }
@@ -148,5 +149,6 @@ export interface RecentItem {
   objectId: string;
   objectTypeId: string;
   objectTypeIcon: string;
+  objectTypeLabel: string;
   date: Date;
 }
