@@ -47,7 +47,7 @@ export class ObjectFormElementComponent implements OnDestroy {
   ) {}
 
   labelToggled(toggled: boolean) {
-    if (!this.skipToggle && this.element._eoFormControlWrapper.situation === 'SEARCH') {
+    if (!this.skipToggle && this.situation === 'SEARCH') {
       const toggleClass = 'label-toggled';
       this.isNull = toggled;
       if (toggled) {
@@ -85,9 +85,10 @@ export class ObjectFormElementComponent implements OnDestroy {
       (this.situation !== 'SEARCH' && this.situation !== 'CREATE' && this.formElementRef.errors) ||
       ((this.situation === 'SEARCH' || this.situation === 'CREATE') && this.formElementRef.errors && (this.formElementRef.dirty || this.formElementRef.touched))
     ) {
-      this.errors = [];
-      Object.keys(this.formElementRef.errors).forEach(e => {
-        this.errors.push(e === 'eoformScript' ? this.formElementRef._eoFormElement.error.msg : this.formTranslateService.getErrorLabel(e));
+      this.errors = Object.keys(this.formElementRef.errors).map(key => {
+        return key === 'eoformScript'
+          ? this.formElementRef._eoFormElement.error.msg
+          : this.formTranslateService.getErrorLabel(key, this.formElementRef.errors[key].params);
       });
     }
   }

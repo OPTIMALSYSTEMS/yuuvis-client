@@ -2,6 +2,7 @@ export { TranslateLoader, TranslateModule, TranslateService } from '@ngx-transla
 export * from './lib/core.environment';
 export * from './lib/core.module';
 export * from './lib/core.shared.module';
+export * from './lib/model/dms-object.interface';
 export * from './lib/model/dms-object.model';
 export * from './lib/model/object-type.model';
 export * from './lib/model/range-value.model';
@@ -34,6 +35,7 @@ export * from './lib/service/search/search.service.interface';
 export * from './lib/service/system/system.enum';
 export { ObjectTypeField } from './lib/service/system/system.interface';
 export * from './lib/service/system/system.service';
+export * from './lib/service/upload/upload.interface';
 export * from './lib/service/upload/upload.service';
 export * from './lib/service/user/user.service';
 export * from './lib/util/utils';

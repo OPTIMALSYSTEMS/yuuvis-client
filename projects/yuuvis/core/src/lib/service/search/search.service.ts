@@ -7,7 +7,7 @@ import { BackendService } from '../backend/backend.service';
 import { BaseObjectTypeField, ContentStreamField, SecondaryObjectTypeField } from '../system/system.enum';
 import { ObjectType } from './../../model/object-type.model';
 import { SearchQuery, SortOption } from './search-query.model';
-import { AggregateResult, SearchResult, SearchResultContent, SearchResultItem } from './search.service.interface';
+import { AggregateResult, Aggregation, SearchResult, SearchResultContent, SearchResultItem } from './search.service.interface';
 
 /**
  * @ignore
@@ -64,8 +64,8 @@ export class SearchService {
    * @param aggregations List of aggregations to be fetched (e.g. `enaio:objectTypeId`
    * to get an aggregation of object types)
    */
-  aggregate(q: SearchQuery, aggregations?: string[]) {
-    q.aggs = aggregations || [];
+  aggregate(q: SearchQuery, aggregations: string[]) {
+    q.aggs = aggregations;
     return this.backend.post(`/dms/search`, q.toQueryJson(), ApiBase.apiWeb).pipe(map(res => this.toAggregateResult(res, aggregations)));
   }
 
@@ -74,16 +74,24 @@ export class SearchService {
   }
 
   private toAggregateResult(searchResponse: any, aggregations?: string[]): AggregateResult {
-    const agg = [];
+    const agg: Aggregation[] = [];
     if (aggregations) {
-      aggregations.forEach(a =>
-        agg.push(
-          searchResponse.objects.map(o => ({
+      aggregations.forEach(a => {
+        const ag: Aggregation = {
+          aggKey: a,
+          entries: searchResponse.objects.map(o => ({
             key: o.properties[a].value,
             count: o.properties['OBJECT_COUNT'].value
           }))
-        )
-      );
+        };
+        agg.push(ag);
+        // agg.push(
+
+        //   searchResponse.objects.map(o => ({
+        //     key: o.properties[a].value,
+        //     count: o.properties['OBJECT_COUNT'].value
+        //   }))
+      });
     }
     return {
       totalNumItems: searchResponse.totalNumItems,

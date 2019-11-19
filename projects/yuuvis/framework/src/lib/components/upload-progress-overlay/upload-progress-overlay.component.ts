@@ -1,7 +1,10 @@
-import { Component, Input } from '@angular/core';
-import { ProgressStatus, UploadService } from '@yuuvis/core';
-import { Observable, of } from 'rxjs';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { ProgressStatus, UploadResult, UploadService } from '@yuuvis/core';
+import { forkJoin, Observable, of } from 'rxjs';
+import { tap } from 'rxjs/operators';
 import { SVGIcons } from './../../svg.generated';
+
 @Component({
   selector: 'yuv-upload-progress-overlay',
   templateUrl: './upload-progress-overlay.component.html',
@@ -10,18 +13,37 @@ import { SVGIcons } from './../../svg.generated';
 export class UploadProgressOverlayComponent {
   icon = {
     minimize: SVGIcons['arrow-down'],
-    remove: SVGIcons['clear']
+    remove: SVGIcons['clear'],
+    done: SVGIcons['done']
   };
   minimized: boolean;
+  allDone: boolean;
   progressStatus$: Observable<ProgressStatus>;
+  running$: Observable<boolean>;
+
   // besides listening to the upload service you may want to use
   // the input to provide the component with data (also nice for testing :)
-  @Input() set progress(ps: ProgressStatus) {
+  @Input()
+  set progress(ps: ProgressStatus) {
     this.progressStatus$ = ps ? of(ps) : null;
+    this.runningProcess(ps);
+    // this.running$ = forkJoin(ps.items.map(p => p.progress)).pipe(
+
+    // )
   }
 
-  constructor(private uploadService: UploadService) {
-    this.progressStatus$ = this.uploadService.status$;
+  @Output() resultItemClick = new EventEmitter<UploadResult>();
+
+  constructor(private uploadService: UploadService, private router: Router, private route: ActivatedRoute) {
+    this.progressStatus$ = this.uploadService.status$.pipe(tap(r => this.runningProcess(r)));
+  }
+
+  private runningProcess(ps: ProgressStatus) {
+    forkJoin(ps.items.map(p => p.progress)).subscribe(results => (this.running$ = of(true)), err => (this.running$ = of(false)));
+  }
+
+  openObject(item: UploadResult) {
+    this.resultItemClick.emit(item);
   }
 
   remove(id: string) {

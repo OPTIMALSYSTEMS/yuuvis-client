@@ -1,4 +1,4 @@
-import { Component, EventEmitter, HostListener, Input, Output, Renderer2, ViewChild } from '@angular/core';
+import { Component, EventEmitter, HostListener, Input, OnDestroy, Output, Renderer2, ViewChild } from '@angular/core';
 import { EventService, PendingChangesService, Utils, YuvEventType } from '@yuuvis/core';
 import { Dialog } from 'primeng/dialog';
 import { filter } from 'rxjs/operators';
@@ -10,7 +10,7 @@ import { SVGIcons } from '../../svg.generated';
   templateUrl: './dialog.component.html',
   styleUrls: ['./dialog.component.scss']
 })
-export class DialogComponent {
+export class DialogComponent implements OnDestroy {
   icClose = SVGIcons.clear;
 
   private _visible = false;
@@ -18,6 +18,7 @@ export class DialogComponent {
   private active: boolean;
   private id = Utils.uuid();
   private parentId = '';
+  contentStyle: any = { 'max-height': '100%' };
   @Input() title: string;
   @Input() subtitle: string;
   @Input() styleClass = '';
@@ -26,8 +27,12 @@ export class DialogComponent {
   @Input() dirtyCheck: string | string[] = [];
 
   @Input() appendTo = 'body';
-  @Input() minWidth = 200;
-  @Input() minHeight = 'auto';
+  @Input() set minWidth(w: number | string) {
+    this.contentStyle['min-width'] = typeof w === 'string' ? w : (w || 200) + 'px';
+  }
+  @Input() set minHeight(h: number | string) {
+    this.contentStyle['min-height'] = typeof h === 'string' ? h : (h || 0) + 'px';
+  }
   @Input() resizable = false;
   @Output() visibleChange: EventEmitter<any> = new EventEmitter();
   @Output() hide: EventEmitter<any> = new EventEmitter();
@@ -88,17 +93,8 @@ export class DialogComponent {
     if (this.dialog) {
       this.renderer[this.active || !this.appendTo ? 'addClass' : 'removeClass'](this.dialog.contentViewChild.nativeElement, 'active');
       if (this.active) {
-        if (this.minHeight !== 'auto') {
-          setTimeout(() => {
-            this.minHeight = 'auto';
-            if (!!this.dialog) {
-              this.renderer.setStyle(this.dialog.contentViewChild.nativeElement.parentElement, 'minHeight', 'auto');
-              this.renderer.setStyle(this.dialog.contentViewChild.nativeElement.parentElement, 'maxWidth', '50%');
-            }
-          }, 200);
-        }
         this.dialog.moveOnTop();
-        let focusableElement = this.dialog.contentViewChild.nativeElement.querySelector('[tabindex]');
+        const focusableElement = this.dialog.contentViewChild.nativeElement.querySelector('[tabindex]');
         if (focusableElement) {
           focusableElement.focus();
         }

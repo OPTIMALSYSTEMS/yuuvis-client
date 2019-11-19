@@ -1,8 +1,8 @@
 import { Component, forwardRef, Input } from '@angular/core';
 import { ControlValueAccessor, FormControl, NG_VALIDATORS, NG_VALUE_ACCESSOR, Validator } from '@angular/forms';
-import { TranslateService } from '@yuuvis/core';
+import { TranslateService, Utils } from '@yuuvis/core';
 import { LocaleNumberPipe } from '../../../pipes/locale-number.pipe';
-import { Utils } from '../../../util/utils';
+import { FileSizePipe } from './../../../pipes/filesize.pipe';
 
 /**
  * Creates form input for number values.
@@ -40,10 +40,8 @@ export class NumberComponent implements ControlValueAccessor, Validator {
   _precision: number;
   _pattern: string;
   _grouping: boolean;
-  _min: number;
-  _max: number;
   validationErrors = [];
-  numberPipe: LocaleNumberPipe;
+  numberPipe: LocaleNumberPipe | FileSizePipe;
 
   /**
    * Number of decimal places
@@ -89,27 +87,27 @@ export class NumberComponent implements ControlValueAccessor, Validator {
    * Will prevent the input from being changed (default: false)
    */
   @Input() readonly: boolean;
+
   /**
    * set minimum input value
    */
-  @Input()
-  set min(min: number) {
-    this._min = min;
-  }
-  get min() {
-    return this._min;
-  }
+  @Input() minValue: number;
 
   /**
    * set maximum input value
    *
    */
-  @Input()
-  set max(max: number) {
-    this._max = max;
+  @Input() maxValue: number;
+
+  @Input() set classification(classification: string) {
+    this.numberPipe = classification === 'filesize' ? new FileSizePipe(this.translate) : new LocaleNumberPipe(this.translate);
   }
-  get max() {
-    return this._max;
+
+  static betweenTwoNumbers(val: number, minVal: number, maxVal: number) {
+    const min = !Utils.isEmpty(minVal) ? minVal : -Infinity;
+    const max = !Utils.isEmpty(maxVal) ? maxVal : Infinity;
+
+    return val >= min && val <= max;
   }
 
   constructor(private translate: TranslateService) {
@@ -142,33 +140,27 @@ export class NumberComponent implements ControlValueAccessor, Validator {
     const val = this.numberPipe.stringToNumber(evt);
     // general number validation
     if (isNaN(val) || typeof val !== 'number') {
-      this.validationErrors.push({
-        key: 'number'
-      });
+      this.validationErrors.push({ key: 'number' });
     } else {
       // check precision
       const prePointDigits = this.precision - this.scale;
       if (val.toFixed(0).length > prePointDigits) {
-        this.validationErrors.push({
-          key: 'precision',
-          params: {
-            prePointDigits
-          }
-        });
+        this.validationErrors.push({ key: 'precision', params: { prePointDigits } });
       }
       // check scale
       if (val % 1 && val.toString().split('.')[1].length > this.scale) {
-        this.validationErrors.push({
-          key: 'scale',
-          params: {
-            scale: this.scale
-          }
-        });
+        this.validationErrors.push({ key: 'scale', params: { scale: this.scale } });
       }
 
       // min max
-      if (this.min && this.max && !Utils.betweenTwoNumbers(val, this.min, this.max)) {
-        this.validationErrors.push({ key: 'minmax' });
+      if (!NumberComponent.betweenTwoNumbers(val, this.minValue, this.maxValue)) {
+        if (Utils.isEmpty(this.minValue)) {
+          this.validationErrors.push({ key: 'maxvalue', params: { maxValue: this.maxValue } });
+        } else if (Utils.isEmpty(this.maxValue)) {
+          this.validationErrors.push({ key: 'minvalue', params: { minValue: this.minValue } });
+        } else {
+          this.validationErrors.push({ key: 'minmax', params: { minValue: this.minValue, maxValue: this.maxValue } });
+        }
       }
 
       if (!this.validationErrors.length) {
@@ -194,16 +186,6 @@ export class NumberComponent implements ControlValueAccessor, Validator {
 
   // returns null when valid else the validation object
   public validate(c: FormControl) {
-    let ret = null;
-    if (this.validationErrors.length > 0) {
-      ret = {};
-      for (let e of this.validationErrors) {
-        ret[e.key] = {
-          valid: false,
-          ...e
-        };
-      }
-    }
-    return ret;
+    return this.validationErrors.length ? Utils.arrayToObject(this.validationErrors, 'key', err => ({ valid: false, ...err })) : null;
   }
 }

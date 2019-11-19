@@ -249,11 +249,11 @@ class ScopeElement {
   }
 
   get minlen() {
-    return this.element.minlen;
+    return this.element.minLength;
   }
 
   get maxlen() {
-    return this.element.maxlen;
+    return this.element.maxLength;
   }
 
   get classification() {

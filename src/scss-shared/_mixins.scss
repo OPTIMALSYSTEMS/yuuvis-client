@@ -20,7 +20,7 @@
 
 // shadow to be applied to apps main panels
 @mixin panel-shadow() {
-  box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.15);
+  box-shadow: 0 1px 10px 0 rgba(0, 0, 0, 0.15);
 }
 
 @mixin box-shadow($horizontalLength: 0, $verticalLength: 1px, $blurRadius: 0, $spread: 0, $color: $color-primary-3) {

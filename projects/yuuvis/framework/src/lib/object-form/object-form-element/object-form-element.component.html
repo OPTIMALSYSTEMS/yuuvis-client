@@ -13,7 +13,7 @@
         [multiselect]="formElementRef._eoFormElement.multiselect" [multiline]="formElementRef._eoFormElement.multiline"
         [classification]="formElementRef._eoFormElement.classification" [regex]="formElementRef._eoFormElement.regex"
         [size]="formElementRef._eoFormElement.size" [readonly]="formElementRef._eoFormElement.readonly"
-        [minLength]="formElementRef._eoFormElement.minlen" [maxLength]="formElementRef._eoFormElement.maxlen">
+        [minLength]="formElementRef._eoFormElement.minLength" [maxLength]="formElementRef._eoFormElement.maxLength">
       </yuv-string>
     </yuv-form-input>
 
@@ -51,15 +51,19 @@
 
       <yuv-number *ngIf="situation !== 'SEARCH'; else tplIntegerRange"
         [readonly]="formElementRef._eoFormElement.readonly" [precision]="formElementRef._eoFormElement.precision"
-        [scale]="0" [grouping]="formElementRef._eoFormElement.grouping" [min]="formElementRef._eoFormElement.min"
-        [max]="formElementRef._eoFormElement.max" [formControlName]="element._eoFormControlWrapper.controlName">
+        [scale]="0" [grouping]="formElementRef._eoFormElement.grouping"
+        [minValue]="formElementRef._eoFormElement.minValue" [maxValue]="formElementRef._eoFormElement.maxValue"
+        [formControlName]="element._eoFormControlWrapper.controlName"
+        [classification]="formElementRef._eoFormElement.classification">
       </yuv-number>
 
       <ng-template #tplIntegerRange>
         <yuv-number-range [readonly]="formElementRef._eoFormElement.readonly"
           [precision]="formElementRef._eoFormElement.precision" [scale]="0"
-          [grouping]="formElementRef._eoFormElement.grouping"
-          [formControlName]="element._eoFormControlWrapper.controlName"></yuv-number-range>
+          [grouping]="formElementRef._eoFormElement.grouping" [minValue]="formElementRef._eoFormElement.minValue"
+          [maxValue]="formElementRef._eoFormElement.maxValue" [pattern]="formElementRef._eoFormElement.pattern"
+          [formControlName]="element._eoFormControlWrapper.controlName"
+          [classification]="formElementRef._eoFormElement.classification"></yuv-number-range>
       </ng-template>
 
     </yuv-form-input>
@@ -72,14 +76,16 @@
       <yuv-number *ngIf="situation !== 'SEARCH'; else tplDecimalRange"
         [readonly]="formElementRef._eoFormElement.readonly" [precision]="formElementRef._eoFormElement.precision"
         [scale]="formElementRef._eoFormElement.scale" [grouping]="formElementRef._eoFormElement.grouping"
-        [pattern]="formElementRef._eoFormElement.pattern" [min]="formElementRef._eoFormElement.min"
-        [max]="formElementRef._eoFormElement.max" [formControlName]="element._eoFormControlWrapper.controlName">
+        [pattern]="formElementRef._eoFormElement.pattern" [minValue]="formElementRef._eoFormElement.minValue"
+        [maxValue]="formElementRef._eoFormElement.maxValue"
+        [formControlName]="element._eoFormControlWrapper.controlName">
       </yuv-number>
 
       <ng-template #tplDecimalRange>
         <yuv-number-range [readonly]="formElementRef._eoFormElement.readonly"
           [precision]="formElementRef._eoFormElement.precision" [scale]="formElementRef._eoFormElement.scale"
           [pattern]="formElementRef._eoFormElement.pattern" [grouping]="formElementRef._eoFormElement.grouping"
+          [minValue]="formElementRef._eoFormElement.minValue" [maxValue]="formElementRef._eoFormElement.maxValue"
           [formControlName]="element._eoFormControlWrapper.controlName"></yuv-number-range>
       </ng-template>
 

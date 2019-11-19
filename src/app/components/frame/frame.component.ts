@@ -1,7 +1,7 @@
 import { Component, HostBinding, HostListener, OnInit } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { SwUpdate } from '@angular/service-worker';
-import { AuthService, UserService, YuvUser } from '@yuuvis/core';
+import { AuthService, UploadResult, UserService, YuvUser } from '@yuuvis/core';
 import { LayoutService, LayoutSettings } from '@yuuvis/framework';
 import { filter } from 'rxjs/operators';
 
@@ -101,6 +101,10 @@ export class FrameComponent implements OnInit {
       }
       this.deferredPrompt = null;
     });
+  }
+
+  onResultItemClick(res: UploadResult) {
+    this.router.navigate(['/object', res.objectId]);
   }
 
   ngOnInit() {

@@ -1,3 +1,4 @@
+import { ContentStreamField } from '@yuuvis/core';
 import { ObjectFormControlWrapper } from './object-form.interface';
 import { ObjectFormControl } from './object-form.model';
 import { FormValidation } from './object-form.validation';
@@ -37,9 +38,22 @@ export class ObjectFormUtils {
       formElement.isNotSetValue = true;
     }
 
+    ObjectFormUtils.updateFormElement(formElement);
+
     formControl._eoFormElement = formElement;
     wrapper.addControl(formElement.name, formControl);
 
     return wrapper;
+  }
+
+  static updateFormElement(formElement: any) {
+    if (formElement.type === 'decimal' && !formElement.scale) {
+      formElement.scale = 2;
+    }
+
+    if (formElement.type === 'integer' && formElement.id === ContentStreamField.LENGTH) {
+      formElement.classification = 'filesize';
+    }
+    return formElement;
   }
 }

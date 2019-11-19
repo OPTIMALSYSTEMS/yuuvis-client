@@ -5,6 +5,11 @@
   @include flex-col();
   box-sizing: border-box;
 
+  .date-chips {
+    @include flex-row();
+    padding: 0 var(--app-pane-padding);
+  }
+
   .controls {
     @include flex-col(none);
 

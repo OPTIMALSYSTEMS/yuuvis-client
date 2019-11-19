@@ -2,4 +2,5 @@
   <button (click)="uploadFake()">Run fake</button>
 </div>
 
-<yuv-upload-progress-overlay [progress]="progress"></yuv-upload-progress-overlay>
+<yuv-upload-progress-overlay [progress]="progress" (resultItemClick)="onResultItemClick($event)">
+</yuv-upload-progress-overlay>

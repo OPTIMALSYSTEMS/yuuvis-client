@@ -1,6 +1,7 @@
 export interface DmsObjectContent {
   contentStreamId: string;
   fileName: string;
+  size: number;
   mimeType: string;
 }
 export interface DmsObjectRights {

@@ -53,7 +53,11 @@ export class SearchResultPanelComponent {
   /**
    * Emitted once a result list item has been double-clicked.
    */
-  @Output() onRowDoubleClicked = new EventEmitter<RowEvent>();
+  @Output() rowDoubleClicked = new EventEmitter<RowEvent>();
+  /**
+   * Emitted when the query has been changed from within the component
+   */
+  @Output() queryChanged = new EventEmitter<SearchQuery>();
 
   constructor(private translate: TranslateService, private systemService: SystemService, private dmsService: DmsService) {}
 
@@ -70,12 +74,12 @@ export class SearchResultPanelComponent {
 
   generateQueryDescription() {
     const translateParams = {
-      term: this._searchQuery.term,
+      term: this._searchQuery.term || '',
       types: this._searchQuery.types.length ? this._searchQuery.types.map(t => this.systemService.getLocalizedResource(`${t}_label`)).join(', ') : null
     };
     if (translateParams.term && !translateParams.types) {
       this.queryDescription = this.translate.instant('yuv.framework.search-result-panel.header.description', translateParams);
-    } else if (translateParams.term && translateParams.types) {
+    } else if (translateParams.types) {
       this.queryDescription = this.translate.instant('yuv.framework.search-result-panel.header.description.types', translateParams);
     } else {
       this.queryDescription = '';
@@ -84,6 +88,7 @@ export class SearchResultPanelComponent {
 
   onQueryChangedFromWithin(searchQuery: SearchQuery) {
     this.query = searchQuery;
+    this.queryChanged.emit(searchQuery);
   }
 
   openActionMenu() {

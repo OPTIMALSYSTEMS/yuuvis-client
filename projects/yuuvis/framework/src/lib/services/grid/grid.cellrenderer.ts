@@ -1,4 +1,4 @@
-import { RangeValue, SearchFilter, Utils } from '@yuuvis/core';
+import { Utils } from '@yuuvis/core';
 
 export class CellRenderer {
   static render(type: string, param: any, newParam?: any) {
@@ -13,14 +13,7 @@ export class CellRenderer {
     if (param.value || param.value === 0) {
       const { value, context, scale, grouping, pattern } = param;
       const transform = val => context.numberPipe.transform(val, grouping, pattern, scale, `1.${scale || 0}-${scale || 0}`);
-      if (value.operator) {
-        // range value from search form table
-        const both = value.operator === SearchFilter.OPERATOR.INTERVAL_INCLUDE_BOTH;
-        const op = RangeValue.getOperatorLabel(value.operator);
-        return `${both ? transform(value.firstValue) + ' ' : ''}${op} ${both ? transform(value.secondValue) : transform(value.firstValue)}`;
-      } else {
-        return Array.isArray(value) ? CellRenderer.multiSelectCellRenderer(value.map(val => transform(val))) : transform(value);
-      }
+      return Array.isArray(value) ? CellRenderer.multiSelectCellRenderer(value.map(val => transform(val))) : transform(value);
     }
     return '';
   }

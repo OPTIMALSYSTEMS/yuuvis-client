@@ -2,6 +2,7 @@ import { CdkStepperModule } from '@angular/cdk/stepper';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { YuvCommonUiModule } from '@yuuvis/common-ui';
 import { TranslateModule } from '@yuuvis/core';
 import { YuvComponentsModule } from '../components/components.module';
@@ -14,6 +15,7 @@ import { ObjectCreateComponent } from './object-create/object-create.component';
   declarations: [ObjectCreateComponent],
   exports: [ObjectCreateComponent],
   imports: [
+    BrowserAnimationsModule,
     CommonModule,
     YuvCommonUiModule,
     YuvComponentsModule,

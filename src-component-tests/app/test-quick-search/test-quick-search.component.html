@@ -3,4 +3,13 @@
     <button (click)="setQuery(null)">clear query</button>
 </div>
 
-<yuv-quick-search [query]="query" (querySubmit)="onSubmit($event)"></yuv-quick-search>
+<!-- <yuv-quick-search [query]="query" (querySubmit)="onSubmit($event)"></yuv-quick-search> -->
+<yuv-quick-search #quickSearch [query]="appQuery" (typeAggregation)="onTypeAggregation($event)"
+    (querySubmit)="onSubmit($event)"></yuv-quick-search>
+
+
+<div class="aggs" *ngIf="aggs">
+    <div *ngFor="let a of aggs" (click)="applyAggregation(a)">
+        {{a.label}}/{{a.count}}
+    </div>
+</div>
