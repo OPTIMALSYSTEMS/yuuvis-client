@@ -1,4 +1,4 @@
-import { HttpClient, HttpEventType, HttpHeaders, HttpRequest, HttpResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpEventType, HttpHeaders, HttpRequest, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, ReplaySubject, Subject, throwError } from 'rxjs';
 import { catchError, filter, map, scan, tap } from 'rxjs/operators';
@@ -43,7 +43,7 @@ export class UploadService {
     const request = this.createHttpRequest(url, { formData }, false);
     return this.http.request(request).pipe(
       filter((obj: any) => obj && obj.body),
-      map((obj: any) => (obj ? ((obj.body as any) ? (obj.body as any).objects.map(val => val.properties) : null) : obj)),
+      map(this.transformResponse),
       catchError(err => throwError(err))
     );
   }
@@ -59,6 +59,10 @@ export class UploadService {
       this.status.items = this.status.items.filter(i => i.id !== id);
       this.statusSource.next(this.status);
     }
+  }
+
+  private transformResponse(response): any {
+    return response ? ((response.body as any) ? (response.body as any).objects.map(val => val.properties) : null) : response;
   }
 
   /**
@@ -100,7 +104,7 @@ export class UploadService {
    */
   private executeUpload(url: string, file, label: string): Observable<any> {
     const request = this.createHttpRequest(url, { file }, true);
-    return this.startUploadWithFile(request, label);
+    return this.startUploadWithFile(request, label).pipe(map(this.transformResponse));
   }
 
   /**
@@ -113,7 +117,41 @@ export class UploadService {
   private executeMultipartUpload(url: string, file: File[], label: string, data?: any): Observable<any> {
     const formData: FormData = this.createFormData({ file, data });
     const request = this.createHttpRequest(url, { formData }, true);
-    return this.startUploadWithFile(request, label);
+    return this.startUploadWithFile(request, label).pipe(map(this.transformResponse));
+  }
+
+  private createProgressStatus(event, progress: Subject<number>, id: string) {
+    if (event.type === HttpEventType.UploadProgress) {
+      const percentDone = Math.round((100 * event.loaded) / event.total);
+      progress.next(percentDone);
+    } else if (event instanceof HttpResponse) {
+      progress.complete();
+      // add upload response
+      console.log('response', event);
+      // this.status.items = this.status.items.filter(s => s.id !== id);
+      const idx = this.status.items.findIndex(s => s.id === id);
+      if (idx !== -1) {
+        this.status.items[idx].result = (event.body as any).objects.map(o => ({
+          objectId: o.properties[BaseObjectTypeField.OBJECT_ID].value,
+          contentStreamId: o.contentStreams[0]['contentStreamId'],
+          filename: o.contentStreams[0]['fileName'],
+          label: o.properties[SecondaryObjectTypeField.TITLE] ? o.properties[SecondaryObjectTypeField.TITLE].value : o.contentStreams[0]['fileName']
+        }));
+        this.statusSource.next(this.status);
+      }
+    }
+  }
+
+  private createUploadError(err: HttpErrorResponse, progress: Subject<number>, id: string): Observable<HttpErrorResponse> {
+    const statusItem = this.status.items.find(s => s.id === id);
+    statusItem.err = {
+      code: err.status,
+      message: err.error ? err.error.errorMessage : err.message
+    };
+    this.logger.error('upload failed', statusItem);
+    this.status.err++;
+    progress.next(0);
+    return throwError(err);
   }
 
   /**
@@ -132,46 +170,12 @@ export class UploadService {
       const subscription = this.http
         .request(request)
         .pipe(
-          catchError(err => {
-            const statusItem = this.status.items.find(s => s.id === id);
-            statusItem.err = {
-              code: err.status,
-              message: err.error ? err.error.errorMessage : err.message
-            };
-            this.logger.error('upload failed', statusItem);
-            this.status.err++;
-            progress.next(0);
-            return throwError(err);
-          }),
-          tap(event => {
-            if (event.type === HttpEventType.UploadProgress) {
-              const percentDone = Math.round((100 * event.loaded) / event.total);
-              progress.next(percentDone);
-            } else if (event instanceof HttpResponse) {
-              progress.complete();
-              // add upload response
-              console.log('response', event);
-              // this.status.items = this.status.items.filter(s => s.id !== id);
-              const idx = this.status.items.findIndex(s => s.id === id);
-              if (idx !== -1) {
-                this.status.items[idx].result = (event.body as any).objects.map(o => ({
-                  objectId: o.properties[BaseObjectTypeField.OBJECT_ID].value,
-                  contentStreamId: o.contentStreams[0]['contentStreamId'],
-                  filename: o.contentStreams[0]['fileName'],
-                  label: o.properties[SecondaryObjectTypeField.TITLE] ? o.properties[SecondaryObjectTypeField.TITLE].value : null
-                }));
-                this.statusSource.next(this.status);
-              }
-            }
-          })
+          catchError((err: HttpErrorResponse) => this.createUploadError(err, progress, id)),
+          tap(event => this.createProgressStatus(event, progress, id))
         )
         // actual return value of this function
         .subscribe(
-          (res: any) => {
-            if (res.status) {
-              result = res;
-            }
-          },
+          (res: any) => (res.status ? (result = res) : null),
           err => {
             o.error(err);
             o.complete();

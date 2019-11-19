@@ -1,5 +1,4 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
 import { ProgressStatus, UploadResult, UploadService } from '@yuuvis/core';
 import { forkJoin, Observable, of } from 'rxjs';
 import { tap } from 'rxjs/operators';
@@ -19,7 +18,7 @@ export class UploadProgressOverlayComponent {
   minimized: boolean;
   allDone: boolean;
   progressStatus$: Observable<ProgressStatus>;
-  running$: Observable<boolean>;
+  completed$: Observable<boolean>;
 
   // besides listening to the upload service you may want to use
   // the input to provide the component with data (also nice for testing :)
@@ -31,14 +30,14 @@ export class UploadProgressOverlayComponent {
 
   @Output() resultItemClick = new EventEmitter<UploadResult>();
 
-  constructor(private uploadService: UploadService, private router: Router, private route: ActivatedRoute) {
+  constructor(private uploadService: UploadService) {
     this.progressStatus$ = this.uploadService.status$.pipe(tap(r => this.runningProcess(r)));
   }
 
   private runningProcess(ps: ProgressStatus) {
     forkJoin(ps.items.map(p => p.progress)).subscribe(
-      results => (this.running$ = of(true)),
-      err => (this.running$ = of(false))
+      results => (this.completed$ = of(true)),
+      err => (this.completed$ = of(true))
     );
   }
 

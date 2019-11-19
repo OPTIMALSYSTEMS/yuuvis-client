@@ -1,8 +1,11 @@
-import { Component, ViewChild } from '@angular/core';
+import { Location } from '@angular/common';
+import { Component, OnDestroy, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { FadeInAnimations } from '@yuuvis/common-ui';
 import { DmsService, ObjectType, PendingChangesService, SystemService, TranslateService, Utils } from '@yuuvis/core';
 import { Observable } from 'rxjs';
+import { catchError } from 'rxjs/operators';
+import { takeUntilDestroy } from 'take-until-destroy';
 import { FormStatusChangedEvent, ObjectFormOptions } from '../../object-form/object-form.interface';
 import { ObjectFormComponent } from '../../object-form/object-form/object-form.component';
 import { NotificationService } from '../../services/notification/notification.service';
@@ -17,7 +20,7 @@ import { Breadcrumb, CreateState, CurrentStep, Labels } from './../object-create
   animations: [FadeInAnimations.fadeIn],
   providers: [ObjectCreateService]
 })
-export class ObjectCreateComponent {
+export class ObjectCreateComponent implements OnDestroy {
   @ViewChild(ObjectFormComponent, { static: false }) objectForm: ObjectFormComponent;
 
   icon = {
@@ -28,7 +31,7 @@ export class ObjectCreateComponent {
   state$: Observable<CreateState> = this.objCreateServcice.state$;
   breadcrumb$: Observable<Breadcrumb[]> = this.objCreateServcice.breadcrumb$;
 
-  createAnother: boolean;
+  createAnother: boolean = false;
   // selectedIndex: number = 0;
   availableDocumentTypes: { type: ObjectType; label: string }[] = [];
   availableFolderTypes: { type: ObjectType; label: string }[] = [];
@@ -49,17 +52,15 @@ export class ObjectCreateComponent {
     private dmsService: DmsService,
     private translate: TranslateService,
     private pendingChanges: PendingChangesService,
-    private router: Router
+    private router: Router,
+    private location: Location
   ) {
     this.resetState();
 
     this.system
       .getObjectTypes()
       .filter(ot => ot.creatable)
-      .map(ot => ({
-        type: ot,
-        label: this.system.getLocalizedResource(`${ot.id}_label`)
-      }))
+      .map(ot => ({ type: ot, label: this.system.getLocalizedResource(`${ot.id}_label`) }))
       .sort(Utils.sortValues('label'))
       .forEach(ot => (ot.type.isFolder ? this.availableFolderTypes.push(ot) : this.availableDocumentTypes.push(ot)));
 
@@ -141,10 +142,14 @@ export class ObjectCreateComponent {
     this.objCreateServcice.setNewBreadcrumb(CurrentStep.INDEXDATA);
   }
 
+  private createObject(id: string, data: any, files: File[]): Observable<any> {
+    return this.dmsService.createDmsObject(id, data, files, files.map(file => file.name).join(', '));
+  }
+
   create() {
-    // TODO: actually create the object;
-    this.dmsService.createDmsObject(this.selectedObjectType.id, this.formState.data, this.files, this.files.map(file => file.name).join(', ')).subscribe(
-      res => {
+    this.createObject(this.selectedObjectType.id, this.formState.data, this.files)
+      .pipe(takeUntilDestroy(this), catchError(Utils.catch(null, this.translate.instant('yuv.framework.object-create.notify.error'))))
+      .subscribe(res => {
         this.finishPending();
         this.notify.success(this.translate.instant('yuv.framework.object-create.notify.success'));
         if (this.createAnother) {
@@ -152,17 +157,17 @@ export class ObjectCreateComponent {
           this.files = [];
           this.resetState();
         } else {
-          const id = Utils.getProperty(res, '0.system:objectId.value');
-          if (id) {
-            // TODO: remove timeout when backend is synced
-            setTimeout(() => this.router.navigate(['object', id]), 700);
+          if (res.length > 1) {
+            this.location.back();
+          } else {
+            const id = Utils.getProperty(res, '0.system:objectId.value');
+            if (id) {
+              // TODO: remove timeout when backend is synced
+              setTimeout(() => this.router.navigate(['object', id]), 700);
+            }
           }
         }
-      },
-      err => {
-        this.notify.error(this.translate.instant('yuv.framework.object-create.notify.error'));
-      }
-    );
+      });
   }
 
   resetState() {
@@ -180,8 +185,7 @@ export class ObjectCreateComponent {
   }
 
   /**
-   * Checks whether or not all requirements are met to create a
-   * new object.
+   * Checks whether or not all requirements are met to create a new object.
    */
   private isReady() {
     const typeSelected = !!this.selectedObjectType;
@@ -214,4 +218,6 @@ export class ObjectCreateComponent {
   private finishPending() {
     this.pendingChanges.finishTask(this.pendingTaskId);
   }
+
+  ngOnDestroy() {}
 }
