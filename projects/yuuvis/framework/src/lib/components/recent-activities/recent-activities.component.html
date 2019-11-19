@@ -1,0 +1,27 @@
+<div class="header">
+  <div class="tabs">
+    <div class="tab" *ngIf="created" [ngClass]="{active: selected === 'created'}" (click)="select('created')">
+      {{'yuv.framework.recent-activities.header.created'|translate}}</div>
+    <div class="tab" *ngIf="modified" [ngClass]="{active: selected === 'modified'}" (click)="select('modified')">
+      {{'yuv.framework.recent-activities.header.modified'|translate}}</div>
+  </div>
+  <button (click)="triggerShowAll()">{{'yuv.framework.recent-activities.header.more'|translate}}</button>
+</div>
+
+<div class="outer">
+
+  <ng-container *ngIf="created && selected === 'created'">
+    <drag-scroll [scroll-x-wheel-enabled]="true">
+      <yuv-recent-acitivities-item drag-scroll-item *ngFor="let i of recentlyCreated" [recentItem]="i"
+        (click)="triggerItemClicked(i)"></yuv-recent-acitivities-item>
+    </drag-scroll>
+
+  </ng-container>
+
+  <ng-container *ngIf="modified && selected === 'modified'">
+    <drag-scroll [scroll-x-wheel-enabled]="true">
+      <yuv-recent-acitivities-item drag-scroll-item *ngFor="let i of recentlyModified" [recentItem]="i"
+        (click)="triggerItemClicked(i)"></yuv-recent-acitivities-item>
+    </drag-scroll>
+  </ng-container>
+</div>

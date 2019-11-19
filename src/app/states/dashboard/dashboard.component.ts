@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { SearchQuery } from '@yuuvis/core';
-import { ObjectTypeAggregation, QuickSearchComponent } from '@yuuvis/framework';
+import { ObjectTypeAggregation, QuickSearchComponent, RecentItem } from '@yuuvis/framework';
 import { APP_VARS } from '../../app.vars';
 import { AppSearchService } from '../../service/app-search.service';
 @Component({
@@ -18,6 +18,14 @@ export class DashboardComponent implements OnInit {
   aggs: ObjectTypeAggregation[];
 
   constructor(private router: Router, private appSearch: AppSearchService, private titleService: Title) {}
+
+  onShowAll(q: SearchQuery) {
+    this.onQuickSearchQuery(q);
+  }
+
+  onRecentItemClicked(recentItem: RecentItem) {
+    this.router.navigate(['/object/' + recentItem.objectId]);
+  }
 
   onQuickSearchQuery(query: SearchQuery) {
     this.router
