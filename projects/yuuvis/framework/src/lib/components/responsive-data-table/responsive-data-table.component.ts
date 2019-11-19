@@ -1,5 +1,5 @@
 import { Component, EventEmitter, HostBinding, HostListener, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { BaseObjectTypeField, Utils } from '@yuuvis/core';
+import { BaseObjectTypeField, PendingChangesService, Utils } from '@yuuvis/core';
 import { ColDef, GridOptions, RowEvent, RowNode } from 'ag-grid-community';
 import { ResizedEvent } from 'angular-resize-event';
 import { Observable, ReplaySubject } from 'rxjs';
@@ -45,7 +45,6 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
    * ResponsiveTableData setter
    */
   @Input() set data(data: ResponsiveTableData) {
-    66;
     this._data = data;
     if (this.gridOptions) {
       this.applyGridOption(this.small);
@@ -85,7 +84,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
     this.copyToClipboard('row');
   }
 
-  constructor() {
+  constructor(private pendingChanges: PendingChangesService) {
     // subscribe to the whole components size changing
     this.resize$
       .pipe(
@@ -117,6 +116,9 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
           this.optionsChanged.emit(Utils.arrayToObject(this.gridOptions.columnApi.getColumnState(), 'colId', 'width'));
         }
       });
+
+    // subscribe to pending hanges
+    this.pendingChanges.tasks$.pipe(takeUntilDestroy(this)).subscribe(tasks => this.gridOptions && (this.gridOptions.suppressCellSelection = !!tasks.length));
   }
 
   /**
@@ -199,11 +201,15 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
    * select rows based on list of IDs
    * @param selection default is first row
    */
-  selectRows(selection?: string[]) {
-    (selection || [this._data.rows[0].id]).forEach((id: string) => {
+  selectRows(selection?: string[], focusColId?: string) {
+    this.gridOptions.api.clearFocusedCell();
+    (selection || [this._data.rows[0].id]).forEach((id: string, index: number) => {
       const n = this.gridOptions.api.getRowNode(id);
       if (n) {
-        n.setSelected(true);
+        if (index === 0) {
+          this.gridOptions.api.setFocusedCell(n.rowIndex, focusColId || this._data.columns[0].field);
+        }
+        n.setSelected(true, index === 0);
       }
     });
   }
@@ -243,7 +249,8 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
       onGridReady: event => {
         this.gridOptions.api.setSortModel(this._data.sortModel || []);
         this.gridOptions.api.setFocusedCell(0, this._data.columns[0].field);
-      }
+      },
+      onRowDoubleClicked: event => this.rowDoubleClicked.emit(event)
     };
   }
 
@@ -270,6 +277,21 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
     textArea.select();
     const copySuccess = document.execCommand('copy');
     document.body.removeChild(textArea);
+  }
+
+  onMouseDown($event: any) {
+    if ($event.button === 0 && this.gridOptions && this.gridOptions.suppressCellSelection) {
+      if (!this.pendingChanges.check()) {
+        this.gridOptions.suppressCellSelection = false;
+        const colEl = ($event.composedPath ? $event.composedPath() : []).find(el => el.getAttribute('col-id'));
+        if (colEl) {
+          this.selectRows([colEl.parentElement.getAttribute('row-id')], colEl.getAttribute('col-id'));
+        }
+      } else {
+        $event.preventDefault();
+        $event.stopImmediatePropagation();
+      }
+    }
   }
 
   /**

@@ -1,6 +1,6 @@
 import { Component, ViewChild } from '@angular/core';
 import { FadeInAnimations } from '@yuuvis/common-ui';
-import { DmsService, ObjectType, PendingChangesService, SystemService, TranslateService, Utils } from '@yuuvis/core';
+import { DmsService, ObjectType, SystemService, TranslateService, Utils } from '@yuuvis/core';
 import { Observable } from 'rxjs';
 import { FormStatusChangedEvent, ObjectFormOptions } from '../../object-form/object-form.interface';
 import { ObjectFormComponent } from '../../object-form/object-form/object-form.component';
@@ -39,15 +39,12 @@ export class ObjectCreateComponent {
   labels: Labels;
   title: string;
 
-  private pendingTaskId: string;
-
   constructor(
     private objCreateServcice: ObjectCreateService,
     private system: SystemService,
     private notify: NotificationService,
     private dmsService: DmsService,
-    private translate: TranslateService,
-    private pendingChanges: PendingChangesService
+    private translate: TranslateService
   ) {
     this.resetState();
 
@@ -86,7 +83,6 @@ export class ObjectCreateComponent {
     this.title = objectType ? this.system.getLocalizedResource(`${objectType.id}_label`) : this.labels.defaultTitle;
     this.files = [];
     this.objCreateServcice.setNewState({ busy: true });
-    this.startPending();
 
     this.system.getObjectTypeForm(objectType.id, 'CREATE').subscribe(
       model => {
@@ -143,7 +139,6 @@ export class ObjectCreateComponent {
     // TODO: actually create the object;
     this.dmsService.createDmsObject(this.selectedObjectType.id, this.formState.data, this.files, this.files.map(file => file.name).join(', ')).subscribe(
       res => {
-        this.finishPending();
         this.notify.success(this.translate.instant('yuv.framework.object-create.notify.success'));
         if (this.createAnother) {
           this.selectedObjectType = null;
@@ -195,17 +190,5 @@ export class ObjectCreateComponent {
       }
     }
     return typeSelected && fileSelected && !!this.formState && !this.formState.invalid;
-  }
-
-  private startPending() {
-    // because this method will be called every time the form status changes,
-    // pending task will only be started once until it was finished
-    if (!this.pendingChanges.hasPendingTask(this.pendingTaskId || ' ')) {
-      this.pendingTaskId = this.pendingChanges.startTask();
-    }
-  }
-
-  private finishPending() {
-    this.pendingChanges.finishTask(this.pendingTaskId);
   }
 }
