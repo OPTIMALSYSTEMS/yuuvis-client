@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
 import { Observable, ReplaySubject } from 'rxjs';
 import { Utils } from '../../util/utils';
 import { Logger } from '../logger/logger';
@@ -28,7 +27,10 @@ export class PendingChangesService {
   private tasksSource = new ReplaySubject<string[]>();
   public tasks$: Observable<string[]> = this.tasksSource.asObservable();
 
-  constructor(private logger: Logger, private translate: TranslateService) {}
+  private customMsg = '';
+  private defaultMsg = 'You are currently editing the index data of a form that has not been saved. Unsaved data will be lost.';
+
+  constructor(private logger: Logger) {}
 
   /**
    * Registers a task to be pending.
@@ -72,11 +74,10 @@ export class PendingChangesService {
    * @returns
    */
   check(component?: PendingChangesComponent): boolean {
-    if (component ? !component.hasPendingChanges() : !this.hasPendingTask()) {
+    if (component && component.hasPendingChanges ? !component.hasPendingChanges() : !this.hasPendingTask()) {
       return false;
     } else {
-      // TODO: We got no language resources in core -> Find another way to get confirm message
-      const confirmed = confirm(this.translate.instant('eo.object.indexdata.save.browsernav'));
+      const confirmed = confirm(this.customMsg || this.defaultMsg);
       if (confirmed) {
         this.clear();
       }
@@ -86,8 +87,7 @@ export class PendingChangesService {
 
   checkForPendingTasks(taskIds: string | string[]): boolean {
     if (this.hasPendingTask(taskIds)) {
-      // TODO: We got no language resources in core -> Find another way to get confirm message
-      const confirmed = confirm(this.translate.instant('eo.object.indexdata.save.browsernav'));
+      const confirmed = confirm(this.customMsg || this.defaultMsg);
       if (confirmed) {
         this.clear();
       }
@@ -103,5 +103,13 @@ export class PendingChangesService {
   clear() {
     this.tasks = [];
     this.tasksSource.next(this.tasks);
+  }
+
+  /**
+   * Enables to set localized message for window alert
+   * @param message that appears inside window alert
+   */
+  setCustomMessage(message: string) {
+    this.customMsg = message;
   }
 }

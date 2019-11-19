@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { PendingChangesGuard } from '@yuuvis/core';
 import { AboutComponent } from '../states/about/component/about.component';
 import { CreateComponent } from '../states/create/create.component';
 import { DashboardComponent } from '../states/dashboard/dashboard.component';
@@ -20,9 +21,9 @@ const routes: Routes = [
   { path: 'enter', component: EnterComponent },
   { path: 'settings', component: SettingsComponent, canActivate: [AuthGuard] },
   { path: 'about', component: AboutComponent, canActivate: [AuthGuard] },
-  { path: 'create', component: CreateComponent, canActivate: [AuthGuard] },
-  { path: 'result', component: ResultComponent, canActivate: [AuthGuard] },
-  { path: 'object/:id', component: ObjectComponent, canActivate: [AuthGuard] },
+  { path: 'create', component: CreateComponent, canActivate: [AuthGuard], canDeactivate: [PendingChangesGuard] },
+  { path: 'result', component: ResultComponent, canActivate: [AuthGuard], canDeactivate: [PendingChangesGuard] },
+  { path: 'object/:id', component: ObjectComponent, canActivate: [AuthGuard], canDeactivate: [PendingChangesGuard] },
   // default route
   { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
   // 404 route
