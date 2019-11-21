@@ -61,7 +61,7 @@ export class FrameComponent implements OnInit {
     });
 
     this.connectionService.connection$.subscribe((connectionState: ConnectionState) => {
-      this.offline = !connectionState.isConnected;
+      this.offline = !connectionState.isOnline;
       if (this.offline) {
         this.router.navigate(['offline']);
       } else {
