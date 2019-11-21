@@ -48,19 +48,13 @@ export class FileDropDirective implements OnDestroy {
     }
   }
   @HostListener('drop', ['$event']) onDrop(evt: DragEvent) {
-    let transfer = this.getTransfer(evt);
+    const transfer = this.getTransfer(evt);
     if (!transfer) {
       return;
     }
     this.preventAndStop(evt);
     // check for directories
-    let invalidInput: boolean;
-    for (let i = 0; i < transfer.items.length; i++) {
-      const fe = transfer.items[i].webkitGetAsEntry();
-      if (fe.isDirectory || this._disabled || this._invalid) {
-        invalidInput = true;
-      }
-    }
+    const invalidInput = this._disabled || this._invalid || Array.from(transfer.items).some((i: any) => (i.webkitGetAsEntry() || {}).isDirectory);
     if (!invalidInput) {
       this.onFilesDropped(Array.from(transfer.files));
     }
