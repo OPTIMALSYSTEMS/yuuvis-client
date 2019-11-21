@@ -122,14 +122,13 @@ export class UploadService {
     const { objects } = result.body;
     if (objects.length > 1) {
       const data = objects[0];
+      const label = data.properties[SecondaryObjectTypeField.TITLE] ? data.properties[SecondaryObjectTypeField.TITLE].value : '...';
       return [
         {
           objectId: objects.map(val => val.properties[BaseObjectTypeField.OBJECT_ID].value),
           contentStreamId: data.contentStreams[0]['contentStreamId'],
           filename: data.contentStreams[0]['fileName'],
-          label: `(${objects.length}) ${
-            data.properties[SecondaryObjectTypeField.TITLE] ? data.properties[SecondaryObjectTypeField.TITLE].value : data.contentStreams[0]['fileName']
-          }`
+          label: `(${objects.length}) ${label}`
         }
       ];
     } else {
