@@ -8,6 +8,7 @@ import { DashboardComponent } from '../states/dashboard/dashboard.component';
 import { EnterComponent } from '../states/enter/enter.component';
 import { NotFoundComponent } from '../states/not-found/not-found.component';
 import { ObjectComponent } from '../states/object/object.component';
+import { OfflineComponent } from '../states/offline/offline.component';
 import { ResultComponent } from '../states/result/result.component';
 import { SettingsComponent } from '../states/settings/settings.component';
 import { AuthGuard } from './auth-guard/auth-guard.service';
@@ -23,6 +24,7 @@ const routes: Routes = [
   { path: 'about', component: AboutComponent, canActivate: [AuthGuard] },
   { path: 'create', component: CreateComponent, canActivate: [AuthGuard], canDeactivate: [PendingChangesGuard] },
   { path: 'result', component: ResultComponent, canActivate: [AuthGuard], canDeactivate: [PendingChangesGuard] },
+  { path: 'offline', component: OfflineComponent, canActivate: [AuthGuard] },
   { path: 'object/:id', component: ObjectComponent, canActivate: [AuthGuard], canDeactivate: [PendingChangesGuard] },
   // default route
   { path: '', redirectTo: '/dashboard', pathMatch: 'full' },

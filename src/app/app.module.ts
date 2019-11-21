@@ -17,9 +17,10 @@ import { ResultComponent } from './states/result/result.component';
 import { SettingsComponent } from './states/settings/settings.component';
 import { ObjectComponent } from './states/object/object.component';
 import { CreateComponent } from './states/create/create.component';
+import { OfflineComponent } from './states/offline/offline.component';
 
 @NgModule({
-  declarations: [AppComponent, DashboardComponent, ResultComponent, FrameComponent, SettingsComponent, NotFoundComponent, EnterComponent, ObjectComponent, CreateComponent],
+  declarations: [AppComponent, DashboardComponent, ResultComponent, FrameComponent, SettingsComponent, NotFoundComponent, EnterComponent, ObjectComponent, CreateComponent, OfflineComponent],
   imports: [
     BrowserModule,
     FormsModule,

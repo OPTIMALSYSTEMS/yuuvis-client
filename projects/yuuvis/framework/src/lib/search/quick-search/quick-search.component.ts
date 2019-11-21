@@ -30,6 +30,9 @@ import { ValuePickerItem } from './value-picker/value-picker.component';
  * Component providing an extensible search input. It's a simple input field for fulltext
  * search queries that can be extended by searching for certain object types and even set
  * search terms for particular fields of the target types.
+ *
+ * Adding a class of `inline` to the component will apply a different layout more suitable
+ * for embedding the component somwhere else.
  */
 @Component({
   selector: 'yuv-quick-search',
