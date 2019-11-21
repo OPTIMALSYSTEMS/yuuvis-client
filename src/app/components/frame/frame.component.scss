@@ -12,6 +12,11 @@ $user-panel-width: 180px;
   grid-template-rows: var(--app-bar-height) 1fr;
   grid-template-areas: 'header' 'content';
 
+  &.offline .app-bar {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
   .app-bar {
     grid-area: header;
     order: 1;

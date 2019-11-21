@@ -19,6 +19,7 @@ export * from './lib/service/config/config.interface';
 export * from './lib/service/config/config.service';
 export * from './lib/service/config/core-config';
 export * from './lib/service/config/core-config.tokens';
+export * from './lib/service/connection/connection.service';
 export * from './lib/service/core-init/core-init.service';
 export * from './lib/service/dms/dms.service';
 export * from './lib/service/event/event.interface';

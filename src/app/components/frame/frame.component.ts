@@ -1,7 +1,7 @@
 import { Component, HostBinding, HostListener, OnInit } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { SwUpdate } from '@angular/service-worker';
-import { AuthService, UploadResult, UserService, YuvUser } from '@yuuvis/core';
+import { AuthService, ConnectionService, UploadResult, UserService, YuvUser } from '@yuuvis/core';
 import { LayoutService, LayoutSettings } from '@yuuvis/framework';
 import { filter } from 'rxjs/operators';
 
@@ -36,6 +36,9 @@ export class FrameComponent implements OnInit {
   }
 
   @HostBinding('class.transparentAppBar') tab: boolean;
+  @HostBinding('class.transparentAppBar')
+  @HostBinding('class.offline.transparentAppBar')
+  offline: boolean;
   swUpdateAvailable: boolean;
   hideAppBar = false;
   showSideBar = false;
@@ -45,6 +48,7 @@ export class FrameComponent implements OnInit {
     private router: Router,
     private layoutService: LayoutService,
     private update: SwUpdate,
+    private connectionService: ConnectionService,
     private authService: AuthService,
     private userService: UserService
   ) {
@@ -54,6 +58,16 @@ export class FrameComponent implements OnInit {
 
     this.layoutService.layoutSettings$.subscribe((settings: LayoutSettings) => {
       this.applyLayoutSettings(settings);
+    });
+
+    this.connectionService.monitor().subscribe(isConnected => {
+      console.log(isConnected);
+      this.offline = !isConnected;
+      if (!isConnected) {
+        this.router.navigate(['offline']);
+      } else {
+        this.router.navigate(['/']);
+      }
     });
   }
 
