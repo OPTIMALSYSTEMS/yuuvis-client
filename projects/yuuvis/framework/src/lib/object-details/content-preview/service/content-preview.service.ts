@@ -10,9 +10,10 @@ export class ContentPreviewService {
   constructor(private location: PlatformLocation, private userService: UserService, private layoutService: LayoutService) {}
 
   createPreviewUrl(id: string, content: DmsObjectContent): string {
-    const { mimeType, size, contentStreamId } = content;
+    const { mimeType, size, contentStreamId, fileName } = content;
     const { root, path } = this.createPath(id);
-    return id ? Utils.buildUri(`${root}/viewer/`, { mimeType, path, size, contentStreamId, ...this.createSettings() }) : '';
+    const fileExtension = fileName.includes('.') ? fileName.split('.').pop() : '';
+    return id ? Utils.buildUri(`${root}/viewer/`, { mimeType, path, fileExtension, size, contentStreamId, ...this.createSettings() }) : '';
   }
 
   private createPath(id: string): { root: string; path: string } {
