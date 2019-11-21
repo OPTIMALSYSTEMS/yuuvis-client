@@ -177,6 +177,7 @@ $user-panel-width: 180px;
     }
   }
 
+  &.offline,
   &.transparentAppBar {
     .app-bar {
       background-color: transparent;

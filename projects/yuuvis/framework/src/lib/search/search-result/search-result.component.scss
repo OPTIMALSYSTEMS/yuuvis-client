@@ -68,9 +68,12 @@ $yuv-panel-header-height: 110px;
     }
 
     .toolbar-content {
-      padding: var(--app-pane-padding);
       background-color: var(--panel-background-lightgrey);
       flex: 1;
+
+      yuv-quick-search {
+        border-bottom: 1px solid var(--panel-divider-color);
+      }
     }
   }
 

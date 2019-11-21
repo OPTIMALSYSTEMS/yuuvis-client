@@ -36,9 +36,7 @@ export class FrameComponent implements OnInit {
   }
 
   @HostBinding('class.transparentAppBar') tab: boolean;
-  @HostBinding('class.transparentAppBar')
-  @HostBinding('class.offline.transparentAppBar')
-  offline: boolean;
+  @HostBinding('class.offline') offline: boolean;
   swUpdateAvailable: boolean;
   hideAppBar = false;
   showSideBar = false;
