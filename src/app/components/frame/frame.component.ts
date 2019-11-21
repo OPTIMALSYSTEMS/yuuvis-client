@@ -1,7 +1,7 @@
 import { Component, HostBinding, HostListener, OnInit } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { SwUpdate } from '@angular/service-worker';
-import { AuthService, ConnectionService, UploadResult, UserService, YuvUser } from '@yuuvis/core';
+import { AuthService, ConnectionService, ConnectionState, UploadResult, UserService, YuvUser } from '@yuuvis/core';
 import { LayoutService, LayoutSettings } from '@yuuvis/framework';
 import { filter } from 'rxjs/operators';
 
@@ -60,10 +60,9 @@ export class FrameComponent implements OnInit {
       this.applyLayoutSettings(settings);
     });
 
-    this.connectionService.monitor().subscribe(isConnected => {
-      console.log(isConnected);
-      this.offline = !isConnected;
-      if (!isConnected) {
+    this.connectionService.connection$.subscribe((connectionState: ConnectionState) => {
+      this.offline = !connectionState.isConnected;
+      if (this.offline) {
         this.router.navigate(['offline']);
       } else {
         this.router.navigate(['/']);
