@@ -40,7 +40,7 @@ export class DashboardComponent implements OnInit {
   }
 
   onTypeAggregation(aggs: ObjectTypeAggregation[]) {
-    this.aggs = aggs;
+    // this.aggs = aggs;
   }
 
   applyAggregation(agg: ObjectTypeAggregation) {

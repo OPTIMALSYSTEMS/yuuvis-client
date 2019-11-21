@@ -37,7 +37,7 @@ export class DmsService {
     const url = `${this.backend.getApiBase(ApiBase.apiWeb)}/dms/create`;
     const data = indexdata;
     data[BaseObjectTypeField.OBJECT_TYPE_ID] = objectTypeId;
-    return this.uploadService.uploadMultipart(url, files, data, label);
+    return files.length ? this.uploadService.uploadMultipart(url, files, data, label) : this.uploadService.createDocument(url, data);
   }
 
   /**

@@ -79,6 +79,7 @@
   "yuv.framework.object-details.tabs.summary.title": "Übersicht",
   "yuv.framework.object-details.tooltip.icon.actions": "Objektaktionen",
   "yuv.framework.object-form-edit.invalid": "Das Formular enthält Fehler. Korrigieren Sie die Fehler, um die Eingaben speichern zu können.",
+  "yuv.framework.object-form-edit.pending-changes.alert": "Sie bearbeiten gerade die Indexdaten eines ungespeicherten Formulars. Ungespeicherte Daten gehen verloren.",
   "yuv.framework.object-form-edit.reset": "Änderungen verwerfen",
   "yuv.framework.object-form-edit.save": "Speichern",
   "yuv.framework.object-form-edit.save.error": "Das Dokument kann im Moment nicht gespeichert werden.",

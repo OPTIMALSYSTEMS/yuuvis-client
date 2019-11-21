@@ -2,7 +2,6 @@ import { Observable, Subscription } from 'rxjs';
 
 export interface ProgressStatus {
   items: ProgressStatusItem[];
-  // result?: CreateObjectResult[];
   err: number;
 }
 export interface ProgressStatusItem {

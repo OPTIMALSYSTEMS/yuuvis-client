@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, Output, ViewChild } from '@angular/core';
 import { DmsObject, DmsService, PendingChangesService, SystemService, TranslateService, Utils } from '@yuuvis/core';
 import { finalize } from 'rxjs/operators';
 import { NotificationService } from './../../services/notification/notification.service';
@@ -10,7 +10,7 @@ import { ObjectFormComponent } from './../object-form/object-form.component';
   templateUrl: './object-form-edit.component.html',
   styleUrls: ['./object-form-edit.component.scss']
 })
-export class ObjectFormEditComponent {
+export class ObjectFormEditComponent implements OnDestroy {
   // ID set by pendingChanges service when editing indexdata
   // Used to finish the pending task when editing is done
   private pendingTaskId: string;
@@ -63,6 +63,8 @@ export class ObjectFormEditComponent {
       this.messages.formSuccess = res['yuv.framework.object-form-edit.save.success'];
       this.messages.formError = res['yuv.framework.object-form-edit.save.error'];
     });
+
+    this.pendingChanges.setCustomMessage(this.translate.instant('yuv.framework.object-form-edit.pending-changes.alert'));
   }
 
   private startPending() {
@@ -154,4 +156,6 @@ export class ObjectFormEditComponent {
     // TODO: enable once rights are available:
     // return dmsObject.hasOwnProperty('rights') && dmsObject.rights.edit && !dmsObject.isFinalized;
   }
+
+  ngOnDestroy() {}
 }
