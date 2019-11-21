@@ -58,6 +58,10 @@ export class SearchResultPanelComponent {
    * Emitted when the query has been changed from within the component
    */
   @Output() queryChanged = new EventEmitter<SearchQuery>();
+  /**
+   * Emitted when the query has been changed and a new descriptor has been set
+   */
+  @Output() queryDescriptionChange = new EventEmitter<string>();
 
   constructor(private translate: TranslateService, private systemService: SystemService, private dmsService: DmsService) {}
 
@@ -84,6 +88,7 @@ export class SearchResultPanelComponent {
     } else {
       this.queryDescription = '';
     }
+    this.queryDescriptionChange.emit(this.queryDescription);
   }
 
   onQueryChangedFromWithin(searchQuery: SearchQuery) {

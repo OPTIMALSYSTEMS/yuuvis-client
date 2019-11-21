@@ -31,6 +31,7 @@ export class ResultComponent implements OnInit, OnDestroy {
     public translate: TranslateService,
     private location: PlatformLocation,
     private appSearch: AppSearchService,
+    private title: Title,
     private route: ActivatedRoute,
     private router: Router
   ) {
@@ -69,6 +70,10 @@ export class ResultComponent implements OnInit, OnDestroy {
     if (rowEvent) {
       this.router.navigate(['/object/' + rowEvent.data.id]);
     }
+  }
+
+  onQueryDescriptionChange(desc: string) {
+    this.title.setTitle(desc && desc.length ? desc : this.translate.instant('yuv.framework.search-result-panel.header.title'));
   }
 
   ngOnInit() {
