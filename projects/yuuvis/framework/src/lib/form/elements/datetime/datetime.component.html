@@ -1,33 +1,14 @@
-<!-- non web environments use native pickers -->
-<div class="yuv-datepicker native" lang="{{ locale }}" *ngIf="!isWebEnv; else web">
-  <input type="date" [(ngModel)]="value" *ngIf="!withTime" [readonly]="readonly" />
-  <input type="datetime-local" [(ngModel)]="value" [readonly]="readonly" *ngIf="withTime" />
+<yuv-dialog [styleClass]="'date-picker'" [title]="pickerTitle" [(visible)]="showPicker" *ngIf="showPicker">
+  <yuv-datepicker [date]="value" [withTime]="withTime" [withAmPm]="withAmPm" [onylFutureDates]="onylFutureDates"
+    (onCanceled)="showPicker = false" (onDateChanged)="setValueFromPicker($event)"></yuv-datepicker>
+</yuv-dialog>
+
+<div class="yuv-datepicker">
+  <p-inputMask [mask]="maskPattern" [(ngModel)]="innerValue" (ngModelChange)="onMaskValueChange($event)"
+    (onComplete)="setValueFromMask()" [readonly]="readonly" [slotChar]="_datePattern"></p-inputMask>
+
+  <button class="ui-button" data-datepicker="icon" (click)="showPicker = true" (keyup.arrowDown)="showPicker = true"
+    *ngIf="!readonly">
+    <yuv-icon [svg]="datepickerIcon"></yuv-icon>
+  </button>
 </div>
-
-<ng-template #web>
-  <yuv-dialog [styleClass]="'date-picker'" [title]="pickerTitle" [(visible)]="showPicker" *ngIf="showPicker">
-    <yuv-datepicker
-      [date]="value"
-      [withTime]="withTime"
-      [withAmPm]="withAmPm"
-      [onylFutureDates]="onylFutureDates"
-      (onCanceled)="showPicker = false"
-      (onDateChanged)="setValueFromPicker($event)"
-    ></yuv-datepicker>
-  </yuv-dialog>
-
-  <div class="yuv-datepicker">
-    <p-inputMask
-      [mask]="maskPattern"
-      [(ngModel)]="innerValue"
-      (ngModelChange)="onMaskValueChange($event)"
-      (onComplete)="setValueFromMask()"
-      [readonly]="readonly"
-      [slotChar]="_datePattern"
-    ></p-inputMask>
-
-    <button class="ui-button" data-datepicker="icon" (click)="showPicker = true" (keyup.arrowDown)="showPicker = true" *ngIf="!readonly">
-      <yuv-icon [svg]="datepickerIcon"></yuv-icon>
-    </button>
-  </div>
-</ng-template>

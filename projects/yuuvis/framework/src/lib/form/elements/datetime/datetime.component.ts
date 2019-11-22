@@ -1,6 +1,6 @@
 import { Component, forwardRef, HostListener, Input, OnInit } from '@angular/core';
 import { ControlValueAccessor, FormControl, NG_VALIDATORS, NG_VALUE_ACCESSOR, Validator } from '@angular/forms';
-import { TranslateService, YuvEnvironment } from '@yuuvis/core';
+import { TranslateService } from '@yuuvis/core';
 import * as moment_ from 'moment';
 import 'moment/min/locales';
 import { LocaleDatePipe } from '../../../pipes';
@@ -51,7 +51,6 @@ export class DatetimeComponent implements OnInit, ControlValueAccessor, Validato
   maskPattern: string;
   _datePattern: string;
   datePattern: string;
-  isWebEnv: boolean = YuvEnvironment.isWebEnvironment();
   _withTime: boolean;
   withAmPm: boolean;
 

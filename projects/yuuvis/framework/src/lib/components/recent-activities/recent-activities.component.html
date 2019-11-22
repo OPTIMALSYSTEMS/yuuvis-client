@@ -11,7 +11,7 @@
 <div class="outer">
 
   <ng-container *ngIf="created && selected === 'created'">
-    <drag-scroll [scroll-x-wheel-enabled]="true">
+    <drag-scroll [snap-disabled]="true" [scroll-x-wheel-enabled]="true">
       <yuv-recent-acitivities-item drag-scroll-item *ngFor="let i of recentlyCreated" [recentItem]="i"
         (click)="triggerItemClicked(i)"></yuv-recent-acitivities-item>
     </drag-scroll>
@@ -19,7 +19,7 @@
   </ng-container>
 
   <ng-container *ngIf="modified && selected === 'modified'">
-    <drag-scroll [scroll-x-wheel-enabled]="true">
+    <drag-scroll [snap-disabled]="true" [scroll-x-wheel-enabled]="true">
       <yuv-recent-acitivities-item drag-scroll-item *ngFor="let i of recentlyModified" [recentItem]="i"
         (click)="triggerItemClicked(i)"></yuv-recent-acitivities-item>
     </drag-scroll>
