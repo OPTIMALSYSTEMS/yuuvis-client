@@ -1,9 +1,9 @@
+import { RowEvent } from '@ag-grid-community/core';
 import { PlatformLocation } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AppCacheService, Screen, ScreenService, SearchQuery, TranslateService } from '@yuuvis/core';
-import { RowEvent } from 'ag-grid-community';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { AppSearchService } from '../../service/app-search.service';
 

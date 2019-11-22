@@ -1,3 +1,4 @@
+import { ColDef, RowEvent } from '@ag-grid-community/core';
 import { Component, EventEmitter, Input, OnDestroy, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import {
@@ -13,7 +14,6 @@ import {
   YuvEvent,
   YuvEventType
 } from '@yuuvis/core';
-import { ColDef, RowEvent } from 'ag-grid-community';
 import { of } from 'rxjs';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { ResponsiveDataTableComponent } from '../../components/responsive-data-table/responsive-data-table.component';
