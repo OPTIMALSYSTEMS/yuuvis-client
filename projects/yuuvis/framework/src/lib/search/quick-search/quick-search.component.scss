@@ -111,13 +111,18 @@
         padding: calc(var(--app-pane-padding) / 2);
 
         &.primary {
-          padding: calc(var(--app-pane-padding) / 2);
+          padding: calc(var(--app-pane-padding) / 8);
           background-color: transparent;
           color: var(--color-accent);
 
           &:focus,
           &:hover {
             background-color: rgba(var(--color-accent-rgb), 0.2);
+          }
+
+          yuv-icon {
+            width: 32px;
+            height: 32px;
           }
         }
 

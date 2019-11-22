@@ -19,7 +19,7 @@
     display: flex;
     flex-flow: column;
     align-items: center;
-    justify-content: center;
+    margin-top: calc((100vh / 4) - var(--app-bar-height));
     padding: var(--app-pane-padding);
     flex: 1;
   }
@@ -27,16 +27,40 @@
     flex: 0;
 
     yuv-recent-activities::ng-deep {
+      background-color: transparent;
+      padding: 0;
+
+      .dark & {
+        background-color: rgba(0, 0, 0, 0.2);
+      }
+
       .header {
-        padding: var(--app-pane-padding);
-        background-color: var(--panel-background);
+        padding: calc(var(--app-pane-padding) / 2) var(--app-pane-padding);
+        background-color: rgba(255, 255, 255, 0.6);
+        margin: 0;
+        display: flex;
+        justify-content: center;
+        order: 2;
+
+        .tabs {
+          flex: 0 0 auto;
+        }
       }
       .outer {
-        padding: 0 var(--app-pane-padding);
-      }
-      .drag-scroll-content {
-        display: flex !important;
+        padding-bottom: calc(var(--app-pane-padding) / 2);
+        display: flex;
         justify-content: center;
+
+        drag-scroll {
+          display: flex;
+          justify-content: center;
+          padding: var(--app-pane-padding);
+        }
+      }
+      yuv-recent-acitivities-item {
+        &:first-child {
+          margin-left: var(--app-pane-padding);
+        }
       }
     }
   }

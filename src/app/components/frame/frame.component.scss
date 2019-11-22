@@ -49,7 +49,7 @@ $user-panel-width: 180px;
       display: flex;
       flex-flow: row nowrap;
       align-items: center;
-      padding: 0 calc(var(--app-pane-padding) * 2);
+      padding: 0 calc(var(--app-pane-padding) * 0.5);
       yuv-icon {
         padding: calc(var(--app-pane-padding) / 2);
 
