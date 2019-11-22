@@ -12,6 +12,7 @@
     "moment",
     "lodash",
     "take-until-destroy",
+    "ngx-drag-scroll",
     "ngx-toastr"
   ],
   "lib": {
