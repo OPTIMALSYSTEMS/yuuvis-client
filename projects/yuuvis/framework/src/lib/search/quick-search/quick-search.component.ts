@@ -4,6 +4,7 @@ import {
   AggregateResult,
   BaseObjectTypeField,
   ContentStreamField,
+  DeviceService,
   ObjectType,
   ObjectTypeField,
   RangeValue,
@@ -54,6 +55,7 @@ export class QuickSearchComponent implements AfterViewInit {
     arrowDown: SVGIcons['arrow-down'],
     addCircle: SVGIcons['addCircle']
   };
+  autofocus: boolean;
   searchForm: FormGroup;
   searchFieldsForm: FormGroup;
   invalidTerm: boolean;
@@ -141,8 +143,12 @@ export class QuickSearchComponent implements AfterViewInit {
     private popoverService: PopoverService,
     private translate: TranslateService,
     private systemService: SystemService,
+    private device: DeviceService,
     private searchService: SearchService
   ) {
+    this.autofocus = this.device.isDesktop;
+    console.log(this.autofocus);
+
     this.searchQuery = new SearchQuery();
     this.searchForm = this.fb.group({
       term: ['']

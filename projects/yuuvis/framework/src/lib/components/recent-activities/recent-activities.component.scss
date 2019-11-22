@@ -5,6 +5,12 @@
   padding: calc(var(--app-pane-padding) / 2);
   user-select: none;
 
+  ::ng-deep {
+    .drag-scroll-content::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
   &.transparent {
     background-color: transparent;
     padding: 0;

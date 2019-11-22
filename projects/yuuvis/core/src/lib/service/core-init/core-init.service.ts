@@ -7,6 +7,7 @@ import { YuvConfig } from '../config/config.interface';
 import { ConfigService } from '../config/config.service';
 import { CoreConfig } from '../config/core-config';
 import { CORE_CONFIG } from '../config/core-config.tokens';
+import { DeviceService } from '../device/device.service';
 import { Logger } from '../logger/logger';
 import { ScreenService } from '../screen/screen.service';
 
@@ -18,6 +19,7 @@ export class CoreInit {
     @Inject(CORE_CONFIG) private coreConfig: CoreConfig,
     // DO NOT REMOVE: Otherwise service will not kick in until referenced
     private screenService: ScreenService,
+    private deviceService: DeviceService,
     private logger: Logger,
     private http: HttpClient,
     private configService: ConfigService,
@@ -26,6 +28,8 @@ export class CoreInit {
 
   initialize(): Promise<boolean> {
     return new Promise((resolve, reject) => {
+      this.deviceService.init();
+
       /**
        * getting a string means that we got an URL to load the config from
        */
