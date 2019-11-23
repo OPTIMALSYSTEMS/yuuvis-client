@@ -82,7 +82,7 @@ $user-panel-width: 180px;
     }
   }
   .app-content {
-    height: 100vh;
+    height: calc(100vh - var(--app-bar-height));
     order: 0;
     grid-area: content;
     background-color: var(--main-background);
@@ -195,6 +195,7 @@ $user-panel-width: 180px;
       }
     }
     .app-content {
+      height: 100vh;
       grid-column: 1;
       grid-row: 1 / span 2;
     }
