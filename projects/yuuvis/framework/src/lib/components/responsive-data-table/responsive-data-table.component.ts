@@ -1,6 +1,7 @@
+import { ClientSideRowModelModule } from '@ag-grid-community/client-side-row-model';
+import { ColDef, GridOptions, Module, RowEvent, RowNode } from '@ag-grid-community/core';
 import { Component, EventEmitter, HostBinding, HostListener, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { BaseObjectTypeField, PendingChangesService, Utils } from '@yuuvis/core';
-import { ColDef, GridOptions, RowEvent, RowNode } from 'ag-grid-community';
 import { ResizedEvent } from 'angular-resize-event';
 import { Observable, ReplaySubject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
@@ -33,6 +34,8 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
   };
 
   gridOptions: GridOptions;
+
+  public modules: Module[] = [ClientSideRowModelModule];
 
   @Input() options: any;
   /**

@@ -1,6 +1,6 @@
+import { RowEvent } from '@ag-grid-community/core';
 import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { DmsService, SearchQuery, SystemService, TranslateService } from '@yuuvis/core';
-import { RowEvent } from 'ag-grid-community';
 import { SVGIcons } from '../../svg.generated';
 import { SearchResultComponent } from '../search-result/search-result.component';
 

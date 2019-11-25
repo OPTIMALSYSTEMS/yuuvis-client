@@ -10,7 +10,7 @@
   animation: yuvFadeInUp 300ms;
   @include panel-shadow();
 
-  yuv-icon {
+  &__header {
     cursor: pointer;
   }
 
@@ -80,7 +80,12 @@
     }
   }
 
-  .progress-item,
+  .progress-item {
+    display: grid;
+    grid-template-columns: 35px 1fr 35px;
+    grid-template-rows: 1fr;
+    grid-template-areas: '. . .';
+  }
   .result-item {
     display: flex;
     align-items: center;
@@ -158,6 +163,7 @@
       width: 16px;
       height: 16px;
       margin-right: 12px;
+      justify-self: end;
     }
   }
 

@@ -1,3 +1,4 @@
+import { ColDef, ICellRendererFunc } from '@ag-grid-community/core';
 import { Component, Input, OnInit } from '@angular/core';
 import {
   AppCacheService,
@@ -9,7 +10,6 @@ import {
   SecondaryObjectTypeField,
   SystemService
 } from '@yuuvis/core';
-import { ColDef, ICellRendererFunc } from 'ag-grid-community';
 import { GridService } from '../../services/grid/grid.service';
 import { Summary, SummaryEntry } from './summary.interface';
 

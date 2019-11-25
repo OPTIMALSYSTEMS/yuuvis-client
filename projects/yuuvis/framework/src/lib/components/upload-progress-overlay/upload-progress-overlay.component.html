@@ -2,9 +2,9 @@
   <div class="uploadProgress" *ngIf="ps.items.length || ps.result?.length"
     [ngClass]="{'mini': minimized, panelError: ps.err > 0, allErr: ps.err === ps.items.length, 'finished': allDone}">
 
-    <header>
+    <header class="uploadProgress__header" (click)="minimized = !minimized">
       <div class="title" [ngClass]="{complete: (completed$ | async) === true}">{{'yuv.framework.upload-progress-overlay.title'|translate}}</div>
-      <yuv-icon [svg]="icon.minimize" (click)="minimized = !minimized"></yuv-icon>
+      <yuv-icon [svg]="icon.minimize"></yuv-icon>
     </header>
     <section class="files">
       <div class="progress-item" *ngFor="let item of ps.items; trackBy: trackByFn"

@@ -1,7 +1,17 @@
 import { Component, HostBinding, HostListener, OnInit } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { SwUpdate } from '@angular/service-worker';
-import { AuthService, ConnectionService, ConnectionState, UploadResult, UserService, YuvUser } from '@yuuvis/core';
+import {
+  AuthService,
+  BaseObjectTypeField,
+  ConnectionService,
+  ConnectionState,
+  SearchFilter,
+  SearchQuery,
+  UploadResult,
+  UserService,
+  YuvUser
+} from '@yuuvis/core';
 import { LayoutService, LayoutSettings } from '@yuuvis/framework';
 import { filter } from 'rxjs/operators';
 
@@ -13,6 +23,10 @@ import { filter } from 'rxjs/operators';
 export class FrameComponent implements OnInit {
   deferredPrompt: any;
   showButton = false;
+  swUpdateAvailable: boolean;
+  hideAppBar = false;
+  showSideBar = false;
+  user: YuvUser;
 
   @HostListener('window:dragover', ['$event']) onDragOver(e) {
     let transfer = e.dataTransfer;
@@ -35,12 +49,10 @@ export class FrameComponent implements OnInit {
     this.showButton = true;
   }
 
+  // tslint:disable-next-line: member-ordering
   @HostBinding('class.transparentAppBar') tab: boolean;
+  // tslint:disable-next-line: member-ordering
   @HostBinding('class.offline') offline: boolean;
-  swUpdateAvailable: boolean;
-  hideAppBar = false;
-  showSideBar = false;
-  user: YuvUser;
 
   constructor(
     private router: Router,
@@ -115,7 +127,13 @@ export class FrameComponent implements OnInit {
   }
 
   onResultItemClick(res: UploadResult) {
-    this.router.navigate(['/object', res.objectId]);
+    if (Array.isArray(res.objectId)) {
+      const searchQuery = new SearchQuery();
+      searchQuery.addFilter(new SearchFilter(BaseObjectTypeField.OBJECT_ID, SearchFilter.OPERATOR.IN, res.objectId));
+      this.router.navigate(['/result'], { queryParams: { query: JSON.stringify(searchQuery.toQueryJson()) } });
+    } else {
+      this.router.navigate(['/object', res.objectId]);
+    }
   }
 
   ngOnInit() {

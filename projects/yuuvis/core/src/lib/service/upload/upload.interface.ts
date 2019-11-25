@@ -27,11 +27,17 @@ interface ContentStream {
 }
 
 export interface UploadResult {
-  objectId: string;
+  objectId: string | string[];
   contentStreamId: string;
   filename: string;
   label?: string;
+}
 
-  // contentStreams: ContentStream[];
-  // properties: any;
+export interface CreatedObject {
+  body?: {
+    objects: {
+      properties: any;
+      contentStreams?: ContentStream[];
+    }[];
+  };
 }
