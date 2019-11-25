@@ -5,19 +5,17 @@
   outline: 0;
   display: flex;
 
-  //   &:focus {
-  //     background-color: var(--color-accent);
-  //     color: #fff;
-  //   }
+  > div {
+    display: flex;
+    align-items: center;
+  }
 
   &:not(.selected):hover,
   &:not(.selected).active {
     background-color: var(--item-focus-border-color);
   }
-  &.selected {
-    color: #fff;
-    background-color: var(--color-accent);
-  }
+  // &.selected {
+  // }
 
   &.disabled {
     opacity: 0.3;

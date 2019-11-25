@@ -1,3 +1,4 @@
+import { PlatformLocation } from '@angular/common';
 import { Component, EventEmitter, HostListener, Input, OnDestroy, Output, Renderer2, ViewChild } from '@angular/core';
 import { EventService, PendingChangesService, Utils, YuvEventType } from '@yuuvis/core';
 import { Dialog } from 'primeng/dialog';
@@ -45,11 +46,14 @@ export class DialogComponent implements OnDestroy {
     return this._visible;
   }
 
-  set visible(val) {
-    this._visible = !!val;
-    this.visibleChange.emit(this._visible);
-    this._visible ? this.show.emit(val) : this.hide.emit(val);
-    this.toggleActive(this._visible);
+  set visible(val: boolean) {
+    this.setVisibility(val);
+  }
+
+  @HostListener('window:popstate') handlePopState() {
+    if (this._visible) {
+      this.setVisibility(false);
+    }
   }
 
   @HostListener('document:keydown.escape', ['$event'])
@@ -68,7 +72,12 @@ export class DialogComponent implements OnDestroy {
     }
   }
 
-  constructor(private eventService: EventService, private pendingChanges: PendingChangesService, private renderer: Renderer2) {
+  constructor(
+    private eventService: EventService,
+    private location: PlatformLocation,
+    private pendingChanges: PendingChangesService,
+    private renderer: Renderer2
+  ) {
     this._lastFocused = document.activeElement;
     this.eventService
       .on(YuvEventType.DIALOG_STACK_CHANGED)
@@ -80,6 +89,17 @@ export class DialogComponent implements OnDestroy {
         this.toggleActive(!event.data.active, !event.data.active);
         this.parentId = event.data.active ? event.data.id : '';
       });
+  }
+
+  private setVisibility(val: boolean) {
+    if (!this._visible && val) {
+      // TODO: What about nested dialogs?
+      this.location.pushState({}, 'dialog', `${this.location.pathname}#dialog`);
+    }
+    this._visible = !!val;
+    this.visibleChange.emit(this._visible);
+    this._visible ? this.show.emit(val) : this.hide.emit(val);
+    this.toggleActive(this._visible);
   }
 
   toggleActive(active: boolean, trigger = true) {
@@ -109,10 +129,10 @@ export class DialogComponent implements OnDestroy {
   closeDialog() {
     if (this.dirtyCheck) {
       if (!this.pendingChanges.checkForPendingTasks(this.dirtyCheck)) {
-        this.visible = false;
+        this.location.back();
       }
     } else {
-      this.visible = false;
+      this.location.back();
     }
   }
 

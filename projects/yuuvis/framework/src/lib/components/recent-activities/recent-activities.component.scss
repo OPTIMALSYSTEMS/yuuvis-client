@@ -5,6 +5,19 @@
   padding: calc(var(--app-pane-padding) / 2);
   user-select: none;
 
+  .outer {
+    button {
+      margin: calc(var(--app-pane-padding) / 2);
+      background-color: rgba(255, 255, 255, 0.5);
+      color: var(--text-color-hint);
+      font-weight: bold;
+
+      .dark & {
+        background-color: rgba(0, 0, 0, 0.1);
+      }
+    }
+  }
+
   ::ng-deep {
     .drag-scroll-content::-webkit-scrollbar {
       display: none;
@@ -47,13 +60,11 @@
 
   &.tabbed {
     .tab {
-      border-radius: 4px;
       cursor: pointer;
-      padding: calc(var(--app-pane-padding) / 4) calc(var(--app-pane-padding) / 2);
+      padding: calc(var(--app-pane-padding) / 2) var(--app-pane-padding);
 
       &.active {
-        color: #fff;
-        background-color: var(--color-accent);
+        color: var(--color-accent);
       }
     }
   }

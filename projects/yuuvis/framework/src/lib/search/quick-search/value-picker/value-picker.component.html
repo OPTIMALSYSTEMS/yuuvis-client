@@ -5,10 +5,16 @@
 <section class="list" cdkTrapFocus (keyup)="onKeydown($event)">
   <!-- <yuv-value-picker-item *ngFor="let item of _items | filter: 'label' : input.value; index as index" [item]="item" -->
   <yuv-value-picker-item *ngFor="let item of items; index as index" [item]="item" class="list-group-item"
-    [ngClass]="{selected: !!selection[item.id]}" (click)="onClick(item)" (dblclick)="onDoubleClick(item)">
-    {{item.label}}
+    [ngClass]="{ selected: !!selection[item.id] }">
+    <yuv-checkbox *ngIf="multiselect" [value]="!!selection[item.id]" (change)="onCheckboxChange($event, item)">
+    </yuv-checkbox>
+    <div class="label" (click)="onClick(item)">
+      {{ item.label }}
+    </div>
   </yuv-value-picker-item>
 </section>
-<section class="buttons" *ngIf="multiselect">
-  <button class="primary" (click)="emitSelection()">{{'yuv.framework.valuepicker.button.select'|translate}}</button>
+<section class="buttons">
+  <button (click)="emitCancel()">{{ 'yuv.framework.shared.cancel' | translate }}</button>
+  <button *ngIf="multiselect && hasSelection()" class="primary"
+    (click)="emitSelection()">{{ 'yuv.framework.valuepicker.button.select' | translate }}</button>
 </section>

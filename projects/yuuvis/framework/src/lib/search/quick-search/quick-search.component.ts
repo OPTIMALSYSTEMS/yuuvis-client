@@ -55,7 +55,7 @@ export class QuickSearchComponent implements AfterViewInit {
     arrowDown: SVGIcons['arrow-down'],
     addCircle: SVGIcons['addCircle']
   };
-  autofocus: boolean;
+  autofocus: boolean = false;
   searchForm: FormGroup;
   searchFieldsForm: FormGroup;
   invalidTerm: boolean;
@@ -120,22 +120,9 @@ export class QuickSearchComponent implements AfterViewInit {
   @Output() typeAggregation = new EventEmitter<ObjectTypeAggregation[]>();
 
   @HostBinding('class.busy') busy: boolean;
-  @HostListener('keydown.alt.+', ['$event']) onAddField(event) {
-    if (this.availableObjectTypeFields.length) {
-      this.showObjectTypeFieldPicker();
-    }
-  }
-
-  @HostListener('keydown.alt.-', ['$event']) onAddType(event) {
-    if (this.availableObjectTypes.length) {
-      this.showObjectTypePicker();
-    }
-  }
 
   @HostListener('keydown.enter', ['$event']) onEnter(event) {
-    // if (!this.searchFieldsForm) {
     this.executeSearch();
-    // }
   }
 
   constructor(
@@ -147,7 +134,7 @@ export class QuickSearchComponent implements AfterViewInit {
     private searchService: SearchService
   ) {
     this.autofocus = this.device.isDesktop;
-    console.log(this.autofocus);
+    console.log('autofocus: ' + this.autofocus);
 
     this.searchQuery = new SearchQuery();
     this.searchForm = this.fb.group({
@@ -260,20 +247,25 @@ export class QuickSearchComponent implements AfterViewInit {
    * estimated result of the current query.
    */
   aggregate() {
-    if (!this.settingUpQuery && this.searchForm.valid && (!this.searchFieldsForm || this.searchFieldsForm.valid)) {
-      this.resultCount = null;
-      this.error = false;
-      this.busy = true;
-      this.searchService.aggregate(this.searchQuery, [BaseObjectTypeField.OBJECT_TYPE_ID]).subscribe(
-        (res: AggregateResult) => {
-          this.processAggregateResult(res);
-          this.busy = false;
-        },
-        err => {
-          this.error = true;
-          this.busy = false;
-        }
-      );
+    if (this.searchQuery.term || (this.searchQuery.types && this.searchQuery.types.length) || (this.searchQuery.filters && this.searchQuery.filters.length)) {
+      if (!this.settingUpQuery && this.searchForm.valid && (!this.searchFieldsForm || this.searchFieldsForm.valid)) {
+        this.resultCount = null;
+        this.error = false;
+        this.busy = true;
+        this.searchService.aggregate(this.searchQuery, [BaseObjectTypeField.OBJECT_TYPE_ID]).subscribe(
+          (res: AggregateResult) => {
+            this.processAggregateResult(res);
+            this.busy = false;
+          },
+          err => {
+            this.error = true;
+            this.busy = false;
+            this.typeAggregation.emit([]);
+          }
+        );
+      }
+    } else {
+      this.typeAggregation.emit([]);
     }
   }
 
@@ -307,6 +299,12 @@ export class QuickSearchComponent implements AfterViewInit {
         break;
       }
     }
+    if (popoverRef) {
+      popoverRef.close();
+    }
+  }
+
+  onValuePickerCancel(popoverRef?: PopoverRef) {
     if (popoverRef) {
       popoverRef.close();
     }

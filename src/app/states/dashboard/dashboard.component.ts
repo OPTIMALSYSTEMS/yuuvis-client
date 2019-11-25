@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, HostBinding, OnInit, ViewChild } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { SearchQuery } from '@yuuvis/core';
@@ -16,6 +16,7 @@ export class DashboardComponent implements OnInit {
   // application wide search query
   appQuery: SearchQuery;
   aggs: ObjectTypeAggregation[];
+  @HostBinding('class.aggregations') hasAggs: boolean;
 
   constructor(private router: Router, private appSearch: AppSearchService, private titleService: Title) {}
 
@@ -40,7 +41,8 @@ export class DashboardComponent implements OnInit {
   }
 
   onTypeAggregation(aggs: ObjectTypeAggregation[]) {
-    // this.aggs = aggs;
+    this.aggs = aggs;
+    this.hasAggs = aggs && aggs.length > 0;
   }
 
   applyAggregation(agg: ObjectTypeAggregation) {

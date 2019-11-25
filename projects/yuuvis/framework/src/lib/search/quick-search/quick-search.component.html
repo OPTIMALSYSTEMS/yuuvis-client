@@ -57,7 +57,7 @@
 
 <ng-template #tplValuePicker let-data let-popover="popover">
   <yuv-value-picker [items]="data.items" [selectedItemIds]="data.selected" [multiselect]="data.multiselect"
-    [ngClass]="{'quick-search': true, 'hashtag': data.type === 'field'}"
+    [ngClass]="{'quick-search': true, 'hashtag': data.type === 'field'}" (cancel)="onValuePickerCancel(popover)"
     (select)="onValuePickerResult(data.type, $event, popover)">
   </yuv-value-picker>
 </ng-template>

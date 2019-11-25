@@ -111,13 +111,18 @@
         padding: calc(var(--app-pane-padding) / 2);
 
         &.primary {
-          padding: calc(var(--app-pane-padding) / 2);
+          padding: calc(var(--app-pane-padding) / 8);
           background-color: transparent;
           color: var(--color-accent);
 
           &:focus,
           &:hover {
             background-color: rgba(var(--color-accent-rgb), 0.2);
+          }
+
+          yuv-icon {
+            width: 32px;
+            height: 32px;
           }
         }
 
@@ -289,7 +294,7 @@
 }
 
 ::ng-deep .quick-search {
-  .list-group-item::before,
+  .list-group-item .label::before,
   .ui-autocomplete-list-item::before {
     content: '@';
     display: inline;
@@ -298,7 +303,7 @@
     padding: 0 1px;
   }
 
-  &.hashtag .list-group-item::before,
+  &.hashtag .list-group-item .label::before,
   &.hashtag .ui-autocomplete-list-item::before {
     content: '#';
   }
