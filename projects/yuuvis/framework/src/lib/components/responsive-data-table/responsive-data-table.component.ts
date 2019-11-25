@@ -1,7 +1,7 @@
 import { ClientSideRowModelModule } from '@ag-grid-community/client-side-row-model';
 import { ColDef, GridOptions, Module, RowEvent, RowNode } from '@ag-grid-community/core';
 import { Component, EventEmitter, HostBinding, HostListener, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { BaseObjectTypeField, PendingChangesService, Utils } from '@yuuvis/core';
+import { BaseObjectTypeField, DeviceService, PendingChangesService, Utils } from '@yuuvis/core';
 import { ResizedEvent } from 'angular-resize-event';
 import { Observable, ReplaySubject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
@@ -87,7 +87,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
     this.copyToClipboard('row');
   }
 
-  constructor(private pendingChanges: PendingChangesService) {
+  constructor(private pendingChanges: PendingChangesService, private deviceService: DeviceService) {
     // subscribe to the whole components size changing
     this.resize$
       .pipe(
@@ -206,6 +206,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
    */
   selectRows(selection?: string[], focusColId?: string) {
     this.gridOptions.api.clearFocusedCell();
+    this.gridOptions.api.deselectAll();
     (selection || [this._data.rows[0].id]).forEach((id: string, index: number) => {
       const n = this.gridOptions.api.getRowNode(id);
       if (n) {
@@ -238,7 +239,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
       // EVENTS - add event callback handlers
       onSelectionChanged: event => {
         const selection = this.gridOptions.api.getSelectedNodes().map((rowNode: RowNode) => rowNode.id);
-        if (JSON.stringify(selection) !== JSON.stringify(this._currentSelection)) {
+        if (!event || JSON.stringify(selection) !== JSON.stringify(this._currentSelection)) {
           this._currentSelection = selection;
           this.selectionChanged.emit(this.gridOptions.api.getSelectedRows());
         }
@@ -282,18 +283,27 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
     document.body.removeChild(textArea);
   }
 
-  onMouseDown($event: any) {
+  onMouseDown($event: MouseEvent | any) {
     if ($event.button === 0 && this.gridOptions && this.gridOptions.suppressCellSelection) {
       if (!this.pendingChanges.check()) {
         this.gridOptions.suppressCellSelection = false;
-        const colEl = ($event.composedPath ? $event.composedPath() : []).find(el => el.getAttribute('col-id'));
-        if (colEl) {
-          this.selectRows([colEl.parentElement.getAttribute('row-id')], colEl.getAttribute('col-id'));
-        }
+        this.selectEvent($event);
       } else {
         $event.preventDefault();
         $event.stopImmediatePropagation();
       }
+    } else if (this.deviceService.isMobile || this.deviceService.isTablet) {
+      // ag-grid issue with selection on mobile devices
+      this.selectEvent($event);
+    }
+  }
+
+  private selectEvent($event: MouseEvent | any) {
+    const colEl = ($event.composedPath ? $event.composedPath() : []).find(el => el.getAttribute('col-id'));
+    if (colEl) {
+      this.selectRows([colEl.parentElement.getAttribute('row-id')], colEl.getAttribute('col-id'));
+      this.gridOptions.onSelectionChanged(null);
+      console.log(colEl.parentElement.getAttribute('row-id'));
     }
   }
 

@@ -3,7 +3,7 @@ import { PlatformLocation } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AppCacheService, Screen, ScreenService, SearchQuery, TranslateService } from '@yuuvis/core';
+import { AppCacheService, PendingChangesService, Screen, ScreenService, SearchQuery, TranslateService } from '@yuuvis/core';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { AppSearchService } from '../../service/app-search.service';
 
@@ -31,6 +31,7 @@ export class ResultComponent implements OnInit, OnDestroy {
     public translate: TranslateService,
     private location: PlatformLocation,
     private appSearch: AppSearchService,
+    private pendingChanges: PendingChangesService,
     private title: Title,
     private route: ActivatedRoute,
     private router: Router
@@ -45,7 +46,9 @@ export class ResultComponent implements OnInit, OnDestroy {
   }
 
   onSlaveClosed() {
-    this.objectDetailsID = null;
+    if (!this.pendingChanges.check()) {
+      this.select([]);
+    }
   }
 
   onQueryChanged(query: SearchQuery) {
