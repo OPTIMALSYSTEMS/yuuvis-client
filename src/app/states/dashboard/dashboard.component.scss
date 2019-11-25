@@ -1,3 +1,5 @@
+@import '../../../../src/scss-shared/_mixins';
+
 :host-context(.screen-s) {
   // justify-content: flex-start;
   // width: 100vw;
@@ -14,17 +16,34 @@
   height: 100%;
   padding-top: var(--app-bar-height);
   box-sizing: border-box;
+  overflow: hidden;
+
+  &.aggregations {
+    .bottom {
+      opacity: 0.2;
+      transform: translateY(75%);
+    }
+  }
 
   .top {
     display: flex;
     flex-flow: column;
+    padding: 0 var(--app-pane-padding);
     align-items: center;
     margin-top: calc((100vh / 4) - var(--app-bar-height));
-    padding: var(--app-pane-padding);
     flex: 1;
+    min-height: 0;
+
+    yuv-quick-search {
+      z-index: 1;
+    }
   }
   .bottom {
-    flex: 0;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    transition: all 200ms;
 
     yuv-recent-activities::ng-deep {
       background-color: transparent;
@@ -57,59 +76,53 @@
         }
       }
       yuv-recent-acitivities-item {
-        box-shadow: 0px 3px 6px 0px rgba(0, 0, 0, 0.26);
-        background: transparent;
-        border: 4px solid #fff;
-        .pre {
-          background: #fff;
-        }
-
-        .dark & {
-          border: 4px solid var(--panel-background);
-          .pre {
-            background: var(--panel-background);
-          }
-        }
-
         &:first-child {
           margin-left: var(--app-pane-padding);
         }
-        // &:last-child {
-        //   background: #fff;
-        // }
+
+        .pre {
+          margin: calc(var(--app-pane-padding) / 4);
+        }
       }
     }
   }
 
   .aggs {
-    position: absolute;
-    left: 0;
-    top: var(--app-bar-height);
-    bottom: calc(4 * var(--app-bar-height));
-    animation: yuvFadeInLeft 200ms;
+    z-index: 0;
+    flex: 1;
+    min-height: 0;
+    animation: yuvFadeInUp 200ms;
     display: flex;
     flex-flow: column;
     overflow: auto;
 
+    background-color: rgba(255, 255, 255, 0.4);
+    outline: 1000px solid rgba(255, 255, 255, 0.4);
+    .dark & {
+      background-color: rgba(0, 0, 0, 0.4);
+      outline: 1000px solid rgba(0, 0, 0, 0.4);
+    }
+
     .container {
-      margin: auto;
       > div {
         display: flex;
         align-items: center;
         padding: var(--app-pane-padding);
         .label {
-          order: 1;
-          padding: var(--app-pane-padding);
-          font-size: var(--font-title);
+          order: 0;
+          font-size: var(--font-subhead);
           opacity: 0.5;
+          flex: 1;
+          @include bidi-style(margin-right, var(--app-pane-padding), margin-left, var(--app-pane-padding));
         }
         .count {
-          font-size: var(--font-display);
-          order: 0;
+          color: var(--color-accent);
+          border-radius: 2px;
+          order: 1;
         }
 
         &:hover {
-          color: var(--color-accent);
+          background-color: var(--item-focus-background-color);
           cursor: pointer;
         }
       }

@@ -1,6 +1,6 @@
 import { ActiveDescendantKeyManager } from '@angular/cdk/a11y';
 import { ENTER, SPACE } from '@angular/cdk/keycodes';
-import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnInit, Output, QueryList, ViewChildren } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, EventEmitter, HostBinding, Input, OnInit, Output, QueryList, ViewChildren } from '@angular/core';
 import { ValuePickerItemComponent } from './value-picker-item/value-picker-item.component';
 
 @Component({
@@ -12,9 +12,17 @@ export class ValuePickerComponent implements OnInit, AfterViewInit {
   @ViewChildren(ValuePickerItemComponent) itemElements: QueryList<ValuePickerItemComponent>;
   @Input() items: ValuePickerItem[];
   @Input() selectedItemIds: string[];
-  @Input() multiselect: boolean;
+  @Input() set multiselect(m: boolean) {
+    this.isMultiple = m;
+  }
+  get multiselect() {
+    return this.isMultiple;
+  }
   @Output() select = new EventEmitter<any>();
+  @Output() cancel = new EventEmitter<any>();
   private keyManager: ActiveDescendantKeyManager<ValuePickerItemComponent>;
+
+  @HostBinding('class.multiple') isMultiple: boolean;
 
   selection = {};
 
@@ -49,17 +57,26 @@ export class ValuePickerComponent implements OnInit, AfterViewInit {
     }
   }
 
-  onClick(item) {
-    this.addToSelection(item);
+  onClick(item: ValuePickerItem) {
+    this.selection = {};
+    this.selection[item.id] = item;
+    this.emitSelection();
+  }
+
+  onCheckboxChange(v: boolean, item: ValuePickerItem) {
+    if (v) {
+      this.selection[item.id] = item;
+    } else {
+      delete this.selection[item.id];
+    }
+
     if (!this.multiselect) {
       this.emitSelection();
     }
   }
 
-  onDoubleClick(item) {
-    this.selection = {};
-    this.addToSelection(item);
-    this.emitSelection();
+  emitCancel() {
+    this.cancel.emit();
   }
 
   addToSelection(item) {
@@ -68,6 +85,10 @@ export class ValuePickerComponent implements OnInit, AfterViewInit {
     } else {
       delete this.selection[item.id];
     }
+  }
+
+  hasSelection() {
+    return Object.keys(this.selection).length > 0;
   }
 
   emitSelection() {

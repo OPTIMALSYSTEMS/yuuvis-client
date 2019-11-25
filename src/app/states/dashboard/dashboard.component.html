@@ -1,20 +1,19 @@
-<div class="aggs" *ngIf="aggs">
-  <div class="container">
-    <div *ngFor="let a of aggs" (click)="applyAggregation(a)">
-      <div class="label">
-        {{a.label}}
-      </div>
-      <div class="count">
-        {{a.count}}
-      </div>
-    </div>
-  </div>
-</div>
-
-
 <div class="top">
   <yuv-quick-search #quickSearch [query]="appQuery" (typeAggregation)="onTypeAggregation($event)"
     (querySubmit)="onQuickSearchQuery($event)"></yuv-quick-search>
+
+  <div class="aggs" *ngIf="aggs?.length">
+    <div class="container">
+      <div *ngFor="let a of aggs" (click)="applyAggregation(a)">
+        <div class="label">
+          {{a.label}}
+        </div>
+        <div class="count">
+          {{a.count}}
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <div class="bottom">

@@ -294,7 +294,7 @@
 }
 
 ::ng-deep .quick-search {
-  .list-group-item::before,
+  .list-group-item .label::before,
   .ui-autocomplete-list-item::before {
     content: '@';
     display: inline;
@@ -303,7 +303,7 @@
     padding: 0 1px;
   }
 
-  &.hashtag .list-group-item::before,
+  &.hashtag .list-group-item .label::before,
   &.hashtag .ui-autocomplete-list-item::before {
     content: '#';
   }
