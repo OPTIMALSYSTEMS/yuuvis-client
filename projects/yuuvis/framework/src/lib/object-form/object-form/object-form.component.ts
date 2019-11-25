@@ -2,7 +2,7 @@ import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, EventEmitter, 
 import { ValidatorFn, Validators } from '@angular/forms';
 import { UnsubscribeOnDestroy } from '@yuuvis/common-ui';
 import { Logger, RangeValue, SearchFilter, SearchService, SystemService } from '@yuuvis/core';
-import * as _ from 'lodash';
+import { cloneDeep } from 'lodash-es';
 import { Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import { ObjectFormScriptService } from '../object-form-script/object-form-script.service';
@@ -48,7 +48,7 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
   @Input('formOptions')
   set options(formOptions: ObjectFormOptions) {
     this.defaultFormOptions = formOptions;
-    this.formOptions = _.cloneDeep(formOptions);
+    this.formOptions = cloneDeep(formOptions);
     this.init();
   }
 

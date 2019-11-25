@@ -1,13 +1,96 @@
 import { HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BackendService, Logger } from '@yuuvis/core';
-import * as lodash from 'lodash';
-import * as moment_ from 'moment';
 import { forkJoin as observableForkJoin, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { ObjectFormScriptingScope } from './object-form-scripting-scope';
 
-const moment = moment_;
+export const moment = date => {
+  const d = date ? new Date(date.toDate ? date.toDate() : date) : new Date();
+  return {
+    set(unit, value) {
+      return unit && d['set' + unit[0].toUpperCase() + unit.slice(1)] ? d['set' + unit[0].toUpperCase() + unit.slice(1)](value) && this : null;
+    },
+    get: unit => (unit && d['get' + unit[0].toUpperCase() + unit.slice(1)] ? d['get' + unit[0].toUpperCase() + unit.slice(1)]() : null),
+    toDate: () => d,
+    toISOString: () => d.toISOString(),
+    isValid: () => !isNaN(d.getTime()),
+    isSame: dd => d === dd,
+    isBefore: dd => d < dd,
+    isBetween: (dd, ddd) => dd < d && d < ddd,
+    startOf(unit) {
+      switch (unit) {
+        case 'day':
+          return d.setHours(0, 0, 0, 0) && this;
+        case 'month':
+          return new Date(d.setDate(1)).setHours(0, 0, 0, 0) && this;
+        case 'year':
+          return new Date(d.setMonth(0, 1)).setHours(0, 0, 0, 0) && this;
+      }
+      return null;
+    },
+    add(value, unit) {
+      switch (unit) {
+        case 'minute':
+          return d.setMinutes(d.getMinutes() + value) && this;
+        case 'hour':
+          return d.setHours(d.getHours() + value) && this;
+        case 'day':
+        case undefined:
+          return d.setHours(d.getHours() + 24 * value) && this;
+        case 'week':
+          return d.setHours(d.getHours() + 24 * 7 * value) && this;
+        case 'month':
+          return d.setDate(d.getMonth() + value) && this;
+        case 'year':
+          return d.setFullYear(d.getFullYear() + value) && this;
+      }
+      return null;
+    }
+  };
+};
+
+export const lodash = {
+  clone: object => JSON.parse(JSON.stringify(object)),
+  get: (object, key) => (typeof key === 'string' ? key.split('.') : key || []).reduce((o, k) => (o || {})[k], object),
+  sortBy(array, predicate, reverseOrder) {
+    const cb = typeof predicate === 'function' ? predicate : o => (predicate ? this.get(o, predicate) : o);
+    return array.sort((a: any, b: any) => {
+      let comparison: number;
+      const varA = cb(a);
+      const varB = cb(b);
+      if (typeof varA === 'number' && typeof varB === 'number') {
+        comparison = varA - varB;
+      } else {
+        const stringA = varA || varA === 0 ? varA.toString() : '';
+        const stringB = varB || varB === 0 ? varB.toString() : '';
+        comparison = stringA.localeCompare(stringB);
+      }
+      return reverseOrder ? comparison * -1 : comparison;
+    });
+  },
+  uniqBy(array, predicate) {
+    const cb = typeof predicate === 'function' ? predicate : o => (predicate ? this.get(o, predicate) : o);
+    return [
+      ...array
+        .reduce((m, item) => {
+          const key = item === null || item === undefined ? item : cb(item);
+          return (m.has(key) || m.set(key, item)) && m;
+        }, new Map())
+        .values()
+    ];
+  },
+  // map all Array functions
+  ...Object.getOwnPropertyNames(Array.prototype).reduce(
+    (o, k) => (typeof Array.prototype[k] === 'function' ? (o[k] = (object, ...args) => object[k](...args)) : {}) && o,
+    {}
+  ),
+  // map useful Object functions
+  ...['assign', 'keys', 'values', 'entries'].reduce(
+    (o, k) => (o[k] = (object, ...args) => (Array.isArray(object) ? object[k](...args) : Object[k](object, ...args))) && o,
+    {}
+  )
+};
 
 @Injectable()
 export class ObjectFormScriptService {

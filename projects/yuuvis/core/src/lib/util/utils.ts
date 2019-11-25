@@ -123,13 +123,16 @@ export class Utils {
    */
   public static sortValues(key = '', order = Sort.ASC, locales?: string | string[], options?: Intl.CollatorOptions) {
     const f = (a: any, b: any) => {
+      let comparison: number;
       const varA = Utils.getProperty(a, key);
       const varB = Utils.getProperty(b, key);
-
-      const stringA = varA || varA === 0 ? varA.toString() : '';
-      const stringB = varB || varB === 0 ? varB.toString() : '';
-
-      const comparison = stringA.localeCompare(stringB, locales, options);
+      if (typeof varA === 'number' && typeof varB === 'number') {
+        comparison = varA - varB;
+      } else {
+        const stringA = varA || varA === 0 ? varA.toString() : '';
+        const stringB = varB || varB === 0 ? varB.toString() : '';
+        comparison = stringA.localeCompare(stringB, locales, options);
+      }
       return order === Sort.DESC ? comparison * -1 : comparison;
     };
     return f;

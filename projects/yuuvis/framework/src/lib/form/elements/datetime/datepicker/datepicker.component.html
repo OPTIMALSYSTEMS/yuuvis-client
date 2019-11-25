@@ -2,21 +2,21 @@
   <div class="select">
     <div class="year">
       <div class="back">
-        <div class="current" (click)="focusSelection()">
-          <div class="d">{{ selected.date() }}</div>
+        <div class="current" (click)="setCalenderDate(selected)">
+          <div class="d">{{ selected.getDate() }}</div>
           <div>
-            <div class="m">{{ monthsShort[selected.month()] }}</div>
-            <div class="y">{{ selected.year() }}</div>
+            <div class="m">{{ monthsShort[selected.getMonth()] }}</div>
+            <div class="y">{{ selected.getFullYear() }}</div>
           </div>
         </div>
       </div>
       <input (keydown)="onInputKeydown($event)" type="number" [(ngModel)]="year" [max]="maxYear"
         (ngModelChange)="setYear($event)" [ngModelOptions]="{ standalone: true }" />
       <div class="controls">
-        <button class="icon white year-up" (click)="increment(year)" [disabled]="year === maxYear">
+        <button class="icon white year-up" (click)="setYear(year + 1)" [disabled]="year === maxYear">
           <yuv-icon [svg]="arrowDownIcon"></yuv-icon>
         </button>
-        <button class="icon white year-down" (click)="decrement(year)" [disabled]="year === minYear">
+        <button class="icon white year-down" (click)="setYear(year - 1)" [disabled]="year === minYear">
           <yuv-icon [svg]="arrowDownIcon"></yuv-icon>
         </button>
       </div>
@@ -24,7 +24,7 @@
 
     <div class="month">
       <span *ngFor="let _month of monthsShort; let _i = index" (click)="setMonth(_i)"
-        [ngClass]="{ current: monthInfo.month == _i }">{{ _month }}</span>
+        [ngClass]="{ current: current.getMonth() == _i }">{{ _month }}</span>
     </div>
   </div>
 
@@ -39,7 +39,8 @@
       <div *ngFor="let day of week.days; trackBy: trackByFn">
         <span class="day" *ngIf="!day.disabled"
           [ngClass]="{ today: day.isToday, 'different-month': !day.isCurrentMonth, selected: isSelectedDay(day.date) }"
-          (click)="select(day.date)" (dblclick)="select(day.date)">{{ day.number }}</span>
+          (click)="setCalenderDate(day.date)"
+          (dblclick)="setCalenderDate(day.date);selectValue()">{{ day.number }}</span>
         <span class="day disabled" *ngIf="day.disabled"
           [ngClass]="{ today: day.isToday, 'different-month': !day.isCurrentMonth, selected: isSelectedDay(day.date) }">{{ day.number }}</span>
       </div>
@@ -47,42 +48,47 @@
   </div>
 
   <div class="date-chips">
-    <button class="chip" *ngIf="withTime" (click)="setDateByType('now')"
+    <button class="chip" *ngIf="withTime" (click)="setDateByType('now')" (dblclick)="setDateByType('now', true)"
       translate>yuv.framework.search.agg.time.now</button>
-    <button class="chip" (click)="setDateByType('today')" translate>yuv.framework.search.agg.time.today</button>
-    <button class="chip" (click)="setDateByType('yesterday')" translate>yuv.framework.search.agg.time.yesterday</button>
-    <button class="chip" (click)="setDateByType('thisweek')" translate>yuv.framework.search.agg.time.thisweek</button>
-    <button class="chip" (click)="setDateByType('thismonth')" translate>yuv.framework.search.agg.time.thismonth</button>
-    <button class="chip" (click)="setDateByType('thisyear')" translate>yuv.framework.search.agg.time.thisyear</button>
+    <button class="chip" (click)="setDateByType('today')" (dblclick)="setDateByType('today', true)"
+      translate>yuv.framework.search.agg.time.today</button>
+    <button class="chip" (click)="setDateByType('yesterday')" (dblclick)="setDateByType('yesterday', true)"
+      translate>yuv.framework.search.agg.time.yesterday</button>
+    <button class="chip" (click)="setDateByType('thisweek')" (dblclick)="setDateByType('thisweek', true)"
+      translate>yuv.framework.search.agg.time.thisweek</button>
+    <button class="chip" (click)="setDateByType('thismonth')" (dblclick)="setDateByType('thismonth', true)"
+      translate>yuv.framework.search.agg.time.thismonth</button>
+    <button class="chip" (click)="setDateByType('thisyear')" (dblclick)="setDateByType('thisyear', true)"
+      translate>yuv.framework.search.agg.time.thisyear</button>
   </div>
 
   <div class="time" *ngIf="withTime">
-    <div class="value val-h">{{ timeToString(withAmPm && !inRange(time.h, 1, 12) ? time.h - 12 : time.h) }}</div>
+    <div class="value val-h">
+      {{ timeToString(selected.getHours(), withAmPm) }}
+    </div>
     <div class="controls ctrl-h">
-      <button class="icon btn-up" (click)="setTime({ h: time.h + 1, m: time.m })">
+      <button class="icon btn-up" (click)="addTime(1)">
         <yuv-icon [svg]="arrowDownIcon"></yuv-icon>
       </button>
-      <button class="icon btn-down" (click)="setTime({ h: time.h - 1, m: time.m })">
+      <button class="icon btn-down" (click)="addTime(-1)">
         <yuv-icon [svg]="arrowDownIcon"></yuv-icon>
       </button>
     </div>
 
     <div class="value val-sep">:</div>
-    <div class="value val-min">{{ timeToString(time.m) }}</div>
+    <div class="value val-min">{{ timeToString(selected.getMinutes()) }}</div>
     <div class="controls ctrl-min">
-      <button class="icon btn-up" (click)="setTime({ h: time.h, m: time.m + 1 })">
+      <button class="icon btn-up" (click)="addTime(0, 1)">
         <yuv-icon [svg]="arrowDownIcon"></yuv-icon>
       </button>
-      <button class="icon btn-down" (click)="setTime({ h: time.h, m: time.m - 1 })">
+      <button class="icon btn-down" (click)="addTime(0, -1)">
         <yuv-icon [svg]="arrowDownIcon"></yuv-icon>
       </button>
     </div>
 
     <div class="controls ctrl-am-pm" *ngIf="withAmPm">
-      <button class="" [ngClass]="{ primary: inRange(time.h) }"
-        (click)="setTime({ h: inRange(time.h) ? time.h : time.h - 12, m: time.m })">AM</button>
-      <button class="" [ngClass]="{ primary: !inRange(time.h) }"
-        (click)="setTime({ h: inRange(time.h) ? time.h + 12 : time.h, m: time.m })">PM</button>
+      <button class="" [ngClass]="{ primary: inRange() }" (click)="addTime(inRange() ? 0 : -12)">AM</button>
+      <button class="" [ngClass]="{ primary: !inRange() }" (click)="addTime(inRange() ? 12 : 0)">PM</button>
     </div>
   </div>
 
