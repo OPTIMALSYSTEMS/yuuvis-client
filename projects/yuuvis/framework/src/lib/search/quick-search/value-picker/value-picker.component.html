@@ -4,11 +4,21 @@
 
 <section class="list" cdkTrapFocus (keyup)="onKeydown($event)">
   <!-- <yuv-value-picker-item *ngFor="let item of _items | filter: 'label' : input.value; index as index" [item]="item" -->
-  <yuv-value-picker-item *ngFor="let item of items; index as index" [item]="item" class="list-group-item"
-    [ngClass]="{selected: !!selection[item.id]}" (click)="onClick(item)" (dblclick)="onDoubleClick(item)">
-    {{item.label}}
+  <yuv-value-picker-item
+    *ngFor="let item of items; index as index"
+    [item]="item"
+    class="list-group-item"
+    [ngClass]="{ selected: !!selection[item.id] }"
+    (click)="onClick(item)"
+    (dblclick)="onDoubleClick(item)"
+  >
+    <label class="container">
+      <input type="checkbox" />
+      <span class="checkmark"></span>
+    </label>
+    {{ item.label }}
   </yuv-value-picker-item>
 </section>
 <section class="buttons" *ngIf="multiselect">
-  <button class="primary" (click)="emitSelection()">{{'yuv.framework.valuepicker.button.select'|translate}}</button>
+  <button class="primary" (click)="emitSelection()">{{ 'yuv.framework.valuepicker.button.select' | translate }}</button>
 </section>
