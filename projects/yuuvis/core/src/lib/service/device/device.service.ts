@@ -18,7 +18,6 @@ export class DeviceService {
 
   // called on core init
   init() {
-    console.log('hello `Home` component');
     this.info = this.deviceService.getDeviceInfo();
     this.isMobile = this.deviceService.isMobile();
     this.isTablet = this.deviceService.isTablet();

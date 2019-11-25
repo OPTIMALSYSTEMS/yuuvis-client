@@ -93,6 +93,7 @@ export class DialogComponent implements OnDestroy {
 
   private setVisibility(val: boolean) {
     if (!this._visible && val) {
+      // TODO: What about nested dialogs?
       this.location.pushState({}, 'dialog', `${this.location.pathname}#dialog`);
     }
     this._visible = !!val;
@@ -128,11 +129,9 @@ export class DialogComponent implements OnDestroy {
   closeDialog() {
     if (this.dirtyCheck) {
       if (!this.pendingChanges.checkForPendingTasks(this.dirtyCheck)) {
-        // this.visible = false;
         this.location.back();
       }
     } else {
-      // this.visible = false;
       this.location.back();
     }
   }

@@ -55,7 +55,7 @@ export class QuickSearchComponent implements AfterViewInit {
     arrowDown: SVGIcons['arrow-down'],
     addCircle: SVGIcons['addCircle']
   };
-  autofocus: boolean;
+  autofocus: boolean = false;
   searchForm: FormGroup;
   searchFieldsForm: FormGroup;
   invalidTerm: boolean;
@@ -147,7 +147,7 @@ export class QuickSearchComponent implements AfterViewInit {
     private searchService: SearchService
   ) {
     this.autofocus = this.device.isDesktop;
-    console.log(this.autofocus);
+    console.log('autofocus: ' + this.autofocus);
 
     this.searchQuery = new SearchQuery();
     this.searchForm = this.fb.group({
