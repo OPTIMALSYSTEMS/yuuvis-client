@@ -91,6 +91,8 @@ export class ResponsiveMasterSlaveComponent implements OnInit, OnDestroy {
   @Input() set options(o: ResponsiveMasterSlaveOptions) {
     const direction = this.useSmallDeviceLayout ? 'vertical' : o.direction || 'horizontal';
     this._options = { ...(direction === 'vertical' ? this.verticalOptions : this.horizontalOptions), ...(direction === o.direction ? o : {}) };
+    const { masterSize, slaveSize } = this.options;
+    this.optionsChanged.emit({ masterSize, slaveSize, direction });
   }
   get options(): ResponsiveMasterSlaveOptions {
     return this._options;
@@ -122,9 +124,7 @@ export class ResponsiveMasterSlaveComponent implements OnInit, OnDestroy {
   }
 
   dragEnd(evt: any) {
-    const options = { masterSize: evt.sizes[0], slaveSize: evt.sizes[1], direction: this.options.direction };
-    this.options = options;
-    this.optionsChanged.emit(options);
+    this.options = { masterSize: evt.sizes[0], slaveSize: evt.sizes[1], direction: this.options.direction };
   }
 
   ngOnInit() {}
