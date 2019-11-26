@@ -45,7 +45,7 @@ export class NumberRangeComponent implements ControlValueAccessor, Validator {
     { label: SearchFilter.OPERATOR_LABEL.INTERVAL_INCLUDE_BOTH, value: SearchFilter.OPERATOR.INTERVAL_INCLUDE_BOTH }
   ];
   // the selected search option
-  public searchOption = this.availableSearchOptions[2].value;
+  public searchOption = this.availableSearchOptions[1].value;
 
   constructor() {
     this.rangeForm.valueChanges.forEach(() => {
