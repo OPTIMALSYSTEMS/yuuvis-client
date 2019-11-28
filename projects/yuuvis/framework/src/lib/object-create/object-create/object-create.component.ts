@@ -152,6 +152,7 @@ export class ObjectCreateComponent implements OnDestroy {
           this.selectedObjectType = null;
           this.files = [];
           this.resetState();
+          this.reset();
         } else {
           if (res.length > 1) {
             this.location.back();
