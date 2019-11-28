@@ -3,7 +3,7 @@
 
 <!-- single line input with multiselect-->
 <p-chips *ngIf="!multiline && multiselect" [addOnTab]="true" [(ngModel)]="value" [disabled]="readonly"
-  (onBlur)="onBlur()" (ngModelChange)="onValueChange($event)"> </p-chips>
+  (onBlur)="onBlur()" [addOnBlur]="true" (ngModelChange)="onValueChange($event)"> </p-chips>
 
 <!-- multi line text inputs -->
 <textarea class="input-textarea size-{{ size }}" pInputTextarea *ngIf="multiline" (blur)="onBlur()" [(ngModel)]="value"
