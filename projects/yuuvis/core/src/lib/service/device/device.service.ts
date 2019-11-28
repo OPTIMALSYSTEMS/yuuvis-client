@@ -23,7 +23,7 @@ export class DeviceService {
     this.isTablet = this.deviceService.isTablet();
     this.isDesktop = this.deviceService.isDesktop();
 
-    if (this.isMobile) {
+    if (this.isMobile && screen && screen.orientation) {
       screen.orientation.lock('portrait');
     }
 
