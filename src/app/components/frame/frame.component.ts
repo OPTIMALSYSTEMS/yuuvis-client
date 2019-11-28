@@ -1,17 +1,7 @@
 import { Component, HostBinding, HostListener, OnInit } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { SwUpdate } from '@angular/service-worker';
-import {
-  AuthService,
-  BaseObjectTypeField,
-  ConnectionService,
-  ConnectionState,
-  SearchFilter,
-  SearchQuery,
-  UploadResult,
-  UserService,
-  YuvUser
-} from '@yuuvis/core';
+import { AuthService, BaseObjectTypeField, ConnectionService, ConnectionState, SearchFilter, SearchQuery, UploadResult, UserService, YuvUser } from '@yuuvis/core';
 import { LayoutService, LayoutSettings } from '@yuuvis/framework';
 import { filter } from 'rxjs/operators';
 
@@ -27,6 +17,9 @@ export class FrameComponent implements OnInit {
   hideAppBar = false;
   showSideBar = false;
   user: YuvUser;
+  offlineSVG = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+  <path d="M0 0h24v24H0z" fill="none"/><path d="M20 18h2v-8h-2v8zm0 4h2v-2h-2v2zM2 22h16V8h4V2L2 22z"/>
+  </svg>`;
 
   @HostListener('window:dragover', ['$event']) onDragOver(e) {
     let transfer = e.dataTransfer;
@@ -66,17 +59,14 @@ export class FrameComponent implements OnInit {
       this.swUpdateAvailable = true;
     });
 
+    this.router.events.subscribe(e => console.log(e));
+
     this.layoutService.layoutSettings$.subscribe((settings: LayoutSettings) => {
       this.applyLayoutSettings(settings);
     });
 
     this.connectionService.connection$.subscribe((connectionState: ConnectionState) => {
       this.offline = !connectionState.isOnline;
-      if (this.offline) {
-        this.router.navigate(['offline']);
-      } else {
-        this.router.navigate(['/']);
-      }
     });
   }
 

@@ -1,13 +1,11 @@
-<div class="content grid-container" [ngClass]="{'toolbar-open': toolbarOpen}">
-
+<div class="content grid-container" [ngClass]="{ 'toolbar-open': toolbarOpen }">
   <div class="toolbar">
     <!-- <yuv-icon [svg]="icon.icSearchFilter"></yuv-icon> -->
     <div class="toggle">
       <yuv-icon [svg]="icon.icArrowNext" (click)="toolbarOpen = !toolbarOpen"></yuv-icon>
     </div>
     <div class="toolbar-content" *ngIf="toolbarOpen">
-      <yuv-quick-search class="inline" [query]="query" (querySubmit)="onQuickSearchQuery($event)">
-      </yuv-quick-search>
+      <yuv-quick-search class="inline" [query]="query" (querySubmit)="onQuickSearchQuery($event)"> </yuv-quick-search>
     </div>
   </div>
   <div class="table" [yuvBusyOverlay]="busy">
@@ -16,13 +14,21 @@
     </ng-template>
 
     <ng-container *ngIf="tableData?.rows.length; else tplEmpty">
-      <yuv-responsive-data-table #dataTable class="data-table" [data]="tableData" [breakpoint]="400"
-        (optionsChanged)="optionsChanged.emit($event)" [options]="options"
-        (selectionChanged)="onSelectionChanged($event)" (sortChanged)="onSortChanged($event)"
-        (rowDoubleClicked)="rowDoubleClicked.emit($event)">
+      <yuv-responsive-data-table
+        yuvOfflineDisabled
+        #dataTable
+        class="data-table"
+        [data]="tableData"
+        [breakpoint]="400"
+        (optionsChanged)="optionsChanged.emit($event)"
+        [options]="options"
+        (selectionChanged)="onSelectionChanged($event)"
+        (sortChanged)="onSortChanged($event)"
+        (rowDoubleClicked)="rowDoubleClicked.emit($event)"
+      >
       </yuv-responsive-data-table>
 
-      <div class="footer paging">
+      <div class="footer paging" yuvOfflineDisabled>
         <div class="status">
           {{ 'yuv.framework.search-result.footer.hits' | translate: { count: totalNumItems } }}
         </div>

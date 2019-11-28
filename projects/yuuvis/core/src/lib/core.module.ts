@@ -6,6 +6,7 @@ import { YuvCoreSharedModule } from './core.shared.module';
 import { AuthInterceptor } from './service/auth/auth.interceptor';
 import { CoreConfig } from './service/config/core-config';
 import { CORE_CONFIG, CUSTOM_CONFIG } from './service/config/core-config.tokens';
+import { OfflineInterceptor } from './service/connection/offline.interceptor';
 import { CoreInit } from './service/core-init/core-init.service';
 import { EoxMissingTranslationHandler } from './service/core-init/missing-translation-handler';
 import { EoxTranslateJsonLoader } from './service/core-init/translate-json-loader';
@@ -44,6 +45,7 @@ export class YuvCoreModule {
         CoreInit,
         { provide: Logger, useClass: LoggerConsoleService },
         { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
+        { provide: HTTP_INTERCEPTORS, useClass: OfflineInterceptor, multi: true },
         { provide: CUSTOM_CONFIG, useValue: config },
         { provide: CORE_CONFIG, useClass: CoreConfig, deps: [CUSTOM_CONFIG] },
         {

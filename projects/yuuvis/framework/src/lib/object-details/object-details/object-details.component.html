@@ -1,15 +1,25 @@
-<yuv-panel *ngIf="dmsObject; else empty" class="object-details" [title]="dmsObject.title"
+<yuv-panel
+  *ngIf="dmsObject; else empty"
+  class="object-details"
+  [title]="dmsObject.title"
   (yuvFileDrop)="onFileDropped($event)"
-  [yuvFileDropOptions]="{disabled: dmsObject.contentStreamAllowed === 'notallowed'}"
-  [description]="dmsObject.description" [yuvBusyOverlay]="busy" [enableStandaloneBackButton]="true"
-  [standaloneFullscreen]="standaloneFullscreen" (backButtonClick)="standaloneBackButtonClicked()">
+  [yuvFileDropOptions]="{ disabled: dmsObject.contentStreamAllowed === 'notallowed' }"
+  [description]="dmsObject.description"
+  [yuvBusyOverlay]="busy"
+  [enableStandaloneBackButton]="true"
+  [standaloneFullscreen]="standaloneFullscreen"
+  (backButtonClick)="standaloneBackButtonClicked()"
+>
   <div class="header-icon" [innerHtml]="objectIcon | safeHtml"></div>
 
-  <yuv-action-menu-bar class="actions">
-    <yuv-icon (click)="refreshDetails()" [title]="'yuv.framework.list.refresh' | translate"
-      class="button refresh-button" [svg]="icons.refresh"></yuv-icon>
-    <yuv-icon (click)="openActionMenu()" [title]="'yuv.framework.object-details.tooltip.icon.actions' | translate"
-      class="button actions-button" [svg]="icons.kebap"></yuv-icon>
+  <yuv-action-menu-bar class="actions" yuvOfflineDisabled>
+    <yuv-icon (click)="refreshDetails()" [title]="'yuv.framework.list.refresh' | translate" class="button refresh-button" [svg]="icons.refresh"></yuv-icon>
+    <yuv-icon
+      (click)="openActionMenu()"
+      [title]="'yuv.framework.object-details.tooltip.icon.actions' | translate"
+      class="button actions-button"
+      [svg]="icons.kebap"
+    ></yuv-icon>
   </yuv-action-menu-bar>
 
   <yuv-action-menu-bar class="status" [className]="'status'">
@@ -31,8 +41,7 @@
 
     <p-tabPanel [id]="'indexdata'" [header]="'yuv.framework.object-details.tabs.indexdata.title' | translate">
       <ng-template pTemplate="content">
-        <yuv-object-form-edit [dmsObject]="dmsObject" (indexDataSaved)="onIndexdataSaved($event)">
-        </yuv-object-form-edit>
+        <yuv-object-form-edit [dmsObject]="dmsObject" (indexDataSaved)="onIndexdataSaved($event)"> </yuv-object-form-edit>
       </ng-template>
     </p-tabPanel>
 
@@ -49,8 +58,7 @@
     </p-tabPanel>
   </yuv-responsive-tab-container>
 </yuv-panel>
-<yuv-action-menu [(visible)]="actionMenuVisible" [selection]="actionMenuSelection">
-</yuv-action-menu>
+<yuv-action-menu [(visible)]="actionMenuVisible" [selection]="actionMenuSelection"> </yuv-action-menu>
 
 <ng-template #empty>
   <yuv-empty [icon]="icons.noFile"></yuv-empty>
