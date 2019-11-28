@@ -5,7 +5,7 @@ import { YuvCommonUiModule } from '@yuuvis/common-ui';
 import { TranslateModule } from '@yuuvis/core';
 import { TabViewModule } from 'primeng/tabview';
 import { YuvComponentsModule } from '../components/components.module';
-import { YuvDirectivesModule } from '../directives';
+import { YuvDirectivesModule } from '../directives/directives.module';
 import { YuvPipesModule } from '../pipes/pipes.module';
 import { YuvFormModule } from './../form/form.module';
 import { ObjectFormEditComponent } from './object-form-edit/object-form-edit.component';
