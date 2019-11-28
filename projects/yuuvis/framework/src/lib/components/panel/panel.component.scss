@@ -1,5 +1,9 @@
 @import '../../../../../../../src/scss-shared/_mixins';
 
+.screen-s .yuv-panel-wrapper {
+  grid-template-rows: auto 1fr;
+}
+
 .yuv-panel-wrapper {
   display: grid;
   background-color: var(--panel-background-grey);
@@ -52,7 +56,6 @@
     grid-template-areas: 'icon header_text actions' 'status status status';
     grid-area: header;
     padding: var(--app-pane-padding);
-    padding-bottom: 0;
     color: var(--text-color-caption);
 
     .header_text {
@@ -121,7 +124,7 @@
         width: 18px;
         // color: var(--text-color-caption);
       }
-      padding: calc(var(--app-pane-padding) / 2) 0;
+      // padding: calc(var(--app-pane-padding) / 2) 0;
     }
   }
 }
