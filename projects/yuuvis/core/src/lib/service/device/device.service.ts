@@ -23,6 +23,10 @@ export class DeviceService {
     this.isTablet = this.deviceService.isTablet();
     this.isDesktop = this.deviceService.isDesktop();
 
+    if (this.isMobile && screen && screen.orientation) {
+      screen.orientation.lock('portrait');
+    }
+
     this.logger.debug('device info', this.info);
     this.logger.debug(`mobile ${this.isMobile}`);
     this.logger.debug(`tablet: ${this.isTablet}`);

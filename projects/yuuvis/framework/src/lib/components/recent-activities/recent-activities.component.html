@@ -13,7 +13,7 @@
     <drag-scroll [snap-disabled]="true" [scroll-x-wheel-enabled]="true">
       <yuv-recent-acitivities-item drag-scroll-item *ngFor="let i of recentlyCreated" [recentItem]="i"
         (click)="triggerItemClicked(i)"></yuv-recent-acitivities-item>
-      <button drag-scroll-item
+      <button drag-scroll-item *ngIf="recentlyCreated?.length"
         (click)="triggerShowAll()">{{'yuv.framework.recent-activities.header.more'|translate}}</button>
     </drag-scroll>
 
@@ -23,7 +23,7 @@
     <drag-scroll [snap-disabled]="true" [scroll-x-wheel-enabled]="true">
       <yuv-recent-acitivities-item drag-scroll-item *ngFor="let i of recentlyModified" [recentItem]="i"
         (click)="triggerItemClicked(i)"></yuv-recent-acitivities-item>
-      <button drag-scroll-item
+      <button drag-scroll-item *ngIf="recentlyModified?.length"
         (click)="triggerShowAll()">{{'yuv.framework.recent-activities.header.more'|translate}}</button>
     </drag-scroll>
   </ng-container>

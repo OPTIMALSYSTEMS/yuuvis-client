@@ -1,24 +1,17 @@
 <div class="testing-controls">
-    <!-- <button (click)="created = !created">Toggle created</button>
-    <button (click)="modified = !modified">Toggle modified</button> -->
+    <button id="ra-cm" (click)="setConfig(config[0])">created & modified</button>
+    <button id="ra-c" (click)="setConfig(config[1])">created only</button>
+    <button id="ra-m" (click)="setConfig(config[2])">modified only</button>
+    <button id="ra-style" (click)="setConfig(config[3])">styling</button>
+    <button id="ra-size" (click)="setConfig(config[4])">size 5</button>
 </div>
 
 
-<yuv-recent-activities class="cmp" (itemClick)="onRecentItemClicked($event)" (showAll)="onShowAll($event)">
-</yuv-recent-activities>
+<ng-container *ngIf="currentConfig">
+    <yuv-recent-activities class="{{currentConfig.classes || 'cmp'}}" [created]="currentConfig.created"
+        [size]="currentConfig.size" [modified]="currentConfig.modified" (itemClick)="onRecentItemClicked($event)"
+        (showAll)="onShowAll($event)">
+    </yuv-recent-activities>
 
-<yuv-recent-activities class="cmp" [modified]="false" (itemClick)="onRecentItemClicked($event)"
-    (showAll)="onShowAll($event)">
-</yuv-recent-activities>
-
-<yuv-recent-activities class="cmp" [created]="false" (itemClick)="onRecentItemClicked($event)"
-    (showAll)="onShowAll($event)">
-</yuv-recent-activities>
-
-<yuv-recent-activities class="transparent" (itemClick)="onRecentItemClicked($event)" (showAll)="onShowAll($event)">
-</yuv-recent-activities>
-
-<yuv-recent-activities class="flipped" (itemClick)="onRecentItemClicked($event)" (showAll)="onShowAll($event)">
-</yuv-recent-activities>
-
-<pre class="res">{{res}}</pre>
+    <pre class="res">{{res}}</pre>
+</ng-container>

@@ -50,6 +50,28 @@ export class ScreenService {
   public screenChange$: Observable<Screen> = this.screenSource.asObservable();
   private resize$ = fromEvent(window, 'resize').pipe(debounceTime(this.getDebounceTime()));
 
+  private static getMode(bounds: ClientRect, orientation: string): string {
+    if (ScreenService.isBelow(ScreenService.upperBoundary.small, bounds)) {
+      return ScreenService.MODE.SMALL;
+    } else if (
+      ScreenService.isBelow(
+        orientation === ScreenService.ORIENTATION.LANDSCAPE ? ScreenService.upperBoundary.mediumLandscape : ScreenService.upperBoundary.mediumPortrait,
+        bounds
+      )
+    ) {
+      return ScreenService.MODE.MEDIUM;
+    } else if (ScreenService.isBelow(ScreenService.upperBoundary.large, bounds)) {
+      return ScreenService.MODE.LARGE;
+    } else {
+      return ScreenService.MODE.EXTRA_LARGE;
+    }
+  }
+
+  private static isBelow(size: number, bounds: ClientRect): boolean {
+    const landscape = bounds.width < ScreenService.upperBoundary.large ? bounds.width >= bounds.height : false;
+    return (landscape && bounds.height < size) || (!landscape && bounds.width < size);
+  }
+
   constructor(private ref: ApplicationRef, private device: DeviceService) {
     this.resize$.subscribe((e: Event) => {
       this.setScreen(e);
@@ -72,10 +94,16 @@ export class ScreenService {
     const mode = ScreenService.getMode(bounds, orientation);
 
     this.screen = {
-      mode: mode,
-      orientation: orientation,
+      mode,
+      orientation,
       width: bounds.width,
-      height: bounds.height
+      height: bounds.height,
+      isPortrait: orientation === ScreenService.ORIENTATION.PORTRAIT,
+      isLanscape: orientation === ScreenService.ORIENTATION.LANDSCAPE,
+      isSmall: mode === ScreenService.MODE.SMALL,
+      isMedium: mode === ScreenService.MODE.MEDIUM,
+      isLarge: mode === ScreenService.MODE.LARGE,
+      isExtraLarge: mode === ScreenService.MODE.EXTRA_LARGE
     };
     // set according css classes to the body
     const bodyElements: HTMLCollectionOf<HTMLBodyElement> = document.getElementsByTagName('body');
@@ -97,28 +125,6 @@ export class ScreenService {
     this.screenSource.next(this.screen);
     // force change detection because resize will not be recognized by Angular in some cases
     this.ref.tick();
-  }
-
-  private static getMode(bounds: ClientRect, orientation: string): string {
-    if (ScreenService.isBelow(ScreenService.upperBoundary.small, bounds)) {
-      return ScreenService.MODE.SMALL;
-    } else if (
-      ScreenService.isBelow(
-        orientation === ScreenService.ORIENTATION.LANDSCAPE ? ScreenService.upperBoundary.mediumLandscape : ScreenService.upperBoundary.mediumPortrait,
-        bounds
-      )
-    ) {
-      return ScreenService.MODE.MEDIUM;
-    } else if (ScreenService.isBelow(ScreenService.upperBoundary.large, bounds)) {
-      return ScreenService.MODE.LARGE;
-    } else {
-      return ScreenService.MODE.EXTRA_LARGE;
-    }
-  }
-
-  private static isBelow(size: number, bounds: ClientRect): boolean {
-    const landscape = bounds.width < ScreenService.upperBoundary.large ? bounds.width >= bounds.height : false;
-    return (landscape && bounds.height < size) || (!landscape && bounds.width < size);
   }
 
   private getDebounceTime() {

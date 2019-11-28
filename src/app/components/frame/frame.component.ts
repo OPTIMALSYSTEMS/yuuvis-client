@@ -59,6 +59,8 @@ export class FrameComponent implements OnInit {
       this.swUpdateAvailable = true;
     });
 
+    this.router.events.subscribe(e => console.log(e));
+
     this.layoutService.layoutSettings$.subscribe((settings: LayoutSettings) => {
       this.applyLayoutSettings(settings);
     });

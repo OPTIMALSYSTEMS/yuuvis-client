@@ -137,14 +137,15 @@ export class SystemService {
    */
   private setSchema(schemaResponse: SchemaResponse, localizedResource: any) {
     const objectTypes: ObjectType[] = schemaResponse.objectTypes.map((ot: SchemaResponseTypeDefinition) => {
+      const isFolder = ot.baseId === 'folder';
       return new ObjectType({
         id: ot.id,
         localNamespace: ot.localNamespace,
         description: ot.description,
         baseId: ot.baseId,
         creatable: ot.creatable,
-        contentStreamAllowed: ot.contentStreamAllowed,
-        isFolder: ot.baseId === 'folder',
+        contentStreamAllowed: isFolder ? 'notallowed' : ot.contentStreamAllowed,
+        isFolder: isFolder,
         fields: ot.fields
       });
     });
