@@ -18,7 +18,7 @@ export class UploadProgressOverlayComponent {
   minimized: boolean;
   allDone: boolean;
   progressStatus$: Observable<ProgressStatus>;
-  completed$: Observable<boolean>;
+  completed: boolean;
 
   // besides listening to the upload service you may want to use
   // the input to provide the component with data (also nice for testing :)
@@ -35,9 +35,9 @@ export class UploadProgressOverlayComponent {
   }
 
   private runningProcess(ps: ProgressStatus) {
-    forkJoin(ps.items.map(p => p.progress)).subscribe(
-      results => (this.completed$ = of(true)),
-      err => (this.completed$ = of(true))
+    forkJoin(((ps && ps.items) || []).map(p => p.progress)).subscribe(
+      results => (this.completed = true),
+      err => (this.completed = true)
     );
   }
 

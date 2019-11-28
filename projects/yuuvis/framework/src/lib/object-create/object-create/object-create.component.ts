@@ -157,7 +157,7 @@ export class ObjectCreateComponent implements OnDestroy {
           if (res.length > 1) {
             this.location.back();
           } else {
-            const id = Utils.getProperty(res, '0.system:objectId.value');
+            const id = Utils.getProperty(res, '0.properties.system:objectId.value');
             if (id) {
               // TODO: remove timeout when backend is synced
               setTimeout(() => this.router.navigate(['object', id]), 1000);

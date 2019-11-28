@@ -3,13 +3,12 @@
     [ngClass]="{'mini': minimized, panelError: ps.err > 0, allErr: ps.err === ps.items.length, 'finished': allDone}">
 
     <header class="uploadProgress__header" (click)="minimized = !minimized">
-      <div class="title" [ngClass]="{complete: (completed$ | async) === true}">{{'yuv.framework.upload-progress-overlay.title'|translate}}</div>
+      <div class="title" [ngClass]="{complete: completed}">{{'yuv.framework.upload-progress-overlay.title'|translate}}</div>
       <yuv-icon [svg]="icon.minimize"></yuv-icon>
     </header>
     <section class="files">
-      <div class="progress-item" *ngFor="let item of ps.items; trackBy: trackByFn"
-        [ngClass]="{err: !!item.err, done: item.result}">
-        <yuv-icon [svg]="icon.remove" (click)="remove(item.id)"></yuv-icon>
+      <div class="progress-item" *ngFor="let item of ps.items; trackBy: trackByFn" [ngClass]="{err: !!item.err, done: !!item.result}">
+        <yuv-icon [svg]="icon.remove" class="remove" [ngClass]="{err: !!item.err, done: !!item.result}" (click)="remove(item.id)"></yuv-icon>
 
         <ng-container *ngIf="!item.result; else tplResult">
           <div class="name">{{ item.filename }}</div>
