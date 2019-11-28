@@ -10,12 +10,7 @@ $user-panel-width: 180px;
   display: grid;
   grid-template-columns: 1fr;
   grid-template-rows: var(--app-bar-height) 1fr;
-  grid-template-areas: 'header' 'content';
-
-  &.offline .app-bar {
-    opacity: 0.5;
-    pointer-events: none;
-  }
+  grid-template-areas: 'header''content';
 
   .app-bar {
     grid-area: header;
@@ -30,12 +25,12 @@ $user-panel-width: 180px;
 
     yuv-icon#drawer {
       padding: calc(((var(--app-bar-height) - 24px) / 2) - ((var(--app-bar-height) - 32px) / 4));
-      // background-color: var(--color-accent);
-      // border-radius: 0;
     }
+
     a#logo {
       color: currentColor;
       margin: 0 calc(var(--app-pane-padding) / 2);
+
       yuv-icon {
         width: 32px;
         padding: calc(((var(--app-bar-height) - 32px) / 2) - ((var(--app-bar-height) - 32px) / 4));
@@ -50,6 +45,7 @@ $user-panel-width: 180px;
       flex-flow: row nowrap;
       align-items: center;
       padding: 0 calc(var(--app-pane-padding) * 0.5);
+
       yuv-icon {
         padding: calc(var(--app-pane-padding) / 2);
 
@@ -59,11 +55,16 @@ $user-panel-width: 180px;
         }
       }
     }
+
     .right {
       display: flex;
       flex-flow: row nowrap;
       align-items: center;
       flex: 0 0 auto;
+
+      .offline-icon {
+        color: var(--color-error);
+      }
 
       .user {
         border-radius: 50%;
@@ -81,6 +82,7 @@ $user-panel-width: 180px;
       }
     }
   }
+
   .app-content {
     height: calc(100vh - var(--app-bar-height));
     order: 0;
@@ -91,6 +93,7 @@ $user-panel-width: 180px;
 
   yuv-sidebar .navigation-list {
     padding: var(--app-pane-padding) 0;
+
     .nav-item a {
       display: block;
       color: #fff;
@@ -121,7 +124,8 @@ $user-panel-width: 180px;
         .user-title {
           opacity: 1;
           padding: calc(var(--app-pane-padding) / 2) calc(var(--app-pane-padding) / 2) calc(var(--app-pane-padding) / 2) var(--app-pane-padding);
-          > yuv-icon {
+
+          >yuv-icon {
             display: none;
           }
         }
@@ -143,11 +147,11 @@ $user-panel-width: 180px;
         display: flex;
         align-items: center;
 
-        > yuv-icon {
+        >yuv-icon {
           margin: 0 calc(var(--app-pane-padding) / 2);
         }
 
-        > div {
+        >div {
           display: flex;
           flex: 1;
           flex-flow: column;
@@ -178,7 +182,6 @@ $user-panel-width: 180px;
     }
   }
 
-  &.offline,
   &.transparentAppBar {
     .app-bar {
       background-color: transparent;
@@ -190,10 +193,10 @@ $user-panel-width: 180px;
       }
 
       yuv-icon#drawer {
-        // background-color: transparent;
         border: none;
       }
     }
+
     .app-content {
       height: 100vh;
       grid-column: 1;

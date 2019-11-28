@@ -12,20 +12,21 @@ import { OfflineComponent } from '../states/offline/offline.component';
 import { ResultComponent } from '../states/result/result.component';
 import { SettingsComponent } from '../states/settings/settings.component';
 import { AuthGuard } from './auth-guard/auth-guard.service';
+import { OfflineGuard } from './offline-guard/offline-guard.service';
 
 const routes: Routes = [
   {
     path: 'dashboard',
     component: DashboardComponent,
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard, OfflineGuard]
   },
-  { path: 'enter', component: EnterComponent },
-  { path: 'settings', component: SettingsComponent, canActivate: [AuthGuard] },
-  { path: 'about', component: AboutComponent, canActivate: [AuthGuard] },
-  { path: 'create', component: CreateComponent, canActivate: [AuthGuard], canDeactivate: [PendingChangesGuard] },
-  { path: 'result', component: ResultComponent, canActivate: [AuthGuard], canDeactivate: [PendingChangesGuard] },
-  { path: 'offline', component: OfflineComponent, canActivate: [AuthGuard] },
-  { path: 'object/:id', component: ObjectComponent, canActivate: [AuthGuard], canDeactivate: [PendingChangesGuard] },
+  { path: 'enter', component: EnterComponent, canActivate: [OfflineGuard] },
+  { path: 'settings', component: SettingsComponent, canActivate: [AuthGuard, OfflineGuard] },
+  { path: 'about', component: AboutComponent, canActivate: [AuthGuard, OfflineGuard] },
+  { path: 'create', component: CreateComponent, canActivate: [AuthGuard, OfflineGuard], canDeactivate: [PendingChangesGuard] },
+  { path: 'result', component: ResultComponent, canActivate: [AuthGuard, OfflineGuard], canDeactivate: [PendingChangesGuard] },
+  { path: 'offline', component: OfflineComponent, canActivate: [AuthGuard, OfflineGuard] },
+  { path: 'object/:id', component: ObjectComponent, canActivate: [AuthGuard, OfflineGuard], canDeactivate: [PendingChangesGuard] },
   // default route
   { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
   // 404 route

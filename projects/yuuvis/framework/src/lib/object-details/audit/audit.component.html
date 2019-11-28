@@ -1,25 +1,20 @@
-<div class="yuv-audit" [ngClass]="{singleEntry: auditsRes?.items?.length === 1, onPage: auditsRes?.page > 1}"
-  [yuvBusyOverlay]="busy">
-
+<div class="yuv-audit" [ngClass]="{ singleEntry: auditsRes?.items?.length === 1, onPage: auditsRes?.page > 1 }" [yuvBusyOverlay]="busy">
   <div class="error" *ngIf="error">
     <div translate>yuv.framework.audit.fetch.error</div>
   </div>
 
   <ng-container *ngIf="auditsRes">
-
     <!-- query / filter form -->
-    <form (ngSubmit)="query()" [formGroup]="searchForm" class="search" *ngIf="searchPanelShow"
-      (yuvOutsideClick)="closeSearchPanel()">
+    <form yuvOfflineDisabled (ngSubmit)="query()" [formGroup]="searchForm" class="search" *ngIf="searchPanelShow" (yuvOutsideClick)="closeSearchPanel()">
       <h3 translate>yuv.framework.audit.search.title</h3>
       <div class="controls">
-
         <!-- date range -->
-        <yuv-form-input [label]="'yuv.framework.audit.search.daterange'|translate" [skipToggle]="true">
+        <yuv-form-input [label]="'yuv.framework.audit.search.daterange' | translate" [skipToggle]="true">
           <yuv-datetime-range [withTime]="true" formControlName="dateRange"></yuv-datetime-range>
         </yuv-form-input>
         <!-- actions -->
         <div class="form-control" *ngFor="let group of searchActions">
-          <button type="button" class="group" (click)="toggleGroupActions(group.actions)">{{group.label}}</button>
+          <button type="button" class="group" (click)="toggleGroupActions(group.actions)">{{ group.label }}</button>
           <yuv-form-input class="checkbox" [skipToggle]="true" [label]="auditLabels[c]" *ngFor="let c of group.actions">
             <yuv-checkbox [formControlName]="c"></yuv-checkbox>
           </yuv-form-input>
@@ -28,28 +23,31 @@
       <div class="buttons">
         <!-- <button type="button" (click)="closeSearchPanel()" translate>yuv.framework.audit.search.button.close</button> -->
         <button type="button" (click)="resetSearchPanel()" translate>yuv.framework.audit.search.button.reset</button>
-        <button class="primary" type="submit" [disabled]="searchForm.invalid"
-          translate>yuv.framework.audit.search.button.submit</button>
+        <button class="primary" type="submit" [disabled]="searchForm.invalid" translate>yuv.framework.audit.search.button.submit</button>
       </div>
     </form>
 
     <!-- list of audits -->
     <div class="audits" *ngIf="auditsRes.items.length; else tplEmpty">
-      <div class="audit-entry" *ngFor="let a of auditsRes.items" class="g{{a.actionGroup}}"
-        [ngClass]="{versionEnabled: a.actionGroup === 3 || a.actionGroup === 2}">
+      <div
+        class="audit-entry"
+        *ngFor="let a of auditsRes.items"
+        class="g{{ a.actionGroup }}"
+        [ngClass]="{ versionEnabled: a.actionGroup === 3 || a.actionGroup === 2 }"
+      >
         <div class="created">
-          <div class="date">{{a.creationDate | localeDate: 'eoShortDate'}}</div>
-          <div class="time meta">{{a.creationDate | localeDate: 'eoShortTime'}}</div>
+          <div class="date">{{ a.creationDate | localeDate: 'eoShortDate' }}</div>
+          <div class="time meta">{{ a.creationDate | localeDate: 'eoShortTime' }}</div>
         </div>
         <div class="timeline"></div>
         <div class="content">
           <div class="entry">
             <div class="title">
-              <span>{{auditLabels['a' + a.action]}}</span>
-              <span class="version" title="{{'yuv.framework.audit.version'|translate}}">{{a.version}}</span>
+              <span>{{ auditLabels['a' + a.action] }}</span>
+              <span class="version" title="{{ 'yuv.framework.audit.version' | translate }}">{{ a.version }}</span>
             </div>
             <div class="creator meta">
-              {{a.createdBy.title}}
+              {{ a.createdBy.title }}
             </div>
           </div>
         </div>
@@ -61,8 +59,8 @@
     </ng-template>
 
     <!-- controls -->
-    <div class="footer">
-      <button class="btn-search" [ngClass]="{badge: filtered}" (click)="openSearchPanel()">
+    <div class="footer" yuvOfflineDisabled>
+      <button class="btn-search" [ngClass]="{ badge: filtered }" (click)="openSearchPanel()">
         <yuv-icon [svg]="icon.search"></yuv-icon>
       </button>
       <div class="paging" *ngIf="auditsRes.hasMoreItems || auditsRes.page > 1">
@@ -70,7 +68,7 @@
           <yuv-icon class="prev" [svg]="icon.arrowNext"></yuv-icon>
         </button>
         <div class="page">
-          {{auditsRes.page}}
+          {{ auditsRes.page }}
         </div>
         <button [disabled]="!auditsRes.hasMoreItems" (click)="goToPage(auditsRes.page + 1)">
           <yuv-icon class="next" [svg]="icon.arrowNext"></yuv-icon>

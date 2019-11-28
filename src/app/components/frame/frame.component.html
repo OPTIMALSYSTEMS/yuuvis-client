@@ -1,15 +1,18 @@
-<div class="app-bar" *ngIf="!hideAppBar">
-  <yuv-icon class="btn" id="drawer" (click)="showSideBar = true" replaceUrl
-    [iconSrc]="'assets/default/svg/ic_drawer.svg'"></yuv-icon>
+<div class="app-bar" *ngIf="!hideAppBar" yuvOfflineDisabled>
+  <yuv-icon class="btn" id="drawer" (click)="showSideBar = true" replaceUrl [iconSrc]="'assets/default/svg/ic_drawer.svg'"></yuv-icon>
   <a routerLink="/" id="logo">
     <yuv-icon class="btn" [iconSrc]="'assets/default/theme/app.icon.svg'"></yuv-icon>
   </a>
   <div class="main">
-    <yuv-icon class="btn" routerLink="/create" [title]="'yuv.framework.object-create.header.title'|translate"
-      [iconSrc]="'assets/default/svg/ic_add.svg'"></yuv-icon>
+    <yuv-icon
+      class="btn"
+      routerLink="/create"
+      [title]="'yuv.framework.object-create.header.title' | translate"
+      [iconSrc]="'assets/default/svg/ic_add.svg'"
+    ></yuv-icon>
   </div>
   <div class="right">
-    <!-- <yuv-icon class="btn"routerLink="/result"  [iconSrc]="'assets/default/svg/ic_favorite.svg'"></yuv-icon> -->
+    <yuv-icon *ngIf="offline" class="offline-icon" [svg]="offlineSVG"></yuv-icon>
     <div class="user" (click)="op.toggle($event)">
       <yuv-user-avatar [user]="user"></yuv-user-avatar>
     </div>
