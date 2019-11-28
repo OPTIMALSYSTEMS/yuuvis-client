@@ -11,7 +11,7 @@ import { DragScrollModule } from 'ngx-drag-scroll';
 import { DialogModule } from 'primeng/dialog';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { TabViewModule } from 'primeng/tabview';
-import { YuvDirectivesModule } from '../directives';
+import { YuvDirectivesModule } from '../directives/directives.module';
 import { YuvPipesModule } from '../pipes/pipes.module';
 import { ActionMenuBarComponent } from './action-menu-bar/action-menu-bar.component';
 import { BusyOverlayDirective } from './busy-overlay/busy-overlay.directive';
