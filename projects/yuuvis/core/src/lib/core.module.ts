@@ -27,7 +27,6 @@ export function init_module(coreInit: CoreInit) {
   // Need to set to a const before returning due to:
   // @see: https://github.com/angular/angular/issues/14485
   const fnc: Function = () => {
-    console.log('Init CORE');
     return coreInit.initialize();
   };
   return fnc;

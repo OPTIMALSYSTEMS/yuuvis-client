@@ -9,7 +9,7 @@
       [iconSrc]="'assets/default/svg/ic_add.svg'"></yuv-icon>
   </div>
   <div class="right">
-    <yuv-icon *ngIf="offline" class="offline-icon" [svg]="offlineSVG"></yuv-icon>
+    <yuv-icon *ngIf="offline" class="offline-icon" [svg]="offlineSVG" title="offline"></yuv-icon>
     <div yuvOfflineDisabled class="user" (click)="op.toggle($event)">
       <yuv-user-avatar [user]="user"></yuv-user-avatar>
     </div>
