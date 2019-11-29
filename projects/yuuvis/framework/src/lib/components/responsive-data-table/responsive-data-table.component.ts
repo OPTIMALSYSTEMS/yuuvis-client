@@ -9,6 +9,8 @@ import { takeUntilDestroy } from 'take-until-destroy';
 import { ColumnSizes } from '../../services/grid/grid.interface';
 import { ResponsiveTableData } from './responsive-data-table.interface';
 
+export type ViewMode = 'standard' | 'horizontal' | 'vertical' | 'auto';
+
 /**
  * Responsive DataTable
  */
@@ -29,8 +31,9 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
   private _currentSelection: string[] = [];
 
   private settings = {
-    headerHeight: { default: 37, small: 0 },
-    rowHeight: { default: 48, small: 70 }
+    headerHeight: { standard: 37, horizontal: 0, vertical: 0 },
+    rowHeight: { standard: 48, horizontal: 70, vertical: 1 },
+    colWidth: { standard: 'auto', horizontal: 'auto', vertical: 140 }
   };
 
   gridOptions: GridOptions;
@@ -50,15 +53,23 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
   @Input() set data(data: ResponsiveTableData) {
     this._data = data;
     if (this.gridOptions) {
-      this.applyGridOption(this.small);
+      this.applyGridOption();
     } else {
       this.setupGridOptions();
     }
   }
+
+  /**
+   * view mode of the table
+   */
+  @Input() viewMode: ViewMode = 'auto';
+
+  currentViewMode: ViewMode = 'standard';
+
   /**
    * width (number in pixel) of the table below which it should switch to small view
    */
-  @Input() breakpoint = 600;
+  @Input() breakpoint = 400;
 
   /**
    * emits an array of the selected rows
@@ -75,7 +86,20 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
   @Output() columnResized = new EventEmitter<ColumnSizes>();
 
   @HostBinding('class.yuv-responsive-data-table') _hostClass = true;
-  @HostBinding('class.small') small = false;
+
+  @HostBinding('class.small') get isSmall() {
+    return this.currentViewMode !== 'standard';
+  }
+  @HostBinding('class.standard') get isStandard() {
+    return this.currentViewMode === 'standard';
+  }
+  @HostBinding('class.horizontal') get isHorizontal() {
+    return this.currentViewMode === 'horizontal';
+  }
+  @HostBinding('class.vertical') get isVertical() {
+    return this.currentViewMode === 'vertical';
+  }
+
   @HostListener('keydown.control.c', ['$event'])
   copyCellHandler(event: KeyboardEvent) {
     // copy cell
@@ -95,11 +119,12 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
         // debounceTime(500)
       )
       .subscribe((e: ResizedEvent) => {
-        const small = e.newWidth < this.breakpoint;
+        const vm =
+          this.viewMode === 'auto' ? (e.newHeight < this.breakpoint ? 'vertical' : e.newWidth < this.breakpoint ? 'horizontal' : 'standard') : this.viewMode;
 
-        if (this.gridOptions && this.gridOptions.api && this.small !== small) {
-          this.small = small;
-          this.applyGridOption(small);
+        if (this.gridOptions && this.gridOptions.api && this.currentViewMode !== vm) {
+          this.currentViewMode = vm;
+          this.applyGridOption();
         }
       });
     // subscribe to columns beeing resized
@@ -109,7 +134,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
         debounceTime(1000)
       )
       .subscribe((e: ResizedEvent) => {
-        if (!this.small) {
+        if (this.isStandard) {
           this.columnResized.emit({
             columns: this.gridOptions.columnApi.getColumnState().map(columnState => ({
               id: columnState.colId,
@@ -161,11 +186,11 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
     }
   }
 
-  private applyGridOption(small?: boolean) {
+  private applyGridOption() {
     this.gridOptions.api.setRowData(this._data.rows);
-    this.gridOptions.api.setHeaderHeight(small ? this.settings.headerHeight.small : this.settings.headerHeight.default);
+    this.gridOptions.api.setHeaderHeight(this.settings.headerHeight[this.currentViewMode]);
 
-    const columns = small ? [this.getSmallSizeColDef()] : this._data.columns;
+    const columns = this.isSmall ? [this.getSmallSizeColDef()] : this._data.columns;
     if (JSON.stringify(this.gridOptions.columnDefs) !== JSON.stringify(columns)) {
       this.gridOptions.columnDefs = columns;
       this.gridOptions.api.setColumnDefs(columns);
@@ -175,7 +200,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
       this.gridOptions.api.setSortModel([...this._data.sortModel]);
     }
 
-    if (small) {
+    if (this.isSmall) {
       // gridOptions to be applied for the small view
       this.gridOptions.columnApi.autoSizeAllColumns();
       this.gridOptions.api.sizeColumnsToFit();
@@ -187,15 +212,13 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
 
   private getSmallSizeColDef(): ColDef {
     const colDef: ColDef = {
-      field: BaseObjectTypeField.OBJECT_ID
-    };
-    colDef.cellClass = 'cell-title-description';
-
-    colDef.cellRenderer = params => {
-      return `
-        <div class="title">${params.data[this._data.titleField] || params.value || ''}</div>
-        <div class="description">${params.data[this._data.descriptionField] || ''}</div>
-      `;
+      field: BaseObjectTypeField.OBJECT_ID,
+      cellClass: 'cell-title-description',
+      minWidth: this.isVertical ? this._data.rows.length * (this.settings.colWidth.vertical + 5) : 0,
+      cellRenderer: params => `
+          <div class="title">${params.data[this._data.titleField] || params.value || ''}</div>
+          <div class="description">${params.data[this._data.descriptionField] || ''}</div>
+        `
     };
     return colDef;
   }
@@ -225,12 +248,12 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
         return data.id;
       },
       getRowHeight: () => {
-        return this.small ? this.settings.rowHeight.small : this.settings.rowHeight.default;
+        return this.settings.rowHeight[this.currentViewMode];
       },
       rowData: this._data.rows,
       columnDefs: this._data.columns,
-      headerHeight: this.settings.headerHeight.default,
-      rowHeight: this.settings.rowHeight.default,
+      headerHeight: this.settings.headerHeight.standard,
+      rowHeight: this.settings.rowHeight.standard,
       suppressCellSelection: false,
       rowSelection: this._data.selectType || 'single',
       rowDeselection: true,
