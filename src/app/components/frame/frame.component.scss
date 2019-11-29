@@ -64,7 +64,14 @@ $user-panel-width: 180px;
       flex: 0 0 auto;
 
       .offline-icon {
-        color: var(--color-error);
+        background-color: var(--color-accent);
+        border-radius: 50%;
+        color: #fff;
+        width: 18px;
+        height: 18px;
+        padding: 8px;
+        box-sizing: content-box;
+        animation: offlinepulse 2s infinite;
       }
 
       .user {
@@ -204,5 +211,17 @@ $user-panel-width: 180px;
     .app-content {
       padding-top: 0;
     }
+  }
+}
+
+@keyframes offlinepulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(var(--color-accent-rgb), 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 100px rgba(var(--color-accent-rgb), 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(var(--color-accent-rgb), 0);
   }
 }

@@ -5,18 +5,15 @@ import { switchMap, tap } from 'rxjs/operators';
 import { UserSettings, YuvUser } from '../../model/yuv-user.model';
 import { BackendService } from '../backend/backend.service';
 import { AppCacheService } from '../cache/app-cache.service';
-import { ConfigService } from '../config/config.service';
 import { CoreConfig } from '../config/core-config';
 import { CORE_CONFIG } from '../config/core-config.tokens';
+import { EventService } from '../event/event.service';
+import { YuvEventType } from '../event/events';
 import { SystemService } from '../system/system.service';
 import { UserService } from '../user/user.service';
 
 /**
- * Got some code here
- *
- * ```html
- * <h1>Thats my stuff</h1>
- * ```
+ * Service handling authentication related issues.
  */
 @Injectable({
   providedIn: 'root'
@@ -31,13 +28,14 @@ export class AuthService {
 
   constructor(
     @Inject(CORE_CONFIG) public coreConfig: CoreConfig,
-    private config: ConfigService,
+    private eventService: EventService,
     private translate: TranslateService,
     private userService: UserService,
     private systemService: SystemService,
     private backend: BackendService,
     private appCache: AppCacheService
   ) {
+    // load authentication related properties stored from previous sessions
     this.appCache.getItem(this.STORAGE_KEY).subscribe((data: AuthData) => {
       this.authData = data;
       if (data && data.language) {
@@ -55,7 +53,7 @@ export class AuthService {
   }
 
   /**
-   * Gets called while app init
+   * Called while app/core is initialized (APP_INITIALIZER)
    * @ignore
    */
   initUser(host?: string) {
@@ -63,16 +61,6 @@ export class AuthService {
     let browserLang = this.translate.getBrowserLang();
     this.translate.use(browserLang.match(/en|de/) ? browserLang : 'en');
     return this.fetchUser();
-
-    // return this.storage.getItem(this.TOKEN_STORAGE_KEY).pipe(
-    //   switchMap((res: any) => {
-    //     // if (res) {
-    //     //   // this.cloudLoginSetHeaders(res.accessToken, res.tenant);
-    //     //   this.backend.setHost(host);
-    //     // }
-    //     return this.fetchUser();
-    //   })
-    // );
   }
 
   /**
@@ -82,6 +70,9 @@ export class AuthService {
     return this.authData ? this.authData.tenant : null;
   }
 
+  /**
+   * Fetch information about the user currently logged in
+   */
   fetchUser(): Observable<YuvUser> {
     return this.backend.get(this.userService.USER_FETCH_URI).pipe(
       tap(() => {
@@ -94,18 +85,17 @@ export class AuthService {
 
   /**
    * Logs out the current user.
-   * @param gatewayLogout Flag indicating whether or not to perform a gateway logout as well
    */
   logout() {
     this.authenticated = false;
     this.authSource.next(this.authenticated);
-    // TODO: enable again: this.eventService.trigger(EnaioEvent.LOGOUT);
+    this.eventService.trigger(YuvEventType.LOGOUT);
   }
 
   /**
-   * Initialize/setup the application for a given user.
-   * @param user
-   * @returns Observable<YuvUser>
+   * Initialize/setup the application for a given user. This involves fetching
+   * settings and schema information.
+   * @param userJson Data retrieved from the backend
    */
   private initApp(userJson: any): Observable<YuvUser> {
     return this.systemService.getSystemDefinition().pipe(
@@ -113,15 +103,13 @@ export class AuthService {
       switchMap((userSettings: UserSettings) => {
         const currentUser = new YuvUser(userJson, userSettings);
         this.userService.setCurrentUser(currentUser);
-        this.backend.setHeader('Accept-Language', currentUser.getClientLocale());
-        this.backend.setHeader('X-ID-TENANT-NAME', currentUser.tenant);
-
         this.authData = {
           tenant: currentUser.tenant,
           language: currentUser.getClientLocale()
         };
+        this.backend.setHeader('Accept-Language', this.authData.language);
+        this.backend.setHeader('X-ID-TENANT-NAME', this.authData.tenant);
         this.appCache.setItem(this.STORAGE_KEY, this.authData).subscribe();
-
         return of(currentUser);
       })
     );
