@@ -9,7 +9,7 @@ import { takeUntilDestroy } from 'take-until-destroy';
 import { ColumnSizes } from '../../services/grid/grid.interface';
 import { ResponsiveTableData } from './responsive-data-table.interface';
 
-export type ViewMode = 'standard' | 'horizontal' | 'vertical' | 'auto';
+export type ViewMode = 'standard' | 'horizontal' | 'vertical' | 'grid' | 'auto';
 
 /**
  * Responsive DataTable
@@ -31,9 +31,9 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
   private _currentSelection: string[] = [];
 
   private settings = {
-    headerHeight: { standard: 37, horizontal: 0, vertical: 0 },
-    rowHeight: { standard: 48, horizontal: 70, vertical: 1 },
-    colWidth: { standard: 'auto', horizontal: 'auto', vertical: 140 }
+    headerHeight: { standard: 37, horizontal: 0, vertical: 0, grid: 0 },
+    rowHeight: { standard: 48, horizontal: 70, vertical: 1, grid: 1 },
+    colWidth: { standard: 'auto', horizontal: 'auto', vertical: 140, grid: 140 }
   };
 
   gridOptions: GridOptions;
@@ -62,9 +62,30 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
   /**
    * view mode of the table
    */
-  @Input() viewMode: ViewMode = 'auto';
+  @Input() set viewMode(viewMode: ViewMode) {
+    this._viewMode = viewMode || 'auto';
+    this.currentViewMode = this._viewMode;
+  }
 
-  currentViewMode: ViewMode = 'standard';
+  get viewMode() {
+    return this._viewMode;
+  }
+
+  set currentViewMode(viewMode: ViewMode) {
+    viewMode = this.viewMode === 'auto' ? this._autoViewMode : this.viewMode;
+    if (this.currentViewMode !== viewMode) {
+      this._currentViewMode = viewMode;
+      this.applyGridOption();
+    }
+  }
+
+  get currentViewMode() {
+    return this._currentViewMode;
+  }
+
+  private _viewMode: ViewMode = 'auto';
+  private _currentViewMode: ViewMode = 'standard';
+  private _autoViewMode: ViewMode = 'standard';
 
   /**
    * width (number in pixel) of the table below which it should switch to small view
@@ -99,6 +120,9 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
   @HostBinding('class.vertical') get isVertical() {
     return this.currentViewMode === 'vertical';
   }
+  @HostBinding('class.grid') get isGrid() {
+    return this.currentViewMode === 'grid';
+  }
 
   @HostListener('keydown.control.c', ['$event'])
   copyCellHandler(event: KeyboardEvent) {
@@ -119,31 +143,21 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
         // debounceTime(500)
       )
       .subscribe((e: ResizedEvent) => {
-        const vm =
-          this.viewMode === 'auto' ? (e.newHeight < this.breakpoint ? 'vertical' : e.newWidth < this.breakpoint ? 'horizontal' : 'standard') : this.viewMode;
-
-        if (this.gridOptions && this.gridOptions.api && this.currentViewMode !== vm) {
-          this.currentViewMode = vm;
-          this.applyGridOption();
-        }
+        this._autoViewMode = e.newHeight < this.breakpoint ? 'vertical' : e.newWidth < this.breakpoint ? 'horizontal' : 'standard';
+        this.currentViewMode = this._autoViewMode;
       });
     // subscribe to columns beeing resized
-    this.columnResize$
-      .pipe(
-        takeUntilDestroy(this),
-        debounceTime(1000)
-      )
-      .subscribe((e: ResizedEvent) => {
-        if (this.isStandard) {
-          this.columnResized.emit({
-            columns: this.gridOptions.columnApi.getColumnState().map(columnState => ({
-              id: columnState.colId,
-              width: columnState.width
-            }))
-          });
-          this.optionsChanged.emit(Utils.arrayToObject(this.gridOptions.columnApi.getColumnState(), 'colId', 'width'));
-        }
-      });
+    this.columnResize$.pipe(takeUntilDestroy(this), debounceTime(1000)).subscribe((e: ResizedEvent) => {
+      if (this.isStandard) {
+        this.columnResized.emit({
+          columns: this.gridOptions.columnApi.getColumnState().map(columnState => ({
+            id: columnState.colId,
+            width: columnState.width
+          }))
+        });
+        this.optionsChanged.emit(Utils.arrayToObject(this.gridOptions.columnApi.getColumnState(), 'colId', 'width'));
+      }
+    });
 
     // subscribe to pending hanges
     this.pendingChanges.tasks$.pipe(takeUntilDestroy(this)).subscribe(tasks => this.gridOptions && (this.gridOptions.suppressCellSelection = !!tasks.length));
@@ -187,34 +201,36 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
   }
 
   private applyGridOption() {
-    this.gridOptions.api.setRowData(this._data.rows);
-    this.gridOptions.api.setHeaderHeight(this.settings.headerHeight[this.currentViewMode]);
+    if (this.gridOptions && this.gridOptions.api) {
+      this.gridOptions.api.setRowData(this._data.rows);
+      this.gridOptions.api.setHeaderHeight(this.settings.headerHeight[this.currentViewMode]);
 
-    const columns = this.isSmall ? [this.getSmallSizeColDef()] : this._data.columns;
-    if (JSON.stringify(this.gridOptions.columnDefs) !== JSON.stringify(columns)) {
-      this.gridOptions.columnDefs = columns;
-      this.gridOptions.api.setColumnDefs(columns);
-    }
+      const columns = this.isSmall ? [this.getSmallSizeColDef()] : this._data.columns;
+      if (JSON.stringify(this.gridOptions.columnDefs) !== JSON.stringify(columns)) {
+        this.gridOptions.columnDefs = columns;
+        this.gridOptions.api.setColumnDefs(columns);
+      }
 
-    if (this._data.sortModel) {
-      this.gridOptions.api.setSortModel([...this._data.sortModel]);
-    }
+      if (this._data.sortModel) {
+        this.gridOptions.api.setSortModel([...this._data.sortModel]);
+      }
 
-    if (this.isSmall) {
-      // gridOptions to be applied for the small view
-      this.gridOptions.columnApi.autoSizeAllColumns();
-      this.gridOptions.api.sizeColumnsToFit();
+      if (this.isSmall) {
+        // gridOptions to be applied for the small view
+        this.gridOptions.columnApi.autoSizeAllColumns();
+        this.gridOptions.api.sizeColumnsToFit();
+      }
+      // if the small state changed, a different set of rowData is applied to the grid
+      // so we need to reselect the items that were selected before
+      this.selectRows(this._currentSelection);
     }
-    // if the small state changed, a different set of rowData is applied to the grid
-    // so we need to reselect the items that were selected before
-    this.selectRows(this._currentSelection);
   }
 
   private getSmallSizeColDef(): ColDef {
     const colDef: ColDef = {
       field: BaseObjectTypeField.OBJECT_ID,
       cellClass: 'cell-title-description',
-      minWidth: this.isVertical ? this._data.rows.length * (this.settings.colWidth.vertical + 5) : 0,
+      minWidth: this.isVertical || this.isGrid ? this._data.rows.length * (this.settings.colWidth.vertical + 5) : 0,
       cellRenderer: params => `
           <div class="title">${params.data[this._data.titleField] || params.value || ''}</div>
           <div class="description">${params.data[this._data.descriptionField] || ''}</div>
@@ -235,6 +251,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
       if (n) {
         if (index === 0) {
           this.gridOptions.api.setFocusedCell(n.rowIndex, focusColId || this._data.columns[0].field);
+          this.gridOptions.api.ensureIndexVisible(n.rowIndex);
         }
         n.setSelected(true, index === 0);
       }

@@ -238,6 +238,13 @@ export class SearchResultComponent implements OnDestroy {
     );
   }
 
+  goTo(action: 'next' | 'prev') {
+    const id = (this.selectedItemIDs || [])[0];
+    const index = id ? this._rows.findIndex(r => r.id === id) : -1;
+    const i = action === 'next' ? (index + 1 >= this._rows.length ? 0 : index + 1) : index - 1 < 0 ? this._rows.length - 1 : index - 1;
+    this.dataTable.selectRows([this._rows[i].id]);
+  }
+
   onSelectionChanged(selectedRows: any[]) {
     this.selectedItemIDs = selectedRows.map(r => r.id);
     this.itemsSelected.emit(this.selectedItemIDs);

@@ -5,6 +5,7 @@ $primary-color: var(--color-accent);
 $range-selection-highlight-color: $primary-color;
 
 :host {
+  &.grid,
   &.vertical,
   &.horizontal {
     ::ng-deep {
@@ -14,6 +15,7 @@ $range-selection-highlight-color: $primary-color;
     }
   }
 
+  &.grid,
   &.vertical {
     ::ng-deep {
       .ag-theme-yuv {
@@ -34,7 +36,7 @@ $range-selection-highlight-color: $primary-color;
       }
     }
   }
-  &.combo {
+  &.grid {
     ::ng-deep {
       .ag-theme-yuv {
         .ag-center-cols-container {
