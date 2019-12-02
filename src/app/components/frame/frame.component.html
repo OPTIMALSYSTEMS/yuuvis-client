@@ -9,6 +9,7 @@
       [iconSrc]="'assets/default/svg/ic_add.svg'"></yuv-icon>
   </div>
   <div class="right">
+    <yuv-upload-progress-overlay (resultItemClick)="onResultItemClick($event)"></yuv-upload-progress-overlay>
     <yuv-icon *ngIf="offline" class="offline-icon" [svg]="offlineSVG" title="offline"></yuv-icon>
     <div yuvOfflineDisabled class="user" (click)="op.toggle($event)">
       <yuv-user-avatar [user]="user"></yuv-user-avatar>
@@ -51,4 +52,3 @@
   </section>
 </yuv-sidebar>
 
-<yuv-upload-progress-overlay (resultItemClick)="onResultItemClick($event)"></yuv-upload-progress-overlay>
