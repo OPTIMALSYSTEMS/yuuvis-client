@@ -1,2 +1,2 @@
 export * from './components.module';
-export { RecentItem } from './recent-activities/recent-activities.component';
+export { RecentActivitiesData, RecentItem } from './recent-activities/recent-activities.component';

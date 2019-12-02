@@ -16,6 +16,9 @@
         background-color: rgba(0, 0, 0, 0.1);
       }
     }
+    .empty {
+      padding: var(--app-pane-padding);
+    }
   }
 
   ::ng-deep {
