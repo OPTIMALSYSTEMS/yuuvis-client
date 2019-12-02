@@ -74,9 +74,9 @@ export class ResponsiveMasterSlaveComponent implements OnInit, OnDestroy {
   };
 
   private verticalOptions: ResponsiveMasterSlaveOptions = {
-    masterSize: 60,
+    masterSize: 30,
     masterMinSize: 0,
-    slaveSize: 40,
+    slaveSize: 70,
     slaveMinSize: 0,
     direction: 'vertical',
     resizable: true,
