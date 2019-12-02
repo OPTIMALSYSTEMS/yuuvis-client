@@ -1,6 +1,6 @@
 import { Component, forwardRef, HostListener, Input, OnInit } from '@angular/core';
 import { ControlValueAccessor, FormControl, NG_VALIDATORS, NG_VALUE_ACCESSOR, Validator } from '@angular/forms';
-import { TranslateService } from '@yuuvis/core';
+import { DeviceService, TranslateService } from '@yuuvis/core';
 import { LocaleDatePipe } from '../../../pipes/locale-date.pipe';
 import { SVGIcons } from '../../../svg.generated';
 
@@ -84,7 +84,7 @@ export class DatetimeComponent implements OnInit, ControlValueAccessor, Validato
     return this._withTime;
   }
 
-  constructor(private translate: TranslateService) {
+  constructor(private translate: TranslateService, private device: DeviceService) {
     this.datePipe = new LocaleDatePipe(translate);
     this.locale = this.translate.currentLang;
   }
@@ -121,6 +121,20 @@ export class DatetimeComponent implements OnInit, ControlValueAccessor, Validato
       this.isValid = false;
     }
     this.propagate();
+  }
+
+  openPicker() {
+    if (this.device.isMobile) {
+      // Delay opening the picker on mobile, because the keyboard may be
+      // active. In this case calculating the screen estate for the dialog will
+      // get a wrong height (screen minus keyboard height). So we'll wait until
+      // keyboard is gone, and then trigger open.
+      setTimeout(() => {
+        this.showPicker = true;
+      }, 500);
+    } else {
+      this.showPicker = true;
+    }
   }
 
   setValueFromPicker(event) {

@@ -89,6 +89,7 @@
     .value {
       grid-area: value;
       align-self: center;
+      user-select: text;
       @include ellipsis();
 
       svg {

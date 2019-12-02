@@ -7,7 +7,7 @@
   <p-inputMask [mask]="maskPattern" [(ngModel)]="innerValue" (ngModelChange)="onMaskValueChange($event)"
     (onComplete)="setValueFromMask()" [readonly]="readonly" [slotChar]="_datePattern"></p-inputMask>
 
-  <button class="ui-button" data-datepicker="icon" (click)="showPicker = true" (keyup.arrowDown)="showPicker = true"
+  <button class="ui-button" data-datepicker="icon" (click)="openPicker()" (keyup.arrowDown)="openPicker()"
     *ngIf="!readonly">
     <yuv-icon [svg]="datepickerIcon"></yuv-icon>
   </button>
