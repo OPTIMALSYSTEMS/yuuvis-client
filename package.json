@@ -44,7 +44,8 @@
     "k8s:prepare": "node ./tools/scripts/misc/copy-k8s-descriptors",
     "k8s:deploy": "cd dist/k8s && kubectl apply -f namespace.yaml -f deployment.yaml -f service.yaml",
     "deploy:dist": "npm run docker:create:image && npm run k8s:prepare && npm run k8s:deploy",
-    "deploy:dev": "npm run build:pwa && npm run docker:create:image && npm run k8s:prepare && npm run k8s:deploy"
+    "deploy:dev": "npm run build:pwa && npm run docker:create:image && npm run k8s:prepare && npm run k8s:deploy",
+    "i18n:diff": "node ./tools/scripts/common/i18n-diff.js"
   },
   "private": true,
   "dependencies": {
@@ -114,6 +115,7 @@
     "tslib": "^1.9.0",
     "tslint": "~5.18.0",
     "tslint-config-prettier": "^1.18.0",
-    "typescript": "~3.4.5"
+    "typescript": "~3.4.5",
+    "yargs": "^15.0.2"
   }
 }
