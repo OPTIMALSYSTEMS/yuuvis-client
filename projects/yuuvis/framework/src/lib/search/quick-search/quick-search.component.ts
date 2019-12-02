@@ -419,11 +419,12 @@ export class QuickSearchComponent implements AfterViewInit {
       this.searchHasResults = true;
       // type aggregations
       this.typeAggregation.emit(
-        res.aggregations[0].entries.map(r => {
-          this.resultCount += r.count;
-
-          return { objectTypeId: r.key, label: this.systemService.getLocalizedResource(`${r.key}_label`), count: r.count };
-        })
+        res.aggregations[0].entries
+          .map(r => {
+            this.resultCount += r.count;
+            return { objectTypeId: r.key, label: this.systemService.getLocalizedResource(`${r.key}_label`), count: r.count };
+          })
+          .sort(Utils.sortValues('label'))
       );
     } else {
       this.searchHasResults = false;

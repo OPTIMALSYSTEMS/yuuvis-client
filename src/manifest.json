@@ -2,6 +2,7 @@
   "name": "yuuvis flex",
   "short_name": "yuuvis-flex",
   "theme_color": "#484f54",
+  ​​"orientation": "portrait",
   "background_color": "#484f54",
   "display": "standalone",
   "scope": "/",

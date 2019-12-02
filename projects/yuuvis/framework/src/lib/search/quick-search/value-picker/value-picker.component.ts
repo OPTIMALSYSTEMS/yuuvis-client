@@ -10,7 +10,7 @@ import { ValuePickerItemComponent } from './value-picker-item/value-picker-item.
 })
 export class ValuePickerComponent implements OnInit, AfterViewInit {
   @ViewChildren(ValuePickerItemComponent) itemElements: QueryList<ValuePickerItemComponent>;
-  @Input() items: ValuePickerItem[];
+  @Input() items: ValuePickerItem[]; // | ValuePickerGroup[];
   @Input() selectedItemIds: string[];
   @Input() set multiselect(m: boolean) {
     this.isMultiple = m;
@@ -123,4 +123,9 @@ export interface ValuePickerItem {
   id: string;
   label: string;
   value: any;
+}
+export interface ValuePickerGroup {
+  id: string;
+  label: string;
+  items: ValuePickerItem[];
 }

@@ -1,7 +1,17 @@
 import { Component, HostBinding, HostListener, OnInit } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { SwUpdate } from '@angular/service-worker';
-import { AuthService, BaseObjectTypeField, ConnectionService, ConnectionState, SearchFilter, SearchQuery, UploadResult, UserService, YuvUser } from '@yuuvis/core';
+import {
+  AuthService,
+  BaseObjectTypeField,
+  ConnectionService,
+  ConnectionState,
+  SearchFilter,
+  SearchQuery,
+  UploadResult,
+  UserService,
+  YuvUser
+} from '@yuuvis/core';
 import { LayoutService, LayoutSettings } from '@yuuvis/framework';
 import { filter } from 'rxjs/operators';
 
@@ -59,8 +69,6 @@ export class FrameComponent implements OnInit {
       this.swUpdateAvailable = true;
     });
 
-    this.router.events.subscribe(e => console.log(e));
-
     this.layoutService.layoutSettings$.subscribe((settings: LayoutSettings) => {
       this.applyLayoutSettings(settings);
     });
@@ -100,22 +108,6 @@ export class FrameComponent implements OnInit {
     this.update.activateUpdate().then(() => document.location.reload());
   }
 
-  addToHomeScreen() {
-    // hide our user interface that shows our A2HS button
-    this.showButton = false;
-    // Show the prompt
-    this.deferredPrompt.prompt();
-    // Wait for the user to respond to the prompt
-    this.deferredPrompt.userChoice.then(choiceResult => {
-      if (choiceResult.outcome === 'accepted') {
-        console.log('User accepted the A2HS prompt');
-      } else {
-        console.log('User dismissed the A2HS prompt');
-      }
-      this.deferredPrompt = null;
-    });
-  }
-
   onResultItemClick(res: UploadResult) {
     if (Array.isArray(res.objectId)) {
       const searchQuery = new SearchQuery();
@@ -133,14 +125,15 @@ export class FrameComponent implements OnInit {
 
     this.authService.authenticated$.subscribe((authenticated: boolean) => {
       if (!authenticated) {
-        // this.router.navigate(['enter'], { preserveQueryParams: true });
-        (window as any).location.href = `/oauth/${this.authService.getTenant()}`;
+        const tenant = this.authService.getTenant();
+        if (tenant) {
+          (window as any).location.href = `/oauth/${tenant}`;
+        }
       }
     });
 
     this.router.events.pipe(filter(e => e instanceof NavigationEnd)).subscribe((e: NavigationEnd) => {
-      this.tab = e.urlAfterRedirects.startsWith('/dashboard') || e.urlAfterRedirects.startsWith('/enter');
-      this.hideAppBar = e.urlAfterRedirects.startsWith('/enter');
+      this.tab = e.urlAfterRedirects.startsWith('/dashboard');
     });
   }
 }

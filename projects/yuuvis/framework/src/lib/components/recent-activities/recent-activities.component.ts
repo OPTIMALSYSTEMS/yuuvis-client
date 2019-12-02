@@ -31,6 +31,14 @@ import { catchError } from 'rxjs/operators';
 })
 export class RecentActivitiesComponent implements OnInit {
   /**
+   * Data to be displayed by the component. If not provided, recent items will be
+   * fetched for the current user. This may come in handy if you want to display
+   * recent activities for another user.
+   *
+   * Setting this will ignore all other inputs.
+   */
+  @Input() data: RecentActivitiesData;
+  /**
    * Whether or not to show recently created items (default: true)
    */
   @Input() created: boolean = true;
@@ -124,25 +132,47 @@ export class RecentActivitiesComponent implements OnInit {
     this.itemClick.emit(item);
   }
 
+  private postFetch() {
+    const hasModifiedItems = this.modified;
+
+    if ((this.modified && !this.created) || (this.recentlyCreated && this.recentlyCreated.length === 0)) {
+      this.selected = 'modified';
+    }
+    this.isTabbed = this.created && this.modified;
+    this.hasAnyItems = (this.recentlyCreated && this.recentlyCreated.length > 0) || (this.recentlyModified && this.recentlyModified.length > 0);
+  }
+
   ngOnInit() {
-    this.userService.user$.subscribe((user: YuvUser) => {
-      if (user) {
-        if (this.created) {
-          this.getCreated(user.id);
-        }
-        if (this.modified) {
-          this.getModified(user.id);
-        }
-        if (this.modified && !this.created) {
-          this.selected = 'modified';
-        }
-        this.isTabbed = this.created && this.modified;
-        this.hasAnyItems = (this.recentlyCreated && this.recentlyCreated.length > 0) || (this.recentlyModified && this.recentlyModified.length > 0);
+    if (this.data) {
+      if (this.data.modified) {
+        this.modified = true;
+        this.recentlyModified = this.data.modified;
       }
-    });
+      if (this.data.modified) {
+        this.created = true;
+        this.recentlyCreated = this.data.created;
+      }
+      this.postFetch();
+    } else {
+      this.userService.user$.subscribe((user: YuvUser) => {
+        if (user) {
+          if (this.created) {
+            this.getCreated(user.id);
+          }
+          if (this.modified) {
+            this.getModified(user.id);
+          }
+          this.postFetch();
+        }
+      });
+    }
   }
 }
 
+export interface RecentActivitiesData {
+  created: RecentItem[];
+  modified: RecentItem[];
+}
 export interface RecentItem {
   title: string;
   description: string;

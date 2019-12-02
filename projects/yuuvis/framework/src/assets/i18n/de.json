@@ -112,6 +112,7 @@
 	"yuv.framework.recent-activities.header.created": "Kürzlich erstellt",
 	"yuv.framework.recent-activities.header.modified": "Kürzlich bearbeitet",
 	"yuv.framework.recent-activities.header.more": "Mehr ...",
+  "yuv.framework.recent-activities.list.empty": "Es konnten keine Einträge gefunden werden.",
 	"yuv.framework.responsive-tab-container.button.split": "Aspekt teilen",
 	"yuv.framework.search-result-panel.header.description": "Suche nach '{{term}}'",
 	"yuv.framework.search-result-panel.header.description.types": "Suche nach '{{term}}' in {{types}}",

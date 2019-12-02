@@ -34,7 +34,10 @@
     flex: 1;
     min-height: 0;
 
-    yuv-quick-search {
+    yuv-quick-search,
+    .aggs {
+      width: 500px;
+      max-width: 100%;
       z-index: 1;
     }
   }
