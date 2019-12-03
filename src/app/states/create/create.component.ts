@@ -6,9 +6,7 @@ import { TranslateService } from '@yuuvis/core';
   selector: 'yuv-create',
   templateUrl: './create.component.html',
   styleUrls: ['./create.component.scss'],
-  host: {
-    class: 'state-content-default'
-  }
+  host: { class: 'state-content-default' }
 })
 export class CreateComponent implements OnInit {
   constructor(private translate: TranslateService, private titleService: Title) {}

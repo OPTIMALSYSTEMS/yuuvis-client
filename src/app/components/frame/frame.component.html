@@ -34,7 +34,7 @@
         </div>
         <div class="nav-item logout">
           <!-- <a [routerLink]="['/enter', { logout: true }]" translate>yuv.client.frame.app-bar.logout</a> -->
-          <a (click)="logout()" translate>yuv.client.frame.app-bar.logout</a>
+          <a href="logout" (click)="logout($event)" translate>yuv.client.frame.app-bar.logout</a>
         </div>
       </div>
     </p-overlayPanel>

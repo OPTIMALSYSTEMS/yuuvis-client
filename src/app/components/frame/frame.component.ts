@@ -89,8 +89,9 @@ export class FrameComponent implements OnInit {
     }
   }
 
-  logout() {
-    (window as any).location.href = '/logout';
+  logout(event: MouseEvent) {
+    event.preventDefault();
+    this.userService.logout();
   }
 
   navigate(state: string) {
