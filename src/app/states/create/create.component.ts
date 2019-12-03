@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { Title } from '@angular/platform-browser';
+import { TranslateService } from '@yuuvis/core';
 
 @Component({
   selector: 'yuv-create',
@@ -9,7 +11,9 @@ import { Component, OnInit } from '@angular/core';
   }
 })
 export class CreateComponent implements OnInit {
-  constructor() {}
+  constructor(private translate: TranslateService, private titleService: Title) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.titleService.setTitle(this.translate.instant('yuv.framework.object-create.header.title'));
+  }
 }

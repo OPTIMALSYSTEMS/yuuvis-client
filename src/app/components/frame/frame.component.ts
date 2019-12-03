@@ -65,17 +65,11 @@ export class FrameComponent implements OnInit {
     private authService: AuthService,
     private userService: UserService
   ) {
-    this.update.available.subscribe(update => {
-      this.swUpdateAvailable = true;
-    });
+    this.update.available.subscribe(update => (this.swUpdateAvailable = true));
 
-    this.layoutService.layoutSettings$.subscribe((settings: LayoutSettings) => {
-      this.applyLayoutSettings(settings);
-    });
+    this.layoutService.layoutSettings$.subscribe((settings: LayoutSettings) => this.applyLayoutSettings(settings));
 
-    this.connectionService.connection$.subscribe((connectionState: ConnectionState) => {
-      this.offline = !connectionState.isOnline;
-    });
+    this.connectionService.connection$.subscribe((connectionState: ConnectionState) => (this.offline = !connectionState.isOnline));
   }
 
   private applyLayoutSettings(settings: LayoutSettings) {
@@ -119,9 +113,7 @@ export class FrameComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.userService.user$.subscribe((user: YuvUser) => {
-      this.user = user;
-    });
+    this.userService.user$.subscribe((user: YuvUser) => (this.user = user));
 
     this.authService.authenticated$.subscribe((authenticated: boolean) => {
       if (!authenticated) {
@@ -132,8 +124,6 @@ export class FrameComponent implements OnInit {
       }
     });
 
-    this.router.events.pipe(filter(e => e instanceof NavigationEnd)).subscribe((e: NavigationEnd) => {
-      this.tab = e.urlAfterRedirects.startsWith('/dashboard');
-    });
+    this.router.events.pipe(filter(e => e instanceof NavigationEnd)).subscribe((e: NavigationEnd) => (this.tab = e.urlAfterRedirects.startsWith('/dashboard')));
   }
 }
