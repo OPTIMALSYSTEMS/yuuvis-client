@@ -36,9 +36,11 @@
     &.size-small {
       height: 4em;
     }
+
     &.size-medium {
       height: 6em;
     }
+
     &.size-large {
       height: 8em;
     }
@@ -46,7 +48,21 @@
 
   p-chips {
     width: 100%;
+
+    &.invalid {
+      li:nth-last-child(2) {
+        color: var(--color-error) !important;
+        border-color: var(--color-error) !important;
+
+        .dark & {
+          background-color: var(--color-error) !important;
+          border-color: var(--color-error) !important;
+          color: white !important;
+        }
+      }
+    }
   }
+
   .ui-inputtext,
   input {
     padding: 0;
