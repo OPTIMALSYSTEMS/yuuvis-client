@@ -27,18 +27,19 @@ $range-selection-highlight-color: $primary-color;
             }
           }
         }
-        // &.ag-row-focus yuv-recent-acitivities-item {
-        //   &,
-        //   .pre {
-        //     background-color: var(--item-focus-background-color);
-        //   }
-        // }
-        // &.ag-row-selected yuv-recent-acitivities-item {
-        //   &,
-        //   .pre {
-        //     background-color: var(--color-accent);
-        //   }
-        // }
+        &.ag-row-focus .ag-cell-focus,
+        &.ag-row-focus {
+          background-color: transparent;
+          yuv-recent-acitivities-item {
+            background-color: var(--item-focus-background-color);
+          }
+        }
+        &.ag-row-selected {
+          background-color: transparent;
+          yuv-recent-acitivities-item {
+            background-color: var(--color-accent) !important;
+          }
+        }
       }
       .ag-theme-yuv .ag-header {
         border: 0;

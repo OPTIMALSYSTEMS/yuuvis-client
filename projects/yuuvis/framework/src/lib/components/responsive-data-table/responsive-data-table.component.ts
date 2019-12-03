@@ -33,7 +33,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
 
   private settings = {
     headerHeight: { standard: 37, horizontal: 0, vertical: 0, grid: 0 },
-    rowHeight: { standard: 48, horizontal: 74, vertical: 1, grid: 1 },
+    rowHeight: { standard: 48, horizontal: 70, vertical: 1, grid: 1 },
     colWidth: { standard: 'auto', horizontal: 'auto', vertical: 160, grid: 160 }
   };
 
@@ -231,7 +231,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
     const colDef: ColDef = {
       field: BaseObjectTypeField.OBJECT_ID,
       cellClass: 'cell-title-description',
-      minWidth: this.isVertical || this.isGrid ? this._data.rows.length * (this.settings.colWidth.vertical + 2) : 0,
+      minWidth: this.isVertical || this.isGrid ? this._data.rows.length * this.settings.colWidth.vertical : 0,
       cellRendererFramework: RecentAcitivitiesItemComponent
       // cellRenderer: params => `
       //     <div class="title">${params.data[this._data.titleField] || params.value || ''}</div>
