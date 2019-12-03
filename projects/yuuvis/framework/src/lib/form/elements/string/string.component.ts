@@ -1,4 +1,4 @@
-import { Component, forwardRef, Input } from '@angular/core';
+import { Component, ElementRef, forwardRef, Input } from '@angular/core';
 import { ControlValueAccessor, FormControl, NG_VALIDATORS, NG_VALUE_ACCESSOR, Validator } from '@angular/forms';
 import { Utils } from '@yuuvis/core';
 import { SVGIcons } from '../../../svg.generated';
@@ -48,6 +48,8 @@ export class StringComponent implements ControlValueAccessor, Validator {
     globe: SVGIcons.globe
   };
 
+  maxEntryCountIfInvalid = null;
+
   /**
    * Indicator that multiple strings could be inserted, they will be rendered as chips (default: false).
    */
@@ -95,9 +97,9 @@ export class StringComponent implements ControlValueAccessor, Validator {
   valid: boolean;
   validationErrors = [];
 
-  constructor() {}
+  constructor(private elementRef: ElementRef) { }
 
-  propagateChange = (_: any) => {};
+  propagateChange = (_: any) => { };
 
   onKeyUpEnter(event) {
     const input = event.target.value.trim();
@@ -117,7 +119,7 @@ export class StringComponent implements ControlValueAccessor, Validator {
     this.propagateChange = fn;
   }
 
-  registerOnTouched(fn: any): void {}
+  registerOnTouched(fn: any): void { }
 
   onValueChange(val) {
     this.validationErrors = [];
@@ -155,8 +157,11 @@ export class StringComponent implements ControlValueAccessor, Validator {
       this.validationErrors.push({ key: 'onlyWhitespaces' });
     }
 
-    if (!this.validationErrors.length) {
-      this.value = val;
+    if (this.validationErrors.length && this.multiselect && this.value) {
+      // Setting maxEntryCountIfInvalid to the actual length of the value array to prevent the user to add more entries.
+      this.maxEntryCountIfInvalid = this.value.length;
+    } else {
+      this.maxEntryCountIfInvalid = null;
     }
 
     this.propagateChange(this.value);

@@ -9,7 +9,7 @@
   background-color: var(--panel-background-grey);
   grid-template-columns: 1fr;
   grid-template-rows: var(--app-pane-header-height) 1fr;
-  grid-template-areas: 'header' 'content';
+  grid-template-areas: 'header''content';
 
   height: 100%;
   overflow: hidden;
@@ -19,21 +19,24 @@
     grid-template-rows: auto 1fr;
 
     .header {
-      > .icon {
+      >.icon {
         &.default {
           display: none;
         }
+
         &.close {
           display: block;
         }
       }
 
       .header_text {
-        grid-template-areas: 'title' 'title';
+        grid-template-areas: 'title''title';
+
         .header_title {
           font-size: var(--font-subhead);
           font-weight: var(--font-weight-normal);
         }
+
         .header_description {
           display: none;
         }
@@ -53,7 +56,7 @@
     background-color: var(--panel-background);
     grid-template-columns: auto 1fr auto;
     grid-template-rows: 1fr auto;
-    grid-template-areas: 'icon header_text actions' 'status status status';
+    grid-template-areas: 'icon header_text actions''status status status';
     grid-area: header;
     padding: var(--app-pane-padding);
     color: var(--text-color-caption);
@@ -63,8 +66,9 @@
       display: grid;
       grid-template-columns: 1fr;
       grid-template-rows: auto 1fr;
-      grid-template-areas: 'title' 'description';
+      grid-template-areas: 'title''description';
     }
+
     .header_title {
       grid-area: title;
       font-weight: var(--font-weight-normal);
@@ -82,10 +86,11 @@
       @include ellipsis();
     }
 
-    > .icon {
+    >.icon {
       grid-area: icon;
       padding-top: calc(var(--app-pane-padding) / 4);
       padding-right: var(--app-pane-padding);
+
       svg {
         fill: currentColor;
       }
@@ -95,7 +100,7 @@
       }
     }
 
-    > .actions {
+    >.actions {
       grid-area: actions;
 
       .yuv-icon {
@@ -112,18 +117,21 @@
 
         &.disabled {
           opacity: 0.5;
+          pointer-events: none;
         }
       }
     }
 
-    > .status {
+    >.status {
       grid-area: status;
       justify-self: end;
+
       .yuv-icon {
         height: 18px;
         width: 18px;
         // color: var(--text-color-caption);
       }
+
       // padding: calc(var(--app-pane-padding) / 2) 0;
     }
   }

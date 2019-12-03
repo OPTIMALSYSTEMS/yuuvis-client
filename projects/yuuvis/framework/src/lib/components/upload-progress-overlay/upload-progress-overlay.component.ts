@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { ProgressStatus, UploadResult, UploadService } from '@yuuvis/core';
 import { forkJoin, Observable, of } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { first, tap } from 'rxjs/operators';
 import { SVGIcons } from './../../svg.generated';
 
 @Component({
@@ -13,7 +13,8 @@ export class UploadProgressOverlayComponent {
   icon = {
     minimize: SVGIcons['arrow-down'],
     remove: SVGIcons['clear'],
-    done: SVGIcons['done']
+    done: SVGIcons['done'],
+    up: SVGIcons['cloud-upload']
   };
   minimized: boolean;
   allDone: boolean;
@@ -35,10 +36,15 @@ export class UploadProgressOverlayComponent {
   }
 
   private runningProcess(ps: ProgressStatus) {
-    forkJoin(((ps && ps.items) || []).map(p => p.progress)).subscribe(
-      results => (this.completed = true),
-      err => (this.completed = true)
-    );
+    forkJoin(((ps && ps.items) || []).map(p => p.progress))
+      .pipe(
+        first(),
+        tap(val => (this.completed = false))
+      )
+      .subscribe(
+        results => (this.completed = true),
+        err => (this.completed = true)
+      );
   }
 
   openObject(item: UploadResult) {

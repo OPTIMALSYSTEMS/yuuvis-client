@@ -1,13 +1,7 @@
 @import '../../../../../../../src/scss-shared/_mixins';
 
 .uploadProgress {
-  position: absolute;
-  bottom: var(--app-pane-padding);
-  right: var(--app-pane-padding);
-  width: 300px;
-  background: var(--panel-background);
   animation: yuvFadeInUp 300ms;
-  @include panel-shadow();
 
   &__header {
     cursor: pointer;
@@ -49,7 +43,6 @@
   }
 
   header {
-    background-color: var(--color-primary);
     color: #fff;
     display: flex;
     align-items: center;
@@ -74,106 +67,125 @@
       display: none;
     }
   }
+}
+.progress-item {
+  display: grid;
+  grid-template-columns: 35px 1fr 35px;
+  grid-template-rows: 35px;
+  grid-template-areas: '. . .';
+}
+.result-item {
+  display: flex;
+  align-items: center;
+  position: relative;
+  padding: calc(var(--app-pane-padding) / 2) 0;
+  border-bottom: 1px solid var(--panel-divider-color);
+}
 
-  .progress-item {
-    display: grid;
-    grid-template-columns: 35px 1fr 35px;
-    grid-template-rows: 35px;
-    grid-template-areas: '. . .';
+.progress-item,
+.result-item {
+  &.err {
+    background-color: var(--color-error);
+    color: #fff;
   }
-  .result-item {
-    display: flex;
-    align-items: center;
-    position: relative;
-    padding: calc(var(--app-pane-padding) / 2) 0;
-    border-bottom: 1px solid var(--panel-divider-color);
-  }
 
-  .progress-item,
-  .result-item {
-    &.err {
-      background-color: var(--color-error);
-      color: #fff;
-    }
-
-    .name {
-      flex: 1;
-      color: var(--text-color-body);
-      padding: 0 calc(var(--app-pane-padding) / 2);
-      word-wrap: break-word;
-      overflow: hidden;
-      align-self: center;
-      @include ellipsis(225px);
-      :hover {
-        cursor: pointer;
-      }
-    }
-
-    yuv-icon {
-      padding: calc(var(--app-pane-padding) / 2);
-      flex: 0 0 auto;
-      box-sizing: content-box;
-      width: 18px;
-      height: 18px;
-      color: var(--text-color-hint);
-
-      &.remove:hover {
-        cursor: pointer;
-      }
-      &.done {
-        width: 14px;
-        height: 14px;
-        border-radius: 50%;
-        padding: calc(var(--app-pane-padding) / 8);
-        border: 1px solid var(--color-success);
-        margin: 0 calc(var(--app-pane-padding) / 2);
-        color: var(--color-success);
-        align-self: center;
-        justify-self: center;
-      }
-    }
-
-    .result-items {
-      align-self: center;
-      .name:hover {
-        cursor: pointer;
-      }
-    }
-
-    .percentage {
-      padding: 0 calc(var(--app-pane-padding) / 2);
-      font-family: monospace;
-      font-size: var(--font-hint);
-      color: var(--text-color-caption);
-      align-self: center;
-      &:after {
-        content: '%';
-      }
-    }
-
-    .progress {
-      position: absolute;
-      height: 3px;
-      background-color: var(--color-accent);
-      bottom: 1px;
-      left: 0;
-      width: attr(data-progress) '%';
-    }
-
-    .processing {
-      width: 16px;
-      height: 16px;
-      margin-right: 12px;
-      justify-self: end;
+  .name {
+    flex: 1;
+    color: var(--text-color-body);
+    padding: 0 calc(var(--app-pane-padding) / 2);
+    word-wrap: break-word;
+    overflow: hidden;
+    align-self: center;
+    @include ellipsis(225px);
+    :hover {
+      cursor: pointer;
     }
   }
 
-  @keyframes load8 {
-    0% {
-      transform: rotate(0deg);
+  yuv-icon {
+    padding: calc(var(--app-pane-padding) / 2);
+    flex: 0 0 auto;
+    box-sizing: content-box;
+    width: 18px;
+    height: 18px;
+    color: var(--text-color-hint);
+
+    &.remove:hover {
+      cursor: pointer;
     }
-    100% {
-      transform: rotate(360deg);
+    &.done {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      padding: calc(var(--app-pane-padding) / 8);
+      border: 1px solid var(--color-success);
+      margin: 0 calc(var(--app-pane-padding) / 2);
+      color: var(--color-success);
+      align-self: center;
+      justify-self: center;
     }
+  }
+
+  .result-items {
+    align-self: center;
+    .name:hover {
+      cursor: pointer;
+    }
+  }
+
+  .percentage {
+    padding: 0 calc(var(--app-pane-padding) / 2);
+    font-family: monospace;
+    font-size: var(--font-hint);
+    color: var(--text-color-caption);
+    align-self: center;
+    &:after {
+      content: '%';
+    }
+  }
+
+  .progress {
+    position: absolute;
+    height: 3px;
+    background-color: var(--color-accent);
+    bottom: 1px;
+    left: 0;
+    width: attr(data-progress) '%';
+  }
+
+  .processing {
+    width: 16px;
+    height: 16px;
+    margin-right: 12px;
+    justify-self: end;
+    align-self: center;
+  }
+}
+
+@keyframes load8 {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.upload__progress {
+  width: 3.5em;
+  height: 3.5em;
+}
+
+.upload-files {
+  width: 300px;
+  background: var(--main-background);
+}
+
+.cloudy {
+  &.complete .uploadCloud {
+    fill: inherit;
+  }
+  &.processing .uploadCloud {
+    fill: hotpink;
   }
 }
