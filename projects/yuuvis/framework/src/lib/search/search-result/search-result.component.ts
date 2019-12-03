@@ -20,6 +20,7 @@ import { ResponsiveDataTableComponent } from '../../components/responsive-data-t
 import { ResponsiveTableData } from '../../components/responsive-data-table/responsive-data-table.interface';
 import { GridService } from '../../services/grid/grid.service';
 import { SVGIcons } from '../../svg.generated';
+import { ViewMode } from './../../components/responsive-data-table/responsive-data-table.component';
 
 @Component({
   selector: 'yuv-search-result',
@@ -101,6 +102,15 @@ export class SearchResultComponent implements OnDestroy {
 
   get hasPages(): boolean {
     return this._hasPages;
+  }
+
+  /**
+   * view mode of the table
+   */
+  @Input() set viewMode(viewMode: ViewMode) {
+    if (this.dataTable) {
+      this.dataTable.viewMode = this.dataTable.viewMode !== viewMode ? viewMode : 'auto';
+    }
   }
 
   constructor(private gridService: GridService, private eventService: EventService, private searchService: SearchService, private fb: FormBuilder) {

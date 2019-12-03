@@ -51,14 +51,15 @@ import { UploadProgressOverlayComponent } from './upload-progress-overlay/upload
     DialogComponent,
     FilePickerComponent,
     UploadProgressOverlayComponent,
-    RecentActivitiesComponent
+    RecentActivitiesComponent,
+    RecentAcitivitiesItemComponent
   ],
   imports: [
     CommonModule,
     AngularResizedEventModule,
     CdkStepperModule,
     AngularSplitModule,
-    AgGridModule.withComponents([]),
+    AgGridModule.withComponents([RecentAcitivitiesItemComponent]),
     RouterModule,
     TabViewModule,
     DialogModule,
@@ -70,4 +71,4 @@ import { UploadProgressOverlayComponent } from './upload-progress-overlay/upload
     YuvDirectivesModule
   ]
 })
-export class YuvComponentsModule { }
+export class YuvComponentsModule {}

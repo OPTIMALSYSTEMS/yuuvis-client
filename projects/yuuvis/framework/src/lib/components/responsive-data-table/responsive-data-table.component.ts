@@ -7,6 +7,7 @@ import { Observable, ReplaySubject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { ColumnSizes } from '../../services/grid/grid.interface';
+import { RecentAcitivitiesItemComponent } from './../recent-activities/recent-acitivities-item/recent-acitivities-item.component';
 import { ResponsiveTableData } from './responsive-data-table.interface';
 
 export type ViewMode = 'standard' | 'horizontal' | 'vertical' | 'grid' | 'auto';
@@ -32,8 +33,8 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
 
   private settings = {
     headerHeight: { standard: 37, horizontal: 0, vertical: 0, grid: 0 },
-    rowHeight: { standard: 48, horizontal: 70, vertical: 1, grid: 1 },
-    colWidth: { standard: 'auto', horizontal: 'auto', vertical: 140, grid: 140 }
+    rowHeight: { standard: 48, horizontal: 74, vertical: 1, grid: 1 },
+    colWidth: { standard: 'auto', horizontal: 'auto', vertical: 160, grid: 160 }
   };
 
   gridOptions: GridOptions;
@@ -230,11 +231,12 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
     const colDef: ColDef = {
       field: BaseObjectTypeField.OBJECT_ID,
       cellClass: 'cell-title-description',
-      minWidth: this.isVertical || this.isGrid ? this._data.rows.length * (this.settings.colWidth.vertical + 5) : 0,
-      cellRenderer: params => `
-          <div class="title">${params.data[this._data.titleField] || params.value || ''}</div>
-          <div class="description">${params.data[this._data.descriptionField] || ''}</div>
-        `
+      minWidth: this.isVertical || this.isGrid ? this._data.rows.length * (this.settings.colWidth.vertical + 2) : 0,
+      cellRendererFramework: RecentAcitivitiesItemComponent
+      // cellRenderer: params => `
+      //     <div class="title">${params.data[this._data.titleField] || params.value || ''}</div>
+      //     <div class="description">${params.data[this._data.descriptionField] || ''}</div>
+      //   `
     };
     return colDef;
   }
