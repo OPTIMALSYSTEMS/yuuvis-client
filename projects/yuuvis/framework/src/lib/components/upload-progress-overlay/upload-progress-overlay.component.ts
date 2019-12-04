@@ -39,7 +39,7 @@ export class UploadProgressOverlayComponent {
     this.resultItemClick.emit(item);
   }
 
-  remove(id: string) {
+  remove(id?: string) {
     this.uploadService.cancelItem(id);
   }
 

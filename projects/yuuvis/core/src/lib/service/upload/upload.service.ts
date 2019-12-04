@@ -56,13 +56,18 @@ export class UploadService {
    * Cancels an upload request and removes it from the list of files being uploaded.
    * @param id ID of the UploadItem to be canceled
    */
-  cancelItem(id: string) {
-    const match = this.status.items.find(i => i.id === id);
-    if (match) {
-      match.subscription.unsubscribe();
-      this.status.items = this.status.items.filter(i => i.id !== id);
-      this.statusSource.next(this.status);
+  cancelItem(id?: string) {
+    if (id) {
+      const match = this.status.items.find(i => i.id === id);
+      if (match) {
+        match.subscription.unsubscribe();
+        this.status.items = this.status.items.filter(i => i.id !== id);
+      }
+    } else {
+      this.status.items.forEach(element => element.subscription.unsubscribe());
+      this.status.items = [];
     }
+    this.statusSource.next(this.status);
   }
 
   /**
