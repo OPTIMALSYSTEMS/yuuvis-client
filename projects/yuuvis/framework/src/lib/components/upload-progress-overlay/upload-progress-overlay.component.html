@@ -3,11 +3,9 @@
   [ngClass]="{'mini': minimized, panelError: ps.err > 0, allErr: ps.err === ps.items.length, 'finished': allDone}">
   
     <header class="uploadProgress__header" (click)="op.toggle($event)">
-      <yuv-icon class="cloudy" [svg]="icon.up" *ngIf="completed"></yuv-icon>
-      <div *ngIf="!completed" class="yuv-loader upload__progress"></div>
-        <!-- <div class="title" [ngClass]="{complete: completed}">{{'yuv.framework.upload-progress-overlay.title'|translate}}</div> -->
+      <yuv-icon class="cloudy" [svg]="icon.up" *ngIf="(completedUp$ | async)"></yuv-icon>
+      <div *ngIf="!(completedUp$ | async)" class="yuv-loader upload__progress"></div>
     </header>
-   
   </div>
   
   <p-overlayPanel #op>

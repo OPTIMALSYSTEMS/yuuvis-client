@@ -1,6 +1,6 @@
 import { HttpClient, HttpErrorResponse, HttpEventType, HttpHeaders, HttpRequest, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, ReplaySubject, Subject, throwError } from 'rxjs';
+import { BehaviorSubject, Observable, ReplaySubject, Subject, throwError } from 'rxjs';
 import { catchError, filter, map, scan, tap } from 'rxjs/operators';
 import { Utils } from '../../util/utils';
 import { Logger } from '../logger/logger';
@@ -16,6 +16,8 @@ export class UploadService {
   private status: ProgressStatus = { err: 0, items: [] };
   private statusSource = new ReplaySubject<ProgressStatus>();
   public status$: Observable<ProgressStatus> = this.statusSource.pipe(scan((acc: ProgressStatus, newVal) => ({ ...acc, ...newVal }), this.status));
+  private uploadStatus = new BehaviorSubject<boolean>(false);
+  public uploadStatus$: Observable<boolean> = this.uploadStatus.asObservable();
 
   constructor(private http: HttpClient, private logger: Logger) {}
 
@@ -148,7 +150,6 @@ export class UploadService {
     } else if (event instanceof HttpResponse) {
       progress.complete();
       // add upload response
-      console.log('response', event);
       // this.status.items = this.status.items.filter(s => s.id !== id);
       const idx = this.status.items.findIndex(s => s.id === id);
       if (idx !== -1) {
@@ -182,7 +183,7 @@ export class UploadService {
       let result;
       // Create a subscription from the http request that will be applied to the upload
       // status item in order to be able to cancel the request later on.
-
+      this.uploadStatus.next(false);
       const subscription = this.http
         .request(request)
         .pipe(
@@ -198,6 +199,7 @@ export class UploadService {
           },
           () => {
             o.next(result);
+            this.uploadStatus.next(true);
             o.complete();
           }
         );
