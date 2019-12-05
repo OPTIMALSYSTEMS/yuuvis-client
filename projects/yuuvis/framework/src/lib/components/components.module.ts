@@ -14,6 +14,7 @@ import { TabViewModule } from 'primeng/tabview';
 import { YuvDirectivesModule } from '../directives/directives.module';
 import { YuvPipesModule } from '../pipes/pipes.module';
 import { ActionMenuBarComponent } from './action-menu-bar/action-menu-bar.component';
+import { IconUploadComponent } from './animated-icons/icon-upload/icon-upload.component';
 import { BusyOverlayDirective } from './busy-overlay/busy-overlay.directive';
 import { DialogComponent } from './dialog/dialog.component';
 import { FilePickerComponent } from './file-picker/file-picker.component';
@@ -37,7 +38,8 @@ import { UploadProgressOverlayComponent } from './upload-progress-overlay/upload
     UploadProgressOverlayComponent,
     FilePickerComponent,
     RecentActivitiesComponent,
-    RecentAcitivitiesItemComponent
+    RecentAcitivitiesItemComponent,
+    IconUploadComponent
   ],
   exports: [
     ResponsiveDataTableComponent,
@@ -51,7 +53,8 @@ import { UploadProgressOverlayComponent } from './upload-progress-overlay/upload
     DialogComponent,
     FilePickerComponent,
     UploadProgressOverlayComponent,
-    RecentActivitiesComponent
+    RecentActivitiesComponent,
+    IconUploadComponent
   ],
   imports: [
     CommonModule,
@@ -70,4 +73,4 @@ import { UploadProgressOverlayComponent } from './upload-progress-overlay/upload
     YuvDirectivesModule
   ]
 })
-export class YuvComponentsModule { }
+export class YuvComponentsModule {}
