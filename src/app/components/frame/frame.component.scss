@@ -15,7 +15,7 @@ $user-panel-width: 180px;
   .app-bar {
     grid-area: header;
     order: 1;
-    z-index: 1;
+    z-index: 6;
     display: flex;
     flex-flow: row nowrap;
     align-items: center;
@@ -80,6 +80,7 @@ $user-panel-width: 180px;
         width: 32px;
         height: 32px;
         background-color: rgba(255, 255, 255, 0.1);
+        cursor: pointer;
 
         .overlay {
           position: absolute;

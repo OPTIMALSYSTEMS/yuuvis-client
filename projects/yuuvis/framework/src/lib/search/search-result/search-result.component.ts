@@ -20,6 +20,7 @@ import { ResponsiveDataTableComponent } from '../../components/responsive-data-t
 import { ResponsiveTableData } from '../../components/responsive-data-table/responsive-data-table.interface';
 import { GridService } from '../../services/grid/grid.service';
 import { SVGIcons } from '../../svg.generated';
+import { ViewMode } from './../../components/responsive-data-table/responsive-data-table.component';
 
 @Component({
   selector: 'yuv-search-result',
@@ -101,6 +102,15 @@ export class SearchResultComponent implements OnDestroy {
 
   get hasPages(): boolean {
     return this._hasPages;
+  }
+
+  /**
+   * view mode of the table
+   */
+  @Input() set viewMode(viewMode: ViewMode) {
+    if (this.dataTable) {
+      this.dataTable.viewMode = this.dataTable.viewMode !== viewMode ? viewMode : 'auto';
+    }
   }
 
   constructor(private gridService: GridService, private eventService: EventService, private searchService: SearchService, private fb: FormBuilder) {
@@ -236,6 +246,13 @@ export class SearchResultComponent implements OnDestroy {
         this.busy = false;
       }
     );
+  }
+
+  goTo(action: 'next' | 'prev') {
+    const id = (this.selectedItemIDs || [])[0];
+    const index = id ? this._rows.findIndex(r => r.id === id) : -1;
+    const i = action === 'next' ? (index + 1 >= this._rows.length ? 0 : index + 1) : index - 1 < 0 ? this._rows.length - 1 : index - 1;
+    this.dataTable.selectRows([this._rows[i].id]);
   }
 
   onSelectionChanged(selectedRows: any[]) {

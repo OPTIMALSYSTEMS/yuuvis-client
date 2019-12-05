@@ -5,15 +5,81 @@ $primary-color: var(--color-accent);
 $range-selection-highlight-color: $primary-color;
 
 :host {
+  &.grid,
   &.vertical,
   &.horizontal {
     ::ng-deep {
+      .ag-theme-yuv .ag-row {
+        border: 0;
+        padding: 0;
+        .ag-cell {
+          padding: 0;
+          width: 100% !important;
+        }
+        yuv-recent-acitivities-item {
+          @include flex-col();
+          background-color: transparent;
+          .pre {
+            background-color: var(--panel-divider-color);
+            .type {
+              margin: 0 4px;
+              font-size: var(--font-hint);
+            }
+          }
+        }
+        &.ag-row-focus .ag-cell-focus,
+        &.ag-row-focus {
+          background-color: transparent;
+          yuv-recent-acitivities-item {
+            background-color: var(--item-focus-background-color);
+          }
+        }
+        &.ag-row-selected {
+          background-color: transparent;
+          yuv-recent-acitivities-item {
+            background-color: var(--color-accent) !important;
+          }
+        }
+      }
       .ag-theme-yuv .ag-header {
         border: 0;
       }
     }
   }
 
+  &.horizontal {
+    ::ng-deep {
+      .ag-theme-yuv {
+        .ag-center-cols-container {
+          width: 100% !important;
+        }
+        .ag-row {
+          yuv-recent-acitivities-item {
+            flex-flow: row;
+            max-width: 100%;
+            margin: 4px;
+            .pre {
+              min-width: 140px;
+            }
+            .main {
+              flex: 1;
+              position: relative;
+              .description {
+                margin-right: 80px;
+              }
+              .date {
+                position: absolute;
+                right: var(--app-pane-padding);
+                bottom: calc(var(--app-pane-padding) / 2);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  &.grid,
   &.vertical {
     ::ng-deep {
       .ag-theme-yuv {
@@ -26,15 +92,15 @@ $range-selection-highlight-color: $primary-color;
         .ag-row {
           position: relative;
           overflow: hidden;
-          width: 140px;
-          height: 70px !important;
+          width: 160px;
+          height: 174px !important;
           transform: none !important;
           border-width: 1px !important;
         }
       }
     }
   }
-  &.combo {
+  &.grid {
     ::ng-deep {
       .ag-theme-yuv {
         .ag-center-cols-container {

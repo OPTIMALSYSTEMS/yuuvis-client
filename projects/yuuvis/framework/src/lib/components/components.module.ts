@@ -9,6 +9,7 @@ import { AngularResizedEventModule } from 'angular-resize-event';
 import { AngularSplitModule } from 'angular-split';
 import { DragScrollModule } from 'ngx-drag-scroll';
 import { DialogModule } from 'primeng/dialog';
+import { OverlayPanelModule } from 'primeng/overlaypanel';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { TabViewModule } from 'primeng/tabview';
 import { YuvDirectivesModule } from '../directives/directives.module';
@@ -26,42 +27,31 @@ import { ResponsiveMasterSlaveComponent } from './responsive-master-slave/respon
 import { ResponsiveTabContainerComponent } from './responsive-tab-container/responsive-tab-container.component';
 import { UploadProgressOverlayComponent } from './upload-progress-overlay/upload-progress-overlay.component';
 
+const components = [
+  PanelComponent,
+  DialogComponent,
+  FilePickerComponent,
+  UploadProgressOverlayComponent,
+  RecentActivitiesComponent,
+  ResponsiveDataTableComponent,
+  BusyOverlayDirective,
+  ResponsiveMasterSlaveComponent,
+  ActionMenuBarComponent,
+  ResponsiveTabContainerComponent,
+  RecentAcitivitiesItemComponent,
+  IconUploadComponent
+];
+
 @NgModule({
-  declarations: [
-    ResponsiveDataTableComponent,
-    BusyOverlayDirective,
-    ResponsiveMasterSlaveComponent,
-    ActionMenuBarComponent,
-    ResponsiveTabContainerComponent,
-    PanelComponent,
-    DialogComponent,
-    UploadProgressOverlayComponent,
-    FilePickerComponent,
-    RecentActivitiesComponent,
-    RecentAcitivitiesItemComponent,
-    IconUploadComponent
-  ],
-  exports: [
-    ResponsiveDataTableComponent,
-    BusyOverlayDirective,
-    ResponsiveMasterSlaveComponent,
-    ActionMenuBarComponent,
-    ResponsiveTabContainerComponent,
-    TabViewModule,
-    PanelComponent,
-    ActionMenuBarComponent,
-    DialogComponent,
-    FilePickerComponent,
-    UploadProgressOverlayComponent,
-    RecentActivitiesComponent,
-    IconUploadComponent
-  ],
+  declarations: [...components],
+  exports: [...components, TabViewModule],
   imports: [
+    OverlayPanelModule,
     CommonModule,
     AngularResizedEventModule,
     CdkStepperModule,
     AngularSplitModule,
-    AgGridModule.withComponents([]),
+    AgGridModule.withComponents([RecentAcitivitiesItemComponent]),
     RouterModule,
     TabViewModule,
     DialogModule,

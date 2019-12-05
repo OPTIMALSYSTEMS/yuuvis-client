@@ -68,11 +68,11 @@
         <ng-template #tplSupported>
           <div class="content-select-list">
             <div class="files">
-              <div class="file" *ngFor="let file of files">
+              <div class="file" *ngFor="let file of files; let i = index">
                 <div class="name">
                   {{ file.name }}
                 </div>
-                <yuv-icon class="btn" [svg]="icon.clear" (click)="removeFile(file)"></yuv-icon>
+                <yuv-icon class="btn" [svg]="icon.clear" (click)="removeFile(file, i)"></yuv-icon>
               </div>
             </div>
 

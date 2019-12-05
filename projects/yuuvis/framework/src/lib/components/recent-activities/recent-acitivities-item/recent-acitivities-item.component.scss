@@ -12,8 +12,7 @@
 
   .pre {
     background: var(--panel-background-grey);
-    display: flex;
-    flex-flow: column;
+    @include flex-col(0);
     align-items: center;
     justify-content: center;
     padding: calc(var(--app-pane-padding) / 2);
@@ -26,6 +25,7 @@
     .type {
       margin-top: 0.5em;
       color: var(--text-color-caption);
+      @include ellipsis();
     }
   }
 

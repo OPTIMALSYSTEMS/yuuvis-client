@@ -108,10 +108,10 @@ export class RecentActivitiesComponent implements OnInit {
       title: resItem.fields.get(SecondaryObjectTypeField.TITLE),
       description: resItem.fields.get(SecondaryObjectTypeField.DESCRIPTION),
       objectId: resItem.fields.get(BaseObjectTypeField.OBJECT_ID),
-      objectTypeId: objectTypeId,
+      objectTypeId,
       objectTypeIcon: this.systemService.getObjectTypeIcon(objectTypeId),
       objectTypeLabel: this.systemService.getLocalizedResource(`${objectTypeId}_label`),
-      date: date
+      date
     };
   }
 

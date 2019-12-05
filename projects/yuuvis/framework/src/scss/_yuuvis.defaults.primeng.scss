@@ -378,15 +378,4 @@ body {
   // }
 
   // -------------------------------------------------------------------
-  // ag-grid related overrides
-  .ag-theme-yuv {
-    .ag-cell {
-      .title,
-      .description {
-        overflow: hidden;
-        text-overflow: ellipsis;
-        width: 70vw;
-      }
-    }
-  }
 }

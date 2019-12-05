@@ -121,8 +121,8 @@ export class ObjectCreateComponent implements OnDestroy {
     this.objCreateServcice.setNewState({ done: this.isReady() });
   }
 
-  removeFile(file: File) {
-    this.files = this.files.filter(f => f.name !== file.name);
+  removeFile(file: File, fileIndex: number) {
+    this.files.splice(fileIndex, 1);
     this.objCreateServcice.setNewState({ done: this.isReady() });
   }
 
