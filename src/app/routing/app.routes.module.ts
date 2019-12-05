@@ -14,7 +14,7 @@ import { OfflineGuard } from './offline-guard/offline-guard.service';
 const routes: Routes = [
   { path: 'dashboard', component: DashboardComponent, canActivate: [OfflineGuard] },
   { path: 'settings', component: SettingsComponent, canActivate: [OfflineGuard] },
-  { path: 'about', component: AboutComponent, canActivate: [OfflineGuard] },
+  { path: 'about', component: AboutComponent },
   { path: 'create', component: CreateComponent, canActivate: [OfflineGuard], canDeactivate: [PendingChangesGuard] },
   { path: 'result', component: ResultComponent, canActivate: [OfflineGuard], canDeactivate: [PendingChangesGuard] },
   { path: 'object/:id', component: ObjectComponent, canActivate: [OfflineGuard], canDeactivate: [PendingChangesGuard] },
