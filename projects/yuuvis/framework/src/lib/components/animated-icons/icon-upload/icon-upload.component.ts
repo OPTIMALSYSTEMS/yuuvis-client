@@ -6,8 +6,10 @@ import { Component, HostBinding, Input } from '@angular/core';
   styleUrls: ['./icon-upload.component.scss']
 })
 export class IconUploadComponent {
-  @Input() set active(a: boolean) {
+  @Input() 
+  set active(a: boolean) {
     this.isActive = a;
   }
+
   @HostBinding('class.active') isActive: boolean;
 }

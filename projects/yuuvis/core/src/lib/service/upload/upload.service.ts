@@ -200,6 +200,7 @@ export class UploadService {
           (res: any) => (res.status ? (result = res) : null),
           err => {
             o.error(err);
+            this.uploadStatus.next(true);
             o.complete();
           },
           () => {

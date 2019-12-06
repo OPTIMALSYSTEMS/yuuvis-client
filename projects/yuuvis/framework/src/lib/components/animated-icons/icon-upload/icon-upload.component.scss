@@ -1,8 +1,12 @@
 :host {
+  svg {
+    width: 24px;
+    height: 24px;
+  }
   svg,
   path,
   rect {
-    fill: currentColor;
+    fill:  rgba(229,229,229, 1);
   }
   .arr {
     fill: var(--color-accent);
