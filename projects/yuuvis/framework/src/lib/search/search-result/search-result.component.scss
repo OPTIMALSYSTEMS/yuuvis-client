@@ -96,6 +96,7 @@ $yuv-panel-header-height: 110px;
   .footer {
     grid-area: footer;
     background-color: var(--panel-background);
+    width: 100%;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -116,6 +117,7 @@ $yuv-panel-header-height: 110px;
       display: flex;
       flex-wrap: nowrap;
       align-items: center;
+      white-space: nowrap;
       min-height: 24px;
       padding: 0 calc(var(--app-pane-padding) / 2);
     }
@@ -160,6 +162,8 @@ $yuv-panel-header-height: 110px;
           line-height: 1em;
           text-align: right;
           border: 0;
+          background-color: var(--main-background);
+          color: var(--text-color-body);
           font-size: var(--font-caption);
           border-right: 1px solid rgba(0, 0, 0, 0.2);
 

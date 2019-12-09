@@ -41,8 +41,6 @@
             [ngClass]="{'active': dataTable.viewMode === 'grid', 'current': dataTable.currentViewMode === 'grid'}">&#9783;</button>
           <button (click)="viewMode = 'horizontal'"
             [ngClass]="{'active': dataTable.viewMode === 'horizontal', 'current': dataTable.currentViewMode === 'horizontal'}">&#9868;</button>
-          <button (click)="viewMode = 'vertical'"
-            [ngClass]="{'active': dataTable.viewMode === 'vertical', 'current': dataTable.currentViewMode === 'vertical'}">&#9867;</button>
         </div>
 
         <div class="controls" *ngIf="hasPages">
