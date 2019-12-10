@@ -10,7 +10,7 @@ import { ColumnSizes } from '../../services/grid/grid.interface';
 import { RecentAcitivitiesItemComponent } from './../recent-activities/recent-acitivities-item/recent-acitivities-item.component';
 import { ResponsiveTableData } from './responsive-data-table.interface';
 
-export type ViewMode = 'standard' | 'horizontal' | 'vertical' | 'grid' | 'auto';
+export type ViewMode = 'standard' | 'horizontal' | 'grid' | 'auto';
 
 /**
  * Responsive DataTable
@@ -32,9 +32,10 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
   private _currentSelection: string[] = [];
 
   private settings = {
-    headerHeight: { standard: 37, horizontal: 0, vertical: 0, grid: 0 },
-    rowHeight: { standard: 48, horizontal: 70, vertical: 1, grid: 1 },
-    colWidth: { standard: 'auto', horizontal: 'auto', vertical: 160, grid: 160 }
+    headerHeight: { standard: 37, horizontal: 0, grid: 0 },
+    rowHeight: { standard: 48, horizontal: 70, grid: 1, vertical: 180 },
+    colWidth: { standard: 'auto', horizontal: 'auto', grid: 160 },
+    size: { newHeight: 0, newWidth: 0 }
   };
 
   gridOptions: GridOptions;
@@ -119,7 +120,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
     return this.currentViewMode === 'horizontal';
   }
   @HostBinding('class.vertical') get isVertical() {
-    return this.currentViewMode === 'vertical';
+    return this.currentViewMode === 'grid' && this.settings.size.newHeight < this.settings.rowHeight.vertical;
   }
   @HostBinding('class.grid') get isGrid() {
     return this.currentViewMode === 'grid';
@@ -143,8 +144,9 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
         takeUntilDestroy(this)
         // debounceTime(500)
       )
-      .subscribe((e: ResizedEvent) => {
-        this._autoViewMode = e.newHeight < this.breakpoint ? 'vertical' : e.newWidth < this.breakpoint ? 'horizontal' : 'standard';
+      .subscribe(({ newHeight, newWidth }: ResizedEvent) => {
+        this.settings.size = { newHeight, newWidth };
+        this._autoViewMode = newHeight < this.breakpoint ? 'grid' : newWidth < this.breakpoint ? 'horizontal' : 'standard';
         this.currentViewMode = this._autoViewMode;
       });
     // subscribe to columns beeing resized
@@ -221,6 +223,9 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
         this.gridOptions.columnApi.autoSizeAllColumns();
         this.gridOptions.api.sizeColumnsToFit();
       }
+
+      if (this.isGrid) {
+      }
       // if the small state changed, a different set of rowData is applied to the grid
       // so we need to reselect the items that were selected before
       this.selectRows(this._currentSelection);
@@ -231,7 +236,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
     const colDef: ColDef = {
       field: BaseObjectTypeField.OBJECT_ID,
       cellClass: 'cell-title-description',
-      minWidth: this.isVertical || this.isGrid ? this._data.rows.length * this.settings.colWidth.vertical : 0,
+      minWidth: this.isGrid ? this._data.rows.length * this.settings.colWidth.grid : 0,
       cellRendererFramework: RecentAcitivitiesItemComponent
       // cellRenderer: params => `
       //     <div class="title">${params.data[this._data.titleField] || params.value || ''}</div>

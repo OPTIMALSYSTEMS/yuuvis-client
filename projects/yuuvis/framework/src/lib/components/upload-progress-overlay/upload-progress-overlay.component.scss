@@ -71,6 +71,10 @@
 
 .remove-all {
   text-align: end;
+  padding: calc((var(--app-bar-height) - 32px) / 8);
+  color: var(--text-color-caption);
+  background-color: var(--app-bar-background);
+  border-top: 1px solid var(--panel-divider-color);
 }
 .progress-item {
   display: grid;
@@ -183,6 +187,14 @@
 .upload-files {
   width: 300px;
   background: var(--main-background);
+
+  .title {
+    padding: calc((var(--app-bar-height) - 32px) / 4);
+    color: var(--text-color-caption);
+    font-weight: bold;
+    background-color: var(--app-bar-background);
+    border-bottom: 1px solid var(--panel-divider-color);
+  }
 }
 
 .cloudy {

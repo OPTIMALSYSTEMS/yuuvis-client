@@ -87,7 +87,7 @@ $range-selection-highlight-color: $primary-color;
           @include flex-row();
           height: 100% !important;
           justify-content: space-between;
-          flex-wrap: nowrap;
+          flex-wrap: wrap;
         }
         .ag-row {
           position: relative;
@@ -100,12 +100,20 @@ $range-selection-highlight-color: $primary-color;
       }
     }
   }
-  &.grid {
+  &.grid:not(.vertical) {
     ::ng-deep {
       .ag-theme-yuv {
         .ag-center-cols-container {
-          flex-wrap: wrap;
           width: 100% !important;
+        }
+      }
+    }
+  }
+  &.vertical {
+    ::ng-deep {
+      .ag-theme-yuv {
+        .ag-center-cols-container {
+          flex-wrap: nowrap;
         }
         .ag-row {
           position: relative;
