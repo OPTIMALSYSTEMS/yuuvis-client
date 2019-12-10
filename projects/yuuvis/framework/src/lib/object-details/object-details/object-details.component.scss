@@ -6,13 +6,8 @@
       #summary > .ui-tabview-panel {
         padding: var(--app-pane-padding);
       }
-      #history > .ui-tabview-panel,
-      #preview > .ui-tabview-panel {
-        height: 100%;
-      }
 
       #indexdata > .ui-tabview-panel {
-        height: 100%;
         overflow: hidden;
 
         .object-form-edit {

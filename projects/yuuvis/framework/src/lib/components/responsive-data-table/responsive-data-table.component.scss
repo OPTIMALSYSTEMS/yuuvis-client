@@ -4,11 +4,10 @@ $icon-size: 18px !default;
 $primary-color: var(--color-accent);
 $range-selection-highlight-color: $primary-color;
 
-:host {
-  &.grid,
-  &.vertical,
-  &.horizontal {
-    ::ng-deep {
+::ng-deep {
+  yuv-responsive-data-table {
+    &.grid,
+    &.horizontal {
       .ag-theme-yuv .ag-row {
         border: 0;
         padding: 0;
@@ -48,30 +47,28 @@ $range-selection-highlight-color: $primary-color;
   }
 
   &.horizontal {
-    ::ng-deep {
-      .ag-theme-yuv {
-        .ag-center-cols-container {
-          width: 100% !important;
-        }
-        .ag-row {
-          yuv-recent-acitivities-item {
-            flex-flow: row;
-            max-width: 100%;
-            margin: 4px;
-            .pre {
-              min-width: 140px;
+    .ag-theme-yuv {
+      .ag-center-cols-container {
+        width: 100% !important;
+      }
+      .ag-row {
+        yuv-recent-acitivities-item {
+          flex-flow: row;
+          max-width: 100%;
+          margin: 4px;
+          .pre {
+            min-width: 140px;
+          }
+          .main {
+            flex: 1;
+            position: relative;
+            .description {
+              margin-right: 80px;
             }
-            .main {
-              flex: 1;
-              position: relative;
-              .description {
-                margin-right: 80px;
-              }
-              .date {
-                position: absolute;
-                right: var(--app-pane-padding);
-                bottom: calc(var(--app-pane-padding) / 2);
-              }
+            .date {
+              position: absolute;
+              right: var(--app-pane-padding);
+              bottom: calc(var(--app-pane-padding) / 2);
             }
           }
         }
@@ -79,52 +76,57 @@ $range-selection-highlight-color: $primary-color;
     }
   }
 
-  &.grid,
-  &.vertical {
-    ::ng-deep {
-      .ag-theme-yuv {
-        .ag-center-cols-container {
-          @include flex-row();
-          height: 100% !important;
-          justify-content: space-between;
-          flex-wrap: wrap;
-        }
-        .ag-row {
-          position: relative;
-          overflow: hidden;
-          width: 160px;
-          height: 174px !important;
-          transform: none !important;
-          border-width: 1px !important;
-        }
+  &.grid {
+    .ag-theme-yuv {
+      .ag-center-cols-container {
+        @include flex-row();
+        justify-content: space-between;
+        flex-wrap: wrap;
+      }
+      .ag-row {
+        position: relative;
+        overflow: hidden;
+        width: 160px;
+        height: 174px !important;
+        transform: none !important;
+        border-width: 1px !important;
+      }
+      .ag-pinned-left-cols-container,
+      .ag-pinned-right-cols-container,
+      .ag-full-width-container,
+      .ag-center-cols-container,
+      .ag-center-cols-viewport,
+      .ag-center-cols-clipper {
+        height: auto !important;
       }
     }
   }
   &.grid:not(.vertical) {
-    ::ng-deep {
-      .ag-theme-yuv {
-        .ag-center-cols-container {
-          width: 100% !important;
-        }
+    .ag-theme-yuv {
+      .ag-center-cols-clipper {
+        display: table;
+      }
+      .ag-center-cols-container {
+        width: 100% !important;
       }
     }
   }
-  &.vertical {
-    ::ng-deep {
-      .ag-theme-yuv {
-        .ag-center-cols-container {
-          flex-wrap: nowrap;
-        }
-        .ag-row {
-          position: relative;
-        }
+  &.grid.vertical {
+    .ag-theme-yuv {
+      .ag-center-cols-container {
+        flex-wrap: nowrap;
       }
     }
   }
 }
 
-.yuv-responsive-data-table {
+.data-table-resizable {
+  overflow: hidden;
   height: 100%;
+}
+
+.yuv-responsive-data-table {
+  @include frame(0);
   background-color: var(--panel-background);
 
   .table {

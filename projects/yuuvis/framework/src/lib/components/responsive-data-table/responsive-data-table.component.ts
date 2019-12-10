@@ -33,7 +33,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
 
   private settings = {
     headerHeight: { standard: 37, horizontal: 0, grid: 0 },
-    rowHeight: { standard: 48, horizontal: 70, grid: 1, vertical: 180 },
+    rowHeight: { standard: 48, horizontal: 70, grid: 180 },
     colWidth: { standard: 'auto', horizontal: 'auto', grid: 160 },
     size: { newHeight: 0, newWidth: 0 }
   };
@@ -120,7 +120,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
     return this.currentViewMode === 'horizontal';
   }
   @HostBinding('class.vertical') get isVertical() {
-    return this.currentViewMode === 'grid' && this.settings.size.newHeight < this.settings.rowHeight.vertical;
+    return this.currentViewMode === 'grid' && this.settings.size.newHeight < this.settings.rowHeight.grid;
   }
   @HostBinding('class.grid') get isGrid() {
     return this.currentViewMode === 'grid';
@@ -224,8 +224,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
         this.gridOptions.api.sizeColumnsToFit();
       }
 
-      if (this.isGrid) {
-      }
+      this.gridOptions.rowBuffer = this.isGrid ? 1000 : undefined;
       // if the small state changed, a different set of rowData is applied to the grid
       // so we need to reselect the items that were selected before
       this.selectRows(this._currentSelection);
