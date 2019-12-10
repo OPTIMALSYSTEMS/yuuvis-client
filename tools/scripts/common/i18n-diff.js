@@ -6,7 +6,7 @@ const argv = require('yargs')
     alias: 'b',
     describe: 'file path before translation',
     demand: false,
-    default: './src/assets/default/i18n/de.json'
+    default: './src/assets/default/i18n/en.json'
   })
   .option('after', {
     alias: 'a',
