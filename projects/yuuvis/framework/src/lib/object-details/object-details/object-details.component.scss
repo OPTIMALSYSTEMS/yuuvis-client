@@ -3,10 +3,6 @@
     .ui-tabview .ui-tabview-panels {
       background-color: var(--panel-background-grey);
 
-      #summary > .ui-tabview-panel {
-        padding: var(--app-pane-padding);
-      }
-
       #indexdata > .ui-tabview-panel {
         overflow: hidden;
 
@@ -25,7 +21,7 @@
             }
           }
           .form-controls {
-            border: 4px solid var(--panel-background-grey);
+            border-top: 1px solid var(--panel-divider-color);
             background: var(--panel-background);
             animation: yuvFadeInUp 200ms;
             &.disabled {

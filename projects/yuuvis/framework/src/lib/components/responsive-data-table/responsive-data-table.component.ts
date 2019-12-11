@@ -120,7 +120,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
     return this.currentViewMode === 'horizontal';
   }
   @HostBinding('class.vertical') get isVertical() {
-    return this.currentViewMode === 'grid' && this.settings.size.newHeight < this.settings.rowHeight.grid;
+    return this.currentViewMode === 'grid' && this.settings.size.newHeight < this.settings.rowHeight.grid * 1.5;
   }
   @HostBinding('class.grid') get isGrid() {
     return this.currentViewMode === 'grid';
@@ -346,7 +346,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
   }
 
   private selectEvent($event: MouseEvent | any) {
-    const colEl = ($event.composedPath ? $event.composedPath() : []).find(el => el.getAttribute('col-id'));
+    const colEl = ($event.composedPath ? $event.composedPath() : []).find(el => el && el.getAttribute('col-id'));
     if (colEl) {
       this.selectRows([colEl.parentElement.getAttribute('row-id')], colEl.getAttribute('col-id'));
       this.gridOptions.onSelectionChanged(null);

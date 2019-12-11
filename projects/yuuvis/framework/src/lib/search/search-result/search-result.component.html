@@ -20,48 +20,50 @@
         (rowDoubleClicked)="rowDoubleClicked.emit($event)">
       </yuv-responsive-data-table>
 
-      <div class="footer paging" yuvOfflineDisabled>
-        <div class="status">
-          {{ 'yuv.framework.search-result.footer.hits' | translate: { count: totalNumItems } }}
-        </div>
+      <div class="footer" yuvOfflineDisabled>
+        <div class="footer_wrapper">
+          <div class="status">
+            {{ 'yuv.framework.search-result.footer.hits' | translate: { count: totalNumItems } }}
+          </div>
 
-        <div class="navigation">
-          <button [disabled]="!tableData?.rows?.length" (click)="goTo('prev')">
-            <yuv-icon class="prev" [svg]="icon.icArrowNext"></yuv-icon>
-          </button>
-          <button [disabled]="!tableData?.rows?.length" (click)="goTo('next')">
-            <yuv-icon class="next" [svg]="icon.icArrowNext"></yuv-icon>
-          </button>
-        </div>
+          <div class="navigation">
+            <button [disabled]="!tableData?.rows?.length" (click)="goTo('prev')">
+              <yuv-icon class="prev" [svg]="icon.icArrowNext"></yuv-icon>
+            </button>
+            <button [disabled]="!tableData?.rows?.length" (click)="goTo('next')">
+              <yuv-icon class="next" [svg]="icon.icArrowNext"></yuv-icon>
+            </button>
+          </div>
 
-        <div class="view-mode">
-          <button (click)="viewMode = 'standard'"
-            [ngClass]="{'active': dataTable.viewMode === 'standard', 'current': dataTable.currentViewMode === 'standard'}">&#9776;</button>
-          <button (click)="viewMode = 'grid'"
-            [ngClass]="{'active': dataTable.viewMode === 'grid', 'current': dataTable.currentViewMode === 'grid'}">&#9783;</button>
-          <button (click)="viewMode = 'horizontal'"
-            [ngClass]="{'active': dataTable.viewMode === 'horizontal', 'current': dataTable.currentViewMode === 'horizontal'}">&#9868;</button>
-        </div>
+          <div class="view-mode">
+            <button (click)="viewMode = 'standard'"
+              [ngClass]="{'active': dataTable.viewMode === 'standard', 'current': dataTable.currentViewMode === 'standard'}">&#9776;</button>
+            <button (click)="viewMode = 'grid'"
+              [ngClass]="{'active': dataTable.viewMode === 'grid', 'current': dataTable.currentViewMode === 'grid'}">&#9783;</button>
+            <button (click)="viewMode = 'horizontal'"
+              [ngClass]="{'active': dataTable.viewMode === 'horizontal', 'current': dataTable.currentViewMode === 'horizontal'}">&#9868;</button>
+          </div>
 
-        <div class="controls" *ngIf="hasPages">
-          <button [disabled]="pagination.page === 0" (click)="goToPage(1)">
-            <yuv-icon class="first" [svg]="icon.icArrowLast"></yuv-icon>
-          </button>
-          <button [disabled]="pagination.page === 0" (click)="goToPage(pagination.page - 1)">
-            <yuv-icon class="prev" [svg]="icon.icArrowNext"></yuv-icon>
-          </button>
+          <div class="controls" *ngIf="hasPages">
+            <button [disabled]="pagination.page === 0" (click)="goToPage(1)">
+              <yuv-icon class="first" [svg]="icon.icArrowLast"></yuv-icon>
+            </button>
+            <button [disabled]="pagination.page === 0" (click)="goToPage(pagination.page - 1)">
+              <yuv-icon class="prev" [svg]="icon.icArrowNext"></yuv-icon>
+            </button>
 
-          <form (ngSubmit)="onPagingFormSubmit()" [formGroup]="pagingForm">
-            <input type="text" formControlName="page" />
-            <div>{{ pagination.pages }}</div>
-          </form>
+            <form (ngSubmit)="onPagingFormSubmit()" [formGroup]="pagingForm">
+              <input type="text" formControlName="page" />
+              <div>{{ pagination.pages }}</div>
+            </form>
 
-          <button [disabled]="pagination.page === pagination.pages" (click)="goToPage(pagination.page + 1)">
-            <yuv-icon class="next" [svg]="icon.icArrowNext"></yuv-icon>
-          </button>
-          <button [disabled]="pagination.page === pagination.pages" (click)="goToPage(pagination.pages)">
-            <yuv-icon class="last" [svg]="icon.icArrowLast"></yuv-icon>
-          </button>
+            <button [disabled]="pagination.page === pagination.pages" (click)="goToPage(pagination.page + 1)">
+              <yuv-icon class="next" [svg]="icon.icArrowNext"></yuv-icon>
+            </button>
+            <button [disabled]="pagination.page === pagination.pages" (click)="goToPage(pagination.pages)">
+              <yuv-icon class="last" [svg]="icon.icArrowLast"></yuv-icon>
+            </button>
+          </div>
         </div>
       </div>
     </ng-container>

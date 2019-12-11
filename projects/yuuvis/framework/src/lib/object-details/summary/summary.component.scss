@@ -1,6 +1,10 @@
 @import './../../../../../../../src/scss-shared/_mixins';
 
 .object-summary {
+  display: block;
+  height: 100%;
+  overflow: auto;
+  padding: var(--app-pane-padding);
   ::ng-deep {
     .ui-accordion {
       p-accordiontab {

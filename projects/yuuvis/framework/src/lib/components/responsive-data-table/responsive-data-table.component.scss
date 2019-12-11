@@ -93,7 +93,7 @@ $range-selection-highlight-color: $primary-color;
       .ag-theme-yuv {
         .ag-center-cols-container {
           @include flex-row();
-          justify-content: space-between;
+          justify-content: space-evenly;
           flex-wrap: wrap;
         }
         .ag-row {
@@ -110,7 +110,10 @@ $range-selection-highlight-color: $primary-color;
         .ag-center-cols-container,
         .ag-center-cols-viewport,
         .ag-center-cols-clipper {
-          height: auto !important;
+          height: 100% !important;
+        }
+        .ag-body-horizontal-scroll {
+          display: none;
         }
       }
     }

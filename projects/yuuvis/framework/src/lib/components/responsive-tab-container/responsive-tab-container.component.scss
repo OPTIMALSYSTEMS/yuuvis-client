@@ -49,6 +49,11 @@
       }
     }
   }
+
+  p-tabview::ng-deep > .ui-tabview > .ui-tabview-panels > p-tabpanel > .ui-tabview-panel {
+    @include frame(0);
+    top: 40px; // header height
+  }
 }
 
 ::ng-deep {
@@ -82,10 +87,6 @@
     overflow: auto;
     border: none;
     border-top: 1px solid #c8c8c8;
-    .ui-tabview-panel {
-      @include frame(0);
-      top: 40px; // header height
-    }
   }
 
   .split-tab-view .ui-tabview-panel {
