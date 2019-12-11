@@ -84,7 +84,7 @@
     border-top: 1px solid #c8c8c8;
     .ui-tabview-panel {
       @include frame(0);
-      top: 40px;
+      top: 40px; // header height
     }
   }
 
