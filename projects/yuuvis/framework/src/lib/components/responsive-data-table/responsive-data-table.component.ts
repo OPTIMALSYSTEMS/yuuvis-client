@@ -203,8 +203,10 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
     }
   }
 
-  private applyGridOption() {
+  private applyGridOption(retry = true) {
     if (this.gridOptions && this.gridOptions.api) {
+      // make sure that all rows are visible / loaded
+      this.gridOptions.rowBuffer = this.isSmall ? 1000 : undefined;
       this.gridOptions.api.setRowData(this._data.rows);
       this.gridOptions.api.setHeaderHeight(this.settings.headerHeight[this.currentViewMode]);
 
@@ -214,7 +216,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
         this.gridOptions.api.setColumnDefs(columns);
       }
 
-      if (this._data.sortModel) {
+      if (this.isStandard && this._data.sortModel) {
         this.gridOptions.api.setSortModel([...this._data.sortModel]);
       }
 
@@ -224,11 +226,11 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
         this.gridOptions.api.sizeColumnsToFit();
       }
 
-      // make sure that all rows are visible / loaded
-      this.gridOptions.rowBuffer = this.isSmall ? 1000 : undefined;
       // if the small state changed, a different set of rowData is applied to the grid
       // so we need to reselect the items that were selected before
       this.selectRows(this._currentSelection);
+    } else if (retry) {
+      setTimeout(() => this.applyGridOption(false), 0);
     }
   }
 
@@ -258,7 +260,14 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
       if (n) {
         if (index === 0) {
           this.gridOptions.api.setFocusedCell(n.rowIndex, focusColId || this._data.columns[0].field);
-          this.gridOptions.api.ensureIndexVisible(n.rowIndex);
+          if (this.isVertical) {
+            const shift = Math.floor(this.settings.size.newWidth / this.settings.colWidth.grid / 2);
+            this.gridOptions.api['gridPanel'].setCenterViewportScrollLeft(Math.max(0, (n.rowIndex - shift) * this.settings.colWidth.grid));
+          } else if (this.isGrid) {
+            this.gridOptions.api.ensureIndexVisible(Math.floor(n.rowIndex / Math.floor(this.settings.size.newWidth / this.settings.colWidth.grid)));
+          } else {
+            this.gridOptions.api.ensureIndexVisible(n.rowIndex);
+          }
         }
         n.setSelected(true, index === 0);
       }
@@ -291,12 +300,8 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
           this.selectionChanged.emit(this.gridOptions.api.getSelectedRows());
         }
       },
-      onColumnResized: event => {
-        this.columnResizeSource.next();
-      },
-      onSortChanged: event => {
-        this.sortChanged.emit(this.gridOptions.api.getSortModel());
-      },
+      onColumnResized: event => this.columnResizeSource.next(),
+      onSortChanged: event => this.isStandard && this.sortChanged.emit(this.gridOptions.api.getSortModel()),
       onGridReady: event => {
         this.gridOptions.api.setSortModel(this._data.sortModel || []);
         this.gridOptions.api.setFocusedCell(0, this._data.columns[0].field);
