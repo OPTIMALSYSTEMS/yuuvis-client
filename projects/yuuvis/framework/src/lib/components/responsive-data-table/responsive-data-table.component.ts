@@ -66,7 +66,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
    */
   @Input() set viewMode(viewMode: ViewMode) {
     this._viewMode = viewMode || 'auto';
-    this.currentViewMode = this._viewMode;
+    this.currentViewMode = this._viewMode === 'auto' ? this._autoViewMode : this._viewMode;
   }
 
   get viewMode() {
@@ -74,7 +74,6 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
   }
 
   set currentViewMode(viewMode: ViewMode) {
-    viewMode = this.viewMode === 'auto' ? this._autoViewMode : this.viewMode;
     if (this.currentViewMode !== viewMode) {
       this._currentViewMode = viewMode;
       this.applyGridOption();
@@ -147,7 +146,9 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
       .subscribe(({ newHeight, newWidth }: ResizedEvent) => {
         this.settings.size = { newHeight, newWidth };
         this._autoViewMode = newHeight < this.breakpoint ? 'grid' : newWidth < this.breakpoint ? 'horizontal' : 'standard';
-        this.currentViewMode = this._autoViewMode;
+        if (this.viewMode === 'auto') {
+          this.currentViewMode = this._autoViewMode;
+        }
       });
     // subscribe to columns beeing resized
     this.columnResize$.pipe(takeUntilDestroy(this), debounceTime(1000)).subscribe((e: ResizedEvent) => {
