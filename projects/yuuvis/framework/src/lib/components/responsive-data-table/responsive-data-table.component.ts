@@ -252,7 +252,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
    * select rows based on list of IDs
    * @param selection default is first row
    */
-  selectRows(selection?: string[], focusColId?: string) {
+  selectRows(selection?: string[], focusColId?: string, ensureVisibility = true) {
     this.gridOptions.api.clearFocusedCell();
     this.gridOptions.api.deselectAll();
     (selection || [this._data.rows[0].id]).forEach((id: string, index: number) => {
@@ -260,13 +260,15 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
       if (n) {
         if (index === 0) {
           this.gridOptions.api.setFocusedCell(n.rowIndex, focusColId || this._data.columns[0].field);
-          if (this.isVertical) {
-            const shift = Math.floor(this.settings.size.newWidth / this.settings.colWidth.grid / 2);
-            this.gridOptions.api['gridPanel'].setCenterViewportScrollLeft(Math.max(0, (n.rowIndex - shift) * this.settings.colWidth.grid));
-          } else if (this.isGrid) {
-            this.gridOptions.api.ensureIndexVisible(Math.floor(n.rowIndex / Math.floor(this.settings.size.newWidth / this.settings.colWidth.grid)));
-          } else {
-            this.gridOptions.api.ensureIndexVisible(n.rowIndex);
+          if (ensureVisibility) {
+            if (this.isVertical) {
+              const shift = Math.floor(this.settings.size.newWidth / this.settings.colWidth.grid / 2);
+              this.gridOptions.api['gridPanel'].setCenterViewportScrollLeft(Math.max(0, (n.rowIndex - shift) * this.settings.colWidth.grid));
+            } else if (this.isGrid) {
+              this.gridOptions.api.ensureIndexVisible(Math.floor(n.rowIndex / Math.floor(this.settings.size.newWidth / this.settings.colWidth.grid)));
+            } else {
+              this.gridOptions.api.ensureIndexVisible(n.rowIndex);
+            }
           }
         }
         n.setSelected(true, index === 0);
@@ -353,7 +355,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
   private selectEvent($event: MouseEvent | any) {
     const colEl = ($event.composedPath ? $event.composedPath() : []).find(el => el && el.getAttribute('col-id'));
     if (colEl) {
-      this.selectRows([colEl.parentElement.getAttribute('row-id')], colEl.getAttribute('col-id'));
+      this.selectRows([colEl.parentElement.getAttribute('row-id')], colEl.getAttribute('col-id'), false);
       this.gridOptions.onSelectionChanged(null);
       console.log(colEl.parentElement.getAttribute('row-id'));
     }
