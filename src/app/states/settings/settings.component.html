@@ -2,9 +2,9 @@
   <div class="head">
     <yuv-user-avatar class="background" [user]="user$ | async"></yuv-user-avatar>
     <div class="user">
-      <div class="meta">{{(user$ | async).username}}</div>
+      <div class="meta uname">{{(user$ | async).username}}</div>
       <h1>{{(user$ | async).title}}</h1>
-      <div class="meta">{{(user$ | async).email}}</div>
+      <div class="meta uemail">{{(user$ | async).email}}</div>
     </div>
     <yuv-user-avatar class="box panel" [user]="user$ | async"></yuv-user-avatar>
   </div>
