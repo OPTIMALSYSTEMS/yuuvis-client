@@ -1,0 +1,23 @@
+:host {
+  display: block;
+  background-color: #e5e5e5;
+  padding: var(--app-pane-padding);
+  margin-bottom: var(--app-pane-padding);
+
+  .group-label {
+    color: red;
+  }
+  .items {
+    column-count: 3;
+    column-gap: 40px;
+  }
+
+  .disabled {
+    opacity: 0.3;
+  }
+
+  &:focus {
+    background: rgb(0, 166, 221);
+    color: #fff;
+  }
+}

@@ -1,0 +1,23 @@
+:host {
+  display: block;
+  margin-bottom: 2px;
+  background-color: #0090ff;
+
+  > div {
+    transition: all 0.3s;
+    outline: none;
+    margin: var(--app-pane-padding);
+    color: white;
+  }
+
+  &.multiselect {
+    div.selected {
+      background-color: yellow;
+    }
+  }
+
+  &:focus {
+    background-color: #28bf5f;
+    transform: translateX(1rem);
+  }
+}
