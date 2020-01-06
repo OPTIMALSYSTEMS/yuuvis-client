@@ -1,5 +1,6 @@
 <ng-container *ngIf="dmsObject">
-  <iframe *ngIf="previewSrc; else tplNoPreview" [src]="previewSrc | safeUrl" frameborder="0" #contentPreview></iframe>
+
+  <iframe *ngIf="previewSrc$ | async as previewSrc; else tplNoPreview" [src]="previewSrc | safeUrl" frameborder="0" #contentPreview></iframe>
 
   <ng-template #tplNoPreview>
     <div class="no-preview">

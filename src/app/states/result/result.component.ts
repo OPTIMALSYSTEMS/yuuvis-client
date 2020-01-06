@@ -4,6 +4,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AppCacheService, PendingChangesService, Screen, ScreenService, SearchQuery, TranslateService } from '@yuuvis/core';
+import { ContentPreviewService } from '@yuuvis/framework';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { AppSearchService } from '../../service/app-search.service';
 
@@ -34,7 +35,8 @@ export class ResultComponent implements OnInit, OnDestroy {
     private pendingChanges: PendingChangesService,
     private title: Title,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private contentPreviewService: ContentPreviewService
   ) {
     this.screenService.screenChange$.pipe(takeUntilDestroy(this)).subscribe((screen: Screen) => {
       this.smallScreen = screen.mode === ScreenService.MODE.SMALL;
@@ -65,6 +67,7 @@ export class ResultComponent implements OnInit, OnDestroy {
   }
 
   select(items: string[]) {
+    this.contentPreviewService.resetSource();
     this.selectedItems = items;
     this.objectDetailsID = this.selectedItems[0];
   }

@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, ElementRef, Input } from '@angular/core';
-import { SafeResourceUrl } from '@angular/platform-browser';
 import { DmsObject } from '@yuuvis/core';
-import { fromEvent } from 'rxjs';
+import { fromEvent, Observable, of } from 'rxjs';
+import { tap } from 'rxjs/operators';
 import { SVGIcons } from '../../svg.generated';
 import { ContentPreviewService } from './service/content-preview.service';
 
@@ -18,7 +18,7 @@ export class ContentPreviewComponent implements AfterViewInit {
   @Input()
   set dmsObject(object: DmsObject) {
     // generate preview URI with streamID to enable refresh if file was changed
-    this.previewSrc = !object || !object.content || !object.content.size ? null : this.contentPreviewService.createPreviewUrl(object.id, object.content);
+    this.previewSrc$ = !object || !object.content || !object.content.size ? of(null) : this.createPreviewUrl(object);
     this._dmsObject = object;
   }
 
@@ -27,14 +27,17 @@ export class ContentPreviewComponent implements AfterViewInit {
   }
 
   icons = SVGIcons;
-  previewSrc: SafeResourceUrl;
+  previewSrc$: Observable<string>;
 
   constructor(private elRef: ElementRef, private contentPreviewService: ContentPreviewService) {}
 
+  private createPreviewUrl(object: DmsObject): Observable<string> {
+    this.contentPreviewService.createPreviewUrl(object.id, object.content);
+    return this.contentPreviewService.previewSrc$;
+  }
+
   refresh() {
-    if (this.previewSrc) {
-      this.elRef.nativeElement.querySelector('iframe').contentWindow.location.reload(true);
-    }
+    this.previewSrc$.pipe(tap(val => (val ? this.elRef.nativeElement.querySelector('iframe').contentWindow.location.reload(true) : null)));
   }
 
   /**
