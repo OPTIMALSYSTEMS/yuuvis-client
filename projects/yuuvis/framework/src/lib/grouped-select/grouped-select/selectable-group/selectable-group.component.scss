@@ -1,15 +1,17 @@
 :host {
   display: block;
-  background-color: #e5e5e5;
+  background-color: #fff;
   padding: var(--app-pane-padding);
-  margin-bottom: var(--app-pane-padding);
+  margin: 20px;
 
   .group-label {
-    color: red;
+    color: var(--color-accent);
+    font-size: var(--font-subhead);
+    margin-bottom: var(--app-pane-padding);
   }
   .items {
     column-count: 3;
-    column-gap: 40px;
+    column-gap: 20px;
   }
 
   .disabled {
@@ -17,7 +19,7 @@
   }
 
   &:focus {
-    background: rgb(0, 166, 221);
+    border-color: var(--color-accent);
     color: #fff;
   }
 }
