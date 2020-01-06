@@ -1,6 +1,6 @@
 <div class="top">
   <yuv-quick-search #quickSearch [query]="appQuery" (typeAggregation)="onTypeAggregation($event)"
-    (querySubmit)="onQuickSearchQuery($event)"></yuv-quick-search>
+    (querySubmit)="onQuickSearchQuery($event, true)"></yuv-quick-search>
 
   <div class="aggs" *ngIf="aggs?.length">
     <div class="container">
@@ -17,6 +17,6 @@
 </div>
 
 <div class="bottom">
-  <yuv-recent-activities (itemClick)="onRecentItemClicked($event)" (showAll)="onShowAll($event)">
+  <yuv-recent-activities id="ra-dashboard" (itemClick)="onRecentItemClicked($event)" (showAll)="onShowAll($event)">
   </yuv-recent-activities>
 </div>

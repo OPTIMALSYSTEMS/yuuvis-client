@@ -1,5 +1,6 @@
-import { Component, EventEmitter, HostBinding, Input, OnInit, Output } from '@angular/core';
+import { Attribute, Component, EventEmitter, HostBinding, Input, OnInit, Output } from '@angular/core';
 import {
+  AppCacheService,
   BaseObjectTypeField,
   SearchFilter,
   SearchQuery,
@@ -23,6 +24,9 @@ import { catchError } from 'rxjs/operators';
  * There are some css classes that affect the look and feel of the component.
  * `<yuv-recent-activities class="transparent">` Transparent background
  * `<yuv-recent-activities class="flipped">` Flip controls to be on the bottom instaed of on the top
+ *
+ * If the component has an `id` attribute, the state of the component will be persisted. So make sure
+ * to set up unique ids if you are using this component on more than one place within your application.
  */
 @Component({
   selector: 'yuv-recent-activities',
@@ -30,6 +34,8 @@ import { catchError } from 'rxjs/operators';
   styleUrls: ['./recent-activities.component.scss']
 })
 export class RecentActivitiesComponent implements OnInit {
+  private cacheKeyBase = 'yuv.framework.recent-activities';
+
   /**
    * Data to be displayed by the component. If not provided, recent items will be
    * fetched for the current user. This may come in handy if you want to display
@@ -70,7 +76,21 @@ export class RecentActivitiesComponent implements OnInit {
   createdQuery: SearchQuery;
   modifiedQuery: SearchQuery;
 
-  constructor(private userService: UserService, private systemService: SystemService, private searchService: SearchService) {}
+  constructor(
+    @Attribute('id') public id,
+    private userService: UserService,
+    private appCache: AppCacheService,
+    private systemService: SystemService,
+    private searchService: SearchService
+  ) {
+    if (this.id) {
+      this.appCache.getItem(`${this.cacheKeyBase}.${this.id}`).subscribe(res => {
+        if (res && res.selected) {
+          this.selected = res.selected;
+        }
+      });
+    }
+  }
 
   private getCreated(userId: string) {
     this.createdQuery = new SearchQuery();
@@ -117,6 +137,13 @@ export class RecentActivitiesComponent implements OnInit {
 
   select(tab: 'created' | 'modified') {
     this.selected = tab;
+    if (this.id) {
+      this.appCache
+        .setItem(`${this.cacheKeyBase}.${this.id}`, {
+          selected: this.selected
+        })
+        .subscribe();
+    }
   }
 
   triggerShowAll() {
@@ -133,8 +160,6 @@ export class RecentActivitiesComponent implements OnInit {
   }
 
   private postFetch() {
-    const hasModifiedItems = this.modified;
-
     if ((this.modified && !this.created) || (this.recentlyCreated && this.recentlyCreated.length === 0)) {
       this.selected = 'modified';
     }

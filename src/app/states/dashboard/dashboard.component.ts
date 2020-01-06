@@ -1,6 +1,6 @@
 import { Component, HostBinding, OnInit, ViewChild } from '@angular/core';
 import { Title } from '@angular/platform-browser';
-import { Router } from '@angular/router';
+import { NavigationExtras, Router } from '@angular/router';
 import { SearchQuery } from '@yuuvis/core';
 import { ObjectTypeAggregation, QuickSearchComponent, RecentItem } from '@yuuvis/framework';
 import { APP_VARS } from '../../app.vars';
@@ -28,16 +28,12 @@ export class DashboardComponent implements OnInit {
     this.router.navigate(['/object/' + recentItem.objectId]);
   }
 
-  onQuickSearchQuery(query: SearchQuery, preventAppSearchSet: boolean = false) {
-    this.router
-      .navigate(['/result'], {
-        queryParams: { query: JSON.stringify(query.toQueryJson()) }
-      })
-      .then(_ => {
-        if (!preventAppSearchSet) {
-          this.appSearch.setQuery(query);
-        }
-      });
+  async onQuickSearchQuery(query: SearchQuery, preventAppSearchSet: boolean = false) {
+    const navigationExtras: NavigationExtras = { queryParams: { query: JSON.stringify(query.toQueryJson()) } };
+    await this.router.navigate(['/result'], navigationExtras);
+    if (!preventAppSearchSet) {
+      this.appSearch.setQuery(query);
+    }
   }
 
   onTypeAggregation(aggs: ObjectTypeAggregation[]) {
@@ -51,8 +47,6 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit() {
     this.titleService.setTitle(APP_VARS.defaultPageTitle);
-    this.appSearch.query$.subscribe((q: SearchQuery) => {
-      this.appQuery = q;
-    });
+    this.appSearch.query$.subscribe((q: SearchQuery) => (this.appQuery = q));
   }
 }
