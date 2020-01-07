@@ -21,8 +21,6 @@ import { filter } from 'rxjs/operators';
   styleUrls: ['./frame.component.scss']
 })
 export class FrameComponent implements OnInit {
-  deferredPrompt: any;
-  showButton = false;
   swUpdateAvailable: boolean;
   hideAppBar = false;
   showSideBar = false;
@@ -39,15 +37,6 @@ export class FrameComponent implements OnInit {
   }
   @HostListener('window:drop', ['$event']) onDrop(e) {
     e.preventDefault();
-  }
-
-  @HostListener('window:beforeinstallprompt', ['$event'])
-  onbeforeinstallprompt(e) {
-    // Prevent Chrome 67 and earlier from automatically showing the prompt
-    e.preventDefault();
-    // Stash the event so it can be triggered later.
-    this.deferredPrompt = e;
-    this.showButton = true;
   }
 
   // tslint:disable-next-line: member-ordering
