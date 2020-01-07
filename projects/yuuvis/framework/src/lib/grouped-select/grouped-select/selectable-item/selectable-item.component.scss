@@ -1,23 +1,35 @@
 :host {
   display: block;
-  margin-bottom: 2px;
-  background-color: #0090ff;
+  margin-bottom: 8px;
+  // background-color: hotpink;
+  padding: 2px;
+  -webkit-column-break-inside: avoid;
+  page-break-inside: avoid;
+  break-inside: avoid;
+  color: var(--text-color-body);
 
   > div {
     transition: all 0.3s;
     outline: none;
-    margin: var(--app-pane-padding);
-    color: white;
+    margin: 6px;
   }
 
   &.multiselect {
     div.selected {
-      background-color: yellow;
+      // background-color: yellow;
     }
   }
 
   &:focus {
-    background-color: #28bf5f;
-    transform: translateX(1rem);
+    background-color: var(--color-accent);
+    color: #fff;
+    yuv-checkbox {
+      color: #fff;
+    }
+    // transform: translateX(1rem);
+  }
+
+  yuv-checkbox {
+    margin-right: var(--app-pane-padding);
   }
 }
