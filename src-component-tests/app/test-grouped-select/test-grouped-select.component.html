@@ -1,4 +1,10 @@
 <div class="cmp">
-  <yuv-grouped-select multiple="true" [groups]="groups" (selectionChange)="onSelectionChange($event)">
+  <yuv-grouped-select autofocus="true" multiple="true" [groups]="groups" [(ngModel)]="selectedItems"
+    (ngModelChange)="onSelectionChange($event)">
+  </yuv-grouped-select>
+</div>
+
+<div class="cmp">
+  <yuv-grouped-select [groups]="groups2" [(ngModel)]="selectedItems2" (ngModelChange)="onSelectionChange($event)">
   </yuv-grouped-select>
 </div>

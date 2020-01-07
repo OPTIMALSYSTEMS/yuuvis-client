@@ -4,13 +4,12 @@ import { Selectable } from './../grouped-select.interface';
 
 @Component({
   selector: 'yuv-selectable-item',
-  template: '<div [ngClass]="{selected: _selected}"><yuv-checkbox [(ngModel)]="_selected"></yuv-checkbox>{{item.label}}</div>',
+  template: '<div [ngClass]="{selected: selected}"><yuv-checkbox tabindex="-1" [(ngModel)]="selected"></yuv-checkbox>{{item.label}}</div>',
   styleUrls: ['./selectable-item.component.scss']
 })
 export class SelectableItemComponent implements FocusableOption {
-  _selected: boolean;
-
-  @HostListener('keydown.Space') onSpace() {
+  @HostListener('keydown.Space', ['$event']) onSpace(e) {
+    e.preventDefault();
     this.toggleSelected();
   }
 
@@ -19,13 +18,14 @@ export class SelectableItemComponent implements FocusableOption {
   }
 
   @Input() item: Selectable;
-  @Output() selected = new EventEmitter<boolean>();
+  @Input() selected: boolean;
+  @Output() select = new EventEmitter<boolean>();
 
   constructor(public element: ElementRef) {}
 
   private toggleSelected() {
-    this._selected = !this._selected;
-    this.selected.emit(this._selected);
+    this.selected = !this.selected;
+    this.select.emit(this.selected);
   }
 
   focus(): void {

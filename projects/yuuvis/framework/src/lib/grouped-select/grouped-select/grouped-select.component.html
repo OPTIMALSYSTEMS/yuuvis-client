@@ -1,19 +1,9 @@
-<div cdkTrapFocus cdkTrapFocusAutoCapture>
+<div cdkTrapFocus cdkTrapFocusAutoCapture="{{autofocus}}" (resized)="onContainerResized($event)">
   <yuv-selectable-group (focus)="selectedGroup = group" *ngFor="let group of groups" [group]="group"
     [ngClass]="{ active: selectedGroup?.label === group.label }" tabindex="0">
-
     <yuv-selectable-item tabindex="-1" *ngFor="let item of group.items" [ngClass]="{multiselect: multiple}"
-      (focus)="itemFocused(item)" (blur)="itemFocused(null)" (selected)="itemSelected($event, item)" [item]="item">
+      (focus)="itemFocused(item)" (blur)="itemFocused(null)" (select)="itemSelected($event, item)" [item]="item"
+      [selected]="isSelected(item)">
     </yuv-selectable-item>
-
   </yuv-selectable-group>
-
-  <!-- <section>
-    <button (click)="close('cancel')" type="button">
-      Cancel
-    </button>
-    <button (click)="triggerSelect()" type="button">
-      Select
-    </button>
-  </section> -->
 </div>

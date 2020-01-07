@@ -8,12 +8,30 @@ import { Selectable, SelectableGroup } from '@yuuvis/framework';
 })
 export class TestGroupedSelectComponent implements OnInit {
   groups: SelectableGroup[] = [];
+  groups2: SelectableGroup[] = [
+    {
+      label: 'Tiere',
+      items: [{ label: 'Hund' }, { label: 'Katze' }, { label: 'Maus' }]
+    },
+    {
+      label: 'Pflanzen',
+      items: [{ label: 'Baum' }, { label: 'Farn' }, { label: 'Brennessel' }, { label: 'Blume' }]
+    }
+  ];
+  selectedItems: Selectable[] = [
+    { label: 'item_0_0' },
+    { label: 'item_0_1' },
+    { label: 'item_0_2' },
+    { label: 'item_1_2' },
+    { label: 'item_1_5' },
+    { label: 'item_1_4' },
+    { label: 'item_1_9' },
+    { label: 'item_1_8' },
+    { label: 'item_2_6' }
+  ];
+  selectedItems2: Selectable[] = [];
 
   constructor() {}
-
-  // onSelect(selected: Selectable | Selectable[]) {
-  //   console.log(selected);
-  // }
 
   onSelectionChange(selected: Selectable[]) {
     console.log(selected);

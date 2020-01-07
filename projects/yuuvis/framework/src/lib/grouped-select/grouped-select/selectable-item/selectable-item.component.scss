@@ -16,20 +16,35 @@
 
   &.multiselect {
     div.selected {
-      // background-color: yellow;
+      ::ng-deep {
+        .ui-chkbox .ui-chkbox-box.ui-state-active {
+          background-color: rgba(255, 255, 255, 0.2);
+          color: var(--color-accent);
+          border-color: var(--color-accent);
+        }
+      }
     }
   }
 
   &:focus {
     background-color: var(--color-accent);
     color: #fff;
-    yuv-checkbox {
-      color: #fff;
+
+    ::ng-deep {
+      .ui-chkbox .ui-chkbox-box {
+        background-color: rgba(255, 255, 255, 0.2) !important;
+        color: #fff !important;
+        border-color: #fff !important;
+      }
     }
-    // transform: translateX(1rem);
+
+    // yuv-checkbox {
+    //   color: #fff;
+    // }
   }
 
   yuv-checkbox {
     margin-right: var(--app-pane-padding);
+    pointer-events: none;
   }
 }

@@ -1,4 +1,7 @@
-import { Attribute, Component, EventEmitter, HostListener, Input, OnInit, Output } from '@angular/core';
+import { Attribute, Component, forwardRef, HostListener, Input } from '@angular/core';
+import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { Observable, Subject } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
 import { Selectable, SelectableGroup } from './grouped-select.interface';
 
 /**
@@ -8,9 +11,16 @@ import { Selectable, SelectableGroup } from './grouped-select.interface';
 @Component({
   selector: 'yuv-grouped-select',
   templateUrl: './grouped-select.component.html',
-  styleUrls: ['./grouped-select.component.scss']
+  styleUrls: ['./grouped-select.component.scss'],
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => GroupedSelectComponent),
+      multi: true
+    }
+  ]
 })
-export class GroupedSelectComponent implements OnInit {
+export class GroupedSelectComponent implements ControlValueAccessor {
   @HostListener('keydown.Enter') onEnter() {
     if (this.multiple) {
       if (this.selectedItems.length === 0) {
@@ -19,40 +29,45 @@ export class GroupedSelectComponent implements OnInit {
     } else {
       this.selectedItems = [this.focusedItem];
     }
-    this.selectionChange.emit(this.selectedItems);
-    // this.triggerSelect();
+    this.propagateChange(this.selectedItems);
   }
 
   /**
    * Array of `SelectableGroup` items, that contain the actual `Selectables`.
    */
   @Input() groups: SelectableGroup[];
+  @Input() columnWidth: number = 200;
+  @Input() minItemsPerColumn: number = 3;
+
   multiple: boolean;
-
-  /**
-   * Emitted when selection is done. Emits a
-   * `Selectable` by default and an array of `Selectables` when
-   * `multiple` attribute is set to 'true'
-   */
-  // @Output() select = new EventEmitter<Selectable | Selectable[]>();
-
-  /**
-   * Emitted once the selection changes. Only triggered whem `multiple`
-   * is set to 'true'.
-   */
-  @Output() selectionChange = new EventEmitter<Selectable[]>();
+  autofocus: boolean;
+  selectedGroup: SelectableGroup;
 
   private selectedItems: Selectable[] = [];
-  selectedGroup: SelectableGroup;
   private focusedItem: Selectable;
 
-  constructor(@Attribute('multiple') multiple: string) {
-    this.multiple = multiple === 'true' ? true : false;
-  }
+  private sizeSource = new Subject<{ width: number; height: number }>();
+  private resized$: Observable<{ width: number; height: number }> = this.sizeSource.asObservable();
 
-  // private triggerSelect(selectables: Selectable[]) {
-  //   this.select.emit(this.multiple ? selectables : selectables[0]);
-  // }
+  constructor(@Attribute('multiple') multiple: string, @Attribute('autofocus') autofocus: string) {
+    this.multiple = multiple === 'true' ? true : false;
+    this.autofocus = autofocus === 'true' ? true : false;
+
+    this.resized$.pipe(debounceTime(500)).subscribe(v => {
+      let c = 1;
+      if (v.width > 2 * this.columnWidth && v.width < 3 * this.columnWidth) {
+        c = 2;
+      }
+      if (v.width > 3 * this.columnWidth) {
+        c = 3;
+      }
+
+      const minItems = (c - 1) * this.minItemsPerColumn;
+      this.groups.forEach(g => {
+        g.columns = g.items.length >= minItems ? c : c - 1;
+      });
+    });
+  }
 
   itemSelected(selected: boolean, item: Selectable) {
     if (this.multiple) {
@@ -61,27 +76,36 @@ export class GroupedSelectComponent implements OnInit {
       } else {
         this.selectedItems = this.selectedItems.filter(i => i.label !== item.label);
       }
+    } else {
+      this.selectedItems = [item];
     }
-    console.log(this.selectedItems);
-    this.selectionChange.emit(this.selectedItems);
+    this.propagateChange(this.selectedItems);
+  }
+
+  isSelected(item): boolean {
+    return this.selectedItems ? !!this.selectedItems.find(i => i.label === item.label) : false;
   }
 
   itemFocused(item) {
     this.focusedItem = item;
   }
 
-  // triggerSelect() {
-
-  //   // if (this.multiple) {
-  //   //   // this.triggerSelect(this.selectedItems);
-  //   //   this.select.emit(this.selectedItems);
-  //   // } else {
-  //   //   // this.triggerSelect([this.focusedItem]);
-  //   //   this.select.emit(this.focusedItem);
-  //   // }
-  // }
-
-  ngOnInit() {
-    console.log(this.multiple);
+  onContainerResized(event) {
+    this.sizeSource.next({
+      width: event.newWidth,
+      height: event.newHeight
+    });
   }
+
+  propagateChange = (_: any) => {};
+
+  writeValue(value: Selectable[]): void {
+    this.selectedItems = value === undefined ? [] : value;
+  }
+
+  registerOnChange(fn: any): void {
+    this.propagateChange = fn;
+  }
+
+  registerOnTouched(fn: any): void {}
 }

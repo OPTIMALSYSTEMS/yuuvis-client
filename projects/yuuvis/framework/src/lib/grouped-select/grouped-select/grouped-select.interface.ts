@@ -2,6 +2,7 @@
 export interface SelectableGroup {
   label: string;
   items: Selectable[];
+  columns?: number;
 }
 
 export interface Selectable {

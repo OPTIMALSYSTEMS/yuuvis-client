@@ -9,6 +9,7 @@ import { ActionModule } from '../actions/action.module';
 import { YuvComponentsModule } from '../components/components.module';
 import { YuvDirectivesModule } from '../directives/directives.module';
 import { YuvFormModule } from '../form/form.module';
+import { YuvGroupedSelectModule } from '../grouped-select/grouped-select.module';
 import { YuvObjectFormModule } from '../object-form/object-form.module';
 import { YuvPipesModule } from '../pipes/pipes.module';
 import { YuvPopoverModule } from '../popover/popover.module';
@@ -17,8 +18,9 @@ import { ValuePickerItemComponent } from './quick-search/value-picker/value-pick
 import { ValuePickerComponent } from './quick-search/value-picker/value-picker.component';
 import { SearchResultPanelComponent } from './search-result-panel/search-result-panel.component';
 import { SearchResultComponent } from './search-result/search-result.component';
+import { ObjectTypePickerComponent } from './quick-search/object-type-picker/object-type-picker.component';
 @NgModule({
-  declarations: [QuickSearchComponent, SearchResultComponent, SearchResultPanelComponent, ValuePickerComponent, ValuePickerItemComponent],
+  declarations: [QuickSearchComponent, SearchResultComponent, SearchResultPanelComponent, ValuePickerComponent, ValuePickerItemComponent, ObjectTypePickerComponent],
   imports: [
     CommonModule,
     BrowserAnimationsModule,
@@ -33,8 +35,9 @@ import { SearchResultComponent } from './search-result/search-result.component';
     ActionModule,
     AutoCompleteModule,
     YuvFormModule,
-    YuvDirectivesModule
+    YuvDirectivesModule,
+    YuvGroupedSelectModule
   ],
   exports: [QuickSearchComponent, SearchResultComponent, SearchResultPanelComponent]
 })
-export class YuvSearchModule { }
+export class YuvSearchModule {}

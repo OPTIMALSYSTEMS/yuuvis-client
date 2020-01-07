@@ -1,6 +1,6 @@
 <section #groupList>
   <div class="group-label">{{ group.label }}</div>
-  <div class="items">
+  <div class="items col_{{group.columns || 1}}">
     <ng-content></ng-content>
   </div>
 </section>

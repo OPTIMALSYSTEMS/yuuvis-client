@@ -1,6 +1,11 @@
+:host {
+  display: flex;
+}
+
 .cmp {
-  width: 50vw;
-  height: 90vh;
+  width: 25vw;
+  height: 60vh;
   overflow-y: auto;
   background-color: var(--panel-background-grey);
+  margin: 10px;
 }
