@@ -30,7 +30,7 @@
             [ngClass]="{ selected: selectedObjectType?.id === t.type.id }"
             (click)="selectObjectType(t.type)"
           >
-            {{ t.label }}
+            <span>{{ t.label }}</span>
             <div>{{ labels[t.type.contentStreamAllowed] }}</div>
           </div>
         </div>
@@ -44,7 +44,7 @@
             [ngClass]="{ selected: selectedObjectType?.id === t.type.id }"
             (click)="selectObjectType(t.type)"
           >
-            {{ t.label }}
+            <span>{{ t.label }}</span>
           </div>
         </div>
       </div>

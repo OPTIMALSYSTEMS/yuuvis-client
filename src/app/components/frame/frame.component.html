@@ -17,7 +17,7 @@
 
     <p-overlayPanel #op>
       <div class="user-panel">
-        <div class="update" *ngIf="swUpdateAvailable" (click)="updateWorker()">Update available</div>
+        <div class="update" *ngIf="!swUpdateAvailable" (click)="updateWorker()">Update available</div>
 
         <div class="avatar" [ngClass]="{ enabled: user?.enabled }">
           <yuv-user-avatar [user]="user"></yuv-user-avatar>
