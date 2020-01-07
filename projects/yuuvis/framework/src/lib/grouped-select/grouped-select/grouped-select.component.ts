@@ -1,7 +1,7 @@
 import { Attribute, Component, forwardRef, HostListener, Input } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { Observable, Subject } from 'rxjs';
-import { debounceTime } from 'rxjs/operators';
+import { Observable, Subject, timer } from 'rxjs';
+import { debounce, tap } from 'rxjs/operators';
 import { Selectable, SelectableGroup } from './grouped-select.interface';
 
 /**
@@ -45,6 +45,7 @@ export class GroupedSelectComponent implements ControlValueAccessor {
 
   private selectedItems: Selectable[] = [];
   private focusedItem: Selectable;
+  private resizeDebounce = 0;
 
   private sizeSource = new Subject<{ width: number; height: number }>();
   private resized$: Observable<{ width: number; height: number }> = this.sizeSource.asObservable();
@@ -53,20 +54,29 @@ export class GroupedSelectComponent implements ControlValueAccessor {
     this.multiple = multiple === 'true' ? true : false;
     this.autofocus = autofocus === 'true' ? true : false;
 
-    this.resized$.pipe(debounceTime(500)).subscribe(v => {
-      let c = 1;
-      if (v.width > 2 * this.columnWidth && v.width < 3 * this.columnWidth) {
-        c = 2;
-      }
-      if (v.width > 3 * this.columnWidth) {
-        c = 3;
-      }
+    this.resized$
+      .pipe(
+        debounce(() => {
+          return timer(this.resizeDebounce);
+        }),
+        tap(() => {
+          this.resizeDebounce = 500;
+        })
+      )
+      .subscribe(v => {
+        let c = 1;
+        if (v.width > 2 * this.columnWidth && v.width < 3 * this.columnWidth) {
+          c = 2;
+        }
+        if (v.width > 3 * this.columnWidth) {
+          c = 3;
+        }
 
-      const minItems = (c - 1) * this.minItemsPerColumn;
-      this.groups.forEach(g => {
-        g.columns = g.items.length >= minItems ? c : c - 1;
+        const minItems = (c - 1) * this.minItemsPerColumn;
+        this.groups.forEach(g => {
+          g.columns = g.items.length >= minItems ? c : c - 1;
+        });
       });
-    });
   }
 
   itemSelected(selected: boolean, item: Selectable) {
