@@ -21,6 +21,7 @@ import { timer } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { ObjectFormControlWrapper } from '../../object-form';
 import { ObjectFormControl } from '../../object-form/object-form.model';
+import { PopoverConfig } from '../../popover/popover.interface';
 import { PopoverRef } from '../../popover/popover.ref';
 import { PopoverService } from '../../popover/popover.service';
 import { SVGIcons } from '../../svg.generated';
@@ -272,7 +273,6 @@ export class QuickSearchComponent implements AfterViewInit {
     // TODO: Apply grouping from object type groups. For now it's just one group for all
     const pickerItems: SelectableGroup = {
       id: 'types',
-      label: '...',
       items: this.availableObjectTypes
     };
     // this.showPicker(this.tplValuePicker, this.typeSelectTrigger.nativeElement, [pickerItems], 'type');
@@ -282,25 +282,24 @@ export class QuickSearchComponent implements AfterViewInit {
   showObjectTypeFieldPicker() {
     const pickerItems: SelectableGroup = {
       id: 'fields',
-      label: '...',
       items: this.availableObjectTypeFields
     };
     this.showPicker(this.tplValuePicker, this.fieldSelectTrigger.nativeElement, [pickerItems], 'field');
   }
 
   private showPicker(template: TemplateRef<any>, target: HTMLElement, items: SelectableGroup[], type: 'type' | 'field'): void {
-    this.popoverService.open(
-      template,
-      {
-        data: {
-          type: type,
-          items: items,
-          selected: type === 'type' ? this.selectedObjectTypes : null,
-          multiselect: type === 'type'
-        }
-      },
-      target
-    );
+    const popoverConfig: PopoverConfig = {
+      width: '50%',
+      height: '50%',
+      data: {
+        type: type,
+        items: items,
+        selected: type === 'type' ? this.selectedObjectTypes : null,
+        multiselect: type === 'type'
+      }
+    };
+
+    this.popoverService.open(template, popoverConfig, target);
   }
 
   onPickerResult(type: 'type' | 'field', res: any, popoverRef?: PopoverRef) {

@@ -1,7 +1,7 @@
 <div (resized)="onContainerResized($event)">
 
   <div class="group" *ngFor="let group of groups" (focus)="groupFocused(group)" tabindex="0">
-    <div class="group-label">{{ group.label }}</div>
+    <div class="group-label" *ngIf="group.label">{{ group.label }}</div>
     <div class="items col_{{group.columns || 1}}">
 
       <yuv-selectable-item tabindex="-1" *ngFor="let item of group.items" [ngClass]="{multiselect: multiple}"

@@ -45,7 +45,7 @@ export class PopoverService {
     target?: ElementRef | HTMLElement
   ): PopoverRef<D> {
     const popoverConfig: PopoverConfig = Object.assign({}, defaultConfig, config);
-    const positionStrategy = this.getPositionStrategy(target);
+    const positionStrategy = this.getPositionStrategy(popoverConfig, target);
     const overlayConfig: OverlayConfig = {
       hasBackdrop: true,
       backdropClass: config.backdropClass,
@@ -97,7 +97,7 @@ export class PopoverService {
     return popoverRef;
   }
 
-  private getPositionStrategy(target?: ElementRef | HTMLElement): GlobalPositionStrategy | FlexibleConnectedPositionStrategy {
+  private getPositionStrategy(popoverConfig: PopoverConfig, target?: ElementRef | HTMLElement): GlobalPositionStrategy | FlexibleConnectedPositionStrategy {
     let positionStrategy;
 
     // On small screen devices we'll go 'fullscreen' even if
@@ -136,8 +136,8 @@ export class PopoverService {
         positionStrategy = this.overlay
           .position()
           .global()
-          .width('50%')
-          .height('90%')
+          .width(`${popoverConfig.width}` || '10%')
+          .height(`${popoverConfig.height}` || '10%')
           .centerHorizontally()
           .centerVertically();
       }

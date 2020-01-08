@@ -4,7 +4,7 @@ import { Selectable, SelectableInternal } from './../grouped-select.interface';
 
 @Component({
   selector: 'yuv-selectable-item',
-  template: '<div [ngClass]="{selected: selected}"><yuv-checkbox tabindex="-1" [(ngModel)]="selected"></yuv-checkbox>{{item.label}}</div>',
+  templateUrl: './selectable-item.component.html',
   styleUrls: ['./selectable-item.component.scss']
 })
 export class SelectableItemComponent implements FocusableOption {
@@ -15,9 +15,9 @@ export class SelectableItemComponent implements FocusableOption {
     this.toggleSelected();
   }
 
-  @HostListener('click') onClick() {
-    this.toggleSelected();
-  }
+  // @HostListener('click') onClick() {
+  //   this.toggleSelected();
+  // }
 
   @Input() set item(item: Selectable) {
     this._item = item;
@@ -34,6 +34,9 @@ export class SelectableItemComponent implements FocusableOption {
   private toggleSelected() {
     this.selected = !this.selected;
     this.select.emit(this.selected);
+  }
+  checked(e) {
+    console.log(e);
   }
 
   focus(): void {

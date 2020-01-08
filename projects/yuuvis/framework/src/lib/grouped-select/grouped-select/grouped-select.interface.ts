@@ -1,7 +1,7 @@
 // Interface for a group of `Selectables`
 export interface SelectableGroup {
   id: string;
-  label: string;
+  label?: string;
   items: Selectable[];
 }
 
