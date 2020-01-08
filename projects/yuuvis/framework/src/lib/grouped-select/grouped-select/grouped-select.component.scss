@@ -1,3 +1,46 @@
 :host {
   display: block;
+
+  &:not(.multiple) {
+    ::ng-deep {
+      yuv-checkbox {
+        display: none;
+      }
+    }
+  }
+
+  div.group {
+    display: block;
+    background-color: #fff;
+    padding: var(--app-pane-padding);
+    margin: 20px;
+
+    .group-label {
+      color: var(--color-accent);
+      font-size: var(--font-subhead);
+      margin-bottom: var(--app-pane-padding);
+    }
+    .items {
+      column-count: 1;
+      column-gap: 20px;
+
+      &.col_2 {
+        column-count: 2;
+      }
+
+      &.col_3 {
+        column-count: 3;
+      }
+    }
+
+    .disabled {
+      opacity: 0.3;
+    }
+
+    &:focus,
+    &:focus-within {
+      outline: 2px solid var(--color-accent);
+      color: #fff;
+    }
+  }
 }

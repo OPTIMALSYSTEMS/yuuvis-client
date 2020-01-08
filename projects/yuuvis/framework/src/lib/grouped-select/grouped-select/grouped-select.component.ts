@@ -1,8 +1,10 @@
-import { Attribute, Component, forwardRef, HostListener, Input } from '@angular/core';
+import { FocusKeyManager } from '@angular/cdk/a11y';
+import { AfterViewInit, Attribute, Component, ElementRef, forwardRef, HostBinding, HostListener, Input, QueryList, ViewChildren } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { Observable, Subject, timer } from 'rxjs';
 import { debounce, tap } from 'rxjs/operators';
-import { Selectable, SelectableGroup } from './grouped-select.interface';
+import { Selectable, SelectableGroup, SelectableGroupInternal, SelectableInternal } from './grouped-select.interface';
+import { SelectableItemComponent } from './selectable-item/selectable-item.component';
 
 /**
  * Component for selecting an entry from a set of grouped items. Selectable items are
@@ -20,7 +22,12 @@ import { Selectable, SelectableGroup } from './grouped-select.interface';
     }
   ]
 })
-export class GroupedSelectComponent implements ControlValueAccessor {
+export class GroupedSelectComponent implements AfterViewInit, ControlValueAccessor {
+  @ViewChildren(SelectableItemComponent) items: QueryList<SelectableItemComponent>;
+  private keyManager: FocusKeyManager<SelectableItemComponent>;
+  private _selectableItemIndex = -1;
+  private _groups: SelectableGroupInternal[];
+
   @HostListener('keydown.Enter') onEnter() {
     if (this.multiple) {
       if (this.selectedItems.length === 0) {
@@ -29,19 +36,33 @@ export class GroupedSelectComponent implements ControlValueAccessor {
     } else {
       this.selectedItems = [this.focusedItem];
     }
+    // this.selectedItems = [this.focusedItem];
     this.propagateChange(this.selectedItems);
+  }
+
+  @HostListener('keydown', ['$event']) onKeyDown(event) {
+    this.keyManager.onKeydown(event);
   }
 
   /**
    * Array of `SelectableGroup` items, that contain the actual `Selectables`.
    */
-  @Input() groups: SelectableGroup[];
+  @Input() set groups(groups: SelectableGroup[]) {
+    this._groups = groups;
+  }
+  get groups() {
+    return this._groups;
+  }
   @Input() columnWidth: number = 200;
   @Input() minItemsPerColumn: number = 3;
 
-  multiple: boolean;
+  get selectableItemIndex(): number {
+    return this._selectableItemIndex++;
+  }
+
+  @HostBinding('class.multiple') multiple: boolean;
   autofocus: boolean;
-  selectedGroup: SelectableGroup;
+  // selectedGroup: SelectableGroup;
 
   private selectedItems: Selectable[] = [];
   private focusedItem: Selectable;
@@ -50,7 +71,7 @@ export class GroupedSelectComponent implements ControlValueAccessor {
   private sizeSource = new Subject<{ width: number; height: number }>();
   private resized$: Observable<{ width: number; height: number }> = this.sizeSource.asObservable();
 
-  constructor(@Attribute('multiple') multiple: string, @Attribute('autofocus') autofocus: string) {
+  constructor(@Attribute('multiple') multiple: string, @Attribute('autofocus') autofocus: string, private elRef: ElementRef) {
     this.multiple = multiple === 'true' ? true : false;
     this.autofocus = autofocus === 'true' ? true : false;
 
@@ -73,13 +94,21 @@ export class GroupedSelectComponent implements ControlValueAccessor {
         }
 
         const minItems = (c - 1) * this.minItemsPerColumn;
-        this.groups.forEach(g => {
+        this._groups.forEach(g => {
           g.columns = g.items.length >= minItems ? c : c - 1;
         });
       });
   }
 
-  itemSelected(selected: boolean, item: Selectable) {
+  groupFocused(group: SelectableGroup) {
+    const innerIdx = group.items.map((g: SelectableInternal) => g.index);
+    // const idx = (group.items[0] as SelectableInternal).index;
+    if (!innerIdx.includes(this.keyManager.activeItemIndex)) {
+      this.keyManager.setActiveItem(innerIdx[0]);
+    }
+  }
+
+  itemSelected(selected: boolean, item: SelectableInternal) {
     if (this.multiple) {
       if (selected) {
         this.selectedItems.push(item);
@@ -92,11 +121,15 @@ export class GroupedSelectComponent implements ControlValueAccessor {
     this.propagateChange(this.selectedItems);
   }
 
+  itemClicked(item: SelectableInternal) {
+    this.keyManager.updateActiveItemIndex(item.index);
+  }
+
   isSelected(item): boolean {
     return this.selectedItems ? !!this.selectedItems.find(i => i.id === item.id) : false;
   }
 
-  itemFocused(item) {
+  itemFocused(item: SelectableInternal) {
     this.focusedItem = item;
   }
 
@@ -118,4 +151,13 @@ export class GroupedSelectComponent implements ControlValueAccessor {
   }
 
   registerOnTouched(fn: any): void {}
+
+  ngAfterViewInit() {
+    this.keyManager = new FocusKeyManager(this.items).withWrap();
+    let i = 0;
+    this.items.forEach((c: SelectableItemComponent) => (c._item.index = i++));
+    if (this.autofocus && this.groups.length > 0) {
+      this.elRef.nativeElement.querySelector('.group').focus();
+    }
+  }
 }

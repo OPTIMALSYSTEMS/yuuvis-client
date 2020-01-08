@@ -1,6 +1,6 @@
 import { FocusableOption } from '@angular/cdk/a11y';
 import { Component, ElementRef, EventEmitter, HostListener, Input, Output } from '@angular/core';
-import { Selectable } from './../grouped-select.interface';
+import { Selectable, SelectableInternal } from './../grouped-select.interface';
 
 @Component({
   selector: 'yuv-selectable-item',
@@ -8,6 +8,8 @@ import { Selectable } from './../grouped-select.interface';
   styleUrls: ['./selectable-item.component.scss']
 })
 export class SelectableItemComponent implements FocusableOption {
+  _item: SelectableInternal;
+
   @HostListener('keydown.Space', ['$event']) onSpace(e) {
     e.preventDefault();
     this.toggleSelected();
@@ -17,8 +19,14 @@ export class SelectableItemComponent implements FocusableOption {
     this.toggleSelected();
   }
 
-  @Input() item: Selectable;
+  @Input() set item(item: Selectable) {
+    this._item = item;
+  }
+  get item() {
+    return this._item;
+  }
   @Input() selected: boolean;
+
   @Output() select = new EventEmitter<boolean>();
 
   constructor(public element: ElementRef) {}

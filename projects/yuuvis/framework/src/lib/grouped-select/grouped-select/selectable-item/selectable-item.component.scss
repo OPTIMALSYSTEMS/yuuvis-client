@@ -1,7 +1,6 @@
 :host {
   display: block;
-  margin-bottom: 8px;
-  // background-color: hotpink;
+  margin-bottom: calc(var(--app-pane-padding) / 2);
   padding: 2px;
   -webkit-column-break-inside: avoid;
   page-break-inside: avoid;
@@ -9,9 +8,8 @@
   color: var(--text-color-body);
 
   > div {
-    transition: all 0.3s;
-    outline: none;
-    margin: 6px;
+    transition: background-color, color 0.3s;
+    margin: calc(var(--app-pane-padding) / 4);
   }
 
   &.multiselect {
@@ -28,6 +26,7 @@
 
   &:focus {
     background-color: var(--color-accent);
+    outline: 0;
     color: #fff;
 
     ::ng-deep {
@@ -37,10 +36,6 @@
         border-color: #fff !important;
       }
     }
-
-    // yuv-checkbox {
-    //   color: #fff;
-    // }
   }
 
   yuv-checkbox {

@@ -22,10 +22,10 @@ export class TestGroupedSelectComponent implements OnInit {
       id: 'pflanzen',
       label: 'Pflanzen',
       items: [
-        { id: '1', label: 'Baum' },
-        { id: '2', label: 'Farn' },
-        { id: '3', label: 'Brennessel' },
-        { id: '4', label: 'Blume' }
+        { id: '4', label: 'Baum' },
+        { id: '5', label: 'Farn' },
+        { id: '6', label: 'Brennessel' },
+        { id: '7', label: 'Blume' }
       ]
     }
   ];
