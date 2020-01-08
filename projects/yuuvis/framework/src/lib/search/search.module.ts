@@ -13,14 +13,12 @@ import { YuvGroupedSelectModule } from '../grouped-select/grouped-select.module'
 import { YuvObjectFormModule } from '../object-form/object-form.module';
 import { YuvPipesModule } from '../pipes/pipes.module';
 import { YuvPopoverModule } from '../popover/popover.module';
+import { QuickSearchPickerComponent } from './quick-search/quick-search-picker/quick-search-picker.component';
 import { QuickSearchComponent } from './quick-search/quick-search.component';
-import { ValuePickerItemComponent } from './quick-search/value-picker/value-picker-item/value-picker-item.component';
-import { ValuePickerComponent } from './quick-search/value-picker/value-picker.component';
 import { SearchResultPanelComponent } from './search-result-panel/search-result-panel.component';
 import { SearchResultComponent } from './search-result/search-result.component';
-import { ObjectTypePickerComponent } from './quick-search/object-type-picker/object-type-picker.component';
 @NgModule({
-  declarations: [QuickSearchComponent, SearchResultComponent, SearchResultPanelComponent, ValuePickerComponent, ValuePickerItemComponent, ObjectTypePickerComponent],
+  declarations: [QuickSearchComponent, SearchResultComponent, SearchResultPanelComponent, QuickSearchPickerComponent],
   imports: [
     CommonModule,
     BrowserAnimationsModule,

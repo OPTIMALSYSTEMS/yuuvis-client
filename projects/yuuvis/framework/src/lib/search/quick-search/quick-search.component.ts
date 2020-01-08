@@ -24,8 +24,8 @@ import { ObjectFormControl } from '../../object-form/object-form.model';
 import { PopoverRef } from '../../popover/popover.ref';
 import { PopoverService } from '../../popover/popover.service';
 import { SVGIcons } from '../../svg.generated';
+import { Selectable, SelectableGroup } from './../../grouped-select/grouped-select/grouped-select.interface';
 import { ObjectFormUtils } from './../../object-form/object-form.utils';
-import { ValuePickerItem } from './value-picker/value-picker.component';
 
 /**
  * Component providing an extensible search input. It's a simple input field for fulltext
@@ -69,7 +69,7 @@ export class QuickSearchComponent implements AfterViewInit {
 
   objectTypeSelectLabel: string;
 
-  availableObjectTypes: { id: string; label: string; value: string }[];
+  availableObjectTypes: Selectable[];
   availableObjectTypeFields: { id: string; label: string; value: ObjectTypeField }[];
   private TYPES = '@';
   private TYPE_FIELDS = '#';
@@ -134,7 +134,6 @@ export class QuickSearchComponent implements AfterViewInit {
     private searchService: SearchService
   ) {
     this.autofocus = this.device.isDesktop;
-    console.log('autofocus: ' + this.autofocus);
 
     this.searchQuery = new SearchQuery();
     this.searchForm = this.fb.group({
@@ -183,7 +182,7 @@ export class QuickSearchComponent implements AfterViewInit {
     const { term } = this.lastAutoQuery;
     this.searchQuery.term = term;
     this.searchForm.patchValue({ term: { label: term } });
-    this.onValuePickerResult(this.lastAutoQuery.isTypes ? 'type' : 'field', selection.value);
+    this.onPickerResult(this.lastAutoQuery.isTypes ? 'type' : 'field', selection.value);
     this.autoSelectTimer = timer(1).subscribe(t => (this.autoSelectTimer = null));
   }
 
@@ -270,25 +269,41 @@ export class QuickSearchComponent implements AfterViewInit {
   }
 
   showObjectTypePicker() {
-    this.showValuePicker(this.tplValuePicker, this.typeSelectTrigger.nativeElement, this.availableObjectTypes, 'type');
+    // TODO: Apply grouping from object type groups. For now it's just one group for all
+    const pickerItems: SelectableGroup = {
+      id: 'types',
+      label: '...',
+      items: this.availableObjectTypes
+    };
+    // this.showPicker(this.tplValuePicker, this.typeSelectTrigger.nativeElement, [pickerItems], 'type');
+    this.showPicker(this.tplValuePicker, null, [pickerItems], 'type');
   }
 
   showObjectTypeFieldPicker() {
-    this.showValuePicker(this.tplValuePicker, this.fieldSelectTrigger.nativeElement, this.availableObjectTypeFields, 'field');
+    const pickerItems: SelectableGroup = {
+      id: 'fields',
+      label: '...',
+      items: this.availableObjectTypeFields
+    };
+    this.showPicker(this.tplValuePicker, this.fieldSelectTrigger.nativeElement, [pickerItems], 'field');
   }
 
-  private showValuePicker(template: TemplateRef<any>, target: HTMLElement, items: ValuePickerItem[], type: 'type' | 'field'): void {
-    this.popoverService.open(template, target, {
-      data: {
-        type: type,
-        items: items,
-        selected: type === 'type' ? this.selectedObjectTypes : null,
-        multiselect: type === 'type'
-      }
-    });
+  private showPicker(template: TemplateRef<any>, target: HTMLElement, items: SelectableGroup[], type: 'type' | 'field'): void {
+    this.popoverService.open(
+      template,
+      {
+        data: {
+          type: type,
+          items: items,
+          selected: type === 'type' ? this.selectedObjectTypes : null,
+          multiselect: type === 'type'
+        }
+      },
+      target
+    );
   }
 
-  onValuePickerResult(type: 'type' | 'field', res: any, popoverRef?: PopoverRef) {
+  onPickerResult(type: 'type' | 'field', res: any, popoverRef?: PopoverRef) {
     switch (type) {
       case 'field': {
         this.onObjectTypeFieldSelected(res);
@@ -304,7 +319,7 @@ export class QuickSearchComponent implements AfterViewInit {
     }
   }
 
-  onValuePickerCancel(popoverRef?: PopoverRef) {
+  onPickerCancel(popoverRef?: PopoverRef) {
     if (popoverRef) {
       popoverRef.close();
     }
@@ -501,13 +516,14 @@ export class QuickSearchComponent implements AfterViewInit {
 
   focusInput() {
     if (this.autoTerm) {
-      // this.termInput.nativeElement.focus();
       this.autoTerm.inputEL.nativeElement.focus();
     }
   }
 
   ngAfterViewInit() {
-    this.focusInput();
+    if (this.autofocus) {
+      this.focusInput();
+    }
   }
 }
 

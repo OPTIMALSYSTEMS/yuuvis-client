@@ -84,7 +84,7 @@ export class GroupedSelectComponent implements ControlValueAccessor {
       if (selected) {
         this.selectedItems.push(item);
       } else {
-        this.selectedItems = this.selectedItems.filter(i => i.label !== item.label);
+        this.selectedItems = this.selectedItems.filter(i => i.id !== item.id);
       }
     } else {
       this.selectedItems = [item];
@@ -93,7 +93,7 @@ export class GroupedSelectComponent implements ControlValueAccessor {
   }
 
   isSelected(item): boolean {
-    return this.selectedItems ? !!this.selectedItems.find(i => i.label === item.label) : false;
+    return this.selectedItems ? !!this.selectedItems.find(i => i.id === item.id) : false;
   }
 
   itemFocused(item) {

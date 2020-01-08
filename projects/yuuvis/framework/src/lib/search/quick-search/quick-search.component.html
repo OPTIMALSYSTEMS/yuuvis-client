@@ -52,9 +52,15 @@
 
 <div class="error" *ngIf="error">{{ 'yuv.framework.quick-search.aggregate.error' | translate }}</div>
 
+
 <ng-template #tplValuePicker let-data let-popover="popover">
-  <yuv-value-picker yuvOfflineDisabled [items]="data.items" [selectedItemIds]="data.selected"
+
+
+
+
+
+  <yuv-quick-search-picker yuvOfflineDisabled [items]="data.items" [selectedItemIds]="data.selected"
     [multiselect]="data.multiselect" [ngClass]="{ 'quick-search': true, hashtag: data.type === 'field' }"
-    (cancel)="onValuePickerCancel(popover)" (select)="onValuePickerResult(data.type, $event, popover)">
-  </yuv-value-picker>
+    (cancel)="onPickerCancel(popover)" (select)="onPickerResult(data.type, $event, popover)">
+  </yuv-quick-search-picker>
 </ng-template>

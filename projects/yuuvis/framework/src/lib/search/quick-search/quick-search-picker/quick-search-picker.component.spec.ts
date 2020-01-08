@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ObjectTypePickerComponent } from './object-type-picker.component';
+import { QuickSearchPickerComponent } from './quick-search-picker.component';
 
-describe('ObjectTypePickerComponent', () => {
-  let component: ObjectTypePickerComponent;
-  let fixture: ComponentFixture<ObjectTypePickerComponent>;
+describe('QuickSearchPickerComponent', () => {
+  let component: QuickSearchPickerComponent;
+  let fixture: ComponentFixture<QuickSearchPickerComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ObjectTypePickerComponent ]
+      declarations: [ QuickSearchPickerComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ObjectTypePickerComponent);
+    fixture = TestBed.createComponent(QuickSearchPickerComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

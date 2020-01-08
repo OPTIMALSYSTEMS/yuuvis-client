@@ -10,24 +10,35 @@ export class TestGroupedSelectComponent implements OnInit {
   groups: SelectableGroup[] = [];
   groups2: SelectableGroup[] = [
     {
+      id: 'tiere',
       label: 'Tiere',
-      items: [{ label: 'Hund' }, { label: 'Katze' }, { label: 'Maus' }]
+      items: [
+        { id: '1', label: 'Hund' },
+        { id: '2', label: 'Katze' },
+        { id: '3', label: 'Maus' }
+      ]
     },
     {
+      id: 'pflanzen',
       label: 'Pflanzen',
-      items: [{ label: 'Baum' }, { label: 'Farn' }, { label: 'Brennessel' }, { label: 'Blume' }]
+      items: [
+        { id: '1', label: 'Baum' },
+        { id: '2', label: 'Farn' },
+        { id: '3', label: 'Brennessel' },
+        { id: '4', label: 'Blume' }
+      ]
     }
   ];
   selectedItems: Selectable[] = [
-    { label: 'item_0_0' },
-    { label: 'item_0_1' },
-    { label: 'item_0_2' },
-    { label: 'item_1_2' },
-    { label: 'item_1_5' },
-    { label: 'item_1_4' },
-    { label: 'item_1_9' },
-    { label: 'item_1_8' },
-    { label: 'item_2_6' }
+    { id: '0_0', label: 'item_0_0' },
+    { id: '0_1', label: 'item_0_1' },
+    { id: '0_2', label: 'item_0_2' },
+    { id: '1_2', label: 'item_1_2' },
+    { id: '1_5', label: 'item_1_5' },
+    { id: '1_4', label: 'item_1_4' },
+    { id: '1_9', label: 'item_1_9' },
+    { id: '1_8', label: 'item_1_8' },
+    { id: '2_6', label: 'item_2_6' }
   ];
   selectedItems2: Selectable[] = [];
 
@@ -43,12 +54,14 @@ export class TestGroupedSelectComponent implements OnInit {
 
     for (let i = 0; i < gc; i++) {
       const g: SelectableGroup = {
+        id: `${i}`,
         label: `group_${i}`,
         items: []
       };
 
       for (let j = 0; j < ic; j++) {
         g.items.push({
+          id: `${i}_${j}`,
           label: `item_${i}_${j}`
         });
       }
