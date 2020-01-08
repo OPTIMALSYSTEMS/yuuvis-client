@@ -4,9 +4,7 @@ import { ApiBase, DmsObjectContent, UserService, Utils } from '@yuuvis/core';
 import { Observable, ReplaySubject } from 'rxjs';
 import { LayoutService } from '../../../services/layout/layout.service';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class ContentPreviewService {
   private previewSrcSource = new ReplaySubject<string>(null);
   public previewSrc$: Observable<string> = this.previewSrcSource.asObservable();
@@ -36,7 +34,7 @@ export class ContentPreviewService {
   }
 
   resetSource() {
-    this.previewSrcSource.next('');
+    this.previewSrcSource.next();
   }
 
   mapLang(lang: string) {

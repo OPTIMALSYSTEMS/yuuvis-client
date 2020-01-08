@@ -8,7 +8,8 @@ import { ContentPreviewService } from './service/content-preview.service';
 @Component({
   selector: 'yuv-content-preview',
   templateUrl: './content-preview.component.html',
-  styleUrls: ['./content-preview.component.scss']
+  styleUrls: ['./content-preview.component.scss'],
+  providers: [ContentPreviewService]
 })
 export class ContentPreviewComponent implements AfterViewInit {
   private _dmsObject: DmsObject;

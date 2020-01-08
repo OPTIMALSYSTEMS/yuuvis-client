@@ -2,6 +2,7 @@ import { Component, EventEmitter, HostBinding, Input, Output } from '@angular/co
 import { DmsObject, DmsService, SystemService, UserService } from '@yuuvis/core';
 import { CellRenderer } from '../../services/grid/grid.cellrenderer';
 import { SVGIcons } from '../../svg.generated';
+import { ContentPreviewService } from '../content-preview/service/content-preview.service';
 
 /**
  * High level component displaying detail aspects for a given DmsObject.
@@ -10,7 +11,8 @@ import { SVGIcons } from '../../svg.generated';
 @Component({
   selector: 'yuv-object-details',
   templateUrl: './object-details.component.html',
-  styleUrls: ['./object-details.component.scss']
+  styleUrls: ['./object-details.component.scss'],
+  providers: [ContentPreviewService]
 })
 export class ObjectDetailsComponent {
   @HostBinding('class.yuv-object-details') _hostClass = true;
@@ -63,7 +65,12 @@ export class ObjectDetailsComponent {
   @Input() options;
   @Output() optionsChanged = new EventEmitter();
 
-  constructor(private dmsService: DmsService, private userService: UserService, private systemService: SystemService) {
+  constructor(
+    private dmsService: DmsService,
+    private userService: UserService,
+    private systemService: SystemService,
+    private contentPreviewService: ContentPreviewService
+  ) {
     this.userIsAdmin = this.userService.hasAdministrationRoles;
   }
 
@@ -87,6 +94,7 @@ export class ObjectDetailsComponent {
 
   private getDmsObject(id: string) {
     this.busy = true;
+    this.contentPreviewService.resetSource();
     this.dmsService.getDmsObject(id).subscribe(dmsObject => {
       this.dmsObject = dmsObject;
       this.busy = false;
@@ -96,7 +104,6 @@ export class ObjectDetailsComponent {
   refreshDetails() {
     if (this._objectId) {
       this.getDmsObject(this._objectId);
-    } else {
     }
   }
 }
