@@ -15,17 +15,15 @@ export class QuickSearchPickerComponent implements OnInit {
   @Input() selectedItemIds: string[];
   @Input() multiselect: boolean;
 
-  @Output() select = new EventEmitter<string[]>();
-  @Output() resect = new EventEmitter<string[]>();
+  @Output() select = new EventEmitter<Selectable[]>();
   @Output() cancel = new EventEmitter<any>();
 
   selectedItems: Selectable[];
-  task = 'Select your object type';
 
   constructor() {}
 
   emitSelection() {
-    this.select.emit(this.selectedItems.map(i => i.id));
+    this.select.emit(this.selectedItems);
   }
 
   onGroupItemSelect(selection: Selectable[]) {
@@ -37,7 +35,10 @@ export class QuickSearchPickerComponent implements OnInit {
     this.cancel.emit();
   }
 
-  onReset() {}
+  onReset() {
+    this.selectedItems = [];
+  }
+
   ngOnInit() {
     if (this.selectedItemIds) {
       this.selectedItems = [];

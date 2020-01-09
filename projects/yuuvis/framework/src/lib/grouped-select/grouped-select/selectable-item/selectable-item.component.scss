@@ -2,9 +2,6 @@
   display: block;
   margin-bottom: calc(var(--app-pane-padding) / 2);
   padding: 2px;
-  -webkit-column-break-inside: avoid;
-  page-break-inside: avoid;
-  break-inside: avoid;
   color: var(--text-color-body);
 
   > div {

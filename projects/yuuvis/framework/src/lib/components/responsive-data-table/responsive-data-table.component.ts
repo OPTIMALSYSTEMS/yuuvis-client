@@ -204,7 +204,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
     }
   }
 
-  private applyGridOption(retry = true) {
+  private applyGridOption(retry: boolean = true) {
     if (this.gridOptions && this.gridOptions.api) {
       // make sure that all rows are visible / loaded
       this.gridOptions.rowBuffer = this.isSmall ? 1000 : undefined;
@@ -253,7 +253,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
    * select rows based on list of IDs
    * @param selection default is first row
    */
-  selectRows(selection?: string[], focusColId?: string, ensureVisibility = true) {
+  selectRows(selection?: string[], focusColId?: string, ensureVisibility: boolean = true) {
     this.gridOptions.api.clearFocusedCell();
     this.gridOptions.api.deselectAll();
     (selection || [this._data.rows[0].id]).forEach((id: string, index: number) => {

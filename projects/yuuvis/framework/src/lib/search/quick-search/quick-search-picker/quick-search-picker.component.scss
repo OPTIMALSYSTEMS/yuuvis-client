@@ -7,6 +7,10 @@
 
   header {
     grid-area: header;
+    font-size: var(--font-headline);
+    color: var(--text-color-caption);
+    padding: var(--app-pane-padding);
+    border-bottom: 1px solid var(--panel-background-grey);
   }
   section.main {
     grid-area: main;
@@ -15,12 +19,21 @@
     padding: var(--app-pane-padding);
   }
   section.buttons {
+    border-top: 1px solid var(--panel-background-grey);
     grid-area: buttons;
+    display: flex;
+    padding: var(--app-pane-padding);
+    > div {
+      flex: 1;
+    }
   }
 }
 :host-context(.fields) {
   header,
   section.buttons {
     display: none;
+  }
+  section.main {
+    padding: 0;
   }
 }

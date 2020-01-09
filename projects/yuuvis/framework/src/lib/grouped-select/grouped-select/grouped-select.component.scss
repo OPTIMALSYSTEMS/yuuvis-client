@@ -1,6 +1,19 @@
 :host {
   display: block;
 
+  .container {
+    // column-gap: var(--app-pane-padding);
+    display: flex;
+    flex-flow: row wrap;
+
+    // display: grid;
+    // grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    // grid-gap: 10px;
+    // grid-auto-rows: minmax(180px, auto);
+    // grid-auto-flow: dense;
+    // padding: 10px;
+  }
+
   &:not(.multiple) {
     ::ng-deep {
       yuv-checkbox {
@@ -10,31 +23,23 @@
   }
 
   div.group {
+    // width: 200px;
+    margin: 8px;
     display: block;
     background-color: #fff;
     padding: var(--app-pane-padding);
-    margin-bottom: var(--app-pane-padding);
+    // -webkit-column-break-inside: avoid;
+    // page-break-inside: avoid;
+    // break-inside: avoid;
 
-    &:last-child {
-      margin: 0;
+    &:not(.last) {
+      margin-bottom: var(--app-pane-padding);
     }
 
     .group-label {
       color: var(--color-accent);
       font-size: var(--font-subhead);
       margin-bottom: var(--app-pane-padding);
-    }
-    .items {
-      column-count: 1;
-      column-gap: 20px;
-
-      &.col_2 {
-        column-count: 2;
-      }
-
-      &.col_3 {
-        column-count: 3;
-      }
     }
 
     .disabled {

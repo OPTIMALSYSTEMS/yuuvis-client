@@ -11,10 +11,6 @@ export interface Selectable {
   value?: any;
 }
 
-export interface SelectableGroupInternal extends SelectableGroup {
-  columns?: number;
-}
-
 export interface SelectableInternal extends Selectable {
   index?: number;
 }
