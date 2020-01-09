@@ -12,12 +12,8 @@ export class SelectableItemComponent implements FocusableOption {
 
   @HostListener('keydown.Space', ['$event']) onSpace(e) {
     e.preventDefault();
-    this.toggleSelected();
+    this.toggleSelected(!this.selected);
   }
-
-  // @HostListener('click') onClick() {
-  //   this.toggleSelected();
-  // }
 
   @Input() set item(item: Selectable) {
     this._item = item;
@@ -25,18 +21,35 @@ export class SelectableItemComponent implements FocusableOption {
   get item() {
     return this._item;
   }
+  /**
+   * Whether or not the item is selected
+   */
   @Input() selected: boolean;
 
-  @Output() select = new EventEmitter<boolean>();
+  /**
+   * Emitted when the items selected state changed. Emits the new state.
+   */
+  @Output() toggle = new EventEmitter<boolean>();
+  /**
+   *
+   */
+  @Output() select = new EventEmitter<Selectable>();
 
   constructor(public element: ElementRef) {}
 
-  private toggleSelected() {
-    this.selected = !this.selected;
-    this.select.emit(this.selected);
+  /**
+   * Called by clicking the checkbox
+   */
+  toggleSelected(e) {
+    this.selected = e;
+    this.toggle.emit(this.selected);
   }
-  checked(e) {
-    console.log(e);
+
+  /**
+   * Called by clicking the label.
+   */
+  emitSelect() {
+    this.select.emit(this.item);
   }
 
   focus(): void {

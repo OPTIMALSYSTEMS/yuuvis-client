@@ -45,7 +45,14 @@ export class TestGroupedSelectComponent implements OnInit {
   constructor() {}
 
   onSelectionChange(selected: Selectable[]) {
-    console.log(selected);
+    console.log('selectionchange', selected);
+  }
+
+  onSelect(selection: Selectable[]) {
+    console.log(
+      'select',
+      selection.map(i => i.label)
+    );
   }
 
   ngOnInit() {

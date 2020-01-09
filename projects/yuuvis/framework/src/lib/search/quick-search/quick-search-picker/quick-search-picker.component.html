@@ -1,6 +1,11 @@
-<yuv-grouped-select autofocus="true" multiple="true" [groups]="items" [(ngModel)]="selectedItems">
-</yuv-grouped-select>
-
-
-<button type="button" (click)="emitSelection()">OK</button>
-<button type="button" (click)="onCancel()">Cancel</button>
+<header>lala</header>
+<section class="main" cdkTrapFocus>
+    <yuv-grouped-select autofocus="true" [multiple]="multiselect" [groups]="items" [(ngModel)]="selectedItems"
+        (select)="onGroupItemSelect($event)">
+    </yuv-grouped-select>
+</section>
+<section class="buttons">
+    <button type="button" (click)="onCancel()">{{ 'yuv.framework.shared.cancel' | translate }}</button>
+    <button class="primary" type="button"
+        (click)="emitSelection()">{{ 'yuv.framework.valuepicker.button.select' | translate }}</button>
+</section>

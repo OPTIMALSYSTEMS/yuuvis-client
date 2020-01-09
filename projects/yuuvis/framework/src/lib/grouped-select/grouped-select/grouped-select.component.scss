@@ -13,7 +13,11 @@
     display: block;
     background-color: #fff;
     padding: var(--app-pane-padding);
-    margin: 20px;
+    margin-bottom: var(--app-pane-padding);
+
+    &:last-child {
+      margin: 0;
+    }
 
     .group-label {
       color: var(--color-accent);
@@ -39,7 +43,8 @@
 
     &:focus,
     &:focus-within {
-      outline: 2px solid var(--color-accent);
+      outline: 2px solid rgba(var(--color-accent-rgb), 0.4);
+      outline-offset: -2px;
       color: #fff;
     }
   }

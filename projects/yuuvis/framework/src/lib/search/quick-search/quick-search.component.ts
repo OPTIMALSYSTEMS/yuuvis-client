@@ -275,8 +275,17 @@ export class QuickSearchComponent implements AfterViewInit {
       id: 'types',
       items: this.availableObjectTypes
     };
-    // this.showPicker(this.tplValuePicker, this.typeSelectTrigger.nativeElement, [pickerItems], 'type');
-    this.showPicker(this.tplValuePicker, null, [pickerItems], 'type');
+    const popoverConfig: PopoverConfig = {
+      width: '50%',
+      height: '50%',
+      data: {
+        type: 'type',
+        items: [pickerItems],
+        selected: this.selectedObjectTypes,
+        multiselect: true
+      }
+    };
+    this.popoverService.open(this.tplValuePicker, popoverConfig);
   }
 
   showObjectTypeFieldPicker() {
@@ -284,22 +293,17 @@ export class QuickSearchComponent implements AfterViewInit {
       id: 'fields',
       items: this.availableObjectTypeFields
     };
-    this.showPicker(this.tplValuePicker, this.fieldSelectTrigger.nativeElement, [pickerItems], 'field');
-  }
-
-  private showPicker(template: TemplateRef<any>, target: HTMLElement, items: SelectableGroup[], type: 'type' | 'field'): void {
     const popoverConfig: PopoverConfig = {
-      width: '50%',
-      height: '50%',
+      panelClass: 'fields',
+      maxHeight: 200,
       data: {
-        type: type,
-        items: items,
-        selected: type === 'type' ? this.selectedObjectTypes : null,
-        multiselect: type === 'type'
+        type: 'field',
+        items: [pickerItems],
+        selected: this.selectedObjectTypes,
+        multiselect: false
       }
     };
-
-    this.popoverService.open(template, popoverConfig, target);
+    this.popoverService.open(this.tplValuePicker, popoverConfig, this.fieldSelectTrigger.nativeElement);
   }
 
   onPickerResult(type: 'type' | 'field', res: any, popoverRef?: PopoverRef) {

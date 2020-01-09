@@ -35,7 +35,7 @@ export class PopoverService {
   /**
    * Opens a modal overlay.
    * @param componentOrTemplate The template or component to be displayed within the overlay
-   * @param config Config to be passed to the component inside
+   * @param config Config to be passed to the component inside (data and settings for the look&feel of the popover)
    * @param target Optional target element to attach the overlay to. If not provided
    * overlay will go centered fullscreen.
    */

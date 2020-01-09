@@ -26,13 +26,25 @@ export class QuickSearchPickerComponent implements OnInit {
     this.select.emit(this.selectedItems.map(i => i.id));
   }
 
+  onGroupItemSelect(selection: Selectable[]) {
+    this.selectedItems = selection;
+    this.emitSelection();
+  }
+
   onCancel() {
     this.cancel.emit();
   }
 
   ngOnInit() {
     if (this.selectedItemIds) {
-      // this.selectedItems = this.items.filter(i => this.selectedItemIds.includes(i.id));
+      this.selectedItems = [];
+      this.items.forEach(g => {
+        g.items.forEach(i => {
+          if (this.selectedItemIds.includes(i.id)) {
+            this.selectedItems.push(i);
+          }
+        });
+      });
     }
   }
 }

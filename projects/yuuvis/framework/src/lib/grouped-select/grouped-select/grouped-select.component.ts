@@ -1,5 +1,18 @@
 import { FocusKeyManager } from '@angular/cdk/a11y';
-import { AfterViewInit, Attribute, Component, ElementRef, forwardRef, HostBinding, HostListener, Input, QueryList, ViewChildren } from '@angular/core';
+import {
+  AfterViewInit,
+  Attribute,
+  Component,
+  ElementRef,
+  EventEmitter,
+  forwardRef,
+  HostBinding,
+  HostListener,
+  Input,
+  Output,
+  QueryList,
+  ViewChildren
+} from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { Observable, Subject, timer } from 'rxjs';
 import { debounce, tap } from 'rxjs/operators';
@@ -9,6 +22,12 @@ import { SelectableItemComponent } from './selectable-item/selectable-item.compo
 /**
  * Component for selecting an entry from a set of grouped items. Selectable items are
  * assigned to groups and will be selectable using mouse or keyboard.
+ *
+ * ## multiple
+ * Using the SPACE key on a focused entry or clicking the items checkbox will add or remove the
+ * item from the current selection and propagate this change.
+ * Hitting ENTER or clicking the label of an item will immediately reset the selection to the
+ * current item only.
  */
 @Component({
   selector: 'yuv-grouped-select',
@@ -30,14 +49,19 @@ export class GroupedSelectComponent implements AfterViewInit, ControlValueAccess
 
   @HostListener('keydown.Enter') onEnter() {
     if (this.multiple) {
+      // Setting the selection to the focused item should only happen, when nothing else
+      // has been selected so far. Otherwise ENTER is supposed to submit forms this component
+      // is maybe a part off.
       if (this.selectedItems.length === 0) {
         this.selectedItems = [this.focusedItem];
       }
     } else {
       this.selectedItems = [this.focusedItem];
     }
-    // this.selectedItems = [this.focusedItem];
     this.propagateChange(this.selectedItems);
+    // Hitting ENTER will in any case trigger the select event, that
+    // 'approves' the current selection.
+    this.select.emit(this.selectedItems);
   }
 
   @HostListener('keydown', ['$event']) onKeyDown(event) {
@@ -53,16 +77,29 @@ export class GroupedSelectComponent implements AfterViewInit, ControlValueAccess
   get groups() {
     return this._groups;
   }
+  /**
+   *
+   */
+  @Input() set multiple(m: boolean) {
+    this._multiple = m;
+  }
+  get multiple() {
+    return this._multiple;
+  }
   @Input() columnWidth: number = 200;
   @Input() minItemsPerColumn: number = 3;
+
+  /**
+   * Emitted when the component 'approves' the current selection.
+   */
+  @Output() select = new EventEmitter<Selectable[]>();
 
   get selectableItemIndex(): number {
     return this._selectableItemIndex++;
   }
 
-  @HostBinding('class.multiple') multiple: boolean;
+  @HostBinding('class.multiple') _multiple: boolean = false;
   autofocus: boolean;
-  // selectedGroup: SelectableGroup;
 
   private selectedItems: Selectable[] = [];
   private focusedItem: Selectable;
@@ -71,8 +108,7 @@ export class GroupedSelectComponent implements AfterViewInit, ControlValueAccess
   private sizeSource = new Subject<{ width: number; height: number }>();
   private resized$: Observable<{ width: number; height: number }> = this.sizeSource.asObservable();
 
-  constructor(@Attribute('multiple') multiple: string, @Attribute('autofocus') autofocus: string, private elRef: ElementRef) {
-    this.multiple = multiple === 'true' ? true : false;
+  constructor(@Attribute('autofocus') autofocus: string, private elRef: ElementRef) {
     this.autofocus = autofocus === 'true' ? true : false;
 
     this.resized$
@@ -102,13 +138,18 @@ export class GroupedSelectComponent implements AfterViewInit, ControlValueAccess
 
   groupFocused(group: SelectableGroup) {
     const innerIdx = group.items.map((g: SelectableInternal) => g.index);
-    // const idx = (group.items[0] as SelectableInternal).index;
     if (!innerIdx.includes(this.keyManager.activeItemIndex)) {
       this.keyManager.setActiveItem(innerIdx[0]);
     }
   }
 
-  itemSelected(selected: boolean, item: SelectableInternal) {
+  itemSelected(item: SelectableInternal) {
+    this.selectedItems = [item];
+    this.propagateChange(this.selectedItems);
+    this.select.emit(this.selectedItems);
+  }
+
+  itemToggled(selected: boolean, item: SelectableInternal) {
     if (this.multiple) {
       if (selected) {
         this.selectedItems.push(item);
