@@ -275,6 +275,13 @@ export class QuickSearchComponent implements AfterViewInit {
       id: 'types',
       items: this.availableObjectTypes
     };
+
+    const x = this.groupBy(
+      this.availableObjectTypes.map(t => t.value),
+      'description'
+    );
+    console.log(x);
+
     const popoverConfig: PopoverConfig = {
       width: '50%',
       height: '50%',
@@ -286,6 +293,13 @@ export class QuickSearchComponent implements AfterViewInit {
       }
     };
     this.popoverService.open(this.tplValuePicker, popoverConfig);
+  }
+
+  groupBy(arr: any[], key: string) {
+    return arr.reduce((rv, x) => {
+      (rv[x[key]] = rv[x[key]] || []).push(x);
+      return rv;
+    }, {});
   }
 
   showObjectTypeFieldPicker() {

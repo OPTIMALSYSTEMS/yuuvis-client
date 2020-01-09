@@ -58,9 +58,6 @@ export class TestGroupedSelectComponent implements OnInit {
   ngOnInit() {
     const x = [10, 4, 6, 8, 2];
 
-    // const gc = 5;
-    // const ic = 10;
-
     for (let i = 0; i < x.length; i++) {
       const g: SelectableGroup = {
         id: `${i}`,

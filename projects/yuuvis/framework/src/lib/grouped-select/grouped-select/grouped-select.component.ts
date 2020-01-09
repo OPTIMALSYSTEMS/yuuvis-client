@@ -16,7 +16,7 @@ import {
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { Observable, Subject, timer } from 'rxjs';
 import { debounce, tap } from 'rxjs/operators';
-import { Selectable, SelectableGroup, SelectableGroupInternal, SelectableInternal } from './grouped-select.interface';
+import { Selectable, SelectableGroup, SelectableInternal } from './grouped-select.interface';
 import { SelectableItemComponent } from './selectable-item/selectable-item.component';
 
 /**
@@ -45,7 +45,7 @@ export class GroupedSelectComponent implements AfterViewInit, ControlValueAccess
   @ViewChildren(SelectableItemComponent) items: QueryList<SelectableItemComponent>;
   private keyManager: FocusKeyManager<SelectableItemComponent>;
   private _selectableItemIndex = -1;
-  private _groups: SelectableGroupInternal[];
+  private _groups: SelectableGroup[];
 
   @HostListener('keydown.Enter') onEnter() {
     if (this.multiple) {
