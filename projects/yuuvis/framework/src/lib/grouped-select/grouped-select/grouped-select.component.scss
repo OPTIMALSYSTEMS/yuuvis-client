@@ -1,10 +1,12 @@
 :host {
-  display: block;
-
   .container {
     // column-gap: var(--app-pane-padding);
     display: flex;
-    flex-flow: row wrap;
+    flex-flow: column wrap;
+
+    // align-content: space-between;
+    height: 852px;
+    margin: var(--app-pane-padding);
 
     // display: grid;
     // grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
@@ -12,8 +14,8 @@
     // grid-auto-rows: minmax(180px, auto);
     // grid-auto-flow: dense;
     // padding: 10px;
+    counter-reset: groups;
   }
-
   &:not(.multiple) {
     ::ng-deep {
       yuv-checkbox {
@@ -24,17 +26,24 @@
 
   div.group {
     // width: 200px;
+    width: 23%;
     margin: 8px;
     display: block;
     background-color: #fff;
     padding: var(--app-pane-padding);
+    position: relative;
     // -webkit-column-break-inside: avoid;
     // page-break-inside: avoid;
     // break-inside: avoid;
-
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.2);
     &:not(.last) {
       margin-bottom: var(--app-pane-padding);
     }
+
+    // &::before {
+    //   counter-increment: groups;
+    //   content: counter(groups);
+    // }
 
     .group-label {
       color: var(--color-accent);
@@ -52,5 +61,26 @@
       outline-offset: -2px;
       color: #fff;
     }
+  }
+
+  .group:nth-of-type(4n + 1) {
+    order: 1;
+  }
+  .group:nth-of-type(4n + 2) {
+    order: 2;
+  }
+  .group:nth-of-type(4n + 3) {
+    order: 3;
+  }
+  .group:nth-of-type(4n) {
+    order: 4;
+  }
+
+  .container::before,
+  .container::after {
+    content: '';
+    flex-basis: 100%;
+    width: 0;
+    order: 2;
   }
 }
