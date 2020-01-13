@@ -1,9 +1,9 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { IconRegistryService } from '@yuuvis/common-ui';
 import { AuditQueryOptions, AuditQueryResult, AuditService, DmsObject, EventService, RangeValue, TranslateService, YuvEvent, YuvEventType } from '@yuuvis/core';
 import { takeUntilDestroy } from 'take-until-destroy';
-import { SVGIcons } from '../../svg.generated';
-
+import { arrowNext, search } from '../../svg.generated';
 /**
  * Component listing audits for a given `DmsObject`.
  */
@@ -22,11 +22,6 @@ export class AuditComponent implements OnInit, OnDestroy {
   busy: boolean;
   searchActions: { label: string; actions: string[] }[] = [];
 
-  icon = {
-    search: SVGIcons['search'],
-    arrowNext: SVGIcons['arrow-next'],
-    arrowLast: SVGIcons['arrow-last']
-  };
   actionGroups: any = {};
   auditLabels: any = {};
 
@@ -48,7 +43,14 @@ export class AuditComponent implements OnInit, OnDestroy {
     return this._objectID;
   }
 
-  constructor(private auditService: AuditService, private eventService: EventService, private fb: FormBuilder, private translate: TranslateService) {
+  constructor(
+    private auditService: AuditService,
+    private eventService: EventService,
+    private fb: FormBuilder,
+    private translate: TranslateService,
+    private iconRegistry: IconRegistryService
+  ) {
+    this.iconRegistry.registerIcons([search, arrowNext, arrowNext]);
     this.auditLabels = {
       a100: this.translate.instant('yuv.framework.audit.label.create.metadata'),
       a101: this.translate.instant('yuv.framework.audit.label.create.metadata.withcontent'),

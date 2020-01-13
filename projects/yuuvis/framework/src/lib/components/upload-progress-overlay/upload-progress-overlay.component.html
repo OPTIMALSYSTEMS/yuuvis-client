@@ -10,7 +10,7 @@
     <section class="upload-files">
       <div class="title" [ngClass]="{complete: completed}">{{'yuv.framework.upload-progress-overlay.title'|translate}}</div>
       <div class="progress-item" *ngFor="let item of ps.items; trackBy: trackByFn" [ngClass]="{err: !!item.err, done: !!item.result}">
-        <yuv-icon title="{{'yuv.framework.upload-progress-overlay.remove'|translate}}" [svg]="icon.remove" class="remove" [ngClass]="{err: !!item.err, done: !!item.result}" (click)="remove(item.id)"></yuv-icon>
+        <yuv-icon title="{{'yuv.framework.upload-progress-overlay.remove'|translate}}" icon="clear" class="remove" [ngClass]="{err: !!item.err, done: !!item.result}" (click)="remove(item.id)"></yuv-icon>
         
         <ng-container *ngIf="!item.result; else tplResult">
           <div class="name">{{ item.filename }}</div>
@@ -28,7 +28,7 @@
               {{ res.label }}
             </div>
           </div>
-          <yuv-icon class="done" [svg]="icon.done"></yuv-icon>
+          <yuv-icon class="done" icon="done"></yuv-icon>
         </ng-template>
       </div>
       <section class="remove-all">

@@ -1,6 +1,7 @@
 import { ColDef, RowEvent } from '@ag-grid-community/core';
 import { Component, EventEmitter, Input, OnDestroy, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { IconRegistryService } from '@yuuvis/common-ui';
 import {
   BaseObjectTypeField,
   DmsObject,
@@ -19,7 +20,7 @@ import { takeUntilDestroy } from 'take-until-destroy';
 import { ResponsiveDataTableComponent } from '../../components/responsive-data-table/responsive-data-table.component';
 import { ResponsiveTableData } from '../../components/responsive-data-table/responsive-data-table.interface';
 import { GridService } from '../../services/grid/grid.service';
-import { SVGIcons } from '../../svg.generated';
+import { arrowLast, arrowNext } from '../../svg.generated';
 import { ViewMode } from './../../components/responsive-data-table/responsive-data-table.component';
 
 @Component({
@@ -38,12 +39,12 @@ export class SearchResultComponent implements OnDestroy {
   toolbarOpen: boolean;
 
   // icons used within the template
-  icon = {
-    icSearchFilter: SVGIcons['search-filter'],
-    icArrowNext: SVGIcons['arrow-next'],
-    icArrowLast: SVGIcons['arrow-last'],
-    icKebap: SVGIcons['kebap']
-  };
+  // icon = {
+  //   icSearchFilter: SVGIcons['search-filter'],
+  //   icArrowNext: SVGIcons['arrow-next'],
+  //   icArrowLast: SVGIcons['arrow-last'],
+  //   icKebap: SVGIcons['kebap']
+  // };
   tableData: ResponsiveTableData;
   // object type shown in the result list, will be null for mixed results
   private resultListObjectTypeId: string;
@@ -113,7 +114,15 @@ export class SearchResultComponent implements OnDestroy {
     }
   }
 
-  constructor(private gridService: GridService, private eventService: EventService, private searchService: SearchService, private fb: FormBuilder) {
+  constructor(
+    private gridService: GridService,
+    private eventService: EventService,
+    private searchService: SearchService,
+    private fb: FormBuilder,
+    private iconRegistry: IconRegistryService
+  ) {
+    this.iconRegistry.registerIcons([arrowNext, arrowLast]);
+
     this.pagingForm = this.fb.group({
       page: ['']
     });

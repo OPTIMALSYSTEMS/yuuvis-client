@@ -1,16 +1,16 @@
 <div class="app-bar" *ngIf="!hideAppBar">
   <yuv-icon class="btn" id="drawer" (click)="showSideBar = true" replaceUrl
-    [iconSrc]="'assets/default/svg/ic_drawer.svg'"></yuv-icon>
+    icon="drawer"></yuv-icon>
   <a yuvOfflineDisabled routerLink="/" id="logo">
     <yuv-icon class="btn" [iconSrc]="'assets/default/theme/app.icon.svg'"></yuv-icon>
   </a>
   <div yuvOfflineDisabled class="main">
     <yuv-icon class="btn" routerLink="/create" [title]="'yuv.framework.object-create.header.title' | translate"
-      [iconSrc]="'assets/default/svg/ic_add.svg'"></yuv-icon>
+      icon="add"></yuv-icon>
   </div>
   <div class="right">
     <yuv-upload-progress-overlay (resultItemClick)="onResultItemClick($event)"></yuv-upload-progress-overlay>
-    <yuv-icon *ngIf="offline" class="offline-icon" [svg]="offlineSVG" title="offline"></yuv-icon>
+    <yuv-icon *ngIf="offline" class="offline-icon" icon="offline" title="offline"></yuv-icon>
     <div yuvOfflineDisabled class="user" (click)="op.toggle($event)">
       <yuv-user-avatar [user]="user"></yuv-user-avatar>
     </div>
@@ -22,7 +22,7 @@
         <div class="avatar" [ngClass]="{ enabled: user?.enabled }">
           <yuv-user-avatar [user]="user"></yuv-user-avatar>
           <div class="user-title">
-            <yuv-icon [iconSrc]="'assets/default/svg/ic_user_disabled.svg'"></yuv-icon>
+            <yuv-icon icon="userDisabled"></yuv-icon>
             <div>
               <span class="usertitle">{{ user?.title }}</span>
               <span class="email" title="{{ user?.email }}">{{ user?.email }}</span>

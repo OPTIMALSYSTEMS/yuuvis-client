@@ -3,7 +3,7 @@
                       (ngModelChange)="onChange($event)"
                       [disabled]="readonly"
                       [ngClass]="{undefined: value === null}"></p-triStateCheckbox>
-  <yuv-icon *ngIf="!readonly && value !== null && tristate" [svg]="icClear" (click)="reset()"></yuv-icon>
+  <yuv-icon *ngIf="!readonly && value !== null && tristate" icon="clear" (click)="reset()"></yuv-icon>
 </div>
 
 <ng-template #twostate>

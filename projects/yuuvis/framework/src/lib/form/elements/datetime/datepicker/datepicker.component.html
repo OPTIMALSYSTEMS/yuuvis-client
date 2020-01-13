@@ -14,10 +14,10 @@
         (ngModelChange)="setYear($event)" [ngModelOptions]="{ standalone: true }" />
       <div class="controls">
         <button class="icon white year-up" (click)="setYear(year + 1)" [disabled]="year === maxYear">
-          <yuv-icon [svg]="arrowDownIcon"></yuv-icon>
+          <yuv-icon icon="arrowDown"></yuv-icon>
         </button>
         <button class="icon white year-down" (click)="setYear(year - 1)" [disabled]="year === minYear">
-          <yuv-icon [svg]="arrowDownIcon"></yuv-icon>
+          <yuv-icon icon="arrowDown"></yuv-icon>
         </button>
       </div>
     </div>
@@ -68,10 +68,10 @@
     </div>
     <div class="controls ctrl-h">
       <button class="icon btn-up" (click)="addTime(1)">
-        <yuv-icon [svg]="arrowDownIcon"></yuv-icon>
+        <yuv-icon icon="arrowDown"></yuv-icon>
       </button>
       <button class="icon btn-down" (click)="addTime(-1)">
-        <yuv-icon [svg]="arrowDownIcon"></yuv-icon>
+        <yuv-icon icon="arrowDown"></yuv-icon>
       </button>
     </div>
 
@@ -79,10 +79,10 @@
     <div class="value val-min">{{ timeToString(selected.getMinutes()) }}</div>
     <div class="controls ctrl-min">
       <button class="icon btn-up" (click)="addTime(0, 1)">
-        <yuv-icon [svg]="arrowDownIcon"></yuv-icon>
+        <yuv-icon icon="arrowDown"></yuv-icon>
       </button>
       <button class="icon btn-down" (click)="addTime(0, -1)">
-        <yuv-icon [svg]="arrowDownIcon"></yuv-icon>
+        <yuv-icon icon="arrowDown"></yuv-icon>
       </button>
     </div>
 

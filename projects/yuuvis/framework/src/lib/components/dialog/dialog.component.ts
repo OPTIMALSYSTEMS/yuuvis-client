@@ -1,19 +1,17 @@
 import { PlatformLocation } from '@angular/common';
 import { Component, EventEmitter, HostListener, Input, OnDestroy, Output, Renderer2, ViewChild } from '@angular/core';
+import { IconRegistryService } from '@yuuvis/common-ui';
 import { EventService, PendingChangesService, Utils, YuvEventType } from '@yuuvis/core';
 import { Dialog } from 'primeng/dialog';
 import { filter } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
-import { SVGIcons } from '../../svg.generated';
-
+import { clear } from '../../svg.generated';
 @Component({
   selector: 'yuv-dialog',
   templateUrl: './dialog.component.html',
   styleUrls: ['./dialog.component.scss']
 })
 export class DialogComponent implements OnDestroy {
-  icClose = SVGIcons.clear;
-
   private _visible = false;
   private _lastFocused;
   private active: boolean;
@@ -76,8 +74,10 @@ export class DialogComponent implements OnDestroy {
     private eventService: EventService,
     private location: PlatformLocation,
     private pendingChanges: PendingChangesService,
-    private renderer: Renderer2
+    private renderer: Renderer2,
+    private iconRegistry: IconRegistryService
   ) {
+    this.iconRegistry.registerIcons([clear]);
     this._lastFocused = document.activeElement;
     this.eventService
       .on(YuvEventType.DIALOG_STACK_CHANGED)

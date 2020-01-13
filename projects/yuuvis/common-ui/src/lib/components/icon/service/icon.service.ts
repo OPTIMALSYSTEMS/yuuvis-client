@@ -11,27 +11,21 @@ export class IconService {
   constructor(private http: HttpClient) {}
 
   fetch(uri: string): Observable<any> {
-    if (this.cache.has(uri)) {
-      return of(this.cache.get(uri));
-    } else {
-      return this.getViaTempCache(uri, () =>
-        this.http
-          .get(uri, { responseType: 'text' })
-          .pipe(tap(text => this.cache.set(uri, text)))
-      );
-    }
+    return this.cache.has(uri)
+      ? of(this.cache.get(uri))
+      : this.getViaTemplateCache(uri, () => this.http.get(uri, { responseType: 'text' }).pipe(tap(text => this.cache.set(uri, text))));
   }
 
-  private getViaTempCache(id: string, request: Function): Observable<any> {
+  private getViaTemplateCache(id: string, request: Function): Observable<any> {
     if (this.temp.has(id)) {
       return this.temp.get(id);
     } else {
-      const resp = request().pipe(
+      const res = request().pipe(
         finalize(() => this.temp.delete(id)),
         shareReplay(1)
       );
-      this.temp.set(id, resp);
-      return resp;
+      this.temp.set(id, res);
+      return res;
     }
   }
 }

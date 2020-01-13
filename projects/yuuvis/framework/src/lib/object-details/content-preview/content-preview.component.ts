@@ -1,8 +1,9 @@
 import { AfterViewInit, Component, ElementRef, Input } from '@angular/core';
+import { IconRegistryService } from '@yuuvis/common-ui';
 import { DmsObject } from '@yuuvis/core';
 import { fromEvent, Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
-import { SVGIcons } from '../../svg.generated';
+import { folder, noFile } from '../../svg.generated';
 import { ContentPreviewService } from './service/content-preview.service';
 
 @Component({
@@ -29,10 +30,11 @@ export class ContentPreviewComponent implements AfterViewInit {
     return this._dmsObject;
   }
 
-  icons = SVGIcons;
   previewSrc$: Observable<string> = this.contentPreviewService.previewSrc$;
 
-  constructor(private elRef: ElementRef, private contentPreviewService: ContentPreviewService) {}
+  constructor(private elRef: ElementRef, private contentPreviewService: ContentPreviewService, private iconRegistry: IconRegistryService) {
+    this.iconRegistry.registerIcons([folder, noFile]);
+  }
 
   refresh() {
     this.previewSrc$.pipe(tap(val => (val ? this.elRef.nativeElement.querySelector('iframe').contentWindow.location.reload(true) : null)));

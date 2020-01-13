@@ -1,6 +1,6 @@
 import { Component, EventEmitter, HostBinding, Input, Output } from '@angular/core';
-import { SVGIcons } from './../../svg.generated';
-
+import { IconRegistryService } from '@yuuvis/common-ui';
+import { clear } from './../../svg.generated';
 @Component({
   selector: 'yuv-panel',
   templateUrl: './panel.component.html',
@@ -8,8 +8,6 @@ import { SVGIcons } from './../../svg.generated';
   host: { class: 'yuv-panel-wrapper' }
 })
 export class PanelComponent {
-  closeIcon = SVGIcons.clear;
-
   @Input() title = '';
   @Input() description = '';
 
@@ -21,6 +19,10 @@ export class PanelComponent {
   @Input() enableStandaloneBackButton: boolean;
 
   @Output() backButtonClick = new EventEmitter();
+
+  constructor(private iconRegistry: IconRegistryService) {
+    this.iconRegistry.registerIcons([clear]);
+  }
 
   clickBackButton() {
     this.backButtonClick.emit();

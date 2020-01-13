@@ -1,7 +1,6 @@
 import { Component, EventEmitter, HostBinding, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { Screen, ScreenService } from '@yuuvis/core';
 import { takeUntilDestroy } from 'take-until-destroy';
-import { SVGIcons } from '../../svg.generated';
 import { ResponsiveMasterSlaveOptions } from './responsive-master-slave.interface';
 
 /**
@@ -56,7 +55,6 @@ import { ResponsiveMasterSlaveOptions } from './responsive-master-slave.interfac
   styleUrls: ['./responsive-master-slave.component.scss']
 })
 export class ResponsiveMasterSlaveComponent implements OnInit, OnDestroy {
-  backButton = SVGIcons.navBack;
   useSmallDeviceLayout: boolean;
   visible = {
     master: true,

@@ -1,9 +1,10 @@
 import { Component, ComponentFactoryResolver, EventEmitter, Input, OnDestroy, Output, Type, ViewChild, ViewContainerRef } from '@angular/core';
 import { NavigationStart, Router } from '@angular/router';
+import { IconRegistryService } from '@yuuvis/common-ui';
 import { DmsObject } from '@yuuvis/core';
 import { filter, take } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
-import { SVGIcons } from '../../svg.generated';
+import { clear } from '../../svg.generated';
 import { ActionService } from '../action-service/action.service';
 import { ActionComponent } from '../interfaces/action-component.interface';
 import { ActionListEntry } from '../interfaces/action-list-entry';
@@ -71,14 +72,15 @@ export class ActionMenuComponent implements OnDestroy {
   showDescriptions: boolean;
   showMenu = false;
   loading = false;
-  icons = SVGIcons;
 
   constructor(
     private actionService: ActionService,
     private router: Router,
     public viewContainerRef: ViewContainerRef,
-    private componentFactoryResolver: ComponentFactoryResolver
+    private componentFactoryResolver: ComponentFactoryResolver,
+    private iconRegistry: IconRegistryService
   ) {
+    this.iconRegistry.registerIcons([clear]);
     this.router.events
       .pipe(
         takeUntilDestroy(this),

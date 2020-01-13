@@ -1,21 +1,7 @@
 import { AfterViewInit, Component, ElementRef, EventEmitter, HostBinding, HostListener, Input, Output, TemplateRef, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import {
-  AggregateResult,
-  BaseObjectTypeField,
-  ContentStreamField,
-  DeviceService,
-  ObjectType,
-  ObjectTypeField,
-  RangeValue,
-  RetentionField,
-  SearchFilter,
-  SearchQuery,
-  SearchService,
-  SystemService,
-  TranslateService,
-  Utils
-} from '@yuuvis/core';
+import { IconRegistryService } from '@yuuvis/common-ui';
+import { AggregateResult, BaseObjectTypeField, ContentStreamField, DeviceService, ObjectType, ObjectTypeField, RangeValue, RetentionField, SearchFilter, SearchQuery, SearchService, SystemService, TranslateService, Utils } from '@yuuvis/core';
 import { AutoComplete } from 'primeng/autocomplete';
 import { timer } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
@@ -23,9 +9,10 @@ import { ObjectFormControlWrapper } from '../../object-form';
 import { ObjectFormControl } from '../../object-form/object-form.model';
 import { PopoverRef } from '../../popover/popover.ref';
 import { PopoverService } from '../../popover/popover.service';
-import { SVGIcons } from '../../svg.generated';
+import { addCircle, arrowDown, clear, search } from '../../svg.generated';
 import { ObjectFormUtils } from './../../object-form/object-form.utils';
 import { ValuePickerItem } from './value-picker/value-picker.component';
+
 
 /**
  * Component providing an extensible search input. It's a simple input field for fulltext
@@ -49,12 +36,6 @@ export class QuickSearchComponent implements AfterViewInit {
   @ViewChild('extrasForm', { static: false }) extrasForm: ElementRef;
   @ViewChild('tplValuePicker', { static: false }) tplValuePicker: TemplateRef<any>;
 
-  icons = {
-    search: SVGIcons['search'],
-    clear: SVGIcons['clear'],
-    arrowDown: SVGIcons['arrow-down'],
-    addCircle: SVGIcons['addCircle']
-  };
   autofocus: boolean = false;
   searchForm: FormGroup;
   searchFieldsForm: FormGroup;
@@ -131,8 +112,11 @@ export class QuickSearchComponent implements AfterViewInit {
     private translate: TranslateService,
     private systemService: SystemService,
     private device: DeviceService,
-    private searchService: SearchService
+    private searchService: SearchService,
+    private iconRegistry: IconRegistryService
   ) {
+    this.iconRegistry.registerIcons([arrowDown, addCircle, search, clear]);
+
     this.autofocus = this.device.isDesktop;
     console.log('autofocus: ' + this.autofocus);
 

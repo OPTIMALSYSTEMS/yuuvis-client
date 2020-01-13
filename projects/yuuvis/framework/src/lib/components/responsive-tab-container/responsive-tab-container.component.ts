@@ -1,10 +1,10 @@
 import { AfterContentInit, Component, ContentChildren, EventEmitter, Input, OnInit, Output, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { IconRegistryService } from '@yuuvis/common-ui';
 import { Screen, ScreenService } from '@yuuvis/core';
 import { TabPanel, TabView } from 'primeng/tabview';
 import { Observable } from 'rxjs';
 import { filter, map, take, tap } from 'rxjs/operators';
-import { SVGIcons } from '../../svg.generated';
-
+import { verticalSplit } from './../../svg.generated';
 /**
  * Responsive Split TabContainer + plugin support
  */
@@ -40,9 +40,12 @@ export class ResponsiveTabContainerComponent implements OnInit, AfterContentInit
   allPanels: TabPanel[] = [];
   splitPanels: TabPanel[] = [];
   orientation = 'top';
-  svgIcon = SVGIcons;
   isSmallScreen$: Observable<boolean>;
   isBigScreen: Observable<boolean>;
+
+  constructor(private screenService: ScreenService, private iconRegistry: IconRegistryService) {
+    this.iconRegistry.registerIcons([verticalSplit]);
+  }
 
   /**
    * add SplitPanel with specific TabPanel
@@ -54,7 +57,14 @@ export class ResponsiveTabContainerComponent implements OnInit, AfterContentInit
       panel.loaded = true;
       panel.disabled = true;
       this.splitPanels.push(panel);
-      setTimeout(() => this.movePanelContent(panel, this.splitTabViews.find(v => this.pID(v.tabPanels.first) === this.pID(panel, '_empty'))), 100);
+      setTimeout(
+        () =>
+          this.movePanelContent(
+            panel,
+            this.splitTabViews.find(v => this.pID(v.tabPanels.first) === this.pID(panel, '_empty'))
+          ),
+        100
+      );
       if (!id) {
         this.open(this.allPanels.find(p => !p.selected && !p.disabled));
       }
@@ -87,8 +97,6 @@ export class ResponsiveTabContainerComponent implements OnInit, AfterContentInit
     }
     this.savePanelOrder();
   }
-
-  constructor(private screenService: ScreenService) {}
 
   ngOnInit() {
     this.isSmallScreen$ = this.screenService.screenChange$.pipe(

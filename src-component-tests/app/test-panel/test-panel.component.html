@@ -11,18 +11,18 @@
 
 <yuv-panel [title]="title" [description]="description" class="cmp">
 
-  <yuv-icon class="header-icon" [svg]="icons.favorite" *ngIf="showIcon"></yuv-icon>
+  <yuv-icon class="header-icon" icon="favorite" *ngIf="showIcon"></yuv-icon>
 
   <yuv-action-menu-bar class="actions" *ngIf="showActions">
-    <yuv-icon class="btn" [svg]="icons.refresh"></yuv-icon>
-    <yuv-icon class="btn" [svg]="icons.kebap"></yuv-icon>
+    <yuv-icon class="btn" icon="refresh"></yuv-icon>
+    <yuv-icon class="btn" icon="kebap"></yuv-icon>
   </yuv-action-menu-bar>
 
   <yuv-action-menu-bar class="status" [className]="'status'" *ngIf="showStatus">
-    <yuv-icon [svg]="icons.subscription"></yuv-icon>
-    <yuv-icon [svg]="icons.resubmission"></yuv-icon>
-    <yuv-icon [svg]="icons.lock"></yuv-icon>
-    <yuv-icon [svg]="icons.finalized"></yuv-icon>
+    <yuv-icon icon="subscription"></yuv-icon>
+    <yuv-icon icon="resubmission"></yuv-icon>
+    <yuv-icon icon="lock"></yuv-icon>
+    <yuv-icon icon="finalized"></yuv-icon>
   </yuv-action-menu-bar>
 
   <div class="content" [yuvBusyOverlay]="busy">

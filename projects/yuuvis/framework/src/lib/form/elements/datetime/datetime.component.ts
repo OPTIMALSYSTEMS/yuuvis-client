@@ -1,9 +1,9 @@
 import { Component, forwardRef, HostListener, Input, OnInit } from '@angular/core';
 import { ControlValueAccessor, FormControl, NG_VALIDATORS, NG_VALUE_ACCESSOR, Validator } from '@angular/forms';
+import { IconRegistryService } from '@yuuvis/common-ui';
 import { DeviceService, TranslateService } from '@yuuvis/core';
 import { LocaleDatePipe } from '../../../pipes/locale-date.pipe';
-import { SVGIcons } from '../../../svg.generated';
-
+import { datepicker } from '../../../svg.generated';
 /**
  * Creates form input for date values. Input can be typed using a localized masked 
  * input or done by using a datepicker component.
@@ -37,7 +37,6 @@ import { SVGIcons } from '../../../svg.generated';
   ]
 })
 export class DatetimeComponent implements OnInit, ControlValueAccessor, Validator {
-  datepickerIcon = SVGIcons.datepicker;
   params;
   value; // model value
   innerValue; // inner ng-model value
@@ -84,7 +83,8 @@ export class DatetimeComponent implements OnInit, ControlValueAccessor, Validato
     return this._withTime;
   }
 
-  constructor(private translate: TranslateService, private device: DeviceService) {
+  constructor(private translate: TranslateService, private device: DeviceService, private iconRegistry: IconRegistryService) {
+    this.iconRegistry.registerIcons([datepicker]);
     this.datePipe = new LocaleDatePipe(translate);
     this.locale = this.translate.currentLang;
   }

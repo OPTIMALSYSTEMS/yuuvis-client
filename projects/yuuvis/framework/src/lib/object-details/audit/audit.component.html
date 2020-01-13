@@ -61,17 +61,17 @@
     <!-- controls -->
     <div class="footer" yuvOfflineDisabled>
       <button class="btn-search" [ngClass]="{ badge: filtered }" (click)="openSearchPanel()">
-        <yuv-icon [svg]="icon.search"></yuv-icon>
+        <yuv-icon icon="search"></yuv-icon>
       </button>
       <div class="paging" *ngIf="auditsRes.hasMoreItems || auditsRes.page > 1">
         <button [disabled]="auditsRes.page === 1" (click)="goToPage(auditsRes.page - 1)">
-          <yuv-icon class="prev" [svg]="icon.arrowNext"></yuv-icon>
+          <yuv-icon class="prev" icon="arrowNext"></yuv-icon>
         </button>
         <div class="page">
           {{ auditsRes.page }}
         </div>
         <button [disabled]="!auditsRes.hasMoreItems" (click)="goToPage(auditsRes.page + 1)">
-          <yuv-icon class="next" [svg]="icon.arrowNext"></yuv-icon>
+          <yuv-icon class="next" icon="arrowNext"></yuv-icon>
         </button>
       </div>
     </div>

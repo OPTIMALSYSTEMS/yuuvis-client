@@ -6,10 +6,10 @@
     <div class="no-preview">
 
       <ng-container *ngIf="dmsObject.isFolder; else tplNoContent">
-        <yuv-icon [svg]="icons.folder"></yuv-icon>
+        <yuv-icon icon="folder"></yuv-icon>
       </ng-container>
       <ng-template #tplNoContent>
-        <yuv-icon [svg]="icons.noFile"></yuv-icon>
+        <yuv-icon icon="noFile"></yuv-icon>
       </ng-template>
 
     </div>

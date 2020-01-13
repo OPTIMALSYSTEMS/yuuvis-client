@@ -1,15 +1,15 @@
 import { Location } from '@angular/common';
 import { Component, OnDestroy, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { FadeInAnimations } from '@yuuvis/common-ui';
-import { DmsService, ObjectType, PendingChangesService, SystemService, TranslateService, Utils } from '@yuuvis/core';
+import { FadeInAnimations, IconRegistryService } from '@yuuvis/common-ui';
+import { DmsService, ObjectType, SystemService, TranslateService, Utils } from '@yuuvis/core';
 import { Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { FormStatusChangedEvent, ObjectFormOptions } from '../../object-form/object-form.interface';
 import { ObjectFormComponent } from '../../object-form/object-form/object-form.component';
 import { NotificationService } from '../../services/notification/notification.service';
-import { SVGIcons } from '../../svg.generated';
+import { clear } from '../../svg.generated';
 import { ObjectCreateService } from '../object-create.service';
 import { Breadcrumb, CreateState, CurrentStep, Labels } from './../object-create.interface';
 
@@ -23,9 +23,6 @@ import { Breadcrumb, CreateState, CurrentStep, Labels } from './../object-create
 export class ObjectCreateComponent implements OnDestroy {
   @ViewChild(ObjectFormComponent, { static: false }) objectForm: ObjectFormComponent;
 
-  icon = {
-    clear: SVGIcons['clear']
-  };
   animationTimer = { value: true, params: { time: '400ms' } };
   // state of creation progress
   state$: Observable<CreateState> = this.objCreateServcice.state$;
@@ -49,10 +46,11 @@ export class ObjectCreateComponent implements OnDestroy {
     private notify: NotificationService,
     private dmsService: DmsService,
     private translate: TranslateService,
-    private pendingChanges: PendingChangesService,
     private router: Router,
-    private location: Location
+    private location: Location,
+    private iconRegistry: IconRegistryService
   ) {
+    this.iconRegistry.registerIcons([clear]);
     this.resetState();
 
     this.system

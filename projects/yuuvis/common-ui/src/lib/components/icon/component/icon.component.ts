@@ -17,24 +17,36 @@ export class IconComponent {
   private svgWidth = 24;
   private svgHeight = 24;
 
+  /**
+   * Size of the svg array contains width and height in that order...
+   */
   @Input()
   set svgDim(val: number[]) {
     this.svgWidth = val[0] || this.svgWidth;
     this.svgHeight = val[0] || this.svgHeight;
   }
 
+  /**
+   * url / local path to the svg
+   */
   @Input('iconSrc')
   set iconSrc(iconSrc: string) {
     this.removeSVG();
     this.iconService.fetch(iconSrc).subscribe(svg => this.createSvg(svg));
   }
 
+  /**
+   *  svg data direct
+   */
   @Input('svg')
   set icon(icon: SVGElement) {
     this.removeSVG();
     this.createSvg(icon);
   }
 
+  /**
+   * registert name of the svg
+   */
   @Input('icon')
   set svg(iconName: string) {
     this.removeSVG();

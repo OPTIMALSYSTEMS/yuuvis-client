@@ -1,6 +1,6 @@
 <div class="upper" [ngClass]="{ zero: resultCount === 0 }"
   *ngIf="searchQuery.term || searchQuery.types?.length || searchQuery.filters?.length">
-  <yuv-icon [svg]="icons.clear" (click)="reset()"></yuv-icon>
+  <yuv-icon icon="clear" (click)="reset()"></yuv-icon>
   <div class="yuv-loader-straight"></div>
   <div class="count" *ngIf="resultCount !== null">{{ resultCount }}</div>
 </div>
@@ -10,7 +10,7 @@
     <div class="main">
       <button type="button" class="type-select" #typeSelectTrigger (click)="showObjectTypePicker()">
         <div class="label">{{ objectTypeSelectLabel }}</div>
-        <yuv-icon [svg]="icons.arrowDown"></yuv-icon>
+        <yuv-icon icon="arrowDown"></yuv-icon>
       </button>
 
       <div class="input">
@@ -26,11 +26,11 @@
       <button type="button" class="field-select" #fieldSelectTrigger (click)="showObjectTypeFieldPicker()"
         *ngIf="availableObjectTypeFields?.length"
         title="{{ 'yuv.framework.quick-search.field-select.tooltip' | translate }}">
-        <yuv-icon [svg]="icons.addCircle"></yuv-icon>
+        <yuv-icon icon="addCircle"></yuv-icon>
       </button>
 
       <button type="button" class="primary submit" [ngClass]="{ active: resultCount > 0 }" (click)="executeSearch()">
-        <yuv-icon [svg]="icons.search"></yuv-icon>
+        <yuv-icon icon="search"></yuv-icon>
       </button>
     </div>
   </form>
@@ -42,7 +42,7 @@
         <yuv-object-form-element [situation]="'SEARCH'" [inlineError]="true" [element]="searchFieldsForm.controls[key]">
         </yuv-object-form-element>
         <button type="button" (click)="removeFieldEntry(key)">
-          <yuv-icon [svg]="icons.clear"></yuv-icon>
+          <yuv-icon icon="clear"></yuv-icon>
         </button>
       </div>
       <div class="operator">&</div>

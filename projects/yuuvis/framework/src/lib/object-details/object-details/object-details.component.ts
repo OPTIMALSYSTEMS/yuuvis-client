@@ -1,7 +1,8 @@
 import { Component, EventEmitter, HostBinding, Input, Output } from '@angular/core';
+import { IconRegistryService } from '@yuuvis/common-ui';
 import { DmsObject, DmsService, SystemService, UserService } from '@yuuvis/core';
 import { CellRenderer } from '../../services/grid/grid.cellrenderer';
-import { SVGIcons } from '../../svg.generated';
+import { kebap, noFile, refresh } from '../../svg.generated';
 import { ContentPreviewService } from '../content-preview/service/content-preview.service';
 
 /**
@@ -16,8 +17,8 @@ import { ContentPreviewService } from '../content-preview/service/content-previe
 })
 export class ObjectDetailsComponent {
   @HostBinding('class.yuv-object-details') _hostClass = true;
+  nofileIcon = noFile.data;
   objectIcon = '';
-  icons = SVGIcons;
   busy: boolean;
   userIsAdmin: boolean;
   actionMenuVisible = false;
@@ -69,8 +70,10 @@ export class ObjectDetailsComponent {
     private dmsService: DmsService,
     private userService: UserService,
     private systemService: SystemService,
-    private contentPreviewService: ContentPreviewService
+    private contentPreviewService: ContentPreviewService,
+    private iconRegistry: IconRegistryService
   ) {
+    this.iconRegistry.registerIcons([refresh, kebap, noFile]);
     this.userIsAdmin = this.userService.hasAdministrationRoles;
   }
 

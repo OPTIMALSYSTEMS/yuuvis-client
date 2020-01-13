@@ -5,7 +5,7 @@
     <header class="yuv-dialog-header" [ngClass]="styleClass ? styleClass + '--header ' : ''">
       <h5 class="headline">{{ title }}</h5>
       <h6 *ngIf="subtitle" class="subtitle">{{ subtitle }}</h6>
-      <yuv-icon [svg]="icClose" (click)="closeDialog()" class="button white yuv-dialog-close"></yuv-icon>
+      <yuv-icon icon="clear" (click)="closeDialog()" class="button white yuv-dialog-close"></yuv-icon>
     </header>
     <div class="yuv-dialog-content" [ngClass]="styleClass ? styleClass + '--content ' : ''">
       <ng-content></ng-content>

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { SVGIcons } from './../../../projects/yuuvis/framework/src/lib/svg.generated';
+import { IconRegistryService } from '@yuuvis/common-ui';
+import { favorite, finalized, kebap, lock, refresh, resubmission, subscription } from './../../../projects/yuuvis/framework/src/lib/svg.generated';
 
 @Component({
   selector: 'yuv-test-panel',
@@ -12,12 +13,11 @@ export class TestPanelComponent implements OnInit {
   showActions: boolean = true;
   showStatus: boolean = true;
 
-  icons = SVGIcons;
-
   title: string;
   description: string;
 
-  constructor() {
+  constructor(private iconRegistry: IconRegistryService) {
+    this.iconRegistry.registerIcons([favorite, refresh, kebap, subscription, resubmission, lock, finalized]);
     this.setRegularSizeTitle();
   }
 

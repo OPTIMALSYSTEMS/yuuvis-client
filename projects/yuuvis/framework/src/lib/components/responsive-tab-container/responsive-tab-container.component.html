@@ -4,7 +4,7 @@
       <span yuvOfflineDisabled class="tab-navigation"
         [title]="'yuv.framework.responsive-tab-container.button.split' | translate">
         <yuv-icon *ngIf="!(isSmallScreen$ | async)" class="split-btn" (click)="splitPanelAdd()"
-          [svg]="svgIcon.vertical_split"></yuv-icon>
+          icon="verticalSplit"></yuv-icon>
       </span>
       <ng-content></ng-content>
     </p-tabView>
