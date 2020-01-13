@@ -14,7 +14,7 @@ import {
   YuvUser
 } from '@yuuvis/core';
 import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { catchError, timeout } from 'rxjs/operators';
 
 /**
  * Component showing recent activities for the current user. This means listing the objects
@@ -115,6 +115,7 @@ export class RecentActivitiesComponent implements OnInit {
     this.fetchError = false;
 
     return this.searchService.search(query).pipe(
+      timeout(2000),
       catchError(e => {
         this.fetchError = true;
         return throwError(e);
