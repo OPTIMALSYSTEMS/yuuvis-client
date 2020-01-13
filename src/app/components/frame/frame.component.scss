@@ -97,7 +97,7 @@ $user-panel-width: 180px;
     grid-area: content;
     background-color: var(--main-background);
     overflow-x: auto;
-    height: 100vh;
+    height: 100%;
     width: 100vw;
     padding-top: var(--app-bar-height);
     grid-column: 1;
