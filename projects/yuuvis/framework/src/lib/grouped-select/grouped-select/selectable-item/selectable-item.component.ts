@@ -2,6 +2,9 @@ import { FocusableOption } from '@angular/cdk/a11y';
 import { Component, ElementRef, EventEmitter, HostListener, Input, Output } from '@angular/core';
 import { Selectable, SelectableInternal } from './../grouped-select.interface';
 
+/**
+ * @ignore
+ */
 @Component({
   selector: 'yuv-selectable-item',
   templateUrl: './selectable-item.component.html',

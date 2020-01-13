@@ -17,6 +17,9 @@ export interface Labels {
   required: string;
 }
 
+/**
+ * @ignore
+ */
 export enum CurrentStep {
   OBJECTTYPE = 'objecttype',
   FILES = 'files',

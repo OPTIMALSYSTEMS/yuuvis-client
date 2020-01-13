@@ -1,6 +1,13 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { LocaleNumberPipe } from './locale-number.pipe';
 
+/**
+ * This pipe transforms its input (supposed to be a file size in bytes) into a more
+ * human readable format like for example 1MB or 200KB.
+ *
+ * @example
+ * <div *ngFor="let size of file | fileSize">...</div>
+ */
 @Pipe({ name: 'fileSize' })
 export class FileSizePipe extends LocaleNumberPipe implements PipeTransform {
   private k = 1024;

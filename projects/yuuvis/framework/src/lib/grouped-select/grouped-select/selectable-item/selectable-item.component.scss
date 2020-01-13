@@ -6,12 +6,13 @@
 
   > div {
     transition: background-color, color 0.3s;
-    margin: calc(var(--app-pane-padding) / 4);
     display: flex;
     align-items: center;
 
     .label {
+      padding: calc(var(--app-pane-padding) / 4);
       flex: 1;
+      cursor: pointer;
     }
   }
 
@@ -26,23 +27,25 @@
       }
     }
   }
-
+  &:hover {
+    background-color: var(--item-focus-background-color);
+  }
   &:focus {
-    background-color: var(--color-accent);
+    // background-color: var(--color-accent);
+    background-color: var(--item-focus-background-color);
     outline: 0;
-    color: #fff;
+    // color: #fff;
 
-    ::ng-deep {
-      .ui-chkbox .ui-chkbox-box {
-        background-color: rgba(255, 255, 255, 0.2) !important;
-        color: #fff !important;
-        border-color: #fff !important;
-      }
-    }
+    // ::ng-deep {
+    //   .ui-chkbox .ui-chkbox-box {
+    //     background-color: rgba(255, 255, 255, 0.2) !important;
+    //     color: #fff !important;
+    //     border-color: #fff !important;
+    //   }
+    // }
   }
 
   yuv-checkbox {
-    margin-right: var(--app-pane-padding);
-    // pointer-events: none;
+    margin: 2px calc(var(--app-pane-padding) / 2) 2px 2px;
   }
 }

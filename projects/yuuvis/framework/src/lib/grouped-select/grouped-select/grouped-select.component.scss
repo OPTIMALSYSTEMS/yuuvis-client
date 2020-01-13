@@ -10,15 +10,22 @@
   div.group {
     margin: 8px;
     display: block;
-    background-color: #fff;
+    background-color: var(--panel-background);
     padding: var(--app-pane-padding);
     position: relative;
     box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.2);
 
     .group-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       color: var(--color-accent);
       font-size: var(--font-subhead);
       margin-bottom: var(--app-pane-padding);
+
+      &.selectable {
+        cursor: pointer;
+      }
     }
 
     .disabled {

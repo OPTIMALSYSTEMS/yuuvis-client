@@ -1,5 +1,9 @@
 import { Utils } from '@yuuvis/core';
 
+/**
+ * @ignore
+ * Collection of renderers to be used within ag-grid.
+ */
 export class CellRenderer {
   static render(type: string, param: any, newParam?: any) {
     return CellRenderer[type + 'CellRenderer'](...param, ...newParam);
