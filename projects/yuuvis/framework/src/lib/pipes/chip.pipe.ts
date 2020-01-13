@@ -1,6 +1,9 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
+/**
+ * @ignore
+ */
 @Pipe({ name: 'Chip' })
 export class ChipPipe implements PipeTransform {
   constructor(private sanitizer: DomSanitizer) {}

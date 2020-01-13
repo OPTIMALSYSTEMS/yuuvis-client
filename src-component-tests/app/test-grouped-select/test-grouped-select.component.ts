@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Selectable, SelectableGroup } from '@yuuvis/framework';
+import * as faker from 'faker';
 
 @Component({
   selector: 'yuv-test-grouped-select',
@@ -7,52 +8,24 @@ import { Selectable, SelectableGroup } from '@yuuvis/framework';
   styleUrls: ['./test-grouped-select.component.scss']
 })
 export class TestGroupedSelectComponent implements OnInit {
+  view: string = 'm';
+  selectionRes: any;
+  selectionChangedRes: any;
   groups: SelectableGroup[] = [];
-  groups2: SelectableGroup[] = [
-    {
-      id: 'tiere',
-      label: 'Tiere',
-      items: [
-        { id: '1', label: 'Hund' },
-        { id: '2', label: 'Katze' },
-        { id: '3', label: 'Maus' }
-      ]
-    },
-    {
-      id: 'pflanzen',
-      label: 'Pflanzen',
-      items: [
-        { id: '4', label: 'Baum' },
-        { id: '5', label: 'Farn' },
-        { id: '6', label: 'Brennessel' },
-        { id: '7', label: 'Blume' }
-      ]
-    }
-  ];
-  selectedItems: Selectable[] = [
-    { id: '0_0', label: 'item_0_0' },
-    { id: '0_1', label: 'item_0_1' },
-    { id: '0_2', label: 'item_0_2' },
-    { id: '1_2', label: 'item_1_2' },
-    { id: '1_5', label: 'item_1_5' },
-    { id: '1_4', label: 'item_1_4' },
-    { id: '1_9', label: 'item_1_9' },
-    { id: '1_8', label: 'item_1_8' },
-    { id: '2_6', label: 'item_2_6' }
-  ];
-  selectedItems2: Selectable[] = [];
+  selectedItems: Selectable[] = [];
 
   constructor() {}
 
   onSelectionChange(selected: Selectable[]) {
-    console.log('selectionchange', selected);
+    this.selectionChangedRes = selected;
   }
 
   onSelect(selection: Selectable[]) {
-    console.log(
-      'select',
-      selection.map(i => i.label)
-    );
+    this.selectionRes = JSON.stringify(selection, null, 2);
+  }
+
+  setSelectedItems() {
+    this.selectedItems = [this.groups[0].items[1], this.groups[0].items[2], this.groups[1].items[0]];
   }
 
   ngOnInit() {
@@ -61,14 +34,14 @@ export class TestGroupedSelectComponent implements OnInit {
     for (let i = 0; i < x.length; i++) {
       const g: SelectableGroup = {
         id: `${i}`,
-        label: `group_${i}`,
+        label: `${i} - ${faker.commerce.department()}`,
         items: []
       };
 
       for (let j = 0; j < x[i]; j++) {
         g.items.push({
           id: `${i}_${j}`,
-          label: `item_${i}_${j}`
+          label: `${faker.commerce.product()}`
         });
       }
       this.groups.push(g);

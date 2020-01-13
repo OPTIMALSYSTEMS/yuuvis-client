@@ -5,6 +5,10 @@ import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { NotificationService } from '../notification/notification.service';
 
+/**
+ * @ignore
+ * Interceptor fetching an handling errors in a global manner.
+ */
 @Injectable()
 export class ErrorHandlerService implements ErrorHandler, HttpInterceptor {
   constructor(private injector: Injector) {}

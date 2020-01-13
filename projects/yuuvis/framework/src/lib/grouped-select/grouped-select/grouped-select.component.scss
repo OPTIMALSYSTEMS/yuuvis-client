@@ -26,7 +26,7 @@
     // width: 200px;
     margin: 8px;
     display: block;
-    background-color: #fff;
+    background-color: var(--panel-background);
     padding: var(--app-pane-padding);
     // -webkit-column-break-inside: avoid;
     // page-break-inside: avoid;
@@ -37,9 +37,16 @@
     }
 
     .group-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       color: var(--color-accent);
       font-size: var(--font-subhead);
       margin-bottom: var(--app-pane-padding);
+
+      &.selectable {
+        cursor: pointer;
+      }
     }
 
     .disabled {

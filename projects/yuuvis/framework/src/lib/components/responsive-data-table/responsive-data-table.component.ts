@@ -10,10 +10,13 @@ import { ColumnSizes } from '../../services/grid/grid.interface';
 import { RecentAcitivitiesItemComponent } from './../recent-activities/recent-acitivities-item/recent-acitivities-item.component';
 import { ResponsiveTableData } from './responsive-data-table.interface';
 
+/**
+ * @ignore
+ */
 export type ViewMode = 'standard' | 'horizontal' | 'grid' | 'auto';
 
 /**
- * Responsive DataTable
+ * Responsive DataTable.
  */
 @Component({
   selector: 'yuv-responsive-data-table',

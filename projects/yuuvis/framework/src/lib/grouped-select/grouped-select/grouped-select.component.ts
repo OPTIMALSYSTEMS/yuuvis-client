@@ -20,14 +20,17 @@ import { Selectable, SelectableGroup, SelectableInternal } from './grouped-selec
 import { SelectableItemComponent } from './selectable-item/selectable-item.component';
 
 /**
- * Component for selecting an entry from a set of grouped items. Selectable items are
- * assigned to groups and will be selectable using mouse or keyboard.
+ * Component for selecting a single or multiple entries from a set of grouped items. This component is implementing '**ControlValueAccessor**' so you can
+ * also use it within Angular forms.
  *
- * ## multiple
- * Using the SPACE key on a focused entry or clicking the items checkbox will add or remove the
- * item from the current selection and propagate this change.
- * Hitting ENTER or clicking the label of an item will immediately reset the selection to the
- * current item only.
+ * > Setting the components **multiple** input to **true** will enable the selection of more than one item.
+ * > In this case using the SPACE key on a focused entry or clicking the items checkbox will add or remove the
+ * > item from the current selection and propagate this change.
+ * > Clicking the label of an item will immediately reset the selection to the
+ * > current item only. Hitting ENTER will also immediately select one item as long as there are no other items selected.
+ *
+ * @example
+ * <yuv-grouped-select [groups]="groups" [multiple]="true"></yuv-grouped-select>
  */
 @Component({
   selector: 'yuv-grouped-select',
@@ -69,7 +72,7 @@ export class GroupedSelectComponent implements AfterViewInit, ControlValueAccess
   }
 
   /**
-   * Array of `SelectableGroup` items, that contain the actual `Selectables`.
+   * Array of {@link SelectableGroup} items, that contain the actual {@link SelectableGroup}.
    */
   @Input() set groups(groups: SelectableGroup[]) {
     this._groups = groups;
@@ -78,7 +81,7 @@ export class GroupedSelectComponent implements AfterViewInit, ControlValueAccess
     return this._groups;
   }
   /**
-   *
+   *  Whether or not to support selection of multiple items
    */
   @Input() set multiple(m: boolean) {
     this._multiple = m;
@@ -87,7 +90,6 @@ export class GroupedSelectComponent implements AfterViewInit, ControlValueAccess
     return this._multiple;
   }
   @Input() columnWidth: number = 200;
-  @Input() minItemsPerColumn: number = 3;
 
   /**
    * Emitted when the component 'approves' the current selection.
@@ -100,6 +102,7 @@ export class GroupedSelectComponent implements AfterViewInit, ControlValueAccess
 
   @HostBinding('class.multiple') _multiple: boolean = false;
   autofocus: boolean;
+  enableSelectAll: boolean;
   columns: number = 1;
 
   private selectedItems: Selectable[] = [];
@@ -109,8 +112,9 @@ export class GroupedSelectComponent implements AfterViewInit, ControlValueAccess
   private sizeSource = new Subject<{ width: number; height: number }>();
   private resized$: Observable<{ width: number; height: number }> = this.sizeSource.asObservable();
 
-  constructor(@Attribute('autofocus') autofocus: string, private elRef: ElementRef) {
+  constructor(@Attribute('autofocus') autofocus: string, @Attribute('enableSelectAll') enableSelectAll: string, private elRef: ElementRef) {
     this.autofocus = autofocus === 'true' ? true : false;
+    this.enableSelectAll = enableSelectAll === 'true' ? true : false;
 
     this.resized$
       .pipe(
@@ -130,10 +134,6 @@ export class GroupedSelectComponent implements AfterViewInit, ControlValueAccess
           c = 3;
         }
         this.columns = c;
-        // const minItems = (c - 1) * this.minItemsPerColumn;
-        // this._groups.forEach(g => {
-        //   g.columns = g.items.length >= minItems ? c : c - 1;
-        // });
       });
   }
 
@@ -157,10 +157,10 @@ export class GroupedSelectComponent implements AfterViewInit, ControlValueAccess
       } else {
         this.selectedItems = this.selectedItems.filter(i => i.id !== item.id);
       }
+      this.propagateChange(this.selectedItems);
     } else {
       this.selectedItems = [item];
     }
-    this.propagateChange(this.selectedItems);
   }
 
   itemClicked(item: SelectableInternal) {
@@ -173,6 +173,22 @@ export class GroupedSelectComponent implements AfterViewInit, ControlValueAccess
 
   itemFocused(item: SelectableInternal) {
     this.focusedItem = item;
+  }
+
+  toggleAllOfGroup(group: SelectableGroup) {
+    if (this.enableSelectAll) {
+      const selectedItemsIDs = this.selectedItems.map(i => i.id);
+      const groupItemIDs = group.items.map(i => i.id);
+      const contained = group.items.filter(i => selectedItemsIDs.includes(i.id));
+      if (contained.length === group.items.length) {
+        // all of the groups items are selected, so we'll remove them from teh current selection
+        this.selectedItems = this.selectedItems.filter(i => !groupItemIDs.includes(i.id));
+      } else {
+        // add the group items that are not already part of the selection
+        group.items.filter(i => !selectedItemsIDs.includes(i.id)).forEach(i => this.selectedItems.push(i));
+      }
+      this.propagateChange(this.selectedItems);
+    }
   }
 
   onContainerResized(event) {

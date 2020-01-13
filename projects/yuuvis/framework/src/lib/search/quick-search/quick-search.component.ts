@@ -25,8 +25,8 @@ import { PopoverConfig } from '../../popover/popover.interface';
 import { PopoverRef } from '../../popover/popover.ref';
 import { PopoverService } from '../../popover/popover.service';
 import { SVGIcons } from '../../svg.generated';
-import { Selectable, SelectableGroup } from './../../grouped-select/grouped-select/grouped-select.interface';
 import { ObjectFormUtils } from './../../object-form/object-form.utils';
+import { QuickSearchPickerData, QuickSearchPickerDataItem } from './quick-search-picker/quick-search-picker.component';
 
 /**
  * Component providing an extensible search input. It's a simple input field for fulltext
@@ -70,8 +70,9 @@ export class QuickSearchComponent implements AfterViewInit {
 
   objectTypeSelectLabel: string;
 
-  availableObjectTypes: Selectable[];
-  availableObjectTypeFields: { id: string; label: string; value: ObjectTypeField }[];
+  availableObjectTypes: QuickSearchPickerDataItem[];
+  availableObjectTypeFields: QuickSearchPickerDataItem[];
+
   private TYPES = '@';
   private TYPE_FIELDS = '#';
   lastAutoQuery: any = {};
@@ -156,7 +157,7 @@ export class QuickSearchComponent implements AfterViewInit {
         .map(ot => ({
           id: ot.id,
           label: this.systemService.getLocalizedResource(`${ot.id}_label`),
-          value: ot.id
+          value: ot
         }))
         .sort(Utils.sortValues('label'));
       this.availableObjectTypes = types;
@@ -270,64 +271,41 @@ export class QuickSearchComponent implements AfterViewInit {
   }
 
   showObjectTypePicker() {
-    // TODO: Apply grouping from object type groups. For now it's just one group for all
-    const pickerItems: SelectableGroup = {
-      id: 'types',
-      items: this.availableObjectTypes
+    const pickerData: QuickSearchPickerData = {
+      type: 'type',
+      items: this.availableObjectTypes,
+      selected: this.selectedObjectTypes
     };
-
-    const x = this.groupBy(
-      this.availableObjectTypes.map(t => t.value),
-      'description'
-    );
-    console.log(x);
-
     const popoverConfig: PopoverConfig = {
       width: '50%',
       height: '50%',
-      data: {
-        type: 'type',
-        items: [pickerItems],
-        selected: this.selectedObjectTypes,
-        multiselect: true
-      }
+      data: pickerData
     };
     this.popoverService.open(this.tplValuePicker, popoverConfig);
   }
 
-  groupBy(arr: any[], key: string) {
-    return arr.reduce((rv, x) => {
-      (rv[x[key]] = rv[x[key]] || []).push(x);
-      return rv;
-    }, {});
-  }
-
   showObjectTypeFieldPicker() {
-    const pickerItems: SelectableGroup = {
-      id: 'fields',
-      items: this.availableObjectTypeFields
+    const pickerData: QuickSearchPickerData = {
+      type: 'field',
+      items: this.availableObjectTypeFields,
+      selected: []
     };
     const popoverConfig: PopoverConfig = {
       panelClass: 'fields',
       maxHeight: 200,
-      data: {
-        type: 'field',
-        items: [pickerItems],
-        selected: this.selectedObjectTypes,
-        multiselect: false
-      }
+      data: pickerData
     };
     this.popoverService.open(this.tplValuePicker, popoverConfig, this.fieldSelectTrigger.nativeElement);
   }
 
-  onPickerResult(type: 'type' | 'field', res: Selectable[], popoverRef?: PopoverRef) {
+  onPickerResult(type: 'type' | 'field', res: ObjectType[] | ObjectTypeField, popoverRef?: PopoverRef) {
     switch (type) {
       case 'field': {
-        this.onObjectTypeFieldSelected(res[0].value);
+        this.onObjectTypeFieldSelected(res as ObjectTypeField);
         break;
       }
       case 'type': {
-        this.onObjectTypesSelected(res.map(o => o.id));
+        this.onObjectTypesSelected(res as ObjectType[]);
         break;
       }
     }
@@ -346,8 +324,8 @@ export class QuickSearchComponent implements AfterViewInit {
     this.addFieldEntry(field, isEmpty);
   }
 
-  private onObjectTypesSelected(types: string | string[], aggregate: boolean = true) {
-    this.selectedObjectTypes = typeof types === 'string' ? [types] : types;
+  private onObjectTypesSelected(types: ObjectType | ObjectType[], aggregate: boolean = true) {
+    this.selectedObjectTypes = (Array.isArray(types) ? types : [types]).map(t => t.id);
     this.setAvailableObjectTypesFields();
 
     // get rid of existing object type fields that not match availableObjectTypeFields
@@ -405,7 +383,10 @@ export class QuickSearchComponent implements AfterViewInit {
 
       // setup target object types
       if (q.types && q.types.length) {
-        this.onObjectTypesSelected(q.types, false);
+        this.onObjectTypesSelected(
+          this.availableObjectTypes.filter(t => q.types.includes(t.id)).map(t => t.value as ObjectType),
+          false
+        );
       }
       this.searchQuery = q;
       // setup object type field form from filters
@@ -422,9 +403,10 @@ export class QuickSearchComponent implements AfterViewInit {
         this.availableObjectTypeFields
           .filter(otf => filterIDs.includes(otf.id))
           .forEach(otf => {
-            this.onObjectTypeFieldSelected(otf.value, filters[otf.id].isEmpty());
+            const field = otf.value as ObjectTypeField;
+            this.onObjectTypeFieldSelected(field, filters[otf.id].isEmpty());
             // setup values based on whether or not the type supports ranges
-            const isRange = ['datetime', 'integer', 'decimal'].includes(otf.value.propertyType);
+            const isRange = ['datetime', 'integer', 'decimal'].includes(field.propertyType);
             const cv = {};
             cv[otf.id] = !isRange
               ? filters[otf.id].firstValue

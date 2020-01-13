@@ -1,6 +1,9 @@
 import { FormGroup } from '@angular/forms';
 import { ObjectFormGroup } from './object-form.model';
 
+/**
+ * @ignore
+ */
 export type ObjectFormModel = ObjectFormGroup | ObjectFormControlWrapper;
 
 export interface ObjectFormOptions {
@@ -32,6 +35,7 @@ export interface YuvFormGroupWrapper {
 }
 
 /**
+ * @ignore
  * Extend angulars default FormGroup for implementation of a form group wrapping
  * a form control.
  */
