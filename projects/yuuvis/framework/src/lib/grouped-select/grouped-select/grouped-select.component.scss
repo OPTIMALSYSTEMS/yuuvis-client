@@ -1,39 +1,19 @@
 :host {
+  //default - styling
+
   .container {
-    column-count: 2;
     display: flex;
     flex-flow: column wrap;
-    height: 1150px;
     margin: var(--app-pane-padding);
-    width: 90%;
-    counter-reset: groups;
-  }
-  &:not(.multiple) {
-    ::ng-deep {
-      yuv-checkbox {
-        display: none;
-      }
-    }
   }
 
   div.group {
-    // width: 200px;
-    width: 34%;
     margin: 8px;
     display: block;
     background-color: #fff;
     padding: var(--app-pane-padding);
     position: relative;
-
     box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.2);
-    // &:not(.last) {
-    //   margin-bottom: var(--app-pane-padding);
-    // }
-
-    // &::before {
-    //   counter-increment: groups;
-    //   content: counter(groups);
-    // }
 
     .group-label {
       color: var(--color-accent);
@@ -52,19 +32,13 @@
       color: #fff;
     }
   }
-
-  .group:nth-child(3n + 1) {
-    order: 1;
+  &:not(.multiple) {
+    ::ng-deep {
+      yuv-checkbox {
+        display: none;
+      }
+    }
   }
-  .group:nth-child(3n + 2) {
-    order: 2;
-  }
-  .group:nth-child(3n) {
-    order: 3;
-  }
-  // .group:nth-of-type(4n) {
-  //   order: 4;
-  // }
 
   .container::before,
   .container::after {
@@ -72,5 +46,41 @@
     flex-basis: 100%;
     width: 0;
     order: 2;
+  }
+
+  //styling for 3 columns-container
+  .container.threeColumns {
+    height: 1150px;
+    width: 90%;
+    counter-reset: groups;
+    div.group {
+      width: 34%;
+    }
+    .group:nth-child(3n + 1) {
+      order: 1;
+    }
+    .group:nth-child(3n + 2) {
+      order: 2;
+    }
+    .group:nth-child(3n) {
+      order: 3;
+    }
+  }
+
+  //styling for twocolumns-container
+  .container.twoColumns {
+    height: 1616px;
+    width: 96%;
+    counter-reset: groups;
+    div.group {
+      width: 47%;
+    }
+
+    .group:nth-child(2n + 1) {
+      order: 1;
+    }
+    .group:nth-child(2n) {
+      order: 2;
+    }
   }
 }

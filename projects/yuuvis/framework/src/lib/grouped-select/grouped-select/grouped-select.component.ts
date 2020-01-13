@@ -100,7 +100,7 @@ export class GroupedSelectComponent implements AfterViewInit, ControlValueAccess
 
   @HostBinding('class.multiple') _multiple: boolean = false;
   autofocus: boolean;
-  columns: number = 1;
+  columns: string = '';
 
   private selectedItems: Selectable[] = [];
   private focusedItem: Selectable;
@@ -122,12 +122,12 @@ export class GroupedSelectComponent implements AfterViewInit, ControlValueAccess
         })
       )
       .subscribe(v => {
-        let c = 1;
+        let c = 'oneColumn';
         if (v.width > 2 * this.columnWidth && v.width < 3 * this.columnWidth) {
-          c = 2;
+          c = 'twoColumns';
         }
         if (v.width > 3 * this.columnWidth) {
-          c = 3;
+          c = 'threeColumns';
         }
         this.columns = c;
         // const minItems = (c - 1) * this.minItemsPerColumn;
