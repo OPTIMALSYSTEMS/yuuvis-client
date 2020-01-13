@@ -1,5 +1,5 @@
 import { ComponentFactoryResolver, Inject, Injectable, InjectionToken, ViewContainerRef } from '@angular/core';
-import * as _ from 'lodash';
+import { Utils } from '@yuuvis/core';
 import { merge as observableMerge, Observable, of as observableOf } from 'rxjs';
 import { combineAll, map } from 'rxjs/operators';
 import { ActionListEntry } from '../interfaces/action-list-entry';
@@ -59,10 +59,11 @@ export class ActionService {
 
       return observableMerge(observables).pipe(
         combineAll(),
-        map(() => {
-          const actions = targetActionsList.filter(actionListEntry => this.isRangeAllowed(actionListEntry.action, actionListEntry.availableSelection.length));
-          return _.sortBy(actions, 'action.priority');
-        })
+        map(() =>
+          targetActionsList
+            .filter(actionListEntry => this.isRangeAllowed(actionListEntry.action, actionListEntry.availableSelection.length))
+            .sort(Utils.sortValues('action.priority'))
+        )
       );
     } else {
       return observableOf([]);

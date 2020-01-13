@@ -1,5 +1,6 @@
-import { Component, EventEmitter, HostBinding, Input, OnInit, Output } from '@angular/core';
+import { Attribute, Component, EventEmitter, HostBinding, Input, OnInit, Output } from '@angular/core';
 import {
+  AppCacheService,
   BaseObjectTypeField,
   SearchFilter,
   SearchQuery,
@@ -23,6 +24,9 @@ import { catchError } from 'rxjs/operators';
  * There are some css classes that affect the look and feel of the component.
  * `<yuv-recent-activities class="transparent">` Transparent background
  * `<yuv-recent-activities class="flipped">` Flip controls to be on the bottom instaed of on the top
+ *
+ * If the component has an `id` attribute, the state of the component will be persisted. So make sure
+ * to set up unique ids if you are using this component on more than one place within your application.
  */
 @Component({
   selector: 'yuv-recent-activities',
@@ -30,6 +34,16 @@ import { catchError } from 'rxjs/operators';
   styleUrls: ['./recent-activities.component.scss']
 })
 export class RecentActivitiesComponent implements OnInit {
+  private cacheKeyBase = 'yuv.framework.recent-activities';
+
+  /**
+   * Data to be displayed by the component. If not provided, recent items will be
+   * fetched for the current user. This may come in handy if you want to display
+   * recent activities for another user.
+   *
+   * Setting this will ignore all other inputs.
+   */
+  @Input() data: RecentActivitiesData;
   /**
    * Whether or not to show recently created items (default: true)
    */
@@ -62,7 +76,21 @@ export class RecentActivitiesComponent implements OnInit {
   createdQuery: SearchQuery;
   modifiedQuery: SearchQuery;
 
-  constructor(private userService: UserService, private systemService: SystemService, private searchService: SearchService) {}
+  constructor(
+    @Attribute('id') public id,
+    private userService: UserService,
+    private appCache: AppCacheService,
+    private systemService: SystemService,
+    private searchService: SearchService
+  ) {
+    if (this.id) {
+      this.appCache.getItem(`${this.cacheKeyBase}.${this.id}`).subscribe(res => {
+        if (res && res.selected) {
+          this.selected = res.selected;
+        }
+      });
+    }
+  }
 
   private getCreated(userId: string) {
     this.createdQuery = new SearchQuery();
@@ -100,14 +128,22 @@ export class RecentActivitiesComponent implements OnInit {
       title: resItem.fields.get(SecondaryObjectTypeField.TITLE),
       description: resItem.fields.get(SecondaryObjectTypeField.DESCRIPTION),
       objectId: resItem.fields.get(BaseObjectTypeField.OBJECT_ID),
-      objectTypeId: objectTypeId,
+      objectTypeId,
       objectTypeIcon: this.systemService.getObjectTypeIcon(objectTypeId),
-      date: date
+      objectTypeLabel: this.systemService.getLocalizedResource(`${objectTypeId}_label`),
+      date
     };
   }
 
   select(tab: 'created' | 'modified') {
     this.selected = tab;
+    if (this.id) {
+      this.appCache
+        .setItem(`${this.cacheKeyBase}.${this.id}`, {
+          selected: this.selected
+        })
+        .subscribe();
+    }
   }
 
   triggerShowAll() {
@@ -123,30 +159,51 @@ export class RecentActivitiesComponent implements OnInit {
     this.itemClick.emit(item);
   }
 
+  private postFetch() {
+    if ((this.modified && !this.created) || (this.recentlyCreated && this.recentlyCreated.length === 0)) {
+      this.selected = 'modified';
+    }
+    this.isTabbed = this.created && this.modified;
+    this.hasAnyItems = (this.recentlyCreated && this.recentlyCreated.length > 0) || (this.recentlyModified && this.recentlyModified.length > 0);
+  }
+
   ngOnInit() {
-    this.userService.user$.subscribe((user: YuvUser) => {
-      if (user) {
-        if (this.created) {
-          this.getCreated(user.id);
-        }
-        if (this.modified) {
-          this.getModified(user.id);
-        }
-        if (this.modified && !this.created) {
-          this.selected = 'modified';
-        }
-        this.isTabbed = this.created && this.modified;
-        this.hasAnyItems = (this.recentlyCreated && this.recentlyCreated.length > 0) || (this.recentlyModified && this.recentlyModified.length > 0);
+    if (this.data) {
+      if (this.data.modified) {
+        this.modified = true;
+        this.recentlyModified = this.data.modified;
       }
-    });
+      if (this.data.modified) {
+        this.created = true;
+        this.recentlyCreated = this.data.created;
+      }
+      this.postFetch();
+    } else {
+      this.userService.user$.subscribe((user: YuvUser) => {
+        if (user) {
+          if (this.created) {
+            this.getCreated(user.id);
+          }
+          if (this.modified) {
+            this.getModified(user.id);
+          }
+          this.postFetch();
+        }
+      });
+    }
   }
 }
 
+export interface RecentActivitiesData {
+  created: RecentItem[];
+  modified: RecentItem[];
+}
 export interface RecentItem {
   title: string;
   description: string;
   objectId: string;
   objectTypeId: string;
   objectTypeIcon: string;
+  objectTypeLabel: string;
   date: Date;
 }

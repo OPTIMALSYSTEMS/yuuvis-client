@@ -1,5 +1,5 @@
-@import '~ag-grid-community/dist/styles/ag-grid.css';
-@import '~ag-grid-community/dist/styles/ag-theme-balham.css';
+@import '~@ag-grid-community/core/dist/styles/ag-grid.css';
+@import '~@ag-grid-community/core/dist/styles/ag-theme-balham.css';
 
 @import '~@angular/cdk/overlay-prebuilt.css';
 
@@ -76,6 +76,12 @@ body.rtl * {
 * {
   font-family: 'Roboto';
   font-size: var(--font-body);
+}
+
+body {
+  // disable selection of ui components text
+  user-select: none;
+  -webkit-tap-highlight-color: rgba(var(--color-accent-rgb), 0.2);
 }
 
 // scrollbars

@@ -35,8 +35,8 @@ export const BaseObjectTypeField = {
 };
 
 export const SecondaryObjectTypeField = {
-  TITLE: 'clienttitle',
-  DESCRIPTION: 'clientdescription'
+  TITLE: 'appClient:clienttitle',
+  DESCRIPTION: 'appClient:clientdescription'
 };
 
 export const ContentStreamField = {

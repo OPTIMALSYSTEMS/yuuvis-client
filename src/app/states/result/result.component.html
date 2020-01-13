@@ -2,6 +2,7 @@
   (slaveClosed)="onSlaveClosed()" (optionsChanged)="onOptionsChanged($event, 'yuv-responsive-master-slave')"
   [detailsActive]="objectDetailsID">
   <yuv-search-result-panel class="yuv-master" [query]="searchQuery" [selectedItemIDs]="selectedItems"
+    (queryDescriptionChange)="onQueryDescriptionChange($event)"
     (optionsChanged)="onOptionsChanged($event, 'yuv-search-result-panel')"
     [options]="getOptions('yuv-search-result-panel')" (itemsSelected)="select($event)"
     (rowDoubleClicked)="onRowDoubleClicked($event)" (queryChanged)="onQueryChanged($event)">

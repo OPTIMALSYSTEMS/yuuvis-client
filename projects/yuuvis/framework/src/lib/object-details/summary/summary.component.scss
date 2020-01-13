@@ -1,6 +1,10 @@
 @import './../../../../../../../src/scss-shared/_mixins';
 
 .object-summary {
+  display: block;
+  height: 100%;
+  overflow: auto;
+  padding: var(--app-pane-padding);
   ::ng-deep {
     .ui-accordion {
       p-accordiontab {
@@ -89,6 +93,7 @@
     .value {
       grid-area: value;
       align-self: center;
+      user-select: text;
       @include ellipsis();
 
       svg {

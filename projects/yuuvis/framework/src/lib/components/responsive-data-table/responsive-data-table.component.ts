@@ -1,12 +1,16 @@
+import { ClientSideRowModelModule } from '@ag-grid-community/client-side-row-model';
+import { ColDef, GridOptions, Module, RowEvent, RowNode } from '@ag-grid-community/core';
 import { Component, EventEmitter, HostBinding, HostListener, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { BaseObjectTypeField, Utils } from '@yuuvis/core';
-import { ColDef, GridOptions, RowEvent, RowNode } from 'ag-grid-community';
+import { BaseObjectTypeField, DeviceService, PendingChangesService, Utils } from '@yuuvis/core';
 import { ResizedEvent } from 'angular-resize-event';
 import { Observable, ReplaySubject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { ColumnSizes } from '../../services/grid/grid.interface';
+import { RecentAcitivitiesItemComponent } from './../recent-activities/recent-acitivities-item/recent-acitivities-item.component';
 import { ResponsiveTableData } from './responsive-data-table.interface';
+
+export type ViewMode = 'standard' | 'horizontal' | 'grid' | 'auto';
 
 /**
  * Responsive DataTable
@@ -28,11 +32,15 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
   private _currentSelection: string[] = [];
 
   private settings = {
-    headerHeight: { default: 37, small: 0 },
-    rowHeight: { default: 48, small: 70 }
+    headerHeight: { standard: 37, horizontal: 0, grid: 0 },
+    rowHeight: { standard: 48, horizontal: 70, grid: 160 },
+    colWidth: { standard: 'auto', horizontal: 'auto', grid: 160 },
+    size: { newHeight: 0, newWidth: 0 }
   };
 
   gridOptions: GridOptions;
+
+  public modules: Module[] = [ClientSideRowModelModule];
 
   @Input() options: any;
   /**
@@ -45,18 +53,45 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
    * ResponsiveTableData setter
    */
   @Input() set data(data: ResponsiveTableData) {
-    66;
     this._data = data;
     if (this.gridOptions) {
-      this.applyGridOption(this.small);
+      this.applyGridOption();
     } else {
       this.setupGridOptions();
     }
   }
+
+  /**
+   * view mode of the table
+   */
+  @Input() set viewMode(viewMode: ViewMode) {
+    this._viewMode = viewMode || 'auto';
+    this.currentViewMode = this._viewMode === 'auto' ? this._autoViewMode : this._viewMode;
+  }
+
+  get viewMode() {
+    return this._viewMode;
+  }
+
+  set currentViewMode(viewMode: ViewMode) {
+    if (this.currentViewMode !== viewMode) {
+      this._currentViewMode = viewMode;
+      this.applyGridOption();
+    }
+  }
+
+  get currentViewMode() {
+    return this._currentViewMode;
+  }
+
+  private _viewMode: ViewMode = 'auto';
+  private _currentViewMode: ViewMode = 'standard';
+  private _autoViewMode: ViewMode = 'standard';
+
   /**
    * width (number in pixel) of the table below which it should switch to small view
    */
-  @Input() breakpoint = 600;
+  @Input() breakpoint = 400;
 
   /**
    * emits an array of the selected rows
@@ -73,7 +108,23 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
   @Output() columnResized = new EventEmitter<ColumnSizes>();
 
   @HostBinding('class.yuv-responsive-data-table') _hostClass = true;
-  @HostBinding('class.small') small = false;
+
+  @HostBinding('class.small') get isSmall() {
+    return this.currentViewMode !== 'standard';
+  }
+  @HostBinding('class.standard') get isStandard() {
+    return this.currentViewMode === 'standard';
+  }
+  @HostBinding('class.horizontal') get isHorizontal() {
+    return this.currentViewMode === 'horizontal';
+  }
+  @HostBinding('class.vertical') get isVertical() {
+    return this.currentViewMode === 'grid' && this.settings.size.newHeight < this.settings.rowHeight.grid * 1.5;
+  }
+  @HostBinding('class.grid') get isGrid() {
+    return this.currentViewMode === 'grid';
+  }
+
   @HostListener('keydown.control.c', ['$event'])
   copyCellHandler(event: KeyboardEvent) {
     // copy cell
@@ -85,38 +136,35 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
     this.copyToClipboard('row');
   }
 
-  constructor() {
+  constructor(private pendingChanges: PendingChangesService, private deviceService: DeviceService) {
     // subscribe to the whole components size changing
     this.resize$
       .pipe(
         takeUntilDestroy(this)
         // debounceTime(500)
       )
-      .subscribe((e: ResizedEvent) => {
-        const small = e.newWidth < this.breakpoint;
-
-        if (this.gridOptions && this.gridOptions.api && this.small !== small) {
-          this.small = small;
-          this.applyGridOption(small);
+      .subscribe(({ newHeight, newWidth }: ResizedEvent) => {
+        this.settings.size = { newHeight, newWidth };
+        this._autoViewMode = newHeight < this.breakpoint ? 'grid' : newWidth < this.breakpoint ? 'horizontal' : 'standard';
+        if (this.viewMode === 'auto') {
+          this.currentViewMode = this._autoViewMode;
         }
       });
     // subscribe to columns beeing resized
-    this.columnResize$
-      .pipe(
-        takeUntilDestroy(this),
-        debounceTime(1000)
-      )
-      .subscribe((e: ResizedEvent) => {
-        if (!this.small) {
-          this.columnResized.emit({
-            columns: this.gridOptions.columnApi.getColumnState().map(columnState => ({
-              id: columnState.colId,
-              width: columnState.width
-            }))
-          });
-          this.optionsChanged.emit(Utils.arrayToObject(this.gridOptions.columnApi.getColumnState(), 'colId', 'width'));
-        }
-      });
+    this.columnResize$.pipe(takeUntilDestroy(this), debounceTime(1000)).subscribe((e: ResizedEvent) => {
+      if (this.isStandard) {
+        this.columnResized.emit({
+          columns: this.gridOptions.columnApi.getColumnState().map(columnState => ({
+            id: columnState.colId,
+            width: columnState.width
+          }))
+        });
+        this.optionsChanged.emit(Utils.arrayToObject(this.gridOptions.columnApi.getColumnState(), 'colId', 'width'));
+      }
+    });
+
+    // subscribe to pending hanges
+    this.pendingChanges.tasks$.pipe(takeUntilDestroy(this)).subscribe(tasks => this.gridOptions && (this.gridOptions.suppressCellSelection = !!tasks.length));
   }
 
   /**
@@ -156,41 +204,47 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
     }
   }
 
-  private applyGridOption(small?: boolean) {
-    this.gridOptions.api.setRowData(this._data.rows);
-    this.gridOptions.api.setHeaderHeight(small ? this.settings.headerHeight.small : this.settings.headerHeight.default);
+  private applyGridOption(retry = true) {
+    if (this.gridOptions && this.gridOptions.api) {
+      // make sure that all rows are visible / loaded
+      this.gridOptions.rowBuffer = this.isSmall ? 1000 : undefined;
+      this.gridOptions.api.setRowData(this._data.rows);
+      this.gridOptions.api.setHeaderHeight(this.settings.headerHeight[this.currentViewMode]);
 
-    const columns = small ? [this.getSmallSizeColDef()] : this._data.columns;
-    if (JSON.stringify(this.gridOptions.columnDefs) !== JSON.stringify(columns)) {
-      this.gridOptions.columnDefs = columns;
-      this.gridOptions.api.setColumnDefs(columns);
-    }
+      const columns = this.isSmall ? [this.getSmallSizeColDef()] : this._data.columns;
+      if (JSON.stringify(this.gridOptions.columnDefs) !== JSON.stringify(columns)) {
+        this.gridOptions.columnDefs = columns;
+        this.gridOptions.api.setColumnDefs(columns);
+      }
 
-    if (this._data.sortModel) {
-      this.gridOptions.api.setSortModel([...this._data.sortModel]);
-    }
+      if (this.isStandard && this._data.sortModel) {
+        this.gridOptions.api.setSortModel([...this._data.sortModel]);
+      }
 
-    if (small) {
-      // gridOptions to be applied for the small view
-      this.gridOptions.columnApi.autoSizeAllColumns();
-      this.gridOptions.api.sizeColumnsToFit();
+      if (this.isSmall) {
+        // gridOptions to be applied for the small view
+        this.gridOptions.columnApi.autoSizeAllColumns();
+        this.gridOptions.api.sizeColumnsToFit();
+      }
+
+      // if the small state changed, a different set of rowData is applied to the grid
+      // so we need to reselect the items that were selected before
+      this.selectRows(this._currentSelection);
+    } else if (retry) {
+      setTimeout(() => this.applyGridOption(false), 0);
     }
-    // if the small state changed, a different set of rowData is applied to the grid
-    // so we need to reselect the items that were selected before
-    this.selectRows(this._currentSelection);
   }
 
   private getSmallSizeColDef(): ColDef {
     const colDef: ColDef = {
-      field: BaseObjectTypeField.OBJECT_ID
-    };
-    colDef.cellClass = 'cell-title-description';
-
-    colDef.cellRenderer = params => {
-      return `
-        <div class="title">${params.data[this._data.titleField] || params.value || ''}</div>
-        <div class="description">${params.data[this._data.descriptionField] || ''}</div>
-      `;
+      field: BaseObjectTypeField.OBJECT_ID,
+      cellClass: 'cell-title-description',
+      minWidth: this.isGrid ? this._data.rows.length * this.settings.colWidth.grid : 0,
+      cellRendererFramework: RecentAcitivitiesItemComponent
+      // cellRenderer: params => `
+      //     <div class="title">${params.data[this._data.titleField] || params.value || ''}</div>
+      //     <div class="description">${params.data[this._data.descriptionField] || ''}</div>
+      //   `
     };
     return colDef;
   }
@@ -199,11 +253,26 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
    * select rows based on list of IDs
    * @param selection default is first row
    */
-  selectRows(selection?: string[]) {
-    (selection || [this._data.rows[0].id]).forEach((id: string) => {
+  selectRows(selection?: string[], focusColId?: string, ensureVisibility = true) {
+    this.gridOptions.api.clearFocusedCell();
+    this.gridOptions.api.deselectAll();
+    (selection || [this._data.rows[0].id]).forEach((id: string, index: number) => {
       const n = this.gridOptions.api.getRowNode(id);
       if (n) {
-        n.setSelected(true);
+        if (index === 0) {
+          this.gridOptions.api.setFocusedCell(n.rowIndex, focusColId || this._data.columns[0].field);
+          if (ensureVisibility) {
+            if (this.isVertical) {
+              const shift = Math.floor(this.settings.size.newWidth / this.settings.colWidth.grid / 2);
+              this.gridOptions.api['gridPanel'].setCenterViewportScrollLeft(Math.max(0, (n.rowIndex - shift) * this.settings.colWidth.grid));
+            } else if (this.isGrid) {
+              this.gridOptions.api.ensureIndexVisible(Math.floor(n.rowIndex / Math.floor(this.settings.size.newWidth / this.settings.colWidth.grid)));
+            } else {
+              this.gridOptions.api.ensureIndexVisible(n.rowIndex);
+            }
+          }
+        }
+        n.setSelected(true, index === 0);
       }
     });
   }
@@ -215,12 +284,12 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
         return data.id;
       },
       getRowHeight: () => {
-        return this.small ? this.settings.rowHeight.small : this.settings.rowHeight.default;
+        return this.settings.rowHeight[this.currentViewMode];
       },
       rowData: this._data.rows,
       columnDefs: this._data.columns,
-      headerHeight: this.settings.headerHeight.default,
-      rowHeight: this.settings.rowHeight.default,
+      headerHeight: this.settings.headerHeight.standard,
+      rowHeight: this.settings.rowHeight.standard,
       suppressCellSelection: false,
       rowSelection: this._data.selectType || 'single',
       rowDeselection: true,
@@ -229,21 +298,18 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
       // EVENTS - add event callback handlers
       onSelectionChanged: event => {
         const selection = this.gridOptions.api.getSelectedNodes().map((rowNode: RowNode) => rowNode.id);
-        if (JSON.stringify(selection) !== JSON.stringify(this._currentSelection)) {
+        if (!event || JSON.stringify(selection) !== JSON.stringify(this._currentSelection)) {
           this._currentSelection = selection;
           this.selectionChanged.emit(this.gridOptions.api.getSelectedRows());
         }
       },
-      onColumnResized: event => {
-        this.columnResizeSource.next();
-      },
-      onSortChanged: event => {
-        this.sortChanged.emit(this.gridOptions.api.getSortModel());
-      },
+      onColumnResized: event => this.columnResizeSource.next(),
+      onSortChanged: event => this.isStandard && this.sortChanged.emit(this.gridOptions.api.getSortModel()),
       onGridReady: event => {
         this.gridOptions.api.setSortModel(this._data.sortModel || []);
         this.gridOptions.api.setFocusedCell(0, this._data.columns[0].field);
-      }
+      },
+      onRowDoubleClicked: event => this.rowDoubleClicked.emit(event)
     };
   }
 
@@ -270,6 +336,30 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
     textArea.select();
     const copySuccess = document.execCommand('copy');
     document.body.removeChild(textArea);
+  }
+
+  onMouseDown($event: MouseEvent | any) {
+    if ($event.button === 0 && this.gridOptions && this.gridOptions.suppressCellSelection) {
+      if (!this.pendingChanges.check()) {
+        this.gridOptions.suppressCellSelection = false;
+        this.selectEvent($event);
+      } else {
+        $event.preventDefault();
+        $event.stopImmediatePropagation();
+      }
+    } else if (this.deviceService.isMobile || this.deviceService.isTablet) {
+      // ag-grid issue with selection on mobile devices
+      this.selectEvent($event);
+    }
+  }
+
+  private selectEvent($event: MouseEvent | any) {
+    const colEl = ($event.composedPath ? $event.composedPath() : []).find(el => el && el.getAttribute('col-id'));
+    if (colEl) {
+      this.selectRows([colEl.parentElement.getAttribute('row-id')], colEl.getAttribute('col-id'), false);
+      this.gridOptions.onSelectionChanged(null);
+      console.log(colEl.parentElement.getAttribute('row-id'));
+    }
   }
 
   /**

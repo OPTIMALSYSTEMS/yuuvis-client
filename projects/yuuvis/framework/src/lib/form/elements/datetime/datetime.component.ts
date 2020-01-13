@@ -1,11 +1,8 @@
 import { Component, forwardRef, HostListener, Input, OnInit } from '@angular/core';
 import { ControlValueAccessor, FormControl, NG_VALIDATORS, NG_VALUE_ACCESSOR, Validator } from '@angular/forms';
-import { TranslateService, YuvEnvironment } from '@yuuvis/core';
-import * as moment_ from 'moment';
-import 'moment/min/locales';
-import { LocaleDatePipe } from '../../../pipes';
+import { DeviceService, TranslateService } from '@yuuvis/core';
+import { LocaleDatePipe } from '../../../pipes/locale-date.pipe';
 import { SVGIcons } from '../../../svg.generated';
-const moment = moment_;
 
 /**
  * Creates form input for date values. Input can be typed using a localized masked 
@@ -51,7 +48,6 @@ export class DatetimeComponent implements OnInit, ControlValueAccessor, Validato
   maskPattern: string;
   _datePattern: string;
   datePattern: string;
-  isWebEnv: boolean = YuvEnvironment.isWebEnvironment();
   _withTime: boolean;
   withAmPm: boolean;
 
@@ -80,13 +76,7 @@ export class DatetimeComponent implements OnInit, ControlValueAccessor, Validato
   set withTime(value) {
     this._withTime = value;
     this._datePattern = this.datePipe.format(this.withTime ? 'eoShort' : 'eoShortDate');
-    this.withAmPm = !!~this._datePattern.indexOf('a');
-    // BUG: moment does not support 'd' & 'y' (ISO8601_DATE_REGEX)
-    this.datePattern = this._datePattern
-      .replace(/y/g, 'Y')
-      .replace(/d/g, 'D')
-      .replace(/aa/g, 'A');
-
+    this.withAmPm = this._datePattern.includes('a');
     this.maskPattern = this._datePattern.replace(/[mMdDyYhH]/g, '9');
   }
 
@@ -94,10 +84,9 @@ export class DatetimeComponent implements OnInit, ControlValueAccessor, Validato
     return this._withTime;
   }
 
-  constructor(private translate: TranslateService) {
+  constructor(private translate: TranslateService, private device: DeviceService) {
     this.datePipe = new LocaleDatePipe(translate);
-    this.locale = this.translate.currentLang.replace('zh', 'zh-cn'); // BUG: moment does not support 'zh'
-    moment.locale(this.locale);
+    this.locale = this.translate.currentLang;
   }
 
   formatDate(value: Date) {
@@ -111,12 +100,7 @@ export class DatetimeComponent implements OnInit, ControlValueAccessor, Validato
   }
 
   writeValue(value: any): void {
-    this.value = value
-      ? moment(new Date(value), this.datePattern)
-          .seconds(0)
-          .millisecond(0)
-          .toDate()
-      : null;
+    this.value = value ? new Date(new Date(value).setSeconds(0, 0)) : null;
     this.setInnerValue();
   }
 
@@ -127,22 +111,34 @@ export class DatetimeComponent implements OnInit, ControlValueAccessor, Validato
   registerOnTouched(fn: any): void {}
 
   setValueFromMask() {
-    let m = moment(this.innerValue, this.datePattern);
-    this.isValid = m.isValid();
-    if (this.isValid) {
-      this.value = m.toDate();
+    try {
+      const d = this.datePipe.transform(this.innerValue, this._datePattern);
+      this.isValid = !!d;
+      if (this.isValid) {
+        this.value = new Date(d);
+      }
+    } catch {
+      this.isValid = false;
     }
     this.propagate();
   }
 
+  openPicker() {
+    if (this.device.isMobile) {
+      // Delay opening the picker on mobile, because the keyboard may be
+      // active. In this case calculating the screen estate for the dialog will
+      // get a wrong height (screen minus keyboard height). So we'll wait until
+      // keyboard is gone, and then trigger open.
+      setTimeout(() => {
+        this.showPicker = true;
+      }, 500);
+    } else {
+      this.showPicker = true;
+    }
+  }
+
   setValueFromPicker(event) {
-    this.value = event.date
-      ? moment(event.date, this.datePattern)
-          .seconds(0)
-          .millisecond(0)
-          .toDate()
-      : null;
-    this.setInnerValue();
+    this.writeValue(event.date);
     this.propagate();
     this.showPicker = false;
   }
@@ -156,10 +152,10 @@ export class DatetimeComponent implements OnInit, ControlValueAccessor, Validato
 
   private setInnerValue() {
     if (this.value) {
-      let m = moment(this.value);
-      this.isValid = m.isValid();
+      const d = this.datePipe.transform(this.value, this._datePattern);
+      this.isValid = !!d;
       if (this.isValid) {
-        this.innerValue = m.format(this.datePattern);
+        this.innerValue = d;
       }
     } else {
       this.innerValue = null;

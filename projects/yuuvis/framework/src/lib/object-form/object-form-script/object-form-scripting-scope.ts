@@ -1,4 +1,4 @@
-import * as _ from 'lodash';
+import { cloneDeep } from 'lodash-es';
 
 // This class will be injected as scope into form scripts
 // to enable simple way of scripting and assure backward compatibility we use
@@ -96,14 +96,14 @@ class ScopeElement {
   private createProxy(value) {
     const handler = {
       set: (target, key, val) => {
-        const previousValue = _.cloneDeep(this.element.value);
+        const previousValue = cloneDeep(this.element.value);
         if (this.isProxyable(val, key)) {
           target[key] = this.createProxy(val);
         } else {
           target[key] = val;
         }
         if (this.hasValueChanged(this.element.value, previousValue) && !key.includes('_meta')) {
-          this.onScriptingModelChange(this.element.name, { newValue: _.cloneDeep(this.element.value), name: 'value' });
+          this.onScriptingModelChange(this.element.name, { newValue: cloneDeep(this.element.value), name: 'value' });
         }
         return true;
       },
@@ -129,7 +129,7 @@ class ScopeElement {
   }
 
   update(value, model) {
-    const newValue = _.cloneDeep(value);
+    const newValue = cloneDeep(value);
     if (this.hasValueChanged(this.element.value, value)) {
       if (this.isProxyable(value)) {
         this.element.value = this.createProxy(newValue);
@@ -149,7 +149,7 @@ class ScopeElement {
       } else {
         this.element.value = value;
       }
-      this.onScriptingModelChange(this.element.name, { newValue: _.cloneDeep(this.element.value), name: 'value' });
+      this.onScriptingModelChange(this.element.name, { newValue: cloneDeep(this.element.value), name: 'value' });
     }
   }
 

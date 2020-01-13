@@ -4,6 +4,7 @@ import {
   AggregateResult,
   BaseObjectTypeField,
   ContentStreamField,
+  DeviceService,
   ObjectType,
   ObjectTypeField,
   RangeValue,
@@ -30,6 +31,9 @@ import { ValuePickerItem } from './value-picker/value-picker.component';
  * Component providing an extensible search input. It's a simple input field for fulltext
  * search queries that can be extended by searching for certain object types and even set
  * search terms for particular fields of the target types.
+ *
+ * Adding a class of `inline` to the component will apply a different layout more suitable
+ * for embedding the component somwhere else.
  */
 @Component({
   selector: 'yuv-quick-search',
@@ -51,6 +55,7 @@ export class QuickSearchComponent implements AfterViewInit {
     arrowDown: SVGIcons['arrow-down'],
     addCircle: SVGIcons['addCircle']
   };
+  autofocus: boolean = false;
   searchForm: FormGroup;
   searchFieldsForm: FormGroup;
   invalidTerm: boolean;
@@ -115,22 +120,9 @@ export class QuickSearchComponent implements AfterViewInit {
   @Output() typeAggregation = new EventEmitter<ObjectTypeAggregation[]>();
 
   @HostBinding('class.busy') busy: boolean;
-  @HostListener('keydown.alt.+', ['$event']) onAddField(event) {
-    if (this.availableObjectTypeFields.length) {
-      this.showObjectTypeFieldPicker();
-    }
-  }
-
-  @HostListener('keydown.alt.-', ['$event']) onAddType(event) {
-    if (this.availableObjectTypes.length) {
-      this.showObjectTypePicker();
-    }
-  }
 
   @HostListener('keydown.enter', ['$event']) onEnter(event) {
-    // if (!this.searchFieldsForm) {
     this.executeSearch();
-    // }
   }
 
   constructor(
@@ -138,8 +130,12 @@ export class QuickSearchComponent implements AfterViewInit {
     private popoverService: PopoverService,
     private translate: TranslateService,
     private systemService: SystemService,
+    private device: DeviceService,
     private searchService: SearchService
   ) {
+    this.autofocus = this.device.isDesktop;
+    console.log('autofocus: ' + this.autofocus);
+
     this.searchQuery = new SearchQuery();
     this.searchForm = this.fb.group({
       term: ['']
@@ -251,20 +247,25 @@ export class QuickSearchComponent implements AfterViewInit {
    * estimated result of the current query.
    */
   aggregate() {
-    if (!this.settingUpQuery && this.searchForm.valid && (!this.searchFieldsForm || this.searchFieldsForm.valid)) {
-      this.resultCount = null;
-      this.error = false;
-      this.busy = true;
-      this.searchService.aggregate(this.searchQuery, [BaseObjectTypeField.OBJECT_TYPE_ID]).subscribe(
-        (res: AggregateResult) => {
-          this.processAggregateResult(res);
-          this.busy = false;
-        },
-        err => {
-          this.error = true;
-          this.busy = false;
-        }
-      );
+    if (this.searchQuery.term || (this.searchQuery.types && this.searchQuery.types.length) || (this.searchQuery.filters && this.searchQuery.filters.length)) {
+      if (!this.settingUpQuery && this.searchForm.valid && (!this.searchFieldsForm || this.searchFieldsForm.valid)) {
+        this.resultCount = null;
+        this.error = false;
+        this.busy = true;
+        this.searchService.aggregate(this.searchQuery, [BaseObjectTypeField.OBJECT_TYPE_ID]).subscribe(
+          (res: AggregateResult) => {
+            this.processAggregateResult(res);
+            this.busy = false;
+          },
+          err => {
+            this.error = true;
+            this.busy = false;
+            this.typeAggregation.emit([]);
+          }
+        );
+      }
+    } else {
+      this.typeAggregation.emit([]);
     }
   }
 
@@ -298,6 +299,12 @@ export class QuickSearchComponent implements AfterViewInit {
         break;
       }
     }
+    if (popoverRef) {
+      popoverRef.close();
+    }
+  }
+
+  onValuePickerCancel(popoverRef?: PopoverRef) {
     if (popoverRef) {
       popoverRef.close();
     }
@@ -392,7 +399,9 @@ export class QuickSearchComponent implements AfterViewInit {
               : new RangeValue(filters[otf.id].operator, filters[otf.id].firstValue, filters[otf.id].secondValue);
             formPatch[`fc_${otf.id}`] = cv;
           });
-        this.searchFieldsForm.patchValue(formPatch);
+        if (this.searchFieldsForm) {
+          this.searchFieldsForm.patchValue(formPatch);
+        }
       }
       this.settingUpQuery = false;
       this.aggregate();
@@ -410,11 +419,12 @@ export class QuickSearchComponent implements AfterViewInit {
       this.searchHasResults = true;
       // type aggregations
       this.typeAggregation.emit(
-        res.aggregations[0].entries.map(r => {
-          this.resultCount += r.count;
-
-          return { objectTypeId: r.key, label: this.systemService.getLocalizedResource(`${r.key}_label`), count: r.count };
-        })
+        res.aggregations[0].entries
+          .map(r => {
+            this.resultCount += r.count;
+            return { objectTypeId: r.key, label: this.systemService.getLocalizedResource(`${r.key}_label`), count: r.count };
+          })
+          .sort(Utils.sortValues('label'))
       );
     } else {
       this.searchHasResults = false;

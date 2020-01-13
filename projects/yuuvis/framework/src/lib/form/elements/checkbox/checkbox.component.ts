@@ -1,4 +1,4 @@
-import { Component, forwardRef, Input } from '@angular/core';
+import { Component, EventEmitter, forwardRef, Input, Output } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { SVGIcons } from '../../../svg.generated';
 
@@ -26,7 +26,7 @@ import { SVGIcons } from '../../../svg.generated';
   ]
 })
 export class CheckboxComponent implements ControlValueAccessor {
-  value: boolean = null;
+  // value: boolean = null;
   icClear = SVGIcons.clear;
 
   /**
@@ -38,7 +38,9 @@ export class CheckboxComponent implements ControlValueAccessor {
    * Will prevent the input from being changed (default: false)
    */
   @Input() readonly: boolean;
+  @Input() value: boolean = null;
   //@Input() filter: any;
+  @Output() change = new EventEmitter<boolean>();
 
   constructor() {}
 
@@ -63,6 +65,7 @@ export class CheckboxComponent implements ControlValueAccessor {
     if (value === null) {
       this.value = true;
     }
+    this.change.emit(this.value);
     this.propagateChange(this.value);
   }
 }

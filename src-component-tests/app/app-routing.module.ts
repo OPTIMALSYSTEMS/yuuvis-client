@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { TestActionMenuComponent } from './test-action-menu/test-action-menu.component';
+import { TestAnimatedIconsComponent } from './test-animated-icons/test-animated-icons.component';
 import { TestAuditComponent } from './test-audit/test-audit.component';
 import { TestContentPreviewComponent } from './test-content-preview/test-content-preview.component';
 import { TestFileDropComponent } from './test-file-drop/test-file-drop.component';
@@ -19,6 +20,7 @@ import { TestUploadProgressOverlayComponent } from './test-upload-progress-overl
 
 const routes: Routes = [
   { path: 'action-menu', component: TestActionMenuComponent },
+  { path: 'animated-icons', component: TestAnimatedIconsComponent },
   { path: 'audit', component: TestAuditComponent },
   { path: 'content-preview', component: TestContentPreviewComponent },
   { path: 'file-drop', component: TestFileDropComponent },

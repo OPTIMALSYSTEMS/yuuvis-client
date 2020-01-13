@@ -1,9 +1,9 @@
+import { RowEvent } from '@ag-grid-community/core';
 import { PlatformLocation } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AppCacheService, Screen, ScreenService, SearchQuery, TranslateService } from '@yuuvis/core';
-import { RowEvent } from 'ag-grid-community';
+import { AppCacheService, PendingChangesService, Screen, ScreenService, SearchQuery, TranslateService } from '@yuuvis/core';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { AppSearchService } from '../../service/app-search.service';
 
@@ -31,6 +31,8 @@ export class ResultComponent implements OnInit, OnDestroy {
     public translate: TranslateService,
     private location: PlatformLocation,
     private appSearch: AppSearchService,
+    private pendingChanges: PendingChangesService,
+    private title: Title,
     private route: ActivatedRoute,
     private router: Router
   ) {
@@ -44,7 +46,9 @@ export class ResultComponent implements OnInit, OnDestroy {
   }
 
   onSlaveClosed() {
-    this.objectDetailsID = null;
+    if (!this.pendingChanges.check()) {
+      this.select([]);
+    }
   }
 
   onQueryChanged(query: SearchQuery) {
@@ -69,6 +73,10 @@ export class ResultComponent implements OnInit, OnDestroy {
     if (rowEvent) {
       this.router.navigate(['/object/' + rowEvent.data.id]);
     }
+  }
+
+  onQueryDescriptionChange(desc: string) {
+    this.title.setTitle(desc && desc.length ? desc : this.translate.instant('yuv.framework.search-result-panel.header.title'));
   }
 
   ngOnInit() {

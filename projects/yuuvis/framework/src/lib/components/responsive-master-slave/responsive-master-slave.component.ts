@@ -1,4 +1,3 @@
-import { PlatformLocation } from '@angular/common';
 import { Component, EventEmitter, HostBinding, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { Screen, ScreenService } from '@yuuvis/core';
 import { takeUntilDestroy } from 'take-until-destroy';
@@ -61,10 +60,10 @@ export class ResponsiveMasterSlaveComponent implements OnInit, OnDestroy {
   useSmallDeviceLayout: boolean;
   visible = {
     master: true,
-    slave: true
+    slave: false
   };
 
-  private _options: ResponsiveMasterSlaveOptions = {
+  private horizontalOptions: ResponsiveMasterSlaveOptions = {
     masterSize: 60,
     masterMinSize: 20,
     slaveSize: 40,
@@ -74,18 +73,33 @@ export class ResponsiveMasterSlaveComponent implements OnInit, OnDestroy {
     useStateLayout: false
   };
 
+  private verticalOptions: ResponsiveMasterSlaveOptions = {
+    masterSize: 40,
+    masterMinSize: 0,
+    slaveSize: 60,
+    slaveMinSize: 0,
+    direction: 'vertical',
+    resizable: true,
+    useStateLayout: false
+  };
+
+  private _options: ResponsiveMasterSlaveOptions = {};
+
   @HostBinding('class.yuv-responsive-master-slave') _hostClass = true;
   @HostBinding('class.detailsActive') _detailsActive: boolean;
 
   @Input() set options(o: ResponsiveMasterSlaveOptions) {
-    this._options = { ...this._options, ...o };
+    const direction = this.useSmallDeviceLayout ? 'vertical' : o.direction || 'horizontal';
+    this._options = { ...(direction === 'vertical' ? this.verticalOptions : this.horizontalOptions), ...(direction === o.direction ? o : {}) };
+    const { masterSize, slaveSize } = this.options;
+    this.optionsChanged.emit({ masterSize, slaveSize, direction });
   }
   get options(): ResponsiveMasterSlaveOptions {
     return this._options;
   }
   @Input() set detailsActive(a: boolean) {
-    this._detailsActive = a;
-    this.setPanelVisibility();
+    this._detailsActive = !!a;
+    this.visible.slave = this._detailsActive;
   }
   get detailsActive() {
     return this._detailsActive;
@@ -93,37 +107,24 @@ export class ResponsiveMasterSlaveComponent implements OnInit, OnDestroy {
   @Output() slaveClosed = new EventEmitter();
   @Output() optionsChanged = new EventEmitter();
 
-  constructor(private screenService: ScreenService, private location: PlatformLocation) {
+  constructor(private screenService: ScreenService) {
     this.screenService.screenChange$.pipe(takeUntilDestroy(this)).subscribe((screen: Screen) => {
-      const useSmallDeviceLayout = screen.mode === ScreenService.MODE.SMALL;
-      this.useSmallDeviceLayout = useSmallDeviceLayout;
-      this.setPanelVisibility();
+      this.useSmallDeviceLayout = screen.isSmall;
+      // update options based on layout
+      this.options = { direction: this.options.direction };
     });
-  }
-
-  private setPanelVisibility() {
-    if (!this.useSmallDeviceLayout) {
-      // large screen mode
-      this.visible.master = true;
-      this.visible.slave = !!this._detailsActive;
-    } else if (!!this._detailsActive) {
-      // small screen mode with selected item
-      this.visible.master = false;
-      this.visible.slave = true;
-    } else {
-      this.visible.master = true;
-      this.visible.slave = false;
-    }
   }
 
   closeSlave() {
     this.slaveClosed.emit();
   }
 
+  gutterDblClick() {
+    this.options = { direction: this.options.direction === 'vertical' ? 'horizontal' : 'vertical' };
+  }
+
   dragEnd(evt: any) {
-    const options = { masterSize: evt.sizes[0], slaveSize: evt.sizes[1] };
-    this.options = options;
-    this.optionsChanged.emit(options);
+    this.options = { masterSize: evt.sizes[0], slaveSize: evt.sizes[1], direction: this.options.direction };
   }
 
   ngOnInit() {}

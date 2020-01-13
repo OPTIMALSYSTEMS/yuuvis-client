@@ -1,22 +1,23 @@
 <div class="app-bar" *ngIf="!hideAppBar">
   <yuv-icon class="btn" id="drawer" (click)="showSideBar = true" replaceUrl
     [iconSrc]="'assets/default/svg/ic_drawer.svg'"></yuv-icon>
-  <a routerLink="/" id="logo">
+  <a yuvOfflineDisabled routerLink="/" id="logo">
     <yuv-icon class="btn" [iconSrc]="'assets/default/theme/app.icon.svg'"></yuv-icon>
   </a>
-  <div class="main">
-    <yuv-icon class="btn" routerLink="/create" [title]="'yuv.framework.object-create.header.title'|translate"
+  <div yuvOfflineDisabled class="main">
+    <yuv-icon class="btn" routerLink="/create" [title]="'yuv.framework.object-create.header.title' | translate"
       [iconSrc]="'assets/default/svg/ic_add.svg'"></yuv-icon>
   </div>
   <div class="right">
-    <!-- <yuv-icon class="btn"routerLink="/result"  [iconSrc]="'assets/default/svg/ic_favorite.svg'"></yuv-icon> -->
-    <div class="user" (click)="op.toggle($event)">
+    <yuv-upload-progress-overlay (resultItemClick)="onResultItemClick($event)"></yuv-upload-progress-overlay>
+    <yuv-icon *ngIf="offline" class="offline-icon" [svg]="offlineSVG" title="offline"></yuv-icon>
+    <div yuvOfflineDisabled class="user" (click)="op.toggle($event)">
       <yuv-user-avatar [user]="user"></yuv-user-avatar>
     </div>
 
     <p-overlayPanel #op>
       <div class="user-panel">
-        <div class="update" *ngIf="swUpdateAvailable" (click)="updateWorker()">Update available</div>
+        <div class="update" *ngIf="!swUpdateAvailable" (click)="updateWorker()">Update available</div>
 
         <div class="avatar" [ngClass]="{ enabled: user?.enabled }">
           <yuv-user-avatar [user]="user"></yuv-user-avatar>
@@ -33,7 +34,7 @@
         </div>
         <div class="nav-item logout">
           <!-- <a [routerLink]="['/enter', { logout: true }]" translate>yuv.client.frame.app-bar.logout</a> -->
-          <a (click)="logout()" translate>yuv.client.frame.app-bar.logout</a>
+          <a href="logout" (click)="logout($event)" translate>yuv.client.frame.app-bar.logout</a>
         </div>
       </div>
     </p-overlayPanel>
@@ -50,5 +51,3 @@
     </div>
   </section>
 </yuv-sidebar>
-
-<yuv-upload-progress-overlay (resultItemClick)="onResultItemClick($event)"></yuv-upload-progress-overlay>

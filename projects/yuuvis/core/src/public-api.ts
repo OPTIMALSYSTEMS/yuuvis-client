@@ -1,5 +1,4 @@
 export { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core';
-export * from './lib/core.environment';
 export * from './lib/core.module';
 export * from './lib/core.shared.module';
 export * from './lib/model/dms-object.interface';
@@ -19,7 +18,9 @@ export * from './lib/service/config/config.interface';
 export * from './lib/service/config/config.service';
 export * from './lib/service/config/core-config';
 export * from './lib/service/config/core-config.tokens';
+export * from './lib/service/connection/connection.service';
 export * from './lib/service/core-init/core-init.service';
+export * from './lib/service/device/device.service';
 export * from './lib/service/dms/dms.service';
 export * from './lib/service/event/event.interface';
 export * from './lib/service/event/event.service';

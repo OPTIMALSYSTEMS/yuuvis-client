@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { EnterComponent } from './enter.component';
+import { TestAnimatedIconsComponent } from './test-animated-icons.component';
 
-describe('EnterComponent', () => {
-  let component: EnterComponent;
-  let fixture: ComponentFixture<EnterComponent>;
+describe('TestAnimatedIconsComponent', () => {
+  let component: TestAnimatedIconsComponent;
+  let fixture: ComponentFixture<TestAnimatedIconsComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ EnterComponent ]
+      declarations: [ TestAnimatedIconsComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(EnterComponent);
+    fixture = TestBed.createComponent(TestAnimatedIconsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

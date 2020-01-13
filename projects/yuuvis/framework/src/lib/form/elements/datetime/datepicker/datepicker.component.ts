@@ -1,13 +1,9 @@
+import { FormStyle, getLocaleDayNames, getLocaleFirstDayOfWeek, getLocaleMonthNames, TranslationWidth } from '@angular/common';
 import { Component, EventEmitter, HostListener, Input, OnInit, Output } from '@angular/core';
 import { TranslateService } from '@yuuvis/core';
-import * as moment_ from 'moment';
-import { Moment } from 'moment';
-import 'moment/min/locales';
 import { SVGIcons } from '../../../../svg.generated';
-import { Time, Weeks } from './datepicker.interface';
+import { DynamicDate, Weeks } from './datepicker.interface';
 import { DatepickerService } from './service/datepicker.service';
-
-const moment = moment_;
 
 @Component({
   selector: 'yuv-datepicker',
@@ -18,58 +14,21 @@ const moment = moment_;
 export class DatepickerComponent implements OnInit {
   arrowDownIcon = SVGIcons['arrow-down'];
 
+  startDay: number;
   monthsShort: string[];
   weekdaysShort: string[];
   maxYear = 99999;
   minYear = 0;
 
   // current month shown in the picker
-  set month(month: Moment) {
-    this.datepickerService.month = month;
-  }
+  weeks: Weeks[];
+  current: Date;
 
-  get month() {
-    return this.datepickerService.month;
-  }
-
-  set weeks(weeks: Weeks[]) {
-    this.datepickerService.weeks = weeks;
-  }
-
-  get weeks() {
-    return this.datepickerService.weeks;
-  }
-
-  // ngModel for the year input
-  set year(year: number) {
-    this.datepickerService.year = year;
-  }
-
-  get year() {
-    return this.datepickerService.year;
-  }
+  year: number;
 
   // selected date
-  selected: Moment;
+  selected: Date;
 
-  // ngModel for the year input
-
-  // ngModel for the time inputs
-  time = {
-    h: 0,
-    m: 0
-  };
-
-  // weeks of the current month
-
-  monthInfo = {
-    month: null,
-    year: null
-  };
-
-  // ISO string of the date set by the components date property (used for comparing equality)
-  private _date: string;
-  private initialized: boolean;
   // emitted when a new value is set by the picker
   @Output() onDateChanged = new EventEmitter();
   @Output() onCanceled = new EventEmitter();
@@ -77,43 +36,30 @@ export class DatepickerComponent implements OnInit {
   @Input() withTime: boolean;
   @Input() withAmPm: boolean;
 
-  @Input()
-  set onylFutureDates(enabled: boolean) {
-    this.datepickerService.futureOnly = enabled ? enabled : false;
-  }
+  @Input() onylFutureDates = false;
 
-  get futureOnly() {
-    return this.datepickerService.futureOnly;
-  }
-
-  @Input('date')
-  set date(date: any) {
-    let mIso = moment(date).toISOString();
-    if (this._date !== mIso) {
-      this._date = mIso;
-      if (this.initialized) {
-        this.setCalenderDate(date, true);
-      }
-    }
+  @Input() set date(date: any) {
+    this.setCalenderDate(date, true, true);
   }
 
   @HostListener('document:keydown', ['$event']) onKeydownHandler(event: KeyboardEvent) {
-    let newDate;
+    let newDate: Date;
+    const selected = new Date(this.selected);
     if (event.keyCode === 13) {
       this.selectValue();
     } else if (event.keyCode === 27) {
       this.cancel();
     } else if (event.keyCode === 37) {
-      newDate = moment(this.selected).add(-1, 'd');
+      newDate = new Date(selected.setHours(-24));
     } else if (event.keyCode === 38) {
-      newDate = moment(this.selected).add(-7, 'd');
+      newDate = new Date(selected.setHours(-24 * 7));
     } else if (event.keyCode === 39) {
-      newDate = moment(this.selected).add(1, 'd');
+      newDate = new Date(selected.setHours(24));
     } else if (event.keyCode === 40) {
-      newDate = moment(this.selected).add(7, 'd');
+      newDate = new Date(selected.setHours(24 * 7));
     }
-    if (newDate && !this.datepickerService.isDisabledDate(newDate)) {
-      this.select(newDate);
+    if (newDate && !this.isDisabledDate(newDate)) {
+      this.setCalenderDate(newDate);
     }
     if (event.keyCode === 13 || event.keyCode === 27) {
       event.preventDefault();
@@ -128,21 +74,16 @@ export class DatepickerComponent implements OnInit {
   }
 
   constructor(translate: TranslateService, private datepickerService: DatepickerService) {
-    const locale = translate.currentLang.replace('zh', 'zh-cn'); // BUG: moment does not support 'zh'
-    moment.locale(locale);
-    let startDay = moment()
-      .startOf('week')
-      .day();
-    this.monthsShort = moment.monthsShort();
-    this.weekdaysShort = moment
-      .weekdaysShort()
-      .slice(startDay)
-      .concat(moment.weekdaysShort().slice(0, startDay));
+    const days = getLocaleDayNames(translate.currentLang, FormStyle.Format, TranslationWidth.Abbreviated);
+
+    this.startDay = getLocaleFirstDayOfWeek(translate.currentLang);
+    this.monthsShort = getLocaleMonthNames(translate.currentLang, FormStyle.Format, TranslationWidth.Abbreviated);
+    this.weekdaysShort = days.slice(this.startDay).concat(days.slice(0, this.startDay));
   }
 
   selectValue() {
     this.onDateChanged.emit({
-      date: this.selected.toDate()
+      date: new Date(this.selected)
     });
   }
 
@@ -150,132 +91,70 @@ export class DatepickerComponent implements OnInit {
     this.onCanceled.emit({});
   }
 
-  select(date) {
-    this.selected = date;
-    if (this.withTime) {
-      this.selected.hour(this.time.h);
-      this.selected.minute(this.time.m);
-    }
-    if (this.selected.month() !== this.month.month()) {
-      this.setMonth(this.selected.month());
-    }
-    if (this.selected.year() !== this.year) {
-      this.setYear(this.selected.year());
-    }
+  isDisabledDate(date: Date): boolean {
+    return this.onylFutureDates && date ? date.getTime() <= new Date().getTime() : false;
   }
 
-  focusSelection() {
-    this.month.month(this.selected.month());
-    this.month.year(this.selected.year());
-    this.datepickerService.buildMonth();
-    this.createInfo();
-  }
+  setCalenderDate(date: Date | string | number, select = true, format = false) {
+    const d = date ? new Date(date) : new Date();
+    const _date = format ? new Date(this.withTime ? d.setSeconds(0, 0) : d.setHours(0, 0, 0, 0)) : d;
 
-  /**
-   * Set the pickers selected date
-   *
-   * @param Date | string date
-   * @param boolean select - if set to true the given day will be set selected
-   */
-  setCalenderDate(date: Date | string | Moment, select?: boolean) {
-    const m = moment(date);
-
-    if (m.isValid()) {
-      this.month = m;
-      // let start = moment;
-      // start.date(1);
-      // this.removeTime(start.day(0));
+    if (!isNaN(_date.getTime())) {
       if (select) {
-        this.selected = moment(date);
+        const sd = this.selected && !format ? new Date(_date).setHours(this.selected.getHours(), this.selected.getMinutes()) : _date;
+        this.selected = new Date(sd);
+        this.year = this.selected.getFullYear();
       }
-      if (this.withTime) {
-        this.time = {
-          h: m.hour(),
-          m: m.minute()
-        };
+      if (!this.current || this.current.getMonth() !== _date.getMonth() || this.current.getFullYear() !== _date.getFullYear()) {
+        this.current = _date;
+        this.weeks = this.datepickerService.buildMonth(this.current, this.startDay, dd => this.isDisabledDate(dd));
       }
-      this.datepickerService.buildMonth();
-      this.createInfo();
     }
   }
 
-  public increment(year: number) {
-    this.setYear(year + 1);
+  setYear(year: number) {
+    this.selected.setFullYear(this.getLoop(year, this.minYear, this.maxYear));
+    this.setCalenderDate(this.selected);
   }
 
-  public decrement(year: number) {
-    this.setYear(year - 1);
+  setMonth(month: number) {
+    this.setCalenderDate(new Date(this.selected).setMonth(month), false);
   }
 
-  public setYear(year: number) {
-    this.year = this.datepickerService.setYear(year, this.minYear, this.maxYear);
-    this.month.year(this.year);
-    this.datepickerService.buildMonth();
-    this.createInfo();
-    this.selected.year(this.year);
+  setTime(h = 0, m = 0) {
+    this.selected.setHours(this.getLoop(h, 0, 23), this.getLoop(m, 0, 59), 0, 0);
   }
 
-  public timeToString(time: number): string {
+  addTime(h = 0, m = 0) {
+    this.setTime(this.selected.getHours() + h, this.selected.getMinutes() + m);
+  }
+
+  setDateByType(type: DynamicDate, emit = false) {
+    this.setCalenderDate(this.datepickerService.getDateFromType(type, this.startDay), true, true);
+    if (emit) {
+      this.selectValue();
+    }
+  }
+
+  timeToString(time: number, withAmPm = false): string {
+    time = withAmPm && !this.inRange(time, 1, 12) ? time - 12 : time;
     return ('0' + Math.abs(time)).slice(-2);
   }
 
-  public setTime(time: Time) {
-    this.time = this.datepickerService.setTime(time);
-    this.selected.hour(this.time.h);
-    this.selected.minute(this.time.m);
+  isSelectedDay(day: Date) {
+    return day.getTime() === new Date(this.selected).setHours(0, 0, 0, 0);
   }
 
-  public setMonth(index: number) {
-    this.month.month(index);
-    this.datepickerService.buildMonth();
-    this.createInfo();
-  }
-
-  public setDateByType(type: 'now' | 'today' | 'yesterday' | 'thisweek' | 'thismonth' | 'thisyear') {
-    this.setCalenderDate(this.getDateFromType(type), true);
-  }
-
-  public getDateFromType(type: string) {
-    switch (type) {
-      case 'now':
-        return moment();
-      case 'today':
-        return moment().startOf('day');
-      case 'yesterday':
-        return moment()
-          .startOf('day')
-          .add(-1, 'day');
-      case 'thisweek':
-        return moment().startOf('week');
-      case 'thismonth':
-        return moment().startOf('month');
-      case 'thisyear':
-        return moment().startOf('year');
-    }
-  }
-
-  public isSelectedDay(day: Moment) {
-    return day.isSame(this.selected, 'day');
-  }
-
-  inRange(x, min = 0, max = 11) {
+  inRange(x: number = this.selected.getHours(), min = 0, max = 11) {
     return (x - min) * (x - max) <= 0;
   }
 
-  createInfo() {
-    this.monthInfo = this.datepickerService.createInfo();
+  getLoop(x: number, min: number, max: number) {
+    return x < min ? max : x > max ? min : x;
   }
 
   ngOnInit() {
-    if (!this._date) {
-      this._date = this.withTime
-        ? moment().toISOString()
-        : moment()
-            .startOf('day')
-            .toISOString();
-    }
-    this.setCalenderDate(this._date, true);
-    this.initialized = true;
+    this.setCalenderDate(this.current, true, true);
   }
 
   public trackByFn(index, item) {

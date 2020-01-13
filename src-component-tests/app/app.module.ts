@@ -23,6 +23,7 @@ import { TestSummaryComponent } from './test-summary/test-summary.component';
 import { TestUploadProgressOverlayComponent } from './test-upload-progress-overlay/test-upload-progress-overlay.component';
 import { TestFileDropComponent } from './test-file-drop/test-file-drop.component';
 import { TestRecentActivitiesComponent } from './test-recent-activities/test-recent-activities.component';
+import { TestAnimatedIconsComponent } from './test-animated-icons/test-animated-icons.component';
 
 @NgModule({
   declarations: [
@@ -43,7 +44,8 @@ import { TestRecentActivitiesComponent } from './test-recent-activities/test-rec
     TestObjectCreateComponent,
     TestUploadProgressOverlayComponent,
     TestFileDropComponent,
-    TestRecentActivitiesComponent
+    TestRecentActivitiesComponent,
+    TestAnimatedIconsComponent
   ],
   imports: [
     HttpClientModule,

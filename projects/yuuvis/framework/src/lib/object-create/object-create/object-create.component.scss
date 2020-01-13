@@ -18,6 +18,7 @@
       align-items: center;
       padding: var(--app-pane-padding) 0;
       border-bottom: 1px solid var(--panel-divider-color);
+      overflow-x: auto;
 
       h1 {
         font-size: var(--font-headline);

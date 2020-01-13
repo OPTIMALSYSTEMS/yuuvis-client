@@ -7,6 +7,8 @@ import { TranslateModule } from '@yuuvis/core';
 import { AutoCompleteModule } from 'primeng/autocomplete';
 import { ActionModule } from '../actions/action.module';
 import { YuvComponentsModule } from '../components/components.module';
+import { YuvDirectivesModule } from '../directives/directives.module';
+import { YuvFormModule } from '../form/form.module';
 import { YuvObjectFormModule } from '../object-form/object-form.module';
 import { YuvPipesModule } from '../pipes/pipes.module';
 import { YuvPopoverModule } from '../popover/popover.module';
@@ -29,8 +31,10 @@ import { SearchResultComponent } from './search-result/search-result.component';
     YuvPopoverModule,
     YuvCommonUiModule,
     ActionModule,
-    AutoCompleteModule
+    AutoCompleteModule,
+    YuvFormModule,
+    YuvDirectivesModule
   ],
   exports: [QuickSearchComponent, SearchResultComponent, SearchResultPanelComponent]
 })
-export class YuvSearchModule {}
+export class YuvSearchModule { }

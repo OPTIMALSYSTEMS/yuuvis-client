@@ -2,9 +2,9 @@
   <div class="head">
     <yuv-user-avatar class="background" [user]="user$ | async"></yuv-user-avatar>
     <div class="user">
-      <div class="meta">{{(user$ | async).username}}</div>
+      <div class="meta uname">{{(user$ | async).username}}</div>
       <h1>{{(user$ | async).title}}</h1>
-      <div class="meta">{{(user$ | async).email}}</div>
+      <div class="meta uemail">{{(user$ | async).email}}</div>
     </div>
     <yuv-user-avatar class="box panel" [user]="user$ | async"></yuv-user-avatar>
   </div>
@@ -12,7 +12,7 @@
     <div class="body-wrap">
 
       <!-- language -->
-      <div class="setting settings__row">
+      <div class="setting settings__row" yuvOfflineDisabled>
         <div class="label" translate>yuv.client.state.settings.language</div>
         <div class="value buttons">
           <button class="toggle" (click)="changeClientLocale(locale.iso)"

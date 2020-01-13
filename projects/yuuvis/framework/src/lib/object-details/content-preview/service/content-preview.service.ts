@@ -1,19 +1,15 @@
 import { PlatformLocation } from '@angular/common';
 import { Injectable } from '@angular/core';
 import { ApiBase, DmsObjectContent, UserService, Utils } from '@yuuvis/core';
+import { Observable, ReplaySubject } from 'rxjs';
 import { LayoutService } from '../../../services/layout/layout.service';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class ContentPreviewService {
-  constructor(private location: PlatformLocation, private userService: UserService, private layoutService: LayoutService) {}
+  private previewSrcSource = new ReplaySubject<string>(null);
+  public previewSrc$: Observable<string> = this.previewSrcSource.asObservable();
 
-  createPreviewUrl(id: string, content: DmsObjectContent): string {
-    const { mimeType, size, contentStreamId } = content;
-    const { root, path } = this.createPath(id);
-    return id ? Utils.buildUri(`${root}/viewer/`, { mimeType, path, size, contentStreamId, ...this.createSettings() }) : '';
-  }
+  constructor(private location: PlatformLocation, private userService: UserService, private layoutService: LayoutService) {}
 
   private createPath(id: string): { root: string; path: string } {
     let root = `${this.location.protocol}//${this.location.hostname}`;
@@ -28,6 +24,17 @@ export class ContentPreviewService {
     const direction = user.uiDirection;
     const lang = this.mapLang(user.getClientLocale());
     return { darkMode, accentColor, direction, lang };
+  }
+
+  createPreviewUrl(id: string, content: DmsObjectContent): void {
+    const { mimeType, size, contentStreamId, fileName } = content;
+    const { root, path } = this.createPath(id);
+    const fileExtension = fileName.includes('.') ? fileName.split('.').pop() : '';
+    this.previewSrcSource.next(id ? Utils.buildUri(`${root}/viewer/`, { mimeType, path, fileExtension, size, contentStreamId, ...this.createSettings() }) : '');
+  }
+
+  resetSource() {
+    this.previewSrcSource.next();
   }
 
   mapLang(lang: string) {

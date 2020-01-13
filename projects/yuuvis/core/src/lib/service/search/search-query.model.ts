@@ -28,6 +28,10 @@ export class SearchQuery {
           this.filters.push(new SearchFilter(k, filterValue.o, filterValue.v1, filterValue.v2));
         });
       }
+
+      if (searchQueryProperties.sort) {
+        searchQueryProperties.sort.forEach(o => this.addSortOption(o.field, o.order));
+      }
     }
   }
   /**
@@ -227,9 +231,9 @@ export class SearchFilter {
     /** greater than */
     GREATER_THAN: '>',
     /** greater than or equal */
-    GREATER_OR_EQUAL: '>=', //
+    GREATER_OR_EQUAL: '≽', //
     LESS_THAN: '<', // less than
-    LESS_OR_EQUAL: '<=', // less than or equal
+    LESS_OR_EQUAL: '≼', // less than or equal
     INTERVAL: '<>', // interval
     INTERVAL_INCLUDE_BOTH: '-', // interval include left and right
     INTERVAL_INCLUDE_TO: '>-', // interval include right

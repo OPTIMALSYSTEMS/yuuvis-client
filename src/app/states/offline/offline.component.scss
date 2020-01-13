@@ -1,0 +1,26 @@
+:host {
+  display: flex;
+  flex-flow: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+
+  .box {
+    padding: var(--app-pane-padding);
+    text-align: center;
+    width: 300px;
+    margin-top: -22vh;
+    color: var(--text-color-caption);
+    h2 {
+      color: var(--color-accent);
+      font-size: var(--font-title);
+      font-weight: normal;
+    }
+
+    svg {
+      fill: var(--color-accent);
+      width: auto;
+      height: 20vh;
+    }
+  }
+}

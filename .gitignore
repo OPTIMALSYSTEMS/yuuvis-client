@@ -55,6 +55,7 @@ testem.log
 /typings
 
 # e2e tests
+/e2e/cypress/reports/
 /e2e/cypress/screenshots/
 /e2e/cypress/videos/
 /e2e/cypress/node_modules/

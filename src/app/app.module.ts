@@ -10,16 +10,26 @@ import { AppComponent } from './app.component';
 import { FrameComponent } from './components/frame/frame.component';
 import { AppRoutingModule } from './routing/app.routes.module';
 import { AboutModule } from './states/about/about.module';
+import { CreateComponent } from './states/create/create.component';
 import { DashboardComponent } from './states/dashboard/dashboard.component';
-import { EnterComponent } from './states/enter/enter.component';
 import { NotFoundComponent } from './states/not-found/not-found.component';
+import { ObjectComponent } from './states/object/object.component';
+import { OfflineComponent } from './states/offline/offline.component';
 import { ResultComponent } from './states/result/result.component';
 import { SettingsComponent } from './states/settings/settings.component';
-import { ObjectComponent } from './states/object/object.component';
-import { CreateComponent } from './states/create/create.component';
 
 @NgModule({
-  declarations: [AppComponent, DashboardComponent, ResultComponent, FrameComponent, SettingsComponent, NotFoundComponent, EnterComponent, ObjectComponent, CreateComponent],
+  declarations: [
+    AppComponent,
+    DashboardComponent,
+    ResultComponent,
+    FrameComponent,
+    SettingsComponent,
+    NotFoundComponent,
+    ObjectComponent,
+    CreateComponent,
+    OfflineComponent
+  ],
   imports: [
     BrowserModule,
     FormsModule,

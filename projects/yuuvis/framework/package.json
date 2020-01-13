@@ -17,12 +17,14 @@
     "primeicons": "^2.0.0",
     "angular-split": "3.0.1",
     "@angular/cdk": "^7.3.7",
-    "ag-grid-angular": "^21.0.1",
-    "ag-grid-community": "^21.0.1",
+    "@angular/forms": "~8.0.0",
+    "@ag-grid-community/core": "^22.0.0",
+    "@ag-grid-community/angular": "^22.0.0",
+    "@ag-grid-community/client-side-row-model": "^22.0.0",
     "angular-resize-event": "^1.0.0",
-    "moment": "^2.24.0",
-    "lodash": "^4.17.15",
+    "lodash-es": "^4.17.15",
     "take-until-destroy": "^2.1.0",
+    "ngx-drag-scroll": "^8.0.0-beta.2",
     "ngx-toastr": "^11.1.0"
   }
 }

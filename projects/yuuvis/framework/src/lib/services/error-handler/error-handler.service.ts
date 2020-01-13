@@ -1,7 +1,6 @@
 import { HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest, HttpResponse } from '@angular/common/http';
 import { ErrorHandler, Injectable, Injector } from '@angular/core';
-import { NavigationExtras, Router } from '@angular/router';
-import { AuthService, Logger, TranslateService, YuvError } from '@yuuvis/core';
+import { AuthService, Logger, YuvError } from '@yuuvis/core';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { NotificationService } from '../notification/notification.service';
@@ -12,9 +11,6 @@ export class ErrorHandlerService implements ErrorHandler, HttpInterceptor {
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     const auth = this.injector.get(AuthService);
-    const router = this.injector.get(Router);
-    // need to use location here, because the router may not be ready
-    const currentRouteUrl = location.href.substr(location.origin.length);
 
     return next.handle(req).pipe(
       tap(
@@ -27,13 +23,6 @@ export class ErrorHandlerService implements ErrorHandler, HttpInterceptor {
           if (error instanceof HttpErrorResponse || error.isHttpErrorResponse) {
             if (error.status === 401) {
               auth.logout();
-              if (!currentRouteUrl.includes('/enter')) {
-                const returnUrl = currentRouteUrl;
-                const uriParamQuery: NavigationExtras = { queryParams: returnUrl ? { returnUrl } : {} };
-                router.navigate(['/enter'], uriParamQuery).then(() => {
-                  router.navigate([{ outlets: { modal: null } }], { queryParamsHandling: 'preserve' } as NavigationExtras);
-                });
-              }
             }
           }
         }
@@ -45,8 +34,6 @@ export class ErrorHandlerService implements ErrorHandler, HttpInterceptor {
     if (error) {
       const logger = this.injector.get(Logger);
       const notificationsService = this.injector.get(NotificationService);
-      const translate = this.injector.get(TranslateService);
-
       const title = error.name ? error.name : error.toString();
       const message = error.message ? error.message : '';
 

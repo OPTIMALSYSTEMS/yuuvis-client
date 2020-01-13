@@ -36,7 +36,7 @@ export class DatetimeRangeComponent implements OnInit, ControlValueAccessor, Val
     { label: SearchFilter.OPERATOR_LABEL.INTERVAL_INCLUDE_BOTH, value: SearchFilter.OPERATOR.INTERVAL_INCLUDE_BOTH }
   ];
   // the selected search option
-  public searchOption = this.availableSearchOptions[2].value;
+  public searchOption = this.availableSearchOptions[1].value;
   datePipe: LocaleDatePipe;
 
   constructor(private fb: FormBuilder, public translate: TranslateService) {

@@ -113,4 +113,8 @@ export class UserService {
   getUserById(id: string): Observable<YuvUser> {
     return this.backend.get(`/user/${id}/info`).pipe(map(user => new YuvUser(user, this.user.userSettings)));
   }
+
+  logout(): void {
+    (window as any).location.href = '/logout';
+  }
 }

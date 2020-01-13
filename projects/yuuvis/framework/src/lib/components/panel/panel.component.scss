@@ -1,5 +1,12 @@
 @import '../../../../../../../src/scss-shared/_mixins';
 
+.screen-s .yuv-panel-wrapper {
+  grid-template-rows: auto 1fr;
+  .header {
+    padding: calc(var(--app-pane-padding) / 2) var(--app-pane-padding);
+  }
+}
+
 .yuv-panel-wrapper {
   display: grid;
   background-color: var(--panel-background-grey);
@@ -19,6 +26,7 @@
         &.default {
           display: none;
         }
+
         &.close {
           display: block;
         }
@@ -26,10 +34,12 @@
 
       .header_text {
         grid-template-areas: 'title' 'title';
+
         .header_title {
           font-size: var(--font-subhead);
           font-weight: var(--font-weight-normal);
         }
+
         .header_description {
           display: none;
         }
@@ -52,7 +62,6 @@
     grid-template-areas: 'icon header_text actions' 'status status status';
     grid-area: header;
     padding: var(--app-pane-padding);
-    padding-bottom: 0;
     color: var(--text-color-caption);
 
     .header_text {
@@ -62,6 +71,7 @@
       grid-template-rows: auto 1fr;
       grid-template-areas: 'title' 'description';
     }
+
     .header_title {
       grid-area: title;
       font-weight: var(--font-weight-normal);
@@ -75,6 +85,7 @@
       grid-area: description;
       font-weight: var(--font-weight-normal);
       font-size: var(--font-subhead);
+      line-height: 1em;
       margin-top: 0.5em;
       @include ellipsis();
     }
@@ -83,6 +94,7 @@
       grid-area: icon;
       padding-top: calc(var(--app-pane-padding) / 4);
       padding-right: var(--app-pane-padding);
+
       svg {
         fill: currentColor;
       }
@@ -109,6 +121,7 @@
 
         &.disabled {
           opacity: 0.5;
+          pointer-events: none;
         }
       }
     }
@@ -116,12 +129,14 @@
     > .status {
       grid-area: status;
       justify-self: end;
+
       .yuv-icon {
         height: 18px;
         width: 18px;
         // color: var(--text-color-caption);
       }
-      padding: calc(var(--app-pane-padding) / 2) 0;
+
+      // padding: calc(var(--app-pane-padding) / 2) 0;
     }
   }
 }

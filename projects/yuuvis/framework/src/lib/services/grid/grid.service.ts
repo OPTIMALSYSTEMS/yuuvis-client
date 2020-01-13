@@ -1,3 +1,4 @@
+import { ColDef } from '@ag-grid-community/core';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import {
@@ -14,7 +15,6 @@ import {
   TranslateService,
   Utils
 } from '@yuuvis/core';
-import { ColDef } from 'ag-grid-community';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { FileSizePipe, LocaleDatePipe, LocaleNumberPipe } from '../../pipes';

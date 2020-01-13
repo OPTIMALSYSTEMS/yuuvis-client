@@ -1,5 +1,5 @@
 <as-split [direction]="options.direction" [ngClass]="{ state: options.useStateLayout }" [disabled]="!options.resizable"
-  gutterSize="16" (dragEnd)="dragEnd($event)">
+  gutterSize="16" (dragEnd)="dragEnd($event)" gutterDblClickDuration="300" (gutterDblClick)="gutterDblClick()">
   <as-split-area [ngClass]="{ panel: options.useStateLayout }" [size]="options.masterSize"
     [minSize]="options.masterMinSize" order="0" [visible]="visible.master">
     <ng-content select=".yuv-master"></ng-content>

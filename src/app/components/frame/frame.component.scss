@@ -15,6 +15,7 @@ $user-panel-width: 180px;
   .app-bar {
     grid-area: header;
     order: 1;
+    z-index: 6;
     display: flex;
     flex-flow: row nowrap;
     align-items: center;
@@ -25,12 +26,12 @@ $user-panel-width: 180px;
 
     yuv-icon#drawer {
       padding: calc(((var(--app-bar-height) - 24px) / 2) - ((var(--app-bar-height) - 32px) / 4));
-      // background-color: var(--color-accent);
-      // border-radius: 0;
     }
+
     a#logo {
       color: currentColor;
       margin: 0 calc(var(--app-pane-padding) / 2);
+
       yuv-icon {
         width: 32px;
         padding: calc(((var(--app-bar-height) - 32px) / 2) - ((var(--app-bar-height) - 32px) / 4));
@@ -44,7 +45,8 @@ $user-panel-width: 180px;
       display: flex;
       flex-flow: row nowrap;
       align-items: center;
-      padding: 0 calc(var(--app-pane-padding) * 2);
+      padding: 0 calc(var(--app-pane-padding) * 0.5);
+
       yuv-icon {
         padding: calc(var(--app-pane-padding) / 2);
 
@@ -54,11 +56,23 @@ $user-panel-width: 180px;
         }
       }
     }
+
     .right {
       display: flex;
       flex-flow: row nowrap;
       align-items: center;
       flex: 0 0 auto;
+
+      .offline-icon {
+        background-color: var(--color-accent);
+        border-radius: 50%;
+        color: #fff;
+        width: 18px;
+        height: 18px;
+        padding: 8px;
+        box-sizing: content-box;
+        animation: offlinepulse 2s 3;
+      }
 
       .user {
         border-radius: 50%;
@@ -66,6 +80,7 @@ $user-panel-width: 180px;
         width: 32px;
         height: 32px;
         background-color: rgba(255, 255, 255, 0.1);
+        cursor: pointer;
 
         .overlay {
           position: absolute;
@@ -76,15 +91,22 @@ $user-panel-width: 180px;
       }
     }
   }
+
   .app-content {
     order: 0;
     grid-area: content;
     background-color: var(--main-background);
     overflow-x: auto;
+    height: 100%;
+    width: 100vw;
+    padding-top: var(--app-bar-height);
+    grid-column: 1;
+    grid-row: 1 / span 2;
   }
 
   yuv-sidebar .navigation-list {
     padding: var(--app-pane-padding) 0;
+
     .nav-item a {
       display: block;
       color: #fff;
@@ -115,6 +137,7 @@ $user-panel-width: 180px;
         .user-title {
           opacity: 1;
           padding: calc(var(--app-pane-padding) / 2) calc(var(--app-pane-padding) / 2) calc(var(--app-pane-padding) / 2) var(--app-pane-padding);
+
           > yuv-icon {
             display: none;
           }
@@ -183,13 +206,23 @@ $user-panel-width: 180px;
       }
 
       yuv-icon#drawer {
-        // background-color: transparent;
         border: none;
       }
     }
     .app-content {
-      grid-column: 1;
-      grid-row: 1 / span 2;
+      padding-top: 0;
     }
+  }
+}
+
+@keyframes offlinepulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(var(--color-accent-rgb), 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 100px rgba(var(--color-accent-rgb), 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(var(--color-accent-rgb), 0);
   }
 }

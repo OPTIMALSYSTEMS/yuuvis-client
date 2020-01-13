@@ -1,4 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AppCacheService, DmsObject, DmsService, EventService, YuvEventType } from '@yuuvis/core';
 import { takeUntilDestroy } from 'take-until-destroy';
@@ -22,6 +23,7 @@ export class ObjectComponent implements OnInit, OnDestroy {
   constructor(
     private route: ActivatedRoute,
     private dmsService: DmsService,
+    private title: Title,
     private router: Router,
     private eventService: EventService,
     private appCacheService: AppCacheService
@@ -46,6 +48,7 @@ export class ObjectComponent implements OnInit, OnDestroy {
       if (params.id) {
         this.dmsService.getDmsObject(params.id).subscribe((res: DmsObject) => {
           this.item = res;
+          this.title.setTitle(this.item.title);
           this.appCacheService.getItem(this.getStorageKey()).subscribe(o => (this.options = { ...this.options, ...o }));
         });
       }
