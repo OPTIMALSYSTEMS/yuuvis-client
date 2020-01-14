@@ -1,4 +1,5 @@
 <div class="app-bar" *ngIf="!hideAppBar">
+
   <yuv-icon class="btn" id="drawer" (click)="showSideBar = true" replaceUrl
     [iconSrc]="'assets/default/svg/ic_drawer.svg'"></yuv-icon>
   <a yuvOfflineDisabled routerLink="/" id="logo">
@@ -9,6 +10,15 @@
       [iconSrc]="'assets/default/svg/ic_add.svg'"></yuv-icon>
   </div>
   <div class="right">
+
+    <!-- PWA update indicator -->
+    <div class="pwa-update" *ngIf="swUpdateAvailable">
+      <span>{{'yuv.client.frame.app-bar.pwa-update.msg' | translate}}</span>
+      <yuv-icon class="btn" [iconSrc]="'assets/default/svg/ic_refresh.svg'" (click)="reload()"></yuv-icon>
+      <yuv-icon class="btn close" [iconSrc]="'assets/default/svg/ic_close.svg'"
+        (click)="swUpdateAvailable = !swUpdateAvailable"></yuv-icon>
+    </div>
+
     <yuv-upload-progress-overlay (resultItemClick)="onResultItemClick($event)"></yuv-upload-progress-overlay>
     <yuv-icon *ngIf="offline" class="offline-icon" [svg]="offlineSVG" title="offline"></yuv-icon>
     <div yuvOfflineDisabled class="user" (click)="op.toggle($event)">
@@ -17,8 +27,6 @@
 
     <p-overlayPanel #op>
       <div class="user-panel">
-        <div class="update" *ngIf="!swUpdateAvailable" (click)="updateWorker()">Update available</div>
-
         <div class="avatar" [ngClass]="{ enabled: user?.enabled }">
           <yuv-user-avatar [user]="user"></yuv-user-avatar>
           <div class="user-title">
