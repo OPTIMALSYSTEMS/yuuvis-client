@@ -52,7 +52,9 @@ export class FrameComponent implements OnInit {
     private authService: AuthService,
     private userService: UserService
   ) {
-    this.update.available.subscribe(update => (this.swUpdateAvailable = true));
+    this.update.available.subscribe(update => {
+      this.swUpdateAvailable = true;
+    });
 
     this.layoutService.layoutSettings$.subscribe((settings: LayoutSettings) => this.applyLayoutSettings(settings));
 
@@ -74,6 +76,10 @@ export class FrameComponent implements OnInit {
     } else {
       body.style.removeProperty(dbProperty);
     }
+  }
+
+  reload() {
+    location.reload();
   }
 
   logout(event: MouseEvent) {

@@ -11,6 +11,7 @@ import { ActionModule } from './actions/action.module';
 import { YuvComponentsModule } from './components/components.module';
 import { YuvDirectivesModule } from './directives/directives.module';
 import { YuvFormModule } from './form/form.module';
+import { YuvGroupedSelectModule } from './grouped-select/grouped-select.module';
 import { YuvObjectCreateModule } from './object-create/object-create.module';
 import { YuvObjectDetailsModule } from './object-details/object-details.module';
 import { YuvObjectFormModule } from './object-form/object-form.module';
@@ -36,7 +37,7 @@ import { YuvUserModule } from './user/user.module';
   imports: [
     CommonModule,
     BrowserAnimationsModule,
-
+    YuvGroupedSelectModule,
     YuvFormModule,
     YuvPopoverModule,
     YuvSearchModule,
@@ -56,6 +57,7 @@ import { YuvUserModule } from './user/user.module';
   exports: [
     YuvDirectivesModule,
     YuvFormModule,
+    YuvGroupedSelectModule,
     YuvPopoverModule,
     YuvComponentsModule,
     YuvObjectDetailsModule,

@@ -1,11 +1,17 @@
 import { FormControl, FormGroup } from '@angular/forms';
 import { YuvFormGroup } from './object-form.interface';
 
-// extensions of the default angular form groups
+/**
+ * @ignore
+ * Extension of the default angular form group,
+ */
 export class ObjectFormGroup extends FormGroup {
   public _eoFormGroup: YuvFormGroup;
 }
-
+/**
+ * @ignore
+ * Extension of the default angular form control,
+ */
 export class ObjectFormControl extends FormControl {
   private __eoFormElement;
 

@@ -1,9 +1,9 @@
 import { cloneDeep } from 'lodash-es';
 
-// This class will be injected as scope into form scripts
-// to enable simple way of scripting and assure backward compatibility we use
-// MobX.observe to track changes on the scripting model.
-// @see: https://medium.com/@mweststrate/object-observe-is-dead-long-live-mobservable-observe-ad96930140c5
+/**
+ * @ignore
+ * This class will be injected as scope into form scripts.
+ */
 export class ObjectFormScriptingScope {
   // List of all form fields (elements)
   public model: any = {};

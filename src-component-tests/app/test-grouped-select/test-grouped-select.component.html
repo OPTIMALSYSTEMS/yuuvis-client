@@ -1,0 +1,39 @@
+<div class="testing-controls">
+  <button (click)="setSelectedItems()">set selection</button>
+  <button [disabled]="view === 'm'" (click)="view = 'm'">multiselect</button>
+  <button [disabled]="view === 's'" (click)="view = 's'">singleselect</button>
+  <button [disabled]="view === 'a'" (click)="view = 'a'">enableSelectAll</button>
+</div>
+
+
+
+
+<div class="cmp">
+  <yuv-grouped-select *ngIf="view === 'm'" autofocus="true" multiple="true" [groups]="groups"
+    [(ngModel)]="selectedItems" (select)="onSelect($event)" (ngModelChange)="onSelectionChange($event)">
+  </yuv-grouped-select>
+
+  <yuv-grouped-select *ngIf="view === 's'" autofocus="true" [groups]="groups" [(ngModel)]="selectedItems"
+    (select)="onSelect($event)" (ngModelChange)="onSelectionChange($event)">
+  </yuv-grouped-select>
+
+  <yuv-grouped-select *ngIf="view === 'a'" enableSelectAll="true" multiple="true" [groups]="groups"
+    [(ngModel)]="selectedItems" (select)="onSelect($event)" (ngModelChange)="onSelectionChange($event)">
+  </yuv-grouped-select>
+</div>
+
+<div class="res" [ngClass]="{off: !o}">
+  <h2 title="toggle Output" (click)="o = !o">@Output</h2>
+  <div>
+    <h3>
+      onSelectionChange [{{selectionChangedRes?.length}}]:
+    </h3>
+    <pre>{{selectionChangedRes | json}}</pre>
+  </div>
+  <div>
+    <h3>
+      onSelect:
+    </h3>
+    <pre>{{selectionRes}}</pre>
+  </div>
+</div>

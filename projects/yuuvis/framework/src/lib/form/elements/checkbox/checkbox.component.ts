@@ -1,4 +1,4 @@
-import { Component, EventEmitter, forwardRef, Input, Output } from '@angular/core';
+import { Attribute, Component, EventEmitter, forwardRef, Input, Output } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { SVGIcons } from '../../../svg.generated';
 
@@ -28,6 +28,7 @@ import { SVGIcons } from '../../../svg.generated';
 export class CheckboxComponent implements ControlValueAccessor {
   // value: boolean = null;
   icClear = SVGIcons.clear;
+  _tabindex;
 
   /**
    * By default checkbox value will be either 'true' or 'false'. Setting tristate
@@ -42,7 +43,9 @@ export class CheckboxComponent implements ControlValueAccessor {
   //@Input() filter: any;
   @Output() change = new EventEmitter<boolean>();
 
-  constructor() {}
+  constructor(@Attribute('tabindex') tabindex: string) {
+    this._tabindex = tabindex || '0';
+  }
 
   reset(): void {
     this.value = null;

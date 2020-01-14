@@ -1,6 +1,9 @@
 import { ValidatorFn, Validators } from '@angular/forms';
 import { ObjectFormControl } from './object-form.model';
-
+/**
+ * @ignore
+ * Custom validation class.
+ */
 export class FormValidation {
   /**
    * Build validators for the given form element to be attached to
@@ -16,7 +19,7 @@ export class FormValidation {
     // apply situation based validations
     switch (situation) {
       case 'SEARCH': {
-        // todo: implement general validators for SEARCH situation
+        // TODO: implement general validators for SEARCH situation
         break;
       }
       default: {
