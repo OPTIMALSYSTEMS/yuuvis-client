@@ -7,7 +7,7 @@
   </div>
 </div>
 
-<div class="outer">
+<div class="outer" *ngIf="!isLoading; else tplLoading">
 
   <ng-container *ngIf="created && selected === 'created'">
     <ng-container *ngIf="recentlyCreated?.length > 0; else tplEmpty">
@@ -35,5 +35,10 @@
 <ng-template #tplEmpty>
   <div class="empty">
     {{'yuv.framework.recent-activities.list.empty'|translate}}
+  </div>
+</ng-template>
+
+<ng-template #tplLoading>
+  <div class="loading" [yuvBusyOverlay]="isLoading">
   </div>
 </ng-template>

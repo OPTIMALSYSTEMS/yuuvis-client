@@ -14,7 +14,7 @@ import {
   YuvUser
 } from '@yuuvis/core';
 import { Observable, throwError } from 'rxjs';
-import { catchError, timeout } from 'rxjs/operators';
+import { catchError, tap } from 'rxjs/operators';
 
 /**
  * Component showing recent activities for the current user. This means listing the objects
@@ -35,7 +35,7 @@ import { catchError, timeout } from 'rxjs/operators';
 })
 export class RecentActivitiesComponent implements OnInit {
   private cacheKeyBase = 'yuv.framework.recent-activities';
-
+  isLoading = false;
   /**
    * Data to be displayed by the component. If not provided, recent items will be
    * fetched for the current user. This may come in handy if you want to display
@@ -113,9 +113,9 @@ export class RecentActivitiesComponent implements OnInit {
 
   private fetchItems(query: SearchQuery): Observable<SearchResult> {
     this.fetchError = false;
-
+    this.isLoading = true;
     return this.searchService.search(query).pipe(
-      timeout(2000),
+      tap(() => (this.isLoading = false)),
       catchError(e => {
         this.fetchError = true;
         return throwError(e);
