@@ -1,0 +1,51 @@
+:host {
+  display: block;
+  margin-bottom: calc(var(--app-pane-padding) / 2);
+  padding: 2px;
+  color: var(--text-color-body);
+
+  > div {
+    transition: background-color, color 0.3s;
+    display: flex;
+    align-items: center;
+
+    .label {
+      padding: calc(var(--app-pane-padding) / 4);
+      flex: 1;
+      cursor: pointer;
+    }
+  }
+
+  &.multiselect {
+    div.selected {
+      ::ng-deep {
+        .ui-chkbox .ui-chkbox-box.ui-state-active {
+          background-color: rgba(255, 255, 255, 0.2);
+          color: var(--color-accent);
+          border-color: var(--color-accent);
+        }
+      }
+    }
+  }
+  &:hover {
+    background-color: var(--item-focus-background-color);
+  }
+  &:focus {
+    // background-color: var(--color-accent);
+    background-color: var(--item-focus-background-color);
+    outline: 0;
+    // color: #fff;
+
+    // ::ng-deep {
+    //   .ui-chkbox .ui-chkbox-box {
+    //     background-color: rgba(255, 255, 255, 0.2) !important;
+    //     color: #fff !important;
+    //     border-color: #fff !important;
+    //   }
+    // }
+  }
+
+  yuv-checkbox {
+    margin: 2px calc(var(--app-pane-padding) / 2) 2px 2px;
+  }
+}

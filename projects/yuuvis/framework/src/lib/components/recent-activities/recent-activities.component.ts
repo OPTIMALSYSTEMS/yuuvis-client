@@ -77,7 +77,7 @@ export class RecentActivitiesComponent implements OnInit {
   modifiedQuery: SearchQuery;
 
   constructor(
-    @Attribute('id') public id,
+    @Attribute('id') public id: string,
     private userService: UserService,
     private appCache: AppCacheService,
     private systemService: SystemService,
