@@ -1,10 +1,10 @@
 <div class="pre">
-  <yuv-icon [svg]="recentItem.objectTypeIcon"></yuv-icon>
-  <div class="type">{{recentItem.objectTypeLabel}}</div>
+  <yuv-icon [svg]="recentItem?.objectTypeIcon"></yuv-icon>
+  <div class="type">{{recentItem?.objectTypeLabel}}</div>
 </div>
 <div class="main">
 
-  <div class="title">{{recentItem.title}}</div>
-  <div class="description">{{recentItem.description}}</div>
-  <div class="date">{{recentItem.date | localeDate: 'eoShortDate'}}</div>
+  <div class="title">{{recentItem?.title}}</div>
+  <div class="description">{{recentItem?.description}}</div>
+  <div class="date">{{recentItem?.date | localeDate: 'eoShortDate'}}</div>
 </div>

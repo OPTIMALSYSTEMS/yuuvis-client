@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ValuePickerItemComponent } from './value-picker-item.component';
+import { SelectableItemComponent } from './selectable-item.component';
 
-describe('ValuePickerItemComponent', () => {
-  let component: ValuePickerItemComponent;
-  let fixture: ComponentFixture<ValuePickerItemComponent>;
+describe('SelectableItemComponent', () => {
+  let component: SelectableItemComponent;
+  let fixture: ComponentFixture<SelectableItemComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ValuePickerItemComponent ]
+      declarations: [ SelectableItemComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ValuePickerItemComponent);
+    fixture = TestBed.createComponent(SelectableItemComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

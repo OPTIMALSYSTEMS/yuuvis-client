@@ -1,6 +1,6 @@
 {
   "name": "@yuuvis/core library",
-  "output": "./../../../documentation/yuuvis/core",
+  "output": "./../../../documentation/output/yuuvis/core",
   "tsconfig": "./tsconfig.lib.json",
   "customFavicon": "./../../../src/favicon.ico",
   "disableLifeCycleHooks": true,
@@ -11,7 +11,8 @@
   "disableCoverage": false,
   "coverageTestThresholdFail": false,
   "hideGenerator": true,
-  "extTheme": "./../../doc-styles",
+  "extTheme": "./../../../documentation/styles",
+  "templates": "./../../../documentation/templates",
   "navTabConfig": [
     {
       "id": "readme",
