@@ -33,6 +33,7 @@ export class ObjectDetailsComponent {
    */
   @Input()
   set dmsObject(object: DmsObject) {
+    this.contentPreviewService.resetSource();
     this._dmsObject = object;
     this._objectId = object ? object.id : null;
     if (object) {
