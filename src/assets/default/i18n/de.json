@@ -134,6 +134,7 @@
   "yuv.framework.upload-progress-overlay.remove-all": "Alle entfernen",
   "yuv.framework.upload-progress-overlay.title": "Ablagestatus",
   "yuv.client.frame.app-bar.logout": "Abmelden",
+  "yuv.client.frame.app-bar.pwa-update.msg": "Neue Version verfügbar",
   "yuv.client.state.about.author.label": "Hersteller:",
   "yuv.client.state.about.claim": "yuuvis® flex ist unsere Content Services Plattform, ein Framework für Lösungsentwickler, die auf offenen Standards basierende Content-zentrische Anwendung bei kurzer Time-to-Market erstellen wollen. Create. Scalable. Framework.",
   "yuv.client.state.about.client.version.label": "Komponenten-Version:",
