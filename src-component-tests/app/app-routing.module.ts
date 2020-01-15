@@ -5,6 +5,7 @@ import { TestAnimatedIconsComponent } from './test-animated-icons/test-animated-
 import { TestAuditComponent } from './test-audit/test-audit.component';
 import { TestContentPreviewComponent } from './test-content-preview/test-content-preview.component';
 import { TestFileDropComponent } from './test-file-drop/test-file-drop.component';
+import { TestIconsComponent } from './test-icons/test-icons/test-icons.component';
 import { TestObjectCreateComponent } from './test-object-create/test-object-create.component';
 import { TestObjectDetailsComponent } from './test-object-details/test-object-details.component';
 import { TestObjectFormEditComponent } from './test-object-form-edit/test-object-form-edit.component';
@@ -35,7 +36,8 @@ const routes: Routes = [
   { path: 'search-result-panel', component: TestSearchResultPanelComponent },
   { path: 'recent-activities', component: TestRecentActivitiesComponent },
   { path: 'summary', component: TestSummaryComponent },
-  { path: 'upload-progress-overlay', component: TestUploadProgressOverlayComponent }
+  { path: 'upload-progress-overlay', component: TestUploadProgressOverlayComponent },
+  { path: 'icons', component: TestIconsComponent }
 ];
 
 @NgModule({
