@@ -55,7 +55,10 @@
 <yuv-sidebar [display]="showSideBar" (hide)="showSideBar = false">
   <section class="content navigation-list">
     <div class="nav-item">
-      <a (click)="navigate('about')" translate>yuv.client.state.about.title</a>
+      <a (click)="navigate('dashboard')" [ngClass]="{'disabled active': currentRoute === 'dashboard'}" translate>yuv.client.state.dashboard.title</a>
+      <a (click)="navigate('create')" [ngClass]="{'disabled active': currentRoute === 'create'}" translate>yuv.client.state.create.title</a>
+      <a (click)="navigate('settings')" [ngClass]="{'disabled active': currentRoute === 'settings'}" translate>yuv.client.state.settings.title</a>
+      <a (click)="navigate('about')" [ngClass]="{'disabled active': currentRoute === 'about'}" translate>yuv.client.state.about.title</a>
     </div>
   </section>
 </yuv-sidebar>

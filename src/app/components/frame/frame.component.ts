@@ -52,13 +52,13 @@ export class FrameComponent implements OnInit {
     private authService: AuthService,
     private userService: UserService
   ) {
-    this.update.available.subscribe(update => {
-      this.swUpdateAvailable = true;
-    });
-
+    this.update.available.subscribe(update => (this.swUpdateAvailable = true));
     this.layoutService.layoutSettings$.subscribe((settings: LayoutSettings) => this.applyLayoutSettings(settings));
-
     this.connectionService.connection$.subscribe((connectionState: ConnectionState) => (this.offline = !connectionState.isOnline));
+  }
+
+  get currentRoute() {
+    return this.router.url.substr(1);
   }
 
   private applyLayoutSettings(settings: LayoutSettings) {
@@ -88,8 +88,10 @@ export class FrameComponent implements OnInit {
   }
 
   navigate(state: string) {
-    this.showSideBar = false;
-    this.router.navigate([state]);
+    if (this.currentRoute !== 'state') {
+      this.showSideBar = false;
+      this.router.navigate([state]);
+    }
   }
 
   updateWorker() {
