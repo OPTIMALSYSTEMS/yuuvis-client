@@ -42,6 +42,10 @@ export class DmsObject {
       };
     }
 
+    if (searchResultItem.options && searchResultItem.options.rights) {
+      this.rights = searchResultItem.options.rights;
+    }
+
     // TODO: setup contextfolder
   }
 

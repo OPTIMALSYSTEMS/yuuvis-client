@@ -1,3 +1,5 @@
+import { DmsObjectRights } from '../../model/dms-object.interface';
+
 export interface SearchResult {
   hasMoreItems: boolean;
   totalNumItems: number;
@@ -9,6 +11,7 @@ export interface SearchResult {
 export interface SearchResultItem {
   objectTypeId: string;
   content?: SearchResultContent;
+  options?: { rights: DmsObjectRights };
   fields: Map<string, any>;
 }
 
