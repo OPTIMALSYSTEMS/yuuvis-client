@@ -88,7 +88,7 @@ export class FrameComponent implements OnInit {
   }
 
   navigate(state: string) {
-    if (this.currentRoute !== 'state') {
+    if (this.currentRoute !== state) {
       this.showSideBar = false;
       this.router.navigate([state]);
     }
