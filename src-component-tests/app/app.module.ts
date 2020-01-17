@@ -2,7 +2,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
-import { YuvDirectivesModule, YuvFrameworkModule } from '@yuuvis/framework';
+import { YuvDirectivesModule, YuvFrameworkModule, YuvGroupedSelectModule } from '@yuuvis/framework';
 import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -12,6 +12,7 @@ import { TestAnimatedIconsComponent } from './test-animated-icons/test-animated-
 import { TestAuditComponent } from './test-audit/test-audit.component';
 import { TestContentPreviewComponent } from './test-content-preview/test-content-preview.component';
 import { TestFileDropComponent } from './test-file-drop/test-file-drop.component';
+import { TestGroupedSelectComponent } from './test-grouped-select/test-grouped-select.component';
 import { TestIconsComponent } from './test-icons/test-icons/test-icons.component';
 import { TestObjectCreateComponent } from './test-object-create/test-object-create.component';
 import { TestObjectDetailsComponent } from './test-object-details/test-object-details.component';
@@ -25,6 +26,7 @@ import { TestSearchResultPanelComponent } from './test-search-result-panel/test-
 import { TestSearchResultComponent } from './test-search-result/test-search-result.component';
 import { TestSummaryComponent } from './test-summary/test-summary.component';
 import { TestUploadProgressOverlayComponent } from './test-upload-progress-overlay/test-upload-progress-overlay.component';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -46,7 +48,8 @@ import { TestUploadProgressOverlayComponent } from './test-upload-progress-overl
     TestFileDropComponent,
     TestRecentActivitiesComponent,
     TestAnimatedIconsComponent,
-    TestIconsComponent
+    TestIconsComponent,
+    TestGroupedSelectComponent
   ],
   imports: [
     HttpClientModule,
@@ -59,7 +62,8 @@ import { TestUploadProgressOverlayComponent } from './test-upload-progress-overl
       translations: ['assets/default/i18n/'],
       environment
     }),
-    YuvDirectivesModule
+    YuvDirectivesModule,
+    YuvGroupedSelectModule
   ],
   providers: [],
   bootstrap: [AppComponent]

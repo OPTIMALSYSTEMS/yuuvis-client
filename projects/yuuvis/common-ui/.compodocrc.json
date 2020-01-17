@@ -1,17 +1,16 @@
 {
   "name": "@yuuvis/common-ui library",
-  "output": "./../../../src-docs/assets/yuuvis/common-ui",
+  "output": "./../../../documentation/output/yuuvis/common-ui",
   "tsconfig": "./tsconfig.lib.json",
+  "customFavicon": "./../../../src/favicon.ico",
   "disableLifeCycleHooks": true,
   "disablePrivate": true,
   "disableProtected": true,
   "disableInternal": true,
   "disableGraph": true,
-  "disableCoverage": true,
-  "disableDomTree": true,
-  "disableSourceCode": true,
-  "disableTemplateTab": true,
-  "disableStyleTab": true,
-  "disableRoutesGraph": true,
-  "exportFormat": "json"
+  "disableCoverage": false,
+  "coverageTestThresholdFail": false,
+  "hideGenerator": true,
+  "extTheme": "./../../../documentation/styles",
+  "templates": "./../../../documentation/templates"
 }

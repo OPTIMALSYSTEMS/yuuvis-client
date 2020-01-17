@@ -9,7 +9,7 @@ import { ObjectTypeAggregation, QuickSearchComponent } from '@yuuvis/framework';
 })
 export class TestQuickSearchComponent implements OnInit {
   @ViewChild('quickSearch', { static: true }) quickSearchEl: QuickSearchComponent;
-  private storedQuery = {
+  storedQuery = {
     size: 50,
     term: 'bart*',
     types: ['tenKolibri:qadocallsinglefields'],

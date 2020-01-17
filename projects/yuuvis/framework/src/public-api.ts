@@ -6,6 +6,7 @@ export * from './lib/components/index';
 export * from './lib/directives/index';
 export * from './lib/form/index';
 export * from './lib/framework.module';
+export * from './lib/grouped-select/index';
 export * from './lib/object-details/index';
 export * from './lib/object-form/index';
 export * from './lib/pipes/index';

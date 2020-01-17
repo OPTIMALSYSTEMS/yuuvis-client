@@ -1,3 +1,4 @@
+@import '../../../../src/scss-shared/_mixins';
 $user-panel-width: 180px;
 
 :host {
@@ -23,6 +24,21 @@ $user-panel-width: 180px;
     color: var(--text-color-caption);
     background-color: var(--app-bar-background);
     border-bottom: 1px solid var(--panel-divider-color);
+
+    .pwa-update {
+      display: flex;
+      align-items: center;
+      background-color: var(--color-accent);
+      animation: yuvFadeInDown 200ms;
+      padding: 2px;
+      border-radius: 2px;
+      span {
+        padding: 0 calc(var(--app-pane-padding) / 2);
+      }
+      yuv-icon.close {
+        box-sizing: border-box;
+      }
+    }
 
     yuv-icon#drawer {
       padding: calc(((var(--app-bar-height) - 24px) / 2) - ((var(--app-bar-height) - 32px) / 4));
@@ -119,6 +135,11 @@ $user-panel-width: 180px;
 
       &:hover {
         background-color: rgba(255, 255, 255, 0.1);
+      }
+
+      &.active {
+        pointer-events: none;
+        color: darken(#fff, 11%);
       }
     }
   }

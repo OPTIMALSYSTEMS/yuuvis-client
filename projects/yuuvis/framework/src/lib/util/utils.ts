@@ -1,1 +1,4 @@
+/**
+ * @ignore
+ */
 export class Utils {}

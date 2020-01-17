@@ -1,0 +1,93 @@
+:host {
+  //default - styling
+
+  .container {
+    display: flex;
+    flex-flow: column wrap;
+    margin: var(--app-pane-padding);
+  }
+
+  div.group {
+    margin: 8px;
+    display: block;
+    background-color: var(--panel-background);
+    padding: var(--app-pane-padding);
+    position: relative;
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.2);
+
+    .group-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: var(--color-accent);
+      font-size: var(--font-subhead);
+      margin-bottom: var(--app-pane-padding);
+
+      &.selectable {
+        cursor: pointer;
+      }
+    }
+
+    .disabled {
+      opacity: 0.3;
+    }
+
+    &:focus,
+    &:focus-within {
+      outline: 2px solid rgba(var(--color-accent-rgb), 0.4);
+      outline-offset: -2px;
+      color: #fff;
+    }
+  }
+  &:not(.multiple) {
+    ::ng-deep {
+      yuv-checkbox {
+        display: none;
+      }
+    }
+  }
+
+  .container::before,
+  .container::after {
+    content: '';
+    flex-basis: 100%;
+    width: 0;
+    order: 2;
+  }
+
+  //styling for 3 columns-container
+  .container.threeColumns {
+    height: 1150px;
+    width: 90%;
+    counter-reset: groups;
+    div.group {
+      width: 34%;
+    }
+    .group:nth-child(3n + 1) {
+      order: 1;
+    }
+    .group:nth-child(3n + 2) {
+      order: 2;
+    }
+    .group:nth-child(3n) {
+      order: 3;
+    }
+  }
+
+  //styling for twocolumns-container
+  .container.twoColumns {
+    height: 1616px;
+    width: 96%;
+    counter-reset: groups;
+    div.group {
+      width: 47%;
+    }
+
+    .group:nth-child(2n + 1) {
+      order: 1;
+    }
+    .group:nth-child(2n) {
+      order: 2;
+    }
+  }
+}

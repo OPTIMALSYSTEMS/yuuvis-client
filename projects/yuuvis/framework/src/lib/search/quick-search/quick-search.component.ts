@@ -7,11 +7,12 @@ import { timer } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { ObjectFormControlWrapper } from '../../object-form';
 import { ObjectFormControl } from '../../object-form/object-form.model';
+import { PopoverConfig } from '../../popover/popover.interface';
 import { PopoverRef } from '../../popover/popover.ref';
 import { PopoverService } from '../../popover/popover.service';
 import { addCircle, arrowDown, clear, search } from '../../svg.generated';
 import { ObjectFormUtils } from './../../object-form/object-form.utils';
-import { ValuePickerItem } from './value-picker/value-picker.component';
+import { QuickSearchPickerData, QuickSearchPickerDataItem } from './quick-search-picker/quick-search-picker.component';
 
 
 /**
@@ -50,8 +51,9 @@ export class QuickSearchComponent implements AfterViewInit {
 
   objectTypeSelectLabel: string;
 
-  availableObjectTypes: { id: string; label: string; value: string }[];
-  availableObjectTypeFields: { id: string; label: string; value: ObjectTypeField }[];
+  availableObjectTypes: QuickSearchPickerDataItem[];
+  availableObjectTypeFields: QuickSearchPickerDataItem[];
+
   private TYPES = '@';
   private TYPE_FIELDS = '#';
   lastAutoQuery: any = {};
@@ -118,7 +120,6 @@ export class QuickSearchComponent implements AfterViewInit {
     this.iconRegistry.registerIcons([arrowDown, addCircle, search, clear]);
 
     this.autofocus = this.device.isDesktop;
-    console.log('autofocus: ' + this.autofocus);
 
     this.searchQuery = new SearchQuery();
     this.searchForm = this.fb.group({
@@ -140,7 +141,7 @@ export class QuickSearchComponent implements AfterViewInit {
         .map(ot => ({
           id: ot.id,
           label: this.systemService.getLocalizedResource(`${ot.id}_label`),
-          value: ot.id
+          value: ot
         }))
         .sort(Utils.sortValues('label'));
       this.availableObjectTypes = types;
@@ -167,7 +168,7 @@ export class QuickSearchComponent implements AfterViewInit {
     const { term } = this.lastAutoQuery;
     this.searchQuery.term = term;
     this.searchForm.patchValue({ term: { label: term } });
-    this.onValuePickerResult(this.lastAutoQuery.isTypes ? 'type' : 'field', selection.value);
+    this.onPickerResult(this.lastAutoQuery.isTypes ? 'type' : 'field', selection.value);
     this.autoSelectTimer = timer(1).subscribe(t => (this.autoSelectTimer = null));
   }
 
@@ -254,32 +255,41 @@ export class QuickSearchComponent implements AfterViewInit {
   }
 
   showObjectTypePicker() {
-    this.showValuePicker(this.tplValuePicker, this.typeSelectTrigger.nativeElement, this.availableObjectTypes, 'type');
+    const pickerData: QuickSearchPickerData = {
+      type: 'type',
+      items: this.availableObjectTypes,
+      selected: this.selectedObjectTypes
+    };
+    const popoverConfig: PopoverConfig = {
+      width: '50%',
+      height: '50%',
+      data: pickerData
+    };
+    this.popoverService.open(this.tplValuePicker, popoverConfig);
   }
 
   showObjectTypeFieldPicker() {
-    this.showValuePicker(this.tplValuePicker, this.fieldSelectTrigger.nativeElement, this.availableObjectTypeFields, 'field');
+    const pickerData: QuickSearchPickerData = {
+      type: 'field',
+      items: this.availableObjectTypeFields,
+      selected: []
+    };
+    const popoverConfig: PopoverConfig = {
+      panelClass: 'fields',
+      maxHeight: 200,
+      data: pickerData
+    };
+    this.popoverService.open(this.tplValuePicker, popoverConfig, this.fieldSelectTrigger.nativeElement);
   }
 
-  private showValuePicker(template: TemplateRef<any>, target: HTMLElement, items: ValuePickerItem[], type: 'type' | 'field'): void {
-    this.popoverService.open(template, target, {
-      data: {
-        type: type,
-        items: items,
-        selected: type === 'type' ? this.selectedObjectTypes : null,
-        multiselect: type === 'type'
-      }
-    });
-  }
-
-  onValuePickerResult(type: 'type' | 'field', res: any, popoverRef?: PopoverRef) {
+  onPickerResult(type: 'type' | 'field', res: ObjectType[] | ObjectTypeField, popoverRef?: PopoverRef) {
     switch (type) {
       case 'field': {
-        this.onObjectTypeFieldSelected(res);
+        this.onObjectTypeFieldSelected(res as ObjectTypeField);
         break;
       }
       case 'type': {
-        this.onObjectTypesSelected(res);
+        this.onObjectTypesSelected(res as ObjectType[]);
         break;
       }
     }
@@ -288,7 +298,7 @@ export class QuickSearchComponent implements AfterViewInit {
     }
   }
 
-  onValuePickerCancel(popoverRef?: PopoverRef) {
+  onPickerCancel(popoverRef?: PopoverRef) {
     if (popoverRef) {
       popoverRef.close();
     }
@@ -298,8 +308,8 @@ export class QuickSearchComponent implements AfterViewInit {
     this.addFieldEntry(field, isEmpty);
   }
 
-  private onObjectTypesSelected(types: string | string[], aggregate: boolean = true) {
-    this.selectedObjectTypes = typeof types === 'string' ? [types] : types;
+  private onObjectTypesSelected(types: ObjectType | ObjectType[], aggregate: boolean = true) {
+    this.selectedObjectTypes = (Array.isArray(types) ? types : [types]).map(t => t.id);
     this.setAvailableObjectTypesFields();
 
     // get rid of existing object type fields that not match availableObjectTypeFields
@@ -357,7 +367,10 @@ export class QuickSearchComponent implements AfterViewInit {
 
       // setup target object types
       if (q.types && q.types.length) {
-        this.onObjectTypesSelected(q.types, false);
+        this.onObjectTypesSelected(
+          this.availableObjectTypes.filter(t => q.types.includes(t.id)).map(t => t.value as ObjectType),
+          false
+        );
       }
       this.searchQuery = q;
       // setup object type field form from filters
@@ -374,9 +387,10 @@ export class QuickSearchComponent implements AfterViewInit {
         this.availableObjectTypeFields
           .filter(otf => filterIDs.includes(otf.id))
           .forEach(otf => {
-            this.onObjectTypeFieldSelected(otf.value, filters[otf.id].isEmpty());
+            const field = otf.value as ObjectTypeField;
+            this.onObjectTypeFieldSelected(field, filters[otf.id].isEmpty());
             // setup values based on whether or not the type supports ranges
-            const isRange = ['datetime', 'integer', 'decimal'].includes(otf.value.propertyType);
+            const isRange = ['datetime', 'integer', 'decimal'].includes(field.propertyType);
             const cv = {};
             cv[otf.id] = !isRange
               ? filters[otf.id].firstValue
@@ -485,13 +499,14 @@ export class QuickSearchComponent implements AfterViewInit {
 
   focusInput() {
     if (this.autoTerm) {
-      // this.termInput.nativeElement.focus();
       this.autoTerm.inputEL.nativeElement.focus();
     }
   }
 
   ngAfterViewInit() {
-    this.focusInput();
+    if (this.autofocus) {
+      this.focusInput();
+    }
   }
 }
 

@@ -17,9 +17,7 @@ export class LayoutService {
   constructor(@Inject(DOCUMENT) private document: any, private appCache: AppCacheService, private userService: UserService, private backend: BackendService) {
     // load saved settings
     this.appCache.getItem(this.STORAGE_KEY).subscribe(settings => this.processLayoutSettings(settings));
-    this.userService.user$.subscribe((user: YuvUser) => {
-      this.applyDirection(user.uiDirection);
-    });
+    this.userService.user$.subscribe((user: YuvUser) => this.applyDirection(user ? user.uiDirection : 'yuv-ltr'));
   }
 
   private processLayoutSettings(settings: any) {

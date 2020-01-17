@@ -5,6 +5,7 @@ import { TestAnimatedIconsComponent } from './test-animated-icons/test-animated-
 import { TestAuditComponent } from './test-audit/test-audit.component';
 import { TestContentPreviewComponent } from './test-content-preview/test-content-preview.component';
 import { TestFileDropComponent } from './test-file-drop/test-file-drop.component';
+import { TestGroupedSelectComponent } from './test-grouped-select/test-grouped-select.component';
 import { TestIconsComponent } from './test-icons/test-icons/test-icons.component';
 import { TestObjectCreateComponent } from './test-object-create/test-object-create.component';
 import { TestObjectDetailsComponent } from './test-object-details/test-object-details.component';
@@ -25,6 +26,7 @@ const routes: Routes = [
   { path: 'audit', component: TestAuditComponent },
   { path: 'content-preview', component: TestContentPreviewComponent },
   { path: 'file-drop', component: TestFileDropComponent },
+  { path: 'grouped-select', component: TestGroupedSelectComponent },
   { path: 'responsive-tab-container', component: TestResponsiveTabContainerComponent },
   { path: 'object-create', component: TestObjectCreateComponent },
   { path: 'object-details', component: TestObjectDetailsComponent },

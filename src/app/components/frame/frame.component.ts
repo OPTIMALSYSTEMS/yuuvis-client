@@ -58,10 +58,12 @@ export class FrameComponent implements OnInit {
     this.iconRegistry.registerIcons([drawer, add, userDisabled, offline]);
 
     this.update.available.subscribe(update => (this.swUpdateAvailable = true));
-
     this.layoutService.layoutSettings$.subscribe((settings: LayoutSettings) => this.applyLayoutSettings(settings));
-
     this.connectionService.connection$.subscribe((connectionState: ConnectionState) => (this.offline = !connectionState.isOnline));
+  }
+
+  get currentRoute() {
+    return this.router.url.substr(1);
   }
 
   private applyLayoutSettings(settings: LayoutSettings) {
@@ -81,14 +83,20 @@ export class FrameComponent implements OnInit {
     }
   }
 
+  reload() {
+    location.reload();
+  }
+
   logout(event: MouseEvent) {
     event.preventDefault();
     this.userService.logout();
   }
 
   navigate(state: string) {
-    this.showSideBar = false;
-    this.router.navigate([state]);
+    if (this.currentRoute !== state) {
+      this.showSideBar = false;
+      this.router.navigate([state]);
+    }
   }
 
   updateWorker() {
