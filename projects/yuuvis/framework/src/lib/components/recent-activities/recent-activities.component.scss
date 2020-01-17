@@ -12,6 +12,9 @@
     ::ng-deep {
       .yuv-busy-overlay {
         background-color: rgba(0, 0, 0, 0.2);
+        width: 4em;
+        margin: auto;
+        border-radius: 50%;
       }
     }
   }
