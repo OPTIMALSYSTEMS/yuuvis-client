@@ -14,16 +14,16 @@ import { IconRegistryService } from '../service/iconRegistry.service';
 })
 export class IconComponent {
   private svgIcon: SVGElement;
-  private svgWidth = 24;
-  private svgHeight = 24;
+  private svgWidth = '100%';
+  private svgHeight = '100%';
 
   /**
    * Size of the svg array contains width and height in that order...
    */
   @Input()
-  set svgDim(val: number[]) {
-    this.svgWidth = val[0] || this.svgWidth;
-    this.svgHeight = val[0] || this.svgHeight;
+  set svgDim(val: any) {
+    this.svgWidth = `${val[0]}px` || this.svgWidth;
+    this.svgHeight = `${val[0]}px` || this.svgHeight;
   }
 
   /**
