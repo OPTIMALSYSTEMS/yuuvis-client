@@ -241,8 +241,9 @@ export class Utils {
     return !!(elem.offsetWidth || elem.offsetHeight || elem.getClientRects().length);
   }
 
-  public static getBaseHref() {
-    return document.getElementsByTagName('base')[0].getAttribute('href');
+  public static getBaseHref(removeTrailingSlash?: boolean) {
+    const baseHref = document.getElementsByTagName('base')[0].getAttribute('href');
+    return removeTrailingSlash ? baseHref.substr(0, baseHref.length - 1) : baseHref;
   }
 
   /**

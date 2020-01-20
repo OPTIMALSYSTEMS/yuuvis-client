@@ -1,7 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
 import { forkJoin, of } from 'rxjs';
-import { catchError, map, mergeMap } from 'rxjs/operators';
+import { catchError, map, switchMap, tap } from 'rxjs/operators';
+import { Utils } from '../../util/utils';
 import { AuthService } from '../auth/auth.service';
 import { YuvConfig } from '../config/config.interface';
 import { ConfigService } from '../config/config.service';
@@ -37,7 +38,7 @@ export class CoreInit {
         ? of([this.coreConfig.main])
         : forkJoin(
             this.coreConfig.main.map(c =>
-              this.http.get(c).pipe(
+              this.http.get(`${Utils.getBaseHref(true)}${c}`).pipe(
                 catchError(e => {
                   this.logger.error('failed to catch config file', e);
                   return of({});
@@ -55,10 +56,16 @@ export class CoreInit {
               return acc;
             }, {})
           ),
-          mergeMap((res: YuvConfig) => {
-            this.configService.set(res);
-            return this.authService.initUser().pipe(catchError(e => of(true)));
+          tap((res: YuvConfig) => this.configService.set(res)),
+          switchMap((res: YuvConfig) => {
+            return this.authService.initUser().pipe(
+              tap(x => console.log(x)),
+              catchError(e => {
+                return of(true);
+              })
+            );
           })
+          //tap(res => console.log(res))
         )
         .subscribe(
           res => {

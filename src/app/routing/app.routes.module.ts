@@ -12,12 +12,12 @@ import { SettingsComponent } from '../states/settings/settings.component';
 import { OfflineGuard } from './offline-guard/offline-guard.service';
 
 const routes: Routes = [
-  { path: 'dashboard', component: DashboardComponent, canActivate: [OfflineGuard] },
-  { path: 'settings', component: SettingsComponent, canActivate: [OfflineGuard] },
+  { path: 'dashboard', component: DashboardComponent, canDeactivate: [OfflineGuard] },
+  { path: 'settings', component: SettingsComponent, canDeactivate: [OfflineGuard] },
   { path: 'about', component: AboutComponent },
-  { path: 'create', component: CreateComponent, canActivate: [OfflineGuard], canDeactivate: [PendingChangesGuard] },
-  { path: 'result', component: ResultComponent, canActivate: [OfflineGuard], canDeactivate: [PendingChangesGuard] },
-  { path: 'object/:id', component: ObjectComponent, canActivate: [OfflineGuard], canDeactivate: [PendingChangesGuard] },
+  { path: 'create', component: CreateComponent, canDeactivate: [OfflineGuard, PendingChangesGuard] },
+  { path: 'result', component: ResultComponent, canDeactivate: [OfflineGuard, PendingChangesGuard] },
+  { path: 'object/:id', component: ObjectComponent, canDeactivate: [OfflineGuard, PendingChangesGuard] },
   // default route
   { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
   // 404 route

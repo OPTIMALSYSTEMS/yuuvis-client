@@ -56,8 +56,8 @@ import { TestUploadProgressOverlayComponent } from './test-upload-progress-overl
     FormsModule,
     ReactiveFormsModule,
     YuvFrameworkModule.forRoot({
-      main: ['assets/default/config/main.json'],
-      translations: ['assets/default/i18n/'],
+      main: ['/assets/default/config/main.json'],
+      translations: ['/assets/default/i18n/'],
       environment
     }),
     YuvDirectivesModule,

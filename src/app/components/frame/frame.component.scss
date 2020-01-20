@@ -1,5 +1,7 @@
 @import '../../../../src/scss-shared/_mixins';
 $user-panel-width: 180px;
+$pwa-update-width: 200px;
+$app-bar-zindex: 6;
 
 :host {
   position: absolute;
@@ -13,10 +15,32 @@ $user-panel-width: 180px;
   grid-template-rows: var(--app-bar-height) 1fr;
   grid-template-areas: 'header' 'content';
 
+  .pwa-update {
+    position: absolute;
+    width: $pwa-update-width;
+    top: calc(var(--app-pane-padding) / 2);
+    left: calc(50% - #{$pwa-update-width / 2});
+    z-index: $app-bar-zindex + 1;
+    display: flex;
+    align-items: center;
+    background-color: var(--color-accent);
+    color: #fff;
+    animation: yuvFadeInDown 200ms;
+    padding: 2px;
+    border-radius: 2px;
+    span {
+      padding: 0 calc(var(--app-pane-padding) / 2);
+      flex: 1;
+    }
+    yuv-icon.close {
+      box-sizing: border-box;
+    }
+  }
+
   .app-bar {
     grid-area: header;
     order: 1;
-    z-index: 6;
+    z-index: $app-bar-zindex;
     display: flex;
     flex-flow: row nowrap;
     align-items: center;
@@ -29,6 +53,7 @@ $user-panel-width: 180px;
       display: flex;
       align-items: center;
       background-color: var(--color-accent);
+      color: #fff;
       animation: yuvFadeInDown 200ms;
       padding: 2px;
       border-radius: 2px;
@@ -118,6 +143,33 @@ $user-panel-width: 180px;
     padding-top: var(--app-bar-height);
     grid-column: 1;
     grid-row: 1 / span 2;
+  }
+
+  .offline-no-user {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--main-background);
+
+    yuv-icon.logo {
+      width: 50%;
+      height: auto;
+    }
+    yuv-icon.offline {
+      padding: var(--app-pane-padding);
+      box-sizing: content-box;
+      background: var(--color-accent);
+      border-radius: 50%;
+      color: #fff;
+      margin-top: calc(var(--app-pane-padding) * 2);
+      box-shadow: 0 0 0 16px rgba(var(--color-accent-rgb), 0.2);
+    }
   }
 
   yuv-sidebar .navigation-list {
