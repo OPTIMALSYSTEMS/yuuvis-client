@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { finalize, shareReplay, tap } from 'rxjs/operators';
 
+/** soon to be gone */
 @Injectable()
 export class IconService {
   private cache = new Map<string, any>();
@@ -14,11 +15,7 @@ export class IconService {
     if (this.cache.has(uri)) {
       return of(this.cache.get(uri));
     } else {
-      return this.getViaTempCache(uri, () =>
-        this.http
-          .get(uri, { responseType: 'text' })
-          .pipe(tap(text => this.cache.set(uri, text)))
-      );
+      return this.getViaTempCache(uri, () => this.http.get(uri, { responseType: 'text' }).pipe(tap(text => this.cache.set(uri, text))));
     }
   }
 
