@@ -54,7 +54,13 @@ export class FrameComponent implements OnInit {
   ) {
     this.update.available.subscribe(update => (this.swUpdateAvailable = true));
     this.layoutService.layoutSettings$.subscribe((settings: LayoutSettings) => this.applyLayoutSettings(settings));
-    this.connectionService.connection$.subscribe((connectionState: ConnectionState) => (this.offline = !connectionState.isOnline));
+    this.connectionService.connection$.subscribe((connectionState: ConnectionState) => {
+      this.offline = !connectionState.isOnline;
+      if (!this.offline && !this.user) {
+        // going back online without ever have loaded a user
+        // this.reload();
+      }
+    });
   }
 
   get currentRoute() {
@@ -109,7 +115,9 @@ export class FrameComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.userService.user$.subscribe((user: YuvUser) => (this.user = user));
+    this.userService.user$.subscribe((user: YuvUser) => {
+      this.user = user;
+    });
 
     this.authService.authenticated$.subscribe((authenticated: boolean) => {
       if (!authenticated) {

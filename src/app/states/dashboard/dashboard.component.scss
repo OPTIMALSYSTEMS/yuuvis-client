@@ -114,7 +114,7 @@
         .label {
           order: 0;
           font-size: var(--font-subhead);
-          opacity: 0.5;
+          opacity: 0.75;
           flex: 1;
           @include bidi-style(margin-right, var(--app-pane-padding), margin-left, var(--app-pane-padding));
         }

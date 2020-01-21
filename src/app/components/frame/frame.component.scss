@@ -157,18 +157,24 @@ $app-bar-zindex: 6;
     justify-content: center;
     background-color: var(--main-background);
 
-    yuv-icon.logo {
-      width: 50%;
-      height: auto;
-    }
-    yuv-icon.offline {
-      padding: var(--app-pane-padding);
-      box-sizing: content-box;
-      background: var(--color-accent);
-      border-radius: 50%;
-      color: #fff;
-      margin-top: calc(var(--app-pane-padding) * 2);
-      box-shadow: 0 0 0 16px rgba(var(--color-accent-rgb), 0.2);
+    .box {
+      width: 300px;
+      display: flex;
+      flex-flow: column;
+      align-items: center;
+
+      h1 {
+        font-size: var(--font-display);
+        margin: 0 0 calc(var(--app-pane-padding) / 2) 0;
+        font-weight: var(--font-weight-normal);
+      }
+
+      yuv-icon {
+        width: 50%;
+        height: auto;
+        opacity: 0.2;
+        margin: var(--app-pane-padding) 0;
+      }
     }
   }
 

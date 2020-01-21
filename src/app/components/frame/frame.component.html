@@ -1,5 +1,5 @@
 <!-- PWA update indicator -->
-<div class="pwa-update" *ngIf="!swUpdateAvailable">
+<div class="pwa-update" *ngIf="swUpdateAvailable">
   <span>{{'yuv.client.frame.app-bar.pwa-update.msg' | translate}}</span>
   <yuv-icon class="btn" [iconSrc]="'assets/default/svg/ic_refresh.svg'" (click)="reload()"></yuv-icon>
   <yuv-icon class="btn close" [iconSrc]="'assets/default/svg/ic_close.svg'"
@@ -79,7 +79,13 @@
 
 <ng-template #offlineNoUser>
   <div class="offline-no-user" *ngIf="offline">
-    <yuv-icon class="logo" [iconSrc]="'assets/default/theme/splash.svg'"></yuv-icon>
-    <yuv-icon class="offline" [svg]="offlineSVG"></yuv-icon>
+
+    <div class="box">
+      <h1>{{'yuv.client.frame.offline.title'|translate}}</h1>
+      <div>{{'yuv.client.frame.offline.message'|translate}}</div>
+      <yuv-icon class="logo" [svg]="offlineSVG"></yuv-icon>
+      <button class="primary" (click)="reload()">{{'yuv.client.frame.offline.button.refresh'|translate}}</button>
+    </div>
+
   </div>
 </ng-template>
