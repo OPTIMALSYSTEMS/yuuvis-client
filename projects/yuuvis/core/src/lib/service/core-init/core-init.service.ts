@@ -38,7 +38,7 @@ export class CoreInit {
         ? of([this.coreConfig.main])
         : forkJoin(
             this.coreConfig.main.map(c =>
-              this.http.get(`${Utils.getBaseHref(true)}${c}`).pipe(
+              this.http.get(`${Utils.getBaseHref()}${c}`).pipe(
                 catchError(e => {
                   this.logger.error('failed to catch config file', e);
                   return of({});
