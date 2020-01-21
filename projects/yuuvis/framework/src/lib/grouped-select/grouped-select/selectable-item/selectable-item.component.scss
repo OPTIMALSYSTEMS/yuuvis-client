@@ -13,11 +13,31 @@
     transition: background-color, color 0.3s;
     display: flex;
     align-items: center;
+    flex-flow: row-reverse;
+
+    &.highlight {
+      .title {
+        font-weight: var(--font-weight-bold);
+        text-decoration: underline;
+      }
+    }
+
+    yuv-icon {
+      color: var(--text-color-hint);
+      opacity: 0.75;
+    }
 
     .label {
       padding: calc(var(--app-pane-padding) / 2);
       flex: 1;
       cursor: pointer;
+
+      .description {
+        color: var(--text-color-caption);
+        font-size: var(--font-caption);
+        margin-top: calc(var(--app-pane-padding) / 4);
+        font-style: italic;
+      }
     }
   }
 
@@ -41,6 +61,6 @@
   }
 
   yuv-checkbox {
-    margin: 2px calc(var(--app-pane-padding) / 2) 2px 2px;
+    margin: 2px 2px 2px calc(var(--app-pane-padding) / 2);
   }
 }

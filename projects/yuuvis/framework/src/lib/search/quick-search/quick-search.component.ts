@@ -158,6 +158,9 @@ export class QuickSearchComponent implements AfterViewInit {
         .map(ot => ({
           id: ot.id,
           label: this.systemService.getLocalizedResource(`${ot.id}_label`),
+          description: this.systemService.getLocalizedResource(`${ot.id}_description`),
+          highlight: ot.isFolder,
+          svg: this.systemService.getObjectTypeIcon(ot.id),
           value: ot
         }))
         .sort(Utils.sortValues('label'));
