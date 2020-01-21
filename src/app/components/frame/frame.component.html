@@ -20,14 +20,6 @@
     </div>
     <div class="right">
 
-      <!-- PWA update indicator -->
-      <div class="pwa-update" *ngIf="swUpdateAvailable">
-        <span>{{'yuv.client.frame.app-bar.pwa-update.msg' | translate}}</span>
-        <yuv-icon class="btn" [iconSrc]="'assets/default/svg/ic_refresh.svg'" (click)="reload()"></yuv-icon>
-        <yuv-icon class="btn close" [iconSrc]="'assets/default/svg/ic_close.svg'"
-          (click)="swUpdateAvailable = !swUpdateAvailable"></yuv-icon>
-      </div>
-
       <yuv-upload-progress-overlay (resultItemClick)="onResultItemClick($event)"></yuv-upload-progress-overlay>
       <yuv-icon *ngIf="offline" class="offline-icon" [svg]="offlineSVG" title="offline"></yuv-icon>
       <div yuvOfflineDisabled class="user" (click)="op.toggle($event)">
