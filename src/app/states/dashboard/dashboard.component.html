@@ -1,6 +1,5 @@
 <div class="top">
-  <yuv-quick-search #quickSearch [query]="appQuery" (typeAggregation)="onTypeAggregation($event)"
-    (querySubmit)="onQuickSearchQuery($event)"></yuv-quick-search>
+
 
   <div class="aggs" *ngIf="aggs?.length">
     <div class="container">
@@ -14,6 +13,11 @@
       </div>
     </div>
   </div>
+
+
+  <yuv-quick-search #quickSearch [query]="appQuery" (typeAggregation)="onTypeAggregation($event)"
+    (querySubmit)="onQuickSearchQuery($event)"></yuv-quick-search>
+
 </div>
 
 <div class="bottom">

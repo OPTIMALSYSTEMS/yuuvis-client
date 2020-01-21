@@ -17,7 +17,7 @@ import {
   Utils
 } from '@yuuvis/core';
 import { AutoComplete } from 'primeng/autocomplete';
-import { timer } from 'rxjs';
+import { Subscription, timer } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { ObjectFormControlWrapper } from '../../object-form';
 import { ObjectFormControl } from '../../object-form/object-form.model';
@@ -59,6 +59,7 @@ export class QuickSearchComponent implements AfterViewInit {
   autofocus: boolean = false;
   searchForm: FormGroup;
   searchFieldsForm: FormGroup;
+  searchFieldsFormSubscription: Subscription;
   invalidTerm: boolean;
   error: boolean;
   resultCount: number = null;
@@ -198,7 +199,7 @@ export class QuickSearchComponent implements AfterViewInit {
   private initSearchFieldsForm() {
     // object type field form (form holding the query fields)
     this.searchFieldsForm = this.fb.group({});
-    this.searchFieldsForm.valueChanges.pipe(debounceTime(500)).subscribe(formValue => {
+    this.searchFieldsFormSubscription = this.searchFieldsForm.valueChanges.pipe(debounceTime(500)).subscribe(formValue => {
       this.onSearchFieldFormChange(formValue);
     });
   }
@@ -277,8 +278,8 @@ export class QuickSearchComponent implements AfterViewInit {
       selected: this.selectedObjectTypes
     };
     const popoverConfig: PopoverConfig = {
-      width: '50%',
-      height: '50%',
+      width: '55%',
+      height: '70%',
       data: pickerData
     };
     this.popoverService.open(this.tplValuePicker, popoverConfig);
@@ -507,6 +508,9 @@ export class QuickSearchComponent implements AfterViewInit {
   private resetObjectTypeFields() {
     this.formFields = [];
     this.searchFieldsForm = null;
+    if (this.searchFieldsFormSubscription) {
+      this.searchFieldsFormSubscription.unsubscribe();
+    }
     this.searchQuery.clearFilters();
   }
   private resetObjectTypes() {

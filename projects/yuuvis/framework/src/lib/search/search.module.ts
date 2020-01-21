@@ -1,3 +1,4 @@
+import { A11yModule } from '@angular/cdk/a11y';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -34,7 +35,8 @@ import { SearchResultComponent } from './search-result/search-result.component';
     AutoCompleteModule,
     YuvFormModule,
     YuvDirectivesModule,
-    YuvGroupedSelectModule
+    YuvGroupedSelectModule,
+    A11yModule
   ],
   exports: [QuickSearchComponent, SearchResultComponent, SearchResultPanelComponent]
 })

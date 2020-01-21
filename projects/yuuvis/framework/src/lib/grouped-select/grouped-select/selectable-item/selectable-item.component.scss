@@ -1,8 +1,13 @@
 :host {
   display: block;
-  margin-bottom: calc(var(--app-pane-padding) / 2);
-  padding: 2px;
+
+  padding: calc(var(--app-pane-padding) / 4);
+  border-bottom: 1px solid var(--panel-divider-color);
   color: var(--text-color-body);
+
+  &:last-child {
+    border-bottom: none !important;
+  }
 
   > div {
     transition: background-color, color 0.3s;
@@ -10,7 +15,7 @@
     align-items: center;
 
     .label {
-      padding: calc(var(--app-pane-padding) / 4);
+      padding: calc(var(--app-pane-padding) / 2);
       flex: 1;
       cursor: pointer;
     }
@@ -31,18 +36,8 @@
     background-color: var(--item-focus-background-color);
   }
   &:focus {
-    // background-color: var(--color-accent);
     background-color: var(--item-focus-background-color);
     outline: 0;
-    // color: #fff;
-
-    // ::ng-deep {
-    //   .ui-chkbox .ui-chkbox-box {
-    //     background-color: rgba(255, 255, 255, 0.2) !important;
-    //     color: #fff !important;
-    //     border-color: #fff !important;
-    //   }
-    // }
   }
 
   yuv-checkbox {

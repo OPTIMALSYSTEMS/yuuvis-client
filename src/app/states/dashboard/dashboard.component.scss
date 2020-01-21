@@ -1,10 +1,6 @@
 @import '../../../../src/scss-shared/_mixins';
 
 :host-context(.screen-s) {
-  // justify-content: flex-start;
-  // width: 100vw;
-  // padding-top: calc(var(--app-bar-height) + calc(var(--app-pane-padding) * 3));
-
   .top {
     justify-content: flex-start;
   }
@@ -33,6 +29,13 @@
     margin-top: calc((100vh / 4) - var(--app-bar-height));
     flex: 1;
     min-height: 0;
+
+    yuv-quick-search {
+      order: 0;
+    }
+    .aggs {
+      order: 1;
+    }
 
     yuv-quick-search,
     .aggs {
