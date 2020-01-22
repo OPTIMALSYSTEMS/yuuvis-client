@@ -15,7 +15,7 @@ import {
 import { IconRegistryService } from '@yuuvis/common-ui';
 import { LayoutService, LayoutSettings } from '@yuuvis/framework';
 import { filter } from 'rxjs/operators';
-import { drawer, add, userDisabled, offline } from '../../../assets/default/svg/svg';
+import { drawer, add, userDisabled, offline, refresh } from '../../../assets/default/svg/svg';
 
 @Component({
   selector: 'yuv-frame',
@@ -55,7 +55,7 @@ export class FrameComponent implements OnInit {
     private iconRegistry: IconRegistryService
   ) {
 
-    this.iconRegistry.registerIcons([drawer, add, userDisabled, offline]);
+    this.iconRegistry.registerIcons([drawer, refresh, add, userDisabled, offline]);
 
     this.update.available.subscribe(update => (this.swUpdateAvailable = true));
     this.layoutService.layoutSettings$.subscribe((settings: LayoutSettings) => this.applyLayoutSettings(settings));

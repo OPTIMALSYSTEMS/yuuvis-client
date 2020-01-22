@@ -1,8 +1,8 @@
 <div class="content grid-container" [ngClass]="{ 'toolbar-open': toolbarOpen }">
   <div class="toolbar">
-    <!-- <yuv-icon icon="searchFilter"></yuv-icon> -->
+    <!-- <yuv-icon [icon]="'searchFilter'"></yuv-icon> -->
     <div class="toggle">
-      <yuv-icon icon="arrowNext" (click)="toolbarOpen = !toolbarOpen"></yuv-icon>
+      <yuv-icon [icon]="'arrowNext'" (click)="toolbarOpen = !toolbarOpen"></yuv-icon>
     </div>
     <div class="toolbar-content" *ngIf="toolbarOpen">
       <yuv-quick-search class="inline" [query]="query" (querySubmit)="onQuickSearchQuery($event)"> </yuv-quick-search>
@@ -28,10 +28,10 @@
 
           <div class="navigation">
             <button [disabled]="!tableData?.rows?.length" (click)="goTo('prev')">
-              <yuv-icon class="prev" icon="arrowNext"></yuv-icon>
+              <yuv-icon class="prev" [icon]="'arrowNext'"></yuv-icon>
             </button>
             <button [disabled]="!tableData?.rows?.length" (click)="goTo('next')">
-              <yuv-icon class="next" icon="arrowNext"></yuv-icon>
+              <yuv-icon class="next" [icon]="'arrowNext'"></yuv-icon>
             </button>
           </div>
 
@@ -46,10 +46,10 @@
 
           <div class="controls" *ngIf="hasPages">
             <button [disabled]="pagination.page === 0" (click)="goToPage(1)">
-              <yuv-icon class="first" icon="arrowLast"></yuv-icon>
+              <yuv-icon class="first" [icon]="'arrowLast'"></yuv-icon>
             </button>
             <button [disabled]="pagination.page === 0" (click)="goToPage(pagination.page - 1)">
-              <yuv-icon class="prev" icon="arrowNext"></yuv-icon>
+              <yuv-icon class="prev" [icon]="'arrowNext'"></yuv-icon>
             </button>
 
             <form (ngSubmit)="onPagingFormSubmit()" [formGroup]="pagingForm">
@@ -58,10 +58,10 @@
             </form>
 
             <button [disabled]="pagination.page === pagination.pages" (click)="goToPage(pagination.page + 1)">
-              <yuv-icon class="next" icon="arrowNext"></yuv-icon>
+              <yuv-icon class="next" [icon]="'arrowNext'"></yuv-icon>
             </button>
             <button [disabled]="pagination.page === pagination.pages" (click)="goToPage(pagination.pages)">
-              <yuv-icon class="last" icon="arrowLast"></yuv-icon>
+              <yuv-icon class="last" [icon]="'arrowLast'"></yuv-icon>
             </button>
           </div>
         </div>

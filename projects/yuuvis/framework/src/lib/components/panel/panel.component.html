@@ -3,7 +3,7 @@
     <ng-content select=".header-icon"></ng-content>
   </div>
   <div class="icon close" *ngIf="enableStandaloneBackButton">
-    <yuv-icon icon="clear" (click)="clickBackButton()"></yuv-icon>
+    <yuv-icon [icon]="'clear'" (click)="clickBackButton()"></yuv-icon>
   </div>
   <header class="header_text">
     <div class="header_title">{{ title }}</div>

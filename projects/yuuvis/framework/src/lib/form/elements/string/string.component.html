@@ -12,9 +12,9 @@
 
 <div class="classify" [ngClass]="{ empty: !value || situation === 'SEARCH' }">
   <a href="mailto:{{ value }}" *ngIf="classification === 'email' && valid">
-    <yuv-icon icon="envelope"></yuv-icon>
+    <yuv-icon [icon]="'envelope'"></yuv-icon>
   </a>
   <a target="_blank" href="{{ value }}" *ngIf="classification === 'url' && valid">
-    <yuv-icon icon="globe"></yuv-icon>
+    <yuv-icon [icon]="'globe'"></yuv-icon>
   </a>
 </div>

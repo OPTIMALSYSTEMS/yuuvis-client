@@ -1,27 +1,27 @@
 <!-- PWA update indicator -->
 <div class="pwa-update" *ngIf="swUpdateAvailable">
   <span>{{'yuv.client.frame.app-bar.pwa-update.msg' | translate}}</span>
-  <yuv-icon class="btn" [iconSrc]="'assets/default/svg/ic_refresh.svg'" (click)="reload()"></yuv-icon>
-  <yuv-icon class="btn close" [iconSrc]="'assets/default/svg/ic_close.svg'"
-    (click)="swUpdateAvailable = !swUpdateAvailable"></yuv-icon>
+  <yuv-icon class="btn" [icon]="'refresh'" (click)="reload()"></yuv-icon>
+  <yuv-icon class="btn close" [icon]="'close'" (click)="swUpdateAvailable = !swUpdateAvailable"></yuv-icon>
 </div>
 
 <ng-container *ngIf="user; else offlineNoUser">
   <div class="app-bar" *ngIf="!hideAppBar">
 
-    <yuv-icon class="btn" id="drawer" (click)="showSideBar = true" replaceUrl
-      [iconSrc]="'assets/default/svg/ic_drawer.svg'"></yuv-icon>
+    <yuv-icon class="btn" id="drawer" (click)="showSideBar = true" replaceUrl [icon]="'drawer'"></yuv-icon>
     <a yuvOfflineDisabled routerLink="/" id="logo">
       <yuv-icon class="btn" [iconSrc]="'assets/default/theme/app.icon.svg'"></yuv-icon>
     </a>
     <div yuvOfflineDisabled class="main">
-      <yuv-icon class="btn" routerLink="/create" [title]="'yuv.framework.object-create.header.title' | translate"
-        [iconSrc]="'assets/default/svg/ic_add.svg'"></yuv-icon>
+      <yuv-icon class="btn" routerLink="/create" 
+                [title]="'yuv.framework.object-create.header.title' | translate"
+                [icon]="'add'">
+      </yuv-icon>
     </div>
     <div class="right">
 
       <yuv-upload-progress-overlay (resultItemClick)="onResultItemClick($event)"></yuv-upload-progress-overlay>
-      <yuv-icon *ngIf="offline" class="offline-icon" [svg]="offlineSVG" title="offline"></yuv-icon>
+      <yuv-icon *ngIf="offline" class="offline-icon" [svg]="offline" title="offline"></yuv-icon>
       <div yuvOfflineDisabled class="user" (click)="op.toggle($event)">
         <yuv-user-avatar [user]="user"></yuv-user-avatar>
       </div>
@@ -31,7 +31,7 @@
           <div class="avatar" [ngClass]="{ enabled: user?.enabled }">
             <yuv-user-avatar [user]="user"></yuv-user-avatar>
             <div class="user-title">
-              <yuv-icon [iconSrc]="'assets/default/svg/ic_user_disabled.svg'"></yuv-icon>
+              <yuv-icon [icon]="'userDisabled'"></yuv-icon>
               <div>
                 <span class="usertitle">{{ user?.title }}</span>
                 <span class="email" title="{{ user?.email }}">{{ user?.email }}</span>
@@ -75,7 +75,7 @@
     <div class="box">
       <h1>{{'yuv.client.frame.offline.title'|translate}}</h1>
       <div>{{'yuv.client.frame.offline.message'|translate}}</div>
-      <yuv-icon class="logo" [svg]="offlineSVG"></yuv-icon>
+      <yuv-icon class="logo" [svg]="offline"></yuv-icon>
       <button class="primary" (click)="reload()">{{'yuv.client.frame.offline.button.refresh'|translate}}</button>
     </div>
 

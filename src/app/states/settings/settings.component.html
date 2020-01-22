@@ -30,7 +30,7 @@
             <p-accordionTab [transitionOptions]="'0ms'" header="{{'yuv.client.state.settings.roles'|translate}}">
 
               <div class="role" *ngFor="let role of (user$ | async).authorities">
-                <yuv-icon icon="shield"></yuv-icon>
+                <yuv-icon [icon]="'shield'"></yuv-icon>
                 <div class="name">{{role}}</div>
               </div>
             </p-accordionTab>
