@@ -43,14 +43,16 @@ export class UserService {
   public setCurrentUser(user: YuvUser) {
     this.user = user;
     // this.user.setImageBase(this.backend.getServiceBase());
-    this.backend.setHeader('Accept-Language', this.user.getClientLocale());
+    if (user) {
+      this.backend.setHeader('Accept-Language', this.user.getClientLocale());
 
-    const languages = this.config.getClientLocales().map(lang => lang.iso);
-    const userLang = user.getClientLocale();
-    if (languages.indexOf(userLang) !== -1) {
-      this.logger.debug("Setting client locale to '" + userLang + "'");
-      this.translate.use(userLang);
-      this.user.uiDirection = this.getUiDirection(userLang);
+      const languages = this.config.getClientLocales().map(lang => lang.iso);
+      const userLang = user.getClientLocale();
+      if (languages.indexOf(userLang) !== -1) {
+        this.logger.debug("Setting client locale to '" + userLang + "'");
+        this.translate.use(userLang);
+        this.user.uiDirection = this.getUiDirection(userLang);
+      }
     }
     this.userSource.next(this.user);
   }

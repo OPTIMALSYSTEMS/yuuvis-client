@@ -1,18 +1,43 @@
 :host {
   display: block;
-  margin-bottom: calc(var(--app-pane-padding) / 2);
-  padding: 2px;
+
+  padding: calc(var(--app-pane-padding) / 4);
+  border-bottom: 1px solid var(--panel-divider-color);
   color: var(--text-color-body);
+
+  &:last-child {
+    border-bottom: none !important;
+  }
 
   > div {
     transition: background-color, color 0.3s;
     display: flex;
     align-items: center;
+    flex-flow: row-reverse;
+
+    &.highlight {
+      .title {
+        font-weight: var(--font-weight-bold);
+        text-decoration: underline;
+      }
+    }
+
+    yuv-icon {
+      color: var(--text-color-hint);
+      opacity: 0.75;
+    }
 
     .label {
-      padding: calc(var(--app-pane-padding) / 4);
+      padding: calc(var(--app-pane-padding) / 2);
       flex: 1;
       cursor: pointer;
+
+      .description {
+        color: var(--text-color-caption);
+        font-size: var(--font-caption);
+        margin-top: calc(var(--app-pane-padding) / 4);
+        font-style: italic;
+      }
     }
   }
 
@@ -31,21 +56,11 @@
     background-color: var(--item-focus-background-color);
   }
   &:focus {
-    // background-color: var(--color-accent);
     background-color: var(--item-focus-background-color);
     outline: 0;
-    // color: #fff;
-
-    // ::ng-deep {
-    //   .ui-chkbox .ui-chkbox-box {
-    //     background-color: rgba(255, 255, 255, 0.2) !important;
-    //     color: #fff !important;
-    //     border-color: #fff !important;
-    //   }
-    // }
   }
 
   yuv-checkbox {
-    margin: 2px calc(var(--app-pane-padding) / 2) 2px 2px;
+    margin: 2px 2px 2px calc(var(--app-pane-padding) / 2);
   }
 }

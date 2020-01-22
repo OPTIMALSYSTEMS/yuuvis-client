@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { finalize, shareReplay, tap } from 'rxjs/operators';
 
+/** soon to be gone */
 @Injectable()
 export class IconService {
   private cache = new Map<string, any>();

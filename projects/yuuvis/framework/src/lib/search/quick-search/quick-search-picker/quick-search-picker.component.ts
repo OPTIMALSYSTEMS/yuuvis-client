@@ -122,8 +122,8 @@ export class QuickSearchPickerComponent {
 // Input data for the quick search picker component
 export interface QuickSearchPickerData {
   // the type of data item provided
-  type: 'type' | 'field';
   // actual items based on the given type
+  type: 'type' | 'field';
   items: QuickSearchPickerDataItem[];
   // array of item IDs that should be selected upfront
   selected: string[];
@@ -132,5 +132,8 @@ export interface QuickSearchPickerData {
 export interface QuickSearchPickerDataItem {
   id: string;
   label: string;
+  description?: string;
+  svg?: string;
+  highlight?: boolean;
   value: ObjectType | ObjectTypeField;
 }

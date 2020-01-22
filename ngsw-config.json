@@ -3,21 +3,38 @@
   "index": "/index.html",
   "dataGroups": [
     {
-      "name": "api",
-      "urls": ["/web-api/**"],
+      "name": "user",
+      "urls": ["/api-web/user/settings", "/api-web/user/whoami"],
       "cacheConfig": {
-        "maxSize": 0,
-        "maxAge": "0u",
+        "maxSize": 10,
+        "maxAge": "5m",
+        "strategy": "freshness"
+      }
+    },
+    {
+      "name": "schema",
+      "urls": ["/api-web/resources/text", "/api/dms/schema"],
+      "cacheConfig": {
+        "maxSize": 10,
+        "maxAge": "5m",
         "strategy": "freshness"
       }
     }
   ],
   "assetGroups": [
     {
+      "name": "index",
+      "installMode": "lazy",
+      "updateMode": "prefetch",
+      "resources": {
+        "files": ["/index.html"]
+      }
+    },
+    {
       "name": "app",
       "installMode": "lazy",
       "resources": {
-        "files": ["/favicon.ico", "index.html", "/*.css", "/*.js"]
+        "files": ["/favicon.ico", "/*.css", "/*.js"]
       }
     },
     {
