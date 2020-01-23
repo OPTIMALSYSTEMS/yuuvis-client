@@ -29,6 +29,6 @@ export class DeleteActionComponent extends DmsObjectTarget implements ComponentA
   }
 
   isExecutable(element: DmsObject) {
-    return observableOf(element && element.rights && element.rights.delete);
+    return observableOf(element && element.rights && element.rights.deleteObject);
   }
 }

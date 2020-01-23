@@ -14,11 +14,12 @@ export class DmsObject {
   isFolder: boolean;
   objectTypeId: string;
   rights: DmsObjectRights = {
-    select: false,
-    edit: false,
-    delete: false,
-    finalize: false,
-    recycle: false
+    readIndexData: false,
+    readContent: false,
+    writeIndexData: false,
+    writeContent: false,
+    deleteObject: false,
+    deleteContent: false
   };
   contentStreamAllowed: string;
   version: number;
@@ -42,8 +43,13 @@ export class DmsObject {
       };
     }
 
-    if (searchResultItem.options && searchResultItem.options.rights) {
-      this.rights = searchResultItem.options.rights;
+    if (searchResultItem.permissions) {
+      this.rights.readIndexData = searchResultItem.permissions.read.includes('metadata');
+      this.rights.readContent = searchResultItem.permissions.read.includes('content');
+      this.rights.writeIndexData = searchResultItem.permissions.write.includes('metadata');
+      this.rights.writeContent = searchResultItem.permissions.write.includes('content');
+      this.rights.deleteObject = searchResultItem.permissions.delete.includes('object');
+      this.rights.deleteContent = searchResultItem.permissions.delete.includes('content');
     }
 
     // TODO: setup contextfolder

@@ -41,8 +41,7 @@
 
     <p-tabPanel [id]="'indexdata'" [header]="'yuv.framework.object-details.tabs.indexdata.title' | translate" [headerStyleClass]="'indexdata'">
       <ng-template pTemplate="content">
-        <yuv-object-form-edit [dmsObject]="dmsObject" (indexDataSaved)="onIndexdataSaved($event)" [formDisabled]="!dmsObject.rights.edit">
-        </yuv-object-form-edit>
+        <yuv-object-form-edit [dmsObject]="dmsObject" (indexDataSaved)="onIndexdataSaved($event)"> </yuv-object-form-edit>
       </ng-template>
     </p-tabPanel>
 

@@ -1,12 +1,11 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { forkJoin, Observable } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import { DmsObject } from '../../model/dms-object.model';
 import { ApiBase } from '../backend/api.enum';
 import { BackendService } from '../backend/backend.service';
 import { EventService } from '../event/event.service';
 import { YuvEventType } from '../event/events';
-import { SearchFilter, SearchQuery } from '../search/search-query.model';
 import { SearchService } from '../search/search.service';
 import { SearchResult, SearchResultItem } from '../search/search.service.interface';
 import { BaseObjectTypeField } from '../system/system.enum';
@@ -67,7 +66,12 @@ export class DmsService {
    */
   getDmsObject(id: string, version?: number, intent?: string): Observable<DmsObject> {
     // TODO: Support version and intent params as well
-    return this.getDmsObjects([id]).pipe(map(res => res[0]));
+    return this.backend.get('/dms/objects/' + id + '?includePermissions=true', ApiBase.core).pipe(
+      map(res => {
+        const item: SearchResultItem = this.searchService.toSearchResult(res).items[0];
+        return this.searchResultToDmsObject(item);
+      })
+    );
   }
 
   /**
@@ -88,9 +92,7 @@ export class DmsService {
    * @param ids List of IDs of objects to be retrieved
    */
   getDmsObjects(ids: string[]): Observable<DmsObject[]> {
-    const q = new SearchQuery();
-    q.addFilter(new SearchFilter(BaseObjectTypeField.OBJECT_ID, SearchFilter.OPERATOR.IN, ids));
-    return this.searchService.search(q).pipe(map((res: SearchResult) => res.items.map(i => this.searchResultToDmsObject(i))));
+    return forkJoin(ids.map(id => this.getDmsObject(id)));
   }
 
   private searchResultToDmsObject(resItem: SearchResultItem): DmsObject {

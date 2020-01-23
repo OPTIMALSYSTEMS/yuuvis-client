@@ -5,11 +5,12 @@ export interface DmsObjectContent {
   mimeType: string;
 }
 export interface DmsObjectRights {
-  select: boolean;
-  edit: boolean;
-  delete: boolean;
-  finalize: boolean;
-  recycle: boolean;
+  readIndexData: boolean;
+  readContent: boolean;
+  writeIndexData: boolean;
+  writeContent: boolean;
+  deleteObject: boolean;
+  deleteContent: boolean;
 }
 export interface DmsObjectContext {
   id: string;
