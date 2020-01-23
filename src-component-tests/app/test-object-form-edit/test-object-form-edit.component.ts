@@ -9,15 +9,21 @@ import { DmsObject } from '@yuuvis/core';
 export class TestObjectFormEditComponent implements OnInit {
   dmsObject: DmsObject;
   disableWholeForm: boolean = false;
+  visible: boolean;
 
   constructor() {}
 
   toggleDisabled() {
-    this.disableWholeForm = !this.disableWholeForm;
+    this.visible = false;
+    setTimeout(() => {
+      this.disableWholeForm = !this.disableWholeForm;
+      this.visible = true;
+    }, 0);
   }
 
   setDmsObject(o: DmsObject) {
     this.dmsObject = o;
+    this.visible = true;
   }
 
   ngOnInit() {}

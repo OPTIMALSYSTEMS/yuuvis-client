@@ -1,5 +1,6 @@
-<div [ngClass]="{selected: selected, highlight: item.highlight}">
-    <yuv-checkbox tabindex="-1" [(ngModel)]="selected" (ngModelChange)="toggleSelected($event)"></yuv-checkbox>
+<div [ngClass]="{selected: selected}">
+    <yuv-checkbox tabindex="-1" [(ngModel)]="selected" (ngModelChange)="toggleSelected($event)">
+    </yuv-checkbox>
     <div class="label" (click)="emitSelect()">
         <div class="title">{{item.label}}</div>
         <div class="description">{{item.description}}</div>
