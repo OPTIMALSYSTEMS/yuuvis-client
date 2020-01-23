@@ -1,5 +1,5 @@
 import { FocusableOption } from '@angular/cdk/a11y';
-import { Component, ElementRef, EventEmitter, HostListener, Input, Output } from '@angular/core';
+import { Component, ElementRef, EventEmitter, HostBinding, HostListener, Input, Output } from '@angular/core';
 import { Selectable, SelectableInternal } from './../grouped-select.interface';
 
 /**
@@ -18,8 +18,11 @@ export class SelectableItemComponent implements FocusableOption {
     this.toggleSelected(!this.selected);
   }
 
+  @HostBinding('class.highlight') _highlight: boolean;
+
   @Input() set item(item: Selectable) {
     this._item = item;
+    this._highlight = item.highlight;
   }
   get item() {
     return this._item;

@@ -4,5 +4,7 @@
   <button (click)="toggleDisabled()">toggle disabled</button>
 </div>
 
-<yuv-object-form-edit class="cmp" [dmsObject]="dmsObject" (indexDataSaved)="onIndexDataSaved($event)"
-  [formDisabled]="disableWholeForm"></yuv-object-form-edit>
+<ng-container *ngIf="visible">
+  <yuv-object-form-edit class="cmp" [dmsObject]="dmsObject" (indexDataSaved)="onIndexDataSaved($event)"
+    [formDisabled]="disableWholeForm"></yuv-object-form-edit>
+</ng-container>

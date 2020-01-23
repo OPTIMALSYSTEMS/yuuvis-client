@@ -14,9 +14,21 @@ body {
 
   button {
     font-family: monospace;
+    background-color: rgba(0, 0, 0, 0.1);
+    margin: 2px;
     &.current {
       background-color: black;
       color: white;
+    }
+  }
+
+  .group {
+    display: inline-block;
+    border: 1px dashed rgba(0, 0, 0, 0.2);
+    padding: 2px;
+    margin: 2px;
+    strong {
+      padding: 0 8px;
     }
   }
 }

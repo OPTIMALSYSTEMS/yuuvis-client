@@ -1,7 +1,7 @@
 :host {
   display: block;
 
-  padding: calc(var(--app-pane-padding) / 4);
+  padding: calc(var(--app-pane-padding) / 4) var(--app-pane-padding);
   border-bottom: 1px solid var(--panel-divider-color);
   color: var(--text-color-body);
 
@@ -9,18 +9,25 @@
     border-bottom: none !important;
   }
 
-  > div {
-    transition: background-color, color 0.3s;
-    display: flex;
-    align-items: center;
-    flex-flow: row-reverse;
-
-    &.highlight {
+  &.highlight {
+    background-color: var(--item-focus-background-color);
+    > div {
       .title {
         font-weight: var(--font-weight-bold);
         text-decoration: underline;
       }
     }
+    &:focus {
+      background-color: var(--item-focus-border-color);
+      // outline: 0;
+    }
+  }
+
+  > div {
+    transition: background-color, color 0.3s;
+    display: flex;
+    align-items: center;
+    flex-flow: row-reverse;
 
     yuv-icon {
       color: var(--text-color-hint);
@@ -46,8 +53,8 @@
       ::ng-deep {
         .ui-chkbox .ui-chkbox-box.ui-state-active {
           background-color: rgba(255, 255, 255, 0.2);
-          color: var(--color-accent);
-          border-color: var(--color-accent);
+          color: var(--text-color-caption);
+          border-color: var(--text-color-caption);
         }
       }
     }

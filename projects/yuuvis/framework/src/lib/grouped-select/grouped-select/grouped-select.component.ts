@@ -89,7 +89,7 @@ export class GroupedSelectComponent implements AfterViewInit, ControlValueAccess
   get multiple() {
     return this._multiple;
   }
-  @Input() columnWidth: number = 200;
+  @Input() columnWidth: number = 250;
 
   /**
    * Emitted when the component 'approves' the current selection.
@@ -115,26 +115,6 @@ export class GroupedSelectComponent implements AfterViewInit, ControlValueAccess
   constructor(@Attribute('autofocus') autofocus: string, @Attribute('enableSelectAll') enableSelectAll: string, private elRef: ElementRef) {
     this.autofocus = autofocus === 'true' ? true : false;
     this.enableSelectAll = enableSelectAll === 'true' ? true : false;
-
-    this.resized$
-      .pipe(
-        debounce(() => {
-          return timer(this.resizeDebounce);
-        }),
-        tap(() => {
-          this.resizeDebounce = 500;
-        })
-      )
-      .subscribe(v => {
-        let c = 'oneColumn';
-        if (v.width > 2 * this.columnWidth && v.width < 3 * this.columnWidth) {
-          c = 'twoColumns';
-        }
-        if (v.width > 3 * this.columnWidth) {
-          c = 'threeColumns';
-        }
-        this.columns = c;
-      });
   }
 
   groupFocused(group: SelectableGroup) {
@@ -176,7 +156,7 @@ export class GroupedSelectComponent implements AfterViewInit, ControlValueAccess
   }
 
   toggleAllOfGroup(group: SelectableGroup) {
-    if (this.enableSelectAll) {
+    if (this.enableSelectAll && this._multiple) {
       const selectedItemsIDs = this.selectedItems.map(i => i.id);
       const groupItemIDs = group.items.map(i => i.id);
       const contained = group.items.filter(i => selectedItemsIDs.includes(i.id));
@@ -217,5 +197,25 @@ export class GroupedSelectComponent implements AfterViewInit, ControlValueAccess
     if (this.autofocus && this.groups.length > 0) {
       this.elRef.nativeElement.querySelector('.group').focus();
     }
+
+    this.resized$
+      .pipe(
+        debounce(() => {
+          return timer(this.resizeDebounce);
+        }),
+        tap(() => {
+          this.resizeDebounce = 500;
+        })
+      )
+      .subscribe(v => {
+        let c = 'oneColumn';
+        if (v.width > 2 * this.columnWidth && v.width < 3 * this.columnWidth) {
+          c = 'twoColumns';
+        }
+        if (v.width > 3 * this.columnWidth) {
+          c = 'threeColumns';
+        }
+        this.columns = c;
+      });
   }
 }
