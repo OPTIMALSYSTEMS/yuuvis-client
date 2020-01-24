@@ -1,4 +1,9 @@
 :host {
+  p-triStateCheckbox:focus,
+  p-checkbox:focus {
+    outline: 0;
+  }
+
   .tristate {
     display: flex;
     align-items: center;

@@ -56,7 +56,7 @@ export class QuickSearchPickerComponent {
   constructor(private systemService: SystemService) {}
 
   private getObjectTypeSelectables(): SelectableGroup[] {
-    // TODO: Apply a different property to group by one grouping is available
+    // TODO: Apply a different property to group once grouping is available
     const tmp = this._data.items.map(i => ({
       ...i,
       group: this.systemService.getLocalizedResource(`${i.id}_description`)

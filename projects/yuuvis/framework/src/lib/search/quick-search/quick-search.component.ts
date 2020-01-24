@@ -1,7 +1,22 @@
 import { AfterViewInit, Component, ElementRef, EventEmitter, HostBinding, HostListener, Input, Output, TemplateRef, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { IconRegistryService } from '@yuuvis/common-ui';
-import { AggregateResult, BaseObjectTypeField, ContentStreamField, DeviceService, ObjectType, ObjectTypeField, RangeValue, RetentionField, SearchFilter, SearchQuery, SearchService, SystemService, TranslateService, Utils } from '@yuuvis/core';
+import {
+  AggregateResult,
+  BaseObjectTypeField,
+  ContentStreamField,
+  DeviceService,
+  ObjectType,
+  ObjectTypeField,
+  RangeValue,
+  RetentionField,
+  SearchFilter,
+  SearchQuery,
+  SearchService,
+  SystemService,
+  TranslateService,
+  Utils
+} from '@yuuvis/core';
 import { AutoComplete } from 'primeng/autocomplete';
 import { Subscription, timer } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
@@ -13,7 +28,6 @@ import { PopoverService } from '../../popover/popover.service';
 import { addCircle, arrowDown, clear, search } from '../../svg.generated';
 import { ObjectFormUtils } from './../../object-form/object-form.utils';
 import { QuickSearchPickerData, QuickSearchPickerDataItem } from './quick-search-picker/quick-search-picker.component';
-
 
 /**
  * Component providing an extensible search input. It's a simple input field for fulltext
@@ -142,12 +156,15 @@ export class QuickSearchComponent implements AfterViewInit {
         .map(ot => ({
           id: ot.id,
           label: this.systemService.getLocalizedResource(`${ot.id}_label`),
-          description: this.systemService.getLocalizedResource(`${ot.id}_description`),
+          // description: this.systemService.getLocalizedResource(`${ot.id}_description`),
           highlight: ot.isFolder,
           svg: this.systemService.getObjectTypeIcon(ot.id),
           value: ot
         }))
-        .sort(Utils.sortValues('label'));
+        .sort(Utils.sortValues('label'))
+        .sort((x, y) => {
+          return x.highlight === y.highlight ? 0 : x.highlight ? -1 : 1;
+        });
       this.availableObjectTypes = types;
       this.onObjectTypesSelected([], false);
     });

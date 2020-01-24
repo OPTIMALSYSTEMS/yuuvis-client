@@ -4,7 +4,7 @@
   .container {
     display: flex;
     flex-flow: row wrap;
-    padding: calc(var(--app-pane-padding) / 4);
+    padding: calc(var(--app-pane-padding) / 2);
   }
 
   &:not(.multiple) {
@@ -16,10 +16,10 @@
   }
 
   div.group {
-    margin: calc(var(--app-pane-padding) / 4);
+    margin: calc(var(--app-pane-padding) / 2);
     display: block;
     background-color: var(--panel-background);
-    box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1);
+    box-shadow: 0 1px 3px 0px rgba(0, 0, 0, 0.2);
     width: 100%;
 
     .group-label {
@@ -46,14 +46,14 @@
   //three column-group container
   .threeColumns {
     div.group {
-      width: calc(33% - 8px);
+      width: calc(33% - 16px);
     }
   }
 
   //two column-group container
   .twoColumns {
     div.group {
-      width: calc(50% - 8px);
+      width: calc(50% - 16px);
     }
   }
 }

@@ -39,10 +39,14 @@
       flex: 1;
       cursor: pointer;
 
+      .title {
+        margin: calc(var(--app-pane-padding) / 4) 0;
+      }
+
       .description {
         color: var(--text-color-caption);
         font-size: var(--font-caption);
-        margin-top: calc(var(--app-pane-padding) / 4);
+
         font-style: italic;
       }
     }
@@ -69,5 +73,6 @@
 
   yuv-checkbox {
     margin: 2px 2px 2px calc(var(--app-pane-padding) / 2);
+    outline: 0;
   }
 }
