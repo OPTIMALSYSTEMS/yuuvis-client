@@ -8,6 +8,7 @@ import { TranslateModule } from '@yuuvis/core';
 import { YuvComponentsModule } from '../components/components.module';
 import { YuvDirectivesModule } from '../directives/directives.module';
 import { YuvFormModule } from '../form/form.module';
+import { YuvGroupedSelectModule } from '../grouped-select';
 import { YuvObjectFormModule } from '../object-form/object-form.module';
 import { ObjectCreateComponent } from './object-create/object-create.component';
 
@@ -21,6 +22,7 @@ import { ObjectCreateComponent } from './object-create/object-create.component';
     YuvComponentsModule,
     FormsModule,
     YuvFormModule,
+    YuvGroupedSelectModule,
     YuvObjectFormModule,
     CdkStepperModule,
     YuvDirectivesModule,

@@ -67,8 +67,6 @@
 	"yuv.framework.object-create.step.type.content.allowed": "With or without document file",
 	"yuv.framework.object-create.step.type.content.notallowed": "Without document file",
 	"yuv.framework.object-create.step.type.content.required": "With document file",
-	"yuv.framework.object-create.step.type.document": "Document",
-	"yuv.framework.object-create.step.type.folder": "Context",
 	"yuv.framework.object-details.summary.section.admin": "Administrative information",
 	"yuv.framework.object-details.summary.section.baseparams": "Basic parameters",
 	"yuv.framework.object-details.summary.section.core": "Object attributes",
