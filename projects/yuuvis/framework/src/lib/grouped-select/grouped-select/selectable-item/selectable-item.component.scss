@@ -1,18 +1,54 @@
 :host {
   display: block;
-  margin-bottom: calc(var(--app-pane-padding) / 2);
-  padding: 2px;
+
+  padding: calc(var(--app-pane-padding) / 4) var(--app-pane-padding);
+  border-bottom: 1px solid var(--panel-divider-color);
   color: var(--text-color-body);
+
+  &:last-child {
+    border-bottom: none !important;
+  }
+
+  &.highlight {
+    background-color: var(--item-focus-background-color);
+    > div {
+      .title {
+        font-weight: var(--font-weight-bold);
+        text-decoration: underline;
+      }
+    }
+    &:focus {
+      background-color: var(--item-focus-border-color);
+      // outline: 0;
+    }
+  }
 
   > div {
     transition: background-color, color 0.3s;
     display: flex;
     align-items: center;
+    flex-flow: row-reverse;
+
+    yuv-icon {
+      color: var(--text-color-hint);
+      opacity: 0.75;
+    }
 
     .label {
-      padding: calc(var(--app-pane-padding) / 4);
+      padding: calc(var(--app-pane-padding) / 2);
       flex: 1;
       cursor: pointer;
+
+      .title {
+        margin: calc(var(--app-pane-padding) / 4) 0;
+      }
+
+      .description {
+        color: var(--text-color-caption);
+        font-size: var(--font-caption);
+
+        font-style: italic;
+      }
     }
   }
 
@@ -21,8 +57,8 @@
       ::ng-deep {
         .ui-chkbox .ui-chkbox-box.ui-state-active {
           background-color: rgba(255, 255, 255, 0.2);
-          color: var(--color-accent);
-          border-color: var(--color-accent);
+          color: var(--text-color-caption);
+          border-color: var(--text-color-caption);
         }
       }
     }
@@ -31,21 +67,12 @@
     background-color: var(--item-focus-background-color);
   }
   &:focus {
-    // background-color: var(--color-accent);
     background-color: var(--item-focus-background-color);
     outline: 0;
-    // color: #fff;
-
-    // ::ng-deep {
-    //   .ui-chkbox .ui-chkbox-box {
-    //     background-color: rgba(255, 255, 255, 0.2) !important;
-    //     color: #fff !important;
-    //     border-color: #fff !important;
-    //   }
-    // }
   }
 
   yuv-checkbox {
-    margin: 2px calc(var(--app-pane-padding) / 2) 2px 2px;
+    margin: 2px 2px 2px calc(var(--app-pane-padding) / 2);
+    outline: 0;
   }
 }

@@ -1,17 +1,13 @@
 <header>{{ 'yuv.framework.quick-search-picker.title' | translate }}</header>
 <section class="main" cdkTrapFocus>
-
-
-    <yuv-grouped-select autofocus="true" [multiple]="multiselect" [groups]="groups" [(ngModel)]="selectedItems"
+    <yuv-grouped-select [multiple]="multiselect" [groups]="groups" [(ngModel)]="selectedItems"
         (select)="onGroupItemSelect($event)">
     </yuv-grouped-select>
-
-
-
 </section>
 <section class="buttons">
     <div>
-        <button type="button" (click)="onCancel()">{{ 'yuv.framework.shared.cancel' | translate }}</button>
+        <button class="cancel" type="button"
+            (click)="onCancel()">{{ 'yuv.framework.shared.cancel' | translate }}</button>
         <button type="button" (click)="onReset()">{{ 'yuv.framework.shared.reset' | translate }}</button>
     </div>
     <button class="primary" type="button"

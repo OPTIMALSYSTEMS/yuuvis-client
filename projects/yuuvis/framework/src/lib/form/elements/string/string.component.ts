@@ -1,8 +1,8 @@
 import { Component, ElementRef, forwardRef, Input } from '@angular/core';
 import { ControlValueAccessor, FormControl, NG_VALIDATORS, NG_VALUE_ACCESSOR, Validator } from '@angular/forms';
+import { IconRegistryService } from '@yuuvis/common-ui';
 import { Utils } from '@yuuvis/core';
-import { SVGIcons } from '../../../svg.generated';
-
+import { envelope, globe } from '../../../svg.generated';
 /**
  * Creates form input for strings. Based on the input values different kinds of inputs will be generated.
  *
@@ -43,11 +43,6 @@ import { SVGIcons } from '../../../svg.generated';
   ]
 })
 export class StringComponent implements ControlValueAccessor, Validator {
-  icons = {
-    envelope: SVGIcons.envelope,
-    globe: SVGIcons.globe
-  };
-
   maxEntryCountIfInvalid = null;
 
   /**
@@ -97,9 +92,11 @@ export class StringComponent implements ControlValueAccessor, Validator {
   valid: boolean;
   validationErrors = [];
 
-  constructor(private elementRef: ElementRef) { }
+  constructor(private elementRef: ElementRef, private iconRegistry: IconRegistryService) {
+    this.iconRegistry.registerIcons([envelope, globe]);
+  }
 
-  propagateChange = (_: any) => { };
+  propagateChange = (_: any) => {};
 
   onKeyUpEnter(event) {
     const input = event.target.value.trim();
@@ -119,7 +116,7 @@ export class StringComponent implements ControlValueAccessor, Validator {
     this.propagateChange = fn;
   }
 
-  registerOnTouched(fn: any): void { }
+  registerOnTouched(fn: any): void {}
 
   onValueChange(val) {
     this.validationErrors = [];

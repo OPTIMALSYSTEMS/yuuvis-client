@@ -8,6 +8,9 @@ export interface SelectableGroup {
 export interface Selectable {
   id: string;
   label: string;
+  svg?: string;
+  description?: string;
+  highlight?: boolean;
   value?: any;
 }
 

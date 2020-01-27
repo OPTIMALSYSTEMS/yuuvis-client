@@ -1,20 +1,14 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { IconRegistryService } from '@yuuvis/common-ui';
 import { ProgressStatus, UploadResult, UploadService } from '@yuuvis/core';
 import { Observable, of } from 'rxjs';
-import { SVGIcons } from './../../svg.generated';
-
+import { clear, done } from './../../svg.generated';
 @Component({
   selector: 'yuv-upload-progress-overlay',
   templateUrl: './upload-progress-overlay.component.html',
   styleUrls: ['./upload-progress-overlay.component.scss']
 })
 export class UploadProgressOverlayComponent {
-  icon = {
-    minimize: SVGIcons['arrow-down'],
-    remove: SVGIcons['clear'],
-    done: SVGIcons['done'],
-    up: SVGIcons['cloud-upload']
-  };
   minimized: boolean;
   allDone: boolean;
   progressStatus$: Observable<ProgressStatus>;
@@ -30,7 +24,8 @@ export class UploadProgressOverlayComponent {
 
   @Output() resultItemClick = new EventEmitter<UploadResult>();
 
-  constructor(private uploadService: UploadService) {
+  constructor(private uploadService: UploadService, private iconRegistry: IconRegistryService) {
+    this.iconRegistry.registerIcons([clear, done]);
     this.progressStatus$ = this.uploadService.status$;
     this.completedUp$ = this.uploadService.uploadStatus$;
   }

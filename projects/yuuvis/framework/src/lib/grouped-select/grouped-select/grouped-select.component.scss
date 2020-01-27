@@ -1,28 +1,31 @@
 :host {
-  //default - styling
+  display: block;
 
   .container {
     display: flex;
-    flex-flow: column wrap;
-    margin: var(--app-pane-padding);
+    flex-flow: row wrap;
+    padding: calc(var(--app-pane-padding) / 2);
+  }
+
+  &:not(.multiple) {
+    ::ng-deep {
+      yuv-checkbox {
+        display: none;
+      }
+    }
   }
 
   div.group {
-    margin: 8px;
+    margin: calc(var(--app-pane-padding) / 2);
     display: block;
     background-color: var(--panel-background);
-    padding: var(--app-pane-padding);
-    position: relative;
-    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.2);
+    box-shadow: 0 1px 3px 0px rgba(0, 0, 0, 0.2);
+    width: 100%;
 
     .group-label {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
       color: var(--color-accent);
+      padding: var(--app-pane-padding);
       font-size: var(--font-subhead);
-      margin-bottom: var(--app-pane-padding);
-
       &.selectable {
         cursor: pointer;
       }
@@ -39,55 +42,18 @@
       color: #fff;
     }
   }
-  &:not(.multiple) {
-    ::ng-deep {
-      yuv-checkbox {
-        display: none;
-      }
-    }
-  }
 
-  .container::before,
-  .container::after {
-    content: '';
-    flex-basis: 100%;
-    width: 0;
-    order: 2;
-  }
-
-  //styling for 3 columns-container
-  .container.threeColumns {
-    height: 1150px;
-    width: 90%;
-    counter-reset: groups;
+  //three column-group container
+  .threeColumns {
     div.group {
-      width: 34%;
-    }
-    .group:nth-child(3n + 1) {
-      order: 1;
-    }
-    .group:nth-child(3n + 2) {
-      order: 2;
-    }
-    .group:nth-child(3n) {
-      order: 3;
+      width: calc(33% - 16px);
     }
   }
 
-  //styling for twocolumns-container
-  .container.twoColumns {
-    height: 1616px;
-    width: 96%;
-    counter-reset: groups;
+  //two column-group container
+  .twoColumns {
     div.group {
-      width: 47%;
-    }
-
-    .group:nth-child(2n + 1) {
-      order: 1;
-    }
-    .group:nth-child(2n) {
-      order: 2;
+      width: calc(50% - 16px);
     }
   }
 }

@@ -1,25 +1,57 @@
 <div class="testing-controls">
-  <button (click)="setSelectedItems()">set selection</button>
-  <button [disabled]="view === 'm'" (click)="view = 'm'">multiselect</button>
-  <button [disabled]="view === 's'" (click)="view = 's'">singleselect</button>
-  <button [disabled]="view === 'a'" (click)="view = 'a'">enableSelectAll</button>
+
+
+
+
+  <div class="group">
+    <strong>actions</strong>
+    <button (click)="setSelection()">set selection</button>
+    <button (click)="clearSelection()">clear selection</button>
+  </div>
+
+  <div class="group">
+    <strong>view</strong>
+    <button [disabled]="view === 'default'" (click)="view = 'default'">view: default</button>
+    <button [disabled]="view === 'selectall'" (click)="view = 'selectall'">view: enable select all</button>
+  </div>
+
+  <div class="group">
+    <strong>data</strong>
+    <button (click)="setGroupData()">data: just labels</button>
+    <button (click)="setGroupData(true)">data: full</button>
+  </div>
+  <!-- <button (click)="setRandomGroupData()">generate random data</button> -->
+  <div class="checkbox">
+    <yuv-checkbox [(ngModel)]="multiselect"></yuv-checkbox>&nbsp;&nbsp;multiselect
+  </div>
+
 </div>
 
-
-
-
 <div class="cmp">
-  <yuv-grouped-select *ngIf="view === 'm'" autofocus="true" multiple="true" [groups]="groups"
-    [(ngModel)]="selectedItems" (select)="onSelect($event)" (ngModelChange)="onSelectionChange($event)">
-  </yuv-grouped-select>
 
-  <yuv-grouped-select *ngIf="view === 's'" autofocus="true" [groups]="groups" [(ngModel)]="selectedItems"
-    (select)="onSelect($event)" (ngModelChange)="onSelectionChange($event)">
-  </yuv-grouped-select>
+  <ng-container *ngIf="view === 'default'">
+    <yuv-grouped-select autofocus="true" [multiple]="multiselect" [groups]="groups" [(ngModel)]="selectedItems"
+      (select)="onSelect($event)" (ngModelChange)="onSelectionChange($event)">
+    </yuv-grouped-select>
+  </ng-container>
 
-  <yuv-grouped-select *ngIf="view === 'a'" enableSelectAll="true" multiple="true" [groups]="groups"
-    [(ngModel)]="selectedItems" (select)="onSelect($event)" (ngModelChange)="onSelectionChange($event)">
-  </yuv-grouped-select>
+  <ng-container *ngIf="view === 'single'">
+    <yuv-grouped-select autofocus="true" [groups]="groups" [(ngModel)]="selectedItems" (select)="onSelect($event)"
+      (ngModelChange)="onSelectionChange($event)">
+    </yuv-grouped-select>
+  </ng-container>
+
+  <ng-container *ngIf="view === 'selectall'">
+    <yuv-grouped-select enableSelectAll="true" [multiple]="multiselect" [groups]="groups" [(ngModel)]="selectedItems"
+      (select)="onSelect($event)" (ngModelChange)="onSelectionChange($event)">
+    </yuv-grouped-select>
+  </ng-container>
+
+  <ng-container *ngIf="view === 'full'">
+    <yuv-grouped-select enableSelectAll="true" [multiple]="multiselect" [groups]="groups" [(ngModel)]="selectedItems"
+      (select)="onSelect($event)" (ngModelChange)="onSelectionChange($event)">
+    </yuv-grouped-select>
+  </ng-container>
 </div>
 
 <div class="res" [ngClass]="{off: !o}">

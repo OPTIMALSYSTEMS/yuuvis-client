@@ -1,7 +1,7 @@
 import { Attribute, Component, EventEmitter, forwardRef, Input, Output } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { SVGIcons } from '../../../svg.generated';
-
+import { IconRegistryService } from '@yuuvis/common-ui';
+import { clear } from '../../../svg.generated';
 /**
  * Creates form input for boolean values (checkbox).
  *
@@ -27,7 +27,6 @@ import { SVGIcons } from '../../../svg.generated';
 })
 export class CheckboxComponent implements ControlValueAccessor {
   // value: boolean = null;
-  icClear = SVGIcons.clear;
   _tabindex;
 
   /**
@@ -43,7 +42,8 @@ export class CheckboxComponent implements ControlValueAccessor {
   //@Input() filter: any;
   @Output() change = new EventEmitter<boolean>();
 
-  constructor(@Attribute('tabindex') tabindex: string) {
+  constructor(@Attribute('tabindex') tabindex: string, private iconRegistry: IconRegistryService) {
+    this.iconRegistry.registerIcons([clear]);
     this._tabindex = tabindex || '0';
   }
 

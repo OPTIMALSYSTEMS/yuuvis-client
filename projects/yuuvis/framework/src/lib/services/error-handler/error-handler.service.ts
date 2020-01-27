@@ -36,6 +36,10 @@ export class ErrorHandlerService implements ErrorHandler, HttpInterceptor {
 
   handleError(error) {
     if (error) {
+      if (error instanceof HttpErrorResponse && !navigator.onLine) {
+        return;
+      }
+
       const logger = this.injector.get(Logger);
       const notificationsService = this.injector.get(NotificationService);
       const title = error.name ? error.name : error.toString();

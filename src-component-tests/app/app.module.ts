@@ -13,6 +13,7 @@ import { TestAuditComponent } from './test-audit/test-audit.component';
 import { TestContentPreviewComponent } from './test-content-preview/test-content-preview.component';
 import { TestFileDropComponent } from './test-file-drop/test-file-drop.component';
 import { TestGroupedSelectComponent } from './test-grouped-select/test-grouped-select.component';
+import { TestIconsComponent } from './test-icons/test-icons/test-icons.component';
 import { TestObjectCreateComponent } from './test-object-create/test-object-create.component';
 import { TestObjectDetailsComponent } from './test-object-details/test-object-details.component';
 import { TestObjectFormEditComponent } from './test-object-form-edit/test-object-form-edit.component';
@@ -47,6 +48,7 @@ import { TestUploadProgressOverlayComponent } from './test-upload-progress-overl
     TestFileDropComponent,
     TestRecentActivitiesComponent,
     TestAnimatedIconsComponent,
+    TestIconsComponent,
     TestGroupedSelectComponent
   ],
   imports: [

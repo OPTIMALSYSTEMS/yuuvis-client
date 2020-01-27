@@ -3,6 +3,8 @@ import { Title } from '@angular/platform-browser';
 import { ConfigService, TranslateService, UserService, YuvUser } from '@yuuvis/core';
 import { LayoutService, LayoutSettings } from '@yuuvis/framework';
 import { Observable } from 'rxjs';
+import { IconRegistryService } from '@yuuvis/common-ui';
+import { shield } from '../../../assets/default/svg/svg';
 
 @Component({
   selector: 'yuv-settings',
@@ -23,8 +25,11 @@ export class SettingsComponent implements OnInit {
     private layoutService: LayoutService,
     private titleService: Title,
     public config: ConfigService,
-    private userService: UserService
+    private userService: UserService,
+    private iconRegistry: IconRegistryService
   ) {
+    this.iconRegistry.registerIcons([shield]);
+
     this.clientLocales = config.getClientLocales();
   }
 

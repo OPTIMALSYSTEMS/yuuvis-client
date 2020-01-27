@@ -1,5 +1,7 @@
 @import '../../../../src/scss-shared/_mixins';
 $user-panel-width: 180px;
+$pwa-update-width: 200px;
+$app-bar-zindex: 6;
 
 :host {
   position: absolute;
@@ -13,10 +15,32 @@ $user-panel-width: 180px;
   grid-template-rows: var(--app-bar-height) 1fr;
   grid-template-areas: 'header' 'content';
 
+  .pwa-update {
+    position: absolute;
+    width: $pwa-update-width;
+    top: calc(var(--app-pane-padding) / 2);
+    left: calc(50% - #{$pwa-update-width / 2});
+    z-index: $app-bar-zindex + 1;
+    display: flex;
+    align-items: center;
+    background-color: var(--color-accent);
+    color: #fff;
+    animation: yuvFadeInDown 200ms;
+    padding: 2px;
+    border-radius: 2px;
+    span {
+      padding: 0 calc(var(--app-pane-padding) / 2);
+      flex: 1;
+    }
+    yuv-icon.close {
+      box-sizing: border-box;
+    }
+  }
+
   .app-bar {
     grid-area: header;
     order: 1;
-    z-index: 6;
+    z-index: $app-bar-zindex;
     display: flex;
     flex-flow: row nowrap;
     align-items: center;
@@ -29,6 +53,7 @@ $user-panel-width: 180px;
       display: flex;
       align-items: center;
       background-color: var(--color-accent);
+      color: #fff;
       animation: yuvFadeInDown 200ms;
       padding: 2px;
       border-radius: 2px;
@@ -120,6 +145,39 @@ $user-panel-width: 180px;
     grid-row: 1 / span 2;
   }
 
+  .offline-no-user {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--main-background);
+
+    .box {
+      width: 300px;
+      display: flex;
+      flex-flow: column;
+      align-items: center;
+
+      h1 {
+        font-size: var(--font-display);
+        margin: 0 0 calc(var(--app-pane-padding) / 2) 0;
+        font-weight: var(--font-weight-normal);
+      }
+
+      yuv-icon {
+        width: 50%;
+        height: auto;
+        opacity: 0.2;
+        margin: var(--app-pane-padding) 0;
+      }
+    }
+  }
+
   yuv-sidebar .navigation-list {
     padding: var(--app-pane-padding) 0;
 
@@ -135,6 +193,11 @@ $user-panel-width: 180px;
 
       &:hover {
         background-color: rgba(255, 255, 255, 0.1);
+      }
+
+      &.active {
+        pointer-events: none;
+        color: darken(#fff, 11%);
       }
     }
   }

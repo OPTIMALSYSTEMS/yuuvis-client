@@ -17,6 +17,7 @@ p-dialog .ui-dialog.ui-widget {
     right: 5px;
     top: 5px;
     z-index: 2;
+    cursor: pointer;
   }
   &-header {
     background-color: var(--color-accent);

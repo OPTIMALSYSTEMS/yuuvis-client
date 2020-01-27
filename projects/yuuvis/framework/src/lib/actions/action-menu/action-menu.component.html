@@ -8,7 +8,7 @@
         <yuv-checkbox [(ngModel)]="showDescriptions" [ngModelOptions]="{standalone: true}"></yuv-checkbox>
       </yuv-form-input>
     </div>
-    <yuv-icon class="btn close" [svg]="icons.clear" (click)="hide()"></yuv-icon>
+    <yuv-icon class="btn close" [icon]="'clear'" (click)="hide()"></yuv-icon>
   </div>
 
   <div class="menu-actions" [hidden]="subActionsList || showComponent">

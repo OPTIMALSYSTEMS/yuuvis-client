@@ -1,15 +1,16 @@
 import { Location } from '@angular/common';
 import { Component, OnDestroy, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { FadeInAnimations } from '@yuuvis/common-ui';
-import { DmsService, ObjectType, PendingChangesService, SystemService, TranslateService, Utils } from '@yuuvis/core';
+import { FadeInAnimations, IconRegistryService } from '@yuuvis/common-ui';
+import { DmsService, ObjectType, ObjectTypeGroup, SystemService, TranslateService, Utils } from '@yuuvis/core';
 import { Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
+import { SelectableGroup } from '../../grouped-select';
 import { FormStatusChangedEvent, ObjectFormOptions } from '../../object-form/object-form.interface';
 import { ObjectFormComponent } from '../../object-form/object-form/object-form.component';
 import { NotificationService } from '../../services/notification/notification.service';
-import { SVGIcons } from '../../svg.generated';
+import { clear } from '../../svg.generated';
 import { ObjectCreateService } from '../object-create.service';
 import { Breadcrumb, CreateState, CurrentStep, Labels } from './../object-create.interface';
 
@@ -23,21 +24,15 @@ import { Breadcrumb, CreateState, CurrentStep, Labels } from './../object-create
 export class ObjectCreateComponent implements OnDestroy {
   @ViewChild(ObjectFormComponent, { static: false }) objectForm: ObjectFormComponent;
 
-  icon = {
-    clear: SVGIcons['clear']
-  };
   animationTimer = { value: true, params: { time: '400ms' } };
   // state of creation progress
   state$: Observable<CreateState> = this.objCreateServcice.state$;
   breadcrumb$: Observable<Breadcrumb[]> = this.objCreateServcice.breadcrumb$;
 
   createAnother: boolean = false;
-  // selectedIndex: number = 0;
-  availableDocumentTypes: { type: ObjectType; label: string }[] = [];
-  availableFolderTypes: { type: ObjectType; label: string }[] = [];
-
   selectedObjectType: ObjectType;
   selectedObjectTypeFormOptions: ObjectFormOptions;
+  availableObjectTypeGroups: SelectableGroup[];
   formState: FormStatusChangedEvent;
   files: File[] = [];
   labels: Labels;
@@ -49,18 +44,12 @@ export class ObjectCreateComponent implements OnDestroy {
     private notify: NotificationService,
     private dmsService: DmsService,
     private translate: TranslateService,
-    private pendingChanges: PendingChangesService,
     private router: Router,
-    private location: Location
+    private location: Location,
+    private iconRegistry: IconRegistryService
   ) {
+    this.iconRegistry.registerIcons([clear]);
     this.resetState();
-
-    this.system
-      .getObjectTypes()
-      .filter(ot => ot.creatable)
-      .map(ot => ({ type: ot, label: this.system.getLocalizedResource(`${ot.id}_label`) }))
-      .sort(Utils.sortValues('label'))
-      .forEach(ot => (ot.type.isFolder ? this.availableFolderTypes.push(ot) : this.availableDocumentTypes.push(ot)));
 
     this.labels = {
       defaultTitle: this.translate.instant('yuv.framework.object-create.header.title'),
@@ -69,6 +58,20 @@ export class ObjectCreateComponent implements OnDestroy {
       required: this.translate.instant('yuv.framework.object-create.step.type.content.required')
     };
     this.title = this.labels.defaultTitle;
+
+    let i = 0;
+    this.availableObjectTypeGroups = this.system.getGroupedObjectTypes().map((otg: ObjectTypeGroup) => ({
+      id: `${i++}`,
+      label: otg.label,
+      items: otg.types.map((ot: ObjectType) => ({
+        id: ot.id,
+        label: this.system.getLocalizedResource(`${ot.id}_label`),
+        description: ot.isFolder ? '' : this.labels[ot.contentStreamAllowed],
+        highlight: ot.isFolder,
+        svg: this.system.getObjectTypeIcon(ot.id),
+        value: ot
+      }))
+    }));
   }
 
   goToStep(step: CurrentStep) {

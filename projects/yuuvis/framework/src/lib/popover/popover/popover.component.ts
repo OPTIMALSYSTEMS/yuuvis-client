@@ -1,8 +1,8 @@
 import { BasePortalOutlet, CdkPortalOutlet, ComponentPortal, TemplatePortal } from '@angular/cdk/portal';
 import { Component, ComponentRef, EmbeddedViewRef, Optional, ViewChild } from '@angular/core';
+import { IconRegistryService } from '@yuuvis/common-ui';
 import { PopoverRef } from '../popover.ref';
-import { SVGIcons } from './../../svg.generated';
-
+import { clear } from './../../svg.generated';
 @Component({
   selector: 'yuv-popover',
   templateUrl: './popover.component.html',
@@ -11,10 +11,9 @@ import { SVGIcons } from './../../svg.generated';
 export class PopoverComponent extends BasePortalOutlet {
   @ViewChild(CdkPortalOutlet, { static: true }) portalOutlet: CdkPortalOutlet;
 
-  closeIcon = SVGIcons.clear;
-
-  constructor(@Optional() private popoverRef: PopoverRef) {
+  constructor(@Optional() private popoverRef: PopoverRef, private iconRegistry: IconRegistryService) {
     super();
+    this.iconRegistry.registerIcons([clear]);
   }
 
   attachComponentPortal<T>(componentPortal: ComponentPortal<any>): ComponentRef<T> {

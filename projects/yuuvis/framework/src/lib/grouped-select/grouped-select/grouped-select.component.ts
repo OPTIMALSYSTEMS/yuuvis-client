@@ -64,7 +64,7 @@ export class GroupedSelectComponent implements AfterViewInit, ControlValueAccess
     this.propagateChange(this.selectedItems);
     // Hitting ENTER will in any case trigger the select event, that
     // 'approves' the current selection.
-    this.select.emit(this.selectedItems);
+    this.emit();
   }
 
   @HostListener('keydown', ['$event']) onKeyDown(event) {
@@ -89,12 +89,12 @@ export class GroupedSelectComponent implements AfterViewInit, ControlValueAccess
   get multiple() {
     return this._multiple;
   }
-  @Input() columnWidth: number = 200;
+  @Input() columnWidth: number = 250;
 
   /**
    * Emitted when the component 'approves' the current selection.
    */
-  @Output() select = new EventEmitter<Selectable[]>();
+  @Output() select = new EventEmitter<Selectable | Selectable[]>();
 
   get selectableItemIndex(): number {
     return this._selectableItemIndex++;
@@ -105,7 +105,20 @@ export class GroupedSelectComponent implements AfterViewInit, ControlValueAccess
   enableSelectAll: boolean;
   columns: string = '';
 
-  private selectedItems: Selectable[] = [];
+  private _selectedItems: Selectable[] = [];
+
+  set selectedItems(items: Selectable[]) {
+    this._selectedItems = items;
+    this.selectedItemsCheck = {};
+    if (items) {
+      items.forEach(s => (this.selectedItemsCheck[s.id] = true));
+    }
+  }
+  get selectedItems() {
+    return this._selectedItems;
+  }
+
+  selectedItemsCheck = {};
   private focusedItem: Selectable;
   private resizeDebounce = 0;
 
@@ -115,26 +128,6 @@ export class GroupedSelectComponent implements AfterViewInit, ControlValueAccess
   constructor(@Attribute('autofocus') autofocus: string, @Attribute('enableSelectAll') enableSelectAll: string, private elRef: ElementRef) {
     this.autofocus = autofocus === 'true' ? true : false;
     this.enableSelectAll = enableSelectAll === 'true' ? true : false;
-
-    this.resized$
-      .pipe(
-        debounce(() => {
-          return timer(this.resizeDebounce);
-        }),
-        tap(() => {
-          this.resizeDebounce = 500;
-        })
-      )
-      .subscribe(v => {
-        let c = 'oneColumn';
-        if (v.width > 2 * this.columnWidth && v.width < 3 * this.columnWidth) {
-          c = 'twoColumns';
-        }
-        if (v.width > 3 * this.columnWidth) {
-          c = 'threeColumns';
-        }
-        this.columns = c;
-      });
   }
 
   groupFocused(group: SelectableGroup) {
@@ -147,7 +140,7 @@ export class GroupedSelectComponent implements AfterViewInit, ControlValueAccess
   itemSelected(item: SelectableInternal) {
     this.selectedItems = [item];
     this.propagateChange(this.selectedItems);
-    this.select.emit(this.selectedItems);
+    this.emit();
   }
 
   itemToggled(selected: boolean, item: SelectableInternal) {
@@ -168,6 +161,8 @@ export class GroupedSelectComponent implements AfterViewInit, ControlValueAccess
   }
 
   isSelected(item): boolean {
+    console.log('x');
+
     return this.selectedItems ? !!this.selectedItems.find(i => i.id === item.id) : false;
   }
 
@@ -176,7 +171,7 @@ export class GroupedSelectComponent implements AfterViewInit, ControlValueAccess
   }
 
   toggleAllOfGroup(group: SelectableGroup) {
-    if (this.enableSelectAll) {
+    if (this.enableSelectAll && this._multiple) {
       const selectedItemsIDs = this.selectedItems.map(i => i.id);
       const groupItemIDs = group.items.map(i => i.id);
       const contained = group.items.filter(i => selectedItemsIDs.includes(i.id));
@@ -210,6 +205,11 @@ export class GroupedSelectComponent implements AfterViewInit, ControlValueAccess
 
   registerOnTouched(fn: any): void {}
 
+  private emit() {
+    // this.select.emit(this.selectedItems);
+    this.select.emit(this._multiple ? this.selectedItems : this.selectedItems[0]);
+  }
+
   ngAfterViewInit() {
     this.keyManager = new FocusKeyManager(this.items).withWrap();
     let i = 0;
@@ -217,5 +217,25 @@ export class GroupedSelectComponent implements AfterViewInit, ControlValueAccess
     if (this.autofocus && this.groups.length > 0) {
       this.elRef.nativeElement.querySelector('.group').focus();
     }
+
+    this.resized$
+      .pipe(
+        debounce(() => {
+          return timer(this.resizeDebounce);
+        }),
+        tap(() => {
+          this.resizeDebounce = 500;
+        })
+      )
+      .subscribe(v => {
+        let c = 'oneColumn';
+        if (v.width > 2 * this.columnWidth && v.width < 3 * this.columnWidth) {
+          c = 'twoColumns';
+        }
+        if (v.width > 3 * this.columnWidth) {
+          c = 'threeColumns';
+        }
+        this.columns = c;
+      });
   }
 }

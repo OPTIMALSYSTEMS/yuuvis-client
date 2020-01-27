@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { DmsObject, TranslateService } from '@yuuvis/core';
 import { of as observableOf } from 'rxjs';
-import { SVGIcons } from '../../../svg.generated';
+import { deleteIcon } from '../../../svg.generated';
 import { DmsObjectTarget } from '../../action-target';
 import { ComponentAction } from '../../interfaces/action.interface';
 import { SelectionRange } from '../../selection-range.enum';
@@ -17,7 +17,7 @@ export class DeleteActionComponent extends DmsObjectTarget implements ComponentA
   label: string;
   description: string;
   priority = 8;
-  iconSrc = SVGIcons['delete'];
+  iconSrc = deleteIcon.data;
   group = 'further';
   range = SelectionRange.SINGLE_SELECT;
   component = DeleteComponent;

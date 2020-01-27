@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { ContentStreamAllowed, DmsObject, SystemService, TranslateService } from '@yuuvis/core';
 import { of as observableOf } from 'rxjs';
-import { SVGIcons } from '../../../svg.generated';
+import { contentUpload } from '../../../svg.generated';
 import { DmsObjectTarget } from '../../action-target';
 import { ComponentAction } from '../../interfaces/action.interface';
 import { SelectionRange } from '../../selection-range.enum';
@@ -16,7 +16,7 @@ export class UploadActionComponent extends DmsObjectTarget implements ComponentA
   label: string;
   description: string;
   priority = 7;
-  iconSrc = SVGIcons['content-upload'];
+  iconSrc = contentUpload.data;
   group = 'common';
   range = SelectionRange.SINGLE_SELECT;
   component = UploadComponent;

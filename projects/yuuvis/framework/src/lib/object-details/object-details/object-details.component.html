@@ -13,12 +13,12 @@
   <div class="header-icon" [innerHtml]="objectIcon | safeHtml"></div>
 
   <yuv-action-menu-bar class="actions" yuvOfflineDisabled>
-    <yuv-icon (click)="refreshDetails()" [title]="'yuv.framework.list.refresh' | translate" class="button refresh-button" [svg]="icons.refresh"></yuv-icon>
+    <yuv-icon (click)="refreshDetails()" [title]="'yuv.framework.list.refresh' | translate" class="button refresh-button" [icon]="'refresh'"></yuv-icon>
     <yuv-icon
       (click)="openActionMenu()"
       [title]="'yuv.framework.object-details.tooltip.icon.actions' | translate"
       class="button actions-button"
-      [svg]="icons.kebap"
+      [icon]="'kebap'"
     ></yuv-icon>
   </yuv-action-menu-bar>
 
@@ -26,10 +26,10 @@
     <!--   <a class="content-link">
       <span translate>eo.object.contentlink</span>
     </a>
-    <yuv-icon class="subscription-icon" [svg]="icons.subscription"></yuv-icon>
-    <yuv-icon class="resubmission-icon" [svg]="icons.resubmission"></yuv-icon>
-    <yuv-icon class="lock" [svg]="icons.lock"></yuv-icon>
-    <yuv-icon class="finalized-icon" [svg]="icons.finalized"></yuv-icon> -->
+    <yuv-icon class="subscription-icon" [icon]="'subscription'"></yuv-icon>
+    <yuv-icon class="resubmission-icon" [icon]="'resubmission'"></yuv-icon>
+    <yuv-icon class="lock" [icon]="'lock'"></yuv-icon>
+    <yuv-icon class="finalized-icon" [icon]="'finalized'"></yuv-icon> -->
   </yuv-action-menu-bar>
 
   <yuv-responsive-tab-container class="content" (optionsChanged)="optionsChanged.emit($event)" [options]="options">
@@ -61,5 +61,5 @@
 <yuv-action-menu [(visible)]="actionMenuVisible" [selection]="actionMenuSelection"> </yuv-action-menu>
 
 <ng-template #empty>
-  <yuv-empty [icon]="icons.noFile"></yuv-empty>
+  <yuv-empty [icon]="nofileIcon"></yuv-empty>
 </ng-template>

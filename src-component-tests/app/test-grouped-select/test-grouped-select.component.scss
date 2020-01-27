@@ -2,8 +2,12 @@
   display: flex;
 }
 
+.checkbox {
+  padding: 8px;
+}
+
 .cmp {
-  min-width: 50vw;
+  width: 50vw;
   height: 66vh;
   overflow-y: auto;
   background-color: var(--panel-background-grey);

@@ -1,5 +1,6 @@
 import { AfterViewInit, Component, ElementRef, EventEmitter, HostBinding, HostListener, Input, Output, TemplateRef, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { IconRegistryService } from '@yuuvis/common-ui';
 import {
   AggregateResult,
   BaseObjectTypeField,
@@ -7,6 +8,7 @@ import {
   DeviceService,
   ObjectType,
   ObjectTypeField,
+  ObjectTypeGroup,
   RangeValue,
   RetentionField,
   SearchFilter,
@@ -17,16 +19,17 @@ import {
   Utils
 } from '@yuuvis/core';
 import { AutoComplete } from 'primeng/autocomplete';
-import { timer } from 'rxjs';
+import { Subscription, timer } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { Selectable, SelectableGroup } from '../../grouped-select';
 import { ObjectFormControlWrapper } from '../../object-form';
 import { ObjectFormControl } from '../../object-form/object-form.model';
 import { PopoverConfig } from '../../popover/popover.interface';
 import { PopoverRef } from '../../popover/popover.ref';
 import { PopoverService } from '../../popover/popover.service';
-import { SVGIcons } from '../../svg.generated';
+import { addCircle, arrowDown, clear, search } from '../../svg.generated';
 import { ObjectFormUtils } from './../../object-form/object-form.utils';
-import { QuickSearchPickerData, QuickSearchPickerDataItem } from './quick-search-picker/quick-search-picker.component';
+import { QuickSearchPickerData } from './quick-search-picker/quick-search-picker.component';
 
 /**
  * Component providing an extensible search input. It's a simple input field for fulltext
@@ -50,15 +53,10 @@ export class QuickSearchComponent implements AfterViewInit {
   @ViewChild('extrasForm', { static: false }) extrasForm: ElementRef;
   @ViewChild('tplValuePicker', { static: false }) tplValuePicker: TemplateRef<any>;
 
-  icons = {
-    search: SVGIcons['search'],
-    clear: SVGIcons['clear'],
-    arrowDown: SVGIcons['arrow-down'],
-    addCircle: SVGIcons['addCircle']
-  };
   autofocus: boolean = false;
   searchForm: FormGroup;
   searchFieldsForm: FormGroup;
+  searchFieldsFormSubscription: Subscription;
   invalidTerm: boolean;
   error: boolean;
   resultCount: number = null;
@@ -70,8 +68,9 @@ export class QuickSearchComponent implements AfterViewInit {
 
   objectTypeSelectLabel: string;
 
-  availableObjectTypes: QuickSearchPickerDataItem[];
-  availableObjectTypeFields: QuickSearchPickerDataItem[];
+  availableObjectTypes: Selectable[];
+  availableObjectTypeGroups: SelectableGroup[];
+  availableObjectTypeFields: Selectable[];
 
   private TYPES = '@';
   private TYPE_FIELDS = '#';
@@ -133,8 +132,11 @@ export class QuickSearchComponent implements AfterViewInit {
     private translate: TranslateService,
     private systemService: SystemService,
     private device: DeviceService,
-    private searchService: SearchService
+    private searchService: SearchService,
+    private iconRegistry: IconRegistryService
   ) {
+    this.iconRegistry.registerIcons([arrowDown, addCircle, search, clear]);
+
     this.autofocus = this.device.isDesktop;
 
     this.searchQuery = new SearchQuery();
@@ -161,6 +163,18 @@ export class QuickSearchComponent implements AfterViewInit {
         }))
         .sort(Utils.sortValues('label'));
       this.availableObjectTypes = types;
+      let i = 0;
+      this.availableObjectTypeGroups = this.systemService.getGroupedObjectTypes().map((otg: ObjectTypeGroup) => ({
+        id: `${i++}`,
+        label: otg.label,
+        items: otg.types.map((ot: ObjectType) => ({
+          id: ot.id,
+          label: this.systemService.getLocalizedResource(`${ot.id}_label`),
+          highlight: ot.isFolder,
+          svg: this.systemService.getObjectTypeIcon(ot.id),
+          value: ot
+        }))
+      }));
       this.onObjectTypesSelected([], false);
     });
   }
@@ -198,7 +212,7 @@ export class QuickSearchComponent implements AfterViewInit {
   private initSearchFieldsForm() {
     // object type field form (form holding the query fields)
     this.searchFieldsForm = this.fb.group({});
-    this.searchFieldsForm.valueChanges.pipe(debounceTime(500)).subscribe(formValue => {
+    this.searchFieldsFormSubscription = this.searchFieldsForm.valueChanges.pipe(debounceTime(500)).subscribe(formValue => {
       this.onSearchFieldFormChange(formValue);
     });
   }
@@ -273,12 +287,12 @@ export class QuickSearchComponent implements AfterViewInit {
   showObjectTypePicker() {
     const pickerData: QuickSearchPickerData = {
       type: 'type',
-      items: this.availableObjectTypes,
+      items: this.availableObjectTypeGroups,
       selected: this.selectedObjectTypes
     };
     const popoverConfig: PopoverConfig = {
-      width: '50%',
-      height: '50%',
+      width: '55%',
+      height: '70%',
       data: pickerData
     };
     this.popoverService.open(this.tplValuePicker, popoverConfig);
@@ -287,7 +301,12 @@ export class QuickSearchComponent implements AfterViewInit {
   showObjectTypeFieldPicker() {
     const pickerData: QuickSearchPickerData = {
       type: 'field',
-      items: this.availableObjectTypeFields,
+      items: [
+        {
+          id: 'field',
+          items: this.availableObjectTypeFields
+        }
+      ],
       selected: []
     };
     const popoverConfig: PopoverConfig = {
@@ -507,6 +526,9 @@ export class QuickSearchComponent implements AfterViewInit {
   private resetObjectTypeFields() {
     this.formFields = [];
     this.searchFieldsForm = null;
+    if (this.searchFieldsFormSubscription) {
+      this.searchFieldsFormSubscription.unsubscribe();
+    }
     this.searchQuery.clearFilters();
   }
   private resetObjectTypes() {

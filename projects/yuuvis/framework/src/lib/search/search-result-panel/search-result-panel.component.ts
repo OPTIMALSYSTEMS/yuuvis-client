@@ -1,7 +1,8 @@
 import { RowEvent } from '@ag-grid-community/core';
 import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { IconRegistryService } from '@yuuvis/common-ui';
 import { DmsService, SearchQuery, SystemService, TranslateService } from '@yuuvis/core';
-import { SVGIcons } from '../../svg.generated';
+import { kebap, refresh, search } from '../../svg.generated';
 import { SearchResultComponent } from '../search-result/search-result.component';
 
 @Component({
@@ -11,12 +12,6 @@ import { SearchResultComponent } from '../search-result/search-result.component'
 })
 export class SearchResultPanelComponent {
   // icons used within the template
-  icon = {
-    icSearch: SVGIcons['search'],
-    refresh: SVGIcons['refresh'],
-    icKebap: SVGIcons['kebap']
-  };
-
   _searchQuery: SearchQuery;
   queryDescription: string;
   actionMenuVisible = false;
@@ -63,7 +58,14 @@ export class SearchResultPanelComponent {
    */
   @Output() queryDescriptionChange = new EventEmitter<string>();
 
-  constructor(private translate: TranslateService, private systemService: SystemService, private dmsService: DmsService) {}
+  constructor(
+    private translate: TranslateService,
+    private systemService: SystemService,
+    private dmsService: DmsService,
+    private iconRegistry: IconRegistryService
+  ) {
+    this.iconRegistry.registerIcons([search, refresh, kebap]);
+  }
 
   refresh() {
     if (this.searchResultComponent) {

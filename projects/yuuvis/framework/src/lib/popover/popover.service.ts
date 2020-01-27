@@ -28,7 +28,9 @@ export class PopoverService {
       this.useSmallDeviceLayout = screen.mode === ScreenService.MODE.SMALL;
     });
     this.userService.user$.subscribe((user: YuvUser) => {
-      this.direction = user.uiDirection;
+      if (user) {
+        this.direction = user.uiDirection;
+      }
     });
   }
 
