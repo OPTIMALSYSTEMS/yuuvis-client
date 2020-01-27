@@ -8,7 +8,7 @@ import { TranslateModule } from '@yuuvis/core';
 import { YuvComponentsModule } from '../components/components.module';
 import { YuvDirectivesModule } from '../directives/directives.module';
 import { YuvFormModule } from '../form/form.module';
-import { YuvGroupedSelectModule } from '../grouped-select';
+import { YuvGroupedSelectModule } from '../grouped-select/grouped-select.module';
 import { YuvObjectFormModule } from '../object-form/object-form.module';
 import { ObjectCreateComponent } from './object-create/object-create.component';
 
