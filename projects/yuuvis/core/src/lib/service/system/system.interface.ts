@@ -18,6 +18,11 @@ export interface ObjectTypeProperties {
   fields: ObjectTypeField[];
 }
 
+export interface ObjectTypeGroup {
+  label: string;
+  types: ObjectType[];
+}
+
 export interface ObjectTypeField {
   id: string;
   propertyType: string;

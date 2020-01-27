@@ -1,5 +1,4 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { ObjectType, ObjectTypeField, SystemService } from '@yuuvis/core';
 import { Selectable, SelectableGroup } from './../../../grouped-select/grouped-select/grouped-select.interface';
 
 /**
@@ -18,20 +17,21 @@ export class QuickSearchPickerComponent {
     this._data = data;
     if (data) {
       this.multiselect = data.type === 'type';
+      this.groups = data.items || [];
 
-      switch (data.type) {
-        case 'type': {
-          this.groups = this.getObjectTypeSelectables();
-          break;
-        }
-        case 'field': {
-          this.groups = this.getObjectTypeFieldSelectables();
-          break;
-        }
-        default: {
-          this.groups = [];
-        }
-      }
+      // switch (data.type) {
+      //   case 'type': {
+      //     this.groups = data.items;
+      //     break;
+      //   }
+      //   case 'field': {
+      //     this.groups = this.getObjectTypeFieldSelectables();
+      //     break;
+      //   }
+      //   default: {
+      //     this.groups = [];
+      //   }
+      // }
 
       if (data.selected) {
         this.selectedItems = [];
@@ -53,37 +53,7 @@ export class QuickSearchPickerComponent {
   selectedItems: Selectable[];
   multiselect: boolean;
 
-  constructor(private systemService: SystemService) {}
-
-  private getObjectTypeSelectables(): SelectableGroup[] {
-    // TODO: Apply a different property to group once grouping is available
-    const tmp = this._data.items.map(i => ({
-      ...i,
-      group: this.systemService.getLocalizedResource(`${i.id}_description`)
-    }));
-    const grouped = this.groupBy(tmp, 'group');
-    const selectableGroups = [];
-    let i = 0;
-    Object.keys(grouped)
-      .sort()
-      .forEach(k => {
-        selectableGroups.push({
-          id: `${i++}`,
-          label: k,
-          items: grouped[k]
-        });
-      });
-    return selectableGroups;
-  }
-
-  private getObjectTypeFieldSelectables(): SelectableGroup[] {
-    return [
-      {
-        id: 'field',
-        items: this._data.items
-      }
-    ];
-  }
+  constructor() {}
 
   emitSelection() {
     switch (this._data.type) {
@@ -98,8 +68,8 @@ export class QuickSearchPickerComponent {
     }
   }
 
-  onGroupItemSelect(selection: Selectable[]) {
-    this.selectedItems = selection;
+  onGroupItemSelect(selection: Selectable | Selectable[]) {
+    this.selectedItems = Array.isArray(selection) ? selection : [selection];
     this.emitSelection();
   }
 
@@ -110,13 +80,6 @@ export class QuickSearchPickerComponent {
   onReset() {
     this.selectedItems = [];
   }
-
-  groupBy(arr: any[], key: string) {
-    return arr.reduce((rv, x) => {
-      (rv[x[key]] = rv[x[key]] || []).push(x);
-      return rv;
-    }, {});
-  }
 }
 
 // Input data for the quick search picker component
@@ -124,16 +87,7 @@ export interface QuickSearchPickerData {
   // the type of data item provided
   // actual items based on the given type
   type: 'type' | 'field';
-  items: QuickSearchPickerDataItem[];
+  items: SelectableGroup[];
   // array of item IDs that should be selected upfront
   selected: string[];
-}
-
-export interface QuickSearchPickerDataItem {
-  id: string;
-  label: string;
-  description?: string;
-  svg?: string;
-  highlight?: boolean;
-  value: ObjectType | ObjectTypeField;
 }
