@@ -151,7 +151,8 @@ export class SearchService {
       resultListItems.push({
         objectTypeId,
         content,
-        fields
+        fields,
+        permissions: o.permissions
       });
     });
 

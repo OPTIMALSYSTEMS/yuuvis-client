@@ -8,6 +8,7 @@ import {
   DeviceService,
   ObjectType,
   ObjectTypeField,
+  ObjectTypeGroup,
   RangeValue,
   RetentionField,
   SearchFilter,
@@ -20,6 +21,7 @@ import {
 import { AutoComplete } from 'primeng/autocomplete';
 import { Subscription, timer } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { Selectable, SelectableGroup } from '../../grouped-select';
 import { ObjectFormControlWrapper } from '../../object-form';
 import { ObjectFormControl } from '../../object-form/object-form.model';
 import { PopoverConfig } from '../../popover/popover.interface';
@@ -27,7 +29,7 @@ import { PopoverRef } from '../../popover/popover.ref';
 import { PopoverService } from '../../popover/popover.service';
 import { addCircle, arrowDown, clear, search } from '../../svg.generated';
 import { ObjectFormUtils } from './../../object-form/object-form.utils';
-import { QuickSearchPickerData, QuickSearchPickerDataItem } from './quick-search-picker/quick-search-picker.component';
+import { QuickSearchPickerData } from './quick-search-picker/quick-search-picker.component';
 
 /**
  * Component providing an extensible search input. It's a simple input field for fulltext
@@ -66,8 +68,9 @@ export class QuickSearchComponent implements AfterViewInit {
 
   objectTypeSelectLabel: string;
 
-  availableObjectTypes: QuickSearchPickerDataItem[];
-  availableObjectTypeFields: QuickSearchPickerDataItem[];
+  availableObjectTypes: Selectable[];
+  availableObjectTypeGroups: SelectableGroup[];
+  availableObjectTypeFields: Selectable[];
 
   private TYPES = '@';
   private TYPE_FIELDS = '#';
@@ -156,16 +159,22 @@ export class QuickSearchComponent implements AfterViewInit {
         .map(ot => ({
           id: ot.id,
           label: this.systemService.getLocalizedResource(`${ot.id}_label`),
-          // description: this.systemService.getLocalizedResource(`${ot.id}_description`),
+          value: ot
+        }))
+        .sort(Utils.sortValues('label'));
+      this.availableObjectTypes = types;
+      let i = 0;
+      this.availableObjectTypeGroups = this.systemService.getGroupedObjectTypes().map((otg: ObjectTypeGroup) => ({
+        id: `${i++}`,
+        label: otg.label,
+        items: otg.types.map((ot: ObjectType) => ({
+          id: ot.id,
+          label: this.systemService.getLocalizedResource(`${ot.id}_label`),
           highlight: ot.isFolder,
           svg: this.systemService.getObjectTypeIcon(ot.id),
           value: ot
         }))
-        .sort(Utils.sortValues('label'))
-        .sort((x, y) => {
-          return x.highlight === y.highlight ? 0 : x.highlight ? -1 : 1;
-        });
-      this.availableObjectTypes = types;
+      }));
       this.onObjectTypesSelected([], false);
     });
   }
@@ -278,7 +287,7 @@ export class QuickSearchComponent implements AfterViewInit {
   showObjectTypePicker() {
     const pickerData: QuickSearchPickerData = {
       type: 'type',
-      items: this.availableObjectTypes,
+      items: this.availableObjectTypeGroups,
       selected: this.selectedObjectTypes
     };
     const popoverConfig: PopoverConfig = {
@@ -292,7 +301,12 @@ export class QuickSearchComponent implements AfterViewInit {
   showObjectTypeFieldPicker() {
     const pickerData: QuickSearchPickerData = {
       type: 'field',
-      items: this.availableObjectTypeFields,
+      items: [
+        {
+          id: 'field',
+          items: this.availableObjectTypeFields
+        }
+      ],
       selected: []
     };
     const popoverConfig: PopoverConfig = {

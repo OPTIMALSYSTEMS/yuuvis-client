@@ -9,7 +9,14 @@ export interface SearchResult {
 export interface SearchResultItem {
   objectTypeId: string;
   content?: SearchResultContent;
+  permissions?: SearchResultPermissions;
   fields: Map<string, any>;
+}
+
+export interface SearchResultPermissions {
+  read: Array<'metadata' | 'content'>;
+  write: Array<'metadata' | 'content'>;
+  delete: Array<'object' | 'content'>;
 }
 
 export interface SearchResultContent {

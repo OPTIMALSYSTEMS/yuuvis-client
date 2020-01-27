@@ -64,7 +64,7 @@ export class GroupedSelectComponent implements AfterViewInit, ControlValueAccess
     this.propagateChange(this.selectedItems);
     // Hitting ENTER will in any case trigger the select event, that
     // 'approves' the current selection.
-    this.select.emit(this.selectedItems);
+    this.emit();
   }
 
   @HostListener('keydown', ['$event']) onKeyDown(event) {
@@ -94,7 +94,7 @@ export class GroupedSelectComponent implements AfterViewInit, ControlValueAccess
   /**
    * Emitted when the component 'approves' the current selection.
    */
-  @Output() select = new EventEmitter<Selectable[]>();
+  @Output() select = new EventEmitter<Selectable | Selectable[]>();
 
   get selectableItemIndex(): number {
     return this._selectableItemIndex++;
@@ -105,7 +105,20 @@ export class GroupedSelectComponent implements AfterViewInit, ControlValueAccess
   enableSelectAll: boolean;
   columns: string = '';
 
-  private selectedItems: Selectable[] = [];
+  private _selectedItems: Selectable[] = [];
+
+  set selectedItems(items: Selectable[]) {
+    this._selectedItems = items;
+    this.selectedItemsCheck = {};
+    if (items) {
+      items.forEach(s => (this.selectedItemsCheck[s.id] = true));
+    }
+  }
+  get selectedItems() {
+    return this._selectedItems;
+  }
+
+  selectedItemsCheck = {};
   private focusedItem: Selectable;
   private resizeDebounce = 0;
 
@@ -127,7 +140,7 @@ export class GroupedSelectComponent implements AfterViewInit, ControlValueAccess
   itemSelected(item: SelectableInternal) {
     this.selectedItems = [item];
     this.propagateChange(this.selectedItems);
-    this.select.emit(this.selectedItems);
+    this.emit();
   }
 
   itemToggled(selected: boolean, item: SelectableInternal) {
@@ -148,6 +161,8 @@ export class GroupedSelectComponent implements AfterViewInit, ControlValueAccess
   }
 
   isSelected(item): boolean {
+    console.log('x');
+
     return this.selectedItems ? !!this.selectedItems.find(i => i.id === item.id) : false;
   }
 
@@ -189,6 +204,11 @@ export class GroupedSelectComponent implements AfterViewInit, ControlValueAccess
   }
 
   registerOnTouched(fn: any): void {}
+
+  private emit() {
+    // this.select.emit(this.selectedItems);
+    this.select.emit(this._multiple ? this.selectedItems : this.selectedItems[0]);
+  }
 
   ngAfterViewInit() {
     this.keyManager = new FocusKeyManager(this.items).withWrap();

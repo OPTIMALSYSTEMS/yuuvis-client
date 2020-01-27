@@ -8,7 +8,7 @@ import { AppCacheService } from '../cache/app-cache.service';
 import { Logger } from '../logger/logger';
 import { Utils } from './../../util/utils';
 import { SecondaryObjectTypeField, SystemType } from './system.enum';
-import { ObjectTypeField, SchemaResponse, SchemaResponseTypeDefinition, SystemDefinition } from './system.interface';
+import { ObjectTypeField, ObjectTypeGroup, SchemaResponse, SchemaResponseTypeDefinition, SystemDefinition } from './system.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -25,6 +25,44 @@ export class SystemService {
 
   getObjectTypes(): ObjectType[] {
     return this.system.objectTypes;
+  }
+
+  /**
+   * Returns grouped object types sorted by label and folders first.
+   */
+  getGroupedObjectTypes(): ObjectTypeGroup[] {
+    // TODO: Apply a different property to group once grouping is available
+    const grouped = this.groupBy(
+      this.getObjectTypes()
+        .map(ot => ({
+          ...ot,
+          group: this.getLocalizedResource(`${ot.id}_description`)
+        }))
+        .sort(Utils.sortValues('label'))
+        .sort((x, y) => {
+          return x.isFolder === y.isFolder ? 0 : x.isFolder ? -1 : 1;
+        }),
+      'group'
+    );
+
+    const groups: ObjectTypeGroup[] = [];
+    Object.keys(grouped)
+      .sort()
+      .forEach(k => {
+        delete grouped[k].group;
+        groups.push({
+          label: k,
+          types: grouped[k]
+        });
+      });
+    return groups;
+  }
+
+  private groupBy(arr: any[], key: string) {
+    return arr.reduce((rv, x) => {
+      (rv[x[key]] = rv[x[key]] || []).push(x);
+      return rv;
+    }, {});
   }
 
   getObjectType(objectTypeId: string): ObjectType {
