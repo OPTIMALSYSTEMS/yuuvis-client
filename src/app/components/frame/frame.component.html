@@ -13,15 +13,14 @@
       <yuv-icon class="btn" [iconSrc]="'assets/default/theme/app.icon.svg'"></yuv-icon>
     </a>
     <div yuvOfflineDisabled class="main">
-      <yuv-icon class="btn" routerLink="/create" 
-                [title]="'yuv.framework.object-create.header.title' | translate"
-                [icon]="'add'">
+      <yuv-icon class="btn" routerLink="/create" [title]="'yuv.framework.object-create.header.title' | translate"
+        [icon]="'add'">
       </yuv-icon>
     </div>
     <div class="right">
 
       <yuv-upload-progress-overlay (resultItemClick)="onResultItemClick($event)"></yuv-upload-progress-overlay>
-      <yuv-icon *ngIf="offline" class="offline-icon" [svg]="offline" title="offline"></yuv-icon>
+      <yuv-icon *ngIf="isOffline" class="offline-icon" [icon]="'offline'" title="offline"></yuv-icon>
       <div yuvOfflineDisabled class="user" (click)="op.toggle($event)">
         <yuv-user-avatar [user]="user"></yuv-user-avatar>
       </div>

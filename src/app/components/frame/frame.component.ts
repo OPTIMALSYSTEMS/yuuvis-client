@@ -1,6 +1,7 @@
 import { Component, HostBinding, HostListener, OnInit } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { SwUpdate } from '@angular/service-worker';
+import { IconRegistryService } from '@yuuvis/common-ui';
 import {
   AuthService,
   BaseObjectTypeField,
@@ -12,10 +13,9 @@ import {
   UserService,
   YuvUser
 } from '@yuuvis/core';
-import { IconRegistryService } from '@yuuvis/common-ui';
 import { LayoutService, LayoutSettings } from '@yuuvis/framework';
 import { filter } from 'rxjs/operators';
-import { drawer, add, userDisabled, offline, refresh } from '../../../assets/default/svg/svg';
+import { add, drawer, offline, refresh, userDisabled } from '../../../assets/default/svg/svg';
 
 @Component({
   selector: 'yuv-frame',
@@ -43,7 +43,7 @@ export class FrameComponent implements OnInit {
   // tslint:disable-next-line: member-ordering
   @HostBinding('class.transparentAppBar') tab: boolean;
   // tslint:disable-next-line: member-ordering
-  @HostBinding('class.offline') offline: boolean;
+  @HostBinding('class.offline') isOffline: boolean;
 
   constructor(
     private router: Router,
@@ -54,14 +54,13 @@ export class FrameComponent implements OnInit {
     private userService: UserService,
     private iconRegistry: IconRegistryService
   ) {
-
     this.iconRegistry.registerIcons([drawer, refresh, add, userDisabled, offline]);
 
     this.update.available.subscribe(update => (this.swUpdateAvailable = true));
     this.layoutService.layoutSettings$.subscribe((settings: LayoutSettings) => this.applyLayoutSettings(settings));
     this.connectionService.connection$.subscribe((connectionState: ConnectionState) => {
-      this.offline = !connectionState.isOnline;
-      if (!this.offline && !this.user) {
+      this.isOffline = !connectionState.isOnline;
+      if (!this.isOffline && !this.user) {
         // going back online without ever have loaded a user
         // this.reload();
       }
