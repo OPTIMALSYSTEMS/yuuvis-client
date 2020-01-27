@@ -67,8 +67,6 @@
   "yuv.framework.object-create.step.type.content.allowed": "Datei: optional",
   "yuv.framework.object-create.step.type.content.notallowed": "Datei: nein",
   "yuv.framework.object-create.step.type.content.required": "Datei: ja",
-  "yuv.framework.object-create.step.type.document": "Dokument",
-  "yuv.framework.object-create.step.type.folder": "Kontext",
   "yuv.framework.object-details.summary.section.admin": "Administrative Information",
   "yuv.framework.object-details.summary.section.baseparams": "Basisparameter",
   "yuv.framework.object-details.summary.section.core": "Objektattribute",
