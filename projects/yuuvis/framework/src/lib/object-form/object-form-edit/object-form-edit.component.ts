@@ -152,8 +152,6 @@ export class ObjectFormEditComponent implements OnDestroy {
   }
 
   private isEditable(dmsObject: DmsObject): boolean {
-    // return true;
-    // TODO: enable once rights are available:
     return dmsObject.hasOwnProperty('rights') && dmsObject.rights.writeIndexData;
   }
 
