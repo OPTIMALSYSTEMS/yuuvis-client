@@ -18,7 +18,7 @@
     <!-- STEP 1: Select an object type-->
     <div class="step select" *ngSwitchCase="'objecttype'" [@fadeIn]="animationTimer">
       <h1>{{ 'yuv.framework.object-create.step.type' | translate }}</h1>
-      <yuv-grouped-select [groups]="availableObjectTypeGroups" (select)="selectObjectType($event)">
+      <yuv-grouped-select [groups]="availableObjectTypeGroups" (select)="selectObjectType($event.value)">
       </yuv-grouped-select>
     </div>
 
