@@ -59,13 +59,11 @@ export class CoreInit {
           tap((res: YuvConfig) => this.configService.set(res)),
           switchMap((res: YuvConfig) => {
             return this.authService.initUser().pipe(
-              tap(x => console.log(x)),
               catchError(e => {
                 return of(true);
               })
             );
           })
-          //tap(res => console.log(res))
         )
         .subscribe(
           res => {
