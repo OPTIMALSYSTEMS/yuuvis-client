@@ -147,7 +147,7 @@
   "yuv.client.state.about.releasedate.label": "Produktversion:",
   "yuv.client.state.about.title": "Über yuuvis® flex",
   "yuv.client.state.create.title": "Objekt anlegen",
-  "yuv.client.state.dashboard.title": "Startseite",
+  "yuv.client.state.dashboard.title": "Dashboard",
   "yuv.client.state.not-found.description": "Das Objekt konnte nicht geladen werden.",
   "yuv.client.state.not-found.title": "Nicht gefunden",
   "yuv.client.state.result.title": "Suchergebnis",

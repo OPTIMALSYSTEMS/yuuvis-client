@@ -29,14 +29,6 @@ export class DeleteActionComponent extends DmsObjectTarget implements ComponentA
   }
 
   isExecutable(element: DmsObject) {
-    //todo: add condition when properties exists
-    // const isLocked = element.lock && element.lock.by.other;
-    // return observableOf(element && !element.isFinalized && element.rights && element.rights.recycle && !isLocked && this.isAllowedState());
-    return observableOf(true);
+    return observableOf(element && element.rights && element.rights.deleteObject);
   }
-
-  // isAllowedState() {
-  //   const disabledStates = ['/favorites', '/inbox', '/process', '/versions', '/notifications'];
-  //   return !disabledStates.some(s => this.router.url.startsWith(s));
-  // }
 }
