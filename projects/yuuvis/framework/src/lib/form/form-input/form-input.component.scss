@@ -77,12 +77,13 @@
 
   &.required .fe-wrapper {
     > label {
-      background-color: var(--item-focus-background-color);
+      // background-color: var(--item-focus-background-color);
+      font-weight: bold;
 
       &:after {
         content: '*';
         padding: 0 4px;
-        font-weight: bold;
+        color: var(--color-error);
       }
     }
   }

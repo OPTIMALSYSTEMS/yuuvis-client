@@ -41,7 +41,7 @@ export class DmsObjectPickerComponent implements OnInit {
 
   ngOnInit() {
     this.form = this.fb.group({
-      objectId: [this.defaultId ? this.defaultId : '523d445f-bb49-4718-aee4-3d59b2d10d78', Validators.required]
+      objectId: [this.defaultId ? this.defaultId : 'aeb19b4b-d44b-4dfb-b852-d0358c7cc294', Validators.required]
     });
   }
 }

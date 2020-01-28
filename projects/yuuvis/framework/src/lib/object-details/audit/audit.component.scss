@@ -6,8 +6,8 @@
     height: 100%;
     display: grid;
     grid-template-columns: 1fr;
-    grid-template-rows: auto 1fr;
-    grid-template-areas: 'footer' 'items';
+    grid-template-rows: 1fr auto;
+    grid-template-areas: 'items' 'footer';
     background-color: var(--panel-background-grey);
 
     .error {
@@ -75,6 +75,33 @@
         @include gap(calc(var(--app-pane-padding) / 4));
       }
     }
+
+    .btn-search {
+      position: absolute;
+      top: var(--app-pane-padding);
+      left: var(--app-pane-padding);
+      background-color: var(--panel-background);
+      padding: calc(var(--app-pane-padding) / 2);
+      @include panel-shadow();
+
+      &.badge {
+        color: var(--color-accent);
+        // &::after {
+        //   content: '';
+        //   position: absolute;
+        //   height: 4px;
+        //   background-color: var(--color-accent);
+        //   bottom: 0;
+        //   right: 0;
+        //   left: 0;
+        // }
+      }
+
+      yuv-icon {
+        display: block;
+      }
+    }
+
     .audits {
       grid-area: items;
     }
@@ -91,7 +118,6 @@
       background-color: var(--panel-background);
       border-bottom: 1px solid var(--panel-divider-color);
       display: flex;
-      padding: calc(var(--app-pane-padding) / 4);
 
       .paging {
         flex: 1;
@@ -99,6 +125,7 @@
         align-items: center;
         justify-content: flex-end;
         color: var(--text-color-caption);
+        margin: calc(var(--app-pane-padding) / 4);
 
         .page {
           padding: 0 calc(var(--app-pane-padding) / 2);
@@ -112,18 +139,18 @@
         padding: calc(var(--app-pane-padding) / 4);
       }
 
-      .btn-search.badge {
-        position: relative;
-        &::after {
-          content: '';
-          position: absolute;
-          height: 4px;
-          background-color: var(--color-accent);
-          bottom: 0;
-          right: 0;
-          left: 0;
-        }
-      }
+      // .btn-search.badge {
+      //   position: relative;
+      //   &::after {
+      //     content: '';
+      //     position: absolute;
+      //     height: 4px;
+      //     background-color: var(--color-accent);
+      //     bottom: 0;
+      //     right: 0;
+      //     left: 0;
+      //   }
+      // }
     }
 
     &.singleEntry {
