@@ -44,12 +44,12 @@ export class DmsObject {
     }
 
     if (searchResultItem.permissions) {
-      this.rights.readIndexData = searchResultItem.permissions.read.includes('metadata');
-      this.rights.readContent = searchResultItem.permissions.read.includes('content');
-      this.rights.writeIndexData = searchResultItem.permissions.write.includes('metadata');
-      this.rights.writeContent = searchResultItem.permissions.write.includes('content');
-      this.rights.deleteObject = searchResultItem.permissions.delete.includes('object');
-      this.rights.deleteContent = searchResultItem.permissions.delete.includes('content');
+      this.rights.readIndexData = searchResultItem.permissions.read && searchResultItem.permissions.read.includes('metadata');
+      this.rights.readContent = searchResultItem.permissions.read && searchResultItem.permissions.read.includes('content');
+      this.rights.writeIndexData = searchResultItem.permissions.write && searchResultItem.permissions.write.includes('metadata');
+      this.rights.writeContent = searchResultItem.permissions.write && searchResultItem.permissions.write.includes('content');
+      this.rights.deleteObject = searchResultItem.permissions.delete && searchResultItem.permissions.delete.includes('object');
+      this.rights.deleteContent = searchResultItem.permissions.delete && searchResultItem.permissions.delete.includes('content');
     }
 
     // TODO: setup contextfolder
