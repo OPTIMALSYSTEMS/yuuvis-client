@@ -1,5 +1,5 @@
 import { Component, HostBinding, HostListener, OnInit } from '@angular/core';
-import { NavigationEnd, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { SwUpdate } from '@angular/service-worker';
 import { IconRegistryService } from '@yuuvis/common-ui';
 import {
@@ -14,8 +14,7 @@ import {
   YuvUser
 } from '@yuuvis/core';
 import { LayoutService, LayoutSettings } from '@yuuvis/framework';
-import { filter } from 'rxjs/operators';
-import { add, drawer, offline, refresh, userDisabled } from '../../../assets/default/svg/svg';
+import { add, close, drawer, offline, refresh, userDisabled } from '../../../assets/default/svg/svg';
 
 @Component({
   selector: 'yuv-frame',
@@ -54,16 +53,14 @@ export class FrameComponent implements OnInit {
     private userService: UserService,
     private iconRegistry: IconRegistryService
   ) {
-    this.iconRegistry.registerIcons([drawer, refresh, add, userDisabled, offline]);
-
+    this.iconRegistry.registerIcons([drawer, refresh, add, userDisabled, offline, close]);
+    this.userService.user$.subscribe((user: YuvUser) => {
+      this.user = user;
+    });
     this.update.available.subscribe(update => (this.swUpdateAvailable = true));
     this.layoutService.layoutSettings$.subscribe((settings: LayoutSettings) => this.applyLayoutSettings(settings));
     this.connectionService.connection$.subscribe((connectionState: ConnectionState) => {
       this.isOffline = !connectionState.isOnline;
-      if (!this.isOffline && !this.user) {
-        // going back online without ever have loaded a user
-        // this.reload();
-      }
     });
   }
 
@@ -119,19 +116,17 @@ export class FrameComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.userService.user$.subscribe((user: YuvUser) => {
-      this.user = user;
-    });
-
-    this.authService.authenticated$.subscribe((authenticated: boolean) => {
-      if (!authenticated) {
-        const tenant = this.authService.getTenant();
-        if (tenant) {
-          (window as any).location.href = `/oauth/${tenant}`;
-        }
-      }
-    });
-
-    this.router.events.pipe(filter(e => e instanceof NavigationEnd)).subscribe((e: NavigationEnd) => (this.tab = e.urlAfterRedirects.startsWith('/dashboard')));
+    // this.userService.user$.subscribe((user: YuvUser) => {
+    //   this.user = user;
+    // });
+    // this.authService.authenticated$.subscribe((authenticated: boolean) => {
+    //   if (!authenticated) {
+    //     const tenant = this.authService.getTenant();
+    //     if (tenant) {
+    //       (window as any).location.href = `/oauth/${tenant}`;
+    //     }
+    //   }
+    // });
+    // this.router.events.pipe(filter(e => e instanceof NavigationEnd)).subscribe((e: NavigationEnd) => (this.tab = e.urlAfterRedirects.startsWith('/dashboard')));
   }
 }
