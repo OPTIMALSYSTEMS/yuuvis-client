@@ -5,7 +5,7 @@
   "background_color": "#484f54",
   "display": "standalone",
   "scope": "/",
-  "start_url": "/",
+  "start_url": "$STARTURL",
   "icons": [
     {
       "src": "assets/icons/icon-72x72.png",
