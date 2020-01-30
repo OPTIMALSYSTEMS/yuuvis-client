@@ -120,6 +120,7 @@ $app-bar-zindex: 6;
         margin: 0 var(--app-pane-padding);
         width: 32px;
         height: 32px;
+        overflow: hidden;
         background-color: rgba(255, 255, 255, 0.1);
         cursor: pointer;
 

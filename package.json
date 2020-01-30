@@ -38,6 +38,7 @@
     "build:libs:all": "npm run build:core && npm run build:common && npm run build:framework",
     "build:web": "npm run prebuild:about && npm run build:libs:all && npm run build -- --prod --base-href /client/ && node ./tools/scripts/misc/replace-start-url --url=/client/ && npm run prepare:dist",
     "build:pwa": "npm run prebuild:about && npm run build:libs:all && npm run build -- --prod --base-href /clientdev/ && node ./tools/scripts/misc/replace-start-url --url=/clientdev/ && npm run prepare:dist",
+    "build:pwa:loc": "npm run prebuild:about && npm run build:libs:all && npm run build -- --prod --base-href /yuuvis-flokfugl/ && node ./tools/scripts/misc/replace-start-url --url=/yuuvis-flokfugl/ && npm run prepare:dist",
     "prepare:dist": "node ./tools/scripts/misc/prepare-dist",
     "serve:dist": "node ./tools/scripts/dist-serve",
     "docker:create:tag": "node ./tools/scripts/misc/create-random-tag",

@@ -69,12 +69,11 @@
 </ng-container>
 
 <ng-template #offlineNoUser>
-  <div class="offline-no-user" *ngIf="offline">
-
+  <div class="offline-no-user" *ngIf="isOffline">
     <div class="box">
       <h1>{{'yuv.client.frame.offline.title'|translate}}</h1>
       <div>{{'yuv.client.frame.offline.message'|translate}}</div>
-      <yuv-icon class="logo" [svg]="offline"></yuv-icon>
+      <yuv-icon class="logo" [icon]="'offline'"></yuv-icon>
       <button class="primary" (click)="reload()">{{'yuv.client.frame.offline.button.refresh'|translate}}</button>
     </div>
 

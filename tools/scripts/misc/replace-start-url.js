@@ -3,8 +3,9 @@ const replace = require('replace-in-file');
 
 const replaceStartUrl = startUrl => {
   const manifestPath = path.resolve(__dirname, '..', '..', '..', 'dist', 'yuuvis-flokfugl', 'manifest.json');
+  console.log('replacing starturl in manifest.json');
   replace.sync({
-    from: '$STARTURL',
+    from: /__basehref__/g,
     to: startUrl,
     files: [manifestPath]
   });
