@@ -1,5 +1,5 @@
 import { Component, HostBinding, HostListener, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { NavigationEnd, Router } from '@angular/router';
 import { SwUpdate } from '@angular/service-worker';
 import { IconRegistryService } from '@yuuvis/common-ui';
 import {
@@ -14,6 +14,7 @@ import {
   YuvUser
 } from '@yuuvis/core';
 import { LayoutService, LayoutSettings } from '@yuuvis/framework';
+import { filter } from 'rxjs/operators';
 import { add, close, drawer, offline, refresh, userDisabled } from '../../../assets/default/svg/svg';
 
 @Component({
@@ -127,6 +128,6 @@ export class FrameComponent implements OnInit {
     //     }
     //   }
     // });
-    // this.router.events.pipe(filter(e => e instanceof NavigationEnd)).subscribe((e: NavigationEnd) => (this.tab = e.urlAfterRedirects.startsWith('/dashboard')));
+    this.router.events.pipe(filter(e => e instanceof NavigationEnd)).subscribe((e: NavigationEnd) => (this.tab = e.urlAfterRedirects.startsWith('/dashboard')));
   }
 }
