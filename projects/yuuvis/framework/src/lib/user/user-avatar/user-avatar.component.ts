@@ -38,7 +38,7 @@ export class UserAvatarComponent {
   }
 
   private setGravatarUserImage(email: string) {
-    this.img = this.sanitizer.bypassSecurityTrustStyle(`url('http://www.gravatar.com/avatar/${Utils.md5(email)}.jpg?s=80')`);
+    this.img = this.sanitizer.bypassSecurityTrustStyle(`url('http://www.gravatar.com/avatar/${Utils.md5(email)}.jpg?s=180')`);
   }
 
   private setDefaulUserImage() {
