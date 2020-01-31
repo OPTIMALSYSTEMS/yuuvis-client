@@ -66,7 +66,7 @@ export class DmsService {
    */
   getDmsObject(id: string, version?: number, intent?: string): Observable<DmsObject> {
     // TODO: Support version and intent params as well
-    return this.backend.get('/dms/objects/' + id + '?includePermissions=true', ApiBase.core).pipe(
+    return this.backend.get('/dms/' + id).pipe(
       map(res => {
         const item: SearchResultItem = this.searchService.toSearchResult(res).items[0];
         return this.searchResultToDmsObject(item);
