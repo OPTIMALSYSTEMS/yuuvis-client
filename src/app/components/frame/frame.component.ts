@@ -120,14 +120,14 @@ export class FrameComponent implements OnInit {
     // this.userService.user$.subscribe((user: YuvUser) => {
     //   this.user = user;
     // });
-    // this.authService.authenticated$.subscribe((authenticated: boolean) => {
-    //   if (!authenticated) {
-    //     const tenant = this.authService.getTenant();
-    //     if (tenant) {
-    //       (window as any).location.href = `/oauth/${tenant}`;
-    //     }
-    //   }
-    // });
+    this.authService.authenticated$.subscribe((authenticated: boolean) => {
+      if (!authenticated) {
+        const tenant = this.authService.getTenant();
+        if (tenant) {
+          (window as any).location.href = `/oauth/${tenant}`;
+        }
+      }
+    });
     this.router.events.pipe(filter(e => e instanceof NavigationEnd)).subscribe((e: NavigationEnd) => (this.tab = e.urlAfterRedirects.startsWith('/dashboard')));
   }
 }

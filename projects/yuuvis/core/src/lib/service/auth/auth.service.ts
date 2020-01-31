@@ -34,18 +34,23 @@ export class AuthService {
     private systemService: SystemService,
     private backend: BackendService,
     private appCache: AppCacheService
-  ) {
+  ) {}
+
+  // called on core init
+  init(): Observable<any> {
     // load authentication related properties stored from previous sessions
-    this.appCache.getItem(this.STORAGE_KEY).subscribe((data: AuthData) => {
-      this.authData = data;
-      if (data && data.language) {
-        this.translate.use(data.language ? data.language : 'en');
-        this.backend.setHeader('Accept-Language', data.language);
-      }
-      if (data && data.tenant) {
-        this.backend.setHeader('X-ID-TENANT-NAME', data.tenant);
-      }
-    });
+    return this.appCache.getItem(this.STORAGE_KEY).pipe(
+      tap((data: AuthData) => {
+        this.authData = data;
+        if (data && data.language) {
+          this.translate.use(data.language ? data.language : 'en');
+          this.backend.setHeader('Accept-Language', data.language);
+        }
+        if (data && data.tenant) {
+          this.backend.setHeader('X-ID-TENANT-NAME', data.tenant);
+        }
+      })
+    );
   }
 
   isLoggedIn() {

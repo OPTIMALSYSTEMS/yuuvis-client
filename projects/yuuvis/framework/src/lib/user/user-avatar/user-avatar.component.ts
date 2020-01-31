@@ -1,6 +1,6 @@
 import { Component, ElementRef, HostBinding, Input, Renderer2 } from '@angular/core';
 import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
-import { Utils, YuvUser } from '@yuuvis/core';
+import { YuvUser } from '@yuuvis/core';
 
 @Component({
   selector: 'yuv-user-avatar',
@@ -24,8 +24,6 @@ export class UserAvatarComponent {
 
   getUserImage(user: YuvUser) {
     if (user && user.image) {
-    } else if (user && user.email) {
-      this.setGravatarUserImage(user.email);
     } else if (user && !user.image) {
       this.img = null;
       const initials: HTMLElement = document.createElement('div');
@@ -35,10 +33,6 @@ export class UserAvatarComponent {
     } else {
       this.setDefaulUserImage();
     }
-  }
-
-  private setGravatarUserImage(email: string) {
-    this.img = this.sanitizer.bypassSecurityTrustStyle(`url('http://www.gravatar.com/avatar/${Utils.md5(email)}.jpg?s=180')`);
   }
 
   private setDefaulUserImage() {
