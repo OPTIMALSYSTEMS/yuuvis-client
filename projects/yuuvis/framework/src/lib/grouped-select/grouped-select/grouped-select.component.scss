@@ -12,6 +12,10 @@
       yuv-checkbox {
         display: none;
       }
+      &:focus,
+      &:focus-within {
+        outline: transparent !important;
+      }
     }
   }
 
