@@ -19,6 +19,11 @@ $avatar-size-small: 80px;
       yuv-user-avatar.box {
         width: $avatar-size-small;
         height: $avatar-size-small;
+        & ::ng-deep {
+          .initials {
+            font-size: $avatar-size-small / 2;
+          }
+        }
       }
     }
   }
@@ -92,6 +97,14 @@ $avatar-size-small: 80px;
         right: 0;
         top: 0;
         bottom: 0;
+        overflow: hidden;
+
+        & ::ng-deep {
+          .initials {
+            font-size: 200px;
+            opacity: 0.1;
+          }
+        }
       }
       yuv-user-avatar.box {
         position: absolute;
@@ -102,6 +115,14 @@ $avatar-size-small: 80px;
         border: calc(var(--app-pane-padding) / 4) solid #fff;
         width: $avatar-size;
         height: $avatar-size;
+        overflow: hidden;
+
+        & ::ng-deep {
+          .initials {
+            font-size: $avatar-size / 2;
+            color: #fff;
+          }
+        }
       }
       .user {
         position: relative;
