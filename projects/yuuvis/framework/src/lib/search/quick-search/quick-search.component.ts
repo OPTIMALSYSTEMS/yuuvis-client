@@ -10,7 +10,6 @@ import {
   ObjectTypeField,
   ObjectTypeGroup,
   RangeValue,
-  RetentionField,
   SearchFilter,
   SearchQuery,
   SearchService,
@@ -86,7 +85,7 @@ export class QuickSearchComponent implements AfterViewInit {
   private skipTypes = [];
   // fields that should not be searchable
   private skipFields = [
-    ...Object.keys(RetentionField).map(k => RetentionField[k]),
+    // ...Object.keys(RetentionField).map(k => RetentionField[k]),
     BaseObjectTypeField.OBJECT_ID,
     BaseObjectTypeField.CREATED_BY,
     BaseObjectTypeField.MODIFIED_BY,
