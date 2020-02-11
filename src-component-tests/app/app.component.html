@@ -4,13 +4,19 @@
     yuuvis component playground
   </div>
   <div class="settings">
-    <button class="toggle" (click)="toggleDirection()"
-      [ngClass]="{on: uiSettings.rtl}">{{uiSettings.rtl ? 'RTL' : 'LTR'}}</button>
-    <button class="toggle" (click)="toggleDarkMode()"
-      [ngClass]="{on: uiSettings.darkMode}">{{uiSettings.darkMode ? 'disable' : 'enable'}}
-      DarkMode</button>
+
+    <div class="colorpicker">
+      <div class="color">
+        <span class="clear" (click)="setAccentColor(null)">clear</span>
+        <span *ngFor="let c of accentColorRGB" (click)="setAccentColor(c)"
+          [ngStyle]="{'background-color': getBackgroundColor(c)}"></span>
+      </div>
+      <div class="current-color"></div>
+    </div>
+    <button class="toggle" (click)="toggleDirection()">{{uiSettings.direction === 'rtl' ? 'RTL' : 'LTR'}}</button>
+    <button class="toggle" (click)="toggleDarkMode()">{{uiSettings.darkMode ? 'DARK' : 'LIGHT'}}</button>
   </div>
-  <div class="user" *ngIf="!!user; else tplNotLoggedIn">Logged in as '{{user?.username}}'</div>
+  <div class="user" *ngIf="!!user; else tplNotLoggedIn">USER: '{{user?.username}}'</div>
   <ng-template #tplNotLoggedIn>
     <div class="user">Not logged in</div>
   </ng-template>

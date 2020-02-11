@@ -26,6 +26,7 @@ import { TestSearchResultPanelComponent } from './test-search-result-panel/test-
 import { TestSearchResultComponent } from './test-search-result/test-search-result.component';
 import { TestSummaryComponent } from './test-summary/test-summary.component';
 import { TestUploadProgressOverlayComponent } from './test-upload-progress-overlay/test-upload-progress-overlay.component';
+import { TestUserAvatarComponent } from './test-user-avatar/test-user-avatar.component';
 
 @NgModule({
   declarations: [
@@ -49,7 +50,8 @@ import { TestUploadProgressOverlayComponent } from './test-upload-progress-overl
     TestRecentActivitiesComponent,
     TestAnimatedIconsComponent,
     TestIconsComponent,
-    TestGroupedSelectComponent
+    TestGroupedSelectComponent,
+    TestUserAvatarComponent
   ],
   imports: [
     HttpClientModule,

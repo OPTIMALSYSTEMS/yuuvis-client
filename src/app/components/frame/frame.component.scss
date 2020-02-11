@@ -227,10 +227,9 @@ $app-bar-zindex: 6;
       yuv-user-avatar {
         flex: 1;
 
-        & ::ng-deep {
-          .initials {
+        &.initials ::ng-deep {
+          div {
             font-size: $user-panel-width * 0.4;
-            color: var(--color-primary);
             text-shadow: 0 0 $user-panel-width * 0.4 rgba(255, 255, 255, 1);
           }
         }

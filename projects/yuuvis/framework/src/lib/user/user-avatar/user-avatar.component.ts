@@ -24,10 +24,17 @@ export class UserAvatarComponent {
 
   getUserImage(user: YuvUser) {
     if (user && user.image) {
-    } else if (user && !user.image) {
+      this.img = this.sanitizer.bypassSecurityTrustStyle(`url('${user.image}')`);
+    } else if (user && !user.image && user.firstname && user.lastname) {
       this.img = null;
+      this.elRef.nativeElement.classList.add('initials');
       const initials: HTMLElement = document.createElement('div');
-      initials.classList.add('initials');
+      // scale initials font-size based on the containers size
+      const rect = this.elRef.nativeElement.getBoundingClientRect();
+      // when rendered invisible the width will be 0px
+      if (rect.width > 0) {
+        initials.style.fontSize = `${rect.width * 0.5}px`;
+      }
       initials.innerText = `${user.firstname.substr(0, 1)}${user.lastname.substr(0, 1)}`;
       this.renderer.appendChild(this.elRef.nativeElement, initials);
     } else {

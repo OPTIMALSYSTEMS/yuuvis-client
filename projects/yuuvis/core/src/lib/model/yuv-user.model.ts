@@ -22,6 +22,7 @@ export class YuvUser {
     this.firstname = json.firstname;
     this.lastname = json.lastname;
     this.email = json.email;
+    this.image = json.image;
     this.title = json.title;
     this.tenant = json.tenant;
     this.domain = json.domain;

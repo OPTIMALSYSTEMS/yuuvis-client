@@ -9,7 +9,11 @@
   background-size: cover;
   background-position: center center;
 
-  .initials {
-    font-weight: var(--font-weight-bold);
+  &.initials {
+    background-color: var(--color-accent);
+    > div {
+      font-weight: var(--font-weight-bold);
+      color: rgba(255, 255, 255, 0.5);
+    }
   }
 }

@@ -10,10 +10,12 @@ import { AppCacheService, Direction, UserService, YuvUser } from '@yuuvis/core';
 export class AppComponent implements OnInit {
   routes = [];
   user: YuvUser;
+  accentColorRGB = ['255, 152, 0', '120, 144, 156', '124, 179, 66', '3,169,244', '126,87,194', '236,64,122'];
 
   uiSettings = {
     darkMode: false,
-    direction: Direction.LTR
+    direction: Direction.LTR,
+    accentColor: null
   };
 
   private STORAGE_KEY = 'yuv.cmp-test.settings';
@@ -43,6 +45,16 @@ export class AppComponent implements OnInit {
     this.saveUiSettings();
   }
 
+  getBackgroundColor(rgb: string) {
+    return `rgb(${rgb})`;
+  }
+
+  setAccentColor(color: string) {
+    this.uiSettings.accentColor = color;
+    this.applyUiSettings();
+    this.saveUiSettings();
+  }
+
   private saveUiSettings() {
     this.appCache.setItem(this.STORAGE_KEY, this.uiSettings).subscribe();
   }
@@ -60,6 +72,11 @@ export class AppComponent implements OnInit {
       bodyClasses.add('yuv-rtl');
     } else {
       bodyClasses.remove('yuv-rtl');
+    }
+    if (this.uiSettings.accentColor) {
+      document.documentElement.style.setProperty('--color-accent-rgb', this.uiSettings.accentColor);
+    } else {
+      document.documentElement.style.removeProperty('--color-accent-rgb');
     }
   }
 
