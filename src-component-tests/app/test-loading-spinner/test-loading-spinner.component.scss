@@ -1,0 +1,15 @@
+:host {
+  color: var(--text-color-body);
+  .row {
+    display: flex;
+    align-items: center;
+
+    > div {
+      margin: 0 2em;
+    }
+  }
+  .panel {
+    height: auto;
+    padding: var(--app-pane-padding);
+  }
+}

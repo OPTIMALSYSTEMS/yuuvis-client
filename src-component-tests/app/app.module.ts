@@ -14,6 +14,7 @@ import { TestContentPreviewComponent } from './test-content-preview/test-content
 import { TestFileDropComponent } from './test-file-drop/test-file-drop.component';
 import { TestGroupedSelectComponent } from './test-grouped-select/test-grouped-select.component';
 import { TestIconsComponent } from './test-icons/test-icons/test-icons.component';
+import { TestLoadingSpinnerComponent } from './test-loading-spinner/test-loading-spinner.component';
 import { TestObjectCreateComponent } from './test-object-create/test-object-create.component';
 import { TestObjectDetailsComponent } from './test-object-details/test-object-details.component';
 import { TestObjectFormEditComponent } from './test-object-form-edit/test-object-form-edit.component';
@@ -51,7 +52,8 @@ import { TestUserAvatarComponent } from './test-user-avatar/test-user-avatar.com
     TestAnimatedIconsComponent,
     TestIconsComponent,
     TestGroupedSelectComponent,
-    TestUserAvatarComponent
+    TestUserAvatarComponent,
+    TestLoadingSpinnerComponent
   ],
   imports: [
     HttpClientModule,

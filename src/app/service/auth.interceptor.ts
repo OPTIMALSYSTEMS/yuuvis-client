@@ -25,7 +25,6 @@ export class AuthInterceptor implements HttpInterceptor {
           if (error instanceof HttpErrorResponse || error.isHttpErrorResponse) {
             if (error.status === 401) {
               // session timed out or we lost the tenant header
-              console.log('Ahhhhhhhhhhhhhhhhh');
               this.userService.logout();
             }
           }

@@ -1,4 +1,51 @@
-// Small straight loading spinner
+// linear loading indicator
+.yuv-loader-linear {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  background-color: rgba(var(--color-accent-rgb), 0.2);
+  height: calc(var(--app-pane-padding) / 4);
+
+  &:before {
+    content: '';
+    position: absolute;
+    height: 100%;
+    background-color: rgba(var(--color-accent-rgb), 1);
+    animation: linear-before 1.5s infinite ease-out;
+  }
+
+  &:after {
+    content: '';
+    position: absolute;
+    height: 100%;
+    background-color: rgba(var(--color-accent-rgb), 0.5);
+    animation: linear-after 1.5s infinite ease-in;
+  }
+}
+
+@keyframes linear-before {
+  0% {
+    left: -100%;
+    width: 100%;
+  }
+  100% {
+    left: 100%;
+    width: 10%;
+  }
+}
+
+@keyframes linear-after {
+  0% {
+    left: -150%;
+    width: 100%;
+  }
+  100% {
+    left: 100%;
+    width: 10%;
+  }
+}
+
+// Small straight loading spinner (dots in a row)
 .yuv-loader-straight {
   display: flex;
   flex-flow: row nowrap;

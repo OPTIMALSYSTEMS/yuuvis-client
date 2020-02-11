@@ -5,18 +5,13 @@
   padding: calc(var(--app-pane-padding) / 2);
   user-select: none;
   color: var(--text-color-body);
+  position: relative;
 
-  .loading {
-    height: 50px;
-
-    ::ng-deep {
-      .yuv-busy-overlay {
-        background-color: rgba(0, 0, 0, 0.2);
-        width: 4em;
-        margin: auto;
-        border-radius: 50%;
-      }
-    }
+  .yuv-loader-linear {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
   }
 
   .outer {
