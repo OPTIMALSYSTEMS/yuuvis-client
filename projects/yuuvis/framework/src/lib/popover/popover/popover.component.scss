@@ -15,6 +15,7 @@
       color: var(--text-color-hint);
       top: var(--app-pane-padding);
       @include bidi-style(right, var(--app-pane-padding), left, var(--app-pane-padding));
+      z-index: 1000;
     }
   }
 }

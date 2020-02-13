@@ -17,6 +17,12 @@
         outline: transparent !important;
       }
     }
+    .group {
+      .screen-s & {
+        position: relative;
+        top: calc(var(--app-pane-padding) * 3);
+      }
+    }
   }
 
   div.group {
