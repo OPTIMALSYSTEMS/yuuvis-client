@@ -146,7 +146,8 @@ export class GroupedSelectComponent implements AfterViewInit, ControlValueAccess
   itemToggled(selected: boolean, item: SelectableInternal) {
     if (this.multiple) {
       if (selected) {
-        this.selectedItems.push(item);
+        // needs to be immutable
+        this.selectedItems = [...this.selectedItems, item];
       } else {
         this.selectedItems = this.selectedItems.filter(i => i.id !== item.id);
       }
