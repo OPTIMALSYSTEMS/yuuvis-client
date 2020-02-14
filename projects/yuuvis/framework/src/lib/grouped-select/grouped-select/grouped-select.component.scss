@@ -21,6 +21,7 @@
       .screen-s & {
         position: relative;
         top: calc(var(--app-pane-padding) * 3);
+        box-shadow: none;
       }
     }
   }
