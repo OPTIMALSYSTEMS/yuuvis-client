@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { LocalStorage } from '@ngx-pwa/local-storage';
+import { DmsObject } from '@yuuvis/core';
 import { AppDataService } from '../add.data.service';
 
 @Component({
@@ -12,8 +13,12 @@ export class TestSummaryComponent implements OnInit {
 
   constructor(private data: AppDataService, private localStorage: LocalStorage) {}
 
-  setDmsObjectInput() {
-    this.summaryObject = this.data.getDmsObject();
+  // setDmsObjectInput() {
+  //   this.summaryObject = this.data.getDmsObject();
+  // }
+
+  setDmsObjectInput(dmsObject: DmsObject) {
+    this.summaryObject = dmsObject || this.data.getDmsObject();
   }
 
   clearDmsObjectInput() {

@@ -1,5 +1,6 @@
 <div class="testing-controls">
-  <button (click)="setDmsObjectInput()">Set dmsObject input</button>
+  <yuv-dms-object-picker (dmsObject)="setDmsObjectInput($event)"></yuv-dms-object-picker>
+  <!-- <button (click)="setDmsObjectInput()">Set dmsObject input</button> -->
   <button (click)="contentDmsObjectInput()">with content</button>
   <button (click)="clearDmsObjectInput()">NULL dmsObject input</button>
   <button (click)="clearDmsObjectInput()">Invalid dmsObject input</button>

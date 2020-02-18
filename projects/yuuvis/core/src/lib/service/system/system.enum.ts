@@ -28,6 +28,7 @@ export const BaseObjectTypeField = {
   PARENT_OBJECT_TYPE_ID: 'system:parentObjectTypeId',
   PARENT_VERSION_NUMBER: 'system:parentVersionNumber',
   TENANT: 'system:tenant',
+  ACL: 'system:acl',
   TRACE_ID: 'system:traceId',
   SECONDARY_OBJECT_TYPE_IDS: 'system:secondaryObjectTypeIds',
   BASE_TYPE_ID: 'system:baseTypeId',

@@ -81,6 +81,7 @@ export class SummaryComponent implements OnInit {
       ContentStreamField.ID,
       BaseObjectTypeField.OBJECT_TYPE_ID,
       BaseObjectTypeField.TENANT,
+      BaseObjectTypeField.ACL,
       BaseObjectTypeField.PARENT_ID,
       BaseObjectTypeField.PARENT_OBJECT_TYPE_ID,
       BaseObjectTypeField.PARENT_VERSION_NUMBER,
