@@ -29,6 +29,11 @@ export class UploadActionComponent extends DmsObjectTarget implements ComponentA
 
   isExecutable(element: DmsObject) {
     const objectType = this.system.getObjectType(element.objectTypeId);
-    return observableOf(objectType.contentStreamAllowed && objectType.contentStreamAllowed !== ContentStreamAllowed.NOT_ALLOWED);
+
+    console.log(element);
+
+    return observableOf(
+      element.rights && element.rights.writeContent && objectType.contentStreamAllowed && objectType.contentStreamAllowed !== ContentStreamAllowed.NOT_ALLOWED
+    );
   }
 }

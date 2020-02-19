@@ -83,8 +83,9 @@ export class ObjectDetailsComponent {
   }
 
   onFileDropped(file: File) {
-    console.log(file);
-    this.dmsService.uploadContent(this.dmsObject.id, file).subscribe();
+    if (this.dmsObject.rights && this.dmsObject.rights.writeContent) {
+      this.dmsService.uploadContent(this.dmsObject.id, file).subscribe();
+    }
   }
 
   onIndexdataSaved(updatedObject: DmsObject) {
