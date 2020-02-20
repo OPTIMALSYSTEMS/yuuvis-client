@@ -7,8 +7,8 @@ import { Observable, ReplaySubject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { ColumnSizes } from '../../services/grid/grid.interface';
-import { RecentAcitivitiesItemComponent } from './../recent-activities/recent-acitivities-item/recent-acitivities-item.component';
 import { ResponsiveTableData } from './responsive-data-table.interface';
+import { TileCellRendererComponent } from './tile-cell-renderer/tile-cell-renderer.component';
 
 /**
  * @ignore
@@ -36,8 +36,8 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
 
   private settings = {
     headerHeight: { standard: 37, horizontal: 0, grid: 0 },
-    rowHeight: { standard: 48, horizontal: 70, grid: 160 },
-    colWidth: { standard: 'auto', horizontal: 'auto', grid: 160 },
+    rowHeight: { standard: 48, horizontal: 70, grid: 177 },
+    colWidth: { standard: 'auto', horizontal: 'auto', grid: 177 },
     size: { newHeight: 0, newWidth: 0 }
   };
 
@@ -243,7 +243,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
       field: BaseObjectTypeField.OBJECT_ID,
       cellClass: 'cell-title-description',
       minWidth: this.isGrid ? this._data.rows.length * this.settings.colWidth.grid : 0,
-      cellRendererFramework: RecentAcitivitiesItemComponent
+      cellRendererFramework: TileCellRendererComponent
       // cellRenderer: params => `
       //     <div class="title">${params.data[this._data.titleField] || params.value || ''}</div>
       //     <div class="description">${params.data[this._data.descriptionField] || ''}</div>

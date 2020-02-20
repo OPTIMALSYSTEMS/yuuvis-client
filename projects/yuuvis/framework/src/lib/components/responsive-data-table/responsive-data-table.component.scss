@@ -1,6 +1,7 @@
 @import '../../../../../../../src/scss-shared/_mixins';
 
 $icon-size: 18px !default;
+$grid-tile-size: 177px;
 $primary-color: var(--color-accent);
 $range-selection-highlight-color: $primary-color;
 
@@ -15,86 +16,74 @@ $range-selection-highlight-color: $primary-color;
           padding: 0;
           width: 100% !important;
         }
-        yuv-recent-acitivities-item {
+        yuv-tile-cell-renderer {
           @include flex-col();
           background-color: transparent;
-          .pre {
-            display: block;
-            text-align: center;
-            background-color: var(--panel-divider-color);
-            yuv-icon {
-              display: block;
-              margin: auto;
-              margin-bottom: 8px;
-            }
-            .type {
-              display: block;
-              font-size: var(--font-hint);
-              line-height: 1em;
-            }
-          }
-          .main {
-            .date {
-              line-height: 1.5em;
-            }
-          }
         }
         &.ag-row-focus .ag-cell-focus,
         &.ag-row-focus {
           background-color: transparent;
-          yuv-recent-acitivities-item {
-            background-color: var(--item-focus-background-color);
+          yuv-tile-cell-renderer {
+            background-color: rgba(var(--color-accent-rgb), 0.3);
           }
         }
         &.ag-row-selected {
           background-color: transparent;
-          yuv-recent-acitivities-item {
-            background-color: var(--color-accent) !important;
+          yuv-tile-cell-renderer {
+            background-color: rgba(var(--color-accent-rgb), 0.4) !important;
           }
         }
       }
       .ag-theme-yuv .ag-header {
         border: 0;
+        &.ag-pivot-off {
+          display: none;
+        }
       }
     }
 
-    &.horizontal {
-      .ag-theme-yuv {
-        .ag-center-cols-container {
-          width: 100% !important;
-        }
-        .ag-row {
-          yuv-recent-acitivities-item {
-            flex-flow: row;
-            max-width: 100%;
-            margin: 4px;
-            .pre {
-              min-width: 25%;
-            }
-            .main {
-              max-width: 75%;
-              flex: 1;
-              position: relative;
-              .description {
-                margin-right: 80px;
-              }
-              .date {
-                position: absolute;
-                right: var(--app-pane-padding);
-                bottom: calc(var(--app-pane-padding) / 2);
-              }
-            }
-          }
-        }
-      }
-    }
+    // &.horizontal {
+    //   .ag-theme-yuv {
+    //     .ag-center-cols-container {
+    //       width: 100% !important;
+    //     }
+    //     .ag-row {
+    //       yuv-tile-cell-renderer {
+    //         flex-flow: row;
+    //         max-width: 100%;
+    //         // margin: calc(var(--app-pane-padding) / 8);
+    //         .pre {
+    //           min-width: 25%;
+    //         }
+    //         .main {
+    //           max-width: 75%;
+    //           flex: 1;
+    //           position: relative;
+    //           .description {
+    //             margin-right: 80px;
+    //           }
+    //           .date {
+    //             position: absolute;
+    //             right: var(--app-pane-padding);
+    //             bottom: calc(var(--app-pane-padding) / 2);
+    //           }
+    //         }
+    //       }
+    //     }
+    //   }
+    // }
 
     &.grid {
       .ag-theme-yuv {
+        .ag-body-viewport {
+          background-color: var(--panel-background-grey);
+        }
         .ag-center-cols-container {
           @include flex-row();
           flex-wrap: wrap;
-          justify-content: space-evenly;
+          // justify-content: space-evenly;
+          padding: var(--app-pane-padding);
+
           @supports (-ms-ime-align: auto) {
             & {
               justify-content: space-around; // Edge
@@ -104,8 +93,8 @@ $range-selection-highlight-color: $primary-color;
         .ag-row {
           position: relative;
           overflow: hidden;
-          width: 160px;
-          height: 160px !important;
+          width: $grid-tile-size;
+          height: $grid-tile-size !important;
           transform: none !important;
           border-width: 1px !important;
         }

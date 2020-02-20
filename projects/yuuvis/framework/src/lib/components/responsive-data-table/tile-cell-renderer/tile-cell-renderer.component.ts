@@ -1,16 +1,15 @@
 import { AgRendererComponent } from '@ag-grid-community/angular';
-import { Component, Input } from '@angular/core';
+import { Component } from '@angular/core';
 import { BaseObjectTypeField, SecondaryObjectTypeField, SystemService } from '@yuuvis/core';
-import { RecentItem } from './../recent-activities.component';
 
 @Component({
-  selector: 'yuv-recent-acitivities-item',
-  templateUrl: './recent-acitivities-item.component.html',
-  styleUrls: ['./recent-acitivities-item.component.scss']
+  selector: 'yuv-tile-cell-renderer',
+  templateUrl: './tile-cell-renderer.component.html',
+  styleUrls: ['./tile-cell-renderer.component.scss']
 })
-export class RecentAcitivitiesItemComponent implements AgRendererComponent {
-  @Input() recentItem: RecentItem;
+export class TileCellRendererComponent implements AgRendererComponent {
   private params: any;
+  data: any;
 
   constructor(private systemService: SystemService) {}
 
@@ -21,7 +20,7 @@ export class RecentAcitivitiesItemComponent implements AgRendererComponent {
   agInit(params: any): void {
     const { data } = (this.params = params);
     const objectTypeId = data[BaseObjectTypeField.OBJECT_TYPE_ID];
-    this.recentItem = {
+    this.data = {
       title: data[SecondaryObjectTypeField.TITLE],
       description: data[SecondaryObjectTypeField.DESCRIPTION],
       objectId: data[BaseObjectTypeField.OBJECT_ID],

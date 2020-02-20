@@ -111,8 +111,9 @@ body {
 }
 
 .panel {
-  @include panel-shadow();
+  // @include panel-shadow();
   height: 100%;
+  border: 1px solid var(--panel-divider-color);
 }
 
 svg .accent {

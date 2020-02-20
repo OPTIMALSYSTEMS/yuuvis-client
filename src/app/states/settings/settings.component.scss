@@ -80,7 +80,7 @@ $avatar-size-small: 80px;
     .head {
       grid-area: head;
       position: relative;
-      background-color: var(--color-primary-3);
+      background-color: var(--color-primary);
 
       yuv-user-avatar.background {
         position: absolute;
