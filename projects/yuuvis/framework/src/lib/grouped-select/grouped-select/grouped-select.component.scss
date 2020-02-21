@@ -30,13 +30,12 @@
     margin: calc(var(--app-pane-padding) / 2);
     display: block;
     background-color: var(--panel-background);
-    box-shadow: 0 1px 3px 0px rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--panel-divider-color);
     width: 100%;
 
     .group-label {
-      color: var(--color-accent);
+      color: var(--text-color-hint);
       padding: var(--app-pane-padding);
-      font-size: var(--font-subhead);
       &.selectable {
         cursor: pointer;
       }

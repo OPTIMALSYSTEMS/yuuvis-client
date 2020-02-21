@@ -13,8 +13,9 @@
   animation: yuvFadeIn 500ms;
 
   .pre {
+    display: flex;
+    flex-flow: column;
     background-color: var(--panel-background-lightgrey);
-    // @include flex-col(0);
     align-items: center;
     justify-content: center;
     padding: calc(var(--app-pane-padding) / 2);

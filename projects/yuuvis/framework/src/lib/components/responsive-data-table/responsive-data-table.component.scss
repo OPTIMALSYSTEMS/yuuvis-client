@@ -10,27 +10,78 @@ $range-selection-highlight-color: $primary-color;
     &.grid,
     &.horizontal {
       .ag-theme-yuv .ag-row {
-        border: 0;
         padding: 0;
         .ag-cell {
           padding: 0;
           width: 100% !important;
         }
-        yuv-tile-cell-renderer {
-          @include flex-col();
-          background-color: transparent;
-        }
-        &.ag-row-focus .ag-cell-focus,
-        &.ag-row-focus {
-          background-color: transparent;
-          yuv-tile-cell-renderer {
-            background-color: rgba(var(--color-accent-rgb), 0.3);
+
+        .rdt-row {
+          display: flex;
+          line-height: 1.7em;
+          overflow: hidden;
+
+          .main {
+            .title {
+              font-weight: bold;
+              @include ellipsis();
+              display: block;
+            }
+            .description {
+              opacity: 0.54;
+              @include ellipsis();
+              display: block;
+            }
+          }
+
+          // title/description only row
+          &.row-horizontal {
+            flex-flow: row nowrap;
+            align-items: center;
+            .head {
+              padding: 0 var(--app-pane-padding);
+              flex: 0 0 auto;
+            }
+            .main {
+              flex: 1;
+            }
+          }
+
+          // grid tile
+          &.row-grid {
+            flex-flow: column;
+            border: 1px solid var(--panel-divider-color);
+
+            .head {
+              flex: 1;
+              display: flex;
+              flex-flow: column;
+              align-items: center;
+              justify-content: center;
+              background-color: var(--panel-background-lightgrey);
+              border-bottom: 1px solid var(--panel-divider-color);
+
+              svg {
+                width: 70px;
+                height: 70px;
+                opacity: 0.1;
+              }
+            }
+            .main {
+              flex: 0 0 auto;
+              padding: calc(var(--app-pane-padding) / 2);
+            }
           }
         }
+
         &.ag-row-selected {
-          background-color: transparent;
-          yuv-tile-cell-renderer {
-            background-color: rgba(var(--color-accent-rgb), 0.4) !important;
+          .rdt-row {
+            .main {
+              .title,
+              .description {
+                opacity: 1;
+              }
+            }
           }
         }
       }
@@ -42,37 +93,6 @@ $range-selection-highlight-color: $primary-color;
       }
     }
 
-    // &.horizontal {
-    //   .ag-theme-yuv {
-    //     .ag-center-cols-container {
-    //       width: 100% !important;
-    //     }
-    //     .ag-row {
-    //       yuv-tile-cell-renderer {
-    //         flex-flow: row;
-    //         max-width: 100%;
-    //         // margin: calc(var(--app-pane-padding) / 8);
-    //         .pre {
-    //           min-width: 25%;
-    //         }
-    //         .main {
-    //           max-width: 75%;
-    //           flex: 1;
-    //           position: relative;
-    //           .description {
-    //             margin-right: 80px;
-    //           }
-    //           .date {
-    //             position: absolute;
-    //             right: var(--app-pane-padding);
-    //             bottom: calc(var(--app-pane-padding) / 2);
-    //           }
-    //         }
-    //       }
-    //     }
-    //   }
-    // }
-
     &.grid {
       .ag-theme-yuv {
         .ag-body-viewport {
@@ -81,22 +101,69 @@ $range-selection-highlight-color: $primary-color;
         .ag-center-cols-container {
           @include flex-row();
           flex-wrap: wrap;
-          // justify-content: space-evenly;
           padding: var(--app-pane-padding);
+          align-content: flex-start;
 
-          @supports (-ms-ime-align: auto) {
-            & {
-              justify-content: space-around; // Edge
-            }
-          }
+          // @supports (-ms-ime-align: auto) {
+          //   & {
+          //     justify-content: space-around; // Edge
+          //   }
+          // }
         }
         .ag-row {
+          border: 0;
           position: relative;
           overflow: hidden;
           width: $grid-tile-size;
           height: $grid-tile-size !important;
           transform: none !important;
           border-width: 1px !important;
+          .rdt-row {
+            flex: 1;
+            background-color: var(--panel-background);
+          }
+
+          &.ag-row-focus .ag-cell-focus,
+          &.ag-row-focus {
+            // background-color: transparent;
+            // .rdt-row {
+            //   border-color: rgba(var(--color-accent-rgb), 0.3);
+            //   // background-color: var(--item-focus-background-color);
+            //   .head {
+            //     // background-color: rgba(var(--color-accent-rgb), 0.3);
+            //     border-color: rgba(var(--color-accent-rgb), 0.3);
+            //   }
+            // }
+          }
+          &.ag-row-selected {
+            background-color: transparent;
+            .rdt-row {
+              background-color: rgba(var(--color-accent-rgb), 0.7);
+              border-color: var(--color-accent);
+              .head {
+                background-color: var(--color-accent);
+                border-color: var(--color-accent);
+                color: #fff;
+                svg {
+                  opacity: 0.8;
+                }
+              }
+              .main {
+                .title,
+                .description {
+                  opacity: 1;
+                }
+              }
+            }
+          }
+          .ag-cell {
+            padding: calc(var(--app-pane-padding) / 2);
+            > span {
+              display: flex;
+              width: 100%;
+              height: 100%;
+            }
+          }
         }
         .ag-pinned-left-cols-container,
         .ag-pinned-right-cols-container,

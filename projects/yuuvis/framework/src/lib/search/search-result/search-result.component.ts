@@ -20,7 +20,7 @@ import { takeUntilDestroy } from 'take-until-destroy';
 import { ResponsiveDataTableComponent } from '../../components/responsive-data-table/responsive-data-table.component';
 import { ResponsiveTableData } from '../../components/responsive-data-table/responsive-data-table.interface';
 import { GridService } from '../../services/grid/grid.service';
-import { arrowLast, arrowNext } from '../../svg.generated';
+import { arrowLast, arrowNext, listModeDefault, listModeGrid, listModeSimple } from '../../svg.generated';
 import { ViewMode } from './../../components/responsive-data-table/responsive-data-table.component';
 
 @Component({
@@ -121,7 +121,7 @@ export class SearchResultComponent implements OnDestroy {
     private fb: FormBuilder,
     private iconRegistry: IconRegistryService
   ) {
-    this.iconRegistry.registerIcons([arrowNext, arrowLast]);
+    this.iconRegistry.registerIcons([arrowNext, arrowLast, listModeDefault, listModeGrid, listModeSimple]);
 
     this.pagingForm = this.fb.group({
       page: ['']

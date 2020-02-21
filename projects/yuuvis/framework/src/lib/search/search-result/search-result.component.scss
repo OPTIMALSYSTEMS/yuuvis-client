@@ -119,19 +119,10 @@ $yuv-panel-toolbar-icon: 37px;
         .prev {
           transform: rotate(180deg);
         }
-      }
 
-      .view-mode {
-        button {
-          padding: 4px;
-          font-size: 1.5em;
-          &.current {
-            background-color: var(--item-focus-background-color);
-          }
-          &.active {
-            color: #fff;
-            background-color: var(--color-accent);
-          }
+        &.active {
+          background-color: var(--color-accent);
+          color: #fff;
         }
       }
 

@@ -26,22 +26,29 @@
             {{ 'yuv.framework.search-result.footer.hits' | translate: { count: totalNumItems } }}
           </div>
 
-          <div class="navigation">
+          <!-- maybe redundant here because you can just use the list -->
+          <!-- <div class="navigation">
             <button [disabled]="!tableData?.rows?.length" (click)="goTo('prev')">
               <yuv-icon class="prev" [icon]="'arrowNext'"></yuv-icon>
             </button>
             <button [disabled]="!tableData?.rows?.length" (click)="goTo('next')">
               <yuv-icon class="next" [icon]="'arrowNext'"></yuv-icon>
             </button>
-          </div>
+          </div> -->
 
           <div class="view-mode">
-            <button (click)="viewMode = 'standard'"
-              [ngClass]="{'active': dataTable.viewMode === 'standard', 'current': dataTable.currentViewMode === 'standard'}">&#9776;</button>
-            <button (click)="viewMode = 'grid'"
-              [ngClass]="{'active': dataTable.viewMode === 'grid', 'current': dataTable.currentViewMode === 'grid'}">&#9783;</button>
-            <button (click)="viewMode = 'horizontal'"
-              [ngClass]="{'active': dataTable.viewMode === 'horizontal', 'current': dataTable.currentViewMode === 'horizontal'}">&#9868;</button>
+            <button
+              [ngClass]="{'active': dataTable.viewMode === 'standard', 'current': dataTable.currentViewMode === 'standard'}">
+              <yuv-icon class="next" (click)="viewMode = 'standard'" [icon]="'listModeDefault'"></yuv-icon>
+            </button>
+            <button
+              [ngClass]="{'active': dataTable.viewMode === 'grid', 'current': dataTable.currentViewMode === 'grid'}">
+              <yuv-icon class="next" (click)="viewMode = 'grid'" [icon]="'listModeGrid'"></yuv-icon>
+            </button>
+            <button
+              [ngClass]="{'active': dataTable.viewMode === 'horizontal', 'current': dataTable.currentViewMode === 'horizontal'}">
+              <yuv-icon class="next" (click)="viewMode = 'horizontal'" [icon]="'listModeSimple'"></yuv-icon>
+            </button>
           </div>
 
           <div class="controls" *ngIf="hasPages">

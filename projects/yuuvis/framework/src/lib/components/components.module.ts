@@ -23,7 +23,6 @@ import { FilePickerComponent } from './file-picker/file-picker.component';
 import { PanelComponent } from './panel/panel.component';
 import { RecentActivitiesComponent } from './recent-activities/recent-activities.component';
 import { ResponsiveDataTableComponent } from './responsive-data-table/responsive-data-table.component';
-import { TileCellRendererComponent } from './responsive-data-table/tile-cell-renderer/tile-cell-renderer.component';
 import { ResponsiveMasterSlaveComponent } from './responsive-master-slave/responsive-master-slave.component';
 import { ResponsiveTabContainerComponent } from './responsive-tab-container/responsive-tab-container.component';
 import { UploadProgressOverlayComponent } from './upload-progress-overlay/upload-progress-overlay.component';
@@ -40,8 +39,7 @@ const components = [
   ActionMenuBarComponent,
   ResponsiveTabContainerComponent,
   IconUploadComponent,
-  DmsObjectTileComponent,
-  TileCellRendererComponent
+  DmsObjectTileComponent
 ];
 
 @NgModule({
@@ -53,7 +51,7 @@ const components = [
     AngularResizedEventModule,
     CdkStepperModule,
     AngularSplitModule,
-    AgGridModule.withComponents([TileCellRendererComponent]),
+    AgGridModule,
     RouterModule,
     TabViewModule,
     DialogModule,
