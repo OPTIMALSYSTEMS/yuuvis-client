@@ -18,13 +18,13 @@
 
     button {
       background-color: rgba(255, 255, 255, 0.1);
-      &:hover {
-        border: 1px solid var(--color-primary-3);
-      }
+      // &:hover {
+      //   border: 1px solid var(--color-primary-3);
+      // }
     }
 
     .primary {
-      background-color: var(--color-accent-1);
+      background-color: rgba(var(--color-accent-rgb), 0.8);
     }
 
     .secondary {

@@ -1,4 +1,6 @@
 :host {
+  display: block;
+
   ::ng-deep {
     .ui-tabview .ui-tabview-panels {
       background-color: var(--panel-background-grey);

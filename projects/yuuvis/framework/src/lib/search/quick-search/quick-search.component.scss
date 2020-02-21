@@ -91,6 +91,7 @@
         padding: calc(var(--app-pane-padding) / 8);
         margin-top: calc(var(--app-pane-padding) / 4);
         background-color: var(--panel-background-grey);
+        border: 1px solid var(--panel-divider-color);
       }
       .buttons {
         display: flex;
@@ -209,6 +210,7 @@
           display: flex;
           flex: 1;
           background-color: var(--panel-background);
+          border: 1px solid var(--panel-divider-color);
           align-items: center;
           margin: calc(var(--app-pane-padding) / 8);
 

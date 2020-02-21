@@ -82,19 +82,10 @@
       left: var(--app-pane-padding);
       background-color: var(--panel-background);
       padding: calc(var(--app-pane-padding) / 2);
-      @include panel-shadow();
+      border: 1px solid var(--panel-divider-color);
 
       &.badge {
         color: var(--color-accent);
-        // &::after {
-        //   content: '';
-        //   position: absolute;
-        //   height: 4px;
-        //   background-color: var(--color-accent);
-        //   bottom: 0;
-        //   right: 0;
-        //   left: 0;
-        // }
       }
 
       yuv-icon {
@@ -116,7 +107,7 @@
     .footer {
       grid-area: footer;
       background-color: var(--panel-background);
-      border-bottom: 1px solid var(--panel-divider-color);
+      border-top: 1px solid var(--panel-divider-color);
       display: flex;
 
       .paging {
@@ -138,19 +129,6 @@
       button {
         padding: calc(var(--app-pane-padding) / 4);
       }
-
-      // .btn-search.badge {
-      //   position: relative;
-      //   &::after {
-      //     content: '';
-      //     position: absolute;
-      //     height: 4px;
-      //     background-color: var(--color-accent);
-      //     bottom: 0;
-      //     right: 0;
-      //     left: 0;
-      //   }
-      // }
     }
 
     &.singleEntry {

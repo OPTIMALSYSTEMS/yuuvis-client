@@ -1,13 +1,12 @@
 import { ClientSideRowModelModule } from '@ag-grid-community/client-side-row-model';
 import { ColDef, GridOptions, Module, RowEvent, RowNode } from '@ag-grid-community/core';
 import { Component, EventEmitter, HostBinding, HostListener, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { BaseObjectTypeField, DeviceService, PendingChangesService, Utils } from '@yuuvis/core';
+import { BaseObjectTypeField, DeviceService, PendingChangesService, SystemService, Utils } from '@yuuvis/core';
 import { ResizedEvent } from 'angular-resize-event';
 import { Observable, ReplaySubject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { ColumnSizes } from '../../services/grid/grid.interface';
-import { RecentAcitivitiesItemComponent } from './../recent-activities/recent-acitivities-item/recent-acitivities-item.component';
 import { ResponsiveTableData } from './responsive-data-table.interface';
 
 /**
@@ -21,7 +20,8 @@ export type ViewMode = 'standard' | 'horizontal' | 'grid' | 'auto';
 @Component({
   selector: 'yuv-responsive-data-table',
   templateUrl: './responsive-data-table.component.html',
-  styleUrls: ['./responsive-data-table.component.scss']
+  styleUrls: ['./responsive-data-table.component.scss'],
+  host: { class: 'yuv-responsive-data-table' }
 })
 export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
   // internal subject for element size changes used for debouncing resize events
@@ -36,8 +36,8 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
 
   private settings = {
     headerHeight: { standard: 37, horizontal: 0, grid: 0 },
-    rowHeight: { standard: 48, horizontal: 70, grid: 160 },
-    colWidth: { standard: 'auto', horizontal: 'auto', grid: 160 },
+    rowHeight: { standard: 48, horizontal: 70, grid: 177 },
+    colWidth: { standard: 'auto', horizontal: 'auto', grid: 177 },
     size: { newHeight: 0, newWidth: 0 }
   };
 
@@ -110,7 +110,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
    */
   @Output() columnResized = new EventEmitter<ColumnSizes>();
 
-  @HostBinding('class.yuv-responsive-data-table') _hostClass = true;
+  // @HostBinding('class.yuv-responsive-data-table') _hostClass = true;
 
   @HostBinding('class.small') get isSmall() {
     return this.currentViewMode !== 'standard';
@@ -139,7 +139,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
     this.copyToClipboard('row');
   }
 
-  constructor(private pendingChanges: PendingChangesService, private deviceService: DeviceService) {
+  constructor(private pendingChanges: PendingChangesService, private systemService: SystemService, private deviceService: DeviceService) {
     // subscribe to the whole components size changing
     this.resize$
       .pipe(
@@ -243,11 +243,19 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
       field: BaseObjectTypeField.OBJECT_ID,
       cellClass: 'cell-title-description',
       minWidth: this.isGrid ? this._data.rows.length * this.settings.colWidth.grid : 0,
-      cellRendererFramework: RecentAcitivitiesItemComponent
-      // cellRenderer: params => `
-      //     <div class="title">${params.data[this._data.titleField] || params.value || ''}</div>
-      //     <div class="description">${params.data[this._data.descriptionField] || ''}</div>
-      //   `
+      cellRenderer: params => {
+        const objectTypeId = params.data[BaseObjectTypeField.OBJECT_TYPE_ID];
+        return `
+          <div class="rdt-row ${this._currentViewMode === 'horizontal' ? 'row-horizontal' : 'row-grid'}">
+            <div class="head" title="${this.systemService.getLocalizedResource(`${objectTypeId}_label`)}">
+            ${this.systemService.getObjectTypeIcon(objectTypeId)}</div>  
+            <div class="main">
+            <div class="title">${params.data[this._data.titleField] || params.value || ''}</div>
+              <div class="description">${params.data[this._data.descriptionField] || ''}</div>
+            </div>
+          </div>
+          `;
+      }
     };
     return colDef;
   }

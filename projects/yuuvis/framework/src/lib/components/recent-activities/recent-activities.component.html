@@ -12,8 +12,11 @@
   <ng-container *ngIf="created && selected === 'created'">
     <ng-container *ngIf="recentlyCreated?.length > 0; else tplEmpty">
       <drag-scroll yuvOfflineDisabled [snap-disabled]="true" [scroll-x-wheel-enabled]="true">
-        <yuv-recent-acitivities-item drag-scroll-item *ngFor="let i of recentlyCreated" [recentItem]="i"
-          (click)="triggerItemClicked(i)"></yuv-recent-acitivities-item>
+
+        <yuv-dms-object-tile drag-scroll-item *ngFor="let i of recentlyCreated" [title]="i.title"
+          [description]="i.description" [objectTypeIcon]="i.objectTypeIcon" [objectTypeLabel]="i.objectTypeLabel"
+          [date]="i.date" (click)="triggerItemClicked(i)"></yuv-dms-object-tile>
+
         <button drag-scroll-item *ngIf="recentlyCreated?.length && !data"
           (click)="triggerShowAll()">{{'yuv.framework.recent-activities.header.more'|translate}}</button>
       </drag-scroll>
@@ -23,8 +26,11 @@
   <ng-container *ngIf="modified && selected === 'modified'">
     <ng-container *ngIf="recentlyModified?.length > 0; else tplEmpty">
       <drag-scroll yuvOfflineDisabled [snap-disabled]="true" [scroll-x-wheel-enabled]="true">
-        <yuv-recent-acitivities-item drag-scroll-item *ngFor="let i of recentlyModified" [recentItem]="i"
-          (click)="triggerItemClicked(i)"></yuv-recent-acitivities-item>
+
+        <yuv-dms-object-tile drag-scroll-item *ngFor="let i of recentlyModified" [title]="i.title"
+          [description]="i.description" [objectTypeIcon]="i.objectTypeIcon" [objectTypeLabel]="i.objectTypeLabel"
+          [date]="i.date" (click)="triggerItemClicked(i)"></yuv-dms-object-tile>
+
         <button drag-scroll-item *ngIf="recentlyModified?.length && !data"
           (click)="triggerShowAll()">{{'yuv.framework.recent-activities.header.more'|translate}}</button>
       </drag-scroll>

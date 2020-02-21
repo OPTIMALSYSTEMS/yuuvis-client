@@ -1,14 +1,14 @@
 <yuv-responsive-master-slave class="state" [options]="getOptions('yuv-responsive-master-slave')"
   (slaveClosed)="onSlaveClosed()" (optionsChanged)="onOptionsChanged($event, 'yuv-responsive-master-slave')"
   [detailsActive]="objectDetailsID">
-  <yuv-search-result-panel class="yuv-master" [query]="searchQuery" [selectedItemIDs]="selectedItems"
+  <yuv-search-result-panel class="yuv-master panel" [query]="searchQuery" [selectedItemIDs]="selectedItems"
     (queryDescriptionChange)="onQueryDescriptionChange($event)"
     (optionsChanged)="onOptionsChanged($event, 'yuv-search-result-panel')"
     [options]="getOptions('yuv-search-result-panel')" (itemsSelected)="select($event)"
     (rowDoubleClicked)="onRowDoubleClicked($event)" (queryChanged)="onQueryChanged($event)">
   </yuv-search-result-panel>
 
-  <yuv-object-details class="yuv-slave" [objectId]="objectDetailsID" [searchTerm]="searchQuery?.term"
+  <yuv-object-details class="yuv-slave panel" [objectId]="objectDetailsID" [searchTerm]="searchQuery?.term"
     (optionsChanged)="onOptionsChanged($event, 'yuv-object-details')" [options]="getOptions('yuv-object-details')"
     (standaloneFullscreenBackButtonClick)="onSlaveClosed()" [standaloneFullscreen]="smallScreen">
   </yuv-object-details>

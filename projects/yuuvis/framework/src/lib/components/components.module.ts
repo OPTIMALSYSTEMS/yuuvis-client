@@ -18,9 +18,9 @@ import { ActionMenuBarComponent } from './action-menu-bar/action-menu-bar.compon
 import { IconUploadComponent } from './animated-icons/icon-upload/icon-upload.component';
 import { BusyOverlayDirective } from './busy-overlay/busy-overlay.directive';
 import { DialogComponent } from './dialog/dialog.component';
+import { DmsObjectTileComponent } from './dms-object-tile/dms-object-tile.component';
 import { FilePickerComponent } from './file-picker/file-picker.component';
 import { PanelComponent } from './panel/panel.component';
-import { RecentAcitivitiesItemComponent } from './recent-activities/recent-acitivities-item/recent-acitivities-item.component';
 import { RecentActivitiesComponent } from './recent-activities/recent-activities.component';
 import { ResponsiveDataTableComponent } from './responsive-data-table/responsive-data-table.component';
 import { ResponsiveMasterSlaveComponent } from './responsive-master-slave/responsive-master-slave.component';
@@ -38,8 +38,8 @@ const components = [
   ResponsiveMasterSlaveComponent,
   ActionMenuBarComponent,
   ResponsiveTabContainerComponent,
-  RecentAcitivitiesItemComponent,
-  IconUploadComponent
+  IconUploadComponent,
+  DmsObjectTileComponent
 ];
 
 @NgModule({
@@ -51,7 +51,7 @@ const components = [
     AngularResizedEventModule,
     CdkStepperModule,
     AngularSplitModule,
-    AgGridModule.withComponents([RecentAcitivitiesItemComponent]),
+    AgGridModule,
     RouterModule,
     TabViewModule,
     DialogModule,

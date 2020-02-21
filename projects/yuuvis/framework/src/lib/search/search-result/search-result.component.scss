@@ -1,9 +1,8 @@
 @import '../../../../../../../src/scss-shared/_mixins';
 
-// $yuv-panel-toolbar-width: 57px;
 $yuv-panel-header-height: 110px;
 $yuv-panel-footer-height: 50px;
-$yuv-panel-toolbar-icon: 36px;
+$yuv-panel-toolbar-icon: 37px;
 
 .yuv-search-result {
   height: 100%;
@@ -21,8 +20,6 @@ $yuv-panel-toolbar-icon: 36px;
       grid-template-columns: 400px 1fr;
 
       .toolbar {
-        // padding: 0 var(--app-pane-padding);
-        // align-items: flex-end;
         .toggle yuv-icon {
           transform: rotate(180deg);
         }
@@ -36,10 +33,8 @@ $yuv-panel-toolbar-icon: 36px;
   .toolbar {
     grid-area: toolbar;
     color: var(--text-color-caption);
-    // padding: calc(var(--app-pane-padding) / 4);
     display: flex;
     flex-flow: column;
-    // align-items: center;
     justify-content: flex-start;
     background-color: var(--panel-background-grey);
     border-right: 1px solid var(--panel-divider-color);
@@ -109,12 +104,6 @@ $yuv-panel-toolbar-icon: 36px;
       color: var(--text-color-caption);
       overflow: auto hidden;
 
-      // dark mode
-      .dark & {
-        background-color: var(--panel-background-dark);
-        color: var(--text-color-caption-dark);
-      }
-
       & > * {
         display: flex;
         flex-wrap: nowrap;
@@ -130,19 +119,10 @@ $yuv-panel-toolbar-icon: 36px;
         .prev {
           transform: rotate(180deg);
         }
-      }
 
-      .view-mode {
-        button {
-          padding: 4px;
-          font-size: 1.5em;
-          &.current {
-            background-color: var(--item-focus-background-color);
-          }
-          &.active {
-            color: #fff;
-            background-color: var(--color-accent);
-          }
+        &.active {
+          background-color: var(--color-accent);
+          color: #fff;
         }
       }
 
