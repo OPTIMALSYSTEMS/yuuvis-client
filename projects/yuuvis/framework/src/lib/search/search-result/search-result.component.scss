@@ -120,7 +120,7 @@ $yuv-panel-toolbar-icon: 37px;
           transform: rotate(180deg);
         }
 
-        &.active {
+        &.current {
           background-color: var(--color-accent);
           color: #fff;
         }
