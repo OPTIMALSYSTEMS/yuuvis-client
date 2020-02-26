@@ -162,8 +162,6 @@ export class GroupedSelectComponent implements AfterViewInit, ControlValueAccess
   }
 
   isSelected(item): boolean {
-    console.log('x');
-
     return this.selectedItems ? !!this.selectedItems.find(i => i.id === item.id) : false;
   }
 
@@ -181,7 +179,9 @@ export class GroupedSelectComponent implements AfterViewInit, ControlValueAccess
         this.selectedItems = this.selectedItems.filter(i => !groupItemIDs.includes(i.id));
       } else {
         // add the group items that are not already part of the selection
-        group.items.filter(i => !selectedItemsIDs.includes(i.id)).forEach(i => this.selectedItems.push(i));
+        const sel = [...this.selectedItems];
+        group.items.filter(i => !selectedItemsIDs.includes(i.id)).forEach(i => sel.push(i));
+        this.selectedItems = sel;
       }
       this.propagateChange(this.selectedItems);
     }

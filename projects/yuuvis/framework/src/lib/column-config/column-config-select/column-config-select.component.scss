@@ -1,0 +1,17 @@
+:host {
+  color: var(--text-color-body);
+  .item {
+    padding: calc(var(--app-pane-padding) / 1.5) var(--app-pane-padding);
+    border-bottom: 1px solid var(--panel-divider-color);
+    cursor: pointer;
+
+    &:hover {
+      background-color: var(--item-focus-background-color);
+    }
+
+    &.selected {
+      background-color: var(--color-accent);
+      color: #fff;
+    }
+  }
+}

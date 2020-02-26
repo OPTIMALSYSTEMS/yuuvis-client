@@ -1,0 +1,12 @@
+<div class="item" *ngFor="let item of configSelectItems; trackBy: trackByFn"
+  [ngClass]="{selected: selectedItem === item.id}" (click)="selectItem(item)">
+  {{item.label}}
+</div>
+
+<!-- <div class="group" *ngFor="let group of groups">
+  <h2>{{group.label}}</h2>
+  <div class="type" *ngFor="let type of group.types" [ngClass]="{selected: selectedItem === type.id}"
+    (click)="selectItem(type.value)">
+    {{type.label}}
+  </div>
+</div> -->
