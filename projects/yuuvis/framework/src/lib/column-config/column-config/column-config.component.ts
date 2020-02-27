@@ -1,23 +1,23 @@
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { Component, EventEmitter, Input, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
 import { IconRegistryService } from '@yuuvis/common-ui';
-import { BaseObjectTypeField, ContentStreamField, ObjectType, ObjectTypeField, RetentionField, SystemService, TranslateService, Utils } from '@yuuvis/core';
+import { BaseObjectTypeField, ContentStreamField, ObjectType, ObjectTypeField, SystemService, TranslateService, Utils } from '@yuuvis/core';
 import { Selectable, SelectableGroup } from '../../grouped-select';
 import { PopoverConfig } from '../../popover/popover.interface';
 import { PopoverRef } from '../../popover/popover.ref';
 import { PopoverService } from '../../popover/popover.service';
 import { addCircle, arrowDown, clear, dragHandle } from '../../svg.generated';
-import { ColumnConfig, ColumnConfigColumn, ColumnConfigInput } from '../column-config.interface';
+import { ColumnConfig, ColumnConfigColumn } from '../column-config.interface';
 
 /**
- * Component for configuring a result list column configuration for an object type
- * or an object type within a context.
+ * Component for configuring a result list column configuration for an object.
  *
- * There are three types of configurations available.
+ * Set the components **type** property to an ObjectType or an object type id to load and edit
+ * the column configuration for that type. If input is NULL, you will be presented with the
+ * column configuration of a mixed result list.
  *
- * - Mixed result list configuration (result lists that contain entries of different object types)
- * - Object type (result lists that only contain entries of a particular object type)
- * - Object type within context (result lists of a particular object type within a context)
+ * Mixed result list configurations will be applied to result list that contain different
+ * types of objects with columns that are shared by all object types.
  */
 @Component({
   selector: 'yuv-column-config',
@@ -28,15 +28,10 @@ export class ColumnConfigComponent implements OnInit {
   @ViewChild('tplColumnPicker', { static: false }) tplColumnPicker: TemplateRef<any>;
 
   private _objectType: ObjectType;
-  private _contextType: ObjectType;
-
   private _objectTypeFields: ObjectTypeField[];
-  // fields of the context type that are available for being used in the column config
-  private _contextTypeFields: ObjectTypeField[];
 
-  // fields that should not be available for column confiig
+  // fields that should not be available for column config
   private skipFields = [
-    ...Object.keys(RetentionField).map(k => RetentionField[k]),
     BaseObjectTypeField.OBJECT_ID,
     BaseObjectTypeField.CREATED_BY,
     BaseObjectTypeField.MODIFIED_BY,
@@ -55,10 +50,7 @@ export class ColumnConfigComponent implements OnInit {
     ContentStreamField.ARCHIVE_PATH
   ];
 
-  title = {
-    type: null,
-    context: null
-  };
+  title: string;
 
   // Columns that are part of the current column configuration
   columnConfig: ColumnConfig;
@@ -68,24 +60,11 @@ export class ColumnConfigComponent implements OnInit {
    * ColumnConfigInput holding the object type (and maybe the context)
    * to edit the column configuration for
    */
-  @Input() set type(input: ColumnConfigInput) {
-    if (input.type) {
-      this._objectType = typeof input.type === 'string' ? this.fetchObjectType(input.type) : input.type;
-      this.title.type = this.systemService.getLocalizedResource(`${this._objectType.id}_label`);
-    } else {
-      this._objectType = this.systemService.getBaseType();
-      this.title.type = this.translate.instant('yuv.framework.column-config.title.mixed');
-    }
-    if (input.context) {
-      this._contextType = typeof input.context === 'string' ? this.fetchObjectType(input.context) : input.context;
-    } else {
-      this._contextType = null;
-    }
-
-    this.title.context = this._contextType ? this.systemService.getLocalizedResource(`${this._contextType.id}_label`) : null;
+  @Input() set type(input: string | ObjectType) {
+    this._objectType = typeof input === 'string' ? this.fetchObjectType(input) : input;
+    this.title = this._objectType.label;
     this._objectTypeFields = this._objectType ? this.filterFields(this._objectType.fields) : [];
-    this._contextTypeFields = this._contextType ? this.getAvailableContextTypeFields(this._contextType) : [];
-    this.fetchColumnConfig(this._objectType ? this._objectType.id : null, this._contextType ? this._contextType.id : null);
+    this.fetchColumnConfig(this._objectType ? this._objectType.id : null);
     this.checkMoreColumnsAvailable();
   }
   /**
@@ -114,18 +93,9 @@ export class ColumnConfigComponent implements OnInit {
         items: this.getSelectables(this._objectTypeFields)
       }
     ];
-    if (this._contextTypeFields.length) {
-      groups.push({
-        id: 'context',
-        label: this.translate.instant('yuv.framework.column-config.add.group.context'),
-        items: this.getSelectables(this._contextTypeFields)
-      });
-    }
 
     const popoverConfig: PopoverConfig = {
-      // width: '55%',
-      // height: '70%',
-      maxHeight: '90%',
+      maxHeight: '70%',
       data: {
         groups: groups
       }
@@ -134,8 +104,6 @@ export class ColumnConfigComponent implements OnInit {
   }
 
   onPickerResult(selectedFields: Selectable[], popoverRef?: PopoverRef) {
-    console.log(selectedFields);
-
     selectedFields.forEach(selectable =>
       this.columnConfig.columns.push({
         id: selectable.id,
@@ -175,14 +143,13 @@ export class ColumnConfigComponent implements OnInit {
   }
 
   private checkMoreColumnsAvailable() {
-    this.moreColumnsAvailable = this._objectTypeFields.length + this._contextTypeFields.length > this.columnConfig.columns.length;
+    this.moreColumnsAvailable = this._objectTypeFields.length > this.columnConfig.columns.length;
   }
 
-  private fetchColumnConfig(objectTypeId: string, contextTypeId: string): void {
+  private fetchColumnConfig(objectTypeId: string): void {
     // TODO: load existing column configuration for the given input
     this.columnConfig = {
       type: objectTypeId,
-      context: contextTypeId,
       columns: []
     };
   }
@@ -201,7 +168,7 @@ export class ColumnConfigComponent implements OnInit {
   }
 
   private fetchObjectType(id: string): ObjectType {
-    return this.systemService.getObjectType(id);
+    return this.systemService.getObjectType(id, true);
   }
 
   // get the fields of a context type that are available to be used for column config

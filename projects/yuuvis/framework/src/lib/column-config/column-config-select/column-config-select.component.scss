@@ -1,17 +1,32 @@
 :host {
   color: var(--text-color-body);
-  .item {
-    padding: calc(var(--app-pane-padding) / 1.5) var(--app-pane-padding);
-    border-bottom: 1px solid var(--panel-divider-color);
-    cursor: pointer;
 
-    &:hover {
-      background-color: var(--item-focus-background-color);
+  .group {
+    margin-bottom: var(--app-pane-padding);
+    h2 {
+      color: var(--color-accent);
+      margin: 0;
+      padding: var(--app-pane-padding);
     }
+    .types {
+      .type {
+        padding: calc(var(--app-pane-padding) / 1.5) var(--app-pane-padding);
+        border-top: 1px solid var(--panel-divider-color);
+        cursor: pointer;
 
-    &.selected {
-      background-color: var(--color-accent);
-      color: #fff;
+        &:first-child {
+          border: 0;
+        }
+
+        &:hover {
+          background-color: var(--item-focus-background-color);
+        }
+
+        &.selected {
+          background-color: var(--color-accent);
+          color: #fff;
+        }
+      }
     }
   }
 }

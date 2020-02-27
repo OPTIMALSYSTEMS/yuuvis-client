@@ -1,5 +1,3 @@
-import { ObjectType } from '../../model/object-type.model';
-
 export interface SystemDefinition {
   version: number;
   lastModificationDate: any;
@@ -7,8 +5,9 @@ export interface SystemDefinition {
   i18n: any;
 }
 
-export interface ObjectTypeProperties {
+export interface ObjectType {
   id: string;
+  label?: string;
   localNamespace: string;
   description: string;
   baseId: string;

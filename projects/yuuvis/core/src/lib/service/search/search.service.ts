@@ -5,7 +5,7 @@ import { RangeValue } from '../../model/range-value.model';
 import { ApiBase } from '../backend/api.enum';
 import { BackendService } from '../backend/backend.service';
 import { BaseObjectTypeField, ContentStreamField, SecondaryObjectTypeField } from '../system/system.enum';
-import { ObjectType } from './../../model/object-type.model';
+import { ObjectType } from '../system/system.interface';
 import { SearchQuery, SortOption } from './search-query.model';
 import { AggregateResult, Aggregation, SearchResult, SearchResultContent, SearchResultItem } from './search.service.interface';
 

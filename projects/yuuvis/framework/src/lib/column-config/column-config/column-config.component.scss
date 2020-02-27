@@ -1,3 +1,4 @@
+@import './../../../../../../../src/scss-shared/_mixins';
 .cdk-drag-preview {
   // z-index: 8000 !important;
   // display: flex;
@@ -31,17 +32,17 @@
 
       .title {
         flex: 1;
+        @include ellipsis();
+        font-size: var(--font-title);
+        font-weight: var(--font-weight-normal);
+        color: var(--text-color-caption);
       }
-      yuv-icon {
+      button {
         padding: calc(var(--app-pane-padding) / 4) calc(var(--app-pane-padding) / 2);
-        box-sizing: content-box;
-        background-color: var(--color-accent);
-        color: #fff;
-
-        &.disabled {
-          pointer-events: none;
-          opacity: 0.5;
-          filter: grayscale(1);
+        display: flex;
+        align-items: center;
+        span {
+          padding: 0 calc(var(--app-pane-padding) / 2);
         }
       }
     }
@@ -72,9 +73,13 @@
         flex: 1;
       }
       .type {
-        padding: 0 calc(var(--app-pane-padding) / 2);
         font-family: monospace;
         opacity: 0.5;
+      }
+      .buttons {
+        padding: 0 calc(var(--app-pane-padding) / 2);
+        display: flex;
+        align-items: center;
       }
 
       button {

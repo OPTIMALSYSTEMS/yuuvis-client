@@ -1,5 +1,5 @@
 <section class="main" cdkTrapFocus>
-  <yuv-grouped-select [multiple]="true" [groups]="groups" [(ngModel)]="selectedItems"
+  <yuv-grouped-select singleGroup="true" [multiple]="true" [groups]="groups" [(ngModel)]="selectedItems"
     (select)="onGroupItemSelect($event)" enableSelectAll="true" yuvFocusFirst="200">
   </yuv-grouped-select>
 </section>

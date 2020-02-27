@@ -1,15 +1,7 @@
 import { ObjectType } from '@yuuvis/core';
 
-export interface ColumnConfigInput {
-  // Object type or object type ID
-  type: ObjectType | string;
-  // Context type or context type ID
-  context?: ObjectType | string;
-}
-
 export interface ColumnConfig {
   type: string;
-  context: string;
   columns: ColumnConfigColumn[];
 }
 
@@ -30,5 +22,4 @@ export interface ColumnConfigSelectItem {
   id: string;
   label: string;
   type: ObjectType;
-  context?: ObjectType;
 }

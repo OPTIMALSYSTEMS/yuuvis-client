@@ -1,5 +1,5 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
-import { ObjectType, SystemService, TranslateService, Utils } from '@yuuvis/core';
+import { ObjectType, ObjectTypeGroup, SystemService, TranslateService } from '@yuuvis/core';
 import { ColumnConfigSelectItem } from '../column-config.interface';
 
 @Component({
@@ -10,15 +10,18 @@ import { ColumnConfigSelectItem } from '../column-config.interface';
 export class ColumnConfigSelectComponent implements OnInit {
   @Output() itemSelected = new EventEmitter<ColumnConfigSelectItem>();
 
-  configSelectItems: ColumnConfigSelectItem[] = [];
-  // groups: any[];
+  groups: ObjectTypeGroup[];
   selectedItem: string;
 
   constructor(private systemsService: SystemService, private translate: TranslateService) {}
 
-  selectItem(item: ColumnConfigSelectItem) {
-    this.selectedItem = item.id;
-    this.itemSelected.emit(item);
+  selectItem(type: ObjectType) {
+    this.selectedItem = type.id;
+    this.itemSelected.emit({
+      id: type.id,
+      label: type.label,
+      type: type
+    });
   }
 
   trackByFn(index, item) {
@@ -26,29 +29,6 @@ export class ColumnConfigSelectComponent implements OnInit {
   }
 
   ngOnInit() {
-    // this.groups = this.systemsService.getGroupedObjectTypes().map(g => ({
-    //   label: g.label,
-    //   types: g.types.map(t => ({
-    //     id: t.id,
-    //     label: this.systemsService.getLocalizedResource(`${t.id}_label`),
-    //     type: t
-    //   }))
-    // }));
-
-    this.configSelectItems = [
-      {
-        id: 'mixed',
-        label: this.translate.instant('yuv.framework.column-config.title.mixed'),
-        type: null
-      },
-      ...this.systemsService
-        .getObjectTypes()
-        .map((t: ObjectType) => ({
-          id: Utils.uuid(),
-          label: this.systemsService.getLocalizedResource(`${t.id}_label`),
-          type: t
-        }))
-        .sort(Utils.sortValues('label'))
-    ];
+    this.groups = this.systemsService.getGroupedObjectTypes(true);
   }
 }

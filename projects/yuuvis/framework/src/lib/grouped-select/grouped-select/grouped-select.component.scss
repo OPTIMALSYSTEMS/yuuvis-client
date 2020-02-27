@@ -1,6 +1,17 @@
 :host {
   display: block;
 
+  &.singleGroup {
+    .container {
+      padding: 0;
+
+      .group {
+        margin: 0;
+        border: 0;
+      }
+    }
+  }
+
   .container {
     display: flex;
     flex-flow: row wrap;

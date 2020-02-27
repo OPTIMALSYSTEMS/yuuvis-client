@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { ColumnConfigInput, ColumnConfigSelectItem } from '@yuuvis/framework';
+import { ObjectType } from '@yuuvis/core';
+import { ColumnConfigSelectItem } from '@yuuvis/framework';
 
 @Component({
   selector: 'yuv-test-column-config',
@@ -7,22 +8,16 @@ import { ColumnConfigInput, ColumnConfigSelectItem } from '@yuuvis/framework';
   styleUrls: ['./test-column-config.component.scss']
 })
 export class TestColumnConfigComponent implements OnInit {
-  columnConfigInput: ColumnConfigInput;
+  columnConfigInput: string | ObjectType;
 
   constructor() {}
 
-  setColumnConfigInput(type: string, context?: string) {
-    this.columnConfigInput = {
-      type: type,
-      context: context
-    };
+  setColumnConfigInput(type: string) {
+    this.columnConfigInput = type;
   }
 
   setColumnConfigInputFromSelect(item: ColumnConfigSelectItem) {
-    this.columnConfigInput = {
-      type: item.type,
-      context: item.context
-    };
+    this.columnConfigInput = item.type;
   }
 
   ngOnInit() {}

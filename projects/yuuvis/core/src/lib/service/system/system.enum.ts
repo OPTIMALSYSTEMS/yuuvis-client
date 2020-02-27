@@ -67,3 +67,9 @@ export const ParentField = {
   asvvorgangsname: 'tenKolibri:asvvorgangsname',
   asvvorgangsnummer: 'tenKolibri:asvvorgangsnummer'
 };
+
+export enum ContentStreamAllowed {
+  ALLOWED = 'allowed',
+  NOT_ALLOWED = 'notallowed',
+  REQUIRED = 'required'
+}

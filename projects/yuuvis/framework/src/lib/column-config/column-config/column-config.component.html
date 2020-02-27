@@ -1,24 +1,23 @@
 <div class="columns" cdkDropList (cdkDropListDropped)="drop($event)" [cdkDropListData]="columnConfig.columns"
   *ngIf="columnConfig">
   <div class="toolbar">
-    <div class="title">
-      <h2>{{title.type ? title.type : title.mixed}}</h2>
-      <div class="subtitle" *ngIf="title.context">
-        {{'yuv.framework.column-config.title.context'|translate: ({context: title.context})}}
-      </div>
-    </div>
-    <yuv-icon [ngClass]="{disabled: !moreColumnsAvailable}" [icon]="'addCircle'" (click)="showColumnPicker()">
-    </yuv-icon>
+    <div class="title">{{title}}</div>
+    <button class="primary" [disabled]="!moreColumnsAvailable" (click)="showColumnPicker()">
+      <yuv-icon [icon]="'addCircle'"></yuv-icon>
+      <span>{{'yuv.framework.column-config.column.button.add'|translate}}</span>
+    </button>
   </div>
   <div class="column" cdkDrag *ngFor="let c of columnConfig.columns">
     <yuv-icon class="handle" cdkDragHandle [icon]="'dragHandle'"></yuv-icon>
     <div class="label">{{c.label}}</div>
     <div class="type">{{c.propertyType}}</div>
-    <button class="pinned" [ngClass]="{active: c.pinned}"
-      (click)="c.pinned = !c.pinned">{{'yuv.framework.column-config.column.button.pinned'|translate}}</button>
-    <button class="sort" [ngClass]="{asc: c.sort === 'asc', desc: c.sort === 'desc'}" (click)="toggleSort(c)">
-      {{'yuv.framework.column-config.column.button.sort'|translate}} <yuv-icon [icon]="'arrowDown'"></yuv-icon>
-    </button>
+    <div class="buttons">
+      <button class="pinned" [ngClass]="{active: c.pinned}"
+        (click)="c.pinned = !c.pinned">{{'yuv.framework.column-config.column.button.pinned'|translate}}</button>
+      <button class="sort" [ngClass]="{asc: c.sort === 'asc', desc: c.sort === 'desc'}" (click)="toggleSort(c)">
+        {{'yuv.framework.column-config.column.button.sort'|translate}} <yuv-icon [icon]="'arrowDown'"></yuv-icon>
+      </button>
+    </div>
     <yuv-icon [icon]="'clear'" (click)="removeColumn(c)"></yuv-icon>
   </div>
 </div>
