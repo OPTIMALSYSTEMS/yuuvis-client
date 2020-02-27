@@ -48,7 +48,11 @@
     "k8s:deploy": "cd dist/k8s && kubectl apply -f namespace.yaml -f deployment.yaml -f service.yaml",
     "deploy:dist": "npm run docker:create:image && npm run k8s:prepare && npm run k8s:deploy",
     "deploy:dev": "npm run build:pwa && npm run docker:create:image && npm run k8s:prepare && npm run k8s:deploy",
-    "i18n:diff": "node ./tools/scripts/common/i18n-diff.js"
+    "i18n:diff": "node ./tools/scripts/common/i18n-diff.js",
+    "pack:lib:core": "cd lib-release &&  npm pack ../projects/yuuvis/core",
+    "pack:lib:common": "cd lib-release &&  npm pack ../projects/yuuvis/common-ui",
+    "pack:lib:framework": "cd lib-release &&  npm pack ../projects/yuuvis/framework",
+    "pack:lib:all": "npm run pack:lib:core && npm run pack:lib:common && npm run pack:lib:framework"
   },
   "private": true,
   "dependencies": {
