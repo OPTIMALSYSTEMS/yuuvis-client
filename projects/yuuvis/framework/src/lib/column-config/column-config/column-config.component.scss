@@ -20,7 +20,9 @@
 }
 
 :host {
+  display: block;
   color: var(--text-color-body);
+  background-color: var(--panel-background);
 
   .columns {
     .toolbar {

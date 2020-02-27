@@ -1,5 +1,7 @@
 :host {
   color: var(--text-color-body);
+  display: block;
+  background-color: var(--panel-background);
 
   .type {
     padding: calc(var(--app-pane-padding) / 1.5) var(--app-pane-padding);

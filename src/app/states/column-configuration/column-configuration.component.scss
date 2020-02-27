@@ -1,0 +1,12 @@
+:host {
+  display: block;
+  height: 100%;
+  box-sizing: border-box;
+  padding: var(--app-pane-padding);
+
+  yuv-column-config-select,
+  yuv-column-config {
+    overflow-y: auto;
+    border: 1px solid var(--panel-divider-color);
+  }
+}

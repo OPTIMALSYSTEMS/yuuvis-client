@@ -1,5 +1,3 @@
-import { ObjectType } from '@yuuvis/core';
-
 export interface ColumnConfig {
   type: string;
   columns: ColumnConfigColumn[];
@@ -18,8 +16,8 @@ export interface ColumnConfigColumn {
   pinned?: boolean;
 }
 
-export interface ColumnConfigSelectItem {
-  id: string;
-  label: string;
-  type: ObjectType;
-}
+// export interface ColumnConfigSelectItem {
+//   id: string;
+//   label: string;
+//   type: ObjectType;
+// }

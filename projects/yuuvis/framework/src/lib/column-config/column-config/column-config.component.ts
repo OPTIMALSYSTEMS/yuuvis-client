@@ -61,12 +61,16 @@ export class ColumnConfigComponent implements OnInit {
    * to edit the column configuration for
    */
   @Input() set type(input: string | ObjectType) {
-    this._objectType = typeof input === 'string' ? this.fetchObjectType(input) : input;
-    this.title =
-      this._objectType.id === this.systemService.BASE_TYPE_ID ? this.translate.instant('yuv.framework.column-config.type.mixed.label') : this._objectType.label;
-    this._objectTypeFields = this._objectType ? this.filterFields(this._objectType.fields) : [];
-    this.fetchColumnConfig(this._objectType ? this._objectType.id : null);
-    this.checkMoreColumnsAvailable();
+    if (input) {
+      this._objectType = typeof input === 'string' ? this.fetchObjectType(input) : input;
+      this.title =
+        this._objectType.id === this.systemService.BASE_TYPE_ID
+          ? this.translate.instant('yuv.framework.column-config.type.mixed.label')
+          : this._objectType.label;
+      this._objectTypeFields = this._objectType ? this.filterFields(this._objectType.fields) : [];
+      this.fetchColumnConfig(this._objectType ? this._objectType.id : null);
+      this.checkMoreColumnsAvailable();
+    }
   }
   /**
    * Emitted when the column configuration has been changed

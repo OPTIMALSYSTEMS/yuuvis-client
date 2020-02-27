@@ -1,6 +1,5 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { ObjectType, ObjectTypeGroup, SystemService, TranslateService } from '@yuuvis/core';
-import { ColumnConfigSelectItem } from '../column-config.interface';
 
 @Component({
   selector: 'yuv-column-config-select',
@@ -8,7 +7,7 @@ import { ColumnConfigSelectItem } from '../column-config.interface';
   styleUrls: ['./column-config-select.component.scss']
 })
 export class ColumnConfigSelectComponent implements OnInit {
-  @Output() itemSelected = new EventEmitter<ColumnConfigSelectItem>();
+  @Output() itemSelected = new EventEmitter<ObjectType>();
 
   mixed: ObjectType;
   groups: ObjectTypeGroup[];
@@ -18,11 +17,7 @@ export class ColumnConfigSelectComponent implements OnInit {
 
   selectItem(type: ObjectType) {
     this.selectedItem = type.id;
-    this.itemSelected.emit({
-      id: type.id,
-      label: type.label,
-      type: type
-    });
+    this.itemSelected.emit(type);
   }
 
   trackByFn(index, item) {

@@ -1,0 +1,9 @@
+<yuv-responsive-master-slave class="state" [detailsActive]="true" [options]="options">
+
+
+
+  <yuv-column-config-select class="yuv-master panel" (itemSelected)="setColumnConfigInput($event)">
+  </yuv-column-config-select>
+  <yuv-column-config class="yuv-slave panel" [type]="columnConfigInput"></yuv-column-config>
+
+</yuv-responsive-master-slave>
