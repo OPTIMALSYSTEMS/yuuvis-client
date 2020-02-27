@@ -10,6 +10,7 @@ import { ColumnConfigSelectItem } from '../column-config.interface';
 export class ColumnConfigSelectComponent implements OnInit {
   @Output() itemSelected = new EventEmitter<ColumnConfigSelectItem>();
 
+  mixed: ObjectType;
   groups: ObjectTypeGroup[];
   selectedItem: string;
 
@@ -30,5 +31,6 @@ export class ColumnConfigSelectComponent implements OnInit {
 
   ngOnInit() {
     this.groups = this.systemsService.getGroupedObjectTypes(true);
+    this.mixed = this.systemsService.getBaseType();
   }
 }

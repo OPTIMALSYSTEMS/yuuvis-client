@@ -1,6 +1,21 @@
 :host {
   color: var(--text-color-body);
 
+  .type {
+    padding: calc(var(--app-pane-padding) / 1.5) var(--app-pane-padding);
+    border-bottom: 1px solid var(--panel-divider-color);
+    cursor: pointer;
+
+    &:hover {
+      background-color: var(--item-focus-background-color);
+    }
+
+    &.selected {
+      background-color: var(--color-accent);
+      color: #fff;
+    }
+  }
+
   .group {
     margin-bottom: var(--app-pane-padding);
     h2 {
@@ -10,21 +25,8 @@
     }
     .types {
       .type {
-        padding: calc(var(--app-pane-padding) / 1.5) var(--app-pane-padding);
-        border-top: 1px solid var(--panel-divider-color);
-        cursor: pointer;
-
-        &:first-child {
+        &:last-child {
           border: 0;
-        }
-
-        &:hover {
-          background-color: var(--item-focus-background-color);
-        }
-
-        &.selected {
-          background-color: var(--color-accent);
-          color: #fff;
         }
       }
     }

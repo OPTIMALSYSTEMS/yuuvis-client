@@ -51,6 +51,7 @@
   "yuv.framework.column-config.column.button.pinned": "pinned",
   "yuv.framework.column-config.column.button.sort": "sort",
   "yuv.framework.column-config.picker.button.select": "Select",
+  "yuv.framework.column-config.type.mixed.label": "Mixed result list",
   "yuv.framework.filepicker.maxsize.exceeded.message": "The file size must not exceed {{max}}",
   "yuv.framework.filepicker.maxsize.exceeded.title": "Too large",
   "yuv.framework.form.datepicker.select": "Select",

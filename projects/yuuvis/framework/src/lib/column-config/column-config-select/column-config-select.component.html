@@ -1,3 +1,5 @@
+<div class="type" [ngClass]="{selected: selectedItem === mixed.id}" (click)="selectItem(mixed)">
+  {{'yuv.framework.column-config.type.mixed.label'|translate}}</div>
 <div class="group" *ngFor="let group of groups">
   <h2>{{group.label}}</h2>
   <div class="types">

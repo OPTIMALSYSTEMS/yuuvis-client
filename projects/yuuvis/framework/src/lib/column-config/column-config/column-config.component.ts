@@ -13,8 +13,8 @@ import { ColumnConfig, ColumnConfigColumn } from '../column-config.interface';
  * Component for configuring a result list column configuration for an object.
  *
  * Set the components **type** property to an ObjectType or an object type id to load and edit
- * the column configuration for that type. If input is NULL, you will be presented with the
- * column configuration of a mixed result list.
+ * the column configuration for that type. In order to create/edit the column configuration for
+ * a mixed result list you need to pass in the base object type (systemService.getBaseType()).
  *
  * Mixed result list configurations will be applied to result list that contain different
  * types of objects with columns that are shared by all object types.
@@ -62,7 +62,8 @@ export class ColumnConfigComponent implements OnInit {
    */
   @Input() set type(input: string | ObjectType) {
     this._objectType = typeof input === 'string' ? this.fetchObjectType(input) : input;
-    this.title = this._objectType.label;
+    this.title =
+      this._objectType.id === this.systemService.BASE_TYPE_ID ? this.translate.instant('yuv.framework.column-config.type.mixed.label') : this._objectType.label;
     this._objectTypeFields = this._objectType ? this.filterFields(this._objectType.fields) : [];
     this.fetchColumnConfig(this._objectType ? this._objectType.id : null);
     this.checkMoreColumnsAvailable();

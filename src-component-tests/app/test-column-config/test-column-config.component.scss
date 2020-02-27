@@ -9,6 +9,7 @@
     height: 70vh;
     yuv-column-config {
       flex: 1;
+      overflow-y: auto;
     }
     yuv-column-config-select {
       border-right: 1px solid var(--panel-divider-color);
