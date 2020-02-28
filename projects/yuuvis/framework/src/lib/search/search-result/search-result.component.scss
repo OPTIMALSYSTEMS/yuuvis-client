@@ -2,7 +2,7 @@
 
 $yuv-panel-header-height: 110px;
 $yuv-panel-footer-height: 50px;
-$yuv-panel-toolbar-icon: 37px;
+$yuv-result-header-height: 38px;
 
 .yuv-search-result {
   height: 100%;
@@ -22,9 +22,20 @@ $yuv-panel-toolbar-icon: 37px;
       .toolbar {
         .toggle yuv-icon {
           transform: rotate(180deg);
+          opacity: 1;
+          pointer-events: initial;
         }
         yuv-quick-search {
           width: 100%;
+        }
+      }
+    }
+    &:not(.has-query) {
+      .toolbar {
+        yuv-icon.mode,
+        yuv-icon.config {
+          opacity: 0.3;
+          pointer-events: none;
         }
       }
     }
@@ -39,34 +50,76 @@ $yuv-panel-toolbar-icon: 37px;
     background-color: var(--panel-background-grey);
     border-right: 1px solid var(--panel-divider-color);
 
-    .screen-s & {
-      display: none;
+    > div {
+      display: flex;
+      flex-flow: column;
+      align-items: center;
     }
+
+    .top {
+      flex: 1;
+
+      yuv-icon {
+        box-sizing: content-box;
+        margin: calc(var(--app-pane-padding) / 4);
+      }
+    }
+    .bottom {
+      padding: calc(var(--app-pane-padding) / 2) 0;
+    }
+
+    // .screen-s & {
+    //   display: none;
+    // }
 
     .toggle {
       border-bottom: 1px solid var(--panel-divider-color);
+      height: $yuv-result-header-height;
       display: flex;
+      flex-flow: row;
       justify-content: flex-end;
-
       yuv-icon {
-        width: $yuv-panel-toolbar-icon;
-        height: $yuv-panel-toolbar-icon;
-        padding: 4px;
-        cursor: pointer;
-        transition: all 200ms;
+        opacity: 0;
+        pointer-events: none;
+        margin: calc(var(--app-pane-padding) / 4);
+      }
+    }
 
-        &:hover {
-          background-color: var(--panel-divider-color);
-        }
+    .ico yuv-icon {
+      padding: 4px;
+      cursor: pointer;
+      transition: all 200ms;
+
+      &:hover {
+        background-color: var(--panel-divider-color);
+      }
+
+      &.mode {
+        width: 18px;
+        height: 18px;
+        box-sizing: content-box;
+        border-radius: 2px;
+      }
+
+      &.current {
+        background-color: var(--text-color-caption);
+        color: #fff;
       }
     }
 
     .toolbar-content {
       background-color: var(--panel-background-lightgrey);
       flex: 1;
-
+      ::ng-deep {
+        .yuv-quick-search .upper {
+          background-color: red;
+        }
+      }
       yuv-quick-search {
         border-bottom: 1px solid var(--panel-divider-color);
+      }
+      yuv-column-config {
+        width: 100%;
       }
     }
   }
@@ -113,16 +166,17 @@ $yuv-panel-toolbar-icon: 37px;
         padding: 0 calc(var(--app-pane-padding) / 4);
       }
 
+      .status {
+        flex: 1;
+        padding: 0 calc(var(--app-pane-padding) / 2);
+      }
+
       button {
         padding: 0;
+        display: flex;
         .first,
         .prev {
           transform: rotate(180deg);
-        }
-
-        &.current {
-          background-color: var(--color-accent);
-          color: #fff;
         }
       }
 
@@ -156,6 +210,32 @@ $yuv-panel-toolbar-icon: 37px;
         }
       }
     }
+
+    // div.config-overlay {
+    //   background-color: var(--panel-background);
+    //   border: 1px solid var(--panel-divider-color);
+    //   position: absolute;
+    //   z-index: 1;
+    //   bottom: 40px;
+    //   animation: yuvFadeInUp 200ms;
+
+    //   .option {
+    //     color: var(--text-color-body);
+    //     display: flex;
+    //     align-items: center;
+    //     cursor: pointer;
+    //     padding: calc(var(--app-pane-padding) / 2) var(--app-pane-padding);
+
+    //     &.current yuv-icon {
+    //       background-color: var(--color-accent);
+    //       color: #fff;
+    //     }
+
+    //     &:hover {
+    //       background-color: var(--panel-divider-color);
+    //     }
+    //   }
+    // }
   }
 
   .data-table {

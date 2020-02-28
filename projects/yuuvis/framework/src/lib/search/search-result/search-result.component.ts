@@ -12,6 +12,7 @@ import {
   SearchService,
   SecondaryObjectTypeField,
   SortOption,
+  SystemService,
   YuvEvent,
   YuvEventType
 } from '@yuuvis/core';
@@ -20,7 +21,7 @@ import { takeUntilDestroy } from 'take-until-destroy';
 import { ResponsiveDataTableComponent } from '../../components/responsive-data-table/responsive-data-table.component';
 import { ResponsiveTableData } from '../../components/responsive-data-table/responsive-data-table.interface';
 import { GridService } from '../../services/grid/grid.service';
-import { arrowLast, arrowNext, listModeDefault, listModeGrid, listModeSimple } from '../../svg.generated';
+import { arrowLast, arrowNext, clear, listModeDefault, listModeGrid, listModeSimple, search, settings } from '../../svg.generated';
 import { ViewMode } from './../../components/responsive-data-table/responsive-data-table.component';
 
 @Component({
@@ -36,15 +37,10 @@ export class SearchResultComponent implements OnDestroy {
   private _hasPages = false;
   pagingForm: FormGroup;
   busy: boolean;
-  toolbarOpen: boolean;
 
-  // icons used within the template
-  // icon = {
-  //   icSearchFilter: SVGIcons['search-filter'],
-  //   icArrowNext: SVGIcons['arrow-next'],
-  //   icArrowLast: SVGIcons['arrow-last'],
-  //   icKebap: SVGIcons['kebap']
-  // };
+  toolbar: 'search' | 'config';
+  columnConfigInput: any;
+  showConfigOverlay: boolean;
   tableData: ResponsiveTableData;
   // object type shown in the result list, will be null for mixed results
   private resultListObjectTypeId: string;
@@ -61,6 +57,11 @@ export class SearchResultComponent implements OnDestroy {
 
   @Input() set query(searchQuery: SearchQuery) {
     this._searchQuery = searchQuery;
+    this.columnConfigInput = searchQuery && searchQuery.types && searchQuery.types.length === 1 ? searchQuery.types[0] : this.systemervice.getBaseType();
+
+    if (searchQuery && searchQuery.types && searchQuery.types.length === 1) {
+      this.columnConfigInput = searchQuery.types[0];
+    }
     if (searchQuery) {
       this.executeQuery();
     } else {
@@ -112,16 +113,18 @@ export class SearchResultComponent implements OnDestroy {
     if (this.dataTable) {
       this.dataTable.viewMode = this.dataTable.viewMode !== viewMode ? viewMode : 'auto';
     }
+    this.showConfigOverlay = false;
   }
 
   constructor(
     private gridService: GridService,
     private eventService: EventService,
+    private systemervice: SystemService,
     private searchService: SearchService,
     private fb: FormBuilder,
     private iconRegistry: IconRegistryService
   ) {
-    this.iconRegistry.registerIcons([arrowNext, arrowLast, listModeDefault, listModeGrid, listModeSimple]);
+    this.iconRegistry.registerIcons([settings, clear, search, arrowNext, arrowLast, listModeDefault, listModeGrid, listModeSimple]);
 
     this.pagingForm = this.fb.group({
       page: ['']

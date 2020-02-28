@@ -64,7 +64,7 @@ export class SettingsComponent implements OnInit {
   }
 
   editColumnConfig() {
-    this.router.navigate(['settings/column-config']);
+    this.router.navigate(['config/column-config']);
   }
 
   ngOnInit() {

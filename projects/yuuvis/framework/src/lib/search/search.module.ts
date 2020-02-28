@@ -6,7 +6,9 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { YuvCommonUiModule } from '@yuuvis/common-ui';
 import { TranslateModule } from '@yuuvis/core';
 import { AutoCompleteModule } from 'primeng/autocomplete';
+import { OverlayPanelModule } from 'primeng/overlaypanel';
 import { ActionModule } from '../actions/action.module';
+import { YuvColumnConfigModule } from '../column-config';
 import { YuvComponentsModule } from '../components/components.module';
 import { YuvDirectivesModule } from '../directives/directives.module';
 import { YuvFormModule } from '../form/form.module';
@@ -35,6 +37,8 @@ import { SearchResultComponent } from './search-result/search-result.component';
     AutoCompleteModule,
     YuvFormModule,
     YuvDirectivesModule,
+    OverlayPanelModule,
+    YuvColumnConfigModule,
     YuvGroupedSelectModule,
     A11yModule
   ],

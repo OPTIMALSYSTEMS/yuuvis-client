@@ -27,6 +27,7 @@
   .columns {
     .toolbar {
       display: flex;
+      flex-flow: row;
       align-items: center;
       justify-content: flex-end;
       border-bottom: 1px solid var(--panel-divider-color);
