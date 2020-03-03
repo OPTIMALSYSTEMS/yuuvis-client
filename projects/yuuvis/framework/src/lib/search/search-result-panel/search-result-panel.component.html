@@ -1,21 +1,18 @@
-<yuv-panel class="search-result" [title]="'yuv.framework.search-result-panel.header.title' | translate" [description]="queryDescription">
-  <yuv-icon class="header-icon" [icon]="'search'"></yuv-icon>
+<yuv-panel class="search-result" [title]="'yuv.framework.search-result-panel.header.title' | translate"
+  [description]="queryDescription">
+  <!-- <yuv-icon class="header-icon" [icon]="'search'"></yuv-icon> -->
 
   <yuv-action-menu-bar class="actions" yuvOfflineDisabled>
-    <yuv-icon (click)="refresh()" [title]="'yuv.framework.list.refresh' | translate" class="button refresh-button" [icon]="'refresh'"></yuv-icon>
-    <yuv-icon class="header-icon" (click)="openActionMenu()" [icon]="'kebap'" [ngClass]="{ disabled: !selectedItemIDs?.length }"> </yuv-icon>
+    <yuv-icon (click)="refresh()" [title]="'yuv.framework.list.refresh' | translate" class="button refresh-button"
+      [icon]="'refresh'"></yuv-icon>
+    <yuv-icon class="header-icon" (click)="openActionMenu()" [icon]="'kebap'"
+      [ngClass]="{ disabled: !selectedItemIDs?.length }"> </yuv-icon>
   </yuv-action-menu-bar>
 
-  <yuv-search-result
-    class="content"
-    [query]="_searchQuery"
-    [selectedItemIDs]="selectedItemIDs"
-    (itemsSelected)="onItemsSelected($event)"
-    (queryChanged)="onQueryChangedFromWithin($event)"
-    (optionsChanged)="optionsChanged.emit($event)"
-    [options]="options"
-    (rowDoubleClicked)="rowDoubleClicked.emit($event)"
-  >
+  <yuv-search-result class="content" [query]="_searchQuery" [selectedItemIDs]="selectedItemIDs"
+    (itemsSelected)="onItemsSelected($event)" (queryChanged)="onQueryChangedFromWithin($event)"
+    (optionsChanged)="optionsChanged.emit($event)" [options]="options"
+    (rowDoubleClicked)="rowDoubleClicked.emit($event)">
   </yuv-search-result>
 </yuv-panel>
 <yuv-action-menu [(visible)]="actionMenuVisible" [selection]="actionMenuSelection"> </yuv-action-menu>

@@ -1,4 +1,5 @@
 export const SystemType = {
+  OBJECT: 'system:object',
   DOCUMENT: 'system:document',
   FOLDER: 'system:folder',
   AUDIT: 'system:audit'

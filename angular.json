@@ -312,13 +312,8 @@
             "main": "projects/tenant-login/src/main.ts",
             "polyfills": "projects/tenant-login/src/polyfills.ts",
             "tsConfig": "projects/tenant-login/tsconfig.app.json",
-            "assets": [
-              "projects/tenant-login/src/favicon.ico",
-              "projects/tenant-login/src/assets"
-            ],
-            "styles": [
-              "projects/tenant-login/src/styles.scss"
-            ],
+            "assets": ["projects/tenant-login/src/favicon.ico", "projects/tenant-login/src/assets"],
+            "styles": ["projects/tenant-login/src/styles.scss"],
             "scripts": []
           },
           "configurations": {
@@ -372,27 +367,16 @@
             "polyfills": "projects/tenant-login/src/polyfills.ts",
             "tsConfig": "projects/tenant-login/tsconfig.spec.json",
             "karmaConfig": "projects/tenant-login/karma.conf.js",
-            "assets": [
-              "projects/tenant-login/src/favicon.ico",
-              "projects/tenant-login/src/assets"
-            ],
-            "styles": [
-              "projects/tenant-login/src/styles.scss"
-            ],
+            "assets": ["projects/tenant-login/src/favicon.ico", "projects/tenant-login/src/assets"],
+            "styles": ["projects/tenant-login/src/styles.scss"],
             "scripts": []
           }
         },
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
-            "tsConfig": [
-              "projects/tenant-login/tsconfig.app.json",
-              "projects/tenant-login/tsconfig.spec.json",
-              "projects/tenant-login/e2e/tsconfig.json"
-            ],
-            "exclude": [
-              "**/node_modules/**"
-            ]
+            "tsConfig": ["projects/tenant-login/tsconfig.app.json", "projects/tenant-login/tsconfig.spec.json", "projects/tenant-login/e2e/tsconfig.json"],
+            "exclude": ["**/node_modules/**"]
           }
         },
         "e2e": {

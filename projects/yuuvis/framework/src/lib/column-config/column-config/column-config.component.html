@@ -1,26 +1,46 @@
-<div class="columns" cdkDropList (cdkDropListDropped)="drop($event)" [cdkDropListData]="columnConfig.columns"
-  *ngIf="columnConfig">
-  <div class="toolbar">
+<div class="error" *ngIf="error">
+  <div class="msg"><span>{{error}}</span>
+    <yuv-icon icon="clear" (click)="error = null"></yuv-icon>
+  </div>
+</div>
+
+<ng-container *ngIf="columnConfig">
+  <div class="header">
     <div class="title">{{title}}</div>
     <button class="primary" [disabled]="!moreColumnsAvailable" (click)="showColumnPicker()">
       <yuv-icon [icon]="'addCircle'"></yuv-icon>
       <span>{{'yuv.framework.column-config.column.button.add'|translate}}</span>
     </button>
   </div>
-  <div class="column" cdkDrag *ngFor="let c of columnConfig.columns">
-    <yuv-icon class="handle" cdkDragHandle [icon]="'dragHandle'"></yuv-icon>
-    <div class="label">{{c.label}}</div>
-    <div class="type">{{c.propertyType}}</div>
-    <div class="buttons">
-      <button class="pinned" [ngClass]="{active: c.pinned}"
-        (click)="c.pinned = !c.pinned">{{'yuv.framework.column-config.column.button.pinned'|translate}}</button>
-      <button class="sort" [ngClass]="{asc: c.sort === 'asc', desc: c.sort === 'desc'}" (click)="toggleSort(c)">
-        {{'yuv.framework.column-config.column.button.sort'|translate}} <yuv-icon [icon]="'arrowDown'"></yuv-icon>
-      </button>
+
+  <div class="columns" cdkDropList (cdkDropListDropped)="drop($event)" [cdkDropListData]="columnConfig.columns">
+    <div class="column" cdkDrag *ngFor="let c of columnConfig.columns">
+      <yuv-icon class="handle" cdkDragHandle [icon]="'dragHandle'"></yuv-icon>
+      <div class="label">{{c.label}}</div>
+      <div class="type">{{c.propertyType}}</div>
+      <div class="buttons">
+
+        <button class="sort" [ngClass]="{asc: c.sort === 'asc', desc: c.sort === 'desc'}" (click)="toggleSort(c)"
+          title="{{labels.sort}}">
+          <yuv-icon class="arrow" icon="arrowDown"></yuv-icon>
+          <yuv-icon icon="sort"></yuv-icon>
+        </button>
+
+        <button class="pinned" [ngClass]="{active: c.pinned}" (click)="togglePinned(c)" title="{{labels.pinned}}">
+          <yuv-icon icon="pin"></yuv-icon>
+        </button>
+
+      </div>
+      <yuv-icon [icon]="'clear'" (click)="removeColumn(c)"></yuv-icon>
     </div>
-    <yuv-icon [icon]="'clear'" (click)="removeColumn(c)"></yuv-icon>
   </div>
-</div>
+
+  <div class="actions" *ngIf="columnConfigDirty">
+
+    <button (click)="revert()">{{'yuv.framework.column-config.button.revert'|translate}}</button>
+    <button class="primary" (click)="save()">{{'yuv.framework.column-config.button.save'|translate}}</button>
+  </div>
+</ng-container>
 
 <ng-template #tplColumnPicker let-data let-popover="popover">
   <yuv-column-picker [groups]="data.groups" (cancel)="onPickerCancel(popover)"

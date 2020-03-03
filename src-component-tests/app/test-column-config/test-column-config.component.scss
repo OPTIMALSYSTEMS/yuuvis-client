@@ -1,7 +1,4 @@
 :host {
-  yuv-column-config {
-    display: block;
-  }
   .cmp {
     background-color: var(--panel-background);
     display: flex;
@@ -9,7 +6,7 @@
     height: 70vh;
     yuv-column-config {
       flex: 1;
-      overflow-y: auto;
+      // overflow-y: auto;
     }
     yuv-column-config-select {
       border-right: 1px solid var(--panel-divider-color);

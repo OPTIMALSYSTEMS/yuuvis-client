@@ -15,9 +15,3 @@ export interface ColumnConfigColumn {
   // whether or not this column should be pinned
   pinned?: boolean;
 }
-
-// export interface ColumnConfigSelectItem {
-//   id: string;
-//   label: string;
-//   type: ObjectType;
-// }

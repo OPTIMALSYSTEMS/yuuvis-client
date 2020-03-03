@@ -38,6 +38,8 @@ export { ObjectType, ObjectTypeField, ObjectTypeGroup } from './lib/service/syst
 export * from './lib/service/system/system.service';
 export * from './lib/service/upload/upload.interface';
 export * from './lib/service/upload/upload.service';
+export * from './lib/service/user-config/user-config.interface';
+export * from './lib/service/user-config/user-config.service';
 export * from './lib/service/user/user.service';
 export * from './lib/util/utils';
 export * from './lib/util/utils.helper.enum';

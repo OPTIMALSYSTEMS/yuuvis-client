@@ -3,6 +3,7 @@
 $yuv-panel-header-height: 110px;
 $yuv-panel-footer-height: 50px;
 $yuv-result-header-height: 38px;
+$yuv-panel-toolbar-width: 400px;
 
 .yuv-search-result {
   height: 100%;
@@ -18,6 +19,10 @@ $yuv-result-header-height: 38px;
 
     &.toolbar-open {
       grid-template-columns: 400px 1fr;
+
+      .screen-s & {
+        grid-template-columns: 80% 1fr;
+      }
 
       .toolbar {
         .toggle yuv-icon {
@@ -43,11 +48,11 @@ $yuv-result-header-height: 38px;
 
   .toolbar {
     grid-area: toolbar;
-    color: var(--text-color-caption);
+    color: #fff;
     display: flex;
     flex-flow: column;
     justify-content: flex-start;
-    background-color: var(--panel-background-grey);
+    background-color: var(--color-primary);
     border-right: 1px solid var(--panel-divider-color);
 
     > div {
@@ -110,11 +115,6 @@ $yuv-result-header-height: 38px;
     .toolbar-content {
       background-color: var(--panel-background-lightgrey);
       flex: 1;
-      ::ng-deep {
-        .yuv-quick-search .upper {
-          background-color: red;
-        }
-      }
       yuv-quick-search {
         border-bottom: 1px solid var(--panel-divider-color);
       }
