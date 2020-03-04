@@ -69,6 +69,7 @@ export class ColumnConfigComponent implements OnInit {
   private _loadedColumnConfig: ColumnConfig;
   moreColumnsAvailable: boolean;
   columnConfigDirty: boolean;
+  busy: boolean;
   error: string;
 
   labels: any;
@@ -80,10 +81,7 @@ export class ColumnConfigComponent implements OnInit {
   @Input() set type(input: string | ObjectType) {
     if (input) {
       this._objectType = typeof input === 'string' ? this.fetchObjectType(input) : input;
-      this.title =
-        this._objectType.id === this.systemService.BASE_TYPE_ID
-          ? this.translate.instant('yuv.framework.column-config.type.mixed.label')
-          : this._objectType.label;
+      this.title = this._objectType.id === SystemType.OBJECT ? this.translate.instant('yuv.framework.column-config.type.mixed.label') : this._objectType.label;
       this._objectTypeFields = this._objectType ? this.filterFields(this._objectType.fields) : [];
       this.fetchColumnConfig(this._objectType ? this._objectType.id : null);
     }
@@ -186,13 +184,17 @@ export class ColumnConfigComponent implements OnInit {
   }
 
   save() {
+    this.busy = true;
     this.error = null;
     this.userConfig.saveColumnConfig(this.columnConfig).subscribe(
       res => {
+        this.busy = false;
         this.configSaved.emit(this.columnConfig);
         this._loadedColumnConfig = this.cloneConfig(this.columnConfig);
+        this.columnConfigDirty = false;
       },
       err => {
+        this.busy = false;
         console.log(err);
         this.error = this.labels.error.save;
       }
@@ -215,9 +217,11 @@ export class ColumnConfigComponent implements OnInit {
   }
 
   private fetchColumnConfig(objectTypeId: string): void {
-    // if (!!objectTypeId) {
+    this.busy = true;
+    this.error = null;
     this.userConfig.getColumnConfig(objectTypeId || SystemType.OBJECT).subscribe(
       res => {
+        this.busy = false;
         this.columnConfig = {
           type: objectTypeId,
           columns: [...res.columns]
@@ -227,6 +231,7 @@ export class ColumnConfigComponent implements OnInit {
       },
       err => {
         console.error(err);
+        this.busy = false;
         this.error = this.labels.error.load;
         this.columnConfig = {
           type: objectTypeId,
@@ -236,14 +241,6 @@ export class ColumnConfigComponent implements OnInit {
         this.checkMoreColumnsAvailable();
       }
     );
-    // } else {
-    //   this.columnConfig = {
-    //     type: objectTypeId,
-    //     columns: []
-    //   };
-    //   this._loadedColumnConfig = this.cloneConfig(this.columnConfig);
-    //   this.checkMoreColumnsAvailable();
-    // }
   }
 
   private getSelectables(fields: ObjectTypeField[]): Selectable[] {

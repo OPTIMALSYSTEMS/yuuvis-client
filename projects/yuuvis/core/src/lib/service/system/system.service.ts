@@ -13,8 +13,6 @@ import { ObjectType, ObjectTypeField, ObjectTypeGroup, SchemaResponse, SchemaRes
   providedIn: 'root'
 })
 export class SystemService {
-  // ID applied to the base type (see: getBaseType())
-  BASE_TYPE_ID = 'yuv:base';
   private STORAGE_KEY = 'yuv.core.system.definition';
 
   private system: SystemDefinition;
@@ -123,7 +121,7 @@ export class SystemService {
       { ...props, id: SecondaryObjectTypeField.DESCRIPTION }
     ];
     return {
-      id: this.BASE_TYPE_ID,
+      id: SystemType.OBJECT,
       localNamespace: null,
       description: null,
       baseId: null,

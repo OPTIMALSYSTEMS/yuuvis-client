@@ -160,6 +160,8 @@
   "yuv.client.state.about.product.label": "Produkt:",
   "yuv.client.state.about.releasedate.label": "Produktversion:",
   "yuv.client.state.about.title": "Über yuuvis® flex",
+  "yuv.client.state.column-configuration.panel.description": "Konfiguration der Trefferlisten nach Objekttyp",
+  "yuv.client.state.column-configuration.panel.title": "Spaltenkonfiguration",
   "yuv.client.state.create.title": "Objekt anlegen",
   "yuv.client.state.dashboard.title": "Dashboard",
   "yuv.client.state.not-found.description": "Das Objekt konnte nicht geladen werden.",
