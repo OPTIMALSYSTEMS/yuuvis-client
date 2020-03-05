@@ -52,7 +52,15 @@
     "pack:lib:core": "cd lib-release &&  npm pack ../projects/yuuvis/core",
     "pack:lib:common": "cd lib-release &&  npm pack ../projects/yuuvis/common-ui",
     "pack:lib:framework": "cd lib-release &&  npm pack ../projects/yuuvis/framework",
-    "pack:lib:all": "npm run pack:lib:core && npm run pack:lib:common && npm run pack:lib:framework"
+    "pack:lib:all": "npm run pack:lib:core && npm run pack:lib:common && npm run pack:lib:framework",
+    "unpublish:lib:core": "npm unpublish @yuuvis/core --force",
+    "unpublish:lib:common": "npm unpublish @yuuvis/common-ui --force",
+    "unpublish:lib:framework": "npm unpublish @yuuvis/framework --force",
+    "unpublish:lib:all": "npm run unpublish:lib:core && npm run unpublish:lib:common && npm run unpublish:lib:framework",
+    "publish:lib:core": "npm run pack:lib:core && npm run unpublish:lib:core && npm publish ./lib-release/yuuvis-core-0.0.1.tgz",
+    "publish:lib:common": "npm run pack:lib:common && npm run unpublish:lib:common && npm publish ./lib-release/yuuvis-common-ui-0.0.1.tgz",
+    "publish:lib:framework": "npm run pack:lib:framework && npm run unpublish:lib:framework && npm publish ./lib-release/yuuvis-framework-0.0.1.tgz",
+    "publish:lib:all": "npm run publish:lib:core && npm run publish:lib:common && npm run publish:lib:framework"
   },
   "private": true,
   "dependencies": {
