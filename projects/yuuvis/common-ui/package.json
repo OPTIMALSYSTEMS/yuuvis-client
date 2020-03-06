@@ -1,5 +1,6 @@
 {
   "name": "@yuuvis/common-ui",
+  "description": "yuuvis Common UI library",
   "version": "0.0.1",
   "scripts": {
     "doc": "./node_modules/.bin/compodoc",
