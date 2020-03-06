@@ -13,9 +13,26 @@
       <yuv-icon class="btn" [iconSrc]="'assets/default/theme/app.icon.svg'"></yuv-icon>
     </a>
     <div yuvOfflineDisabled class="main">
+
+      <!-- create -->
       <yuv-icon class="btn" routerLink="/create" [title]="'yuv.framework.object-create.header.title' | translate"
         [icon]="'add'">
       </yuv-icon>
+
+      <!-- search -->
+      <yuv-icon class="btn" *ngIf="!showSearch; else tplSearch"
+        [title]="'yuv.framework.object-create.header.title' | translate" icon="search" (click)="toggleSearch(true)">
+      </yuv-icon>
+      <ng-template #tplSearch>
+        <div class="app-bar-search">
+          <button class="close" (click)="toggleSearch(false)">
+            <yuv-icon icon="close"></yuv-icon>
+          </button>
+          <yuv-quick-search [inline]="true" [query]="appQuery" (querySubmit)="onQuickSearchQuery($event)">
+          </yuv-quick-search>
+        </div>
+      </ng-template>
+
     </div>
     <div class="right">
 

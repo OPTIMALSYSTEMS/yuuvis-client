@@ -1,5 +1,5 @@
 import { Component, HostBinding, HostListener, OnInit } from '@angular/core';
-import { NavigationEnd, Router } from '@angular/router';
+import { NavigationEnd, NavigationExtras, Router } from '@angular/router';
 import { SwUpdate } from '@angular/service-worker';
 import { IconRegistryService } from '@yuuvis/common-ui';
 import {
@@ -13,9 +13,10 @@ import {
   UserService,
   YuvUser
 } from '@yuuvis/core';
-import { LayoutService, LayoutSettings } from '@yuuvis/framework';
+import { LayoutService, LayoutSettings, Screen, ScreenService } from '@yuuvis/framework';
 import { filter } from 'rxjs/operators';
-import { add, close, drawer, offline, refresh, userDisabled } from '../../../assets/default/svg/svg';
+import { add, close, drawer, offline, refresh, search, userDisabled } from '../../../assets/default/svg/svg';
+import { AppSearchService } from '../../service/app-search.service';
 
 @Component({
   selector: 'yuv-frame',
@@ -24,9 +25,12 @@ import { add, close, drawer, offline, refresh, userDisabled } from '../../../ass
 })
 export class FrameComponent implements OnInit {
   swUpdateAvailable: boolean;
-  hideAppBar = false;
-  showSideBar = false;
+  hideAppBar: boolean;
+  showSideBar: boolean;
+  screenSmall: boolean;
+  showSearch: boolean;
   user: YuvUser;
+  appQuery: SearchQuery;
 
   @HostListener('window:dragover', ['$event']) onDragOver(e) {
     let transfer = e.dataTransfer;
@@ -49,12 +53,14 @@ export class FrameComponent implements OnInit {
     private router: Router,
     private layoutService: LayoutService,
     private update: SwUpdate,
+    private appSearch: AppSearchService,
     private connectionService: ConnectionService,
     private authService: AuthService,
+    private screenService: ScreenService,
     private userService: UserService,
     private iconRegistry: IconRegistryService
   ) {
-    this.iconRegistry.registerIcons([drawer, refresh, add, userDisabled, offline, close]);
+    this.iconRegistry.registerIcons([search, drawer, refresh, add, userDisabled, offline, close]);
     this.userService.user$.subscribe((user: YuvUser) => {
       this.user = user;
     });
@@ -62,6 +68,9 @@ export class FrameComponent implements OnInit {
     this.layoutService.layoutSettings$.subscribe((settings: LayoutSettings) => this.applyLayoutSettings(settings));
     this.connectionService.connection$.subscribe((connectionState: ConnectionState) => {
       this.isOffline = !connectionState.isOnline;
+    });
+    this.screenService.screenChange$.subscribe((s: Screen) => {
+      this.screenSmall = s.isSmall;
     });
   }
 
@@ -86,6 +95,10 @@ export class FrameComponent implements OnInit {
     }
   }
 
+  toggleSearch(visible: boolean) {
+    this.showSearch = visible;
+  }
+
   reload() {
     location.reload();
   }
@@ -100,6 +113,11 @@ export class FrameComponent implements OnInit {
       this.showSideBar = false;
       this.router.navigate([state]);
     }
+  }
+
+  async onQuickSearchQuery(query: SearchQuery) {
+    const navigationExtras: NavigationExtras = { queryParams: { query: JSON.stringify(query.toQueryJson()) } };
+    await this.router.navigate(['/result'], navigationExtras);
   }
 
   updateWorker() {
@@ -128,6 +146,11 @@ export class FrameComponent implements OnInit {
         }
       }
     });
-    this.router.events.pipe(filter(e => e instanceof NavigationEnd)).subscribe((e: NavigationEnd) => (this.tab = e.urlAfterRedirects.startsWith('/dashboard')));
+    this.appSearch.query$.subscribe((q: SearchQuery) => (this.appQuery = q));
+    this.router.events.pipe(filter(e => e instanceof NavigationEnd)).subscribe((e: NavigationEnd) => {
+      this.tab = e.urlAfterRedirects.startsWith('/dashboard');
+      // hide open search bar when leaving state
+      this.toggleSearch(false);
+    });
   }
 }

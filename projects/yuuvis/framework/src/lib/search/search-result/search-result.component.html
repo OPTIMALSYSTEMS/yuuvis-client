@@ -1,50 +1,5 @@
 <div class="content grid-container" [ngClass]="{ 'toolbar-open': !!toolbar, 'has-query': !!query }">
 
-  <div class="toolbar">
-
-    <div class="toggle ico">
-      <yuv-icon icon="clear" (click)="toolbar = null"></yuv-icon>
-    </div>
-
-    <ng-container *ngIf="!toolbar; else tplToolbarContent">
-
-      <div class="top ico">
-        <yuv-icon class="search" icon="search" (click)="toolbar = 'search'"></yuv-icon>
-        <yuv-icon class="config" icon="settings" (click)="toolbar = 'config'"></yuv-icon>
-      </div>
-
-      <!-- mode settings -->
-      <div class="bottom ico">
-        <yuv-icon class="mode" icon="listModeDefault"
-          title="{{ 'yuv.framework.search-result.footer.config.mode.default' | translate}}"
-          [ngClass]="{'current': dataTable?.currentViewMode === 'standard'}" (click)="viewMode = 'standard'"></yuv-icon>
-
-        <yuv-icon class="mode" icon="listModeGrid"
-          title="{{ 'yuv.framework.search-result.footer.config.mode.grid' | translate}}"
-          [ngClass]="{'current': dataTable?.currentViewMode === 'grid'}" (click)="viewMode = 'grid'"></yuv-icon>
-
-        <yuv-icon class="mode" icon="listModeSimple"
-          title="{{ 'yuv.framework.search-result.footer.config.mode.horizontal' | translate}}"
-          [ngClass]="{'current': dataTable?.currentViewMode === 'horizontal'}" (click)="viewMode = 'horizontal'">
-        </yuv-icon>
-
-      </div>
-
-    </ng-container>
-
-    <ng-template #tplToolbarContent>
-      <!-- search -->
-      <div class="toolbar-content" *ngIf="toolbar === 'search'">
-        <yuv-quick-search class="inline" [query]="query" (querySubmit)="onQuickSearchQuery($event)"> </yuv-quick-search>
-      </div>
-      <!-- column configuration -->
-      <div class="toolbar-content" *ngIf="toolbar === 'config' && columnConfigInput">
-        <yuv-column-config [type]="columnConfigInput"></yuv-column-config>
-      </div>
-    </ng-template>
-
-  </div>
-
   <div class="table" [yuvBusyOverlay]="busy">
     <ng-template #tplEmpty>
       <div class="empty" *ngIf="query" translate>yuv.framework.search-result.empty</div>
@@ -59,53 +14,27 @@
 
       <div class="footer" yuvOfflineDisabled>
 
-        <!-- <div class="config-overlay" *ngIf="showConfigOverlay" (yuvOutsideClick)="showConfigOverlay = false">
-
-
-          <div class="option">
-            <yuv-icon (click)="viewMode = 'standard'" [icon]="'listModeDefault'"></yuv-icon>
-            {{ 'yuv.framework.search-result.footer.config.column-config' | translate}}
-          </div>
-
-          <div class="option" [ngClass]="{'current': dataTable.currentViewMode === 'standard'}"
-            (click)="viewMode = 'standard'">
-            <yuv-icon [icon]="'listModeDefault'"></yuv-icon>
-            {{ 'yuv.framework.search-result.footer.config.mode.default' | translate}}
-          </div>
-
-          <div class="option" [ngClass]="{'current': dataTable.currentViewMode === 'grid'}" (click)="viewMode = 'grid'">
-            <yuv-icon [icon]="'listModeGrid'"></yuv-icon>
-            {{ 'yuv.framework.search-result.footer.config.mode.grid' | translate}}
-          </div>
-
-          <div class="option" [ngClass]="{'current': dataTable.currentViewMode === 'horizontal'}"
-            (click)="viewMode = 'horizontal'">
-            <yuv-icon [icon]="'listModeSimple'"></yuv-icon>
-            {{ 'yuv.framework.search-result.footer.config.mode.horizontal' | translate}}
-          </div>
-        </div> -->
-
-
         <div class="footer_wrapper">
           <div class="status">
             {{ 'yuv.framework.search-result.footer.hits' | translate: { count: totalNumItems } }}
           </div>
 
-          <!-- <div>
-            <button
-              [ngClass]="{'active': dataTable.viewMode === 'standard', 'current': dataTable.currentViewMode === 'standard'}">
-              <yuv-icon class="next" (click)="viewMode = 'standard'" [icon]="'listModeDefault'"></yuv-icon>
-            </button>
-            <button
-              [ngClass]="{'active': dataTable.viewMode === 'grid', 'current': dataTable.currentViewMode === 'grid'}">
-              <yuv-icon class="next" (click)="viewMode = 'grid'" [icon]="'listModeGrid'"></yuv-icon>
-            </button>
-            <button
-              [ngClass]="{'active': dataTable.viewMode === 'horizontal', 'current': dataTable.currentViewMode === 'horizontal'}">
-              <yuv-icon class="next" (click)="viewMode = 'horizontal'" [icon]="'listModeSimple'"></yuv-icon>
-            </button>
-          </div> -->
+          <!-- list mode settings -->
+          <div class="mode">
+            <yuv-icon class="mode" icon="listModeDefault"
+              title="{{ 'yuv.framework.search-result.footer.config.mode.default' | translate}}"
+              [ngClass]="{'current': dataTable?.currentViewMode === 'standard'}" (click)="viewMode = 'standard'">
+            </yuv-icon>
+            <yuv-icon class="mode" icon="listModeGrid"
+              title="{{ 'yuv.framework.search-result.footer.config.mode.grid' | translate}}"
+              [ngClass]="{'current': dataTable?.currentViewMode === 'grid'}" (click)="viewMode = 'grid'"></yuv-icon>
+            <yuv-icon class="mode" icon="listModeSimple"
+              title="{{ 'yuv.framework.search-result.footer.config.mode.horizontal' | translate}}"
+              [ngClass]="{'current': dataTable?.currentViewMode === 'horizontal'}" (click)="viewMode = 'horizontal'">
+            </yuv-icon>
+          </div>
 
+          <!-- paging controls -->
           <div class="controls" *ngIf="hasPages">
             <button [disabled]="pagination.page === 0" (click)="goToPage(1)">
               <yuv-icon class="first" [icon]="'arrowLast'"></yuv-icon>

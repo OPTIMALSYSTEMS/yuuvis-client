@@ -1,8 +1,8 @@
 <yuv-panel class="search-result" [title]="'yuv.framework.search-result-panel.header.title' | translate"
   [description]="queryDescription">
-  <!-- <yuv-icon class="header-icon" [icon]="'search'"></yuv-icon> -->
 
   <yuv-action-menu-bar class="actions" yuvOfflineDisabled>
+    <yuv-icon class="config" icon="settings" (click)="showColumnConfigEditor()"></yuv-icon>
     <yuv-icon (click)="refresh()" [title]="'yuv.framework.list.refresh' | translate" class="button refresh-button"
       [icon]="'refresh'"></yuv-icon>
     <yuv-icon class="header-icon" (click)="openActionMenu()" [icon]="'kebap'"
@@ -16,3 +16,8 @@
   </yuv-search-result>
 </yuv-panel>
 <yuv-action-menu [(visible)]="actionMenuVisible" [selection]="actionMenuSelection"> </yuv-action-menu>
+
+<!-- column config editor overlay -->
+<ng-template #tplColumnConfigPicker let-data let-popover="popover">
+  <yuv-column-config [type]="data" (configSaved)="columnConfigChanged($event, popover)"></yuv-column-config>
+</ng-template>

@@ -104,6 +104,10 @@ export class QuickSearchComponent implements AfterViewInit {
     ContentStreamField.ARCHIVE_PATH
   ];
 
+  @Input() set inline(i: boolean) {
+    this._inline = i;
+  }
+
   /**
    * A SearchQuery to be loaded. If not provided a new query will be created.
    */
@@ -120,6 +124,7 @@ export class QuickSearchComponent implements AfterViewInit {
   @Output() typeAggregation = new EventEmitter<ObjectTypeAggregation[]>();
 
   @HostBinding('class.busy') busy: boolean;
+  @HostBinding('class.inline') _inline: boolean;
 
   @HostListener('keydown.enter', ['$event']) onEnter(event) {
     this.executeSearch();
@@ -261,6 +266,7 @@ export class QuickSearchComponent implements AfterViewInit {
    * estimated result of the current query.
    */
   aggregate() {
+    if (this._inline) return;
     if (this.searchQuery.term || (this.searchQuery.types && this.searchQuery.types.length) || (this.searchQuery.filters && this.searchQuery.filters.length)) {
       if (!this.settingUpQuery && this.searchForm.valid && (!this.searchFieldsForm || this.searchFieldsForm.valid)) {
         this.resultCount = null;

@@ -12,7 +12,6 @@ import {
   SearchService,
   SecondaryObjectTypeField,
   SortOption,
-  SystemService,
   YuvEvent,
   YuvEventType
 } from '@yuuvis/core';
@@ -39,7 +38,7 @@ export class SearchResultComponent implements OnDestroy {
   busy: boolean;
 
   toolbar: 'search' | 'config';
-  columnConfigInput: any;
+  // columnConfigInput: any;
   showConfigOverlay: boolean;
   tableData: ResponsiveTableData;
   // object type shown in the result list, will be null for mixed results
@@ -57,11 +56,11 @@ export class SearchResultComponent implements OnDestroy {
 
   @Input() set query(searchQuery: SearchQuery) {
     this._searchQuery = searchQuery;
-    this.columnConfigInput = searchQuery && searchQuery.types && searchQuery.types.length === 1 ? searchQuery.types[0] : this.systemervice.getBaseType();
+    // this.columnConfigInput = searchQuery && searchQuery.types && searchQuery.types.length === 1 ? searchQuery.types[0] : this.systemervice.getBaseType();
 
-    if (searchQuery && searchQuery.types && searchQuery.types.length === 1) {
-      this.columnConfigInput = searchQuery.types[0];
-    }
+    // if (searchQuery && searchQuery.types && searchQuery.types.length === 1) {
+    //   this.columnConfigInput = searchQuery.types[0];
+    // }
     if (searchQuery) {
       this.executeQuery();
     } else {
@@ -119,7 +118,6 @@ export class SearchResultComponent implements OnDestroy {
   constructor(
     private gridService: GridService,
     private eventService: EventService,
-    private systemervice: SystemService,
     private searchService: SearchService,
     private fb: FormBuilder,
     private iconRegistry: IconRegistryService

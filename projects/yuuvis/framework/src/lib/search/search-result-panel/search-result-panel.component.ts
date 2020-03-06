@@ -1,7 +1,10 @@
 import { RowEvent } from '@ag-grid-community/core';
-import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, Output, TemplateRef, ViewChild } from '@angular/core';
 import { IconRegistryService } from '@yuuvis/common-ui';
-import { DmsService, SearchQuery, SystemService, TranslateService } from '@yuuvis/core';
+import { ColumnConfig, DmsService, SearchQuery, SystemService, TranslateService } from '@yuuvis/core';
+import { PopoverConfig } from '../../popover/popover.interface';
+import { PopoverRef } from '../../popover/popover.ref';
+import { PopoverService } from '../../popover/popover.service';
 import { kebap, refresh, search } from '../../svg.generated';
 import { SearchResultComponent } from '../search-result/search-result.component';
 
@@ -13,17 +16,24 @@ import { SearchResultComponent } from '../search-result/search-result.component'
 export class SearchResultPanelComponent {
   // icons used within the template
   _searchQuery: SearchQuery;
+  columnConfigInput: any;
+  // showColumConfig: boolean;
   queryDescription: string;
   actionMenuVisible = false;
   actionMenuSelection = [];
 
   @ViewChild(SearchResultComponent, { static: false }) searchResultComponent: SearchResultComponent;
+  @ViewChild('tplColumnConfigPicker', { static: false }) tplColumnConfigPicker: TemplateRef<any>;
 
   /**
    * Search query to be executed and rendered in the result list.
    */
   @Input() set query(searchQuery: SearchQuery) {
     this._searchQuery = searchQuery;
+    this.columnConfigInput = searchQuery && searchQuery.types && searchQuery.types.length === 1 ? searchQuery.types[0] : this.systemService.getBaseType();
+    if (searchQuery && searchQuery.types && searchQuery.types.length === 1) {
+      this.columnConfigInput = searchQuery.types[0];
+    }
     if (searchQuery) {
       this.generateQueryDescription();
     }
@@ -61,6 +71,7 @@ export class SearchResultPanelComponent {
   constructor(
     private translate: TranslateService,
     private systemService: SystemService,
+    private popoverService: PopoverService,
     private dmsService: DmsService,
     private iconRegistry: IconRegistryService
   ) {
@@ -104,6 +115,24 @@ export class SearchResultPanelComponent {
         this.actionMenuSelection = items;
         this.actionMenuVisible = true;
       });
+    }
+  }
+
+  showColumnConfigEditor() {
+    const popoverConfig: PopoverConfig = {
+      width: '55%',
+      height: '70%',
+      data: this.columnConfigInput
+    };
+    this.popoverService.open(this.tplColumnConfigPicker, popoverConfig);
+  }
+
+  columnConfigChanged(columnConfig: ColumnConfig, popoverRef?: PopoverRef) {
+    // TODO: Update current column config
+    console.log(columnConfig);
+
+    if (popoverRef) {
+      popoverRef.close();
     }
   }
 }
