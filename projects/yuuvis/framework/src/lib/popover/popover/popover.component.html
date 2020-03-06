@@ -1,4 +1,4 @@
-<div class="popover-close">
+<div class="popover-close" *ngIf="!disableSmallScreenClose">
     <yuv-icon [icon]="'clear'" (click)="close()"></yuv-icon>
 </div>
 <ng-container cdkPortalOutlet></ng-container>

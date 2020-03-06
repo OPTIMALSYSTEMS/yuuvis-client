@@ -1,8 +1,11 @@
-import { Component, forwardRef, HostListener, Input, OnInit } from '@angular/core';
+import { Component, forwardRef, HostListener, Input, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { ControlValueAccessor, FormControl, NG_VALIDATORS, NG_VALUE_ACCESSOR, Validator } from '@angular/forms';
 import { IconRegistryService } from '@yuuvis/common-ui';
 import { DeviceService, TranslateService } from '@yuuvis/core';
 import { LocaleDatePipe } from '../../../pipes/locale-date.pipe';
+import { PopoverConfig } from '../../../popover/popover.interface';
+import { PopoverRef } from '../../../popover/popover.ref';
+import { PopoverService } from '../../../popover/popover.service';
 import { datepicker } from '../../../svg.generated';
 /**
  * Creates form input for date values. Input can be typed using a localized masked 
@@ -37,6 +40,8 @@ import { datepicker } from '../../../svg.generated';
   ]
 })
 export class DatetimeComponent implements OnInit, ControlValueAccessor, Validator {
+  @ViewChild('tplDatePicker', { static: false }) tplDatePicker: TemplateRef<any>;
+
   params;
   value; // model value
   innerValue; // inner ng-model value
@@ -83,7 +88,12 @@ export class DatetimeComponent implements OnInit, ControlValueAccessor, Validato
     return this._withTime;
   }
 
-  constructor(private translate: TranslateService, private device: DeviceService, private iconRegistry: IconRegistryService) {
+  constructor(
+    private translate: TranslateService,
+    private popoverService: PopoverService,
+    private device: DeviceService,
+    private iconRegistry: IconRegistryService
+  ) {
     this.iconRegistry.registerIcons([datepicker]);
     this.datePipe = new LocaleDatePipe(translate);
     this.locale = this.translate.currentLang;
@@ -124,24 +134,53 @@ export class DatetimeComponent implements OnInit, ControlValueAccessor, Validato
   }
 
   openPicker() {
-    if (this.device.isMobile) {
-      // Delay opening the picker on mobile, because the keyboard may be
-      // active. In this case calculating the screen estate for the dialog will
-      // get a wrong height (screen minus keyboard height). So we'll wait until
-      // keyboard is gone, and then trigger open.
-      setTimeout(() => {
-        this.showPicker = true;
-      }, 500);
-    } else {
-      this.showPicker = true;
+    const popoverConfig: PopoverConfig = {
+      // width: '55%',
+      // height: '70%',
+      disableSmallScreenClose: true,
+      data: {
+        value: this.value,
+        withTime: this.withTime,
+        withAmPm: this.withAmPm,
+        onylFutureDates: this.onylFutureDates
+      }
+    };
+    this.popoverService.open(this.tplDatePicker, popoverConfig);
+  }
+
+  setValueFromPicker(event, popoverRef?: PopoverRef) {
+    this.writeValue(event.date);
+    this.propagate();
+    if (popoverRef) {
+      popoverRef.close();
     }
   }
 
-  setValueFromPicker(event) {
-    this.writeValue(event.date);
-    this.propagate();
-    this.showPicker = false;
+  onPickerCancel(popoverRef?: PopoverRef) {
+    if (popoverRef) {
+      popoverRef.close();
+    }
   }
+
+  // XXopenPicker() {
+  //   if (this.device.isMobile) {
+  //     // Delay opening the picker on mobile, because the keyboard may be
+  //     // active. In this case calculating the screen estate for the dialog will
+  //     // get a wrong height (screen minus keyboard height). So we'll wait until
+  //     // keyboard is gone, and then trigger open.
+  //     setTimeout(() => {
+  //       this.showPicker = true;
+  //     }, 500);
+  //   } else {
+  //     this.showPicker = true;
+  //   }
+  // }
+
+  // XXsetValueFromPicker(event, popoverRef?: PopoverRef) {
+  //   this.writeValue(event.date);
+  //   this.propagate();
+  //   this.showPicker = false;
+  // }
 
   onMaskValueChange(event) {
     if (event === this._datePattern) {
