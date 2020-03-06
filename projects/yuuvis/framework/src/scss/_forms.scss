@@ -45,7 +45,7 @@ button {
     color: #fff;
 
     &:not([disabled]):hover {
-      background-color: var(--color-accent-1);
+      filter: grayscale(0.5);
     }
   }
   &.secondary {
