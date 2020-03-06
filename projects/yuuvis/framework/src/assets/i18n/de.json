@@ -129,7 +129,6 @@
 	"yuv.framework.search-result-panel.header.description.types": "Suche nach '{{term}}' in {{types}}",
 	"yuv.framework.search-result-panel.header.title": "Suchergebnis",
 	"yuv.framework.search-result.empty": "Keine Treffer",
-	"yuv.framework.search-result.footer.config.column-config": "Spaltenkonfiguration",
 	"yuv.framework.search-result.footer.config.mode.default": "Liste: Standard",
 	"yuv.framework.search-result.footer.config.mode.grid": "Liste: Grid",
 	"yuv.framework.search-result.footer.config.mode.horizontal": "Liste: Horizontal",

@@ -14,7 +14,6 @@ $yuv-result-header-height: 38px;
     grid-template-rows: 1fr;
     grid-template-areas: 'table';
     height: 100%;
-    border-top: 1px solid var(--panel-divider-color);
   }
 
   .table {
@@ -81,8 +80,8 @@ $yuv-result-header-height: 38px;
           }
 
           &.current {
-            background-color: var(--text-color-caption);
-            color: #fff;
+            background-color: var(--panel-divider-color);
+            color: var(--text-color-body);
           }
         }
       }

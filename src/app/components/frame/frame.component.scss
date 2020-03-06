@@ -92,8 +92,8 @@ $app-bar-zindex: 6;
         padding: calc(var(--app-pane-padding) / 2);
 
         &:hover {
-          background-color: var(--color-accent);
-          color: #fff;
+          background-color: rgba(var(--color-accent-rgb), 0.2);
+          color: var(--color-accent);
         }
       }
 
@@ -105,8 +105,12 @@ $app-bar-zindex: 6;
         top: 0;
         height: var(--app-bar-height);
         box-shadow: 0 0 10px 10px rgba(0, 0, 0, 0.1);
-        border-bottom: 1px solid var(--panel-divider-color);
         background-color: var(--main-background);
+        animation: yuvFadeInDown 200ms;
+
+        .dark & {
+          border-bottom: 1px solid var(--panel-divider-color);
+        }
 
         > button.close {
           flex: 0 0 auto;

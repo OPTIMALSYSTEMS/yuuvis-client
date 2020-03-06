@@ -20,8 +20,7 @@
       </yuv-icon>
 
       <!-- search -->
-      <yuv-icon class="btn" *ngIf="!showSearch; else tplSearch"
-        [title]="'yuv.framework.object-create.header.title' | translate" icon="search" (click)="toggleSearch(true)">
+      <yuv-icon class="btn" *ngIf="!showSearch; else tplSearch" icon="search" (click)="toggleSearch(true)">
       </yuv-icon>
       <ng-template #tplSearch>
         <div class="app-bar-search">

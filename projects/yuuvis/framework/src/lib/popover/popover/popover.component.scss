@@ -6,16 +6,20 @@
   background-color: var(--panel-background);
   color: var(--text-color-body);
 
-  yuv-icon.popover-close {
+  .popover-close {
+    width: 100%;
     display: none;
+    justify-content: flex-end;
+    position: absolute;
+    color: var(--text-color-hint);
+    top: -32px;
+    border-bottom: 1px solid var(--panel-divider-color);
+    z-index: 1000;
+    background-color: var(--panel-background);
+    padding: calc(var(--app-pane-padding) / 4);
 
     .screen-s & {
-      display: block;
-      position: absolute;
-      color: var(--text-color-hint);
-      top: var(--app-pane-padding);
-      @include bidi-style(right, var(--app-pane-padding), left, var(--app-pane-padding));
-      z-index: 1000;
+      display: flex;
     }
   }
 }

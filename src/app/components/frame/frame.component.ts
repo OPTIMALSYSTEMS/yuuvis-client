@@ -116,6 +116,7 @@ export class FrameComponent implements OnInit {
   }
 
   async onQuickSearchQuery(query: SearchQuery) {
+    this.appSearch.setQuery(query);
     const navigationExtras: NavigationExtras = { queryParams: { query: JSON.stringify(query.toQueryJson()) } };
     await this.router.navigate(['/result'], navigationExtras);
   }
