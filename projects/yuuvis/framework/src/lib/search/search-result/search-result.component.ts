@@ -4,6 +4,8 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { IconRegistryService } from '@yuuvis/common-ui';
 import {
   BaseObjectTypeField,
+  ColumnConfig,
+  ColumnConfigColumn,
   DmsObject,
   EventService,
   SearchQuery,
@@ -12,9 +14,12 @@ import {
   SearchService,
   SecondaryObjectTypeField,
   SortOption,
+  UserConfigService,
   YuvEvent,
   YuvEventType
 } from '@yuuvis/core';
+import { Observable, of } from 'rxjs';
+import { map, switchMap, tap } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { ResponsiveDataTableComponent, ResponsiveDataTableOptions } from '../../components/responsive-data-table/responsive-data-table.component';
 import { ResponsiveTableData } from '../../components/responsive-data-table/responsive-data-table.interface';
@@ -60,7 +65,7 @@ export class SearchResultComponent implements OnDestroy {
   @Input() set query(searchQuery: SearchQuery) {
     this._searchQuery = searchQuery;
     if (searchQuery) {
-      this.executeQuery();
+      this.executeQuery(this.applyColumnConfig);
     } else {
       // reset
       this.createTableData({
@@ -114,6 +119,7 @@ export class SearchResultComponent implements OnDestroy {
   constructor(
     @Attribute('applyColumnConfig') public applyColumnConfig: boolean,
     private gridService: GridService,
+    private userConfig: UserConfigService,
     private eventService: EventService,
     private searchService: SearchService,
     private fb: FormBuilder,
@@ -166,12 +172,31 @@ export class SearchResultComponent implements OnDestroy {
     this.optionsChanged.emit(dataTableOptions);
   }
 
-  private executeQuery() {
+  private executeQuery(applyColumnConfig?: boolean) {
     this.busy = true;
-    this.searchService.search(this._searchQuery, this.applyColumnConfig).subscribe((res: SearchResult) => {
-      this.totalNumItems = res.totalNumItems;
-      this.createTableData(res);
-    });
+    (applyColumnConfig ? this.applyColumnConfiguration(this._searchQuery) : of(this._searchQuery))
+      .pipe(switchMap((q: SearchQuery) => this.searchService.search(q)))
+      .subscribe((res: SearchResult) => {
+        this.totalNumItems = res.totalNumItems;
+        this.createTableData(res);
+      });
+  }
+
+  private applyColumnConfiguration(q: SearchQuery): Observable<SearchQuery> {
+    const targetType = q.types && q.types.length === 1 ? q.types[0] : null;
+    return this.userConfig.getColumnConfig(targetType).pipe(
+      tap((cc: ColumnConfig) => {
+        q.sortOptions = [];
+        cc.columns
+          .filter(c => !!c.sort)
+          .forEach(c => {
+            q.addSortOption(c.id, c.sort);
+          });
+      }),
+      map((cc: ColumnConfig) => cc.columns.map((column: ColumnConfigColumn) => column.id)),
+      tap((fields: string[]) => (q.fields = [BaseObjectTypeField.OBJECT_ID, BaseObjectTypeField.OBJECT_TYPE_ID, ...fields])),
+      switchMap(() => of(q))
+    );
   }
 
   // Create actual table data from the search result
@@ -183,7 +208,6 @@ export class SearchResultComponent implements OnDestroy {
       objecttypeId = this._searchQuery.types.length > 1 ? null : this._searchQuery.types[0] || null;
     }
 
-    // (objecttypeId !== this.resultListObjectTypeId || !this._columns ? this.gridService.getColumnConfiguration(objecttypeId) : of(this._columns)).subscribe(
     this.gridService.getColumnConfiguration(objecttypeId).subscribe((colDefs: ColDef[]) => {
       // setup pagination form in case of a paged search result chunk
       this.pagination = null;

@@ -1,12 +1,10 @@
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
-import { map, switchMap, tap } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { RangeValue } from '../../model/range-value.model';
 import { ApiBase } from '../backend/api.enum';
 import { BackendService } from '../backend/backend.service';
 import { BaseObjectTypeField, ContentStreamField } from '../system/system.enum';
-import { ColumnConfig, ColumnConfigColumn } from '../user-config/user-config.interface';
-import { UserConfigService } from '../user-config/user-config.service';
 import { SearchQuery } from './search-query.model';
 import { AggregateResult, Aggregation, SearchResult, SearchResultContent, SearchResultItem } from './search.service.interface';
 
@@ -29,7 +27,7 @@ import { AggregateResult, Aggregation, SearchResult, SearchResultContent, Search
 export class SearchService {
   private lastSearchQuery: SearchQuery;
 
-  constructor(private userConfig: UserConfigService, private backend: BackendService) {}
+  constructor(private backend: BackendService) {}
 
   /**
    * Creates a RangeValue instance from the given value object.
@@ -48,24 +46,13 @@ export class SearchService {
     return null;
   }
 
-  search(q: SearchQuery, applyColumnConfig?: boolean): Observable<SearchResult> {
-    return this.searchRaw(q, applyColumnConfig).pipe(map(res => this.toSearchResult(res)));
+  search(q: SearchQuery): Observable<SearchResult> {
+    return this.searchRaw(q).pipe(map(res => this.toSearchResult(res)));
   }
 
-  searchRaw(q: SearchQuery, applyColumnConfig?: boolean): Observable<any> {
-    return (applyColumnConfig ? this.applyColumnConfig(q) : of(q)).pipe(
-      tap((query: SearchQuery) => (this.lastSearchQuery = query)),
-      switchMap((query: SearchQuery) => this.backend.post(`/dms/search`, query.toQueryJson(), ApiBase.apiWeb))
-    );
-  }
-
-  private applyColumnConfig(q: SearchQuery): Observable<SearchQuery> {
-    const targetType = q.types && q.types.length === 1 ? q.types[0] : null;
-    return this.userConfig.getColumnConfig(targetType).pipe(
-      map((cc: ColumnConfig) => cc.columns.map((column: ColumnConfigColumn) => column.id)),
-      tap((fields: string[]) => (q.fields = [BaseObjectTypeField.OBJECT_ID, BaseObjectTypeField.OBJECT_TYPE_ID, ...fields])),
-      switchMap(() => of(q))
-    );
+  searchRaw(q: SearchQuery): Observable<any> {
+    this.lastSearchQuery = q;
+    return this.backend.post(`/dms/search`, q.toQueryJson(), ApiBase.apiWeb);
   }
 
   /**
