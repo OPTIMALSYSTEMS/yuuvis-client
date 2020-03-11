@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { BackendService } from '../backend/backend.service';
+import { SystemType } from '../system/system.enum';
 import { SystemService } from '../system/system.service';
 import { ColumnConfig } from './user-config.interface';
 
@@ -14,8 +15,8 @@ import { ColumnConfig } from './user-config.interface';
 export class UserConfigService {
   constructor(private backend: BackendService, private systemService: SystemService) {}
 
-  getColumnConfig(objectTypeId: string): Observable<ColumnConfig> {
-    return this.backend.get(`/user/config/result/${encodeURIComponent(objectTypeId)}`).pipe(
+  getColumnConfig(objectTypeId?: string): Observable<ColumnConfig> {
+    return this.backend.get(`/user/config/result/${encodeURIComponent(objectTypeId || SystemType.OBJECT)}`).pipe(
       map(res => ({
         type: res.type,
         columns: res.columns.map(c => ({

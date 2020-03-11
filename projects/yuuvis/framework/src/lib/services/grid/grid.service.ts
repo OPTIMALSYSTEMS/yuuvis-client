@@ -5,14 +5,15 @@ import {
   AppCacheService,
   BackendService,
   BaseObjectTypeField,
+  ColumnConfig,
+  ColumnConfigColumn,
   ContentStreamField,
-  FieldDefinition,
   ObjectType,
   ObjectTypeField,
   SearchService,
-  SortOption,
   SystemService,
   TranslateService,
+  UserConfigService,
   Utils
 } from '@yuuvis/core';
 import { Observable } from 'rxjs';
@@ -32,6 +33,7 @@ export class GridService {
     private appCacheService: AppCacheService,
     private system: SystemService,
     private searchSvc: SearchService,
+    private userConfig: UserConfigService,
     private translate: TranslateService,
     private router: Router,
     private backend: BackendService
@@ -59,24 +61,28 @@ export class GridService {
    */
   getColumnConfiguration(objectTypeId?: string): Observable<ColDef[]> {
     const objectType: ObjectType = objectTypeId ? this.system.getObjectType(objectTypeId) : this.system.getBaseType();
-    return this.searchSvc.getFieldDefinition(objectType).pipe(
-      map((fieldDef: FieldDefinition) => {
-        const columns = fieldDef.elements.filter(f => f.propertyType !== 'table').map(f => this.getColumnDefinition(f, fieldDef.getOptions(f.id)));
-
-        return columns;
-      })
-    );
+    const objectTypeFields = {};
+    objectType.fields.forEach((f: ObjectTypeField) => (objectTypeFields[f.id] = f));
+    return this.userConfig
+      .getColumnConfig(objectTypeId)
+      .pipe(
+        map((cc: ColumnConfig) =>
+          cc.columns.filter((c: ColumnConfigColumn) => c.propertyType !== 'table').map(c => this.getColumnDefinition(c, objectTypeFields[c.id]))
+        )
+      );
   }
 
   /**
    * Creates a column definition for a given object type field.
-   * @param field The field to create the column definition for
+   * @param columnConfig Column configuration entry
+   * @param field Object type field matching the column config entry
    */
-  private getColumnDefinition(field: ObjectTypeField, options?: ColDef): ColDef {
+  private getColumnDefinition(columnConfigColumn: ColumnConfigColumn, field: ObjectTypeField): ColDef {
     const colDef: ColDef = {
       colId: field.id, // grid needs unique ID
       field: field.id,
-      headerName: this.system.getLocalizedResource(`${field.id}_label`)
+      headerName: this.system.getLocalizedResource(`${field.id}_label`),
+      pinned: columnConfigColumn.pinned || false
     };
 
     this.addColDefAttrsByType(colDef, field);
@@ -89,8 +95,7 @@ export class GridService {
     if (this.isSortable(field)) {
       colDef.sortable = true;
     }
-
-    return { ...colDef, ...options };
+    return colDef;
   }
 
   private isSortable(field: ObjectTypeField): boolean {
@@ -98,15 +103,15 @@ export class GridService {
     return field.propertyType !== 'id' && !skipSort.includes(field.id);
   }
 
-  /**
-   * Saves column sort settings for a given object type.
-   * @param sortModel Sort settings for columns
-   * @param objectTypeId The ID of the object type to save column settings for
-   */
-  persistSortSettings(sortModel: SortOption[], objectTypeId?: string) {
-    const objectType: ObjectType = objectTypeId ? this.system.getObjectType(objectTypeId) : this.system.getBaseDocumentType();
-    this.searchSvc.updateFieldDefinition(objectType, sortModel, []);
-  }
+  // /**
+  //  * Saves column sort settings for a given object type.
+  //  * @param sortModel Sort settings for columns
+  //  * @param objectTypeId The ID of the object type to save column settings for
+  //  */
+  // persistSortSettings(sortModel: SortOption[], objectTypeId?: string) {
+  //   const objectType: ObjectType = objectTypeId ? this.system.getObjectType(objectTypeId) : this.system.getBaseDocumentType();
+  //   // this.searchSvc.updateFieldDefinition(objectType, sortModel, []);
+  // }
 
   /**
    * Add type specific column definition attributes based on a fields type

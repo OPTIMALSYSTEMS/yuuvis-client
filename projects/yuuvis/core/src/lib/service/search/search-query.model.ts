@@ -4,6 +4,7 @@ import { SearchQueryProperties } from './search.service.interface';
 
 export class SearchQuery {
   term: string;
+  fields: string[];
   size: number = 50;
   aggs: string[];
   from: number;
@@ -16,6 +17,7 @@ export class SearchQuery {
       this.term = searchQueryProperties.term;
       this.from = searchQueryProperties.from;
       this.types = searchQueryProperties.types || [];
+      this.fields = searchQueryProperties.fields || [];
 
       if (searchQueryProperties.size) {
         this.size = searchQueryProperties.size;
@@ -170,6 +172,10 @@ export class SearchQuery {
 
     if (this.types.length) {
       queryJson.types = this.types;
+    }
+
+    if (this.fields && this.fields.length) {
+      queryJson.fields = this.fields;
     }
 
     if (this.filters.length) {

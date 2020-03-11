@@ -56,12 +56,10 @@ export class ResultComponent implements OnInit, OnDestroy {
   }
 
   onOptionsChanged(options: any, component: string) {
-    this.options[component] = options;
-    this.appCacheService.setItem(this.getStorageKey(), this.options).subscribe();
-  }
-
-  getOptions(component: string) {
-    return this.options[component];
+    // do not set this.options because it is an input as well (circle in->out->in)
+    const o = { ...this.options };
+    o[component] = { ...options };
+    this.appCacheService.setItem(this.getStorageKey(), o).subscribe();
   }
 
   select(items: string[]) {

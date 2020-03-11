@@ -14,6 +14,13 @@ import { ResponsiveTableData } from './responsive-data-table.interface';
  */
 export type ViewMode = 'standard' | 'horizontal' | 'grid' | 'auto';
 
+export interface ResponsiveDataTableOptions {
+  viewMode: ViewMode;
+  // Object where the properties are the column IDs
+  // and their values are the columns width.
+  columnWidths: any;
+}
+
 /**
  * Responsive DataTable.
  */
@@ -31,6 +38,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
   private columnResizeSource = new ReplaySubject<any>();
   public columnResize$: Observable<ResizedEvent> = this.columnResizeSource.asObservable();
   private _data: ResponsiveTableData;
+  private _options: ResponsiveDataTableOptions;
   // array of row IDs that are currently selected
   private _currentSelection: string[] = [];
 
@@ -45,12 +53,21 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
 
   public modules: Module[] = [ClientSideRowModelModule];
 
-  @Input() options: any;
-  /**
-   * Emitted when column sizes have been changed.
-   */
-  @Output() optionsChanged = new EventEmitter();
+  @Output() optionsChanged = new EventEmitter<ResponsiveDataTableOptions>();
   @Output() rowDoubleClicked = new EventEmitter<RowEvent>();
+
+  @Input() set options(o: ResponsiveDataTableOptions) {
+    this._options = o;
+    if (this.gridOptions && this._data) {
+      this.gridOptions.api.setColumnDefs(this._options ? this.applyColDefOptions(this._data.columns, this._options.columnWidths) : this._data.columns);
+    }
+    if (o.viewMode) {
+      this.viewMode = o.viewMode;
+    }
+  }
+  get options() {
+    return this._options;
+  }
 
   /**
    * ResponsiveTableData setter
@@ -68,7 +85,10 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
    * view mode of the table
    */
   @Input() set viewMode(viewMode: ViewMode) {
-    this._viewMode = viewMode || 'auto';
+    if (this._viewMode && this._viewMode !== viewMode) {
+      this.optionsChanged.emit({ ...this.options, viewMode: viewMode });
+    }
+    this._viewMode = viewMode || 'standard';
     this.currentViewMode = this._viewMode === 'auto' ? this._autoViewMode : this._viewMode;
   }
 
@@ -87,7 +107,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
     return this._currentViewMode;
   }
 
-  private _viewMode: ViewMode = 'auto';
+  private _viewMode: ViewMode = 'standard';
   private _currentViewMode: ViewMode = 'standard';
   private _autoViewMode: ViewMode = 'standard';
 
@@ -162,7 +182,10 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
             width: columnState.width
           }))
         });
-        this.optionsChanged.emit(Utils.arrayToObject(this.gridOptions.columnApi.getColumnState(), 'colId', 'width'));
+        this.optionsChanged.emit({
+          viewMode: this.viewMode,
+          columnWidths: Utils.arrayToObject(this.gridOptions.columnApi.getColumnState(), 'colId', 'width')
+        });
       }
     });
 
@@ -207,6 +230,20 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
     }
   }
 
+  private applyColDefOptions(columns: ColDef[], columnWidths: any): ColDef[] {
+    let cols = [];
+    if (this._options.viewMode === 'standard' && columnWidths) {
+      columns.forEach(c => {
+        if (columnWidths[c.colId]) {
+          c.width = columnWidths[c.colId];
+        }
+      });
+    } else {
+      cols = columns;
+    }
+    return cols;
+  }
+
   private applyGridOption(retry: boolean = true) {
     if (this.gridOptions && this.gridOptions.api) {
       // make sure that all rows are visible / loaded
@@ -216,8 +253,9 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
 
       const columns = this.isSmall ? [this.getSmallSizeColDef()] : this._data.columns;
       if (JSON.stringify(this.gridOptions.columnDefs) !== JSON.stringify(columns)) {
-        this.gridOptions.columnDefs = columns;
-        this.gridOptions.api.setColumnDefs(columns);
+        const cols = this._options ? this.applyColDefOptions(columns, this._options.columnWidths) : columns;
+        this.gridOptions.columnDefs = cols;
+        this.gridOptions.api.setColumnDefs(cols);
       }
 
       if (this.isStandard && this._data.sortModel) {

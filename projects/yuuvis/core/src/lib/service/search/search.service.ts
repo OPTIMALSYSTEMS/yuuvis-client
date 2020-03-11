@@ -1,34 +1,35 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, switchMap, tap } from 'rxjs/operators';
 import { RangeValue } from '../../model/range-value.model';
 import { ApiBase } from '../backend/api.enum';
 import { BackendService } from '../backend/backend.service';
-import { BaseObjectTypeField, ContentStreamField, SecondaryObjectTypeField } from '../system/system.enum';
-import { ObjectType } from '../system/system.interface';
-import { SearchQuery, SortOption } from './search-query.model';
+import { BaseObjectTypeField, ContentStreamField } from '../system/system.enum';
+import { ColumnConfig, ColumnConfigColumn } from '../user-config/user-config.interface';
+import { UserConfigService } from '../user-config/user-config.service';
+import { SearchQuery } from './search-query.model';
 import { AggregateResult, Aggregation, SearchResult, SearchResultContent, SearchResultItem } from './search.service.interface';
 
 /**
  * @ignore
  * Creates the Model of Field Definitions
  */
-export class FieldDefinition {
-  constructor(public elements: any[] = [], public sortorder: any[] = [], public pinned: any[] = [], public mode?: string) {}
+// export class FieldDefinition {
+//   constructor(public elements: any[] = [], public sortorder: SortOption[] = [], public pinned: string[] = [], public mode?: string) {}
 
-  getOptions(id = '') {
-    const sort = (this.sortorder.find(s => s.field === id) || {}).order;
-    const pinned = !!this.pinned.find(_id => _id === id);
-    return { ...(sort && { sort }), ...(pinned && { pinned }) };
-  }
-}
+//   getOptions(id = '') {
+//     const sort = (this.sortorder.find(s => s.field === id) || {}).order;
+//     const pinned = !!this.pinned.find(_id => _id === id);
+//     return { ...(sort && { sort }), ...(pinned && { pinned }) };
+//   }
+// }
 @Injectable({
   providedIn: 'root'
 })
 export class SearchService {
   private lastSearchQuery: SearchQuery;
 
-  constructor(private backend: BackendService) {}
+  constructor(private userConfig: UserConfigService, private backend: BackendService) {}
 
   /**
    * Creates a RangeValue instance from the given value object.
@@ -47,15 +48,24 @@ export class SearchService {
     return null;
   }
 
-  search(q: SearchQuery): Observable<SearchResult> {
-    this.lastSearchQuery = q;
-
-    return this.backend.post(`/dms/search`, q.toQueryJson(), ApiBase.apiWeb).pipe(map(res => this.toSearchResult(res)));
+  search(q: SearchQuery, applyColumnConfig?: boolean): Observable<SearchResult> {
+    return this.searchRaw(q, applyColumnConfig).pipe(map(res => this.toSearchResult(res)));
   }
 
-  searchRaw(q: SearchQuery): Observable<any> {
-    this.lastSearchQuery = q;
-    return this.backend.post(`/dms/search`, q.toQueryJson(), ApiBase.apiWeb);
+  searchRaw(q: SearchQuery, applyColumnConfig?: boolean): Observable<any> {
+    return (applyColumnConfig ? this.applyColumnConfig(q) : of(q)).pipe(
+      tap((query: SearchQuery) => (this.lastSearchQuery = query)),
+      switchMap((query: SearchQuery) => this.backend.post(`/dms/search`, query.toQueryJson(), ApiBase.apiWeb))
+    );
+  }
+
+  private applyColumnConfig(q: SearchQuery): Observable<SearchQuery> {
+    const targetType = q.types && q.types.length === 1 ? q.types[0] : null;
+    return this.userConfig.getColumnConfig(targetType).pipe(
+      map((cc: ColumnConfig) => cc.columns.map((column: ColumnConfigColumn) => column.id)),
+      tap((fields: string[]) => (q.fields = [BaseObjectTypeField.OBJECT_ID, BaseObjectTypeField.OBJECT_TYPE_ID, ...fields])),
+      switchMap(() => of(q))
+    );
   }
 
   /**
@@ -173,30 +183,5 @@ export class SearchService {
   getPage(query: SearchQuery, page: number): Observable<SearchResult> {
     query.from = (page - 1) * query.size;
     return this.search(query);
-  }
-
-  /**
-   * Fake field definition service
-   * @param objectType default is null (represents mixed result)
-   */
-  getFieldDefinition(objectType: ObjectType): Observable<FieldDefinition> {
-    // TODO: use real service
-    const start = [BaseObjectTypeField.OBJECT_TYPE_ID, ...Object.values(SecondaryObjectTypeField)];
-    const end = [...Object.values(ContentStreamField), ...Object.values(BaseObjectTypeField).filter(f => f !== BaseObjectTypeField.OBJECT_TYPE_ID)];
-    const fd = new FieldDefinition([
-      ...objectType.fields.filter(f => start.includes(f.id)).sort((a, b) => start.indexOf(a.id) - start.indexOf(b.id)),
-      ...objectType.fields.filter(f => !start.includes(f.id) && !end.includes(f.id)),
-      ...objectType.fields.filter(f => end.includes(f.id)).sort((a, b) => end.indexOf(a.id) - end.indexOf(b.id))
-    ]);
-    return of(fd);
-  }
-
-  /**
-   * Fake field definition service
-   * @param objectType default is null (represents mixed result)
-   */
-  updateFieldDefinition(objectType: ObjectType, sortModel: SortOption[], pinModel: string[]): Observable<FieldDefinition> {
-    // TODO: use real service
-    return of(new FieldDefinition([], sortModel, pinModel));
   }
 }

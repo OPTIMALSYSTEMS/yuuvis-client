@@ -1,14 +1,15 @@
-<yuv-responsive-master-slave class="state" [options]="getOptions('yuv-responsive-master-slave')"
+<yuv-responsive-master-slave class="state" [options]="options['yuv-responsive-master-slave']"
   (slaveClosed)="onSlaveClosed()" (optionsChanged)="onOptionsChanged($event, 'yuv-responsive-master-slave')"
-  [detailsActive]="objectDetailsID">
+  [slaveActive]="objectDetailsID">
+
   <yuv-search-result-panel class="yuv-master panel" [query]="searchQuery" [selectedItemIDs]="selectedItems"
-    (queryDescriptionChange)="onQueryDescriptionChange($event)"
+    applyColumnConfig="true" (queryDescriptionChange)="onQueryDescriptionChange($event)"
     (optionsChanged)="onOptionsChanged($event, 'yuv-search-result-panel')"
-    [options]="getOptions('yuv-search-result-panel')" (itemsSelected)="select($event)"
+    [options]="options['yuv-search-result-panel']" (itemsSelected)="select($event)"
     (rowDoubleClicked)="onRowDoubleClicked($event)" (queryChanged)="onQueryChanged($event)">
   </yuv-search-result-panel>
 
   <yuv-object-details class="yuv-slave panel" [objectId]="objectDetailsID" [searchTerm]="searchQuery?.term"
-    (optionsChanged)="onOptionsChanged($event, 'yuv-object-details')" [options]="getOptions('yuv-object-details')">
+    (optionsChanged)="onOptionsChanged($event, 'yuv-object-details')" [options]="options['yuv-object-details']">
   </yuv-object-details>
 </yuv-responsive-master-slave>

@@ -1,7 +1,8 @@
 import { RowEvent } from '@ag-grid-community/core';
-import { Component, EventEmitter, Input, Output, TemplateRef, ViewChild } from '@angular/core';
+import { Attribute, Component, EventEmitter, Input, Output, TemplateRef, ViewChild } from '@angular/core';
 import { IconRegistryService } from '@yuuvis/common-ui';
 import { ColumnConfig, DmsService, SearchQuery, SystemService, TranslateService } from '@yuuvis/core';
+import { ResponsiveDataTableOptions, ViewMode } from '../../components/responsive-data-table/responsive-data-table.component';
 import { PopoverConfig } from '../../popover/popover.interface';
 import { PopoverRef } from '../../popover/popover.ref';
 import { PopoverService } from '../../popover/popover.service';
@@ -16,8 +17,9 @@ import { SearchResultComponent } from '../search-result/search-result.component'
 export class SearchResultPanelComponent {
   // icons used within the template
   _searchQuery: SearchQuery;
+  _options: ResponsiveDataTableOptions;
   columnConfigInput: any;
-  // showColumConfig: boolean;
+  viewMode: ViewMode;
   queryDescription: string;
   actionMenuVisible = false;
   actionMenuSelection = [];
@@ -46,11 +48,19 @@ export class SearchResultPanelComponent {
    * Options to be applied to the contained result list table.
    * Currently these options will control the tables column sizes.
    */
-  @Input() options;
+  @Input() set options(o: ResponsiveDataTableOptions) {
+    if (o) {
+      this.viewMode = o.viewMode;
+    }
+    this._options = o;
+  }
+  get options() {
+    return this._options;
+  }
   /**
    * Emitted when column sizes of the contained result list table have been changed.
    */
-  @Output() optionsChanged = new EventEmitter();
+  @Output() optionsChanged = new EventEmitter<ResponsiveDataTableOptions>();
   /**
    * Emits a list of IDs of items that has been selected.
    */
@@ -69,6 +79,7 @@ export class SearchResultPanelComponent {
   @Output() queryDescriptionChange = new EventEmitter<string>();
 
   constructor(
+    @Attribute('applyColumnConfig') public applyColumnConfig: boolean,
     private translate: TranslateService,
     private systemService: SystemService,
     private popoverService: PopoverService,
@@ -109,6 +120,13 @@ export class SearchResultPanelComponent {
     this.queryChanged.emit(searchQuery);
   }
 
+  onSearchResultOptionsChanged(options: ResponsiveDataTableOptions) {
+    if (options) {
+      this.viewMode = options.viewMode;
+    }
+    this.optionsChanged.emit(options);
+  }
+
   openActionMenu() {
     if (this.selectedItemIDs) {
       this.dmsService.getDmsObjects(this.selectedItemIDs).subscribe(items => {
@@ -130,6 +148,7 @@ export class SearchResultPanelComponent {
   columnConfigChanged(columnConfig: ColumnConfig, popoverRef?: PopoverRef) {
     // TODO: Update current column config
     console.log(columnConfig);
+    this.refresh();
 
     if (popoverRef) {
       popoverRef.close();

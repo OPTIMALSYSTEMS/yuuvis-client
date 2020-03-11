@@ -7,8 +7,8 @@
 
     <ng-container *ngIf="tableData?.rows.length; else tplEmpty">
       <yuv-responsive-data-table yuvOfflineDisabled #dataTable class="data-table" [data]="tableData" [breakpoint]="400"
-        (optionsChanged)="optionsChanged.emit($event)" [options]="options"
-        (selectionChanged)="onSelectionChanged($event)" (sortChanged)="onSortChanged($event)"
+        (optionsChanged)="dataTableOptionsChanged($event)" (optionsChanged)="optionsChanged.emit($event)"
+        [options]="options" (selectionChanged)="onSelectionChanged($event)" (sortChanged)="onSortChanged($event)"
         (rowDoubleClicked)="rowDoubleClicked.emit($event)">
       </yuv-responsive-data-table>
 

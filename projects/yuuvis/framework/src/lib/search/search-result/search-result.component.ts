@@ -1,5 +1,5 @@
 import { ColDef, RowEvent } from '@ag-grid-community/core';
-import { Component, EventEmitter, Input, OnDestroy, Output, ViewChild } from '@angular/core';
+import { Attribute, Component, EventEmitter, Input, OnDestroy, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { IconRegistryService } from '@yuuvis/common-ui';
 import {
@@ -15,14 +15,18 @@ import {
   YuvEvent,
   YuvEventType
 } from '@yuuvis/core';
-import { of } from 'rxjs';
 import { takeUntilDestroy } from 'take-until-destroy';
-import { ResponsiveDataTableComponent } from '../../components/responsive-data-table/responsive-data-table.component';
+import { ResponsiveDataTableComponent, ResponsiveDataTableOptions } from '../../components/responsive-data-table/responsive-data-table.component';
 import { ResponsiveTableData } from '../../components/responsive-data-table/responsive-data-table.interface';
 import { GridService } from '../../services/grid/grid.service';
 import { arrowLast, arrowNext, clear, listModeDefault, listModeGrid, listModeSimple, search, settings } from '../../svg.generated';
 import { ViewMode } from './../../components/responsive-data-table/responsive-data-table.component';
 
+/**
+ * Component rendering a search result within a result list.
+ * Adding `applyColumnConfig` attribute and set it to true will apply the users
+ * result list column configuration.
+ */
 @Component({
   selector: 'yuv-search-result',
   templateUrl: './search-result.component.html',
@@ -37,9 +41,6 @@ export class SearchResultComponent implements OnDestroy {
   pagingForm: FormGroup;
   busy: boolean;
 
-  toolbar: 'search' | 'config';
-  // columnConfigInput: any;
-  showConfigOverlay: boolean;
   tableData: ResponsiveTableData;
   // object type shown in the result list, will be null for mixed results
   private resultListObjectTypeId: string;
@@ -50,17 +51,14 @@ export class SearchResultComponent implements OnDestroy {
     page: number;
   };
 
-  @Input() options: any;
-
+  @Input() options: ResponsiveDataTableOptions;
   @ViewChild('dataTable', { static: false }) dataTable: ResponsiveDataTableComponent;
 
+  /**
+   * Query to be executed by the component.
+   */
   @Input() set query(searchQuery: SearchQuery) {
     this._searchQuery = searchQuery;
-    // this.columnConfigInput = searchQuery && searchQuery.types && searchQuery.types.length === 1 ? searchQuery.types[0] : this.systemervice.getBaseType();
-
-    // if (searchQuery && searchQuery.types && searchQuery.types.length === 1) {
-    //   this.columnConfigInput = searchQuery.types[0];
-    // }
     if (searchQuery) {
       this.executeQuery();
     } else {
@@ -77,7 +75,6 @@ export class SearchResultComponent implements OnDestroy {
   get query() {
     return this._searchQuery;
   }
-
   /**
    * The IDs of the items to be selected
    */
@@ -89,7 +86,7 @@ export class SearchResultComponent implements OnDestroy {
   /**
    * Emitted when column sizes of the result list table have been changed.
    */
-  @Output() optionsChanged = new EventEmitter();
+  @Output() optionsChanged = new EventEmitter<ResponsiveDataTableOptions>();
   @Output() rowDoubleClicked = new EventEmitter<RowEvent>();
   /**
    * Emitted when the query has been chnaged from within the search result component.
@@ -112,10 +109,10 @@ export class SearchResultComponent implements OnDestroy {
     if (this.dataTable) {
       this.dataTable.viewMode = this.dataTable.viewMode !== viewMode ? viewMode : 'auto';
     }
-    this.showConfigOverlay = false;
   }
 
   constructor(
+    @Attribute('applyColumnConfig') public applyColumnConfig: boolean,
     private gridService: GridService,
     private eventService: EventService,
     private searchService: SearchService,
@@ -163,9 +160,15 @@ export class SearchResultComponent implements OnDestroy {
     this.queryChanged.emit(this._searchQuery);
   }
 
+  // callback when column sizes or view mode of the data table changed
+  dataTableOptionsChanged(dataTableOptions: ResponsiveDataTableOptions) {
+    // enrich with own options and emit
+    this.optionsChanged.emit(dataTableOptions);
+  }
+
   private executeQuery() {
     this.busy = true;
-    this.searchService.search(this._searchQuery).subscribe((res: SearchResult) => {
+    this.searchService.search(this._searchQuery, this.applyColumnConfig).subscribe((res: SearchResult) => {
       this.totalNumItems = res.totalNumItems;
       this.createTableData(res);
     });
@@ -180,46 +183,45 @@ export class SearchResultComponent implements OnDestroy {
       objecttypeId = this._searchQuery.types.length > 1 ? null : this._searchQuery.types[0] || null;
     }
 
-    (objecttypeId !== this.resultListObjectTypeId || !this._columns ? this.gridService.getColumnConfiguration(objecttypeId) : of(this._columns)).subscribe(
-      (colDefs: ColDef[]) => {
-        // setup pagination form in case of a paged search result chunk
-        this.pagination = null;
-        this.hasPages = searchResult.items.length !== searchResult.totalNumItems;
-        if (this._searchQuery && searchResult.totalNumItems > this._searchQuery.size) {
-          this.pagination = {
-            pages: Math.ceil(searchResult.totalNumItems / this._searchQuery.size),
-            page: (!this._searchQuery.from ? 0 : this._searchQuery.from / this._searchQuery.size) + 1
-          };
-
-          this.pagingForm.get('page').setValue(pageNumber);
-          this.pagingForm.get('page').setValidators([Validators.min(0), Validators.max(this.pagination.pages)]);
-        }
-
-        // setup column width
-        if (this.options) {
-          colDefs.forEach(col => (col.width = this.options[col.field] || col.width));
-        }
-
-        this.resultListObjectTypeId = objecttypeId;
-        this._columns = colDefs;
-        this._rows = searchResult.items.map(i => this.getRow(i));
-        const sortOptions = this._searchQuery ? this._searchQuery.sortOptions || [] : [];
-
-        this.tableData = {
-          columns: this._columns,
-          rows: this._rows,
-          titleField: SecondaryObjectTypeField.TITLE,
-          descriptionField: SecondaryObjectTypeField.DESCRIPTION,
-          selectType: 'multiple',
-          sortModel: sortOptions.map(o => ({
-            colId: o.field,
-            sort: o.order
-          }))
+    // (objecttypeId !== this.resultListObjectTypeId || !this._columns ? this.gridService.getColumnConfiguration(objecttypeId) : of(this._columns)).subscribe(
+    this.gridService.getColumnConfiguration(objecttypeId).subscribe((colDefs: ColDef[]) => {
+      // setup pagination form in case of a paged search result chunk
+      this.pagination = null;
+      this.hasPages = searchResult.items.length !== searchResult.totalNumItems;
+      if (this._searchQuery && searchResult.totalNumItems > this._searchQuery.size) {
+        this.pagination = {
+          pages: Math.ceil(searchResult.totalNumItems / this._searchQuery.size),
+          page: (!this._searchQuery.from ? 0 : this._searchQuery.from / this._searchQuery.size) + 1
         };
 
-        this.busy = false;
+        this.pagingForm.get('page').setValue(pageNumber);
+        this.pagingForm.get('page').setValidators([Validators.min(0), Validators.max(this.pagination.pages)]);
       }
-    );
+
+      // setup column width
+      if (this.options && this.options.columnWidths) {
+        colDefs.forEach(col => (col.width = this.options.columnWidths[col.field] || col.width));
+      }
+
+      this.resultListObjectTypeId = objecttypeId;
+      this._columns = colDefs;
+      this._rows = searchResult.items.map(i => this.getRow(i));
+      const sortOptions = this._searchQuery ? this._searchQuery.sortOptions || [] : [];
+
+      this.tableData = {
+        columns: this._columns,
+        rows: this._rows,
+        titleField: SecondaryObjectTypeField.TITLE,
+        descriptionField: SecondaryObjectTypeField.DESCRIPTION,
+        selectType: 'multiple',
+        sortModel: sortOptions.map(o => ({
+          colId: o.field,
+          sort: o.order
+        }))
+      };
+
+      this.busy = false;
+    });
   }
 
   /**
@@ -228,6 +230,7 @@ export class SearchResultComponent implements OnDestroy {
   private getRow(searchResultItem: SearchResultItem): any {
     const row = {
       id: searchResultItem.fields.get(BaseObjectTypeField.OBJECT_ID),
+      [BaseObjectTypeField.OBJECT_TYPE_ID]: searchResultItem.fields.get(BaseObjectTypeField.OBJECT_TYPE_ID),
       [SecondaryObjectTypeField.TITLE]: searchResultItem.fields.get(SecondaryObjectTypeField.TITLE),
       [SecondaryObjectTypeField.DESCRIPTION]: searchResultItem.fields.get(SecondaryObjectTypeField.DESCRIPTION)
     };
@@ -276,7 +279,8 @@ export class SearchResultComponent implements OnDestroy {
       this._searchQuery.sortOptions = sortModel.map(m => new SortOption(m.colId, m.sort));
       this._searchQuery.from = 0;
       this.executeQuery();
-      this.gridService.persistSortSettings(this._searchQuery.sortOptions, this.resultListObjectTypeId);
+      // TODO: Reimplement persisting settings comming from the grid (...should we support that at all?)
+      // this.gridService.persistSortSettings(this._searchQuery.sortOptions, this.resultListObjectTypeId);
     }
   }
 
