@@ -1,9 +1,9 @@
-import { AfterViewInit, Component, ElementRef, Input } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Input, NgZone, OnDestroy, OnInit } from '@angular/core';
 import { IconRegistryService } from '@yuuvis/common-ui';
 import { DmsObject } from '@yuuvis/core';
 import { fromEvent, Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
-import { folder, noFile } from '../../svg.generated';
+import { takeUntilDestroy } from 'take-until-destroy';
+import { folder, noFile, undock } from '../../svg.generated';
 import { ContentPreviewService } from './service/content-preview.service';
 
 @Component({
@@ -12,8 +12,11 @@ import { ContentPreviewService } from './service/content-preview.service';
   styleUrls: ['./content-preview.component.scss'],
   providers: [ContentPreviewService]
 })
-export class ContentPreviewComponent implements AfterViewInit {
+export class ContentPreviewComponent implements OnInit, OnDestroy, AfterViewInit {
   private _dmsObject: DmsObject;
+  isUndocked: boolean;
+  undockWin: Window;
+  previewSrc: string;
 
   @Input() searchTerm = '';
 
@@ -30,14 +33,58 @@ export class ContentPreviewComponent implements AfterViewInit {
     return this._dmsObject;
   }
 
+  get iframe() {
+    return this.elRef.nativeElement.querySelector('iframe');
+  }
+
   previewSrc$: Observable<string> = this.contentPreviewService.previewSrc$;
 
-  constructor(private elRef: ElementRef, private contentPreviewService: ContentPreviewService, private iconRegistry: IconRegistryService) {
-    this.iconRegistry.registerIcons([folder, noFile]);
+  constructor(
+    private elRef: ElementRef,
+    private contentPreviewService: ContentPreviewService,
+    private iconRegistry: IconRegistryService,
+    private _ngZone: NgZone
+  ) {
+    this.iconRegistry.registerIcons([folder, noFile, undock]);
+  }
+
+  undock() {
+    this.isUndocked = !this.isUndocked;
+    if (!this.isUndocked) {
+      this.undockWin.close();
+    } else {
+      this._ngZone.runOutsideAngular(_ => {
+        const interval = setInterval(() => {
+          if (this.undockWin && this.undockWin.closed) {
+            clearInterval(interval);
+            this._ngZone.run(() => this.isUndocked && this.undock());
+          }
+        }, 1000);
+      });
+    }
+    this.open(this.previewSrc);
+  }
+
+  open(src: string) {
+    this.previewSrc = src;
+    if (this.isUndocked) {
+      this.undockWin = window.open(
+        this.previewSrc || '',
+        'eoViewer',
+        'directories=0, titlebar=0, toolbar=0, location=0, status=0, menubar=0, resizable=1, top=10, left=10'
+      );
+      if (!this.previewSrc) {
+        this.undockWin.document.write(
+          `<div style="opacity: 0.1; display: flex; height: 100%; width: 100%; align-items: center; justify-content: center;"> 
+           ${noFile.data.replace(/"48"/g, '"100"')}
+          <div>`
+        );
+      }
+    }
   }
 
   refresh() {
-    this.previewSrc$.pipe(tap(val => (val ? this.elRef.nativeElement.querySelector('iframe').contentWindow.location.reload(true) : null)));
+    return this.previewSrc && this.iframe ? this.iframe.contentWindow.location.reload(true) : this.open(this.previewSrc);
   }
 
   /**
@@ -62,12 +109,22 @@ export class ContentPreviewComponent implements AfterViewInit {
     }
   }
 
+  ngOnInit() {
+    this.previewSrc$.pipe(takeUntilDestroy(this)).subscribe(src => this.open(src));
+  }
+
   ngAfterViewInit() {
-    const iframe = this.elRef.nativeElement.querySelector('iframe');
+    const iframe = this.iframe;
     if (iframe) {
-      fromEvent(iframe, 'load').subscribe(res => {
-        setTimeout(() => this.searchPDF(this.searchTerm, iframe), 100);
-      });
+      fromEvent(iframe, 'load')
+        .pipe(takeUntilDestroy(this))
+        .subscribe(res => {
+          setTimeout(() => this.searchPDF(this.searchTerm, iframe), 100);
+        });
     }
+  }
+
+  ngOnDestroy() {
+    return this.undockWin && this.undockWin.close();
   }
 }
