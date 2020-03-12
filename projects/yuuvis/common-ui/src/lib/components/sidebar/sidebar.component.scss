@@ -21,6 +21,7 @@
     display: grid;
     grid-template-columns: 1fr 0.1fr;
     grid-template-rows: 1fr;
+
     grid-template-areas: 'content close';
   }
 }
@@ -39,5 +40,17 @@
 
   button.icon {
     padding: 0; //calc(var(--app-pane-padding) / 2);
+  }
+}
+
+:host-context(.screen-s.screen-landscape) {
+  .sidebar {
+    &-header {
+      height: 70px;
+      background-color: transparent;
+      background-image: none;
+      background-size: cover;
+      padding: calc(var(--app-pane-padding) / 2);
+    }
   }
 }
