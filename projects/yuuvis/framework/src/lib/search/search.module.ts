@@ -8,7 +8,7 @@ import { TranslateModule } from '@yuuvis/core';
 import { AutoCompleteModule } from 'primeng/autocomplete';
 import { OverlayPanelModule } from 'primeng/overlaypanel';
 import { ActionModule } from '../actions/action.module';
-import { YuvColumnConfigModule } from '../column-config';
+import { YuvColumnConfigModule } from '../column-config/column-config.module';
 import { YuvComponentsModule } from '../components/components.module';
 import { YuvDirectivesModule } from '../directives/directives.module';
 import { YuvFormModule } from '../form/form.module';

@@ -19,7 +19,7 @@ export class ResultComponent implements OnInit, OnDestroy {
   searchQuery: SearchQuery;
   selectedItems: string[] = [];
   smallScreen: boolean;
-  private options = {
+  options = {
     'yuv-responsive-master-slave': { useStateLayout: true },
     'yuv-search-result-panel': null,
     'yuv-object-details': null

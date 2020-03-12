@@ -80,6 +80,7 @@ export class ColumnConfigComponent implements OnInit {
    */
   @Input() set type(input: string | ObjectType) {
     if (input) {
+      this.columnConfigDirty = false;
       this._objectType = typeof input === 'string' ? this.fetchObjectType(input) : input;
       this.title = this._objectType.id === SystemType.OBJECT ? this.translate.instant('yuv.framework.column-config.type.mixed.label') : this._objectType.label;
       this._objectTypeFields = this._objectType ? this.filterFields(this._objectType.fields) : [];
