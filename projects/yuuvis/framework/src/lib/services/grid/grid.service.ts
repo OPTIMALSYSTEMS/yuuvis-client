@@ -103,16 +103,6 @@ export class GridService {
     return field.propertyType !== 'id' && !skipSort.includes(field.id);
   }
 
-  // /**
-  //  * Saves column sort settings for a given object type.
-  //  * @param sortModel Sort settings for columns
-  //  * @param objectTypeId The ID of the object type to save column settings for
-  //  */
-  // persistSortSettings(sortModel: SortOption[], objectTypeId?: string) {
-  //   const objectType: ObjectType = objectTypeId ? this.system.getObjectType(objectTypeId) : this.system.getBaseDocumentType();
-  //   // this.searchSvc.updateFieldDefinition(objectType, sortModel, []);
-  // }
-
   /**
    * Add type specific column definition attributes based on a fields type
    *

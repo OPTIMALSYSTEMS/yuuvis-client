@@ -8,19 +8,6 @@ import { BaseObjectTypeField, ContentStreamField } from '../system/system.enum';
 import { SearchQuery } from './search-query.model';
 import { AggregateResult, Aggregation, SearchResult, SearchResultContent, SearchResultItem } from './search.service.interface';
 
-/**
- * @ignore
- * Creates the Model of Field Definitions
- */
-// export class FieldDefinition {
-//   constructor(public elements: any[] = [], public sortorder: SortOption[] = [], public pinned: string[] = [], public mode?: string) {}
-
-//   getOptions(id = '') {
-//     const sort = (this.sortorder.find(s => s.field === id) || {}).order;
-//     const pinned = !!this.pinned.find(_id => _id === id);
-//     return { ...(sort && { sort }), ...(pinned && { pinned }) };
-//   }
-// }
 @Injectable({
   providedIn: 'root'
 })

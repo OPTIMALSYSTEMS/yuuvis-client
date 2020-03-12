@@ -162,26 +162,6 @@ export class DatetimeComponent implements OnInit, ControlValueAccessor, Validato
     }
   }
 
-  // XXopenPicker() {
-  //   if (this.device.isMobile) {
-  //     // Delay opening the picker on mobile, because the keyboard may be
-  //     // active. In this case calculating the screen estate for the dialog will
-  //     // get a wrong height (screen minus keyboard height). So we'll wait until
-  //     // keyboard is gone, and then trigger open.
-  //     setTimeout(() => {
-  //       this.showPicker = true;
-  //     }, 500);
-  //   } else {
-  //     this.showPicker = true;
-  //   }
-  // }
-
-  // XXsetValueFromPicker(event, popoverRef?: PopoverRef) {
-  //   this.writeValue(event.date);
-  //   this.propagate();
-  //   this.showPicker = false;
-  // }
-
   onMaskValueChange(event) {
     if (event === this._datePattern) {
       this.value = null;

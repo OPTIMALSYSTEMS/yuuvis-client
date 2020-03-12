@@ -146,8 +146,6 @@ export class SearchResultPanelComponent {
   }
 
   columnConfigChanged(columnConfig: ColumnConfig, popoverRef?: PopoverRef) {
-    // TODO: Update current column config
-    console.log(columnConfig);
     this.refresh();
 
     if (popoverRef) {
