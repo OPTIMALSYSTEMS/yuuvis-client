@@ -11,7 +11,7 @@
 .as-horizontal.state {
   :host-context(.screen-s) & {
     padding: 0;
-    &.detailsActive {
+    &.slaveActive {
       as-split {
         position: absolute;
         top: var(--app-bar-height);

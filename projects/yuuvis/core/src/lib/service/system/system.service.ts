@@ -1,20 +1,18 @@
 import { Injectable } from '@angular/core';
 import { forkJoin, Observable, of, ReplaySubject } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
-import { ObjectType } from '../../model/object-type.model';
 import { ApiBase } from '../backend/api.enum';
 import { BackendService } from '../backend/backend.service';
 import { AppCacheService } from '../cache/app-cache.service';
 import { Logger } from '../logger/logger';
 import { Utils } from './../../util/utils';
-import { SecondaryObjectTypeField, SystemType } from './system.enum';
-import { ObjectTypeField, ObjectTypeGroup, SchemaResponse, SchemaResponseTypeDefinition, SystemDefinition } from './system.interface';
+import { ContentStreamAllowed, SecondaryObjectTypeField, SystemType } from './system.enum';
+import { ObjectType, ObjectTypeField, ObjectTypeGroup, SchemaResponse, SchemaResponseTypeDefinition, SystemDefinition } from './system.interface';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SystemService {
-  private BASE_TYPE_ID = 'clientdefaults';
   private STORAGE_KEY = 'yuv.core.system.definition';
 
   private system: SystemDefinition;
@@ -23,17 +21,27 @@ export class SystemService {
 
   constructor(private backend: BackendService, private appCache: AppCacheService, private logger: Logger) {}
 
-  getObjectTypes(): ObjectType[] {
-    return this.system.objectTypes;
+  /**
+   * Get all object types
+   * @param withLabels Whether or not to also add the types labels
+   */
+  getObjectTypes(withLabels?: boolean): ObjectType[] {
+    return withLabels
+      ? this.system.objectTypes.map(t => ({
+          ...t,
+          label: this.getLocalizedResource(`${t.id}_label`)
+        }))
+      : this.system.objectTypes;
   }
 
   /**
    * Returns grouped object types sorted by label and folders first.
+   * @param withLabels Whether or not to also add the types labels
    */
-  getGroupedObjectTypes(): ObjectTypeGroup[] {
+  getGroupedObjectTypes(withLabels?: boolean): ObjectTypeGroup[] {
     // TODO: Apply a different property to group once grouping is available
     const grouped = this.groupBy(
-      this.getObjectTypes()
+      this.getObjectTypes(withLabels)
         .map(ot => ({
           ...ot,
           group: this.getLocalizedResource(`${ot.id}_description`)
@@ -65,10 +73,68 @@ export class SystemService {
     }, {});
   }
 
-  getObjectType(objectTypeId: string): ObjectType {
-    return this.system.objectTypes.find(ot => ot.id === objectTypeId);
+  /**
+   * Get a particular object type
+   * @param objectTypeId ID of the object type
+   * @param withLabel Whether or not to also add the types label
+   */
+  getObjectType(objectTypeId: string, withLabel?: boolean): ObjectType {
+    let objectType: ObjectType = this.system.objectTypes.find(ot => ot.id === objectTypeId);
+    if (objectType && withLabel) {
+      objectType.label = this.getLocalizedResource(`${objectType.id}_label`);
+    }
+    return objectType;
   }
 
+  /**
+   * Get the base document type all documents belong to
+   * @param withLabel Whether or not to also add the types label
+   */
+  getBaseDocumentType(withLabel?: boolean): ObjectType {
+    return this.getObjectType(SystemType.DOCUMENT, withLabel);
+  }
+
+  /**
+   * Get the base folder type all folders belong to
+   * @param withLabel Whether or not to also add the types label
+   */
+  getBaseFolderType(withLabel?: boolean): ObjectType {
+    return this.getObjectType(SystemType.FOLDER, withLabel);
+  }
+
+  /**
+   * Get the base object type all dms objects belong to
+   */
+  getBaseType(): ObjectType {
+    const sysFolder = this.getBaseFolderType();
+    const sysDocument = this.getBaseDocumentType();
+
+    // base type contains only fields that are shared by base document and base folder ...
+    const folderTypeFieldIDs = sysFolder.fields.map(f => f.id);
+    const baseTypeFields: ObjectTypeField[] = sysDocument.fields.filter(f => folderTypeFieldIDs.includes(f.id));
+
+    // ... and some secondary object type fields
+    // TODO: get fields for SecondaryObjectTypeField from schema
+    const props: ObjectTypeField = { id: '', propertyType: 'string', description: '', cardinality: 'single', required: true, updatability: 'readwrite' };
+    const secondaryFields: ObjectTypeField[] = [
+      { ...props, id: SecondaryObjectTypeField.TITLE },
+      { ...props, id: SecondaryObjectTypeField.DESCRIPTION }
+    ];
+    return {
+      id: SystemType.OBJECT,
+      localNamespace: null,
+      description: null,
+      baseId: null,
+      creatable: false,
+      isFolder: false,
+      fields: [...baseTypeFields, ...secondaryFields]
+    };
+  }
+
+  /**
+   * Get the icon for an object type. This will return an SVG as a string.
+   * @param objectTypeId ID of the object type
+   */
   getObjectTypeIcon(objectTypeId: string): string {
     if (objectTypeId) {
       const type = this.getObjectType(objectTypeId);
@@ -81,29 +147,10 @@ export class SystemService {
     }
   }
 
-  getBaseDocumentType(): ObjectType {
-    return this.getObjectType(SystemType.DOCUMENT);
-  }
-
-  getBaseType(): ObjectType {
-    const sysDocument = this.getObjectType(SystemType.DOCUMENT);
-    // TODO: get fields for SecondaryObjectTypeField from schema
-    const props: ObjectTypeField = { id: '', propertyType: 'string', description: '', cardinality: 'single', required: true, updatability: 'readwrite' };
-    const secondaryFields: ObjectTypeField[] = [
-      { ...props, id: SecondaryObjectTypeField.TITLE },
-      { ...props, id: SecondaryObjectTypeField.DESCRIPTION }
-    ];
-    return { ...sysDocument, fields: [...sysDocument.fields, ...secondaryFields] };
-  }
-
-  getBaseFolderType(): ObjectType {
-    return this.getObjectType(SystemType.FOLDER);
-  }
-
   getLocalizedResource(key: string): string {
     const v = this.system.i18n[key];
     if (!v) {
-      this.logger.error(`No translation for '${key}'`);
+      this.logger.warn(`No translation for '${key}'`);
     }
     return v;
   }
@@ -180,16 +227,16 @@ export class SystemService {
   private setSchema(schemaResponse: SchemaResponse, localizedResource: any) {
     const objectTypes: ObjectType[] = schemaResponse.objectTypes.map((ot: SchemaResponseTypeDefinition) => {
       const isFolder = ot.baseId === 'folder';
-      return new ObjectType({
+      return {
         id: ot.id,
         localNamespace: ot.localNamespace,
         description: ot.description,
         baseId: ot.baseId,
         creatable: ot.creatable,
-        contentStreamAllowed: isFolder ? 'notallowed' : ot.contentStreamAllowed,
+        contentStreamAllowed: isFolder ? ContentStreamAllowed.NOT_ALLOWED : ot.contentStreamAllowed,
         isFolder: isFolder,
         fields: ot.fields
-      });
+      };
     });
 
     this.system = {

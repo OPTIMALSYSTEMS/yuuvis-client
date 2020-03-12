@@ -10,9 +10,11 @@ import { clear } from './../../svg.generated';
 })
 export class PopoverComponent extends BasePortalOutlet {
   @ViewChild(CdkPortalOutlet, { static: true }) portalOutlet: CdkPortalOutlet;
+  disableSmallScreenClose: boolean;
 
   constructor(@Optional() private popoverRef: PopoverRef, private iconRegistry: IconRegistryService) {
     super();
+    this.disableSmallScreenClose = popoverRef.config.disableSmallScreenClose;
     this.iconRegistry.registerIcons([clear]);
   }
 

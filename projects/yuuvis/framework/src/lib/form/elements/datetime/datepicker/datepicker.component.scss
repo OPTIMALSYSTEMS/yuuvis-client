@@ -2,12 +2,20 @@
 
 .date-picker {
   background: var(--panel-background);
-  @include flex-col();
+  height: 100%;
   box-sizing: border-box;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  grid-template-columns: 1fr;
+  grid-template-areas: 'header' 'contents' 'actions';
 
   .date-chips {
     @include flex-row();
     padding: 0 var(--app-pane-padding);
+  }
+
+  .contents {
+    grid-area: contents;
   }
 
   .controls {
@@ -31,10 +39,6 @@
           border-radius: 2px;
           @include transition();
           background: rgba(255, 255, 255, 0.1);
-
-          // svg {
-          //   fill: var(--text-color-hint);
-          // }
         }
 
         &:first-child {
@@ -45,13 +49,12 @@
   }
 
   .select {
-    flex: 0 0 auto;
+    grid-area: header;
     background: var(--color-accent);
     color: #fff;
 
     .year {
-      padding: 0 var(--app-pane-padding);
-      margin-bottom: var(--app-pane-padding);
+      padding: var(--app-pane-padding);
       @include flex-row(none);
       flex-wrap: nowrap;
       justify-content: flex-end;
@@ -184,8 +187,9 @@
   }
 
   .actions {
+    grid-area: actions;
     @include flex-row(none);
-    justify-content: flex-end;
+    justify-content: space-between;
     padding: var(--app-pane-padding);
   }
 }

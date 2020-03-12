@@ -1,8 +1,3 @@
-<yuv-dialog [styleClass]="'date-picker'" [title]="pickerTitle" [(visible)]="showPicker" *ngIf="showPicker">
-  <yuv-datepicker [date]="value" [withTime]="withTime" [withAmPm]="withAmPm" [onylFutureDates]="onylFutureDates"
-    (onCanceled)="showPicker = false" (onDateChanged)="setValueFromPicker($event)"></yuv-datepicker>
-</yuv-dialog>
-
 <div class="yuv-datepicker">
   <p-inputMask [mask]="maskPattern" [(ngModel)]="innerValue" (ngModelChange)="onMaskValueChange($event)"
     (onComplete)="setValueFromMask()" [readonly]="readonly" [slotChar]="_datePattern"></p-inputMask>
@@ -12,3 +7,10 @@
     <yuv-icon [icon]="'datepicker'"></yuv-icon>
   </button>
 </div>
+
+<!-- date picker overlay -->
+<ng-template #tplDatePicker let-data let-popover="popover">
+  <yuv-datepicker [date]="data.value" [withTime]="data.withTime" [withAmPm]="data.withAmPm"
+    [onylFutureDates]="data.onylFutureDates" (onCanceled)="onPickerCancel(popover)"
+    (onDateChanged)="setValueFromPicker($event, popover)"></yuv-datepicker>
+</ng-template>

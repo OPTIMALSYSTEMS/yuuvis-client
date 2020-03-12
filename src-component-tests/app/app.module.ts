@@ -2,7 +2,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
-import { YuvDirectivesModule, YuvFrameworkModule, YuvGroupedSelectModule } from '@yuuvis/framework';
+import { YuvColumnConfigModule, YuvDirectivesModule, YuvFrameworkModule, YuvGroupedSelectModule } from '@yuuvis/framework';
 import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -10,6 +10,7 @@ import { DmsObjectPickerComponent } from './components/dms-object-picker/dms-obj
 import { TestActionMenuComponent } from './test-action-menu/test-action-menu.component';
 import { TestAnimatedIconsComponent } from './test-animated-icons/test-animated-icons.component';
 import { TestAuditComponent } from './test-audit/test-audit.component';
+import { TestColumnConfigComponent } from './test-column-config/test-column-config.component';
 import { TestContentPreviewComponent } from './test-content-preview/test-content-preview.component';
 import { TestFileDropComponent } from './test-file-drop/test-file-drop.component';
 import { TestGroupedSelectComponent } from './test-grouped-select/test-grouped-select.component';
@@ -53,7 +54,8 @@ import { TestUserAvatarComponent } from './test-user-avatar/test-user-avatar.com
     TestIconsComponent,
     TestGroupedSelectComponent,
     TestUserAvatarComponent,
-    TestLoadingSpinnerComponent
+    TestLoadingSpinnerComponent,
+    TestColumnConfigComponent
   ],
   imports: [
     HttpClientModule,
@@ -67,7 +69,8 @@ import { TestUserAvatarComponent } from './test-user-avatar/test-user-avatar.com
       environment
     }),
     YuvDirectivesModule,
-    YuvGroupedSelectModule
+    YuvGroupedSelectModule,
+    YuvColumnConfigModule
   ],
   providers: [],
   bootstrap: [AppComponent]
