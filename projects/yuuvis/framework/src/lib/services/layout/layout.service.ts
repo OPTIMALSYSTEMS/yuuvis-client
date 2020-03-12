@@ -1,6 +1,6 @@
 import { DOCUMENT } from '@angular/common';
 import { Inject, Injectable } from '@angular/core';
-import { AppCacheService, BackendService, Direction, UserService, YuvUser } from '@yuuvis/core';
+import { AppCacheService, BackendService, Direction, Logger, UserService, YuvUser } from '@yuuvis/core';
 import { Observable, ReplaySubject } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 
@@ -14,7 +14,13 @@ export class LayoutService {
   private layoutSettingsSource = new ReplaySubject<LayoutSettings>();
   public layoutSettings$: Observable<LayoutSettings> = this.layoutSettingsSource.asObservable();
 
-  constructor(@Inject(DOCUMENT) private document: any, private appCache: AppCacheService, private userService: UserService, private backend: BackendService) {
+  constructor(
+    @Inject(DOCUMENT) private document: any,
+    private logger: Logger,
+    private appCache: AppCacheService,
+    private userService: UserService,
+    private backend: BackendService
+  ) {
     // load saved settings
     this.appCache.getItem(this.STORAGE_KEY).subscribe(settings => this.processLayoutSettings(settings));
     this.userService.user$.subscribe((user: YuvUser) => this.applyDirection(user ? user.uiDirection : 'yuv-ltr'));
@@ -65,6 +71,25 @@ export class LayoutService {
   setDashboardBackground(dataUrl: string) {
     this.layoutSettings.dashboardBackground = dataUrl;
     this.saveSettings();
+  }
+
+  /**
+   * Persist component specific layout settings.
+   * @param key Unique key
+   * @param settings The settings required by the component
+   */
+  saveComponentLayout(key: string, settings: any): Observable<any> {
+    this.logger.debug(`saved component layout '${key}'`);
+    return this.appCache.setItem(key, settings);
+  }
+
+  /**
+   * Get the settings for a component
+   * @param key Key the settings has been stored under
+   */
+  loadComponentLayout(key: string): Observable<any> {
+    this.logger.debug(`loaded component layout '${key}'`);
+    return this.appCache.getItem(key);
   }
 
   private saveSettings() {

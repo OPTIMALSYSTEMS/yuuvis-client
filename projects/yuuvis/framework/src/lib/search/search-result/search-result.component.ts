@@ -21,11 +21,10 @@ import {
 import { Observable, of } from 'rxjs';
 import { map, switchMap, tap } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
-import { ResponsiveDataTableComponent, ResponsiveDataTableOptions } from '../../components/responsive-data-table/responsive-data-table.component';
+import { ResponsiveDataTableComponent, ResponsiveDataTableOptions, ViewMode } from '../../components/responsive-data-table/responsive-data-table.component';
 import { ResponsiveTableData } from '../../components/responsive-data-table/responsive-data-table.interface';
 import { GridService } from '../../services/grid/grid.service';
 import { arrowLast, arrowNext, clear, listModeDefault, listModeGrid, listModeSimple, search, settings } from '../../svg.generated';
-import { ViewMode } from './../../components/responsive-data-table/responsive-data-table.component';
 
 /**
  * Component rendering a search result within a result list.

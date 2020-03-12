@@ -62,7 +62,10 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
       this.gridOptions.api.setColumnDefs(this._options ? this.applyColDefOptions(this._data.columns, this._options.columnWidths) : this._data.columns);
     }
     if (o.viewMode) {
-      this.viewMode = o.viewMode;
+      // get a view mode from the options means that we should not emit
+      // this as view mode change, because otherwise it will result in
+      // persisting changes that are already comming from persisted options
+      this.setupViewMode(o.viewMode, true);
     }
   }
   get options() {
@@ -85,11 +88,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
    * view mode of the table
    */
   @Input() set viewMode(viewMode: ViewMode) {
-    if (this._viewMode && this._viewMode !== viewMode) {
-      this.optionsChanged.emit({ ...this.options, viewMode: viewMode });
-    }
-    this._viewMode = viewMode || 'standard';
-    this.currentViewMode = this._viewMode === 'auto' ? this._autoViewMode : this._viewMode;
+    this.setupViewMode(viewMode);
   }
 
   get viewMode() {
@@ -194,6 +193,20 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Set up the components view mode.
+   * @param viewMode The view mode to be set up
+   * @param silent Whether or not to prevent changes to be emitted
+   */
+  private setupViewMode(viewMode: ViewMode, silent?: boolean) {
+    this._options.viewMode = viewMode;
+    if (!silent && this._viewMode && this._viewMode !== viewMode) {
+      this.optionsChanged.emit(this._options);
+    }
+    this._viewMode = viewMode || 'standard';
+    this.currentViewMode = this._viewMode === 'auto' ? this._autoViewMode : this._viewMode;
+  }
+
+  /**
    * Updates a row within the current row data. Will check if there is an entry matching the given ID
    * and update the fields inside the columns with matching values from the data input.
    * @param id The rows ID
@@ -231,17 +244,14 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
   }
 
   private applyColDefOptions(columns: ColDef[], columnWidths: any): ColDef[] {
-    let cols = [];
     if (this._options.viewMode === 'standard' && columnWidths) {
       columns.forEach(c => {
         if (columnWidths[c.colId]) {
           c.width = columnWidths[c.colId];
         }
       });
-    } else {
-      cols = columns;
     }
-    return cols;
+    return columns;
   }
 
   private applyGridOption(retry: boolean = true) {

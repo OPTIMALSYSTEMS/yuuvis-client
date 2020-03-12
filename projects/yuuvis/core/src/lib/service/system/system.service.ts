@@ -150,7 +150,7 @@ export class SystemService {
   getLocalizedResource(key: string): string {
     const v = this.system.i18n[key];
     if (!v) {
-      this.logger.error(`No translation for '${key}'`);
+      this.logger.warn(`No translation for '${key}'`);
     }
     return v;
   }
