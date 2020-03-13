@@ -2,7 +2,7 @@
   "name": "yuuvis-flokfugl",
   "version": "1.0.0-beta.1",
   "releaseDate": "2.0",
-  "description": "yuuvis® flex client",
+  "description": "yuuvis® client",
   "author": "OPTIMAL SYSTEMS GmbH",
   "scripts": {
     "ng": "ng",
