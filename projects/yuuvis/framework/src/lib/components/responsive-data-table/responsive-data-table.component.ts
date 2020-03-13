@@ -61,7 +61,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
     if (this.gridOptions && this._data) {
       this.gridOptions.api.setColumnDefs(this._options ? this.applyColDefOptions(this._data.columns, this._options.columnWidths) : this._data.columns);
     }
-    if (o.viewMode) {
+    if (o && o.viewMode) {
       // get a view mode from the options means that we should not emit
       // this as view mode change, because otherwise it will result in
       // persisting changes that are already comming from persisted options
