@@ -16,7 +16,7 @@ export class LoggerConsoleService implements ILogger {
   };
 
   private apply(fn, args) {
-    args = [`%c${fn}:`, this.styles[fn], ...args];
+    args = [`%c${fn}:`, 'font-family: monospace; font-size: 10px; padding: 2px 4px;' + this.styles[fn], ...args];
     return this.shouldLog(fn) ? console && console[fn] && console[fn](...args) : null;
   }
 

@@ -4,6 +4,10 @@ $yuv-panel-header-height: 110px;
 $yuv-panel-footer-height: 50px;
 $yuv-result-header-height: 38px;
 
+:host {
+  display: block;
+}
+
 .yuv-search-result {
   height: 100%;
   background-color: var(--panel-background);

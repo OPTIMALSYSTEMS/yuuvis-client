@@ -1,4 +1,16 @@
-import { AfterContentInit, Component, ContentChildren, EventEmitter, Input, OnInit, Output, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import {
+  AfterContentInit,
+  Attribute,
+  Component,
+  ContentChildren,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output,
+  QueryList,
+  ViewChild,
+  ViewChildren
+} from '@angular/core';
 import { IconRegistryService } from '@yuuvis/common-ui';
 import { Screen, ScreenService } from '@yuuvis/core';
 import { TabPanel, TabView } from 'primeng/tabview';
@@ -43,7 +55,7 @@ export class ResponsiveTabContainerComponent implements OnInit, AfterContentInit
   isSmallScreen$: Observable<boolean>;
   isBigScreen: Observable<boolean>;
 
-  constructor(private screenService: ScreenService, private iconRegistry: IconRegistryService) {
+  constructor(@Attribute('disable-split') public disableSplit: boolean, private screenService: ScreenService, private iconRegistry: IconRegistryService) {
     this.iconRegistry.registerIcons([verticalSplit]);
   }
 

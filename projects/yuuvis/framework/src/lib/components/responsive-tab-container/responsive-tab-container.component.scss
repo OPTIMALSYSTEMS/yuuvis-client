@@ -29,6 +29,17 @@
     height: 100%;
     overflow: hidden;
 
+    &.noSplit {
+      .tab-navigation {
+        display: none;
+      }
+      ::ng-deep {
+        .ui-tabview .ui-tabview-nav {
+          margin-right: 0;
+        }
+      }
+    }
+
     .tab-navigation {
       position: absolute;
       top: 1px;
@@ -57,20 +68,23 @@
 }
 
 ::ng-deep {
-  .ui-tabview .ui-tabview-nav {
-    overflow: auto hidden;
-    display: flex;
-    margin-right: 28px;
-    :host-context(.screen-s) & {
-      margin-right: 0;
-    }
+  .ui-tabview {
+    border-radius: 0 !important;
+    .ui-tabview-nav {
+      overflow: auto hidden;
+      display: flex;
+      margin-right: 28px;
+      :host-context(.screen-s) & {
+        margin-right: 0;
+      }
 
-    // .ui-tabview-close:after {
-    //   content: '\0000D7';
-    // }
+      // .ui-tabview-close:after {
+      //   content: '\0000D7';
+      // }
 
-    li.ui-state-disabled {
-      display: none;
+      li.ui-state-disabled {
+        display: none;
+      }
     }
   }
 

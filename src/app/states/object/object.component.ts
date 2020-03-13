@@ -1,7 +1,19 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AppCacheService, DmsObject, DmsService, EventService, YuvEventType } from '@yuuvis/core';
+import {
+  AppCacheService,
+  BaseObjectTypeField,
+  DmsObject,
+  DmsService,
+  EventService,
+  SearchFilter,
+  SearchQuery,
+  TranslateService,
+  YuvEventType
+} from '@yuuvis/core';
+import { LayoutService } from '@yuuvis/framework';
+import { tap } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
 
 @Component({
@@ -14,51 +26,129 @@ import { takeUntilDestroy } from 'take-until-destroy';
 })
 export class ObjectComponent implements OnInit, OnDestroy {
   private STORAGE_KEY = 'yuv.app.object';
-  item: DmsObject;
+
+  contextBusy: boolean;
+  contextError: string;
+
+  context: DmsObject;
+  selectedItem: string;
+  recentItems: string[] = [];
+  contextChildrenQuery: SearchQuery;
+  recentItemsQuery: SearchQuery;
 
   private options = {
-    'yuv-object-details': null
+    'yuv-responsive-master-slave': { useStateLayout: true },
+    'yuv-object-details': null,
+    'yuv-search-result-all': null,
+    'yuv-search-result-recent': null
   };
 
   constructor(
     private route: ActivatedRoute,
     private dmsService: DmsService,
+    private translate: TranslateService,
     private title: Title,
     private router: Router,
+    private layoutService: LayoutService,
     private eventService: EventService,
     private appCacheService: AppCacheService
   ) {}
 
   onOptionsChanged(options: any, component: string) {
-    // console.log(options, component);
     this.options[component] = options;
-    this.appCacheService.setItem(this.getStorageKey(), this.options).subscribe();
+    // this.appCacheService.setItem(this.getStorageKey(), this.options).subscribe();
+    this.layoutService.saveComponentLayout(this.getOptionsStorageKey(), this.options).subscribe();
   }
 
   getOptions(component: string) {
     return this.options[component];
   }
 
-  private getStorageKey() {
-    return this.item ? `${this.STORAGE_KEY}.${this.item.objectTypeId}` : this.STORAGE_KEY;
+  private getOptionsStorageKey() {
+    return this.STORAGE_KEY;
+  }
+
+  private getRecentItemsStorageKey() {
+    return this.context ? `${this.STORAGE_KEY}.${this.context.id}` : this.STORAGE_KEY;
+  }
+
+  private setupSelectedItem(id) {
+    this.selectedItem = id;
+    this.addRecentItem(id);
+  }
+
+  private loadRecentItems() {
+    this.appCacheService.getItem(this.getRecentItemsStorageKey()).subscribe(items => {
+      this.recentItems = items || [];
+      this.setupRecentItemsQuery();
+    });
+  }
+
+  private addRecentItem(id) {
+    this.recentItems = this.recentItems.filter(i => i !== id);
+    this.recentItems.push(id);
+    this.setupRecentItemsQuery();
+    if (this.context) {
+      this.appCacheService.setItem(this.getRecentItemsStorageKey(), this.recentItems).subscribe();
+    }
+  }
+
+  private setupRecentItemsQuery() {
+    const q = new SearchQuery();
+    q.addFilter(new SearchFilter(BaseObjectTypeField.OBJECT_ID, SearchFilter.OPERATOR.IN, this.recentItems));
+    this.recentItemsQuery = q;
+  }
+
+  private setupContext(contextID: string) {
+    this.contextBusy = true;
+    this.dmsService
+      .getDmsObject(contextID)
+      .pipe(
+        tap((res: DmsObject) => {
+          this.context = res;
+          this.title.setTitle(this.context.title);
+          this.loadRecentItems();
+
+          // TODO: setup the right query for fetching children
+          const q = new SearchQuery();
+          q.addFilter(new SearchFilter(BaseObjectTypeField.PARENT_ID, SearchFilter.OPERATOR.EQUAL, this.context.id));
+          this.contextChildrenQuery = q;
+        })
+      )
+      .subscribe(
+        _ => {
+          this.contextBusy = false;
+        },
+        err => {
+          this.contextBusy = false;
+          this.contextError = this.translate.instant('yuv.client.state.object.context.load.error');
+        }
+      );
+  }
+
+  select(ids: string[]) {
+    if (ids && ids.length === 1) {
+      this.router.navigate(['.'], { fragment: ids[0], replaceUrl: !!this.selectedItem, relativeTo: this.route });
+    }
   }
 
   ngOnInit() {
+    this.layoutService.loadComponentLayout(this.getOptionsStorageKey()).subscribe(o => (this.options = { ...this.options, ...o }));
     this.route.params.pipe(takeUntilDestroy(this)).subscribe((params: any) => {
       if (params.id) {
-        this.dmsService.getDmsObject(params.id).subscribe((res: DmsObject) => {
-          this.item = res;
-          this.title.setTitle(this.item.title);
-          this.appCacheService.getItem(this.getStorageKey()).subscribe(o => (this.options = { ...this.options, ...o }));
-        });
+        this.setupContext(params.id);
       }
+    });
+    // fragments are used to identify the selected item within the context
+    this.route.fragment.pipe(takeUntilDestroy(this)).subscribe((fragment: any) => {
+      this.setupSelectedItem(fragment);
     });
 
     this.eventService
       .on(YuvEventType.DMS_OBJECT_DELETED)
       .pipe(takeUntilDestroy(this))
       .subscribe(event => {
-        if (this.item.id === event.data.id) {
+        if (this.context.id === event.data.id) {
           this.router.navigate(['/']);
         }
       });

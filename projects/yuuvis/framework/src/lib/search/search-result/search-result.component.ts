@@ -92,11 +92,6 @@ export class SearchResultComponent implements OnDestroy {
    */
   @Output() optionsChanged = new EventEmitter<ResponsiveDataTableOptions>();
   @Output() rowDoubleClicked = new EventEmitter<RowEvent>();
-  /**
-   * Emitted when the query has been chnaged from within the search result component.
-   * This happens when the user uses the toolbar to alter the current query.
-   */
-  @Output() queryChanged = new EventEmitter<SearchQuery>();
 
   set hasPages(count) {
     this._hasPages = count;
@@ -157,12 +152,6 @@ export class SearchResultComponent implements OnDestroy {
    */
   refresh() {
     this.executeQuery();
-  }
-
-  onQuickSearchQuery(query: SearchQuery) {
-    this.query = query;
-    this.executeQuery();
-    this.queryChanged.emit(this._searchQuery);
   }
 
   // callback when column sizes or view mode of the data table changed

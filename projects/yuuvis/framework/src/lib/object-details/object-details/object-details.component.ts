@@ -51,9 +51,11 @@ export class ObjectDetailsComponent {
    */
   @Input()
   set objectId(id: string) {
+    this._objectId = id;
     if (id) {
-      this._objectId = id;
       this.getDmsObject(id);
+    } else {
+      this.dmsObject = null;
     }
   }
 

@@ -52,15 +52,10 @@ export class ResultComponent implements OnInit, OnDestroy {
     }
   }
 
-  onQueryChanged(query: SearchQuery) {
-    this.appSearch.setQuery(query);
-  }
-
   onOptionsChanged(options: any, component: string) {
     // do not set this.options because it is an input as well (circle in->out->in)
     const o = { ...this.options };
     o[component] = { ...options };
-    // this.appCacheService.setItem(this.getStorageKey(), o).subscribe();
     this.layoutService.saveComponentLayout(this.getStorageKey(), o).subscribe();
   }
 
