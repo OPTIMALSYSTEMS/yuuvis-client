@@ -15,10 +15,10 @@ import { ResponsiveTableData } from './responsive-data-table.interface';
 export type ViewMode = 'standard' | 'horizontal' | 'grid' | 'auto';
 
 export interface ResponsiveDataTableOptions {
-  viewMode: ViewMode;
+  viewMode?: ViewMode;
   // Object where the properties are the column IDs
   // and their values are the columns width.
-  columnWidths: any;
+  columnWidths?: any;
 }
 
 /**
@@ -38,7 +38,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
   private columnResizeSource = new ReplaySubject<any>();
   public columnResize$: Observable<ResizedEvent> = this.columnResizeSource.asObservable();
   private _data: ResponsiveTableData;
-  private _options: ResponsiveDataTableOptions;
+  private _options: ResponsiveDataTableOptions = {};
   // array of row IDs that are currently selected
   private _currentSelection: string[] = [];
 
