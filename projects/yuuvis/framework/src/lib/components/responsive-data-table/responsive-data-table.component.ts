@@ -15,10 +15,10 @@ import { ResponsiveTableData } from './responsive-data-table.interface';
 export type ViewMode = 'standard' | 'horizontal' | 'grid' | 'auto';
 
 export interface ResponsiveDataTableOptions {
-  viewMode: ViewMode;
+  viewMode?: ViewMode;
   // Object where the properties are the column IDs
   // and their values are the columns width.
-  columnWidths: any;
+  columnWidths?: any;
 }
 
 /**
@@ -38,7 +38,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
   private columnResizeSource = new ReplaySubject<any>();
   public columnResize$: Observable<ResizedEvent> = this.columnResizeSource.asObservable();
   private _data: ResponsiveTableData;
-  private _options: ResponsiveDataTableOptions;
+  private _options: ResponsiveDataTableOptions = {};
   // array of row IDs that are currently selected
   private _currentSelection: string[] = [];
 
@@ -61,7 +61,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
     if (this.gridOptions && this._data) {
       this.gridOptions.api.setColumnDefs(this._options ? this.applyColDefOptions(this._data.columns, this._options.columnWidths) : this._data.columns);
     }
-    if (o.viewMode) {
+    if (o && o.viewMode) {
       // get a view mode from the options means that we should not emit
       // this as view mode change, because otherwise it will result in
       // persisting changes that are already comming from persisted options

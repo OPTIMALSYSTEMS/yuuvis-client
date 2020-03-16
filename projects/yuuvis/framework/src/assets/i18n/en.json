@@ -62,7 +62,7 @@
 	"yuv.framework.form.form-input.null": "No value",
 	"yuv.framework.list.refresh": "Refresh",
 	"yuv.framework.object-create.footer.another": "Create additional object",
-	"yuv.framework.object-create.footer.create": "File",
+	"yuv.framework.object-create.footer.create": "Create object",
 	"yuv.framework.object-create.header.title": "Create object",
 	"yuv.framework.object-create.notify.error": "Error occurred while creating the object",
 	"yuv.framework.object-create.notify.success": "The object was created",
