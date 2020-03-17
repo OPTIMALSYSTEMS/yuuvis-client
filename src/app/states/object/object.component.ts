@@ -95,6 +95,7 @@ export class ObjectComponent implements OnInit, OnDestroy {
   }
 
   private setupRecentItemsQuery() {
+    // TODO: Only set up new query if the items actually changed
     const q = new SearchQuery();
     q.addFilter(new SearchFilter(BaseObjectTypeField.OBJECT_ID, SearchFilter.OPERATOR.IN, this.recentItems.reverse()));
     this.recentItemsQuery = q;
@@ -111,6 +112,14 @@ export class ObjectComponent implements OnInit, OnDestroy {
           this.loadRecentItems();
           const q = new SearchQuery();
           q.addFilter(new SearchFilter(BaseObjectTypeField.PARENT_ID, SearchFilter.OPERATOR.EQUAL, this.context.id));
+          // by default result will be sorted by modification date, in order to always retrieve items that
+          // were modified/created recently first
+          q.sortOptions = [
+            {
+              field: BaseObjectTypeField.MODIFICATION_DATE,
+              order: 'asc'
+            }
+          ];
           this.contextChildrenQuery = q;
         })
       )
