@@ -24,8 +24,7 @@
       [ngClass]="{ disabled: !selectedItemIDs?.length }"> </yuv-icon>
   </yuv-action-menu-bar> -->
 
-    <yuv-responsive-tab-container class="content" (optionsChanged)="onOptionsChanged($event, 'yuv-search-result-panel')"
-      [options]="options" disable-split="true">
+    <p-tabView class="content" [activeIndex]="activeTabIndex">
       <p-tabPanel [id]="'children'" [header]="'yuv.client.state.object.tabs.children.title' | translate">
         <ng-template pTemplate="content">
 
@@ -54,7 +53,21 @@
         </ng-template>
       </p-tabPanel>
 
-    </yuv-responsive-tab-container>
+      <p-tabPanel [id]="'search-result'" [disabled]="!contextSearchQuery"
+        [header]="'yuv.client.state.object.tabs.search-result.title' | translate">
+        <ng-template pTemplate="content">
+
+
+          <yuv-search-result class="content" [query]="contextSearchQuery" [selectedItemIDs]="[selectedItem]"
+            applyColumnConfig="true" (itemsSelected)="select($event)">
+          </yuv-search-result>
+
+
+
+        </ng-template>
+      </p-tabPanel>
+
+    </p-tabView>
 
 
 

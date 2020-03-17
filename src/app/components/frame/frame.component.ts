@@ -1,5 +1,5 @@
 import { Component, HostBinding, HostListener, OnInit } from '@angular/core';
-import { NavigationEnd, NavigationExtras, Router } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, NavigationExtras, Router } from '@angular/router';
 import { SwUpdate } from '@angular/service-worker';
 import { IconRegistryService } from '@yuuvis/common-ui';
 import {
@@ -31,6 +31,7 @@ export class FrameComponent implements OnInit {
   showSearch: boolean;
   user: YuvUser;
   appQuery: SearchQuery;
+  context: string;
 
   @HostListener('window:dragover', ['$event']) onDragOver(e) {
     let transfer = e.dataTransfer;
@@ -51,6 +52,7 @@ export class FrameComponent implements OnInit {
 
   constructor(
     private router: Router,
+    private route: ActivatedRoute,
     private layoutService: LayoutService,
     private update: SwUpdate,
     private appSearch: AppSearchService,
@@ -116,9 +118,36 @@ export class FrameComponent implements OnInit {
   }
 
   async onQuickSearchQuery(query: SearchQuery) {
-    this.appSearch.setQuery(query);
+    // As app bar search is available anywhere inside the app, searches will be
+    // set up to the global app search in order to be persisted through states.
+    // On the other hand, there are some states that enable search within a context.
+    // Those queries will NOT be set to the global app search service, because you
+    // wouldn't be able to get rid of the context anywhere else.
+    const withinContext = query.getFilter(BaseObjectTypeField.PARENT_ID) ? query.getFilter(BaseObjectTypeField.PARENT_ID).firstValue : null;
     const navigationExtras: NavigationExtras = { queryParams: { query: JSON.stringify(query.toQueryJson()) } };
-    await this.router.navigate(['/result'], navigationExtras);
+    // Being within a context does not mean that the query is restricted to this
+    // context (user decides). So we have to check based on the provided filters
+    if (withinContext) {
+      await this.router.navigate([], {
+        relativeTo: this.route,
+        // replace url if there was a former search already
+        replaceUrl: !!this.route.snapshot.paramMap.get('query'),
+        preserveFragment: true,
+        ...navigationExtras
+      });
+    } else {
+      this.appSearch.setQuery(query);
+      await this.router.navigate(['/result'], navigationExtras);
+    }
+
+    // const contextFilter = query.getFilter(BaseObjectTypeField.PARENT_ID);
+    // if (!!contextFilter) {
+    //   const contextID = contextFilter.firstValue;
+    // }
+    // console.log('CTX SEARCH ' + !!query.getFilter(BaseObjectTypeField.PARENT_ID).firstValue);
+    // this.appSearch.setQuery(query);
+    // const navigationExtras: NavigationExtras = { queryParams: { query: JSON.stringify(query.toQueryJson()) } };
+    // await this.router.navigate(['/result'], navigationExtras);
   }
 
   updateWorker() {
@@ -132,6 +161,17 @@ export class FrameComponent implements OnInit {
       this.router.navigate(['/result'], { queryParams: { query: JSON.stringify(searchQuery.toQueryJson()) } });
     } else {
       this.router.navigate(['/object', res.objectId]);
+    }
+  }
+
+  private getContextFromURL(url: string) {
+    const contextUriPrefix = '/object/';
+    if (url.startsWith(contextUriPrefix)) {
+      const hashIdx = url.indexOf('#');
+      this.context = url.substring(contextUriPrefix.length, hashIdx === -1 ? url.length : hashIdx);
+      console.log(this.context);
+    } else {
+      this.context = null;
     }
   }
 
@@ -154,6 +194,7 @@ export class FrameComponent implements OnInit {
         filter(e => e instanceof NavigationEnd)
       )
       .subscribe((e: NavigationEnd) => {
+        this.getContextFromURL(e.urlAfterRedirects);
         this.tab = e.urlAfterRedirects.startsWith('/dashboard');
         // hide open search bar when leaving state
         this.toggleSearch(false);

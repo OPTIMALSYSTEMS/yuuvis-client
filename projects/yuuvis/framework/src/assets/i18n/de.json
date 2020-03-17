@@ -116,6 +116,7 @@
 	"yuv.framework.quick-search-picker.button.select": "Auswählen",
 	"yuv.framework.quick-search-picker.title": "Einschränken auf Objekttypen",
 	"yuv.framework.quick-search.aggregate.error": "Die Anfrage konnte nicht ausgeführt werden.",
+	"yuv.framework.quick-search.context-search.chip": "im Kontext",
 	"yuv.framework.quick-search.field-select.tooltip": "Suchbedingung hinzufügen",
 	"yuv.framework.quick-search.term.placeholder": "Suchbegriff",
 	"yuv.framework.quick-search.type.all": "Alle",

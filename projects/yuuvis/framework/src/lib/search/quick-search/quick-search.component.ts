@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, EventEmitter, HostBinding, HostListener, Input, Output, TemplateRef, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, EventEmitter, HostBinding, HostListener, Input, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { IconRegistryService } from '@yuuvis/common-ui';
 import {
@@ -35,6 +35,9 @@ import { QuickSearchPickerData } from './quick-search-picker/quick-search-picker
  * search queries that can be extended by searching for certain object types and even set
  * search terms for particular fields of the target types.
  *
+ * Setting up the ID of a context folder will restrict the search to only return results from
+ * within the given context folder.
+ *
  * Adding a class of `inline` to the component will apply a different layout more suitable
  * for embedding the component somwhere else.
  */
@@ -44,7 +47,7 @@ import { QuickSearchPickerData } from './quick-search-picker/quick-search-picker
   styleUrls: ['./quick-search.component.scss'],
   host: { class: 'yuv-quick-search' }
 })
-export class QuickSearchComponent implements AfterViewInit {
+export class QuickSearchComponent implements OnInit, AfterViewInit {
   @ViewChild('termEl', { static: false }) termInput: ElementRef;
   @ViewChild('autoTermEl', { static: false }) autoTerm: AutoComplete;
   @ViewChild('typeSelectTrigger', { static: false }) typeSelectTrigger: ElementRef;
@@ -61,21 +64,22 @@ export class QuickSearchComponent implements AfterViewInit {
   resultCount: number = null;
   searchHasResults: boolean = true;
   settingUpQuery: boolean;
+  searchWithinContext: boolean = true;
   searchQuery: SearchQuery;
   autoSuggestions = [];
   autoSelectTimer: any;
 
   objectTypeSelectLabel: string;
 
-  availableObjectTypes: Selectable[];
-  availableObjectTypeGroups: SelectableGroup[];
-  availableObjectTypeFields: Selectable[];
+  availableObjectTypes: Selectable[] = [];
+  availableObjectTypeGroups: SelectableGroup[] = [];
+  availableObjectTypeFields: Selectable[] = [];
 
   private TYPES = '@';
   private TYPE_FIELDS = '#';
   lastAutoQuery: any = {};
 
-  selectedObjectTypes: string[];
+  selectedObjectTypes: string[] = [];
 
   // list of form element IDs
   formFields: string[] = [];
@@ -103,6 +107,11 @@ export class QuickSearchComponent implements AfterViewInit {
     ContentStreamField.DIGEST,
     ContentStreamField.ARCHIVE_PATH
   ];
+
+  /**
+   * ID of a context folder to restrict search to.
+   */
+  @Input() context: string;
 
   @Input() set inline(i: boolean) {
     this._inline = i;
@@ -140,12 +149,11 @@ export class QuickSearchComponent implements AfterViewInit {
     private iconRegistry: IconRegistryService
   ) {
     this.iconRegistry.registerIcons([arrowDown, addCircle, search, clear]);
-
     this.autofocus = this.device.isDesktop;
 
-    this.searchQuery = new SearchQuery();
     this.searchForm = this.fb.group({
-      term: ['']
+      term: [''],
+      searchWithinContext: [false]
     });
 
     this.searchForm.valueChanges.pipe(distinctUntilChanged(), debounceTime(500)).subscribe(({ term }) => {
@@ -154,32 +162,6 @@ export class QuickSearchComponent implements AfterViewInit {
         this.searchQuery.term = _term;
         this.aggregate();
       }
-    });
-
-    this.systemService.system$.subscribe(_ => {
-      const types = this.systemService
-        .getObjectTypes()
-        .filter(t => !this.skipTypes.includes(t.id))
-        .map(ot => ({
-          id: ot.id,
-          label: this.systemService.getLocalizedResource(`${ot.id}_label`),
-          value: ot
-        }))
-        .sort(Utils.sortValues('label'));
-      this.availableObjectTypes = types;
-      let i = 0;
-      this.availableObjectTypeGroups = this.systemService.getGroupedObjectTypes().map((otg: ObjectTypeGroup) => ({
-        id: `${i++}`,
-        label: otg.label,
-        items: otg.types.map((ot: ObjectType) => ({
-          id: ot.id,
-          label: this.systemService.getLocalizedResource(`${ot.id}_label`),
-          highlight: ot.isFolder,
-          svg: this.systemService.getObjectTypeIcon(ot.id),
-          value: ot
-        }))
-      }));
-      this.onObjectTypesSelected([], false);
     });
   }
 
@@ -266,7 +248,7 @@ export class QuickSearchComponent implements AfterViewInit {
    * estimated result of the current query.
    */
   aggregate() {
-    if (this._inline) return;
+    // if (this._inline) return;
     if (this.searchQuery.term || (this.searchQuery.types && this.searchQuery.types.length) || (this.searchQuery.filters && this.searchQuery.filters.length)) {
       if (!this.settingUpQuery && this.searchForm.valid && (!this.searchFieldsForm || this.searchFieldsForm.valid)) {
         this.resultCount = null;
@@ -401,8 +383,10 @@ export class QuickSearchComponent implements AfterViewInit {
   setQuery(q: SearchQuery) {
     if (q && JSON.stringify(q) !== JSON.stringify(this.searchQuery)) {
       this.settingUpQuery = true;
+      this.searchQuery = q;
       this.resetObjectTypes();
       this.resetObjectTypeFields();
+
       this.searchForm.patchValue({ term: { label: q.term } }, { emitEvent: false });
 
       // setup target object types
@@ -412,7 +396,9 @@ export class QuickSearchComponent implements AfterViewInit {
           false
         );
       }
-      this.searchQuery = q;
+      if (this.context && this.searchWithinContext) {
+        this.searchQuery.addFilter(new SearchFilter(BaseObjectTypeField.PARENT_ID, SearchFilter.OPERATOR.EQUAL, this.context));
+      }
       // setup object type field form from filters
       if (q.filters && q.filters.length) {
         const filterIDs = [];
@@ -469,6 +455,24 @@ export class QuickSearchComponent implements AfterViewInit {
     }
   }
 
+  toggleSearchWithinContext() {
+    if (this.searchWithinContext) {
+      this.searchQuery.removeFilter(BaseObjectTypeField.PARENT_ID);
+    } else {
+      this.searchQuery.addFilter(new SearchFilter(BaseObjectTypeField.PARENT_ID, SearchFilter.OPERATOR.EQUAL, this.context));
+    }
+    this.searchWithinContext = !this.searchWithinContext;
+    this.aggregate();
+  }
+
+  private newQuery(): SearchQuery {
+    const q = new SearchQuery();
+    if (this.context && this.searchWithinContext) {
+      q.addFilter(new SearchFilter(BaseObjectTypeField.PARENT_ID, SearchFilter.OPERATOR.EQUAL, this.context));
+    }
+    return q;
+  }
+
   /**
    * Adds a new form field to the query
    * @param field The object type field to be added
@@ -521,7 +525,7 @@ export class QuickSearchComponent implements AfterViewInit {
    * Reset the whole search form
    */
   reset() {
-    this.searchQuery = new SearchQuery();
+    this.searchQuery = this.newQuery();
     this.resultCount = null;
     this.resetObjectTypes();
     this.resetObjectTypeFields();
@@ -550,6 +554,35 @@ export class QuickSearchComponent implements AfterViewInit {
     if (this.autofocus) {
       this.focusInput();
     }
+  }
+
+  ngOnInit() {
+    this.searchQuery = this.newQuery();
+    this.systemService.system$.subscribe(_ => {
+      const types = this.systemService
+        .getObjectTypes()
+        .filter(t => !this.skipTypes.includes(t.id))
+        .map(ot => ({
+          id: ot.id,
+          label: this.systemService.getLocalizedResource(`${ot.id}_label`),
+          value: ot
+        }))
+        .sort(Utils.sortValues('label'));
+      this.availableObjectTypes = types;
+      let i = 0;
+      this.availableObjectTypeGroups = this.systemService.getGroupedObjectTypes().map((otg: ObjectTypeGroup) => ({
+        id: `${i++}`,
+        label: otg.label,
+        items: otg.types.map((ot: ObjectType) => ({
+          id: ot.id,
+          label: this.systemService.getLocalizedResource(`${ot.id}_label`),
+          highlight: ot.isFolder,
+          svg: this.systemService.getObjectTypeIcon(ot.id),
+          value: ot
+        }))
+      }));
+      this.onObjectTypesSelected([], false);
+    });
   }
 }
 

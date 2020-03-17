@@ -42,6 +42,7 @@ export class SearchResultComponent implements OnDestroy {
   private _columns: ColDef[];
   private _rows: any[];
   private _hasPages = false;
+  private _itemsSupposedToBeSelected: string[];
   pagingForm: FormGroup;
   busy: boolean;
 
@@ -80,9 +81,13 @@ export class SearchResultComponent implements OnDestroy {
     return this._searchQuery;
   }
   /**
-   * The IDs of the items to be selected
+   * The IDs of the items supposed to be selected. This is only going one direction.
+   * If the items are not part of the actual table data, nothing will be selected.
    */
-  @Input() selectedItemIDs: string[];
+  @Input() set selectedItemIDs(ids: string[]) {
+    this._itemsSupposedToBeSelected = ids;
+    this.setSelection(ids);
+  }
   /**
    * Emits the current selection as list of object IDs
    */
@@ -231,8 +236,10 @@ export class SearchResultComponent implements OnDestroy {
           sort: o.order
         }))
       };
-
       this.busy = false;
+      setTimeout(_ => {
+        this.setSelection(this._itemsSupposedToBeSelected);
+      }, 0);
     });
   }
 
@@ -273,16 +280,14 @@ export class SearchResultComponent implements OnDestroy {
     );
   }
 
-  goTo(action: 'next' | 'prev') {
-    const id = (this.selectedItemIDs || [])[0];
-    const index = id ? this._rows.findIndex(r => r.id === id) : -1;
-    const i = action === 'next' ? (index + 1 >= this._rows.length ? 0 : index + 1) : index - 1 < 0 ? this._rows.length - 1 : index - 1;
-    this.dataTable.selectRows([this._rows[i].id]);
+  private setSelection(ids: string[]) {
+    if (this.dataTable && this.tableData && this.tableData.rows.length) {
+      this.dataTable.selectRows(ids);
+    }
   }
 
   onSelectionChanged(selectedRows: any[]) {
-    this.selectedItemIDs = selectedRows.map(r => r.id);
-    this.itemsSelected.emit(this.selectedItemIDs);
+    this.itemsSelected.emit(selectedRows.map(r => r.id));
   }
 
   onSortChanged(sortModel: { colId: string; sort: string }[]) {

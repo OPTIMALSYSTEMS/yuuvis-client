@@ -6,6 +6,9 @@
       background-color: var(--color-accent);
       color: #fff;
     }
+    .ui-tabview > .ui-tabview-panels > p-tabpanel > .ui-tabview-panel {
+      height: 100%;
+    }
     .ui-tabview.ui-tabview-top .ui-tabview-nav li {
       &:not(.ui-state-active):not(.ui-state-disabled):hover {
         border-color: rgba(255, 255, 255, 0.5);

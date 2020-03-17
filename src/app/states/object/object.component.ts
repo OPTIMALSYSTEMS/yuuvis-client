@@ -29,12 +29,13 @@ export class ObjectComponent implements OnInit, OnDestroy {
 
   contextBusy: boolean;
   contextError: string;
-
+  activeTabIndex: number;
   context: DmsObject;
   selectedItem: string;
   recentItems: string[] = [];
   contextChildrenQuery: SearchQuery;
   recentItemsQuery: SearchQuery;
+  contextSearchQuery: SearchQuery;
 
   private options = {
     'yuv-responsive-master-slave': { useStateLayout: true },
@@ -95,7 +96,7 @@ export class ObjectComponent implements OnInit, OnDestroy {
 
   private setupRecentItemsQuery() {
     const q = new SearchQuery();
-    q.addFilter(new SearchFilter(BaseObjectTypeField.OBJECT_ID, SearchFilter.OPERATOR.IN, this.recentItems));
+    q.addFilter(new SearchFilter(BaseObjectTypeField.OBJECT_ID, SearchFilter.OPERATOR.IN, this.recentItems.reverse()));
     this.recentItemsQuery = q;
   }
 
@@ -108,8 +109,6 @@ export class ObjectComponent implements OnInit, OnDestroy {
           this.context = res;
           this.title.setTitle(this.context.title);
           this.loadRecentItems();
-
-          // TODO: setup the right query for fetching children
           const q = new SearchQuery();
           q.addFilter(new SearchFilter(BaseObjectTypeField.PARENT_ID, SearchFilter.OPERATOR.EQUAL, this.context.id));
           this.contextChildrenQuery = q;
@@ -128,7 +127,7 @@ export class ObjectComponent implements OnInit, OnDestroy {
 
   select(ids: string[]) {
     if (ids && ids.length === 1) {
-      this.router.navigate(['.'], { fragment: ids[0], replaceUrl: !!this.selectedItem, relativeTo: this.route });
+      this.router.navigate(['.'], { fragment: ids[0], replaceUrl: !!this.selectedItem, relativeTo: this.route, queryParamsHandling: 'preserve' });
     }
   }
 
@@ -138,6 +137,11 @@ export class ObjectComponent implements OnInit, OnDestroy {
       if (params.id) {
         this.setupContext(params.id);
       }
+    });
+    // query params may provide a query to be executed within this state
+    this.route.queryParams.pipe(takeUntilDestroy(this)).subscribe((queryParams: any) => {
+      this.contextSearchQuery = !!queryParams.query ? new SearchQuery(JSON.parse(queryParams.query)) : null;
+      this.activeTabIndex = !!this.contextSearchQuery ? 2 : 0;
     });
     // fragments are used to identify the selected item within the context
     this.route.fragment.pipe(takeUntilDestroy(this)).subscribe((fragment: any) => {

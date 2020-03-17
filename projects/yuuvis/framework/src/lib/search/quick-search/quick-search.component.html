@@ -8,6 +8,7 @@
 <div yuvOfflineDisabled class="search-box" [ngClass]="{ invalid: invalidTerm, extrasEnabled: formFields.length }">
   <form [formGroup]="searchForm">
     <div class="main">
+
       <button type="button" class="type-select" #typeSelectTrigger (click)="showObjectTypePicker()">
         <div class="label">{{ objectTypeSelectLabel }}</div>
         <yuv-icon [icon]="'arrowDown'"></yuv-icon>
@@ -22,6 +23,12 @@
           (keydown)="autoKeyDown($event)" [autofocus]="autofocus" [autoHighlight]="true">
         </p-autoComplete>
       </div>
+
+      <!-- in context -->
+      <button class="context-search" *ngIf="context" [ngClass]="{active: searchWithinContext}"
+        (click)="toggleSearchWithinContext()">
+        {{ 'yuv.framework.quick-search.context-search.chip' | translate }}
+      </button>
 
       <button type="button" class="field-select" #fieldSelectTrigger (click)="showObjectTypeFieldPicker()"
         *ngIf="availableObjectTypeFields?.length"
