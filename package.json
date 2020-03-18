@@ -81,7 +81,6 @@
     "@biesbjerg/ngx-translate-extract-marker": "^1.0.0",
     "@ngx-pwa/local-storage": "^7.4.2",
     "@ngx-translate/core": "^11.0.1",
-    "@yuuvis/common-ui": "0.0.1",
     "angular-resize-event": "^1.0.0",
     "angular-split": "^3.0.1",
     "core-js": "^2.5.4",
