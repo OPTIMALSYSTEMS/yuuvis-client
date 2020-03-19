@@ -10,6 +10,7 @@ import { OverlayPanelModule } from 'primeng/overlaypanel';
 import { ActionModule } from './actions/action.module';
 import { YuvColumnConfigModule } from './column-config/column-config.module';
 import { YuvComponentsModule } from './components/components.module';
+import { YuvContextModule } from './context/context.module';
 import { YuvDirectivesModule } from './directives/directives.module';
 import { YuvFormModule } from './form/form.module';
 import { YuvGroupedSelectModule } from './grouped-select/grouped-select.module';
@@ -69,6 +70,7 @@ import { YuvUserModule } from './user/user.module';
     YuvUserModule,
     YuvComponentsModule,
     YuvObjectFormModule,
+    YuvContextModule,
     YuvCommonUiModule,
     YuvCoreModule,
     OverlayPanelModule,

@@ -1,4 +1,7 @@
 {
+  "yuv.client.state.object.tabs.children.title": "Content",
+  "yuv.client.state.object.tabs.recent.title": "Recent objects",
+  "yuv.client.state.object.tabs.search-result.title": "Search result",
   "yuv.framework.action-menu.action.delete.dms.object.confirm.message": "Are you sure you want to delete '{{item}}'?",
   "yuv.framework.action-menu.action.delete.dms.object.description": "Deletes the object.",
   "yuv.framework.action-menu.action.delete.dms.object.done.message": "Deleting objects.",
@@ -167,9 +170,6 @@
   "yuv.client.state.not-found.description": "Unable to load the object.",
   "yuv.client.state.not-found.title": "Not found",
   "yuv.client.state.object.context.load.error": "Failed loading context folder.",
-  "yuv.client.state.object.tabs.children.title": "Content",
-  "yuv.client.state.object.tabs.recent.title": "Recent items",
-  "yuv.client.state.object.tabs.search-result.title": "Search result",
   "yuv.client.state.result.title": "Search result",
   "yuv.client.state.settings.config.column-config": "Result list",
   "yuv.client.state.settings.config.column-config.open": "Edit result list configuration",

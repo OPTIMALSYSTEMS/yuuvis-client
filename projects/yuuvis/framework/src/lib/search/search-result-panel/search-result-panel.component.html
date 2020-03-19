@@ -12,7 +12,6 @@
 
   <yuv-search-result class="content" [query]="_searchQuery" applyColumnConfig="true" [selectedItemIDs]="selectedItemIDs"
     (itemsSelected)="onItemsSelected($event)" (queryChanged)="onQueryChangedFromWithin($event)"
-    (optionsChanged)="onSearchResultOptionsChanged($event)" [options]="options"
     (rowDoubleClicked)="rowDoubleClicked.emit($event)">
   </yuv-search-result>
 </yuv-panel>

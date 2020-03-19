@@ -21,7 +21,7 @@
     <yuv-icon class="finalized-icon" [icon]="'finalized'"></yuv-icon> -->
   </yuv-action-menu-bar>
 
-  <yuv-responsive-tab-container class="content" (optionsChanged)="optionsChanged.emit($event)" [options]="options">
+  <yuv-responsive-tab-container class="content" [layoutOptionsKey]="layoutOptionsKey">
     <p-tabPanel [id]="'summary'" [header]="'yuv.framework.object-details.tabs.summary.title' | translate"
       [headerStyleClass]="'summary'">
       <ng-template pTemplate="content">

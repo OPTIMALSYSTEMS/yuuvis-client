@@ -1,4 +1,7 @@
 {
+  "yuv.client.state.object.tabs.children.title": "Inhalt",
+  "yuv.client.state.object.tabs.recent.title": "Letzte Objekte",
+  "yuv.client.state.object.tabs.search-result.title": "Suchergebnis",
   "yuv.framework.action-menu.action.delete.dms.object.confirm.message": "Sind Sie sicher, dass '{{item}}' gelöscht werden soll?",
   "yuv.framework.action-menu.action.delete.dms.object.description": "Löscht das Objekt.",
   "yuv.framework.action-menu.action.delete.dms.object.done.message": "Objekte werden gelöscht.",
@@ -167,9 +170,6 @@
   "yuv.client.state.not-found.description": "Das Objekt konnte nicht geladen werden.",
   "yuv.client.state.not-found.title": "Nicht gefunden",
   "yuv.client.state.object.context.load.error": "Der Kontextordner konnte nicht geladen werden.",
-  "yuv.client.state.object.tabs.children.title": "Inhalt",
-  "yuv.client.state.object.tabs.recent.title": "Zuletzt geöffnet",
-  "yuv.client.state.object.tabs.search-result.title": "Suchergebnis",
   "yuv.client.state.result.title": "Suchergebnis",
   "yuv.client.state.settings.config.column-config": "Trefferlisten",
   "yuv.client.state.settings.config.column-config.open": "Spaltenkonfiguration Trefferlisten bearbeiten",

@@ -19,11 +19,11 @@ export class ResultComponent implements OnInit, OnDestroy {
   searchQuery: SearchQuery;
   selectedItems: string[] = [];
   smallScreen: boolean;
-  options = {
-    'yuv-responsive-master-slave': { useStateLayout: true },
-    'yuv-search-result-panel': null,
-    'yuv-object-details': null
-  };
+  // options = {
+  //   'yuv-responsive-master-slave': { useStateLayout: true },
+  //   'yuv-search-result-panel': null,
+  //   'yuv-object-details': null
+  // };
 
   constructor(
     private titleService: Title,
@@ -52,12 +52,12 @@ export class ResultComponent implements OnInit, OnDestroy {
     }
   }
 
-  onOptionsChanged(options: any, component: string) {
-    // do not set this.options because it is an input as well (circle in->out->in)
-    const o = { ...this.options };
-    o[component] = { ...options };
-    this.layoutService.saveComponentLayout(this.getStorageKey(), o).subscribe();
-  }
+  // onOptionsChanged(options: any, component: string) {
+  //   // do not set this.options because it is an input as well (circle in->out->in)
+  //   const o = { ...this.options };
+  //   o[component] = { ...options };
+  //   this.layoutService.saveComponentLayout(this.getStorageKey(), o).subscribe();
+  // }
 
   select(items: string[]) {
     this.selectedItems = items;
@@ -80,11 +80,13 @@ export class ResultComponent implements OnInit, OnDestroy {
     this.route.queryParamMap.pipe(takeUntilDestroy(this)).subscribe(params => {
       this.searchQuery = params.get('query') ? new SearchQuery(JSON.parse(params.get('query'))) : null;
       // this.appCacheService.getItem(this.getStorageKey()).subscribe(o => (this.options = { ...this.options, ...o }));
-      this.layoutService.loadComponentLayout(this.getStorageKey()).subscribe(o => (this.options = { ...this.options, ...o }));
+      // this.layoutService.loadComponentLayout(this.getStorageKey()).subscribe(o => (this.options = { ...this.options, ...o }));
+
+      // this.layoutService.loadLayoutOptions()
     });
   }
 
-  private getStorageKey() {
+  getLayoutOptionsStorageKey() {
     return `${this.STORAGE_KEY}.${this.searchQuery && this.searchQuery.types.length === 1 ? this.searchQuery.types[0] : 'mixed'}`;
   }
 

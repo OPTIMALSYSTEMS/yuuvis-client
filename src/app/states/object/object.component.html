@@ -1,84 +1,14 @@
-<!-- <yuv-object-details class="panel" [dmsObject]="item" (optionsChanged)="onOptionsChanged($event, 'yuv-object-details')"
-  [options]="getOptions('yuv-object-details')"> </yuv-object-details> -->
+<yuv-responsive-master-slave *ngIf="context" class="state" [layoutOptionsKey]="layoutOptionsStorageKey"
+  (slaveClosed)="onSlaveClosed()" [slaveActive]="true">
 
-
-<!-- <div class="context" *ngIf="context" [yuvBusyOverlay]="contextBusy">
-  <div class="context-fold">{{context.title}}
-
-  </div>
-  <div class="context-content"> -->
-
-<yuv-responsive-master-slave *ngIf="context" class="state" [options]="options['yuv-responsive-master-slave']"
-  (slaveClosed)="onSlaveClosed()" (optionsChanged)="onOptionsChanged($event, 'yuv-responsive-master-slave')"
-  [slaveActive]="true">
-
-  <yuv-panel class="yuv-master panel" [title]="context.title" [description]="queryDescription">
-
-
-    <!-- <yuv-action-menu-bar class="actions" yuvOfflineDisabled>
-    <yuv-icon class="config" icon="settings" (click)="showColumnConfigEditor()" *ngIf="viewMode === 'standard'">
-    </yuv-icon>
-    <yuv-icon (click)="refresh()" [title]="'yuv.framework.list.refresh' | translate" class="button refresh-button"
-      [icon]="'refresh'"></yuv-icon>
-    <yuv-icon class="header-icon" (click)="openActionMenu()" [icon]="'kebap'"
-      [ngClass]="{ disabled: !selectedItemIDs?.length }"> </yuv-icon>
-  </yuv-action-menu-bar> -->
-
-    <p-tabView class="content" [activeIndex]="activeTabIndex">
-      <p-tabPanel [id]="'children'" [header]="'yuv.client.state.object.tabs.children.title' | translate">
-        <ng-template pTemplate="content">
-
-
-          <yuv-search-result class="content" [query]="contextChildrenQuery" [selectedItemIDs]="[selectedItem]"
-            applyColumnConfig="true" (optionsChanged)="onOptionsChanged($event, 'yuv-search-result-all')"
-            [options]="options['yuv-search-result-all']" (itemsSelected)="select($event)">
-          </yuv-search-result>
-
-
-
-        </ng-template>
-      </p-tabPanel>
-
-      <p-tabPanel [id]="'recent'" [header]="'yuv.client.state.object.tabs.recent.title' | translate">
-        <ng-template pTemplate="content">
-
-
-          <yuv-search-result class="content" [query]="recentItemsQuery" [selectedItemIDs]="[selectedItem]"
-            applyColumnConfig="true" (optionsChanged)="onOptionsChanged($event, 'yuv-search-result-recent')"
-            [options]="options['yuv-search-result-recent']" (itemsSelected)="select($event)">
-          </yuv-search-result>
-
-
-
-        </ng-template>
-      </p-tabPanel>
-
-      <p-tabPanel [id]="'search-result'" [disabled]="!contextSearchQuery"
-        [header]="'yuv.client.state.object.tabs.search-result.title' | translate">
-        <ng-template pTemplate="content">
-
-
-          <yuv-search-result class="content" [query]="contextSearchQuery" [selectedItemIDs]="[selectedItem]"
-            applyColumnConfig="true" (itemsSelected)="select($event)">
-          </yuv-search-result>
-
-
-
-        </ng-template>
-      </p-tabPanel>
-
-    </p-tabView>
-
-
-
-  </yuv-panel>
+  <yuv-context class="yuv-master panel" [context]="context" [yuvBusyOverlay]="contextBusy" [recentItems]="recentItems"
+    [contextSearchQuery]="contextSearchQuery" [layoutOptionsKey]="layoutOptionsStorageKey"
+    (itemsSelected)="contextItemsSelected($event)"></yuv-context>
 
   <yuv-object-details class="yuv-slave panel" [objectId]="selectedItem" [searchTerm]="searchQuery?.term"
-    (optionsChanged)="onOptionsChanged($event, 'yuv-object-details')" [options]="options['yuv-object-details']">
+    [layoutOptionsKey]="layoutOptionsStorageKey">
   </yuv-object-details>
 </yuv-responsive-master-slave>
-<!-- </div>
-</div> -->
 
 <div class="error" *ngIf="contextError">
   <div class="message">{{contextError}}</div>

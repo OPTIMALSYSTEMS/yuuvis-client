@@ -21,7 +21,7 @@ import {
 import { Observable, of } from 'rxjs';
 import { map, switchMap, tap } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
-import { ResponsiveDataTableComponent, ResponsiveDataTableOptions, ViewMode } from '../../components/responsive-data-table/responsive-data-table.component';
+import { ResponsiveDataTableComponent, ViewMode } from '../../components/responsive-data-table/responsive-data-table.component';
 import { ResponsiveTableData } from '../../components/responsive-data-table/responsive-data-table.interface';
 import { GridService } from '../../services/grid/grid.service';
 import { arrowLast, arrowNext, clear, listModeDefault, listModeGrid, listModeSimple, search, settings } from '../../svg.generated';
@@ -56,9 +56,16 @@ export class SearchResultComponent implements OnDestroy {
     page: number;
   };
 
-  @Input() options: ResponsiveDataTableOptions;
+  // @Input() options: ResponsiveDataTableOptions;
+
   @ViewChild('dataTable', { static: false }) dataTable: ResponsiveDataTableComponent;
 
+  /**
+   * Providing a layout options key will enable the component to persist its layout settings
+   * in relation to a host component. The key is basically a unique key for the host, which
+   * will be used to store component specific settings using the layout service.
+   */
+  @Input() layoutOptionsKey: string;
   /**
    * Query to be executed by the component.
    */
@@ -92,10 +99,10 @@ export class SearchResultComponent implements OnDestroy {
    * Emits the current selection as list of object IDs
    */
   @Output() itemsSelected = new EventEmitter<string[]>();
-  /**
-   * Emitted when column sizes of the result list table have been changed.
-   */
-  @Output() optionsChanged = new EventEmitter<ResponsiveDataTableOptions>();
+  // /**
+  //  * Emitted when column sizes of the result list table have been changed.
+  //  */
+  // @Output() optionsChanged = new EventEmitter<ResponsiveDataTableOptions>();
   @Output() rowDoubleClicked = new EventEmitter<RowEvent>();
 
   set hasPages(count) {
@@ -159,12 +166,6 @@ export class SearchResultComponent implements OnDestroy {
     this.executeQuery();
   }
 
-  // callback when column sizes or view mode of the data table changed
-  dataTableOptionsChanged(dataTableOptions: ResponsiveDataTableOptions) {
-    // enrich with own options and emit
-    this.optionsChanged.emit(dataTableOptions);
-  }
-
   private executeQuery(applyColumnConfig?: boolean) {
     this.busy = true;
     (applyColumnConfig ? this.applyColumnConfiguration(this._searchQuery) : of(this._searchQuery))
@@ -215,10 +216,10 @@ export class SearchResultComponent implements OnDestroy {
         this.pagingForm.get('page').setValidators([Validators.min(0), Validators.max(this.pagination.pages)]);
       }
 
-      // setup column width
-      if (this.options && this.options.columnWidths) {
-        colDefs.forEach(col => (col.width = this.options.columnWidths[col.field] || col.width));
-      }
+      // // TODO: setup column width
+      // if (this.options && this.options.columnWidths) {
+      //   colDefs.forEach(col => (col.width = this.options.columnWidths[col.field] || col.width));
+      // }
 
       this.resultListObjectTypeId = objecttypeId;
       this._columns = colDefs;

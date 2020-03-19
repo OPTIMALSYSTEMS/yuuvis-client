@@ -1,0 +1,34 @@
+:host {
+  display: block;
+  yuv-panel ::ng-deep {
+    .header {
+      background-color: var(--color-accent);
+      color: #fff;
+    }
+    .ui-tabview > .ui-tabview-panels > p-tabpanel > .ui-tabview-panel {
+      height: 100%;
+    }
+    .ui-tabview.ui-tabview-top .ui-tabview-nav li {
+      &:not(.ui-state-active):not(.ui-state-disabled):hover {
+        border-color: rgba(255, 255, 255, 0.5);
+        a {
+          color: #fff;
+        }
+      }
+
+      &.ui-state-active {
+        border-color: rgba(255, 255, 255, 0.75);
+      }
+      &:focus .ui-tabview-title {
+        background-color: rgba(255, 255, 255, 0.2);
+      }
+
+      a {
+        color: #fff;
+      }
+    }
+    .ui-tabview.ui-tabview-top {
+      background-color: var(--color-accent);
+    }
+  }
+}

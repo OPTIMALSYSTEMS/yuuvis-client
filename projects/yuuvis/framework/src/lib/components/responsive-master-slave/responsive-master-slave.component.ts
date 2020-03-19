@@ -1,6 +1,7 @@
-import { Component, EventEmitter, HostBinding, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, HostBinding, Input, OnDestroy, Output } from '@angular/core';
 import { Screen, ScreenService } from '@yuuvis/core';
 import { takeUntilDestroy } from 'take-until-destroy';
+import { LayoutService } from '../../services/layout/layout.service';
 import { ResponsiveMasterSlaveOptions } from './responsive-master-slave.interface';
 
 /**
@@ -25,7 +26,7 @@ import { ResponsiveMasterSlaveOptions } from './responsive-master-slave.interfac
   templateUrl: './responsive-master-slave.component.html',
   styleUrls: ['./responsive-master-slave.component.scss']
 })
-export class ResponsiveMasterSlaveComponent implements OnInit, OnDestroy {
+export class ResponsiveMasterSlaveComponent implements OnDestroy {
   useSmallDeviceLayout: boolean;
   visible = {
     master: true,
@@ -52,34 +53,24 @@ export class ResponsiveMasterSlaveComponent implements OnInit, OnDestroy {
     useStateLayout: false
   };
 
-  private _options: ResponsiveMasterSlaveOptions = {};
+  _layoutOptions: ResponsiveMasterSlaveOptions = {};
 
   @HostBinding('class.yuv-responsive-master-slave') _hostClass = true;
   @HostBinding('class.slaveActive') _slaveActive: boolean;
 
   /**
-   * Using options input you can configure how the component should behave.
-   * Available options are:
-   *
-   * - **masterSize:** Size (width or height depending on the direction settings) of the master panel in percent (default: 60)
-   * - **slaveSize:** Size (width or height depending on the direction settings) of the slave panel in percent (default: 40)
-   * - **direction:** Sets how to layout master and slave pane ('horizontal' or 'vertical'). Defaults to 'horizontal'.
-   * - **resizable:** Indicator whether or not the panels could be resized. By default you are able to drag the divider between master and slave panel to resize both of them.
-   * - **useStateLayout:** Using state layout means that the component is used as the base layout of a state view. This will apply some classes to the components and its panels. It will setup a padding to the component itself and apply a default panel style (white background and slight shadow) to master and slave component.
+   * Providing a layout options key will enable the component to persist its layout settings
+   * in relation to a host component. The key is basically a unique key for the host, which
+   * will be used to store component specific settings using the layout service.
    */
-  @Input() set options(o: ResponsiveMasterSlaveOptions) {
-    const prev = JSON.stringify(this._options);
-    const direction = this.useSmallDeviceLayout ? 'vertical' : o.direction || 'horizontal';
-    this._options = { ...(direction === 'vertical' ? this.verticalOptions : this.horizontalOptions), ...(direction === o.direction ? o : {}) };
-    if (prev !== JSON.stringify(this._options)) {
-      // only emit when there are actual changes
-      const { masterSize, slaveSize } = this.options;
-      this.optionsChanged.emit({ masterSize, slaveSize, direction });
-    }
+  private _layoutOptionsKey: string;
+  @Input() set layoutOptionsKey(lok: string) {
+    this._layoutOptionsKey = lok;
+    this.layoutService.loadLayoutOptions(lok, 'yuv-responsive-master-slave').subscribe((o: ResponsiveMasterSlaveOptions) => {
+      this.setDirection(o);
+    });
   }
-  get options(): ResponsiveMasterSlaveOptions {
-    return this._options;
-  }
+
   @Input() set slaveActive(a: boolean) {
     this._slaveActive = !!a;
     this.visible.slave = this._slaveActive;
@@ -88,14 +79,20 @@ export class ResponsiveMasterSlaveComponent implements OnInit, OnDestroy {
     return this._slaveActive;
   }
   @Output() slaveClosed = new EventEmitter();
-  @Output() optionsChanged = new EventEmitter();
 
-  constructor(private screenService: ScreenService) {
+  constructor(private screenService: ScreenService, private layoutService: LayoutService) {
     this.screenService.screenChange$.pipe(takeUntilDestroy(this)).subscribe((screen: Screen) => {
       this.useSmallDeviceLayout = screen.isSmall;
-      // update options based on layout
-      this.options = { direction: this.options.direction };
+      this.setDirection(this._layoutOptions);
     });
+  }
+
+  private setDirection(options: ResponsiveMasterSlaveOptions) {
+    const direction = this.useSmallDeviceLayout ? 'vertical' : options ? options.direction : 'horizontal';
+    this._layoutOptions = {
+      ...(direction === 'vertical' ? this.verticalOptions : this.horizontalOptions),
+      ...(options && direction === options.direction ? options : {})
+    };
   }
 
   closeSlave() {
@@ -103,13 +100,23 @@ export class ResponsiveMasterSlaveComponent implements OnInit, OnDestroy {
   }
 
   gutterDblClick() {
-    this.options = { direction: this.options.direction === 'vertical' ? 'horizontal' : 'vertical' };
+    this._layoutOptions.direction = this._layoutOptions.direction === 'vertical' ? 'horizontal' : 'vertical';
+    this.setDirection(this._layoutOptions);
+    this.saveLayoutOptions();
   }
 
   dragEnd(evt: any) {
-    this.options = { masterSize: evt.sizes[0], slaveSize: evt.sizes[1], direction: this.options.direction };
+    this._layoutOptions.masterSize = evt.sizes[0];
+    this._layoutOptions.slaveSize = evt.sizes[1];
+    this.saveLayoutOptions();
   }
 
-  ngOnInit() {}
+  // will only persist the settings if a layoutOptionsKey was provided
+  private saveLayoutOptions() {
+    if (this._layoutOptionsKey) {
+      this.layoutService.saveLayoutOptions(this._layoutOptionsKey, 'yuv-responsive-master-slave', this._layoutOptions).subscribe();
+    }
+  }
+
   ngOnDestroy() {}
 }

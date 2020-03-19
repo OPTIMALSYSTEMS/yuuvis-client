@@ -73,23 +73,52 @@ export class LayoutService {
     this.saveSettings();
   }
 
-  /**
-   * Persist component specific layout settings.
-   * @param key Unique key
-   * @param settings The settings required by the component
-   */
-  saveComponentLayout(key: string, settings: any): Observable<any> {
-    this.logger.debug(`saved component layout '${key}'`);
-    return this.appCache.setItem(key, settings);
-  }
+  // /**
+  //  * Persist component specific layout settings.
+  //  * @param key Unique key
+  //  * @param settings The settings required by the component
+  //  */
+  // saveComponentLayout(key: string, settings: any): Observable<any> {
+  //   this.logger.debug(`saved component layout '${key}'`);
+  //   return this.appCache.setItem(key, settings);
+  // }
+
+  // /**
+  //  * Get the settings for a component
+  //  * @param key Key the settings has been stored under
+  //  */
+  // loadComponentLayout(key: string): Observable<any> {
+  //   this.logger.debug(`loaded component layout '${key}'`);
+  //   return this.appCache.getItem(key);
+  // }
 
   /**
-   * Get the settings for a component
-   * @param key Key the settings has been stored under
+   * Save layout options. Layout options are settings provided by components, that
+   * can be persisted locally. All options relate to a host component (e.g. a state) in
+   * order to save layout settings for re-appearing components without overriding them.
+   * @param layoutOptionsKey Unique key for host component (e.g. 'yuv.state.object')
+   * @param elementKey Unique key within the component that is going to store layout settings
+   * @param value The layout settings itself
    */
-  loadComponentLayout(key: string): Observable<any> {
-    this.logger.debug(`loaded component layout '${key}'`);
-    return this.appCache.getItem(key);
+  saveLayoutOptions(layoutOptionsKey: string, elementKey: string, value: any): Observable<any> {
+    this.logger.debug(`saving layout options for '${layoutOptionsKey}-${elementKey}'`);
+    return this.appCache.getItem(layoutOptionsKey).pipe(
+      switchMap(res => {
+        const v = res || {};
+        v[elementKey] = value;
+        return this.appCache.setItem(layoutOptionsKey, v);
+      })
+    );
+  }
+  /**
+   * Load layout settings for a component.
+   * @param layoutOptionsKey Unique host component key
+   * @param elementKey Component key. If you do not provide a component key, you'll get all
+   * the layout settings for the given host component.
+   */
+  loadLayoutOptions(layoutOptionsKey: string, elementKey?: string): Observable<any> {
+    this.logger.debug(`loading layout options for '${layoutOptionsKey}-${elementKey}'`);
+    return this.appCache.getItem(layoutOptionsKey).pipe(map(res => (elementKey && res ? res[elementKey] : res)));
   }
 
   private saveSettings() {

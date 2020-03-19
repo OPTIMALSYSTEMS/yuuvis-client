@@ -1,4 +1,7 @@
 {
+	"yuv.client.state.object.tabs.children.title": "Inhalt",
+	"yuv.client.state.object.tabs.recent.title": "Letzte Objekte",
+	"yuv.client.state.object.tabs.search-result.title": "Suchergebnis",
 	"yuv.framework.action-menu.action.delete.dms.object.confirm.message": "Sind Sie sicher, dass '{{item}}' gelöscht werden soll?",
 	"yuv.framework.action-menu.action.delete.dms.object.description": "Löscht das Objekt.",
 	"yuv.framework.action-menu.action.delete.dms.object.done.message": "Objekte werden gelöscht.",

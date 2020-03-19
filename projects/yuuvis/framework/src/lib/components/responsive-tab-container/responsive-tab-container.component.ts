@@ -16,6 +16,7 @@ import { Screen, ScreenService } from '@yuuvis/core';
 import { TabPanel, TabView } from 'primeng/tabview';
 import { Observable } from 'rxjs';
 import { filter, map, take, tap } from 'rxjs/operators';
+import { LayoutService } from '../../services/layout/layout.service';
 import { verticalSplit } from './../../svg.generated';
 /**
  * Responsive Split TabContainer + plugin support
@@ -31,14 +32,19 @@ export class ResponsiveTabContainerComponent implements OnInit, AfterContentInit
    */
   @Input() pluginPanels = new QueryList<TabPanel>();
 
-  private _options = { panelOrder: [], panelSizes: [] };
+  _layoutOptions = { panelOrder: [], panelSizes: [] };
 
-  @Input() set options(opt) {
-    this._options = { ...this._options, ...opt };
-  }
-
-  get options() {
-    return this._options;
+  /**
+   * Providing a layout options key will enable the component to persist its layout settings
+   * in relation to a host component. The key is basically a unique key for the host, which
+   * will be used to store component specific settings using the layout service.
+   */
+  private _layoutOptionsKey: string;
+  @Input() set layoutOptionsKey(lok: string) {
+    this._layoutOptionsKey = lok;
+    this.layoutService.loadLayoutOptions(lok, 'yuv-responsive-tab-container').subscribe(o => {
+      this._layoutOptions = { ...this._layoutOptions, ...o };
+    });
   }
 
   @ContentChildren(TabPanel) tabPanels: QueryList<TabPanel>;
@@ -55,7 +61,12 @@ export class ResponsiveTabContainerComponent implements OnInit, AfterContentInit
   isSmallScreen$: Observable<boolean>;
   isBigScreen: Observable<boolean>;
 
-  constructor(@Attribute('disable-split') public disableSplit: boolean, private screenService: ScreenService, private iconRegistry: IconRegistryService) {
+  constructor(
+    @Attribute('disable-split') public disableSplit: boolean,
+    private layoutService: LayoutService,
+    private screenService: ScreenService,
+    private iconRegistry: IconRegistryService
+  ) {
     this.iconRegistry.registerIcons([verticalSplit]);
   }
 
@@ -168,11 +179,13 @@ export class ResponsiveTabContainerComponent implements OnInit, AfterContentInit
    */
   savePanelOrder() {
     this.isBigScreen.subscribe(() => {
-      this.options.panelOrder = [this.pID(this.mainTabView.findSelectedTab()), ...this.splitPanels.map(p => this.pID(p))];
-      if (this.options.panelOrder.length !== this.options.panelSizes.length) {
-        this.options.panelSizes = [];
+      this._layoutOptions.panelOrder = [this.pID(this.mainTabView.findSelectedTab()), ...this.splitPanels.map(p => this.pID(p))];
+      if (this._layoutOptions.panelOrder.length !== this._layoutOptions.panelSizes.length) {
+        this._layoutOptions.panelSizes = [];
       }
-      this.optionsChanged.emit(this.options);
+      if (this._layoutOptionsKey) {
+        this.layoutService.saveLayoutOptions(this._layoutOptionsKey, 'yuv-responsive-tab-container', this._layoutOptions).subscribe();
+      }
     });
   }
 
@@ -181,7 +194,7 @@ export class ResponsiveTabContainerComponent implements OnInit, AfterContentInit
    */
   loadPanelOrder() {
     this.isBigScreen.subscribe(() => {
-      const panelOrder = this.options.panelOrder || [];
+      const panelOrder = this._layoutOptions.panelOrder || [];
       if (panelOrder && panelOrder.length) {
         panelOrder.slice(1).forEach(id => this.splitPanelAdd(id));
         const tab = this.allPanels.find(p => this.pID(p) === panelOrder[0]);
@@ -191,7 +204,9 @@ export class ResponsiveTabContainerComponent implements OnInit, AfterContentInit
   }
 
   dragEnd(evt: any) {
-    this.options.panelSizes = evt.sizes;
-    this.optionsChanged.emit(this.options);
+    this._layoutOptions.panelSizes = evt.sizes;
+    if (this._layoutOptionsKey) {
+      this.layoutService.saveLayoutOptions(this._layoutOptionsKey, 'yuv-responsive-tab-container', this._layoutOptions).subscribe();
+    }
   }
 }

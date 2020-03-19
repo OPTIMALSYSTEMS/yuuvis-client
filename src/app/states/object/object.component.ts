@@ -1,19 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
-import {
-  AppCacheService,
-  BaseObjectTypeField,
-  DmsObject,
-  DmsService,
-  EventService,
-  SearchFilter,
-  SearchQuery,
-  TranslateService,
-  YuvEventType
-} from '@yuuvis/core';
-import { LayoutService } from '@yuuvis/framework';
-import { tap } from 'rxjs/operators';
+import { AppCacheService, DmsObject, DmsService, EventService, SearchQuery, TranslateService, YuvEventType } from '@yuuvis/core';
 import { takeUntilDestroy } from 'take-until-destroy';
 
 @Component({
@@ -25,24 +13,14 @@ import { takeUntilDestroy } from 'take-until-destroy';
   }
 })
 export class ObjectComponent implements OnInit, OnDestroy {
-  private STORAGE_KEY = 'yuv.app.object';
+  layoutOptionsStorageKey = 'yuv.app.object';
 
   contextBusy: boolean;
   contextError: string;
-  activeTabIndex: number;
   context: DmsObject;
   selectedItem: string;
   recentItems: string[] = [];
-  contextChildrenQuery: SearchQuery;
-  recentItemsQuery: SearchQuery;
   contextSearchQuery: SearchQuery;
-
-  private options = {
-    'yuv-responsive-master-slave': { useStateLayout: true },
-    'yuv-object-details': null,
-    'yuv-search-result-all': null,
-    'yuv-search-result-recent': null
-  };
 
   constructor(
     private route: ActivatedRoute,
@@ -50,27 +28,19 @@ export class ObjectComponent implements OnInit, OnDestroy {
     private translate: TranslateService,
     private title: Title,
     private router: Router,
-    private layoutService: LayoutService,
     private eventService: EventService,
     private appCacheService: AppCacheService
   ) {}
 
-  onOptionsChanged(options: any, component: string) {
-    this.options[component] = options;
-    // this.appCacheService.setItem(this.getStorageKey(), this.options).subscribe();
-    this.layoutService.saveComponentLayout(this.getOptionsStorageKey(), this.options).subscribe();
-  }
-
-  getOptions(component: string) {
-    return this.options[component];
-  }
-
-  private getOptionsStorageKey() {
-    return this.STORAGE_KEY;
+  contextItemsSelected(ids: string[]) {
+    if (ids && ids.length === 1) {
+      this.router.navigate(['.'], { fragment: ids[0], replaceUrl: !!this.selectedItem, relativeTo: this.route, queryParamsHandling: 'preserve' });
+      this.addRecentItem(ids[0]);
+    }
   }
 
   private getRecentItemsStorageKey() {
-    return this.context ? `${this.STORAGE_KEY}.${this.context.id}` : this.STORAGE_KEY;
+    return this.context ? `${this.layoutOptionsStorageKey}.${this.context.id}` : this.layoutOptionsStorageKey;
   }
 
   private setupSelectedItem(id) {
@@ -81,67 +51,52 @@ export class ObjectComponent implements OnInit, OnDestroy {
   private loadRecentItems() {
     this.appCacheService.getItem(this.getRecentItemsStorageKey()).subscribe(items => {
       this.recentItems = items || [];
-      this.setupRecentItemsQuery();
     });
   }
 
-  private addRecentItem(id) {
+  private addRecentItem(id: string) {
     this.recentItems = this.recentItems.filter(i => i !== id);
     this.recentItems.push(id);
-    this.setupRecentItemsQuery();
     if (this.context) {
       this.appCacheService.setItem(this.getRecentItemsStorageKey(), this.recentItems).subscribe();
     }
   }
 
-  private setupRecentItemsQuery() {
-    // TODO: Only set up new query if the items actually changed
-    const q = new SearchQuery();
-    q.addFilter(new SearchFilter(BaseObjectTypeField.OBJECT_ID, SearchFilter.OPERATOR.IN, this.recentItems.reverse()));
-    this.recentItemsQuery = q;
-  }
-
   private setupContext(contextID: string) {
     this.contextBusy = true;
-    this.dmsService
-      .getDmsObject(contextID)
-      .pipe(
-        tap((res: DmsObject) => {
-          this.context = res;
+    this.dmsService.getDmsObject(contextID).subscribe(
+      (dmsObject: DmsObject) => {
+        if (!dmsObject.isFolder) {
+          if (dmsObject.parentId) {
+            // got object from within a context, so we'll go there instead
+            this.router.navigate(['', dmsObject.parentId], {
+              fragment: dmsObject.id,
+              relativeTo: this.route,
+              replaceUrl: true
+            });
+          } else {
+            // got object that is just an object without context
+            this.router.navigate([''], {
+              fragment: 'standalone',
+              relativeTo: this.route,
+              replaceUrl: true
+            });
+          }
+        } else {
+          this.context = dmsObject;
           this.title.setTitle(this.context.title);
           this.loadRecentItems();
-          const q = new SearchQuery();
-          q.addFilter(new SearchFilter(BaseObjectTypeField.PARENT_ID, SearchFilter.OPERATOR.EQUAL, this.context.id));
-          // by default result will be sorted by modification date, in order to always retrieve items that
-          // were modified/created recently first
-          q.sortOptions = [
-            {
-              field: BaseObjectTypeField.MODIFICATION_DATE,
-              order: 'asc'
-            }
-          ];
-          this.contextChildrenQuery = q;
-        })
-      )
-      .subscribe(
-        _ => {
-          this.contextBusy = false;
-        },
-        err => {
-          this.contextBusy = false;
-          this.contextError = this.translate.instant('yuv.client.state.object.context.load.error');
         }
-      );
-  }
-
-  select(ids: string[]) {
-    if (ids && ids.length === 1) {
-      this.router.navigate(['.'], { fragment: ids[0], replaceUrl: !!this.selectedItem, relativeTo: this.route, queryParamsHandling: 'preserve' });
-    }
+        this.contextBusy = false;
+      },
+      err => {
+        this.contextBusy = false;
+        this.contextError = this.translate.instant('yuv.client.state.object.context.load.error');
+      }
+    );
   }
 
   ngOnInit() {
-    this.layoutService.loadComponentLayout(this.getOptionsStorageKey()).subscribe(o => (this.options = { ...this.options, ...o }));
     this.route.params.pipe(takeUntilDestroy(this)).subscribe((params: any) => {
       if (params.id) {
         this.setupContext(params.id);
@@ -150,7 +105,6 @@ export class ObjectComponent implements OnInit, OnDestroy {
     // query params may provide a query to be executed within this state
     this.route.queryParams.pipe(takeUntilDestroy(this)).subscribe((queryParams: any) => {
       this.contextSearchQuery = !!queryParams.query ? new SearchQuery(JSON.parse(queryParams.query)) : null;
-      this.activeTabIndex = !!this.contextSearchQuery ? 2 : 0;
     });
     // fragments are used to identify the selected item within the context
     this.route.fragment.pipe(takeUntilDestroy(this)).subscribe((fragment: any) => {

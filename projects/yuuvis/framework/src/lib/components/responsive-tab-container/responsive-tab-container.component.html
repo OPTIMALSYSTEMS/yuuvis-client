@@ -1,5 +1,5 @@
 <as-split (dragEnd)="dragEnd($event)">
-  <as-split-area [size]="(options?.panelSizes)[0]">
+  <as-split-area [size]="(_layoutOptions?.panelSizes)[0]">
     <p-tabView yuvOfflineDisabled="ul" #mainTabView (onChange)="onChange($event)" orientation="{{ orientation }}"
       [ngClass]="{noSplit: disableSplit}">
       <span yuvOfflineDisabled class="tab-navigation"
@@ -12,7 +12,7 @@
   </as-split-area>
 
   <as-split-area *ngFor="let panel of splitPanels; let index = index" class="secondary"
-    [size]="(options?.panelSizes)[index + 1]">
+    [size]="(_layoutOptions?.panelSizes)[index + 1]">
     <p-tabView yuvOfflineDisabled="ul" class=" split-tab-view" #splitTabView [controlClose]="true"
       (onClose)="splitPanelClose(panel, index)">
       <p-tabPanel [id]="pID(panel, '_empty')" [header]="panel.header" [closable]="true"></p-tabPanel>

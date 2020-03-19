@@ -8,6 +8,7 @@ export class DmsObject {
   id: string;
   title: string;
   description: string;
+  parentId: string;
   content: DmsObjectContent;
   data: any;
   contextFolder: DmsObjectContext;
@@ -28,6 +29,7 @@ export class DmsObject {
     this.id = searchResultItem.fields.get(BaseObjectTypeField.OBJECT_ID);
     this.objectTypeId = searchResultItem.objectTypeId;
     this.title = searchResultItem.fields.get(SecondaryObjectTypeField.TITLE);
+    this.parentId = searchResultItem.fields.get(BaseObjectTypeField.PARENT_ID);
     this.description = searchResultItem.fields.get(SecondaryObjectTypeField.DESCRIPTION);
     this.data = this.generateData(searchResultItem.fields);
 

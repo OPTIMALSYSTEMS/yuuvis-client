@@ -44,19 +44,27 @@ export class SearchResultPanelComponent {
    * List of result list item IDs supposed to be selected.
    */
   @Input() selectedItemIDs: string[];
+  // /**
+  //  * Options to be applied to the contained result list table.
+  //  * Currently these options will control the tables column sizes.
+  //  */
+  // @Input() set options(o: ResponsiveDataTableOptions) {
+  //   if (o) {
+  //     this.viewMode = o.viewMode;
+  //   }
+  //   this._options = o;
+  // }
+  // get options() {
+  //   return this._options;
+  // }
+
   /**
-   * Options to be applied to the contained result list table.
-   * Currently these options will control the tables column sizes.
+   * Providing a layout options key will enable the component to persist its layout settings
+   * in relation to a host component. The key is basically a unique key for the host, which
+   * will be used to store component specific settings using the layout service.
    */
-  @Input() set options(o: ResponsiveDataTableOptions) {
-    if (o) {
-      this.viewMode = o.viewMode;
-    }
-    this._options = o;
-  }
-  get options() {
-    return this._options;
-  }
+  @Input() layoutOptionsKey: string;
+
   /**
    * Emitted when column sizes of the contained result list table have been changed.
    */
@@ -120,12 +128,12 @@ export class SearchResultPanelComponent {
     this.queryChanged.emit(searchQuery);
   }
 
-  onSearchResultOptionsChanged(options: ResponsiveDataTableOptions) {
-    if (options) {
-      this.viewMode = options.viewMode;
-    }
-    this.optionsChanged.emit(options);
-  }
+  // onSearchResultOptionsChanged(options: ResponsiveDataTableOptions) {
+  //   if (options) {
+  //     this.viewMode = options.viewMode;
+  //   }
+  //   this.optionsChanged.emit(options);
+  // }
 
   openActionMenu() {
     if (this.selectedItemIDs) {

@@ -1,12 +1,13 @@
 import { ClientSideRowModelModule } from '@ag-grid-community/client-side-row-model';
 import { ColDef, GridOptions, Module, RowEvent, RowNode } from '@ag-grid-community/core';
-import { Component, EventEmitter, HostBinding, HostListener, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, ElementRef, EventEmitter, HostBinding, HostListener, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { BaseObjectTypeField, DeviceService, PendingChangesService, SystemService, Utils } from '@yuuvis/core';
 import { ResizedEvent } from 'angular-resize-event';
 import { Observable, ReplaySubject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { ColumnSizes } from '../../services/grid/grid.interface';
+import { LayoutService } from '../../services/layout/layout.service';
 import { ResponsiveTableData } from './responsive-data-table.interface';
 
 /**
@@ -38,7 +39,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
   private columnResizeSource = new ReplaySubject<any>();
   public columnResize$: Observable<ResizedEvent> = this.columnResizeSource.asObservable();
   private _data: ResponsiveTableData;
-  private _options: ResponsiveDataTableOptions = {};
+  private _layoutOptions: ResponsiveDataTableOptions = {};
   // array of row IDs that are currently selected
   private _currentSelection: string[] = [];
 
@@ -53,23 +54,29 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
 
   public modules: Module[] = [ClientSideRowModelModule];
 
-  @Output() optionsChanged = new EventEmitter<ResponsiveDataTableOptions>();
   @Output() rowDoubleClicked = new EventEmitter<RowEvent>();
 
-  @Input() set options(o: ResponsiveDataTableOptions) {
-    this._options = o || {};
-    if (this.gridOptions && this._data) {
-      this.gridOptions.api.setColumnDefs(this._options ? this.applyColDefOptions(this._data.columns, this._options.columnWidths) : this._data.columns);
+  /**
+   * Providing a layout options key will enable the component to persist its layout settings
+   * in relation to a host component. The key is basically a unique key for the host, which
+   * will be used to store component specific settings using the layout service.
+   */
+  private _layoutOptionsKey: string;
+  @Input() set layoutOptionsKey(lok: string) {
+    this._layoutOptionsKey = lok;
+    if (lok) {
+      this.layoutService.loadLayoutOptions(lok, 'yuv-responsive-data-table').subscribe((o: ResponsiveDataTableOptions) => {
+        this._layoutOptions = o || {};
+        if (this.gridOptions && this._data) {
+          this.gridOptions.api.setColumnDefs(
+            this._layoutOptions ? this.applyColDefOptions(this._data.columns, this._layoutOptions.columnWidths) : this._data.columns
+          );
+        }
+        if (o && o.viewMode) {
+          this.setupViewMode(o.viewMode);
+        }
+      });
     }
-    if (o && o.viewMode) {
-      // get a view mode from the options means that we should not emit
-      // this as view mode change, because otherwise it will result in
-      // persisting changes that are already comming from persisted options
-      this.setupViewMode(o.viewMode, true);
-    }
-  }
-  get options() {
-    return this._options;
   }
 
   /**
@@ -158,7 +165,13 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
     this.copyToClipboard('row');
   }
 
-  constructor(private pendingChanges: PendingChangesService, private systemService: SystemService, private deviceService: DeviceService) {
+  constructor(
+    private pendingChanges: PendingChangesService,
+    private elRef: ElementRef,
+    private layoutService: LayoutService,
+    private systemService: SystemService,
+    private deviceService: DeviceService
+  ) {
     // subscribe to the whole components size changing
     this.resize$
       .pipe(
@@ -181,10 +194,14 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
             width: columnState.width
           }))
         });
-        this.optionsChanged.emit({
-          viewMode: this.viewMode,
-          columnWidths: Utils.arrayToObject(this.gridOptions.columnApi.getColumnState(), 'colId', 'width')
-        });
+        if (this._layoutOptionsKey) {
+          this.layoutService
+            .saveLayoutOptions(this._layoutOptionsKey, 'yuv-responsive-data-table', {
+              viewMode: this.viewMode,
+              columnWidths: Utils.arrayToObject(this.gridOptions.columnApi.getColumnState(), 'colId', 'width')
+            })
+            .subscribe();
+        }
       }
     });
 
@@ -195,12 +212,11 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
   /**
    * Set up the components view mode.
    * @param viewMode The view mode to be set up
-   * @param silent Whether or not to prevent changes to be emitted
    */
-  private setupViewMode(viewMode: ViewMode, silent?: boolean) {
-    this._options.viewMode = viewMode;
-    if (!silent && this._viewMode && this._viewMode !== viewMode) {
-      this.optionsChanged.emit(this._options);
+  private setupViewMode(viewMode: ViewMode) {
+    this._layoutOptions.viewMode = viewMode;
+    if (this._layoutOptionsKey && this._viewMode && this._viewMode !== viewMode) {
+      this.layoutService.saveLayoutOptions(this._layoutOptionsKey, 'yuv-responsive-data-table', this._layoutOptions).subscribe();
     }
     this._viewMode = viewMode || 'standard';
     this.currentViewMode = this._viewMode === 'auto' ? this._autoViewMode : this._viewMode;
@@ -244,7 +260,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
   }
 
   private applyColDefOptions(columns: ColDef[], columnWidths: any): ColDef[] {
-    if (this._options.viewMode === 'standard' && columnWidths) {
+    if (this._layoutOptions.viewMode === 'standard' && columnWidths) {
       columns.forEach(c => {
         if (columnWidths[c.colId]) {
           c.width = columnWidths[c.colId];
@@ -263,7 +279,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
 
       const columns = this.isSmall ? [this.getSmallSizeColDef()] : this._data.columns;
       if (JSON.stringify(this.gridOptions.columnDefs) !== JSON.stringify(columns)) {
-        const cols = this._options ? this.applyColDefOptions(columns, this._options.columnWidths) : columns;
+        const cols = this._layoutOptions ? this.applyColDefOptions(columns, this._layoutOptions.columnWidths) : columns;
         this.gridOptions.columnDefs = cols;
         this.gridOptions.api.setColumnDefs(cols);
       }
@@ -271,9 +287,11 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
       if (this.isStandard && this._data.sortModel) {
         this.gridOptions.api.setSortModel([...this._data.sortModel]);
       }
-
-      if (this.isSmall) {
-        // gridOptions to be applied for the small view
+      const hidden = this.elRef.nativeElement.getBoundingClientRect().width === 0;
+      if (this.isSmall && !hidden) {
+        // gridOptions to be applied for the small view.
+        // Those options rely on the grids DOM element, so we need to keep track
+        // if the grid is currently visible (has a width)
         this.gridOptions.columnApi.autoSizeAllColumns();
         this.gridOptions.api.sizeColumnsToFit();
       }

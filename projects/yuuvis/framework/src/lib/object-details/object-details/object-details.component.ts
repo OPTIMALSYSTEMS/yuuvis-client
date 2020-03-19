@@ -1,4 +1,4 @@
-import { Component, EventEmitter, HostBinding, Input, Output } from '@angular/core';
+import { Component, HostBinding, Input } from '@angular/core';
 import { IconRegistryService } from '@yuuvis/common-ui';
 import { DmsObject, DmsService, SystemService, UserService } from '@yuuvis/core';
 import { CellRenderer } from '../../services/grid/grid.cellrenderer';
@@ -63,8 +63,12 @@ export class ObjectDetailsComponent {
     return this._objectId;
   }
 
-  @Input() options;
-  @Output() optionsChanged = new EventEmitter();
+  /**
+   * Providing a layout options key will enable the component to persist its layout settings
+   * in relation to a host component. The key is basically a unique key for the host, which
+   * will be used to store component specific settings using the layout service.
+   */
+  @Input() layoutOptionsKey: string;
 
   constructor(
     private dmsService: DmsService,

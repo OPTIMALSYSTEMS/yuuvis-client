@@ -139,15 +139,6 @@ export class FrameComponent implements OnInit {
       this.appSearch.setQuery(query);
       await this.router.navigate(['/result'], navigationExtras);
     }
-
-    // const contextFilter = query.getFilter(BaseObjectTypeField.PARENT_ID);
-    // if (!!contextFilter) {
-    //   const contextID = contextFilter.firstValue;
-    // }
-    // console.log('CTX SEARCH ' + !!query.getFilter(BaseObjectTypeField.PARENT_ID).firstValue);
-    // this.appSearch.setQuery(query);
-    // const navigationExtras: NavigationExtras = { queryParams: { query: JSON.stringify(query.toQueryJson()) } };
-    // await this.router.navigate(['/result'], navigationExtras);
   }
 
   updateWorker() {
@@ -166,19 +157,18 @@ export class FrameComponent implements OnInit {
 
   private getContextFromURL(url: string) {
     const contextUriPrefix = '/object/';
-    if (url.startsWith(contextUriPrefix)) {
+    // getting a #standalone fragment means that we got an object without context
+    if (url.startsWith(contextUriPrefix) && url.indexOf('#standalone') === -1) {
       const hashIdx = url.indexOf('#');
-      this.context = url.substring(contextUriPrefix.length, hashIdx === -1 ? url.length : hashIdx);
-      console.log(this.context);
+      const qmIdx = url.indexOf('?');
+      const eIdx = hashIdx > qmIdx ? qmIdx : hashIdx;
+      this.context = url.substring(contextUriPrefix.length, eIdx === -1 ? url.length : eIdx);
     } else {
       this.context = null;
     }
   }
 
   ngOnInit() {
-    // this.userService.user$.subscribe((user: YuvUser) => {
-    //   this.user = user;
-    // });
     this.authService.authenticated$.subscribe((authenticated: boolean) => {
       if (!authenticated) {
         const tenant = this.authService.getTenant();
