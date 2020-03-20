@@ -1,0 +1,21 @@
+:host {
+  display: block;
+  height: 100%;
+  box-sizing: border-box;
+  padding: var(--app-pane-padding);
+
+  .screen-s & {
+    padding: 0;
+
+    ::ng-deep {
+      .as-split-gutter {
+        border-top: 1px solid var(--panel-divider-color);
+        border-bottom: 1px solid var(--panel-divider-color);
+      }
+    }
+
+    .panel {
+      border: 0;
+    }
+  }
+}

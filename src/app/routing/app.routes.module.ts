@@ -9,6 +9,7 @@ import { NotFoundComponent } from '../states/not-found/not-found.component';
 import { ObjectComponent } from '../states/object/object.component';
 import { ResultComponent } from '../states/result/result.component';
 import { SettingsComponent } from '../states/settings/settings.component';
+import { VersionsComponent } from './../states/versions/versions.component';
 import { OfflineGuard } from './offline-guard/offline-guard.service';
 
 const routes: Routes = [
@@ -18,6 +19,7 @@ const routes: Routes = [
   { path: 'create', component: CreateComponent, canDeactivate: [OfflineGuard, PendingChangesGuard] },
   { path: 'result', component: ResultComponent, canDeactivate: [OfflineGuard, PendingChangesGuard] },
   { path: 'object/:id', component: ObjectComponent, canDeactivate: [OfflineGuard, PendingChangesGuard] },
+  { path: 'versions/:id', component: VersionsComponent, canDeactivate: [OfflineGuard, PendingChangesGuard] },
   // default route
   { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
   // 404 route
