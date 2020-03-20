@@ -88,12 +88,45 @@ $app-bar-zindex: 6;
       align-items: center;
       padding: 0 calc(var(--app-pane-padding) * 0.5);
 
-      yuv-icon {
+      > yuv-icon {
         padding: calc(var(--app-pane-padding) / 2);
 
         &:hover {
-          background-color: var(--color-accent);
-          color: #fff;
+          background-color: rgba(var(--color-accent-rgb), 0.2);
+          color: var(--color-accent);
+        }
+      }
+
+      .app-bar-search {
+        display: flex;
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        height: var(--app-bar-height);
+        box-shadow: 0 0 10px 10px rgba(0, 0, 0, 0.1);
+        background-color: var(--main-background);
+        animation: yuvFadeInDown 200ms;
+
+        .dark & {
+          border-bottom: 1px solid var(--panel-divider-color);
+        }
+
+        > button.close {
+          flex: 0 0 auto;
+          color: var(--text-color-hint);
+          padding: 0;
+          width: var(--app-bar-height);
+          height: var(--app-bar-height);
+          border: 0;
+
+          yuv-icon {
+            box-sizing: content-box;
+          }
+        }
+        yuv-quick-search {
+          flex: 1;
+          @include bidi-style(border-left, 1px solid var(--panel-divider-color), border-right, 1px solid var(--panel-divider-color));
         }
       }
     }

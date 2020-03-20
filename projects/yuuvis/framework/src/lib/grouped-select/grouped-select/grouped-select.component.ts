@@ -29,6 +29,11 @@ import { SelectableItemComponent } from './selectable-item/selectable-item.compo
  * > Clicking the label of an item will immediately reset the selection to the
  * > current item only. Hitting ENTER will also immediately select one item as long as there are no other items selected.
  *
+ * ### other properties
+ * **enableSelectAll** - When set to true, clicking of the groups title will select all group items (multiple only)
+ * **autofocus** - When set to true, the first item of the first group will be focused immediately
+ * **singleGroup** - When set to true, styles are applied to render the component for one group only *
+ *
  * @example
  * <yuv-grouped-select [groups]="groups" [multiple]="true"></yuv-grouped-select>
  */
@@ -101,6 +106,7 @@ export class GroupedSelectComponent implements AfterViewInit, ControlValueAccess
   }
 
   @HostBinding('class.multiple') _multiple: boolean = false;
+  @HostBinding('class.singleGroup') singleGroup: boolean = false;
   autofocus: boolean;
   enableSelectAll: boolean;
   columns: string = '';
@@ -125,9 +131,15 @@ export class GroupedSelectComponent implements AfterViewInit, ControlValueAccess
   private sizeSource = new Subject<{ width: number; height: number }>();
   private resized$: Observable<{ width: number; height: number }> = this.sizeSource.asObservable();
 
-  constructor(@Attribute('autofocus') autofocus: string, @Attribute('enableSelectAll') enableSelectAll: string, private elRef: ElementRef) {
+  constructor(
+    @Attribute('autofocus') autofocus: string,
+    @Attribute('singleGroup') singleGroup: string,
+    @Attribute('enableSelectAll') enableSelectAll: string,
+    private elRef: ElementRef
+  ) {
     this.autofocus = autofocus === 'true' ? true : false;
     this.enableSelectAll = enableSelectAll === 'true' ? true : false;
+    this.singleGroup = singleGroup === 'true' ? true : false;
   }
 
   groupFocused(group: SelectableGroup) {
@@ -162,8 +174,6 @@ export class GroupedSelectComponent implements AfterViewInit, ControlValueAccess
   }
 
   isSelected(item): boolean {
-    console.log('x');
-
     return this.selectedItems ? !!this.selectedItems.find(i => i.id === item.id) : false;
   }
 
@@ -181,7 +191,9 @@ export class GroupedSelectComponent implements AfterViewInit, ControlValueAccess
         this.selectedItems = this.selectedItems.filter(i => !groupItemIDs.includes(i.id));
       } else {
         // add the group items that are not already part of the selection
-        group.items.filter(i => !selectedItemsIDs.includes(i.id)).forEach(i => this.selectedItems.push(i));
+        const sel = [...this.selectedItems];
+        group.items.filter(i => !selectedItemsIDs.includes(i.id)).forEach(i => sel.push(i));
+        this.selectedItems = sel;
       }
       this.propagateChange(this.selectedItems);
     }

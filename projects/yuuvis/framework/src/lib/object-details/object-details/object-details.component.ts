@@ -61,9 +61,6 @@ export class ObjectDetailsComponent {
     return this._objectId;
   }
 
-  @Input() standaloneFullscreen: boolean;
-  @Output() standaloneFullscreenBackButtonClick = new EventEmitter();
-
   @Input() options;
   @Output() optionsChanged = new EventEmitter();
 
@@ -76,10 +73,6 @@ export class ObjectDetailsComponent {
   ) {
     this.iconRegistry.registerIcons([refresh, kebap, noFile]);
     this.userIsAdmin = this.userService.hasAdministrationRoles;
-  }
-
-  standaloneBackButtonClicked() {
-    this.standaloneFullscreenBackButtonClick.emit();
   }
 
   onFileDropped(file: File) {

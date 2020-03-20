@@ -1,4 +1,5 @@
 export const SystemType = {
+  OBJECT: 'system:object',
   DOCUMENT: 'system:document',
   FOLDER: 'system:folder',
   AUDIT: 'system:audit'
@@ -67,3 +68,9 @@ export const ParentField = {
   asvvorgangsname: 'tenKolibri:asvvorgangsname',
   asvvorgangsnummer: 'tenKolibri:asvvorgangsnummer'
 };
+
+export enum ContentStreamAllowed {
+  ALLOWED = 'allowed',
+  NOT_ALLOWED = 'notallowed',
+  REQUIRED = 'required'
+}

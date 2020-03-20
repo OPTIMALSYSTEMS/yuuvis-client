@@ -2,7 +2,7 @@
 
 $yuv-panel-header-height: 110px;
 $yuv-panel-footer-height: 50px;
-$yuv-panel-toolbar-icon: 37px;
+$yuv-result-header-height: 38px;
 
 .yuv-search-result {
   height: 100%;
@@ -10,65 +10,10 @@ $yuv-panel-toolbar-icon: 37px;
 
   .grid-container {
     display: grid;
-    grid-template-columns: auto 1fr;
+    grid-template-columns: 1fr;
     grid-template-rows: 1fr;
-    grid-template-areas: 'toolbar table';
+    grid-template-areas: 'table';
     height: 100%;
-    border-top: 1px solid var(--panel-divider-color);
-
-    &.toolbar-open {
-      grid-template-columns: 400px 1fr;
-
-      .toolbar {
-        .toggle yuv-icon {
-          transform: rotate(180deg);
-        }
-        yuv-quick-search {
-          width: 100%;
-        }
-      }
-    }
-  }
-
-  .toolbar {
-    grid-area: toolbar;
-    color: var(--text-color-caption);
-    display: flex;
-    flex-flow: column;
-    justify-content: flex-start;
-    background-color: var(--panel-background-grey);
-    border-right: 1px solid var(--panel-divider-color);
-
-    .screen-s & {
-      display: none;
-    }
-
-    .toggle {
-      border-bottom: 1px solid var(--panel-divider-color);
-      display: flex;
-      justify-content: flex-end;
-
-      yuv-icon {
-        width: $yuv-panel-toolbar-icon;
-        height: $yuv-panel-toolbar-icon;
-        padding: 4px;
-        cursor: pointer;
-        transition: all 200ms;
-
-        &:hover {
-          background-color: var(--panel-divider-color);
-        }
-      }
-    }
-
-    .toolbar-content {
-      background-color: var(--panel-background-lightgrey);
-      flex: 1;
-
-      yuv-quick-search {
-        border-bottom: 1px solid var(--panel-divider-color);
-      }
-    }
   }
 
   .table {
@@ -113,16 +58,40 @@ $yuv-panel-toolbar-icon: 37px;
         padding: 0 calc(var(--app-pane-padding) / 4);
       }
 
+      .status {
+        padding: 0 calc(var(--app-pane-padding) / 2);
+      }
+
+      .mode {
+        yuv-icon {
+          padding: 4px;
+          cursor: pointer;
+          transition: all 200ms;
+
+          &:hover {
+            background-color: var(--panel-divider-color);
+          }
+
+          &.mode {
+            width: 18px;
+            height: 18px;
+            box-sizing: content-box;
+            border-radius: 2px;
+          }
+
+          &.current {
+            background-color: var(--panel-divider-color);
+            color: var(--text-color-body);
+          }
+        }
+      }
+
       button {
         padding: 0;
+        display: flex;
         .first,
         .prev {
           transform: rotate(180deg);
-        }
-
-        &.current {
-          background-color: var(--color-accent);
-          color: #fff;
         }
       }
 

@@ -1,6 +1,17 @@
 :host {
   display: block;
 
+  &.singleGroup {
+    .container {
+      padding: 0;
+
+      .group {
+        margin: 0;
+        border: 0;
+      }
+    }
+  }
+
   .container {
     display: flex;
     flex-flow: row wrap;
@@ -12,15 +23,9 @@
       yuv-checkbox {
         display: none;
       }
-      &:focus,
-      &:focus-within {
-        outline: transparent !important;
-      }
     }
     .group {
       .screen-s & {
-        position: relative;
-        top: calc(var(--app-pane-padding) * 3);
         box-shadow: none;
       }
     }

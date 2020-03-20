@@ -14,7 +14,10 @@
         "label": "English",
         "fallback": true
       }
-    ]
+    ],
+    "logging": {
+      "level": "debug"
+    }
   },
   "client": {
     "docu": {

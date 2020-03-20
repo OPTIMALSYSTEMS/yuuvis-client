@@ -103,12 +103,6 @@ $range-selection-highlight-color: $primary-color;
           flex-wrap: wrap;
           padding: var(--app-pane-padding);
           align-content: flex-start;
-
-          // @supports (-ms-ime-align: auto) {
-          //   & {
-          //     justify-content: space-around; // Edge
-          //   }
-          // }
         }
         .ag-row {
           border: 0;
@@ -123,26 +117,16 @@ $range-selection-highlight-color: $primary-color;
             background-color: var(--panel-background);
           }
 
-          &.ag-row-focus .ag-cell-focus,
-          &.ag-row-focus {
-            // background-color: transparent;
-            // .rdt-row {
-            //   border-color: rgba(var(--color-accent-rgb), 0.3);
-            //   // background-color: var(--item-focus-background-color);
-            //   .head {
-            //     // background-color: rgba(var(--color-accent-rgb), 0.3);
-            //     border-color: rgba(var(--color-accent-rgb), 0.3);
-            //   }
-            // }
-          }
+          // &.ag-row-focus .ag-cell-focus,
+          // &.ag-row-focus {
+          // }
           &.ag-row-selected {
             background-color: transparent;
             .rdt-row {
-              background-color: rgba(var(--color-accent-rgb), 0.7);
-              border-color: var(--color-accent);
+              border-color: rgba(var(--color-accent-rgb), 0.5);
               .head {
-                background-color: var(--color-accent);
-                border-color: var(--color-accent);
+                background-color: rgba(var(--color-accent-rgb), 0.5);
+                border-color: transparent;
                 color: #fff;
                 svg {
                   opacity: 0.8;

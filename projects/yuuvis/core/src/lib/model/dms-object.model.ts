@@ -1,8 +1,8 @@
 import { SearchResultItem } from '../service/search/search.service.interface';
 import { BaseObjectTypeField } from '../service/system/system.enum';
+import { ObjectType } from '../service/system/system.interface';
 import { SecondaryObjectTypeField } from './../service/system/system.enum';
 import { DmsObjectContent, DmsObjectContext, DmsObjectRights } from './dms-object.interface';
-import { ObjectType } from './object-type.model';
 
 export class DmsObject {
   id: string;

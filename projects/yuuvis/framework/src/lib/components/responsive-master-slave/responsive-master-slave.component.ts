@@ -8,13 +8,13 @@ import { ResponsiveMasterSlaveOptions } from './responsive-master-slave.interfac
  * and slave side by side on larger screens. Panes are in this case by default
  * divided by a draggable divider.
  *
- * On small screens either master or slave pane is shown. Using `detailsActive` input
+ * On small screens either master or slave pane is shown. Using `slaveActive` input
  * will control whether or not the slave pane is visible. Use `slaveClosed` event
  * callback to act upon the slave panel being closed (This should at least reset
- * `detailsActive` input to avoid inconsistancies).
+ * `slaveActive` input to avoid inconsistancies).
  *
  ```html
- <yuv-responsive-master-slave [detailsActive]="..." (slaveClosed)="...">
+ <yuv-responsive-master-slave [slaveActive]="..." (slaveClosed)="...">
     <... class="yuv-master"></...>
     <... class="yuv-slave"></...>
  </<yuv-responsive-master-slave>
@@ -55,7 +55,7 @@ export class ResponsiveMasterSlaveComponent implements OnInit, OnDestroy {
   private _options: ResponsiveMasterSlaveOptions = {};
 
   @HostBinding('class.yuv-responsive-master-slave') _hostClass = true;
-  @HostBinding('class.detailsActive') _detailsActive: boolean;
+  @HostBinding('class.slaveActive') _slaveActive: boolean;
 
   /**
    * Using options input you can configure how the component should behave.
@@ -68,20 +68,24 @@ export class ResponsiveMasterSlaveComponent implements OnInit, OnDestroy {
    * - **useStateLayout:** Using state layout means that the component is used as the base layout of a state view. This will apply some classes to the components and its panels. It will setup a padding to the component itself and apply a default panel style (white background and slight shadow) to master and slave component.
    */
   @Input() set options(o: ResponsiveMasterSlaveOptions) {
+    const prev = JSON.stringify(this._options);
     const direction = this.useSmallDeviceLayout ? 'vertical' : o.direction || 'horizontal';
     this._options = { ...(direction === 'vertical' ? this.verticalOptions : this.horizontalOptions), ...(direction === o.direction ? o : {}) };
-    const { masterSize, slaveSize } = this.options;
-    this.optionsChanged.emit({ masterSize, slaveSize, direction });
+    if (prev !== JSON.stringify(this._options)) {
+      // only emit when there are actual changes
+      const { masterSize, slaveSize } = this.options;
+      this.optionsChanged.emit({ masterSize, slaveSize, direction });
+    }
   }
   get options(): ResponsiveMasterSlaveOptions {
     return this._options;
   }
-  @Input() set detailsActive(a: boolean) {
-    this._detailsActive = !!a;
-    this.visible.slave = this._detailsActive;
+  @Input() set slaveActive(a: boolean) {
+    this._slaveActive = !!a;
+    this.visible.slave = this._slaveActive;
   }
-  get detailsActive() {
-    return this._detailsActive;
+  get slaveActive() {
+    return this._slaveActive;
   }
   @Output() slaveClosed = new EventEmitter();
   @Output() optionsChanged = new EventEmitter();

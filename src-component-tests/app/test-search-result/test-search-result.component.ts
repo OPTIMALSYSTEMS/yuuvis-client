@@ -17,6 +17,12 @@ export class TestSearchResultComponent implements OnInit {
     });
   }
 
+  setSingleTypeQuery() {
+    this.query = new SearchQuery({
+      types: ['appPersonalfile:pfpersonalfile']
+    });
+  }
+
   clearQuery() {
     this.query = null;
   }

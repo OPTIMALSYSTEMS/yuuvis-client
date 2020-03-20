@@ -33,6 +33,7 @@ export interface SearchResultContent {
 export interface SearchQueryProperties {
   term?: string;
   size?: number;
+  fields?: string[];
   from?: number;
   aggs?: string[];
   maxItems?: number;

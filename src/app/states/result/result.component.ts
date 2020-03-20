@@ -3,7 +3,8 @@ import { PlatformLocation } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AppCacheService, PendingChangesService, Screen, ScreenService, SearchQuery, TranslateService } from '@yuuvis/core';
+import { PendingChangesService, Screen, ScreenService, SearchQuery, TranslateService } from '@yuuvis/core';
+import { LayoutService } from '@yuuvis/framework';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { AppSearchService } from '../../service/app-search.service';
 
@@ -18,7 +19,7 @@ export class ResultComponent implements OnInit, OnDestroy {
   searchQuery: SearchQuery;
   selectedItems: string[] = [];
   smallScreen: boolean;
-  private options = {
+  options = {
     'yuv-responsive-master-slave': { useStateLayout: true },
     'yuv-search-result-panel': null,
     'yuv-object-details': null
@@ -27,7 +28,7 @@ export class ResultComponent implements OnInit, OnDestroy {
   constructor(
     private titleService: Title,
     private screenService: ScreenService,
-    private appCacheService: AppCacheService,
+    private layoutService: LayoutService,
     public translate: TranslateService,
     private location: PlatformLocation,
     private appSearch: AppSearchService,
@@ -56,12 +57,11 @@ export class ResultComponent implements OnInit, OnDestroy {
   }
 
   onOptionsChanged(options: any, component: string) {
-    this.options[component] = options;
-    this.appCacheService.setItem(this.getStorageKey(), this.options).subscribe();
-  }
-
-  getOptions(component: string) {
-    return this.options[component];
+    // do not set this.options because it is an input as well (circle in->out->in)
+    const o = { ...this.options };
+    o[component] = { ...options };
+    // this.appCacheService.setItem(this.getStorageKey(), o).subscribe();
+    this.layoutService.saveComponentLayout(this.getStorageKey(), o).subscribe();
   }
 
   select(items: string[]) {
@@ -84,7 +84,8 @@ export class ResultComponent implements OnInit, OnDestroy {
     // extract the query from the route params
     this.route.queryParamMap.pipe(takeUntilDestroy(this)).subscribe(params => {
       this.searchQuery = params.get('query') ? new SearchQuery(JSON.parse(params.get('query'))) : null;
-      this.appCacheService.getItem(this.getStorageKey()).subscribe(o => (this.options = { ...this.options, ...o }));
+      // this.appCacheService.getItem(this.getStorageKey()).subscribe(o => (this.options = { ...this.options, ...o }));
+      this.layoutService.loadComponentLayout(this.getStorageKey()).subscribe(o => (this.options = { ...this.options, ...o }));
     });
   }
 

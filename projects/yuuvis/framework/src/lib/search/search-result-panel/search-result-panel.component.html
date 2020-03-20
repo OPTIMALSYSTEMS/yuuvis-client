@@ -1,21 +1,24 @@
-<yuv-panel class="search-result" [title]="'yuv.framework.search-result-panel.header.title' | translate" [description]="queryDescription">
-  <yuv-icon class="header-icon" [icon]="'search'"></yuv-icon>
+<yuv-panel class="search-result" [title]="'yuv.framework.search-result-panel.header.title' | translate"
+  [description]="queryDescription">
 
   <yuv-action-menu-bar class="actions" yuvOfflineDisabled>
-    <yuv-icon (click)="refresh()" [title]="'yuv.framework.list.refresh' | translate" class="button refresh-button" [icon]="'refresh'"></yuv-icon>
-    <yuv-icon class="header-icon" (click)="openActionMenu()" [icon]="'kebap'" [ngClass]="{ disabled: !selectedItemIDs?.length }"> </yuv-icon>
+    <yuv-icon class="config" icon="settings" (click)="showColumnConfigEditor()" *ngIf="viewMode === 'standard'">
+    </yuv-icon>
+    <yuv-icon (click)="refresh()" [title]="'yuv.framework.list.refresh' | translate" class="button refresh-button"
+      [icon]="'refresh'"></yuv-icon>
+    <yuv-icon class="header-icon" (click)="openActionMenu()" [icon]="'kebap'"
+      [ngClass]="{ disabled: !selectedItemIDs?.length }"> </yuv-icon>
   </yuv-action-menu-bar>
 
-  <yuv-search-result
-    class="content"
-    [query]="_searchQuery"
-    [selectedItemIDs]="selectedItemIDs"
-    (itemsSelected)="onItemsSelected($event)"
-    (queryChanged)="onQueryChangedFromWithin($event)"
-    (optionsChanged)="optionsChanged.emit($event)"
-    [options]="options"
-    (rowDoubleClicked)="rowDoubleClicked.emit($event)"
-  >
+  <yuv-search-result class="content" [query]="_searchQuery" applyColumnConfig="true" [selectedItemIDs]="selectedItemIDs"
+    (itemsSelected)="onItemsSelected($event)" (queryChanged)="onQueryChangedFromWithin($event)"
+    (optionsChanged)="onSearchResultOptionsChanged($event)" [options]="options"
+    (rowDoubleClicked)="rowDoubleClicked.emit($event)">
   </yuv-search-result>
 </yuv-panel>
 <yuv-action-menu [(visible)]="actionMenuVisible" [selection]="actionMenuSelection"> </yuv-action-menu>
+
+<!-- column config editor overlay -->
+<ng-template #tplColumnConfigPicker let-data let-popover="popover">
+  <yuv-column-config [type]="data" (configSaved)="columnConfigChanged($event, popover)"></yuv-column-config>
+</ng-template>

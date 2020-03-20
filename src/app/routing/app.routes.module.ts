@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { PendingChangesGuard } from '@yuuvis/core';
 import { AboutComponent } from '../states/about/component/about.component';
+import { ColumnConfigurationComponent } from '../states/column-configuration/column-configuration.component';
 import { CreateComponent } from '../states/create/create.component';
 import { DashboardComponent } from '../states/dashboard/dashboard.component';
 import { NotFoundComponent } from '../states/not-found/not-found.component';
@@ -15,6 +16,7 @@ import { OfflineGuard } from './offline-guard/offline-guard.service';
 const routes: Routes = [
   { path: 'dashboard', component: DashboardComponent, canDeactivate: [OfflineGuard] },
   { path: 'settings', component: SettingsComponent, canDeactivate: [OfflineGuard] },
+  { path: 'config/column-config', component: ColumnConfigurationComponent, canDeactivate: [OfflineGuard] },
   { path: 'about', component: AboutComponent },
   { path: 'create', component: CreateComponent, canDeactivate: [OfflineGuard, PendingChangesGuard] },
   { path: 'result', component: ResultComponent, canDeactivate: [OfflineGuard, PendingChangesGuard] },

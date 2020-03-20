@@ -8,6 +8,7 @@ import { AngularSplitModule } from 'angular-split';
 import { ToastrModule } from 'ngx-toastr';
 import { OverlayPanelModule } from 'primeng/overlaypanel';
 import { ActionModule } from './actions/action.module';
+import { YuvColumnConfigModule } from './column-config/column-config.module';
 import { YuvComponentsModule } from './components/components.module';
 import { YuvDirectivesModule } from './directives/directives.module';
 import { YuvFormModule } from './form/form.module';
@@ -44,6 +45,7 @@ import { YuvUserModule } from './user/user.module';
     YuvUserModule,
     YuvCommonUiModule,
     YuvObjectDetailsModule,
+    YuvColumnConfigModule,
     YuvObjectCreateModule,
     YuvPipesModule,
     OverlayPanelModule,
@@ -61,6 +63,7 @@ import { YuvUserModule } from './user/user.module';
     YuvPopoverModule,
     YuvComponentsModule,
     YuvObjectDetailsModule,
+    YuvColumnConfigModule,
     YuvPipesModule,
     YuvSearchModule,
     YuvUserModule,

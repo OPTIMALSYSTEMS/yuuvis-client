@@ -53,7 +53,9 @@ export class PopoverService {
       backdropClass: config.backdropClass,
       panelClass: config.panelClass,
       positionStrategy,
-      scrollStrategy: this.overlay.scrollStrategies.reposition()
+      scrollStrategy: this.overlay.scrollStrategies.reposition(),
+      maxHeight: config.maxHeight,
+      maxWidth: config.maxWidth
     };
 
     const overlayRef = this.overlay.create(overlayConfig);

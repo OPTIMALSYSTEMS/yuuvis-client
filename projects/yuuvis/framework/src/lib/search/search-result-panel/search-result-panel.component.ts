@@ -1,7 +1,11 @@
 import { RowEvent } from '@ag-grid-community/core';
-import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { Attribute, Component, EventEmitter, Input, Output, TemplateRef, ViewChild } from '@angular/core';
 import { IconRegistryService } from '@yuuvis/common-ui';
-import { DmsService, SearchQuery, SystemService, TranslateService } from '@yuuvis/core';
+import { ColumnConfig, DmsService, SearchQuery, SystemService, TranslateService } from '@yuuvis/core';
+import { ResponsiveDataTableOptions, ViewMode } from '../../components/responsive-data-table/responsive-data-table.component';
+import { PopoverConfig } from '../../popover/popover.interface';
+import { PopoverRef } from '../../popover/popover.ref';
+import { PopoverService } from '../../popover/popover.service';
 import { kebap, refresh, search } from '../../svg.generated';
 import { SearchResultComponent } from '../search-result/search-result.component';
 
@@ -13,17 +17,25 @@ import { SearchResultComponent } from '../search-result/search-result.component'
 export class SearchResultPanelComponent {
   // icons used within the template
   _searchQuery: SearchQuery;
+  _options: ResponsiveDataTableOptions;
+  columnConfigInput: any;
+  viewMode: ViewMode;
   queryDescription: string;
   actionMenuVisible = false;
   actionMenuSelection = [];
 
   @ViewChild(SearchResultComponent, { static: false }) searchResultComponent: SearchResultComponent;
+  @ViewChild('tplColumnConfigPicker', { static: false }) tplColumnConfigPicker: TemplateRef<any>;
 
   /**
    * Search query to be executed and rendered in the result list.
    */
   @Input() set query(searchQuery: SearchQuery) {
     this._searchQuery = searchQuery;
+    this.columnConfigInput = searchQuery && searchQuery.types && searchQuery.types.length === 1 ? searchQuery.types[0] : this.systemService.getBaseType();
+    if (searchQuery && searchQuery.types && searchQuery.types.length === 1) {
+      this.columnConfigInput = searchQuery.types[0];
+    }
     if (searchQuery) {
       this.generateQueryDescription();
     }
@@ -36,11 +48,19 @@ export class SearchResultPanelComponent {
    * Options to be applied to the contained result list table.
    * Currently these options will control the tables column sizes.
    */
-  @Input() options;
+  @Input() set options(o: ResponsiveDataTableOptions) {
+    if (o) {
+      this.viewMode = o.viewMode;
+    }
+    this._options = o;
+  }
+  get options() {
+    return this._options;
+  }
   /**
    * Emitted when column sizes of the contained result list table have been changed.
    */
-  @Output() optionsChanged = new EventEmitter();
+  @Output() optionsChanged = new EventEmitter<ResponsiveDataTableOptions>();
   /**
    * Emits a list of IDs of items that has been selected.
    */
@@ -59,8 +79,10 @@ export class SearchResultPanelComponent {
   @Output() queryDescriptionChange = new EventEmitter<string>();
 
   constructor(
+    @Attribute('applyColumnConfig') public applyColumnConfig: boolean,
     private translate: TranslateService,
     private systemService: SystemService,
+    private popoverService: PopoverService,
     private dmsService: DmsService,
     private iconRegistry: IconRegistryService
   ) {
@@ -98,12 +120,36 @@ export class SearchResultPanelComponent {
     this.queryChanged.emit(searchQuery);
   }
 
+  onSearchResultOptionsChanged(options: ResponsiveDataTableOptions) {
+    if (options) {
+      this.viewMode = options.viewMode;
+    }
+    this.optionsChanged.emit(options);
+  }
+
   openActionMenu() {
     if (this.selectedItemIDs) {
       this.dmsService.getDmsObjects(this.selectedItemIDs).subscribe(items => {
         this.actionMenuSelection = items;
         this.actionMenuVisible = true;
       });
+    }
+  }
+
+  showColumnConfigEditor() {
+    const popoverConfig: PopoverConfig = {
+      width: '55%',
+      height: '70%',
+      data: this.columnConfigInput
+    };
+    this.popoverService.open(this.tplColumnConfigPicker, popoverConfig);
+  }
+
+  columnConfigChanged(columnConfig: ColumnConfig, popoverRef?: PopoverRef) {
+    this.refresh();
+
+    if (popoverRef) {
+      popoverRef.close();
     }
   }
 }

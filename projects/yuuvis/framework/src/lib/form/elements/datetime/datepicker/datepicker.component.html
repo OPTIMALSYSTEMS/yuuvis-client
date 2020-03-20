@@ -1,4 +1,5 @@
 <div class="date-picker">
+
   <div class="select">
     <div class="year">
       <div class="back">
@@ -28,71 +29,74 @@
     </div>
   </div>
 
-  <div class="calendar">
-    <div class="week names">
-      <div *ngFor="let _day of weekdaysShort">
-        <span class="day">{{ _day }}</span>
+  <div class="contents">
+    <div class="calendar">
+      <div class="week names">
+        <div *ngFor="let _day of weekdaysShort">
+          <span class="day">{{ _day }}</span>
+        </div>
+      </div>
+
+      <div class="week" *ngFor="let week of weeks; trackBy: trackByFn">
+        <div *ngFor="let day of week.days; trackBy: trackByFn">
+          <span class="day" *ngIf="!day.disabled"
+            [ngClass]="{ today: day.isToday, 'different-month': !day.isCurrentMonth, selected: isSelectedDay(day.date) }"
+            (click)="setCalenderDate(day.date)"
+            (dblclick)="setCalenderDate(day.date);selectValue()">{{ day.number }}</span>
+          <span class="day disabled" *ngIf="day.disabled"
+            [ngClass]="{ today: day.isToday, 'different-month': !day.isCurrentMonth, selected: isSelectedDay(day.date) }">{{ day.number }}</span>
+        </div>
       </div>
     </div>
 
-    <div class="week" *ngFor="let week of weeks; trackBy: trackByFn">
-      <div *ngFor="let day of week.days; trackBy: trackByFn">
-        <span class="day" *ngIf="!day.disabled"
-          [ngClass]="{ today: day.isToday, 'different-month': !day.isCurrentMonth, selected: isSelectedDay(day.date) }"
-          (click)="setCalenderDate(day.date)"
-          (dblclick)="setCalenderDate(day.date);selectValue()">{{ day.number }}</span>
-        <span class="day disabled" *ngIf="day.disabled"
-          [ngClass]="{ today: day.isToday, 'different-month': !day.isCurrentMonth, selected: isSelectedDay(day.date) }">{{ day.number }}</span>
+    <div class="date-chips">
+      <button class="chip" *ngIf="withTime" (click)="setDateByType('now')" (dblclick)="setDateByType('now', true)"
+        translate>yuv.framework.search.agg.time.now</button>
+      <button class="chip" (click)="setDateByType('today')" (dblclick)="setDateByType('today', true)"
+        translate>yuv.framework.search.agg.time.today</button>
+      <button class="chip" (click)="setDateByType('yesterday')" (dblclick)="setDateByType('yesterday', true)"
+        translate>yuv.framework.search.agg.time.yesterday</button>
+      <button class="chip" (click)="setDateByType('thisweek')" (dblclick)="setDateByType('thisweek', true)"
+        translate>yuv.framework.search.agg.time.thisweek</button>
+      <button class="chip" (click)="setDateByType('thismonth')" (dblclick)="setDateByType('thismonth', true)"
+        translate>yuv.framework.search.agg.time.thismonth</button>
+      <button class="chip" (click)="setDateByType('thisyear')" (dblclick)="setDateByType('thisyear', true)"
+        translate>yuv.framework.search.agg.time.thisyear</button>
+    </div>
+
+    <div class="time" *ngIf="withTime">
+      <div class="value val-h">
+        {{ timeToString(selected.getHours(), withAmPm) }}
       </div>
-    </div>
-  </div>
+      <div class="controls ctrl-h">
+        <button class="icon btn-up" (click)="addTime(1)">
+          <yuv-icon [icon]="'arrowDown'"></yuv-icon>
+        </button>
+        <button class="icon btn-down" (click)="addTime(-1)">
+          <yuv-icon [icon]="'arrowDown'"></yuv-icon>
+        </button>
+      </div>
 
-  <div class="date-chips">
-    <button class="chip" *ngIf="withTime" (click)="setDateByType('now')" (dblclick)="setDateByType('now', true)"
-      translate>yuv.framework.search.agg.time.now</button>
-    <button class="chip" (click)="setDateByType('today')" (dblclick)="setDateByType('today', true)"
-      translate>yuv.framework.search.agg.time.today</button>
-    <button class="chip" (click)="setDateByType('yesterday')" (dblclick)="setDateByType('yesterday', true)"
-      translate>yuv.framework.search.agg.time.yesterday</button>
-    <button class="chip" (click)="setDateByType('thisweek')" (dblclick)="setDateByType('thisweek', true)"
-      translate>yuv.framework.search.agg.time.thisweek</button>
-    <button class="chip" (click)="setDateByType('thismonth')" (dblclick)="setDateByType('thismonth', true)"
-      translate>yuv.framework.search.agg.time.thismonth</button>
-    <button class="chip" (click)="setDateByType('thisyear')" (dblclick)="setDateByType('thisyear', true)"
-      translate>yuv.framework.search.agg.time.thisyear</button>
-  </div>
+      <div class="value val-sep">:</div>
+      <div class="value val-min">{{ timeToString(selected.getMinutes()) }}</div>
+      <div class="controls ctrl-min">
+        <button class="icon btn-up" (click)="addTime(0, 1)">
+          <yuv-icon [icon]="'arrowDown'"></yuv-icon>
+        </button>
+        <button class="icon btn-down" (click)="addTime(0, -1)">
+          <yuv-icon [icon]="'arrowDown'"></yuv-icon>
+        </button>
+      </div>
 
-  <div class="time" *ngIf="withTime">
-    <div class="value val-h">
-      {{ timeToString(selected.getHours(), withAmPm) }}
-    </div>
-    <div class="controls ctrl-h">
-      <button class="icon btn-up" (click)="addTime(1)">
-        <yuv-icon [icon]="'arrowDown'"></yuv-icon>
-      </button>
-      <button class="icon btn-down" (click)="addTime(-1)">
-        <yuv-icon [icon]="'arrowDown'"></yuv-icon>
-      </button>
-    </div>
-
-    <div class="value val-sep">:</div>
-    <div class="value val-min">{{ timeToString(selected.getMinutes()) }}</div>
-    <div class="controls ctrl-min">
-      <button class="icon btn-up" (click)="addTime(0, 1)">
-        <yuv-icon [icon]="'arrowDown'"></yuv-icon>
-      </button>
-      <button class="icon btn-down" (click)="addTime(0, -1)">
-        <yuv-icon [icon]="'arrowDown'"></yuv-icon>
-      </button>
-    </div>
-
-    <div class="controls ctrl-am-pm" *ngIf="withAmPm">
-      <button class="" [ngClass]="{ primary: inRange() }" (click)="addTime(inRange() ? 0 : -12)">AM</button>
-      <button class="" [ngClass]="{ primary: !inRange() }" (click)="addTime(inRange() ? 12 : 0)">PM</button>
+      <div class="controls ctrl-am-pm" *ngIf="withAmPm">
+        <button class="" [ngClass]="{ primary: inRange() }" (click)="addTime(inRange() ? 0 : -12)">AM</button>
+        <button class="" [ngClass]="{ primary: !inRange() }" (click)="addTime(inRange() ? 12 : 0)">PM</button>
+      </div>
     </div>
   </div>
 
   <div class="actions">
+    <button (click)="cancel()" translate>yuv.framework.shared.cancel</button>
     <button class="primary" (click)="selectValue()" translate>yuv.framework.form.datepicker.select</button>
   </div>
 </div>

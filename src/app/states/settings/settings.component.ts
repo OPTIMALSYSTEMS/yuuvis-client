@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
+import { Router } from '@angular/router';
+import { IconRegistryService } from '@yuuvis/common-ui';
 import { ConfigService, TranslateService, UserService, YuvUser } from '@yuuvis/core';
 import { LayoutService, LayoutSettings } from '@yuuvis/framework';
 import { Observable } from 'rxjs';
-import { IconRegistryService } from '@yuuvis/common-ui';
 import { shield } from '../../../assets/default/svg/svg';
 
 @Component({
@@ -22,6 +23,7 @@ export class SettingsComponent implements OnInit {
 
   constructor(
     private translate: TranslateService,
+    private router: Router,
     private layoutService: LayoutService,
     private titleService: Title,
     public config: ConfigService,
@@ -59,6 +61,10 @@ export class SettingsComponent implements OnInit {
 
   clearLayout() {
     this.layoutService.clearLayout().subscribe();
+  }
+
+  editColumnConfig() {
+    this.router.navigate(['config/column-config']);
   }
 
   ngOnInit() {
