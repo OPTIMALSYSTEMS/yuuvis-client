@@ -46,20 +46,16 @@ export class AppDataService {
     fields.set(SecondaryObjectTypeField.TITLE, 'Mail to someone');
     fields.set(SecondaryObjectTypeField.DESCRIPTION, '...hurz');
     fields.set(BaseObjectTypeField.BASE_TYPE_ID, 'system:document');
-    fields.set(BaseObjectTypeField.OBJECT_TYPE_ID, 'tenKolibri:asvemail');
-    fields.set(BaseObjectTypeField.TRACE_ID, '54d863be4e0ae849');
+    fields.set(BaseObjectTypeField.OBJECT_TYPE_ID, 'appAsv:asvemail');
+    fields.set(BaseObjectTypeField.TRACE_ID, '59c362b455c0a415');
     fields.set(BaseObjectTypeField.TENANT, 'kolibri');
     fields.set(BaseObjectTypeField.MODIFICATION_DATE, '2019-04-12T15:29:56.910Z');
     fields.set(BaseObjectTypeField.VERSION_NUMBER, 1);
     fields.set(BaseObjectTypeField.CREATION_DATE, '2019-04-12T15:29:56.910Z');
-    fields.set(BaseObjectTypeField.CREATED_BY, 'Martin Bartonitz');
-    fields.set(BaseObjectTypeField.MODIFIED_BY, 'Martin Bartonitz');
+    fields.set(BaseObjectTypeField.CREATED_BY, "Martonitz, Bartin (bartin)");
+    fields.set(BaseObjectTypeField.MODIFIED_BY, "Martonitz, Bartin (bartin)");
     fields.set(BaseObjectTypeField.OBJECT_ID, 'ebb327ff-d7b2-4657-9f59-a3318fc5796e');
-    fields.set('tenKolibri:asvto', ['Andreas Schulz <schulz@optimal-systems.de>']);
-    fields.set('tenKolibri:asvfrom', 'Sven Kaiser <Kaiser@optimal-systems.de>');
-    fields.set('tenKolibri:asvbetreff', 'Neue OS-Webseiten sind LIVE');
-    fields.set('tenKolibri:asvbcc', ['Martin Bartonitz <bartonitz@optimal-systems.de>']);
-    fields.set('tenKolibri:asvcc', []);
+    fields.set('appAsv:asvto', ['Alex Scholz <scholz@optimal-systems.de>', 'Würgen Jidiker <jidiker@optimal-systems.de>']);
     fields.set('system:contentStreamLength', 60416);
     fields.set('system:contentStreamMimeType', 'application/vnd.ms-outlook');
     fields.set('system:contentStreamFileName', '02 Neue OS-Webseiten sind LIVE.msg');
@@ -70,10 +66,10 @@ export class AppDataService {
 
     return new DmsObject(
       {
-        objectTypeId: 'tenKolibri:asvemail',
+        objectTypeId: 'appAsv:asvemail',
         fields: fields
       },
-      this.systemService.getObjectType('tenKolibri:asvemail')
+      this.systemService.getObjectType('appAsv:asvemail')
     );
   }
 }
