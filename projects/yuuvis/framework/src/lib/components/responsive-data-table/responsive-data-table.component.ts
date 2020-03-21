@@ -19,6 +19,7 @@ export interface ResponsiveDataTableOptions {
   // Object where the properties are the column IDs
   // and their values are the columns width.
   columnWidths?: any;
+  gridOptions?: Partial<GridOptions>;
 }
 
 /**
@@ -57,15 +58,18 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
   @Output() rowDoubleClicked = new EventEmitter<RowEvent>();
 
   @Input() set options(o: ResponsiveDataTableOptions) {
-    this._options = o;
-    if (this.gridOptions && this._data) {
-      this.gridOptions.api.setColumnDefs(this._options ? this.applyColDefOptions(this._data.columns, this._options.columnWidths) : this._data.columns);
+    this._options = o || {};
+    if (this.options.gridOptions && this.gridOptions) {
+      Object.assign(this.gridOptions, this.options.gridOptions);
     }
-    if (o && o.viewMode) {
+    if (this.gridOptions && this._data) {
+      this.gridOptions.api.setColumnDefs(this.applyColDefOptions(this._data.columns, this.options.columnWidths));
+    }
+    if (this.options.viewMode) {
       // get a view mode from the options means that we should not emit
       // this as view mode change, because otherwise it will result in
       // persisting changes that are already comming from persisted options
-      this.setupViewMode(o.viewMode, true);
+      this.setupViewMode(this.options.viewMode, true);
     }
   }
   get options() {
@@ -368,7 +372,8 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
         this.gridOptions.api.setSortModel(this._data.sortModel || []);
         this.gridOptions.api.setFocusedCell(0, this._data.columns[0].field);
       },
-      onRowDoubleClicked: event => this.rowDoubleClicked.emit(event)
+      onRowDoubleClicked: event => this.rowDoubleClicked.emit(event),
+      ...(this.options && this.options.gridOptions)
     };
   }
 

@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 import { YuvCommonUiModule } from '@yuuvis/common-ui';
 import { TranslateModule } from '@yuuvis/core';
 import { AccordionModule } from 'primeng/accordion';
@@ -32,6 +33,7 @@ const objectDetails = [ObjectDetailsComponent, SummaryComponent, AuditComponent,
     FormsModule,
     YuvObjectFormModule,
     ActionModule,
+    RouterModule,
     CalendarModule
   ],
   declarations: [...objectDetails],

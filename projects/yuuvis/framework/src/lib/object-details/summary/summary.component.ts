@@ -8,7 +8,8 @@ import {
   ObjectTypeField,
   ParentField,
   SecondaryObjectTypeField,
-  SystemService
+  SystemService,
+  Utils
 } from '@yuuvis/core';
 import { GridService } from '../../services/grid/grid.service';
 import { Summary, SummaryEntry } from './summary.interface';
@@ -26,6 +27,7 @@ export class SummaryComponent implements OnInit {
   private STORAGE_KEY_ACTIVE_INDEX = 'yuv.framework.summary.active-index';
   summary: Summary;
   activeIndex: number[] = null;
+  dmsObjectID: string;
 
   /**
    * `DmsObject` to show the summary for
@@ -33,6 +35,7 @@ export class SummaryComponent implements OnInit {
   @Input()
   set dmsObject(dmsObject: DmsObject) {
     if (dmsObject) {
+      this.dmsObjectID = dmsObject.id;
       this.summary = this.generateSummary(dmsObject);
 
       if (this.activeIndex === null) {
@@ -48,10 +51,27 @@ export class SummaryComponent implements OnInit {
       this.summary = null;
     }
   }
+
+  /**
+   * `DmsObject` to compare changes between objects
+   */
+  @Input() dmsObject2: DmsObject;
+
   /**
    * Whether or not to show the extras section that holds the more technical data for the object
    */
   @Input() showExtrasSection: boolean;
+
+  isEmpty = v => Utils.isEmpty(v);
+  isVersion = v => v === BaseObjectTypeField.VERSION_NUMBER;
+
+  classes = (v1, v2) => ({
+    entry: true,
+    diffActive: !!this.dmsObject2,
+    new: !!this.dmsObject2 && this.isEmpty(v1) && !this.isEmpty(v2),
+    removed: !!this.dmsObject2 && !this.isEmpty(v1) && this.isEmpty(v2),
+    modified: !!this.dmsObject2 && !this.isEmpty(v1) && !this.isEmpty(v2)
+  });
 
   constructor(private systemService: SystemService, private gridService: GridService, private appCacheService: AppCacheService) {}
 
@@ -140,13 +160,16 @@ export class SummaryComponent implements OnInit {
           label: label ? label : key,
           key,
           value: renderer ? renderer({ value: dmsObject.data[key] }) : dmsObject.data[key],
+          value2: this.dmsObject2 && (renderer ? renderer({ value: this.dmsObject2.data[key] }) : this.dmsObject2.data[key]),
           order: null
         };
 
         if (key === BaseObjectTypeField.OBJECT_TYPE_ID) {
           si.value = this.systemService.getLocalizedResource(`${dmsObject.data[key]}_label`);
         }
-        if (extraFields.includes(prepKey)) {
+        if (this.dmsObject2 && (si.value === si.value2 || this.isVersion(key) || key === BaseObjectTypeField.MODIFICATION_DATE)) {
+          // skip equal and irrelevant values
+        } else if (extraFields.includes(prepKey)) {
           summary.extras.push(si);
         } else if (defaultBaseFields.find(field => field.key.startsWith(prepKey))) {
           defaultBaseFields.map(field => (field.key === prepKey ? (si.order = field.order) : null));
@@ -156,12 +179,12 @@ export class SummaryComponent implements OnInit {
         } else if (!skipFields.includes(prepKey)) {
           summary.core.push(si);
         }
-
-        summary.base.sort((a, b) => a.order - b.order);
-        summary.core
-          .sort((a, b) => (a.key === SecondaryObjectTypeField.DESCRIPTION ? -1 : b.key === SecondaryObjectTypeField.DESCRIPTION ? 1 : 0))
-          .sort((a, b) => (a.key === SecondaryObjectTypeField.TITLE ? -1 : b.key === SecondaryObjectTypeField.TITLE ? 1 : 0));
       });
+
+      summary.base.sort((a, b) => a.order - b.order);
+      summary.core
+        .sort((a, b) => (a.key === SecondaryObjectTypeField.DESCRIPTION ? -1 : b.key === SecondaryObjectTypeField.DESCRIPTION ? 1 : 0))
+        .sort((a, b) => (a.key === SecondaryObjectTypeField.TITLE ? -1 : b.key === SecondaryObjectTypeField.TITLE ? 1 : 0));
     });
 
     return summary;

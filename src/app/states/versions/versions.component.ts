@@ -1,11 +1,20 @@
-import { RowEvent } from '@ag-grid-community/core';
 import { PlatformLocation } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AppCacheService, PendingChangesService, Screen, ScreenService, SearchQuery, TranslateService } from '@yuuvis/core';
+import {
+  AppCacheService,
+  BaseObjectTypeField,
+  DmsObject,
+  DmsService,
+  PendingChangesService,
+  Screen,
+  ScreenService,
+  SecondaryObjectTypeField,
+  TranslateService
+} from '@yuuvis/core';
+import { ResponsiveDataTableOptions, ResponsiveTableData } from '@yuuvis/framework';
 import { takeUntilDestroy } from 'take-until-destroy';
-import { AppSearchService } from '../../service/app-search.service';
 
 @Component({
   selector: 'yuv-versions',
@@ -14,14 +23,21 @@ import { AppSearchService } from '../../service/app-search.service';
 })
 export class VersionsComponent implements OnInit, OnDestroy {
   private STORAGE_KEY = 'yuv.app.versions';
-  objectDetailsID: string;
-  searchQuery: SearchQuery;
-  selectedItems: string[] = [];
+  allItems: DmsObject[] = [];
+  dmsObjectID: string;
+  dmsObject: DmsObject;
+  dmsObject2: DmsObject;
   smallScreen: boolean;
   private options = {
     'yuv-responsive-master-slave': { useStateLayout: true },
-    'yuv-search-result-panel': null,
+    'yuv-version-result-panel': null,
     'yuv-object-details': null
+  };
+
+  tableData: ResponsiveTableData;
+  tableOptions: ResponsiveDataTableOptions = {
+    viewMode: 'horizontal',
+    gridOptions: { getRowNodeId: o => o.id + '_' + o[BaseObjectTypeField.VERSION_NUMBER] }
   };
 
   constructor(
@@ -30,9 +46,8 @@ export class VersionsComponent implements OnInit, OnDestroy {
     private appCacheService: AppCacheService,
     public translate: TranslateService,
     private location: PlatformLocation,
-    private appSearch: AppSearchService,
+    private dmsService: DmsService,
     private pendingChanges: PendingChangesService,
-    private title: Title,
     private route: ActivatedRoute,
     private router: Router
   ) {
@@ -51,50 +66,45 @@ export class VersionsComponent implements OnInit, OnDestroy {
     }
   }
 
-  onQueryChanged(query: SearchQuery) {
-    this.appSearch.setQuery(query);
-  }
-
-  onOptionsChanged(options: any, component: string) {
-    this.options[component] = options;
-    this.appCacheService.setItem(this.getStorageKey(), this.options).subscribe();
-  }
-
   getOptions(component: string) {
     return this.options[component];
   }
 
-  select(items: string[]) {
-    this.selectedItems = items;
-    this.objectDetailsID = this.selectedItems[0];
+  select(items: any[]) {
+    [this.dmsObject, this.dmsObject2] = items.map(i =>
+      this.allItems.find(a => a.data[BaseObjectTypeField.VERSION_NUMBER] === i[BaseObjectTypeField.VERSION_NUMBER])
+    );
   }
 
-  onRowDoubleClicked(rowEvent: RowEvent) {
-    if (rowEvent) {
-      this.router.navigate(['/object/' + rowEvent.data.id]);
-    }
-  }
-
-  onQueryDescriptionChange(desc: string) {
-    this.title.setTitle(desc && desc.length ? desc : this.translate.instant('yuv.framework.search-result-panel.header.title'));
+  refresh() {
+    // load versions
+    this.dmsService.getDmsObjectVersions(this.dmsObjectID).subscribe(rows => {
+      this.allItems = rows;
+      this.tableData = {
+        columns: [{ field: SecondaryObjectTypeField.TITLE }],
+        rows: rows.map(a => a.data).sort((a, b) => b[BaseObjectTypeField.VERSION_NUMBER] - a[BaseObjectTypeField.VERSION_NUMBER]),
+        titleField: SecondaryObjectTypeField.TITLE,
+        descriptionField: SecondaryObjectTypeField.DESCRIPTION,
+        // titleField: SecondaryObjectTypeField.TITLE.replace('appClient:', ''),
+        // descriptionField: SecondaryObjectTypeField.DESCRIPTION.replace('appClient:', ''),
+        selectType: 'multiple'
+      };
+    });
   }
 
   ngOnInit() {
     this.titleService.setTitle(this.translate.instant('yuv.client.state.result.title'));
     this.route.params.pipe(takeUntilDestroy(this)).subscribe((params: any) => {
       if (params.id) {
-        // load versions
+        this.dmsObjectID = params.id;
+        this.refresh();
       }
     });
-    // extract the query from the route params
+    // extract the versions from the route params
     this.route.queryParamMap.pipe(takeUntilDestroy(this)).subscribe(params => {
-      this.searchQuery = params.get('query') ? new SearchQuery(JSON.parse(params.get('query'))) : null;
-      this.appCacheService.getItem(this.getStorageKey()).subscribe(o => (this.options = { ...this.options, ...o }));
+      const version = params.get('version');
+      const version2 = params.get('version2');
     });
-  }
-
-  private getStorageKey() {
-    return `${this.STORAGE_KEY}.${this.searchQuery && this.searchQuery.types.length === 1 ? this.searchQuery.types[0] : 'mixed'}`;
   }
 
   ngOnDestroy() {}
