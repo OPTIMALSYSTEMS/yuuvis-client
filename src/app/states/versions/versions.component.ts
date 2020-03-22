@@ -76,7 +76,7 @@ export class VersionsComponent implements OnInit, OnDestroy {
   }
 
   getVersion(o: any) {
-    return o && typeof o === 'object' ? o[BaseObjectTypeField.VERSION_NUMBER] || o.data[BaseObjectTypeField.VERSION_NUMBER] : o;
+    return o[BaseObjectTypeField.VERSION_NUMBER] || o.version || o;
   }
 
   getRowNodeId(o: any) {
