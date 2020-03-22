@@ -69,9 +69,7 @@ export class ObjectDetailsComponent {
 
   @Input()
   set activeTabPanel(panel: TabPanel | string) {
-    if (this.tabContainer && panel) {
-      this.tabContainer.open(panel);
-    }
+    setTimeout(() => panel && this.tabContainer && this.tabContainer.open(panel), this.tabContainer ? 0 : 200);
   }
 
   @Input() options;

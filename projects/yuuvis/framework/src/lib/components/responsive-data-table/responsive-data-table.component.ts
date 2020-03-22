@@ -89,6 +89,13 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * set selected rows for the table
+   */
+  @Input() set selection(selection: string[]) {
+    setTimeout(() => this.selectRows(selection), 0);
+  }
+
+  /**
    * view mode of the table
    */
   @Input() set viewMode(viewMode: ViewMode) {
@@ -259,7 +266,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
   }
 
   private applyGridOption(retry: boolean = true) {
-    if (this.gridOptions && this.gridOptions.api) {
+    if (this.isReady()) {
       // make sure that all rows are visible / loaded
       this.gridOptions.rowBuffer = this.isSmall ? 1000 : undefined;
       this.gridOptions.api.setRowData(this._data.rows);
@@ -297,9 +304,10 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
       minWidth: this.isGrid ? this._data.rows.length * this.settings.colWidth.grid : 0,
       cellRenderer: params => {
         const objectTypeId = params.data[BaseObjectTypeField.OBJECT_TYPE_ID];
+        const version = params.data[BaseObjectTypeField.VERSION_NUMBER];
         return `
           <div class="rdt-row ${this._currentViewMode === 'horizontal' ? 'row-horizontal' : 'row-grid'}">
-            <div class="head" title="${this.systemService.getLocalizedResource(`${objectTypeId}_label`)}">
+            <div class="head" title="${this.systemService.getLocalizedResource(`${objectTypeId}_label`)}" data-version="${version}">
             ${this.systemService.getObjectTypeIcon(objectTypeId)}</div>  
             <div class="main">
             <div class="title">${params.data[this._data.titleField] || params.value || ''}</div>
@@ -360,10 +368,11 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
 
       // EVENTS - add event callback handlers
       onSelectionChanged: event => {
-        const selection = this.gridOptions.api.getSelectedNodes().map((rowNode: RowNode) => rowNode.id);
-        if (!event || JSON.stringify(selection) !== JSON.stringify(this._currentSelection)) {
-          this._currentSelection = selection;
-          this.selectionChanged.emit(this.gridOptions.api.getSelectedRows());
+        const focused = this.gridOptions.api.getFocusedCell() || { rowIndex: -1 };
+        const selection = this.gridOptions.api.getSelectedNodes().sort(n => (n.rowIndex === focused.rowIndex ? -1 : 0));
+        if (!event || selection.map((rowNode: RowNode) => rowNode.id).join() !== (this._currentSelection || []).join()) {
+          this._currentSelection = selection.map((rowNode: RowNode) => rowNode.id);
+          this.selectionChanged.emit(selection.map((rowNode: RowNode) => rowNode.data));
         }
       },
       onColumnResized: event => this.columnResizeSource.next(),
@@ -433,6 +442,11 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
   onResized(e: ResizedEvent) {
     this.resizeSource.next(e);
   }
+
+  isReady() {
+    return !!(this.gridOptions && this.gridOptions.api);
+  }
+
   ngOnInit() {}
 
   ngOnDestroy() {}

@@ -52,10 +52,15 @@ export class SummaryComponent implements OnInit {
     }
   }
 
+  dmsObject2: DmsObject;
+
   /**
-   * `DmsObject` to compare changes between objects
+   * `DmsObject[]` to compare changes between objects
    */
-  @Input() dmsObject2: DmsObject;
+  @Input() set compareObjects(dmsObjects: DmsObject[]) {
+    this.dmsObject2 = dmsObjects[1];
+    this.dmsObject = dmsObjects[0];
+  }
 
   /**
    * Whether or not to show the extras section that holds the more technical data for the object
@@ -151,7 +156,7 @@ export class SummaryComponent implements OnInit {
     const { skipFields, patentFields, extraFields, defaultBaseFields } = this.getSummaryConfiguration(dmsObject);
 
     this.gridService.getColumnConfiguration(dmsObject.objectTypeId).subscribe((colDef: ColDef[]) => {
-      Object.keys(dmsObject.data).forEach((key: string) => {
+      Object.keys({ ...dmsObject.data, ...(this.dmsObject2 && this.dmsObject2.data) }).forEach((key: string) => {
         const prepKey = key.startsWith('parent.') ? key.replace('parent.', '') : key;
         const label = this.systemService.getLocalizedResource(`${key}_label`);
         const def: ColDef = colDef.find(cd => cd.field === prepKey);

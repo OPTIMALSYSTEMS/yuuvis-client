@@ -4,6 +4,38 @@
   box-sizing: border-box;
   padding: var(--app-pane-padding);
 
+  ::ng-deep .data-table {
+    .rdt-row .head svg {
+      display: none;
+    }
+    .rdt-row .head:after {
+      content: attr(data-version);
+      display: flex;
+      font-size: 18px;
+      justify-content: center;
+      align-items: center;
+      width: 2em;
+      height: 2em;
+      border-radius: 50%;
+      border: 3px solid;
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+    }
+    .ag-row-selected .rdt-row .head:after {
+      border-color: var(--color-accent);
+      color: var(--color-accent);
+    }
+  }
+
+  ::ng-deep .yuv-slave {
+    &.changes-active .ui-tabview-nav li:not(.changes),
+    &:not(.changes-active) .ui-tabview-nav li.changes,
+    .split-btn,
+    .refresh-button {
+      display: none;
+    }
+  }
+
   .screen-s & {
     padding: 0;
 

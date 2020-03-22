@@ -182,5 +182,7 @@
   "yuv.client.state.settings.theme.background.choose": "Select",
   "yuv.client.state.settings.theme.dark": "Dark",
   "yuv.client.state.settings.theme.light": "Light",
-  "yuv.client.state.settings.title": "Settings"
+  "yuv.client.state.settings.title": "Settings",
+  "yuv.client.state.versions.header.title": "Versions",
+  "yuv.client.state.versions.tabs.changes.title": "Changes"
 }
