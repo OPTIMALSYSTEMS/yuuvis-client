@@ -95,6 +95,19 @@ export class DmsService {
     return forkJoin(ids.map(id => this.getDmsObject(id)));
   }
 
+  /**
+   * Fetch a dms object versions.
+   * @param id ID of the object to be retrieved
+   */
+  getDmsObjectVersions(id: string): Observable<DmsObject[]> {
+    return this.backend.get('/dms/objects/' + id + '/versions', 'core').pipe(
+      map(res => {
+        const items: SearchResultItem[] = this.searchService.toSearchResult(res).items || [];
+        return items.map(item => this.searchResultToDmsObject(item));
+      })
+    );
+  }
+
   private searchResultToDmsObject(resItem: SearchResultItem): DmsObject {
     return new DmsObject(resItem, this.systemService.getObjectType(resItem.objectTypeId));
   }

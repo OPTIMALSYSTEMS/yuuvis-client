@@ -19,6 +19,7 @@ export interface ResponsiveDataTableOptions {
   // Object where the properties are the column IDs
   // and their values are the columns width.
   columnWidths?: any;
+  gridOptions?: Partial<GridOptions>;
 }
 
 /**
@@ -57,15 +58,18 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
   @Output() rowDoubleClicked = new EventEmitter<RowEvent>();
 
   @Input() set options(o: ResponsiveDataTableOptions) {
-    this._options = o;
-    if (this.gridOptions && this._data) {
-      this.gridOptions.api.setColumnDefs(this._options ? this.applyColDefOptions(this._data.columns, this._options.columnWidths) : this._data.columns);
+    this._options = o || {};
+    if (this.options.gridOptions && this.gridOptions) {
+      Object.assign(this.gridOptions, this.options.gridOptions);
     }
-    if (o && o.viewMode) {
+    if (this.gridOptions && this._data) {
+      this.gridOptions.api.setColumnDefs(this.applyColDefOptions(this._data.columns, this.options.columnWidths));
+    }
+    if (this.options.viewMode) {
       // get a view mode from the options means that we should not emit
       // this as view mode change, because otherwise it will result in
       // persisting changes that are already comming from persisted options
-      this.setupViewMode(o.viewMode, true);
+      this.setupViewMode(this.options.viewMode, true);
     }
   }
   get options() {
@@ -82,6 +86,13 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
     } else {
       this.setupGridOptions();
     }
+  }
+
+  /**
+   * set selected rows for the table
+   */
+  @Input() set selection(selection: string[]) {
+    setTimeout(() => this.selectRows(selection), 0);
   }
 
   /**
@@ -255,7 +266,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
   }
 
   private applyGridOption(retry: boolean = true) {
-    if (this.gridOptions && this.gridOptions.api) {
+    if (this.isReady()) {
       // make sure that all rows are visible / loaded
       this.gridOptions.rowBuffer = this.isSmall ? 1000 : undefined;
       this.gridOptions.api.setRowData(this._data.rows);
@@ -293,9 +304,10 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
       minWidth: this.isGrid ? this._data.rows.length * this.settings.colWidth.grid : 0,
       cellRenderer: params => {
         const objectTypeId = params.data[BaseObjectTypeField.OBJECT_TYPE_ID];
+        const version = params.data[BaseObjectTypeField.VERSION_NUMBER];
         return `
           <div class="rdt-row ${this._currentViewMode === 'horizontal' ? 'row-horizontal' : 'row-grid'}">
-            <div class="head" title="${this.systemService.getLocalizedResource(`${objectTypeId}_label`)}">
+            <div class="head" title="${this.systemService.getLocalizedResource(`${objectTypeId}_label`)}" data-version="${version}">
             ${this.systemService.getObjectTypeIcon(objectTypeId)}</div>  
             <div class="main">
             <div class="title">${params.data[this._data.titleField] || params.value || ''}</div>
@@ -356,10 +368,11 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
 
       // EVENTS - add event callback handlers
       onSelectionChanged: event => {
-        const selection = this.gridOptions.api.getSelectedNodes().map((rowNode: RowNode) => rowNode.id);
-        if (!event || JSON.stringify(selection) !== JSON.stringify(this._currentSelection)) {
-          this._currentSelection = selection;
-          this.selectionChanged.emit(this.gridOptions.api.getSelectedRows());
+        const focused = this.gridOptions.api.getFocusedCell() || { rowIndex: -1 };
+        const selection = this.gridOptions.api.getSelectedNodes().sort(n => (n.rowIndex === focused.rowIndex ? -1 : 0));
+        if (!event || selection.map((rowNode: RowNode) => rowNode.id).join() !== (this._currentSelection || []).join()) {
+          this._currentSelection = selection.map((rowNode: RowNode) => rowNode.id);
+          this.selectionChanged.emit(selection.map((rowNode: RowNode) => rowNode.data));
         }
       },
       onColumnResized: event => this.columnResizeSource.next(),
@@ -368,7 +381,8 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
         this.gridOptions.api.setSortModel(this._data.sortModel || []);
         this.gridOptions.api.setFocusedCell(0, this._data.columns[0].field);
       },
-      onRowDoubleClicked: event => this.rowDoubleClicked.emit(event)
+      onRowDoubleClicked: event => this.rowDoubleClicked.emit(event),
+      ...(this.options && this.options.gridOptions)
     };
   }
 
@@ -428,6 +442,11 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
   onResized(e: ResizedEvent) {
     this.resizeSource.next(e);
   }
+
+  isReady() {
+    return !!(this.gridOptions && this.gridOptions.api);
+  }
+
   ngOnInit() {}
 
   ngOnDestroy() {}

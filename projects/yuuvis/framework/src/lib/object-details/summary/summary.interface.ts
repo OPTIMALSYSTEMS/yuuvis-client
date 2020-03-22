@@ -8,5 +8,6 @@ export interface SummaryEntry {
   label: string;
   key: string;
   value: any;
+  value2?: any;
   order?: number;
 }

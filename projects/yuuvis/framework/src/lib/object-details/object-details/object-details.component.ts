@@ -1,9 +1,11 @@
-import { Component, EventEmitter, HostBinding, Input, Output } from '@angular/core';
+import { Component, ContentChildren, EventEmitter, HostBinding, Input, Output, QueryList, TemplateRef, ViewChild, ViewChildren } from '@angular/core';
 import { IconRegistryService } from '@yuuvis/common-ui';
-import { DmsObject, DmsService, SystemService, UserService } from '@yuuvis/core';
+import { ConfigService, DmsObject, DmsService, SystemService, UserService } from '@yuuvis/core';
+import { TabPanel } from 'primeng/tabview';
 import { CellRenderer } from '../../services/grid/grid.cellrenderer';
 import { kebap, noFile, refresh } from '../../svg.generated';
 import { ContentPreviewService } from '../content-preview/service/content-preview.service';
+import { ResponsiveTabContainerComponent } from './../../components/responsive-tab-container/responsive-tab-container.component';
 
 /**
  * High level component displaying detail aspects for a given DmsObject.
@@ -16,6 +18,10 @@ import { ContentPreviewService } from '../content-preview/service/content-previe
   providers: [ContentPreviewService]
 })
 export class ObjectDetailsComponent {
+  @ContentChildren(TabPanel) externalPanels: QueryList<TabPanel>;
+  @ViewChildren(TabPanel) viewPanels: QueryList<TabPanel>;
+  @ViewChild(ResponsiveTabContainerComponent, { static: false }) tabContainer: ResponsiveTabContainerComponent;
+
   @HostBinding('class.yuv-object-details') _hostClass = true;
   nofileIcon = noFile.data;
   objectIcon = '';
@@ -61,18 +67,32 @@ export class ObjectDetailsComponent {
     return this._objectId;
   }
 
+  @Input()
+  set activeTabPanel(panel: TabPanel | string) {
+    setTimeout(() => panel && this.tabContainer && this.tabContainer.open(panel), this.tabContainer ? 0 : 200);
+  }
+
   @Input() options;
   @Output() optionsChanged = new EventEmitter();
+
+  @ViewChild('summary', { static: false }) summary: TemplateRef<any>;
+  @ViewChild('indexdata', { static: false }) indexdata: TemplateRef<any>;
+  @ViewChild('preview', { static: false }) preview: TemplateRef<any>;
+  @ViewChild('history', { static: false }) history: TemplateRef<any>;
+
+  @Input() panelOrder = ['summary', 'indexdata', 'preview', 'history'];
 
   constructor(
     private dmsService: DmsService,
     private userService: UserService,
     private systemService: SystemService,
+    private config: ConfigService,
     private contentPreviewService: ContentPreviewService,
     private iconRegistry: IconRegistryService
   ) {
     this.iconRegistry.registerIcons([refresh, kebap, noFile]);
     this.userIsAdmin = this.userService.hasAdministrationRoles;
+    this.panelOrder = this.config.get('objectDetailsTabs') || this.panelOrder;
   }
 
   onFileDropped(file: File) {

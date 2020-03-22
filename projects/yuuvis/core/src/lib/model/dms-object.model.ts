@@ -26,6 +26,7 @@ export class DmsObject {
 
   constructor(searchResultItem: SearchResultItem, objectType: ObjectType) {
     this.id = searchResultItem.fields.get(BaseObjectTypeField.OBJECT_ID);
+    this.version = searchResultItem.fields.get(BaseObjectTypeField.VERSION_NUMBER);
     this.objectTypeId = searchResultItem.objectTypeId;
     this.title = searchResultItem.fields.get(SecondaryObjectTypeField.TITLE);
     this.description = searchResultItem.fields.get(SecondaryObjectTypeField.DESCRIPTION);

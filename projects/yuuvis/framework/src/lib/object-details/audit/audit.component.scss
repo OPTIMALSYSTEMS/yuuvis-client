@@ -176,9 +176,12 @@
           color: var(--color-accent);
           font-size: var(--font-hint);
           font-family: monospace;
-          padding: 4px 6px;
           align-self: center;
           @include bidi-style(margin-left, var(--app-pane-padding), margin-right, var(--app-pane-padding));
+          a {
+            display: block;
+            padding: 4px 6px;
+          }
         }
       }
 

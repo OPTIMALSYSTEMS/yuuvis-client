@@ -21,39 +21,61 @@
     <yuv-icon class="finalized-icon" [icon]="'finalized'"></yuv-icon> -->
   </yuv-action-menu-bar>
 
-  <yuv-responsive-tab-container class="content" (optionsChanged)="optionsChanged.emit($event)" [options]="options">
-    <p-tabPanel [id]="'summary'" [header]="'yuv.framework.object-details.tabs.summary.title' | translate"
-      [headerStyleClass]="'summary'">
-      <ng-template pTemplate="content">
-        <yuv-summary [dmsObject]="dmsObject" [showExtrasSection]="userIsAdmin"></yuv-summary>
-      </ng-template>
-    </p-tabPanel>
+  <yuv-responsive-tab-container #tabContainer class="content" (optionsChanged)="optionsChanged.emit($event)"
+    [options]="options" [pluginPanels]="[viewPanels, externalPanels]">
 
-    <p-tabPanel [id]="'indexdata'" [header]="'yuv.framework.object-details.tabs.indexdata.title' | translate"
-      [headerStyleClass]="'indexdata'">
-      <ng-template pTemplate="content">
-        <yuv-object-form-edit [dmsObject]="dmsObject" (indexDataSaved)="onIndexdataSaved($event)">
-        </yuv-object-form-edit>
-      </ng-template>
-    </p-tabPanel>
+    <ng-container *ngFor="let templateID of panelOrder" [ngTemplateOutlet]="this[templateID]"></ng-container>
 
-    <p-tabPanel [id]="'preview'" [header]="'yuv.framework.object-details.tabs.content.title' | translate"
-      [headerStyleClass]="'preview'">
-      <ng-template pTemplate="content">
-        <yuv-content-preview [dmsObject]="dmsObject" [searchTerm]="searchTerm"></yuv-content-preview>
-      </ng-template>
-    </p-tabPanel>
+    <ng-container *ngTemplateOutlet="content"></ng-container>
 
-    <p-tabPanel [id]="'history'" [header]="'yuv.framework.object-details.tabs.history.title' | translate"
-      [headerStyleClass]="'history'">
-      <ng-template pTemplate="content">
-        <yuv-audit [objectID]="objectId"></yuv-audit>
-      </ng-template>
-    </p-tabPanel>
   </yuv-responsive-tab-container>
 </yuv-panel>
 <yuv-action-menu [(visible)]="actionMenuVisible" [selection]="actionMenuSelection"> </yuv-action-menu>
 
 <ng-template #empty>
   <yuv-empty [icon]="nofileIcon"></yuv-empty>
+</ng-template>
+
+
+<!-- PANELS -->
+<ng-template #summary>
+  <p-tabPanel [id]="'summary'" [header]="'yuv.framework.object-details.tabs.summary.title' | translate"
+    [headerStyleClass]="'summary'">
+    <ng-template pTemplate="content">
+      <yuv-summary [dmsObject]="dmsObject" [showExtrasSection]="userIsAdmin"></yuv-summary>
+    </ng-template>
+  </p-tabPanel>
+</ng-template>
+
+<ng-template #indexdata>
+  <p-tabPanel [id]="'indexdata'" [header]="'yuv.framework.object-details.tabs.indexdata.title' | translate"
+    [headerStyleClass]="'indexdata'">
+    <ng-template pTemplate="content">
+      <yuv-object-form-edit [dmsObject]="dmsObject" (indexDataSaved)="onIndexdataSaved($event)">
+      </yuv-object-form-edit>
+    </ng-template>
+  </p-tabPanel>
+</ng-template>
+
+<ng-template #preview>
+  <p-tabPanel [id]="'preview'" [header]="'yuv.framework.object-details.tabs.content.title' | translate"
+    [headerStyleClass]="'preview'">
+    <ng-template pTemplate="content">
+      <yuv-content-preview [dmsObject]="dmsObject" [searchTerm]="searchTerm"></yuv-content-preview>
+    </ng-template>
+  </p-tabPanel>
+</ng-template>
+
+
+<ng-template #history>
+  <p-tabPanel [id]="'history'" [header]="'yuv.framework.object-details.tabs.history.title' | translate"
+    [headerStyleClass]="'history'">
+    <ng-template pTemplate="content">
+      <yuv-audit [objectID]="objectId"></yuv-audit>
+    </ng-template>
+  </p-tabPanel>
+</ng-template>
+
+<ng-template #content>
+  <ng-content></ng-content>
 </ng-template>
