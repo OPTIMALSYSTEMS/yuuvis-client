@@ -7,10 +7,10 @@
     <yuv-icon (click)="refresh()" [title]="'yuv.framework.list.refresh' | translate" class="button refresh-button"
       [icon]="'refresh'"></yuv-icon>
     <yuv-icon class="header-icon" (click)="openActionMenu()" [icon]="'kebap'"
-      [ngClass]="{ disabled: !selectedItemIDs?.length }"> </yuv-icon>
+      [ngClass]="{ disabled: !preSelectItems?.length }"> </yuv-icon>
   </yuv-action-menu-bar>
 
-  <yuv-search-result class="content" [query]="_searchQuery" applyColumnConfig="true" [preSelectItems]="selectedItemIDs"
+  <yuv-search-result class="content" [query]="_searchQuery" applyColumnConfig="true" [preSelectItems]="preSelectItems"
     [layoutOptionsKey]="layoutOptionsKey" (viewModeChanged)="onViewModeChanged($event)"
     (itemsSelected)="onItemsSelected($event)" (queryChanged)="onQueryChangedFromWithin($event)"
     (rowDoubleClicked)="rowDoubleClicked.emit($event)">

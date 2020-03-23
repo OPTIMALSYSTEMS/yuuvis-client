@@ -41,5 +41,5 @@
 
 <ng-template #summaryEntry let-item="item">
     <span class="label">{{ item.label }}</span>
-    <span class="value" [innerHtml]="safeHtml || item.value"></span>
+    <span class="value" [innerHtml]="item.value"></span>
 </ng-template>
