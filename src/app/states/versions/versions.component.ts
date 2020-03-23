@@ -2,22 +2,8 @@ import { PlatformLocation } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
-import { IconRegistryService } from '@yuuvis/common-ui';
-import {
-  AppCacheService,
-  BaseObjectTypeField,
-  DmsObject,
-  DmsService,
-  PendingChangesService,
-  Screen,
-  ScreenService,
-  SecondaryObjectTypeField,
-  TranslateService
-} from '@yuuvis/core';
-import { ResponsiveDataTableOptions, ResponsiveTableData } from '@yuuvis/framework';
-import { forkJoin } from 'rxjs';
+import { AppCacheService, DmsObject, PendingChangesService, Screen, ScreenService, TranslateService } from '@yuuvis/core';
 import { takeUntilDestroy } from 'take-until-destroy';
-import { refresh, versions } from '../../../assets/default/svg/svg';
 
 @Component({
   selector: 'yuv-versions',
@@ -26,7 +12,7 @@ import { refresh, versions } from '../../../assets/default/svg/svg';
 })
 export class VersionsComponent implements OnInit, OnDestroy {
   private STORAGE_KEY = 'yuv.app.versions';
-  selection: string[] = [];
+  versions: string[] = [];
   dmsObjectID: string;
   dmsObject: DmsObject;
   dmsObject2: DmsObject;
@@ -37,28 +23,19 @@ export class VersionsComponent implements OnInit, OnDestroy {
     'yuv-object-details': null
   };
 
-  tableData: ResponsiveTableData;
-  tableOptions: ResponsiveDataTableOptions = {
-    viewMode: 'horizontal',
-    gridOptions: { getRowNodeId: o => this.getRowNodeId(o) }
-  };
-
   constructor(
     private titleService: Title,
     private screenService: ScreenService,
     private appCacheService: AppCacheService,
     public translate: TranslateService,
     private location: PlatformLocation,
-    private dmsService: DmsService,
     private pendingChanges: PendingChangesService,
-    private iconRegistry: IconRegistryService,
     private route: ActivatedRoute,
     private router: Router
   ) {
     this.screenService.screenChange$.pipe(takeUntilDestroy(this)).subscribe((screen: Screen) => {
       this.smallScreen = screen.mode === ScreenService.MODE.SMALL;
     });
-    this.iconRegistry.registerIcons([refresh, versions]);
   }
 
   closeDetails() {
@@ -67,7 +44,7 @@ export class VersionsComponent implements OnInit, OnDestroy {
 
   onSlaveClosed() {
     if (!this.pendingChanges.check()) {
-      this.select([]);
+      this.versions = [];
     }
   }
 
@@ -75,39 +52,8 @@ export class VersionsComponent implements OnInit, OnDestroy {
     return this.options[component];
   }
 
-  getVersion(o: any) {
-    return o[BaseObjectTypeField.VERSION_NUMBER] || o.version || o;
-  }
-
-  getRowNodeId(o: any) {
-    return o ? this.dmsObjectID + '_' + this.getVersion(o) : '';
-  }
-
-  select(items: any[]) {
-    const _versions = items
-      .slice(0, 2)
-      .map(a => this.getVersion(a))
-      .sort(); // lower version first
-
-    forkJoin(_versions.map(v => this.dmsService.getDmsObject(this.dmsObjectID, v))).subscribe(objects => {
-      [this.dmsObject, this.dmsObject2] = objects;
-      if (items.length > 2) {
-        // reset selection
-        this.selection = [this.getRowNodeId(this.dmsObject), this.getRowNodeId(this.dmsObject2)];
-      }
-    });
-  }
-
-  refresh() {
-    this.dmsService.getDmsObjectVersions(this.dmsObjectID).subscribe(rows => {
-      this.tableData = {
-        columns: [{ field: SecondaryObjectTypeField.TITLE }],
-        rows: rows.map(a => a.data).sort((a, b) => this.getVersion(b) - this.getVersion(a)),
-        titleField: SecondaryObjectTypeField.TITLE,
-        descriptionField: SecondaryObjectTypeField.DESCRIPTION,
-        selectType: 'multiple'
-      };
-    });
+  dmsObjectsSelected(objects: DmsObject[]) {
+    [this.dmsObject, this.dmsObject2] = objects;
   }
 
   ngOnInit() {
@@ -115,12 +61,11 @@ export class VersionsComponent implements OnInit, OnDestroy {
     this.route.params.pipe(takeUntilDestroy(this)).subscribe((params: any) => {
       if (params.id) {
         this.dmsObjectID = params.id;
-        this.refresh();
       }
     });
     // extract the versions from the route params
     this.route.queryParamMap.pipe(takeUntilDestroy(this)).subscribe(params => {
-      this.selection = [params.get('version'), params.get('version2')].filter(v => v).map(v => this.getRowNodeId(v));
+      this.versions = [params.get('version'), params.get('version2')];
     });
   }
 

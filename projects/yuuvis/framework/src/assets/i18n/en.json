@@ -144,5 +144,6 @@
 	"yuv.framework.upload-progress-overlay.icon": "",
 	"yuv.framework.upload-progress-overlay.remove": "Remove",
 	"yuv.framework.upload-progress-overlay.remove-all": "Remove all",
-	"yuv.framework.upload-progress-overlay.title": "Upload status"
+	"yuv.framework.upload-progress-overlay.title": "Upload status",
+	"yuv.framework.version-result.title": "Versions"
 }
