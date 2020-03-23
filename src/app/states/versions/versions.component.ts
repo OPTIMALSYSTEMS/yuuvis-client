@@ -109,7 +109,7 @@ export class VersionsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.titleService.setTitle(this.translate.instant('yuv.client.state.result.title'));
+    this.titleService.setTitle(this.translate.instant('yuv.client.state.versions.header.title'));
     this.route.params.pipe(takeUntilDestroy(this)).subscribe((params: any) => {
       if (params.id) {
         this.dmsObjectID = params.id;

@@ -1,29 +1,38 @@
-<yuv-responsive-master-slave class="state" [options]="getOptions('yuv-responsive-master-slave')"
-  (slaveClosed)="onSlaveClosed()" [slaveActive]="dmsObject">
+<yuv-responsive-master-slave class="state" [options]="getOptions('yuv-responsive-master-slave')" (slaveClosed)="onSlaveClosed()" [slaveActive]="dmsObject">
   <section class="yuv-master panel">
-    <yuv-panel class="search-result" [title]="'yuv.client.state.versions.header.title' | translate"
-      [description]="queryDescription">
+    <yuv-panel class="versions-list" [title]="'yuv.client.state.versions.header.title' | translate" [description]="">
       <yuv-icon class="header-icon" [icon]="'versions'"></yuv-icon>
       <yuv-action-menu-bar class="actions" yuvOfflineDisabled>
-        <yuv-icon (click)="refresh()" [title]="'yuv.framework.list.refresh' | translate" class="button refresh-button"
-          [icon]="'refresh'"></yuv-icon>
+        <yuv-icon (click)="refresh()" [title]="'yuv.framework.list.refresh' | translate" class="button refresh-button" [icon]="'refresh'"></yuv-icon>
       </yuv-action-menu-bar>
       <div class="content">
-        <yuv-responsive-data-table yuvOfflineDisabled #dataTable class="data-table" *ngIf="tableData" [data]="tableData"
-          [breakpoint]="400" [options]="tableOptions" [selection]="selection" (selectionChanged)="select($event)">
+        <yuv-responsive-data-table
+          yuvOfflineDisabled
+          #dataTable
+          class="data-table"
+          *ngIf="tableData"
+          [data]="tableData"
+          [breakpoint]="400"
+          [options]="tableOptions"
+          [selection]="selection"
+          (selectionChanged)="select($event)"
+        >
         </yuv-responsive-data-table>
       </div>
     </yuv-panel>
   </section>
 
-  <yuv-object-details class="yuv-slave panel" [dmsObject]="dmsObject" [options]="getOptions('yuv-object-details')"
-    [panelOrder]="['summary', 'indexdata', 'preview']" [ngClass]="{ 'changes-active': !!dmsObject2 }"
-    [activeTabPanel]="dmsObject2 ? 'changes' : 'summary'">
-    <p-tabPanel [id]="'changes'" [header]="'yuv.client.state.versions.tabs.changes.title' | translate"
-      [headerStyleClass]="'changes'">
+  <yuv-object-details
+    class="yuv-slave panel"
+    [dmsObject]="dmsObject"
+    [options]="getOptions('yuv-object-details')"
+    [panelOrder]="['summary', 'indexdata', 'preview']"
+    [ngClass]="{ 'changes-active': !!dmsObject2 }"
+    [activeTabPanel]="dmsObject2 ? 'changes' : 'summary'"
+  >
+    <p-tabPanel [id]="'changes'" [header]="'yuv.client.state.versions.tabs.changes.title' | translate" [headerStyleClass]="'changes'">
       <ng-template pTemplate="content">
-        <yuv-summary *ngIf="dmsObject2" [compareObjects]="[dmsObject, dmsObject2]" [showExtrasSection]="userIsAdmin">
-        </yuv-summary>
+        <yuv-summary *ngIf="dmsObject2" [compareObjects]="[dmsObject, dmsObject2]" [showExtrasSection]="userIsAdmin"> </yuv-summary>
       </ng-template>
     </p-tabPanel>
   </yuv-object-details>
