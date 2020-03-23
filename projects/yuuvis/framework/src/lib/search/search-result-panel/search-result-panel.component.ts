@@ -19,7 +19,7 @@ export class SearchResultPanelComponent {
   _searchQuery: SearchQuery;
   _options: ResponsiveDataTableOptions;
   columnConfigInput: any;
-  viewMode: ViewMode;
+  viewMode: ViewMode = 'standard';
   queryDescription: string;
   actionMenuVisible = false;
   actionMenuSelection = [];
@@ -41,22 +41,9 @@ export class SearchResultPanelComponent {
     }
   }
   /**
-   * List of result list item IDs supposed to be selected.
+   * List of result list item IDs supposed to be selected upfront.
    */
-  @Input() selectedItemIDs: string[];
-  // /**
-  //  * Options to be applied to the contained result list table.
-  //  * Currently these options will control the tables column sizes.
-  //  */
-  // @Input() set options(o: ResponsiveDataTableOptions) {
-  //   if (o) {
-  //     this.viewMode = o.viewMode;
-  //   }
-  //   this._options = o;
-  // }
-  // get options() {
-  //   return this._options;
-  // }
+  @Input() preSelectItems: string[];
 
   /**
    * Providing a layout options key will enable the component to persist its layout settings
@@ -105,7 +92,7 @@ export class SearchResultPanelComponent {
 
   onItemsSelected(itemIDs) {
     this.itemsSelected.emit(itemIDs);
-    this.selectedItemIDs = itemIDs;
+    this.preSelectItems = itemIDs;
   }
 
   generateQueryDescription() {
@@ -123,6 +110,10 @@ export class SearchResultPanelComponent {
     this.queryDescriptionChange.emit(this.queryDescription);
   }
 
+  onViewModeChanged(mode: ViewMode) {
+    this.viewMode = mode;
+  }
+
   onQueryChangedFromWithin(searchQuery: SearchQuery) {
     this.query = searchQuery;
     this.queryChanged.emit(searchQuery);
@@ -136,8 +127,8 @@ export class SearchResultPanelComponent {
   // }
 
   openActionMenu() {
-    if (this.selectedItemIDs) {
-      this.dmsService.getDmsObjects(this.selectedItemIDs).subscribe(items => {
+    if (this.preSelectItems) {
+      this.dmsService.getDmsObjects(this.preSelectItems).subscribe(items => {
         this.actionMenuSelection = items;
         this.actionMenuVisible = true;
       });

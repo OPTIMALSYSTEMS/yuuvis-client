@@ -13,6 +13,7 @@ export class ContextComponent implements OnInit {
   activeTabIndex: number;
   contextChildrenQuery: SearchQuery;
   recentItemsQuery: SearchQuery;
+  // selectedItem: string;
 
   layoutOptions = {
     'yuv-search-result-all': null,
@@ -30,6 +31,11 @@ export class ContextComponent implements OnInit {
   get context() {
     return this._context;
   }
+
+  /**
+   * IDs of items supposed to be selected upfront.
+   */
+  @Input() preSelectItems: string[];
 
   private _contextSearchQuery: SearchQuery;
   /**

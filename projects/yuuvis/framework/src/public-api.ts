@@ -4,6 +4,7 @@ export * from 'ngx-toastr';
 export * from './lib/actions/index';
 export * from './lib/column-config/index';
 export * from './lib/components/index';
+export * from './lib/context/index';
 export * from './lib/directives/index';
 export * from './lib/form/index';
 export * from './lib/framework.module';

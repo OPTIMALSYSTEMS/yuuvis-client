@@ -1,7 +1,7 @@
 <yuv-responsive-master-slave class="state" [layoutOptionsKey]="getLayoutOptionsStorageKey()"
   (slaveClosed)="onSlaveClosed()" [slaveActive]="objectDetailsID">
 
-  <yuv-search-result-panel class="yuv-master panel" [query]="searchQuery" [selectedItemIDs]="selectedItems"
+  <yuv-search-result-panel class="yuv-master panel" [query]="searchQuery" [preSelectItems]="selectedItems"
     applyColumnConfig="true" (queryDescriptionChange)="onQueryDescriptionChange($event)"
     [layoutOptionsKey]="getLayoutOptionsStorageKey()" (itemsSelected)="select($event)"
     (rowDoubleClicked)="onRowDoubleClicked($event)">

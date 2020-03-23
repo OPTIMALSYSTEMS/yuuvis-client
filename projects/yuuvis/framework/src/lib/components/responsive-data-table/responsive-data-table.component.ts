@@ -105,6 +105,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
   set currentViewMode(viewMode: ViewMode) {
     if (this.currentViewMode !== viewMode) {
       this._currentViewMode = viewMode;
+      this.viewModeChanged.emit(this._currentViewMode);
       this.applyGridOption();
     }
   }
@@ -135,6 +136,10 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
    * emits an array of the column sizes
    */
   @Output() columnResized = new EventEmitter<ColumnSizes>();
+  /**
+   * emitted when the view mode changes
+   */
+  @Output() viewModeChanged = new EventEmitter<ViewMode>();
 
   // @HostBinding('class.yuv-responsive-data-table') _hostClass = true;
 

@@ -1,7 +1,8 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AppCacheService, DmsObject, DmsService, EventService, SearchQuery, TranslateService, YuvEventType } from '@yuuvis/core';
+import { ContextComponent } from '@yuuvis/framework';
 import { takeUntilDestroy } from 'take-until-destroy';
 
 @Component({
@@ -14,13 +15,19 @@ import { takeUntilDestroy } from 'take-until-destroy';
 })
 export class ObjectComponent implements OnInit, OnDestroy {
   layoutOptionsStorageKey = 'yuv.app.object';
+  private standaloneFragment = 'standalone';
+
+  @ViewChild('yuvContext', { static: true }) yuvContextCmp: ContextComponent;
 
   contextBusy: boolean;
   contextError: string;
   context: DmsObject;
   selectedItem: string;
+  // ID of the object that should be shown standalone (have no context)
+  _standalone: string;
   recentItems: string[] = [];
   contextSearchQuery: SearchQuery;
+  private contextId: string;
 
   constructor(
     private route: ActivatedRoute,
@@ -69,16 +76,14 @@ export class ObjectComponent implements OnInit, OnDestroy {
         if (!dmsObject.isFolder) {
           if (dmsObject.parentId) {
             // got object from within a context, so we'll go there instead
-            this.router.navigate(['', dmsObject.parentId], {
+            this.router.navigate(['/object', dmsObject.parentId], {
               fragment: dmsObject.id,
-              relativeTo: this.route,
               replaceUrl: true
             });
           } else {
             // got object that is just an object without context
-            this.router.navigate([''], {
-              fragment: 'standalone',
-              relativeTo: this.route,
+            this.router.navigate(['/object', dmsObject.id], {
+              fragment: this.standaloneFragment,
               replaceUrl: true
             });
           }
@@ -99,6 +104,9 @@ export class ObjectComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.route.params.pipe(takeUntilDestroy(this)).subscribe((params: any) => {
       if (params.id) {
+        // saving context ID in its own var, so while the dms object is loading
+        // we are able to properly set the selected item when there is no fragment ist available.
+        this.contextId = params.id;
         this.setupContext(params.id);
       }
     });
@@ -108,7 +116,10 @@ export class ObjectComponent implements OnInit, OnDestroy {
     });
     // fragments are used to identify the selected item within the context
     this.route.fragment.pipe(takeUntilDestroy(this)).subscribe((fragment: any) => {
-      this.setupSelectedItem(fragment);
+      this._standalone = fragment === this.standaloneFragment ? this.contextId : null;
+      if (!this._standalone) {
+        this.setupSelectedItem(fragment || this.contextId);
+      }
     });
 
     this.eventService

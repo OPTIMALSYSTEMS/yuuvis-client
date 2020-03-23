@@ -88,10 +88,10 @@ export class SearchResultComponent implements OnDestroy {
     return this._searchQuery;
   }
   /**
-   * The IDs of the items supposed to be selected. This is only going one direction.
+   * The IDs of the items supposed to be selected upfront. This is only going one direction.
    * If the items are not part of the actual table data, nothing will be selected.
    */
-  @Input() set selectedItemIDs(ids: string[]) {
+  @Input() set preSelectItems(ids: string[]) {
     this._itemsSupposedToBeSelected = ids;
     this.setSelection(ids);
   }
@@ -99,11 +99,11 @@ export class SearchResultComponent implements OnDestroy {
    * Emits the current selection as list of object IDs
    */
   @Output() itemsSelected = new EventEmitter<string[]>();
-  // /**
-  //  * Emitted when column sizes of the result list table have been changed.
-  //  */
-  // @Output() optionsChanged = new EventEmitter<ResponsiveDataTableOptions>();
   @Output() rowDoubleClicked = new EventEmitter<RowEvent>();
+  /**
+   * emitted when the view mode of the underlying data table changes
+   */
+  @Output() viewModeChanged = new EventEmitter<ViewMode>();
 
   set hasPages(count) {
     this._hasPages = count;

@@ -67,9 +67,14 @@ export class GridService {
       .getColumnConfig(objectTypeId)
       .pipe(
         map((cc: ColumnConfig) =>
-          cc.columns.filter((c: ColumnConfigColumn) => c.propertyType !== 'table').map(c => this.getColumnDefinition(c, objectTypeFields[c.id]))
+          cc.columns.filter((c: ColumnConfigColumn) => c.propertyType !== 'table').map(c => this.getColumnDefinition(objectTypeFields[c.id], c))
         )
       );
+  }
+
+  getColumnDefinitions(objectTypeId?: string): ColDef[] {
+    const objectType: ObjectType = objectTypeId ? this.system.getObjectType(objectTypeId) : this.system.getBaseType();
+    return objectType.fields.map(f => this.getColumnDefinition(f));
   }
 
   /**
@@ -77,12 +82,12 @@ export class GridService {
    * @param columnConfig Column configuration entry
    * @param field Object type field matching the column config entry
    */
-  private getColumnDefinition(columnConfigColumn: ColumnConfigColumn, field: ObjectTypeField): ColDef {
+  private getColumnDefinition(field: ObjectTypeField, columnConfigColumn?: ColumnConfigColumn): ColDef {
     const colDef: ColDef = {
       colId: field.id, // grid needs unique ID
       field: field.id,
       headerName: this.system.getLocalizedResource(`${field.id}_label`),
-      pinned: columnConfigColumn.pinned || false
+      pinned: columnConfigColumn ? columnConfigColumn.pinned || false : false
     };
 
     this.addColDefAttrsByType(colDef, field);

@@ -129,41 +129,38 @@ export class SummaryComponent implements OnInit {
     };
 
     const { skipFields, patentFields, extraFields, defaultBaseFields } = this.getSummaryConfiguration(dmsObject);
+    const colDef = this.gridService.getColumnDefinitions(dmsObject.objectTypeId);
+    Object.keys(dmsObject.data).forEach((key: string) => {
+      const prepKey = key.startsWith('parent.') ? key.replace('parent.', '') : key;
+      const label = this.systemService.getLocalizedResource(`${key}_label`);
+      const def: ColDef = colDef.find(cd => cd.field === prepKey);
+      const renderer: ICellRendererFunc = def ? (def.cellRenderer as ICellRendererFunc) : null;
+      const si: SummaryEntry = {
+        label: label ? label : key,
+        key,
+        value: renderer ? renderer({ value: dmsObject.data[key] }) : dmsObject.data[key],
+        order: null
+      };
 
-    this.gridService.getColumnConfiguration(dmsObject.objectTypeId).subscribe((colDef: ColDef[]) => {
-      Object.keys(dmsObject.data).forEach((key: string) => {
-        const prepKey = key.startsWith('parent.') ? key.replace('parent.', '') : key;
-        const label = this.systemService.getLocalizedResource(`${key}_label`);
-        const def: ColDef = colDef.find(cd => cd.field === prepKey);
-        const renderer: ICellRendererFunc = def ? (def.cellRenderer as ICellRendererFunc) : null;
-        const si: SummaryEntry = {
-          label: label ? label : key,
-          key,
-          value: renderer ? renderer({ value: dmsObject.data[key] }) : dmsObject.data[key],
-          order: null
-        };
+      if (key === BaseObjectTypeField.OBJECT_TYPE_ID) {
+        si.value = this.systemService.getLocalizedResource(`${dmsObject.data[key]}_label`);
+      }
+      if (extraFields.includes(prepKey)) {
+        summary.extras.push(si);
+      } else if (defaultBaseFields.find(field => field.key.startsWith(prepKey))) {
+        defaultBaseFields.map(field => (field.key === prepKey ? (si.order = field.order) : null));
+        summary.base.push(si);
+      } else if (patentFields.includes(prepKey)) {
+        summary.parent.push(si);
+      } else if (!skipFields.includes(prepKey)) {
+        summary.core.push(si);
+      }
 
-        if (key === BaseObjectTypeField.OBJECT_TYPE_ID) {
-          si.value = this.systemService.getLocalizedResource(`${dmsObject.data[key]}_label`);
-        }
-        if (extraFields.includes(prepKey)) {
-          summary.extras.push(si);
-        } else if (defaultBaseFields.find(field => field.key.startsWith(prepKey))) {
-          defaultBaseFields.map(field => (field.key === prepKey ? (si.order = field.order) : null));
-          summary.base.push(si);
-        } else if (patentFields.includes(prepKey)) {
-          summary.parent.push(si);
-        } else if (!skipFields.includes(prepKey)) {
-          summary.core.push(si);
-        }
-
-        summary.base.sort((a, b) => a.order - b.order);
-        summary.core
-          .sort((a, b) => (a.key === SecondaryObjectTypeField.DESCRIPTION ? -1 : b.key === SecondaryObjectTypeField.DESCRIPTION ? 1 : 0))
-          .sort((a, b) => (a.key === SecondaryObjectTypeField.TITLE ? -1 : b.key === SecondaryObjectTypeField.TITLE ? 1 : 0));
-      });
+      summary.base.sort((a, b) => a.order - b.order);
+      summary.core
+        .sort((a, b) => (a.key === SecondaryObjectTypeField.DESCRIPTION ? -1 : b.key === SecondaryObjectTypeField.DESCRIPTION ? 1 : 0))
+        .sort((a, b) => (a.key === SecondaryObjectTypeField.TITLE ? -1 : b.key === SecondaryObjectTypeField.TITLE ? 1 : 0));
     });
-
     return summary;
   }
 
