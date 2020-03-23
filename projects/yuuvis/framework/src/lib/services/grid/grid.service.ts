@@ -73,6 +73,16 @@ export class GridService {
   }
 
   /**
+   * Generate column definitions for all fields
+   * @param objectTypeId Object type to create the column definition for. Leave
+   * blank in case of a mixed result list
+   */
+  getColumnDefinitions(objectTypeId?: string): ColDef[] {
+    const objectType: ObjectType = objectTypeId ? this.system.getObjectType(objectTypeId) : this.system.getBaseType();
+    return objectType.fields.map(f => this.getColumnDefinition({ id: f.id, label: '', propertyType: f.propertyType }, f));
+  }
+
+  /**
    * Creates a column definition for a given object type field.
    * @param columnConfig Column configuration entry
    * @param field Object type field matching the column config entry
