@@ -65,8 +65,7 @@ export class DmsService {
    * @param intent
    */
   getDmsObject(id: string, version?: number, intent?: string): Observable<DmsObject> {
-    // TODO: Support version and intent params as well
-    return this.backend.get('/dms/' + id).pipe(
+    return this.backend.get(`/dms/${id}${version ? '/versions/' + version : ''}`).pipe(
       map(res => {
         const item: SearchResultItem = this.searchService.toSearchResult(res).items[0];
         return this.searchResultToDmsObject(item);

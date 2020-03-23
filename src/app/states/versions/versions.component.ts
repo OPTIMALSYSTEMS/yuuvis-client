@@ -15,6 +15,7 @@ import {
   TranslateService
 } from '@yuuvis/core';
 import { ResponsiveDataTableOptions, ResponsiveTableData } from '@yuuvis/framework';
+import { forkJoin } from 'rxjs';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { refresh, versions } from '../../../assets/default/svg/svg';
 
@@ -25,7 +26,6 @@ import { refresh, versions } from '../../../assets/default/svg/svg';
 })
 export class VersionsComponent implements OnInit, OnDestroy {
   private STORAGE_KEY = 'yuv.app.versions';
-  allItems: DmsObject[] = [];
   selection: string[] = [];
   dmsObjectID: string;
   dmsObject: DmsObject;
@@ -84,20 +84,22 @@ export class VersionsComponent implements OnInit, OnDestroy {
   }
 
   select(items: any[]) {
-    [this.dmsObject, this.dmsObject2] = items
+    const _versions = items
       .slice(0, 2)
-      .sort((a, b) => this.getVersion(a) - this.getVersion(b)) // lower version first
-      .map(i => this.allItems.find(a => this.getVersion(a) === this.getVersion(i)));
+      .map(a => this.getVersion(a))
+      .sort(); // lower version first
 
-    if (items.length > 2) {
-      // reset selection
-      this.selection = [this.getRowNodeId(this.dmsObject), this.getRowNodeId(this.dmsObject2)];
-    }
+    forkJoin(_versions.map(v => this.dmsService.getDmsObject(this.dmsObjectID, v))).subscribe(objects => {
+      [this.dmsObject, this.dmsObject2] = objects;
+      if (items.length > 2) {
+        // reset selection
+        this.selection = [this.getRowNodeId(this.dmsObject), this.getRowNodeId(this.dmsObject2)];
+      }
+    });
   }
 
   refresh() {
     this.dmsService.getDmsObjectVersions(this.dmsObjectID).subscribe(rows => {
-      this.allItems = rows;
       this.tableData = {
         columns: [{ field: SecondaryObjectTypeField.TITLE }],
         rows: rows.map(a => a.data).sort((a, b) => this.getVersion(b) - this.getVersion(a)),
