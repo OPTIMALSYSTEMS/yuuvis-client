@@ -401,7 +401,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
         this.gridOptions.api.setFocusedCell(0, this._data.columns[0].field);
       },
       onRowDoubleClicked: event => this.rowDoubleClicked.emit(event),
-      ...(this.data && this.data.gridOptions)
+      ...(this._data && this._data.gridOptions)
     };
   }
 
