@@ -1,71 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>yuuvis® client</title>
+    <base href="/" />
+    <meta name="viewport" content="width = device-width, initial-scale = 1" />
 
-<head>
-  <meta charset="utf-8" />
-  <title>yuuvis® flex Client</title>
-  <base href="/" />
-  <meta name="viewport" content="width = device-width, initial-scale = 1" />
+    <meta name="apple-mobile-web-app-title" content="yuuvis" />
 
-  <meta name="apple-mobile-web-app-title" content="yuuvis" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
 
-  <meta name="apple-mobile-web-app-capable" content="yes">
+    <!-- <meta name="apple-mobile-web-app-status-bar-style" content="black" /> -->
 
-  <!-- <meta name="apple-mobile-web-app-status-bar-style" content="black" /> -->
+    <link rel="apple-touch-icon" href="favicon.ico" />
 
-  <link rel="apple-touch-icon" href="favicon.ico">
+    <link rel="apple-touch-icon" sizes="76x76" href="favicon.ico" />
 
-  <link rel="apple-touch-icon" sizes="76x76" href="favicon.ico">
+    <link rel="apple-touch-icon" sizes="120x120" href="favicon.ico" />
 
-  <link rel="apple-touch-icon" sizes="120x120" href="favicon.ico">
+    <link rel="apple-touch-icon" sizes="152x152" href="favicon.ico" />
 
-  <link rel="apple-touch-icon" sizes="152x152" href="favicon.ico">
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
 
-  <link rel="icon" type="image/x-icon" href="favicon.ico" />
+    <style>
+      html,
+      body {
+        height: 100%;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+      }
 
-  <style>
-    html,
-    body {
-      height: 100%;
-      width: 100%;
-      margin: 0;
-      padding: 0;
-    }
+      #splash {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        background: rgb(244, 244, 244);
+        background: radial-gradient(ellipse at center, rgba(244, 244, 244, 1) 0%, rgba(238, 238, 238, 1) 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
 
-    #splash {
-      position: absolute;
-      left: 0;
-      right: 0;
-      top: 0;
-      bottom: 0;
-      background: rgb(244, 244, 244);
-      background: radial-gradient(ellipse at center, rgba(244, 244, 244, 1) 0%, rgba(238, 238, 238, 1) 100%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
+      #splash img {
+        width: 50%;
+      }
+    </style>
+    <link rel="manifest" href="manifest.json" crossorigin="use-credentials" />
+    <meta name="theme-color" content="#484f54" />
+  </head>
 
-    #splash img {
-      width: 50%;
-    }
-
-  </style>
-  <link rel="manifest" href="manifest.json" crossOrigin="use-credentials">
-  <meta name="theme-color" content="#484f54">
-</head>
-
-<!--
+  <!--
   By including the ontouchstart attribute in the body tag of your code and keeping its value empty, links
   and other elements will display their :hover and :active effects when tapped.
 -->
 
-<body ontouchstart="">
-  <link rel="stylesheet" href="assets/default/theme/theme.css">
-  <yuv-root>
-    <div id="splash"><img src="assets/default/theme/splash.svg"></div>
-  </yuv-root>
-  <noscript>Please enable JavaScript to continue using this application.</noscript>
-</body>
-
+  <body ontouchstart="">
+    <link rel="stylesheet" href="assets/default/theme/theme.css" />
+    <yuv-root>
+      <div id="splash"><img src="assets/default/theme/splash.svg" /></div>
+    </yuv-root>
+    <noscript>Please enable JavaScript to continue using this application.</noscript>
+  </body>
 </html>
 <!-- build time: __timestamp__ -->

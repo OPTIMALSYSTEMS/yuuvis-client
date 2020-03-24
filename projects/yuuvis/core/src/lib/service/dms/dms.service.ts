@@ -65,8 +65,7 @@ export class DmsService {
    * @param intent
    */
   getDmsObject(id: string, version?: number, intent?: string): Observable<DmsObject> {
-    // TODO: Support version and intent params as well
-    return this.backend.get('/dms/' + id).pipe(
+    return this.backend.get(`/dms/${id}${version ? '/versions/' + version : ''}`).pipe(
       map(res => {
         const item: SearchResultItem = this.searchService.toSearchResult(res).items[0];
         return this.searchResultToDmsObject(item);
@@ -93,6 +92,19 @@ export class DmsService {
    */
   getDmsObjects(ids: string[]): Observable<DmsObject[]> {
     return forkJoin(ids.map(id => this.getDmsObject(id)));
+  }
+
+  /**
+   * Fetch a dms object versions.
+   * @param id ID of the object to be retrieved
+   */
+  getDmsObjectVersions(id: string): Observable<DmsObject[]> {
+    return this.backend.get('/dms/objects/' + id + '/versions', 'core').pipe(
+      map(res => {
+        const items: SearchResultItem[] = this.searchService.toSearchResult(res).items || [];
+        return items.map(item => this.searchResultToDmsObject(item));
+      })
+    );
   }
 
   private searchResultToDmsObject(resItem: SearchResultItem): DmsObject {

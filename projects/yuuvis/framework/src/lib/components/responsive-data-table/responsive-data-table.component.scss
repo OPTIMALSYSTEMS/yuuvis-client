@@ -172,6 +172,13 @@ $range-selection-highlight-color: $primary-color;
         }
       }
     }
+    &.horizontal {
+      .ag-theme-yuv {
+        .ag-center-cols-container {
+          width: 100% !important;
+        }
+      }
+    }
     &.grid.vertical {
       .ag-theme-yuv {
         .ag-center-cols-container {

@@ -49,7 +49,9 @@
           <div class="entry">
             <div class="title">
               <span>{{ auditLabels['a' + a.action] }}</span>
-              <span class="version" title="{{ 'yuv.framework.audit.version' | translate }}">{{ a.version }}</span>
+              <span class="version" title="{{ 'yuv.framework.audit.version' | translate }}">
+                <a [routerLink]="['/versions', objectID]" [queryParams]="({version: a.version})"
+                  routerLinkActive="router-link-active">{{a.version}}</a></span>
             </div>
             <div class="creator meta">
               {{ a.createdBy.title }}

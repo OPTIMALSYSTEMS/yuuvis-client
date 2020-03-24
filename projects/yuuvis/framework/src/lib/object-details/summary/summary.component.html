@@ -1,45 +1,54 @@
 <div class="object-summary" *ngIf="summary">
 
 
-    <p-accordion [activeIndex]="activeIndex" [multiple]="true" [expandIcon]="'pi pi-fw pi-chevron-down'"
-        [collapseIcon]="'pi pi-fw pi-chevron-up'" (onOpen)="sectionOpen($event)" (onClose)="sectionClose($event)">
+  <p-accordion [activeIndex]="activeIndex" [multiple]="true" [expandIcon]="'pi pi-fw pi-chevron-down'"
+    [collapseIcon]="'pi pi-fw pi-chevron-up'" (onOpen)="sectionOpen($event)" (onClose)="sectionClose($event)">
 
-        <p-accordionTab [transitionOptions]="'0ms'" data-group="summary.section.parent"
-            header="{{'yuv.framework.object-details.summary.section.parent'|translate}}" *ngIf="summary?.parent.length">
-            <div *ngFor="let item of summary?.parent" class="entry" [attr.data-summary-item]="item.key">
-                <ng-container [ngTemplateOutlet]="summaryEntry" [ngTemplateOutletContext]="{ item: item }">
-                </ng-container>
-            </div>
-        </p-accordionTab>
+    <p-accordionTab [transitionOptions]="'0ms'" data-group="summary.section.parent" *ngIf="summary?.parent.length"
+      header="{{'yuv.framework.object-details.summary.section.parent'|translate}}">
+      <div *ngFor="let item of summary?.parent" class="entry" [ngClass]="classes(item.value, item.value2)"
+        [attr.data-summary-item]="item.key">
+        <ng-container [ngTemplateOutlet]="summaryEntry" [ngTemplateOutletContext]="{ item: item }">
+        </ng-container>
+      </div>
+    </p-accordionTab>
 
-        <p-accordionTab [transitionOptions]="'0ms'" data-group="summary.section.core"
-            header="{{'yuv.framework.object-details.summary.section.core'|translate}}">
-            <div *ngFor="let item of summary?.core" class="entry" [attr.data-summary-item]="item.key">
-                <ng-container [ngTemplateOutlet]="summaryEntry" [ngTemplateOutletContext]="{ item: item }">
-                </ng-container>
-            </div>
-        </p-accordionTab>
+    <p-accordionTab [transitionOptions]="'0ms'" data-group="summary.section.core" *ngIf="summary?.core.length"
+      header="{{'yuv.framework.object-details.summary.section.core'|translate}}">
+      <div *ngFor="let item of summary?.core" class="entry" [ngClass]="classes(item.value, item.value2)"
+        [attr.data-summary-item]="item.key">
+        <ng-container [ngTemplateOutlet]="summaryEntry" [ngTemplateOutletContext]="{ item: item }">
+        </ng-container>
+      </div>
+    </p-accordionTab>
 
-        <p-accordionTab [transitionOptions]="'0ms'" data-group="summary.section.baseparams"
-            header="{{'yuv.framework.object-details.summary.section.baseparams'|translate}}">
-            <div *ngFor="let item of summary?.base" class="entry" [attr.data-summary-item]="item.key">
-                <ng-container [ngTemplateOutlet]="summaryEntry" [ngTemplateOutletContext]="{ item: item }">
-                </ng-container>
-            </div>
-        </p-accordionTab>
+    <p-accordionTab [transitionOptions]="'0ms'" data-group="summary.section.baseparams" *ngIf="summary?.base.length"
+      header="{{'yuv.framework.object-details.summary.section.baseparams'|translate}}">
+      <div *ngFor="let item of summary?.base" class="entry" [ngClass]="classes(item.value, item.value2)"
+        [attr.data-summary-item]="item.key">
+        <ng-container [ngTemplateOutlet]="summaryEntry" [ngTemplateOutletContext]="{ item: item }">
+        </ng-container>
+      </div>
+    </p-accordionTab>
 
-        <p-accordionTab [transitionOptions]="'0ms'" data-group="summary.section.admin"
-            header="{{'yuv.framework.object-details.summary.section.admin'|translate}}"
-            *ngIf="summary?.extras.length && showExtrasSection">
-            <div *ngFor="let item of summary?.extras" class="entry baseparams" [attr.data-summary-item]="item.key">
-                <ng-container [ngTemplateOutlet]="summaryEntry" [ngTemplateOutletContext]="{ item: item }">
-                </ng-container>
-            </div>
-        </p-accordionTab>
-    </p-accordion>
+    <p-accordionTab [transitionOptions]="'0ms'" data-group="summary.section.admin"
+      header="{{'yuv.framework.object-details.summary.section.admin'|translate}}"
+      *ngIf="summary?.extras.length && showExtrasSection">
+      <div *ngFor="let item of summary?.extras" class="entry baseparams" [ngClass]="classes(item.value, item.value2)"
+        [attr.data-summary-item]="item.key">
+        <ng-container [ngTemplateOutlet]="summaryEntry" [ngTemplateOutletContext]="{ item: item }">
+        </ng-container>
+      </div>
+    </p-accordionTab>
+  </p-accordion>
 </div>
 
 <ng-template #summaryEntry let-item="item">
-    <span class="label">{{ item.label }}</span>
-    <span class="value" [innerHtml]="item.value"></span>
+  <span class="label">{{ item.label }}</span>
+  <span class="value first" *ngIf="!isVersion(item.key); else link" [innerHtml]="item.value | safeHtml"></span>
+  <span class="value second" *ngIf="dmsObject2" [innerHtml]="item.value2 | safeHtml"></span>
+  <ng-template #link>
+    <a class="value first" [routerLink]="['/versions', dmsObjectID]" [queryParams]="({version: item.value})"
+      routerLinkActive="router-link-active">{{item.value}}</a>
+  </ng-template>
 </ng-template>

@@ -30,7 +30,7 @@ export class ResponsiveTabContainerComponent implements OnInit, AfterContentInit
   /**
    * TabPanel plugins
    */
-  @Input() pluginPanels = new QueryList<TabPanel>();
+  @Input() pluginPanels = [new QueryList<TabPanel>()];
 
   _layoutOptions = { panelOrder: [], panelSizes: [] };
 
@@ -142,7 +142,7 @@ export class ResponsiveTabContainerComponent implements OnInit, AfterContentInit
    * initialize default TabPanels & TabPanel plugins
    */
   init() {
-    this.allPanels = this.tabPanels.toArray().concat(this.pluginPanels.toArray());
+    this.allPanels = this.pluginPanels.reduce((prev, cur) => [...prev, ...cur.toArray()], this.tabPanels.toArray());
 
     this.mainTabView.tabPanels = new QueryList<TabPanel>();
     this.mainTabView.tabPanels.reset(this.allPanels);
@@ -155,9 +155,10 @@ export class ResponsiveTabContainerComponent implements OnInit, AfterContentInit
    * opens specific TabPanel via native click event
    * @param panel
    */
-  open(panel: TabPanel) {
-    if (panel) {
-      const target = this.mainTabView.el.nativeElement.querySelector(`a#${panel.id}-label`);
+  open(panel: TabPanel | string) {
+    const tab = panel instanceof TabPanel ? panel : this.allPanels.find(p => this.pID(p) === panel);
+    if (tab) {
+      const target = this.mainTabView.el.nativeElement.querySelector(`a#${tab.id}-label`);
       if (target) {
         // use native event to trigger onChange
         target.click();

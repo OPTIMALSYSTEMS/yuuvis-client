@@ -203,4 +203,10 @@ $about-max-width: 800px;
     width: 100vw;
     justify-self: auto;
   }
+  :host-context(.screen-s.screen-landscape) {
+    --about-header-height: 100px;
+    margin: 0;
+    width: 98vw;
+    justify-self: auto;
+  }
 }

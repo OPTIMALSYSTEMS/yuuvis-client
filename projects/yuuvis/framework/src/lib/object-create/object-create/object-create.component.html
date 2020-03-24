@@ -1,4 +1,4 @@
-<div yuvOfflineDisabled class="yuv-object-create" [yuvBusyOverlay]="state.busy" *ngIf="state$ | async as state">
+<div yuvOfflineDisabled class="yuv-object-create" [yuvBusyOverlay]="state.busy" *ngIf="state$ | async as state" cdkTrapFocus>
   <header>
     <h1>
       {{ title }}
@@ -6,8 +6,7 @@
 
     <div class="breadcrumb">
       <ng-container *ngFor="let b of breadcrumb$ | async">
-        <div class="item" *ngIf="b.visible" (click)="goToStep(b.step)"
-          [ngClass]="{ current: b.step === state.currentStep }">
+        <div class="item" *ngIf="b.visible" (click)="goToStep(b.step)" [ngClass]="{ current: b.step === state.currentStep }">
           <span>{{ b.label }}</span>
         </div>
       </ng-container>
@@ -18,19 +17,21 @@
     <!-- STEP 1: Select an object type-->
     <div class="step select" *ngSwitchCase="'objecttype'" [@fadeIn]="animationTimer">
       <h1>{{ 'yuv.framework.object-create.step.type' | translate }}</h1>
-      <yuv-grouped-select [groups]="availableObjectTypeGroups" (select)="selectObjectType($event.value)">
-      </yuv-grouped-select>
+      <yuv-grouped-select [groups]="availableObjectTypeGroups" (select)="selectObjectType($event.value)" yuvFocusFirst="200"> </yuv-grouped-select>
     </div>
 
     <!-- STEP 2: Choose file(s) -->
-    <div class="step select" *ngSwitchCase="'files'" (yuvFileDrop)="onFilesDroppedOnType($event)"
+    <div
+      class="step select"
+      *ngSwitchCase="'files'"
+      (yuvFileDrop)="onFilesDroppedOnType($event)"
       [yuvFileDropOptions]="{ disabled: selectedObjectType.contentStreamAllowed === 'notallowed', multiple: true }"
-      [@fadeIn]="animationTimer">
+      [@fadeIn]="animationTimer"
+    >
       <h1>{{ 'yuv.framework.object-create.step.file' | translate }}</h1>
 
       <div class="content-select">
-        <div class="not-supported"
-          *ngIf="selectedObjectType.isFolder || selectedObjectType.contentStreamAllowed === 'notallowed'; else tplSupported">
+        <div class="not-supported" *ngIf="selectedObjectType.isFolder || selectedObjectType.contentStreamAllowed === 'notallowed'; else tplSupported">
           {{ 'yuv.framework.object-create.step.file.not-supported' | translate }}
         </div>
 
@@ -47,12 +48,14 @@
 
             <!-- upload a file -->
             <div class="buttons">
-              <button *ngIf="files.length"
-                (click)="filesClear()">{{ 'yuv.framework.object-create.step.file.clear' | translate }}</button>
-              <yuv-file-picker [label]="'yuv.framework.object-create.step.file.choose' | translate" [output]="'file'"
-                [multiple]="true" (fileSelected)="fileChosen($event)"></yuv-file-picker>
-              <button class="primary" (click)="fileSelectContinue()"
-                [disabled]="selectedObjectType.contentStreamAllowed === 'required' && files.length === 0">
+              <button *ngIf="files.length" (click)="filesClear()">{{ 'yuv.framework.object-create.step.file.clear' | translate }}</button>
+              <yuv-file-picker
+                [label]="'yuv.framework.object-create.step.file.choose' | translate"
+                [output]="'file'"
+                [multiple]="true"
+                (fileSelected)="fileChosen($event)"
+              ></yuv-file-picker>
+              <button class="primary" (click)="fileSelectContinue()" [disabled]="selectedObjectType.contentStreamAllowed === 'required' && files.length === 0">
                 {{ 'yuv.framework.object-create.step.file.continue' | translate }}
               </button>
             </div>
@@ -65,19 +68,21 @@
     <div class="step form" *ngSwitchCase="'indexdata'" [@fadeIn]="animationTimer">
       <h1>{{ 'yuv.framework.object-create.step.indexdata' | translate }}</h1>
 
-      <yuv-object-form [formOptions]="selectedObjectTypeFormOptions" *ngIf="selectedObjectTypeFormOptions"
-        yuvFocusFirst="200" (statusChanged)="onFormStatusChanged($event)">
+      <yuv-object-form
+        [formOptions]="selectedObjectTypeFormOptions"
+        *ngIf="selectedObjectTypeFormOptions"
+        yuvFocusFirst="200"
+        (statusChanged)="onFormStatusChanged($event)"
+      >
       </yuv-object-form>
     </div>
   </ng-container>
 
   <footer>
-    <yuv-form-input class="checkbox" [label]="'yuv.framework.object-create.footer.another' | translate"
-      [skipToggle]="true">
+    <yuv-form-input class="checkbox" [label]="'yuv.framework.object-create.footer.another' | translate" [skipToggle]="true">
       <yuv-checkbox [(ngModel)]="createAnother"></yuv-checkbox>
     </yuv-form-input>
 
-    <button class="primary create" [disabled]="!state.done" (click)="create()"
-      translate>yuv.framework.object-create.footer.create</button>
+    <button class="primary create" [disabled]="!state.done" (click)="create()" translate>yuv.framework.object-create.footer.create</button>
   </footer>
 </div>
