@@ -17,11 +17,6 @@ export class VersionsComponent implements OnInit, OnDestroy {
   dmsObject: DmsObject;
   dmsObject2: DmsObject;
   smallScreen: boolean;
-  private options = {
-    'yuv-responsive-master-slave': { useStateLayout: true },
-    'yuv-version-result-panel': null,
-    'yuv-object-details': null
-  };
 
   constructor(
     private titleService: Title,
@@ -46,10 +41,6 @@ export class VersionsComponent implements OnInit, OnDestroy {
     if (!this.pendingChanges.check()) {
       this.versions = [];
     }
-  }
-
-  getOptions(component: string) {
-    return this.options[component];
   }
 
   dmsObjectsSelected(objects: DmsObject[]) {

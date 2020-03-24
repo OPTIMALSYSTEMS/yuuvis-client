@@ -1,4 +1,4 @@
-import { ColDef } from '@ag-grid-community/core';
+import { ColDef, GridOptions } from '@ag-grid-community/core';
 
 /**
  * Responsive TableData
@@ -10,4 +10,5 @@ export interface ResponsiveTableData {
   titleField: string;
   descriptionField: string;
   selectType?: 'single' | 'multiple';
+  gridOptions?: Partial<GridOptions>;
 }

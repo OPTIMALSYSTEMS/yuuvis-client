@@ -72,11 +72,6 @@ export class GridService {
       );
   }
 
-  getColumnDefinitions(objectTypeId?: string): ColDef[] {
-    const objectType: ObjectType = objectTypeId ? this.system.getObjectType(objectTypeId) : this.system.getBaseType();
-    return objectType.fields.map(f => this.getColumnDefinition(f));
-  }
-
   /**
    * Generate column definitions for all fields
    * @param objectTypeId Object type to create the column definition for. Leave
@@ -84,7 +79,7 @@ export class GridService {
    */
   getColumnDefinitions(objectTypeId?: string): ColDef[] {
     const objectType: ObjectType = objectTypeId ? this.system.getObjectType(objectTypeId) : this.system.getBaseType();
-    return objectType.fields.map(f => this.getColumnDefinition({ id: f.id, label: '', propertyType: f.propertyType }, f));
+    return objectType.fields.map(f => this.getColumnDefinition(f));
   }
 
   /**

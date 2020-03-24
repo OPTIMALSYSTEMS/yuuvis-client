@@ -6,7 +6,7 @@
   </yuv-action-menu-bar>
   <div class="content">
     <yuv-responsive-data-table yuvOfflineDisabled #dataTable class="data-table" *ngIf="tableData" [data]="tableData"
-      [options]="tableOptions" [selection]="selection" (selectionChanged)="select($event)">
+      [viewMode]="'horizontal'" [selection]="selection" (selectionChanged)="select($event)">
     </yuv-responsive-data-table>
   </div>
 </yuv-panel>

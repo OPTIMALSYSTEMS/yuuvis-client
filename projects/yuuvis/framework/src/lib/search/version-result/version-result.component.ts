@@ -4,7 +4,6 @@ import { BaseObjectTypeField, DmsObject, DmsService, SecondaryObjectTypeField, T
 import { forkJoin, of } from 'rxjs';
 import { ResponsiveTableData } from '../../components/responsive-data-table/responsive-data-table.interface';
 import { refresh, versions } from '../../svg.generated';
-import { ResponsiveDataTableOptions } from './../../components/responsive-data-table/responsive-data-table.component';
 
 @Component({
   selector: 'yuv-version-result',
@@ -28,10 +27,6 @@ export class VersionResultComponent implements OnInit {
   @Output() dmsObjectsSelected = new EventEmitter<DmsObject[]>();
 
   tableData: ResponsiveTableData;
-  @Input() tableOptions: ResponsiveDataTableOptions = {
-    viewMode: 'horizontal',
-    gridOptions: { getRowNodeId: o => this.getRowNodeId(o) }
-  };
 
   constructor(public translate: TranslateService, private dmsService: DmsService, private iconRegistry: IconRegistryService) {
     this.iconRegistry.registerIcons([refresh, versions]);
@@ -69,7 +64,8 @@ export class VersionResultComponent implements OnInit {
         rows: rows.map(a => a.data).sort((a, b) => this.getVersion(b) - this.getVersion(a)),
         titleField: SecondaryObjectTypeField.TITLE,
         descriptionField: SecondaryObjectTypeField.DESCRIPTION,
-        selectType: 'multiple'
+        selectType: 'multiple',
+        gridOptions: { getRowNodeId: o => this.getRowNodeId(o) }
       };
     });
   }

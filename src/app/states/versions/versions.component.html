@@ -1,12 +1,10 @@
-<yuv-responsive-master-slave class="state" [options]="getOptions('yuv-responsive-master-slave')"
-  (slaveClosed)="onSlaveClosed()" [slaveActive]="dmsObject">
+<yuv-responsive-master-slave class="state" (slaveClosed)="onSlaveClosed()" [slaveActive]="dmsObject">
   <yuv-version-result class="yuv-master panel" [objectID]="dmsObjectID" [versions]="versions"
     (dmsObjectsSelected)="dmsObjectsSelected($event)">
   </yuv-version-result>
 
-  <yuv-object-details class="yuv-slave panel" [dmsObject]="dmsObject" [options]="getOptions('yuv-object-details')"
-    [panelOrder]="['summary', 'indexdata', 'preview']" [ngClass]="{ 'changes-active': !!dmsObject2 }"
-    [activeTabPanel]="dmsObject2 ? 'changes' : 'summary'">
+  <yuv-object-details class="yuv-slave panel" [dmsObject]="dmsObject" [panelOrder]="['summary', 'indexdata', 'preview']"
+    [ngClass]="{ 'changes-active': !!dmsObject2 }" [activeTabPanel]="dmsObject2 ? 'changes' : 'summary'">
     <p-tabPanel [id]="'changes'" [header]="'yuv.client.state.versions.tabs.changes.title' | translate"
       [headerStyleClass]="'changes'">
       <ng-template pTemplate="content">
