@@ -81,8 +81,6 @@ export class ResultComponent implements OnInit, OnDestroy {
       this.searchQuery = params.get('query') ? new SearchQuery(JSON.parse(params.get('query'))) : null;
       // this.appCacheService.getItem(this.getStorageKey()).subscribe(o => (this.options = { ...this.options, ...o }));
       // this.layoutService.loadComponentLayout(this.getStorageKey()).subscribe(o => (this.options = { ...this.options, ...o }));
-
-      // this.layoutService.loadLayoutOptions()
     });
   }
 

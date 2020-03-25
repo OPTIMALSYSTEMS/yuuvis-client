@@ -1,7 +1,7 @@
 import { DOCUMENT } from '@angular/common';
 import { Inject, Injectable } from '@angular/core';
 import { AppCacheService, BackendService, Direction, Logger, UserService, YuvUser } from '@yuuvis/core';
-import { Observable, ReplaySubject } from 'rxjs';
+import { Observable, of, ReplaySubject } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 
 @Injectable({
@@ -101,14 +101,16 @@ export class LayoutService {
    * @param value The layout settings itself
    */
   saveLayoutOptions(layoutOptionsKey: string, elementKey: string, value: any): Observable<any> {
-    this.logger.debug(`saving layout options for '${layoutOptionsKey}-${elementKey}'`);
-    return this.appCache.getItem(layoutOptionsKey).pipe(
-      switchMap(res => {
-        const v = res || {};
-        v[elementKey] = value;
-        return this.appCache.setItem(layoutOptionsKey, v);
-      })
-    );
+    this.logger.debug(layoutOptionsKey ? `saving layout options for '${layoutOptionsKey}-${elementKey}'` : `layout key missing`);
+    return layoutOptionsKey
+      ? this.appCache.getItem(layoutOptionsKey).pipe(
+          switchMap(res => {
+            const v = res || {};
+            v[elementKey] = value;
+            return this.appCache.setItem(layoutOptionsKey, v);
+          })
+        )
+      : of();
   }
   /**
    * Load layout settings for a component.
@@ -117,8 +119,8 @@ export class LayoutService {
    * the layout settings for the given host component.
    */
   loadLayoutOptions(layoutOptionsKey: string, elementKey?: string): Observable<any> {
-    this.logger.debug(`loading layout options for '${layoutOptionsKey}-${elementKey}'`);
-    return this.appCache.getItem(layoutOptionsKey).pipe(map(res => (elementKey && res ? res[elementKey] : res)));
+    this.logger.debug(layoutOptionsKey ? `loading layout options for '${layoutOptionsKey}-${elementKey}'` : `layout key missing`);
+    return layoutOptionsKey ? this.appCache.getItem(layoutOptionsKey).pipe(map(res => (elementKey && res ? res[elementKey] : res))) : of();
   }
 
   private saveSettings() {

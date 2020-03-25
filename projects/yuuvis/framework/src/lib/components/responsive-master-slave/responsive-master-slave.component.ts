@@ -102,20 +102,13 @@ export class ResponsiveMasterSlaveComponent implements OnDestroy {
   gutterDblClick() {
     this._layoutOptions.direction = this._layoutOptions.direction === 'vertical' ? 'horizontal' : 'vertical';
     this.setDirection(this._layoutOptions);
-    this.saveLayoutOptions();
+    this.layoutService.saveLayoutOptions(this._layoutOptionsKey, 'yuv-responsive-master-slave', this._layoutOptions).subscribe();
   }
 
   dragEnd(evt: any) {
     this._layoutOptions.masterSize = evt.sizes[0];
     this._layoutOptions.slaveSize = evt.sizes[1];
-    this.saveLayoutOptions();
-  }
-
-  // will only persist the settings if a layoutOptionsKey was provided
-  private saveLayoutOptions() {
-    if (this._layoutOptionsKey) {
-      this.layoutService.saveLayoutOptions(this._layoutOptionsKey, 'yuv-responsive-master-slave', this._layoutOptions).subscribe();
-    }
+    this.layoutService.saveLayoutOptions(this._layoutOptionsKey, 'yuv-responsive-master-slave', this._layoutOptions).subscribe();
   }
 
   ngOnDestroy() {}

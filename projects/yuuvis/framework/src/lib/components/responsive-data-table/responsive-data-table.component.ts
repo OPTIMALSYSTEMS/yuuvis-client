@@ -64,19 +64,17 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
   private _layoutOptionsKey: string;
   @Input() set layoutOptionsKey(lok: string) {
     this._layoutOptionsKey = lok;
-    if (lok) {
-      this.layoutService.loadLayoutOptions(lok, 'yuv-responsive-data-table').subscribe((o: ResponsiveDataTableOptions) => {
-        this._layoutOptions = o || {};
-        if (this.gridOptions && this._data) {
-          this.gridOptions.api.setColumnDefs(
-            this._layoutOptions ? this.applyColDefOptions(this._data.columns, this._layoutOptions.columnWidths) : this._data.columns
-          );
-        }
-        if (o && o.viewMode) {
-          this.setupViewMode(o.viewMode);
-        }
-      });
-    }
+    this.layoutService.loadLayoutOptions(lok, 'yuv-responsive-data-table').subscribe((o: ResponsiveDataTableOptions) => {
+      this._layoutOptions = o || {};
+      if (this.gridOptions && this._data) {
+        this.gridOptions.api.setColumnDefs(
+          this._layoutOptions ? this.applyColDefOptions(this._data.columns, this._layoutOptions.columnWidths) : this._data.columns
+        );
+      }
+      if (o && o.viewMode) {
+        this.setupViewMode(o.viewMode);
+      }
+    });
   }
 
   /**
@@ -209,14 +207,12 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
             width: columnState.width
           }))
         });
-        if (this._layoutOptionsKey) {
-          this.layoutService
-            .saveLayoutOptions(this._layoutOptionsKey, 'yuv-responsive-data-table', {
-              viewMode: this.viewMode,
-              columnWidths: Utils.arrayToObject(this.gridOptions.columnApi.getColumnState(), 'colId', 'width')
-            })
-            .subscribe();
-        }
+        this.layoutService
+          .saveLayoutOptions(this._layoutOptionsKey, 'yuv-responsive-data-table', {
+            viewMode: this.viewMode,
+            columnWidths: Utils.arrayToObject(this.gridOptions.columnApi.getColumnState(), 'colId', 'width')
+          })
+          .subscribe();
       }
     });
 
@@ -230,7 +226,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
    */
   private setupViewMode(viewMode: ViewMode) {
     this._layoutOptions.viewMode = viewMode;
-    if (this._layoutOptionsKey && this._viewMode && this._viewMode !== viewMode) {
+    if (this._viewMode && this._viewMode !== viewMode) {
       this.layoutService.saveLayoutOptions(this._layoutOptionsKey, 'yuv-responsive-data-table', this._layoutOptions).subscribe();
     }
     this._viewMode = viewMode || 'standard';

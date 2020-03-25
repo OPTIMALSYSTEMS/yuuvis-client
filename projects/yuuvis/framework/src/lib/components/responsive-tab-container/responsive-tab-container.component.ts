@@ -184,9 +184,7 @@ export class ResponsiveTabContainerComponent implements OnInit, AfterContentInit
       if (this._layoutOptions.panelOrder.length !== this._layoutOptions.panelSizes.length) {
         this._layoutOptions.panelSizes = [];
       }
-      if (this._layoutOptionsKey) {
-        this.layoutService.saveLayoutOptions(this._layoutOptionsKey, 'yuv-responsive-tab-container', this._layoutOptions).subscribe();
-      }
+      this.layoutService.saveLayoutOptions(this._layoutOptionsKey, 'yuv-responsive-tab-container', this._layoutOptions).subscribe();
     });
   }
 
@@ -206,8 +204,6 @@ export class ResponsiveTabContainerComponent implements OnInit, AfterContentInit
 
   dragEnd(evt: any) {
     this._layoutOptions.panelSizes = evt.sizes;
-    if (this._layoutOptionsKey) {
-      this.layoutService.saveLayoutOptions(this._layoutOptionsKey, 'yuv-responsive-tab-container', this._layoutOptions).subscribe();
-    }
+    this.layoutService.saveLayoutOptions(this._layoutOptionsKey, 'yuv-responsive-tab-container', this._layoutOptions).subscribe();
   }
 }
