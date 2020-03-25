@@ -3,7 +3,7 @@ import { PlatformLocation } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
-import { PendingChangesService, Screen, ScreenService, SearchQuery, TranslateService } from '@yuuvis/core';
+import { PendingChangesService, Screen, ScreenService, SearchQuery, TranslateService, Utils } from '@yuuvis/core';
 import { LayoutService } from '@yuuvis/framework';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { AppSearchService } from '../../service/app-search.service';
@@ -66,7 +66,7 @@ export class ResultComponent implements OnInit, OnDestroy {
 
   onRowDoubleClicked(rowEvent: RowEvent) {
     if (rowEvent) {
-      this.router.navigate(['/object/' + rowEvent.data.id]);
+      Utils.navigate((rowEvent.event as MouseEvent).ctrlKey, this.router, ['/object/' + rowEvent.data.id]);
     }
   }
 

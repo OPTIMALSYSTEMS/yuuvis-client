@@ -15,7 +15,7 @@
 
         <yuv-dms-object-tile drag-scroll-item *ngFor="let i of recentlyCreated" [title]="i.title"
           [description]="i.description" [objectTypeIcon]="i.objectTypeIcon" [objectTypeLabel]="i.objectTypeLabel"
-          [date]="i.date" (click)="triggerItemClicked(i)"></yuv-dms-object-tile>
+          [date]="i.date" (click)="triggerItemClicked(i, $event)"></yuv-dms-object-tile>
 
         <button drag-scroll-item *ngIf="recentlyCreated?.length && !data"
           (click)="triggerShowAll()">{{'yuv.framework.recent-activities.header.more'|translate}}</button>
@@ -29,7 +29,7 @@
 
         <yuv-dms-object-tile drag-scroll-item *ngFor="let i of recentlyModified" [title]="i.title"
           [description]="i.description" [objectTypeIcon]="i.objectTypeIcon" [objectTypeLabel]="i.objectTypeLabel"
-          [date]="i.date" (click)="triggerItemClicked(i)"></yuv-dms-object-tile>
+          [date]="i.date" (click)="triggerItemClicked(i, $event)"></yuv-dms-object-tile>
 
         <button drag-scroll-item *ngIf="recentlyModified?.length && !data"
           (click)="triggerShowAll()">{{'yuv.framework.recent-activities.header.more'|translate}}</button>

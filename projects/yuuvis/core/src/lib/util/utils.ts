@@ -1,3 +1,4 @@
+import { NavigationExtras, Router } from '@angular/router';
 import { EMPTY as observableEmpty, throwError as observableThrowError } from 'rxjs';
 import { YuvError } from '../model/yuv-error.model';
 import { Sort } from './utils.helper.enum';
@@ -310,5 +311,20 @@ export class Utils {
       acc[key ? key(cur) : i] = value ? value(cur) : cur;
       return acc;
     }, {});
+  }
+
+  public static navigate(newTab: boolean, router: Router, commands: any[], navigationExtras?: NavigationExtras): Promise<any> {
+    if (newTab) {
+      return new Promise(() =>
+        window.open(
+          router
+            .createUrlTree(commands, navigationExtras)
+            .toString()
+            .replace('/', '') // relative to host
+        )
+      );
+    } else {
+      return router.navigate(commands, navigationExtras);
+    }
   }
 }

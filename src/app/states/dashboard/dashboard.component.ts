@@ -1,7 +1,7 @@
 import { Component, HostBinding, OnInit, ViewChild } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { NavigationExtras, Router } from '@angular/router';
-import { SearchQuery } from '@yuuvis/core';
+import { SearchQuery, Utils } from '@yuuvis/core';
 import { ObjectTypeAggregation, QuickSearchComponent, RecentItem } from '@yuuvis/framework';
 import { APP_VARS } from '../../app.vars';
 import { AppSearchService } from '../../service/app-search.service';
@@ -25,7 +25,7 @@ export class DashboardComponent implements OnInit {
   }
 
   onRecentItemClicked(recentItem: RecentItem) {
-    this.router.navigate(['/object/' + recentItem.objectId]);
+    Utils.navigate(recentItem.newTab, this.router, ['object', recentItem.objectId]);
   }
 
   async onQuickSearchQuery(query: SearchQuery, preventAppSearchSet: boolean = false) {

@@ -156,8 +156,8 @@ export class RecentActivitiesComponent implements OnInit {
     }
   }
 
-  triggerItemClicked(item: RecentItem) {
-    this.itemClick.emit(item);
+  triggerItemClicked(item: RecentItem, event: MouseEvent) {
+    this.itemClick.emit({ ...item, newTab: event.ctrlKey });
   }
 
   private postFetch() {
@@ -207,4 +207,5 @@ export interface RecentItem {
   objectTypeIcon: string;
   objectTypeLabel: string;
   date: Date;
+  newTab?: boolean;
 }
