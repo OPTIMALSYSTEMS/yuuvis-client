@@ -95,7 +95,10 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
    * set selected rows for the table
    */
   @Input() set selection(selection: string[]) {
-    setTimeout(() => this.selectRows(selection), 0);
+    setTimeout(() => {
+      this.selectRows(selection);
+      this.gridOptions.onSelectionChanged(null);
+    }, 0);
   }
 
   /**
