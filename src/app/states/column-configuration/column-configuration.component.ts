@@ -8,12 +8,12 @@ import { ObjectType } from '@yuuvis/core';
 })
 export class ColumnConfigurationComponent implements OnInit {
   options = { masterSize: 30, masterMinSize: 20, slaveSize: 70, slaveMinSize: 30, direction: 'horizontal', resizable: true, useStateLayout: false };
-  columnConfigInput: ObjectType;
+  columnConfigInput: any;
 
   constructor() {}
 
-  setColumnConfigInput(item: ObjectType) {
-    this.columnConfigInput = item;
+  setColumnConfigInput(type: ObjectType) {
+    this.columnConfigInput = { type };
   }
 
   ngOnInit() {}

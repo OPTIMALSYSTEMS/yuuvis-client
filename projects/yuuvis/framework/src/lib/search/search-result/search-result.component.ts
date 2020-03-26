@@ -88,6 +88,11 @@ export class SearchResultComponent implements OnDestroy {
     return this._searchQuery;
   }
   /**
+   * Emitted when the query has been changed from within the component
+   */
+  @Output() queryChanged = new EventEmitter<SearchQuery>();
+
+  /**
    * The IDs of the items supposed to be selected upfront. This is only going one direction.
    * If the items are not part of the actual table data, nothing will be selected.
    */
@@ -169,7 +174,10 @@ export class SearchResultComponent implements OnDestroy {
   private executeQuery(applyColumnConfig?: boolean) {
     this.busy = true;
     (applyColumnConfig ? this.applyColumnConfiguration(this._searchQuery) : of(this._searchQuery))
-      .pipe(switchMap((q: SearchQuery) => this.searchService.search(q)))
+      .pipe(
+        tap(q => this.queryChanged.emit(q)),
+        switchMap((q: SearchQuery) => this.searchService.search(q))
+      )
       .subscribe((res: SearchResult) => {
         this.totalNumItems = res.totalNumItems;
         this.createTableData(res);
@@ -297,8 +305,6 @@ export class SearchResultComponent implements OnDestroy {
       this._searchQuery.sortOptions = sortModel.map(m => new SortOption(m.colId, m.sort));
       this._searchQuery.from = 0;
       this.executeQuery();
-      // TODO: Reimplement persisting settings comming from the grid (...should we support that at all?)
-      // this.gridService.persistSortSettings(this._searchQuery.sortOptions, this.resultListObjectTypeId);
     }
   }
 
