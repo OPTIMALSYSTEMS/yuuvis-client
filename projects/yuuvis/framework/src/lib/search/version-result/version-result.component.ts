@@ -28,6 +28,8 @@ export class VersionResultComponent implements OnInit {
 
   tableData: ResponsiveTableData;
 
+  @Input() layoutOptionsKey: string;
+
   constructor(public translate: TranslateService, private dmsService: DmsService, private iconRegistry: IconRegistryService) {
     this.iconRegistry.registerIcons([refresh, versions]);
   }
@@ -65,7 +67,7 @@ export class VersionResultComponent implements OnInit {
         titleField: SecondaryObjectTypeField.TITLE,
         descriptionField: SecondaryObjectTypeField.DESCRIPTION,
         selectType: 'multiple',
-        gridOptions: { getRowNodeId: o => this.getRowNodeId(o) }
+        gridOptions: { getRowNodeId: o => this.getRowNodeId(o), rowMultiSelectWithClick: true }
       };
     });
   }

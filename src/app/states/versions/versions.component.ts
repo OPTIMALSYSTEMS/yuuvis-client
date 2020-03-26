@@ -1,8 +1,8 @@
 import { PlatformLocation } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
-import { ActivatedRoute, Router } from '@angular/router';
-import { AppCacheService, DmsObject, PendingChangesService, Screen, ScreenService, TranslateService } from '@yuuvis/core';
+import { ActivatedRoute } from '@angular/router';
+import { DmsObject, PendingChangesService, Screen, ScreenService, TranslateService } from '@yuuvis/core';
 import { takeUntilDestroy } from 'take-until-destroy';
 
 @Component({
@@ -18,15 +18,17 @@ export class VersionsComponent implements OnInit, OnDestroy {
   dmsObject2: DmsObject;
   smallScreen: boolean;
 
+  get layoutOptionsKey() {
+    return this.STORAGE_KEY;
+  }
+
   constructor(
     private titleService: Title,
     private screenService: ScreenService,
-    private appCacheService: AppCacheService,
     public translate: TranslateService,
     private location: PlatformLocation,
     private pendingChanges: PendingChangesService,
-    private route: ActivatedRoute,
-    private router: Router
+    private route: ActivatedRoute
   ) {
     this.screenService.screenChange$.pipe(takeUntilDestroy(this)).subscribe((screen: Screen) => {
       this.smallScreen = screen.mode === ScreenService.MODE.SMALL;

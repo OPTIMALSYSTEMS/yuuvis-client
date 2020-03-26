@@ -77,7 +77,10 @@ export class ObjectDetailsComponent {
   @Input() layoutOptionsKey: string;
   @Input()
   set activeTabPanel(panel: TabPanel | string) {
-    setTimeout(() => panel && this.tabContainer && this.tabContainer.open(panel), this.tabContainer ? 0 : 200);
+    setTimeout(
+      () => this.tabContainer && this.tabContainer.open(panel || this.tabContainer.mainTabView.tabs.find(t => !t.disabled)),
+      this.tabContainer ? 0 : 200
+    );
   }
 
   @ViewChild('summary', { static: false }) summary: TemplateRef<any>;
