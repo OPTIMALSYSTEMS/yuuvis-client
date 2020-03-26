@@ -29,6 +29,7 @@
               <yuv-icon icon="close"></yuv-icon>
             </button>
             <yuv-quick-search [inline]="true" [context]="context" [query]="appQuery"
+              (toggleContextSearch)="onQuickSearchToggleContextSearch($event)"
               (querySubmit)="onQuickSearchQuery($event)">
             </yuv-quick-search>
           </div>

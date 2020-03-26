@@ -79,6 +79,7 @@ export class ResultComponent implements OnInit, OnDestroy {
     // extract the query from the route params
     this.route.queryParamMap.pipe(takeUntilDestroy(this)).subscribe(params => {
       this.searchQuery = params.get('query') ? new SearchQuery(JSON.parse(params.get('query'))) : null;
+      this.appSearch.setQuery(this.searchQuery);
       // this.appCacheService.getItem(this.getStorageKey()).subscribe(o => (this.options = { ...this.options, ...o }));
       // this.layoutService.loadComponentLayout(this.getStorageKey()).subscribe(o => (this.options = { ...this.options, ...o }));
 
