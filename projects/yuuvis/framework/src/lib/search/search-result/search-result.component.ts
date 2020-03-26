@@ -185,8 +185,7 @@ export class SearchResultComponent implements OnDestroy {
   }
 
   private applyColumnConfiguration(q: SearchQuery): Observable<SearchQuery> {
-    const targetType = q.types && q.types.length === 1 ? q.types[0] : null;
-    return this.userConfig.getColumnConfig(targetType).pipe(
+    return this.userConfig.getColumnConfig(q.targetType).pipe(
       tap((cc: ColumnConfig) => {
         q.sortOptions = [];
         cc.columns
@@ -204,10 +203,9 @@ export class SearchResultComponent implements OnDestroy {
   // Create actual table data from the search result
   private createTableData(searchResult: SearchResult, pageNumber = 1): void {
     // object type of the result list items, if NULL we got a mixed result
-    // const id = searchResult.objectTypes.length > 1 ? null : searchResult.objectTypes[0];
     let objecttypeId;
     if (this._searchQuery) {
-      objecttypeId = this._searchQuery.types.length > 1 ? null : this._searchQuery.types[0] || null;
+      objecttypeId = this._searchQuery.targetType;
     }
 
     this.gridService.getColumnConfiguration(objecttypeId).subscribe((colDefs: ColDef[]) => {

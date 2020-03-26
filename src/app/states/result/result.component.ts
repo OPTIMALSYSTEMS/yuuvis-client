@@ -85,7 +85,7 @@ export class ResultComponent implements OnInit, OnDestroy {
   }
 
   getLayoutOptionsStorageKey() {
-    return `${this.STORAGE_KEY}.${this.searchQuery && this.searchQuery.types.length === 1 ? this.searchQuery.types[0] : 'mixed'}`;
+    return `${this.STORAGE_KEY}.${(this.searchQuery && this.searchQuery.targetType) || 'mixed'}`;
   }
 
   ngOnDestroy() {}

@@ -32,7 +32,7 @@ export class SearchResultPanelComponent {
    */
   @Input() set query(searchQuery: SearchQuery) {
     this._searchQuery = searchQuery;
-    const type = searchQuery && searchQuery.types && searchQuery.types.length === 1 ? searchQuery.types[0] : this.systemService.getBaseType();
+    const type = (searchQuery && searchQuery.targetType) || this.systemService.getBaseType();
     this.columnConfigInput = { type, sortOptions: searchQuery && searchQuery.sortOptions };
 
     if (searchQuery) {
