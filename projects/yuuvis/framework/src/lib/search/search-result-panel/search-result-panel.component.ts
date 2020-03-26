@@ -84,9 +84,9 @@ export class SearchResultPanelComponent {
     this.iconRegistry.registerIcons([search, refresh, kebap]);
   }
 
-  refresh() {
+  refresh(applyColumnConfig?: boolean) {
     if (this.searchResultComponent) {
-      this.searchResultComponent.refresh();
+      this.searchResultComponent.refresh(applyColumnConfig);
     }
   }
 
@@ -145,7 +145,7 @@ export class SearchResultPanelComponent {
   }
 
   columnConfigChanged(columnConfig: ColumnConfig, popoverRef?: PopoverRef) {
-    this.refresh();
+    this.refresh(true);
 
     if (popoverRef) {
       popoverRef.close();

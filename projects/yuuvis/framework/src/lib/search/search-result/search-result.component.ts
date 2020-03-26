@@ -162,8 +162,8 @@ export class SearchResultComponent implements OnDestroy {
   /**
    * re-run the current query
    */
-  refresh() {
-    this.executeQuery();
+  refresh(applyColumnConfig?: boolean) {
+    this.executeQuery(applyColumnConfig);
   }
 
   private executeQuery(applyColumnConfig?: boolean) {

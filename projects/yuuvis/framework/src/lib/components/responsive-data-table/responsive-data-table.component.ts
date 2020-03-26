@@ -383,6 +383,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
       rowSelection: this._data.selectType || 'single',
       rowDeselection: true,
       suppressNoRowsOverlay: true,
+      multiSortKey: 'ctrl',
 
       // EVENTS - add event callback handlers
       onSelectionChanged: event => {
