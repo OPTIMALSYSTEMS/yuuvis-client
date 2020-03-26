@@ -43,10 +43,11 @@ export class VersionResultComponent implements OnInit {
   }
 
   select(items: any[]) {
-    const [v1, v2] = items
-      .slice(0, 2)
-      .map(a => this.getVersion(a))
-      .sort(); // lower version first
+    const vs = items.map(a => this.getVersion(a));
+    const [v1, v2] = [
+      vs.shift(), // focused version first
+      vs.sort().pop() // highest version second
+    ].sort(); // compare lower version against higher
 
     if (items.length > 2) {
       // reset selection
