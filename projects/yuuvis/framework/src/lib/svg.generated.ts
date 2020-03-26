@@ -102,6 +102,10 @@ export const noFile = {
  name: 'noFile', 
  data: '<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48"><path d="M29 4H14.6c-.8 0-1.5.2-2 .6l27.2 27.2v-17L29 4zm-.7 11.6V7.8l7.8 7.8h-7.8zM43.4 40.8l-2.5 2.5-3.5-3.5c-.4.1-.8.2-1.2.2H14.6c-2 0-3.6-1.6-3.6-3.6V13.5L5.9 8.4l2.5-2.5L11 8.4l28.7 28.7 3.1 3.1.6.6z"/></svg>',
 };
+export const openContext = {
+ name: 'openContext', 
+ data: '<svg height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M19 7h-8v6h8V7zm2-4H3c-1.1 0-2 .9-2 2v14c0 1.1.9 1.98 2 1.98h18c1.1 0 2-.88 2-1.98V5c0-1.1-.9-2-2-2zm0 16.01H3V4.98h18v14.03z"/><path d="M0 0h24v24H0z" fill="none"/></svg>',
+};
 export const pin = {
  name: 'pin', 
  data: '<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="24" height="24" viewBox="0 0 24 24"><path d="M16,12V4H17V2H7V4H8V12L6,14V16H11.2V22H12.8V16H18V14L16,12M8.8,14L10,12.8V4H14V12.8L15.2,14H8.8Z" /></svg>',

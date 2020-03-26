@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { IconRegistryService } from '@yuuvis/common-ui';
 import { BaseObjectTypeField, DmsObject, DmsService, SecondaryObjectTypeField, TranslateService } from '@yuuvis/core';
 import { forkJoin, of } from 'rxjs';
@@ -30,7 +31,13 @@ export class VersionResultComponent implements OnInit {
 
   @Input() layoutOptionsKey: string;
 
-  constructor(public translate: TranslateService, private dmsService: DmsService, private iconRegistry: IconRegistryService) {
+  constructor(
+    public translate: TranslateService,
+    private dmsService: DmsService,
+    private iconRegistry: IconRegistryService,
+    private router: Router,
+    private route: ActivatedRoute
+  ) {
     this.iconRegistry.registerIcons([refresh, versions]);
   }
 
@@ -70,6 +77,12 @@ export class VersionResultComponent implements OnInit {
         selectType: 'multiple',
         gridOptions: { getRowNodeId: o => this.getRowNodeId(o), rowMultiSelectWithClick: true }
       };
+      this.router.navigate([], {
+        fragment: this.getVersion(this.tableData.rows[0]).toString(),
+        replaceUrl: false,
+        relativeTo: this.route,
+        queryParamsHandling: 'preserve'
+      });
     });
   }
 

@@ -20,7 +20,7 @@
     grid-template-areas: 'head' 'content';
 
     &.descriptionsEnabled {
-      .action {
+      .action .row {
         grid-template-rows: auto auto;
         grid-template-areas: 'icon label count' 'icon description count';
         .description {
@@ -76,8 +76,7 @@
       }
     }
 
-    .action {
-      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    .action .row {
       @include transition();
       padding: calc(var(--app-pane-padding) / 2);
       cursor: pointer;
@@ -87,11 +86,6 @@
       grid-template-areas: 'icon label count';
       align-items: center;
 
-      &.sub {
-        padding-left: var(--app-pane-padding);
-        padding-right: var(--app-pane-padding);
-      }
-
       .label {
         grid-area: label;
       }
@@ -99,10 +93,9 @@
         display: none;
       }
 
-      a.link {
+      &.link {
         text-decoration: none;
         color: inherit;
-        display: block;
         opacity: 1;
       }
 
@@ -115,6 +108,14 @@
       yuv-icon {
         grid-area: icon;
         margin: 0 calc(var(--app-pane-padding) / 2);
+      }
+    }
+
+    .action {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      &.sub {
+        padding-left: var(--app-pane-padding);
+        padding-right: var(--app-pane-padding);
       }
     }
 
