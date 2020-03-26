@@ -5,8 +5,8 @@ import { Utils } from '@yuuvis/core';
  * Collection of renderers to be used within ag-grid.
  */
 export class CellRenderer {
-  static render(type: string, param: any, newParam?: any) {
-    return CellRenderer[type + 'CellRenderer'](...param, ...newParam);
+  static render(type: string, param: any) {
+    return CellRenderer[type + 'CellRenderer'](param);
   }
 
   static filesizeCellRenderer(param) {
@@ -22,15 +22,11 @@ export class CellRenderer {
     return '';
   }
 
-  static typeCellRenderer(param, customTooltip?) {
-    let tooltip: string;
-    let ico = param.context.system.getObjectTypeIcon(param ? param.value : null);
-    if (param && param.value && !customTooltip) {
-      tooltip = param.context.system.getLocalizedResource(`${param.value}_label`);
-    } else if (customTooltip) {
-      tooltip = customTooltip;
-    }
-    return `<span title="${tooltip}">${ico}</span>`;
+  static typeCellRenderer(param: any) {
+    const { value, context } = param;
+    const ico = context.system.getObjectTypeIcon(value) || '';
+    const title = context.system.getLocalizedResource(`${value}_label`) || '';
+    return `<span title="${title}">${ico}</span>`;
   }
 
   // static iconCellRenderer(param) {

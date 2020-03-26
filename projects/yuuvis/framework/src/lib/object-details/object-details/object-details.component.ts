@@ -44,7 +44,7 @@ export class ObjectDetailsComponent {
     this._dmsObject = object;
     this._objectId = object ? object.id : null;
     if (object) {
-      this.objectIcon = CellRenderer.typeCellRenderer(null, this.systemService.getLocalizedResource(`${object.objectTypeId}_label`));
+      this.objectIcon = CellRenderer.typeCellRenderer({ value: object.objectTypeId, context: { system: this.systemService } });
     }
   }
 
