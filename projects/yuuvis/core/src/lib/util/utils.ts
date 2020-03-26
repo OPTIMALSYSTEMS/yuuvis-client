@@ -1,8 +1,9 @@
-import {throwError as observableThrowError, EMPTY as observableEmpty, Observable} from 'rxjs';
+import { NavigationExtras, Router } from '@angular/router';
+import { EMPTY as observableEmpty, throwError as observableThrowError } from 'rxjs';
 import { YuvError } from '../model/yuv-error.model';
+import { Sort } from './utils.helper.enum';
 
 export class Utils {
-
   /**
    * Utility method for adding parameters to a given URI.
    *
@@ -13,7 +14,8 @@ export class Utils {
   public static buildUri(uri: string, params: {}): string {
     const q = Object.keys(params)
       .filter(k => params[k] || params[k] === 0)
-      .map(k => k + '=' + encodeURIComponent(params[k])).join('&');
+      .map(k => k + '=' + encodeURIComponent(params[k]))
+      .join('&');
     return uri + (q ? '?' + q : '');
   }
 
@@ -32,7 +34,7 @@ export class Utils {
    * @returns The quoted printable filename
    */
   public static encodeFileName(filename: string): string {
-    const fileName = Utils.encodeToQuotedPrintable(Utils.encodeToUtf8(filename)).replace(/_/g, '=5F')
+    const fileName = Utils.encodeToQuotedPrintable(Utils.encodeToUtf8(filename)).replace(/_/g, '=5F');
     return `=?UTF-8?Q?${fileName}?=`;
   }
 
@@ -69,7 +71,7 @@ export class Utils {
          * All chars range 0-127 => 1byte
          */
         utfreturn += String.fromCharCode(c);
-      } else if ((c > 127) && (c < 2048)) {
+      } else if (c > 127 && c < 2048) {
         /**
          * All chars range from 127 to 2047 => 2byte
          */
@@ -120,16 +122,19 @@ export class Utils {
    * @param options
    * @returns (a: any, b: any) => number
    */
-  public static sortValues(key = '', order = 'asc', locales?: string | string[], options?: Intl.CollatorOptions) {
+  public static sortValues(key = '', order = Sort.ASC, locales?: string | string[], options?: Intl.CollatorOptions) {
     const f = (a: any, b: any) => {
+      let comparison: number;
       const varA = Utils.getProperty(a, key);
       const varB = Utils.getProperty(b, key);
-
-      const stringA = varA || varA === 0 ? varA.toString() : '';
-      const stringB = varB || varB === 0 ? varB.toString() : '';
-
-      const comparison = stringA.localeCompare(stringB, locales, options);
-      return (order === 'desc') ? (comparison * -1) : comparison;
+      if (typeof varA === 'number' && typeof varB === 'number') {
+        comparison = varA - varB;
+      } else {
+        const stringA = varA || varA === 0 ? varA.toString() : '';
+        const stringB = varB || varB === 0 ? varB.toString() : '';
+        comparison = stringA.localeCompare(stringB, locales, options);
+      }
+      return order === Sort.DESC ? comparison * -1 : comparison;
     };
     return f;
   }
@@ -154,7 +159,7 @@ export class Utils {
    * @returns (error) => Observable<never>
    */
   public static empty(callback?: (error) => any) {
-    const f = (error) => {
+    const f = error => {
       return observableEmpty;
     };
     return f;
@@ -170,7 +175,7 @@ export class Utils {
    * @param message
    */
   public static catchSkip(skipNotification?: (error) => any, callback?: (error) => any, name?: string, message?: string) {
-    const f = (error) => {
+    const f = error => {
       const _error = callback && callback(error);
       const _skipNotification = skipNotification && skipNotification(error);
       return observableThrowError(new YuvError(_error instanceof Error ? _error : error, name, message, _skipNotification));
@@ -189,7 +194,7 @@ export class Utils {
    * @return (error) => Observable<never>
    */
   public static catch(callback?: (error) => any, name?: string, message?: string, skipNotification?: boolean) {
-    const f = (error) => {
+    const f = error => {
       const _error = callback && callback(error);
       return observableThrowError(new YuvError(_error instanceof Error ? _error : error, name, message, skipNotification));
     };
@@ -207,7 +212,7 @@ export class Utils {
    * @return (error) => void
    */
   public static throw(callback?: (error) => any, name?: string, message?: string, skipNotification?: boolean) {
-    const f = (error) => {
+    const f = error => {
       const _error = callback && callback(error);
       throw new YuvError(_error instanceof Error ? _error : error, name, message, skipNotification);
     };
@@ -237,18 +242,17 @@ export class Utils {
     return !!(elem.offsetWidth || elem.offsetHeight || elem.getClientRects().length);
   }
 
-  public static getBaseHref() {
-    return document.getElementsByTagName('base')[0].getAttribute('href');
+  public static getBaseHref(removeTrailingSlash?: boolean) {
+    const baseHref = document.getElementsByTagName('base')[0].getAttribute('href');
+    return removeTrailingSlash ? baseHref.substr(0, baseHref.length - 1) : baseHref;
   }
 
   /**
-   *
    * Truncate a string (first argument) if it is longer than the given maximum string length (second argument).
    * Return the truncated string with a ... ending ot whats provided.
    *
    * @param string str
    * @param number num
-   * @returns
    */
   public static truncateString(str, num, ending = '...') {
     if (str.length > num) {
@@ -258,12 +262,69 @@ export class Utils {
       str = `${str.substring(0, num)}${ending}`;
     }
     return str;
-  };
+  }
 
   /**
    * Get the TimeZone Offsest as ISO String.
    */
   public static getTimezoneOffset(): number {
-      return new Date().getTimezoneOffset();
+    return new Date().getTimezoneOffset();
+  }
+
+  public static isEdge(): boolean {
+    return !!navigator.userAgent && navigator.userAgent.indexOf('Edge') > -1;
+  }
+
+  public static isEmpty(obj) {
+    if (obj == null || obj === '') {
+      return true;
+    }
+
+    if (typeof obj === 'number') {
+      return isNaN(obj);
+    }
+
+    return typeof obj === 'boolean' ? false : !Object.keys(obj).length;
+  }
+
+  public static isEmptyOrFalse(val) {
+    return typeof val === 'boolean' ? !val : Utils.isEmpty(val);
+  }
+
+  public static escapeHtml(str) {
+    str = str ? str : '';
+    const entityMap = {
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#39;',
+      '/': '&#x2F;'
+    };
+    return String(str).replace(/[&<>"'\/]/g, s => entityMap[s]);
+  }
+
+  public static arrayToObject(arr = [], keyProperty?: string | ((o: any) => string), valueProperty?: string | ((o: any) => any)) {
+    const key = typeof keyProperty === 'string' ? (o: any) => o[keyProperty] : keyProperty;
+    const value = typeof valueProperty === 'string' ? (o: any) => o[valueProperty] : valueProperty;
+    return arr.reduce((acc, cur, i) => {
+      acc[key ? key(cur) : i] = value ? value(cur) : cur;
+      return acc;
+    }, {});
+  }
+
+  public static navigate(newTab: boolean, router: Router, commands: any[], navigationExtras?: NavigationExtras): Promise<any> {
+    if (newTab) {
+      return new Promise(() =>
+        window.open(
+          router
+            .createUrlTree(commands, navigationExtras)
+            .toString()
+            .replace('/', '') // relative to host
+        )
+      );
+    } else {
+      return router.navigate(commands, navigationExtras);
+    }
   }
 }

@@ -1,5 +1,4 @@
 .yuv-string {
-
   font-family: 'Roboto';
   display: flex;
   flex-flow: row nowrap;
@@ -10,11 +9,11 @@
   }
 
   .classify {
-
     a {
       color: var(--text-color-hint);
 
-      &:hover, &:focus {
+      &:hover,
+      &:focus {
         color: var(--text-color-caption);
       }
     }
@@ -22,34 +21,56 @@
     &.empty {
       display: none;
     }
+
+    yuv-icon {
+      padding: calc(var(--app-pane-padding) / 2);
+    }
   }
 
   .input-textarea {
+    border: 0;
+    width: 100%;
     resize: vertical;
+    background-color: transparent;
+
     &.size-small {
       height: 4em;
     }
+
     &.size-medium {
       height: 6em;
     }
+
     &.size-large {
       height: 8em;
     }
   }
 
-  .ui-inputtext, input {
+  p-chips {
+    width: 100%;
+
+    &.invalid {
+      li:nth-last-child(2) {
+        color: var(--color-error) !important;
+        border-color: var(--color-error) !important;
+
+        .dark & {
+          background-color: var(--color-error) !important;
+          border-color: var(--color-error) !important;
+          color: white !important;
+        }
+      }
+    }
+  }
+
+  .ui-inputtext,
+  input {
     padding: 0;
-    border: 0!important;
+    border: 0 !important;
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     width: 100%;
+    background: transparent;
   }
 }
-
-// //noinspection CssInvalidPseudoSelector
-// :host ::ng-deep {
-//   input {
-//     width: 100%;
-//   }
-// }

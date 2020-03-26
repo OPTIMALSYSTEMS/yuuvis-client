@@ -1,0 +1,10 @@
+.action-bar {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(24px, 1fr));
+  grid-gap: 20px 5px;
+  grid-auto-flow: column dense;
+
+  &.status {
+    grid-template-columns: repeat(auto-fit, minmax(18px, 1fr));
+  }
+}

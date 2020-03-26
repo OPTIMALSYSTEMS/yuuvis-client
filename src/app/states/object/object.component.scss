@@ -1,0 +1,15 @@
+:host {
+  .error {
+    height: 100%;
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+    justify-content: center;
+    .message {
+      padding: var(--app-pane-padding);
+      border-radius: 2px;
+      background-color: var(--color-error);
+      color: #fff;
+    }
+  }
+}

@@ -1,0 +1,59 @@
+@import '../../../../../../../src/scss-shared/_mixins';
+
+:host {
+  display: flex;
+  flex-flow: column;
+  background: var(--panel-background);
+  margin: calc(var(--app-pane-padding) / 2);
+  user-select: none;
+  color: var(--text-color-body);
+  cursor: pointer;
+  border: 1px solid var(--panel-divider-color);
+  max-width: 190px;
+  animation: yuvFadeIn 500ms;
+
+  .pre {
+    display: flex;
+    flex-flow: column;
+    background-color: var(--panel-background-lightgrey);
+    align-items: center;
+    justify-content: center;
+    padding: calc(var(--app-pane-padding) / 2);
+    border-bottom: 1px solid var(--panel-divider-color);
+
+    yuv-icon {
+      opacity: 0.5;
+    }
+
+    .type {
+      margin-top: 0.5em;
+      opacity: 0.5;
+
+      @include ellipsis();
+    }
+  }
+
+  .main {
+    padding: calc(var(--app-pane-padding) / 2) var(--app-pane-padding);
+  }
+  .title {
+    @include ellipsis();
+    display: block;
+    font-weight: var(--font-weight-bold);
+  }
+  .date,
+  .description {
+    font-size: var(--font-caption);
+    color: var(--text-color-caption);
+  }
+  .date {
+    font-family: monospace;
+    margin-top: calc(var(--app-pane-padding) / 4);
+  }
+  .description {
+    font-style: italic;
+    @include ellipsis();
+    display: block;
+    line-height: 1.8em;
+  }
+}

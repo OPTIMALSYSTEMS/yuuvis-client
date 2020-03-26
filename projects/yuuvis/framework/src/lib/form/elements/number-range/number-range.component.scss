@@ -1,0 +1,21 @@
+.yuv-number-range {
+  display: flex;
+  align-items: center;
+
+  yuv-number {
+    flex: 1 1 auto;
+
+    &.first {
+      ::ng-deep {
+        .input-number {
+          text-align: right;
+        }
+      }
+    }
+  }
+
+  ::ng-deep .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item {
+    color: var(--text-color-body);
+    background-color: var(--panel-background);
+  }
+}

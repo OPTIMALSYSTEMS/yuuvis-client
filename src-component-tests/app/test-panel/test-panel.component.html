@@ -1,0 +1,51 @@
+<div class="testing-controls">
+  <button (click)="busy = !busy">toggle Busy</button>
+  <button (click)="showIcon = !showIcon">toggle Icon</button>
+  <button (click)="showActions = !showActions">toggle Actions</button>
+  <button (click)="showStatus = !showStatus">toggle Status</button>
+  <button (click)="setRegularSizeTitle()">regular size title strings</button>
+  <button (click)="setLongSizeTitle()">long title strings</button>
+</div>
+
+
+
+<yuv-panel [title]="title" [description]="description" class="cmp">
+
+  <yuv-icon class="header-icon" icon="favorite" *ngIf="showIcon"></yuv-icon>
+
+  <yuv-action-menu-bar class="actions" *ngIf="showActions">
+    <yuv-icon class="btn" icon="refresh"></yuv-icon>
+    <yuv-icon class="btn" icon="kebap"></yuv-icon>
+  </yuv-action-menu-bar>
+
+  <yuv-action-menu-bar class="status" [className]="'status'" *ngIf="showStatus">
+    <yuv-icon icon="subscription"></yuv-icon>
+    <yuv-icon icon="resubmission"></yuv-icon>
+    <yuv-icon icon="lock"></yuv-icon>
+    <yuv-icon icon="finalized"></yuv-icon>
+  </yuv-action-menu-bar>
+
+  <div class="content" [yuvBusyOverlay]="busy">
+    <div class="panel-content">
+      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec vulputate lorem vitae enim malesuada, et
+        tristique neque interdum. Aenean iaculis ante quis convallis semper. Duis vel sem a magna euismod hendrerit at
+        eu arcu. Nulla hendrerit aliquam nibh, sit amet convallis ante. Donec eu risus tincidunt, maximus metus id,
+        cursus nunc. Phasellus lectus nibh, iaculis non pellentesque vitae, pretium ut metus. Maecenas id fermentum ex.
+        Aliquam sit amet posuere ligula. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere
+        cubilia Curae; Nullam eu augue aliquam, ultricies ipsum id, consequat libero. Donec quam sapien, viverra at elit
+        eu, consequat dignissim sem. Sed in venenatis nisi, vel feugiat massa.</p>
+      <p>Nullam mauris dolor, tempus vitae nisi vel, sodales cursus arcu. Cras ut ex eu mi suscipit finibus. Sed cursus,
+        turpis ut hendrerit venenatis, orci magna rhoncus libero, sit amet bibendum elit sapien non quam. Praesent
+        interdum bibendum maximus. Mauris at sollicitudin nisi. Nullam sed velit non leo congue venenatis. Cras
+        malesuada elementum felis, tristique tristique justo semper eget. Praesent tempus porttitor sapien, non
+        fermentum odio. Curabitur tincidunt nisl a aliquam varius. Class aptent taciti sociosqu ad litora torquent per
+        conubia nostra, per inceptos himenaeos. Sed eleifend quam in nulla lobortis cursus. Donec lobortis tellus vitae
+        velit tincidunt iaculis. Sed id accumsan orci. Praesent eget iaculis nibh, sit amet commodo ante.</p>
+      <p>Nunc lobortis tempor lacus, non mollis nisl dapibus in. Nam a felis faucibus, facilisis dui a, viverra tortor.
+        Cras ut tellus varius, blandit enim et, vehicula ante. Nam finibus fermentum enim vel porttitor. Ut euismod
+        sagittis venenatis. Integer vehicula odio tempor dolor sollicitudin bibendum. Praesent scelerisque dictum
+        congue. Donec commodo ullamcorper fringilla. Pellentesque habitant morbi tristique senectus et netus et
+        malesuada fames ac turpis egestas. Donec tempor convallis erat sed scelerisque.</p>
+    </div>
+  </div>
+</yuv-panel>

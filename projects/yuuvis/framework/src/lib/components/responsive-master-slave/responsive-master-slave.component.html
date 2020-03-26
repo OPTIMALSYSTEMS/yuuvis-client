@@ -1,0 +1,12 @@
+<as-split [direction]="_layoutOptions.direction" [ngClass]="{ state: _layoutOptions.useStateLayout }"
+  [disabled]="!_layoutOptions.resizable" gutterSize="16" (dragEnd)="dragEnd($event)" gutterDblClickDuration="300"
+  (gutterDblClick)="gutterDblClick()">
+  <as-split-area [ngClass]="{ panel: _layoutOptions.useStateLayout }" [size]="_layoutOptions.masterSize"
+    [minSize]="_layoutOptions.masterMinSize" order="0" [visible]="visible.master">
+    <ng-content select=".yuv-master"></ng-content>
+  </as-split-area>
+  <as-split-area [ngClass]="{ panel: _layoutOptions.useStateLayout }" [size]="_layoutOptions.slaveSize"
+    [minSize]="_layoutOptions.slaveMinSize" order="1" [visible]="visible.slave">
+    <ng-content select=".yuv-slave"></ng-content>
+  </as-split-area>
+</as-split>

@@ -1,0 +1,66 @@
+:host {
+  display: block;
+
+  ::ng-deep {
+    .ui-tabview .ui-tabview-panels {
+      background-color: var(--panel-background-grey);
+
+      #indexdata > .ui-tabview-panel {
+        overflow: hidden;
+
+        .object-form-edit {
+          height: 100%;
+          background: transparent;
+
+          yuv-object-form {
+            overflow: auto;
+            background: transparent;
+
+            .yuv-object-form {
+              margin: var(--app-pane-padding);
+              background: var(--panel-background);
+              box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1);
+            }
+          }
+          .form-controls {
+            border-top: 1px solid var(--panel-divider-color);
+            background: var(--panel-background);
+            animation: yuvFadeInUp 200ms;
+            &.disabled {
+              display: none;
+            }
+
+            .buttons {
+              padding: calc(var(--app-pane-padding) / 2) var(--app-pane-padding);
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+.yuv-object-details {
+  .actions,
+  .status,
+  .header-icon {
+    opacity: 54;
+  }
+
+  .finalized-icon {
+    color: var(--color-success);
+  }
+
+  .ui-tabview .ui-tabview-panels {
+    background-color: var(--panel-background-grey);
+  }
+  yuv-responsive-tab-container.content {
+    background-color: var(--panel-background);
+  }
+
+  yuv-object-form-edit {
+    // margin: var(--app-pane-padding);
+    box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1);
+    height: 100%;
+  }
+}

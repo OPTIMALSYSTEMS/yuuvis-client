@@ -1,0 +1,60 @@
+.chip {
+  display: inline-block;
+  line-height: 1.5em;
+  border-radius: 2px;
+  -webkit-border-radius: 2px;
+  background: var(--item-focus-background-color);
+  border: 1px solid var(--item-focus-border-color);
+  padding: 0 3px;
+  color: var(--text-color-caption);
+  margin: 1px 0;
+  margin-right: 2px;
+}
+
+.button {
+  &.refresh-button,
+  &.actions-button {
+    &:hover {
+      cursor: pointer;
+    }
+  }
+}
+
+.icon {
+  &.light svg {
+    fill: white;
+  }
+}
+
+// default styles to be applied to anything that goes to a states content-section
+.state-content-default {
+  padding: var(--app-pane-padding);
+  box-sizing: border-box;
+  height: 100%;
+  display: block;
+
+  .screen-s & {
+    padding: 0;
+  }
+}
+
+.yuv-busy-overlay {
+  position: absolute;
+  transition: opacity 200ms;
+  opacity: 0;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: rgba(255, 255, 255, 0.8);
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  z-index: 500;
+  justify-content: center;
+
+  // dark mode
+  .dark & {
+    background-color: rgba(var(--color-primary-rgb), 0.85);
+  }
+}

@@ -1,0 +1,161 @@
+@import './../styles.vars.scss';
+
+:host {
+  height: 100vh;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto 1fr;
+  grid-template-areas: 'header header' 'nav content';
+
+  button {
+    background: $color-accent;
+    font-family: monospace;
+    padding: 2px 8px;
+    color: #fff;
+  }
+
+  .login {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background-color: $color-primary;
+    display: grid;
+    align-items: center;
+    justify-content: center;
+
+    form {
+      display: flex;
+      flex-flow: column;
+      align-items: center;
+
+      input {
+        font-family: monospace;
+        border: 0;
+        background-color: rgba(255, 255, 255, 0.2);
+        margin-right: 4px;
+        padding: 4px;
+        color: #fff;
+        margin-bottom: 4px;
+        // width: 120px;
+      }
+    }
+  }
+
+  &.showNav {
+    nav {
+      display: flex;
+      grid-area: nav;
+    }
+    .body {
+      grid-area: content;
+    }
+  }
+
+  .head {
+    background-color: $color-primary;
+    color: #fff;
+    grid-area: header;
+    padding-right: 10px;
+    display: flex;
+    align-items: center;
+
+    .hamburger {
+      background: $color-accent;
+      margin-right: $app-pane-padding;
+      font-family: monospace;
+      padding: 10px $app-pane-padding;
+      cursor: pointer;
+      &:before {
+        content: '\2630';
+      }
+    }
+
+    .title {
+      font-family: monospace;
+      flex: 1;
+    }
+
+    .settings {
+      margin: 0 $app-pane-padding;
+      display: flex;
+      align-items: center;
+      button.toggle {
+        margin: 0 2px;
+        background-color: rgba(255, 255, 255, 0.2);
+      }
+
+      .colorpicker {
+        display: flex;
+        align-items: center;
+        &:hover .color {
+          display: flex;
+          border-radius: 2px;
+          background-color: rgba(255, 255, 255, 0.2);
+          border-color: rgba(255, 255, 255, 0.3);
+        }
+        .color {
+          display: none;
+          border: 1px solid transparent;
+          align-items: center;
+          padding: 2px 0;
+          span {
+            cursor: pointer;
+            margin: 0 2px;
+            &:not(.clear) {
+              width: 18px;
+              height: 18px;
+            }
+            &.clear {
+              margin: 0 4px;
+            }
+          }
+        }
+        .current-color {
+          background-color: var(--color-accent);
+          width: 18px;
+          height: 18px;
+          border-radius: 50%;
+          margin: 0 10px;
+          // border: 2px solid rgba(255, 255, 255, 1);
+        }
+      }
+    }
+
+    .user {
+      font-family: monospace;
+      margin-right: $app-pane-padding;
+    }
+  }
+
+  nav {
+    display: none;
+    background-color: $color-primary;
+    flex-flow: column;
+    border-top: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 2em 0;
+
+    a {
+      padding: 0.5em 1em;
+      font-family: monospace;
+      color: #fff;
+
+      &.active {
+        background-color: $color-accent;
+      }
+    }
+  }
+
+  .body {
+    grid-column: 1 / span 2;
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--main-background);
+    overflow: auto;
+
+    position: relative;
+  }
+}

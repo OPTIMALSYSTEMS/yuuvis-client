@@ -1,1 +1,26 @@
-<yuv-quick-search></yuv-quick-search>
+<div class="top">
+
+
+  <div class="aggs" *ngIf="aggs?.length">
+    <div class="container">
+      <div *ngFor="let a of aggs" (click)="applyAggregation(a)">
+        <div class="label">
+          {{a.label}}
+        </div>
+        <div class="count">
+          {{a.count}}
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <yuv-quick-search #quickSearch [query]="appQuery" (typeAggregation)="onTypeAggregation($event)"
+    (querySubmit)="onQuickSearchQuery($event)"></yuv-quick-search>
+
+</div>
+
+<div class="bottom">
+  <yuv-recent-activities id="ra-dashboard" (itemClick)="onRecentItemClicked($event)" (showAll)="onShowAll($event)">
+  </yuv-recent-activities>
+</div>

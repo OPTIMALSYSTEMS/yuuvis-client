@@ -1,0 +1,9 @@
+<div [ngClass]="{selected: selected}">
+    <yuv-checkbox tabindex="-1" [(ngModel)]="selected" (ngModelChange)="toggleSelected($event)">
+    </yuv-checkbox>
+    <div class="label" (click)="emitSelect()">
+        <div class="title">{{item.label}}</div>
+        <div class="description">{{item.description}}</div>
+    </div>
+    <yuv-icon *ngIf="item.svg" [svg]="item.svg"></yuv-icon>
+</div>

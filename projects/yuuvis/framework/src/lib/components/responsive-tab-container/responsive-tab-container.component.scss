@@ -1,0 +1,122 @@
+@import './../../../../../../../src/scss-shared/_mixins';
+
+.as-split-area {
+  position: relative;
+  .as-dragging &::after {
+    content: '';
+    @include frame(0);
+  }
+}
+
+:host {
+  as-split {
+    padding: 0;
+    as-split-area.secondary {
+      ::ng-deep {
+        .ui-tabview.ui-tabview-top .ui-tabview-nav {
+          margin-right: 0;
+          li.ui-state-active {
+            border-color: var(--panel-divider-color);
+          }
+        }
+      }
+    }
+  }
+
+  p-tabview {
+    position: relative;
+    display: block;
+    height: 100%;
+    overflow: hidden;
+
+    &.noSplit {
+      .tab-navigation {
+        display: none;
+      }
+      ::ng-deep {
+        .ui-tabview .ui-tabview-nav {
+          margin-right: 0;
+        }
+      }
+    }
+
+    .tab-navigation {
+      position: absolute;
+      top: 1px;
+      right: 1px;
+      display: flex;
+      cursor: pointer;
+      color: var(--text-color-hint);
+
+      &:hover {
+        color: var(--text-color-caption);
+      }
+
+      yuv-icon {
+        width: 24px;
+        height: 24px;
+        padding: 7px;
+        box-sizing: content-box;
+      }
+    }
+  }
+
+  p-tabview::ng-deep > .ui-tabview > .ui-tabview-panels > p-tabpanel > .ui-tabview-panel {
+    @include frame(0);
+    top: 40px; // header height
+  }
+}
+
+::ng-deep {
+  .ui-tabview {
+    border-radius: 0 !important;
+    .ui-tabview-nav {
+      overflow: auto hidden;
+      display: flex;
+      margin-right: 28px;
+      :host-context(.screen-s) & {
+        margin-right: 0;
+      }
+
+      // .ui-tabview-close:after {
+      //   content: '\0000D7';
+      // }
+
+      li.ui-state-disabled {
+        display: none;
+      }
+    }
+  }
+
+  :host-context(.screen-s) .ui-tabview.ui-tabview-bottom .ui-tabview-nav {
+    margin-top: -35px;
+  }
+
+  .ui-tabview-nav::-webkit-scrollbar {
+    height: 0;
+  }
+
+  .ui-tabview-panels {
+    height: 100%;
+    overflow: auto;
+    border: none;
+    border-top: 1px solid #c8c8c8;
+  }
+
+  .split-tab-view .ui-tabview-panel {
+    .ui-tabview {
+      padding: 0;
+      height: 100%;
+    }
+
+    // hide first empty/fake tab panel
+    &:first-child {
+      display: none !important;
+    }
+
+    // display original tab panel (disabled by mainTabView)
+    &.ui-helper-hidden {
+      display: block !important;
+    }
+  }
+}

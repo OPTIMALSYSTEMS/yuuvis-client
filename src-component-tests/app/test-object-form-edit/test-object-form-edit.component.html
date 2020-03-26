@@ -1,0 +1,10 @@
+<div class="testing-controls">
+  <yuv-dms-object-picker [defaultId]="'c34ae138-da5f-4226-822b-825b2696699a'" (dmsObject)="setDmsObject($event)">
+  </yuv-dms-object-picker>
+  <button (click)="toggleDisabled()">toggle disabled</button>
+</div>
+
+<ng-container *ngIf="visible">
+  <yuv-object-form-edit class="cmp" [dmsObject]="dmsObject" (indexDataSaved)="onIndexDataSaved($event)"
+    [formDisabled]="disableWholeForm"></yuv-object-form-edit>
+</ng-container>

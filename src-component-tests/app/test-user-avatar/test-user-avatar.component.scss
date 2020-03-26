@@ -1,0 +1,42 @@
+:host {
+  .cmp {
+    box-shadow: none;
+
+    display: flex;
+
+    > div {
+      margin: 10px;
+      display: flex;
+      flex-flow: column;
+      align-items: center;
+
+      .label {
+        max-width: 200px;
+        margin-top: 10px;
+        text-align: center;
+        color: var(--text-color-body);
+      }
+
+      yuv-user-avatar {
+        width: 50px;
+        height: 50px;
+        margin-bottom: var(--app-pane-padding);
+
+        &.medium {
+          width: 100px;
+          height: 100px;
+        }
+        &.large {
+          width: 150px;
+          height: 150px;
+        }
+        &.circle {
+          border-radius: 50%;
+        }
+      }
+      yuv-user-avatar:not(.initials) {
+        background-color: var(--panel-background);
+      }
+    }
+  }
+}

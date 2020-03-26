@@ -3,8 +3,18 @@
   "dest": "../../../dist/yuuvis/framework",
   "whitelistedNonPeerDependencies": [
     "primeng",
+    "primeicons",
     "angular-split",
-    "@angular/cdk"
+    "@angular/cdk",
+    "@angular/forms",
+    "@ag-grid-community/core",
+    "@ag-grid-community/angular",
+    "@ag-grid-community/client-side-row-model",
+    "angular-resize-event",
+    "lodash-es",
+    "take-until-destroy",
+    "ngx-drag-scroll",
+    "ngx-toastr"
   ],
   "lib": {
     "entryFile": "src/public-api.ts"

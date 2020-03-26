@@ -1,0 +1,12 @@
+<yuv-panel class="versions-list" [title]="'yuv.framework.version-result.title' | translate">
+  <yuv-icon class="header-icon" [icon]="'versions'"></yuv-icon>
+  <yuv-action-menu-bar class="actions" yuvOfflineDisabled>
+    <yuv-icon (click)="refresh()" [title]="'yuv.framework.list.refresh' | translate" class="button refresh-button"
+      [icon]="'refresh'"></yuv-icon>
+  </yuv-action-menu-bar>
+  <div class="content">
+    <yuv-responsive-data-table yuvOfflineDisabled #dataTable class="data-table" *ngIf="tableData" [data]="tableData"
+      [viewMode]="'horizontal'" [selection]="selection" (selectionChanged)="select($event)">
+    </yuv-responsive-data-table>
+  </div>
+</yuv-panel>

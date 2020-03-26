@@ -1,6 +1,27 @@
 :host {
-    height: 100%;
-    display: flex;flex-flow: column;
-    justify-content: center;
-    align-items: center;
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--text-color-caption);
+  padding: var(--app-pane-padding);
+
+  yuv-icon {
+    opacity: 0.1;
+    height: 20vh;
+    width: 20vh;
+  }
+
+  .title {
+    font-size: var(--font-display);
+    font-weight: var(--font-weight-light);
+  }
+  .description {
+    margin: calc(var(--app-pane-padding) / 2) 0;
+    font-size: var(--font-title);
+    font-weight: var(--font-weight-light);
+    opacity: 0.84;
+    white-space: unset;
+  }
 }

@@ -16,10 +16,6 @@ $avatar-size-small: 80px;
           font-size: var(--font-hint);
         }
       }
-      yuv-user-avatar.box {
-        width: $avatar-size-small;
-        height: $avatar-size-small;
-      }
     }
   }
 }
@@ -74,7 +70,7 @@ $avatar-size-small: 80px;
     display: grid;
     grid-template-columns: 1fr;
     grid-template-rows: 33% 1fr;
-    grid-template-areas: "head" "body";
+    grid-template-areas: 'head' 'body';
 
     @media (max-width: 800px) {
       margin: 0;
@@ -84,7 +80,7 @@ $avatar-size-small: 80px;
     .head {
       grid-area: head;
       position: relative;
-      background-color: var(--color-primary-3);
+      background-color: var(--color-primary);
 
       yuv-user-avatar.background {
         position: absolute;
@@ -92,16 +88,19 @@ $avatar-size-small: 80px;
         right: 0;
         top: 0;
         bottom: 0;
+        overflow: hidden;
+        opacity: 0.2;
+        filter: grayscale(1);
       }
       yuv-user-avatar.box {
         position: absolute;
         right: var(--app-pane-padding);
         bottom: calc(var(--app-pane-padding) * -1);
-        background-color: var(--color-primary-3);
         border-radius: 2px;
         border: calc(var(--app-pane-padding) / 4) solid #fff;
         width: $avatar-size;
         height: $avatar-size;
+        overflow: hidden;
       }
       .user {
         position: relative;
@@ -110,8 +109,7 @@ $avatar-size-small: 80px;
         justify-content: center;
         background-color: rgba(0, 0, 0, 0.4);
         height: 100%;
-        padding: var(--app-pane-padding) calc(#{$avatar-size} + calc(var(--app-pane-padding) * 2))
-          var(--app-pane-padding) var(--app-pane-padding);
+        padding: var(--app-pane-padding) calc(#{$avatar-size} + calc(var(--app-pane-padding) * 2)) var(--app-pane-padding) var(--app-pane-padding);
         box-sizing: border-box;
         color: #fff;
 
@@ -140,19 +138,105 @@ $avatar-size-small: 80px;
         overflow-y: auto;
         padding: var(--app-pane-padding);
 
+        .settings-section {
+          display: flex;
+          align-items: center;
+          margin-top: calc(var(--app-pane-padding) * 2);
+          margin-bottom: calc(var(--app-pane-padding) / 2);
+          border-bottom: 1px solid var(--panel-divider-color);
+
+          h3 {
+            flex: 1;
+            font-size: var(--font-title);
+            font-weight: normal;
+            color: var(--text-color-hint);
+            margin: 0;
+          }
+          ::ng-deep {
+            button {
+              background-color: var(--panel-background-grey);
+              margin: calc(var(--app-pane-padding) / 4) calc(var(--app-pane-padding) / 8);
+              padding: calc(var(--app-pane-padding) / 4) calc(var(--app-pane-padding) / 2);
+              font-size: var(--font-caption);
+            }
+          }
+        }
+
+        .label {
+          color: var(--text-color-caption);
+        }
+
         .setting {
           display: flex;
           align-items: center;
+          padding: calc(var(--app-pane-padding) / 2) 0;
 
           .label {
-            flex: 0 0 20%;
+            flex: 0 0 30%;
+            color: var(--text-color-caption);
           }
           .value {
+            color: var(--text-color-caption);
+            display: flex;
             flex: 1;
-            button {
-              &.active {
-                background-color: var(--color-accent);
-                color: #fff;
+
+            &.buttons {
+              margin: 0 calc(var(--app-pane-padding) / 8 * -1);
+            }
+
+            ::ng-deep {
+              button {
+                background-color: var(--panel-background-grey);
+                margin: 0 calc(var(--app-pane-padding) / 8);
+                padding: calc(var(--app-pane-padding) / 4) calc(var(--app-pane-padding) / 2);
+
+                &.active {
+                  background-color: var(--color-accent);
+                  color: #fff;
+                }
+              }
+            }
+
+            button.color {
+              display: flex;
+              flex-flow: column;
+              align-items: center;
+              justify-content: center;
+              min-width: 24px;
+              height: 24px;
+              border-radius: 2px;
+              margin: 2px;
+              padding: 0;
+              cursor: pointer;
+
+              &.active::before {
+                content: '';
+                height: 12px;
+
+                width: 12px;
+                border-radius: 50%;
+                background-color: rgba(255, 255, 255, 0.5);
+              }
+
+              &.clear {
+                padding: 0 calc(var(--app-pane-padding) / 4);
+              }
+            }
+          }
+
+          .content.permissions {
+            .role {
+              display: flex;
+              align-items: center;
+              padding: calc(var(--app-pane-padding) / 4) 0;
+
+              yuv-icon {
+                width: 18px;
+                height: 18px;
+                opacity: 0.5;
+              }
+              .name {
+                padding: 0 calc(var(--app-pane-padding) / 2);
               }
             }
           }

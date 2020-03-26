@@ -1,0 +1,58 @@
+:host-context(.screen-s) {
+  header {
+    padding-right: calc(var(--app-pane-padding) * 3);
+  }
+}
+
+:host {
+  display: grid;
+  grid-template-columns: 1fr;
+  height: 100%;
+  grid-template-rows: auto 1fr auto;
+  grid-template-areas: 'header' 'main' 'buttons';
+
+  header {
+    grid-area: header;
+    font-size: var(--font-headline);
+    color: var(--text-color-caption);
+    padding: var(--app-pane-padding);
+    border-bottom: 1px solid var(--panel-divider-color);
+  }
+  section.main {
+    grid-area: main;
+    overflow-y: auto;
+    background-color: var(--panel-background-grey);
+  }
+  section.buttons {
+    border-top: 1px solid var(--panel-divider-color);
+    grid-area: buttons;
+    display: flex;
+    padding: var(--app-pane-padding);
+    > div {
+      flex: 1;
+    }
+    .cancel {
+      .screen-s.screen-portrait & {
+        display: none;
+      }
+    }
+  }
+}
+:host-context(.fields) {
+  header,
+  section.buttons {
+    display: none;
+  }
+  section.main {
+    padding: 0;
+    background-color: #fff;
+    ::ng-deep {
+      .container {
+        padding: 0;
+        .group {
+          margin: 0;
+        }
+      }
+    }
+  }
+}

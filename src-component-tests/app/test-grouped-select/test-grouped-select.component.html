@@ -1,0 +1,71 @@
+<div class="testing-controls">
+
+
+
+
+  <div class="group">
+    <strong>actions</strong>
+    <button (click)="setSelection()">set selection</button>
+    <button (click)="clearSelection()">clear selection</button>
+  </div>
+
+  <div class="group">
+    <strong>view</strong>
+    <button [disabled]="view === 'default'" (click)="view = 'default'">view: default</button>
+    <button [disabled]="view === 'selectall'" (click)="view = 'selectall'">view: enable select all</button>
+  </div>
+
+  <div class="group">
+    <strong>data</strong>
+    <button (click)="setGroupData()">data: just labels</button>
+    <button (click)="setGroupData(true)">data: full</button>
+  </div>
+  <!-- <button (click)="setRandomGroupData()">generate random data</button> -->
+  <div class="checkbox">
+    <yuv-checkbox [(ngModel)]="multiselect"></yuv-checkbox>&nbsp;&nbsp;multiselect
+  </div>
+
+</div>
+
+<div class="cmp">
+
+  <ng-container *ngIf="view === 'default'">
+    <yuv-grouped-select autofocus="true" [multiple]="multiselect" [groups]="groups" [(ngModel)]="selectedItems"
+      (select)="onSelect($event)" (ngModelChange)="onSelectionChange($event)">
+    </yuv-grouped-select>
+  </ng-container>
+
+  <ng-container *ngIf="view === 'single'">
+    <yuv-grouped-select autofocus="true" [groups]="groups" [(ngModel)]="selectedItems" (select)="onSelect($event)"
+      (ngModelChange)="onSelectionChange($event)">
+    </yuv-grouped-select>
+  </ng-container>
+
+  <ng-container *ngIf="view === 'selectall'">
+    <yuv-grouped-select enableSelectAll="true" [multiple]="multiselect" [groups]="groups" [(ngModel)]="selectedItems"
+      (select)="onSelect($event)" (ngModelChange)="onSelectionChange($event)">
+    </yuv-grouped-select>
+  </ng-container>
+
+  <ng-container *ngIf="view === 'full'">
+    <yuv-grouped-select enableSelectAll="true" [multiple]="multiselect" [groups]="groups" [(ngModel)]="selectedItems"
+      (select)="onSelect($event)" (ngModelChange)="onSelectionChange($event)">
+    </yuv-grouped-select>
+  </ng-container>
+</div>
+
+<div class="res" [ngClass]="{off: !o}">
+  <h2 title="toggle Output" (click)="o = !o">@Output</h2>
+  <div>
+    <h3>
+      onSelectionChange [{{selectionChangedRes?.length}}]:
+    </h3>
+    <pre>{{selectionChangedRes | json}}</pre>
+  </div>
+  <div>
+    <h3>
+      onSelect:
+    </h3>
+    <pre>{{selectionRes}}</pre>
+  </div>
+</div>

@@ -1,0 +1,27 @@
+<p-sidebar
+  styleClass="sidebar"
+  [(visible)]="display"
+  [modal]="true"
+  [style]="stylings"
+  (onShow)="onShow()"
+  (onHide)="onHide()"
+  [position]="position"
+  [showCloseIcon]="false"
+>
+  <header
+    #wrapper
+    [class.sidebar-header]="!hasHeaderContent"
+    [ngStyle]="externalHeaderStyle"
+  >
+    <ng-content class="content" select=".header-content"></ng-content>
+    <div class="close">
+      <button class="icon light">
+        <yuv-icon (click)="onHide()" [svg]="closeIcon"></yuv-icon>
+      </button>
+    </div>
+  </header>
+
+  <section class="sidebar-content" [ngStyle]="externalContentStyles">
+    <ng-content select=".content"></ng-content>
+  </section>
+</p-sidebar>

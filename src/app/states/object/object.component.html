@@ -1,0 +1,20 @@
+<yuv-responsive-master-slave *ngIf="context" class="state" [layoutOptionsKey]="layoutOptionsStorageKey"
+  (slaveClosed)="onSlaveClosed()" [slaveActive]="true">
+
+  <yuv-context class="yuv-master panel" [context]="context" [yuvBusyOverlay]="contextBusy" [recentItems]="recentItems"
+    [preSelectItems]="[selectedItem]" [contextSearchQuery]="contextSearchQuery"
+    [layoutOptionsKey]="layoutOptionsStorageKey" (itemsSelected)="contextItemsSelected($event)" #yuvContext>
+  </yuv-context>
+
+  <yuv-object-details class="yuv-slave panel" [objectId]="selectedItem" [searchTerm]="searchQuery?.term"
+    [layoutOptionsKey]="layoutOptionsStorageKey">
+  </yuv-object-details>
+</yuv-responsive-master-slave>
+
+<yuv-object-details *ngIf="_standalone" class="panel" [objectId]="_standalone"
+  [layoutOptionsKey]="layoutOptionsStorageKey">
+</yuv-object-details>
+
+<div class="error" *ngIf="contextError">
+  <div class="message">{{contextError}}</div>
+</div>

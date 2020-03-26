@@ -1,0 +1,7 @@
+{
+    "docu": {
+        "link": "https://help.optimal-systems.com/yuuvisAPI/v###version###/user/client/###userLang###/index.html",
+        "version": 10,
+        "language": ["de", "en"]
+    }
+}

@@ -1,0 +1,11 @@
+:host {
+  width: 80%;
+  max-width: 600px;
+  max-height: 90%;
+  .cmp {
+    display: grid;
+  }
+  .panel-content {
+    padding: var(--app-pane-padding);
+  }
+}

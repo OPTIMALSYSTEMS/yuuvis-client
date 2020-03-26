@@ -1,0 +1,8 @@
+<div class="testing-controls">
+  <button *ngFor="let s of sourceUrl" (click)="source = s"
+    [ngClass]="{ current: source === s }">{{ s.label }}</button>
+</div>
+
+<div class="content">
+  <yuv-content-preview [dmsObject]="source"></yuv-content-preview>
+</div>

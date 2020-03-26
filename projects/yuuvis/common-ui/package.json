@@ -1,8 +1,19 @@
 {
   "name": "@yuuvis/common-ui",
-  "version": "0.0.1",
+  "description": "yuuvis Common UI library",
+  "version": "0.9.0-alpha.0",
+  "scripts": {
+    "doc": "./node_modules/.bin/compodoc",
+    "doc:serve": "./node_modules/.bin/compodoc -s"
+  },
   "peerDependencies": {
-    "@angular/common": "^7.2.0",
-    "@angular/core": "^7.2.0"
+    "@angular/common": "~8.0.0",
+    "@angular/core": "~8.0.0",
+    "rxjs": "~6.5.2"
+  },
+  "dependencies": {
+    "primeng": "^7.1.0",
+    "@angular/common": "^8.0.0",
+    "@angular/core": "^8.0.0"
   }
 }

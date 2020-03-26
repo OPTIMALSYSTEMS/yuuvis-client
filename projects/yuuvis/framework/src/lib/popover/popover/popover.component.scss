@@ -1,0 +1,25 @@
+@import '../../../../../../../src/scss-shared/_mixins';
+
+:host {
+  position: relative;
+  width: 100%;
+  background-color: var(--panel-background);
+  color: var(--text-color-body);
+
+  .popover-close {
+    width: 100%;
+    display: none;
+    justify-content: flex-end;
+    position: absolute;
+    color: var(--text-color-hint);
+    top: -32px;
+    border-bottom: 1px solid var(--panel-divider-color);
+    z-index: 1000;
+    background-color: var(--panel-background);
+    padding: calc(var(--app-pane-padding) / 4);
+
+    .screen-s & {
+      display: flex;
+    }
+  }
+}

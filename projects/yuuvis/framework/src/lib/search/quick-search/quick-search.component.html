@@ -1,15 +1,68 @@
-<div class="count" *ngIf="resultCount !== null">{{resultCount}}</div>
-
-<form class="search-box" (ngSubmit)="executeSearch()" [ngClass]="{invalid: invalidTerm, agg: result.length}" [formGroup]="searchForm">
-  <yuv-icon [svg]="icSearch"></yuv-icon>
-  <div class="input">
-    <input autofocus="autofocus" formControlName="searchInput">
-  </div>
-</form>
-
-<div class="aggregations" *ngIf="result.length">
-  <div class="type" *ngFor="let t of result">
-    <span class="typecount">{{t.count}}</span>
-    <span class="label">{{t.label}}</span>
-  </div>
+<div class="upper" [ngClass]="{ zero: resultCount === 0 }"
+  *ngIf="!_inline && searchQuery.term || searchQuery.types?.length || searchQuery.filters?.length">
+  <yuv-icon [icon]="'clear'" (click)="reset()"></yuv-icon>
+  <div class="yuv-loader-straight"></div>
+  <div class="count" *ngIf="resultCount !== null">{{ resultCount }}</div>
 </div>
+
+<div yuvOfflineDisabled class="search-box" [ngClass]="{ invalid: invalidTerm, extrasEnabled: formFields.length }">
+  <form [formGroup]="searchForm">
+    <div class="main">
+
+      <button type="button" class="type-select" #typeSelectTrigger (click)="showObjectTypePicker()">
+        <div class="label">{{ objectTypeSelectLabel }}</div>
+        <yuv-icon [icon]="'arrowDown'"></yuv-icon>
+      </button>
+
+      <div class="input">
+        <!-- <input #termEl [placeholder]="'yuv.framework.quick-search.term.placeholder'|translate" formControlName="term"> -->
+        <p-autoComplete #autoTermEl [placeholder]="'yuv.framework.quick-search.term.placeholder' | translate"
+          formControlName="term" [suggestions]="autoSuggestions" [field]="'label'"
+          [ngClass]="{ 'quick-search': true, hashtag: lastAutoQuery?.isTypeFields }"
+          (completeMethod)="autocomplete($event)" (onSelect)="autocompleteSelect($event)"
+          (keydown)="autoKeyDown($event)" [autofocus]="autofocus" [autoHighlight]="true">
+        </p-autoComplete>
+      </div>
+
+      <!-- in context -->
+      <button class="context-search" *ngIf="context" [ngClass]="{active: searchWithinContext}"
+        (click)="toggleSearchWithinContext()">
+        {{ 'yuv.framework.quick-search.context-search.chip' | translate }}
+      </button>
+
+      <button type="button" class="field-select" #fieldSelectTrigger (click)="showObjectTypeFieldPicker()"
+        *ngIf="availableObjectTypeFields?.length"
+        title="{{ 'yuv.framework.quick-search.field-select.tooltip' | translate }}">
+        <yuv-icon [icon]="'addCircle'"></yuv-icon>
+      </button>
+
+      <button type="button" class="primary submit" [ngClass]="{ active: resultCount > 0 }" (click)="executeSearch()">
+        <yuv-icon [icon]="'search'"></yuv-icon>
+      </button>
+    </div>
+  </form>
+
+  <!-- form elements from object type fields -->
+  <form class="extras" #extrasForm [formGroup]="searchFieldsForm" *ngIf="formFields.length">
+    <div class="condition" *ngFor="let key of searchFieldsForm?.controls | keys">
+      <div class="fe-chip">
+        <yuv-object-form-element [situation]="'SEARCH'" [inlineError]="true" [element]="searchFieldsForm.controls[key]">
+        </yuv-object-form-element>
+        <button type="button" (click)="removeFieldEntry(key)">
+          <yuv-icon [icon]="'clear'"></yuv-icon>
+        </button>
+      </div>
+      <div class="operator">&</div>
+    </div>
+  </form>
+</div>
+
+<div class="error" *ngIf="error">{{ 'yuv.framework.quick-search.aggregate.error' | translate }}</div>
+
+
+<ng-template #tplValuePicker let-data let-popover="popover">
+  <yuv-quick-search-picker cdkTrapFocus yuvOfflineDisabled [data]="data"
+    [ngClass]="{ 'quick-search': true, hashtag: data.type === 'field' }" (cancel)="onPickerCancel(popover)"
+    (select)="onPickerResult(data.type, $event, popover)">
+  </yuv-quick-search-picker>
+</ng-template>

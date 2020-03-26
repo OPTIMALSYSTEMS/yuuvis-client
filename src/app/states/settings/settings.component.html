@@ -1,28 +1,97 @@
 <div class="settings panel">
-    <div class="head">
-        <yuv-user-avatar class="background" [user]="user"></yuv-user-avatar>
-        <div class="user">
-            <div class="meta">{{user?.username}}</div>
-            <h1>{{user?.title}}</h1>
-            <div class="meta">{{user?.email}}</div>
-        </div>
-        <yuv-user-avatar class="box panel" [user]="user"></yuv-user-avatar>
+  <div class="head">
+    <yuv-user-avatar class="background" [user]="user$ | async"></yuv-user-avatar>
+    <div class="user">
+      <div class="meta uname">{{(user$ | async).username}}</div>
+      <h1>{{(user$ | async).title}}</h1>
+      <div class="meta uemail">{{(user$ | async).email}}</div>
     </div>
-    <div class="body">
-        <div class="body-wrap">
+    <yuv-user-avatar class="box panel" [user]="user$ | async"></yuv-user-avatar>
+  </div>
+  <div class="body">
+    <div class="body-wrap">
 
-            <div class="setting">
-                <div class="label" translate>eo.state.settings.language</div>
-                <div class="value">
-                        <button class="toggle" (click)="changeClientLocale(locale.iso)"
-                        [ngClass]="{active: translate.currentLang === locale.iso}"
-                        *ngFor="let locale of clientLocales">{{locale.label}}</button>
-                </div>
-            </div>
-
-
-
-            <h3 translate>eo.state.settings.deputies</h3>
+      <!-- language -->
+      <div class="setting settings__row" yuvOfflineDisabled>
+        <div class="label" translate>yuv.client.state.settings.language</div>
+        <div class="value buttons">
+          <button class="toggle" (click)="changeClientLocale(locale.iso)"
+            [ngClass]="{active: translate.currentLang === locale.iso}"
+            *ngFor="let locale of clientLocales">{{locale.label}}</button>
         </div>
+      </div>
+
+      <!-- permissions -->
+      <div class="setting">
+        <div class="label" translate>yuv.client.state.settings.permission</div>
+        <div class="content permissions">
+
+          <p-accordion [expandIcon]="'pi pi-fw pi-chevron-down'" [collapseIcon]="'pi pi-fw pi-chevron-up'">
+            <p-accordionTab [transitionOptions]="'0ms'" header="{{'yuv.client.state.settings.roles'|translate}}">
+
+              <div class="role" *ngFor="let role of (user$ | async).authorities">
+                <yuv-icon [icon]="'shield'"></yuv-icon>
+                <div class="name">{{role}}</div>
+              </div>
+            </p-accordionTab>
+          </p-accordion>
+        </div>
+      </div>
+
+      <!-- SECTION LAYOUT -->
+      <div class="settings-section">
+        <h3>{{'yuv.client.state.settings.section.layout'|translate}}</h3>
+        <button (click)="downloadLayout()">{{'yuv.client.state.settings.section.layout.export'|translate}}</button>
+        <yuv-file-picker [label]="'yuv.client.state.settings.section.layout.import'|translate" [accept]="'.json'"
+          [output]="'text'" (fileSelected)="uploadLayout($event)"></yuv-file-picker>
+        <button (click)="clearLayout()">{{'yuv.client.state.settings.section.layout.reset'|translate}}</button>
+      </div>
+
+      <!-- theming -->
+      <div class="setting settings__row">
+        <div class="label" translate>yuv.client.state.settings.theme</div>
+        <div class="value buttons">
+          <button [ngClass]="{active: !darkMode}"
+            (click)="toggleTheme(false)">{{'yuv.client.state.settings.theme.light'|translate}}</button>
+          <button [ngClass]="{active: darkMode}"
+            (click)="toggleTheme(true)">{{'yuv.client.state.settings.theme.dark'|translate}}</button>
+        </div>
+      </div>
+
+      <div class="setting">
+        <div class="label">{{'yuv.client.state.settings.theme.accentcolor'|translate}}</div>
+        <div class="value">
+          <button class="color accent" *ngFor="let ac of accentColorRGB" [ngClass]="{active: ac === accentColor}"
+            [ngStyle]="{'background-color': 'rgb(' + ac + ')'}" (click)="setAccentColor(ac)"></button>
+          <button class="color clear" *ngIf="accentColor"
+            (click)="setAccentColor(null)">{{'yuv.client.state.settings.section.layout.reset'|translate}}</button>
+        </div>
+      </div>
+
+      <div class="setting">
+        <div class="label">{{'yuv.client.state.settings.theme.background'|translate}}</div>
+        <div class="value buttons">
+          <yuv-file-picker [label]="'yuv.client.state.settings.theme.background.choose'|translate" [maxSize]="500000"
+            [accept]="'image/*'" [output]="'dataurl'" (fileSelected)="setBackgroundImage($event)"></yuv-file-picker>
+          <button *ngIf="customDashboardBackground"
+            (click)="setBackgroundImage(null)">{{'yuv.client.state.settings.section.layout.reset'|translate}}</button>
+        </div>
+      </div>
+
+      <!-- SECTION CONFIG -->
+      <div class="settings-section">
+        <h3>{{'yuv.client.state.settings.section.config'|translate}}</h3>
+      </div>
+
+      <!-- other settings -->
+      <div class="setting settings__row">
+        <div class="label" translate>yuv.client.state.settings.config.column-config</div>
+        <div class="value buttons">
+          <button
+            (click)="editColumnConfig()">{{'yuv.client.state.settings.config.column-config.open'|translate}}</button>
+        </div>
+      </div>
+
     </div>
+  </div>
 </div>

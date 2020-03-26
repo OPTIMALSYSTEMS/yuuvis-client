@@ -1,14 +1,30 @@
 {
   "name": "@yuuvis/framework",
-  "version": "0.0.1",
+  "version": "0.9.0-alpha.0",
+  "scripts": {
+    "doc": "./node_modules/.bin/compodoc",
+    "doc:serve": "./node_modules/.bin/compodoc -s"
+  },
   "peerDependencies": {
-    "@angular/common": "^7.2.0",
-    "@angular/animations": "^7.0.0",
-    "@angular/core": "^7.2.0"
+    "@angular/common": "~8.0.0",
+    "@angular/animations": "~8.0.0",
+    "@angular/core": "~8.0.0",
+    "@angular/router": "~8.0.0",
+    "rxjs": "~6.5.2"
   },
   "dependencies": {
     "primeng": "^7.1.0",
-    "angular-split": "^2.0.1",
-    "@angular/cdk": "^7.3.7"
+    "primeicons": "^2.0.0",
+    "angular-split": "3.0.1",
+    "@angular/cdk": "^7.3.7",
+    "@angular/forms": "~8.0.0",
+    "@ag-grid-community/core": "^22.0.0",
+    "@ag-grid-community/angular": "^22.0.0",
+    "@ag-grid-community/client-side-row-model": "^22.0.0",
+    "angular-resize-event": "^1.0.0",
+    "lodash-es": "^4.17.15",
+    "take-until-destroy": "^2.1.0",
+    "ngx-drag-scroll": "^8.0.0-beta.2",
+    "ngx-toastr": "^11.1.0"
   }
 }

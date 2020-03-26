@@ -1,0 +1,31 @@
+@import './../../../../../../../../../src/scss-shared/_mixins';
+
+:host {
+  .filename {
+    white-space: nowrap;
+    overflow: hidden;
+    width: 300px;
+    text-overflow: ellipsis;
+    padding: var(--app-pane-padding);
+    cursor: pointer;
+  }
+
+  .buttons {
+    display: flex;
+    justify-content: flex-end;
+    padding: var(--app-pane-padding);
+    margin-top: var(--app-pane-padding);
+
+    button {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .primary {
+      background-color: rgba(var(--color-accent-rgb), 0.8);
+    }
+
+    .secondary {
+      margin: 0 calc(var(--app-pane-padding) / 2);
+    }
+  }
+}

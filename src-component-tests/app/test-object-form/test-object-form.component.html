@@ -1,0 +1,16 @@
+<div class="testing-controls">
+  <div>
+
+    <yuv-dms-object-picker [defaultId]="'69bb0643-e40e-42cd-ae8b-6acda37c4574'" (dmsObject)="setDmsObject($event)">
+    </yuv-dms-object-picker>
+    <button [ngClass]="{ current: showData }" (click)="showData = !showData">toggle data area</button>
+  </div>
+  <button *ngFor="let m of formModels" (click)="setModel(m.model)"
+    [ngClass]="{ current: currentModel === m.model }">{{ m.label }}</button>
+</div>
+
+<div class="container">
+  <yuv-object-form class="cmp" [yuvBusyOverlay]="busy" (statusChanged)="onFormStatusChanged($event)"
+    [formOptions]="currentModel"></yuv-object-form>
+  <pre class="cmp" *ngIf="showData">{{data}}</pre>
+</div>

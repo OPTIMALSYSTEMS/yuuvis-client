@@ -1,19 +1,34 @@
-import { Component, forwardRef, Input } from '@angular/core';
-import {
-  FormControl,
-  ControlValueAccessor,
-  Validator,
-  NG_VALUE_ACCESSOR,
-  NG_VALIDATORS
-} from '@angular/forms';
-import { Observable } from 'rxjs';
-import { SVGIcons } from '../../../svg.generated';
-
+import { Component, ElementRef, forwardRef, Input } from '@angular/core';
+import { ControlValueAccessor, FormControl, NG_VALIDATORS, NG_VALUE_ACCESSOR, Validator } from '@angular/forms';
+import { IconRegistryService } from '@yuuvis/common-ui';
+import { Utils } from '@yuuvis/core';
+import { envelope, globe } from '../../../svg.generated';
+/**
+ * Creates form input for strings. Based on the input values different kinds of inputs will be generated.
+ *
+ * Implements `ControlValueAccessor` so it can be used within Angular forms.
+ * 
+ * ```html
+<!-- string input validating input to be between 5 and 10 characters -->
+<yuv-string [minLength]="5" [maxLength]="10"></yuv-string>
+```
+ *
+ * ```html
+<!-- string input that only allow digits -->
+<yuv-string  [regex]="[0-9]*"></yuv-string>
+```
+ *
+ * ```html
+<!-- string input rendering a large textarea -->
+<yuv-string [multiline]="true" [size]="'large'"></yuv-string>
+```
+ *
+ */
 @Component({
   selector: 'yuv-string',
   templateUrl: './string.component.html',
   styleUrls: ['./string.component.scss'],
-  host: {'class': 'yuv-string'},
+  host: { class: 'yuv-string' },
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
@@ -28,39 +43,60 @@ import { SVGIcons } from '../../../svg.generated';
   ]
 })
 export class StringComponent implements ControlValueAccessor, Validator {
+  maxEntryCountIfInvalid = null;
 
-  icons = {
-    envelope: SVGIcons.envelope,
-    globe: SVGIcons.globe
-  };
-
-  @Input() onAutoCompleteChanged: (value: string) => Observable<string[]>;
-
+  /**
+   * Indicator that multiple strings could be inserted, they will be rendered as chips (default: false).
+   */
   @Input() multiselect: boolean;
+  /**
+   * Set to true to render a textarea instead of input (default: false)
+   */
   @Input() multiline: boolean;
-  @Input() readonly: boolean;
-  @Input() autofocus: boolean;
-
-  @Input() classification: string;
-  @Input() situation: string;
-  @Input() regex: string;
-  @Input() qname: string;
-  // could be small, medium, large
+  /**
+   * Use in combination with `multiline` to define the size (height) of the textarea. Valid values are 'small','medium','large'
+   */
   @Input() size: string;
-  @Input() minLength: number;
-  @Input() maxLength: number;
+  /**
+   * Will prevent the input from being changed (default: false)
+   */
+  @Input() readonly: boolean;
+  /**
+   * Enable autofucus for the input (default: false)
+   */
+  @Input() autofocus: boolean;
+  /**
+   * Possible values are `email` (validates and creates a link to send an email once there is a valid email address) and `url` (validates and creates a link to an URL typed into the form element).
+   */
+  @Input() classification: string;
+  /**
+   * Possibles values are `EDIT` (default),`SEARCH`,`CREATE`. In search situation validation of the form element will be turned off, so you are able to enter search terms that do not meet the elements validators.
+   */
+  @Input() situation: string;
 
-  autocompleteSuggestions: string[];
+  /**
+   * Regular expression to validate the input value against
+   */
+  @Input() regex: string;
+  /**
+   * Minimal number of characters
+   */
+  @Input() minLength: number;
+  /**
+   * Maximum number of characters
+   */
+  @Input() maxLength: number;
 
   // model value
   value;
   valid: boolean;
+  validationErrors = [];
 
-  constructor() {
+  constructor(private elementRef: ElementRef, private iconRegistry: IconRegistryService) {
+    this.iconRegistry.registerIcons([envelope, globe]);
   }
 
-  propagateChange = (_: any) => {
-  };
+  propagateChange = (_: any) => {};
 
   onKeyUpEnter(event) {
     const input = event.target.value.trim();
@@ -80,32 +116,61 @@ export class StringComponent implements ControlValueAccessor, Validator {
     this.propagateChange = fn;
   }
 
-  registerOnTouched(fn: any): void {
-  }
+  registerOnTouched(fn: any): void {}
 
-  onValueChange(evt) {
-    this.value = evt.length ? evt : null;
+  onValueChange(val) {
+    this.validationErrors = [];
+
+    if (Utils.isEmpty(val)) {
+      this.value = null;
+      this.propagateChange(this.value);
+      return;
+    }
+
+    const multiCheck = check => !!(this.multiselect ? val : [val]).find(v => check(v));
+
+    // validate regular expression
+    if (this.regex && multiCheck(v => !RegExp(this.regex).test(v))) {
+      this.validationErrors.push({ key: 'regex' });
+    }
+
+    // validate classification settings
+    if (this.classification && multiCheck(v => !this.validateClassification(v))) {
+      this.validationErrors.push({ key: 'classification' + this.classification });
+    }
+
+    // validate min length
+    if (!Utils.isEmpty(this.minLength) && multiCheck(v => v.length < this.minLength)) {
+      this.validationErrors.push({ key: 'minlength', params: { minLength: this.minLength } });
+    }
+
+    // validate max length
+    if (!Utils.isEmpty(this.maxLength) && multiCheck(v => v.length > this.maxLength)) {
+      this.validationErrors.push({ key: 'maxlength', params: { maxLength: this.maxLength } });
+    }
+
+    // validate invalid if only whitespaces
+    if (multiCheck(v => v.length && !v.trim().length)) {
+      this.validationErrors.push({ key: 'onlyWhitespaces' });
+    }
+
+    if (this.validationErrors.length && this.multiselect && this.value) {
+      // Setting maxEntryCountIfInvalid to the actual length of the value array to prevent the user to add more entries.
+      this.maxEntryCountIfInvalid = this.value.length;
+    } else {
+      this.maxEntryCountIfInvalid = null;
+    }
+
     this.propagateChange(this.value);
   }
 
   onBlur() {
     if (this.value) {
-      if (this.multiselect) {
-        this.value = this.value.map(v => v.trim());
-      } else {
-        this.value = this.value.trim();
-      }
+      this.value = this.multiselect ? this.value.map(v => v.trim()) : this.value.trim();
     }
   }
 
-  autocompleteFn(evt) {
-    this.onAutoCompleteChanged(evt).subscribe((suggestions: string[]) => {
-      this.autocompleteSuggestions = suggestions;
-    });
-  }
-
   private validateClassification(string): boolean {
-
     if (this.situation === 'SEARCH') {
       return true;
     } else {
@@ -119,86 +184,10 @@ export class StringComponent implements ControlValueAccessor, Validator {
     }
   }
 
-  // returns null when valid else the validation object
+  /**
+   * returns null when valid else the validation object
+   */
   public validate(c: FormControl) {
-
-    let err; 
-    // validate regular expression
-    if (this.value && this.regex) {
-      if (this.multiselect) {
-        if (this.value.length > 0 && !!this.value.find(v => !RegExp(this.regex).test(v))) {
-          err = {};
-          err['regex'] = {
-            valid: false
-          }
-        }
-      } else {
-        if (!RegExp(this.regex).test(this.value)) {
-          err = {};
-          err['regex'] = {
-            valid: false
-          }
-        }
-      }
-    }
-    // validate classification settings
-    if (this.value && this.classification) {
-      if (this.multiselect) {
-        for (let v of this.value) {
-          if (!this.validateClassification(v)) {
-            err = {};
-            err['classification' + this.classification] = {
-              valid: false
-            };
-          }
-        }
-      } else {
-        if (!this.validateClassification(this.value)) {
-          err = {};
-          err['classification' + this.classification] = {
-            valid: false
-          };
-        }
-      }
-    }
-    // validate length here when multiselect
-    if (this.value && this.value !== null) {
-      if (this.multiselect) {
-        if (this.value.length > 0 && !!this.value.find(v => v.length < this.minLength)) {
-          err = {};
-          err['minlength'] = {
-            valid: false
-          }
-        }
-        if (this.value.length > 0 && !!this.value.find(v => v.length > this.maxLength)) {
-          err = {};
-          err['maxlength'] = {
-            valid: false
-          }
-        }
-      }
-    }
-    // validate invalid if only whitespaces
-    if (this.value && this.value !== null) {
-      if (this.multiselect) {
-        for (let v of this.value) {
-          if (v.length && !v.trim().length) {
-            err = {};
-            err['onlyWhitespaces'] = {
-              valid: false
-            }
-          }
-        }
-      } else {
-        if (this.value.length && !this.value.trim().length) {
-          err = {};
-          err['onlyWhitespaces'] = {
-            valid: false
-          }
-        }
-      }
-    }    
-    this.valid = !err;
-    return err ? err : null;
+    return this.validationErrors.length ? Utils.arrayToObject(this.validationErrors, 'key', err => ({ valid: false, ...err })) : null;
   }
 }

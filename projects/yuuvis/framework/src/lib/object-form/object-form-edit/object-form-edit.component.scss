@@ -1,0 +1,59 @@
+@import './../../../../../../../src/scss-shared/_mixins';
+
+:host {
+  display: block;
+}
+.object-form-edit {
+  background: var(--panel-background);
+  min-width: 300px;
+  // min-height: 300px;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr auto;
+  grid-template-areas: 'form' 'buttons';
+
+  yuv-object-form {
+    grid-area: form;
+  }
+
+  .form-controls {
+    grid-area: buttons;
+
+    &.disabled .buttons {
+      opacity: 0.4;
+      filter: grayscale(1);
+      pointer-events: none;
+    }
+
+    .err-msg {
+      order: 0;
+      background-color: var(--color-error);
+      color: #fff;
+      padding: calc(var(--app-pane-padding) / 2) var(--app-pane-padding);
+      display: none;
+    }
+    .buttons {
+      order: 1;
+      padding: var(--app-pane-padding);
+      flex: 1 1 auto;
+      display: flex;
+      flex-flow: row wrap;
+      @include gap(4px);
+      align-items: center;
+      justify-content: flex-end;
+
+      button {
+        flex: 0 0 auto;
+      }
+    }
+  }
+
+  &.invalid {
+    .form-controls {
+      border-color: var(--color-error);
+      .err-msg {
+        display: block;
+      }
+    }
+  }
+}

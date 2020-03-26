@@ -1,0 +1,49 @@
+<div class="header">
+  <div class="tabs">
+    <div class="tab" *ngIf="created" [ngClass]="{active: selected === 'created'}" (click)="select('created')">
+      {{'yuv.framework.recent-activities.header.created'|translate}}</div>
+    <div class="tab" *ngIf="modified" [ngClass]="{active: selected === 'modified'}" (click)="select('modified')">
+      {{'yuv.framework.recent-activities.header.modified'|translate}}</div>
+  </div>
+</div>
+
+<div class="outer" *ngIf="!isLoading; else tplLoading">
+
+  <ng-container *ngIf="created && selected === 'created'">
+    <ng-container *ngIf="recentlyCreated?.length > 0; else tplEmpty">
+      <drag-scroll yuvOfflineDisabled [snap-disabled]="true" [scroll-x-wheel-enabled]="true">
+
+        <yuv-dms-object-tile drag-scroll-item *ngFor="let i of recentlyCreated" [title]="i.title"
+          [description]="i.description" [objectTypeIcon]="i.objectTypeIcon" [objectTypeLabel]="i.objectTypeLabel"
+          [date]="i.date" (click)="triggerItemClicked(i, $event)"></yuv-dms-object-tile>
+
+        <button drag-scroll-item *ngIf="recentlyCreated?.length && !data"
+          (click)="triggerShowAll()">{{'yuv.framework.recent-activities.header.more'|translate}}</button>
+      </drag-scroll>
+    </ng-container>
+  </ng-container>
+
+  <ng-container *ngIf="modified && selected === 'modified'">
+    <ng-container *ngIf="recentlyModified?.length > 0; else tplEmpty">
+      <drag-scroll yuvOfflineDisabled [snap-disabled]="true" [scroll-x-wheel-enabled]="true">
+
+        <yuv-dms-object-tile drag-scroll-item *ngFor="let i of recentlyModified" [title]="i.title"
+          [description]="i.description" [objectTypeIcon]="i.objectTypeIcon" [objectTypeLabel]="i.objectTypeLabel"
+          [date]="i.date" (click)="triggerItemClicked(i, $event)"></yuv-dms-object-tile>
+
+        <button drag-scroll-item *ngIf="recentlyModified?.length && !data"
+          (click)="triggerShowAll()">{{'yuv.framework.recent-activities.header.more'|translate}}</button>
+      </drag-scroll>
+    </ng-container>
+  </ng-container>
+</div>
+
+<ng-template #tplEmpty>
+  <div class="empty">
+    {{'yuv.framework.recent-activities.list.empty'|translate}}
+  </div>
+</ng-template>
+
+<ng-template #tplLoading>
+  <div class="yuv-loader-linear"></div>
+</ng-template>

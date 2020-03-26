@@ -1,0 +1,17 @@
+<div class="object-form-edit" [ngClass]="{invalid: formState?.invalid === true}" [yuvBusyOverlay]="busy">
+  <yuv-object-form [formOptions]="formOptions" *ngIf="formOptions" (statusChanged)="onFormStatusChanged($event)">
+  </yuv-object-form>
+
+  <div class="form-controls" [ngClass]="{disabled: controls.disabled}">
+
+    <div class="err-msg" *ngIf="formState?.invalid" translate>yuv.framework.object-form-edit.invalid</div>
+
+    <div class="buttons" yuvOfflineDisabled>
+      <button class="secondary" (click)="reset()" [disabled]="controls.saving || controls.disabled"
+        translate>yuv.framework.object-form-edit.reset</button>
+      <button class="primary" [ngClass]="{spinner: controls.saving}"
+        [disabled]="formState?.invalid || controls.saving || controls.disabled" (click)="save()"
+        translate>yuv.framework.object-form-edit.save</button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,10 @@
+<div class="upload-progress">
+  <div class="button">
+    <div class="testing-controls">
+      <button (click)="uploadFake()">Run fake</button>
+    </div>          
+  </div>
+  <div class="loader">
+    <yuv-upload-progress-overlay [progress]="progress" (resultItemClick)="onResultItemClick($event)"></yuv-upload-progress-overlay>
+  </div>
+</div>

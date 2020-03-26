@@ -1,15 +1,15 @@
 import { Injectable } from '@angular/core';
-import { YuvConfig } from './config.interface';
 import { TranslateService } from '@ngx-translate/core';
+import { Utils } from '../../util/utils';
+import { YuvConfig, YuvConfigLanguages } from './config.interface';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ConfigService {
-
   private cfg: YuvConfig = null;
 
-  constructor(private translate: TranslateService) { }
+  constructor(private translate: TranslateService) {}
 
   /**
    * Set during app init (see CoreInit)
@@ -22,16 +22,20 @@ export class ConfigService {
     this.translate.setDefaultLang(this.getDefaultClientLocale());
   }
 
+  get(configKey: string): any {
+    return configKey ? Utils.getProperty(this.cfg, configKey) : null;
+  }
+
   /**
    * Getter for the available client locales
    * @returns available client locales
    */
-  getClientLocales(): any[] {
-    return this.cfg['languages'];
+  getClientLocales(): YuvConfigLanguages[] {
+    return this.getCoreConfig('languages');
   }
 
   getApiBase(api: string): string {
-    return this.cfg['apiBase'][api];
+    return this.getCoreConfig('apiBase')[api];
   }
 
   /**
@@ -41,5 +45,9 @@ export class ConfigService {
   getDefaultClientLocale() {
     const lang = this.getClientLocales().find(_ => _.fallback);
     return lang ? lang.iso : 'en';
+  }
+
+  private getCoreConfig(key: string): any {
+    return this.cfg.core[key];
   }
 }

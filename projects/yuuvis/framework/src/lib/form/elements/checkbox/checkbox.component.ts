@@ -1,12 +1,22 @@
-import {Component, forwardRef, Input} from '@angular/core';
-import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
-import { SVGIcons } from '../../../svg.generated';
-
+import { Attribute, Component, EventEmitter, forwardRef, Input, Output } from '@angular/core';
+import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { IconRegistryService } from '@yuuvis/common-ui';
+import { clear } from '../../../svg.generated';
+/**
+ * Creates form input for boolean values (checkbox).
+ *
+ * Implements `ControlValueAccessor` so it can be used within Angular forms.
+ * 
+ * ```html
+<yuv-checkbox></yuv-checkbox>
+```
+ *
+ */
 @Component({
   selector: 'yuv-checkbox',
   templateUrl: './checkbox.component.html',
   styleUrls: ['./checkbox.component.scss'],
-  host: {'class': 'yuv-checkbox'},
+  host: { class: 'yuv-checkbox' },
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
@@ -16,15 +26,25 @@ import { SVGIcons } from '../../../svg.generated';
   ]
 })
 export class CheckboxComponent implements ControlValueAccessor {
+  // value: boolean = null;
+  _tabindex;
 
-  value: boolean = null;
-  icClear = SVGIcons.clear;
-
+  /**
+   * By default checkbox value will be either 'true' or 'false'. Setting tristate
+   * property to 'true' the value could also be set to NULL, meaning not set (default: false)
+   */
   @Input() tristate = false;
+  /**
+   * Will prevent the input from being changed (default: false)
+   */
   @Input() readonly: boolean;
+  @Input() value: boolean = null;
   //@Input() filter: any;
+  @Output() change = new EventEmitter<boolean>();
 
-  constructor() {
+  constructor(@Attribute('tabindex') tabindex: string, private iconRegistry: IconRegistryService) {
+    this.iconRegistry.registerIcons([clear]);
+    this._tabindex = tabindex || '0';
   }
 
   reset(): void {
@@ -32,8 +52,7 @@ export class CheckboxComponent implements ControlValueAccessor {
     this.propagateChange(this.value);
   }
 
-  propagateChange = (_: any) => {
-  }
+  propagateChange = (_: any) => {};
 
   writeValue(value: any): void {
     this.value = value === undefined ? null : value;
@@ -43,14 +62,13 @@ export class CheckboxComponent implements ControlValueAccessor {
     this.propagateChange = fn;
   }
 
-  registerOnTouched(fn: any): void {
-  }
+  registerOnTouched(fn: any): void {}
 
   onChange(value) {
     if (value === null) {
       this.value = true;
     }
+    this.change.emit(this.value);
     this.propagateChange(this.value);
   }
-
 }

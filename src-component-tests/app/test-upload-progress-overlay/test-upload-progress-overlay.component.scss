@@ -1,0 +1,24 @@
+:host {
+  overflow: hidden;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.upload-progress {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr 1fr;
+  grid-template-areas: "button" "loader";
+  
+  margin: auto 50%;
+
+}
+
+.button { 
+  grid-area: button;
+}
+
+.loader { 
+  grid-area: loader;
+}

@@ -3,16 +3,23 @@
  * @ignore
  */
 export interface YuvConfig {
-    apiBase: string;
-    languages: {
-        iso: string,
-        label: string,
-        dir?: Direction,
-        fallback?: boolean
-    }[];
+  core: {
+    apiBase: {
+      core: string;
+      'api-web': string;
+    };
+    languages: YuvConfigLanguages[];
+  };
+}
+
+export interface YuvConfigLanguages {
+  iso: string;
+  label: string;
+  dir?: Direction;
+  fallback?: boolean;
 }
 
 export enum Direction {
-    LTR = 'ltr',
-    RTL = 'rtl'
+  LTR = 'ltr',
+  RTL = 'rtl'
 }

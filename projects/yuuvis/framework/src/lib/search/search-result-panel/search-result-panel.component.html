@@ -1,0 +1,24 @@
+<yuv-panel class="search-result" [title]="'yuv.framework.search-result-panel.header.title' | translate"
+  [description]="queryDescription">
+
+  <yuv-action-menu-bar class="actions" yuvOfflineDisabled>
+    <yuv-icon class="config" icon="settings" (click)="showColumnConfigEditor()" *ngIf="viewMode === 'standard'">
+    </yuv-icon>
+    <yuv-icon (click)="refresh()" [title]="'yuv.framework.list.refresh' | translate" class="button refresh-button"
+      [icon]="'refresh'"></yuv-icon>
+    <yuv-icon class="header-icon" (click)="openActionMenu()" [icon]="'kebap'"
+      [ngClass]="{ disabled: !preSelectItems?.length }"> </yuv-icon>
+  </yuv-action-menu-bar>
+
+  <yuv-search-result class="content" [query]="_searchQuery" applyColumnConfig="true" [preSelectItems]="preSelectItems"
+    [layoutOptionsKey]="layoutOptionsKey" (viewModeChanged)="onViewModeChanged($event)"
+    (itemsSelected)="onItemsSelected($event)" (queryChanged)="onQueryChangedFromWithin($event)"
+    (rowDoubleClicked)="rowDoubleClicked.emit($event)">
+  </yuv-search-result>
+</yuv-panel>
+<yuv-action-menu [(visible)]="actionMenuVisible" [selection]="actionMenuSelection"> </yuv-action-menu>
+
+<!-- column config editor overlay -->
+<ng-template #tplColumnConfigPicker let-data let-popover="popover">
+  <yuv-column-config [type]="data" (configSaved)="columnConfigChanged($event, popover)"></yuv-column-config>
+</ng-template>

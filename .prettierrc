@@ -1,0 +1,20 @@
+{
+  "bracketSpacing": true,
+  "semi": true,
+  "singleQuote": true,
+  "trailingComma": "none",
+  "attrLowercase": false,
+  "tagname-lowercase": false,
+  "printWidth": 160,
+  "no-implicit-dependencies": [
+    true,
+    {
+      "dev": true,
+      "optional": true,
+      "allow": ["rxjs"]
+    }
+  ],
+  "variable-name": {
+    "options": ["check-format", "allow-leading-underscore"]
+  }
+}

@@ -1,0 +1,8 @@
+<div class="yuv-object-form" *ngIf="form && formOptions" [formGroup]="form">
+  <div class="form-element-wrap core">
+    <yuv-object-form-group [group]="form.get('core')" [situation]="formOptions.formModel.situation"></yuv-object-form-group>
+  </div>
+  <div class="form-element-wrap data">
+    <yuv-object-form-group [group]="form.get('data')" [situation]="formOptions.formModel.situation"></yuv-object-form-group>
+  </div>
+</div>

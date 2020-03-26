@@ -1,0 +1,20 @@
+<div class="testing-controls">
+    <button id="ra-cm" (click)="setConfig(config[0])">created & modified</button>
+    <button id="ra-c" (click)="setConfig(config[1])">created only</button>
+    <button id="ra-m" (click)="setConfig(config[2])">modified only</button>
+    <button id="ra-style" (click)="setConfig(config[3])">styling</button>
+    <button id="ra-size" (click)="setConfig(config[4])">size 5</button>
+
+    <button id="ra-data-empty" (click)="setConfig(config[5])">Data empty</button>
+    <button id="ra-data-empty-created" (click)="setConfig(config[6])">Data created empty</button>
+</div>
+
+
+<ng-container *ngIf="currentConfig">
+    <yuv-recent-activities class="{{currentConfig.classes || 'cmp'}}" [data]="currentConfig.data"
+        [created]="currentConfig.created" [size]="currentConfig.size" [modified]="currentConfig.modified"
+        (itemClick)="onRecentItemClicked($event)" (showAll)="onShowAll($event)">
+    </yuv-recent-activities>
+
+    <pre class="res">{{res}}</pre>
+</ng-container>

@@ -1,0 +1,212 @@
+@import './../../../../../src/scss-shared/_mixins';
+
+$app-pane-padding: 16px;
+$about-max-width: 800px;
+
+:host {
+  --about-header-height: 300px;
+  height: 100%;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr;
+  grid-column-gap: 0px;
+  grid-row-gap: 0px;
+}
+
+.yuv-about-state {
+  box-sizing: border-box;
+  width: $about-max-width;
+  justify-self: center;
+
+  .about {
+    @include panel-shadow();
+    background: var(--panel-background);
+    margin: var(--app-pane-padding);
+
+    .header {
+      position: relative;
+      height: var(--about-header-height);
+
+      &:after {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        background-color: var(--color-accent);
+        opacity: 0.5;
+      }
+
+      svg {
+        fill: white;
+        right: 8%;
+        bottom: 18%;
+        position: absolute;
+        z-index: 20;
+        width: 40%;
+      }
+    }
+
+    .body {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      grid-template-rows: min-content;
+      grid-template-areas:
+        'claim claim'
+        'info link'
+        'licenses licenses';
+
+      padding: var(--app-pane-padding);
+
+      :host-context(.screen-s) & {
+        grid-template-columns: 1.2fr 0.8fr;
+        grid-template-rows: min-content;
+        grid-template-areas:
+          'claim claim'
+          'info info'
+          'link link'
+          'licenses licenses';
+      }
+    }
+
+    .claim {
+      grid-area: claim;
+    }
+
+    p {
+      line-height: 1.7em;
+      padding: var(--app-pane-padding) 0;
+    }
+
+    .links {
+      grid-area: link;
+      justify-self: center;
+      margin-top: var(--app-pane-padding);
+      a {
+        color: var(--color-accent);
+      }
+    }
+
+    .info {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      // grid-template-rows: 1fr 1fr 1fr 1fr;
+      grid-template-rows: min-content;
+      grid-template-areas:
+        'product_label product_text'
+        'component_version_label component_version_text'
+        'product_version_label product_version_text'
+        'company_label company_text';
+      grid-area: info;
+      margin: var(--app-pane-padding);
+      padding: calc(var(--app-pane-padding) / 4) 0;
+      background-color: rgba(0, 0, 0, 0.06);
+      border-radius: 2px;
+      font-size: var(--font-hint);
+      color: var(--text-color-caption);
+      padding: calc(var(--app-pane-padding) / 8) calc(var(--app-pane-padding) / 2);
+
+      :host-context(.screen-s) & {
+        margin: 0;
+        .label {
+          padding-bottom: 0;
+        }
+      }
+    }
+
+    $versions: component_version product_version company product;
+    @each $version in $versions {
+      .#{$version}_text {
+        grid-area: #{$version}_text;
+      }
+      .#{$version}_label {
+        grid-area: #{$version}_label;
+      }
+    }
+
+    .label {
+      padding: calc(var(--app-pane-padding) / 2) calc(var(--app-pane-padding) / 2);
+    }
+
+    .text {
+      padding: calc(var(--app-pane-padding) / 2) calc(var(--app-pane-padding) / 2);
+      font-weight: bold;
+    }
+
+    .licenses {
+      display: grid;
+      grid-template-columns: 1fr;
+      grid-template-rows: min-content;
+      grid-template-areas:
+        'licenses_headline'
+        'licenses_intro'
+        'licenses_content';
+      grid-area: licenses;
+    }
+
+    .licenses_headline {
+      grid-area: licenses_headline;
+      margin: 1.5em 0 0 0;
+      color: var(--text-color-caption);
+      font-weight: var(--font-weight-light);
+      font-size: var(--font-title);
+    }
+
+    .licenses_intro {
+      grid-area: licenses_intro;
+    }
+
+    .licenses_content {
+      grid-area: licenses_content;
+
+      .lic-row {
+        padding-top: var(--app-pane-padding);
+        display: flex;
+        flex-flow: row nowrap;
+        padding: calc(var(--app-pane-padding) / 4);
+        border-top: 1px solid var(--panel-divider-color);
+
+        .name {
+          flex: 1 1 auto;
+        }
+
+        .licence {
+          flex: 0 0 auto;
+          font-size: var(--font-hint);
+          color: var(--text-color-caption);
+          a {
+            text-decoration: none;
+            border-radius: 2px;
+            border: 1px solid var(--color-accent);
+            color: var(--color-accent);
+            display: inline-block;
+            padding: 2px 4px;
+            background-color: rgba(0, 0, 0, 0.06);
+            line-height: 1em;
+          }
+        }
+        &:first-child {
+          border-top: none;
+        }
+      }
+    }
+
+    :host-context(.screen-s) & {
+      max-height: 100%;
+      margin: 0;
+    }
+  }
+  :host-context(.screen-s) & {
+    --about-header-height: 100px;
+    margin: 0;
+    width: 100vw;
+    justify-self: auto;
+  }
+  :host-context(.screen-s.screen-landscape) {
+    --about-header-height: 100px;
+    margin: 0;
+    width: 98vw;
+    justify-self: auto;
+  }
+}
