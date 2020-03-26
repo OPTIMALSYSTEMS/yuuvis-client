@@ -86,7 +86,14 @@ export interface LinkAction extends Action {
    * @param selection Selected items
    * @returns Object of params (key/value)
    */
-  getParams(selection: any[]): any;
+  getParams?(selection: any[]): any;
+
+  /**
+   * Fragment to be attached to the link.
+   * @param selection Selected items
+   * @returns the fragment
+   */
+  getFragment?(selection: any[]): string;
 }
 
 /**

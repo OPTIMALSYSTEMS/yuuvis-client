@@ -18,28 +18,29 @@ export class OpenContextActionComponent extends DmsObjectTarget implements LinkA
   iconSrc = openContext.data;
   group = 'common';
   range = SelectionRange.SINGLE_SELECT;
-  latestVersion: number;
 
   constructor(private translate: TranslateService, private router: Router, private route: ActivatedRoute) {
     super();
     this.label = this.translate.instant('yuv.framework.action-menu.action.open.context');
     this.description = this.translate.instant('yuv.framework.action-menu.action.open.context.description');
-    this.latestVersion = parseInt(this.route.snapshot.fragment, 0);
   }
 
   isExecutable(item: DmsObject): Observable<boolean> {
-    return observableOf(this.latestVersion ? this.latestVersion === item.version : true);
+    const isLatestVersion = this.route.snapshot.queryParams.version ? this.route.snapshot.fragment === item.version.toString() : true;
+    const isNotObjectState = !('/' + this.route.snapshot.url.map(a => a.path).join('/')).match(this.getLink([item]));
+    return observableOf(isNotObjectState && isLatestVersion);
   }
 
-  getParams(selection: DmsObject[]) {
-    return {};
+  getFragment(selection: DmsObject[]) {
+    const { id, isFolder } = selection[0];
+    return isFolder ? null : id;
   }
 
-  getLink(selection: DmsObject[]): string {
-    const { id, isFolder, contextFolder } = selection[0];
+  getLink(selection: DmsObject[]) {
+    const { id, isFolder, parentId } = selection[0];
     if (isFolder) {
       this.label = this.translate.instant('yuv.framework.action-menu.action.open');
     }
-    return `/object/${id}`;
+    return `/object/${isFolder ? id : parentId}`;
   }
 }

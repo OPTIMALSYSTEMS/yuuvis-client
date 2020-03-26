@@ -21,7 +21,8 @@
 
       <ng-template #link>
         <a class="row link" [routerLink]="entry.action.getLink(entry.availableSelection)"
-          [queryParams]="entry.action.getParams(entry.availableSelection, true)">
+          [fragment]="entry.action.getFragment ? entry.action.getFragment(entry.availableSelection) : null"
+          [queryParams]="entry.action.getParams ? entry.action.getParams(entry.availableSelection) : {}">
           <ng-container *ngTemplateOutlet="default"></ng-container>
         </a>
       </ng-template>
