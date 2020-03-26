@@ -75,7 +75,7 @@ export class ColumnConfigComponent implements OnInit {
   labels: any;
 
   /**
-   * ColumnConfigInput holding the object type (and maybe the context)
+   * ColumnConfigInput holding the object type (and maybe the context) & custom sort options
    * to edit the column configuration for
    */
   @Input() set options({ type, sortOptions }: { type: string | ObjectType; sortOptions?: SortOption[] }) {
@@ -229,13 +229,17 @@ export class ColumnConfigComponent implements OnInit {
           columns: [...res.columns]
         });
         this.checkMoreColumnsAvailable();
-        this.columnConfig.columns.forEach(col => {
-          const sortOption = (sortOptions || []).find(o => col.id === o.field);
-          if ((col.sort || '') !== ((sortOption && sortOption.order) || '')) {
-            col.sort = sortOption ? (sortOption.order as any) : null;
-            this.columnConfigDirty = true;
-          }
-        });
+
+        // preset sort options with custom values
+        if (sortOptions) {
+          this.columnConfig.columns.forEach(col => {
+            const sortOption = sortOptions.find(o => col.id === o.field);
+            if ((col.sort || '') !== ((sortOption && sortOption.order) || '')) {
+              col.sort = sortOption ? (sortOption.order as any) : null;
+              this.columnConfigDirty = true;
+            }
+          });
+        }
       },
       err => {
         console.error(err);
