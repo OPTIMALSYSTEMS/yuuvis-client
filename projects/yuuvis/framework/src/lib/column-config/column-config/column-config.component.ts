@@ -46,7 +46,6 @@ export class ColumnConfigComponent implements OnInit {
     BaseObjectTypeField.OBJECT_ID,
     BaseObjectTypeField.CREATED_BY,
     BaseObjectTypeField.MODIFIED_BY,
-    BaseObjectTypeField.OBJECT_TYPE_ID,
     BaseObjectTypeField.PARENT_ID,
     BaseObjectTypeField.PARENT_OBJECT_TYPE_ID,
     BaseObjectTypeField.PARENT_VERSION_NUMBER,
