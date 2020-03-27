@@ -6,6 +6,12 @@
   .header-icon {
     margin-right: var(--app-pane-padding);
   }
+
+  .mode.current {
+    background-color: var(--panel-divider-color);
+    color: var(--text-color-body);
+  }
+
   ::ng-deep .data-table {
     .rdt-row .head svg {
       display: none;
@@ -13,11 +19,11 @@
     .rdt-row .head:after {
       content: attr(data-version);
       display: flex;
-      font-size: 18px;
+      font-size: calc(24px - 3px * var(--version-length));
       justify-content: center;
       align-items: center;
-      width: 2em;
-      height: 2em;
+      width: 40px;
+      height: 40px;
       border-radius: 50%;
       border: 3px solid;
       border-color: var(--color-primary);

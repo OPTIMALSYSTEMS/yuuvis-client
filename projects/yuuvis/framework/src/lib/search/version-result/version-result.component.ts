@@ -1,10 +1,12 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { IconRegistryService } from '@yuuvis/common-ui';
 import { BaseObjectTypeField, DmsObject, DmsService, SecondaryObjectTypeField, TranslateService } from '@yuuvis/core';
 import { forkJoin, of } from 'rxjs';
+import { ResponsiveDataTableComponent, ViewMode } from '../../components';
 import { ResponsiveTableData } from '../../components/responsive-data-table/responsive-data-table.interface';
-import { refresh, versions } from '../../svg.generated';
+import { listModeDefault, listModeGrid, listModeSimple, refresh, versions } from '../../svg.generated';
+import { GridService } from './../../services/grid/grid.service';
 
 @Component({
   selector: 'yuv-version-result',
@@ -28,7 +30,18 @@ export class VersionResultComponent implements OnInit {
 
   @Output() dmsObjectsSelected = new EventEmitter<DmsObject[]>();
 
+  @ViewChild('dataTable', { static: false }) dataTable: ResponsiveDataTableComponent;
+
   tableData: ResponsiveTableData;
+
+  /**
+   * view mode of the table
+   */
+  @Input() set viewMode(viewMode: ViewMode) {
+    if (this.dataTable) {
+      this.dataTable.viewMode = viewMode || 'horizontal';
+    }
+  }
 
   @Input() layoutOptionsKey: string;
 
@@ -36,10 +49,11 @@ export class VersionResultComponent implements OnInit {
     public translate: TranslateService,
     private dmsService: DmsService,
     private iconRegistry: IconRegistryService,
+    private gridService: GridService,
     private router: Router,
     private route: ActivatedRoute
   ) {
-    this.iconRegistry.registerIcons([refresh, versions]);
+    this.iconRegistry.registerIcons([refresh, versions, listModeDefault, listModeGrid, listModeSimple]);
   }
 
   getVersion(o: any) {
@@ -79,10 +93,22 @@ export class VersionResultComponent implements OnInit {
     }
   }
 
+  getColumnDefinitions() {
+    const defs = this.gridService.getColumnDefinitions();
+    const cols = [
+      BaseObjectTypeField.VERSION_NUMBER,
+      SecondaryObjectTypeField.TITLE,
+      SecondaryObjectTypeField.DESCRIPTION,
+      BaseObjectTypeField.MODIFICATION_DATE
+    ].map(f => defs.find(d => d.field === f));
+    cols[0].pinned = true;
+    return cols;
+  }
+
   refresh() {
     this.dmsService.getDmsObjectVersions(this.dmsObjectID).subscribe(rows => {
       this.tableData = {
-        columns: [{ field: SecondaryObjectTypeField.TITLE }],
+        columns: this.getColumnDefinitions(),
         rows: rows.map(a => a.data).sort((a, b) => this.getVersion(b) - this.getVersion(a)),
         titleField: SecondaryObjectTypeField.TITLE,
         descriptionField: SecondaryObjectTypeField.DESCRIPTION,

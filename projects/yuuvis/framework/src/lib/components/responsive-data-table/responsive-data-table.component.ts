@@ -322,9 +322,10 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
       cellRenderer: params => {
         const objectTypeId = params.data[BaseObjectTypeField.OBJECT_TYPE_ID];
         const version = params.data[BaseObjectTypeField.VERSION_NUMBER];
+        const title = this.systemService.getLocalizedResource(`${objectTypeId}_label`);
         return `
           <div class="rdt-row ${this._currentViewMode === 'horizontal' ? 'row-horizontal' : 'row-grid'}">
-            <div class="head" title="${this.systemService.getLocalizedResource(`${objectTypeId}_label`)}" data-version="${version}">
+            <div class="head" title="${title}" data-version="${version}"  style="--version-length:${version.toString().length}">
             ${this.systemService.getObjectTypeIcon(objectTypeId)}</div>  
             <div class="main">
             <div class="title">${params.data[this._data.titleField] || params.value || ''}</div>
