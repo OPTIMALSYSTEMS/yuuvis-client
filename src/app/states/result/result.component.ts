@@ -4,9 +4,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PendingChangesService, Screen, ScreenService, SearchQuery, TranslateService, Utils } from '@yuuvis/core';
-import { LayoutService } from '@yuuvis/framework';
 import { takeUntilDestroy } from 'take-until-destroy';
-import { AppSearchService } from '../../service/app-search.service';
 
 @Component({
   selector: 'yuv-result',
@@ -19,19 +17,16 @@ export class ResultComponent implements OnInit, OnDestroy {
   searchQuery: SearchQuery;
   selectedItems: string[] = [];
   smallScreen: boolean;
-  // options = {
-  //   'yuv-responsive-master-slave': { useStateLayout: true },
-  //   'yuv-search-result-panel': null,
-  //   'yuv-object-details': null
-  // };
+
+  get layoutOptionsKey() {
+    return `${this.STORAGE_KEY}.${(this.searchQuery && this.searchQuery.targetType) || 'mixed'}`;
+  }
 
   constructor(
     private titleService: Title,
     private screenService: ScreenService,
-    private layoutService: LayoutService,
     public translate: TranslateService,
     private location: PlatformLocation,
-    private appSearch: AppSearchService,
     private pendingChanges: PendingChangesService,
     private title: Title,
     private route: ActivatedRoute,
@@ -51,13 +46,6 @@ export class ResultComponent implements OnInit, OnDestroy {
       this.select([]);
     }
   }
-
-  // onOptionsChanged(options: any, component: string) {
-  //   // do not set this.options because it is an input as well (circle in->out->in)
-  //   const o = { ...this.options };
-  //   o[component] = { ...options };
-  //   this.layoutService.saveComponentLayout(this.getStorageKey(), o).subscribe();
-  // }
 
   select(items: string[]) {
     this.selectedItems = items;
@@ -79,13 +67,7 @@ export class ResultComponent implements OnInit, OnDestroy {
     // extract the query from the route params
     this.route.queryParamMap.pipe(takeUntilDestroy(this)).subscribe(params => {
       this.searchQuery = params.get('query') ? new SearchQuery(JSON.parse(params.get('query'))) : null;
-      // this.appCacheService.getItem(this.getStorageKey()).subscribe(o => (this.options = { ...this.options, ...o }));
-      // this.layoutService.loadComponentLayout(this.getStorageKey()).subscribe(o => (this.options = { ...this.options, ...o }));
     });
-  }
-
-  getLayoutOptionsStorageKey() {
-    return `${this.STORAGE_KEY}.${this.searchQuery && this.searchQuery.types.length === 1 ? this.searchQuery.types[0] : 'mixed'}`;
   }
 
   ngOnDestroy() {}

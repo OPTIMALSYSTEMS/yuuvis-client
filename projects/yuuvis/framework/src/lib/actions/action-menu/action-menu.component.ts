@@ -180,7 +180,7 @@ export class ActionMenuComponent implements OnDestroy {
 
   isLinkAction(action) {
     // used from within template
-    return !!(action && action.getLink && action.getParams);
+    return !!(action && action.getLink);
   }
 
   private clear() {

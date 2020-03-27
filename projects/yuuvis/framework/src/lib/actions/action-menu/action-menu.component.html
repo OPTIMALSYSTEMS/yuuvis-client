@@ -15,11 +15,17 @@
 
     <ng-template #action let-entry let-id>
 
-      <a *ngIf=" isLinkAction(entry.action); else default" class="link"
-        [routerLink]="entry.action.getLink(entry.availableSelection)"
-        [queryParams]="entry.action.getParams(entry.availableSelection, true)">
+      <div class="row" *ngIf="!isLinkAction(entry.action); else link">
         <ng-container *ngTemplateOutlet="default"></ng-container>
-      </a>
+      </div>
+
+      <ng-template #link>
+        <a class="row link" [routerLink]="entry.action.getLink(entry.availableSelection)"
+          [fragment]="entry.action.getFragment ? entry.action.getFragment(entry.availableSelection) : null"
+          [queryParams]="entry.action.getParams ? entry.action.getParams(entry.availableSelection) : {}">
+          <ng-container *ngTemplateOutlet="default"></ng-container>
+        </a>
+      </ng-template>
 
       <ng-template #default>
         <yuv-icon *ngIf="entry.action.iconSrc && !entry.action?.iconId" [svg]="entry.action.iconSrc"></yuv-icon>

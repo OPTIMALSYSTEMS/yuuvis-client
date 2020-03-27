@@ -55,7 +55,11 @@ export class DmsService {
    */
   uploadContent(objectId: string, file: File): Observable<any> {
     const url = `${this.backend.getApiBase(ApiBase.apiWeb)}/dms/update/${objectId}/content`;
-    return this.uploadService.upload(url, file);
+    return this.uploadService.upload(url, file).pipe(
+      tap(() => {
+        this.getDmsObject(objectId).subscribe((_dmsObject: DmsObject) => this.eventService.trigger(YuvEventType.DMS_OBJECT_UPDATED, _dmsObject));
+      })
+    );
   }
 
   /**

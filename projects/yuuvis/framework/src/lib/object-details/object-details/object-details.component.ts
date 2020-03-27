@@ -1,7 +1,8 @@
-import { Component, ContentChildren, HostBinding, Input, QueryList, TemplateRef, ViewChild, ViewChildren } from '@angular/core';
+import { Component, ContentChildren, HostBinding, Input, OnDestroy, QueryList, TemplateRef, ViewChild, ViewChildren } from '@angular/core';
 import { IconRegistryService } from '@yuuvis/common-ui';
-import { ConfigService, DmsObject, DmsService, SystemService, UserService } from '@yuuvis/core';
+import { ConfigService, DmsObject, DmsService, EventService, SystemService, UserService, YuvEvent, YuvEventType } from '@yuuvis/core';
 import { TabPanel } from 'primeng/tabview';
+import { takeUntilDestroy } from 'take-until-destroy';
 import { CellRenderer } from '../../services/grid/grid.cellrenderer';
 import { kebap, noFile, refresh } from '../../svg.generated';
 import { ContentPreviewService } from '../content-preview/service/content-preview.service';
@@ -17,7 +18,7 @@ import { ResponsiveTabContainerComponent } from './../../components/responsive-t
   styleUrls: ['./object-details.component.scss'],
   providers: [ContentPreviewService]
 })
-export class ObjectDetailsComponent {
+export class ObjectDetailsComponent implements OnDestroy {
   @ContentChildren(TabPanel) externalPanels: QueryList<TabPanel>;
   @ViewChildren(TabPanel) viewPanels: QueryList<TabPanel>;
   @ViewChild(ResponsiveTabContainerComponent, { static: false }) tabContainer: ResponsiveTabContainerComponent;
@@ -44,7 +45,7 @@ export class ObjectDetailsComponent {
     this._dmsObject = object;
     this._objectId = object ? object.id : null;
     if (object) {
-      this.objectIcon = CellRenderer.typeCellRenderer(null, this.systemService.getLocalizedResource(`${object.objectTypeId}_label`));
+      this.objectIcon = CellRenderer.typeCellRenderer({ value: object.objectTypeId, context: { system: this.systemService } });
     }
   }
 
@@ -77,7 +78,10 @@ export class ObjectDetailsComponent {
   @Input() layoutOptionsKey: string;
   @Input()
   set activeTabPanel(panel: TabPanel | string) {
-    setTimeout(() => panel && this.tabContainer && this.tabContainer.open(panel), this.tabContainer ? 0 : 200);
+    setTimeout(
+      () => this.tabContainer && this.tabContainer.open(panel || this.tabContainer.mainTabView.tabs.find(t => !t.disabled)),
+      this.tabContainer ? 0 : 200
+    );
   }
 
   @ViewChild('summary', { static: false }) summary: TemplateRef<any>;
@@ -91,6 +95,7 @@ export class ObjectDetailsComponent {
     private dmsService: DmsService,
     private userService: UserService,
     private systemService: SystemService,
+    private eventService: EventService,
     private config: ConfigService,
     private contentPreviewService: ContentPreviewService,
     private iconRegistry: IconRegistryService
@@ -98,6 +103,16 @@ export class ObjectDetailsComponent {
     this.iconRegistry.registerIcons([refresh, kebap, noFile]);
     this.userIsAdmin = this.userService.hasAdministrationRoles;
     this.panelOrder = this.config.get('objectDetailsTabs') || this.panelOrder;
+
+    this.eventService
+      .on(YuvEventType.DMS_OBJECT_UPDATED)
+      .pipe(takeUntilDestroy(this))
+      .subscribe((e: YuvEvent) => {
+        const dmsObject = e.data as DmsObject;
+        if (dmsObject.id === this.dmsObject.id) {
+          this.dmsObject = dmsObject;
+        }
+      });
   }
 
   onFileDropped(file: File) {
@@ -129,4 +144,6 @@ export class ObjectDetailsComponent {
       this.getDmsObject(this._objectId);
     }
   }
+
+  ngOnDestroy() {}
 }

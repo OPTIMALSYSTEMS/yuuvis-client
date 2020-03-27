@@ -15,6 +15,7 @@ import { DeleteComponent } from './actions/delete-action/delete/delete.component
 import { DownloadActionComponent } from './actions/download-action/download-action';
 import { DownloadOriginalActionComponent } from './actions/download-original-action/download-original-action';
 import { DownloadPdfActionComponent } from './actions/download-pdf-action/download-pdf-action';
+import { OpenContextActionComponent } from './actions/open-context-action/open-context-action';
 import { UploadActionComponent } from './actions/upload-action/upload-action';
 import { UploadComponent } from './actions/upload-action/upload/upload.component';
 
@@ -25,7 +26,8 @@ export const entryComponents = [
   DeleteActionComponent,
   DeleteComponent,
   UploadComponent,
-  UploadActionComponent
+  UploadActionComponent,
+  OpenContextActionComponent
 ];
 
 /**
@@ -66,7 +68,8 @@ export const entryComponents = [
     DeleteActionComponent,
     DeleteComponent,
     UploadComponent,
-    UploadActionComponent
+    UploadActionComponent,
+    OpenContextActionComponent
   ],
   entryComponents
 })

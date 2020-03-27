@@ -25,7 +25,7 @@ export class ContentPreviewComponent implements OnInit, OnDestroy, AfterViewInit
     // generate preview URI with streamID to enable refresh if file was changed
     !object || !object.content || !object.content.size
       ? this.contentPreviewService.resetSource()
-      : this.contentPreviewService.createPreviewUrl(object.id, object.content);
+      : this.contentPreviewService.createPreviewUrl(object.id, object.content, object.version);
     this._dmsObject = object;
   }
 

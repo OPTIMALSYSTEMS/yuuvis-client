@@ -1,12 +1,14 @@
-<yuv-responsive-master-slave class="state" (slaveClosed)="onSlaveClosed()" [slaveActive]="dmsObject">
+<yuv-responsive-master-slave class="state" (slaveClosed)="onSlaveClosed()" [slaveActive]="dmsObject"
+  [layoutOptionsKey]="layoutOptionsKey">
   <yuv-version-result class="yuv-master panel" [objectID]="dmsObjectID" [versions]="versions"
-    (dmsObjectsSelected)="dmsObjectsSelected($event)">
+    (dmsObjectsSelected)="dmsObjectsSelected($event)" [layoutOptionsKey]="layoutOptionsKey">
   </yuv-version-result>
 
   <yuv-object-details class="yuv-slave panel" [dmsObject]="dmsObject" [panelOrder]="['summary', 'indexdata', 'preview']"
-    [ngClass]="{ 'changes-active': !!dmsObject2 }" [activeTabPanel]="dmsObject2 ? 'changes' : 'summary'">
+    [layoutOptionsKey]="!dmsObject2 ? layoutOptionsKey : ''" [ngClass]="{ 'changes-active': !!dmsObject2 }"
+    [activeTabPanel]="dmsObject2 ? 'changes' : ''">
     <p-tabPanel [id]="'changes'" [header]="'yuv.client.state.versions.tabs.changes.title' | translate"
-      [headerStyleClass]="'changes'">
+      [headerStyleClass]="'changes'" [disabled]="!dmsObject2">
       <ng-template pTemplate="content">
         <yuv-summary *ngIf="dmsObject2" [compareObjects]="[dmsObject, dmsObject2]" [showExtrasSection]="userIsAdmin">
         </yuv-summary>

@@ -67,9 +67,8 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
     this.layoutService.loadLayoutOptions(lok, 'yuv-responsive-data-table').subscribe((o: ResponsiveDataTableOptions) => {
       this._layoutOptions = o || {};
       if (this.gridOptions && this._data) {
-        this.gridOptions.api.setColumnDefs(
-          this._layoutOptions ? this.applyColDefOptions(this._data.columns, this._layoutOptions.columnWidths) : this._data.columns
-        );
+        this.gridOptions.api.setColumnDefs(this.applyColDefOptions(this._data.columns));
+        this.gridOptions.columnApi.resetColumnState();
       }
       if (o && o.viewMode) {
         this.setupViewMode(o.viewMode);
@@ -199,7 +198,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
         }
       });
     // subscribe to columns beeing resized
-    this.columnResize$.pipe(takeUntilDestroy(this), debounceTime(1000)).subscribe((e: ResizedEvent) => {
+    this.columnResize$.pipe(takeUntilDestroy(this), debounceTime(500)).subscribe((e: ResizedEvent) => {
       if (this.isStandard) {
         this.columnResized.emit({
           columns: this.gridOptions.columnApi.getColumnState().map(columnState => ({
@@ -207,12 +206,11 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
             width: columnState.width
           }))
         });
-        this.layoutService
-          .saveLayoutOptions(this._layoutOptionsKey, 'yuv-responsive-data-table', {
-            viewMode: this.viewMode,
-            columnWidths: Utils.arrayToObject(this.gridOptions.columnApi.getColumnState(), 'colId', 'width')
-          })
-          .subscribe();
+        this._layoutOptions = {
+          viewMode: this.viewMode,
+          columnWidths: Utils.arrayToObject(this.gridOptions.columnApi.getColumnState(), 'colId', 'width')
+        };
+        this.layoutService.saveLayoutOptions(this._layoutOptionsKey, 'yuv-responsive-data-table', { ...this._layoutOptions }).subscribe();
       }
     });
 
@@ -270,11 +268,11 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
     }
   }
 
-  private applyColDefOptions(columns: ColDef[], columnWidths: any): ColDef[] {
-    if (this._layoutOptions.viewMode === 'standard' && columnWidths) {
+  private applyColDefOptions(columns: ColDef[]): ColDef[] {
+    if (this._layoutOptions && this._layoutOptions.columnWidths) {
       columns.forEach(c => {
-        if (columnWidths[c.colId]) {
-          c.width = columnWidths[c.colId];
+        if (this._layoutOptions.columnWidths[c.colId]) {
+          c.width = this._layoutOptions.columnWidths[c.colId];
         }
       });
     }
@@ -290,9 +288,10 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
 
       const columns = this.isSmall ? [this.getSmallSizeColDef()] : this._data.columns;
       if (JSON.stringify(this.gridOptions.columnDefs) !== JSON.stringify(columns)) {
-        const cols = this._layoutOptions ? this.applyColDefOptions(columns, this._layoutOptions.columnWidths) : columns;
+        const cols = this.applyColDefOptions(columns);
         this.gridOptions.columnDefs = cols;
         this.gridOptions.api.setColumnDefs(cols);
+        this.gridOptions.columnApi.resetColumnState();
       }
 
       if (this.isStandard && this._data.sortModel) {
@@ -323,9 +322,10 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
       cellRenderer: params => {
         const objectTypeId = params.data[BaseObjectTypeField.OBJECT_TYPE_ID];
         const version = params.data[BaseObjectTypeField.VERSION_NUMBER];
+        const title = this.systemService.getLocalizedResource(`${objectTypeId}_label`);
         return `
           <div class="rdt-row ${this._currentViewMode === 'horizontal' ? 'row-horizontal' : 'row-grid'}">
-            <div class="head" title="${this.systemService.getLocalizedResource(`${objectTypeId}_label`)}" data-version="${version}">
+            <div class="head" title="${title}" data-version="${version}"  style="--version-length:${version.toString().length}">
             ${this.systemService.getObjectTypeIcon(objectTypeId)}</div>  
             <div class="main">
             <div class="title">${params.data[this._data.titleField] || params.value || ''}</div>

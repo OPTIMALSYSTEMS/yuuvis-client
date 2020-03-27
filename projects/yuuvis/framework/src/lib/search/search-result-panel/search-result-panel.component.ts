@@ -32,10 +32,9 @@ export class SearchResultPanelComponent {
    */
   @Input() set query(searchQuery: SearchQuery) {
     this._searchQuery = searchQuery;
-    this.columnConfigInput = searchQuery && searchQuery.types && searchQuery.types.length === 1 ? searchQuery.types[0] : this.systemService.getBaseType();
-    if (searchQuery && searchQuery.types && searchQuery.types.length === 1) {
-      this.columnConfigInput = searchQuery.types[0];
-    }
+    const type = (searchQuery && searchQuery.targetType) || this.systemService.getBaseType();
+    this.columnConfigInput = { type, sortOptions: searchQuery && searchQuery.sortOptions };
+
     if (searchQuery) {
       this.generateQueryDescription();
     }
@@ -115,7 +114,7 @@ export class SearchResultPanelComponent {
   }
 
   onQueryChangedFromWithin(searchQuery: SearchQuery) {
-    this.query = searchQuery;
+    this.columnConfigInput.sortOptions = searchQuery && searchQuery.sortOptions;
     this.queryChanged.emit(searchQuery);
   }
 

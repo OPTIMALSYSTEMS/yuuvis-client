@@ -8,6 +8,7 @@ import {
   ContentStreamField,
   ObjectType,
   ObjectTypeField,
+  SortOption,
   SystemService,
   SystemType,
   TranslateService,
@@ -46,7 +47,6 @@ export class ColumnConfigComponent implements OnInit {
     BaseObjectTypeField.OBJECT_ID,
     BaseObjectTypeField.CREATED_BY,
     BaseObjectTypeField.MODIFIED_BY,
-    BaseObjectTypeField.OBJECT_TYPE_ID,
     BaseObjectTypeField.PARENT_ID,
     BaseObjectTypeField.PARENT_OBJECT_TYPE_ID,
     BaseObjectTypeField.PARENT_VERSION_NUMBER,
@@ -75,16 +75,17 @@ export class ColumnConfigComponent implements OnInit {
   labels: any;
 
   /**
-   * ColumnConfigInput holding the object type (and maybe the context)
+   * ColumnConfigInput holding the object type (and maybe the context) & custom sort options
    * to edit the column configuration for
    */
-  @Input() set type(input: string | ObjectType) {
-    if (input) {
+  @Input() set options(options: { type: string | ObjectType; sortOptions?: SortOption[] }) {
+    const type = options && options.type;
+    if (type) {
       this.columnConfigDirty = false;
-      this._objectType = typeof input === 'string' ? this.fetchObjectType(input) : input;
+      this._objectType = typeof type === 'string' ? this.fetchObjectType(type) : type;
       this.title = this._objectType.id === SystemType.OBJECT ? this.translate.instant('yuv.framework.column-config.type.mixed.label') : this._objectType.label;
       this._objectTypeFields = this._objectType ? this.filterFields(this._objectType.fields) : [];
-      this.fetchColumnConfig(this._objectType ? this._objectType.id : null);
+      this.fetchColumnConfig(this._objectType ? this._objectType.id : null, options.sortOptions);
     }
   }
   /**
@@ -179,7 +180,7 @@ export class ColumnConfigComponent implements OnInit {
 
   revert() {
     this.error = null;
-    this.columnConfig = this.cloneConfig(this._loadedColumnConfig);
+    this.resetConfig({ ...this._loadedColumnConfig });
     this.columnConfigDirty = false;
     this.checkMoreColumnsAvailable();
   }
@@ -191,7 +192,7 @@ export class ColumnConfigComponent implements OnInit {
       res => {
         this.busy = false;
         this.configSaved.emit(this.columnConfig);
-        this._loadedColumnConfig = this.cloneConfig(this.columnConfig);
+        this.resetConfig(this.columnConfig);
         this.columnConfigDirty = false;
       },
       err => {
@@ -202,11 +203,12 @@ export class ColumnConfigComponent implements OnInit {
     );
   }
 
-  private cloneConfig(config: ColumnConfig): ColumnConfig {
-    return {
+  private resetConfig(config: ColumnConfig): ColumnConfig {
+    this._loadedColumnConfig = {
       type: config.type,
-      columns: [...config.columns]
+      columns: config.columns.map(c => ({ ...c }))
     };
+    return (this.columnConfig = config);
   }
 
   private filterFields(fields: ObjectTypeField[]) {
@@ -217,28 +219,37 @@ export class ColumnConfigComponent implements OnInit {
     this.moreColumnsAvailable = this._objectTypeFields.length > this.columnConfig.columns.length;
   }
 
-  private fetchColumnConfig(objectTypeId: string): void {
+  private fetchColumnConfig(objectTypeId: string, sortOptions: SortOption[]): void {
     this.busy = true;
     this.error = null;
     this.userConfig.getColumnConfig(objectTypeId || SystemType.OBJECT).subscribe(
       res => {
         this.busy = false;
-        this.columnConfig = {
+        this.resetConfig({
           type: objectTypeId,
           columns: [...res.columns]
-        };
-        this._loadedColumnConfig = this.cloneConfig(this.columnConfig);
+        });
         this.checkMoreColumnsAvailable();
+
+        // preset sort options with custom values
+        if (sortOptions) {
+          this.columnConfig.columns.forEach(col => {
+            const sortOption = sortOptions.find(o => col.id === o.field);
+            if ((col.sort || '') !== ((sortOption && sortOption.order) || '')) {
+              col.sort = sortOption ? (sortOption.order as any) : null;
+              this.columnConfigDirty = true;
+            }
+          });
+        }
       },
       err => {
         console.error(err);
         this.busy = false;
         this.error = this.labels.error.load;
-        this.columnConfig = {
+        this.resetConfig({
           type: objectTypeId,
           columns: []
-        };
-        this._loadedColumnConfig = this.cloneConfig(this.columnConfig);
+        });
         this.checkMoreColumnsAvailable();
       }
     );

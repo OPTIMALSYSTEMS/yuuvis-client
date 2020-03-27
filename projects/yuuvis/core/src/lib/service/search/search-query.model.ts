@@ -9,6 +9,9 @@ export class SearchQuery {
   aggs: string[];
   from: number;
   types: string[] = [];
+  get targetType(): string | null {
+    return this.types && this.types.length === 1 ? this.types[0] : null;
+  }
   filters: SearchFilter[] = [];
   sortOptions: SortOption[] = [];
 

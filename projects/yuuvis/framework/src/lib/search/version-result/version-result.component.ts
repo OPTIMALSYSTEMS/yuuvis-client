@@ -1,9 +1,12 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { IconRegistryService } from '@yuuvis/common-ui';
 import { BaseObjectTypeField, DmsObject, DmsService, SecondaryObjectTypeField, TranslateService } from '@yuuvis/core';
 import { forkJoin, of } from 'rxjs';
+import { ResponsiveDataTableComponent, ViewMode } from '../../components';
 import { ResponsiveTableData } from '../../components/responsive-data-table/responsive-data-table.interface';
-import { refresh, versions } from '../../svg.generated';
+import { listModeDefault, listModeGrid, listModeSimple, refresh, versions } from '../../svg.generated';
+import { GridService } from './../../services/grid/grid.service';
 
 @Component({
   selector: 'yuv-version-result',
@@ -22,14 +25,35 @@ export class VersionResultComponent implements OnInit {
 
   @Input() set versions(vs: string[]) {
     this.selection = (vs || []).filter(v => v).map(v => this.getRowNodeId(v));
+    this.setLatestVersion();
   }
 
   @Output() dmsObjectsSelected = new EventEmitter<DmsObject[]>();
 
+  @ViewChild('dataTable', { static: false }) dataTable: ResponsiveDataTableComponent;
+
   tableData: ResponsiveTableData;
 
-  constructor(public translate: TranslateService, private dmsService: DmsService, private iconRegistry: IconRegistryService) {
-    this.iconRegistry.registerIcons([refresh, versions]);
+  /**
+   * view mode of the table
+   */
+  @Input() set viewMode(viewMode: ViewMode) {
+    if (this.dataTable) {
+      this.dataTable.viewMode = viewMode || 'horizontal';
+    }
+  }
+
+  @Input() layoutOptionsKey: string;
+
+  constructor(
+    public translate: TranslateService,
+    private dmsService: DmsService,
+    private iconRegistry: IconRegistryService,
+    private gridService: GridService,
+    private router: Router,
+    private route: ActivatedRoute
+  ) {
+    this.iconRegistry.registerIcons([refresh, versions, listModeDefault, listModeGrid, listModeSimple]);
   }
 
   getVersion(o: any) {
@@ -41,10 +65,11 @@ export class VersionResultComponent implements OnInit {
   }
 
   select(items: any[]) {
-    const [v1, v2] = items
-      .slice(0, 2)
-      .map(a => this.getVersion(a))
-      .sort(); // lower version first
+    const vs = items.map(a => this.getVersion(a));
+    const [v1, v2] = [
+      vs.shift(), // focused version first
+      vs.sort().pop() // highest version second
+    ].sort(); // compare lower version against higher
 
     if (items.length > 2) {
       // reset selection
@@ -57,16 +82,40 @@ export class VersionResultComponent implements OnInit {
     }
   }
 
+  setLatestVersion() {
+    if (this.tableData && this.tableData.rows) {
+      this.router.navigate([], {
+        fragment: this.getVersion(this.tableData.rows[0]).toString(),
+        replaceUrl: false,
+        relativeTo: this.route,
+        queryParamsHandling: 'preserve'
+      });
+    }
+  }
+
+  getColumnDefinitions() {
+    const defs = this.gridService.getColumnDefinitions();
+    const cols = [
+      BaseObjectTypeField.VERSION_NUMBER,
+      SecondaryObjectTypeField.TITLE,
+      SecondaryObjectTypeField.DESCRIPTION,
+      BaseObjectTypeField.MODIFICATION_DATE
+    ].map(f => defs.find(d => d.field === f));
+    cols[0].pinned = true;
+    return cols;
+  }
+
   refresh() {
     this.dmsService.getDmsObjectVersions(this.dmsObjectID).subscribe(rows => {
       this.tableData = {
-        columns: [{ field: SecondaryObjectTypeField.TITLE }],
+        columns: this.getColumnDefinitions(),
         rows: rows.map(a => a.data).sort((a, b) => this.getVersion(b) - this.getVersion(a)),
         titleField: SecondaryObjectTypeField.TITLE,
         descriptionField: SecondaryObjectTypeField.DESCRIPTION,
         selectType: 'multiple',
-        gridOptions: { getRowNodeId: o => this.getRowNodeId(o) }
+        gridOptions: { getRowNodeId: o => this.getRowNodeId(o), rowMultiSelectWithClick: true }
       };
+      this.setLatestVersion();
     });
   }
 
