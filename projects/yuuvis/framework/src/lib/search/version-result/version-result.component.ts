@@ -23,6 +23,7 @@ export class VersionResultComponent implements OnInit {
 
   @Input() set versions(vs: string[]) {
     this.selection = (vs || []).filter(v => v).map(v => this.getRowNodeId(v));
+    this.setLatestVersion();
   }
 
   @Output() dmsObjectsSelected = new EventEmitter<DmsObject[]>();
@@ -67,6 +68,17 @@ export class VersionResultComponent implements OnInit {
     }
   }
 
+  setLatestVersion() {
+    if (this.tableData && this.tableData.rows) {
+      this.router.navigate([], {
+        fragment: this.getVersion(this.tableData.rows[0]).toString(),
+        replaceUrl: false,
+        relativeTo: this.route,
+        queryParamsHandling: 'preserve'
+      });
+    }
+  }
+
   refresh() {
     this.dmsService.getDmsObjectVersions(this.dmsObjectID).subscribe(rows => {
       this.tableData = {
@@ -77,12 +89,7 @@ export class VersionResultComponent implements OnInit {
         selectType: 'multiple',
         gridOptions: { getRowNodeId: o => this.getRowNodeId(o), rowMultiSelectWithClick: true }
       };
-      this.router.navigate([], {
-        fragment: this.getVersion(this.tableData.rows[0]).toString(),
-        replaceUrl: false,
-        relativeTo: this.route,
-        queryParamsHandling: 'preserve'
-      });
+      this.setLatestVersion();
     });
   }
 
