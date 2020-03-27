@@ -120,8 +120,7 @@
         flex-basis: auto;
         margin: 0;
         padding: calc(var(--app-pane-padding) / 2);
-        border: 1px solid rgba(0, 0, 0, 0.1);
-        background-color: #fff;
+        border: 1px solid var(--item-focus-border-color);
 
         &.first {
           border-radius: 2px 0 0 2px;
