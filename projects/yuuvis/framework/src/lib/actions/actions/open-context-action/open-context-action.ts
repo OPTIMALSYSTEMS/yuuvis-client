@@ -27,20 +27,20 @@ export class OpenContextActionComponent extends DmsObjectTarget implements LinkA
 
   isExecutable(item: DmsObject): Observable<boolean> {
     const isLatestVersion = this.route.snapshot.queryParams.version ? this.route.snapshot.fragment === item.version.toString() : true;
-    const isNotObjectState = !('/' + this.route.snapshot.url.map(a => a.path).join('/')).match(this.getLink([item]));
-    return observableOf(isNotObjectState && isLatestVersion);
+    const isNotSameObjectState = !('/' + this.route.snapshot.url.map(a => a.path).join('/')).match(this.getLink([item]));
+    return observableOf(isNotSameObjectState && isLatestVersion);
   }
 
   getFragment(selection: DmsObject[]) {
-    const { id, isFolder } = selection[0];
-    return isFolder ? null : id;
+    const { id, isFolder, parentId } = selection[0];
+    return isFolder || !parentId ? null : id;
   }
 
   getLink(selection: DmsObject[]) {
     const { id, isFolder, parentId } = selection[0];
-    if (isFolder) {
+    if (isFolder || !parentId) {
       this.label = this.translate.instant('yuv.framework.action-menu.action.open');
     }
-    return `/object/${isFolder ? id : parentId}`;
+    return `/object/${isFolder || !parentId ? id : parentId}`;
   }
 }
