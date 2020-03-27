@@ -11,10 +11,10 @@ export class ContentPreviewService {
 
   constructor(private location: PlatformLocation, private userService: UserService, private layoutService: LayoutService) {}
 
-  private createPath(id: string): { root: string; path: string } {
+  private createPath(id: string, version?: number): { root: string; path: string } {
     let root = `${this.location.protocol}//${this.location.hostname}`;
     root = this.location.port.length ? `${root}:${this.location.port}` : root;
-    const path = `${root}/${ApiBase.apiWeb}/dms/${id}/content?asdownload=false`;
+    const path = `${root}/${ApiBase.apiWeb}/dms/${id}/content?asdownload=false${version ? '&version=' + version : ''}`;
     return { root, path };
   }
 
@@ -26,9 +26,9 @@ export class ContentPreviewService {
     return { darkMode, accentColor, direction, lang };
   }
 
-  createPreviewUrl(id: string, content: DmsObjectContent): void {
+  createPreviewUrl(id: string, content: DmsObjectContent, version?: number): void {
     const { mimeType, size, contentStreamId, fileName } = content;
-    const { root, path } = this.createPath(id);
+    const { root, path } = this.createPath(id, version);
     const fileExtension = fileName.includes('.') ? fileName.split('.').pop() : '';
     this.previewSrcSource.next(id ? Utils.buildUri(`${root}/viewer/`, { mimeType, path, fileExtension, size, contentStreamId, ...this.createSettings() }) : '');
   }
