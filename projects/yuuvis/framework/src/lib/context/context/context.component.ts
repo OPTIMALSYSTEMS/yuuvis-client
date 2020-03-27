@@ -13,7 +13,6 @@ export class ContextComponent implements OnInit {
   activeTabIndex: number;
   contextChildrenQuery: SearchQuery;
   recentItemsQuery: SearchQuery;
-  // selectedItem: string;
 
   layoutOptions = {
     'yuv-search-result-all': null,

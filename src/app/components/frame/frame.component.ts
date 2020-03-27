@@ -32,11 +32,7 @@ export class FrameComponent implements OnInit {
   showSearch: boolean;
   user: YuvUser;
   disabledContextSearch: boolean;
-  // query applied to quick search component (switches
-  // from appQuery to contextQuery depending on the current state)
-  // quickSearchQuery: SearchQuery;
   appQuery: SearchQuery;
-  // contextQuery: SearchQuery;
 
   context: string;
 
@@ -125,10 +121,6 @@ export class FrameComponent implements OnInit {
     }
   }
 
-  // getQuickSearchQuery() {
-  //   return this.context && this.disabledContextSearch ? this.contextQuery : this.appQuery;
-  // }
-
   onQuickSearchToggleContextSearch(on: boolean) {
     this.disabledContextSearch = on;
   }
@@ -182,15 +174,11 @@ export class FrameComponent implements OnInit {
       const ctx = url.substring(contextUriPrefix.length, eIdx === -1 ? url.length : eIdx);
       if (ctx !== this.context) {
         this.context = ctx;
-        // every new context will get a clean internal query
-        // this.contextQuery = new SearchQuery();
         this.logger.debug('frame: entering context search');
-        // this.quickSearchQuery = this.contextQuery;
       }
     } else {
       this.context = null;
       this.logger.debug('frame: entering app search');
-      // this.quickSearchQuery = this.appQuery;
     }
   }
 
