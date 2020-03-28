@@ -127,6 +127,10 @@ export class SearchResultComponent implements OnDestroy {
     }
   }
 
+  get viewMode() {
+    return this.dataTable ? this.dataTable.viewMode : null;
+  }
+
   constructor(
     @Attribute('applyColumnConfig') public applyColumnConfig: boolean,
     private gridService: GridService,
