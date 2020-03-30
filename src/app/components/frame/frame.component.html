@@ -28,11 +28,11 @@
             <button class="close" (click)="toggleSearch(false)">
               <yuv-icon icon="close"></yuv-icon>
             </button>
-            <!-- <yuv-quick-search [inline]="true" [context]="context" [query]="appQuery"
+            <yuv-quick-search [inline]="true" [context]="context" [query]="appQuery"
               (querySubmit)="onQuickSearchQuery($event)">
-            </yuv-quick-search> -->
-            <yuv-quick-search [inline]="true" [query]="appQuery" (querySubmit)="onQuickSearchQuery($event)">
             </yuv-quick-search>
+            <!-- <yuv-quick-search [inline]="true" [query]="appQuery" (querySubmit)="onQuickSearchQuery($event)">
+            </yuv-quick-search> -->
           </div>
         </ng-template>
       </ng-container>
