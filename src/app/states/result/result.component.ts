@@ -5,6 +5,7 @@ import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PendingChangesService, Screen, ScreenService, SearchQuery, TranslateService, Utils } from '@yuuvis/core';
 import { takeUntilDestroy } from 'take-until-destroy';
+import { AppSearchService } from '../../service/app-search.service';
 
 @Component({
   selector: 'yuv-result',
@@ -25,6 +26,7 @@ export class ResultComponent implements OnInit, OnDestroy {
   constructor(
     private titleService: Title,
     private screenService: ScreenService,
+    private appSearch: AppSearchService,
     public translate: TranslateService,
     private location: PlatformLocation,
     private pendingChanges: PendingChangesService,
@@ -67,6 +69,7 @@ export class ResultComponent implements OnInit, OnDestroy {
     // extract the query from the route params
     this.route.queryParamMap.pipe(takeUntilDestroy(this)).subscribe(params => {
       this.searchQuery = params.get('query') ? new SearchQuery(JSON.parse(params.get('query'))) : null;
+      this.appSearch.setQuery(this.searchQuery);
     });
   }
 

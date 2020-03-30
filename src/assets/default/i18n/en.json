@@ -1,6 +1,6 @@
 {
   "yuv.client.state.object.tabs.children.title": "Content",
-  "yuv.client.state.object.tabs.recent.title": "Recent objects",
+  "yuv.client.state.object.tabs.recent.title": "Last viewed",
   "yuv.client.state.object.tabs.search-result.title": "Search result",
   "yuv.framework.action-menu.action.delete.dms.object.confirm.message": "Are you sure you want to delete '{{item}}'?",
   "yuv.framework.action-menu.action.delete.dms.object.description": "Deletes the object.",

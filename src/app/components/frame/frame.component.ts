@@ -7,6 +7,7 @@ import {
   BaseObjectTypeField,
   ConnectionService,
   ConnectionState,
+  Logger,
   SearchFilter,
   SearchQuery,
   UploadResult,
@@ -30,7 +31,9 @@ export class FrameComponent implements OnInit {
   screenSmall: boolean;
   showSearch: boolean;
   user: YuvUser;
+  disabledContextSearch: boolean;
   appQuery: SearchQuery;
+
   context: string;
 
   @HostListener('window:dragover', ['$event']) onDragOver(e) {
@@ -53,6 +56,7 @@ export class FrameComponent implements OnInit {
   constructor(
     private router: Router,
     private route: ActivatedRoute,
+    private logger: Logger,
     private layoutService: LayoutService,
     private update: SwUpdate,
     private appSearch: AppSearchService,
@@ -117,6 +121,10 @@ export class FrameComponent implements OnInit {
     }
   }
 
+  onQuickSearchToggleContextSearch(on: boolean) {
+    this.disabledContextSearch = on;
+  }
+
   async onQuickSearchQuery(query: SearchQuery) {
     // As app bar search is available anywhere inside the app, searches will be
     // set up to the global app search in order to be persisted through states.
@@ -128,6 +136,7 @@ export class FrameComponent implements OnInit {
     // Being within a context does not mean that the query is restricted to this
     // context (user decides). So we have to check based on the provided filters
     if (withinContext) {
+      // this.contextQuery = query;
       await this.router.navigate([], {
         relativeTo: this.route,
         // replace url if there was a former search already
@@ -162,9 +171,14 @@ export class FrameComponent implements OnInit {
       const hashIdx = url.indexOf('#');
       const qmIdx = url.indexOf('?');
       const eIdx = hashIdx > qmIdx ? qmIdx : hashIdx;
-      this.context = url.substring(contextUriPrefix.length, eIdx === -1 ? url.length : eIdx);
+      const ctx = url.substring(contextUriPrefix.length, eIdx === -1 ? url.length : eIdx);
+      if (ctx !== this.context) {
+        this.context = ctx;
+        this.logger.debug('frame: entering context search');
+      }
     } else {
       this.context = null;
+      this.logger.debug('frame: entering app search');
     }
   }
 
@@ -177,7 +191,9 @@ export class FrameComponent implements OnInit {
         }
       }
     });
-    this.appSearch.query$.subscribe((q: SearchQuery) => (this.appQuery = q));
+    this.appSearch.query$.subscribe((q: SearchQuery) => {
+      this.appQuery = q;
+    });
     this.router.events
       .pipe(
         // tap(e => console.log(e)),

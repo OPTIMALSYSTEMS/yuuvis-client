@@ -65,7 +65,7 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
   searchHasResults: boolean = true;
   settingUpQuery: boolean;
   searchWithinContext: boolean = true;
-  searchQuery: SearchQuery;
+  searchQuery: SearchQuery = new SearchQuery();
   autoSuggestions = [];
   autoSelectTimer: any;
 
@@ -77,6 +77,9 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
 
   private TYPES = '@';
   private TYPE_FIELDS = '#';
+  private _context: string;
+  // persist former search while switching between regular and context search
+  private _tmpSearch: any;
   lastAutoQuery: any = {};
 
   selectedObjectTypes: string[] = [];
@@ -111,7 +114,21 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
   /**
    * ID of a context folder to restrict search to.
    */
-  @Input() context: string;
+  @Input() set context(c: string) {
+    if (c && c !== this.context) {
+      this._context = c;
+      this._tmpSearch = this.searchQuery ? this.searchQuery.toQueryJson() : null;
+      // enable context search
+      const contextSearch = new SearchQuery();
+      contextSearch.addFilter(new SearchFilter(BaseObjectTypeField.PARENT_ID, SearchFilter.OPERATOR.EQUAL, this.context));
+      this.setQuery(contextSearch);
+    } else if (!c && this._tmpSearch) {
+      this.setQuery(new SearchQuery(this._tmpSearch));
+    }
+  }
+  get context() {
+    return this._context;
+  }
 
   @Input() set inline(i: boolean) {
     this._inline = i;
@@ -122,7 +139,12 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
    */
   @Input() set query(q: SearchQuery) {
     if (q) {
-      this.setQuery(q);
+      if (this.context && this.searchWithinContext) {
+        // if context has been already set query goes to tmp
+        this._tmpSearch = q.toQueryJson();
+      } else {
+        this.setQuery(q);
+      }
     }
   }
 
@@ -154,6 +176,35 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
     this.searchForm = this.fb.group({
       term: [''],
       searchWithinContext: [false]
+    });
+
+    this.systemService.system$.subscribe(_ => {
+      const types = this.systemService
+        .getObjectTypes()
+        .filter(t => !this.skipTypes.includes(t.id))
+        .map(ot => ({
+          id: ot.id,
+          label: this.systemService.getLocalizedResource(`${ot.id}_label`),
+          value: ot
+        }))
+        .sort(Utils.sortValues('label'));
+      this.availableObjectTypes = types;
+      let i = 0;
+      this.availableObjectTypeGroups = this.systemService.getGroupedObjectTypes().map((otg: ObjectTypeGroup) => ({
+        id: `${i++}`,
+        label: otg.label,
+        items: otg.types.map((ot: ObjectType) => ({
+          id: ot.id,
+          label: this.systemService.getLocalizedResource(`${ot.id}_label`),
+          highlight: ot.isFolder,
+          svg: this.systemService.getObjectTypeIcon(ot.id),
+          value: ot
+        }))
+      }));
+      // this.onObjectTypesSelected([], false);
+      this.selectedObjectTypes = [];
+      this.objectTypeSelectLabel = this.translate.instant('yuv.framework.quick-search.type.all');
+      this.setAvailableObjectTypesFields();
     });
 
     this.searchForm.valueChanges.pipe(distinctUntilChanged(), debounceTime(500)).subscribe(({ term }) => {
@@ -383,10 +434,14 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
   setQuery(q: SearchQuery) {
     if (q && JSON.stringify(q) !== JSON.stringify(this.searchQuery)) {
       this.settingUpQuery = true;
-      this.searchQuery = q;
+      // inline mode does not use aggregations
+      if (this._inline) {
+        q.aggs = [];
+      }
       this.resetObjectTypes();
       this.resetObjectTypeFields();
 
+      this.searchQuery = q;
       this.searchForm.patchValue({ term: { label: q.term } }, { emitEvent: false });
 
       // setup target object types
@@ -456,21 +511,10 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
   }
 
   toggleSearchWithinContext() {
-    if (this.searchWithinContext) {
-      this.searchQuery.removeFilter(BaseObjectTypeField.PARENT_ID);
-    } else {
-      this.searchQuery.addFilter(new SearchFilter(BaseObjectTypeField.PARENT_ID, SearchFilter.OPERATOR.EQUAL, this.context));
-    }
     this.searchWithinContext = !this.searchWithinContext;
-    this.aggregate();
-  }
-
-  private newQuery(): SearchQuery {
-    const q = new SearchQuery();
-    if (this.context && this.searchWithinContext) {
-      q.addFilter(new SearchFilter(BaseObjectTypeField.PARENT_ID, SearchFilter.OPERATOR.EQUAL, this.context));
-    }
-    return q;
+    const s = { ...this.searchQuery.toQueryJson() };
+    this.setQuery(new SearchQuery({ ...this._tmpSearch }));
+    this._tmpSearch = s;
   }
 
   /**
@@ -525,7 +569,7 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
    * Reset the whole search form
    */
   reset() {
-    this.searchQuery = this.newQuery();
+    this.searchQuery = new SearchQuery();
     this.resultCount = null;
     this.resetObjectTypes();
     this.resetObjectTypeFields();
@@ -556,34 +600,7 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
     }
   }
 
-  ngOnInit() {
-    this.searchQuery = this.newQuery();
-    this.systemService.system$.subscribe(_ => {
-      const types = this.systemService
-        .getObjectTypes()
-        .filter(t => !this.skipTypes.includes(t.id))
-        .map(ot => ({
-          id: ot.id,
-          label: this.systemService.getLocalizedResource(`${ot.id}_label`),
-          value: ot
-        }))
-        .sort(Utils.sortValues('label'));
-      this.availableObjectTypes = types;
-      let i = 0;
-      this.availableObjectTypeGroups = this.systemService.getGroupedObjectTypes().map((otg: ObjectTypeGroup) => ({
-        id: `${i++}`,
-        label: otg.label,
-        items: otg.types.map((ot: ObjectType) => ({
-          id: ot.id,
-          label: this.systemService.getLocalizedResource(`${ot.id}_label`),
-          highlight: ot.isFolder,
-          svg: this.systemService.getObjectTypeIcon(ot.id),
-          value: ot
-        }))
-      }));
-      this.onObjectTypesSelected([], false);
-    });
-  }
+  ngOnInit() {}
 }
 
 export interface ObjectTypeAggregation {
