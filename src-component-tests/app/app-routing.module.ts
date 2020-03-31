@@ -22,6 +22,7 @@ import { TestSearchResultComponent } from './test-search-result/test-search-resu
 import { TestSummaryComponent } from './test-summary/test-summary.component';
 import { TestUploadProgressOverlayComponent } from './test-upload-progress-overlay/test-upload-progress-overlay.component';
 import { TestUserAvatarComponent } from './test-user-avatar/test-user-avatar.component';
+import { TestVersionListComponent } from './test-version-list/test-version-list.component';
 
 const routes: Routes = [
   { path: 'action-menu', component: TestActionMenuComponent },
@@ -45,6 +46,7 @@ const routes: Routes = [
   { path: 'summary', component: TestSummaryComponent },
   { path: 'user-avatar', component: TestUserAvatarComponent },
   { path: 'upload-progress-overlay', component: TestUploadProgressOverlayComponent },
+  { path: 'version-list', component: TestVersionListComponent },
   { path: 'icons', component: TestIconsComponent }
 ];
 

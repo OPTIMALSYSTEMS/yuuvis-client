@@ -116,16 +116,20 @@ export class VersionListComponent {
   }
 
   refresh() {
-    this.dmsService.getDmsObjectVersions(this.dmsObjectID).subscribe((rows: DmsObject[]) => {
-      const objectTypeId = rows && rows.length ? rows[0].objectTypeId : null;
-      this.tableData = {
-        columns: this.getColumnDefinitions(objectTypeId),
-        rows: rows.map(a => a.data).sort((a, b) => this.getVersion(b) - this.getVersion(a)),
-        titleField: SecondaryObjectTypeField.TITLE,
-        descriptionField: SecondaryObjectTypeField.DESCRIPTION,
-        selectType: 'multiple',
-        gridOptions: { getRowNodeId: o => this.getRowNodeId(o), rowMultiSelectWithClick: true }
-      };
-    });
+    if (this.dmsObjectID) {
+      this.dmsService.getDmsObjectVersions(this.dmsObjectID).subscribe((rows: DmsObject[]) => {
+        const objectTypeId = rows && rows.length ? rows[0].objectTypeId : null;
+        this.tableData = {
+          columns: this.getColumnDefinitions(objectTypeId),
+          rows: rows.map(a => a.data).sort((a, b) => this.getVersion(b) - this.getVersion(a)),
+          titleField: SecondaryObjectTypeField.TITLE,
+          descriptionField: SecondaryObjectTypeField.DESCRIPTION,
+          selectType: 'multiple',
+          gridOptions: { getRowNodeId: o => this.getRowNodeId(o), rowMultiSelectWithClick: true }
+        };
+      });
+    } else {
+      this.tableData = null;
+    }
   }
 }

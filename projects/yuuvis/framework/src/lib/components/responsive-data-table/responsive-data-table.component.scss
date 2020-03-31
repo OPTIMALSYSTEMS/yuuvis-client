@@ -9,6 +9,14 @@ $range-selection-highlight-color: $primary-color;
   yuv-responsive-data-table {
     // versions data table
     &.versions {
+      .rdt-row.row-grid.version {
+        &::after {
+          position: absolute;
+          right: var(--app-pane-padding);
+          top: var(--app-pane-padding);
+          margin: 0;
+        }
+      }
       .rdt-row.version {
         &::after {
           content: attr(data-version);
