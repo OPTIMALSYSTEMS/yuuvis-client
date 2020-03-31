@@ -168,11 +168,8 @@ export class FrameComponent implements OnInit {
     const contextUriPrefix = '/object/';
     // getting a #standalone fragment means that we got an object without context
     if (url.startsWith(contextUriPrefix) && url.indexOf('#standalone') === -1) {
-      const hashIdx = url.indexOf('#');
-      const qmIdx = url.indexOf('?');
-      const eIdx = hashIdx > qmIdx ? qmIdx : hashIdx;
-      const ctx = url.substring(contextUriPrefix.length, eIdx === -1 ? url.length : eIdx);
-      if (ctx !== this.context) {
+      const ctx = url.match(/\/object\/([^#?]+)/)[1];
+      if (ctx && ctx !== this.context) {
         this.context = ctx;
         this.logger.debug('frame: entering context search');
       }
