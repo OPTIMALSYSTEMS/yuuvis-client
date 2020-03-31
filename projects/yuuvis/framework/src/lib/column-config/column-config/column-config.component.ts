@@ -45,8 +45,6 @@ export class ColumnConfigComponent implements OnInit {
   // fields that should not be available for column config
   private skipFields = [
     BaseObjectTypeField.OBJECT_ID,
-    BaseObjectTypeField.CREATED_BY,
-    BaseObjectTypeField.MODIFIED_BY,
     BaseObjectTypeField.PARENT_ID,
     BaseObjectTypeField.PARENT_OBJECT_TYPE_ID,
     BaseObjectTypeField.PARENT_VERSION_NUMBER,

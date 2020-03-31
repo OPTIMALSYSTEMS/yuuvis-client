@@ -1,7 +1,13 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, QueryList, TemplateRef, ViewChild, ViewChildren } from '@angular/core';
 import { IconRegistryService } from '@yuuvis/common-ui';
-import { BaseObjectTypeField, DmsObject, DmsService, SearchFilter, SearchQuery, TranslateService } from '@yuuvis/core';
+import { BaseObjectTypeField, ColumnConfig, DmsObject, SearchFilter, SearchQuery, SystemService, TranslateService } from '@yuuvis/core';
+import { CellRenderer } from '../../services/grid/grid.cellrenderer';
 import { edit } from '../../svg.generated';
+import { PopoverConfig } from './../../popover/popover.interface';
+import { PopoverRef } from './../../popover/popover.ref';
+import { PopoverService } from './../../popover/popover.service';
+import { SearchResultComponent } from './../../search/search-result/search-result.component';
+import { refresh, settings } from './../../svg.generated';
 
 @Component({
   selector: 'yuv-context',
@@ -14,6 +20,11 @@ export class ContextComponent implements OnInit {
   contextChildrenQuery: SearchQuery;
   recentItemsQuery: SearchQuery;
   // selectedItem: string;
+  columnConfigInput: any;
+
+  activeSearchResult: SearchResultComponent;
+  @ViewChildren(SearchResultComponent) searchResultComponents: QueryList<SearchResultComponent>;
+  @ViewChild('tplColumnConfigPicker', { static: false }) tplColumnConfigPicker: TemplateRef<any>;
 
   layoutOptions = {
     'yuv-search-result-all': null,
@@ -21,11 +32,13 @@ export class ContextComponent implements OnInit {
   };
 
   private _context: DmsObject;
+  contextIcon: string;
   /**
    * The context item
    */
   @Input() set context(c: DmsObject) {
     this._context = c;
+    this.contextIcon = c && CellRenderer.typeCellRenderer({ value: c.objectTypeId, context: { system: this.systemService } });
     this.setupContext();
   }
   get context() {
@@ -78,8 +91,13 @@ export class ContextComponent implements OnInit {
     }
   }
 
-  constructor(private translate: TranslateService, private iconRegistry: IconRegistryService, private dmsService: DmsService) {
-    this.iconRegistry.registerIcons([edit]);
+  constructor(
+    private translate: TranslateService,
+    private iconRegistry: IconRegistryService,
+    private popoverService: PopoverService,
+    private systemService: SystemService
+  ) {
+    this.iconRegistry.registerIcons([edit, settings, refresh]);
   }
 
   select(ids: string[]) {
@@ -99,6 +117,8 @@ export class ContextComponent implements OnInit {
       }
     ];
     this.contextChildrenQuery = ccq;
+
+    this.onTabChange({ index: 0 }); // activate searchResult
   }
 
   private setupRecentItemsQuery(recentItems: string[]) {
@@ -108,6 +128,39 @@ export class ContextComponent implements OnInit {
       this.recentItemsQuery = q;
     } else {
       this.recentItemsQuery = null;
+    }
+  }
+
+  onTabChange(tab: any) {
+    setTimeout(() => {
+      this.activeSearchResult = this.searchResultComponents.toArray()[tab.index];
+      if (this.activeSearchResult) {
+        this.columnConfigInput = {
+          type: (this.activeSearchResult.query && this.activeSearchResult.query.targetType) || this.systemService.getBaseType(),
+          sortOptions: this.activeSearchResult.query && this.activeSearchResult.query.sortOptions
+        };
+      }
+    }, 0);
+  }
+
+  refresh(applyColumnConfig?: boolean) {
+    return this.activeSearchResult && this.activeSearchResult.refresh(applyColumnConfig);
+  }
+
+  showColumnConfigEditor() {
+    const popoverConfig: PopoverConfig = {
+      width: '55%',
+      height: '70%',
+      data: this.columnConfigInput
+    };
+    this.popoverService.open(this.tplColumnConfigPicker, popoverConfig);
+  }
+
+  columnConfigChanged(columnConfig: ColumnConfig, popoverRef?: PopoverRef) {
+    this.refresh(true);
+
+    if (popoverRef) {
+      popoverRef.close();
     }
   }
 
