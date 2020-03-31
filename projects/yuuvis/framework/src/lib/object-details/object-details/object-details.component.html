@@ -42,7 +42,8 @@
   <p-tabPanel [id]="'summary'" [header]="'yuv.framework.object-details.tabs.summary.title' | translate"
     [headerStyleClass]="'summary'">
     <ng-template pTemplate="content">
-      <yuv-summary [dmsObject]="dmsObject" [showExtrasSection]="userIsAdmin"></yuv-summary>
+      <yuv-summary [dmsObject]="dmsObject" [versionRouterLink]="['/versions', dmsObject.id]"
+        [showExtrasSection]="userIsAdmin"></yuv-summary>
     </ng-template>
   </p-tabPanel>
 </ng-template>

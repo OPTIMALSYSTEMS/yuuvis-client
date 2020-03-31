@@ -46,10 +46,11 @@
 <ng-template #summaryEntry let-item="item">
   <span class="label">{{ item.label }}</span>
   <div class="value-area">
-    <span class="value first" *ngIf="!isVersion(item.key); else link" [innerHtml]="item.value | safeHtml"></span>
+    <span class="value first" *ngIf="(!isVersion(item.key) || !versionRouterLink); else link"
+      [innerHtml]="item.value | safeHtml"></span>
     <span class="value second" *ngIf="dmsObject2" [innerHtml]="item.value2 | safeHtml"></span>
     <ng-template #link>
-      <a class="value first" [routerLink]="['/versions', dmsObjectID]"
+      <a class="value first" [routerLink]="versionRouterLink"
         [queryParams]="item.value === '1' ? ({version: item.value}) : ({version: [item.value, item.value - 1].join(',')})"
         routerLinkActive="router-link-active">{{item.value}}</a>
     </ng-template>

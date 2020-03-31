@@ -5,6 +5,7 @@ import {
   BaseObjectTypeField,
   ContentStreamField,
   DmsObject,
+  Logger,
   ObjectTypeField,
   ParentField,
   SecondaryObjectTypeField,
@@ -17,6 +18,11 @@ import { Summary, SummaryEntry } from './summary.interface';
 /**
  * Component that reders a summary for a given `DmsObject`. It will list the index data set for the
  * object devided into sections.
+ *
+ * You may also provide two dms objects (using input property 'compareObjects') in order to show
+ * a diff between the indexdata of those 2 objects. You need to make sure that all compare objects
+ * share the same object type. A good example for using this feature is comparing different
+ * versions of a dms object.
  */
 @Component({
   selector: 'yuv-summary',
@@ -55,12 +61,30 @@ export class SummaryComponent implements OnInit {
   dmsObject2: DmsObject;
 
   /**
-   * `DmsObject[]` to compare changes between objects
+   * Two dms object to be compared against each other. They need to share
+   * the same object type in order to compare them.
    */
   @Input() set compareObjects(dmsObjects: DmsObject[]) {
-    this.dmsObject2 = dmsObjects[1];
-    this.dmsObject = dmsObjects[0];
+    // make sure that objects share the same object type
+    if (dmsObjects) {
+      if (dmsObjects.length === 2) {
+        if (dmsObjects[0].objectTypeId === dmsObjects[1].objectTypeId) {
+          this.dmsObject2 = dmsObjects[1];
+          this.dmsObject = dmsObjects[0];
+        } else {
+          this.logger.error('summary: Invalid input. CompareObjects have to be of same object type.');
+        }
+      } else {
+        this.logger.error('summary: Invalid input. Need 2 dms objects.');
+      }
+    }
   }
+
+  /**
+   * You may provide a router link config here, that will be applied to the objects verion number.
+   * This will be applied to a routerLink directive then.
+   */
+  @Input() versionRouterLink: any[];
 
   /**
    * Whether or not to show the extras section that holds the more technical data for the object
@@ -78,7 +102,7 @@ export class SummaryComponent implements OnInit {
     modified: !!this.dmsObject2 && !this.isEmpty(v1) && !this.isEmpty(v2)
   });
 
-  constructor(private systemService: SystemService, private gridService: GridService, private appCacheService: AppCacheService) {}
+  constructor(private systemService: SystemService, private gridService: GridService, private logger: Logger, private appCacheService: AppCacheService) {}
 
   sectionOpen(e) {
     const activeIndex = this.activeIndex.filter(i => i !== e.index);
