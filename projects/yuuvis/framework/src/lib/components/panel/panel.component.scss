@@ -11,8 +11,8 @@
   display: grid;
   background-color: var(--panel-background-grey);
   grid-template-columns: 1fr;
-  grid-template-rows: var(--app-pane-header-height) 1fr;
-  grid-template-areas: 'header' 'content';
+  grid-template-rows: var(--app-pane-header-height) 1fr auto;
+  grid-template-areas: 'header' 'content' 'footer';
 
   height: 100%;
   overflow: hidden;
@@ -106,5 +106,9 @@
         width: 18px;
       }
     }
+  }
+
+  .footer {
+    grid-area: footer;
   }
 }

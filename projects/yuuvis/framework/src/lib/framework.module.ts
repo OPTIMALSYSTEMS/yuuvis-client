@@ -22,6 +22,7 @@ import { YuvPopoverModule } from './popover/popover.module';
 import { YuvSearchModule } from './search/search.module';
 import { ErrorHandlerService } from './services/error-handler/error-handler.service';
 import { YuvUserModule } from './user/user.module';
+import { YuvVersionsModule } from './versions/versions.module';
 
 /**
  * `YuvFrameworkModule` provides a set of UI components to be used
@@ -43,6 +44,7 @@ import { YuvUserModule } from './user/user.module';
     YuvFormModule,
     YuvPopoverModule,
     YuvSearchModule,
+    YuvVersionsModule,
     YuvUserModule,
     YuvCommonUiModule,
     YuvObjectDetailsModule,
@@ -67,6 +69,7 @@ import { YuvUserModule } from './user/user.module';
     YuvColumnConfigModule,
     YuvPipesModule,
     YuvSearchModule,
+    YuvVersionsModule,
     YuvUserModule,
     YuvComponentsModule,
     YuvObjectFormModule,

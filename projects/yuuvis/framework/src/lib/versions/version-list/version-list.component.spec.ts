@@ -1,18 +1,18 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { VersionResultComponent } from './version-result.component';
+import { VersionListComponent } from './version-list.component';
 
-describe('VersionResultComponent', () => {
-  let component: VersionResultComponent;
-  let fixture: ComponentFixture<VersionResultComponent>;
+describe('VersionsComponent', () => {
+  let component: VersionListComponent;
+  let fixture: ComponentFixture<VersionListComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [VersionResultComponent]
+      declarations: [VersionListComponent]
     }).compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(VersionResultComponent);
+    fixture = TestBed.createComponent(VersionListComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

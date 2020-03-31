@@ -1,8 +1,8 @@
 <yuv-responsive-master-slave class="state" (slaveClosed)="onSlaveClosed()" [slaveActive]="dmsObject"
   [layoutOptionsKey]="layoutOptionsKey">
-  <yuv-version-result class="yuv-master panel" [objectID]="dmsObjectID" [versions]="versions"
-    (dmsObjectsSelected)="dmsObjectsSelected($event)" [layoutOptionsKey]="layoutOptionsKey">
-  </yuv-version-result>
+  <yuv-version-list class="yuv-master panel" [objectID]="dmsObjectID" [versions]="versions"
+    (versionSelected)="versionSelected($event)" [layoutOptionsKey]="layoutOptionsKey">
+  </yuv-version-list>
 
   <yuv-object-details class="yuv-slave panel" [dmsObject]="dmsObject" [panelOrder]="['summary', 'indexdata', 'preview']"
     [layoutOptionsKey]="!dmsObject2 ? layoutOptionsKey : ''" [ngClass]="{ 'changes-active': !!dmsObject2 }"

@@ -20,9 +20,8 @@ import { QuickSearchPickerComponent } from './quick-search/quick-search-picker/q
 import { QuickSearchComponent } from './quick-search/quick-search.component';
 import { SearchResultPanelComponent } from './search-result-panel/search-result-panel.component';
 import { SearchResultComponent } from './search-result/search-result.component';
-import { VersionResultComponent } from './version-result/version-result.component';
 
-const components = [QuickSearchComponent, SearchResultComponent, SearchResultPanelComponent, QuickSearchPickerComponent, VersionResultComponent];
+const components = [QuickSearchComponent, SearchResultComponent, SearchResultPanelComponent, QuickSearchPickerComponent];
 
 @NgModule({
   imports: [

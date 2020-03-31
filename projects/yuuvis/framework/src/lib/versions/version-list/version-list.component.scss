@@ -7,9 +7,31 @@
     margin-right: var(--app-pane-padding);
   }
 
-  .mode.current {
-    background-color: var(--panel-divider-color);
-    color: var(--text-color-body);
+  .content {
+    background-color: var(--panel-background);
+  }
+  .footer {
+    border-top: 1px solid var(--panel-divider-color);
+    padding: calc(var(--app-pane-padding) / 2) var(--app-pane-padding);
+    background-color: var(--panel-background);
+    display: flex;
+    justify-content: flex-end;
+
+    yuv-icon.mode {
+      width: 18px;
+      height: 18px;
+      box-sizing: content-box;
+      border-radius: 2px;
+      color: var(--text-color-caption);
+      padding: 4px;
+      cursor: pointer;
+      transition: all 200ms;
+
+      &.current {
+        background-color: var(--panel-divider-color);
+        color: var(--text-color-body);
+      }
+    }
   }
 
   ::ng-deep .data-table {

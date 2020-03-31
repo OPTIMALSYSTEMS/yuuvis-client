@@ -12,7 +12,7 @@ import { takeUntilDestroy } from 'take-until-destroy';
 })
 export class VersionsComponent implements OnInit, OnDestroy {
   private STORAGE_KEY = 'yuv.app.versions';
-  versions: string[] = [];
+  versions: number[] = [];
   dmsObjectID: string;
   dmsObject: DmsObject;
   dmsObject2: DmsObject;
@@ -45,7 +45,7 @@ export class VersionsComponent implements OnInit, OnDestroy {
     }
   }
 
-  dmsObjectsSelected(objects: DmsObject[]) {
+  versionSelected(objects: DmsObject[]) {
     [this.dmsObject, this.dmsObject2] = objects;
   }
 
@@ -58,7 +58,8 @@ export class VersionsComponent implements OnInit, OnDestroy {
     });
     // extract the versions from the route params
     this.route.queryParamMap.pipe(takeUntilDestroy(this)).subscribe(params => {
-      this.versions = [params.get('version'), params.get('version2')];
+      const vp = params.get('version');
+      this.versions = vp ? vp.split(',').map(v => parseInt(v)) : [];
     });
   }
 
