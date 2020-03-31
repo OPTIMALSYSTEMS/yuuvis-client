@@ -49,9 +49,14 @@
           <div class="entry">
             <div class="title">
               <span>{{ auditLabels['a' + a.action] }}</span>
-              <span class="version" title="{{ 'yuv.framework.audit.version' | translate }}">
-                <a [routerLink]="['/versions', objectID]" [queryParams]="({version: a.version})"
-                  routerLinkActive="router-link-active">{{a.version}}</a></span>
+
+              <span *ngIf="!versionRouterLink; else link" class="version"
+                title="{{ 'yuv.framework.audit.version' | translate }}">{{a.version}}</span>
+
+              <ng-template #link>
+                <a class="version" [routerLink]="versionRouterLink" [queryParams]="({version: a.version})"
+                  routerLinkActive="router-link-active">{{a.version}}</a>
+              </ng-template>
             </div>
             <div class="creator meta">
               {{ a.createdBy.title }}

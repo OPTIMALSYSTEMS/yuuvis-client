@@ -43,6 +43,12 @@ export class AuditComponent implements OnInit, OnDestroy {
     return this._objectID;
   }
 
+  /**
+   * You may provide a router link config here, that will be applied to an audit entries version number.
+   * This will be applied to a routerLink directive then.
+   */
+  @Input() versionRouterLink: any[];
+
   constructor(
     private auditService: AuditService,
     private eventService: EventService,
