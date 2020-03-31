@@ -7,6 +7,32 @@ $range-selection-highlight-color: $primary-color;
 
 ::ng-deep {
   yuv-responsive-data-table {
+    // versions data table
+    &.versions {
+      .rdt-row.version {
+        &::after {
+          content: attr(data-version);
+          border-radius: 4px;
+          background-color: var(--panel-divider-color);
+          padding: 2px calc(var(--app-pane-padding) / 2);
+          margin: 0 calc(var(--app-pane-padding) / 2);
+        }
+        .head {
+          display: none;
+        }
+        .main {
+          padding: 0 var(--app-pane-padding);
+          flex: 1;
+        }
+      }
+      .ag-row-selected .rdt-row.version {
+        &::after {
+          background-color: var(--color-accent);
+          color: #fff;
+        }
+      }
+    }
+
     &.grid,
     &.horizontal {
       .ag-theme-yuv .ag-row {
@@ -14,6 +40,12 @@ $range-selection-highlight-color: $primary-color;
         .ag-cell {
           padding: 0;
           width: 100% !important;
+
+          &.cell-title-description {
+            > span {
+              width: 100%;
+            }
+          }
         }
 
         .rdt-row {

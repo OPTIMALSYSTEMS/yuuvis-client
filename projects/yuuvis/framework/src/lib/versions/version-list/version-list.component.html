@@ -6,8 +6,9 @@
       [icon]="'refresh'"></yuv-icon>
   </yuv-action-menu-bar>
   <div class="content">
-    <yuv-responsive-data-table yuvOfflineDisabled #dataTable class="data-table" *ngIf="tableData" [data]="tableData"
-      [selection]="selection" (selectionChanged)="select($event)" [layoutOptionsKey]="layoutOptionsKey">
+    <yuv-responsive-data-table yuvOfflineDisabled #dataTable class="data-table versions" *ngIf="tableData"
+      [data]="tableData" [selection]="selection" (selectionChanged)="select($event)"
+      [layoutOptionsKey]="layoutOptionsKey">
     </yuv-responsive-data-table>
   </div>
   <div class="footer">
