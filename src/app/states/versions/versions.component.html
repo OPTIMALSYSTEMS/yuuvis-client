@@ -4,9 +4,9 @@
     (versionSelected)="versionSelected($event)" [layoutOptionsKey]="layoutOptionsKey">
   </yuv-version-list>
 
-  <yuv-object-details class="yuv-slave panel" [dmsObject]="dmsObject" [panelOrder]="['summary', 'indexdata', 'preview']"
-    [layoutOptionsKey]="!dmsObject2 ? layoutOptionsKey : ''" [ngClass]="{ 'changes-active': !!dmsObject2 }"
-    [activeTabPanel]="dmsObject2 ? 'changes' : ''">
+  <yuv-object-details class="yuv-slave panel" [disableFileDrop]="true" [dmsObject]="dmsObject"
+    [panelOrder]="['summary', 'indexdata', 'preview']" [layoutOptionsKey]="!dmsObject2 ? layoutOptionsKey : ''"
+    [ngClass]="{ 'changes-active': !!dmsObject2 }" [activeTabPanel]="dmsObject2 ? 'changes' : ''">
     <p-tabPanel [id]="'changes'" [header]="'yuv.client.state.versions.tabs.changes.title' | translate"
       [headerStyleClass]="'changes'" [disabled]="!dmsObject2">
       <ng-template pTemplate="content">

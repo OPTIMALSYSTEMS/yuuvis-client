@@ -22,6 +22,10 @@ export class ObjectDetailsComponent implements OnDestroy {
   @ContentChildren(TabPanel) externalPanels: QueryList<TabPanel>;
   @ViewChildren(TabPanel) viewPanels: QueryList<TabPanel>;
   @ViewChild(ResponsiveTabContainerComponent, { static: false }) tabContainer: ResponsiveTabContainerComponent;
+  @ViewChild('summary', { static: false }) summary: TemplateRef<any>;
+  @ViewChild('indexdata', { static: false }) indexdata: TemplateRef<any>;
+  @ViewChild('preview', { static: false }) preview: TemplateRef<any>;
+  @ViewChild('history', { static: false }) history: TemplateRef<any>;
 
   @HostBinding('class.yuv-object-details') _hostClass = true;
   nofileIcon = noFile.data;
@@ -30,8 +34,6 @@ export class ObjectDetailsComponent implements OnDestroy {
   userIsAdmin: boolean;
   actionMenuVisible = false;
   actionMenuSelection = [];
-
-  @Input() searchTerm = '';
 
   private _dmsObject: DmsObject;
   private _objectId: string;
@@ -54,7 +56,8 @@ export class ObjectDetailsComponent implements OnDestroy {
   }
 
   /**
-   * You can also just provide the component with an ID of a DmsObject. It will then fetch it upfront.
+   * You can also just provide the component with an ID of a DmsObject. It will
+   * then fetch it from the backend upfront.
    */
   @Input()
   set objectId(id: string) {
@@ -71,11 +74,23 @@ export class ObjectDetailsComponent implements OnDestroy {
   }
 
   /**
+   * If you provide a search term here, the object details (content preview) will
+   * try to highlight this term within the objects content file. Depending on the
+   * type of viewer rendering the objects content, this may be supported or not.
+   */
+  @Input() searchTerm = '';
+
+  /**
    * Providing a layout options key will enable the component to persist its layout settings
    * in relation to a host component. The key is basically a unique key for the host, which
    * will be used to store component specific settings using the layout service.
    */
   @Input() layoutOptionsKey: string;
+
+  /**
+   * Set the active tab. Provide either the TabPanel instance or the key of the
+   * tab that should be active.
+   */
   @Input()
   set activeTabPanel(panel: TabPanel | string) {
     setTimeout(
@@ -84,12 +99,29 @@ export class ObjectDetailsComponent implements OnDestroy {
     );
   }
 
-  @ViewChild('summary', { static: false }) summary: TemplateRef<any>;
-  @ViewChild('indexdata', { static: false }) indexdata: TemplateRef<any>;
-  @ViewChild('preview', { static: false }) preview: TemplateRef<any>;
-  @ViewChild('history', { static: false }) history: TemplateRef<any>;
-
+  /**
+   * If you want to set the order of the tabs within object details, you can use
+   * this input property. The tab order will be defined by the index of the
+   * input array containing the following values in the desired order:
+   *
+   * `summary` - Object summary tab
+   * `indexdata` - Indexdata edit form tab
+   * `preview` - Content preview tab
+   * `history`- Object history tab (audits)
+   */
   @Input() panelOrder = ['summary', 'indexdata', 'preview', 'history'];
+  /**
+   * By default this component allows dropping files onto it, which then will replace
+   * the dms objects content (which creates a new version of the object). If you wand
+   * to disable this behaviour, set `disableFileDrop` to true.
+   *
+   * Dropping files will also be disabled, if the user lacks the permission to
+   * edit objects contents.
+   *
+   * An example usage of not allowing files to be dropped, would be showing older
+   * versions of an object.
+   */
+  @Input() disableFileDrop: boolean;
 
   constructor(
     private dmsService: DmsService,
