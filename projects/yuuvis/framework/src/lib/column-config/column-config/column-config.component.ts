@@ -137,8 +137,7 @@ export class ColumnConfigComponent implements OnInit {
     selectedFields.forEach(selectable =>
       this.columnConfig.columns.push({
         id: selectable.id,
-        label: selectable.label,
-        propertyType: selectable.value.propertyType
+        label: selectable.label
       })
     );
     this.checkMoreColumnsAvailable();

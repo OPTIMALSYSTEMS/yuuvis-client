@@ -2,7 +2,7 @@ import { Location } from '@angular/common';
 import { Component, OnDestroy, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { FadeInAnimations, IconRegistryService } from '@yuuvis/common-ui';
-import { DmsService, ObjectType, ObjectTypeGroup, SystemService, TranslateService, Utils } from '@yuuvis/core';
+import { DmsService, ObjectType, ObjectTypeGroup, SystemService, SystemType, TranslateService, Utils } from '@yuuvis/core';
 import { Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
@@ -63,14 +63,23 @@ export class ObjectCreateComponent implements OnDestroy {
     this.availableObjectTypeGroups = this.system.getGroupedObjectTypes().map((otg: ObjectTypeGroup) => ({
       id: `${i++}`,
       label: otg.label,
-      items: otg.types.map((ot: ObjectType) => ({
-        id: ot.id,
-        label: this.system.getLocalizedResource(`${ot.id}_label`),
-        description: ot.isFolder ? '' : this.labels[ot.contentStreamAllowed],
-        highlight: ot.isFolder,
-        svg: this.system.getObjectTypeIcon(ot.id),
-        value: ot
-      }))
+      items: otg.types
+        .filter(
+          ot =>
+            ![
+              // types that should not be able to be created
+              SystemType.FOLDER,
+              SystemType.DOCUMENT
+            ].includes(ot.id)
+        )
+        .map((ot: ObjectType) => ({
+          id: ot.id,
+          label: this.system.getLocalizedResource(`${ot.id}_label`),
+          description: ot.isFolder ? '' : this.labels[ot.contentStreamAllowed],
+          highlight: ot.isFolder,
+          svg: this.system.getObjectTypeIcon(ot.id),
+          value: ot
+        }))
     }));
   }
 
