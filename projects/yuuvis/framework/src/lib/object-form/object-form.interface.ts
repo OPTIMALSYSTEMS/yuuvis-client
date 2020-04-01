@@ -7,23 +7,34 @@ import { ObjectFormGroup } from './object-form.model';
 export type ObjectFormModel = ObjectFormGroup | ObjectFormControlWrapper;
 
 export interface ObjectFormOptions {
-  // The form model holding all groups and elements
+  /**
+   * The form model holding all groups and elements
+   */
   formModel: any;
-  // Data to be merged with the forms model. Usually this will be an
-  // object of property value pairs where the properties name equals the name of
-  // the form element. For search forms (form situation 'SEARCH') data is supposed
-  // to be an array of SearchFilter objects, because search forms may support
-  // range searches in some cases.
+  /**
+   * Data to be merged with the forms model. Usually this will be an
+   * object of property value pairs where the properties name equals the name of
+   * the form element. For search forms (form situation 'SEARCH') data is supposed
+   * to be an array of SearchFilter objects, because search forms may support
+   * range searches in some cases.
+   */
   data: any;
-  // whether or not to disable the complete form
+  /**
+   * whether or not to disable the complete form
+   */
   disabled?: boolean;
-  // in context of BPM forms, form scripts will also provide access to the actions
-  // of a work item. This object is supposed to contain properties in a key value manner,
-  // where key is the actions code and value is the WorkItemAction itself.
+  /**
+   * in context of BPM forms, form scripts will also provide access to the actions
+   * of a work item. This object is supposed to contain properties in a key value manner,
+   * where key is the actions code and value is the WorkItemAction itself.
+   */
   actions?: any;
-  // object form may also provide a collection of objects to be passed to the
-  // form script (e.g. BPM forms provide data from attached dms objects)
+  /**
+   * object form may also provide a collection of objects to be passed to the
+   * form script (e.g. BPM forms provide data from attached dms objects)
+   */
   objects?: any[];
+
   context?: { id: string; title: string; objectTypeId: string };
 }
 

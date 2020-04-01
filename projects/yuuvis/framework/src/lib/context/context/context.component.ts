@@ -9,6 +9,15 @@ import { PopoverService } from './../../popover/popover.service';
 import { SearchResultComponent } from './../../search/search-result/search-result.component';
 import { refresh, settings } from './../../svg.generated';
 
+/**
+ * Component rendering a context and its contents.
+ * A context is a 'folder' that may contain other dms objects that aren't folders.
+ *
+ * [Screenshot](../assets/images/yuv-context.gif)
+ *
+ * @example
+ * <yuv-context [context]="ctx"></yuv-context>
+ */
 @Component({
   selector: 'yuv-context',
   templateUrl: './context.component.html',
@@ -19,7 +28,6 @@ export class ContextComponent implements OnInit {
   activeTabIndex: number;
   contextChildrenQuery: SearchQuery;
   recentItemsQuery: SearchQuery;
-  // selectedItem: string;
   columnConfigInput: any;
 
   activeSearchResult: SearchResultComponent;
@@ -32,7 +40,15 @@ export class ContextComponent implements OnInit {
   };
 
   private _context: DmsObject;
+  private _contextSearchQuery: SearchQuery;
   contextIcon: string;
+
+  _layoutOptionsKeys = {
+    children: null,
+    recent: null,
+    search: null
+  };
+
   /**
    * The context item
    */
@@ -50,7 +66,6 @@ export class ContextComponent implements OnInit {
    */
   @Input() preSelectItems: string[];
 
-  private _contextSearchQuery: SearchQuery;
   /**
    * A search query to be executed within the current context.
    * The query will be extended by a filter that restricts the result
@@ -67,17 +82,13 @@ export class ContextComponent implements OnInit {
     return this._contextSearchQuery;
   }
 
+  /**
+   * Array of IDs used for fetching the recent items for this context.
+   */
   @Input() set recentItems(ri: string[]) {
     this.setupRecentItemsQuery(ri);
   }
 
-  @Output() itemsSelected = new EventEmitter<string[]>();
-
-  _layoutOptionsKeys = {
-    children: null,
-    recent: null,
-    search: null
-  };
   /**
    * Providing a lyout options key will enable the component to persist its layout settings
    * in relation to a host component. The key is basically a unique key for the host, which
@@ -90,6 +101,9 @@ export class ContextComponent implements OnInit {
       this._layoutOptionsKeys.search = `${lok}.search`;
     }
   }
+
+  /** Emitted once an item from either one of the lists has been selected. */
+  @Output() itemsSelected = new EventEmitter<string[]>();
 
   constructor(
     private translate: TranslateService,

@@ -16,13 +16,25 @@ import { GridService } from '../../services/grid/grid.service';
 import { Summary, SummaryEntry } from './summary.interface';
 
 /**
- * Component that reders a summary for a given `DmsObject`. It will list the index data set for the
- * object devided into sections.
+ * This component can be used in two different ways:
  *
- * You may also provide two dms objects (using input property 'compareObjects') in order to show
+ * ### Show object summary
+ * If you provide a DmsObject instance using the `dmsObject` input, this component reders a summary
+ * for a given `DmsObject`. It will list existing  index data set for the object devided into sections.
+ * It also displays information about the attached document file and some technical aspects.
+ *
+ * ### Compare objects
+ * If you provide two dms objects (using input property `compareObjects`) the component will show
  * a diff between the indexdata of those 2 objects. You need to make sure that all compare objects
  * share the same object type. A good example for using this feature is comparing different
  * versions of a dms object.
+ *
+ * @example
+ * <!-- summary of particular dms object -->
+ * <yuv-summary [dmsObject]="dmsObject"></yuv-summary>
+ *
+ * <!-- compare two dms object -->
+ * <yuv-summary [compareObjects]="[dmsObject1, dmsObject2]"></yuv-summary>
  */
 @Component({
   selector: 'yuv-summary',
@@ -81,8 +93,9 @@ export class SummaryComponent implements OnInit {
   }
 
   /**
-   * You may provide a router link config here, that will be applied to the objects verion number.
-   * This will be applied to a routerLink directive then.
+   * You may provide a router link config here, that will be applied to an audit entries
+   * version number. This way you can add a link to the version pointing to some other
+   * state/component dealing with versions of one dms object.
    */
   @Input() versionRouterLink: any[];
 
@@ -109,6 +122,7 @@ export class SummaryComponent implements OnInit {
     activeIndex.push(e.index);
     this.setState(activeIndex);
   }
+
   sectionClose(e) {
     this.setState(this.activeIndex.filter(i => i !== e.index));
   }

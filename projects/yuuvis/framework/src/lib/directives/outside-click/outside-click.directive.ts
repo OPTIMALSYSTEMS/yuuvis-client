@@ -2,6 +2,13 @@ import { Directive, ElementRef, EventEmitter, HostListener, OnDestroy, Output } 
 import { EventService, YuvEventType } from '@yuuvis/core';
 import { takeUntilDestroy } from 'take-until-destroy';
 
+/**
+ * Directive applying some action when the user clicked outside the host
+ * component or hits ESC on the keyboard.
+ *
+ * @example
+ * <div [yuvOutsideClick]="closeModalElement()">...</div>
+ */
 @Directive({
   selector: '[yuvOutsideClick]'
 })

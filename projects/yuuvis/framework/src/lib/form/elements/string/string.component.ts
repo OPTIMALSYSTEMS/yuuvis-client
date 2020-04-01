@@ -7,21 +7,16 @@ import { envelope, globe } from '../../../svg.generated';
  * Creates form input for strings. Based on the input values different kinds of inputs will be generated.
  *
  * Implements `ControlValueAccessor` so it can be used within Angular forms.
- * 
- * ```html
-<!-- string input validating input to be between 5 and 10 characters -->
-<yuv-string [minLength]="5" [maxLength]="10"></yuv-string>
-```
  *
- * ```html
-<!-- string input that only allow digits -->
-<yuv-string  [regex]="[0-9]*"></yuv-string>
-```
+ * @example
+ * <!-- string input validating input to be between 5 and 10 characters -->
+ * <yuv-string [minLength]="5" [maxLength]="10"></yuv-string>
  *
- * ```html
-<!-- string input rendering a large textarea -->
-<yuv-string [multiline]="true" [size]="'large'"></yuv-string>
-```
+ * <!-- string input that only allow digits -->
+ * <yuv-string  [regex]="[0-9]*"></yuv-string>
+ *
+ * <!-- string input rendering a large textarea -->
+ * <yuv-string [multiline]="true" [size]="'large'"></yuv-string>
  *
  */
 @Component({

@@ -7,19 +7,17 @@ import { PopoverConfig } from '../../../popover/popover.interface';
 import { PopoverRef } from '../../../popover/popover.ref';
 import { PopoverService } from '../../../popover/popover.service';
 import { datepicker } from '../../../svg.generated';
+
 /**
- * Creates form input for date values. Input can be typed using a localized masked 
+ * Creates form input for date values. Input can be typed using a localized masked
  * input or done by using a datepicker component.
  *
  * Implements `ControlValueAccessor` so it can be used within Angular forms.
- * 
- * ```html
-<yuv-datetime [pickerTitle]="'Please select a date'"></yuv-datetime>
-```
- * 
- * ```html
-<yuv-datetime [withTime]="true"></yuv-datetime>
-```
+ *
+ * @example
+ * <yuv-datetime [pickerTitle]="'Please select a date'"></yuv-datetime>
+ *
+ * <yuv-datetime [withTime]="true"></yuv-datetime>
  *
  */
 @Component({
