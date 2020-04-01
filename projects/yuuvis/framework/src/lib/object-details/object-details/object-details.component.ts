@@ -10,7 +10,20 @@ import { ResponsiveTabContainerComponent } from './../../components/responsive-t
 
 /**
  * High level component displaying detail aspects for a given DmsObject.
+ * It will also take care of actions that could be executed for or with the
+ * current dms object, like for example downloading original content file.
  *
+ * The component provides the following object aspects:
+ *
+ * - **Summary**: Summary of the object including indexdata and content related information
+ * - **Indexdata**: Indexdata form for editing the objects indexdata
+ * - **Content**: Preview of the document file attached to the object
+ * - **History**: Documentation of the objects lifecycle (audits)
+ *
+ * [Screenshot](../assets/images/yuv-object-details.gif)
+ *
+ * @example
+ * <yuv-object-details [objectId]="'0815'"></yuv-object-details>
  */
 @Component({
   selector: 'yuv-object-details',
@@ -56,8 +69,7 @@ export class ObjectDetailsComponent implements OnDestroy {
   }
 
   /**
-   * You can also just provide the component with an ID of a DmsObject. It will
-   * then fetch it from the backend upfront.
+   * ID of a DmsObject. The object will be fetched from the backend upfront.
    */
   @Input()
   set objectId(id: string) {
@@ -104,10 +116,10 @@ export class ObjectDetailsComponent implements OnDestroy {
    * this input property. The tab order will be defined by the index of the
    * input array containing the following values in the desired order:
    *
-   * `summary` - Object summary tab
-   * `indexdata` - Indexdata edit form tab
-   * `preview` - Content preview tab
-   * `history`- Object history tab (audits)
+   * - `summary`: Object summary tab
+   * - `indexdata`: Indexdata edit form tab
+   * - `preview`: Content preview tab
+   * - `history: Object history tab (audits)
    */
   @Input() panelOrder = ['summary', 'indexdata', 'preview', 'history'];
   /**
