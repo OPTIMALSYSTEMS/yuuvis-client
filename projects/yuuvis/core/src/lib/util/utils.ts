@@ -13,8 +13,8 @@ export class Utils {
    */
   public static buildUri(uri: string, params: {}): string {
     const q = Object.keys(params)
-      .filter(k => params[k] || params[k] === 0)
-      .map(k => k + '=' + encodeURIComponent(params[k]))
+      .filter(k => !Utils.isEmptyOrFalse(params[k]))
+      .map(k => k + '=' + encodeURIComponent(typeof params[k] === 'object' ? JSON.stringify(params[k]) : params[k]))
       .join('&');
     return uri + (q ? '?' + q : '');
   }

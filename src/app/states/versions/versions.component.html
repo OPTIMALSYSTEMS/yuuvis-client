@@ -14,5 +14,11 @@
         </yuv-summary>
       </ng-template>
     </p-tabPanel>
+    <p-tabPanel [id]="'compare'" [header]="'yuv.framework.object-details.tabs.content.title' | translate"
+      [headerStyleClass]="'changes'" [disabled]="!dmsObject2">
+      <ng-template pTemplate="content">
+        <yuv-content-preview *ngIf="dmsObject2" [compareObjects]="[dmsObject, dmsObject2]"></yuv-content-preview>
+      </ng-template>
+    </p-tabPanel>
   </yuv-object-details>
 </yuv-responsive-master-slave>

@@ -25,7 +25,13 @@ export class ContentPreviewComponent implements OnInit, OnDestroy, AfterViewInit
     // generate preview URI with streamID to enable refresh if file was changed
     !object || !object.content || !object.content.size
       ? this.contentPreviewService.resetSource()
-      : this.contentPreviewService.createPreviewUrl(object.id, object.content, object.version);
+      : this.contentPreviewService.createPreviewUrl(
+          object.id,
+          object.content,
+          object.version,
+          this.dmsObject2 && this.dmsObject2.content,
+          this.dmsObject2 && this.dmsObject2.version
+        );
     this._dmsObject = object;
   }
 
@@ -35,6 +41,16 @@ export class ContentPreviewComponent implements OnInit, OnDestroy, AfterViewInit
 
   get iframe() {
     return this.elRef.nativeElement.querySelector('iframe');
+  }
+
+  @Input() dmsObject2: DmsObject;
+
+  /**
+   * `DmsObject[]` to compare changes between objects
+   */
+  @Input() set compareObjects(dmsObjects: DmsObject[]) {
+    this.dmsObject2 = dmsObjects[1];
+    this.dmsObject = dmsObjects[0];
   }
 
   previewSrc$: Observable<string> = this.contentPreviewService.previewSrc$;
