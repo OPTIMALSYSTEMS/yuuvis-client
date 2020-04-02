@@ -16,6 +16,10 @@ const defaultConfig: PopoverConfig = {
   disableClose: false,
   panelClass: ''
 };
+/**
+ * Use PopoverService to trigger popup dialogs.
+ *
+ */
 @Injectable({
   providedIn: 'root'
 })
