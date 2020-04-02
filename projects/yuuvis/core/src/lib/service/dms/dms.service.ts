@@ -103,7 +103,7 @@ export class DmsService {
    * @param id ID of the object to be retrieved
    */
   getDmsObjectVersions(id: string): Observable<DmsObject[]> {
-    return this.backend.get('/dms/objects/' + id + '/versions', 'core').pipe(
+    return this.backend.get('/dms/objects/' + id + '/versions').pipe(
       map(res => {
         const items: SearchResultItem[] = this.searchService.toSearchResult(res).items || [];
         return items.map(item => this.searchResultToDmsObject(item));

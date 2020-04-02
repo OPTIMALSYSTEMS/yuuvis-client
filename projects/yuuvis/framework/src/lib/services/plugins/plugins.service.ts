@@ -5,7 +5,6 @@ import {
   DmsObject,
   DmsService,
   EventService,
-  Logger,
   SearchFilter,
   SearchQuery,
   SearchResult,
@@ -18,23 +17,32 @@ import {
   YuvUser
 } from '@yuuvis/core';
 import { map } from 'rxjs/operators';
+import { NotificationService } from '../notification/notification.service';
+import { PluginAPI } from './plugins.interface';
 
+/**
+ * `PluginService` is an abstraction of some framework capabilities that is aimed towards
+ * providing plugin developers with a convenient and reliable interface. This service and the
+ * API it provides will be stable across the different versions of the framework.
+ *
+ * `PluginService` API is also injected into form scripts.
+ */
 @Injectable({
   providedIn: 'root'
 })
 export class PluginsService {
   private user: YuvUser;
 
+  /**
+   * @ignore
+   */
   constructor(
     private backend: BackendService,
-    // private notifications: NotificationsService,
-    // private clipboard: ClipboardService,
-    private logger: Logger,
+    private notifications: NotificationService,
     public translate: TranslateService,
     private dmsService: DmsService,
     private systemService: SystemService,
     private router: Router,
-    // private agentService: AgentService,
     private eventService: EventService,
     private searchService: SearchService,
     private userService: UserService
@@ -42,9 +50,10 @@ export class PluginsService {
     this.userService.user$.subscribe(user => (this.user = user));
   }
 
-  // todo: create inreface for API
-
-  public getApi(): any {
+  /**
+   * Returns plugin API
+   */
+  public getApi(): PluginAPI {
     return {
       router: {
         get: () => this.router
@@ -57,7 +66,7 @@ export class PluginsService {
         getUser: () => this.getCurrentUser()
       },
       dms: {
-        getObject: (id, type, version) => this.getDmsObject(id, type, version),
+        getObject: (id, version) => this.getDmsObject(id, version),
         getResult: (fields, type) => this.getResult(fields, type),
         downloadContent: (dmsObjects: DmsObject[]) => this.backend.downloadContent(dmsObjects)
       },
@@ -67,33 +76,21 @@ export class PluginsService {
         del: (uri, base) => this.del(uri, base),
         put: (uri, data, base) => this.put(uri, data, base)
       },
-      config: {
-        get: () => this.getConfig()
-      },
       util: {
-        translate: key => this.translate.instant(key),
-        encodeFileName: filename => this.encodeFileName(filename)
-        // notifier: {
-        //   success: (text, title) => this.notifications.success(title, text),
-        //   error: (text, title) => this.notifications.error(title, text),
-        //   info: (text, title) => this.notifications.info(title, text),
-        //   warning: (text, title) => this.notifications.warning(title, text)
-        // }
+        encodeFileName: filename => this.encodeFileName(filename),
+        notifier: {
+          success: (text, title) => this.notifications.success(title, text),
+          error: (text, title) => this.notifications.error(title, text),
+          info: (text, title) => this.notifications.info(title, text),
+          warning: (text, title) => this.notifications.warning(title, text)
+        }
       }
-      // clipboard: {
-      //   set: (elements: DmsObject[], action: ClipboardAction) => this.clipboard.set(elements, action),
-      //   get: () => this.clipboard.get(),
-      //   clear: () => this.clipboard.clear()
-      // },
-      // // Agent
-      // agent: {
-      //   getAvailability: () => this.getAgentAvailability(),
-      //   executeAction: (action, args) => this.executeAgentAction(action, args),
-      //   action: this.agentAction
-      // }
     };
   }
 
+  /**
+   * @ignore
+   */
   public get(uri, base = '') {
     return this.backend
       .get(uri, base, { observe: 'response' })
@@ -109,28 +106,39 @@ export class PluginsService {
       .toPromise();
   }
 
+  /**
+   * @ignore
+   */
   public put(uri, data, base = '') {
     return this.backend.put(uri, data, base).toPromise();
   }
 
+  /**
+   * @ignore
+   */
   public post(uri, data, base = '') {
     return this.backend.post(uri, data, base).toPromise();
   }
 
+  /**
+   * @ignore
+   */
   public del(uri, base = '') {
     return this.backend.delete(uri, base).toPromise();
   }
 
+  /**
+   * @ignore
+   */
   public getCurrentUser(): YuvUser {
     return this.user;
   }
 
+  /**
+   * @ignore
+   */
   public encodeFileName(filename) {
     return Utils.encodeFileName(filename);
-  }
-
-  public getConfig() {
-    return {};
   }
 
   /**
@@ -138,8 +146,7 @@ export class PluginsService {
    *
    * @param fields - the fields to match. example: {name: 'max', plz: '47111}
    * @param type - the target object type
-   *
-   * @returns which will be resolved by an array of DmsObjects matching the given params
+   * @ignore
    */
   public getResult(fields, type): Promise<DmsObject[]> {
     const searchQuery = new SearchQuery();
@@ -163,15 +170,14 @@ export class PluginsService {
   /**
    * Loads a DMS object from the backend.
    *
-   * @param id - The id of the DMS-Object to be fetched.
-   * @param [type] - The object type of the selected DMS-Object. Will improve performance if set.
-   * @param [version] - retrieve a specific version of the dms object
+   * @param id The id of the DMS-Object to be fetched.
+   * @param version Retrieve a specific version of the dms object
    *
-   * @returns which will be resolved by the DMS object fetched from the server
+   * @ignore
    */
-  public getDmsObject(id, type, version): Promise<DmsObject> {
+  public getDmsObject(id, version): Promise<DmsObject> {
     return this.dmsService
-      .getDmsObject(id, type, version)
+      .getDmsObject(id, version)
       .toPromise()
       .then(response => {
         return Promise.resolve(response);
