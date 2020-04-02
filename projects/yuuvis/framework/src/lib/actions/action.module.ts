@@ -74,7 +74,7 @@ export const entryComponents = [
   entryComponents
 })
 export class ActionModule {
-  static forRoot(components: any[] = []): ModuleWithProviders {
+  static forRoot(components: any[] = []): ModuleWithProviders<ActionModule> {
     return {
       ngModule: ActionModule,
       providers: [

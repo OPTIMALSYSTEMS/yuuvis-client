@@ -16,7 +16,7 @@ import { listModeDefault, listModeGrid, listModeSimple, refresh, versions } from
   styleUrls: ['./version-list.component.scss']
 })
 export class VersionListComponent {
-  @ViewChild('dataTable', { static: false }) dataTable: ResponsiveDataTableComponent;
+  @ViewChild('dataTable') dataTable: ResponsiveDataTableComponent;
 
   private COLUMN_CONFIG_SKIP_FIELDS = [
     ...Object.keys(RetentionField).map(k => RetentionField[k]),

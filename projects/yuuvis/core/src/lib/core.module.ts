@@ -37,7 +37,7 @@ export function init_module(coreInit: CoreInit) {
   exports: [YuvCoreSharedModule]
 })
 export class YuvCoreModule {
-  static forRoot(config?: CoreConfig): ModuleWithProviders {
+  static forRoot(config?: CoreConfig): ModuleWithProviders<YuvCoreModule> {
     return {
       ngModule: YuvCoreModule,
       providers: [

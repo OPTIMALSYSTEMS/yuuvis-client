@@ -24,8 +24,8 @@ export class SearchResultPanelComponent {
   actionMenuVisible = false;
   actionMenuSelection = [];
 
-  @ViewChild(SearchResultComponent, { static: false }) searchResultComponent: SearchResultComponent;
-  @ViewChild('tplColumnConfigPicker', { static: false }) tplColumnConfigPicker: TemplateRef<any>;
+  @ViewChild(SearchResultComponent) searchResultComponent: SearchResultComponent;
+  @ViewChild('tplColumnConfigPicker') tplColumnConfigPicker: TemplateRef<any>;
 
   /**
    * Search query to be executed and rendered in the result list.

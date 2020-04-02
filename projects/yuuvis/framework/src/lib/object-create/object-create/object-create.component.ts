@@ -22,7 +22,7 @@ import { Breadcrumb, CreateState, CurrentStep, Labels } from './../object-create
   providers: [ObjectCreateService]
 })
 export class ObjectCreateComponent implements OnDestroy {
-  @ViewChild(ObjectFormComponent, { static: false }) objectForm: ObjectFormComponent;
+  @ViewChild(ObjectFormComponent) objectForm: ObjectFormComponent;
 
   animationTimer = { value: true, params: { time: '400ms' } };
   // state of creation progress

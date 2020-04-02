@@ -40,7 +40,7 @@ import { datepicker } from '../../../svg.generated';
   ]
 })
 export class DatetimeComponent implements OnInit, ControlValueAccessor, Validator {
-  @ViewChild('tplDatePicker', { static: false }) tplDatePicker: TemplateRef<any>;
+  @ViewChild('tplDatePicker') tplDatePicker: TemplateRef<any>;
 
   params;
   value; // model value

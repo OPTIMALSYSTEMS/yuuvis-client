@@ -17,6 +17,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
+            "aot": true,
             "outputPath": "dist/yuuvis-flokfugl",
             "index": "src/index.html",
             "main": "src/main.ts",
@@ -49,15 +50,31 @@
                   "type": "initial",
                   "maximumWarning": "2mb",
                   "maximumError": "5mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb"
                 }
               ],
               "serviceWorker": true,
               "ngswConfigPath": "ngsw-config.json"
             },
             "dist": {
+              "budgets": [
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb"
+                }
+              ],
               "tsConfig": "src/tsconfig.dist.json"
             },
             "dev": {
+              "budgets": [
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb"
+                }
+              ],
               "tsConfig": "src/tsconfig.dev.json"
             }
           }
@@ -144,7 +161,12 @@
             "tsConfig": "projects/yuuvis/common-ui/tsconfig.lib.json",
             "project": "projects/yuuvis/common-ui/ng-package.json"
           }
-        },
+        ,          "configurations": {
+            "production": {
+              "tsConfig": "projects/yuuvis/common-ui/tsconfig.lib.prod.json"
+            }
+          }
+},
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
@@ -174,7 +196,12 @@
             "tsConfig": "projects/yuuvis/core/tsconfig.lib.json",
             "project": "projects/yuuvis/core/ng-package.json"
           }
-        },
+        ,          "configurations": {
+            "production": {
+              "tsConfig": "projects/yuuvis/core/tsconfig.lib.prod.json"
+            }
+          }
+},
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
@@ -209,7 +236,12 @@
             "tsConfig": "projects/yuuvis/framework/tsconfig.lib.json",
             "project": "projects/yuuvis/framework/ng-package.json"
           }
-        },
+        ,          "configurations": {
+            "production": {
+              "tsConfig": "projects/yuuvis/framework/tsconfig.lib.prod.json"
+            }
+          }
+},
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
@@ -241,6 +273,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
+            "aot": true,
             "outputPath": "dist/component-tests",
             "index": "src-component-tests/index.html",
             "main": "src-component-tests/main.ts",
@@ -253,6 +286,12 @@
           },
           "configurations": {
             "test": {
+              "budgets": [
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb"
+                }
+              ],
               "fileReplacements": [
                 {
                   "replace": "src-component-tests/environments/environment.ts",
@@ -307,6 +346,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
+            "aot": true,
             "outputPath": "dist/tenant-login",
             "index": "projects/tenant-login/src/index.html",
             "main": "projects/tenant-login/src/main.ts",
@@ -338,6 +378,10 @@
                   "type": "initial",
                   "maximumWarning": "2mb",
                   "maximumError": "5mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb"
                 }
               ]
             }

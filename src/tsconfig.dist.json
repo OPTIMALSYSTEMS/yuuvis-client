@@ -21,5 +21,8 @@
         "dist/yuuvis/framework/*"
       ]
     }
-  }
+  },
+  "include": [
+    "src/**/*.d.ts"
+  ]
 }

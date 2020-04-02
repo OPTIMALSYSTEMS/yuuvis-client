@@ -29,8 +29,8 @@ import { ActionComponentAnchorDirective } from './action-component-anchor/action
   host: { class: 'yuv-action-menu' }
 })
 export class ActionMenuComponent implements OnDestroy {
-  @ViewChild(ActionComponentAnchorDirective, { static: false }) eoActionComponentAnchor: ActionComponentAnchorDirective;
-  @ViewChild(ActionComponentAnchorDirective, { static: false }) externalDialog: ActionComponentAnchorDirective;
+  @ViewChild(ActionComponentAnchorDirective) eoActionComponentAnchor: ActionComponentAnchorDirective;
+  @ViewChild(ActionComponentAnchorDirective) externalDialog: ActionComponentAnchorDirective;
 
   /**
    * Specifies the items for which the actions should be provided.

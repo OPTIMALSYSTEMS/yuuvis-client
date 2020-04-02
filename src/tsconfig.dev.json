@@ -21,5 +21,8 @@
         "projects/yuuvis/framework/src/lib/*"
       ]
     }
-  }
+  },
+  "include": [
+    "src/**/*.d.ts"
+  ]
 }

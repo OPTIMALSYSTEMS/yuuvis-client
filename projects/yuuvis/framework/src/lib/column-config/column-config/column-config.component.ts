@@ -37,7 +37,7 @@ import { addCircle, arrowDown, clear, dragHandle, pin, sort } from '../../svg.ge
   styleUrls: ['./column-config.component.scss']
 })
 export class ColumnConfigComponent implements OnInit {
-  @ViewChild('tplColumnPicker', { static: false }) tplColumnPicker: TemplateRef<any>;
+  @ViewChild('tplColumnPicker') tplColumnPicker: TemplateRef<any>;
 
   private _objectType: ObjectType;
   private _objectTypeFields: ObjectTypeField[];

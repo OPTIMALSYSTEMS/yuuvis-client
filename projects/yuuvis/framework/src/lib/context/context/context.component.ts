@@ -24,7 +24,7 @@ export class ContextComponent implements OnInit {
 
   activeSearchResult: SearchResultComponent;
   @ViewChildren(SearchResultComponent) searchResultComponents: QueryList<SearchResultComponent>;
-  @ViewChild('tplColumnConfigPicker', { static: false }) tplColumnConfigPicker: TemplateRef<any>;
+  @ViewChild('tplColumnConfigPicker') tplColumnConfigPicker: TemplateRef<any>;
 
   layoutOptions = {
     'yuv-search-result-all': null,

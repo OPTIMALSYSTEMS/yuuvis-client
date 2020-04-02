@@ -48,12 +48,12 @@ import { QuickSearchPickerData } from './quick-search-picker/quick-search-picker
   host: { class: 'yuv-quick-search' }
 })
 export class QuickSearchComponent implements OnInit, AfterViewInit {
-  @ViewChild('termEl', { static: false }) termInput: ElementRef;
-  @ViewChild('autoTermEl', { static: false }) autoTerm: AutoComplete;
-  @ViewChild('typeSelectTrigger', { static: false }) typeSelectTrigger: ElementRef;
-  @ViewChild('fieldSelectTrigger', { static: false }) fieldSelectTrigger: ElementRef;
-  @ViewChild('extrasForm', { static: false }) extrasForm: ElementRef;
-  @ViewChild('tplValuePicker', { static: false }) tplValuePicker: TemplateRef<any>;
+  @ViewChild('termEl') termInput: ElementRef;
+  @ViewChild('autoTermEl') autoTerm: AutoComplete;
+  @ViewChild('typeSelectTrigger') typeSelectTrigger: ElementRef;
+  @ViewChild('fieldSelectTrigger') fieldSelectTrigger: ElementRef;
+  @ViewChild('extrasForm') extrasForm: ElementRef;
+  @ViewChild('tplValuePicker') tplValuePicker: TemplateRef<any>;
 
   autofocus: boolean = false;
   searchForm: FormGroup;

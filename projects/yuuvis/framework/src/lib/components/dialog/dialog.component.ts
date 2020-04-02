@@ -37,7 +37,7 @@ export class DialogComponent implements OnDestroy {
   @Output() hide: EventEmitter<any> = new EventEmitter();
   @Output() show: EventEmitter<any> = new EventEmitter();
 
-  @ViewChild(Dialog, { static: false }) dialog: Dialog;
+  @ViewChild(Dialog) dialog: Dialog;
 
   @Input()
   get visible(): boolean {

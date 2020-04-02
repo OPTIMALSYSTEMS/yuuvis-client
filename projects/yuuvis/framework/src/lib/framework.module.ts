@@ -98,7 +98,7 @@ import { YuvVersionsModule } from './versions/versions.module';
   declarations: []
 })
 export class YuvFrameworkModule {
-  static forRoot(config?: CoreConfig): ModuleWithProviders {
+  static forRoot(config?: CoreConfig): ModuleWithProviders<YuvFrameworkModule> {
     return {
       ngModule: YuvFrameworkModule,
       providers: [

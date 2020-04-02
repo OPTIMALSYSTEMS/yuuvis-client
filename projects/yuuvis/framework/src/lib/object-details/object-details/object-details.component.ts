@@ -34,11 +34,11 @@ import { ResponsiveTabContainerComponent } from './../../components/responsive-t
 export class ObjectDetailsComponent implements OnDestroy {
   @ContentChildren(TabPanel) externalPanels: QueryList<TabPanel>;
   @ViewChildren(TabPanel) viewPanels: QueryList<TabPanel>;
-  @ViewChild(ResponsiveTabContainerComponent, { static: false }) tabContainer: ResponsiveTabContainerComponent;
-  @ViewChild('summary', { static: false }) summary: TemplateRef<any>;
-  @ViewChild('indexdata', { static: false }) indexdata: TemplateRef<any>;
-  @ViewChild('preview', { static: false }) preview: TemplateRef<any>;
-  @ViewChild('history', { static: false }) history: TemplateRef<any>;
+  @ViewChild(ResponsiveTabContainerComponent) tabContainer: ResponsiveTabContainerComponent;
+  @ViewChild('summary') summary: TemplateRef<any>;
+  @ViewChild('indexdata') indexdata: TemplateRef<any>;
+  @ViewChild('preview') preview: TemplateRef<any>;
+  @ViewChild('history') history: TemplateRef<any>;
 
   @HostBinding('class.yuv-object-details') _hostClass = true;
   nofileIcon = noFile.data;

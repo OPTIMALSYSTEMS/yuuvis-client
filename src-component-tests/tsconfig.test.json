@@ -9,5 +9,12 @@
       "@yuuvis/framework": ["projects/yuuvis/framework/src/public-api"],
       "@yuuvis/framework/*": ["projects/yuuvis/framework/src/lib/*"]
     }
-  }
+  },
+  "files": [
+    "main.ts",
+    "polyfills.ts"
+  ],
+  "include": [
+    "src-component-tests/**/*.d.ts"
+  ]
 }

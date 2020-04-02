@@ -58,7 +58,7 @@ export class SearchResultComponent implements OnDestroy {
 
   // @Input() options: ResponsiveDataTableOptions;
 
-  @ViewChild('dataTable', { static: false }) dataTable: ResponsiveDataTableComponent;
+  @ViewChild('dataTable') dataTable: ResponsiveDataTableComponent;
 
   /**
    * Providing a layout options key will enable the component to persist its layout settings
