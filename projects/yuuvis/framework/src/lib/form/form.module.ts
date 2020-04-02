@@ -15,6 +15,7 @@ import { CheckboxComponent } from './elements/checkbox/checkbox.component';
 import { DatetimeRangeComponent } from './elements/datetime-range/datetime-range.component';
 import { DatepickerComponent } from './elements/datetime/datepicker/datepicker.component';
 import { DatetimeComponent } from './elements/datetime/datetime.component';
+import { YearRangeDirective } from './elements/datetime/year-range/year-range.directive';
 import { NumberRangeComponent } from './elements/number-range/number-range.component';
 import { NumberComponent } from './elements/number/number.component';
 import { StringComponent } from './elements/string/string.component';
@@ -33,9 +34,19 @@ import { FormInputComponent } from './form-input/form-input.component';
     NumberComponent,
     DatepickerComponent,
     DatetimeRangeComponent,
-    NumberRangeComponent
+    NumberRangeComponent,
+    YearRangeDirective
   ],
-  exports: [FormInputComponent, CheckboxComponent, StringComponent, DatetimeComponent, NumberComponent, DatetimeRangeComponent, NumberRangeComponent],
+  exports: [
+    FormInputComponent,
+    CheckboxComponent,
+    StringComponent,
+    DatetimeComponent,
+    NumberComponent,
+    DatetimeRangeComponent,
+    NumberRangeComponent,
+    YearRangeDirective
+  ],
   imports: [
     CommonModule,
     FormsModule,
