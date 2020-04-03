@@ -26,11 +26,17 @@ export class ContentPreviewService {
     return { darkMode, accentColor, direction, lang };
   }
 
-  createPreviewUrl(id: string, content: DmsObjectContent, version?: number): void {
+  private createParams(id: string, content: DmsObjectContent, version?: number) {
     const { mimeType, size, contentStreamId, fileName } = content;
     const { root, path } = this.createPath(id, version);
     const fileExtension = fileName.includes('.') ? fileName.split('.').pop() : '';
-    this.previewSrcSource.next(id ? Utils.buildUri(`${root}/viewer/`, { mimeType, path, fileExtension, size, contentStreamId, ...this.createSettings() }) : '');
+    return { mimeType, path, fileExtension, size, contentStreamId, root, ...this.createSettings() };
+  }
+
+  createPreviewUrl(id: string, content: DmsObjectContent, version?: number, content2?: DmsObjectContent, version2?: number): void {
+    const params = this.createParams(id, content, version);
+    const query = content2 ? { compare: [params, this.createParams(id, content2, version2)] } : params;
+    this.previewSrcSource.next(id ? Utils.buildUri(`${params.root}/viewer/`, query) : '');
   }
 
   resetSource() {

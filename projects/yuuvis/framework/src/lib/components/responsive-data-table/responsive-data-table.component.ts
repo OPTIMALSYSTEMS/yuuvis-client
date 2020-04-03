@@ -6,6 +6,7 @@ import { ResizedEvent } from 'angular-resize-event';
 import { Observable, ReplaySubject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
+import { LocaleDatePipe } from '../../pipes/locale-date.pipe';
 import { ColumnSizes } from '../../services/grid/grid.interface';
 import { LayoutService } from '../../services/layout/layout.service';
 import { ResponsiveTableData } from './responsive-data-table.interface';
@@ -29,7 +30,8 @@ export interface ResponsiveDataTableOptions {
   selector: 'yuv-responsive-data-table',
   templateUrl: './responsive-data-table.component.html',
   styleUrls: ['./responsive-data-table.component.scss'],
-  host: { class: 'yuv-responsive-data-table' }
+  host: { class: 'yuv-responsive-data-table' },
+  providers: [LocaleDatePipe]
 })
 export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
   // internal subject for element size changes used for debouncing resize events
@@ -180,6 +182,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
   constructor(
     private pendingChanges: PendingChangesService,
     private elRef: ElementRef,
+    private datePipe: LocaleDatePipe,
     private layoutService: LayoutService,
     private systemService: SystemService,
     private deviceService: DeviceService
@@ -322,14 +325,17 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
       cellRenderer: params => {
         const objectTypeId = params.data[BaseObjectTypeField.OBJECT_TYPE_ID];
         const version = params.data[BaseObjectTypeField.VERSION_NUMBER];
+        const modified = this.datePipe.transform(params.data[BaseObjectTypeField.MODIFICATION_DATE]);
+
         const title = this.systemService.getLocalizedResource(`${objectTypeId}_label`);
         return `
-          <div class="rdt-row ${this._currentViewMode === 'horizontal' ? 'row-horizontal' : 'row-grid'}${version ? ' version' : ''}" data-version="${version}">
+          <div class="rdt-row ${this._currentViewMode === 'horizontal' ? 'row-horizontal' : 'row-grid'}" data-version="${version}">
             <div class="head" title="${title}">
             ${this.systemService.getObjectTypeIcon(objectTypeId)}</div>  
             <div class="main">
             <div class="title">${params.data[this._data.titleField] || params.value || ''}</div>
               <div class="description">${params.data[this._data.descriptionField] || ''}</div>
+              <div class="date">${modified}</div>
             </div>
           </div>
           `;

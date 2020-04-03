@@ -4,15 +4,26 @@
     (versionSelected)="versionSelected($event)" [layoutOptionsKey]="layoutOptionsKey">
   </yuv-version-list>
 
-  <yuv-object-details class="yuv-slave panel" [disableFileDrop]="true" [dmsObject]="dmsObject"
-    [panelOrder]="['summary', 'indexdata', 'preview']" [layoutOptionsKey]="!dmsObject2 ? layoutOptionsKey : ''"
-    [ngClass]="{ 'changes-active': !!dmsObject2 }" [activeTabPanel]="dmsObject2 ? 'changes' : ''">
-    <p-tabPanel [id]="'changes'" [header]="'yuv.client.state.versions.tabs.changes.title' | translate"
-      [headerStyleClass]="'changes'" [disabled]="!dmsObject2">
-      <ng-template pTemplate="content">
-        <yuv-summary *ngIf="dmsObject2" [compareObjects]="[dmsObject, dmsObject2]" [showExtrasSection]="userIsAdmin">
-        </yuv-summary>
-      </ng-template>
-    </p-tabPanel>
-  </yuv-object-details>
+  <div class="yuv-slave panel">
+    <yuv-object-details [disableFileDrop]="true" [dmsObject]="dmsObject" *ngIf="!dmsObject2"
+      [panelOrder]="['summary', 'indexdata', 'preview']" [layoutOptionsKey]="layoutOptionsKey">
+    </yuv-object-details>
+
+    <yuv-object-details [disableFileDrop]="true" [dmsObject]="dmsObject" *ngIf="dmsObject2" [panelOrder]="[]"
+      [layoutOptionsKey]="layoutOptionsKey + '.changes'">
+      <p-tabPanel [id]="'changes'" [header]="'yuv.client.state.versions.tabs.changes.title' | translate"
+        [headerStyleClass]="'changes'" [disabled]="!dmsObject2">
+        <ng-template pTemplate="content">
+          <yuv-summary *ngIf="dmsObject2" [compareObjects]="[dmsObject, dmsObject2]" [showExtrasSection]="userIsAdmin">
+          </yuv-summary>
+        </ng-template>
+      </p-tabPanel>
+      <p-tabPanel [id]="'compare'" [header]="'yuv.framework.object-details.tabs.content.title' | translate"
+        [headerStyleClass]="'compare'" [disabled]="!dmsObject2">
+        <ng-template pTemplate="content">
+          <yuv-content-preview *ngIf="dmsObject2" [compareObjects]="[dmsObject, dmsObject2]"></yuv-content-preview>
+        </ng-template>
+      </p-tabPanel>
+    </yuv-object-details>
+  </div>
 </yuv-responsive-master-slave>

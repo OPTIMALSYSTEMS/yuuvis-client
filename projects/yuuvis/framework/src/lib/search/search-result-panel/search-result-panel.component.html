@@ -6,8 +6,7 @@
     </yuv-icon>
     <yuv-icon (click)="refresh()" [title]="'yuv.framework.list.refresh' | translate" class="button refresh-button"
       [icon]="'refresh'"></yuv-icon>
-    <yuv-icon class="header-icon" (click)="openActionMenu()" [icon]="'kebap'"
-      [ngClass]="{ disabled: !preSelectItems?.length }"> </yuv-icon>
+    <yuv-icon (click)="openActionMenu()" [icon]="'kebap'" [ngClass]="{ disabled: !preSelectItems?.length }"> </yuv-icon>
   </yuv-action-menu-bar>
 
   <yuv-search-result class="content" [query]="_searchQuery" applyColumnConfig="true" [preSelectItems]="preSelectItems"
