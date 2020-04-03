@@ -26,8 +26,8 @@ export class TestPanelComponent implements OnInit {
   }
 
   setRegularSizeTitle() {
-    this.title = 'Pretty great title';
-    this.description = 'damn good description';
+    this.title = 'Lorem ipsum';
+    this.description = 'Cras ut ex eu mi suscipit finibus';
   }
 
   setLongSizeTitle() {

@@ -41,6 +41,8 @@ export class VersionListComponent {
   selection: string[] = [];
   tableData: ResponsiveTableData;
   dmsObjectID: string;
+  // latest version of the current dms object
+  activeVersion: DmsObject;
 
   /**
    * ID of the dms object to list the versions for.
@@ -121,17 +123,20 @@ export class VersionListComponent {
     if (this.dmsObjectID) {
       this.dmsService.getDmsObjectVersions(this.dmsObjectID).subscribe((rows: DmsObject[]) => {
         const objectTypeId = rows && rows.length ? rows[0].objectTypeId : null;
+        const sorted = rows.sort((a, b) => this.getVersion(b) - this.getVersion(a));
         this.tableData = {
           columns: this.getColumnDefinitions(objectTypeId),
-          rows: rows.map(a => a.data).sort((a, b) => this.getVersion(b) - this.getVersion(a)),
+          rows: sorted.map(a => a.data),
           titleField: SecondaryObjectTypeField.TITLE,
           descriptionField: SecondaryObjectTypeField.DESCRIPTION,
           selectType: 'multiple',
           gridOptions: { getRowNodeId: o => this.getRowNodeId(o), rowMultiSelectWithClick: true }
         };
+        this.activeVersion = sorted[0];
       });
     } else {
       this.tableData = null;
+      this.activeVersion = null;
     }
   }
 }

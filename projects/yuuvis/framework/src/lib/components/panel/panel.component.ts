@@ -7,9 +7,18 @@ import { clear } from './../../svg.generated';
  * and a content section. But it could also contain a footer. Define the
  * actual content of each section by providing classes to child elements.
  *
+ * [Screenshot](../assets/images/yuv-panel.gif)
+ *
  * @example
- * <yuv-panel [title]="'My Panel'">
+ * <yuv-panel [title]="'My Panel'" [description]="'some description'">
  *   <div class="header">
+ *
+ *   <yuv-icon class="header-icon" icon="favorite" *ngIf="showIcon"></yuv-icon>
+ *
+ *   <yuv-action-menu-bar class="actions" *ngIf="showActions">
+ *     <yuv-icon class="btn" icon="refresh"></yuv-icon>
+ *     <yuv-icon class="btn" icon="kebap"></yuv-icon>
+ *   </yuv-action-menu-bar>
  *
  *   </div>
  *   <div class="content">Main content section</div>
