@@ -74,6 +74,8 @@
 
     > .actions {
       grid-area: actions;
+      display: flex;
+      align-items: flex-start;
 
       .yuv-icon {
         padding: calc(var(--app-pane-padding) / 4);

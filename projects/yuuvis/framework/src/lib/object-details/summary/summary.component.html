@@ -50,8 +50,7 @@
       [innerHtml]="item.value | safeHtml"></span>
     <span class="value second" *ngIf="dmsObject2" [innerHtml]="item.value2 | safeHtml"></span>
     <ng-template #link>
-      <a class="value first" [routerLink]="versionRouterLink"
-        [queryParams]="item.value === '1' ? ({version: item.value}) : ({version: [item.value, item.value - 1].join(',')})"
+      <a class="value first" [routerLink]="versionRouterLink" [queryParams]="{version: item.value}"
         routerLinkActive="router-link-active">{{item.value}}</a>
     </ng-template>
   </div>

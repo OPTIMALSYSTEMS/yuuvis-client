@@ -7,6 +7,55 @@
     margin-right: var(--app-pane-padding);
   }
 
+  .compare-form {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: stretch;
+    margin: 0 calc(var(--app-pane-padding) / 2);
+
+    .group {
+      display: flex;
+      flex-flow: row nowrap;
+      align-items: center;
+      border-radius: 4px;
+      border: 1px solid var(--text-color-caption);
+      yuv-icon {
+        padding: 0;
+        pointer-events: none;
+        transition: 200ms;
+        transform: rotate(180deg);
+
+        &.rt {
+          transform: rotate(0deg);
+        }
+      }
+    }
+
+    button {
+      padding: 0 calc(var(--app-pane-padding) / 4);
+      margin: 0 calc(var(--app-pane-padding) / 4);
+    }
+
+    input {
+      background-color: transparent;
+      width: calc(var(--font-body) * 2);
+      height: calc(var(--font-body) * 2);
+      border: 0;
+      text-align: center;
+
+      /* get rid of the arrows */
+      &::-webkit-outer-spin-button,
+      &::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+      /* Firefox */
+      &[type='number'] {
+        -moz-appearance: textfield;
+      }
+    }
+  }
+
   .content {
     background-color: var(--panel-background);
   }

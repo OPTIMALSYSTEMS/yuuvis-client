@@ -1,11 +1,12 @@
 import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { FormBuilder, FormGroup } from '@angular/forms';
 import { IconRegistryService } from '@yuuvis/common-ui';
 import { BaseObjectTypeField, ContentStreamField, DmsObject, DmsService, RetentionField, SecondaryObjectTypeField, TranslateService } from '@yuuvis/core';
 import { forkJoin, of } from 'rxjs';
 import { ResponsiveDataTableComponent, ViewMode } from '../../components';
 import { ResponsiveTableData } from '../../components/responsive-data-table/responsive-data-table.interface';
 import { GridService } from '../../services/grid/grid.service';
-import { listModeDefault, listModeGrid, listModeSimple, refresh, versions } from '../../svg.generated';
+import { arrowNext, listModeDefault, listModeGrid, listModeSimple, refresh, versions } from '../../svg.generated';
 
 /**
  * Component showing a list of all versions of a dms object.
@@ -45,6 +46,7 @@ export class VersionListComponent {
   dmsObjectID: string;
   // latest version of the current dms object
   activeVersion: DmsObject;
+  compareForm: FormGroup;
 
   /**
    * ID of the dms object to list the versions for.
@@ -83,8 +85,21 @@ export class VersionListComponent {
    */
   @Output() versionSelected = new EventEmitter<DmsObject[]>();
 
-  constructor(public translate: TranslateService, private dmsService: DmsService, private iconRegistry: IconRegistryService, private gridService: GridService) {
-    this.iconRegistry.registerIcons([refresh, versions, listModeDefault, listModeGrid, listModeSimple]);
+  constructor(
+    public translate: TranslateService,
+    private fb: FormBuilder,
+    private dmsService: DmsService,
+    private iconRegistry: IconRegistryService,
+    private gridService: GridService
+  ) {
+    this.iconRegistry.registerIcons([arrowNext, refresh, versions, listModeDefault, listModeGrid, listModeSimple]);
+    this.compareForm = this.fb.group({
+      versionOne: [],
+      versionTwo: []
+    });
+    this.compareForm.valueChanges.subscribe(v => {
+      console.log(v);
+    });
   }
 
   private getVersion(o: any) {
@@ -102,15 +117,15 @@ export class VersionListComponent {
       vs.sort().pop() // highest version second
     ].sort(); // compare lower version against higher
 
-    if (items.length > 2) {
-      // reset selection
-      this.selection = [this.getRowNodeId(v1), this.getRowNodeId(v2)];
-    } else {
-      const o = [v1, v2].filter(v => v).map(v => this.dmsService.getDmsObject(this.dmsObjectID, v));
-      forkJoin(o.length ? o : of(null)).subscribe(objects => {
-        this.versionSelected.emit(objects);
-      });
-    }
+    // if (items.length > 2) {
+    //   // reset selection
+    //   this.selection = [this.getRowNodeId(v1), this.getRowNodeId(v2)];
+    // } else {
+    const o = [v1, v2].filter(v => v).map(v => this.dmsService.getDmsObject(this.dmsObjectID, v));
+    forkJoin(o.length ? o : of(null)).subscribe(objects => {
+      this.versionSelected.emit(objects);
+    });
+    // }
   }
 
   private getColumnDefinitions(objectTypeId: string) {
@@ -132,9 +147,12 @@ export class VersionListComponent {
           titleField: SecondaryObjectTypeField.TITLE,
           descriptionField: SecondaryObjectTypeField.DESCRIPTION,
           selectType: 'multiple',
-          gridOptions: { getRowNodeId: o => this.getRowNodeId(o), rowMultiSelectWithClick: true }
+          gridOptions: { getRowNodeId: o => this.getRowNodeId(o), rowMultiSelectWithClick: false }
         };
         this.activeVersion = sorted[0];
+        this.compareForm.patchValue({
+          versionOne: this.activeVersion.version
+        });
       });
     } else {
       this.tableData = null;

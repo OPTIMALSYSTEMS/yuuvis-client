@@ -2,10 +2,33 @@
   [description]="activeVersion?.title">
   <yuv-icon class="header-icon" [icon]="'versions'"></yuv-icon>
 
-  <yuv-action-menu-bar class="actions" yuvOfflineDisabled>
-    <yuv-icon (click)="refresh()" [title]="'yuv.framework.list.refresh' | translate" class="button refresh-button"
-      [icon]="'refresh'"></yuv-icon>
-  </yuv-action-menu-bar>
+
+  <div class="actions" yuvOfflineDisabled>
+
+
+    <!-- compare trigger -->
+    <form class="compare-form" [formGroup]="compareForm">
+      <div class="group">
+        <input type="number" formControlName="versionOne">
+        <!-- <span>{{(compareForm.value?.versionOne > compareForm.value?.versionTwo) ? '>': '<'}}</span> -->
+        <yuv-icon [ngClass]="{rt: compareForm.value?.versionOne > compareForm.value?.versionTwo}" icon="arrowNext">
+        </yuv-icon>
+        <input type="number" formControlName="versionTwo">
+      </div>
+      <button class="primary" [disabled]="compareForm.invalid">CMP</button>
+    </form>
+
+
+
+
+    <yuv-action-menu-bar class="actions">
+      <yuv-icon (click)="refresh()" [title]="'yuv.framework.list.refresh' | translate" class="button refresh-button"
+        [icon]="'refresh'"></yuv-icon>
+    </yuv-action-menu-bar>
+  </div>
+  <div class="actions">
+
+  </div>
 
   <div class="status">{{activeVersion?.created.on | localeDate: 'eoShort'}}</div>
 
