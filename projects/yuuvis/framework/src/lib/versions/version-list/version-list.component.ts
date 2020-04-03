@@ -21,6 +21,8 @@ export class VersionListComponent {
   private COLUMN_CONFIG_SKIP_FIELDS = [
     ...Object.keys(RetentionField).map(k => RetentionField[k]),
     BaseObjectTypeField.OBJECT_ID,
+    BaseObjectTypeField.CREATION_DATE,
+    BaseObjectTypeField.CREATED_BY,
     BaseObjectTypeField.OBJECT_TYPE_ID,
     BaseObjectTypeField.PARENT_ID,
     BaseObjectTypeField.PARENT_OBJECT_TYPE_ID,
