@@ -45,7 +45,7 @@ export class LayoutService {
 
   private applyLayoutSettings(settings: LayoutSettings) {
     const darkModeClass = 'dark';
-    if (settings && settings['darkMode']) {
+    if (settings) {
       const body = this.document.getElementsByTagName('body')[0];
       const bodyClassList = body.classList;
       if (bodyClassList.contains(darkModeClass) && !settings.darkMode) {
