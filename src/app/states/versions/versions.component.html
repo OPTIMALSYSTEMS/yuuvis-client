@@ -1,29 +1,19 @@
-<yuv-responsive-master-slave class="state" (slaveClosed)="onSlaveClosed()" [slaveActive]="dmsObject"
+<yuv-responsive-master-slave class="state" (slaveClosed)="onSlaveClosed()" [slaveActive]="dmsObject || compare"
   [layoutOptionsKey]="layoutOptionsKey">
   <yuv-version-list class="yuv-master panel" [objectID]="dmsObjectID" [versions]="versions"
-    (versionSelected)="versionSelected($event)" [layoutOptionsKey]="layoutOptionsKey">
+    (compareVersionsChange)="onCompareVersionsChange($event)" (selectionChange)="versionSelected($event)"
+    [layoutOptionsKey]="layoutOptionsKey">
   </yuv-version-list>
 
   <div class="yuv-slave panel">
-    <yuv-object-details [disableFileDrop]="true" [dmsObject]="dmsObject" *ngIf="!dmsObject2"
-      [panelOrder]="['summary', 'indexdata', 'preview']" [layoutOptionsKey]="layoutOptionsKey">
-    </yuv-object-details>
+    <yuv-object-details-compare [objectCompareInput]="compare" *ngIf="compare; else tplSingle"
+      [layoutOptionsKey]="layoutOptionsKey + '.changes'"></yuv-object-details-compare>
 
-    <yuv-object-details [disableFileDrop]="true" [dmsObject]="dmsObject" *ngIf="dmsObject2" [panelOrder]="[]"
-      [layoutOptionsKey]="layoutOptionsKey + '.changes'">
-      <p-tabPanel [id]="'changes'" [header]="'yuv.client.state.versions.tabs.changes.title' | translate"
-        [headerStyleClass]="'changes'" [disabled]="!dmsObject2">
-        <ng-template pTemplate="content">
-          <yuv-summary *ngIf="dmsObject2" [compareObjects]="[dmsObject, dmsObject2]" [showExtrasSection]="userIsAdmin">
-          </yuv-summary>
-        </ng-template>
-      </p-tabPanel>
-      <p-tabPanel [id]="'compare'" [header]="'yuv.framework.object-details.tabs.content.title' | translate"
-        [headerStyleClass]="'compare'" [disabled]="!dmsObject2">
-        <ng-template pTemplate="content">
-          <yuv-content-preview *ngIf="dmsObject2" [compareObjects]="[dmsObject, dmsObject2]"></yuv-content-preview>
-        </ng-template>
-      </p-tabPanel>
-    </yuv-object-details>
+    <ng-template #tplSingle>
+      <yuv-object-details [disableFileDrop]="true" [dmsObject]="dmsObject"
+        [panelOrder]="['summary', 'indexdata', 'preview']" [layoutOptionsKey]="layoutOptionsKey">
+      </yuv-object-details>
+    </ng-template>
+
   </div>
 </yuv-responsive-master-slave>

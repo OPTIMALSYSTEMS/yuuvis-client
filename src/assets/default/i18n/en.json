@@ -84,6 +84,9 @@
   "yuv.framework.object-create.step.type.content.allowed": "File: optional",
   "yuv.framework.object-create.step.type.content.notallowed": "File: no",
   "yuv.framework.object-create.step.type.content.required": "File: yes",
+  "yuv.framework.object-details-compare.tabs.changes.title": "Index data changes",
+  "yuv.framework.object-details-compare.tabs.content.title": "Content changes",
+  "yuv.framework.object-details-compare.title": "Compare",
   "yuv.framework.object-details.summary.section.admin": "Administrative information",
   "yuv.framework.object-details.summary.section.baseparams": "Basic parameters",
   "yuv.framework.object-details.summary.section.core": "Object attributes",
@@ -152,6 +155,8 @@
   "yuv.framework.upload-progress-overlay.remove": "Remove",
   "yuv.framework.upload-progress-overlay.remove-all": "Remove all",
   "yuv.framework.upload-progress-overlay.title": "Upload status",
+  "yuv.framework.version-list.compare.form.submit": "Compare",
+  "yuv.framework.version-list.compare.tooltip": "Compare versions",
   "yuv.framework.version-list.config.mode.default": "Table",
   "yuv.framework.version-list.config.mode.grid": "Gallery",
   "yuv.framework.version-list.config.mode.horizontal": "List",
@@ -195,6 +200,6 @@
   "yuv.client.state.settings.theme.dark": "Dark",
   "yuv.client.state.settings.theme.light": "Light",
   "yuv.client.state.settings.title": "Settings",
-  "yuv.client.state.versions.header.title": "Versions",
-  "yuv.client.state.versions.tabs.changes.title": "Changes"
+  "yuv.client.state.versions.compare.label": "version {{version}}",
+  "yuv.client.state.versions.header.title": "Versions"
 }

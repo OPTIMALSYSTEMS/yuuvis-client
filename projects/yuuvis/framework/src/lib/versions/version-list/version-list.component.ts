@@ -1,8 +1,9 @@
 import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { IconRegistryService } from '@yuuvis/common-ui';
 import { BaseObjectTypeField, ContentStreamField, DmsObject, DmsService, RetentionField, SecondaryObjectTypeField, TranslateService } from '@yuuvis/core';
-import { forkJoin, of } from 'rxjs';
+import { forkJoin, Observable, of } from 'rxjs';
+import { tap } from 'rxjs/operators';
 import { ResponsiveDataTableComponent, ViewMode } from '../../components';
 import { ResponsiveTableData } from '../../components/responsive-data-table/responsive-data-table.interface';
 import { GridService } from '../../services/grid/grid.service';
@@ -43,6 +44,11 @@ export class VersionListComponent {
 
   selection: string[] = [];
   tableData: ResponsiveTableData;
+  // list of available version numbers to be used validating the compare form input
+  // because some versions may have been deleted and should therefore not be selectable
+  // for the compare versions form
+  availableVersions: number[] = [];
+  busy: boolean;
   dmsObjectID: string;
   // latest version of the current dms object
   activeVersion: DmsObject;
@@ -81,9 +87,14 @@ export class VersionListComponent {
   @Input() layoutOptionsKey: string;
 
   /**
-   * Emitted once one or more versions from the list were selected.
+   * Emitted once the selection has changed.
    */
-  @Output() versionSelected = new EventEmitter<DmsObject[]>();
+  @Output() selectionChange = new EventEmitter<DmsObject[]>();
+
+  /**
+   * Emitted when the compare objects form has been submitted.
+   */
+  @Output() compareVersionsChange = new EventEmitter<DmsObject[]>();
 
   constructor(
     public translate: TranslateService,
@@ -93,13 +104,33 @@ export class VersionListComponent {
     private gridService: GridService
   ) {
     this.iconRegistry.registerIcons([arrowNext, refresh, versions, listModeDefault, listModeGrid, listModeSimple]);
-    this.compareForm = this.fb.group({
-      versionOne: [],
-      versionTwo: []
-    });
-    this.compareForm.valueChanges.subscribe(v => {
-      console.log(v);
-    });
+
+    const compareFormValidator: ValidatorFn = (g: FormGroup): ValidationErrors | null => {
+      const v1 = g.get('versionOne');
+      const v2 = g.get('versionTwo');
+      return this.activeVersion &&
+        v1 &&
+        v1.value <= this.activeVersion.version &&
+        v1.value >= 1 &&
+        v2 &&
+        v2.value <= this.activeVersion.version &&
+        v2.value >= 1 &&
+        v1.value !== v2.value &&
+        this.availableVersions.includes(v1.value) &&
+        this.availableVersions.includes(v2.value)
+        ? null
+        : {
+            compareForm: true
+          };
+    };
+
+    this.compareForm = this.fb.group(
+      {
+        versionOne: ['', Validators.required],
+        versionTwo: ['', Validators.required]
+      },
+      { validator: compareFormValidator }
+    );
   }
 
   private getVersion(o: any) {
@@ -111,21 +142,31 @@ export class VersionListComponent {
   }
 
   select(items: any[]) {
-    const vs = items.map(a => this.getVersion(a));
-    const [v1, v2] = [
-      vs.shift(), // focused version first
-      vs.sort().pop() // highest version second
-    ].sort(); // compare lower version against higher
+    if (items && items.length === 1) {
+      const v = this.getVersion(items[0]);
+      this.compareForm.patchValue({
+        versionTwo: this.activeVersion.version > 1 && v === this.activeVersion.version ? v - 1 : v
+      });
+    }
 
-    // if (items.length > 2) {
-    //   // reset selection
-    //   this.selection = [this.getRowNodeId(v1), this.getRowNodeId(v2)];
-    // } else {
-    const o = [v1, v2].filter(v => v).map(v => this.dmsService.getDmsObject(this.dmsObjectID, v));
-    forkJoin(o.length ? o : of(null)).subscribe(objects => {
-      this.versionSelected.emit(objects);
+    this.versionsToObjects(items.map(a => this.getVersion(a))).subscribe((objects: DmsObject[]) => {
+      this.selectionChange.emit(objects);
     });
-    // }
+  }
+
+  submitCompareForm() {
+    this.dataTable.clearSelection();
+    this.versionsToObjects([this.compareForm.value.versionOne, this.compareForm.value.versionTwo].map(a => this.getVersion(a))).subscribe(
+      (objects: DmsObject[]) => {
+        this.compareVersionsChange.emit(objects);
+      }
+    );
+  }
+
+  private versionsToObjects(versions: number[]): Observable<DmsObject[]> {
+    this.busy = true;
+    const tasks = versions.filter(v => v).map(v => this.dmsService.getDmsObject(this.dmsObjectID, v));
+    return (tasks.length ? forkJoin(tasks) : of([])).pipe(tap(_ => (this.busy = false)));
   }
 
   private getColumnDefinitions(objectTypeId: string) {
@@ -150,6 +191,7 @@ export class VersionListComponent {
           gridOptions: { getRowNodeId: o => this.getRowNodeId(o), rowMultiSelectWithClick: false }
         };
         this.activeVersion = sorted[0];
+        this.availableVersions = sorted.map(d => d.version);
         this.compareForm.patchValue({
           versionOne: this.activeVersion.version
         });

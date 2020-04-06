@@ -14,10 +14,11 @@ import { YuvObjectFormModule } from '../object-form/object-form.module';
 import { YuvPipesModule } from '../pipes/pipes.module';
 import { AuditComponent } from './audit/audit.component';
 import { ContentPreviewComponent } from './content-preview/content-preview.component';
+import { ObjectDetailsCompareComponent } from './object-details-compare/object-details-compare.component';
 import { ObjectDetailsComponent } from './object-details/object-details.component';
 import { SummaryComponent } from './summary/summary.component';
 
-const objectDetails = [ObjectDetailsComponent, SummaryComponent, AuditComponent, ContentPreviewComponent];
+const objectDetails = [ObjectDetailsComponent, ObjectDetailsCompareComponent, SummaryComponent, AuditComponent, ContentPreviewComponent];
 
 @NgModule({
   imports: [
@@ -36,7 +37,7 @@ const objectDetails = [ObjectDetailsComponent, SummaryComponent, AuditComponent,
     RouterModule,
     CalendarModule
   ],
-  declarations: [...objectDetails],
+  declarations: [...objectDetails, ObjectDetailsCompareComponent],
   exports: [...objectDetails]
 })
 export class YuvObjectDetailsModule {}

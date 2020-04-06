@@ -344,6 +344,10 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
     return colDef;
   }
 
+  clearSelection() {
+    this.gridOptions.api.deselectAll();
+  }
+
   /**
    * select rows based on list of IDs
    * @param selection default is first row

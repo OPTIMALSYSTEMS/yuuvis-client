@@ -1,0 +1,14 @@
+:host {
+  display: block;
+  height: 100%;
+  width: 100%;
+
+  ::ng-deep {
+    yuv-responsive-tab-container.content {
+      background-color: var(--panel-background);
+    }
+    .ui-tabview .ui-tabview-panels {
+      background-color: var(--panel-background-grey);
+    }
+  }
+}
