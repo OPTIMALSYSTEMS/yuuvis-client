@@ -10,6 +10,7 @@ import { TestGroupedSelectComponent } from './test-grouped-select/test-grouped-s
 import { TestIconsComponent } from './test-icons/test-icons/test-icons.component';
 import { TestLoadingSpinnerComponent } from './test-loading-spinner/test-loading-spinner.component';
 import { TestObjectCreateComponent } from './test-object-create/test-object-create.component';
+import { TestObjectDetailsCompareComponent } from './test-object-details-compare/test-object-details-compare.component';
 import { TestObjectDetailsComponent } from './test-object-details/test-object-details.component';
 import { TestObjectFormEditComponent } from './test-object-form-edit/test-object-form-edit.component';
 import { TestObjectFormComponent } from './test-object-form/test-object-form.component';
@@ -36,6 +37,7 @@ const routes: Routes = [
   { path: 'responsive-tab-container', component: TestResponsiveTabContainerComponent },
   { path: 'object-create', component: TestObjectCreateComponent },
   { path: 'object-details', component: TestObjectDetailsComponent },
+  { path: 'object-details-compare', component: TestObjectDetailsCompareComponent },
   { path: 'object-form', component: TestObjectFormComponent },
   { path: 'object-form-edit', component: TestObjectFormEditComponent },
   { path: 'panel', component: TestPanelComponent },

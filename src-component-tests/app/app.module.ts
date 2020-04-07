@@ -30,6 +30,7 @@ import { TestSummaryComponent } from './test-summary/test-summary.component';
 import { TestUploadProgressOverlayComponent } from './test-upload-progress-overlay/test-upload-progress-overlay.component';
 import { TestUserAvatarComponent } from './test-user-avatar/test-user-avatar.component';
 import { TestVersionListComponent } from './test-version-list/test-version-list.component';
+import { TestObjectDetailsCompareComponent } from './test-object-details-compare/test-object-details-compare.component';
 
 @NgModule({
   declarations: [
@@ -57,7 +58,8 @@ import { TestVersionListComponent } from './test-version-list/test-version-list.
     TestUserAvatarComponent,
     TestLoadingSpinnerComponent,
     TestColumnConfigComponent,
-    TestVersionListComponent
+    TestVersionListComponent,
+    TestObjectDetailsCompareComponent
   ],
   imports: [
     HttpClientModule,

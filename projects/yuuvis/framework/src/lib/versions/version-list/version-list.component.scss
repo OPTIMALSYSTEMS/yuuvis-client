@@ -12,6 +12,7 @@
     flex-flow: row nowrap;
     align-items: stretch;
     color: var(--color-accent);
+    margin-top: calc(var(--app-pane-padding) / 2);
 
     &.ng-invalid {
       color: var(--color-error);

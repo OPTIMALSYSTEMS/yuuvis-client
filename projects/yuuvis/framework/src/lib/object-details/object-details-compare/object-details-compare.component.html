@@ -1,5 +1,13 @@
 <yuv-panel *ngIf="objectCompareInput?.first.item" [title]="'yuv.framework.object-details-compare.title' | translate"
-  [description]="objectCompareInput?.first.label + ' - ' + objectCompareInput?.second.label">
+  [description]="objectCompareInput?.title">
+
+  <div class="status">
+    <div class="compare-status">
+      <div class="label">{{objectCompareInput?.first.label}}</div>
+      <yuv-icon icon="compare"></yuv-icon>
+      <div class="label">{{objectCompareInput?.second.label}}</div>
+    </div>
+  </div>
 
   <yuv-responsive-tab-container #tabContainer class="content" [layoutOptionsKey]="layoutOptionsKey">
     <p-tabPanel [id]="'changes'" [header]="'yuv.framework.object-details-compare.tabs.changes.title' | translate"

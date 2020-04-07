@@ -1,9 +1,9 @@
 import { PlatformLocation } from '@angular/common';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { DmsObject, PendingChangesService, Screen, ScreenService, TranslateService } from '@yuuvis/core';
-import { ObjectCompareInput } from '@yuuvis/framework';
+import { ObjectCompareInput, VersionListComponent } from '@yuuvis/framework';
 import { takeUntilDestroy } from 'take-until-destroy';
 
 @Component({
@@ -13,6 +13,9 @@ import { takeUntilDestroy } from 'take-until-destroy';
 })
 export class VersionsComponent implements OnInit, OnDestroy {
   private STORAGE_KEY = 'yuv.app.versions';
+
+  @ViewChild('versionList', { static: true }) versionList: VersionListComponent;
+
   versions: number[] = [];
   dmsObjectID: string;
   dmsObject: DmsObject;
@@ -50,6 +53,7 @@ export class VersionsComponent implements OnInit, OnDestroy {
 
   onCompareVersionsChange(objects: DmsObject[]) {
     this.compare = {
+      title: this.versionList.activeVersion.title,
       first: {
         label: this.translate.instant('yuv.client.state.versions.compare.label', { version: objects[0].version }),
         item: objects[0]

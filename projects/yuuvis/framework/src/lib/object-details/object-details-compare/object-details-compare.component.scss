@@ -1,7 +1,35 @@
+@import '../../../../../../../src/scss-shared/_mixins';
 :host {
   display: block;
   height: 100%;
   width: 100%;
+
+  .status {
+    width: 100%;
+    .compare-status {
+      display: flex;
+      width: 100%;
+      align-items: center;
+      margin-top: calc(var(--app-pane-padding) / 2);
+
+      .label {
+        flex: 1;
+        border: 2px solid var(--color-accent);
+        border-radius: 2px;
+        color: var(--color-accent);
+        text-align: center;
+        font-weight: bold;
+        @include ellipsis();
+        padding: calc((var(--app-pane-padding) / 8) + 1px) calc(var(--app-pane-padding) / 4);
+      }
+      yuv-icon {
+        color: var(--color-accent);
+        width: 24px;
+        height: 24px;
+        margin: 0 calc(var(--app-pane-padding) / 4);
+      }
+    }
+  }
 
   ::ng-deep {
     yuv-responsive-tab-container.content {

@@ -1,7 +1,13 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { IconRegistryService } from '@yuuvis/common-ui';
 import { DmsObject } from '@yuuvis/core';
+import { compare } from '../../svg.generated';
 
 export interface ObjectCompareInput {
+  /**
+   * Title string to be shown in the components header
+   */
+  titel?: string;
   first: {
     label: string;
     item: DmsObject;
@@ -34,7 +40,9 @@ export class ObjectDetailsCompareComponent implements OnInit {
    */
   @Input() layoutOptionsKey: string;
 
-  constructor() {}
+  constructor(private iconRegistry: IconRegistryService) {
+    this.iconRegistry.registerIcons([compare]);
+  }
 
   ngOnInit() {}
 }
