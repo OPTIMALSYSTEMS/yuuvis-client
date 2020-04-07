@@ -14,7 +14,7 @@ export class TestObjectDetailsCompareComponent {
 
   // compare two versions of the same dms object
   compareVersions() {
-    const objectID = '4862f9d8-9087-4376-a7e7-6626d7280ff1';
+    const objectID = 'dd9bbde7-5f03-4e8b-84c6-a9036a3045d3';
     this.dmsService.getDmsObjectVersions(objectID).subscribe(
       (res: DmsObject[]) => {
         this.compare = {

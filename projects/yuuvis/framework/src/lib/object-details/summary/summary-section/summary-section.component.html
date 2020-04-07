@@ -1,9 +1,21 @@
-<div class="summary-section" *ngIf="summary?.parent.length">
-  <h2>{{label}}<yuv-icon icon="arrowDown" (click)="toggle()"></yuv-icon>
-  </h2>
-  <div *ngFor="let item of summary?.parent" class="entry" [ngClass]="classes(item.value, item.value2)"
+<div class="section-head" (click)="toggle()">
+  {{label}}
+  <yuv-icon icon="arrowDown"></yuv-icon>
+</div>
+<div class="section-content">
+
+  <div *ngFor="let item of entries" class="entry" [ngClass]="classes(item.value, item.value2)"
     [attr.data-summary-item]="item.key">
-    <ng-container [ngTemplateOutlet]="summaryEntry" [ngTemplateOutletContext]="{ item: item }">
-    </ng-container>
+    <span class="label">{{ item.label }}</span>
+    <div class="value-area">
+      <span class="value first" *ngIf="(!isVersion(item.key) || !versionRouterLink); else link"
+        [innerHtml]="item.value | safeHtml"></span>
+      <span class="value second" *ngIf="item.value2" [innerHtml]="item.value2 | safeHtml"></span>
+
+      <ng-template #link>
+        <a class="value first" [routerLink]="versionRouterLink" [queryParams]="{version: item.value}"
+          routerLinkActive="router-link-active">{{item.value}}</a>
+      </ng-template>
+    </div>
   </div>
 </div>
