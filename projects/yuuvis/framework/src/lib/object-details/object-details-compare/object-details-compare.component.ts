@@ -7,7 +7,7 @@ export interface ObjectCompareInput {
   /**
    * Title string to be shown in the components header
    */
-  titel?: string;
+  title?: string;
   first: {
     label: string;
     item: DmsObject;
