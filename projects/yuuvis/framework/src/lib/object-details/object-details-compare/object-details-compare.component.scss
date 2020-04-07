@@ -17,6 +17,7 @@
         border: 2px solid var(--color-accent);
         border-radius: 2px;
         color: var(--color-accent);
+        background-color: rgba(var(--color-accent-rgb), 0.15);
         text-align: center;
         font-weight: bold;
         @include ellipsis();

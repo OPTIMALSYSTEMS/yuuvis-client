@@ -25,7 +25,6 @@ export interface ObjectCompareInput {
   selector: 'yuv-object-details-compare',
   templateUrl: './object-details-compare.component.html',
   styleUrls: ['./object-details-compare.component.scss']
-  // host: {class: 'yuv-object-details-compare'}
 })
 export class ObjectDetailsCompareComponent implements OnInit {
   /**

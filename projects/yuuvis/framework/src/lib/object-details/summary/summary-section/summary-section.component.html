@@ -1,0 +1,9 @@
+<div class="summary-section" *ngIf="summary?.parent.length">
+  <h2>{{label}}<yuv-icon icon="arrowDown" (click)="toggle()"></yuv-icon>
+  </h2>
+  <div *ngFor="let item of summary?.parent" class="entry" [ngClass]="classes(item.value, item.value2)"
+    [attr.data-summary-item]="item.key">
+    <ng-container [ngTemplateOutlet]="summaryEntry" [ngTemplateOutletContext]="{ item: item }">
+    </ng-container>
+  </div>
+</div>

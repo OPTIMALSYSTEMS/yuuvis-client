@@ -1,6 +1,29 @@
 <div class="object-summary" *ngIf="summary">
 
 
+
+  <div class="summary-section" *ngIf="summary?.parent.length">
+    <h2>{{'yuv.framework.object-details.summary.section.parent'|translate}}
+
+      <yuv-icon icon="arrowDown"></yuv-icon>
+    </h2>
+    <div *ngFor="let item of summary?.parent" class="entry" [ngClass]="classes(item.value, item.value2)"
+      [attr.data-summary-item]="item.key">
+      <ng-container [ngTemplateOutlet]="summaryEntry" [ngTemplateOutletContext]="{ item: item }">
+      </ng-container>
+    </div>
+  </div>
+
+
+
+
+
+
+
+
+
+
+
   <p-accordion [activeIndex]="activeIndex" [multiple]="true" [expandIcon]="'pi pi-fw pi-chevron-down'"
     [collapseIcon]="'pi pi-fw pi-chevron-up'" (onOpen)="sectionOpen($event)" (onClose)="sectionClose($event)">
 
