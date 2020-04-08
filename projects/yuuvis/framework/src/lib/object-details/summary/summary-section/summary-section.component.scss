@@ -77,6 +77,13 @@
           fill: var(--text-color-caption);
         }
       }
+      a.value.version {
+        background-color: rgba(var(--color-accent-rgb), 0.2);
+        padding: calc(var(--app-pane-padding) / 8) calc(var(--app-pane-padding) / 4);
+        &::after {
+          content: ' \00bb';
+        }
+      }
     }
 
     &.diffActive {
@@ -84,10 +91,6 @@
       $ise-color-gone: #ed5564;
 
       .value-area {
-        // display: grid;
-        // grid-template-rows: 1fr;
-        // grid-template-columns: 50% 50%;
-        // grid-template-areas: 'first second';
         .value {
           @include flex-row();
           align-items: center;
@@ -140,7 +143,7 @@
             content: '';
             background-color: $ise-color-new;
             // added
-            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="18" viewBox="0 0 24 24" width="18"><path fill="white" d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>');
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="16" viewBox="0 0 24 24" width="16"><path fill="white" d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>');
           }
         }
       }
@@ -150,7 +153,7 @@
           &::before {
             content: '';
             // modified
-            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="18" viewBox="0 0 24 24" width="18"><path fill="white" d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>');
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="16" viewBox="0 0 24 24" width="16"><path fill="white" d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>');
           }
         }
       }
@@ -161,7 +164,7 @@
           &::before {
             content: '';
             // removed
-            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="18" viewBox="0 0 24 24" width="18"><path fill="white" d="M19 13H5v-2h14v2z"/></svg>');
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="16" viewBox="0 0 24 24" width="16"><path fill="white" d="M19 13H5v-2h14v2z"/></svg>');
             background-color: $ise-color-gone;
           }
         }

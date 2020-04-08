@@ -6,10 +6,14 @@
   </yuv-version-list>
 
   <div class="yuv-slave panel">
-    <yuv-object-details-compare [objectCompareInput]="compare" *ngIf="compare; else tplSingle"
-      [layoutOptionsKey]="layoutOptionsKey + '.changes'"></yuv-object-details-compare>
+
+    <yuv-object-details-compare *ngIf="compare; else tplSingle" [objectCompareInput]="compare"
+      [layoutOptionsKey]="layoutOptionsKey + '.changes'">
+    </yuv-object-details-compare>
+
 
     <ng-template #tplSingle>
+      <div class="version">{{dmsObject?.version}}</div>
       <yuv-object-details [disableFileDrop]="true" [dmsObject]="dmsObject"
         [panelOrder]="['summary', 'indexdata', 'preview']" [layoutOptionsKey]="layoutOptionsKey">
       </yuv-object-details>

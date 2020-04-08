@@ -10,6 +10,17 @@
     }
   }
 
+  .yuv-slave .version {
+    position: absolute;
+    z-index: 1;
+    right: calc(var(--app-pane-padding) * 3);
+    top: var(--app-pane-padding);
+    font-size: 5em;
+    pointer-events: none;
+    line-height: 1em;
+    color: rgba(var(--color-accent-rgb), 0.2);
+  }
+
   .screen-s & {
     padding: 0;
 

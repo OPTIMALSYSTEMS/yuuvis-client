@@ -16,9 +16,9 @@
     <form class="compare-form" *ngIf="activeVersion?.version > 1" [formGroup]="compareForm"
       [title]="'yuv.framework.version-list.compare.tooltip' | translate" (ngSubmit)="submitCompareForm()">
       <div class="group">
-        <input type="number" max="{{activeVersion?.version}}" formControlName="versionOne">
+        <input type="number" max="{{activeVersion?.version}}" min="1" formControlName="versionOne">
         ...
-        <input type="number" formControlName="versionTwo">
+        <input type="number" max="{{activeVersion?.version}}" min="1" formControlName="versionTwo">
       </div>
       <button type="submit" class="primary" [disabled]="compareForm.invalid || busy">
         {{'yuv.framework.version-list.compare.form.submit' | translate}}

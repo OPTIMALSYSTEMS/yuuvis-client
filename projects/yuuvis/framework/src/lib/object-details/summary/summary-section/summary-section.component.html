@@ -13,7 +13,7 @@
       <span class="value second" *ngIf="item.value2" [innerHtml]="item.value2 | safeHtml"></span>
 
       <ng-template #link>
-        <a class="value first" [routerLink]="versionRouterLink" [queryParams]="{version: item.value}"
+        <a class="value first version" [routerLink]="versionRouterLink" [queryParams]="{version: item.value}"
           routerLinkActive="router-link-active">{{item.value}}</a>
       </ng-template>
     </div>

@@ -81,6 +81,14 @@ body.rtl * {
   outline-color: var(--color-accent);
 }
 
+/* Text selection background */
+::selection {
+  background: rgba(var(--color-accent-rgb), 0.2); /* WebKit/Blink Browsers */
+}
+::-moz-selection {
+  background: rgba(var(--color-accent-rgb), 0.2); /* Gecko Browsers */
+}
+
 body {
   // disable selection of ui components text
   user-select: none;
