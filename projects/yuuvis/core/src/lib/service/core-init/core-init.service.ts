@@ -31,40 +31,6 @@ export class CoreInit {
     return new Promise((resolve, reject) => {
       this.deviceService.init();
 
-      // /**
-      //  * getting a string means that we got an URL to load the config from
-      //  */
-      // let config = !Array.isArray(this.coreConfig.main)
-      //   ? of([this.coreConfig.main])
-      //   : forkJoin(
-      //       this.coreConfig.main.map(c =>
-      //         this.http.get(`${Utils.getBaseHref()}${c}`).pipe(
-      //           catchError(e => {
-      //             this.logger.error('failed to catch config file', e);
-      //             return of({});
-      //           })
-      //         )
-      //       )
-      //     );
-
-      // config
-      //   .pipe(
-      //     map(res =>
-      //       res.reduce((acc, x) => {
-      //         // merge object values on 2nd level
-      //         Object.keys(x).forEach(k => (!acc[k] || Array.isArray(x[k]) || typeof x[k] !== 'object' ? (acc[k] = x[k]) : Object.assign(acc[k], x[k])));
-      //         return acc;
-      //       }, {})
-      //     ),
-      //     tap((res: YuvConfig) => this.configService.set(res)),
-      //     switchMap((res: YuvConfig) => {
-      //       return this.authService.initUser().pipe(
-      //         catchError(e => {
-      //           return of(true);
-      //         })
-      //       );
-      //     })
-      //   )
       forkJoin(this.loadConfig(), this.authService.init()).subscribe(
         res => {
           resolve(true);
