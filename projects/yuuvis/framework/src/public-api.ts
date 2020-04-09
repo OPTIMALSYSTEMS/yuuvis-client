@@ -15,3 +15,4 @@ export * from './lib/pipes/index';
 export * from './lib/search/index';
 export * from './lib/services/index';
 export * from './lib/user/index';
+export * from './lib/util/helpers';
