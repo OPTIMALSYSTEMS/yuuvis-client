@@ -8,6 +8,7 @@ import { ObjectType, SortOption } from '@yuuvis/core';
 })
 export class TestColumnConfigComponent implements OnInit {
   options: { type: string | ObjectType; sortOptions?: SortOption[] };
+  showSelector: boolean;
 
   constructor() {}
 

@@ -12,6 +12,7 @@ export class TestPanelComponent implements OnInit {
   showIcon: boolean = true;
   showActions: boolean = true;
   showStatus: boolean = true;
+  showFooter: boolean = false;
 
   title: string;
   description: string;

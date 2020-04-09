@@ -14,6 +14,7 @@ import { stringElements } from './data/form.string';
   styleUrls: ['./test-object-form.component.scss']
 })
 export class TestObjectFormComponent implements OnInit {
+  showData: boolean;
   formModels = [
     {
       label: 'Form groups',
@@ -91,14 +92,14 @@ export class TestObjectFormComponent implements OnInit {
   setDmsObject(dmsObject: DmsObject) {
     this.busy = true;
     this.systemService.getObjectTypeForm(dmsObject.objectTypeId, 'EDIT').subscribe(
-      model => {
+      (model) => {
         this.currentModel = {
           formModel: model,
           data: dmsObject.data
         };
         this.busy = false;
       },
-      err => {
+      (err) => {
         this.busy = false;
       }
     );

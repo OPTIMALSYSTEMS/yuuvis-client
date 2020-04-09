@@ -10,6 +10,7 @@ import { AppDataService } from '../add.data.service';
 })
 export class TestSummaryComponent implements OnInit {
   summaryObject;
+  showExtras: boolean;
 
   constructor(private data: AppDataService, private localStorage: LocalStorage) {}
 
