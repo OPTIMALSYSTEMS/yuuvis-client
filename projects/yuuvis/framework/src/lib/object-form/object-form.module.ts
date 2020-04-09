@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
-import { YuvCommonUiModule } from '@yuuvis/common-ui';
 import { TranslateModule } from '@yuuvis/core';
 import { TabViewModule } from 'primeng/tabview';
+import { YuvCommonModule } from '../common/common.module';
 import { YuvComponentsModule } from '../components/components.module';
 import { YuvDirectivesModule } from '../directives/directives.module';
 import { YuvPipesModule } from '../pipes/pipes.module';
@@ -15,7 +15,17 @@ import { ObjectFormComponent } from './object-form/object-form.component';
 
 @NgModule({
   declarations: [ObjectFormComponent, ObjectFormElementComponent, ObjectFormGroupComponent, ObjectFormEditComponent],
-  imports: [CommonModule, YuvCommonUiModule, ReactiveFormsModule, YuvPipesModule, YuvFormModule, TabViewModule, TranslateModule, YuvComponentsModule, YuvDirectivesModule],
+  imports: [
+    CommonModule,
+    YuvCommonModule,
+    ReactiveFormsModule,
+    YuvPipesModule,
+    YuvFormModule,
+    TabViewModule,
+    TranslateModule,
+    YuvComponentsModule,
+    YuvDirectivesModule
+  ],
   exports: [ObjectFormComponent, ObjectFormEditComponent, ObjectFormElementComponent]
 })
-export class YuvObjectFormModule { }
+export class YuvObjectFormModule {}

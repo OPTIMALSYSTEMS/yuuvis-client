@@ -2,11 +2,11 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { YuvCommonUiModule } from '@yuuvis/common-ui';
 import { TranslateModule } from '@yuuvis/core';
 import { AccordionModule } from 'primeng/accordion';
 import { CalendarModule } from 'primeng/calendar';
 import { YuvActionModule } from '../actions/action.module';
+import { YuvCommonModule } from '../common/common.module';
 import { YuvComponentsModule } from '../components/components.module';
 import { YuvDirectivesModule } from '../directives/directives.module';
 import { YuvFormModule } from '../form/form.module';
@@ -30,7 +30,7 @@ const objectDetails = [ObjectDetailsComponent, ObjectDetailsCompareComponent, Su
     YuvPipesModule,
     ReactiveFormsModule,
     YuvFormModule,
-    YuvCommonUiModule,
+    YuvCommonModule,
     TranslateModule,
     FormsModule,
     YuvObjectFormModule,

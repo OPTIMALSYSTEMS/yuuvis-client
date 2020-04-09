@@ -1,7 +1,7 @@
 import { FormStyle, getLocaleDayNames, getLocaleFirstDayOfWeek, getLocaleMonthNames, TranslationWidth } from '@angular/common';
 import { Component, EventEmitter, HostListener, Input, OnInit, Output } from '@angular/core';
-import { IconRegistryService } from '@yuuvis/common-ui';
 import { TranslateService } from '@yuuvis/core';
+import { IconRegistryService } from '../../../../common/components/icon/service/iconRegistry.service';
 import { arrowDown } from './../../../../svg.generated';
 import { DynamicDate, Weeks } from './datepicker.interface';
 import { DatepickerService } from './service/datepicker.service';
@@ -107,7 +107,7 @@ export class DatepickerComponent implements OnInit {
       }
       if (!this.current || this.current.getMonth() !== _date.getMonth() || this.current.getFullYear() !== _date.getFullYear()) {
         this.current = _date;
-        this.weeks = this.datepickerService.buildMonth(this.current, this.startDay, dd => this.isDisabledDate(dd));
+        this.weeks = this.datepickerService.buildMonth(this.current, this.startDay, (dd) => this.isDisabledDate(dd));
       }
     }
   }

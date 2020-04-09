@@ -1,6 +1,6 @@
 import { BasePortalOutlet, CdkPortalOutlet, ComponentPortal, TemplatePortal } from '@angular/cdk/portal';
 import { Component, ComponentRef, EmbeddedViewRef, Optional, ViewChild } from '@angular/core';
-import { IconRegistryService } from '@yuuvis/common-ui';
+import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { PopoverRef } from '../popover.ref';
 import { clear } from './../../svg.generated';
 @Component({

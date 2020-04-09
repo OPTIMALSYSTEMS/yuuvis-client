@@ -1,7 +1,7 @@
 import { RowEvent } from '@ag-grid-community/core';
 import { Attribute, Component, EventEmitter, Input, Output, TemplateRef, ViewChild } from '@angular/core';
-import { IconRegistryService } from '@yuuvis/common-ui';
 import { ColumnConfig, DmsService, SearchQuery, SystemService, TranslateService } from '@yuuvis/core';
+import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { ResponsiveDataTableOptions, ViewMode } from '../../components/responsive-data-table/responsive-data-table.component';
 import { PopoverConfig } from '../../popover/popover.interface';
 import { PopoverRef } from '../../popover/popover.ref';
@@ -97,7 +97,7 @@ export class SearchResultPanelComponent {
   generateQueryDescription() {
     const translateParams = {
       term: this._searchQuery.term || '',
-      types: this._searchQuery.types.length ? this._searchQuery.types.map(t => this.systemService.getLocalizedResource(`${t}_label`)).join(', ') : null
+      types: this._searchQuery.types.length ? this._searchQuery.types.map((t) => this.systemService.getLocalizedResource(`${t}_label`)).join(', ') : null
     };
     if (translateParams.term && !translateParams.types) {
       this.queryDescription = this.translate.instant('yuv.framework.search-result-panel.header.description', translateParams);
@@ -127,7 +127,7 @@ export class SearchResultPanelComponent {
 
   openActionMenu() {
     if (this.preSelectItems) {
-      this.dmsService.getDmsObjects(this.preSelectItems).subscribe(items => {
+      this.dmsService.getDmsObjects(this.preSelectItems).subscribe((items) => {
         this.actionMenuSelection = items;
         this.actionMenuVisible = true;
       });

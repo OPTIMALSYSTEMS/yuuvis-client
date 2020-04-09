@@ -1,6 +1,6 @@
 import { Component, EventEmitter, HostBinding, Input, Output } from '@angular/core';
-import { IconRegistryService } from '@yuuvis/common-ui';
 import { BaseObjectTypeField, Utils } from '@yuuvis/core';
+import { IconRegistryService } from '../../../common/components/icon/service/iconRegistry.service';
 import { arrowDown } from '../../../svg.generated';
 import { SummaryEntry } from '../summary.interface';
 @Component({
@@ -25,8 +25,8 @@ export class SummarySectionComponent {
     this.iconRegistry.registerIcons([arrowDown]);
   }
 
-  isVersion = v => v === BaseObjectTypeField.VERSION_NUMBER;
-  isEmpty = v => Utils.isEmpty(v);
+  isVersion = (v) => v === BaseObjectTypeField.VERSION_NUMBER;
+  isEmpty = (v) => Utils.isEmpty(v);
 
   classes = (v1, v2) => ({
     entry: true,

@@ -2,19 +2,12 @@
   "extends": "./tsconfig.app.json",
   "compilerOptions": {
     "paths": {
-      "@yuuvis/common-ui": ["projects/yuuvis/common-ui/src/public-api"],
-      "@yuuvis/common-ui/*": ["projects/yuuvis/common-ui/src/lib/*"],
       "@yuuvis/core": ["projects/yuuvis/core/src/public-api"],
       "@yuuvis/core/*": ["projects/yuuvis/core/src/lib/*"],
       "@yuuvis/framework": ["projects/yuuvis/framework/src/public-api"],
       "@yuuvis/framework/*": ["projects/yuuvis/framework/src/lib/*"]
     }
-  },
-  "files": [
-    "main.ts",
-    "polyfills.ts"
-  ],
-  "include": [
-    "src-component-tests/**/*.d.ts"
-  ]
+  },
+  "files": ["main.ts", "polyfills.ts"],
+  "include": ["src-component-tests/**/*.d.ts"]
 }

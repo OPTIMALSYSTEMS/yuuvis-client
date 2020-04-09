@@ -2,8 +2,8 @@ import { CommonModule } from '@angular/common';
 import { ANALYZE_FOR_ENTRY_COMPONENTS, ModuleWithProviders, NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { YuvCommonUiModule } from '@yuuvis/common-ui';
 import { TranslateModule } from '@yuuvis/core';
+import { YuvCommonModule } from '../common/common.module';
 import { YuvComponentsModule } from '../components/components.module';
 import { YuvDirectivesModule } from '../directives/directives.module';
 import { YuvFormModule } from './../form/form.module';
@@ -43,7 +43,7 @@ export const entryComponents = [
     ReactiveFormsModule,
     TranslateModule,
     YuvComponentsModule,
-    YuvCommonUiModule
+    YuvCommonModule
   ],
   exports: [ActionMenuComponent],
   providers: [

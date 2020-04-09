@@ -1,11 +1,12 @@
 import { Location } from '@angular/common';
 import { Component, OnDestroy, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { FadeInAnimations, IconRegistryService } from '@yuuvis/common-ui';
 import { DmsService, ObjectType, ObjectTypeGroup, SystemService, SystemType, TranslateService, Utils } from '@yuuvis/core';
 import { Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
+import { FadeInAnimations } from '../../common/animations/fadein.animation';
+import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { SelectableGroup } from '../../grouped-select';
 import { FormStatusChangedEvent, ObjectFormOptions } from '../../object-form/object-form.interface';
 import { ObjectFormComponent } from '../../object-form/object-form/object-form.component';
@@ -71,7 +72,7 @@ export class ObjectCreateComponent implements OnDestroy {
       label: otg.label,
       items: otg.types
         .filter(
-          ot =>
+          (ot) =>
             ![
               // types that should not be able to be created
               SystemType.FOLDER,
@@ -107,7 +108,7 @@ export class ObjectCreateComponent implements OnDestroy {
     this.objCreateServcice.setNewState({ busy: true });
 
     this.system.getObjectTypeForm(objectType.id, 'CREATE').subscribe(
-      model => {
+      (model) => {
         this.objCreateServcice.setNewState({ busy: false });
         this.selectedObjectTypeFormOptions = {
           formModel: model,
@@ -123,7 +124,7 @@ export class ObjectCreateComponent implements OnDestroy {
         }
         this.objCreateServcice.setNewState({ done: this.isReady() });
       },
-      err => {
+      (err) => {
         this.objCreateServcice.setNewState({ done: false });
       }
     );
@@ -158,13 +159,13 @@ export class ObjectCreateComponent implements OnDestroy {
   }
 
   private createObject(id: string, data: any, files: File[]): Observable<any> {
-    return this.dmsService.createDmsObject(id, data, files, files.map(file => file.name).join(', '));
+    return this.dmsService.createDmsObject(id, data, files, files.map((file) => file.name).join(', '));
   }
 
   create() {
     this.createObject(this.selectedObjectType.id, this.formState.data, this.files)
       .pipe(takeUntilDestroy(this), catchError(Utils.catch(null, this.translate.instant('yuv.framework.object-create.notify.error'))))
-      .subscribe(res => {
+      .subscribe((res) => {
         this.notify.success(this.translate.instant('yuv.framework.object-create.notify.success'));
         if (this.createAnother) {
           this.selectedObjectType = null;

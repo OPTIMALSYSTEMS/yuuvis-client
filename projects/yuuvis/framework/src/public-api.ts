@@ -3,6 +3,7 @@ export * from 'angular-split';
 export * from 'ngx-toastr';
 export * from './lib/actions/index';
 export * from './lib/column-config/index';
+export * from './lib/common/index';
 export * from './lib/components/index';
 export * from './lib/context/index';
 export * from './lib/directives/index';

@@ -1,10 +1,10 @@
 import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
 import { ValidatorFn, Validators } from '@angular/forms';
-import { UnsubscribeOnDestroy } from '@yuuvis/common-ui';
 import { Logger, RangeValue, SearchFilter, SearchService, SystemService } from '@yuuvis/core';
 import { cloneDeep } from 'lodash-es';
 import { Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
+import { UnsubscribeOnDestroy } from '../../common/util/unsubscribe.component';
 import { ObjectFormScriptService } from '../object-form-script/object-form-script.service';
 import { ObjectFormScriptingScope } from '../object-form-script/object-form-scripting-scope';
 import { FormStatusChangedEvent, ObjectFormControlWrapper, ObjectFormOptions } from '../object-form.interface';
@@ -430,7 +430,7 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
       if (Array.isArray(formElement.value)) {
         // copy by value for arrays of objects (e.g. table data)
         value = [];
-        formElement.value.forEach(o => {
+        formElement.value.forEach((o) => {
           value.push(JSON.parse(JSON.stringify(o)));
         });
       } else {
@@ -465,9 +465,9 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
         if (this.scriptingScope && formControl._eoFormElement.value) {
           // having a scripting scope and table rows means that we need to set empty
           // columns to NULL, because otherwise mobX won't be able to track those values
-          const valueFields = formControl._eoFormElement.elements.map(e => e.name);
-          formControl._eoFormElement.value.forEach(rowValue => {
-            valueFields.forEach(valueField => {
+          const valueFields = formControl._eoFormElement.elements.map((e) => e.name);
+          formControl._eoFormElement.value.forEach((rowValue) => {
+            valueFields.forEach((valueField) => {
               if (!rowValue.hasOwnProperty(valueField)) {
                 rowValue[valueField] = null;
               }
@@ -523,7 +523,7 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
       // apply change listener to the form control, that will trigger
       // the form elements onChange listener
       let controlWatch = ctrl.valueChanges.pipe(debounceTime(500));
-      controlWatch.subscribe(v => {
+      controlWatch.subscribe((v) => {
         if (this.scriptingScope) {
           this.scriptingScope.modelChanged(v);
         }
@@ -575,7 +575,7 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
 
   // recursive method for adding values to model elements
   private setElementValues(elements, data) {
-    elements.forEach(element => {
+    elements.forEach((element) => {
       if (this.hasValue(data, element)) {
         element.value = this.getValue(data, element);
         if (element.value) {
@@ -612,7 +612,7 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
   private hasValue(data, element) {
     // differ between array of SearchFilters and a form data object
     if (Array.isArray(data)) {
-      return !!data.find(filter => filter.property === element.id);
+      return !!data.find((filter) => filter.property === element.id);
     } else {
       return data.hasOwnProperty(element.name);
     }
@@ -628,12 +628,12 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
       if (['datetime', 'integer', 'decimal'].includes(element.type)) {
         value = this.isInnerTableForm
           ? SearchService.toRangeValue(data[element.name])
-          : this.searchFilterToRangeValue(data.find(filter => filter.property === element.id));
+          : this.searchFilterToRangeValue(data.find((filter) => filter.property === element.id));
       } else {
         if (this.isInnerTableForm) {
           value = data[element.name];
         } else {
-          const filter: SearchFilter = data.find(f => f.property === element.id);
+          const filter: SearchFilter = data.find((f) => f.property === element.id);
           // take care of searches for explicit NULL values
           if (filter.operator === SearchFilter.OPERATOR.EQUAL && filter.firstValue === null) {
             element.isNotSetValue = true;
@@ -688,7 +688,7 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
   private unsubscribeAll() {
     if (this.subscriptions.length) {
       this.logger.debug('unsubscribed from ' + this.subscriptions.length + ' value change listeners.');
-      this.subscriptions.forEach(s => s.unsubscribe());
+      this.subscriptions.forEach((s) => s.unsubscribe());
       this.subscriptions = [];
     }
   }

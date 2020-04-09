@@ -1,10 +1,10 @@
 import { PlatformLocation } from '@angular/common';
 import { Component, EventEmitter, HostListener, Input, OnDestroy, Output, Renderer2, ViewChild } from '@angular/core';
-import { IconRegistryService } from '@yuuvis/common-ui';
 import { EventService, PendingChangesService, Utils, YuvEventType } from '@yuuvis/core';
 import { Dialog } from 'primeng/dialog';
 import { filter } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
+import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { clear } from '../../svg.generated';
 @Component({
   selector: 'yuv-dialog',

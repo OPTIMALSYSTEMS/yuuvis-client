@@ -1,8 +1,0 @@
-{
-  "extends": "../../../tslint.json",
-  "rules": {
-    "import-blacklist": [true, "rxjs/Rx", "@yuuvis/common-ui", ["^.*/(projects|dist)/yuuvis/(core|commmon-ui|framework).*$", "^.*/src/(app|lib).*$"]],
-    "directive-selector": [true, "attribute", "lib", "camelCase"],
-    "component-selector": [true, "element", "lib", "kebab-case"]
-  }
-}

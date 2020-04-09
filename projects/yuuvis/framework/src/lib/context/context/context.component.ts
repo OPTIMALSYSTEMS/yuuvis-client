@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output, QueryList, TemplateRef, ViewChild, ViewChildren } from '@angular/core';
-import { IconRegistryService } from '@yuuvis/common-ui';
 import { BaseObjectTypeField, ColumnConfig, DmsObject, SearchFilter, SearchQuery, SystemService, TranslateService } from '@yuuvis/core';
+import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { CellRenderer } from '../../services/grid/grid.cellrenderer';
 import { edit } from '../../svg.generated';
 import { PopoverConfig } from './../../popover/popover.interface';
