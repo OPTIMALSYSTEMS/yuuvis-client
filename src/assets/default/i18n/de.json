@@ -161,6 +161,8 @@
   "yuv.client.action.open": "Öffnen",
   "yuv.client.action.open.context": "Im Kontext öffnen",
   "yuv.client.action.open.context.description": "Öffnet das Objekt in seinem Kontext",
+  "yuv.client.action.open.versions": "Versionen anzeigen",
+  "yuv.client.action.open.versions.description": "Zeigt alle Versionen des Objekts.",
   "yuv.client.frame.app-bar.logout": "Abmelden",
   "yuv.client.frame.app-bar.pwa-update.msg": "Update verfügbar",
   "yuv.client.frame.offline.button.refresh": "Neuladen",
