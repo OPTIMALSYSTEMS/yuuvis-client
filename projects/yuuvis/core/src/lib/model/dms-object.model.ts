@@ -24,6 +24,14 @@ export class DmsObject {
   };
   contentStreamAllowed: string;
   version: number;
+  created: {
+    on: Date;
+    by: { id: string; title?: string; name?: string };
+  };
+  modified: {
+    on: Date;
+    by: { id: string; title?: string; name?: string };
+  };
 
   constructor(searchResultItem: SearchResultItem, objectType: ObjectType) {
     this.id = searchResultItem.fields.get(BaseObjectTypeField.OBJECT_ID);
@@ -36,6 +44,19 @@ export class DmsObject {
 
     this.isFolder = objectType.isFolder;
     this.contentStreamAllowed = objectType.contentStreamAllowed;
+
+    this.created = {
+      on: searchResultItem.fields.get(BaseObjectTypeField.CREATION_DATE),
+      by: {
+        id: searchResultItem.fields.get(BaseObjectTypeField.CREATED_BY)
+      }
+    };
+    this.modified = {
+      on: searchResultItem.fields.get(BaseObjectTypeField.MODIFICATION_DATE),
+      by: {
+        id: searchResultItem.fields.get(BaseObjectTypeField.MODIFIED_BY)
+      }
+    };
 
     if (searchResultItem.content) {
       this.content = {

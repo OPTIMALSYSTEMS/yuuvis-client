@@ -1,59 +1,18 @@
 <div class="object-summary" *ngIf="summary">
 
+  <yuv-summary-section [id]="'summary.parent'" *ngIf="summary?.parent.length" [visible]="visible.parent"
+    [entries]="summary?.parent" [diff]="!!dmsObject2" (visibilityChange)="onSectionVisibilityChange('parent', $event)"
+    [label]="'yuv.framework.object-details.summary.section.parent'|translate"></yuv-summary-section>
+  <yuv-summary-section [id]="'summary.core'" *ngIf="summary?.core.length" [visible]="visible.core"
+    [entries]="summary?.core" [diff]="!!dmsObject2" (visibilityChange)="onSectionVisibilityChange('core', $event)"
+    [label]="'yuv.framework.object-details.summary.section.core'|translate"></yuv-summary-section>
+  <yuv-summary-section [id]="'summary.baseparams'" *ngIf="summary?.base.length" [visible]="visible.baseparams"
+    [entries]="summary?.base" [diff]="!!dmsObject2" [versionRouterLink]="versionRouterLink"
+    (visibilityChange)="onSectionVisibilityChange('baseparams', $event)"
+    [label]="'yuv.framework.object-details.summary.section.baseparams'|translate"></yuv-summary-section>
+  <yuv-summary-section [id]="'summary.admin'" *ngIf="summary?.extras.length && showExtrasSection"
+    [visible]="visible.admin" [entries]="summary?.extras" [diff]="!!dmsObject2"
+    (visibilityChange)="onSectionVisibilityChange('admin', $event)"
+    [label]="'yuv.framework.object-details.summary.section.admin'|translate"></yuv-summary-section>
 
-  <p-accordion [activeIndex]="activeIndex" [multiple]="true" [expandIcon]="'pi pi-fw pi-chevron-down'"
-    [collapseIcon]="'pi pi-fw pi-chevron-up'" (onOpen)="sectionOpen($event)" (onClose)="sectionClose($event)">
-
-    <p-accordionTab [transitionOptions]="'0ms'" data-group="summary.section.parent" *ngIf="summary?.parent.length"
-      header="{{'yuv.framework.object-details.summary.section.parent'|translate}}">
-      <div *ngFor="let item of summary?.parent" class="entry" [ngClass]="classes(item.value, item.value2)"
-        [attr.data-summary-item]="item.key">
-        <ng-container [ngTemplateOutlet]="summaryEntry" [ngTemplateOutletContext]="{ item: item }">
-        </ng-container>
-      </div>
-    </p-accordionTab>
-
-    <p-accordionTab [transitionOptions]="'0ms'" data-group="summary.section.core" *ngIf="summary?.core.length"
-      header="{{'yuv.framework.object-details.summary.section.core'|translate}}">
-      <div *ngFor="let item of summary?.core" class="entry" [ngClass]="classes(item.value, item.value2)"
-        [attr.data-summary-item]="item.key">
-        <ng-container [ngTemplateOutlet]="summaryEntry" [ngTemplateOutletContext]="{ item: item }">
-        </ng-container>
-      </div>
-    </p-accordionTab>
-
-    <p-accordionTab [transitionOptions]="'0ms'" data-group="summary.section.baseparams" *ngIf="summary?.base.length"
-      header="{{'yuv.framework.object-details.summary.section.baseparams'|translate}}">
-      <div *ngFor="let item of summary?.base" class="entry" [ngClass]="classes(item.value, item.value2)"
-        [attr.data-summary-item]="item.key">
-        <ng-container [ngTemplateOutlet]="summaryEntry" [ngTemplateOutletContext]="{ item: item }">
-        </ng-container>
-      </div>
-    </p-accordionTab>
-
-    <p-accordionTab [transitionOptions]="'0ms'" data-group="summary.section.admin"
-      header="{{'yuv.framework.object-details.summary.section.admin'|translate}}"
-      *ngIf="summary?.extras.length && showExtrasSection">
-      <div *ngFor="let item of summary?.extras" class="entry baseparams" [ngClass]="classes(item.value, item.value2)"
-        [attr.data-summary-item]="item.key">
-        <ng-container [ngTemplateOutlet]="summaryEntry" [ngTemplateOutletContext]="{ item: item }">
-        </ng-container>
-      </div>
-    </p-accordionTab>
-  </p-accordion>
 </div>
-
-<ng-template #summaryEntry let-item="item">
-  <span class="label">{{ item.label }}</span>
-  <div class="value-area">
-    <span class="value first" *ngIf="(!isVersion(item.key) || !versionRouterLink); else link"
-      [innerHtml]="item.value | safeHtml"></span>
-    <span class="value second" *ngIf="dmsObject2" [innerHtml]="item.value2 | safeHtml"></span>
-    <ng-template #link>
-      <a class="value first" [routerLink]="versionRouterLink"
-        [queryParams]="item.value === '1' ? ({version: item.value}) : ({version: [item.value, item.value - 1].join(',')})"
-        routerLinkActive="router-link-active">{{item.value}}</a>
-    </ng-template>
-  </div>
-
-</ng-template>

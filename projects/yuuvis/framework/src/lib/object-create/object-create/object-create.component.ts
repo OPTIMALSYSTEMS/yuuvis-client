@@ -14,6 +14,12 @@ import { clear } from '../../svg.generated';
 import { ObjectCreateService } from '../object-create.service';
 import { Breadcrumb, CreateState, CurrentStep, Labels } from './../object-create.interface';
 
+/**
+ * This component is basically a wizard for creating new dms objects.
+ *
+ * @example
+ * <yuv-object-create></yuv-object-create>
+ */
 @Component({
   selector: 'yuv-object-create',
   templateUrl: './object-create.component.html',

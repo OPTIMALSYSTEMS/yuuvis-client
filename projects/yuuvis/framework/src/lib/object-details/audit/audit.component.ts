@@ -4,8 +4,16 @@ import { IconRegistryService } from '@yuuvis/common-ui';
 import { AuditQueryOptions, AuditQueryResult, AuditService, DmsObject, EventService, RangeValue, TranslateService, YuvEvent, YuvEventType } from '@yuuvis/core';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { arrowNext, search } from '../../svg.generated';
+
 /**
- * Component listing audits for a given `DmsObject`.
+ * Component showing the history of a dms object by listing its audit entries.
+ * A search/filter panel is also part of the component so you are able to handle
+ * even large numbers of audits.
+ *
+ * [Screenshot](../assets/images/yuv-audit.gif)
+ *
+ * @example
+ * <yuv-audit [objectID]="'0815'"></yuv-audit>
  */
 @Component({
   selector: 'yuv-audit',
@@ -44,8 +52,9 @@ export class AuditComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * You may provide a router link config here, that will be applied to an audit entries version number.
-   * This will be applied to a routerLink directive then.
+   * You may provide a router link config here, that will be applied to an audit entries
+   * version number. This way you can add a link to the version pointing to some other
+   * state/component dealing with versions of one dms object.
    */
   @Input() versionRouterLink: any[];
 

@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { UploadOverlayComponent } from './upload-overlay.component';
+import { SummarySectionComponent } from './summary-section.component';
 
-describe('UploadOverlayComponent', () => {
-  let component: UploadOverlayComponent;
-  let fixture: ComponentFixture<UploadOverlayComponent>;
+describe('SummarySectionComponent', () => {
+  let component: SummarySectionComponent;
+  let fixture: ComponentFixture<SummarySectionComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ UploadOverlayComponent ]
+      declarations: [ SummarySectionComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(UploadOverlayComponent);
+    fixture = TestBed.createComponent(SummarySectionComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

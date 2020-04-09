@@ -2,6 +2,11 @@ import { Component, ElementRef, HostBinding, Input, Renderer2 } from '@angular/c
 import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
 import { YuvUser } from '@yuuvis/core';
 
+/**
+ * Component rendering a users avatar. If there is no avatar image availbale, the
+ * component will render the initials of the user, but only if we can fetch a first-
+ * and lastname. Otherwise there will be a fallback image.
+ */
 @Component({
   selector: 'yuv-user-avatar',
   template: '',
@@ -12,6 +17,9 @@ export class UserAvatarComponent {
   private defaultUserImage =
     'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="rgba(0,0,0,.2)"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>';
 
+  /**
+   * The user to display the avatar image for.
+   */
   @Input()
   set user(u: YuvUser) {
     this.getUserImage(u);

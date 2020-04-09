@@ -9,20 +9,31 @@ import {
   ObjectTypeField,
   ParentField,
   SecondaryObjectTypeField,
-  SystemService,
-  Utils
+  SystemService
 } from '@yuuvis/core';
 import { GridService } from '../../services/grid/grid.service';
 import { Summary, SummaryEntry } from './summary.interface';
 
 /**
- * Component that reders a summary for a given `DmsObject`. It will list the index data set for the
- * object devided into sections.
+ * This component can be used in two different ways:
  *
- * You may also provide two dms objects (using input property 'compareObjects') in order to show
+ * ### Show object summary
+ * If you provide a DmsObject instance using the `dmsObject` input, this component reders a summary
+ * for a given `DmsObject`. It will list existing  index data set for the object devided into sections.
+ * It also displays information about the attached document file and some technical aspects.
+ *
+ * ### Compare objects
+ * If you provide two dms objects (using input property `compareObjects`) the component will show
  * a diff between the indexdata of those 2 objects. You need to make sure that all compare objects
  * share the same object type. A good example for using this feature is comparing different
  * versions of a dms object.
+ *
+ * @example
+ * <!-- summary of particular dms object -->
+ * <yuv-summary [dmsObject]="dmsObject"></yuv-summary>
+ *
+ * <!-- compare two dms object -->
+ * <yuv-summary [compareObjects]="[dmsObject1, dmsObject2]"></yuv-summary>
  */
 @Component({
   selector: 'yuv-summary',
@@ -30,9 +41,16 @@ import { Summary, SummaryEntry } from './summary.interface';
   styleUrls: ['./summary.component.scss']
 })
 export class SummaryComponent implements OnInit {
-  private STORAGE_KEY_ACTIVE_INDEX = 'yuv.framework.summary.active-index';
+  private STORAGE_KEY_SECTION_VISIBLE = 'yuv.framework.summary.section.visibility';
   summary: Summary;
-  activeIndex: number[] = null;
+
+  visible: any = {
+    parent: true,
+    core: true,
+    baseparams: true,
+    admin: true
+  };
+
   dmsObjectID: string;
 
   /**
@@ -43,16 +61,6 @@ export class SummaryComponent implements OnInit {
     if (dmsObject) {
       this.dmsObjectID = dmsObject.id;
       this.summary = this.generateSummary(dmsObject);
-
-      if (this.activeIndex === null) {
-        this.activeIndex = [0, 1];
-        if (this.showExtrasSection) {
-          this.activeIndex.push(2);
-        }
-        if (this.summary.parent.length > 0) {
-          this.activeIndex.push(3);
-        }
-      }
     } else {
       this.summary = null;
     }
@@ -81,8 +89,9 @@ export class SummaryComponent implements OnInit {
   }
 
   /**
-   * You may provide a router link config here, that will be applied to the objects verion number.
-   * This will be applied to a routerLink directive then.
+   * You may provide a router link config here, that will be applied to an audit entries
+   * version number. This way you can add a link to the version pointing to some other
+   * state/component dealing with versions of one dms object.
    */
   @Input() versionRouterLink: any[];
 
@@ -91,31 +100,14 @@ export class SummaryComponent implements OnInit {
    */
   @Input() showExtrasSection: boolean;
 
-  isEmpty = v => Utils.isEmpty(v);
+  // isEmpty = v => Utils.isEmpty(v);
   isVersion = v => v === BaseObjectTypeField.VERSION_NUMBER;
-
-  classes = (v1, v2) => ({
-    entry: true,
-    diffActive: !!this.dmsObject2,
-    new: !!this.dmsObject2 && this.isEmpty(v1) && !this.isEmpty(v2),
-    removed: !!this.dmsObject2 && !this.isEmpty(v1) && this.isEmpty(v2),
-    modified: !!this.dmsObject2 && !this.isEmpty(v1) && !this.isEmpty(v2)
-  });
 
   constructor(private systemService: SystemService, private gridService: GridService, private logger: Logger, private appCacheService: AppCacheService) {}
 
-  sectionOpen(e) {
-    const activeIndex = this.activeIndex.filter(i => i !== e.index);
-    activeIndex.push(e.index);
-    this.setState(activeIndex);
-  }
-  sectionClose(e) {
-    this.setState(this.activeIndex.filter(i => i !== e.index));
-  }
-
-  private setState(activeIndex: number[]) {
-    this.activeIndex = activeIndex;
-    this.appCacheService.setItem(this.STORAGE_KEY_ACTIVE_INDEX, this.activeIndex).subscribe();
+  onSectionVisibilityChange(k, visible: boolean) {
+    this.visible[k] = visible;
+    this.appCacheService.setItem(this.STORAGE_KEY_SECTION_VISIBLE, this.visible).subscribe();
   }
 
   private excludeTables(objectTypeId): string[] {
@@ -219,9 +211,9 @@ export class SummaryComponent implements OnInit {
 
   ngOnInit(): void {
     // TODO: store component state using a general service
-    this.appCacheService.getItem(this.STORAGE_KEY_ACTIVE_INDEX).subscribe((activeIndex: number[]) => {
-      if (activeIndex !== null) {
-        this.activeIndex = activeIndex;
+    this.appCacheService.getItem(this.STORAGE_KEY_SECTION_VISIBLE).subscribe((visibility: number[]) => {
+      if (visibility !== null) {
+        this.visible = visibility;
       }
     });
   }

@@ -6,6 +6,12 @@ import { takeUntilDestroy } from 'take-until-destroy';
 import { folder, noFile, undock } from '../../svg.generated';
 import { ContentPreviewService } from './service/content-preview.service';
 
+/**
+ * Component rendering a content preview for a dms object.
+ *
+ * @example
+ * <yuv-content-preview [dmsObject]="dmsObject"></yuv-content-preview>
+ */
 @Component({
   selector: 'yuv-content-preview',
   templateUrl: './content-preview.component.html',
@@ -18,8 +24,9 @@ export class ContentPreviewComponent implements OnInit, OnDestroy, AfterViewInit
   undockWin: Window;
   previewSrc: string;
 
-  @Input() searchTerm = '';
-
+  /**
+   * DmsObject to show the preview for.
+   */
   @Input()
   set dmsObject(object: DmsObject) {
     // generate preview URI with streamID to enable refresh if file was changed
@@ -38,6 +45,13 @@ export class ContentPreviewComponent implements OnInit, OnDestroy, AfterViewInit
   get dmsObject() {
     return this._dmsObject;
   }
+
+  /**
+   * If you provide a search term here, the component will
+   * try to highlight this term within the preview. Depending on the
+   * type of viewer rendering the objects content, this may be supported or not.
+   */
+  @Input() searchTerm = '';
 
   get iframe() {
     return this.elRef.nativeElement.querySelector('iframe');

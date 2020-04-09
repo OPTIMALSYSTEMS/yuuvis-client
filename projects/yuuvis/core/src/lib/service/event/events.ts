@@ -1,7 +1,6 @@
 /**
  * Events emitted by parts of the application
  */
-
 export const YuvEventType = {
   LOGOUT: 'yuv.user.logout',
   CLIENT_LOCALE_CHANGED: 'yuv.user.locale.client.changed',

@@ -6,10 +6,9 @@ import { clear } from '../../../svg.generated';
  * Creates form input for boolean values (checkbox).
  *
  * Implements `ControlValueAccessor` so it can be used within Angular forms.
- * 
- * ```html
-<yuv-checkbox></yuv-checkbox>
-```
+ *
+ * @example
+ * <yuv-checkbox></yuv-checkbox>
  *
  */
 @Component({

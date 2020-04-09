@@ -3,6 +3,15 @@ import { ControlValueAccessor, FormBuilder, FormControl, FormGroup, NG_VALIDATOR
 import { RangeValue, SearchFilter, TranslateService } from '@yuuvis/core';
 import { LocaleDatePipe } from '../../../pipes/locale-date.pipe';
 
+/**
+ * Creates form input for date ranges. Based upon {@link DatetimeComponent}.
+ *
+ * Implements `ControlValueAccessor` so it can be used within Angular forms.
+ *
+ * @example
+ * <yuv-datetime-range></yuv-datetime-range>
+ *
+ */
 @Component({
   selector: 'yuv-datetime-range',
   templateUrl: './datetime-range.component.html',
@@ -21,8 +30,14 @@ import { LocaleDatePipe } from '../../../pipes/locale-date.pipe';
   ]
 })
 export class DatetimeRangeComponent implements OnInit, ControlValueAccessor, Validator {
-  @Input() withTime: boolean;
+  /**
+   * Title for the datepicker
+   */
   @Input() pickerTitle: string;
+  /**
+   * Enables setting time as well (default: false)
+   */
+  @Input() withTime: boolean;
 
   rangeForm: FormGroup;
   value: RangeValue;

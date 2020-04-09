@@ -14,6 +14,16 @@ import { ObjectFormUtils } from '../object-form.utils';
 import { FormValidation } from '../object-form.validation';
 import { PluginsService } from './../../services/plugins/plugins.service';
 
+/**
+ * Component rendering a model based form.
+ * The yuuvis backend provides form models for different kinds of object
+ * types and situations. This component is able to render those models according
+ * the their situation. It also has the ability to run form scripts that interact
+ * with the form elements based on events triggered when values change.
+ *
+ * @example
+ * <yuv-object-form [formOptions]="options" (statusChanged)="check($event)"></yuv-object-form>
+ */
 @Component({
   selector: 'yuv-object-form',
   templateUrl: './object-form.component.html',
@@ -21,7 +31,23 @@ import { PluginsService } from './../../services/plugins/plugins.service';
   styleUrls: ['./object-form.component.scss']
 })
 export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestroy, AfterViewInit {
+  /**
+   * There are special scenarios where forms are within a form themselves.
+   * Setting this property to true, will handle the current form in a
+   * slightly different way when it comes to form scripting.
+   */
   @Input() isInnerTableForm: boolean;
+
+  /**
+   * Inputs and settings for the form.
+   */
+  @Input('formOptions')
+  set options(formOptions: ObjectFormOptions) {
+    this.defaultFormOptions = formOptions;
+    this.formOptions = cloneDeep(formOptions);
+    this.init();
+  }
+
   // triggered when the forms state has been changed
   @Output() statusChanged = new EventEmitter<FormStatusChangedEvent>();
   // handler to be executed after the form has been set up
@@ -44,13 +70,6 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
   // local store for all the form control references
   private formControls = {};
   private initialValidators = {};
-
-  @Input('formOptions')
-  set options(formOptions: ObjectFormOptions) {
-    this.defaultFormOptions = formOptions;
-    this.formOptions = cloneDeep(formOptions);
-    this.init();
-  }
 
   constructor(
     private logger: Logger,

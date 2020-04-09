@@ -9,7 +9,7 @@ $range-selection-highlight-color: $primary-color;
   yuv-responsive-data-table {
     // versions data table
     &.versions {
-      .rdt-row.row-grid.version {
+      .rdt-row.row-grid {
         &::after {
           position: absolute;
           right: var(--app-pane-padding);
@@ -17,7 +17,7 @@ $range-selection-highlight-color: $primary-color;
           margin: 0;
         }
       }
-      .rdt-row.version {
+      .rdt-row {
         &::after {
           content: attr(data-version);
           border-radius: 4px;
@@ -31,9 +31,12 @@ $range-selection-highlight-color: $primary-color;
         .main {
           padding: 0 var(--app-pane-padding);
           flex: 1;
+          .date {
+            display: block !important;
+          }
         }
       }
-      .ag-row-selected .rdt-row.version {
+      .ag-row-selected .rdt-row {
         &::after {
           background-color: var(--color-accent);
           color: #fff;
@@ -58,19 +61,30 @@ $range-selection-highlight-color: $primary-color;
 
         .rdt-row {
           display: flex;
-          line-height: 1.7em;
           overflow: hidden;
 
           .main {
+            line-height: 1.5em;
+            min-width: 0;
+
             .title {
+              line-height: 1.7em;
               font-weight: bold;
               @include ellipsis();
               display: block;
             }
+
+            .date,
             .description {
               opacity: 0.54;
               @include ellipsis();
               display: block;
+            }
+
+            .date {
+              font-size: var(--font-hint);
+              font-family: monospace;
+              display: none;
             }
           }
 

@@ -11,7 +11,7 @@
   display: grid;
   background-color: var(--panel-background-grey);
   grid-template-columns: 1fr;
-  grid-template-rows: var(--app-pane-header-height) 1fr auto;
+  grid-template-rows: auto 1fr auto;
   grid-template-areas: 'header' 'content' 'footer';
 
   height: 100%;
@@ -28,58 +28,56 @@
   .header {
     display: grid;
     background-color: var(--panel-background);
-    grid-template-columns: auto 1fr auto;
-    grid-template-rows: 1fr auto;
-    grid-template-areas: 'icon header_text actions' 'status status status';
     grid-area: header;
-    padding: var(--app-pane-padding);
     color: var(--text-color-caption);
 
-    .header_text {
-      grid-area: header_text;
-      display: grid;
-      grid-template-columns: 1fr;
-      grid-template-rows: auto 1fr;
-      grid-template-areas: 'title' 'description';
+    grid-template-columns: var(--app-pane-padding) auto 1fr auto var(--app-pane-padding);
+    grid-template-rows: var(--app-pane-padding) 1fr auto auto var(--app-pane-padding);
+    grid-template-areas:
+      '. . . . .'
+      '. icon header_title actions .'
+      '. icon header_description actions .'
+      '. status status status .'
+      '. . . . .';
+
+    .header-wrap {
+      margin: var(--app-pane-padding);
     }
 
     .header_title {
-      grid-area: title;
+      grid-area: header_title;
       font-weight: var(--font-weight-normal);
       font-size: var(--font-title);
       @include ellipsis();
-      display: flex;
-      align-items: center;
     }
 
     .header_description {
-      grid-area: description;
+      grid-area: header_description;
       font-weight: var(--font-weight-normal);
       font-size: var(--font-subhead);
-      line-height: 1em;
-      margin-top: 0.5em;
+      margin-top: calc(var(--app-pane-padding) / 4);
       @include ellipsis();
     }
 
-    > .icon {
+    .header-icon {
       grid-area: icon;
-      padding-top: calc(var(--app-pane-padding) / 4);
+      @include bidi-style(margin-right, var(--app-pane-padding), margin-left, var(--app-pane-padding));
 
       svg {
-        margin-right: var(--app-pane-padding);
         fill: currentColor;
       }
 
-      &.close {
-        display: none;
-      }
+      // &.close {
+      //   display: none;
+      // }
     }
 
     > .actions {
       grid-area: actions;
+      display: flex;
+      align-items: flex-start;
 
       .yuv-icon {
-        // color: var(--text-color-caption);
         padding: calc(var(--app-pane-padding) / 4);
         box-sizing: content-box;
         border-radius: 2px;
@@ -110,5 +108,7 @@
 
   .footer {
     grid-area: footer;
+    background-color: var(--panel-background);
+    padding: calc(var(--app-pane-padding) / 2) var(--app-pane-padding);
   }
 }
