@@ -228,6 +228,10 @@ body {
           color: var(--text-color-caption);
         }
 
+        &:focus {
+          box-shadow: none;
+        }
+
         // active tab style
         &.ui-state-active {
           background-color: transparent;
@@ -238,7 +242,6 @@ body {
             background-color: transparent;
             border-width: 0 0 $ui-tabs-border-size 0;
             border-color: var(--color-accent);
-
             a {
               color: var(--text-color-body);
             }
