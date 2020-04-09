@@ -7,7 +7,7 @@ import { YuvCommonUiModule } from '@yuuvis/common-ui';
 import { TranslateModule } from '@yuuvis/core';
 import { AutoCompleteModule } from 'primeng/autocomplete';
 import { OverlayPanelModule } from 'primeng/overlaypanel';
-import { ActionModule } from '../actions/action.module';
+import { YuvActionModule } from '../actions/action.module';
 import { YuvColumnConfigModule } from '../column-config/column-config.module';
 import { YuvComponentsModule } from '../components/components.module';
 import { YuvDirectivesModule } from '../directives/directives.module';
@@ -35,7 +35,7 @@ const components = [QuickSearchComponent, SearchResultComponent, SearchResultPan
     YuvComponentsModule,
     YuvPopoverModule,
     YuvCommonUiModule,
-    ActionModule,
+    YuvActionModule,
     AutoCompleteModule,
     YuvFormModule,
     YuvDirectivesModule,

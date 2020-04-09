@@ -14,5 +14,6 @@ export * from './lib/object-form/index';
 export * from './lib/pipes/index';
 export * from './lib/search/index';
 export * from './lib/services/index';
+export * from './lib/svg.generated';
 export * from './lib/user/index';
 export * from './lib/versions/index';
