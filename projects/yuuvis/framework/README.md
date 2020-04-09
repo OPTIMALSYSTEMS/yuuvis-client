@@ -1,33 +1,11 @@
 # @yuuvis/framework
 
-Component library for creating applications facing a yuuvis MOMENTUM backend.
+Component library for creating applications facing a yuuvis® MOMENTUM backend.
 
 ## Intentions
 
 This library provides yuuvis developers with a collection of UI components for creating their own client applications.
-It depends on `@yuuvis/framework` and is also the foundation of the yuuvis client application.
-
-## Usage
-
-#### 1. Import `YuvFrameworkModule`:
-
-To use `@yuuvis/framwork` in your Angular project you have to import `YuvFrameworkModule.forRoot()` in the root NgModule of your application.
-
-```ts
-import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
-import { YuvFrameworkModule } from '@yuuvis/framework';
-
-@NgModule({
-  imports: [BrowserModule, YuvFrameworkModule.forRoot()],
-  bootstrap: [AppComponent]
-})
-export class AppModule {}
-```
-
-# @yuuvis/framework
-
-`@yuuvis/framework` library provides a set of services to interact with a yuuvis MOMENTUM backend.
+It depends on `@yuuvis/framework` and is also the foundation of the yuuvis® client application.
 
 ## Installation
 
@@ -90,7 +68,7 @@ The main configuration file is supposed to be located at `assets/default/config/
 
 ##### Translations
 
-The `@yuuvis/framework` library sets up a translations module that can be used within the application that you are creating. This module will be bound to the language a user has set up on the yuuvis MOMENTUM backend. In order to be able to initialize this module the core config needs to know about where you store your translation files. By default they are supposed to be at `assets/default/i18n/`.
+The `@yuuvis/framework` library sets up a translations module that can be used within the application that you are creating. This module will be bound to the language a user has set up on the yuuvis® MOMENTUM backend. In order to be able to initialize this module the core config needs to know about where you store your translation files. By default they are supposed to be at `assets/default/i18n/`.
 
 Inside those folder you then provide a file for each supported language (`en.json`, `de.json`). If you do not need translations, just provide empty files here.
 
@@ -113,17 +91,4 @@ export class AppModule {}
 
 #### 3. Use `YuvFrameworkModule`:
 
-Once you finshed steps one and two you are ready to go. Just inject the services you need into the component like you're used to do.
-
-```ts
-import { UserService } from '@yuuvis/framework';
-
-@Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
-})
-export class AppComponent {
-  constructor(private userService: UserService) {}
-}
-```
+Once you finshed steps one and two you are ready to go. Just use the components like any other UI component. For details check out `@yuuvis/framework` documentation.
