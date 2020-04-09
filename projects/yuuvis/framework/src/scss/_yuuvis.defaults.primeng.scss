@@ -176,6 +176,10 @@ body {
     > ul.ui-inputtext {
       padding: 0;
 
+      &.ui-state-focus {
+        box-shadow: none !important;
+      }
+
       .ui-chips-input-token input {
         font-family: 'Roboto';
         font-size: var(--font-body);
