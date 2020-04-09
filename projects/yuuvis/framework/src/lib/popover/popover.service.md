@@ -23,7 +23,7 @@ The template is hooked up with a template variable so we are able to reference i
 
 ...
 // get a reference to the template
-@ViewChild('popupTemplate', { static: false }) popupTemplate: TemplateRef<any>;
+@ViewChild('popupTemplate') popupTemplate: TemplateRef<any>;
 ...
 
 showPopup() {
