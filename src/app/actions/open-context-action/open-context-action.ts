@@ -18,8 +18,8 @@ export class OpenContextActionComponent extends DmsObjectTarget implements LinkA
 
   constructor(private translate: TranslateService, private router: Router, private route: ActivatedRoute) {
     super();
-    this.label = this.translate.instant('yuv.framework.action-menu.action.open.context');
-    this.description = this.translate.instant('yuv.framework.action-menu.action.open.context.description');
+    this.label = this.translate.instant('yuv.client.action.open.context');
+    this.description = this.translate.instant('yuv.client.action.open.context.description');
   }
 
   isExecutable(item: DmsObject): Observable<boolean> {
@@ -30,7 +30,7 @@ export class OpenContextActionComponent extends DmsObjectTarget implements LinkA
   getLink(selection: DmsObject[]) {
     const { id, isFolder, parentId } = selection[0];
     if (isFolder || !parentId) {
-      this.label = this.translate.instant('yuv.framework.action-menu.action.open');
+      this.label = this.translate.instant('yuv.client.action.open');
     }
     return `/object/${isFolder || !parentId ? id : parentId}`;
   }
