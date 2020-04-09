@@ -170,7 +170,7 @@ export class GroupedSelectComponent implements AfterViewInit, ControlValueAccess
   }
 
   itemClicked(item: SelectableInternal) {
-    this.keyManager.updateActiveItemIndex(item.index);
+    this.keyManager.updateActiveItem(item.index);
   }
 
   isSelected(item): boolean {
