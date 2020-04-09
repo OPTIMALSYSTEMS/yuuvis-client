@@ -3,8 +3,9 @@
   background-color: transparent;
   color: var(--text-color-body);
 
-  .ag-root {
+  .ag-root-wrapper {
     border: 0;
+    background-color: transparent;
   }
 
   .ag-header {
@@ -13,7 +14,8 @@
     border-bottom: 1px solid var(--panel-divider-color);
   }
 
-  .ag-header-cell {
+  .ag-header-cell,
+  .ag-header-icon {
     color: var(--text-color-caption);
 
     .ag-cell-label-container {
@@ -23,6 +25,7 @@
 
   .ag-row {
     border-color: var(--panel-divider-color);
+    color: var(--text-color-body);
 
     &.ag-row-odd:not(.ag-row-selected),
     &.ag-row-even:not(.ag-row-selected) {
