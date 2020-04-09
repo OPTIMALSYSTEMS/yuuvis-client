@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { LocalStorage, StorageMap } from '@ngx-pwa/local-storage';
-import { forkJoin, from, Observable } from 'rxjs';
-import { switchMap, take } from 'rxjs/operators';
+import { forkJoin, Observable } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 import { Utils } from '../../util/utils';
 
 /**
@@ -32,12 +32,17 @@ export class AppCacheService {
   }
 
   getStorage(): Observable<any> {
-    return from(this.storageMap.keys()).pipe(
-      take(100),
+    return new Observable<string[]>(observer => {
+      const keys = [];
+      this.storageMap.keys().subscribe({
+        next: key => keys.push(key),
+        complete: () => observer.next(keys)
+      });
+    }).pipe(
       switchMap(keys =>
         forkJoin(
           Utils.arrayToObject(
-            keys as any, // TODO: fix this
+            keys,
             o => o,
             k => this.getItem(k)
           )
