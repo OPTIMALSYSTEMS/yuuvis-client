@@ -10,6 +10,7 @@ body {
 
     &:enabled:focus:not(.ui-state-error) {
       border-color: var(--color-accent);
+      box-shadow: none;
     }
   }
 
