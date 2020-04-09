@@ -7,7 +7,7 @@ import { CoreConfig, CORE_CONFIG, CUSTOM_CONFIG, YuvCoreModule, YuvCoreSharedMod
 import { AngularSplitModule } from 'angular-split';
 import { ToastrModule } from 'ngx-toastr';
 import { OverlayPanelModule } from 'primeng/overlaypanel';
-import { ActionModule } from './actions/action.module';
+import { YuvActionModule } from './actions/action.module';
 import { YuvColumnConfigModule } from './column-config/column-config.module';
 import { YuvComponentsModule } from './components/components.module';
 import { YuvContextModule } from './context/context.module';
@@ -52,7 +52,7 @@ import { YuvVersionsModule } from './versions/versions.module';
     YuvObjectCreateModule,
     YuvPipesModule,
     OverlayPanelModule,
-    ActionModule,
+    YuvActionModule,
     YuvCoreSharedModule,
     YuvComponentsModule,
     AngularSplitModule.forRoot(),
@@ -80,7 +80,7 @@ import { YuvVersionsModule } from './versions/versions.module';
     AngularSplitModule,
     YuvCoreSharedModule,
     YuvObjectCreateModule,
-    ActionModule,
+    YuvActionModule,
     ToastrModule
   ],
   providers: [

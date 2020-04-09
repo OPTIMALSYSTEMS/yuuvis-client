@@ -18,7 +18,10 @@ export class ActionService {
     @Inject(CUSTOM_ACTIONS) custom_actions: any[] = [],
     private _componentFactoryResolver: ComponentFactoryResolver
   ) {
-    this.allActionComponents = actions.concat(custom_actions).filter(entry => entry.target && !entry.isSubAction && !entry.disabled);
+    this.allActionComponents = []
+      .concat(...actions)
+      .concat(custom_actions)
+      .filter((entry) => entry.target && !entry.isSubAction && !entry.disabled);
   }
 
   getActionsList(selection: any[], viewContainerRef: ViewContainerRef): Observable<ActionListEntry[]> {
@@ -40,16 +43,16 @@ export class ActionService {
   getExecutableActionsListFromGivenActions(allActionComponents: any[], selection: any[], viewContainerRef: ViewContainerRef): Observable<ActionListEntry[]> {
     if (selection && selection.length) {
       const allActionsList: ActionListEntry[] = allActionComponents
-        .filter(actionComponent => selection[0] instanceof actionComponent.target)
+        .filter((actionComponent) => selection[0] instanceof actionComponent.target)
         .map((actionComponent: any) => this.createExecutableActionListEntry(actionComponent, [], viewContainerRef));
 
       const targetActionsList = allActionsList.filter((actionListEntry: any) => selection[0] instanceof actionListEntry.target);
       const observables = [];
-      targetActionsList.forEach(actionListEntry => {
-        selection.forEach(item => {
+      targetActionsList.forEach((actionListEntry) => {
+        selection.forEach((item) => {
           let observable = actionListEntry.action.isExecutable(item);
           observables.push(observable);
-          observable.subscribe(res => {
+          observable.subscribe((res) => {
             if (res) {
               actionListEntry.availableSelection.push(item);
             }
@@ -61,7 +64,7 @@ export class ActionService {
         combineAll(),
         map(() =>
           targetActionsList
-            .filter(actionListEntry => this.isRangeAllowed(actionListEntry.action, actionListEntry.availableSelection.length))
+            .filter((actionListEntry) => this.isRangeAllowed(actionListEntry.action, actionListEntry.availableSelection.length))
             .sort(Utils.sortValues('action.priority'))
         )
       );

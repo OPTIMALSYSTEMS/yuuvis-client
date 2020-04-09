@@ -1,11 +1,8 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DmsObject, TranslateService } from '@yuuvis/core';
+import { DmsObjectTarget, LinkAction, openContext, SelectionRange } from '@yuuvis/framework';
 import { Observable, of as observableOf } from 'rxjs';
-import { openContext } from '../../../svg.generated';
-import { DmsObjectTarget } from '../../action-target';
-import { LinkAction } from '../../interfaces/action.interface';
-import { SelectionRange } from '../../selection-range.enum';
 
 @Component({
   selector: 'yuv-open-context-action',
@@ -26,14 +23,8 @@ export class OpenContextActionComponent extends DmsObjectTarget implements LinkA
   }
 
   isExecutable(item: DmsObject): Observable<boolean> {
-    const isLatestVersion = this.route.snapshot.queryParams.version ? this.route.snapshot.fragment === item.version.toString() : true;
-    const isNotSameObjectState = !('/' + this.route.snapshot.url.map(a => a.path).join('/')).match(this.getLink([item]));
-    return observableOf(isNotSameObjectState && isLatestVersion);
-  }
-
-  getFragment(selection: DmsObject[]) {
-    const { id, isFolder, parentId } = selection[0];
-    return isFolder || !parentId ? null : id;
+    const isNotSameObjectState = !('/' + this.route.snapshot.url.map((a) => a.path).join('/')).match(this.getLink([item]));
+    return observableOf(isNotSameObjectState);
   }
 
   getLink(selection: DmsObject[]) {

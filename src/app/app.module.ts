@@ -7,6 +7,7 @@ import { YuvCommonUiModule } from '@yuuvis/common-ui';
 import { YuvColumnConfigModule, YuvComponentsModule, YuvDirectivesModule, YuvFrameworkModule } from '@yuuvis/framework';
 import { AccordionModule } from 'primeng/accordion';
 import { environment } from '../environments/environment';
+import { ActionsModule } from './actions/actions.module';
 import { AppComponent } from './app.component';
 import { FrameComponent } from './components/frame/frame.component';
 import { AppRoutingModule } from './routing/app.routes.module';
@@ -47,6 +48,7 @@ import { VersionsComponent } from './states/versions/versions.component';
     }),
     AppRoutingModule,
     AboutModule,
+    ActionsModule,
     YuvComponentsModule,
     YuvCommonUiModule,
     YuvColumnConfigModule,
