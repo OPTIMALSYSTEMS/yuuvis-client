@@ -2,7 +2,7 @@ import { Component, ElementRef, forwardRef, Input } from '@angular/core';
 import { ControlValueAccessor, FormControl, NG_VALIDATORS, NG_VALUE_ACCESSOR, Validator } from '@angular/forms';
 import { IconRegistryService } from '@yuuvis/common-ui';
 import { Utils } from '@yuuvis/core';
-import { envelope, globe } from '../../../svg.generated';
+import { envelope, globe, phone } from '../../../svg.generated';
 /**
  * Creates form input for strings. Based on the input values different kinds of inputs will be generated.
  *
@@ -19,6 +19,13 @@ import { envelope, globe } from '../../../svg.generated';
  * <yuv-string [multiline]="true" [size]="'large'"></yuv-string>
  *
  */
+
+export enum Classification {
+  PHONE = 'phone',
+  EMAIL = 'email',
+  URL = 'url'
+}
+
 @Component({
   selector: 'yuv-string',
   templateUrl: './string.component.html',
@@ -88,7 +95,7 @@ export class StringComponent implements ControlValueAccessor, Validator {
   validationErrors = [];
 
   constructor(private elementRef: ElementRef, private iconRegistry: IconRegistryService) {
-    this.iconRegistry.registerIcons([envelope, globe]);
+    this.iconRegistry.registerIcons([envelope, globe, phone]);
   }
 
   propagateChange = (_: any) => {};
@@ -122,30 +129,31 @@ export class StringComponent implements ControlValueAccessor, Validator {
       return;
     }
 
-    const multiCheck = check => !!(this.multiselect ? val : [val]).find(v => check(v));
+    const multiCheck = (check) => !!(this.multiselect ? val : [val]).find((v) => check(v));
 
     // validate regular expression
-    if (this.regex && multiCheck(v => !RegExp(this.regex).test(v))) {
+    if (this.regex && multiCheck((v) => !RegExp(this.regex).test(v))) {
       this.validationErrors.push({ key: 'regex' });
     }
+    console.log(multiCheck((v) => !this.validateClassification(v)));
 
     // validate classification settings
-    if (this.classification && multiCheck(v => !this.validateClassification(v))) {
+    if (this.classification && multiCheck((v) => !this.validateClassification(v))) {
       this.validationErrors.push({ key: 'classification' + this.classification });
     }
 
     // validate min length
-    if (!Utils.isEmpty(this.minLength) && multiCheck(v => v.length < this.minLength)) {
+    if (!Utils.isEmpty(this.minLength) && multiCheck((v) => v.length < this.minLength)) {
       this.validationErrors.push({ key: 'minlength', params: { minLength: this.minLength } });
     }
 
     // validate max length
-    if (!Utils.isEmpty(this.maxLength) && multiCheck(v => v.length > this.maxLength)) {
+    if (!Utils.isEmpty(this.maxLength) && multiCheck((v) => v.length > this.maxLength)) {
       this.validationErrors.push({ key: 'maxlength', params: { maxLength: this.maxLength } });
     }
 
     // validate invalid if only whitespaces
-    if (multiCheck(v => v.length && !v.trim().length)) {
+    if (multiCheck((v) => v.length && !v.trim().length)) {
       this.validationErrors.push({ key: 'onlyWhitespaces' });
     }
 
@@ -161,7 +169,7 @@ export class StringComponent implements ControlValueAccessor, Validator {
 
   onBlur() {
     if (this.value) {
-      this.value = this.multiselect ? this.value.map(v => v.trim()) : this.value.trim();
+      this.value = this.multiselect ? this.value.map((v) => v.trim()) : this.value.trim();
     }
   }
 
@@ -170,10 +178,12 @@ export class StringComponent implements ControlValueAccessor, Validator {
       return true;
     } else {
       let pattern;
-      if (this.classification === 'email') {
+      if (this.classification === Classification.EMAIL) {
         pattern = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-      } else if (this.classification === 'url') {
+      } else if (this.classification === Classification.URL) {
         pattern = /(http|ftp|https):\/\/[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:\/~+#-]*[\w@?^=%&amp;\/~+#-])?/;
+      } else if (this.classification === Classification.PHONE) {
+        pattern = /^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$/g;
       }
       return pattern ? pattern.test(string) : false;
     }
@@ -183,6 +193,12 @@ export class StringComponent implements ControlValueAccessor, Validator {
    * returns null when valid else the validation object
    */
   public validate(c: FormControl) {
-    return this.validationErrors.length ? Utils.arrayToObject(this.validationErrors, 'key', err => ({ valid: false, ...err })) : null;
+    if (this.validationErrors.length) {
+      this.valid = false;
+      return Utils.arrayToObject(this.validationErrors, 'key', (err) => ({ valid: false, ...err }));
+    } else {
+      this.valid = true;
+      return null;
+    }
   }
 }

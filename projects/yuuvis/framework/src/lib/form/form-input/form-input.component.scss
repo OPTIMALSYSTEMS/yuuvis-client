@@ -13,7 +13,7 @@
     display: flex;
     @include transition();
     flex-flow: row nowrap;
-    align-items: center;
+    align-items: flex-end;
     padding: calc(var(--app-pane-padding) / 4) 0;
     border-bottom: 1px solid rgba(0, 0, 0, 0.15);
 
@@ -45,6 +45,7 @@
       order: 2;
       flex: 0 1 auto;
       padding: 2px calc(var(--app-pane-padding) / 4);
+      padding-bottom: 6px;
       margin-right: 3px;
       color: var(--text-color-caption);
       border-radius: 2px;
