@@ -3,12 +3,12 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { YuvCommonUiModule } from '@yuuvis/common-ui';
 import { TranslateModule } from '@yuuvis/core';
 import { AutoCompleteModule } from 'primeng/autocomplete';
 import { OverlayPanelModule } from 'primeng/overlaypanel';
-import { ActionModule } from '../actions/action.module';
+import { YuvActionModule } from '../actions/action.module';
 import { YuvColumnConfigModule } from '../column-config/column-config.module';
+import { YuvCommonModule } from '../common/common.module';
 import { YuvComponentsModule } from '../components/components.module';
 import { YuvDirectivesModule } from '../directives/directives.module';
 import { YuvFormModule } from '../form/form.module';
@@ -34,8 +34,8 @@ const components = [QuickSearchComponent, SearchResultComponent, SearchResultPan
     TranslateModule,
     YuvComponentsModule,
     YuvPopoverModule,
-    YuvCommonUiModule,
-    ActionModule,
+    YuvCommonModule,
+    YuvActionModule,
     AutoCompleteModule,
     YuvFormModule,
     YuvDirectivesModule,

@@ -1,7 +1,7 @@
 import { Component, ElementRef, forwardRef, Input } from '@angular/core';
 import { ControlValueAccessor, FormControl, NG_VALIDATORS, NG_VALUE_ACCESSOR, Validator } from '@angular/forms';
-import { IconRegistryService } from '@yuuvis/common-ui';
 import { Utils } from '@yuuvis/core';
+import { IconRegistryService } from '../../../common/components/icon/service/iconRegistry.service';
 import { envelope, globe, phone } from '../../../svg.generated';
 /**
  * Creates form input for strings. Based on the input values different kinds of inputs will be generated.

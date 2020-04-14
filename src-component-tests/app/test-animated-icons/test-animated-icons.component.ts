@@ -6,10 +6,8 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./test-animated-icons.component.scss']
 })
 export class TestAnimatedIconsComponent implements OnInit {
+  activeUpload: boolean;
+  constructor() {}
 
-  constructor() { }
-
-  ngOnInit() {
-  }
-
+  ngOnInit() {}
 }

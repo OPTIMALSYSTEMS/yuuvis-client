@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { IconRegistryService } from '@yuuvis/common-ui';
+import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { clear } from './../../svg.generated';
 
 /**

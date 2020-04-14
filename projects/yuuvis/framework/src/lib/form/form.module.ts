@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { YuvCommonUiModule } from '@yuuvis/common-ui';
 import { TranslateModule } from '@yuuvis/core';
 import { AutoCompleteModule } from 'primeng/autocomplete';
 import { CalendarModule } from 'primeng/calendar';
@@ -10,11 +9,13 @@ import { ChipsModule } from 'primeng/chips';
 import { DropdownModule } from 'primeng/dropdown';
 import { InputMaskModule } from 'primeng/inputmask';
 import { TriStateCheckboxModule } from 'primeng/tristatecheckbox';
+import { YuvCommonModule } from '../common/common.module';
 import { YuvComponentsModule } from '../components/components.module';
 import { CheckboxComponent } from './elements/checkbox/checkbox.component';
 import { DatetimeRangeComponent } from './elements/datetime-range/datetime-range.component';
 import { DatepickerComponent } from './elements/datetime/datepicker/datepicker.component';
 import { DatetimeComponent } from './elements/datetime/datetime.component';
+import { YearRangeDirective } from './elements/datetime/year-range/year-range.directive';
 import { NumberRangeComponent } from './elements/number-range/number-range.component';
 import { NumberComponent } from './elements/number/number.component';
 import { StringComponent } from './elements/string/string.component';
@@ -33,9 +34,19 @@ import { FormInputComponent } from './form-input/form-input.component';
     NumberComponent,
     DatepickerComponent,
     DatetimeRangeComponent,
-    NumberRangeComponent
+    NumberRangeComponent,
+    YearRangeDirective
   ],
-  exports: [FormInputComponent, CheckboxComponent, StringComponent, DatetimeComponent, NumberComponent, DatetimeRangeComponent, NumberRangeComponent],
+  exports: [
+    FormInputComponent,
+    CheckboxComponent,
+    StringComponent,
+    DatetimeComponent,
+    NumberComponent,
+    DatetimeRangeComponent,
+    NumberRangeComponent,
+    YearRangeDirective
+  ],
   imports: [
     CommonModule,
     FormsModule,
@@ -46,7 +57,7 @@ import { FormInputComponent } from './form-input/form-input.component';
     ChipsModule,
     AutoCompleteModule,
     YuvComponentsModule,
-    YuvCommonUiModule,
+    YuvCommonModule,
     DropdownModule,
     ReactiveFormsModule,
     InputMaskModule

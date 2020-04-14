@@ -2,13 +2,13 @@ import { CommonModule } from '@angular/common';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { ErrorHandler, ModuleWithProviders, NgModule } from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { YuvCommonUiModule } from '@yuuvis/common-ui';
 import { CoreConfig, CORE_CONFIG, CUSTOM_CONFIG, YuvCoreModule, YuvCoreSharedModule } from '@yuuvis/core';
 import { AngularSplitModule } from 'angular-split';
 import { ToastrModule } from 'ngx-toastr';
 import { OverlayPanelModule } from 'primeng/overlaypanel';
-import { ActionModule } from './actions/action.module';
+import { YuvActionModule } from './actions/action.module';
 import { YuvColumnConfigModule } from './column-config/column-config.module';
+import { YuvCommonModule } from './common/common.module';
 import { YuvComponentsModule } from './components/components.module';
 import { YuvContextModule } from './context/context.module';
 import { YuvDirectivesModule } from './directives/directives.module';
@@ -26,8 +26,7 @@ import { YuvVersionsModule } from './versions/versions.module';
 
 /**
  * `YuvFrameworkModule` provides a set of UI components to be used
- * when creating yuuvis client applications. It also re-exports the
- * `YuvCommonUiModule` containing more low level components like SVG icons.
+ * when creating yuuvis client applications.
  * `YuvCoreModule` is also part of this library, so the provided components
  * are able to communicate with the Yuuyis backend services. So if you import
  * `YuvFrameworkModule` you don't need to import either one of those modeules.
@@ -46,13 +45,13 @@ import { YuvVersionsModule } from './versions/versions.module';
     YuvSearchModule,
     YuvVersionsModule,
     YuvUserModule,
-    YuvCommonUiModule,
+    YuvCommonModule,
     YuvObjectDetailsModule,
     YuvColumnConfigModule,
     YuvObjectCreateModule,
     YuvPipesModule,
     OverlayPanelModule,
-    ActionModule,
+    YuvActionModule,
     YuvCoreSharedModule,
     YuvComponentsModule,
     AngularSplitModule.forRoot(),
@@ -74,13 +73,13 @@ import { YuvVersionsModule } from './versions/versions.module';
     YuvComponentsModule,
     YuvObjectFormModule,
     YuvContextModule,
-    YuvCommonUiModule,
+    YuvCommonModule,
     YuvCoreModule,
     OverlayPanelModule,
     AngularSplitModule,
     YuvCoreSharedModule,
     YuvObjectCreateModule,
-    ActionModule,
+    YuvActionModule,
     ToastrModule
   ],
   providers: [
@@ -98,7 +97,7 @@ import { YuvVersionsModule } from './versions/versions.module';
   declarations: []
 })
 export class YuvFrameworkModule {
-  static forRoot(config?: CoreConfig): ModuleWithProviders {
+  static forRoot(config?: CoreConfig): ModuleWithProviders<YuvFrameworkModule> {
     return {
       ngModule: YuvFrameworkModule,
       providers: [

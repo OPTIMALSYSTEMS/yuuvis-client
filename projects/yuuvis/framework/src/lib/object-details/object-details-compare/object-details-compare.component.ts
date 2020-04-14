@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { IconRegistryService } from '@yuuvis/common-ui';
 import { DmsObject } from '@yuuvis/core';
+import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { compare } from '../../svg.generated';
 
 export interface ObjectCompareInput {

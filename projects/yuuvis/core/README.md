@@ -1,6 +1,6 @@
 # @yuuvis/core
 
-`@yuuvis/core` library provides a set of services to interact with a yuuvis MOMENTUM backend.
+`@yuuvis/core` library provides a set of services to interact with a yuuvis® MOMENTUM backend.
 
 ## Installation
 
@@ -63,7 +63,7 @@ The main configuration file is supposed to be located at `assets/default/config/
 
 ##### Translations
 
-The `@yuuvis/core` library sets up a translations module that can be used within the application that you are creating. This module will be bound to the language a user has set up on the yuuvis MOMENTUM backend. In order to be able to initialize this module the core config needs to know about where you store your translation files. By default they are supposed to be at `assets/default/i18n/`.
+The `@yuuvis/core` library sets up a translations module that can be used within the application that you are creating. This module will be bound to the language a user has set up on the yuuvis® MOMENTUM backend. In order to be able to initialize this module the core config needs to know about where you store your translation files. By default they are supposed to be at `assets/default/i18n/`.
 
 Inside those folder you then provide a file for each supported language (`en.json`, `de.json`). If you do not need translations, just provide empty files here.
 

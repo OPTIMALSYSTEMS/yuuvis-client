@@ -6,6 +6,8 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./test-action-menu.component.scss']
 })
 export class TestActionMenuComponent implements OnInit {
+  actionMenuVisible: boolean;
+  actionMenuSelection;
   constructor() {}
 
   ngOnInit() {}

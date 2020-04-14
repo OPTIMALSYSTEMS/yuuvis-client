@@ -1,7 +1,7 @@
 import { Component, forwardRef, HostListener, Input, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { ControlValueAccessor, FormControl, NG_VALIDATORS, NG_VALUE_ACCESSOR, Validator } from '@angular/forms';
-import { IconRegistryService } from '@yuuvis/common-ui';
 import { DeviceService, TranslateService } from '@yuuvis/core';
+import { IconRegistryService } from '../../../common/components/icon/service/iconRegistry.service';
 import { LocaleDatePipe } from '../../../pipes/locale-date.pipe';
 import { PopoverConfig } from '../../../popover/popover.interface';
 import { PopoverRef } from '../../../popover/popover.ref';
@@ -38,7 +38,7 @@ import { datepicker } from '../../../svg.generated';
   ]
 })
 export class DatetimeComponent implements OnInit, ControlValueAccessor, Validator {
-  @ViewChild('tplDatePicker', { static: false }) tplDatePicker: TemplateRef<any>;
+  @ViewChild('tplDatePicker') tplDatePicker: TemplateRef<any>;
 
   params;
   value; // model value

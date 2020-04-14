@@ -16,4 +16,4 @@ import { FocusWithinDirective } from './directives/focus-within.directive';
   exports: [IconComponent, FocusWithinDirective, SidebarComponent, EmptyComponent],
   providers: [IconService, IconRegistryService]
 })
-export class YuvCommonUiModule {}
+export class YuvCommonModule {}

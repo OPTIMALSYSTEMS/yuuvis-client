@@ -1,7 +1,6 @@
 import { Component, HostBinding, HostListener, OnInit } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, NavigationExtras, Router } from '@angular/router';
 import { SwUpdate } from '@angular/service-worker';
-import { IconRegistryService } from '@yuuvis/common-ui';
 import {
   AuthService,
   BaseObjectTypeField,
@@ -14,7 +13,7 @@ import {
   UserService,
   YuvUser
 } from '@yuuvis/core';
-import { LayoutService, LayoutSettings, Screen, ScreenService } from '@yuuvis/framework';
+import { IconRegistryService, LayoutService, LayoutSettings, Screen, ScreenService } from '@yuuvis/framework';
 import { filter } from 'rxjs/operators';
 import { add, close, drawer, offline, refresh, search, userDisabled } from '../../../assets/default/svg/svg';
 import { AppSearchService } from '../../service/app-search.service';
@@ -70,7 +69,7 @@ export class FrameComponent implements OnInit {
     this.userService.user$.subscribe((user: YuvUser) => {
       this.user = user;
     });
-    this.update.available.subscribe(update => (this.swUpdateAvailable = true));
+    this.update.available.subscribe((update) => (this.swUpdateAvailable = true));
     this.layoutService.layoutSettings$.subscribe((settings: LayoutSettings) => this.applyLayoutSettings(settings));
     this.connectionService.connection$.subscribe((connectionState: ConnectionState) => {
       this.isOffline = !connectionState.isOnline;
@@ -194,7 +193,7 @@ export class FrameComponent implements OnInit {
     this.router.events
       .pipe(
         // tap(e => console.log(e)),
-        filter(e => e instanceof NavigationEnd)
+        filter((e) => e instanceof NavigationEnd)
       )
       .subscribe((e: NavigationEnd) => {
         this.getContextFromURL(e.urlAfterRedirects);

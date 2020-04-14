@@ -1,9 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { Router } from '@angular/router';
-import { IconRegistryService } from '@yuuvis/common-ui';
 import { ConfigService, TranslateService, UserService, YuvUser } from '@yuuvis/core';
-import { LayoutService, LayoutSettings } from '@yuuvis/framework';
+import { IconRegistryService, LayoutService, LayoutSettings } from '@yuuvis/framework';
 import { Observable } from 'rxjs';
 import { shield } from '../../../assets/default/svg/svg';
 

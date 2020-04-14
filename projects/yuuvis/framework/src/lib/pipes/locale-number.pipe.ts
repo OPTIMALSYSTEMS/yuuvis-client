@@ -1,8 +1,8 @@
 import { CurrencyPipe, DecimalPipe, PercentPipe } from '@angular/common';
 import { Pipe, PipeTransform } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { UnsubscribeOnDestroy } from '@yuuvis/common-ui';
 import { takeUntil } from 'rxjs/operators';
+import { UnsubscribeOnDestroy } from '../common/util/unsubscribe.component';
 
 @Pipe({
   name: 'localeDecimal',
@@ -65,7 +65,7 @@ export class LocaleNumberPipe extends UnsubscribeOnDestroy implements PipeTransf
     super();
     this.decimalPipe = new LocaleDecimalPipe(this.translate);
     this.updateSeparators(this.translate.currentLang);
-    this.translate.onLangChange.pipe(takeUntil(this.componentDestroyed$)).subscribe(currLang => this.updateSeparators(currLang.lang));
+    this.translate.onLangChange.pipe(takeUntil(this.componentDestroyed$)).subscribe((currLang) => this.updateSeparators(currLang.lang));
   }
 
   public transform(value: any, grouping?: boolean, pattern?: string, scale?: number, digits?: string, locale?: string): string | null {

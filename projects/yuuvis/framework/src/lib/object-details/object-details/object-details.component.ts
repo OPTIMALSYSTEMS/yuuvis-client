@@ -1,8 +1,8 @@
 import { Component, ContentChildren, HostBinding, Input, OnDestroy, QueryList, TemplateRef, ViewChild, ViewChildren } from '@angular/core';
-import { IconRegistryService } from '@yuuvis/common-ui';
 import { ConfigService, DmsObject, DmsService, EventService, SystemService, UserService, YuvEvent, YuvEventType } from '@yuuvis/core';
 import { TabPanel } from 'primeng/tabview';
 import { takeUntilDestroy } from 'take-until-destroy';
+import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { CellRenderer } from '../../services/grid/grid.cellrenderer';
 import { kebap, noFile, refresh } from '../../svg.generated';
 import { ContentPreviewService } from '../content-preview/service/content-preview.service';
@@ -34,11 +34,11 @@ import { ResponsiveTabContainerComponent } from './../../components/responsive-t
 export class ObjectDetailsComponent implements OnDestroy {
   @ContentChildren(TabPanel) externalPanels: QueryList<TabPanel>;
   @ViewChildren(TabPanel) viewPanels: QueryList<TabPanel>;
-  @ViewChild(ResponsiveTabContainerComponent, { static: false }) tabContainer: ResponsiveTabContainerComponent;
-  @ViewChild('summary', { static: false }) summary: TemplateRef<any>;
-  @ViewChild('indexdata', { static: false }) indexdata: TemplateRef<any>;
-  @ViewChild('preview', { static: false }) preview: TemplateRef<any>;
-  @ViewChild('history', { static: false }) history: TemplateRef<any>;
+  @ViewChild(ResponsiveTabContainerComponent) tabContainer: ResponsiveTabContainerComponent;
+  @ViewChild('summary') summary: TemplateRef<any>;
+  @ViewChild('indexdata') indexdata: TemplateRef<any>;
+  @ViewChild('preview') preview: TemplateRef<any>;
+  @ViewChild('history') history: TemplateRef<any>;
 
   @HostBinding('class.yuv-object-details') _hostClass = true;
   nofileIcon = noFile.data;
@@ -106,7 +106,7 @@ export class ObjectDetailsComponent implements OnDestroy {
   @Input()
   set activeTabPanel(panel: TabPanel | string) {
     setTimeout(
-      () => this.tabContainer && this.tabContainer.open(panel || this.tabContainer.mainTabView.tabs.find(t => !t.disabled)),
+      () => this.tabContainer && this.tabContainer.open(panel || this.tabContainer.mainTabView.tabs.find((t) => !t.disabled)),
       this.tabContainer ? 0 : 200
     );
   }
@@ -177,7 +177,7 @@ export class ObjectDetailsComponent implements OnDestroy {
   private getDmsObject(id: string) {
     this.busy = true;
     this.contentPreviewService.resetSource();
-    this.dmsService.getDmsObject(id).subscribe(dmsObject => {
+    this.dmsService.getDmsObject(id).subscribe((dmsObject) => {
       this.dmsObject = dmsObject;
       this.busy = false;
     });

@@ -3,7 +3,6 @@ import { CdkStepperModule } from '@angular/cdk/stepper';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { YuvCommonUiModule } from '@yuuvis/common-ui';
 import { TranslateModule } from '@yuuvis/core';
 import { AngularResizedEventModule } from 'angular-resize-event';
 import { AngularSplitModule } from 'angular-split';
@@ -12,6 +11,7 @@ import { DialogModule } from 'primeng/dialog';
 import { OverlayPanelModule } from 'primeng/overlaypanel';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { TabViewModule } from 'primeng/tabview';
+import { YuvCommonModule } from '../common/common.module';
 import { YuvDirectivesModule } from '../directives/directives.module';
 import { YuvPipesModule } from '../pipes/pipes.module';
 import { ActionMenuBarComponent } from './action-menu-bar/action-menu-bar.component';
@@ -57,7 +57,7 @@ const components = [
     DialogModule,
     ProgressBarModule,
     YuvPipesModule,
-    YuvCommonUiModule,
+    YuvCommonModule,
     TranslateModule,
     DragScrollModule,
     YuvDirectivesModule

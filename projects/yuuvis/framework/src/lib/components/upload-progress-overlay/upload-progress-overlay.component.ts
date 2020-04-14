@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { IconRegistryService } from '@yuuvis/common-ui';
 import { ProgressStatus, UploadResult, UploadService } from '@yuuvis/core';
 import { Observable, of } from 'rxjs';
+import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { clear, done } from './../../svg.generated';
 @Component({
   selector: 'yuv-upload-progress-overlay',

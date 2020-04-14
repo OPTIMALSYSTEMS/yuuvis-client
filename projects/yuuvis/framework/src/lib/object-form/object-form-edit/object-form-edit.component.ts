@@ -18,7 +18,7 @@ export class ObjectFormEditComponent implements OnDestroy {
 
   // fetch a reference to the opbject form component to be able to
   // get the form data
-  @ViewChild(ObjectFormComponent, { static: false }) objectForm: ObjectFormComponent;
+  @ViewChild(ObjectFormComponent) objectForm: ObjectFormComponent;
 
   @Input() formDisabled: boolean;
   @Input('dmsObject')

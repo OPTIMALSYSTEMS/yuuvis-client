@@ -8,7 +8,8 @@
     [attr.data-summary-item]="item.key">
     <span class="label">{{ item.label }}</span>
     <div class="value-area">
-      <span class="value first" *ngIf="(!isVersion(item.key) || !versionRouterLink); else link"
+      <span class="value first"
+        *ngIf="(!isVersion(item.key) || !versionRouterLink || (isVersion(item.key) && item.value === '1')); else link"
         [innerHtml]="item.value | safeHtml"></span>
       <span class="value second" *ngIf="item.value2" [innerHtml]="item.value2 | safeHtml"></span>
 

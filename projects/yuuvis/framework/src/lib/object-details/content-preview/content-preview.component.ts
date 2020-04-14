@@ -1,8 +1,8 @@
 import { AfterViewInit, Component, ElementRef, Input, NgZone, OnDestroy, OnInit } from '@angular/core';
-import { IconRegistryService } from '@yuuvis/common-ui';
 import { DmsObject } from '@yuuvis/core';
 import { fromEvent, Observable } from 'rxjs';
 import { takeUntilDestroy } from 'take-until-destroy';
+import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { folder, noFile, undock } from '../../svg.generated';
 import { ContentPreviewService } from './service/content-preview.service';
 
@@ -83,7 +83,7 @@ export class ContentPreviewComponent implements OnInit, OnDestroy, AfterViewInit
     if (!this.isUndocked) {
       this.undockWin.close();
     } else {
-      this._ngZone.runOutsideAngular(_ => {
+      this._ngZone.runOutsideAngular((_) => {
         const interval = setInterval(() => {
           if (this.undockWin && this.undockWin.closed) {
             clearInterval(interval);
@@ -140,7 +140,7 @@ export class ContentPreviewComponent implements OnInit, OnDestroy, AfterViewInit
   }
 
   ngOnInit() {
-    this.previewSrc$.pipe(takeUntilDestroy(this)).subscribe(src => this.open(src));
+    this.previewSrc$.pipe(takeUntilDestroy(this)).subscribe((src) => this.open(src));
   }
 
   ngAfterViewInit() {
@@ -148,7 +148,7 @@ export class ContentPreviewComponent implements OnInit, OnDestroy, AfterViewInit
     if (iframe) {
       fromEvent(iframe, 'load')
         .pipe(takeUntilDestroy(this))
-        .subscribe(res => {
+        .subscribe((res) => {
           setTimeout(() => this.searchPDF(this.searchTerm, iframe), 100);
         });
     }

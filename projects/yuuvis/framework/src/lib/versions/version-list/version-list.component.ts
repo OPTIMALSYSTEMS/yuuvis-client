@@ -1,9 +1,9 @@
 import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
-import { IconRegistryService } from '@yuuvis/common-ui';
 import { BaseObjectTypeField, ContentStreamField, DmsObject, DmsService, RetentionField, SecondaryObjectTypeField, TranslateService } from '@yuuvis/core';
 import { forkJoin, Observable, of } from 'rxjs';
 import { tap } from 'rxjs/operators';
+import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { ResponsiveDataTableComponent, ViewMode } from '../../components';
 import { ResponsiveTableData } from '../../components/responsive-data-table/responsive-data-table.interface';
 import { GridService } from '../../services/grid/grid.service';
@@ -18,10 +18,10 @@ import { arrowNext, listModeDefault, listModeGrid, listModeSimple, refresh, vers
   styleUrls: ['./version-list.component.scss']
 })
 export class VersionListComponent {
-  @ViewChild('dataTable', { static: false }) dataTable: ResponsiveDataTableComponent;
+  @ViewChild('dataTable') dataTable: ResponsiveDataTableComponent;
 
   private COLUMN_CONFIG_SKIP_FIELDS = [
-    ...Object.keys(RetentionField).map(k => RetentionField[k]),
+    ...Object.keys(RetentionField).map((k) => RetentionField[k]),
     BaseObjectTypeField.CREATED_BY,
     BaseObjectTypeField.CREATION_DATE,
     BaseObjectTypeField.OBJECT_ID,
@@ -66,7 +66,7 @@ export class VersionListComponent {
    * Array of version numbers to be selected upfront.
    */
   @Input() set versions(vs: string[]) {
-    this.selection = (vs || []).filter(v => v).map(v => this.getRowNodeId(v));
+    this.selection = (vs || []).filter((v) => v).map((v) => this.getRowNodeId(v));
   }
 
   /**
@@ -149,14 +149,14 @@ export class VersionListComponent {
       });
     }
 
-    this.versionsToObjects(items.map(a => this.getVersion(a))).subscribe((objects: DmsObject[]) => {
+    this.versionsToObjects(items.map((a) => this.getVersion(a))).subscribe((objects: DmsObject[]) => {
       this.selectionChange.emit(objects);
     });
   }
 
   submitCompareForm() {
     this.dataTable.clearSelection();
-    this.versionsToObjects([this.compareForm.value.versionOne, this.compareForm.value.versionTwo].map(a => this.getVersion(a))).subscribe(
+    this.versionsToObjects([this.compareForm.value.versionOne, this.compareForm.value.versionTwo].map((a) => this.getVersion(a))).subscribe(
       (objects: DmsObject[]) => {
         this.compareVersionsChange.emit(objects);
       }
@@ -165,16 +165,16 @@ export class VersionListComponent {
 
   private versionsToObjects(versions: number[]): Observable<DmsObject[]> {
     this.busy = true;
-    const tasks = versions.filter(v => v).map(v => this.dmsService.getDmsObject(this.dmsObjectID, v));
-    return (tasks.length ? forkJoin(tasks) : of([])).pipe(tap(_ => (this.busy = false)));
+    const tasks = versions.filter((v) => v).map((v) => this.dmsService.getDmsObject(this.dmsObjectID, v));
+    return (tasks.length ? forkJoin(tasks) : of([])).pipe(tap((_) => (this.busy = false)));
   }
 
   private getColumnDefinitions(objectTypeId: string) {
-    const defs = this.gridService.getColumnDefinitions(objectTypeId).filter(d => !this.COLUMN_CONFIG_SKIP_FIELDS.includes(d.field));
+    const defs = this.gridService.getColumnDefinitions(objectTypeId).filter((d) => !this.COLUMN_CONFIG_SKIP_FIELDS.includes(d.field));
     const coreColumnIds = [BaseObjectTypeField.VERSION_NUMBER, SecondaryObjectTypeField.TITLE, SecondaryObjectTypeField.DESCRIPTION];
-    const coreColumns = coreColumnIds.map(f => defs.find(d => d.field === f));
+    const coreColumns = coreColumnIds.map((f) => defs.find((d) => d.field === f));
     coreColumns[0].pinned = true;
-    return [...coreColumns, ...defs.filter(d => !coreColumnIds.includes(d.field))];
+    return [...coreColumns, ...defs.filter((d) => !coreColumnIds.includes(d.field))];
   }
 
   refresh() {
@@ -184,14 +184,14 @@ export class VersionListComponent {
         const sorted = rows.sort((a, b) => this.getVersion(b) - this.getVersion(a));
         this.tableData = {
           columns: this.getColumnDefinitions(objectTypeId),
-          rows: sorted.map(a => a.data),
+          rows: sorted.map((a) => a.data),
           titleField: SecondaryObjectTypeField.TITLE,
           descriptionField: SecondaryObjectTypeField.DESCRIPTION,
           selectType: 'multiple',
-          gridOptions: { getRowNodeId: o => this.getRowNodeId(o), rowMultiSelectWithClick: false }
+          gridOptions: { getRowNodeId: (o) => this.getRowNodeId(o), rowMultiSelectWithClick: false }
         };
         this.activeVersion = sorted[0];
-        this.availableVersions = sorted.map(d => d.version);
+        this.availableVersions = sorted.map((d) => d.version);
         this.compareForm.patchValue({
           versionOne: this.activeVersion.version
         });
