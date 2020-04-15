@@ -65,7 +65,7 @@ export class GridService {
     objectType.fields.forEach((f: ObjectTypeField) => (objectTypeFields[f.id] = f));
     return this.userConfig
       .getColumnConfig(objectTypeId)
-      .pipe(map((cc: ColumnConfig) => cc.columns.map(c => this.getColumnDefinition(objectTypeFields[c.id], c))));
+      .pipe(map((cc: ColumnConfig) => cc.columns.map((c) => this.getColumnDefinition(objectTypeFields[c.id], c))));
   }
 
   /**
@@ -75,7 +75,7 @@ export class GridService {
    */
   getColumnDefinitions(objectTypeId?: string): ColDef[] {
     const objectType: ObjectType = objectTypeId ? this.system.getObjectType(objectTypeId) : this.system.getBaseType();
-    return objectType.fields.map(f => this.getColumnDefinition(f));
+    return objectType.fields.map((f) => this.getColumnDefinition(f));
   }
 
   /**
@@ -105,10 +105,13 @@ export class GridService {
   }
 
   private isSortable(field: ObjectTypeField): boolean {
-    const skipSort = [BaseObjectTypeField.CREATED_BY, BaseObjectTypeField.MODIFIED_BY].map(s => s.toString());
+    const skipSort = [BaseObjectTypeField.CREATED_BY, BaseObjectTypeField.MODIFIED_BY].map((s) => s.toString());
     return field.propertyType !== 'id' && !skipSort.includes(field.id);
   }
 
+  private fieldClassification(classification: string[]): string {
+    return Array.isArray(classification) ? classification[0] : null;
+  }
   /**
    * Add type specific column definition attributes based on a fields type
    *
@@ -120,10 +123,9 @@ export class GridService {
   private addColDefAttrsByType(colDef: ColDef, field: ObjectTypeField) {
     colDef.cellClass = `col-${field.propertyType}`;
     colDef.headerClass = `col-header-${field.propertyType}`;
-
     switch (field.propertyType) {
       case 'string': {
-        colDef.cellRenderer = params => Utils.escapeHtml(params.value);
+        colDef.cellRenderer = (params) => Utils.escapeHtml(params.value);
         if (field.cardinality === 'multi') {
           colDef.cellRenderer = this.customContext(CellRenderer.multiSelectCellRenderer);
         }
@@ -141,8 +143,9 @@ export class GridService {
           grouping: true,
           pattern: undefined
         };
+
         colDef.width = 150;
-        colDef.cellRenderer = this.customContext(CellRenderer.numberCellRenderer, params);
+        colDef.cellRenderer = !this.fieldClassification(field?.classification) ? this.customContext(CellRenderer.numberCellRenderer, params) : undefined;
         break;
       }
       case 'decimal': {
@@ -153,7 +156,7 @@ export class GridService {
           cips: true
         };
         colDef.width = 150;
-        colDef.cellRenderer = this.customContext(CellRenderer.numberCellRenderer, params);
+        colDef.cellRenderer = !this.fieldClassification(field?.classification) ? this.customContext(CellRenderer.numberCellRenderer, params) : undefined;
         break;
       }
       // case 'NUMBER': {
@@ -213,14 +216,14 @@ export class GridService {
   }
 
   private customContext(fnc, mixin?) {
-    return params => fnc({ ...params, context: this.context, ...(mixin && mixin) });
+    return (params) => fnc({ ...params, context: this.context, ...(mixin && mixin) });
   }
 
   public fileSizeKeyCreator(param) {
     if (!param.value) {
       return null;
     }
-    const match = param.context.fileSizeOpts.find(f => f.from <= param.value && param.value < f.to);
+    const match = param.context.fileSizeOpts.find((f) => f.from <= param.value && param.value < f.to);
     return match ? match.label : param.context.fileSizePipe.transform(param.value);
   }
 }
