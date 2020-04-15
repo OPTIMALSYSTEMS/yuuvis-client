@@ -4,7 +4,6 @@ import {
   AppCacheService,
   BaseObjectTypeField,
   ContentStreamField,
-  DmsObject,
   Logger,
   ObjectTypeField,
   ParentField,
@@ -12,6 +11,7 @@ import {
   SystemService
 } from '@yuuvis/core';
 import { GridService } from '../../services/grid/grid.service';
+import { DmsObject } from './../../../../../core/src/lib/model/dms-object.model';
 import { Summary, SummaryEntry } from './summary.interface';
 
 /**
@@ -58,12 +58,8 @@ export class SummaryComponent implements OnInit {
    */
   @Input()
   set dmsObject(dmsObject: DmsObject) {
-    if (dmsObject) {
-      this.dmsObjectID = dmsObject.id;
-      this.summary = this.generateSummary(dmsObject);
-    } else {
-      this.summary = null;
-    }
+    this.dmsObjectID = dmsObject?.id;
+    this.summary = dmsObject ? this.generateSummary(dmsObject) : null;
   }
 
   dmsObject2: DmsObject;
@@ -101,12 +97,13 @@ export class SummaryComponent implements OnInit {
   @Input() showExtrasSection: boolean;
 
   // isEmpty = v => Utils.isEmpty(v);
-  isVersion = v => v === BaseObjectTypeField.VERSION_NUMBER;
+  isVersion = (v) => v === BaseObjectTypeField.VERSION_NUMBER;
 
   constructor(private systemService: SystemService, private gridService: GridService, private logger: Logger, private appCacheService: AppCacheService) {}
 
   onSectionVisibilityChange(k, visible: boolean) {
     this.visible[k] = visible;
+    // TODO: check if is this subscribe is not a potential performance leak
     this.appCacheService.setItem(this.STORAGE_KEY_SECTION_VISIBLE, this.visible).subscribe();
   }
 
@@ -151,12 +148,12 @@ export class SummaryComponent implements OnInit {
     ];
 
     let baseFields = dmsObject.isFolder
-      ? this.systemService.getBaseFolderType().fields.map(f => f.id)
-      : this.systemService.getBaseDocumentType().fields.map(f => f.id);
-    baseFields = baseFields.filter(fields => defaultBaseFields.filter(defFields => defFields.key === fields).length === 0);
+      ? this.systemService.getBaseFolderType().fields.map((f) => f.id)
+      : this.systemService.getBaseDocumentType().fields.map((f) => f.id);
+    baseFields = baseFields.filter((fields) => defaultBaseFields.filter((defFields) => defFields.key === fields).length === 0);
 
     const extraFields: string[] = [ContentStreamField.DIGEST, ContentStreamField.ARCHIVE_PATH, ContentStreamField.REPOSITORY_ID];
-    baseFields.map(fields => extraFields.push(fields));
+    baseFields.map((fields) => extraFields.push(fields));
 
     return { skipFields, extraFields, patentFields, defaultBaseFields };
   }
@@ -172,9 +169,9 @@ export class SummaryComponent implements OnInit {
     const { skipFields, patentFields, extraFields, defaultBaseFields } = this.getSummaryConfiguration(dmsObject);
     const colDef: ColDef[] = this.gridService.getColumnDefinitions(dmsObject.objectTypeId);
 
-    Object.keys({ ...dmsObject.data, ...(this.dmsObject2 && this.dmsObject2.data) }).forEach((key: string) => {
+    Object.keys({ ...dmsObject.data, ...this.dmsObject2?.data }).forEach((key: string) => {
       const prepKey = key.startsWith('parent.') ? key.replace('parent.', '') : key; // todo: pls implement general solution
-      const def: ColDef = colDef.find(cd => cd.field === prepKey);
+      const def: ColDef = colDef.find((cd) => cd.field === prepKey);
       const renderer: ICellRendererFunc = def ? (def.cellRenderer as ICellRendererFunc) : null;
       const si: SummaryEntry = {
         label: (def && def.headerName) || key,
@@ -191,8 +188,8 @@ export class SummaryComponent implements OnInit {
         // skip equal and irrelevant values
       } else if (extraFields.includes(prepKey)) {
         summary.extras.push(si);
-      } else if (defaultBaseFields.find(field => field.key.startsWith(prepKey))) {
-        defaultBaseFields.map(field => (field.key === prepKey ? (si.order = field.order) : null));
+      } else if (defaultBaseFields.find((field) => field.key.startsWith(prepKey))) {
+        defaultBaseFields.map((field) => (field.key === prepKey ? (si.order = field.order) : null));
         summary.base.push(si);
       } else if (patentFields.includes(prepKey)) {
         summary.parent.push(si);

@@ -30,6 +30,7 @@ export interface ObjectTypeField {
   required: boolean;
   updatability: string;
   resolution?: string;
+  classification?: string[];
 }
 
 // base definition of the kind of data we'll receive
