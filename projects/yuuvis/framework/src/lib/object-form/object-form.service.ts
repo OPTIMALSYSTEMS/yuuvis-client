@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Logger, RangeValue, SystemService } from '@yuuvis/core';
 import { ObjectFormControlWrapper, ObjectFormModel } from './object-form.interface';
 import { ObjectFormGroup } from './object-form.model';
+import { Situation } from './object-form.situation';
 import { ObjectFormUtils } from './object-form.utils';
 
 @Injectable()
@@ -75,7 +76,7 @@ export class ObjectFormService {
         // }
 
         switch (situation) {
-          case 'SEARCH': {
+          case Situation.SEARCH: {
             if (val !== null) {
               // row editing forms use the name instead of the qname because otherwise the
               // tables grid isn't able to map the fields
@@ -87,13 +88,13 @@ export class ObjectFormService {
             }
             break;
           }
-          case 'CREATE': {
+          case Situation.CREATE: {
             if (val !== null) {
               this.setDataValue(fc._eoFormElement.name, val, data, fc._eoFormElement, isTableRowEditForm);
             }
             break;
           }
-          case 'EDIT': {
+          case Situation.EDIT: {
             // in edit situation we have to compare new values against the initial values
             // If a property that is contained in the forms initial data is removed (e.g. set to null)
             // then we have to set this null value, because otherwise the server will ignore the changes
@@ -106,7 +107,7 @@ export class ObjectFormService {
         }
       }
     } else {
-      Object.keys(formControl.controls).forEach(controlKey => {
+      Object.keys(formControl.controls).forEach((controlKey) => {
         let formControlKeyed = <ObjectFormGroup>formControl.controls[controlKey];
         this.getElementValues(data, formControlKeyed, situation, initialData, isTableRowEditForm);
       });

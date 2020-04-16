@@ -1,21 +1,6 @@
 import { AfterViewInit, Component, ElementRef, EventEmitter, HostBinding, HostListener, Input, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import {
-  AggregateResult,
-  BaseObjectTypeField,
-  ContentStreamField,
-  DeviceService,
-  ObjectType,
-  ObjectTypeField,
-  ObjectTypeGroup,
-  RangeValue,
-  SearchFilter,
-  SearchQuery,
-  SearchService,
-  SystemService,
-  TranslateService,
-  Utils
-} from '@yuuvis/core';
+import { AggregateResult, BaseObjectTypeField, ContentStreamField, DeviceService, ObjectType, ObjectTypeField, ObjectTypeGroup, RangeValue, SearchFilter, SearchQuery, SearchService, SystemService, TranslateService, Utils } from '@yuuvis/core';
 import { AutoComplete } from 'primeng/autocomplete';
 import { Subscription, timer } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
@@ -27,6 +12,7 @@ import { PopoverConfig } from '../../popover/popover.interface';
 import { PopoverRef } from '../../popover/popover.ref';
 import { PopoverService } from '../../popover/popover.service';
 import { addCircle, arrowDown, clear, search } from '../../svg.generated';
+import { Situation } from './../../object-form/object-form.situation';
 import { ObjectFormUtils } from './../../object-form/object-form.utils';
 import { QuickSearchPickerData } from './quick-search-picker/quick-search-picker.component';
 
@@ -533,7 +519,7 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
     formElement.description = null;
     formElement.isNotSetValue = isEmpty;
 
-    const formControl = ObjectFormUtils.elementToFormControl(formElement, 'SEARCH');
+    const formControl = ObjectFormUtils.elementToFormControl(formElement, Situation.SEARCH);
     this.searchFieldsForm.addControl(`fc_${field.id}`, formControl);
     this.formFields.push(`fc_${field.id}`);
 
