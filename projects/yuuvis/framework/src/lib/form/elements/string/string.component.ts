@@ -3,6 +3,7 @@ import { ControlValueAccessor, FormControl, NG_VALIDATORS, NG_VALUE_ACCESSOR, Va
 import { Utils } from '@yuuvis/core';
 import { IconRegistryService } from '../../../common/components/icon/service/iconRegistry.service';
 import { envelope, globe, phone } from '../../../svg.generated';
+import { Situation } from './../../../object-form/object-form.situation';
 /**
  * Creates form input for strings. Based on the input values different kinds of inputs will be generated.
  *
@@ -174,7 +175,7 @@ export class StringComponent implements ControlValueAccessor, Validator {
   }
 
   private validateClassification(string): boolean {
-    if (this.situation === 'SEARCH') {
+    if (this.situation === Situation.SEARCH) {
       return true;
     } else {
       let pattern;
