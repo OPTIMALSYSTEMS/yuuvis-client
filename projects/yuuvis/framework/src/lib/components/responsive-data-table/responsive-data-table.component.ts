@@ -322,6 +322,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
       field: BaseObjectTypeField.OBJECT_ID,
       cellClass: 'cell-title-description',
       minWidth: this.isGrid ? this._data.rows.length * this.settings.colWidth.grid : 0,
+      valueGetter: params => JSON.stringify(params.data), // needed to compare value changes & redraw cell
       cellRenderer: params => {
         const objectTypeId = params.data[BaseObjectTypeField.OBJECT_TYPE_ID];
         const version = params.data[BaseObjectTypeField.VERSION_NUMBER];
@@ -333,7 +334,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
             <div class="head" title="${title}">
             ${this.systemService.getObjectTypeIcon(objectTypeId)}</div>  
             <div class="main">
-            <div class="title">${params.data[this._data.titleField] || params.value || ''}</div>
+            <div class="title">${params.data[this._data.titleField] || params.data[BaseObjectTypeField.OBJECT_ID] || ''}</div>
               <div class="description">${params.data[this._data.descriptionField] || ''}</div>
               <div class="date">${modified}</div>
             </div>
