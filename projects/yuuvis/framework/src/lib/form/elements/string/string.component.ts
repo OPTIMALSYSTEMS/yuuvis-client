@@ -136,7 +136,6 @@ export class StringComponent implements ControlValueAccessor, Validator {
     if (this.regex && multiCheck((v) => !RegExp(this.regex).test(v))) {
       this.validationErrors.push({ key: 'regex' });
     }
-    console.log(multiCheck((v) => !this.validateClassification(v)));
 
     // validate classification settings
     if (this.classification && multiCheck((v) => !this.validateClassification(v))) {

@@ -117,6 +117,33 @@ export class GridService {
   private fieldClassification(classification: string[]): string {
     return Array.isArray(classification) ? classification[0] : null;
   }
+
+  /**
+   * add classification specific column definition attributes
+   *
+   * @param colDef - the column definition object to be extended
+   * @param classification - the classification to evaluate
+   *
+   * @returns enriched column definition object
+   */
+  private addColDefAttrsByClassification(colDef: ColDef, classification) {
+    switch (classification) {
+      case 'email': {
+        colDef.cellRenderer = CellRenderer.emailCellRenderer;
+        break;
+      }
+      case 'url': {
+        colDef.cellRenderer = CellRenderer.urlCellRenderer;
+        break;
+      }
+      case 'phone': {
+        colDef.cellRenderer = CellRenderer.phoneCellRenderer;
+        break;
+      }
+    }
+    return colDef;
+  }
+
   /**
    * Add type specific column definition attributes based on a fields type
    *
@@ -135,6 +162,9 @@ export class GridService {
           colDef.cellRenderer = this.customContext(CellRenderer.multiSelectCellRenderer);
         }
         colDef.cellClass = field.cardinality === 'multi' ? 'multiCell string' : 'string';
+        if (field?.classification?.length) {
+          this.addColDefAttrsByClassification(colDef, field?.classification[0]);
+        }
         break;
       }
       case 'datetime': {
@@ -164,19 +194,6 @@ export class GridService {
         colDef.cellRenderer = !this.fieldClassification(field?.classification) ? this.customContext(CellRenderer.numberCellRenderer, params) : undefined;
         break;
       }
-      // case 'NUMBER': {
-      //   colDef.width = 150;
-      //   const { scale, grouping, pattern } = resultField;
-      //   colDef.cellRenderer = this.customContext(
-      //     CellRenderer.numberCellRenderer,
-      //     { scale, grouping, pattern }
-      //   );
-      //   colDef.getQuickFilterText = this.customContext(
-      //     CellRenderer.numberCellRenderer,
-      //     { scale, grouping, pattern }
-      //   );
-      //   break;
-      // }
       case 'boolean': {
         colDef.cellRenderer = this.customContext(CellRenderer.booleanCellRenderer);
         colDef.width = 100;
