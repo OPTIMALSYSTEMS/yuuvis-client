@@ -1,6 +1,6 @@
 import { CurrencyPipe, DecimalPipe, PercentPipe } from '@angular/common';
 import { Pipe, PipeTransform } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService } from '@yuuvis/core';
 import { takeUntil } from 'rxjs/operators';
 import { UnsubscribeOnDestroy } from '../common/util/unsubscribe.component';
 
