@@ -17,4 +17,7 @@
   <a target="_blank" href="{{ value }}" *ngIf="classification === 'url' && valid">
     <yuv-icon [icon]="'globe'"></yuv-icon>
   </a>
+  <a target="_blank" href="tel:{{ value }}" *ngIf="classification === 'phone' && valid">
+    <yuv-icon [icon]="'phone'"></yuv-icon>
+  </a>
 </div>

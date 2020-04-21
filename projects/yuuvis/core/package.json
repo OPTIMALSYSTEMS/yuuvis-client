@@ -1,6 +1,8 @@
 {
   "name": "@yuuvis/core",
   "version": "0.9.0-alpha.0",
+  "author": "OPTIMAL SYSTEMS GmbH <npm@optimal-systems.de>",
+  "license": "MIT",
   "scripts": {
     "doc": "./node_modules/.bin/compodoc",
     "doc:serve": "./node_modules/.bin/compodoc -s"

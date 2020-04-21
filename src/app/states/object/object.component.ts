@@ -56,13 +56,13 @@ export class ObjectComponent implements OnInit, OnDestroy {
   }
 
   private loadRecentItems() {
-    this.appCacheService.getItem(this.getRecentItemsStorageKey()).subscribe(items => {
+    this.appCacheService.getItem(this.getRecentItemsStorageKey()).subscribe((items) => {
       this.recentItems = items || [];
     });
   }
 
   private addRecentItem(id: string) {
-    this.recentItems = this.recentItems.filter(i => i !== id);
+    this.recentItems = this.recentItems.filter((i) => i !== id);
     this.recentItems.push(id);
     if (this.context) {
       this.appCacheService.setItem(this.getRecentItemsStorageKey(), this.recentItems).subscribe();
@@ -88,13 +88,14 @@ export class ObjectComponent implements OnInit, OnDestroy {
             });
           }
         } else {
+          // TODO: shouldn't context be set always? @anndreasSchulz
           this.context = dmsObject;
           this.title.setTitle(this.context.title);
           this.loadRecentItems();
         }
         this.contextBusy = false;
       },
-      err => {
+      (err) => {
         this.contextBusy = false;
         this.contextError = this.translate.instant('yuv.client.state.object.context.load.error');
       }
@@ -125,8 +126,8 @@ export class ObjectComponent implements OnInit, OnDestroy {
     this.eventService
       .on(YuvEventType.DMS_OBJECT_DELETED)
       .pipe(takeUntilDestroy(this))
-      .subscribe(event => {
-        if (this.context.id === event.data.id) {
+      .subscribe((event) => {
+        if (this.context?.id === event.data.id || this.contextId === event.data.id) {
           this.router.navigate(['/']);
         }
       });

@@ -2,7 +2,8 @@ import { Component, ElementRef, forwardRef, Input } from '@angular/core';
 import { ControlValueAccessor, FormControl, NG_VALIDATORS, NG_VALUE_ACCESSOR, Validator } from '@angular/forms';
 import { Utils } from '@yuuvis/core';
 import { IconRegistryService } from '../../../common/components/icon/service/iconRegistry.service';
-import { envelope, globe } from '../../../svg.generated';
+import { envelope, globe, phone } from '../../../svg.generated';
+import { Situation } from './../../../object-form/object-form.situation';
 /**
  * Creates form input for strings. Based on the input values different kinds of inputs will be generated.
  *
@@ -19,6 +20,13 @@ import { envelope, globe } from '../../../svg.generated';
  * <yuv-string [multiline]="true" [size]="'large'"></yuv-string>
  *
  */
+
+export enum Classification {
+  PHONE = 'phone',
+  EMAIL = 'email',
+  URL = 'url'
+}
+
 @Component({
   selector: 'yuv-string',
   templateUrl: './string.component.html',
@@ -88,7 +96,7 @@ export class StringComponent implements ControlValueAccessor, Validator {
   validationErrors = [];
 
   constructor(private elementRef: ElementRef, private iconRegistry: IconRegistryService) {
-    this.iconRegistry.registerIcons([envelope, globe]);
+    this.iconRegistry.registerIcons([envelope, globe, phone]);
   }
 
   propagateChange = (_: any) => {};
@@ -128,6 +136,7 @@ export class StringComponent implements ControlValueAccessor, Validator {
     if (this.regex && multiCheck((v) => !RegExp(this.regex).test(v))) {
       this.validationErrors.push({ key: 'regex' });
     }
+    console.log(multiCheck((v) => !this.validateClassification(v)));
 
     // validate classification settings
     if (this.classification && multiCheck((v) => !this.validateClassification(v))) {
@@ -166,14 +175,16 @@ export class StringComponent implements ControlValueAccessor, Validator {
   }
 
   private validateClassification(string): boolean {
-    if (this.situation === 'SEARCH') {
+    if (this.situation === Situation.SEARCH) {
       return true;
     } else {
       let pattern;
-      if (this.classification === 'email') {
+      if (this.classification === Classification.EMAIL) {
         pattern = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-      } else if (this.classification === 'url') {
+      } else if (this.classification === Classification.URL) {
         pattern = /(http|ftp|https):\/\/[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:\/~+#-]*[\w@?^=%&amp;\/~+#-])?/;
+      } else if (this.classification === Classification.PHONE) {
+        pattern = /^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$/g;
       }
       return pattern ? pattern.test(string) : false;
     }
@@ -183,6 +194,12 @@ export class StringComponent implements ControlValueAccessor, Validator {
    * returns null when valid else the validation object
    */
   public validate(c: FormControl) {
-    return this.validationErrors.length ? Utils.arrayToObject(this.validationErrors, 'key', (err) => ({ valid: false, ...err })) : null;
+    if (this.validationErrors.length) {
+      this.valid = false;
+      return Utils.arrayToObject(this.validationErrors, 'key', (err) => ({ valid: false, ...err }));
+    } else {
+      this.valid = true;
+      return null;
+    }
   }
 }

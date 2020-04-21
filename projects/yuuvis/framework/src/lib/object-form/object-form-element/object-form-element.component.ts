@@ -3,6 +3,7 @@ import { TranslateService } from '@yuuvis/core';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { ObjectFormTranslateService } from '../object-form-translate.service';
 import { ObjectFormControlWrapper } from '../object-form.interface';
+import { Situation } from './../object-form.situation';
 
 @Component({
   selector: 'yuv-object-form-element',
@@ -33,7 +34,7 @@ export class ObjectFormElementComponent implements OnDestroy {
         this.labelToggled(true);
       }
       this.fetchTags();
-      this.formElementRef.valueChanges.pipe(takeUntilDestroy(this)).subscribe(_ => {
+      this.formElementRef.valueChanges.pipe(takeUntilDestroy(this)).subscribe((_) => {
         this.setupErrors();
       });
     }
@@ -47,7 +48,7 @@ export class ObjectFormElementComponent implements OnDestroy {
   ) {}
 
   labelToggled(toggled: boolean) {
-    if (!this.skipToggle && this.situation === 'SEARCH') {
+    if (!this.skipToggle && this.situation === Situation.SEARCH) {
       const toggleClass = 'label-toggled';
       this.isNull = toggled;
       if (toggled) {
@@ -63,7 +64,7 @@ export class ObjectFormElementComponent implements OnDestroy {
   fetchTags() {
     this.tag = null;
     if (
-      this.situation === 'CREATE' &&
+      this.situation === Situation.CREATE &&
       (this.formElementRef._eoFormElement.hasOwnProperty('defaultvaluefunction') || this.formElementRef._eoFormElement.hasOwnProperty('defaultvalue'))
     ) {
       this.tag =
@@ -82,10 +83,12 @@ export class ObjectFormElementComponent implements OnDestroy {
   private setupErrors() {
     this.errors = null;
     if (
-      (this.situation !== 'SEARCH' && this.situation !== 'CREATE' && this.formElementRef.errors) ||
-      ((this.situation === 'SEARCH' || this.situation === 'CREATE') && this.formElementRef.errors && (this.formElementRef.dirty || this.formElementRef.touched))
+      (this.situation !== Situation.SEARCH && this.situation !== Situation.CREATE && this.formElementRef.errors) ||
+      ((this.situation === Situation.SEARCH || this.situation === Situation.CREATE) &&
+        this.formElementRef.errors &&
+        (this.formElementRef.dirty || this.formElementRef.touched))
     ) {
-      this.errors = Object.keys(this.formElementRef.errors).map(key => {
+      this.errors = Object.keys(this.formElementRef.errors).map((key) => {
         return key === 'eoformScript'
           ? this.formElementRef._eoFormElement.error.msg
           : this.formTranslateService.getErrorLabel(key, this.formElementRef.errors[key].params);

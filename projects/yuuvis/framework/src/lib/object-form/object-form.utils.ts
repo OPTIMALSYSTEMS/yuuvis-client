@@ -1,6 +1,7 @@
 import { ContentStreamField } from '@yuuvis/core';
 import { ObjectFormControlWrapper } from './object-form.interface';
 import { ObjectFormControl } from './object-form.model';
+import { Situation } from './object-form.situation';
 import { FormValidation } from './object-form.validation';
 
 export class ObjectFormUtils {
@@ -15,7 +16,7 @@ export class ObjectFormUtils {
   static elementToFormControl(formElement: any, situation?: string): ObjectFormControlWrapper {
     // Create the ObjectFormControlWrapper
     let wrapper = new ObjectFormControlWrapper({});
-    let formSituation = situation ? situation : 'EDIT';
+    let formSituation = situation ? situation : Situation.EDIT;
 
     wrapper._eoFormControlWrapper = {
       controlName: formElement.name,
@@ -34,7 +35,7 @@ export class ObjectFormUtils {
 
     // Form elements in SEARCH situation may arrive with a value set to NULL (explicit search for
     // fields that are NOT set). In that case we need to prepare the form control
-    if (formSituation === 'SEARCH' && formElement.value === null) {
+    if (formSituation === Situation.SEARCH && formElement.value === null) {
       formElement.isNotSetValue = true;
     }
 

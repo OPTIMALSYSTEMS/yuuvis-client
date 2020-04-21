@@ -114,6 +114,9 @@ export class GridService {
     return field.propertyType !== 'id' && !skipSort.includes(field.id);
   }
 
+  private fieldClassification(classification: string[]): string {
+    return Array.isArray(classification) ? classification[0] : null;
+  }
   /**
    * Add type specific column definition attributes based on a fields type
    *
@@ -125,7 +128,6 @@ export class GridService {
   private addColDefAttrsByType(colDef: ColDef, field: ObjectTypeField) {
     colDef.cellClass = `col-${field.propertyType}`;
     colDef.headerClass = `col-header-${field.propertyType}`;
-
     switch (field.propertyType) {
       case 'string': {
         colDef.cellRenderer = (params) => Utils.escapeHtml(params.value);
@@ -146,8 +148,9 @@ export class GridService {
           grouping: true,
           pattern: undefined
         };
+
         colDef.width = 150;
-        colDef.cellRenderer = this.customContext(CellRenderer.numberCellRenderer, params);
+        colDef.cellRenderer = !this.fieldClassification(field?.classification) ? this.customContext(CellRenderer.numberCellRenderer, params) : undefined;
         break;
       }
       case 'decimal': {
@@ -158,7 +161,7 @@ export class GridService {
           cips: true
         };
         colDef.width = 150;
-        colDef.cellRenderer = this.customContext(CellRenderer.numberCellRenderer, params);
+        colDef.cellRenderer = !this.fieldClassification(field?.classification) ? this.customContext(CellRenderer.numberCellRenderer, params) : undefined;
         break;
       }
       // case 'NUMBER': {
