@@ -27,7 +27,7 @@ export class SystemService {
    */
   getObjectTypes(withLabels?: boolean): ObjectType[] {
     return withLabels
-      ? this.system.objectTypes.map(t => ({
+      ? this.system.objectTypes.map((t) => ({
           ...t,
           label: this.getLocalizedResource(`${t.id}_label`)
         }))
@@ -37,12 +37,14 @@ export class SystemService {
   /**
    * Returns grouped object types sorted by label and folders first.
    * @param withLabels Whether or not to also add the types labels
+   * @param skipAbstract Whether or not to exclude abstract object types like e.g. 'system:document'
    */
-  getGroupedObjectTypes(withLabels?: boolean): ObjectTypeGroup[] {
+  getGroupedObjectTypes(withLabels?: boolean, skipAbstract?: boolean): ObjectTypeGroup[] {
     // TODO: Apply a different property to group once grouping is available
     const grouped = this.groupBy(
       this.getObjectTypes(withLabels)
-        .map(ot => ({
+        .filter((ot) => !skipAbstract || ot.creatable)
+        .map((ot) => ({
           ...ot,
           group: this.getLocalizedResource(`${ot.id}_description`)
         }))
@@ -56,7 +58,7 @@ export class SystemService {
     const groups: ObjectTypeGroup[] = [];
     Object.keys(grouped)
       .sort()
-      .forEach(k => {
+      .forEach((k) => {
         delete grouped[k].group;
         groups.push({
           label: k,
@@ -79,7 +81,7 @@ export class SystemService {
    * @param withLabel Whether or not to also add the types label
    */
   getObjectType(objectTypeId: string, withLabel?: boolean): ObjectType {
-    let objectType: ObjectType = this.system.objectTypes.find(ot => ot.id === objectTypeId);
+    let objectType: ObjectType = this.system.objectTypes.find((ot) => ot.id === objectTypeId);
     if (objectType && withLabel) {
       objectType.label = this.getLocalizedResource(`${objectType.id}_label`);
     }
@@ -110,8 +112,8 @@ export class SystemService {
     const sysDocument = this.getBaseDocumentType();
 
     // base type contains only fields that are shared by base document and base folder ...
-    const folderTypeFieldIDs = sysFolder.fields.map(f => f.id);
-    const baseTypeFields: ObjectTypeField[] = sysDocument.fields.filter(f => folderTypeFieldIDs.includes(f.id));
+    const folderTypeFieldIDs = sysFolder.fields.map((f) => f.id);
+    const baseTypeFields: ObjectTypeField[] = sysDocument.fields.filter((f) => folderTypeFieldIDs.includes(f.id));
 
     // ... and some secondary object type fields
     // TODO: get fields for SecondaryObjectTypeField from schema
@@ -206,12 +208,12 @@ export class SystemService {
     const fetchTasks = [this.backend.get('/dms/schema', ApiBase.core), this.fetchLocalizations()];
 
     return forkJoin(fetchTasks).pipe(
-      catchError(error => {
+      catchError((error) => {
         this.logger.error('Error fetching recent version of system definition from server.', error);
         this.systemSource.error('Error fetching recent version of system definition from server.');
         return of(null);
       }),
-      map(data => {
+      map((data) => {
         if (data && data.length) {
           this.setSchema(data[0], data[1]);
         }
@@ -255,7 +257,7 @@ export class SystemService {
 
   updateLocalizations(): Observable<any> {
     return this.fetchLocalizations().pipe(
-      tap(res => {
+      tap((res) => {
         this.system.i18n = res;
         this.appCache.setItem(this.STORAGE_KEY, this.system).subscribe();
         this.systemSource.next(this.system);

@@ -12,6 +12,7 @@ import {
   ObjectTypeField,
   SearchService,
   SystemService,
+  SystemType,
   TranslateService,
   UserConfigService,
   Utils
@@ -60,12 +61,16 @@ export class GridService {
    * blank in case of a mixed result list
    */
   getColumnConfiguration(objectTypeId?: string): Observable<ColDef[]> {
-    const objectType: ObjectType = objectTypeId ? this.system.getObjectType(objectTypeId) : this.system.getBaseType();
+    // Abstract types like `system:document` or `system:folder` should also fall back to the
+    // mixed column configuration
+    const abstractTypes = [SystemType.DOCUMENT, SystemType.FOLDER];
+    const objectType: ObjectType = !objectTypeId || abstractTypes.includes(objectTypeId) ? this.system.getBaseType() : this.system.getObjectType(objectTypeId);
     const objectTypeFields = {};
     objectType.fields.forEach((f: ObjectTypeField) => (objectTypeFields[f.id] = f));
+
     return this.userConfig
       .getColumnConfig(objectTypeId)
-      .pipe(map((cc: ColumnConfig) => cc.columns.map(c => this.getColumnDefinition(objectTypeFields[c.id], c))));
+      .pipe(map((cc: ColumnConfig) => cc.columns.map((c) => this.getColumnDefinition(objectTypeFields[c.id], c))));
   }
 
   /**
@@ -75,7 +80,7 @@ export class GridService {
    */
   getColumnDefinitions(objectTypeId?: string): ColDef[] {
     const objectType: ObjectType = objectTypeId ? this.system.getObjectType(objectTypeId) : this.system.getBaseType();
-    return objectType.fields.map(f => this.getColumnDefinition(f));
+    return objectType.fields.map((f) => this.getColumnDefinition(f));
   }
 
   /**
@@ -105,7 +110,7 @@ export class GridService {
   }
 
   private isSortable(field: ObjectTypeField): boolean {
-    const skipSort = [BaseObjectTypeField.CREATED_BY, BaseObjectTypeField.MODIFIED_BY].map(s => s.toString());
+    const skipSort = [BaseObjectTypeField.CREATED_BY, BaseObjectTypeField.MODIFIED_BY].map((s) => s.toString());
     return field.propertyType !== 'id' && !skipSort.includes(field.id);
   }
 
@@ -123,7 +128,7 @@ export class GridService {
 
     switch (field.propertyType) {
       case 'string': {
-        colDef.cellRenderer = params => Utils.escapeHtml(params.value);
+        colDef.cellRenderer = (params) => Utils.escapeHtml(params.value);
         if (field.cardinality === 'multi') {
           colDef.cellRenderer = this.customContext(CellRenderer.multiSelectCellRenderer);
         }
@@ -213,14 +218,14 @@ export class GridService {
   }
 
   private customContext(fnc, mixin?) {
-    return params => fnc({ ...params, context: this.context, ...(mixin && mixin) });
+    return (params) => fnc({ ...params, context: this.context, ...(mixin && mixin) });
   }
 
   public fileSizeKeyCreator(param) {
     if (!param.value) {
       return null;
     }
-    const match = param.context.fileSizeOpts.find(f => f.from <= param.value && param.value < f.to);
+    const match = param.context.fileSizeOpts.find((f) => f.from <= param.value && param.value < f.to);
     return match ? match.label : param.context.fileSizePipe.transform(param.value);
   }
 }
