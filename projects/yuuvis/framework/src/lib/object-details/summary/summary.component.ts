@@ -4,6 +4,7 @@ import {
   AppCacheService,
   BaseObjectTypeField,
   ContentStreamField,
+  DmsObject,
   Logger,
   ObjectTypeField,
   ParentField,
@@ -11,7 +12,6 @@ import {
   SystemService
 } from '@yuuvis/core';
 import { GridService } from '../../services/grid/grid.service';
-import { DmsObject } from './../../../../../core/src/lib/model/dms-object.model';
 import { Summary, SummaryEntry } from './summary.interface';
 
 /**

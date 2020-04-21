@@ -3,7 +3,6 @@ import { ControlValueAccessor, FormControl, NG_VALIDATORS, NG_VALUE_ACCESSOR, Va
 import { TranslateService, Utils } from '@yuuvis/core';
 import { LocaleNumberPipe } from '../../../pipes/locale-number.pipe';
 import { FileSizePipe } from './../../../pipes/filesize.pipe';
-import { Classification } from './../string/string.component';
 
 /**
  * Creates form input for number values.
@@ -48,8 +47,6 @@ export class NumberComponent implements ControlValueAccessor, Validator {
    */
   @Input()
   set scale(val: number) {
-    console.log('scale: ', val);
-
     this._scale = Math.min(val || 0, 30);
   }
   get scale(): number {
@@ -60,8 +57,6 @@ export class NumberComponent implements ControlValueAccessor, Validator {
    */
   @Input()
   set precision(val: number) {
-    console.log('Pressision: ', val);
-
     this._precision = Math.min(val || 100, 100);
   }
   get precision(): number {
@@ -82,8 +77,6 @@ export class NumberComponent implements ControlValueAccessor, Validator {
    */
   @Input()
   set pattern(val) {
-    console.log({ val });
-
     this._pattern = val;
   }
   get pattern() {
@@ -111,15 +104,12 @@ export class NumberComponent implements ControlValueAccessor, Validator {
    * handled like file sizes (calculates differnt units)
    */
   @Input() set classification(classification: string) {
-    console.log({ Classification });
-
     this.numberPipe = classification === 'filesize' ? new FileSizePipe(this.translate) : new LocaleNumberPipe(this.translate);
   }
 
   static betweenTwoNumbers(val: number, minVal: number, maxVal: number) {
     const min = !Utils.isEmpty(minVal) ? minVal : -Infinity;
     const max = !Utils.isEmpty(maxVal) ? maxVal : Infinity;
-
     return val >= min && val <= max;
   }
 
