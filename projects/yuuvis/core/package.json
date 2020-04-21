@@ -1,6 +1,6 @@
 {
   "name": "@yuuvis/core",
-  "version": "0.9.0-alpha.0",
+  "version": "0.9.0-alpha.001",
   "author": "OPTIMAL SYSTEMS GmbH <npm@optimal-systems.de>",
   "license": "MIT",
   "scripts": {
@@ -10,11 +10,11 @@
   "peerDependencies": {
     "@angular/common": "~9.1.0",
     "@angular/core": "~9.1.0",
-    "rxjs": "~6.5.4"
+    "rxjs": "~6.5.5"
   },
   "dependencies": {
-    "@ngx-pwa/local-storage": "^7.4.2",
-    "@ngx-translate/core": "^11.0.1",
-    "ngx-device-detector": "^1.3.19"
+    "@ngx-pwa/local-storage": "^9.0.3",
+    "@ngx-translate/core": "^12.1.2",
+    "ngx-device-detector": "^1.4.1"
   }
 }

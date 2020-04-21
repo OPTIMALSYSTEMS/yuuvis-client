@@ -1,6 +1,6 @@
 {
   "name": "@yuuvis/framework",
-  "version": "0.9.0-alpha.0",
+  "version": "0.9.0-alpha.001",
   "author": "OPTIMAL SYSTEMS GmbH <npm@optimal-systems.de>",
   "license": "MIT",
   "scripts": {
@@ -8,25 +8,25 @@
     "doc:serve": "./node_modules/.bin/compodoc -s"
   },
   "peerDependencies": {
-    "@angular/common": "~8.0.0",
-    "@angular/animations": "~8.0.0",
-    "@angular/core": "~8.0.0",
-    "@angular/router": "~8.0.0",
-    "rxjs": "~6.5.2"
+    "@angular/common": "~9.1.0",
+    "@angular/animations": "~9.1.0",
+    "@angular/core": "~9.1.0",
+    "@angular/router": "~9.1.0",
+    "@angular/forms": "~9.1.0",
+    "rxjs": "~6.5.5"
   },
   "dependencies": {
-    "primeng": "^7.1.0",
+    "primeng": "^9.0.5",
     "primeicons": "^2.0.0",
     "angular-split": "3.0.1",
-    "@angular/cdk": "^7.3.7",
-    "@angular/forms": "~8.0.0",
-    "@ag-grid-community/core": "^22.0.0",
-    "@ag-grid-community/angular": "^22.0.0",
-    "@ag-grid-community/client-side-row-model": "^22.0.0",
-    "angular-resize-event": "^1.0.0",
+    "@angular/cdk": "^9.2.0",
+    "@ag-grid-community/core": "^23.0.2",
+    "@ag-grid-community/angular": "^23.0.3",
+    "@ag-grid-community/client-side-row-model": "^23.0.2",
+    "angular-resize-event": "^1.2.1",
     "lodash-es": "^4.17.15",
     "take-until-destroy": "^2.1.0",
     "ngx-drag-scroll": "^8.0.0-beta.2",
-    "ngx-toastr": "^11.1.0"
+    "ngx-toastr": "^12.0.1"
   }
 }
