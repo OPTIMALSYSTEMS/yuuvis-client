@@ -170,11 +170,9 @@ export class FrameComponent implements OnInit {
       const ctx = url.match(/\/object\/([^#?]+)/)[1];
       if (ctx && ctx !== this.context) {
         this.context = ctx;
-        this.logger.debug('frame: entering context search');
       }
     } else {
       this.context = null;
-      this.logger.debug('frame: entering app search');
     }
   }
 
@@ -190,16 +188,12 @@ export class FrameComponent implements OnInit {
     this.appSearch.query$.subscribe((q: SearchQuery) => {
       this.appQuery = q;
     });
-    this.router.events
-      .pipe(
-        // tap(e => console.log(e)),
-        filter((e) => e instanceof NavigationEnd)
-      )
-      .subscribe((e: NavigationEnd) => {
-        this.getContextFromURL(e.urlAfterRedirects);
-        this.tab = e.urlAfterRedirects.startsWith('/dashboard');
-        // hide open search bar when leaving state
-        this.toggleSearch(false);
-      });
+    this.router.events.pipe(filter((e) => e instanceof NavigationEnd)).subscribe((e: NavigationEnd) => {
+      this.getContextFromURL(e.urlAfterRedirects);
+      // transparent app-bar?
+      this.tab = e.urlAfterRedirects.startsWith('/dashboard');
+      // hide open search bar when leaving state
+      this.toggleSearch(false);
+    });
   }
 }

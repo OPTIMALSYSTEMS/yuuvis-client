@@ -1,7 +1,7 @@
 import { Location } from '@angular/common';
-import { Component, OnDestroy, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, Output, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { DmsService, ObjectType, ObjectTypeGroup, SystemService, SystemType, TranslateService, Utils } from '@yuuvis/core';
+import { DmsObject, DmsService, ObjectType, ObjectTypeGroup, SystemService, SystemType, TranslateService, Utils } from '@yuuvis/core';
 import { Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
@@ -31,6 +31,8 @@ import { Breadcrumb, CreateState, CurrentStep, Labels } from './../object-create
 export class ObjectCreateComponent implements OnDestroy {
   @ViewChild(ObjectFormComponent) objectForm: ObjectFormComponent;
 
+  context: DmsObject;
+
   animationTimer = { value: true, params: { time: '400ms' } };
   // state of creation progress
   state$: Observable<CreateState> = this.objCreateServcice.state$;
@@ -39,11 +41,37 @@ export class ObjectCreateComponent implements OnDestroy {
   createAnother: boolean = false;
   selectedObjectType: ObjectType;
   selectedObjectTypeFormOptions: ObjectFormOptions;
+
+  // groups of object types available for the root target
+  generalObjectTypeGroups: SelectableGroup[];
+  // groups of object types available for a context
+  contextObjectTypeGroups: SelectableGroup[];
+
   availableObjectTypeGroups: SelectableGroup[];
   formState: FormStatusChangedEvent;
   files: File[] = [];
   labels: Labels;
   title: string;
+
+  /**
+   * ID of parent folder/context.
+   */
+  @Input() set contextId(id: string) {
+    if (id) {
+      this.dmsService.getDmsObject(id).subscribe((res: DmsObject) => {
+        this.context = res;
+        this.setupContextTypeGroups();
+      });
+    } else {
+      this.context = null;
+    }
+  }
+
+  /**
+   * Triggered when the context set by the input property 'contextId' has been
+   * removed by the user.
+   */
+  @Output() contextRemoved = new EventEmitter();
 
   constructor(
     private objCreateServcice: ObjectCreateService,
@@ -67,7 +95,7 @@ export class ObjectCreateComponent implements OnDestroy {
     this.title = this.labels.defaultTitle;
 
     let i = 0;
-    this.availableObjectTypeGroups = this.system.getGroupedObjectTypes().map((otg: ObjectTypeGroup) => ({
+    this.generalObjectTypeGroups = this.system.getGroupedObjectTypes().map((otg: ObjectTypeGroup) => ({
       id: `${i++}`,
       label: otg.label,
       items: otg.types
@@ -88,6 +116,13 @@ export class ObjectCreateComponent implements OnDestroy {
           value: ot
         }))
     }));
+    this.availableObjectTypeGroups = this.generalObjectTypeGroups;
+  }
+
+  removeContext() {
+    this.contextId = null;
+    this.availableObjectTypeGroups = this.generalObjectTypeGroups;
+    this.contextRemoved.emit();
   }
 
   goToStep(step: CurrentStep) {
@@ -198,6 +233,16 @@ export class ObjectCreateComponent implements OnDestroy {
   onFormStatusChanged(evt) {
     this.formState = evt;
     this.objCreateServcice.setNewState({ done: this.isReady() });
+  }
+
+  // Set up object types that are available for the given context
+  private setupContextTypeGroups() {
+    this.contextObjectTypeGroups = this.generalObjectTypeGroups.map((g) => {
+      // TODO: figure out which types are available based on the schema
+      // right now we are just filtering out the folders ...
+      return { ...g, items: g.items.filter((t) => !t.highlight) };
+    });
+    this.availableObjectTypeGroups = this.contextObjectTypeGroups;
   }
 
   /**

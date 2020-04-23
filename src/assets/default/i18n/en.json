@@ -64,6 +64,7 @@
   "yuv.framework.form.datepicker.select": "Select",
   "yuv.framework.form.form-input.null": "No value",
   "yuv.framework.list.refresh": "Refresh",
+  "yuv.framework.object-create.context.title": "At location '{{title}}'",
   "yuv.framework.object-create.footer.another": "Create additional object",
   "yuv.framework.object-create.footer.create": "Create object",
   "yuv.framework.object-create.header.title": "Create object",

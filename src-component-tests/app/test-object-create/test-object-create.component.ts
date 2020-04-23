@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { DmsObject } from '@yuuvis/core';
 
 @Component({
   selector: 'yuv-test-object-create',
@@ -6,10 +7,18 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./test-object-create.component.scss']
 })
 export class TestObjectCreateComponent implements OnInit {
+  contextId: string;
 
-  constructor() { }
+  constructor() {}
 
-  ngOnInit() {
+  setContext(o: DmsObject) {
+    this.contextId = o ? o.id : null;
   }
 
+  onContextRemoved() {
+    alert('Context removed');
+    this.contextId = null;
+  }
+
+  ngOnInit() {}
 }
