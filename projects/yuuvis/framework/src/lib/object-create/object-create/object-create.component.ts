@@ -1,7 +1,5 @@
-import { Location } from '@angular/common';
 import { Component, EventEmitter, Input, OnDestroy, Output, ViewChild } from '@angular/core';
-import { Router } from '@angular/router';
-import { DmsObject, DmsService, ObjectType, ObjectTypeGroup, SystemService, SystemType, TranslateService, Utils } from '@yuuvis/core';
+import { BaseObjectTypeField, DmsObject, DmsService, ObjectType, ObjectTypeGroup, SystemService, SystemType, TranslateService, Utils } from '@yuuvis/core';
 import { Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
@@ -54,7 +52,9 @@ export class ObjectCreateComponent implements OnDestroy {
   title: string;
 
   /**
-   * ID of parent folder/context.
+   * ID of parent folder/context. Providing this ID will create the new object
+   * inside this parent folder. Eventhough you specify the context, the user is
+   * able to remove it. So this is more a suggestion.
    */
   @Input() set contextId(id: string) {
     if (id) {
@@ -73,14 +73,17 @@ export class ObjectCreateComponent implements OnDestroy {
    */
   @Output() contextRemoved = new EventEmitter();
 
+  /**
+   * Emits the IDs of the objects that have been created
+   */
+  @Output() objectCreated = new EventEmitter<string[]>();
+
   constructor(
     private objCreateServcice: ObjectCreateService,
     private system: SystemService,
     private notify: NotificationService,
     private dmsService: DmsService,
     private translate: TranslateService,
-    private router: Router,
-    private location: Location,
     private iconRegistry: IconRegistryService
   ) {
     this.iconRegistry.registerIcons([clear]);
@@ -193,12 +196,16 @@ export class ObjectCreateComponent implements OnDestroy {
     this.objCreateServcice.setNewBreadcrumb(CurrentStep.INDEXDATA);
   }
 
-  private createObject(id: string, data: any, files: File[]): Observable<any> {
+  private createObject(id: string, data: any, files: File[]): Observable<string[]> {
     return this.dmsService.createDmsObject(id, data, files, files.map((file) => file.name).join(', '));
   }
 
   create() {
-    this.createObject(this.selectedObjectType.id, this.formState.data, this.files)
+    let data = this.formState.data;
+    if (this.context) {
+      data[BaseObjectTypeField.PARENT_ID] = this.context.id;
+    }
+    this.createObject(this.selectedObjectType.id, data, this.files)
       .pipe(takeUntilDestroy(this), catchError(Utils.catch(null, this.translate.instant('yuv.framework.object-create.notify.error'))))
       .subscribe((res) => {
         this.notify.success(this.translate.instant('yuv.framework.object-create.notify.success'));
@@ -208,15 +215,7 @@ export class ObjectCreateComponent implements OnDestroy {
           this.resetState();
           this.reset();
         } else {
-          if (res.length > 1) {
-            this.location.back();
-          } else {
-            const id = Utils.getProperty(res, '0.properties.system:objectId.value');
-            if (id) {
-              // TODO: remove timeout when backend is synced
-              setTimeout(() => this.router.navigate(['object', id]), 1000);
-            }
-          }
+          this.objectCreated.emit(res);
         }
       });
   }

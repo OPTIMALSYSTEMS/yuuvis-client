@@ -1,1 +1,2 @@
-<yuv-object-create class="panel" [contextId]="context" (contextRemoved)="onContextRemoved()"></yuv-object-create>
+<yuv-object-create class="panel" [contextId]="context" (objectCreated)="onObjectCreated($event)"
+    (contextRemoved)="onContextRemoved()"></yuv-object-create>

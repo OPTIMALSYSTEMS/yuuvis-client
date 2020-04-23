@@ -63,7 +63,8 @@
 
       yuv-icon {
         padding: calc(var(--app-pane-padding) / 4);
-        @include bidi-style(margin-right, var(--app-pane-padding), margin-left, var(--app-pane-padding));
+        box-sizing: border-box;
+        @include bidi-style(margin-right, calc(var(--app-pane-padding) / 2), margin-left, calc(var(--app-pane-padding) / 2));
       }
     }
 

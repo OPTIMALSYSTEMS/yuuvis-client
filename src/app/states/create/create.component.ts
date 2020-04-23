@@ -1,3 +1,4 @@
+import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -12,11 +13,26 @@ import { TranslateService } from '@yuuvis/core';
 export class CreateComponent implements OnInit {
   context: string;
 
-  constructor(private translate: TranslateService, private router: Router, private route: ActivatedRoute, private titleService: Title) {}
+  constructor(
+    private translate: TranslateService,
+    private location: Location,
+    private router: Router,
+    private route: ActivatedRoute,
+    private titleService: Title
+  ) {}
 
   onContextRemoved() {
     // get rid of the fragment identifying the context
     this.router.navigate([]);
+  }
+
+  onObjectCreated(createdObjectsIds: string[]) {
+    if (createdObjectsIds.length > 1) {
+      this.location.back();
+    } else {
+      // TODO: remove timeout when backend returns synchroniously AFTER the object was created
+      setTimeout(() => this.router.navigate(['object', createdObjectsIds[0]]), 1000);
+    }
   }
 
   ngOnInit() {
