@@ -1,11 +1,17 @@
 import { AfterViewInit, Component, ElementRef, Input, NgZone, OnDestroy, OnInit } from '@angular/core';
-import { IconRegistryService } from '@yuuvis/common-ui';
 import { DmsObject } from '@yuuvis/core';
 import { fromEvent, Observable } from 'rxjs';
 import { takeUntilDestroy } from 'take-until-destroy';
+import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { folder, noFile, undock } from '../../svg.generated';
 import { ContentPreviewService } from './service/content-preview.service';
 
+/**
+ * Component rendering a content preview for a dms object.
+ *
+ * @example
+ * <yuv-content-preview [dmsObject]="dmsObject"></yuv-content-preview>
+ */
 @Component({
   selector: 'yuv-content-preview',
   templateUrl: './content-preview.component.html',
@@ -18,14 +24,21 @@ export class ContentPreviewComponent implements OnInit, OnDestroy, AfterViewInit
   undockWin: Window;
   previewSrc: string;
 
-  @Input() searchTerm = '';
-
+  /**
+   * DmsObject to show the preview for.
+   */
   @Input()
   set dmsObject(object: DmsObject) {
     // generate preview URI with streamID to enable refresh if file was changed
     !object || !object.content || !object.content.size
       ? this.contentPreviewService.resetSource()
-      : this.contentPreviewService.createPreviewUrl(object.id, object.content, object.version);
+      : this.contentPreviewService.createPreviewUrl(
+          object.id,
+          object.content,
+          object.version,
+          this.dmsObject2 && this.dmsObject2.content,
+          this.dmsObject2 && this.dmsObject2.version
+        );
     this._dmsObject = object;
   }
 
@@ -33,8 +46,25 @@ export class ContentPreviewComponent implements OnInit, OnDestroy, AfterViewInit
     return this._dmsObject;
   }
 
+  /**
+   * If you provide a search term here, the component will
+   * try to highlight this term within the preview. Depending on the
+   * type of viewer rendering the objects content, this may be supported or not.
+   */
+  @Input() searchTerm = '';
+
   get iframe() {
     return this.elRef.nativeElement.querySelector('iframe');
+  }
+
+  @Input() dmsObject2: DmsObject;
+
+  /**
+   * `DmsObject[]` to compare changes between objects
+   */
+  @Input() set compareObjects(dmsObjects: DmsObject[]) {
+    this.dmsObject2 = dmsObjects[1];
+    this.dmsObject = dmsObjects[0];
   }
 
   previewSrc$: Observable<string> = this.contentPreviewService.previewSrc$;
@@ -53,7 +83,7 @@ export class ContentPreviewComponent implements OnInit, OnDestroy, AfterViewInit
     if (!this.isUndocked) {
       this.undockWin.close();
     } else {
-      this._ngZone.runOutsideAngular(_ => {
+      this._ngZone.runOutsideAngular((_) => {
         const interval = setInterval(() => {
           if (this.undockWin && this.undockWin.closed) {
             clearInterval(interval);
@@ -110,7 +140,7 @@ export class ContentPreviewComponent implements OnInit, OnDestroy, AfterViewInit
   }
 
   ngOnInit() {
-    this.previewSrc$.pipe(takeUntilDestroy(this)).subscribe(src => this.open(src));
+    this.previewSrc$.pipe(takeUntilDestroy(this)).subscribe((src) => this.open(src));
   }
 
   ngAfterViewInit() {
@@ -118,7 +148,7 @@ export class ContentPreviewComponent implements OnInit, OnDestroy, AfterViewInit
     if (iframe) {
       fromEvent(iframe, 'load')
         .pipe(takeUntilDestroy(this))
-        .subscribe(res => {
+        .subscribe((res) => {
           setTimeout(() => this.searchPDF(this.searchTerm, iframe), 100);
         });
     }

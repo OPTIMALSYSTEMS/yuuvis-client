@@ -15,6 +15,7 @@ export class TestGroupedSelectComponent implements OnInit {
   selectionChangedRes: any;
   groups: SelectableGroup[] = [];
   selectedItems: Selectable[] = [];
+  o: boolean;
 
   constructor() {}
 

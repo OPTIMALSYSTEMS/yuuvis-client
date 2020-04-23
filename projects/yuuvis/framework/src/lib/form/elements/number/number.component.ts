@@ -8,10 +8,9 @@ import { FileSizePipe } from './../../../pipes/filesize.pipe';
  * Creates form input for number values.
  *
  * Implements `ControlValueAccessor` so it can be used within Angular forms.
- * 
- * ```html
-<yuv-number [scale]="2"></yuv-number>
-```
+ *
+ * @example
+ * <yuv-number [scale]="2"></yuv-number>
  *
  */
 @Component({
@@ -99,6 +98,11 @@ export class NumberComponent implements ControlValueAccessor, Validator {
    */
   @Input() maxValue: number;
 
+  /**
+   * classification property adds some semantics to the value of this component.
+   * If you provide a value of `filesize` numbers typed into the control will be
+   * handled like file sizes (calculates differnt units)
+   */
   @Input() set classification(classification: string) {
     this.numberPipe = classification === 'filesize' ? new FileSizePipe(this.translate) : new LocaleNumberPipe(this.translate);
   }
@@ -106,7 +110,6 @@ export class NumberComponent implements ControlValueAccessor, Validator {
   static betweenTwoNumbers(val: number, minVal: number, maxVal: number) {
     const min = !Utils.isEmpty(minVal) ? minVal : -Infinity;
     const max = !Utils.isEmpty(maxVal) ? maxVal : Infinity;
-
     return val >= min && val <= max;
   }
 
@@ -186,6 +189,6 @@ export class NumberComponent implements ControlValueAccessor, Validator {
 
   // returns null when valid else the validation object
   public validate(c: FormControl) {
-    return this.validationErrors.length ? Utils.arrayToObject(this.validationErrors, 'key', err => ({ valid: false, ...err })) : null;
+    return this.validationErrors.length ? Utils.arrayToObject(this.validationErrors, 'key', (err) => ({ valid: false, ...err })) : null;
   }
 }

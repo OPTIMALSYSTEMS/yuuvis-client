@@ -45,12 +45,14 @@ export class LayoutService {
 
   private applyLayoutSettings(settings: LayoutSettings) {
     const darkModeClass = 'dark';
-    const body = this.document.getElementsByTagName('body')[0];
-    const bodyClassList = body.classList;
-    if (bodyClassList.contains(darkModeClass) && !settings.darkMode) {
-      bodyClassList.remove(darkModeClass);
-    } else if (!bodyClassList.contains(darkModeClass) && settings.darkMode) {
-      bodyClassList.add(darkModeClass);
+    if (settings) {
+      const body = this.document.getElementsByTagName('body')[0];
+      const bodyClassList = body.classList;
+      if (bodyClassList.contains(darkModeClass) && !settings.darkMode) {
+        bodyClassList.remove(darkModeClass);
+      } else if (!bodyClassList.contains(darkModeClass) && settings.darkMode) {
+        bodyClassList.add(darkModeClass);
+      }
     }
   }
 
@@ -110,7 +112,7 @@ export class LayoutService {
             return this.appCache.setItem(layoutOptionsKey, v);
           })
         )
-      : of();
+      : of(null);
   }
   /**
    * Load layout settings for a component.
@@ -120,7 +122,7 @@ export class LayoutService {
    */
   loadLayoutOptions(layoutOptionsKey: string, elementKey?: string): Observable<any> {
     this.logger.debug(layoutOptionsKey ? `loading layout options for '${layoutOptionsKey}-${elementKey}'` : `layout key missing`);
-    return layoutOptionsKey ? this.appCache.getItem(layoutOptionsKey).pipe(map(res => (elementKey && res ? res[elementKey] : res))) : of();
+    return layoutOptionsKey ? this.appCache.getItem(layoutOptionsKey).pipe(map(res => (elementKey && res ? res[elementKey] : res))) : of(null);
   }
 
   private saveSettings() {

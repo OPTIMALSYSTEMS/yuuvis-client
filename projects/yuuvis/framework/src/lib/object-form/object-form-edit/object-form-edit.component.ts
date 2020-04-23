@@ -3,6 +3,7 @@ import { DmsObject, DmsService, PendingChangesService, SystemService, TranslateS
 import { finalize } from 'rxjs/operators';
 import { NotificationService } from './../../services/notification/notification.service';
 import { FormStatusChangedEvent, ObjectFormOptions } from './../object-form.interface';
+import { Situation } from './../object-form.situation';
 import { ObjectFormComponent } from './../object-form/object-form.component';
 
 @Component({
@@ -18,7 +19,7 @@ export class ObjectFormEditComponent implements OnDestroy {
 
   // fetch a reference to the opbject form component to be able to
   // get the form data
-  @ViewChild(ObjectFormComponent, { static: false }) objectForm: ObjectFormComponent;
+  @ViewChild(ObjectFormComponent) objectForm: ObjectFormComponent;
 
   @Input() formDisabled: boolean;
   @Input('dmsObject')
@@ -28,7 +29,6 @@ export class ObjectFormEditComponent implements OnDestroy {
       this.formState = null;
       this.controls.saving = false;
       this.controls.disabled = true;
-
       this.createObjectForm(dmsObject);
     }
     this._dmsObject = dmsObject;
@@ -59,7 +59,7 @@ export class ObjectFormEditComponent implements OnDestroy {
     private pendingChanges: PendingChangesService,
     public translate: TranslateService
   ) {
-    this.translate.get(['yuv.framework.object-form-edit.save.success', 'yuv.framework.object-form-edit.save.error']).subscribe(res => {
+    this.translate.get(['yuv.framework.object-form-edit.save.success', 'yuv.framework.object-form-edit.save.error']).subscribe((res) => {
       this.messages.formSuccess = res['yuv.framework.object-form-edit.save.success'];
       this.messages.formError = res['yuv.framework.object-form-edit.save.error'];
     });
@@ -100,7 +100,7 @@ export class ObjectFormEditComponent implements OnDestroy {
           .updateDmsObject(this._dmsObject.id, formData)
           .pipe(finalize(() => this.finishPending()))
           .subscribe(
-            updatedObject => {
+            (updatedObject) => {
               this._dmsObject = updatedObject;
               this.formOptions.data = updatedObject.data;
               this.controls.saving = false;
@@ -129,8 +129,8 @@ export class ObjectFormEditComponent implements OnDestroy {
   // create the formOptions required by object form component
   private createObjectForm(dmsObject: DmsObject) {
     this.busy = true;
-    this.systemService.getObjectTypeForm(dmsObject.objectTypeId, 'EDIT').subscribe(
-      model => {
+    this.systemService.getObjectTypeForm(dmsObject.objectTypeId, Situation.EDIT).subscribe(
+      (model) => {
         this.formOptions = {
           formModel: model,
           data: dmsObject.data,
@@ -145,7 +145,7 @@ export class ObjectFormEditComponent implements OnDestroy {
         }
         this.busy = false;
       },
-      err => {
+      (err) => {
         this.busy = false;
       }
     );

@@ -10,7 +10,6 @@ import { CoreConfig } from '../config/core-config';
 import { CORE_CONFIG } from '../config/core-config.tokens';
 import { DeviceService } from '../device/device.service';
 import { Logger } from '../logger/logger';
-import { ScreenService } from '../screen/screen.service';
 
 @Injectable({
   providedIn: 'root'
@@ -18,8 +17,6 @@ import { ScreenService } from '../screen/screen.service';
 export class CoreInit {
   constructor(
     @Inject(CORE_CONFIG) private coreConfig: CoreConfig,
-    // DO NOT REMOVE: Otherwise service will not kick in until referenced
-    private screenService: ScreenService,
     private deviceService: DeviceService,
     private logger: Logger,
     private http: HttpClient,
@@ -31,45 +28,11 @@ export class CoreInit {
     return new Promise((resolve, reject) => {
       this.deviceService.init();
 
-      // /**
-      //  * getting a string means that we got an URL to load the config from
-      //  */
-      // let config = !Array.isArray(this.coreConfig.main)
-      //   ? of([this.coreConfig.main])
-      //   : forkJoin(
-      //       this.coreConfig.main.map(c =>
-      //         this.http.get(`${Utils.getBaseHref()}${c}`).pipe(
-      //           catchError(e => {
-      //             this.logger.error('failed to catch config file', e);
-      //             return of({});
-      //           })
-      //         )
-      //       )
-      //     );
-
-      // config
-      //   .pipe(
-      //     map(res =>
-      //       res.reduce((acc, x) => {
-      //         // merge object values on 2nd level
-      //         Object.keys(x).forEach(k => (!acc[k] || Array.isArray(x[k]) || typeof x[k] !== 'object' ? (acc[k] = x[k]) : Object.assign(acc[k], x[k])));
-      //         return acc;
-      //       }, {})
-      //     ),
-      //     tap((res: YuvConfig) => this.configService.set(res)),
-      //     switchMap((res: YuvConfig) => {
-      //       return this.authService.initUser().pipe(
-      //         catchError(e => {
-      //           return of(true);
-      //         })
-      //       );
-      //     })
-      //   )
       forkJoin(this.loadConfig(), this.authService.init()).subscribe(
-        res => {
+        (res) => {
           resolve(true);
         },
-        err => {
+        (err) => {
           this.logger.error(err);
           reject();
         }
@@ -82,9 +45,9 @@ export class CoreInit {
     let config = !Array.isArray(this.coreConfig.main)
       ? of([this.coreConfig.main])
       : forkJoin(
-          this.coreConfig.main.map(c =>
+          this.coreConfig.main.map((c) =>
             this.http.get(`${Utils.getBaseHref()}${c}`).pipe(
-              catchError(e => {
+              catchError((e) => {
                 this.logger.error('failed to catch config file', e);
                 return of({});
               })
@@ -93,17 +56,17 @@ export class CoreInit {
         );
 
     return config.pipe(
-      map(res =>
+      map((res) =>
         res.reduce((acc, x) => {
           // merge object values on 2nd level
-          Object.keys(x).forEach(k => (!acc[k] || Array.isArray(x[k]) || typeof x[k] !== 'object' ? (acc[k] = x[k]) : Object.assign(acc[k], x[k])));
+          Object.keys(x).forEach((k) => (!acc[k] || Array.isArray(x[k]) || typeof x[k] !== 'object' ? (acc[k] = x[k]) : Object.assign(acc[k], x[k])));
           return acc;
         }, {})
       ),
       tap((res: YuvConfig) => this.configService.set(res)),
       switchMap((res: YuvConfig) => {
         return this.authService.initUser().pipe(
-          catchError(e => {
+          catchError((e) => {
             return of(true);
           })
         );

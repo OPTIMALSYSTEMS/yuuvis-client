@@ -1,11 +1,12 @@
 import { Location } from '@angular/common';
 import { Component, OnDestroy, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { FadeInAnimations, IconRegistryService } from '@yuuvis/common-ui';
-import { DmsService, ObjectType, ObjectTypeGroup, SystemService, TranslateService, Utils } from '@yuuvis/core';
+import { DmsService, ObjectType, ObjectTypeGroup, SystemService, SystemType, TranslateService, Utils } from '@yuuvis/core';
 import { Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
+import { FadeInAnimations } from '../../common/animations/fadein.animation';
+import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { SelectableGroup } from '../../grouped-select';
 import { FormStatusChangedEvent, ObjectFormOptions } from '../../object-form/object-form.interface';
 import { ObjectFormComponent } from '../../object-form/object-form/object-form.component';
@@ -14,6 +15,12 @@ import { clear } from '../../svg.generated';
 import { ObjectCreateService } from '../object-create.service';
 import { Breadcrumb, CreateState, CurrentStep, Labels } from './../object-create.interface';
 
+/**
+ * This component is basically a wizard for creating new dms objects.
+ *
+ * @example
+ * <yuv-object-create></yuv-object-create>
+ */
 @Component({
   selector: 'yuv-object-create',
   templateUrl: './object-create.component.html',
@@ -22,7 +29,7 @@ import { Breadcrumb, CreateState, CurrentStep, Labels } from './../object-create
   providers: [ObjectCreateService]
 })
 export class ObjectCreateComponent implements OnDestroy {
-  @ViewChild(ObjectFormComponent, { static: false }) objectForm: ObjectFormComponent;
+  @ViewChild(ObjectFormComponent) objectForm: ObjectFormComponent;
 
   animationTimer = { value: true, params: { time: '400ms' } };
   // state of creation progress
@@ -63,14 +70,23 @@ export class ObjectCreateComponent implements OnDestroy {
     this.availableObjectTypeGroups = this.system.getGroupedObjectTypes().map((otg: ObjectTypeGroup) => ({
       id: `${i++}`,
       label: otg.label,
-      items: otg.types.map((ot: ObjectType) => ({
-        id: ot.id,
-        label: this.system.getLocalizedResource(`${ot.id}_label`),
-        description: ot.isFolder ? '' : this.labels[ot.contentStreamAllowed],
-        highlight: ot.isFolder,
-        svg: this.system.getObjectTypeIcon(ot.id),
-        value: ot
-      }))
+      items: otg.types
+        .filter(
+          (ot) =>
+            ![
+              // types that should not be able to be created
+              SystemType.FOLDER,
+              SystemType.DOCUMENT
+            ].includes(ot.id)
+        )
+        .map((ot: ObjectType) => ({
+          id: ot.id,
+          label: this.system.getLocalizedResource(`${ot.id}_label`),
+          description: ot.isFolder ? '' : this.labels[ot.contentStreamAllowed],
+          highlight: ot.isFolder,
+          svg: this.system.getObjectTypeIcon(ot.id),
+          value: ot
+        }))
     }));
   }
 
@@ -92,7 +108,7 @@ export class ObjectCreateComponent implements OnDestroy {
     this.objCreateServcice.setNewState({ busy: true });
 
     this.system.getObjectTypeForm(objectType.id, 'CREATE').subscribe(
-      model => {
+      (model) => {
         this.objCreateServcice.setNewState({ busy: false });
         this.selectedObjectTypeFormOptions = {
           formModel: model,
@@ -108,7 +124,7 @@ export class ObjectCreateComponent implements OnDestroy {
         }
         this.objCreateServcice.setNewState({ done: this.isReady() });
       },
-      err => {
+      (err) => {
         this.objCreateServcice.setNewState({ done: false });
       }
     );
@@ -143,13 +159,13 @@ export class ObjectCreateComponent implements OnDestroy {
   }
 
   private createObject(id: string, data: any, files: File[]): Observable<any> {
-    return this.dmsService.createDmsObject(id, data, files, files.map(file => file.name).join(', '));
+    return this.dmsService.createDmsObject(id, data, files, files.map((file) => file.name).join(', '));
   }
 
   create() {
     this.createObject(this.selectedObjectType.id, this.formState.data, this.files)
       .pipe(takeUntilDestroy(this), catchError(Utils.catch(null, this.translate.instant('yuv.framework.object-create.notify.error'))))
-      .subscribe(res => {
+      .subscribe((res) => {
         this.notify.success(this.translate.instant('yuv.framework.object-create.notify.success'));
         if (this.createAnother) {
           this.selectedObjectType = null;

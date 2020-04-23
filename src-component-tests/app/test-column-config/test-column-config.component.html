@@ -1,8 +1,6 @@
 <div class="testing-controls">
   <button (click)="setColumnConfigInput('appPersonalfile:pfpersonalfile')">Personalfile</button>
   <button (click)="setColumnConfigInput(null)">Mixed result list</button>
-  <button (click)="setColumnConfigInput('appPersonalfile:pfdocument', 'appPersonalfile:pfpersonalfile')">with
-    context</button>
 
   <button (click)="showSelector = !showSelector">toggle selector</button>
 </div>
@@ -10,5 +8,5 @@
 <div class="cmp">
   <yuv-column-config-select (itemSelected)="setColumnConfigInputFromSelect($event)" *ngIf="showSelector">
   </yuv-column-config-select>
-  <yuv-column-config [type]="columnConfigInput" *ngIf="columnConfigInput"></yuv-column-config>
+  <yuv-column-config [options]="options" *ngIf="options"></yuv-column-config>
 </div>

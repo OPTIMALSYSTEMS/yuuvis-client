@@ -4,16 +4,8 @@ $pwa-update-width: 200px;
 $app-bar-zindex: 6;
 
 :host {
-  position: absolute;
   overflow: hidden;
-  left: 0;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  display: grid;
-  grid-template-columns: 1fr;
-  grid-template-rows: var(--app-bar-height) 1fr;
-  grid-template-areas: 'header' 'content';
+  @include frame(0);
 
   .pwa-update {
     position: absolute;
@@ -38,8 +30,9 @@ $app-bar-zindex: 6;
   }
 
   .app-bar {
-    grid-area: header;
-    order: 1;
+    position: absolute;
+    top: 0;
+    width: 100%;
     z-index: $app-bar-zindex;
     display: flex;
     flex-flow: row nowrap;
@@ -168,12 +161,10 @@ $app-bar-zindex: 6;
   }
 
   .app-content {
-    order: 0;
-    grid-area: content;
     background-color: var(--main-background);
     overflow-x: auto;
     height: 100%;
-    width: 100vw;
+    width: 100%;
     padding-top: var(--app-bar-height);
     grid-column: 1;
     grid-row: 1 / span 2;

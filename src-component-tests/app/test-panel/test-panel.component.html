@@ -3,6 +3,7 @@
   <button (click)="showIcon = !showIcon">toggle Icon</button>
   <button (click)="showActions = !showActions">toggle Actions</button>
   <button (click)="showStatus = !showStatus">toggle Status</button>
+  <button (click)="showFooter = !showFooter">toggle Footer</button>
   <button (click)="setRegularSizeTitle()">regular size title strings</button>
   <button (click)="setLongSizeTitle()">long title strings</button>
 </div>
@@ -48,4 +49,6 @@
         malesuada fames ac turpis egestas. Donec tempor convallis erat sed scelerisque.</p>
     </div>
   </div>
+
+  <div class="footer" *ngIf="showFooter">Footer section</div>
 </yuv-panel>

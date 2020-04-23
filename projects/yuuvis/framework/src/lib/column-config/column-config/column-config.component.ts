@@ -1,6 +1,5 @@
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { Component, EventEmitter, Input, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
-import { IconRegistryService } from '@yuuvis/common-ui';
 import {
   BaseObjectTypeField,
   ColumnConfig,
@@ -15,6 +14,7 @@ import {
   UserConfigService,
   Utils
 } from '@yuuvis/core';
+import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { Selectable, SelectableGroup } from '../../grouped-select';
 import { PopoverConfig } from '../../popover/popover.interface';
 import { PopoverRef } from '../../popover/popover.ref';
@@ -37,7 +37,7 @@ import { addCircle, arrowDown, clear, dragHandle, pin, sort } from '../../svg.ge
   styleUrls: ['./column-config.component.scss']
 })
 export class ColumnConfigComponent implements OnInit {
-  @ViewChild('tplColumnPicker', { static: false }) tplColumnPicker: TemplateRef<any>;
+  @ViewChild('tplColumnPicker') tplColumnPicker: TemplateRef<any>;
 
   private _objectType: ObjectType;
   private _objectTypeFields: ObjectTypeField[];
@@ -134,11 +134,10 @@ export class ColumnConfigComponent implements OnInit {
   }
 
   onPickerResult(selectedFields: Selectable[], popoverRef?: PopoverRef) {
-    selectedFields.forEach(selectable =>
+    selectedFields.forEach((selectable) =>
       this.columnConfig.columns.push({
         id: selectable.id,
-        label: selectable.label,
-        propertyType: selectable.value.propertyType
+        label: selectable.label
       })
     );
     this.checkMoreColumnsAvailable();
@@ -155,7 +154,7 @@ export class ColumnConfigComponent implements OnInit {
   }
 
   removeColumn(column: ColumnConfigColumn) {
-    this.columnConfig.columns = this.columnConfig.columns.filter(c => c.id !== column.id);
+    this.columnConfig.columns = this.columnConfig.columns.filter((c) => c.id !== column.id);
     this.checkMoreColumnsAvailable();
     this.columnConfigDirty = true;
   }
@@ -187,13 +186,13 @@ export class ColumnConfigComponent implements OnInit {
     this.busy = true;
     this.error = null;
     this.userConfig.saveColumnConfig(this.columnConfig).subscribe(
-      res => {
+      (res) => {
         this.busy = false;
         this.configSaved.emit(this.columnConfig);
         this.resetConfig(this.columnConfig);
         this.columnConfigDirty = false;
       },
-      err => {
+      (err) => {
         this.busy = false;
         console.log(err);
         this.error = this.labels.error.save;
@@ -204,13 +203,13 @@ export class ColumnConfigComponent implements OnInit {
   private resetConfig(config: ColumnConfig): ColumnConfig {
     this._loadedColumnConfig = {
       type: config.type,
-      columns: config.columns.map(c => ({ ...c }))
+      columns: config.columns.map((c) => ({ ...c }))
     };
     return (this.columnConfig = config);
   }
 
   private filterFields(fields: ObjectTypeField[]) {
-    return fields.filter(f => !this.skipFields.includes(f.id));
+    return fields.filter((f) => !this.skipFields.includes(f.id));
   }
 
   private checkMoreColumnsAvailable() {
@@ -221,7 +220,7 @@ export class ColumnConfigComponent implements OnInit {
     this.busy = true;
     this.error = null;
     this.userConfig.getColumnConfig(objectTypeId || SystemType.OBJECT).subscribe(
-      res => {
+      (res) => {
         this.busy = false;
         this.resetConfig({
           type: objectTypeId,
@@ -231,8 +230,8 @@ export class ColumnConfigComponent implements OnInit {
 
         // preset sort options with custom values
         if (sortOptions) {
-          this.columnConfig.columns.forEach(col => {
-            const sortOption = sortOptions.find(o => col.id === o.field);
+          this.columnConfig.columns.forEach((col) => {
+            const sortOption = sortOptions.find((o) => col.id === o.field);
             if ((col.sort || '') !== ((sortOption && sortOption.order) || '')) {
               col.sort = sortOption ? (sortOption.order as any) : null;
               this.columnConfigDirty = true;
@@ -240,7 +239,7 @@ export class ColumnConfigComponent implements OnInit {
           });
         }
       },
-      err => {
+      (err) => {
         console.error(err);
         this.busy = false;
         this.error = this.labels.error.load;
@@ -254,10 +253,10 @@ export class ColumnConfigComponent implements OnInit {
   }
 
   private getSelectables(fields: ObjectTypeField[]): Selectable[] {
-    const existingColumnIDs = this.columnConfig.columns.map(c => c.id);
+    const existingColumnIDs = this.columnConfig.columns.map((c) => c.id);
     return fields
-      .filter(f => !existingColumnIDs.includes(f.id))
-      .map(f => ({
+      .filter((f) => !existingColumnIDs.includes(f.id))
+      .map((f) => ({
         id: f.id,
         label: this.systemService.getLocalizedResource(`${f.id}_label`),
         description: this.systemService.getLocalizedResource(`${f.id}_description`),

@@ -2,6 +2,15 @@ import { Component, forwardRef, Input } from '@angular/core';
 import { ControlValueAccessor, FormControl, FormGroup, NG_VALIDATORS, NG_VALUE_ACCESSOR, Validator } from '@angular/forms';
 import { RangeValue, SearchFilter } from '@yuuvis/core';
 
+/**
+ * Creates form input for ranges of numeric values.
+ *
+ * Implements `ControlValueAccessor` so it can be used within Angular forms.
+ *
+ * @example
+ * <yuv-number-range [scale]="2"></yuv-number-range>
+ *
+ */
 @Component({
   selector: 'yuv-number-range',
   templateUrl: './number-range.component.html',
@@ -20,13 +29,41 @@ import { RangeValue, SearchFilter } from '@yuuvis/core';
   ]
 })
 export class NumberRangeComponent implements ControlValueAccessor, Validator {
+  /**
+   * Number of decimal places
+   */
   @Input() scale;
+  /**
+   * Overall amount of digits allowed (including decimal places)
+   */
   @Input() precision;
+  /**
+   *  Set to true to group number by pattern
+   */
   @Input() grouping;
+  /**
+   * The pattern to group number value by
+   */
   @Input() pattern;
+  /**
+   * Will prevent the input from being changed (default: false)
+   */
   @Input() readonly: boolean;
+
+  /**
+   * classification property adds some semantics to the value of this component.
+   * If you provide a value of `filesize` numbers typed into the control will be
+   * handled like file sizes (calculates differnt units)
+   */
   @Input() classification: string;
+  /**
+   * set minimum input value
+   */
   @Input() minValue: number;
+  /**
+   * set maximum input value
+   *
+   */
   @Input() maxValue: number;
 
   public rangeForm = new FormGroup({

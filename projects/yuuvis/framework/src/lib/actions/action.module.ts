@@ -2,8 +2,8 @@ import { CommonModule } from '@angular/common';
 import { ANALYZE_FOR_ENTRY_COMPONENTS, ModuleWithProviders, NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { YuvCommonUiModule } from '@yuuvis/common-ui';
 import { TranslateModule } from '@yuuvis/core';
+import { YuvCommonModule } from '../common/common.module';
 import { YuvComponentsModule } from '../components/components.module';
 import { YuvDirectivesModule } from '../directives/directives.module';
 import { YuvFormModule } from './../form/form.module';
@@ -15,7 +15,6 @@ import { DeleteComponent } from './actions/delete-action/delete/delete.component
 import { DownloadActionComponent } from './actions/download-action/download-action';
 import { DownloadOriginalActionComponent } from './actions/download-original-action/download-original-action';
 import { DownloadPdfActionComponent } from './actions/download-pdf-action/download-pdf-action';
-import { OpenContextActionComponent } from './actions/open-context-action/open-context-action';
 import { UploadActionComponent } from './actions/upload-action/upload-action';
 import { UploadComponent } from './actions/upload-action/upload/upload.component';
 
@@ -26,14 +25,13 @@ export const entryComponents = [
   DeleteActionComponent,
   DeleteComponent,
   UploadComponent,
-  UploadActionComponent,
-  OpenContextActionComponent
+  UploadActionComponent
 ];
 
 /**
- * @module
- * @description
- * Module for the action menu
+ * `YuvActionModule` contains components for creating an actions menu.
+ * Actions will be provided by the `ActionMenuComponent`. Part of the module
+ * are actions that can be triggered for e.g. DmsObjects.
  */
 @NgModule({
   imports: [
@@ -45,14 +43,15 @@ export const entryComponents = [
     ReactiveFormsModule,
     TranslateModule,
     YuvComponentsModule,
-    YuvCommonUiModule
+    YuvCommonModule
   ],
   exports: [ActionMenuComponent],
   providers: [
     ActionService,
     {
       provide: ACTIONS,
-      useValue: entryComponents
+      useValue: entryComponents,
+      multi: true
     },
     {
       provide: CUSTOM_ACTIONS,
@@ -68,15 +67,14 @@ export const entryComponents = [
     DeleteActionComponent,
     DeleteComponent,
     UploadComponent,
-    UploadActionComponent,
-    OpenContextActionComponent
+    UploadActionComponent
   ],
   entryComponents
 })
-export class ActionModule {
-  static forRoot(components: any[] = []): ModuleWithProviders {
+export class YuvActionModule {
+  static forRoot(components: any[] = []): ModuleWithProviders<YuvActionModule> {
     return {
-      ngModule: ActionModule,
+      ngModule: YuvActionModule,
       providers: [
         {
           provide: ANALYZE_FOR_ENTRY_COMPONENTS,

@@ -14,7 +14,7 @@ export class UploadComponent implements OnInit, ActionComponent {
 
   file: File;
 
-  @ViewChild('fileInput', { static: false }) fileInput;
+  @ViewChild('fileInput') fileInput;
 
   constructor(private dmsService: DmsService) {}
 

@@ -1,18 +1,23 @@
-<yuv-responsive-master-slave class="state" (slaveClosed)="onSlaveClosed()" [slaveActive]="dmsObject"
+<yuv-responsive-master-slave class="state" (slaveClosed)="onSlaveClosed()" [slaveActive]="dmsObject || compare"
   [layoutOptionsKey]="layoutOptionsKey">
-  <yuv-version-result class="yuv-master panel" [objectID]="dmsObjectID" [versions]="versions"
-    (dmsObjectsSelected)="dmsObjectsSelected($event)" [layoutOptionsKey]="layoutOptionsKey">
-  </yuv-version-result>
+  <yuv-version-list class="yuv-master panel" #versionList [objectID]="dmsObjectID" [versions]="versions"
+    (compareVersionsChange)="onCompareVersionsChange($event)" (selectionChange)="versionSelected($event)"
+    [layoutOptionsKey]="layoutOptionsKey">
+  </yuv-version-list>
 
-  <yuv-object-details class="yuv-slave panel" [dmsObject]="dmsObject" [panelOrder]="['summary', 'indexdata', 'preview']"
-    [layoutOptionsKey]="!dmsObject2 ? layoutOptionsKey : ''" [ngClass]="{ 'changes-active': !!dmsObject2 }"
-    [activeTabPanel]="dmsObject2 ? 'changes' : ''">
-    <p-tabPanel [id]="'changes'" [header]="'yuv.client.state.versions.tabs.changes.title' | translate"
-      [headerStyleClass]="'changes'" [disabled]="!dmsObject2">
-      <ng-template pTemplate="content">
-        <yuv-summary *ngIf="dmsObject2" [compareObjects]="[dmsObject, dmsObject2]" [showExtrasSection]="userIsAdmin">
-        </yuv-summary>
-      </ng-template>
-    </p-tabPanel>
-  </yuv-object-details>
+  <div class="yuv-slave panel">
+
+    <yuv-object-details-compare *ngIf="compare; else tplSingle" [objectCompareInput]="compare"
+      [layoutOptionsKey]="layoutOptionsKey + '.changes'">
+    </yuv-object-details-compare>
+
+
+    <ng-template #tplSingle>
+      <div class="version">{{dmsObject?.version}}</div>
+      <yuv-object-details [disableFileDrop]="true" [dmsObject]="dmsObject"
+        [panelOrder]="['summary', 'indexdata', 'preview']" [layoutOptionsKey]="layoutOptionsKey">
+      </yuv-object-details>
+    </ng-template>
+
+  </div>
 </yuv-responsive-master-slave>

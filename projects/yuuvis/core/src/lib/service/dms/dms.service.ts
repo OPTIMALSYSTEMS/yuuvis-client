@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { forkJoin, Observable } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import { DmsObject } from '../../model/dms-object.model';
+import { Utils } from '../../util/utils';
 import { ApiBase } from '../backend/api.enum';
 import { BackendService } from '../backend/backend.service';
 import { EventService } from '../event/event.service';
@@ -103,11 +104,12 @@ export class DmsService {
    * @param id ID of the object to be retrieved
    */
   getDmsObjectVersions(id: string): Observable<DmsObject[]> {
-    return this.backend.get('/dms/objects/' + id + '/versions', 'core').pipe(
+    return this.backend.get('/dms/' + id + '/versions').pipe(
       map(res => {
         const items: SearchResultItem[] = this.searchService.toSearchResult(res).items || [];
         return items.map(item => this.searchResultToDmsObject(item));
-      })
+      }),
+      map(res => res.sort(Utils.sortValues('version')))
     );
   }
 

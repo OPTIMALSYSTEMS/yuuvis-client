@@ -5,18 +5,35 @@ import {
   BaseObjectTypeField,
   ContentStreamField,
   DmsObject,
+  Logger,
   ObjectTypeField,
   ParentField,
   SecondaryObjectTypeField,
-  SystemService,
-  Utils
+  SystemService
 } from '@yuuvis/core';
 import { GridService } from '../../services/grid/grid.service';
 import { Summary, SummaryEntry } from './summary.interface';
 
 /**
- * Component that reders a summary for a given `DmsObject`. It will list the index data set for the
- * object devided into sections.
+ * This component can be used in two different ways:
+ *
+ * ### Show object summary
+ * If you provide a DmsObject instance using the `dmsObject` input, this component reders a summary
+ * for a given `DmsObject`. It will list existing  index data set for the object devided into sections.
+ * It also displays information about the attached document file and some technical aspects.
+ *
+ * ### Compare objects
+ * If you provide two dms objects (using input property `compareObjects`) the component will show
+ * a diff between the indexdata of those 2 objects. You need to make sure that all compare objects
+ * share the same object type. A good example for using this feature is comparing different
+ * versions of a dms object.
+ *
+ * @example
+ * <!-- summary of particular dms object -->
+ * <yuv-summary [dmsObject]="dmsObject"></yuv-summary>
+ *
+ * <!-- compare two dms object -->
+ * <yuv-summary [compareObjects]="[dmsObject1, dmsObject2]"></yuv-summary>
  */
 @Component({
   selector: 'yuv-summary',
@@ -24,9 +41,16 @@ import { Summary, SummaryEntry } from './summary.interface';
   styleUrls: ['./summary.component.scss']
 })
 export class SummaryComponent implements OnInit {
-  private STORAGE_KEY_ACTIVE_INDEX = 'yuv.framework.summary.active-index';
+  private STORAGE_KEY_SECTION_VISIBLE = 'yuv.framework.summary.section.visibility';
   summary: Summary;
-  activeIndex: number[] = null;
+
+  visible: any = {
+    parent: true,
+    core: true,
+    baseparams: true,
+    admin: true
+  };
+
   dmsObjectID: string;
 
   /**
@@ -34,64 +58,53 @@ export class SummaryComponent implements OnInit {
    */
   @Input()
   set dmsObject(dmsObject: DmsObject) {
-    if (dmsObject) {
-      this.dmsObjectID = dmsObject.id;
-      this.summary = this.generateSummary(dmsObject);
-
-      if (this.activeIndex === null) {
-        this.activeIndex = [0, 1];
-        if (this.showExtrasSection) {
-          this.activeIndex.push(2);
-        }
-        if (this.summary.parent.length > 0) {
-          this.activeIndex.push(3);
-        }
-      }
-    } else {
-      this.summary = null;
-    }
+    this.dmsObjectID = dmsObject?.id;
+    this.summary = dmsObject ? this.generateSummary(dmsObject) : null;
   }
 
   dmsObject2: DmsObject;
 
   /**
-   * `DmsObject[]` to compare changes between objects
+   * Two dms object to be compared against each other. They need to share
+   * the same object type in order to compare them.
    */
   @Input() set compareObjects(dmsObjects: DmsObject[]) {
-    this.dmsObject2 = dmsObjects[1];
-    this.dmsObject = dmsObjects[0];
+    // make sure that objects share the same object type
+    if (dmsObjects) {
+      if (dmsObjects.length === 2) {
+        if (dmsObjects[0].objectTypeId === dmsObjects[1].objectTypeId) {
+          this.dmsObject2 = dmsObjects[1];
+          this.dmsObject = dmsObjects[0];
+        } else {
+          this.logger.error('summary: Invalid input. CompareObjects have to be of same object type.');
+        }
+      } else {
+        this.logger.error('summary: Invalid input. Need 2 dms objects.');
+      }
+    }
   }
+
+  /**
+   * You may provide a router link config here, that will be applied to an audit entries
+   * version number. This way you can add a link to the version pointing to some other
+   * state/component dealing with versions of one dms object.
+   */
+  @Input() versionRouterLink: any[];
 
   /**
    * Whether or not to show the extras section that holds the more technical data for the object
    */
   @Input() showExtrasSection: boolean;
 
-  isEmpty = v => Utils.isEmpty(v);
-  isVersion = v => v === BaseObjectTypeField.VERSION_NUMBER;
+  // isEmpty = v => Utils.isEmpty(v);
+  isVersion = (v) => v === BaseObjectTypeField.VERSION_NUMBER;
 
-  classes = (v1, v2) => ({
-    entry: true,
-    diffActive: !!this.dmsObject2,
-    new: !!this.dmsObject2 && this.isEmpty(v1) && !this.isEmpty(v2),
-    removed: !!this.dmsObject2 && !this.isEmpty(v1) && this.isEmpty(v2),
-    modified: !!this.dmsObject2 && !this.isEmpty(v1) && !this.isEmpty(v2)
-  });
+  constructor(private systemService: SystemService, private gridService: GridService, private logger: Logger, private appCacheService: AppCacheService) {}
 
-  constructor(private systemService: SystemService, private gridService: GridService, private appCacheService: AppCacheService) {}
-
-  sectionOpen(e) {
-    const activeIndex = this.activeIndex.filter(i => i !== e.index);
-    activeIndex.push(e.index);
-    this.setState(activeIndex);
-  }
-  sectionClose(e) {
-    this.setState(this.activeIndex.filter(i => i !== e.index));
-  }
-
-  private setState(activeIndex: number[]) {
-    this.activeIndex = activeIndex;
-    this.appCacheService.setItem(this.STORAGE_KEY_ACTIVE_INDEX, this.activeIndex).subscribe();
+  onSectionVisibilityChange(k, visible: boolean) {
+    this.visible[k] = visible;
+    // TODO: check if is this subscribe is not a potential performance leak
+    this.appCacheService.setItem(this.STORAGE_KEY_SECTION_VISIBLE, this.visible).subscribe();
   }
 
   private excludeTables(objectTypeId): string[] {
@@ -135,12 +148,12 @@ export class SummaryComponent implements OnInit {
     ];
 
     let baseFields = dmsObject.isFolder
-      ? this.systemService.getBaseFolderType().fields.map(f => f.id)
-      : this.systemService.getBaseDocumentType().fields.map(f => f.id);
-    baseFields = baseFields.filter(fields => defaultBaseFields.filter(defFields => defFields.key === fields).length === 0);
+      ? this.systemService.getBaseFolderType().fields.map((f) => f.id)
+      : this.systemService.getBaseDocumentType().fields.map((f) => f.id);
+    baseFields = baseFields.filter((fields) => defaultBaseFields.filter((defFields) => defFields.key === fields).length === 0);
 
     const extraFields: string[] = [ContentStreamField.DIGEST, ContentStreamField.ARCHIVE_PATH, ContentStreamField.REPOSITORY_ID];
-    baseFields.map(fields => extraFields.push(fields));
+    baseFields.map((fields) => extraFields.push(fields));
 
     return { skipFields, extraFields, patentFields, defaultBaseFields };
   }
@@ -156,9 +169,9 @@ export class SummaryComponent implements OnInit {
     const { skipFields, patentFields, extraFields, defaultBaseFields } = this.getSummaryConfiguration(dmsObject);
     const colDef: ColDef[] = this.gridService.getColumnDefinitions(dmsObject.objectTypeId);
 
-    Object.keys({ ...dmsObject.data, ...(this.dmsObject2 && this.dmsObject2.data) }).forEach((key: string) => {
+    Object.keys({ ...dmsObject.data, ...this.dmsObject2?.data }).forEach((key: string) => {
       const prepKey = key.startsWith('parent.') ? key.replace('parent.', '') : key; // todo: pls implement general solution
-      const def: ColDef = colDef.find(cd => cd.field === prepKey);
+      const def: ColDef = colDef.find((cd) => cd.field === prepKey);
       const renderer: ICellRendererFunc = def ? (def.cellRenderer as ICellRendererFunc) : null;
       const si: SummaryEntry = {
         label: (def && def.headerName) || key,
@@ -175,8 +188,8 @@ export class SummaryComponent implements OnInit {
         // skip equal and irrelevant values
       } else if (extraFields.includes(prepKey)) {
         summary.extras.push(si);
-      } else if (defaultBaseFields.find(field => field.key.startsWith(prepKey))) {
-        defaultBaseFields.map(field => (field.key === prepKey ? (si.order = field.order) : null));
+      } else if (defaultBaseFields.find((field) => field.key.startsWith(prepKey))) {
+        defaultBaseFields.map((field) => (field.key === prepKey ? (si.order = field.order) : null));
         summary.base.push(si);
       } else if (patentFields.includes(prepKey)) {
         summary.parent.push(si);
@@ -195,9 +208,9 @@ export class SummaryComponent implements OnInit {
 
   ngOnInit(): void {
     // TODO: store component state using a general service
-    this.appCacheService.getItem(this.STORAGE_KEY_ACTIVE_INDEX).subscribe((activeIndex: number[]) => {
-      if (activeIndex !== null) {
-        this.activeIndex = activeIndex;
+    this.appCacheService.getItem(this.STORAGE_KEY_SECTION_VISIBLE).subscribe((visibility: number[]) => {
+      if (visibility !== null) {
+        this.visible = visibility;
       }
     });
   }

@@ -10,6 +10,7 @@ import { TestGroupedSelectComponent } from './test-grouped-select/test-grouped-s
 import { TestIconsComponent } from './test-icons/test-icons/test-icons.component';
 import { TestLoadingSpinnerComponent } from './test-loading-spinner/test-loading-spinner.component';
 import { TestObjectCreateComponent } from './test-object-create/test-object-create.component';
+import { TestObjectDetailsCompareComponent } from './test-object-details-compare/test-object-details-compare.component';
 import { TestObjectDetailsComponent } from './test-object-details/test-object-details.component';
 import { TestObjectFormEditComponent } from './test-object-form-edit/test-object-form-edit.component';
 import { TestObjectFormComponent } from './test-object-form/test-object-form.component';
@@ -22,6 +23,7 @@ import { TestSearchResultComponent } from './test-search-result/test-search-resu
 import { TestSummaryComponent } from './test-summary/test-summary.component';
 import { TestUploadProgressOverlayComponent } from './test-upload-progress-overlay/test-upload-progress-overlay.component';
 import { TestUserAvatarComponent } from './test-user-avatar/test-user-avatar.component';
+import { TestVersionListComponent } from './test-version-list/test-version-list.component';
 
 const routes: Routes = [
   { path: 'action-menu', component: TestActionMenuComponent },
@@ -35,6 +37,7 @@ const routes: Routes = [
   { path: 'responsive-tab-container', component: TestResponsiveTabContainerComponent },
   { path: 'object-create', component: TestObjectCreateComponent },
   { path: 'object-details', component: TestObjectDetailsComponent },
+  { path: 'object-details-compare', component: TestObjectDetailsCompareComponent },
   { path: 'object-form', component: TestObjectFormComponent },
   { path: 'object-form-edit', component: TestObjectFormEditComponent },
   { path: 'panel', component: TestPanelComponent },
@@ -45,6 +48,7 @@ const routes: Routes = [
   { path: 'summary', component: TestSummaryComponent },
   { path: 'user-avatar', component: TestUserAvatarComponent },
   { path: 'upload-progress-overlay', component: TestUploadProgressOverlayComponent },
+  { path: 'version-list', component: TestVersionListComponent },
   { path: 'icons', component: TestIconsComponent }
 ];
 

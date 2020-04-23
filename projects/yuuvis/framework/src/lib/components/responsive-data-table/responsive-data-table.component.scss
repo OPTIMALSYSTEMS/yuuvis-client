@@ -7,6 +7,43 @@ $range-selection-highlight-color: $primary-color;
 
 ::ng-deep {
   yuv-responsive-data-table {
+    // versions data table
+    &.versions {
+      .rdt-row.row-grid {
+        &::after {
+          position: absolute;
+          right: var(--app-pane-padding);
+          top: var(--app-pane-padding);
+          margin: 0;
+        }
+      }
+      .rdt-row {
+        &::after {
+          content: attr(data-version);
+          border-radius: 4px;
+          background-color: var(--panel-divider-color);
+          padding: 2px calc(var(--app-pane-padding) / 2);
+          margin: 0 calc(var(--app-pane-padding) / 2);
+        }
+        .head {
+          display: none;
+        }
+        .main {
+          padding: 0 var(--app-pane-padding);
+          flex: 1;
+          .date {
+            display: block !important;
+          }
+        }
+      }
+      .ag-row-selected .rdt-row {
+        &::after {
+          background-color: var(--color-accent);
+          color: #fff;
+        }
+      }
+    }
+
     &.grid,
     &.horizontal {
       .ag-theme-yuv .ag-row {
@@ -14,23 +51,40 @@ $range-selection-highlight-color: $primary-color;
         .ag-cell {
           padding: 0;
           width: 100% !important;
+
+          &.cell-title-description {
+            > span {
+              width: 100%;
+            }
+          }
         }
 
         .rdt-row {
           display: flex;
-          line-height: 1.7em;
           overflow: hidden;
 
           .main {
+            line-height: 1.5em;
+            min-width: 0;
+
             .title {
+              line-height: 1.7em;
               font-weight: bold;
               @include ellipsis();
               display: block;
             }
+
+            .date,
             .description {
               opacity: 0.54;
               @include ellipsis();
               display: block;
+            }
+
+            .date {
+              font-size: var(--font-hint);
+              font-family: monospace;
+              display: none;
             }
           }
 

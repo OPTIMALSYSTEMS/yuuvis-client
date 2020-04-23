@@ -23,7 +23,9 @@
     }
 
     yuv-icon {
-      padding: calc(var(--app-pane-padding) / 2);
+      width: 18px;
+      height: 18px;
+      padding: calc(var(--app-pane-padding) / 8);
     }
   }
 

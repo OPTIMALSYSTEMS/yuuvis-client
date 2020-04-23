@@ -1,9 +1,9 @@
 import { Component, ComponentFactoryResolver, EventEmitter, Input, OnDestroy, Output, Type, ViewChild, ViewContainerRef } from '@angular/core';
 import { NavigationStart, Router } from '@angular/router';
-import { IconRegistryService } from '@yuuvis/common-ui';
 import { DmsObject } from '@yuuvis/core';
 import { filter, take } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
+import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { clear } from '../../svg.generated';
 import { ActionService } from '../action-service/action.service';
 import { ActionComponent } from '../interfaces/action-component.interface';
@@ -29,8 +29,8 @@ import { ActionComponentAnchorDirective } from './action-component-anchor/action
   host: { class: 'yuv-action-menu' }
 })
 export class ActionMenuComponent implements OnDestroy {
-  @ViewChild(ActionComponentAnchorDirective, { static: false }) eoActionComponentAnchor: ActionComponentAnchorDirective;
-  @ViewChild(ActionComponentAnchorDirective, { static: false }) externalDialog: ActionComponentAnchorDirective;
+  @ViewChild(ActionComponentAnchorDirective) eoActionComponentAnchor: ActionComponentAnchorDirective;
+  @ViewChild(ActionComponentAnchorDirective) externalDialog: ActionComponentAnchorDirective;
 
   /**
    * Specifies the items for which the actions should be provided.
@@ -84,7 +84,7 @@ export class ActionMenuComponent implements OnDestroy {
     this.router.events
       .pipe(
         takeUntilDestroy(this),
-        filter(evt => evt instanceof NavigationStart)
+        filter((evt) => evt instanceof NavigationStart)
       )
       .subscribe(() => this.hide());
   }
@@ -92,11 +92,11 @@ export class ActionMenuComponent implements OnDestroy {
   private getActions() {
     this.loading = true;
     this.actionService.getActionsList(this.selection, this.viewContainerRef).subscribe(
-      actionsList => {
+      (actionsList) => {
         this.actionLists.common = actionsList;
         this.loading = false;
       },
-      err => {
+      (err) => {
         this.loading = false;
       }
     );
@@ -172,7 +172,7 @@ export class ActionMenuComponent implements OnDestroy {
     (<ActionComponent>componentRef.instance).canceled.pipe(take(1)).subscribe(() => this.cancel());
     (<ActionComponent>componentRef.instance).finished.pipe(take(1)).subscribe(() => this.finish());
     if (inputs) {
-      Object.keys(inputs).forEach(function(key) {
+      Object.keys(inputs).forEach(function (key) {
         componentRef.instance[key] = inputs[key];
       });
     }

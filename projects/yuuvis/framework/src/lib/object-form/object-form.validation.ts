@@ -1,5 +1,6 @@
 import { ValidatorFn, Validators } from '@angular/forms';
 import { ObjectFormControl } from './object-form.model';
+import { Situation } from './object-form.situation';
 /**
  * @ignore
  * Custom validation class.
@@ -18,7 +19,7 @@ export class FormValidation {
 
     // apply situation based validations
     switch (situation) {
-      case 'SEARCH': {
+      case Situation.SEARCH: {
         // TODO: implement general validators for SEARCH situation
         break;
       }

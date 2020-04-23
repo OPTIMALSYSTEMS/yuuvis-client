@@ -1,13 +1,9 @@
 <div class="header">
-  <div class="icon default">
-    <ng-content select=".header-icon"></ng-content>
-  </div>
-  <header class="header_text">
-    <div class="header_title">{{ title }}</div>
-    <div class="header_description">{{ description }}</div>
-  </header>
-
+  <ng-content select=".header-icon"></ng-content>
+  <div class="header_title">{{ title }}</div>
+  <div class="header_description">{{ description }}</div>
   <ng-content class="actions" select=".actions"></ng-content>
   <ng-content class="status" select=".status"></ng-content>
 </div>
 <ng-content class="content" select=".content"></ng-content>
+<ng-content class="footer" select=".footer"></ng-content>

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { IconRegistryService } from '@yuuvis/common-ui';
+import { IconRegistryService } from '@yuuvis/framework';
 import { favorite, finalized, kebap, lock, refresh, resubmission, subscription } from './../../../projects/yuuvis/framework/src/lib/svg.generated';
 
 @Component({
@@ -12,6 +12,7 @@ export class TestPanelComponent implements OnInit {
   showIcon: boolean = true;
   showActions: boolean = true;
   showStatus: boolean = true;
+  showFooter: boolean = false;
 
   title: string;
   description: string;
@@ -26,8 +27,8 @@ export class TestPanelComponent implements OnInit {
   }
 
   setRegularSizeTitle() {
-    this.title = 'Pretty great title';
-    this.description = 'damn good description';
+    this.title = 'Lorem ipsum';
+    this.description = 'Cras ut ex eu mi suscipit finibus';
   }
 
   setLongSizeTitle() {

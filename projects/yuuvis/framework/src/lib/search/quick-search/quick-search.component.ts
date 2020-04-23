@@ -1,25 +1,10 @@
 import { AfterViewInit, Component, ElementRef, EventEmitter, HostBinding, HostListener, Input, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { IconRegistryService } from '@yuuvis/common-ui';
-import {
-  AggregateResult,
-  BaseObjectTypeField,
-  ContentStreamField,
-  DeviceService,
-  ObjectType,
-  ObjectTypeField,
-  ObjectTypeGroup,
-  RangeValue,
-  SearchFilter,
-  SearchQuery,
-  SearchService,
-  SystemService,
-  TranslateService,
-  Utils
-} from '@yuuvis/core';
+import { AggregateResult, BaseObjectTypeField, ContentStreamField, DeviceService, ObjectType, ObjectTypeField, ObjectTypeGroup, RangeValue, SearchFilter, SearchQuery, SearchService, SystemService, TranslateService, Utils } from '@yuuvis/core';
 import { AutoComplete } from 'primeng/autocomplete';
 import { Subscription, timer } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { Selectable, SelectableGroup } from '../../grouped-select';
 import { ObjectFormControlWrapper } from '../../object-form';
 import { ObjectFormControl } from '../../object-form/object-form.model';
@@ -27,6 +12,7 @@ import { PopoverConfig } from '../../popover/popover.interface';
 import { PopoverRef } from '../../popover/popover.ref';
 import { PopoverService } from '../../popover/popover.service';
 import { addCircle, arrowDown, clear, search } from '../../svg.generated';
+import { Situation } from './../../object-form/object-form.situation';
 import { ObjectFormUtils } from './../../object-form/object-form.utils';
 import { QuickSearchPickerData } from './quick-search-picker/quick-search-picker.component';
 
@@ -48,12 +34,12 @@ import { QuickSearchPickerData } from './quick-search-picker/quick-search-picker
   host: { class: 'yuv-quick-search' }
 })
 export class QuickSearchComponent implements OnInit, AfterViewInit {
-  @ViewChild('termEl', { static: false }) termInput: ElementRef;
-  @ViewChild('autoTermEl', { static: false }) autoTerm: AutoComplete;
-  @ViewChild('typeSelectTrigger', { static: false }) typeSelectTrigger: ElementRef;
-  @ViewChild('fieldSelectTrigger', { static: false }) fieldSelectTrigger: ElementRef;
-  @ViewChild('extrasForm', { static: false }) extrasForm: ElementRef;
-  @ViewChild('tplValuePicker', { static: false }) tplValuePicker: TemplateRef<any>;
+  @ViewChild('termEl') termInput: ElementRef;
+  @ViewChild('autoTermEl') autoTerm: AutoComplete;
+  @ViewChild('typeSelectTrigger') typeSelectTrigger: ElementRef;
+  @ViewChild('fieldSelectTrigger') fieldSelectTrigger: ElementRef;
+  @ViewChild('extrasForm') extrasForm: ElementRef;
+  @ViewChild('tplValuePicker') tplValuePicker: TemplateRef<any>;
 
   autofocus: boolean = false;
   searchForm: FormGroup;
@@ -178,11 +164,11 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
       searchWithinContext: [false]
     });
 
-    this.systemService.system$.subscribe(_ => {
+    this.systemService.system$.subscribe((_) => {
       const types = this.systemService
         .getObjectTypes()
-        .filter(t => !this.skipTypes.includes(t.id))
-        .map(ot => ({
+        .filter((t) => !this.skipTypes.includes(t.id))
+        .map((ot) => ({
           id: ot.id,
           label: this.systemService.getLocalizedResource(`${ot.id}_label`),
           value: ot
@@ -228,7 +214,8 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
       this.setAvailableObjectTypesFields();
     }
     const suggestions: any[] = (q.isTypes ? this.availableObjectTypes : this.availableObjectTypeFields) || [];
-    this.autoSuggestions = !q.isTypes && !q.isTypeFields ? [] : suggestions.filter(t => (t.label || '').toLowerCase().includes(q.text)).map(t => ({ ...t }));
+    this.autoSuggestions =
+      !q.isTypes && !q.isTypeFields ? [] : suggestions.filter((t) => (t.label || '').toLowerCase().includes(q.text)).map((t) => ({ ...t }));
   }
 
   autocompleteSelect(selection) {
@@ -236,7 +223,7 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
     this.searchQuery.term = term;
     this.searchForm.patchValue({ term: { label: term } });
     this.onPickerResult(this.lastAutoQuery.isTypes ? 'type' : 'field', selection.value);
-    this.autoSelectTimer = timer(1).subscribe(t => (this.autoSelectTimer = null));
+    this.autoSelectTimer = timer(1).subscribe((t) => (this.autoSelectTimer = null));
   }
 
   autoKeyDown(event: KeyboardEvent) {
@@ -249,7 +236,7 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
   private initSearchFieldsForm() {
     // object type field form (form holding the query fields)
     this.searchFieldsForm = this.fb.group({});
-    this.searchFieldsFormSubscription = this.searchFieldsForm.valueChanges.pipe(debounceTime(500)).subscribe(formValue => {
+    this.searchFieldsFormSubscription = this.searchFieldsForm.valueChanges.pipe(debounceTime(500)).subscribe((formValue) => {
       this.onSearchFieldFormChange(formValue);
     });
   }
@@ -259,7 +246,7 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
 
     // extract form controls
     const formControls: ObjectFormControl[] = [];
-    Object.keys(this.searchFieldsForm.controls).forEach(k => {
+    Object.keys(this.searchFieldsForm.controls).forEach((k) => {
       const wrapper: ObjectFormControlWrapper = this.searchFieldsForm.controls[k] as ObjectFormControlWrapper;
       formControls.push(wrapper.controls[wrapper._eoFormControlWrapper.controlName] as ObjectFormControl);
     });
@@ -269,7 +256,7 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
 
     // setup filters from form controls
     this.searchQuery.clearFilters();
-    formControls.forEach(fc => {
+    formControls.forEach((fc) => {
       const filter = new SearchFilter(fc._eoFormElement.name, SearchFilter.OPERATOR.EQUAL, fc.value);
       if (!filter.isEmpty() || fc._eoFormElement.isNotSetValue) {
         this.searchQuery.addFilter(filter);
@@ -289,7 +276,7 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
    */
   private getFilterComparator(filters: SearchFilter[]): string {
     return filters
-      .map(f => f.toString())
+      .map((f) => f.toString())
       .sort()
       .join();
   }
@@ -310,7 +297,7 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
             this.processAggregateResult(res);
             this.busy = false;
           },
-          err => {
+          (err) => {
             this.error = true;
             this.busy = false;
             this.typeAggregation.emit([]);
@@ -382,11 +369,11 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
   }
 
   private onObjectTypesSelected(types: ObjectType | ObjectType[], aggregate: boolean = true) {
-    this.selectedObjectTypes = (Array.isArray(types) ? types : [types]).map(t => t.id);
+    this.selectedObjectTypes = (Array.isArray(types) ? types : [types]).map((t) => t.id);
     this.setAvailableObjectTypesFields();
 
     // get rid of existing object type fields that not match availableObjectTypeFields
-    this.formFields.filter(id => !this.availableObjectTypeFields.find(field => `fc_${field.id}` === id)).forEach(f => this.removeFieldEntry(f));
+    this.formFields.filter((id) => !this.availableObjectTypeFields.find((field) => `fc_${field.id}` === id)).forEach((f) => this.removeFieldEntry(f));
 
     if (this.selectedObjectTypes.length === 1) {
       this.objectTypeSelectLabel = this.systemService.getLocalizedResource(`${this.selectedObjectTypes[0]}_label`);
@@ -408,22 +395,22 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
     let sharedFields;
 
     const selectedObjectTypes: ObjectType[] = this.selectedObjectTypes.length
-      ? this.systemService.getObjectTypes().filter(t => this.selectedObjectTypes.includes(t.id))
+      ? this.systemService.getObjectTypes().filter((t) => this.selectedObjectTypes.includes(t.id))
       : this.systemService.getObjectTypes();
 
-    selectedObjectTypes.forEach(t => {
+    selectedObjectTypes.forEach((t) => {
       if (!sharedFields) {
         sharedFields = t.fields;
       } else {
         // check for fields that are not part of the shared fields
-        const fieldIDs = t.fields.map(f => f.id);
-        sharedFields = sharedFields.filter(f => fieldIDs.includes(f.id));
+        const fieldIDs = t.fields.map((f) => f.id);
+        sharedFields = sharedFields.filter((f) => fieldIDs.includes(f.id));
       }
     });
 
     this.availableObjectTypeFields = sharedFields
-      .filter(f => !this.skipFields.includes(f.id))
-      .map(f => ({
+      .filter((f) => !this.skipFields.includes(f.id))
+      .map((f) => ({
         id: f.id,
         label: this.systemService.getLocalizedResource(`${f.id}_label`),
         value: f
@@ -447,7 +434,7 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
       // setup target object types
       if (q.types && q.types.length) {
         this.onObjectTypesSelected(
-          this.availableObjectTypes.filter(t => q.types.includes(t.id)).map(t => t.value as ObjectType),
+          this.availableObjectTypes.filter((t) => q.types.includes(t.id)).map((t) => t.value as ObjectType),
           false
         );
       }
@@ -460,14 +447,14 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
         const filters: any = {};
         const formPatch = {};
 
-        q.filters.forEach(f => {
+        q.filters.forEach((f) => {
           filterIDs.push(f.property);
           filters[f.property] = f;
         });
 
         this.availableObjectTypeFields
-          .filter(otf => filterIDs.includes(otf.id))
-          .forEach(otf => {
+          .filter((otf) => filterIDs.includes(otf.id))
+          .forEach((otf) => {
             const field = otf.value as ObjectTypeField;
             this.onObjectTypeFieldSelected(field, filters[otf.id].isEmpty());
             // setup values based on whether or not the type supports ranges
@@ -499,7 +486,7 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
       // type aggregations
       this.typeAggregation.emit(
         res.aggregations[0].entries
-          .map(r => {
+          .map((r) => {
             this.resultCount += r.count;
             return { objectTypeId: r.key, label: this.systemService.getLocalizedResource(`${r.key}_label`), count: r.count };
           })
@@ -532,7 +519,7 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
     formElement.description = null;
     formElement.isNotSetValue = isEmpty;
 
-    const formControl = ObjectFormUtils.elementToFormControl(formElement, 'SEARCH');
+    const formControl = ObjectFormUtils.elementToFormControl(formElement, Situation.SEARCH);
     this.searchFieldsForm.addControl(`fc_${field.id}`, formControl);
     this.formFields.push(`fc_${field.id}`);
 
@@ -561,7 +548,7 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
    * @param formElement The form element to be removed
    */
   removeFieldEntry(formControlName: string) {
-    this.formFields = this.formFields.filter(f => f !== formControlName);
+    this.formFields = this.formFields.filter((f) => f !== formControlName);
     this.searchFieldsForm.removeControl(formControlName);
   }
 

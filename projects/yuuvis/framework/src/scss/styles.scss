@@ -7,7 +7,6 @@
 @import '~primeicons/primeicons.css';
 @import '~primeng/resources/themes/nova-light/theme.css';
 @import '~primeng/resources/primeng.min.css';
-@import '~@yuuvis/common-ui/common-ui.css';
 
 @import './general';
 @import './grid';
@@ -79,6 +78,14 @@ body.rtl * {
 
 :focus {
   outline-color: var(--color-accent);
+}
+
+/* Text selection background */
+::selection {
+  background: rgba(var(--color-accent-rgb), 0.2); /* WebKit/Blink Browsers */
+}
+::-moz-selection {
+  background: rgba(var(--color-accent-rgb), 0.2); /* Gecko Browsers */
 }
 
 body {

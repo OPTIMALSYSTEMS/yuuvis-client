@@ -1,15 +1,14 @@
 import { Attribute, Component, EventEmitter, forwardRef, Input, Output } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { IconRegistryService } from '@yuuvis/common-ui';
+import { IconRegistryService } from '../../../common/components/icon/service/iconRegistry.service';
 import { clear } from '../../../svg.generated';
 /**
  * Creates form input for boolean values (checkbox).
  *
  * Implements `ControlValueAccessor` so it can be used within Angular forms.
- * 
- * ```html
-<yuv-checkbox></yuv-checkbox>
-```
+ *
+ * @example
+ * <yuv-checkbox></yuv-checkbox>
  *
  */
 @Component({

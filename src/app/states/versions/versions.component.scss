@@ -5,17 +5,20 @@
   padding: var(--app-pane-padding);
 
   ::ng-deep .yuv-slave {
-    &.changes-active .as-split-area.secondary,
-    &.changes-active .as-split-gutter,
-    &.changes-active .split-btn,
-    &.changes-active .ui-tabview-nav li:not(.changes),
-    &:not(.changes-active) .ui-tabview-nav li.changes,
     .refresh-button {
       display: none;
     }
-    &.changes-active .as-split-area {
-      flex: 1 !important;
-    }
+  }
+
+  .yuv-slave .version {
+    position: absolute;
+    z-index: 1;
+    right: calc(var(--app-pane-padding) * 3);
+    top: var(--app-pane-padding);
+    font-size: 5em;
+    pointer-events: none;
+    line-height: 1em;
+    color: rgba(var(--color-accent-rgb), 0.2);
   }
 
   .screen-s & {

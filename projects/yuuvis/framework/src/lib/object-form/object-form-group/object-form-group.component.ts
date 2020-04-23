@@ -1,6 +1,7 @@
 import { Component, Input, ViewEncapsulation } from '@angular/core';
 import { ObjectFormControlWrapper, YuvFormGroup, YuvFormGroupWrapper } from '../object-form.interface';
 import { ObjectFormGroup } from '../object-form.model';
+import { Situation } from './../object-form.situation';
 
 @Component({
   selector: 'yuv-object-form-group',
@@ -21,7 +22,7 @@ export class ObjectFormGroupComponent {
   isData: boolean;
 
   // form situation, if not set default will be 'EDIT'
-  @Input() situation = 'EDIT';
+  @Input() situation = Situation.EDIT;
 
   @Input('group')
   set groupd(g: ObjectFormGroup) {

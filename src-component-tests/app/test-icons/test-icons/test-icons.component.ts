@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { IconRegistryService } from '@yuuvis/common-ui';
+import { IconRegistryService } from '@yuuvis/framework';
 import {
   addCircle,
   arrowDown,

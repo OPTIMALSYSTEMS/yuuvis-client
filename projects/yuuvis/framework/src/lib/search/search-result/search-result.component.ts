@@ -1,7 +1,6 @@
 import { ColDef, RowEvent } from '@ag-grid-community/core';
 import { Attribute, Component, EventEmitter, Input, OnDestroy, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { IconRegistryService } from '@yuuvis/common-ui';
 import {
   BaseObjectTypeField,
   ColumnConfig,
@@ -21,6 +20,7 @@ import {
 import { Observable, of } from 'rxjs';
 import { map, switchMap, tap } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
+import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { ResponsiveDataTableComponent, ViewMode } from '../../components/responsive-data-table/responsive-data-table.component';
 import { ResponsiveTableData } from '../../components/responsive-data-table/responsive-data-table.interface';
 import { GridService } from '../../services/grid/grid.service';
@@ -58,7 +58,7 @@ export class SearchResultComponent implements OnDestroy {
 
   // @Input() options: ResponsiveDataTableOptions;
 
-  @ViewChild('dataTable', { static: false }) dataTable: ResponsiveDataTableComponent;
+  @ViewChild('dataTable') dataTable: ResponsiveDataTableComponent;
 
   /**
    * Providing a layout options key will enable the component to persist its layout settings
@@ -160,7 +160,7 @@ export class SearchResultComponent implements OnDestroy {
     this.eventService
       .on(YuvEventType.DMS_OBJECT_DELETED)
       .pipe(takeUntilDestroy(this))
-      .subscribe(event => {
+      .subscribe((event) => {
         const deleted = this.dataTable.deleteRow(event.data.id);
         if (deleted) {
           this.totalNumItems--;
@@ -179,7 +179,7 @@ export class SearchResultComponent implements OnDestroy {
     this.busy = true;
     (applyColumnConfig ? this.applyColumnConfiguration(this._searchQuery) : of(this._searchQuery))
       .pipe(
-        tap(q => this.queryChanged.emit(q)),
+        tap((q) => this.queryChanged.emit(q)),
         switchMap((q: SearchQuery) => this.searchService.search(q))
       )
       .subscribe((res: SearchResult) => {
@@ -193,8 +193,8 @@ export class SearchResultComponent implements OnDestroy {
       tap((cc: ColumnConfig) => {
         q.sortOptions = [];
         cc.columns
-          .filter(c => !!c.sort)
-          .forEach(c => {
+          .filter((c) => !!c.sort)
+          .forEach((c) => {
             q.addSortOption(c.id, c.sort);
           });
       }),
@@ -233,7 +233,7 @@ export class SearchResultComponent implements OnDestroy {
 
       this.resultListObjectTypeId = objecttypeId;
       this._columns = colDefs;
-      this._rows = searchResult.items.map(i => this.getRow(i));
+      this._rows = searchResult.items.map((i) => this.getRow(i));
       const sortOptions = this._searchQuery ? this._searchQuery.sortOptions || [] : [];
 
       this.tableData = {
@@ -242,13 +242,13 @@ export class SearchResultComponent implements OnDestroy {
         titleField: SecondaryObjectTypeField.TITLE,
         descriptionField: SecondaryObjectTypeField.DESCRIPTION,
         selectType: 'multiple',
-        sortModel: sortOptions.map(o => ({
+        sortModel: sortOptions.map((o) => ({
           colId: o.field,
           sort: o.order
         }))
       };
       this.busy = false;
-      setTimeout(_ => {
+      setTimeout((_) => {
         this.setSelection(this._itemsSupposedToBeSelected);
       }, 0);
     });
@@ -282,7 +282,7 @@ export class SearchResultComponent implements OnDestroy {
       (res: SearchResult) => {
         this.createTableData(res, page);
       },
-      err => {
+      (err) => {
         // TODO: how should errors be handles in case hat loading pages fail
       },
       () => {
@@ -298,13 +298,13 @@ export class SearchResultComponent implements OnDestroy {
   }
 
   onSelectionChanged(selectedRows: any[]) {
-    this.itemsSelected.emit(selectedRows.map(r => r.id));
+    this.itemsSelected.emit(selectedRows.map((r) => r.id));
   }
 
   onSortChanged(sortModel: { colId: string; sort: string }[]) {
     if (JSON.stringify(this.tableData.sortModel) !== JSON.stringify(sortModel)) {
       // change query to reflect the sort setting from the grid
-      this._searchQuery.sortOptions = sortModel.map(m => new SortOption(m.colId, m.sort));
+      this._searchQuery.sortOptions = sortModel.map((m) => new SortOption(m.colId, m.sort));
       this._searchQuery.from = 0;
       this.executeQuery();
     }

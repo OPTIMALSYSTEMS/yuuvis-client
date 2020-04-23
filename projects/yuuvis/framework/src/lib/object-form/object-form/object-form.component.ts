@@ -1,10 +1,10 @@
 import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
 import { ValidatorFn, Validators } from '@angular/forms';
-import { UnsubscribeOnDestroy } from '@yuuvis/common-ui';
 import { Logger, RangeValue, SearchFilter, SearchService, SystemService } from '@yuuvis/core';
 import { cloneDeep } from 'lodash-es';
 import { Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
+import { UnsubscribeOnDestroy } from '../../common/util/unsubscribe.component';
 import { ObjectFormScriptService } from '../object-form-script/object-form-script.service';
 import { ObjectFormScriptingScope } from '../object-form-script/object-form-scripting-scope';
 import { FormStatusChangedEvent, ObjectFormControlWrapper, ObjectFormOptions } from '../object-form.interface';
@@ -13,7 +13,18 @@ import { ObjectFormService } from '../object-form.service';
 import { ObjectFormUtils } from '../object-form.utils';
 import { FormValidation } from '../object-form.validation';
 import { PluginsService } from './../../services/plugins/plugins.service';
+import { Situation } from './../object-form.situation';
 
+/**
+ * Component rendering a model based form.
+ * The yuuvis backend provides form models for different kinds of object
+ * types and situations. This component is able to render those models according
+ * the their situation. It also has the ability to run form scripts that interact
+ * with the form elements based on events triggered when values change.
+ *
+ * @example
+ * <yuv-object-form [formOptions]="options" (statusChanged)="check($event)"></yuv-object-form>
+ */
 @Component({
   selector: 'yuv-object-form',
   templateUrl: './object-form.component.html',
@@ -21,7 +32,23 @@ import { PluginsService } from './../../services/plugins/plugins.service';
   styleUrls: ['./object-form.component.scss']
 })
 export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestroy, AfterViewInit {
+  /**
+   * There are special scenarios where forms are within a form themselves.
+   * Setting this property to true, will handle the current form in a
+   * slightly different way when it comes to form scripting.
+   */
   @Input() isInnerTableForm: boolean;
+
+  /**
+   * Inputs and settings for the form.
+   */
+  @Input('formOptions')
+  set options(formOptions: ObjectFormOptions) {
+    this.defaultFormOptions = formOptions;
+    this.formOptions = cloneDeep(formOptions);
+    this.init();
+  }
+
   // triggered when the forms state has been changed
   @Output() statusChanged = new EventEmitter<FormStatusChangedEvent>();
   // handler to be executed after the form has been set up
@@ -44,13 +71,6 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
   // local store for all the form control references
   private formControls = {};
   private initialValidators = {};
-
-  @Input('formOptions')
-  set options(formOptions: ObjectFormOptions) {
-    this.defaultFormOptions = formOptions;
-    this.formOptions = cloneDeep(formOptions);
-    this.init();
-  }
 
   constructor(
     private logger: Logger,
@@ -79,7 +99,7 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
   }
 
   private initScriptingScope(formOptions, dataFormModel) {
-    let { data, actions, objects, context } = <ObjectFormOptions>(formOptions || {});
+    const { data, actions, objects, context } = (formOptions || {}) as ObjectFormOptions;
 
     if (this.scriptingScope) {
       this.scriptingScope.setModel(this.scriptModel);
@@ -114,9 +134,7 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
 
   public setFormData(data) {
     this.formOptions.data = data;
-    setTimeout(() => {
-      this.init();
-    }, 0);
+    setTimeout(() => this.init(), 0);
   }
 
   /**
@@ -167,19 +185,18 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
       this.scriptingScope = new ObjectFormScriptingScope(formModel.situation, this.onScriptingModelChanged, this.pluginService.getApi(), this.isInnerTableForm);
     }
 
-    let form = new ObjectFormGroup({});
-    if (formModel.elements[0] && formModel.elements[0].elements) {
+    const form = new ObjectFormGroup({});
+    if (formModel?.elements[0]?.elements) {
       this.addFormControl(form, formModel.elements[0], 'core');
     }
-    if (formModel.elements[1] && formModel.elements[1].elements) {
+    if (formModel?.elements[1]?.elements) {
       this.addFormControl(form, formModel.elements[1], 'data');
     }
-
     this.form = form;
 
     setTimeout(() => {
       this.initValidators(this.form);
-      let formWatch = this.form.valueChanges.pipe(debounceTime(500)).subscribe(() => !formWatch.closed && this.emitFormChangedEvent());
+      const formWatch = this.form.valueChanges.pipe(debounceTime(500)).subscribe(() => !formWatch.closed && this.emitFormChangedEvent());
       this.subscriptions.push(formWatch);
 
       this.initScriptingScope(formOptions, formModel);
@@ -359,6 +376,18 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
   //   return of(null);
   // }
 
+  private patchFormValue(formValue: string[] | string) {
+    let value: any;
+    if (Array.isArray(formValue)) {
+      value = [];
+      // copy by value for arrays of objects (e.g. table data)
+      formValue.forEach((o) => value.push(JSON.parse(JSON.stringify(o))));
+    } else {
+      value = formValue;
+    }
+    return value;
+  }
+
   /**
    * Recursive method adding a new FormControl (group or control) to a parent form group
    *
@@ -408,15 +437,11 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
       // do not set a reference as the form controls value
       // otherwise we could not reset the form
       let value: any;
-      if (Array.isArray(formElement.value)) {
-        // copy by value for arrays of objects (e.g. table data)
-        value = [];
-        formElement.value.forEach(o => {
-          value.push(JSON.parse(JSON.stringify(o)));
-        });
-      } else {
-        value = formElement.value;
-      }
+      value = formElement?.value
+        ? this.patchFormValue(formElement?.value)
+        : formElement?.defaultvalue && this.formOptions.formModel.situation === Situation.CREATE
+        ? this.patchFormValue(formElement?.defaultvalue)
+        : formElement?.value;
 
       // // for codesystem elements add entries if not yet provided
       // if (formElement.type === 'CODESYSTEM' && !formElement.codesystem.entries) {
@@ -424,9 +449,9 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
       // }
 
       // create the actual form control
-      let controlDisabled = this.formOptions.disabled || !!formElement.readonly;
-      let formControl = new ObjectFormControl({
-        value: value,
+      const controlDisabled = this.formOptions.disabled || !!formElement.readonly;
+      const formControl = new ObjectFormControl({
+        value,
         disabled: controlDisabled
       });
 
@@ -446,9 +471,9 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
         if (this.scriptingScope && formControl._eoFormElement.value) {
           // having a scripting scope and table rows means that we need to set empty
           // columns to NULL, because otherwise mobX won't be able to track those values
-          const valueFields = formControl._eoFormElement.elements.map(e => e.name);
-          formControl._eoFormElement.value.forEach(rowValue => {
-            valueFields.forEach(valueField => {
+          const valueFields = formControl._eoFormElement.elements.map((e) => e.name);
+          formControl._eoFormElement.value.forEach((rowValue) => {
+            valueFields.forEach((valueField) => {
               if (!rowValue.hasOwnProperty(valueField)) {
                 rowValue[valueField] = null;
               }
@@ -484,7 +509,7 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
 
       ObjectFormUtils.updateFormElement(formElement);
 
-      if (this.formOptions.formModel.situation === 'SEARCH') {
+      if (this.formOptions.formModel.situation === Situation.SEARCH) {
         // in search situation even readonly fields should be editable ...
         formControl._eoFormElement.readonly = false;
         // ... and required makes no sense here
@@ -492,7 +517,7 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
       }
 
       // remove empty descriptions
-      let desc = formControl._eoFormElement.description;
+      const desc = formControl._eoFormElement.description;
       if (desc && desc.trim().length === 0) {
         formControl._eoFormElement.description = null;
       }
@@ -503,8 +528,8 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
 
       // apply change listener to the form control, that will trigger
       // the form elements onChange listener
-      let controlWatch = ctrl.valueChanges.pipe(debounceTime(500));
-      controlWatch.subscribe(v => {
+      const controlWatch = ctrl.valueChanges.pipe(debounceTime(500));
+      controlWatch.subscribe((v) => {
         if (this.scriptingScope) {
           this.scriptingScope.modelChanged(v);
         }
@@ -556,7 +581,7 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
 
   // recursive method for adding values to model elements
   private setElementValues(elements, data) {
-    elements.forEach(element => {
+    elements.forEach((element) => {
       if (this.hasValue(data, element)) {
         element.value = this.getValue(data, element);
         if (element.value) {
@@ -576,7 +601,7 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
   // so they have to be fetched and added to the element for the form to be able
   // to render the element correctly
   private fetchMetaData(data, element) {
-    if (this.formOptions.formModel.situation === 'SEARCH') {
+    if (this.formOptions.formModel.situation === Situation.SEARCH) {
       // todo: how to fetch meta data in search situation
     } else {
       if (element.type === 'ORGANIZATION' && data[element.name + '_meta']) {
@@ -593,7 +618,7 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
   private hasValue(data, element) {
     // differ between array of SearchFilters and a form data object
     if (Array.isArray(data)) {
-      return !!data.find(filter => filter.property === element.id);
+      return !!data.find((filter) => filter.property === element.id);
     } else {
       return data.hasOwnProperty(element.name);
     }
@@ -601,7 +626,7 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
 
   private getValue(data, element) {
     let value;
-    if (this.formOptions.formModel.situation === 'SEARCH') {
+    if (this.formOptions.formModel.situation === Situation.SEARCH) {
       // Differ between fields that support ranges and the ones that don't.
       // In search situation fields get their values from SearchFilters. The so called
       // inner table forms are the ones used by the table lement to edit its rows. They
@@ -609,12 +634,12 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
       if (['datetime', 'integer', 'decimal'].includes(element.type)) {
         value = this.isInnerTableForm
           ? SearchService.toRangeValue(data[element.name])
-          : this.searchFilterToRangeValue(data.find(filter => filter.property === element.id));
+          : this.searchFilterToRangeValue(data.find((filter) => filter.property === element.id));
       } else {
         if (this.isInnerTableForm) {
           value = data[element.name];
         } else {
-          const filter: SearchFilter = data.find(f => f.property === element.id);
+          const filter: SearchFilter = data.find((f) => f.property === element.id);
           // take care of searches for explicit NULL values
           if (filter.operator === SearchFilter.OPERATOR.EQUAL && filter.firstValue === null) {
             element.isNotSetValue = true;
@@ -669,7 +694,7 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
   private unsubscribeAll() {
     if (this.subscriptions.length) {
       this.logger.debug('unsubscribed from ' + this.subscriptions.length + ' value change listeners.');
-      this.subscriptions.forEach(s => s.unsubscribe());
+      this.subscriptions.forEach((s) => s.unsubscribe());
       this.subscriptions = [];
     }
   }

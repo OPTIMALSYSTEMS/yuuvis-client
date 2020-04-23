@@ -1,11 +1,19 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { IconRegistryService } from '@yuuvis/common-ui';
 import { AuditQueryOptions, AuditQueryResult, AuditService, DmsObject, EventService, RangeValue, TranslateService, YuvEvent, YuvEventType } from '@yuuvis/core';
 import { takeUntilDestroy } from 'take-until-destroy';
+import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { arrowNext, search } from '../../svg.generated';
+
 /**
- * Component listing audits for a given `DmsObject`.
+ * Component showing the history of a dms object by listing its audit entries.
+ * A search/filter panel is also part of the component so you are able to handle
+ * even large numbers of audits.
+ *
+ * [Screenshot](../assets/images/yuv-audit.gif)
+ *
+ * @example
+ * <yuv-audit [objectID]="'0815'"></yuv-audit>
  */
 @Component({
   selector: 'yuv-audit',
@@ -43,6 +51,13 @@ export class AuditComponent implements OnInit, OnDestroy {
     return this._objectID;
   }
 
+  /**
+   * You may provide a router link config here, that will be applied to an audit entries
+   * version number. This way you can add a link to the version pointing to some other
+   * state/component dealing with versions of one dms object.
+   */
+  @Input() versionRouterLink: any[];
+
   constructor(
     private auditService: AuditService,
     private eventService: EventService,
@@ -72,20 +87,20 @@ export class AuditComponent implements OnInit, OnDestroy {
     };
     const actionKeys = Object.keys(this.auditLabels);
     this.actionGroups = [
-      { label: this.translate.instant('yuv.framework.audit.label.group.update'), actions: actionKeys.filter(k => k.startsWith('a3')) },
-      { label: this.translate.instant('yuv.framework.audit.label.group.get'), actions: actionKeys.filter(k => k.startsWith('a4')) },
-      { label: this.translate.instant('yuv.framework.audit.label.group.delete'), actions: actionKeys.filter(k => k.startsWith('a2')) },
-      { label: this.translate.instant('yuv.framework.audit.label.group.create'), actions: actionKeys.filter(k => k.startsWith('a1')) }
+      { label: this.translate.instant('yuv.framework.audit.label.group.update'), actions: actionKeys.filter((k) => k.startsWith('a3')) },
+      { label: this.translate.instant('yuv.framework.audit.label.group.get'), actions: actionKeys.filter((k) => k.startsWith('a4')) },
+      { label: this.translate.instant('yuv.framework.audit.label.group.delete'), actions: actionKeys.filter((k) => k.startsWith('a2')) },
+      { label: this.translate.instant('yuv.framework.audit.label.group.create'), actions: actionKeys.filter((k) => k.startsWith('a1')) }
     ];
 
     let fbInput = {
       dateRange: []
     };
 
-    this.actionGroups.forEach(g => {
+    this.actionGroups.forEach((g) => {
       const groupEntry = {
         label: g.label,
-        actions: g.actions.map(a => {
+        actions: g.actions.map((a) => {
           fbInput[a] = [false];
           return a;
         })
@@ -119,7 +134,7 @@ export class AuditComponent implements OnInit, OnDestroy {
         this.auditsRes = res;
         this.busy = false;
       },
-      err => {
+      (err) => {
         this.onError();
       }
     );
@@ -138,7 +153,7 @@ export class AuditComponent implements OnInit, OnDestroy {
     }
     const actions = [];
     // this.searchActions.forEach(a => {
-    Object.keys(this.auditLabels).forEach(a => {
+    Object.keys(this.auditLabels).forEach((a) => {
       if (this.searchForm.value[a]) {
         actions.push(parseInt(a.substr(1)));
       }
@@ -162,7 +177,7 @@ export class AuditComponent implements OnInit, OnDestroy {
     const patch = {
       dateRange: null
     };
-    Object.keys(this.auditLabels).forEach(a => {
+    Object.keys(this.auditLabels).forEach((a) => {
       patch[a] = null;
     });
     this.searchForm.patchValue(patch);
@@ -176,7 +191,7 @@ export class AuditComponent implements OnInit, OnDestroy {
   toggleGroupActions(actions: string[]) {
     let isTrue = 0;
     let isFalse = 0;
-    actions.forEach(a => {
+    actions.forEach((a) => {
       if (this.searchForm.value[a] === false) {
         isFalse++;
       } else {
@@ -184,7 +199,7 @@ export class AuditComponent implements OnInit, OnDestroy {
       }
     });
     const patch = {};
-    actions.forEach(a => {
+    actions.forEach((a) => {
       patch[a] = isTrue < isFalse;
     });
     this.searchForm.patchValue(patch);
@@ -197,7 +212,7 @@ export class AuditComponent implements OnInit, OnDestroy {
         this.auditsRes = res;
         this.busy = false;
       },
-      err => {
+      (err) => {
         this.onError();
       }
     );

@@ -2,6 +2,11 @@ import { Component, ElementRef, EventEmitter, HostBinding, Input, Output, Render
 
 /**
  * Component for wrapping a form element. Provides a label and focus behaviour.
+ *
+ * @example
+ * <yuv-form-input [label]="'my form element'">
+ *   <!-- form element to be wrapped -->
+ * </yuv-form-input>
  */
 @Component({
   selector: 'yuv-form-input',

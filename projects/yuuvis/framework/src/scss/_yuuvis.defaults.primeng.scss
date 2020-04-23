@@ -7,9 +7,11 @@ body .ui-multiselect {
 body {
   .ui-inputtext {
     color: var(--text-color-body);
+    font-size: var(--font-body);
 
     &:enabled:focus:not(.ui-state-error) {
       border-color: var(--color-accent);
+      box-shadow: none;
     }
   }
 
@@ -175,6 +177,10 @@ body {
     > ul.ui-inputtext {
       padding: 0;
 
+      &.ui-state-focus {
+        box-shadow: none !important;
+      }
+
       .ui-chips-input-token input {
         font-family: 'Roboto';
         font-size: var(--font-body);
@@ -227,6 +233,10 @@ body {
           color: var(--text-color-caption);
         }
 
+        &:focus {
+          box-shadow: none;
+        }
+
         // active tab style
         &.ui-state-active {
           background-color: transparent;
@@ -237,7 +247,6 @@ body {
             background-color: transparent;
             border-width: 0 0 $ui-tabs-border-size 0;
             border-color: var(--color-accent);
-
             a {
               color: var(--text-color-body);
             }

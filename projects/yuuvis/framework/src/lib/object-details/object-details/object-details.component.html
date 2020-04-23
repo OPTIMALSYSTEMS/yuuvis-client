@@ -1,7 +1,8 @@
 <yuv-panel *ngIf="dmsObject; else empty" class="object-details" [title]="dmsObject.title"
   (yuvFileDrop)="onFileDropped($event)"
-  [yuvFileDropOptions]="{ disabled: dmsObject.contentStreamAllowed === 'notallowed' }"
+  [yuvFileDropOptions]="{ disabled: disableFileDrop || dmsObject.contentStreamAllowed === 'notallowed' }"
   [description]="dmsObject.description" [yuvBusyOverlay]="busy">
+
   <div class="header-icon" [innerHtml]="objectIcon | safeHtml"></div>
 
   <yuv-action-menu-bar class="actions" yuvOfflineDisabled>
@@ -42,7 +43,8 @@
   <p-tabPanel [id]="'summary'" [header]="'yuv.framework.object-details.tabs.summary.title' | translate"
     [headerStyleClass]="'summary'">
     <ng-template pTemplate="content">
-      <yuv-summary [dmsObject]="dmsObject" [showExtrasSection]="userIsAdmin"></yuv-summary>
+      <yuv-summary [dmsObject]="dmsObject" [versionRouterLink]="['/versions', dmsObject.id]"
+        [showExtrasSection]="userIsAdmin"></yuv-summary>
     </ng-template>
   </p-tabPanel>
 </ng-template>
@@ -71,7 +73,7 @@
   <p-tabPanel [id]="'history'" [header]="'yuv.framework.object-details.tabs.history.title' | translate"
     [headerStyleClass]="'history'">
     <ng-template pTemplate="content">
-      <yuv-audit [objectID]="objectId"></yuv-audit>
+      <yuv-audit [objectID]="objectId" [versionRouterLink]="['/versions', dmsObject.id]"></yuv-audit>
     </ng-template>
   </p-tabPanel>
 </ng-template>

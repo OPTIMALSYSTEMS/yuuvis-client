@@ -16,9 +16,6 @@
 	"yuv.framework.action-menu.action.export.pdf.description": "Lädt die Dokumentdatei als PDF herunter",
 	"yuv.framework.action-menu.action.export.pdf.label": "PDF",
 	"yuv.framework.action-menu.action.export.title": "Herunterladen im Format",
-	"yuv.framework.action-menu.action.open": "Öffnen",
-	"yuv.framework.action-menu.action.open.context": "Im Kontext öffnen",
-	"yuv.framework.action-menu.action.open.context.description": "Öffnet das Objekt in seinem Kontext",
 	"yuv.framework.action-menu.action.upload.dms.object.content.description": "Fügt dem Objekt eine Dokumentdatei hinzu.",
 	"yuv.framework.action-menu.action.upload.dms.object.content.label": "Dokumentdatei hinzufügen",
 	"yuv.framework.action-menu.action.upload.dms.object.content.noFile": "Keine Datei ausgewählt",
@@ -84,6 +81,9 @@
 	"yuv.framework.object-create.step.type.content.allowed": "Datei: optional",
 	"yuv.framework.object-create.step.type.content.notallowed": "Datei: nein",
 	"yuv.framework.object-create.step.type.content.required": "Datei: ja",
+	"yuv.framework.object-details-compare.tabs.changes.title": "Änderungen Indexdaten",
+	"yuv.framework.object-details-compare.tabs.content.title": "Änderungen Inhalt",
+	"yuv.framework.object-details-compare.title": "Vergleichen",
 	"yuv.framework.object-details.summary.section.admin": "Administrative Information",
 	"yuv.framework.object-details.summary.section.baseparams": "Basisparameter",
 	"yuv.framework.object-details.summary.section.core": "Objektattribute",
@@ -152,5 +152,10 @@
 	"yuv.framework.upload-progress-overlay.remove": "Entfernen",
 	"yuv.framework.upload-progress-overlay.remove-all": "Alle entfernen",
 	"yuv.framework.upload-progress-overlay.title": "Hinzufügestatus",
-	"yuv.framework.version-result.title": "Versionen"
+	"yuv.framework.version-list.compare.form.submit": "Vergleich",
+	"yuv.framework.version-list.compare.tooltip": "Versionen vergleichen",
+	"yuv.framework.version-list.config.mode.default": "Tabelle",
+	"yuv.framework.version-list.config.mode.grid": "Galerie",
+	"yuv.framework.version-list.config.mode.horizontal": "Liste",
+	"yuv.framework.version-list.title": "Versionen"
 }
