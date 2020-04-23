@@ -78,12 +78,14 @@
 }
 .progress-item {
   display: grid;
-  grid-template-columns: 35px 1fr 35px;
-  grid-template-rows: 35px;
-  grid-template-areas: '. . .';
+  grid-template-columns: 1fr auto auto;
+  grid-template-rows: auto;
+  grid-template-areas: 'result ico action';
 }
 .result-item {
+  grid-area: result;
   display: flex;
+  flex-flow: row-reverse;
   align-items: center;
   position: relative;
   padding: calc(var(--app-pane-padding) / 2) 0;
@@ -112,23 +114,25 @@
 
   yuv-icon {
     padding: calc(var(--app-pane-padding) / 2);
-    flex: 0 0 auto;
+    // flex: 0 0 auto;
     box-sizing: content-box;
     width: 18px;
     height: 18px;
     color: var(--text-color-hint);
 
-    &.remove:hover {
+    &.remove {
+      grid-area: action;
       cursor: pointer;
     }
     &.done {
+      grid-area: ico;
       width: 14px;
       height: 14px;
-      border-radius: 50%;
-      padding: calc(var(--app-pane-padding) / 8);
-      border: 1px solid var(--color-success);
+      border-radius: 2px;
+      padding: 0;
+      background-color: var(--color-success);
       margin: 0 calc(var(--app-pane-padding) / 2);
-      color: var(--color-success);
+      color: #fff;
       align-self: center;
       justify-self: center;
     }
@@ -189,9 +193,8 @@
   background: var(--main-background);
 
   .title {
-    padding: calc((var(--app-bar-height) - 32px) / 4);
+    padding: calc(var(--app-pane-padding) / 2);
     color: var(--text-color-caption);
-    font-weight: bold;
     background-color: var(--app-bar-background);
     border-bottom: 1px solid var(--panel-divider-color);
   }

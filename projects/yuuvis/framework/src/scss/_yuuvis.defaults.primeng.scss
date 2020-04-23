@@ -7,6 +7,7 @@ body .ui-multiselect {
 body {
   .ui-inputtext {
     color: var(--text-color-body);
+    font-size: var(--font-body);
 
     &:enabled:focus:not(.ui-state-error) {
       border-color: var(--color-accent);
