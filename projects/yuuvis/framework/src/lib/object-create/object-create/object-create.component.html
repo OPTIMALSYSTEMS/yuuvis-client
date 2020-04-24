@@ -1,4 +1,4 @@
-<div yuvOfflineDisabled class="yuv-object-create" [yuvBusyOverlay]="state.busy" *ngIf="state$ | async as state"
+<div yuvOfflineDisabled class="yuv-object-create" [yuvBusyOverlay]="state.busy || busy" *ngIf="state$ | async as state"
   cdkTrapFocus>
   <header>
     <h1>
@@ -15,10 +15,17 @@
     </div>
   </header>
 
-  <!-- context indicator -->
-  <section class="context" *ngIf="context">
-    <yuv-icon class="btn" icon="clear" (click)="removeContext()"></yuv-icon>
-    {{'yuv.framework.object-create.context.title'|translate: ({title: context.title})}}
+  <!-- status indicator -->
+  <section class="status-indicator" *ngIf="context || files?.length">
+
+    <div class="context" *ngIf="context">
+      <yuv-icon class="btn" icon="clear" (click)="removeContext()"></yuv-icon>
+      {{'yuv.framework.object-create.context.title'|translate: ({title: context.title})}}
+    </div>
+    <div class="files" *ngIf="files?.length">
+      <yuv-icon class="btn" icon="clear" (click)="removeFiles()"></yuv-icon>
+      {{files.length}} FilesXXXXXX
+    </div>
   </section>
 
   <ng-container [ngSwitch]="state.currentStep">
@@ -54,12 +61,12 @@
 
             <!-- upload a file -->
             <div class="buttons">
-              <button *ngIf="files.length"
+              <button *ngIf="files?.length"
                 (click)="filesClear()">{{ 'yuv.framework.object-create.step.file.clear' | translate }}</button>
               <yuv-file-picker [label]="'yuv.framework.object-create.step.file.choose' | translate" [output]="'file'"
                 [multiple]="true" (fileSelected)="fileChosen($event)"></yuv-file-picker>
               <button class="primary" (click)="fileSelectContinue()"
-                [disabled]="selectedObjectType.contentStreamAllowed === 'required' && files.length === 0">
+                [disabled]="selectedObjectType.contentStreamAllowed === 'required' && files?.length === 0">
                 {{ 'yuv.framework.object-create.step.file.continue' | translate }}
               </button>
             </div>

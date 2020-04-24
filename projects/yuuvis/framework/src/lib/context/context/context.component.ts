@@ -104,6 +104,8 @@ export class ContextComponent implements OnInit {
 
   /** Emitted once an item from either one of the lists has been selected. */
   @Output() itemsSelected = new EventEmitter<string[]>();
+  /** Emitted when files are dropped to the component */
+  @Output() filesDropped = new EventEmitter<File[]>();
 
   constructor(
     private translate: TranslateService,
@@ -116,6 +118,10 @@ export class ContextComponent implements OnInit {
 
   select(ids: string[]) {
     this.itemsSelected.emit(ids);
+  }
+
+  onFilesDropped(files: File[]) {
+    this.filesDropped.emit(files);
   }
 
   private setupContext() {

@@ -19,10 +19,12 @@ export class SelectableItemComponent implements FocusableOption {
   }
 
   @HostBinding('class.highlight') _highlight: boolean;
+  @HostBinding('class.disabled') _disabled: boolean;
 
   @Input() set item(item: Selectable) {
     this._item = item;
     this._highlight = item.highlight;
+    this._disabled = item.disabled;
   }
   get item() {
     return this._item;

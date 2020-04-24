@@ -1,5 +1,16 @@
 import { Component, EventEmitter, Input, OnDestroy, Output, ViewChild } from '@angular/core';
-import { BaseObjectTypeField, DmsObject, DmsService, ObjectType, ObjectTypeGroup, SystemService, SystemType, TranslateService, Utils } from '@yuuvis/core';
+import {
+  BaseObjectTypeField,
+  ContentStreamAllowed,
+  DmsObject,
+  DmsService,
+  ObjectType,
+  ObjectTypeGroup,
+  SystemService,
+  SystemType,
+  TranslateService,
+  Utils
+} from '@yuuvis/core';
 import { Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
@@ -36,6 +47,7 @@ export class ObjectCreateComponent implements OnDestroy {
   state$: Observable<CreateState> = this.objCreateServcice.state$;
   breadcrumb$: Observable<Breadcrumb[]> = this.objCreateServcice.breadcrumb$;
 
+  busy: boolean = false;
   createAnother: boolean = false;
   selectedObjectType: ObjectType;
   selectedObjectTypeFormOptions: ObjectFormOptions;
@@ -47,7 +59,7 @@ export class ObjectCreateComponent implements OnDestroy {
 
   availableObjectTypeGroups: SelectableGroup[];
   formState: FormStatusChangedEvent;
-  files: File[] = [];
+  _files: File[] = [];
   labels: Labels;
   title: string;
 
@@ -58,13 +70,38 @@ export class ObjectCreateComponent implements OnDestroy {
    */
   @Input() set contextId(id: string) {
     if (id) {
-      this.dmsService.getDmsObject(id).subscribe((res: DmsObject) => {
-        this.context = res;
-        this.setupContextTypeGroups();
-      });
+      this.busy = true;
+      this.dmsService.getDmsObject(id).subscribe(
+        (res: DmsObject) => {
+          this.context = res;
+          this.setupContextTypeGroups();
+          this.busy = false;
+        },
+        (err) => (this.busy = false)
+      );
     } else {
       this.context = null;
     }
+  }
+
+  /**
+   * Files that should be used for creating object(s)
+   */
+  @Input() set files(files: File[]) {
+    this._files = files || [];
+    // TODO: Update availableObjectTypes to disable all types that do not support files
+
+    if (files?.length) {
+      this.availableObjectTypeGroups.forEach((g) => {
+        g.items.forEach((i) => {
+          i.disabled = i.value.contentStreamAllowed === ContentStreamAllowed.NOT_ALLOWED;
+        });
+      });
+    }
+  }
+
+  get files(): File[] {
+    return this._files;
   }
 
   /**
@@ -128,6 +165,10 @@ export class ObjectCreateComponent implements OnDestroy {
     this.contextRemoved.emit();
   }
 
+  removeFiles() {
+    this.files = [];
+  }
+
   goToStep(step: CurrentStep) {
     this.objCreateServcice.setNewState({ currentStep: step });
     if (step === CurrentStep.INDEXDATA && this.formState) {
@@ -142,7 +183,6 @@ export class ObjectCreateComponent implements OnDestroy {
   selectObjectType(objectType: ObjectType) {
     this.selectedObjectType = objectType;
     this.title = objectType ? this.system.getLocalizedResource(`${objectType.id}_label`) : this.labels.defaultTitle;
-    this.files = [];
     this.objCreateServcice.setNewState({ busy: true });
 
     this.system.getObjectTypeForm(objectType.id, 'CREATE').subscribe(

@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@yuuvis/core';
+import { FrameService } from '../../components/frame/frame.service';
 
 @Component({
   selector: 'yuv-create',
@@ -12,10 +13,12 @@ import { TranslateService } from '@yuuvis/core';
 })
 export class CreateComponent implements OnInit {
   context: string;
+  files: File[];
 
   constructor(
     private translate: TranslateService,
     private location: Location,
+    private frameService: FrameService,
     private router: Router,
     private route: ActivatedRoute,
     private titleService: Title
@@ -36,7 +39,13 @@ export class CreateComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.context = this.route.snapshot.fragment;
+    this.context = this.route.snapshot.paramMap.get('context');
+    if (this.route.snapshot.paramMap.has('filesRef')) {
+      const files: File[] = this.frameService.getItem(this.route.snapshot.paramMap.get('filesRef'));
+      if (files && files.length) {
+        this.files = files;
+      }
+    }
     this.titleService.setTitle(this.translate.instant('yuv.framework.object-create.header.title'));
   }
 }

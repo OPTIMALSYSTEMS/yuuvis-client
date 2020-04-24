@@ -53,7 +53,7 @@
       }
     }
 
-    section.context {
+    section.status-indicator {
       grid-area: context;
       background-color: var(--color-accent);
       color: #fff;
@@ -61,10 +61,15 @@
       display: flex;
       align-items: center;
 
-      yuv-icon {
-        padding: calc(var(--app-pane-padding) / 4);
-        box-sizing: border-box;
-        @include bidi-style(margin-right, calc(var(--app-pane-padding) / 2), margin-left, calc(var(--app-pane-padding) / 2));
+      > div {
+        &.context {
+        }
+
+        yuv-icon {
+          padding: calc(var(--app-pane-padding) / 4);
+          box-sizing: border-box;
+          @include bidi-style(margin-right, calc(var(--app-pane-padding) / 2), margin-left, calc(var(--app-pane-padding) / 2));
+        }
       }
     }
 
