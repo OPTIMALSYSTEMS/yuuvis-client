@@ -1,6 +1,5 @@
 import { ColDef } from '@ag-grid-community/core';
 import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
 import {
   AppCacheService,
   BackendService,
@@ -36,14 +35,12 @@ export class GridService {
     private searchSvc: SearchService,
     private userConfig: UserConfigService,
     private translate: TranslateService,
-    private router: Router,
     private backend: BackendService
   ) {
     this.context = {
       translate,
       system,
       backend,
-      router,
       fileSizePipe: new FileSizePipe(translate),
       numberPipe: new LocaleNumberPipe(translate),
       datePipe: new LocaleDatePipe(translate),
