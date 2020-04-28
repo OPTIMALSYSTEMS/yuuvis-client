@@ -30,6 +30,9 @@ import { arrowLast, arrowNext, clear, listModeDefault, listModeGrid, listModeSim
  * Component rendering a search result within a result list.
  * Adding `applyColumnConfig` attribute and set it to true will apply the users
  * result list column configuration.
+ *
+ * @example
+ * <yuv-search-result [query]="searchQuery" (itemsSelected)="select($event)"></yuv-search-result>
  */
 @Component({
   selector: 'yuv-search-result',

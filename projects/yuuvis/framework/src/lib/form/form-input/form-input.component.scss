@@ -13,7 +13,7 @@
     display: flex;
     @include transition();
     flex-flow: row nowrap;
-    align-items: flex-end;
+    align-items: center;
     padding: calc(var(--app-pane-padding) / 4) 0;
     border-bottom: 1px solid rgba(0, 0, 0, 0.15);
 
@@ -45,7 +45,6 @@
       order: 2;
       flex: 0 1 auto;
       padding: 2px calc(var(--app-pane-padding) / 4);
-      padding-bottom: 6px;
       margin-right: 3px;
       color: var(--text-color-caption);
       border-radius: 2px;
@@ -55,13 +54,14 @@
       order: 3;
       flex: 0 0 auto;
       border-radius: 2px;
-      background-color: var(--color-primary);
       font-size: var(--font-hint);
       display: inline-block;
       line-height: 1em;
       padding: 2px;
       cursor: default;
-      color: #fff;
+      background-color: rgba(var(--color-accent-rgb), 0.2);
+      color: var(--color-accent);
+      font-family: monospace;
     }
   }
 

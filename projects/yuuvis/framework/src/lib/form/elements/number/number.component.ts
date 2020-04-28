@@ -110,7 +110,6 @@ export class NumberComponent implements ControlValueAccessor, Validator {
   static betweenTwoNumbers(val: number, minVal: number, maxVal: number) {
     const min = !Utils.isEmpty(minVal) ? minVal : -Infinity;
     const max = !Utils.isEmpty(maxVal) ? maxVal : Infinity;
-
     return val >= min && val <= max;
   }
 
@@ -190,6 +189,6 @@ export class NumberComponent implements ControlValueAccessor, Validator {
 
   // returns null when valid else the validation object
   public validate(c: FormControl) {
-    return this.validationErrors.length ? Utils.arrayToObject(this.validationErrors, 'key', err => ({ valid: false, ...err })) : null;
+    return this.validationErrors.length ? Utils.arrayToObject(this.validationErrors, 'key', (err) => ({ valid: false, ...err })) : null;
   }
 }

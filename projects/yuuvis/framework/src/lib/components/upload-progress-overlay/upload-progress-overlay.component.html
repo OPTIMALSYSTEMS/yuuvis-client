@@ -1,17 +1,22 @@
 <ng-container *ngIf="progressStatus$ | async as ps">
-  <div class="uploadProgress" *ngIf="ps.items.length || ps.result?.length" [ngClass]="{'mini': minimized, panelError: ps.err > 0, allErr: ps.err === ps.items.length, 'finished': allDone}">
+  <div class="uploadProgress" *ngIf="ps.items.length || ps.result?.length"
+    [ngClass]="{'mini': minimized, panelError: ps.err > 0, allErr: ps.err === ps.items.length, 'finished': allDone}">
 
     <header class="uploadProgress__header" (click)="upload.toggle($event)">
-      <yuv-icon-upload [active]="!(completedUp$ | async)" title="{{'yuv.framework.upload-progress-overlay.title'|translate}}"></yuv-icon-upload>
+      <yuv-icon-upload [active]="!(completedUp$ | async)"
+        title="{{'yuv.framework.upload-progress-overlay.title'|translate}}"></yuv-icon-upload>
     </header>
   </div>
-  
+
   <p-overlayPanel #upload>
     <section class="upload-files">
-      <div class="title" [ngClass]="{complete: completed}">{{'yuv.framework.upload-progress-overlay.title'|translate}}</div>
-      <div class="progress-item" *ngFor="let item of ps.items; trackBy: trackByFn" [ngClass]="{err: !!item.err, done: !!item.result}">
-        <yuv-icon title="{{'yuv.framework.upload-progress-overlay.remove'|translate}}" [icon]="'clear'" class="remove" [ngClass]="{err: !!item.err, done: !!item.result}" (click)="remove(item.id)"></yuv-icon>
-        
+      <div class="title" [ngClass]="{complete: completed}">{{'yuv.framework.upload-progress-overlay.title'|translate}}
+      </div>
+      <div class="progress-item" *ngFor="let item of ps.items; trackBy: trackByFn"
+        [ngClass]="{err: !!item.err, done: !!item.result}">
+        <yuv-icon title="{{'yuv.framework.upload-progress-overlay.remove'|translate}}" [icon]="'clear'" class="remove"
+          [ngClass]="{err: !!item.err}" (click)="remove(item.id)"></yuv-icon>
+
         <ng-container *ngIf="!item.result; else tplResult">
           <div class="name">{{ item.filename }}</div>
           <ng-container *ngIf="item.progress | async as progress">
@@ -21,7 +26,7 @@
             </ng-container>
           </ng-container>
         </ng-container>
-          
+
         <ng-template #tplResult>
           <div class="result-items">
             <div class="name" *ngFor="let res of item.result; trackBy: trackByFn" (click)="openObject(res)">
@@ -32,7 +37,8 @@
         </ng-template>
       </div>
       <section class="remove-all">
-        <button (click)="remove(); upload.hide()">{{'yuv.framework.upload-progress-overlay.remove-all'|translate}}</button>
+        <button
+          (click)="remove(); upload.hide()">{{'yuv.framework.upload-progress-overlay.remove-all'|translate}}</button>
       </section>
     </section>
   </p-overlayPanel>
@@ -41,4 +47,3 @@
 <ng-template #tplProcessing>
   <div title="{{'yuv.framework.upload-progress-overlay.icon'|translate}}" class="yuv-loader processing"></div>
 </ng-template>
-  

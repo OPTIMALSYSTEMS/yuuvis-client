@@ -16,8 +16,8 @@ export class CellRenderer {
   static numberCellRenderer(param) {
     if (param.value || param.value === 0) {
       const { value, context, scale, grouping, pattern } = param;
-      const transform = val => context.numberPipe.transform(val, grouping, pattern, scale, `1.${scale || 0}-${scale || 0}`);
-      return Array.isArray(value) ? CellRenderer.multiSelectCellRenderer(value.map(val => transform(val))) : transform(value);
+      const transform = (val) => context.numberPipe.transform(val, grouping, pattern, scale, `1.${scale || 0}-${scale || 0}`);
+      return Array.isArray(value) ? CellRenderer.multiSelectCellRenderer(value.map((val) => transform(val))) : transform(value);
     }
     return '';
   }
@@ -48,6 +48,10 @@ export class CellRenderer {
     return param.value ? `<a href="mailto:${param.value}">${Utils.escapeHtml(param.value)}</a>` : '';
   }
 
+  static phoneCellRenderer(param) {
+    return param.value ? `<a href="tel:${param.value}">${Utils.escapeHtml(param.value)}</a>` : '';
+  }
+
   static urlCellRenderer(param) {
     return param.value ? `<a target="_blank " href="${param.value}">${Utils.escapeHtml(param.value)}</a>` : '';
   }
@@ -55,8 +59,10 @@ export class CellRenderer {
   static dateTimeCellRenderer(param) {
     if (param.value) {
       const { value, context, pattern } = param;
-      const transform = val => context.datePipe.transform(val, pattern);
-      return `<span date="${value}">${Array.isArray(value) ? CellRenderer.multiSelectCellRenderer(value.map(val => transform(val))) : transform(value)}</span>`;
+      const transform = (val) => context.datePipe.transform(val, pattern);
+      return `<span date="${value}">${
+        Array.isArray(value) ? CellRenderer.multiSelectCellRenderer(value.map((val) => transform(val))) : transform(value)
+      }</span>`;
     }
     return '';
   }
@@ -80,7 +86,7 @@ export class CellRenderer {
         value = value.split(', ');
       }
       return (Array.isArray(value) ? value : [value])
-        .map(val => `<div class="chip">${Utils.escapeHtml(val && val.toString ? val.toString() : ' ')}</div>`)
+        .map((val) => `<div class="chip">${Utils.escapeHtml(val && val.toString ? val.toString() : ' ')}</div>`)
         .join('');
     }
     return '';
@@ -89,7 +95,7 @@ export class CellRenderer {
   static linkCellRenderer(param) {
     let val = '';
     if (param.value) {
-      (Array.isArray(param.value) ? param.value : [param.value]).forEach(value => {
+      (Array.isArray(param.value) ? param.value : [param.value]).forEach((value) => {
         const query = {
           types: [param.reference.type],
           filters: {}

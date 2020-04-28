@@ -436,8 +436,6 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
 
       // do not set a reference as the form controls value
       // otherwise we could not reset the form
-
-      console.log(formElement);
       let value: any;
       value = formElement?.value
         ? this.patchFormValue(formElement?.value)

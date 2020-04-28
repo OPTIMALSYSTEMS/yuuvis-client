@@ -1,6 +1,5 @@
 import { ColDef } from '@ag-grid-community/core';
 import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
 import {
   AppCacheService,
   BackendService,
@@ -12,6 +11,7 @@ import {
   ObjectTypeField,
   SearchService,
   SystemService,
+  SystemType,
   TranslateService,
   UserConfigService,
   Utils
@@ -35,14 +35,12 @@ export class GridService {
     private searchSvc: SearchService,
     private userConfig: UserConfigService,
     private translate: TranslateService,
-    private router: Router,
     private backend: BackendService
   ) {
     this.context = {
       translate,
       system,
       backend,
-      router,
       fileSizePipe: new FileSizePipe(translate),
       numberPipe: new LocaleNumberPipe(translate),
       datePipe: new LocaleDatePipe(translate),
@@ -60,9 +58,13 @@ export class GridService {
    * blank in case of a mixed result list
    */
   getColumnConfiguration(objectTypeId?: string): Observable<ColDef[]> {
-    const objectType: ObjectType = objectTypeId ? this.system.getObjectType(objectTypeId) : this.system.getBaseType();
+    // Abstract types like `system:document` or `system:folder` should also fall back to the
+    // mixed column configuration
+    const abstractTypes = [SystemType.DOCUMENT, SystemType.FOLDER];
+    const objectType: ObjectType = !objectTypeId || abstractTypes.includes(objectTypeId) ? this.system.getBaseType() : this.system.getObjectType(objectTypeId);
     const objectTypeFields = {};
     objectType.fields.forEach((f: ObjectTypeField) => (objectTypeFields[f.id] = f));
+
     return this.userConfig
       .getColumnConfig(objectTypeId)
       .pipe(map((cc: ColumnConfig) => cc.columns.map((c) => this.getColumnDefinition(objectTypeFields[c.id], c))));
@@ -109,9 +111,41 @@ export class GridService {
     return field.propertyType !== 'id' && !skipSort.includes(field.id);
   }
 
-  private fieldClassification(classification: string[]): string {
-    return Array.isArray(classification) ? classification[0] : null;
+  /**
+   * add classification specific column definition attributes
+   *
+   * @param colDef - the column definition object to be extended
+   * @param classification - the classification to evaluate
+   *
+   * @returns enriched column definition object
+   */
+  private fieldClassification(classification, params?) {
+    if (!Array.isArray(classification)) {
+      return undefined;
+    }
+    switch (classification[0]) {
+      case 'email': {
+        return CellRenderer.emailCellRenderer;
+        break;
+      }
+      case 'url': {
+        return CellRenderer.urlCellRenderer;
+        break;
+      }
+      case 'phone': {
+        return CellRenderer.phoneCellRenderer;
+        break;
+      }
+      case 'digit': {
+        return this.customContext(CellRenderer.numberCellRenderer, params);
+        break;
+      }
+      default: {
+        return undefined;
+      }
+    }
   }
+
   /**
    * Add type specific column definition attributes based on a fields type
    *
@@ -130,6 +164,9 @@ export class GridService {
           colDef.cellRenderer = this.customContext(CellRenderer.multiSelectCellRenderer);
         }
         colDef.cellClass = field.cardinality === 'multi' ? 'multiCell string' : 'string';
+        if (Array.isArray(field?.classification)) {
+          colDef.cellRenderer = this.fieldClassification(field?.classification);
+        }
         break;
       }
       case 'datetime': {
@@ -143,9 +180,8 @@ export class GridService {
           grouping: true,
           pattern: undefined
         };
-
         colDef.width = 150;
-        colDef.cellRenderer = !this.fieldClassification(field?.classification) ? this.customContext(CellRenderer.numberCellRenderer, params) : undefined;
+        colDef.cellRenderer = this.fieldClassification(field?.classification, params);
         break;
       }
       case 'decimal': {
@@ -156,22 +192,9 @@ export class GridService {
           cips: true
         };
         colDef.width = 150;
-        colDef.cellRenderer = !this.fieldClassification(field?.classification) ? this.customContext(CellRenderer.numberCellRenderer, params) : undefined;
+        colDef.cellRenderer = this.fieldClassification(field?.classification, params);
         break;
       }
-      // case 'NUMBER': {
-      //   colDef.width = 150;
-      //   const { scale, grouping, pattern } = resultField;
-      //   colDef.cellRenderer = this.customContext(
-      //     CellRenderer.numberCellRenderer,
-      //     { scale, grouping, pattern }
-      //   );
-      //   colDef.getQuickFilterText = this.customContext(
-      //     CellRenderer.numberCellRenderer,
-      //     { scale, grouping, pattern }
-      //   );
-      //   break;
-      // }
       case 'boolean': {
         colDef.cellRenderer = this.customContext(CellRenderer.booleanCellRenderer);
         colDef.width = 100;

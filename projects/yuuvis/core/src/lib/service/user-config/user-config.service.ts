@@ -16,10 +16,14 @@ export class UserConfigService {
   constructor(private backend: BackendService, private systemService: SystemService) {}
 
   getColumnConfig(objectTypeId?: string): Observable<ColumnConfig> {
-    return this.backend.get(`/user/config/result/${encodeURIComponent(objectTypeId || SystemType.OBJECT)}`).pipe(
-      map(res => ({
+    // skip abstract object types
+    const ot = this.systemService.getObjectType(objectTypeId);
+    const otid = ot && ot.creatable ? objectTypeId : SystemType.OBJECT;
+
+    return this.backend.get(`/user/config/result/${encodeURIComponent(otid)}`).pipe(
+      map((res) => ({
         type: res.type,
-        columns: res.columns.map(c => ({
+        columns: res.columns.map((c) => ({
           id: c.id,
           label: this.systemService.getLocalizedResource(`${c.id}_label`),
           pinned: c.pinned,
@@ -32,7 +36,7 @@ export class UserConfigService {
   saveColumnConfig(columnConfig: ColumnConfig): Observable<any> {
     return this.backend.post(`/user/config/result/${encodeURIComponent(columnConfig.type)}`, {
       type: columnConfig.type,
-      columns: columnConfig.columns.map(c => ({
+      columns: columnConfig.columns.map((c) => ({
         id: c.id,
         pinned: c.pinned,
         sort: {

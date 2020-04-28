@@ -92,3 +92,20 @@ export class AppModule {}
 #### 3. Use `YuvFrameworkModule`:
 
 Once you finshed steps one and two you are ready to go. Just use the components like any other UI component. For details check out `@yuuvis/framework` documentation.
+
+### Troubleshooting
+
+Make sure that your project is running on a recent Angular version. If you are not yet on Angular 9, update your project:
+
+```sh
+ `ng update @angular/cli@^9 @angular/core@^9`.
+```
+
+You may also want to update your global Angular CLI to version 9:
+
+```sh
+npm uninstall -g @angular/cli
+npm cache verify
+# if npm version is < 5 then use `npm cache clean`
+npm install -g @angular/cli@latest
+```

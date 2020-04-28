@@ -29,7 +29,7 @@ export class ColumnConfigSelectComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.groups = this.systemsService.getGroupedObjectTypes(true);
+    this.groups = this.systemsService.getGroupedObjectTypes(true, true);
     this.mixed = this.systemsService.getBaseType();
   }
 }

@@ -1,6 +1,6 @@
 import { DatePipe, FormatWidth, getLocaleDateFormat, getLocaleDateTimeFormat, getLocaleTimeFormat } from '@angular/common';
 import { Pipe, PipeTransform } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService } from '@yuuvis/core';
 
 @Pipe({
   name: 'localeDate',
@@ -29,20 +29,13 @@ export class LocaleDatePipe extends DatePipe implements PipeTransform {
     switch (format) {
       case 'eoNiceShort':
       case 'eoShortDate':
-        formatValue = getLocaleDateFormat(this.lang, FormatWidth.Short)
-          .replace(/[d]+/, 'dd')
-          .replace(/[M]+/, 'MM')
-          .replace(/[y]+/, 'yyyy');
+        formatValue = getLocaleDateFormat(this.lang, FormatWidth.Short).replace(/[d]+/, 'dd').replace(/[M]+/, 'MM').replace(/[y]+/, 'yyyy');
         break;
       case 'eoShortDay':
         formatValue = 'EE';
         break;
       case 'eoShortTime':
-        formatValue = getLocaleTimeFormat(this.lang, FormatWidth.Short)
-          .replace(/[h]+/, 'hh')
-          .replace(/[H]+/, 'HH')
-          .replace(/[m]+/, 'mm')
-          .replace(/[a]+/, 'aa');
+        formatValue = getLocaleTimeFormat(this.lang, FormatWidth.Short).replace(/[h]+/, 'hh').replace(/[H]+/, 'HH').replace(/[m]+/, 'mm').replace(/[a]+/, 'aa');
         break;
       case 'eoShort':
         formatValue = getLocaleDateTimeFormat(this.lang, FormatWidth.Short)

@@ -10,14 +10,15 @@
 <textarea class="input-textarea size-{{ size }}" pInputTextarea *ngIf="multiline" (blur)="onBlur()" [(ngModel)]="value"
   [readonly]="readonly" (ngModelChange)="onValueChange($event)"></textarea>
 
-<div class="classify" [ngClass]="{ empty: !value || situation === 'SEARCH' }">
-  <a href="mailto:{{ value }}" *ngIf="classification === 'email' && valid">
+<div class="classify" [ngClass]="{ empty: !value || situation === 'SEARCH' }" *ngIf="classification && valid"
+  [ngSwitch]="classification">
+  <a href="mailto:{{ value }}" *ngSwitchCase="'email'">
     <yuv-icon [icon]="'envelope'"></yuv-icon>
   </a>
-  <a target="_blank" href="{{ value }}" *ngIf="classification === 'url' && valid">
+  <a target="_blank" href="{{ value }}" *ngSwitchCase="'url'">
     <yuv-icon [icon]="'globe'"></yuv-icon>
   </a>
-  <a target="_blank" href="tel:{{ value }}" *ngIf="classification === 'phone' && valid">
+  <a target="_blank" href="tel:{{ value }}" *ngSwitchCase="'phone'">
     <yuv-icon [icon]="'phone'"></yuv-icon>
   </a>
 </div>
