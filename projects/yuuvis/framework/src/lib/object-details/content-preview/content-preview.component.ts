@@ -1,6 +1,7 @@
 import { AfterViewInit, Component, ElementRef, Input, NgZone, OnDestroy, OnInit } from '@angular/core';
 import { DmsObject } from '@yuuvis/core';
 import { fromEvent, Observable } from 'rxjs';
+import { takeWhile } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { folder, noFile, undock } from '../../svg.generated';
@@ -19,9 +20,18 @@ import { ContentPreviewService } from './service/content-preview.service';
   providers: [ContentPreviewService]
 })
 export class ContentPreviewComponent implements OnInit, OnDestroy, AfterViewInit {
+  private UNDOCK_WINDOW_NAME = 'eoViewer';
   private _dmsObject: DmsObject;
   isUndocked: boolean;
-  undockWin: Window;
+
+  set undockWin(win: Window) {
+    window[this.UNDOCK_WINDOW_NAME] = win;
+  }
+
+  get undockWin(): Window {
+    return window[this.UNDOCK_WINDOW_NAME];
+  }
+
   previewSrc: string;
 
   /**
@@ -76,23 +86,31 @@ export class ContentPreviewComponent implements OnInit, OnDestroy, AfterViewInit
     private _ngZone: NgZone
   ) {
     this.iconRegistry.registerIcons([folder, noFile, undock]);
+    if (this.undockWin && !this.undockWin.closed) {
+      this.undock(true);
+    }
   }
 
-  undock() {
+  undock(skipLoad = false) {
     this.isUndocked = !this.isUndocked;
     if (!this.isUndocked) {
       this.undockWin.close();
     } else {
-      this._ngZone.runOutsideAngular((_) => {
+      this._ngZone.runOutsideAngular(_ => {
         const interval = setInterval(() => {
           if (this.undockWin && this.undockWin.closed) {
             clearInterval(interval);
             this._ngZone.run(() => this.isUndocked && this.undock());
           }
         }, 1000);
+        fromEvent(window, 'beforeunload')
+          .pipe(takeWhile(() => this.isUndocked))
+          .subscribe(e => this.undockWin && this.undockWin.close());
       });
     }
-    this.open(this.previewSrc);
+    if (!skipLoad) {
+      this.open(this.previewSrc);
+    }
   }
 
   open(src: string) {
@@ -100,12 +118,12 @@ export class ContentPreviewComponent implements OnInit, OnDestroy, AfterViewInit
     if (this.isUndocked) {
       this.undockWin = window.open(
         this.previewSrc || '',
-        'eoViewer',
+        this.UNDOCK_WINDOW_NAME,
         'directories=0, titlebar=0, toolbar=0, location=0, status=0, menubar=0, resizable=1, top=10, left=10'
       );
-      if (!this.previewSrc) {
+      if (!this.previewSrc && !this.undockWin.document.querySelector('#no-file')) {
         this.undockWin.document.write(
-          `<div style="opacity: 0.1; display: flex; height: 100%; width: 100%; align-items: center; justify-content: center;"> 
+          `<div id="no-file" style="opacity: 0.1; display: flex; height: 100%; width: 100%; align-items: center; justify-content: center;"> 
            ${noFile.data.replace(/"48"/g, '"100"')}
           <div>`
         );
@@ -140,7 +158,7 @@ export class ContentPreviewComponent implements OnInit, OnDestroy, AfterViewInit
   }
 
   ngOnInit() {
-    this.previewSrc$.pipe(takeUntilDestroy(this)).subscribe((src) => this.open(src));
+    this.previewSrc$.pipe(takeUntilDestroy(this)).subscribe(src => this.open(src));
   }
 
   ngAfterViewInit() {
@@ -148,13 +166,13 @@ export class ContentPreviewComponent implements OnInit, OnDestroy, AfterViewInit
     if (iframe) {
       fromEvent(iframe, 'load')
         .pipe(takeUntilDestroy(this))
-        .subscribe((res) => {
+        .subscribe(res => {
           setTimeout(() => this.searchPDF(this.searchTerm, iframe), 100);
         });
     }
   }
 
   ngOnDestroy() {
-    return this.undockWin && this.undockWin.close();
+    // return this.undockWin && this.undockWin.close();
   }
 }
