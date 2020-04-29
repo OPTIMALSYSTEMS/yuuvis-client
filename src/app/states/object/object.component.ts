@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AppCacheService, DmsObject, DmsService, EventService, SearchQuery, TranslateService, YuvEventType } from '@yuuvis/core';
 import { ContextComponent } from '@yuuvis/framework';
 import { takeUntilDestroy } from 'take-until-destroy';
+import { FrameService } from '../../components/frame/frame.service';
 
 @Component({
   selector: 'yuv-object',
@@ -34,10 +35,15 @@ export class ObjectComponent implements OnInit, OnDestroy {
     private dmsService: DmsService,
     private translate: TranslateService,
     private title: Title,
+    private frameService: FrameService,
     private router: Router,
     private eventService: EventService,
     private appCacheService: AppCacheService
   ) {}
+
+  onContextFilesDropped(files: File[]) {
+    this.frameService.createObject(this.context.id, files);
+  }
 
   contextItemsSelected(ids: string[]) {
     if (ids && ids.length === 1) {

@@ -2,8 +2,9 @@
   (slaveClosed)="onSlaveClosed()" [slaveActive]="true">
 
   <yuv-context class="yuv-master panel" [context]="context" [yuvBusyOverlay]="contextBusy" [recentItems]="recentItems"
-    [preSelectItems]="[selectedItem]" [contextSearchQuery]="contextSearchQuery"
-    [layoutOptionsKey]="layoutOptionsStorageKey" (itemsSelected)="contextItemsSelected($event)" #yuvContext>
+    (filesDropped)="onContextFilesDropped($event)" [preSelectItems]="[selectedItem]"
+    [contextSearchQuery]="contextSearchQuery" [layoutOptionsKey]="layoutOptionsStorageKey"
+    (itemsSelected)="contextItemsSelected($event)" #yuvContext>
   </yuv-context>
 
   <yuv-object-details class="yuv-slave panel" [objectId]="selectedItem" [searchTerm]="searchQuery?.term"

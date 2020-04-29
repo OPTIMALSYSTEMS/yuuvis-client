@@ -15,8 +15,8 @@
     <div yuvOfflineDisabled class="main">
 
       <!-- create -->
-      <yuv-icon class="btn" routerLink="/create" [title]="'yuv.framework.object-create.header.title' | translate"
-        [icon]="'add'">
+      <yuv-icon class="btn" routerLink="/create" [queryParams]="{context: context}"
+        [title]="'yuv.framework.object-create.header.title' | translate" [icon]="'add'">
       </yuv-icon>
 
       <!-- search -->
