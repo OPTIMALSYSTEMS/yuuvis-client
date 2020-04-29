@@ -56,19 +56,24 @@
     section.status-indicator {
       grid-area: context;
       background-color: var(--color-accent);
+      padding: calc(var(--app-pane-padding) / 4);
       color: #fff;
-      padding: calc(var(--app-pane-padding) / 2) var(--app-pane-padding);
       display: flex;
       align-items: center;
 
       > div {
-        &.context {
-        }
+        background-color: rgba(255, 255, 255, 0.2);
+        display: flex;
+        flex-flow: row-reverse;
+        align-items: center;
+        padding: 0 calc(var(--app-pane-padding) / 2);
+        @include bidi-style(margin-right, calc(var(--app-pane-padding) / 4), margin-left, calc(var(--app-pane-padding) / 4));
 
         yuv-icon {
           padding: calc(var(--app-pane-padding) / 4);
           box-sizing: border-box;
-          @include bidi-style(margin-right, calc(var(--app-pane-padding) / 2), margin-left, calc(var(--app-pane-padding) / 2));
+          cursor: pointer;
+          @include bidi-style(margin-left, calc(var(--app-pane-padding) / 2), margin-right, calc(var(--app-pane-padding) / 2));
         }
       }
     }

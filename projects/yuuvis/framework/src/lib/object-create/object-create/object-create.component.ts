@@ -88,27 +88,15 @@ export class ObjectCreateComponent implements OnDestroy {
    * Files that should be used for creating object(s)
    */
   @Input() set files(files: File[]) {
-    this._files = files || [];
-    // TODO: Update availableObjectTypes to disable all types that do not support files
-
-    if (files?.length) {
-      this.availableObjectTypeGroups.forEach((g) => {
-        g.items.forEach((i) => {
-          i.disabled = i.value.contentStreamAllowed === ContentStreamAllowed.NOT_ALLOWED;
-        });
-      });
+    if (files) {
+      this._files = files || [];
+      this.setupAvailableObjectTypeGroups();
     }
   }
 
   get files(): File[] {
     return this._files;
   }
-
-  /**
-   * Triggered when the context set by the input property 'contextId' has been
-   * removed by the user.
-   */
-  @Output() contextRemoved = new EventEmitter();
 
   /**
    * Emits the IDs of the objects that have been created
@@ -156,13 +144,32 @@ export class ObjectCreateComponent implements OnDestroy {
           value: ot
         }))
     }));
-    this.availableObjectTypeGroups = this.generalObjectTypeGroups;
+    this.setupAvailableObjectTypeGroups();
+  }
+
+  private setupAvailableObjectTypeGroups() {
+    // it is important to create new instances of the available object types
+    // in order to trigger change detection within grouped select component
+    const agFiltered = [];
+    const ag = this.context ? this.contextObjectTypeGroups : this.generalObjectTypeGroups;
+
+    if (this.files) {
+      // if we got files we also need to disable items that do not support contents
+      ag.forEach((g: SelectableGroup) => {
+        agFiltered.push({
+          ...g,
+          items: g.items.map((i) => ({ ...i, disabled: this.files.length > 0 && i.value.contentStreamAllowed === ContentStreamAllowed.NOT_ALLOWED }))
+        });
+      });
+      this.availableObjectTypeGroups = agFiltered;
+    } else {
+      this.availableObjectTypeGroups = ag;
+    }
   }
 
   removeContext() {
     this.contextId = null;
-    this.availableObjectTypeGroups = this.generalObjectTypeGroups;
-    this.contextRemoved.emit();
+    this.setupAvailableObjectTypeGroups();
   }
 
   removeFiles() {
@@ -281,7 +288,7 @@ export class ObjectCreateComponent implements OnDestroy {
       // right now we are just filtering out the folders ...
       return { ...g, items: g.items.filter((t) => !t.highlight) };
     });
-    this.availableObjectTypeGroups = this.contextObjectTypeGroups;
+    this.setupAvailableObjectTypeGroups();
   }
 
   /**
@@ -290,18 +297,20 @@ export class ObjectCreateComponent implements OnDestroy {
   private isReady() {
     const typeSelected = !!this.selectedObjectType;
     let fileSelected = false;
-    switch (this.selectedObjectType.contentStreamAllowed) {
-      case 'required': {
-        fileSelected = this.files.length > 0;
-        break;
-      }
-      case 'notallowed': {
-        fileSelected = this.files.length === 0;
-        break;
-      }
-      case 'allowed': {
-        fileSelected = true;
-        break;
+    if (typeSelected) {
+      switch (this.selectedObjectType.contentStreamAllowed) {
+        case 'required': {
+          fileSelected = this.files.length > 0;
+          break;
+        }
+        case 'notallowed': {
+          fileSelected = this.files.length === 0;
+          break;
+        }
+        case 'allowed': {
+          fileSelected = true;
+          break;
+        }
       }
     }
     return typeSelected && fileSelected && !!this.formState && !this.formState.invalid;

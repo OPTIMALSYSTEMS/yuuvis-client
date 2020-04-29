@@ -22,6 +22,8 @@ import { ResponsiveTabContainerComponent } from './../../components/responsive-t
  *
  * [Screenshot](../assets/images/yuv-object-details.gif)
  *
+ * **NOTICE:** This component can only be used in projects that support routing.
+ *
  * @example
  * <yuv-object-details [objectId]="'0815'"></yuv-object-details>
  */

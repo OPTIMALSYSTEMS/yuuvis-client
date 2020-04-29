@@ -19,18 +19,19 @@
   <section class="status-indicator" *ngIf="context || files?.length">
 
     <div class="context" *ngIf="context">
-      <yuv-icon class="btn" icon="clear" (click)="removeContext()"></yuv-icon>
-      {{'yuv.framework.object-create.context.title'|translate: ({title: context.title})}}
+      <yuv-icon icon="clear" (click)="removeContext()"></yuv-icon>
+      {{'yuv.framework.object-create.status.context'|translate: ({title: context.title})}}
     </div>
     <div class="files" *ngIf="files?.length">
-      <yuv-icon class="btn" icon="clear" (click)="removeFiles()"></yuv-icon>
-      {{files.length}} FilesXXXXXX
+      <yuv-icon icon="clear" (click)="removeFiles()"></yuv-icon>
+      {{'yuv.framework.object-create.status.files'|translate: ({count: files.length})}}
     </div>
   </section>
 
   <ng-container [ngSwitch]="state.currentStep">
     <!-- STEP 1: Select an object type-->
-    <div class="step select" *ngSwitchCase="'objecttype'" [@fadeIn]="animationTimer">
+    <div class="step select" *ngSwitchCase="'objecttype'" [@fadeIn]="animationTimer"
+      (yuvFileDrop)="onFilesDroppedOnType($event)" [yuvFileDropOptions]="{ multiple: true }">
       <h1>{{ 'yuv.framework.object-create.step.type' | translate }}</h1>
       <yuv-grouped-select [groups]="availableObjectTypeGroups" (select)="selectObjectType($event.value)"
         yuvFocusFirst="200"> </yuv-grouped-select>

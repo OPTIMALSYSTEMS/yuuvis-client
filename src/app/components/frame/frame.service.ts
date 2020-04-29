@@ -61,6 +61,6 @@ export class FrameService {
       this.addItem(refId, files);
       params['filesRef'] = refId;
     }
-    this.router.navigate(['/create', params]);
+    this.router.navigate(['/create'], { queryParams: params });
   }
 }

@@ -24,11 +24,6 @@ export class CreateComponent implements OnInit {
     private titleService: Title
   ) {}
 
-  onContextRemoved() {
-    // get rid of the fragment identifying the context
-    this.router.navigate([]);
-  }
-
   onObjectCreated(createdObjectsIds: string[]) {
     if (createdObjectsIds.length > 1) {
       this.location.back();
@@ -39,9 +34,9 @@ export class CreateComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.context = this.route.snapshot.paramMap.get('context');
-    if (this.route.snapshot.paramMap.has('filesRef')) {
-      const files: File[] = this.frameService.getItem(this.route.snapshot.paramMap.get('filesRef'));
+    this.context = this.route.snapshot.queryParamMap.get('context');
+    if (this.route.snapshot.queryParamMap.has('filesRef')) {
+      const files: File[] = this.frameService.getItem(this.route.snapshot.queryParamMap.get('filesRef'));
       if (files && files.length) {
         this.files = files;
       }
