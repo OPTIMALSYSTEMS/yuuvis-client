@@ -1,7 +1,7 @@
 import { PlatformLocation } from '@angular/common';
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Title } from '@angular/platform-browser';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { DmsObject, PendingChangesService, Screen, ScreenService, TranslateService } from '@yuuvis/core';
 import { ObjectCompareInput, VersionListComponent } from '@yuuvis/framework';
 import { takeUntilDestroy } from 'take-until-destroy';
@@ -34,7 +34,8 @@ export class VersionsComponent implements OnInit, OnDestroy {
     public translate: TranslateService,
     private location: PlatformLocation,
     private pendingChanges: PendingChangesService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private router: Router
   ) {
     this.screenService.screenChange$.pipe(takeUntilDestroy(this)).subscribe((screen: Screen) => {
       this.smallScreen = screen.mode === ScreenService.MODE.SMALL;
@@ -43,6 +44,10 @@ export class VersionsComponent implements OnInit, OnDestroy {
 
   closeDetails() {
     this.location.back();
+  }
+
+  onEditRecentClick(id: string) {
+    this.router.navigate(['/object', id]);
   }
 
   onSlaveClosed() {
@@ -81,9 +86,9 @@ export class VersionsComponent implements OnInit, OnDestroy {
       }
     });
     // extract the versions from the route params
-    this.route.queryParamMap.pipe(takeUntilDestroy(this)).subscribe(params => {
+    this.route.queryParamMap.pipe(takeUntilDestroy(this)).subscribe((params) => {
       const vp = params.get('version');
-      this.versions = vp ? vp.split(',').map(v => parseInt(v)) : [];
+      this.versions = vp ? vp.split(',').map((v) => parseInt(v)) : [];
     });
   }
 

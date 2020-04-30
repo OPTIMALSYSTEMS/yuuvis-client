@@ -97,7 +97,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       this.selectRows(selection);
       this.gridOptions.onSelectionChanged(null);
-    }, 0);
+    }, 100);
   }
 
   /**
@@ -204,7 +204,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
     this.columnResize$.pipe(takeUntilDestroy(this), debounceTime(500)).subscribe((e: ResizedEvent) => {
       if (this.isStandard) {
         this.columnResized.emit({
-          columns: this.gridOptions.columnApi.getColumnState().map(columnState => ({
+          columns: this.gridOptions.columnApi.getColumnState().map((columnState) => ({
             id: columnState.colId,
             width: columnState.width
           }))
@@ -218,7 +218,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
     });
 
     // subscribe to pending hanges
-    this.pendingChanges.tasks$.pipe(takeUntilDestroy(this)).subscribe(tasks => this.gridOptions && (this.gridOptions.suppressCellSelection = !!tasks.length));
+    this.pendingChanges.tasks$.pipe(takeUntilDestroy(this)).subscribe((tasks) => this.gridOptions && (this.gridOptions.suppressCellSelection = !!tasks.length));
   }
 
   /**
@@ -244,9 +244,9 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
    */
   updateRow(id: string, data: any) {
     // check if ID is part of the current rows
-    const matchRow = this._data.rows.find(r => r.id === id);
+    const matchRow = this._data.rows.find((r) => r.id === id);
     if (matchRow) {
-      Object.keys(matchRow).forEach(k => {
+      Object.keys(matchRow).forEach((k) => {
         matchRow[k] = data[k];
       });
       matchRow.id = id;
@@ -273,7 +273,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
 
   private applyColDefOptions(columns: ColDef[]): ColDef[] {
     if (this._layoutOptions && this._layoutOptions.columnWidths) {
-      columns.forEach(c => {
+      columns.forEach((c) => {
         if (this._layoutOptions.columnWidths[c.colId]) {
           c.width = this._layoutOptions.columnWidths[c.colId];
         }
@@ -322,8 +322,8 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
       field: BaseObjectTypeField.OBJECT_ID,
       cellClass: 'cell-title-description',
       minWidth: this.isGrid ? this._data.rows.length * this.settings.colWidth.grid : 0,
-      valueGetter: params => JSON.stringify(params.data), // needed to compare value changes & redraw cell
-      cellRenderer: params => {
+      valueGetter: (params) => JSON.stringify(params.data), // needed to compare value changes & redraw cell
+      cellRenderer: (params) => {
         const objectTypeId = params.data[BaseObjectTypeField.OBJECT_TYPE_ID];
         const version = params.data[BaseObjectTypeField.VERSION_NUMBER];
         const modified = this.datePipe.transform(params.data[BaseObjectTypeField.MODIFICATION_DATE]);
@@ -379,7 +379,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
 
   private setupGridOptions() {
     this.gridOptions = {
-      getRowNodeId: data => {
+      getRowNodeId: (data) => {
         // defines what to use as ID for each row (important for reselecting a previous selection)
         return data.id;
       },
@@ -397,21 +397,21 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
       multiSortKey: 'ctrl',
 
       // EVENTS - add event callback handlers
-      onSelectionChanged: event => {
+      onSelectionChanged: (event) => {
         const focused = this.gridOptions.api.getFocusedCell() || { rowIndex: -1 };
-        const selection = this.gridOptions.api.getSelectedNodes().sort(n => (n.rowIndex === focused.rowIndex ? -1 : 0));
+        const selection = this.gridOptions.api.getSelectedNodes().sort((n) => (n.rowIndex === focused.rowIndex ? -1 : 0));
         if (!event || selection.map((rowNode: RowNode) => rowNode.id).join() !== (this._currentSelection || []).join()) {
           this._currentSelection = selection.map((rowNode: RowNode) => rowNode.id);
           this.selectionChanged.emit(selection.map((rowNode: RowNode) => rowNode.data));
         }
       },
-      onColumnResized: event => this.columnResizeSource.next(),
-      onSortChanged: event => this.isStandard && this.sortChanged.emit(this.gridOptions.api.getSortModel()),
-      onGridReady: event => {
+      onColumnResized: (event) => this.columnResizeSource.next(),
+      onSortChanged: (event) => this.isStandard && this.sortChanged.emit(this.gridOptions.api.getSortModel()),
+      onGridReady: (event) => {
         this.gridOptions.api.setSortModel(this._data.sortModel || []);
         this.gridOptions.api.setFocusedCell(0, this._data.columns[0].field);
       },
-      onRowDoubleClicked: event => this.rowDoubleClicked.emit(event),
+      onRowDoubleClicked: (event) => this.rowDoubleClicked.emit(event),
       ...(this._data && this._data.gridOptions)
     };
   }
@@ -457,7 +457,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
   }
 
   private selectEvent($event: MouseEvent | any) {
-    const colEl = ($event.composedPath ? $event.composedPath() : []).find(el => el && el.getAttribute('col-id'));
+    const colEl = ($event.composedPath ? $event.composedPath() : []).find((el) => el && el.getAttribute('col-id'));
     if (colEl) {
       this.selectRows([colEl.parentElement.getAttribute('row-id')], colEl.getAttribute('col-id'), false);
       this.gridOptions.onSelectionChanged(null);

@@ -7,7 +7,7 @@ import { IconRegistryService } from '../../common/components/icon/service/iconRe
 import { ResponsiveDataTableComponent, ViewMode } from '../../components';
 import { ResponsiveTableData } from '../../components/responsive-data-table/responsive-data-table.interface';
 import { GridService } from '../../services/grid/grid.service';
-import { arrowNext, listModeDefault, listModeGrid, listModeSimple, refresh, versions } from '../../svg.generated';
+import { arrowNext, edit, listModeDefault, listModeGrid, listModeSimple, refresh, versions } from '../../svg.generated';
 
 /**
  * Component showing a list of all versions of a dms object.
@@ -17,7 +17,7 @@ import { arrowNext, listModeDefault, listModeGrid, listModeSimple, refresh, vers
   templateUrl: './version-list.component.html',
   styleUrls: ['./version-list.component.scss']
 })
-export class VersionListComponent {
+export class VersionListComponent implements OnInit {
   @ViewChild('dataTable') dataTable: ResponsiveDataTableComponent;
 
   private COLUMN_CONFIG_SKIP_FIELDS = [
@@ -96,6 +96,13 @@ export class VersionListComponent {
    */
   @Output() compareVersionsChange = new EventEmitter<DmsObject[]>();
 
+  /**
+   * Setting this output will draw an edit icon into the header, that
+   * will trigger this emitter once it has been clicked
+   */
+  @Output() editRecentClick = new EventEmitter<string>();
+  private enableEdit: boolean;
+
   constructor(
     public translate: TranslateService,
     private fb: FormBuilder,
@@ -103,7 +110,7 @@ export class VersionListComponent {
     private iconRegistry: IconRegistryService,
     private gridService: GridService
   ) {
-    this.iconRegistry.registerIcons([arrowNext, refresh, versions, listModeDefault, listModeGrid, listModeSimple]);
+    this.iconRegistry.registerIcons([edit, arrowNext, refresh, versions, listModeDefault, listModeGrid, listModeSimple]);
 
     const compareFormValidator: ValidatorFn = (g: FormGroup): ValidationErrors | null => {
       const v1 = g.get('versionOne');
@@ -177,6 +184,10 @@ export class VersionListComponent {
     return [...coreColumns, ...defs.filter((d) => !coreColumnIds.includes(d.field))];
   }
 
+  edit() {
+    this.editRecentClick.emit(this.dmsObjectID);
+  }
+
   refresh() {
     if (this.dmsObjectID) {
       this.dmsService.getDmsObjectVersions(this.dmsObjectID).subscribe((rows: DmsObject[]) => {
@@ -200,5 +211,10 @@ export class VersionListComponent {
       this.tableData = null;
       this.activeVersion = null;
     }
+  }
+
+  ngOnInit() {
+    // only enable edit button if somone subscribed to the output emitter
+    this.enableEdit = this.editRecentClick.observers.length > 0;
   }
 }
