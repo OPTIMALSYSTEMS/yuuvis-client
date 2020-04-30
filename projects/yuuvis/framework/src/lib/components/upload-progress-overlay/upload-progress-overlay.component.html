@@ -1,6 +1,6 @@
 <ng-container *ngIf="progressStatus$ | async as ps">
   <div class="uploadProgress" *ngIf="ps.items.length || ps.result?.length"
-    [ngClass]="{'mini': minimized, panelError: ps.err > 0, allErr: ps.err === ps.items.length, 'finished': allDone}">
+    [ngClass]="{panelError: ps.err > 0, allErr: ps.err === ps.items.length, 'finished': allDone}">
 
     <header class="uploadProgress__header" (click)="upload.toggle($event)">
       <yuv-icon-upload [active]="!(completedUp$ | async)"
@@ -9,7 +9,7 @@
   </div>
 
   <p-overlayPanel #upload>
-    <section class="upload-files">
+    <section class="upload-files dark">
       <div class="title" [ngClass]="{complete: completed}">{{'yuv.framework.upload-progress-overlay.title'|translate}}
       </div>
       <div class="progress-item" *ngFor="let item of ps.items; trackBy: trackByFn"

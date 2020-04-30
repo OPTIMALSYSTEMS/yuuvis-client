@@ -25,12 +25,7 @@ export class CreateComponent implements OnInit {
   ) {}
 
   onObjectCreated(createdObjectsIds: string[]) {
-    if (createdObjectsIds.length > 1) {
-      this.location.back();
-    } else {
-      // TODO: remove timeout when backend returns synchroniously AFTER the object was created
-      setTimeout(() => this.router.navigate(['object', createdObjectsIds[0]]), 1000);
-    }
+    this.location.back();
   }
 
   ngOnInit() {

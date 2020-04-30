@@ -8,11 +8,9 @@ import {
   ObjectTypeGroup,
   SystemService,
   SystemType,
-  TranslateService,
-  Utils
+  TranslateService
 } from '@yuuvis/core';
 import { Observable } from 'rxjs';
-import { catchError } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { FadeInAnimations } from '../../common/animations/fadein.animation';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
@@ -252,19 +250,28 @@ export class ObjectCreateComponent implements OnDestroy {
     if (this.context) {
       data[BaseObjectTypeField.PARENT_ID] = this.context.id;
     }
+    this.busy = true;
+
     this.createObject(this.selectedObjectType.id, data, this.files)
-      .pipe(takeUntilDestroy(this), catchError(Utils.catch(null, this.translate.instant('yuv.framework.object-create.notify.error'))))
-      .subscribe((res) => {
-        this.notify.success(this.translate.instant('yuv.framework.object-create.notify.success'));
-        if (this.createAnother) {
-          this.selectedObjectType = null;
-          this.files = [];
-          this.resetState();
-          this.reset();
-        } else {
-          this.objectCreated.emit(res);
+      .pipe(takeUntilDestroy(this))
+      .subscribe(
+        (res) => {
+          this.busy = false;
+          // this.notify.success(this.translate.instant('yuv.framework.object-create.notify.success'));
+          if (this.createAnother) {
+            this.selectedObjectType = null;
+            this.files = [];
+            this.resetState();
+            this.reset();
+          } else {
+            this.objectCreated.emit(res);
+          }
+        },
+        (err) => {
+          this.busy = false;
+          this.notify.error(this.translate.instant('yuv.framework.object-create.notify.error'));
         }
-      });
+      );
   }
 
   resetState() {
