@@ -108,7 +108,7 @@ export class ObjectDetailsComponent implements OnDestroy {
   @Input()
   set activeTabPanel(panel: TabPanel | string) {
     setTimeout(
-      () => this.tabContainer && this.tabContainer.open(panel || this.tabContainer.mainTabView.tabs.find((t) => !t.disabled)),
+      () => this.tabContainer && this.tabContainer.open(panel || this.tabContainer.mainTabView.tabs.find(t => !t.disabled)),
       this.tabContainer ? 0 : 200
     );
   }
@@ -137,6 +137,8 @@ export class ObjectDetailsComponent implements OnDestroy {
    */
   @Input() disableFileDrop: boolean;
 
+  undockWinActive = false;
+
   constructor(
     private dmsService: DmsService,
     private userService: UserService,
@@ -149,6 +151,7 @@ export class ObjectDetailsComponent implements OnDestroy {
     this.iconRegistry.registerIcons([refresh, kebap, noFile]);
     this.userIsAdmin = this.userService.hasAdministrationRoles;
     this.panelOrder = this.config.get('objectDetailsTabs') || this.panelOrder;
+    this.undockWinActive = ContentPreviewService.undockWinActive();
 
     this.eventService
       .on(YuvEventType.DMS_OBJECT_UPDATED)
@@ -179,7 +182,7 @@ export class ObjectDetailsComponent implements OnDestroy {
   private getDmsObject(id: string) {
     this.busy = true;
     this.contentPreviewService.resetSource();
-    this.dmsService.getDmsObject(id).subscribe((dmsObject) => {
+    this.dmsService.getDmsObject(id).subscribe(dmsObject => {
       this.dmsObject = dmsObject;
       this.busy = false;
     });

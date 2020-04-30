@@ -315,16 +315,13 @@ export class Utils {
 
   public static navigate(newTab: boolean, router: Router, commands: any[], navigationExtras?: NavigationExtras): Promise<any> {
     if (newTab) {
-      return new Promise(() =>
-        window.open(
-          router
-            .createUrlTree(commands, navigationExtras)
-            .toString()
-            .replace('/', '') // relative to host
-        )
-      );
+      return new Promise(() => Utils.openWindow(router.serializeUrl(router.createUrlTree(commands, navigationExtras))));
     } else {
       return router.navigate(commands, navigationExtras);
     }
+  }
+
+  public static openWindow(url: string = '', target = '_blank', features?: string, replace?: boolean): Window {
+    return window.open(url.match(new RegExp('^/.+')) ? url.replace(new RegExp('^/'), '') : url, target, features, replace); // relative to host
   }
 }
