@@ -6,8 +6,30 @@ import { LayoutService } from '../../../services/layout/layout.service';
 
 @Injectable()
 export class ContentPreviewService {
+  static UNDOCK_WINDOW_NAME = 'eoViewer';
+
   private previewSrcSource = new ReplaySubject<string>(null);
   public previewSrc$: Observable<string> = this.previewSrcSource.asObservable();
+
+  static undockWin(src: string) {
+    return (window[ContentPreviewService.UNDOCK_WINDOW_NAME] = window.open(
+      src || '',
+      ContentPreviewService.UNDOCK_WINDOW_NAME,
+      'directories=0, titlebar=0, toolbar=0, location=0, status=0, menubar=0, resizable=1, top=10, left=10'
+    ));
+  }
+
+  static closeWin() {
+    return this.getUndockWin() && this.getUndockWin().close();
+  }
+
+  static getUndockWin(): Window {
+    return window[ContentPreviewService.UNDOCK_WINDOW_NAME];
+  }
+
+  static undockWinActive(): boolean {
+    return !!ContentPreviewService.getUndockWin() && !ContentPreviewService.getUndockWin().closed;
+  }
 
   constructor(private location: PlatformLocation, private userService: UserService, private layoutService: LayoutService) {}
 
