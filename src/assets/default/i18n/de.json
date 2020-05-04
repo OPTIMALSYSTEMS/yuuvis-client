@@ -66,7 +66,7 @@
   "yuv.framework.list.refresh": "Aktualisieren",
   "yuv.framework.object-create.footer.another": "Weiteres Objekt erstellen",
   "yuv.framework.object-create.footer.create": "Objekt erstellen",
-  "yuv.framework.object-create.header.title": "Objekt anlegen",
+  "yuv.framework.object-create.header.title": "Objekt erstellen",
   "yuv.framework.object-create.notify.error": "Fehler beim Erstellen des Objekts",
   "yuv.framework.object-create.notify.success": "Das Objekt wurde erstellt",
   "yuv.framework.object-create.status.context": "Am Ablageort '{{title}}'",

@@ -9,7 +9,7 @@ import { clear, done } from './../../svg.generated';
   styleUrls: ['./upload-progress-overlay.component.scss']
 })
 export class UploadProgressOverlayComponent {
-  minimized: boolean;
+  // minimized: boolean;
   allDone: boolean;
   progressStatus$: Observable<ProgressStatus>;
   completed: boolean;
