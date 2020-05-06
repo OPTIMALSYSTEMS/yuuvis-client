@@ -1,43 +1,36 @@
 <!-- PWA update indicator -->
 <div class="pwa-update" *ngIf="swUpdateAvailable">
-  <span>{{'yuv.client.frame.app-bar.pwa-update.msg' | translate}}</span>
+  <span>{{ 'yuv.client.frame.app-bar.pwa-update.msg' | translate }}</span>
   <yuv-icon class="btn" [icon]="'refresh'" (click)="reload()"></yuv-icon>
   <yuv-icon class="btn close" [icon]="'close'" (click)="swUpdateAvailable = !swUpdateAvailable"></yuv-icon>
 </div>
 
 <ng-container *ngIf="user; else offlineNoUser">
   <div class="app-bar" *ngIf="!hideAppBar">
-
     <yuv-icon class="btn" id="drawer" (click)="showSideBar = true" replaceUrl [icon]="'drawer'"></yuv-icon>
     <a yuvOfflineDisabled routerLink="/" id="logo">
       <yuv-icon class="btn" [iconSrc]="'assets/default/theme/app.icon.svg'"></yuv-icon>
     </a>
     <div yuvOfflineDisabled class="main">
-
       <!-- create -->
-      <yuv-icon class="btn" routerLink="/create" [title]="'yuv.framework.object-create.header.title' | translate"
-        [icon]="'add'">
-      </yuv-icon>
+      <a routerLink="/create" [queryParams]="{ context: context }">
+        <yuv-icon class="btn" [title]="'yuv.framework.object-create.header.title' | translate" [icon]="'add'"> </yuv-icon>
+      </a>
 
       <!-- search -->
       <ng-container *ngIf="!tab">
-        <yuv-icon class="btn" *ngIf="!showSearch; else tplSearch" icon="search" (click)="toggleSearch(true)">
-        </yuv-icon>
+        <yuv-icon class="btn" *ngIf="!showSearch; else tplSearch" icon="search" (click)="toggleSearch(true)"> </yuv-icon>
         <ng-template #tplSearch>
           <div class="app-bar-search">
             <button class="close" (click)="toggleSearch(false)">
               <yuv-icon icon="close"></yuv-icon>
             </button>
-            <yuv-quick-search [inline]="true" [context]="context" [query]="appQuery"
-              (querySubmit)="onQuickSearchQuery($event)">
-            </yuv-quick-search>
+            <yuv-quick-search [inline]="true" [context]="context" [query]="appQuery" (querySubmit)="onQuickSearchQuery($event)"> </yuv-quick-search>
           </div>
         </ng-template>
       </ng-container>
-
     </div>
     <div class="right">
-
       <yuv-upload-progress-overlay (resultItemClick)="onResultItemClick($event)"></yuv-upload-progress-overlay>
       <yuv-icon *ngIf="isOffline" class="offline-icon" [icon]="'offline'" title="offline"></yuv-icon>
       <div yuvOfflineDisabled class="user" (click)="op.toggle($event)">
@@ -74,14 +67,10 @@
   <yuv-sidebar [display]="showSideBar" (hide)="showSideBar = false">
     <section class="content navigation-list">
       <div class="nav-item">
-        <a routerLink="dashboard" routerLinkActive="active" (click)="showSideBar = false"
-          translate>yuv.client.state.dashboard.title</a>
-        <a routerLink="create" routerLinkActive="active" (click)="showSideBar = false"
-          translate>yuv.client.state.create.title</a>
-        <a routerLink="settings" routerLinkActive="active" (click)="showSideBar = false"
-          translate>yuv.client.state.settings.title</a>
-        <a routerLink="about" routerLinkActive="active" (click)="showSideBar = false"
-          translate>yuv.client.state.about.title</a>
+        <a routerLink="dashboard" routerLinkActive="active" (click)="showSideBar = false" translate>yuv.client.state.dashboard.title</a>
+        <a routerLink="create" routerLinkActive="active" (click)="showSideBar = false" translate>yuv.client.state.create.title</a>
+        <a routerLink="settings" routerLinkActive="active" (click)="showSideBar = false" translate>yuv.client.state.settings.title</a>
+        <a routerLink="about" routerLinkActive="active" (click)="showSideBar = false" translate>yuv.client.state.about.title</a>
       </div>
     </section>
   </yuv-sidebar>
@@ -90,11 +79,10 @@
 <ng-template #offlineNoUser>
   <div class="offline-no-user" *ngIf="isOffline">
     <div class="box">
-      <h1>{{'yuv.client.frame.offline.title'|translate}}</h1>
-      <div>{{'yuv.client.frame.offline.message'|translate}}</div>
+      <h1>{{ 'yuv.client.frame.offline.title' | translate }}</h1>
+      <div>{{ 'yuv.client.frame.offline.message' | translate }}</div>
       <yuv-icon class="logo" [icon]="'offline'"></yuv-icon>
-      <button class="primary" (click)="reload()">{{'yuv.client.frame.offline.button.refresh'|translate}}</button>
+      <button class="primary" (click)="reload()">{{ 'yuv.client.frame.offline.button.refresh' | translate }}</button>
     </div>
-
   </div>
 </ng-template>

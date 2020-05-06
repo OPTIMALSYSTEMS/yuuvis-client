@@ -3,6 +3,14 @@
   width: 90%;
   height: 80%;
 
+  .testing-controls > div {
+    display: flex;
+    align-items: center;
+    .label {
+      margin-right: 20px;
+    }
+  }
+
   yuv-object-create {
     height: 100%;
   }

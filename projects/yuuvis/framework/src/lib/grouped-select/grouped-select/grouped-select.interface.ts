@@ -11,6 +11,7 @@ export interface Selectable {
   svg?: string;
   description?: string;
   highlight?: boolean;
+  disabled?: boolean;
   value?: any;
 }
 

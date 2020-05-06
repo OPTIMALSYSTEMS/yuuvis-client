@@ -63,7 +63,7 @@ export class FileDropDirective implements OnDestroy {
 
   constructor(private elementRef: ElementRef, private fileDropService: FileDropService, private renderer: Renderer2) {
     this.id = Utils.uuid();
-    this.fileDropService.activeDropzone$.pipe(takeUntilDestroy(this)).subscribe(activeZoneId => {
+    this.fileDropService.activeDropzone$.pipe(takeUntilDestroy(this)).subscribe((activeZoneId) => {
       // some other dropzone received the files and cleared the file-drop-service
       if (activeZoneId === null) {
         this.fileOver = false;
@@ -113,27 +113,11 @@ export class FileDropDirective implements OnDestroy {
     const { types } = event.dataTransfer;
     if (types) {
       if (types.includes('Files')) {
-        // if (this.isOldEdge()) {
-        //   return types.length === 1 && types[0] === 'Files';
-        // }
         return event.dataTransfer.items.length;
       }
-
-      // for (let i = 0; i < types.length; i++) {
-      //   if (types[i] === 'Files') {
-      //     if (this.isOldEdge()) {
-      //       return types.length === 1 && types[0] === 'Files';
-      //     }
-      //     return true;
-      //   }
-      // }
     }
     return 0;
   }
-
-  // private isOldEdge() {
-  //   return !!navigator.userAgent && navigator.userAgent.indexOf('Edge') > -1;
-  // }
 
   private preventAndStop(event: any): any {
     event.preventDefault();
