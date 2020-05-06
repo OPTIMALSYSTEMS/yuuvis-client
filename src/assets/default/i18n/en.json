@@ -183,7 +183,7 @@
   "yuv.client.state.dashboard.title": "Dashboard",
   "yuv.client.state.not-found.description": "Unable to load the object.",
   "yuv.client.state.not-found.title": "Not found",
-  "yuv.client.state.object.context.load.error": "Failed loading context folder.",
+  "yuv.client.state.object.context.load.error": "The Object is not accessible. Either the object was deleted or the access rights have changed.",
   "yuv.client.state.result.title": "Search result",
   "yuv.client.state.settings.config.column-config": "Result list",
   "yuv.client.state.settings.config.column-config.open": "Edit result list configuration",
