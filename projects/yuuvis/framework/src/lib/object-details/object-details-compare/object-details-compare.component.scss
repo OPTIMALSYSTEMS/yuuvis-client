@@ -27,7 +27,14 @@
         color: var(--color-accent);
         width: 24px;
         height: 24px;
+        cursor: pointer;
         margin: 0 calc(var(--app-pane-padding) / 4);
+        @include transition;
+
+        &:hover {
+          // background-color: rgba(var(--color-accent-rgb), 0.15);
+          transform: rotate(180deg);
+        }
       }
     }
   }
