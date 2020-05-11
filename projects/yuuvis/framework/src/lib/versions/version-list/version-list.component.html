@@ -11,21 +11,6 @@
     </yuv-action-menu-bar>
   </div>
 
-  <!-- <div class="status">
-    <form class="compare-form" *ngIf="activeVersion?.version > 1" [formGroup]="compareForm"
-      [title]="'yuv.framework.version-list.compare.tooltip' | translate" (ngSubmit)="submitCompareForm()">
-      <div class="group">
-        <input type="number" max="{{activeVersion?.version}}" min="1" formControlName="versionOne">
-        ...
-        <input type="number" max="{{activeVersion?.version}}" min="1" formControlName="versionTwo">
-      </div>
-      <button type="submit" class="primary" [disabled]="compareForm.invalid || busy">
-        {{'yuv.framework.version-list.compare.form.submit' | translate}}
-      </button>
-    </form>
-  </div> -->
-
-
   <div class="content">
     <yuv-responsive-data-table yuvOfflineDisabled #dataTable class="data-table versions" *ngIf="tableData"
       [selectionLimit]="2" [data]="tableData" [selection]="selection" (selectionChanged)="select($event)"

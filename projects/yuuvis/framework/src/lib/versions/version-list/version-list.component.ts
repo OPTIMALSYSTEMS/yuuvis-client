@@ -165,6 +165,6 @@ export class VersionListComponent implements OnInit {
 
   ngOnInit() {
     // only enable edit button if somone subscribed to the output emitter
-    this.enableEdit = this.editRecentClick.observers.length > 0;
+    this.enableEdit = !!this.editRecentClick.observers.length;
   }
 }
