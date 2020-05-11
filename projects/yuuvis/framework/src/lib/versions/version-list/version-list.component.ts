@@ -96,7 +96,7 @@ export class VersionListComponent implements OnInit {
    * will trigger this emitter once it has been clicked
    */
   @Output() editRecentClick = new EventEmitter<string>();
-  private enableEdit: boolean;
+  enableEdit: boolean;
 
   constructor(
     public translate: TranslateService,
