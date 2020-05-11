@@ -32,8 +32,6 @@ export class UploadProgressOverlayComponent {
     this.completedUp$ = this.uploadService.uploadStatus$;
 
     this.progressStatus$.subscribe((s) => {
-      console.log(s.items);
-
       if (!s.items.length && this.uploadsOverlay) {
         this.uploadsOverlay.hide();
       }

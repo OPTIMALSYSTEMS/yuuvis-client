@@ -46,6 +46,9 @@ export class ObjectComponent implements OnInit, OnDestroy {
   }
 
   contextItemsSelected(ids: string[]) {
+    if (ids && ids.length === 0) {
+      ids = [this.context.id];
+    }
     if (ids && ids.length === 1) {
       this.router.navigate(['.'], { fragment: ids[0], replaceUrl: !!this.selectedItem, relativeTo: this.route, queryParamsHandling: 'preserve' });
       this.addRecentItem(ids[0]);
