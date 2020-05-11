@@ -5,13 +5,12 @@ import { TranslateModule } from '@yuuvis/core';
 import { YuvCommonModule } from '../common/common.module';
 import { YuvComponentsModule } from '../components/components.module';
 import { YuvPipesModule } from '../pipes/pipes.module';
-import { VersionCompareTriggerComponent } from './version-compare-trigger/version-compare-trigger.component';
 import { VersionListComponent } from './version-list/version-list.component';
 
 const components = [VersionListComponent];
 
 @NgModule({
-  declarations: [...components, VersionCompareTriggerComponent],
+  declarations: [...components],
   exports: [...components],
   imports: [CommonModule, FormsModule, ReactiveFormsModule, YuvComponentsModule, TranslateModule, YuvPipesModule, YuvCommonModule]
 })
