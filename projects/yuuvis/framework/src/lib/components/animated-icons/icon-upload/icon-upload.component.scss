@@ -1,6 +1,7 @@
 :host {
   border-radius: 50%;
   padding: calc(var(--app-pane-padding) / 4);
+  background-color: var(--color-accent);
 
   svg {
     width: 24px;
@@ -10,11 +11,11 @@
   svg,
   path,
   rect {
-    fill: rgba(229, 229, 229, 1);
+    fill: #fff;
   }
   .arr {
     fill: var(--color-accent);
-    animation: ani 1000ms infinite;
+    animation: ani 1200ms infinite;
   }
 
   g.ani {
@@ -23,7 +24,6 @@
 
   &.active {
     animation: backgroundPulse 2s infinite;
-    // background-color: rgba(var(--color-accent-rgb), 0.2);
 
     .def {
       display: none;
@@ -46,14 +46,14 @@
   @keyframes ani {
     0% {
       opacity: 0;
-      transform: translateY(5px);
+      transform: translateY(12px);
     }
     75% {
       opacity: 1;
     }
     100% {
       opacity: 0;
-      transform: translateY(-5px);
+      transform: translateY(-12px);
     }
   }
 }
