@@ -23,12 +23,17 @@ export class UploadActionComponent extends DmsObjectTarget implements ComponentA
 
   constructor(private translate: TranslateService, private system: SystemService) {
     super();
-    this.label = this.translate.instant('yuv.framework.action-menu.action.upload.dms.object.content.label');
+    this.setLabel('yuv.framework.action-menu.action.upload.dms.object.conten.add.label');
     this.description = this.translate.instant('yuv.framework.action-menu.action.upload.dms.object.content.description');
+  }
+
+  private setLabel(label: string) {
+    this.label = this.translate.instant(label);
   }
 
   isExecutable(element: DmsObject) {
     const objectType = this.system.getObjectType(element.objectTypeId);
+    element.content ? this.setLabel('yuv.framework.action-menu.action.upload.dms.object.conten.replace.label') : null;
     return observableOf(
       element.rights && element.rights.writeContent && objectType.contentStreamAllowed && objectType.contentStreamAllowed !== ContentStreamAllowed.NOT_ALLOWED
     );
