@@ -20,6 +20,8 @@ export interface ObjectCompareInput {
 
 /**
  * Component comparing two dms objects.
+ * @example
+ *   <yuv-object-details-compare [objectCompareInput]="compare" [layoutOptionsKey]="layoutOptionsKey + '.changes'"></yuv-object-details-compare>
  */
 @Component({
   selector: 'yuv-object-details-compare',

@@ -68,7 +68,6 @@
 	"yuv.framework.object-create.footer.create": "Create object",
 	"yuv.framework.object-create.header.title": "Create object",
 	"yuv.framework.object-create.notify.error": "Error while creating the object",
-	"yuv.framework.object-create.notify.success": "The object was created",
 	"yuv.framework.object-create.status.context": "At location '{{title}}'",
 	"yuv.framework.object-create.status.files": "Files: {{count}}",
 	"yuv.framework.object-create.step.file": "Add file",
