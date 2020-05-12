@@ -158,5 +158,6 @@
 	"yuv.framework.version-list.config.mode.default": "Table",
 	"yuv.framework.version-list.config.mode.grid": "Gallery",
 	"yuv.framework.version-list.config.mode.horizontal": "List",
+	"yuv.framework.version-list.edit": "Open current version",
 	"yuv.framework.version-list.title": "Versions"
 }

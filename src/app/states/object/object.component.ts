@@ -63,7 +63,7 @@ export class ObjectComponent implements OnInit, OnDestroy {
 
   private loadRecentItems() {
     this.appCacheService.getItem(this.getRecentItemsStorageKey()).subscribe((items) => {
-      this.recentItems = items || [];
+      this.recentItems = items && Array.isArray(items) ? items : [];
     });
   }
 

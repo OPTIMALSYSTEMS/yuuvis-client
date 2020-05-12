@@ -45,5 +45,13 @@ export class ObjectDetailsCompareComponent implements OnInit {
     this.iconRegistry.registerIcons([compare]);
   }
 
+  toggle() {
+    this.objectCompareInput = {
+      first: this.objectCompareInput.second,
+      second: this.objectCompareInput.first,
+      title: this.objectCompareInput.title
+    };
+  }
+
   ngOnInit() {}
 }

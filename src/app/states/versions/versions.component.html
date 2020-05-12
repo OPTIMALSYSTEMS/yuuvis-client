@@ -1,7 +1,7 @@
 <yuv-responsive-master-slave class="state" (slaveClosed)="onSlaveClosed()" [slaveActive]="dmsObject || compare"
   [layoutOptionsKey]="layoutOptionsKey">
   <yuv-version-list class="yuv-master panel" #versionList [objectID]="dmsObjectID" [versions]="versions"
-    (compareVersionsChange)="onCompareVersionsChange($event)" (selectionChange)="versionSelected($event)"
+    (editRecentClick)="onEditRecentClick($event)" (selectionChange)="versionSelected($event)"
     [layoutOptionsKey]="layoutOptionsKey">
   </yuv-version-list>
 
