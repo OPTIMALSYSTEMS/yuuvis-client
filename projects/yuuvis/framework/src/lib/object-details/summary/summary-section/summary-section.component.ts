@@ -6,6 +6,9 @@ import { SummaryEntry } from '../summary.interface';
 /**
  * This low level component is a part of the summary component and consists of separate sections with information about the object
  *  such as `Object attributes`, `Basic parameters` and  `Administrative information`.
+ * 
+ * [Screenshot](../assets/images/yuv-summary-section.gif)
+ * 
  *  @example
  * <yuv-summary-section [id]="'summary.parent'" *ngIf="summary?.parent.length" [visible]="visible.parent"
     [entries]="summary?.parent" [diff]="!!dmsObject2" (visibilityChange)="onSectionVisibilityChange('parent', $event)"

@@ -3,6 +3,16 @@ import { BackendService, DmsObject, DmsService, EventService, TranslateService, 
 import { NotificationService } from '../../../../services/notification/notification.service';
 import { ActionComponent } from '../../../interfaces/action-component.interface';
 
+/**
+ * This component is a part of the action menu and is responsible for deleting selected objects.
+ *
+ * [Screenshot](../assets/images/yuv-action-delete.gif)
+ *
+ * @example
+ * <yuv-delete [selection]="selection" (finished)="deleteEvent()" (canceled)="canceledDeleteEvent()"></yuv-delete>
+ *
+ */
+
 @Component({
   selector: 'yuv-delete',
   templateUrl: './delete.component.html',
@@ -12,9 +22,19 @@ export class DeleteComponent implements OnInit, ActionComponent {
   deleting = false;
   folder = '';
   count = '...';
-
+  /**
+   * Specifies the object for which the actions should be provided.
+   */
   @Input() selection: any[];
+
+  /**
+   * Provides the delete action for selected object
+   */
   @Output() finished: EventEmitter<any> = new EventEmitter<any>();
+
+  /**
+   * Cancels the object deletion
+   */
   @Output() canceled: EventEmitter<any> = new EventEmitter<any>();
 
   constructor(
@@ -37,7 +57,7 @@ export class DeleteComponent implements OnInit, ActionComponent {
 
         this.finished.emit();
       },
-      error => {
+      (error) => {
         switch (error.status) {
           case 403:
             this.notificationService.error(this.translate.instant('yuv.framework.action-menu.action.delete.dms.object.error.403'));

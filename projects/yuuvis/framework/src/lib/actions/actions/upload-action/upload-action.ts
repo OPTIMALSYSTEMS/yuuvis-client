@@ -7,6 +7,14 @@ import { ComponentAction } from '../../interfaces/action.interface';
 import { SelectionRange } from '../../selection-range.enum';
 import { UploadComponent } from './upload/upload.component';
 
+/**
+ * This low level component update for the view a replaced content of selected  object and doesn't have any `Inputs()` or `Outputs()`.
+ *
+ * @example
+ * <yuv-update></yuv-update>
+ *
+ */
+
 @Component({
   selector: 'yuv-update',
   template: ``

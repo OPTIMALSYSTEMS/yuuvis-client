@@ -6,6 +6,13 @@ import { DmsObjectTarget } from '../../action-target';
 import { SimpleAction } from '../../interfaces/action.interface';
 import { SelectionRange } from '../../selection-range.enum';
 
+/**
+ * This component provides the ability to download the file in the original format. This component doesn't have any `Inputs()` or `Outputs()`.
+ *
+ * @example
+ * <yuv-download-content-original></yuv-download-content-original>
+ */
+
 @Component({
   selector: 'yuv-download-content-original',
   template: ``

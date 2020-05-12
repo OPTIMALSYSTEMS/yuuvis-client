@@ -12,14 +12,12 @@ import { ComponentAction, ExternalComponentAction, ListAction, SimpleAction } fr
 import { ActionComponentAnchorDirective } from './action-component-anchor/action-component-anchor.directive';
 
 /**
- * # yuv-action-menu
+ * This component creates a menu of available actions for a selection of items. It will be positioned absolutely, so a parent has to be positioned relatively.
  *
- * Creates a menu of available actions for a selection of items.
- * The component will be positioned absolutely, so a parent has to be positioned relatively.
+ * [Screenshot](../assets/images/yuv-action-menu.gif)
  *
- * ```html
-<yuv-action-menu [(visible)]="showActionMenu" [selection]="selection"></yuv-action-menu>
-```
+ * @example
+ * <yuv-action-menu [(visible)]="showActionMenu" [selection]="selection"></yuv-action-menu>
  *
  */
 @Component({
