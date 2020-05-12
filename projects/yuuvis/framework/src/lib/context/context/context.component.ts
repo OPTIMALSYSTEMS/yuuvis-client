@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output, QueryList, TemplateRef, ViewChild, ViewChildren } from '@angular/core';
 import { BaseObjectTypeField, ColumnConfig, DmsObject, SearchFilter, SearchQuery, SystemService, TranslateService } from '@yuuvis/core';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
+import { FileDropOptions } from '../../directives/file-drop/file-drop.directive';
 import { CellRenderer } from '../../services/grid/grid.cellrenderer';
 import { edit } from '../../svg.generated';
 import { PopoverConfig } from './../../popover/popover.interface';
@@ -107,6 +108,11 @@ export class ContextComponent implements OnInit {
   /** Emitted when files are dropped to the component */
   @Output() filesDropped = new EventEmitter<File[]>();
 
+  fileDropOptions: FileDropOptions = {
+    disabled: false,
+    multiple: true
+  };
+
   constructor(
     private translate: TranslateService,
     private iconRegistry: IconRegistryService,
@@ -114,6 +120,7 @@ export class ContextComponent implements OnInit {
     private systemService: SystemService
   ) {
     this.iconRegistry.registerIcons([edit, settings, refresh]);
+    this.fileDropOptions.label = this.translate.instant('yuv.framework.context.filedrop.label');
   }
 
   select(ids: string[]) {

@@ -1,5 +1,5 @@
 import { Component, ContentChildren, HostBinding, Input, OnDestroy, QueryList, TemplateRef, ViewChild, ViewChildren } from '@angular/core';
-import { ConfigService, DmsObject, DmsService, EventService, SystemService, UserService, YuvEvent, YuvEventType } from '@yuuvis/core';
+import { ConfigService, DmsObject, DmsService, EventService, SystemService, TranslateService, UserService, YuvEvent, YuvEventType } from '@yuuvis/core';
 import { TabPanel } from 'primeng/tabview';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
@@ -49,7 +49,7 @@ export class ObjectDetailsComponent implements OnDestroy {
   userIsAdmin: boolean;
   actionMenuVisible = false;
   actionMenuSelection = [];
-
+  fileDropLabel: string;
   private _dmsObject: DmsObject;
   private _objectId: string;
 
@@ -108,7 +108,7 @@ export class ObjectDetailsComponent implements OnDestroy {
   @Input()
   set activeTabPanel(panel: TabPanel | string) {
     setTimeout(
-      () => this.tabContainer && this.tabContainer.open(panel || this.tabContainer.mainTabView.tabs.find(t => !t.disabled)),
+      () => this.tabContainer && this.tabContainer.open(panel || this.tabContainer.mainTabView.tabs.find((t) => !t.disabled)),
       this.tabContainer ? 0 : 200
     );
   }
@@ -144,6 +144,7 @@ export class ObjectDetailsComponent implements OnDestroy {
     private userService: UserService,
     private systemService: SystemService,
     private eventService: EventService,
+    private translate: TranslateService,
     private config: ConfigService,
     private contentPreviewService: ContentPreviewService,
     private iconRegistry: IconRegistryService
@@ -153,6 +154,7 @@ export class ObjectDetailsComponent implements OnDestroy {
     this.panelOrder = this.config.get('objectDetailsTabs') || this.panelOrder;
     this.undockWinActive = ContentPreviewService.undockWinActive();
 
+    this.fileDropLabel = this.translate.instant('yuv.framework.object-details.filedrop.label');
     this.eventService
       .on(YuvEventType.DMS_OBJECT_UPDATED)
       .pipe(takeUntilDestroy(this))
@@ -182,7 +184,7 @@ export class ObjectDetailsComponent implements OnDestroy {
   private getDmsObject(id: string) {
     this.busy = true;
     this.contentPreviewService.resetSource();
-    this.dmsService.getDmsObject(id).subscribe(dmsObject => {
+    this.dmsService.getDmsObject(id).subscribe((dmsObject) => {
       this.dmsObject = dmsObject;
       this.busy = false;
     });

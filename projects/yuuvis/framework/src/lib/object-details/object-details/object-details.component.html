@@ -1,6 +1,6 @@
 <yuv-panel *ngIf="dmsObject; else empty" class="object-details" [title]="dmsObject.title"
   (yuvFileDrop)="onFileDropped($event)"
-  [yuvFileDropOptions]="{ disabled: disableFileDrop || dmsObject.contentStreamAllowed === 'notallowed' }"
+  [yuvFileDropOptions]="{ disabled: (disableFileDrop || dmsObject.contentStreamAllowed === 'notallowed'), label: fileDropLabel }"
   [description]="dmsObject.description" [yuvBusyOverlay]="busy">
 
   <div class="header-icon" [innerHtml]="objectIcon | safeHtml"></div>
