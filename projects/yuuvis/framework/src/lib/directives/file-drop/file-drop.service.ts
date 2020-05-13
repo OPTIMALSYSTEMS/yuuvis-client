@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { fromEvent, merge, Observable, ReplaySubject } from 'rxjs';
-import { distinctUntilChanged, map } from 'rxjs/operators';
+import { filter, map, tap } from 'rxjs/operators';
 
 /**
  * Service that manages state for components that deal with drag and drop.
@@ -14,6 +14,7 @@ export class FileDropService {
   private dropzones = [];
   private dragEventCount = 0;
   private activeDropzone;
+  private fileOver: boolean;
   private activeDropzoneSource = new ReplaySubject<string>();
   private fileDraggedOverAppSource = new ReplaySubject<boolean>();
 
@@ -36,9 +37,11 @@ export class FileDropService {
           if (event.type === 'dragleave') {
             this.dragEventCount--;
           }
+          console.log(this.dragEventCount);
           return this.dragEventCount !== 0;
         }),
-        distinctUntilChanged()
+        filter((b) => b !== this.fileOver),
+        tap((b) => (this.fileOver = b))
       )
       .subscribe((b) => this.fileDraggedOverAppSource.next(b));
   }
@@ -69,6 +72,8 @@ export class FileDropService {
   clear() {
     this.dropzones = [];
     this.setActive(null);
+    this.dragEventCount = 0;
+    this.fileOver = false;
     this.fileDraggedOverAppSource.next(false);
   }
 
