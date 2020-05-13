@@ -125,7 +125,7 @@
   "yuv.framework.object-form-element.tag.df": "Default value",
   "yuv.framework.object-form-element.tag.ex": "Extracted from document",
   "yuv.framework.quick-search-picker.button.select": "Select",
-  "yuv.framework.quick-search-picker.title": "Limit to object types",
+  "yuv.framework.quick-search-picker.title": "Restrict to object types",
   "yuv.framework.quick-search.aggregate.error": "The search could not be executed.",
   "yuv.framework.quick-search.context-search.chip": "in the context",
   "yuv.framework.quick-search.field-select.tooltip": "Add search condition",
