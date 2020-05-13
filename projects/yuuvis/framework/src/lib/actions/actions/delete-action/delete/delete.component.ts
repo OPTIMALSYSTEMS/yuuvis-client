@@ -4,13 +4,7 @@ import { NotificationService } from '../../../../services/notification/notificat
 import { ActionComponent } from '../../../interfaces/action-component.interface';
 
 /**
- * This component is a part of the action menu and is responsible for deleting selected objects.
- *
- * [Screenshot](../assets/images/yuv-action-delete.gif)
- *
- * @example
- * <yuv-delete [selection]="selection" (finished)="deleteEvent()" (canceled)="canceledDeleteEvent()"></yuv-delete>
- *
+ * @ignore
  */
 
 @Component({
@@ -22,19 +16,11 @@ export class DeleteComponent implements OnInit, ActionComponent {
   deleting = false;
   folder = '';
   count = '...';
-  /**
-   * Specifies the object for which the actions should be provided.
-   */
+
   @Input() selection: any[];
 
-  /**
-   * Provides the delete action for selected object
-   */
   @Output() finished: EventEmitter<any> = new EventEmitter<any>();
 
-  /**
-   * Cancels the object deletion
-   */
   @Output() canceled: EventEmitter<any> = new EventEmitter<any>();
 
   constructor(

@@ -8,15 +8,8 @@ import { SelectionRange } from '../../selection-range.enum';
 import { DownloadOriginalActionComponent } from '../download-original-action/download-original-action';
 
 /**
- * This component is a part of the action menu and is responsible for download files of selected objects. This component doesn't have any `Inputs()` or `Outputs()`.
- *
- * [Screenshot](../assets/images/yuv-download-action.gif)
- *
- * @example
- * <yuv-download-content></yuv-download-content>
- *
+ * @ignore
  */
-
 @Component({
   selector: 'yuv-download-content',
   template: ``

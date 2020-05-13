@@ -8,13 +8,7 @@ import { SelectionRange } from '../../selection-range.enum';
 import { DeleteComponent } from './delete/delete.component';
 
 /**
- * This low level component displays a message about the successful removal of the object and doesn't have any `Inputs()` or `Outputs()`.
- *
- * [Screenshot](../assets/images/yuv-delete-message.gif)
- *
- * @example
- * <yuv-delete-action></yuv-delete-action>
- *
+ * @ignore
  */
 
 @Component({

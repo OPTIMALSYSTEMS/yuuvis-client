@@ -1,17 +1,9 @@
 import { Component, EventEmitter, OnInit, ViewChild } from '@angular/core';
 import { DmsService } from '@yuuvis/core';
 import { ActionComponent } from './../../../interfaces/action-component.interface';
-
 /**
- * This component is a part of the action menu and is responsible for replace files of selected objects. This component doesn't have any `Inputs()` or `Outputs()`.
- *
- * [Screenshot](../assets/images/yuv-download-action.gif)
- *
- * @example
- * <yuv-upload></yuv-upload>
- *
+ * @ignore
  */
-
 @Component({
   selector: 'yuv-upload',
   templateUrl: './upload.component.html',

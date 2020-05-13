@@ -12,7 +12,8 @@ import { ComponentAction, ExternalComponentAction, ListAction, SimpleAction } fr
 import { ActionComponentAnchorDirective } from './action-component-anchor/action-component-anchor.directive';
 
 /**
- * This component creates a menu of available actions for a selection of items. It will be positioned absolutely, so a parent has to be positioned relatively.
+ * This component creates a menu of available actions for a selection of items. The action menu includes such actions as `delete`, `download` and `upload`.
+ * This component will be positioned absolutely, so a parent has to be positioned relatively.
  *
  * [Screenshot](../assets/images/yuv-action-menu.gif)
  *

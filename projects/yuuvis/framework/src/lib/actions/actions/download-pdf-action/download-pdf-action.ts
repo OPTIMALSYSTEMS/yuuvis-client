@@ -7,10 +7,7 @@ import { SimpleAction } from '../../interfaces/action.interface';
 import { SelectionRange } from '../../selection-range.enum';
 
 /**
- * This component provides the ability to download the file in the PDF format. This component doesn't have any `Inputs()` or `Outputs()`.
- *
- * @example
- * <yuv-download-content-pdf></yuv-download-content-pdf>
+ * @ignore
  */
 
 @Component({
