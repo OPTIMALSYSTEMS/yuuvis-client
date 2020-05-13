@@ -93,10 +93,13 @@ export class FileDropDirective implements OnDestroy {
   private addOverlay() {
     const rect: DOMRect = this.elementRef.nativeElement.getBoundingClientRect();
     const ov: HTMLElement = document.createElement('div');
-    const background = this._options.disabled || this._invalid ? 'rgba(0,0,0,.1)' : 'rgba(var(--color-accent-rgb), 0.4)';
+    ov.classList.add('yuvFileDropOverlay');
+    if (this._options.disabled || this._invalid) {
+      ov.classList.add('disabled');
+    }
     this.overlay = Utils.uuid();
     ov.setAttribute('id', this.overlay);
-    ov.style.cssText = `display: flex; align-items: center; justify-content: center; animation: yuvFadeIn 200ms; position: absolute; pointer-events: none; top: ${rect.top}px; left: ${rect.left}px; width: ${rect.width}px; height: ${rect.height}px; background: ${background}`;
+    ov.style.cssText = `position: absolute; top: ${rect.top}px; left: ${rect.left}px; width: ${rect.width}px; height: ${rect.height}px;`;
     if (this._options.label) {
       const label: HTMLElement = document.createElement('div');
       label.innerText = this._options.label;
@@ -116,10 +119,14 @@ export class FileDropDirective implements OnDestroy {
     if (highlight) {
       const rect: DOMRect = this.elementRef.nativeElement.getBoundingClientRect();
       const ov: HTMLElement = document.createElement('div');
-      const borderColor = this._options.disabled || this._invalid ? 'rgba(0,0,0,.3)' : 'rgba(var(--color-accent-rgb), 0.6)';
+      ov.classList.add('yuvFileDropOverlay');
+      ov.classList.add('highlight');
+      if (this._options.disabled || this._invalid) {
+        ov.classList.add('disabled');
+      }
       this.highlightOverlay = Utils.uuid();
       ov.setAttribute('id', this.highlightOverlay);
-      ov.style.cssText = `animation: yuvFadeIn 200ms; position: absolute; pointer-events: none; top: ${rect.top}px; left: ${rect.left}px; width: ${rect.width}px; height: ${rect.height}px; outline: 2px dotted ${borderColor}; outline-offset: -3px`;
+      ov.style.cssText = `position: absolute; top: ${rect.top}px; left: ${rect.left}px; width: ${rect.width}px; height: ${rect.height}px;`;
       document.body.appendChild(ov);
     } else {
       if (this.highlightOverlay) {

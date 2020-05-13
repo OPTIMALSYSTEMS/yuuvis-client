@@ -6,8 +6,33 @@ body {
   }
 }
 
-.yuvFileDropHighlightOverlay {
-  background: red;
+.yuvFileDropOverlay {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: yuvFadeIn 200ms;
+  pointer-events: none;
+  background-color: rgba(var(--color-primary-rgb), 0.4);
+  &.disabled {
+    background-color: rgba(0, 0, 0, 0.1);
+  }
+  &.highlight {
+    outline: 2px dotted rgba(var(--color-accent-rgb), 0.6);
+    outline-offset: -3px;
+
+    > div {
+      background-color: var(--color-accent);
+      border: 2px solid #fff;
+      color: #fff;
+    }
+
+    &.disabled {
+      outline-color: rgba(0, 0, 0, 0.3);
+      > div {
+        background-color: var(--text-color-hint);
+      }
+    }
+  }
 }
 
 .chip {
