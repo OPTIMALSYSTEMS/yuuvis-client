@@ -1,7 +1,12 @@
 import { Injectable } from '@angular/core';
 import { fromEvent, merge, Observable, ReplaySubject } from 'rxjs';
-import { filter, map, tap } from 'rxjs/operators';
+import { distinctUntilChanged, map } from 'rxjs/operators';
 
+/**
+ * Service that manages state for components that deal with drag and drop.
+ * Using `yuvFileDrop` directive you can enable any component to handle files
+ * dropped onto it.
+ */
 @Injectable({
   providedIn: 'root'
 })
@@ -10,14 +15,16 @@ export class FileDropService {
   private dragEventCount = 0;
   private activeDropzone;
   private activeDropzoneSource = new ReplaySubject<string>();
-  public activeDropzone$: Observable<string> = this.activeDropzoneSource.asObservable();
+  private fileDraggedOverAppSource = new ReplaySubject<boolean>();
 
+  /**
+   * Emits the dropzone that is currently active (dragged over).
+   */
+  public activeDropzone$: Observable<string> = this.activeDropzoneSource.asObservable();
   /**
    * Emits whether or not a file was dragged over the application
    */
-  private fileDraggedOverAppSource = new ReplaySubject<boolean>();
   public fileDraggedOverApp$: Observable<boolean> = this.fileDraggedOverAppSource.asObservable();
-  private fileOver: boolean;
 
   constructor() {
     merge(fromEvent(document, 'dragenter'), fromEvent(document, 'dragleave'))
@@ -31,26 +38,38 @@ export class FileDropService {
           }
           return this.dragEventCount !== 0;
         }),
-        filter((b) => b !== this.fileOver),
-        tap((b) => (this.fileOver = b))
+        distinctUntilChanged()
       )
       .subscribe((b) => this.fileDraggedOverAppSource.next(b));
   }
 
+  /**
+   * Adds a new dropzone to the list of managed dropzones
+   * @param id ID of the dropzone
+   */
   add(id: string) {
     if (!this.dropzones.includes(id)) {
       this.dropzones.push(id);
     }
     this.setActive(id);
   }
+
+  /**
+   * Removes a dropzone from the managed list of dropzones
+   * @param id ID of the dropzone to be removed
+   */
   remove(id) {
     this.dropzones = this.dropzones.filter((d) => d !== id);
     this.setActive(this.dropzones[this.dropzones.length - 1]);
   }
 
+  /**
+   * Reset the state of the service. Removes all dropzones.
+   */
   clear() {
     this.dropzones = [];
     this.setActive(null);
+    this.fileDraggedOverAppSource.next(false);
   }
 
   /**

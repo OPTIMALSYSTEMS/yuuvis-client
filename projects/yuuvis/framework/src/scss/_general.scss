@@ -12,25 +12,29 @@ body {
   justify-content: center;
   animation: yuvFadeIn 200ms;
   pointer-events: none;
-  background-color: rgba(var(--color-primary-rgb), 0.4);
-  &.disabled {
-    background-color: rgba(0, 0, 0, 0.1);
+  z-index: 2;
+  background-color: rgba(var(--color-accent-rgb), 0.4);
+
+  > div {
+    background-color: var(--color-accent);
+    border: 2px solid #fff;
+    padding: 4px 8px;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.2);
+    color: #fff;
   }
+
   &.highlight {
-    outline: 2px dotted rgba(var(--color-accent-rgb), 0.6);
-    outline-offset: -3px;
+    z-index: 1;
+    background-color: rgba(255, 255, 255, 0.4);
+    border: 4px solid rgba(var(--color-accent-rgb), 0.8);
+    box-shadow: 0 0 0 1px #fff inset;
+    outline: 1px solid #fff;
+    outline-offset: -5px;
+    box-sizing: border-box;
 
-    > div {
-      background-color: var(--color-accent);
-      border: 2px solid #fff;
-      color: #fff;
-    }
-
-    &.disabled {
-      outline-color: rgba(0, 0, 0, 0.3);
-      > div {
-        background-color: var(--text-color-hint);
-      }
+    .dark & {
+      background-color: rgba(var(--color-primary-rgb), 0.5);
     }
   }
 }
