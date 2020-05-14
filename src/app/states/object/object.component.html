@@ -9,13 +9,12 @@
 
   <yuv-object-details class="yuv-slave panel" [objectId]="selectedItem" [searchTerm]="searchQuery?.term"
     [layoutOptionsKey]="layoutOptionsStorageKey">
-  </yuv-object-details>
+  </yuv-object-details> 
 </yuv-responsive-master-slave>
 
 <yuv-object-details *ngIf="_standalone" class="panel" [objectId]="_standalone"
   [layoutOptionsKey]="layoutOptionsStorageKey">
 </yuv-object-details>
 
-<div class="error" *ngIf="contextError">
-  <div class="message">{{contextError}}</div>
-</div>
+
+<yuv-context-error *ngIf="contextError" [contextError]="contextError"></yuv-context-error>

@@ -50,6 +50,7 @@ export class ObjectDetailsComponent implements OnDestroy {
   actionMenuVisible = false;
   actionMenuSelection = [];
   fileDropLabel: string;
+  contextError: string = null;
   private _dmsObject: DmsObject;
   private _objectId: string;
 
@@ -184,10 +185,16 @@ export class ObjectDetailsComponent implements OnDestroy {
   private getDmsObject(id: string) {
     this.busy = true;
     this.contentPreviewService.resetSource();
-    this.dmsService.getDmsObject(id).subscribe((dmsObject) => {
-      this.dmsObject = dmsObject;
-      this.busy = false;
-    });
+    this.dmsService.getDmsObject(id).subscribe(
+      (dmsObject) => {
+        this.dmsObject = dmsObject;
+        this.busy = false;
+      },
+      (error) => {
+        this.busy = false;
+        this.contextError = this.translate.instant('yuv.client.state.object.context.load.error');
+      }
+    );
   }
 
   refreshDetails() {

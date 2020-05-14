@@ -34,7 +34,8 @@
 <yuv-action-menu [(visible)]="actionMenuVisible" [selection]="actionMenuSelection"> </yuv-action-menu>
 
 <ng-template #empty>
-  <yuv-empty [icon]="nofileIcon"></yuv-empty>
+  <yuv-context-error *ngIf="contextError" [contextError]="contextError"></yuv-context-error>
+  <yuv-empty *ngIf="!contextError" [icon]="nofileIcon"></yuv-empty>
 </ng-template>
 
 
