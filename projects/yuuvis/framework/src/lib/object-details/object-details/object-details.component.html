@@ -44,8 +44,9 @@
   <p-tabPanel [id]="'summary'" [header]="'yuv.framework.object-details.tabs.summary.title' | translate"
     [headerStyleClass]="'summary'">
     <ng-template pTemplate="content">
-      <yuv-summary [dmsObject]="dmsObject" [versionRouterLink]="['/versions', dmsObject.id]"
-        [showExtrasSection]="userIsAdmin"></yuv-summary>
+      <yuv-summary [dmsObject]="dmsObject" [versionLinkTemplate]="versionLinkTemplate"
+        [showExtrasSection]="userIsAdmin">
+      </yuv-summary>
     </ng-template>
   </p-tabPanel>
 </ng-template>
@@ -77,7 +78,7 @@
   <p-tabPanel [id]="'history'" [header]="'yuv.framework.object-details.tabs.history.title' | translate"
     [headerStyleClass]="'history'">
     <ng-template pTemplate="content">
-      <yuv-audit [objectID]="objectId" [versionRouterLink]="['/versions', dmsObject.id]"></yuv-audit>
+      <yuv-audit [objectID]="objectId" [versionLinkTemplate]="versionLinkTemplate"></yuv-audit>
     </ng-template>
   </p-tabPanel>
 </ng-template>

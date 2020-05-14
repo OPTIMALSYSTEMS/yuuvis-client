@@ -8,13 +8,17 @@
   </yuv-context>
 
   <yuv-object-details class="yuv-slave panel" [objectId]="selectedItem" [searchTerm]="searchQuery?.term"
-    [layoutOptionsKey]="layoutOptionsStorageKey">
-  </yuv-object-details> 
+    [versionLinkTemplate]="versionLinkTpl" [layoutOptionsKey]="layoutOptionsStorageKey">
+  </yuv-object-details>
 </yuv-responsive-master-slave>
 
-<yuv-object-details *ngIf="_standalone" class="panel" [objectId]="_standalone"
+<yuv-object-details *ngIf="_standalone" class="panel" [objectId]="_standalone" [versionLinkTemplate]="versionLinkTpl"
   [layoutOptionsKey]="layoutOptionsStorageKey">
 </yuv-object-details>
 
-
 <yuv-context-error *ngIf="contextError" [contextError]="contextError"></yuv-context-error>
+
+<!-- template to render the version link withing object details summary and audit aspects -->
+<ng-template #versionLinkTpl let-version="version">
+  <a [routerLink]="['/versions', selectedItem]" [queryParams]="({version: version})">{{version}}</a>
+</ng-template>

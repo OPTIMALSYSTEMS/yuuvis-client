@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, TemplateRef } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { AuditQueryOptions, AuditQueryResult, AuditService, DmsObject, EventService, RangeValue, TranslateService, YuvEvent, YuvEventType } from '@yuuvis/core';
 import { takeUntilDestroy } from 'take-until-destroy';
@@ -52,11 +52,10 @@ export class AuditComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * You may provide a router link config here, that will be applied to an audit entries
-   * version number. This way you can add a link to the version pointing to some other
-   * state/component dealing with versions of one dms object.
+   * Custom template to render version numer within summary and audit
+   * aspect as for example a link.
    */
-  @Input() versionRouterLink: any[];
+  @Input() versionLinkTemplate: TemplateRef<any>;
 
   constructor(
     private auditService: AuditService,

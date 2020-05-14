@@ -45,6 +45,10 @@ export class ObjectComponent implements OnInit, OnDestroy {
     this.frameService.createObject(this.context.id, files);
   }
 
+  objectDetailsVersionClicked(version: number) {
+    console.log(version);
+  }
+
   contextItemsSelected(ids: string[]) {
     if (ids && ids.length === 0) {
       ids = [this.context.id];
