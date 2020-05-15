@@ -7,8 +7,8 @@
       *ngIf="activeSearchResult?.viewMode === 'standard'"> </yuv-icon>
     <yuv-icon (click)="refresh()" [title]="'yuv.framework.list.refresh' | translate" class="button refresh-button"
       [icon]="'refresh'"></yuv-icon>
-    <yuv-icon (click)="openActionMenu()" [ngClass]="{ disabled: !preSelectItems?.length }" class="button actions-button"
-      [icon]="'kebap'"></yuv-icon>
+    <yuv-icon (click)="openActionMenu()" [ngClass]="{ disabled: !preSelectItems || preSelectItems?.length === 0 }"
+      class="button actions-button" [icon]="'kebap'"></yuv-icon>
   </yuv-action-menu-bar>
 
   <p-tabView class="content" [activeIndex]="activeTabIndex" (onChange)="onTabChange($event)">

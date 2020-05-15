@@ -4,6 +4,7 @@ import { fromEvent, Observable } from 'rxjs';
 import { takeWhile } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
+import { FileDropService } from '../../directives/file-drop/file-drop.service';
 import { folder, noFile, undock } from '../../svg.generated';
 import { ContentPreviewService } from './service/content-preview.service';
 
@@ -75,6 +76,7 @@ export class ContentPreviewComponent implements OnInit, OnDestroy, AfterViewInit
   previewSrc$: Observable<string> = this.contentPreviewService.previewSrc$;
 
   constructor(
+    public fileDropService: FileDropService,
     private elRef: ElementRef,
     private contentPreviewService: ContentPreviewService,
     private iconRegistry: IconRegistryService,
@@ -91,7 +93,7 @@ export class ContentPreviewComponent implements OnInit, OnDestroy, AfterViewInit
     if (!this.isUndocked) {
       ContentPreviewService.closeWin();
     } else {
-      this._ngZone.runOutsideAngular(_ => {
+      this._ngZone.runOutsideAngular((_) => {
         const interval = setInterval(() => {
           if (this.undockWin && !ContentPreviewService.undockWinActive()) {
             clearInterval(interval);
@@ -100,7 +102,7 @@ export class ContentPreviewComponent implements OnInit, OnDestroy, AfterViewInit
         }, 1000);
         fromEvent(window, 'beforeunload')
           .pipe(takeWhile(() => this.isUndocked))
-          .subscribe(e => ContentPreviewService.closeWin());
+          .subscribe((e) => ContentPreviewService.closeWin());
       });
     }
     if (open) {
@@ -157,7 +159,7 @@ export class ContentPreviewComponent implements OnInit, OnDestroy, AfterViewInit
   }
 
   ngOnInit() {
-    this.previewSrc$.pipe(takeUntilDestroy(this)).subscribe(src => this.open(src));
+    this.previewSrc$.pipe(takeUntilDestroy(this)).subscribe((src) => this.open(src));
   }
 
   ngAfterViewInit() {
@@ -165,7 +167,7 @@ export class ContentPreviewComponent implements OnInit, OnDestroy, AfterViewInit
     if (iframe) {
       fromEvent(iframe, 'load')
         .pipe(takeUntilDestroy(this))
-        .subscribe(res => {
+        .subscribe((res) => {
           setTimeout(() => this.searchPDF(this.searchTerm, iframe), 100);
         });
     }

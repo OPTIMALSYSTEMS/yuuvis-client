@@ -64,10 +64,16 @@ export class ContextComponent implements OnInit {
     return this._context;
   }
 
+  private _psi: string[];
   /**
    * IDs of items supposed to be selected upfront.
    */
-  @Input() preSelectItems: string[];
+  @Input() set preSelectItems(items: string[]) {
+    this._psi = items.filter((id) => id !== this._context.id);
+  }
+  get preSelectItems() {
+    return this._psi;
+  }
 
   /**
    * A search query to be executed within the current context.
