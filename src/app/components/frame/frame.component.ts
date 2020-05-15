@@ -6,7 +6,6 @@ import {
   BaseObjectTypeField,
   ConnectionService,
   ConnectionState,
-  Logger,
   SearchFilter,
   SearchQuery,
   UploadResult,
@@ -17,6 +16,7 @@ import { IconRegistryService, LayoutService, LayoutSettings, Screen, ScreenServi
 import { filter } from 'rxjs/operators';
 import { add, close, drawer, offline, refresh, search, userDisabled } from '../../../assets/default/svg/svg';
 import { AppSearchService } from '../../service/app-search.service';
+import { FrameService } from './frame.service';
 
 @Component({
   selector: 'yuv-frame',
@@ -26,6 +26,7 @@ import { AppSearchService } from '../../service/app-search.service';
 export class FrameComponent implements OnInit {
   swUpdateAvailable: boolean;
   hideAppBar: boolean;
+  disableFileDrop: boolean;
   showSideBar: boolean;
   screenSmall: boolean;
   showSearch: boolean;
@@ -54,8 +55,8 @@ export class FrameComponent implements OnInit {
 
   constructor(
     private router: Router,
+    private frameService: FrameService,
     private route: ActivatedRoute,
-    private logger: Logger,
     private layoutService: LayoutService,
     private update: SwUpdate,
     private appSearch: AppSearchService,
@@ -122,6 +123,10 @@ export class FrameComponent implements OnInit {
 
   onQuickSearchToggleContextSearch(on: boolean) {
     this.disabledContextSearch = on;
+  }
+
+  onFilesDropped(files: File[]) {
+    this.frameService.createObject(null, files);
   }
 
   async onQuickSearchQuery(query: SearchQuery) {
@@ -192,6 +197,8 @@ export class FrameComponent implements OnInit {
       this.getContextFromURL(e.urlAfterRedirects);
       // transparent app-bar?
       this.tab = e.urlAfterRedirects.startsWith('/dashboard');
+      // disable fileDrop being on create state
+      this.disableFileDrop = e.urlAfterRedirects.startsWith('/create');
       // hide open search bar when leaving state
       this.toggleSearch(false);
     });

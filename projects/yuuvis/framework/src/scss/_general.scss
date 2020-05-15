@@ -12,7 +12,7 @@ body {
   justify-content: center;
   animation: yuvFadeIn 200ms;
   pointer-events: none;
-  z-index: 2;
+  z-index: 12;
   background-color: rgba(var(--color-accent-rgb), 0.4);
 
   > div {
@@ -25,13 +25,14 @@ body {
   }
 
   &.highlight {
-    z-index: 1;
+    z-index: 11;
     background-color: rgba(255, 255, 255, 0.4);
-    border: 4px solid rgba(var(--color-accent-rgb), 0.8);
-    box-shadow: 0 0 0 1px #fff inset;
-    outline: 1px solid #fff;
-    outline-offset: -5px;
-    box-sizing: border-box;
+    // border: 2px dotted rgba(var(--color-accent-rgb), 0.8);
+    // box-shadow: 0 0 0 1px #fff inset;
+    outline: 2px dotted var(--color-accent);
+    // outline: 1px solid #fff;
+    outline-offset: -3px;
+    // box-sizing: border-box;
 
     .dark & {
       background-color: rgba(var(--color-primary-rgb), 0.5);

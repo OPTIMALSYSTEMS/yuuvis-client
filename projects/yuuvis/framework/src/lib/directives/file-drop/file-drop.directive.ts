@@ -25,10 +25,9 @@ export class FileDropDirective implements OnDestroy {
 
   /**
    * Emitted once a file (or multiple files) has been dropped on the directives
-   * host component. Depending on the given options it will provide you with either
-   * one file or an array of files.
+   * host component. It will provide you with an array of files dropped.
    */
-  @Output() yuvFileDrop = new EventEmitter<File | File[]>();
+  @Output() yuvFileDrop = new EventEmitter<File[]>();
   /**
    * Options to be applied to the directive. You can use them to disable
    * drop support, allow multiple files instaed of a single file or add
@@ -139,7 +138,7 @@ export class FileDropDirective implements OnDestroy {
   }
 
   private onFilesDropped(files: File[]) {
-    this.yuvFileDrop.emit(this._options.multiple ? files : files[0]);
+    this.yuvFileDrop.emit(files);
   }
 
   private preventAndStop(event: any): any {

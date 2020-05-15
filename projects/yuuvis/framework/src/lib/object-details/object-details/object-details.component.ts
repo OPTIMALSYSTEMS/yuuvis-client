@@ -63,6 +63,10 @@ export class ObjectDetailsComponent implements OnDestroy {
     this._objectId = object ? object.id : null;
     if (object) {
       this.objectIcon = CellRenderer.typeCellRenderer({ value: object.objectTypeId, context: { system: this.systemService } });
+
+      this.fileDropLabel = !object.content
+        ? this.translate.instant('yuv.framework.object-details.filedrop.content.add')
+        : this.translate.instant('yuv.framework.object-details.filedrop.content.replace');
     }
   }
 
@@ -160,7 +164,6 @@ export class ObjectDetailsComponent implements OnDestroy {
     this.panelOrder = this.config.get('objectDetailsTabs') || this.panelOrder;
     this.undockWinActive = ContentPreviewService.undockWinActive();
 
-    this.fileDropLabel = this.translate.instant('yuv.framework.object-details.filedrop.label');
     this.eventService
       .on(YuvEventType.DMS_OBJECT_UPDATED)
       .pipe(takeUntilDestroy(this))
@@ -172,9 +175,9 @@ export class ObjectDetailsComponent implements OnDestroy {
       });
   }
 
-  onFileDropped(file: File) {
-    if (this.dmsObject.rights && this.dmsObject.rights.writeContent) {
-      this.dmsService.uploadContent(this.dmsObject.id, file).subscribe();
+  onFileDropped(files: File[]) {
+    if (files && files.length === 1 && this.dmsObject.rights && this.dmsObject.rights.writeContent) {
+      this.dmsService.uploadContent(this.dmsObject.id, files[0]).subscribe();
     }
   }
 

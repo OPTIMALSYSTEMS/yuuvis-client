@@ -37,7 +37,6 @@ export class FileDropService {
           if (event.type === 'dragleave') {
             this.dragEventCount--;
           }
-          console.log(this.dragEventCount);
           return this.dragEventCount !== 0;
         }),
         filter((b) => b !== this.fileOver),
