@@ -16,9 +16,7 @@
   [layoutOptionsKey]="layoutOptionsStorageKey">
 </yuv-object-details>
 
-<div class="error" *ngIf="contextError">
-  <div class="message">{{contextError}}</div>
-</div>
+<yuv-context-error *ngIf="contextError" [contextError]="contextError"></yuv-context-error>
 
 <!-- template to render the version link withing object details summary and audit aspects -->
 <ng-template #versionLinkTpl let-version="version">
