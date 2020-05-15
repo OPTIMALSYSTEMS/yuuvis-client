@@ -7,6 +7,8 @@
       *ngIf="activeSearchResult?.viewMode === 'standard'"> </yuv-icon>
     <yuv-icon (click)="refresh()" [title]="'yuv.framework.list.refresh' | translate" class="button refresh-button"
       [icon]="'refresh'"></yuv-icon>
+    <yuv-icon (click)="openActionMenu()" [ngClass]="{ disabled: !preSelectItems?.length }" class="button actions-button"
+      [icon]="'kebap'"></yuv-icon>
   </yuv-action-menu-bar>
 
   <p-tabView class="content" [activeIndex]="activeTabIndex" (onChange)="onTabChange($event)">
@@ -40,6 +42,8 @@
     </p-tabPanel>
   </p-tabView>
 </yuv-panel>
+
+<yuv-action-menu [(visible)]="actionMenuVisible" [selection]="actionMenuSelection"> </yuv-action-menu>
 
 <!-- column config editor overlay -->
 <ng-template #tplColumnConfigPicker let-data let-popover="popover">

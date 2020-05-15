@@ -48,7 +48,7 @@ export class ObjectDetailsComponent implements OnDestroy {
   busy: boolean;
   userIsAdmin: boolean;
   actionMenuVisible = false;
-  actionMenuSelection = [];
+  actionMenuSelection: DmsObject[] = [];
   fileDropLabel: string;
   contextError: string = null;
   private _dmsObject: DmsObject;

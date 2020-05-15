@@ -1,9 +1,9 @@
 import { Component, EventEmitter, Input, OnInit, Output, QueryList, TemplateRef, ViewChild, ViewChildren } from '@angular/core';
-import { BaseObjectTypeField, ColumnConfig, DmsObject, SearchFilter, SearchQuery, SystemService, TranslateService } from '@yuuvis/core';
+import { BaseObjectTypeField, ColumnConfig, DmsObject, DmsService, SearchFilter, SearchQuery, SystemService, TranslateService } from '@yuuvis/core';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { FileDropOptions } from '../../directives/file-drop/file-drop.directive';
 import { CellRenderer } from '../../services/grid/grid.cellrenderer';
-import { edit } from '../../svg.generated';
+import { edit, kebap } from '../../svg.generated';
 import { PopoverConfig } from './../../popover/popover.interface';
 import { PopoverRef } from './../../popover/popover.ref';
 import { PopoverService } from './../../popover/popover.service';
@@ -43,6 +43,8 @@ export class ContextComponent implements OnInit {
   private _context: DmsObject;
   private _contextSearchQuery: SearchQuery;
   contextIcon: string;
+  actionMenuVisible = false;
+  actionMenuSelection: DmsObject[] = [];
 
   _layoutOptionsKeys = {
     children: null,
@@ -115,16 +117,27 @@ export class ContextComponent implements OnInit {
 
   constructor(
     private translate: TranslateService,
+    private dmsService: DmsService,
     private iconRegistry: IconRegistryService,
     private popoverService: PopoverService,
     private systemService: SystemService
   ) {
-    this.iconRegistry.registerIcons([edit, settings, refresh]);
+    this.iconRegistry.registerIcons([edit, settings, refresh, kebap]);
     this.fileDropOptions.label = this.translate.instant('yuv.framework.context.filedrop.label');
   }
 
   select(ids: string[]) {
     this.itemsSelected.emit(ids);
+    this.preSelectItems = ids;
+  }
+
+  openActionMenu() {
+    if (this.preSelectItems) {
+      this.dmsService.getDmsObjects(this.preSelectItems).subscribe((items) => {
+        this.actionMenuSelection = items;
+        this.actionMenuVisible = true;
+      });
+    }
   }
 
   onFilesDropped(files: File[]) {
