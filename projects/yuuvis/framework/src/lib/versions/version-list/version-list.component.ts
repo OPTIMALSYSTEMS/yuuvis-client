@@ -58,6 +58,13 @@ export class VersionListComponent implements OnInit {
   }
 
   /**
+   * If the version to be selected is the recent/latest version, the component
+   * will also select the previous version (if there is more than one). To disable
+   * this behaviour set this property to true.
+   */
+  @Input() disableAutoSelectOnRecentVersion: boolean;
+
+  /**
    * Array of version numbers to be selected upfront.
    */
   @Input() set versions(vs: string[]) {
@@ -147,6 +154,20 @@ export class VersionListComponent implements OnInit {
       this.dmsService.getDmsObjectVersions(this.dmsObjectID).subscribe((rows: DmsObject[]) => {
         const objectTypeId = rows && rows.length ? rows[0].objectTypeId : null;
         const sorted = rows.sort((a, b) => this.getVersion(b) - this.getVersion(a));
+        this.activeVersion = sorted[0];
+
+        // having just one selected version that is also the recent version, will also select the
+        // previous version as long as there are more than just one version, or
+        // `disableAutoSelectOnRecentVersion` has been set to true
+        if (
+          !this.disableAutoSelectOnRecentVersion &&
+          rows.length > 1 &&
+          this.selection.length === 1 &&
+          this.selection[0] === this.getRowNodeId(sorted[0].version)
+        ) {
+          this.selection.push(this.getRowNodeId(sorted[1].version));
+        }
+
         this.tableData = {
           columns: this.getColumnDefinitions(objectTypeId),
           rows: sorted.map((a) => a.data),
@@ -155,7 +176,6 @@ export class VersionListComponent implements OnInit {
           selectType: 'multiple',
           gridOptions: { getRowNodeId: (o) => this.getRowNodeId(o), rowMultiSelectWithClick: false }
         };
-        this.activeVersion = sorted[0];
       });
     } else {
       this.tableData = null;

@@ -8,7 +8,7 @@
     <span class="label">{{ item.label }}</span>
     <div class="value-area">
       <span class="value first"
-        *ngIf="(!isVersion(item.key) || !versionRouterLink || (isVersion(item.key) && item.value === '1')); else link"
+        *ngIf="(!isVersion(item.key) || (isVersion(item.key) && item.value === '1') || !versionLinkTemplate); else versionLink"
         [innerHtml]="item.value ? (item.value | safeHtml) : ''"></span>
 
       <ng-container *ngIf="diff">
@@ -19,9 +19,11 @@
         <span class="value second" [innerHtml]="item.value2 ? (item.value2 | safeHtml) : ''"></span>
       </ng-container>
 
-      <ng-template #link>
-        <a class="value first version" [routerLink]="versionRouterLink" [queryParams]="{version: item.value}"
-          routerLinkActive="router-link-active">{{item.value}}</a>
+      <ng-template #versionLink>
+        <span class="value first version">
+          <ng-container *ngTemplateOutlet="versionLinkTemplate;context:{version: item.value}">
+          </ng-container>
+        </span>
       </ng-template>
     </div>
   </div>

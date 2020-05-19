@@ -74,7 +74,7 @@
           fill: var(--text-color-caption);
         }
       }
-      a.value.version {
+      .value.version {
         background-color: rgba(var(--color-accent-rgb), 0.2);
         padding: calc(var(--app-pane-padding) / 8) calc(var(--app-pane-padding) / 4);
         &::after {

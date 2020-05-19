@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { forkJoin, Observable } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
+import { delay, map, tap } from 'rxjs/operators';
 import { DmsObject } from '../../model/dms-object.model';
 import { Utils } from '../../util/utils';
 import { ApiBase } from '../backend/api.enum';
@@ -42,7 +42,14 @@ export class DmsService {
 
     const upload = files.length ? this.uploadService.uploadMultipart(url, files, data, label) : this.uploadService.createDocument(url, data);
 
-    return upload.pipe(map((res) => res.map((r: any) => r.properties[BaseObjectTypeField.OBJECT_ID].value)));
+    return upload.pipe(
+      map((res) => res.map((r: any) => r.properties[BaseObjectTypeField.OBJECT_ID].value)),
+      // TODO: Replace by proper solution
+      // Right now there is a gap between when the object was
+      // created and when it is indexed. So delaying here will
+      // give backend time to get its stuff together.
+      delay(1000)
+    );
   }
 
   /**

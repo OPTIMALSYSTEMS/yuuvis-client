@@ -1,5 +1,5 @@
 <yuv-panel [title]="context.title" [description]="context.description" (yuvFileDrop)="onFilesDropped($event)"
-  (titleClick)="select([context.id])" [yuvFileDropOptions]="{ disabled: false, multiple: true }">
+  (titleClick)="select([context.id])" [yuvFileDropOptions]="fileDropOptions">
   <div class="header-icon" [innerHtml]="contextIcon | safeHtml"></div>
 
   <yuv-action-menu-bar class="actions" yuvOfflineDisabled>
@@ -7,11 +7,12 @@
       *ngIf="activeSearchResult?.viewMode === 'standard'"> </yuv-icon>
     <yuv-icon (click)="refresh()" [title]="'yuv.framework.list.refresh' | translate" class="button refresh-button"
       [icon]="'refresh'"></yuv-icon>
-    <!-- <yuv-icon class="details" icon="edit" (click)="select([context.id])"></yuv-icon> -->
+    <yuv-icon (click)="openActionMenu()" [ngClass]="{ disabled: !preSelectItems || preSelectItems?.length === 0 }"
+      class="button actions-button" [icon]="'kebap'"></yuv-icon>
   </yuv-action-menu-bar>
 
   <p-tabView class="content" [activeIndex]="activeTabIndex" (onChange)="onTabChange($event)">
-    <p-tabPanel [id]="'children'" [header]="'yuv.client.state.object.tabs.children.title' | translate">
+    <p-tabPanel [id]="'children'" [header]="'yuv.framework.context.tabs.children.title' | translate">
       <ng-template pTemplate="content">
         <!-- context children search result -->
         <yuv-search-result class="content" [query]="contextChildrenQuery" [preSelectItems]="preSelectItems"
@@ -21,7 +22,7 @@
     </p-tabPanel>
 
     <p-tabPanel [id]="'recent'" [disabled]="!recentItemsQuery"
-      [header]="'yuv.client.state.object.tabs.recent.title' | translate">
+      [header]="'yuv.framework.context.tabs.recent.title' | translate">
       <ng-template pTemplate="content">
         <!-- recent item search result -->
         <yuv-search-result class="content" [query]="recentItemsQuery" [preSelectItems]="preSelectItems"
@@ -31,7 +32,7 @@
     </p-tabPanel>
 
     <p-tabPanel [id]="'search-result'" [disabled]="!contextSearchQuery"
-      [header]="'yuv.client.state.object.tabs.search-result.title' | translate">
+      [header]="'yuv.framework.context.tabs.search-result.title' | translate">
       <ng-template pTemplate="content">
         <!-- context search result -->
         <yuv-search-result class="content" [query]="contextSearchQuery" [preSelectItems]="preSelectItems"
@@ -41,6 +42,8 @@
     </p-tabPanel>
   </p-tabView>
 </yuv-panel>
+
+<yuv-action-menu [(visible)]="actionMenuVisible" [selection]="actionMenuSelection"> </yuv-action-menu>
 
 <!-- column config editor overlay -->
 <ng-template #tplColumnConfigPicker let-data let-popover="popover">

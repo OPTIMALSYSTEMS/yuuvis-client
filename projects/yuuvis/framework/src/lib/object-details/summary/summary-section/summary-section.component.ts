@@ -1,4 +1,4 @@
-import { Component, EventEmitter, HostBinding, Input, Output } from '@angular/core';
+import { Component, EventEmitter, HostBinding, Input, Output, TemplateRef } from '@angular/core';
 import { BaseObjectTypeField, Utils } from '@yuuvis/core';
 import { IconRegistryService } from '../../../common/components/icon/service/iconRegistry.service';
 import { arrowDown } from '../../../svg.generated';
@@ -47,17 +47,11 @@ export class SummarySectionComponent {
    * entries that should be used for creating object(s).
    */
   @Input() entries: SummaryEntry[];
-
   /**
-   * You may provide a router link config here, that will be applied to an audit entries
-   * version number. This way you can add a link to the version pointing to some other
-   * state/component dealing with versions of one dms object.
+   * Custom template to render version as for example a link.
    */
-  @Input() versionRouterLink: any[];
+  @Input() versionLinkTemplate: TemplateRef<any>;
 
-  /**
-   * check the sections visibility changes.
-   */
   @Output() visibilityChange = new EventEmitter<boolean>();
 
   @HostBinding('class.visible') isVisible: boolean;

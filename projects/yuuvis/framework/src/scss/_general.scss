@@ -6,6 +6,40 @@ body {
   }
 }
 
+.yuvFileDropOverlay {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: yuvFadeIn 200ms;
+  pointer-events: none;
+  z-index: 12;
+  background-color: rgba(var(--color-accent-rgb), 0.4);
+
+  > div {
+    background-color: var(--color-accent);
+    border: 2px solid #fff;
+    padding: 4px 8px;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.2);
+    color: #fff;
+  }
+
+  &.highlight {
+    z-index: 11;
+    background-color: rgba(255, 255, 255, 0.4);
+    // border: 2px dotted rgba(var(--color-accent-rgb), 0.8);
+    // box-shadow: 0 0 0 1px #fff inset;
+    outline: 2px dotted var(--color-accent);
+    // outline: 1px solid #fff;
+    outline-offset: -3px;
+    // box-sizing: border-box;
+
+    .dark & {
+      background-color: rgba(var(--color-primary-rgb), 0.5);
+    }
+  }
+}
+
 .chip {
   display: inline-block;
   line-height: 1.5em;

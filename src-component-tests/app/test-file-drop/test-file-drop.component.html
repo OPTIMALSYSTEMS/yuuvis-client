@@ -21,11 +21,13 @@
   </div>
 
   <!-- with options -->
-  <div class="target" (yuvFileDrop)="onFilesDropped($event, 'multiple')" [yuvFileDropOptions]="{multiple: true}">
+  <div class="target" (yuvFileDrop)="onFilesDropped($event, 'multiple')"
+    [yuvFileDropOptions]="{label: 'with label', multiple: true}">
     <div class="label">multiple</div>
   </div>
 
-  <div class="target" (yuvFileDrop)="onFilesDropped($event, 'disabled')" [yuvFileDropOptions]="{disabled: true}">
+  <div class="target" (yuvFileDrop)="onFilesDropped($event, 'disabled')"
+    [yuvFileDropOptions]="{label: 'with label', disabled: true}">
     <div class="label">disabled</div>
   </div>
 
