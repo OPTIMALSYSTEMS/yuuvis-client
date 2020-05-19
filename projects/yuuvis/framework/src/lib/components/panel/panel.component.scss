@@ -17,6 +17,15 @@
   height: 100%;
   overflow: hidden;
 
+  &.titleClickable {
+    .header {
+      .header_title,
+      .header_description {
+        cursor: pointer;
+      }
+    }
+  }
+
   .content {
     grid-area: content;
     color: var(--text-color-body);

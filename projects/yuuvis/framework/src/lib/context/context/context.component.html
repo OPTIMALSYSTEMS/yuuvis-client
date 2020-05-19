@@ -1,5 +1,5 @@
 <yuv-panel [title]="context.title" [description]="context.description" (yuvFileDrop)="onFilesDropped($event)"
-  [yuvFileDropOptions]="{ disabled: false, multiple: true }">
+  (titleClick)="select([context.id])" [yuvFileDropOptions]="{ disabled: false, multiple: true }">
   <div class="header-icon" [innerHtml]="contextIcon | safeHtml"></div>
 
   <yuv-action-menu-bar class="actions" yuvOfflineDisabled>
@@ -7,7 +7,7 @@
       *ngIf="activeSearchResult?.viewMode === 'standard'"> </yuv-icon>
     <yuv-icon (click)="refresh()" [title]="'yuv.framework.list.refresh' | translate" class="button refresh-button"
       [icon]="'refresh'"></yuv-icon>
-    <yuv-icon class="details" icon="edit" (click)="select([context.id])"></yuv-icon>
+    <!-- <yuv-icon class="details" icon="edit" (click)="select([context.id])"></yuv-icon> -->
   </yuv-action-menu-bar>
 
   <p-tabView class="content" [activeIndex]="activeTabIndex" (onChange)="onTabChange($event)">

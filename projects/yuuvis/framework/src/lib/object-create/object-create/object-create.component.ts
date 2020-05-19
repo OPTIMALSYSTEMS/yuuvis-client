@@ -208,7 +208,11 @@ export class ObjectCreateComponent implements OnDestroy {
         this.objCreateServcice.setNewState({ done: this.isReady() });
       },
       (err) => {
-        this.objCreateServcice.setNewState({ done: false });
+        this.objCreateServcice.setNewState({
+          busy: false,
+          done: this.isReady()
+        });
+        this.notify.error(this.title, this.translate.instant('yuv.framework.object-create.step.objecttype.form.fail'));
       }
     );
   }

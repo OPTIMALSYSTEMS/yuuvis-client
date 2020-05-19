@@ -1,6 +1,8 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { ProgressStatus, UploadResult, UploadService } from '@yuuvis/core';
+import { OverlayPanel } from 'primeng/overlaypanel';
 import { Observable, of } from 'rxjs';
+import { tap } from 'rxjs/operators';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { clear, done } from './../../svg.generated';
 @Component({
@@ -14,6 +16,7 @@ export class UploadProgressOverlayComponent {
   progressStatus$: Observable<ProgressStatus>;
   completed: boolean;
   completedUp$: Observable<boolean>;
+  @ViewChild('uploadsOverlay') uploadsOverlay: OverlayPanel;
 
   // besides listening to the upload service you may want to use
   // the input to provide the component with data (also nice for testing :)
@@ -26,7 +29,13 @@ export class UploadProgressOverlayComponent {
 
   constructor(private uploadService: UploadService, private iconRegistry: IconRegistryService) {
     this.iconRegistry.registerIcons([clear, done]);
-    this.progressStatus$ = this.uploadService.status$;
+    this.progressStatus$ = this.uploadService.status$.pipe(
+      tap((s) => {
+        if (!s.items.length && this.uploadsOverlay) {
+          this.uploadsOverlay.hide();
+        }
+      })
+    );
     this.completedUp$ = this.uploadService.uploadStatus$;
   }
 
