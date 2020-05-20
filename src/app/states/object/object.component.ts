@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AppCacheService, DmsObject, DmsService, EventService, SearchQuery, TranslateService, YuvEventType } from '@yuuvis/core';
 import { ContextComponent } from '@yuuvis/framework';
 import { takeUntilDestroy } from 'take-until-destroy';
+import { FrameService } from '../../components/frame/frame.service';
 
 @Component({
   selector: 'yuv-object',
@@ -34,12 +35,24 @@ export class ObjectComponent implements OnInit, OnDestroy {
     private dmsService: DmsService,
     private translate: TranslateService,
     private title: Title,
+    private frameService: FrameService,
     private router: Router,
     private eventService: EventService,
     private appCacheService: AppCacheService
   ) {}
 
+  onContextFilesDropped(files: File[]) {
+    this.frameService.createObject(this.context.id, files);
+  }
+
+  objectDetailsVersionClicked(version: number) {
+    console.log(version);
+  }
+
   contextItemsSelected(ids: string[]) {
+    if (ids && ids.length === 0) {
+      ids = [this.context.id];
+    }
     if (ids && ids.length === 1) {
       this.router.navigate(['.'], { fragment: ids[0], replaceUrl: !!this.selectedItem, relativeTo: this.route, queryParamsHandling: 'preserve' });
       this.addRecentItem(ids[0]);
@@ -57,7 +70,7 @@ export class ObjectComponent implements OnInit, OnDestroy {
 
   private loadRecentItems() {
     this.appCacheService.getItem(this.getRecentItemsStorageKey()).subscribe((items) => {
-      this.recentItems = items || [];
+      this.recentItems = items && Array.isArray(items) ? items : [];
     });
   }
 

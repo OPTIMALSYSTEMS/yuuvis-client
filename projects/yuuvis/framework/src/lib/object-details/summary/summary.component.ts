@@ -1,5 +1,5 @@
 import { ColDef, ICellRendererFunc } from '@ag-grid-community/core';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, TemplateRef } from '@angular/core';
 import {
   AppCacheService,
   BaseObjectTypeField,
@@ -85,16 +85,14 @@ export class SummaryComponent implements OnInit {
   }
 
   /**
-   * You may provide a router link config here, that will be applied to an audit entries
-   * version number. This way you can add a link to the version pointing to some other
-   * state/component dealing with versions of one dms object.
-   */
-  @Input() versionRouterLink: any[];
-
-  /**
    * Whether or not to show the extras section that holds the more technical data for the object
    */
   @Input() showExtrasSection: boolean;
+
+  /**
+   * Custom template to render version as for example a link.
+   */
+  @Input() versionLinkTemplate: TemplateRef<any>;
 
   // isEmpty = v => Utils.isEmpty(v);
   isVersion = (v) => v === BaseObjectTypeField.VERSION_NUMBER;
@@ -184,7 +182,7 @@ export class SummaryComponent implements OnInit {
       if (key === BaseObjectTypeField.OBJECT_TYPE_ID) {
         si.value = this.systemService.getLocalizedResource(`${dmsObject.data[key]}_label`);
       }
-      if (this.dmsObject2 && (si.value === si.value2 || this.isVersion(key) || key === BaseObjectTypeField.MODIFICATION_DATE)) {
+      if (this.dmsObject2 && (si.value === si.value2 || this.isVersion(key))) {
         // skip equal and irrelevant values
       } else if (extraFields.includes(prepKey)) {
         summary.extras.push(si);

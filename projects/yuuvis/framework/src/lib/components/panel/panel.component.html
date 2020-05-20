@@ -1,7 +1,7 @@
 <div class="header">
   <ng-content select=".header-icon"></ng-content>
-  <div class="header_title">{{ title }}</div>
-  <div class="header_description">{{ description }}</div>
+  <div class="header_title" (click)="titleClick?.emit()">{{ title }}</div>
+  <div class="header_description" (click)="titleClick?.emit()">{{ description }}</div>
   <ng-content class="actions" select=".actions"></ng-content>
   <ng-content class="status" select=".status"></ng-content>
 </div>

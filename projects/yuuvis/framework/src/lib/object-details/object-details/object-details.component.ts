@@ -1,5 +1,5 @@
 import { Component, ContentChildren, HostBinding, Input, OnDestroy, QueryList, TemplateRef, ViewChild, ViewChildren } from '@angular/core';
-import { ConfigService, DmsObject, DmsService, EventService, SystemService, UserService, YuvEvent, YuvEventType } from '@yuuvis/core';
+import { ConfigService, DmsObject, DmsService, EventService, SystemService, TranslateService, UserService, YuvEvent, YuvEventType } from '@yuuvis/core';
 import { TabPanel } from 'primeng/tabview';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
@@ -21,6 +21,8 @@ import { ResponsiveTabContainerComponent } from './../../components/responsive-t
  * - **History**: Documentation of the objects lifecycle (audits)
  *
  * [Screenshot](../assets/images/yuv-object-details.gif)
+ *
+ * **NOTICE:** This component can only be used in projects that support routing.
  *
  * @example
  * <yuv-object-details [objectId]="'0815'"></yuv-object-details>
@@ -46,8 +48,9 @@ export class ObjectDetailsComponent implements OnDestroy {
   busy: boolean;
   userIsAdmin: boolean;
   actionMenuVisible = false;
-  actionMenuSelection = [];
-
+  actionMenuSelection: DmsObject[] = [];
+  fileDropLabel: string;
+  contextError: string = null;
   private _dmsObject: DmsObject;
   private _objectId: string;
 
@@ -61,6 +64,10 @@ export class ObjectDetailsComponent implements OnDestroy {
     this._objectId = object ? object.id : null;
     if (object) {
       this.objectIcon = CellRenderer.typeCellRenderer({ value: object.objectTypeId, context: { system: this.systemService } });
+
+      this.fileDropLabel = !object.content
+        ? this.translate.instant('yuv.framework.object-details.filedrop.content.add')
+        : this.translate.instant('yuv.framework.object-details.filedrop.content.replace');
     }
   }
 
@@ -135,11 +142,20 @@ export class ObjectDetailsComponent implements OnDestroy {
    */
   @Input() disableFileDrop: boolean;
 
+  /**
+   * Custom template to render version numer within summary and audit
+   * aspect as for example a link.
+   */
+  @Input() versionLinkTemplate: TemplateRef<any>;
+
+  undockWinActive = false;
+
   constructor(
     private dmsService: DmsService,
     private userService: UserService,
     private systemService: SystemService,
     private eventService: EventService,
+    private translate: TranslateService,
     private config: ConfigService,
     private contentPreviewService: ContentPreviewService,
     private iconRegistry: IconRegistryService
@@ -147,6 +163,7 @@ export class ObjectDetailsComponent implements OnDestroy {
     this.iconRegistry.registerIcons([refresh, kebap, noFile]);
     this.userIsAdmin = this.userService.hasAdministrationRoles;
     this.panelOrder = this.config.get('objectDetailsTabs') || this.panelOrder;
+    this.undockWinActive = ContentPreviewService.undockWinActive();
 
     this.eventService
       .on(YuvEventType.DMS_OBJECT_UPDATED)
@@ -159,9 +176,9 @@ export class ObjectDetailsComponent implements OnDestroy {
       });
   }
 
-  onFileDropped(file: File) {
-    if (this.dmsObject.rights && this.dmsObject.rights.writeContent) {
-      this.dmsService.uploadContent(this.dmsObject.id, file).subscribe();
+  onFileDropped(files: File[]) {
+    if (files && files.length === 1 && this.dmsObject.rights && this.dmsObject.rights.writeContent) {
+      this.dmsService.uploadContent(this.dmsObject.id, files[0]).subscribe();
     }
   }
 
@@ -177,10 +194,16 @@ export class ObjectDetailsComponent implements OnDestroy {
   private getDmsObject(id: string) {
     this.busy = true;
     this.contentPreviewService.resetSource();
-    this.dmsService.getDmsObject(id).subscribe((dmsObject) => {
-      this.dmsObject = dmsObject;
-      this.busy = false;
-    });
+    this.dmsService.getDmsObject(id).subscribe(
+      (dmsObject) => {
+        this.dmsObject = dmsObject;
+        this.busy = false;
+      },
+      (error) => {
+        this.busy = false;
+        this.contextError = this.translate.instant('yuv.client.state.object.context.load.error');
+      }
+    );
   }
 
   refreshDetails() {

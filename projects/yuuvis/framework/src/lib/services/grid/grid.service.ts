@@ -1,6 +1,5 @@
 import { ColDef } from '@ag-grid-community/core';
 import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
 import {
   AppCacheService,
   BackendService,
@@ -36,14 +35,12 @@ export class GridService {
     private searchSvc: SearchService,
     private userConfig: UserConfigService,
     private translate: TranslateService,
-    private router: Router,
     private backend: BackendService
   ) {
     this.context = {
       translate,
       system,
       backend,
-      router,
       fileSizePipe: new FileSizePipe(translate),
       numberPipe: new LocaleNumberPipe(translate),
       datePipe: new LocaleDatePipe(translate),
@@ -114,10 +111,6 @@ export class GridService {
     return field.propertyType !== 'id' && !skipSort.includes(field.id);
   }
 
-  private fieldClassification(classification: string[]): string {
-    return Array.isArray(classification) ? classification[0] : null;
-  }
-
   /**
    * add classification specific column definition attributes
    *
@@ -126,22 +119,31 @@ export class GridService {
    *
    * @returns enriched column definition object
    */
-  private addColDefAttrsByClassification(colDef: ColDef, classification) {
-    switch (classification) {
+  private fieldClassification(classification, params?) {
+    if (!Array.isArray(classification)) {
+      return undefined;
+    }
+    switch (classification[0]) {
       case 'email': {
-        colDef.cellRenderer = CellRenderer.emailCellRenderer;
+        return CellRenderer.emailCellRenderer;
         break;
       }
       case 'url': {
-        colDef.cellRenderer = CellRenderer.urlCellRenderer;
+        return CellRenderer.urlCellRenderer;
         break;
       }
       case 'phone': {
-        colDef.cellRenderer = CellRenderer.phoneCellRenderer;
+        return CellRenderer.phoneCellRenderer;
         break;
       }
+      case 'digit': {
+        return this.customContext(CellRenderer.numberCellRenderer, params);
+        break;
+      }
+      default: {
+        return undefined;
+      }
     }
-    return colDef;
   }
 
   /**
@@ -162,8 +164,8 @@ export class GridService {
           colDef.cellRenderer = this.customContext(CellRenderer.multiSelectCellRenderer);
         }
         colDef.cellClass = field.cardinality === 'multi' ? 'multiCell string' : 'string';
-        if (field?.classification?.length) {
-          this.addColDefAttrsByClassification(colDef, field?.classification[0]);
+        if (Array.isArray(field?.classification)) {
+          colDef.cellRenderer = this.fieldClassification(field?.classification);
         }
         break;
       }
@@ -178,9 +180,8 @@ export class GridService {
           grouping: true,
           pattern: undefined
         };
-
         colDef.width = 150;
-        colDef.cellRenderer = !this.fieldClassification(field?.classification) ? this.customContext(CellRenderer.numberCellRenderer, params) : undefined;
+        colDef.cellRenderer = this.fieldClassification(field?.classification, params);
         break;
       }
       case 'decimal': {
@@ -191,7 +192,7 @@ export class GridService {
           cips: true
         };
         colDef.width = 150;
-        colDef.cellRenderer = !this.fieldClassification(field?.classification) ? this.customContext(CellRenderer.numberCellRenderer, params) : undefined;
+        colDef.cellRenderer = this.fieldClassification(field?.classification, params);
         break;
       }
       case 'boolean': {

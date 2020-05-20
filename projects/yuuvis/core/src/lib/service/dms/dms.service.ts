@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { forkJoin, Observable } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
+import { delay, map, tap } from 'rxjs/operators';
 import { DmsObject } from '../../model/dms-object.model';
 import { Utils } from '../../util/utils';
 import { ApiBase } from '../backend/api.enum';
@@ -32,12 +32,24 @@ export class DmsService {
    * @param indexdata Indexdata for the new object(s)
    * @param files File(s) to create dms objects content(s) with
    * @param label A label that will show up in the upload overlay dialog while uploading
+   *
+   * @returns Array of IDs of the objects that have been created
    */
-  createDmsObject(objectTypeId: string, indexdata: any, files: File[], label?: string): Observable<any> {
+  createDmsObject(objectTypeId: string, indexdata: any, files: File[], label?: string): Observable<string[]> {
     const url = `${this.backend.getApiBase(ApiBase.apiWeb)}/dms/create`;
     const data = indexdata;
     data[BaseObjectTypeField.OBJECT_TYPE_ID] = objectTypeId;
-    return files.length ? this.uploadService.uploadMultipart(url, files, data, label) : this.uploadService.createDocument(url, data);
+
+    const upload = files.length ? this.uploadService.uploadMultipart(url, files, data, label) : this.uploadService.createDocument(url, data);
+
+    return upload.pipe(
+      map((res) => res.map((r: any) => r.properties[BaseObjectTypeField.OBJECT_ID].value)),
+      // TODO: Replace by proper solution
+      // Right now there is a gap between when the object was
+      // created and when it is indexed. So delaying here will
+      // give backend time to get its stuff together.
+      delay(1000)
+    );
   }
 
   /**
@@ -71,7 +83,7 @@ export class DmsService {
    */
   getDmsObject(id: string, version?: number, intent?: string): Observable<DmsObject> {
     return this.backend.get(`/dms/${id}${version ? '/versions/' + version : ''}`).pipe(
-      map(res => {
+      map((res) => {
         const item: SearchResultItem = this.searchService.toSearchResult(res).items[0];
         return this.searchResultToDmsObject(item);
       })
@@ -85,7 +97,7 @@ export class DmsService {
    */
   updateDmsObject(id: string, data: any) {
     return this.backend.patch(`/dms/update/${id}`, data).pipe(
-      map(res => this.searchService.toSearchResult(res)),
+      map((res) => this.searchService.toSearchResult(res)),
       map((res: SearchResult) => this.searchResultToDmsObject(res.items[0])),
       tap((_dmsObject: DmsObject) => this.eventService.trigger(YuvEventType.DMS_OBJECT_UPDATED, _dmsObject))
     );
@@ -96,7 +108,7 @@ export class DmsService {
    * @param ids List of IDs of objects to be retrieved
    */
   getDmsObjects(ids: string[]): Observable<DmsObject[]> {
-    return forkJoin(ids.map(id => this.getDmsObject(id)));
+    return forkJoin(ids.map((id) => this.getDmsObject(id)));
   }
 
   /**
@@ -105,11 +117,11 @@ export class DmsService {
    */
   getDmsObjectVersions(id: string): Observable<DmsObject[]> {
     return this.backend.get('/dms/' + id + '/versions').pipe(
-      map(res => {
+      map((res) => {
         const items: SearchResultItem[] = this.searchService.toSearchResult(res).items || [];
-        return items.map(item => this.searchResultToDmsObject(item));
+        return items.map((item) => this.searchResultToDmsObject(item));
       }),
-      map(res => res.sort(Utils.sortValues('version')))
+      map((res) => res.sort(Utils.sortValues('version')))
     );
   }
 

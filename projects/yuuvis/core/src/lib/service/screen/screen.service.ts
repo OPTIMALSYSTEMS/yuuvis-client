@@ -50,7 +50,7 @@ export class ScreenService {
   public screenChange$: Observable<Screen> = this.screenSource.asObservable();
   private resize$ = fromEvent(window, 'resize').pipe(debounceTime(this.getDebounceTime()));
 
-  private static getMode(bounds: ClientRect, orientation: string): string {
+  private static getMode(bounds: ScreenSize, orientation: string): string {
     if (ScreenService.isBelow(ScreenService.upperBoundary.small, bounds)) {
       return ScreenService.MODE.SMALL;
     } else if (
@@ -67,7 +67,7 @@ export class ScreenService {
     }
   }
 
-  private static isBelow(size: number, bounds: ClientRect): boolean {
+  private static isBelow(size: number, bounds: ScreenSize): boolean {
     const landscape = bounds.width < ScreenService.upperBoundary.large ? bounds.width >= bounds.height : false;
     return (landscape && bounds.height < size) || (!landscape && bounds.width < size);
   }
@@ -80,7 +80,11 @@ export class ScreenService {
   }
 
   private setScreen(evt?: Event) {
-    const bounds = document.getElementsByTagName('body')[0].getBoundingClientRect();
+    const bounds: ScreenSize = {
+      width: window.innerWidth,
+      height: window.innerHeight
+    };
+
     let orientation = bounds.width >= bounds.height ? ScreenService.ORIENTATION.LANDSCAPE : ScreenService.ORIENTATION.PORTRAIT;
 
     if (this.device.isMobile && window.screen['orientation']) {
@@ -125,7 +129,7 @@ export class ScreenService {
     this.screenSource.next(this.screen);
     // force change detection because resize will not be recognized by Angular in some cases
     // TODO: check: causes recursive ticks in some cases ...
-    // this.ref.tick();
+    this.ref.tick();
   }
 
   private getDebounceTime() {
@@ -133,4 +137,9 @@ export class ScreenService {
     // keyboard appears, so we dont't need to debounce
     return this.device.isMobile ? 0 : 500;
   }
+}
+
+export interface ScreenSize {
+  width: number;
+  height: number;
 }

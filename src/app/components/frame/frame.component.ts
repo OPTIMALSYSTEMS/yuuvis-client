@@ -6,7 +6,6 @@ import {
   BaseObjectTypeField,
   ConnectionService,
   ConnectionState,
-  Logger,
   SearchFilter,
   SearchQuery,
   UploadResult,
@@ -17,6 +16,7 @@ import { IconRegistryService, LayoutService, LayoutSettings, Screen, ScreenServi
 import { filter } from 'rxjs/operators';
 import { add, close, drawer, offline, refresh, search, userDisabled } from '../../../assets/default/svg/svg';
 import { AppSearchService } from '../../service/app-search.service';
+import { FrameService } from './frame.service';
 
 @Component({
   selector: 'yuv-frame',
@@ -26,6 +26,7 @@ import { AppSearchService } from '../../service/app-search.service';
 export class FrameComponent implements OnInit {
   swUpdateAvailable: boolean;
   hideAppBar: boolean;
+  disableFileDrop: boolean;
   showSideBar: boolean;
   screenSmall: boolean;
   showSearch: boolean;
@@ -54,8 +55,8 @@ export class FrameComponent implements OnInit {
 
   constructor(
     private router: Router,
+    private frameService: FrameService,
     private route: ActivatedRoute,
-    private logger: Logger,
     private layoutService: LayoutService,
     private update: SwUpdate,
     private appSearch: AppSearchService,
@@ -124,6 +125,10 @@ export class FrameComponent implements OnInit {
     this.disabledContextSearch = on;
   }
 
+  onFilesDropped(files: File[]) {
+    this.frameService.createObject(null, files);
+  }
+
   async onQuickSearchQuery(query: SearchQuery) {
     // As app bar search is available anywhere inside the app, searches will be
     // set up to the global app search in order to be persisted through states.
@@ -170,11 +175,9 @@ export class FrameComponent implements OnInit {
       const ctx = url.match(/\/object\/([^#?]+)/)[1];
       if (ctx && ctx !== this.context) {
         this.context = ctx;
-        this.logger.debug('frame: entering context search');
       }
     } else {
       this.context = null;
-      this.logger.debug('frame: entering app search');
     }
   }
 
@@ -190,16 +193,14 @@ export class FrameComponent implements OnInit {
     this.appSearch.query$.subscribe((q: SearchQuery) => {
       this.appQuery = q;
     });
-    this.router.events
-      .pipe(
-        // tap(e => console.log(e)),
-        filter((e) => e instanceof NavigationEnd)
-      )
-      .subscribe((e: NavigationEnd) => {
-        this.getContextFromURL(e.urlAfterRedirects);
-        this.tab = e.urlAfterRedirects.startsWith('/dashboard');
-        // hide open search bar when leaving state
-        this.toggleSearch(false);
-      });
+    this.router.events.pipe(filter((e) => e instanceof NavigationEnd)).subscribe((e: NavigationEnd) => {
+      this.getContextFromURL(e.urlAfterRedirects);
+      // transparent app-bar?
+      this.tab = e.urlAfterRedirects.startsWith('/dashboard');
+      // disable fileDrop being on create state
+      this.disableFileDrop = e.urlAfterRedirects.startsWith('/create');
+      // hide open search bar when leaving state
+      this.toggleSearch(false);
+    });
   }
 }

@@ -1,8 +1,10 @@
 import { AfterViewInit, Component, ElementRef, Input, NgZone, OnDestroy, OnInit } from '@angular/core';
 import { DmsObject } from '@yuuvis/core';
 import { fromEvent, Observable } from 'rxjs';
+import { takeWhile } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
+import { FileDropService } from '../../directives/file-drop/file-drop.service';
 import { folder, noFile, undock } from '../../svg.generated';
 import { ContentPreviewService } from './service/content-preview.service';
 
@@ -21,7 +23,11 @@ import { ContentPreviewService } from './service/content-preview.service';
 export class ContentPreviewComponent implements OnInit, OnDestroy, AfterViewInit {
   private _dmsObject: DmsObject;
   isUndocked: boolean;
-  undockWin: Window;
+
+  get undockWin(): Window {
+    return ContentPreviewService.getUndockWin();
+  }
+
   previewSrc: string;
 
   /**
@@ -70,46 +76,59 @@ export class ContentPreviewComponent implements OnInit, OnDestroy, AfterViewInit
   previewSrc$: Observable<string> = this.contentPreviewService.previewSrc$;
 
   constructor(
+    public fileDropService: FileDropService,
     private elRef: ElementRef,
     private contentPreviewService: ContentPreviewService,
     private iconRegistry: IconRegistryService,
     private _ngZone: NgZone
   ) {
     this.iconRegistry.registerIcons([folder, noFile, undock]);
+    if (ContentPreviewService.undockWinActive()) {
+      this.undock(false);
+    }
   }
 
-  undock() {
+  undock(open = true) {
     this.isUndocked = !this.isUndocked;
     if (!this.isUndocked) {
-      this.undockWin.close();
+      ContentPreviewService.closeWin();
     } else {
       this._ngZone.runOutsideAngular((_) => {
         const interval = setInterval(() => {
-          if (this.undockWin && this.undockWin.closed) {
+          if (this.undockWin && !ContentPreviewService.undockWinActive()) {
             clearInterval(interval);
             this._ngZone.run(() => this.isUndocked && this.undock());
           }
         }, 1000);
+        fromEvent(window, 'beforeunload')
+          .pipe(takeWhile(() => this.isUndocked))
+          .subscribe((e) => ContentPreviewService.closeWin());
       });
     }
-    this.open(this.previewSrc);
+    if (open) {
+      this.open(this.previewSrc);
+    }
   }
 
   open(src: string) {
     this.previewSrc = src;
     if (this.isUndocked) {
-      this.undockWin = window.open(
-        this.previewSrc || '',
-        'eoViewer',
-        'directories=0, titlebar=0, toolbar=0, location=0, status=0, menubar=0, resizable=1, top=10, left=10'
-      );
-      if (!this.previewSrc) {
-        this.undockWin.document.write(
-          `<div style="opacity: 0.1; display: flex; height: 100%; width: 100%; align-items: center; justify-content: center;"> 
-           ${noFile.data.replace(/"48"/g, '"100"')}
-          <div>`
-        );
+      this.openWindow(this.previewSrc);
+    }
+  }
+
+  openWindow(src: string, clean = false) {
+    ContentPreviewService.undockWin(src);
+    if (clean) {
+      while (this.undockWin.document.body.firstChild) {
+        this.undockWin.document.body.firstChild.remove();
       }
+    } else if (!src && !this.undockWin.document.querySelector('#no-file')) {
+      this.undockWin.document.write(
+        `<div id="no-file" style="opacity: 0.1; display: flex; height: 100%; width: 100%; align-items: center; justify-content: center;"> 
+         ${noFile.data.replace(/"48"/g, '"100"')}
+        <div>`
+      );
     }
   }
 
@@ -155,6 +174,6 @@ export class ContentPreviewComponent implements OnInit, OnDestroy, AfterViewInit
   }
 
   ngOnDestroy() {
-    return this.undockWin && this.undockWin.close();
+    // return ContentPreviewService.undockWinActive() && this.openWindow('', true);
   }
 }

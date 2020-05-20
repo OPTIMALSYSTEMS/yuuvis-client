@@ -1,6 +1,6 @@
 <yuv-panel *ngIf="dmsObject; else empty" class="object-details" [title]="dmsObject.title"
   (yuvFileDrop)="onFileDropped($event)"
-  [yuvFileDropOptions]="{ disabled: disableFileDrop || dmsObject.contentStreamAllowed === 'notallowed' }"
+  [yuvFileDropOptions]="{ disabled: (disableFileDrop || dmsObject.contentStreamAllowed === 'notallowed'), label: fileDropLabel }"
   [description]="dmsObject.description" [yuvBusyOverlay]="busy">
 
   <div class="header-icon" [innerHtml]="objectIcon | safeHtml"></div>
@@ -34,7 +34,8 @@
 <yuv-action-menu [(visible)]="actionMenuVisible" [selection]="actionMenuSelection"> </yuv-action-menu>
 
 <ng-template #empty>
-  <yuv-empty [icon]="nofileIcon"></yuv-empty>
+  <yuv-context-error *ngIf="contextError" [contextError]="contextError"></yuv-context-error>
+  <yuv-empty *ngIf="!contextError" [icon]="nofileIcon"></yuv-empty>
 </ng-template>
 
 
@@ -43,8 +44,9 @@
   <p-tabPanel [id]="'summary'" [header]="'yuv.framework.object-details.tabs.summary.title' | translate"
     [headerStyleClass]="'summary'">
     <ng-template pTemplate="content">
-      <yuv-summary [dmsObject]="dmsObject" [versionRouterLink]="['/versions', dmsObject.id]"
-        [showExtrasSection]="userIsAdmin"></yuv-summary>
+      <yuv-summary [dmsObject]="dmsObject" [versionLinkTemplate]="versionLinkTemplate"
+        [showExtrasSection]="userIsAdmin">
+      </yuv-summary>
     </ng-template>
   </p-tabPanel>
 </ng-template>
@@ -62,7 +64,10 @@
 <ng-template #preview>
   <p-tabPanel [id]="'preview'" [header]="'yuv.framework.object-details.tabs.content.title' | translate"
     [headerStyleClass]="'preview'">
-    <ng-template pTemplate="content">
+    <ng-template pTemplate="content" *ngIf="!undockWinActive; else loadPreview">
+      <yuv-content-preview [dmsObject]="dmsObject" [searchTerm]="searchTerm"></yuv-content-preview>
+    </ng-template>
+    <ng-template #loadPreview>
       <yuv-content-preview [dmsObject]="dmsObject" [searchTerm]="searchTerm"></yuv-content-preview>
     </ng-template>
   </p-tabPanel>
@@ -73,7 +78,7 @@
   <p-tabPanel [id]="'history'" [header]="'yuv.framework.object-details.tabs.history.title' | translate"
     [headerStyleClass]="'history'">
     <ng-template pTemplate="content">
-      <yuv-audit [objectID]="objectId" [versionRouterLink]="['/versions', dmsObject.id]"></yuv-audit>
+      <yuv-audit [objectID]="objectId" [versionLinkTemplate]="versionLinkTemplate"></yuv-audit>
     </ng-template>
   </p-tabPanel>
 </ng-template>

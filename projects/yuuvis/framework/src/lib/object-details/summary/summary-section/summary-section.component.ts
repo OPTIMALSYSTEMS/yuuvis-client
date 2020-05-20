@@ -1,4 +1,4 @@
-import { Component, EventEmitter, HostBinding, Input, Output } from '@angular/core';
+import { Component, EventEmitter, HostBinding, Input, Output, TemplateRef } from '@angular/core';
 import { BaseObjectTypeField, Utils } from '@yuuvis/core';
 import { IconRegistryService } from '../../../common/components/icon/service/iconRegistry.service';
 import { arrowDown } from '../../../svg.generated';
@@ -16,7 +16,11 @@ export class SummarySectionComponent {
   @Input() id: string;
   @Input() label: string;
   @Input() entries: SummaryEntry[];
-  @Input() versionRouterLink: any[];
+  /**
+   * Custom template to render version as for example a link.
+   */
+  @Input() versionLinkTemplate: TemplateRef<any>;
+
   @Output() visibilityChange = new EventEmitter<boolean>();
 
   @HostBinding('class.visible') isVisible: boolean;

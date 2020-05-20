@@ -1,16 +1,21 @@
 :host {
+  border-radius: 50%;
+  padding: calc(var(--app-pane-padding) / 4);
+  background-color: var(--color-accent);
+
   svg {
     width: 24px;
     height: 24px;
+    display: block;
   }
   svg,
   path,
   rect {
-    fill:  rgba(229,229,229, 1);
+    fill: #fff;
   }
   .arr {
     fill: var(--color-accent);
-    animation: ani 1000ms infinite;
+    animation: ani 1200ms infinite;
   }
 
   g.ani {
@@ -18,6 +23,8 @@
   }
 
   &.active {
+    animation: backgroundPulse 2s infinite;
+
     .def {
       display: none;
     }
@@ -25,18 +32,28 @@
       opacity: 1;
     }
   }
-
+  @keyframes backgroundPulse {
+    0% {
+      box-shadow: 0 0 0 0 rgba(var(--color-accent-rgb), 0.7);
+    }
+    70% {
+      box-shadow: 0 0 0 40px rgba(var(--color-accent-rgb), 0);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgba(var(--color-accent-rgb), 0);
+    }
+  }
   @keyframes ani {
     0% {
       opacity: 0;
-      transform: translateY(5px);
+      transform: translateY(12px);
     }
     75% {
       opacity: 1;
     }
     100% {
       opacity: 0;
-      transform: translateY(-5px);
+      transform: translateY(-12px);
     }
   }
 }

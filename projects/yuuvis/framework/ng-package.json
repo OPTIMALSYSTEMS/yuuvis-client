@@ -14,7 +14,8 @@
     "lodash-es",
     "take-until-destroy",
     "ngx-drag-scroll",
-    "ngx-toastr"
+    "ngx-toastr",
+    "@yuuvis/core"
   ],
   "lib": {
     "entryFile": "src/public-api.ts"

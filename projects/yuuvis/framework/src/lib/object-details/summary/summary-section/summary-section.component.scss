@@ -40,10 +40,6 @@
     border-bottom: 1px solid var(--panel-divider-color);
     @include transition();
 
-    &:hover {
-      background-color: var(--item-focus-background-color);
-    }
-
     &:last-child {
       border: 0;
     }
@@ -71,13 +67,14 @@
       .value {
         align-self: center;
         user-select: text;
-        @include ellipsis();
+        max-height: 200px;
+        overflow-y: auto;
 
         svg {
           fill: var(--text-color-caption);
         }
       }
-      a.value.version {
+      .value.version {
         background-color: rgba(var(--color-accent-rgb), 0.2);
         padding: calc(var(--app-pane-padding) / 8) calc(var(--app-pane-padding) / 4);
         &::after {
@@ -89,87 +86,48 @@
     &.diffActive {
       $ise-color-new: #9abd1e;
       $ise-color-gone: #ed5564;
+      border-bottom: 1px dotted var(--panel-divider-color);
+
+      &.removed .value-area .indicator svg {
+        background-color: $ise-color-gone;
+        color: #fff;
+      }
+      &.new .value-area .indicator svg {
+        color: #fff;
+        background-color: $ise-color-new;
+      }
 
       .value-area {
+        display: grid;
+        grid-template-rows: 1fr;
+        grid-template-columns: 1fr auto 1fr;
+        border: 1px solid var(--panel-divider-color);
+
+        // marker badge
+        .indicator {
+          display: flex;
+          flex-flow: column;
+          color: var(--text-color-hint);
+          align-items: center;
+          justify-content: center;
+          width: var(--app-pane-padding);
+
+          svg {
+            background-color: var(--panel-divider-color);
+            border-radius: 2px;
+            color: var(--text-color-caption);
+            padding: 1px;
+            box-sizing: content-box;
+          }
+        }
+
         .value {
           @include flex-row();
-          align-items: center;
           white-space: normal;
           word-break: break-word;
           height: 100%;
           position: relative;
-          overflow: unset;
-          flex-basis: auto;
-          margin: 0;
-
           padding: calc(var(--app-pane-padding) / 2);
-          border: 1px solid var(--item-focus-border-color);
-
-          &.first {
-            grid-area: first;
-            border-radius: 2px 0 0 2px;
-            padding-right: var(--app-pane-padding);
-          }
-          &.second {
-            grid-area: second;
-            border-radius: 0 2px 2px 0;
-            padding-left: var(--app-pane-padding);
-          }
-
-          // marker badge
-          &::before {
-            display: block;
-            position: absolute;
-            z-index: 1;
-            left: calc(var(--app-pane-padding) / 2 * -1);
-            top: calc(50% - (var(--app-pane-padding) / 2));
-            width: var(--app-pane-padding);
-            height: var(--app-pane-padding);
-            background-color: var(--color-primary);
-            background-position: center center;
-            background-repeat: no-repeat;
-            border-radius: 2px;
-          }
-        }
-      }
-
-      &.new .value {
-        &.first {
-          display: none;
-        }
-        &.second {
-          border-color: $ise-color-new;
-          &::before {
-            content: '';
-            background-color: $ise-color-new;
-            // added
-            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="16" viewBox="0 0 24 24" width="16"><path fill="white" d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>');
-          }
-        }
-      }
-      &.modified .value {
-        &.second {
-          border-left: 0;
-          &::before {
-            content: '';
-            // modified
-            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="16" viewBox="0 0 24 24" width="16"><path fill="white" d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>');
-          }
-        }
-      }
-      &.removed .value {
-        &.first {
-          border-color: $ise-color-gone;
-          padding-left: var(--app-pane-padding);
-          &::before {
-            content: '';
-            // removed
-            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="16" viewBox="0 0 24 24" width="16"><path fill="white" d="M19 13H5v-2h14v2z"/></svg>');
-            background-color: $ise-color-gone;
-          }
-        }
-        &.second {
-          display: none;
         }
       }
     }

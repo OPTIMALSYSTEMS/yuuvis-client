@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, HostBinding, Input, OnInit, Output } from '@angular/core';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { clear } from './../../svg.generated';
 
@@ -31,11 +31,18 @@ import { clear } from './../../svg.generated';
   styleUrls: ['./panel.component.scss'],
   host: { class: 'yuv-panel-wrapper' }
 })
-export class PanelComponent {
+export class PanelComponent implements OnInit {
   @Input() title = '';
   @Input() description = '';
+  @Output() titleClick = new EventEmitter();
+
+  @HostBinding('class.titleClickable') _titleClickable: boolean;
 
   constructor(private iconRegistry: IconRegistryService) {
     this.iconRegistry.registerIcons([clear]);
+  }
+
+  ngOnInit() {
+    this._titleClickable = !!this.titleClick.observers.length;
   }
 }

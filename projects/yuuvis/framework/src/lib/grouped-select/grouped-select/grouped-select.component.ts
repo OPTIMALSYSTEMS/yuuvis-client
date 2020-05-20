@@ -117,7 +117,7 @@ export class GroupedSelectComponent implements AfterViewInit, ControlValueAccess
     this._selectedItems = items;
     this.selectedItemsCheck = {};
     if (items) {
-      items.forEach(s => (this.selectedItemsCheck[s.id] = true));
+      items.forEach((s) => (this.selectedItemsCheck[s.id] = true));
     }
   }
   get selectedItems() {
@@ -161,7 +161,7 @@ export class GroupedSelectComponent implements AfterViewInit, ControlValueAccess
         // needs to be immutable
         this.selectedItems = [...this.selectedItems, item];
       } else {
-        this.selectedItems = this.selectedItems.filter(i => i.id !== item.id);
+        this.selectedItems = this.selectedItems.filter((i) => i.id !== item.id);
       }
       this.propagateChange(this.selectedItems);
     } else {
@@ -174,7 +174,7 @@ export class GroupedSelectComponent implements AfterViewInit, ControlValueAccess
   }
 
   isSelected(item): boolean {
-    return this.selectedItems ? !!this.selectedItems.find(i => i.id === item.id) : false;
+    return this.selectedItems ? !!this.selectedItems.find((i) => i.id === item.id) : false;
   }
 
   itemFocused(item: SelectableInternal) {
@@ -183,16 +183,16 @@ export class GroupedSelectComponent implements AfterViewInit, ControlValueAccess
 
   toggleAllOfGroup(group: SelectableGroup) {
     if (this.enableSelectAll && this._multiple) {
-      const selectedItemsIDs = this.selectedItems.map(i => i.id);
-      const groupItemIDs = group.items.map(i => i.id);
-      const contained = group.items.filter(i => selectedItemsIDs.includes(i.id));
+      const selectedItemsIDs = this.selectedItems.map((i) => i.id);
+      const groupItemIDs = group.items.map((i) => i.id);
+      const contained = group.items.filter((i) => selectedItemsIDs.includes(i.id));
       if (contained.length === group.items.length) {
         // all of the groups items are selected, so we'll remove them from teh current selection
-        this.selectedItems = this.selectedItems.filter(i => !groupItemIDs.includes(i.id));
+        this.selectedItems = this.selectedItems.filter((i) => !groupItemIDs.includes(i.id));
       } else {
         // add the group items that are not already part of the selection
         const sel = [...this.selectedItems];
-        group.items.filter(i => !selectedItemsIDs.includes(i.id)).forEach(i => sel.push(i));
+        group.items.filter((i) => !selectedItemsIDs.includes(i.id)).forEach((i) => sel.push(i));
         this.selectedItems = sel;
       }
       this.propagateChange(this.selectedItems);
@@ -224,7 +224,7 @@ export class GroupedSelectComponent implements AfterViewInit, ControlValueAccess
   }
 
   ngAfterViewInit() {
-    this.keyManager = new FocusKeyManager(this.items).withWrap();
+    this.keyManager = new FocusKeyManager(this.items).skipPredicate((item) => item.disabled).withWrap();
     let i = 0;
     this.items.forEach((c: SelectableItemComponent) => (c._item.index = i++));
     if (this.autofocus && this.groups.length > 0) {
@@ -240,7 +240,7 @@ export class GroupedSelectComponent implements AfterViewInit, ControlValueAccess
           this.resizeDebounce = 500;
         })
       )
-      .subscribe(v => {
+      .subscribe((v) => {
         let c = 'oneColumn';
         if (v.width > 2 * this.columnWidth && v.width < 3 * this.columnWidth) {
           c = 'twoColumns';
