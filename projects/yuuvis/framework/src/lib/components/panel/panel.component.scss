@@ -2,9 +2,6 @@
 
 .screen-s .yuv-panel-wrapper {
   grid-template-rows: auto 1fr;
-  .header {
-    padding: calc(var(--app-pane-padding) / 2) var(--app-pane-padding);
-  }
 }
 
 .yuv-panel-wrapper {
@@ -26,7 +23,7 @@
     }
   }
 
-  .content {
+  > .content {
     grid-area: content;
     color: var(--text-color-body);
     background-color: var(--panel-background-grey);
@@ -34,7 +31,7 @@
     position: relative;
   }
 
-  .header {
+  > .header {
     display: grid;
     background-color: var(--panel-background);
     grid-area: header;
@@ -115,7 +112,7 @@
     }
   }
 
-  .footer {
+  > .footer {
     grid-area: footer;
     background-color: var(--panel-background);
     padding: calc(var(--app-pane-padding) / 2) var(--app-pane-padding);
