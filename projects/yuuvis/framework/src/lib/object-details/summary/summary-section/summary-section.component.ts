@@ -4,15 +4,7 @@ import { IconRegistryService } from '../../../common/components/icon/service/ico
 import { arrowDown } from '../../../svg.generated';
 import { SummaryEntry } from '../summary.interface';
 /**
- * This low level component is a part of the summary component and consists of separate sections with information about the object
- *  such as `Object attributes`, `Basic parameters` and  `Administrative information`.
- * 
- * [Screenshot](../assets/images/yuv-summary-section.gif)
- * 
- *  @example
- * <yuv-summary-section [id]="'summary.parent'" *ngIf="summary?.parent.length" [visible]="visible.parent"
-    [entries]="summary?.parent" [diff]="!!dmsObject2" (visibilityChange)="onSectionVisibilityChange('parent', $event)"
-    [label]="'yuv.framework.object-details.summary.section.parent'|translate"></yuv-summary-section>
+ * @ignore
  */
 @Component({
   selector: 'yuv-summary-section',
@@ -20,36 +12,18 @@ import { SummaryEntry } from '../summary.interface';
   styleUrls: ['./summary-section.component.scss']
 })
 export class SummarySectionComponent {
-  /**
-   * whether or not to show a diff in indexdata of the second dmsObject.
-   */
   @Input() diff: boolean;
 
-  /**
-   * whether or not provide the opportunity to see all versions of the object.
-   */
   @Input() set visible(v: boolean) {
     this.isVisible = v;
   }
 
-  /**
-   * id of a parent folder. Providing this ID will create the new object
-   * inside of parent selected folder such as parent, core, baseparams or admin.
-   */
   @Input() id: string;
 
-  /**
-   * label provides the names of the section's header and contents.
-   */
   @Input() label: string;
 
-  /**
-   * entries that should be used for creating object(s).
-   */
   @Input() entries: SummaryEntry[];
-  /**
-   * Custom template to render version as for example a link.
-   */
+
   @Input() versionLinkTemplate: TemplateRef<any>;
 
   @Output() visibilityChange = new EventEmitter<boolean>();

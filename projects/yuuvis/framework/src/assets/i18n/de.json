@@ -1,4 +1,5 @@
 {
+	"yuv.client.state.object.context.load.error": "",
 	"yuv.framework.action-menu.action.delete.dms.object.confirm.message": "Sind Sie sicher, dass '{{item}}' gelöscht werden soll?",
 	"yuv.framework.action-menu.action.delete.dms.object.description": "Löscht das Objekt.",
 	"yuv.framework.action-menu.action.delete.dms.object.done.message": "Objekt wurde gelöscht.",

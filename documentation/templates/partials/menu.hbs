@@ -196,7 +196,7 @@ let tp = lithtml.html(`<nav>
     </ul>
     </li>
     {{/if}}
-    {{#if components}}
+    {{!-- {{#if components}}
     {{#element-alone components 'component'}}
     <li class="chapter">
         <div class="simple menu-toggler" data-toggle="collapse" ${ isNormalMode ? 'data-target="#components-links"'
@@ -215,7 +215,7 @@ let tp = lithtml.html(`<nav>
         </ul>
     </li>
     {{/element-alone}}
-    {{/if}}
+    {{/if}} --}}
     {{#if controllers}}
     {{#element-alone controllers 'controller'}}
     <li class="chapter">

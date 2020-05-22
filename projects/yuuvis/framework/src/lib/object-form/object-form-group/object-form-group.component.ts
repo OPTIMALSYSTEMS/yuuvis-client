@@ -2,7 +2,9 @@ import { Component, Input, ViewEncapsulation } from '@angular/core';
 import { ObjectFormControlWrapper, YuvFormGroup, YuvFormGroupWrapper } from '../object-form.interface';
 import { ObjectFormGroup } from '../object-form.model';
 import { Situation } from './../object-form.situation';
-
+/**
+ * @ignore
+ */
 @Component({
   selector: 'yuv-object-form-group',
   templateUrl: './object-form-group.component.html',

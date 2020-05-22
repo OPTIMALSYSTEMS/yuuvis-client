@@ -21,9 +21,11 @@ import { QuickSearchComponent } from './quick-search/quick-search.component';
 import { SearchResultPanelComponent } from './search-result-panel/search-result-panel.component';
 import { SearchResultComponent } from './search-result/search-result.component';
 
-const components = [QuickSearchComponent, SearchResultComponent, SearchResultPanelComponent, QuickSearchPickerComponent];
+const searchComponents = [QuickSearchComponent, SearchResultComponent, SearchResultPanelComponent, QuickSearchPickerComponent];
 
 @NgModule({
+  declarations: [...searchComponents],
+  exports: [...searchComponents],
   imports: [
     CommonModule,
     BrowserAnimationsModule,
@@ -43,8 +45,6 @@ const components = [QuickSearchComponent, SearchResultComponent, SearchResultPan
     YuvColumnConfigModule,
     YuvGroupedSelectModule,
     A11yModule
-  ],
-  declarations: [...components],
-  exports: [...components]
+  ]
 })
 export class YuvSearchModule {}

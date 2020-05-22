@@ -8,7 +8,7 @@
   "disableProtected": true,
   "disableInternal": true,
   "disableGraph": true,
-  "disableCoverage": false,
+  "disableCoverage": true,
   "coverageTestThresholdFail": false,
   "assetsFolder": "./../../../documentation/assets",
   "extTheme": "./../../../documentation/styles",
