@@ -11,6 +11,10 @@ import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { FocusWithinDirective } from './directives/focus-within.directive';
 import { RouterLinkDirective } from './directives/router-link.directive';
 
+/**
+ * `YuvCommonModule` is the basic client module, that came from `yuuvis core` and contains components for providing icons
+ * and the sidebar.
+ */
 @NgModule({
   imports: [CommonModule, HttpClientModule, AccordionModule, SidebarModule],
   declarations: [IconComponent, FocusWithinDirective, SidebarComponent, EmptyComponent, RouterLinkDirective],

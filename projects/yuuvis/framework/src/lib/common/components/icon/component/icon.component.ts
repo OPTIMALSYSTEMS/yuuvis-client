@@ -3,11 +3,16 @@ import { ChangeDetectionStrategy, Component, ElementRef, Inject, Input, Optional
 import { IconService } from '../service/icon.service';
 import { IconRegistryService } from '../service/iconRegistry.service';
 
+/**
+ * This component provides icons in the `yuuvis client`.
+ * To use it in your code you need to add an icon tag `yuv-icon` and the name of the svg.
+ * @example
+ *  <yuv-icon [icon]="'clear'"></yuv-icon>
+ *
+ */
 @Component({
   selector: 'yuv-icon',
-  template: `
-    <ng-content></ng-content>
-  `,
+  template: ` <ng-content></ng-content> `,
   styleUrls: ['./icon.component.scss'],
   host: { class: 'yuv-icon' },
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -32,7 +37,7 @@ export class IconComponent {
   @Input('iconSrc')
   set iconSrc(iconSrc: string) {
     this.removeSVG();
-    this.iconService.fetch(iconSrc).subscribe(svg => this.createSvg(svg));
+    this.iconService.fetch(iconSrc).subscribe((svg) => this.createSvg(svg));
   }
 
   /**

@@ -9,7 +9,10 @@ import { YuvGroupedSelectModule } from '../grouped-select/grouped-select.module'
 import { ColumnConfigSelectComponent } from './column-config-select/column-config-select.component';
 import { ColumnConfigComponent } from './column-config/column-config.component';
 import { ColumnPickerComponent } from './column-picker/column-picker.component';
-
+/**
+ * `YuvColumntConfigModule` contains components for configuration columns in the result list of an object.
+ * Configuration will be provided by the `ColumnConfigComponent`.
+ */
 @NgModule({
   declarations: [ColumnConfigComponent, ColumnPickerComponent, ColumnConfigSelectComponent],
   exports: [ColumnConfigComponent, ColumnConfigSelectComponent],
