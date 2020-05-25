@@ -1,4 +1,5 @@
 {
+	"yuv.client.state.object.context.load.error": "",
 	"yuv.framework.action-menu.action.delete.dms.object.confirm.message": "Sind Sie sicher, dass '{{item}}' gelöscht werden soll?",
 	"yuv.framework.action-menu.action.delete.dms.object.description": "Löscht das Objekt.",
 	"yuv.framework.action-menu.action.delete.dms.object.done.message": "Objekt wurde gelöscht.",
@@ -14,9 +15,9 @@
 	"yuv.framework.action-menu.action.export.pdf.label": "PDF",
 	"yuv.framework.action-menu.action.export.title": "Herunterladen im Format",
 	"yuv.framework.action-menu.action.upload.dms.object.content.add.label": "Dokumentdatei hinzufügen",
-	"yuv.framework.action-menu.action.upload.dms.object.content.replace.label": "Dokumentdatei ersetzen",
 	"yuv.framework.action-menu.action.upload.dms.object.content.description": "Fügt dem Objekt eine Dokumentdatei hinzu.",
 	"yuv.framework.action-menu.action.upload.dms.object.content.noFile": "Keine Datei ausgewählt",
+	"yuv.framework.action-menu.action.upload.dms.object.content.replace.label": "Dokumentdatei ersetzen",
 	"yuv.framework.action-menu.action.upload.dms.object.content.submit": "Hinzufügen",
 	"yuv.framework.action-menu.actions.group.common": "ALLGEMEIN",
 	"yuv.framework.action-menu.actions.group.further_actions": "WEITERE AKTIONEN",

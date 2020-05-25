@@ -1,19 +1,26 @@
-<ng-container *ngIf="dmsObject && !isUndocked">
-  <ng-container *ngIf="previewSrc; else tplNoPreview">
-    <iframe [ngClass]="{covered: (fileDropService.fileDraggedOverApp$ | async)}" [src]="previewSrc | safeUrl"
-      frameborder="0" #contentPreview></iframe>
-  </ng-container>
-
-  <ng-template #tplNoPreview>
-    <div class="no-preview">
-      <ng-container *ngIf="dmsObject.isFolder; else tplNoContent">
-        <yuv-icon [icon]="'folder'"></yuv-icon>
+<div class="content-preview-container">
+  <div class="content">
+    <ng-container *ngIf="dmsObject && !isUndocked">
+      <ng-container *ngIf="previewSrc; else tplNoPreview">
+        <iframe [ngClass]="{covered: (fileDropService.fileDraggedOverApp$ | async)}" [src]="previewSrc | safeUrl"
+          frameborder="0" #contentPreview></iframe>
       </ng-container>
-      <ng-template #tplNoContent>
-        <yuv-icon [icon]="'noFile'"></yuv-icon>
+    
+      <ng-template #tplNoPreview>
+        <div class="no-preview">
+          <ng-container *ngIf="dmsObject.isFolder; else tplNoContent">
+            <yuv-icon [icon]="'folder'"></yuv-icon>
+          </ng-container>
+          <ng-template #tplNoContent>
+            <yuv-icon [icon]="'noFile'"></yuv-icon>
+          </ng-template>
+        </div>
       </ng-template>
-    </div>
-  </ng-template>
-</ng-container>
+    </ng-container>
 
-<yuv-icon class="button undock" (click)="undock()" [icon]="'undock'"></yuv-icon>
+
+  </div>
+  <div class="undock_btn">
+    <yuv-icon class="button undock" (click)="undock()" [icon]="'undock'"></yuv-icon>
+  </div>
+</div>
