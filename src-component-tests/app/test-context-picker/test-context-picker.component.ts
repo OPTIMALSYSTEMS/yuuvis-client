@@ -1,4 +1,5 @@
 import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { DmsObject, DmsService } from '@yuuvis/core';
 import { PopoverConfig, PopoverRef, PopoverService } from '@yuuvis/framework';
 
 @Component({
@@ -8,8 +9,9 @@ import { PopoverConfig, PopoverRef, PopoverService } from '@yuuvis/framework';
 })
 export class TestContextPickerComponent implements OnInit {
   @ViewChild('tplContextPicker') tplContextPicker: TemplateRef<any>;
+  selectedObject: DmsObject;
 
-  constructor(private popoverService: PopoverService) {}
+  constructor(private popoverService: PopoverService, private dmsService: DmsService) {}
 
   showContextPicker() {
     const popoverConfig: PopoverConfig = {
@@ -19,6 +21,8 @@ export class TestContextPickerComponent implements OnInit {
   }
 
   onPickerResult(contextId: string, popoverRef?: PopoverRef) {
+    console.log('Got context ID', contextId);
+    this.dmsService.getDmsObject(contextId).subscribe((o) => (this.selectedObject = o));
     if (popoverRef) {
       popoverRef.close();
     }

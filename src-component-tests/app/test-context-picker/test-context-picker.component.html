@@ -6,6 +6,11 @@
     <yuv-context-picker (contextSelect)="onPickerResult($event)"></yuv-context-picker>
 </div>
 
+<div class="selected" *ngIf="selectedObject">
+    {{selectedObject.title}}<br>
+    {{selectedObject.description}}
+</div>
+
 
 <!-- template to be rendered by popover service -->
 <ng-template #tplContextPicker let-data let-popover="popover">

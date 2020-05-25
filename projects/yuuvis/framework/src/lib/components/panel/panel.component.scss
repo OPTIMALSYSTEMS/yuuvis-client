@@ -67,7 +67,7 @@
 
     .header-icon {
       grid-area: icon;
-      @include bidi-style(margin-right, var(--app-pane-padding), margin-left, var(--app-pane-padding));
+      @include bidi-style(margin-right, var(--app-pane-padding), margin-left);
 
       svg {
         fill: currentColor;

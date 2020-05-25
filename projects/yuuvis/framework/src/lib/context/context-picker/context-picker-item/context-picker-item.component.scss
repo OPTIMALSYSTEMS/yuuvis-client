@@ -1,0 +1,28 @@
+@import '../../../../../../../../src/scss-shared/_mixins';
+:host {
+  display: grid;
+  grid-template-rows: auto auto;
+  grid-template-columns: auto 1fr auto;
+  grid-template-areas: 'icon title details' 'icon description details';
+
+  yuv-icon {
+    grid-area: icon;
+    align-self: center;
+    @include bidi-style(margin-right, calc(var(--app-pane-padding) / 2), margin-left, initial);
+  }
+  .title {
+    grid-area: title;
+  }
+  .description {
+    grid-area: description;
+    opacity: 0.5;
+  }
+  .details {
+    grid-area: details;
+    align-self: center;
+  }
+
+  &.active {
+    background-color: var(--color-accent);
+  }
+}
