@@ -2,7 +2,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
-import { YuvColumnConfigModule, YuvDirectivesModule, YuvFrameworkModule, YuvGroupedSelectModule } from '@yuuvis/framework';
+import { YuvColumnConfigModule, YuvComponentsModule, YuvDirectivesModule, YuvFrameworkModule, YuvGroupedSelectModule } from '@yuuvis/framework';
 import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -12,11 +12,13 @@ import { TestAnimatedIconsComponent } from './test-animated-icons/test-animated-
 import { TestAuditComponent } from './test-audit/test-audit.component';
 import { TestColumnConfigComponent } from './test-column-config/test-column-config.component';
 import { TestContentPreviewComponent } from './test-content-preview/test-content-preview.component';
+import { TestContextPickerComponent } from './test-context-picker/test-context-picker.component';
 import { TestFileDropComponent } from './test-file-drop/test-file-drop.component';
 import { TestGroupedSelectComponent } from './test-grouped-select/test-grouped-select.component';
 import { TestIconsComponent } from './test-icons/test-icons/test-icons.component';
 import { TestLoadingSpinnerComponent } from './test-loading-spinner/test-loading-spinner.component';
 import { TestObjectCreateComponent } from './test-object-create/test-object-create.component';
+import { TestObjectDetailsCompareComponent } from './test-object-details-compare/test-object-details-compare.component';
 import { TestObjectDetailsComponent } from './test-object-details/test-object-details.component';
 import { TestObjectFormEditComponent } from './test-object-form-edit/test-object-form-edit.component';
 import { TestObjectFormComponent } from './test-object-form/test-object-form.component';
@@ -30,7 +32,6 @@ import { TestSummaryComponent } from './test-summary/test-summary.component';
 import { TestUploadProgressOverlayComponent } from './test-upload-progress-overlay/test-upload-progress-overlay.component';
 import { TestUserAvatarComponent } from './test-user-avatar/test-user-avatar.component';
 import { TestVersionListComponent } from './test-version-list/test-version-list.component';
-import { TestObjectDetailsCompareComponent } from './test-object-details-compare/test-object-details-compare.component';
 
 @NgModule({
   declarations: [
@@ -59,7 +60,8 @@ import { TestObjectDetailsCompareComponent } from './test-object-details-compare
     TestLoadingSpinnerComponent,
     TestColumnConfigComponent,
     TestVersionListComponent,
-    TestObjectDetailsCompareComponent
+    TestObjectDetailsCompareComponent,
+    TestContextPickerComponent
   ],
   imports: [
     HttpClientModule,
@@ -72,6 +74,7 @@ import { TestObjectDetailsCompareComponent } from './test-object-details-compare
       translations: ['assets/default/i18n/'],
       environment
     }),
+    YuvComponentsModule,
     YuvDirectivesModule,
     YuvGroupedSelectModule,
     YuvColumnConfigModule

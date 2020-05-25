@@ -1,0 +1,14 @@
+<div class="testing-controls">
+    <button (click)="showContextPicker()">Open picker in dialog</button>
+</div>
+
+<div class="cmp">
+    <yuv-context-picker (contextSelect)="onPickerResult($event)"></yuv-context-picker>
+</div>
+
+
+<!-- template to be rendered by popover service -->
+<ng-template #tplContextPicker let-data let-popover="popover">
+    <yuv-context-picker (cancel)="onPickerCancel(popover)" (contextSelect)="onPickerResult($event, popover)">
+    </yuv-context-picker>
+</ng-template>
