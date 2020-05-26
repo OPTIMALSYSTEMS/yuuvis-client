@@ -100,6 +100,7 @@
 	"yuv.framework.object-details.tabs.indexdata.title": "Index data",
 	"yuv.framework.object-details.tabs.summary.title": "Summary",
 	"yuv.framework.object-details.tooltip.icon.actions": "Object actions",
+	"yuv.framework.object-details.tooltip.undock": "undock",
 	"yuv.framework.object-form-edit.invalid": "The form contains errors. Correct the errors in order to be able to save the entries.",
 	"yuv.framework.object-form-edit.pending-changes.alert": "You are currently editing the index data of a form that has not been saved. Unsaved data will be lost.",
 	"yuv.framework.object-form-edit.reset": "Discard changes",
