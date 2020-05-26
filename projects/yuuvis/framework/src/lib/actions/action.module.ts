@@ -15,6 +15,8 @@ import { DeleteComponent } from './actions/delete-action/delete/delete.component
 import { DownloadActionComponent } from './actions/download-action/download-action';
 import { DownloadOriginalActionComponent } from './actions/download-original-action/download-original-action';
 import { DownloadPdfActionComponent } from './actions/download-pdf-action/download-pdf-action';
+import { MoveActionComponent } from './actions/move-action/move-action';
+import { MoveComponent } from './actions/move-action/move/move.component';
 import { UploadActionComponent } from './actions/upload-action/upload-action';
 import { UploadComponent } from './actions/upload-action/upload/upload.component';
 
@@ -25,7 +27,9 @@ export const entryComponents = [
   DeleteActionComponent,
   DeleteComponent,
   UploadComponent,
-  UploadActionComponent
+  UploadActionComponent,
+  MoveActionComponent,
+  MoveComponent
 ];
 
 /**
@@ -67,7 +71,9 @@ export const entryComponents = [
     DeleteActionComponent,
     DeleteComponent,
     UploadComponent,
-    UploadActionComponent
+    UploadActionComponent,
+    MoveActionComponent,
+    MoveComponent
   ],
   entryComponents
 })
