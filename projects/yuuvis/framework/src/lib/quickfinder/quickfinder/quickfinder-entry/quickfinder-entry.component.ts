@@ -1,7 +1,7 @@
 import { Highlightable } from '@angular/cdk/a11y';
 import { Component, ElementRef, HostBinding, Input } from '@angular/core';
 
-export interface ContextFilterItem {
+export interface QuickfinderEntry {
   id: string;
   iconSVG: string;
   title: string;
@@ -9,14 +9,14 @@ export interface ContextFilterItem {
 }
 
 @Component({
-  selector: 'yuv-context-picker-item',
-  templateUrl: './context-picker-item.component.html',
-  styleUrls: ['./context-picker-item.component.scss']
+  selector: 'yuv-quickfinder-entry',
+  templateUrl: './quickfinder-entry.component.html',
+  styleUrls: ['./quickfinder-entry.component.scss']
 })
-export class ContextPickerItemComponent implements Highlightable {
+export class QuickfinderEntryComponent implements Highlightable {
   @HostBinding('class.active') _active: boolean = false;
 
-  @Input() item: ContextFilterItem;
+  @Input() item: QuickfinderEntry;
 
   constructor(public element: ElementRef) {}
 

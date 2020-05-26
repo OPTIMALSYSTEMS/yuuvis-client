@@ -1,0 +1,20 @@
+<form [formGroup]="inputForm">
+    <div class="term-input">
+        <input type="text" #termInput formControlName="term">
+        <yuv-icon icon="clear" (click)="clear()"></yuv-icon>
+    </div>
+</form>
+<!-- <div class="result">
+    <yuv-quickfinder-entry *ngFor="let item of result" (click)="clickSelect(item.id)" [item]="item">
+        <ng-container *ngTemplateOutlet="detailsLinkTemplate;context:{context: item.id}"></ng-container>
+    </yuv-quickfinder-entry>
+</div> -->
+
+
+<ng-template #tplPicker let-data let-popover="popover">
+    <div class="result">
+        <yuv-quickfinder-entry *ngFor="let item of result" (click)="onPickerResult(item.id, popover)" [item]="item">
+            <ng-container *ngTemplateOutlet="detailsLinkTemplate;context:{context: item.id}"></ng-container>
+        </yuv-quickfinder-entry>
+    </div>
+</ng-template>

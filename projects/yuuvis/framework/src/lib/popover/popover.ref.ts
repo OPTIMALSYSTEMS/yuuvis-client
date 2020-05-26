@@ -17,7 +17,7 @@ export class PopoverRef<T = any> {
 
       this.overlayRef
         .keydownEvents()
-        .pipe(filter(event => event.key === 'Escape'))
+        .pipe(filter((event) => event.key === 'Escape'))
         .subscribe(() => {
           this.close();
         });

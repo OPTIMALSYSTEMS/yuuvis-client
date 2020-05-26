@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { TestContextPickerComponent } from './test-context-picker.component';
+import { TestQuickfinderComponent } from './test-quickfinder.component';
 
-describe('TestContextPickerComponent', () => {
-  let component: TestContextPickerComponent;
-  let fixture: ComponentFixture<TestContextPickerComponent>;
+describe('TestQuickfinderComponent', () => {
+  let component: TestQuickfinderComponent;
+  let fixture: ComponentFixture<TestQuickfinderComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ TestContextPickerComponent ]
+      declarations: [ TestQuickfinderComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(TestContextPickerComponent);
+    fixture = TestBed.createComponent(TestQuickfinderComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

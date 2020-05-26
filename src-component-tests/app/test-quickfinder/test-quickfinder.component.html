@@ -1,0 +1,27 @@
+<div class="testing-controls">
+    <!-- <button (click)="showContextPicker()">Open picker in dialog</button> -->
+</div>
+
+<div class="cmp">
+    <yuv-quickfinder [minChars]="1" [maxSuggestions]="5" [detailsLinkTemplate]="contextDetailsLinkTpl"
+        (objectSelect)="onPickerResult($event)">
+    </yuv-quickfinder>
+</div>
+
+<div class="selected" *ngIf="selectedObject">
+    {{selectedObject.title}}<br>
+    {{selectedObject.description}}
+</div>
+
+<!-- template to render a link inside the context picker -->
+<ng-template #contextDetailsLinkTpl let-context="context">
+    <a [routerLink]="['/context-picker', context]">
+        =>
+    </a>
+</ng-template>
+
+<!-- template to be rendered by popover service -->
+<!-- <ng-template #tplContextPicker let-data let-popover="popover">
+    <yuv-quickfinder (cancel)="onPickerCancel(popover)" (select)="onPickerResult($event, popover)">
+    </yuv-quickfinder>
+</ng-template> -->

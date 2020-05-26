@@ -3,11 +3,11 @@ import { DmsObject, DmsService } from '@yuuvis/core';
 import { PopoverConfig, PopoverRef, PopoverService } from '@yuuvis/framework';
 
 @Component({
-  selector: 'yuv-test-context-picker',
-  templateUrl: './test-context-picker.component.html',
-  styleUrls: ['./test-context-picker.component.scss']
+  selector: 'yuv-test-quickfinder',
+  templateUrl: './test-quickfinder.component.html',
+  styleUrls: ['./test-quickfinder.component.scss']
 })
-export class TestContextPickerComponent implements OnInit {
+export class TestQuickfinderComponent implements OnInit {
   @ViewChild('tplContextPicker') tplContextPicker: TemplateRef<any>;
   selectedObject: DmsObject;
 
