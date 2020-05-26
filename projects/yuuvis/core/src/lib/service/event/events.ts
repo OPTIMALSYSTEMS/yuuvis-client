@@ -11,6 +11,7 @@ export const YuvEventType = {
   // DMS_OBJECT_FAVORITE_ON: 'eo.dms.object.favorite.on',
   // DMS_OBJECT_FAVORITE_OFF: 'eo.dms.object.favorite.off',
   DMS_OBJECT_UPDATED: 'eo.dms.object.updated',
+  DMS_OBJECT_MOVED: 'eo.dms.object.moved',
   // DMS_OBJECT_PASTED: 'eo.dms.object.pasted',
   // INBOX_ITEM_CONFIRMED: 'eo.inbox.item.confirmed',
   DIALOG_STACK_CHANGED: 'eo.dialog.stack.changed'

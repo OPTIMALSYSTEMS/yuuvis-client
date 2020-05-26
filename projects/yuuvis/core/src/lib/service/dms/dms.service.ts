@@ -104,6 +104,21 @@ export class DmsService {
   }
 
   /**
+   * Moves given objects to a different context folder.
+   * @param folderId the id of the new context folder of the objects
+   * @param ids the ids of objects to move
+   */
+  moveDmsObjectsToFolder(folderId: string, ids: string[]) {
+    let data = {};
+    data[BaseObjectTypeField.PARENT_ID] = folderId;
+    return forkJoin(
+      ids.map((id) => {
+        return this.updateDmsObject(id, data).pipe(tap((res) => this.eventService.trigger(YuvEventType.DMS_OBJECT_MOVED, res)));
+      })
+    );
+  }
+
+  /**
    * Get a bunch of dms objects.
    * @param ids List of IDs of objects to be retrieved
    */
