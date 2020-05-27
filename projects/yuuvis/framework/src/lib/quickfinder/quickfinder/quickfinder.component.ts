@@ -16,7 +16,7 @@ import {
   ViewChildren
 } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { BaseObjectTypeField, DmsObject, SearchQuery, SearchService, SecondaryObjectTypeField, SystemService, SystemType } from '@yuuvis/core';
+import { BaseObjectTypeField, SearchQuery, SearchService, SecondaryObjectTypeField, SystemService, SystemType } from '@yuuvis/core';
 import { debounceTime, map } from 'rxjs/operators';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { PopoverRef } from '../../popover/popover.ref';
@@ -36,14 +36,19 @@ export class QuickfinderComponent implements OnInit, AfterViewInit, OnDestroy {
   private keyManager: ActiveDescendantKeyManager<QuickfinderEntryComponent>;
   private query: SearchQuery;
   inputForm: FormGroup;
-  details: DmsObject;
+  selectedEntry: QuickfinderEntry;
   result: QuickfinderEntry[];
+  busy: boolean;
   private popoverRef: PopoverRef;
 
   @ViewChildren(QuickfinderEntryComponent) items: QueryList<QuickfinderEntryComponent>;
   @ViewChild('termInput') termInput;
   @ViewChild('tplPicker') tplPicker: TemplateRef<any>;
 
+  /**
+   * Label for the quickfinder
+   */
+  @Input() label: string;
   /**
    * Minimal number of characters to trigger search (default: 2)
    */
@@ -67,28 +72,16 @@ export class QuickfinderComponent implements OnInit, AfterViewInit, OnDestroy {
   /**
    * Emitted once an object has been selected
    */
-  @Output() objectSelect = new EventEmitter<string>();
+  @Output() objectSelect = new EventEmitter<QuickfinderEntry>();
 
   // @Output() cancel = new EventEmitter<any>();
 
   @HostListener('keydown', ['$event']) onKeyDown(event) {
     this.keyManager.onKeydown(event);
     if (this.result && this.keyManager.activeItemIndex >= 0) {
-      const selectedItemId = this.result[this.keyManager.activeItemIndex].id;
       switch (event.keyCode) {
-        // case ESCAPE: {
-        //   event.preventDefault();
-        //   event.stopPropagation();
-        //   if (this.details) {
-        //     this.details = null;
-        //   } else {
-        //     this.cancel.emit();
-        //   }
-        //   break;
-        // }
         case ENTER: {
-          this.objectSelect.emit(selectedItemId);
-          this.popoverRef.close();
+          this.selectEntry(this.result[this.keyManager.activeItemIndex]);
           break;
         }
       }
@@ -103,11 +96,6 @@ export class QuickfinderComponent implements OnInit, AfterViewInit, OnDestroy {
     private systemService: SystemService,
     private searchService: SearchService
   ) {
-    this.query = new SearchQuery({
-      fields: [BaseObjectTypeField.OBJECT_ID, BaseObjectTypeField.OBJECT_TYPE_ID, SecondaryObjectTypeField.TITLE, SecondaryObjectTypeField.DESCRIPTION],
-      types: this.allowedTargetTypes,
-      size: this.maxSuggestions
-    });
     this.iconRegistry.registerIcons([clear, arrowNext]);
     this.inputForm = this.fb.group({
       term: []
@@ -123,6 +111,7 @@ export class QuickfinderComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private fetchResult() {
+    this.busy = true;
     this.searchService
       .search(this.query)
       .pipe(
@@ -138,9 +127,15 @@ export class QuickfinderComponent implements OnInit, AfterViewInit, OnDestroy {
       .subscribe(
         (r) => {
           this.result = r;
-          console.log(this.popoverRef);
           if (!this.popoverRef) {
-            this.popoverRef = this.popoverService.open(this.tplPicker, {}, this.elRef);
+            this.popoverRef = this.popoverService.open(
+              this.tplPicker,
+              {
+                maxWidth: '250px',
+                backdropClass: 'invisible'
+              },
+              this.elRef
+            );
             const sub = this.popoverRef.afterClosed().subscribe((_) => {
               sub.unsubscribe();
               this.popoverRef = null;
@@ -149,42 +144,38 @@ export class QuickfinderComponent implements OnInit, AfterViewInit, OnDestroy {
         },
         (e) => {
           console.error(e);
-        }
+        },
+        () => (this.busy = false)
       );
   }
 
-  clickSelect(id) {
-    const idx = this.result.findIndex((r) => r.id === id);
-    if (idx >= 0) {
-      this.keyManager.setActiveItem(idx);
-    }
+  selectEntry(entry: QuickfinderEntry) {
+    this.selectedEntry = entry;
+    this.objectSelect.emit(this.selectedEntry);
+    this.popoverRef.close();
   }
 
   clear() {
+    this.selectedEntry = null;
     this.inputForm.patchValue({
       term: ''
     });
-    this.termInput.nativeElement.focus();
+    setTimeout(() => {
+      this.termInput.nativeElement.focus();
+    }, 0);
   }
 
-  onPickerResult(objectId: string, popoverRef?: PopoverRef) {
-    console.log('Got context ID', objectId);
-    if (popoverRef) {
-      popoverRef.close();
-    }
+  ngOnInit(): void {
+    this.query = new SearchQuery({
+      fields: [BaseObjectTypeField.OBJECT_ID, BaseObjectTypeField.OBJECT_TYPE_ID, SecondaryObjectTypeField.TITLE, SecondaryObjectTypeField.DESCRIPTION],
+      types: this.allowedTargetTypes,
+      size: this.maxSuggestions
+    });
   }
-
-  // onPickerCancel(popoverRef?: PopoverRef) {
-  //   if (popoverRef) {
-  //     popoverRef.close();
-  //   }
-  // }
-
-  ngOnInit(): void {}
 
   ngOnDestroy(): void {}
 
   ngAfterViewInit(): void {
-    this.keyManager = new ActiveDescendantKeyManager(this.items).skipPredicate((item) => item.disabled).withWrap();
+    this.keyManager = new ActiveDescendantKeyManager(this.items).withWrap();
   }
 }

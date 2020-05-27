@@ -1,9 +1,16 @@
 @import '../../../../../../../../src/scss-shared/_mixins';
 :host {
   display: grid;
+  cursor: pointer;
   grid-template-rows: auto auto;
   grid-template-columns: auto 1fr auto;
   grid-template-areas: 'icon title details' 'icon description details';
+  border-bottom: 1px solid var(--panel-divider-color);
+  padding: calc(var(--app-pane-padding) / 2);
+
+  &:hover {
+    background-color: var(--item-focus-background-color);
+  }
 
   yuv-icon {
     grid-area: icon;

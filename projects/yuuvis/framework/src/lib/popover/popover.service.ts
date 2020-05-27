@@ -52,87 +52,17 @@ export class PopoverService {
   ): PopoverRef<D> {
     const popoverConfig = Object.assign({}, defaultConfig, config);
     const positionStrategy = this.getPositionStrategy(popoverConfig, target);
-    const overlayConfig: OverlayConfig = !!target
-      ? {
-          positionStrategy,
-          scrollStrategy: this.overlay.scrollStrategies.close()
-        }
-      : {
-          hasBackdrop: true,
-          backdropClass: config.backdropClass,
-          panelClass: config.panelClass,
-          positionStrategy,
-          scrollStrategy: this.overlay.scrollStrategies.reposition(),
-          maxHeight: config.maxHeight,
-          maxWidth: config.maxWidth
-        };
-
-    // const overlayRef = this.overlay.create(overlayConfig);
-    // overlayRef.setDirection(this.direction === Direction.RTL ? 'rtl' : 'ltr');
-    // const popoverRef = new PopoverRef(overlayRef, popoverConfig);
-
-    // const popover = overlayRef.attach(
-    //   new ComponentPortal(
-    //     PopoverComponent,
-    //     null,
-    //     new PortalInjector(
-    //       this.injector,
-    //       new WeakMap<any, any>([[PopoverRef, popoverRef]])
-    //     )
-    //   )
-    // ).instance;
-
-    // if (componentOrTemplate instanceof TemplateRef) {
-    //   // rendering a provided template dynamically
-    //   popover.attachTemplatePortal(
-    //     new TemplatePortal(componentOrTemplate, null, {
-    //       $implicit: config.data,
-    //       popover: popoverRef
-    //     })
-    //   );
-    // } else {
-    //   // rendering a provided component dynamically
-    //   popover.attachComponentPortal(
-    //     new ComponentPortal(
-    //       componentOrTemplate,
-    //       null,
-    //       new PortalInjector(
-    //         this.injector,
-    //         new WeakMap<any, any>([
-    //           [POPOVER_DATA, config.data],
-    //           [PopoverRef, popoverRef]
-    //         ])
-    //       )
-    //     )
-    //   );
-    // }
-
+    const overlayConfig: OverlayConfig = {
+      hasBackdrop: true,
+      backdropClass: config.backdropClass,
+      panelClass: config.panelClass,
+      positionStrategy,
+      scrollStrategy: this.overlay.scrollStrategies.reposition(),
+      maxHeight: config.maxHeight,
+      maxWidth: config.maxWidth
+    };
     return this.createOverlay(componentOrTemplate, overlayConfig, popoverConfig, config);
   }
-
-  // openAsContextMenu(componentOrTemplate: ComponentType<any> | TemplateRef<any>, target: ElementRef | HTMLElement) {
-  //   return this.open(componentOrTemplate, {}, target);
-
-  //   // // const popoverConfig = Object.assign({}, defaultConfig, config);
-  //   // const positionStrategy = this.overlay
-  //   //   .position()
-  //   //   .flexibleConnectedTo({ x, y })
-  //   //   .withPositions([
-  //   //     {
-  //   //       originX: 'end',
-  //   //       originY: 'bottom',
-  //   //       overlayX: 'end',
-  //   //       overlayY: 'top'
-  //   //     }
-  //   //   ]);
-  //   // const overlayConfig: OverlayConfig = {
-  //   //   hasBackdrop: false,
-  //   //   positionStrategy,
-  //   //   scrollStrategy: this.overlay.scrollStrategies.close()
-  //   // };
-
-  //   // return this.createOverlay(componentOrTemplate, overlayConfig, popoverConfig, config);
-  // }
 
   private createOverlay(
     componentOrTemplate: ComponentType<any> | TemplateRef<any>,

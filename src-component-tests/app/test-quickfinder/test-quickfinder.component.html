@@ -6,6 +6,9 @@
     <yuv-quickfinder [minChars]="1" [maxSuggestions]="5" [detailsLinkTemplate]="contextDetailsLinkTpl"
         (objectSelect)="onPickerResult($event)">
     </yuv-quickfinder>
+    <yuv-quickfinder [label]="'pick a folder'" [allowedTargetTypes]="['system:folder']" [minChars]="1"
+        [maxSuggestions]="5" [detailsLinkTemplate]="contextDetailsLinkTpl" (objectSelect)="onPickerResult($event)">
+    </yuv-quickfinder>
 </div>
 
 <div class="selected" *ngIf="selectedObject">
@@ -19,9 +22,3 @@
         =>
     </a>
 </ng-template>
-
-<!-- template to be rendered by popover service -->
-<!-- <ng-template #tplContextPicker let-data let-popover="popover">
-    <yuv-quickfinder (cancel)="onPickerCancel(popover)" (select)="onPickerResult($event, popover)">
-    </yuv-quickfinder>
-</ng-template> -->

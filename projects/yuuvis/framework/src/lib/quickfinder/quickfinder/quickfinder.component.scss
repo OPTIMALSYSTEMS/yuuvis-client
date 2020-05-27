@@ -6,28 +6,35 @@
 
   form {
     grid-area: form;
-    background-color: var(--color-accent);
-    padding: var(--app-pane-padding);
+    display: flex;
+    align-items: center;
 
-    .term-input {
-      display: flex;
-      //   background-color: rgba(255, 255, 255, 0.5);
-      border-bottom: 1px solid #fff;
-
-      input {
-        flex: 1;
-        background-color: transparent;
-        border: 0;
-        outline: 0;
-      }
-      yuv-icon {
-        color: #fff;
-        padding: calc(var(--app-pane-padding) / 4);
-      }
+    .main {
+      flex: 1;
+      background-color: transparent;
+      border: 0;
+      outline: 0;
     }
+    .aside {
+      width: var(--app-pane-padding);
+      height: var(--app-pane-padding);
+      padding: 0;
+    }
+
+    // .yuv-icon {
+    //   padding: calc(var(--app-pane-padding) / 4);
+    //   margin: 0 calc(var(--app-pane-padding) / 4);
+    // }
+    // .yuv-loader {
+    //   width: var(--app-pane-padding);
+    //   height: var(--app-pane-padding);
+    //   margin: calc(var(--app-pane-padding) / 4);
+    // }
   }
   .result {
     grid-area: result;
+    yuv-quickfinder-entry {
+    }
   }
 
   yuv-summary {

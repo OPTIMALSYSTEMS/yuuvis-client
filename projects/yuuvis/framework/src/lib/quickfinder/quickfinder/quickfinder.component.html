@@ -1,19 +1,22 @@
-<form [formGroup]="inputForm">
-    <div class="term-input">
-        <input type="text" #termInput formControlName="term">
-        <yuv-icon icon="clear" (click)="clear()"></yuv-icon>
-    </div>
-</form>
-<!-- <div class="result">
-    <yuv-quickfinder-entry *ngFor="let item of result" (click)="clickSelect(item.id)" [item]="item">
-        <ng-container *ngTemplateOutlet="detailsLinkTemplate;context:{context: item.id}"></ng-container>
-    </yuv-quickfinder-entry>
-</div> -->
+<yuv-form-input [label]="label">
+    <form [formGroup]="inputForm">
+        <ng-container *ngIf="!selectedEntry; else tplSelected">
+            <input class="main" type="text" #termInput formControlName="term">
+            <div class="aside small" [ngClass]="{'yuv-loader': busy}"></div>
+        </ng-container>
+    </form>
+</yuv-form-input>
 
+<ng-template #tplSelected>
+    <div class="main">
+        {{selectedEntry.title}}
+    </div>
+    <yuv-icon class="aside btn" icon="clear" (click)="clear()"></yuv-icon>
+</ng-template>
 
 <ng-template #tplPicker let-data let-popover="popover">
     <div class="result">
-        <yuv-quickfinder-entry *ngFor="let item of result" (click)="onPickerResult(item.id, popover)" [item]="item">
+        <yuv-quickfinder-entry *ngFor="let item of result" (click)="selectEntry(item, popover)" [item]="item">
             <ng-container *ngTemplateOutlet="detailsLinkTemplate;context:{context: item.id}"></ng-container>
         </yuv-quickfinder-entry>
     </div>
