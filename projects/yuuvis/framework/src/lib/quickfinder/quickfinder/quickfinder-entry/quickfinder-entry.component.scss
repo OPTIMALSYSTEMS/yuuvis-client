@@ -1,10 +1,10 @@
-@import '../../../../../../../../src/scss-shared/_mixins';
 :host {
   display: grid;
   cursor: pointer;
   grid-template-rows: auto auto;
   grid-template-columns: auto 1fr auto;
   grid-template-areas: 'icon title details' 'icon description details';
+  gap: 0 var(--app-pane-padding);
   border-bottom: 1px solid var(--panel-divider-color);
   padding: calc(var(--app-pane-padding) / 2);
 
@@ -15,14 +15,14 @@
   yuv-icon {
     grid-area: icon;
     align-self: center;
-    @include bidi-style(margin-right, calc(var(--app-pane-padding) / 2), margin-left, initial);
+    opacity: 0.54;
   }
   .title {
     grid-area: title;
   }
   .description {
     grid-area: description;
-    opacity: 0.5;
+    opacity: 0.54;
   }
   .details {
     grid-area: details;
@@ -30,6 +30,6 @@
   }
 
   &.active {
-    background-color: var(--color-accent);
+    background-color: var(--item-selected-background-color);
   }
 }

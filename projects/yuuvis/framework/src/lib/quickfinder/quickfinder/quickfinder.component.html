@@ -17,7 +17,7 @@
 <ng-template #tplPicker let-data let-popover="popover">
     <div class="result">
         <yuv-quickfinder-entry *ngFor="let item of result" (click)="selectEntry(item, popover)" [item]="item">
-            <ng-container *ngTemplateOutlet="detailsLinkTemplate;context:{context: item.id}"></ng-container>
+            <ng-container *ngTemplateOutlet="entryLinkTemplate;context:{entry: item}"></ng-container>
         </yuv-quickfinder-entry>
     </div>
 </ng-template>

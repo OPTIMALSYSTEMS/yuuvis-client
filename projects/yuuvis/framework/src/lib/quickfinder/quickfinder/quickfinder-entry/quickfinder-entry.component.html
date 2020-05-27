@@ -2,6 +2,6 @@
 <div class="title">{{item.title}}</div>
 <div class="description">{{item.description}}</div>
 
-<div class="details">
+<div class="details" (click)="detailsClicked($event)">
     <ng-content></ng-content>
 </div>

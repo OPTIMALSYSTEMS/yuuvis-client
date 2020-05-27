@@ -24,6 +24,7 @@
   --panel-divider-color: rgb(224, 224, 224);
 
   --item-focus-background-color: rgba(0, 0, 0, 0.06);
+  --item-selected-background-color: rgba(var(--color-accent-rgb), 0.2);
   --item-focus-border-color: rgba(0, 0, 0, 0.1);
 
   --app-bar-background: var(--panel-background);

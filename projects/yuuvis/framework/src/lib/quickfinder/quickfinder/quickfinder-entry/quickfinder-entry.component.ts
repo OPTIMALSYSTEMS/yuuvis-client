@@ -20,6 +20,10 @@ export class QuickfinderEntryComponent implements Highlightable {
 
   constructor(public element: ElementRef) {}
 
+  detailsClicked(event) {
+    event.stopPropagation();
+  }
+
   setActiveStyles(): void {
     this._active = true;
   }
