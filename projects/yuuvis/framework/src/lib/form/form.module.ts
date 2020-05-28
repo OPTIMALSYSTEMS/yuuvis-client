@@ -18,6 +18,7 @@ import { DatetimeComponent } from './elements/datetime/datetime.component';
 import { YearRangeDirective } from './elements/datetime/year-range/year-range.directive';
 import { NumberRangeComponent } from './elements/number-range/number-range.component';
 import { NumberComponent } from './elements/number/number.component';
+import { OrganizationComponent } from './elements/organization/organization.component';
 import { StringComponent } from './elements/string/string.component';
 import { FormInputComponent } from './form-input/form-input.component';
 
@@ -35,7 +36,8 @@ import { FormInputComponent } from './form-input/form-input.component';
     DatepickerComponent,
     DatetimeRangeComponent,
     NumberRangeComponent,
-    YearRangeDirective
+    YearRangeDirective,
+    OrganizationComponent
   ],
   exports: [
     FormInputComponent,
@@ -45,7 +47,8 @@ import { FormInputComponent } from './form-input/form-input.component';
     NumberComponent,
     DatetimeRangeComponent,
     NumberRangeComponent,
-    YearRangeDirective
+    YearRangeDirective,
+    OrganizationComponent
   ],
   imports: [
     CommonModule,

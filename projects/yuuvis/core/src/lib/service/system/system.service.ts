@@ -6,7 +6,7 @@ import { BackendService } from '../backend/backend.service';
 import { AppCacheService } from '../cache/app-cache.service';
 import { Logger } from '../logger/logger';
 import { Utils } from './../../util/utils';
-import { ContentStreamAllowed, SecondaryObjectTypeField, SystemType } from './system.enum';
+import { BaseObjectTypeField, ContentStreamAllowed, SecondaryObjectTypeField, SystemType } from './system.enum';
 import { ObjectType, ObjectTypeField, ObjectTypeGroup, SchemaResponse, SchemaResponseTypeDefinition, SystemDefinition } from './system.interface';
 
 @Injectable({
@@ -229,6 +229,14 @@ export class SystemService {
   private setSchema(schemaResponse: SchemaResponse, localizedResource: any) {
     const objectTypes: ObjectType[] = schemaResponse.objectTypes.map((ot: SchemaResponseTypeDefinition) => {
       const isFolder = ot.baseId === 'folder';
+
+      // map certain fields to organization type (fake it until you make it ;-)
+      const orgTypeFields = [BaseObjectTypeField.MODIFIED_BY, BaseObjectTypeField.CREATED_BY];
+      ot.fields.forEach((f) => {
+        if (orgTypeFields.includes(f.id)) {
+          f.classification = ['id:organization'];
+        }
+      });
       return {
         id: ot.id,
         localNamespace: ot.localNamespace,
