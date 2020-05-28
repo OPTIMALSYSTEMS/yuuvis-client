@@ -129,7 +129,8 @@ export class ScreenService {
     this.screenSource.next(this.screen);
     // force change detection because resize will not be recognized by Angular in some cases
     // TODO: check: causes recursive ticks in some cases ...
-    this.ref.tick();
+    // this.ref.tick();
+    setTimeout(() => {}, 0);
   }
 
   private getDebounceTime() {
