@@ -178,7 +178,7 @@
   "yuv.client.frame.offline.title": "Offline",
   "yuv.client.state.about.author.label": "Hersteller:",
   "yuv.client.state.about.claim": "yuuvis® Momentum ist unsere Content Services Plattform, ein Framework für Lösungsentwickler, die auf offenen Standards basierende Content-zentrische Anwendung bei kurzer Time-to-Market erstellen wollen. Create. Scalable. Framework.",
-  "yuv.client.state.about.client.version.label": "Komponenten-Version:",
+  "yuv.client.state.about.client.version.label": "Komponentenversion:",
   "yuv.client.state.about.documentation.link.label": "Dokumentation",
   "yuv.client.state.about.license.intro": "Dieses Dokument enthält Lizenzinformationen mit ergänzenden Bestimmungen für die in yuuvis® client eingebundenen Fremdkomponenten. Diese Lizenzinformationen und ergänzenden Bestimmungen werden durch diese Referenzierung Teil der OPTIMAL SYSTEMS Software Lizenzvereinbarung.",
   "yuv.client.state.about.license.title": "Lizenzhinweise",
