@@ -168,9 +168,27 @@ export class StringComponent implements ControlValueAccessor, Validator {
   }
 
   onBlur() {
-    if (this.value) {
-      this.value = this.multiselect ? this.value.map((v) => v.trim()) : this.value.trim();
+    if (this.trimValue()) {
+      this.propagateChange(this.value);
     }
+  }
+
+  /**
+   * Trims the current value and returns wether or not it has been trimmed
+   */
+  private trimValue(): boolean {
+    if (this.value) {
+      if (this.multiselect) {
+        const lengthBefore = this.value.join('').length;
+        this.value = this.value.map((v) => v.trim());
+        return this.value.join('').length !== lengthBefore;
+      } else {
+        const lengthBefore = this.value.length;
+        this.value = this.value.trim();
+        return this.value.length !== lengthBefore;
+      }
+    }
+    return false;
   }
 
   private validateClassification(string): boolean {
