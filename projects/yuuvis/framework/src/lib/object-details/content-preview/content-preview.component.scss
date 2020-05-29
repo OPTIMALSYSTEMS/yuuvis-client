@@ -38,3 +38,23 @@
     }
   }
 }
+
+.content-preview-container {
+  display: grid;
+  grid-template-columns: 2fr minmax(auto, 40px);
+  grid-template-rows: 1fr;
+  gap: 1px 1px;
+  grid-template-areas: 'content undock_btn';
+  width: 100%;
+}
+
+.content {
+  grid-area: content;
+}
+
+.undock_btn {
+  grid-area: undock_btn;
+  yuv-icon:hover {
+    cursor: pointer;
+  }
+}
