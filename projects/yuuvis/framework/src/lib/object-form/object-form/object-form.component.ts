@@ -183,6 +183,7 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
     if (this.isInnerTableForm || (formModel.script && formModel.script.length > 0)) {
       this.logger.debug('adding form scripting scope');
       this.scriptingScope = new ObjectFormScriptingScope(formModel.situation, this.onScriptingModelChanged, this.pluginService.getApi(), this.isInnerTableForm);
+      this.scriptingScope.objectId = this.formOptions.objectId;
     }
 
     const form = new ObjectFormGroup({});
