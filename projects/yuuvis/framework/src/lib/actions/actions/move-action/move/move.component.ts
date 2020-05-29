@@ -22,7 +22,7 @@ export class MoveComponent implements OnInit, ActionComponent {
   }
 
   move() {
-    this.dmsService.moveDmsObjectsToFolder(this.contextInfo.id, this.selection).subscribe();
+    this.dmsService.moveDmsObjects(this.contextInfo.id, this.selection).subscribe();
     this.finished.emit();
   }
 

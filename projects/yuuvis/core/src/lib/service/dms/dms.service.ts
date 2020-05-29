@@ -113,9 +113,9 @@ export class DmsService {
    * @param folderId the id of the new context folder of the objects
    * @param ids the ids of objects to move
    */
-  moveDmsObjectsToFolder(folderId: string, objects: DmsObject[]) {
+  moveDmsObjects(targetFolderId: string, objects: DmsObject[]) {
     let data = {};
-    data[BaseObjectTypeField.PARENT_ID] = folderId;
+    data[BaseObjectTypeField.PARENT_ID] = targetFolderId;
     return forkJoin(
       objects.map((o) => {
         return this.updateDmsObject(o.id, data, true).pipe(
@@ -127,7 +127,7 @@ export class DmsService {
       map((results) => {
         let succeeded = results.filter((res) => !res.isError).map((res) => res.dmsObject);
         let failed = results.filter((res) => res.isError).map((res) => res.dmsObject);
-        return { succeeded, failed, newParentId: folderId };
+        return { succeeded, failed, targetFolderId };
       }),
       tap((results) => this.eventService.trigger(YuvEventType.DMS_OBJECTS_MOVED, results))
     );

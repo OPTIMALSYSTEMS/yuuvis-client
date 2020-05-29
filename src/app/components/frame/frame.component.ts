@@ -1,4 +1,4 @@
-import { Component, HostBinding, HostListener, OnInit } from '@angular/core';
+import { Component, HostBinding, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, NavigationExtras, Router } from '@angular/router';
 import { SwUpdate } from '@angular/service-worker';
 import {
@@ -18,6 +18,7 @@ import {
 } from '@yuuvis/core';
 import { IconRegistryService, LayoutService, LayoutSettings, NotificationService, Screen, ScreenService } from '@yuuvis/framework';
 import { filter } from 'rxjs/operators';
+import { takeUntilDestroy } from 'take-until-destroy';
 import { add, close, drawer, offline, refresh, search, userDisabled } from '../../../assets/default/svg/svg';
 import { AppSearchService } from '../../service/app-search.service';
 import { FrameService } from './frame.service';
@@ -27,7 +28,7 @@ import { FrameService } from './frame.service';
   templateUrl: './frame.component.html',
   styleUrls: ['./frame.component.scss']
 })
-export class FrameComponent implements OnInit {
+export class FrameComponent implements OnInit, OnDestroy {
   swUpdateAvailable: boolean;
   hideAppBar: boolean;
   disableFileDrop: boolean;
@@ -86,22 +87,28 @@ export class FrameComponent implements OnInit {
     this.screenService.screenChange$.subscribe((s: Screen) => {
       this.screenSmall = s.isSmall;
     });
-    this.eventService.on(YuvEventType.DMS_OBJECTS_MOVED).subscribe((event) => {
-      this.dmsService.getDmsObject(event.data.newParentId).subscribe((newParent) => {
-        const title = this.translateService.instant('yuv.framework.action-menu.action.move.dms.object.picker.title') + ': ' + newParent.title;
-        const devider = '; ';
-        if (!event.data.failed.length) {
-          this.notificationService.success(title, event.data.succeeded.map((o) => o.title).join(devider));
-        } else if (!event.data.succeeded.length) {
-          this.notificationService.error(title, event.data.failed.map((o) => o.title).join(devider));
-        } else {
-          this.notificationService.warning(
-            title,
-            'Succeeded: ' + event.data.succeeded.map((o) => o.title).join(devider) + 'Failed: ' + event.data.failed.map((o) => o.title).join(devider)
-          );
-        }
+    this.eventService
+      .on(YuvEventType.DMS_OBJECTS_MOVED)
+      .pipe(takeUntilDestroy(this))
+      .subscribe((event) => {
+        this.dmsService.getDmsObject(event.data.targetFolderId).subscribe((newParent) => {
+          const title = this.translateService.instant('yuv.client.frame.move.notification.title', { objectTitle: newParent.title });
+          const devider = '; ';
+          if (!event.data.failed.length) {
+            this.notificationService.success(title, event.data.succeeded.map((o) => o.title).join(devider));
+          } else if (!event.data.succeeded.length) {
+            this.notificationService.error(title, event.data.failed.map((o) => o.title).join(devider));
+          } else {
+            this.notificationService.warning(
+              title,
+              this.translateService.instant('yuv.client.frame.move.notification.message', {
+                succeeded: event.data.succeeded.map((o) => o.title).join(devider),
+                failed: event.data.failed.map((o) => o.title).join(devider)
+              })
+            );
+          }
+        });
       });
-    });
   }
 
   get currentRoute() {
@@ -227,4 +234,6 @@ export class FrameComponent implements OnInit {
       this.toggleSearch(false);
     });
   }
+
+  ngOnDestroy() {}
 }
