@@ -173,7 +173,7 @@
   "yuv.client.frame.app-bar.filedrop.label": "Create as a new object",
   "yuv.client.frame.app-bar.logout": "Log out",
   "yuv.client.frame.app-bar.pwa-update.msg": "Update available",
-  "yuv.client.frame.offline.button.refresh": "Refresh",
+  "yuv.client.frame.offline.button.refresh": "Reload",
   "yuv.client.frame.offline.message": "You are not connected to the Internet.",
   "yuv.client.frame.offline.title": "Offline",
   "yuv.client.state.about.author.label": "Manufacturer:",
