@@ -34,7 +34,7 @@ export class SearchService {
   }
 
   search(q: SearchQuery): Observable<SearchResult> {
-    return this.searchRaw(q).pipe(map(res => this.toSearchResult(res)));
+    return this.searchRaw(q).pipe(map((res) => this.toSearchResult(res)));
   }
 
   searchRaw(q: SearchQuery): Observable<any> {
@@ -50,7 +50,7 @@ export class SearchService {
    */
   aggregate(q: SearchQuery, aggregations: string[]) {
     q.aggs = aggregations;
-    return this.backend.post(`/dms/search`, q.toQueryJson(), ApiBase.apiWeb).pipe(map(res => this.toAggregateResult(res, aggregations)));
+    return this.backend.post(`/dms/search`, q.toQueryJson(), ApiBase.apiWeb).pipe(map((res) => this.toAggregateResult(res, aggregations)));
   }
 
   getLastSearchQuery() {
@@ -60,10 +60,10 @@ export class SearchService {
   private toAggregateResult(searchResponse: any, aggregations?: string[]): AggregateResult {
     const agg: Aggregation[] = [];
     if (aggregations) {
-      aggregations.forEach(a => {
+      aggregations.forEach((a) => {
         const ag: Aggregation = {
           aggKey: a,
-          entries: searchResponse.objects.map(o => ({
+          entries: searchResponse.objects.map((o) => ({
             key: o.properties[a].value,
             count: o.properties['OBJECT_COUNT'].value
           }))
@@ -91,7 +91,7 @@ export class SearchService {
     const resultListItems: SearchResultItem[] = [];
     const objectTypes: string[] = [];
 
-    searchResponse.objects.forEach(o => {
+    searchResponse.objects.forEach((o) => {
       const fields = new Map();
       // process properties section of result
       Object.keys(o.properties).forEach((key: string) =>
@@ -127,7 +127,7 @@ export class SearchService {
         };
       }
 
-      const objectTypeId = o.properties[BaseObjectTypeField.OBJECT_TYPE_ID].value;
+      const objectTypeId = o.properties[BaseObjectTypeField.OBJECT_TYPE_ID] ? o.properties[BaseObjectTypeField.OBJECT_TYPE_ID].value : null;
       if (objectTypes.indexOf(objectTypeId) === -1) {
         objectTypes.push(objectTypeId);
       }

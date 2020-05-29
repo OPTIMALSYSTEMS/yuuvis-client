@@ -1,0 +1,26 @@
+:host {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  grid-template-columns: 1fr auto;
+  grid-template-areas: 'form form' 'result details';
+
+  form {
+    grid-area: form;
+    display: flex;
+    align-items: center;
+    color: var(--text-color-body);
+
+    .main {
+      color: var(--text-color-body);
+      flex: 1;
+      background-color: transparent;
+      border: 0;
+      outline: 0;
+    }
+    .aside {
+      width: var(--app-pane-padding);
+      height: var(--app-pane-padding);
+      padding: 0;
+    }
+  }
+}
