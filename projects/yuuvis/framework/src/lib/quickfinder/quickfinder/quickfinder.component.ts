@@ -1,5 +1,5 @@
 import { ActiveDescendantKeyManager } from '@angular/cdk/a11y';
-import { ENTER } from '@angular/cdk/keycodes';
+import { DOWN_ARROW, ENTER } from '@angular/cdk/keycodes';
 import { Component, ElementRef, EventEmitter, HostListener, Input, OnDestroy, Output, QueryList, TemplateRef, ViewChild, ViewChildren } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { BaseObjectTypeField, Logger, SearchQuery, SearchService, SecondaryObjectTypeField, SystemService } from '@yuuvis/core';
@@ -84,6 +84,10 @@ export class QuickfinderComponent implements OnDestroy {
         }
       }
     }
+    const term = this.inputForm.get('term').value;
+    if (term && term.length && event.keyCode === DOWN_ARROW) {
+      this.fetchResult();
+    }
   }
 
   constructor(
@@ -109,7 +113,7 @@ export class QuickfinderComponent implements OnDestroy {
     });
   }
 
-  private fetchResult() {
+  private fetchResult(): void {
     this.busy = true;
     this.searchService
       .search(this.query)
@@ -150,11 +154,12 @@ export class QuickfinderComponent implements OnDestroy {
           } else if (this.popoverRef) {
             this.popoverRef.close();
           }
+          this.busy = false;
         },
         (e) => {
           this.logger.error(e);
-        },
-        () => (this.busy = false)
+          this.busy = false;
+        }
       );
   }
 
