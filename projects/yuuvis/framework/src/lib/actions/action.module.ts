@@ -6,6 +6,7 @@ import { TranslateModule } from '@yuuvis/core';
 import { YuvCommonModule } from '../common/common.module';
 import { YuvComponentsModule } from '../components/components.module';
 import { YuvDirectivesModule } from '../directives/directives.module';
+import { YuvQuickfinderModule } from '../quickfinder/quickfinder.module';
 import { YuvFormModule } from './../form/form.module';
 import { ActionComponentAnchorDirective } from './action-menu/action-component-anchor/action-component-anchor.directive';
 import { ActionMenuComponent } from './action-menu/action-menu.component';
@@ -47,7 +48,8 @@ export const entryComponents = [
     ReactiveFormsModule,
     TranslateModule,
     YuvComponentsModule,
-    YuvCommonModule
+    YuvCommonModule,
+    YuvQuickfinderModule
   ],
   exports: [ActionMenuComponent],
   providers: [

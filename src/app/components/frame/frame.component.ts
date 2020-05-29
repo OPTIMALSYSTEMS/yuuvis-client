@@ -6,13 +6,17 @@ import {
   BaseObjectTypeField,
   ConnectionService,
   ConnectionState,
+  DmsService,
+  EventService,
   SearchFilter,
   SearchQuery,
+  TranslateService,
   UploadResult,
   UserService,
+  YuvEventType,
   YuvUser
 } from '@yuuvis/core';
-import { IconRegistryService, LayoutService, LayoutSettings, Screen, ScreenService } from '@yuuvis/framework';
+import { IconRegistryService, LayoutService, LayoutSettings, NotificationService, Screen, ScreenService } from '@yuuvis/framework';
 import { filter } from 'rxjs/operators';
 import { add, close, drawer, offline, refresh, search, userDisabled } from '../../../assets/default/svg/svg';
 import { AppSearchService } from '../../service/app-search.service';
@@ -64,6 +68,10 @@ export class FrameComponent implements OnInit {
     private authService: AuthService,
     private screenService: ScreenService,
     private userService: UserService,
+    private eventService: EventService,
+    private notificationService: NotificationService,
+    private translateService: TranslateService,
+    private dmsService: DmsService,
     private iconRegistry: IconRegistryService
   ) {
     this.iconRegistry.registerIcons([search, drawer, refresh, add, userDisabled, offline, close]);
@@ -77,6 +85,22 @@ export class FrameComponent implements OnInit {
     });
     this.screenService.screenChange$.subscribe((s: Screen) => {
       this.screenSmall = s.isSmall;
+    });
+    this.eventService.on(YuvEventType.DMS_OBJECTS_MOVED).subscribe((event) => {
+      this.dmsService.getDmsObject(event.data.newParentId).subscribe((newParent) => {
+        const title = this.translateService.instant('yuv.framework.action-menu.action.move.dms.object.picker.title') + ': ' + newParent.title;
+        const devider = '; ';
+        if (!event.data.failed.length) {
+          this.notificationService.success(title, event.data.succeeded.map((o) => o.title).join(devider));
+        } else if (!event.data.succeeded.length) {
+          this.notificationService.error(title, event.data.failed.map((o) => o.title).join(devider));
+        } else {
+          this.notificationService.warning(
+            title,
+            'Succeeded: ' + event.data.succeeded.map((o) => o.title).join(devider) + 'Failed: ' + event.data.failed.map((o) => o.title).join(devider)
+          );
+        }
+      });
     });
   }
 

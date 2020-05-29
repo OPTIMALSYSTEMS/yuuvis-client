@@ -1,5 +1,5 @@
 import { Component, EventEmitter, OnInit } from '@angular/core';
-import { DmsObject, DmsService } from '@yuuvis/core';
+import { DmsService, SystemType } from '@yuuvis/core';
 import { ActionComponent } from './../../../interfaces/action-component.interface';
 
 @Component({
@@ -12,21 +12,18 @@ export class MoveComponent implements OnInit, ActionComponent {
   finished: EventEmitter<any> = new EventEmitter();
   canceled: EventEmitter<any> = new EventEmitter();
 
-  context: DmsObject;
+  contextInfo: any;
+  allowedTypes = [SystemType.FOLDER];
 
   constructor(private dmsService: DmsService) {}
 
-  onPickerResult(contextId) {
-    this.dmsService.getDmsObject(contextId).subscribe((dmsObject) => (this.context = dmsObject));
+  onPickerResult(contextInfos) {
+    this.contextInfo = contextInfos;
   }
 
   move() {
-    this.dmsService
-      .moveDmsObjectsToFolder(
-        this.context.id,
-        this.selection.map((o) => o.id)
-      )
-      .subscribe(() => this.finished.emit());
+    this.dmsService.moveDmsObjectsToFolder(this.contextInfo.id, this.selection).subscribe();
+    this.finished.emit();
   }
 
   cancel() {

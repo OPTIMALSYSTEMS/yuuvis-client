@@ -4,14 +4,14 @@ import { of as observableOf } from 'rxjs';
 import { editLocation } from '../../../svg.generated';
 import { DmsObjectTarget } from '../../action-target';
 import { SelectionRange } from '../../selection-range.enum';
-import { ExternalComponentAction } from './../../interfaces/action.interface';
+import { ComponentAction } from './../../interfaces/action.interface';
 import { MoveComponent } from './move/move.component';
 
 @Component({
   selector: 'yuv-move-action',
   template: ``
 })
-export class MoveActionComponent extends DmsObjectTarget implements ExternalComponentAction {
+export class MoveActionComponent extends DmsObjectTarget implements ComponentAction {
   header: string;
   label: string;
   description: string;
@@ -19,7 +19,7 @@ export class MoveActionComponent extends DmsObjectTarget implements ExternalComp
   iconSrc = editLocation.data;
   group = 'common';
   range = SelectionRange.MULTI_SELECT;
-  extComponent = MoveComponent;
+  component = MoveComponent;
 
   constructor(private translate: TranslateService) {
     super();
@@ -28,6 +28,6 @@ export class MoveActionComponent extends DmsObjectTarget implements ExternalComp
   }
 
   isExecutable(element: DmsObject) {
-    return observableOf(element && element.rights && element.rights.writeIndexData);
+    return observableOf(element && !element.isFolder && element.rights && element.rights.writeIndexData);
   }
 }

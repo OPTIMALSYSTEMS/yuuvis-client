@@ -1,22 +1,10 @@
-<yuv-dialog
-  title="{{ 'yuv.framework.action-menu.action.move.dms.object.picker.title' | translate }}"
-  [visible]="true"
-  [minWidth]="1000"
-  [minHeight]="630"
-  [styleClass]="'yuv-move'"
->
-  <div class="yuv-move">
-    <!-- <h2>{{ 'yuv.framework.action-menu.action.move.dms.object.picker.title' | translate }}</h2> -->
+<div class="yuv-move">
+  <h2>{{ 'yuv.framework.action-menu.action.move.dms.object.picker.title' | translate }}</h2>
 
-    <!-- <yuv-context-picker (contextSelect)="onPickerResult($event)"></yuv-context-picker> -->
+  <yuv-quickfinder (objectSelect)="onPickerResult($event)" [allowedTargetTypes]="allowedTypes"></yuv-quickfinder>
 
-    <div *ngIf="context">
-      <span>{{ context.title }}</span>
-    </div>
-
-    <div class="form-buttons">
-      <button (click)="cancel()">{{ 'yuv.framework.shared.cancel' | translate }}</button>
-      <button class="primary" (click)="move()">OK</button>
-    </div>
+  <div class="form-buttons">
+    <button (click)="cancel()">{{ 'yuv.framework.shared.cancel' | translate }}</button>
+    <button class="primary" [disabled]="!contextInfo" (click)="move()">OK</button>
   </div>
-</yuv-dialog>
+</div>

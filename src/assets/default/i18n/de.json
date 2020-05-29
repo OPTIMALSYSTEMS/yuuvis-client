@@ -16,7 +16,7 @@
   "yuv.framework.action-menu.action.export.title": "Herunterladen im Format",
   "yuv.framework.action-menu.action.move.dms.object.description": "Verschiebt Objekte in einen anderen Kontextordner.",
   "yuv.framework.action-menu.action.move.dms.object.label": "Verschieben",
-  "yuv.framework.action-menu.action.move.dms.object.picker.title": "Verschiebt nach",
+  "yuv.framework.action-menu.action.move.dms.object.picker.title": "Verschieben nach",
   "yuv.framework.action-menu.action.upload.dms.object.content.add.label": "Dokumentdatei hinzufügen",
   "yuv.framework.action-menu.action.upload.dms.object.content.description": "Fügt dem Objekt eine Dokumentdatei hinzu.",
   "yuv.framework.action-menu.action.upload.dms.object.content.noFile": "Keine Datei ausgewählt",
