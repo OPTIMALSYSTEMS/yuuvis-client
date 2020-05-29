@@ -2,7 +2,7 @@ import { Component, Input } from '@angular/core';
 
 @Component({
   selector: 'yuv-context-error',
-  template: `<div class="error" *ngIf="contextError">
+  template: `<div class="error">
     <div class="message">{{ contextError }}</div>
   </div>`,
   styles: [

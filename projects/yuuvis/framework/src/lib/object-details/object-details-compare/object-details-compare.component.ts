@@ -1,22 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { DmsObject } from '@yuuvis/core';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { compare } from '../../svg.generated';
-
-export interface ObjectCompareInput {
-  /**
-   * Title string to be shown in the components header
-   */
-  title?: string;
-  first: {
-    label: string;
-    item: DmsObject;
-  };
-  second: {
-    label: string;
-    item: DmsObject;
-  };
-}
+import { ObjectCompareInput } from './object-details-compare.interface';
 
 /**
  * Component comparing two dms objects.
