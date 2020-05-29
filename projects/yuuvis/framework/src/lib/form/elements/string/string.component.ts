@@ -1,6 +1,6 @@
 import { Component, ElementRef, forwardRef, Input } from '@angular/core';
 import { ControlValueAccessor, FormControl, NG_VALIDATORS, NG_VALUE_ACCESSOR, Validator } from '@angular/forms';
-import { Utils } from '@yuuvis/core';
+import { Classification, Utils } from '@yuuvis/core';
 import { IconRegistryService } from '../../../common/components/icon/service/iconRegistry.service';
 import { envelope, globe, phone } from '../../../svg.generated';
 import { Situation } from './../../../object-form/object-form.situation';
@@ -20,13 +20,6 @@ import { Situation } from './../../../object-form/object-form.situation';
  * <yuv-string [multiline]="true" [size]="'large'"></yuv-string>
  *
  */
-
-export enum Classification {
-  PHONE = 'phone',
-  EMAIL = 'email',
-  URL = 'url'
-}
-
 @Component({
   selector: 'yuv-string',
   templateUrl: './string.component.html',
@@ -178,11 +171,11 @@ export class StringComponent implements ControlValueAccessor, Validator {
       return true;
     } else {
       let pattern;
-      if (this.classification === Classification.EMAIL) {
+      if (this.classification === Classification.STRING_EMAIL) {
         pattern = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-      } else if (this.classification === Classification.URL) {
+      } else if (this.classification === Classification.STRING_URL) {
         pattern = /(http|ftp|https):\/\/[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:\/~+#-]*[\w@?^=%&amp;\/~+#-])?/;
-      } else if (this.classification === Classification.PHONE) {
+      } else if (this.classification === Classification.STRING_PHONE) {
         pattern = /^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$/g;
       }
       return pattern ? pattern.test(string) : false;

@@ -5,6 +5,7 @@ import { booleanElements } from './data/form.boolean';
 import { datetimeElements } from './data/form.datetime';
 import { groupingModel } from './data/form.grouping';
 import { numberElements } from './data/form.numbers';
+import { organizationElements } from './data/form.organization';
 import { formScriptingModel } from './data/form.scripting';
 import { stringElements } from './data/form.string';
 
@@ -75,6 +76,15 @@ export class TestObjectFormComponent implements OnInit {
       model: {
         formModel: formScriptingModel,
         data: {}
+      }
+    },
+    {
+      label: 'ID Organization',
+      model: {
+        formModel: this.wrap(organizationElements),
+        data: {
+          'id:organization:readonly': '3'
+        }
       }
     }
   ];

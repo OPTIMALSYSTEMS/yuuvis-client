@@ -6,7 +6,7 @@ import { BackendService } from '../backend/backend.service';
 import { AppCacheService } from '../cache/app-cache.service';
 import { Logger } from '../logger/logger';
 import { Utils } from './../../util/utils';
-import { BaseObjectTypeField, ContentStreamAllowed, SecondaryObjectTypeField, SystemType } from './system.enum';
+import { BaseObjectTypeField, Classification, ContentStreamAllowed, SecondaryObjectTypeField, SystemType } from './system.enum';
 import { ObjectType, ObjectTypeField, ObjectTypeGroup, SchemaResponse, SchemaResponseTypeDefinition, SystemDefinition } from './system.interface';
 
 @Injectable({
@@ -149,6 +149,15 @@ export class SystemService {
     }
   }
 
+  /**
+   * Retrieve an organization object by its ID
+   * @param id ID of org object
+   */
+  getOrganizationObjectById(id: string): Observable<any> {
+    return of('1');
+    // return this.backend.get(`/organization/id/${id}`)
+  }
+
   getLocalizedResource(key: string): string {
     const v = this.system.i18n[key];
     if (!v) {
@@ -234,7 +243,7 @@ export class SystemService {
       const orgTypeFields = [BaseObjectTypeField.MODIFIED_BY, BaseObjectTypeField.CREATED_BY];
       ot.fields.forEach((f) => {
         if (orgTypeFields.includes(f.id)) {
-          f.classification = ['id:organization'];
+          f.classification = [Classification.STRING_ORGANIZATION];
         }
       });
       return {

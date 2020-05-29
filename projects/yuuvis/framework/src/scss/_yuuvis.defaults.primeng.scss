@@ -3,7 +3,6 @@
 body .ui-multiselect {
   background-color: red;
 }
-
 body {
   .ui-inputtext {
     color: var(--text-color-body);
@@ -18,6 +17,53 @@ body {
   .ui-widget {
     font-family: 'Roboto';
     font-size: var(--font-body);
+  }
+
+  // -------------------------------------------------------------------
+  // primeng autocomplete
+  .ui-autocomplete {
+    &.ui-autocomplete-multiple {
+      width: 100%;
+      .ui-autocomplete-multiple-container {
+        padding: 0;
+        background-color: transparent;
+
+        &:not(.ui-state-disabled).ui-state-focus {
+          box-shadow: none;
+        }
+
+        .ui-autocomplete-input-token input {
+          font-size: var(--font-body);
+          color: var(--text-color-body);
+        }
+
+        // the actual chip
+        .ui-autocomplete-token {
+          line-height: 1.5em;
+          border-radius: 2px;
+          background: var(--item-focus-background-color);
+          border: 1px solid var(--item-focus-border-color);
+          padding: 0 3px;
+          color: var(--text-color-caption);
+        }
+      }
+    }
+  }
+  .ui-autocomplete-panel {
+    background-color: var(--panel-background);
+    border: 1px solid var(--panel-divider-color);
+    box-shadow: 0 1px 10px 0 rgba(0, 0, 0, 0.15);
+    border-radius: 0;
+
+    .ui-autocomplete-items {
+      .ui-autocomplete-list-item {
+        color: var(--text-color-body);
+
+        &.ui-state-highlight {
+          background-color: var(--color-accent);
+        }
+      }
+    }
   }
 
   // -------------------------------------------------------------------

@@ -489,23 +489,24 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
         }
       }
 
-      if (formElement.type === 'CODESYSTEM' || (formElement.type === 'STRING' && formElement.classification === 'selector')) {
-        formControl._eoFormElement.applyFilter = (func: Function) => {
-          formControl._eoFormElement.filterFunction = func;
-        };
-      }
+      // TODO: Not suppoprted right now
+      // if (formElement.type === 'CODESYSTEM' || (formElement.type === 'STRING' && formElement.classification === 'selector')) {
+      //   formControl._eoFormElement.applyFilter = (func: Function) => {
+      //     formControl._eoFormElement.filterFunction = func;
+      //   };
+      // }
 
-      if (formElement.type === 'STRING' && formElement.classification === 'selector') {
-        formControl._eoFormElement.setList = (listObject: any) => {
-          formControl._eoFormElement.list = listObject;
-        };
-      }
+      // if (formElement.type === 'STRING' && formElement.classification === 'selector') {
+      //   formControl._eoFormElement.setList = (listObject: any) => {
+      //     formControl._eoFormElement.list = listObject;
+      //   };
+      // }
 
-      if (formElement.type === 'ORGANIZATION') {
-        formControl._eoFormElement.setFilter = (filterObject: any) => {
-          formControl._eoFormElement.filter = filterObject;
-        };
-      }
+      // if (formElement.type === 'ORGANIZATION') {
+      //   formControl._eoFormElement.setFilter = (filterObject: any) => {
+      //     formControl._eoFormElement.filter = filterObject;
+      //   };
+      // }
 
       ObjectFormUtils.updateFormElement(formElement);
 
@@ -602,16 +603,17 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
   // to render the element correctly
   private fetchMetaData(data, element) {
     if (this.formOptions.formModel.situation === Situation.SEARCH) {
-      // todo: how to fetch meta data in search situation
+      // TODO: how to fetch meta data in search situation
     } else {
-      if (element.type === 'ORGANIZATION' && data[element.name + '_meta']) {
-        element.dataMeta = data[element.name + '_meta'];
-      } else if (element.type === 'CODESYSTEM' && data[element.name + '_meta']) {
-        element.dataMeta = data[element.name + '_meta'];
-        element.defaultrepresentation = data[element.name + '_meta'].defaultrepresentation;
-      } else if (element.type === 'REFERENCE' && data[element.name + '_meta']) {
-        element.dataMeta = data[element.name + '_meta'];
-      }
+      // TODO: Not supported right now
+      // if (element.type === 'ORGANIZATION' && data[element.name + '_meta']) {
+      //   element.dataMeta = data[element.name + '_meta'];
+      // } else if (element.type === 'CODESYSTEM' && data[element.name + '_meta']) {
+      //   element.dataMeta = data[element.name + '_meta'];
+      //   element.defaultrepresentation = data[element.name + '_meta'].defaultrepresentation;
+      // } else if (element.type === 'REFERENCE' && data[element.name + '_meta']) {
+      //   element.dataMeta = data[element.name + '_meta'];
+      // }
     }
   }
 

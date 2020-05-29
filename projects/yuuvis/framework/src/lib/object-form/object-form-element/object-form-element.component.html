@@ -18,7 +18,7 @@
 
 
       <yuv-organization *ngIf="formElementRef._eoFormElement.classification === 'id:organization'"
-        [situation]="element._eoFormControlWrapper.situation"
+        [situation]="element._eoFormControlWrapper.situation" [multiselect]="formElementRef._eoFormElement.multiselect"
         [formControlName]="element._eoFormControlWrapper.controlName"
         [classification]="formElementRef._eoFormElement.classification"
         [readonly]="formElementRef._eoFormElement.readonly">
