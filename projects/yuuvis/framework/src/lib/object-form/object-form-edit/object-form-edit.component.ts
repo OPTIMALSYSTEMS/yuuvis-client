@@ -134,6 +134,7 @@ export class ObjectFormEditComponent implements OnDestroy {
         this.formOptions = {
           formModel: model,
           data: dmsObject.data,
+          objectId: dmsObject.id,
           disabled: this.formDisabled || !this.isEditable(dmsObject)
         };
         if (dmsObject.contextFolder) {
