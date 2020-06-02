@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output, QueryList, TemplateRef, ViewChild, ViewChildren } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, QueryList, TemplateRef, ViewChild, ViewChildren } from '@angular/core';
 import {
   BaseObjectTypeField,
   ColumnConfig,
@@ -11,6 +11,7 @@ import {
   TranslateService,
   YuvEventType
 } from '@yuuvis/core';
+import { takeUntilDestroy } from 'take-until-destroy';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { FileDropOptions } from '../../directives/file-drop/file-drop.directive';
 import { CellRenderer } from '../../services/grid/grid.cellrenderer';
@@ -35,7 +36,7 @@ import { refresh, settings } from './../../svg.generated';
   templateUrl: './context.component.html',
   styleUrls: ['./context.component.scss']
 })
-export class ContextComponent implements OnInit {
+export class ContextComponent implements OnInit, OnDestroy {
   busy: boolean;
   activeTabIndex: number;
   contextChildrenQuery: SearchQuery;
@@ -142,7 +143,10 @@ export class ContextComponent implements OnInit {
   ) {
     this.iconRegistry.registerIcons([edit, settings, refresh, kebap]);
     this.fileDropOptions.label = this.translate.instant('yuv.framework.context.filedrop.label');
-    this.eventService.on(YuvEventType.DMS_OBJECTS_MOVED).subscribe(() => this.refresh());
+    this.eventService
+      .on(YuvEventType.DMS_OBJECTS_MOVED)
+      .pipe(takeUntilDestroy(this))
+      .subscribe(() => this.refresh());
   }
 
   select(ids: string[]) {
@@ -224,4 +228,6 @@ export class ContextComponent implements OnInit {
   }
 
   ngOnInit() {}
+
+  ngOnDestroy() {}
 }

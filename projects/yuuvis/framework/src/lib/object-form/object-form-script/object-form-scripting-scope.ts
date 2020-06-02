@@ -11,6 +11,9 @@ export class ObjectFormScriptingScope {
   // all data values including invisible elements (READONLY)
   public data: any = {};
 
+  // The id of the current DMS-Object (READONLY)
+  public objectId: string;
+
   // actions passed by BPM forms
   public actions: any = {};
   // additional objects provided by the object form
@@ -116,7 +119,7 @@ class ScopeElement {
       }
     };
 
-    Object.keys(value).forEach(key => {
+    Object.keys(value).forEach((key) => {
       if (this.isProxyable(value[key], key)) {
         value[key] = this.createProxy(value[key]);
       }
