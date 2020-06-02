@@ -60,3 +60,8 @@ export interface SchemaResponseTypeDefinition {
   contentStreamAllowed?: string;
   fields: SchemaResponseFieldDefinition[];
 }
+
+export interface ClassificationEntry {
+  classification: string;
+  options: string[];
+}

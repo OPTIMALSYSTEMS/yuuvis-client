@@ -1,0 +1,14 @@
+<p-autoComplete [(ngModel)]="innerValue" #autocomplete [minLength]="minLength" (onSelect)="onSelect($event)"
+    [readonly]="!multiselect && innerValue.length === 1" (completeMethod)="autocompleteFn($event)"
+    (onUnselect)="onUnselect($event)" (onBlur)="onAutoCompleteBlur()" field="title" [suggestions]="autocompleteRes"
+    [disabled]="readonly" [placeholder]="placeholder" [multiple]="true">
+
+    <!-- template for the suggest list -->
+    <ng-template let-item pTemplate="item">
+        <yuv-reference-item [item]="item">
+            <ng-container *ngTemplateOutlet="entryLinkTemplate; context: { entry: item }"></ng-container>
+        </yuv-reference-item>
+    </ng-template>
+
+</p-autoComplete>
+<yuv-icon class="classify" icon="reference"></yuv-icon>

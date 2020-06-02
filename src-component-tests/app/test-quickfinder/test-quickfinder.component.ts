@@ -1,6 +1,6 @@
 import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { DmsObject, DmsService } from '@yuuvis/core';
-import { PopoverRef, PopoverService, QuickfinderEntry } from '@yuuvis/framework';
+import { PopoverRef, PopoverService, ReferenceEntry } from '@yuuvis/framework';
 
 @Component({
   selector: 'yuv-test-quickfinder',
@@ -9,16 +9,13 @@ import { PopoverRef, PopoverService, QuickfinderEntry } from '@yuuvis/framework'
 })
 export class TestQuickfinderComponent implements OnInit {
   @ViewChild('tplContextPicker') tplContextPicker: TemplateRef<any>;
-  selectedObject: DmsObject;
+  selectedObjects: DmsObject[];
 
   constructor(private popoverService: PopoverService, private dmsService: DmsService) {}
 
-  onPickerResult(result: QuickfinderEntry, popoverRef?: PopoverRef) {
+  onPickerResult(result: ReferenceEntry[], popoverRef?: PopoverRef) {
     console.log('Picker result', result);
-    this.dmsService.getDmsObject(result.id).subscribe((o) => (this.selectedObject = o));
-    if (popoverRef) {
-      popoverRef.close();
-    }
+    this.dmsService.getDmsObjects(result.map((i) => i.id)).subscribe((o) => (this.selectedObjects = o));
   }
 
   ngOnInit(): void {}
