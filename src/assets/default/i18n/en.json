@@ -13,7 +13,7 @@
   "yuv.framework.action-menu.action.export.pdf.description": "Downloads the document file as a PDF",
   "yuv.framework.action-menu.action.export.pdf.label": "PDF",
   "yuv.framework.action-menu.action.export.title": "Download in the following format",
-  "yuv.framework.action-menu.action.move.dms.object.description": "Moves objects to a different context folder.",
+  "yuv.framework.action-menu.action.move.dms.object.description": "Changes the filing location.",
   "yuv.framework.action-menu.action.move.dms.object.label": "Move",
   "yuv.framework.action-menu.action.move.dms.object.picker.title": "Move to",
   "yuv.framework.action-menu.action.upload.dms.object.content.add.label": "Add document file",
