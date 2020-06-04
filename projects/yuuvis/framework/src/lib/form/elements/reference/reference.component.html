@@ -10,5 +10,12 @@
         </yuv-reference-item>
     </ng-template>
 
+    <!-- template for the selected items -->
+    <ng-template let-item pTemplate="selectedItem">
+        <!-- <div class="token" [ngClass]="{noAccess: item.title === noAccessTitle}">{{item.title}}</div> -->
+        <span class="ui-autocomplete-token-label"
+            [ngClass]="{noAccess: item.title === noAccessTitle}">{{item.title}}</span>
+    </ng-template>
+
 </p-autoComplete>
 <yuv-icon class="classify" icon="reference"></yuv-icon>

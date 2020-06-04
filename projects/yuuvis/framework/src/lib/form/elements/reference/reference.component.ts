@@ -7,6 +7,7 @@ import {
   SearchFilter,
   SearchQuery,
   SearchQueryProperties,
+  SearchResult,
   SearchService,
   SecondaryObjectTypeField,
   SystemService
@@ -33,6 +34,8 @@ import { ReferenceEntry } from './reference.interface';
 export class ReferenceComponent implements ControlValueAccessor {
   @ViewChild('autocomplete') autoCompleteInput: AutoComplete;
   private queryJson: SearchQueryProperties;
+  noAccessTitle = '*****';
+
   minLength = 2;
 
   value;
@@ -142,14 +145,26 @@ export class ReferenceComponent implements ControlValueAccessor {
     q.fields = [BaseObjectTypeField.OBJECT_ID, BaseObjectTypeField.OBJECT_TYPE_ID, SecondaryObjectTypeField.TITLE, SecondaryObjectTypeField.DESCRIPTION];
     q.addFilter(new SearchFilter(BaseObjectTypeField.OBJECT_ID, SearchFilter.OPERATOR.IN, ids));
     return this.searchService.search(q).pipe(
-      map((res) =>
-        res.items.map((i) => ({
-          id: i.fields.get(BaseObjectTypeField.OBJECT_ID),
-          iconSVG: this.systemService.getObjectTypeIcon(i.fields.get(BaseObjectTypeField.OBJECT_TYPE_ID)),
-          title: i.fields.get(SecondaryObjectTypeField.TITLE),
-          description: i.fields.get(SecondaryObjectTypeField.DESCRIPTION)
-        }))
-      )
+      map((res: SearchResult) => {
+        if (ids.length !== res.items.length) {
+          // some of the IDs could not be retrieved (no permission or deleted)
+          const x = {};
+          res.items.forEach((r) => (x[r.fields.get(BaseObjectTypeField.OBJECT_ID)] = r));
+          return ids.map((id) => ({
+            id: id,
+            iconSVG: x[id] ? this.systemService.getObjectTypeIcon(x[id].fields.get(BaseObjectTypeField.OBJECT_TYPE_ID)) : null,
+            title: x[id] ? x[id].fields.get(SecondaryObjectTypeField.TITLE) : this.noAccessTitle,
+            description: x[id] ? x[id].fields.get(SecondaryObjectTypeField.DESCRIPTION) : null
+          }));
+        } else {
+          return res.items.map((i) => ({
+            id: i.fields.get(BaseObjectTypeField.OBJECT_ID),
+            iconSVG: this.systemService.getObjectTypeIcon(i.fields.get(BaseObjectTypeField.OBJECT_TYPE_ID)),
+            title: i.fields.get(SecondaryObjectTypeField.TITLE),
+            description: i.fields.get(SecondaryObjectTypeField.DESCRIPTION)
+          }));
+        }
+      })
     );
   }
 

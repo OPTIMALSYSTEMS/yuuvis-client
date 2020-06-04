@@ -18,5 +18,15 @@ export const referenceElements = [
     classification: ['id:reference[system:folder]'],
     type: 'string',
     required: false
+  },
+  {
+    readonly: false,
+    name: 'id:reference:value',
+    label: 'with initial value',
+    description: '',
+    classification: ['id:reference'],
+    multiselect: false,
+    type: 'string',
+    required: false
   }
 ];

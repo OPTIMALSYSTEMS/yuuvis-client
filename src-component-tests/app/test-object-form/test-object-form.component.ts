@@ -83,7 +83,7 @@ export class TestObjectFormComponent implements OnInit {
       model: {
         formModel: this.wrap(referenceElements),
         data: {
-          'id:reference:readonly': '3'
+          'id:reference:value': ['d50256d1-6502-40c4-b8da-626793d5ab12', 'shouldfail']
         }
       }
     }
