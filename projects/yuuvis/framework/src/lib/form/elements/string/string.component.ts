@@ -69,7 +69,10 @@ export class StringComponent implements ControlValueAccessor, Validator {
    */
   @Input() autofocus: boolean;
   /**
-   * Possible values are `email` (validates and creates a link to send an email once there is a valid email address) and `url` (validates and creates a link to an URL typed into the form element).
+   * Additional semantics for the form element. Possible values are
+   * `email` (validates and creates a link to send an email once there
+   * is a valid email address) and `url` (validates and creates a link
+   * to an URL typed into the form element).
    */
   @Input() classification: string;
   /**

@@ -19,6 +19,14 @@ import { IconRegistryService } from '../../../common/components/icon/service/ico
 import { reference } from '../../../svg.generated';
 import { ReferenceEntry } from './reference.interface';
 
+/**
+ * Creates a form element for adding references to other dms objects.
+ *
+ * Implements `ControlValueAccessor` so it can be used within Angular forms.
+ *
+ * @example
+ * <yuv-reference (objectSelect)="referencesChanges($event)"></yuv-reference>
+ */
 @Component({
   selector: 'yuv-reference',
   templateUrl: './reference.component.html',
@@ -34,27 +42,37 @@ import { ReferenceEntry } from './reference.interface';
 export class ReferenceComponent implements ControlValueAccessor {
   @ViewChild('autocomplete') autoCompleteInput: AutoComplete;
   private queryJson: SearchQueryProperties;
-  noAccessTitle = '*****';
+  noAccessTitle = '! *******';
 
   minLength = 2;
 
   value;
   innerValue: ReferenceEntry[] = [];
   autocompleteRes: any[] = [];
-  targetTypes = [];
 
   @HostBinding('class.inputDisabled') _inputDisabled: boolean;
-
+  /**
+   * Possibles values are `EDIT` (default),`SEARCH`,`CREATE`. In search situation validation of the form element will be turned off, so you are able to enter search terms that do not meet the elements validators.
+   */
   @Input() situation: string;
+  /**
+   * Indicator that multiple strings could be inserted, they will be rendered as chips (default: false).
+   */
   @Input() multiselect: boolean;
+  /**
+   * Additional semantics for the form element. You could specify restrictions on what object
+   * type should be allowed by setting eg. `['id:reference[system:folder]']` to only allow folders
+   */
   @Input() set classification(c: string[]) {
     const ce: ClassificationEntry = this.systemService.getClassifications(c).get(Classification.STRING_REFERENCE);
     if (ce && ce.options) {
       this.allowedTargetTypes = ce.options;
     }
   }
+  /**
+   * Will prevent the input from being changed (default: false)
+   */
   @Input() readonly: boolean;
-  @Input() placeholder: string;
   /**
    * You can provide a template reference here that will be rendered at the end of each
    * quickfinder result item. Within the provided template you'll get an object
@@ -70,10 +88,6 @@ export class ReferenceComponent implements ControlValueAccessor {
    * the object in a new tab/window.
    */
   @Input() entryLinkTemplate: TemplateRef<any>;
-  /**
-   * Provides a custom template to be rendered within a chip
-   */
-  @Input() chipTemplate: TemplateRef<any>;
 
   /**
    * Minimal number of characters to trigger search (default: 2)
@@ -85,7 +99,7 @@ export class ReferenceComponent implements ControlValueAccessor {
   @Input() maxSuggestions: number = 10;
 
   /**
-   * Restrict the suggestions to a list of allowed target object types
+   * Restrict the suggestions to a list of allowed target object types.
    */
   @Input() allowedTargetTypes: string[] = [];
 
@@ -121,7 +135,7 @@ export class ReferenceComponent implements ControlValueAccessor {
     this.objectSelect.emit(this.innerValue);
   }
 
-  resolveFn(value: any) {
+  private resolveFn(value: any) {
     const tasks: Observable<any>[] = [];
     const resolveIds: string[] = [];
     (value instanceof Array ? value : [value]).forEach((v) => {

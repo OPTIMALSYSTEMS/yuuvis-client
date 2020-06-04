@@ -4,7 +4,8 @@
 
   ::ng-deep {
     .ui-autocomplete-token-label.noAccess {
-      color: red !important;
+      color: var(--color-error) !important;
+      cursor: not-allowed;
     }
   }
 

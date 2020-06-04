@@ -72,6 +72,7 @@
   "yuv.framework.filepicker.maxsize.exceeded.title": "Too large",
   "yuv.framework.form.datepicker.select": "Select",
   "yuv.framework.form.form-input.null": "No value",
+  "yuv.framework.form.reference.noaccess": "Deleted or access to object denied",
   "yuv.framework.list.refresh": "Refresh",
   "yuv.framework.object-create.footer.another": "Create additional object",
   "yuv.framework.object-create.footer.create": "Create object",
