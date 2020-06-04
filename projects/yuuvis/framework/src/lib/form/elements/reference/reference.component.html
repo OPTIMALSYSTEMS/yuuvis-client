@@ -1,7 +1,7 @@
 <p-autoComplete [(ngModel)]="innerValue" #autocomplete [minLength]="minLength" (onSelect)="onSelect($event)"
-    [readonly]="!multiselect && innerValue.length === 1" (completeMethod)="autocompleteFn($event)"
-    (onUnselect)="onUnselect($event)" (onBlur)="onAutoCompleteBlur()" field="title" [suggestions]="autocompleteRes"
-    [disabled]="readonly" [placeholder]="placeholder" [multiple]="true">
+    [readonly]="_inputDisabled" (completeMethod)="autocompleteFn($event)" (onUnselect)="onUnselect($event)"
+    (onBlur)="onAutoCompleteBlur()" field="title" [suggestions]="autocompleteRes" [disabled]="readonly"
+    [placeholder]="placeholder" [multiple]="true">
 
     <!-- template for the suggest list -->
     <ng-template let-item pTemplate="item">

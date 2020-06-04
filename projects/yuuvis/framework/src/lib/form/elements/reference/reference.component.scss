@@ -2,6 +2,17 @@
   display: flex;
   align-items: center;
 
+  &.inputDisabled {
+    ::ng-deep {
+      .ui-autocomplete-multiple-container.ui-inputtext {
+        cursor: default;
+      }
+      .ui-autocomplete-input-token {
+        display: none !important;
+      }
+    }
+  }
+
   p-autocomplete {
     flex: 1;
   }

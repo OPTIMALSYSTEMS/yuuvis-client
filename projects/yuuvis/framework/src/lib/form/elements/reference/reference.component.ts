@@ -1,4 +1,4 @@
-import { Component, EventEmitter, forwardRef, Input, Output, TemplateRef, ViewChild } from '@angular/core';
+import { Component, EventEmitter, forwardRef, HostBinding, Input, Output, TemplateRef, ViewChild } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import {
   BaseObjectTypeField,
@@ -39,6 +39,8 @@ export class ReferenceComponent implements ControlValueAccessor {
   innerValue: ReferenceEntry[] = [];
   autocompleteRes: any[] = [];
   targetTypes = [];
+
+  @HostBinding('class.inputDisabled') _inputDisabled: boolean;
 
   @Input() situation: string;
   @Input() multiselect: boolean;
@@ -111,6 +113,7 @@ export class ReferenceComponent implements ControlValueAccessor {
   registerOnTouched(fn: any): void {}
 
   private propagate() {
+    this._inputDisabled = !this.multiselect && this.innerValue.length === 1;
     this.propagateChange(this.value);
     this.objectSelect.emit(this.innerValue);
   }

@@ -2,7 +2,11 @@ import { Component, EventEmitter, Input, Output, TemplateRef } from '@angular/co
 import { ReferenceEntry } from '../../form/elements/reference/reference.interface';
 
 /**
- * Picker for quickly selecting an object.
+ * Picker for quickly selecting one object. You may restrict the object types
+ * allowed to be selected by setting the `allowedTargetTypes` input.
+ *
+ * This component is based on the `yuv-reference` form control. If you need to
+ * select more than one object, you can use this component instead.
  */
 @Component({
   selector: 'yuv-quickfinder',
@@ -11,18 +15,13 @@ import { ReferenceEntry } from '../../form/elements/reference/reference.interfac
 })
 export class QuickfinderComponent {
   /**
-   * Label for the quickfinder
+   * Label for the quickfinder input element
    */
   @Input() label: string;
   /**
    * Minimal number of characters to trigger search (default: 2)
    */
   @Input() minChars: number = 2;
-
-  /**
-   * Wheter or not to support selection of multiple references
-   */
-  @Input() multiple: boolean;
   /**
    * Maximal number of suggestions for the given search term (default: 10)
    */
@@ -53,4 +52,8 @@ export class QuickfinderComponent {
    * Emitted once an object has been selected
    */
   @Output() objectSelect = new EventEmitter<ReferenceEntry>();
+
+  onObjectSelected(entries: ReferenceEntry[]) {
+    this.objectSelect.emit(entries && entries.length ? entries[0] : null);
+  }
 }

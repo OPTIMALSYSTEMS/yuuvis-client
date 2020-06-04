@@ -17,16 +17,11 @@
     <yuv-quickfinder [label]="'with custom links'" [allowedTargetTypes]="['system:folder']" [minChars]="1"
         [maxSuggestions]="5" [entryLinkTemplate]="quickfinderEntryLinkTpl" (objectSelect)="onPickerResult($event)">
     </yuv-quickfinder>
-
-    <!-- multiselect -->
-    <yuv-quickfinder [label]="'select many items'" [multiple]="true" (objectSelect)="onPickerResult($event)">
-    </yuv-quickfinder>
 </div>
 
-<div class="selected" *ngFor="let s of selectedObjects">
-    <hr>
-    {{s.title}}<br>
-    {{s.description}}
+<div class="selected" *ngIf="selectedObject">
+    {{selectedObject.title}}<br>
+    {{selectedObject.description}}
 </div>
 
 <!-- template to render a link inside the context picker -->

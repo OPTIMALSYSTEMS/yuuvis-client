@@ -61,10 +61,10 @@ body {
         color: var(--text-color-body);
 
         &.ui-state-highlight {
-          background-color: var(--color-accent);
+          color: var(--text-color-body);
+          background-color: var(--item-selected-background-color);
 
           a {
-            color: #fff;
             &:hover {
               text-decoration: underline;
             }

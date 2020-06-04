@@ -1,0 +1,6 @@
+<div class="testing-controls">
+    <yuv-quickfinder [label]="'Select a context'" (objectSelect)="onObjectSelect($event)"
+        [allowedTargetTypes]="allowedTypes"></yuv-quickfinder>
+</div>
+
+<yuv-context class="cmp" *ngIf="contextObject" [context]="contextObject"></yuv-context>
