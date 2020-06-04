@@ -1,3 +1,4 @@
+import { ObjectType } from '@yuuvis/core';
 export interface CreateState {
   currentStep: CurrentStep;
   busy: boolean;
@@ -15,6 +16,11 @@ export interface Labels {
   allowed: string;
   notallowed: string;
   required: string;
+}
+
+export interface ObjectTypePreset {
+  objectType: ObjectType;
+  data: any;
 }
 
 /**
