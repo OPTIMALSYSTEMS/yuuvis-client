@@ -606,8 +606,9 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
   // to render the element correctly
   private fetchMetaData(data, element) {
     if (this.formOptions.formModel.situation === Situation.SEARCH) {
-      // todo: how to fetch meta data in search situation
+      // TODO: how to fetch meta data in search situation
     } else {
+      // TODO: Not supported right now
       // if (element.type === 'ORGANIZATION' && data[element.name + '_meta']) {
       //   element.dataMeta = data[element.name + '_meta'];
       // } else if (element.type === 'CODESYSTEM' && data[element.name + '_meta']) {

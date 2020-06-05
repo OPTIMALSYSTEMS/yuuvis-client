@@ -5,6 +5,7 @@ import { booleanElements } from './data/form.boolean';
 import { datetimeElements } from './data/form.datetime';
 import { groupingModel } from './data/form.grouping';
 import { numberElements } from './data/form.numbers';
+import { organizationElements } from './data/form.organization';
 import { referenceElements } from './data/form.reference';
 import { formScriptingModel } from './data/form.scripting';
 import { stringElements } from './data/form.string';
@@ -84,6 +85,15 @@ export class TestObjectFormComponent implements OnInit {
         formModel: this.wrap(referenceElements),
         data: {
           'id:reference:value': ['d50256d1-6502-40c4-b8da-626793d5ab12', 'shouldfail']
+        }
+      }
+    },
+    {
+      label: 'ID Organization',
+      model: {
+        formModel: this.wrap(organizationElements),
+        data: {
+          'id:organization:readonly': '3'
         }
       }
     }

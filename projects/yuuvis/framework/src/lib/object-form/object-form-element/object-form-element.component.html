@@ -8,7 +8,7 @@
       [skipToggle]="skipToggle || situation !== 'SEARCH'" (onToggleLabel)="labelToggled($event)"
       [required]="formElementRef._eoFormElement.required" [invalid]="errors">
       <yuv-string
-        *ngIf="!formElementRef._eoFormElement.reference && formElementRef._eoFormElement.classification !== 'selector'"
+        *ngIf="!formElementRef._eoFormElement.reference && formElementRef._eoFormElement.classification !== 'selector' && formElementRef._eoFormElement.classification !== 'id:organization'"
         [situation]="element._eoFormControlWrapper.situation"
         [formControlName]="element._eoFormControlWrapper.controlName"
         [multiselect]="formElementRef._eoFormElement.multiselect" [multiline]="formElementRef._eoFormElement.multiline"
@@ -28,6 +28,16 @@
         [classification]="formElementRef._eoFormElement.classification"
         [readonly]="formElementRef._eoFormElement.readonly">
       </yuv-reference>
+
+      <!-- STRING:ORGANIZATION -->
+      <yuv-organization *ngSwitchCase="'string:organization'" [situation]="element._eoFormControlWrapper.situation"
+        [multiselect]="formElementRef._eoFormElement.multiselect"
+        [formControlName]="element._eoFormControlWrapper.controlName"
+        [classification]="formElementRef._eoFormElement.classification"
+        [readonly]="formElementRef._eoFormElement.readonly">
+      </yuv-organization>
+
+
     </yuv-form-input>
 
     <!-- BOOLEAN -->

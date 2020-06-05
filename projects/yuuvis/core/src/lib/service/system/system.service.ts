@@ -6,7 +6,7 @@ import { BackendService } from '../backend/backend.service';
 import { AppCacheService } from '../cache/app-cache.service';
 import { Logger } from '../logger/logger';
 import { Utils } from './../../util/utils';
-import { ContentStreamAllowed, SecondaryObjectTypeField, SystemType } from './system.enum';
+import { BaseObjectTypeField, Classification, ContentStreamAllowed, SecondaryObjectTypeField, SystemType } from './system.enum';
 import {
   ClassificationEntry,
   ObjectType,
@@ -157,6 +157,15 @@ export class SystemService {
     }
   }
 
+  /**
+   * Retrieve an organization object by its ID
+   * @param id ID of org object
+   */
+  getOrganizationObjectById(id: string): Observable<any> {
+    return of('1');
+    // return this.backend.get(`/organization/id/${id}`)
+  }
+
   getLocalizedResource(key: string): string {
     const v = this.system.i18n[key];
     if (!v) {
@@ -237,6 +246,14 @@ export class SystemService {
   private setSchema(schemaResponse: SchemaResponse, localizedResource: any) {
     const objectTypes: ObjectType[] = schemaResponse.objectTypes.map((ot: SchemaResponseTypeDefinition) => {
       const isFolder = ot.baseId === 'folder';
+
+      // map certain fields to organization type (fake it until you make it ;-)
+      const orgTypeFields = [BaseObjectTypeField.MODIFIED_BY, BaseObjectTypeField.CREATED_BY];
+      ot.fields.forEach((f) => {
+        if (orgTypeFields.includes(f.id)) {
+          f.classification = [Classification.STRING_ORGANIZATION];
+        }
+      });
       return {
         id: ot.id,
         localNamespace: ot.localNamespace,

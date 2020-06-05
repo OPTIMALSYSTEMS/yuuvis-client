@@ -18,10 +18,11 @@ import { DatetimeComponent } from './elements/datetime/datetime.component';
 import { YearRangeDirective } from './elements/datetime/year-range/year-range.directive';
 import { NumberRangeComponent } from './elements/number-range/number-range.component';
 import { NumberComponent } from './elements/number/number.component';
+import { OrganizationComponent } from './elements/organization/organization.component';
+import { ReferenceItemComponent } from './elements/reference/reference-item/reference-item.component';
 import { ReferenceComponent } from './elements/reference/reference.component';
 import { StringComponent } from './elements/string/string.component';
 import { FormInputComponent } from './form-input/form-input.component';
-import { ReferenceItemComponent } from './elements/reference/reference-item/reference-item.component';
 
 /**
  * `YuvFormModule` bundles form controls like inputs, checkboxes, datepickers and so on.
@@ -39,7 +40,8 @@ import { ReferenceItemComponent } from './elements/reference/reference-item/refe
     NumberRangeComponent,
     YearRangeDirective,
     ReferenceComponent,
-    ReferenceItemComponent
+    ReferenceItemComponent,
+    OrganizationComponent
   ],
   exports: [
     FormInputComponent,
@@ -50,7 +52,8 @@ import { ReferenceItemComponent } from './elements/reference/reference-item/refe
     DatetimeRangeComponent,
     NumberRangeComponent,
     YearRangeDirective,
-    ReferenceComponent
+    ReferenceComponent,
+    OrganizationComponent
   ],
   imports: [
     CommonModule,
