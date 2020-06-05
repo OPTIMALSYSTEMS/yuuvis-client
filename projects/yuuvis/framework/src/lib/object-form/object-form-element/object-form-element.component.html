@@ -28,17 +28,20 @@
         [classification]="formElementRef._eoFormElement.classification"
         [readonly]="formElementRef._eoFormElement.readonly">
       </yuv-reference>
+    </yuv-form-input>
 
-      <!-- STRING:ORGANIZATION -->
-      <yuv-organization *ngSwitchCase="'string:organization'" [situation]="element._eoFormControlWrapper.situation"
+    <!-- STRING:ORGANIZATION -->
+    <yuv-form-input *ngSwitchCase="'string:organization'" [tag]="tag" [label]="formElementRef._eoFormElement.label"
+      [isNull]="isNull" [skipToggle]="skipToggle || situation !== 'SEARCH'" (onToggleLabel)="labelToggled($event)"
+      [required]="formElementRef._eoFormElement.required" [invalid]="errors">
+      <yuv-organization [situation]="element._eoFormControlWrapper.situation"
         [multiselect]="formElementRef._eoFormElement.multiselect"
         [formControlName]="element._eoFormControlWrapper.controlName"
         [classification]="formElementRef._eoFormElement.classification"
         [readonly]="formElementRef._eoFormElement.readonly">
       </yuv-organization>
-
-
     </yuv-form-input>
+
 
     <!-- BOOLEAN -->
     <yuv-form-input *ngSwitchCase="'boolean'" [tag]="tag" class="checkbox" [label]="formElementRef._eoFormElement.label"

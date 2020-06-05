@@ -4,7 +4,7 @@ export const organizationElements = [
     name: 'id:organization',
     label: 'user',
     description: '',
-    classification: 'id:organization',
+    classification: ['id:organization'],
     type: 'string',
     required: false
   },
@@ -14,7 +14,7 @@ export const organizationElements = [
     label: 'multiselect',
     description: '',
     multiselect: true,
-    classification: 'id:organization',
+    classification: ['id:organization'],
     type: 'string',
     required: false
   },
@@ -24,7 +24,7 @@ export const organizationElements = [
     label: 'readonly',
     description: '',
     multiselect: true,
-    classification: 'id:organization',
+    classification: ['id:organization'],
     type: 'string',
     required: false
   }

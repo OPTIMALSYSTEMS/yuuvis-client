@@ -84,7 +84,8 @@ export class TestObjectFormComponent implements OnInit {
       model: {
         formModel: this.wrap(referenceElements),
         data: {
-          'id:reference:value': ['d50256d1-6502-40c4-b8da-626793d5ab12', 'shouldfail']
+          'id:reference:value': ['d50256d1-6502-40c4-b8da-626793d5ab12', 'shouldfail'],
+          'id:reference:readonly': ['d50256d1-6502-40c4-b8da-626793d5ab12', 'shouldfail']
         }
       }
     },
@@ -93,7 +94,7 @@ export class TestObjectFormComponent implements OnInit {
       model: {
         formModel: this.wrap(organizationElements),
         data: {
-          'id:organization:readonly': '3'
+          'id:organization:readonly': ['shouldfail', 'a69a0eb6-3662-4c00-8096-38fbb2c4a922']
         }
       }
     }

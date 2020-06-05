@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, of } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 import { UserSettings, YuvUser } from '../../model/yuv-user.model';
 import { BackendService } from '../backend/backend.service';
@@ -46,7 +46,7 @@ export class UserService {
     if (user) {
       this.backend.setHeader('Accept-Language', this.user.getClientLocale());
 
-      const languages = this.config.getClientLocales().map(lang => lang.iso);
+      const languages = this.config.getClientLocales().map((lang) => lang.iso);
       const userLang = user.getClientLocale();
       if (languages.indexOf(userLang) !== -1) {
         this.logger.debug("Setting client locale to '" + userLang + "'");
@@ -112,8 +112,55 @@ export class UserService {
     return this.backend.get('/user/settings');
   }
 
+  /**
+   * Search for a user based on a search term
+   * @param term Search term
+   */
+  queryUser(term: string): Observable<YuvUser[]> {
+    // TODO: implement once service is available
+    const dummyData = [
+      {
+        username: 'martin',
+        id: '2685df3a-1cf8-4da3-968c-0a4a10b48921',
+        type: 'USER',
+        email: 'bartonitz@optimal-systems.de',
+        firstname: 'Martin',
+        lastname: 'Bartonitz',
+        enabled: true
+      },
+      {
+        username: 'jürgen',
+        id: '75c3d8ba-2818-4064-a761-997143a4db43',
+        type: 'USER',
+        email: 'widiker@optimal-systems.de',
+        firstname: 'Jürgen',
+        lastname: 'Widiker',
+        enabled: true
+      },
+      {
+        username: 'frank',
+        id: 'b74225f6-f8f2-4cb6-aa84-c00a34b8b8b1',
+        type: 'USER',
+        email: 'frank.klingebiel@optimal-systems.de',
+        firstname: 'Frank',
+        lastname: 'Klingebiel',
+        enabled: true
+      },
+      {
+        username: 'andreas',
+        id: 'a69a0eb6-3662-4c00-8096-38fbb2c4a922',
+        type: 'USER',
+        email: 'schulz@optimal-systems.de',
+        firstname: 'Andreas',
+        lastname: 'Schulz',
+        enabled: true
+      }
+    ];
+    return of(dummyData.map((d) => new YuvUser(d, null)).filter((d) => d.firstname.includes(term) || d.lastname.includes(term) || d.email.includes(term)));
+  }
+
   getUserById(id: string): Observable<YuvUser> {
-    return this.backend.get(`/user/${id}/info`).pipe(map(user => new YuvUser(user, this.user.userSettings)));
+    return this.backend.get(`/user/${id}/info`).pipe(map((user) => new YuvUser(user, this.user.userSettings)));
   }
 
   logout(): void {

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, forwardRef, HostBinding, Input, Output, TemplateRef, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, forwardRef, HostBinding, Input, Output, TemplateRef, ViewChild } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import {
   BaseObjectTypeField,
@@ -39,7 +39,7 @@ import { ReferenceEntry } from './reference.interface';
     }
   ]
 })
-export class ReferenceComponent implements ControlValueAccessor {
+export class ReferenceComponent implements ControlValueAccessor, AfterViewInit {
   @ViewChild('autocomplete') autoCompleteInput: AutoComplete;
   private queryJson: SearchQueryProperties;
   noAccessTitle = '! *******';
@@ -59,6 +59,12 @@ export class ReferenceComponent implements ControlValueAccessor {
    * Indicator that multiple strings could be inserted, they will be rendered as chips (default: false).
    */
   @Input() multiselect: boolean;
+  /**
+   * Set this to true and the component will try to gain focus once it has been rendered.
+   * Notice that this is not reliable. If there are any other components that are rendered
+   * later and also try to be focused, they will 'win', because there can only be one focus.
+   */
+  @Input() autofocus: boolean;
   /**
    * Additional semantics for the form element. You could specify restrictions on what object
    * type should be allowed by setting eg. `['id:reference[system:folder]']` to only allow folders
@@ -248,5 +254,13 @@ export class ReferenceComponent implements ControlValueAccessor {
       types: this.allowedTargetTypes,
       size: this.maxSuggestions
     };
+  }
+
+  ngAfterViewInit() {
+    if (this.autoCompleteInput.multiInputEL && this.autofocus) {
+      setTimeout((_) => {
+        this.autoCompleteInput.multiInputEL.nativeElement.focus();
+      });
+    }
   }
 }

@@ -157,15 +157,6 @@ export class SystemService {
     }
   }
 
-  /**
-   * Retrieve an organization object by its ID
-   * @param id ID of org object
-   */
-  getOrganizationObjectById(id: string): Observable<any> {
-    return of('1');
-    // return this.backend.get(`/organization/id/${id}`)
-  }
-
   getLocalizedResource(key: string): string {
     const v = this.system.i18n[key];
     if (!v) {

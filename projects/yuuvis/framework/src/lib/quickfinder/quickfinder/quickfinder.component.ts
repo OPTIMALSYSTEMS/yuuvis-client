@@ -26,6 +26,12 @@ export class QuickfinderComponent {
    * Maximal number of suggestions for the given search term (default: 10)
    */
   @Input() maxSuggestions: number = 10;
+  /**
+   * Set this to true and the component will try to gain focus once it has been rendered.
+   * Notice that this is not reliable. If there are any other components that are rendered
+   * later and also try to be focused, they will 'win', because there can only be one focus.
+   */
+  @Input() autofocus: boolean;
 
   /**
    * Restrict the suggestions to a list of allowed target object types

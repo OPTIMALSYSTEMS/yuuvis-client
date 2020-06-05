@@ -1,8 +1,9 @@
-import { Component, forwardRef, Input, ViewChild } from '@angular/core';
-import { ControlValueAccessor, NG_VALIDATORS, NG_VALUE_ACCESSOR, Validator } from '@angular/forms';
-import { SystemService } from '@yuuvis/core';
+import { AfterViewInit, Component, forwardRef, HostBinding, Input, ViewChild } from '@angular/core';
+import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { UserService, YuvUser } from '@yuuvis/core';
 import { AutoComplete } from 'primeng/autocomplete';
 import { forkJoin, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { IconRegistryService } from '../../../common/components/icon/service/iconRegistry.service';
 import { organization } from '../../../svg.generated';
 
@@ -15,36 +16,45 @@ import { organization } from '../../../svg.generated';
       provide: NG_VALUE_ACCESSOR,
       useExisting: forwardRef(() => OrganizationComponent),
       multi: true
-    },
-    {
-      provide: NG_VALIDATORS,
-      useExisting: forwardRef(() => OrganizationComponent),
-      multi: true
     }
   ]
 })
-export class OrganizationComponent implements ControlValueAccessor, Validator {
+export class OrganizationComponent implements ControlValueAccessor, AfterViewInit {
   @ViewChild('autocomplete') autoCompleteInput: AutoComplete;
 
+  noAccessTitle = '! *******';
   minLength = 2;
 
   value;
-  innerValue: any[] = [];
-  autocompleteRes: any[] = [];
+  innerValue: YuvUser[] = [];
+  autocompleteRes: YuvUser[] = [];
 
+  @HostBinding('class.inputDisabled') _inputDisabled: boolean;
+
+  /**
+   * Possibles values are `EDIT` (default),`SEARCH`,`CREATE`. In search situation validation of the form element will be turned off, so you are able to enter search terms that do not meet the elements validators.
+   */
   @Input() situation: string;
+  /**
+   * Indicator that multiple strings could be inserted, they will be rendered as chips (default: false).
+   */
   @Input() multiselect: boolean;
+  /**
+   * Additional semantics for the form element.
+   */
   @Input() classification: string;
+  /**
+   * Will prevent the input from being changed (default: false)
+   */
   @Input() readonly: boolean;
-  @Input() placeholder: string;
+  /**
+   * Set this to true and the component will try to gain focus once it has been rendered.
+   * Notice that this is not reliable. If there are any other components that are rendered
+   * later and also try to be focused, they will 'win', because there can only be one focus.
+   */
+  @Input() autofocus: boolean;
 
-  private dummyData = [
-    { title: 'Bartonitz, Martin', id: '1' },
-    { title: 'Ansorg, Manuel', id: '2' },
-    { title: 'Mustermann, Max', id: '3' }
-  ];
-
-  constructor(private iconRegistry: IconRegistryService, private systemService: SystemService) {
+  constructor(private iconRegistry: IconRegistryService, private userService: UserService) {
     this.iconRegistry.registerIcons([organization]);
   }
 
@@ -67,41 +77,40 @@ export class OrganizationComponent implements ControlValueAccessor, Validator {
   registerOnTouched(fn: any): void {}
 
   private propagate() {
+    this._inputDisabled = !this.multiselect && this.innerValue.length === 1;
     this.propagateChange(this.value);
-  }
-
-  validate() {
-    // null means valid
-    return null;
   }
 
   resolveFn(value: any) {
     let map = (value instanceof Array ? value : [value]).map((v) => {
-      let match = this.innerValue.find((iv) => iv.name === v);
-      return match ? of(match) : this.systemService.getOrganizationObjectById(v);
+      let match = this.innerValue.find((iv) => iv.id === v);
+      return match
+        ? of(match)
+        : this.userService.getUserById(v).pipe(
+            catchError((e) =>
+              of(
+                new YuvUser(
+                  {
+                    id: v.id,
+                    title: this.noAccessTitle,
+                    image: null
+                  },
+                  null
+                )
+              )
+            )
+          );
     });
     return forkJoin(map).subscribe((data) => {
       this.innerValue = data;
-      // this.onValueResolved.emit(this.innerValue);
     });
   }
 
   autocompleteFn(evt) {
     if (evt.query.length >= this.minLength) {
-      this.autocompleteRes = this.dummyData.filter((e) => e.title.includes(evt.query));
-      // if (this.multiselect || (!this.multiselect && this.innerValue.length === 0)) {
-      //   // this.backend.getJson(this.buildAutocompleteUri(evt.query))
-      //   //   .subscribe((res) => {
-      //   //     // autocomplete values should be unique and not part of the exceptions
-      //   //     this.autocompleteRes = res.filter(v => (!this.value || this.value.indexOf(v.name) === -1) && this.exceptions.indexOf(v.name) === -1)
-      //   //       .sort(Utils.sortValues('title'));
-      //   //   }, Utils.throw(null,
-      //   //     this.translate.instant('eo.form.property.organization.request.error.title'),
-      //   //     this.translate.instant('eo.form.property.organization.request.error.msg')
-      //   //   ));
-      // } else {
-      //   this.autocompleteRes = [];
-      // }
+      this.userService.queryUser(evt.query).subscribe((res: YuvUser[]) => {
+        this.autocompleteRes = res;
+      });
     } else {
       this.autocompleteRes = [];
     }
@@ -137,6 +146,14 @@ export class OrganizationComponent implements ControlValueAccessor, Validator {
   private clearInnerInput() {
     if (this.autoCompleteInput.multiInputEL) {
       this.autoCompleteInput.multiInputEL.nativeElement.value = '';
+    }
+  }
+
+  ngAfterViewInit() {
+    if (this.autoCompleteInput.multiInputEL && this.autofocus) {
+      setTimeout((_) => {
+        this.autoCompleteInput.multiInputEL.nativeElement.focus();
+      });
     }
   }
 }

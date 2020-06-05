@@ -28,5 +28,15 @@ export const referenceElements = [
     multiselect: false,
     type: 'string',
     required: false
+  },
+  {
+    readonly: true,
+    name: 'id:reference:readonly',
+    label: 'readonly with initial value',
+    description: '',
+    classification: ['id:reference'],
+    multiselect: false,
+    type: 'string',
+    required: false
   }
 ];
