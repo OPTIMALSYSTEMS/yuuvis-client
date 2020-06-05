@@ -120,6 +120,18 @@
     padding: calc(var(--app-pane-padding) / 4);
 
     &:not(:focus-within):not(:hover) {
+      &.extrasEnabled {
+        .main {
+          button.field-select {
+            yuv-icon {
+              border-radius: 2px;
+              background-color: var(--text-color-hint);
+              color: #fff;
+            }
+          }
+        }
+      }
+
       .extras {
         opacity: 0;
         pointer-events: none;
