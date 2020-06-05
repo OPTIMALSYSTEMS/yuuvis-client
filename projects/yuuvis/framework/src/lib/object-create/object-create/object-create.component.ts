@@ -20,7 +20,7 @@ import { ObjectFormComponent } from '../../object-form/object-form/object-form.c
 import { NotificationService } from '../../services/notification/notification.service';
 import { clear } from '../../svg.generated';
 import { ObjectCreateService } from '../object-create.service';
-import { Breadcrumb, CreateState, CurrentStep, Labels } from './../object-create.interface';
+import { Breadcrumb, CreateState, CurrentStep, Labels, ObjectTypePreset } from './../object-create.interface';
 
 /**
  * This component is basically a wizard for creating new dms objects.
@@ -60,6 +60,15 @@ export class ObjectCreateComponent implements OnDestroy {
   _files: File[] = [];
   labels: Labels;
   title: string;
+
+  @Input()
+  set objectTypePreset(preset: ObjectTypePreset) {
+    if (preset) {
+      const { objectType, data } = preset;
+      this.selectObjectType(objectType);
+      this.formState = { ...this.formState, data };
+    }
+  }
 
   /**
    * ID of parent folder/context. Providing this ID will create the new object
@@ -186,6 +195,8 @@ export class ObjectCreateComponent implements OnDestroy {
    * @param objectType The object type to be selected
    */
   selectObjectType(objectType: ObjectType) {
+    console.log(objectType);
+
     this.selectedObjectType = objectType;
     this.title = objectType ? this.system.getLocalizedResource(`${objectType.id}_label`) : this.labels.defaultTitle;
     this.objCreateServcice.setNewState({ busy: true });
