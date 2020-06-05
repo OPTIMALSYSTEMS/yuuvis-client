@@ -19,6 +19,16 @@ export const organizationElements = [
     required: false
   },
   {
+    readonly: false,
+    name: 'id:organization:value',
+    label: 'initioal value',
+    description: '',
+    multiselect: true,
+    classification: ['id:organization'],
+    type: 'string',
+    required: false
+  },
+  {
     readonly: true,
     name: 'id:organization:readonly',
     label: 'readonly',

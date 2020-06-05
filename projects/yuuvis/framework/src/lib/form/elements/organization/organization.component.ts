@@ -42,7 +42,7 @@ export class OrganizationComponent implements ControlValueAccessor, AfterViewIni
   /**
    * Additional semantics for the form element.
    */
-  @Input() classification: string;
+  @Input() classification: string[];
   /**
    * Will prevent the input from being changed (default: false)
    */

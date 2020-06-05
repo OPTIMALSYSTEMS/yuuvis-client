@@ -67,7 +67,7 @@ export class StringComponent implements ControlValueAccessor, Validator {
    * is a valid email address) and `url` (validates and creates a link
    * to an URL typed into the form element).
    */
-  @Input() classification: string;
+  @Input() classification: string[];
   /**
    * Possibles values are `EDIT` (default),`SEARCH`,`CREATE`. In search situation validation of the form element will be turned off, so you are able to enter search terms that do not meet the elements validators.
    */
@@ -134,10 +134,13 @@ export class StringComponent implements ControlValueAccessor, Validator {
     }
 
     // validate classification settings
-    if (this.classification && multiCheck((v) => !this.validateClassification(v))) {
-      this.validationErrors.push({ key: 'classification' + this.classification });
+    if (this.classification && this.classification.length) {
+      this.classification.forEach((c) => {
+        if (multiCheck((v) => !this.validateClassification(v, c))) {
+          this.validationErrors.push({ key: 'classification' + c });
+        }
+      });
     }
-
     // validate min length
     if (!Utils.isEmpty(this.minLength) && multiCheck((v) => v.length < this.minLength)) {
       this.validationErrors.push({ key: 'minlength', params: { minLength: this.minLength } });
@@ -187,16 +190,16 @@ export class StringComponent implements ControlValueAccessor, Validator {
     return false;
   }
 
-  private validateClassification(string): boolean {
+  private validateClassification(string: string, classification: string): boolean {
     if (this.situation === Situation.SEARCH) {
       return true;
     } else {
       let pattern;
-      if (this.classification === Classification.STRING_EMAIL) {
+      if (classification === Classification.STRING_EMAIL) {
         pattern = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-      } else if (this.classification === Classification.STRING_URL) {
+      } else if (classification === Classification.STRING_URL) {
         pattern = /(http|ftp|https):\/\/[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:\/~+#-]*[\w@?^=%&amp;\/~+#-])?/;
-      } else if (this.classification === Classification.STRING_PHONE) {
+      } else if (classification === Classification.STRING_PHONE) {
         pattern = /^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$/g;
       }
       return pattern ? pattern.test(string) : false;

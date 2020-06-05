@@ -2,19 +2,11 @@
   display: flex;
   align-items: center;
 
-  ::ng-deep {
-    .ui-autocomplete-token-label.noAccess {
-      color: var(--color-error) !important;
-      cursor: not-allowed;
-    }
-  }
-
   &.inputDisabled {
     ::ng-deep {
       .ui-autocomplete-multiple-container.ui-inputtext {
         cursor: default;
       }
-
       .ui-autocomplete-input-token {
         display: none !important;
       }

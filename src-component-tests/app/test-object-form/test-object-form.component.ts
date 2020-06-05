@@ -94,6 +94,7 @@ export class TestObjectFormComponent implements OnInit {
       model: {
         formModel: this.wrap(organizationElements),
         data: {
+          'id:organization:value': ['a69a0eb6-3662-4c00-8096-38fbb2c4a922', 'shouldfail'],
           'id:organization:readonly': ['shouldfail', 'a69a0eb6-3662-4c00-8096-38fbb2c4a922']
         }
       }
