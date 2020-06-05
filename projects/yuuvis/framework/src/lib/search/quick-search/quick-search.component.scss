@@ -119,6 +119,19 @@
     border-radius: 2px;
     padding: calc(var(--app-pane-padding) / 4);
 
+    &:not(:focus-within):not(:hover) {
+      .extras {
+        opacity: 0;
+        pointer-events: none;
+        height: 0;
+        position: absolute;
+        overflow: hidden;
+        margin: 0;
+        padding: 0;
+        width: 100%;
+      }
+    }
+
     &.extrasEnabled {
       flex-flow: column;
       .extras {
@@ -146,6 +159,7 @@
       button {
         padding: calc(var(--app-pane-padding) / 2);
         display: flex;
+        align-items: center;
 
         &.primary {
           padding: calc(var(--app-pane-padding) / 8) calc(var(--app-pane-padding) / 2);
