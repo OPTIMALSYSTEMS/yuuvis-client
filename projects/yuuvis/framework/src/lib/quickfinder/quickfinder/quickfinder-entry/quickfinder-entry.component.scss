@@ -1,0 +1,35 @@
+:host {
+  display: grid;
+  cursor: pointer;
+  grid-template-rows: auto auto;
+  grid-template-columns: auto 1fr auto;
+  grid-template-areas: 'icon title details' 'icon description details';
+  gap: 0 var(--app-pane-padding);
+  border-bottom: 1px solid var(--panel-divider-color);
+  padding: calc(var(--app-pane-padding) / 2);
+
+  &:hover {
+    background-color: var(--item-focus-background-color);
+  }
+
+  yuv-icon {
+    grid-area: icon;
+    align-self: center;
+    opacity: 0.54;
+  }
+  .title {
+    grid-area: title;
+  }
+  .description {
+    grid-area: description;
+    opacity: 0.54;
+  }
+  .details {
+    grid-area: details;
+    align-self: center;
+  }
+
+  &.active {
+    background-color: var(--item-selected-background-color);
+  }
+}

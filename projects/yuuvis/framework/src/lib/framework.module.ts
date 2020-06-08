@@ -19,6 +19,7 @@ import { YuvObjectDetailsModule } from './object-details/object-details.module';
 import { YuvObjectFormModule } from './object-form/object-form.module';
 import { YuvPipesModule } from './pipes/pipes.module';
 import { YuvPopoverModule } from './popover/popover.module';
+import { YuvQuickfinderModule } from './quickfinder/quickfinder.module';
 import { YuvSearchModule } from './search/search.module';
 import { ErrorHandlerService } from './services/error-handler/error-handler.service';
 import { YuvUserModule } from './user/user.module';
@@ -49,6 +50,7 @@ import { YuvVersionsModule } from './versions/versions.module';
     YuvObjectDetailsModule,
     YuvColumnConfigModule,
     YuvObjectCreateModule,
+    YuvQuickfinderModule,
     YuvPipesModule,
     OverlayPanelModule,
     YuvActionModule,
@@ -73,6 +75,7 @@ import { YuvVersionsModule } from './versions/versions.module';
     YuvComponentsModule,
     YuvObjectFormModule,
     YuvContextModule,
+    YuvQuickfinderModule,
     YuvCommonModule,
     YuvCoreModule,
     OverlayPanelModule,

@@ -2,4 +2,8 @@
   display: block;
   width: 90%;
   height: 90%;
+
+  display: grid;
+  grid-template-rows: min-content min-content;
+  gap: 20px;
 }

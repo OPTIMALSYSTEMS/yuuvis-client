@@ -177,7 +177,7 @@ $desktop-width: 1024px;
 }
 
 /* mixin definition ; sets LTR and RTL within the same style call */
-@mixin bidi-style($prop, $value, $inverse-prop, $default-value) {
+@mixin bidi-style($prop, $value, $inverse-prop, $default-value: initial) {
   #{$prop}: $value;
 
   .yuv-rtl & {

@@ -1,0 +1,10 @@
+<div class="yuv-move">
+  <h2>{{ 'yuv.framework.action-menu.action.move.dms.object.picker.title' | translate }}</h2>
+
+  <yuv-quickfinder (objectSelect)="onPickerResult($event)" [allowedTargetTypes]="allowedTypes"></yuv-quickfinder>
+
+  <div class="form-buttons">
+    <button (click)="cancel()">{{ 'yuv.framework.shared.cancel' | translate }}</button>
+    <button class="primary" [disabled]="!contextInfo" (click)="move()">OK</button>
+  </div>
+</div>

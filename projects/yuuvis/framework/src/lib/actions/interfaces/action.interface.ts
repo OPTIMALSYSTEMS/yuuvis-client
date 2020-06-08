@@ -67,7 +67,7 @@ export interface ExternalComponentAction extends Action {
   /**
    * Component to be injected into the dialog
    */
-  extComponents: Type<any>;
+  extComponent: Type<any>;
 }
 
 /**

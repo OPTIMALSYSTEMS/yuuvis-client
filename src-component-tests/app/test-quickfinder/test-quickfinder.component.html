@@ -1,0 +1,30 @@
+<div class="testing-controls">
+    <!-- <button (click)="showContextPicker()">Open picker in dialog</button> -->
+</div>
+
+<div class="cmp">
+    <!-- all kinds of objects -->
+    <yuv-quickfinder [minChars]="1" [maxSuggestions]="5" (objectSelect)="onPickerResult($event)">
+    </yuv-quickfinder>
+
+    <!-- restrict suggestions to folders -->
+    <yuv-quickfinder [label]="'pick a folder'" [allowedTargetTypes]="['system:folder']" [minChars]="2"
+        [maxSuggestions]="15" (objectSelect)="onPickerResult($event)">
+    </yuv-quickfinder>
+
+
+    <!-- add custom link template to enhance suggestions -->
+    <yuv-quickfinder [label]="'with custom links'" [allowedTargetTypes]="['system:folder']" [minChars]="1"
+        [maxSuggestions]="5" [entryLinkTemplate]="quickfinderEntryLinkTpl" (objectSelect)="onPickerResult($event)">
+    </yuv-quickfinder>
+</div>
+
+<div class="selected" *ngIf="selectedObject">
+    {{selectedObject.title}}<br>
+    {{selectedObject.description}}
+</div>
+
+<!-- template to render a link inside the context picker -->
+<ng-template #quickfinderEntryLinkTpl let-entry="entry">
+    <a [routerLink]="['/context-picker', entry.id]" title="Open {{entry.title}}">open</a>
+</ng-template>

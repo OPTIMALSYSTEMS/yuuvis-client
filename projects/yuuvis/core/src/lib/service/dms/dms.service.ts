@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { forkJoin, Observable } from 'rxjs';
-import { delay, map, tap } from 'rxjs/operators';
+import { forkJoin, Observable, of } from 'rxjs';
+import { catchError, delay, map, tap } from 'rxjs/operators';
 import { DmsObject } from '../../model/dms-object.model';
 import { Utils } from '../../util/utils';
 import { ApiBase } from '../backend/api.enum';
@@ -94,12 +94,42 @@ export class DmsService {
    * Update indexdata of a dms object.
    * @param id ID of the object to apply the data to
    * @param data Indexdata to be applied
+   * @param silent (optional) If true, no DMS_OBJECT_UPDATED event will be send
    */
-  updateDmsObject(id: string, data: any) {
+  updateDmsObject(id: string, data: any, silent?: boolean) {
     return this.backend.patch(`/dms/update/${id}`, data).pipe(
       map((res) => this.searchService.toSearchResult(res)),
       map((res: SearchResult) => this.searchResultToDmsObject(res.items[0])),
-      tap((_dmsObject: DmsObject) => this.eventService.trigger(YuvEventType.DMS_OBJECT_UPDATED, _dmsObject))
+      tap((_dmsObject: DmsObject) => {
+        if (!silent) {
+          this.eventService.trigger(YuvEventType.DMS_OBJECT_UPDATED, _dmsObject);
+        }
+      })
+    );
+  }
+
+  /**
+   * Moves given objects to a different context folder.
+   * @param folderId the id of the new context folder of the objects
+   * @param ids the ids of objects to move
+   */
+  moveDmsObjects(targetFolderId: string, objects: DmsObject[]) {
+    let data = {};
+    data[BaseObjectTypeField.PARENT_ID] = targetFolderId;
+    return forkJoin(
+      objects.map((o) => {
+        return this.updateDmsObject(o.id, data, true).pipe(
+          catchError((err) => of({ isError: true, dmsObject: o })),
+          map((res) => (res instanceof DmsObject ? { isError: false, dmsObject: res } : res))
+        );
+      })
+    ).pipe(
+      map((results) => {
+        let succeeded = results.filter((res) => !res.isError).map((res) => res.dmsObject);
+        let failed = results.filter((res) => res.isError).map((res) => res.dmsObject);
+        return { succeeded, failed, targetFolderId };
+      }),
+      tap((results) => this.eventService.trigger(YuvEventType.DMS_OBJECTS_MOVED, results))
     );
   }
 

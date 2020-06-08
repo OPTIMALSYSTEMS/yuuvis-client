@@ -21,7 +21,7 @@ export class DeleteActionComponent extends DmsObjectTarget implements ComponentA
   description: string;
   priority = 8;
   iconSrc = deleteIcon.data;
-  group = 'further';
+  group = 'common';
   range = SelectionRange.SINGLE_SELECT;
   component = DeleteComponent;
 
