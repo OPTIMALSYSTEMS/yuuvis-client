@@ -8,6 +8,9 @@ import { SelectionRange } from '../selection-range.enum';
 
 export const ACTIONS = new InjectionToken<any[]>('ACTIONS');
 export const CUSTOM_ACTIONS = new InjectionToken<any[]>('CUSTOM_ACTIONS');
+/**
+ * Use ActionService to provide `actions` for an action menu
+ */
 
 @Injectable()
 export class ActionService {
@@ -75,8 +78,8 @@ export class ActionService {
 
   /**
    * Checks if the action is allowed for single ot multiple selection
-   * @param action
-   * @param itemsCount
+   * @param action It is an action that will be provided
+   * @param itemsCount The count of selected items, for which the user wants to perform some action
    * @returns
    */
   private isRangeAllowed(action, itemsCount) {
