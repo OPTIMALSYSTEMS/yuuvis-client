@@ -4,6 +4,7 @@
   "releaseDate": "Summer 2020",
   "description": "yuuvis® client",
   "author": "OPTIMAL SYSTEMS GmbH",
+  "license": "Apache-2.0",
   "scripts": {
     "ng": "ng",
     "prebuild:about": "node ./tools/scripts/common/about/prebuild-about-state",
