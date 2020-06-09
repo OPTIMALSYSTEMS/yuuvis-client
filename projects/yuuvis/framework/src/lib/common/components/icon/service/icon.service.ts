@@ -3,7 +3,9 @@ import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { finalize, shareReplay, tap } from 'rxjs/operators';
 
-/** soon to be gone */
+/**
+ * IconService get and injects the icons.
+ */
 @Injectable()
 export class IconService {
   private cache = new Map<string, any>();
@@ -14,7 +16,7 @@ export class IconService {
   fetch(uri: string): Observable<any> {
     return this.cache.has(uri)
       ? of(this.cache.get(uri))
-      : this.getViaTemplateCache(uri, () => this.http.get(uri, { responseType: 'text' }).pipe(tap(text => this.cache.set(uri, text))));
+      : this.getViaTemplateCache(uri, () => this.http.get(uri, { responseType: 'text' }).pipe(tap((text) => this.cache.set(uri, text))));
   }
 
   private getViaTemplateCache(id: string, request: Function): Observable<any> {
