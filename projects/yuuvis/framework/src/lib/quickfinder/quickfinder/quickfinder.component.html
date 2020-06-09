@@ -1,23 +1,5 @@
-<yuv-form-input [label]="label">
-  <form [formGroup]="inputForm">
-    <ng-container *ngIf="!selectedEntry; else tplSelected">
-      <input class="main" type="text" #termInput formControlName="term" />
-      <div class="aside small" [ngClass]="{ 'yuv-loader': busy }"></div>
-    </ng-container>
-  </form>
+<yuv-form-input [label]="label" [skipToggle]="true">
+  <yuv-reference (objectSelect)="onObjectSelected($event)" [autofocus]="autofocus" [minChars]="minChars"
+    [allowedTargetTypes]="allowedTargetTypes" [maxSuggestions]="maxSuggestions" [entryLinkTemplate]="entryLinkTemplate">
+  </yuv-reference>
 </yuv-form-input>
-
-<ng-template #tplSelected>
-  <div class="main">
-    {{ selectedEntry.title }}
-  </div>
-  <yuv-icon class="aside btn" icon="clear" (click)="clear()"></yuv-icon>
-</ng-template>
-
-<ng-template #tplPicker let-data let-popover="popover">
-  <div class="result">
-    <yuv-quickfinder-entry *ngFor="let item of result" (click)="selectEntry(item)" [item]="item">
-      <ng-container *ngTemplateOutlet="entryLinkTemplate; context: { entry: item }"></ng-container>
-    </yuv-quickfinder-entry>
-  </div>
-</ng-template>

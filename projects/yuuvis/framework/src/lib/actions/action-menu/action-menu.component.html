@@ -1,7 +1,9 @@
-<div class="action-menu dark" *ngIf="showMenu" [ngClass]="{ descriptionsEnabled: showDescriptions }">
+<div class="action-menu dark" *ngIf="showMenu" [ngClass]="{ descriptionsEnabled: showDescriptions }"
+  (yuvOutsideClick)="hide()">
   <div class="head">
     <div class="settings">
-      <yuv-form-input class="checkbox" [skipToggle]="true" [label]="'yuv.framework.action-menu.settings.descriptions' | translate">
+      <yuv-form-input class="checkbox" [skipToggle]="true"
+        [label]="'yuv.framework.action-menu.settings.descriptions' | translate">
         <yuv-checkbox [(ngModel)]="showDescriptions" [ngModelOptions]="{ standalone: true }"></yuv-checkbox>
       </yuv-form-input>
     </div>
@@ -15,12 +17,9 @@
       </div>
 
       <ng-template #link>
-        <a
-          class="row link"
-          [routerLink]="entry.action.getLink(entry.availableSelection)"
+        <a class="row link" [routerLink]="entry.action.getLink(entry.availableSelection)"
           [fragment]="entry.action.getFragment ? entry.action.getFragment(entry.availableSelection) : null"
-          [queryParams]="entry.action.getParams ? entry.action.getParams(entry.availableSelection) : {}"
-        >
+          [queryParams]="entry.action.getParams ? entry.action.getParams(entry.availableSelection) : {}">
           <ng-container *ngTemplateOutlet="default"></ng-container>
         </a>
       </ng-template>
@@ -37,7 +36,8 @@
 
     <div class="group common" *ngIf="actionLists?.common.length > 0">
       <div class="group-title">{{ 'yuv.framework.action-menu.actions.group.common' | translate }}</div>
-      <div class="action" *ngFor="let actionListEntry of actionLists.common; index as i" (click)="onClick(actionListEntry)">
+      <div class="action" *ngFor="let actionListEntry of actionLists.common; index as i"
+        (click)="onClick(actionListEntry)">
         <ng-container *ngTemplateOutlet="action; context: { $implicit: actionListEntry, id: +i }"></ng-container>
       </div>
     </div>
@@ -45,7 +45,8 @@
     <ng-container *ngIf="!loading; else loader">
       <div class="group further" *ngIf="actionLists?.further.length > 0">
         <div class="group-title">{{ 'yuv.framework.action-menu.actions.group.further_actions' | translate }}</div>
-        <div class="action" *ngFor="let actionListEntry of actionLists.further; index as i" eoPreventDoubleClick (debounceClick)="onClick(actionListEntry)">
+        <div class="action" *ngFor="let actionListEntry of actionLists.further; index as i" eoPreventDoubleClick
+          (debounceClick)="onClick(actionListEntry)">
           <ng-container *ngTemplateOutlet="action; context: { $implicit: actionListEntry, id: 'f' + i }"></ng-container>
         </div>
       </div>
@@ -65,7 +66,8 @@
   <div class="group sub" *ngIf="subActionsList && !showComponent">
     <div class="sub-actions">
       <div class="group-title">{{ subActionsListHeader }}</div>
-      <div class="action sub" *ngFor="let actionListEntry of subActionsList; index as i" (click)="onClick(actionListEntry)">
+      <div class="action sub" *ngFor="let actionListEntry of subActionsList; index as i"
+        (click)="onClick(actionListEntry)">
         <ng-container *ngTemplateOutlet="action; context: { $implicit: actionListEntry, id: 's' + i }"></ng-container>
       </div>
     </div>

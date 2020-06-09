@@ -48,6 +48,7 @@ export interface SchemaResponseFieldDefinition {
   cardinality: string;
   required: boolean;
   updatability: string;
+  classification?: string[];
   resolution: string;
 }
 export interface SchemaResponseTypeDefinition {
@@ -59,4 +60,9 @@ export interface SchemaResponseTypeDefinition {
   fileable: boolean;
   contentStreamAllowed?: string;
   fields: SchemaResponseFieldDefinition[];
+}
+
+export interface ClassificationEntry {
+  classification: string;
+  options: string[];
 }

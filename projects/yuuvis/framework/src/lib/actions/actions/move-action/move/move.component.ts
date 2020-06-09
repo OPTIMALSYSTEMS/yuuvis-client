@@ -1,5 +1,6 @@
 import { Component, EventEmitter, OnInit } from '@angular/core';
 import { DmsService, SystemType } from '@yuuvis/core';
+import { ReferenceEntry } from '../../../../form/elements/reference/reference.interface';
 import { ActionComponent } from './../../../interfaces/action-component.interface';
 
 @Component({
@@ -12,12 +13,12 @@ export class MoveComponent implements OnInit, ActionComponent {
   finished: EventEmitter<any> = new EventEmitter();
   canceled: EventEmitter<any> = new EventEmitter();
 
-  contextInfo: any;
+  contextInfo: ReferenceEntry;
   allowedTypes = [SystemType.FOLDER];
 
   constructor(private dmsService: DmsService) {}
 
-  onPickerResult(contextInfos) {
+  onPickerResult(contextInfos: ReferenceEntry) {
     this.contextInfo = contextInfos;
   }
 

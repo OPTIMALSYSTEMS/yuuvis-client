@@ -47,7 +47,7 @@ export const stringElements = [
     name: 'string:email',
     label: 'String Classification email',
     description: 'enter valid email address',
-    classification: 'email',
+    classification: ['email'],
     type: 'string',
     required: false
   },
@@ -56,7 +56,16 @@ export const stringElements = [
     name: 'string:url',
     label: 'String Classification url',
     description: 'enter valid url address',
-    classification: 'url',
+    classification: ['url'],
+    type: 'string',
+    required: false
+  },
+  {
+    readonly: false,
+    name: 'string:phone',
+    label: 'String Classification phone',
+    description: 'enter a phone number',
+    classification: ['phone'],
     type: 'string',
     required: false
   },
@@ -64,8 +73,7 @@ export const stringElements = [
     readonly: false,
     name: 'string:multiline',
     label: 'String multiline',
-    description: 'enter multiline string',
-    classification: 'url',
+    description: '',
     multiline: true,
     type: 'string',
     required: false
@@ -76,6 +84,33 @@ export const stringElements = [
     label: 'String multiple entries',
     description: 'enter multiple entries',
     multiselect: true,
+    type: 'string',
+    required: false
+  },
+  {
+    readonly: false,
+    multiselect: true,
+    name: 'string:chips:email',
+    label: 'String Classification email multiple',
+    classification: ['email'],
+    type: 'string',
+    required: false
+  },
+  {
+    readonly: false,
+    multiselect: true,
+    name: 'string:chips:url',
+    label: 'String Classification URL multiple',
+    classification: ['url'],
+    type: 'string',
+    required: false
+  },
+  {
+    readonly: false,
+    multiselect: true,
+    name: 'string:chips:phone',
+    label: 'String Classification phone multiple',
+    classification: ['phone'],
     type: 'string',
     required: false
   }

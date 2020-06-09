@@ -6,8 +6,16 @@ import { BackendService } from '../backend/backend.service';
 import { AppCacheService } from '../cache/app-cache.service';
 import { Logger } from '../logger/logger';
 import { Utils } from './../../util/utils';
-import { ContentStreamAllowed, SecondaryObjectTypeField, SystemType } from './system.enum';
-import { ObjectType, ObjectTypeField, ObjectTypeGroup, SchemaResponse, SchemaResponseTypeDefinition, SystemDefinition } from './system.interface';
+import { BaseObjectTypeField, Classification, ContentStreamAllowed, SecondaryObjectTypeField, SystemType } from './system.enum';
+import {
+  ClassificationEntry,
+  ObjectType,
+  ObjectTypeField,
+  ObjectTypeGroup,
+  SchemaResponse,
+  SchemaResponseTypeDefinition,
+  SystemDefinition
+} from './system.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -229,6 +237,15 @@ export class SystemService {
   private setSchema(schemaResponse: SchemaResponse, localizedResource: any) {
     const objectTypes: ObjectType[] = schemaResponse.objectTypes.map((ot: SchemaResponseTypeDefinition) => {
       const isFolder = ot.baseId === 'folder';
+
+      // TODO: Remove once schema supports organization classification for base params
+      // map certain fields to organization type (fake it until you make it ;-)
+      const orgTypeFields = [BaseObjectTypeField.MODIFIED_BY, BaseObjectTypeField.CREATED_BY];
+      ot.fields.forEach((f) => {
+        if (orgTypeFields.includes(f.id)) {
+          f.classification = [Classification.STRING_ORGANIZATION];
+        }
+      });
       return {
         id: ot.id,
         localNamespace: ot.localNamespace,
@@ -249,6 +266,31 @@ export class SystemService {
     };
     this.appCache.setItem(this.STORAGE_KEY, this.system).subscribe();
     this.systemSource.next(this.system);
+  }
+
+  /**
+   * Extract classifications from object type fields classification
+   * string. This string may contain more than one classification entry.
+   *
+   * Classification is a comma separated string that may contain additional
+   * properties related to on classification entry. Example:
+   *
+   * `id:reference[system:folder], email`
+   *
+   * @param classifications Object type fields classification property (schema)
+   */
+  getClassifications(classifications: string[]): Map<string, ClassificationEntry> {
+    const res = new Map<string, ClassificationEntry>();
+    if (classifications) {
+      classifications.forEach((c) => {
+        const matches: string[] = c.match(/^([^\[]*)(\[(.*)\])?$/);
+        res.set(matches[1], {
+          classification: matches[1],
+          options: matches[3] ? matches[3].split(',') : []
+        });
+      });
+    }
+    return res;
   }
 
   toFormElement(field: ObjectTypeField): any {

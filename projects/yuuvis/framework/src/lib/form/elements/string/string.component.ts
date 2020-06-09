@@ -1,6 +1,6 @@
 import { Component, ElementRef, forwardRef, Input } from '@angular/core';
 import { ControlValueAccessor, FormControl, NG_VALIDATORS, NG_VALUE_ACCESSOR, Validator } from '@angular/forms';
-import { Utils } from '@yuuvis/core';
+import { Classification, Utils } from '@yuuvis/core';
 import { IconRegistryService } from '../../../common/components/icon/service/iconRegistry.service';
 import { envelope, globe, phone } from '../../../svg.generated';
 import { Situation } from './../../../object-form/object-form.situation';
@@ -20,13 +20,6 @@ import { Situation } from './../../../object-form/object-form.situation';
  * <yuv-string [multiline]="true" [size]="'large'"></yuv-string>
  *
  */
-
-export enum Classification {
-  PHONE = 'phone',
-  EMAIL = 'email',
-  URL = 'url'
-}
-
 @Component({
   selector: 'yuv-string',
   templateUrl: './string.component.html',
@@ -69,9 +62,36 @@ export class StringComponent implements ControlValueAccessor, Validator {
    */
   @Input() autofocus: boolean;
   /**
-   * Possible values are `email` (validates and creates a link to send an email once there is a valid email address) and `url` (validates and creates a link to an URL typed into the form element).
+   * Additional semantics for the form element. Possible values are
+   * `email` (validates and creates a link to send an email once there
+   * is a valid email address) and `url` (validates and creates a link
+   * to an URL typed into the form element).
    */
-  @Input() classification: string;
+  @Input() set classification(c: string[]) {
+    this._classification = c;
+    if (c && c.length) {
+      if (c.includes(Classification.STRING_EMAIL)) {
+        this.classify = {
+          hrefPrefix: 'mailto:',
+          icon: 'envelope'
+        };
+      } else if (c.includes(Classification.STRING_URL)) {
+        this.classify = {
+          hrefPrefix: '',
+          icon: 'globe'
+        };
+      } else if (c.includes(Classification.STRING_PHONE)) {
+        this.classify = {
+          hrefPrefix: 'tel:',
+          icon: 'phone'
+        };
+      }
+    }
+  }
+
+  get classification() {
+    return this._classification;
+  }
   /**
    * Possibles values are `EDIT` (default),`SEARCH`,`CREATE`. In search situation validation of the form element will be turned off, so you are able to enter search terms that do not meet the elements validators.
    */
@@ -94,6 +114,8 @@ export class StringComponent implements ControlValueAccessor, Validator {
   value;
   valid: boolean;
   validationErrors = [];
+  classify: { hrefPrefix: string; icon: string };
+  private _classification: string[];
 
   constructor(private elementRef: ElementRef, private iconRegistry: IconRegistryService) {
     this.iconRegistry.registerIcons([envelope, globe, phone]);
@@ -101,12 +123,16 @@ export class StringComponent implements ControlValueAccessor, Validator {
 
   propagateChange = (_: any) => {};
 
+  private propagate() {
+    this.propagateChange(this.value);
+  }
+
   onKeyUpEnter(event) {
     const input = event.target.value.trim();
     if (input) {
       this.value = this.value ? this.value : [];
       this.value = [...this.value, input];
-      this.propagateChange(this.value);
+      this.propagate();
       event.target.value = '';
     }
   }
@@ -126,7 +152,8 @@ export class StringComponent implements ControlValueAccessor, Validator {
 
     if (Utils.isEmpty(val)) {
       this.value = null;
-      this.propagateChange(this.value);
+      this.propagate();
+
       return;
     }
 
@@ -138,10 +165,13 @@ export class StringComponent implements ControlValueAccessor, Validator {
     }
 
     // validate classification settings
-    if (this.classification && multiCheck((v) => !this.validateClassification(v))) {
-      this.validationErrors.push({ key: 'classification' + this.classification });
+    if (this.classification && this.classification.length) {
+      this.classification.forEach((c) => {
+        if (multiCheck((v) => !this.validateClassification(v, c))) {
+          this.validationErrors.push({ key: 'classification' + c });
+        }
+      });
     }
-
     // validate min length
     if (!Utils.isEmpty(this.minLength) && multiCheck((v) => v.length < this.minLength)) {
       this.validationErrors.push({ key: 'minlength', params: { minLength: this.minLength } });
@@ -164,12 +194,12 @@ export class StringComponent implements ControlValueAccessor, Validator {
       this.maxEntryCountIfInvalid = null;
     }
 
-    this.propagateChange(this.value);
+    this.propagate();
   }
 
   onBlur() {
     if (this.trimValue()) {
-      this.propagateChange(this.value);
+      this.propagate();
     }
   }
 
@@ -191,16 +221,16 @@ export class StringComponent implements ControlValueAccessor, Validator {
     return false;
   }
 
-  private validateClassification(string): boolean {
+  private validateClassification(string: string, classification: string): boolean {
     if (this.situation === Situation.SEARCH) {
       return true;
     } else {
       let pattern;
-      if (this.classification === Classification.EMAIL) {
+      if (classification === Classification.STRING_EMAIL) {
         pattern = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-      } else if (this.classification === Classification.URL) {
+      } else if (classification === Classification.STRING_URL) {
         pattern = /(http|ftp|https):\/\/[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:\/~+#-]*[\w@?^=%&amp;\/~+#-])?/;
-      } else if (this.classification === Classification.PHONE) {
+      } else if (classification === Classification.STRING_PHONE) {
         pattern = /^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$/g;
       }
       return pattern ? pattern.test(string) : false;

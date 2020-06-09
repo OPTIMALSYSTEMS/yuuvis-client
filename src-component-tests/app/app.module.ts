@@ -5,6 +5,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import {
   YuvColumnConfigModule,
   YuvComponentsModule,
+  YuvContextModule,
   YuvDirectivesModule,
   YuvFrameworkModule,
   YuvGroupedSelectModule,
@@ -19,6 +20,7 @@ import { TestAnimatedIconsComponent } from './test-animated-icons/test-animated-
 import { TestAuditComponent } from './test-audit/test-audit.component';
 import { TestColumnConfigComponent } from './test-column-config/test-column-config.component';
 import { TestContentPreviewComponent } from './test-content-preview/test-content-preview.component';
+import { TestContextComponent } from './test-context/test-context.component';
 import { TestFileDropComponent } from './test-file-drop/test-file-drop.component';
 import { TestGroupedSelectComponent } from './test-grouped-select/test-grouped-select.component';
 import { TestIconsComponent } from './test-icons/test-icons/test-icons.component';
@@ -68,7 +70,8 @@ import { TestVersionListComponent } from './test-version-list/test-version-list.
     TestColumnConfigComponent,
     TestVersionListComponent,
     TestObjectDetailsCompareComponent,
-    TestQuickfinderComponent
+    TestQuickfinderComponent,
+    TestContextComponent
   ],
   imports: [
     HttpClientModule,
@@ -85,7 +88,8 @@ import { TestVersionListComponent } from './test-version-list/test-version-list.
     YuvDirectivesModule,
     YuvGroupedSelectModule,
     YuvQuickfinderModule,
-    YuvColumnConfigModule
+    YuvColumnConfigModule,
+    YuvContextModule
   ],
   providers: [],
   bootstrap: [AppComponent]
