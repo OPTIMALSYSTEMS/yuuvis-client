@@ -4,22 +4,27 @@
   flex-flow: row nowrap;
   align-items: center;
 
-  p-autocomplete {
-    width: 100%;
+  ::ng-deep {
+    .ui-autocomplete-token-label {
+      display: flex;
+      .classify.inchip {
+        color: red;
+      }
+    }
   }
 
   .classify {
+    color: var(--text-color-hint);
     a {
       color: var(--text-color-hint);
+      display: block;
+      border-radius: 2px;
 
       &:hover,
       &:focus {
-        color: var(--text-color-caption);
+        background-color: var(--color-accent);
+        color: #fff;
       }
-    }
-
-    &.empty {
-      display: none;
     }
 
     yuv-icon {

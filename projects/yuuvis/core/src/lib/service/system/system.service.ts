@@ -238,6 +238,7 @@ export class SystemService {
     const objectTypes: ObjectType[] = schemaResponse.objectTypes.map((ot: SchemaResponseTypeDefinition) => {
       const isFolder = ot.baseId === 'folder';
 
+      // TODO: Remove once schema supports organization classification for base params
       // map certain fields to organization type (fake it until you make it ;-)
       const orgTypeFields = [BaseObjectTypeField.MODIFIED_BY, BaseObjectTypeField.CREATED_BY];
       ot.fields.forEach((f) => {

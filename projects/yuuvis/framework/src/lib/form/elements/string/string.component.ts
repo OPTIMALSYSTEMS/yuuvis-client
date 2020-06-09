@@ -67,7 +67,31 @@ export class StringComponent implements ControlValueAccessor, Validator {
    * is a valid email address) and `url` (validates and creates a link
    * to an URL typed into the form element).
    */
-  @Input() classification: string[];
+  @Input() set classification(c: string[]) {
+    this._classification = c;
+    if (c && c.length) {
+      if (c.includes(Classification.STRING_EMAIL)) {
+        this.classify = {
+          hrefPrefix: 'mailto:',
+          icon: 'envelope'
+        };
+      } else if (c.includes(Classification.STRING_URL)) {
+        this.classify = {
+          hrefPrefix: '',
+          icon: 'globe'
+        };
+      } else if (c.includes(Classification.STRING_PHONE)) {
+        this.classify = {
+          hrefPrefix: 'tel:',
+          icon: 'phone'
+        };
+      }
+    }
+  }
+
+  get classification() {
+    return this._classification;
+  }
   /**
    * Possibles values are `EDIT` (default),`SEARCH`,`CREATE`. In search situation validation of the form element will be turned off, so you are able to enter search terms that do not meet the elements validators.
    */
@@ -90,6 +114,8 @@ export class StringComponent implements ControlValueAccessor, Validator {
   value;
   valid: boolean;
   validationErrors = [];
+  classify: { hrefPrefix: string; icon: string };
+  private _classification: string[];
 
   constructor(private elementRef: ElementRef, private iconRegistry: IconRegistryService) {
     this.iconRegistry.registerIcons([envelope, globe, phone]);
@@ -97,12 +123,16 @@ export class StringComponent implements ControlValueAccessor, Validator {
 
   propagateChange = (_: any) => {};
 
+  private propagate() {
+    this.propagateChange(this.value);
+  }
+
   onKeyUpEnter(event) {
     const input = event.target.value.trim();
     if (input) {
       this.value = this.value ? this.value : [];
       this.value = [...this.value, input];
-      this.propagateChange(this.value);
+      this.propagate();
       event.target.value = '';
     }
   }
@@ -122,7 +152,8 @@ export class StringComponent implements ControlValueAccessor, Validator {
 
     if (Utils.isEmpty(val)) {
       this.value = null;
-      this.propagateChange(this.value);
+      this.propagate();
+
       return;
     }
 
@@ -163,12 +194,12 @@ export class StringComponent implements ControlValueAccessor, Validator {
       this.maxEntryCountIfInvalid = null;
     }
 
-    this.propagateChange(this.value);
+    this.propagate();
   }
 
   onBlur() {
     if (this.trimValue()) {
-      this.propagateChange(this.value);
+      this.propagate();
     }
   }
 

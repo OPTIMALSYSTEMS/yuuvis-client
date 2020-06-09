@@ -4,21 +4,29 @@
 <!-- single line input with multiselect-->
 <p-chips *ngIf="!multiline && multiselect" [addOnTab]="true" [(ngModel)]="value" [disabled]="readonly"
   [max]="maxEntryCountIfInvalid" (onBlur)="onBlur()" [addOnBlur]="true" (ngModelChange)="onValueChange($event)"
-  [ngClass]="{ invalid: validationErrors.length}"> </p-chips>
+  [ngClass]="{ invalid: validationErrors.length}">
+
+  <ng-template let-item pTemplate="item">
+    <span class="ui-autocomplete-token-label">
+      <div *ngIf="classify" class="classify inchip">
+        <a href="{{classify.hrefPrefix + item}}">
+          <yuv-icon [icon]="classify.icon"></yuv-icon>
+        </a>
+      </div>{{item}}
+    </span>
+  </ng-template>
+</p-chips>
 
 <!-- multi line text inputs -->
 <textarea class="input-textarea size-{{ size }}" pInputTextarea *ngIf="multiline" (blur)="onBlur()" [(ngModel)]="value"
   [readonly]="readonly" (ngModelChange)="onValueChange($event)"></textarea>
 
-<div class="classify" [ngClass]="{ empty: !value || situation === 'SEARCH' }" *ngIf="classification && valid"
-  [ngSwitch]="classification">
-  <a href="mailto:{{ value }}" *ngSwitchCase="'email'">
-    <yuv-icon [icon]="'envelope'"></yuv-icon>
-  </a>
-  <a target="_blank" href="{{ value }}" *ngSwitchCase="'url'">
-    <yuv-icon [icon]="'globe'"></yuv-icon>
-  </a>
-  <a target="_blank" href="tel:{{ value }}" *ngSwitchCase="'phone'">
-    <yuv-icon [icon]="'phone'"></yuv-icon>
+<div *ngIf="classify" class="classify">
+  <a href="{{classify.hrefPrefix + value}}" *ngIf="value && !validationErrors.length; else tplNoValue">
+    <yuv-icon [icon]="classify.icon"></yuv-icon>
   </a>
 </div>
+
+<ng-template #tplNoValue>
+  <yuv-icon [icon]="classify.icon"></yuv-icon>
+</ng-template>
