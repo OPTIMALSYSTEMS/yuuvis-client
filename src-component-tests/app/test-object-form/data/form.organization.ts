@@ -13,7 +13,7 @@ export const organizationElements = [
     name: 'id:organization:multi',
     label: 'multiselect',
     description: '',
-    multiselect: true,
+    cardinality: 'multi',
     classification: ['id:organization'],
     type: 'string',
     required: false
@@ -23,7 +23,7 @@ export const organizationElements = [
     name: 'id:organization:value',
     label: 'initioal value',
     description: '',
-    multiselect: true,
+    cardinality: 'multi',
     classification: ['id:organization'],
     type: 'string',
     required: false
@@ -33,7 +33,7 @@ export const organizationElements = [
     name: 'id:organization:readonly',
     label: 'readonly',
     description: '',
-    multiselect: true,
+    cardinality: 'multi',
     classification: ['id:organization'],
     type: 'string',
     required: false
