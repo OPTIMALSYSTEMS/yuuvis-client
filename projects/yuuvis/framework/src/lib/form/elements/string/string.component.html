@@ -8,11 +8,14 @@
 
   <ng-template let-item pTemplate="item">
     <span class="ui-autocomplete-token-label">
-      <div *ngIf="classify" class="classify inchip">
+      <div *ngIf="classify && !validationErrors.length" class="classify inchip">
         <a href="{{classify.hrefPrefix + item}}">
           <yuv-icon [icon]="classify.icon"></yuv-icon>
         </a>
-      </div>{{item}}
+      </div>
+      <div class="label">
+        {{item}}
+      </div>
     </span>
   </ng-template>
 </p-chips>
@@ -22,7 +25,8 @@
   [readonly]="readonly" (ngModelChange)="onValueChange($event)"></textarea>
 
 <div *ngIf="classify" class="classify">
-  <a href="{{classify.hrefPrefix + value}}" *ngIf="value && !validationErrors.length; else tplNoValue">
+  <a href="{{classify.hrefPrefix + value}}"
+    *ngIf="value && !validationErrors.length && (classify.hrefPrefix !== '' || value.length <= 1); else tplNoValue">
     <yuv-icon [icon]="classify.icon"></yuv-icon>
   </a>
 </div>

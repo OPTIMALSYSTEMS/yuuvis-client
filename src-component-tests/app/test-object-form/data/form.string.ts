@@ -95,5 +95,23 @@ export const stringElements = [
     classification: ['email'],
     type: 'string',
     required: false
+  },
+  {
+    readonly: false,
+    multiselect: true,
+    name: 'string:chips:url',
+    label: 'String Classification URL multiple',
+    classification: ['url'],
+    type: 'string',
+    required: false
+  },
+  {
+    readonly: false,
+    multiselect: true,
+    name: 'string:chips:phone',
+    label: 'String Classification phone multiple',
+    classification: ['phone'],
+    type: 'string',
+    required: false
   }
 ];

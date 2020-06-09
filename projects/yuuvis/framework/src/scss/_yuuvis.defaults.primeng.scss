@@ -50,9 +50,12 @@ body {
           padding: 0 3px;
           color: var(--text-color-caption);
 
-          .ui-autocomplete-token-label.noAccess {
-            color: var(--color-error);
-            cursor: not-allowed;
+          .ui-autocomplete-token-label {
+            margin-right: 18px;
+            &.noAccess {
+              color: var(--color-error);
+              cursor: not-allowed;
+            }
           }
         }
       }
@@ -236,6 +239,7 @@ body {
   // primeng chips
   // body .ui-chips > ul.ui-inputtext .ui-chips-input-token input
   .ui-chips {
+    width: 100%;
     > ul.ui-inputtext {
       padding: 0;
 
