@@ -74,3 +74,13 @@ export enum ContentStreamAllowed {
   NOT_ALLOWED = 'notallowed',
   REQUIRED = 'required'
 }
+
+// Classifications
+export enum Classification {
+  STRING_ORGANIZATION = 'id:organization',
+  STRING_REFERENCE = 'id:reference',
+  STRING_EMAIL = 'email',
+  STRING_URL = 'url',
+  STRING_PHONE = 'phone',
+  NUMBER_FILESIZE = 'filesize'
+}

@@ -17,6 +17,10 @@
     <yuv-quickfinder [label]="'with custom links'" [allowedTargetTypes]="['system:folder']" [minChars]="1"
         [maxSuggestions]="5" [entryLinkTemplate]="quickfinderEntryLinkTpl" (objectSelect)="onPickerResult($event)">
     </yuv-quickfinder>
+
+    <!-- autofocs -->
+    <yuv-quickfinder [label]="'autofocus'" [autofocus]="true" (objectSelect)="onPickerResult($event)">
+    </yuv-quickfinder>
 </div>
 
 <div class="selected" *ngIf="selectedObject">

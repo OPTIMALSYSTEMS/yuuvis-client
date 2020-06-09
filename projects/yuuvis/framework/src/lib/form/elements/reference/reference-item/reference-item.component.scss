@@ -1,0 +1,24 @@
+:host {
+  display: grid;
+  grid-template-rows: auto auto;
+  grid-template-columns: auto 1fr auto;
+  grid-template-areas: 'icon title details' 'icon description details';
+  gap: 0 var(--app-pane-padding);
+
+  yuv-icon {
+    grid-area: icon;
+    align-self: center;
+    opacity: 0.54;
+  }
+  .title {
+    grid-area: title;
+  }
+  .description {
+    grid-area: description;
+    opacity: 0.54;
+  }
+  .details {
+    grid-area: details;
+    align-self: center;
+  }
+}

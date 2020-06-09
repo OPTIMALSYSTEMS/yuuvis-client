@@ -1,4 +1,4 @@
-import { ContentStreamField } from '@yuuvis/core';
+import { Classification, ContentStreamField } from '@yuuvis/core';
 import { ObjectFormControlWrapper } from './object-form.interface';
 import { ObjectFormControl } from './object-form.model';
 import { Situation } from './object-form.situation';
@@ -53,7 +53,7 @@ export class ObjectFormUtils {
     }
 
     if (formElement.type === 'integer' && formElement.id === ContentStreamField.LENGTH) {
-      formElement.classification = 'filesize';
+      formElement.classification = Classification.NUMBER_FILESIZE;
     }
     return formElement;
   }

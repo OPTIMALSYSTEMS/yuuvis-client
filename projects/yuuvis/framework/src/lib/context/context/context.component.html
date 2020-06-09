@@ -1,5 +1,5 @@
 <yuv-panel [title]="context.title" [description]="context.description" (yuvFileDrop)="onFilesDropped($event)"
-  (titleClick)="select([context.id])" [yuvFileDropOptions]="fileDropOptions">
+  (titleClick)="select([context.id])" [yuvFileDropOptions]="fileDropOptions" *ngIf="context">
   <div class="header-icon" [innerHtml]="contextIcon | safeHtml"></div>
 
   <yuv-action-menu-bar class="actions" yuvOfflineDisabled>

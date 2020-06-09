@@ -31,6 +31,13 @@ export class YuvUser {
     this.enabled = json.enabled;
 
     this.userSettings = userSettings;
+    this.setTitle();
+  }
+
+  private setTitle() {
+    if (!this.title) {
+      this.title = this.firstname && this.lastname ? `${this.lastname}, ${this.firstname}` : this.username;
+    }
   }
 
   /**

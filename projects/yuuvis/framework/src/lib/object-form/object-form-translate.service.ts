@@ -29,6 +29,8 @@ export class ObjectFormTranslateService {
         return this.translate.instant('yuv.framework.object-form-element.error.string.regex.nomatch', params);
       case 'classificationemail':
         return this.translate.instant('yuv.framework.object-form-element.error.string.classification.email', params);
+      case 'classificationphone':
+        return this.translate.instant('yuv.framework.object-form-element.error.string.classification.phone', params);
       case 'classificationurl':
         return this.translate.instant('yuv.framework.object-form-element.error.string.classification.url', params);
       case 'onlyWhitespaces':

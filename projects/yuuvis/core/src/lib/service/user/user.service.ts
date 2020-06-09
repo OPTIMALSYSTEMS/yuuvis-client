@@ -46,7 +46,7 @@ export class UserService {
     if (user) {
       this.backend.setHeader('Accept-Language', this.user.getClientLocale());
 
-      const languages = this.config.getClientLocales().map(lang => lang.iso);
+      const languages = this.config.getClientLocales().map((lang) => lang.iso);
       const userLang = user.getClientLocale();
       if (languages.indexOf(userLang) !== -1) {
         this.logger.debug("Setting client locale to '" + userLang + "'");
@@ -112,8 +112,16 @@ export class UserService {
     return this.backend.get('/user/settings');
   }
 
+  /**
+   * Search for a user based on a search term
+   * @param term Search term
+   */
+  queryUser(term: string): Observable<YuvUser[]> {
+    return this.backend.get(`/user/users?search=${term}`).pipe(map((users) => (!users ? [] : users.map((u) => new YuvUser(u, null)))));
+  }
+
   getUserById(id: string): Observable<YuvUser> {
-    return this.backend.get(`/user/${id}/info`).pipe(map(user => new YuvUser(user, this.user.userSettings)));
+    return this.backend.get(`/user/${id}/info`).pipe(map((user) => new YuvUser(user, this.user.userSettings)));
   }
 
   logout(): void {
