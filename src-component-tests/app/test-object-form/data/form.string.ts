@@ -71,6 +71,15 @@ export const stringElements = [
   },
   {
     readonly: false,
+    name: 'string:multiline',
+    label: 'String multiline',
+    description: '',
+    multiline: true,
+    type: 'string',
+    required: false
+  },
+  {
+    readonly: false,
     name: 'string:chips',
     label: 'String multiple entries',
     description: 'enter multiple entries',
