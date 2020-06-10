@@ -6,13 +6,14 @@ import { BackendService } from '../backend/backend.service';
 import { AppCacheService } from '../cache/app-cache.service';
 import { Logger } from '../logger/logger';
 import { Utils } from './../../util/utils';
-import { BaseObjectTypeField, Classification, ContentStreamAllowed, SecondaryObjectTypeField, SystemType } from './system.enum';
+import { BaseObjectTypeField, Classification, ContentStreamAllowed, InternalFieldType, SecondaryObjectTypeField, SystemType } from './system.enum';
 import {
   ClassificationEntry,
   ObjectType,
   ObjectTypeField,
   ObjectTypeGroup,
   SchemaResponse,
+  SchemaResponseFieldDefinition,
   SchemaResponseTypeDefinition,
   SystemDefinition
 } from './system.interface';
@@ -125,7 +126,15 @@ export class SystemService {
 
     // ... and some secondary object type fields
     // TODO: get fields for SecondaryObjectTypeField from schema
-    const props: ObjectTypeField = { id: '', propertyType: 'string', description: '', cardinality: 'single', required: true, updatability: 'readwrite' };
+    const props: ObjectTypeField = {
+      id: '',
+      propertyType: 'string',
+      _internalType: 'string',
+      description: '',
+      cardinality: 'single',
+      required: true,
+      updatability: 'readwrite'
+    };
     const secondaryFields: ObjectTypeField[] = [
       { ...props, id: SecondaryObjectTypeField.TITLE },
       { ...props, id: SecondaryObjectTypeField.DESCRIPTION }
@@ -246,7 +255,8 @@ export class SystemService {
           f.classification = [Classification.STRING_ORGANIZATION];
         }
       });
-      return {
+
+      const objectType: ObjectType = {
         id: ot.id,
         localNamespace: ot.localNamespace,
         description: ot.description,
@@ -254,8 +264,9 @@ export class SystemService {
         creatable: ot.creatable,
         contentStreamAllowed: isFolder ? ContentStreamAllowed.NOT_ALLOWED : ot.contentStreamAllowed,
         isFolder: isFolder,
-        fields: ot.fields
+        fields: ot.fields.map((f) => ({ ...f, _internalType: this.getInternalFormElementType(f) }))
       };
+      return objectType;
     });
 
     this.system = {
@@ -266,6 +277,25 @@ export class SystemService {
     };
     this.appCache.setItem(this.STORAGE_KEY, this.system).subscribe();
     this.systemSource.next(this.system);
+  }
+
+  /**
+   * Generates an internal type for a given object type field.
+   * Due to some conditions that should not be evaluated on each change detection
+   * cycle, we'll use this internal type that will be set only once.
+   * @param formElement
+   */
+  private getInternalFormElementType(field: SchemaResponseFieldDefinition): string {
+    const classifications = this.getClassifications(field.classification);
+
+    if (field.propertyType === 'string' && classifications.has(Classification.STRING_REFERENCE)) {
+      return InternalFieldType.STRING_REFERENCE;
+    } else if (field.propertyType === 'string' && classifications.has(Classification.STRING_ORGANIZATION)) {
+      return InternalFieldType.STRING_ORGANIZATION;
+    } else {
+      // if there are no matching conditions just return the original type
+      return field.propertyType;
+    }
   }
 
   /**

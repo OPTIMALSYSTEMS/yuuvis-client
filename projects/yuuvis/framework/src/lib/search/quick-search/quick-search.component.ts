@@ -1,6 +1,21 @@
 import { AfterViewInit, Component, ElementRef, EventEmitter, HostBinding, HostListener, Input, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { AggregateResult, BaseObjectTypeField, ContentStreamField, DeviceService, ObjectType, ObjectTypeField, ObjectTypeGroup, RangeValue, SearchFilter, SearchQuery, SearchService, SystemService, TranslateService, Utils } from '@yuuvis/core';
+import {
+  AggregateResult,
+  BaseObjectTypeField,
+  ContentStreamField,
+  DeviceService,
+  ObjectType,
+  ObjectTypeField,
+  ObjectTypeGroup,
+  RangeValue,
+  SearchFilter,
+  SearchQuery,
+  SearchService,
+  SystemService,
+  TranslateService,
+  Utils
+} from '@yuuvis/core';
 import { AutoComplete } from 'primeng/autocomplete';
 import { Subscription, timer } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
@@ -80,8 +95,8 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
   private skipFields = [
     // ...Object.keys(RetentionField).map(k => RetentionField[k]),
     BaseObjectTypeField.OBJECT_ID,
-    BaseObjectTypeField.CREATED_BY,
-    BaseObjectTypeField.MODIFIED_BY,
+    // BaseObjectTypeField.CREATED_BY,
+    // BaseObjectTypeField.MODIFIED_BY,
     BaseObjectTypeField.OBJECT_TYPE_ID,
     BaseObjectTypeField.PARENT_ID,
     BaseObjectTypeField.PARENT_OBJECT_TYPE_ID,
