@@ -4,7 +4,7 @@ export const booleanElements = [
     name: 'boolean:default',
     label: 'default',
     description: 'default checkbox',
-    type: 'boolean',
+    _internalType: 'boolean',
     required: false
   },
   {
@@ -12,7 +12,7 @@ export const booleanElements = [
     name: 'boolean:one',
     label: 'required checkbox',
     description: 'mandatory checkbox',
-    type: 'boolean',
+    _internalType: 'boolean',
     required: true
   },
   {
@@ -20,7 +20,7 @@ export const booleanElements = [
     name: 'boolean:readonly',
     label: 'readonly checkbox',
     description: 'readonly without value',
-    type: 'boolean',
+    _internalType: 'boolean',
     required: false
   },
   {
@@ -28,7 +28,7 @@ export const booleanElements = [
     name: 'boolean:readonlyvalue',
     label: 'readonly checkbox with value',
     description: 'readonly with value',
-    type: 'boolean',
+    _internalType: 'boolean',
     required: false
   },
   {
@@ -37,7 +37,7 @@ export const booleanElements = [
     label: 'tristate checkbox',
     tristate: true,
     description: '',
-    type: 'boolean',
+    _internalType: 'boolean',
     required: false
   },
   {
@@ -46,7 +46,7 @@ export const booleanElements = [
     label: 'required tristate checkbox',
     tristate: true,
     description: 'mandatory checkbox',
-    type: 'boolean',
+    _internalType: 'boolean',
     required: true
   }
 ];

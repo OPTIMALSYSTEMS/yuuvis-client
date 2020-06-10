@@ -20,7 +20,7 @@ export const groupingModel = {
               name: 'string:1',
               label: 'String No. 2',
               description: '',
-              type: 'string',
+              _internalType: 'string',
               required: false
             },
             {
@@ -36,7 +36,7 @@ export const groupingModel = {
                       name: 'string:2',
                       label: 'String',
                       description: '',
-                      type: 'string',
+                      _internalType: 'string',
                       required: false
                     },
                     {
@@ -44,7 +44,7 @@ export const groupingModel = {
                       name: 'string:3',
                       label: 'String',
                       description: '',
-                      type: 'string',
+                      _internalType: 'string',
                       required: false
                     }
                   ]
@@ -58,7 +58,7 @@ export const groupingModel = {
                       name: 'string:4',
                       label: 'String',
                       description: '',
-                      type: 'string',
+                      _internalType: 'string',
                       required: false
                     },
                     {
@@ -66,7 +66,7 @@ export const groupingModel = {
                       name: 'string:5',
                       label: 'String',
                       description: '',
-                      type: 'string',
+                      _internalType: 'string',
                       required: false
                     }
                   ]
@@ -80,7 +80,7 @@ export const groupingModel = {
                       name: 'string:6',
                       label: 'String',
                       description: '',
-                      type: 'string',
+                      _internalType: 'string',
                       required: false
                     },
                     {
@@ -88,7 +88,7 @@ export const groupingModel = {
                       name: 'string:7',
                       label: 'String',
                       description: '',
-                      type: 'string',
+                      _internalType: 'string',
                       required: false
                     }
                   ]
@@ -123,7 +123,7 @@ export const groupingModel = {
                       name: 'string:8',
                       label: 'String',
                       description: '',
-                      type: 'string',
+                      _internalType: 'string',
                       required: false
                     },
                     {
@@ -135,7 +135,7 @@ export const groupingModel = {
                           name: 'string:9',
                           label: 'String',
                           description: '',
-                          type: 'string',
+                          _internalType: 'string',
                           required: false
                         },
                         {
@@ -143,7 +143,7 @@ export const groupingModel = {
                           name: 'string:10',
                           label: 'String',
                           description: '',
-                          type: 'string',
+                          _internalType: 'string',
                           required: false
                         }
                       ]
@@ -153,7 +153,7 @@ export const groupingModel = {
                       name: 'string:11',
                       label: 'String',
                       description: '',
-                      type: 'string',
+                      _internalType: 'string',
                       required: false
                     }
                   ]
@@ -168,7 +168,7 @@ export const groupingModel = {
                       name: 'string:12',
                       label: 'String',
                       description: '',
-                      type: 'string',
+                      _internalType: 'string',
                       required: false
                     },
                     {
@@ -176,7 +176,7 @@ export const groupingModel = {
                       name: 'string:13',
                       label: 'String',
                       description: '',
-                      type: 'string',
+                      _internalType: 'string',
                       required: false
                     },
                     {
@@ -184,7 +184,7 @@ export const groupingModel = {
                       name: 'string:14',
                       label: 'String',
                       description: '',
-                      type: 'string',
+                      _internalType: 'string',
                       required: false
                     },
                     {
@@ -192,7 +192,7 @@ export const groupingModel = {
                       name: 'string:15',
                       label: 'String',
                       description: '',
-                      type: 'string',
+                      _internalType: 'string',
                       required: false
                     }
                   ]
@@ -211,7 +211,7 @@ export const groupingModel = {
               name: 'string:16',
               label: 'String',
               description: '',
-              type: 'string',
+              _internalType: 'string',
               required: false
             },
             {
@@ -224,7 +224,7 @@ export const groupingModel = {
                   name: 'string:17',
                   label: 'String',
                   description: '',
-                  type: 'string',
+                  _internalType: 'string',
                   required: false
                 },
                 {
@@ -232,7 +232,7 @@ export const groupingModel = {
                   name: 'string:18',
                   label: 'String',
                   description: '',
-                  type: 'string',
+                  _internalType: 'string',
                   required: false
                 },
                 {
@@ -240,7 +240,7 @@ export const groupingModel = {
                   name: 'string:19',
                   label: 'String',
                   description: '',
-                  type: 'string',
+                  _internalType: 'string',
                   required: false
                 },
                 {
@@ -248,7 +248,7 @@ export const groupingModel = {
                   name: 'string:20',
                   label: 'String',
                   description: '',
-                  type: 'string',
+                  _internalType: 'string',
                   required: false
                 }
               ]
@@ -262,7 +262,7 @@ export const groupingModel = {
                   name: 'string:21',
                   label: 'String',
                   description: '',
-                  type: 'string',
+                  _internalType: 'string',
                   required: false
                 },
                 {
@@ -270,7 +270,7 @@ export const groupingModel = {
                   name: 'string:22',
                   label: 'String',
                   description: '',
-                  type: 'string',
+                  _internalType: 'string',
                   required: false
                 },
                 {
@@ -278,7 +278,7 @@ export const groupingModel = {
                   name: 'string:23',
                   label: 'String',
                   description: '',
-                  type: 'string',
+                  _internalType: 'string',
                   required: false
                 },
                 {
@@ -286,7 +286,7 @@ export const groupingModel = {
                   name: 'string:24',
                   label: 'String',
                   description: '',
-                  type: 'string',
+                  _internalType: 'string',
                   required: false
                 }
               ]
@@ -305,7 +305,7 @@ export const groupingModel = {
                       name: 'string:25',
                       label: 'String',
                       description: '',
-                      type: 'string',
+                      _internalType: 'string',
                       required: false
                     },
                     {
@@ -318,7 +318,7 @@ export const groupingModel = {
                           name: 'string:26',
                           label: 'String',
                           description: '',
-                          type: 'string',
+                          _internalType: 'string',
                           required: false
                         },
                         {
@@ -326,7 +326,7 @@ export const groupingModel = {
                           name: 'string:27',
                           label: 'String',
                           description: '',
-                          type: 'string',
+                          _internalType: 'string',
                           required: false
                         }
                       ]
@@ -341,7 +341,7 @@ export const groupingModel = {
                           name: 'string:28',
                           label: 'String',
                           description: '',
-                          type: 'string',
+                          _internalType: 'string',
                           required: false
                         },
                         {
@@ -349,7 +349,7 @@ export const groupingModel = {
                           name: 'string:29',
                           label: 'String',
                           description: '',
-                          type: 'string',
+                          _internalType: 'string',
                           required: false
                         },
                         {
@@ -357,7 +357,7 @@ export const groupingModel = {
                           name: 'string:30',
                           label: 'String',
                           description: '',
-                          type: 'string',
+                          _internalType: 'string',
                           required: false
                         }
                       ]
@@ -378,7 +378,7 @@ export const groupingModel = {
               name: 'string:31',
               label: 'String',
               description: '',
-              type: 'string',
+              _internalType: 'string',
               required: false
             },
             {
@@ -386,7 +386,7 @@ export const groupingModel = {
               name: 'string:32',
               label: 'String',
               description: '',
-              type: 'string',
+              _internalType: 'string',
               required: false
             },
             {
@@ -402,7 +402,7 @@ export const groupingModel = {
                       name: 'string:33',
                       label: 'String',
                       description: '',
-                      type: 'string',
+                      _internalType: 'string',
                       required: false
                     },
                     {
@@ -410,7 +410,7 @@ export const groupingModel = {
                       name: 'string:34',
                       label: 'String',
                       description: '',
-                      type: 'string',
+                      _internalType: 'string',
                       required: false
                     }
                   ]
@@ -424,7 +424,7 @@ export const groupingModel = {
                       name: 'string:35',
                       label: 'String',
                       description: '',
-                      type: 'string',
+                      _internalType: 'string',
                       required: false
                     },
                     {
@@ -432,7 +432,7 @@ export const groupingModel = {
                       name: 'string:36',
                       label: 'String',
                       description: '',
-                      type: 'string',
+                      _internalType: 'string',
                       required: false
                     }
                   ]
@@ -451,7 +451,7 @@ export const groupingModel = {
               name: 'string:37',
               label: 'String',
               description: '',
-              type: 'string',
+              _internalType: 'string',
               required: false
             },
             {
@@ -459,7 +459,7 @@ export const groupingModel = {
               name: 'string:38',
               label: 'String',
               description: '',
-              type: 'string',
+              _internalType: 'string',
               required: false
             },
             {
@@ -467,7 +467,7 @@ export const groupingModel = {
               name: 'string:39',
               label: 'String',
               description: '',
-              type: 'string',
+              _internalType: 'string',
               required: false
             }
           ]
@@ -482,7 +482,7 @@ export const groupingModel = {
               name: 'string:40',
               label: 'String',
               description: '',
-              type: 'string',
+              _internalType: 'string',
               required: false
             }
           ]
@@ -497,7 +497,7 @@ export const groupingModel = {
               name: 'string:41',
               label: 'String',
               description: '',
-              type: 'string',
+              _internalType: 'string',
               required: false
             }
           ]
