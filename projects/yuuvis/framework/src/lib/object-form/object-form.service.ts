@@ -1,6 +1,6 @@
 import { DatePipe } from '@angular/common';
 import { Injectable } from '@angular/core';
-import { Classification, Logger, RangeValue, SystemService } from '@yuuvis/core';
+import { Logger, RangeValue, SystemService } from '@yuuvis/core';
 import { ObjectFormControlWrapper, ObjectFormModel } from './object-form.interface';
 import { ObjectFormGroup } from './object-form.model';
 import { Situation } from './object-form.situation';
@@ -32,26 +32,6 @@ export class ObjectFormService {
       formElement = element;
     }
     return !!formElement ? ObjectFormUtils.elementToFormControl(element, situation) : null;
-  }
-
-  /**
-   * Generates an internal form element type from the regular form element.
-   * Due to some conditions that should not be evaluated on each change detection
-   * cycle, we'll use this internal type that will be set only once
-   * (when the object form is rendered).
-   * @param formElement
-   */
-  getInternalFormElementType(formElement: any) {
-    const classifications = this.systemService.getClassifications(formElement.classification);
-
-    if (formElement.type === 'string' && classifications.has(Classification.STRING_REFERENCE)) {
-      return 'string:reference';
-    } else if (formElement.type === 'string' && classifications.has(Classification.STRING_ORGANIZATION)) {
-      return 'string:organization';
-    } else {
-      // if there are no matching conditions just return the original type
-      return formElement.type;
-    }
   }
 
   /**
