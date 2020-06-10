@@ -74,7 +74,7 @@ export const stringElements = [
     name: 'string:multiline',
     label: 'String multiline',
     description: '',
-    multiline: true,
+    cardinality: 'multi',
     type: 'string',
     required: false
   },

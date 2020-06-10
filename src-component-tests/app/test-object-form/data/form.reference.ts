@@ -4,7 +4,7 @@ export const referenceElements = [
     name: 'id:reference:multi',
     label: 'multiselect',
     description: '',
-    multiselect: true,
+    cardinality: 'multi',
     classification: ['id:reference'],
     type: 'string',
     required: false
