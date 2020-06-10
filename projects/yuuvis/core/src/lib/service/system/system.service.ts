@@ -264,7 +264,7 @@ export class SystemService {
         creatable: ot.creatable,
         contentStreamAllowed: isFolder ? ContentStreamAllowed.NOT_ALLOWED : ot.contentStreamAllowed,
         isFolder: isFolder,
-        fields: ot.fields.map((f) => ({ ...f, _internalType: this.getInternalFormElementType(f) }))
+        fields: ot.fields.map((f) => ({ ...f, _internalType: this.getInternalFormElementType(f, 'propertyType') }))
       };
       return objectType;
     });
@@ -285,16 +285,16 @@ export class SystemService {
    * cycle, we'll use this internal type that will be set only once.
    * @param formElement
    */
-  private getInternalFormElementType(field: SchemaResponseFieldDefinition): string {
+  getInternalFormElementType(field: SchemaResponseFieldDefinition, defaultValueProperty: string): string {
     const classifications = this.getClassifications(field.classification);
 
-    if (field.propertyType === 'string' && classifications.has(Classification.STRING_REFERENCE)) {
+    if (field[defaultValueProperty] === 'string' && classifications.has(Classification.STRING_REFERENCE)) {
       return InternalFieldType.STRING_REFERENCE;
-    } else if (field.propertyType === 'string' && classifications.has(Classification.STRING_ORGANIZATION)) {
+    } else if (field[defaultValueProperty] === 'string' && classifications.has(Classification.STRING_ORGANIZATION)) {
       return InternalFieldType.STRING_ORGANIZATION;
     } else {
       // if there are no matching conditions just return the original type
-      return field.propertyType;
+      return field[defaultValueProperty];
     }
   }
 

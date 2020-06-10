@@ -6,7 +6,7 @@ export const referenceElements = [
     description: '',
     cardinality: 'multi',
     classification: ['id:reference'],
-    type: 'string',
+    _internalType: 'string:reference',
     required: false
   },
   {
@@ -16,7 +16,7 @@ export const referenceElements = [
     description: 'Restricted to a certain target type',
     multiselect: false,
     classification: ['id:reference[system:folder]'],
-    type: 'string',
+    _internalType: 'string:reference',
     required: false
   },
   {
@@ -26,7 +26,7 @@ export const referenceElements = [
     description: '',
     classification: ['id:reference'],
     multiselect: false,
-    type: 'string',
+    _internalType: 'string:reference',
     required: false
   },
   {
@@ -36,7 +36,7 @@ export const referenceElements = [
     description: '',
     classification: ['id:reference'],
     multiselect: false,
-    type: 'string',
+    _internalType: 'string:reference',
     required: false
   }
 ];

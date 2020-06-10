@@ -5,7 +5,7 @@ export const organizationElements = [
     label: 'user',
     description: '',
     classification: ['id:organization'],
-    type: 'string',
+    _internalType: 'string:organization',
     required: false
   },
   {
@@ -15,7 +15,7 @@ export const organizationElements = [
     description: '',
     cardinality: 'multi',
     classification: ['id:organization'],
-    type: 'string',
+    _internalType: 'string:organization',
     required: false
   },
   {
@@ -25,7 +25,7 @@ export const organizationElements = [
     description: '',
     cardinality: 'multi',
     classification: ['id:organization'],
-    type: 'string',
+    _internalType: 'string:organization',
     required: false
   },
   {
@@ -35,7 +35,7 @@ export const organizationElements = [
     description: '',
     cardinality: 'multi',
     classification: ['id:organization'],
-    type: 'string',
+    _internalType: 'string:organization',
     required: false
   }
 ];
