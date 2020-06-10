@@ -16,6 +16,9 @@ export const CUSTOM_ACTIONS = new InjectionToken<any[]>('CUSTOM_ACTIONS');
 export class ActionService {
   private allActionComponents: any[] = [];
 
+  /**
+   * @ignore
+   */
   constructor(
     @Inject(ACTIONS) actions: any[] = [],
     @Inject(CUSTOM_ACTIONS) custom_actions: any[] = [],

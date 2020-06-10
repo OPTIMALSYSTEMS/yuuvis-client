@@ -41,6 +41,10 @@ export class FocusWithinDirective {
    */
   @Output() yuvFocusWithinBlur = new EventEmitter();
 
+  /**
+   * @ignore
+   */
+
   constructor(private elRef: ElementRef) {}
 
   // Determine if the given node matches the given selector.

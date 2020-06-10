@@ -11,6 +11,10 @@ export class IconService {
   private cache = new Map<string, any>();
   private temp = new Map<string, any>();
 
+  /**
+   * @ignore
+   *
+   */
   constructor(private http: HttpClient) {}
 
   fetch(uri: string): Observable<any> {

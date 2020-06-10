@@ -11,6 +11,9 @@ import { Utils } from '@yuuvis/core';
   selector: 'a[routerLink]'
 })
 export class RouterLinkDirective {
+  /**
+   * @ignore
+   */
   constructor(private hostElement: ElementRef) {}
 
   @HostListener('click', ['$event.ctrlKey'])
