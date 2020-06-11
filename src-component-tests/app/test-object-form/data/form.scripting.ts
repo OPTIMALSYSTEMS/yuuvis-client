@@ -23,7 +23,7 @@ export const formScriptingModel = {
   elements: [
     {
       label: 'core',
-      _internalType: 'o2mGroup',
+      type: 'o2mGroup',
       layout: {
         align: 'column'
       },
@@ -34,7 +34,7 @@ export const formScriptingModel = {
           name: 'yuuvis:test',
           label: 'Input',
           description: 'scrpiting test field',
-          _internalType: 'string',
+          type: 'string',
           required: false
         },
         {
@@ -42,7 +42,7 @@ export const formScriptingModel = {
           name: 'yuuvis:required',
           label: 'set required',
           description: '',
-          _internalType: 'boolean',
+          type: 'boolean',
           required: false
         },
         {
@@ -50,14 +50,14 @@ export const formScriptingModel = {
           name: 'yuuvis:readonly',
           label: 'set readonly',
           description: '',
-          _internalType: 'boolean',
+          type: 'boolean',
           required: false
         }
       ]
     },
     {
       label: 'data',
-      _internalType: 'o2mGroupStack',
+      type: 'o2mGroupStack',
       layout: {
         align: 'column'
       },

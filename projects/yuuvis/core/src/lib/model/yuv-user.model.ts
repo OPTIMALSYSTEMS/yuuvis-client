@@ -36,7 +36,7 @@ export class YuvUser {
 
   private setTitle() {
     if (!this.title) {
-      this.title = this.firstname && this.lastname ? `${this.lastname}, ${this.firstname}` : this.username;
+      this.title = this.firstname && this.lastname ? `${this.lastname}, ${this.firstname} (${this.username})` : this.username;
     }
   }
 

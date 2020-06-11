@@ -281,20 +281,22 @@ export class SystemService {
 
   /**
    * Generates an internal type for a given object type field.
-   * Due to some conditions that should not be evaluated on each change detection
-   * cycle, we'll use this internal type that will be set only once.
-   * @param formElement
+   * Adding this to a form element or object type field enables us to render forms
+   * based on object type fields in a more performant way. Otherwise we would
+   * have to evaluate the conditions for every form element on every digest cycle.
+   * @param field formElement from object type form model or object type field
+   * @typeProperty the property on the field input that represents its type
    */
-  getInternalFormElementType(field: SchemaResponseFieldDefinition, defaultValueProperty: string): string {
+  getInternalFormElementType(field: SchemaResponseFieldDefinition, typeProperty: string): string {
     const classifications = this.getClassifications(field.classification);
 
-    if (field[defaultValueProperty] === 'string' && classifications.has(Classification.STRING_REFERENCE)) {
+    if (field[typeProperty] === 'string' && classifications.has(Classification.STRING_REFERENCE)) {
       return InternalFieldType.STRING_REFERENCE;
-    } else if (field[defaultValueProperty] === 'string' && classifications.has(Classification.STRING_ORGANIZATION)) {
+    } else if (field[typeProperty] === 'string' && classifications.has(Classification.STRING_ORGANIZATION)) {
       return InternalFieldType.STRING_ORGANIZATION;
     } else {
       // if there are no matching conditions just return the original type
-      return field[defaultValueProperty];
+      return field[typeProperty];
     }
   }
 
