@@ -11,7 +11,7 @@
         *ngIf="!formElementRef._eoFormElement.reference && formElementRef._eoFormElement.classification !== 'selector' && formElementRef._eoFormElement.classification !== 'id:organization'"
         [situation]="element._eoFormControlWrapper.situation"
         [formControlName]="element._eoFormControlWrapper.controlName"
-        [multiselect]="formElementRef._eoFormElement.cardinality === 'multi'"
+        [multiselect]="formElementRef._eoFormElement.cardinality === 'multi'  || situation === 'SEARCH'"
         [multiline]="formElementRef._eoFormElement.multiline"
         [classification]="formElementRef._eoFormElement.classification" [regex]="formElementRef._eoFormElement.regex"
         [size]="formElementRef._eoFormElement.size" [readonly]="formElementRef._eoFormElement.readonly"
@@ -25,7 +25,7 @@
       [required]="formElementRef._eoFormElement.required" [invalid]="errors">
       <yuv-reference [situation]="element._eoFormControlWrapper.situation"
         [formControlName]="element._eoFormControlWrapper.controlName"
-        [multiselect]="formElementRef._eoFormElement.cardinality === 'multi'"
+        [multiselect]="formElementRef._eoFormElement.cardinality === 'multi'  || situation === 'SEARCH'"
         [classification]="formElementRef._eoFormElement.classification"
         [readonly]="formElementRef._eoFormElement.readonly">
       </yuv-reference>
@@ -36,7 +36,7 @@
       [isNull]="isNull" [skipToggle]="skipToggle || situation !== 'SEARCH'" (onToggleLabel)="labelToggled($event)"
       [required]="formElementRef._eoFormElement.required" [invalid]="errors">
       <yuv-organization [situation]="element._eoFormControlWrapper.situation"
-        [multiselect]="formElementRef._eoFormElement.cardinality === 'multi'"
+        [multiselect]="formElementRef._eoFormElement.cardinality === 'multi'  || situation === 'SEARCH'"
         [formControlName]="element._eoFormControlWrapper.controlName"
         [classification]="formElementRef._eoFormElement.classification"
         [readonly]="formElementRef._eoFormElement.readonly">
