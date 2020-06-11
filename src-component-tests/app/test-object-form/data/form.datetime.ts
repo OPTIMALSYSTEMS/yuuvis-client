@@ -4,7 +4,7 @@ export const datetimeElements = [
     name: 'datetime:disabled',
     label: 'disabled datetime',
     description: '',
-    _internalType: 'datetime',
+    type: 'datetime',
     required: false
   },
   {
@@ -12,7 +12,7 @@ export const datetimeElements = [
     name: 'datetime:disabled:with:value',
     label: 'disabled datetime with value',
     description: '',
-    _internalType: 'datetime',
+    type: 'datetime',
     required: false
   },
   {
@@ -20,7 +20,7 @@ export const datetimeElements = [
     name: 'datetime:two',
     label: 'default datetime',
     description: '',
-    _internalType: 'datetime',
+    type: 'datetime',
     required: false
   },
   {
@@ -28,7 +28,7 @@ export const datetimeElements = [
     name: 'datetime:three',
     label: 'datetime with time',
     description: 'a description',
-    _internalType: 'datetime',
+    type: 'datetime',
     required: false
   },
   {
@@ -37,7 +37,7 @@ export const datetimeElements = [
     label: 'date',
     resolution: 'date',
     description: 'a description',
-    _internalType: 'datetime',
+    type: 'datetime',
     required: false
   },
   {
@@ -46,7 +46,7 @@ export const datetimeElements = [
     label: 'date with value',
     resolution: 'date',
     description: 'a description',
-    _internalType: 'datetime',
+    type: 'datetime',
     required: false
   },
   {
@@ -55,7 +55,7 @@ export const datetimeElements = [
     label: 'date required',
     resolution: 'date',
     description: 'required date field',
-    _internalType: 'datetime',
+    type: 'datetime',
     required: true
   }
 ];

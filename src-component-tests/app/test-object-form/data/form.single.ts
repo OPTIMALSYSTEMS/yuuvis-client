@@ -20,7 +20,7 @@ export const formSingleModel = {
           name: 'tenKolibri:strsinglemin5max10required',
           label: 'Zeichenkette',
           description: 'min 5 - max 10 - Pflicht',
-          _internalType: 'string',
+          type: 'string',
           defaultvalue: ['value'],
           required: true
         },
@@ -29,7 +29,7 @@ export const formSingleModel = {
           name: 'tenKolibri:intsinglemin11max99required',
           label: 'Ganze Zahl beschränkt',
           description: 'min 11 - max 999 - Pflicht',
-          _internalType: 'integer',
+          type: 'integer',
           defaultvalue: [20],
           required: true
         },
@@ -38,7 +38,7 @@ export const formSingleModel = {
           name: 'tenKolibri:intsingle',
           label: 'Ganze Zahl',
           description: 'unbeschränkt',
-          _internalType: 'integer',
+          type: 'integer',
           required: false
         },
         {
@@ -46,7 +46,7 @@ export const formSingleModel = {
           name: 'tenKolibri:decsinglemin1111max9999required',
           label: 'Dezimalzahl beschränkt',
           description: 'min 11.11 - max 99.99 - Pflicht',
-          _internalType: 'decimal',
+          type: 'decimal',
           defaultvalue: [12.34],
           required: true
         },
@@ -55,7 +55,7 @@ export const formSingleModel = {
           name: 'tenKolibri:decsingle',
           label: 'Dezimalzahl',
           description: 'unbeschränkt',
-          _internalType: 'decimal',
+          type: 'decimal',
           required: false
         },
         {
@@ -63,7 +63,7 @@ export const formSingleModel = {
           name: 'tenKolibri:datetimesinglerequired',
           label: 'Datum & Zeit',
           description: 'Pflicht',
-          _internalType: 'datetime',
+          type: 'datetime',
           defaultvalue: ['2019-04-17T14:59:00.000Z'],
           required: true
         },
@@ -72,7 +72,7 @@ export const formSingleModel = {
           name: 'tenKolibri:booleanrequiredtrue',
           label: 'Boolean',
           description: 'Pflicht',
-          _internalType: 'boolean',
+          type: 'boolean',
           defaultvalue: [true],
           required: true
         },
@@ -81,28 +81,28 @@ export const formSingleModel = {
           name: 'tenKolibri:booleannull',
           label: 'Boolean Tri-State',
           description: 'Null erlaubt',
-          _internalType: 'boolean',
+          type: 'boolean',
           required: false
         },
         {
           readonly: false,
           name: 'tenKolibri:roles',
           label: 'Rollen',
-          _internalType: 'string',
+          type: 'string',
           required: false
         },
         {
           readonly: false,
           name: 'clienttitle',
           label: 'Titel',
-          _internalType: 'string',
+          type: 'string',
           required: true
         },
         {
           readonly: false,
           name: 'clientdescription',
           label: 'Beschreibung',
-          _internalType: 'string',
+          type: 'string',
           required: true
         }
       ]

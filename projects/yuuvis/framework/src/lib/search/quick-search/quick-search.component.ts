@@ -26,6 +26,7 @@ import { ObjectFormControl } from '../../object-form/object-form.model';
 import { PopoverConfig } from '../../popover/popover.interface';
 import { PopoverRef } from '../../popover/popover.ref';
 import { PopoverService } from '../../popover/popover.service';
+import { NotificationService } from '../../services/notification/notification.service';
 import { addCircle, arrowDown, clear, search } from '../../svg.generated';
 import { Situation } from './../../object-form/object-form.situation';
 import { ObjectFormUtils } from './../../object-form/object-form.utils';
@@ -131,6 +132,10 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
     return this._context;
   }
 
+  /**
+   * Enables inline mode. This is a more compact version of the component that
+   * is meant to be embedded into other components.
+   */
   @Input() set inline(i: boolean) {
     this._inline = i;
   }
@@ -168,6 +173,7 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
     private translate: TranslateService,
     private systemService: SystemService,
     private device: DeviceService,
+    private notify: NotificationService,
     private searchService: SearchService,
     private iconRegistry: IconRegistryService
   ) {
@@ -313,7 +319,11 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
             this.busy = false;
           },
           (err) => {
-            this.error = true;
+            if (this._inline) {
+              this.notify.error(this.translate.instant('yuv.framework.quick-search.aggregate.error'));
+            } else {
+              this.error = true;
+            }
             this.busy = false;
             this.typeAggregation.emit([]);
           }
