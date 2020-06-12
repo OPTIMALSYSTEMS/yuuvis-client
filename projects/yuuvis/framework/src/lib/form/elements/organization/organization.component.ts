@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, forwardRef, HostBinding, Input, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, forwardRef, HostBinding, HostListener, Input, ViewChild } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { UserService, YuvUser } from '@yuuvis/core';
 import { AutoComplete } from 'primeng/autocomplete';
@@ -28,6 +28,13 @@ export class OrganizationComponent implements ControlValueAccessor, AfterViewIni
   value;
   innerValue: YuvUser[] = [];
   autocompleteRes: YuvUser[] = [];
+
+  // prevent ENTER from being propagated, because the component could be located
+  // inside some other component that also relys on ENTER
+  @HostListener('keydown.enter', ['$event'])
+  onKeydownHandler(event: KeyboardEvent) {
+    event.stopPropagation();
+  }
 
   @HostBinding('class.inputDisabled') _inputDisabled: boolean;
 

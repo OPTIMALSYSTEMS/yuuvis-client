@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, EventEmitter, forwardRef, HostBinding, Input, Output, TemplateRef, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, forwardRef, HostBinding, HostListener, Input, Output, TemplateRef, ViewChild } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import {
   BaseObjectTypeField,
@@ -49,6 +49,13 @@ export class ReferenceComponent implements ControlValueAccessor, AfterViewInit {
   value;
   innerValue: ReferenceEntry[] = [];
   autocompleteRes: any[] = [];
+
+  // prevent ENTER from being propagated, because the component could be located
+  // inside some other component that also relys on ENTER
+  @HostListener('keydown.enter', ['$event'])
+  onKeydownHandler(event: KeyboardEvent) {
+    event.stopPropagation();
+  }
 
   @HostBinding('class.inputDisabled') _inputDisabled: boolean;
   /**

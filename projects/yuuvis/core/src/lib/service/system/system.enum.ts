@@ -84,3 +84,9 @@ export enum Classification {
   STRING_PHONE = 'phone',
   NUMBER_FILESIZE = 'filesize'
 }
+
+// special internal types of object type fields
+export const InternalFieldType = {
+  STRING_ORGANIZATION: 'string:organization',
+  STRING_REFERENCE: 'string:reference'
+};

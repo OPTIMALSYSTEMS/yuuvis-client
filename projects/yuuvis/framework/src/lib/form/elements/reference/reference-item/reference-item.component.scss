@@ -4,6 +4,7 @@
   grid-template-columns: auto 1fr auto;
   grid-template-areas: 'icon title details' 'icon description details';
   gap: 0 var(--app-pane-padding);
+  padding: calc(var(--app-pane-padding) / 4) 0;
 
   yuv-icon {
     grid-area: icon;
@@ -13,9 +14,11 @@
   .title {
     grid-area: title;
   }
-  .description {
+  .desc {
     grid-area: description;
-    opacity: 0.54;
+    font-size: var(--font-hint);
+    color: var(--text-color-caption);
+    margin-top: calc(var(--app-pane-padding) / 4);
   }
   .details {
     grid-area: details;

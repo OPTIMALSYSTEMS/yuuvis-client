@@ -1,6 +1,21 @@
 import { AfterViewInit, Component, ElementRef, EventEmitter, HostBinding, HostListener, Input, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { AggregateResult, BaseObjectTypeField, ContentStreamField, DeviceService, ObjectType, ObjectTypeField, ObjectTypeGroup, RangeValue, SearchFilter, SearchQuery, SearchService, SystemService, TranslateService, Utils } from '@yuuvis/core';
+import {
+  AggregateResult,
+  BaseObjectTypeField,
+  ContentStreamField,
+  DeviceService,
+  ObjectType,
+  ObjectTypeField,
+  ObjectTypeGroup,
+  RangeValue,
+  SearchFilter,
+  SearchQuery,
+  SearchService,
+  SystemService,
+  TranslateService,
+  Utils
+} from '@yuuvis/core';
 import { AutoComplete } from 'primeng/autocomplete';
 import { Subscription, timer } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
@@ -11,6 +26,7 @@ import { ObjectFormControl } from '../../object-form/object-form.model';
 import { PopoverConfig } from '../../popover/popover.interface';
 import { PopoverRef } from '../../popover/popover.ref';
 import { PopoverService } from '../../popover/popover.service';
+import { NotificationService } from '../../services/notification/notification.service';
 import { addCircle, arrowDown, clear, search } from '../../svg.generated';
 import { Situation } from './../../object-form/object-form.situation';
 import { ObjectFormUtils } from './../../object-form/object-form.utils';
@@ -80,8 +96,8 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
   private skipFields = [
     // ...Object.keys(RetentionField).map(k => RetentionField[k]),
     BaseObjectTypeField.OBJECT_ID,
-    BaseObjectTypeField.CREATED_BY,
-    BaseObjectTypeField.MODIFIED_BY,
+    // BaseObjectTypeField.CREATED_BY,
+    // BaseObjectTypeField.MODIFIED_BY,
     BaseObjectTypeField.OBJECT_TYPE_ID,
     BaseObjectTypeField.PARENT_ID,
     BaseObjectTypeField.PARENT_OBJECT_TYPE_ID,
@@ -116,6 +132,10 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
     return this._context;
   }
 
+  /**
+   * Enables inline mode. This is a more compact version of the component that
+   * is meant to be embedded into other components.
+   */
   @Input() set inline(i: boolean) {
     this._inline = i;
   }
@@ -153,6 +173,7 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
     private translate: TranslateService,
     private systemService: SystemService,
     private device: DeviceService,
+    private notify: NotificationService,
     private searchService: SearchService,
     private iconRegistry: IconRegistryService
   ) {
@@ -257,7 +278,7 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
     // setup filters from form controls
     this.searchQuery.clearFilters();
     formControls.forEach((fc) => {
-      const filter = new SearchFilter(fc._eoFormElement.name, SearchFilter.OPERATOR.EQUAL, fc.value);
+      const filter = new SearchFilter(fc._eoFormElement.name, Array.isArray(fc.value) ? SearchFilter.OPERATOR.IN : SearchFilter.OPERATOR.EQUAL, fc.value);
       if (!filter.isEmpty() || fc._eoFormElement.isNotSetValue) {
         this.searchQuery.addFilter(filter);
       }
@@ -298,7 +319,11 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
             this.busy = false;
           },
           (err) => {
-            this.error = true;
+            if (this._inline) {
+              this.notify.error(this.translate.instant('yuv.framework.quick-search.aggregate.error'));
+            } else {
+              this.error = true;
+            }
             this.busy = false;
             this.typeAggregation.emit([]);
           }

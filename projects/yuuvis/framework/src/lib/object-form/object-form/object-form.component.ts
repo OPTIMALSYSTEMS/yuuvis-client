@@ -459,7 +459,7 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
       formElement.readonly = controlDisabled;
       // we are using an internal type to distinguish between the components
       // to be used to render certain form elements
-      formElement._internalType = this.formHelperService.getInternalFormElementType(formElement);
+      formElement._internalType = this.systemService.getInternalFormElementType(formElement, 'type');
 
       formControl._eoFormElement = formElement;
       this.formControls[formElement.name] = formControl;

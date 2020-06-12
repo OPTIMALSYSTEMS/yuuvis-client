@@ -33,7 +33,7 @@ export class TestPanelComponent implements OnInit {
 
   setLongSizeTitle() {
     this.title = 'Sometimes someone will add a pretty long title string here that should not break the UI';
-    this.description = 'Also ther is the possibility that descriptions will be as long as the long title string, who actually knows';
+    this.description = 'Also there is the possibility that descriptions will be as long as the long title string, who actually knows';
   }
 
   ngOnInit() {}

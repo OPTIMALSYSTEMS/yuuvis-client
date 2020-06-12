@@ -83,13 +83,13 @@ export const stringElements = [
     name: 'string:chips',
     label: 'String multiple entries',
     description: 'enter multiple entries',
-    multiselect: true,
+    cardinality: 'multi',
     type: 'string',
     required: false
   },
   {
     readonly: false,
-    multiselect: true,
+    cardinality: 'multi',
     name: 'string:chips:email',
     label: 'String Classification email multiple',
     classification: ['email'],
@@ -98,7 +98,7 @@ export const stringElements = [
   },
   {
     readonly: false,
-    multiselect: true,
+    cardinality: 'multi',
     name: 'string:chips:url',
     label: 'String Classification URL multiple',
     classification: ['url'],
@@ -107,7 +107,7 @@ export const stringElements = [
   },
   {
     readonly: false,
-    multiselect: true,
+    cardinality: 'multi',
     name: 'string:chips:phone',
     label: 'String Classification phone multiple',
     classification: ['phone'],
