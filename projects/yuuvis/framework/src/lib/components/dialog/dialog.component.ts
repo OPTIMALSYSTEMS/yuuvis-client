@@ -6,6 +6,12 @@ import { filter } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { clear } from '../../svg.generated';
+
+/**
+ * Creates a modal user dialog after each ineraction user with a client
+ * @example
+ * <yuv-dialog></yuv-dialog>
+ */
 @Component({
   selector: 'yuv-dialog',
   templateUrl: './dialog.component.html',
@@ -18,7 +24,14 @@ export class DialogComponent implements OnDestroy {
   private id = Utils.uuid();
   private parentId = '';
   contentStyle: any = { 'max-height': '100%' };
+
+  /**
+   * Provides dialog's title
+   */
   @Input() title: string;
+  /**
+   * Provides dialog's subtitle
+   */
   @Input() subtitle: string;
   @Input() styleClass = '';
 
