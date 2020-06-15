@@ -278,7 +278,7 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
     // setup filters from form controls
     this.searchQuery.clearFilters();
     formControls.forEach((fc) => {
-      const filter = new SearchFilter(fc._eoFormElement.name, SearchFilter.OPERATOR.EQUAL, fc.value);
+      const filter = new SearchFilter(fc._eoFormElement.name, Array.isArray(fc.value) ? SearchFilter.OPERATOR.IN : SearchFilter.OPERATOR.EQUAL, fc.value);
       if (!filter.isEmpty() || fc._eoFormElement.isNotSetValue) {
         this.searchQuery.addFilter(filter);
       }

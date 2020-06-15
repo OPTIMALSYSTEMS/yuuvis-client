@@ -15,4 +15,10 @@ export interface PopoverConfig<T = any> {
   /** The max-height of the overlay panel. If a number is provided, pixel units are assumed. */
   maxHeight?: number | string;
   data?: T;
+  /** The time in seconds, that the overlay should exist. */
+  duration?: number;
+  top?: number;
+  bottom?: number;
+  left?: number;
+  right?: number;
 }

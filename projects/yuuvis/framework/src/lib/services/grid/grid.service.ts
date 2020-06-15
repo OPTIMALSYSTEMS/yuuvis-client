@@ -4,6 +4,7 @@ import {
   AppCacheService,
   BackendService,
   BaseObjectTypeField,
+  Classification,
   ColumnConfig,
   ColumnConfigColumn,
   ContentStreamField,
@@ -124,19 +125,19 @@ export class GridService {
       return undefined;
     }
     switch (classification[0]) {
-      case 'email': {
+      case Classification.STRING_EMAIL: {
         return CellRenderer.emailCellRenderer;
         break;
       }
-      case 'url': {
+      case Classification.STRING_URL: {
         return CellRenderer.urlCellRenderer;
         break;
       }
-      case 'phone': {
+      case Classification.STRING_PHONE: {
         return CellRenderer.phoneCellRenderer;
         break;
       }
-      case 'digit': {
+      case Classification.NUMBER_DIGIT: {
         return this.customContext(CellRenderer.numberCellRenderer, params);
         break;
       }

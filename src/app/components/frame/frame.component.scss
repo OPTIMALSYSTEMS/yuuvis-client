@@ -339,3 +339,43 @@ $app-bar-zindex: 6;
     box-shadow: 0 0 0 0 rgba(var(--color-accent-rgb), 0);
   }
 }
+
+.move-notification {
+  padding: var(--app-pane-padding);
+  background: var(--color-success);
+  color: #fff;
+  // border-radius: 2px;
+  &.fail {
+    background: var(--color-error);
+  }
+  &.warning {
+    background: var(--color-warning);
+  }
+  .header {
+    display: flex;
+    justify-content: space-between;
+    .header-title {
+      display: flex;
+      align-items: center;
+      font-size: var(--font-subhead);
+      font-weight: bold;
+      margin-right: var(--app-pane-padding);
+    }
+    a {
+      color: #fff;
+    }
+  }
+  .list {
+    .entry {
+      margin: calc(var(--app-pane-padding) / 2) 0;
+      display: flex;
+      yuv-icon {
+        margin-right: calc(var(--app-pane-padding) / 2);
+      }
+      .description {
+        font-size: var(--font-hint);
+        margin-top: 2px;
+      }
+    }
+  }
+}

@@ -1,4 +1,5 @@
-import { Component, HostBinding, HostListener, OnDestroy, OnInit } from '@angular/core';
+// import { openContext } from './../../../../projects/yuuvis/framework/src/lib/svg.generated';
+import { Component, HostBinding, HostListener, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, NavigationExtras, Router } from '@angular/router';
 import { SwUpdate } from '@angular/service-worker';
 import {
@@ -10,13 +11,24 @@ import {
   EventService,
   SearchFilter,
   SearchQuery,
+  SystemService,
   TranslateService,
   UploadResult,
   UserService,
   YuvEventType,
   YuvUser
 } from '@yuuvis/core';
-import { IconRegistryService, LayoutService, LayoutSettings, NotificationService, Screen, ScreenService } from '@yuuvis/framework';
+import {
+  IconRegistryService,
+  LayoutService,
+  LayoutSettings,
+  NotificationService,
+  openContext,
+  PopoverRef,
+  PopoverService,
+  Screen,
+  ScreenService
+} from '@yuuvis/framework';
 import { filter } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { add, close, drawer, offline, refresh, search, userDisabled } from '../../../assets/default/svg/svg';
@@ -29,6 +41,8 @@ import { FrameService } from './frame.service';
   styleUrls: ['./frame.component.scss']
 })
 export class FrameComponent implements OnInit, OnDestroy {
+  @ViewChild('moveNotification') moveNotification: TemplateRef<any>;
+
   swUpdateAvailable: boolean;
   hideAppBar: boolean;
   disableFileDrop: boolean;
@@ -72,10 +86,12 @@ export class FrameComponent implements OnInit, OnDestroy {
     private eventService: EventService,
     private notificationService: NotificationService,
     private translateService: TranslateService,
+    private popoverService: PopoverService,
     private dmsService: DmsService,
+    private systemService: SystemService,
     private iconRegistry: IconRegistryService
   ) {
-    this.iconRegistry.registerIcons([search, drawer, refresh, add, userDisabled, offline, close]);
+    this.iconRegistry.registerIcons([search, drawer, refresh, add, userDisabled, offline, close, openContext]);
     this.userService.user$.subscribe((user: YuvUser) => {
       this.user = user;
     });
@@ -90,25 +106,42 @@ export class FrameComponent implements OnInit, OnDestroy {
     this.eventService
       .on(YuvEventType.DMS_OBJECTS_MOVED)
       .pipe(takeUntilDestroy(this))
-      .subscribe((event) => {
-        this.dmsService.getDmsObject(event.data.targetFolderId).subscribe((newParent) => {
-          const title = this.translateService.instant('yuv.client.frame.move.notification.title', { objectTitle: newParent.title });
-          const devider = '; ';
-          if (!event.data.failed.length) {
-            this.notificationService.success(title, event.data.succeeded.map((o) => o.title).join(devider));
-          } else if (!event.data.succeeded.length) {
-            this.notificationService.error(title, event.data.failed.map((o) => o.title).join(devider));
-          } else {
-            this.notificationService.warning(
-              title,
-              this.translateService.instant('yuv.client.frame.move.notification.message', {
-                succeeded: event.data.succeeded.map((o) => o.title).join(devider),
-                failed: event.data.failed.map((o) => o.title).join(devider)
-              })
-            );
-          }
-        });
+      .subscribe((event) => this.onObjetcsMove(event));
+  }
+
+  onObjetcsMove(event) {
+    this.dmsService.getDmsObject(event.data.targetFolderId).subscribe((newParent) => {
+      const title = this.translateService.instant('yuv.client.frame.move.notification.title', { objectTitle: newParent.title });
+      const succeeded = event.data.succeeded.map((o) => {
+        o.icon = this.systemService.getObjectTypeIcon(o.objectTypeId);
+        return o;
       });
+      const failed = event.data.failed.map((o) => {
+        o.icon = this.systemService.getObjectTypeIcon(o.objectTypeId);
+        return o;
+      });
+      const popoverConfig = {
+        maxHeight: '70%',
+        width: 300,
+        bottom: 16,
+        right: 16,
+        duration: 10,
+        data: {
+          title: title,
+          newParent: newParent,
+          succeeded: succeeded,
+          failed: failed
+        },
+        panelClass: 'move-notification'
+      };
+      this.popoverService.open(this.moveNotification, popoverConfig);
+    });
+  }
+
+  closeNotification(popoverRef?: PopoverRef) {
+    if (popoverRef) {
+      popoverRef.close();
+    }
   }
 
   get currentRoute() {
