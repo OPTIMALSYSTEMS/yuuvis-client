@@ -37,6 +37,8 @@ export class ObjectFormElementComponent implements OnDestroy {
       this.formElementRef.valueChanges.pipe(takeUntilDestroy(this)).subscribe((_) => {
         this.setupErrors();
       });
+
+      // this.setGrouping(this.formElementRef._eoFormElement);
     }
   }
 
@@ -46,6 +48,16 @@ export class ObjectFormElementComponent implements OnDestroy {
     private renderer: Renderer2,
     private el: ElementRef
   ) {}
+
+  // private setGrouping(formElement) {
+  //   this.formElementRef = {
+  //     ...this.formElementRef,
+  //     _eoFormElement: {
+  //       ...this.formElementRef._eoFormElement,
+  //       grouping: formElement?.classification?.includes(Classification.NUMBER_DIGIT)
+  //     }
+  //   };
+  // }
 
   labelToggled(toggled: boolean) {
     if (!this.skipToggle && this.situation === Situation.SEARCH) {

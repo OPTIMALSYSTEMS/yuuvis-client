@@ -82,7 +82,8 @@ export enum Classification {
   STRING_EMAIL = 'email',
   STRING_URL = 'url',
   STRING_PHONE = 'phone',
-  NUMBER_FILESIZE = 'filesize'
+  NUMBER_FILESIZE = 'filesize',
+  NUMBER_DIGIT = 'digit'
 }
 
 // special internal types of object type fields

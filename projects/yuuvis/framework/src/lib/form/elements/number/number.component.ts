@@ -67,7 +67,7 @@ export class NumberComponent implements ControlValueAccessor, Validator {
    */
   @Input()
   set grouping(val: boolean) {
-    this._grouping = val;
+    this._grouping = val ?? true;
   }
   get grouping(): boolean {
     return this._grouping;
