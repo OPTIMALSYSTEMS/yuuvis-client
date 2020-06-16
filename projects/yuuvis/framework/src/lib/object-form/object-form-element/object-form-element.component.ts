@@ -34,9 +34,7 @@ export class ObjectFormElementComponent implements OnDestroy {
         this.labelToggled(true);
       }
       this.fetchTags();
-      this.formElementRef.valueChanges.pipe(takeUntilDestroy(this)).subscribe((_) => {
-        this.setupErrors();
-      });
+      this.formElementRef.valueChanges.pipe(takeUntilDestroy(this)).subscribe((_) => this.setupErrors());
     }
   }
 

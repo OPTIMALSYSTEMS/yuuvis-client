@@ -8,6 +8,7 @@ import {
   ColumnConfig,
   ColumnConfigColumn,
   ContentStreamField,
+  InternalFieldType,
   ObjectType,
   ObjectTypeField,
   SearchService,
@@ -158,7 +159,35 @@ export class GridService {
   private addColDefAttrsByType(colDef: ColDef, field: ObjectTypeField) {
     colDef.cellClass = `col-${field.propertyType}`;
     colDef.headerClass = `col-header-${field.propertyType}`;
-    switch (field.propertyType) {
+
+    const internalType = this.system.getInternalFormElementType(field as any, 'propertyType');
+
+    switch (internalType) {
+      case InternalFieldType.STRING_REFERENCE: {
+        //  colDef.cellRenderer = this.customContext(CellRenderer.referenceCellRenderer);
+        // TODO: Replace actual implementation. Right now it's like 'string'
+        // colDef.cellRenderer = (params) => Utils.escapeHtml(params.value);
+        // if (field.cardinality === 'multi') {
+        //   colDef.cellRenderer = this.customContext(CellRenderer.multiSelectCellRenderer);
+        // }
+        colDef.cellClass = field.cardinality === 'multi' ? 'multiCell string' : 'string';
+        if (Array.isArray(field?.classification)) {
+          colDef.cellRenderer = this.fieldClassification(field?.classification);
+        }
+        break;
+      }
+      case InternalFieldType.STRING_ORGANIZATION: {
+        // TODO: Replace actual implementation. Right now it's like 'string'
+        // colDef.cellRenderer = (params) => Utils.escapeHtml(params.value);
+        // if (field.cardinality === 'multi') {
+        //   colDef.cellRenderer = this.customContext(CellRenderer.multiSelectCellRenderer);
+        // }
+        colDef.cellClass = field.cardinality === 'multi' ? 'multiCell string' : 'string';
+        if (Array.isArray(field?.classification)) {
+          colDef.cellRenderer = this.fieldClassification(field?.classification);
+        }
+        break;
+      }
       case 'string': {
         colDef.cellRenderer = (params) => Utils.escapeHtml(params.value);
         if (field.cardinality === 'multi') {
