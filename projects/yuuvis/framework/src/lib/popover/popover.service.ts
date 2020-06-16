@@ -149,6 +149,19 @@ export class PopoverService {
           .height(`${popoverConfig.height}` || '10%')
           .centerHorizontally()
           .centerVertically();
+
+        if (popoverConfig.top) {
+          positionStrategy.top(`${popoverConfig.top}px`);
+        }
+        if (popoverConfig.bottom) {
+          positionStrategy.bottom(`${popoverConfig.bottom}px`);
+        }
+        if (popoverConfig.left) {
+          positionStrategy.left(`${popoverConfig.left}px`);
+        }
+        if (popoverConfig.right) {
+          positionStrategy.right(`${popoverConfig.right}px`);
+        }
       }
     }
     return positionStrategy;

@@ -73,8 +73,8 @@ export const stringElements = [
     readonly: false,
     name: 'string:multiline',
     label: 'String multiline',
-    description: '',
-    cardinality: 'multi',
+    description: 'enter multiline string',
+    multiline: true,
     type: 'string',
     required: false
   },

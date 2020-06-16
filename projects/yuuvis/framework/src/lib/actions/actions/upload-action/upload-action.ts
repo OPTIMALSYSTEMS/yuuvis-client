@@ -23,17 +23,18 @@ export class UploadActionComponent extends DmsObjectTarget implements ComponentA
 
   constructor(private translate: TranslateService, private system: SystemService) {
     super();
-    this.label = this.translate.instant('yuv.framework.action-menu.action.upload.dms.object.content.add.label');
-    this.description = this.translate.instant('yuv.framework.action-menu.action.upload.dms.object.content.description');
   }
 
   isExecutable(element: DmsObject) {
-    const objectType = this.system.getObjectType(element.objectTypeId);
-    if (element.content) {
-      this.label = this.translate.instant('yuv.framework.action-menu.action.upload.dms.object.content.replace.label');
+    const { objectTypeId, rights, content } = element;
+    const objectType = this.system.getObjectType(objectTypeId);
+    if (content) {
+      this.label = this.translate.instant(`yuv.framework.action-menu.action.upload.dms.object.content.replace.label`);
+      this.description = this.translate.instant(`yuv.framework.action-menu.action.upload.dms.object.content.replace.description`);
+    } else {
+      this.label = this.translate.instant('yuv.framework.action-menu.action.upload.dms.object.content.add.label');
+      this.description = this.translate.instant('yuv.framework.action-menu.action.upload.dms.object.content.add.description');
     }
-    return observableOf(
-      element.rights && element.rights.writeContent && objectType.contentStreamAllowed && objectType.contentStreamAllowed !== ContentStreamAllowed.NOT_ALLOWED
-    );
+    return observableOf(element?.rights?.writeContent && objectType?.contentStreamAllowed !== ContentStreamAllowed.NOT_ALLOWED);
   }
 }

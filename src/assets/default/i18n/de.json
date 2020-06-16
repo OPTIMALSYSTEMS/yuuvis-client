@@ -184,7 +184,7 @@
   "yuv.client.frame.app-bar.filedrop.label": "Als neues Objekt erstellen",
   "yuv.client.frame.app-bar.logout": "Abmelden",
   "yuv.client.frame.app-bar.pwa-update.msg": "Update verfügbar",
-  "yuv.client.frame.move.notification.message": "Erfolgreich: {{succeeded}} | Fehlgeschlagen: {{failed}}",
+  "yuv.client.frame.move.notification.failed": "Fehlgeschlagen:",
   "yuv.client.frame.move.notification.title": "Verschieben nach: {{objectTitle}}",
   "yuv.client.frame.offline.button.refresh": "Neuladen",
   "yuv.client.frame.offline.message": "Sie sind nicht mit dem Internet verbunden.",
