@@ -92,6 +92,7 @@ export const stringElements = [
     cardinality: 'multi',
     name: 'string:chips:email',
     label: 'String Classification email multiple',
+    description: 'enter multiple email addresses',
     classification: ['email'],
     type: 'string',
     required: false
@@ -101,6 +102,7 @@ export const stringElements = [
     cardinality: 'multi',
     name: 'string:chips:url',
     label: 'String Classification URL multiple',
+    description: 'enter multiple URL addresses',
     classification: ['url'],
     type: 'string',
     required: false
@@ -110,6 +112,7 @@ export const stringElements = [
     cardinality: 'multi',
     name: 'string:chips:phone',
     label: 'String Classification phone multiple',
+    description: 'enter multiple phone numbers',
     classification: ['phone'],
     type: 'string',
     required: false
