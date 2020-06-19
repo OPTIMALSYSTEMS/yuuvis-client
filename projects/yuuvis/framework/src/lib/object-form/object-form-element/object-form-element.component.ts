@@ -1,5 +1,5 @@
 import { Component, ElementRef, Input, OnDestroy, Renderer2 } from '@angular/core';
-import { TranslateService } from '@yuuvis/core';
+import { Classification, TranslateService } from '@yuuvis/core';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { ObjectFormTranslateService } from '../object-form-translate.service';
 import { ObjectFormControlWrapper } from '../object-form.interface';
@@ -36,6 +36,7 @@ export class ObjectFormElementComponent implements OnDestroy {
       this.fetchTags();
       this.formElementRef.valueChanges.pipe(takeUntilDestroy(this)).subscribe((_) => this.setupErrors());
     }
+    this.setGrouping(this.formElementRef._eoFormElement);
   }
 
   constructor(
@@ -44,6 +45,20 @@ export class ObjectFormElementComponent implements OnDestroy {
     private renderer: Renderer2,
     private el: ElementRef
   ) {}
+
+  /**
+   * formating rules...
+   * https://wiki.optimal-systems.de/display/PM/Status+yuuvis+Momentum+-+Flex+client
+   */
+  private setGrouping(formElement) {
+    this.formElementRef = {
+      ...this.formElementRef,
+      _eoFormElement: {
+        ...this.formElementRef._eoFormElement,
+        grouping: formElement?.classification?.includes(Classification.NUMBER_DIGIT)
+      }
+    };
+  }
 
   labelToggled(toggled: boolean) {
     if (!this.skipToggle && this.situation === Situation.SEARCH) {
