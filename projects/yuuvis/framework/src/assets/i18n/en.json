@@ -133,7 +133,7 @@
 	"yuv.framework.object-form-element.error.numberrangeorder.invalid": "The 'from' value exceeds the 'to' value.",
 	"yuv.framework.object-form-element.error.required": "Mandatory field",
 	"yuv.framework.object-form-element.error.string.classification.email": "Please enter a valid e-mail address.",
-	"yuv.framework.object-form-element.error.string.classification.phone": "Please enter a valid phone number",
+	"yuv.framework.object-form-element.error.string.classification.phone": "Please enter a valid phone number.",
 	"yuv.framework.object-form-element.error.string.classification.url": "Please enter a valid URL.",
 	"yuv.framework.object-form-element.error.string.regex.nomatch": "The entry does not follow the specifications.",
 	"yuv.framework.object-form-element.error.string.whitespaces": "The entry contains only spaces.",
