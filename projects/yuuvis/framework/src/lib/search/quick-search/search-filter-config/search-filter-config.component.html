@@ -1,0 +1,34 @@
+<header>{{ 'Filter Configuration' }}</header>
+<section class="main">
+  <as-split>
+    <as-split-area [size]="30">
+      <section class="left">
+        <yuv-grouped-select [groups]="storedFiltersGroups" [selection]="visibleFilters"
+          (select)="onFilterSelect($event)">
+        </yuv-grouped-select>
+      </section>
+    </as-split-area>
+
+    <as-split-area [size]="70">
+      <section class="right">
+        <yuv-grouped-select [multiple]="true" [singleSelect]="false" [groups]="availableFiltersGroups"
+          [selection]="selection" (change)="onActiveFilterChange($event)" (select)="onActiveFilterChange($event)">
+        </yuv-grouped-select>
+
+        <yuv-search-filter-form [disabled]="isDefault()" [options]="formOptions"
+          (filterChanged)="onFilterChanged($event)" (controlRemoved)="onControlRemoved($event)">
+        </yuv-search-filter-form>
+      </section>
+    </as-split-area>
+  </as-split>
+</section>
+<section class="footer buttons">
+  <div>
+    <button class="cancel" type="button" (click)="onClose()">{{ 'Cancel' }}</button>
+    <button class="load" type="button" (click)="createNew(query.filters)">{{ 'Current Filters' }}</button>
+    <button class="primary" type="button" (click)="createNew()">{{ 'Create New' }}</button>
+  </div>
+  <button *ngIf="isStored()" class="primary" type="button"
+    (click)="onVisibilityChange()">{{ isVisible() ? 'Deactivate' : 'Activate' }}</button>
+  <button *ngIf="!isDefault()" class="primary" type="button" (click)="onSave()">{{ 'Save' }}</button>
+</section>

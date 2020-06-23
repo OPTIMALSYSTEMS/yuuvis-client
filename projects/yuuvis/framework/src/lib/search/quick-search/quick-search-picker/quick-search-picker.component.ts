@@ -16,27 +16,13 @@ export class QuickSearchPickerComponent {
   @Input() set data(data: QuickSearchPickerData) {
     this._data = data;
     if (data) {
-      this.multiselect = data.type === 'type';
+      this.multiselect = data.type !== 'field';
       this.groups = data.items || [];
-
-      // switch (data.type) {
-      //   case 'type': {
-      //     this.groups = data.items;
-      //     break;
-      //   }
-      //   case 'field': {
-      //     this.groups = this.getObjectTypeFieldSelectables();
-      //     break;
-      //   }
-      //   default: {
-      //     this.groups = [];
-      //   }
-      // }
 
       if (data.selected) {
         this.selectedItems = [];
-        this.groups.forEach(g => {
-          g.items.forEach(i => {
+        this.groups.forEach((g) => {
+          g.items.forEach((i) => {
             if (this._data.selected.includes(i.id)) {
               this.selectedItems.push(i);
             }
@@ -46,7 +32,7 @@ export class QuickSearchPickerComponent {
     }
   }
 
-  @Output() select = new EventEmitter<any>();
+  @Output() select = new EventEmitter<Selectable[]>();
   @Output() cancel = new EventEmitter<any>();
 
   groups: SelectableGroup[];
@@ -56,16 +42,7 @@ export class QuickSearchPickerComponent {
   constructor() {}
 
   emitSelection() {
-    switch (this._data.type) {
-      case 'type': {
-        this.select.emit(this.selectedItems.map(i => i.value));
-        break;
-      }
-      case 'field': {
-        this.select.emit(this.selectedItems[0].value);
-        break;
-      }
-    }
+    this.select.emit(this.selectedItems);
   }
 
   onGroupItemSelect(selection: Selectable | Selectable[]) {
@@ -86,7 +63,7 @@ export class QuickSearchPickerComponent {
 export interface QuickSearchPickerData {
   // the type of data item provided
   // actual items based on the given type
-  type: 'type' | 'field';
+  type: 'type' | 'field' | 'filter';
   items: SelectableGroup[];
   // array of item IDs that should be selected upfront
   selected: string[];

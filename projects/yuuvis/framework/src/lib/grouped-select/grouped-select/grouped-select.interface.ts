@@ -12,6 +12,7 @@ export interface Selectable {
   description?: string;
   highlight?: boolean;
   disabled?: boolean;
+  count?: number;
   value?: any;
 }
 

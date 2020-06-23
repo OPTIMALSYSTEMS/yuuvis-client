@@ -1,0 +1,22 @@
+<section class="main">
+  <yuv-grouped-select [multiple]="true" [singleSelect]="false" [groups]="availableTypeGroups"
+    [selection]="typeSelection" (change)="onTypeChange($event)"> </yuv-grouped-select>
+
+  <yuv-grouped-select [multiple]="true" [singleSelect]="false" [groups]="availableFilterGroups"
+    [selection]="filterSelection" (change)="onFilterChange($event)"> </yuv-grouped-select>
+</section>
+
+<div class="footer" yuvOfflineDisabled>
+  <div class="filter-actions">
+    <yuv-icon class="config" [icon]="'settings'" (click)="showFilterConfig()" [title]="'Manage Filters...'"> </yuv-icon>
+    <yuv-icon (click)="resetFilters()" [title]="'yuv.framework.list.refresh' | translate" class="button"
+      [icon]="'refresh'"></yuv-icon>
+    <yuv-icon (click)="saveSearch()" [title]="'Save Search...'" class="button" [icon]="'favorite'"> </yuv-icon>
+  </div>
+</div>
+
+<!-- column config editor overlay -->
+<ng-template #tplFilterConfig let-data let-popover="popover">
+  <yuv-search-filter-config [options]="data" (close)="onConfigClose(popover)">
+  </yuv-search-filter-config>
+</ng-template>

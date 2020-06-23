@@ -1,0 +1,60 @@
+:host {
+  flex: 1;
+  padding: var(--app-pane-padding);
+  .stored-filter {
+    border: 1px solid var(--panel-divider-color);
+    input {
+      padding: var(--app-pane-padding);
+      font-size: 20px;
+      border: none;
+      width: 100%;
+    }
+  }
+
+  .condition {
+    display: flex;
+    align-items: center;
+
+    &:last-child {
+      .operator {
+        opacity: 0;
+      }
+    }
+    .fe-chip {
+      display: flex;
+      flex: 1;
+      background-color: var(--panel-background);
+      border: 1px solid var(--panel-divider-color);
+      align-items: center;
+      margin: calc(var(--app-pane-padding) / 8);
+
+      button {
+        padding: 0;
+        border-radius: 50%;
+        display: flex;
+        flex-flow: column;
+        align-items: center;
+        justify-content: center;
+        padding: 1px;
+        margin: 2px;
+        opacity: 0.4;
+
+        &:focus,
+        &:hover {
+          opacity: 1;
+        }
+
+        yuv-icon {
+          width: 18px;
+          height: 18px;
+        }
+      }
+    }
+
+    .operator {
+      padding: calc(var(--app-pane-padding) / 4) calc(var(--app-pane-padding) / 2);
+      line-height: 1em;
+      color: var(--text-color-caption);
+    }
+  }
+}
