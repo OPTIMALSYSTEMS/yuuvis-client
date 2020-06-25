@@ -127,16 +127,6 @@ export class StringComponent implements ControlValueAccessor, Validator {
     this.propagateChange(this.value);
   }
 
-  onKeyUpEnter(event) {
-    const input = event.target.value.trim();
-    if (input) {
-      this.value = this.value ? this.value : [];
-      this.value = [...this.value, input];
-      this.propagate();
-      event.target.value = '';
-    }
-  }
-
   writeValue(value: any): void {
     this.value = value || null;
   }
@@ -148,6 +138,7 @@ export class StringComponent implements ControlValueAccessor, Validator {
   registerOnTouched(fn: any): void {}
 
   onValueChange(val) {
+    this.maxEntryCountIfInvalid = null;
     this.validationErrors = [];
 
     if (Utils.isEmpty(val)) {
@@ -190,10 +181,7 @@ export class StringComponent implements ControlValueAccessor, Validator {
     if (this.validationErrors.length && this.multiselect && this.value) {
       // Setting maxEntryCountIfInvalid to the actual length of the value array to prevent the user to add more entries.
       this.maxEntryCountIfInvalid = this.value.length;
-    } else {
-      this.maxEntryCountIfInvalid = null;
     }
-
     this.propagate();
   }
 
