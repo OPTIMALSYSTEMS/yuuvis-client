@@ -62,11 +62,11 @@ export class UserService {
   }
 
   get hasAdminRole(): boolean {
-    return new RegExp(AdministrationRoles.ADMIN).test(this.user.authorities.join(','));
+    return new RegExp(AdministrationRoles.ADMIN).test(this.user?.authorities.join(','));
   }
 
   get hasSystemRole(): boolean {
-    return new RegExp(AdministrationRoles.SYSTEM).test(this.user.authorities.join(','));
+    return new RegExp(AdministrationRoles.SYSTEM).test(this.user?.authorities.join(','));
   }
 
   get hasAdministrationRoles(): boolean {
