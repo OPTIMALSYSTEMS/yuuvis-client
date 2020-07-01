@@ -12,6 +12,7 @@ import {
   TranslateService,
   Utils
 } from '@yuuvis/core';
+import { Observable, of } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import { DynamicDate } from '../../form/elements/datetime/datepicker/datepicker.interface';
 import { DatepickerService } from '../../form/elements/datetime/datepicker/service/datepicker.service';
@@ -25,7 +26,7 @@ export class QuickSearchService {
   private STORAGE_KEY_FILTERS = 'yuv.framework.search.filters';
 
   private filters = {};
-  private filtersVisibility = {};
+  private filtersVisibility = [];
   availableObjectTypes: Selectable[] = [];
   availableObjectTypeGroups: SelectableGroup[] = [];
 
@@ -37,8 +38,8 @@ export class QuickSearchService {
   skipFields = [
     // ...Object.keys(RetentionField).map(k => RetentionField[k]),
     BaseObjectTypeField.OBJECT_ID,
-    BaseObjectTypeField.CREATED_BY,
-    BaseObjectTypeField.MODIFIED_BY,
+    // BaseObjectTypeField.CREATED_BY,
+    // BaseObjectTypeField.MODIFIED_BY,
     BaseObjectTypeField.OBJECT_TYPE_ID,
     BaseObjectTypeField.PARENT_ID,
     BaseObjectTypeField.PARENT_OBJECT_TYPE_ID,
@@ -133,17 +134,18 @@ export class QuickSearchService {
     return this.appCacheService.getItem(this.STORAGE_KEY_FILTERS_VISIBLE).pipe(tap((f) => (this.filtersVisibility = f || [])));
   }
 
-  loadFilters(availableObjectTypeFields: Selectable[]) {
-    const available = availableObjectTypeFields.map((a) => a.id);
-    return this.appCacheService.getItem(this.STORAGE_KEY_FILTERS).pipe(
+  loadStoredFilters(store?: Observable<any>) {
+    return (store || this.appCacheService.getItem(this.STORAGE_KEY_FILTERS)).pipe(
       tap((f) => (this.filters = f || {})),
-      map(() => Object.values(this.filters).map((s: any) => ({ ...s, value: s.value.map((v) => this.parseSearchFilter(v)) }))),
-      map((list) =>
-        [...list.filter((v: Selectable) => this.isMatching(v, available)), ...this.getDefaultFiltersList(availableObjectTypeFields)]
-          .map((f) => ({ ...f, highlight: !f.id.startsWith('__') }))
-          .sort(Utils.sortValues('label'))
-      )
+      map(() => Object.values(this.filters).map((s: any) => ({ ...s, value: s.value.map((v) => this.parseSearchFilter(v)) })))
     );
+  }
+
+  loadFilters(storedFilters: Selectable[], availableObjectTypeFields: Selectable[]) {
+    const available = availableObjectTypeFields.map((a) => a.id);
+    return [...storedFilters.filter((v: Selectable) => this.isMatching(v, available)), ...this.getDefaultFiltersList(availableObjectTypeFields)]
+      .map((f) => ({ ...f, highlight: !f.id.startsWith('__') }))
+      .sort(Utils.sortValues('label'));
   }
 
   private isMatching(v: Selectable, available: string[]) {
@@ -159,12 +161,21 @@ export class QuickSearchService {
   }
 
   saveFiltersVisibility(ids: string[]) {
-    this.appCacheService.setItem(this.STORAGE_KEY_FILTERS_VISIBLE, ids).subscribe();
+    this.filtersVisibility = [...ids];
+    this.appCacheService.setItem(this.STORAGE_KEY_FILTERS_VISIBLE, this.filtersVisibility).subscribe();
+    return of(this.filtersVisibility);
   }
 
   saveFilter(item: Selectable) {
     this.filters[item.id] = { ...item, value: item.value.map((v) => v.toString()) };
     this.appCacheService.setItem(this.STORAGE_KEY_FILTERS, this.filters).subscribe();
+    return this.loadStoredFilters(of(this.filters));
+  }
+
+  removeFilter(item: Selectable) {
+    delete this.filters[item.id];
+    this.appCacheService.setItem(this.STORAGE_KEY_FILTERS, this.filters).subscribe();
+    return this.loadStoredFilters(of(this.filters));
   }
 
   getDefaultFiltersList(availableObjectTypeFields: Selectable[]) {
@@ -230,7 +241,7 @@ export class QuickSearchService {
         items: ['*word*', '*pdf*', '*image*'].map((r) => ({
           id: '__' + MIME_TYPE.id + '#' + r,
           label: r.replace(/\*/g, ''),
-          value: [new SearchFilter(MIME_TYPE.id, SearchFilter.OPERATOR.EQUAL, [r])]
+          value: [new SearchFilter(MIME_TYPE.id, SearchFilter.OPERATOR.IN, [r])]
         }))
       },
       LENGTH && {

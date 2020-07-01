@@ -1,15 +1,6 @@
 :host {
   flex: 1;
   padding: var(--app-pane-padding);
-  .stored-filter {
-    border: 1px solid var(--panel-divider-color);
-    input {
-      padding: var(--app-pane-padding);
-      font-size: 20px;
-      border: none;
-      width: 100%;
-    }
-  }
 
   .condition {
     display: flex;

@@ -4,8 +4,7 @@
     <as-split-area [size]="30">
       <section class="left">
         <yuv-grouped-select [groups]="storedFiltersGroups" [selection]="visibleFilters"
-          (select)="onFilterSelect($event)">
-        </yuv-grouped-select>
+          (select)="onFilterSelect($event)"> </yuv-grouped-select>
       </section>
     </as-split-area>
 
@@ -16,7 +15,13 @@
         </yuv-grouped-select>
 
         <yuv-search-filter-form [disabled]="isDefault()" [options]="formOptions"
-          (filterChanged)="onFilterChanged($event)" (controlRemoved)="onControlRemoved($event)">
+          (filterChanged)="onFilterChanged($event)" (controlRemoved)="onControlRemoved($event)"
+          (valid)="formValid = $event">
+          <form class="stored-filter">
+            <input #storedFilterInput type="text" placeholder="Filter name..." [(ngModel)]="selectedFilter.label"
+              [disabled]="isDefault()" [ngModelOptions]="{ standalone: true }"
+              (change)="onFilterNameChanged($event.target.value)" />
+          </form>
         </yuv-search-filter-form>
       </section>
     </as-split-area>
@@ -24,11 +29,18 @@
 </section>
 <section class="footer buttons">
   <div>
-    <button class="cancel" type="button" (click)="onClose()">{{ 'Cancel' }}</button>
-    <button class="load" type="button" (click)="createNew(query.filters)">{{ 'Current Filters' }}</button>
-    <button class="primary" type="button" (click)="createNew()">{{ 'Create New' }}</button>
+    <button class="primary" type="button"
+      (click)="createNew(fromActive ? query.filters : [])">{{ 'Create New' }}</button>
+    <!-- <button *ngIf="query.filters.length" class="primary" type="button"
+      (click)="createNew(query.filters)">{{ 'Create From Active Filters' }}</button> -->
+    <span *ngIf="query.filters.length">
+      <yuv-checkbox id="fromA" [tristate]="false" [(ngModel)]="fromActive"></yuv-checkbox>
+      <label for="fromA">{{ 'from Active Filters' }}</label>
+    </span>
   </div>
+  <button *ngIf="!isDefault() && isStored() && !isVisible()" type="button" (click)="onRemove()">{{ 'Remove' }}</button>
   <button *ngIf="isStored()" class="primary" type="button"
-    (click)="onVisibilityChange()">{{ isVisible() ? 'Deactivate' : 'Activate' }}</button>
-  <button *ngIf="!isDefault()" class="primary" type="button" (click)="onSave()">{{ 'Save' }}</button>
+    (click)="onVisibilityChange()">{{ isVisible() ? 'Disable' : 'Enable' }}</button>
+  <button *ngIf="!isDefault()" [disabled]="!formValid || isEmpty()" class="primary" type="button"
+    (click)="onSave()">{{ 'Save' }}</button>
 </section>

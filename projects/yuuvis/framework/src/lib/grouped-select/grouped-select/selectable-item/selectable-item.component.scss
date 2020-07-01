@@ -10,11 +10,11 @@
   }
 
   &.highlight {
-    background-color: var(--item-focus-background-color);
+    // background-color: var(--item-focus-background-color);
     > div {
       .title {
         font-weight: var(--font-weight-bold);
-        text-decoration: underline;
+        // text-decoration: underline;
       }
     }
     &:focus {
@@ -46,6 +46,10 @@
 
       .title {
         margin: calc(var(--app-pane-padding) / 4) 0;
+      }
+
+      .count {
+        float: right;
       }
 
       .description {

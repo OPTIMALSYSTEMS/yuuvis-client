@@ -1,7 +1,8 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { SearchFilter, SearchQuery, Utils } from '@yuuvis/core';
 import { forkJoin } from 'rxjs';
 import { Selectable } from '../../../grouped-select';
+import { NotificationService } from '../../../services/notification/notification.service';
 import { SelectableGroup } from './../../../grouped-select/grouped-select/grouped-select.interface';
 import { QuickSearchService } from './../quick-search.service';
 
@@ -11,15 +12,19 @@ import { QuickSearchService } from './../quick-search.service';
   styleUrls: ['./search-filter-config.component.scss']
 })
 export class SearchFilterConfigComponent implements OnInit {
+  @ViewChild('storedFilterInput') storedFilterInput: ElementRef;
+
   storedFiltersGroups: SelectableGroup[] = [];
   availableFiltersGroups: SelectableGroup[] = [];
   availableObjectTypeFields: Selectable[];
 
   visibleFilters: string[] = [];
-  storedFilters: Selectable[];
-  selectedFilter: Selectable;
+  storedFilters: Selectable[] = [];
+  selectedFilter: Selectable = { id: '', label: '' };
   selection: string[] = [];
   formOptions: any;
+  formValid = false;
+  fromActive = true;
 
   query: SearchQuery;
 
@@ -27,53 +32,57 @@ export class SearchFilterConfigComponent implements OnInit {
     this.query = data.query;
     this.availableObjectTypeFields = this.quickSearchService.getAvailableObjectTypesFields(data.typeSelection);
 
-    forkJoin([this.quickSearchService.loadFilters(this.availableObjectTypeFields), this.quickSearchService.loadFiltersVisibility()]).subscribe(
-      ([storedFilters, visibleFilters]) => {
-        this.storedFilters = storedFilters;
-        this.visibleFilters = visibleFilters || storedFilters.map((f) => f.id);
-        this.storedFiltersGroups = [
-          {
-            id: 'active',
-            label: 'Active Filters',
-            items: this.quickSearchService.getActiveFilters(this.query, storedFilters, this.availableObjectTypeFields)
-          },
-          {
-            id: 'activated',
-            label: 'Filters',
-            items: storedFilters.filter((f) => this.isVisible(f))
-          },
-          {
-            id: 'deactivated',
-            label: 'Deactivated Filters',
-            items: storedFilters.filter((f) => !this.isVisible(f))
-          }
-        ];
-        this.availableFiltersGroups = [
-          {
-            id: 'custom',
-            label: 'Custom Filters',
-            items: this.availableObjectTypeFields.map((o) => ({ ...o, value: [new SearchFilter(o.id, undefined, undefined)] }))
-          }
-        ];
-        // load active filters
-        this.createNew(this.query.filters);
+    this.availableFiltersGroups = [
+      {
+        id: 'custom',
+        label: 'Custom Filters',
+        items: this.availableObjectTypeFields.map((o) => ({ ...o, value: [new SearchFilter(o.id, undefined, undefined)] }))
       }
-    );
+    ];
+
+    // load active filters
+    this.createNew(this.query.filters);
+
+    forkJoin([this.quickSearchService.loadStoredFilters(), this.quickSearchService.loadFiltersVisibility()]).subscribe(([storedFilters, visibleFilters]) => {
+      this.storedFilters = this.quickSearchService.loadFilters(storedFilters as any, this.availableObjectTypeFields);
+      this.visibleFilters = visibleFilters || this.storedFilters.map((f) => f.id);
+      this.storedFiltersGroups = [
+        {
+          id: 'active',
+          label: 'Active Filters',
+          items: this.quickSearchService.getActiveFilters(this.query, this.storedFilters, this.availableObjectTypeFields)
+        },
+        {
+          id: 'enabled',
+          label: 'Enabled Filters',
+          items: this.storedFilters.filter((f) => this.isVisible(f))
+        },
+        {
+          id: 'disabled',
+          label: 'Disabled Filters',
+          items: this.storedFilters.filter((f) => !this.isVisible(f))
+        }
+      ];
+    });
   }
   @Output() close = new EventEmitter<any>();
 
-  constructor(private quickSearchService: QuickSearchService) {}
+  constructor(private quickSearchService: QuickSearchService, private notify: NotificationService) {}
 
   isVisible(filter = this.selectedFilter) {
-    return filter && this.visibleFilters.includes(filter.id);
+    return filter && filter.id && this.visibleFilters.includes(filter.id);
   }
 
   isDefault(filter = this.selectedFilter) {
-    return filter && !filter.highlight;
+    return filter && filter.id && !filter.highlight;
   }
 
   isStored(filter = this.selectedFilter) {
-    return filter && !!this.storedFilters.find((f) => f.id === filter.id);
+    return filter && filter.id && !!this.storedFilters.find((f) => f.id === filter.id);
+  }
+
+  isEmpty(filter = this.selectedFilter) {
+    return filter && filter.id && !(filter.value && filter.value.length);
   }
 
   createNew(filters: SearchFilter[] = []) {
@@ -105,7 +114,7 @@ export class SearchFilterConfigComponent implements OnInit {
     this.visibleFilters = this.visibleFilters.filter((id) => id !== this.selectedFilter.id).concat(visible ? [] : [this.selectedFilter.id]);
     this.storedFiltersGroups[1].items = this.storedFilters.filter((f) => this.isVisible(f));
     this.storedFiltersGroups[2].items = this.storedFilters.filter((f) => !this.isVisible(f));
-    this.quickSearchService.saveFiltersVisibility(this.visibleFilters);
+    this.quickSearchService.saveFiltersVisibility(this.visibleFilters).subscribe();
   }
 
   onControlRemoved(id: string) {
@@ -115,14 +124,30 @@ export class SearchFilterConfigComponent implements OnInit {
 
   onFilterChanged(res: Selectable) {
     this.selectedFilter = res;
-    console.log(res.value);
+  }
+
+  onFilterNameChanged(name: string) {
+    this.selectedFilter.label = name;
   }
 
   onSave() {
-    this.quickSearchService.saveFilter(this.selectedFilter);
-    // todo : find better way
-    this.storedFilters = [this.selectedFilter, ...this.storedFilters.filter((s) => s.id !== this.selectedFilter.id)];
-    this.onVisibilityChange(false);
+    if (this.formValid && this.selectedFilter.label && !this.isEmpty()) {
+      this.quickSearchService.saveFilter(this.selectedFilter).subscribe((storedFilters) => {
+        this.storedFilters = this.quickSearchService.loadFilters(storedFilters as any, this.availableObjectTypeFields);
+        this.onVisibilityChange(false);
+        this.notify.success('Filter was saved');
+      });
+    } else if (!this.selectedFilter.label) {
+      this.storedFilterInput.nativeElement.focus();
+    }
+  }
+
+  onRemove() {
+    this.quickSearchService.removeFilter(this.selectedFilter).subscribe((storedFilters) => {
+      this.storedFilters = this.quickSearchService.loadFilters(storedFilters as any, this.availableObjectTypeFields);
+      this.onVisibilityChange(true);
+      this.notify.success('Filter was removed');
+    });
   }
 
   ngOnInit() {}

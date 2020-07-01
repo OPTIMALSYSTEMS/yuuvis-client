@@ -15,7 +15,6 @@ import { ObjectFormControlWrapper } from './../../../object-form/object-form.int
   styleUrls: ['./search-filter-form.component.scss']
 })
 export class SearchFilterFormComponent implements OnInit, OnDestroy {
-  @ViewChild('storedFilterInput') storedFilterInput: ElementRef;
   @ViewChild('extrasForm') extrasForm: ElementRef;
 
   searchFieldsForm: FormGroup;
@@ -41,6 +40,7 @@ export class SearchFilterFormComponent implements OnInit, OnDestroy {
 
   @Output() filterChanged = new EventEmitter<Selectable>();
   @Output() controlRemoved = new EventEmitter<string>();
+  @Output() valid = new EventEmitter<boolean>();
 
   constructor(private systemService: SystemService, private fb: FormBuilder) {}
 
@@ -53,6 +53,7 @@ export class SearchFilterFormComponent implements OnInit, OnDestroy {
   }
 
   private onSearchFieldFormChange() {
+    this.valid.emit(this.searchFieldsForm.valid);
     // generate search query filter section from form fields
 
     // extract form controls
@@ -68,7 +69,7 @@ export class SearchFilterFormComponent implements OnInit, OnDestroy {
     // setup filters from form controls
     this.filterQuery.clearFilters();
     formControls.forEach((fc) => {
-      const filter = new SearchFilter(fc._eoFormElement.name, SearchFilter.OPERATOR.EQUAL, fc.value);
+      const filter = new SearchFilter(fc._eoFormElement.name, Array.isArray(fc.value) ? SearchFilter.OPERATOR.IN : SearchFilter.OPERATOR.EQUAL, fc.value);
       if (!filter.isEmpty() || fc._eoFormElement.isNotSetValue) {
         this.filterQuery.addFilter(filter);
       }
@@ -166,10 +167,6 @@ export class SearchFilterFormComponent implements OnInit, OnDestroy {
       this.controlRemoved.emit(formControlName.replace('fc_', ''));
       this.onSearchFieldFormChange();
     }
-  }
-
-  nameChanged(name: string) {
-    this.filterChanged.emit(this.filter);
   }
 
   ngOnInit() {}

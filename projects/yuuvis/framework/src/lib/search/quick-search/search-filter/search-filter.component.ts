@@ -6,7 +6,6 @@ import { Selectable } from '../../../grouped-select';
 import { SelectableGroup } from '../../../grouped-select/grouped-select/grouped-select.interface';
 import { FileSizePipe } from '../../../pipes/filesize.pipe';
 import { PopoverConfig } from '../../../popover/popover.interface';
-import { PopoverRef } from '../../../popover/popover.ref';
 import { PopoverService } from '../../../popover/popover.service';
 import { favorite, refresh, settings } from '../../../svg.generated';
 import { QuickSearchService } from '../quick-search.service';
@@ -32,6 +31,7 @@ export class SearchFilterComponent implements OnInit {
   filesizePipe: FileSizePipe;
   private _query: SearchQuery;
   private filterQuery: SearchQuery;
+  private parentID: SearchFilter;
 
   @Input() set query(q: SearchQuery) {
     this._query = new SearchQuery(q.toQueryJson());
@@ -53,12 +53,12 @@ export class SearchFilterComponent implements OnInit {
   }
 
   private setupFilterPanel() {
-    const parentID = this.filterQuery.filters.find((f) => f.property === BaseObjectTypeField.PARENT_ID);
-    if (parentID) {
+    this.parentID = this.filterQuery.filters.find((f) => f.property === BaseObjectTypeField.PARENT_ID);
+    if (this.parentID) {
       const data = {
         query: {
           statement: `SELECT COUNT(*), ${BaseObjectTypeField.OBJECT_TYPE_ID} FROM ${SystemType.OBJECT}
-          WHERE ${BaseObjectTypeField.PARENT_ID}='${parentID.firstValue}' GROUP BY ${BaseObjectTypeField.OBJECT_TYPE_ID}`
+          WHERE ${BaseObjectTypeField.PARENT_ID}='${this.parentID.firstValue}' GROUP BY ${BaseObjectTypeField.OBJECT_TYPE_ID}`
         }
       };
       this.backend.post('/dms/objects/search', data, ApiBase.core).subscribe((res) => {
@@ -96,27 +96,25 @@ export class SearchFilterComponent implements OnInit {
   private setupFilters(typeSelection: string[], filterSelection?: string[], activeFilters?: Selectable[]) {
     this.availableObjectTypeFields = this.quickSearchService.getAvailableObjectTypesFields(typeSelection);
 
-    forkJoin([this.quickSearchService.loadFilters(this.availableObjectTypeFields), this.quickSearchService.loadFiltersVisibility()]).subscribe(
-      ([storedFilters, visibleFilters]) => {
-        this.storedFilters = storedFilters;
-        this.activeFilters = activeFilters || this.quickSearchService.getActiveFilters(this.filterQuery, storedFilters, this.availableObjectTypeFields);
-        const visible = visibleFilters || storedFilters.map((s) => s.id);
+    forkJoin([this.quickSearchService.loadStoredFilters(), this.quickSearchService.loadFiltersVisibility()]).subscribe(([storedFilters, visibleFilters]) => {
+      this.storedFilters = this.quickSearchService.loadFilters(storedFilters as any, this.availableObjectTypeFields);
+      this.activeFilters = activeFilters || this.quickSearchService.getActiveFilters(this.filterQuery, this.storedFilters, this.availableObjectTypeFields);
+      const visible = visibleFilters || this.storedFilters.map((s) => s.id);
 
-        this.availableFilterGroups = [
-          {
-            id: 'active',
-            label: 'Active Filters',
-            items: this.activeFilters
-          },
-          {
-            id: 'stored',
-            label: '★ Stored Filters',
-            items: this.storedFilters.filter((f) => visible.includes(f.id))
-          }
-        ];
-        this.filterSelection = filterSelection || this.activeFilters.map((a) => a.id);
-      }
-    );
+      this.availableFilterGroups = [
+        {
+          id: 'active',
+          label: 'Active Filters',
+          items: this.activeFilters
+        },
+        {
+          id: 'stored',
+          label: '★ Stored Filters',
+          items: this.storedFilters.filter((f) => visible.includes(f.id))
+        }
+      ];
+      this.filterSelection = filterSelection || this.activeFilters.map((a) => a.id);
+    });
   }
 
   showFilterConfig() {
@@ -129,14 +127,10 @@ export class SearchFilterComponent implements OnInit {
       height: '75%',
       data: pickerData
     };
-    this.popoverService.open(this.tplFilterConfig, popoverConfig);
-  }
-
-  onConfigClose(popoverRef: PopoverRef) {
-    // todo : trigger on outsideclick
-    // update filters visibility
-    this.setupFilters(this.typeSelection, this.filterSelection, this.activeFilters);
-    return popoverRef && popoverRef.close();
+    this.popoverService
+      .open(this.tplFilterConfig, popoverConfig)
+      .afterClosed()
+      .subscribe(() => this.setupFilters(this.typeSelection, this.filterSelection, this.activeFilters));
   }
 
   onFilterChange(res: Selectable[]) {
@@ -144,7 +138,9 @@ export class SearchFilterComponent implements OnInit {
     this.availableFilterGroups[0].items = this.activeFilters = [...res, ...this.activeFilters.filter((f) => !res.map((r) => r.id).includes(f.id))].sort(
       Utils.sortValues('label')
     );
-    this.filterQuery.filters = (res.map((v) => v.value) as SearchFilter[][]).reduce((pre, cur) => (pre = pre.concat(cur)), []);
+    this.filterQuery.filters = (res.map((v) => v.value) as SearchFilter[][])
+      .reduce((pre, cur) => (pre = pre.concat(cur)), [])
+      .concat(this.parentID ? [this.parentID] : []);
     this.filterChange.emit(this.filterQuery);
   }
 

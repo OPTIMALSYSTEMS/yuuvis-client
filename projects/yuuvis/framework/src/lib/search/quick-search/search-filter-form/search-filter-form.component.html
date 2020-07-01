@@ -1,12 +1,8 @@
-<form class="stored-filter">
-  <input #storedFilterInput type="text" placeholder="Filter name..." [(ngModel)]="filter.label" [disabled]="disabled"
-    [ngModelOptions]="{standalone:true}" (change)="nameChanged($event.target.value)" />
-</form>
+<ng-content></ng-content>
 <form class="extras" #extrasForm [formGroup]="searchFieldsForm" *ngIf="formFields.length">
   <div class="condition" *ngFor="let key of searchFieldsForm?.controls | keys">
     <div class="fe-chip">
-      <yuv-object-form-element [situation]="'SEARCH'" [inlineError]="true" [element]="searchFieldsForm.controls[key]">
-      </yuv-object-form-element>
+      <yuv-object-form-element [situation]="'SEARCH'" [inlineError]="true" [element]="searchFieldsForm.controls[key]"> </yuv-object-form-element>
       <button *ngIf="!disabled" type="button" (click)="removeFieldEntry(key)">
         <yuv-icon [icon]="'clear'"></yuv-icon>
       </button>

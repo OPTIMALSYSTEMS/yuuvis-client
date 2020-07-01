@@ -122,7 +122,7 @@ export class GroupedSelectComponent implements AfterViewInit, ControlValueAccess
   private _selectedItems: Selectable[] = [];
 
   set selectedItems(items: Selectable[]) {
-    this._selectedItems = items;
+    this._selectedItems = items || [];
     this.selectedItemsCheck = {};
     if (items) {
       items.forEach((s) => (this.selectedItemsCheck[s.id] = true));
@@ -162,7 +162,7 @@ export class GroupedSelectComponent implements AfterViewInit, ControlValueAccess
   }
 
   itemSelected(item: SelectableInternal) {
-    this.selectedItems = this.singleSelect ? [item] : [...this.selectedItems, item];
+    this.selectedItems = this.singleSelect ? [item] : [...this.selectedItems.filter((i) => i.id !== item.id), item];
     this.emit();
   }
 

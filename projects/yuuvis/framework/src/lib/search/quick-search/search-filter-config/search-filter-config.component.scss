@@ -7,6 +7,19 @@
   grid-template-rows: auto 1fr auto;
   grid-template-areas: 'header' 'main' 'buttons';
 
+  .stored-filter {
+    border: 1px solid var(--panel-divider-color);
+    input {
+      padding: var(--app-pane-padding);
+      font-size: 20px;
+      border: none;
+      width: 100%;
+      &:focus {
+        border-bottom: 1px solid var(--color-accent);
+      }
+    }
+  }
+
   header {
     grid-area: header;
     font-size: var(--font-headline);
@@ -30,10 +43,11 @@
     > div {
       flex: 1;
     }
-    .cancel {
-      .screen-s.screen-portrait & {
-        display: none;
-      }
+    .primary + .primary {
+      margin-left: calc(var(--app-pane-padding) / 2);
+    }
+    yuv-checkbox {
+      margin: calc(var(--app-pane-padding) / 2);
     }
   }
 }
