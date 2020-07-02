@@ -20,7 +20,7 @@ export class Utils {
   }
 
   public static formatMailTo(value: FormatedMailTo, isEmail: boolean): FormatedMailTo {
-    if (isEmail) {
+    if (isEmail && !!value) {
       if (Array.isArray(value)) {
         return value.join().replace(/,/g, '; ');
       } else {

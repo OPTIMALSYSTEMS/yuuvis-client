@@ -1,9 +1,9 @@
-import { Component, ElementRef, Input, OnDestroy, Renderer2 } from '@angular/core';
-import { Classification, TranslateService } from '@yuuvis/core';
-import { takeUntilDestroy } from 'take-until-destroy';
-import { ObjectFormTranslateService } from '../object-form-translate.service';
-import { ObjectFormControlWrapper } from '../object-form.interface';
-import { Situation } from './../object-form.situation';
+import {Component, ElementRef, Input, OnDestroy, Renderer2} from '@angular/core';
+import {Classification, TranslateService} from '@yuuvis/core';
+import {takeUntilDestroy} from 'take-until-destroy';
+import {ObjectFormTranslateService} from '../object-form-translate.service';
+import {ObjectFormControlWrapper} from '../object-form.interface';
+import {Situation} from './../object-form.situation';
 
 @Component({
   selector: 'yuv-object-form-element',
@@ -30,13 +30,13 @@ export class ObjectFormElementComponent implements OnDestroy {
     if (el) {
       this.element = el;
       this.formElementRef = el.controls[el._eoFormControlWrapper.controlName];
+      this.formElementRef._eoFormElement = this.setGrouping(this.formElementRef?._eoFormElement);
       if (this.formElementRef._eoFormElement.isNotSetValue) {
         this.labelToggled(true);
       }
       this.fetchTags();
-      this.formElementRef.valueChanges.pipe(takeUntilDestroy(this)).subscribe((_) => this.setupErrors());
+      this.formElementRef?.valueChanges.pipe(takeUntilDestroy(this)).subscribe((_) => this.setupErrors());
     }
-    this.setGrouping(this.formElementRef._eoFormElement);
   }
 
   constructor(
@@ -51,13 +51,7 @@ export class ObjectFormElementComponent implements OnDestroy {
    * https://wiki.optimal-systems.de/display/PM/Status+yuuvis+Momentum+-+Flex+client
    */
   private setGrouping(formElement) {
-    this.formElementRef = {
-      ...this.formElementRef,
-      _eoFormElement: {
-        ...this.formElementRef._eoFormElement,
-        grouping: formElement?.classification?.includes(Classification.NUMBER_DIGIT)
-      }
-    };
+    return {...formElement, grouping: !!formElement?.classification?.includes(Classification.NUMBER_DIGIT)};
   }
 
   labelToggled(toggled: boolean) {
