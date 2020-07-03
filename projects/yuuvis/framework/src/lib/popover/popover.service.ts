@@ -50,7 +50,7 @@ export class PopoverService {
     config: Partial<PopoverConfig> = {},
     target?: ElementRef | HTMLElement
   ): PopoverRef<D> {
-    const popoverConfig: PopoverConfig = Object.assign({}, defaultConfig, config);
+    const popoverConfig = Object.assign({}, defaultConfig, config);
     const positionStrategy = this.getPositionStrategy(popoverConfig, target);
     const overlayConfig: OverlayConfig = {
       hasBackdrop: true,
@@ -61,7 +61,15 @@ export class PopoverService {
       maxHeight: config.maxHeight,
       maxWidth: config.maxWidth
     };
+    return this.createOverlay(componentOrTemplate, overlayConfig, popoverConfig, config);
+  }
 
+  private createOverlay(
+    componentOrTemplate: ComponentType<any> | TemplateRef<any>,
+    overlayConfig: OverlayConfig,
+    popoverConfig: PopoverConfig,
+    config: Partial<PopoverConfig> = {}
+  ): PopoverRef {
     const overlayRef = this.overlay.create(overlayConfig);
     overlayRef.setDirection(this.direction === Direction.RTL ? 'rtl' : 'ltr');
     const popoverRef = new PopoverRef(overlayRef, popoverConfig);
@@ -101,7 +109,6 @@ export class PopoverService {
         )
       );
     }
-
     return popoverRef;
   }
 
@@ -111,13 +118,7 @@ export class PopoverService {
     // On small screen devices we'll go 'fullscreen' even if
     // a target to attach to was provided
     if (this.useSmallDeviceLayout) {
-      positionStrategy = this.overlay
-        .position()
-        .global()
-        .width('90%')
-        .height('90%')
-        .centerHorizontally()
-        .centerVertically();
+      positionStrategy = this.overlay.position().global().width('90%').height('90%').centerHorizontally().centerVertically();
     } else {
       // if a target is provided, the popover will be attached to that element
       if (target) {
@@ -148,6 +149,19 @@ export class PopoverService {
           .height(`${popoverConfig.height}` || '10%')
           .centerHorizontally()
           .centerVertically();
+
+        if (popoverConfig.top) {
+          positionStrategy.top(`${popoverConfig.top}px`);
+        }
+        if (popoverConfig.bottom) {
+          positionStrategy.bottom(`${popoverConfig.bottom}px`);
+        }
+        if (popoverConfig.left) {
+          positionStrategy.left(`${popoverConfig.left}px`);
+        }
+        if (popoverConfig.right) {
+          positionStrategy.right(`${popoverConfig.right}px`);
+        }
       }
     }
     return positionStrategy;

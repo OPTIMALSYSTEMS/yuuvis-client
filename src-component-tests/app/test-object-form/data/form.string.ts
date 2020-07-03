@@ -47,7 +47,7 @@ export const stringElements = [
     name: 'string:email',
     label: 'String Classification email',
     description: 'enter valid email address',
-    classification: 'email',
+    classification: ['email'],
     type: 'string',
     required: false
   },
@@ -56,7 +56,16 @@ export const stringElements = [
     name: 'string:url',
     label: 'String Classification url',
     description: 'enter valid url address',
-    classification: 'url',
+    classification: ['url'],
+    type: 'string',
+    required: false
+  },
+  {
+    readonly: false,
+    name: 'string:phone',
+    label: 'String Classification phone',
+    description: 'enter a phone number',
+    classification: ['phone'],
     type: 'string',
     required: false
   },
@@ -65,7 +74,6 @@ export const stringElements = [
     name: 'string:multiline',
     label: 'String multiline',
     description: 'enter multiline string',
-    classification: 'url',
     multiline: true,
     type: 'string',
     required: false
@@ -75,7 +83,37 @@ export const stringElements = [
     name: 'string:chips',
     label: 'String multiple entries',
     description: 'enter multiple entries',
-    multiselect: true,
+    cardinality: 'multi',
+    type: 'string',
+    required: false
+  },
+  {
+    readonly: false,
+    cardinality: 'multi',
+    name: 'string:chips:email',
+    label: 'String Classification email multiple',
+    description: 'enter multiple email addresses',
+    classification: ['email'],
+    type: 'string',
+    required: false
+  },
+  {
+    readonly: false,
+    cardinality: 'multi',
+    name: 'string:chips:url',
+    label: 'String Classification URL multiple',
+    description: 'enter multiple URL addresses',
+    classification: ['url'],
+    type: 'string',
+    required: false
+  },
+  {
+    readonly: false,
+    cardinality: 'multi',
+    name: 'string:chips:phone',
+    label: 'String Classification phone multiple',
+    description: 'enter multiple phone numbers',
+    classification: ['phone'],
     type: 'string',
     required: false
   }

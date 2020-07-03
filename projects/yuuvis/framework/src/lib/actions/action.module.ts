@@ -6,6 +6,7 @@ import { TranslateModule } from '@yuuvis/core';
 import { YuvCommonModule } from '../common/common.module';
 import { YuvComponentsModule } from '../components/components.module';
 import { YuvDirectivesModule } from '../directives/directives.module';
+import { YuvQuickfinderModule } from '../quickfinder/quickfinder.module';
 import { YuvFormModule } from './../form/form.module';
 import { ActionComponentAnchorDirective } from './action-menu/action-component-anchor/action-component-anchor.directive';
 import { ActionMenuComponent } from './action-menu/action-menu.component';
@@ -15,6 +16,8 @@ import { DeleteComponent } from './actions/delete-action/delete/delete.component
 import { DownloadActionComponent } from './actions/download-action/download-action';
 import { DownloadOriginalActionComponent } from './actions/download-original-action/download-original-action';
 import { DownloadPdfActionComponent } from './actions/download-pdf-action/download-pdf-action';
+import { MoveActionComponent } from './actions/move-action/move-action';
+import { MoveComponent } from './actions/move-action/move/move.component';
 import { UploadActionComponent } from './actions/upload-action/upload-action';
 import { UploadComponent } from './actions/upload-action/upload/upload.component';
 
@@ -25,7 +28,9 @@ export const entryComponents = [
   DeleteActionComponent,
   DeleteComponent,
   UploadComponent,
-  UploadActionComponent
+  UploadActionComponent,
+  MoveActionComponent,
+  MoveComponent
 ];
 
 /**
@@ -43,7 +48,8 @@ export const entryComponents = [
     ReactiveFormsModule,
     TranslateModule,
     YuvComponentsModule,
-    YuvCommonModule
+    YuvCommonModule,
+    YuvQuickfinderModule
   ],
   exports: [ActionMenuComponent],
   providers: [
@@ -67,7 +73,9 @@ export const entryComponents = [
     DeleteActionComponent,
     DeleteComponent,
     UploadComponent,
-    UploadActionComponent
+    UploadActionComponent,
+    MoveActionComponent,
+    MoveComponent
   ],
   entryComponents
 })

@@ -4,9 +4,11 @@ import {
   AppCacheService,
   BackendService,
   BaseObjectTypeField,
+  Classification,
   ColumnConfig,
   ColumnConfigColumn,
   ContentStreamField,
+  InternalFieldType,
   ObjectType,
   ObjectTypeField,
   SearchService,
@@ -124,19 +126,19 @@ export class GridService {
       return undefined;
     }
     switch (classification[0]) {
-      case 'email': {
+      case Classification.STRING_EMAIL: {
         return CellRenderer.emailCellRenderer;
         break;
       }
-      case 'url': {
+      case Classification.STRING_URL: {
         return CellRenderer.urlCellRenderer;
         break;
       }
-      case 'phone': {
+      case Classification.STRING_PHONE: {
         return CellRenderer.phoneCellRenderer;
         break;
       }
-      case 'digit': {
+      case Classification.NUMBER_DIGIT: {
         return this.customContext(CellRenderer.numberCellRenderer, params);
         break;
       }
@@ -157,7 +159,35 @@ export class GridService {
   private addColDefAttrsByType(colDef: ColDef, field: ObjectTypeField) {
     colDef.cellClass = `col-${field.propertyType}`;
     colDef.headerClass = `col-header-${field.propertyType}`;
-    switch (field.propertyType) {
+
+    const internalType = this.system.getInternalFormElementType(field as any, 'propertyType');
+
+    switch (internalType) {
+      case InternalFieldType.STRING_REFERENCE: {
+        //  colDef.cellRenderer = this.customContext(CellRenderer.referenceCellRenderer);
+        // TODO: Replace actual implementation. Right now it's like 'string'
+        // colDef.cellRenderer = (params) => Utils.escapeHtml(params.value);
+        // if (field.cardinality === 'multi') {
+        //   colDef.cellRenderer = this.customContext(CellRenderer.multiSelectCellRenderer);
+        // }
+        colDef.cellClass = field.cardinality === 'multi' ? 'multiCell string' : 'string';
+        if (Array.isArray(field?.classification)) {
+          colDef.cellRenderer = this.fieldClassification(field?.classification);
+        }
+        break;
+      }
+      case InternalFieldType.STRING_ORGANIZATION: {
+        // TODO: Replace actual implementation. Right now it's like 'string'
+        // colDef.cellRenderer = (params) => Utils.escapeHtml(params.value);
+        // if (field.cardinality === 'multi') {
+        //   colDef.cellRenderer = this.customContext(CellRenderer.multiSelectCellRenderer);
+        // }
+        colDef.cellClass = field.cardinality === 'multi' ? 'multiCell string' : 'string';
+        if (Array.isArray(field?.classification)) {
+          colDef.cellRenderer = this.fieldClassification(field?.classification);
+        }
+        break;
+      }
       case 'string': {
         colDef.cellRenderer = (params) => Utils.escapeHtml(params.value);
         if (field.cardinality === 'multi') {

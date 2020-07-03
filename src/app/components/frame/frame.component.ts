@@ -1,4 +1,5 @@
-import { Component, HostBinding, HostListener, OnInit } from '@angular/core';
+// import { openContext } from './../../../../projects/yuuvis/framework/src/lib/svg.generated';
+import { Component, HostBinding, HostListener, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, NavigationExtras, Router } from '@angular/router';
 import { SwUpdate } from '@angular/service-worker';
 import {
@@ -6,14 +7,30 @@ import {
   BaseObjectTypeField,
   ConnectionService,
   ConnectionState,
+  DmsService,
+  EventService,
   SearchFilter,
   SearchQuery,
+  SystemService,
+  TranslateService,
   UploadResult,
   UserService,
+  YuvEventType,
   YuvUser
 } from '@yuuvis/core';
-import { IconRegistryService, LayoutService, LayoutSettings, Screen, ScreenService } from '@yuuvis/framework';
+import {
+  IconRegistryService,
+  LayoutService,
+  LayoutSettings,
+  NotificationService,
+  openContext,
+  PopoverRef,
+  PopoverService,
+  Screen,
+  ScreenService
+} from '@yuuvis/framework';
 import { filter } from 'rxjs/operators';
+import { takeUntilDestroy } from 'take-until-destroy';
 import { add, close, drawer, offline, refresh, search, userDisabled } from '../../../assets/default/svg/svg';
 import { AppSearchService } from '../../service/app-search.service';
 import { FrameService } from './frame.service';
@@ -23,7 +40,9 @@ import { FrameService } from './frame.service';
   templateUrl: './frame.component.html',
   styleUrls: ['./frame.component.scss']
 })
-export class FrameComponent implements OnInit {
+export class FrameComponent implements OnInit, OnDestroy {
+  @ViewChild('moveNotification') moveNotification: TemplateRef<any>;
+
   swUpdateAvailable: boolean;
   hideAppBar: boolean;
   disableFileDrop: boolean;
@@ -64,9 +83,15 @@ export class FrameComponent implements OnInit {
     private authService: AuthService,
     private screenService: ScreenService,
     private userService: UserService,
+    private eventService: EventService,
+    private notificationService: NotificationService,
+    private translateService: TranslateService,
+    private popoverService: PopoverService,
+    private dmsService: DmsService,
+    private systemService: SystemService,
     private iconRegistry: IconRegistryService
   ) {
-    this.iconRegistry.registerIcons([search, drawer, refresh, add, userDisabled, offline, close]);
+    this.iconRegistry.registerIcons([search, drawer, refresh, add, userDisabled, offline, close, openContext]);
     this.userService.user$.subscribe((user: YuvUser) => {
       this.user = user;
     });
@@ -78,6 +103,45 @@ export class FrameComponent implements OnInit {
     this.screenService.screenChange$.subscribe((s: Screen) => {
       this.screenSmall = s.isSmall;
     });
+    this.eventService
+      .on(YuvEventType.DMS_OBJECTS_MOVED)
+      .pipe(takeUntilDestroy(this))
+      .subscribe((event) => this.onObjetcsMove(event));
+  }
+
+  onObjetcsMove(event) {
+    this.dmsService.getDmsObject(event.data.targetFolderId).subscribe((newParent) => {
+      const title = this.translateService.instant('yuv.client.frame.move.notification.title', { objectTitle: newParent.title });
+      const succeeded = event.data.succeeded.map((o) => {
+        o.icon = this.systemService.getObjectTypeIcon(o.objectTypeId);
+        return o;
+      });
+      const failed = event.data.failed.map((o) => {
+        o.icon = this.systemService.getObjectTypeIcon(o.objectTypeId);
+        return o;
+      });
+      const popoverConfig = {
+        maxHeight: '70%',
+        width: 300,
+        bottom: 16,
+        right: 16,
+        duration: 10,
+        data: {
+          title: title,
+          newParent: newParent,
+          succeeded: succeeded,
+          failed: failed
+        },
+        panelClass: 'move-notification'
+      };
+      this.popoverService.open(this.moveNotification, popoverConfig);
+    });
+  }
+
+  closeNotification(popoverRef?: PopoverRef) {
+    if (popoverRef) {
+      popoverRef.close();
+    }
   }
 
   get currentRoute() {
@@ -203,4 +267,6 @@ export class FrameComponent implements OnInit {
       this.toggleSearch(false);
     });
   }
+
+  ngOnDestroy() {}
 }

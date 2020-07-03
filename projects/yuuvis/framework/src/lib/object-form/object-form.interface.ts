@@ -19,6 +19,8 @@ export interface ObjectFormOptions {
    * range searches in some cases.
    */
   data: any;
+  // The id of the current DMS-Object
+  objectId?: string;
   /**
    * whether or not to disable the complete form
    */

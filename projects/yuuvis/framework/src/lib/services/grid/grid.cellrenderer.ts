@@ -45,7 +45,7 @@ export class CellRenderer {
   // }
 
   static emailCellRenderer(param) {
-    return param.value ? `<a href="mailto:${param.value}">${Utils.escapeHtml(param.value)}</a>` : '';
+    return param.value ? `<a href="mailto:${Utils.formatMailTo(param?.value, true)}">${Utils.escapeHtml(param.value)}</a>` : '';
   }
 
   static phoneCellRenderer(param) {

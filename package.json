@@ -1,9 +1,10 @@
 {
   "name": "yuuvis-flokfugl",
-  "version": "1.0.0",
-  "releaseDate": "Spring 2020",
+  "version": "1.1.0",
+  "releaseDate": "Summer 2020",
   "description": "yuuvis® client",
   "author": "OPTIMAL SYSTEMS GmbH",
+  "license": "Apache-2.0",
   "scripts": {
     "ng": "ng",
     "prebuild:about": "node ./tools/scripts/common/about/prebuild-about-state",

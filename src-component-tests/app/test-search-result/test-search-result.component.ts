@@ -17,6 +17,25 @@ export class TestSearchResultComponent implements OnInit {
     });
   }
 
+  teamsQuery() {
+    this.query = new SearchQuery({
+      size: 50,
+      types: ['appTeams:toteamsdoc'],
+      filters: {
+        'appTeams:toteam': {
+          op: 'eq',
+          v1: 'yuuvis'
+        }
+      },
+      // filters: [
+      //   { property: 'appTeams:toteam', operator: 'eq', firstValue: 'yuuvis' },
+      //   { property: 'appTeams:tochannel', operator: 'eq', firstValue: 'general' }
+      // ],
+      // sortOptions: [],
+      fields: []
+    });
+  }
+
   setSingleTypeQuery() {
     this.query = new SearchQuery({
       types: ['appPersonalfile:pfpersonalfile']

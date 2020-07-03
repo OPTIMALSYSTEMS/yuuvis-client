@@ -93,7 +93,8 @@ export class ActionMenuComponent implements OnDestroy {
     this.loading = true;
     this.actionService.getActionsList(this.selection, this.viewContainerRef).subscribe(
       (actionsList) => {
-        this.actionLists.common = actionsList;
+        this.actionLists.common = actionsList.filter((actionListEntry) => actionListEntry.action.group === 'common');
+        this.actionLists.further = actionsList.filter((actionListEntry) => actionListEntry.action.group === 'further');
         this.loading = false;
       },
       (err) => {
@@ -131,7 +132,7 @@ export class ActionMenuComponent implements OnDestroy {
     const isSimpleAction = !!actionListEntry.action['run'];
     const isListAction = actionListEntry.action.hasOwnProperty('subActionComponents');
     const isComponentAction = actionListEntry.action.hasOwnProperty('component');
-    const isExternalComponentAction = actionListEntry.action.hasOwnProperty('extComponents');
+    const isExternalComponentAction = actionListEntry.action.hasOwnProperty('extComponent');
     const isSimpleActionOnly = isSimpleAction && !isListAction && !isComponentAction && !isExternalComponentAction;
 
     if (isSimpleAction) {
@@ -158,7 +159,7 @@ export class ActionMenuComponent implements OnDestroy {
       this.showActionComponent(componentAction.component, this.eoActionComponentAnchor, this.componentFactoryResolver, true);
     } else if (isExternalComponentAction) {
       const extComponentAction = actionListEntry.action as ExternalComponentAction;
-      this.showActionComponent(extComponentAction.extComponents, this.externalDialog, this.componentFactoryResolver, false);
+      this.showActionComponent(extComponentAction.extComponent, this.externalDialog, this.componentFactoryResolver, false);
     }
   }
 

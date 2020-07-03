@@ -6,8 +6,17 @@ import { BackendService } from '../backend/backend.service';
 import { AppCacheService } from '../cache/app-cache.service';
 import { Logger } from '../logger/logger';
 import { Utils } from './../../util/utils';
-import { ContentStreamAllowed, SecondaryObjectTypeField, SystemType } from './system.enum';
-import { ObjectType, ObjectTypeField, ObjectTypeGroup, SchemaResponse, SchemaResponseTypeDefinition, SystemDefinition } from './system.interface';
+import { BaseObjectTypeField, Classification, ContentStreamAllowed, InternalFieldType, SecondaryObjectTypeField, SystemType } from './system.enum';
+import {
+  ClassificationEntry,
+  ObjectType,
+  ObjectTypeField,
+  ObjectTypeGroup,
+  SchemaResponse,
+  SchemaResponseFieldDefinition,
+  SchemaResponseTypeDefinition,
+  SystemDefinition
+} from './system.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -117,7 +126,15 @@ export class SystemService {
 
     // ... and some secondary object type fields
     // TODO: get fields for SecondaryObjectTypeField from schema
-    const props: ObjectTypeField = { id: '', propertyType: 'string', description: '', cardinality: 'single', required: true, updatability: 'readwrite' };
+    const props: ObjectTypeField = {
+      id: '',
+      propertyType: 'string',
+      _internalType: 'string',
+      description: '',
+      cardinality: 'single',
+      required: true,
+      updatability: 'readwrite'
+    };
     const secondaryFields: ObjectTypeField[] = [
       { ...props, id: SecondaryObjectTypeField.TITLE },
       { ...props, id: SecondaryObjectTypeField.DESCRIPTION }
@@ -229,7 +246,17 @@ export class SystemService {
   private setSchema(schemaResponse: SchemaResponse, localizedResource: any) {
     const objectTypes: ObjectType[] = schemaResponse.objectTypes.map((ot: SchemaResponseTypeDefinition) => {
       const isFolder = ot.baseId === 'folder';
-      return {
+
+      // TODO: Remove once schema supports organization classification for base params
+      // map certain fields to organization type (fake it until you make it ;-)
+      const orgTypeFields = [BaseObjectTypeField.MODIFIED_BY, BaseObjectTypeField.CREATED_BY];
+      ot.fields.forEach((f) => {
+        if (orgTypeFields.includes(f.id)) {
+          f.classification = [Classification.STRING_ORGANIZATION];
+        }
+      });
+
+      const objectType: ObjectType = {
         id: ot.id,
         localNamespace: ot.localNamespace,
         description: ot.description,
@@ -237,8 +264,9 @@ export class SystemService {
         creatable: ot.creatable,
         contentStreamAllowed: isFolder ? ContentStreamAllowed.NOT_ALLOWED : ot.contentStreamAllowed,
         isFolder: isFolder,
-        fields: ot.fields
+        fields: ot.fields.map((f) => ({ ...f, _internalType: this.getInternalFormElementType(f, 'propertyType') }))
       };
+      return objectType;
     });
 
     this.system = {
@@ -249,6 +277,52 @@ export class SystemService {
     };
     this.appCache.setItem(this.STORAGE_KEY, this.system).subscribe();
     this.systemSource.next(this.system);
+  }
+
+  /**
+   * Generates an internal type for a given object type field.
+   * Adding this to a form element or object type field enables us to render forms
+   * based on object type fields in a more performant way. Otherwise we would
+   * have to evaluate the conditions for every form element on every digest cycle.
+   * @param field formElement from object type form model or object type field
+   * @typeProperty the property on the field input that represents its type
+   */
+  getInternalFormElementType(field: SchemaResponseFieldDefinition, typeProperty: string): string {
+    const classifications = this.getClassifications(field.classification);
+
+    if (field[typeProperty] === 'string' && classifications.has(Classification.STRING_REFERENCE)) {
+      return InternalFieldType.STRING_REFERENCE;
+    } else if (field[typeProperty] === 'string' && classifications.has(Classification.STRING_ORGANIZATION)) {
+      return InternalFieldType.STRING_ORGANIZATION;
+    } else {
+      // if there are no matching conditions just return the original type
+      return field[typeProperty];
+    }
+  }
+
+  /**
+   * Extract classifications from object type fields classification
+   * string. This string may contain more than one classification entry.
+   *
+   * Classification is a comma separated string that may contain additional
+   * properties related to on classification entry. Example:
+   *
+   * `id:reference[system:folder], email`
+   *
+   * @param classifications Object type fields classification property (schema)
+   */
+  getClassifications(classifications: string[]): Map<string, ClassificationEntry> {
+    const res = new Map<string, ClassificationEntry>();
+    if (classifications) {
+      classifications.forEach((c) => {
+        const matches: string[] = c.match(/^([^\[]*)(\[(.*)\])?$/);
+        res.set(matches[1], {
+          classification: matches[1],
+          options: matches[3] ? matches[3].split(',') : []
+        });
+      });
+    }
+    return res;
   }
 
   toFormElement(field: ObjectTypeField): any {

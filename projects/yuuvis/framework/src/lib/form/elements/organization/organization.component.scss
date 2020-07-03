@@ -1,0 +1,26 @@
+:host {
+  display: flex;
+  align-items: center;
+
+  &.inputDisabled {
+    ::ng-deep {
+      .ui-autocomplete-multiple-container.ui-inputtext {
+        cursor: default;
+      }
+      .ui-autocomplete-input-token {
+        display: none !important;
+      }
+    }
+  }
+
+  p-autocomplete {
+    flex: 1;
+  }
+
+  yuv-icon.classify {
+    width: 18px;
+    height: 18px;
+    padding: calc(var(--app-pane-padding) / 8);
+    color: var(--text-color-hint);
+  }
+}

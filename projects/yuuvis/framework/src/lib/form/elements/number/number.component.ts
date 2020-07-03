@@ -1,6 +1,6 @@
 import { Component, forwardRef, Input } from '@angular/core';
 import { ControlValueAccessor, FormControl, NG_VALIDATORS, NG_VALUE_ACCESSOR, Validator } from '@angular/forms';
-import { TranslateService, Utils } from '@yuuvis/core';
+import { Classification, TranslateService, Utils } from '@yuuvis/core';
 import { LocaleNumberPipe } from '../../../pipes/locale-number.pipe';
 import { FileSizePipe } from './../../../pipes/filesize.pipe';
 
@@ -67,7 +67,7 @@ export class NumberComponent implements ControlValueAccessor, Validator {
    */
   @Input()
   set grouping(val: boolean) {
-    this._grouping = val;
+    this._grouping = val ?? true;
   }
   get grouping(): boolean {
     return this._grouping;
@@ -104,7 +104,7 @@ export class NumberComponent implements ControlValueAccessor, Validator {
    * handled like file sizes (calculates differnt units)
    */
   @Input() set classification(classification: string) {
-    this.numberPipe = classification === 'filesize' ? new FileSizePipe(this.translate) : new LocaleNumberPipe(this.translate);
+    this.numberPipe = classification === Classification.NUMBER_FILESIZE ? new FileSizePipe(this.translate) : new LocaleNumberPipe(this.translate);
   }
 
   static betweenTwoNumbers(val: number, minVal: number, maxVal: number) {

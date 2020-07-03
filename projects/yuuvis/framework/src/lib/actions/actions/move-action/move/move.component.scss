@@ -1,0 +1,11 @@
+@import './../../../../../../../../../src/scss-shared/_mixins';
+
+.yuv-move {
+  padding: var(--app-pane-padding);
+
+  .form-buttons {
+    display: flex;
+    margin: var(--app-pane-padding);
+    justify-content: flex-end;
+  }
+}
