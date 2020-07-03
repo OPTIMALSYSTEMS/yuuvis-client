@@ -163,6 +163,7 @@ export class DatetimeComponent implements OnInit, ControlValueAccessor, Validato
   onMaskValueChange(event) {
     if (event === this._datePattern || event.length === 0) {
       this.value = null;
+      this.isValid = true;
       this.propagate();
     }
   }
