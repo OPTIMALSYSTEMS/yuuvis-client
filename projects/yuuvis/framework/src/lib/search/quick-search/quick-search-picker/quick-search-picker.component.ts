@@ -14,7 +14,8 @@ import { Selectable, SelectableGroup } from './../../../grouped-select/grouped-s
 export class QuickSearchPickerComponent {
   private _data: QuickSearchPickerData;
 
-  @Input() set data(data: QuickSearchPickerData) {
+  @Input()
+  set data(data: QuickSearchPickerData) {
     this._data = data;
     if (data) {
       this.multiselect = data.type === 'type';

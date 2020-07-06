@@ -6,9 +6,11 @@ import {
   DmsService,
   ObjectType,
   ObjectTypeGroup,
+  Sort,
   SystemService,
   SystemType,
-  TranslateService
+  TranslateService,
+  Utils
 } from '@yuuvis/core';
 import { Observable } from 'rxjs';
 import { takeUntilDestroy } from 'take-until-destroy';
@@ -159,7 +161,7 @@ export class ObjectCreateComponent implements OnDestroy {
     // in order to trigger change detection within grouped select component
     const agFiltered = [];
     const ag = this.context ? this.contextObjectTypeGroups : this.generalObjectTypeGroups;
-
+    ag.map((groupItem) => groupItem?.items.sort(Utils.sortValues('label', Sort.ASC)));
     if (this.files) {
       // if we got files we also need to disable items that do not support contents
       ag.forEach((g: SelectableGroup) => {
@@ -168,6 +170,9 @@ export class ObjectCreateComponent implements OnDestroy {
           items: g.items.map((i) => ({ ...i, disabled: this.files.length > 0 && i.value.contentStreamAllowed === ContentStreamAllowed.NOT_ALLOWED }))
         });
       });
+
+      console.log(agFiltered);
+
       this.availableObjectTypeGroups = agFiltered;
     } else {
       this.availableObjectTypeGroups = ag;
