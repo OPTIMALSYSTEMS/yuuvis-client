@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Sort, Utils } from '@yuuvis/core';
 import { Selectable, SelectableGroup } from './../../../grouped-select/grouped-select/grouped-select.interface';
 
 /**
@@ -18,6 +19,7 @@ export class QuickSearchPickerComponent {
     if (data) {
       this.multiselect = data.type === 'type';
       this.groups = data.items || [];
+      this.groups.map((groupItem) => groupItem?.items.sort(Utils.sortValues('label', Sort.ASC)));
 
       // switch (data.type) {
       //   case 'type': {
@@ -35,8 +37,8 @@ export class QuickSearchPickerComponent {
 
       if (data.selected) {
         this.selectedItems = [];
-        this.groups.forEach(g => {
-          g.items.forEach(i => {
+        this.groups.forEach((g) => {
+          g.items.forEach((i) => {
             if (this._data.selected.includes(i.id)) {
               this.selectedItems.push(i);
             }
@@ -58,7 +60,7 @@ export class QuickSearchPickerComponent {
   emitSelection() {
     switch (this._data.type) {
       case 'type': {
-        this.select.emit(this.selectedItems.map(i => i.value));
+        this.select.emit(this.selectedItems.map((i) => i.value));
         break;
       }
       case 'field': {
