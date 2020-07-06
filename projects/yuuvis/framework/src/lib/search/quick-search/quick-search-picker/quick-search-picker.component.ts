@@ -20,7 +20,7 @@ export class QuickSearchPickerComponent {
     if (data) {
       this.multiselect = data.type === 'type';
       this.groups = data.items || [];
-      this.groups.map((groupItem) => groupItem?.items.sort(Utils.sortValues('label', Sort.ASC)));
+      this.groups.map((groupItem) => groupItem?.items.sort(Utils.sortValues('label')).sort(Utils.sortValues('value.isFolder', Sort.DESC)));
 
       // switch (data.type) {
       //   case 'type': {
