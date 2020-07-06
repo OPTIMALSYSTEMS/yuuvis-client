@@ -170,9 +170,6 @@ export class ObjectCreateComponent implements OnDestroy {
           items: g.items.map((i) => ({ ...i, disabled: this.files.length > 0 && i.value.contentStreamAllowed === ContentStreamAllowed.NOT_ALLOWED }))
         });
       });
-
-      console.log(agFiltered);
-
       this.availableObjectTypeGroups = agFiltered;
     } else {
       this.availableObjectTypeGroups = ag;
