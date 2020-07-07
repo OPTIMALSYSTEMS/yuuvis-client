@@ -79,7 +79,8 @@ export class GroupedSelectComponent implements AfterViewInit, ControlValueAccess
   /**
    * Array of {@link SelectableGroup} items, that contain the actual {@link SelectableGroup}.
    */
-  @Input() set groups(groups: SelectableGroup[]) {
+  @Input()
+  set groups(groups: SelectableGroup[]) {
     this._groups = groups;
   }
   get groups() {
@@ -88,7 +89,8 @@ export class GroupedSelectComponent implements AfterViewInit, ControlValueAccess
   /**
    *  Whether or not to support selection of multiple items
    */
-  @Input() set multiple(m: boolean) {
+  @Input()
+  set multiple(m: boolean) {
     this._multiple = m;
   }
   get multiple() {
