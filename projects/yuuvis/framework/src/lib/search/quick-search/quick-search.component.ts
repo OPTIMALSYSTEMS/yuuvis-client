@@ -367,14 +367,14 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
     this.popoverService.open(this.tplValuePicker, popoverConfig, this.fieldSelectTrigger.nativeElement);
   }
 
-  onPickerResult(type: 'type' | 'field', res: ObjectType[] | ObjectTypeField, popoverRef?: PopoverRef) {
+  onPickerResult(type: 'type' | 'field', res: Selectable[], popoverRef?: PopoverRef) {
     switch (type) {
       case 'field': {
-        this.onObjectTypeFieldSelected(res as ObjectTypeField);
+        this.onObjectTypeFieldSelected(res[0].value as ObjectTypeField);
         break;
       }
       case 'type': {
-        this.onObjectTypesSelected(res as ObjectType[]);
+        this.onObjectTypesSelected(res.map((r) => r.value) as ObjectType[]);
         break;
       }
     }

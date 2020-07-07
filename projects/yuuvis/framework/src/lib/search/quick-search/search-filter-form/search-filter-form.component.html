@@ -1,0 +1,12 @@
+<ng-content></ng-content>
+<form class="extras" #extrasForm [formGroup]="searchFieldsForm" *ngIf="formFields.length">
+  <div class="condition" *ngFor="let key of searchFieldsForm?.controls | keys">
+    <div class="fe-chip">
+      <yuv-object-form-element [situation]="'SEARCH'" [inlineError]="true" [element]="searchFieldsForm.controls[key]"> </yuv-object-form-element>
+      <button *ngIf="!disabled" type="button" (click)="removeFieldEntry(key)">
+        <yuv-icon [icon]="'clear'"></yuv-icon>
+      </button>
+    </div>
+    <div class="operator">&</div>
+  </div>
+</form>

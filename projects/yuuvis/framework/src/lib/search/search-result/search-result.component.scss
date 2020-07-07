@@ -21,6 +21,7 @@ $yuv-result-header-height: 38px;
   }
 
   .table {
+    height: 100%;
     display: grid;
     grid-template-columns: 100%;
     grid-template-rows: 1fr auto;

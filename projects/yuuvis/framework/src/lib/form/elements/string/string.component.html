@@ -25,7 +25,7 @@
   [readonly]="readonly" (ngModelChange)="onValueChange($event)"></textarea>
 
 <div *ngIf="classify" class="classify">
-  <a href="{{classify.hrefPrefix + value}}"
+  <a href="{{classify.hrefPrefix + formatedValue}}"
     *ngIf="value && !validationErrors.length && (classify.hrefPrefix !== '' || !multiselect || value.length <= 1); else tplNoValue">
     <yuv-icon [icon]="classify.icon"></yuv-icon>
   </a>

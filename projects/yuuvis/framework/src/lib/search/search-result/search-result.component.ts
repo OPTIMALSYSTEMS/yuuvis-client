@@ -41,6 +41,7 @@ import { arrowLast, arrowNext, clear, listModeDefault, listModeGrid, listModeSim
   host: { class: 'yuv-search-result' }
 })
 export class SearchResultComponent implements OnDestroy {
+  private _originalQuery: SearchQuery;
   private _searchQuery: SearchQuery;
   private _columns: ColDef[];
   private _rows: any[];
@@ -73,6 +74,7 @@ export class SearchResultComponent implements OnDestroy {
    * Query to be executed by the component.
    */
   @Input() set query(searchQuery: SearchQuery) {
+    this._originalQuery = searchQuery && new SearchQuery(searchQuery.toQueryJson());
     this._searchQuery = searchQuery;
     if (searchQuery) {
       this.executeQuery(this.applyColumnConfig);
@@ -311,6 +313,12 @@ export class SearchResultComponent implements OnDestroy {
       this._searchQuery.from = 0;
       this.executeQuery();
     }
+  }
+
+  onFilterChanged(filterQuery: SearchQuery) {
+    this._searchQuery.types = filterQuery.types;
+    this._searchQuery.filters = filterQuery.filters;
+    this.executeQuery();
   }
 
   ngOnDestroy() {}

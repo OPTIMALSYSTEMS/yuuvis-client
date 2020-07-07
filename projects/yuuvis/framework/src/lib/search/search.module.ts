@@ -4,6 +4,7 @@ import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { TranslateModule } from '@yuuvis/core';
+import { AngularSplitModule } from 'angular-split';
 import { AutoCompleteModule } from 'primeng/autocomplete';
 import { OverlayPanelModule } from 'primeng/overlaypanel';
 import { YuvActionModule } from '../actions/action.module';
@@ -18,14 +19,26 @@ import { YuvPipesModule } from '../pipes/pipes.module';
 import { YuvPopoverModule } from '../popover/popover.module';
 import { QuickSearchPickerComponent } from './quick-search/quick-search-picker/quick-search-picker.component';
 import { QuickSearchComponent } from './quick-search/quick-search.component';
+import { QuickSearchService } from './quick-search/quick-search.service';
+import { SearchFilterConfigComponent } from './quick-search/search-filter-config/search-filter-config.component';
+import { SearchFilterFormComponent } from './quick-search/search-filter-form/search-filter-form.component';
+import { SearchFilterComponent } from './quick-search/search-filter/search-filter.component';
 import { SearchResultPanelComponent } from './search-result-panel/search-result-panel.component';
 import { SearchResultComponent } from './search-result/search-result.component';
 
-const searchComponents = [QuickSearchComponent, SearchResultComponent, SearchResultPanelComponent, QuickSearchPickerComponent];
+const components = [
+  QuickSearchComponent,
+  SearchResultComponent,
+  SearchResultPanelComponent,
+  QuickSearchPickerComponent,
+  SearchFilterComponent,
+  SearchFilterConfigComponent,
+  SearchFilterFormComponent
+];
 
 @NgModule({
-  declarations: [...searchComponents],
-  exports: [...searchComponents],
+  declarations: [...components],
+  exports: [...components],
   imports: [
     CommonModule,
     BrowserAnimationsModule,
@@ -44,7 +57,11 @@ const searchComponents = [QuickSearchComponent, SearchResultComponent, SearchRes
     OverlayPanelModule,
     YuvColumnConfigModule,
     YuvGroupedSelectModule,
-    A11yModule
-  ]
+    A11yModule,
+    AngularSplitModule
+  ],
+  providers: [QuickSearchService],
+  declarations: [...components],
+  exports: [...components]
 })
 export class YuvSearchModule {}
