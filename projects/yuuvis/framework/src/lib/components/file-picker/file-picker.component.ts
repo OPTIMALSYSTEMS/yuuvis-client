@@ -3,7 +3,12 @@ import { TranslateService } from '@yuuvis/core';
 import { Observable } from 'rxjs';
 import { FileSizePipe } from '../../pipes/filesize.pipe';
 import { NotificationService } from '../../services/notification/notification.service';
-
+/**
+ * Responsible for exporting and importing third-party files.
+ * @example
+ *   <yuv-file-picker [label]="'name.of.picker.button' | translate" [output]="'file'"
+      [multiple]="true" (nameOfSelectedFunction)="fileChosen($event)"></yuv-file-picker>
+ */
 @Component({
   selector: 'yuv-file-picker',
   templateUrl: './file-picker.component.html',
@@ -15,13 +20,28 @@ export class FilePickerComponent {
    * Label to be used for picker button
    */
   @Input() label: string;
+
+  /**
+   * Data type, wich can be accepted in your client
+   */
   @Input() accept: string;
+
+  /**
+   * Regulates multiple or single file selection
+   */
   @Input() multiple: boolean;
   /**
    * Maximum size of the file
    */
   @Input() maxSize: number;
+  /**
+   * Data type in output
+   */
   @Input() output: 'text' | 'dataurl' | 'arraybuffer' | 'file' = 'file';
+
+  /**
+   * Emittet when file has been selected.
+   */
   @Output() fileSelected = new EventEmitter<FileInputResult>();
 
   constructor(private notify: NotificationService, private renderer: Renderer2, private translate: TranslateService) {}
@@ -66,7 +86,7 @@ export class FilePickerComponent {
               this.fileSelected.emit(file);
             }
           }
-          read.subscribe(res => this.fileSelected.emit(res));
+          read.subscribe((res) => this.fileSelected.emit(res));
         }
       }
       this.fileInputEl.nativeElement.value = null;
@@ -74,13 +94,13 @@ export class FilePickerComponent {
   }
 
   private readAsText(blob: Blob): Observable<string> {
-    return new Observable(o => {
+    return new Observable((o) => {
       const myReader: FileReader = new FileReader();
-      myReader.onerror = err => {
+      myReader.onerror = (err) => {
         o.error(err);
         o.complete();
       };
-      myReader.onloadend = e => {
+      myReader.onloadend = (e) => {
         o.next(myReader.result as string);
         o.complete();
       };
@@ -89,13 +109,13 @@ export class FilePickerComponent {
   }
 
   private readAsDataUrl(blob: Blob): Observable<string> {
-    return new Observable(o => {
+    return new Observable((o) => {
       const myReader: FileReader = new FileReader();
-      myReader.onerror = err => {
+      myReader.onerror = (err) => {
         o.error(err);
         o.complete();
       };
-      myReader.onloadend = e => {
+      myReader.onloadend = (e) => {
         o.next(myReader.result as string);
         o.complete();
       };
@@ -104,13 +124,13 @@ export class FilePickerComponent {
   }
 
   private readAsArrayBuffer(blob: Blob): Observable<ArrayBuffer> {
-    return new Observable(o => {
+    return new Observable((o) => {
       const myReader: FileReader = new FileReader();
-      myReader.onerror = err => {
+      myReader.onerror = (err) => {
         o.error(err);
         o.complete();
       };
-      myReader.onloadend = e => {
+      myReader.onloadend = (e) => {
         o.next(myReader.result as ArrayBuffer);
         o.complete();
       };

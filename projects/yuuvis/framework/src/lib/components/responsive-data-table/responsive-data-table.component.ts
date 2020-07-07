@@ -24,7 +24,12 @@ export interface ResponsiveDataTableOptions {
 }
 
 /**
- * Responsive DataTable.
+ * Responsive DataTable to show the search results.
+ * @example
+ *     <yuv-responsive-data-table 
+            [breakpoint]="" [layoutOptionsKey]="layoutOptionsKey" (selectionChanged)="onSelectionChanged($event)"
+            (viewModeChanged)="onViewModeChanged.emit($event)" (sortChanged)="onSortChanged($event)">
+          </yuv-responsive-data-table>
  */
 @Component({
   selector: 'yuv-responsive-data-table',

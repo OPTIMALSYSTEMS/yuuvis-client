@@ -26,7 +26,7 @@ import { SearchFilterComponent } from './quick-search/search-filter/search-filte
 import { SearchResultPanelComponent } from './search-result-panel/search-result-panel.component';
 import { SearchResultComponent } from './search-result/search-result.component';
 
-const components = [
+const searchComponents = [
   QuickSearchComponent,
   SearchResultComponent,
   SearchResultPanelComponent,
@@ -59,7 +59,7 @@ const components = [
     AngularSplitModule
   ],
   providers: [QuickSearchService],
-  declarations: [...components],
-  exports: [...components]
+  declarations: [...searchComponents],
+  exports: [...searchComponents]
 })
 export class YuvSearchModule {}
