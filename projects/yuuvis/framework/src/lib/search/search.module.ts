@@ -37,8 +37,6 @@ const components = [
 ];
 
 @NgModule({
-  declarations: [...components],
-  exports: [...components],
   imports: [
     CommonModule,
     BrowserAnimationsModule,
