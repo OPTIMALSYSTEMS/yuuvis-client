@@ -53,14 +53,9 @@ export class SystemService {
     const grouped = this.groupBy(
       this.getObjectTypes(withLabels)
         .filter((ot) => !skipAbstract || ot.creatable)
-        .map((ot) => ({
-          ...ot,
-          group: this.getLocalizedResource(`${ot.id}_description`)
-        }))
+        .map((ot) => ({ ...ot, group: this.getLocalizedResource(`${ot.id}_description`) }))
         .sort(Utils.sortValues('label'))
-        .sort((x, y) => {
-          return x.isFolder === y.isFolder ? 0 : x.isFolder ? -1 : 1;
-        }),
+        .sort((x, y) => (x.isFolder === y.isFolder ? 0 : x.isFolder ? -1 : 1)),
       'group'
     );
 
