@@ -8,9 +8,7 @@ import { IconRegistryService } from '../../common/components/icon/service/iconRe
 import { clear } from '../../svg.generated';
 
 /**
- * Creates a modal user dialog after each ineraction user with a client
- * @example
- * <yuv-dialog></yuv-dialog>
+ * @ignore
  */
 @Component({
   selector: 'yuv-dialog',
@@ -25,13 +23,8 @@ export class DialogComponent implements OnDestroy {
   private parentId = '';
   contentStyle: any = { 'max-height': '100%' };
 
-  /**
-   * Provides dialog's title
-   */
   @Input() title: string;
-  /**
-   * Provides dialog's subtitle
-   */
+
   @Input() subtitle: string;
   @Input() styleClass = '';
 
