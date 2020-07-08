@@ -162,7 +162,8 @@ export class GroupedSelectComponent implements AfterViewInit, ControlValueAccess
   }
 
   itemSelected(item: SelectableInternal) {
-    this.selectedItems = this.singleSelect ? [item] : [...this.selectedItems.filter((i) => i.id !== item.id), item];
+    const selected = !this.isSelected(item);
+    this.selectedItems = this.singleSelect ? [item] : this.selectedItems.filter((i) => i.id !== item.id).concat(selected ? [item] : []);
     this.emit();
   }
 
