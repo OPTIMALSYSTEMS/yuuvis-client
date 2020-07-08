@@ -4,7 +4,10 @@ import { Observable } from 'rxjs';
 import { FileSizePipe } from '../../pipes/filesize.pipe';
 import { NotificationService } from '../../services/notification/notification.service';
 /**
- * Responsible for exporting and importing third-party files.
+ * Responsible for importing third-party files.
+ * 
+ * [Screenshot](../assets/images/yuv-file-picker.gif)
+ * 
  * @example
  *   <yuv-file-picker [label]="'name.of.picker.button' | translate" [output]="'file'"
       [multiple]="true" (nameOfSelectedFunction)="fileChosen($event)"></yuv-file-picker>

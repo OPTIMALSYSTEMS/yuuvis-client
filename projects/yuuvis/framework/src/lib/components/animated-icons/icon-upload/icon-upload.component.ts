@@ -4,6 +4,9 @@ import { Component, HostBinding, Input } from '@angular/core';
  * Upload icon used to visualize the process of downloading files to the client.
  * It becomes visible and active during and after downloading files.
  * The rest of the time the icon is not visible.
+ *
+ * [Screenshot](../assets/images/yuv-icon-upload.gif)
+ *
  * @example
  *  <yuv-icon-upload [active]="!(someFunction$ | async)"></yuv-icon-upload>
  */

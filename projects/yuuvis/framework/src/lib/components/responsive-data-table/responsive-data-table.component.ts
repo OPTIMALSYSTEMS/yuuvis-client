@@ -25,6 +25,9 @@ export interface ResponsiveDataTableOptions {
 
 /**
  * Responsive DataTable to show the search results.
+ * 
+ * [Screenshot](../assets/images/yuv-responsive-data-table.gif)
+ * 
  * @example
  *     <yuv-responsive-data-table 
             [breakpoint]="" [layoutOptionsKey]="layoutOptionsKey" (selectionChanged)="onSelectionChanged($event)"

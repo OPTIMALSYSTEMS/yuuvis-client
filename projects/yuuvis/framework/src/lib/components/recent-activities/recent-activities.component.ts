@@ -28,6 +28,8 @@ import { catchError, tap } from 'rxjs/operators';
  * If the component has an `id` attribute, the state of the component will be persisted. So make sure
  * to set up unique ids if you are using this component on more than one place within your application.
  * 
+ * [Screenshot](../assets/images/yuv-recent-activities.gif)
+ * 
  * @example
  *  <yuv-recent-activities id="some-id" (itemClick)="onItemClicked($event)" (showAll)="onShowAll($event)">
   </yuv-recent-activities>

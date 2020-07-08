@@ -1,8 +1,11 @@
 import { Component, Input, OnInit } from '@angular/core';
 /**
- * Creates an action menu bar for selected item.
+ * Creates a menu bar for selected items.
+ * 
+ * [Screenshot](../assets/images/yuv-action-menu-bar.gif)
+ * 
  * @example
- * <yuv-action-menu-bar class="actions"></uv-action-menu-bar>
+ * <yuv-action-menu-bar class="actions"></yuv-action-menu-bar>
 
  */
 @Component({

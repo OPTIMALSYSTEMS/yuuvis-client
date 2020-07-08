@@ -2,6 +2,9 @@ import { Component, Input } from '@angular/core';
 
 /**
  * Component rendering a dms object as a tile
+ * 
+ * [Screenshot](../assets/images/yuv-dms-object-tile.gif)
+ * 
  * @example
  *  <yuv-dms-object-tile [title]="i.title"  [description]="i.description" [objectTypeIcon]="i.objectTypeIcon" [objectTypeLabel]="i.objectTypeLabel"
     [date]="i.date" (click)="someFunction(argument, $event)"></yuv-dms-object-tile>

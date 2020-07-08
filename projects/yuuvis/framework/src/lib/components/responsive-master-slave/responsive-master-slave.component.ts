@@ -13,13 +13,15 @@ import { ResponsiveMasterSlaveOptions } from './responsive-master-slave.interfac
  * will control whether or not the slave pane is visible. Use `slaveClosed` event
  * callback to act upon the slave panel being closed (This should at least reset
  * `slaveActive` input to avoid inconsistancies).
- *
- ```html
- <yuv-responsive-master-slave [slaveActive]="..." (slaveClosed)="...">
+ * 
+ * [Screenshot](../assets/images/yuv-responsive-master-slave.gif)
+ * 
+ * @example
+ *  <yuv-responsive-master-slave [slaveActive]="..." (slaveClosed)="...">
     <... class="yuv-master"></...>
     <... class="yuv-slave"></...>
- </<yuv-responsive-master-slave>
- ```
+ </yuv-responsive-master-slave>
+
  */
 @Component({
   selector: 'yuv-responsive-master-slave',
@@ -58,19 +60,22 @@ export class ResponsiveMasterSlaveComponent implements OnDestroy {
   @HostBinding('class.yuv-responsive-master-slave') _hostClass = true;
   @HostBinding('class.slaveActive') _slaveActive: boolean;
 
+  private _layoutOptionsKey: string;
+
   /**
    * Providing a layout options key will enable the component to persist its layout settings
    * in relation to a host component. The key is basically a unique key for the host, which
    * will be used to store component specific settings using the layout service.
    */
-  private _layoutOptionsKey: string;
   @Input() set layoutOptionsKey(lok: string) {
     this._layoutOptionsKey = lok;
     this.layoutService.loadLayoutOptions(lok, 'yuv-responsive-master-slave').subscribe((o: ResponsiveMasterSlaveOptions) => {
       this.setDirection(o);
     });
   }
-
+  /**
+   * Control whether or not the slave pane is visible.
+   */
   @Input() set slaveActive(a: boolean) {
     this._slaveActive = !!a;
     this.visible.slave = this._slaveActive;
@@ -78,6 +83,12 @@ export class ResponsiveMasterSlaveComponent implements OnDestroy {
   get slaveActive() {
     return this._slaveActive;
   }
+
+  /**
+   * Emittet when the slave panel has been closed.
+   *
+   */
+
   @Output() slaveClosed = new EventEmitter();
 
   constructor(private screenService: ScreenService, private layoutService: LayoutService) {
