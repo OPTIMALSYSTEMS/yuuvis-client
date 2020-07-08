@@ -191,6 +191,14 @@ export class QuickSearchService {
     const filesizePipe = new FileSizePipe(this.translate);
     const key = 'yuv.framework.search.agg.time.';
     const timeRange: DynamicDate[] = ['today', 'yesterday', 'thisweek', 'thismonth', 'thisyear'];
+    const timeRangeDates: any[] = timeRange.map((range) => {
+      const from = this.datepickerService.getDateFromType(range, getLocaleFirstDayOfWeek(this.translate.currentLang));
+      const to =
+        range === 'thisyear' || range === 'thismonth'
+          ? new Date(from).setMonth(range === 'thismonth' ? new Date(from).getMonth() + 1 : 12) - 1
+          : new Date(from).setHours(24 * (range === 'thisweek' ? 7 : 1)) - 1;
+      return { from: new Date(from).toISOString(), to: new Date(to).toISOString(), range };
+    });
 
     const CREATION_DATE = availableObjectTypeFields.find((s) => s.id === BaseObjectTypeField.CREATION_DATE);
     const MODIFICATION_DATE = availableObjectTypeFields.find((s) => s.id === BaseObjectTypeField.MODIFICATION_DATE);
@@ -198,41 +206,22 @@ export class QuickSearchService {
     const LENGTH = availableObjectTypeFields.find((s) => s.id === ContentStreamField.LENGTH);
 
     return [
-      // {
-      //   id: 'custom',
-      //   label: 'Custom Filters',
-      //   items: this.availableObjectTypeFields.map((o) => ({ ...o, value: [new SearchFilter(o.id, undefined, undefined)] }))
-      // },
       CREATION_DATE && {
         id: 'created',
         label: CREATION_DATE.label,
-        items: timeRange.map((r) => ({
-          id: '__' + CREATION_DATE.id + '#' + r,
-          label: this.translate.instant(key + r),
-          value: [
-            new SearchFilter(
-              CREATION_DATE.id,
-              SearchFilter.OPERATOR.INTERVAL_INCLUDE_BOTH,
-              new Date(this.datepickerService.getDateFromType(r, getLocaleFirstDayOfWeek(this.translate.currentLang))).toISOString(),
-              new Date(this.datepickerService.getDateFromType('now', getLocaleFirstDayOfWeek(this.translate.currentLang))).toISOString()
-            )
-          ]
+        items: timeRangeDates.map(({ from, to, range }) => ({
+          id: '__' + CREATION_DATE.id + '#' + range,
+          label: this.translate.instant(key + range),
+          value: [new SearchFilter(CREATION_DATE.id, SearchFilter.OPERATOR.INTERVAL_INCLUDE_BOTH, from, to)]
         }))
       },
       MODIFICATION_DATE && {
-        id: 'created',
+        id: 'modified',
         label: MODIFICATION_DATE.label,
-        items: timeRange.map((r) => ({
-          id: '__' + MODIFICATION_DATE.id + '#' + r,
-          label: this.translate.instant(key + r),
-          value: [
-            new SearchFilter(
-              MODIFICATION_DATE.id,
-              SearchFilter.OPERATOR.INTERVAL_INCLUDE_BOTH,
-              new Date(this.datepickerService.getDateFromType(r, getLocaleFirstDayOfWeek(this.translate.currentLang))).toISOString(),
-              new Date(this.datepickerService.getDateFromType('now', getLocaleFirstDayOfWeek(this.translate.currentLang))).toISOString()
-            )
-          ]
+        items: timeRangeDates.map(({ from, to, range }) => ({
+          id: '__' + MODIFICATION_DATE.id + '#' + range,
+          label: this.translate.instant(key + range),
+          value: [new SearchFilter(MODIFICATION_DATE.id, SearchFilter.OPERATOR.INTERVAL_INCLUDE_BOTH, from, to)]
         }))
       },
       MIME_TYPE && {

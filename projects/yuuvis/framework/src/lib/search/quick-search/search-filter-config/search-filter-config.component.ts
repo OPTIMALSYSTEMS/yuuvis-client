@@ -147,6 +147,7 @@ export class SearchFilterConfigComponent implements OnInit {
       this.storedFilters = this.quickSearchService.loadFilters(storedFilters as any, this.availableObjectTypeFields);
       this.onVisibilityChange(true);
       this.notify.success('Filter was removed');
+      this.createNew();
     });
   }
 
