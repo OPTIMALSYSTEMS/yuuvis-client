@@ -41,9 +41,6 @@ pre[class*='language-'] {
   background-color: #fff;
 }
 
-.card-module {
-  min-height: 40px !important;
-}
 .navbar-default {
   background: var(--color-accent);
 }
