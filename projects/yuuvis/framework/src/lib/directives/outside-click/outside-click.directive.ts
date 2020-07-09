@@ -31,6 +31,10 @@ export class OutsideClickDirective implements OnDestroy {
 
   @Output() yuvOutsideClick = new EventEmitter();
 
+  /**
+   *
+   * @ignore
+   */
   constructor(private eventService: EventService, private _elementRef: ElementRef) {
     this.eventService
       .on(YuvEventType.DIALOG_STACK_CHANGED)

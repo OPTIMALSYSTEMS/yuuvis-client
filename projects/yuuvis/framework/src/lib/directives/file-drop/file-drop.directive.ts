@@ -81,6 +81,10 @@ export class FileDropDirective implements OnDestroy {
     this.fileDropService.clear();
   }
 
+  /**
+   *
+   *@ignore
+   */
   constructor(private elementRef: ElementRef, private cd: ChangeDetectorRef, private fileDropService: FileDropService, private renderer: Renderer2) {
     this.id = Utils.uuid();
     this.fileDropService.activeDropzone$.pipe(takeUntilDestroy(this)).subscribe((activeZoneId) => {

@@ -37,6 +37,10 @@ pre[class*='language-'] {
   font-weight: normal;
 }
 
+.card-module {
+  min-height: 40px !important;
+}
+
 .content section > table {
   background-color: #fff;
 }

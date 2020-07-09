@@ -19,7 +19,9 @@ import { IconRegistryService } from '../../common/components/icon/service/iconRe
 import { LayoutService } from '../../services/layout/layout.service';
 import { verticalSplit } from './../../svg.generated';
 /**
- * Responsive Split TabContainer + plugin support
+ * Responsive Split TabContainer + plugin support.
+ *
+ * [Screenshot](../assets/images/yuv-responsive-tab-container.gif)
  */
 @Component({
   selector: 'yuv-responsive-tab-container',
@@ -40,6 +42,13 @@ export class ResponsiveTabContainerComponent implements OnInit, AfterContentInit
    * will be used to store component specific settings using the layout service.
    */
   private _layoutOptionsKey: string;
+
+  /**
+   * Providing a layout options key will enable the component to persist its
+   * layout settings in relation to a host component.
+   * The key is basically a unique key for the host, which will be used to
+   * store component specific settings using the layout service.
+   */
   @Input() set layoutOptionsKey(lok: string) {
     this._layoutOptionsKey = lok;
     this.layoutService.loadLayoutOptions(lok, 'yuv-responsive-tab-container').subscribe((o) => {
@@ -53,6 +62,9 @@ export class ResponsiveTabContainerComponent implements OnInit, AfterContentInit
   @ViewChild('mainTabView', { static: true }) mainTabView: TabView;
   @ViewChildren('splitTabView') splitTabViews: QueryList<TabView>;
 
+  /**
+   * Emittet, when tabs have been changed.
+   */
   @Output() optionsChanged = new EventEmitter();
 
   allPanels: TabPanel[] = [];
