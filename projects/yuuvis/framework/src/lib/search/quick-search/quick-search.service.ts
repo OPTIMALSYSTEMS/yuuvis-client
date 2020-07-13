@@ -1,6 +1,7 @@
 import { getLocaleFirstDayOfWeek } from '@angular/common';
 import { Injectable } from '@angular/core';
 import {
+  AggregateResult,
   AppCacheService,
   BaseObjectTypeField,
   ContentStreamField,
@@ -8,6 +9,7 @@ import {
   ObjectTypeGroup,
   SearchFilter,
   SearchQuery,
+  SearchService,
   SystemService,
   TranslateService,
   UserService,
@@ -61,7 +63,8 @@ export class QuickSearchService {
     private systemService: SystemService,
     private datepickerService: DatepickerService,
     private appCacheService: AppCacheService,
-    private userService: UserService
+    private userService: UserService,
+    private searchService: SearchService
   ) {
     this.systemService.system$.subscribe((_) => {
       this.availableObjectTypes = this.systemService
@@ -86,6 +89,18 @@ export class QuickSearchService {
         }))
       }));
     });
+  }
+
+  getActiveTypes(query: SearchQuery) {
+    return this.searchService.aggregate(query, [BaseObjectTypeField.OBJECT_TYPE_ID]).pipe(
+      map((res: AggregateResult) => {
+        return res.aggregations && res.aggregations.length
+          ? res.aggregations[0].entries
+              .map((r) => ({ id: r.key, label: this.systemService.getLocalizedResource(`${r.key}_label`), count: r.count }))
+              .sort(Utils.sortValues('label'))
+          : [];
+      })
+    );
   }
 
   getAvailableObjectTypesFields(selectedTypes = []): Selectable[] {
