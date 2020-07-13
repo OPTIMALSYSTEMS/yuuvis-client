@@ -43,6 +43,18 @@
       </yuv-organization>
     </yuv-form-input>
 
+    <!-- STRING:CATALOG -->
+    <yuv-form-input *ngSwitchCase="'string:catalog'" [tag]="tag" [label]="formElementRef._eoFormElement.label"
+      [isNull]="isNull" [skipToggle]="skipToggle || situation !== 'SEARCH'" (onToggleLabel)="labelToggled($event)"
+      [required]="formElementRef._eoFormElement.required" [invalid]="errors">
+
+      <yuv-catalog [situation]="element._eoFormControlWrapper.situation"
+        [formControlName]="element._eoFormControlWrapper.controlName"
+        [classification]="formElementRef._eoFormElement.classification"
+        [readonly]="formElementRef._eoFormElement.readonly">
+      </yuv-catalog>
+    </yuv-form-input>
+
 
     <!-- BOOLEAN -->
     <yuv-form-input *ngSwitchCase="'boolean'" [tag]="tag" class="checkbox" [label]="formElementRef._eoFormElement.label"
