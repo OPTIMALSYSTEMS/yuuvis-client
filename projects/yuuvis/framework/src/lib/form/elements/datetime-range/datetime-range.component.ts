@@ -38,6 +38,10 @@ export class DatetimeRangeComponent implements OnInit, ControlValueAccessor, Val
    * Enables setting time as well (default: false)
    */
   @Input() withTime: boolean;
+  /**
+   * Will prevent the input from being changed (default: false)
+   */
+  @Input() readonly: boolean;
 
   rangeForm: FormGroup;
   value: RangeValue;
@@ -73,7 +77,7 @@ export class DatetimeRangeComponent implements OnInit, ControlValueAccessor, Val
 
   writeValue(value: RangeValue): void {
     if (value && value instanceof RangeValue && (value.firstValue || value.secondValue)) {
-      let match = this.availableSearchOptions.find(o => o.value === value.operator);
+      let match = this.availableSearchOptions.find((o) => o.value === value.operator);
       this.searchOption = match ? match.value : this.availableSearchOptions[0].value;
 
       this.value = value;
