@@ -1,9 +1,16 @@
-import {Component, ElementRef, Input, OnDestroy, Renderer2} from '@angular/core';
-import {Classification, TranslateService} from '@yuuvis/core';
-import {takeUntilDestroy} from 'take-until-destroy';
-import {ObjectFormTranslateService} from '../object-form-translate.service';
-import {ObjectFormControlWrapper} from '../object-form.interface';
-import {Situation} from './../object-form.situation';
+import { Component, ElementRef, Input, OnDestroy, Renderer2 } from '@angular/core';
+import { Classification, TranslateService } from '@yuuvis/core';
+import { takeUntilDestroy } from 'take-until-destroy';
+import { ObjectFormTranslateService } from '../object-form-translate.service';
+import { ObjectFormControlWrapper } from '../object-form.interface';
+import { Situation } from './../object-form.situation';
+
+/**
+ * Component rendering a single form element.
+ *
+ * @example
+ *<yuv-object-form-element [element]="someForm.controls[key]" [situation]="situation"></yuv-object-form-element>
+ */
 
 @Component({
   selector: 'yuv-object-form-element',
@@ -20,11 +27,25 @@ export class ObjectFormElementComponent implements OnDestroy {
     title: string;
   };
 
+  /**
+   * Form situation, if not set default will be 'EDIT'
+   */
   @Input() situation: string;
+
+  /**
+   * set a label toggle class to form
+   */
   @Input() skipToggle: boolean;
+
+  /**
+   * Provide an error message if the required field was not filled.
+   */
   @Input() inlineError: boolean;
 
-  // element is supposed to be a special FormGroup holding a single form element
+  /**
+   *  Element is supposed to be a special FormGroup holding a single form element.
+   */
+
   @Input('element')
   set elementSetter(el: ObjectFormControlWrapper) {
     if (el) {
@@ -51,7 +72,7 @@ export class ObjectFormElementComponent implements OnDestroy {
    * https://wiki.optimal-systems.de/display/PM/Status+yuuvis+Momentum+-+Flex+client
    */
   private setGrouping(formElement) {
-    return {...formElement, grouping: !!formElement?.classification?.includes(Classification.NUMBER_DIGIT)};
+    return { ...formElement, grouping: !!formElement?.classification?.includes(Classification.NUMBER_DIGIT) };
   }
 
   labelToggled(toggled: boolean) {

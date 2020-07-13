@@ -27,6 +27,8 @@ import { Breadcrumb, CreateState, CurrentStep, Labels, ObjectTypePreset } from '
 /**
  * This component is basically a wizard for creating new dms objects.
  *
+ * [Screenshot](../assets/images/yuv-object-create.gif)
+ *
  * @example
  * <yuv-object-create></yuv-object-create>
  */

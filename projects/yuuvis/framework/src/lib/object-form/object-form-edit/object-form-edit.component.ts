@@ -6,6 +6,15 @@ import { FormStatusChangedEvent, ObjectFormOptions } from './../object-form.inte
 import { Situation } from './../object-form.situation';
 import { ObjectFormComponent } from './../object-form/object-form.component';
 
+/**
+ * Component rendering a form for editing an index data of the dms object.
+ *
+ * [Screenshot](../assets/images/yuv-object-form-edit.gif)
+ *
+ * @example
+ * <yuv-object-form-edit [dmsObject]="dmsObject" (indexDataSaved)="onIndexDataSaved($event)"></yuv-object-form-edit>
+ */
+
 @Component({
   selector: 'yuv-object-form-edit',
   templateUrl: './object-form-edit.component.html',
@@ -22,6 +31,9 @@ export class ObjectFormEditComponent implements OnDestroy {
   @ViewChild(ObjectFormComponent) objectForm: ObjectFormComponent;
 
   @Input() formDisabled: boolean;
+  /**
+   * DmsObject to show the details for.
+   */
   @Input('dmsObject')
   set dmsObject(dmsObject: DmsObject) {
     if (dmsObject && (!this._dmsObject || this._dmsObject.id !== dmsObject.id)) {

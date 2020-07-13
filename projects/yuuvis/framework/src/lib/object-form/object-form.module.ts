@@ -13,6 +13,11 @@ import { ObjectFormElementComponent } from './object-form-element/object-form-el
 import { ObjectFormGroupComponent } from './object-form-group/object-form-group.component';
 import { ObjectFormComponent } from './object-form/object-form.component';
 
+/**
+ * Module provides components for creating for a dms object.
+ * These include: object form component, object form edit component and object form element component.
+ */
+
 @NgModule({
   declarations: [ObjectFormComponent, ObjectFormElementComponent, ObjectFormGroupComponent, ObjectFormEditComponent],
   imports: [

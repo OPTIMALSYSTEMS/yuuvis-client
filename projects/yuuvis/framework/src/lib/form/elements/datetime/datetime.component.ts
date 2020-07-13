@@ -14,6 +14,8 @@ import { datepicker } from '../../../svg.generated';
  *
  * Implements `ControlValueAccessor` so it can be used within Angular forms.
  *
+ *  [Screenshot](../assets/images/yuv-datetime.gif)
+ *
  * @example
  * <yuv-datetime [pickerTitle]="'Please select a date'"></yuv-datetime>
  *

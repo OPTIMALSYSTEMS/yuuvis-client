@@ -3,6 +3,9 @@ import { DmsService, SystemType } from '@yuuvis/core';
 import { ReferenceEntry } from '../../../../form/elements/reference/reference.interface';
 import { ActionComponent } from './../../../interfaces/action-component.interface';
 
+/**
+ * @ignore
+ */
 @Component({
   selector: 'yuv-move',
   templateUrl: './move.component.html',

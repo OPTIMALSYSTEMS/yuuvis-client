@@ -22,6 +22,8 @@ import { Situation } from './../object-form.situation';
  * the their situation. It also has the ability to run form scripts that interact
  * with the form elements based on events triggered when values change.
  *
+ *  [Screenshot](../assets/images/yuv-object-form.gif)
+ *
  * @example
  * <yuv-object-form [formOptions]="options" (statusChanged)="check($event)"></yuv-object-form>
  */
