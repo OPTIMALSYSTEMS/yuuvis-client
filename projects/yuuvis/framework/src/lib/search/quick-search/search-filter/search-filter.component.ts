@@ -86,7 +86,7 @@ export class SearchFilterComponent implements OnInit {
     this.availableTypeGroups = [
       {
         id: 'types',
-        label: 'Object Types',
+        label: this.translate.instant('yuv.framework.search.filter.object.types'),
         items: types
       }
     ];
@@ -104,12 +104,12 @@ export class SearchFilterComponent implements OnInit {
       this.availableFilterGroups = [
         {
           id: 'active',
-          label: 'Active Filters',
+          label: this.translate.instant('yuv.framework.search.filter.active.filters'),
           items: this.activeFilters
         },
         {
           id: 'stored',
-          label: '★ Stored Filters',
+          label: this.translate.instant('yuv.framework.search.filter.stored.filters'),
           items: this.storedFilters.filter((f) => visible.includes(f.id))
         }
       ];
