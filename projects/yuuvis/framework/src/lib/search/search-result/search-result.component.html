@@ -1,62 +1,72 @@
 <div class="content grid-container" [ngClass]="{ 'has-query': !!query }">
+  <as-split>
+    <as-split-area [size]="25">
+      <yuv-search-filter [query]="query" (filterChange)="onFilterChanged($event)">
+      </yuv-search-filter>
+    </as-split-area>
 
-  <div class="table" [yuvBusyOverlay]="busy">
-    <ng-template #tplEmpty>
-      <div class="empty" *ngIf="query" translate>yuv.framework.search-result.empty</div>
-    </ng-template>
+    <as-split-area [size]="75">
+      <div class="table" [yuvBusyOverlay]="busy">
+        <ng-template #tplEmpty>
+          <div class="empty" *ngIf="query" translate>yuv.framework.search-result.empty</div>
+        </ng-template>
 
-    <ng-container *ngIf="tableData?.rows.length; else tplEmpty">
-      <yuv-responsive-data-table yuvOfflineDisabled #dataTable class="data-table" [data]="tableData" [breakpoint]="400"
-        [layoutOptionsKey]="layoutOptionsKey" (selectionChanged)="onSelectionChanged($event)"
-        (viewModeChanged)="viewModeChanged.emit($event)" (sortChanged)="onSortChanged($event)"
-        (rowDoubleClicked)="rowDoubleClicked.emit($event)">
-      </yuv-responsive-data-table>
+        <ng-container *ngIf="tableData?.rows.length; else tplEmpty">
 
-      <div class="footer" yuvOfflineDisabled>
+          <yuv-responsive-data-table yuvOfflineDisabled #dataTable class="data-table" [data]="tableData"
+            [breakpoint]="400" [layoutOptionsKey]="layoutOptionsKey" (selectionChanged)="onSelectionChanged($event)"
+            (viewModeChanged)="viewModeChanged.emit($event)" (sortChanged)="onSortChanged($event)"
+            (rowDoubleClicked)="rowDoubleClicked.emit($event)">
+          </yuv-responsive-data-table>
 
-        <div class="footer_wrapper">
-          <div class="status">
-            {{ 'yuv.framework.search-result.footer.hits' | translate: { count: totalNumItems } }}
+          <div class="footer" yuvOfflineDisabled>
+
+            <div class="footer_wrapper">
+              <div class="status">
+                {{ 'yuv.framework.search-result.footer.hits' | translate: { count: totalNumItems } }}
+              </div>
+
+              <!-- list mode settings -->
+              <div class="mode">
+                <yuv-icon class="mode" icon="listModeDefault"
+                  title="{{ 'yuv.framework.search-result.footer.config.mode.default' | translate}}"
+                  [ngClass]="{'current': dataTable?.currentViewMode === 'standard'}" (click)="viewMode = 'standard'">
+                </yuv-icon>
+                <yuv-icon class="mode" icon="listModeGrid"
+                  title="{{ 'yuv.framework.search-result.footer.config.mode.grid' | translate}}"
+                  [ngClass]="{'current': dataTable?.currentViewMode === 'grid'}" (click)="viewMode = 'grid'"></yuv-icon>
+                <yuv-icon class="mode" icon="listModeSimple"
+                  title="{{ 'yuv.framework.search-result.footer.config.mode.horizontal' | translate}}"
+                  [ngClass]="{'current': dataTable?.currentViewMode === 'horizontal'}"
+                  (click)="viewMode = 'horizontal'">
+                </yuv-icon>
+              </div>
+
+              <!-- paging controls -->
+              <div class="controls" *ngIf="hasPages">
+                <button [disabled]="pagination.page === 0" (click)="goToPage(1)">
+                  <yuv-icon class="first" [icon]="'arrowLast'"></yuv-icon>
+                </button>
+                <button [disabled]="pagination.page === 0" (click)="goToPage(pagination.page - 1)">
+                  <yuv-icon class="prev" [icon]="'arrowNext'"></yuv-icon>
+                </button>
+
+                <form (ngSubmit)="onPagingFormSubmit()" [formGroup]="pagingForm">
+                  <input type="text" formControlName="page" />
+                  <div>{{ pagination.pages }}</div>
+                </form>
+
+                <button [disabled]="pagination.page === pagination.pages" (click)="goToPage(pagination.page + 1)">
+                  <yuv-icon class="next" [icon]="'arrowNext'"></yuv-icon>
+                </button>
+                <button [disabled]="pagination.page === pagination.pages" (click)="goToPage(pagination.pages)">
+                  <yuv-icon class="last" [icon]="'arrowLast'"></yuv-icon>
+                </button>
+              </div>
+            </div>
           </div>
-
-          <!-- list mode settings -->
-          <div class="mode">
-            <yuv-icon class="mode" icon="listModeDefault"
-              title="{{ 'yuv.framework.search-result.footer.config.mode.default' | translate}}"
-              [ngClass]="{'current': dataTable?.currentViewMode === 'standard'}" (click)="viewMode = 'standard'">
-            </yuv-icon>
-            <yuv-icon class="mode" icon="listModeGrid"
-              title="{{ 'yuv.framework.search-result.footer.config.mode.grid' | translate}}"
-              [ngClass]="{'current': dataTable?.currentViewMode === 'grid'}" (click)="viewMode = 'grid'"></yuv-icon>
-            <yuv-icon class="mode" icon="listModeSimple"
-              title="{{ 'yuv.framework.search-result.footer.config.mode.horizontal' | translate}}"
-              [ngClass]="{'current': dataTable?.currentViewMode === 'horizontal'}" (click)="viewMode = 'horizontal'">
-            </yuv-icon>
-          </div>
-
-          <!-- paging controls -->
-          <div class="controls" *ngIf="hasPages">
-            <button [disabled]="pagination.page === 0" (click)="goToPage(1)">
-              <yuv-icon class="first" [icon]="'arrowLast'"></yuv-icon>
-            </button>
-            <button [disabled]="pagination.page === 0" (click)="goToPage(pagination.page - 1)">
-              <yuv-icon class="prev" [icon]="'arrowNext'"></yuv-icon>
-            </button>
-
-            <form (ngSubmit)="onPagingFormSubmit()" [formGroup]="pagingForm">
-              <input type="text" formControlName="page" />
-              <div>{{ pagination.pages }}</div>
-            </form>
-
-            <button [disabled]="pagination.page === pagination.pages" (click)="goToPage(pagination.page + 1)">
-              <yuv-icon class="next" [icon]="'arrowNext'"></yuv-icon>
-            </button>
-            <button [disabled]="pagination.page === pagination.pages" (click)="goToPage(pagination.pages)">
-              <yuv-icon class="last" [icon]="'arrowLast'"></yuv-icon>
-            </button>
-          </div>
-        </div>
+        </ng-container>
       </div>
-    </ng-container>
-  </div>
+    </as-split-area>
+  </as-split>
 </div>

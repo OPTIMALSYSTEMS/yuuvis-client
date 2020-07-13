@@ -34,6 +34,15 @@ export const numberElements = [
     maxValue: 155,
     required: false
   },
+  {
+    readonly: false,
+    name: 'integer:five',
+    label: 'integer digit',
+    description: 'integer classification digit',
+    type: 'integer',
+    classification: ['digit'],
+    required: false
+  },
 
   // decimals
   {
@@ -69,5 +78,14 @@ export const numberElements = [
     minValue: 10.11,
     maxValue: 155.55,
     required: false
-  }
+  },
+  {
+    readonly: false,
+    name: 'decimal:five',
+    label: 'decimal digit',
+    description: 'decimal classification digit',
+    type: 'decimal',
+    classification: ['digit'],
+    required: false
+  },
 ];

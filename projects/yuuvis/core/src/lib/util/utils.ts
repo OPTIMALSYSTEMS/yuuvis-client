@@ -1,7 +1,7 @@
 import { NavigationExtras, Router } from '@angular/router';
 import { EMPTY as observableEmpty, throwError as observableThrowError } from 'rxjs';
 import { YuvError } from '../model/yuv-error.model';
-import { Sort } from './utils.helper.enum';
+import { FormatedMailTo, Sort } from './utils.helper.enum';
 
 export class Utils {
   /**
@@ -13,10 +13,21 @@ export class Utils {
    */
   public static buildUri(uri: string, params: {}): string {
     const q = Object.keys(params)
-      .filter(k => !Utils.isEmptyOrFalse(params[k]))
-      .map(k => k + '=' + encodeURIComponent(typeof params[k] === 'object' ? JSON.stringify(params[k]) : params[k]))
+      .filter((k) => !Utils.isEmptyOrFalse(params[k]))
+      .map((k) => k + '=' + encodeURIComponent(typeof params[k] === 'object' ? JSON.stringify(params[k]) : params[k]))
       .join('&');
     return uri + (q ? '?' + q : '');
+  }
+
+  public static formatMailTo(value: FormatedMailTo, isEmail: boolean): FormatedMailTo {
+    if (isEmail && !!value) {
+      if (Array.isArray(value)) {
+        return value.join().replace(/,/g, '; ');
+      } else {
+        return value.replace(/,/g, '; ');
+      }
+    }
+    return value;
   }
 
   /**
@@ -159,7 +170,7 @@ export class Utils {
    * @returns (error) => Observable<never>
    */
   public static empty(callback?: (error) => any) {
-    const f = error => {
+    const f = (error) => {
       return observableEmpty;
     };
     return f;
@@ -175,7 +186,7 @@ export class Utils {
    * @param message
    */
   public static catchSkip(skipNotification?: (error) => any, callback?: (error) => any, name?: string, message?: string) {
-    const f = error => {
+    const f = (error) => {
       const _error = callback && callback(error);
       const _skipNotification = skipNotification && skipNotification(error);
       return observableThrowError(new YuvError(_error instanceof Error ? _error : error, name, message, _skipNotification));
@@ -194,7 +205,7 @@ export class Utils {
    * @return (error) => Observable<never>
    */
   public static catch(callback?: (error) => any, name?: string, message?: string, skipNotification?: boolean) {
-    const f = error => {
+    const f = (error) => {
       const _error = callback && callback(error);
       return observableThrowError(new YuvError(_error instanceof Error ? _error : error, name, message, skipNotification));
     };
@@ -212,7 +223,7 @@ export class Utils {
    * @return (error) => void
    */
   public static throw(callback?: (error) => any, name?: string, message?: string, skipNotification?: boolean) {
-    const f = error => {
+    const f = (error) => {
       const _error = callback && callback(error);
       throw new YuvError(_error instanceof Error ? _error : error, name, message, skipNotification);
     };
@@ -301,7 +312,7 @@ export class Utils {
       "'": '&#39;',
       '/': '&#x2F;'
     };
-    return String(str).replace(/[&<>"'\/]/g, s => entityMap[s]);
+    return String(str).replace(/[&<>"'\/]/g, (s) => entityMap[s]);
   }
 
   public static arrayToObject(arr = [], keyProperty?: string | ((o: any) => string), valueProperty?: string | ((o: any) => any)) {

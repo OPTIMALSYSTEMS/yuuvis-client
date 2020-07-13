@@ -1,9 +1,10 @@
 import { Component, ElementRef, forwardRef, Input } from '@angular/core';
 import { ControlValueAccessor, FormControl, NG_VALIDATORS, NG_VALUE_ACCESSOR, Validator } from '@angular/forms';
-import { Classification, Utils } from '@yuuvis/core';
+import { Classification, ClassificationPrefix, FormatedMailTo, Utils } from '@yuuvis/core';
 import { IconRegistryService } from '../../../common/components/icon/service/iconRegistry.service';
 import { envelope, globe, phone } from '../../../svg.generated';
 import { Situation } from './../../../object-form/object-form.situation';
+
 /**
  * Creates form input for strings. Based on the input values different kinds of inputs will be generated.
  *
@@ -67,23 +68,24 @@ export class StringComponent implements ControlValueAccessor, Validator {
    * is a valid email address) and `url` (validates and creates a link
    * to an URL typed into the form element).
    */
-  @Input() set classification(c: string[]) {
+  @Input()
+  set classification(c: string[]) {
     this._classification = c;
     if (c && c.length) {
       if (c.includes(Classification.STRING_EMAIL)) {
         this.classify = {
-          hrefPrefix: 'mailto:',
-          icon: 'envelope'
+          hrefPrefix: ClassificationPrefix.EMAIL,
+          icon: ClassificationPrefix.EMAIL_ICON
         };
       } else if (c.includes(Classification.STRING_URL)) {
         this.classify = {
-          hrefPrefix: '',
-          icon: 'globe'
+          hrefPrefix: ClassificationPrefix.URL,
+          icon: ClassificationPrefix.URL_ICON
         };
       } else if (c.includes(Classification.STRING_PHONE)) {
         this.classify = {
-          hrefPrefix: 'tel:',
-          icon: 'phone'
+          hrefPrefix: ClassificationPrefix.PHONE,
+          icon: ClassificationPrefix.PHONE_ICON
         };
       }
     }
@@ -112,6 +114,7 @@ export class StringComponent implements ControlValueAccessor, Validator {
 
   // model value
   value;
+  formatedValue: FormatedMailTo;
   valid: boolean;
   validationErrors = [];
   classify: { hrefPrefix: string; icon: string };
@@ -128,6 +131,7 @@ export class StringComponent implements ControlValueAccessor, Validator {
   }
 
   writeValue(value: any): void {
+    this.formatedValue = Utils.formatMailTo(value, this.classify?.hrefPrefix === ClassificationPrefix.EMAIL);
     this.value = value || null;
   }
 
@@ -182,6 +186,8 @@ export class StringComponent implements ControlValueAccessor, Validator {
       // Setting maxEntryCountIfInvalid to the actual length of the value array to prevent the user to add more entries.
       this.maxEntryCountIfInvalid = this.value.length;
     }
+
+    this.formatedValue = Utils.formatMailTo(val, this.classify?.hrefPrefix === ClassificationPrefix.EMAIL);
     this.propagate();
   }
 
