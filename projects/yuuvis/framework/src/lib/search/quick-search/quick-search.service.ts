@@ -1,6 +1,7 @@
 import { getLocaleFirstDayOfWeek } from '@angular/common';
 import { Injectable } from '@angular/core';
 import {
+  AggregateResult,
   AppCacheService,
   BaseObjectTypeField,
   ContentStreamField,
@@ -8,8 +9,10 @@ import {
   ObjectTypeGroup,
   SearchFilter,
   SearchQuery,
+  SearchService,
   SystemService,
   TranslateService,
+  UserService,
   Utils
 } from '@yuuvis/core';
 import { Observable, of } from 'rxjs';
@@ -59,7 +62,9 @@ export class QuickSearchService {
     public translate: TranslateService,
     private systemService: SystemService,
     private datepickerService: DatepickerService,
-    private appCacheService: AppCacheService
+    private appCacheService: AppCacheService,
+    private userService: UserService,
+    private searchService: SearchService
   ) {
     this.systemService.system$.subscribe((_) => {
       this.availableObjectTypes = this.systemService
@@ -84,6 +89,18 @@ export class QuickSearchService {
         }))
       }));
     });
+  }
+
+  getActiveTypes(query: SearchQuery) {
+    return this.searchService.aggregate(query, [BaseObjectTypeField.OBJECT_TYPE_ID]).pipe(
+      map((res: AggregateResult) => {
+        return res.aggregations && res.aggregations.length
+          ? res.aggregations[0].entries
+              .map((r) => ({ id: r.key, label: this.systemService.getLocalizedResource(`${r.key}_label`), count: r.count }))
+              .sort(Utils.sortValues('label'))
+          : [];
+      })
+    );
   }
 
   getAvailableObjectTypesFields(selectedTypes = []): Selectable[] {
@@ -131,11 +148,16 @@ export class QuickSearchService {
   }
 
   loadFiltersVisibility() {
-    return this.appCacheService.getItem(this.STORAGE_KEY_FILTERS_VISIBLE).pipe(tap((f) => (this.filtersVisibility = f || [])));
+    return this.userService.getSettings(this.STORAGE_KEY_FILTERS_VISIBLE).pipe(
+      // return this.appCacheService.getItem(this.STORAGE_KEY_FILTERS_VISIBLE).pipe(
+      tap((f) => (this.filtersVisibility = (f && f.visible) || [])),
+      map((f) => this.filters && f.visible)
+    );
   }
 
   loadStoredFilters(store?: Observable<any>) {
-    return (store || this.appCacheService.getItem(this.STORAGE_KEY_FILTERS)).pipe(
+    return (store || this.userService.getSettings(this.STORAGE_KEY_FILTERS)).pipe(
+      // return (store || this.appCacheService.getItem(this.STORAGE_KEY_FILTERS)).pipe(
       tap((f) => (this.filters = f || {})),
       map(() => Object.values(this.filters).map((s: any) => ({ ...s, value: s.value.map((v) => this.parseSearchFilter(v)) })))
     );
@@ -162,20 +184,25 @@ export class QuickSearchService {
 
   saveFiltersVisibility(ids: string[]) {
     this.filtersVisibility = [...ids];
-    this.appCacheService.setItem(this.STORAGE_KEY_FILTERS_VISIBLE, this.filtersVisibility).subscribe();
+    this.userService.saveSettings(this.STORAGE_KEY_FILTERS_VISIBLE, { visible: this.filtersVisibility }).subscribe();
+    // this.appCacheService.setItem(this.STORAGE_KEY_FILTERS_VISIBLE, { visible: this.filtersVisibility }).subscribe();
     return of(this.filtersVisibility);
+  }
+
+  saveFilters(filters = this.filters) {
+    this.userService.saveSettings(this.STORAGE_KEY_FILTERS, filters).subscribe();
+    // this.appCacheService.setItem(this.STORAGE_KEY_FILTERS, filters).subscribe();
+    return this.loadStoredFilters(of(filters));
   }
 
   saveFilter(item: Selectable) {
     this.filters[item.id] = { ...item, value: item.value.map((v) => v.toString()) };
-    this.appCacheService.setItem(this.STORAGE_KEY_FILTERS, this.filters).subscribe();
-    return this.loadStoredFilters(of(this.filters));
+    return this.saveFilters();
   }
 
   removeFilter(item: Selectable) {
     delete this.filters[item.id];
-    this.appCacheService.setItem(this.STORAGE_KEY_FILTERS, this.filters).subscribe();
-    return this.loadStoredFilters(of(this.filters));
+    return this.saveFilters();
   }
 
   getDefaultFiltersList(availableObjectTypeFields: Selectable[]) {

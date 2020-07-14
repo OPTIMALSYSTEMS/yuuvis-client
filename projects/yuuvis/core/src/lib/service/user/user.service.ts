@@ -127,4 +127,12 @@ export class UserService {
   logout(): void {
     (window as any).location.href = '/logout';
   }
+
+  getSettings(section: string): Observable<any> {
+    return this.backend.get('/user/settings/' + section);
+  }
+
+  saveSettings(section: string, data: any): Observable<any> {
+    return this.backend.post('/user/settings/' + section, data);
+  }
 }

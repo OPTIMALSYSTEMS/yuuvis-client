@@ -4,8 +4,9 @@
     [precision]="precision" [grouping]="grouping" [pattern]="pattern" formControlName="numberValueFrom"
     [classification]="classification" [minValue]="minValue" [maxValue]="maxValue"></yuv-number>
 
-  <p-dropdown class="no-trigger" [styleClass]="'range'" [(ngModel)]="searchOption" (ngModelChange)="onValueChange()"
-    [ngModelOptions]="{standalone: true}" [options]="availableSearchOptions"></p-dropdown>
+  <p-dropdown [readonly]="readonly" class="no-trigger" [styleClass]="'range'" [(ngModel)]="searchOption"
+    (ngModelChange)="onValueChange()" [ngModelOptions]="{standalone: true}" [options]="availableSearchOptions">
+  </p-dropdown>
 
   <yuv-number [scale]="scale" [readonly]="readonly" [precision]="precision" [grouping]="grouping" [pattern]="pattern"
     formControlName="numberValue" [classification]="classification" [minValue]="minValue" [maxValue]="maxValue">
