@@ -315,7 +315,7 @@ export class SystemService {
         const matches: string[] = c.match(/^([^\[]*)(\[(.*)\])?$/);
         res.set(matches[1], {
           classification: matches[1],
-          options: matches[3] ? matches[3].split(',') : []
+          options: matches[3] ? matches[3].split(',').map((o) => o.trim()) : []
         });
       });
     }

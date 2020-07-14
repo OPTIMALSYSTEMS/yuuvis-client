@@ -1,1 +1,3 @@
-<p-dropdown [options]="_options" [(ngModel)]="value"></p-dropdown>
+<p-dropdown [options]="_options" placeholder=" " (ngModelChange)="onChange($event)" [readonly]="readonly"
+    [showClear]="true" [(ngModel)]="value">
+</p-dropdown>
