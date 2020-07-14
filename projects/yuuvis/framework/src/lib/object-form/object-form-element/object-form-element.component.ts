@@ -42,10 +42,13 @@ export class ObjectFormElementComponent implements OnDestroy {
    */
   @Input() inlineError: boolean;
 
+  get shouldSkipToggle() {
+    return this.skipToggle || this.situation !== 'SEARCH' || this.formElementRef._eoFormElement.readonly;
+  }
+
   /**
    *  Element is supposed to be a special FormGroup holding a single form element.
    */
-
   @Input('element')
   set elementSetter(el: ObjectFormControlWrapper) {
     if (el) {
@@ -53,7 +56,7 @@ export class ObjectFormElementComponent implements OnDestroy {
       this.formElementRef = el.controls[el._eoFormControlWrapper.controlName];
       this.formElementRef._eoFormElement = this.setGrouping(this.formElementRef?._eoFormElement);
       if (this.formElementRef._eoFormElement.isNotSetValue) {
-        this.labelToggled(true);
+        this.labelToggled(true, false);
       }
       this.fetchTags();
       this.formElementRef?.valueChanges.pipe(takeUntilDestroy(this)).subscribe((_) => this.setupErrors());
@@ -75,8 +78,8 @@ export class ObjectFormElementComponent implements OnDestroy {
     return { ...formElement, grouping: !!formElement?.classification?.includes(Classification.NUMBER_DIGIT) };
   }
 
-  labelToggled(toggled: boolean) {
-    if (!this.skipToggle && this.situation === Situation.SEARCH) {
+  labelToggled(toggled: boolean, readonly = this.formElementRef._eoFormElement.readonly) {
+    if (!this.skipToggle && this.situation === Situation.SEARCH && !readonly) {
       const toggleClass = 'label-toggled';
       this.isNull = toggled;
       if (toggled) {

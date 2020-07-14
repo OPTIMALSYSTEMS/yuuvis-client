@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
-import { ApiBase, BackendService, BaseObjectTypeField, SearchFilter, SearchQuery, SystemService, SystemType, TranslateService, Utils } from '@yuuvis/core';
+import { BackendService, BaseObjectTypeField, SearchFilter, SearchQuery, SystemService, TranslateService, Utils } from '@yuuvis/core';
 import { forkJoin } from 'rxjs';
 import { IconRegistryService } from '../../../common/components/icon/service/iconRegistry.service';
 import { Selectable } from '../../../grouped-select';
@@ -19,6 +19,7 @@ export class SearchFilterComponent implements OnInit {
   @ViewChild('tplFilterConfig') tplFilterConfig: TemplateRef<any>;
 
   availableTypeGroups: SelectableGroup[] = [];
+  availableObjectTypes: Selectable[] = [];
   typeSelection: string[] = [];
 
   availableFilterGroups: SelectableGroup[] = [];
@@ -54,43 +55,20 @@ export class SearchFilterComponent implements OnInit {
 
   private setupFilterPanel() {
     this.parentID = this.filterQuery.filters.find((f) => f.property === BaseObjectTypeField.PARENT_ID);
-    if (this.parentID) {
-      const data = {
-        query: {
-          statement: `SELECT COUNT(*), ${BaseObjectTypeField.OBJECT_TYPE_ID} FROM ${SystemType.OBJECT}
-          WHERE ${BaseObjectTypeField.PARENT_ID}='${this.parentID.firstValue}' GROUP BY ${BaseObjectTypeField.OBJECT_TYPE_ID}`
-        }
-      };
-      this.backend.post('/dms/objects/search', data, ApiBase.core).subscribe((res) => {
-        const types = res.objects.map((o) => ({
-          id: o.properties[BaseObjectTypeField.OBJECT_TYPE_ID].value,
-          label: this.systemService.getLocalizedResource(`${o.properties[BaseObjectTypeField.OBJECT_TYPE_ID].value}_label`),
-          count: o.properties.OBJECT_COUNT.value
-        }));
-        this.setupTypes(types);
-      });
-    } else {
-      // todo: get aggregation counts
-      this.setupTypes(
-        this.filterQuery.types.map((o) => ({
-          id: o,
-          label: this.systemService.getLocalizedResource(`${o}_label`),
-          count: 0
-        }))
-      );
-    }
+    this.quickSearchService.getActiveTypes(this.filterQuery).subscribe((res: any) => this.setupTypes(res));
   }
 
   private setupTypes(types: Selectable[]) {
     this.typeSelection = types.map((t) => t.id);
+    this.availableObjectTypes = [...types];
     this.availableTypeGroups = [
       {
         id: 'types',
-        label: 'Object Types',
+        label: this.translate.instant('yuv.framework.search.filter.object.types'),
         items: types
       }
     ];
-    this.setupFilters(this.typeSelection);
+    return this.setupFilters(this.typeSelection);
   }
 
   private setupFilters(typeSelection: string[], filterSelection?: string[], activeFilters?: Selectable[]) {
@@ -104,12 +82,12 @@ export class SearchFilterComponent implements OnInit {
       this.availableFilterGroups = [
         {
           id: 'active',
-          label: 'Active Filters',
+          label: this.translate.instant('yuv.framework.search.filter.active.filters'),
           items: this.activeFilters
         },
         {
           id: 'stored',
-          label: '★ Stored Filters',
+          label: this.translate.instant('yuv.framework.search.filter.stored.filters'),
           items: this.storedFilters.filter((f) => visible.includes(f.id))
         }
       ];
@@ -142,6 +120,7 @@ export class SearchFilterComponent implements OnInit {
       .reduce((pre, cur) => (pre = pre.concat(cur)), [])
       .concat(this.parentID ? [this.parentID] : []);
     this.filterChange.emit(this.filterQuery);
+    this.aggregate();
   }
 
   onTypeChange(res: Selectable[]) {
@@ -153,6 +132,7 @@ export class SearchFilterComponent implements OnInit {
     // todo: remove unwanted filters
     this.filterQuery.types = res.map((r) => r.id);
     this.filterChange.emit(this.filterQuery);
+    this.aggregate();
   }
 
   saveSearch() {}
@@ -160,6 +140,17 @@ export class SearchFilterComponent implements OnInit {
   resetFilters() {
     this.query = new SearchQuery(this._query.toQueryJson());
     this.filterChange.emit(new SearchQuery(this._query.toQueryJson()));
+  }
+
+  aggregate() {
+    this.quickSearchService.getActiveTypes(this.filterQuery).subscribe((types: any) => {
+      this.availableObjectTypes.forEach((i) => {
+        const match = types.find((t) => t.id === i.id);
+        i.count = match ? match.count : 0;
+      });
+      // remove all empty types that are part of query
+      this.availableTypeGroups[0].items = this.availableObjectTypes.filter((t) => t.count || !this.filterQuery.types.find((id) => id === t.id));
+    });
   }
 
   ngOnInit(): void {}

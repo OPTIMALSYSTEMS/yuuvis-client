@@ -9,11 +9,17 @@
 
   .stored-filter {
     border: 1px solid var(--panel-divider-color);
+    @include placeholder(rgba(0, 0, 0, 0.2));
+    .dark & {
+      @include placeholder(rgba(255, 255, 255, 0.3));
+    }
     input {
       padding: var(--app-pane-padding);
       font-size: 20px;
       border: none;
       width: 100%;
+      background: rgba(0, 0, 0, 0);
+      color: var(--text-color-body);
       &:focus {
         border-bottom: 1px solid var(--color-accent);
       }

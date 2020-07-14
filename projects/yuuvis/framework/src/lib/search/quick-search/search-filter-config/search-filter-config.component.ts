@@ -1,5 +1,5 @@
 import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
-import { SearchFilter, SearchQuery, Utils } from '@yuuvis/core';
+import { SearchFilter, SearchQuery, TranslateService, Utils } from '@yuuvis/core';
 import { forkJoin } from 'rxjs';
 import { Selectable } from '../../../grouped-select';
 import { NotificationService } from '../../../services/notification/notification.service';
@@ -35,7 +35,7 @@ export class SearchFilterConfigComponent implements OnInit {
     this.availableFiltersGroups = [
       {
         id: 'custom',
-        label: 'Custom Filters',
+        label: this.translate.instant('yuv.framework.search.filter.custom.filters'),
         items: this.availableObjectTypeFields.map((o) => ({ ...o, value: [new SearchFilter(o.id, undefined, undefined)] }))
       }
     ];
@@ -49,17 +49,17 @@ export class SearchFilterConfigComponent implements OnInit {
       this.storedFiltersGroups = [
         {
           id: 'active',
-          label: 'Active Filters',
+          label: this.translate.instant('yuv.framework.search.filter.active.filters'),
           items: this.quickSearchService.getActiveFilters(this.query, this.storedFilters, this.availableObjectTypeFields)
         },
         {
           id: 'enabled',
-          label: 'Enabled Filters',
+          label: this.translate.instant('yuv.framework.search.filter.enabled.filters'),
           items: this.storedFilters.filter((f) => this.isVisible(f))
         },
         {
           id: 'disabled',
-          label: 'Disabled Filters',
+          label: this.translate.instant('yuv.framework.search.filter.disabled.filters'),
           items: this.storedFilters.filter((f) => !this.isVisible(f))
         }
       ];
@@ -67,7 +67,7 @@ export class SearchFilterConfigComponent implements OnInit {
   }
   @Output() close = new EventEmitter<any>();
 
-  constructor(private quickSearchService: QuickSearchService, private notify: NotificationService) {}
+  constructor(private quickSearchService: QuickSearchService, private notify: NotificationService, private translate: TranslateService) {}
 
   isVisible(filter = this.selectedFilter) {
     return filter && filter.id && this.visibleFilters.includes(filter.id);
@@ -135,7 +135,7 @@ export class SearchFilterConfigComponent implements OnInit {
       this.quickSearchService.saveFilter(this.selectedFilter).subscribe((storedFilters) => {
         this.storedFilters = this.quickSearchService.loadFilters(storedFilters as any, this.availableObjectTypeFields);
         this.onVisibilityChange(false);
-        this.notify.success('Filter was saved');
+        this.notify.success(this.translate.instant('yuv.framework.search.filter.configuration'), this.translate.instant('yuv.framework.search.filter.saved'));
       });
     } else if (!this.selectedFilter.label) {
       this.storedFilterInput.nativeElement.focus();
@@ -146,7 +146,7 @@ export class SearchFilterConfigComponent implements OnInit {
     this.quickSearchService.removeFilter(this.selectedFilter).subscribe((storedFilters) => {
       this.storedFilters = this.quickSearchService.loadFilters(storedFilters as any, this.availableObjectTypeFields);
       this.onVisibilityChange(true);
-      this.notify.success('Filter was removed');
+      this.notify.success(this.translate.instant('yuv.framework.search.filter.configuration'), this.translate.instant('yuv.framework.search.filter.removed'));
       this.createNew();
     });
   }
