@@ -148,10 +148,15 @@ export class SearchFilterComponent implements OnInit {
       ];
 
       if (this.viewMode === 'groups') {
-        this.availableFilterGroups[1].items = this.storedFilters.filter((f) => visible.includes(f.id) && f.highlight);
+        const filters = this.availableFilterGroups[1].items;
         this.availableFilterGroups = [
-          ...this.availableFilterGroups,
-          ...this.quickSearchService.getAvailableFilterGroups(this.storedFilters, this.availableObjectTypeFields)
+          this.availableFilterGroups[0],
+          {
+            id: 'custom',
+            label: this.translate.instant('yuv.framework.search.filter.custom.filters'),
+            items: filters.filter((f) => f.highlight)
+          },
+          ...this.quickSearchService.getAvailableFilterGroups(filters, this.availableObjectTypeFields)
         ];
       }
       this.filterSelection = filterSelection || this.activeFilters.map((a) => a.id);
@@ -188,13 +193,10 @@ export class SearchFilterComponent implements OnInit {
   }
 
   onTypeChange(res: Selectable[]) {
-    this.setupFilters(
-      res.map((r) => r.id),
-      this.filterSelection,
-      this.activeFilters
-    );
+    this.typeSelection = res.map((r) => r.id);
+    this.setupFilters(this.typeSelection, this.filterSelection, this.activeFilters);
     // todo: remove unwanted filters
-    this.filterQuery.types = res.map((r) => r.id);
+    this.filterQuery.types = [...this.typeSelection];
     this.filterChange.emit(this.filterQuery);
     this.aggregate();
   }
