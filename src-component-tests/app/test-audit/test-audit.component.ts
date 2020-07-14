@@ -4,7 +4,8 @@ import { DmsObject } from '@yuuvis/core';
 @Component({
   selector: 'yuv-test-audit',
   templateUrl: './test-audit.component.html',
-  styleUrls: ['./test-audit.component.scss']
+  styleUrls: ['./test-audit.component.scss'],
+  host: { class: 'yuv-test-container' }
 })
 export class TestAuditComponent implements OnInit {
   dmsObject: DmsObject;

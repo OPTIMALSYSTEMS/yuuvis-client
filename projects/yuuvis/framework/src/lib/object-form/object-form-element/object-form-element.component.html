@@ -50,6 +50,7 @@
 
       <yuv-catalog [situation]="element._eoFormControlWrapper.situation"
         [formControlName]="element._eoFormControlWrapper.controlName"
+        [multiselect]="formElementRef._eoFormElement.cardinality === 'multi'  || situation === 'SEARCH'"
         [classification]="formElementRef._eoFormElement.classification"
         [readonly]="formElementRef._eoFormElement.readonly">
       </yuv-catalog>

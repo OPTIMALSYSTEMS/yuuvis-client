@@ -32,13 +32,18 @@ import { Classification, ClassificationEntry, SystemService } from '@yuuvis/core
   ]
 })
 export class CatalogComponent implements ControlValueAccessor {
-  value: string;
+  value: string | string[];
   _options: { label: string; value: string }[];
 
   /**
    * Possibles values are `EDIT` (default),`SEARCH`,`CREATE`. In search situation validation of the form element will be turned off, so you are able to enter search terms that do not meet the elements validators.
    */
   @Input() situation: string;
+  /**
+   * By default a filter panel will shown if the number of options exceeds 10 entries. You could
+   * change this number.
+   */
+  @Input() enableFilterWhenOptionsExceed: number = 10;
   /**
    * Array of selectable entries
    */
@@ -48,6 +53,10 @@ export class CatalogComponent implements ControlValueAccessor {
       value: o
     }));
   }
+  /**
+   * Indicator that multiple items could be selected
+   */
+  @Input() multiselect: boolean;
   /**
    * Additional semantics for the form element.
    */

@@ -8,6 +8,7 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { ChipsModule } from 'primeng/chips';
 import { DropdownModule } from 'primeng/dropdown';
 import { InputMaskModule } from 'primeng/inputmask';
+import { MultiSelectModule } from 'primeng/multiselect';
 import { TriStateCheckboxModule } from 'primeng/tristatecheckbox';
 import { YuvCommonModule } from '../common/common.module';
 import { YuvComponentsModule } from '../components/components.module';
@@ -71,7 +72,8 @@ import { FormInputComponent } from './form-input/form-input.component';
     YuvCommonModule,
     DropdownModule,
     ReactiveFormsModule,
-    InputMaskModule
+    InputMaskModule,
+    MultiSelectModule
   ]
 })
 export class YuvFormModule {}

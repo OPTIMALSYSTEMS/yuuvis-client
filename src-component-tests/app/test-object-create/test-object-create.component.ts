@@ -4,7 +4,8 @@ import { DmsObject } from '@yuuvis/core';
 @Component({
   selector: 'yuv-test-object-create',
   templateUrl: './test-object-create.component.html',
-  styleUrls: ['./test-object-create.component.scss']
+  styleUrls: ['./test-object-create.component.scss'],
+  host: { class: 'yuv-test-container' }
 })
 export class TestObjectCreateComponent implements OnInit {
   contextId: string;

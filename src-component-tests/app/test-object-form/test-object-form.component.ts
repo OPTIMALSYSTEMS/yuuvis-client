@@ -14,7 +14,8 @@ import { stringElements } from './data/form.string';
 @Component({
   selector: 'yuv-test-object-form',
   templateUrl: './test-object-form.component.html',
-  styleUrls: ['./test-object-form.component.scss']
+  styleUrls: ['./test-object-form.component.scss'],
+  host: { class: 'yuv-test-container' }
 })
 export class TestObjectFormComponent implements OnInit {
   showData: boolean;
@@ -105,7 +106,9 @@ export class TestObjectFormComponent implements OnInit {
       model: {
         formModel: this.wrap(catalogElements),
         data: {
-          catalog: 'Zwei'
+          catalog: 'Zwei',
+          'catalog:readonly:multi': ['Hund', 'Katze'],
+          'catalog:readonly': 'Esel'
         }
       }
     }

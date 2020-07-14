@@ -4,7 +4,8 @@ import { SearchQuery } from '@yuuvis/core';
 @Component({
   selector: 'yuv-test-search-result',
   templateUrl: './test-search-result.component.html',
-  styleUrls: ['./test-search-result.component.scss']
+  styleUrls: ['./test-search-result.component.scss'],
+  host: { class: 'yuv-test-container' }
 })
 export class TestSearchResultComponent implements OnInit {
   query: SearchQuery;
