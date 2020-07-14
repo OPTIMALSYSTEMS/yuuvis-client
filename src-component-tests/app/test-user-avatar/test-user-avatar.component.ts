@@ -4,7 +4,8 @@ import { YuvUser } from '@yuuvis/core';
 @Component({
   selector: 'yuv-test-user-avatar',
   templateUrl: './test-user-avatar.component.html',
-  styleUrls: ['./test-user-avatar.component.scss']
+  styleUrls: ['./test-user-avatar.component.scss'],
+  host: { class: 'yuv-test-container' }
 })
 export class TestUserAvatarComponent implements OnInit {
   // user with image

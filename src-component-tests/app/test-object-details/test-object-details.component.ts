@@ -5,7 +5,8 @@ import { AppDataService } from '../add.data.service';
 @Component({
   selector: 'yuv-test-object-details',
   templateUrl: './test-object-details.component.html',
-  styleUrls: ['./test-object-details.component.scss']
+  styleUrls: ['./test-object-details.component.scss'],
+  host: { class: 'yuv-test-container' }
 })
 export class TestObjectDetailsComponent implements OnInit {
   summaryObject;
