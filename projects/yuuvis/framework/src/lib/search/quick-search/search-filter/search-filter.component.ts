@@ -9,6 +9,10 @@ import { PopoverConfig } from '../../../popover/popover.interface';
 import { PopoverService } from '../../../popover/popover.service';
 import { favorite, refresh, settings } from '../../../svg.generated';
 import { QuickSearchService } from '../quick-search.service';
+import { LayoutService } from './../../../services/layout/layout.service';
+import { listModeDefault, listModeSimple } from './../../../svg.generated';
+
+export type FilterViewMode = 'standard' | 'groups';
 
 @Component({
   selector: 'yuv-search-filter',
@@ -17,6 +21,30 @@ import { QuickSearchService } from '../quick-search.service';
 })
 export class SearchFilterComponent implements OnInit {
   @ViewChild('tplFilterConfig') tplFilterConfig: TemplateRef<any>;
+
+  @Input() viewMode: FilterViewMode = 'standard';
+
+  /**
+   * Providing a layout options key will enable the component to persist its layout settings
+   * in relation to a host component. The key is basically a unique key for the host, which
+   * will be used to store component specific settings using the layout service.
+   */
+  private _layoutOptionsKey: string;
+  @Input() set layoutOptionsKey(lok: string) {
+    this._layoutOptionsKey = lok;
+    this.layoutService.loadLayoutOptions(this.layoutOptionsKey, 'yuv-search-filter').subscribe((o: any) => {
+      this._layoutOptions = o || {};
+      if (o && o.viewMode) {
+        this.viewMode = o.viewMode;
+      }
+    });
+  }
+
+  get layoutOptionsKey() {
+    return this._layoutOptionsKey + '.search-filter';
+  }
+
+  private _layoutOptions: any = {};
 
   availableTypeGroups: SelectableGroup[] = [];
   availableObjectTypes: Selectable[] = [];
@@ -48,14 +76,40 @@ export class SearchFilterComponent implements OnInit {
     private systemService: SystemService,
     private iconRegistry: IconRegistryService,
     private quickSearchService: QuickSearchService,
-    private popoverService: PopoverService
+    private popoverService: PopoverService,
+    private layoutService: LayoutService
   ) {
-    this.iconRegistry.registerIcons([settings, refresh, favorite]);
+    this.iconRegistry.registerIcons([settings, refresh, favorite, listModeDefault, listModeSimple]);
+  }
+
+  private saveLayoutOptions() {
+    if (this._layoutOptionsKey) {
+      this._layoutOptions = {
+        viewMode: this.viewMode,
+        collapsedGroups: [...this.availableFilterGroups, ...this.availableTypeGroups].filter((g) => g.collapsed).map((g) => g.id)
+      };
+      this.layoutService.saveLayoutOptions(this.layoutOptionsKey, 'yuv-search-filter', { ...this._layoutOptions }).subscribe();
+    }
+  }
+
+  onToggle(group: SelectableGroup) {
+    this.saveLayoutOptions();
+  }
+
+  modeChange(mode: FilterViewMode) {
+    this.viewMode = mode;
+    this.saveLayoutOptions();
   }
 
   private setupFilterPanel() {
     this.parentID = this.filterQuery.filters.find((f) => f.property === BaseObjectTypeField.PARENT_ID);
     this.quickSearchService.getActiveTypes(this.filterQuery).subscribe((res: any) => this.setupTypes(res));
+  }
+
+  private setupCollapsedGroups() {
+    if (this._layoutOptions && this._layoutOptions.collapsedGroups) {
+      [...this.availableFilterGroups, ...this.availableTypeGroups].forEach((g) => (g.collapsed = this._layoutOptions.collapsedGroups.includes(g.id)));
+    }
   }
 
   private setupTypes(types: Selectable[]) {
@@ -68,6 +122,7 @@ export class SearchFilterComponent implements OnInit {
         items: types
       }
     ];
+    this.setupCollapsedGroups();
     return this.setupFilters(this.typeSelection);
   }
 
@@ -92,6 +147,7 @@ export class SearchFilterComponent implements OnInit {
         }
       ];
       this.filterSelection = filterSelection || this.activeFilters.map((a) => a.id);
+      this.setupCollapsedGroups();
     });
   }
 

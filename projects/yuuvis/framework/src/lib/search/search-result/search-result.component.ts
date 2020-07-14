@@ -60,6 +60,8 @@ export class SearchResultComponent implements OnDestroy {
     page: number;
   };
 
+  filterSize = 25;
+
   // @Input() options: ResponsiveDataTableOptions;
 
   @ViewChild('dataTable') dataTable: ResponsiveDataTableComponent;
