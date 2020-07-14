@@ -5,7 +5,8 @@ import { ObjectTypeAggregation, QuickSearchComponent } from '@yuuvis/framework';
 @Component({
   selector: 'yuv-test-quick-search',
   templateUrl: './test-quick-search.component.html',
-  styleUrls: ['./test-quick-search.component.scss']
+  styleUrls: ['./test-quick-search.component.scss'],
+  host: { class: 'yuv-test-container' }
 })
 export class TestQuickSearchComponent implements OnInit {
   @ViewChild('quickSearch', { static: true }) quickSearchEl: QuickSearchComponent;

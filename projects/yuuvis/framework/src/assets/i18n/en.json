@@ -1,4 +1,10 @@
 {
+	"null.Create From Active Filters": "",
+	"null.Create New": "",
+	"null.Filter Configuration": "",
+	"null.Remove": "",
+	"null.Save": "",
+	"null.from Active Filters": "",
 	"yuv.client.state.object.context.load.error": "",
 	"yuv.framework.action-menu.action.delete.dms.object.confirm.message": "Are you sure you want to delete '{{item}}'?",
 	"yuv.framework.action-menu.action.delete.dms.object.description": "Deletes the object.",

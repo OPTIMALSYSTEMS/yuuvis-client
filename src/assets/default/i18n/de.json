@@ -1,4 +1,10 @@
 {
+  "null.Create From Active Filters": "",
+  "null.Create New": "",
+  "null.Filter Configuration": "",
+  "null.Remove": "",
+  "null.Save": "",
+  "null.from Active Filters": "",
   "yuv.client.state.object.context.load.error": "Das Objekt ist nicht verfügbar. Entweder wurde das Objekt gelöscht oder die Zugriffsrechte haben sich geändert.",
   "yuv.framework.action-menu.action.delete.dms.object.confirm.message": "Sind Sie sicher, dass '{{item}}' gelöscht werden soll?",
   "yuv.framework.action-menu.action.delete.dms.object.description": "Löscht das Objekt.",

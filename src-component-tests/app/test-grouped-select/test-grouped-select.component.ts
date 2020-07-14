@@ -6,7 +6,8 @@ import { DATA_GROUPS, DATA_GROUPS_FULL } from './test-grouped-select.data';
 @Component({
   selector: 'yuv-test-grouped-select',
   templateUrl: './test-grouped-select.component.html',
-  styleUrls: ['./test-grouped-select.component.scss']
+  styleUrls: ['./test-grouped-select.component.scss'],
+  host: { class: 'yuv-test-container' }
 })
 export class TestGroupedSelectComponent implements OnInit {
   view: string = 'default';
