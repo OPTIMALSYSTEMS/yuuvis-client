@@ -51,9 +51,14 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
     this.init();
   }
 
-  // triggered when the forms state has been changed
+  /**
+   * triggered when the forms state has been changed
+   */
   @Output() statusChanged = new EventEmitter<FormStatusChangedEvent>();
-  // handler to be executed after the form has been set up
+
+  /**
+   * handler to be executed after the form has been set up
+   */
   @Output() onFormReady = new EventEmitter();
 
   // counter for naming the forms groups
