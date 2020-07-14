@@ -82,23 +82,23 @@ export class SearchFilterComponent implements OnInit {
     this.iconRegistry.registerIcons([settings, refresh, favorite, listModeDefault, listModeSimple]);
   }
 
-  private saveLayoutOptions() {
+  private saveLayoutOptions(options: any) {
     if (this._layoutOptionsKey) {
-      this._layoutOptions = {
-        viewMode: this.viewMode,
-        collapsedGroups: [...this.availableFilterGroups, ...this.availableTypeGroups].filter((g) => g.collapsed).map((g) => g.id)
-      };
+      this._layoutOptions = { ...this._layoutOptions, ...options };
       this.layoutService.saveLayoutOptions(this.layoutOptionsKey, 'yuv-search-filter', { ...this._layoutOptions }).subscribe();
     }
   }
 
   onToggle(group: SelectableGroup) {
-    this.saveLayoutOptions();
+    this.saveLayoutOptions({
+      collapsedGroups: (this._layoutOptions.collapsedGroups || []).filter((id) => id !== group.id).concat(group.collapsed ? [group.id] : [])
+    });
   }
 
-  modeChange(mode: FilterViewMode) {
-    this.viewMode = mode;
-    this.saveLayoutOptions();
+  modeChange(viewMode: FilterViewMode) {
+    this.viewMode = viewMode;
+    this.saveLayoutOptions({ viewMode });
+    this.setupFilters(this.typeSelection, this.filterSelection, this.activeFilters);
   }
 
   private setupFilterPanel() {
@@ -146,6 +146,14 @@ export class SearchFilterComponent implements OnInit {
           items: this.storedFilters.filter((f) => visible.includes(f.id))
         }
       ];
+
+      if (this.viewMode === 'groups') {
+        this.availableFilterGroups[1].items = this.storedFilters.filter((f) => visible.includes(f.id) && f.highlight);
+        this.availableFilterGroups = [
+          ...this.availableFilterGroups,
+          ...this.quickSearchService.getAvailableFilterGroups(this.storedFilters, this.availableObjectTypeFields)
+        ];
+      }
       this.filterSelection = filterSelection || this.activeFilters.map((a) => a.id);
       this.setupCollapsedGroups();
     });

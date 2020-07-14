@@ -13,11 +13,10 @@
   <!-- list mode settings -->
   <div class="mode">
     <yuv-icon class="mode" [icon]="'listModeDefault'"
-      title="{{ 'yuv.framework.search-result.footer.config.mode.default' | translate }}"
+      title="{{ 'yuv.framework.search.filter.mode.default' | translate }}"
       [ngClass]="{ current: viewMode === 'standard' }" (click)="modeChange('standard')">
     </yuv-icon>
-    <yuv-icon class="mode" [icon]="'listModeSimple'"
-      title="{{ 'yuv.framework.search-result.footer.config.mode.horizontal' | translate }}"
+    <yuv-icon class="mode" [icon]="'listModeSimple'" title="{{ 'yuv.framework.search.filter.mode.groups' | translate }}"
       [ngClass]="{ current: viewMode === 'groups' }" (click)="modeChange('groups')">
     </yuv-icon>
   </div>

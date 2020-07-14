@@ -164,7 +164,6 @@ export class GroupedSelectComponent implements AfterViewInit, ControlValueAccess
 
   groupToggled(group: SelectableGroup, state: any) {
     if (state.originalEvent.fromState !== 'void') {
-      console.log(state);
       this.groupToggle.emit(group);
     }
   }
