@@ -110,6 +110,11 @@ export class GroupedSelectComponent implements AfterViewInit, ControlValueAccess
    */
   @Output() change = new EventEmitter<Selectable | Selectable[]>();
 
+  /**
+   * Emitted on toggle change.
+   */
+  @Output() groupToggle = new EventEmitter<SelectableGroup>();
+
   get selectableItemIndex(): number {
     return this._selectableItemIndex++;
   }
@@ -117,6 +122,7 @@ export class GroupedSelectComponent implements AfterViewInit, ControlValueAccess
   @HostBinding('class.singleGroup') singleGroup: boolean = false;
   autofocus: boolean;
   enableSelectAll: boolean;
+  toggleable: boolean;
   columns: string = '';
 
   private _selectedItems: Selectable[] = [];
@@ -143,15 +149,24 @@ export class GroupedSelectComponent implements AfterViewInit, ControlValueAccess
     @Attribute('autofocus') autofocus: string,
     @Attribute('singleGroup') singleGroup: string,
     @Attribute('enableSelectAll') enableSelectAll: string,
+    @Attribute('toggleable') toggleable: string,
     private elRef: ElementRef
   ) {
     this.autofocus = autofocus === 'true' ? true : false;
     this.enableSelectAll = enableSelectAll === 'true' ? true : false;
     this.singleGroup = singleGroup === 'true' ? true : false;
+    this.toggleable = toggleable === 'true' ? true : false;
   }
 
   findSelectable(id: string) {
     return this.groups.reduce((pre, cur) => (pre = pre.concat(cur.items)), []).find((s) => s.id === id);
+  }
+
+  groupToggled(group: SelectableGroup, state: any) {
+    if (state.originalEvent.fromState !== 'void') {
+      console.log(state);
+      this.groupToggle.emit(group);
+    }
   }
 
   groupFocused(group: SelectableGroup) {

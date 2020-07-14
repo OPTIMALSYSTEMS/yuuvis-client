@@ -4,6 +4,7 @@ import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@yuuvis/core';
 import { AngularResizedEventModule } from 'angular-resize-event';
+import { PanelModule } from 'primeng/panel';
 import { YuvCommonModule } from '../common/common.module';
 import { YuvFormModule } from './../form/form.module';
 import { GroupedSelectComponent } from './grouped-select/grouped-select.component';
@@ -15,6 +16,6 @@ import { SelectableItemComponent } from './grouped-select/selectable-item/select
 @NgModule({
   declarations: [GroupedSelectComponent, SelectableItemComponent],
   exports: [GroupedSelectComponent],
-  imports: [CommonModule, YuvFormModule, FormsModule, A11yModule, AngularResizedEventModule, TranslateModule, YuvCommonModule]
+  imports: [CommonModule, YuvFormModule, FormsModule, A11yModule, AngularResizedEventModule, PanelModule, TranslateModule, YuvCommonModule]
 })
 export class YuvGroupedSelectModule {}

@@ -2,6 +2,7 @@
 export interface SelectableGroup {
   id: string;
   label?: string;
+  collapsed?: boolean;
   items: Selectable[];
 }
 
