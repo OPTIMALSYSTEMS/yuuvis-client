@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { DmsObject, SystemService } from '@yuuvis/core';
 import { FormStatusChangedEvent } from '@yuuvis/framework';
 import { booleanElements } from './data/form.boolean';
+import { catalogElements } from './data/form.catalog';
 import { datetimeElements } from './data/form.datetime';
 import { groupingModel } from './data/form.grouping';
 import { numberElements } from './data/form.numbers';
@@ -13,7 +14,8 @@ import { stringElements } from './data/form.string';
 @Component({
   selector: 'yuv-test-object-form',
   templateUrl: './test-object-form.component.html',
-  styleUrls: ['./test-object-form.component.scss']
+  styleUrls: ['./test-object-form.component.scss'],
+  host: { class: 'yuv-test-container' }
 })
 export class TestObjectFormComponent implements OnInit {
   showData: boolean;
@@ -96,6 +98,17 @@ export class TestObjectFormComponent implements OnInit {
         data: {
           'id:organization:value': ['a69a0eb6-3662-4c00-8096-38fbb2c4a922', 'shouldfail'],
           'id:organization:readonly': ['shouldfail', 'a69a0eb6-3662-4c00-8096-38fbb2c4a922']
+        }
+      }
+    },
+    {
+      label: 'Catalog',
+      model: {
+        formModel: this.wrap(catalogElements),
+        data: {
+          catalog: 'Zwei',
+          'catalog:readonly:multi': ['Hund', 'Katze'],
+          'catalog:readonly': 'Esel'
         }
       }
     }

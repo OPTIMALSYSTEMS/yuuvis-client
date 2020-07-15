@@ -182,6 +182,8 @@
   "yuv.framework.search.filter.enabled.filters": "Enabled filters",
   "yuv.framework.search.filter.from.active": "from active filters",
   "yuv.framework.search.filter.manage": "Manage filters",
+  "yuv.framework.search.filter.mode.default": "Flat list",
+  "yuv.framework.search.filter.mode.groups": "Groups",
   "yuv.framework.search.filter.name": "Filter name",
   "yuv.framework.search.filter.object.types": "Object types",
   "yuv.framework.search.filter.remove": "Remove",

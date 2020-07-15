@@ -1,8 +1,9 @@
 <div class="container" [ngClass]="columns" (resized)="onContainerResized($event)">
-  <div [id]="group.id" class="group" *ngFor="let group of groups; let last = last" (focus)="groupFocused(group)"
+  <p-panel [toggleable]="toggleable" [(collapsed)]="group.collapsed" (onAfterToggle)="groupToggled(group, $event)"
+    [id]="group.id" class="group" *ngFor="let group of groups; let last = last" (focus)="groupFocused(group)"
     [ngClass]="{ last: last }" tabindex="0">
-    <div class="group-label" *ngIf="group.label" [ngClass]="{ selectable: enableSelectAll }"
-      (click)="toggleAllOfGroup(group)">{{ group.label }}</div>
+    <p-header class="group-label" *ngIf="group.label" [ngClass]="{ selectable: enableSelectAll }"
+      (click)="toggleAllOfGroup(group)">{{ group.label }}</p-header>
     <div class="items">
       <yuv-selectable-item tabindex="-1" *ngFor="let item of group.items" [ngClass]="{ multiselect: multiple }"
         (click)="itemClicked(item)" (focus)="itemFocused(item)" (blur)="itemFocused(null)"
@@ -10,5 +11,5 @@
         [selected]="!!selectedItemsCheck[item.id]">
       </yuv-selectable-item>
     </div>
-  </div>
+  </p-panel>
 </div>

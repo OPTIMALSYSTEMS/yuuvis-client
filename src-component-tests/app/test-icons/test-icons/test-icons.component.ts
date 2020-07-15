@@ -35,6 +35,7 @@ import {
   selector: 'yuv-test-icons',
   templateUrl: './test-icons.component.html',
   styleUrls: ['./test-icons.component.scss'],
+  host: { class: 'yuv-test-container' },
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TestIconsComponent implements OnInit {

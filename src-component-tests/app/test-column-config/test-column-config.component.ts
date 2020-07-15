@@ -4,7 +4,8 @@ import { ObjectType, SortOption } from '@yuuvis/core';
 @Component({
   selector: 'yuv-test-column-config',
   templateUrl: './test-column-config.component.html',
-  styleUrls: ['./test-column-config.component.scss']
+  styleUrls: ['./test-column-config.component.scss'],
+  host: { class: 'yuv-test-container' }
 })
 export class TestColumnConfigComponent implements OnInit {
   options: { type: string | ObjectType; sortOptions?: SortOption[] };
