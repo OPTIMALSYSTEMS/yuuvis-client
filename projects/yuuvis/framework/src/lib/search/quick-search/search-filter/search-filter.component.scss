@@ -13,10 +13,13 @@
   .footer {
     grid-area: footer;
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
+    flex-wrap: nowrap;
     align-items: center;
+    white-space: nowrap;
     border-top: 1px solid var(--panel-divider-color);
     color: var(--text-color-caption);
+    padding: calc(var(--app-pane-padding) / 4) calc(var(--app-pane-padding) / 2);
 
     yuv-icon {
       margin: 0 calc(var(--app-pane-padding) / 2);
@@ -25,6 +28,26 @@
 
       &:hover {
         background-color: var(--panel-divider-color);
+      }
+    }
+
+    .mode {
+      padding: calc(var(--app-pane-padding) / 2);
+      yuv-icon {
+        padding: 4px;
+        margin: 0;
+
+        &.mode {
+          width: 18px;
+          height: 18px;
+          box-sizing: content-box;
+          border-radius: 2px;
+        }
+
+        &.current {
+          background-color: var(--panel-divider-color);
+          color: var(--text-color-body);
+        }
       }
     }
   }

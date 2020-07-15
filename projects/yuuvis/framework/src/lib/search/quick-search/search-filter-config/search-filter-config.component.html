@@ -3,7 +3,8 @@
   <as-split>
     <as-split-area [size]="30">
       <section class="left">
-        <yuv-grouped-select [groups]="storedFiltersGroups" [selection]="visibleFilters" (select)="onFilterSelect($event)"> </yuv-grouped-select>
+        <yuv-grouped-select toggleable="true" [groups]="storedFiltersGroups" [selection]="visibleFilters" (select)="onFilterSelect($event)">
+        </yuv-grouped-select>
       </section>
     </as-split-area>
 
