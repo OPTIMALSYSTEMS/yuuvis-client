@@ -24,7 +24,7 @@ export const catalogElements = [
     name: 'catalog:multi',
     label: 'Multiselect',
     description: '',
-    classification: ['catalog[Jeff, Lewis, Mark]'],
+    classification: ['catalog[Jeff, Lewis, Mark, Christian, Marko, Maximilian]'],
     cardinality: 'multi',
     type: 'string:catalog',
     required: false
