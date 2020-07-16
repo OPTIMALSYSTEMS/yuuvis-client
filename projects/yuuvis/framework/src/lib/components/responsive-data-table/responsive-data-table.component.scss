@@ -7,6 +7,117 @@ $range-selection-highlight-color: $primary-color;
 
 ::ng-deep {
   yuv-responsive-data-table {
+    //ag-grid checkboxes
+    .ag-theme-balham .ag-checkbox-input-wrapper {
+      font-size: 16px;
+      font-family: 'Roboto';
+      font-style: normal;
+      font-weight: normal;
+      font-variant: normal;
+      text-transform: none;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      width: 21px;
+      height: 21px;
+      display: flex;
+      cursor: pointer;
+      vertical-align: middle;
+      background-color: var(--panel-divider-color);
+      border-radius: 0;
+      line-height: 16px;
+      border: 2px solid transparent;
+      color: var(--text-color-caption);
+      outline: 0;
+      margin-left: 8px;
+
+      &:after {
+        position: absolute;
+        left: -9999px;
+      }
+
+      &:active {
+        box-shadow: none;
+        background-color: rgba(255, 255, 255, 0.2);
+        color: var(--text-color-caption);
+        border-color: var(--text-color-caption);
+      }
+      &:focus-within {
+        box-shadow: none;
+        background-color: rgba(255, 255, 255, 0.2);
+        color: var(--text-color-caption);
+        border-color: var(--text-color-caption);
+        outline: 0;
+      }
+      &:focus {
+        box-shadow: none;
+        background-color: rgba(255, 255, 255, 0.2);
+        color: var(--text-color-caption);
+        border-color: var(--text-color-caption);
+        outline: 0;
+      }
+    }
+
+    .ag-theme-balham .ag-checkbox-input-wrapper.ag-checked {
+      &:after {
+        font-family: 'Roboto';
+        left: 4px;
+        top: 5px;
+        width: 10px;
+        height: 6px;
+        border-radius: 1px;
+        border-left: 2px solid var(--text-color-caption);
+        border-bottom: 2px solid var(--text-color-caption);
+        transform: rotate(-44deg);
+        content: '';
+        position: absolute;
+        transition: background-color 0.2s, border-color 0.2s, box-shadow 0.2s;
+        color: var(--text-color-caption);
+      }
+
+      &::before {
+        background-color: #fff;
+        font-family: 'Roboto';
+        border: 2px solid var(--text-color-caption);
+        content: '';
+        position: absolute;
+        width: 21px;
+        height: 21px;
+        display: flex;
+        vertical-align: middle;
+        line-height: 16px;
+        font-style: normal;
+        font-weight: normal;
+        font-variant: normal;
+        text-transform: none;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        outline: 0;
+        margin-left: -2px;
+      }
+
+      &:active {
+        box-shadow: none;
+        background-color: rgba(255, 255, 255, 0.2);
+        color: var(--text-color-caption);
+        border-color: var(--text-color-caption);
+      }
+      &:focus-within {
+        box-shadow: none;
+        background-color: rgba(255, 255, 255, 0.2);
+        color: var(--text-color-caption);
+        border-color: var(--text-color-caption);
+      }
+      &:focus {
+        box-shadow: none;
+        background-color: rgba(255, 255, 255, 0.2);
+        color: var(--text-color-caption);
+        border-color: var(--text-color-caption);
+      }
+    }
+    //typ icon another line-height
+    .ag-theme-balham .ag-cell {
+      line-height: 11px;
+    }
     // versions data table
     &.versions {
       .rdt-row.row-grid {
