@@ -159,7 +159,7 @@ export class QuickSearchService {
     return this.userService.getSettings(this.STORAGE_KEY_FILTERS_VISIBLE).pipe(
       // return this.appCacheService.getItem(this.STORAGE_KEY_FILTERS_VISIBLE).pipe(
       tap((f) => (this.filtersVisibility = (f && f.visible) || [])),
-      map((f) => this.filters && f.visible)
+      map((f) => f && f.visible)
     );
   }
 
