@@ -33,10 +33,8 @@ export class ClipboardLinkActionComponent extends DmsObjectTarget implements Sim
     selection.forEach((element) => {
       const title = `${element.data[SecondaryObjectTypeField.TITLE]}`;
       if (window.location.href.includes('/versions')) {
-        // clipboardText += urlPrefix + '/versions/' + element.id + '&version=' + element.version + '\n';
         clipboardText += `${title}: ${urlPrefix}/versions/${element.id}&version=${element.version}\n`;
       } else {
-        // clipboardText += urlPrefix + '/object/' + element.id + '\n';
         clipboardText += `${title}: ${urlPrefix}/object/${element.id}\n`;
       }
     });
@@ -54,7 +52,6 @@ export class ClipboardLinkActionComponent extends DmsObjectTarget implements Sim
     } else {
       this.toast.error(this.translate.instant('yuv.client.action.clipboard.link.error'));
     }
-    console.log(clipboardText);
     return of(copySuccess);
   }
 }
