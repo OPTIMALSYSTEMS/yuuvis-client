@@ -197,8 +197,7 @@ export class ObjectCreateComponent implements OnDestroy {
    * @param objectType The object type to be selected
    */
   selectObjectType(objectType: ObjectType) {
-    console.log(objectType);
-
+    this.formState = null;
     this.selectedObjectType = objectType;
     this.title = objectType ? this.system.getLocalizedResource(`${objectType.id}_label`) : this.labels.defaultTitle;
     this.objCreateServcice.setNewState({ busy: true });
@@ -297,6 +296,7 @@ export class ObjectCreateComponent implements OnDestroy {
   }
 
   reset() {
+    this.formState = null;
     this.objectForm.resetForm();
   }
 
