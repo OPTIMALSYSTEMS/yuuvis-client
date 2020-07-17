@@ -66,6 +66,7 @@ export class ColumnConfigComponent implements OnInit {
   // The column config that has been fetched from the backend (for being able to reset)
   private _loadedColumnConfig: ColumnConfig;
   moreColumnsAvailable: boolean;
+  showCancelButton: boolean;
   columnConfigDirty: boolean;
   busy: boolean;
   error: string;
@@ -91,6 +92,12 @@ export class ColumnConfigComponent implements OnInit {
    * to the backend. Will emitt the updated column configuration.
    */
   @Output() configSaved = new EventEmitter<ColumnConfig>();
+  /**
+   * Adding a listener for this output will show a cancel button
+   * inside the components action bar and an event will be emitted
+   * once the button has been clicked.
+   */
+  @Output() cancel = new EventEmitter();
 
   constructor(
     private systemService: SystemService,
@@ -269,5 +276,7 @@ export class ColumnConfigComponent implements OnInit {
     return this.systemService.getObjectType(id, true);
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.showCancelButton = !!this.cancel.observers.length;
+  }
 }

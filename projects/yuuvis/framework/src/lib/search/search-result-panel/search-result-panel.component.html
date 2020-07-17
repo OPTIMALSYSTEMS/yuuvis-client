@@ -19,5 +19,6 @@
 
 <!-- column config editor overlay -->
 <ng-template #tplColumnConfigPicker let-data let-popover="popover">
-  <yuv-column-config [options]="data" (configSaved)="columnConfigChanged($event, popover)"></yuv-column-config>
+  <yuv-column-config [options]="data" (cancel)="columnConfigCanceled(popover)"
+    (configSaved)="columnConfigChanged($event, popover)"></yuv-column-config>
 </ng-template>

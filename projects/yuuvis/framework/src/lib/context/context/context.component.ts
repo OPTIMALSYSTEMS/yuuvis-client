@@ -221,10 +221,13 @@ export class ContextComponent implements OnInit, OnDestroy {
 
   columnConfigChanged(columnConfig: ColumnConfig, popoverRef?: PopoverRef) {
     this.refresh(true);
-
     if (popoverRef) {
       popoverRef.close();
     }
+  }
+
+  columnConfigCanceled(popoverRef: PopoverRef) {
+    popoverRef.close();
   }
 
   ngOnInit() {}
