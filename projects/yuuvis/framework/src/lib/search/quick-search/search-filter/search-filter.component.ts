@@ -63,9 +63,14 @@ export class SearchFilterComponent implements OnInit {
   private parentID: SearchFilter;
 
   @Input() set query(q: SearchQuery) {
-    this._query = new SearchQuery(q.toQueryJson());
-    this.filterQuery = new SearchQuery(q.toQueryJson());
-    this.setupFilterPanel();
+    if (q) {
+      this._query = new SearchQuery(q.toQueryJson());
+      this.filterQuery = new SearchQuery(q.toQueryJson());
+      this.setupFilterPanel();
+    } else {
+      this._query = null;
+      this.filterQuery = null;
+    }
   }
 
   @Output() filterChange = new EventEmitter<SearchQuery>();
