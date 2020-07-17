@@ -1,4 +1,4 @@
-<ng-container *ngIf="filterQuery">
+<ng-container *ngIf="_query">
   <section class="main">
     <yuv-grouped-select toggleable="true" enableSelectAll="true" [multiple]="true" [singleSelect]="false"
       [groups]="availableTypeGroups" [selection]="typeSelection" (change)="onTypeChange($event)"

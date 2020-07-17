@@ -58,7 +58,7 @@ export class SearchFilterComponent implements OnInit {
   storedFilters: Selectable[] = [];
 
   filesizePipe: FileSizePipe;
-  private _query: SearchQuery;
+  _query: SearchQuery;
   private filterQuery: SearchQuery;
   private parentID: SearchFilter;
 
