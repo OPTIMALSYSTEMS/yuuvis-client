@@ -11,6 +11,7 @@
 
   <yuv-search-result class="content" [query]="_searchQuery" applyColumnConfig="true" [preSelectItems]="preSelectItems"
     [layoutOptionsKey]="layoutOptionsKey" (viewModeChanged)="onViewModeChanged($event)"
+    [showFilterPanel]="showFilterPanel" (filterPanelToggled)="onFilterPanelToggled($event)"
     (itemsSelected)="onItemsSelected($event)" (queryChanged)="onQueryChangedFromWithin($event)"
     (rowDoubleClicked)="rowDoubleClicked.emit($event)">
   </yuv-search-result>

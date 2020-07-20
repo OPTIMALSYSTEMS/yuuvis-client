@@ -1,11 +1,18 @@
 <div class="content grid-container" [ngClass]="{ 'has-query': !!query }">
-  <as-split gutterDblClickDuration="300" (gutterDblClick)="filterSize = (filterSize ? 0 : 25)">
-    <as-split-area [size]="filterSize">
+
+
+  <div class="filterCollapsed" (click)="showFilterPanel = true" *ngIf="!showFilterPanel">
+    <yuv-icon icon="filter"></yuv-icon>{{'yuv.framework.search-result.filter.panel.title'|translate}}
+  </div>
+
+
+  <as-split gutterDblClickDuration="300" (gutterDblClick)="showFilterPanel = false">
+    <as-split-area [size]="filterSize" [order]="0" *ngIf="showFilterPanel">
       <yuv-search-filter [query]="query" [layoutOptionsKey]="layoutOptionsKey" (filterChange)="onFilterChanged($event)">
       </yuv-search-filter>
     </as-split-area>
 
-    <as-split-area [size]="100 - filterSize">
+    <as-split-area [size]="100 - filterSize" [order]="1">
       <div class="table" [yuvBusyOverlay]="busy">
         <ng-template #tplEmpty>
           <div class="empty" *ngIf="query" translate>yuv.framework.search-result.empty</div>
