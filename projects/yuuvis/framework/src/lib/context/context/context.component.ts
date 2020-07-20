@@ -15,6 +15,7 @@ import { takeUntilDestroy } from 'take-until-destroy';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { FileDropOptions } from '../../directives/file-drop/file-drop.directive';
 import { CellRenderer } from '../../services/grid/grid.cellrenderer';
+import { LayoutService } from '../../services/layout/layout.service';
 import { edit, kebap } from '../../svg.generated';
 import { PopoverConfig } from './../../popover/popover.interface';
 import { PopoverRef } from './../../popover/popover.ref';
@@ -57,6 +58,7 @@ export class ContextComponent implements OnInit, OnDestroy {
   contextIcon: string;
   actionMenuVisible = false;
   actionMenuSelection: DmsObject[] = [];
+  showFilterPanel: boolean;
 
   _layoutOptionsKeys = {
     children: null,
@@ -120,6 +122,11 @@ export class ContextComponent implements OnInit, OnDestroy {
       this._layoutOptionsKeys.children = `${lok}.children`;
       this._layoutOptionsKeys.recent = `${lok}.recent`;
       this._layoutOptionsKeys.search = `${lok}.search`;
+
+      // load own settings
+      this.layoutService.loadLayoutOptions('yuv-context', 'layout').subscribe((o: any) => {
+        this.showFilterPanel = o ? o.showFilterPanel || false : false;
+      });
     }
   }
 
@@ -138,6 +145,7 @@ export class ContextComponent implements OnInit, OnDestroy {
     private dmsService: DmsService,
     private iconRegistry: IconRegistryService,
     private popoverService: PopoverService,
+    private layoutService: LayoutService,
     private eventService: EventService,
     private systemService: SystemService
   ) {
@@ -161,6 +169,11 @@ export class ContextComponent implements OnInit, OnDestroy {
         this.actionMenuVisible = true;
       });
     }
+  }
+
+  onFilterPanelToggled(visible: boolean) {
+    this.showFilterPanel = visible;
+    this.layoutService.saveLayoutOptions('yuv-context', 'layout', { showFilterPanel: visible }).subscribe();
   }
 
   onFilesDropped(files: File[]) {

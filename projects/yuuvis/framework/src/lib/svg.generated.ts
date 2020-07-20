@@ -70,6 +70,10 @@ export const favorite = {
  name: 'favorite', 
  data: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>',
 };
+export const filter = {
+ name: 'filter', 
+ data: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M3 2h18v2h-.08L15 9.92v12.99l-6-6v-7L3.09 4H3V2m8 14.08l2 2V9h.09l5-5H5.92l5 5H11v7.08z"/></svg>',
+};
 export const finalized = {
  name: 'finalized', 
  data: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="none" d="M0 0v24h24V0H0zm9 13l3 3 5.5-5.5L19 12l-7 7-4.5-4.5L9 13z"/><path d="M21.4 11.6l-9-9C12 2.2 11.5 2 11 2H4c-1.1 0-2 .9-2 2v7c0 .5.2 1 .6 1.4l9 9c.4.4.9.6 1.4.6s1-.2 1.4-.6l7-7c.4-.4.6-.9.6-1.4s-.2-1.1-.6-1.4zM5.5 7C4.7 7 4 6.3 4 5.5S4.7 4 5.5 4 7 4.7 7 5.5 6.3 7 5.5 7zM12 19l-4.5-4.5L9 13l3 3 5.5-5.5L19 12l-7 7z"/></svg>',

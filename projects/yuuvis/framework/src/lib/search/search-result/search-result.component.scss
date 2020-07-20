@@ -26,6 +26,27 @@ $yuv-result-header-height: 38px;
     grid-template-rows: 1fr;
     grid-template-areas: 'table';
     height: 100%;
+
+    &.has-query .filterCollapsed {
+      display: block;
+    }
+
+    .filterCollapsed {
+      display: none;
+      border-right: 1px solid var(--panel-divider-color);
+      writing-mode: vertical-lr;
+      color: var(--text-color-caption);
+      yuv-icon {
+        margin: calc(var(--app-pane-padding) / 2) 0;
+        opacity: 0.6;
+        padding: 4px;
+      }
+
+      &:hover {
+        color: var(--color-accent);
+        cursor: pointer;
+      }
+    }
   }
 
   .table {

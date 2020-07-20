@@ -50,6 +50,10 @@ export class SearchResultPanelComponent {
    * will be used to store component specific settings using the layout service.
    */
   @Input() layoutOptionsKey: string;
+  /**
+   * Whether or not to expand the filter panel
+   */
+  @Input() showFilterPanel: boolean;
 
   /**
    * Emitted when column sizes of the contained result list table have been changed.
@@ -71,6 +75,10 @@ export class SearchResultPanelComponent {
    * Emitted when the query has been changed and a new descriptor has been set
    */
   @Output() queryDescriptionChange = new EventEmitter<string>();
+  /**
+   * Emitted when the visibility of the filter panel changes
+   */
+  @Output() filterPanelToggled = new EventEmitter<boolean>();
 
   constructor(
     @Attribute('applyColumnConfig') public applyColumnConfig: boolean,
@@ -116,6 +124,12 @@ export class SearchResultPanelComponent {
   onQueryChangedFromWithin(searchQuery: SearchQuery) {
     this.columnConfigInput.sortOptions = searchQuery && searchQuery.sortOptions;
     this.queryChanged.emit(searchQuery);
+  }
+
+  onFilterPanelToggled(visible: boolean) {
+    if (this.filterPanelToggled) {
+      this.filterPanelToggled.emit(visible);
+    }
   }
 
   // onSearchResultOptionsChanged(options: ResponsiveDataTableOptions) {
