@@ -5,6 +5,13 @@ import { Selectable, SelectableGroup } from './../../../grouped-select/grouped-s
 /**
  * Internal modal picker component for choosing target object type(s) or object type fields
  * within the quick-search component.
+ *
+ * [Screenshot](../assets/images/yuv-quick-search-picker.gif)
+ * 
+ * @example
+ *  <yuv-quick-search-picker [data]="data" (cancel)="onCancel(someParameter)"
+    (select)="onSelect(firstParam, $event, secondParam)">
+  </yuv-quick-search-picker>
  */
 @Component({
   selector: 'yuv-quick-search-picker',
@@ -14,6 +21,10 @@ import { Selectable, SelectableGroup } from './../../../grouped-select/grouped-s
 export class QuickSearchPickerComponent {
   private _data: QuickSearchPickerData;
 
+  /**
+   * Input data for the quick search picker component.
+   * The type of data item provided actual items based on the given type.
+   */
   @Input()
   set data(data: QuickSearchPickerData) {
     this._data = data;
@@ -35,7 +46,14 @@ export class QuickSearchPickerComponent {
     }
   }
 
+  /**
+   * Emitted, when an object type or object types have been selected.
+   */
   @Output() select = new EventEmitter<Selectable[]>();
+
+  /**
+   * Emittet when a component dialog has been closed.
+   */
   @Output() cancel = new EventEmitter<any>();
 
   groups: SelectableGroup[];

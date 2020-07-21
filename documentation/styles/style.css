@@ -58,8 +58,8 @@ pre[class*='language-'] {
   background: #484f54;
 }
 
-.links .readme {
-  padding-left: 0px;
+.menu ul.list li.chapter ul.links .readme {
+  margin-left: -20px;
 }
 
 #book-search-input {

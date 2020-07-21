@@ -21,6 +21,10 @@ import { DynamicDate } from '../../form/elements/datetime/datepicker/datepicker.
 import { DatepickerService } from '../../form/elements/datetime/datepicker/service/datepicker.service';
 import { Selectable, SelectableGroup } from '../../grouped-select';
 import { FileSizePipe } from '../../pipes/filesize.pipe';
+
+/**
+ * Use QuickSearchService to provide `filter opportunity` for target object types.
+ */
 @Injectable({
   providedIn: 'root'
 })
@@ -57,7 +61,10 @@ export class QuickSearchService {
     ContentStreamField.DIGEST,
     ContentStreamField.ARCHIVE_PATH
   ];
-
+  /**
+   *
+   * @ignore
+   */
   constructor(
     public translate: TranslateService,
     private systemService: SystemService,

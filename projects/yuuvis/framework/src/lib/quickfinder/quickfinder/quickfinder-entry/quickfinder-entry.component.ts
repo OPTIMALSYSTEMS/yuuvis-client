@@ -7,7 +7,9 @@ export interface QuickfinderEntry {
   title: string;
   description: string;
 }
-
+/**
+ * @ignore
+ */
 @Component({
   selector: 'yuv-quickfinder-entry',
   templateUrl: './quickfinder-entry.component.html',

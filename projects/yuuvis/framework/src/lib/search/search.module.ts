@@ -35,7 +35,10 @@ const searchComponents = [
   SearchFilterConfigComponent,
   SearchFilterFormComponent
 ];
-
+/**
+ * Module providing components for extensible search of target object types, filter those objects and rendering a search result as well.
+ *
+ */
 @NgModule({
   imports: [
     CommonModule,

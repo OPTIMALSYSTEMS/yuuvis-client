@@ -11,6 +11,15 @@ import { arrowNext, edit, listModeDefault, listModeGrid, listModeSimple, refresh
 
 /**
  * Component showing a list of all versions of a dms object.
+ *
+ * [Screenshot](../assets/images/yuv-version-list.gif)
+ *
+ * @example
+ *
+ * <yuv-version-list [objectID]="objectID" [versions]="versions" (editRecentClick)="onEditRecentClick($event)" (selectionChange)="onSelectionChange($event)"
+ * [layoutOptionsKey]="layoutOptionsKey"></yuv-version-list>
+ *
+ *
  */
 @Component({
   selector: 'yuv-version-list',

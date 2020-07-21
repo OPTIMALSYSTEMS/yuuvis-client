@@ -8,7 +8,16 @@ import { PopoverRef } from '../../popover/popover.ref';
 import { PopoverService } from '../../popover/popover.service';
 import { kebap, refresh, search } from '../../svg.generated';
 import { SearchResultComponent } from '../search-result/search-result.component';
-
+/**
+ * This component wraps a `SearchResultComponent`.
+ *
+ * [Screenshot](../assets/images/yuv-search-result-panel.gif)
+ *
+ * @example
+ *  <yuv-search-result-panel [query]="query" [selectItems]="selectedItems"
+ * (queryChanged)="onQueryChange($event)" [showFilterPanel]="showFilterPanel" [layoutOptionsKey]="layoutOptionsKey" (itemsSelected)="select($event)"
+ * (filterPanelToggled)="onFilterPanelToggled($event)" (rowDoubleClicked)="onRowDoubleClicked($event)"></yuv-search-result-panel>
+ */
 @Component({
   selector: 'yuv-search-result-panel',
   templateUrl: './search-result-panel.component.html',

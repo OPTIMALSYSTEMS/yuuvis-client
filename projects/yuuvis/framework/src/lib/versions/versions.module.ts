@@ -9,6 +9,9 @@ import { VersionListComponent } from './version-list/version-list.component';
 
 const versionComponents = [VersionListComponent];
 
+/**
+ * Module is providing a `VersionListComponent`.
+ */
 @NgModule({
   declarations: [...versionComponents],
   exports: [...versionComponents],
