@@ -38,4 +38,9 @@ export class TestActionMenuComponent implements OnInit {
       this.systemService.getObjectType('appAsv:asvemail')
     );
   }
+
+  setDmsObjectInput(dmsObject: DmsObject) {
+    this.actionMenuSelection = [dmsObject];
+    this.actionMenuVisible = !this.actionMenuVisible;
+  }
 }

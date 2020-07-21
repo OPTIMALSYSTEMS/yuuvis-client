@@ -292,6 +292,10 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
         }
       });
     }
+    if (!this.deviceService.isDesktop) {
+      const first = columns.find((c) => c.pinned === 'left' || c.pinned === true) || columns[0];
+      first.checkboxSelection = true;
+    }
     return columns;
   }
 

@@ -417,8 +417,8 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
 
       ctrl = new ObjectFormGroup({});
       ctrl._eoFormGroup = {
-        label: formElement.label,
-        //layoutgroup: formElement.layoutgroup,
+        // label: formElement.label,
+        label: formElement.name ? this.systemService.getLocalizedResource(`${formElement.name}_label`) || formElement.name : '???',
         layout: formElement.layout,
         type: formElement.type
       };
@@ -463,6 +463,7 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
         disabled: controlDisabled
       });
 
+      formElement.label = formElement.name ? this.systemService.getLocalizedResource(`${formElement.name}_label`) || formElement.name : '???';
       formElement.readonly = controlDisabled;
       // we are using an internal type to distinguish between the components
       // to be used to render certain form elements

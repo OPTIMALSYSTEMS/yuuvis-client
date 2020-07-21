@@ -17,7 +17,7 @@ export const datetimeElements = [
   },
   {
     readonly: false,
-    name: 'datetime:two',
+    name: 'datetime:default',
     label: 'default datetime',
     description: '',
     type: 'datetime',
@@ -25,7 +25,7 @@ export const datetimeElements = [
   },
   {
     readonly: false,
-    name: 'datetime:three',
+    name: 'datetime:with:value',
     label: 'datetime with time',
     description: 'a description',
     type: 'datetime',
@@ -42,7 +42,7 @@ export const datetimeElements = [
   },
   {
     readonly: false,
-    name: 'date:four:with:value',
+    name: 'date:with:value',
     label: 'date with value',
     resolution: 'date',
     description: 'a description',
@@ -51,7 +51,7 @@ export const datetimeElements = [
   },
   {
     readonly: false,
-    name: 'date:five:required',
+    name: 'date:required',
     label: 'date required',
     resolution: 'date',
     description: 'required date field',

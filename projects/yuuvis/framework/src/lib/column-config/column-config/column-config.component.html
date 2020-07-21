@@ -36,10 +36,14 @@
       </div>
     </div>
 
-    <div class="actions" *ngIf="columnConfigDirty">
-
-      <button (click)="revert()">{{'yuv.framework.column-config.button.revert'|translate}}</button>
-      <button class="primary" (click)="save()">{{'yuv.framework.column-config.button.save'|translate}}</button>
+    <div class="actions" *ngIf="showCancelButton || columnConfigDirty">
+      <div class="left">
+        <button *ngIf="showCancelButton" (click)="cancel.emit()">{{'yuv.framework.shared.cancel'|translate}}</button>
+      </div>
+      <div class="right" *ngIf="columnConfigDirty">
+        <button (click)="revert()">{{'yuv.framework.column-config.button.revert'|translate}}</button>
+        <button class="primary" (click)="save()">{{'yuv.framework.column-config.button.save'|translate}}</button>
+      </div>
     </div>
   </ng-container>
 

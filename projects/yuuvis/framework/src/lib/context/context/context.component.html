@@ -15,8 +15,9 @@
     <p-tabPanel [id]="'children'" [header]="'yuv.framework.context.tabs.children.title' | translate">
       <ng-template pTemplate="content">
         <!-- context children search result -->
-        <yuv-search-result class="content" [query]="contextChildrenQuery" [preSelectItems]="preSelectItems"
-          applyColumnConfig="true" [layoutOptionsKey]="_layoutOptionsKeys.children" (itemsSelected)="select($event)">
+        <yuv-search-result [showFilterPanel]="showFilterPanel" (filterPanelToggled)="onFilterPanelToggled($event)"
+          class="content" [query]="contextChildrenQuery" [preSelectItems]="preSelectItems" applyColumnConfig="true"
+          [layoutOptionsKey]="_layoutOptionsKeys.children" (itemsSelected)="select($event)">
         </yuv-search-result>
       </ng-template>
     </p-tabPanel>
@@ -25,8 +26,9 @@
       [header]="'yuv.framework.context.tabs.recent.title' | translate">
       <ng-template pTemplate="content">
         <!-- recent item search result -->
-        <yuv-search-result class="content" [query]="recentItemsQuery" [preSelectItems]="preSelectItems"
-          applyColumnConfig="true" [layoutOptionsKey]="_layoutOptionsKeys.recent" (itemsSelected)="select($event)">
+        <yuv-search-result [showFilterPanel]="showFilterPanel" (filterPanelToggled)="onFilterPanelToggled($event)"
+          class="content" [query]="recentItemsQuery" [preSelectItems]="preSelectItems" applyColumnConfig="true"
+          [layoutOptionsKey]="_layoutOptionsKeys.recent" (itemsSelected)="select($event)">
         </yuv-search-result>
       </ng-template>
     </p-tabPanel>
@@ -35,7 +37,8 @@
       [header]="'yuv.framework.context.tabs.search-result.title' | translate">
       <ng-template pTemplate="content">
         <!-- context search result -->
-        <yuv-search-result class="content" [query]="contextSearchQuery" [preSelectItems]="preSelectItems"
+        <yuv-search-result [showFilterPanel]="showFilterPanel" (filterPanelToggled)="onFilterPanelToggled($event)"
+          class="content" [query]="contextSearchQuery" [preSelectItems]="preSelectItems"
           [layoutOptionsKey]="_layoutOptionsKeys.search" applyColumnConfig="true" (itemsSelected)="select($event)">
         </yuv-search-result>
       </ng-template>
@@ -47,5 +50,6 @@
 
 <!-- column config editor overlay -->
 <ng-template #tplColumnConfigPicker let-data let-popover="popover">
-  <yuv-column-config [options]="data" (configSaved)="columnConfigChanged($event, popover)"></yuv-column-config>
+  <yuv-column-config [options]="data" (cancel)="columnConfigCanceled(popover)"
+    (configSaved)="columnConfigChanged($event, popover)"></yuv-column-config>
 </ng-template>
