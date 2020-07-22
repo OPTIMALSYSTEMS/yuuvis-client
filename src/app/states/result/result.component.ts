@@ -4,8 +4,13 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PendingChangesService, Screen, ScreenService, SearchQuery, TranslateService, Utils } from '@yuuvis/core';
+import { LayoutService } from '@yuuvis/framework';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { AppSearchService } from '../../service/app-search.service';
+
+export interface ResultStateLayoutOptions {
+  showFilterPanel: boolean;
+}
 
 @Component({
   selector: 'yuv-result',
@@ -18,6 +23,7 @@ export class ResultComponent implements OnInit, OnDestroy {
   searchQuery: SearchQuery;
   selectedItems: string[] = [];
   smallScreen: boolean;
+  showFilterPanel: boolean;
 
   get layoutOptionsKey() {
     return `${this.STORAGE_KEY}.${(this.searchQuery && this.searchQuery.targetType) || 'mixed'}`;
@@ -31,11 +37,15 @@ export class ResultComponent implements OnInit, OnDestroy {
     private location: PlatformLocation,
     private pendingChanges: PendingChangesService,
     private title: Title,
+    private layoutService: LayoutService,
     private route: ActivatedRoute,
     private router: Router
   ) {
     this.screenService.screenChange$.pipe(takeUntilDestroy(this)).subscribe((screen: Screen) => {
       this.smallScreen = screen.mode === ScreenService.MODE.SMALL;
+    });
+    this.layoutService.loadLayoutOptions('yuv-result', 'state').subscribe((o: ResultStateLayoutOptions) => {
+      this.showFilterPanel = o ? o.showFilterPanel || false : false;
     });
   }
 
@@ -54,6 +64,11 @@ export class ResultComponent implements OnInit, OnDestroy {
     this.objectDetailsID = this.selectedItems[0];
   }
 
+  onFilterPanelToggled(visible: boolean) {
+    this.showFilterPanel = visible;
+    this.layoutService.saveLayoutOptions('yuv-result', 'state', { showFilterPanel: visible }).subscribe();
+  }
+
   onRowDoubleClicked(rowEvent: RowEvent) {
     if (rowEvent) {
       Utils.navigate((rowEvent.event as MouseEvent).ctrlKey, this.router, ['/object/' + rowEvent.data.id]);
@@ -67,7 +82,7 @@ export class ResultComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.titleService.setTitle(this.translate.instant('yuv.client.state.result.title'));
     // extract the query from the route params
-    this.route.queryParamMap.pipe(takeUntilDestroy(this)).subscribe(params => {
+    this.route.queryParamMap.pipe(takeUntilDestroy(this)).subscribe((params) => {
       this.searchQuery = params.get('query') ? new SearchQuery(JSON.parse(params.get('query'))) : null;
       this.appSearch.setQuery(this.searchQuery);
     });

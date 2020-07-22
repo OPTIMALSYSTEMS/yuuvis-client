@@ -24,7 +24,7 @@ import { IconRegistryService } from '../../common/components/icon/service/iconRe
 import { ResponsiveDataTableComponent, ViewMode } from '../../components/responsive-data-table/responsive-data-table.component';
 import { ResponsiveTableData } from '../../components/responsive-data-table/responsive-data-table.interface';
 import { GridService } from '../../services/grid/grid.service';
-import { arrowLast, arrowNext, clear, listModeDefault, listModeGrid, listModeSimple, search, settings } from '../../svg.generated';
+import { arrowLast, arrowNext, clear, filter, listModeDefault, listModeGrid, listModeSimple, search, settings } from '../../svg.generated';
 
 /**
  * Component rendering a search result within a result list.
@@ -47,8 +47,23 @@ export class SearchResultComponent implements OnDestroy {
   private _rows: any[];
   private _hasPages = false;
   private _itemsSupposedToBeSelected: string[];
+  private _showFilterPanel: boolean;
   pagingForm: FormGroup;
   busy: boolean;
+
+  /**
+   * Whether or not to expand the filter panel
+   */
+  @Input() set showFilterPanel(b: boolean) {
+    if (this._showFilterPanel !== b) {
+      this._showFilterPanel = b;
+      this.filterPanelToggled.emit(b);
+    }
+  }
+
+  get showFilterPanel(): boolean {
+    return this._showFilterPanel;
+  }
 
   tableData: ResponsiveTableData;
   // object type shown in the result list, will be null for mixed results
@@ -60,7 +75,7 @@ export class SearchResultComponent implements OnDestroy {
     page: number;
   };
 
-  // @Input() options: ResponsiveDataTableOptions;
+  filterSize = 25;
 
   @ViewChild('dataTable') dataTable: ResponsiveDataTableComponent;
 
@@ -114,6 +129,10 @@ export class SearchResultComponent implements OnDestroy {
    * emitted when the view mode of the underlying data table changes
    */
   @Output() viewModeChanged = new EventEmitter<ViewMode>();
+  /**
+   * Emitted when the visibility of the filter panel changes
+   */
+  @Output() filterPanelToggled = new EventEmitter<boolean>();
 
   set hasPages(count) {
     this._hasPages = count;
@@ -145,7 +164,7 @@ export class SearchResultComponent implements OnDestroy {
     private fb: FormBuilder,
     private iconRegistry: IconRegistryService
   ) {
-    this.iconRegistry.registerIcons([settings, clear, search, arrowNext, arrowLast, listModeDefault, listModeGrid, listModeSimple]);
+    this.iconRegistry.registerIcons([filter, settings, clear, search, arrowNext, arrowLast, listModeDefault, listModeGrid, listModeSimple]);
 
     this.pagingForm = this.fb.group({
       page: ['']

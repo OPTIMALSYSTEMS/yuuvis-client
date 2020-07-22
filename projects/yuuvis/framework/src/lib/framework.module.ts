@@ -36,55 +36,28 @@ import { YuvVersionsModule } from './versions/versions.module';
  * - PrimeNG [OverlayPanelModule](https://www.primefaces.org/primeng/#/overlaypanel)
  */
 
+const modules = [
+  YuvGroupedSelectModule,
+  YuvFormModule,
+  YuvPopoverModule,
+  YuvComponentsModule,
+  YuvSearchModule,
+  YuvVersionsModule,
+  YuvUserModule,
+  YuvCommonModule,
+  YuvObjectDetailsModule,
+  YuvColumnConfigModule,
+  YuvObjectCreateModule,
+  YuvQuickfinderModule,
+  YuvPipesModule,
+  OverlayPanelModule,
+  YuvActionModule,
+  YuvCoreSharedModule
+];
+
 @NgModule({
-  imports: [
-    CommonModule,
-    BrowserAnimationsModule,
-    YuvGroupedSelectModule,
-    YuvFormModule,
-    YuvPopoverModule,
-    YuvSearchModule,
-    YuvVersionsModule,
-    YuvUserModule,
-    YuvCommonModule,
-    YuvObjectDetailsModule,
-    YuvColumnConfigModule,
-    YuvObjectCreateModule,
-    YuvQuickfinderModule,
-    YuvPipesModule,
-    OverlayPanelModule,
-    YuvActionModule,
-    YuvCoreSharedModule,
-    YuvComponentsModule,
-    AngularSplitModule.forRoot(),
-    YuvCoreModule.forRoot(),
-    ToastrModule.forRoot()
-  ],
-  exports: [
-    YuvDirectivesModule,
-    YuvFormModule,
-    YuvGroupedSelectModule,
-    YuvPopoverModule,
-    YuvComponentsModule,
-    YuvObjectDetailsModule,
-    YuvColumnConfigModule,
-    YuvPipesModule,
-    YuvSearchModule,
-    YuvVersionsModule,
-    YuvUserModule,
-    YuvComponentsModule,
-    YuvObjectFormModule,
-    YuvContextModule,
-    YuvQuickfinderModule,
-    YuvCommonModule,
-    YuvCoreModule,
-    OverlayPanelModule,
-    AngularSplitModule,
-    YuvCoreSharedModule,
-    YuvObjectCreateModule,
-    YuvActionModule,
-    ToastrModule
-  ],
+  imports: [CommonModule, BrowserAnimationsModule, ...modules, AngularSplitModule.forRoot(), YuvCoreModule.forRoot(), ToastrModule.forRoot()],
+  exports: [YuvDirectivesModule, ...modules, YuvObjectFormModule, YuvContextModule, YuvCoreModule, AngularSplitModule, ToastrModule],
   providers: [
     {
       provide: HTTP_INTERCEPTORS,

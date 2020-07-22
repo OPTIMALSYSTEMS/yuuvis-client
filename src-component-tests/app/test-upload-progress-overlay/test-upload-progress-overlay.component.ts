@@ -7,7 +7,8 @@ import { UploadResult } from './../../../projects/yuuvis/core/src/lib/service/up
 @Component({
   selector: 'yuv-test-upload-progress-overlay',
   templateUrl: './test-upload-progress-overlay.component.html',
-  styleUrls: ['./test-upload-progress-overlay.component.scss']
+  styleUrls: ['./test-upload-progress-overlay.component.scss'],
+  host: { class: 'yuv-test-container' }
 })
 export class TestUploadProgressOverlayComponent implements OnInit {
   progress: ProgressStatus;
@@ -66,7 +67,7 @@ export class TestUploadProgressOverlayComponent implements OnInit {
         t++;
         if (t === 100) {
           // this.progress.items = this.progress.items.filter(s => s.id !== id);
-          const idx = this.progress.items.findIndex(s => s.id === id);
+          const idx = this.progress.items.findIndex((s) => s.id === id);
           this.progress.items[idx].result = this.uploadResults[idx];
         }
       })

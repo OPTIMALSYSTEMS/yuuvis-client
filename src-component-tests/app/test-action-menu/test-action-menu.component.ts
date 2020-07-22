@@ -1,12 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import {DmsObject, SystemService } from '@yuuvis/core';
-import {BaseObjectTypeField, SecondaryObjectTypeField} from '../../../projects/yuuvis/core/src/lib/service/system/system.enum';
-import {DmsObjectRights} from '../../../projects/yuuvis/core/src/lib/model/dms-object.interface';
+import { DmsObject, SystemService } from '@yuuvis/core';
 
 @Component({
   selector: 'yuv-test-action-menu',
   templateUrl: './test-action-menu.component.html',
-  styleUrls: ['./test-action-menu.component.scss']
+  styleUrls: ['./test-action-menu.component.scss'],
+  host: { class: 'yuv-test-container' }
 })
 export class TestActionMenuComponent implements OnInit {
   actionMenuVisible: boolean;
@@ -26,7 +25,8 @@ export class TestActionMenuComponent implements OnInit {
   }
 
   getDmsObjectDummy() {
-    return new DmsObject({
+    return new DmsObject(
+      {
         objectTypeId: 'appAsv:asvemail',
         fields: new Map<string, any>(),
         permissions: {
@@ -37,5 +37,10 @@ export class TestActionMenuComponent implements OnInit {
       },
       this.systemService.getObjectType('appAsv:asvemail')
     );
+  }
+
+  setDmsObjectInput(dmsObject: DmsObject) {
+    this.actionMenuSelection = [dmsObject];
+    this.actionMenuVisible = !this.actionMenuVisible;
   }
 }

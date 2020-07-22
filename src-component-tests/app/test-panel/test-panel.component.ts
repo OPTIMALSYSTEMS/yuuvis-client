@@ -5,7 +5,8 @@ import { favorite, finalized, kebap, lock, refresh, resubmission, subscription }
 @Component({
   selector: 'yuv-test-panel',
   templateUrl: './test-panel.component.html',
-  styleUrls: ['./test-panel.component.scss']
+  styleUrls: ['./test-panel.component.scss'],
+  host: { class: 'yuv-test-container' }
 })
 export class TestPanelComponent implements OnInit {
   busy: boolean;

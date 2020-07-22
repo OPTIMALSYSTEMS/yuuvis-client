@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
-import { ApiBase, BackendService, BaseObjectTypeField, SearchFilter, SearchQuery, SystemService, SystemType, TranslateService, Utils } from '@yuuvis/core';
+import { BackendService, BaseObjectTypeField, SearchFilter, SearchQuery, SystemService, TranslateService, Utils } from '@yuuvis/core';
 import { forkJoin } from 'rxjs';
 import { IconRegistryService } from '../../../common/components/icon/service/iconRegistry.service';
 import { Selectable } from '../../../grouped-select';
@@ -9,6 +9,10 @@ import { PopoverConfig } from '../../../popover/popover.interface';
 import { PopoverService } from '../../../popover/popover.service';
 import { favorite, refresh, settings } from '../../../svg.generated';
 import { QuickSearchService } from '../quick-search.service';
+import { LayoutService } from './../../../services/layout/layout.service';
+import { listModeDefault, listModeSimple } from './../../../svg.generated';
+
+export type FilterViewMode = 'standard' | 'groups';
 
 @Component({
   selector: 'yuv-search-filter',
@@ -18,7 +22,32 @@ import { QuickSearchService } from '../quick-search.service';
 export class SearchFilterComponent implements OnInit {
   @ViewChild('tplFilterConfig') tplFilterConfig: TemplateRef<any>;
 
+  @Input() viewMode: FilterViewMode = 'standard';
+
+  /**
+   * Providing a layout options key will enable the component to persist its layout settings
+   * in relation to a host component. The key is basically a unique key for the host, which
+   * will be used to store component specific settings using the layout service.
+   */
+  private _layoutOptionsKey: string;
+  @Input() set layoutOptionsKey(lok: string) {
+    this._layoutOptionsKey = lok;
+    this.layoutService.loadLayoutOptions(this.layoutOptionsKey, 'yuv-search-filter').subscribe((o: any) => {
+      this._layoutOptions = o || {};
+      if (o && o.viewMode) {
+        this.viewMode = o.viewMode;
+      }
+    });
+  }
+
+  get layoutOptionsKey() {
+    return this._layoutOptionsKey + '.search-filter';
+  }
+
+  private _layoutOptions: any = {};
+
   availableTypeGroups: SelectableGroup[] = [];
+  availableObjectTypes: Selectable[] = [];
   typeSelection: string[] = [];
 
   availableFilterGroups: SelectableGroup[] = [];
@@ -29,14 +58,19 @@ export class SearchFilterComponent implements OnInit {
   storedFilters: Selectable[] = [];
 
   filesizePipe: FileSizePipe;
-  private _query: SearchQuery;
+  _query: SearchQuery;
   private filterQuery: SearchQuery;
   private parentID: SearchFilter;
 
   @Input() set query(q: SearchQuery) {
-    this._query = new SearchQuery(q.toQueryJson());
-    this.filterQuery = new SearchQuery(q.toQueryJson());
-    this.setupFilterPanel();
+    if (q) {
+      this._query = new SearchQuery(q.toQueryJson());
+      this.filterQuery = new SearchQuery(q.toQueryJson());
+      this.setupFilterPanel();
+    } else {
+      this._query = null;
+      this.filterQuery = null;
+    }
   }
 
   @Output() filterChange = new EventEmitter<SearchQuery>();
@@ -47,50 +81,54 @@ export class SearchFilterComponent implements OnInit {
     private systemService: SystemService,
     private iconRegistry: IconRegistryService,
     private quickSearchService: QuickSearchService,
-    private popoverService: PopoverService
+    private popoverService: PopoverService,
+    private layoutService: LayoutService
   ) {
-    this.iconRegistry.registerIcons([settings, refresh, favorite]);
+    this.iconRegistry.registerIcons([settings, refresh, favorite, listModeDefault, listModeSimple]);
+  }
+
+  private saveLayoutOptions(options: any) {
+    if (this._layoutOptionsKey) {
+      this._layoutOptions = { ...this._layoutOptions, ...options };
+      this.layoutService.saveLayoutOptions(this.layoutOptionsKey, 'yuv-search-filter', { ...this._layoutOptions }).subscribe();
+    }
+  }
+
+  onToggle(group: SelectableGroup) {
+    this.saveLayoutOptions({
+      collapsedGroups: (this._layoutOptions.collapsedGroups || []).filter((id) => id !== group.id).concat(group.collapsed ? [group.id] : [])
+    });
+  }
+
+  modeChange(viewMode: FilterViewMode) {
+    this.viewMode = viewMode;
+    this.saveLayoutOptions({ viewMode });
+    this.setupFilters(this.typeSelection, this.filterSelection, this.activeFilters);
   }
 
   private setupFilterPanel() {
     this.parentID = this.filterQuery.filters.find((f) => f.property === BaseObjectTypeField.PARENT_ID);
-    if (this.parentID) {
-      const data = {
-        query: {
-          statement: `SELECT COUNT(*), ${BaseObjectTypeField.OBJECT_TYPE_ID} FROM ${SystemType.OBJECT}
-          WHERE ${BaseObjectTypeField.PARENT_ID}='${this.parentID.firstValue}' GROUP BY ${BaseObjectTypeField.OBJECT_TYPE_ID}`
-        }
-      };
-      this.backend.post('/dms/objects/search', data, ApiBase.core).subscribe((res) => {
-        const types = res.objects.map((o) => ({
-          id: o.properties[BaseObjectTypeField.OBJECT_TYPE_ID].value,
-          label: this.systemService.getLocalizedResource(`${o.properties[BaseObjectTypeField.OBJECT_TYPE_ID].value}_label`),
-          count: o.properties.OBJECT_COUNT.value
-        }));
-        this.setupTypes(types);
-      });
-    } else {
-      // todo: get aggregation counts
-      this.setupTypes(
-        this.filterQuery.types.map((o) => ({
-          id: o,
-          label: this.systemService.getLocalizedResource(`${o}_label`),
-          count: 0
-        }))
-      );
+    this.quickSearchService.getActiveTypes(this.filterQuery).subscribe((res: any) => this.setupTypes(res));
+  }
+
+  private setupCollapsedGroups() {
+    if (this._layoutOptions && this._layoutOptions.collapsedGroups) {
+      [...this.availableFilterGroups, ...this.availableTypeGroups].forEach((g) => (g.collapsed = this._layoutOptions.collapsedGroups.includes(g.id)));
     }
   }
 
   private setupTypes(types: Selectable[]) {
     this.typeSelection = types.map((t) => t.id);
+    this.availableObjectTypes = [...types];
     this.availableTypeGroups = [
       {
         id: 'types',
-        label: 'Object Types',
+        label: this.translate.instant('yuv.framework.search.filter.object.types'),
         items: types
       }
     ];
-    this.setupFilters(this.typeSelection);
+    this.setupCollapsedGroups();
+    return this.setupFilters(this.typeSelection);
   }
 
   private setupFilters(typeSelection: string[], filterSelection?: string[], activeFilters?: Selectable[]) {
@@ -104,16 +142,30 @@ export class SearchFilterComponent implements OnInit {
       this.availableFilterGroups = [
         {
           id: 'active',
-          label: 'Active Filters',
+          label: this.translate.instant('yuv.framework.search.filter.active.filters'),
           items: this.activeFilters
         },
         {
           id: 'stored',
-          label: '★ Stored Filters',
+          label: this.translate.instant('yuv.framework.search.filter.stored.filters'),
           items: this.storedFilters.filter((f) => visible.includes(f.id))
         }
       ];
+
+      if (this.viewMode === 'groups') {
+        const filters = this.availableFilterGroups[1].items;
+        this.availableFilterGroups = [
+          this.availableFilterGroups[0],
+          {
+            id: 'custom',
+            label: this.translate.instant('yuv.framework.search.filter.custom.filters'),
+            items: filters.filter((f) => f.highlight)
+          },
+          ...this.quickSearchService.getAvailableFilterGroups(filters, this.availableObjectTypeFields)
+        ];
+      }
       this.filterSelection = filterSelection || this.activeFilters.map((a) => a.id);
+      this.setupCollapsedGroups();
     });
   }
 
@@ -142,17 +194,16 @@ export class SearchFilterComponent implements OnInit {
       .reduce((pre, cur) => (pre = pre.concat(cur)), [])
       .concat(this.parentID ? [this.parentID] : []);
     this.filterChange.emit(this.filterQuery);
+    this.aggregate();
   }
 
   onTypeChange(res: Selectable[]) {
-    this.setupFilters(
-      res.map((r) => r.id),
-      this.filterSelection,
-      this.activeFilters
-    );
+    this.typeSelection = res.map((r) => r.id);
+    this.setupFilters(this.typeSelection, this.filterSelection, this.activeFilters);
     // todo: remove unwanted filters
-    this.filterQuery.types = res.map((r) => r.id);
+    this.filterQuery.types = [...this.typeSelection];
     this.filterChange.emit(this.filterQuery);
+    this.aggregate();
   }
 
   saveSearch() {}
@@ -160,6 +211,17 @@ export class SearchFilterComponent implements OnInit {
   resetFilters() {
     this.query = new SearchQuery(this._query.toQueryJson());
     this.filterChange.emit(new SearchQuery(this._query.toQueryJson()));
+  }
+
+  aggregate() {
+    this.quickSearchService.getActiveTypes(this.filterQuery).subscribe((types: any) => {
+      this.availableObjectTypes.forEach((i) => {
+        const match = types.find((t) => t.id === i.id);
+        i.count = match ? match.count : 0;
+      });
+      // remove all empty types that are part of query
+      this.availableTypeGroups[0].items = this.availableObjectTypes.filter((t) => t.count || !this.filterQuery.types.find((id) => id === t.id));
+    });
   }
 
   ngOnInit(): void {}

@@ -5,7 +5,7 @@ Component library for creating applications facing a yuuvis® MOMENTUM backend.
 ## Intentions
 
 This library provides yuuvis developers with a collection of UI components for creating their own client applications.
-It depends on `@yuuvis/framework` and is also the foundation of the yuuvis® client application.
+It depends on `@yuuvis/core` and is also the foundation of the yuuvis® client application.
 
 ## Installation
 

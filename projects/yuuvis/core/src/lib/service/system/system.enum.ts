@@ -77,6 +77,7 @@ export enum ContentStreamAllowed {
 
 // Classifications
 export enum Classification {
+  STRING_CATALOG = 'catalog',
   STRING_ORGANIZATION = 'id:organization',
   STRING_REFERENCE = 'id:reference',
   STRING_EMAIL = 'email',
@@ -89,5 +90,6 @@ export enum Classification {
 // special internal types of object type fields
 export const InternalFieldType = {
   STRING_ORGANIZATION: 'string:organization',
-  STRING_REFERENCE: 'string:reference'
+  STRING_REFERENCE: 'string:reference',
+  STRING_CATALOG: 'string:catalog'
 };

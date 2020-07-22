@@ -1,9 +1,11 @@
 <form class="yuv-datetime-range" [formGroup]="rangeForm">
   <yuv-datetime *ngIf="searchOption === 'gtelte'" [pickerTitle]="pickerTitle" [withTime]="withTime"
-    formControlName="dateValueFrom"></yuv-datetime>
+    [readonly]="readonly" formControlName="dateValueFrom"></yuv-datetime>
 
-  <p-dropdown class="no-trigger" [styleClass]="'range'" [(ngModel)]="searchOption" (ngModelChange)="onValueChange()"
-    [ngModelOptions]="{standalone: true}" [options]="availableSearchOptions"></p-dropdown>
+  <p-dropdown [readonly]="readonly" class="no-trigger" [styleClass]="'range'" [(ngModel)]="searchOption"
+    (ngModelChange)="onValueChange()" [ngModelOptions]="{standalone: true}" [options]="availableSearchOptions">
+  </p-dropdown>
 
-  <yuv-datetime [pickerTitle]="pickerTitle" [withTime]="withTime" formControlName="dateValue"></yuv-datetime>
+  <yuv-datetime [pickerTitle]="pickerTitle" [withTime]="withTime" formControlName="dateValue" [readonly]="readonly">
+  </yuv-datetime>
 </form>

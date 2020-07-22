@@ -3,8 +3,8 @@ export const formScriptingModel = {
   name: '',
   situation: 'EDIT',
   script: `
-  scope.model["yuuvis:readonly"].onchange=togglereadonly;
-  scope.model["yuuvis:required"].onchange=togglerequired;
+  scope.model["set:readonly"].onchange=togglereadonly;
+  scope.model["set:required"].onchange=togglerequired;
 
   console.log(scope.model);
 
@@ -39,7 +39,7 @@ export const formScriptingModel = {
         },
         {
           readonly: false,
-          name: 'yuuvis:required',
+          name: 'set:required',
           label: 'set required',
           description: '',
           type: 'boolean',
@@ -47,7 +47,7 @@ export const formScriptingModel = {
         },
         {
           readonly: false,
-          name: 'yuuvis:readonly',
+          name: 'set:readonly',
           label: 'set readonly',
           description: '',
           type: 'boolean',
