@@ -1,10 +1,16 @@
 import { Injectable } from '@angular/core';
 import { DynamicDate, PickerDay } from './../datepicker.interface';
 
+/**
+ * Providing a current data, that shown in the picker.
+ */
 @Injectable({
   providedIn: 'root'
 })
 export class DatepickerService {
+  /**
+   * @ignore
+   */
   constructor() {}
 
   buildWeek(startDate: Date, month: number, isDisabled?: (date: Date) => boolean): PickerDay[] {

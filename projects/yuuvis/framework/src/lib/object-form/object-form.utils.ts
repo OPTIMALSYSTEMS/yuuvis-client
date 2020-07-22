@@ -4,6 +4,10 @@ import { ObjectFormControl } from './object-form.model';
 import { Situation } from './object-form.situation';
 import { FormValidation } from './object-form.validation';
 
+/**
+ * Provides a rendering of form control in `ObjectFormComponent`, `QuickSearchComponent` so wie `SearchFilterFormComponent`.
+ */
+
 export class ObjectFormUtils {
   /**
    * Converts a form element object to an ObjectFormControlWrapper which then can be used to
