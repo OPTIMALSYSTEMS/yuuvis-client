@@ -2,13 +2,18 @@
 
 
   <div class="filterCollapsed" (click)="showFilterPanel = true" *ngIf="!showFilterPanel">
-    <yuv-icon icon="filter"></yuv-icon>{{'yuv.framework.search-result.filter.panel.title'|translate}}
+    <div>
+      <yuv-icon icon="filter"></yuv-icon>
+      {{'yuv.framework.search-result.filter.panel.title'|translate}}
+    </div>
+    <yuv-icon class="collapse" icon="doubleArrow"></yuv-icon>
   </div>
 
 
   <as-split gutterDblClickDuration="300" (gutterDblClick)="showFilterPanel = false">
     <as-split-area [size]="filterSize" [order]="0" *ngIf="showFilterPanel">
       <yuv-search-filter [query]="query" [layoutOptionsKey]="layoutOptionsKey" (filterChange)="onFilterChanged($event)">
+        <yuv-icon class="actions collapse btn" icon="doubleArrow" (click)="showFilterPanel = false"></yuv-icon>
       </yuv-search-filter>
     </as-split-area>
 

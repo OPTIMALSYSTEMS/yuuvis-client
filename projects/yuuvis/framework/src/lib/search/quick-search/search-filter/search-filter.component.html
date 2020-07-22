@@ -11,6 +11,12 @@
   </section>
 
   <div class="footer" yuvOfflineDisabled>
+
+    <!-- <div class="ng-content-actions">
+      <ng-content select=".actions"></ng-content>
+    </div> -->
+
+
     <!-- list mode settings -->
     <div class="mode">
       <yuv-icon class="mode" [icon]="'listModeDefault'"
@@ -29,6 +35,7 @@
         [icon]="'refresh'"></yuv-icon>
       <yuv-icon (click)="saveSearch()" [title]="'yuv.framework.search.save.search' | translate" class="button"
         [icon]="'favorite'"> </yuv-icon>
+      <ng-content select=".actions"></ng-content>
     </div>
   </div>
 </ng-container>

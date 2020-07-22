@@ -24,7 +24,7 @@ import { IconRegistryService } from '../../common/components/icon/service/iconRe
 import { ResponsiveDataTableComponent, ViewMode } from '../../components/responsive-data-table/responsive-data-table.component';
 import { ResponsiveTableData } from '../../components/responsive-data-table/responsive-data-table.interface';
 import { GridService } from '../../services/grid/grid.service';
-import { arrowLast, arrowNext, clear, filter, listModeDefault, listModeGrid, listModeSimple, search, settings } from '../../svg.generated';
+import { arrowLast, arrowNext, clear, doubleArrow, filter, listModeDefault, listModeGrid, listModeSimple, search, settings } from '../../svg.generated';
 
 /**
  * Component rendering a search result within a result list.
@@ -164,7 +164,7 @@ export class SearchResultComponent implements OnDestroy {
     private fb: FormBuilder,
     private iconRegistry: IconRegistryService
   ) {
-    this.iconRegistry.registerIcons([filter, settings, clear, search, arrowNext, arrowLast, listModeDefault, listModeGrid, listModeSimple]);
+    this.iconRegistry.registerIcons([doubleArrow, filter, settings, clear, search, arrowNext, arrowLast, listModeDefault, listModeGrid, listModeSimple]);
 
     this.pagingForm = this.fb.group({
       page: ['']
