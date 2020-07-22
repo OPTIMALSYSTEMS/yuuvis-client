@@ -56,8 +56,6 @@ export class ContentPreviewService {
   }
 
   createPreviewUrl(id: string, content: DmsObjectContent, version?: number, content2?: DmsObjectContent, version2?: number): void {
-    console.log({ content });
-
     const params = this.createParams(id, content, version);
     const query = content2 ? { compare: [params, this.createParams(id, content2, version2)] } : params;
     this.previewSrcSource.next(id ? Utils.buildUri(`${params.root}/viewer/`, query) : '');
