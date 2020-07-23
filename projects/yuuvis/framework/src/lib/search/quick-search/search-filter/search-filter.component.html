@@ -42,5 +42,5 @@
 
 <!-- column config editor overlay -->
 <ng-template #tplFilterConfig let-data let-popover="popover">
-  <yuv-search-filter-config [options]="data"> </yuv-search-filter-config>
+  <yuv-search-filter-config [options]="data" (close)="popover.close()"> </yuv-search-filter-config>
 </ng-template>
