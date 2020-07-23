@@ -4,7 +4,7 @@ export const catalogElements = [
     name: 'catalog',
     label: 'choose',
     description: 'simple catalog',
-    classification: ['catalog[Eins, Zwei, Drei]'],
+    classification: ['catalog[Eins, Zwei, Drei, Vier, Fünf, Sechs, Sieben, Acht, Neun, Zehn]'],
     type: 'string:catalog',
     required: false
   },
@@ -34,7 +34,7 @@ export const catalogElements = [
     name: 'catalog:filter',
     label: 'Enabled filter panel',
     description: 'catalog with filter panel',
-    classification: ['catalog[1,2,3,4,5,6,7,8,9,10,11,12]'],
+    classification: ['catalog[1,2,3,4,5,6,7,8,9,10,11]'],
     type: 'string:catalog',
     required: false
   },

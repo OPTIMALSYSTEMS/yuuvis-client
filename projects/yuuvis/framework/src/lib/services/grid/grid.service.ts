@@ -89,9 +89,9 @@ export class GridService {
    */
   private getColumnDefinition(field: ObjectTypeField, columnConfigColumn?: ColumnConfigColumn): ColDef {
     const colDef: ColDef = {
-      colId: field.id, // grid needs unique ID
-      field: field.id,
-      headerName: this.system.getLocalizedResource(`${field.id}_label`),
+      colId: field?.id, // grid needs unique ID
+      field: field?.id,
+      headerName: this.system.getLocalizedResource(`${field?.id}_label`),
       pinned: columnConfigColumn ? columnConfigColumn.pinned || false : false
     };
 
@@ -110,7 +110,7 @@ export class GridService {
 
   private isSortable(field: ObjectTypeField): boolean {
     const skipSort = [BaseObjectTypeField.CREATED_BY, BaseObjectTypeField.MODIFIED_BY].map((s) => s.toString());
-    return field.propertyType !== 'id' && !skipSort.includes(field.id);
+    return field?.propertyType !== 'id' && !skipSort.includes(field?.id);
   }
 
   /**
@@ -157,8 +157,8 @@ export class GridService {
    * @returns enriched column definition object
    */
   private addColDefAttrsByType(colDef: ColDef, field: ObjectTypeField) {
-    colDef.cellClass = `col-${field.propertyType}`;
-    colDef.headerClass = `col-header-${field.propertyType}`;
+    colDef.cellClass = `col-${field?.propertyType}`;
+    colDef.headerClass = `col-header-${field?.propertyType}`;
 
     const internalType = this.system.getInternalFormElementType(field as any, 'propertyType');
 
