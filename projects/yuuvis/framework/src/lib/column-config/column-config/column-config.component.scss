@@ -149,8 +149,13 @@
       grid-area: actions;
       display: flex;
       align-items: center;
-      justify-content: flex-end;
+      justify-content: space-between;
       padding: calc(var(--app-pane-padding) / 2) var(--app-pane-padding);
+
+      > .right {
+        display: flex;
+        justify-content: flex-end;
+      }
     }
 
     .error {

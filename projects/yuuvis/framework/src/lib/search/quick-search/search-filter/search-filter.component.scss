@@ -8,6 +8,38 @@
   .main {
     grid-area: main;
     overflow: auto;
+    background-color: var(--panel-background-grey);
+
+    ::ng-deep {
+      yuv-grouped-select {
+        .container {
+          padding: 0;
+        }
+
+        .ui-panel .ui-panel-titlebar {
+          padding: calc(var(--app-pane-padding) / 2) var(--app-pane-padding);
+        }
+      }
+
+      yuv-selectable-item > div {
+        .label {
+          padding: 0;
+          .title {
+            font-size: var(--font-caption);
+          }
+        }
+        .ui-chkbox {
+          font-size: 14px;
+          .ui-chkbox-box.ui-state-active {
+            border-color: var(--text-color-hint) !important;
+            border-width: 1px;
+          }
+          .pi-check:before {
+            font-size: 10px;
+          }
+        }
+      }
+    }
   }
 
   .footer {
@@ -48,6 +80,16 @@
           background-color: var(--panel-divider-color);
           color: var(--text-color-body);
         }
+      }
+    }
+
+    .filter-actions {
+      yuv-icon {
+        width: 18px;
+        height: 18px;
+        box-sizing: content-box;
+        padding: 4px;
+        margin: 0;
       }
     }
   }

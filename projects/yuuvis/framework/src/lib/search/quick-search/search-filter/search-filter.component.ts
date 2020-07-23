@@ -7,7 +7,7 @@ import { SelectableGroup } from '../../../grouped-select/grouped-select/grouped-
 import { FileSizePipe } from '../../../pipes/filesize.pipe';
 import { PopoverConfig } from '../../../popover/popover.interface';
 import { PopoverService } from '../../../popover/popover.service';
-import { favorite, refresh, settings } from '../../../svg.generated';
+import { favorite, reset, settings } from '../../../svg.generated';
 import { QuickSearchService } from '../quick-search.service';
 import { LayoutService } from './../../../services/layout/layout.service';
 import { listModeDefault, listModeSimple } from './../../../svg.generated';
@@ -62,14 +62,19 @@ export class SearchFilterComponent implements OnInit {
   storedFilters: Selectable[] = [];
 
   filesizePipe: FileSizePipe;
-  private _query: SearchQuery;
+  _query: SearchQuery;
   private filterQuery: SearchQuery;
   private parentID: SearchFilter;
 
   @Input() set query(q: SearchQuery) {
-    this._query = new SearchQuery(q.toQueryJson());
-    this.filterQuery = new SearchQuery(q.toQueryJson());
-    this.setupFilterPanel();
+    if (q) {
+      this._query = new SearchQuery(q.toQueryJson());
+      this.filterQuery = new SearchQuery(q.toQueryJson());
+      this.setupFilterPanel();
+    } else {
+      this._query = null;
+      this.filterQuery = null;
+    }
   }
 
   @Output() filterChange = new EventEmitter<SearchQuery>();
@@ -83,7 +88,7 @@ export class SearchFilterComponent implements OnInit {
     private popoverService: PopoverService,
     private layoutService: LayoutService
   ) {
-    this.iconRegistry.registerIcons([settings, refresh, favorite, listModeDefault, listModeSimple]);
+    this.iconRegistry.registerIcons([settings, reset, favorite, listModeDefault, listModeSimple]);
   }
 
   private saveLayoutOptions(options: any) {
