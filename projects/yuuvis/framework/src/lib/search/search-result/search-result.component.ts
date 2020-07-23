@@ -75,7 +75,11 @@ export class SearchResultComponent implements OnDestroy {
     page: number;
   };
 
-  filterSize = 25;
+  // default and minimal size of the filter panel in pixel
+  filterPanelSize = {
+    default: 250,
+    min: 200
+  };
 
   @ViewChild('dataTable') dataTable: ResponsiveDataTableComponent;
 

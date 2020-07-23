@@ -10,14 +10,14 @@
   </div>
 
 
-  <as-split gutterDblClickDuration="300" (gutterDblClick)="showFilterPanel = false">
-    <as-split-area [size]="filterSize" [order]="0" *ngIf="showFilterPanel">
+  <as-split unit="pixel" gutterDblClickDuration="300" (gutterDblClick)="showFilterPanel = false">
+    <as-split-area [size]="filterPanelSize.default" [minSize]="filterPanelSize.min" [order]="0" *ngIf="showFilterPanel">
       <yuv-search-filter [query]="query" [layoutOptionsKey]="layoutOptionsKey" (filterChange)="onFilterChanged($event)">
         <yuv-icon class="actions collapse btn" icon="doubleArrow" (click)="showFilterPanel = false"></yuv-icon>
       </yuv-search-filter>
     </as-split-area>
 
-    <as-split-area [size]="100 - filterSize" [order]="1">
+    <as-split-area size="*" [order]="1">
       <div class="table" [yuvBusyOverlay]="busy">
         <ng-template #tplEmpty>
           <div class="empty" *ngIf="query" translate>yuv.framework.search-result.empty</div>
