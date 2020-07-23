@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Icon } from '../icon.interface';
 /**
+ * @ignore
  * Apply IconRegistryService for registering only used icons and reducing unnessesary JavaScript code.
  * This helps your client be more perfomanced.
  */

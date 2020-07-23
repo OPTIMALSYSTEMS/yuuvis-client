@@ -50,7 +50,10 @@ export class ObjectFormUtils {
 
     return wrapper;
   }
-
+  /**
+   * Update a form element after change a form element object.
+   * @param formElement - the form element object
+   */
   static updateFormElement(formElement: any) {
     if (formElement.type === 'decimal' && !formElement.scale) {
       formElement.scale = 2;

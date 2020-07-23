@@ -12,8 +12,15 @@ export class LayoutService {
   private STORAGE_KEY_REGEXP = new RegExp('^yuv.app.');
   private layoutSettings: LayoutSettings = {};
   private layoutSettingsSource = new ReplaySubject<LayoutSettings>();
+  /**
+   * Return new layout setting dipends on selected mode : light or dark
+   */
   public layoutSettings$: Observable<LayoutSettings> = this.layoutSettingsSource.asObservable();
 
+  /**
+   *
+   * @ignore
+   */
   constructor(
     @Inject(DOCUMENT) private document: any,
     private logger: Logger,
@@ -22,7 +29,7 @@ export class LayoutService {
     private backend: BackendService
   ) {
     // load saved settings
-    this.appCache.getItem(this.STORAGE_KEY).subscribe(settings => this.processLayoutSettings(settings));
+    this.appCache.getItem(this.STORAGE_KEY).subscribe((settings) => this.processLayoutSettings(settings));
     this.userService.user$.subscribe((user: YuvUser) => this.applyDirection(user ? user.uiDirection : 'yuv-ltr'));
   }
 
@@ -55,7 +62,9 @@ export class LayoutService {
       }
     }
   }
-
+  /**
+   * private
+   */
   getLayoutSettings() {
     return this.layoutSettings;
   }
@@ -106,7 +115,7 @@ export class LayoutService {
     this.logger.debug(layoutOptionsKey ? `saving layout options for '${layoutOptionsKey}-${elementKey}'` : `layout key missing`);
     return layoutOptionsKey
       ? this.appCache.getItem(layoutOptionsKey).pipe(
-          switchMap(res => {
+          switchMap((res) => {
             const v = res || {};
             v[elementKey] = value;
             return this.appCache.setItem(layoutOptionsKey, v);
@@ -122,7 +131,7 @@ export class LayoutService {
    */
   loadLayoutOptions(layoutOptionsKey: string, elementKey?: string): Observable<any> {
     this.logger.debug(layoutOptionsKey ? `loading layout options for '${layoutOptionsKey}-${elementKey}'` : `layout key missing`);
-    return layoutOptionsKey ? this.appCache.getItem(layoutOptionsKey).pipe(map(res => (elementKey && res ? res[elementKey] : res))) : of(null);
+    return layoutOptionsKey ? this.appCache.getItem(layoutOptionsKey).pipe(map((res) => (elementKey && res ? res[elementKey] : res))) : of(null);
   }
 
   private saveSettings() {
@@ -132,13 +141,13 @@ export class LayoutService {
 
   private cleanupData(data: any, filter?: (key: string) => boolean) {
     filter = filter || ((key: string) => !key.match(this.STORAGE_KEY_REGEXP));
-    Object.keys(data).forEach(k => filter(k) && delete data[k]);
+    Object.keys(data).forEach((k) => filter(k) && delete data[k]);
     return data;
   }
 
   private generateStorageJsonUri() {
     return this.appCache.getStorage().pipe(
-      map(data => {
+      map((data) => {
         const blob = new Blob([JSON.stringify(this.cleanupData(data), null, 2)], { type: 'text/json' });
         const uri = URL.createObjectURL(blob);
         // setTimeout(() => URL.revokeObjectURL(uri), 10000);
@@ -148,7 +157,7 @@ export class LayoutService {
   }
 
   downloadLayout(filename = 'settings.json') {
-    this.generateStorageJsonUri().subscribe(uri => this.backend.download(uri, filename));
+    this.generateStorageJsonUri().subscribe((uri) => this.backend.download(uri, filename));
   }
 
   uploadLayout(data: string | any, filter?: (key: string) => boolean, force = false) {
@@ -160,7 +169,7 @@ export class LayoutService {
   }
 
   clearLayout() {
-    return this.appCache.getStorage().pipe(switchMap(data => this.uploadLayout(data, (key: string) => !!key.match(this.STORAGE_KEY_REGEXP), true)));
+    return this.appCache.getStorage().pipe(switchMap((data) => this.uploadLayout(data, (key: string) => !!key.match(this.STORAGE_KEY_REGEXP), true)));
   }
 
   clearAll() {

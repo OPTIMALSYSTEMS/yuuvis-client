@@ -5,6 +5,7 @@ import { Observable, ReplaySubject } from 'rxjs';
 import { LayoutService } from '../../../services/layout/layout.service';
 
 /**
+ * @ignore
  * Providing a content preview for a dms object.
  */
 @Injectable()

@@ -4,6 +4,7 @@ import { Observable, of } from 'rxjs';
 import { finalize, shareReplay, tap } from 'rxjs/operators';
 
 /**
+ * @ignore
  * IconService get and injects the icons.
  */
 @Injectable()
