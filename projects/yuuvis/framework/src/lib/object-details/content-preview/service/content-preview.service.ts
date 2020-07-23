@@ -55,11 +55,11 @@ export class ContentPreviewService {
     return { darkMode, accentColor, direction, lang };
   }
 
-  private createParams(id: string, content: DmsObjectContent, version?: number) {
+  private createParams(objectId: string, content: DmsObjectContent, version?: number) {
     const { mimeType, size, contentStreamId, fileName } = content;
-    const { root, path } = this.createPath(id, version);
+    const { root, path } = this.createPath(objectId, version);
     const fileExtension = fileName.includes('.') ? fileName.split('.').pop() : '';
-    return { mimeType, path, fileExtension, size, contentStreamId, root, ...this.createSettings() };
+    return { mimeType, path, fileExtension, size, contentStreamId, objectId, root, ...this.createSettings() };
   }
 
   createPreviewUrl(id: string, content: DmsObjectContent, version?: number, content2?: DmsObjectContent, version2?: number): void {
