@@ -20,6 +20,14 @@ $yuv-result-header-height: 38px;
   height: 100%;
   background-color: var(--panel-background);
 
+  yuv-icon.collapse {
+    transform: rotate(180deg);
+    cursor: pointer;
+    padding: 4px;
+    opacity: 0.6;
+    box-sizing: border-box;
+  }
+
   .grid-container {
     display: grid;
     grid-template-columns: auto 1fr;
@@ -28,15 +36,16 @@ $yuv-result-header-height: 38px;
     height: 100%;
 
     &.has-query .filterCollapsed {
-      display: block;
+      display: flex;
     }
 
     .filterCollapsed {
       grid-area: fc;
       display: none;
+      flex-flow: column;
+      justify-content: space-between;
       background: var(--panel-background-lightgrey);
       border-right: 1px solid var(--panel-divider-color);
-      writing-mode: vertical-lr;
       color: var(--text-color-caption);
       yuv-icon {
         margin: calc(var(--app-pane-padding) / 2) 0;
@@ -47,6 +56,15 @@ $yuv-result-header-height: 38px;
       &:hover {
         color: var(--color-accent);
         cursor: pointer;
+      }
+
+      > div {
+        writing-mode: vertical-lr;
+      }
+
+      yuv-icon.collapse {
+        align-self: start;
+        transform: rotate(0deg);
       }
     }
 
