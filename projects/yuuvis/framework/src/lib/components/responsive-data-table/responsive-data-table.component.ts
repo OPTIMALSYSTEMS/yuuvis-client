@@ -1,6 +1,6 @@
 import { ClientSideRowModelModule } from '@ag-grid-community/client-side-row-model';
 import { ColDef, GridOptions, Module, RowEvent, RowNode } from '@ag-grid-community/core';
-import { Component, ElementRef, EventEmitter, HostBinding, HostListener, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, ElementRef, EventEmitter, HostBinding, HostListener, Input, NgZone, OnDestroy, OnInit, Output } from '@angular/core';
 import { BaseObjectTypeField, DeviceService, PendingChangesService, SystemService, Utils } from '@yuuvis/core';
 import { ResizedEvent } from 'angular-resize-event';
 import { Observable, ReplaySubject } from 'rxjs';
@@ -190,7 +190,8 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
     private datePipe: LocaleDatePipe,
     private layoutService: LayoutService,
     private systemService: SystemService,
-    private deviceService: DeviceService
+    private deviceService: DeviceService,
+    private _ngZone: NgZone
   ) {
     // subscribe to the whole components size changing
     this.resize$
@@ -418,10 +419,10 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
       onSelectionChanged: (event) => {
         const focused = this.gridOptions.api.getFocusedCell() || { rowIndex: -1 };
         const selection = this.gridOptions.api.getSelectedNodes().sort((n) => (n.rowIndex === focused.rowIndex ? -1 : 0));
-
         if (!event || selection.map((rowNode: RowNode) => rowNode.id).join() !== (this._currentSelection || []).join()) {
           this._currentSelection = selection.map((rowNode: RowNode) => rowNode.id);
-          this.selectionChanged.emit(selection.map((rowNode: RowNode) => rowNode.data));
+          // ag-grid bug on mobile - issue with change detection after touch event
+          this._ngZone.run(() => this.selectionChanged.emit(selection.map((rowNode: RowNode) => rowNode.data)));
         }
       },
       onColumnResized: (event) => this.columnResizeSource.next(),
@@ -461,7 +462,8 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
   }
 
   onMouseDown($event: MouseEvent | any) {
-    if ($event.button === 0 && this.gridOptions && this.gridOptions.suppressCellSelection) {
+    // TODO: find the solution for mobile / touch event
+    if (this.deviceService.isDesktop && $event.button === 0 && this.gridOptions && this.gridOptions.suppressCellSelection) {
       if (!this.pendingChanges.check()) {
         this.gridOptions.suppressCellSelection = false;
         this.selectEvent($event);
@@ -469,9 +471,6 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
         $event.preventDefault();
         $event.stopImmediatePropagation();
       }
-    } else if (this.deviceService.isMobile || this.deviceService.isTablet) {
-      // ag-grid issue with selection on mobile devices
-      this.selectEvent($event);
     }
   }
 
