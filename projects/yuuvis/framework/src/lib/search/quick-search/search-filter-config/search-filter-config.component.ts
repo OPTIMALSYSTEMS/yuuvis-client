@@ -23,12 +23,14 @@ export class SearchFilterConfigComponent implements OnInit {
   visibleFilters: string[] = [];
   storedFilters: Selectable[] = [];
   selectedFilter: Selectable = { id: '', label: '' };
+  mainSelection: string[] = [];
   selection: string[] = [];
   formOptions: any;
   formValid = false;
   fromActive = true;
 
   query: SearchQuery;
+  CREATE_NEW_ID = '__create_new';
 
   @Input() set options(data: { typeSelection: string[]; query: SearchQuery }) {
     this.query = data.query;
@@ -42,13 +44,10 @@ export class SearchFilterConfigComponent implements OnInit {
       }
     ];
 
-    // load active filters
-    // this.createNew(this.query.filters);
-    this.createNew();
-
     forkJoin([this.quickSearchService.loadStoredFilters(), this.quickSearchService.loadFiltersVisibility()]).subscribe(([storedFilters, visibleFilters]) => {
       this.storedFilters = this.quickSearchService.loadFilters(storedFilters as any, this.availableObjectTypeFields);
       this.visibleFilters = visibleFilters || this.storedFilters.map((f) => f.id);
+
       this.storedFiltersGroups = [
         {
           id: 'custom',
@@ -66,6 +65,9 @@ export class SearchFilterConfigComponent implements OnInit {
           items: this.storedFilters.filter((f) => !this.isVisible(f))
         }
       ];
+
+      this.createNew();
+      this.mainSelection = [this.CREATE_NEW_ID];
     });
   }
   @Output() close = new EventEmitter<any>();
@@ -107,13 +109,13 @@ export class SearchFilterConfigComponent implements OnInit {
   getDefaultFilters() {
     return [
       {
-        id: '__create_new',
+        id: this.CREATE_NEW_ID,
         svg: addCircle.data,
         label: this.translate.instant('yuv.framework.search.filter.create.new'),
         value: []
       },
       this.query.filters.length && {
-        id: '__create_new#active',
+        id: this.CREATE_NEW_ID + '#active',
         svg: addCircle.data,
         label: `${this.translate.instant('yuv.framework.search.filter.create.new')} (${this.translate.instant('yuv.framework.search.filter.from.active')})`,
         value: [...this.query.filters]
@@ -123,7 +125,7 @@ export class SearchFilterConfigComponent implements OnInit {
   }
 
   onFilterSelect(res: Selectable) {
-    if (res.id.startsWith('__create_new')) {
+    if (res.id.startsWith(this.CREATE_NEW_ID)) {
       this.createNew(res.value);
     } else {
       this.selectedFilter = res;

@@ -5,7 +5,7 @@
 <section class="main">
   <as-split>
     <as-split-area [size]="30">
-      <yuv-grouped-select toggleable="true" [groups]="storedFiltersGroups" [selection]="visibleFilters"
+      <yuv-grouped-select toggleable="true" [groups]="storedFiltersGroups" [selection]="mainSelection"
         (select)="onFilterSelect($event)">
       </yuv-grouped-select>
     </as-split-area>

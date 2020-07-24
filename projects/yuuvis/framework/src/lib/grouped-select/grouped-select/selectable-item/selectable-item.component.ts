@@ -32,7 +32,9 @@ export class SelectableItemComponent implements FocusableOption {
   /**
    * Whether or not the item is selected
    */
-  @Input() selected: boolean;
+  @HostBinding('class.selected')
+  @Input()
+  selected: boolean;
 
   /**
    * Emitted when the items selected state changed. Emits the new state.
