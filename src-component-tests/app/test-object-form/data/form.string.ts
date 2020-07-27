@@ -1,7 +1,7 @@
 export const stringElements = [
   {
     readonly: false,
-    name: 'string:one',
+    name: 'string:required',
     label: 'required string',
     description: '',
     type: 'string',
@@ -17,7 +17,7 @@ export const stringElements = [
   },
   {
     readonly: true,
-    name: 'string:three',
+    name: 'string:readonly',
     label: 'readonly string',
     description: 'string field supposed to be inactive',
     type: 'string',
@@ -25,7 +25,7 @@ export const stringElements = [
   },
   {
     readonly: false,
-    name: 'string:four',
+    name: 'string:regex',
     label: 'String with RegExp',
     description: 'enter valid time like eg. hh:mm',
     regex: '^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$',
@@ -90,7 +90,7 @@ export const stringElements = [
   {
     readonly: false,
     cardinality: 'multi',
-    name: 'string:chips:email',
+    name: 'string:email:multi',
     label: 'String Classification email multiple',
     description: 'enter multiple email addresses',
     classification: ['email'],
@@ -100,7 +100,7 @@ export const stringElements = [
   {
     readonly: false,
     cardinality: 'multi',
-    name: 'string:chips:url',
+    name: 'string:url:multi',
     label: 'String Classification URL multiple',
     description: 'enter multiple URL addresses',
     classification: ['url'],
@@ -110,7 +110,7 @@ export const stringElements = [
   {
     readonly: false,
     cardinality: 'multi',
-    name: 'string:chips:phone',
+    name: 'string:phone:multi',
     label: 'String Classification phone multiple',
     description: 'enter multiple phone numbers',
     classification: ['phone'],

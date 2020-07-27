@@ -1,36 +1,46 @@
-<section class="main">
-  <yuv-grouped-select toggleable="true" enableSelectAll="true" [multiple]="true" [singleSelect]="false"
-    [groups]="availableTypeGroups" [selection]="typeSelection" (change)="onTypeChange($event)"
-    (groupToggle)="onToggle($event)">
-  </yuv-grouped-select>
+<ng-container *ngIf="_query">
+  <section class="main">
+    <yuv-grouped-select toggleable="true" enableSelectAll="true" [multiple]="true" [singleSelect]="false"
+      [groups]="availableTypeGroups" [selection]="typeSelection" (change)="onTypeChange($event)"
+      (groupToggle)="onToggle($event)">
+    </yuv-grouped-select>
 
-  <yuv-grouped-select toggleable="true" [multiple]="true" [singleSelect]="false" [groups]="availableFilterGroups"
-    [selection]="filterSelection" (change)="onFilterChange($event)" (groupToggle)="onToggle($event)">
-  </yuv-grouped-select>
-</section>
+    <yuv-grouped-select toggleable="true" [multiple]="true" [singleSelect]="false" [groups]="availableFilterGroups"
+      [selection]="filterSelection" (change)="onFilterChange($event)" (groupToggle)="onToggle($event)">
+    </yuv-grouped-select>
+  </section>
 
-<div class="footer" yuvOfflineDisabled>
-  <!-- list mode settings -->
-  <div class="mode">
-    <yuv-icon class="mode" [icon]="'listModeDefault'"
-      title="{{ 'yuv.framework.search.filter.mode.default' | translate }}"
-      [ngClass]="{ current: viewMode === 'standard' }" (click)="modeChange('standard')">
-    </yuv-icon>
-    <yuv-icon class="mode" [icon]="'listModeSimple'" title="{{ 'yuv.framework.search.filter.mode.groups' | translate }}"
-      [ngClass]="{ current: viewMode === 'groups' }" (click)="modeChange('groups')">
-    </yuv-icon>
+  <div class="footer" yuvOfflineDisabled>
+
+    <!-- <div class="ng-content-actions">
+      <ng-content select=".actions"></ng-content>
+    </div> -->
+
+
+    <!-- list mode settings -->
+    <div class="mode">
+      <yuv-icon class="mode" [icon]="'listModeDefault'"
+        title="{{ 'yuv.framework.search.filter.mode.default' | translate }}"
+        [ngClass]="{ current: viewMode === 'standard' }" (click)="modeChange('standard')">
+      </yuv-icon>
+      <yuv-icon class="mode" [icon]="'listModeSimple'"
+        title="{{ 'yuv.framework.search.filter.mode.groups' | translate }}"
+        [ngClass]="{ current: viewMode === 'groups' }" (click)="modeChange('groups')">
+      </yuv-icon>
+    </div>
+    <div class="filter-actions">
+      <yuv-icon class="config" [icon]="'settings'" (click)="showFilterConfig()"
+        [title]="'yuv.framework.search.filter.manage' | translate"> </yuv-icon>
+      <yuv-icon (click)="resetFilters()" [title]="'yuv.framework.search.filter.reset' | translate" class="button"
+        [icon]="'reset'"></yuv-icon>
+      <yuv-icon (click)="saveSearch()" [title]="'yuv.framework.search.save.search' | translate" class="button"
+        [icon]="'favorite'"> </yuv-icon>
+      <ng-content select=".actions"></ng-content>
+    </div>
   </div>
-  <div class="filter-actions">
-    <yuv-icon class="config" [icon]="'settings'" (click)="showFilterConfig()"
-      [title]="'yuv.framework.search.filter.manage' | translate"> </yuv-icon>
-    <yuv-icon (click)="resetFilters()" [title]="'yuv.framework.search.filter.reset' | translate" class="button"
-      [icon]="'refresh'"></yuv-icon>
-    <yuv-icon (click)="saveSearch()" [title]="'yuv.framework.search.save.search' | translate" class="button"
-      [icon]="'favorite'"> </yuv-icon>
-  </div>
-</div>
+</ng-container>
 
 <!-- column config editor overlay -->
 <ng-template #tplFilterConfig let-data let-popover="popover">
-  <yuv-search-filter-config [options]="data"> </yuv-search-filter-config>
+  <yuv-search-filter-config [options]="data" (close)="popover.close()"> </yuv-search-filter-config>
 </ng-template>

@@ -7,7 +7,7 @@ import { SelectableGroup } from '../../../grouped-select/grouped-select/grouped-
 import { FileSizePipe } from '../../../pipes/filesize.pipe';
 import { PopoverConfig } from '../../../popover/popover.interface';
 import { PopoverService } from '../../../popover/popover.service';
-import { favorite, refresh, settings } from '../../../svg.generated';
+import { favorite, reset, settings } from '../../../svg.generated';
 import { QuickSearchService } from '../quick-search.service';
 import { LayoutService } from './../../../services/layout/layout.service';
 import { listModeDefault, listModeSimple } from './../../../svg.generated';
@@ -52,20 +52,29 @@ export class SearchFilterComponent implements OnInit {
 
   availableFilterGroups: SelectableGroup[] = [];
   availableObjectTypeFields: Selectable[] = [];
-  filterSelection: string[] = [];
+
+  get filterSelection() {
+    return (this.activeFilters || []).map((f) => f.id);
+  }
 
   activeFilters: Selectable[] = [];
+  lastFilters: Selectable[] = [];
   storedFilters: Selectable[] = [];
 
   filesizePipe: FileSizePipe;
-  private _query: SearchQuery;
+  _query: SearchQuery;
   private filterQuery: SearchQuery;
   private parentID: SearchFilter;
 
   @Input() set query(q: SearchQuery) {
-    this._query = new SearchQuery(q.toQueryJson());
-    this.filterQuery = new SearchQuery(q.toQueryJson());
-    this.setupFilterPanel();
+    if (q) {
+      this._query = new SearchQuery(q.toQueryJson());
+      this.filterQuery = new SearchQuery(q.toQueryJson());
+      this.setupFilterPanel();
+    } else {
+      this._query = null;
+      this.filterQuery = null;
+    }
   }
 
   @Output() filterChange = new EventEmitter<SearchQuery>();
@@ -79,7 +88,7 @@ export class SearchFilterComponent implements OnInit {
     private popoverService: PopoverService,
     private layoutService: LayoutService
   ) {
-    this.iconRegistry.registerIcons([settings, refresh, favorite, listModeDefault, listModeSimple]);
+    this.iconRegistry.registerIcons([settings, reset, favorite, listModeDefault, listModeSimple]);
   }
 
   private saveLayoutOptions(options: any) {
@@ -98,7 +107,7 @@ export class SearchFilterComponent implements OnInit {
   modeChange(viewMode: FilterViewMode) {
     this.viewMode = viewMode;
     this.saveLayoutOptions({ viewMode });
-    this.setupFilters(this.typeSelection, this.filterSelection, this.activeFilters);
+    this.setupFilters(this.typeSelection, this.activeFilters);
   }
 
   private setupFilterPanel() {
@@ -126,24 +135,27 @@ export class SearchFilterComponent implements OnInit {
     return this.setupFilters(this.typeSelection);
   }
 
-  private setupFilters(typeSelection: string[], filterSelection?: string[], activeFilters?: Selectable[]) {
+  private setupFilters(typeSelection: string[], activeFilters?: Selectable[]) {
     this.availableObjectTypeFields = this.quickSearchService.getAvailableObjectTypesFields(typeSelection);
 
-    forkJoin([this.quickSearchService.loadStoredFilters(), this.quickSearchService.loadFiltersVisibility()]).subscribe(([storedFilters, visibleFilters]) => {
+    forkJoin([
+      this.quickSearchService.loadStoredFilters(),
+      this.quickSearchService.loadFiltersVisibility(),
+      this.quickSearchService.loadLastFilters()
+    ]).subscribe(([storedFilters, visibleFilters, lastFilters]) => {
       this.storedFilters = this.quickSearchService.loadFilters(storedFilters as any, this.availableObjectTypeFields);
       this.activeFilters = activeFilters || this.quickSearchService.getActiveFilters(this.filterQuery, this.storedFilters, this.availableObjectTypeFields);
-      const visible = visibleFilters || this.storedFilters.map((s) => s.id);
 
       this.availableFilterGroups = [
         {
           id: 'active',
-          label: this.translate.instant('yuv.framework.search.filter.active.filters'),
-          items: this.activeFilters
+          label: this.translate.instant('yuv.framework.search.filter.recent.filters'),
+          items: [...this.activeFilters, ...this.updateLastFilters(lastFilters)]
         },
         {
           id: 'stored',
           label: this.translate.instant('yuv.framework.search.filter.stored.filters'),
-          items: this.storedFilters.filter((f) => visible.includes(f.id))
+          items: this.storedFilters.filter((f) => (visibleFilters ? visibleFilters.includes(f.id) : true))
         }
       ];
 
@@ -159,9 +171,17 @@ export class SearchFilterComponent implements OnInit {
           ...this.quickSearchService.getAvailableFilterGroups(filters, this.availableObjectTypeFields)
         ];
       }
-      this.filterSelection = filterSelection || this.activeFilters.map((a) => a.id);
+
       this.setupCollapsedGroups();
     });
+  }
+
+  updateLastFilters(ids: string[]) {
+    return (this.lastFilters = (ids || [])
+      .filter((id) => !this.filterSelection.includes(id))
+      .slice(0, 5)
+      .map((id) => this.storedFilters.find((f) => f.id === id))
+      .filter((f) => f)).sort(Utils.sortValues('label'));
   }
 
   showFilterConfig() {
@@ -177,14 +197,15 @@ export class SearchFilterComponent implements OnInit {
     this.popoverService
       .open(this.tplFilterConfig, popoverConfig)
       .afterClosed()
-      .subscribe(() => this.setupFilters(this.typeSelection, this.filterSelection, this.activeFilters));
+      .subscribe(() => this.setupFilters(this.typeSelection, this.activeFilters));
   }
 
   onFilterChange(res: Selectable[]) {
     // todo: find best UX (maybe css animation)
-    this.availableFilterGroups[0].items = this.activeFilters = [...res, ...this.activeFilters.filter((f) => !res.map((r) => r.id).includes(f.id))].sort(
-      Utils.sortValues('label')
-    );
+    this.activeFilters = [...res];
+    this.quickSearchService.saveLastFilters(this.filterSelection).subscribe((lastFilters) => {
+      this.availableFilterGroups[0].items = [...this.activeFilters, ...this.updateLastFilters(lastFilters)];
+    });
     this.filterQuery.filters = (res.map((v) => v.value) as SearchFilter[][])
       .reduce((pre, cur) => (pre = pre.concat(cur)), [])
       .concat(this.parentID ? [this.parentID] : []);
@@ -194,7 +215,7 @@ export class SearchFilterComponent implements OnInit {
 
   onTypeChange(res: Selectable[]) {
     this.typeSelection = res.map((r) => r.id);
-    this.setupFilters(this.typeSelection, this.filterSelection, this.activeFilters);
+    this.setupFilters(this.typeSelection, this.activeFilters);
     // todo: remove unwanted filters
     this.filterQuery.types = [...this.typeSelection];
     this.filterChange.emit(this.filterQuery);

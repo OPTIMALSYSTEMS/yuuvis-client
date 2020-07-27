@@ -260,7 +260,7 @@ export class Utils {
 
   /**
    * Truncate a string (first argument) if it is longer than the given maximum string length (second argument).
-   * Return the truncated string with a ... ending ot whats provided.
+   * Return the truncated string with a ... ending or whats provided.
    *
    * @param string str
    * @param number num

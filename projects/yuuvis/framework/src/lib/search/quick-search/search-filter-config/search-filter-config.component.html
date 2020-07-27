@@ -1,63 +1,45 @@
-<header>{{ 'yuv.framework.search.filter.configuration' | translate }}</header>
+<header>
+  <label>{{ 'yuv.framework.search.filter.configuration' | translate }}</label>
+  <yuv-icon class="btn" [icon]="'clear'" (click)="onClose()"></yuv-icon>
+</header>
 <section class="main">
   <as-split>
     <as-split-area [size]="30">
-      <section class="left">
-        <yuv-grouped-select toggleable="true" [groups]="storedFiltersGroups" [selection]="visibleFilters" (select)="onFilterSelect($event)">
-        </yuv-grouped-select>
-      </section>
+      <yuv-grouped-select toggleable="true" [groups]="storedFiltersGroups" [selection]="mainSelection"
+        (select)="onFilterSelect($event)">
+      </yuv-grouped-select>
     </as-split-area>
 
     <as-split-area [size]="70">
-      <section class="right">
-        <yuv-grouped-select
-          [multiple]="true"
-          [singleSelect]="false"
-          [groups]="availableFiltersGroups"
-          [selection]="selection"
-          (change)="onActiveFilterChange($event)"
-          (select)="onActiveFilterChange($event)"
-        >
-        </yuv-grouped-select>
+      <section class="filter">
+        <section class="configuration">
+          <yuv-search-filter-form [disabled]="isDefault()" [options]="formOptions"
+            (filterChanged)="onFilterChanged($event)" (controlRemoved)="onControlRemoved($event)"
+            (valid)="formValid = $event">
+            <form class="stored-filter">
+              <input #storedFilterInput type="text" [placeholder]="'yuv.framework.search.filter.name' | translate"
+                [(ngModel)]="selectedFilter.label" [disabled]="isDefault()" [ngModelOptions]="{ standalone: true }"
+                (change)="onFilterNameChanged($event.target.value)" />
+            </form>
+          </yuv-search-filter-form>
 
-        <yuv-search-filter-form
-          [disabled]="isDefault()"
-          [options]="formOptions"
-          (filterChanged)="onFilterChanged($event)"
-          (controlRemoved)="onControlRemoved($event)"
-          (valid)="formValid = $event"
-        >
-          <form class="stored-filter">
-            <input
-              #storedFilterInput
-              type="text"
-              [placeholder]="'yuv.framework.search.filter.name' | translate"
-              [(ngModel)]="selectedFilter.label"
-              [disabled]="isDefault()"
-              [ngModelOptions]="{ standalone: true }"
-              (change)="onFilterNameChanged($event.target.value)"
-            />
-          </form>
-        </yuv-search-filter-form>
+          <yuv-grouped-select toggleable="true" [multiple]="true" [singleSelect]="false"
+            [groups]="availableFiltersGroups" [selection]="selection" (change)="onActiveFilterChange($event)"
+            (select)="onActiveFilterChange($event)">
+          </yuv-grouped-select>
+        </section>
+        <section class="footer buttons">
+          <button *ngIf="!isDefault() && isStored() && !isVisible()" type="button"
+            (click)="onRemove()">{{ 'yuv.framework.search.filter.remove' | translate }}</button>
+          <button *ngIf="isStored()" class="primary" type="button" (click)="onVisibilityChange()">
+            {{ isVisible() ? ('yuv.framework.search.filter.disable' | translate) : ('yuv.framework.search.filter.enable' | translate) }}
+          </button>
+          <button *ngIf="!isDefault()" [disabled]="!formValid || isEmpty()" class="primary" type="button"
+            (click)="onSave()">
+            {{ 'yuv.framework.search.filter.save' | translate }}
+          </button>
+        </section>
       </section>
     </as-split-area>
   </as-split>
-</section>
-<section class="footer buttons">
-  <div>
-    <button class="primary" type="button" (click)="createNew(fromActive ? query.filters : [])">
-      {{ 'yuv.framework.search.filter.create.new' | translate }}
-    </button>
-    <span *ngIf="query.filters.length">
-      <yuv-checkbox id="fromA" [tristate]="false" [(ngModel)]="fromActive"></yuv-checkbox>
-      <label for="fromA">{{ 'yuv.framework.search.filter.from.active' | translate }}</label>
-    </span>
-  </div>
-  <button *ngIf="!isDefault() && isStored() && !isVisible()" type="button" (click)="onRemove()">{{ 'yuv.framework.search.filter.remove' | translate }}</button>
-  <button *ngIf="isStored()" class="primary" type="button" (click)="onVisibilityChange()">
-    {{ isVisible() ? ('yuv.framework.search.filter.disable' | translate) : ('yuv.framework.search.filter.enable' | translate) }}
-  </button>
-  <button *ngIf="!isDefault()" [disabled]="!formValid || isEmpty()" class="primary" type="button" (click)="onSave()">
-    {{ 'yuv.framework.search.filter.save' | translate }}
-  </button>
 </section>

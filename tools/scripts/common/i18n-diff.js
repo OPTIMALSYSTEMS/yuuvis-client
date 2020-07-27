@@ -42,7 +42,7 @@ function createDiff() {
   };
 
   for(let befKey in before) {
-    if(after[befKey]) {
+    if(after[befKey] !== undefined) {
       if(before[befKey] != after[befKey]) {
         diff.changed[befKey] = {
           old: before[befKey],

@@ -46,10 +46,16 @@
 
       .title {
         margin: calc(var(--app-pane-padding) / 4) 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
       }
 
       .count {
-        float: right;
+        color: var(--color-accent);
+        font-size: var(--font-hint);
+        margin: 0 calc(var(--app-pane-padding) / 4);
+        font-family: monospace;
       }
 
       .description {
@@ -61,20 +67,20 @@
     }
   }
 
-  &.multiselect {
-    div.selected {
-      ::ng-deep {
-        .ui-chkbox .ui-chkbox-box.ui-state-active {
-          background-color: rgba(255, 255, 255, 0.2);
-          color: var(--text-color-caption);
-          border-color: var(--text-color-caption);
-        }
+  &.selected.multiselect {
+    ::ng-deep {
+      .ui-chkbox .ui-chkbox-box.ui-state-active {
+        background-color: rgba(255, 255, 255, 0.2);
+        color: var(--text-color-caption);
+        border-color: var(--text-color-caption);
       }
     }
   }
-  &:hover {
-    background-color: var(--item-focus-background-color);
+
+  &.selected:not(.multiselect) {
+    background-color: var(--item-selected-background-color);
   }
+  &:hover,
   &:focus {
     background-color: var(--item-focus-background-color);
     outline: 0;
