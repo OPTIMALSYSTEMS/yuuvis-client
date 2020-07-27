@@ -30,7 +30,9 @@ import { CellRenderer } from './grid.cellrenderer';
 })
 export class GridService {
   private COLUMN_WIDTH_CACHE_KEY_BASE = 'yuv.grid.column.width';
-
+  /**
+   * @ignore
+   */
   context;
 
   /**

@@ -30,7 +30,7 @@ export class PopoverRef<T = any> {
   }
 
   /**
-   * Emitted while closing the popover dialog
+   * Performed during closing the popover dialog
    * @param dialogResult
    */
   close(dialogResult?: T): void {
@@ -40,7 +40,7 @@ export class PopoverRef<T = any> {
     this.overlayRef.dispose();
   }
   /**
-   * After closing a popover dialog creates a new Observable with a Subject as a source
+   * After closing a popover dialog will be clean a cash and return new values
    */
   afterClosed(): Observable<T> {
     return this.afterClosedSubject.asObservable();

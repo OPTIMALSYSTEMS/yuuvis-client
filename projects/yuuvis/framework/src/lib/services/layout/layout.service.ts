@@ -4,6 +4,10 @@ import { AppCacheService, BackendService, Direction, Logger, UserService, YuvUse
 import { Observable, of, ReplaySubject } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 
+/**
+ * Makes it possible to configure the layout depending on the user's taste: makes it dark or light
+ */
+
 @Injectable({
   providedIn: 'root'
 })
@@ -63,22 +67,34 @@ export class LayoutService {
     }
   }
   /**
-   * private
+   * get selected layout setting
    */
   getLayoutSettings() {
     return this.layoutSettings;
   }
 
+  /**
+   * set dark mode if a dark mode has been selected
+   * @param darkMode - whether or not dark mode has been selected
+   */
   setDarkMode(darkMode: boolean) {
     this.layoutSettings.darkMode = darkMode;
     this.saveSettings();
   }
 
+  /**
+   * Providing specific accent color dipends on selected mode setting
+   * @param rgb - a color variable
+   */
   setAccentColor(rgb: string) {
     this.layoutSettings.accentColor = rgb;
     this.saveSettings();
   }
 
+  /**
+   * Set selected mode to a dasboard component
+   * @param dataUrl - url to your dasboard component
+   */
   setDashboardBackground(dataUrl: string) {
     this.layoutSettings.dashboardBackground = dataUrl;
     this.saveSettings();
@@ -156,10 +172,16 @@ export class LayoutService {
     );
   }
 
+  /**
+   * make it possible for users to export their layout settings as a json file
+   *
+   */
   downloadLayout(filename = 'settings.json') {
     this.generateStorageJsonUri().subscribe((uri) => this.backend.download(uri, filename));
   }
-
+  /**
+   * make it possible for user to import their layout settings as a json file
+   */
   uploadLayout(data: string | any, filter?: (key: string) => boolean, force = false) {
     const layout = this.cleanupData(typeof data === 'string' ? JSON.parse(data) : data, filter);
     if (layout.hasOwnProperty(this.STORAGE_KEY) || force) {
@@ -168,11 +190,14 @@ export class LayoutService {
     return force ? this.clearAll().pipe(switchMap(() => this.appCache.setStorage(layout))) : this.appCache.setStorage(layout);
   }
 
+  /**
+   * make it possible for user to reset thier layout settings and return to the default settings
+   */
   clearLayout() {
     return this.appCache.getStorage().pipe(switchMap((data) => this.uploadLayout(data, (key: string) => !!key.match(this.STORAGE_KEY_REGEXP), true)));
   }
 
-  clearAll() {
+  private clearAll() {
     return this.appCache.clear();
   }
 }

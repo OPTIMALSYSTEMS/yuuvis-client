@@ -27,6 +27,10 @@ export class PopoverService {
   private useSmallDeviceLayout: boolean;
   private direction: string;
 
+  /**
+   *
+   * @ignore
+   */
   constructor(private overlay: Overlay, private userService: UserService, private injector: Injector, private screenService: ScreenService) {
     this.screenService.screenChange$.subscribe((screen: Screen) => {
       this.useSmallDeviceLayout = screen.mode === ScreenService.MODE.SMALL;

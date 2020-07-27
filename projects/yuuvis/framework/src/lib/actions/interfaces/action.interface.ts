@@ -1,7 +1,9 @@
 import { Type } from '@angular/core';
 import { Observable } from 'rxjs';
 import { SelectionRange } from '../selection-range.enum';
-
+/**
+ * @ignore
+ */
 export interface BaseAction {
   target?: Function;
   isSubAction?: boolean;
@@ -12,17 +14,30 @@ export interface BaseAction {
  * Base interface for actions inside the action menu
  */
 export interface Action extends BaseAction {
-  // label to be displayed inside the action menu
+  /**
+   * label to be displayed inside the action menu
+   */
   label: string;
-  // description to be displayed inside the action menu
+  /**
+   * description to be displayed inside the action menu
+   */
   description: string;
+  /**
+   * @ignore
+   */
   iconSrc?: string;
-  // actions priority defining the position of the action within the whole list of actions
+  /**
+   * actions priority defining the position of the action within the whole list of actions
+   */
   priority: number;
-  // group of actions the action should be part of ('common' or 'further')
+  /**
+   * group of actions the action should be part of ('common' or 'further')
+   */
   group: string;
-  // number of selected items supported by the action
-  // (SelectionRange.SINGLE_SELECT, SelectionRange.MULTI_SELECT, SelectionRange.MULTI_SELECT_ONLY )
+  /**
+   * number of selected items supported by the action
+   * (SelectionRange.SINGLE_SELECT, SelectionRange.MULTI_SELECT, SelectionRange.MULTI_SELECT_ONLY )
+   */
   range: SelectionRange;
   /**
    * Determining whether or not the action is executable for the given selection
