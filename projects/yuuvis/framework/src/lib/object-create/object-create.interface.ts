@@ -1,9 +1,12 @@
 import { ObjectType } from '@yuuvis/core';
 
 /**
- * create a new state for the work with new created objects
+ * create a new state for the work with new created objects inside of parents folder
  */
 export interface CreateState {
+  /**
+   * show a new object inside of a parents folder
+   */
   currentStep: CurrentStep;
   busy: boolean;
   done: boolean;
@@ -48,10 +51,13 @@ export interface Labels {
 }
 
 /**
- * select an object type to create a new object
+ * set some object type to create a new object
  */
 export interface ObjectTypePreset {
   objectType: ObjectType;
+  /**
+   * object type key (from schema)
+   */
   data: any;
 }
 
