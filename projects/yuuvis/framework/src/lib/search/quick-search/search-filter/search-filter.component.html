@@ -33,8 +33,9 @@
         [title]="'yuv.framework.search.filter.manage' | translate"> </yuv-icon>
       <yuv-icon (click)="resetFilters()" [title]="'yuv.framework.search.filter.reset' | translate" class="button"
         [icon]="'reset'"></yuv-icon>
-      <yuv-icon (click)="saveSearch()" [title]="'yuv.framework.search.save.search' | translate" class="button"
-        [icon]="'favorite'"> </yuv-icon>
+      <!-- TODO: enable once feature is ready-->
+      <!-- <yuv-icon (click)="saveSearch()" [title]="'yuv.framework.search.save.search' | translate" class="button"
+        [icon]="'favorite'"> </yuv-icon> -->
       <ng-content select=".actions"></ng-content>
     </div>
   </div>
@@ -42,5 +43,5 @@
 
 <!-- column config editor overlay -->
 <ng-template #tplFilterConfig let-data let-popover="popover">
-  <yuv-search-filter-config [options]="data"> </yuv-search-filter-config>
+  <yuv-search-filter-config [options]="data" (close)="popover.close()"> </yuv-search-filter-config>
 </ng-template>

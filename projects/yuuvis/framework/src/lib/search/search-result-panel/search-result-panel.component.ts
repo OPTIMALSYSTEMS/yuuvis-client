@@ -41,12 +41,7 @@ export class SearchResultPanelComponent {
    */
   @Input() set query(searchQuery: SearchQuery) {
     this._searchQuery = searchQuery;
-    const type = (searchQuery && searchQuery.targetType) || this.systemService.getBaseType();
-    this.columnConfigInput = { type, sortOptions: searchQuery && searchQuery.sortOptions };
-
-    if (searchQuery) {
-      this.generateQueryDescription();
-    }
+    this.onQueryChangedFromWithin(searchQuery, false);
   }
   /**
    * List of result list item IDs supposed to be selected upfront.
@@ -111,28 +106,33 @@ export class SearchResultPanelComponent {
     this.preSelectItems = itemIDs;
   }
 
-  generateQueryDescription() {
-    const translateParams = {
-      term: this._searchQuery.term || '',
-      types: this._searchQuery.types.length ? this._searchQuery.types.map((t) => this.systemService.getLocalizedResource(`${t}_label`)).join(', ') : null
-    };
-    if (translateParams.term && !translateParams.types) {
-      this.queryDescription = this.translate.instant('yuv.framework.search-result-panel.header.description', translateParams);
-    } else if (translateParams.types) {
-      this.queryDescription = this.translate.instant('yuv.framework.search-result-panel.header.description.types', translateParams);
-    } else {
-      this.queryDescription = '';
+  generateQueryDescription(searchQuery: SearchQuery) {
+    let description = '';
+    if (searchQuery) {
+      const translateParams = {
+        term: this._searchQuery.term || '',
+        types: this._searchQuery.types.length ? this._searchQuery.types.map((t) => this.systemService.getLocalizedResource(`${t}_label`)).join(', ') : null
+      };
+      if (translateParams.term && !translateParams.types) {
+        description = this.translate.instant('yuv.framework.search-result-panel.header.description', translateParams);
+      } else if (translateParams.types) {
+        description = this.translate.instant('yuv.framework.search-result-panel.header.description.types', translateParams);
+      }
     }
-    this.queryDescriptionChange.emit(this.queryDescription);
+    if (description !== this.queryDescription) {
+      this.queryDescription = description;
+      this.queryDescriptionChange.emit(this.queryDescription);
+    }
   }
 
   onViewModeChanged(mode: ViewMode) {
     this.viewMode = mode;
   }
 
-  onQueryChangedFromWithin(searchQuery: SearchQuery) {
-    this.columnConfigInput.sortOptions = searchQuery && searchQuery.sortOptions;
-    this.queryChanged.emit(searchQuery);
+  onQueryChangedFromWithin(searchQuery: SearchQuery, emit = true) {
+    this.updateColumnConfig(searchQuery);
+    this.generateQueryDescription(searchQuery);
+    return emit && this.queryChanged.emit(searchQuery);
   }
 
   onFilterPanelToggled(visible: boolean) {
@@ -155,6 +155,11 @@ export class SearchResultPanelComponent {
         this.actionMenuVisible = true;
       });
     }
+  }
+
+  updateColumnConfig(searchQuery: SearchQuery) {
+    const type = (searchQuery && searchQuery.targetType) || this.systemService.getBaseType();
+    this.columnConfigInput = { type, sortOptions: searchQuery && searchQuery.sortOptions };
   }
 
   showColumnConfigEditor() {

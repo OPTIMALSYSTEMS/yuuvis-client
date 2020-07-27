@@ -30,10 +30,12 @@ import { FileSizePipe } from '../../pipes/filesize.pipe';
 })
 export class QuickSearchService {
   private STORAGE_KEY_FILTERS_VISIBLE = 'yuv.framework.search.filters.visibility';
+  private STORAGE_KEY_FILTERS_LAST = 'yuv.framework.search.filters.last';
   private STORAGE_KEY_FILTERS = 'yuv.framework.search.filters';
 
   private filters = {};
   private filtersVisibility = [];
+  private filtersLast = [];
   availableObjectTypes: Selectable[] = [];
   availableObjectTypeGroups: SelectableGroup[] = [];
 
@@ -162,6 +164,10 @@ export class QuickSearchService {
       });
   }
 
+  loadLastFilters() {
+    return this.appCacheService.getItem(this.STORAGE_KEY_FILTERS_LAST).pipe(tap((f) => (this.filtersLast = f || [])));
+  }
+
   loadFiltersVisibility() {
     return this.userService.getSettings(this.STORAGE_KEY_FILTERS_VISIBLE).pipe(
       // return this.appCacheService.getItem(this.STORAGE_KEY_FILTERS_VISIBLE).pipe(
@@ -195,6 +201,13 @@ export class QuickSearchService {
     const qFilter = JSON.parse(filter);
     const { op, v, v2 } = Object.values(qFilter)[0] as any;
     return new SearchFilter(Object.keys(qFilter)[0], op, v, v2);
+  }
+
+  saveLastFilters(ids: string[]) {
+    // persist last 20 filters
+    this.filtersLast = [...ids].concat(this.filtersLast.filter((f) => !ids.includes(f))).slice(0, 20);
+    this.appCacheService.setItem(this.STORAGE_KEY_FILTERS_LAST, this.filtersLast).subscribe();
+    return of(this.filtersLast);
   }
 
   saveFiltersVisibility(ids: string[]) {
