@@ -164,7 +164,8 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
   @HostBinding('class.inline') _inline: boolean;
 
   @HostListener('keydown.enter', ['$event']) onEnter(event) {
-    this.executeSearch();
+    // wait for debounce / form changes
+    setTimeout(() => this.executeSearch(), 500);
   }
 
   constructor(
