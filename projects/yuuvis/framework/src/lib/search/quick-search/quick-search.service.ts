@@ -181,7 +181,7 @@ export class QuickSearchService {
     const available = availableObjectTypeFields.map((a) => a.id);
     return [...storedFilters.filter((v: Selectable) => this.isMatching(v, available)), ...this.getDefaultFiltersList(availableObjectTypeFields)]
       .map((f) => ({ ...f, highlight: !f.id.startsWith('__') }))
-      .sort(Utils.sortValues('label'));
+      .sort((a, b) => (a.id.replace(/#.*/, '') === b.id.replace(/#.*/, '') ? 0 : Utils.sortValues('label').call(this, a, b)));
   }
 
   private isMatching(v: Selectable, available: string[]) {
@@ -227,12 +227,10 @@ export class QuickSearchService {
   }
 
   getDefaultFiltersList(availableObjectTypeFields: Selectable[]) {
-    return this.getDefaultFilters(availableObjectTypeFields)
-      .reduce((prev, cur) => {
-        cur.items.forEach((i) => (i.label = `${cur.label} ( ${i.label} )`));
-        return [...prev, ...cur.items];
-      }, [])
-      .sort(Utils.sortValues('label'));
+    return this.getDefaultFilters(availableObjectTypeFields).reduce((prev, cur) => {
+      cur.items.forEach((i) => (i.label = `${cur.label} ( ${i.label} )`));
+      return [...prev, ...cur.items];
+    }, []);
   }
 
   getDefaultFilters(availableObjectTypeFields: Selectable[]) {
