@@ -200,11 +200,23 @@ export class RecentActivitiesComponent implements OnInit {
     }
   }
 }
-
+/**
+ * Input data for the `RecentActivitiesComponent`
+ */
 export interface RecentActivitiesData {
+  /**
+   * List of objects that have been resently created
+   */
   created: RecentItem[];
+  /**
+   * List of objects that have been resently modified
+   */
   modified: RecentItem[];
 }
+
+/**
+ * Object, that has been resently changed
+ */
 export interface RecentItem {
   title: string;
   description: string;
@@ -212,6 +224,10 @@ export interface RecentItem {
   objectTypeId: string;
   objectTypeIcon: string;
   objectTypeLabel: string;
+  /**
+   * date of object
+   */
   date: Date;
+  /** wether or nor will be opended in a new tab*/
   newTab?: boolean;
 }

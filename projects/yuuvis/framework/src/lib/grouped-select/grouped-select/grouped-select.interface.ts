@@ -1,11 +1,16 @@
-// Interface for a group of `Selectables`
+/**
+ * Interface for a group of`Selectables`
+ */
+
 export interface SelectableGroup {
   id: string;
   label?: string;
   collapsed?: boolean;
   items: Selectable[];
 }
-
+/**
+ * Interface for a selectable object
+ */
 export interface Selectable {
   id: string;
   label: string;
@@ -16,7 +21,9 @@ export interface Selectable {
   count?: number;
   value?: any;
 }
-
+/**
+ * @ignore
+ */
 export interface SelectableInternal extends Selectable {
   index?: number;
 }

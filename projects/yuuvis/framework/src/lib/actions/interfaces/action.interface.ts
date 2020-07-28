@@ -58,7 +58,9 @@ export interface SimpleAction extends Action {
   run(selection: any[]): Observable<boolean>;
   // finished: EventEmitter<any>;
 }
-
+/**
+ * @ignore
+ */
 export interface SimpleCustomAction extends SimpleAction {
   action: any;
 }

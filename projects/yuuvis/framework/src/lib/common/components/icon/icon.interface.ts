@@ -1,4 +1,13 @@
+/**
+ * interface for icons, that will be used in the client
+ */
 export interface Icon {
-    name: string;
-    data: string;
+  /**
+   * icon name
+   */
+  name: string;
+  /**
+   * icon URL
+   */
+  data: string;
 }

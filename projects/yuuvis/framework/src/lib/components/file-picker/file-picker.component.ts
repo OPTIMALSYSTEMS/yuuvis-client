@@ -141,10 +141,18 @@ export class FilePickerComponent {
     });
   }
 }
-
+/**
+ * Providing an interface for a `FilePickerComponent`
+ */
 export interface FileInputResult {
+  /**
+   * checks if the uploaded file is of type image
+   */
   isImage: boolean;
   extension?: string;
+  /**
+   * uploaded file data
+   */
   file: {
     name: string;
     size: number;

@@ -1,6 +1,9 @@
 import { Highlightable } from '@angular/cdk/a11y';
 import { Component, ElementRef, HostBinding, Input } from '@angular/core';
 
+/**
+ * @ignore
+ */
 export interface QuickfinderEntry {
   id: string;
   iconSVG: string;

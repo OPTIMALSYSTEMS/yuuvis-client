@@ -622,8 +622,20 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
   ngOnInit() {}
 }
 
+/**
+ * Interface providing a `QuickSearchComponent`
+ */
 export interface ObjectTypeAggregation {
+  /**
+   * id of a found object type
+   */
   objectTypeId: string;
+  /**
+   * label of an object
+   */
   label: string;
+  /**
+   * number of objects found
+   */
   count: number;
 }

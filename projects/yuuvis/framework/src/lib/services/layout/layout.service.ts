@@ -202,8 +202,21 @@ export class LayoutService {
   }
 }
 
+/**
+ * interface for providing a `LayoutService`
+ */
 export interface LayoutSettings {
+  /**
+   * change the mode of layout to dark
+   */
   darkMode?: boolean;
+  /**
+   * set an accent color for a selected mode
+   */
+
   accentColor?: string;
+  /**
+   * set a background in a dashboard
+   */
   dashboardBackground?: string;
 }

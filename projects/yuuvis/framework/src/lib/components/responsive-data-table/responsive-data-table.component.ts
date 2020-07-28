@@ -16,10 +16,19 @@ import { ResponsiveTableData } from './responsive-data-table.interface';
  */
 export type ViewMode = 'standard' | 'horizontal' | 'grid' | 'auto';
 
+/**
+ * Input data for a `ResponsiveDataTableComponent`
+ */
 export interface ResponsiveDataTableOptions {
+  /** View mode type of a data table.
+   * Can be `standard`, `horizontal`, `grid` or `auto`
+   */
   viewMode?: ViewMode;
-  // Object where the properties are the column IDs
-  // and their values are the columns width.
+  /**
+   * Object where the properties are the column IDs
+   * and their values are the columns width.
+   */
+
   columnWidths?: any;
 }
 

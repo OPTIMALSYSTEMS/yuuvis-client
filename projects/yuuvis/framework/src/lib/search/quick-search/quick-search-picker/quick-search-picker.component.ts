@@ -79,13 +79,20 @@ export class QuickSearchPickerComponent {
     this.selectedItems = [];
   }
 }
-
-// Input data for the quick search picker component
+/**
+ * Input data for the `QuickSearchPickerComponent`
+ */
 export interface QuickSearchPickerData {
-  // the type of data item provided
-  // actual items based on the given type
+  /**
+   * the type of data item provided
+   */
+  /**
+   * actual items based on the given type
+   */
   type: 'type' | 'field' | 'filter';
   items: SelectableGroup[];
-  // array of item IDs that should be selected upfront
+  /**
+   * array of item IDs that should be selected upfront
+   */
   selected: string[];
 }
