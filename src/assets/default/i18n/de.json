@@ -83,6 +83,7 @@
   "yuv.framework.form.organization.noaccess": "Gelöscht oder Zugriff verweigert",
   "yuv.framework.form.reference.classify.icon.title": "Objektreferenz",
   "yuv.framework.form.reference.noaccess": "Gelöscht oder Zugriff verweigert",
+  "yuv.framework.list.configure.columns": "Spalten konfigurieren",
   "yuv.framework.list.refresh": "Aktualisieren",
   "yuv.framework.object-create.footer.another": "Weiteres Objekt erstellen",
   "yuv.framework.object-create.footer.create": "Objekt erstellen",

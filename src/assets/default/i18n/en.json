@@ -83,6 +83,7 @@
   "yuv.framework.form.organization.noaccess": "Deleted or access denied",
   "yuv.framework.form.reference.classify.icon.title": "Object reference",
   "yuv.framework.form.reference.noaccess": "Deleted or access denied",
+  "yuv.framework.list.configure.columns": "Configure columns",
   "yuv.framework.list.refresh": "Refresh",
   "yuv.framework.object-create.footer.another": "Create additional object",
   "yuv.framework.object-create.footer.create": "Create object",
