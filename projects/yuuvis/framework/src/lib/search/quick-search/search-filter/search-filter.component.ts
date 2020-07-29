@@ -216,12 +216,8 @@ export class SearchFilterComponent implements OnInit {
   onTypeChange(res: Selectable[]) {
     this.typeSelection = res.map((r) => r.id);
     this.setupFilters(this.typeSelection, this.activeFilters);
-    const hasNewTypes = this.typeSelection.length - this.filterQuery.types.length > 0;
     this.filterQuery.types = [...this.typeSelection];
     this.filterChange.emit(this.filterQuery);
-    if (hasNewTypes) {
-      this.aggregate(true);
-    }
   }
 
   saveSearch() {}
@@ -231,19 +227,16 @@ export class SearchFilterComponent implements OnInit {
     this.filterChange.emit(new SearchQuery(this._query.toQueryJson()));
   }
 
-  aggregate(typeChange = false) {
-    this.quickSearchService.getActiveTypes(this.filterQuery).subscribe((types: any) => {
+  aggregate() {
+    const queryNoTypes = new SearchQuery({ ...this.filterQuery.toQueryJson(), types: [] });
+    this.quickSearchService.getActiveTypes(queryNoTypes).subscribe((types: any) => {
       this.availableObjectTypes.forEach((i) => {
         const match = types.find((t) => t.id === i.id);
         i.count = match ? match.count : 0;
       });
-      if (!typeChange) {
-        // remove all empty types that are part of query
-        this.availableTypeGroups[0].items = this.availableObjectTypes.filter(
-          (t) => t.count || (this.typeSelection.length && !this.typeSelection.includes(t.id)) || this._query.types.includes(t.id)
-        );
-        this.typeSelection = [...this.typeSelection];
-      }
+      // remove all empty types that are part of original query
+      this.availableTypeGroups[0].items = this.availableObjectTypes.filter((t) => t.count || this._query.types.includes(t.id));
+      this.typeSelection = [...this.typeSelection];
     });
   }
 
