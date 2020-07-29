@@ -37,6 +37,10 @@ pre[class*='language-'] {
   font-weight: normal;
 }
 
+.card-header {
+  background-color: #ccc;
+}
+
 .card-module {
   min-height: 40px !important;
 }
@@ -127,9 +131,14 @@ pre[class*='language-'] {
   color: #4c555a;
 }
 
+.btn-default {
+  background-color: var(--color-accent);
+  color: var(--main-background);
+}
+
 a {
   color: var(--color-accent);
-  text-decoration: underline;
+  text-decoration: none;
 }
 a:hover {
   color: var(--color-accent);

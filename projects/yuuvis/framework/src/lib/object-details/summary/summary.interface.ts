@@ -1,8 +1,14 @@
 /**
- * Summary input sections
+ * Summary input sections, which consists of individual `SummaryEntrys` elements
  */
 export interface Summary {
+  /**
+   * Summary entry, that come from a yuuvis core
+   */
   core: SummaryEntry[];
+  /**
+   * Summary entry, that belog to the object
+   */
   base: SummaryEntry[];
   extras: SummaryEntry[];
   parent: SummaryEntry[];
