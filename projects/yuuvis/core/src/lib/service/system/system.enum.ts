@@ -34,6 +34,7 @@ export const BaseObjectTypeField = {
   TRACE_ID: 'system:traceId',
   SECONDARY_OBJECT_TYPE_IDS: 'system:secondaryObjectTypeIds',
   BASE_TYPE_ID: 'system:baseTypeId',
+  TAGS: 'system:tags',
   OBJECT_ID: 'system:objectId'
 };
 

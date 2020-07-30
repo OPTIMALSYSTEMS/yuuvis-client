@@ -98,6 +98,7 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
     BaseObjectTypeField.OBJECT_ID,
     // BaseObjectTypeField.CREATED_BY,
     // BaseObjectTypeField.MODIFIED_BY,
+    BaseObjectTypeField.TAGS,
     BaseObjectTypeField.OBJECT_TYPE_ID,
     BaseObjectTypeField.PARENT_ID,
     BaseObjectTypeField.PARENT_OBJECT_TYPE_ID,

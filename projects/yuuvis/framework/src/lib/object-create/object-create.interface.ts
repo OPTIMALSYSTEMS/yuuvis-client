@@ -29,5 +29,7 @@ export interface ObjectTypePreset {
 export enum CurrentStep {
   OBJECTTYPE = 'objecttype',
   FILES = 'files',
-  INDEXDATA = 'indexdata'
+  INDEXDATA = 'indexdata',
+  DLM_UPLOAD = 'dlm_upload',
+  DLM_INDEXDATA = 'dlm_indexdata'
 }

@@ -84,6 +84,18 @@
         yuvFocusFirst="200" (statusChanged)="onFormStatusChanged($event)">
       </yuv-object-form>
     </div>
+
+    <!-- STEP: DLM_UPLOAD -->
+    <div class="step select" *ngSwitchCase="'dlm_upload'">
+      <button (click)="dlmUploadCancel()">No</button>>
+      <button (click)="dlmUploadApprove()">OK</button>>
+    </div>
+    <!-- STEP: DLM_INDEXDATA -->
+    <div class="step select" *ngSwitchCase="'dlm_indexdata'">
+      DLM IDX
+    </div>
+
+
   </ng-container>
 
   <footer>

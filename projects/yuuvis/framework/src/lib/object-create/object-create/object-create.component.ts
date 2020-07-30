@@ -40,6 +40,8 @@ import { Breadcrumb, CreateState, CurrentStep, Labels, ObjectTypePreset } from '
 export class ObjectCreateComponent implements OnDestroy {
   @ViewChild(ObjectFormComponent) objectForm: ObjectFormComponent;
 
+  private DLM_CLASSIFIER = 'appClient:dlm';
+  private DLM_TAG = 'appClient:dlm:prepare';
   context: DmsObject;
 
   animationTimer = { value: true, params: { time: '400ms' } };
@@ -202,31 +204,78 @@ export class ObjectCreateComponent implements OnDestroy {
     this.title = objectType ? this.system.getLocalizedResource(`${objectType.id}_label`) : this.labels.defaultTitle;
     this.objCreateServcice.setNewState({ busy: true });
 
-    this.system.getObjectTypeForm(objectType.id, 'CREATE').subscribe(
-      (model) => {
-        this.objCreateServcice.setNewState({ busy: false });
-        this.selectedObjectTypeFormOptions = {
-          formModel: model,
-          data: {}
-        };
-        // does selected type support contents?
-        if (objectType.isFolder || objectType.contentStreamAllowed === 'notallowed') {
-          this.objCreateServcice.setNewState({ currentStep: CurrentStep.INDEXDATA });
-          this.objCreateServcice.setNewBreadcrumb(CurrentStep.INDEXDATA, CurrentStep.FILES);
-        } else {
-          this.objCreateServcice.setNewState({ currentStep: CurrentStep.FILES });
-          this.objCreateServcice.setNewBreadcrumb(CurrentStep.FILES, CurrentStep.INDEXDATA);
+    if (this.isDLMType(objectType)) {
+      // DLM object types are treated in a different way
+      this.processDLMType(objectType);
+    } else {
+      this.system.getObjectTypeForm(objectType.id, 'CREATE').subscribe(
+        (model) => {
+          this.objCreateServcice.setNewState({ busy: false });
+          this.selectedObjectTypeFormOptions = {
+            formModel: model,
+            data: {}
+          };
+          // does selected type support contents?
+          if (objectType.isFolder || objectType.contentStreamAllowed === 'notallowed') {
+            this.objCreateServcice.setNewState({ currentStep: CurrentStep.INDEXDATA });
+            this.objCreateServcice.setNewBreadcrumb(CurrentStep.INDEXDATA, CurrentStep.FILES);
+          } else {
+            this.objCreateServcice.setNewState({ currentStep: CurrentStep.FILES });
+            this.objCreateServcice.setNewBreadcrumb(CurrentStep.FILES, CurrentStep.INDEXDATA);
+          }
+          this.objCreateServcice.setNewState({ done: this.isReady() });
+        },
+        (err) => {
+          this.objCreateServcice.setNewState({
+            busy: false,
+            done: this.isReady()
+          });
+          this.notify.error(this.title, this.translate.instant('yuv.framework.object-create.step.objecttype.form.fail'));
         }
-        this.objCreateServcice.setNewState({ done: this.isReady() });
-      },
-      (err) => {
-        this.objCreateServcice.setNewState({
-          busy: false,
-          done: this.isReady()
-        });
-        this.notify.error(this.title, this.translate.instant('yuv.framework.object-create.step.objecttype.form.fail'));
-      }
-    );
+      );
+    }
+  }
+
+  private isDLMType(objectType: ObjectType): boolean {
+    return Array.isArray(objectType.classification) && objectType.classification.includes(this.DLM_CLASSIFIER);
+  }
+
+  private processDLMType(objectType: ObjectType) {
+    if (objectType.isFolder || objectType.contentStreamAllowed === 'notallowed') {
+      this.objCreateServcice.setNewState({ currentStep: CurrentStep.DLM_UPLOAD });
+      this.objCreateServcice.setNewBreadcrumb(CurrentStep.DLM_UPLOAD, CurrentStep.FILES);
+    } else {
+      this.objCreateServcice.setNewState({ currentStep: CurrentStep.FILES });
+      this.objCreateServcice.setNewBreadcrumb(CurrentStep.FILES, CurrentStep.DLM_UPLOAD);
+    }
+    this.objCreateServcice.setNewState({ busy: false, done: this.isReady() });
+  }
+
+  dlmUploadApprove() {
+    let data = {};
+    if (this.context) {
+      data[BaseObjectTypeField.PARENT_ID] = this.context.id;
+    }
+    data[BaseObjectTypeField.TAGS] = [[this.DLM_TAG, 0]];
+    this.busy = true;
+
+    this.createObject(this.selectedObjectType.id, data, this.files)
+      .pipe(takeUntilDestroy(this))
+      .subscribe(
+        (res) => {
+          this.busy = false;
+          this.objCreateServcice.setNewState({ currentStep: CurrentStep.DLM_INDEXDATA });
+          // TODO: continue ...
+        },
+        (err) => {
+          this.busy = false;
+          this.notify.error(this.translate.instant('yuv.framework.object-create.notify.error'));
+        }
+      );
+  }
+
+  dlmUploadCancel() {
+    this.resetState();
   }
 
   fileChosen(files: File[]) {
@@ -253,12 +302,13 @@ export class ObjectCreateComponent implements OnDestroy {
   }
 
   fileSelectContinue() {
-    this.goToStep(CurrentStep.INDEXDATA);
-    this.objCreateServcice.setNewBreadcrumb(CurrentStep.INDEXDATA);
+    const nextStep = this.isDLMType(this.selectedObjectType) ? CurrentStep.DLM_UPLOAD : CurrentStep.INDEXDATA;
+    this.goToStep(nextStep);
+    this.objCreateServcice.setNewBreadcrumb(nextStep);
   }
 
-  private createObject(id: string, data: any, files: File[]): Observable<string[]> {
-    return this.dmsService.createDmsObject(id, data, files, files.map((file) => file.name).join(', '));
+  private createObject(id: string, data: any, files: File[], silent = false): Observable<string[]> {
+    return this.dmsService.createDmsObject(id, data, files, files.map((file) => file.name).join(', '), silent);
   }
 
   create() {
