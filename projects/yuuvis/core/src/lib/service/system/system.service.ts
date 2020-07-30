@@ -6,7 +6,7 @@ import { BackendService } from '../backend/backend.service';
 import { AppCacheService } from '../cache/app-cache.service';
 import { Logger } from '../logger/logger';
 import { Utils } from './../../util/utils';
-import { BaseObjectTypeField, Classification, ContentStreamAllowed, InternalFieldType, SecondaryObjectTypeField, SystemType } from './system.enum';
+import { Classification, ContentStreamAllowed, InternalFieldType, SecondaryObjectTypeField, SystemType } from './system.enum';
 import {
   ClassificationEntry,
   ObjectType,
@@ -15,6 +15,7 @@ import {
   SchemaResponse,
   SchemaResponseFieldDefinition,
   SchemaResponseTypeDefinition,
+  SecondaryObjectType,
   SystemDefinition
 } from './system.interface';
 
@@ -91,6 +92,18 @@ export class SystemService {
     }
     return objectType;
   }
+  /**
+   * Get a particular secondary object type
+   * @param objectTypeId ID of the object type
+   * @param withLabel Whether or not to also add the types label
+   */
+  getSecondaryObjectType(objectTypeId: string, withLabel?: boolean): SecondaryObjectType {
+    let objectType: SecondaryObjectType = this.system.secondaryObjectTypes.find((ot) => ot.id === objectTypeId);
+    if (objectType && withLabel) {
+      objectType.label = this.getLocalizedResource(`${objectType.id}_label`);
+    }
+    return objectType;
+  }
 
   /**
    * Get the base document type all documents belong to
@@ -136,11 +149,12 @@ export class SystemService {
     ];
     return {
       id: SystemType.OBJECT,
-      localNamespace: null,
+      // localNamespace: null,
       description: null,
       baseId: null,
       creatable: false,
       isFolder: false,
+      secondaryObjectTypes: [],
       fields: [...baseTypeFields, ...secondaryFields]
     };
   }
@@ -217,7 +231,7 @@ export class SystemService {
    * @param user User to fetch definition for
    */
   private fetchSystemDefinition(): Observable<boolean> {
-    const fetchTasks = [this.backend.get('/dms/schema', ApiBase.core), this.fetchLocalizations()];
+    const fetchTasks = [this.backend.get('/dms/schema/native.json', ApiBase.core), this.fetchLocalizations()];
 
     return forkJoin(fetchTasks).pipe(
       catchError((error) => {
@@ -239,39 +253,104 @@ export class SystemService {
    * @param schemaResponse Response from the backend
    */
   private setSchema(schemaResponse: SchemaResponse, localizedResource: any) {
-    const objectTypes: ObjectType[] = schemaResponse.objectTypes.map((ot: SchemaResponseTypeDefinition) => {
-      const isFolder = ot.baseId === 'folder';
-
-      // TODO: Remove once schema supports organization classification for base params
-      // map certain fields to organization type (fake it until you make it ;-)
-      const orgTypeFields = [BaseObjectTypeField.MODIFIED_BY, BaseObjectTypeField.CREATED_BY];
-      ot.fields.forEach((f) => {
-        if (orgTypeFields.includes(f.id)) {
-          f.classification = [Classification.STRING_ORGANIZATION];
-        }
-      });
-
-      const objectType: ObjectType = {
-        id: ot.id,
-        localNamespace: ot.localNamespace,
-        description: ot.description,
-        baseId: ot.baseId,
-        creatable: ot.creatable,
-        contentStreamAllowed: isFolder ? ContentStreamAllowed.NOT_ALLOWED : ot.contentStreamAllowed,
-        isFolder: isFolder,
-        fields: ot.fields.map((f) => ({ ...f, _internalType: this.getInternalFormElementType(f, 'propertyType') }))
-      };
-      return objectType;
+    // prepare a quick access object for the fields
+    let propertiesQA = {};
+    schemaResponse.propertyDefinition.forEach((p: any) => {
+      propertiesQA[p.id] = p;
     });
+    // prepare a quick access object for object types (including secondary objects)
+    let objectTypesQA = {};
+    schemaResponse.typeFolderDefinition.forEach((ot: any) => {
+      objectTypesQA[ot.id] = ot;
+    });
+    schemaResponse.typeDocumentDefinition.forEach((ot: any) => {
+      objectTypesQA[ot.id] = ot;
+    });
+    schemaResponse.typeSecondaryDefinition.forEach((sot: any) => {
+      objectTypesQA[sot.id] = sot;
+    });
+
+    const objectTypes: ObjectType[] = [
+      // folder types
+      ...schemaResponse.typeFolderDefinition.map((fd) => ({
+        id: fd.id,
+        description: fd.description,
+        classification: fd.classification,
+        baseId: fd.baseId,
+        creatable: this.isCreatable(fd),
+        contentStreamAllowed: ContentStreamAllowed.NOT_ALLOWED,
+        isFolder: true,
+        secondaryObjectTypes: fd.secondaryObjectTypeId ? fd.secondaryObjectTypeId.map((t) => ({ id: t.value, static: t.static })) : [],
+        fields: this.resolveObjectTypeFields(fd, propertiesQA, objectTypesQA)
+      })),
+      // document types
+      ...schemaResponse.typeDocumentDefinition.map((dd) => ({
+        id: dd.id,
+        description: dd.description,
+        classification: dd.classification,
+
+        baseId: dd.baseId,
+        creatable: this.isCreatable(dd),
+        contentStreamAllowed: dd.contentStreamAllowed,
+        isFolder: false,
+        secondaryObjectTypes: dd.secondaryObjectTypeId ? dd.secondaryObjectTypeId.map((t) => ({ id: t.value, static: t.static })) : [],
+        fields: this.resolveObjectTypeFields(dd, propertiesQA, objectTypesQA)
+      }))
+    ];
+
+    const secondaryObjectTypes: SecondaryObjectType[] = schemaResponse.typeSecondaryDefinition.map((std) => ({
+      id: std.id,
+      description: std.description,
+      classification: std.classification,
+      baseId: std.baseId,
+      fields: this.resolveObjectTypeFields(std, propertiesQA, objectTypesQA)
+    }));
 
     this.system = {
       version: schemaResponse.version,
       lastModificationDate: schemaResponse.lastModificationDate,
       objectTypes,
+      secondaryObjectTypes,
       i18n: localizedResource
     };
     this.appCache.setItem(this.STORAGE_KEY, this.system).subscribe();
     this.systemSource.next(this.system);
+  }
+
+  /**
+   * Resolve all the fields for an object type. This also includes secondary object types and the fields inherited from
+   * the base type (... and of course the base type (and its secondary object types) of the base type and so on)
+   * @param schemaTypeDefinition object type definition from the native schema
+   * @param propertiesQA Quick access object of all properties
+   * @param objectTypesQA Quick access object of all object types
+   */
+  private resolveObjectTypeFields(schemaTypeDefinition: SchemaResponseTypeDefinition, propertiesQA: any, objectTypesQA: any) {
+    // const rootTypes = [SystemType.DOCUMENT, SystemType.FOLDER, SystemType.SOT];
+    const objectTypeFieldIDs = schemaTypeDefinition.propertyReference.map((pr) => pr.value);
+    if (schemaTypeDefinition.secondaryObjectTypeId) {
+      schemaTypeDefinition.secondaryObjectTypeId
+        .map((sot) => sot.value)
+        .forEach((sotID) => {
+          objectTypesQA[sotID].propertyReference.forEach((pr) => {
+            objectTypeFieldIDs.push(pr.value);
+          });
+        });
+    }
+
+    let fields = objectTypeFieldIDs.map((id) => ({
+      ...propertiesQA[id],
+      _internalType: this.getInternalFormElementType(propertiesQA[id], 'propertyType')
+    }));
+
+    // also resolve properties of the base type
+    if (schemaTypeDefinition.baseId !== schemaTypeDefinition.id && !!objectTypesQA[schemaTypeDefinition.baseId]) {
+      fields = fields.concat(this.resolveObjectTypeFields(objectTypesQA[schemaTypeDefinition.baseId], propertiesQA, objectTypesQA));
+    }
+    return fields;
+  }
+
+  private isCreatable(schemaTypeDefinition: SchemaResponseTypeDefinition) {
+    return ![SystemType.FOLDER, SystemType.DOCUMENT].includes(schemaTypeDefinition.id);
   }
 
   /**

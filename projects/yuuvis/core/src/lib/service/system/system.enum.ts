@@ -2,7 +2,8 @@ export const SystemType = {
   OBJECT: 'system:object',
   DOCUMENT: 'system:document',
   FOLDER: 'system:folder',
-  AUDIT: 'system:audit'
+  AUDIT: 'system:audit',
+  SOT: 'system:secondray'
 };
 
 export const AdministrationRoles = {
