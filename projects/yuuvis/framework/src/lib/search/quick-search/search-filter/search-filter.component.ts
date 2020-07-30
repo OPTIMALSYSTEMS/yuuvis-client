@@ -57,6 +57,7 @@ export class SearchFilterComponent implements OnInit {
     return (this.activeFilters || []).map((f) => f.id);
   }
 
+  _originalFilters: Selectable[] = [];
   activeFilters: Selectable[] = [];
   lastFilters: Selectable[] = [];
   storedFilters: Selectable[] = [];
@@ -144,7 +145,9 @@ export class SearchFilterComponent implements OnInit {
       this.quickSearchService.loadLastFilters()
     ]).subscribe(([storedFilters, visibleFilters, lastFilters]) => {
       this.storedFilters = this.quickSearchService.loadFilters(storedFilters as any, this.availableObjectTypeFields);
-      this.activeFilters = activeFilters || this.quickSearchService.getActiveFilters(this.filterQuery, this.storedFilters, this.availableObjectTypeFields);
+      this.activeFilters =
+        activeFilters ||
+        (this._originalFilters = this.quickSearchService.getActiveFilters(this.filterQuery, this.storedFilters, this.availableObjectTypeFields));
 
       this.availableFilterGroups = [
         {
@@ -197,14 +200,18 @@ export class SearchFilterComponent implements OnInit {
     this.popoverService
       .open(this.tplFilterConfig, popoverConfig)
       .afterClosed()
-      .subscribe(() => this.setupFilters(this.typeSelection, this.activeFilters));
+      .subscribe(() => this.setupFilters(this.typeSelection));
   }
 
   onFilterChange(res: Selectable[]) {
     // todo: find best UX (maybe css animation)
     this.activeFilters = [...res];
     this.quickSearchService.saveLastFilters(this.filterSelection).subscribe((lastFilters) => {
-      this.availableFilterGroups[0].items = [...this.activeFilters, ...this.updateLastFilters(lastFilters)];
+      this.availableFilterGroups[0].items = [
+        ...this.activeFilters,
+        ...this._originalFilters.filter((o) => !this.filterSelection.includes(o.id)),
+        ...this.updateLastFilters(lastFilters)
+      ];
     });
     this.filterQuery.filters = (res.map((v) => v.value) as SearchFilter[][])
       .reduce((pre, cur) => (pre = pre.concat(cur)), [])
