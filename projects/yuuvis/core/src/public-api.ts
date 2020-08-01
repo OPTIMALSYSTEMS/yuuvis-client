@@ -34,7 +34,7 @@ export * from './lib/service/search/search-query.model';
 export * from './lib/service/search/search.service';
 export * from './lib/service/search/search.service.interface';
 export * from './lib/service/system/system.enum';
-export { ClassificationEntry, ObjectType, ObjectTypeField, ObjectTypeGroup } from './lib/service/system/system.interface';
+export { ClassificationEntry, ObjectType, ObjectTypeField, ObjectTypeGroup, SecondaryObjectType } from './lib/service/system/system.interface';
 export * from './lib/service/system/system.service';
 export * from './lib/service/upload/upload.interface';
 export * from './lib/service/upload/upload.service';

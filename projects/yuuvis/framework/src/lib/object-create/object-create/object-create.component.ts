@@ -6,6 +6,11 @@ import {
   DmsService,
   ObjectType,
   ObjectTypeGroup,
+  SearchQuery,
+  SearchResult,
+  SearchResultItem,
+  SearchService,
+  SecondaryObjectType,
   Sort,
   SystemService,
   SystemType,
@@ -13,6 +18,7 @@ import {
   Utils
 } from '@yuuvis/core';
 import { Observable } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { FadeInAnimations } from '../../common/animations/fadein.animation';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
@@ -23,6 +29,20 @@ import { NotificationService } from '../../services/notification/notification.se
 import { clear } from '../../svg.generated';
 import { ObjectCreateService } from '../object-create.service';
 import { Breadcrumb, CreateState, CurrentStep, Labels, ObjectTypePreset } from './../object-create.interface';
+
+// Interface used for creating special DLM objects.
+export interface DLMState {
+  // The DLM objects that have been created
+  dmsObject: {
+    items: DmsObject[];
+    selected?: DmsObject;
+  };
+  // List of floating secondary object types that could be applied to the current DLM(s)
+  floatingSOT: {
+    items: SecondaryObjectType[];
+    selected?: SecondaryObjectType;
+  };
+}
 
 /**
  * This component is basically a wizard for creating new dms objects.
@@ -42,6 +62,13 @@ export class ObjectCreateComponent implements OnDestroy {
 
   private DLM_CLASSIFIER = 'appClient:dlm';
   private DLM_TAG = 'appClient:dlm:prepare';
+  // possible states of a DLM item
+  private DLM_STATE = {
+    // created but no FSOT assigned so far
+    IN_PROGRESS: 0,
+    // an FSOT has been assigned
+    READY: 1
+  };
   context: DmsObject;
 
   animationTimer = { value: true, params: { time: '400ms' } };
@@ -53,6 +80,10 @@ export class ObjectCreateComponent implements OnDestroy {
   createAnother: boolean = false;
   selectedObjectType: ObjectType;
   selectedObjectTypeFormOptions: ObjectFormOptions;
+
+  dlmCreate: DLMState;
+  // list of DLM objects that have not been finished yet
+  unfinishedDLM: any[];
 
   // groups of object types available for the root target
   generalObjectTypeGroups: SelectableGroup[];
@@ -118,6 +149,7 @@ export class ObjectCreateComponent implements OnDestroy {
     private objCreateServcice: ObjectCreateService,
     private system: SystemService,
     private notify: NotificationService,
+    private searchService: SearchService,
     private dmsService: DmsService,
     private translate: TranslateService,
     private iconRegistry: IconRegistryService
@@ -156,6 +188,33 @@ export class ObjectCreateComponent implements OnDestroy {
         }))
     }));
     this.setupAvailableObjectTypeGroups();
+    this.collectUnfinishedDLMs();
+  }
+
+  // Get all DLMs that have ot been finished yet
+  private collectUnfinishedDLMs() {
+    // TODO: implement
+    const q = {
+      filters: {},
+      types: this.system
+        .getObjectTypes()
+        .filter((t) => t.classification && t.classification.includes(this.DLM_CLASSIFIER))
+        .map((t) => t.id)
+    };
+    // q.filters[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS] = {
+    //   o: SearchFilter.OPERATOR.EQUAL
+    // };
+
+    // TODO: search in system:tags when searching in tables is available
+    // q.filters[`${BaseObjectTypeField.TAGS}.name`] = {
+    //   o: SearchFilter.OPERATOR.EQUAL,
+    //   v1: this.DLM_TAG
+    // }
+    // q.filters[`${BaseObjectTypeField.TAGS}.state`] = {
+    //   o: SearchFilter.OPERATOR.EQUAL,
+    //   v1: this.DLM_TAG
+    // }
+    this.searchService.search(new SearchQuery(q)).subscribe((res: SearchResult) => (this.unfinishedDLM = res.items));
   }
 
   private setupAvailableObjectTypeGroups() {
@@ -191,6 +250,9 @@ export class ObjectCreateComponent implements OnDestroy {
     this.objCreateServcice.setNewState({ currentStep: step });
     if (step === CurrentStep.INDEXDATA && this.formState) {
       this.selectedObjectTypeFormOptions.data = this.formState.data;
+    }
+    if (step === CurrentStep.OBJECTTYPE) {
+      this.dlmCreate = null;
     }
   }
 
@@ -260,12 +322,18 @@ export class ObjectCreateComponent implements OnDestroy {
     this.busy = true;
 
     this.createObject(this.selectedObjectType.id, data, this.files)
-      .pipe(takeUntilDestroy(this))
+      .pipe(
+        takeUntilDestroy(this),
+        switchMap((res: string[]) => this.dmsService.getDmsObjects(res))
+      )
       .subscribe(
-        (res) => {
+        (res: DmsObject[]) => {
           this.busy = false;
           this.objCreateServcice.setNewState({ currentStep: CurrentStep.DLM_INDEXDATA });
-          // TODO: continue ...
+          this.dlmCreate = {
+            dmsObject: { items: res },
+            floatingSOT: { items: this.system.getFloatingSecondaryObjectTypes(this.selectedObjectType.id, true) }
+          };
         },
         (err) => {
           this.busy = false;
@@ -276,6 +344,25 @@ export class ObjectCreateComponent implements OnDestroy {
 
   dlmUploadCancel() {
     this.resetState();
+  }
+
+  clickedUnfinishedDLM(dlm: SearchResultItem) {
+    // TODO: Implement finishing the DLM
+    console.log(dlm);
+    this.objCreateServcice.setNewState({ busy: true });
+    this.dlmCreate = null;
+    this.dmsService.getDmsObject(dlm.fields.get(BaseObjectTypeField.OBJECT_ID)).subscribe((dmsObject) => {
+      this.selectedObjectType = this.system.getObjectType(dlm.objectTypeId, true);
+
+      this.objCreateServcice.setNewState({ currentStep: CurrentStep.DLM_INDEXDATA, busy: false });
+      this.dlmCreate = {
+        dmsObject: {
+          items: [dmsObject],
+          selected: dmsObject
+        },
+        floatingSOT: { items: this.system.getFloatingSecondaryObjectTypes(this.selectedObjectType.id, true) }
+      };
+    });
   }
 
   fileChosen(files: File[]) {
@@ -341,6 +428,7 @@ export class ObjectCreateComponent implements OnDestroy {
   }
 
   resetState() {
+    this.dlmCreate = null;
     this.objCreateServcice.resetState();
     this.objCreateServcice.resetBreadcrumb();
   }

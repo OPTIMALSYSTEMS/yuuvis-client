@@ -1,7 +1,38 @@
 @import '../../../../../../../src/scss-shared/_mixins';
 
 :host {
+  display: grid;
+  grid-template-rows: 1fr;
+  grid-template-columns: minmax(250px, 20%) 1fr;
+  grid-template-areas: 'dlm main';
+  gap: var(--app-pane-padding);
+  height: 100%;
+
+  .unfinished-dlm {
+    grid-area: dlm;
+
+    .dlm {
+      background-color: var(--panel-background);
+      border-bottom: 1px solid var(--panel-divider-color);
+      word-break: break-all;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+
+      &:not(.current):hover {
+        background-color: var(--item-focus-background-color);
+      }
+
+      &.current {
+        background-color: var(--color-accent);
+        color: #fff;
+      }
+    }
+  }
+
   .yuv-object-create {
+    grid-area: main;
+    overflow-y: auto;
     display: grid;
     height: 100%;
     grid-template-columns: 1fr;
@@ -210,6 +241,38 @@
         align-items: center;
         justify-content: center;
         justify-self: stretch;
+      }
+
+      &.dlm-indexdata {
+        > as-split {
+          grid-area: main;
+        }
+        ::ng-deep {
+          .as-split-gutter-icon {
+            position: relative;
+            &::before {
+              content: '';
+              width: 5px;
+              position: absolute;
+              height: 100%;
+              border-right: 1px solid var(--panel-divider-color);
+            }
+          }
+        }
+
+        .list {
+          padding: calc(var(--app-pane-padding) / 2);
+          .item {
+            background-color: var(--panel-background);
+            border: 1px solid var(--panel-divider-color);
+            margin-top: -1px;
+            word-break: break-all;
+            padding: calc(var(--app-pane-padding) / 2);
+          }
+        }
+        .preview {
+          height: 100%;
+        }
       }
     }
 

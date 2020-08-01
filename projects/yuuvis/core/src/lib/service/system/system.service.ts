@@ -100,9 +100,20 @@ export class SystemService {
   getSecondaryObjectType(objectTypeId: string, withLabel?: boolean): SecondaryObjectType {
     let objectType: SecondaryObjectType = this.system.secondaryObjectTypes.find((ot) => ot.id === objectTypeId);
     if (objectType && withLabel) {
-      objectType.label = this.getLocalizedResource(`${objectType.id}_label`);
+      objectType.label = this.getLocalizedResource(`${objectType.id}_label`) || objectType.id;
     }
     return objectType;
+  }
+
+  /**
+   * Floating secondary object types are secondary object types that could be applied
+   * to an object dynamically.
+   * @param objectTypeId ID of the object type to fetch the FSOTs for
+   * @param withLabel Whether or not to also add the types label
+   */
+  getFloatingSecondaryObjectTypes(objectTypeId: string, withLabel?: boolean): SecondaryObjectType[] {
+    const ot = this.getObjectType(objectTypeId);
+    return ot.secondaryObjectTypes ? ot.secondaryObjectTypes.filter((sot) => !sot.static).map((sot) => this.getSecondaryObjectType(sot.id, withLabel)) : [];
   }
 
   /**
