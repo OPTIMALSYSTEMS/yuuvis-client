@@ -1,9 +1,8 @@
 import { Component, HostBinding, Input } from '@angular/core';
 
 /**
- * Upload icon used to visualize the process of downloading files to the client.
- * It becomes visible and active during and after downloading files.
- * The rest of the time the icon is not visible.
+ * Upload icon used to visualize the process of uploading files to the backend.
+ * It becomes visible and active during and after uploading files.
  *
  * [Screenshot](../assets/images/yuv-icon-upload.gif)
  *
@@ -17,7 +16,7 @@ import { Component, HostBinding, Input } from '@angular/core';
 })
 export class IconUploadComponent {
   /**
-   * Gets css class active when uploading files
+   * Set the components `active` state. This will make the component visible.
    */
   @Input()
   set active(a: boolean) {

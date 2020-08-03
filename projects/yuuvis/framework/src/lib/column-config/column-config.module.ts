@@ -10,8 +10,10 @@ import { ColumnConfigSelectComponent } from './column-config-select/column-confi
 import { ColumnConfigComponent } from './column-config/column-config.component';
 import { ColumnPickerComponent } from './column-picker/column-picker.component';
 /**
- * `YuvColumntConfigModule` contains components for configuration columns in the result list of an object.
- * Configuration will be provided by the `ColumnConfigComponent`.
+ * `YuvColumntConfigModule` contains components related to column configuration.
+ * The concept of a column configuration defines a set of columns that should be
+ * shown within a search result list based on the object types that are part of
+ * the result.
  */
 @NgModule({
   declarations: [ColumnConfigComponent, ColumnPickerComponent, ColumnConfigSelectComponent],

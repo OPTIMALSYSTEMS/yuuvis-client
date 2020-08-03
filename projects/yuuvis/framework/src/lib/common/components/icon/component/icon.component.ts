@@ -4,10 +4,11 @@ import { IconService } from '../service/icon.service';
 import { IconRegistryService } from '../service/iconRegistry.service';
 
 /**
- * This component provides icons in the `yuuvis client`.
- * To use it in your code you need to add an icon tag `yuv-icon` and the name of the svg.
+ * Renders an SVG-Icon. There are several ways how to provide the components with the actual SVG.
+ * The recommended way is to use the IconRegistryService. This way you'll get the benefits of
+ * optimized builds and bundles. But you can alkso reference SVG files from your asstes folder.
  * @example
- *  <yuv-icon [icon]="'clear'"></yuv-icon>
+ *  <yuv-icon iconSrc="assets/svg/clear.svg"></yuv-icon>
  *
  */
 @Component({
