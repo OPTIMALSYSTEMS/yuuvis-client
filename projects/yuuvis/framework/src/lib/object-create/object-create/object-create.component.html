@@ -1,184 +1,190 @@
-<yuv-panel class="unfinished-dlm panel" [title]="'yuv.framework.object-create.unfinished-dlm.header.title' | translate"
-  *ngIf="unfinishedDLM?.length">
+<as-split gutterSize="16">
+  <as-split-area [size]="20" order="0" *ngIf="unfinishedDLM?.length">
+    <yuv-panel class="unfinished-dlm panel"
+      [title]="'yuv.framework.object-create.unfinished-dlm.header.title' | translate"
+      [description]="'yuv.framework.object-create.unfinished-dlm.header.subtitle' | translate">
 
-  <cdk-virtual-scroll-viewport itemSize="50" class="content">
-    <div class="dlm" style="height: 50px" *cdkVirtualFor="let dlm of unfinishedDLM"
-      [ngClass]="{current: dlmCreate?.dmsObject.selected.id === dlm.fields.get('system:objectId')}"
-      (click)="clickedUnfinishedDLM(dlm)">
-      {{dlm.content?.fileName}}
-    </div>
-  </cdk-virtual-scroll-viewport>
-</yuv-panel>
-
-<div yuvOfflineDisabled class="yuv-object-create panel" [yuvBusyOverlay]="state.busy || busy"
-  *ngIf="state$ | async as state" cdkTrapFocus>
-  <header>
-    <h1>
-      {{ title }}
-    </h1>
-
-    <div class="breadcrumb">
-      <ng-container *ngFor="let b of breadcrumb$ | async">
-        <div class="item" *ngIf="b.visible" (click)="goToStep(b.step)"
-          [ngClass]="{ current: b.step === state.currentStep }">
-          <span>{{ b.label }}</span>
+      <cdk-virtual-scroll-viewport itemSize="50" class="content">
+        <div class="dlm" style="height: 50px" *cdkVirtualFor="let dlm of unfinishedDLM"
+          [ngClass]="{current: dlmCreate?.dmsObject.selected.id === dlm.fields.get('system:objectId')}"
+          (click)="clickedUnfinishedDLM(dlm)">
+          {{dlm.content?.fileName}}
         </div>
-      </ng-container>
-    </div>
-  </header>
+      </cdk-virtual-scroll-viewport>
+    </yuv-panel>
+  </as-split-area>
+  <as-split-area [size]="80" order="1">
+    <div yuvOfflineDisabled class="yuv-object-create panel" [yuvBusyOverlay]="state.busy || busy"
+      *ngIf="state$ | async as state" cdkTrapFocus>
+      <header>
+        <h1>
+          {{ title }}
+        </h1>
 
-  <!-- status indicator -->
-  <section class="status-indicator">
-
-    <div class="context" *ngIf="context">
-      <yuv-icon icon="clear" (click)="removeContext()"></yuv-icon>
-      {{'yuv.framework.object-create.status.context'|translate: ({title: context.title})}}
-    </div>
-    <div class="files" *ngIf="files?.length">
-      <yuv-icon icon="clear" (click)="removeFiles()"></yuv-icon>
-      {{'yuv.framework.object-create.status.files'|translate: ({count: files.length})}}
-    </div>
-  </section>
-
-  <ng-container [ngSwitch]="state.currentStep">
-    <!-- STEP 1: Select an object type-->
-    <div class="step select" *ngSwitchCase="'objecttype'" [@fadeIn]="animationTimer"
-      (yuvFileDrop)="onFilesDroppedOnType($event)" [yuvFileDropOptions]="{ multiple: true }">
-      <h1>{{ 'yuv.framework.object-create.step.type' | translate }}</h1>
-      <yuv-grouped-select [groups]="availableObjectTypeGroups" (select)="selectObjectType($event.value)"
-        yuvFocusFirst="200"> </yuv-grouped-select>
-    </div>
-
-    <!-- STEP 2: Choose file(s) -->
-    <div class="step select" *ngSwitchCase="'files'" (yuvFileDrop)="onFilesDroppedOnType($event)"
-      [yuvFileDropOptions]="{ disabled: selectedObjectType.contentStreamAllowed === 'notallowed', multiple: true }"
-      [@fadeIn]="animationTimer">
-      <h1>{{ 'yuv.framework.object-create.step.file' | translate }}</h1>
-
-      <div class="content-select">
-        <div class="not-supported"
-          *ngIf="selectedObjectType.isFolder || selectedObjectType.contentStreamAllowed === 'notallowed'; else tplSupported">
-          {{ 'yuv.framework.object-create.step.file.not-supported' | translate }}
-        </div>
-
-        <ng-template #tplSupported>
-          <div class="content-select-list">
-            <div class="files">
-              <div class="file" *ngFor="let file of files; let i = index">
-                <div class="name">
-                  {{ file.name }}
-                </div>
-                <yuv-icon class="btn" [icon]="'clear'" (click)="removeFile(file, i)"></yuv-icon>
-              </div>
-            </div>
-
-            <!-- upload a file -->
-            <div class="buttons">
-              <button *ngIf="files?.length"
-                (click)="filesClear()">{{ 'yuv.framework.object-create.step.file.clear' | translate }}</button>
-              <yuv-file-picker [label]="'yuv.framework.object-create.step.file.choose' | translate" [output]="'file'"
-                [multiple]="true" (fileSelected)="fileChosen($event)"></yuv-file-picker>
-              <button class="primary" (click)="fileSelectContinue()"
-                [disabled]="selectedObjectType.contentStreamAllowed === 'required' && files?.length === 0">
-                {{ 'yuv.framework.object-create.step.file.continue' | translate }}
-              </button>
-            </div>
-          </div>
-        </ng-template>
-      </div>
-    </div>
-
-    <!-- STEP 3: Add indexdata -->
-    <div class="step form" *ngSwitchCase="'indexdata'" [@fadeIn]="animationTimer">
-      <h1>{{ 'yuv.framework.object-create.step.indexdata' | translate }}</h1>
-
-      <yuv-object-form [formOptions]="selectedObjectTypeFormOptions" *ngIf="selectedObjectTypeFormOptions"
-        yuvFocusFirst="200" (statusChanged)="onFormStatusChanged($event)">
-      </yuv-object-form>
-    </div>
-
-    <!-- STEP: DLM_UPLOAD -->
-    <div class="step dlm-upload" *ngSwitchCase="'dlm_upload'">
-
-      <div class="box">
-        <p>{{'yuv.framework.object-create.dlm.upload.info'|translate}}</p>
-        <div class="actions">
-          <button (click)="dlmUploadCancel()">{{'yuv.framework.shared.cancel'|translate}}</button>
-          <button class="primary"
-            (click)="dlmUploadApprove()">{{'yuv.framework.object-create.dlm.upload.approve'|translate}}</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- STEP: DLM_INDEXDATA -->
-    <div class="step dlm-indexdata" *ngSwitchCase="'dlm_indexdata'">
-
-      <as-split>
-        <!-- SOT select and form -->
-        <as-split-area [size]="!dlmCreate?.floatingSOT.selected ? 30 : 50">
-
-          <ng-container *ngIf="!dlmCreate?.floatingSOT.selected; else tplSOTForm">
-            <div class="floating-sots list panel">
-              <h2>{{'yuv.framework.object-create.dlm.type.select.title' | translate}}</h2>
-              <div class="sots item" *ngFor="let sot of dlmCreate?.floatingSOT.items"
-                (click)="dlmCreate.floatingSOT.selected = sot">
-                {{sot.label}}
-              </div>
+        <div class="breadcrumb">
+          <ng-container *ngFor="let b of breadcrumb$ | async">
+            <div class="item" *ngIf="b.visible" (click)="goToStep(b.step)"
+              [ngClass]="{ current: b.step === state.currentStep }">
+              <span>{{ b.label }}</span>
             </div>
           </ng-container>
+        </div>
+      </header>
 
-          <ng-template #tplSOTForm>
-            <div class="floating-sot-form panel">
-              <div class="header">
-                <yuv-icon class="btn" (click)="dlmCreate?.floatingSOT.selected = null" icon="navBack"></yuv-icon>
-                <span>{{dlmCreate.floatingSOT.selected.label}}</span>
-              </div>
-              <div class="form">
-                {{dlmCreate.floatingSOT.selected.label}} form
-              </div>
+      <!-- status indicator -->
+      <section class="status-indicator">
+
+        <div class="context" *ngIf="context">
+          <yuv-icon icon="clear" (click)="removeContext()"></yuv-icon>
+          {{'yuv.framework.object-create.status.context'|translate: ({title: context.title})}}
+        </div>
+        <div class="files" *ngIf="files?.length">
+          <yuv-icon icon="clear" (click)="removeFiles()"></yuv-icon>
+          {{'yuv.framework.object-create.status.files'|translate: ({count: files.length})}}
+        </div>
+      </section>
+
+      <ng-container [ngSwitch]="state.currentStep">
+        <!-- STEP 1: Select an object type-->
+        <div class="step select" *ngSwitchCase="'objecttype'" [@fadeIn]="animationTimer"
+          (yuvFileDrop)="onFilesDroppedOnType($event)" [yuvFileDropOptions]="{ multiple: true }">
+          <h1>{{ 'yuv.framework.object-create.step.type' | translate }}</h1>
+          <yuv-grouped-select [groups]="availableObjectTypeGroups" (select)="selectObjectType($event.value)"
+            yuvFocusFirst="200"> </yuv-grouped-select>
+        </div>
+
+        <!-- STEP 2: Choose file(s) -->
+        <div class="step select" *ngSwitchCase="'files'" (yuvFileDrop)="onFilesDroppedOnType($event)"
+          [yuvFileDropOptions]="{ disabled: selectedObjectType.contentStreamAllowed === 'notallowed', multiple: true }"
+          [@fadeIn]="animationTimer">
+          <h1>{{ 'yuv.framework.object-create.step.file' | translate }}</h1>
+
+          <div class="content-select">
+            <div class="not-supported"
+              *ngIf="selectedObjectType.isFolder || selectedObjectType.contentStreamAllowed === 'notallowed'; else tplSupported">
+              {{ 'yuv.framework.object-create.step.file.not-supported' | translate }}
             </div>
-          </ng-template>
 
-        </as-split-area>
+            <ng-template #tplSupported>
+              <div class="content-select-list">
+                <div class="files">
+                  <div class="file" *ngFor="let file of files; let i = index">
+                    <div class="name">
+                      {{ file.name }}
+                    </div>
+                    <yuv-icon class="btn" [icon]="'clear'" (click)="removeFile(file, i)"></yuv-icon>
+                  </div>
+                </div>
 
-        <!-- preview -->
-        <as-split-area class="preview-split panel" [size]="!dlmCreate?.floatingSOT.selected ? 70 : 50">
-
-          <as-split unit="pixel">
-            <as-split-area size="*">
-
-              <div class="preview" *ngIf="!!dlmCreate?.dmsObject.selected">
-                <yuv-content-preview [dmsObject]="dlmCreate.dmsObject.selected"></yuv-content-preview>
+                <!-- upload a file -->
+                <div class="buttons">
+                  <button *ngIf="files?.length"
+                    (click)="filesClear()">{{ 'yuv.framework.object-create.step.file.clear' | translate }}</button>
+                  <yuv-file-picker [label]="'yuv.framework.object-create.step.file.choose' | translate"
+                    [output]="'file'" [multiple]="true" (fileSelected)="fileChosen($event)"></yuv-file-picker>
+                  <button class="primary" (click)="fileSelectContinue()"
+                    [disabled]="selectedObjectType.contentStreamAllowed === 'required' && files?.length === 0">
+                    {{ 'yuv.framework.object-create.step.file.continue' | translate }}
+                  </button>
+                </div>
               </div>
+            </ng-template>
+          </div>
+        </div>
+
+        <!-- STEP 3: Add indexdata -->
+        <div class="step form" *ngSwitchCase="'indexdata'" [@fadeIn]="animationTimer">
+          <h1>{{ 'yuv.framework.object-create.step.indexdata' | translate }}</h1>
+
+          <yuv-object-form [formOptions]="selectedObjectTypeFormOptions" *ngIf="selectedObjectTypeFormOptions"
+            yuvFocusFirst="200" (statusChanged)="onFormStatusChanged($event)">
+          </yuv-object-form>
+        </div>
+
+        <!-- STEP: DLM_UPLOAD -->
+        <div class="step dlm-upload" *ngSwitchCase="'dlm_upload'">
+
+          <div class="box">
+            <p>{{'yuv.framework.object-create.dlm.upload.info'|translate}}</p>
+            <div class="actions">
+              <button (click)="dlmUploadCancel()">{{'yuv.framework.shared.cancel'|translate}}</button>
+              <button class="primary"
+                (click)="dlmUploadApprove()">{{'yuv.framework.object-create.dlm.upload.approve'|translate}}</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP: DLM_INDEXDATA -->
+        <div class="step dlm-indexdata" *ngSwitchCase="'dlm_indexdata'">
+
+          <as-split>
+            <!-- SOT select and form -->
+            <as-split-area [size]="!dlmCreate?.floatingSOT.selected ? 30 : 50">
+
+              <ng-container *ngIf="!dlmCreate?.floatingSOT.selected; else tplSOTForm">
+                <div class="floating-sots list panel">
+                  <h2>{{'yuv.framework.object-create.dlm.type.select.title' | translate}}</h2>
+                  <div class="sots item" *ngFor="let sot of dlmCreate?.floatingSOT.items"
+                    (click)="dlmCreate.floatingSOT.selected = sot">
+                    {{sot.label}}
+                  </div>
+                </div>
+              </ng-container>
+
+              <ng-template #tplSOTForm>
+                <div class="floating-sot-form panel">
+                  <div class="header">
+                    <yuv-icon class="btn" (click)="dlmCreate?.floatingSOT.selected = null" icon="navBack"></yuv-icon>
+                    <span>{{dlmCreate.floatingSOT.selected.label}}</span>
+                  </div>
+                  <div class="form">
+                    {{dlmCreate.floatingSOT.selected.label}} form
+                  </div>
+                </div>
+              </ng-template>
+
             </as-split-area>
-            <!-- objects -->
-            <!-- <as-split-area size="200" *ngIf="dlmCreate?.dmsObject.items.length > 1"> -->
-            <as-split-area size="200">
-              <div class="objects">
-                <!-- <h2>{{'yuv.framework.object-create.dlm.object.select.title' | translate}}</h2> -->
-                <div class="item" *ngFor="let o of dlmCreate?.dmsObject.items"
-                  [ngClass]="{current: dlmCreate?.dmsObject.selected.id === o.id}"
-                  (click)="dlmCreate.dmsObject.selected = o">
-                  {{o.content.fileName}}</div>
-              </div>
+
+            <!-- preview -->
+            <as-split-area class="preview-split panel" [size]="!dlmCreate?.floatingSOT.selected ? 70 : 50">
+
+              <as-split unit="pixel">
+                <as-split-area size="*">
+
+                  <div class="preview" *ngIf="!!dlmCreate?.dmsObject.selected">
+                    <yuv-content-preview [dmsObject]="dlmCreate.dmsObject.selected"></yuv-content-preview>
+                  </div>
+                </as-split-area>
+                <!-- objects -->
+                <!-- <as-split-area size="200" *ngIf="dlmCreate?.dmsObject.items.length > 1"> -->
+                <as-split-area size="200">
+                  <div class="objects">
+                    <!-- <h2>{{'yuv.framework.object-create.dlm.object.select.title' | translate}}</h2> -->
+                    <div class="item" *ngFor="let o of dlmCreate?.dmsObject.items"
+                      [ngClass]="{current: dlmCreate?.dmsObject.selected.id === o.id}"
+                      (click)="dlmCreate.dmsObject.selected = o">
+                      {{o.content.fileName}}</div>
+                  </div>
+                </as-split-area>
+              </as-split>
             </as-split-area>
+
+
           </as-split>
-        </as-split-area>
+        </div>
 
 
-      </as-split>
+      </ng-container>
+
+      <footer>
+        <yuv-form-input class="checkbox" [label]="'yuv.framework.object-create.footer.another' | translate"
+          [skipToggle]="true">
+          <yuv-checkbox [(ngModel)]="createAnother"></yuv-checkbox>
+        </yuv-form-input>
+
+        <button class="primary create" [disabled]="!state.done" (click)="create()"
+          translate>yuv.framework.object-create.footer.create</button>
+      </footer>
     </div>
-
-
-  </ng-container>
-
-  <footer>
-    <yuv-form-input class="checkbox" [label]="'yuv.framework.object-create.footer.another' | translate"
-      [skipToggle]="true">
-      <yuv-checkbox [(ngModel)]="createAnother"></yuv-checkbox>
-    </yuv-form-input>
-
-    <button class="primary create" [disabled]="!state.done" (click)="create()"
-      translate>yuv.framework.object-create.footer.create</button>
-  </footer>
-</div>
+  </as-split-area>
+</as-split>

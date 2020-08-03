@@ -1,15 +1,15 @@
 @import '../../../../../../../src/scss-shared/_mixins';
 
 :host {
-  display: grid;
-  grid-template-rows: 1fr;
-  grid-template-columns: minmax(250px, 20%) 1fr;
-  grid-template-areas: 'dlm main';
-  gap: var(--app-pane-padding);
+  // display: grid;
+  // grid-template-rows: 1fr;
+  // grid-template-columns: minmax(250px, 20%) 1fr;
+  // grid-template-areas: 'dlm main';
+  // gap: var(--app-pane-padding);
   height: 100%;
 
   .unfinished-dlm {
-    grid-area: dlm;
+    // grid-area: dlm;
 
     .dlm {
       background-color: var(--panel-background);
@@ -30,7 +30,7 @@
   }
 
   .yuv-object-create {
-    grid-area: main;
+    // grid-area: main;
     overflow-y: auto;
     display: grid;
     height: 100%;
@@ -257,7 +257,7 @@
                 position: relative;
                 &::before {
                   content: '';
-                  width: 5px;
+                  width: 0px;
                   position: absolute;
                   height: 100%;
                   border-right: 1px solid var(--panel-divider-color);
