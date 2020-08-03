@@ -99,8 +99,15 @@
 
     <!-- STEP: DLM_UPLOAD -->
     <div class="step dlm-upload" *ngSwitchCase="'dlm_upload'">
-      <button (click)="dlmUploadCancel()">No</button>>
-      <button (click)="dlmUploadApprove()">OK</button>>
+
+      <div class="box">
+        <p>{{'yuv.framework.object-create.dlm.upload.info'|translate}}</p>
+        <div class="actions">
+          <button (click)="dlmUploadCancel()">{{'yuv.framework.shared.cancel'|translate}}</button>
+          <button class="primary"
+            (click)="dlmUploadApprove()">{{'yuv.framework.object-create.dlm.upload.approve'|translate}}</button>
+        </div>
+      </div>
     </div>
 
     <!-- STEP: DLM_INDEXDATA -->
@@ -108,25 +115,35 @@
 
       <as-split>
         <!-- SOT select and form -->
-        <as-split-area [size]="!dlmCreate.floatingSOT.selected ? 30 : 50">
-          <div class="types list">
-            <ng-container *ngIf="!dlmCreate?.floatingSOT.selected; else tplSOTForm">
+        <as-split-area [size]="!dlmCreate?.floatingSOT.selected ? 30 : 50">
+
+          <ng-container *ngIf="!dlmCreate?.floatingSOT.selected; else tplSOTForm">
+            <div class="floating-sots list panel">
               <h2>{{'yuv.framework.object-create.dlm.type.select.title' | translate}}</h2>
               <div class="sots item" *ngFor="let sot of dlmCreate?.floatingSOT.items"
                 (click)="dlmCreate.floatingSOT.selected = sot">
                 {{sot.label}}
               </div>
-            </ng-container>
+            </div>
+          </ng-container>
 
-            <ng-template #tplSOTForm>
-              <button (click)="dlmCreate.floatingSOT.selected = null">x</button>
-              {{dlmCreate.floatingSOT.selected.label}}
-            </ng-template>
-          </div>
+          <ng-template #tplSOTForm>
+            <div class="floating-sot-form panel">
+              <div class="header">
+                <yuv-icon class="btn" (click)="dlmCreate?.floatingSOT.selected = null" icon="navBack"></yuv-icon>
+                <span>{{dlmCreate.floatingSOT.selected.label}}</span>
+              </div>
+              <div class="form">
+                {{dlmCreate.floatingSOT.selected.label}} form
+              </div>
+            </div>
+          </ng-template>
+
         </as-split-area>
 
         <!-- preview -->
-        <as-split-area [size]="!dlmCreate.floatingSOT.selected ? 70 : 50">
+        <as-split-area class="preview-split panel" [size]="!dlmCreate?.floatingSOT.selected ? 70 : 50">
+
           <as-split unit="pixel">
             <as-split-area size="*">
 
@@ -135,11 +152,12 @@
               </div>
             </as-split-area>
             <!-- objects -->
+            <!-- <as-split-area size="200" *ngIf="dlmCreate?.dmsObject.items.length > 1"> -->
             <as-split-area size="200">
-              <div class="objects list">
-                <h2>{{'yuv.framework.object-create.dlm.object.select.title' | translate}}</h2>
-                <!-- <div class="objects" *ngIf="dlmCreate?.dmsObject.items.length > 1"> -->
-                <div class="object item" *ngFor="let o of dlmCreate?.dmsObject.items"
+              <div class="objects">
+                <!-- <h2>{{'yuv.framework.object-create.dlm.object.select.title' | translate}}</h2> -->
+                <div class="item" *ngFor="let o of dlmCreate?.dmsObject.items"
+                  [ngClass]="{current: dlmCreate?.dmsObject.selected.id === o.id}"
                   (click)="dlmCreate.dmsObject.selected = o">
                   {{o.content.fileName}}</div>
               </div>

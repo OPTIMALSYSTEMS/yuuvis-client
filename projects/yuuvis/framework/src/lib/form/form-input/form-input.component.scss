@@ -11,6 +11,7 @@
 .yuv-form-input {
   .fe-wrapper {
     display: flex;
+    overflow: auto;
     @include transition();
     flex-flow: row nowrap;
     align-items: center;

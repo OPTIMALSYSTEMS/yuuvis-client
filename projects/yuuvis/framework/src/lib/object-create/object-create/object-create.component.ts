@@ -26,7 +26,7 @@ import { SelectableGroup } from '../../grouped-select';
 import { FormStatusChangedEvent, ObjectFormOptions } from '../../object-form/object-form.interface';
 import { ObjectFormComponent } from '../../object-form/object-form/object-form.component';
 import { NotificationService } from '../../services/notification/notification.service';
-import { clear } from '../../svg.generated';
+import { clear, navBack } from '../../svg.generated';
 import { ObjectCreateService } from '../object-create.service';
 import { Breadcrumb, CreateState, CurrentStep, Labels, ObjectTypePreset } from './../object-create.interface';
 
@@ -154,7 +154,7 @@ export class ObjectCreateComponent implements OnDestroy {
     private translate: TranslateService,
     private iconRegistry: IconRegistryService
   ) {
-    this.iconRegistry.registerIcons([clear]);
+    this.iconRegistry.registerIcons([clear, navBack]);
     this.resetState();
 
     this.labels = {
@@ -347,22 +347,25 @@ export class ObjectCreateComponent implements OnDestroy {
   }
 
   clickedUnfinishedDLM(dlm: SearchResultItem) {
-    // TODO: Implement finishing the DLM
-    console.log(dlm);
-    this.objCreateServcice.setNewState({ busy: true });
-    this.dlmCreate = null;
-    this.dmsService.getDmsObject(dlm.fields.get(BaseObjectTypeField.OBJECT_ID)).subscribe((dmsObject) => {
-      this.selectedObjectType = this.system.getObjectType(dlm.objectTypeId, true);
+    const alreadySelected = this.dlmCreate?.dmsObject.selected.id === dlm.fields.get(BaseObjectTypeField.OBJECT_ID);
+    if (alreadySelected) {
+      this.resetState();
+    } else {
+      this.objCreateServcice.setNewState({ busy: true });
+      this.dlmCreate = null;
+      this.dmsService.getDmsObject(dlm.fields.get(BaseObjectTypeField.OBJECT_ID)).subscribe((dmsObject) => {
+        this.selectedObjectType = this.system.getObjectType(dlm.objectTypeId, true);
 
-      this.objCreateServcice.setNewState({ currentStep: CurrentStep.DLM_INDEXDATA, busy: false });
-      this.dlmCreate = {
-        dmsObject: {
-          items: [dmsObject],
-          selected: dmsObject
-        },
-        floatingSOT: { items: this.system.getFloatingSecondaryObjectTypes(this.selectedObjectType.id, true) }
-      };
-    });
+        this.objCreateServcice.setNewState({ currentStep: CurrentStep.DLM_INDEXDATA, busy: false });
+        this.dlmCreate = {
+          dmsObject: {
+            items: [dmsObject],
+            selected: dmsObject
+          },
+          floatingSOT: { items: this.system.getFloatingSecondaryObjectTypes(this.selectedObjectType.id, true) }
+        };
+      });
+    }
   }
 
   fileChosen(files: File[]) {
