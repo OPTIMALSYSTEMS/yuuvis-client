@@ -3,11 +3,17 @@ import { ChangeDetectionStrategy, Component, ElementRef, Inject, Input, Optional
 import { IconService } from '../service/icon.service';
 import { IconRegistryService } from '../service/iconRegistry.service';
 
+/**
+ * Renders an SVG-Icon. There are several ways how to provide the components with the actual SVG.
+ * The recommended way is to use the IconRegistryService. This way you'll get the benefits of
+ * optimized builds and bundles. But you can alkso reference SVG files from your asstes folder.
+ * @example
+ *  <yuv-icon iconSrc="assets/svg/clear.svg"></yuv-icon>
+ *
+ */
 @Component({
   selector: 'yuv-icon',
-  template: `
-    <ng-content></ng-content>
-  `,
+  template: ` <ng-content></ng-content> `,
   styleUrls: ['./icon.component.scss'],
   host: { class: 'yuv-icon' },
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -32,7 +38,7 @@ export class IconComponent {
   @Input('iconSrc')
   set iconSrc(iconSrc: string) {
     this.removeSVG();
-    this.iconService.fetch(iconSrc).subscribe(svg => this.createSvg(svg));
+    this.iconService.fetch(iconSrc).subscribe((svg) => this.createSvg(svg));
   }
 
   /**

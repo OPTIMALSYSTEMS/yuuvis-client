@@ -5,6 +5,13 @@ import { ObjectFormTranslateService } from '../object-form-translate.service';
 import { ObjectFormControlWrapper } from '../object-form.interface';
 import { Situation } from './../object-form.situation';
 
+/**
+ * Component rendering a single form element.
+ *
+ * @example
+ *<yuv-object-form-element [element]="someForm.controls[key]" [situation]="situation"></yuv-object-form-element>
+ */
+
 @Component({
   selector: 'yuv-object-form-element',
   templateUrl: './object-form-element.component.html',
@@ -20,15 +27,28 @@ export class ObjectFormElementComponent implements OnDestroy {
     title: string;
   };
 
+  /**
+   * Form situation, if not set default will be 'EDIT'
+   */
   @Input() situation: string;
+
+  /**
+   * set a label toggle class to form
+   */
   @Input() skipToggle: boolean;
+
+  /**
+   * Provide an error message if the required field was not filled.
+   */
   @Input() inlineError: boolean;
 
   get shouldSkipToggle() {
     return this.skipToggle || this.situation !== 'SEARCH' || this.formElementRef._eoFormElement.readonly;
   }
 
-  // element is supposed to be a special FormGroup holding a single form element
+  /**
+   *  Element is supposed to be a special FormGroup holding a single form element.
+   */
   @Input('element')
   set elementSetter(el: ObjectFormControlWrapper) {
     if (el) {

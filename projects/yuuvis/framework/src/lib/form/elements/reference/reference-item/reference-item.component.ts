@@ -1,6 +1,8 @@
 import { Component, Input } from '@angular/core';
 import { ReferenceEntry } from '../reference.interface';
-
+/**
+ * @ignore
+ */
 @Component({
   selector: 'yuv-reference-item',
   templateUrl: './reference-item.component.html',

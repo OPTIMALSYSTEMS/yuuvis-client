@@ -3,6 +3,9 @@ import { BaseObjectTypeField, Utils } from '@yuuvis/core';
 import { IconRegistryService } from '../../../common/components/icon/service/iconRegistry.service';
 import { arrowDown } from '../../../svg.generated';
 import { SummaryEntry } from '../summary.interface';
+/**
+ * @ignore
+ */
 @Component({
   selector: 'yuv-summary-section',
   templateUrl: './summary-section.component.html',
@@ -10,15 +13,17 @@ import { SummaryEntry } from '../summary.interface';
 })
 export class SummarySectionComponent {
   @Input() diff: boolean;
+
   @Input() set visible(v: boolean) {
     this.isVisible = v;
   }
+
   @Input() id: string;
+
   @Input() label: string;
+
   @Input() entries: SummaryEntry[];
-  /**
-   * Custom template to render version as for example a link.
-   */
+
   @Input() versionLinkTemplate: TemplateRef<any>;
 
   @Output() visibilityChange = new EventEmitter<boolean>();

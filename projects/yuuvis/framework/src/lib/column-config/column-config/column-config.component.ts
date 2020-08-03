@@ -22,7 +22,7 @@ import { PopoverService } from '../../popover/popover.service';
 import { addCircle, arrowDown, clear, dragHandle, pin, sort } from '../../svg.generated';
 
 /**
- * Component for configuring a result list column configuration for an object.
+ * This component is for configuring a result list column configuration for an object.
  *
  * Set the components **type** property to an ObjectType or an object type id to load and edit
  * the column configuration for that type. In order to create/edit the column configuration for
@@ -30,6 +30,12 @@ import { addCircle, arrowDown, clear, dragHandle, pin, sort } from '../../svg.ge
  *
  * Mixed result list configurations will be applied to result list that contain different
  * types of objects with columns that are shared by all object types.
+ *
+ * [Screenshot](../assets/images/yuv-column-config.gif)
+ *
+ * @example
+ * <yuv-column-config [options]="data" (configSaved)="columnConfigChanged($event, popover)"></yuv-column-config>
+ *
  */
 @Component({
   selector: 'yuv-column-config',

@@ -1,12 +1,23 @@
 import { Injectable } from '@angular/core';
 import { TranslateService } from '@yuuvis/core';
-
+/**
+ * Providing an error message when a translation string for an object wasn't found
+ */
 @Injectable({
   providedIn: 'root'
 })
 export class ObjectFormTranslateService {
+  /**
+   *
+   * @ignore
+   */
   constructor(private translate: TranslateService) {}
 
+  /**
+   * Set the error label if a translation for this string wasn't provided
+   * @param error - error message about a missed translation key
+   * @param params
+   */
   getErrorLabel(error: string, params?: any) {
     switch (error) {
       case 'daterange':

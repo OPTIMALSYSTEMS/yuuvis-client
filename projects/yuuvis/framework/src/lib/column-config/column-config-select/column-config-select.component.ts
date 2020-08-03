@@ -2,7 +2,10 @@ import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { ObjectType, ObjectTypeGroup, SystemService, TranslateService } from '@yuuvis/core';
 
 /**
- * Component for picking an object type.
+ * This component is for picking an object type.
+ *
+ * @example
+ *  <yuv-column-config-select (itemSelected)="setColumnConfigInputFromSelect($event)"></yuv-column-config-select>
  */
 @Component({
   selector: 'yuv-column-config-select',

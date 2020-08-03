@@ -3,6 +3,10 @@ import { Component, ComponentRef, EmbeddedViewRef, HostListener, Optional, ViewC
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { PopoverRef } from '../popover.ref';
 import { clear } from './../../svg.generated';
+
+/**
+ * @ignore
+ */
 @Component({
   selector: 'yuv-popover',
   templateUrl: './popover.component.html',

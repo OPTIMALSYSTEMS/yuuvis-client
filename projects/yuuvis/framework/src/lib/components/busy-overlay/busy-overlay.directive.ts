@@ -6,9 +6,9 @@ import { Utils } from '@yuuvis/core';
  * and a loading spinner once the condition resolves with true. This is useful for example to
  * prevent user intercation while component data is loading or some processing is done.
  *
- * ```
+ * @example
  * <div class="result-list" [yuvBusyOverlay]="waitingForServerResponse">...</div>
- * ```
+ *
  */
 @Directive({
   selector: '[yuvBusyOverlay]'
@@ -27,7 +27,10 @@ export class BusyOverlayDirective {
       this.removeBusyOverlay();
     }
   }
-
+  /**
+   *
+   * @ignore
+   */
   constructor(private element: ElementRef) {}
 
   private addBusyOverlay() {

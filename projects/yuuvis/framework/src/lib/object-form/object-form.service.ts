@@ -6,6 +6,9 @@ import { ObjectFormGroup } from './object-form.model';
 import { Situation } from './object-form.situation';
 import { ObjectFormUtils } from './object-form.utils';
 
+/**
+ * @ignore
+ */
 @Injectable()
 export class ObjectFormService {
   private datePipe = new DatePipe('en');

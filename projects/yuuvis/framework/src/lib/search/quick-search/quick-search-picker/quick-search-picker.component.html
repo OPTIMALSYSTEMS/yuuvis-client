@@ -1,7 +1,7 @@
 <header>{{ 'yuv.framework.quick-search-picker.title' | translate }}</header>
 <section class="main" cdkTrapFocus>
-  <yuv-grouped-select [multiple]="multiselect" [groups]="groups" [(ngModel)]="selectedItems"
-    (select)="onGroupItemSelect($event)" yuvFocusFirst="200">
+  <yuv-grouped-select toggleable="false" enableSelectAll="true" [multiple]="multiselect" [groups]="groups"
+    [(ngModel)]="selectedItems" (select)="onGroupItemSelect($event)" yuvFocusFirst="200">
   </yuv-grouped-select>
 </section>
 <section class="buttons">

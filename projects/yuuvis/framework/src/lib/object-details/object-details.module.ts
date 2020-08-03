@@ -22,6 +22,9 @@ import { SummaryComponent } from './summary/summary.component';
 
 const objectDetails = [ObjectDetailsComponent, ObjectDetailsCompareComponent, SummaryComponent, AuditComponent, ContentPreviewComponent, ContextErrorComponent];
 
+/**
+ * Module providing components to display the details of dms - objects such as object summary, context, audit, etc.
+ */
 @NgModule({
   imports: [
     CommonModule,

@@ -27,6 +27,10 @@ export class FocusFirstDirective implements AfterViewInit {
     '[tabindex]:not([tabindex="-1"])'
   ];
 
+  /**
+   *
+   * @ignore
+   */
   constructor(private el: ElementRef, @Attribute('yuvFocusFirst') public timeout: string, private render: Renderer2) {
     try {
       this.timeoutValue = parseInt(this.timeout);
@@ -37,7 +41,7 @@ export class FocusFirstDirective implements AfterViewInit {
 
   ngAfterViewInit() {
     this.render.setAttribute(this.el.nativeElement, 'data-id', this.id);
-    const parentSelectors = this.selectors.map(s => `[data-id="${this.id}"] ${s}`).join(',');
+    const parentSelectors = this.selectors.map((s) => `[data-id="${this.id}"] ${s}`).join(',');
     setTimeout(() => {
       (document.querySelector(parentSelectors) as HTMLElement).focus();
     }, this.timeoutValue);

@@ -1,12 +1,13 @@
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { NgModule } from '@angular/core';
 import { UserAvatarComponent } from './user-avatar/user-avatar.component';
 
+/**
+ * Module provides a `UserAvatarComponent`.
+ */
 @NgModule({
   declarations: [UserAvatarComponent],
-  imports: [
-    CommonModule
-  ],
+  imports: [CommonModule],
   exports: [UserAvatarComponent]
 })
-export class YuvUserModule { }
+export class YuvUserModule {}

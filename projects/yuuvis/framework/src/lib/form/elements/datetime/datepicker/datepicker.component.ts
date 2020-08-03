@@ -5,7 +5,9 @@ import { IconRegistryService } from '../../../../common/components/icon/service/
 import { arrowDown } from './../../../../svg.generated';
 import { DynamicDate, Weeks } from './datepicker.interface';
 import { DatepickerService } from './service/datepicker.service';
-
+/**
+ * @ignore
+ */
 @Component({
   selector: 'yuv-datepicker',
   templateUrl: './datepicker.component.html',

@@ -1,6 +1,9 @@
 import { Injectable } from '@angular/core';
 import { IndividualConfig, ToastrService } from 'ngx-toastr';
 
+/**
+ * Shows a message after completing each action.
+ */
 @Injectable({
   providedIn: 'root'
 })
@@ -15,7 +18,10 @@ export class NotificationService {
     onActivateTick: true, // triggers change detection
     timeOut: 15000
   };
-
+  /**
+   *
+   * @ignore
+   */
   constructor(private toastrService: ToastrService) {}
 
   /**

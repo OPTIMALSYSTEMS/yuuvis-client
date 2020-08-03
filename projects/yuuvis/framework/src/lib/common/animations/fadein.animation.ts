@@ -1,5 +1,7 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
-
+/**
+ * @ignore
+ */
 export class FadeInAnimations {
   static fadeIn = trigger('fadeIn', [
     state('void', style({ opacity: '0' })),

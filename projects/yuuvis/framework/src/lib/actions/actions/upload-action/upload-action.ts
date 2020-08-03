@@ -6,7 +6,9 @@ import { DmsObjectTarget } from '../../action-target';
 import { ComponentAction } from '../../interfaces/action.interface';
 import { SelectionRange } from '../../selection-range.enum';
 import { UploadComponent } from './upload/upload.component';
-
+/**
+ * @ignore
+ */
 @Component({
   selector: 'yuv-update',
   template: ``

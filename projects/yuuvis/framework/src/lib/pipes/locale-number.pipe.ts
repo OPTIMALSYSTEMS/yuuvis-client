@@ -4,6 +4,9 @@ import { TranslateService } from '@yuuvis/core';
 import { takeUntil } from 'rxjs/operators';
 import { UnsubscribeOnDestroy } from '../common/util/unsubscribe.component';
 
+/**
+ * @ignore
+ */
 @Pipe({
   name: 'localeDecimal',
   pure: false
@@ -18,6 +21,9 @@ export class LocaleDecimalPipe extends DecimalPipe implements PipeTransform {
   }
 }
 
+/**
+ * @ignore
+ */
 @Pipe({
   name: 'localePercent',
   pure: false
@@ -32,6 +38,9 @@ export class LocalePercentPipe extends PercentPipe implements PipeTransform {
   }
 }
 
+/**
+ * @ignore
+ */
 @Pipe({
   name: 'localeCurrency',
   pure: false
@@ -52,6 +61,9 @@ export class LocaleCurrencyPipe extends CurrencyPipe implements PipeTransform {
   }
 }
 
+/**
+ * @ignore
+ */
 @Pipe({
   name: 'localeNumber',
   pure: false

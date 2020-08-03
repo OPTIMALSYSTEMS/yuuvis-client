@@ -81,6 +81,10 @@ export class FileDropDirective implements OnDestroy {
     this.fileDropService.clear();
   }
 
+  /**
+   *
+   *@ignore
+   */
   constructor(private elementRef: ElementRef, private cd: ChangeDetectorRef, private fileDropService: FileDropService, private renderer: Renderer2) {
     this.id = Utils.uuid();
     this.fileDropService.activeDropzone$.pipe(takeUntilDestroy(this)).subscribe((activeZoneId) => {
@@ -153,11 +157,20 @@ export class FileDropDirective implements OnDestroy {
   ngOnDestroy() {}
 }
 
+/**
+ * Providing options for a `FileDropDirective`.
+ */
 export interface FileDropOptions {
-  // label to be printed on the overlay
+  /**
+   * label to be printed on the overlay
+   */
   label?: string;
-  // if set to true drop target will be disabled and not accept any files dropped
+  /**
+   * if set to true drop target will be disabled and not accept any files dropped
+   */
   disabled?: boolean;
-  // if set to true supports multiple files being dropped
+  /**
+   * if set to true supports multiple files being dropped
+   */
   multiple?: boolean;
 }

@@ -6,6 +6,9 @@ import { DmsObjectTarget } from '../../action-target';
 import { SimpleAction } from '../../interfaces/action.interface';
 import { SelectionRange } from '../../selection-range.enum';
 
+/**
+ * @ignore
+ */
 @Component({
   selector: 'yuv-download-content-original',
   template: ``

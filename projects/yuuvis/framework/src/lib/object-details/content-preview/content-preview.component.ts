@@ -11,6 +11,8 @@ import { ContentPreviewService } from './service/content-preview.service';
 /**
  * Component rendering a content preview for a dms object.
  *
+ * [Screenshot](../assets/images/yuv-content-preview.gif)
+ *
  * @example
  * <yuv-content-preview [dmsObject]="dmsObject"></yuv-content-preview>
  */

@@ -75,7 +75,9 @@ export class ObjectFormScriptingScope {
     }
   }
 }
-
+/**
+ * @ignore
+ */
 class ScopeElement {
   constructor(private element: any, private onScriptingModelChange: Function) {
     if (this.element.value === undefined) {

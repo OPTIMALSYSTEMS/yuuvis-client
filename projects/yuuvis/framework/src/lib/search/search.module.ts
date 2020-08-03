@@ -26,7 +26,7 @@ import { SearchFilterComponent } from './quick-search/search-filter/search-filte
 import { SearchResultPanelComponent } from './search-result-panel/search-result-panel.component';
 import { SearchResultComponent } from './search-result/search-result.component';
 
-const components = [
+const searchComponents = [
   QuickSearchComponent,
   SearchResultComponent,
   SearchResultPanelComponent,
@@ -35,7 +35,10 @@ const components = [
   SearchFilterConfigComponent,
   SearchFilterFormComponent
 ];
-
+/**
+ * Module providing components for extensible search of target object types, filter those objects and rendering a search result as well.
+ *
+ */
 @NgModule({
   imports: [
     CommonModule,
@@ -59,7 +62,7 @@ const components = [
     AngularSplitModule
   ],
   providers: [QuickSearchService],
-  declarations: [...components],
-  exports: [...components]
+  declarations: [...searchComponents],
+  exports: [...searchComponents]
 })
 export class YuvSearchModule {}

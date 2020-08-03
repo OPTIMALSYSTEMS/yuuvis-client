@@ -22,15 +22,22 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { FileSizePipe, LocaleDatePipe, LocaleNumberPipe } from '../../pipes';
 import { CellRenderer } from './grid.cellrenderer';
-
+/**
+ * Providing grid configuration for components that use ag-grid.
+ */
 @Injectable({
   providedIn: 'root'
 })
 export class GridService {
   private COLUMN_WIDTH_CACHE_KEY_BASE = 'yuv.grid.column.width';
-
+  /**
+   * @ignore
+   */
   context;
 
+  /**
+   * @ignore
+   */
   constructor(
     private appCacheService: AppCacheService,
     private system: SystemService,
@@ -271,7 +278,11 @@ export class GridService {
   private customContext(fnc, mixin?) {
     return (params) => fnc({ ...params, context: this.context, ...(mixin && mixin) });
   }
-
+  /**
+   *Return a string key for a value. This string is used  searching within cell editor dropdowns. 
+    When filtering and searching the string is exposed to the user, so make sure to return a human-readable value.
+   * 
+   */
   public fileSizeKeyCreator(param) {
     if (!param.value) {
       return null;

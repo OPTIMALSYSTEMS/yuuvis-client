@@ -88,16 +88,9 @@ export class ReferenceComponent implements ControlValueAccessor, AfterViewInit {
   @Input() readonly: boolean;
   /**
    * You can provide a template reference here that will be rendered at the end of each
-   * quickfinder result item. Within the provided template you'll get an object
-   * representing the current entry:
+   * quickfinder result item.
    *
-   * ```html
-   * <ng-template #quickfinderEntryLinkTpl let-entry="entry">
-   *   <a [routerLink]="['/context', entry.id]" title="Open '{{entry.title}}'">open</a>
-   * </ng-template>
-   * ```
-   *
-   * Use case: Add a router link of your host application that opens
+   *Use case: Add a router link of your host application that opens
    * the object in a new tab/window.
    */
   @Input() entryLinkTemplate: TemplateRef<any>;

@@ -27,6 +27,9 @@ export class FileDropService {
    */
   public fileDraggedOverApp$: Observable<boolean> = this.fileDraggedOverAppSource.asObservable();
 
+  /**
+   * @ignore
+   */
   constructor() {
     merge(fromEvent(document, 'dragenter'), fromEvent(document, 'dragleave'))
       .pipe(

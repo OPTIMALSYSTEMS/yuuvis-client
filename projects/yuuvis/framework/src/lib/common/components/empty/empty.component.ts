@@ -1,5 +1,7 @@
 import { Component, Input } from '@angular/core';
-
+/**
+ * @ignore
+ */
 @Component({
   selector: 'yuv-empty',
   templateUrl: './empty.component.html',
