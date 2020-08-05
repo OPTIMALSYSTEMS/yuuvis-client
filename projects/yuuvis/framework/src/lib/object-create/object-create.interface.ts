@@ -71,6 +71,6 @@ export enum CurrentStep {
   OBJECTTYPE = 'objecttype',
   FILES = 'files',
   INDEXDATA = 'indexdata',
-  DLM_UPLOAD = 'dlm_upload',
-  DLM_INDEXDATA = 'dlm_indexdata'
+  AFO_UPLOAD = 'afo_upload',
+  AFO_INDEXDATA = 'afo_indexdata'
 }

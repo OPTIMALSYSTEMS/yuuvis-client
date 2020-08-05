@@ -1,51 +1,75 @@
 import { Component, EventEmitter, Input, OnDestroy, Output, ViewChild } from '@angular/core';
 import {
+  ApiBase,
+  BackendService,
   BaseObjectTypeField,
   ContentStreamAllowed,
   DmsObject,
   DmsService,
   ObjectType,
+  ObjectTypeClassification,
   ObjectTypeGroup,
   SearchQuery,
   SearchResult,
   SearchResultItem,
   SearchService,
   SecondaryObjectType,
+  SecondaryObjectTypeClassification,
   Sort,
   SystemService,
   SystemType,
   TranslateService,
   Utils
 } from '@yuuvis/core';
-import { Observable } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
+import { forkJoin, Observable, of } from 'rxjs';
+import { catchError, map, switchMap } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { FadeInAnimations } from '../../common/animations/fadein.animation';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { SelectableGroup } from '../../grouped-select';
+import { CombinedObjectFormInput } from '../../object-form/combined-object-form/combined-object-form.component';
 import { FormStatusChangedEvent, ObjectFormOptions } from '../../object-form/object-form.interface';
+import { Situation } from '../../object-form/object-form.situation';
 import { ObjectFormComponent } from '../../object-form/object-form/object-form.component';
 import { NotificationService } from '../../services/notification/notification.service';
 import { clear, navBack } from '../../svg.generated';
 import { ObjectCreateService } from '../object-create.service';
 import { Breadcrumb, CreateState, CurrentStep, Labels, ObjectTypePreset } from './../object-create.interface';
 
-// Interface used for creating special DLM objects.
-export interface DLMState {
-  // The DLM objects that have been created
+// Interface used for creating special AFOs (Advanced filing objects).
+export interface AFOState {
+  // The AFOs that have been created
   dmsObject: {
     items: DmsObject[];
     selected?: DmsObject;
   };
-  // List of floating secondary object types that could be applied to the current DLM(s)
+  // List of floating secondary object types that could be applied to the current AFO(s)
   floatingSOT: {
     items: SecondaryObjectType[];
-    selected?: SecondaryObjectType;
+    selected?: {
+      sot: SecondaryObjectType;
+      // may be more than one form model because it is a combination of multiple SOTs
+      combinedFormInput: CombinedObjectFormInput;
+    };
   };
 }
 
 /**
  * This component is basically a wizard for creating new dms objects.
+ * There are two kinds of processes that are supported:
+ *
+ * 1. Regular
+ * Objects are created once all data is collected on the client side. The object is stored
+ * after the user addes document files and indexdata.
+ *
+ * 2. Advanced filing
+ * There are object types that support an advanced filing process. They have no required
+ * indexdata fields and contain a set of floating secondary object types that could be
+ * applied to them later on.
+ * The document files are uploaded immediately. Some pre-processing tasks will analyse
+ * the files and provide some support regarding classification and indexdata extraction.
+ * Once this is done, the user is promted to choose one of the floating SOTs in order to
+ * apply indexdata to the dms object.
  *
  * [Screenshot](../assets/images/yuv-object-create.gif)
  *
@@ -62,10 +86,9 @@ export interface DLMState {
 export class ObjectCreateComponent implements OnDestroy {
   @ViewChild(ObjectFormComponent) objectForm: ObjectFormComponent;
 
-  private DLM_CLASSIFIER = 'appClient:dlm';
-  private DLM_TAG = 'appClient:dlm:prepare';
+  private AFO_TAG = 'appClient:dlm:prepare';
   // possible states of a DLM item
-  private DLM_STATE = {
+  private AFO_STATE = {
     // created but no FSOT assigned so far
     IN_PROGRESS: 0,
     // an FSOT has been assigned
@@ -83,9 +106,9 @@ export class ObjectCreateComponent implements OnDestroy {
   selectedObjectType: ObjectType;
   selectedObjectTypeFormOptions: ObjectFormOptions;
 
-  dlmCreate: DLMState;
-  // list of DLM objects that have not been finished yet
-  unfinishedDLM: any[];
+  afoCreate: AFOState;
+  // list of AFOs that have not been finished yet
+  pendingAFO: any[];
 
   // groups of object types available for the root target
   generalObjectTypeGroups: SelectableGroup[];
@@ -153,6 +176,7 @@ export class ObjectCreateComponent implements OnDestroy {
     private notify: NotificationService,
     private searchService: SearchService,
     private dmsService: DmsService,
+    private backend: BackendService,
     private translate: TranslateService,
     private iconRegistry: IconRegistryService
   ) {
@@ -190,17 +214,17 @@ export class ObjectCreateComponent implements OnDestroy {
         }))
     }));
     this.setupAvailableObjectTypeGroups();
-    this.collectUnfinishedDLMs();
+    this.collectPendingAFOs();
   }
 
-  // Get all DLMs that have ot been finished yet
-  private collectUnfinishedDLMs() {
-    // TODO: implement
+  // Get all AFOs that have ot been finished yet
+  private collectPendingAFOs() {
+    // TODO: implement the right way
     const q = {
       filters: {},
       types: this.system
         .getObjectTypes()
-        .filter((t) => t.classification && t.classification.includes(this.DLM_CLASSIFIER))
+        .filter((t) => t.classification && t.classification.includes(ObjectTypeClassification.ADVANCED_FILING_OBJECT))
         .map((t) => t.id)
     };
     // q.filters[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS] = {
@@ -216,7 +240,7 @@ export class ObjectCreateComponent implements OnDestroy {
     //   o: SearchFilter.OPERATOR.EQUAL,
     //   v1: this.DLM_TAG
     // }
-    this.searchService.search(new SearchQuery(q)).subscribe((res: SearchResult) => (this.unfinishedDLM = res.items));
+    this.searchService.search(new SearchQuery(q)).subscribe((res: SearchResult) => (this.pendingAFO = res.items));
   }
 
   private setupAvailableObjectTypeGroups() {
@@ -254,7 +278,7 @@ export class ObjectCreateComponent implements OnDestroy {
       this.selectedObjectTypeFormOptions.data = this.formState.data;
     }
     if (step === CurrentStep.OBJECTTYPE) {
-      this.dlmCreate = null;
+      this.afoCreate = null;
     }
   }
 
@@ -268,9 +292,9 @@ export class ObjectCreateComponent implements OnDestroy {
     this.title = objectType ? this.system.getLocalizedResource(`${objectType.id}_label`) : this.labels.defaultTitle;
     this.objCreateServcice.setNewState({ busy: true });
 
-    if (this.isDLMType(objectType)) {
+    if (this.system.isAFOType(objectType)) {
       // DLM object types are treated in a different way
-      this.processDLMType(objectType);
+      this.processAFOType(objectType);
     } else {
       this.system.getObjectTypeForm(objectType.id, 'CREATE').subscribe(
         (model) => {
@@ -300,27 +324,57 @@ export class ObjectCreateComponent implements OnDestroy {
     }
   }
 
-  private isDLMType(objectType: ObjectType): boolean {
-    return Array.isArray(objectType.classification) && objectType.classification.includes(this.DLM_CLASSIFIER);
-  }
-
-  private processDLMType(objectType: ObjectType) {
+  private processAFOType(objectType: ObjectType) {
     if (objectType.isFolder || objectType.contentStreamAllowed === 'notallowed') {
-      this.objCreateServcice.setNewState({ currentStep: CurrentStep.DLM_UPLOAD });
-      this.objCreateServcice.setNewBreadcrumb(CurrentStep.DLM_UPLOAD, CurrentStep.FILES);
+      this.objCreateServcice.setNewState({ currentStep: CurrentStep.AFO_UPLOAD });
+      this.objCreateServcice.setNewBreadcrumb(CurrentStep.AFO_UPLOAD, CurrentStep.FILES);
     } else {
       this.objCreateServcice.setNewState({ currentStep: CurrentStep.FILES });
-      this.objCreateServcice.setNewBreadcrumb(CurrentStep.FILES, CurrentStep.DLM_UPLOAD);
+      this.objCreateServcice.setNewBreadcrumb(CurrentStep.FILES, CurrentStep.AFO_UPLOAD);
     }
     this.objCreateServcice.setNewState({ busy: false, done: this.isReady() });
   }
 
-  dlmUploadApprove() {
+  afoSelectFloatingSOT(sot: SecondaryObjectType) {
+    this.busy = true;
+    const objectTypeIDs = [];
+
+    // main object type may not have own fields
+    if (this.selectedObjectType.fields.filter((f) => !f.id.startsWith('system:')).length) {
+      objectTypeIDs.push(this.selectedObjectType.id);
+    }
+
+    // required SOTs will also be applied
+    this.selectedObjectType.secondaryObjectTypes
+      .filter((otSot) => !otSot.static)
+      .forEach((otSot) => {
+        const t = this.system.getSecondaryObjectType(otSot.id);
+        if (t.classification && t.classification.includes(SecondaryObjectTypeClassification.REQUIRED)) {
+          objectTypeIDs.push(t.id);
+        }
+      });
+
+    this.system.getObjectTypeForms([...objectTypeIDs, sot.id], Situation.CREATE).subscribe(
+      (res) => {
+        this.afoCreate.floatingSOT.selected = {
+          sot: sot,
+          // TODO: also apply extaction data here
+          combinedFormInput: { formModels: res, data: {} }
+        };
+        this.busy = false;
+      },
+      (err) => {
+        this.busy = false;
+      }
+    );
+  }
+
+  afoUploadApprove() {
     let data = {};
     if (this.context) {
       data[BaseObjectTypeField.PARENT_ID] = this.context.id;
     }
-    data[BaseObjectTypeField.TAGS] = [[this.DLM_TAG, 0]];
+    data[BaseObjectTypeField.TAGS] = [[this.AFO_TAG, this.AFO_STATE.IN_PROGRESS]];
     this.busy = true;
 
     this.createObject(this.selectedObjectType.id, data, this.files)
@@ -331,11 +385,17 @@ export class ObjectCreateComponent implements OnDestroy {
       .subscribe(
         (res: DmsObject[]) => {
           this.busy = false;
-          this.objCreateServcice.setNewState({ currentStep: CurrentStep.DLM_INDEXDATA });
-          this.dlmCreate = {
-            dmsObject: { items: res },
-            floatingSOT: { items: this.system.getFloatingSecondaryObjectTypes(this.selectedObjectType.id, true) }
+          this.objCreateServcice.setNewState({ currentStep: CurrentStep.AFO_INDEXDATA });
+          const selectableSOTs = this.system
+            .getFloatingSecondaryObjectTypes(this.selectedObjectType.id, true)
+            .filter((sot) => !sot.classification || !sot.classification.includes(SecondaryObjectTypeClassification.REQUIRED));
+          this.afoCreate = {
+            dmsObject: { items: res, selected: res[0] },
+            floatingSOT: { items: selectableSOTs }
           };
+          if (selectableSOTs.length === 1) {
+            this.afoSelectFloatingSOT(selectableSOTs[0]);
+          }
         },
         (err) => {
           this.busy = false;
@@ -344,28 +404,36 @@ export class ObjectCreateComponent implements OnDestroy {
       );
   }
 
-  dlmUploadCancel() {
+  afoUploadCancel() {
     this.resetState();
   }
 
-  clickedUnfinishedDLM(dlm: SearchResultItem) {
-    const alreadySelected = this.dlmCreate?.dmsObject.selected.id === dlm.fields.get(BaseObjectTypeField.OBJECT_ID);
+  clickedPendingAFO(dlm: SearchResultItem) {
+    const alreadySelected = this.afoCreate?.dmsObject.selected.id === dlm.fields.get(BaseObjectTypeField.OBJECT_ID);
     if (alreadySelected) {
       this.resetState();
     } else {
       this.objCreateServcice.setNewState({ busy: true });
-      this.dlmCreate = null;
+      this.afoCreate = null;
       this.dmsService.getDmsObject(dlm.fields.get(BaseObjectTypeField.OBJECT_ID)).subscribe((dmsObject) => {
         this.selectedObjectType = this.system.getObjectType(dlm.objectTypeId, true);
 
-        this.objCreateServcice.setNewState({ currentStep: CurrentStep.DLM_INDEXDATA, busy: false });
-        this.dlmCreate = {
+        this.objCreateServcice.setNewState({ currentStep: CurrentStep.AFO_INDEXDATA, busy: false });
+        const selectableSOTs = this.system
+          .getFloatingSecondaryObjectTypes(this.selectedObjectType.id, true)
+          .filter((sot) => !sot.classification || !sot.classification.includes(SecondaryObjectTypeClassification.REQUIRED));
+        this.afoCreate = {
           dmsObject: {
             items: [dmsObject],
             selected: dmsObject
           },
-          floatingSOT: { items: this.system.getFloatingSecondaryObjectTypes(this.selectedObjectType.id, true) }
+          floatingSOT: {
+            items: selectableSOTs
+          }
         };
+        if (selectableSOTs.length === 1) {
+          this.afoSelectFloatingSOT(selectableSOTs[0]);
+        }
       });
     }
   }
@@ -394,7 +462,7 @@ export class ObjectCreateComponent implements OnDestroy {
   }
 
   fileSelectContinue() {
-    const nextStep = this.isDLMType(this.selectedObjectType) ? CurrentStep.DLM_UPLOAD : CurrentStep.INDEXDATA;
+    const nextStep = this.system.isAFOType(this.selectedObjectType) ? CurrentStep.AFO_UPLOAD : CurrentStep.INDEXDATA;
     this.goToStep(nextStep);
     this.objCreateServcice.setNewBreadcrumb(nextStep);
   }
@@ -409,31 +477,71 @@ export class ObjectCreateComponent implements OnDestroy {
       data[BaseObjectTypeField.PARENT_ID] = this.context.id;
     }
     this.busy = true;
-
-    this.createObject(this.selectedObjectType.id, data, this.files)
-      .pipe(takeUntilDestroy(this))
-      .subscribe(
-        (res) => {
-          this.busy = false;
-          // this.notify.success(this.translate.instant('yuv.framework.object-create.notify.success'));
-          if (this.createAnother) {
-            this.selectedObjectType = null;
-            this.files = [];
-            this.resetState();
-            this.reset();
-          } else {
-            this.objectCreated.emit(res);
-          }
-        },
-        (err) => {
-          this.busy = false;
-          this.notify.error(this.translate.instant('yuv.framework.object-create.notify.error'));
+    (this.system.isAFOType(this.selectedObjectType) ? this.createAFO(data) : this.createDefault(data)).subscribe(
+      (ids: string[]) => {
+        this.busy = false;
+        // this.notify.success(this.translate.instant('yuv.framework.object-create.notify.success'));
+        if (this.createAnother) {
+          this.selectedObjectType = null;
+          this.files = [];
+          this.resetState();
+          this.reset();
+        } else {
+          this.objectCreated.emit(ids);
         }
-      );
+      },
+      (err) => {
+        this.busy = false;
+        this.notify.error(this.translate.instant('yuv.framework.object-create.notify.error'));
+      }
+    );
+  }
+
+  /**
+   * Finish creation of an AFO
+   * @param data Data to be allied to the object
+   * @returns List of IDs of finished objects
+   */
+  private createAFO(data: any): Observable<string[]> {
+    // add selected SOTs
+    const sotsToBeApplied: string[] = this.selectedObjectType.secondaryObjectTypes
+      .filter((sot) => {
+        const soType = this.system.getSecondaryObjectType(sot.id);
+        // add static as well as required SOTs
+        return sot.static || (soType.classification && soType.classification.includes(SecondaryObjectTypeClassification.REQUIRED));
+      })
+      .map((sot) => sot.id);
+    // add the chosen type as well
+    sotsToBeApplied.push(this.afoCreate.floatingSOT.selected.sot.id);
+    data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS] = sotsToBeApplied;
+
+    // update existing dms object
+    return forkJoin(
+      this.afoCreate.dmsObject.items.map((dmsObject) =>
+        this.dmsService.updateDmsObject(dmsObject.id, data).pipe(
+          // update system tags
+          switchMap((dmsObject: DmsObject) =>
+            this.backend.post(`/dms/objects/${dmsObject}/tags/${this.AFO_TAG}/state/${this.AFO_STATE.READY}`, {}, ApiBase.core).pipe(map((_) => of(dmsObject)))
+          ),
+          catchError((e) => {
+            return of(null);
+          })
+        )
+      )
+    );
+  }
+
+  /**
+   * Create an object the default way (not an AFO)
+   * @param data Data to be allied to the object
+   * @returns List of IDs of created objects
+   */
+  private createDefault(data: any): Observable<string[]> {
+    return this.createObject(this.selectedObjectType.id, data, this.files);
   }
 
   resetState() {
-    this.dlmCreate = null;
+    this.afoCreate = null;
     this.objCreateServcice.resetState();
     this.objCreateServcice.resetBreadcrumb();
   }
@@ -467,7 +575,7 @@ export class ObjectCreateComponent implements OnDestroy {
     if (typeSelected) {
       switch (this.selectedObjectType.contentStreamAllowed) {
         case 'required': {
-          fileSelected = this.files.length > 0;
+          fileSelected = !!this.afoCreate.dmsObject.selected || this.files.length > 0;
           break;
         }
         case 'notallowed': {

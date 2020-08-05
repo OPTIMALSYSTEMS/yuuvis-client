@@ -77,7 +77,7 @@ export enum ContentStreamAllowed {
   REQUIRED = 'required'
 }
 
-// Classifications
+// classifications applied to object type fields
 export enum Classification {
   STRING_CATALOG = 'catalog',
   STRING_ORGANIZATION = 'id:organization',
@@ -87,6 +87,17 @@ export enum Classification {
   STRING_PHONE = 'phone',
   NUMBER_FILESIZE = 'filesize',
   NUMBER_DIGIT = 'digit'
+}
+
+// classifications applied to object types
+export enum ObjectTypeClassification {
+  ADVANCED_FILING_OBJECT = 'appClient:dlm'
+}
+
+// classifications applied to secondary object types
+export enum SecondaryObjectTypeClassification {
+  REQUIRED = 'appClient:required',
+  PRIMARY = 'appClient:primary'
 }
 
 // special internal types of object type fields

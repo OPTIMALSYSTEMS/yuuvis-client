@@ -6,7 +6,7 @@ import { BackendService } from '../backend/backend.service';
 import { AppCacheService } from '../cache/app-cache.service';
 import { Logger } from '../logger/logger';
 import { Utils } from './../../util/utils';
-import { Classification, ContentStreamAllowed, InternalFieldType, SecondaryObjectTypeField, SystemType } from './system.enum';
+import { Classification, ContentStreamAllowed, InternalFieldType, ObjectTypeClassification, SecondaryObjectTypeField, SystemType } from './system.enum';
 import {
   ClassificationEntry,
   ObjectType,
@@ -178,12 +178,22 @@ export class SystemService {
     if (objectTypeId) {
       const type = this.getObjectType(objectTypeId);
       // TODO: point to actual icon URI
-      return type && type.isFolder
-        ? '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/><path d="M0 0h24v24H0z" fill="none"/></svg>'
-        : '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M6 2c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6H6zm7 7V3.5L18.5 9H13z"/><path d="M0 0h24v24H0z" fill="none"/></svg>';
+      // AFOs (Advanced filing objects) should have a more prominent icon
+      // TODO: Handle different icons in resources service
+      if (this.isAFOType(type)) {
+        return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M6 2c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6H6zm7 7V3.5L18.5 9H13z"/><path d="M0 0h24v24H0V0z" fill="none"/><circle fill="#fff" cx="18.1" cy="18" r="5"/><path class="accent" d="M18,12c-3.3,0-6,2.7-6,6s2.7,6,6,6c3.3,0,6-2.7,6-6S21.3,12,18,12z M20.5,21.6L18,20.1l-2.5,1.5l0.7-2.9l-2.2-1.9l3-0.3l1.2-2.7l1.2,2.7l3,0.3l-2.2,1.9L20.5,21.6z"/></svg>';
+      } else {
+        return type && type.isFolder
+          ? '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/><path d="M0 0h24v24H0z" fill="none"/></svg>'
+          : '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M6 2c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6H6zm7 7V3.5L18.5 9H13z"/><path d="M0 0h24v24H0z" fill="none"/></svg>';
+      }
     } else {
       return null;
     }
+  }
+
+  isAFOType(objectType: ObjectType): boolean {
+    return Array.isArray(objectType.classification) && objectType.classification.includes(ObjectTypeClassification.ADVANCED_FILING_OBJECT);
   }
 
   getLocalizedResource(key: string): string {
@@ -203,6 +213,32 @@ export class SystemService {
    */
   getObjectTypeForm(objectTypeId: string, situation: string, mode?: string): Observable<any> {
     return this.backend.get(Utils.buildUri(`/dms/form/${objectTypeId}`, { situation }));
+  }
+
+  /**
+   * Fetch a collection of form models.
+   * @param objectTypeIDs Object type IDs to fetch form model for
+   * @param situation Form situation
+   * @returns Object where the object type id is key and the form model is the value
+   */
+  getObjectTypeForms(objectTypeIDs: string[], situation: string): Observable<{ [key: string]: any }> {
+    return forkJoin(
+      objectTypeIDs.map((o) =>
+        this.getObjectTypeForm(o, situation).pipe(
+          catchError((e) => of(null)),
+          map((res) => ({
+            id: o,
+            formModel: res
+          }))
+        )
+      )
+    ).pipe(
+      map((res) => {
+        const resMap = {};
+        res.forEach((r) => (resMap[r.id] = r.formModel));
+        return resMap;
+      })
+    );
   }
 
   isDateFormat(data: string): boolean {
@@ -340,6 +376,7 @@ export class SystemService {
     const objectTypeFieldIDs = schemaTypeDefinition.propertyReference.map((pr) => pr.value);
     if (schemaTypeDefinition.secondaryObjectTypeId) {
       schemaTypeDefinition.secondaryObjectTypeId
+        .filter((sot) => sot.static)
         .map((sot) => sot.value)
         .forEach((sotID) => {
           objectTypesQA[sotID].propertyReference.forEach((pr) => {
@@ -403,10 +440,12 @@ export class SystemService {
     if (classifications) {
       classifications.forEach((c) => {
         const matches: string[] = c.match(/^([^\[]*)(\[(.*)\])?$/);
-        res.set(matches[1], {
-          classification: matches[1],
-          options: matches[3] ? matches[3].split(',').map((o) => o.trim()) : []
-        });
+        if (matches && matches.length) {
+          res.set(matches[1], {
+            classification: matches[1],
+            options: matches[3] ? matches[3].split(',').map((o) => o.trim()) : []
+          });
+        }
       });
     }
     return res;

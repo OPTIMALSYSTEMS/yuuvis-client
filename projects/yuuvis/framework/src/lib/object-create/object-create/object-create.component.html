@@ -1,16 +1,16 @@
 <as-split gutterSize="16">
-  <as-split-area [size]="20" order="0" *ngIf="unfinishedDLM?.length">
-    <yuv-panel class="unfinished-dlm panel"
-      [title]="'yuv.framework.object-create.unfinished-dlm.header.title' | translate"
-      [description]="'yuv.framework.object-create.unfinished-dlm.header.subtitle' | translate">
+  <as-split-area [size]="20" order="0" *ngIf="pendingAFO?.length">
+    <yuv-panel class="pending-afo panel" [title]="'yuv.framework.object-create.afo.pending.header.title' | translate"
+      [description]="'yuv.framework.object-create.afo.pending.header.subtitle' | translate">
 
       <cdk-virtual-scroll-viewport itemSize="50" class="content">
-        <div class="dlm" style="height: 50px" *cdkVirtualFor="let dlm of unfinishedDLM"
-          [ngClass]="{current: dlmCreate?.dmsObject.selected.id === dlm.fields.get('system:objectId')}"
-          (click)="clickedUnfinishedDLM(dlm)">
-          {{dlm.content?.fileName}}
+        <div class="afo" style="height: 50px" *cdkVirtualFor="let afo of pendingAFO"
+          [ngClass]="{current: afoCreate?.dmsObject?.selected?.id === afo.fields.get('system:objectId')}"
+          (click)="clickedPendingAFO(afo)">
+          {{afo.content?.fileName}}
         </div>
       </cdk-virtual-scroll-viewport>
+
     </yuv-panel>
   </as-split-area>
   <as-split-area [size]="80" order="1">
@@ -101,31 +101,32 @@
           </yuv-object-form>
         </div>
 
-        <!-- STEP: DLM_UPLOAD -->
-        <div class="step dlm-upload" *ngSwitchCase="'dlm_upload'">
+        <!-- STEP: AFO_UPLOAD -->
+        <div class="step afo-upload" *ngSwitchCase="'afo_upload'">
 
           <div class="box">
-            <p>{{'yuv.framework.object-create.dlm.upload.info'|translate}}</p>
+            <p>{{'yuv.framework.object-create.afo.upload.info'|translate}}</p>
             <div class="actions">
-              <button (click)="dlmUploadCancel()">{{'yuv.framework.shared.cancel'|translate}}</button>
+              <button (click)="afoUploadCancel()">{{'yuv.framework.shared.cancel'|translate}}</button>
               <button class="primary"
-                (click)="dlmUploadApprove()">{{'yuv.framework.object-create.dlm.upload.approve'|translate}}</button>
+                (click)="afoUploadApprove()">{{'yuv.framework.object-create.afo.upload.approve'|translate}}</button>
             </div>
           </div>
         </div>
 
-        <!-- STEP: DLM_INDEXDATA -->
-        <div class="step dlm-indexdata" *ngSwitchCase="'dlm_indexdata'">
+        <!-- STEP: AFO_INDEXDATA -->
+        <div class="step afo-indexdata" *ngSwitchCase="'afo_indexdata'">
 
           <as-split>
             <!-- SOT select and form -->
-            <as-split-area [size]="!dlmCreate?.floatingSOT.selected ? 30 : 50">
+            <as-split-area [size]="!afoCreate?.floatingSOT.selected ? 30 : 50">
 
-              <ng-container *ngIf="!dlmCreate?.floatingSOT.selected; else tplSOTForm">
+              <ng-container *ngIf="!afoCreate?.floatingSOT.selected; else tplSOTForm">
                 <div class="floating-sots list panel">
-                  <h2>{{'yuv.framework.object-create.dlm.type.select.title' | translate}}</h2>
-                  <div class="sots item" *ngFor="let sot of dlmCreate?.floatingSOT.items"
-                    (click)="dlmCreate.floatingSOT.selected = sot">
+                  <h2>{{selectedObjectType.label}}<br>
+                    <em>{{'yuv.framework.object-create.afo.type.select.title' | translate}}</em></h2>
+                  <div class="sots item" *ngFor="let sot of afoCreate?.floatingSOT.items"
+                    (click)="afoSelectFloatingSOT(sot)">
                     {{sot.label}}
                   </div>
                 </div>
@@ -134,11 +135,15 @@
               <ng-template #tplSOTForm>
                 <div class="floating-sot-form panel">
                   <div class="header">
-                    <yuv-icon class="btn" (click)="dlmCreate?.floatingSOT.selected = null" icon="navBack"></yuv-icon>
-                    <span>{{dlmCreate.floatingSOT.selected.label}}</span>
+                    <yuv-icon class="btn" (click)="afoCreate?.floatingSOT.selected = null" icon="navBack"></yuv-icon>
+                    <span>{{afoCreate.floatingSOT.selected.sot.label}}<br><em>{{selectedObjectType.label}}</em></span>
                   </div>
                   <div class="form">
-                    {{dlmCreate.floatingSOT.selected.label}} form
+                    <yuv-combined-object-form (statusChanged)="onFormStatusChanged($event)"
+                      [objectFormInput]="afoCreate.floatingSOT.selected.combinedFormInput">
+                    </yuv-combined-object-form>
+
+
                   </div>
                 </div>
               </ng-template>
@@ -146,34 +151,28 @@
             </as-split-area>
 
             <!-- preview -->
-            <as-split-area class="preview-split panel" [size]="!dlmCreate?.floatingSOT.selected ? 70 : 50">
+            <as-split-area class="preview-split panel" [size]="!afoCreate?.floatingSOT.selected ? 70 : 50">
 
               <as-split unit="pixel">
                 <as-split-area size="*">
 
-                  <div class="preview" *ngIf="!!dlmCreate?.dmsObject.selected">
-                    <yuv-content-preview [dmsObject]="dlmCreate.dmsObject.selected"></yuv-content-preview>
+                  <div class="preview" *ngIf="!!afoCreate?.dmsObject.selected">
+                    <yuv-content-preview [dmsObject]="afoCreate.dmsObject.selected"></yuv-content-preview>
                   </div>
                 </as-split-area>
                 <!-- objects -->
-                <!-- <as-split-area size="200" *ngIf="dlmCreate?.dmsObject.items.length > 1"> -->
-                <as-split-area size="200">
+                <as-split-area size="200" *ngIf="afoCreate?.dmsObject.items.length > 1">
                   <div class="objects">
-                    <!-- <h2>{{'yuv.framework.object-create.dlm.object.select.title' | translate}}</h2> -->
-                    <div class="item" *ngFor="let o of dlmCreate?.dmsObject.items"
-                      [ngClass]="{current: dlmCreate?.dmsObject.selected.id === o.id}"
-                      (click)="dlmCreate.dmsObject.selected = o">
+                    <div class="item" *ngFor="let o of afoCreate?.dmsObject.items"
+                      [ngClass]="{current: afoCreate?.dmsObject?.selected?.id === o.id}"
+                      (click)="afoCreate.dmsObject.selected = o">
                       {{o.content.fileName}}</div>
                   </div>
                 </as-split-area>
               </as-split>
             </as-split-area>
-
-
           </as-split>
         </div>
-
-
       </ng-container>
 
       <footer>
