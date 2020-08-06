@@ -11,6 +11,7 @@
       display: flex;
       align-items: center;
       cursor: pointer;
+      padding: var(--app-pane-padding);
 
       &:not(.current):hover {
         background-color: var(--item-focus-background-color);
@@ -333,10 +334,12 @@
 
         .box {
           background-color: var(--panel-background);
+          max-width: 300px;
 
           p {
             margin: 0;
             padding: var(--app-pane-padding);
+            line-height: 1.7em;
           }
 
           .actions {

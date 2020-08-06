@@ -1,12 +1,21 @@
 import { Injectable } from '@angular/core';
 import { forkJoin, Observable, of, ReplaySubject } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
+import { DmsObject } from '../../model/dms-object.model';
 import { ApiBase } from '../backend/api.enum';
 import { BackendService } from '../backend/backend.service';
 import { AppCacheService } from '../cache/app-cache.service';
 import { Logger } from '../logger/logger';
 import { Utils } from './../../util/utils';
-import { Classification, ContentStreamAllowed, InternalFieldType, ObjectTypeClassification, SecondaryObjectTypeField, SystemType } from './system.enum';
+import {
+  BaseObjectTypeField,
+  Classification,
+  ContentStreamAllowed,
+  InternalFieldType,
+  ObjectTypeClassification,
+  SecondaryObjectTypeField,
+  SystemType
+} from './system.enum';
 import {
   ClassificationEntry,
   ObjectType,
@@ -213,6 +222,34 @@ export class SystemService {
    */
   getObjectTypeForm(objectTypeId: string, situation: string, mode?: string): Observable<any> {
     return this.backend.get(Utils.buildUri(`/dms/form/${objectTypeId}`, { situation }));
+  }
+
+  /**
+   * AFOs (advanced filing objects) use more than one object type form.
+   * In facct its a collection of forms that will be combined later on.
+   * This method fetches all the forms bound to an AFO type.
+   *
+   * @param dmsObject a dms object created from an AFO type
+   * @returns object where property name is the object type key and value is the form model for this type
+   * or null in case the given object does not belong to an AFO type
+   */
+  getAFOTypeForms(dmsObject: DmsObject, situation?: string): Observable<{ [key: string]: any }> {
+    const afoType = this.getObjectType(dmsObject.objectTypeId);
+    // make sure that it actually is an AFO type
+    if (this.isAFOType(afoType)) {
+      const objectTypeIDs = [];
+      // if the main type itself has properties, add them
+      if (afoType.fields.filter((f) => !f.id.startsWith('system:')).length) {
+        objectTypeIDs.push(afoType.id);
+      }
+      const sots: string[] = dmsObject.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS];
+      if (sots) {
+        sots.forEach((sot) => objectTypeIDs.push(sot));
+      }
+      return objectTypeIDs.length ? this.getObjectTypeForms(objectTypeIDs, situation) : of(null);
+    } else {
+      return of(null);
+    }
   }
 
   /**

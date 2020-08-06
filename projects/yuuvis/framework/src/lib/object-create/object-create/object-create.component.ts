@@ -325,13 +325,13 @@ export class ObjectCreateComponent implements OnDestroy {
   }
 
   private processAFOType(objectType: ObjectType) {
-    if (objectType.isFolder || objectType.contentStreamAllowed === 'notallowed') {
-      this.objCreateServcice.setNewState({ currentStep: CurrentStep.AFO_UPLOAD });
-      this.objCreateServcice.setNewBreadcrumb(CurrentStep.AFO_UPLOAD, CurrentStep.FILES);
-    } else {
-      this.objCreateServcice.setNewState({ currentStep: CurrentStep.FILES });
-      this.objCreateServcice.setNewBreadcrumb(CurrentStep.FILES, CurrentStep.AFO_UPLOAD);
-    }
+    // if (objectType.isFolder || objectType.contentStreamAllowed === 'notallowed') {
+    //   this.objCreateServcice.setNewState({ currentStep: CurrentStep.AFO_UPLOAD });
+    //   this.objCreateServcice.setNewBreadcrumb(CurrentStep.AFO_UPLOAD, CurrentStep.FILES);
+    // } else {
+    this.objCreateServcice.setNewState({ currentStep: CurrentStep.FILES });
+    this.objCreateServcice.setNewBreadcrumb(CurrentStep.FILES, CurrentStep.AFO_UPLOAD);
+    // }
     this.objCreateServcice.setNewState({ busy: false, done: this.isReady() });
   }
 
@@ -386,6 +386,8 @@ export class ObjectCreateComponent implements OnDestroy {
         (res: DmsObject[]) => {
           this.busy = false;
           this.objCreateServcice.setNewState({ currentStep: CurrentStep.AFO_INDEXDATA });
+          this.objCreateServcice.setNewBreadcrumb(CurrentStep.AFO_INDEXDATA);
+
           const selectableSOTs = this.system
             .getFloatingSecondaryObjectTypes(this.selectedObjectType.id, true)
             .filter((sot) => !sot.classification || !sot.classification.includes(SecondaryObjectTypeClassification.REQUIRED));
@@ -414,6 +416,7 @@ export class ObjectCreateComponent implements OnDestroy {
       this.resetState();
     } else {
       this.objCreateServcice.setNewState({ busy: true });
+      this.objCreateServcice.setNewBreadcrumb(CurrentStep.AFO_INDEXDATA);
       this.afoCreate = null;
       this.dmsService.getDmsObject(dlm.fields.get(BaseObjectTypeField.OBJECT_ID)).subscribe((dmsObject) => {
         this.selectedObjectType = this.system.getObjectType(dlm.objectTypeId, true);
@@ -575,7 +578,7 @@ export class ObjectCreateComponent implements OnDestroy {
     if (typeSelected) {
       switch (this.selectedObjectType.contentStreamAllowed) {
         case 'required': {
-          fileSelected = !!this.afoCreate.dmsObject.selected || this.files.length > 0;
+          fileSelected = !!this.afoCreate?.dmsObject.selected || this.files.length > 0;
           break;
         }
         case 'notallowed': {

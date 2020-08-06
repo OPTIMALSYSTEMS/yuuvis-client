@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, OnDestroy, Output, ViewChild } from '@angular/core';
 import { DmsObject, DmsService, PendingChangesService, SystemService, TranslateService, Utils } from '@yuuvis/core';
 import { finalize } from 'rxjs/operators';
+import { CombinedObjectFormComponent, CombinedObjectFormInput } from '../combined-object-form/combined-object-form.component';
 import { NotificationService } from './../../services/notification/notification.service';
 import { FormStatusChangedEvent, ObjectFormOptions } from './../object-form.interface';
 import { Situation } from './../object-form.situation';
@@ -26,9 +27,14 @@ export class ObjectFormEditComponent implements OnDestroy {
   private pendingTaskId: string;
   private _dmsObject: DmsObject;
 
+  // Indicator that we are dealing with an advanced filing object type
+  // This kind of object will use a combination of multiple forms instaed of a single one
+  isAFOType: boolean;
+
   // fetch a reference to the opbject form component to be able to
   // get the form data
   @ViewChild(ObjectFormComponent) objectForm: ObjectFormComponent;
+  @ViewChild(CombinedObjectFormComponent) afoObjectForm: CombinedObjectFormComponent;
 
   @Input() formDisabled: boolean;
   /**
@@ -51,6 +57,7 @@ export class ObjectFormEditComponent implements OnDestroy {
   @Output() indexDataSaved = new EventEmitter<DmsObject>();
 
   formOptions: ObjectFormOptions;
+  combinedFormInput: CombinedObjectFormInput;
   formState: FormStatusChangedEvent;
   busy: boolean;
   controls = {
@@ -107,17 +114,24 @@ export class ObjectFormEditComponent implements OnDestroy {
       if (this.formState.dirty && !this.formState.invalid) {
         this.controls.saving = true;
 
-        const formData = this.objectForm.getFormData();
+        const formData = (this.objectForm || this.afoObjectForm).getFormData();
         this.dmsService
           .updateDmsObject(this._dmsObject.id, formData)
           .pipe(finalize(() => this.finishPending()))
           .subscribe(
             (updatedObject) => {
               this._dmsObject = updatedObject;
-              this.formOptions.data = updatedObject.data;
+              if (this.formOptions) {
+                this.formOptions.data = updatedObject.data;
+                this.objectForm.setFormPristine();
+              }
+              if (this.combinedFormInput) {
+                this.combinedFormInput.data = updatedObject.data;
+                this.afoObjectForm.setFormsPristine();
+              }
+
               this.controls.saving = false;
               this.controls.disabled = true;
-              this.objectForm.setFormPristine();
               this.notification.success(this._dmsObject.title, this.messages.formSuccess);
               this.indexDataSaved.emit(this._dmsObject);
             },
@@ -141,27 +155,46 @@ export class ObjectFormEditComponent implements OnDestroy {
   // create the formOptions required by object form component
   private createObjectForm(dmsObject: DmsObject) {
     this.busy = true;
-    this.systemService.getObjectTypeForm(dmsObject.objectTypeId, Situation.EDIT).subscribe(
-      (model) => {
-        this.formOptions = {
-          formModel: model,
-          data: dmsObject.data,
-          objectId: dmsObject.id,
-          disabled: this.formDisabled || !this.isEditable(dmsObject)
-        };
-        if (dmsObject.contextFolder) {
-          this.formOptions.context = {
-            id: dmsObject.contextFolder.id,
-            title: dmsObject.contextFolder.title,
-            objectTypeId: dmsObject.contextFolder.objectTypeId
+    this.isAFOType = this.systemService.isAFOType(this.systemService.getObjectType(dmsObject.objectTypeId));
+
+    if (this.isAFOType) {
+      this.formOptions = null;
+      this.systemService.getAFOTypeForms(dmsObject, Situation.EDIT).subscribe(
+        (res) => {
+          this.combinedFormInput = {
+            formModels: res,
+            data: dmsObject.data
           };
+          this.busy = false;
+        },
+        (err) => {
+          this.busy = false;
         }
-        this.busy = false;
-      },
-      (err) => {
-        this.busy = false;
-      }
-    );
+      );
+    } else {
+      this.systemService.getObjectTypeForm(dmsObject.objectTypeId, Situation.EDIT).subscribe(
+        (model) => {
+          this.combinedFormInput = null;
+          this.formOptions = {
+            formModel: model,
+            data: dmsObject.data,
+            objectId: dmsObject.id,
+            disabled: this.formDisabled || !this.isEditable(dmsObject)
+          };
+          if (dmsObject.contextFolder) {
+            this.formOptions.context = {
+              id: dmsObject.contextFolder.id,
+              title: dmsObject.contextFolder.title,
+              objectTypeId: dmsObject.contextFolder.objectTypeId
+            };
+          }
+          this.busy = false;
+        },
+        (err) => {
+          this.busy = false;
+        }
+      );
+    }
   }
 
   private isEditable(dmsObject: DmsObject): boolean {

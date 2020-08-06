@@ -1,6 +1,7 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, QueryList, ViewChildren } from '@angular/core';
 import { SystemService } from '@yuuvis/core';
 import { FormStatusChangedEvent, ObjectFormOptions } from '../object-form.interface';
+import { ObjectFormComponent } from '../object-form/object-form.component';
 
 export interface CombinedObjectFormInput {
   formModels: { [key: string]: any };
@@ -13,6 +14,8 @@ export interface CombinedObjectFormInput {
   styleUrls: ['./combined-object-form.component.scss']
 })
 export class CombinedObjectFormComponent implements OnInit {
+  @ViewChildren(ObjectFormComponent) objectForms: QueryList<ObjectFormComponent>;
+
   forms: {
     id: string;
     label: string;
@@ -21,16 +24,17 @@ export class CombinedObjectFormComponent implements OnInit {
   formStates: Map<string, FormStatusChangedEvent> = new Map<string, FormStatusChangedEvent>();
 
   @Input() set objectFormInput(ofi: CombinedObjectFormInput) {
-    this.forms = ofi
-      ? Object.keys(ofi.formModels).map((k) => ({
-          id: k,
-          label: this.system.getLocalizedResource(`${k}_label`),
-          formOptions: {
-            formModel: ofi.formModels[k],
-            data: ofi.data
-          }
-        }))
-      : null;
+    this.forms =
+      ofi && ofi.formModels
+        ? Object.keys(ofi.formModels).map((k) => ({
+            id: k,
+            label: this.system.getLocalizedResource(`${k}_label`),
+            formOptions: {
+              formModel: ofi.formModels[k],
+              data: ofi.data
+            }
+          }))
+        : null;
   }
 
   @Output() statusChanged = new EventEmitter<FormStatusChangedEvent>();
@@ -58,6 +62,29 @@ export class CombinedObjectFormComponent implements OnInit {
       combinedState.data = { ...combinedState.data, ...s.data };
     });
     this.statusChanged.emit(combinedState);
+  }
+
+  /**
+   * Extracts the values from the form model. Each form value is represented by one
+   * property on the result object holding the fields value. The keys (properties) are the `name`
+   * properties of the form element (in SEARCH situation the `qname` field is used).
+   *
+   * How values are extracted is influenced by the forms situation.
+   *
+   * @return object of key value pairs
+   */
+  public getFormData() {
+    let data = {};
+    this.objectForms.forEach((f) => {
+      data = { ...data, ...f.getFormData() };
+    });
+    return data;
+  }
+
+  public setFormsPristine() {
+    this.objectForms.forEach((f) => {
+      f.setFormPristine();
+    });
   }
 
   ngOnInit(): void {}

@@ -74,9 +74,14 @@ export class GridService {
     const objectTypeFields = {};
     objectType.fields.forEach((f: ObjectTypeField) => (objectTypeFields[f.id] = f));
 
-    return this.userConfig
-      .getColumnConfig(objectTypeId)
-      .pipe(map((cc: ColumnConfig) => cc.columns.map((c) => this.getColumnDefinition(objectTypeFields[c.id], c))));
+    return this.userConfig.getColumnConfig(objectTypeId).pipe(
+      map((cc: ColumnConfig) =>
+        cc.columns
+          // maybe there are columns that do not match the type definition anymore
+          .filter((c) => !!objectTypeFields[c.id])
+          .map((c) => this.getColumnDefinition(objectTypeFields[c.id], c))
+      )
+    );
   }
 
   /**
