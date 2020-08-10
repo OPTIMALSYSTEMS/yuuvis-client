@@ -81,7 +81,7 @@ export interface SchemaResponseFieldDefinition {
   cardinality: string;
   required: boolean;
   updatability: string;
-  classification?: string[];
+  classifications?: string[];
   resolution: string;
 }
 // export interface SchemaResponseTypeDefinition {
