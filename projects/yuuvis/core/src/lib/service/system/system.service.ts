@@ -247,7 +247,7 @@ export class SystemService {
       const orgTypeFields = [BaseObjectTypeField.MODIFIED_BY, BaseObjectTypeField.CREATED_BY];
       ot.fields.forEach((f) => {
         if (orgTypeFields.includes(f.id)) {
-          f.classification = [Classification.STRING_ORGANIZATION];
+          f.classifications = [Classification.STRING_ORGANIZATION];
         }
       });
 
