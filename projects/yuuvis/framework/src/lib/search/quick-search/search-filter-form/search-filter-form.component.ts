@@ -1,5 +1,4 @@
-import { DOCUMENT } from '@angular/common';
-import { Component, ElementRef, EventEmitter, Inject, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { ObjectTypeField, RangeValue, SearchFilter, SearchFilterGroup, SearchQuery, SystemService } from '@yuuvis/core';
 import { Subject, Subscription } from 'rxjs';
@@ -56,12 +55,7 @@ export class SearchFilterFormComponent implements OnInit, OnDestroy {
   @Output() controlRemoved = new EventEmitter<string>();
   @Output() valid = new EventEmitter<boolean>();
 
-  constructor(
-    private systemService: SystemService,
-    private fb: FormBuilder,
-    @Inject(DOCUMENT) private document: Document,
-    private iconRegistry: IconRegistryService
-  ) {
+  constructor(private systemService: SystemService, private fb: FormBuilder, private iconRegistry: IconRegistryService) {
     this.dragMovedSubject.pipe(debounceTime(50)).subscribe((event) => this.dragMoved(event));
     this.iconRegistry.registerIcons([dragHandle, clear]);
   }
@@ -201,7 +195,7 @@ export class SearchFilterFormComponent implements OnInit, OnDestroy {
 
   // @debounce(50)
   dragMoved(event) {
-    let e = this.document.elementFromPoint(event.pointerPosition.x, event.pointerPosition.y);
+    let e = window.document.elementFromPoint(event.pointerPosition.x, event.pointerPosition.y);
 
     if (!e) {
       this.clearDragInfo();
@@ -269,15 +263,15 @@ export class SearchFilterFormComponent implements OnInit, OnDestroy {
   showDragInfo() {
     this.clearDragInfo();
     if (this.dropActionTodo) {
-      this.document.getElementById('node-' + this.dropActionTodo.targetId).classList.add('drop-' + this.dropActionTodo.action);
+      window.document.getElementById('node-' + this.dropActionTodo.targetId).classList.add('drop-' + this.dropActionTodo.action);
     }
   }
   clearDragInfo(dropped = false) {
     if (dropped) {
       this.dropActionTodo = null;
     }
-    this.document.querySelectorAll('.drop-before').forEach((element) => element.classList.remove('drop-before'));
-    this.document.querySelectorAll('.drop-after').forEach((element) => element.classList.remove('drop-after'));
-    this.document.querySelectorAll('.drop-inside').forEach((element) => element.classList.remove('drop-inside'));
+    window.document.querySelectorAll('.drop-before').forEach((element) => element.classList.remove('drop-before'));
+    window.document.querySelectorAll('.drop-after').forEach((element) => element.classList.remove('drop-after'));
+    window.document.querySelectorAll('.drop-inside').forEach((element) => element.classList.remove('drop-inside'));
   }
 }
