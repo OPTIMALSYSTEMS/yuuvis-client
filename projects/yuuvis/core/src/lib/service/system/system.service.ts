@@ -201,8 +201,23 @@ export class SystemService {
     }
   }
 
+  /**
+   * Checks whether or not the given object type is an Advanced Filing Object (AFO). These types have a special kind of
+   * create lifecycle and may be treated in a different way.
+   *
+   * AFOs are object types that require a content stream and have a classification of 'appClient:dlm'. The object type itself
+   * has no mandatory properties, so the content can be uploaded without having to apply some indexdata.
+   *
+   * AFOs have at least one Secondary Object Type (SOT) that could be applied later on.
+   *
+   * @param objectType Object type to be checked
+   */
   isAFOType(objectType: ObjectType): boolean {
-    return Array.isArray(objectType.classification) && objectType.classification.includes(ObjectTypeClassification.ADVANCED_FILING_OBJECT);
+    return (
+      objectType.contentStreamAllowed === ContentStreamAllowed.REQUIRED &&
+      Array.isArray(objectType.classification) &&
+      objectType.classification.includes(ObjectTypeClassification.ADVANCED_FILING_OBJECT)
+    );
   }
 
   getLocalizedResource(key: string): string {
