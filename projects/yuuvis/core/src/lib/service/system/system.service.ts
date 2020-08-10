@@ -283,7 +283,7 @@ export class SystemService {
    * @typeProperty the property on the field input that represents its type
    */
   getInternalFormElementType(field: SchemaResponseFieldDefinition, typeProperty: string): string {
-    const classifications = this.getClassifications(field?.classification);
+    const classifications = this.getClassifications(field?.classifications);
 
     if (field[typeProperty] === 'string' && classifications.has(Classification.STRING_REFERENCE)) {
       return InternalFieldType.STRING_REFERENCE;
