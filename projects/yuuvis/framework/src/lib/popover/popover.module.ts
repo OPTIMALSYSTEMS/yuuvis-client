@@ -5,6 +5,10 @@ import { NgModule } from '@angular/core';
 import { YuvCommonModule } from '../common/common.module';
 import { PopoverComponent } from './popover/popover.component';
 
+/**
+ * Use this module to inject a `PopoverService`.
+ */
+
 // based upon https://stackblitz.com/edit/cdk-popover-example-p1
 @NgModule({
   declarations: [PopoverComponent],

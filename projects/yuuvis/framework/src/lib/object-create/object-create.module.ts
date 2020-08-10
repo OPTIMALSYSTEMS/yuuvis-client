@@ -12,6 +12,9 @@ import { YuvGroupedSelectModule } from '../grouped-select/grouped-select.module'
 import { YuvObjectFormModule } from '../object-form/object-form.module';
 import { ObjectCreateComponent } from './object-create/object-create.component';
 
+/**
+ * Module providing `ObjectCreateComponent`
+ */
 @NgModule({
   declarations: [ObjectCreateComponent],
   exports: [ObjectCreateComponent],

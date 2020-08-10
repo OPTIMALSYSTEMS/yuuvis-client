@@ -29,6 +29,10 @@ export class OfflineDisabledDirective implements AfterViewInit, OnDestroy {
    */
   @Input() yuvOfflineDisabled = '';
 
+  /**
+   *
+   * @ignore
+   */
   constructor(private element: ElementRef, private connectionService: ConnectionService) {}
 
   ngAfterViewInit() {

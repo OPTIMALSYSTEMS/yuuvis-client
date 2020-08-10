@@ -22,6 +22,8 @@ import { Situation } from './../object-form.situation';
  * the their situation. It also has the ability to run form scripts that interact
  * with the form elements based on events triggered when values change.
  *
+ *  [Screenshot](../assets/images/yuv-object-form.gif)
+ *
  * @example
  * <yuv-object-form [formOptions]="options" (statusChanged)="check($event)"></yuv-object-form>
  */
@@ -49,9 +51,14 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
     this.init();
   }
 
-  // triggered when the forms state has been changed
+  /**
+   * triggered when the forms state has been changed
+   */
   @Output() statusChanged = new EventEmitter<FormStatusChangedEvent>();
-  // handler to be executed after the form has been set up
+
+  /**
+   * handler to be executed after the form has been set up
+   */
   @Output() onFormReady = new EventEmitter();
 
   // counter for naming the forms groups

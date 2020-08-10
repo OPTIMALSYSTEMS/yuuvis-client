@@ -42,6 +42,13 @@ import { QuickSearchPickerData } from './quick-search-picker/quick-search-picker
  *
  * Adding a class of `inline` to the component will apply a different layout more suitable
  * for embedding the component somwhere else.
+ *
+ * [Screenshot](../assets/images/yuv-quick-search.gif)
+ * 
+ * @example
+ * <yuv-quick-search #quickSearch [query]="query" (typeAggregation)="onTypeAggregation($event)"
+    (querySubmit)="onSubmit($event)"></yuv-quick-search>
+ *
  */
 @Component({
   selector: 'yuv-quick-search',
@@ -616,8 +623,20 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
   ngOnInit() {}
 }
 
+/**
+ * Interface providing a `QuickSearchComponent`
+ */
 export interface ObjectTypeAggregation {
+  /**
+   * id of a found object type
+   */
   objectTypeId: string;
+  /**
+   * label of an object
+   */
   label: string;
+  /**
+   * number of objects found
+   */
   count: number;
 }

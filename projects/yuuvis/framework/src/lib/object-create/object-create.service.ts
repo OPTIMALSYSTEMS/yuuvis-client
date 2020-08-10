@@ -4,6 +4,9 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { scan } from 'rxjs/operators';
 import { Breadcrumb, CreateState, CurrentStep } from './object-create.interface';
 
+/**
+ * @ignore
+ */
 @Injectable()
 export class ObjectCreateService {
   private state = new BehaviorSubject<CreateState>(this.defaultState);

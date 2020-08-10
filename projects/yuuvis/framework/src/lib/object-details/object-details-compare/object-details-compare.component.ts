@@ -5,6 +5,11 @@ import { ObjectCompareInput } from './object-details-compare.interface';
 
 /**
  * Component comparing two dms objects.
+ *
+ * [Screenshot](../assets/images/yuv-object-details-compare.gif)
+ *
+ * @example
+ *   <yuv-object-details-compare [objectCompareInput]="compare" [layoutOptionsKey]="layoutOptionsKey + '.changes'"></yuv-object-details-compare>
  */
 @Component({
   selector: 'yuv-object-details-compare',

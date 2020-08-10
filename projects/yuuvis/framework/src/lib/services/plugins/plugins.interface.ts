@@ -2,15 +2,19 @@ import { Router } from '@angular/router';
 import { DmsObject, YuvEvent, YuvUser } from '@yuuvis/core';
 import { Observable } from 'rxjs';
 
+/**
+ * Providing a plugin service and injected into form scripts
+ */
 export interface PluginAPI {
   router: {
     get(): Router;
   };
+
+  /**
+   * Listen to a certain type of yuuvis event ({@link YuvEventType})
+   *
+   */
   events: {
-    /**
-     * Listen to a certain type of yuuvis event ({@link YuvEventType})
-     * @param type Key of the event to listen to
-     */
     on(type: string): Observable<YuvEvent>;
     /**
      * Trigger a certain type of yuuvis event ({@link YuvEventType})
@@ -19,18 +23,18 @@ export interface PluginAPI {
      */
     trigger(type: string, data?: any): void;
   };
+  /**
+   * Get the user that is currently logged in
+   */
   session: {
-    /**
-     * Get the user that is currently logged in
-     */
     getUser(): YuvUser;
   };
+  /**
+   * Fetches a dms object
+   *
+   *
+   */
   dms: {
-    /**
-     * Fetches a dms object
-     * @param id ID of the dms object
-     * @param version Version of the object
-     */
     getObject(id: string, version?: number): Promise<DmsObject>;
     /**
      * Fetches dms objects from the backend that match the given params
@@ -44,6 +48,9 @@ export interface PluginAPI {
      */
     downloadContent(dmsObjects: DmsObject[]): void;
   };
+  /**
+   * Execute a GET request against yuuvis backend
+   */
   http: {
     /**
      * Execute a GET request against yuuvis backend
@@ -72,6 +79,9 @@ export interface PluginAPI {
      */
     put(uri: string, data: any, base?: string): any;
   };
+  /**
+   * Encode a filename safe for sending chars beyond ASCII-7bit using quoted printable encoding.
+   */
   util: {
     /**
      * Encode a filename safe for sending chars beyond ASCII-7bit using quoted printable encoding.

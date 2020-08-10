@@ -25,17 +25,6 @@ import { ErrorHandlerService } from './services/error-handler/error-handler.serv
 import { YuvUserModule } from './user/user.module';
 import { YuvVersionsModule } from './versions/versions.module';
 
-/**
- * `YuvFrameworkModule` provides a set of UI components to be used
- * when creating yuuvis client applications.
- * `YuvCoreModule` is also part of this library, so the provided components
- * are able to communicate with the Yuuyis backend services. So if you import
- * `YuvFrameworkModule` you don't need to import either one of those modeules.
- * Other third-party modules that are used and re-exported as well:
- * - [AngularSplitModule](https://github.com/bertrandg/angular-split)
- * - PrimeNG [OverlayPanelModule](https://www.primefaces.org/primeng/#/overlaypanel)
- */
-
 const modules = [
   YuvGroupedSelectModule,
   YuvFormModule,
@@ -54,6 +43,17 @@ const modules = [
   YuvActionModule,
   YuvCoreSharedModule
 ];
+
+/**
+ * `YuvFrameworkModule` provides a set of UI components to be used
+ * when creating yuuvis client applications.
+ * `YuvCoreModule` is also part of this library, so the provided components
+ * are able to communicate with the Yuuyis backend services. So if you import
+ * `YuvFrameworkModule` you don't need to import either one of those modeules.
+ * Other third-party modules that are used and re-exported as well:
+ * - [AngularSplitModule](https://github.com/bertrandg/angular-split)
+ * - PrimeNG [OverlayPanelModule](https://www.primefaces.org/primeng/#/overlaypanel)
+ */
 
 @NgModule({
   imports: [CommonModule, BrowserAnimationsModule, ...modules, AngularSplitModule.forRoot(), YuvCoreModule.forRoot(), ToastrModule.forRoot()],

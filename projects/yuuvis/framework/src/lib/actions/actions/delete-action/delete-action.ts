@@ -7,6 +7,10 @@ import { ComponentAction } from '../../interfaces/action.interface';
 import { SelectionRange } from '../../selection-range.enum';
 import { DeleteComponent } from './delete/delete.component';
 
+/**
+ * @ignore
+ */
+
 @Component({
   selector: 'yuv-delete-action',
   template: ``

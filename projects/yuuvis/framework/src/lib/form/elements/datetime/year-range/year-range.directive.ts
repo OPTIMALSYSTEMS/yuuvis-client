@@ -1,5 +1,8 @@
 import { Directive, HostListener, Input } from '@angular/core';
 
+/**
+ * @ignore
+ */
 @Directive({
   selector: '[yuvYearRange]'
 })
@@ -29,6 +32,8 @@ export class YearRangeDirective {
   get selectedYear() {
     return this._selectedYear;
   }
-
+  /**
+   * @ignore
+   */
   constructor() {}
 }

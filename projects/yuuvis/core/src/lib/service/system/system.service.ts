@@ -247,7 +247,7 @@ export class SystemService {
       const orgTypeFields = [BaseObjectTypeField.MODIFIED_BY, BaseObjectTypeField.CREATED_BY];
       ot.fields.forEach((f) => {
         if (orgTypeFields.includes(f.id)) {
-          f.classification = [Classification.STRING_ORGANIZATION];
+          f.classifications = [Classification.STRING_ORGANIZATION];
         }
       });
 
@@ -283,7 +283,7 @@ export class SystemService {
    * @typeProperty the property on the field input that represents its type
    */
   getInternalFormElementType(field: SchemaResponseFieldDefinition, typeProperty: string): string {
-    const classifications = this.getClassifications(field?.classification);
+    const classifications = this.getClassifications(field?.classifications);
 
     if (field[typeProperty] === 'string' && classifications.has(Classification.STRING_REFERENCE)) {
       return InternalFieldType.STRING_REFERENCE;

@@ -10,6 +10,9 @@ import { YuvSearchModule } from '../search/search.module';
 import { YuvPipesModule } from './../pipes/pipes.module';
 import { ContextComponent } from './context/context.component';
 
+/**
+ * `YuvContextModule` contains component for rendering a context and its contents.
+ */
 @NgModule({
   declarations: [ContextComponent],
   exports: [ContextComponent],

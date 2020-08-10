@@ -5,18 +5,18 @@ import { forkJoin as observableForkJoin, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { ObjectFormScriptingScope } from './object-form-scripting-scope';
 
-export const moment = date => {
+export const moment = (date) => {
   const d = date ? new Date(date.toDate ? date.toDate() : date) : new Date();
   return {
     set(unit, value) {
       return unit && d['set' + unit[0].toUpperCase() + unit.slice(1)] ? d['set' + unit[0].toUpperCase() + unit.slice(1)](value) && this : null;
     },
-    get: unit => (unit && d['get' + unit[0].toUpperCase() + unit.slice(1)] ? d['get' + unit[0].toUpperCase() + unit.slice(1)]() : null),
+    get: (unit) => (unit && d['get' + unit[0].toUpperCase() + unit.slice(1)] ? d['get' + unit[0].toUpperCase() + unit.slice(1)]() : null),
     toDate: () => d,
     toISOString: () => d.toISOString(),
     isValid: () => !isNaN(d.getTime()),
-    isSame: dd => d === dd,
-    isBefore: dd => d < dd,
+    isSame: (dd) => d === dd,
+    isBefore: (dd) => d < dd,
     isBetween: (dd, ddd) => dd < d && d < ddd,
     startOf(unit) {
       switch (unit) {
@@ -51,10 +51,10 @@ export const moment = date => {
 };
 
 export const lodash = {
-  clone: object => JSON.parse(JSON.stringify(object)),
+  clone: (object) => JSON.parse(JSON.stringify(object)),
   get: (object, key) => (typeof key === 'string' ? key.split('.') : key || []).reduce((o, k) => (o || {})[k], object),
   sortBy(array, predicate, reverseOrder) {
-    const cb = typeof predicate === 'function' ? predicate : o => (predicate ? this.get(o, predicate) : o);
+    const cb = typeof predicate === 'function' ? predicate : (o) => (predicate ? this.get(o, predicate) : o);
     return array.sort((a: any, b: any) => {
       let comparison: number;
       const varA = cb(a);
@@ -70,7 +70,7 @@ export const lodash = {
     });
   },
   uniqBy(array, predicate) {
-    const cb = typeof predicate === 'function' ? predicate : o => (predicate ? this.get(o, predicate) : o);
+    const cb = typeof predicate === 'function' ? predicate : (o) => (predicate ? this.get(o, predicate) : o);
     return [
       ...array
         .reduce((m, item) => {
@@ -92,6 +92,9 @@ export const lodash = {
   )
 };
 
+/**
+ * @ignore
+ */
 @Injectable()
 export class ObjectFormScriptService {
   constructor(private logger: Logger, private backend: BackendService) {}
@@ -158,7 +161,7 @@ export class ObjectFormScriptService {
         globals.push(this.resolveGlobalScript(use, scope));
       }
 
-      observableForkJoin(globals).subscribe(globalReturns => {
+      observableForkJoin(globals).subscribe((globalReturns) => {
         for (let scriptReturn of globalReturns) {
           exports.push(scriptReturn['exports']);
         }

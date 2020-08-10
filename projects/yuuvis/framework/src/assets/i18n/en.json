@@ -157,7 +157,7 @@
 	"yuv.framework.search-result-panel.header.description.types": "Search for '{{term}}' in {{types}}",
 	"yuv.framework.search-result-panel.header.title": "Search result",
 	"yuv.framework.search-result.empty": "No hits",
-	"yuv.framework.search-result.filter.panel.title": "Filter",
+	"yuv.framework.search-result.filter.panel.title": "Filters",
 	"yuv.framework.search-result.footer.config.mode.default": "Table",
 	"yuv.framework.search-result.footer.config.mode.grid": "Gallery",
 	"yuv.framework.search-result.footer.config.mode.horizontal": "List",

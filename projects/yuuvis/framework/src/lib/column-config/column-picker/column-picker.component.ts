@@ -1,6 +1,8 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Selectable, SelectableGroup } from '../../grouped-select';
-
+/**
+ * @ignore
+ */
 @Component({
   selector: 'yuv-column-picker',
   templateUrl: './column-picker.component.html',

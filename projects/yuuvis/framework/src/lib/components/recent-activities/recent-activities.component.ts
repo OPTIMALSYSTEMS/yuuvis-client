@@ -23,10 +23,16 @@ import { catchError, tap } from 'rxjs/operators';
  *
  * There are some css classes that affect the look and feel of the component.
  * `<yuv-recent-activities class="transparent">` Transparent background
- * `<yuv-recent-activities class="flipped">` Flip controls to be on the bottom instaed of on the top
+ * `<yuv-recent-activities class="flipped">` Flip controls to be on the bottom instaed of on the top.
  *
  * If the component has an `id` attribute, the state of the component will be persisted. So make sure
  * to set up unique ids if you are using this component on more than one place within your application.
+ * 
+ * [Screenshot](../assets/images/yuv-recent-activities.gif)
+ * 
+ * @example
+ *  <yuv-recent-activities id="some-id" (itemClick)="onItemClicked($event)" (showAll)="onShowAll($event)">
+  </yuv-recent-activities>
  */
 @Component({
   selector: 'yuv-recent-activities',
@@ -84,7 +90,7 @@ export class RecentActivitiesComponent implements OnInit {
     private searchService: SearchService
   ) {
     if (this.id) {
-      this.appCache.getItem(`${this.cacheKeyBase}.${this.id}`).subscribe(res => {
+      this.appCache.getItem(`${this.cacheKeyBase}.${this.id}`).subscribe((res) => {
         if (res && res.selected) {
           this.selected = res.selected;
         }
@@ -98,7 +104,7 @@ export class RecentActivitiesComponent implements OnInit {
     this.createdQuery.sortOptions = [new SortOption(BaseObjectTypeField.CREATION_DATE, 'desc')];
     this.createdQuery.size = this.size;
     this.fetchItems(this.createdQuery).subscribe((res: SearchResult) => {
-      this.recentlyCreated = res.items.map(i => this.toRecentItem(i, i.fields.get(BaseObjectTypeField.CREATION_DATE)));
+      this.recentlyCreated = res.items.map((i) => this.toRecentItem(i, i.fields.get(BaseObjectTypeField.CREATION_DATE)));
     });
   }
   private getModified(userId: string) {
@@ -107,7 +113,7 @@ export class RecentActivitiesComponent implements OnInit {
     this.modifiedQuery.sortOptions = [new SortOption(BaseObjectTypeField.MODIFICATION_DATE, 'desc')];
     this.modifiedQuery.size = this.size;
     this.fetchItems(this.modifiedQuery).subscribe((res: SearchResult) => {
-      this.recentlyModified = res.items.map(i => this.toRecentItem(i, i.fields.get(BaseObjectTypeField.MODIFICATION_DATE)));
+      this.recentlyModified = res.items.map((i) => this.toRecentItem(i, i.fields.get(BaseObjectTypeField.MODIFICATION_DATE)));
     });
   }
 
@@ -116,7 +122,7 @@ export class RecentActivitiesComponent implements OnInit {
     this.isLoading = true;
     return this.searchService.search(query).pipe(
       tap(() => (this.isLoading = false)),
-      catchError(e => {
+      catchError((e) => {
         this.fetchError = true;
         return throwError(e);
       })
@@ -194,11 +200,23 @@ export class RecentActivitiesComponent implements OnInit {
     }
   }
 }
-
+/**
+ * Input data for the `RecentActivitiesComponent`
+ */
 export interface RecentActivitiesData {
+  /**
+   * List of objects that have been resently created
+   */
   created: RecentItem[];
+  /**
+   * List of objects that have been resently modified
+   */
   modified: RecentItem[];
 }
+
+/**
+ * Object, that has been resently changed
+ */
 export interface RecentItem {
   title: string;
   description: string;
@@ -206,6 +224,10 @@ export interface RecentItem {
   objectTypeId: string;
   objectTypeIcon: string;
   objectTypeLabel: string;
+  /**
+   * date of object
+   */
   date: Date;
+  /** wether or nor will be opended in a new tab*/
   newTab?: boolean;
 }

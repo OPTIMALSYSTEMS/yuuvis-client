@@ -16,15 +16,32 @@ import { ResponsiveTableData } from './responsive-data-table.interface';
  */
 export type ViewMode = 'standard' | 'horizontal' | 'grid' | 'auto';
 
+/**
+ * Input data for a `ResponsiveDataTableComponent`
+ */
 export interface ResponsiveDataTableOptions {
+  /** View mode type of a data table.
+   * Can be `standard`, `horizontal`, `grid` or `auto`
+   */
   viewMode?: ViewMode;
-  // Object where the properties are the column IDs
-  // and their values are the columns width.
+  /**
+   * Object where the properties are the column IDs
+   * and their values are the columns width.
+   */
+
   columnWidths?: any;
 }
 
 /**
- * Responsive DataTable.
+ * Responsive DataTable to show the search results.
+ * 
+ * [Screenshot](../assets/images/yuv-responsive-data-table.gif)
+ * 
+ * @example
+ *     <yuv-responsive-data-table 
+            [breakpoint]="" [layoutOptionsKey]="layoutOptionsKey" (selectionChanged)="onSelectionChanged($event)"
+            (viewModeChanged)="onViewModeChanged.emit($event)" (sortChanged)="onSortChanged($event)">
+          </yuv-responsive-data-table>
  */
 @Component({
   selector: 'yuv-responsive-data-table',

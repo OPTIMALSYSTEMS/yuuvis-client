@@ -18,7 +18,7 @@ import { Summary, SummaryEntry } from './summary.interface';
  * This component can be used in two different ways:
  *
  * ### Show object summary
- * If you provide a DmsObject instance using the `dmsObject` input, this component reders a summary
+ * If you provide a DmsObject instance using the `dmsObject` input, this component renders a summary
  * for a given `DmsObject`. It will list existing  index data set for the object devided into sections.
  * It also displays information about the attached document file and some technical aspects.
  *

@@ -5,7 +5,9 @@ import { ObjectFormGroup } from './object-form.model';
  * @ignore
  */
 export type ObjectFormModel = ObjectFormGroup | ObjectFormControlWrapper;
-
+/**
+ * Interface for providing components, that render an model based form.
+ */
 export interface ObjectFormOptions {
   /**
    * The form model holding all groups and elements
@@ -39,11 +41,18 @@ export interface ObjectFormOptions {
 
   context?: { id: string; title: string; objectTypeId: string };
 }
-
+/**
+ * Wrapper for a rendering a from group
+ */
 export interface YuvFormGroupWrapper {
-  // form control situation (CREATE, EDIT, SEARCH)
+  /**
+   * form control situation (CREATE, EDIT, SEARCH)
+   */
+  //
   situation: string;
-  // the name of the wrapped form control
+  /**
+   * the name of the wrapped form control
+   */
   controlName: string;
 }
 
@@ -56,26 +65,45 @@ export class ObjectFormControlWrapper extends FormGroup {
   _eoFormControlWrapper: YuvFormGroupWrapper;
 }
 
+/**
+ * Input data for a form group
+ */
 export interface YuvFormGroup {
-  // the label for the form group
+  /**
+   * the label for the form group
+   */
   label?: string;
-  // object holding properties defining layout properties of the group
+  /**
+   * object holding properties defining layout properties of the group
+   */
+  //
   layout: any;
-  // type of group indicating if the form is a stack, a fieldset or a simple group
+  /**
+   * type of group indicating if the form is a stack, a fieldset or a simple group
+   */
   type: string;
-  // object containing the groups child form components
-  // key is the controls name, value the actual form control or -group
-  //controls?: any;
 }
 
-// event data emitted by the statusChanged callback
+/**
+ * event data emitted by the statusChanged callback
+ */
 export interface FormStatusChangedEvent {
-  // flag indicating whether or not the form is invalid
+  /**
+   * flag indicating whether or not the form is invalid
+   *
+   */
   invalid: boolean;
-  // flag indicating whether or not the form has been edited
+  /**
+   * flag indicating whether or not the form has been edited
+   */
   dirty: boolean;
-  // flag indicating whether or not the forms indexdata has been changed
+  /**
+   * flag indicating whether or not the forms indexdata has been changed
+   */
   indexdataChanged: boolean;
-  // the extracted data from the form
+  /**
+   * the extracted data from the form
+   */
+
   data?: any;
 }

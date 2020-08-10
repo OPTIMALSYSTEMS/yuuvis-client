@@ -42,6 +42,11 @@ const components = [
   DmsObjectTileComponent
 ];
 
+/**
+ * `YuvComponentsModule` contains components for creating client's basic design elements such as action menu, responsive panels, dialogs,
+ * upload, tabels, file pickers etc.
+ */
+
 @NgModule({
   declarations: [...components],
   exports: [...components, TabViewModule],

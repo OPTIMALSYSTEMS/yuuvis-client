@@ -7,6 +7,9 @@ import { SelectionRange } from '../../selection-range.enum';
 import { ComponentAction } from './../../interfaces/action.interface';
 import { MoveComponent } from './move/move.component';
 
+/**
+ * @ignore
+ */
 @Component({
   selector: 'yuv-move-action',
   template: ``

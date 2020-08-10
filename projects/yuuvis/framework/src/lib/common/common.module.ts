@@ -11,6 +11,10 @@ import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { FocusWithinDirective } from './directives/focus-within.directive';
 import { RouterLinkDirective } from './directives/router-link.directive';
 
+/**
+ * `YuvCommonModule` is a shared module containing components that are (re)used by other modules of the framework.
+ * It for example contains the `yuv-icon` component, responsible for rendering SVG-Icons.
+ */
 @NgModule({
   imports: [CommonModule, HttpClientModule, AccordionModule, SidebarModule],
   declarations: [IconComponent, FocusWithinDirective, SidebarComponent, EmptyComponent, RouterLinkDirective],

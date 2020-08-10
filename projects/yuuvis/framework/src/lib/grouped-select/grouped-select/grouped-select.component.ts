@@ -20,7 +20,7 @@ import { Selectable, SelectableGroup, SelectableInternal } from './grouped-selec
 import { SelectableItemComponent } from './selectable-item/selectable-item.component';
 
 /**
- * Component for selecting a single or multiple entries from a set of grouped items. This component is implementing '**ControlValueAccessor**' so you can
+ * Component for selecting a single or multiple entries from a set of grouped items. This component is implementing `ControlValueAccessor` so you can
  * also use it within Angular forms.
  *
  * > Setting the components **multiple** input to **true** will enable the selection of more than one item.
@@ -29,7 +29,7 @@ import { SelectableItemComponent } from './selectable-item/selectable-item.compo
  * > Clicking the label of an item will immediately reset the selection to the
  * > current item only. Hitting ENTER will also immediately select one item as long as there are no other items selected.
  *
- * ### other properties
+ * ### Other properties
  * **enableSelectAll** - When set to true, clicking of the groups title will select all group items (multiple only)
  * **autofocus** - When set to true, the first item of the first group will be focused immediately
  * **singleGroup** - When set to true, styles are applied to render the component for one group only *

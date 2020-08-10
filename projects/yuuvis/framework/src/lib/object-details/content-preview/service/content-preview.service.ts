@@ -4,6 +4,10 @@ import { ApiBase, DmsObjectContent, UserService, Utils } from '@yuuvis/core';
 import { Observable, ReplaySubject } from 'rxjs';
 import { LayoutService } from '../../../services/layout/layout.service';
 
+/**
+ * @ignore
+ * Providing a content preview for a dms object.
+ */
 @Injectable()
 export class ContentPreviewService {
   static UNDOCK_WINDOW_NAME = 'eoViewer';
@@ -31,6 +35,10 @@ export class ContentPreviewService {
     return !!ContentPreviewService.getUndockWin() && !ContentPreviewService.getUndockWin().closed;
   }
 
+  /**
+   *
+   * @ignore
+   */
   constructor(private location: PlatformLocation, private userService: UserService, private layoutService: LayoutService) {}
 
   private createPath(id: string, version?: number): { root: string; path: string } {
