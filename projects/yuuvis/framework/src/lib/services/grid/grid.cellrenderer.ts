@@ -1,4 +1,4 @@
-import { Utils } from '@yuuvis/core';
+import { SearchFilter, SearchQuery, Utils } from '@yuuvis/core';
 
 /**
  * @ignore
@@ -96,16 +96,15 @@ export class CellRenderer {
     let val = '';
     if (param.value) {
       (Array.isArray(param.value) ? param.value : [param.value]).forEach((value) => {
-        const query = {
-          types: [param.reference.type],
-          filters: {}
-        };
-        query.filters[param.reference.element] = {
-          o: 'eq',
-          v1: value
-        };
         const link = Utils.buildUri('result', {
-          query: encodeURIComponent(JSON.stringify(query))
+          query: encodeURIComponent(
+            JSON.stringify(
+              new SearchQuery({
+                types: [param.reference.type],
+                filters: [new SearchFilter(param.reference.element, SearchFilter.OPERATOR.EQUAL, value).toQuery()]
+              }).toQueryJson()
+            )
+          )
         });
         val += `<div class="chip">
             <a class="link router-link" href="${link}" target="_blank" onclick="return false;">

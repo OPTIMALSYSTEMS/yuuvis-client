@@ -1,13 +1,17 @@
-import { Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
+import { Component, ElementRef, EventEmitter, Inject, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { ObjectTypeField, RangeValue, SearchFilter, SearchQuery, SystemService } from '@yuuvis/core';
-import { Subscription } from 'rxjs';
+import { ObjectTypeField, RangeValue, SearchFilter, SearchFilterGroup, SearchQuery, SystemService } from '@yuuvis/core';
+import { Subject, Subscription } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { Selectable } from '../../../grouped-select';
 import { ObjectFormControl } from '../../../object-form/object-form.model';
 import { Situation } from '../../../object-form/object-form.situation';
 import { ObjectFormUtils } from '../../../object-form/object-form.utils';
+import { IconRegistryService } from './../../../common/components/icon/service/iconRegistry.service';
 import { ObjectFormControlWrapper } from './../../../object-form/object-form.interface';
+import { clear, dragHandle } from './../../../svg.generated';
 
 @Component({
   selector: 'yuv-search-filter-form',
@@ -16,6 +20,14 @@ import { ObjectFormControlWrapper } from './../../../object-form/object-form.int
 })
 export class SearchFilterFormComponent implements OnInit, OnDestroy {
   @ViewChild('extrasForm') extrasForm: ElementRef;
+
+  filterGroup: SearchFilterGroup;
+  dropTargetIds: string[];
+  dropActionTodo: {
+    targetId: string;
+    action?: string;
+  } = null;
+  dragMovedSubject = new Subject();
 
   searchFieldsForm: FormGroup;
   formFields = [];
@@ -27,14 +39,16 @@ export class SearchFilterFormComponent implements OnInit, OnDestroy {
 
   @Input() disabled = false;
 
-  @Input() set options(opts: { filter: Selectable; activeFilters: SearchFilter[]; availableObjectTypeFields: Selectable[] }) {
+  @Input() set options(opts: { filter: Selectable; activeFilters: (SearchFilter | SearchFilterGroup)[]; availableObjectTypeFields: Selectable[] }) {
     if (opts) {
       const { filter, activeFilters, availableObjectTypeFields } = opts;
       this.filterQuery = new SearchQuery();
       this.filter = { ...filter };
+      this.filterGroup = new SearchFilterGroup('main', undefined, [...activeFilters]);
+      this.dropTargetIds = [this.filterGroup.id, ...this.filterGroup.groups.map((g) => g.id), ...this.filterGroup.filters.map((f) => f.id)];
       this.availableObjectTypeFields = availableObjectTypeFields;
       const sf: SearchFilter[] = filter ? filter.value : [];
-      this.updateSearchFields((activeFilters || []).map((f) => sf.find((s) => s.property === f.property) || f));
+      this.updateSearchFields((this.filterGroup.filters || []).map((f) => sf.find((s) => s.property === f.property) || f));
     }
   }
 
@@ -42,7 +56,15 @@ export class SearchFilterFormComponent implements OnInit, OnDestroy {
   @Output() controlRemoved = new EventEmitter<string>();
   @Output() valid = new EventEmitter<boolean>();
 
-  constructor(private systemService: SystemService, private fb: FormBuilder) {}
+  constructor(
+    private systemService: SystemService,
+    private fb: FormBuilder,
+    @Inject(DOCUMENT) private document: Document,
+    private iconRegistry: IconRegistryService
+  ) {
+    this.dragMovedSubject.pipe(debounceTime(50)).subscribe((event) => this.dragMoved(event));
+    this.iconRegistry.registerIcons([dragHandle, clear]);
+  }
 
   private initSearchFieldsForm() {
     // object type field form (form holding the query fields)
@@ -116,6 +138,10 @@ export class SearchFilterFormComponent implements OnInit, OnDestroy {
     }
   }
 
+  // drop(event: CdkDragDrop<string[]>) {
+  //   moveItemInArray(this.formFields, event.previousIndex, event.currentIndex);
+  // }
+
   /**
    * Adds a new form field to the query
    * @param field The object type field to be added
@@ -172,4 +198,86 @@ export class SearchFilterFormComponent implements OnInit, OnDestroy {
   ngOnInit() {}
 
   ngOnDestroy() {}
+
+  // @debounce(50)
+  dragMoved(event) {
+    let e = this.document.elementFromPoint(event.pointerPosition.x, event.pointerPosition.y);
+
+    if (!e) {
+      this.clearDragInfo();
+      return;
+    }
+    let container = e.classList.contains('node-item') ? e : e.closest('.node-item');
+    if (!container) {
+      this.clearDragInfo();
+      return;
+    }
+    this.dropActionTodo = {
+      targetId: container.getAttribute('data-id')
+    };
+    const targetRect = container.getBoundingClientRect();
+    const oneThird = targetRect.height / 3;
+
+    if (event.pointerPosition.y - targetRect.top < oneThird) {
+      // before
+      this.dropActionTodo['action'] = 'before';
+    } else if (event.pointerPosition.y - targetRect.top > 2 * oneThird) {
+      // after
+      this.dropActionTodo['action'] = 'after';
+    } else {
+      // inside
+      this.dropActionTodo['action'] = 'inside';
+    }
+    this.showDragInfo();
+  }
+
+  drop(event) {
+    if (!this.dropActionTodo) return;
+
+    const draggedItemId = event.item.data;
+    const parentItem = this.filterGroup.find(event.previousContainer.id);
+    const targetList = this.filterGroup.findParent(this.dropActionTodo.targetId) || this.filterGroup;
+
+    console.log(
+      '\nmoving\n[' + draggedItemId + '] from list [' + parentItem.id + ']',
+      '\n[' + this.dropActionTodo.action + ']\n[' + this.dropActionTodo.targetId + '] from list [' + targetList.id + ']'
+    );
+
+    const draggedItem = this.filterGroup.find(draggedItemId);
+
+    parentItem.group = parentItem.group.filter((c) => c.id !== draggedItemId);
+    const newContainer = targetList.group;
+    if (this.dropActionTodo.action.match(/before|after/)) {
+      const targetIndex = newContainer.findIndex((c) => c.id === this.dropActionTodo.targetId);
+      newContainer.splice(targetIndex + (this.dropActionTodo.action === 'before' ? 0 : 1), 0, draggedItem);
+    } else {
+      const target = this.filterGroup.find(this.dropActionTodo.targetId);
+      if (target.group) {
+        target.group.push(draggedItem);
+      } else {
+        targetList.group = targetList.group.map((g) =>
+          g.id === target.id ? new SearchFilterGroup(target.property + '_' + draggedItem.property, 'OR', [target, draggedItem]) : g
+        );
+      }
+    }
+
+    this.filterGroup = SearchFilterGroup.fromQuery(this.filterGroup.toQuery());
+
+    this.clearDragInfo(true);
+  }
+
+  showDragInfo() {
+    this.clearDragInfo();
+    if (this.dropActionTodo) {
+      this.document.getElementById('node-' + this.dropActionTodo.targetId).classList.add('drop-' + this.dropActionTodo.action);
+    }
+  }
+  clearDragInfo(dropped = false) {
+    if (dropped) {
+      this.dropActionTodo = null;
+    }
+    this.document.querySelectorAll('.drop-before').forEach((element) => element.classList.remove('drop-before'));
+    this.document.querySelectorAll('.drop-after').forEach((element) => element.classList.remove('drop-after'));
+    this.document.querySelectorAll('.drop-inside').forEach((element) => element.classList.remove('drop-inside'));
+  }
 }

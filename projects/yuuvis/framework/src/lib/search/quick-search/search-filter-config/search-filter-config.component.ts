@@ -1,5 +1,5 @@
 import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
-import { SearchFilter, SearchQuery, TranslateService, Utils } from '@yuuvis/core';
+import { SearchFilter, SearchFilterGroup, SearchQuery, TranslateService, Utils } from '@yuuvis/core';
 import { forkJoin } from 'rxjs';
 import { IconRegistryService } from '../../../common/components/icon/service/iconRegistry.service';
 import { Selectable } from '../../../grouped-select';
@@ -97,12 +97,12 @@ export class SearchFilterConfigComponent implements OnInit {
     return filter && filter.id && !(filter.value && filter.value.length);
   }
 
-  createNew(filters: SearchFilter[] = []) {
+  createNew(value: (SearchFilter | SearchFilterGroup)[] = []) {
     this.onFilterSelect({
       id: Utils.uuid(),
       label: '',
       highlight: true,
-      value: [...filters]
+      value: [...value]
     });
   }
 
@@ -118,7 +118,7 @@ export class SearchFilterConfigComponent implements OnInit {
         id: this.CREATE_NEW_ID + '#active',
         svg: addCircle.data,
         label: `${this.translate.instant('yuv.framework.search.filter.create.new')} (${this.translate.instant('yuv.framework.search.filter.from.active')})`,
-        value: [...this.query.filters]
+        value: [this.query.filterGroup]
       },
       ...this.storedFilters.filter((f) => this.isVisible(f) && f.highlight)
     ].filter((f) => f);
