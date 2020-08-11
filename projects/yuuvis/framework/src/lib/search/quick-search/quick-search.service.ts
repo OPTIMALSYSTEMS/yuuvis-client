@@ -149,17 +149,22 @@ export class QuickSearchService {
   }
 
   getActiveFilters(query: SearchQuery, filters: Selectable[], availableObjectTypeFields: Selectable[]) {
-    // todo: resolve multiFilters
-    // todo: resolve custom filter label
-    return query.filters
-      .filter((f) => !this.skipFields.includes(f.property))
-      .map((f) => {
+    return (query.filterGroup.operator === SearchFilterGroup.OPERATOR.AND ? query.filterGroup.group : [query.filterGroup])
+      .reduce((prev, cur) => {
+        const g = SearchFilterGroup.fromArray([cur]);
+        // spread groups that have filters with same property
+        return [...prev, ...(g.group.every((f) => f.property === g.filters[0].property) ? g.group.map((f) => SearchFilterGroup.fromArray([f])) : [g])];
+      }, [])
+      .filter((g) => !g.filters.find((f) => this.skipFields.includes(f.property)))
+      .map((g) => {
         return (
-          filters.find((sf) => sf.value[0].toString() === f.toString()) || {
-            id: f.property + '#' + Utils.uuid(),
+          filters.find((sf) => SearchFilterGroup.fromArray(sf.value).toString() === g.toString()) || {
+            id: '#' + Utils.uuid(),
             highlight: true,
-            label: `* ${availableObjectTypeFields.find((s) => s.id === f.property).label} *`,
-            value: [f]
+            label: `* ${g.filters
+              .map((f) => availableObjectTypeFields.find((s) => s.id === f.property).label)
+              .join(` ${SearchFilterGroup.OPERATOR_LABEL[g.operator]} `)} *`,
+            value: [g]
           }
         );
       });
