@@ -225,7 +225,7 @@ export class SearchFilterComponent implements OnInit {
         q.addFilterGroup(g);
       }
     });
-    this.filterQuery.filterGroup = q.filterGroup;
+    this.filterQuery.filterGroup = SearchFilterGroup.fromQuery(q.filterGroup.toShortQuery());
     console.log(this.filterQuery.toQueryJson());
 
     this.filterChange.emit(this.filterQuery);
