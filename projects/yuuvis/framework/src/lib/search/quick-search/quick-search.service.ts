@@ -8,6 +8,7 @@ import {
   ObjectType,
   ObjectTypeGroup,
   SearchFilter,
+  SearchFilterGroup,
   SearchQuery,
   SearchService,
   SystemService,
@@ -180,7 +181,7 @@ export class QuickSearchService {
     return (store || this.userService.getSettings(this.STORAGE_KEY_FILTERS)).pipe(
       // return (store || this.appCacheService.getItem(this.STORAGE_KEY_FILTERS)).pipe(
       tap((f) => (this.filters = f || {})),
-      map(() => Object.values(this.filters).map((s: any) => ({ ...s, value: s.value.map((v) => this.parseSearchFilter(v)) })))
+      map(() => Object.values(this.filters).map((s: any) => ({ ...s, value: [SearchFilterGroup.fromQuery(JSON.parse(s.value))] })))
     );
   }
 
@@ -192,15 +193,9 @@ export class QuickSearchService {
   }
 
   private isMatching(v: Selectable, available: string[]) {
-    // todo: support partially matching ???
-    const properties = v.value.map((v) => v.property);
+    // TODO: support partially matching ???
+    const properties = SearchFilterGroup.fromArray(v.value).filters.map((v) => v.property);
     return properties.every((p) => available.includes(p));
-  }
-
-  private parseSearchFilter(filter: string): any {
-    const qFilter = JSON.parse(filter);
-    const { op, v, v2 } = Object.values(qFilter)[0] as any;
-    return new SearchFilter(Object.keys(qFilter)[0], op, v, v2);
   }
 
   saveLastFilters(ids: string[]) {
@@ -224,7 +219,7 @@ export class QuickSearchService {
   }
 
   saveFilter(item: Selectable) {
-    this.filters[item.id] = { ...item, value: item.value.map((v) => v.toString()) };
+    this.filters[item.id] = { ...item, value: SearchFilterGroup.fromArray(item.value).toShortString() };
     return this.saveFilters();
   }
 

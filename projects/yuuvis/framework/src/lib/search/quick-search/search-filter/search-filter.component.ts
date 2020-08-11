@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
-import { BackendService, BaseObjectTypeField, SearchFilter, SearchQuery, SystemService, TranslateService, Utils } from '@yuuvis/core';
+import { BackendService, BaseObjectTypeField, SearchFilter, SearchFilterGroup, SearchQuery, SystemService, TranslateService, Utils } from '@yuuvis/core';
 import { forkJoin } from 'rxjs';
 import { IconRegistryService } from '../../../common/components/icon/service/iconRegistry.service';
 import { Selectable } from '../../../grouped-select';
@@ -213,9 +213,21 @@ export class SearchFilterComponent implements OnInit {
         ...this.updateLastFilters(lastFilters)
       ];
     });
-    this.filterQuery.filters = (res.map((v) => v.value) as SearchFilter[][])
-      .reduce((pre, cur) => (pre = pre.concat(cur)), [])
-      .concat(this.parentID ? [this.parentID] : []);
+
+    const groups = res.map((v) => SearchFilterGroup.fromArray(v.value)).concat(this.parentID ? SearchFilterGroup.fromArray([this.parentID]) : []);
+
+    const q = new SearchQuery();
+    groups.forEach((g) => {
+      if (g.filters.length === 1) {
+        const f = g.filters[0];
+        q.addFilter(f, f.property, SearchFilterGroup.OPERATOR.OR);
+      } else {
+        q.addFilterGroup(g);
+      }
+    });
+    this.filterQuery.filterGroup = q.filterGroup;
+    console.log(this.filterQuery.toQueryJson());
+
     this.filterChange.emit(this.filterQuery);
     this.aggregate();
   }
