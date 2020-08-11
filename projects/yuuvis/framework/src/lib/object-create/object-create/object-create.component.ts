@@ -7,10 +7,7 @@ import {
   DmsObject,
   DmsService,
   ObjectType,
-  ObjectTypeClassification,
   ObjectTypeGroup,
-  SearchQuery,
-  SearchResult,
   SearchResultItem,
   SearchService,
   SecondaryObjectType,
@@ -217,15 +214,25 @@ export class ObjectCreateComponent implements OnDestroy {
     this.collectPendingAFOs();
   }
 
-  // Get all AFOs that have ot been finished yet
+  // Get all AFOs that have not been finished yet
   private collectPendingAFOs() {
     // TODO: implement the right way
     const q = {
-      filters: {},
-      types: this.system
-        .getObjectTypes()
-        .filter((t) => t.classification && t.classification.includes(ObjectTypeClassification.ADVANCED_FILING_OBJECT))
-        .map((t) => t.id)
+      tags: {
+        name: this.AFO_TAG
+        // filters: [
+        //   {
+        //     f: 'state',
+        //     o: SearchFilter.OPERATOR.EQUAL,
+        //     v1: '0'
+        //   }
+        // ]
+      }
+
+      // types: this.system
+      //   .getObjectTypes()
+      //   .filter((t) => t.classification && t.classification.includes(ObjectTypeClassification.ADVANCED_FILING_OBJECT))
+      //   .map((t) => t.id)
     };
     // q.filters[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS] = {
     //   o: SearchFilter.OPERATOR.EQUAL
@@ -240,7 +247,15 @@ export class ObjectCreateComponent implements OnDestroy {
     //   o: SearchFilter.OPERATOR.EQUAL,
     //   v1: this.DLM_TAG
     // }
-    this.searchService.search(new SearchQuery(q)).subscribe((res: SearchResult) => (this.pendingAFO = res.items));
+    // this.searchService.search(new SearchQuery(q)).subscribe((res: SearchResult) => (this.pendingAFO = res.items));
+
+    // TODO: Enable search for tags in search service (extend SearchQuery)
+    this.backend
+      .post(`/dms/search`, q, ApiBase.apiWeb)
+      .pipe(map((res) => this.searchService.toSearchResult(res)))
+      .subscribe((res) => {
+        this.pendingAFO = res.items;
+      });
   }
 
   private setupAvailableObjectTypeGroups() {
