@@ -8,6 +8,7 @@ import {
   DmsService,
   ObjectType,
   ObjectTypeGroup,
+  SearchFilter,
   SearchResultItem,
   SearchService,
   SecondaryObjectType,
@@ -24,7 +25,7 @@ import { takeUntilDestroy } from 'take-until-destroy';
 import { FadeInAnimations } from '../../common/animations/fadein.animation';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { SelectableGroup } from '../../grouped-select';
-import { CombinedObjectFormInput } from '../../object-form/combined-object-form/combined-object-form.component';
+import { CombinedObjectFormComponent, CombinedObjectFormInput } from '../../object-form/combined-object-form/combined-object-form.component';
 import { FormStatusChangedEvent, ObjectFormOptions } from '../../object-form/object-form.interface';
 import { Situation } from '../../object-form/object-form.situation';
 import { ObjectFormComponent } from '../../object-form/object-form/object-form.component';
@@ -82,6 +83,7 @@ export interface AFOState {
 })
 export class ObjectCreateComponent implements OnDestroy {
   @ViewChild(ObjectFormComponent) objectForm: ObjectFormComponent;
+  @ViewChild(CombinedObjectFormComponent) combinedObjectForm: CombinedObjectFormComponent;
 
   private AFO_TAG = 'appClient:dlm:prepare';
   // possible states of a DLM item
@@ -163,7 +165,7 @@ export class ObjectCreateComponent implements OnDestroy {
   }
 
   /**
-   * Emits the IDs of the objects that have been created
+   * Emitts IDs of objects that have been created
    */
   @Output() objectCreated = new EventEmitter<string[]>();
 
@@ -218,36 +220,21 @@ export class ObjectCreateComponent implements OnDestroy {
   private collectPendingAFOs() {
     // TODO: implement the right way
     const q = {
-      tags: {
-        name: this.AFO_TAG
-        // filters: [
-        //   {
-        //     f: 'state',
-        //     o: SearchFilter.OPERATOR.EQUAL,
-        //     v1: '0'
-        //   }
-        // ]
-      }
-
-      // types: this.system
-      //   .getObjectTypes()
-      //   .filter((t) => t.classification && t.classification.includes(ObjectTypeClassification.ADVANCED_FILING_OBJECT))
-      //   .map((t) => t.id)
+      tags: [
+        {
+          name: this.AFO_TAG,
+          filters: {
+            filters: [
+              {
+                f: 'state',
+                o: SearchFilter.OPERATOR.EQUAL,
+                v1: '0'
+              }
+            ]
+          }
+        }
+      ]
     };
-    // q.filters[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS] = {
-    //   o: SearchFilter.OPERATOR.EQUAL
-    // };
-
-    // TODO: search in system:tags when searching in tables is available
-    // q.filters[`${BaseObjectTypeField.TAGS}.name`] = {
-    //   o: SearchFilter.OPERATOR.EQUAL,
-    //   v1: this.DLM_TAG
-    // }
-    // q.filters[`${BaseObjectTypeField.TAGS}.state`] = {
-    //   o: SearchFilter.OPERATOR.EQUAL,
-    //   v1: this.DLM_TAG
-    // }
-    // this.searchService.search(new SearchQuery(q)).subscribe((res: SearchResult) => (this.pendingAFO = res.items));
 
     // TODO: Enable search for tags in search service (extend SearchQuery)
     this.backend
@@ -495,11 +482,12 @@ export class ObjectCreateComponent implements OnDestroy {
       data[BaseObjectTypeField.PARENT_ID] = this.context.id;
     }
     this.busy = true;
-    (this.system.isAFOType(this.selectedObjectType) ? this.createAFO(data) : this.createDefault(data)).subscribe(
+    const isAFO = this.system.isAFOType(this.selectedObjectType);
+    (isAFO ? this.createAFO(data) : this.createDefault(data)).subscribe(
       (ids: string[]) => {
         this.busy = false;
         // this.notify.success(this.translate.instant('yuv.framework.object-create.notify.success'));
-        if (this.createAnother) {
+        if (this.createAnother || this.afoCreate.dmsObject.selected) {
           this.selectedObjectType = null;
           this.files = [];
           this.resetState();
@@ -539,7 +527,9 @@ export class ObjectCreateComponent implements OnDestroy {
         this.dmsService.updateDmsObject(dmsObject.id, data).pipe(
           // update system tags
           switchMap((dmsObject: DmsObject) =>
-            this.backend.post(`/dms/objects/${dmsObject}/tags/${this.AFO_TAG}/state/${this.AFO_STATE.READY}`, {}, ApiBase.core).pipe(map((_) => of(dmsObject)))
+            this.backend
+              .post(`/dms/objects/${dmsObject.id}/tags/${this.AFO_TAG}/state/${this.AFO_STATE.READY}?overwrite=true`, {}, ApiBase.core)
+              .pipe(map((_) => of(dmsObject)))
           ),
           catchError((e) => {
             return of(null);
@@ -566,7 +556,7 @@ export class ObjectCreateComponent implements OnDestroy {
 
   reset() {
     this.formState = null;
-    this.objectForm.resetForm();
+    (this.afoCreate ? this.combinedObjectForm : this.objectForm)?.resetForm();
   }
 
   onFormStatusChanged(evt) {

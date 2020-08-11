@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output, QueryList, ViewChildren } from '@angular/core';
 import { SystemService } from '@yuuvis/core';
-import { FormStatusChangedEvent, ObjectFormOptions } from '../object-form.interface';
+import { FormStatusChangedEvent, IObjectForm, ObjectFormOptions } from '../object-form.interface';
 import { ObjectFormComponent } from '../object-form/object-form.component';
 
 export interface CombinedObjectFormInput {
@@ -13,7 +13,7 @@ export interface CombinedObjectFormInput {
   templateUrl: './combined-object-form.component.html',
   styleUrls: ['./combined-object-form.component.scss']
 })
-export class CombinedObjectFormComponent implements OnInit {
+export class CombinedObjectFormComponent implements OnInit, IObjectForm {
   @ViewChildren(ObjectFormComponent) objectForms: QueryList<ObjectFormComponent>;
 
   forms: {
@@ -73,7 +73,7 @@ export class CombinedObjectFormComponent implements OnInit {
    *
    * @return object of key value pairs
    */
-  public getFormData() {
+  getFormData() {
     let data = {};
     this.objectForms.forEach((f) => {
       data = { ...data, ...f.getFormData() };
@@ -81,10 +81,15 @@ export class CombinedObjectFormComponent implements OnInit {
     return data;
   }
 
-  public setFormsPristine() {
+  setFormPristine() {
     this.objectForms.forEach((f) => {
       f.setFormPristine();
     });
+  }
+
+  resetForm() {
+    // this.initOptions();
+    // this.emitFormChangedEvent();
   }
 
   ngOnInit(): void {}

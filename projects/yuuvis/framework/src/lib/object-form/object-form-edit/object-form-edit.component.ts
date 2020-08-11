@@ -127,7 +127,7 @@ export class ObjectFormEditComponent implements OnDestroy {
               }
               if (this.combinedFormInput) {
                 this.combinedFormInput.data = updatedObject.data;
-                this.afoObjectForm.setFormsPristine();
+                this.afoObjectForm.setFormPristine();
               }
 
               this.controls.saving = false;

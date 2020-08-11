@@ -1,6 +1,12 @@
 import { FormGroup } from '@angular/forms';
 import { ObjectFormGroup } from './object-form.model';
 
+export interface IObjectForm {
+  getFormData(): void;
+  setFormPristine(): void;
+  resetForm(): void;
+}
+
 /**
  * @ignore
  */

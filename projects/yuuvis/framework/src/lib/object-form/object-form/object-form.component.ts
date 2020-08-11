@@ -7,7 +7,7 @@ import { debounceTime } from 'rxjs/operators';
 import { UnsubscribeOnDestroy } from '../../common/util/unsubscribe.component';
 import { ObjectFormScriptService } from '../object-form-script/object-form-script.service';
 import { ObjectFormScriptingScope } from '../object-form-script/object-form-scripting-scope';
-import { FormStatusChangedEvent, ObjectFormControlWrapper, ObjectFormOptions } from '../object-form.interface';
+import { FormStatusChangedEvent, IObjectForm, ObjectFormControlWrapper, ObjectFormOptions } from '../object-form.interface';
 import { ObjectFormControl, ObjectFormGroup } from '../object-form.model';
 import { ObjectFormService } from '../object-form.service';
 import { ObjectFormUtils } from '../object-form.utils';
@@ -33,7 +33,7 @@ import { Situation } from './../object-form.situation';
   providers: [ObjectFormService, ObjectFormScriptService],
   styleUrls: ['./object-form.component.scss']
 })
-export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestroy, AfterViewInit {
+export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestroy, AfterViewInit, IObjectForm {
   /**
    * There are special scenarios where forms are within a form themselves.
    * Setting this property to true, will handle the current form in a
