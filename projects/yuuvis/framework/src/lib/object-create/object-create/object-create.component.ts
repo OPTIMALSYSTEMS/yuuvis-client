@@ -360,8 +360,9 @@ export class ObjectCreateComponent implements OnDestroy {
       (res) => {
         this.afoCreate.floatingSOT.selected = {
           sot: sot,
-          // TODO: also apply extaction data here
-          combinedFormInput: { formModels: res, data: {} }
+          // TODO: also apply extraction data here
+          // TODO: If object is changed form should also get new data
+          combinedFormInput: { formModels: res, data: this.afoCreate.dmsObject.items.length === 1 ? this.afoCreate.dmsObject.selected.data : {} }
         };
         this.busy = false;
       },
