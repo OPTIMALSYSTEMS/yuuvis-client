@@ -88,8 +88,9 @@ export class CombinedObjectFormComponent implements OnInit, IObjectForm {
   }
 
   resetForm() {
-    // this.initOptions();
-    // this.emitFormChangedEvent();
+    this.objectForms.forEach((f) => {
+      f.resetForm();
+    });
   }
 
   ngOnInit(): void {}
