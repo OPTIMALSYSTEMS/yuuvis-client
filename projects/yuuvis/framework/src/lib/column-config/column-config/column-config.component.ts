@@ -56,7 +56,7 @@ export class ColumnConfigComponent implements OnInit {
     BaseObjectTypeField.PARENT_VERSION_NUMBER,
     BaseObjectTypeField.TENANT,
     BaseObjectTypeField.TRACE_ID,
-    BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS,
+    // BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS,
     BaseObjectTypeField.BASE_TYPE_ID,
     ContentStreamField.ID,
     ContentStreamField.RANGE,

@@ -88,10 +88,15 @@ export class GridService {
    * Generate column definitions for all fields
    * @param objectTypeId Object type to create the column definition for. Leave
    * blank in case of a mixed result list
+   * @param isSecondaryObjectType Whether or not the given object ID belongs to a secndary object type
    */
-  getColumnDefinitions(objectTypeId?: string): ColDef[] {
-    const objectType: ObjectType = objectTypeId ? this.system.getObjectType(objectTypeId) : this.system.getBaseType();
-    return objectType.fields.map((f) => this.getColumnDefinition(f));
+  getColumnDefinitions(objectTypeId?: string, isSecondaryObjectType?: boolean): ColDef[] {
+    if (isSecondaryObjectType) {
+      return this.system.getSecondaryObjectType(objectTypeId).fields.map((f) => this.getColumnDefinition(f));
+    } else {
+      const objectType: ObjectType = objectTypeId ? this.system.getObjectType(objectTypeId) : this.system.getBaseType();
+      return objectType.fields.map((f) => this.getColumnDefinition(f));
+    }
   }
 
   /**
@@ -274,6 +279,10 @@ export class GridService {
         colDef.width = 100;
         colDef.cellRenderer = this.customContext(CellRenderer.filesizeCellRenderer);
         colDef.keyCreator = this.customContext(this.fileSizeKeyCreator);
+        break;
+      }
+      case BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS: {
+        colDef.cellRenderer = this.customContext(CellRenderer.sotCellRenderer);
         break;
       }
     }

@@ -13,6 +13,7 @@ import {
   ContentStreamAllowed,
   InternalFieldType,
   ObjectTypeClassification,
+  SecondaryObjectTypeClassification,
   SecondaryObjectTypeField,
   SystemType
 } from './system.enum';
@@ -123,6 +124,25 @@ export class SystemService {
   getFloatingSecondaryObjectTypes(objectTypeId: string, withLabel?: boolean): SecondaryObjectType[] {
     const ot = this.getObjectType(objectTypeId);
     return ot.secondaryObjectTypes ? ot.secondaryObjectTypes.filter((sot) => !sot.static).map((sot) => this.getSecondaryObjectType(sot.id, withLabel)) : [];
+  }
+
+  /**
+   * Applicable floating SOTs are SOTs that could be added by a users choice.
+   * Regular floating SOTs may also contain SOTs that are applied
+   * automatically (classification: 'appClient:required'). Those types will not be
+   * returned here.
+   *
+   * There are also special AFSOTs: If they have a classification of 'appClient:primary' they
+   * are supposed to be the leading object type once chosen.
+   *
+   * @param objectTypeId ID of the object type to fetch the FSOTs for
+   * @param withLabel Whether or not to also add the types label
+   */
+  getApplicableFloatingSecondaryObjectTypes(objectTypeId: string, withLabel?: boolean): SecondaryObjectType[] {
+    // all floating SOTs that are not classifoed as `required`
+    return this.getFloatingSecondaryObjectTypes(objectTypeId, withLabel).filter(
+      (sot) => !sot.classification.includes(SecondaryObjectTypeClassification.REQUIRED)
+    );
   }
 
   /**

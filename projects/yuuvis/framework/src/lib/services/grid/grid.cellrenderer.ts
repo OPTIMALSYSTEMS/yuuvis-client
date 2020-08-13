@@ -1,4 +1,4 @@
-import { SearchFilter, SearchQuery, Utils } from '@yuuvis/core';
+import { SearchFilter, SearchQuery, SecondaryObjectTypeClassification, Utils } from '@yuuvis/core';
 
 /**
  * @ignore
@@ -27,6 +27,19 @@ export class CellRenderer {
     const ico = context.system.getObjectTypeIcon(value) || '';
     const title = context.system.getLocalizedResource(`${value}_label`) || '';
     return `<span title="${title}">${ico}</span>`;
+  }
+
+  static sotCellRenderer(param: any) {
+    const { context, value } = param;
+    return value
+      ? value
+          .map((v) => context.system.getSecondaryObjectType(v, true))
+          .map((sot) => {
+            const cls = sot.classification?.includes(SecondaryObjectTypeClassification.PRIMARY) ? ' psot' : '';
+            return `<div class="chip${cls}">${Utils.escapeHtml(sot.label)}</div>`;
+          })
+          .join('')
+      : '';
   }
 
   // static iconCellRenderer(param) {

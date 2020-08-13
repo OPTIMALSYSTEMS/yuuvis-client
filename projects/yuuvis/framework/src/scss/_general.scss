@@ -51,6 +51,12 @@ body {
   color: var(--text-color-caption);
   margin: 1px 0;
   margin-right: 2px;
+
+  // primary SOT chip
+  &.psot {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+  }
 }
 
 .button {
