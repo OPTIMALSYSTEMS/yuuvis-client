@@ -103,8 +103,9 @@ export class NumberComponent implements ControlValueAccessor, Validator {
    * If you provide a value of `filesize` numbers typed into the control will be
    * handled like file sizes (calculates differnt units)
    */
-  @Input() set classification(classification: string) {
-    this.numberPipe = classification === Classification.NUMBER_FILESIZE ? new FileSizePipe(this.translate) : new LocaleNumberPipe(this.translate);
+  @Input() set classifications(classifications: string[]) {
+    this.numberPipe =
+      classifications && classifications.includes(Classification.NUMBER_FILESIZE) ? new FileSizePipe(this.translate) : new LocaleNumberPipe(this.translate);
   }
 
   static betweenTwoNumbers(val: number, minVal: number, maxVal: number) {

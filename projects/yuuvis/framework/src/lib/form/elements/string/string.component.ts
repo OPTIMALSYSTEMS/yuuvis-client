@@ -69,8 +69,8 @@ export class StringComponent implements ControlValueAccessor, Validator {
    * to an URL typed into the form element).
    */
   @Input()
-  set classification(c: string[]) {
-    this._classification = c;
+  set classifications(c: string[]) {
+    this._classifications = c;
     if (c && c.length) {
       if (c.includes(Classification.STRING_EMAIL)) {
         this.classify = {
@@ -91,8 +91,8 @@ export class StringComponent implements ControlValueAccessor, Validator {
     }
   }
 
-  get classification() {
-    return this._classification;
+  get classifications() {
+    return this._classifications;
   }
   /**
    * Possibles values are `EDIT` (default),`SEARCH`,`CREATE`. In search situation validation of the form element will be turned off, so you are able to enter search terms that do not meet the elements validators.
@@ -118,7 +118,7 @@ export class StringComponent implements ControlValueAccessor, Validator {
   valid: boolean;
   validationErrors = [];
   classify: { hrefPrefix: string; icon: string };
-  private _classification: string[];
+  private _classifications: string[];
 
   constructor(private elementRef: ElementRef, private iconRegistry: IconRegistryService) {
     this.iconRegistry.registerIcons([envelope, globe, phone]);
@@ -160,8 +160,8 @@ export class StringComponent implements ControlValueAccessor, Validator {
     }
 
     // validate classification settings
-    if (this.classification && this.classification.length) {
-      this.classification.forEach((c) => {
+    if (this.classifications && this.classifications.length) {
+      this.classifications.forEach((c) => {
         if (multiCheck((v) => !this.validateClassification(v, c))) {
           this.validationErrors.push({ key: 'classification' + c });
         }

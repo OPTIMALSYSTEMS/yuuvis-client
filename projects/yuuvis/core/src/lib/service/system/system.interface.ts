@@ -46,7 +46,7 @@ export interface ObjectTypeField {
   // the propertyType
   _internalType: string;
   resolution?: string;
-  classification?: string[];
+  classifications?: string[];
 }
 
 // base definition of the kind of data we'll receive

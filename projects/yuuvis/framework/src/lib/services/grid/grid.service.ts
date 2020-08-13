@@ -183,8 +183,8 @@ export class GridService {
         //   colDef.cellRenderer = this.customContext(CellRenderer.multiSelectCellRenderer);
         // }
         colDef.cellClass = field.cardinality === 'multi' ? 'multiCell string' : 'string';
-        if (Array.isArray(field?.classification)) {
-          colDef.cellRenderer = this.fieldClassification(field?.classification);
+        if (Array.isArray(field?.classifications)) {
+          colDef.cellRenderer = this.fieldClassification(field?.classifications);
         }
         break;
       }
@@ -195,8 +195,8 @@ export class GridService {
         //   colDef.cellRenderer = this.customContext(CellRenderer.multiSelectCellRenderer);
         // }
         colDef.cellClass = field.cardinality === 'multi' ? 'multiCell string' : 'string';
-        if (Array.isArray(field?.classification)) {
-          colDef.cellRenderer = this.fieldClassification(field?.classification);
+        if (Array.isArray(field?.classifications)) {
+          colDef.cellRenderer = this.fieldClassification(field?.classifications);
         }
         break;
       }
@@ -206,8 +206,8 @@ export class GridService {
           colDef.cellRenderer = this.customContext(CellRenderer.multiSelectCellRenderer);
         }
         colDef.cellClass = field.cardinality === 'multi' ? 'multiCell string' : 'string';
-        if (Array.isArray(field?.classification)) {
-          colDef.cellRenderer = this.fieldClassification(field?.classification);
+        if (Array.isArray(field?.classifications)) {
+          colDef.cellRenderer = this.fieldClassification(field?.classifications);
         }
         break;
       }
@@ -223,7 +223,7 @@ export class GridService {
           pattern: undefined
         };
         colDef.width = 150;
-        colDef.cellRenderer = this.fieldClassification(field?.classification, params);
+        colDef.cellRenderer = this.fieldClassification(field?.classifications, params);
         break;
       }
       case 'decimal': {
@@ -234,7 +234,7 @@ export class GridService {
           cips: true
         };
         colDef.width = 150;
-        colDef.cellRenderer = this.fieldClassification(field?.classification, params);
+        colDef.cellRenderer = this.fieldClassification(field?.classifications, params);
         break;
       }
       case 'boolean': {

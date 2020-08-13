@@ -2,14 +2,14 @@
 
   <yuv-number *ngIf="searchOption === 'gtelte'" class="first" [readonly]="readonly" [scale]="scale"
     [precision]="precision" [grouping]="grouping" [pattern]="pattern" formControlName="numberValueFrom"
-    [classification]="classification" [minValue]="minValue" [maxValue]="maxValue"></yuv-number>
+    [classifications]="classifications" [minValue]="minValue" [maxValue]="maxValue"></yuv-number>
 
   <p-dropdown [readonly]="readonly" class="no-trigger" [styleClass]="'range'" [(ngModel)]="searchOption"
     (ngModelChange)="onValueChange()" [ngModelOptions]="{standalone: true}" [options]="availableSearchOptions">
   </p-dropdown>
 
   <yuv-number [scale]="scale" [readonly]="readonly" [precision]="precision" [grouping]="grouping" [pattern]="pattern"
-    formControlName="numberValue" [classification]="classification" [minValue]="minValue" [maxValue]="maxValue">
+    formControlName="numberValue" [classifications]="classifications" [minValue]="minValue" [maxValue]="maxValue">
   </yuv-number>
 
 </form>
