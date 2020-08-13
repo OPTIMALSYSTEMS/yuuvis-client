@@ -3,10 +3,6 @@
     .ui-autocomplete-token-label {
       display: flex;
       align-items: center;
-      // .classify.inchip {
-      //   color: red;
-      // }
-
       .label {
         padding: 0 calc(var(--app-pane-padding) / 4);
       }
@@ -46,18 +42,6 @@
     width: 100%;
     resize: vertical;
     background-color: transparent;
-
-    &.size-small {
-      height: 4em;
-    }
-
-    &.size-medium {
-      height: 6em;
-    }
-
-    &.size-large {
-      height: 8em;
-    }
   }
 
   p-chips {

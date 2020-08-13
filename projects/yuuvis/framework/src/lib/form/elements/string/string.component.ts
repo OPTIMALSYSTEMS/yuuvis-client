@@ -18,7 +18,7 @@ import { Situation } from './../../../object-form/object-form.situation';
  * <yuv-string  [regex]="[0-9]*"></yuv-string>
  *
  * <!-- string input rendering a large textarea -->
- * <yuv-string [multiline]="true" [size]="'large'"></yuv-string>
+ * <yuv-string [rows]="10"></yuv-string>
  *
  */
 @Component({
@@ -47,13 +47,10 @@ export class StringComponent implements ControlValueAccessor, Validator {
    */
   @Input() multiselect: boolean;
   /**
-   * Set to true to render a textarea instead of input (default: false)
+   * Setting rows to more than 1 will generate a textarea instead of an input tag
+   * and apply the rows property to it
    */
-  @Input() multiline: boolean;
-  /**
-   * Use in combination with `multiline` to define the size (height) of the textarea. Valid values are 'small','medium','large'
-   */
-  @Input() size: string;
+  @Input() rows: number;
   /**
    * Will prevent the input from being changed (default: false)
    */

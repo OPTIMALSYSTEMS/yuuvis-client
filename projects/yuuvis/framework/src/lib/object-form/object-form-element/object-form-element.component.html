@@ -11,9 +11,8 @@
       <yuv-string [situation]="element._eoFormControlWrapper.situation"
         [formControlName]="element._eoFormControlWrapper.controlName"
         [multiselect]="formElementRef._eoFormElement.cardinality === 'multi'  || situation === 'SEARCH'"
-        [multiline]="formElementRef._eoFormElement.multiline"
-        [classifications]="formElementRef._eoFormElement.classifications" [regex]="formElementRef._eoFormElement.regex"
-        [size]="formElementRef._eoFormElement.size" [readonly]="formElementRef._eoFormElement.readonly"
+        [rows]="formElementRef._eoFormElement.rows" [classifications]="formElementRef._eoFormElement.classifications"
+        [regex]="formElementRef._eoFormElement.regex" [readonly]="formElementRef._eoFormElement.readonly"
         [minLength]="formElementRef._eoFormElement.minLength" [maxLength]="formElementRef._eoFormElement.maxLength">
       </yuv-string>
     </yuv-form-input>
