@@ -417,11 +417,12 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
 
       ctrl = new ObjectFormGroup({});
       ctrl._eoFormGroup = {
-        // label: formElement.label,
-        label: formElement.name ? this.systemService.getLocalizedResource(`${formElement.name}_label`) || formElement.name : '???',
         layout: formElement.layout,
         type: formElement.type
       };
+      if (formElement.name) {
+        ctrl._eoFormGroup.label = this.systemService.getLocalizedResource(`${formElement.name}_label`) || formElement.name;
+      }
 
       if (useName === 'core' || useName === 'data') {
         ctrl._eoFormGroup.label = useName;
