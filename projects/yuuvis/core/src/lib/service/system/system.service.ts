@@ -226,7 +226,7 @@ export class SystemService {
    * create lifecycle and may be treated in a different way.
    *
    * AFOs are object types that require a content stream and have a classification of 'appClient:dlm'. The object type itself
-   * has no mandatory properties, so the content can be uploaded without having to apply some indexdata.
+   * is required to have no mandatory properties, so the content can be uploaded without having to apply some indexdata.
    *
    * AFOs have at least one Secondary Object Type (SOT) that could be applied later on.
    *
@@ -237,6 +237,21 @@ export class SystemService {
       objectType.contentStreamAllowed === ContentStreamAllowed.REQUIRED &&
       Array.isArray(objectType.classification) &&
       objectType.classification.includes(ObjectTypeClassification.ADVANCED_FILING_OBJECT)
+    );
+  }
+
+  /**
+   * Floating object types (FOT) are object types that have a classification of 'appClient:floatingType' and at least one
+   * secondary object type (SOT) with a classification of 'appClient:primary'.
+   *
+   * Once one primary SOT has been applied to the FOT the SOT will be treated like the main object type.
+   * Using this kind of objects you are able to create types that can turn into any applied primary SOT.
+   */
+  isFloatingObjectType(objectType: ObjectType): boolean {
+    return (
+      Array.isArray(objectType.classification) &&
+      objectType.classification.includes(ObjectTypeClassification.FLOATING_OBJECT_TYPE) &&
+      !!objectType.secondaryObjectTypes.find((sot) => this.getSecondaryObjectType(sot.id).classification?.includes(SecondaryObjectTypeClassification.PRIMARY))
     );
   }
 
