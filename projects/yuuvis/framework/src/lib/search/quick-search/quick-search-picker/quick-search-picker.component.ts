@@ -29,7 +29,7 @@ export class QuickSearchPickerComponent {
   set data(data: QuickSearchPickerData) {
     this._data = data;
     if (data) {
-      this.multiselect = data.type !== 'field';
+      this.type = data.type;
       this.groups = data.items || [];
       this.groups.map((groupItem) => groupItem?.items.sort(Utils.sortValues('label')).sort(Utils.sortValues('value.isFolder', Sort.DESC)));
 
@@ -58,7 +58,11 @@ export class QuickSearchPickerComponent {
 
   groups: SelectableGroup[];
   selectedItems: Selectable[];
-  multiselect: boolean;
+  type: string;
+
+  get isType() {
+    return this.type === 'type';
+  }
 
   constructor() {}
 

@@ -195,6 +195,7 @@ export class SearchFilterComponent implements OnInit {
     const popoverConfig: PopoverConfig = {
       width: '55%',
       height: '75%',
+      disableSmallScreenClose: true,
       data: pickerData
     };
     this.popoverService

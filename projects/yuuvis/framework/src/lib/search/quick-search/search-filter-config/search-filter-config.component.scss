@@ -16,6 +16,7 @@
   }
 
   .stored-filter {
+    flex: 1;
     background-color: var(--panel-background);
     border: 1px solid var(--panel-divider-color);
     @include placeholder(rgba(0, 0, 0, 0.2));
@@ -64,8 +65,8 @@
     grid-area: configuration;
     @include flex-row();
     overflow: auto;
-    yuv-grouped-select {
-      overflow: auto;
+    .filter-header {
+      @include flex-row(1);
     }
   }
 
@@ -82,11 +83,5 @@
     yuv-checkbox {
       margin: calc(var(--app-pane-padding) / 2);
     }
-  }
-}
-
-:host-context(.screen-s) {
-  section.configuration {
-    @include flex-col();
   }
 }

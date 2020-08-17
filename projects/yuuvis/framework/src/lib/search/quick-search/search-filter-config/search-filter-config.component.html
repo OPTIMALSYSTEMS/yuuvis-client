@@ -14,19 +14,29 @@
       <section class="filter">
         <section class="configuration">
           <yuv-search-filter-form [disabled]="isDefault()" [options]="formOptions"
-            (filterChanged)="onFilterChanged($event)" (controlRemoved)="onControlRemoved($event)"
-            (valid)="formValid = $event">
-            <form class="stored-filter">
-              <input #storedFilterInput type="text" [placeholder]="'yuv.framework.search.filter.name' | translate"
-                [(ngModel)]="selectedFilter.label" [disabled]="isDefault()" [ngModelOptions]="{ standalone: true }"
-                (change)="onFilterNameChanged($event.target.value)" />
-            </form>
+            [newFilters]="formOptions?.newFilters" (filterChanged)="onFilterChanged($event)"
+            (controlRemoved)="onControlRemoved($event)" (valid)="formValid = $event">
+            <div class="filter-header">
+              <form class="stored-filter">
+                <input #storedFilterInput type="text" [placeholder]="'yuv.framework.search.filter.name' | translate"
+                  [(ngModel)]="selectedFilter.label" [disabled]="isDefault()" [ngModelOptions]="{ standalone: true }"
+                  (change)="onFilterNameChanged($event.target.value)" />
+              </form>
+              <button type="button" class="field-select" #fieldSelectTrigger (click)="showObjectTypeFieldPicker()"
+                *ngIf="availableObjectTypeFields?.length"
+                title="{{ 'yuv.framework.quick-search.field-select.tooltip' | translate }}">
+                <yuv-icon [icon]="'addCircle'"></yuv-icon>
+              </button>
+
+              <ng-template #tplValuePicker let-data let-popover="popover">
+                <yuv-quick-search-picker cdkTrapFocus yuvOfflineDisabled [data]="data"
+                  [ngClass]="{ 'quick-search': true, hashtag: data.type === 'field' }"
+                  (cancel)="onPickerCancel(popover)" (select)="onPickerResult(data.type, $event, popover)">
+                </yuv-quick-search-picker>
+              </ng-template>
+            </div>
           </yuv-search-filter-form>
 
-          <yuv-grouped-select toggleable="true" [multiple]="true" [singleSelect]="false"
-            [groups]="availableFiltersGroups" [selection]="selection" (change)="onActiveFilterChange($event)"
-            (select)="onActiveFilterChange($event)">
-          </yuv-grouped-select>
         </section>
         <section class="footer buttons">
           <button *ngIf="!isDefault() && isStored() && !isVisible()" type="button"
