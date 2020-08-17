@@ -146,6 +146,17 @@ export class SystemService {
   }
 
   /**
+   * Returns the floating type of a dms object if available.
+   * This is only possible if the dms object has been created from a certain kind of object type (Floating object type)
+   * @param dmsObject Dms object to get the applied FOT for
+   */
+  getAppliedFloatingObjectType(dmsObject: DmsObject): SecondaryObjectType {
+    return this.isFloatingObjectType(this.getObjectType(dmsObject.objectTypeId))
+      ? dmsObject.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS].find((sot) => sot.classification?.includes(SecondaryObjectTypeClassification.PRIMARY))
+      : null;
+  }
+
+  /**
    * Get the base document type all documents belong to
    * @param withLabel Whether or not to also add the types label
    */
@@ -206,11 +217,14 @@ export class SystemService {
   getObjectTypeIcon(objectTypeId: string): string {
     if (objectTypeId) {
       const type = this.getObjectType(objectTypeId);
+      const sot = this.getSecondaryObjectType(objectTypeId);
       // TODO: point to actual icon URI
       // AFOs (Advanced filing objects) should have a more prominent icon
       // TODO: Handle different icons in resources service
-      if (this.isAFOType(type)) {
-        return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M6 2c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6H6zm7 7V3.5L18.5 9H13z"/><path d="M0 0h24v24H0V0z" fill="none"/><circle fill="#fff" cx="18.1" cy="18" r="5"/><path class="accent" d="M18,12c-3.3,0-6,2.7-6,6s2.7,6,6,6c3.3,0,6-2.7,6-6S21.3,12,18,12z M20.5,21.6L18,20.1l-2.5,1.5l0.7-2.9l-2.2-1.9l3-0.3l1.2-2.7l1.2,2.7l3,0.3l-2.2,1.9L20.5,21.6z"/></svg>';
+      if (type && this.isAFOType(type)) {
+        return '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M6 2c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6H6zm7 7V3.5L18.5 9H13z"/><path d="M0 0h24v24H0V0z" fill="none"/><circle fill="#fff" cx="18.1" cy="18" r="5"/><path class="accent" d="M18,12c-3.3,0-6,2.7-6,6s2.7,6,6,6c3.3,0,6-2.7,6-6S21.3,12,18,12z M20.5,21.6L18,20.1l-2.5,1.5l0.7-2.9l-2.2-1.9l3-0.3l1.2-2.7l1.2,2.7l3,0.3l-2.2,1.9L20.5,21.6z"/></svg>';
+      } else if (sot) {
+        return '<svg xmlns="http://www.w3.org/2000/svg"  width="24" height="24" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h5v8l-2.5-1.5L6 12V4z"/></svg>';
       } else {
         return type && type.isFolder
           ? '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/><path d="M0 0h24v24H0z" fill="none"/></svg>'
@@ -226,7 +240,7 @@ export class SystemService {
    * create lifecycle and may be treated in a different way.
    *
    * AFOs are object types that require a content stream and have a classification of 'appClient:dlm'. The object type itself
-   * has no mandatory properties, so the content can be uploaded without having to apply some indexdata.
+   * is required to have no mandatory properties, so the content can be uploaded without having to apply some indexdata.
    *
    * AFOs have at least one Secondary Object Type (SOT) that could be applied later on.
    *
@@ -237,6 +251,21 @@ export class SystemService {
       objectType.contentStreamAllowed === ContentStreamAllowed.REQUIRED &&
       Array.isArray(objectType.classification) &&
       objectType.classification.includes(ObjectTypeClassification.ADVANCED_FILING_OBJECT)
+    );
+  }
+
+  /**
+   * Floating object types (FOT) are object types that have a classification of 'appClient:floatingType' and at least one
+   * secondary object type (SOT) with a classification of 'appClient:primary'.
+   *
+   * Once one primary SOT has been applied to the FOT the SOT will be treated like the main object type.
+   * Using this kind of objects you are able to create types that can turn into any applied primary SOT.
+   */
+  isFloatingObjectType(objectType: ObjectType): boolean {
+    return (
+      Array.isArray(objectType.classification) &&
+      objectType.classification.includes(ObjectTypeClassification.FLOATING_OBJECT_TYPE) &&
+      !!objectType.secondaryObjectTypes.find((sot) => this.getSecondaryObjectType(sot.id).classification?.includes(SecondaryObjectTypeClassification.PRIMARY))
     );
   }
 

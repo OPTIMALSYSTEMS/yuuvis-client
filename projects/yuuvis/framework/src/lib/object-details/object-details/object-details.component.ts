@@ -1,5 +1,16 @@
 import { Component, ContentChildren, HostBinding, Input, OnDestroy, QueryList, TemplateRef, ViewChild, ViewChildren } from '@angular/core';
-import { ConfigService, DmsObject, DmsService, EventService, SystemService, TranslateService, UserService, YuvEvent, YuvEventType } from '@yuuvis/core';
+import {
+  BaseObjectTypeField,
+  ConfigService,
+  DmsObject,
+  DmsService,
+  EventService,
+  SystemService,
+  TranslateService,
+  UserService,
+  YuvEvent,
+  YuvEventType
+} from '@yuuvis/core';
 import { TabPanel } from 'primeng/tabview';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
@@ -63,7 +74,15 @@ export class ObjectDetailsComponent implements OnDestroy {
     this._dmsObject = object;
     this._objectId = object ? object.id : null;
     if (object) {
-      this.objectIcon = CellRenderer.typeCellRenderer({ value: object.objectTypeId, context: { system: this.systemService } });
+      const params = {
+        value: object.objectTypeId,
+        data: {},
+        context: {
+          system: this.systemService
+        }
+      };
+      params.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS] = object.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS];
+      this.objectIcon = CellRenderer.typeCellRenderer(params);
 
       this.fileDropLabel = !object.content
         ? this.translate.instant('yuv.framework.object-details.filedrop.content.add')
