@@ -15,6 +15,7 @@ import { AboutModule } from './states/about/about.module';
 import { ColumnConfigurationComponent } from './states/column-configuration/column-configuration.component';
 import { CreateComponent } from './states/create/create.component';
 import { DashboardComponent } from './states/dashboard/dashboard.component';
+import { InboxModule } from './states/inbox/inbox.module';
 import { NotFoundComponent } from './states/not-found/not-found.component';
 import { ObjectComponent } from './states/object/object.component';
 import { OfflineComponent } from './states/offline/offline.component';
@@ -47,6 +48,7 @@ import { VersionsComponent } from './states/versions/versions.component';
     }),
     AppRoutingModule,
     AboutModule,
+    InboxModule,
     ActionsModule,
     YuvComponentsModule,
     YuvCommonModule,
