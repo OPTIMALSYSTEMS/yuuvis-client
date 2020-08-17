@@ -96,7 +96,7 @@ export class SystemService {
    * @param withLabel Whether or not to also add the types label
    */
   getObjectType(objectTypeId: string, withLabel?: boolean): ObjectType {
-    let objectType: ObjectType = this.system.objectTypes.find((ot) => ot.id === objectTypeId);
+    const objectType: ObjectType = this.system.objectTypes.find((ot) => ot.id === objectTypeId);
     if (objectType && withLabel) {
       objectType.label = this.getLocalizedResource(`${objectType.id}_label`);
     }
@@ -108,7 +108,7 @@ export class SystemService {
    * @param withLabel Whether or not to also add the types label
    */
   getSecondaryObjectType(objectTypeId: string, withLabel?: boolean): SecondaryObjectType {
-    let objectType: SecondaryObjectType = this.system.secondaryObjectTypes.find((ot) => ot.id === objectTypeId);
+    const objectType: SecondaryObjectType = this.system.secondaryObjectTypes.find((ot) => ot.id === objectTypeId);
     if (objectType && withLabel) {
       objectType.label = this.getLocalizedResource(`${objectType.id}_label`) || objectType.id;
     }
@@ -373,7 +373,7 @@ export class SystemService {
    */
   private setSchema(schemaResponse: SchemaResponse, localizedResource: any) {
     // prepare a quick access object for the fields
-    let propertiesQA = {};
+    const propertiesQA = {};
     const orgTypeFields = [BaseObjectTypeField.MODIFIED_BY, BaseObjectTypeField.CREATED_BY];
     schemaResponse.propertyDefinition.forEach((p: any) => {
       // TODO: Remove once schema supports organization classification for base params
@@ -384,7 +384,7 @@ export class SystemService {
       propertiesQA[p.id] = p;
     });
     // prepare a quick access object for object types (including secondary objects)
-    let objectTypesQA = {};
+    const objectTypesQA = {};
     schemaResponse.typeFolderDefinition.forEach((ot: any) => {
       objectTypesQA[ot.id] = ot;
     });

@@ -13,6 +13,7 @@ export * from './lib/service/auth/auth.interface';
 export * from './lib/service/auth/auth.service';
 export * from './lib/service/backend/api.enum';
 export * from './lib/service/backend/backend.service';
+export * from './lib/service/bpm/bpm.service';
 export * from './lib/service/cache/app-cache.service';
 export * from './lib/service/config/config.interface';
 export * from './lib/service/config/config.service';

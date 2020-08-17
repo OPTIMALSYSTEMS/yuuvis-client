@@ -1,1 +1,21 @@
-<p>inbox works!</p>
+<yuv-responsive-master-slave class="state" [layoutOptionsKey]="layoutOptionsKey" (slaveClosed)="onSlaveClosed()" [slaveActive]="objectDetailsID">
+  <section class="yuv-master panel">
+    DATA Table
+
+    <pre>{{ inboxData$ | async | json }}</pre>
+  </section>
+  <section class="yuv-slave panel">
+    Details
+
+    <pre>{{ inboxData$ | async | json }}</pre>
+  </section>
+</yuv-responsive-master-slave>
+<!-- <yuv-responsive-data-table yuvOfflineDisabled #dataTable class="data-table" [data]="tableData"
+    [breakpoint]="400" [layoutOptionsKey]="layoutOptionsKey" (selectionChanged)="onSelectionChanged($event)"
+    (viewModeChanged)="viewModeChanged.emit($event)" (sortChanged)="onSortChanged($event)"
+    (rowDoubleClicked)="rowDoubleClicked.emit($event)">
+</yuv-responsive-data-table> -->
+
+<!-- <yuv-object-details class="yuv-slave panel" [objectId]="objectDetailsID" [searchTerm]="searchQuery?.term"
+    [layoutOptionsKey]="layoutOptionsKey" [versionLinkTemplate]="versionLinkTpl">
+  </yuv-object-details> -->
