@@ -94,11 +94,13 @@ export class SearchFilterFormComponent implements OnInit, OnDestroy {
       const wrapper = this.searchFieldsForm.controls[id] as ObjectFormControlWrapper;
       const fc = wrapper.controls[wrapper._eoFormControlWrapper.controlName] as ObjectFormControl;
       const original = this.filterGroup.find(id);
-      const filter = new SearchFilter(fc._eoFormElement.name, Array.isArray(fc.value) ? SearchFilter.OPERATOR.IN : SearchFilter.OPERATOR.EQUAL, fc.value);
-      if (!filter.isEmpty() || fc._eoFormElement.isNotSetValue) {
-        Object.assign(original, filter, { id: original.id, excludeFromQuery: false });
-      } else {
-        Object.assign(original, { excludeFromQuery: true });
+      if (original) {
+        const filter = new SearchFilter(fc._eoFormElement.name, Array.isArray(fc.value) ? SearchFilter.OPERATOR.IN : SearchFilter.OPERATOR.EQUAL, fc.value);
+        if (!filter.isEmpty() || fc._eoFormElement.isNotSetValue) {
+          Object.assign(original, filter, { id: original.id, excludeFromQuery: false });
+        } else {
+          Object.assign(original, { excludeFromQuery: true });
+        }
       }
     });
     // only execute aggregate call if filter settings have actually been changed
