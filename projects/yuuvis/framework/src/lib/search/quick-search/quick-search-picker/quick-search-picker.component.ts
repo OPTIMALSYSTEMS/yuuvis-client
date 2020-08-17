@@ -20,7 +20,6 @@ import { Selectable, SelectableGroup } from './../../../grouped-select/grouped-s
 })
 export class QuickSearchPickerComponent {
   private _data: QuickSearchPickerData;
-
   /**
    * Input data for the quick search picker component.
    * The type of data item provided actual items based on the given type.
@@ -93,7 +92,7 @@ export interface QuickSearchPickerData {
   /**
    * actual items based on the given type
    */
-  type: 'type' | 'field' | 'filter';
+  type: 'type' | 'filter';
   items: SelectableGroup[];
   /**
    * array of item IDs that should be selected upfront

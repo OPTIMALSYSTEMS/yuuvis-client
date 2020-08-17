@@ -219,7 +219,7 @@ export class SearchQuery {
 
     if (this.filterGroup) {
       const fg = this.filterGroup.toShortQuery();
-      queryJson.filters = fg.operator ? [fg] : fg.filters;
+      queryJson.filters = this.filterGroup.operator === SearchFilterGroup.OPERATOR.OR ? [fg] : fg.filters;
     }
 
     if (this.aggs && this.aggs.length) {

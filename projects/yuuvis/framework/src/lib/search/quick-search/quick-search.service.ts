@@ -16,7 +16,7 @@ import {
   UserService,
   Utils
 } from '@yuuvis/core';
-import { Observable, of } from 'rxjs';
+import { forkJoin, Observable, of } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import { DynamicDate } from '../../form/elements/datetime/datepicker/datepicker.interface';
 import { DatepickerService } from '../../form/elements/datetime/datepicker/service/datepicker.service';
@@ -99,6 +99,10 @@ export class QuickSearchService {
         }))
       }));
     });
+  }
+
+  loadFilterSettings() {
+    return forkJoin([this.loadStoredFilters(), this.loadFiltersVisibility()]);
   }
 
   getAvailableFilterGroups(storedFilters: Selectable[], availableObjectTypeFields: Selectable[]) {

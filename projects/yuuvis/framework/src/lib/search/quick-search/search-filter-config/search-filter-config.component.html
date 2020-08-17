@@ -30,7 +30,6 @@
 
               <ng-template #tplValuePicker let-data let-popover="popover">
                 <yuv-quick-search-picker cdkTrapFocus yuvOfflineDisabled [data]="data"
-                  [ngClass]="{ 'quick-search': true, hashtag: data.type === 'field' }"
                   (cancel)="onPickerCancel(popover)" (select)="onPickerResult(data.type, $event, popover)">
                 </yuv-quick-search-picker>
               </ng-template>

@@ -45,7 +45,7 @@ export class SearchFilterConfigComponent implements OnInit {
     this.availableFiltersGroups = [
       {
         id: 'form',
-        label: this.translate.instant('yuv.framework.quick-search.field-select.tooltip'),
+        label: this.translate.instant('yuv.framework.search.filter.custom.filters'),
         items: this.availableObjectTypeFields.map((o) => ({ ...o, value: [new SearchFilter(o.id, undefined, undefined)] }))
       }
     ];
@@ -199,8 +199,8 @@ export class SearchFilterConfigComponent implements OnInit {
       selected: []
     };
     const popoverConfig: PopoverConfig = {
-      panelClass: 'fields',
-      maxHeight: 200,
+      panelClass: 'filters',
+      maxHeight: 400,
       disableSmallScreenClose: true,
       data: pickerData
     };
