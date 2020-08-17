@@ -1,6 +1,6 @@
 import { Component, ElementRef, forwardRef, Input } from '@angular/core';
 import { ControlValueAccessor, FormControl, NG_VALIDATORS, NG_VALUE_ACCESSOR, Validator } from '@angular/forms';
-import { Classification, ClassificationPrefix, FormatedMailTo, Utils } from '@yuuvis/core';
+import { Classification, ClassificationPrefix, FormattedMailTo, Utils } from '@yuuvis/core';
 import { IconRegistryService } from '../../../common/components/icon/service/iconRegistry.service';
 import { envelope, globe, phone } from '../../../svg.generated';
 import { Situation } from './../../../object-form/object-form.situation';
@@ -111,7 +111,7 @@ export class StringComponent implements ControlValueAccessor, Validator {
 
   // model value
   value;
-  formatedValue: FormatedMailTo;
+  formatedValue: FormattedMailTo;
   valid: boolean;
   validationErrors = [];
   classify: { hrefPrefix: string; icon: string };
