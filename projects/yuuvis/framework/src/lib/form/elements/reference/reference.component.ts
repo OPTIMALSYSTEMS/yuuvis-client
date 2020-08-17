@@ -76,7 +76,7 @@ export class ReferenceComponent implements ControlValueAccessor, AfterViewInit {
    * Additional semantics for the form element. You could specify restrictions on what object
    * type should be allowed by setting eg. `['id:reference[system:folder]']` to only allow folders
    */
-  @Input() set classification(c: string[]) {
+  @Input() set classifications(c: string[]) {
     const ce: ClassificationEntry = this.systemService.getClassifications(c).get(Classification.STRING_REFERENCE);
     if (ce && ce.options) {
       this.allowedTargetTypes = ce.options;

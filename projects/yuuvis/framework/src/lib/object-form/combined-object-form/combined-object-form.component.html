@@ -1,0 +1,7 @@
+<div class="yuv-combined-object-form" *ngIf="forms">
+    <ng-container *ngFor="let form of forms">
+        <h2>{{form.label}}</h2>
+        <yuv-object-form [formOptions]="form.formOptions" (statusChanged)="onFormStatusChanged(form.id, $event)">
+        </yuv-object-form>
+    </ng-container>
+</div>

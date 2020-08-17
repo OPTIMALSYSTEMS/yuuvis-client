@@ -2,7 +2,8 @@
   "core": {
     "apiBase": {
       "core": "/api",
-      "api-web": "/api-web"
+      "api-web": "/api-web",
+      "custom": "/custom"
     },
     "languages": [
       {

@@ -2,7 +2,8 @@ export const SystemType = {
   OBJECT: 'system:object',
   DOCUMENT: 'system:document',
   FOLDER: 'system:folder',
-  AUDIT: 'system:audit'
+  AUDIT: 'system:audit',
+  SOT: 'system:secondray'
 };
 
 export const AdministrationRoles = {
@@ -33,6 +34,7 @@ export const BaseObjectTypeField = {
   TRACE_ID: 'system:traceId',
   SECONDARY_OBJECT_TYPE_IDS: 'system:secondaryObjectTypeIds',
   BASE_TYPE_ID: 'system:baseTypeId',
+  TAGS: 'system:tags',
   OBJECT_ID: 'system:objectId'
 };
 
@@ -75,7 +77,7 @@ export enum ContentStreamAllowed {
   REQUIRED = 'required'
 }
 
-// Classifications
+// classifications applied to object type fields
 export enum Classification {
   STRING_CATALOG = 'catalog',
   STRING_ORGANIZATION = 'id:organization',
@@ -85,6 +87,18 @@ export enum Classification {
   STRING_PHONE = 'phone',
   NUMBER_FILESIZE = 'filesize',
   NUMBER_DIGIT = 'digit'
+}
+
+// classifications applied to object types
+export enum ObjectTypeClassification {
+  ADVANCED_FILING_OBJECT = 'appClient:dlm',
+  FLOATING_OBJECT_TYPE = 'appClient:floatingType'
+}
+
+// classifications applied to secondary object types
+export enum SecondaryObjectTypeClassification {
+  REQUIRED = 'appClient:required',
+  PRIMARY = 'appClient:primary'
 }
 
 // special internal types of object type fields

@@ -74,19 +74,29 @@ export class GridService {
     const objectTypeFields = {};
     objectType.fields.forEach((f: ObjectTypeField) => (objectTypeFields[f.id] = f));
 
-    return this.userConfig
-      .getColumnConfig(objectTypeId)
-      .pipe(map((cc: ColumnConfig) => cc.columns.map((c) => this.getColumnDefinition(objectTypeFields[c.id], c))));
+    return this.userConfig.getColumnConfig(objectTypeId).pipe(
+      map((cc: ColumnConfig) =>
+        cc.columns
+          // maybe there are columns that do not match the type definition anymore
+          .filter((c) => !!objectTypeFields[c.id])
+          .map((c) => this.getColumnDefinition(objectTypeFields[c.id], c))
+      )
+    );
   }
 
   /**
    * Generate column definitions for all fields
    * @param objectTypeId Object type to create the column definition for. Leave
    * blank in case of a mixed result list
+   * @param isSecondaryObjectType Whether or not the given object ID belongs to a secndary object type
    */
-  getColumnDefinitions(objectTypeId?: string): ColDef[] {
-    const objectType: ObjectType = objectTypeId ? this.system.getObjectType(objectTypeId) : this.system.getBaseType();
-    return objectType.fields.map((f) => this.getColumnDefinition(f));
+  getColumnDefinitions(objectTypeId?: string, isSecondaryObjectType?: boolean): ColDef[] {
+    if (isSecondaryObjectType) {
+      return this.system.getSecondaryObjectType(objectTypeId).fields.map((f) => this.getColumnDefinition(f));
+    } else {
+      const objectType: ObjectType = objectTypeId ? this.system.getObjectType(objectTypeId) : this.system.getBaseType();
+      return objectType.fields.map((f) => this.getColumnDefinition(f));
+    }
   }
 
   /**
@@ -178,8 +188,8 @@ export class GridService {
         //   colDef.cellRenderer = this.customContext(CellRenderer.multiSelectCellRenderer);
         // }
         colDef.cellClass = field.cardinality === 'multi' ? 'multiCell string' : 'string';
-        if (Array.isArray(field?.classification)) {
-          colDef.cellRenderer = this.fieldClassification(field?.classification);
+        if (Array.isArray(field?.classifications)) {
+          colDef.cellRenderer = this.fieldClassification(field?.classifications);
         }
         break;
       }
@@ -190,8 +200,8 @@ export class GridService {
         //   colDef.cellRenderer = this.customContext(CellRenderer.multiSelectCellRenderer);
         // }
         colDef.cellClass = field.cardinality === 'multi' ? 'multiCell string' : 'string';
-        if (Array.isArray(field?.classification)) {
-          colDef.cellRenderer = this.fieldClassification(field?.classification);
+        if (Array.isArray(field?.classifications)) {
+          colDef.cellRenderer = this.fieldClassification(field?.classifications);
         }
         break;
       }
@@ -201,8 +211,8 @@ export class GridService {
           colDef.cellRenderer = this.customContext(CellRenderer.multiSelectCellRenderer);
         }
         colDef.cellClass = field.cardinality === 'multi' ? 'multiCell string' : 'string';
-        if (Array.isArray(field?.classification)) {
-          colDef.cellRenderer = this.fieldClassification(field?.classification);
+        if (Array.isArray(field?.classifications)) {
+          colDef.cellRenderer = this.fieldClassification(field?.classifications);
         }
         break;
       }
@@ -218,7 +228,7 @@ export class GridService {
           pattern: undefined
         };
         colDef.width = 150;
-        colDef.cellRenderer = this.fieldClassification(field?.classification, params);
+        colDef.cellRenderer = this.fieldClassification(field?.classifications, params);
         break;
       }
       case 'decimal': {
@@ -229,7 +239,7 @@ export class GridService {
           cips: true
         };
         colDef.width = 150;
-        colDef.cellRenderer = this.fieldClassification(field?.classification, params);
+        colDef.cellRenderer = this.fieldClassification(field?.classifications, params);
         break;
       }
       case 'boolean': {
@@ -269,6 +279,10 @@ export class GridService {
         colDef.width = 100;
         colDef.cellRenderer = this.customContext(CellRenderer.filesizeCellRenderer);
         colDef.keyCreator = this.customContext(this.fileSizeKeyCreator);
+        break;
+      }
+      case BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS: {
+        colDef.cellRenderer = this.customContext(CellRenderer.sotCellRenderer);
         break;
       }
     }

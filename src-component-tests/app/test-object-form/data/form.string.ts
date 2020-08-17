@@ -74,7 +74,7 @@ export const stringElements = [
     name: 'string:multiline',
     label: 'String multiline',
     description: 'enter multiline string',
-    multiline: true,
+    rows: 3,
     type: 'string',
     required: false
   },
@@ -114,6 +114,16 @@ export const stringElements = [
     label: 'String Classification phone multiple',
     description: 'enter multiple phone numbers',
     classification: ['phone'],
+    type: 'string',
+    required: false
+  },
+  {
+    readonly: false,
+    cardinality: 'single',
+    name: 'string:phone:rows',
+    label: 'Multiline string',
+    description: '',
+    rows: 5,
     type: 'string',
     required: false
   }

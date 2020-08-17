@@ -2,18 +2,30 @@ export interface SystemDefinition {
   version: number;
   lastModificationDate: any;
   objectTypes: ObjectType[];
+  secondaryObjectTypes: SecondaryObjectType[];
   i18n: any;
 }
 
 export interface ObjectType {
   id: string;
   label?: string;
-  localNamespace: string;
+  classification?: string[];
+  // localNamespace: string;
   description: string;
   baseId: string;
   creatable: boolean;
   contentStreamAllowed?: string;
   isFolder: boolean;
+  secondaryObjectTypes: { id: string; static?: boolean }[];
+  fields: ObjectTypeField[];
+}
+
+export interface SecondaryObjectType {
+  id: string;
+  label?: string;
+  classification?: string[];
+  description: string;
+  baseId: string;
   fields: ObjectTypeField[];
 }
 
@@ -34,7 +46,7 @@ export interface ObjectTypeField {
   // the propertyType
   _internalType: string;
   resolution?: string;
-  classification?: string[];
+  classifications?: string[];
 }
 
 // base definition of the kind of data we'll receive
@@ -42,7 +54,24 @@ export interface ObjectTypeField {
 export interface SchemaResponse {
   version: number;
   lastModificationDate: string;
-  objectTypes: SchemaResponseTypeDefinition[];
+  propertyDefinition: [any];
+  typeDocumentDefinition: SchemaResponseDocumentTypeDefinition[];
+  typeFolderDefinition: SchemaResponseFolderTypeDefinition[];
+  typeSecondaryDefinition: SchemaResponseTypeDefinition[];
+}
+
+export interface SchemaResponseTypeDefinition {
+  id: string;
+  description?: string;
+  baseId: string;
+  propertyReference: { value: string }[];
+  secondaryObjectTypeId: { value: string; static?: boolean }[];
+  classification: string[];
+}
+
+export interface SchemaResponseFolderTypeDefinition extends SchemaResponseTypeDefinition {}
+export interface SchemaResponseDocumentTypeDefinition extends SchemaResponseFolderTypeDefinition {
+  contentStreamAllowed?: string;
 }
 
 export interface SchemaResponseFieldDefinition {
@@ -55,16 +84,16 @@ export interface SchemaResponseFieldDefinition {
   classifications?: string[];
   resolution: string;
 }
-export interface SchemaResponseTypeDefinition {
-  id: string;
-  localNamespace: string;
-  description: string;
-  baseId: string;
-  creatable: boolean;
-  fileable: boolean;
-  contentStreamAllowed?: string;
-  fields: SchemaResponseFieldDefinition[];
-}
+// export interface SchemaResponseTypeDefinition {
+//   id: string;
+//   localNamespace: string;
+//   description: string;
+//   baseId: string;
+//   creatable: boolean;
+//   fileable: boolean;
+//   contentStreamAllowed?: string;
+//   fields: SchemaResponseFieldDefinition[];
+// }
 
 export interface ClassificationEntry {
   classification: string;

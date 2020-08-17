@@ -55,7 +55,7 @@ export class NumberRangeComponent implements ControlValueAccessor, Validator {
    * If you provide a value of `filesize` numbers typed into the control will be
    * handled like file sizes (calculates differnt units)
    */
-  @Input() classification: string;
+  @Input() classifications: string[];
   /**
    * set minimum input value
    */
@@ -94,7 +94,7 @@ export class NumberRangeComponent implements ControlValueAccessor, Validator {
 
   writeValue(value: RangeValue): void {
     if (value && value instanceof RangeValue && (value.firstValue != null || value.secondValue != null)) {
-      const match = this.availableSearchOptions.find(o => o.value === value.operator);
+      const match = this.availableSearchOptions.find((o) => o.value === value.operator);
       this.searchOption = match ? match.value : this.availableSearchOptions[0].value;
 
       this.value = value;

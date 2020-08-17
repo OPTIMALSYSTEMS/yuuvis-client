@@ -1,4 +1,4 @@
-import { SearchFilter, SearchQuery, Utils } from '@yuuvis/core';
+import { BaseObjectTypeField, SearchFilter, SearchQuery, SecondaryObjectTypeClassification, Utils } from '@yuuvis/core';
 
 /**
  * @ignore
@@ -23,10 +23,34 @@ export class CellRenderer {
   }
 
   static typeCellRenderer(param: any) {
-    const { value, context } = param;
+    let value = param.value;
+    const { context } = param;
+    const sotIDs = param.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS];
+    if (sotIDs) {
+      const afot = sotIDs.find((sot) => context.system.getSecondaryObjectType(sot)?.classification?.includes(SecondaryObjectTypeClassification.PRIMARY));
+      value = afot || value;
+    }
+
     const ico = context.system.getObjectTypeIcon(value) || '';
     const title = context.system.getLocalizedResource(`${value}_label`) || '';
     return `<span title="${title}">${ico}</span>`;
+  }
+
+  static sotCellRenderer(param: any) {
+    const { context, value } = param;
+    return value
+      ? value
+          .map((v) => context.system.getSecondaryObjectType(v, true))
+          .map((sot) => {
+            if (sot) {
+              const cls = sot.classification?.includes(SecondaryObjectTypeClassification.PRIMARY) ? ' psot' : '';
+              return `<div class="chip${cls}">${Utils.escapeHtml(sot.label)}</div>`;
+            } else {
+              return '';
+            }
+          })
+          .join('')
+      : '';
   }
 
   // static iconCellRenderer(param) {

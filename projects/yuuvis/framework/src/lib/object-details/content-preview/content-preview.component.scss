@@ -41,10 +41,9 @@
 
 .content-preview-container {
   display: grid;
-  grid-template-columns: 2fr minmax(auto, 40px);
-  grid-template-rows: 1fr;
-  gap: 1px 1px;
-  grid-template-areas: 'content undock_btn';
+  grid-template-rows: 1fr auto;
+  grid-template-columns: 1fr;
+  grid-template-areas: 'content' 'undock_btn';
   width: 100%;
 }
 
@@ -54,7 +53,18 @@
 
 .undock_btn {
   grid-area: undock_btn;
-  yuv-icon:hover {
+  background-color: var(--panel-background-grey);
+  padding: calc(var(--app-pane-padding) / 4);
+  border-top: 1px solid var(--panel-divider-color);
+  display: flex;
+  justify-content: flex-end;
+
+  span {
+    background-color: var(--color-primary);
+    color: #fff;
+    font-size: var(--font-hint);
+    border-radius: 2px;
+    padding: 2px 8px;
     cursor: pointer;
   }
 }

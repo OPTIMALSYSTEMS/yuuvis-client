@@ -60,7 +60,7 @@ export class ObjectFormUtils {
     }
 
     if (formElement.type === 'integer' && formElement.id === ContentStreamField.LENGTH) {
-      formElement.classification = Classification.NUMBER_FILESIZE;
+      formElement.classifications = [Classification.NUMBER_FILESIZE];
     }
     return formElement;
   }

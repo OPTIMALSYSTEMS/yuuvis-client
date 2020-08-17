@@ -5,7 +5,7 @@
         <iframe [ngClass]="{covered: (fileDropService.fileDraggedOverApp$ | async)}" [src]="previewSrc | safeUrl"
           frameborder="0" #contentPreview></iframe>
       </ng-container>
-    
+
       <ng-template #tplNoPreview>
         <div class="no-preview">
           <ng-container *ngIf="dmsObject.isFolder; else tplNoContent">
@@ -18,9 +18,8 @@
       </ng-template>
     </ng-container>
 
-
   </div>
   <div class="undock_btn">
-    <yuv-icon class="button undock" title="{{'yuv.framework.object-details.tooltip.undock' | translate}}" (click)="undock()" [icon]="'undock'"></yuv-icon>
+    <span (click)="undock()">{{'yuv.framework.object-details.tooltip.undock' | translate}}</span>
   </div>
 </div>

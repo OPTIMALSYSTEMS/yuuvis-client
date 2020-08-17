@@ -70,5 +70,7 @@ export interface ObjectTypePreset {
 export enum CurrentStep {
   OBJECTTYPE = 'objecttype',
   FILES = 'files',
-  INDEXDATA = 'indexdata'
+  INDEXDATA = 'indexdata',
+  AFO_UPLOAD = 'afo_upload',
+  AFO_INDEXDATA = 'afo_indexdata'
 }
