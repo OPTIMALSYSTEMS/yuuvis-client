@@ -31,7 +31,10 @@ export interface SecondaryObjectType {
 
 export interface ObjectTypeGroup {
   label: string;
-  types: ObjectType[];
+  types: {
+    id: string;
+    label: string;
+  };
 }
 
 export interface ObjectTypeField {

@@ -7,27 +7,8 @@ import { BackendService } from '../backend/backend.service';
 import { AppCacheService } from '../cache/app-cache.service';
 import { Logger } from '../logger/logger';
 import { Utils } from './../../util/utils';
-import {
-  BaseObjectTypeField,
-  Classification,
-  ContentStreamAllowed,
-  InternalFieldType,
-  ObjectTypeClassification,
-  SecondaryObjectTypeClassification,
-  SecondaryObjectTypeField,
-  SystemType
-} from './system.enum';
-import {
-  ClassificationEntry,
-  ObjectType,
-  ObjectTypeField,
-  ObjectTypeGroup,
-  SchemaResponse,
-  SchemaResponseFieldDefinition,
-  SchemaResponseTypeDefinition,
-  SecondaryObjectType,
-  SystemDefinition
-} from './system.interface';
+import { BaseObjectTypeField, Classification, ContentStreamAllowed, InternalFieldType, ObjectTypeClassification, SecondaryObjectTypeClassification, SecondaryObjectTypeField, SystemType } from './system.enum';
+import { ClassificationEntry, ObjectType, ObjectTypeField, ObjectTypeGroup, SchemaResponse, SchemaResponseFieldDefinition, SchemaResponseTypeDefinition, SecondaryObjectType, SystemDefinition } from './system.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -56,14 +37,23 @@ export class SystemService {
 
   /**
    * Returns grouped object types sorted by label and folders first.
+   * This also includes floating object types.
+   * 
    * @param withLabels Whether or not to also add the types labels
    * @param skipAbstract Whether or not to exclude abstract object types like e.g. 'system:document'
    */
   getGroupedObjectTypes(withLabels?: boolean, skipAbstract?: boolean): ObjectTypeGroup[] {
     // TODO: Apply a different property to group once grouping is available
+
+
+    this.getObjectTypes(withLabels)
+    .filter((ot) => !skipAbstract || ot.creatable)
+
+
     const grouped = this.groupBy(
       this.getObjectTypes(withLabels)
         .filter((ot) => !skipAbstract || ot.creatable)
+        .
         .map((ot) => ({ ...ot, group: this.getLocalizedResource(`${ot.id}_description`) }))
         .sort(Utils.sortValues('label'))
         .sort((x, y) => (x.isFolder === y.isFolder ? 0 : x.isFolder ? -1 : 1)),
@@ -213,15 +203,16 @@ export class SystemService {
   /**
    * Get the icon for an object type. This will return an SVG as a string.
    * @param objectTypeId ID of the object type
+   * @param secondaryObjecttypeIDs List of secondary object type ID. This
    */
-  getObjectTypeIcon(objectTypeId: string): string {
+  getObjectTypeIcon(objectTypeId: string, secondaryObjecttypeIDs?: string[]): string {
     if (objectTypeId) {
       const type = this.getObjectType(objectTypeId);
       const sot = this.getSecondaryObjectType(objectTypeId);
       // TODO: point to actual icon URI
       // AFOs (Advanced filing objects) should have a more prominent icon
       // TODO: Handle different icons in resources service
-      if (type && this.isAFOType(type)) {
+      if (type && this.isFloatingObjectType(type)) {
         return '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M6 2c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6H6zm7 7V3.5L18.5 9H13z"/><path d="M0 0h24v24H0V0z" fill="none"/><circle fill="#fff" cx="18.1" cy="18" r="5"/><path class="accent" d="M18,12c-3.3,0-6,2.7-6,6s2.7,6,6,6c3.3,0,6-2.7,6-6S21.3,12,18,12z M20.5,21.6L18,20.1l-2.5,1.5l0.7-2.9l-2.2-1.9l3-0.3l1.2-2.7l1.2,2.7l3,0.3l-2.2,1.9L20.5,21.6z"/></svg>';
       } else if (sot) {
         return '<svg xmlns="http://www.w3.org/2000/svg"  width="24" height="24" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h5v8l-2.5-1.5L6 12V4z"/></svg>';
@@ -236,6 +227,24 @@ export class SystemService {
   }
 
   /**
+   * Get the leading object type ID for resolving object type icon and so on.
+   * By default this is the actual object type id, but in case of types that are based
+   * on floating secondary object types this will be one of the FSOTs.
+   * @param objectTypeId The object type ID
+   * @param appliedSecondaryObjecttypeIDs List of applied secondary object types. This list
+   * is supposed to be fetched from an actual instance (DmsObject) instead of fetching it from
+   * the type definition (schema) because schema defines the types that are applicable whereas
+   * the instance holds the types that are actually applied.
+   */
+  getLeadingObjectTypeID(objectTypeId: string, appliedSecondaryObjecttypeIDs?: string[]) {
+    return this.isFloatingObjectType(this.getObjectType(objectTypeId))
+      ? // in case of a floating type, the leading object type ID will be the
+        // primary SOT applied to it
+        appliedSecondaryObjecttypeIDs.find((t) => this.getSecondaryObjectType(t).classification?.includes(SecondaryObjectTypeClassification.PRIMARY))
+      : objectTypeId;
+  }
+
+  /**
    * Checks whether or not the given object type is an Advanced Filing Object (AFO). These types have a special kind of
    * create lifecycle and may be treated in a different way.
    *
@@ -246,17 +255,17 @@ export class SystemService {
    *
    * @param objectType Object type to be checked
    */
-  isAFOType(objectType: ObjectType): boolean {
-    return (
-      objectType.contentStreamAllowed === ContentStreamAllowed.REQUIRED &&
-      Array.isArray(objectType.classification) &&
-      objectType.classification.includes(ObjectTypeClassification.ADVANCED_FILING_OBJECT)
-    );
-  }
+  // isAFOType(objectType: ObjectType): boolean {
+  //   return (
+  //     objectType.contentStreamAllowed === ContentStreamAllowed.REQUIRED &&
+  //     Array.isArray(objectType.classification) &&
+  //     objectType.classification.includes(ObjectTypeClassification.ADVANCED_FILING_OBJECT)
+  //   );
+  // }
 
   /**
-   * Floating object types (FOT) are object types that have a classification of 'appClient:floatingType' and at least one
-   * secondary object type (SOT) with a classification of 'appClient:primary'.
+   * Floating object types (FOT) are object types thet have at least one non static (floating)
+   * secondary object type (SOT).
    *
    * Once one primary SOT has been applied to the FOT the SOT will be treated like the main object type.
    * Using this kind of objects you are able to create types that can turn into any applied primary SOT.
@@ -289,22 +298,22 @@ export class SystemService {
   }
 
   /**
-   * AFOs (advanced filing objects) use more than one object type form.
-   * In facct its a collection of forms that will be combined later on.
-   * This method fetches all the forms bound to an AFO type.
+   * Floating object types use more than one object type form.
+   * In fact its a collection of forms that will be combined later on.
+   * This method fetches all the forms bound to an floating object type.
    *
    * @param dmsObject a dms object created from an AFO type
    * @returns object where property name is the object type key and value is the form model for this type
    * or null in case the given object does not belong to an AFO type
    */
-  getAFOTypeForms(dmsObject: DmsObject, situation?: string): Observable<{ [key: string]: any }> {
-    const afoType = this.getObjectType(dmsObject.objectTypeId);
-    // make sure that it actually is an AFO type
-    if (this.isAFOType(afoType)) {
+  getFloatingObjectTypeForms(dmsObject: DmsObject, situation?: string): Observable<{ [key: string]: any }> {
+    const ot = this.getObjectType(dmsObject.objectTypeId);
+    // make sure that it actually is a floating object type
+    if (this.isFloatingObjectType(ot)) {
       const objectTypeIDs = [];
       // if the main type itself has properties, add them
-      if (afoType.fields.filter((f) => !f.id.startsWith('system:')).length) {
-        objectTypeIDs.push(afoType.id);
+      if (ot.fields.filter((f) => !f.id.startsWith('system:')).length) {
+        objectTypeIDs.push(ot.id);
       }
       const sots: string[] = dmsObject.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS];
       if (sots) {

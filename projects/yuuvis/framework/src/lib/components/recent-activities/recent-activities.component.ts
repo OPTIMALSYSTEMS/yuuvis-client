@@ -15,6 +15,7 @@ import {
 } from '@yuuvis/core';
 import { Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
+import { CellRenderer } from '../../services/grid/grid.cellrenderer';
 
 /**
  * Component showing recent activities for the current user. This means listing the objects
@@ -131,12 +132,20 @@ export class RecentActivitiesComponent implements OnInit {
 
   private toRecentItem(resItem: SearchResultItem, date: Date): RecentItem {
     const objectTypeId = resItem.fields.get(BaseObjectTypeField.OBJECT_TYPE_ID);
+    const crParams = {
+      value: objectTypeId,
+      data: {},
+      context: {
+        system: this.systemService
+      }
+    };
+    crParams.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS] = resItem.fields.get(BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS);
     return {
       title: resItem.fields.get(SecondaryObjectTypeField.TITLE),
       description: resItem.fields.get(SecondaryObjectTypeField.DESCRIPTION),
       objectId: resItem.fields.get(BaseObjectTypeField.OBJECT_ID),
       objectTypeId,
-      objectTypeIcon: this.systemService.getObjectTypeIcon(objectTypeId),
+      objectTypeIcon: CellRenderer.typeCellRenderer(crParams),
       objectTypeLabel: this.systemService.getLocalizedResource(`${objectTypeId}_label`),
       date
     };
