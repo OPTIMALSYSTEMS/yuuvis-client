@@ -284,10 +284,12 @@ export class QuickSearchService {
       MIME_TYPE && {
         id: 'mime',
         label: MIME_TYPE.label,
-        items: ['*word*', '*pdf*', '*image*'].map((r) => ({
+        items: ['*word*', '*pdf*', '*image*', '*audio*', '*video*', '*excel*', '*mail*', '*text*'].sort().map((r) => ({
           id: '__' + MIME_TYPE.id + '#' + r,
           label: r.replace(/\*/g, ''),
-          value: [new SearchFilter(MIME_TYPE.id, SearchFilter.OPERATOR.IN, [r])]
+          value: [
+            new SearchFilter(MIME_TYPE.id, SearchFilter.OPERATOR.IN, r === '*excel*' ? [r, '*sheet*'] : r === '*mail*' ? ['*message*', '*outlook*'] : [r])
+          ]
         }))
       },
       LENGTH && {
