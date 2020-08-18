@@ -162,6 +162,7 @@ export class SearchFilterConfigComponent implements OnInit {
   onControlRemoved(id: string) {}
 
   onFilterChanged(res: Selectable) {
+    res.label = this.selectedFilter.label;
     this.selectedFilter = res;
   }
 
