@@ -177,7 +177,6 @@ export class ReferenceComponent implements ControlValueAccessor, AfterViewInit {
           // some of the IDs could not be retrieved (no permission or deleted)
           const x = {};
           res.items.forEach((r) => (x[r.fields.get(BaseObjectTypeField.OBJECT_ID)] = r));
-
           return ids.map((id) => {
             const crParams = {
               value: x[id].fields.get(BaseObjectTypeField.OBJECT_TYPE_ID),

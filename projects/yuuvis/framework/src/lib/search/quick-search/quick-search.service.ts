@@ -16,7 +16,7 @@ import {
   UserService,
   Utils
 } from '@yuuvis/core';
-import { Observable, of } from 'rxjs';
+import { forkJoin, Observable, of } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import { DynamicDate } from '../../form/elements/datetime/datepicker/datepicker.interface';
 import { DatepickerService } from '../../form/elements/datetime/datepicker/service/datepicker.service';
@@ -101,9 +101,13 @@ export class QuickSearchService {
     });
   }
 
+  loadFilterSettings() {
+    return forkJoin([this.loadStoredFilters(), this.loadFiltersVisibility()]);
+  }
+
   getAvailableFilterGroups(storedFilters: Selectable[], availableObjectTypeFields: Selectable[]) {
     const groups = storedFilters.reduce((prev, cur) => {
-      cur.value.forEach((f) => (prev[f.property] = (prev[f.property] || []).concat([cur])));
+      SearchFilterGroup.fromArray(cur.value).filters.forEach((f) => (prev[f.property] = (prev[f.property] || []).concat([cur])));
       return prev;
     }, {});
     return Object.keys(groups).map((key) => ({ id: key, label: availableObjectTypeFields.find((f) => f.id === key).label, items: groups[key] }));
