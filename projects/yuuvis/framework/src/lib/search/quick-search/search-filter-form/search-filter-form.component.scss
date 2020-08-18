@@ -2,8 +2,21 @@
   flex: 1;
   padding: var(--app-pane-padding);
 
+  .node-item {
+    display: flex;
+    flex-direction: row;
+  }
+
+  .cdk-drag {
+    display: flex;
+    flex-direction: row;
+  }
+
   .cdk-drag-handle {
-    display: none;
+    // display: none;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
   }
 
   .cdk-drag-placeholder {
@@ -19,20 +32,22 @@
   }
 
   .drop-inside {
-    border: 1px solid #00f;
+    border: 1px dotted var(--color-accent);
+    border-radius: 5px;
   }
 
   .drop-before {
-    border-top: 1px solid #00f;
+    border-top: 1px dotted var(--color-accent);
   }
 
   .drop-after {
-    border-bottom: 1px solid #00f;
+    border-bottom: 1px dotted var(--color-accent);
   }
 
   .condition {
     display: flex;
     align-items: center;
+    flex: 1;
     padding: calc(var(--app-pane-padding) / 4);
     // border-bottom: 1px solid var(--panel-divider-color);
     background-color: var(--panel-background);
@@ -65,11 +80,6 @@
     display: flex;
     align-items: center;
 
-    &:last-child {
-      .operator {
-        opacity: 0;
-      }
-    }
     .fe-chip {
       display: flex;
       flex: 1;
