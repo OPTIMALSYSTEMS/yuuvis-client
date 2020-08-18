@@ -3,7 +3,6 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import {
   AggregateResult,
   BaseObjectTypeField,
-  ContentStreamField,
   DeviceService,
   ObjectType,
   SearchFilter,
@@ -89,31 +88,6 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
   formOptions: any;
   formValid = true;
 
-  // object types that one should not search for
-  // private skipTypes = [SystemType.DOCUMENT, SystemType.FOLDER];
-  private skipTypes = [];
-  // fields that should not be searchable
-  private skipFields = [
-    // ...Object.keys(RetentionField).map(k => RetentionField[k]),
-    BaseObjectTypeField.OBJECT_ID,
-    // BaseObjectTypeField.CREATED_BY,
-    // BaseObjectTypeField.MODIFIED_BY,
-    BaseObjectTypeField.TAGS,
-    BaseObjectTypeField.OBJECT_TYPE_ID,
-    BaseObjectTypeField.PARENT_ID,
-    BaseObjectTypeField.PARENT_OBJECT_TYPE_ID,
-    BaseObjectTypeField.PARENT_VERSION_NUMBER,
-    BaseObjectTypeField.TENANT,
-    BaseObjectTypeField.TRACE_ID,
-    BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS,
-    BaseObjectTypeField.BASE_TYPE_ID,
-    ContentStreamField.ID,
-    ContentStreamField.RANGE,
-    ContentStreamField.REPOSITORY_ID,
-    ContentStreamField.DIGEST,
-    ContentStreamField.ARCHIVE_PATH
-  ];
-
   /**
    * ID of a context folder to restrict search to.
    */
@@ -122,15 +96,17 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
       this._context = c;
       this._tmpSearch = this.searchQuery ? this.searchQuery.toQueryJson() : null;
       // enable context search
-      const contextSearch = new SearchQuery();
-      contextSearch.addFilter(new SearchFilter(BaseObjectTypeField.PARENT_ID, SearchFilter.OPERATOR.EQUAL, this.context));
-      this.setQuery(contextSearch);
+      this.setQuery(new SearchQuery());
     } else if (!c && this._tmpSearch) {
       this.setQuery(new SearchQuery(this._tmpSearch));
     }
   }
   get context() {
     return this._context;
+  }
+
+  get contextFilter() {
+    return new SearchFilter(BaseObjectTypeField.PARENT_ID, SearchFilter.OPERATOR.EQUAL, this.context);
   }
 
   /**
@@ -322,7 +298,10 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
   onControlRemoved(id: string) {}
 
   onFilterChanged(res: Selectable) {
-    this.searchQuery.filterGroup = SearchFilterGroup.fromArray(res.value);
+    this.searchQuery.filterGroup = SearchFilterGroup.fromArray(res.value).clone();
+    if (this.context && this.searchWithinContext) {
+      this.searchQuery.addFilter(this.contextFilter);
+    }
     this.aggregate();
   }
 
@@ -375,8 +354,7 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
         );
       }
       if (this.context && this.searchWithinContext) {
-        // TODO: check all combinations
-        this.searchQuery.addFilter(new SearchFilter(BaseObjectTypeField.PARENT_ID, SearchFilter.OPERATOR.EQUAL, this.context));
+        this.searchQuery.addFilter(this.contextFilter);
       }
 
       this.settingUpQuery = false;
