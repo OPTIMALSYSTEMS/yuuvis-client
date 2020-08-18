@@ -345,38 +345,13 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
   }
 
   private setAvailableObjectTypesFields() {
-    this.availableObjectTypeFields = [];
+    this.availableObjectTypeFields = this.quickSearchService.getAvailableObjectTypesFields(this.selectedObjectTypes);
 
-    let sharedFields;
-
-    const selectedObjectTypes: ObjectType[] = this.selectedObjectTypes.length
-      ? this.systemService.getObjectTypes().filter((t) => this.selectedObjectTypes.includes(t.id))
-      : this.systemService.getObjectTypes();
-
-    selectedObjectTypes.forEach((t) => {
-      if (!sharedFields) {
-        sharedFields = t.fields;
-      } else {
-        // check for fields that are not part of the shared fields
-        const fieldIDs = t.fields.map((f) => f.id);
-        sharedFields = sharedFields.filter((f) => fieldIDs.includes(f.id));
-      }
-    });
-
-    this.availableObjectTypeFields = sharedFields
-      .filter((f) => !this.skipFields.includes(f.id))
-      .map((f) => ({
-        id: f.id,
-        label: this.systemService.getLocalizedResource(`${f.id}_label`),
-        value: f
-      }))
-      .sort(Utils.sortValues('label'));
-
+    // remove filters that are not relevant
     this.searchQuery.filterGroup.filters.forEach(
-      (f) => this.availableObjectTypeFields.find((t) => t.id !== f.property) && this.searchQuery.filterGroup.remove(f.id)
+      (f) => !this.availableObjectTypeFields.find((t) => t.id === f.property) && this.searchQuery.filterGroup.remove(f.id)
     );
 
-    // TODO: notsetvalue ???
     this.formOptions = { filter: { id: 'new', value: [this.searchQuery.filterGroup.clone()] }, availableObjectTypeFields: this.availableObjectTypeFields };
   }
 
