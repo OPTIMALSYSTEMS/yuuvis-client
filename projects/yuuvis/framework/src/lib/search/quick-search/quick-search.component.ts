@@ -211,10 +211,7 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
 
   autocomplete(event: any) {
     const q = (this.lastAutoQuery = this.parseQuery(event.query));
-    if (q.isTypeFields) {
-      this.setAvailableObjectTypesFields();
-    }
-    // TODO : update filter suggestions
+    // TODO : add active filter suggestions
     const suggestions: any[] =
       (q.isTypes ? this.availableObjectTypes : this.availableObjectTypeFields.map((o) => ({ ...o, value: [new SearchFilter(o.id, undefined, undefined)] }))) ||
       [];
@@ -375,7 +372,12 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
       }))
       .sort(Utils.sortValues('label'));
 
-    this.formOptions = { filter: { id: 'new', value: [this.searchQuery.filterGroup] }, availableObjectTypeFields: this.availableObjectTypeFields };
+    this.searchQuery.filterGroup.filters.forEach(
+      (f) => this.availableObjectTypeFields.find((t) => t.id !== f.property) && this.searchQuery.filterGroup.remove(f.id)
+    );
+
+    // TODO: notsetvalue ???
+    this.formOptions = { filter: { id: 'new', value: [this.searchQuery.filterGroup.clone()] }, availableObjectTypeFields: this.availableObjectTypeFields };
   }
 
   setQuery(q: SearchQuery) {
