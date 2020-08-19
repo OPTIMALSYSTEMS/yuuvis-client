@@ -12,11 +12,16 @@ import { SearchResult, SearchResultItem } from '../search/search.service.interfa
 import { BaseObjectTypeField } from '../system/system.enum';
 import { SystemService } from '../system/system.service';
 import { UploadService } from '../upload/upload.service';
-
+/**
+ * Service for working with dms objects: create them, delete, etc.
+ */
 @Injectable({
   providedIn: 'root'
 })
 export class DmsService {
+  /**
+   * @ignore
+   */
   constructor(
     private searchService: SearchService,
     private backend: BackendService,

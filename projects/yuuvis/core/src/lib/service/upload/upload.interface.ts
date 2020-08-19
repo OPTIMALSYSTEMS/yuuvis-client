@@ -33,6 +33,9 @@ export interface UploadResult {
   label?: string;
 }
 
+/**
+ * Interface that was used by upload service
+ */
 export interface CreatedObject {
   body?: {
     objects: {

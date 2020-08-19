@@ -2,14 +2,18 @@ import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { YuvEvent } from './event.interface';
-
+/**
+ * Service for providing triggered events
+ */
 @Injectable({
   providedIn: 'root'
 })
 export class EventService {
   private eventSource = new Subject<YuvEvent>();
   public event$: Observable<YuvEvent> = this.eventSource.asObservable();
-
+  /**
+   * @ignore
+   */
   constructor() {}
 
   /**
@@ -26,6 +30,6 @@ export class EventService {
    * @param types Type/key of the event
    */
   on(...types: string[]): Observable<YuvEvent> {
-    return this.event$.pipe(filter(event => event && !!types.find(t => t === event.type)));
+    return this.event$.pipe(filter((event) => event && !!types.find((t) => t === event.type)));
   }
 }

@@ -18,6 +18,9 @@ import {
   SystemDefinition
 } from './system.interface';
 
+/**
+ * Providing system definitions.
+ */
 @Injectable({
   providedIn: 'root'
 })
@@ -28,6 +31,9 @@ export class SystemService {
   private systemSource = new ReplaySubject<SystemDefinition>();
   public system$: Observable<SystemDefinition> = this.systemSource.asObservable();
 
+  /**
+   * @ignore
+   */
   constructor(private backend: BackendService, private appCache: AppCacheService, private logger: Logger) {}
 
   /**

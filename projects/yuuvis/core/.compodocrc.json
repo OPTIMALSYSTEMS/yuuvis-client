@@ -8,7 +8,7 @@
   "disableProtected": true,
   "disableInternal": true,
   "disableGraph": true,
-  "disableCoverage": false,
+  "disableCoverage": true,
   "coverageTestThresholdFail": false,
   "hideGenerator": true,
   "extTheme": "./../../../documentation/styles",
@@ -25,14 +25,6 @@
     {
       "id": "info",
       "label": "API"
-    },
-    {
-      "id": "source",
-      "label": "Source"
-    },
-    {
-      "id": "tree",
-      "label": "DOM Tree"
     }
   ]
 }

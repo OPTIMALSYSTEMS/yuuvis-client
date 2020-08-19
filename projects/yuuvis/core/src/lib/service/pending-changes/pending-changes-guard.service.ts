@@ -2,7 +2,9 @@ import { Injectable } from '@angular/core';
 import { CanDeactivate } from '@angular/router';
 import { PendingChangesComponent } from './pending-changes-component.interface';
 import { PendingChangesService } from './pending-changes.service';
-
+/**
+ * Providing a `PendingChangesComponent`.
+ */
 @Injectable({
   providedIn: 'root'
 })

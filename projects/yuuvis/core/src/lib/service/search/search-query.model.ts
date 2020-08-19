@@ -1,7 +1,9 @@
 import { RangeValue } from './../../model/range-value.model';
 import { Utils } from './../../util/utils';
 import { SearchQueryProperties } from './search.service.interface';
-
+/**
+ * Search query properties
+ */
 export class SearchQuery {
   term: string;
   fields: string[];
@@ -28,14 +30,14 @@ export class SearchQuery {
 
       if (searchQueryProperties.filters) {
         this.filters = [];
-        Object.keys(searchQueryProperties.filters).forEach(k => {
+        Object.keys(searchQueryProperties.filters).forEach((k) => {
           const filterValue = searchQueryProperties.filters[k];
           this.filters.push(new SearchFilter(k, filterValue.o, filterValue.v1, filterValue.v2));
         });
       }
 
       if (searchQueryProperties.sort) {
-        searchQueryProperties.sort.forEach(o => this.addSortOption(o.field, o.order));
+        searchQueryProperties.sort.forEach((o) => this.addSortOption(o.field, o.order));
       }
     }
   }
@@ -56,7 +58,7 @@ export class SearchQuery {
    * @param type The object type to be removed
    */
   public removeType(objectTypeId: string) {
-    this.types = this.types.filter(t => t !== objectTypeId);
+    this.types = this.types.filter((t) => t !== objectTypeId);
   }
 
   /**
@@ -65,7 +67,7 @@ export class SearchQuery {
    * @param type The object type to be toggled
    */
   public toggleType(objectTypeId: string) {
-    if (this.types.find(t => t === objectTypeId)) {
+    if (this.types.find((t) => t === objectTypeId)) {
       this.removeType(objectTypeId);
     } else {
       this.types.push(objectTypeId);
@@ -97,7 +99,7 @@ export class SearchQuery {
    * @param filterPropertyName The filter (its property name) to be removed
    */
   public removeFilter(filterPropertyName: string) {
-    this.filters = this.filters.filter(f => f.property !== filterPropertyName);
+    this.filters = this.filters.filter((f) => f.property !== filterPropertyName);
   }
 
   /**
@@ -131,7 +133,7 @@ export class SearchQuery {
    * @returns Search Filter Object
    */
   public getFilter(propertyName: string): SearchFilter {
-    return this.filters.find(f => f.property === propertyName);
+    return this.filters.find((f) => f.property === propertyName);
   }
 
   /**
@@ -143,7 +145,7 @@ export class SearchQuery {
    * @param missing
    */
   public addSortOption(name: string, order: string, missing?: string) {
-    if (!this.sortOptions.find(s => s.field === name)) {
+    if (!this.sortOptions.find((s) => s.field === name)) {
       this.sortOptions.push(new SortOption(name, order, missing));
     }
   }
@@ -153,7 +155,7 @@ export class SearchQuery {
    * @param name
    */
   removeSortOption(name: string) {
-    this.sortOptions = this.sortOptions.filter(s => s.field !== name);
+    this.sortOptions = this.sortOptions.filter((s) => s.field !== name);
   }
 
   /**
@@ -183,7 +185,7 @@ export class SearchQuery {
 
     if (this.filters.length) {
       queryJson.filters = {};
-      this.filters.forEach(f => {
+      this.filters.forEach((f) => {
         queryJson.filters[f.property] = {
           o: f.operator,
           v1: f.firstValue,
@@ -207,6 +209,9 @@ export class SearchQuery {
   }
 }
 
+/**
+ * `SearchFilter` is used for a filtering of searching results of DmsObjects.
+ */
 export class SearchFilter {
   /**
    * available operators for a search filter
@@ -274,7 +279,7 @@ export class SearchFilter {
       this.property === property &&
       this.operator === operator &&
       this.secondValue === secondValue &&
-      (this.firstValue instanceof Array ? !!this.firstValue.find(v => v === firstValue) : this.firstValue === firstValue)
+      (this.firstValue instanceof Array ? !!this.firstValue.find((v) => v === firstValue) : this.firstValue === firstValue)
     );
   }
 
@@ -290,7 +295,9 @@ export class SearchFilter {
     return JSON.stringify(this.toQuery());
   }
 }
-
+/**
+ * Sortig criteria of objects searching result
+ */
 export class SortOption {
   constructor(public field: string, public order: string, public missing?: string) {}
 }

@@ -14,16 +14,23 @@ export interface AuditEntry {
 }
 
 export interface AuditQueryResult {
-  // the original query, needed for later on paging requests
+  /**
+   * the original query, needed for later on paging requests
+   */
+
   query: SearchQuery;
   items: AuditEntry[];
   hasMoreItems: boolean;
-  // the page of the current result (in case of multi-page results, otherwise 1)
+  /**
+   * the page of the current result (in case of multi-page results, otherwise 1)
+   */
   page: number;
 }
 
 export interface AuditQueryOptions {
-  // max number of items to be fetched (default: 50)
+  /**
+   * max number of items to be fetched (default: 50)
+   */
   size?: number;
   dateRange?: RangeValue;
   actions?: AuditQueryOptionAction[];

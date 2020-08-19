@@ -7,8 +7,11 @@ import { Logger } from '../logger/logger';
 import { BaseObjectTypeField, SecondaryObjectTypeField } from '../system/system.enum';
 import { CreatedObject, ProgressStatus, UploadResult } from './upload.interface';
 
-const transformResponse = () => map((res: CreatedObject) => (res && res.body ? res.body.objects.map(val => val) : null));
+const transformResponse = () => map((res: CreatedObject) => (res && res.body ? res.body.objects.map((val) => val) : null));
 
+/**
+ * Service for providing upload of different object types into a client.
+ */
 @Injectable({
   providedIn: 'root'
 })
@@ -19,6 +22,9 @@ export class UploadService {
   private uploadStatus = new BehaviorSubject<boolean>(false);
   public uploadStatus$: Observable<boolean> = this.uploadStatus.asObservable();
 
+  /**
+   * @ignore
+   */
   constructor(private http: HttpClient, private logger: Logger) {}
 
   /**
@@ -48,7 +54,7 @@ export class UploadService {
     return this.http.request(request).pipe(
       filter((obj: any) => obj && obj.body),
       transformResponse(),
-      catchError(err => throwError(err))
+      catchError((err) => throwError(err))
     );
   }
 
@@ -58,13 +64,13 @@ export class UploadService {
    */
   cancelItem(id?: string) {
     if (id) {
-      const match = this.status.items.find(i => i.id === id);
+      const match = this.status.items.find((i) => i.id === id);
       if (match) {
         match.subscription.unsubscribe();
-        this.status.items = this.status.items.filter(i => i.id !== id);
+        this.status.items = this.status.items.filter((i) => i.id !== id);
       }
     } else {
-      this.status.items.forEach(element => element.subscription.unsubscribe());
+      this.status.items.forEach((element) => element.subscription.unsubscribe());
       this.status.items = [];
     }
     this.statusSource.next(this.status);
@@ -76,7 +82,7 @@ export class UploadService {
    */
   private createFormData({ file, data }: { data?: any; file?: File[] }): FormData {
     const formData: FormData = new FormData();
-    (file || []).forEach(f => formData.append('files', f, f.name));
+    (file || []).forEach((f) => formData.append('files', f, f.name));
     data ? formData.append('data', new Blob([JSON.stringify(data)], { type: 'application/json' })) : null;
     return formData;
   }
@@ -132,14 +138,14 @@ export class UploadService {
       const label = data.properties[SecondaryObjectTypeField.TITLE] ? data.properties[SecondaryObjectTypeField.TITLE].value : '...';
       return [
         {
-          objectId: objects.map(val => val.properties[BaseObjectTypeField.OBJECT_ID].value),
+          objectId: objects.map((val) => val.properties[BaseObjectTypeField.OBJECT_ID].value),
           contentStreamId: data.contentStreams[0]['contentStreamId'],
           filename: data.contentStreams[0]['fileName'],
           label: `(${objects.length}) ${label}`
         }
       ];
     } else {
-      return result.body.objects.map(o => ({
+      return result.body.objects.map((o) => ({
         objectId: o.properties[BaseObjectTypeField.OBJECT_ID].value,
         contentStreamId: o.contentStreams[0]['contentStreamId'],
         filename: o.contentStreams[0]['fileName'],
@@ -156,7 +162,7 @@ export class UploadService {
       progress.complete();
       // add upload response
       // this.status.items = this.status.items.filter(s => s.id !== id);
-      const idx = this.status.items.findIndex(s => s.id === id);
+      const idx = this.status.items.findIndex((s) => s.id === id);
       if (idx !== -1) {
         this.status.items[idx].result = this.generateResult(event);
         this.statusSource.next(this.status);
@@ -165,7 +171,7 @@ export class UploadService {
   }
 
   private createUploadError(err: HttpErrorResponse, progress: Subject<number>, id: string): Observable<HttpErrorResponse> {
-    const statusItem = this.status.items.find(s => s.id === id);
+    const statusItem = this.status.items.find((s) => s.id === id);
     statusItem.err = {
       code: err.status,
       message: err.error ? err.error.errorMessage : err.message
@@ -182,7 +188,7 @@ export class UploadService {
    * @param label A label that will show up in the upload overlay dialog while uploading
    */
   private startUploadWithFile(request: any, label: string): Observable<CreatedObject> {
-    return new Observable(o => {
+    return new Observable((o) => {
       const id = Utils.uuid();
       const progress = new Subject<number>();
       let result;
@@ -193,12 +199,12 @@ export class UploadService {
         .request(request)
         .pipe(
           catchError((err: HttpErrorResponse) => this.createUploadError(err, progress, id)),
-          tap(event => this.createProgressStatus(event, progress, id))
+          tap((event) => this.createProgressStatus(event, progress, id))
         )
         // actual return value of this function
         .subscribe(
           (res: any) => (res.status ? (result = res) : null),
-          err => {
+          (err) => {
             o.error(err);
             this.uploadStatus.next(true);
             o.complete();
