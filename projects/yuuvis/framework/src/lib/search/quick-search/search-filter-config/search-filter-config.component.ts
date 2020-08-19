@@ -155,6 +155,7 @@ export class SearchFilterConfigComponent implements OnInit {
     this.storedFiltersGroups[0].items = this.getDefaultFilters();
     this.storedFiltersGroups[1].items = this.storedFilters.filter((f) => this.isVisible(f));
     this.storedFiltersGroups[2].items = this.storedFilters.filter((f) => !this.isVisible(f));
+    this.availableFiltersGroups[1].items = this.storedFilters.filter((f) => this.isVisible(f));
     this.quickSearchService.saveFiltersVisibility(this.visibleFilters).subscribe();
   }
 
