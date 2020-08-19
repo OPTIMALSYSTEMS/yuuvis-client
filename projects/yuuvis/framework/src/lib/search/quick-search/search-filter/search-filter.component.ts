@@ -113,7 +113,10 @@ export class SearchFilterComponent implements OnInit {
 
   private setupFilterPanel() {
     this.parentID = this.filterQuery.filters.find((f) => f.property === BaseObjectTypeField.PARENT_ID);
-    this.quickSearchService.getActiveTypes(this.filterQuery).subscribe((res: any) => this.setupTypes(res));
+    // wait until loadFilterSettings
+    forkJoin([this.quickSearchService.getActiveTypes(this.filterQuery), this.quickSearchService.loadFilterSettings()]).subscribe(([res]) =>
+      this.setupTypes(res)
+    );
   }
 
   private setupCollapsedGroups() {
@@ -139,11 +142,7 @@ export class SearchFilterComponent implements OnInit {
   private setupFilters(typeSelection: string[], activeFilters?: Selectable[]) {
     this.availableObjectTypeFields = this.quickSearchService.getAvailableObjectTypesFields(typeSelection);
 
-    forkJoin([
-      this.quickSearchService.loadStoredFilters(),
-      this.quickSearchService.loadFiltersVisibility(),
-      this.quickSearchService.loadLastFilters()
-    ]).subscribe(([storedFilters, visibleFilters, lastFilters]) => {
+    this.quickSearchService.getCurrentSettings().subscribe(([storedFilters, visibleFilters, lastFilters]) => {
       this.storedFilters = this.quickSearchService.loadFilters(storedFilters as any, this.availableObjectTypeFields);
       this.activeFilters =
         activeFilters ||

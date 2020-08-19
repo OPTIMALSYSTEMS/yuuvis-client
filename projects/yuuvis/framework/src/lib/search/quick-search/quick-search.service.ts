@@ -35,7 +35,7 @@ export class QuickSearchService {
   private STORAGE_KEY_FILTERS = 'yuv.framework.search.filters';
 
   private filters = {};
-  private filtersVisibility = [];
+  private filtersVisibility: string[];
   private filtersLast = [];
   availableObjectTypes: Selectable[] = [];
   availableObjectTypeGroups: SelectableGroup[] = [];
@@ -102,7 +102,11 @@ export class QuickSearchService {
   }
 
   loadFilterSettings() {
-    return forkJoin([this.loadStoredFilters(), this.loadFiltersVisibility()]);
+    return forkJoin([this.loadStoredFilters(), this.loadFiltersVisibility(), this.loadLastFilters()]);
+  }
+
+  getCurrentSettings() {
+    return forkJoin([this.loadStoredFilters(of(this.filters)), of(this.filtersVisibility ? [...this.filtersVisibility] : null), of([...this.filtersLast])]);
   }
 
   getAvailableFilterGroups(storedFilters: Selectable[], availableObjectTypeFields: Selectable[]) {
@@ -181,8 +185,8 @@ export class QuickSearchService {
   loadFiltersVisibility() {
     return this.userService.getSettings(this.STORAGE_KEY_FILTERS_VISIBLE).pipe(
       // return this.appCacheService.getItem(this.STORAGE_KEY_FILTERS_VISIBLE).pipe(
-      tap((f) => (this.filtersVisibility = (f && f.visible) || [])),
-      map((f) => f && f.visible)
+      tap((f) => (this.filtersVisibility = f && f.visible)),
+      map((f) => this.filtersVisibility)
     );
   }
 

@@ -1,6 +1,5 @@
 import { Component, ElementRef, EventEmitter, Input, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
 import { SearchFilter, SearchFilterGroup, SearchQuery, TranslateService, Utils } from '@yuuvis/core';
-import { forkJoin } from 'rxjs';
 import { IconRegistryService } from '../../../common/components/icon/service/iconRegistry.service';
 import { Selectable } from '../../../grouped-select';
 import { PopoverConfig } from '../../../popover/popover.interface';
@@ -50,7 +49,7 @@ export class SearchFilterConfigComponent implements OnInit {
       }
     ];
 
-    forkJoin([this.quickSearchService.loadStoredFilters(), this.quickSearchService.loadFiltersVisibility()]).subscribe(([storedFilters, visibleFilters]) => {
+    this.quickSearchService.getCurrentSettings().subscribe(([storedFilters, visibleFilters]) => {
       this.storedFilters = this.quickSearchService.loadFilters(storedFilters as any, this.availableObjectTypeFields);
       this.visibleFilters = visibleFilters || this.storedFilters.map((f) => f.id);
 

@@ -105,9 +105,15 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
     return this._context;
   }
 
-  get contextFilter() {
+  private get contextFilter() {
     return new SearchFilter(BaseObjectTypeField.PARENT_ID, SearchFilter.OPERATOR.EQUAL, this.context);
   }
+
+  private get customFilters(): Selectable[] {
+    return this.availableObjectTypeFields.map((o) => ({ ...o, value: [new SearchFilter(o.id, undefined, undefined)] }));
+  }
+
+  private enabledFilters: Selectable[] = [];
 
   /**
    * Enables inline mode. This is a more compact version of the component that
@@ -168,7 +174,8 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
     this.availableObjectTypeGroups = this.quickSearchService.availableObjectTypeGroups;
     this.selectedObjectTypes = [];
     this.objectTypeSelectLabel = this.translate.instant('yuv.framework.quick-search.type.all');
-    this.setAvailableObjectTypesFields();
+    // TODO: load only if needed
+    this.quickSearchService.loadFilterSettings().subscribe(() => this.setAvailableObjectTypesFields());
 
     this.searchForm.valueChanges.pipe(distinctUntilChanged(), debounceTime(500)).subscribe(({ term }) => {
       const _term = typeof term === 'string' ? term : (term && term.label) || '';
@@ -188,9 +195,7 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
   autocomplete(event: any) {
     const q = (this.lastAutoQuery = this.parseQuery(event.query));
     // TODO : add active filter suggestions
-    const suggestions: any[] =
-      (q.isTypes ? this.availableObjectTypes : this.availableObjectTypeFields.map((o) => ({ ...o, value: [new SearchFilter(o.id, undefined, undefined)] }))) ||
-      [];
+    const suggestions: any[] = (q.isTypes ? this.availableObjectTypes : [...this.customFilters, ...this.enabledFilters]) || [];
     this.autoSuggestions =
       !q.isTypes && !q.isTypeFields ? [] : suggestions.filter((t) => (t.label || '').toLowerCase().includes(q.text)).map((t) => ({ ...t }));
   }
@@ -262,9 +267,14 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
       type: 'filter',
       items: [
         {
-          id: 'filter',
+          id: 'custom',
           label: this.translate.instant('yuv.framework.search.filter.custom.filters'),
-          items: this.availableObjectTypeFields.map((o) => ({ ...o, value: [new SearchFilter(o.id, undefined, undefined)] }))
+          items: this.customFilters
+        },
+        {
+          id: 'enabled',
+          label: this.translate.instant('yuv.framework.search.filter.enabled.filters'),
+          items: this.enabledFilters
         }
       ],
       selected: []
@@ -325,6 +335,12 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
 
   private setAvailableObjectTypesFields() {
     this.availableObjectTypeFields = this.quickSearchService.getAvailableObjectTypesFields(this.selectedObjectTypes);
+
+    this.quickSearchService.getCurrentSettings().subscribe(([storedFilters, visibleFilters]) => {
+      this.enabledFilters = this.quickSearchService
+        .loadFilters(storedFilters as any, this.availableObjectTypeFields)
+        .filter((f) => (visibleFilters ? visibleFilters.includes(f.id) : true));
+    });
 
     // remove filters that are not relevant
     this.searchQuery.filterGroup.filters.forEach(
