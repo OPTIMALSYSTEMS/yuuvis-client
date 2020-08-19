@@ -4,12 +4,12 @@ import {
   BaseObjectTypeField,
   Classification,
   ClassificationEntry,
+  ClientDefaultsObjectTypeField,
   SearchFilter,
   SearchQuery,
   SearchQueryProperties,
   SearchResult,
   SearchService,
-  SecondaryObjectTypeField,
   SystemService
 } from '@yuuvis/core';
 import { AutoComplete } from 'primeng/autocomplete';
@@ -167,8 +167,8 @@ export class ReferenceComponent implements ControlValueAccessor, AfterViewInit {
       BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS,
       BaseObjectTypeField.OBJECT_ID,
       BaseObjectTypeField.OBJECT_TYPE_ID,
-      SecondaryObjectTypeField.TITLE,
-      SecondaryObjectTypeField.DESCRIPTION
+      ClientDefaultsObjectTypeField.TITLE,
+      ClientDefaultsObjectTypeField.DESCRIPTION
     ];
     q.addFilter(new SearchFilter(BaseObjectTypeField.OBJECT_ID, SearchFilter.OPERATOR.IN, ids));
     return this.searchService.search(q).pipe(
@@ -190,8 +190,8 @@ export class ReferenceComponent implements ControlValueAccessor, AfterViewInit {
             return {
               id: id,
               iconSVG: x[id] ? CellRenderer.typeCellRenderer(crParams) : null,
-              title: x[id] ? x[id].fields.get(SecondaryObjectTypeField.TITLE) : this.noAccessTitle,
-              description: x[id] ? x[id].fields.get(SecondaryObjectTypeField.DESCRIPTION) : null
+              title: x[id] ? x[id].fields.get(ClientDefaultsObjectTypeField.TITLE) : this.noAccessTitle,
+              description: x[id] ? x[id].fields.get(ClientDefaultsObjectTypeField.DESCRIPTION) : null
             };
           });
         } else {
@@ -209,8 +209,8 @@ export class ReferenceComponent implements ControlValueAccessor, AfterViewInit {
             return {
               id: i.fields.get(BaseObjectTypeField.OBJECT_ID),
               iconSVG: CellRenderer.typeCellRenderer(crParams),
-              title: i.fields.get(SecondaryObjectTypeField.TITLE),
-              description: i.fields.get(SecondaryObjectTypeField.DESCRIPTION)
+              title: i.fields.get(ClientDefaultsObjectTypeField.TITLE),
+              description: i.fields.get(ClientDefaultsObjectTypeField.DESCRIPTION)
             };
           });
         }
@@ -237,8 +237,9 @@ export class ReferenceComponent implements ControlValueAccessor, AfterViewInit {
               return {
                 id: i.fields.get(BaseObjectTypeField.OBJECT_ID),
                 iconSVG: CellRenderer.typeCellRenderer(crParams),
-                title: i.fields.get(SecondaryObjectTypeField.TITLE),
-                description: i.fields.get(SecondaryObjectTypeField.DESCRIPTION)
+                // title and description may not be present
+                title: i.fields.get(ClientDefaultsObjectTypeField.TITLE) || i.fields.get(BaseObjectTypeField.OBJECT_ID),
+                description: i.fields.get(ClientDefaultsObjectTypeField.DESCRIPTION)
               };
             })
           )
@@ -291,7 +292,12 @@ export class ReferenceComponent implements ControlValueAccessor, AfterViewInit {
 
   ngOnInit(): void {
     this.queryJson = {
-      fields: [BaseObjectTypeField.OBJECT_ID, BaseObjectTypeField.OBJECT_TYPE_ID, SecondaryObjectTypeField.TITLE, SecondaryObjectTypeField.DESCRIPTION],
+      fields: [
+        BaseObjectTypeField.OBJECT_ID,
+        BaseObjectTypeField.OBJECT_TYPE_ID,
+        ClientDefaultsObjectTypeField.TITLE,
+        ClientDefaultsObjectTypeField.DESCRIPTION
+      ],
       types: this.allowedTargetTypes,
       size: this.maxSuggestions
     };

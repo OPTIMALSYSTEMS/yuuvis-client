@@ -14,7 +14,6 @@ import {
   InternalFieldType,
   ObjectTypeClassification,
   SecondaryObjectTypeClassification,
-  SecondaryObjectTypeField,
   SystemType
 } from './system.enum';
 import {
@@ -34,6 +33,8 @@ import {
 })
 export class SystemService {
   private STORAGE_KEY = 'yuv.core.system.definition';
+  // ID of the secondary object type that serves as cllient defaults
+  private CLIENT_DEFAULTS = 'appClient:clientdefaults';
 
   private system: SystemDefinition;
   private systemSource = new ReplaySubject<SystemDefinition>();
@@ -203,31 +204,31 @@ export class SystemService {
     const folderTypeFieldIDs = sysFolder.fields.map((f) => f.id);
     const baseTypeFields: ObjectTypeField[] = sysDocument.fields.filter((f) => folderTypeFieldIDs.includes(f.id));
 
-    // ... and some secondary object type fields
-    // TODO: get fields for SecondaryObjectTypeField from schema
-    const props: ObjectTypeField = {
-      id: '',
-      propertyType: 'string',
-      _internalType: 'string',
-      description: '',
-      cardinality: 'single',
-      required: true,
-      updatability: 'readwrite'
-    };
-    const secondaryFields: ObjectTypeField[] = [
-      { ...props, id: SecondaryObjectTypeField.TITLE },
-      { ...props, id: SecondaryObjectTypeField.DESCRIPTION }
-    ];
+    // // ... and some secondary object type fields
+    // // TODO: get fields for SecondaryObjectTypeField from schema
+    // const props: ObjectTypeField = {
+    //   id: '',
+    //   propertyType: 'string',
+    //   _internalType: 'string',
+    //   description: '',
+    //   cardinality: 'single',
+    //   required: true,
+    //   updatability: 'readwrite'
+    // };
+    // const secondaryFields: ObjectTypeField[] = [
+    //   { ...props, id: SecondaryObjectTypeField.TITLE },
+    //   { ...props, id: SecondaryObjectTypeField.DESCRIPTION }
+    // ];
     return {
       id: SystemType.OBJECT,
-      // localNamespace: null,
       description: null,
       isFloatingType: false,
       baseId: null,
       creatable: false,
       isFolder: false,
       secondaryObjectTypes: [],
-      fields: [...baseTypeFields, ...secondaryFields]
+      // fields: [...baseTypeFields, ...secondaryFields]
+      fields: baseTypeFields
     };
   }
 

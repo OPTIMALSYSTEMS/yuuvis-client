@@ -2,12 +2,12 @@ import { Attribute, Component, EventEmitter, HostBinding, Input, OnInit, Output 
 import {
   AppCacheService,
   BaseObjectTypeField,
+  ClientDefaultsObjectTypeField,
   SearchFilter,
   SearchQuery,
   SearchResult,
   SearchResultItem,
   SearchService,
-  SecondaryObjectTypeField,
   SortOption,
   SystemService,
   UserService,
@@ -137,8 +137,8 @@ export class RecentActivitiesComponent implements OnInit {
     );
 
     return {
-      title: resItem.fields.get(SecondaryObjectTypeField.TITLE),
-      description: resItem.fields.get(SecondaryObjectTypeField.DESCRIPTION),
+      title: resItem.fields.get(ClientDefaultsObjectTypeField.TITLE),
+      description: resItem.fields.get(ClientDefaultsObjectTypeField.DESCRIPTION),
       objectId: resItem.fields.get(BaseObjectTypeField.OBJECT_ID),
       objectTypeId,
       objectTypeIcon: CellRenderer.typeCellRenderer({
