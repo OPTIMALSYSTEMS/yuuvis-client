@@ -7,8 +7,27 @@ import { BackendService } from '../backend/backend.service';
 import { AppCacheService } from '../cache/app-cache.service';
 import { Logger } from '../logger/logger';
 import { Utils } from './../../util/utils';
-import { BaseObjectTypeField, Classification, ContentStreamAllowed, InternalFieldType, ObjectTypeClassification, SecondaryObjectTypeClassification, SecondaryObjectTypeField, SystemType } from './system.enum';
-import { ClassificationEntry, ObjectType, ObjectTypeField, ObjectTypeGroup, SchemaResponse, SchemaResponseFieldDefinition, SchemaResponseTypeDefinition, SecondaryObjectType, SystemDefinition } from './system.interface';
+import {
+  BaseObjectTypeField,
+  Classification,
+  ContentStreamAllowed,
+  InternalFieldType,
+  ObjectTypeClassification,
+  SecondaryObjectTypeClassification,
+  SecondaryObjectTypeField,
+  SystemType
+} from './system.enum';
+import {
+  ClassificationEntry,
+  ObjectType,
+  ObjectTypeField,
+  ObjectTypeGroup,
+  SchemaResponse,
+  SchemaResponseFieldDefinition,
+  SchemaResponseTypeDefinition,
+  SecondaryObjectType,
+  SystemDefinition
+} from './system.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -38,22 +57,33 @@ export class SystemService {
   /**
    * Returns grouped object types sorted by label and folders first.
    * This also includes floating object types.
-   * 
-   * @param withLabels Whether or not to also add the types labels
+   *
    * @param skipAbstract Whether or not to exclude abstract object types like e.g. 'system:document'
+   * @param includeFloatingTypes Whether or not to include
    */
-  getGroupedObjectTypes(withLabels?: boolean, skipAbstract?: boolean): ObjectTypeGroup[] {
+  getGroupedObjectTypes(skipAbstract?: boolean, includeFloatingTypes: boolean = true): ObjectTypeGroup[] {
     // TODO: Apply a different property to group once grouping is available
-
-
-    this.getObjectTypes(withLabels)
-    .filter((ot) => !skipAbstract || ot.creatable)
-
+    const types: ObjectType[] = [];
+    this.getObjectTypes(true)
+      .filter((ot) => (!includeFloatingTypes ? !ot.isFloatingType : true && (!skipAbstract || this.isCreatable(ot.id))))
+      .forEach((ot) => {
+        types.push(ot);
+        // if (includeFloatingTypes) {
+        //   ot.secondaryObjectTypes
+        //     .filter((sot) => !sot.static)
+        //     .forEach((fsot) => {
+        //       types.push({
+        //         id: fsot.id,
+        //         label: this.getLocalizedResource(`${fsot.id}_label`),
+        //         isFolder: ot.isFolder,
+        //         isFloatingType: true
+        //       });
+        //     });
+        // }
+      });
 
     const grouped = this.groupBy(
-      this.getObjectTypes(withLabels)
-        .filter((ot) => !skipAbstract || ot.creatable)
-        .
+      types
         .map((ot) => ({ ...ot, group: this.getLocalizedResource(`${ot.id}_description`) }))
         .sort(Utils.sortValues('label'))
         .sort((x, y) => (x.isFolder === y.isFolder ? 0 : x.isFolder ? -1 : 1)),
@@ -192,6 +222,7 @@ export class SystemService {
       id: SystemType.OBJECT,
       // localNamespace: null,
       description: null,
+      isFloatingType: false,
       baseId: null,
       creatable: false,
       isFolder: false,
@@ -203,19 +234,18 @@ export class SystemService {
   /**
    * Get the icon for an object type. This will return an SVG as a string.
    * @param objectTypeId ID of the object type
-   * @param secondaryObjecttypeIDs List of secondary object type ID. This
    */
-  getObjectTypeIcon(objectTypeId: string, secondaryObjecttypeIDs?: string[]): string {
+  getObjectTypeIcon(objectTypeId: string): string {
     if (objectTypeId) {
       const type = this.getObjectType(objectTypeId);
-      const sot = this.getSecondaryObjectType(objectTypeId);
+      // const sot = this.getSecondaryObjectType(objectTypeId);
       // TODO: point to actual icon URI
       // AFOs (Advanced filing objects) should have a more prominent icon
       // TODO: Handle different icons in resources service
       if (type && this.isFloatingObjectType(type)) {
         return '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M6 2c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6H6zm7 7V3.5L18.5 9H13z"/><path d="M0 0h24v24H0V0z" fill="none"/><circle fill="#fff" cx="18.1" cy="18" r="5"/><path class="accent" d="M18,12c-3.3,0-6,2.7-6,6s2.7,6,6,6c3.3,0,6-2.7,6-6S21.3,12,18,12z M20.5,21.6L18,20.1l-2.5,1.5l0.7-2.9l-2.2-1.9l3-0.3l1.2-2.7l1.2,2.7l3,0.3l-2.2,1.9L20.5,21.6z"/></svg>';
-      } else if (sot) {
-        return '<svg xmlns="http://www.w3.org/2000/svg"  width="24" height="24" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h5v8l-2.5-1.5L6 12V4z"/></svg>';
+      } else if (type.isFloatingType) {
+        return '<svg xmlns="http://www.w3.org/2000/svg"  width="24" height="24" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path class="accent" d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h5v8l-2.5-1.5L6 12V4z"/></svg>';
       } else {
         return type && type.isFolder
           ? '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/><path d="M0 0h24v24H0z" fill="none"/></svg>'
@@ -228,20 +258,29 @@ export class SystemService {
 
   /**
    * Get the leading object type ID for resolving object type icon and so on.
-   * By default this is the actual object type id, but in case of types that are based
-   * on floating secondary object types this will be one of the FSOTs.
+   * By default this is the actual object type id, but in case of floating types that are based
+   * on floating secondary object types this will be one of the primary FSOTs.
+   *
+   * FOTs (floating object types) are object types that are based on a container type (the actual object type)
+   * and contain a set of (bu tat least one) primary FSOTs (floating secondary object types).
+   * Once one of the FSOTs is applied the FOT kind of becomes the secondary type.
+   *
    * @param objectTypeId The object type ID
    * @param appliedSecondaryObjecttypeIDs List of applied secondary object types. This list
    * is supposed to be fetched from an actual instance (DmsObject) instead of fetching it from
    * the type definition (schema) because schema defines the types that are applicable whereas
    * the instance holds the types that are actually applied.
    */
-  getLeadingObjectTypeID(objectTypeId: string, appliedSecondaryObjecttypeIDs?: string[]) {
-    return this.isFloatingObjectType(this.getObjectType(objectTypeId))
-      ? // in case of a floating type, the leading object type ID will be the
-        // primary SOT applied to it
-        appliedSecondaryObjecttypeIDs.find((t) => this.getSecondaryObjectType(t).classification?.includes(SecondaryObjectTypeClassification.PRIMARY))
-      : objectTypeId;
+  getLeadingObjectTypeID(objectTypeId: string, appliedSecondaryObjecttypeIDs?: string[]): string {
+    if (appliedSecondaryObjecttypeIDs && this.isFloatingObjectType(this.getObjectType(objectTypeId))) {
+      return (
+        appliedSecondaryObjecttypeIDs
+          .map((sot) => this.getSecondaryObjectType(sot))
+          .find((sot) => sot.classification?.includes(SecondaryObjectTypeClassification.PRIMARY))?.id || objectTypeId
+      );
+    } else {
+      return objectTypeId;
+    }
   }
 
   /**
@@ -255,13 +294,13 @@ export class SystemService {
    *
    * @param objectType Object type to be checked
    */
-  // isAFOType(objectType: ObjectType): boolean {
-  //   return (
-  //     objectType.contentStreamAllowed === ContentStreamAllowed.REQUIRED &&
-  //     Array.isArray(objectType.classification) &&
-  //     objectType.classification.includes(ObjectTypeClassification.ADVANCED_FILING_OBJECT)
-  //   );
-  // }
+  isAdvancedFilingObjectType(objectType: ObjectType): boolean {
+    return (
+      objectType.contentStreamAllowed === ContentStreamAllowed.REQUIRED &&
+      Array.isArray(objectType.classification) &&
+      objectType.classification.includes(ObjectTypeClassification.ADVANCED_FILING_OBJECT)
+    );
+  }
 
   /**
    * Floating object types (FOT) are object types thet have at least one non static (floating)
@@ -274,7 +313,8 @@ export class SystemService {
     return (
       Array.isArray(objectType.classification) &&
       objectType.classification.includes(ObjectTypeClassification.FLOATING_OBJECT_TYPE) &&
-      !!objectType.secondaryObjectTypes.find((sot) => this.getSecondaryObjectType(sot.id).classification?.includes(SecondaryObjectTypeClassification.PRIMARY))
+      objectType.secondaryObjectTypes.filter((sot) => !sot.static).length > 0
+      // !!objectType.secondaryObjectTypes.find((sot) => this.getSecondaryObjectType(sot.id).classification?.includes(SecondaryObjectTypeClassification.PRIMARY))
     );
   }
 
@@ -439,8 +479,9 @@ export class SystemService {
         id: fd.id,
         description: fd.description,
         classification: fd.classification,
+        isFloatingType: false,
         baseId: fd.baseId,
-        creatable: this.isCreatable(fd),
+        creatable: this.isCreatable(fd.id),
         contentStreamAllowed: ContentStreamAllowed.NOT_ALLOWED,
         isFolder: true,
         secondaryObjectTypes: fd.secondaryObjectTypeId ? fd.secondaryObjectTypeId.map((t) => ({ id: t.value, static: t.static })) : [],
@@ -451,9 +492,9 @@ export class SystemService {
         id: dd.id,
         description: dd.description,
         classification: dd.classification,
-
+        isFloatingType: false,
         baseId: dd.baseId,
-        creatable: this.isCreatable(dd),
+        creatable: this.isCreatable(dd.id),
         contentStreamAllowed: dd.contentStreamAllowed,
         isFolder: false,
         secondaryObjectTypes: dd.secondaryObjectTypeId ? dd.secondaryObjectTypeId.map((t) => ({ id: t.value, static: t.static })) : [],
@@ -469,10 +510,35 @@ export class SystemService {
       fields: this.resolveObjectTypeFields(std, propertiesQA, objectTypesQA)
     }));
 
+    // deal with floating types
+    const floatingTypes: ObjectType[] = [];
+    objectTypes.forEach((ot) => {
+      if (this.isFloatingObjectType(ot)) {
+        ot.secondaryObjectTypes
+          .filter((sot) => !sot.static)
+          .map((sot) => objectTypesQA[sot.id])
+          .filter((def: SchemaResponseTypeDefinition) => !def.classification?.includes(SecondaryObjectTypeClassification.REQUIRED))
+          .forEach((def: SchemaResponseTypeDefinition) => {
+            floatingTypes.push({
+              id: def.id,
+              description: def.description,
+              classification: ot.classification,
+              isFloatingType: true,
+              baseId: ot.baseId,
+              creatable: ot.creatable && this.isCreatable(def.id),
+              contentStreamAllowed: ot.contentStreamAllowed,
+              isFolder: ot.isFolder,
+              secondaryObjectTypes: [],
+              fields: [...ot.fields, ...this.resolveObjectTypeFields(objectTypesQA[def.id], propertiesQA, objectTypesQA)]
+            });
+          });
+      }
+    });
+
     this.system = {
       version: schemaResponse.version,
       lastModificationDate: schemaResponse.lastModificationDate,
-      objectTypes,
+      objectTypes: [...objectTypes, ...floatingTypes],
       secondaryObjectTypes,
       i18n: localizedResource
     };
@@ -513,8 +579,8 @@ export class SystemService {
     return fields;
   }
 
-  private isCreatable(schemaTypeDefinition: SchemaResponseTypeDefinition) {
-    return ![SystemType.FOLDER, SystemType.DOCUMENT].includes(schemaTypeDefinition.id);
+  private isCreatable(objectTypeId: string) {
+    return ![SystemType.FOLDER, SystemType.DOCUMENT].includes(objectTypeId);
   }
 
   /**

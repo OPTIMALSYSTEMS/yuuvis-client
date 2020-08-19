@@ -16,6 +16,7 @@ export interface ObjectType {
   creatable: boolean;
   contentStreamAllowed?: string;
   isFolder: boolean;
+  isFloatingType: boolean;
   secondaryObjectTypes: { id: string; static?: boolean }[];
   fields: ObjectTypeField[];
 }
@@ -31,10 +32,7 @@ export interface SecondaryObjectType {
 
 export interface ObjectTypeGroup {
   label: string;
-  types: {
-    id: string;
-    label: string;
-  };
+  types: ObjectType[];
 }
 
 export interface ObjectTypeField {

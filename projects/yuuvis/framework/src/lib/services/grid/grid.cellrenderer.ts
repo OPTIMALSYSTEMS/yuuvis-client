@@ -1,4 +1,4 @@
-import { BaseObjectTypeField, SearchFilter, SearchQuery, SecondaryObjectTypeClassification, Utils } from '@yuuvis/core';
+import { SearchFilter, SearchQuery, SecondaryObjectTypeClassification, Utils } from '@yuuvis/core';
 
 /**
  * @ignore
@@ -23,14 +23,7 @@ export class CellRenderer {
   }
 
   static typeCellRenderer(param: any) {
-    let value = param.value;
-    const { context } = param;
-    const sotIDs = param.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS];
-    if (sotIDs) {
-      const afot = sotIDs.find((sot) => context.system.getSecondaryObjectType(sot)?.classification?.includes(SecondaryObjectTypeClassification.PRIMARY));
-      value = afot || value;
-    }
-
+    const { value, context } = param;
     const ico = context.system.getObjectTypeIcon(value) || '';
     const title = context.system.getLocalizedResource(`${value}_label`) || '';
     return `<span title="${title}">${ico}</span>`;

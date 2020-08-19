@@ -179,13 +179,14 @@ export class ReferenceComponent implements ControlValueAccessor, AfterViewInit {
           res.items.forEach((r) => (x[r.fields.get(BaseObjectTypeField.OBJECT_ID)] = r));
           return ids.map((id) => {
             const crParams = {
-              value: x[id].fields.get(BaseObjectTypeField.OBJECT_TYPE_ID),
-              data: {},
+              value: this.systemService.getLeadingObjectTypeID(
+                x[id].fields.get(BaseObjectTypeField.OBJECT_TYPE_ID),
+                x[id].fields.get(BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS)
+              ),
               context: {
                 system: this.systemService
               }
             };
-            crParams.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS] = x[id].fields.get(BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS);
             return {
               id: id,
               iconSVG: x[id] ? CellRenderer.typeCellRenderer(crParams) : null,
@@ -196,13 +197,14 @@ export class ReferenceComponent implements ControlValueAccessor, AfterViewInit {
         } else {
           return res.items.map((i) => {
             const crParams = {
-              value: i.fields.get(BaseObjectTypeField.OBJECT_TYPE_ID),
-              data: {},
+              value: this.systemService.getLeadingObjectTypeID(
+                i.fields.get(BaseObjectTypeField.OBJECT_TYPE_ID),
+                i.fields.get(BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS)
+              ),
               context: {
                 system: this.systemService
               }
             };
-            crParams.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS] = i.fields.get(BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS);
 
             return {
               id: i.fields.get(BaseObjectTypeField.OBJECT_ID),
@@ -224,14 +226,14 @@ export class ReferenceComponent implements ControlValueAccessor, AfterViewInit {
           map((r) =>
             r.items.map((i) => {
               const crParams = {
-                value: i.fields.get(BaseObjectTypeField.OBJECT_TYPE_ID),
-                data: {},
+                value: this.systemService.getLeadingObjectTypeID(
+                  i.fields.get(BaseObjectTypeField.OBJECT_TYPE_ID),
+                  i.fields.get(BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS)
+                ),
                 context: {
                   system: this.systemService
                 }
               };
-              crParams.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS] = i.fields.get(BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS);
-
               return {
                 id: i.fields.get(BaseObjectTypeField.OBJECT_ID),
                 iconSVG: CellRenderer.typeCellRenderer(crParams),

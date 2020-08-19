@@ -191,7 +191,7 @@ export class ObjectCreateComponent implements OnDestroy {
     this.title = this.labels.defaultTitle;
 
     let i = 0;
-    this.generalObjectTypeGroups = this.system.getGroupedObjectTypes().map((otg: ObjectTypeGroup) => ({
+    this.generalObjectTypeGroups = this.system.getGroupedObjectTypes(true, true).map((otg: ObjectTypeGroup) => ({
       id: `${i++}`,
       label: otg.label,
       items: otg.types
@@ -203,14 +203,17 @@ export class ObjectCreateComponent implements OnDestroy {
               SystemType.DOCUMENT
             ].includes(ot.id)
         )
-        .map((ot: ObjectType) => ({
-          id: ot.id,
-          label: this.system.getLocalizedResource(`${ot.id}_label`),
-          description: ot.isFolder ? '' : this.labels[ot.contentStreamAllowed],
-          highlight: ot.isFolder,
-          svg: this.system.getObjectTypeIcon(ot.id),
-          value: ot
-        }))
+
+        .map((ot: ObjectType) => {
+          return {
+            id: ot.id,
+            label: ot.label,
+            description: ot.isFolder ? '' : this.labels[ot.contentStreamAllowed],
+            highlight: ot.isFolder,
+            svg: this.system.getObjectTypeIcon(ot.id),
+            value: ot
+          };
+        })
     }));
     this.setupAvailableObjectTypeGroups();
     this.collectPendingAFOs();
@@ -294,7 +297,7 @@ export class ObjectCreateComponent implements OnDestroy {
     this.title = objectType ? this.system.getLocalizedResource(`${objectType.id}_label`) : this.labels.defaultTitle;
     this.objCreateServcice.setNewState({ busy: true });
 
-    if (this.system.isAFOType(objectType)) {
+    if (this.system.isAdvancedFilingObjectType(objectType)) {
       // DLM object types are treated in a different way
       this.processAFOType(objectType);
     } else {
@@ -468,7 +471,7 @@ export class ObjectCreateComponent implements OnDestroy {
   }
 
   fileSelectContinue() {
-    const nextStep = this.system.isAFOType(this.selectedObjectType) ? CurrentStep.AFO_UPLOAD : CurrentStep.INDEXDATA;
+    const nextStep = this.system.isAdvancedFilingObjectType(this.selectedObjectType) ? CurrentStep.AFO_UPLOAD : CurrentStep.INDEXDATA;
     this.goToStep(nextStep);
     this.objCreateServcice.setNewBreadcrumb(nextStep);
   }
@@ -483,7 +486,7 @@ export class ObjectCreateComponent implements OnDestroy {
       data[BaseObjectTypeField.PARENT_ID] = this.context.id;
     }
     this.busy = true;
-    const isAFO = this.system.isAFOType(this.selectedObjectType);
+    const isAFO = this.system.isAdvancedFilingObjectType(this.selectedObjectType);
     (isAFO ? this.createAFO(data) : this.createDefault(data)).subscribe(
       (ids: string[]) => {
         this.busy = false;
