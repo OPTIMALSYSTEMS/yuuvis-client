@@ -43,7 +43,7 @@
     </div>
   </form>
 
-  <yuv-search-filter-form class="extras" #extrasForm [disabled]="false" [options]="formOptions"
+  <yuv-search-filter-form class="extras" #extrasForm [dragDisabled]="true" [options]="formOptions"
     [newFilters]="formOptions?.newFilters" (filterChanged)="onFilterChanged($event)"
     (controlRemoved)="onControlRemoved($event)" (valid)="formValid = $event">
   </yuv-search-filter-form>

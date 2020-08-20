@@ -39,6 +39,7 @@ export class SearchFilterFormComponent implements OnInit, OnDestroy {
   private availableObjectTypeFields: Selectable[];
 
   @Input() disabled = false;
+  @Input() dragDisabled = false;
 
   @Input() set options(opts: { filter: Selectable; availableObjectTypeFields: Selectable[] }) {
     if (opts) {

@@ -13,7 +13,6 @@
   }
 
   .cdk-drag-handle {
-    // display: none;
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -42,6 +41,12 @@
 
   .drop-after {
     border-bottom: 1px dotted var(--color-accent);
+  }
+
+  .operator {
+    cursor: pointer;
+    min-width: 32px;
+    text-align: center;
   }
 
   .condition {
