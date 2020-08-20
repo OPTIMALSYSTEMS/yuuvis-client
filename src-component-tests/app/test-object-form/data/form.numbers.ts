@@ -40,7 +40,7 @@ export const numberElements = [
     label: 'integer digit',
     description: 'integer classification digit',
     type: 'integer',
-    classification: ['digit'],
+    classifications: ['digit'],
     required: false
   },
 
@@ -85,7 +85,7 @@ export const numberElements = [
     label: 'decimal digit',
     description: 'decimal classification digit',
     type: 'decimal',
-    classification: ['digit'],
+    classifications: ['digit'],
     required: false
   },
 ];
