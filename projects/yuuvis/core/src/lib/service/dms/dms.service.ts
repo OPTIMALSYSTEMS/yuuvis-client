@@ -40,12 +40,12 @@ export class DmsService {
    *
    * @returns Array of IDs of the objects that have been created
    */
-  createDmsObject(objectTypeId: string, indexdata: any, files: File[], label?: string): Observable<string[]> {
+  createDmsObject(objectTypeId: string, indexdata: any, files: File[], label?: string, silent = false): Observable<string[]> {
     const url = `${this.backend.getApiBase(ApiBase.apiWeb)}/dms/create`;
     const data = indexdata;
     data[BaseObjectTypeField.OBJECT_TYPE_ID] = objectTypeId;
 
-    const upload = files.length ? this.uploadService.uploadMultipart(url, files, data, label) : this.uploadService.createDocument(url, data);
+    const upload = files.length ? this.uploadService.uploadMultipart(url, files, data, label, silent) : this.uploadService.createDocument(url, data);
 
     return upload.pipe(
       map((res) => res.map((r: any) => r.properties[BaseObjectTypeField.OBJECT_ID].value)),

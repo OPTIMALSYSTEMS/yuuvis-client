@@ -1,11 +1,14 @@
-import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
-import { SearchFilter, SearchQuery, TranslateService, Utils } from '@yuuvis/core';
-import { forkJoin } from 'rxjs';
+import { Component, ElementRef, EventEmitter, Input, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
+import { SearchFilter, SearchFilterGroup, SearchQuery, TranslateService, Utils } from '@yuuvis/core';
 import { IconRegistryService } from '../../../common/components/icon/service/iconRegistry.service';
 import { Selectable } from '../../../grouped-select';
+import { PopoverConfig } from '../../../popover/popover.interface';
+import { PopoverRef } from '../../../popover/popover.ref';
 import { NotificationService } from '../../../services/notification/notification.service';
 import { addCircle, clear } from '../../../svg.generated';
+import { QuickSearchPickerData } from '../quick-search-picker/quick-search-picker.component';
 import { SelectableGroup } from './../../../grouped-select/grouped-select/grouped-select.interface';
+import { PopoverService } from './../../../popover/popover.service';
 import { QuickSearchService } from './../quick-search.service';
 
 @Component({
@@ -15,6 +18,8 @@ import { QuickSearchService } from './../quick-search.service';
 })
 export class SearchFilterConfigComponent implements OnInit {
   @ViewChild('storedFilterInput') storedFilterInput: ElementRef;
+  @ViewChild('fieldSelectTrigger') fieldSelectTrigger: ElementRef;
+  @ViewChild('tplValuePicker') tplValuePicker: TemplateRef<any>;
 
   storedFiltersGroups: SelectableGroup[] = [];
   availableFiltersGroups: SelectableGroup[] = [];
@@ -32,19 +37,19 @@ export class SearchFilterConfigComponent implements OnInit {
   query: SearchQuery;
   CREATE_NEW_ID = '__create_new';
 
-  @Input() set options(data: { typeSelection: string[]; query: SearchQuery }) {
+  @Input() set options(data: { typeSelection: string[]; query: SearchQuery; sharedFields: boolean }) {
     this.query = data.query;
-    this.availableObjectTypeFields = this.quickSearchService.getAvailableObjectTypesFields(data.typeSelection);
+    this.availableObjectTypeFields = this.quickSearchService.getAvailableObjectTypesFields(data.typeSelection, data.sharedFields);
 
     this.availableFiltersGroups = [
       {
         id: 'form',
-        label: this.translate.instant('yuv.framework.quick-search.field-select.tooltip'),
+        label: this.translate.instant('yuv.framework.search.filter.custom.filters'),
         items: this.availableObjectTypeFields.map((o) => ({ ...o, value: [new SearchFilter(o.id, undefined, undefined)] }))
       }
     ];
 
-    forkJoin([this.quickSearchService.loadStoredFilters(), this.quickSearchService.loadFiltersVisibility()]).subscribe(([storedFilters, visibleFilters]) => {
+    this.quickSearchService.loadFilterSettings().subscribe(([storedFilters, visibleFilters]) => {
       this.storedFilters = this.quickSearchService.loadFilters(storedFilters as any, this.availableObjectTypeFields);
       this.visibleFilters = visibleFilters || this.storedFilters.map((f) => f.id);
 
@@ -66,6 +71,12 @@ export class SearchFilterConfigComponent implements OnInit {
         }
       ];
 
+      this.availableFiltersGroups.push({
+        id: 'enabled',
+        label: this.translate.instant('yuv.framework.search.filter.enabled.filters'),
+        items: this.storedFilters.filter((f) => this.isVisible(f))
+      });
+
       this.createNew();
       this.mainSelection = [this.CREATE_NEW_ID];
     });
@@ -76,7 +87,8 @@ export class SearchFilterConfigComponent implements OnInit {
     private quickSearchService: QuickSearchService,
     private notify: NotificationService,
     private translate: TranslateService,
-    private iconRegistry: IconRegistryService
+    private iconRegistry: IconRegistryService,
+    private popoverService: PopoverService
   ) {
     this.iconRegistry.registerIcons([addCircle, clear]);
   }
@@ -94,15 +106,15 @@ export class SearchFilterConfigComponent implements OnInit {
   }
 
   isEmpty(filter = this.selectedFilter) {
-    return filter && filter.id && !(filter.value && filter.value.length);
+    return filter && filter.id && SearchFilterGroup.fromArray(filter.value || []).isEmpty();
   }
 
-  createNew(filters: SearchFilter[] = []) {
+  createNew(value: (SearchFilter | SearchFilterGroup)[] = []) {
     this.onFilterSelect({
       id: Utils.uuid(),
       label: '',
       highlight: true,
-      value: [...filters]
+      value: [...value]
     });
   }
 
@@ -118,7 +130,7 @@ export class SearchFilterConfigComponent implements OnInit {
         id: this.CREATE_NEW_ID + '#active',
         svg: addCircle.data,
         label: `${this.translate.instant('yuv.framework.search.filter.create.new')} (${this.translate.instant('yuv.framework.search.filter.from.active')})`,
-        value: [...this.query.filters]
+        value: [this.query.filterGroup]
       },
       ...this.storedFilters.filter((f) => this.isVisible(f) && f.highlight)
     ].filter((f) => f);
@@ -129,15 +141,9 @@ export class SearchFilterConfigComponent implements OnInit {
       this.createNew(res.value);
     } else {
       this.selectedFilter = res;
-      this.selection = res.value.map((f) => f.property);
       this.availableFiltersGroups[0].items = this.availableFiltersGroups[0].items.map((i) => ({ ...i, disabled: this.isDefault() }));
-      this.formOptions = { filter: this.selectedFilter, activeFilters: res.value, availableObjectTypeFields: this.availableObjectTypeFields };
+      this.formOptions = { filter: this.selectedFilter, availableObjectTypeFields: this.availableObjectTypeFields };
     }
-  }
-
-  onActiveFilterChange(res: Selectable[]) {
-    this.selection = res.map((f) => f.id);
-    this.formOptions = { filter: this.selectedFilter, activeFilters: res.map((f) => f.value[0]), availableObjectTypeFields: this.availableObjectTypeFields };
   }
 
   onClose() {
@@ -149,15 +155,14 @@ export class SearchFilterConfigComponent implements OnInit {
     this.storedFiltersGroups[0].items = this.getDefaultFilters();
     this.storedFiltersGroups[1].items = this.storedFilters.filter((f) => this.isVisible(f));
     this.storedFiltersGroups[2].items = this.storedFilters.filter((f) => !this.isVisible(f));
+    this.availableFiltersGroups[1].items = this.storedFilters.filter((f) => this.isVisible(f));
     this.quickSearchService.saveFiltersVisibility(this.visibleFilters).subscribe();
   }
 
-  onControlRemoved(id: string) {
-    this.selection = this.selection.filter((f) => f !== id);
-    console.log(id);
-  }
+  onControlRemoved(id: string) {}
 
   onFilterChanged(res: Selectable) {
+    res.label = this.selectedFilter.label;
     this.selectedFilter = res;
   }
 
@@ -170,6 +175,8 @@ export class SearchFilterConfigComponent implements OnInit {
       this.quickSearchService.saveFilter(this.selectedFilter).subscribe((storedFilters) => {
         this.storedFilters = this.quickSearchService.loadFilters(storedFilters as any, this.availableObjectTypeFields);
         this.onVisibilityChange(false);
+        // reset form
+        this.onFilterSelect(this.selectedFilter);
         this.notify.success(this.translate.instant('yuv.framework.search.filter.configuration'), this.translate.instant('yuv.framework.search.filter.saved'));
       });
     } else if (!this.selectedFilter.label) {
@@ -184,6 +191,31 @@ export class SearchFilterConfigComponent implements OnInit {
       this.notify.success(this.translate.instant('yuv.framework.search.filter.configuration'), this.translate.instant('yuv.framework.search.filter.removed'));
       this.createNew();
     });
+  }
+
+  showObjectTypeFieldPicker() {
+    const pickerData: QuickSearchPickerData = {
+      type: 'filter',
+      items: this.availableFiltersGroups,
+      selected: []
+    };
+    const popoverConfig: PopoverConfig = {
+      panelClass: 'filters',
+      maxHeight: 400,
+      disableSmallScreenClose: true,
+      data: pickerData
+    };
+    this.popoverService.open(this.tplValuePicker, popoverConfig, this.fieldSelectTrigger.nativeElement);
+  }
+
+  onPickerResult(type: string, res: Selectable[], popoverRef?: PopoverRef) {
+    const fs = res[0].value as any;
+    this.formOptions.newFilters = [...fs];
+    this.onPickerCancel(popoverRef);
+  }
+
+  onPickerCancel(popoverRef?: PopoverRef) {
+    return popoverRef && popoverRef.close();
   }
 
   ngOnInit() {}

@@ -33,8 +33,8 @@ export class UploadService {
    * @param file The file to be uploaded
    * @param label A label that will show up in the upload overlay dialog while uploading
    */
-  upload(url: string, file: File, label?: string): Observable<any> {
-    return this.executeUpload(url, file, label || file.name);
+  upload(url: string, file: File, label?: string, silent?: boolean): Observable<any> {
+    return this.executeUpload(url, file, label || file.name, silent);
   }
 
   /**
@@ -44,8 +44,8 @@ export class UploadService {
    * @param data Data to be send along with the files
    * @param label A label that will show up in the upload overlay dialog while uploading
    */
-  uploadMultipart(url: string, files: File[], data?: any, label?: string): Observable<any> {
-    return this.executeMultipartUpload(url, files, label || 'Upload', data);
+  uploadMultipart(url: string, files: File[], data?: any, label?: string, silent?: boolean): Observable<any> {
+    return this.executeMultipartUpload(url, files, label || 'Upload', data, silent);
   }
 
   createDocument(url: string, data: any): Observable<any> {
@@ -113,9 +113,9 @@ export class UploadService {
    * @param file The file to be uploaded
    * @param label A label that will show up in the upload overlay dialog while uploading
    */
-  private executeUpload(url: string, file, label: string): Observable<any> {
+  private executeUpload(url: string, file, label: string, silent = false): Observable<any> {
     const request = this.createHttpRequest(url, { file }, true);
-    return this.startUploadWithFile(request, label).pipe(transformResponse());
+    return silent ? this.http.request(request) : this.startUploadWithFile(request, label).pipe(transformResponse());
   }
 
   /**
@@ -125,10 +125,10 @@ export class UploadService {
    * @param label A label that will show up in the upload overlay dialog while uploading
    * @param data Data to be send along with the files
    */
-  private executeMultipartUpload(url: string, file: File[], label: string, data?: any): Observable<any> {
+  private executeMultipartUpload(url: string, file: File[], label: string, data?: any, silent = false): Observable<any> {
     const formData: FormData = this.createFormData({ file, data });
     const request = this.createHttpRequest(url, { formData }, true);
-    return this.startUploadWithFile(request, label).pipe(transformResponse());
+    return silent ? this.http.request(request) : this.startUploadWithFile(request, label).pipe(transformResponse());
   }
 
   private generateResult(result: CreatedObject): UploadResult[] {

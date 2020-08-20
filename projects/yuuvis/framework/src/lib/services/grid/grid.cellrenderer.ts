@@ -1,4 +1,4 @@
-import { Utils } from '@yuuvis/core';
+import { BaseObjectTypeField, SearchFilter, SearchQuery, SecondaryObjectTypeClassification, Utils } from '@yuuvis/core';
 
 /**
  * @ignore
@@ -23,10 +23,34 @@ export class CellRenderer {
   }
 
   static typeCellRenderer(param: any) {
-    const { value, context } = param;
+    let value = param.value;
+    const { context } = param;
+    const sotIDs = param.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS];
+    if (sotIDs) {
+      const afot = sotIDs.find((sot) => context.system.getSecondaryObjectType(sot)?.classification?.includes(SecondaryObjectTypeClassification.PRIMARY));
+      value = afot || value;
+    }
+
     const ico = context.system.getObjectTypeIcon(value) || '';
     const title = context.system.getLocalizedResource(`${value}_label`) || '';
     return `<span title="${title}">${ico}</span>`;
+  }
+
+  static sotCellRenderer(param: any) {
+    const { context, value } = param;
+    return value
+      ? value
+          .map((v) => context.system.getSecondaryObjectType(v, true))
+          .map((sot) => {
+            if (sot) {
+              const cls = sot.classification?.includes(SecondaryObjectTypeClassification.PRIMARY) ? ' psot' : '';
+              return `<div class="chip${cls}">${Utils.escapeHtml(sot.label)}</div>`;
+            } else {
+              return '';
+            }
+          })
+          .join('')
+      : '';
   }
 
   // static iconCellRenderer(param) {
@@ -96,16 +120,15 @@ export class CellRenderer {
     let val = '';
     if (param.value) {
       (Array.isArray(param.value) ? param.value : [param.value]).forEach((value) => {
-        const query = {
-          types: [param.reference.type],
-          filters: {}
-        };
-        query.filters[param.reference.element] = {
-          o: 'eq',
-          v1: value
-        };
         const link = Utils.buildUri('result', {
-          query: encodeURIComponent(JSON.stringify(query))
+          query: encodeURIComponent(
+            JSON.stringify(
+              new SearchQuery({
+                types: [param.reference.type],
+                filters: [new SearchFilter(param.reference.element, SearchFilter.OPERATOR.EQUAL, value).toQuery()]
+              }).toQueryJson()
+            )
+          )
         });
         val += `<div class="chip">
             <a class="link router-link" href="${link}" target="_blank" onclick="return false;">

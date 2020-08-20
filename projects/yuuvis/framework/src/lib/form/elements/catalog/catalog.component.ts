@@ -60,7 +60,7 @@ export class CatalogComponent implements ControlValueAccessor {
   /**
    * Additional semantics for the form element.
    */
-  @Input() set classification(c: string[]) {
+  @Input() set classifications(c: string[]) {
     const ce: ClassificationEntry = this.systemService.getClassifications(c).get(Classification.STRING_CATALOG);
     if (ce && ce.options) {
       this._options = ce.options.map((o) => ({

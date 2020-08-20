@@ -7,7 +7,7 @@ import { debounceTime } from 'rxjs/operators';
 import { UnsubscribeOnDestroy } from '../../common/util/unsubscribe.component';
 import { ObjectFormScriptService } from '../object-form-script/object-form-script.service';
 import { ObjectFormScriptingScope } from '../object-form-script/object-form-scripting-scope';
-import { FormStatusChangedEvent, ObjectFormControlWrapper, ObjectFormOptions } from '../object-form.interface';
+import { FormStatusChangedEvent, IObjectForm, ObjectFormControlWrapper, ObjectFormOptions } from '../object-form.interface';
 import { ObjectFormControl, ObjectFormGroup } from '../object-form.model';
 import { ObjectFormService } from '../object-form.service';
 import { ObjectFormUtils } from '../object-form.utils';
@@ -33,7 +33,7 @@ import { Situation } from './../object-form.situation';
   providers: [ObjectFormService, ObjectFormScriptService],
   styleUrls: ['./object-form.component.scss']
 })
-export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestroy, AfterViewInit {
+export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestroy, AfterViewInit, IObjectForm {
   /**
    * There are special scenarios where forms are within a form themselves.
    * Setting this property to true, will handle the current form in a
@@ -417,11 +417,12 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
 
       ctrl = new ObjectFormGroup({});
       ctrl._eoFormGroup = {
-        // label: formElement.label,
-        label: formElement.name ? this.systemService.getLocalizedResource(`${formElement.name}_label`) || formElement.name : '???',
         layout: formElement.layout,
         type: formElement.type
       };
+      if (formElement.name) {
+        ctrl._eoFormGroup.label = this.systemService.getLocalizedResource(`${formElement.name}_label`) || formElement.name;
+      }
 
       if (useName === 'core' || useName === 'data') {
         ctrl._eoFormGroup.label = useName;

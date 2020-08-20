@@ -8,6 +8,7 @@ import { YuvComponentsModule } from '../components/components.module';
 import { YuvDirectivesModule } from '../directives/directives.module';
 import { YuvPipesModule } from '../pipes/pipes.module';
 import { YuvFormModule } from './../form/form.module';
+import { CombinedObjectFormComponent } from './combined-object-form/combined-object-form.component';
 import { ObjectFormEditComponent } from './object-form-edit/object-form-edit.component';
 import { ObjectFormElementComponent } from './object-form-element/object-form-element.component';
 import { ObjectFormGroupComponent } from './object-form-group/object-form-group.component';
@@ -19,7 +20,7 @@ import { ObjectFormComponent } from './object-form/object-form.component';
  */
 
 @NgModule({
-  declarations: [ObjectFormComponent, ObjectFormElementComponent, ObjectFormGroupComponent, ObjectFormEditComponent],
+  declarations: [ObjectFormComponent, ObjectFormElementComponent, ObjectFormGroupComponent, ObjectFormEditComponent, CombinedObjectFormComponent],
   imports: [
     CommonModule,
     YuvCommonModule,
@@ -31,6 +32,6 @@ import { ObjectFormComponent } from './object-form/object-form.component';
     YuvComponentsModule,
     YuvDirectivesModule
   ],
-  exports: [ObjectFormComponent, ObjectFormEditComponent, ObjectFormElementComponent]
+  exports: [ObjectFormComponent, ObjectFormEditComponent, ObjectFormElementComponent, CombinedObjectFormComponent]
 })
 export class YuvObjectFormModule {}

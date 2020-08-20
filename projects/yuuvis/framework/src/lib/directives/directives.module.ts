@@ -5,7 +5,7 @@ import { OfflineDisabledDirective } from './offline-disabled/offline-disabled.di
 import { OutsideClickDirective } from './outside-click/outside-click.directive';
 
 /**
- * `YuvDirectivesModule` contains direktives for working with DOM elements like file drop direktive, focus first direktive, etc.
+ * `YuvDirectivesModule` contains directives that may be applied to any DOM element.
  */
 @NgModule({
   declarations: [OutsideClickDirective, FileDropDirective, OfflineDisabledDirective, FocusFirstDirective],

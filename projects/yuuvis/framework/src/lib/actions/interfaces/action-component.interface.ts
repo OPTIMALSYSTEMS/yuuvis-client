@@ -6,15 +6,15 @@ import { EventEmitter } from '@angular/core';
  */
 export interface ActionComponent {
   /**
-   * selection an action
+   * Selection of e.g. list items that will be applied to the action
    */
   selection: any[];
   /**
-   * finish some action
+   * Emitted once the action has been finished
    */
   finished: EventEmitter<any>;
   /**
-   * cancel some action
+   * Emitted once the action has been canceled
    */
   canceled: EventEmitter<any>;
 }

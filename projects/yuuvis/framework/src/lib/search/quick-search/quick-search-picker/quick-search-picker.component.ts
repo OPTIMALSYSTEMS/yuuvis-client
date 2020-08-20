@@ -20,7 +20,6 @@ import { Selectable, SelectableGroup } from './../../../grouped-select/grouped-s
 })
 export class QuickSearchPickerComponent {
   private _data: QuickSearchPickerData;
-
   /**
    * Input data for the quick search picker component.
    * The type of data item provided actual items based on the given type.
@@ -29,7 +28,7 @@ export class QuickSearchPickerComponent {
   set data(data: QuickSearchPickerData) {
     this._data = data;
     if (data) {
-      this.multiselect = data.type !== 'field';
+      this.type = data.type;
       this.groups = data.items || [];
       this.groups.map((groupItem) => groupItem?.items.sort(Utils.sortValues('label')).sort(Utils.sortValues('value.isFolder', Sort.DESC)));
 
@@ -58,7 +57,11 @@ export class QuickSearchPickerComponent {
 
   groups: SelectableGroup[];
   selectedItems: Selectable[];
-  multiselect: boolean;
+  type: string;
+
+  get isType() {
+    return this.type === 'type';
+  }
 
   constructor() {}
 
@@ -89,7 +92,7 @@ export interface QuickSearchPickerData {
   /**
    * actual items based on the given type
    */
-  type: 'type' | 'field' | 'filter';
+  type: 'type' | 'filter';
   items: SelectableGroup[];
   /**
    * array of item IDs that should be selected upfront

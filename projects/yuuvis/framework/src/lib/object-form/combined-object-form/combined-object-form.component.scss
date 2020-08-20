@@ -1,0 +1,20 @@
+:host {
+  .yuv-combined-object-form {
+    > h2 {
+      margin: 0;
+      padding: var(--app-pane-padding) 0 calc(var(--app-pane-padding) / 4) 0;
+      color: var(--color-accent);
+      font-weight: normal;
+    }
+
+    yuv-object-form {
+      border: 1px dashed var(--color-accent);
+
+      ::ng-deep {
+        .form-element-wrap.core {
+          padding: calc(var(--app-pane-padding) / 2);
+        }
+      }
+    }
+  }
+}

@@ -5,6 +5,7 @@ export interface SystemDefinition {
   version: number;
   lastModificationDate: any;
   objectTypes: ObjectType[];
+  secondaryObjectTypes: SecondaryObjectType[];
   i18n: any;
 }
 /**
@@ -13,12 +14,23 @@ export interface SystemDefinition {
 export interface ObjectType {
   id: string;
   label?: string;
-  localNamespace: string;
+  classification?: string[];
+  // localNamespace: string;
   description: string;
   baseId: string;
   creatable: boolean;
   contentStreamAllowed?: string;
   isFolder: boolean;
+  secondaryObjectTypes: { id: string; static?: boolean }[];
+  fields: ObjectTypeField[];
+}
+
+export interface SecondaryObjectType {
+  id: string;
+  label?: string;
+  classification?: string[];
+  description: string;
+  baseId: string;
   fields: ObjectTypeField[];
 }
 /**
@@ -46,7 +58,7 @@ export interface ObjectTypeField {
 
   _internalType: string;
   resolution?: string;
-  classification?: string[];
+  classifications?: string[];
 }
 
 /**
@@ -57,7 +69,24 @@ export interface ObjectTypeField {
 export interface SchemaResponse {
   version: number;
   lastModificationDate: string;
-  objectTypes: SchemaResponseTypeDefinition[];
+  propertyDefinition: [any];
+  typeDocumentDefinition: SchemaResponseDocumentTypeDefinition[];
+  typeFolderDefinition: SchemaResponseFolderTypeDefinition[];
+  typeSecondaryDefinition: SchemaResponseTypeDefinition[];
+}
+
+export interface SchemaResponseTypeDefinition {
+  id: string;
+  description?: string;
+  baseId: string;
+  propertyReference: { value: string }[];
+  secondaryObjectTypeId: { value: string; static?: boolean }[];
+  classification: string[];
+}
+
+export interface SchemaResponseFolderTypeDefinition extends SchemaResponseTypeDefinition { }
+export interface SchemaResponseDocumentTypeDefinition extends SchemaResponseFolderTypeDefinition {
+  contentStreamAllowed?: string;
 }
 /**
  * Interface for create the schema from the servers schema field definition response
@@ -69,27 +98,20 @@ export interface SchemaResponseFieldDefinition {
   cardinality: string;
   required: boolean;
   updatability: string;
-  classification?: string[];
+  classifications?: string[];
   resolution: string;
 }
-/**
- * Interface for create the schema from the servers schema type definition response
- */
-export interface SchemaResponseTypeDefinition {
-  id: string;
-  localNamespace: string;
-  description: string;
-  baseId: string;
-  creatable: boolean;
-  fileable: boolean;
-  contentStreamAllowed?: string;
-  fields: SchemaResponseFieldDefinition[];
-}
-/**
- * Interface for an additional semantics for the form element.
- * It lets to specify restrictions on what object
- * type should be allowed by setting eg
- */
+// export interface SchemaResponseTypeDefinition {
+//   id: string;
+//   localNamespace: string;
+//   description: string;
+//   baseId: string;
+//   creatable: boolean;
+//   fileable: boolean;
+//   contentStreamAllowed?: string;
+//   fields: SchemaResponseFieldDefinition[];
+// }
+
 export interface ClassificationEntry {
   classification: string;
   options: string[];

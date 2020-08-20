@@ -37,7 +37,9 @@ export class ObjectCreateService {
     const labels = {
       [CurrentStep.OBJECTTYPE]: this.translate.instant('yuv.framework.object-create.step.objecttype'),
       [CurrentStep.FILES]: this.translate.instant('yuv.framework.object-create.step.files'),
-      [CurrentStep.INDEXDATA]: this.translate.instant('yuv.framework.object-create.step.indexdata')
+      [CurrentStep.INDEXDATA]: this.translate.instant('yuv.framework.object-create.step.indexdata'),
+      [CurrentStep.AFO_UPLOAD]: this.translate.instant('yuv.framework.object-create.step.afo-upload'),
+      [CurrentStep.AFO_INDEXDATA]: this.translate.instant('yuv.framework.object-create.step.afo-indexdata')
     };
 
     return Object.keys(CurrentStep).map((step: CurrentStep) => ({

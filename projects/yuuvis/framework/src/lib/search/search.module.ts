@@ -1,4 +1,5 @@
 import { A11yModule } from '@angular/cdk/a11y';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -59,7 +60,8 @@ const searchComponents = [
     YuvColumnConfigModule,
     YuvGroupedSelectModule,
     A11yModule,
-    AngularSplitModule
+    AngularSplitModule,
+    DragDropModule
   ],
   providers: [QuickSearchService],
   declarations: [...searchComponents],

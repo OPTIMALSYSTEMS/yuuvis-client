@@ -1,12 +1,22 @@
 import { Injectable } from '@angular/core';
 import { forkJoin, Observable, of, ReplaySubject } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
+import { DmsObject } from '../../model/dms-object.model';
 import { ApiBase } from '../backend/api.enum';
 import { BackendService } from '../backend/backend.service';
 import { AppCacheService } from '../cache/app-cache.service';
 import { Logger } from '../logger/logger';
 import { Utils } from './../../util/utils';
-import { BaseObjectTypeField, Classification, ContentStreamAllowed, InternalFieldType, SecondaryObjectTypeField, SystemType } from './system.enum';
+import {
+  BaseObjectTypeField,
+  Classification,
+  ContentStreamAllowed,
+  InternalFieldType,
+  ObjectTypeClassification,
+  SecondaryObjectTypeClassification,
+  SecondaryObjectTypeField,
+  SystemType
+} from './system.enum';
 import {
   ClassificationEntry,
   ObjectType,
@@ -15,6 +25,7 @@ import {
   SchemaResponse,
   SchemaResponseFieldDefinition,
   SchemaResponseTypeDefinition,
+  SecondaryObjectType,
   SystemDefinition
 } from './system.interface';
 
@@ -41,12 +52,7 @@ export class SystemService {
    * @param withLabels Whether or not to also add the types labels
    */
   getObjectTypes(withLabels?: boolean): ObjectType[] {
-    return withLabels
-      ? this.system.objectTypes.map((t) => ({
-          ...t,
-          label: this.getLocalizedResource(`${t.id}_label`)
-        }))
-      : this.system.objectTypes;
+    return withLabels ? this.system.objectTypes.map((t) => ({ ...t, label: this.getLocalizedResource(`${t.id}_label`) })) : this.system.objectTypes;
   }
 
   /**
@@ -97,6 +103,59 @@ export class SystemService {
     }
     return objectType;
   }
+  /**
+   * Get a particular secondary object type
+   * @param objectTypeId ID of the object type
+   * @param withLabel Whether or not to also add the types label
+   */
+  getSecondaryObjectType(objectTypeId: string, withLabel?: boolean): SecondaryObjectType {
+    let objectType: SecondaryObjectType = this.system.secondaryObjectTypes.find((ot) => ot.id === objectTypeId);
+    if (objectType && withLabel) {
+      objectType.label = this.getLocalizedResource(`${objectType.id}_label`) || objectType.id;
+    }
+    return objectType;
+  }
+
+  /**
+   * Floating secondary object types are secondary object types that could be applied
+   * to an object dynamically.
+   * @param objectTypeId ID of the object type to fetch the FSOTs for
+   * @param withLabel Whether or not to also add the types label
+   */
+  getFloatingSecondaryObjectTypes(objectTypeId: string, withLabel?: boolean): SecondaryObjectType[] {
+    const ot = this.getObjectType(objectTypeId);
+    return ot.secondaryObjectTypes ? ot.secondaryObjectTypes.filter((sot) => !sot.static).map((sot) => this.getSecondaryObjectType(sot.id, withLabel)) : [];
+  }
+
+  /**
+   * Applicable floating SOTs are SOTs that could be added by a users choice.
+   * Regular floating SOTs may also contain SOTs that are applied
+   * automatically (classification: 'appClient:required'). Those types will not be
+   * returned here.
+   *
+   * There are also special AFSOTs: If they have a classification of 'appClient:primary' they
+   * are supposed to be the leading object type once chosen.
+   *
+   * @param objectTypeId ID of the object type to fetch the FSOTs for
+   * @param withLabel Whether or not to also add the types label
+   */
+  getApplicableFloatingSecondaryObjectTypes(objectTypeId: string, withLabel?: boolean): SecondaryObjectType[] {
+    // all floating SOTs that are not classifoed as `required`
+    return this.getFloatingSecondaryObjectTypes(objectTypeId, withLabel).filter(
+      (sot) => !sot.classification.includes(SecondaryObjectTypeClassification.REQUIRED)
+    );
+  }
+
+  /**
+   * Returns the floating type of a dms object if available.
+   * This is only possible if the dms object has been created from a certain kind of object type (Floating object type)
+   * @param dmsObject Dms object to get the applied FOT for
+   */
+  getAppliedFloatingObjectType(dmsObject: DmsObject): SecondaryObjectType {
+    return this.isFloatingObjectType(this.getObjectType(dmsObject.objectTypeId))
+      ? dmsObject.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS].find((sot) => sot.classification?.includes(SecondaryObjectTypeClassification.PRIMARY))
+      : null;
+  }
 
   /**
    * Get the base document type all documents belong to
@@ -142,11 +201,12 @@ export class SystemService {
     ];
     return {
       id: SystemType.OBJECT,
-      localNamespace: null,
+      // localNamespace: null,
       description: null,
       baseId: null,
       creatable: false,
       isFolder: false,
+      secondaryObjectTypes: [],
       fields: [...baseTypeFields, ...secondaryFields]
     };
   }
@@ -158,13 +218,56 @@ export class SystemService {
   getObjectTypeIcon(objectTypeId: string): string {
     if (objectTypeId) {
       const type = this.getObjectType(objectTypeId);
+      const sot = this.getSecondaryObjectType(objectTypeId);
       // TODO: point to actual icon URI
-      return type && type.isFolder
-        ? '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/><path d="M0 0h24v24H0z" fill="none"/></svg>'
-        : '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M6 2c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6H6zm7 7V3.5L18.5 9H13z"/><path d="M0 0h24v24H0z" fill="none"/></svg>';
+      // AFOs (Advanced filing objects) should have a more prominent icon
+      // TODO: Handle different icons in resources service
+      if (type && this.isAFOType(type)) {
+        return '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M6 2c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6H6zm7 7V3.5L18.5 9H13z"/><path d="M0 0h24v24H0V0z" fill="none"/><circle fill="#fff" cx="18.1" cy="18" r="5"/><path class="accent" d="M18,12c-3.3,0-6,2.7-6,6s2.7,6,6,6c3.3,0,6-2.7,6-6S21.3,12,18,12z M20.5,21.6L18,20.1l-2.5,1.5l0.7-2.9l-2.2-1.9l3-0.3l1.2-2.7l1.2,2.7l3,0.3l-2.2,1.9L20.5,21.6z"/></svg>';
+      } else if (sot) {
+        return '<svg xmlns="http://www.w3.org/2000/svg"  width="24" height="24" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h5v8l-2.5-1.5L6 12V4z"/></svg>';
+      } else {
+        return type && type.isFolder
+          ? '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/><path d="M0 0h24v24H0z" fill="none"/></svg>'
+          : '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M6 2c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6H6zm7 7V3.5L18.5 9H13z"/><path d="M0 0h24v24H0z" fill="none"/></svg>';
+      }
     } else {
       return null;
     }
+  }
+
+  /**
+   * Checks whether or not the given object type is an Advanced Filing Object (AFO). These types have a special kind of
+   * create lifecycle and may be treated in a different way.
+   *
+   * AFOs are object types that require a content stream and have a classification of 'appClient:dlm'. The object type itself
+   * is required to have no mandatory properties, so the content can be uploaded without having to apply some indexdata.
+   *
+   * AFOs have at least one Secondary Object Type (SOT) that could be applied later on.
+   *
+   * @param objectType Object type to be checked
+   */
+  isAFOType(objectType: ObjectType): boolean {
+    return (
+      objectType.contentStreamAllowed === ContentStreamAllowed.REQUIRED &&
+      Array.isArray(objectType.classification) &&
+      objectType.classification.includes(ObjectTypeClassification.ADVANCED_FILING_OBJECT)
+    );
+  }
+
+  /**
+   * Floating object types (FOT) are object types that have a classification of 'appClient:floatingType' and at least one
+   * secondary object type (SOT) with a classification of 'appClient:primary'.
+   *
+   * Once one primary SOT has been applied to the FOT the SOT will be treated like the main object type.
+   * Using this kind of objects you are able to create types that can turn into any applied primary SOT.
+   */
+  isFloatingObjectType(objectType: ObjectType): boolean {
+    return (
+      Array.isArray(objectType.classification) &&
+      objectType.classification.includes(ObjectTypeClassification.FLOATING_OBJECT_TYPE) &&
+      !!objectType.secondaryObjectTypes.find((sot) => this.getSecondaryObjectType(sot.id).classification?.includes(SecondaryObjectTypeClassification.PRIMARY))
+    );
   }
 
   getLocalizedResource(key: string): string {
@@ -184,6 +287,60 @@ export class SystemService {
    */
   getObjectTypeForm(objectTypeId: string, situation: string, mode?: string): Observable<any> {
     return this.backend.get(Utils.buildUri(`/dms/form/${objectTypeId}`, { situation }));
+  }
+
+  /**
+   * AFOs (advanced filing objects) use more than one object type form.
+   * In facct its a collection of forms that will be combined later on.
+   * This method fetches all the forms bound to an AFO type.
+   *
+   * @param dmsObject a dms object created from an AFO type
+   * @returns object where property name is the object type key and value is the form model for this type
+   * or null in case the given object does not belong to an AFO type
+   */
+  getAFOTypeForms(dmsObject: DmsObject, situation?: string): Observable<{ [key: string]: any }> {
+    const afoType = this.getObjectType(dmsObject.objectTypeId);
+    // make sure that it actually is an AFO type
+    if (this.isAFOType(afoType)) {
+      const objectTypeIDs = [];
+      // if the main type itself has properties, add them
+      if (afoType.fields.filter((f) => !f.id.startsWith('system:')).length) {
+        objectTypeIDs.push(afoType.id);
+      }
+      const sots: string[] = dmsObject.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS];
+      if (sots) {
+        sots.forEach((sot) => objectTypeIDs.push(sot));
+      }
+      return objectTypeIDs.length ? this.getObjectTypeForms(objectTypeIDs, situation) : of(null);
+    } else {
+      return of(null);
+    }
+  }
+
+  /**
+   * Fetch a collection of form models.
+   * @param objectTypeIDs Object type IDs to fetch form model for
+   * @param situation Form situation
+   * @returns Object where the object type id is key and the form model is the value
+   */
+  getObjectTypeForms(objectTypeIDs: string[], situation: string): Observable<{ [key: string]: any }> {
+    return forkJoin(
+      objectTypeIDs.map((o) =>
+        this.getObjectTypeForm(o, situation).pipe(
+          catchError((e) => of(null)),
+          map((res) => ({
+            id: o,
+            formModel: res
+          }))
+        )
+      )
+    ).pipe(
+      map((res) => {
+        const resMap = {};
+        res.forEach((r) => (resMap[r.id] = r.formModel));
+        return resMap;
+      })
+    );
   }
 
   isDateFormat(data: string): boolean {
@@ -223,7 +380,7 @@ export class SystemService {
    * @param user User to fetch definition for
    */
   private fetchSystemDefinition(): Observable<boolean> {
-    const fetchTasks = [this.backend.get('/dms/schema', ApiBase.core), this.fetchLocalizations()];
+    const fetchTasks = [this.backend.get('/dms/schema/native.json', ApiBase.core), this.fetchLocalizations()];
 
     return forkJoin(fetchTasks).pipe(
       catchError((error) => {
@@ -245,39 +402,111 @@ export class SystemService {
    * @param schemaResponse Response from the backend
    */
   private setSchema(schemaResponse: SchemaResponse, localizedResource: any) {
-    const objectTypes: ObjectType[] = schemaResponse.objectTypes.map((ot: SchemaResponseTypeDefinition) => {
-      const isFolder = ot.baseId === 'folder';
-
+    // prepare a quick access object for the fields
+    let propertiesQA = {};
+    const orgTypeFields = [BaseObjectTypeField.MODIFIED_BY, BaseObjectTypeField.CREATED_BY];
+    schemaResponse.propertyDefinition.forEach((p: any) => {
       // TODO: Remove once schema supports organization classification for base params
       // map certain fields to organization type (fake it until you make it ;-)
-      const orgTypeFields = [BaseObjectTypeField.MODIFIED_BY, BaseObjectTypeField.CREATED_BY];
-      ot.fields.forEach((f) => {
-        if (orgTypeFields.includes(f.id)) {
-          f.classification = [Classification.STRING_ORGANIZATION];
-        }
-      });
-
-      const objectType: ObjectType = {
-        id: ot.id,
-        localNamespace: ot.localNamespace,
-        description: ot.description,
-        baseId: ot.baseId,
-        creatable: ot.creatable,
-        contentStreamAllowed: isFolder ? ContentStreamAllowed.NOT_ALLOWED : ot.contentStreamAllowed,
-        isFolder: isFolder,
-        fields: ot.fields.map((f) => ({ ...f, _internalType: this.getInternalFormElementType(f, 'propertyType') }))
-      };
-      return objectType;
+      if (orgTypeFields.includes(p.id)) {
+        p.classifications = [Classification.STRING_ORGANIZATION];
+      }
+      propertiesQA[p.id] = p;
     });
+    // prepare a quick access object for object types (including secondary objects)
+    let objectTypesQA = {};
+    schemaResponse.typeFolderDefinition.forEach((ot: any) => {
+      objectTypesQA[ot.id] = ot;
+    });
+    schemaResponse.typeDocumentDefinition.forEach((ot: any) => {
+      objectTypesQA[ot.id] = ot;
+    });
+    schemaResponse.typeSecondaryDefinition.forEach((sot: any) => {
+      objectTypesQA[sot.id] = sot;
+    });
+
+    const objectTypes: ObjectType[] = [
+      // folder types
+      ...schemaResponse.typeFolderDefinition.map((fd) => ({
+        id: fd.id,
+        description: fd.description,
+        classification: fd.classification,
+        baseId: fd.baseId,
+        creatable: this.isCreatable(fd),
+        contentStreamAllowed: ContentStreamAllowed.NOT_ALLOWED,
+        isFolder: true,
+        secondaryObjectTypes: fd.secondaryObjectTypeId ? fd.secondaryObjectTypeId.map((t) => ({ id: t.value, static: t.static })) : [],
+        fields: this.resolveObjectTypeFields(fd, propertiesQA, objectTypesQA)
+      })),
+      // document types
+      ...schemaResponse.typeDocumentDefinition.map((dd) => ({
+        id: dd.id,
+        description: dd.description,
+        classification: dd.classification,
+
+        baseId: dd.baseId,
+        creatable: this.isCreatable(dd),
+        contentStreamAllowed: dd.contentStreamAllowed,
+        isFolder: false,
+        secondaryObjectTypes: dd.secondaryObjectTypeId ? dd.secondaryObjectTypeId.map((t) => ({ id: t.value, static: t.static })) : [],
+        fields: this.resolveObjectTypeFields(dd, propertiesQA, objectTypesQA)
+      }))
+    ];
+
+    const secondaryObjectTypes: SecondaryObjectType[] = schemaResponse.typeSecondaryDefinition.map((std) => ({
+      id: std.id,
+      description: std.description,
+      classification: std.classification,
+      baseId: std.baseId,
+      fields: this.resolveObjectTypeFields(std, propertiesQA, objectTypesQA)
+    }));
 
     this.system = {
       version: schemaResponse.version,
       lastModificationDate: schemaResponse.lastModificationDate,
       objectTypes,
+      secondaryObjectTypes,
       i18n: localizedResource
     };
     this.appCache.setItem(this.STORAGE_KEY, this.system).subscribe();
     this.systemSource.next(this.system);
+  }
+
+  /**
+   * Resolve all the fields for an object type. This also includes secondary object types and the fields inherited from
+   * the base type (... and of course the base type (and its secondary object types) of the base type and so on)
+   * @param schemaTypeDefinition object type definition from the native schema
+   * @param propertiesQA Quick access object of all properties
+   * @param objectTypesQA Quick access object of all object types
+   */
+  private resolveObjectTypeFields(schemaTypeDefinition: SchemaResponseTypeDefinition, propertiesQA: any, objectTypesQA: any) {
+    // const rootTypes = [SystemType.DOCUMENT, SystemType.FOLDER, SystemType.SOT];
+    const objectTypeFieldIDs = schemaTypeDefinition.propertyReference.map((pr) => pr.value);
+    if (schemaTypeDefinition.secondaryObjectTypeId) {
+      schemaTypeDefinition.secondaryObjectTypeId
+        .filter((sot) => sot.static)
+        .map((sot) => sot.value)
+        .forEach((sotID) => {
+          objectTypesQA[sotID].propertyReference.forEach((pr) => {
+            objectTypeFieldIDs.push(pr.value);
+          });
+        });
+    }
+
+    let fields = objectTypeFieldIDs.map((id) => ({
+      ...propertiesQA[id],
+      _internalType: this.getInternalFormElementType(propertiesQA[id], 'propertyType')
+    }));
+
+    // also resolve properties of the base type
+    if (schemaTypeDefinition.baseId !== schemaTypeDefinition.id && !!objectTypesQA[schemaTypeDefinition.baseId]) {
+      fields = fields.concat(this.resolveObjectTypeFields(objectTypesQA[schemaTypeDefinition.baseId], propertiesQA, objectTypesQA));
+    }
+    return fields;
+  }
+
+  private isCreatable(schemaTypeDefinition: SchemaResponseTypeDefinition) {
+    return ![SystemType.FOLDER, SystemType.DOCUMENT].includes(schemaTypeDefinition.id);
   }
 
   /**
@@ -289,7 +518,7 @@ export class SystemService {
    * @typeProperty the property on the field input that represents its type
    */
   getInternalFormElementType(field: SchemaResponseFieldDefinition, typeProperty: string): string {
-    const classifications = this.getClassifications(field?.classification);
+    const classifications = this.getClassifications(field?.classifications);
 
     if (field[typeProperty] === 'string' && classifications.has(Classification.STRING_REFERENCE)) {
       return InternalFieldType.STRING_REFERENCE;
@@ -319,10 +548,12 @@ export class SystemService {
     if (classifications) {
       classifications.forEach((c) => {
         const matches: string[] = c.match(/^([^\[]*)(\[(.*)\])?$/);
-        res.set(matches[1], {
-          classification: matches[1],
-          options: matches[3] ? matches[3].split(',').map((o) => o.trim()) : []
-        });
+        if (matches && matches.length) {
+          res.set(matches[1], {
+            classification: matches[1],
+            options: matches[3] ? matches[3].split(',').map((o) => o.trim()) : []
+          });
+        }
       });
     }
     return res;

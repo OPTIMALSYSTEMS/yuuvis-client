@@ -2,6 +2,10 @@
   <yuv-object-form [formOptions]="formOptions" *ngIf="formOptions" (statusChanged)="onFormStatusChanged($event)">
   </yuv-object-form>
 
+  <yuv-combined-object-form *ngIf="combinedFormInput" (statusChanged)="onFormStatusChanged($event)"
+    [objectFormInput]="combinedFormInput">
+  </yuv-combined-object-form>
+
   <div class="form-controls" [ngClass]="{disabled: controls.disabled}">
 
     <div class="err-msg" *ngIf="formState?.invalid" translate>yuv.framework.object-form-edit.invalid</div>

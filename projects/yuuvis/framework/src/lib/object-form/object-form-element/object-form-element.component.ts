@@ -75,7 +75,7 @@ export class ObjectFormElementComponent implements OnDestroy {
    * https://wiki.optimal-systems.de/display/PM/Status+yuuvis+Momentum+-+Flex+client
    */
   private setGrouping(formElement) {
-    return { ...formElement, grouping: !!formElement?.classification?.includes(Classification.NUMBER_DIGIT) };
+    return { ...formElement, grouping: !!formElement?.classifications?.includes(Classification.NUMBER_DIGIT) };
   }
 
   labelToggled(toggled: boolean, readonly = this.formElementRef._eoFormElement.readonly) {

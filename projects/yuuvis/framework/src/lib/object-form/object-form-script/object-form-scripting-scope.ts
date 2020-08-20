@@ -261,8 +261,8 @@ class ScopeElement {
     return this.element.maxLength;
   }
 
-  get classification() {
-    return this.element.classification;
+  get classifications() {
+    return this.element.classifications;
   }
 
   get scale() {

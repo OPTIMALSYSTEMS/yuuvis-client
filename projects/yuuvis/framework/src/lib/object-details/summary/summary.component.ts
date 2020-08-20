@@ -125,16 +125,17 @@ export class SummaryComponent implements OnInit {
     ];
 
     const defaultBaseFields: { key: string; order: number }[] = [
-      { key: BaseObjectTypeField.CREATION_DATE, order: 1 },
-      { key: BaseObjectTypeField.CREATED_BY, order: 2 },
-      { key: BaseObjectTypeField.MODIFICATION_DATE, order: 3 },
-      { key: BaseObjectTypeField.MODIFIED_BY, order: 4 },
-      { key: BaseObjectTypeField.VERSION_NUMBER, order: 5 },
-      { key: ContentStreamField.FILENAME, order: 6 },
-      { key: ContentStreamField.LENGTH, order: 7 },
-      { key: ContentStreamField.MIME_TYPE, order: 8 },
-      { key: BaseObjectTypeField.OBJECT_ID, order: 9 },
-      { key: BaseObjectTypeField.PARENT_ID, order: 10 }
+      { key: BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS, order: 1 },
+      { key: BaseObjectTypeField.CREATION_DATE, order: 2 },
+      { key: BaseObjectTypeField.CREATED_BY, order: 3 },
+      { key: BaseObjectTypeField.MODIFICATION_DATE, order: 4 },
+      { key: BaseObjectTypeField.MODIFIED_BY, order: 5 },
+      { key: BaseObjectTypeField.VERSION_NUMBER, order: 6 },
+      { key: ContentStreamField.FILENAME, order: 7 },
+      { key: ContentStreamField.LENGTH, order: 8 },
+      { key: ContentStreamField.MIME_TYPE, order: 9 },
+      { key: BaseObjectTypeField.OBJECT_ID, order: 10 },
+      { key: BaseObjectTypeField.PARENT_ID, order: 11 }
     ];
 
     const patentFields: string[] = [
@@ -165,7 +166,11 @@ export class SummaryComponent implements OnInit {
     };
 
     const { skipFields, patentFields, extraFields, defaultBaseFields } = this.getSummaryConfiguration(dmsObject);
-    const colDef: ColDef[] = this.gridService.getColumnDefinitions(dmsObject.objectTypeId);
+    let colDef: ColDef[] = this.gridService.getColumnDefinitions(dmsObject.objectTypeId);
+    const fsots = this.systemService.getFloatingSecondaryObjectTypes(dmsObject.objectTypeId);
+    fsots.forEach((fsot) => {
+      colDef = [...colDef, ...this.gridService.getColumnDefinitions(fsot.id, true)];
+    });
 
     Object.keys({ ...dmsObject.data, ...this.dmsObject2?.data }).forEach((key: string) => {
       const prepKey = key.startsWith('parent.') ? key.replace('parent.', '') : key; // todo: pls implement general solution
@@ -174,8 +179,8 @@ export class SummaryComponent implements OnInit {
       const si: SummaryEntry = {
         label: (def && def.headerName) || key,
         key,
-        value: renderer ? renderer({ value: dmsObject.data[key] }) : dmsObject.data[key],
-        value2: this.dmsObject2 && (renderer ? renderer({ value: this.dmsObject2.data[key] }) : this.dmsObject2.data[key]),
+        value: renderer ? renderer({ value: dmsObject.data[key], data: dmsObject.data }) : dmsObject.data[key],
+        value2: this.dmsObject2 && (renderer ? renderer({ value: this.dmsObject2.data[key], data: this.dmsObject2.data }) : this.dmsObject2.data[key]),
         order: null
       };
 
