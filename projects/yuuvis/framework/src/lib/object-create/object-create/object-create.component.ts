@@ -491,7 +491,7 @@ export class ObjectCreateComponent implements OnDestroy {
       (ids: string[]) => {
         this.busy = false;
         // this.notify.success(this.translate.instant('yuv.framework.object-create.notify.success'));
-        if (this.createAnother || this.afoCreate.dmsObject.selected) {
+        if (this.createAnother || this.afoCreate?.dmsObject.selected) {
           this.selectedObjectType = null;
           this.files = [];
           this.resetState();

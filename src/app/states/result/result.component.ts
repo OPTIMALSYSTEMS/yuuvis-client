@@ -84,7 +84,12 @@ export class ResultComponent implements OnInit, OnDestroy {
     // extract the query from the route params
     this.route.queryParamMap.pipe(takeUntilDestroy(this)).subscribe((params) => {
       this.searchQuery = params.get('query') ? new SearchQuery(JSON.parse(params.get('query'))) : null;
-      this.appSearch.setQuery(this.searchQuery);
+      // if the 'tmp' query param is est, the query will not be set
+      // to the global app search
+      const isTmpSearch = params.get('tmp');
+      if (!isTmpSearch) {
+        this.appSearch.setQuery(this.searchQuery);
+      }
     });
   }
 
