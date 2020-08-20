@@ -1,10 +1,15 @@
+/**
+ * Interface providing system definition
+ */
 export interface SystemDefinition {
   version: number;
   lastModificationDate: any;
   objectTypes: ObjectType[];
   i18n: any;
 }
-
+/**
+ * Object Type interface
+ */
 export interface ObjectType {
   id: string;
   label?: string;
@@ -16,12 +21,16 @@ export interface ObjectType {
   isFolder: boolean;
   fields: ObjectTypeField[];
 }
-
+/**
+ * Interface for the groups of object types available for the root target
+ */
 export interface ObjectTypeGroup {
   label: string;
   types: ObjectType[];
 }
-
+/**
+ * Interface for a secondary object type field
+ */
 export interface ObjectTypeField {
   id: string;
   propertyType: string;
@@ -40,14 +49,19 @@ export interface ObjectTypeField {
   classification?: string[];
 }
 
-// base definition of the kind of data we'll receive
-// from the backend asking for native schema
+/**
+ * Base definition of the kind of data we'll receive
+ * from the backend asking for native schema
+ */
+
 export interface SchemaResponse {
   version: number;
   lastModificationDate: string;
   objectTypes: SchemaResponseTypeDefinition[];
 }
-
+/**
+ * Interface for create the schema from the servers schema field definition response
+ */
 export interface SchemaResponseFieldDefinition {
   id: string;
   description: string;
@@ -58,6 +72,9 @@ export interface SchemaResponseFieldDefinition {
   classification?: string[];
   resolution: string;
 }
+/**
+ * Interface for create the schema from the servers schema type definition response
+ */
 export interface SchemaResponseTypeDefinition {
   id: string;
   localNamespace: string;
@@ -68,7 +85,11 @@ export interface SchemaResponseTypeDefinition {
   contentStreamAllowed?: string;
   fields: SchemaResponseFieldDefinition[];
 }
-
+/**
+ * Interface for an additional semantics for the form element.
+ * It lets to specify restrictions on what object
+ * type should be allowed by setting eg
+ */
 export interface ClassificationEntry {
   classification: string;
   options: string[];

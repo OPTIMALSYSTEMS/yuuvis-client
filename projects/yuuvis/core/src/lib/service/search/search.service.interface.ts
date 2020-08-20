@@ -29,7 +29,10 @@ export interface SearchResultContent {
   range: string;
   mimeType: string;
 }
-
+/**
+ * Interface providing dearch query properties, that can be send to
+ * the search service
+ */
 export interface SearchQueryProperties {
   term?: string;
   size?: number;
@@ -42,11 +45,20 @@ export interface SearchQueryProperties {
   sort?: any;
 }
 
+/**
+ * Interface providing the estimated result of the current query.
+ */
 export interface AggregateResult {
+  /**
+   * number of results found
+   */
   totalNumItems: number;
   aggregations: Aggregation[];
 }
 
+/**
+ * Property of a one search query aggregation
+ */
 export interface Aggregation {
   aggKey: string;
   entries: {
