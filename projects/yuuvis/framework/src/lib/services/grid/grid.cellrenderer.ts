@@ -26,7 +26,7 @@ export class CellRenderer {
     let { value } = param;
     const { context } = param;
 
-    if (param.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS]) {
+    if (param.data && param.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS]) {
       value = context.system.getLeadingObjectTypeID(value, param.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS]);
     }
 

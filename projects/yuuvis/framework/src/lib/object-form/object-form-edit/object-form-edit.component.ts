@@ -42,7 +42,7 @@ export class ObjectFormEditComponent implements OnDestroy {
    */
   @Input('dmsObject')
   set dmsObject(dmsObject: DmsObject) {
-    if (dmsObject && (!this._dmsObject || this._dmsObject.id !== dmsObject.id)) {
+    if (this.isFloatingObjectType || (dmsObject && (!this._dmsObject || this._dmsObject.id !== dmsObject.id))) {
       // reset the state of the form
       this.formState = null;
       this.controls.saving = false;
@@ -163,7 +163,8 @@ export class ObjectFormEditComponent implements OnDestroy {
         (res) => {
           this.combinedFormInput = {
             formModels: res,
-            data: dmsObject.data
+            data: dmsObject.data,
+            disabled: this.formDisabled || !this.isEditable(dmsObject)
           };
           this.busy = false;
         },
