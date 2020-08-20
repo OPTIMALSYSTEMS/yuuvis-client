@@ -1,0 +1,94 @@
+:host {
+  display: block;
+  height: 100%;
+  background-color: var(--panel-background);
+
+  .header-icon {
+    margin-right: var(--app-pane-padding);
+  }
+
+  .compare-form {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: stretch;
+    color: var(--color-accent);
+    margin-top: calc(var(--app-pane-padding) / 2);
+
+    &.ng-invalid {
+      color: var(--color-error);
+    }
+
+    .group {
+      display: flex;
+      flex-flow: row nowrap;
+      align-items: center;
+      border-radius: 4px;
+      border: 2px solid currentColor;
+      font-weight: bold;
+      margin: 0 calc(var(--app-pane-padding) / 4);
+
+      yuv-icon {
+        padding: 0;
+        pointer-events: none;
+        transition: 200ms;
+        transform: rotate(180deg);
+
+        &.rt {
+          transform: rotate(0deg);
+        }
+      }
+    }
+
+    button {
+      padding: 0 calc(var(--app-pane-padding) / 4);
+    }
+
+    input {
+      background-color: transparent;
+      width: calc(var(--font-body) * 2.5);
+      font-weight: bold;
+      color: currentColor;
+      border: 0;
+      text-align: center;
+      padding: 3px 0px;
+
+      /* get rid of the arrows */
+      &::-webkit-outer-spin-button,
+      &::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+      /* Firefox */
+      &[type='number'] {
+        -moz-appearance: textfield;
+      }
+    }
+  }
+
+  .content {
+    background-color: var(--panel-background);
+  }
+  .footer {
+    border-top: 1px solid var(--panel-divider-color);
+    padding: calc(var(--app-pane-padding) / 2) var(--app-pane-padding);
+    background-color: var(--panel-background);
+    display: flex;
+    justify-content: flex-end;
+
+    yuv-icon.mode {
+      width: 18px;
+      height: 18px;
+      box-sizing: content-box;
+      border-radius: 2px;
+      color: var(--text-color-caption);
+      padding: 4px;
+      cursor: pointer;
+      transition: all 200ms;
+
+      &.current {
+        background-color: var(--panel-divider-color);
+        color: var(--text-color-body);
+      }
+    }
+  }
+}

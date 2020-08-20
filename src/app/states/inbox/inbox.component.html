@@ -1,57 +1,19 @@
-<section *ngIf="inboxData$ | async as inboxData">
-
-  <yuv-inbox-list [inboxData]="inboxData"></yuv-inbox-list>
+<section class="inbox-wrapper" *ngIf="inboxData$ | async as inboxData">
+  <yuv-responsive-master-slave class="state"
+    (slaveClosed)="onSlaveClosed()"
+    [layoutOptionsKey]="layoutOptionsKey"
+    [slaveActive]="itemIsSelected">
+    <yuv-inbox-list class="yuv-master panel" [inboxData]="inboxData" (selectedItem)="selectedItem($event)"></yuv-inbox-list>
+    <section class="yuv-slave panel">
+      <yuv-object-details [disableFileDrop]="true" [dmsObject]="dmsObject$ | async"
+        [panelOrder]="['summary', 'indexdata', 'preview']" [layoutOptionsKey]="layoutOptionsKey">
+      </yuv-object-details>
+    </section>
+  </yuv-responsive-master-slave>
 </section>
 
-
-<!-- <section *ngIf="inboxData$ | async as inboxData">
-
-
-
-  <yuv-responsive-master-slave class="state" [layoutOptionsKey]="layoutOptionsKey" (slaveClosed)="onSlaveClosed()" [slaveActive]="true">
-
-     <section class="yuv-master panel"> 
-      <yuv-panel class="inbox" [title]="'inbox'" [description]="'whatever there is to do!'">
-        <yuv-icon class="header-icon" [icon]="'versions'"></yuv-icon>
-    
-        <div class="content">
-          <yuv-responsive-data-table 
-            yuvOfflineDisabled class="data-table" [data]="inboxData"
-            [breakpoint]="400"
-            [viewMode]="'standart'"
-            [layoutOptionsKey]="layoutOptionsKey" (selectionChanged)="onSelectionChanged($event)">
-          </yuv-responsive-data-table> 
-        </div>
-        <div class="footer">
-    
-          <yuv-icon class="mode" icon="listModeDefault"
-            title="{{ 'yuv.framework.version-list.config.mode.default' | translate}}"
-            [ngClass]="{'current': dataTable?.currentViewMode === 'standard'}" (click)="viewMode = 'standard'">
-          </yuv-icon>
-          <yuv-icon class="mode" icon="listModeGrid" title="{{ 'yuv.framework.version-list.config.mode.grid' | translate}}"
-            [ngClass]="{'current': dataTable?.currentViewMode === 'grid'}" (click)="viewMode = 'grid'"></yuv-icon>
-          <yuv-icon class="mode" icon="listModeSimple"
-            title="{{ 'yuv.framework.version-list.config.mode.horizontal' | translate}}"
-            [ngClass]="{'current': dataTable?.currentViewMode === 'horizontal'}" (click)="viewMode = 'horizontal'">
-          </yuv-icon>
-      
-        </div>
-    
-      </yuv-panel>
-    </section> 
-    <section class="yuv-slave panel">
-      Details
-      <pre>{{ inboxData | json }}</pre>
-    </section>
-  </yuv-responsive-master-slave> 
-</section> -->
-
-<!-- <yuv-object-details class="yuv-slave panel" [objectId]="objectDetailsID" [searchTerm]="searchQuery?.term"
+<!-- <yuv-object-details class="yuv-slave panel" [objectId]="objectDetailsID" 
   [layoutOptionsKey]="layoutOptionsKey" [versionLinkTemplate]="versionLinkTpl">
 </yuv-object-details> -->
-<!-- <yuv-responsive-data-table class="yuv-master panel" *ngIf="inboxData$ | async as inboxData"
-        yuvOfflineDisabled class="data-table" [data]="inboxData"
-        [breakpoint]="400"
-        [viewMode]="'standart'"
-        [layoutOptionsKey]="layoutOptionsKey" (selectionChanged)="onSelectionChanged($event)">
-      </yuv-responsive-data-table> -->
+
+<pre>{{dmsObject$ | async | json}}</pre>
