@@ -1,10 +1,17 @@
+export enum ProcessDefinitionKey {
+  FOLLOW_UP = 'follow-up'
+}
+
 export interface ProcessInstance {
-  processDefinitionKey: string;
+  processDefinitionKey: ProcessDefinitionKey;
   name: string;
   businessKey: string;
   returnVariables: boolean;
   startFormVariables: StartFormVariable[];
 }
+
+// tslint:disable-next-line: no-empty-interface
+export interface InboxPayload extends ProcessInstance {}
 
 export interface StartFormVariable {
   name: string;
@@ -45,7 +52,7 @@ export interface ProcessData {
 
 export interface Variable {
   name: string;
-  type: string;
+  type?: string;
   value: string;
-  scope: string;
+  scope?: string;
 }

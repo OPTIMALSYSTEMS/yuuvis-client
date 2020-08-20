@@ -185,6 +185,8 @@ export class VersionListComponent implements OnInit {
           selectType: 'multiple',
           gridOptions: { getRowNodeId: (o) => this.getRowNodeId(o), rowMultiSelectWithClick: false }
         };
+
+        console.log(this.tableData);
       });
     } else {
       this.tableData = null;

@@ -98,13 +98,17 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
   /**
    * ResponsiveTableData setter
    */
-  @Input() set data(data: ResponsiveTableData) {
+  @Input()
+  set data(data: ResponsiveTableData) {
     this._data = data;
     if (this.gridOptions) {
       this.applyGridOption();
     } else {
       this.setupGridOptions();
     }
+  }
+  get data(): ResponsiveTableData {
+    return this._data;
   }
 
   /**

@@ -3,7 +3,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { ApiBase } from '../backend/api.enum';
 import { BackendService } from '../backend/backend.service';
-import { ProcessData, ProcessDataResponse, ProcessInstance } from './bpm.interface';
+import { ProcessData, ProcessDataResponse, ProcessDefinitionKey, ProcessInstance } from './bpm.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +12,7 @@ export class BpmService {
   private readonly bpmUrl = '/bpm/process/instances';
   constructor(private backendService: BackendService) {}
 
-  getProcessInstances(businessKey?: string, processDefKey = 'follow-up', includeProcessVar = true): Observable<ProcessData[]> {
+  getProcessInstances(processDefKey: ProcessDefinitionKey, businessKey?: string, includeProcessVar = true): Observable<ProcessData[]> {
     const businessKeyValue = businessKey ? `&businessKey=${businessKey}` : '';
     return this.backendService
       .get(`${this.bpmUrl}?processDefinitionKey=${processDefKey}&includeProcessVariables=${includeProcessVar}${businessKeyValue}`, ApiBase.apiWeb)

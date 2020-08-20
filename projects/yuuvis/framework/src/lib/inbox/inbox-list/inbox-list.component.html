@@ -1,0 +1,8 @@
+<yuv-responsive-data-table 
+  yuvOfflineDisabled class="data-table" [data]="inboxData"
+  [breakpoint]="400"
+  [viewMode]="'standart'"
+  [layoutOptionsKey]="layoutOptionsKey" (selectionChanged)="onSelectionChanged($event)">
+</yuv-responsive-data-table> 
+
+<pre>{{inboxData|json}}</pre>

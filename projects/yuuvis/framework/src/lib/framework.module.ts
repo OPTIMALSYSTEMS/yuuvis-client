@@ -14,6 +14,7 @@ import { YuvContextModule } from './context/context.module';
 import { YuvDirectivesModule } from './directives/directives.module';
 import { YuvFormModule } from './form/form.module';
 import { YuvGroupedSelectModule } from './grouped-select/grouped-select.module';
+import { YuvInboxModule } from './inbox/inbox.module';
 import { YuvObjectCreateModule } from './object-create/object-create.module';
 import { YuvObjectDetailsModule } from './object-details/object-details.module';
 import { YuvObjectFormModule } from './object-form/object-form.module';
@@ -41,7 +42,8 @@ const modules = [
   YuvPipesModule,
   OverlayPanelModule,
   YuvActionModule,
-  YuvCoreSharedModule
+  YuvCoreSharedModule,
+  YuvInboxModule
 ];
 
 /**
