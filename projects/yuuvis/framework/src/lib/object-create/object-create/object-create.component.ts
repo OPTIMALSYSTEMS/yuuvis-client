@@ -191,30 +191,30 @@ export class ObjectCreateComponent implements OnDestroy {
     this.title = this.labels.defaultTitle;
 
     let i = 0;
-    this.generalObjectTypeGroups = this.system.getGroupedObjectTypes(true, true).map((otg: ObjectTypeGroup) => ({
-      id: `${i++}`,
-      label: otg.label,
-      items: otg.types
-        .filter(
-          (ot) =>
-            ![
-              // types that should not be able to be created
-              SystemType.FOLDER,
-              SystemType.DOCUMENT
-            ].includes(ot.id)
-        )
-
-        .map((ot: ObjectType) => {
-          return {
+    this.generalObjectTypeGroups = this.system
+      .getGroupedObjectTypes()
+      .map((otg: ObjectTypeGroup) => ({
+        id: `${i++}`,
+        label: otg.label,
+        items: otg.types
+          .filter(
+            (ot) =>
+              ![
+                // types that should not be able to be created
+                SystemType.FOLDER,
+                SystemType.DOCUMENT
+              ].includes(ot.id)
+          )
+          .map((ot: ObjectType) => ({
             id: ot.id,
-            label: ot.label,
+            label: this.system.getLocalizedResource(`${ot.id}_label`),
             description: ot.isFolder ? '' : this.labels[ot.contentStreamAllowed],
             highlight: ot.isFolder,
             svg: this.system.getObjectTypeIcon(ot.id),
             value: ot
-          };
-        })
-    }));
+          }))
+      }))
+      .filter((group: SelectableGroup) => group.items.length > 0);
     this.setupAvailableObjectTypeGroups();
     this.collectPendingAFOs();
   }

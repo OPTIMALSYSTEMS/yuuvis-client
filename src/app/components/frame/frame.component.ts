@@ -226,7 +226,12 @@ export class FrameComponent implements OnInit, OnDestroy {
     if (Array.isArray(res.objectId)) {
       const searchQuery = new SearchQuery();
       searchQuery.addFilter(new SearchFilter(BaseObjectTypeField.OBJECT_ID, SearchFilter.OPERATOR.IN, res.objectId));
-      this.router.navigate(['/result'], { queryParams: { query: JSON.stringify(searchQuery.toQueryJson()) } });
+      this.router.navigate(['/result'], {
+        queryParams: {
+          query: JSON.stringify(searchQuery.toQueryJson()),
+          tmp: true
+        }
+      });
     } else {
       this.router.navigate(['/object', res.objectId]);
     }

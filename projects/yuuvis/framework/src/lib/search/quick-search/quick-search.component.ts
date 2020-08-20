@@ -3,7 +3,6 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import {
   AggregateResult,
   BaseObjectTypeField,
-  ContentStreamField,
   DeviceService,
   ObjectType,
   SearchFilter,
@@ -89,31 +88,6 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
   formOptions: any;
   formValid = true;
 
-  // object types that one should not search for
-  // private skipTypes = [SystemType.DOCUMENT, SystemType.FOLDER];
-  private skipTypes = [];
-  // fields that should not be searchable
-  private skipFields = [
-    // ...Object.keys(RetentionField).map(k => RetentionField[k]),
-    BaseObjectTypeField.OBJECT_ID,
-    // BaseObjectTypeField.CREATED_BY,
-    // BaseObjectTypeField.MODIFIED_BY,
-    BaseObjectTypeField.TAGS,
-    BaseObjectTypeField.OBJECT_TYPE_ID,
-    BaseObjectTypeField.PARENT_ID,
-    BaseObjectTypeField.PARENT_OBJECT_TYPE_ID,
-    BaseObjectTypeField.PARENT_VERSION_NUMBER,
-    BaseObjectTypeField.TENANT,
-    BaseObjectTypeField.TRACE_ID,
-    BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS,
-    BaseObjectTypeField.BASE_TYPE_ID,
-    ContentStreamField.ID,
-    ContentStreamField.RANGE,
-    ContentStreamField.REPOSITORY_ID,
-    ContentStreamField.DIGEST,
-    ContentStreamField.ARCHIVE_PATH
-  ];
-
   /**
    * ID of a context folder to restrict search to.
    */
@@ -122,9 +96,7 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
       this._context = c;
       this._tmpSearch = this.searchQuery ? this.searchQuery.toQueryJson() : null;
       // enable context search
-      const contextSearch = new SearchQuery();
-      contextSearch.addFilter(new SearchFilter(BaseObjectTypeField.PARENT_ID, SearchFilter.OPERATOR.EQUAL, this.context));
-      this.setQuery(contextSearch);
+      this.setQuery(new SearchQuery());
     } else if (!c && this._tmpSearch) {
       this.setQuery(new SearchQuery(this._tmpSearch));
     }
@@ -132,6 +104,16 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
   get context() {
     return this._context;
   }
+
+  private get contextFilter() {
+    return new SearchFilter(BaseObjectTypeField.PARENT_ID, SearchFilter.OPERATOR.EQUAL, this.context);
+  }
+
+  private get customFilters(): Selectable[] {
+    return this.availableObjectTypeFields.map((o) => ({ ...o, value: [new SearchFilter(o.id, undefined, undefined)] }));
+  }
+
+  private enabledFilters: Selectable[] = [];
 
   /**
    * Enables inline mode. This is a more compact version of the component that
@@ -192,7 +174,8 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
     this.availableObjectTypeGroups = this.quickSearchService.availableObjectTypeGroups;
     this.selectedObjectTypes = [];
     this.objectTypeSelectLabel = this.translate.instant('yuv.framework.quick-search.type.all');
-    this.setAvailableObjectTypesFields();
+    // TODO: load only if needed
+    this.quickSearchService.loadFilterSettings().subscribe(() => this.setAvailableObjectTypesFields());
 
     this.searchForm.valueChanges.pipe(distinctUntilChanged(), debounceTime(500)).subscribe(({ term }) => {
       const _term = typeof term === 'string' ? term : (term && term.label) || '';
@@ -212,9 +195,7 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
   autocomplete(event: any) {
     const q = (this.lastAutoQuery = this.parseQuery(event.query));
     // TODO : add active filter suggestions
-    const suggestions: any[] =
-      (q.isTypes ? this.availableObjectTypes : this.availableObjectTypeFields.map((o) => ({ ...o, value: [new SearchFilter(o.id, undefined, undefined)] }))) ||
-      [];
+    const suggestions: any[] = (q.isTypes ? this.availableObjectTypes : [...this.customFilters, ...this.enabledFilters]) || [];
     this.autoSuggestions =
       !q.isTypes && !q.isTypeFields ? [] : suggestions.filter((t) => (t.label || '').toLowerCase().includes(q.text)).map((t) => ({ ...t }));
   }
@@ -286,9 +267,14 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
       type: 'filter',
       items: [
         {
-          id: 'filter',
+          id: 'custom',
           label: this.translate.instant('yuv.framework.search.filter.custom.filters'),
-          items: this.availableObjectTypeFields.map((o) => ({ ...o, value: [new SearchFilter(o.id, undefined, undefined)] }))
+          items: this.customFilters
+        },
+        {
+          id: 'enabled',
+          label: this.translate.instant('yuv.framework.search.filter.enabled.filters'),
+          items: this.enabledFilters
         }
       ],
       selected: []
@@ -322,7 +308,10 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
   onControlRemoved(id: string) {}
 
   onFilterChanged(res: Selectable) {
-    this.searchQuery.filterGroup = SearchFilterGroup.fromArray(res.value);
+    this.searchQuery.filterGroup = SearchFilterGroup.fromArray(res.value).clone();
+    if (this.context && this.searchWithinContext) {
+      this.searchQuery.addFilter(this.contextFilter);
+    }
     this.aggregate();
   }
 
@@ -346,6 +335,12 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
 
   private setAvailableObjectTypesFields() {
     this.availableObjectTypeFields = this.quickSearchService.getAvailableObjectTypesFields(this.selectedObjectTypes);
+
+    this.quickSearchService.getCurrentSettings().subscribe(([storedFilters, visibleFilters]) => {
+      this.enabledFilters = this.quickSearchService
+        .loadFilters(storedFilters as any, this.availableObjectTypeFields)
+        .filter((f) => (visibleFilters ? visibleFilters.includes(f.id) : true));
+    });
 
     // remove filters that are not relevant
     this.searchQuery.filterGroup.filters.forEach(
@@ -375,8 +370,7 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
         );
       }
       if (this.context && this.searchWithinContext) {
-        // TODO: check all combinations
-        this.searchQuery.addFilter(new SearchFilter(BaseObjectTypeField.PARENT_ID, SearchFilter.OPERATOR.EQUAL, this.context));
+        this.searchQuery.addFilter(this.contextFilter);
       }
 
       this.settingUpQuery = false;

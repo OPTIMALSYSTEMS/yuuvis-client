@@ -2,9 +2,27 @@
   flex: 1;
   padding: var(--app-pane-padding);
 
+  > form {
+    padding: calc(var(--app-pane-padding) / 2);
+    background-color: var(--panel-background-grey);
+    border: 1px solid var(--panel-divider-color);
+    margin-top: calc(var(--app-pane-padding) / 4);
+    width: 100%;
+  }
+
+  .node-group {
+    padding: 2px;
+  }
+
   .node-item {
     display: flex;
     flex-direction: row;
+
+    .node-item {
+      .cdk-drag-handle {
+        display: none;
+      }
+    }
   }
 
   .cdk-drag {
@@ -13,10 +31,17 @@
   }
 
   .cdk-drag-handle {
-    // display: none;
     display: flex;
     flex-direction: row;
     align-items: center;
+
+    &::after {
+      content: '';
+      border: 2px solid var(--color-primary);
+      border-right-width: 0;
+      width: calc(var(--app-pane-padding) / 4);
+      align-self: stretch;
+    }
   }
 
   .cdk-drag-placeholder {
@@ -44,14 +69,19 @@
     border-bottom: 1px dotted var(--color-accent);
   }
 
+  .operator {
+    background-color: var(--color-primary);
+    color: #fff;
+    cursor: pointer;
+    padding: calc(var(--app-pane-padding) / 8);
+    min-width: 32px;
+    text-align: center;
+  }
+
   .condition {
     display: flex;
     align-items: center;
     flex: 1;
-    padding: calc(var(--app-pane-padding) / 4);
-    // border-bottom: 1px solid var(--panel-divider-color);
-    background-color: var(--panel-background);
-    margin-bottom: 1px;
 
     > yuv-icon {
       transition: 200ms;
@@ -69,7 +99,7 @@
         cursor: move;
       }
       &.remove {
-        padding: calc(var(--app-pane-padding) / 2);
+        padding: calc(var(--app-pane-padding) / 4);
         width: 18px;
         height: 18px;
       }
