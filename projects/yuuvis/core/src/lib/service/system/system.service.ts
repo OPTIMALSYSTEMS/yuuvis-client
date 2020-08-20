@@ -69,18 +69,6 @@ export class SystemService {
       .filter((ot) => (!includeFloatingTypes ? !ot.isFloatingType : true && (!skipAbstract || this.isCreatable(ot.id))))
       .forEach((ot) => {
         types.push(ot);
-        // if (includeFloatingTypes) {
-        //   ot.secondaryObjectTypes
-        //     .filter((sot) => !sot.static)
-        //     .forEach((fsot) => {
-        //       types.push({
-        //         id: fsot.id,
-        //         label: this.getLocalizedResource(`${fsot.id}_label`),
-        //         isFolder: ot.isFolder,
-        //         isFloatingType: true
-        //       });
-        //     });
-        // }
       });
 
     const grouped = this.groupBy(
@@ -203,22 +191,6 @@ export class SystemService {
     // base type contains only fields that are shared by base document and base folder ...
     const folderTypeFieldIDs = sysFolder.fields.map((f) => f.id);
     const baseTypeFields: ObjectTypeField[] = sysDocument.fields.filter((f) => folderTypeFieldIDs.includes(f.id));
-
-    // // ... and some secondary object type fields
-    // // TODO: get fields for SecondaryObjectTypeField from schema
-    // const props: ObjectTypeField = {
-    //   id: '',
-    //   propertyType: 'string',
-    //   _internalType: 'string',
-    //   description: '',
-    //   cardinality: 'single',
-    //   required: true,
-    //   updatability: 'readwrite'
-    // };
-    // const secondaryFields: ObjectTypeField[] = [
-    //   { ...props, id: SecondaryObjectTypeField.TITLE },
-    //   { ...props, id: SecondaryObjectTypeField.DESCRIPTION }
-    // ];
     return {
       id: SystemType.OBJECT,
       description: null,
@@ -227,7 +199,6 @@ export class SystemService {
       creatable: false,
       isFolder: false,
       secondaryObjectTypes: [],
-      // fields: [...baseTypeFields, ...secondaryFields]
       fields: baseTypeFields
     };
   }
