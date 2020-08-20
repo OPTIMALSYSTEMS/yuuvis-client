@@ -1,6 +1,5 @@
 import { Component, ElementRef, EventEmitter, Input, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
 import { SearchFilter, SearchFilterGroup, SearchQuery, TranslateService, Utils } from '@yuuvis/core';
-import { forkJoin } from 'rxjs';
 import { IconRegistryService } from '../../../common/components/icon/service/iconRegistry.service';
 import { Selectable } from '../../../grouped-select';
 import { PopoverConfig } from '../../../popover/popover.interface';
@@ -50,7 +49,7 @@ export class SearchFilterConfigComponent implements OnInit {
       }
     ];
 
-    forkJoin([this.quickSearchService.loadStoredFilters(), this.quickSearchService.loadFiltersVisibility()]).subscribe(([storedFilters, visibleFilters]) => {
+    this.quickSearchService.getCurrentSettings().subscribe(([storedFilters, visibleFilters]) => {
       this.storedFilters = this.quickSearchService.loadFilters(storedFilters as any, this.availableObjectTypeFields);
       this.visibleFilters = visibleFilters || this.storedFilters.map((f) => f.id);
 
@@ -156,12 +155,14 @@ export class SearchFilterConfigComponent implements OnInit {
     this.storedFiltersGroups[0].items = this.getDefaultFilters();
     this.storedFiltersGroups[1].items = this.storedFilters.filter((f) => this.isVisible(f));
     this.storedFiltersGroups[2].items = this.storedFilters.filter((f) => !this.isVisible(f));
+    this.availableFiltersGroups[1].items = this.storedFilters.filter((f) => this.isVisible(f));
     this.quickSearchService.saveFiltersVisibility(this.visibleFilters).subscribe();
   }
 
   onControlRemoved(id: string) {}
 
   onFilterChanged(res: Selectable) {
+    res.label = this.selectedFilter.label;
     this.selectedFilter = res;
   }
 
