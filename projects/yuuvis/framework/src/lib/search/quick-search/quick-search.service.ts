@@ -129,22 +129,11 @@ export class QuickSearchService {
     );
   }
 
-  getAvailableObjectTypesFields(selectedTypes = []): Selectable[] {
-    let sharedFields;
-
-    const selectedObjectTypes: ObjectType[] = selectedTypes.length
-      ? this.systemService.getObjectTypes().filter((t) => selectedTypes.includes(t.id))
-      : this.systemService.getObjectTypes();
-
-    selectedObjectTypes.forEach((t) => {
-      if (!sharedFields) {
-        sharedFields = t.fields;
-      } else {
-        // check for fields that are not part of the shared fields
-        const fieldIDs = t.fields.map((f) => f.id);
-        sharedFields = sharedFields.filter((f) => fieldIDs.includes(f.id));
-      }
-    });
+  getAvailableObjectTypesFields(selectedTypes = [], shared = true): Selectable[] {
+    const selectedObjectTypes = this.systemService.getObjectTypes().filter((t) => (selectedTypes.length ? selectedTypes.includes(t.id) : true));
+    const sharedFields = shared
+      ? selectedObjectTypes.reduce((prev, cur) => cur.fields.filter((f) => prev.find((p) => p.id === f.id)), selectedObjectTypes[0].fields)
+      : selectedObjectTypes.reduce((prev, cur) => [...prev, ...cur.fields.filter((f) => !prev.find((p) => p.id === f.id))], []);
 
     return sharedFields
       .filter((f) => !this.skipFields.includes(f.id))

@@ -189,7 +189,8 @@ export class SearchFilterComponent implements OnInit {
   showFilterConfig() {
     const pickerData: any = {
       query: this.filterQuery,
-      typeSelection: [...this.typeSelection]
+      typeSelection: [...this.typeSelection],
+      sharedFields: true
     };
     const popoverConfig: PopoverConfig = {
       width: '55%',
