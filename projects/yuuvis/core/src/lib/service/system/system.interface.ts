@@ -24,7 +24,9 @@ export interface ObjectType {
   secondaryObjectTypes: { id: string; static?: boolean }[];
   fields: ObjectTypeField[];
 }
-
+/**
+ * Interface providing secondary object type
+ */
 export interface SecondaryObjectType {
   id: string;
   label?: string;
@@ -75,6 +77,9 @@ export interface SchemaResponse {
   typeSecondaryDefinition: SchemaResponseTypeDefinition[];
 }
 
+/**
+ * Interface for create the schema from the servers schema type definition response
+ */
 export interface SchemaResponseTypeDefinition {
   id: string;
   description?: string;
@@ -84,7 +89,7 @@ export interface SchemaResponseTypeDefinition {
   classification: string[];
 }
 
-export interface SchemaResponseFolderTypeDefinition extends SchemaResponseTypeDefinition { }
+export interface SchemaResponseFolderTypeDefinition extends SchemaResponseTypeDefinition {}
 export interface SchemaResponseDocumentTypeDefinition extends SchemaResponseFolderTypeDefinition {
   contentStreamAllowed?: string;
 }
@@ -112,6 +117,9 @@ export interface SchemaResponseFieldDefinition {
 //   fields: SchemaResponseFieldDefinition[];
 // }
 
+/**
+ * Object type fields classification property (schema)
+ */
 export interface ClassificationEntry {
   classification: string;
   options: string[];

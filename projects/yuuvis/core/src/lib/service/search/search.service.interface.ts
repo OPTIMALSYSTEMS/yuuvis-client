@@ -1,11 +1,19 @@
+/**
+ * Interface providing a search service
+ */
 export interface SearchResult {
   hasMoreItems: boolean;
   totalNumItems: number;
   items: SearchResultItem[];
-  // object types within the result
+  /**
+   * object types within the result
+   */
+
   objectTypes: string[];
 }
-
+/**
+ * Interface for the item of search results
+ */
 export interface SearchResultItem {
   objectTypeId: string;
   content?: SearchResultContent;

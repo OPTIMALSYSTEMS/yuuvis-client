@@ -66,7 +66,9 @@ export class YuvUser {
     return `${this.lastname}, ${this.firstname} (${this.username})`;
   }
 }
-
+/**
+ * Interface for user settings
+ */
 export interface UserSettings {
   locale: string;
 }
