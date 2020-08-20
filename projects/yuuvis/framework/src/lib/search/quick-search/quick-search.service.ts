@@ -35,7 +35,7 @@ export class QuickSearchService {
   private STORAGE_KEY_FILTERS = 'yuv.framework.search.filters';
 
   private filters = {};
-  private filtersVisibility = [];
+  private filtersVisibility: string[];
   private filtersLast = [];
   availableObjectTypes: Selectable[] = [];
   availableObjectTypeGroups: SelectableGroup[] = [];
@@ -102,7 +102,11 @@ export class QuickSearchService {
   }
 
   loadFilterSettings() {
-    return forkJoin([this.loadStoredFilters(), this.loadFiltersVisibility()]);
+    return forkJoin([this.loadStoredFilters(), this.loadFiltersVisibility(), this.loadLastFilters()]);
+  }
+
+  getCurrentSettings() {
+    return forkJoin([this.loadStoredFilters(of(this.filters)), of(this.filtersVisibility ? [...this.filtersVisibility] : null), of([...this.filtersLast])]);
   }
 
   getAvailableFilterGroups(storedFilters: Selectable[], availableObjectTypeFields: Selectable[]) {
@@ -125,22 +129,11 @@ export class QuickSearchService {
     );
   }
 
-  getAvailableObjectTypesFields(selectedTypes = []): Selectable[] {
-    let sharedFields;
-
-    const selectedObjectTypes: ObjectType[] = selectedTypes.length
-      ? this.systemService.getObjectTypes().filter((t) => selectedTypes.includes(t.id))
-      : this.systemService.getObjectTypes();
-
-    selectedObjectTypes.forEach((t) => {
-      if (!sharedFields) {
-        sharedFields = t.fields;
-      } else {
-        // check for fields that are not part of the shared fields
-        const fieldIDs = t.fields.map((f) => f.id);
-        sharedFields = sharedFields.filter((f) => fieldIDs.includes(f.id));
-      }
-    });
+  getAvailableObjectTypesFields(selectedTypes = [], shared = true): Selectable[] {
+    const selectedObjectTypes = this.systemService.getObjectTypes().filter((t) => (selectedTypes.length ? selectedTypes.includes(t.id) : true));
+    const sharedFields = shared
+      ? selectedObjectTypes.reduce((prev, cur) => cur.fields.filter((f) => prev.find((p) => p.id === f.id)), selectedObjectTypes[0].fields)
+      : selectedObjectTypes.reduce((prev, cur) => [...prev, ...cur.fields.filter((f) => !prev.find((p) => p.id === f.id))], []);
 
     return sharedFields
       .filter((f) => !this.skipFields.includes(f.id))
@@ -181,8 +174,8 @@ export class QuickSearchService {
   loadFiltersVisibility() {
     return this.userService.getSettings(this.STORAGE_KEY_FILTERS_VISIBLE).pipe(
       // return this.appCacheService.getItem(this.STORAGE_KEY_FILTERS_VISIBLE).pipe(
-      tap((f) => (this.filtersVisibility = (f && f.visible) || [])),
-      map((f) => f && f.visible)
+      tap((f) => (this.filtersVisibility = f && f.visible)),
+      map((f) => this.filtersVisibility)
     );
   }
 

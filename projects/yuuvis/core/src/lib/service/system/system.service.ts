@@ -46,12 +46,7 @@ export class SystemService {
    * @param withLabels Whether or not to also add the types labels
    */
   getObjectTypes(withLabels?: boolean): ObjectType[] {
-    return withLabels
-      ? this.system.objectTypes.map((t) => ({
-          ...t,
-          label: this.getLocalizedResource(`${t.id}_label`)
-        }))
-      : this.system.objectTypes;
+    return withLabels ? this.system.objectTypes.map((t) => ({ ...t, label: this.getLocalizedResource(`${t.id}_label`) })) : this.system.objectTypes;
   }
 
   /**
