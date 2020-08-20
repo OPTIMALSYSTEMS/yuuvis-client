@@ -352,7 +352,6 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
       minWidth: this.isGrid ? this._data.rows.length * this.settings.colWidth.grid : 0,
       valueGetter: (params) => JSON.stringify(params.data), // needed to compare value changes & redraw cell
       cellRenderer: (params) => {
-        // const objectTypeId = params.data[BaseObjectTypeField.OBJECT_TYPE_ID];
         const objectTypeId = this.systemService.getLeadingObjectTypeID(
           params.data[BaseObjectTypeField.OBJECT_TYPE_ID],
           params.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS]
@@ -360,7 +359,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
         const version = params.data[BaseObjectTypeField.VERSION_NUMBER];
         const modified = this.datePipe.transform(params.data[BaseObjectTypeField.MODIFICATION_DATE]);
         const title = this.systemService.getLocalizedResource(`${objectTypeId}_label`);
-
+        params.value = objectTypeId;
         params.context = {
           system: this.systemService
         };

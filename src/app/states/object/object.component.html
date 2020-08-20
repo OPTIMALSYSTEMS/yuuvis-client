@@ -20,5 +20,5 @@
 
 <!-- template to render the version link withing object details summary and audit aspects -->
 <ng-template #versionLinkTpl let-version="version">
-  <a [routerLink]="['/versions', selectedItem]" [queryParams]="({version: version})">{{version}}</a>
+  <a [routerLink]="['/versions', selectedItem || _standalone]" [queryParams]="({version: version})">{{version}}</a>
 </ng-template>

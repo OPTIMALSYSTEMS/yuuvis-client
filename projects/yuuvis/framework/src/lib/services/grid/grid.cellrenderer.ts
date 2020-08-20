@@ -1,4 +1,4 @@
-import { SearchFilter, SearchQuery, SecondaryObjectTypeClassification, Utils } from '@yuuvis/core';
+import { BaseObjectTypeField, SearchFilter, SearchQuery, SecondaryObjectTypeClassification, Utils } from '@yuuvis/core';
 
 /**
  * @ignore
@@ -23,7 +23,13 @@ export class CellRenderer {
   }
 
   static typeCellRenderer(param: any) {
-    const { value, context } = param;
+    let { value } = param;
+    const { context } = param;
+
+    if (param.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS]) {
+      value = context.system.getLeadingObjectTypeID(value, param.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS]);
+    }
+
     const ico = context.system.getObjectTypeIcon(value) || '';
     const title = context.system.getLocalizedResource(`${value}_label`) || '';
     return `<span title="${title}">${ico}</span>`;
