@@ -47,7 +47,7 @@ export const stringElements = [
     name: 'string:email',
     label: 'String Classification email',
     description: 'enter valid email address',
-    classification: ['email'],
+    classifications: ['email'],
     type: 'string',
     required: false
   },
@@ -56,7 +56,7 @@ export const stringElements = [
     name: 'string:url',
     label: 'String Classification url',
     description: 'enter valid url address',
-    classification: ['url'],
+    classifications: ['url'],
     type: 'string',
     required: false
   },
@@ -65,7 +65,7 @@ export const stringElements = [
     name: 'string:phone',
     label: 'String Classification phone',
     description: 'enter a phone number',
-    classification: ['phone'],
+    classifications: ['phone'],
     type: 'string',
     required: false
   },
@@ -93,7 +93,7 @@ export const stringElements = [
     name: 'string:email:multi',
     label: 'String Classification email multiple',
     description: 'enter multiple email addresses',
-    classification: ['email'],
+    classifications: ['email'],
     type: 'string',
     required: false
   },
@@ -103,7 +103,7 @@ export const stringElements = [
     name: 'string:url:multi',
     label: 'String Classification URL multiple',
     description: 'enter multiple URL addresses',
-    classification: ['url'],
+    classifications: ['url'],
     type: 'string',
     required: false
   },
@@ -113,7 +113,7 @@ export const stringElements = [
     name: 'string:phone:multi',
     label: 'String Classification phone multiple',
     description: 'enter multiple phone numbers',
-    classification: ['phone'],
+    classifications: ['phone'],
     type: 'string',
     required: false
   },

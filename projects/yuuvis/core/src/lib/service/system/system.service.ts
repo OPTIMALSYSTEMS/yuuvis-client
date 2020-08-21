@@ -50,6 +50,16 @@ export class SystemService {
   }
 
   /**
+   * Get all secondary object types
+   * @param withLabels Whether or not to also add the types labels
+   */
+  getSecondaryObjectTypes(withLabels?: boolean): SecondaryObjectType[] {
+    return withLabels
+      ? this.system.secondaryObjectTypes.map((t) => ({ ...t, label: this.getLocalizedResource(`${t.id}_label`) }))
+      : this.system.secondaryObjectTypes;
+  }
+
+  /**
    * Returns grouped object types sorted by label and folders first.
    * @param withLabels Whether or not to also add the types labels
    * @param skipAbstract Whether or not to exclude abstract object types like e.g. 'system:document'

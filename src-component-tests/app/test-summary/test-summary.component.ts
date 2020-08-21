@@ -38,7 +38,7 @@ export class TestSummaryComponent implements OnInit {
   }
 
   clearStorage() {
-    this.localStorage.removeItem('yuv.framework.summary.active-index').subscribe();
+    this.localStorage.removeItem('yuv.framework.summary.section.visibility').subscribe();
   }
 
   ngOnInit() {}
