@@ -37,9 +37,9 @@ export class SearchFilterConfigComponent implements OnInit {
   query: SearchQuery;
   CREATE_NEW_ID = '__create_new';
 
-  @Input() set options(data: { typeSelection: string[]; query: SearchQuery }) {
+  @Input() set options(data: { typeSelection: string[]; query: SearchQuery; sharedFields: boolean }) {
     this.query = data.query;
-    this.availableObjectTypeFields = this.quickSearchService.getAvailableObjectTypesFields(data.typeSelection);
+    this.availableObjectTypeFields = this.quickSearchService.getAvailableObjectTypesFields(data.typeSelection, data.sharedFields);
 
     this.availableFiltersGroups = [
       {
@@ -49,7 +49,7 @@ export class SearchFilterConfigComponent implements OnInit {
       }
     ];
 
-    this.quickSearchService.getCurrentSettings().subscribe(([storedFilters, visibleFilters]) => {
+    this.quickSearchService.loadFilterSettings().subscribe(([storedFilters, visibleFilters]) => {
       this.storedFilters = this.quickSearchService.loadFilters(storedFilters as any, this.availableObjectTypeFields);
       this.visibleFilters = visibleFilters || this.storedFilters.map((f) => f.id);
 

@@ -191,27 +191,30 @@ export class ObjectCreateComponent implements OnDestroy {
     this.title = this.labels.defaultTitle;
 
     let i = 0;
-    this.generalObjectTypeGroups = this.system.getGroupedObjectTypes().map((otg: ObjectTypeGroup) => ({
-      id: `${i++}`,
-      label: otg.label,
-      items: otg.types
-        .filter(
-          (ot) =>
-            ![
-              // types that should not be able to be created
-              SystemType.FOLDER,
-              SystemType.DOCUMENT
-            ].includes(ot.id)
-        )
-        .map((ot: ObjectType) => ({
-          id: ot.id,
-          label: this.system.getLocalizedResource(`${ot.id}_label`),
-          description: ot.isFolder ? '' : this.labels[ot.contentStreamAllowed],
-          highlight: ot.isFolder,
-          svg: this.system.getObjectTypeIcon(ot.id),
-          value: ot
-        }))
-    }));
+    this.generalObjectTypeGroups = this.system
+      .getGroupedObjectTypes()
+      .map((otg: ObjectTypeGroup) => ({
+        id: `${i++}`,
+        label: otg.label,
+        items: otg.types
+          .filter(
+            (ot) =>
+              ![
+                // types that should not be able to be created
+                SystemType.FOLDER,
+                SystemType.DOCUMENT
+              ].includes(ot.id)
+          )
+          .map((ot: ObjectType) => ({
+            id: ot.id,
+            label: this.system.getLocalizedResource(`${ot.id}_label`),
+            description: ot.isFolder ? '' : this.labels[ot.contentStreamAllowed],
+            highlight: ot.isFolder,
+            svg: this.system.getObjectTypeIcon(ot.id),
+            value: ot
+          }))
+      }))
+      .filter((group: SelectableGroup) => group.items.length > 0);
     this.setupAvailableObjectTypeGroups();
     this.collectPendingAFOs();
   }
@@ -488,7 +491,7 @@ export class ObjectCreateComponent implements OnDestroy {
       (ids: string[]) => {
         this.busy = false;
         // this.notify.success(this.translate.instant('yuv.framework.object-create.notify.success'));
-        if (this.createAnother || this.afoCreate.dmsObject.selected) {
+        if (this.createAnother || this.afoCreate?.dmsObject.selected) {
           this.selectedObjectType = null;
           this.files = [];
           this.resetState();

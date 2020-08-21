@@ -21,6 +21,7 @@ import { OfflineComponent } from './states/offline/offline.component';
 import { ResultComponent } from './states/result/result.component';
 import { SettingsComponent } from './states/settings/settings.component';
 import { VersionsComponent } from './states/versions/versions.component';
+import { FilterConfigurationComponent } from './states/filter-configuration/filter-configuration.component';
 
 @NgModule({
   declarations: [
@@ -34,7 +35,8 @@ import { VersionsComponent } from './states/versions/versions.component';
     CreateComponent,
     OfflineComponent,
     VersionsComponent,
-    ColumnConfigurationComponent
+    ColumnConfigurationComponent,
+    FilterConfigurationComponent
   ],
   imports: [
     BrowserModule,

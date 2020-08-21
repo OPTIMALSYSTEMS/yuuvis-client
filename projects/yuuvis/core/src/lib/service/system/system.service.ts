@@ -46,12 +46,17 @@ export class SystemService {
    * @param withLabels Whether or not to also add the types labels
    */
   getObjectTypes(withLabels?: boolean): ObjectType[] {
+    return withLabels ? this.system.objectTypes.map((t) => ({ ...t, label: this.getLocalizedResource(`${t.id}_label`) })) : this.system.objectTypes;
+  }
+
+  /**
+   * Get all secondary object types
+   * @param withLabels Whether or not to also add the types labels
+   */
+  getSecondaryObjectTypes(withLabels?: boolean): SecondaryObjectType[] {
     return withLabels
-      ? this.system.objectTypes.map((t) => ({
-          ...t,
-          label: this.getLocalizedResource(`${t.id}_label`)
-        }))
-      : this.system.objectTypes;
+      ? this.system.secondaryObjectTypes.map((t) => ({ ...t, label: this.getLocalizedResource(`${t.id}_label`) }))
+      : this.system.secondaryObjectTypes;
   }
 
   /**
