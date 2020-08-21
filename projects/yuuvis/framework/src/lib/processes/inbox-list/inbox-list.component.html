@@ -1,5 +1,5 @@
 
-<yuv-panel class="versions-list" [title]="'yuv.framework.inbox-list.inbox' | translate" 
+<yuv-panel class="inbox-list" [title]="'yuv.framework.inbox-list.inbox' | translate" 
   [description]="'yuv.framework.inbox-list.inbox.description' | translate">
   <yuv-icon class="header-icon" [icon]="'inbox'"></yuv-icon>
 
@@ -11,23 +11,23 @@
   </div>
 
   <div class="content">
-    <yuv-responsive-data-table yuvOfflineDisabled class="data-table versions" *ngIf="inboxData"
+    <yuv-responsive-data-table yuvOfflineDisabled class="data-table inbox" *ngIf="inboxData"
       [data]="inboxData" (selectionChanged)="select($event)"
-      [viewMode]="'horizontal'"
+      [viewMode]="viewMode"
       [layoutOptionsKey]="layoutOptionsKey">
     </yuv-responsive-data-table>
   </div>
 
   <section class="footer">
-    <!-- <yuv-icon class="mode" icon="listModeDefault"
+    <yuv-icon class="mode" icon="listModeDefault"
       title="{{ 'yuv.framework.version-list.config.mode.default' | translate}}"
-      [ngClass]="{'current': dataTable?.currentViewMode === 'standard'}" (click)="viewMode = 'standard'">
+      [ngClass]="{'current': inboxData?.currentViewMode === 'standard'}" (click)="viewMode = 'standard'">
     </yuv-icon>
     <yuv-icon class="mode" icon="listModeGrid" title="{{ 'yuv.framework.version-list.config.mode.grid' | translate}}"
-      [ngClass]="{'current': dataTable?.currentViewMode === 'grid'}" (click)="viewMode = 'grid'"></yuv-icon>
+      [ngClass]="{'current': inboxData?.currentViewMode === 'grid'}" (click)="viewMode = 'grid'"></yuv-icon>
     <yuv-icon class="mode" icon="listModeSimple"
       title="{{ 'yuv.framework.version-list.config.mode.horizontal' | translate}}"
-      [ngClass]="{'current': dataTable?.currentViewMode === 'horizontal'}" (click)="viewMode = 'horizontal'">
-    </yuv-icon> -->
+      [ngClass]="{'current': inboxData?.currentViewMode === 'horizontal'}" (click)="viewMode = 'horizontal'">
+    </yuv-icon>
   </section>
 </yuv-panel>

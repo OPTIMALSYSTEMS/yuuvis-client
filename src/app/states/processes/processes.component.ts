@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { DmsObject, DmsService, InboxService, ProcessDefinitionKey } from '@yuuvis/core';
+import { BpmService, DmsObject, DmsService, TaskData } from '@yuuvis/core';
 import {
   arrowNext,
   edit,
@@ -16,23 +16,23 @@ import { Observable } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 
 @Component({
-  selector: 'yuv-inbox',
-  templateUrl: './inbox.component.html',
-  styleUrls: ['./inbox.component.scss']
+  selector: 'app-processes',
+  templateUrl: './processes.component.html',
+  styleUrls: ['./processes.component.scss']
 })
-export class InboxComponent {
-  layoutOptionsKey = 'yuv.app.inbox';
+export class ProcessesComponent {
+  layoutOptionsKey = 'yuv.app.processes';
   objectDetailsID: string;
   itemIsSelected = false;
   dmsObject$: Observable<DmsObject>;
-  inboxData$: Observable<ResponsiveTableData> = this.inboxService
-    .getInbox(ProcessDefinitionKey.FOLLOW_UP)
-    .pipe(map((val) => this.formatProcessDataService.formatInboxProcessDataForTable(val)));
+  processData$: Observable<ResponsiveTableData> = this.bpmService
+    .getTasks()
+    .pipe(map((val: TaskData[]) => this.formatProcessDataService.formatProcessDataForTable(val)));
 
   constructor(
-    private inboxService: InboxService,
     private dmsService: DmsService,
     private formatProcessDataService: FormatProcessDataService,
+    private bpmService: BpmService,
     private iconRegistry: IconRegistryService
   ) {
     this.iconRegistry.registerIcons([edit, arrowNext, refresh, processes, listModeDefault, listModeGrid, listModeSimple]);
@@ -43,6 +43,8 @@ export class InboxComponent {
   }
 
   selectedItem(item) {
-    this.getSelectedDetail(item[0].businessKey);
+    console.log({ item });
+
+    // this.getSelectedDetail(item[0].businessKey);
   }
 }

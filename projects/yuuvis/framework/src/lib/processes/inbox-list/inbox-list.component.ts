@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { ViewMode } from './../../components/responsive-data-table/responsive-data-table.component';
 
 @Component({
@@ -6,15 +6,14 @@ import { ViewMode } from './../../components/responsive-data-table/responsive-da
   templateUrl: './inbox-list.component.html',
   styleUrls: ['./inbox-list.component.scss']
 })
-export class InboxListComponent implements OnInit {
+export class InboxListComponent {
   layoutOptionsKey = 'yuv.app.inbox';
   private _inboxData: any;
   viewMode: ViewMode;
 
   @Input()
   set inboxData(data) {
-    console.log({ data });
-
+    data.currentViewMode = 'standart';
     this._inboxData = data;
   }
   get inboxData() {
@@ -24,8 +23,6 @@ export class InboxListComponent implements OnInit {
   @Output() selectedItem: EventEmitter<any> = new EventEmitter<any>();
 
   constructor() {}
-
-  ngOnInit() {}
 
   select(event) {
     this.selectedItem.emit(event);

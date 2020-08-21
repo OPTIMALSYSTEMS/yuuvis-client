@@ -20,6 +20,7 @@ import { InboxComponent } from './states/inbox/inbox.component';
 import { NotFoundComponent } from './states/not-found/not-found.component';
 import { ObjectComponent } from './states/object/object.component';
 import { OfflineComponent } from './states/offline/offline.component';
+import { ProcessesComponent } from './states/processes/processes.component';
 import { ResultComponent } from './states/result/result.component';
 import { SettingsComponent } from './states/settings/settings.component';
 import { VersionsComponent } from './states/versions/versions.component';
@@ -38,7 +39,8 @@ import { VersionsComponent } from './states/versions/versions.component';
     VersionsComponent,
     ColumnConfigurationComponent,
     InboxComponent,
-    FilterConfigurationComponent
+    FilterConfigurationComponent,
+    ProcessesComponent
   ],
   imports: [
     BrowserModule,

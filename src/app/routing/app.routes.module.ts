@@ -8,6 +8,7 @@ import { CreateComponent } from '../states/create/create.component';
 import { DashboardComponent } from '../states/dashboard/dashboard.component';
 import { NotFoundComponent } from '../states/not-found/not-found.component';
 import { ObjectComponent } from '../states/object/object.component';
+import { ProcessesComponent } from '../states/processes/processes.component';
 import { ResultComponent } from '../states/result/result.component';
 import { SettingsComponent } from '../states/settings/settings.component';
 import { FilterConfigurationComponent } from './../states/filter-configuration/filter-configuration.component';
@@ -24,6 +25,7 @@ const routes: Routes = [
   { path: 'create', component: CreateComponent, canDeactivate: [OfflineGuard, PendingChangesGuard] },
   { path: 'result', component: ResultComponent, canDeactivate: [OfflineGuard, PendingChangesGuard] },
   { path: 'inbox', component: InboxComponent, canDeactivate: [OfflineGuard, PendingChangesGuard] },
+  { path: 'processes', component: ProcessesComponent, canDeactivate: [OfflineGuard, PendingChangesGuard] },
   { path: 'object/:id', component: ObjectComponent, canDeactivate: [OfflineGuard, PendingChangesGuard] },
   { path: 'versions/:id', component: VersionsComponent, canDeactivate: [OfflineGuard, PendingChangesGuard] },
   // default route
