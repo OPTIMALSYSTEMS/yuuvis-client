@@ -91,7 +91,7 @@ export class SearchQuery {
       if (parent) {
         parent.group = parent.group.filter((f) => f.property !== groupProperty || (remove ? !remove(f as SearchFilterGroup) : false));
         if (parent.isEmpty()) {
-          this.filterGroup.group = this.filterGroup.group.filter((g) => !g.isEmpty()); // TODO: needs to be recursive for deep groups
+          this.filterGroup.remove(parent.id);
         }
       }
     }
@@ -291,7 +291,12 @@ export class SearchFilterGroup {
 
   remove(id: string) {
     const parent = this.findParent(id);
-    return parent ? (parent.group = parent.group.filter((f) => f.id !== id)) : false;
+    if (parent) {
+      parent.group = parent.group.filter((f) => f.id !== id);
+      if (parent.isEmpty()) {
+        this.remove(parent.id);
+      }
+    }
   }
 
   /**
