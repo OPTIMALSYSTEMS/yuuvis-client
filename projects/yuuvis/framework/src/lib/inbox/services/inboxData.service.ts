@@ -8,11 +8,17 @@ export class InboxDataService {
   formatInboxProcessDataForTable(processData: ProcessData[]) {
     const colDef = processData.map((data) => {
       const variables = data.variables.filter((variable) => variable.name !== 'initiator');
-      variables.push({ name: 'type', value: data.name }, { name: 'businessKey', value: data.businessKey });
+      variables.push(
+        { name: 'type', value: data.name },
+        { name: 'businessKey', value: data.businessKey },
+        { name: 'startTime', value: new Date(data.startTime) }
+      );
       const columnDefs = [];
       const rowData = [];
 
       variables.map((variable) => {
+        console.log(variable.name, this.systemService.getLocalizedResource(`${variable.name}_label`));
+
         columnDefs.push({
           field: variable.name,
           headerClass: `col-header-type-${variable.name}`,

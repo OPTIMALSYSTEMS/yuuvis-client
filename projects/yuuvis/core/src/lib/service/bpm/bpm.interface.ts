@@ -53,6 +53,6 @@ export interface ProcessData {
 export interface Variable {
   name: string;
   type?: string;
-  value: string;
+  value: string | Date;
   scope?: string;
 }

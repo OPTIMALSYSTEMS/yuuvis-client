@@ -14,7 +14,9 @@ export class InboxComponent {
   objectDetailsID: string;
   itemIsSelected = false;
   dmsObject$: Observable<DmsObject>;
-  inboxData$: Observable<any> = this.inboxService.getInbox(ProcessDefinitionKey.FOLLOW_UP).pipe(map(this.inboxDataService.formatInboxProcessDataForTable));
+  inboxData$: Observable<any> = this.inboxService
+    .getInbox(ProcessDefinitionKey.FOLLOW_UP)
+    .pipe(map((val) => this.inboxDataService.formatInboxProcessDataForTable(val)));
 
   constructor(
     private inboxService: InboxService,
