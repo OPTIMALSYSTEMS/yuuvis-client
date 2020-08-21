@@ -1,0 +1,24 @@
+@import './../../../../../../../../../src/scss-shared/_mixins';
+
+.yuv-follow-up {
+  padding: var(--app-pane-padding);
+
+  h2 {
+    font-weight: var(--font-weight-light);
+    font-size: var(--font-subhead);
+  }
+
+  .err-msg {
+    font-size: var(--font-hint);
+    color: var(--color-error);
+    padding: calc(var(--app-pane-padding) / 4) 0;
+    border: 0;
+  }
+
+  .form-buttons {
+    display: flex;
+    flex-flow: wrap;
+    padding: var(--app-pane-padding) 0;
+    justify-content: flex-end;
+  }
+}
