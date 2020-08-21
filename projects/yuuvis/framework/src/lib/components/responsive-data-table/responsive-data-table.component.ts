@@ -7,6 +7,7 @@ import { Observable, ReplaySubject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { LocaleDatePipe } from '../../pipes/locale-date.pipe';
+import { CellRenderer } from '../../services/grid/grid.cellrenderer';
 import { ColumnSizes } from '../../services/grid/grid.interface';
 import { LayoutService } from '../../services/layout/layout.service';
 import { ResponsiveTableData } from './responsive-data-table.interface';
@@ -358,12 +359,16 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
         const objectTypeId = params.data[BaseObjectTypeField.OBJECT_TYPE_ID];
         const version = params.data[BaseObjectTypeField.VERSION_NUMBER];
         const modified = this.datePipe.transform(params.data[BaseObjectTypeField.MODIFICATION_DATE]);
-
         const title = this.systemService.getLocalizedResource(`${objectTypeId}_label`);
+
+        params.context = {
+          system: this.systemService
+        };
+
         return `
           <div class="rdt-row ${this._currentViewMode === 'horizontal' ? 'row-horizontal' : 'row-grid'}" data-version="${version}">
             <div class="head" title="${title}">
-            ${this.systemService.getObjectTypeIcon(objectTypeId)}</div>  
+            ${CellRenderer.typeCellRenderer(params)}</div>  
             <div class="main">
             <div class="title">${params.data[this._data.titleField] || params.data[BaseObjectTypeField.OBJECT_ID] || ''}</div>
               <div class="description">${params.data[this._data.descriptionField] || ''}</div>

@@ -219,7 +219,7 @@ export class SearchQuery {
 
     if (this.filterGroup) {
       const fg = this.filterGroup.toShortQuery();
-      queryJson.filters = fg.operator ? [fg] : fg.filters;
+      queryJson.filters = this.filterGroup.operator === SearchFilterGroup.OPERATOR.OR ? [fg] : fg.filters;
     }
 
     if (this.aggs && this.aggs.length) {
@@ -275,12 +275,23 @@ export class SearchFilterGroup {
 
   id = Utils.uuid();
 
-  find(id: string) {
-    return this.id === id ? this : this.group.find((cur) => (cur instanceof SearchFilterGroup ? cur.find(id) : cur.id === id));
+  clone(short = true) {
+    return SearchFilterGroup.fromQuery(short ? this.toShortQuery() : this.toQuery());
   }
 
-  findParent(id: string, parent?: any) {
-    return this.id === id ? parent : this.group.find((cur) => (cur instanceof SearchFilterGroup ? cur.findParent(id, this) : cur.id === id && parent));
+  find(id: string) {
+    return this.id === id ? this : this.group.reduce((prev, cur) => prev || (cur instanceof SearchFilterGroup ? cur.find(id) : cur.id === id && cur), null);
+  }
+
+  findParent(id: string, parent?: SearchFilterGroup) {
+    return this.id === id
+      ? parent
+      : this.group.reduce((prev, cur) => prev || (cur instanceof SearchFilterGroup ? cur.findParent(id, this) : cur.id === id && this), null);
+  }
+
+  remove(id: string) {
+    const parent = this.findParent(id);
+    return parent ? (parent.group = parent.group.filter((f) => f.id !== id)) : false;
   }
 
   /**
@@ -322,7 +333,13 @@ export class SearchFilterGroup {
   }
 
   toQuery() {
-    return { property: this.property, lo: this.operator, filters: this.group.map((g) => (g instanceof SearchFilterGroup ? g.toQuery() : g.toQuery())) };
+    return {
+      property: this.property,
+      lo: this.operator,
+      filters: this.group
+        .filter((g) => (g instanceof SearchFilterGroup ? g.filters.filter((f) => !f.excludeFromQuery).length : !g.excludeFromQuery))
+        .map((g) => (g instanceof SearchFilterGroup ? g.toQuery() : g.toQuery()))
+    };
   }
 
   toShortQuery() {
@@ -330,8 +347,14 @@ export class SearchFilterGroup {
       ...(this.property !== SearchFilterGroup.DEFAULT ? { property: this.property } : {}),
       ...(this.operator !== SearchFilterGroup.OPERATOR.AND ? { lo: this.operator } : {}),
       filters: this.group
-        .filter((g) => (g instanceof SearchFilterGroup ? g.filters.length : true))
-        .map((g) => (g instanceof SearchFilterGroup ? (g.filters.length === 1 ? g.filters[0].toQuery() : g.toShortQuery()) : g.toQuery()))
+        .filter((g) => (g instanceof SearchFilterGroup ? g.filters.filter((f) => !f.excludeFromQuery).length : !g.excludeFromQuery))
+        .map((g) =>
+          g instanceof SearchFilterGroup
+            ? g.filters.filter((f) => !f.excludeFromQuery).length === 1
+              ? g.filters.filter((f) => !f.excludeFromQuery)[0].toQuery()
+              : g.toShortQuery()
+            : g.toQuery()
+        )
     };
   }
 
@@ -392,6 +415,12 @@ export class SearchFilter {
   }
 
   id = Utils.uuid();
+
+  excludeFromQuery = false;
+
+  clone() {
+    return SearchFilter.fromQuery(this.toQuery());
+  }
 
   /**
    * Constructor for creating a new SearchFilter.

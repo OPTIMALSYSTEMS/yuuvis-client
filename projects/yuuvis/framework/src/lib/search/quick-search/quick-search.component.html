@@ -5,7 +5,7 @@
   <div class="count" *ngIf="resultCount !== null">{{ resultCount }}</div>
 </div>
 
-<div yuvOfflineDisabled class="search-box" [ngClass]="{ invalid: invalidTerm, extrasEnabled: formFields.length }">
+<div yuvOfflineDisabled class="search-box" [ngClass]="{ invalid: invalidTerm }">
   <form [formGroup]="searchForm">
     <div class="main">
 
@@ -42,27 +42,17 @@
     </div>
   </form>
 
-  <!-- form elements from object type fields -->
-  <form class="extras" #extrasForm [formGroup]="searchFieldsForm" *ngIf="formFields.length">
-    <div class="condition" *ngFor="let key of searchFieldsForm?.controls | keys">
-      <div class="fe-chip">
-        <yuv-object-form-element [situation]="'SEARCH'" [inlineError]="true" [element]="searchFieldsForm.controls[key]">
-        </yuv-object-form-element>
-        <button type="button" (click)="removeFieldEntry(key)">
-          <yuv-icon [icon]="'clear'"></yuv-icon>
-        </button>
-      </div>
-      <div class="operator">&</div>
-    </div>
-  </form>
+  <yuv-search-filter-form class="extras" #extrasForm [dragDisabled]="true" [options]="formOptions"
+    [newFilters]="formOptions?.newFilters" (filterChanged)="onFilterChanged($event)"
+    (controlRemoved)="onControlRemoved($event)" (valid)="formValid = $event">
+  </yuv-search-filter-form>
+
 </div>
 
 <div class="error" *ngIf="error">{{ 'yuv.framework.quick-search.aggregate.error' | translate }}</div>
 
-
 <ng-template #tplValuePicker let-data let-popover="popover">
-  <yuv-quick-search-picker cdkTrapFocus yuvOfflineDisabled [data]="data"
-    [ngClass]="{ 'quick-search': true, hashtag: data.type === 'field' }" (cancel)="onPickerCancel(popover)"
+  <yuv-quick-search-picker cdkTrapFocus yuvOfflineDisabled [data]="data" (cancel)="onPickerCancel(popover)"
     (select)="onPickerResult(data.type, $event, popover)">
   </yuv-quick-search-picker>
 </ng-template>

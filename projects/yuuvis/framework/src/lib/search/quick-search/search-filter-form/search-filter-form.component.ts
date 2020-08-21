@@ -20,7 +20,9 @@ import { clear, dragHandle } from './../../../svg.generated';
 export class SearchFilterFormComponent implements OnInit, OnDestroy {
   @ViewChild('extrasForm') extrasForm: ElementRef;
 
-  filterGroup: SearchFilterGroup;
+  get filterGroup(): SearchFilterGroup {
+    return this.filterQuery.filterGroup;
+  }
   dropTargetIds: string[];
   dropActionTodo: {
     targetId: string;
@@ -37,17 +39,29 @@ export class SearchFilterFormComponent implements OnInit, OnDestroy {
   private availableObjectTypeFields: Selectable[];
 
   @Input() disabled = false;
+  @Input() dragDisabled = false;
 
-  @Input() set options(opts: { filter: Selectable; activeFilters: (SearchFilter | SearchFilterGroup)[]; availableObjectTypeFields: Selectable[] }) {
+  @Input() set options(opts: { filter: Selectable; availableObjectTypeFields: Selectable[] }) {
     if (opts) {
-      const { filter, activeFilters, availableObjectTypeFields } = opts;
+      const { filter, availableObjectTypeFields } = opts;
       this.filterQuery = new SearchQuery();
+      this.filterQuery.filterGroup = SearchFilterGroup.fromArray(filter.value).clone();
       this.filter = { ...filter };
-      this.filterGroup = new SearchFilterGroup('main', undefined, [...activeFilters]);
-      this.dropTargetIds = [this.filterGroup.id, ...this.filterGroup.groups.map((g) => g.id), ...this.filterGroup.filters.map((f) => f.id)];
       this.availableObjectTypeFields = availableObjectTypeFields;
-      const sf: SearchFilter[] = filter ? filter.value : [];
-      this.updateSearchFields((this.filterGroup.filters || []).map((f) => sf.find((s) => s.property === f.property) || f));
+      this.updateSearchFields(this.filterGroup.filters);
+      this.onFilterChanged(false);
+    }
+  }
+
+  @Input() set newFilters(filters: any[]) {
+    if (filters) {
+      this.filterGroup.group.push(
+        ...filters.map((f: any) =>
+          f instanceof SearchFilterGroup ? (f.filters.length === 1 ? f.filters[0] : f).clone() : Object.assign(f.clone(), { excludeFromQuery: f.isEmpty() })
+        )
+      );
+      this.updateSearchFields(this.filterGroup.filters);
+      this.onFilterChanged();
     }
   }
 
@@ -68,61 +82,51 @@ export class SearchFilterFormComponent implements OnInit, OnDestroy {
     });
   }
 
+  private onFilterChanged(emit = true) {
+    this.filter.value = [(this.filterQuery.filterGroup = this.filterGroup)];
+    this.dropTargetIds = [this.filterGroup.id, ...this.filterGroup.groups.map((g) => g.id), ...this.filterGroup.filters.map((f) => f.id)];
+    return emit && this.filterChanged.emit(this.filter);
+  }
+
   private onSearchFieldFormChange() {
     this.valid.emit(this.searchFieldsForm.valid);
-    // generate search query filter section from form fields
-
-    // extract form controls
-    const formControls: ObjectFormControl[] = [];
-    Object.keys(this.searchFieldsForm.controls).forEach((k) => {
-      const wrapper: ObjectFormControlWrapper = this.searchFieldsForm.controls[k] as ObjectFormControlWrapper;
-      formControls.push(wrapper.controls[wrapper._eoFormControlWrapper.controlName] as ObjectFormControl);
-    });
 
     // get comparator for current filter settings (avoiding unnecessary aggregate calls)
-    const filterCompareCurrent = this.getFilterComparator(this.filterQuery.filters);
+    const filterCompareCurrent = this.filterGroup.toShortString();
 
     // setup filters from form controls
-    this.filterQuery.clearFilters();
-    formControls.forEach((fc) => {
-      const filter = new SearchFilter(fc._eoFormElement.name, Array.isArray(fc.value) ? SearchFilter.OPERATOR.IN : SearchFilter.OPERATOR.EQUAL, fc.value);
-      if (!filter.isEmpty() || fc._eoFormElement.isNotSetValue) {
-        this.filterQuery.addFilter(filter);
+    Object.keys(this.searchFieldsForm.controls).forEach((id) => {
+      const wrapper = this.searchFieldsForm.controls[id] as ObjectFormControlWrapper;
+      const fc = wrapper.controls[wrapper._eoFormControlWrapper.controlName] as ObjectFormControl;
+      const original = this.filterGroup.find(id);
+      if (original) {
+        const filter = new SearchFilter(fc._eoFormElement.name, Array.isArray(fc.value) ? SearchFilter.OPERATOR.IN : SearchFilter.OPERATOR.EQUAL, fc.value);
+        if (!filter.isEmpty() || fc._eoFormElement.isNotSetValue) {
+          Object.assign(original, filter, { id: original.id, excludeFromQuery: false });
+        } else {
+          Object.assign(original, { excludeFromQuery: true });
+        }
       }
     });
-    const filterCompareNew = this.getFilterComparator(this.filterQuery.filters);
     // only execute aggregate call if filter settings have actually been changed
-    if (filterCompareCurrent !== filterCompareNew) {
-      this.filter.value = this.filterQuery.filters;
-      this.filterChanged.emit(this.filter);
+    if (filterCompareCurrent !== this.filterGroup.toShortString()) {
+      this.onFilterChanged();
     }
   }
 
-  /**
-   * Generates an object from a filters array and returns its JSON string (stringified).
-   * Used for checking equality of filter arrays.
-   * @param filters
-   */
-  private getFilterComparator(filters: SearchFilter[]): string {
-    return filters
-      .map((f) => f.toString())
-      .sort()
-      .join();
-  }
-
   updateSearchFields(filters: SearchFilter[]) {
-    this.formFields.forEach((ff) => !(filters || []).find((f) => ff === `fc_${f.property}`) && this.removeFieldEntry(ff, false));
+    this.formFields.forEach((ff) => !(filters || []).find((f) => ff === f.id) && this.removeFieldEntry(ff, false));
 
     const formPatch = {};
     (filters || []).forEach((filter) => {
       const otf = this.availableObjectTypeFields.find((o) => o.id === filter.property);
       if (otf) {
         const field = otf.value as ObjectTypeField;
-        this.addFieldEntry(field, filter.operator && filter.isEmpty());
+        this.addFieldEntry(field, filter.operator && filter.isEmpty(), filter.id);
         if (filter.operator) {
           // setup values based on whether or not the type supports ranges
           const isRange = ['datetime', 'integer', 'decimal'].includes(field.propertyType);
-          formPatch[`fc_${otf.id}`] = { [otf.id]: !isRange ? filter.firstValue : new RangeValue(filter.operator, filter.firstValue, filter.secondValue) };
+          formPatch[filter.id] = { [otf.id]: !isRange ? filter.firstValue : new RangeValue(filter.operator, filter.firstValue, filter.secondValue) };
         }
       }
     });
@@ -132,15 +136,12 @@ export class SearchFilterFormComponent implements OnInit, OnDestroy {
     }
   }
 
-  // drop(event: CdkDragDrop<string[]>) {
-  //   moveItemInArray(this.formFields, event.previousIndex, event.currentIndex);
-  // }
-
   /**
    * Adds a new form field to the query
    * @param field The object type field to be added
    */
-  addFieldEntry(field: ObjectTypeField, isEmpty = false) {
+  addFieldEntry(field: ObjectTypeField, isEmpty = false, id?: string, focus = true) {
+    const fcID = `${id || field.id}`;
     if (!this.searchFieldsForm) {
       this.initSearchFieldsForm();
     }
@@ -154,19 +155,21 @@ export class SearchFilterFormComponent implements OnInit, OnDestroy {
 
     const formControl = ObjectFormUtils.elementToFormControl(formElement, Situation.SEARCH);
 
-    if (this.formFields.includes(`fc_${field.id}`)) {
+    if (this.formFields.includes(fcID)) {
       // todo: refactor this discusting code && isNotSetValue check
-      const control = this.searchFieldsForm.get(`fc_${field.id}`) as ObjectFormControlWrapper;
+      const control = this.searchFieldsForm.get(fcID) as ObjectFormControlWrapper;
       const name = control._eoFormControlWrapper.controlName;
       control.controls[name]['__eoFormElement'] = formControl.controls[name]['__eoFormElement'];
       // control.updateValueAndValidity();
     } else {
-      this.searchFieldsForm.addControl(`fc_${field.id}`, formControl);
-      this.formFields.push(`fc_${field.id}`);
+      this.searchFieldsForm.addControl(fcID, formControl);
+      this.formFields.push(fcID);
     }
 
-    // focus the generated field
-    setTimeout(() => this.focusLastExtrasField(), 500);
+    if (focus) {
+      // focus the generated field
+      setTimeout(() => this.focusLastExtrasField(), 500);
+    }
   }
 
   private focusLastExtrasField() {
@@ -183,9 +186,17 @@ export class SearchFilterFormComponent implements OnInit, OnDestroy {
   removeFieldEntry(formControlName: string, emit = true) {
     this.formFields = this.formFields.filter((f) => f !== formControlName);
     this.searchFieldsForm.removeControl(formControlName);
+    this.filterGroup.remove(formControlName);
     if (emit) {
-      this.controlRemoved.emit(formControlName.replace('fc_', ''));
-      this.onSearchFieldFormChange();
+      this.controlRemoved.emit(formControlName);
+      this.onFilterChanged();
+    }
+  }
+
+  operatorClick(group: SearchFilter | SearchFilterGroup) {
+    if (group instanceof SearchFilterGroup) {
+      group.operator = group.operator === SearchFilterGroup.OPERATOR.OR ? SearchFilterGroup.OPERATOR.AND : SearchFilterGroup.OPERATOR.OR;
+      this.onFilterChanged();
     }
   }
 
@@ -193,59 +204,45 @@ export class SearchFilterFormComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {}
 
-  // @debounce(50)
-  dragMoved(event) {
-    let e = window.document.elementFromPoint(event.pointerPosition.x, event.pointerPosition.y);
+  dragMoved(event: any) {
+    const e = window.document.elementFromPoint(event.pointerPosition.x, event.pointerPosition.y);
+    const container = e && (e.classList.contains('node-item') ? e : e.closest('.node-item'));
 
-    if (!e) {
-      this.clearDragInfo();
-      return;
+    if (!e || !container) {
+      return this.clearDragInfo();
     }
-    let container = e.classList.contains('node-item') ? e : e.closest('.node-item');
-    if (!container) {
-      this.clearDragInfo();
-      return;
-    }
+
     this.dropActionTodo = {
+      action: 'inside',
       targetId: container.getAttribute('data-id')
     };
     const targetRect = container.getBoundingClientRect();
     const oneThird = targetRect.height / 3;
 
     if (event.pointerPosition.y - targetRect.top < oneThird) {
-      // before
-      this.dropActionTodo['action'] = 'before';
+      this.dropActionTodo.action = 'before';
     } else if (event.pointerPosition.y - targetRect.top > 2 * oneThird) {
-      // after
-      this.dropActionTodo['action'] = 'after';
-    } else {
-      // inside
-      this.dropActionTodo['action'] = 'inside';
+      this.dropActionTodo.action = 'after';
     }
     this.showDragInfo();
   }
 
-  drop(event) {
-    if (!this.dropActionTodo) return;
+  drop(event: any) {
+    if (!this.dropActionTodo) {
+      return;
+    }
 
     const draggedItemId = event.item.data;
     const parentItem = this.filterGroup.find(event.previousContainer.id);
     const targetList = this.filterGroup.findParent(this.dropActionTodo.targetId) || this.filterGroup;
-
-    console.log(
-      '\nmoving\n[' + draggedItemId + '] from list [' + parentItem.id + ']',
-      '\n[' + this.dropActionTodo.action + ']\n[' + this.dropActionTodo.targetId + '] from list [' + targetList.id + ']'
-    );
-
+    const target = this.filterGroup.find(this.dropActionTodo.targetId);
     const draggedItem = this.filterGroup.find(draggedItemId);
 
     parentItem.group = parentItem.group.filter((c) => c.id !== draggedItemId);
-    const newContainer = targetList.group;
     if (this.dropActionTodo.action.match(/before|after/)) {
-      const targetIndex = newContainer.findIndex((c) => c.id === this.dropActionTodo.targetId);
-      newContainer.splice(targetIndex + (this.dropActionTodo.action === 'before' ? 0 : 1), 0, draggedItem);
+      const targetIndex = targetList.group.findIndex((c) => c.id === this.dropActionTodo.targetId);
+      targetList.group.splice(targetIndex + (this.dropActionTodo.action === 'before' ? 0 : 1), 0, draggedItem);
     } else {
-      const target = this.filterGroup.find(this.dropActionTodo.targetId);
       if (target.group) {
         target.group.push(draggedItem);
       } else {
@@ -255,9 +252,8 @@ export class SearchFilterFormComponent implements OnInit, OnDestroy {
       }
     }
 
-    this.filterGroup = SearchFilterGroup.fromQuery(this.filterGroup.toQuery());
-
     this.clearDragInfo(true);
+    this.onFilterChanged();
   }
 
   showDragInfo() {

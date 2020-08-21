@@ -227,7 +227,10 @@ export class SearchResultComponent implements OnDestroy {
           });
       }),
       map((cc: ColumnConfig) => cc.columns.map((column: ColumnConfigColumn) => column.id)),
-      tap((fields: string[]) => (q.fields = [BaseObjectTypeField.OBJECT_ID, BaseObjectTypeField.OBJECT_TYPE_ID, ...fields])),
+      tap(
+        (fields: string[]) =>
+          (q.fields = [BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS, BaseObjectTypeField.OBJECT_ID, BaseObjectTypeField.OBJECT_TYPE_ID, ...fields])
+      ),
       switchMap(() => of(q))
     );
   }
@@ -289,6 +292,7 @@ export class SearchResultComponent implements OnDestroy {
     const row = {
       id: searchResultItem.fields.get(BaseObjectTypeField.OBJECT_ID),
       [BaseObjectTypeField.OBJECT_TYPE_ID]: searchResultItem.fields.get(BaseObjectTypeField.OBJECT_TYPE_ID),
+      [BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS]: searchResultItem.fields.get(BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS),
       [SecondaryObjectTypeField.TITLE]: searchResultItem.fields.get(SecondaryObjectTypeField.TITLE),
       [SecondaryObjectTypeField.DESCRIPTION]: searchResultItem.fields.get(SecondaryObjectTypeField.DESCRIPTION)
     };

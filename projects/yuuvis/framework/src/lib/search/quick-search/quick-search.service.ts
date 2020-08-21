@@ -16,7 +16,7 @@ import {
   UserService,
   Utils
 } from '@yuuvis/core';
-import { Observable, of } from 'rxjs';
+import { forkJoin, Observable, of } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import { DynamicDate } from '../../form/elements/datetime/datepicker/datepicker.interface';
 import { DatepickerService } from '../../form/elements/datetime/datepicker/service/datepicker.service';
@@ -35,7 +35,7 @@ export class QuickSearchService {
   private STORAGE_KEY_FILTERS = 'yuv.framework.search.filters';
 
   private filters = {};
-  private filtersVisibility = [];
+  private filtersVisibility: string[];
   private filtersLast = [];
   availableObjectTypes: Selectable[] = [];
   availableObjectTypeGroups: SelectableGroup[] = [];
@@ -101,9 +101,17 @@ export class QuickSearchService {
     });
   }
 
+  loadFilterSettings() {
+    return forkJoin([this.loadStoredFilters(), this.loadFiltersVisibility(), this.loadLastFilters()]);
+  }
+
+  getCurrentSettings() {
+    return forkJoin([this.loadStoredFilters(of(this.filters)), of(this.filtersVisibility ? [...this.filtersVisibility] : null), of([...this.filtersLast])]);
+  }
+
   getAvailableFilterGroups(storedFilters: Selectable[], availableObjectTypeFields: Selectable[]) {
     const groups = storedFilters.reduce((prev, cur) => {
-      cur.value.forEach((f) => (prev[f.property] = (prev[f.property] || []).concat([cur])));
+      SearchFilterGroup.fromArray(cur.value).filters.forEach((f) => (prev[f.property] = (prev[f.property] || []).concat([cur])));
       return prev;
     }, {});
     return Object.keys(groups).map((key) => ({ id: key, label: availableObjectTypeFields.find((f) => f.id === key).label, items: groups[key] }));
@@ -121,22 +129,11 @@ export class QuickSearchService {
     );
   }
 
-  getAvailableObjectTypesFields(selectedTypes = []): Selectable[] {
-    let sharedFields;
-
-    const selectedObjectTypes: ObjectType[] = selectedTypes.length
-      ? this.systemService.getObjectTypes().filter((t) => selectedTypes.includes(t.id))
-      : this.systemService.getObjectTypes();
-
-    selectedObjectTypes.forEach((t) => {
-      if (!sharedFields) {
-        sharedFields = t.fields;
-      } else {
-        // check for fields that are not part of the shared fields
-        const fieldIDs = t.fields.map((f) => f.id);
-        sharedFields = sharedFields.filter((f) => fieldIDs.includes(f.id));
-      }
-    });
+  getAvailableObjectTypesFields(selectedTypes = [], shared = true): Selectable[] {
+    const selectedObjectTypes = this.systemService.getObjectTypes().filter((t) => (selectedTypes.length ? selectedTypes.includes(t.id) : true));
+    const sharedFields = shared
+      ? selectedObjectTypes.reduce((prev, cur) => cur.fields.filter((f) => prev.find((p) => p.id === f.id)), selectedObjectTypes[0].fields)
+      : selectedObjectTypes.reduce((prev, cur) => [...prev, ...cur.fields.filter((f) => !prev.find((p) => p.id === f.id))], []);
 
     return sharedFields
       .filter((f) => !this.skipFields.includes(f.id))
@@ -177,8 +174,8 @@ export class QuickSearchService {
   loadFiltersVisibility() {
     return this.userService.getSettings(this.STORAGE_KEY_FILTERS_VISIBLE).pipe(
       // return this.appCacheService.getItem(this.STORAGE_KEY_FILTERS_VISIBLE).pipe(
-      tap((f) => (this.filtersVisibility = (f && f.visible) || [])),
-      map((f) => f && f.visible)
+      tap((f) => (this.filtersVisibility = f && f.visible)),
+      map((f) => this.filtersVisibility)
     );
   }
 
@@ -280,10 +277,12 @@ export class QuickSearchService {
       MIME_TYPE && {
         id: 'mime',
         label: MIME_TYPE.label,
-        items: ['*word*', '*pdf*', '*image*'].map((r) => ({
+        items: ['*word*', '*pdf*', '*image*', '*audio*', '*video*', '*excel*', '*mail*', '*text*'].sort().map((r) => ({
           id: '__' + MIME_TYPE.id + '#' + r,
           label: r.replace(/\*/g, ''),
-          value: [new SearchFilter(MIME_TYPE.id, SearchFilter.OPERATOR.IN, [r])]
+          value: [
+            new SearchFilter(MIME_TYPE.id, SearchFilter.OPERATOR.IN, r === '*excel*' ? [r, '*sheet*'] : r === '*mail*' ? ['*message*', '*outlook*'] : [r])
+          ]
         }))
       },
       LENGTH && {

@@ -66,6 +66,10 @@ export class SettingsComponent implements OnInit {
     this.router.navigate(['config/column-config']);
   }
 
+  editFilterConfig() {
+    this.router.navigate(['config/filter-config']);
+  }
+
   ngOnInit() {
     this.titleService.setTitle(this.translate.instant('yuv.client.state.settings.title'));
     this.user$ = this.userService.user$;

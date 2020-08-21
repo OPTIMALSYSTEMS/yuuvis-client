@@ -120,10 +120,10 @@ export class GroupedSelectComponent implements AfterViewInit, ControlValueAccess
   }
 
   @HostBinding('class.singleGroup') singleGroup: boolean = false;
-  autofocus: boolean;
-  enableSelectAll: boolean;
-  toggleable: boolean;
-  columns: string = '';
+  @Input() autofocus: boolean;
+  @Input() enableSelectAll: boolean;
+  @Input() toggleable: boolean;
+  @Input() columns: string = '';
 
   private _selectedItems: Selectable[] = [];
 

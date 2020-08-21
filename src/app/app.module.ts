@@ -15,6 +15,7 @@ import { AboutModule } from './states/about/about.module';
 import { ColumnConfigurationComponent } from './states/column-configuration/column-configuration.component';
 import { CreateComponent } from './states/create/create.component';
 import { DashboardComponent } from './states/dashboard/dashboard.component';
+import { FilterConfigurationComponent } from './states/filter-configuration/filter-configuration.component';
 import { InboxComponent } from './states/inbox/inbox.component';
 import { NotFoundComponent } from './states/not-found/not-found.component';
 import { ObjectComponent } from './states/object/object.component';
@@ -36,7 +37,8 @@ import { VersionsComponent } from './states/versions/versions.component';
     OfflineComponent,
     VersionsComponent,
     ColumnConfigurationComponent,
-    InboxComponent
+    InboxComponent,
+    FilterConfigurationComponent
   ],
   imports: [
     BrowserModule,

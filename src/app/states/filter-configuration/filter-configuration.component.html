@@ -1,0 +1,16 @@
+<yuv-panel [title]="'yuv.client.state.filter-configuration.panel.title'|translate"
+  [description]="('yuv.client.state.filter-configuration.panel.description'|translate) + ': ' + types">
+  <div class="actions">
+    <button type="button" class="type-select btn primary" #typeSelectTrigger (click)="showObjectTypePicker()">
+      {{ 'yuv.framework.quick-search-picker.title' | translate }}
+    </button>
+    <ng-template #tplValuePicker let-data let-popover="popover">
+      <yuv-quick-search-picker cdkTrapFocus yuvOfflineDisabled [data]="data" (cancel)="onPickerCancel(popover)"
+        (select)="onPickerResult(data.type, $event, popover)">
+      </yuv-quick-search-picker>
+    </ng-template>
+  </div>
+  <div class="content">
+    <yuv-search-filter-config [options]="data"> </yuv-search-filter-config>
+  </div>
+</yuv-panel>
