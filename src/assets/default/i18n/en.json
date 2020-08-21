@@ -239,7 +239,7 @@
   "yuv.client.state.column-configuration.panel.title": "Column configuration",
   "yuv.client.state.create.title": "Create object",
   "yuv.client.state.dashboard.title": "Dashboard",
-  "yuv.client.state.filter-configuration.panel.description": "Configuration of the search filters for all object types",
+  "yuv.client.state.filter-configuration.panel.description": "Configuration of the search filters by object type",
   "yuv.client.state.filter-configuration.panel.title": "Filter configuration",
   "yuv.client.state.not-found.description": "Unable to load the object.",
   "yuv.client.state.not-found.title": "Not found",
