@@ -51,6 +51,16 @@ export class SystemService {
   }
 
   /**
+   * Get all secondary object types
+   * @param withLabels Whether or not to also add the types labels
+   */
+  getSecondaryObjectTypes(withLabels?: boolean): SecondaryObjectType[] {
+    return withLabels
+      ? this.system.secondaryObjectTypes.map((t) => ({ ...t, label: this.getLocalizedResource(`${t.id}_label`) }))
+      : this.system.secondaryObjectTypes;
+  }
+
+  /**
    * Returns grouped object types sorted by label and folders first.
    * This also includes floating object types.
    *
