@@ -71,7 +71,7 @@ export class SystemService {
     // TODO: Apply a different property to group once grouping is available
     const types: ObjectType[] = [];
     this.getObjectTypes(true)
-      .filter((ot) => (!includeFloatingTypes ? !ot.isFloatingType : true && (!skipAbstract || this.isCreatable(ot.id))))
+      .filter((ot) => (!includeFloatingTypes ? !ot.floatingParentType : true && (!skipAbstract || this.isCreatable(ot.id))))
       .forEach((ot) => {
         types.push(ot);
       });
@@ -199,7 +199,6 @@ export class SystemService {
     return {
       id: SystemType.OBJECT,
       description: null,
-      isFloatingType: false,
       baseId: null,
       creatable: false,
       isFolder: false,
@@ -221,7 +220,7 @@ export class SystemService {
       // TODO: Handle different icons in resources service
       if (type && this.isFloatingObjectType(type)) {
         return '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M6 2c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6H6zm7 7V3.5L18.5 9H13z"/><path d="M0 0h24v24H0V0z" fill="none"/><circle fill="#fff" cx="18.1" cy="18" r="5"/><path class="accent" d="M18,12c-3.3,0-6,2.7-6,6s2.7,6,6,6c3.3,0,6-2.7,6-6S21.3,12,18,12z M20.5,21.6L18,20.1l-2.5,1.5l0.7-2.9l-2.2-1.9l3-0.3l1.2-2.7l1.2,2.7l3,0.3l-2.2,1.9L20.5,21.6z"/></svg>';
-      } else if (type.isFloatingType) {
+      } else if (type.floatingParentType) {
         return '<svg xmlns="http://www.w3.org/2000/svg"  width="24" height="24" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path class="accent" d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h5v8l-2.5-1.5L6 12V4z"/></svg>';
       } else {
         return type && type.isFolder
@@ -456,7 +455,7 @@ export class SystemService {
         id: fd.id,
         description: fd.description,
         classification: fd.classification,
-        isFloatingType: false,
+        // isFloatingType: false,
         baseId: fd.baseId,
         creatable: this.isCreatable(fd.id),
         contentStreamAllowed: ContentStreamAllowed.NOT_ALLOWED,
@@ -469,7 +468,7 @@ export class SystemService {
         id: dd.id,
         description: dd.description,
         classification: dd.classification,
-        isFloatingType: false,
+        // isFloatingType: false,
         baseId: dd.baseId,
         creatable: this.isCreatable(dd.id),
         contentStreamAllowed: dd.contentStreamAllowed,
@@ -500,7 +499,7 @@ export class SystemService {
               id: def.id,
               description: def.description,
               classification: ot.classification,
-              isFloatingType: true,
+              floatingParentType: ot.id,
               baseId: ot.baseId,
               creatable: ot.creatable && this.isCreatable(def.id),
               contentStreamAllowed: ot.contentStreamAllowed,

@@ -135,7 +135,8 @@
               <ng-template #tplSOTForm>
                 <div class="floating-sot-form panel">
                   <div class="header">
-                    <yuv-icon class="btn" (click)="afoCreate?.floatingSOT.selected = null" icon="navBack"></yuv-icon>
+                    <yuv-icon class="btn" *ngIf="afoCreate?.floatingSOT.items.length > 1"
+                      (click)="afoCreate?.floatingSOT.selected = null" icon="navBack"></yuv-icon>
                     <span>{{afoCreate.floatingSOT.selected.sot.label}}<br><em>{{selectedObjectType.label}}</em></span>
                   </div>
                   <div class="form">

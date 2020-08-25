@@ -300,6 +300,10 @@ export class ObjectCreateComponent implements OnDestroy {
     if (this.system.isAdvancedFilingObjectType(objectType)) {
       // DLM object types are treated in a different way
       this.processAFOType(objectType);
+    } else if (this.system.isFloatingObjectType(objectType)) {
+      // same as AFO but just one primary target type
+
+      this.processAFOType(objectType);
     } else {
       this.system.getObjectTypeForm(objectType.id, 'CREATE').subscribe(
         (model) => {
@@ -350,11 +354,14 @@ export class ObjectCreateComponent implements OnDestroy {
     }
 
     // required SOTs will also be applied
-    this.selectedObjectType.secondaryObjectTypes
+    (!!this.selectedObjectType.floatingParentType
+      ? this.system.getObjectType(this.selectedObjectType.floatingParentType)
+      : this.selectedObjectType
+    ).secondaryObjectTypes
       .filter((otSot) => !otSot.static)
       .forEach((otSot) => {
         const t = this.system.getSecondaryObjectType(otSot.id);
-        if (t.classification && t.classification.includes(SecondaryObjectTypeClassification.REQUIRED)) {
+        if (t.fields.length > 0 && t.classification && t.classification.includes(SecondaryObjectTypeClassification.REQUIRED)) {
           objectTypeIDs.push(t.id);
         }
       });
@@ -383,7 +390,7 @@ export class ObjectCreateComponent implements OnDestroy {
     data[BaseObjectTypeField.TAGS] = [[this.AFO_TAG, this.AFO_STATE.IN_PROGRESS]];
     this.busy = true;
 
-    this.createObject(this.selectedObjectType.id, data, this.files)
+    this.createObject(this.selectedObjectType.floatingParentType || this.selectedObjectType.id, data, this.files)
       .pipe(
         takeUntilDestroy(this),
         switchMap((res: string[]) => this.dmsService.getDmsObjects(res))
@@ -394,15 +401,28 @@ export class ObjectCreateComponent implements OnDestroy {
           this.objCreateServcice.setNewState({ currentStep: CurrentStep.AFO_INDEXDATA });
           this.objCreateServcice.setNewBreadcrumb(CurrentStep.AFO_INDEXDATA);
 
-          const selectableSOTs = this.system
-            .getFloatingSecondaryObjectTypes(this.selectedObjectType.id, true)
-            .filter((sot) => !sot.classification || !sot.classification.includes(SecondaryObjectTypeClassification.REQUIRED));
-          this.afoCreate = {
-            dmsObject: { items: res, selected: res[0] },
-            floatingSOT: { items: selectableSOTs }
-          };
-          if (selectableSOTs.length === 1) {
-            this.afoSelectFloatingSOT(selectableSOTs[0]);
+          if (this.selectedObjectType.floatingParentType) {
+            // floating types
+            const sot = this.system.getSecondaryObjectType(this.selectedObjectType.id);
+            const selectableSOTs = this.system
+              .getFloatingSecondaryObjectTypes(this.selectedObjectType.id, true)
+              .filter((sot) => !sot.classification || !sot.classification.includes(SecondaryObjectTypeClassification.REQUIRED));
+            this.afoCreate = {
+              dmsObject: { items: res, selected: res[0] },
+              floatingSOT: { items: selectableSOTs }
+            };
+            this.afoSelectFloatingSOT(sot);
+          } else {
+            const selectableSOTs = this.system
+              .getFloatingSecondaryObjectTypes(this.selectedObjectType.id, true)
+              .filter((sot) => !sot.classification || !sot.classification.includes(SecondaryObjectTypeClassification.REQUIRED));
+            this.afoCreate = {
+              dmsObject: { items: res, selected: res[0] },
+              floatingSOT: { items: selectableSOTs }
+            };
+            if (selectableSOTs.length === 1) {
+              this.afoSelectFloatingSOT(selectableSOTs[0]);
+            }
           }
         },
         (err) => {
