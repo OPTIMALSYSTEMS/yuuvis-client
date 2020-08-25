@@ -1,19 +1,19 @@
 /* tslint:disable:no-unused-variable */
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { InboxListComponent } from './inbox-list.component';
+import { ProcessListComponent } from './process-list.component';
 
-describe('InboxListComponent', () => {
-  let component: InboxListComponent;
-  let fixture: ComponentFixture<InboxListComponent>;
+describe('ProcessListComponent', () => {
+  let component: ProcessListComponent;
+  let fixture: ComponentFixture<ProcessListComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [InboxListComponent]
+      declarations: [ProcessListComponent]
     }).compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(InboxListComponent);
+    fixture = TestBed.createComponent(ProcessListComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { ViewMode } from './../../components/responsive-data-table/responsive-data-table.component';
+import { ViewMode } from '../../components';
 
 @Component({
   selector: 'yuv-inbox-list',

@@ -4,13 +4,15 @@ import { TranslateModule, YuvCoreModule } from '@yuuvis/core';
 import { YuvCommonModule } from '../common';
 import { YuvComponentsModule } from '../components';
 import { InboxListComponent } from './inbox-list/inbox-list.component';
-import { ProcessesListComponent } from './processes-list/processes-list.component';
+import { ProcessListComponent } from './process-list/process-list.component';
 import { FormatProcessDataService } from './services/formatProcessData.service';
+
+const components = [InboxListComponent, ProcessListComponent];
 
 @NgModule({
   imports: [CommonModule, YuvComponentsModule, YuvCoreModule, TranslateModule, YuvCommonModule],
-  declarations: [InboxListComponent, ProcessesListComponent],
+  declarations: [...components],
   providers: [FormatProcessDataService],
-  exports: [InboxListComponent, ProcessesListComponent]
+  exports: [...components]
 })
 export class YuvInboxModule {}
