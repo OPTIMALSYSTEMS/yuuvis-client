@@ -5,10 +5,10 @@ import {
   edit,
   FormatProcessDataService,
   IconRegistryService,
+  inbox,
   listModeDefault,
   listModeGrid,
   listModeSimple,
-  processes,
   refresh,
   ResponsiveTableData
 } from '@yuuvis/framework';
@@ -27,7 +27,7 @@ export class InboxComponent {
   dmsObject$: Observable<DmsObject>;
   inboxData$: Observable<ResponsiveTableData> = this.inboxService
     .getInbox(ProcessDefinitionKey.FOLLOW_UP)
-    .pipe(map((val) => this.formatProcessDataService.formatInboxProcessDataForTable(val)));
+    .pipe(map((val) => this.formatProcessDataService.formatProcessDataForTable(val)));
 
   constructor(
     private inboxService: InboxService,
@@ -35,7 +35,7 @@ export class InboxComponent {
     private formatProcessDataService: FormatProcessDataService,
     private iconRegistry: IconRegistryService
   ) {
-    this.iconRegistry.registerIcons([edit, arrowNext, refresh, processes, listModeDefault, listModeGrid, listModeSimple]);
+    this.iconRegistry.registerIcons([edit, arrowNext, refresh, inbox, listModeDefault, listModeGrid, listModeSimple]);
   }
 
   private getSelectedDetail(businessKey: string) {

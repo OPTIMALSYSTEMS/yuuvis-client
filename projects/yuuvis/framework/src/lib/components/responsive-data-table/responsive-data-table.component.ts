@@ -361,7 +361,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
           params.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS]
         );
         const version = params.data[BaseObjectTypeField.VERSION_NUMBER];
-        const modified = this.datePipe.transform(params.data[BaseObjectTypeField.MODIFICATION_DATE]);
+        const modified = this.datePipe.transform(params.data[this.data.dateField || BaseObjectTypeField.MODIFICATION_DATE]);
         const title = this.systemService.getLocalizedResource(`${objectTypeId}_label`);
         params.value = objectTypeId;
         params.context = {

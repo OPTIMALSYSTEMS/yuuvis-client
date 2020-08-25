@@ -91,3 +91,63 @@ export interface Variable {
   value: string | Date;
   scope?: string;
 }
+
+export class InboxItem {
+  get id() {
+    return this.originaData.id;
+  }
+
+  get title(): string {
+    return this.originaData.variables.find((v) => v.name === 'whatAbout').value as string;
+  }
+
+  get expiryDateTime(): Date {
+    return new Date(this.originaData.variables.find((v) => v.name === 'expiryDateTime').value);
+  }
+
+  get createTime(): Date {
+    return new Date(this.originaData.createTime);
+  }
+
+  get description(): string {
+    return this.title;
+  }
+
+  get type(): string {
+    return 'task';
+  }
+
+  constructor(private originaData: TaskData) {}
+}
+
+export class FollowUp {
+  get id() {
+    return this.originaData.id;
+  }
+
+  get title(): string {
+    return this.originaData.variables.find((v) => v.name === 'whatAbout').value as string;
+  }
+
+  get expiryDateTime(): Date {
+    return new Date(this.originaData.variables.find((v) => v.name === 'expiryDateTime').value);
+  }
+
+  get description(): string {
+    return this.title;
+  }
+
+  get type(): string {
+    return this.originaData.name;
+  }
+
+  get businessKey(): string {
+    return this.originaData.businessKey;
+  }
+
+  get startTime(): Date {
+    return new Date(this.originaData.startTime);
+  }
+
+  constructor(private originaData: ProcessData) {}
+}

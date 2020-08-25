@@ -33,4 +33,13 @@
       }
     }
   }
+
+  ::ng-deep .rdt-row .main {
+    .date {
+      display: block !important;
+    }
+    .description {
+      display: none !important;
+    }
+  }
 }

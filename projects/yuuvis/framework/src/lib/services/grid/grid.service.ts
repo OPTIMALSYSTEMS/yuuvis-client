@@ -218,7 +218,7 @@ export class GridService {
       }
       case 'datetime': {
         colDef.width = 150;
-        colDef.cellRenderer = this.customContext(CellRenderer.dateTimeCellRenderer, { pattern: field.resolution === 'date' ? 'eoShortDate' : 'eoShort' });
+        colDef.cellRenderer = this.dateTimeCellRenderer(field.resolution);
         break;
       }
       case 'integer': {
@@ -303,5 +303,9 @@ export class GridService {
     }
     const match = param.context.fileSizeOpts.find((f) => f.from <= param.value && param.value < f.to);
     return match ? match.label : param.context.fileSizePipe.transform(param.value);
+  }
+
+  public dateTimeCellRenderer(resolution?: string) {
+    return this.customContext(CellRenderer.dateTimeCellRenderer, { pattern: resolution === 'date' ? 'eoShortDate' : 'eoShort' });
   }
 }

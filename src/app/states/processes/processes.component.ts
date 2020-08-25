@@ -8,7 +8,7 @@ import {
   listModeDefault,
   listModeGrid,
   listModeSimple,
-  processes,
+  process,
   refresh,
   ResponsiveTableData
 } from '@yuuvis/framework';
@@ -27,7 +27,7 @@ export class ProcessesComponent {
   dmsObject$: Observable<DmsObject>;
   processData$: Observable<ResponsiveTableData> = this.bpmService
     .getTasks()
-    .pipe(map((val: TaskData[]) => this.formatProcessDataService.formatProcessDataForTable(val)));
+    .pipe(map((val: TaskData[]) => this.formatProcessDataService.formatTaskDataForTable(val)));
 
   constructor(
     private dmsService: DmsService,
@@ -35,7 +35,7 @@ export class ProcessesComponent {
     private bpmService: BpmService,
     private iconRegistry: IconRegistryService
   ) {
-    this.iconRegistry.registerIcons([edit, arrowNext, refresh, processes, listModeDefault, listModeGrid, listModeSimple]);
+    this.iconRegistry.registerIcons([edit, arrowNext, refresh, process, listModeDefault, listModeGrid, listModeSimple]);
   }
 
   private getSelectedDetail(businessKey: string) {
