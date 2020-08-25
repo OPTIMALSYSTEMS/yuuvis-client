@@ -43,8 +43,8 @@ export class SearchFilterConfigComponent implements OnInit {
 
     this.availableFiltersGroups = [
       {
-        id: 'form',
-        label: this.translate.instant('yuv.framework.search.filter.custom.filters'),
+        id: 'new',
+        label: this.translate.instant('yuv.framework.search.filter.available.fields'),
         items: this.availableObjectTypeFields.map((o) => ({ ...o, value: [new SearchFilter(o.id, undefined, undefined)] }))
       }
     ];
@@ -72,8 +72,8 @@ export class SearchFilterConfigComponent implements OnInit {
       ];
 
       this.availableFiltersGroups.push({
-        id: 'enabled',
-        label: this.translate.instant('yuv.framework.search.filter.enabled.filters'),
+        id: 'stored',
+        label: this.translate.instant('yuv.framework.search.filter.stored.filters'),
         items: this.storedFilters.filter((f) => this.isVisible(f))
       });
 
