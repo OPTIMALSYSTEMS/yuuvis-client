@@ -346,18 +346,18 @@ export class ObjectCreateComponent implements OnDestroy {
 
   afoSelectFloatingSOT(sot: SecondaryObjectType) {
     this.busy = true;
+    const objectType = !!this.selectedObjectType.floatingParentType
+      ? this.system.getObjectType(this.selectedObjectType.floatingParentType)
+      : this.selectedObjectType;
     const objectTypeIDs = [];
 
     // main object type may not have own fields
-    if (this.selectedObjectType.fields.filter((f) => !f.id.startsWith('system:')).length) {
-      objectTypeIDs.push(this.selectedObjectType.id);
+    if (objectType.fields.filter((f) => !f.id.startsWith('system:')).length) {
+      objectTypeIDs.push(objectType.id);
     }
 
     // required SOTs will also be applied
-    (!!this.selectedObjectType.floatingParentType
-      ? this.system.getObjectType(this.selectedObjectType.floatingParentType)
-      : this.selectedObjectType
-    ).secondaryObjectTypes
+    objectType.secondaryObjectTypes
       .filter((otSot) => !otSot.static)
       .forEach((otSot) => {
         const t = this.system.getSecondaryObjectType(otSot.id);
@@ -506,7 +506,7 @@ export class ObjectCreateComponent implements OnDestroy {
       data[BaseObjectTypeField.PARENT_ID] = this.context.id;
     }
     this.busy = true;
-    const isAFO = this.system.isAdvancedFilingObjectType(this.selectedObjectType);
+    const isAFO = this.system.isAdvancedFilingObjectType(this.selectedObjectType) || !!this.selectedObjectType.floatingParentType;
     (isAFO ? this.createAFO(data) : this.createDefault(data)).subscribe(
       (ids: string[]) => {
         this.busy = false;
@@ -533,8 +533,11 @@ export class ObjectCreateComponent implements OnDestroy {
    * @returns List of IDs of finished objects
    */
   private createAFO(data: any): Observable<string[]> {
+    const objectType = !!this.selectedObjectType.floatingParentType
+      ? this.system.getObjectType(this.selectedObjectType.floatingParentType)
+      : this.selectedObjectType;
     // add selected SOTs
-    const sotsToBeApplied: string[] = this.selectedObjectType.secondaryObjectTypes
+    const sotsToBeApplied: string[] = objectType.secondaryObjectTypes
       .filter((sot) => {
         const soType = this.system.getSecondaryObjectType(sot.id);
         // add static as well as required SOTs
