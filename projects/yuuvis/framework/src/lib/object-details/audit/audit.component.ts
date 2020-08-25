@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { AuditQueryOptions, AuditQueryResult, AuditService, DmsObject, EventService, RangeValue, TranslateService, YuvEvent, YuvEventType } from '@yuuvis/core';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
-import { arrowNext, search } from '../../svg.generated';
+import { arrowNext, filter } from '../../svg.generated';
 
 /**
  * Component showing the history of a dms object by listing its audit entries.
@@ -64,7 +64,7 @@ export class AuditComponent implements OnInit, OnDestroy {
     private translate: TranslateService,
     private iconRegistry: IconRegistryService
   ) {
-    this.iconRegistry.registerIcons([search, arrowNext, arrowNext]);
+    this.iconRegistry.registerIcons([filter, arrowNext, arrowNext]);
     this.auditLabels = {
       a100: this.translate.instant('yuv.framework.audit.label.create.metadata'),
       a101: this.translate.instant('yuv.framework.audit.label.create.metadata.withcontent'),

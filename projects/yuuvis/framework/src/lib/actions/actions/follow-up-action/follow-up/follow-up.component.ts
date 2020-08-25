@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { BpmService } from '@yuuvis/core';
+import { BpmService, TranslateService } from '@yuuvis/core';
 import { NotificationService } from '../../../../services/notification/notification.service';
 import { ActionComponent } from './../../../interfaces/action-component.interface';
 
@@ -12,12 +12,14 @@ import { ActionComponent } from './../../../interfaces/action-component.interfac
 export class FollowUpComponent implements OnInit, ActionComponent {
   form: FormGroup;
   currentFollowUp: any;
-
+  showdeleteMessage = false;
+  folder = '';
+  secondForm: FormGroup;
   @Input() selection: any[];
   @Output() finished: EventEmitter<any> = new EventEmitter();
   @Output() canceled: EventEmitter<any> = new EventEmitter();
 
-  constructor(private bpmService: BpmService, private fb: FormBuilder, private notificationService: NotificationService) {
+  constructor(private bpmService: BpmService, private fb: FormBuilder, private notificationService: NotificationService, private translate: TranslateService) {
     this.form = this.fb.group({
       expiryDateTime: [],
       whatAbout: ''
@@ -28,24 +30,38 @@ export class FollowUpComponent implements OnInit, ActionComponent {
 
   createFollowUp() {
     this.bpmService.createFollowUp(this.selection[0].id, this.form.value.expiryDateTime, this.form.value.whatAbout).subscribe(() => {
+      this.notificationService.success(
+        this.translate.instant('yuv.framework.action-menu.action.follow-up.label'),
+        this.translate.instant('yuv.framework.action-menu.action.follow-up.done.message')
+      );
       this.finished.emit();
     });
   }
 
   editFollowUp() {
-    this.bpmService
-      .editFollowUp(this.selection[0].id, this.currentFollowUp.id, this.form.value.expiryDateTime, this.form.value.whatAbout)
-      .subscribe(() => this.finished.emit());
-  }
-
-  deleteFollowUp() {
-    this.bpmService.deleteFollowUp(this.currentFollowUp.id).subscribe(() => {
+    this.bpmService.editFollowUp(this.selection[0].id, this.currentFollowUp.id, this.form.value.expiryDateTime, this.form.value.whatAbout).subscribe(() => {
+      this.notificationService.success(
+        this.translate.instant('yuv.framework.action-menu.action.follow-up.label'),
+        this.translate.instant('yuv.framework.action-menu.action.follow-up.edit.done.message')
+      );
       this.finished.emit();
     });
   }
 
+  deleteFollowUp() {
+    this.bpmService.deleteFollowUp(this.currentFollowUp.id).subscribe(() => {
+      this.notificationService.success(
+        this.translate.instant('yuv.framework.action-menu.action.follow-up.label'),
+        this.translate.instant('yuv.framework.action-menu.action.follow-up.delete.message')
+      );
+      this.finished.emit();
+    });
+    this.showdeleteMessage = false;
+  }
+
   cancel() {
     this.canceled.emit();
+    this.showdeleteMessage = false;
   }
 
   ngOnInit(): void {
