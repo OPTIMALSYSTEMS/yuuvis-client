@@ -356,21 +356,24 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
       minWidth: this.isGrid ? this._data.rows.length * this.settings.colWidth.grid : 0,
       valueGetter: (params) => JSON.stringify(params.data), // needed to compare value changes & redraw cell
       cellRenderer: (params) => {
-        const objectTypeId = params.data[BaseObjectTypeField.OBJECT_TYPE_ID];
+        const objectTypeId = this.systemService.getLeadingObjectTypeID(
+          params.data[BaseObjectTypeField.OBJECT_TYPE_ID],
+          params.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS]
+        );
         const version = params.data[BaseObjectTypeField.VERSION_NUMBER];
         const modified = this.datePipe.transform(params.data[BaseObjectTypeField.MODIFICATION_DATE]);
         const title = this.systemService.getLocalizedResource(`${objectTypeId}_label`);
-
+        params.value = objectTypeId;
         params.context = {
           system: this.systemService
         };
 
         return `
           <div class="rdt-row ${this._currentViewMode === 'horizontal' ? 'row-horizontal' : 'row-grid'}" data-version="${version}">
-            <div class="head" title="${title}">
+            <div class="head">
             ${CellRenderer.typeCellRenderer(params)}</div>  
             <div class="main">
-            <div class="title">${params.data[this._data.titleField] || params.data[BaseObjectTypeField.OBJECT_ID] || ''}</div>
+            <div class="title">${params.data[this._data.titleField] || title || ''}</div>
               <div class="description">${params.data[this._data.descriptionField] || ''}</div>
               <div class="date">${modified}</div>
             </div>

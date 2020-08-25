@@ -38,7 +38,9 @@ export const BaseObjectTypeField = {
   OBJECT_ID: 'system:objectId'
 };
 
-export const SecondaryObjectTypeField = {
+// Fields provided by a special secondary object type that most of
+// the object types should have applied to them
+export const ClientDefaultsObjectTypeField = {
   TITLE: 'appClient:clienttitle',
   DESCRIPTION: 'appClient:clientdescription'
 };

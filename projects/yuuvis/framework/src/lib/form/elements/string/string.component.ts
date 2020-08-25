@@ -224,7 +224,7 @@ export class StringComponent implements ControlValueAccessor, Validator {
       } else if (classification === Classification.STRING_PHONE) {
         pattern = /^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$/g;
       }
-      return pattern ? pattern.test(string) : false;
+      return pattern ? pattern.test(string) : true;
     }
   }
 

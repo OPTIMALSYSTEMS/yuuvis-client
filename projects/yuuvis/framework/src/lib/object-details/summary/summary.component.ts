@@ -3,12 +3,12 @@ import { Component, Input, OnInit, TemplateRef } from '@angular/core';
 import {
   AppCacheService,
   BaseObjectTypeField,
+  ClientDefaultsObjectTypeField,
   ContentStreamField,
   DmsObject,
   Logger,
   ObjectTypeField,
   ParentField,
-  SecondaryObjectTypeField,
   SystemService
 } from '@yuuvis/core';
 import { GridService } from '../../services/grid/grid.service';
@@ -203,8 +203,8 @@ export class SummaryComponent implements OnInit {
 
     summary.base.sort((a, b) => a.order - b.order);
     summary.core
-      .sort((a, b) => (a.key === SecondaryObjectTypeField.DESCRIPTION ? -1 : b.key === SecondaryObjectTypeField.DESCRIPTION ? 1 : 0))
-      .sort((a, b) => (a.key === SecondaryObjectTypeField.TITLE ? -1 : b.key === SecondaryObjectTypeField.TITLE ? 1 : 0));
+      .sort((a, b) => (a.key === ClientDefaultsObjectTypeField.DESCRIPTION ? -1 : b.key === ClientDefaultsObjectTypeField.DESCRIPTION ? 1 : 0))
+      .sort((a, b) => (a.key === ClientDefaultsObjectTypeField.TITLE ? -1 : b.key === ClientDefaultsObjectTypeField.TITLE ? 1 : 0));
 
     return summary;
   }

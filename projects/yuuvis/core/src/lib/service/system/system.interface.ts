@@ -16,6 +16,8 @@ export interface ObjectType {
   creatable: boolean;
   contentStreamAllowed?: string;
   isFolder: boolean;
+  // container type of a floating SOT founded type
+  floatingParentType?: string;
   secondaryObjectTypes: { id: string; static?: boolean }[];
   fields: ObjectTypeField[];
 }

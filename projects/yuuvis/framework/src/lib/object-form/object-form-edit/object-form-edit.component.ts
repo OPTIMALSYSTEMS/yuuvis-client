@@ -27,9 +27,9 @@ export class ObjectFormEditComponent implements OnDestroy {
   private pendingTaskId: string;
   private _dmsObject: DmsObject;
 
-  // Indicator that we are dealing with an advanced filing object type
+  // Indicator that we are dealing with a floating object type
   // This kind of object will use a combination of multiple forms instaed of a single one
-  isAFOType: boolean;
+  isFloatingObjectType: boolean;
 
   // fetch a reference to the opbject form component to be able to
   // get the form data
@@ -42,7 +42,7 @@ export class ObjectFormEditComponent implements OnDestroy {
    */
   @Input('dmsObject')
   set dmsObject(dmsObject: DmsObject) {
-    if (dmsObject && (!this._dmsObject || this._dmsObject.id !== dmsObject.id)) {
+    if (this.isFloatingObjectType || (dmsObject && (!this._dmsObject || this._dmsObject.id !== dmsObject.id))) {
       // reset the state of the form
       this.formState = null;
       this.controls.saving = false;
@@ -155,15 +155,16 @@ export class ObjectFormEditComponent implements OnDestroy {
   // create the formOptions required by object form component
   private createObjectForm(dmsObject: DmsObject) {
     this.busy = true;
-    this.isAFOType = this.systemService.isAFOType(this.systemService.getObjectType(dmsObject.objectTypeId));
+    this.isFloatingObjectType = this.systemService.isFloatingObjectType(this.systemService.getObjectType(dmsObject.objectTypeId));
 
-    if (this.isAFOType) {
+    if (this.isFloatingObjectType) {
       this.formOptions = null;
-      this.systemService.getAFOTypeForms(dmsObject, Situation.EDIT).subscribe(
+      this.systemService.getFloatingObjectTypeForms(dmsObject, Situation.EDIT).subscribe(
         (res) => {
           this.combinedFormInput = {
             formModels: res,
-            data: dmsObject.data
+            data: dmsObject.data,
+            disabled: this.formDisabled || !this.isEditable(dmsObject)
           };
           this.busy = false;
         },
