@@ -1,0 +1,10 @@
+:host {
+  display: block;
+  height: 100%;
+  box-sizing: border-box;
+  padding: var(--app-pane-padding);
+
+  .processes-wrapper {
+    height: 100%;
+  }
+}

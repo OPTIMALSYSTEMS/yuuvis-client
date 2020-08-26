@@ -1,7 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { BpmService } from '@yuuvis/core';
-import { NotificationService } from '../../../../services/notification/notification.service';
+import { FollowUpService, ProcessData } from '@yuuvis/core';
 import { ActionComponent } from './../../../interfaces/action-component.interface';
 
 @Component({
@@ -11,13 +10,13 @@ import { ActionComponent } from './../../../interfaces/action-component.interfac
 })
 export class FollowUpComponent implements OnInit, ActionComponent {
   form: FormGroup;
-  currentFollowUp: any;
+  currentFollowUp: ProcessData;
 
   @Input() selection: any[];
   @Output() finished: EventEmitter<any> = new EventEmitter();
   @Output() canceled: EventEmitter<any> = new EventEmitter();
 
-  constructor(private bpmService: BpmService, private fb: FormBuilder, private notificationService: NotificationService) {
+  constructor(private followUpService: FollowUpService, private fb: FormBuilder) {
     this.form = this.fb.group({
       expiryDateTime: [],
       whatAbout: ''
@@ -27,29 +26,23 @@ export class FollowUpComponent implements OnInit, ActionComponent {
   }
 
   createFollowUp() {
-    this.bpmService.createFollowUp(this.selection[0].id, this.form.value.expiryDateTime, this.form.value.whatAbout).subscribe(() => {
-      this.finished.emit();
-    });
+    this.followUpService.createFollowUp(this.selection[0].id, this.form.value).subscribe(() => this.finished.emit());
   }
 
   editFollowUp() {
-    this.bpmService
-      .editFollowUp(this.selection[0].id, this.currentFollowUp.id, this.form.value.expiryDateTime, this.form.value.whatAbout)
-      .subscribe(() => this.finished.emit());
+    this.followUpService.editFollowUp(this.selection[0].id, this.currentFollowUp.id, this.form.value).subscribe(() => this.finished.emit());
   }
 
   deleteFollowUp() {
-    this.bpmService.deleteFollowUp(this.currentFollowUp.id).subscribe(() => {
-      this.finished.emit();
-    });
+    this.followUpService.deleteFollowUp(this.currentFollowUp.id).subscribe(() => this.finished.emit());
   }
 
   cancel() {
     this.canceled.emit();
   }
 
-  ngOnInit(): void {
-    this.bpmService.getFollowUp(this.selection[0].id).subscribe((res) => {
+  ngOnInit() {
+    this.followUpService.getFollowUp(this.selection[0].id).subscribe((res) => {
       this.currentFollowUp = res;
       if (this.currentFollowUp) {
         const value = {
