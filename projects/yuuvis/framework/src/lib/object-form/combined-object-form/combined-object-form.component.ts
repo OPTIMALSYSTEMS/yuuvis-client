@@ -6,6 +6,7 @@ import { ObjectFormComponent } from '../object-form/object-form.component';
 export interface CombinedObjectFormInput {
   formModels: { [key: string]: any };
   data: any;
+  disabled?: boolean;
 }
 
 @Component({
@@ -31,7 +32,8 @@ export class CombinedObjectFormComponent implements OnInit, IObjectForm {
             label: this.system.getLocalizedResource(`${k}_label`),
             formOptions: {
               formModel: ofi.formModels[k],
-              data: ofi.data
+              data: ofi.data,
+              disabled: ofi.disabled
             }
           }))
         : null;

@@ -123,6 +123,7 @@
 
         .value {
           @include flex-row();
+          align-items: center;
           white-space: normal;
           word-break: break-word;
           height: 100%;

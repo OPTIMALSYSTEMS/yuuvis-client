@@ -23,12 +23,11 @@ export class CellRenderer {
   }
 
   static typeCellRenderer(param: any) {
-    let value = param.value;
+    let { value } = param;
     const { context } = param;
-    const sotIDs = param.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS];
-    if (sotIDs) {
-      const afot = sotIDs.find((sot) => context.system.getSecondaryObjectType(sot)?.classification?.includes(SecondaryObjectTypeClassification.PRIMARY));
-      value = afot || value;
+
+    if (param.data && param.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS]) {
+      value = context.system.getLeadingObjectTypeID(value, param.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS]);
     }
 
     const ico = context.system.getObjectTypeIcon(value) || '';

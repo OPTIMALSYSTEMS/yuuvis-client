@@ -265,6 +265,11 @@ body {
     }
   }
 
+  .ui-multiselect {
+    min-height: 20px; // to match chips height and avoid height changes when entering the first value
+    min-width: 150px;
+  }
+
   // -------------------------------------------------------------------
   // primeng tabs
   $ui-tabs-border-size: 4px;

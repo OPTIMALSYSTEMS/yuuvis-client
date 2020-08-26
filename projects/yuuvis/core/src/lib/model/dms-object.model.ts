@@ -1,7 +1,6 @@
 import { SearchResultItem } from '../service/search/search.service.interface';
-import { BaseObjectTypeField } from '../service/system/system.enum';
+import { BaseObjectTypeField, ClientDefaultsObjectTypeField } from '../service/system/system.enum';
 import { ObjectType } from '../service/system/system.interface';
-import { SecondaryObjectTypeField } from './../service/system/system.enum';
 import { DmsObjectContent, DmsObjectContext, DmsObjectRights } from './dms-object.interface';
 /**
  * `DmsObject` is a business object of a type that  generally contain a document file in addition to its metadata.
@@ -53,9 +52,12 @@ export class DmsObject {
     this.id = searchResultItem.fields.get(BaseObjectTypeField.OBJECT_ID);
     this.version = searchResultItem.fields.get(BaseObjectTypeField.VERSION_NUMBER);
     this.objectTypeId = searchResultItem.objectTypeId;
-    this.title = searchResultItem.fields.get(SecondaryObjectTypeField.TITLE);
+
+    // title and description are provided by the client defaults SOT that may not be present all the time
+    this.title = searchResultItem.fields.get(ClientDefaultsObjectTypeField.TITLE);
+    this.description = searchResultItem.fields.get(ClientDefaultsObjectTypeField.DESCRIPTION);
+
     this.parentId = searchResultItem.fields.get(BaseObjectTypeField.PARENT_ID);
-    this.description = searchResultItem.fields.get(SecondaryObjectTypeField.DESCRIPTION);
     this.data = this.generateData(searchResultItem.fields);
 
     this.isFolder = objectType.isFolder;

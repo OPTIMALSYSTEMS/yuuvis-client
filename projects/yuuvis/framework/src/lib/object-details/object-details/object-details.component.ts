@@ -75,13 +75,11 @@ export class ObjectDetailsComponent implements OnDestroy {
     this._objectId = object ? object.id : null;
     if (object) {
       const params = {
-        value: object.objectTypeId,
-        data: {},
+        value: this.systemService.getLeadingObjectTypeID(object.objectTypeId, object.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS]),
         context: {
           system: this.systemService
         }
       };
-      params.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS] = object.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS];
       this.objectIcon = CellRenderer.typeCellRenderer(params);
 
       this.fileDropLabel = !object.content

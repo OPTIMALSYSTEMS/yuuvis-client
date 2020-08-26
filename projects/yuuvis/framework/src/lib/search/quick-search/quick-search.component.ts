@@ -267,13 +267,13 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
       type: 'filter',
       items: [
         {
-          id: 'custom',
-          label: this.translate.instant('yuv.framework.search.filter.custom.filters'),
+          id: 'new',
+          label: this.translate.instant('yuv.framework.search.filter.available.fields'),
           items: this.customFilters
         },
         {
-          id: 'enabled',
-          label: this.translate.instant('yuv.framework.search.filter.enabled.filters'),
+          id: 'stored',
+          label: this.translate.instant('yuv.framework.search.filter.stored.filters'),
           items: this.enabledFilters
         }
       ],
