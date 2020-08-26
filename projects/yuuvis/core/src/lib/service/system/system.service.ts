@@ -333,7 +333,10 @@ export class SystemService {
       }
       const sots: string[] = dmsObject.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS];
       if (sots) {
-        sots.forEach((sot) => objectTypeIDs.push(sot));
+        const sotQA = {};
+        ot.secondaryObjectTypes.forEach((sot) => (sotQA[sot.id] = sot));
+        // don't care about static SOTs because they are already applied to the main object type
+        sots.filter((sot) => sotQA[sot] && !sotQA[sot].static).forEach((sot) => objectTypeIDs.push(sot));
       }
       return objectTypeIDs.length ? this.getObjectTypeForms(objectTypeIDs, situation) : of(null);
     } else {
