@@ -1,7 +1,9 @@
 import { RangeValue } from './../../model/range-value.model';
 import { Utils } from './../../util/utils';
 import { SearchQueryProperties } from './search.service.interface';
-
+/**
+ * Search query properties
+ */
 export class SearchQuery {
   term: string;
   fields: string[];
@@ -269,8 +271,8 @@ export class SearchFilterGroup {
     return arr instanceof SearchFilterGroup
       ? arr
       : arr.length === 1 && arr[0] instanceof SearchFilterGroup
-      ? arr[0]
-      : new SearchFilterGroup(undefined, undefined, [...arr]);
+        ? arr[0]
+        : new SearchFilterGroup(undefined, undefined, [...arr]);
   }
 
   id = Utils.uuid();
@@ -324,7 +326,7 @@ export class SearchFilterGroup {
     public property: string = SearchFilterGroup.DEFAULT,
     public operator: string = SearchFilterGroup.OPERATOR.AND,
     public group: (SearchFilter | SearchFilterGroup)[] = []
-  ) {}
+  ) { }
 
   /**
    * @ignore
@@ -467,7 +469,9 @@ export class SearchFilter {
     return JSON.stringify(this.toQuery());
   }
 }
-
+/**
+ * Sortig criteria of objects searching result
+ */
 export class SortOption {
-  constructor(public field: string, public order: string, public missing?: string) {}
+  constructor(public field: string, public order: string, public missing?: string) { }
 }

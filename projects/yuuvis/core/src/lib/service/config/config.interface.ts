@@ -11,7 +11,9 @@ export interface YuvConfig {
     languages: YuvConfigLanguages[];
   };
 }
-
+/**
+ * interface providing localization of application
+ */
 export interface YuvConfigLanguages {
   iso: string;
   label: string;

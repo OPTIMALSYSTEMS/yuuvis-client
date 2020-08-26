@@ -1,6 +1,9 @@
 import { Injectable } from '@angular/core';
 import { fromEvent, Observable, ReplaySubject } from 'rxjs';
 
+/**
+ * This service is used for connecting and initializing in the client
+ */
 @Injectable({
   providedIn: 'root'
 })
@@ -10,7 +13,9 @@ export class ConnectionService {
   };
   private connectionStateSource = new ReplaySubject<ConnectionState>();
   public connection$: Observable<ConnectionState> = this.connectionStateSource.asObservable();
-
+  /**
+   * @ignore
+   */
   constructor() {
     this.connectionStateSource.next(this.currentState);
     fromEvent(window, 'online').subscribe(() => {
@@ -24,7 +29,12 @@ export class ConnectionService {
     });
   }
 }
-
+/**
+ * Check a connection state of a client
+ */
 export interface ConnectionState {
+  /**
+   * whether or not the application is online.
+   */
   isOnline: boolean;
 }

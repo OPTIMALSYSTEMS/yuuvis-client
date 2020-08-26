@@ -1,6 +1,7 @@
-
-// Result when calling loginDevice endpoint in cloud environment
-// when using device flow
+/**
+ * Result when calling loginDevice endpoint in cloud environment
+ * when using device flow
+ */
 export interface LoginDeviceResult {
   user_code: string;
   device_code: string;
@@ -8,13 +9,17 @@ export interface LoginDeviceResult {
   verification_uri: string;
   expires_in: number;
 }
-
+/**
+ * @ignore
+ */
 export interface StoredToken {
   accessToken: string;
   tenant: string;
 }
 
-// State emitted by the login function when using the device flow
+/**
+ * State emitted by the login function when using the device flow
+ */
 export interface LoginState {
   name: LoginStateName;
   data: any;
@@ -23,5 +28,5 @@ export interface LoginState {
 export enum LoginStateName {
   STATE_LOGIN_URI = 'login.uri',
   STATE_DONE = 'login.done',
-  STATE_CANCELED = 'login.canceled',
+  STATE_CANCELED = 'login.canceled'
 }

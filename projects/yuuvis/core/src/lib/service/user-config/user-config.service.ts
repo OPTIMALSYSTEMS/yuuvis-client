@@ -13,8 +13,13 @@ import { ColumnConfig } from './user-config.interface';
   providedIn: 'root'
 })
 export class UserConfigService {
+  /**
+   * @ignore
+   */
   constructor(private backend: BackendService, private systemService: SystemService) {}
-
+  /**
+   * get and change configuration of the searching result list of available objects
+   */
   getColumnConfig(objectTypeId?: string): Observable<ColumnConfig> {
     // skip abstract object types
     const ot = this.systemService.getObjectType(objectTypeId);
@@ -32,7 +37,9 @@ export class UserConfigService {
       }))
     );
   }
-
+  /**
+   * save result list configuration of available objects
+   */
   saveColumnConfig(columnConfig: ColumnConfig): Observable<any> {
     return this.backend.post(`/user/config/result/${encodeURIComponent(columnConfig.type)}`, {
       type: columnConfig.type,

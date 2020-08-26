@@ -11,7 +11,9 @@ import { YuvEventType } from '../event/events';
 import { Logger } from '../logger/logger';
 import { AdministrationRoles } from '../system/system.enum';
 import { SystemService } from '../system/system.service';
-
+/**
+ * Service providing user account configurations.
+ */
 @Injectable({
   providedIn: 'root'
 })
@@ -20,7 +22,9 @@ export class UserService {
   private user: YuvUser = null;
   private userSource = new BehaviorSubject<YuvUser>(this.user);
   user$: Observable<YuvUser> = this.userSource.asObservable();
-
+  /**
+   * @ignore
+   */
   constructor(
     private backend: BackendService,
     private translate: TranslateService,

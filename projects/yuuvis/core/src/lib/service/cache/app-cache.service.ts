@@ -13,6 +13,9 @@ import { Utils } from '../../util/utils';
   providedIn: 'root'
 })
 export class AppCacheService {
+  /**
+   * @ignore
+   */
   constructor(private storage: LocalStorage, private storageMap: StorageMap) {}
 
   setItem(key: string, value: any): Observable<boolean> {
@@ -32,19 +35,19 @@ export class AppCacheService {
   }
 
   getStorage(): Observable<any> {
-    return new Observable<string[]>(observer => {
+    return new Observable<string[]>((observer) => {
       const keys = [];
       this.storageMap.keys().subscribe({
-        next: key => keys.push(key),
+        next: (key) => keys.push(key),
         complete: () => observer.next(keys)
       });
     }).pipe(
-      switchMap(keys =>
+      switchMap((keys) =>
         forkJoin(
           Utils.arrayToObject(
             keys,
-            o => o,
-            k => this.getItem(k)
+            (o) => o,
+            (k) => this.getItem(k)
           )
         )
       )
@@ -52,6 +55,6 @@ export class AppCacheService {
   }
 
   setStorage(options: any): Observable<any> {
-    return forkJoin(Object.keys(options || {}).map(k => this.setItem(k, options[k])));
+    return forkJoin(Object.keys(options || {}).map((k) => this.setItem(k, options[k])));
   }
 }

@@ -139,7 +139,9 @@ export class ScreenService {
     return this.device.isMobile ? 0 : 500;
   }
 }
-
+/**
+ * Interface providing the size of device screen
+ */
 export interface ScreenSize {
   width: number;
   height: number;
