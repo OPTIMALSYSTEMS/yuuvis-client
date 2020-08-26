@@ -45,4 +45,10 @@ export class InboxComponent {
   selectedItem(item) {
     this.getSelectedDetail(item[0].businessKey);
   }
+
+  refreshList() {
+    // this.inboxData$ = this.inboxService
+    //   .getInbox(ProcessDefinitionKey.FOLLOW_UP)
+    // .pipe(map((val) => this.formatProcessDataService.formatProcessDataForTable(val)));
+  }
 }

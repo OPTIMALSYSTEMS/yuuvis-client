@@ -28,7 +28,7 @@ export * from './lib/service/event/events';
 export * from './lib/service/logger/logger';
 export * from './lib/service/pending-changes/pending-changes-guard.service';
 export * from './lib/service/pending-changes/pending-changes.service';
-export * from './lib/service/processes';
+export * from './lib/service/processes/index';
 export * from './lib/service/screen/screen.interface';
 export * from './lib/service/screen/screen.service';
 export * from './lib/service/search/search-query.model';

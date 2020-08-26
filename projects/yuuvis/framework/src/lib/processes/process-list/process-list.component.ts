@@ -21,6 +21,7 @@ export class ProcessListComponent {
   }
 
   @Output() selectedItem: EventEmitter<any> = new EventEmitter<any>();
+  @Output() refreshList: EventEmitter<any> = new EventEmitter<any>();
 
   constructor() {}
 
@@ -28,5 +29,7 @@ export class ProcessListComponent {
     this.selectedItem.emit(event);
   }
 
-  refresh() {}
+  refresh() {
+    this.refreshList.emit();
+  }
 }

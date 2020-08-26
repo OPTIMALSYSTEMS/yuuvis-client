@@ -42,6 +42,9 @@ export class ProcessesComponent {
     this.dmsObject$ = this.dmsService.getDmsObject(businessKey).pipe(tap((val) => (this.itemIsSelected = true)));
   }
 
+  refreshList() {
+    // this.bpmService. ().subscribe();
+  }
   selectedItem(item) {
     console.log({ item });
 
