@@ -15,13 +15,15 @@ import { AboutModule } from './states/about/about.module';
 import { ColumnConfigurationComponent } from './states/column-configuration/column-configuration.component';
 import { CreateComponent } from './states/create/create.component';
 import { DashboardComponent } from './states/dashboard/dashboard.component';
+import { FilterConfigurationComponent } from './states/filter-configuration/filter-configuration.component';
+import { InboxComponent } from './states/inbox/inbox.component';
 import { NotFoundComponent } from './states/not-found/not-found.component';
 import { ObjectComponent } from './states/object/object.component';
 import { OfflineComponent } from './states/offline/offline.component';
+import { ProcessesComponent } from './states/processes/processes.component';
 import { ResultComponent } from './states/result/result.component';
 import { SettingsComponent } from './states/settings/settings.component';
 import { VersionsComponent } from './states/versions/versions.component';
-import { FilterConfigurationComponent } from './states/filter-configuration/filter-configuration.component';
 
 @NgModule({
   declarations: [
@@ -36,7 +38,9 @@ import { FilterConfigurationComponent } from './states/filter-configuration/filt
     OfflineComponent,
     VersionsComponent,
     ColumnConfigurationComponent,
-    FilterConfigurationComponent
+    InboxComponent,
+    FilterConfigurationComponent,
+    ProcessesComponent
   ],
   imports: [
     BrowserModule,

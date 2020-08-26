@@ -15,6 +15,7 @@ export interface ResponsiveTableData {
   sortModel?: { colId: string; sort: string }[];
   titleField: string;
   descriptionField: string;
+  dateField?: string;
   selectType?: 'single' | 'multiple';
   /**
    * grid setting from ag-grid definition

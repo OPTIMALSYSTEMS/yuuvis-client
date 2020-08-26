@@ -46,17 +46,15 @@ export class QuickSearchService {
 
   // fields that should not be searchable
   skipFields = [
-    // ...Object.keys(RetentionField).map(k => RetentionField[k]),
     BaseObjectTypeField.OBJECT_ID,
-    // BaseObjectTypeField.CREATED_BY,
-    // BaseObjectTypeField.MODIFIED_BY,
     BaseObjectTypeField.OBJECT_TYPE_ID,
     BaseObjectTypeField.PARENT_ID,
     BaseObjectTypeField.PARENT_OBJECT_TYPE_ID,
     BaseObjectTypeField.PARENT_VERSION_NUMBER,
     BaseObjectTypeField.TENANT,
     BaseObjectTypeField.TRACE_ID,
-    BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS,
+    BaseObjectTypeField.TAGS,
+    // BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS,
     BaseObjectTypeField.BASE_TYPE_ID,
     ContentStreamField.ID,
     ContentStreamField.RANGE,
