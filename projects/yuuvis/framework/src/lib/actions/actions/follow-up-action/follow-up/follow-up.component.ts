@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { FollowUpService, TranslateService, ProcessData } from '@yuuvis/core';
+import { FollowUpService, ProcessData, TranslateService } from '@yuuvis/core';
 import { NotificationService } from '../../../../services/notification/notification.service';
 import { ActionComponent } from './../../../interfaces/action-component.interface';
 
@@ -30,7 +30,7 @@ export class FollowUpComponent implements OnInit, ActionComponent {
   }
 
   createFollowUp() {
-    this.followUpService.createFollowUp(this.selection[0].id, this.form.value.expiryDateTime, this.form.value.whatAbout).subscribe(() => {
+    this.followUpService.createFollowUp(this.selection[0].id, this.form.value).subscribe(() => {
       this.notificationService.success(
         this.translate.instant('yuv.framework.action-menu.action.follow-up.label'),
         this.translate.instant('yuv.framework.action-menu.action.follow-up.done.message')
@@ -40,7 +40,7 @@ export class FollowUpComponent implements OnInit, ActionComponent {
   }
 
   editFollowUp() {
-    this.followUpService.editFollowUp(this.selection[0].id, this.currentFollowUp.id, this.form.value.expiryDateTime, this.form.value.whatAbout).subscribe(() => {
+    this.followUpService.editFollowUp(this.selection[0].id, this.currentFollowUp.id, this.form.value).subscribe(() => {
       this.notificationService.success(
         this.translate.instant('yuv.framework.action-menu.action.follow-up.label'),
         this.translate.instant('yuv.framework.action-menu.action.follow-up.edit.done.message')
