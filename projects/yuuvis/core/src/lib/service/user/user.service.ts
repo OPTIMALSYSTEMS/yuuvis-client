@@ -11,7 +11,9 @@ import { YuvEventType } from '../event/events';
 import { Logger } from '../logger/logger';
 import { AdministrationRoles } from '../system/system.enum';
 import { SystemService } from '../system/system.service';
-
+/**
+ * Service providing user account configurations.
+ */
 @Injectable({
   providedIn: 'root'
 })
@@ -20,7 +22,9 @@ export class UserService {
   private user: YuvUser = null;
   private userSource = new BehaviorSubject<YuvUser>(this.user);
   user$: Observable<YuvUser> = this.userSource.asObservable();
-
+  /**
+   * @ignore
+   */
   constructor(
     private backend: BackendService,
     private translate: TranslateService,
@@ -124,8 +128,9 @@ export class UserService {
     return this.backend.get(`/user/${id}/info`).pipe(map((user) => new YuvUser(user, this.user.userSettings)));
   }
 
-  logout(): void {
-    (window as any).location.href = '/logout';
+  logout(redirRoute?: string): void {
+    const redir = redirRoute ? `?redir=${redirRoute}` : '';
+    (window as any).location.href = `/logout${redir}`;
   }
 
   getSettings(section: string): Observable<any> {

@@ -99,13 +99,17 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
   /**
    * ResponsiveTableData setter
    */
-  @Input() set data(data: ResponsiveTableData) {
+  @Input()
+  set data(data: ResponsiveTableData) {
     this._data = data;
     if (this.gridOptions) {
       this.applyGridOption();
     } else {
       this.setupGridOptions();
     }
+  }
+  get data(): ResponsiveTableData {
+    return this._data;
   }
 
   /**
@@ -121,18 +125,18 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
   /**
    * view mode of the table
    */
-  @Input() set viewMode(viewMode: ViewMode) {
+  @Input()
+  set viewMode(viewMode: ViewMode) {
     this.setupViewMode(viewMode);
+  }
+  get viewMode() {
+    return this._viewMode;
   }
 
   /**
    * Limit the number of selected rows
    */
   @Input() selectionLimit;
-
-  get viewMode() {
-    return this._viewMode;
-  }
 
   set currentViewMode(viewMode: ViewMode) {
     if (this.currentViewMode !== viewMode) {
@@ -352,21 +356,24 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
       minWidth: this.isGrid ? this._data.rows.length * this.settings.colWidth.grid : 0,
       valueGetter: (params) => JSON.stringify(params.data), // needed to compare value changes & redraw cell
       cellRenderer: (params) => {
-        const objectTypeId = params.data[BaseObjectTypeField.OBJECT_TYPE_ID];
+        const objectTypeId = this.systemService.getLeadingObjectTypeID(
+          params.data[BaseObjectTypeField.OBJECT_TYPE_ID],
+          params.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS]
+        );
         const version = params.data[BaseObjectTypeField.VERSION_NUMBER];
-        const modified = this.datePipe.transform(params.data[BaseObjectTypeField.MODIFICATION_DATE]);
+        const modified = this.datePipe.transform(params.data[this.data.dateField || BaseObjectTypeField.MODIFICATION_DATE]);
         const title = this.systemService.getLocalizedResource(`${objectTypeId}_label`);
-
+        params.value = objectTypeId;
         params.context = {
           system: this.systemService
         };
 
         return `
           <div class="rdt-row ${this._currentViewMode === 'horizontal' ? 'row-horizontal' : 'row-grid'}" data-version="${version}">
-            <div class="head" title="${title}">
+            <div class="head">
             ${CellRenderer.typeCellRenderer(params)}</div>  
             <div class="main">
-            <div class="title">${params.data[this._data.titleField] || params.data[BaseObjectTypeField.OBJECT_ID] || ''}</div>
+            <div class="title">${params.data[this._data.titleField] || title || ''}</div>
               <div class="description">${params.data[this._data.descriptionField] || ''}</div>
               <div class="date">${modified}</div>
             </div>
@@ -411,13 +418,9 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
 
   private setupGridOptions() {
     this.gridOptions = {
-      getRowNodeId: (data) => {
-        // defines what to use as ID for each row (important for reselecting a previous selection)
-        return data.id;
-      },
-      getRowHeight: () => {
-        return this.settings.rowHeight[this.currentViewMode];
-      },
+      // defines what to use as ID for each row (important for reselecting a previous selection)
+      getRowNodeId: (data) => data.id,
+      getRowHeight: () => this.settings.rowHeight[this.currentViewMode],
       rowData: this._data.rows,
       columnDefs: this._data.columns,
       headerHeight: this.settings.headerHeight.standard,
@@ -488,6 +491,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
     if (this.deviceService.isDesktop && $event.button === 0 && this.gridOptions && this.gridOptions.suppressCellSelection) {
       if (!this.pendingChanges.check()) {
         this.gridOptions.suppressCellSelection = false;
+
         this.selectEvent($event);
       } else {
         $event.preventDefault();

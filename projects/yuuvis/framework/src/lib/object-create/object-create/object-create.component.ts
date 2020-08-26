@@ -191,27 +191,30 @@ export class ObjectCreateComponent implements OnDestroy {
     this.title = this.labels.defaultTitle;
 
     let i = 0;
-    this.generalObjectTypeGroups = this.system.getGroupedObjectTypes().map((otg: ObjectTypeGroup) => ({
-      id: `${i++}`,
-      label: otg.label,
-      items: otg.types
-        .filter(
-          (ot) =>
-            ![
-              // types that should not be able to be created
-              SystemType.FOLDER,
-              SystemType.DOCUMENT
-            ].includes(ot.id)
-        )
-        .map((ot: ObjectType) => ({
-          id: ot.id,
-          label: this.system.getLocalizedResource(`${ot.id}_label`),
-          description: ot.isFolder ? '' : this.labels[ot.contentStreamAllowed],
-          highlight: ot.isFolder,
-          svg: this.system.getObjectTypeIcon(ot.id),
-          value: ot
-        }))
-    }));
+    this.generalObjectTypeGroups = this.system
+      .getGroupedObjectTypes()
+      .map((otg: ObjectTypeGroup) => ({
+        id: `${i++}`,
+        label: otg.label,
+        items: otg.types
+          .filter(
+            (ot) =>
+              ![
+                // types that should not be able to be created
+                SystemType.FOLDER,
+                SystemType.DOCUMENT
+              ].includes(ot.id)
+          )
+          .map((ot: ObjectType) => ({
+            id: ot.id,
+            label: this.system.getLocalizedResource(`${ot.id}_label`),
+            description: ot.isFolder ? '' : this.labels[ot.contentStreamAllowed],
+            highlight: ot.isFolder,
+            svg: this.system.getObjectTypeIcon(ot.id),
+            value: ot
+          }))
+      }))
+      .filter((group: SelectableGroup) => group.items.length > 0);
     this.setupAvailableObjectTypeGroups();
     this.collectPendingAFOs();
   }
@@ -294,8 +297,12 @@ export class ObjectCreateComponent implements OnDestroy {
     this.title = objectType ? this.system.getLocalizedResource(`${objectType.id}_label`) : this.labels.defaultTitle;
     this.objCreateServcice.setNewState({ busy: true });
 
-    if (this.system.isAFOType(objectType)) {
+    if (this.system.isAdvancedFilingObjectType(objectType)) {
       // DLM object types are treated in a different way
+      this.processAFOType(objectType);
+    } else if (this.system.isFloatingObjectType(objectType)) {
+      // same as AFO but just one primary target type
+
       this.processAFOType(objectType);
     } else {
       this.system.getObjectTypeForm(objectType.id, 'CREATE').subscribe(
@@ -339,19 +346,22 @@ export class ObjectCreateComponent implements OnDestroy {
 
   afoSelectFloatingSOT(sot: SecondaryObjectType) {
     this.busy = true;
+    const objectType = !!this.selectedObjectType.floatingParentType
+      ? this.system.getObjectType(this.selectedObjectType.floatingParentType)
+      : this.selectedObjectType;
     const objectTypeIDs = [];
 
     // main object type may not have own fields
-    if (this.selectedObjectType.fields.filter((f) => !f.id.startsWith('system:')).length) {
-      objectTypeIDs.push(this.selectedObjectType.id);
+    if (objectType.fields.filter((f) => !f.id.startsWith('system:')).length) {
+      objectTypeIDs.push(objectType.id);
     }
 
     // required SOTs will also be applied
-    this.selectedObjectType.secondaryObjectTypes
+    objectType.secondaryObjectTypes
       .filter((otSot) => !otSot.static)
       .forEach((otSot) => {
         const t = this.system.getSecondaryObjectType(otSot.id);
-        if (t.classification && t.classification.includes(SecondaryObjectTypeClassification.REQUIRED)) {
+        if (t.fields.length > 0 && t.classification && t.classification.includes(SecondaryObjectTypeClassification.REQUIRED)) {
           objectTypeIDs.push(t.id);
         }
       });
@@ -380,7 +390,7 @@ export class ObjectCreateComponent implements OnDestroy {
     data[BaseObjectTypeField.TAGS] = [[this.AFO_TAG, this.AFO_STATE.IN_PROGRESS]];
     this.busy = true;
 
-    this.createObject(this.selectedObjectType.id, data, this.files)
+    this.createObject(this.selectedObjectType.floatingParentType || this.selectedObjectType.id, data, this.files)
       .pipe(
         takeUntilDestroy(this),
         switchMap((res: string[]) => this.dmsService.getDmsObjects(res))
@@ -391,15 +401,28 @@ export class ObjectCreateComponent implements OnDestroy {
           this.objCreateServcice.setNewState({ currentStep: CurrentStep.AFO_INDEXDATA });
           this.objCreateServcice.setNewBreadcrumb(CurrentStep.AFO_INDEXDATA);
 
-          const selectableSOTs = this.system
-            .getFloatingSecondaryObjectTypes(this.selectedObjectType.id, true)
-            .filter((sot) => !sot.classification || !sot.classification.includes(SecondaryObjectTypeClassification.REQUIRED));
-          this.afoCreate = {
-            dmsObject: { items: res, selected: res[0] },
-            floatingSOT: { items: selectableSOTs }
-          };
-          if (selectableSOTs.length === 1) {
-            this.afoSelectFloatingSOT(selectableSOTs[0]);
+          if (this.selectedObjectType.floatingParentType) {
+            // floating types
+            const sot = this.system.getSecondaryObjectType(this.selectedObjectType.id);
+            const selectableSOTs = this.system
+              .getFloatingSecondaryObjectTypes(this.selectedObjectType.id, true)
+              .filter((sot) => !sot.classification || !sot.classification.includes(SecondaryObjectTypeClassification.REQUIRED));
+            this.afoCreate = {
+              dmsObject: { items: res, selected: res[0] },
+              floatingSOT: { items: selectableSOTs }
+            };
+            this.afoSelectFloatingSOT(sot);
+          } else {
+            const selectableSOTs = this.system
+              .getFloatingSecondaryObjectTypes(this.selectedObjectType.id, true)
+              .filter((sot) => !sot.classification || !sot.classification.includes(SecondaryObjectTypeClassification.REQUIRED));
+            this.afoCreate = {
+              dmsObject: { items: res, selected: res[0] },
+              floatingSOT: { items: selectableSOTs }
+            };
+            if (selectableSOTs.length === 1) {
+              this.afoSelectFloatingSOT(selectableSOTs[0]);
+            }
           }
         },
         (err) => {
@@ -468,7 +491,7 @@ export class ObjectCreateComponent implements OnDestroy {
   }
 
   fileSelectContinue() {
-    const nextStep = this.system.isAFOType(this.selectedObjectType) ? CurrentStep.AFO_UPLOAD : CurrentStep.INDEXDATA;
+    const nextStep = this.system.isAdvancedFilingObjectType(this.selectedObjectType) ? CurrentStep.AFO_UPLOAD : CurrentStep.INDEXDATA;
     this.goToStep(nextStep);
     this.objCreateServcice.setNewBreadcrumb(nextStep);
   }
@@ -483,12 +506,12 @@ export class ObjectCreateComponent implements OnDestroy {
       data[BaseObjectTypeField.PARENT_ID] = this.context.id;
     }
     this.busy = true;
-    const isAFO = this.system.isAFOType(this.selectedObjectType);
+    const isAFO = this.system.isAdvancedFilingObjectType(this.selectedObjectType) || !!this.selectedObjectType.floatingParentType;
     (isAFO ? this.createAFO(data) : this.createDefault(data)).subscribe(
       (ids: string[]) => {
         this.busy = false;
         // this.notify.success(this.translate.instant('yuv.framework.object-create.notify.success'));
-        if (this.createAnother || this.afoCreate.dmsObject.selected) {
+        if (this.createAnother || this.afoCreate?.dmsObject.selected) {
           this.selectedObjectType = null;
           this.files = [];
           this.resetState();
@@ -510,8 +533,11 @@ export class ObjectCreateComponent implements OnDestroy {
    * @returns List of IDs of finished objects
    */
   private createAFO(data: any): Observable<string[]> {
+    const objectType = !!this.selectedObjectType.floatingParentType
+      ? this.system.getObjectType(this.selectedObjectType.floatingParentType)
+      : this.selectedObjectType;
     // add selected SOTs
-    const sotsToBeApplied: string[] = this.selectedObjectType.secondaryObjectTypes
+    const sotsToBeApplied: string[] = objectType.secondaryObjectTypes
       .filter((sot) => {
         const soType = this.system.getSecondaryObjectType(sot.id);
         // add static as well as required SOTs

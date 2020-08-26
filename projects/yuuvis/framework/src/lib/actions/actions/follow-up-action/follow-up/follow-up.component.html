@@ -1,0 +1,45 @@
+<div class="yuv-follow-up">
+  <h2 *ngIf="!currentFollowUp">{{ 'yuv.framework.action-menu.action.follow-up.create.title' | translate }}</h2>
+  <h2 *ngIf="currentFollowUp">{{ 'yuv.framework.action-menu.action.follow-up.edit.title' | translate }}</h2>
+  <ng-template #folowUpForm>
+    <form [formGroup]="form">
+      <yuv-form-input [label]="'yuv.framework.action-menu.action.follow-up.due-date.label' | translate" [skipToggle]="true">
+        <yuv-datetime [withTime]="true" [onylFutureDates]="true" [pickerTitle]="'hurz'" [formControlName]="'expiryDateTime'"></yuv-datetime>
+      </yuv-form-input>
+      <div class="err-msg" *ngIf="form.controls.expiryDateTime.errors && form.dirty">
+        <div *ngIf="form.controls.expiryDateTime.errors.required && !form.controls.expiryDateTime.errors.datecontrol">
+          {{ 'yuv.framework.object-form-element.error.required' | translate }}
+        </div>
+        <div *ngIf="form.controls.expiryDateTime.errors.datecontrol">{{ 'yuv.framework.object-form-element.error.date.invalid' | translate }}</div>
+      </div>
+      <yuv-form-input [label]="'yuv.framework.action-menu.action.follow-up.what-about.label' | translate" [skipToggle]="true">
+        <yuv-string [rows]="4" [maxLength]="100" [formControlName]="'whatAbout'"></yuv-string>
+      </yuv-form-input>
+      <div class="err-msg" *ngIf="form.controls.whatAbout.errors && form.dirty">
+        <div *ngIf="form.controls.whatAbout.errors.maxlength" translate [translateParams]="{ maxLength: 100 }">
+          yuv.framework.object-form-element.error.maxlength
+        </div>
+      </div>
+    </form>
+    <div class="form-buttons">
+      <button (click)="showdeleteMessage = true">{{ 'yuv.framework.shared.cancel' | translate }}</button>
+      <button *ngIf="currentFollowUp" (click)="showdeleteMessage = true">{{ 'yuv.framework.shared.remove' | translate }}</button>
+      <button *ngIf="currentFollowUp" class="primary" [disabled]="form.invalid" (click)="editFollowUp()">
+        {{ 'yuv.framework.shared.change' | translate }}
+      </button>
+      <button *ngIf="!currentFollowUp" class="primary" [disabled]="form.invalid" (click)="createFollowUp()">
+        {{ 'yuv.framework.shared.create' | translate }}
+      </button>
+    </div>
+  </ng-template>
+
+  <div *ngIf="showdeleteMessage; else folowUpForm">
+    <h2>
+      {{ 'yuv.framework.action-menu.action.follow-up.delete.confirm.message' | translate: { item: selection[0].id } }}
+    </h2>
+    <div class="form-buttons">
+      <button (click)="cancel()">{{ 'yuv.framework.shared.cancel' | translate }}</button>
+      <button *ngIf="currentFollowUp" (click)="deleteFollowUp()" class="primary">{{ 'yuv.framework.shared.remove' | translate }}</button>
+    </div>
+  </div>
+</div>

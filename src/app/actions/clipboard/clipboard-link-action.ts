@@ -1,6 +1,6 @@
 import { Location } from '@angular/common';
 import { Component } from '@angular/core';
-import { DmsObject, SecondaryObjectTypeField, TranslateService } from '@yuuvis/core';
+import { ClientDefaultsObjectTypeField, DmsObject, TranslateService } from '@yuuvis/core';
 import { DmsObjectTarget, NotificationService, SelectionRange, SimpleAction } from '@yuuvis/framework';
 import { of as observableOf, of } from 'rxjs';
 
@@ -31,7 +31,7 @@ export class ClipboardLinkActionComponent extends DmsObjectTarget implements Sim
     let clipboardText = '';
 
     selection.forEach((element) => {
-      const title = `${element.data[SecondaryObjectTypeField.TITLE]}`;
+      const title = `${element.data[ClientDefaultsObjectTypeField.TITLE]}`;
       if (window.location.href.includes('/versions')) {
         clipboardText += `${title}: ${urlPrefix}/versions/${element.id}&version=${element.version}\n`;
       } else {

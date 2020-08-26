@@ -1,11 +1,19 @@
+/**
+ * Interface providing a search service
+ */
 export interface SearchResult {
   hasMoreItems: boolean;
   totalNumItems: number;
   items: SearchResultItem[];
-  // object types within the result
+  /**
+   * object types within the result
+   */
+
   objectTypes: string[];
 }
-
+/**
+ * Interface for the item of search results
+ */
 export interface SearchResultItem {
   objectTypeId: string;
   content?: SearchResultContent;
@@ -29,7 +37,10 @@ export interface SearchResultContent {
   range: string;
   mimeType: string;
 }
-
+/**
+ * Interface providing dearch query properties, that can be send to
+ * the search service
+ */
 export interface SearchQueryProperties {
   term?: string;
   size?: number;
@@ -42,11 +53,20 @@ export interface SearchQueryProperties {
   sort?: any;
 }
 
+/**
+ * Interface providing the estimated result of the current query.
+ */
 export interface AggregateResult {
+  /**
+   * number of results found
+   */
   totalNumItems: number;
   aggregations: Aggregation[];
 }
 
+/**
+ * Property of a one search query aggregation
+ */
 export interface Aggregation {
   aggKey: string;
   entries: {

@@ -8,5 +8,6 @@ export class RangeValue {
    * @param firstValue The rages first/start value
    * @param secondValue The ranges last/end value
    */
+
   constructor(public operator: string, public firstValue: string, public secondValue?: string) {}
 }

@@ -39,6 +39,7 @@ export class SearchFilterFormComponent implements OnInit, OnDestroy {
   private availableObjectTypeFields: Selectable[];
 
   @Input() disabled = false;
+  @Input() dragDisabled = false;
 
   @Input() set options(opts: { filter: Selectable; availableObjectTypeFields: Selectable[] }) {
     if (opts) {
@@ -54,7 +55,11 @@ export class SearchFilterFormComponent implements OnInit, OnDestroy {
 
   @Input() set newFilters(filters: any[]) {
     if (filters) {
-      this.filterGroup.group.push(...filters.map((f: any) => Object.assign(f.clone(), { excludeFromQuery: f.isEmpty() })));
+      this.filterGroup.group.push(
+        ...filters.map((f: any) =>
+          f instanceof SearchFilterGroup ? (f.filters.length === 1 ? f.filters[0] : f).clone() : Object.assign(f.clone(), { excludeFromQuery: f.isEmpty() })
+        )
+      );
       this.updateSearchFields(this.filterGroup.filters);
       this.onFilterChanged();
     }
@@ -147,6 +152,12 @@ export class SearchFilterFormComponent implements OnInit, OnDestroy {
     formElement.description = null;
     formElement.isNotSetValue = isEmpty;
     formElement.readonly = this.disabled;
+
+    // TODO: refactor this crazy stuff - should be handled by FormElement class or service
+    if (formElement.classification) {
+      formElement.classifications = formElement.classification;
+      formElement._internalType = this.systemService.getInternalFormElementType(formElement, 'type');
+    }
 
     const formControl = ObjectFormUtils.elementToFormControl(formElement, Situation.SEARCH);
 

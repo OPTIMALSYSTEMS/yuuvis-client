@@ -1,19 +1,31 @@
 import { SearchResultItem } from '../service/search/search.service.interface';
-import { BaseObjectTypeField } from '../service/system/system.enum';
+import { BaseObjectTypeField, ClientDefaultsObjectTypeField } from '../service/system/system.enum';
 import { ObjectType } from '../service/system/system.interface';
-import { SecondaryObjectTypeField } from './../service/system/system.enum';
 import { DmsObjectContent, DmsObjectContext, DmsObjectRights } from './dms-object.interface';
-
+/**
+ * `DmsObject` is a business object of a type that  generally contain a document file in addition to its metadata.
+ *  Document file can be text documents, e-mails, image files, video, etc.
+ *  Each object type classifies the object and defines the properties that the object must have or is allowed to have.
+ */
 export class DmsObject {
   id: string;
   title: string;
   description: string;
   parentId: string;
+  /**
+   * content includes a content id, file size and a mimeType of the object as well
+   */
   content: DmsObjectContent;
   data: any;
+  /**
+   * context folder includes an objectType id, this own id, title and description as well
+   */
   contextFolder: DmsObjectContext;
   isFolder: boolean;
   objectTypeId: string;
+  /**
+   * rights for read and change a DmsObject
+   */
   rights: DmsObjectRights = {
     readIndexData: false,
     readContent: false,
@@ -33,13 +45,19 @@ export class DmsObject {
     by: { id: string; title?: string; name?: string };
   };
 
+  /**
+   * @ignore
+   */
   constructor(searchResultItem: SearchResultItem, objectType: ObjectType) {
     this.id = searchResultItem.fields.get(BaseObjectTypeField.OBJECT_ID);
     this.version = searchResultItem.fields.get(BaseObjectTypeField.VERSION_NUMBER);
     this.objectTypeId = searchResultItem.objectTypeId;
-    this.title = searchResultItem.fields.get(SecondaryObjectTypeField.TITLE);
+
+    // title and description are provided by the client defaults SOT that may not be present all the time
+    this.title = searchResultItem.fields.get(ClientDefaultsObjectTypeField.TITLE);
+    this.description = searchResultItem.fields.get(ClientDefaultsObjectTypeField.DESCRIPTION);
+
     this.parentId = searchResultItem.fields.get(BaseObjectTypeField.PARENT_ID);
-    this.description = searchResultItem.fields.get(SecondaryObjectTypeField.DESCRIPTION);
     this.data = this.generateData(searchResultItem.fields);
 
     this.isFolder = objectType.isFolder;

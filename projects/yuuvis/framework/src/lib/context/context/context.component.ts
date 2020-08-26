@@ -73,13 +73,11 @@ export class ContextComponent implements OnInit, OnDestroy {
     this._context = c;
     if (c) {
       const params = {
-        value: c.objectTypeId,
-        data: {},
+        value: this.systemService.getLeadingObjectTypeID(c.objectTypeId, c.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS]),
         context: {
           system: this.systemService
         }
       };
-      params.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS] = c.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS];
       this.contextIcon = CellRenderer.typeCellRenderer(params);
     }
     this.setupContext();

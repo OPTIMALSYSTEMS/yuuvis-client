@@ -7,13 +7,18 @@ import { BackendService } from '../backend/backend.service';
 import { BaseObjectTypeField, ContentStreamField } from '../system/system.enum';
 import { SearchQuery } from './search-query.model';
 import { AggregateResult, Aggregation, SearchResult, SearchResultContent, SearchResultItem } from './search.service.interface';
-
+/**
+ * Providing searching of dms objects.
+ */
 @Injectable({
   providedIn: 'root'
 })
 export class SearchService {
   private lastSearchQuery: SearchQuery;
 
+  /**
+   * @ignore
+   */
   constructor(private backend: BackendService) {}
 
   /**

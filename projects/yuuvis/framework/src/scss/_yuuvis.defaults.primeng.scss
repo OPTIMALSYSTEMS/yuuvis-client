@@ -251,6 +251,7 @@ body {
         font-family: 'Roboto';
         font-size: var(--font-body);
         color: var(--text-color-body);
+        min-height: 21px; // to match chips height and avoid height changes when entering the first value
       }
 
       .ui-chips-token {
@@ -262,6 +263,11 @@ body {
         border: 1px solid var(--item-focus-background-color);
       }
     }
+  }
+
+  .ui-multiselect {
+    min-height: 20px; // to match chips height and avoid height changes when entering the first value
+    min-width: 150px;
   }
 
   // -------------------------------------------------------------------

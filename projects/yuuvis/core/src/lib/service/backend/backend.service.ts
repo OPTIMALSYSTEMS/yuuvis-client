@@ -5,14 +5,18 @@ import { DmsObject } from '../../model/dms-object.model';
 import { ConfigService } from '../config/config.service';
 import { Logger } from '../logger/logger';
 import { ApiBase } from './api.enum';
-
+/**
+ * Service for providing an yuuvis Backend
+ */
 @Injectable({
   providedIn: 'root'
 })
 export class BackendService {
   private headers = this.setDefaultHeaders();
   private persistedHeaders: any = {};
-
+  /**
+   * @ignore
+   */
   constructor(private http: HttpClient, private logger: Logger, private config: ConfigService) {}
 
   /**
@@ -108,7 +112,7 @@ export class BackendService {
    * @param DmsObject[] dmsObjects Array of dms objects to be downloaded
    */
   public downloadContent(objects: DmsObject[], withVersion?: boolean) {
-    objects.forEach(object => {
+    objects.forEach((object) => {
       const uri = `${this.getApiBase(ApiBase.apiWeb)}/dms/${object.id}/content${withVersion ? '?version=' + object.version : ''}`;
       this.download(uri);
     });

@@ -3,6 +3,7 @@ import { Attribute, Component, EventEmitter, Input, OnDestroy, Output, ViewChild
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import {
   BaseObjectTypeField,
+  ClientDefaultsObjectTypeField,
   ColumnConfig,
   ColumnConfigColumn,
   DmsObject,
@@ -11,7 +12,6 @@ import {
   SearchResult,
   SearchResultItem,
   SearchService,
-  SecondaryObjectTypeField,
   SortOption,
   UserConfigService,
   YuvEvent,
@@ -270,8 +270,8 @@ export class SearchResultComponent implements OnDestroy {
       this.tableData = {
         columns: this._columns,
         rows: this._rows,
-        titleField: SecondaryObjectTypeField.TITLE,
-        descriptionField: SecondaryObjectTypeField.DESCRIPTION,
+        titleField: ClientDefaultsObjectTypeField.TITLE,
+        descriptionField: ClientDefaultsObjectTypeField.DESCRIPTION,
         selectType: 'multiple',
         sortModel: sortOptions.map((o) => ({
           colId: o.field,
@@ -293,8 +293,8 @@ export class SearchResultComponent implements OnDestroy {
       id: searchResultItem.fields.get(BaseObjectTypeField.OBJECT_ID),
       [BaseObjectTypeField.OBJECT_TYPE_ID]: searchResultItem.fields.get(BaseObjectTypeField.OBJECT_TYPE_ID),
       [BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS]: searchResultItem.fields.get(BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS),
-      [SecondaryObjectTypeField.TITLE]: searchResultItem.fields.get(SecondaryObjectTypeField.TITLE),
-      [SecondaryObjectTypeField.DESCRIPTION]: searchResultItem.fields.get(SecondaryObjectTypeField.DESCRIPTION)
+      [ClientDefaultsObjectTypeField.TITLE]: searchResultItem.fields.get(ClientDefaultsObjectTypeField.TITLE),
+      [ClientDefaultsObjectTypeField.DESCRIPTION]: searchResultItem.fields.get(ClientDefaultsObjectTypeField.DESCRIPTION)
     };
     this._columns.forEach((cd: ColDef) => {
       row[cd.field] = searchResultItem.fields.get(cd.field);

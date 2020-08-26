@@ -1,0 +1,17 @@
+<section class="inbox-wrapper" *ngIf="inboxData$ | async as inboxData">
+  <yuv-responsive-master-slave class="state"
+    (slaveClosed)="onSlaveClosed()"
+    [layoutOptionsKey]="layoutOptionsKey"
+    [slaveActive]="itemIsSelected">
+    <yuv-inbox-list class="yuv-master panel" [inboxData]="inboxData" (refreshList)="refreshList()" (selectedItem)="selectedItem($event)"></yuv-inbox-list>
+    <section class="yuv-slave panel">
+      <yuv-object-details [disableFileDrop]="true" [dmsObject]="dmsObject$ | async"
+        [panelOrder]="['summary', 'indexdata', 'preview']" [layoutOptionsKey]="layoutOptionsKey">
+      </yuv-object-details>
+    </section>
+  </yuv-responsive-master-slave>
+</section>
+
+<!-- <yuv-object-details class="yuv-slave panel" [objectId]="objectDetailsID" 
+  [layoutOptionsKey]="layoutOptionsKey" [versionLinkTemplate]="versionLinkTpl">
+</yuv-object-details> -->

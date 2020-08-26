@@ -29,7 +29,9 @@ export class PendingChangesService {
 
   private customMsg = '';
   private defaultMsg = 'You are currently editing the index data of a form that has not been saved. Unsaved data will be lost.';
-
+  /**
+   * @ignore
+   */
   constructor(private logger: Logger) {}
 
   /**
@@ -50,7 +52,7 @@ export class PendingChangesService {
    */
   finishTask(id: string) {
     if (id) {
-      this.tasks = this.tasks.filter(t => t !== id);
+      this.tasks = this.tasks.filter((t) => t !== id);
       this.tasksSource.next(this.tasks);
       this.logger.debug('finished pending task: ' + id);
     }
@@ -64,7 +66,7 @@ export class PendingChangesService {
    * @returns
    */
   hasPendingTask(id?: string | string[]): boolean {
-    return !id ? !!this.tasks.length : Array.isArray(id) ? this.tasks.some(value => id.includes(value)) : this.tasks.includes(id);
+    return !id ? !!this.tasks.length : Array.isArray(id) ? this.tasks.some((value) => id.includes(value)) : this.tasks.includes(id);
   }
 
   /**

@@ -5,12 +5,15 @@ import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
 /**
- * Prevent app from running into 401 issues related to gateway timeouts
+ * Prevent app from running into 401 issues related to gateway timeouts.
  */
 @Injectable({
   providedIn: 'root'
 })
 export class AuthInterceptor implements HttpInterceptor {
+  /**
+   * @ignore
+   */
   constructor(private userService: UserService) {}
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {

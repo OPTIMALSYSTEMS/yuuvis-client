@@ -1,7 +1,9 @@
 import { RangeValue } from './../../model/range-value.model';
 import { Utils } from './../../util/utils';
 import { SearchQueryProperties } from './search.service.interface';
-
+/**
+ * Search query properties
+ */
 export class SearchQuery {
   term: string;
   fields: string[];
@@ -91,7 +93,7 @@ export class SearchQuery {
       if (parent) {
         parent.group = parent.group.filter((f) => f.property !== groupProperty || (remove ? !remove(f as SearchFilterGroup) : false));
         if (parent.isEmpty()) {
-          this.filterGroup.group = this.filterGroup.group.filter((g) => !g.isEmpty()); // TODO: needs to be recursive for deep groups
+          this.filterGroup.remove(parent.id);
         }
       }
     }
@@ -219,7 +221,7 @@ export class SearchQuery {
 
     if (this.filterGroup) {
       const fg = this.filterGroup.toShortQuery();
-      queryJson.filters = this.filterGroup.operator === SearchFilterGroup.OPERATOR.OR ? [fg] : fg.filters;
+      queryJson.filters = fg.filters.length > 1 && this.filterGroup.operator === SearchFilterGroup.OPERATOR.OR ? [fg] : fg.filters;
     }
 
     if (this.aggs && this.aggs.length) {
@@ -291,7 +293,12 @@ export class SearchFilterGroup {
 
   remove(id: string) {
     const parent = this.findParent(id);
-    return parent ? (parent.group = parent.group.filter((f) => f.id !== id)) : false;
+    if (parent) {
+      parent.group = parent.group.filter((f) => f.id !== id);
+      if (parent.isEmpty()) {
+        this.remove(parent.id);
+      }
+    }
   }
 
   /**
@@ -462,7 +469,9 @@ export class SearchFilter {
     return JSON.stringify(this.toQuery());
   }
 }
-
+/**
+ * Sortig criteria of objects searching result
+ */
 export class SortOption {
   constructor(public field: string, public order: string, public missing?: string) {}
 }

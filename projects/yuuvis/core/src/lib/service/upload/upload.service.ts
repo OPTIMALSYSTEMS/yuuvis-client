@@ -4,11 +4,14 @@ import { BehaviorSubject, Observable, ReplaySubject, Subject, throwError } from 
 import { catchError, filter, map, scan, tap } from 'rxjs/operators';
 import { Utils } from '../../util/utils';
 import { Logger } from '../logger/logger';
-import { BaseObjectTypeField, SecondaryObjectTypeField } from '../system/system.enum';
+import { BaseObjectTypeField, ClientDefaultsObjectTypeField } from '../system/system.enum';
 import { CreatedObject, ProgressStatus, UploadResult } from './upload.interface';
 
 const transformResponse = () => map((res: CreatedObject) => (res && res.body ? res.body.objects.map((val) => val) : null));
 
+/**
+ * Service for providing upload of different object types into a client.
+ */
 @Injectable({
   providedIn: 'root'
 })
@@ -19,6 +22,9 @@ export class UploadService {
   private uploadStatus = new BehaviorSubject<boolean>(false);
   public uploadStatus$: Observable<boolean> = this.uploadStatus.asObservable();
 
+  /**
+   * @ignore
+   */
   constructor(private http: HttpClient, private logger: Logger) {}
 
   /**
@@ -129,7 +135,7 @@ export class UploadService {
     const { objects } = result.body;
     if (objects.length > 1) {
       const data = objects[0];
-      const label = data.properties[SecondaryObjectTypeField.TITLE] ? data.properties[SecondaryObjectTypeField.TITLE].value : '...';
+      const label = data.properties[ClientDefaultsObjectTypeField.TITLE] ? data.properties[ClientDefaultsObjectTypeField.TITLE].value : '...';
       return [
         {
           objectId: objects.map((val) => val.properties[BaseObjectTypeField.OBJECT_ID].value),
@@ -143,7 +149,7 @@ export class UploadService {
         objectId: o.properties[BaseObjectTypeField.OBJECT_ID].value,
         contentStreamId: o.contentStreams[0]['contentStreamId'],
         filename: o.contentStreams[0]['fileName'],
-        label: o.properties[SecondaryObjectTypeField.TITLE] ? o.properties[SecondaryObjectTypeField.TITLE].value : o.contentStreams[0]['fileName']
+        label: o.properties[ClientDefaultsObjectTypeField.TITLE] ? o.properties[ClientDefaultsObjectTypeField.TITLE].value : o.contentStreams[0]['fileName']
       }));
     }
   }
