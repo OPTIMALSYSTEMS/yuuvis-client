@@ -13,16 +13,6 @@ import { EoxTranslateJsonLoader } from './service/core-init/translate-json-loade
 import { Logger } from './service/logger/logger';
 import { LoggerConsoleService } from './service/logger/logger-console.service';
 
-/**
- * `YuvCoreModule` provides a bunch of services to interact with a yuuvis backend.
- * It also sets up and re-exports the TranslateModule
- * @param coreInit
- */
-
-/**
- * @ignore
- * APP_INITIALIZER function
- */
 export function init_module(coreInit: CoreInit) {
   // Need to set to a const before returning due to:
   // @see: https://github.com/angular/angular/issues/14485
@@ -31,6 +21,12 @@ export function init_module(coreInit: CoreInit) {
   };
   return fnc;
 }
+
+/**
+ * `YuvCoreModule` provides a bunch of services to interact with a yuuvis backend.
+ *
+ *
+ */
 
 @NgModule({
   imports: [HttpClientModule, TranslateModule.forRoot(), DeviceDetectorModule.forRoot()],

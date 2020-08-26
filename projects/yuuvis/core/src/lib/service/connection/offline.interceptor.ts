@@ -2,7 +2,9 @@ import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/c
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ConnectionService, ConnectionState } from './connection.service';
-
+/**
+ *  Http Offline interceptor trys to serving offline content for method/url
+ */
 @Injectable({
   providedIn: 'root'
 })

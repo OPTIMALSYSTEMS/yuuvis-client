@@ -1,3 +1,6 @@
+/**
+ * User account configuration
+ */
 export class YuvUser {
   id: string;
   username: string;
@@ -12,10 +15,17 @@ export class YuvUser {
   substituteOf: string[];
   enabled: boolean;
 
-  // user settings
+  /**
+   * User settings
+   */
   uiDirection: string;
+  /**
+   * User settings
+   */
   userSettings: UserSettings;
-
+  /**
+   * @ignore
+   */
   constructor(json: any, userSettings: UserSettings) {
     this.id = json.id;
     this.username = json.username;
@@ -56,7 +66,9 @@ export class YuvUser {
     return `${this.lastname}, ${this.firstname} (${this.username})`;
   }
 }
-
+/**
+ * Interface for user settings
+ */
 export interface UserSettings {
   locale: string;
 }

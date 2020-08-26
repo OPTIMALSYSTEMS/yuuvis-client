@@ -9,6 +9,9 @@ import { CreatedObject, ProgressStatus, UploadResult } from './upload.interface'
 
 const transformResponse = () => map((res: CreatedObject) => (res && res.body ? res.body.objects.map((val) => val) : null));
 
+/**
+ * Service for providing upload of different object types into a client.
+ */
 @Injectable({
   providedIn: 'root'
 })
@@ -19,6 +22,9 @@ export class UploadService {
   private uploadStatus = new BehaviorSubject<boolean>(false);
   public uploadStatus$: Observable<boolean> = this.uploadStatus.asObservable();
 
+  /**
+   * @ignore
+   */
   constructor(private http: HttpClient, private logger: Logger) {}
 
   /**

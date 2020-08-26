@@ -10,11 +10,16 @@ import { CoreConfig } from '../config/core-config';
 import { CORE_CONFIG } from '../config/core-config.tokens';
 import { DeviceService } from '../device/device.service';
 import { Logger } from '../logger/logger';
-
+/**
+ * Providing functions,that are are injected at application startup and executed during app initialization.
+ */
 @Injectable({
   providedIn: 'root'
 })
 export class CoreInit {
+  /**
+   * @ignore
+   */
   constructor(
     @Inject(CORE_CONFIG) private coreConfig: CoreConfig,
     private deviceService: DeviceService,

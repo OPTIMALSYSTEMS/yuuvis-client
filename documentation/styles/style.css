@@ -17,7 +17,9 @@
   --font-caption: 12px;
   --font-body: 13px;
 }
-
+.container-fluid.modules {
+  width: 100%;
+}
 body {
   font-family: sans-serif;
 }

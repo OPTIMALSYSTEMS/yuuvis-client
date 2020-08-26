@@ -2,7 +2,9 @@ import { NavigationExtras, Router } from '@angular/router';
 import { EMPTY as observableEmpty, throwError as observableThrowError } from 'rxjs';
 import { YuvError } from '../model/yuv-error.model';
 import { FormatedMailTo, Sort } from './utils.helper.enum';
-
+/**
+ * Custom methods, that help to work with a yuuvis backend
+ */
 export class Utils {
   /**
    * Utility method for adding parameters to a given URI.

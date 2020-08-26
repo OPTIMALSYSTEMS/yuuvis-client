@@ -1,3 +1,6 @@
+/**
+ * Interface providing content for a dms object
+ */
 export interface DmsObjectContent {
   contentStreamId: string;
   fileName: string;
@@ -12,6 +15,9 @@ export interface DmsObjectRights {
   deleteObject: boolean;
   deleteContent: boolean;
 }
+/**
+ * Interface providing context for a dms object
+ */
 export interface DmsObjectContext {
   id: string;
   objectTypeId: string;

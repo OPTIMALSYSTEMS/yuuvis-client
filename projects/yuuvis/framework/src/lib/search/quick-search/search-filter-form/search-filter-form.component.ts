@@ -154,8 +154,10 @@ export class SearchFilterFormComponent implements OnInit, OnDestroy {
     formElement.readonly = this.disabled;
 
     // TODO: refactor this crazy stuff - should be handled by FormElement class or service
-    formElement.classifications = formElement.classification;
-    formElement._internalType = this.systemService.getInternalFormElementType(formElement, 'type');
+    if (formElement.classification) {
+      formElement.classifications = formElement.classification;
+      formElement._internalType = this.systemService.getInternalFormElementType(formElement, 'type');
+    }
 
     const formControl = ObjectFormUtils.elementToFormControl(formElement, Situation.SEARCH);
 
