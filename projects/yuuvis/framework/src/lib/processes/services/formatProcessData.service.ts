@@ -3,21 +3,21 @@ import { FollowUp, InboxItem, ProcessData, SystemService, TaskData } from '@yuuv
 import { ResponsiveTableData } from '../../components/responsive-data-table/responsive-data-table.interface';
 import { GridService } from './../../services/grid/grid.service';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class FormatProcessDataService {
   constructor(private systemService: SystemService, private gridService: GridService) {}
 
   formatTaskDataForTable(processData: TaskData[]): ResponsiveTableData {
     return this.processDataForTable(
       processData.map((data) => new InboxItem(data)),
-      ['title', 'expiryDateTime', 'type', 'createTime']
+      ['description', 'expiryDateTime', 'type', 'createTime']
     );
   }
 
   formatProcessDataForTable(processData: ProcessData[]): ResponsiveTableData {
     return this.processDataForTable(
       processData.map((data) => new FollowUp(data)),
-      ['title', 'expiryDateTime', 'type', 'businessKey', 'startTime']
+      ['description', 'expiryDateTime', 'type', 'businessKey', 'startTime']
     );
   }
 
