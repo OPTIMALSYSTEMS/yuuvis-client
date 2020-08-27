@@ -21,7 +21,7 @@
     padding: calc(var(--app-pane-padding) / 2);
     border-bottom: 1px solid var(--panel-divider-color);
 
-    yuv-icon {
+    > .icon {
       opacity: 0.5;
     }
 

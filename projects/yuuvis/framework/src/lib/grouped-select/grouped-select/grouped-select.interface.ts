@@ -21,7 +21,7 @@ export interface SelectableGroup {
 export interface Selectable {
   id: string;
   label: string;
-  svg?: string;
+  svgSrc?: string;
   description?: string;
   /**
    * highlighted css-class

@@ -210,7 +210,7 @@ export class ObjectCreateComponent implements OnDestroy {
             label: this.system.getLocalizedResource(`${ot.id}_label`),
             description: ot.isFolder ? '' : this.labels[ot.contentStreamAllowed],
             highlight: ot.isFolder,
-            svg: this.system.getObjectTypeIcon(ot.id),
+            svgSrc: this.system.getObjectTypeIconUri(ot.id),
             value: ot
           }))
       }))

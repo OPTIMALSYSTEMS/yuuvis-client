@@ -1,4 +1,6 @@
 import { Component, Input } from '@angular/core';
+import { SystemService } from '@yuuvis/core';
+import { CellRenderer } from '../../services/grid/grid.cellrenderer';
 
 /**
  * Component rendering a dms object as a tile
@@ -15,6 +17,8 @@ import { Component, Input } from '@angular/core';
   styleUrls: ['./dms-object-tile.component.scss']
 })
 export class DmsObjectTileComponent {
+  iconHTML: string = '';
+
   /**
    * Provides a titel from dms object
    */
@@ -25,12 +29,21 @@ export class DmsObjectTileComponent {
    */
   @Input() description: string;
   // @Input() objectId: string;
-  // @Input() objectTypeId: string;
+  @Input() set objectTypeId(id: string) {
+    // this.iconHTML = '....';
+
+    this.iconHTML = CellRenderer.typeCellRenderer({
+      value: id,
+      context: {
+        system: this.systemService
+      }
+    });
+  }
 
   /**
-   * Provides icons from dms object
+   * HTML snippet of the object types icon
    */
-  @Input() objectTypeIcon: string;
+  // @Input() objectTypeIconHTML: string;
   /**
    * Provides label from dms object
    */
@@ -40,4 +53,6 @@ export class DmsObjectTileComponent {
    * Provides date
    */
   @Input() date: Date;
+
+  constructor(private systemService: SystemService) {}
 }

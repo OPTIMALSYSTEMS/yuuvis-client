@@ -263,7 +263,6 @@ export class GridService {
     switch (field.id) {
       case BaseObjectTypeField.OBJECT_TYPE_ID: {
         colDef.cellRenderer = this.customContext(CellRenderer.typeCellRenderer);
-        colDef.width = 80;
         colDef.cellClass = 'res-ico';
         break;
       }

@@ -92,7 +92,7 @@ export class QuickSearchService {
           id: ot.id,
           label: ot.label,
           highlight: ot.isFolder,
-          svg: this.systemService.getObjectTypeIcon(ot.id),
+          svgSrc: this.systemService.getObjectTypeIconUri(ot.id),
           value: ot
         }))
       }));
