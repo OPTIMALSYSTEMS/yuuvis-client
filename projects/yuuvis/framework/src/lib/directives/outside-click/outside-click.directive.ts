@@ -1,6 +1,7 @@
 import { Directive, ElementRef, EventEmitter, HostListener, OnDestroy, Output } from '@angular/core';
 import { EventService, YuvEventType } from '@yuuvis/core';
 import { takeUntilDestroy } from 'take-until-destroy';
+import { PopoverService } from './../../popover/popover.service';
 
 /**
  * Directive applying some action when the user clicked outside the host
@@ -17,14 +18,14 @@ export class OutsideClickDirective implements OnDestroy {
 
   @HostListener('document:keydown.escape', ['$event'])
   onKeydownHandler(event: KeyboardEvent) {
-    if (this.active && !event.defaultPrevented) {
+    if (this.active && !this.popoverService.hasActiveOverlay && !event.defaultPrevented) {
       this.onOutsideEvent(event);
     }
   }
 
-  @HostListener('document:mousedown', ['$event.target'])
-  onMousedown(targetElement: HTMLElement) {
-    if (this.active && !this._elementRef.nativeElement.contains(targetElement)) {
+  @HostListener('document:mousedown', ['$event'])
+  onMousedown(event: MouseEvent) {
+    if (this.active && !this.popoverService.hasActiveOverlay && !this._elementRef.nativeElement.contains(event.target)) {
       this.onOutsideEvent(event);
     }
   }
@@ -35,7 +36,7 @@ export class OutsideClickDirective implements OnDestroy {
    *
    * @ignore
    */
-  constructor(private eventService: EventService, private _elementRef: ElementRef) {
+  constructor(private eventService: EventService, private popoverService: PopoverService, private _elementRef: ElementRef) {
     this.eventService
       .on(YuvEventType.DIALOG_STACK_CHANGED)
       .pipe(takeUntilDestroy(this))
