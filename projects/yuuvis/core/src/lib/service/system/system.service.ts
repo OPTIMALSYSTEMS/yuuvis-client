@@ -258,7 +258,7 @@ export class SystemService {
       return (
         appliedSecondaryObjecttypeIDs
           .map((sot) => this.getSecondaryObjectType(sot))
-          .find((sot) => sot.classification?.includes(SecondaryObjectTypeClassification.PRIMARY))?.id || objectTypeId
+          .find((sot) => sot?.classification?.includes(SecondaryObjectTypeClassification.PRIMARY))?.id || objectTypeId
       );
     } else {
       return objectTypeId;
