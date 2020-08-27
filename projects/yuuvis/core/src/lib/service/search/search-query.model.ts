@@ -221,7 +221,7 @@ export class SearchQuery {
 
     if (this.filterGroup) {
       const fg = this.filterGroup.toShortQuery();
-      queryJson.filters = this.filterGroup.operator === SearchFilterGroup.OPERATOR.OR ? [fg] : fg.filters;
+      queryJson.filters = fg.filters.length > 1 && this.filterGroup.operator === SearchFilterGroup.OPERATOR.OR ? [fg] : fg.filters;
     }
 
     if (this.aggs && this.aggs.length) {
@@ -271,8 +271,8 @@ export class SearchFilterGroup {
     return arr instanceof SearchFilterGroup
       ? arr
       : arr.length === 1 && arr[0] instanceof SearchFilterGroup
-        ? arr[0]
-        : new SearchFilterGroup(undefined, undefined, [...arr]);
+      ? arr[0]
+      : new SearchFilterGroup(undefined, undefined, [...arr]);
   }
 
   id = Utils.uuid();
@@ -326,7 +326,7 @@ export class SearchFilterGroup {
     public property: string = SearchFilterGroup.DEFAULT,
     public operator: string = SearchFilterGroup.OPERATOR.AND,
     public group: (SearchFilter | SearchFilterGroup)[] = []
-  ) { }
+  ) {}
 
   /**
    * @ignore
@@ -473,5 +473,5 @@ export class SearchFilter {
  * Sortig criteria of objects searching result
  */
 export class SortOption {
-  constructor(public field: string, public order: string, public missing?: string) { }
+  constructor(public field: string, public order: string, public missing?: string) {}
 }

@@ -12,4 +12,4 @@ export enum ClassificationPrefix {
   URL_ICON = 'globe'
 }
 
-export type FormatedMailTo = string | string[];
+export type FormattedMailTo = string | string[];
