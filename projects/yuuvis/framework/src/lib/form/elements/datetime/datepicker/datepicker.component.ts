@@ -68,12 +68,6 @@ export class DatepickerComponent implements OnInit {
     }
   }
 
-  @HostListener('mousedown', ['$event'])
-  handleClick(event) {
-    event.preventDefault();
-    event.stopPropagation();
-  }
-
   onInputKeydown(event: KeyboardEvent) {
     if (event.keyCode !== 27 && event.keyCode !== 13) {
       event.stopPropagation();

@@ -27,6 +27,10 @@ export class PopoverService {
   private useSmallDeviceLayout: boolean;
   private direction: string;
 
+  get hasActiveOverlay() {
+    const container = this.overlay['_overlayContainer']['_containerElement'];
+    return container && container.children.length;
+  }
   /**
    *
    * @ignore

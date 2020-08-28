@@ -321,7 +321,7 @@ export class SystemService {
     if (this.isFloatingObjectType(ot)) {
       const objectTypeIDs = [];
       // if the main type itself has properties, add them
-      if (ot.fields.filter((f) => !f.id.startsWith('system:')).length) {
+      if (ot.fields.filter((f) => !this.isSystemProperty(f)).length) {
         objectTypeIDs.push(ot.id);
       }
       const sots: string[] = dmsObject.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS];
@@ -335,6 +335,14 @@ export class SystemService {
     } else {
       return of(null);
     }
+  }
+
+  /**
+   * Determine whether or not the given object type field is a system field
+   * @param field Object type field to be checked
+   */
+  private isSystemProperty(field: ObjectTypeField): boolean {
+    return field.id.startsWith('system:') || field.id === BaseObjectTypeField.LEADING_OBJECT_TYPE_ID;
   }
 
   /**
