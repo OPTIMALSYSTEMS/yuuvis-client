@@ -16,7 +16,7 @@
 
 
   <yuv-quick-search #quickSearch [query]="appQuery" (typeAggregation)="onTypeAggregation($event)"
-    (querySubmit)="onQuickSearchQuery($event)"></yuv-quick-search>
+    (queryReset)="onQuickSearchReset($event)" (querySubmit)="onQuickSearchQuery($event)"></yuv-quick-search>
 
 </div>
 

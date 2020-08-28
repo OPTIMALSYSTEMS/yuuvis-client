@@ -6,12 +6,8 @@
 </div>
 
 <ng-container *ngIf="user; else offlineNoUser">
-  <div
-    class="app-bar"
-    *ngIf="!hideAppBar"
-    (yuvFileDrop)="onFilesDropped($event)"
-    [yuvFileDropOptions]="{ label: 'yuv.client.frame.app-bar.filedrop.label' | translate, disabled: disableFileDrop, multiple: true }"
-  >
+  <div class="app-bar" *ngIf="!hideAppBar" (yuvFileDrop)="onFilesDropped($event)"
+    [yuvFileDropOptions]="{ label: 'yuv.client.frame.app-bar.filedrop.label' | translate, disabled: disableFileDrop, multiple: true }">
     <yuv-icon class="btn" id="drawer" (click)="showSideBar = true" replaceUrl [icon]="'drawer'"></yuv-icon>
     <a yuvOfflineDisabled routerLink="/" id="logo">
       <yuv-icon class="btn" [iconSrc]="'assets/default/theme/app.icon.svg'"></yuv-icon>
@@ -19,18 +15,21 @@
     <div yuvOfflineDisabled class="main">
       <!-- create -->
       <a routerLink="/create" [queryParams]="{ context: context }">
-        <yuv-icon class="btn" [title]="'yuv.framework.object-create.header.title' | translate" [icon]="'add'"> </yuv-icon>
+        <yuv-icon class="btn" [title]="'yuv.framework.object-create.header.title' | translate" [icon]="'add'">
+        </yuv-icon>
       </a>
 
       <!-- search -->
       <ng-container *ngIf="!tab">
-        <yuv-icon class="btn" *ngIf="!showSearch; else tplSearch" icon="search" (click)="toggleSearch(true)"> </yuv-icon>
+        <yuv-icon class="btn" *ngIf="!showSearch; else tplSearch" icon="search" (click)="toggleSearch(true)">
+        </yuv-icon>
         <ng-template #tplSearch>
           <div class="app-bar-search">
             <button class="close" (click)="toggleSearch(false)">
               <yuv-icon icon="close"></yuv-icon>
             </button>
-            <yuv-quick-search [inline]="true" [context]="context" [query]="appQuery" (querySubmit)="onQuickSearchQuery($event)"> </yuv-quick-search>
+            <yuv-quick-search [inline]="true" [context]="context" [query]="appQuery"
+              (querySubmit)="onQuickSearchQuery($event)"> </yuv-quick-search>
           </div>
         </ng-template>
       </ng-container>
@@ -72,12 +71,22 @@
   <yuv-sidebar [display]="showSideBar" (hide)="showSideBar = false">
     <section class="content navigation-list">
       <div class="nav-item">
-        <a routerLink="dashboard" routerLinkActive="active" (click)="showSideBar = false" translate>yuv.client.state.dashboard.title</a>
-        <a routerLink="create" routerLinkActive="active" (click)="showSideBar = false" translate>yuv.client.state.create.title</a>
-        <a routerLink="processes" routerLinkActive="active" (click)="showSideBar = false" translate>yuv.client.state.process.title</a>
-        <a routerLink="inbox" routerLinkActive="active" (click)="showSideBar = false" translate>yuv.client.state.inbox.title</a>
-        <a routerLink="settings" routerLinkActive="active" (click)="showSideBar = false" translate>yuv.client.state.settings.title</a>
-        <a routerLink="about" routerLinkActive="active" (click)="showSideBar = false" translate>yuv.client.state.about.title</a>
+        <a routerLink="dashboard" routerLinkActive="active" (click)="showSideBar = false"
+          translate>yuv.client.state.dashboard.title</a>
+        <a routerLink="create" routerLinkActive="active" (click)="showSideBar = false"
+          translate>yuv.client.state.create.title</a>
+        <a routerLink="/result" [queryParams]="{query: pendingAFOsQuery, tmp: true}" routerLinkActive="active"
+          (click)="showSideBar = false" translate>yuv.client.sidebar.create.pending.title</a>
+
+        <a routerLink="processes" routerLinkActive="active" (click)="showSideBar = false"
+          translate>yuv.client.state.process.title</a>
+        <a routerLink="inbox" routerLinkActive="active" (click)="showSideBar = false"
+          translate>yuv.client.state.inbox.title</a>
+
+        <a routerLink="settings" routerLinkActive="active" (click)="showSideBar = false"
+          translate>yuv.client.state.settings.title</a>
+        <a routerLink="about" routerLinkActive="active" (click)="showSideBar = false"
+          translate>yuv.client.state.about.title</a>
       </div>
     </section>
   </yuv-sidebar>
@@ -95,14 +104,11 @@
 </ng-template>
 
 <ng-template #moveNotification let-data let-popover="popover">
-  <div
-    class="move-notification"
-    [ngClass]="{
+  <div class="move-notification" [ngClass]="{
       success: !data.failed.length,
       fail: !data.succeeded.length,
       warning: data.succeeded.length && data.failed.length
-    }"
-  >
+    }">
     <div class="header">
       <div class="header-title">{{ data.title }}</div>
       <div class="actions">

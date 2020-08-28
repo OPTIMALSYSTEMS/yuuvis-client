@@ -9,6 +9,7 @@ import {
   ConnectionState,
   DmsService,
   EventService,
+  ObjectTag,
   SearchFilter,
   SearchQuery,
   SystemService,
@@ -42,6 +43,24 @@ import { FrameService } from './frame.service';
 })
 export class FrameComponent implements OnInit, OnDestroy {
   @ViewChild('moveNotification') moveNotification: TemplateRef<any>;
+
+  // query for fetching pending AFOs
+  pendingAFOsQuery = JSON.stringify({
+    tags: [
+      {
+        name: ObjectTag.AFO,
+        filters: {
+          filters: [
+            {
+              f: 'state',
+              o: SearchFilter.OPERATOR.EQUAL,
+              v1: '0'
+            }
+          ]
+        }
+      }
+    ]
+  });
 
   swUpdateAvailable: boolean;
   hideAppBar: boolean;
