@@ -10,14 +10,14 @@ export class FormatProcessDataService {
   formatTaskDataForTable(processData: TaskData[]): ResponsiveTableData {
     return this.processDataForTable(
       processData.map((data) => new InboxItem(data)),
-      ['description', 'expiryDateTime', 'type', 'createTime']
+      ['title', 'expiryDateTime', 'type', 'createTime']
     );
   }
 
   formatProcessDataForTable(processData: ProcessData[]): ResponsiveTableData {
     return this.processDataForTable(
       processData.map((data) => new FollowUp(data)),
-      ['description', 'expiryDateTime', 'type', 'businessKey', 'startTime']
+      ['title', 'expiryDateTime', 'type', 'businessKey', 'startTime']
     );
   }
 

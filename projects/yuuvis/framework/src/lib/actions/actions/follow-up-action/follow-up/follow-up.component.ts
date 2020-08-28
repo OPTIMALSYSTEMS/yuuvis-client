@@ -20,7 +20,12 @@ export class FollowUpComponent implements OnInit, ActionComponent {
   @Output() finished: EventEmitter<any> = new EventEmitter();
   @Output() canceled: EventEmitter<any> = new EventEmitter();
 
-  constructor(private followUpService: FollowUpService, private fb: FormBuilder, private notificationService: NotificationService, private translate: TranslateService) {
+  constructor(
+    private followUpService: FollowUpService,
+    private fb: FormBuilder,
+    private notificationService: NotificationService,
+    private translate: TranslateService
+  ) {
     this.form = this.fb.group({
       expiryDateTime: [],
       whatAbout: ''
@@ -68,14 +73,17 @@ export class FollowUpComponent implements OnInit, ActionComponent {
   ngOnInit() {
     this.followUpService.getFollowUp(this.selection[0].id).subscribe((res) => {
       this.currentFollowUp = res;
+      let value: { expiryDateTime?: Date | string; whatAbout: string };
       if (this.currentFollowUp) {
-        const value = {
+        value = {
           expiryDateTime: this.currentFollowUp.variables.find((v) => v.name === 'expiryDateTime').value,
-          whatAbout: this.currentFollowUp.variables.find((v) => v.name === 'whatAbout').value
+          whatAbout: this.currentFollowUp.variables.find((v) => v.name === 'whatAbout').value as string
         };
-        this.form.patchValue(value);
-        this.form.markAsPristine();
+      } else {
+        value = { whatAbout: `${this.selection[0].title}:` as string };
       }
+      this.form.patchValue(value);
+      this.form.markAsPristine();
     });
   }
 }
