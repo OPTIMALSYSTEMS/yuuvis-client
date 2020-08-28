@@ -109,3 +109,7 @@ export const InternalFieldType = {
   STRING_REFERENCE: 'string:reference',
   STRING_CATALOG: 'string:catalog'
 };
+
+export enum ObjectTag {
+  AFO = 'appClient:dlm:prepare'
+}
