@@ -22,7 +22,7 @@ import { PopoverConfig } from '../../popover/popover.interface';
 import { PopoverRef } from '../../popover/popover.ref';
 import { PopoverService } from '../../popover/popover.service';
 import { NotificationService } from '../../services/notification/notification.service';
-import { addCircle, arrowDown, clear, search } from '../../svg.generated';
+import { addCircle, arrowDown, clear, reset, search } from '../../svg.generated';
 import { QuickSearchPickerData } from './quick-search-picker/quick-search-picker.component';
 import { QuickSearchService } from './quick-search.service';
 
@@ -163,7 +163,7 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
     private searchService: SearchService,
     private iconRegistry: IconRegistryService
   ) {
-    this.iconRegistry.registerIcons([arrowDown, addCircle, search, clear]);
+    this.iconRegistry.registerIcons([arrowDown, addCircle, search, clear, reset]);
     this.autofocus = this.device.isDesktop;
 
     this.searchForm = this.fb.group({
