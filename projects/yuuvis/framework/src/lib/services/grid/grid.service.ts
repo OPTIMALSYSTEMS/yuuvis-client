@@ -22,7 +22,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { FileSizePipe, LocaleDatePipe, LocaleNumberPipe } from '../../pipes';
 import { CellRenderer } from './grid.cellrenderer';
-import { IconRendererComponent } from './renderer-components/icon-renderer/icon-renderer.component';
+import { ObjectTypeRendererComponent } from './renderer-components/object-type-renderer/object-type-renderer.component';
 /**
  * Providing grid configuration for components that use ag-grid.
  */
@@ -263,7 +263,7 @@ export class GridService {
   private addColDefAttrsByField(colDef: ColDef, field: ObjectTypeField) {
     switch (field.id) {
       case BaseObjectTypeField.OBJECT_TYPE_ID: {
-        colDef.cellRendererFramework = IconRendererComponent;
+        colDef.cellRendererFramework = ObjectTypeRendererComponent;
         colDef.cellClass = 'res-ico';
         break;
       }

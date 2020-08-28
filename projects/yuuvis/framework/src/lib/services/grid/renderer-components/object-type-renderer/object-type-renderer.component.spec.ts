@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { IconRendererComponent } from './icon-renderer.component';
+import { ObjectTypeRendererComponent } from './object-type-renderer.component';
 
-describe('IconRendererComponent', () => {
-  let component: IconRendererComponent;
-  let fixture: ComponentFixture<IconRendererComponent>;
+describe('ObjectTypeRendererComponent', () => {
+  let component: ObjectTypeRendererComponent;
+  let fixture: ComponentFixture<ObjectTypeRendererComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ IconRendererComponent ]
+      declarations: [ ObjectTypeRendererComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(IconRendererComponent);
+    fixture = TestBed.createComponent(ObjectTypeRendererComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
