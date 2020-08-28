@@ -75,7 +75,7 @@
           translate>yuv.client.state.dashboard.title</a>
         <a routerLink="create" routerLinkActive="active" (click)="showSideBar = false"
           translate>yuv.client.state.create.title</a>
-        <a routerLink="/result" [queryParams]="{query: pendingAFOsQuery}" routerLinkActive="active"
+        <a routerLink="/result" [queryParams]="{query: pendingAFOsQuery, tmp: true}" routerLinkActive="active"
           (click)="showSideBar = false" translate>yuv.client.sidebar.create.pending.title</a>
 
         <a routerLink="processes" routerLinkActive="active" (click)="showSideBar = false"

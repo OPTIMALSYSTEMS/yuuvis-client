@@ -35,7 +35,9 @@ export const BaseObjectTypeField = {
   SECONDARY_OBJECT_TYPE_IDS: 'system:secondaryObjectTypeIds',
   BASE_TYPE_ID: 'system:baseTypeId',
   TAGS: 'system:tags',
-  OBJECT_ID: 'system:objectId'
+  OBJECT_ID: 'system:objectId',
+  // TODO: replace by actual system field identifier once available
+  LEADING_OBJECT_TYPE_ID: 'appClientsystem:leadingTypeId'
 };
 
 // Fields provided by a special secondary object type that most of
