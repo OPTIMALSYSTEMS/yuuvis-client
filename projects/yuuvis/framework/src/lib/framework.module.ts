@@ -25,6 +25,7 @@ import { YuvSearchModule } from './search/search.module';
 import { ErrorHandlerService } from './services/error-handler/error-handler.service';
 import { YuvUserModule } from './user/user.module';
 import { YuvVersionsModule } from './versions/versions.module';
+import { IconRendererComponent } from './services/grid/renderer-components/icon-renderer/icon-renderer.component';
 
 const modules = [
   YuvGroupedSelectModule,
@@ -72,7 +73,7 @@ const modules = [
       useClass: ErrorHandlerService
     }
   ],
-  declarations: []
+  declarations: [IconRendererComponent]
 })
 export class YuvFrameworkModule {
   static forRoot(config?: CoreConfig): ModuleWithProviders<YuvFrameworkModule> {

@@ -36,8 +36,8 @@ import {
 })
 export class SystemService {
   private STORAGE_KEY = 'yuv.core.system.definition';
-  // ID of the secondary object type that serves as cllient defaults
-  private CLIENT_DEFAULTS = 'appClient:clientdefaults';
+  // cached icons to avaoid backend calls (session cache)
+  private iconCache = {};
 
   private system: SystemDefinition;
   private systemSource = new ReplaySubject<SystemDefinition>();
@@ -218,7 +218,7 @@ export class SystemService {
    * @param objectTypeId ID of the object type
    */
   getObjectTypeIcon(objectTypeId: string): Observable<string> {
-    return objectTypeId ? this.backend.get(`/resources/icon/${objectTypeId}`) : of(null);
+    return !!this.iconCache[objectTypeId] ? of(this.iconCache[objectTypeId]) : this.backend.get(`/resources/icon/${objectTypeId}`);
   }
 
   getObjectTypeIconUri(objectTypeId: string): string {

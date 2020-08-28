@@ -14,6 +14,7 @@ import { TabViewModule } from 'primeng/tabview';
 import { YuvCommonModule } from '../common/common.module';
 import { YuvDirectivesModule } from '../directives/directives.module';
 import { YuvPipesModule } from '../pipes/pipes.module';
+import { IconRendererComponent } from '../services/grid/renderer-components/icon-renderer/icon-renderer.component';
 import { ActionMenuBarComponent } from './action-menu-bar/action-menu-bar.component';
 import { IconUploadComponent } from './animated-icons/icon-upload/icon-upload.component';
 import { BusyOverlayDirective } from './busy-overlay/busy-overlay.directive';
@@ -56,7 +57,7 @@ const components = [
     AngularResizedEventModule,
     CdkStepperModule,
     AngularSplitModule,
-    AgGridModule,
+    AgGridModule.withComponents([IconRendererComponent]),
     RouterModule,
     TabViewModule,
     DialogModule,
