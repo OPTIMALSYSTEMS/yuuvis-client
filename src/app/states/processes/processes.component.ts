@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { BpmService, DmsObject, DmsService, TaskData } from '@yuuvis/core';
+import { DmsObject, DmsService, ProcessData, ProcessService } from '@yuuvis/core';
 import {
   arrowNext,
   edit,
@@ -25,14 +25,16 @@ export class ProcessesComponent {
   objectDetailsID: string;
   itemIsSelected = false;
   dmsObject$: Observable<DmsObject>;
-  processData$: Observable<ResponsiveTableData> = this.bpmService
-    .getTasks()
-    .pipe(map((val: TaskData[]) => this.formatProcessDataService.formatTaskDataForTable(val)));
+  processData$: Observable<ResponsiveTableData> = this.processService
+    .getProcesses()
+    .pipe(map((processData: ProcessData[]) => this.formatProcessDataService.formatProcessDataForTable(processData)));
+
+  headerDetails = { title: 'yuv.framework.process-list.process', description: 'yuv.framework.process-list.process.description', icon: 'process' };
 
   constructor(
     private dmsService: DmsService,
+    private processService: ProcessService,
     private formatProcessDataService: FormatProcessDataService,
-    private bpmService: BpmService,
     private iconRegistry: IconRegistryService
   ) {
     this.iconRegistry.registerIcons([edit, arrowNext, refresh, process, listModeDefault, listModeGrid, listModeSimple]);
@@ -43,11 +45,11 @@ export class ProcessesComponent {
   }
 
   refreshList() {
-    // this.bpmService. ().subscribe();
+    this.processData$ = this.processService
+      .getProcesses()
+      .pipe(map((processData: ProcessData[]) => this.formatProcessDataService.formatProcessDataForTable(processData)));
   }
   selectedItem(item) {
-    console.log({ item });
-
-    // this.getSelectedDetail(item[0].businessKey);
+    this.getSelectedDetail(item[0].documentId);
   }
 }

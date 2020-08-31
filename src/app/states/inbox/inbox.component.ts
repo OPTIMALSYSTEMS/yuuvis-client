@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { DmsObject, DmsService, InboxService, ProcessDefinitionKey } from '@yuuvis/core';
+import { Component, OnInit } from '@angular/core';
+import { DmsObject, DmsService, InboxService, ProcessDefinitionKey, TaskData } from '@yuuvis/core';
 import {
   arrowNext,
   edit,
@@ -13,22 +13,23 @@ import {
   ResponsiveTableData
 } from '@yuuvis/framework';
 import { Observable } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
+import { map, take, tap } from 'rxjs/operators';
 
 @Component({
   selector: 'yuv-inbox',
   templateUrl: './inbox.component.html',
   styleUrls: ['./inbox.component.scss']
 })
-export class InboxComponent {
+export class InboxComponent implements OnInit {
   layoutOptionsKey = 'yuv.app.inbox';
   objectDetailsID: string;
   itemIsSelected = false;
   dmsObject$: Observable<DmsObject>;
   inboxData$: Observable<ResponsiveTableData> = this.inboxService
-    .getInbox(ProcessDefinitionKey.FOLLOW_UP)
-    .pipe(map((val) => this.formatProcessDataService.formatProcessDataForTable(val)));
+    .getTasks(ProcessDefinitionKey.FOLLOW_UP)
+    .pipe(map((val: TaskData[]) => this.formatProcessDataService.formatTaskDataForTable(val)));
 
+  headerDetails = { title: 'yuv.framework.inbox-list.inbox', description: 'yuv.framework.inbox-list.inbox.description', icon: 'inbox' };
   constructor(
     private inboxService: InboxService,
     private dmsService: DmsService,
@@ -43,12 +44,14 @@ export class InboxComponent {
   }
 
   selectedItem(item) {
-    this.getSelectedDetail(item[0].businessKey);
+    this.getSelectedDetail(item[0].documentId);
   }
 
   refreshList() {
-    // this.inboxData$ = this.inboxService
-    //   .getInbox(ProcessDefinitionKey.FOLLOW_UP)
-    // .pipe(map((val) => this.formatProcessDataService.formatProcessDataForTable(val)));
+    this.inboxService.getTasks(ProcessDefinitionKey.FOLLOW_UP).pipe(take(1)).subscribe();
+  }
+
+  ngOnInit(): void {
+    this.inboxService.getTasks(ProcessDefinitionKey.FOLLOW_UP).pipe(take(1)).subscribe();
   }
 }

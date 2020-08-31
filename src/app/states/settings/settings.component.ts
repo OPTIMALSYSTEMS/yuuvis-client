@@ -30,7 +30,6 @@ export class SettingsComponent implements OnInit {
     private iconRegistry: IconRegistryService
   ) {
     this.iconRegistry.registerIcons([shield]);
-
     this.clientLocales = config.getClientLocales();
   }
 

@@ -29,7 +29,7 @@ export interface StartFormVariable {
   value: string;
 }
 
-export interface ProcessDataResponse {
+export interface ProcessResponse {
   data: ProcessData[];
   total: number;
   start: number;
@@ -113,6 +113,14 @@ export class InboxItem {
     return this.title;
   }
 
+  get subject(): string {
+    return this.title;
+  }
+
+  get documentId(): string {
+    return this.originaData.variables.find((v) => v.name === 'documentId').value as string;
+  }
+
   get type(): string {
     return 'task';
   }
@@ -143,6 +151,14 @@ export class FollowUp {
 
   get businessKey(): string {
     return this.originaData.businessKey;
+  }
+
+  get subject(): string {
+    return this.title;
+  }
+
+  get documentId(): string {
+    return this.originaData.variables.find((v) => v.name === 'documentId').value as string;
   }
 
   get startTime(): Date {

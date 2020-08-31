@@ -1,7 +1,6 @@
-
-<yuv-panel class="process-list" [title]="'yuv.framework.process-list.process' | translate" 
-  [description]="'yuv.framework.process-list.process.description' | translate">
-  <yuv-icon class="header-icon" [icon]="'process'"></yuv-icon>
+<yuv-panel class="process-list" [title]="header.title" 
+  [description]="header.description">
+  <yuv-icon class="header-icon" [icon]="header.icon"></yuv-icon>
 
   <div class="actions" yuvOfflineDisabled>
     <yuv-action-menu-bar class="actions">
@@ -18,7 +17,7 @@
     </yuv-responsive-data-table>
   </div>
 
-  <section class="footer">
+  <!-- <section class="footer">
     <yuv-icon class="mode" icon="listModeDefault"
       title="{{ 'yuv.framework.version-list.config.mode.default' | translate}}"
       [ngClass]="{'current': processData?.currentViewMode === 'standard'}" (click)="viewMode = 'standard'">
@@ -29,5 +28,5 @@
       title="{{ 'yuv.framework.version-list.config.mode.horizontal' | translate}}"
       [ngClass]="{'current': processData?.currentViewMode === 'horizontal'}" (click)="viewMode = 'horizontal'">
     </yuv-icon>
-  </section>
+  </section> -->
 </yuv-panel>

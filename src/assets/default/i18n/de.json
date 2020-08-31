@@ -87,8 +87,6 @@
   "yuv.framework.form.organization.noaccess": "Gelöscht oder Zugriff verweigert",
   "yuv.framework.form.reference.classify.icon.title": "Objektreferenz",
   "yuv.framework.form.reference.noaccess": "Gelöscht oder Zugriff verweigert",
-  "yuv.framework.inbox-list.inbox": "Eingangskorb",
-  "yuv.framework.inbox-list.inbox.description": "",
   "yuv.framework.list.configure.columns": "Spalten konfigurieren",
   "yuv.framework.list.refresh": "Aktualisieren",
   "yuv.framework.object-create.afo.pending.header.subtitle": "Erweiterter Ablageprozess",
