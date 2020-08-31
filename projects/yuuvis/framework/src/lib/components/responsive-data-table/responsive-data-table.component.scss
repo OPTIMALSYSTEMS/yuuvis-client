@@ -163,7 +163,12 @@ $range-selection-highlight-color: $primary-color;
           padding: 0;
           width: 100% !important;
 
-          &.cell-title-description {
+          // &.cell-title-description {
+          //   > span {
+          //     width: 100%;
+          //   }
+          // }
+          &.rdt-row {
             > span {
               width: 100%;
             }

@@ -7,8 +7,8 @@ import { Observable, ReplaySubject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { LocaleDatePipe } from '../../pipes/locale-date.pipe';
-import { CellRenderer } from '../../services/grid/grid.cellrenderer';
 import { ColumnSizes } from '../../services/grid/grid.interface';
+import { SingleCellRendererComponent } from '../../services/grid/renderer/single-cell-renderer/single-cell-renderer.component';
 import { LayoutService } from '../../services/layout/layout.service';
 import { ResponsiveTableData } from './responsive-data-table.interface';
 
@@ -352,34 +352,35 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
   private getSmallSizeColDef(): ColDef {
     const colDef: ColDef = {
       field: BaseObjectTypeField.OBJECT_ID,
-      cellClass: 'cell-title-description',
+      cellClass: `rdt-row ${this._currentViewMode === 'horizontal' ? 'row-horizontal' : 'row-grid'}`,
       minWidth: this.isGrid ? this._data.rows.length * this.settings.colWidth.grid : 0,
       valueGetter: (params) => JSON.stringify(params.data), // needed to compare value changes & redraw cell
-      cellRenderer: (params) => {
-        const objectTypeId = this.systemService.getLeadingObjectTypeID(
-          params.data[BaseObjectTypeField.OBJECT_TYPE_ID],
-          params.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS]
-        );
-        const version = params.data[BaseObjectTypeField.VERSION_NUMBER];
-        const modified = this.datePipe.transform(params.data[this.data.dateField || BaseObjectTypeField.MODIFICATION_DATE]);
-        const title = this.systemService.getLocalizedResource(`${objectTypeId}_label`);
-        params.value = objectTypeId;
-        params.context = {
-          system: this.systemService
-        };
+      cellRendererFramework: SingleCellRendererComponent
+      // cellRenderer: (params) => {
+      //   const objectTypeId = this.systemService.getLeadingObjectTypeID(
+      //     params.data[BaseObjectTypeField.OBJECT_TYPE_ID],
+      //     params.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS]
+      //   );
+      //   const version = params.data[BaseObjectTypeField.VERSION_NUMBER];
+      //   const modified = this.datePipe.transform(params.data[this.data.dateField || BaseObjectTypeField.MODIFICATION_DATE]);
+      //   const title = this.systemService.getLocalizedResource(`${objectTypeId}_label`);
+      //   params.value = objectTypeId;
+      //   params.context = {
+      //     system: this.systemService
+      //   };
 
-        return `
-          <div class="rdt-row ${this._currentViewMode === 'horizontal' ? 'row-horizontal' : 'row-grid'}" data-version="${version}">
-            <div class="head">
-            ${CellRenderer.typeCellRenderer(params)}</div>  
-            <div class="main">
-            <div class="title">${params.data[this._data.titleField] || title || ''}</div>
-              <div class="description">${params.data[this._data.descriptionField] || ''}</div>
-              <div class="date">${modified}</div>
-            </div>
-          </div>
-          `;
-      }
+      //   return `
+      //     <div class="rdt-row ${this._currentViewMode === 'horizontal' ? 'row-horizontal' : 'row-grid'}" data-version="${version}">
+      //       <div class="head">
+      //       ${CellRenderer.typeCellRenderer(params)}</div>
+      //       <div class="main">
+      //       <div class="title">${params.data[this._data.titleField] || title || ''}</div>
+      //         <div class="description">${params.data[this._data.descriptionField] || ''}</div>
+      //         <div class="date">${modified}</div>
+      //       </div>
+      //     </div>
+      //     `;
+      // }
     };
     return colDef;
   }

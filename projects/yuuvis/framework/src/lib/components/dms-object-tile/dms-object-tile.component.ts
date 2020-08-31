@@ -1,6 +1,4 @@
 import { Component, Input } from '@angular/core';
-import { SystemService } from '@yuuvis/core';
-import { CellRenderer } from '../../services/grid/grid.cellrenderer';
 
 /**
  * Component rendering a dms object as a tile
@@ -17,42 +15,28 @@ import { CellRenderer } from '../../services/grid/grid.cellrenderer';
   styleUrls: ['./dms-object-tile.component.scss']
 })
 export class DmsObjectTileComponent {
-  iconHTML: string = '';
-
   /**
-   * Provides a titel from dms object
+   * Titel of dms object
    */
   @Input() title: string;
 
   /**
-   * Provides a description from dms object
+   * Description of dms object
    */
   @Input() description: string;
-  // @Input() objectId: string;
-  @Input() set objectTypeId(id: string) {
-    // this.iconHTML = '....';
-
-    this.iconHTML = CellRenderer.typeCellRenderer({
-      value: id,
-      context: {
-        system: this.systemService
-      }
-    });
-  }
-
   /**
-   * HTML snippet of the object types icon
+   * ID of the dms objects object type
    */
-  // @Input() objectTypeIconHTML: string;
+  @Input() objectTypeId: string;
   /**
-   * Provides label from dms object
+   * Label of dms object
    */
   @Input() objectTypeLabel: string;
 
   /**
-   * Provides date
+   * Date to be shown in the tile (e.g. create date/modification date)
    */
   @Input() date: Date;
 
-  constructor(private systemService: SystemService) {}
+  constructor() {}
 }

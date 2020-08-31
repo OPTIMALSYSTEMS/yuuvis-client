@@ -1,4 +1,4 @@
-import { BaseObjectTypeField, SearchFilter, SearchQuery, SecondaryObjectTypeClassification, Utils } from '@yuuvis/core';
+import { SearchFilter, SearchQuery, SecondaryObjectTypeClassification, Utils } from '@yuuvis/core';
 
 /**
  * @ignore
@@ -22,25 +22,18 @@ export class CellRenderer {
     return '';
   }
 
-  static typeCellRenderer(param: any) {
-    let { value } = param;
-    const { context } = param;
-    if (param.data && param.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS]) {
-      value = context.system.getLeadingObjectTypeID(value, param.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS]);
-    }
-    const title = context.system.getLocalizedResource(`${value}_label`) || '';
-    // let icon;
-    // const subscription = context.system.getObjectTypeIcon(value).subscribe((v) => (icon = v || ''));
-    // subscription.unsubscribe();
-    // return `<span title="${title}">${icon}</span>`;
-
-    const ico = context.system.getObjectTypeIconUri(value);
-    // const title = context.system.getLocalizedResource(`${value}_label`) || '';
-    // return `<img src="${ico}" alt="${title}">`;
-    return `<object width="24" height="24" type="image/svg+xml" title="${title}" data="${ico}" class="svg-object">
-    <img src="${ico}" alt="${title}">
-    </object>`;
-  }
+  // static typeCellRenderer(param: any) {
+  //   let { value } = param;
+  //   const { context } = param;
+  //   if (param.data && param.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS]) {
+  //     value = context.system.getLeadingObjectTypeID(value, param.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS]);
+  //   }
+  //   const title = context.system.getLocalizedResource(`${value}_label`) || '';
+  //   const ico = context.system.getObjectTypeIconUri(value);
+  //   return `<object width="24" height="24" type="image/svg+xml" title="${title}" data="${ico}" class="svg-object">
+  //   <img src="${ico}" alt="${title}">
+  //   </object>`;
+  // }
 
   static sotCellRenderer(param: any) {
     const { context, value } = param;

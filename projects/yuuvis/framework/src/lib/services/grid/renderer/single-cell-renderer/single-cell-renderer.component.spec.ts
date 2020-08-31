@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ObjectTypeRendererComponent } from './object-type-renderer.component';
+import { SingleCellRendererComponent } from './single-cell-renderer.component';
 
-describe('ObjectTypeRendererComponent', () => {
-  let component: ObjectTypeRendererComponent;
-  let fixture: ComponentFixture<ObjectTypeRendererComponent>;
+describe('SingleCellRendererComponent', () => {
+  let component: SingleCellRendererComponent;
+  let fixture: ComponentFixture<SingleCellRendererComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ObjectTypeRendererComponent ]
+      declarations: [ SingleCellRendererComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ObjectTypeRendererComponent);
+    fixture = TestBed.createComponent(SingleCellRendererComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -1,6 +1,8 @@
 <yuv-panel [title]="context.title" [description]="context.description" (yuvFileDrop)="onFilesDropped($event)"
   (titleClick)="select([context.id])" [yuvFileDropOptions]="fileDropOptions" *ngIf="context">
-  <div class="header-icon" [innerHtml]="contextIcon | safeHtml"></div>
+
+  <yuv-object-type-icon [objectTypeId]="context?.objectTypeId"></yuv-object-type-icon>
+
 
   <yuv-action-menu-bar class="actions" yuvOfflineDisabled>
     <yuv-icon class="config" icon="settings" (click)="showColumnConfigEditor()"
