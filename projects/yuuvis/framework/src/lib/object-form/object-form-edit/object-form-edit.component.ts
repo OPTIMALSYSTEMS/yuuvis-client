@@ -1,6 +1,18 @@
-import { Component, EventEmitter, Input, OnDestroy, Output, ViewChild } from '@angular/core';
-import { DmsObject, DmsService, PendingChangesService, SystemService, TranslateService, Utils } from '@yuuvis/core';
+import { Component, EventEmitter, Input, OnDestroy, Output, TemplateRef, ViewChild } from '@angular/core';
+import {
+  BaseObjectTypeField,
+  DmsObject,
+  DmsService,
+  PendingChangesService,
+  SecondaryObjectType,
+  SecondaryObjectTypeClassification,
+  SystemService,
+  TranslateService,
+  Utils
+} from '@yuuvis/core';
 import { finalize } from 'rxjs/operators';
+import { PopoverConfig } from '../../popover/popover.interface';
+import { PopoverService } from '../../popover/popover.service';
 import { CombinedObjectFormComponent, CombinedObjectFormInput } from '../combined-object-form/combined-object-form.component';
 import { NotificationService } from './../../services/notification/notification.service';
 import { FormStatusChangedEvent, ObjectFormOptions } from './../object-form.interface';
@@ -22,10 +34,18 @@ import { ObjectFormComponent } from './../object-form/object-form.component';
   styleUrls: ['./object-form-edit.component.scss']
 })
 export class ObjectFormEditComponent implements OnDestroy {
+  @ViewChild('tplFloatingTypePicker') tplFloatingTypePicker: TemplateRef<any>;
+  @ViewChild('tplFloatingSOTypePicker') tplFloatingSOTypePicker: TemplateRef<any>;
+
   // ID set by pendingChanges service when editing indexdata
   // Used to finish the pending task when editing is done
   private pendingTaskId: string;
   private _dmsObject: DmsObject;
+
+  fsot: {
+    applicableTypes: SecondaryObjectType[];
+    applicableSOTs: SecondaryObjectType[];
+  };
 
   // Indicator that we are dealing with a floating object type
   // This kind of object will use a combination of multiple forms instaed of a single one
@@ -76,7 +96,8 @@ export class ObjectFormEditComponent implements OnDestroy {
     private dmsService: DmsService,
     private notification: NotificationService,
     private pendingChanges: PendingChangesService,
-    public translate: TranslateService
+    public translate: TranslateService,
+    private popoverService: PopoverService
   ) {
     this.translate.get(['yuv.framework.object-form-edit.save.success', 'yuv.framework.object-form-edit.save.error']).subscribe((res) => {
       this.messages.formSuccess = res['yuv.framework.object-form-edit.save.success'];
@@ -159,6 +180,22 @@ export class ObjectFormEditComponent implements OnDestroy {
 
     if (this.isFloatingObjectType) {
       this.formOptions = null;
+      this.fsot = {
+        applicableTypes: [],
+        applicableSOTs: []
+      };
+      const currentSOTs = dmsObject.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS];
+      this.systemService
+        .getFloatingSecondaryObjectTypes(dmsObject.objectTypeId, true)
+        .filter((sot) => !currentSOTs?.includes(sot.id))
+        .forEach((sot) => {
+          if (sot.classification.includes(SecondaryObjectTypeClassification.PRIMARY)) {
+            this.fsot.applicableTypes.push(sot);
+          } else if (!sot.classification.includes(SecondaryObjectTypeClassification.REQUIRED)) {
+            this.fsot.applicableSOTs.push(sot);
+          }
+        });
+
       this.systemService.getFloatingObjectTypeForms(dmsObject, Situation.EDIT).subscribe(
         (res) => {
           this.combinedFormInput = {
@@ -200,6 +237,14 @@ export class ObjectFormEditComponent implements OnDestroy {
 
   private isEditable(dmsObject: DmsObject): boolean {
     return dmsObject.hasOwnProperty('rights') && dmsObject.rights.writeIndexData;
+  }
+
+  chooseFSOT(isPrimaryFSOT?: boolean) {
+    const popoverConfig: PopoverConfig = {
+      maxHeight: '70%',
+      data: {}
+    };
+    this.popoverService.open(isPrimaryFSOT ? this.tplFloatingTypePicker : this.tplFloatingSOTypePicker, popoverConfig);
   }
 
   ngOnDestroy() {}

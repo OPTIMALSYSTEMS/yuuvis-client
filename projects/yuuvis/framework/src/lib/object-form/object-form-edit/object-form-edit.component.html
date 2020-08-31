@@ -1,10 +1,34 @@
 <div class="object-form-edit" [ngClass]="{invalid: formState?.invalid === true}" [yuvBusyOverlay]="busy">
+
   <yuv-object-form [formOptions]="formOptions" *ngIf="formOptions" (statusChanged)="onFormStatusChanged($event)">
   </yuv-object-form>
 
-  <yuv-combined-object-form *ngIf="combinedFormInput" (statusChanged)="onFormStatusChanged($event)"
-    [objectFormInput]="combinedFormInput">
-  </yuv-combined-object-form>
+
+  <ng-container *ngIf="combinedFormInput">
+    <!-- FSOT add panel -->
+    <div class="fsot">
+
+      <ng-container *ngIf="fsot?.applicableTypes?.length">
+        <button (click)="chooseFSOT(true)">{{'yuv.framework.object-form-edit.fsot.apply-type'|translate}}</button>
+        <!-- popover for applying a new floating type -->
+        <ng-template #tplFloatingTypePicker let-data let-popover="popover">
+          <div *ngFor="let sot of fsot.applicableTypes">{{sot.label}}</div>
+        </ng-template>
+      </ng-container>
+
+      <ng-container *ngIf="fsot?.applicableSOTs?.length">
+        <button (click)="chooseFSOT()">{{'yuv.framework.object-form-edit.fsot.add-fsot'|translate}}</button>
+        <!-- popover for adding a new floating secondary object type -->
+        <ng-template #tplFloatingSOTypePicker let-data let-popover="popover">
+          <div *ngFor="let sot of fsot.applicableSOTs">{{sot.label}}</div>
+        </ng-template>
+      </ng-container>
+
+    </div>
+
+    <yuv-combined-object-form (statusChanged)="onFormStatusChanged($event)" [objectFormInput]="combinedFormInput">
+    </yuv-combined-object-form>
+  </ng-container>
 
   <div class="form-controls" [ngClass]="{disabled: controls.disabled}">
 

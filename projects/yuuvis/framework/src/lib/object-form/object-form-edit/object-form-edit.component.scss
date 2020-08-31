@@ -9,12 +9,17 @@
   overflow: auto;
   display: grid;
   grid-template-columns: 1fr;
-  grid-template-rows: 1fr auto;
-  grid-template-areas: 'form' 'buttons';
+  grid-template-rows: auto 1fr auto;
+  grid-template-areas: 'fsot' 'form' 'buttons';
 
   yuv-combined-object-form,
   yuv-object-form {
     grid-area: form;
+  }
+
+  .fsot {
+    grid-area: fsot;
+    background-color: var(--color-accent);
   }
 
   .form-controls {
