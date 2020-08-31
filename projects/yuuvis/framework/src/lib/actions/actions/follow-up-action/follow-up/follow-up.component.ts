@@ -28,7 +28,8 @@ export class FollowUpComponent implements OnInit, ActionComponent {
   ) {
     this.form = this.fb.group({
       expiryDateTime: [],
-      whatAbout: ''
+      whatAbout: '',
+      documentId: null
     });
 
     this.form.controls['expiryDateTime'].setValidators(Validators.required);
@@ -73,14 +74,16 @@ export class FollowUpComponent implements OnInit, ActionComponent {
   ngOnInit() {
     this.followUpService.getFollowUp(this.selection[0].id).subscribe((res) => {
       this.currentFollowUp = res;
-      let value: { expiryDateTime?: Date | string; whatAbout: string };
+      let value: { expiryDateTime?: Date | string; whatAbout: string; documentId: string };
       if (this.currentFollowUp) {
         value = {
           expiryDateTime: this.currentFollowUp.variables.find((v) => v.name === 'expiryDateTime').value,
-          whatAbout: this.currentFollowUp.variables.find((v) => v.name === 'whatAbout').value as string
+          whatAbout: this.currentFollowUp.variables.find((v) => v.name === 'whatAbout').value as string,
+          documentId: this.selection[0].id
         };
       } else {
-        value = { whatAbout: `${this.selection[0].title}:` as string };
+        const whatAbout = (this.selection[0].title ? `${this.selection[0].title}:` : '') as string;
+        value = { whatAbout, documentId: this.selection[0].id };
       }
       this.form.patchValue(value);
       this.form.markAsPristine();
