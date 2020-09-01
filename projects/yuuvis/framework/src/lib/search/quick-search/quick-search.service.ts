@@ -181,8 +181,18 @@ export class QuickSearchService {
     return (store || this.userService.getSettings(this.STORAGE_KEY_FILTERS)).pipe(
       // return (store || this.appCacheService.getItem(this.STORAGE_KEY_FILTERS)).pipe(
       tap((f) => (this.filters = f || {})),
-      map(() => Object.values(this.filters).map((s: any) => ({ ...s, value: [SearchFilterGroup.fromQuery(JSON.parse(s.value))] })))
+      map(() => Object.values(this.filters).map((s: any) => ({ ...s, value: [SearchFilterGroup.fromQuery(this.parseStoredFilters(s.value))] })))
     );
+  }
+
+  private parseStoredFilters(filters: string): any {
+    let res = {};
+    try {
+      JSON.parse(filters);
+    } catch (e) {
+      console.error(e);
+    }
+    return res;
   }
 
   loadFilters(storedFilters: Selectable[], availableObjectTypeFields: Selectable[]) {

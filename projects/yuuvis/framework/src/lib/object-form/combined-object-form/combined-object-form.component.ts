@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output, QueryList, ViewChildren } from '@angular/core';
-import { SystemService } from '@yuuvis/core';
+import { SecondaryObjectTypeClassification, SystemService } from '@yuuvis/core';
 import { FormStatusChangedEvent, IObjectForm, ObjectFormOptions } from '../object-form.interface';
 import { ObjectFormComponent } from '../object-form/object-form.component';
 
@@ -7,6 +7,11 @@ export interface CombinedObjectFormInput {
   formModels: { [key: string]: any };
   data: any;
   disabled?: boolean;
+  /**
+   * Enable controls for removing parts of the combined form that belong to
+   * applied secondary object types that are not primary, required or static.
+   */
+  enableEditSOT?: boolean;
 }
 
 @Component({
@@ -20,16 +25,20 @@ export class CombinedObjectFormComponent implements OnInit, IObjectForm {
   forms: {
     id: string;
     label: string;
+    enableEditSOT: boolean;
     formOptions: ObjectFormOptions;
   }[];
   formStates: Map<string, FormStatusChangedEvent> = new Map<string, FormStatusChangedEvent>();
+  formsChanged: boolean;
 
   @Input() set objectFormInput(ofi: CombinedObjectFormInput) {
+    this.formsChanged = false;
     this.forms =
       ofi && ofi.formModels
         ? Object.keys(ofi.formModels).map((k) => ({
             id: k,
             label: this.system.getLocalizedResource(`${k}_label`),
+            enableEditSOT: ofi.enableEditSOT && this.canBeRemoved(k),
             formOptions: {
               formModel: ofi.formModels[k],
               data: ofi.data,
@@ -39,14 +48,52 @@ export class CombinedObjectFormComponent implements OnInit, IObjectForm {
         : null;
   }
 
+  /**
+   * Emitted when the status of the combined form changes.
+   */
   @Output() statusChanged = new EventEmitter<FormStatusChangedEvent>();
+  /**
+   * Emitted when one of the contained form should be removed. Only triggered
+   * when `CombinedObjectFormInput` has `enableEditSOT` set to true.
+   */
+  @Output() sotRemove = new EventEmitter<any>();
 
   constructor(private system: SystemService) {}
 
+  private canBeRemoved(id: string): boolean {
+    const sot = this.system.getSecondaryObjectType(id);
+    return sot
+      ? !sot.classification ||
+          (!sot.classification.includes(SecondaryObjectTypeClassification.PRIMARY) && !sot.classification.includes(SecondaryObjectTypeClassification.REQUIRED))
+      : false;
+  }
+
   onFormStatusChanged(formId: string, evt: FormStatusChangedEvent) {
     this.formStates.set(formId, evt);
+    // const combinedState: FormStatusChangedEvent = {
+    //   dirty: false,
+    //   indexdataChanged: false,
+    //   invalid: false,
+    //   data: {}
+    // };
+    // this.formStates.forEach((s) => {
+    //   if (s.dirty) {
+    //     combinedState.dirty = s.dirty;
+    //   }
+    //   if (s.indexdataChanged) {
+    //     combinedState.indexdataChanged = s.indexdataChanged;
+    //   }
+    //   if (s.invalid) {
+    //     combinedState.invalid = s.invalid;
+    //   }
+    //   combinedState.data = { ...combinedState.data, ...s.data };
+    // });
+    this.statusChanged.emit(this.getCombinedFormState());
+  }
+
+  private getCombinedFormState(): FormStatusChangedEvent {
     const combinedState: FormStatusChangedEvent = {
-      dirty: false,
+      dirty: !!this.formsChanged,
       indexdataChanged: false,
       invalid: false,
       data: {}
@@ -63,7 +110,7 @@ export class CombinedObjectFormComponent implements OnInit, IObjectForm {
       }
       combinedState.data = { ...combinedState.data, ...s.data };
     });
-    this.statusChanged.emit(combinedState);
+    return combinedState;
   }
 
   /**
@@ -93,6 +140,43 @@ export class CombinedObjectFormComponent implements OnInit, IObjectForm {
     this.objectForms.forEach((f) => {
       f.resetForm();
     });
+  }
+
+  /**
+   * Add a new form to the combined forms
+   * @param sotID Secondary object type ID
+   * @param formModel SOTs form model
+   * @param data data to be set upfront
+   * @param disabled Whether ot not to disable all form controls
+   */
+  addForm(sotID: string, formModel: any, data: any, disabled: boolean, enableEditSOT: boolean) {
+    const form = {
+      id: sotID,
+      label: this.system.getLocalizedResource(`${sotID}_label`),
+      enableEditSOT: enableEditSOT,
+      formOptions: {
+        formModel: formModel,
+        data: data,
+        disabled: disabled
+      }
+    };
+    if (this.forms) {
+      this.forms.push(form);
+    } else {
+      this.forms = [form];
+    }
+    this.formsChanged = true;
+    this.statusChanged.emit(this.getCombinedFormState());
+  }
+
+  /**
+   * Remove a form from the combined forms
+   * @param id ID of the form to be removed
+   */
+  removeForm(id: string) {
+    this.forms = this.forms.filter((f) => f.id !== id);
+    this.formsChanged = true;
+    this.statusChanged.emit(this.getCombinedFormState());
   }
 
   ngOnInit(): void {}

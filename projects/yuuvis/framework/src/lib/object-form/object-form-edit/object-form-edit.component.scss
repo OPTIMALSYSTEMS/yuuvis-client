@@ -15,6 +15,7 @@
   yuv-combined-object-form,
   yuv-object-form {
     grid-area: form;
+    overflow-y: auto;
   }
 
   .fsot {
@@ -47,6 +48,7 @@
       @include gap(4px);
       align-items: center;
       justify-content: flex-end;
+      width: 100%;
 
       button {
         flex: 0 0 auto;
