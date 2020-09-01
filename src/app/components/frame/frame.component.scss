@@ -224,7 +224,7 @@ $app-bar-zindex: 6;
 
       &.active {
         pointer-events: none;
-        color: darken(#fff, 11%);
+        color: var(--color-accent);
       }
     }
   }
