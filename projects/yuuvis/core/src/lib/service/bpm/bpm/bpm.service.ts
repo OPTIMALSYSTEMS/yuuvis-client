@@ -28,7 +28,7 @@ export class BpmService {
       .pipe(map(({ data }: ProcessResponse) => data[0]));
   }
 
-  createProcess(payload: ProcessInstance): Observable<ProcessData> {
+  createProcess(payload: ProcessInstance): Observable<ProcessResponse> {
     return this.backendService.post(this.bpmProcessUrl, payload, ApiBase.apiWeb);
   }
 

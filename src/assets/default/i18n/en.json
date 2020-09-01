@@ -157,8 +157,6 @@
   "yuv.framework.object-form-element.error.string.whitespaces": "The entry contains only spaces.",
   "yuv.framework.object-form-element.tag.df": "Default value",
   "yuv.framework.object-form-element.tag.ex": "Extracted from document",
-  "yuv.framework.process-list.process": "My Processes",
-  "yuv.framework.process-list.process.description": "",
   "yuv.framework.quick-search-picker.button.select": "Select",
   "yuv.framework.quick-search-picker.title": "Restrict to object types",
   "yuv.framework.quick-search.aggregate.error": "The search could not be executed.",
@@ -282,5 +280,7 @@
   "yuv.client.state.settings.theme.light": "Light",
   "yuv.client.state.settings.title": "Settings",
   "yuv.client.state.versions.compare.label": "version {{version}}",
-  "yuv.client.state.versions.header.title": "Versions"
+  "yuv.client.state.versions.header.title": "Versions",
+  "yuv.framework.inbox-list.inbox": "Inbox",
+  "yuv.framework.process-list.process": "Meine Prozesse"
 }

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { DmsObject, DmsService, InboxService, ProcessDefinitionKey, TaskData } from '@yuuvis/core';
+import { DmsObject, DmsService, InboxService, ProcessDefinitionKey, TaskData, TranslateService } from '@yuuvis/core';
 import {
   arrowNext,
   edit,
@@ -22,17 +22,23 @@ import { map, take, tap } from 'rxjs/operators';
 })
 export class InboxComponent implements OnInit {
   layoutOptionsKey = 'yuv.app.inbox';
+  layoutOptionsKeyList = 'yuv.app.inbox.list';
   objectDetailsID: string;
   itemIsSelected = false;
   dmsObject$: Observable<DmsObject>;
-  inboxData$: Observable<ResponsiveTableData> = this.inboxService
-    .getTasks(ProcessDefinitionKey.FOLLOW_UP)
-    .pipe(map((val: TaskData[]) => this.formatProcessDataService.formatTaskDataForTable(val)));
+  inboxData$: Observable<ResponsiveTableData> = this.inboxService.inboxData$.pipe(
+    map((taskData: TaskData[]) => ({ ...this.formatProcessDataService.formatTaskDataForTable(taskData), currentViewMode: 'standard' }))
+  );
 
-  headerDetails = { title: 'yuv.framework.inbox-list.inbox', description: 'yuv.framework.inbox-list.inbox.description', icon: 'inbox' };
+  headerDetails = {
+    title: this.translateService.instant('yuv.framework.inbox-list.inbox'),
+    description: '',
+    icon: 'inbox'
+  };
   constructor(
     private inboxService: InboxService,
     private dmsService: DmsService,
+    private translateService: TranslateService,
     private formatProcessDataService: FormatProcessDataService,
     private iconRegistry: IconRegistryService
   ) {

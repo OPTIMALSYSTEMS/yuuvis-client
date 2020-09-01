@@ -11,13 +11,15 @@
 
   <div class="content">
     <yuv-responsive-data-table yuvOfflineDisabled class="data-table process" *ngIf="processData"
-      [data]="processData" (selectionChanged)="select($event)"
+      [layoutOptionsKey]="layoutOptionsKey"
       [viewMode]="viewMode"
-      [layoutOptionsKey]="layoutOptionsKey">
+      [data]="processData"
+      (selectionChanged)="select($event)"
+      >
     </yuv-responsive-data-table>
   </div>
 
-  <!-- <section class="footer">
+  <section class="footer" *ngIf="showFooter">
     <yuv-icon class="mode" icon="listModeDefault"
       title="{{ 'yuv.framework.version-list.config.mode.default' | translate}}"
       [ngClass]="{'current': processData?.currentViewMode === 'standard'}" (click)="viewMode = 'standard'">

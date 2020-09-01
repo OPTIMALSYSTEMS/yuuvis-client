@@ -17,7 +17,7 @@ export class InboxService {
   getTasks(processDefKey: ProcessDefinitionKey, includeProcessVar = true): Observable<TaskData[]> {
     // return this.bpmService.getProcessInstances(processDefKey, includeProcessVar).pipe(tap((vlas) => this.inboxDataSource.next(vlas)));
     return this.bpmService.getProcesses(`${this.bpmTaskUrl}?active=true&includeProcessVariables=${includeProcessVar}`).pipe(
-      tap((val) => console.log({ val })),
+      tap(({ data }: TaskDataResponse) => this.inboxDataSource.next(data)),
       map(({ data }: TaskDataResponse) => data)
     );
   }

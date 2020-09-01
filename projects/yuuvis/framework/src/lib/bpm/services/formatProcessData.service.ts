@@ -15,7 +15,7 @@ export class FormatProcessDataService {
   formatTaskDataForTable(processData: TaskData[]): ResponsiveTableData {
     return this.processDataForTable(
       processData.map((data) => new InboxItem(data)),
-      ['subject', 'expiryDateTime', 'type', 'createTime']
+      ['subject', 'expiryDateTime', 'type']
     );
   }
 

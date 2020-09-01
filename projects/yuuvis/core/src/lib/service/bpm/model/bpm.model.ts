@@ -6,8 +6,9 @@ export interface ProcessInstance {
   processDefinitionKey: ProcessDefinitionKey;
   name: string;
   businessKey: string;
-  returnVariables: boolean;
-  startFormVariables: StartFormVariable[];
+  returnVariables?: boolean;
+  // startFormVariables?: StartFormVariable[];
+  variables?: StartFormVariable[];
 }
 
 // tslint:disable-next-line: no-empty-interface

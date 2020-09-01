@@ -3,7 +3,7 @@
     (slaveClosed)="onSlaveClosed()"
     [layoutOptionsKey]="layoutOptionsKey"
     [slaveActive]="itemIsSelected">
-    <yuv-process-list class="yuv-master panel" [headerDetails]="headerDetails" [processData]="processData" (refreshList)="refreshList()" (selectedItem)="selectedItem($event)"></yuv-process-list>
+    <yuv-process-list class="yuv-master panel" [viewMode]="'standard'" [headerDetails]="headerDetails" [processData]="processData" (refreshList)="refreshList()" (selectedItem)="selectedItem($event)"></yuv-process-list>
     <section class="yuv-slave panel">
       <yuv-object-details [disableFileDrop]="true" [dmsObject]="dmsObject$ | async"
         [panelOrder]="['summary', 'indexdata', 'preview']" [layoutOptionsKey]="layoutOptionsKey">

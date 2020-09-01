@@ -157,8 +157,6 @@
   "yuv.framework.object-form-element.error.string.whitespaces": "Die Eingabe enthält nur Leerzeichen.",
   "yuv.framework.object-form-element.tag.df": "Standardwert (default)",
   "yuv.framework.object-form-element.tag.ex": "Extrahiert aus Dokument",
-  "yuv.framework.process-list.process": "",
-  "yuv.framework.process-list.process.description": "",
   "yuv.framework.quick-search-picker.button.select": "Auswählen",
   "yuv.framework.quick-search-picker.title": "Einschränken auf Objekttypen",
   "yuv.framework.quick-search.aggregate.error": "Die Anfrage konnte nicht ausgeführt werden.",
@@ -282,5 +280,7 @@
   "yuv.client.state.settings.theme.light": "Light",
   "yuv.client.state.settings.title": "Einstellungen",
   "yuv.client.state.versions.compare.label": "Version {{version}}",
-  "yuv.client.state.versions.header.title": "Versionen"
+  "yuv.client.state.versions.header.title": "Versionen",
+  "yuv.framework.inbox-list.inbox": "Eingangskorb",
+  "yuv.framework.process-list.process": "My Processes"
 }
