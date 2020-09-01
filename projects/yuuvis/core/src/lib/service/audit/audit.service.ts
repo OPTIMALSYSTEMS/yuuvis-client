@@ -54,7 +54,13 @@ export class AuditService {
       //   q.addFilter(new SearchFilter(AuditField.CREATED_BY, SearchFilter.OPERATOR.EQUAL, options.createdBy));
       // }
       if (options.actions && options.actions.length) {
-        q.addFilter(new SearchFilter(AuditField.ACTION, SearchFilter.OPERATOR.IN, options.actions));
+        q.addFilter(
+          new SearchFilter(
+            AuditField.ACTION,
+            SearchFilter.OPERATOR.IN,
+            options.actions.map((a) => a.toString())
+          )
+        );
       }
     }
     return this.fetchAudits(q);
