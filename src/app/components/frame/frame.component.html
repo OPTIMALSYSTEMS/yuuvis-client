@@ -14,7 +14,7 @@
     </a>
     <div yuvOfflineDisabled class="main">
       <!-- create -->
-      <a routerLink="/create" [queryParams]="{ context: context }">
+      <a routerLink="/create" [queryParams]="{ context: context }" *ngIf="!disableCreate">
         <yuv-icon class="btn" [title]="'yuv.framework.object-create.header.title' | translate" [icon]="'add'">
         </yuv-icon>
       </a>
@@ -73,7 +73,7 @@
       <div class="nav-item">
         <a routerLink="dashboard" routerLinkActive="active" (click)="showSideBar = false"
           translate>yuv.client.state.dashboard.title</a>
-        <a routerLink="create" routerLinkActive="active" (click)="showSideBar = false"
+        <a routerLink="create" *ngIf="!disableCreate" routerLinkActive="active" (click)="showSideBar = false"
           translate>yuv.client.state.create.title</a>
         <a routerLink="/result" [queryParams]="{query: pendingAFOsQuery, tmp: true}" routerLinkActive="active"
           (click)="showSideBar = false" translate>yuv.client.sidebar.create.pending.title</a>

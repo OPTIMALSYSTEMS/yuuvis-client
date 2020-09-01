@@ -11,6 +11,10 @@ export const AdministrationRoles = {
   SYSTEM: 'YUUVIS_SYSTEM_INTEGRATOR'
 };
 
+export const UserRoles = {
+  CREATE_OBJECT: 'YUUVIS_CREATE_OBJECT'
+};
+
 export const RetentionField = {
   EXPIRATION_DATE: 'system:rmExpirationDate',
   START_OF_RETENTION: 'system:rmStartOfRetention',

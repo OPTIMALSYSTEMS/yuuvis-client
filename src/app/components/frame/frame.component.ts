@@ -15,6 +15,7 @@ import {
   SystemService,
   TranslateService,
   UploadResult,
+  UserRoles,
   UserService,
   YuvEventType,
   YuvUser
@@ -65,6 +66,7 @@ export class FrameComponent implements OnInit, OnDestroy {
   swUpdateAvailable: boolean;
   hideAppBar: boolean;
   disableFileDrop: boolean;
+  disableCreate: boolean;
   showSideBar: boolean;
   screenSmall: boolean;
   showSearch: boolean;
@@ -113,6 +115,10 @@ export class FrameComponent implements OnInit, OnDestroy {
     this.iconRegistry.registerIcons([search, drawer, refresh, add, userDisabled, offline, close, openContext]);
     this.userService.user$.subscribe((user: YuvUser) => {
       this.user = user;
+      this.disableCreate = !user.authorities.includes(UserRoles.CREATE_OBJECT);
+      if (this.disableCreate) {
+        this.disableFileDrop = true;
+      }
     });
     this.update.available.subscribe((update) => (this.swUpdateAvailable = true));
     this.layoutService.layoutSettings$.subscribe((settings: LayoutSettings) => this.applyLayoutSettings(settings));
@@ -286,7 +292,7 @@ export class FrameComponent implements OnInit, OnDestroy {
       // transparent app-bar?
       this.tab = e.urlAfterRedirects.startsWith('/dashboard');
       // disable fileDrop being on create state
-      this.disableFileDrop = e.urlAfterRedirects.startsWith('/create');
+      this.disableFileDrop = this.disableCreate || e.urlAfterRedirects.startsWith('/create');
       // hide open search bar when leaving state
       this.toggleSearch(false);
     });
