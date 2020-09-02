@@ -1,6 +1,9 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ProcessData, ProcessService, TranslateService } from '@yuuvis/core';
+import { ActivatedRoute } from '@angular/router';
+import { InboxService, ProcessData, ProcessDefinitionKey, ProcessService, TranslateService } from '@yuuvis/core';
+import { forkJoin } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { NotificationService } from '../../../../services/notification/notification.service';
 import { ActionComponent } from './../../../interfaces/action-component.interface';
 
@@ -22,7 +25,9 @@ export class FollowUpComponent implements OnInit, ActionComponent {
 
   constructor(
     private processService: ProcessService,
+    private inboxService: InboxService,
     private fb: FormBuilder,
+    private activatedRoute: ActivatedRoute,
     private notificationService: NotificationService,
     private translate: TranslateService
   ) {
@@ -31,7 +36,6 @@ export class FollowUpComponent implements OnInit, ActionComponent {
       whatAbout: '',
       documentId: null
     });
-
     this.form.controls['expiryDateTime'].setValidators(Validators.required);
   }
 
@@ -72,7 +76,16 @@ export class FollowUpComponent implements OnInit, ActionComponent {
   }
 
   ngOnInit() {
+    if (this.activatedRoute.snapshot.url[0].path === 'inbox') {
+    } else {
+      forkJoin([this.processService.getFollowUp(this.selection[0].id), this.inboxService.getTasks(ProcessDefinitionKey.FOLLOW_UP)])
+        .pipe(map(([process, tasks]) => tasks.filter((task) => task.executionId === process.id)))
+        .subscribe();
+    }
+
     this.processService.getFollowUp(this.selection[0].id).subscribe((res) => {
+      console.log(res);
+
       this.currentFollowUp = res;
       let value: { expiryDateTime?: Date | string; whatAbout: string; documentId: string };
       if (this.currentFollowUp) {
