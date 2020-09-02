@@ -61,6 +61,7 @@ export interface ProcessData extends Processes {
   referenceId: null;
   referenceType: null;
   completed: boolean;
+  taskId?: string;
 }
 
 export interface TaskData extends Processes {

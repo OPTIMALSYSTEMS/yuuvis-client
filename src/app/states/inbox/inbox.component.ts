@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { DmsObject, DmsService, InboxService, ProcessDefinitionKey, TaskData, TranslateService } from '@yuuvis/core';
+import { DmsObject, DmsService, InboxService, TaskData, TranslateService } from '@yuuvis/core';
 import {
   arrowNext,
   edit,
@@ -12,7 +12,7 @@ import {
   refresh,
   ResponsiveTableData
 } from '@yuuvis/framework';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { map, take, tap } from 'rxjs/operators';
 
 @Component({
@@ -46,18 +46,18 @@ export class InboxComponent implements OnInit {
   }
 
   private getSelectedDetail(businessKey: string) {
-    this.dmsObject$ = this.dmsService.getDmsObject(businessKey).pipe(tap((val) => (this.itemIsSelected = true)));
+    this.dmsObject$ = businessKey ? this.dmsService.getDmsObject(businessKey).pipe(tap((val) => (this.itemIsSelected = true))) : of(null);
   }
 
   selectedItem(item) {
-    this.getSelectedDetail(item[0].documentId);
+    this.getSelectedDetail(item[0]?.documentId);
   }
 
   refreshList() {
-    this.inboxService.getTasks(ProcessDefinitionKey.FOLLOW_UP).pipe(take(1)).subscribe();
+    this.inboxService.getTasks().pipe(take(1)).subscribe();
   }
 
   ngOnInit(): void {
-    this.inboxService.getTasks(ProcessDefinitionKey.FOLLOW_UP).pipe(take(1)).subscribe();
+    this.inboxService.getTasks().pipe(take(1)).subscribe();
   }
 }

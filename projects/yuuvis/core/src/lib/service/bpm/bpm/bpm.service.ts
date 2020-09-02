@@ -32,6 +32,10 @@ export class BpmService {
     return this.backendService.post(this.bpmProcessUrl, payload, ApiBase.apiWeb);
   }
 
+  updateProcess(url: string, payload: any): Observable<any> {
+    return this.backendService.post(url, payload, ApiBase.apiWeb);
+  }
+
   editFollowUp(url: string, processInstanceId: string, payload: ProcessInstance): Observable<any> {
     return this.deleteProcess(url, processInstanceId).pipe(flatMap(() => this.createProcess(payload)));
   }
