@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { LocalStorage, StorageMap } from '@ngx-pwa/local-storage';
-import { forkJoin, Observable } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
+import { forkJoin, Observable, of } from 'rxjs';
+import { first, map, switchMap } from 'rxjs/operators';
 import { Utils } from '../../util/utils';
 
 /**
@@ -30,26 +30,39 @@ export class AppCacheService {
     return this.storage.removeItem(key);
   }
 
-  clear(): Observable<boolean> {
-    return this.storage.clear();
+  public clear(filter?: (key) => boolean): Observable<boolean> {
+    return filter
+      ? this.getStorageKeys().pipe(
+          switchMap((keys) => {
+            const list = keys.filter((k) => filter(k)).map((k) => this.removeItem(k));
+            return list.length ? forkJoin(list).pipe(map(() => true)) : of(true);
+          })
+        )
+      : this.storage.clear();
   }
 
-  getStorage(): Observable<any> {
+  getStorageKeys(): Observable<any> {
     return new Observable<string[]>((observer) => {
       const keys = [];
       this.storageMap.keys().subscribe({
         next: (key) => keys.push(key),
         complete: () => observer.next(keys)
       });
-    }).pipe(
+    }).pipe(first());
+  }
+
+  getStorage(): Observable<any> {
+    return this.getStorageKeys().pipe(
       switchMap((keys) =>
-        forkJoin(
-          Utils.arrayToObject(
-            keys,
-            (o) => o,
-            (k) => this.getItem(k)
-          )
-        )
+        keys.length
+          ? forkJoin(
+              Utils.arrayToObject(
+                keys,
+                (o) => o,
+                (k) => this.getItem(k)
+              )
+            )
+          : of({})
       )
     );
   }
