@@ -7,6 +7,12 @@ $range-selection-highlight-color: $primary-color;
 
 ::ng-deep {
   yuv-responsive-data-table {
+    yuv-single-cell-renderer {
+      width: 100%;
+      height: 100%;
+      display: flex;
+    }
+
     //ag-grid checkboxes
     .ag-theme-balham .ag-checkbox-input-wrapper {
       font-size: 16px;
@@ -162,17 +168,6 @@ $range-selection-highlight-color: $primary-color;
         .ag-cell {
           padding: 0;
           width: 100% !important;
-
-          // &.cell-title-description {
-          //   > span {
-          //     width: 100%;
-          //   }
-          // }
-          &.rdt-row {
-            > span {
-              width: 100%;
-            }
-          }
         }
 
         .rdt-row {
@@ -208,6 +203,8 @@ $range-selection-highlight-color: $primary-color;
           &.row-horizontal {
             flex-flow: row nowrap;
             align-items: center;
+            width: 100%;
+
             .head {
               padding: 0 var(--app-pane-padding);
               flex: 0 0 auto;
@@ -231,10 +228,17 @@ $range-selection-highlight-color: $primary-color;
               background-color: var(--panel-background-lightgrey);
               border-bottom: 1px solid var(--panel-divider-color);
 
-              svg {
+              yuv-object-type-icon {
                 width: 70px;
                 height: 70px;
-                opacity: 0.1;
+
+                ::ng-deep {
+                  yuv-icon svg {
+                    width: 100%;
+                    height: 100%;
+                    opacity: 0.1;
+                  }
+                }
               }
             }
             .main {
@@ -298,8 +302,10 @@ $range-selection-highlight-color: $primary-color;
                 background-color: rgba(var(--color-accent-rgb), 0.5);
                 border-color: transparent;
                 color: #fff;
-                svg {
-                  opacity: 0.8;
+                ::ng-deep {
+                  yuv-object-type-icon yuv-icon svg {
+                    opacity: 0.8;
+                  }
                 }
               }
               .main {

@@ -12,24 +12,34 @@ import { LocaleDatePipe } from '../../../../pipes/locale-date.pipe';
 })
 export class SingleCellRendererComponent implements ICellRendererAngularComp {
   params: any;
-  version: any;
-  modified: any;
-  title: string;
-  description: string;
-  objectTypeId: string;
+
+  viewMode: string;
+
+  cell: {
+    version: any;
+    modified: any;
+    title: string;
+    description: string;
+    objectTypeId: string;
+  };
 
   constructor(private systemService: SystemService, private datePipe: LocaleDatePipe) {}
 
   refresh(params: any): boolean {
     this.params = params;
-    this.objectTypeId = this.systemService.getLeadingObjectTypeID(
+    this.viewMode = params._crParams.viewMode;
+    const objectTypeId = this.systemService.getLeadingObjectTypeID(
       params.data[BaseObjectTypeField.OBJECT_TYPE_ID],
       params.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS]
     );
-    this.version = params.data[BaseObjectTypeField.VERSION_NUMBER];
-    this.modified = this.datePipe.transform(params.data[BaseObjectTypeField.MODIFICATION_DATE]);
-    // this.modified = this.datePipe.transform(params.data[this.data.dateField || BaseObjectTypeField.MODIFICATION_DATE]);
-    this.title = this.systemService.getLocalizedResource(`${this.objectTypeId}_label`);
+
+    this.cell = {
+      objectTypeId: objectTypeId,
+      version: params.data[BaseObjectTypeField.VERSION_NUMBER],
+      modified: this.datePipe.transform(params.data[params._crParams.dateField || BaseObjectTypeField.MODIFICATION_DATE]),
+      title: this.systemService.getLocalizedResource(`${objectTypeId}_label`),
+      description: params.data[params._crParams.descriptionField]
+    };
     return true;
   }
 
