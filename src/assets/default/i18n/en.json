@@ -14,7 +14,7 @@
   "yuv.framework.action-menu.action.export.pdf.description": "Downloads the document file as a PDF",
   "yuv.framework.action-menu.action.export.pdf.label": "PDF",
   "yuv.framework.action-menu.action.export.title": "Download in the following format",
-  "yuv.framework.action-menu.action.follow-up.confirm": "confirm",
+  "yuv.framework.action-menu.action.follow-up.confirm": "Confirm",
   "yuv.framework.action-menu.action.follow-up.confirm.error.message": "The task could not be confirmed",
   "yuv.framework.action-menu.action.follow-up.confirm.success.message": "The task is confirmed",
   "yuv.framework.action-menu.action.follow-up.create.title": "Create follow-up",
