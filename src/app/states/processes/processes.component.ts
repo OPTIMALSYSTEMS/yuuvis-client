@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { DmsObject, DmsService, ProcessData, ProcessService, TranslateService } from '@yuuvis/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { BpmEvent, DmsObject, DmsService, EventService, ProcessData, ProcessService, TranslateService } from '@yuuvis/core';
 import {
   arrowNext,
   edit,
@@ -13,14 +13,15 @@ import {
   ResponsiveTableData
 } from '@yuuvis/framework';
 import { Observable, of } from 'rxjs';
-import { map, take, tap } from 'rxjs/operators';
+import { map, switchMap, take, tap } from 'rxjs/operators';
+import { takeUntilDestroy } from 'take-until-destroy';
 
 @Component({
   selector: 'app-processes',
   templateUrl: './processes.component.html',
   styleUrls: ['./processes.component.scss']
 })
-export class ProcessesComponent implements OnInit {
+export class ProcessesComponent implements OnInit, OnDestroy {
   layoutOptionsKey = 'yuv.app.processes';
   objectDetailsID: string;
   itemIsSelected = false;
@@ -40,9 +41,14 @@ export class ProcessesComponent implements OnInit {
     private processService: ProcessService,
     private translateService: TranslateService,
     private formatProcessDataService: FormatProcessDataService,
-    private iconRegistry: IconRegistryService
+    private iconRegistry: IconRegistryService,
+    private eventService: EventService
   ) {
     this.iconRegistry.registerIcons([edit, arrowNext, refresh, process, listModeDefault, listModeGrid, listModeSimple]);
+  }
+
+  private getProcesses(): Observable<ProcessData[]> {
+    return this.processService.getProcesses().pipe(take(1), takeUntilDestroy(this));
   }
 
   private getSelectedDetail(businessKey: string) {
@@ -50,7 +56,7 @@ export class ProcessesComponent implements OnInit {
   }
 
   refreshList() {
-    this.processService.getProcesses().pipe(take(1)).subscribe();
+    this.getProcesses().subscribe();
   }
 
   selectedItem(item) {
@@ -58,6 +64,16 @@ export class ProcessesComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.processService.getProcesses().pipe(take(1)).subscribe();
+    this.getProcesses().subscribe();
+    this.eventService
+      .on(BpmEvent.BPM_EVENT)
+      .pipe(
+        take(1),
+        switchMap(() => this.getProcesses()),
+        takeUntilDestroy(this)
+      )
+      .subscribe();
   }
+
+  ngOnDestroy() {}
 }

@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { DmsObject, DmsService, InboxService, TaskData, TranslateService } from '@yuuvis/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { BpmEvent, DmsObject, DmsService, EventService, InboxService, TranslateService } from '@yuuvis/core';
 import {
   arrowNext,
   edit,
@@ -13,14 +13,16 @@ import {
   ResponsiveTableData
 } from '@yuuvis/framework';
 import { Observable, of } from 'rxjs';
-import { map, take, tap } from 'rxjs/operators';
+import { map, switchMap, take, tap } from 'rxjs/operators';
+import { takeUntilDestroy } from 'take-until-destroy';
+import { TaskData } from './../../../../projects/yuuvis/core/src/lib/service/bpm/model/bpm.model';
 
 @Component({
   selector: 'yuv-inbox',
   templateUrl: './inbox.component.html',
   styleUrls: ['./inbox.component.scss']
 })
-export class InboxComponent implements OnInit {
+export class InboxComponent implements OnInit, OnDestroy {
   layoutOptionsKey = 'yuv.app.inbox';
   layoutOptionsKeyList = 'yuv.app.inbox.list';
   objectDetailsID: string;
@@ -40,9 +42,14 @@ export class InboxComponent implements OnInit {
     private dmsService: DmsService,
     private translateService: TranslateService,
     private formatProcessDataService: FormatProcessDataService,
-    private iconRegistry: IconRegistryService
+    private iconRegistry: IconRegistryService,
+    private eventService: EventService
   ) {
     this.iconRegistry.registerIcons([edit, arrowNext, refresh, inbox, listModeDefault, listModeGrid, listModeSimple]);
+  }
+
+  private getInbox(): Observable<TaskData[]> {
+    return this.inboxService.getTasks().pipe(take(1), takeUntilDestroy(this));
   }
 
   private getSelectedDetail(businessKey: string) {
@@ -54,10 +61,21 @@ export class InboxComponent implements OnInit {
   }
 
   refreshList() {
-    this.inboxService.getTasks().pipe(take(1)).subscribe();
+    this.getInbox().subscribe();
   }
 
   ngOnInit(): void {
-    this.inboxService.getTasks().pipe(take(1)).subscribe();
+    this.getInbox().subscribe();
+
+    this.eventService
+      .on(BpmEvent.BPM_EVENT)
+      .pipe(
+        take(1),
+        switchMap(() => this.getInbox()),
+        takeUntilDestroy(this)
+      )
+      .subscribe();
   }
+
+  ngOnDestroy() {}
 }

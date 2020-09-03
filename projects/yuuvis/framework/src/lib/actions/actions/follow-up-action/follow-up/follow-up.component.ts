@@ -1,9 +1,10 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { InboxService, ProcessData, ProcessService, TaskData, TranslateService, Utils } from '@yuuvis/core';
-import { Observable, of } from 'rxjs';
-import { map, switchMap, tap } from 'rxjs/operators';
+import { BpmEvent, EventService, InboxService, ProcessData, ProcessService, TaskData, TranslateService, Utils } from '@yuuvis/core';
+import { of } from 'rxjs';
+import { finalize, map, switchMap, tap } from 'rxjs/operators';
+import { takeUntilDestroy } from 'take-until-destroy';
 import { NotificationService } from '../../../../services/notification/notification.service';
 import { ActionComponent } from './../../../interfaces/action-component.interface';
 
@@ -12,7 +13,7 @@ import { ActionComponent } from './../../../interfaces/action-component.interfac
   templateUrl: './follow-up.component.html',
   styleUrls: ['./follow-up.component.scss']
 })
-export class FollowUpComponent implements OnInit, ActionComponent {
+export class FollowUpComponent implements OnInit, OnDestroy, ActionComponent {
   form: FormGroup;
   currentFollowUp: ProcessData;
   showDeleteTemp = false;
@@ -21,6 +22,7 @@ export class FollowUpComponent implements OnInit, ActionComponent {
   canConfirmTask = false;
   disabledForm = false;
   headline: string;
+  loading = false;
 
   @Input() selection: any[];
   @Output() finished: EventEmitter<any> = new EventEmitter();
@@ -32,7 +34,8 @@ export class FollowUpComponent implements OnInit, ActionComponent {
     private fb: FormBuilder,
     private activatedRoute: ActivatedRoute,
     private notificationService: NotificationService,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private eventService: EventService
   ) {
     this.form = this.fb.group({
       expiryDateTime: [],
@@ -43,34 +46,57 @@ export class FollowUpComponent implements OnInit, ActionComponent {
   }
 
   createFollowUp() {
-    this.processService.createFollowUp(this.selection[0].id, this.form.value).subscribe(() => {
-      this.notificationService.success(
-        this.translate.instant('yuv.framework.action-menu.action.follow-up.label'),
-        this.translate.instant('yuv.framework.action-menu.action.follow-up.done.message')
-      );
-      this.finished.emit();
-    });
+    this.loading = true;
+    this.processService
+      .createFollowUp(this.selection[0].id, this.form.value)
+      .pipe(
+        finalize(() => (this.loading = false)),
+        takeUntilDestroy(this)
+      )
+      .subscribe(() => {
+        this.notificationService.success(
+          this.translate.instant('yuv.framework.action-menu.action.follow-up.label'),
+          this.translate.instant('yuv.framework.action-menu.action.follow-up.done.message')
+        );
+        this.finished.emit();
+      });
   }
 
   editFollowUp() {
-    this.processService.editFollowUp(this.selection[0].id, this.currentFollowUp.id, this.form.value).subscribe(() => {
-      this.notificationService.success(
-        this.translate.instant('yuv.framework.action-menu.action.follow-up.label'),
-        this.translate.instant('yuv.framework.action-menu.action.follow-up.edit.done.message')
-      );
-      this.finished.emit();
-    });
+    this.loading = true;
+    this.processService
+      .editFollowUp(this.selection[0].id, this.currentFollowUp.id, this.form.value)
+      .pipe(
+        finalize(() => (this.loading = false)),
+        takeUntilDestroy(this)
+      )
+      .subscribe(() => {
+        this.notificationService.success(
+          this.translate.instant('yuv.framework.action-menu.action.follow-up.label'),
+          this.translate.instant('yuv.framework.action-menu.action.follow-up.edit.done.message')
+        );
+        this.finished.emit();
+      });
   }
 
   deleteFollowUp() {
-    this.processService.deleteFollowUp(this.currentFollowUp.id).subscribe(() => {
-      this.notificationService.success(
-        this.translate.instant('yuv.framework.action-menu.action.follow-up.label'),
-        this.translate.instant('yuv.framework.action-menu.action.follow-up.delete.message')
-      );
-      this.finished.emit();
-    });
-    this.showDeleteTemp = false;
+    this.loading = true;
+    this.processService
+      .deleteFollowUp(this.currentFollowUp.id)
+      .pipe(
+        finalize(() => {
+          this.loading = false;
+          this.showDeleteTemp = false;
+        }),
+        takeUntilDestroy(this)
+      )
+      .subscribe(() => {
+        this.notificationService.success(
+          this.translate.instant('yuv.framework.action-menu.action.follow-up.label'),
+          this.translate.instant('yuv.framework.action-menu.action.follow-up.delete.message')
+        );
+        this.finished.emit();
+      });
   }
 
   cancel() {
@@ -79,11 +105,16 @@ export class FollowUpComponent implements OnInit, ActionComponent {
   }
 
   confirmTask() {
+    this.loading = true;
     this.inboxService
       .completeTask(this.currentFollowUp.taskId)
       .pipe(
-        tap(() => this.finished.emit()),
-        switchMap(() => this.shouldRefreshList())
+        tap(() => {
+          this.finished.emit();
+          this.eventService.trigger(BpmEvent.BPM_EVENT);
+        }),
+        takeUntilDestroy(this),
+        finalize(() => (this.loading = false))
       )
       .subscribe(
         () => {
@@ -103,14 +134,6 @@ export class FollowUpComponent implements OnInit, ActionComponent {
 
   get hasCurrentFollowUp(): boolean {
     return !Utils.isEmpty(this.currentFollowUp);
-  }
-
-  private shouldRefreshList(): Observable<TaskData[] | ProcessData[]> {
-    return this.activatedRoute.snapshot.url[0].path === 'inbox'
-      ? this.inboxService.getTasks()
-      : this.activatedRoute.snapshot.url[0].path === 'processes'
-      ? this.processService.getProcesses()
-      : of(null);
   }
 
   private processProcessData(process: ProcessData, task: TaskData) {
@@ -139,15 +162,19 @@ export class FollowUpComponent implements OnInit, ActionComponent {
   }
 
   ngOnInit() {
+    this.loading = true;
     this.processService
       .getFollowUp(this.selection[0].id)
       .pipe(
         switchMap((process: ProcessData) =>
           process ? this.inboxService.getTask(process?.id).pipe(map((task) => ({ process, task: task[0] }))) : of({ process: null, task: null })
         ),
-        map(({ process, task }: { process: ProcessData; task: TaskData }) => this.processProcessData(process, task))
+        map(({ process, task }: { process: ProcessData; task: TaskData }) => this.processProcessData(process, task)),
+        takeUntilDestroy(this),
+        finalize(() => (this.loading = false))
       )
       .subscribe();
-    this.showDeleteTemp = false;
   }
+
+  ngOnDestroy() {}
 }
