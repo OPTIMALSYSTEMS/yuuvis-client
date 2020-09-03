@@ -18,7 +18,10 @@ import {
   SystemService,
   SystemType,
   TranslateService,
-  Utils
+  UserRoles,
+  UserService,
+  Utils,
+  YuvUser
 } from '@yuuvis/core';
 import { forkJoin, Observable, of } from 'rxjs';
 import { catchError, map, switchMap } from 'rxjs/operators';
@@ -87,7 +90,8 @@ export class ObjectCreateComponent implements OnDestroy {
   @ViewChild(CombinedObjectFormComponent) combinedObjectForm: CombinedObjectFormComponent;
 
   context: DmsObject;
-
+  // whether or not the current user is allowed to use the component and create dms objects
+  invalidUser: boolean;
   animationTimer = { value: true, params: { time: '400ms' } };
   // state of creation progress
   state$: Observable<CreateState> = this.objCreateServcice.state$;
@@ -169,6 +173,7 @@ export class ObjectCreateComponent implements OnDestroy {
     private searchService: SearchService,
     private dmsService: DmsService,
     private backend: BackendService,
+    private userService: UserService,
     private translate: TranslateService,
     private iconRegistry: IconRegistryService
   ) {
@@ -182,6 +187,10 @@ export class ObjectCreateComponent implements OnDestroy {
       required: this.translate.instant('yuv.framework.object-create.step.type.content.required')
     };
     this.title = this.labels.defaultTitle;
+
+    this.userService.user$.subscribe((user: YuvUser) => {
+      this.invalidUser = !user.authorities.includes(UserRoles.CREATE_OBJECT);
+    });
 
     let i = 0;
     this.generalObjectTypeGroups = this.system

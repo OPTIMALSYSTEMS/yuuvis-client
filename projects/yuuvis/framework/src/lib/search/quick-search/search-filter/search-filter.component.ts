@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
-import { BackendService, BaseObjectTypeField, SearchFilter, SearchFilterGroup, SearchQuery, SystemService, TranslateService, Utils } from '@yuuvis/core';
+import { BaseObjectTypeField, SearchFilter, SearchFilterGroup, SearchQuery, TranslateService, Utils } from '@yuuvis/core';
 import { forkJoin } from 'rxjs';
 import { IconRegistryService } from '../../../common/components/icon/service/iconRegistry.service';
 import { Selectable } from '../../../grouped-select';
@@ -61,6 +61,7 @@ export class SearchFilterComponent implements OnInit {
   activeFilters: Selectable[] = [];
   lastFilters: Selectable[] = [];
   storedFilters: Selectable[] = [];
+  visibleFilters: string[] = [];
 
   filesizePipe: FileSizePipe;
   _query: SearchQuery;
@@ -81,9 +82,7 @@ export class SearchFilterComponent implements OnInit {
   @Output() filterChange = new EventEmitter<SearchQuery>();
 
   constructor(
-    private backend: BackendService,
     private translate: TranslateService,
-    private systemService: SystemService,
     private iconRegistry: IconRegistryService,
     private quickSearchService: QuickSearchService,
     private popoverService: PopoverService,
@@ -144,6 +143,7 @@ export class SearchFilterComponent implements OnInit {
 
     this.quickSearchService.getCurrentSettings().subscribe(([storedFilters, visibleFilters, lastFilters]) => {
       this.storedFilters = this.quickSearchService.loadFilters(storedFilters as any, this.availableObjectTypeFields);
+      this.visibleFilters = visibleFilters || this.storedFilters.map((f) => f.id);
       this.activeFilters =
         activeFilters ||
         (this._originalFilters = this.quickSearchService.getActiveFilters(this.filterQuery, this.storedFilters, this.availableObjectTypeFields));
@@ -157,7 +157,7 @@ export class SearchFilterComponent implements OnInit {
         {
           id: 'stored',
           label: this.translate.instant('yuv.framework.search.filter.stored.filters'),
-          items: this.storedFilters.filter((f) => (visibleFilters ? visibleFilters.includes(f.id) : true))
+          items: this.storedFilters.filter((f) => this.visibleFilters.includes(f.id))
         }
       ];
 
@@ -180,7 +180,7 @@ export class SearchFilterComponent implements OnInit {
 
   updateLastFilters(ids: string[]) {
     return (this.lastFilters = (ids || [])
-      .filter((id) => !this.filterSelection.includes(id))
+      .filter((id) => !this.filterSelection.includes(id) && this.visibleFilters.includes(id))
       .slice(0, 5)
       .map((id) => this.storedFilters.find((f) => f.id === id))
       .filter((f) => f)).sort(Utils.sortValues('label'));
