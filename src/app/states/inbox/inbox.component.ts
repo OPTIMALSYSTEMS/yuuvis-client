@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { BpmEvent, DmsObject, DmsService, EventService, InboxService, TranslateService } from '@yuuvis/core';
+import { BpmEvent, DmsObject, DmsService, EventService, InboxService, TaskData, TranslateService } from '@yuuvis/core';
 import {
   arrowNext,
   edit,
@@ -15,7 +15,6 @@ import {
 import { Observable, of } from 'rxjs';
 import { map, switchMap, take, tap } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
-import { TaskData } from './../../../../projects/yuuvis/core/src/lib/service/bpm/model/bpm.model';
 
 @Component({
   selector: 'yuv-inbox',
@@ -29,7 +28,7 @@ export class InboxComponent implements OnInit, OnDestroy {
   itemIsSelected = false;
   dmsObject$: Observable<DmsObject>;
   inboxData$: Observable<ResponsiveTableData> = this.inboxService.inboxData$.pipe(
-    map((taskData: TaskData[]) => ({ ...this.formatProcessDataService.formatTaskDataForTable(taskData), currentViewMode: 'standard' }))
+    map((taskData: TaskData[]) => ({ ...this.formatProcessDataService.formatTaskDataForTable(taskData), currentViewMode: 'horizontal' }))
   );
 
   headerDetails = {

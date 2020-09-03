@@ -14,7 +14,7 @@ interface HeaderDetails {
 })
 export class ProcessListComponent {
   private _processData: any;
-  private _viewMode: ViewMode = 'standard';
+  private _viewMode: ViewMode;
   header: HeaderDetails;
 
   @Input() layoutOptionsKey: string;
@@ -22,6 +22,7 @@ export class ProcessListComponent {
   set processData(data) {
     // data.currentViewMode = 'horizontal';
     this._processData = data;
+    console.log(this._processData);
   }
   get processData() {
     return this._processData;
