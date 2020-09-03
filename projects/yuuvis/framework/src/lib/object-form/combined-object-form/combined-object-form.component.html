@@ -1,9 +1,16 @@
-<div class="yuv-combined-object-form" *ngIf="forms">
+<div class="yuv-combined-object-form" *ngIf="forms?.length > 0; else tplNoForms">
     <ng-container *ngFor="let form of forms">
-        <div class="form-head">{{form.label}}
-            <button *ngIf="form.enableEditSOT" (click)="sotRemove.emit(form.id)">---</button>
+        <div class="form-head">
+            {{form.label}}
+            <yuv-icon icon="clear" class="btn" *ngIf="form.enableEditSOT"
+                [title]="'yuv.framework.combined-object-form.fsot.remove.tooltip'|translate"
+                (click)="sotRemove.emit(form.id)"></yuv-icon>
         </div>
         <yuv-object-form [formOptions]="form.formOptions" (statusChanged)="onFormStatusChanged(form.id, $event)">
         </yuv-object-form>
     </ng-container>
 </div>
+
+<ng-template #tplNoForms>
+    <div class="no-forms" [attr.data-msg]="'yuv.framework.combined-object-form.no-forms'| translate"></div>
+</ng-template>

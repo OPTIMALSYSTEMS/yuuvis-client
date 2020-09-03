@@ -5,9 +5,14 @@
       align-items: center;
       justify-content: space-between;
       margin: 0;
+      font-weight: normal;
       padding: var(--app-pane-padding) 0 calc(var(--app-pane-padding) / 4) 0;
       color: var(--color-accent);
-      font-weight: normal;
+
+      yuv-icon {
+        width: 18px;
+        height: 18px;
+      }
     }
 
     yuv-object-form {
@@ -18,6 +23,22 @@
           padding: calc(var(--app-pane-padding) / 2);
         }
       }
+    }
+  }
+  .no-forms {
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+
+    &::after {
+      content: attr(data-msg);
+      color: var(--text-color-caption);
+      background-color: var(--panel-divider-color);
+      padding: calc(var(--app-pane-padding) / 2);
+      border-radius: calc(var(--app-pane-padding) / 2);
+      max-width: 300px;
     }
   }
 }

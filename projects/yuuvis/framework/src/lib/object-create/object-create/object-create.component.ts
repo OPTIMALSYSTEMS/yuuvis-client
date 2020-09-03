@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, OnDestroy, Output, ViewChild } from '@angular/core';
 import {
+  AFO_STATE,
   ApiBase,
   BackendService,
   BaseObjectTypeField,
@@ -85,13 +86,6 @@ export class ObjectCreateComponent implements OnDestroy {
   @ViewChild(ObjectFormComponent) objectForm: ObjectFormComponent;
   @ViewChild(CombinedObjectFormComponent) combinedObjectForm: CombinedObjectFormComponent;
 
-  // possible states of a DLM item
-  private AFO_STATE = {
-    // created but no FSOT assigned so far
-    IN_PROGRESS: 0,
-    // an FSOT has been assigned
-    READY: 1
-  };
   context: DmsObject;
 
   animationTimer = { value: true, params: { time: '400ms' } };
@@ -356,7 +350,7 @@ export class ObjectCreateComponent implements OnDestroy {
     if (this.context) {
       data[BaseObjectTypeField.PARENT_ID] = this.context.id;
     }
-    data[BaseObjectTypeField.TAGS] = [[ObjectTag.AFO, this.AFO_STATE.IN_PROGRESS]];
+    data[BaseObjectTypeField.TAGS] = [[ObjectTag.AFO, AFO_STATE.IN_PROGRESS]];
     this.busy = true;
 
     this.createObject(this.selectedObjectType.floatingParentType || this.selectedObjectType.id, data, this.files)
@@ -524,7 +518,7 @@ export class ObjectCreateComponent implements OnDestroy {
           // update system tags
           switchMap((dmsObject: DmsObject) =>
             this.backend
-              .post(`/dms/objects/${dmsObject.id}/tags/${ObjectTag.AFO}/state/${this.AFO_STATE.READY}?overwrite=true`, {}, ApiBase.core)
+              .post(`/dms/objects/${dmsObject.id}/tags/${ObjectTag.AFO}/state/${AFO_STATE.READY}?overwrite=true`, {}, ApiBase.core)
               .pipe(map((_) => of(dmsObject)))
           ),
           catchError((e) => {

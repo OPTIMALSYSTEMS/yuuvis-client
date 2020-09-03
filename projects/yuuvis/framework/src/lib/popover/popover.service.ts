@@ -64,6 +64,7 @@ export class PopoverService {
       hasBackdrop: true,
       backdropClass: config.backdropClass,
       panelClass: config.panelClass,
+      disposeOnNavigation: config.disposeOnNavigation || true,
       positionStrategy,
       scrollStrategy: this.overlay.scrollStrategies.reposition(),
       maxHeight: config.maxHeight,

@@ -115,3 +115,11 @@ export const InternalFieldType = {
 export enum ObjectTag {
   AFO = 'appClient:dlm:prepare'
 }
+
+// possible states of a DLM item
+export const AFO_STATE = {
+  // created but no FSOT assigned so far
+  IN_PROGRESS: 0,
+  // an FSOT has been assigned
+  READY: 1
+};

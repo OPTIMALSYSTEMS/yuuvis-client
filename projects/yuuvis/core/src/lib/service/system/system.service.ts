@@ -147,6 +147,24 @@ export class SystemService {
   }
 
   /**
+   * Get the secondary object types of an object type that have the `primary`
+   * classification.
+   * @param objectTypeId ID of the object type
+   */
+  getPrimaryFSOTs(objectTypeId: string): SecondaryObjectType[] {
+    return this.getFloatingSecondaryObjectTypes(objectTypeId).filter((sot) => sot.classification?.includes(SecondaryObjectTypeClassification.PRIMARY));
+  }
+
+  /**
+   * Get the secondary object types of an object type that have the `required`
+   * classification.
+   * @param objectTypeId ID of the object type
+   */
+  getRequiredFSOTs(objectTypeId: string): SecondaryObjectType[] {
+    return this.getFloatingSecondaryObjectTypes(objectTypeId).filter((sot) => sot.classification?.includes(SecondaryObjectTypeClassification.REQUIRED));
+  }
+
+  /**
    * Applicable floating SOTs are SOTs that could be added by a users choice.
    * Regular floating SOTs may also contain SOTs that are applied
    * automatically (classification: 'appClient:required'). Those types will not be

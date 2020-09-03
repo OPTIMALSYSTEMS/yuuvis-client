@@ -1,5 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output, QueryList, ViewChildren } from '@angular/core';
 import { SecondaryObjectTypeClassification, SystemService } from '@yuuvis/core';
+import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
+import { clear } from '../../svg.generated';
 import { FormStatusChangedEvent, IObjectForm, ObjectFormOptions } from '../object-form.interface';
 import { ObjectFormComponent } from '../object-form/object-form.component';
 
@@ -12,6 +14,13 @@ export interface CombinedObjectFormInput {
    * applied secondary object types that are not primary, required or static.
    */
   enableEditSOT?: boolean;
+}
+
+export interface CombinedFormAddInput {
+  id: string;
+  formModel: any;
+  disabled: boolean;
+  enableEditSOT: boolean;
 }
 
 @Component({
@@ -33,6 +42,7 @@ export class CombinedObjectFormComponent implements OnInit, IObjectForm {
 
   @Input() set objectFormInput(ofi: CombinedObjectFormInput) {
     this.formsChanged = false;
+    this.formStates.clear();
     this.forms =
       ofi && ofi.formModels
         ? Object.keys(ofi.formModels).map((k) => ({
@@ -58,7 +68,9 @@ export class CombinedObjectFormComponent implements OnInit, IObjectForm {
    */
   @Output() sotRemove = new EventEmitter<any>();
 
-  constructor(private system: SystemService) {}
+  constructor(private system: SystemService, private iconRegistry: IconRegistryService) {
+    this.iconRegistry.registerIcons([clear]);
+  }
 
   private canBeRemoved(id: string): boolean {
     const sot = this.system.getSecondaryObjectType(id);
@@ -70,24 +82,6 @@ export class CombinedObjectFormComponent implements OnInit, IObjectForm {
 
   onFormStatusChanged(formId: string, evt: FormStatusChangedEvent) {
     this.formStates.set(formId, evt);
-    // const combinedState: FormStatusChangedEvent = {
-    //   dirty: false,
-    //   indexdataChanged: false,
-    //   invalid: false,
-    //   data: {}
-    // };
-    // this.formStates.forEach((s) => {
-    //   if (s.dirty) {
-    //     combinedState.dirty = s.dirty;
-    //   }
-    //   if (s.indexdataChanged) {
-    //     combinedState.indexdataChanged = s.indexdataChanged;
-    //   }
-    //   if (s.invalid) {
-    //     combinedState.invalid = s.invalid;
-    //   }
-    //   combinedState.data = { ...combinedState.data, ...s.data };
-    // });
     this.statusChanged.emit(this.getCombinedFormState());
   }
 
@@ -149,22 +143,22 @@ export class CombinedObjectFormComponent implements OnInit, IObjectForm {
    * @param data data to be set upfront
    * @param disabled Whether ot not to disable all form controls
    */
-  addForm(sotID: string, formModel: any, data: any, disabled: boolean, enableEditSOT: boolean) {
-    const form = {
-      id: sotID,
-      label: this.system.getLocalizedResource(`${sotID}_label`),
-      enableEditSOT: enableEditSOT,
-      formOptions: {
-        formModel: formModel,
-        data: data,
-        disabled: disabled
-      }
-    };
-    if (this.forms) {
-      this.forms.push(form);
-    } else {
-      this.forms = [form];
+  addForms(formModels: CombinedFormAddInput[], data: any) {
+    if (!this.forms) {
+      this.forms = [];
     }
+    formModels.forEach((fm) => {
+      this.forms.push({
+        id: fm.id,
+        label: this.system.getLocalizedResource(`${fm.id}_label`),
+        enableEditSOT: fm.enableEditSOT,
+        formOptions: {
+          formModel: fm.formModel,
+          data: data,
+          disabled: fm.disabled
+        }
+      });
+    });
     this.formsChanged = true;
     this.statusChanged.emit(this.getCombinedFormState());
   }
@@ -173,8 +167,14 @@ export class CombinedObjectFormComponent implements OnInit, IObjectForm {
    * Remove a form from the combined forms
    * @param id ID of the form to be removed
    */
-  removeForm(id: string) {
-    this.forms = this.forms.filter((f) => f.id !== id);
+  removeForms(ids: string[]) {
+    this.forms = this.forms.filter((f) => {
+      const shouldBeRemoved = ids.includes(f.id);
+      if (shouldBeRemoved) {
+        this.formStates.delete(f.id);
+      }
+      return !shouldBeRemoved;
+    });
     this.formsChanged = true;
     this.statusChanged.emit(this.getCombinedFormState());
   }

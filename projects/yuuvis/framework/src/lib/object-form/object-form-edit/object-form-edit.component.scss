@@ -20,7 +20,16 @@
 
   .fsot {
     grid-area: fsot;
+    display: flex;
     background-color: var(--color-accent);
+    // padding: calc(var(--app-pane-padding) / 4) var(--app-pane-padding);
+    justify-content: flex-end;
+    > button {
+      color: #fff;
+      margin: calc(var(--app-pane-padding) / 4);
+      border: 1px solid #fff;
+      padding: calc(var(--app-pane-padding) / 4) calc(var(--app-pane-padding) / 2);
+    }
   }
 
   .form-controls {
