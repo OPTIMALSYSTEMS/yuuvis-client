@@ -23,12 +23,9 @@ export class UserConfigService {
    * Also supports floating types.
    */
   getColumnConfig(objectTypeId?: string): Observable<ColumnConfig> {
-    const ot = this.systemService.getObjectType(objectTypeId);
-    // skip abstract object types
-    let otid = ot?.creatable ? objectTypeId : SystemType.OBJECT;
-    return this.backend.get(this.getRequestURI(otid)).pipe(
+    return this.backend.get(this.getRequestURI(objectTypeId || SystemType.OBJECT)).pipe(
       map((res) => ({
-        type: otid,
+        type: objectTypeId || SystemType.OBJECT,
         columns: res.columns.map((c) => ({
           id: c.id,
           label: this.systemService.getLocalizedResource(`${c.id}_label`),
@@ -74,9 +71,7 @@ export class UserConfigService {
 
       return `${baseURL}${encodeURIComponent(ot.floatingParentType)}?sots=${sots.map((sot) => encodeURIComponent(sot)).join('&sots=')}`;
     } else {
-      // exclude abstract types
-      let otid = ot?.creatable ? objectTypeId : SystemType.OBJECT;
-      return `${baseURL}${encodeURIComponent(otid)}`;
+      return `${baseURL}${encodeURIComponent(objectTypeId)}`;
     }
   }
 }
