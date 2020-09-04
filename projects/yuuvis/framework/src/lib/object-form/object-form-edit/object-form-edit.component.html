@@ -12,7 +12,8 @@
         <button (click)="chooseFSOT(true)">{{'yuv.framework.object-form-edit.fsot.apply-type'|translate}}</button>
         <!-- popover for applying a new floating type -->
         <ng-template #tplFloatingTypePicker let-data let-popover="popover">
-          <div *ngFor="let sot of fsot.applicableTypes" (click)="applyFSOT(sot, true, popover)">{{sot.label}}</div>
+          <yuv-fsot-picker [title]="'yuv.framework.object-form-edit.fsot.apply-type'|translate"
+            [items]="fsot.applicableTypes" (select)="applyFSOT($event, true, popover)"></yuv-fsot-picker>
         </ng-template>
       </ng-container>
 
@@ -20,7 +21,8 @@
         <button (click)="chooseFSOT()">{{'yuv.framework.object-form-edit.fsot.add-fsot'|translate}}</button>
         <!-- popover for adding a new floating secondary object type -->
         <ng-template #tplFloatingSOTypePicker let-data let-popover="popover">
-          <div *ngFor="let sot of fsot.applicableSOTs" (click)="applyFSOT(sot, false, popover)">{{sot.label}}</div>
+          <yuv-fsot-picker [title]="'yuv.framework.object-form-edit.fsot.add-fsot'|translate"
+            [items]="fsot.applicableSOTs" (select)="applyFSOT($event, false, popover)"></yuv-fsot-picker>
         </ng-template>
       </ng-container>
 
