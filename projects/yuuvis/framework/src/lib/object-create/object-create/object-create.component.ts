@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, OnDestroy, Output, ViewChild } from '@angular/core';
 import {
+  AFO_STATE,
   ApiBase,
   BackendService,
   BaseObjectTypeField,
@@ -17,7 +18,10 @@ import {
   SystemService,
   SystemType,
   TranslateService,
-  Utils
+  UserRoles,
+  UserService,
+  Utils,
+  YuvUser
 } from '@yuuvis/core';
 import { forkJoin, Observable, of } from 'rxjs';
 import { catchError, map, switchMap } from 'rxjs/operators';
@@ -85,15 +89,9 @@ export class ObjectCreateComponent implements OnDestroy {
   @ViewChild(ObjectFormComponent) objectForm: ObjectFormComponent;
   @ViewChild(CombinedObjectFormComponent) combinedObjectForm: CombinedObjectFormComponent;
 
-  // possible states of a DLM item
-  private AFO_STATE = {
-    // created but no FSOT assigned so far
-    IN_PROGRESS: 0,
-    // an FSOT has been assigned
-    READY: 1
-  };
   context: DmsObject;
-
+  // whether or not the current user is allowed to use the component and create dms objects
+  invalidUser: boolean;
   animationTimer = { value: true, params: { time: '400ms' } };
   // state of creation progress
   state$: Observable<CreateState> = this.objCreateServcice.state$;
@@ -175,6 +173,7 @@ export class ObjectCreateComponent implements OnDestroy {
     private searchService: SearchService,
     private dmsService: DmsService,
     private backend: BackendService,
+    private userService: UserService,
     private translate: TranslateService,
     private iconRegistry: IconRegistryService
   ) {
@@ -188,6 +187,10 @@ export class ObjectCreateComponent implements OnDestroy {
       required: this.translate.instant('yuv.framework.object-create.step.type.content.required')
     };
     this.title = this.labels.defaultTitle;
+
+    this.userService.user$.subscribe((user: YuvUser) => {
+      this.invalidUser = !user.authorities.includes(UserRoles.CREATE_OBJECT);
+    });
 
     let i = 0;
     this.generalObjectTypeGroups = this.system
@@ -356,7 +359,7 @@ export class ObjectCreateComponent implements OnDestroy {
     if (this.context) {
       data[BaseObjectTypeField.PARENT_ID] = this.context.id;
     }
-    data[BaseObjectTypeField.TAGS] = [[ObjectTag.AFO, this.AFO_STATE.IN_PROGRESS]];
+    data[BaseObjectTypeField.TAGS] = [[ObjectTag.AFO, AFO_STATE.IN_PROGRESS]];
     this.busy = true;
 
     this.createObject(this.selectedObjectType.floatingParentType || this.selectedObjectType.id, data, this.files)
@@ -524,7 +527,7 @@ export class ObjectCreateComponent implements OnDestroy {
           // update system tags
           switchMap((dmsObject: DmsObject) =>
             this.backend
-              .post(`/dms/objects/${dmsObject.id}/tags/${ObjectTag.AFO}/state/${this.AFO_STATE.READY}?overwrite=true`, {}, ApiBase.core)
+              .post(`/dms/objects/${dmsObject.id}/tags/${ObjectTag.AFO}/state/${AFO_STATE.READY}?overwrite=true`, {}, ApiBase.core)
               .pipe(map((_) => of(dmsObject)))
           ),
           catchError((e) => {

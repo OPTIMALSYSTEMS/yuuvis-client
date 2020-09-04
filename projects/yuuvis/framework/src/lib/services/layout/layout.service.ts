@@ -191,7 +191,7 @@ export class LayoutService {
   }
 
   /**
-   * make it possible for user to reset thier layout settings and return to the default settings
+   * make it possible for user to reset their layout settings and return to the default settings
    */
   clearLayout() {
     return this.appCache.getStorage().pipe(switchMap((data) => this.uploadLayout(data, (key: string) => !!key.match(this.STORAGE_KEY_REGEXP), true)));

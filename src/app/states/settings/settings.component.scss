@@ -60,6 +60,12 @@ $avatar-size-small: 80px;
   overflow: hidden;
   justify-content: center;
 
+  .cache {
+    display: flex;
+    flex-flow: row;
+    margin: 0 var(--app-pane-padding);
+  }
+
   .settings {
     width: calc(800px - calc(var(--app-pane-padding) * 2));
     box-sizing: border-box;

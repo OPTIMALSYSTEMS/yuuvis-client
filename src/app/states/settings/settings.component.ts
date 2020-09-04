@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { Router } from '@angular/router';
-import { ConfigService, TranslateService, UserService, YuvUser } from '@yuuvis/core';
-import { IconRegistryService, LayoutService, LayoutSettings } from '@yuuvis/framework';
-import { Observable } from 'rxjs';
+import { AppCacheService, ConfigService, SystemService, TranslateService, UserService, YuvUser } from '@yuuvis/core';
+import { IconRegistryService, LayoutService, LayoutSettings, NotificationService } from '@yuuvis/framework';
+import { forkJoin, Observable } from 'rxjs';
 import { shield } from '../../../assets/default/svg/svg';
 
 @Component({
@@ -19,15 +19,23 @@ export class SettingsComponent implements OnInit {
   clientLocales: any;
 
   accentColorRGB = ['255, 152, 0', '120, 144, 156', '124, 179, 66', '3,169,244', '126,87,194', '236,64,122'];
+  cache = {
+    system: true,
+    history: true,
+    layout: true
+  };
 
   constructor(
     private translate: TranslateService,
     private router: Router,
     private layoutService: LayoutService,
+    private systemService: SystemService,
+    private cacheService: AppCacheService,
     private titleService: Title,
     public config: ConfigService,
     private userService: UserService,
-    private iconRegistry: IconRegistryService
+    private iconRegistry: IconRegistryService,
+    private notificationService: NotificationService
   ) {
     this.iconRegistry.registerIcons([shield]);
 
@@ -68,6 +76,21 @@ export class SettingsComponent implements OnInit {
 
   editFilterConfig() {
     this.router.navigate(['config/filter-config']);
+  }
+
+  clearCache() {
+    const actions = [
+      this.cache.history && this.cacheService.clear((key: string) => !key.startsWith('yuv.core') && !key.startsWith('yuv.app')),
+      this.cache.layout && this.layoutService.clearLayout(),
+      this.cache.system && this.systemService.getSystemDefinition()
+    ].filter((a) => a);
+
+    return actions.length
+      ? forkJoin(actions).subscribe(
+          () => this.notificationService.success(this.translate.instant('yuv.client.state.settings.cache.clear.success')),
+          () => this.notificationService.error(this.translate.instant('yuv.client.state.settings.cache.clear.error'))
+        )
+      : false;
   }
 
   ngOnInit() {

@@ -229,7 +229,16 @@ export class SearchResultComponent implements OnDestroy {
       map((cc: ColumnConfig) => cc.columns.map((column: ColumnConfigColumn) => column.id)),
       tap(
         (fields: string[]) =>
-          (q.fields = [BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS, BaseObjectTypeField.OBJECT_ID, BaseObjectTypeField.OBJECT_TYPE_ID, ...fields])
+          (q.fields = [
+            // required for SingleCellRendering allthough the object may not have those fields
+            ClientDefaultsObjectTypeField.TITLE,
+            ClientDefaultsObjectTypeField.DESCRIPTION,
+            // stuff that's always needed
+            BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS,
+            BaseObjectTypeField.OBJECT_ID,
+            BaseObjectTypeField.OBJECT_TYPE_ID,
+            ...fields
+          ])
       ),
       switchMap(() => of(q))
     );

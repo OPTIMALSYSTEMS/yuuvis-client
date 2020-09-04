@@ -11,6 +11,10 @@ export const AdministrationRoles = {
   SYSTEM: 'YUUVIS_SYSTEM_INTEGRATOR'
 };
 
+export const UserRoles = {
+  CREATE_OBJECT: 'YUUVIS_CREATE_OBJECT'
+};
+
 export const RetentionField = {
   EXPIRATION_DATE: 'system:rmExpirationDate',
   START_OF_RETENTION: 'system:rmStartOfRetention',
@@ -115,3 +119,11 @@ export const InternalFieldType = {
 export enum ObjectTag {
   AFO = 'appClient:dlm:prepare'
 }
+
+// possible states of a DLM item
+export const AFO_STATE = {
+  // created but no FSOT assigned so far
+  IN_PROGRESS: 0,
+  // an FSOT has been assigned
+  READY: 1
+};

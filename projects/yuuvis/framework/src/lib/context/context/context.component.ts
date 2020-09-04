@@ -9,7 +9,10 @@ import {
   SearchQuery,
   SystemService,
   TranslateService,
-  YuvEventType
+  UserRoles,
+  UserService,
+  YuvEventType,
+  YuvUser
 } from '@yuuvis/core';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
@@ -150,11 +153,16 @@ export class ContextComponent implements OnInit, OnDestroy {
     private dmsService: DmsService,
     private iconRegistry: IconRegistryService,
     private popoverService: PopoverService,
+    private userService: UserService,
     private layoutService: LayoutService,
     private eventService: EventService,
     private systemService: SystemService
   ) {
     this.iconRegistry.registerIcons([edit, settings, refresh, kebap]);
+    this.userService.user$.subscribe((user: YuvUser) => {
+      this.fileDropOptions.disabled = !user.authorities.includes(UserRoles.CREATE_OBJECT);
+    });
+
     this.fileDropOptions.label = this.translate.instant('yuv.framework.context.filedrop.label');
     this.eventService
       .on(YuvEventType.DMS_OBJECTS_MOVED)

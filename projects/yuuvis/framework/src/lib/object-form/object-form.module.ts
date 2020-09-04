@@ -13,6 +13,7 @@ import { ObjectFormEditComponent } from './object-form-edit/object-form-edit.com
 import { ObjectFormElementComponent } from './object-form-element/object-form-element.component';
 import { ObjectFormGroupComponent } from './object-form-group/object-form-group.component';
 import { ObjectFormComponent } from './object-form/object-form.component';
+import { FsotPickerComponent } from './object-form-edit/fsot-picker/fsot-picker.component';
 
 /**
  * Module provides components for creating for a dms object.
@@ -20,7 +21,7 @@ import { ObjectFormComponent } from './object-form/object-form.component';
  */
 
 @NgModule({
-  declarations: [ObjectFormComponent, ObjectFormElementComponent, ObjectFormGroupComponent, ObjectFormEditComponent, CombinedObjectFormComponent],
+  declarations: [ObjectFormComponent, ObjectFormElementComponent, ObjectFormGroupComponent, ObjectFormEditComponent, CombinedObjectFormComponent, FsotPickerComponent],
   imports: [
     CommonModule,
     YuvCommonModule,
