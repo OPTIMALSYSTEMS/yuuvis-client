@@ -115,9 +115,11 @@ export class FrameComponent implements OnInit, OnDestroy {
     this.iconRegistry.registerIcons([search, drawer, refresh, add, userDisabled, offline, close, openContext]);
     this.userService.user$.subscribe((user: YuvUser) => {
       this.user = user;
-      this.disableCreate = !user.authorities.includes(UserRoles.CREATE_OBJECT);
-      if (this.disableCreate) {
-        this.disableFileDrop = true;
+      if (user) {
+        this.disableCreate = !user.authorities.includes(UserRoles.CREATE_OBJECT);
+        if (this.disableCreate) {
+          this.disableFileDrop = true;
+        }
       }
     });
     this.update.available.subscribe((update) => (this.swUpdateAvailable = true));

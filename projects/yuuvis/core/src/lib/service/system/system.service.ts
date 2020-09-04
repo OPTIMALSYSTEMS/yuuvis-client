@@ -525,24 +525,34 @@ export class SystemService {
     const floatingTypes: ObjectType[] = [];
     objectTypes.forEach((ot) => {
       if (this.isFloatingObjectType(ot)) {
-        ot.secondaryObjectTypes
+        const primaryFSOTs = ot.secondaryObjectTypes
           .filter((sot) => !sot.static)
           .map((sot) => objectTypesQA[sot.id])
-          .filter((def: SchemaResponseTypeDefinition) => !def.classification?.includes(SecondaryObjectTypeClassification.REQUIRED))
-          .forEach((def: SchemaResponseTypeDefinition) => {
-            floatingTypes.push({
-              id: def.id,
-              description: def.description,
-              classification: ot.classification,
-              floatingParentType: ot.id,
-              baseId: ot.baseId,
-              creatable: ot.creatable && this.isCreatable(def.id),
-              contentStreamAllowed: ot.contentStreamAllowed,
-              isFolder: ot.isFolder,
-              secondaryObjectTypes: [],
-              fields: [...ot.fields, ...this.resolveObjectTypeFields(objectTypesQA[def.id], propertiesQA, objectTypesQA)]
-            });
+          .filter((def: SchemaResponseTypeDefinition) => def.classification?.includes(SecondaryObjectTypeClassification.PRIMARY));
+
+        // take care of 'required' FSOTs as well, because they are applied automatically,
+        // so their fields are always part of the floating type
+        const requiredFSOTs = ot.secondaryObjectTypes
+          .filter((sot) => !sot.static)
+          .map((sot) => objectTypesQA[sot.id])
+          .filter((def: SchemaResponseTypeDefinition) => def.classification?.includes(SecondaryObjectTypeClassification.REQUIRED));
+
+        primaryFSOTs.forEach((def: SchemaResponseTypeDefinition) => {
+          floatingTypes.push({
+            id: def.id,
+            description: def.description,
+            classification: ot.classification,
+            floatingParentType: ot.id,
+            baseId: ot.baseId,
+            creatable: ot.creatable && this.isCreatable(def.id),
+            contentStreamAllowed: ot.contentStreamAllowed,
+            isFolder: ot.isFolder,
+            secondaryObjectTypes: [],
+            fields: [...ot.fields, ...this.resolveObjectTypeFields(objectTypesQA[def.id], propertiesQA, objectTypesQA)].concat(
+              ...requiredFSOTs.map((fsot) => this.resolveObjectTypeFields(objectTypesQA[fsot.id], propertiesQA, objectTypesQA))
+            )
           });
+        });
       }
     });
 
@@ -566,6 +576,7 @@ export class SystemService {
    */
   private resolveObjectTypeFields(schemaTypeDefinition: SchemaResponseTypeDefinition, propertiesQA: any, objectTypesQA: any) {
     // const rootTypes = [SystemType.DOCUMENT, SystemType.FOLDER, SystemType.SOT];
+
     const objectTypeFieldIDs = schemaTypeDefinition.propertyReference.map((pr) => pr.value);
     if (schemaTypeDefinition.secondaryObjectTypeId) {
       schemaTypeDefinition.secondaryObjectTypeId
