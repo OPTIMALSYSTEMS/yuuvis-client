@@ -17,17 +17,22 @@ export class UserConfigService {
    * @ignore
    */
   constructor(private backend: BackendService, private systemService: SystemService) {}
+
   /**
-   * get and change configuration of the searching result list of available objects
+   * Get the column configuration for a given object type.
+   * Also supports floating types.
    */
   getColumnConfig(objectTypeId?: string): Observable<ColumnConfig> {
     // skip abstract object types
     const ot = this.systemService.getObjectType(objectTypeId);
-    const otid = ot && ot.creatable ? objectTypeId : SystemType.OBJECT;
+    let otid = ot?.creatable ? objectTypeId : SystemType.OBJECT;
+    const url = ot?.floatingParentType
+      ? `/user/config/result/${encodeURIComponent(ot.floatingParentType)}?sots=${encodeURIComponent(ot.id)}`
+      : `/user/config/result/${encodeURIComponent(otid)}`;
 
-    return this.backend.get(`/user/config/result/${encodeURIComponent(otid)}`).pipe(
+    return this.backend.get(url).pipe(
       map((res) => ({
-        type: res.type,
+        type: otid,
         columns: res.columns.map((c) => ({
           id: c.id,
           label: this.systemService.getLocalizedResource(`${c.id}_label`),
@@ -41,7 +46,11 @@ export class UserConfigService {
    * save result list configuration of available objects
    */
   saveColumnConfig(columnConfig: ColumnConfig): Observable<any> {
-    return this.backend.post(`/user/config/result/${encodeURIComponent(columnConfig.type)}`, {
+    const ot = this.systemService.getObjectType(columnConfig.type);
+    const url = ot?.floatingParentType
+      ? `/user/config/result/${encodeURIComponent(ot.floatingParentType)}?sots=${encodeURIComponent(ot.id)}`
+      : `/user/config/result/${encodeURIComponent(ot.id)}`;
+    return this.backend.post(url, {
       type: columnConfig.type,
       columns: columnConfig.columns.map((c) => ({
         id: c.id,
