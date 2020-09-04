@@ -216,13 +216,21 @@ export class SystemService {
   /**
    * Get the icon for an object type. This will return an SVG as a string.
    * @param objectTypeId ID of the object type
+   * * @param fallback ID of a fallback icon that should be used if the given object type has no icon yet
    */
-  getObjectTypeIcon(objectTypeId: string): Observable<string> {
-    return !!this.iconCache[objectTypeId] ? of(this.iconCache[objectTypeId]) : this.backend.get(`/resources/icon/${objectTypeId}`);
+  getObjectTypeIcon(objectTypeId: string, fallback?: string): Observable<string> {
+    const uri = `/resources/icon/${encodeURIComponent(objectTypeId)}${fallback ? `?fallback=${encodeURIComponent(fallback)}` : ''}`;
+    return !!this.iconCache[uri] ? of(this.iconCache[objectTypeId]) : this.backend.get(uri);
   }
 
-  getObjectTypeIconUri(objectTypeId: string): string {
-    return `${this.backend.getApiBase(ApiBase.apiWeb)}/resources/icon/${objectTypeId}`;
+  /**
+   * Get the URI of an object type icon.
+   * @param objectTypeId ID of the object type
+   * @param fallback ID of a fallback icon that should be used if the given object type has no icon yet
+   */
+  getObjectTypeIconUri(objectTypeId: string, fallback?: string): string {
+    const uri = `/resources/icon/${encodeURIComponent(objectTypeId)}${fallback ? `?fallback=${encodeURIComponent(fallback)}` : ''}`;
+    return `${this.backend.getApiBase(ApiBase.apiWeb)}${uri}`;
   }
 
   /**
