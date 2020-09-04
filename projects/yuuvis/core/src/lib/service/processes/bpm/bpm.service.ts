@@ -9,8 +9,8 @@ import { ProcessData, ProcessDataResponse, ProcessDefinitionKey, ProcessInstance
   providedIn: 'root'
 })
 export class BpmService {
-  private readonly bpmProcessUrl = '/bpm-engine/process/instances';
-  private readonly bpmTaskUrl = '/bpm-engine/tasks';
+  private readonly bpmProcessUrl = '/bpm/process/instances';
+  private readonly bpmTaskUrl = '/bpm/tasks';
   constructor(private backendService: BackendService) {}
 
   getProcessInstances(processDefKey: ProcessDefinitionKey, includeProcessVar = true): Observable<ProcessData[]> {
