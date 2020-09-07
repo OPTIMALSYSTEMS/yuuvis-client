@@ -1,0 +1,10 @@
+<div class="rdt-row {{viewMode === 'horizontal' ? 'row-horizontal' : 'row-grid'}}" [attr.data-version]="cell.version">
+    <div class="head">
+        <yuv-object-type-icon [objectTypeId]="cell?.objectTypeId"></yuv-object-type-icon>
+    </div>
+    <div class="main">
+        <div class="title">{{cell?.title || ''}}</div>
+        <div class="description">{{cell?.description|| ''}}</div>
+        <div class="date">{{cell?.modified}}</div>
+    </div>
+</div>

@@ -7,9 +7,9 @@ export interface ReferenceEntry {
    */
   id: string;
   /**
-   * name of a customer icon
+   * ID of an object type
    */
-  iconSVG: string;
+  objectTypeId: string;
   /**
    * titel of a selected object
    */

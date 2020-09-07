@@ -61,7 +61,7 @@
     border: 1px solid transparent;
 
     &.ag-cell-last-left-pinned:not(.ag-cell-range-right):not(.ag-cell-range-single-cell) {
-      border-color: var(--panel-divider-color);
+      border-right-color: var(--panel-divider-color);
     }
 
     &.ag-cell-focus {

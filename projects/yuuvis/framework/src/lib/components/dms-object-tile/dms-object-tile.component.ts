@@ -16,28 +16,27 @@ import { Component, Input } from '@angular/core';
 })
 export class DmsObjectTileComponent {
   /**
-   * Provides a titel from dms object
+   * Titel of dms object
    */
   @Input() title: string;
 
   /**
-   * Provides a description from dms object
+   * Description of dms object
    */
   @Input() description: string;
-  // @Input() objectId: string;
-  // @Input() objectTypeId: string;
-
   /**
-   * Provides icons from dms object
+   * ID of the dms objects object type
    */
-  @Input() objectTypeIcon: string;
+  @Input() objectTypeId: string;
   /**
-   * Provides label from dms object
+   * Label of dms object
    */
   @Input() objectTypeLabel: string;
 
   /**
-   * Provides date
+   * Date to be shown in the tile (e.g. create date/modification date)
    */
   @Input() date: Date;
+
+  constructor() {}
 }
