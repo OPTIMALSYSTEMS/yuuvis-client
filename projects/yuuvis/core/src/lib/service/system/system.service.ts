@@ -237,7 +237,8 @@ export class SystemService {
    * * @param fallback ID of a fallback icon that should be used if the given object type has no icon yet
    */
   getObjectTypeIcon(objectTypeId: string, fallback?: string): Observable<string> {
-    const uri = `/resources/icon/${encodeURIComponent(objectTypeId)}${fallback ? `?fallback=${encodeURIComponent(fallback)}` : ''}`;
+    const fb = this.getFallbackIcon(objectTypeId, fallback);
+    const uri = `/resources/icon/${encodeURIComponent(objectTypeId)}${fb ? `?fb=${encodeURIComponent(fallback)}` : ''}`;
     return !!this.iconCache[uri] ? of(this.iconCache[objectTypeId]) : this.backend.get(uri);
   }
 
@@ -247,8 +248,22 @@ export class SystemService {
    * @param fallback ID of a fallback icon that should be used if the given object type has no icon yet
    */
   getObjectTypeIconUri(objectTypeId: string, fallback?: string): string {
-    const uri = `/resources/icon/${encodeURIComponent(objectTypeId)}${fallback ? `?fallback=${encodeURIComponent(fallback)}` : ''}`;
+    const fb = this.getFallbackIcon(objectTypeId, fallback);
+    const uri = `/resources/icon/${encodeURIComponent(objectTypeId)}${fb ? `?fallback=${encodeURIComponent(fb)}` : ''}`;
     return `${this.backend.getApiBase(ApiBase.apiWeb)}${uri}`;
+  }
+
+  private getFallbackIcon(objectTypeId: string, fallback?: string): string {
+    if (!fallback) {
+      // add default fallbacks for system:document and system:folder if now other fallback has been provided
+      const ot = this.getObjectType(objectTypeId);
+      fallback = ot.isFolder ? 'system:folder' : 'system:document';
+      if (this.isFloatingObjectType(ot)) {
+        // types that do not have no object type assigned to them (primary FSOTs)
+        fallback = 'system:dlm';
+      }
+    }
+    return fallback;
   }
 
   /**
