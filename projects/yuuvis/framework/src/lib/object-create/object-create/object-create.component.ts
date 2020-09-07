@@ -10,7 +10,6 @@ import {
   ObjectTag,
   ObjectType,
   ObjectTypeGroup,
-  SearchResultItem,
   SearchService,
   SecondaryObjectType,
   SecondaryObjectTypeClassification,
@@ -97,14 +96,12 @@ export class ObjectCreateComponent implements OnDestroy {
   state$: Observable<CreateState> = this.objCreateServcice.state$;
   breadcrumb$: Observable<Breadcrumb[]> = this.objCreateServcice.breadcrumb$;
 
-  busy: boolean = false;
+  // busy: boolean = false;
   createAnother: boolean = false;
   selectedObjectType: ObjectType;
   selectedObjectTypeFormOptions: ObjectFormOptions;
 
   afoCreate: AFOState;
-  // list of AFOs that have not been finished yet
-  pendingAFO: any[];
 
   // groups of object types available for the root target
   generalObjectTypeGroups: SelectableGroup[];
@@ -133,14 +130,14 @@ export class ObjectCreateComponent implements OnDestroy {
    */
   @Input() set contextId(id: string) {
     if (id) {
-      this.busy = true;
+      this.objCreateServcice.setNewState({ busy: true });
       this.dmsService.getDmsObject(id).subscribe(
         (res: DmsObject) => {
           this.context = res;
           this.setupContextTypeGroups();
-          this.busy = false;
+          this.objCreateServcice.setNewState({ busy: false });
         },
-        (err) => (this.busy = false)
+        (err) => this.objCreateServcice.setNewState({ busy: false })
       );
     } else {
       this.context = null;
@@ -306,18 +303,13 @@ export class ObjectCreateComponent implements OnDestroy {
   }
 
   private processAFOType(objectType: ObjectType) {
-    // if (objectType.isFolder || objectType.contentStreamAllowed === 'notallowed') {
-    //   this.objCreateServcice.setNewState({ currentStep: CurrentStep.AFO_UPLOAD });
-    //   this.objCreateServcice.setNewBreadcrumb(CurrentStep.AFO_UPLOAD, CurrentStep.FILES);
-    // } else {
     this.objCreateServcice.setNewState({ currentStep: CurrentStep.FILES });
-    this.objCreateServcice.setNewBreadcrumb(CurrentStep.FILES, CurrentStep.AFO_UPLOAD);
-    // }
+    this.objCreateServcice.setNewBreadcrumb(CurrentStep.FILES);
     this.objCreateServcice.setNewState({ busy: false, done: this.isReady() });
   }
 
   afoSelectFloatingSOT(sot: SecondaryObjectType) {
-    this.busy = true;
+    this.objCreateServcice.setNewState({ busy: true });
     const objectType = !!this.selectedObjectType.floatingParentType
       ? this.system.getObjectType(this.selectedObjectType.floatingParentType)
       : this.selectedObjectType;
@@ -346,10 +338,10 @@ export class ObjectCreateComponent implements OnDestroy {
           // TODO: If object is changed form should also get new data
           combinedFormInput: { formModels: res, data: this.afoCreate?.dmsObject.items.length === 1 ? this.afoCreate.dmsObject.selected.data : {} }
         };
-        this.busy = false;
+        this.objCreateServcice.setNewState({ busy: false });
       },
       (err) => {
-        this.busy = false;
+        this.objCreateServcice.setNewState({ busy: false });
       }
     );
   }
@@ -360,7 +352,9 @@ export class ObjectCreateComponent implements OnDestroy {
       data[BaseObjectTypeField.PARENT_ID] = this.context.id;
     }
     data[BaseObjectTypeField.TAGS] = [[ObjectTag.AFO, AFO_STATE.IN_PROGRESS]];
-    this.busy = true;
+    // this.busy = true;
+
+    this.objCreateServcice.setNewState({ busy: true });
 
     this.createObject(this.selectedObjectType.floatingParentType || this.selectedObjectType.id, data, this.files)
       .pipe(
@@ -369,9 +363,8 @@ export class ObjectCreateComponent implements OnDestroy {
       )
       .subscribe(
         (res: DmsObject[]) => {
-          this.busy = false;
-          this.objCreateServcice.setNewState({ currentStep: CurrentStep.AFO_INDEXDATA });
-          this.objCreateServcice.setNewBreadcrumb(CurrentStep.AFO_INDEXDATA);
+          this.objCreateServcice.setNewState({ currentStep: CurrentStep.AFO_INDEXDATA, busy: false });
+          this.objCreateServcice.setNewBreadcrumb(CurrentStep.AFO_INDEXDATA, CurrentStep.AFO_UPLOAD);
 
           if (this.selectedObjectType.floatingParentType) {
             // floating types
@@ -398,7 +391,7 @@ export class ObjectCreateComponent implements OnDestroy {
           }
         },
         (err) => {
-          this.busy = false;
+          this.objCreateServcice.setNewState({ busy: false });
           this.notify.error(this.translate.instant('yuv.framework.object-create.notify.error'));
         }
       );
@@ -406,37 +399,6 @@ export class ObjectCreateComponent implements OnDestroy {
 
   afoUploadCancel() {
     this.resetState();
-  }
-
-  clickedPendingAFO(dlm: SearchResultItem) {
-    const alreadySelected = this.afoCreate?.dmsObject.selected.id === dlm.fields.get(BaseObjectTypeField.OBJECT_ID);
-    if (alreadySelected) {
-      this.resetState();
-    } else {
-      this.objCreateServcice.setNewState({ busy: true });
-      this.objCreateServcice.setNewBreadcrumb(CurrentStep.AFO_INDEXDATA);
-      this.afoCreate = null;
-      this.dmsService.getDmsObject(dlm.fields.get(BaseObjectTypeField.OBJECT_ID)).subscribe((dmsObject) => {
-        this.selectedObjectType = this.system.getObjectType(dlm.objectTypeId, true);
-
-        this.objCreateServcice.setNewState({ currentStep: CurrentStep.AFO_INDEXDATA, busy: false });
-        const selectableSOTs = this.system
-          .getFloatingSecondaryObjectTypes(this.selectedObjectType.id, true)
-          .filter((sot) => !sot.classification || !sot.classification.includes(SecondaryObjectTypeClassification.REQUIRED));
-        this.afoCreate = {
-          dmsObject: {
-            items: [dmsObject],
-            selected: dmsObject
-          },
-          floatingSOT: {
-            items: selectableSOTs
-          }
-        };
-        if (selectableSOTs.length === 1) {
-          this.afoSelectFloatingSOT(selectableSOTs[0]);
-        }
-      });
-    }
   }
 
   fileChosen(files: File[]) {
@@ -477,11 +439,12 @@ export class ObjectCreateComponent implements OnDestroy {
     if (this.context) {
       data[BaseObjectTypeField.PARENT_ID] = this.context.id;
     }
-    this.busy = true;
+    this.objCreateServcice.setNewState({ busy: true });
+
     const isAFO = this.system.isAdvancedFilingObjectType(this.selectedObjectType) || !!this.selectedObjectType.floatingParentType;
     (isAFO ? this.createAFO(data) : this.createDefault(data)).subscribe(
       (ids: string[]) => {
-        this.busy = false;
+        this.objCreateServcice.setNewState({ busy: false });
         // this.notify.success(this.translate.instant('yuv.framework.object-create.notify.success'));
         if (this.createAnother || this.afoCreate?.dmsObject.selected) {
           this.selectedObjectType = null;
@@ -493,10 +456,18 @@ export class ObjectCreateComponent implements OnDestroy {
         }
       },
       (err) => {
-        this.busy = false;
+        this.objCreateServcice.setNewState({ busy: false });
         this.notify.error(this.translate.instant('yuv.framework.object-create.notify.error'));
       }
     );
+  }
+
+  createAfoCancel() {
+    this.notify.info(this.translate.instant('yuv.framework.object-create.notify.afo.cancel'));
+    this.selectedObjectType = null;
+    this.files = [];
+    this.resetState();
+    this.reset();
   }
 
   /**

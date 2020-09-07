@@ -1,6 +1,6 @@
 <ng-container *ngIf="!invalidUser">
-  <div yuvOfflineDisabled class="yuv-object-create panel" [yuvBusyOverlay]="state.busy || busy"
-    *ngIf="state$ | async as state" cdkTrapFocus>
+  <div yuvOfflineDisabled class="yuv-object-create panel" [yuvBusyOverlay]="state.busy" *ngIf="state$ | async as state"
+    cdkTrapFocus>
     <header>
       <h1>
         {{ title }}
@@ -9,7 +9,7 @@
       <div class="breadcrumb">
         <ng-container *ngFor="let b of breadcrumb$ | async">
           <div class="item" *ngIf="b.visible" (click)="goToStep(b.step)"
-            [ngClass]="{ current: b.step === state.currentStep }">
+            [ngClass]="{ current: b.step === state.currentStep, disabled: state.currentStep === 'afo_indexdata' }">
             <span>{{ b.label }}</span>
           </div>
         </ng-container>
@@ -167,8 +167,17 @@
         <yuv-checkbox [(ngModel)]="createAnother"></yuv-checkbox>
       </yuv-form-input>
 
-      <button class="primary create" [disabled]="!state.done" (click)="create()"
-        translate>yuv.framework.object-create.footer.create</button>
+      <ng-container *ngIf="state.currentStep === 'afo_indexdata'; else tplCreate">
+        <button (click)="createAfoCancel()" translate>yuv.framework.object-create.footer.create.afo.cancel</button>
+
+        <button class="primary create" (click)="create()"
+          translate>yuv.framework.object-create.footer.create.afo.next</button>
+      </ng-container>
+
+      <ng-template #tplCreate>
+        <button class="primary create" [disabled]="!state.done" (click)="create()"
+          translate>yuv.framework.object-create.footer.create</button>
+      </ng-template>
     </footer>
   </div>
 </ng-container>
