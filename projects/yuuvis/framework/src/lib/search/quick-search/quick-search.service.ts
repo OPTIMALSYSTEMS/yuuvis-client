@@ -188,7 +188,7 @@ export class QuickSearchService {
   private parseStoredFilters(filters: string): any {
     let res = {};
     try {
-      JSON.parse(filters);
+      res = JSON.parse(filters);
     } catch (e) {
       console.error(e);
     }
