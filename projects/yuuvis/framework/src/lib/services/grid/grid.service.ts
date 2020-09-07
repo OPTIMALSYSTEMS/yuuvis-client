@@ -20,8 +20,10 @@ import {
 } from '@yuuvis/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { ObjectTypeIconComponent } from '../../common/components/object-type-icon/object-type-icon.component';
 import { FileSizePipe, LocaleDatePipe, LocaleNumberPipe } from '../../pipes';
 import { CellRenderer } from './grid.cellrenderer';
+
 /**
  * Providing grid configuration for components that use ag-grid.
  */
@@ -262,8 +264,7 @@ export class GridService {
   private addColDefAttrsByField(colDef: ColDef, field: ObjectTypeField) {
     switch (field.id) {
       case BaseObjectTypeField.OBJECT_TYPE_ID: {
-        colDef.cellRenderer = this.customContext(CellRenderer.typeCellRenderer);
-        colDef.width = 80;
+        colDef.cellRendererFramework = ObjectTypeIconComponent;
         colDef.cellClass = 'res-ico';
         break;
       }

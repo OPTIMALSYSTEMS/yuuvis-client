@@ -16,7 +16,6 @@ import { AutoComplete } from 'primeng/autocomplete';
 import { forkJoin, Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { IconRegistryService } from '../../../common/components/icon/service/iconRegistry.service';
-import { CellRenderer } from '../../../services/grid/grid.cellrenderer';
 import { reference } from '../../../svg.generated';
 import { ReferenceEntry } from './reference.interface';
 
@@ -178,18 +177,9 @@ export class ReferenceComponent implements ControlValueAccessor, AfterViewInit {
           const x = {};
           res.items.forEach((r) => (x[r.fields.get(BaseObjectTypeField.OBJECT_ID)] = r));
           return ids.map((id) => {
-            const crParams = {
-              value: this.systemService.getLeadingObjectTypeID(
-                x[id].fields.get(BaseObjectTypeField.OBJECT_TYPE_ID),
-                x[id].fields.get(BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS)
-              ),
-              context: {
-                system: this.systemService
-              }
-            };
             return {
               id: id,
-              iconSVG: x[id] ? CellRenderer.typeCellRenderer(crParams) : null,
+              objectTypeId: x[id].fields.get(BaseObjectTypeField.OBJECT_TYPE_ID),
               title: x[id] ? x[id].fields.get(ClientDefaultsObjectTypeField.TITLE) : this.noAccessTitle,
               description: x[id] ? x[id].fields.get(ClientDefaultsObjectTypeField.DESCRIPTION) : null
             };
@@ -208,7 +198,7 @@ export class ReferenceComponent implements ControlValueAccessor, AfterViewInit {
 
             return {
               id: i.fields.get(BaseObjectTypeField.OBJECT_ID),
-              iconSVG: CellRenderer.typeCellRenderer(crParams),
+              objectTypeId: i.fields.get(BaseObjectTypeField.OBJECT_TYPE_ID),
               title: i.fields.get(ClientDefaultsObjectTypeField.TITLE),
               description: i.fields.get(ClientDefaultsObjectTypeField.DESCRIPTION)
             };
@@ -225,18 +215,9 @@ export class ReferenceComponent implements ControlValueAccessor, AfterViewInit {
         .pipe(
           map((r) =>
             r.items.map((i) => {
-              const crParams = {
-                value: this.systemService.getLeadingObjectTypeID(
-                  i.fields.get(BaseObjectTypeField.OBJECT_TYPE_ID),
-                  i.fields.get(BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS)
-                ),
-                context: {
-                  system: this.systemService
-                }
-              };
               return {
                 id: i.fields.get(BaseObjectTypeField.OBJECT_ID),
-                iconSVG: CellRenderer.typeCellRenderer(crParams),
+                objectTypeId: i.fields.get(BaseObjectTypeField.OBJECT_TYPE_ID),
                 // title and description may not be present
                 title: i.fields.get(ClientDefaultsObjectTypeField.TITLE) || i.fields.get(BaseObjectTypeField.OBJECT_ID),
                 description: i.fields.get(ClientDefaultsObjectTypeField.DESCRIPTION)

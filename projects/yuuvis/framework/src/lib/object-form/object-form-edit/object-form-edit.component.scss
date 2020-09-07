@@ -9,12 +9,27 @@
   overflow: auto;
   display: grid;
   grid-template-columns: 1fr;
-  grid-template-rows: 1fr auto;
-  grid-template-areas: 'form' 'buttons';
+  grid-template-rows: auto 1fr auto;
+  grid-template-areas: 'fsot' 'form' 'buttons';
 
   yuv-combined-object-form,
   yuv-object-form {
     grid-area: form;
+    overflow-y: auto;
+  }
+
+  .fsot {
+    grid-area: fsot;
+    display: flex;
+    background-color: var(--color-accent);
+    // padding: calc(var(--app-pane-padding) / 4) var(--app-pane-padding);
+    justify-content: flex-end;
+    > button {
+      color: #fff;
+      margin: calc(var(--app-pane-padding) / 4);
+      border: 1px solid #fff;
+      padding: calc(var(--app-pane-padding) / 4) calc(var(--app-pane-padding) / 2);
+    }
   }
 
   .form-controls {
@@ -42,6 +57,7 @@
       @include gap(4px);
       align-items: center;
       justify-content: flex-end;
+      width: 100%;
 
       button {
         flex: 0 0 auto;

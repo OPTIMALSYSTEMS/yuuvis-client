@@ -22,7 +22,6 @@
       padding: 0 calc(var(--app-pane-padding) / 2);
     }
   }
-
   .ag-row {
     border-color: var(--panel-divider-color);
     color: var(--text-color-body);
@@ -60,6 +59,10 @@
     display: flex;
     align-items: center;
     border: 1px solid transparent;
+
+    &.ag-cell-last-left-pinned:not(.ag-cell-range-right):not(.ag-cell-range-single-cell) {
+      border-right-color: var(--panel-divider-color);
+    }
 
     &.ag-cell-focus {
       background-color: var(--item-focus-background-color);

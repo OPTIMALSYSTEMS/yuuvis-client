@@ -36,8 +36,8 @@ import {
 })
 export class SystemService {
   private STORAGE_KEY = 'yuv.core.system.definition';
-  // ID of the secondary object type that serves as cllient defaults
-  private CLIENT_DEFAULTS = 'appClient:clientdefaults';
+  // cached icons to avaoid backend calls (session cache)
+  private iconCache = {};
 
   private system: SystemDefinition;
   private systemSource = new ReplaySubject<SystemDefinition>();
@@ -147,6 +147,24 @@ export class SystemService {
   }
 
   /**
+   * Get the secondary object types of an object type that have the `primary`
+   * classification.
+   * @param objectTypeId ID of the object type
+   */
+  getPrimaryFSOTs(objectTypeId: string): SecondaryObjectType[] {
+    return this.getFloatingSecondaryObjectTypes(objectTypeId).filter((sot) => sot.classification?.includes(SecondaryObjectTypeClassification.PRIMARY));
+  }
+
+  /**
+   * Get the secondary object types of an object type that have the `required`
+   * classification.
+   * @param objectTypeId ID of the object type
+   */
+  getRequiredFSOTs(objectTypeId: string): SecondaryObjectType[] {
+    return this.getFloatingSecondaryObjectTypes(objectTypeId).filter((sot) => sot.classification?.includes(SecondaryObjectTypeClassification.REQUIRED));
+  }
+
+  /**
    * Applicable floating SOTs are SOTs that could be added by a users choice.
    * Regular floating SOTs may also contain SOTs that are applied
    * automatically (classification: 'appClient:required'). Those types will not be
@@ -216,26 +234,36 @@ export class SystemService {
   /**
    * Get the icon for an object type. This will return an SVG as a string.
    * @param objectTypeId ID of the object type
+   * * @param fallback ID of a fallback icon that should be used if the given object type has no icon yet
    */
-  getObjectTypeIcon(objectTypeId: string): string {
-    if (objectTypeId) {
-      const type = this.getObjectType(objectTypeId);
-      // const sot = this.getSecondaryObjectType(objectTypeId);
-      // TODO: point to actual icon URI
-      // AFOs (Advanced filing objects) should have a more prominent icon
-      // TODO: Handle different icons in resources service
-      if (type && this.isFloatingObjectType(type)) {
-        return '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M6 2c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6H6zm7 7V3.5L18.5 9H13z"/><path d="M0 0h24v24H0V0z" fill="none"/><circle fill="#fff" cx="18.1" cy="18" r="5"/><path class="accent" d="M18,12c-3.3,0-6,2.7-6,6s2.7,6,6,6c3.3,0,6-2.7,6-6S21.3,12,18,12z M20.5,21.6L18,20.1l-2.5,1.5l0.7-2.9l-2.2-1.9l3-0.3l1.2-2.7l1.2,2.7l3,0.3l-2.2,1.9L20.5,21.6z"/></svg>';
-      } else if (type.floatingParentType) {
-        return '<svg xmlns="http://www.w3.org/2000/svg"  width="24" height="24" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path class="accent" d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h5v8l-2.5-1.5L6 12V4z"/></svg>';
-      } else {
-        return type && type.isFolder
-          ? '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/><path d="M0 0h24v24H0z" fill="none"/></svg>'
-          : '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M6 2c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6H6zm7 7V3.5L18.5 9H13z"/><path d="M0 0h24v24H0z" fill="none"/></svg>';
+  getObjectTypeIcon(objectTypeId: string, fallback?: string): Observable<string> {
+    const fb = this.getFallbackIcon(objectTypeId, fallback);
+    const uri = `/resources/icon/${encodeURIComponent(objectTypeId)}${fb ? `?fb=${encodeURIComponent(fallback)}` : ''}`;
+    return !!this.iconCache[uri] ? of(this.iconCache[objectTypeId]) : this.backend.get(uri);
+  }
+
+  /**
+   * Get the URI of an object type icon.
+   * @param objectTypeId ID of the object type
+   * @param fallback ID of a fallback icon that should be used if the given object type has no icon yet
+   */
+  getObjectTypeIconUri(objectTypeId: string, fallback?: string): string {
+    const fb = this.getFallbackIcon(objectTypeId, fallback);
+    const uri = `/resources/icon/${encodeURIComponent(objectTypeId)}${fb ? `?fallback=${encodeURIComponent(fb)}` : ''}`;
+    return `${this.backend.getApiBase(ApiBase.apiWeb)}${uri}`;
+  }
+
+  private getFallbackIcon(objectTypeId: string, fallback?: string): string {
+    if (!fallback) {
+      // add default fallbacks for system:document and system:folder if now other fallback has been provided
+      const ot = this.getObjectType(objectTypeId);
+      fallback = ot.isFolder ? 'system:folder' : 'system:document';
+      if (this.isFloatingObjectType(ot)) {
+        // types that do not have no object type assigned to them (primary FSOTs)
+        fallback = 'system:dlm';
       }
-    } else {
-      return null;
     }
+    return fallback;
   }
 
   /**
@@ -334,7 +362,7 @@ export class SystemService {
     if (this.isFloatingObjectType(ot)) {
       const objectTypeIDs = [];
       // if the main type itself has properties, add them
-      if (ot.fields.filter((f) => !f.id.startsWith('system:')).length) {
+      if (ot.fields.filter((f) => !this.isSystemProperty(f)).length) {
         objectTypeIDs.push(ot.id);
       }
       const sots: string[] = dmsObject.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS];
@@ -348,6 +376,14 @@ export class SystemService {
     } else {
       return of(null);
     }
+  }
+
+  /**
+   * Determine whether or not the given object type field is a system field
+   * @param field Object type field to be checked
+   */
+  private isSystemProperty(field: ObjectTypeField): boolean {
+    return field.id.startsWith('system:') || field.id === BaseObjectTypeField.LEADING_OBJECT_TYPE_ID;
   }
 
   /**
@@ -499,24 +535,34 @@ export class SystemService {
     const floatingTypes: ObjectType[] = [];
     objectTypes.forEach((ot) => {
       if (this.isFloatingObjectType(ot)) {
-        ot.secondaryObjectTypes
+        const primaryFSOTs = ot.secondaryObjectTypes
           .filter((sot) => !sot.static)
           .map((sot) => objectTypesQA[sot.id])
-          .filter((def: SchemaResponseTypeDefinition) => !def.classification?.includes(SecondaryObjectTypeClassification.REQUIRED))
-          .forEach((def: SchemaResponseTypeDefinition) => {
-            floatingTypes.push({
-              id: def.id,
-              description: def.description,
-              classification: ot.classification,
-              floatingParentType: ot.id,
-              baseId: ot.baseId,
-              creatable: ot.creatable && this.isCreatable(def.id),
-              contentStreamAllowed: ot.contentStreamAllowed,
-              isFolder: ot.isFolder,
-              secondaryObjectTypes: [],
-              fields: [...ot.fields, ...this.resolveObjectTypeFields(objectTypesQA[def.id], propertiesQA, objectTypesQA)]
-            });
+          .filter((def: SchemaResponseTypeDefinition) => def.classification?.includes(SecondaryObjectTypeClassification.PRIMARY));
+
+        // take care of 'required' FSOTs as well, because they are applied automatically,
+        // so their fields are always part of the floating type
+        const requiredFSOTs = ot.secondaryObjectTypes
+          .filter((sot) => !sot.static)
+          .map((sot) => objectTypesQA[sot.id])
+          .filter((def: SchemaResponseTypeDefinition) => def.classification?.includes(SecondaryObjectTypeClassification.REQUIRED));
+
+        primaryFSOTs.forEach((def: SchemaResponseTypeDefinition) => {
+          floatingTypes.push({
+            id: def.id,
+            description: def.description,
+            classification: ot.classification,
+            floatingParentType: ot.id,
+            baseId: ot.baseId,
+            creatable: ot.creatable && this.isCreatable(def.id),
+            contentStreamAllowed: ot.contentStreamAllowed,
+            isFolder: ot.isFolder,
+            secondaryObjectTypes: [],
+            fields: [...ot.fields, ...this.resolveObjectTypeFields(objectTypesQA[def.id], propertiesQA, objectTypesQA)].concat(
+              ...requiredFSOTs.map((fsot) => this.resolveObjectTypeFields(objectTypesQA[fsot.id], propertiesQA, objectTypesQA))
+            )
           });
+        });
       }
     });
 
@@ -540,6 +586,7 @@ export class SystemService {
    */
   private resolveObjectTypeFields(schemaTypeDefinition: SchemaResponseTypeDefinition, propertiesQA: any, objectTypesQA: any) {
     // const rootTypes = [SystemType.DOCUMENT, SystemType.FOLDER, SystemType.SOT];
+
     const objectTypeFieldIDs = schemaTypeDefinition.propertyReference.map((pr) => pr.value);
     if (schemaTypeDefinition.secondaryObjectTypeId) {
       schemaTypeDefinition.secondaryObjectTypeId

@@ -11,6 +11,10 @@ export const AdministrationRoles = {
   SYSTEM: 'YUUVIS_SYSTEM_INTEGRATOR'
 };
 
+export const UserRoles = {
+  CREATE_OBJECT: 'YUUVIS_CREATE_OBJECT'
+};
+
 export const RetentionField = {
   EXPIRATION_DATE: 'system:rmExpirationDate',
   START_OF_RETENTION: 'system:rmStartOfRetention',
@@ -35,7 +39,9 @@ export const BaseObjectTypeField = {
   SECONDARY_OBJECT_TYPE_IDS: 'system:secondaryObjectTypeIds',
   BASE_TYPE_ID: 'system:baseTypeId',
   TAGS: 'system:tags',
-  OBJECT_ID: 'system:objectId'
+  OBJECT_ID: 'system:objectId',
+  // TODO: replace by actual system field identifier once available
+  LEADING_OBJECT_TYPE_ID: 'appClientsystem:leadingTypeId'
 };
 
 // Fields provided by a special secondary object type that most of
@@ -108,4 +114,16 @@ export const InternalFieldType = {
   STRING_ORGANIZATION: 'string:organization',
   STRING_REFERENCE: 'string:reference',
   STRING_CATALOG: 'string:catalog'
+};
+
+export enum ObjectTag {
+  AFO = 'appClient:dlm:prepare'
+}
+
+// possible states of a DLM item
+export const AFO_STATE = {
+  // created but no FSOT assigned so far
+  IN_PROGRESS: 0,
+  // an FSOT has been assigned
+  READY: 1
 };

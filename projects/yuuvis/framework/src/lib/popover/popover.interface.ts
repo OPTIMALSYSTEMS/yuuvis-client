@@ -5,6 +5,7 @@ export interface PopoverConfig<T = any> {
   disableClose?: boolean;
   /** @ignore */
   disableSmallScreenClose?: boolean;
+  disposeOnNavigation?: boolean;
   /** @ignore */
   panelClass?: string | string[];
   width?: number | string;

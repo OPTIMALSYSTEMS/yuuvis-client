@@ -11,6 +11,7 @@ export class SearchQuery {
   aggs: string[];
   from: number;
   types: string[] = [];
+  tags: any;
   get targetType(): string | null {
     return this.types && this.types.length === 1 ? this.types[0] : null;
   }
@@ -29,6 +30,10 @@ export class SearchQuery {
 
       if (searchQueryProperties.size) {
         this.size = searchQueryProperties.size;
+      }
+
+      if (searchQueryProperties.tags) {
+        this.tags = searchQueryProperties.tags;
       }
 
       if (searchQueryProperties.filters) {
@@ -205,6 +210,10 @@ export class SearchQuery {
 
     if (this.term) {
       queryJson.term = this.term;
+    }
+
+    if (this.tags) {
+      queryJson.tags = this.tags;
     }
 
     if (this.from) {

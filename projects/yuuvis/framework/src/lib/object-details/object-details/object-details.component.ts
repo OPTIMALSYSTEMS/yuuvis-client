@@ -14,7 +14,6 @@ import {
 import { TabPanel } from 'primeng/tabview';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
-import { CellRenderer } from '../../services/grid/grid.cellrenderer';
 import { kebap, noFile, refresh } from '../../svg.generated';
 import { ContentPreviewService } from '../content-preview/service/content-preview.service';
 import { ResponsiveTabContainerComponent } from './../../components/responsive-tab-container/responsive-tab-container.component';
@@ -55,7 +54,6 @@ export class ObjectDetailsComponent implements OnDestroy {
 
   @HostBinding('class.yuv-object-details') _hostClass = true;
   nofileIcon = noFile.data;
-  objectIcon = '';
   busy: boolean;
   userIsAdmin: boolean;
   actionMenuVisible = false;
@@ -80,7 +78,6 @@ export class ObjectDetailsComponent implements OnDestroy {
           system: this.systemService
         }
       };
-      this.objectIcon = CellRenderer.typeCellRenderer(params);
 
       this.fileDropLabel = !object.content
         ? this.translate.instant('yuv.framework.object-details.filedrop.content.add')

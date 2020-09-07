@@ -15,18 +15,18 @@
           background: transparent;
 
           yuv-object-form {
-            overflow: auto;
+            // overflow: auto;
             background: transparent;
 
             .yuv-object-form {
-              margin: var(--app-pane-padding);
+              padding: var(--app-pane-padding);
               background: var(--panel-background);
               box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1);
             }
           }
 
           yuv-combined-object-form {
-            margin: var(--app-pane-padding);
+            padding: var(--app-pane-padding);
 
             .yuv-combined-object-form {
               padding: calc(var(--app-pane-padding) / 2);

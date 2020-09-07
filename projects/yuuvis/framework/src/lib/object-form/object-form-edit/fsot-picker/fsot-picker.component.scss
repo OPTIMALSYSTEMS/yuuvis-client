@@ -1,0 +1,16 @@
+:host {
+  .title {
+    padding: calc(var(--app-pane-padding) / 2) var(--app-pane-padding);
+    background-color: var(--color-accent);
+    color: #fff;
+  }
+  .item {
+    padding: calc(var(--app-pane-padding) / 2) var(--app-pane-padding);
+    border-bottom: 1px solid var(--panel-divider-color);
+    cursor: pointer;
+    transition: background-color 200ms ease-in-out;
+    &:hover {
+      background-color: var(--item-focus-background-color);
+    }
+  }
+}

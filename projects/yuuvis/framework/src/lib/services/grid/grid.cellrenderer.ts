@@ -1,4 +1,4 @@
-import { BaseObjectTypeField, SearchFilter, SearchQuery, SecondaryObjectTypeClassification, Utils } from '@yuuvis/core';
+import { SearchFilter, SearchQuery, SecondaryObjectTypeClassification, Utils } from '@yuuvis/core';
 
 /**
  * @ignore
@@ -22,18 +22,18 @@ export class CellRenderer {
     return '';
   }
 
-  static typeCellRenderer(param: any) {
-    let { value } = param;
-    const { context } = param;
-
-    if (param.data && param.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS]) {
-      value = context.system.getLeadingObjectTypeID(value, param.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS]);
-    }
-
-    const ico = context.system.getObjectTypeIcon(value) || '';
-    const title = context.system.getLocalizedResource(`${value}_label`) || '';
-    return `<span title="${title}">${ico}</span>`;
-  }
+  // static typeCellRenderer(param: any) {
+  //   let { value } = param;
+  //   const { context } = param;
+  //   if (param.data && param.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS]) {
+  //     value = context.system.getLeadingObjectTypeID(value, param.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS]);
+  //   }
+  //   const title = context.system.getLocalizedResource(`${value}_label`) || '';
+  //   const ico = context.system.getObjectTypeIconUri(value);
+  //   return `<object width="24" height="24" type="image/svg+xml" title="${title}" data="${ico}" class="svg-object">
+  //   <img src="${ico}" alt="${title}">
+  //   </object>`;
+  // }
 
   static sotCellRenderer(param: any) {
     const { context, value } = param;
@@ -51,21 +51,6 @@ export class CellRenderer {
           .join('')
       : '';
   }
-
-  // static iconCellRenderer(param) {
-  //   let val = '';
-  //   if (param.value && (param.value.url || param.value.iconId)) {
-  //     let iconUrl = param.value.url
-  //       ? Utils.getBaseHref() + param.value.url
-  //       : param.context.backend.getServiceBase() +
-  //         '/ui/icon/' +
-  //         param.value.iconId +
-  //         '.svg';
-  //     let label = param.value.label;
-  //     val = `<img class="object-type" src="${iconUrl}" title="${label}"><span class="object-type-label">${label}</span>`;
-  //   }
-  //   return val;
-  // }
 
   static emailCellRenderer(param) {
     return param.value ? `<a href="mailto:${Utils.formatMailTo(param?.value, true)}">${Utils.escapeHtml(param.value)}</a>` : '';

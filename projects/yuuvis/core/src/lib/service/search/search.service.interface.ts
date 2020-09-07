@@ -51,6 +51,7 @@ export interface SearchQueryProperties {
   types?: string[];
   filters?: any;
   sort?: any;
+  tags?: any;
 }
 
 /**

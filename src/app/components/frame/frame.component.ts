@@ -9,11 +9,13 @@ import {
   ConnectionState,
   DmsService,
   EventService,
+  ObjectTag,
   SearchFilter,
   SearchQuery,
   SystemService,
   TranslateService,
   UploadResult,
+  UserRoles,
   UserService,
   YuvEventType,
   YuvUser
@@ -43,9 +45,28 @@ import { FrameService } from './frame.service';
 export class FrameComponent implements OnInit, OnDestroy {
   @ViewChild('moveNotification') moveNotification: TemplateRef<any>;
 
+  // query for fetching pending AFOs
+  pendingAFOsQuery = JSON.stringify({
+    tags: [
+      {
+        name: ObjectTag.AFO,
+        filters: {
+          filters: [
+            {
+              f: 'state',
+              o: SearchFilter.OPERATOR.EQUAL,
+              v1: '0'
+            }
+          ]
+        }
+      }
+    ]
+  });
+
   swUpdateAvailable: boolean;
   hideAppBar: boolean;
   disableFileDrop: boolean;
+  disableCreate: boolean;
   showSideBar: boolean;
   screenSmall: boolean;
   showSearch: boolean;
@@ -94,6 +115,12 @@ export class FrameComponent implements OnInit, OnDestroy {
     this.iconRegistry.registerIcons([search, drawer, refresh, add, userDisabled, offline, close, openContext]);
     this.userService.user$.subscribe((user: YuvUser) => {
       this.user = user;
+      if (user) {
+        this.disableCreate = !user.authorities.includes(UserRoles.CREATE_OBJECT);
+        if (this.disableCreate) {
+          this.disableFileDrop = true;
+        }
+      }
     });
     this.update.available.subscribe((update) => (this.swUpdateAvailable = true));
     this.layoutService.layoutSettings$.subscribe((settings: LayoutSettings) => this.applyLayoutSettings(settings));
@@ -267,7 +294,7 @@ export class FrameComponent implements OnInit, OnDestroy {
       // transparent app-bar?
       this.tab = e.urlAfterRedirects.startsWith('/dashboard');
       // disable fileDrop being on create state
-      this.disableFileDrop = e.urlAfterRedirects.startsWith('/create');
+      this.disableFileDrop = this.disableCreate || e.urlAfterRedirects.startsWith('/create');
       // hide open search bar when leaving state
       this.toggleSearch(false);
     });

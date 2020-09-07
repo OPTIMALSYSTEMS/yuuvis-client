@@ -36,6 +36,10 @@ export class DashboardComponent implements OnInit {
     }
   }
 
+  onQuickSearchReset() {
+    this.appSearch.setQuery(new SearchQuery());
+  }
+
   onTypeAggregation(aggs: ObjectTypeAggregation[]) {
     this.aggs = aggs;
     this.hasAggs = aggs && aggs.length > 0;
