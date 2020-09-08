@@ -211,7 +211,7 @@ export class ObjectFormEditComponent implements OnDestroy {
   private getCombinedFormAddInput(secondaryObjectTypeIDs: string[], enableEditSOT = true): Observable<CombinedFormAddInput[]> {
     return this.systemService.getObjectTypeForms(secondaryObjectTypeIDs, Situation.EDIT).pipe(
       map((res: { [key: string]: any }) => {
-        const fi: { id: string; formModel: any; disabled: boolean; enableEditSOT: boolean }[] = [];
+        const fi: CombinedFormAddInput[] = [];
         Object.keys(res).forEach((k) => {
           fi.push({
             id: k,
@@ -243,7 +243,7 @@ export class ObjectFormEditComponent implements OnDestroy {
         this.busy = true;
         this.getCombinedFormAddInput(add, true).subscribe((res: CombinedFormAddInput[]) => {
           if (res.length > 0) {
-            this.afoObjectForm.addForms(res, {});
+            this.afoObjectForm.addForms(res, this._dmsObject.data);
             this.getApplicableSecondaries(this._dmsObject);
           }
           this._sotChanged = {
@@ -372,30 +372,12 @@ export class ObjectFormEditComponent implements OnDestroy {
 
     this.getCombinedFormAddInput(sotsToBeAdded, enableEditSOT).subscribe((res: CombinedFormAddInput[]) => {
       if (res.length > 0) {
-        this.afoObjectForm.addForms(res, {});
+        this.afoObjectForm.addForms(res, this._dmsObject.data);
         this.getApplicableSecondaries(this._dmsObject);
         this._sotChanged.applied = [...this._sotChanged.applied, ...sotsToBeAdded];
       }
       this.busy = false;
     });
-
-    // this.systemService.getObjectTypeForms(sotsToBeAdded, Situation.EDIT).subscribe((res: { [key: string]: any }) => {
-    //   const fi: { id: string; formModel: any; disabled: boolean; enableEditSOT: boolean }[] = [];
-    //   Object.keys(res).forEach((k) => {
-    //     fi.push({
-    //       id: k,
-    //       formModel: res[k],
-    //       disabled: this.formDisabled || !this.isEditable(this._dmsObject),
-    //       enableEditSOT: enableEditSOT
-    //     });
-    //   });
-    //   if (fi.length > 0) {
-    //     this.afoObjectForm.addForms(fi, {});
-    //     this.getApplicableSecondaries(this._dmsObject);
-    //     this._sotChanged = true;
-    //   }
-    //   this.busy = false;
-    // });
     if (popoverRef) {
       popoverRef.close();
     }
