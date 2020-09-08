@@ -1,0 +1,34 @@
+<yuv-panel class="process-list" [title]="header.title" 
+  [description]="header.description">
+  <yuv-icon class="header-icon" [icon]="header.icon"></yuv-icon>
+
+  <div class="actions" yuvOfflineDisabled>
+    <yuv-action-menu-bar class="actions">
+      <yuv-icon (click)="refresh()" [title]="'yuv.framework.list.refresh' | translate" class="button refresh-button"
+        icon="refresh"></yuv-icon>
+    </yuv-action-menu-bar>
+  </div>
+
+  <div class="content">
+    <yuv-responsive-data-table yuvOfflineDisabled #dataTable class="data-table process" *ngIf="processData"
+      [layoutOptionsKey]="layoutOptionsKey"
+      [viewMode]="viewMode"
+      [data]="processData"
+      (selectionChanged)="select($event)"
+      >
+    </yuv-responsive-data-table>
+  </div>
+
+  <section class="footer" *ngIf="showFooter">
+    <yuv-icon class="mode" icon="listModeDefault"
+      title="{{ 'yuv.framework.version-list.config.mode.default' | translate}}"
+      [ngClass]="{'current': dataTable?.currentViewMode === 'standard'}" (click)="viewMode = 'standard'">
+    </yuv-icon>
+    <yuv-icon class="mode" icon="listModeGrid" title="{{ 'yuv.framework.version-list.config.mode.grid' | translate}}"
+      [ngClass]="{'current': dataTable?.currentViewMode === 'grid'}" (click)="viewMode = 'grid'"></yuv-icon>
+    <yuv-icon class="mode" icon="listModeSimple"
+      title="{{ 'yuv.framework.version-list.config.mode.horizontal' | translate}}"
+      [ngClass]="{'current': dataTable?.currentViewMode === 'horizontal'}" (click)="viewMode = 'horizontal'">
+    </yuv-icon>
+  </section> -->
+</yuv-panel>

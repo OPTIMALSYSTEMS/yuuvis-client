@@ -6,8 +6,9 @@ export interface ProcessInstance {
   processDefinitionKey: ProcessDefinitionKey;
   name: string;
   businessKey: string;
-  returnVariables: boolean;
-  startFormVariables: StartFormVariable[];
+  returnVariables?: boolean;
+  // startFormVariables?: StartFormVariable[];
+  variables?: StartFormVariable[];
 }
 
 // tslint:disable-next-line: no-empty-interface
@@ -29,7 +30,7 @@ export interface StartFormVariable {
   value: string;
 }
 
-export interface ProcessDataResponse {
+export interface ProcessResponse {
   data: ProcessData[];
   total: number;
   start: number;
@@ -60,6 +61,7 @@ export interface ProcessData extends Processes {
   referenceId: null;
   referenceType: null;
   completed: boolean;
+  taskId?: string;
 }
 
 export interface TaskData extends Processes {
@@ -110,7 +112,15 @@ export class InboxItem {
   }
 
   get description(): string {
-    return this.title;
+    return this.originaData.variables.find((v) => v.name === 'whatAbout').value as string;
+  }
+
+  get subject(): string {
+    return this.originaData.variables.find((v) => v.name === 'whatAbout').value as string;
+  }
+
+  get documentId(): string {
+    return this.originaData.variables.find((v) => v.name === 'documentId').value as string;
   }
 
   get type(): string {
@@ -134,7 +144,7 @@ export class FollowUp {
   }
 
   get description(): string {
-    return this.title;
+    return this.originaData.variables.find((v) => v.name === 'whatAbout').value as string;
   }
 
   get type(): string {
@@ -143,6 +153,14 @@ export class FollowUp {
 
   get businessKey(): string {
     return this.originaData.businessKey;
+  }
+
+  get subject(): string {
+    return this.originaData.variables.find((v) => v.name === 'whatAbout').value as string;
+  }
+
+  get documentId(): string {
+    return this.originaData.variables.find((v) => v.name === 'documentId').value as string;
   }
 
   get startTime(): Date {
