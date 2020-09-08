@@ -115,7 +115,6 @@ export class SummaryComponent implements OnInit {
   private getSummaryConfiguration(dmsObject: DmsObject) {
     const skipFields: string[] = [
       ContentStreamField.ID,
-      BaseObjectTypeField.OBJECT_TYPE_ID,
       BaseObjectTypeField.TENANT,
       BaseObjectTypeField.ACL,
       BaseObjectTypeField.PARENT_ID,
@@ -133,9 +132,7 @@ export class SummaryComponent implements OnInit {
       { key: BaseObjectTypeField.VERSION_NUMBER, order: 6 },
       { key: ContentStreamField.FILENAME, order: 7 },
       { key: ContentStreamField.LENGTH, order: 8 },
-      { key: ContentStreamField.MIME_TYPE, order: 9 },
-      { key: BaseObjectTypeField.OBJECT_ID, order: 10 },
-      { key: BaseObjectTypeField.PARENT_ID, order: 11 }
+      { key: ContentStreamField.MIME_TYPE, order: 9 }
     ];
 
     const patentFields: string[] = [
@@ -151,7 +148,14 @@ export class SummaryComponent implements OnInit {
       : this.systemService.getBaseDocumentType().fields.map((f) => f.id);
     baseFields = baseFields.filter((fields) => defaultBaseFields.filter((defFields) => defFields.key === fields).length === 0);
 
-    const extraFields: string[] = [ContentStreamField.DIGEST, ContentStreamField.ARCHIVE_PATH, ContentStreamField.REPOSITORY_ID];
+    const extraFields: string[] = [
+      ContentStreamField.DIGEST,
+      ContentStreamField.ARCHIVE_PATH,
+      ContentStreamField.REPOSITORY_ID,
+      BaseObjectTypeField.OBJECT_ID,
+      BaseObjectTypeField.PARENT_ID,
+      BaseObjectTypeField.OBJECT_TYPE_ID
+    ];
     baseFields.map((fields) => extraFields.push(fields));
 
     return { skipFields, extraFields, patentFields, defaultBaseFields };
