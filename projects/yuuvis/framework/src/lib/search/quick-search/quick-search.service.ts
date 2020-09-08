@@ -139,7 +139,7 @@ export class QuickSearchService {
             id: '#' + Utils.uuid(),
             highlight: true,
             label: `* ${g.filters
-              .map((f) => availableObjectTypeFields.find((s) => s.id === f.property).label)
+              .map((f) => (availableObjectTypeFields.find((s) => s.id === f.property) || { label: '?' }).label)
               .join(` ${SearchFilterGroup.OPERATOR_LABEL[g.operator]} `)} *`,
             value: [g]
           }
@@ -185,9 +185,12 @@ export class QuickSearchService {
   }
 
   private isMatching(v: Selectable, available: string[]) {
-    // TODO: support partially matching ???
-    const properties = SearchFilterGroup.fromArray(v.value).filters.map((v) => v.property);
-    return properties.every((p) => available.includes(p));
+    const fg = SearchFilterGroup.fromArray(v.value);
+    if (fg.operator === SearchFilterGroup.OPERATOR.AND) {
+      return fg.filters.map((v) => v.property).every((p) => available.includes(p));
+    } else {
+      return fg.group.some((f) => this.isMatching({ ...v, value: [f] }, available));
+    }
   }
 
   saveLastFilters(ids: string[]) {

@@ -1,5 +1,5 @@
 import { Component, ElementRef, OnInit, TemplateRef, ViewChild } from '@angular/core';
-import { SearchQuery, SystemType } from '@yuuvis/core';
+import { SearchQuery } from '@yuuvis/core';
 import { PopoverConfig, PopoverRef, PopoverService, QuickSearchPickerData, QuickSearchService, Selectable, SelectableGroup } from '@yuuvis/framework';
 
 @Component({
@@ -17,12 +17,12 @@ export class FilterConfigurationComponent implements OnInit {
 
   data: any = {
     query: new SearchQuery(),
-    typeSelection: [SystemType.DOCUMENT],
-    sharedFields: true
+    typeSelection: [],
+    sharedFields: false
   };
 
   get types() {
-    return this.data.typeSelection.map((id) => this.availableObjectTypes.find((t) => t.id === id).label).join(', ');
+    return this.data.typeSelection.map((id) => this.availableObjectTypes.find((t) => t.id === id).label).join(', ') || '*';
   }
 
   constructor(private popoverService: PopoverService, private quickSearchService: QuickSearchService) {
