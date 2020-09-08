@@ -37,8 +37,9 @@ export class CombinedObjectFormComponent implements OnInit, IObjectForm {
     enableEditSOT: boolean;
     formOptions: ObjectFormOptions;
   }[];
-  formStates: Map<string, FormStatusChangedEvent> = new Map<string, FormStatusChangedEvent>();
+  private formStates: Map<string, FormStatusChangedEvent> = new Map<string, FormStatusChangedEvent>();
   formsChanged: boolean;
+  combinedFormState: FormStatusChangedEvent;
 
   @Input() set objectFormInput(ofi: CombinedObjectFormInput) {
     this.formsChanged = false;
@@ -86,7 +87,7 @@ export class CombinedObjectFormComponent implements OnInit, IObjectForm {
   }
 
   private getCombinedFormState(): FormStatusChangedEvent {
-    const combinedState: FormStatusChangedEvent = {
+    this.combinedFormState = {
       dirty: !!this.formsChanged,
       indexdataChanged: false,
       invalid: false,
@@ -94,17 +95,17 @@ export class CombinedObjectFormComponent implements OnInit, IObjectForm {
     };
     this.formStates.forEach((s) => {
       if (s.dirty) {
-        combinedState.dirty = s.dirty;
+        this.combinedFormState.dirty = s.dirty;
       }
       if (s.indexdataChanged) {
-        combinedState.indexdataChanged = s.indexdataChanged;
+        this.combinedFormState.indexdataChanged = s.indexdataChanged;
       }
       if (s.invalid) {
-        combinedState.invalid = s.invalid;
+        this.combinedFormState.invalid = s.invalid;
       }
-      combinedState.data = { ...combinedState.data, ...s.data };
+      this.combinedFormState.data = { ...this.combinedFormState.data, ...s.data };
     });
-    return combinedState;
+    return this.combinedFormState;
   }
 
   /**

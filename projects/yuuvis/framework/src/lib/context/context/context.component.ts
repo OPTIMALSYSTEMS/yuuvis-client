@@ -225,7 +225,7 @@ export class ContextComponent implements OnInit, OnDestroy {
       this.activeSearchResult = this.searchResultComponents.toArray()[tab.index];
       if (this.activeSearchResult) {
         this.columnConfigInput = {
-          type: (this.activeSearchResult.query && this.activeSearchResult.query.targetType) || this.systemService.getBaseType(),
+          type: (this.activeSearchResult.query && this.activeSearchResult.query.targetType) || this.systemService.getBaseType(true),
           sortOptions: this.activeSearchResult.query && this.activeSearchResult.query.sortOptions
         };
       }

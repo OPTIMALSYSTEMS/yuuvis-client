@@ -170,7 +170,7 @@
       <ng-container *ngIf="state.currentStep === 'afo_indexdata'; else tplCreate">
         <button (click)="createAfoCancel()" translate>yuv.framework.object-create.footer.create.afo.cancel</button>
 
-        <button class="primary create" (click)="create()"
+        <button class="primary create" (click)="create()" [disabled]="combinedObjectForm?.combinedFormState?.invalid"
           translate>yuv.framework.object-create.footer.create.afo.next</button>
       </ng-container>
 

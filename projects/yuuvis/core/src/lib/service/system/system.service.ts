@@ -213,13 +213,19 @@ export class SystemService {
   /**
    * Get the base object type all dms objects belong to
    */
-  getBaseType(): ObjectType {
+  getBaseType(includeClientDefaults?: boolean): ObjectType {
     const sysFolder = this.getBaseFolderType();
     const sysDocument = this.getBaseDocumentType();
 
     // base type contains only fields that are shared by base document and base folder ...
     const folderTypeFieldIDs = sysFolder.fields.map((f) => f.id);
     const baseTypeFields: ObjectTypeField[] = sysDocument.fields.filter((f) => folderTypeFieldIDs.includes(f.id));
+
+    if (includeClientDefaults) {
+      this.getSecondaryObjectType('appClient:clientdefaults').fields.forEach((f) => {
+        baseTypeFields.push(f);
+      });
+    }
     return {
       id: SystemType.OBJECT,
       description: null,
@@ -254,9 +260,9 @@ export class SystemService {
   }
 
   private getFallbackIcon(objectTypeId: string, fallback?: string): string {
-    if (!fallback) {
+    const ot = this.getObjectType(objectTypeId);
+    if (ot && !fallback) {
       // add default fallbacks for system:document and system:folder if now other fallback has been provided
-      const ot = this.getObjectType(objectTypeId);
       fallback = ot.isFolder ? 'system:folder' : 'system:document';
       if (this.isFloatingObjectType(ot)) {
         // types that do not have no object type assigned to them (primary FSOTs)
@@ -406,10 +412,26 @@ export class SystemService {
     ).pipe(
       map((res) => {
         const resMap = {};
-        res.forEach((r) => (resMap[r.id] = r.formModel));
+        res.filter((r) => this.formHasElements(r.formModel)).forEach((r) => (resMap[r.id] = r.formModel));
         return resMap;
       })
     );
+  }
+
+  /**
+   * Check whether or not the model has at least one form element. Recursive.
+   * @param element Form element to check child elements for
+   */
+  private formHasElements(element: any): boolean {
+    let hasElement = false;
+    element.elements?.forEach((e) => {
+      if (!['o2mGroup', 'o2mGroupStack'].includes(e.type)) {
+        hasElement = true;
+      } else if (!hasElement) {
+        hasElement = this.formHasElements(e);
+      }
+    });
+    return hasElement;
   }
 
   isDateFormat(data: string): boolean {
