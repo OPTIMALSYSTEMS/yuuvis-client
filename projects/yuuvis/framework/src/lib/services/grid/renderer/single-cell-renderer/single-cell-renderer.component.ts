@@ -34,11 +34,11 @@ export class SingleCellRendererComponent implements ICellRendererAngularComp {
     );
 
     this.cell = {
-      objectTypeId: objectTypeId,
+      objectTypeId,
       version: params.data[BaseObjectTypeField.VERSION_NUMBER],
       modified: this.datePipe.transform(params.data[params._crParams.dateField || BaseObjectTypeField.MODIFICATION_DATE]),
-      title: this.systemService.getLocalizedResource(`${objectTypeId}_label`),
-      description: params.data[params._crParams.descriptionField]
+      title: (params._crParams.titleField ? params.data[params._crParams.titleField] : this.systemService.getLocalizedResource(`${objectTypeId}_label`)) || '',
+      description: params.data[params._crParams.descriptionField] || ''
     };
     return true;
   }

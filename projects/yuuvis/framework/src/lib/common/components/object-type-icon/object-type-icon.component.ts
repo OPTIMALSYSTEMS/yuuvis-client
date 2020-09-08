@@ -30,8 +30,9 @@ export class ObjectTypeIconComponent implements ICellRendererAngularComp {
   constructor(private system: SystemService) {}
 
   refresh(params: any): boolean {
-    this.iconSrc = this.system.getObjectTypeIconUri(params.value);
-    this.title = this.system.getLocalizedResource(`${params.value}_label`);
+    this.iconSrc = params?.value ? this.system.getObjectTypeIconUri(params.value) : '';
+    this.title = params?.value ? this.system.getLocalizedResource(`${params.value}_label`) : '';
+
     return true;
   }
 
