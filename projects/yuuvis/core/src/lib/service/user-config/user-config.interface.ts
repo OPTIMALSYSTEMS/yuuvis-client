@@ -4,6 +4,7 @@
 export interface ColumnConfig {
   type: string;
   columns: ColumnConfigColumn[];
+  fields?: any;
 }
 /**
  * Interface for a configuration one column

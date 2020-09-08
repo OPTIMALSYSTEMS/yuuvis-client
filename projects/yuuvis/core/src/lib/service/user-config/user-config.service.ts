@@ -25,16 +25,16 @@ export class UserConfigService {
    */
   getColumnConfig(objectTypeId?: string): Observable<ColumnConfig> {
     // Abstract types like `system:document` or `system:folder` should also fall back to the
-    // mixed column configuration
-    const abstractTypes = [SystemType.DOCUMENT, SystemType.FOLDER];
+    // mixed column configurations
+    const abstractTypes = Object.values(SystemType);
     const objectType: ObjectType =
       !objectTypeId || abstractTypes.includes(objectTypeId) ? this.systemService.getBaseType(true) : this.systemService.getObjectType(objectTypeId);
     const objectTypeFields = {};
     objectType.fields.forEach((f: ObjectTypeField) => (objectTypeFields[f.id] = f));
 
-    return this.fetchColumnConfig(objectTypeId).pipe(
+    return this.fetchColumnConfig(objectType.id).pipe(
       // maybe there are columns that do not match the type definition anymore
-      map((cc: ColumnConfig) => ({ ...cc, columns: cc.columns.filter((c) => !!objectTypeFields[c.id]) }))
+      map((cc: ColumnConfig) => ({ ...cc, columns: cc.columns.filter((c) => !!objectTypeFields[c.id]), fields: objectTypeFields }))
     );
   }
 
