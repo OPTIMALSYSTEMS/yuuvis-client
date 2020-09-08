@@ -15,11 +15,10 @@
           background: transparent;
 
           yuv-object-form {
-            // overflow: auto;
+            padding: var(--app-pane-padding);
             background: transparent;
 
             .yuv-object-form {
-              padding: var(--app-pane-padding);
               background: var(--panel-background);
               box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1);
             }
