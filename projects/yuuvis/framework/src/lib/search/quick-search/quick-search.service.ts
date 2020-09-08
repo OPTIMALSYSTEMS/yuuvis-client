@@ -4,6 +4,7 @@ import {
   AggregateResult,
   AppCacheService,
   BaseObjectTypeField,
+  ColumnConfigSkipFields,
   ContentStreamField,
   ObjectType,
   ObjectTypeGroup,
@@ -41,27 +42,8 @@ export class QuickSearchService {
   availableObjectTypeGroups: SelectableGroup[] = [];
 
   // object types that one should not search for
-  // private skipTypes = [SystemType.DOCUMENT, SystemType.FOLDER];
   skipTypes = [];
 
-  // fields that should not be searchable
-  skipFields = [
-    BaseObjectTypeField.OBJECT_ID,
-    BaseObjectTypeField.OBJECT_TYPE_ID,
-    BaseObjectTypeField.PARENT_ID,
-    BaseObjectTypeField.PARENT_OBJECT_TYPE_ID,
-    BaseObjectTypeField.PARENT_VERSION_NUMBER,
-    BaseObjectTypeField.TENANT,
-    BaseObjectTypeField.TRACE_ID,
-    BaseObjectTypeField.TAGS,
-    // BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS,
-    BaseObjectTypeField.BASE_TYPE_ID,
-    ContentStreamField.ID,
-    ContentStreamField.RANGE,
-    ContentStreamField.REPOSITORY_ID,
-    ContentStreamField.DIGEST,
-    ContentStreamField.ARCHIVE_PATH
-  ];
   /**
    *
    * @ignore
@@ -134,7 +116,7 @@ export class QuickSearchService {
       : selectedObjectTypes.reduce((prev, cur) => [...prev, ...cur.fields.filter((f) => !prev.find((p) => p.id === f.id))], []);
 
     return sharedFields
-      .filter((f) => !this.skipFields.includes(f.id))
+      .filter((f) => !ColumnConfigSkipFields.includes(f.id))
       .map((f) => ({
         id: f.id,
         label: this.systemService.getLocalizedResource(`${f.id}_label`),
@@ -150,7 +132,7 @@ export class QuickSearchService {
         // spread groups that have filters with same property
         return [...prev, ...(g.group.every((f) => f.property === g.filters[0].property) ? g.group.map((f) => SearchFilterGroup.fromArray([f])) : [g])];
       }, [])
-      .filter((g) => !g.filters.find((f) => this.skipFields.includes(f.property)))
+      .filter((g) => !g.filters.find((f) => ColumnConfigSkipFields.includes(f.property)))
       .map((g) => {
         return (
           filters.find((sf) => SearchFilterGroup.fromArray(sf.value).toString() === g.toString()) || {

@@ -1,10 +1,9 @@
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { Component, EventEmitter, Input, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
 import {
-  BaseObjectTypeField,
   ColumnConfig,
   ColumnConfigColumn,
-  ContentStreamField,
+  ColumnConfigSkipFields,
   ObjectType,
   ObjectTypeField,
   SortOption,
@@ -47,23 +46,6 @@ export class ColumnConfigComponent implements OnInit {
 
   private _objectType: ObjectType;
   private _objectTypeFields: ObjectTypeField[];
-
-  // fields that should not be available for column config
-  private skipFields = [
-    BaseObjectTypeField.OBJECT_ID,
-    BaseObjectTypeField.PARENT_ID,
-    BaseObjectTypeField.PARENT_OBJECT_TYPE_ID,
-    BaseObjectTypeField.PARENT_VERSION_NUMBER,
-    BaseObjectTypeField.TENANT,
-    BaseObjectTypeField.TRACE_ID,
-    // BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS,
-    BaseObjectTypeField.BASE_TYPE_ID,
-    ContentStreamField.ID,
-    ContentStreamField.RANGE,
-    ContentStreamField.REPOSITORY_ID,
-    ContentStreamField.DIGEST,
-    ContentStreamField.ARCHIVE_PATH
-  ];
 
   title: string;
 
@@ -222,7 +204,7 @@ export class ColumnConfigComponent implements OnInit {
   }
 
   private filterFields(fields: ObjectTypeField[]) {
-    return fields.filter((f) => !this.skipFields.includes(f.id));
+    return fields.filter((f) => !ColumnConfigSkipFields.includes(f.id));
   }
 
   private checkMoreColumnsAvailable() {

@@ -13,7 +13,6 @@ import {
   ObjectTypeField,
   SearchService,
   SystemService,
-  SystemType,
   TranslateService,
   UserConfigService,
   Utils
@@ -69,20 +68,13 @@ export class GridService {
    * blank in case of a mixed result list
    */
   getColumnConfiguration(objectTypeId?: string): Observable<ColDef[]> {
-    // Abstract types like `system:document` or `system:folder` should also fall back to the
-    // mixed column configuration
-    const abstractTypes = [SystemType.DOCUMENT, SystemType.FOLDER];
-    const objectType: ObjectType = !objectTypeId || abstractTypes.includes(objectTypeId) ? this.system.getBaseType() : this.system.getObjectType(objectTypeId);
-    const objectTypeFields = {};
-    objectType.fields.forEach((f: ObjectTypeField) => (objectTypeFields[f.id] = f));
-
     return this.userConfig.getColumnConfig(objectTypeId).pipe(
-      map((cc: ColumnConfig) =>
-        cc.columns
-          // maybe there are columns that do not match the type definition anymore
-          .filter((c) => !!objectTypeFields[c.id])
-          .map((c) => this.getColumnDefinition(objectTypeFields[c.id], c))
-      )
+      map((cc: ColumnConfig) => {
+        const objectType = this.system.getObjectType(cc.type);
+        const objectTypeFieldsQA = {};
+        objectType.fields.forEach((f: ObjectTypeField) => (objectTypeFieldsQA[f.id] = f));
+        return cc.columns.map((c) => this.getColumnDefinition(objectTypeFieldsQA[c.id], c));
+      })
     );
   }
 

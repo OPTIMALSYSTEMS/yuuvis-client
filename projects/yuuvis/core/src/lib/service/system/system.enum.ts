@@ -127,3 +127,20 @@ export const AFO_STATE = {
   // an FSOT has been assigned
   READY: 1
 };
+
+export const ColumnConfigSkipFields = [
+  BaseObjectTypeField.OBJECT_ID,
+  BaseObjectTypeField.OBJECT_TYPE_ID,
+  BaseObjectTypeField.PARENT_ID,
+  BaseObjectTypeField.PARENT_OBJECT_TYPE_ID,
+  BaseObjectTypeField.PARENT_VERSION_NUMBER,
+  BaseObjectTypeField.TENANT,
+  BaseObjectTypeField.TRACE_ID,
+  BaseObjectTypeField.TAGS,
+  BaseObjectTypeField.BASE_TYPE_ID,
+  ContentStreamField.ID,
+  ContentStreamField.RANGE,
+  ContentStreamField.REPOSITORY_ID,
+  ContentStreamField.DIGEST,
+  ContentStreamField.ARCHIVE_PATH
+];

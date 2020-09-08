@@ -3,6 +3,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { BackendService } from '../backend/backend.service';
 import { SecondaryObjectTypeClassification, SystemType } from '../system/system.enum';
+import { ObjectType, ObjectTypeField } from '../system/system.interface';
 import { SystemService } from '../system/system.service';
 import { ColumnConfig } from './user-config.interface';
 
@@ -23,9 +24,24 @@ export class UserConfigService {
    * Also supports floating types.
    */
   getColumnConfig(objectTypeId?: string): Observable<ColumnConfig> {
-    return this.backend.get(this.getRequestURI(objectTypeId || SystemType.OBJECT)).pipe(
+    // Abstract types like `system:document` or `system:folder` should also fall back to the
+    // mixed column configuration
+    const abstractTypes = [SystemType.DOCUMENT, SystemType.FOLDER];
+    const objectType: ObjectType =
+      !objectTypeId || abstractTypes.includes(objectTypeId) ? this.systemService.getBaseType(true) : this.systemService.getObjectType(objectTypeId);
+    const objectTypeFields = {};
+    objectType.fields.forEach((f: ObjectTypeField) => (objectTypeFields[f.id] = f));
+
+    return this.fetchColumnConfig(objectTypeId).pipe(
+      // maybe there are columns that do not match the type definition anymore
+      map((cc: ColumnConfig) => ({ ...cc, columns: cc.columns.filter((c) => !!objectTypeFields[c.id]) }))
+    );
+  }
+
+  private fetchColumnConfig(objectTypeId: string): Observable<ColumnConfig> {
+    return this.backend.get(this.getRequestURI(objectTypeId)).pipe(
       map((res) => ({
-        type: objectTypeId || SystemType.OBJECT,
+        type: objectTypeId,
         columns: res.columns.map((c) => ({
           id: c.id,
           label: this.systemService.getLocalizedResource(`${c.id}_label`),
