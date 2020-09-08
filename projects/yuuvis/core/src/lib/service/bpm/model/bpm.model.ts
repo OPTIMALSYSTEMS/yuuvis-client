@@ -112,11 +112,11 @@ export class InboxItem {
   }
 
   get description(): string {
-    return this.title;
+    return this.originaData.variables.find((v) => v.name === 'whatAbout').value as string;
   }
 
   get subject(): string {
-    return this.title;
+    return this.originaData.variables.find((v) => v.name === 'whatAbout').value as string;
   }
 
   get documentId(): string {
@@ -144,7 +144,7 @@ export class FollowUp {
   }
 
   get description(): string {
-    return this.title;
+    return this.originaData.variables.find((v) => v.name === 'whatAbout').value as string;
   }
 
   get type(): string {
@@ -156,7 +156,7 @@ export class FollowUp {
   }
 
   get subject(): string {
-    return this.title;
+    return this.originaData.variables.find((v) => v.name === 'whatAbout').value as string;
   }
 
   get documentId(): string {

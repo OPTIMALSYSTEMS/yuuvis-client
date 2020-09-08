@@ -1,5 +1,5 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { ViewMode } from './../../components/responsive-data-table/responsive-data-table.component';
+import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { ResponsiveDataTableComponent, ViewMode } from './../../components/responsive-data-table/responsive-data-table.component';
 
 interface HeaderDetails {
   title: string;
@@ -13,6 +13,7 @@ interface HeaderDetails {
   styleUrls: ['./process-list.component.scss']
 })
 export class ProcessListComponent {
+  @ViewChild('dataTable') dataTable: ResponsiveDataTableComponent;
   private _processData: any;
   private _viewMode: ViewMode;
   header: HeaderDetails;
