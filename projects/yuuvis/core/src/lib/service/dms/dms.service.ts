@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { forkJoin, Observable, of } from 'rxjs';
-import { catchError, delay, map, tap } from 'rxjs/operators';
+import { catchError, delay, map, switchMap, tap } from 'rxjs/operators';
 import { DmsObject } from '../../model/dms-object.model';
 import { Utils } from '../../util/utils';
 import { ApiBase } from '../backend/api.enum';
@@ -8,7 +8,7 @@ import { BackendService } from '../backend/backend.service';
 import { EventService } from '../event/event.service';
 import { YuvEventType } from '../event/events';
 import { SearchService } from '../search/search.service';
-import { SearchResult, SearchResultItem } from '../search/search.service.interface';
+import { SearchResultItem } from '../search/search.service.interface';
 import { BaseObjectTypeField } from '../system/system.enum';
 import { SystemService } from '../system/system.service';
 import { UploadService } from '../upload/upload.service';
@@ -103,8 +103,14 @@ export class DmsService {
    */
   updateDmsObject(id: string, data: any, silent?: boolean) {
     return this.backend.patch(`/dms/update/${id}`, data).pipe(
-      map((res) => this.searchService.toSearchResult(res)),
-      map((res: SearchResult) => this.searchResultToDmsObject(res.items[0])),
+      // update does not return permissions, so we need to re-load the whole dms object
+      // TODO: Remove once permissions are provided
+      switchMap((res) => this.getDmsObject(id)),
+      // TODO: enable once permissions are provided
+      // map((res) => this.searchResultToDmsObject(this.searchService.toSearchResult(res).items[0])),
+
+      // map((res) => this.searchService.toSearchResult(res)),
+      // map((res: SearchResult) => this.searchResultToDmsObject(res.items[0])),
       tap((_dmsObject: DmsObject) => {
         if (!silent) {
           this.eventService.trigger(YuvEventType.DMS_OBJECT_UPDATED, _dmsObject);
