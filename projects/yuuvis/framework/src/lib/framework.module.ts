@@ -7,6 +7,7 @@ import { AngularSplitModule } from 'angular-split';
 import { ToastrModule } from 'ngx-toastr';
 import { OverlayPanelModule } from 'primeng/overlaypanel';
 import { YuvActionModule } from './actions/action.module';
+import { YuvBpmModule } from './bpm/bpm.module';
 import { YuvColumnConfigModule } from './column-config/column-config.module';
 import { YuvCommonModule } from './common/common.module';
 import { YuvComponentsModule } from './components/components.module';
@@ -19,7 +20,6 @@ import { YuvObjectDetailsModule } from './object-details/object-details.module';
 import { YuvObjectFormModule } from './object-form/object-form.module';
 import { YuvPipesModule } from './pipes/pipes.module';
 import { YuvPopoverModule } from './popover/popover.module';
-import { YuvInboxModule } from './processes/inbox.module';
 import { YuvQuickfinderModule } from './quickfinder/quickfinder.module';
 import { YuvSearchModule } from './search/search.module';
 import { ErrorHandlerService } from './services/error-handler/error-handler.service';
@@ -44,7 +44,7 @@ const modules = [
   OverlayPanelModule,
   YuvActionModule,
   YuvCoreSharedModule,
-  YuvInboxModule
+  YuvBpmModule
 ];
 
 /**

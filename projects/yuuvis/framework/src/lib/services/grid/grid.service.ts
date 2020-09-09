@@ -70,10 +70,7 @@ export class GridService {
   getColumnConfiguration(objectTypeId?: string): Observable<ColDef[]> {
     return this.userConfig.getColumnConfig(objectTypeId).pipe(
       map((cc: ColumnConfig) => {
-        const objectType = this.system.getObjectType(cc.type);
-        const objectTypeFieldsQA = {};
-        objectType.fields.forEach((f: ObjectTypeField) => (objectTypeFieldsQA[f.id] = f));
-        return cc.columns.map((c) => this.getColumnDefinition(objectTypeFieldsQA[c.id], c));
+        return cc.columns.map((c) => this.getColumnDefinition(cc.fields[c.id], c));
       })
     );
   }

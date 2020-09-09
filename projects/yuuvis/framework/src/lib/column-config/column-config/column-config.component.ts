@@ -44,10 +44,9 @@ import { addCircle, arrowDown, clear, dragHandle, pin, sort } from '../../svg.ge
 export class ColumnConfigComponent implements OnInit {
   @ViewChild('tplColumnPicker') tplColumnPicker: TemplateRef<any>;
 
-  private _objectType: ObjectType;
-  private _objectTypeFields: ObjectTypeField[];
+  private _objectTypeFields: ObjectTypeField[] = [];
 
-  title: string;
+  title: string = '';
 
   // Columns that are part of the current column configuration
   columnConfig: ColumnConfig;
@@ -66,13 +65,10 @@ export class ColumnConfigComponent implements OnInit {
    * to edit the column configuration for
    */
   @Input() set options(options: { type: string | ObjectType; sortOptions?: SortOption[] }) {
-    const type = options && options.type;
+    const type: any = options && options.type;
     if (type) {
       this.columnConfigDirty = false;
-      this._objectType = typeof type === 'string' ? this.fetchObjectType(type) : type;
-      this.title = this._objectType.id === SystemType.OBJECT ? this.translate.instant('yuv.framework.column-config.type.mixed.label') : this._objectType.label;
-      this._objectTypeFields = this._objectType ? this.filterFields(this._objectType.fields) : [];
-      this.fetchColumnConfig(this._objectType ? this._objectType.id : null, options.sortOptions);
+      this.fetchColumnConfig(type.id || type, options.sortOptions);
     }
   }
   /**
@@ -203,23 +199,26 @@ export class ColumnConfigComponent implements OnInit {
     return (this.columnConfig = config);
   }
 
-  private filterFields(fields: ObjectTypeField[]) {
-    return fields.filter((f) => !ColumnConfigSkipFields.includes(f.id));
+  private filterColumns(cols: any[]) {
+    return cols.filter((f) => !ColumnConfigSkipFields.includes(f.id));
   }
 
   private checkMoreColumnsAvailable() {
-    this.moreColumnsAvailable = this._objectTypeFields.length > this.columnConfig.columns.length;
+    this.moreColumnsAvailable = Object.values(this._objectTypeFields).length > this.columnConfig.columns.length;
   }
 
   private fetchColumnConfig(objectTypeId: string, sortOptions: SortOption[]): void {
     this.busy = true;
     this.error = null;
-    this.userConfig.getColumnConfig(objectTypeId || SystemType.OBJECT).subscribe(
-      (res) => {
+    this.userConfig.getColumnConfig(objectTypeId).subscribe(
+      (res: ColumnConfig) => {
         this.busy = false;
+        this.title =
+          res.type === SystemType.OBJECT ? this.translate.instant('yuv.framework.column-config.type.mixed.label') : this.fetchObjectType(res.type).label;
+        this._objectTypeFields = this.filterColumns(Object.values(res.fields));
         this.resetConfig({
-          type: objectTypeId,
-          columns: [...res.columns]
+          type: res.type,
+          columns: this.filterColumns(res.columns)
         });
         this.checkMoreColumnsAvailable();
 
