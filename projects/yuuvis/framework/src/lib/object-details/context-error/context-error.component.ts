@@ -11,6 +11,7 @@ import { Component, Input } from '@angular/core';
   selector: 'yuv-context-error',
   template: `<div class="error">
     <div class="message">{{ contextError }}</div>
+    <ng-content></ng-content>
   </div>`,
   styles: [
     `

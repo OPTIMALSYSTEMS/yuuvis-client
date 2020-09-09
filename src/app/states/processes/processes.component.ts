@@ -13,7 +13,7 @@ import {
   ResponsiveTableData
 } from '@yuuvis/framework';
 import { Observable, of } from 'rxjs';
-import { map, switchMap, take, tap } from 'rxjs/operators';
+import { catchError, finalize, map, switchMap, take } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
 
 @Component({
@@ -23,6 +23,7 @@ import { takeUntilDestroy } from 'take-until-destroy';
 })
 export class ProcessesComponent implements OnInit, OnDestroy {
   layoutOptionsKey = 'yuv.app.processes';
+  contextError: string;
   objectDetailsID: string;
   itemIsSelected = false;
   dmsObject$: Observable<DmsObject>;
@@ -52,7 +53,15 @@ export class ProcessesComponent implements OnInit, OnDestroy {
   }
 
   private getSelectedDetail(businessKey: string) {
-    this.dmsObject$ = businessKey ? this.dmsService.getDmsObject(businessKey).pipe(tap((val) => (this.itemIsSelected = true))) : of(null);
+    this.dmsObject$ = businessKey
+      ? this.dmsService.getDmsObject(businessKey).pipe(
+          catchError((error) => {
+            this.contextError = this.translateService.instant('yuv.client.state.object.context.load.error');
+            return of(null);
+          }),
+          finalize(() => (this.itemIsSelected = true))
+        )
+      : of(null);
   }
 
   refreshList() {
@@ -62,6 +71,10 @@ export class ProcessesComponent implements OnInit, OnDestroy {
   selectedItem(item) {
     this.getSelectedDetail(item[0]?.documentId);
   }
+
+  // remove() {
+  // this.processService.deleteFollowUp();
+  // }
 
   ngOnInit(): void {
     this.getProcesses().subscribe();

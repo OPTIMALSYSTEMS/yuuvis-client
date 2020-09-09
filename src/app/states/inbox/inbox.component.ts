@@ -13,7 +13,7 @@ import {
   ResponsiveTableData
 } from '@yuuvis/framework';
 import { Observable, of } from 'rxjs';
-import { map, switchMap, take, tap } from 'rxjs/operators';
+import { catchError, finalize, map, switchMap, take } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
 
 @Component({
@@ -24,6 +24,7 @@ import { takeUntilDestroy } from 'take-until-destroy';
 export class InboxComponent implements OnInit, OnDestroy {
   layoutOptionsKey = 'yuv.app.inbox';
   layoutOptionsKeyList = 'yuv.app.inbox.list';
+  contextError: string;
   objectDetailsID: string;
   itemIsSelected = false;
   dmsObject$: Observable<DmsObject>;
@@ -52,7 +53,15 @@ export class InboxComponent implements OnInit, OnDestroy {
   }
 
   private getSelectedDetail(businessKey: string) {
-    this.dmsObject$ = businessKey ? this.dmsService.getDmsObject(businessKey).pipe(tap((val) => (this.itemIsSelected = true))) : of(null);
+    this.dmsObject$ = businessKey
+      ? this.dmsService.getDmsObject(businessKey).pipe(
+          catchError((error) => {
+            this.contextError = this.translateService.instant('yuv.client.state.object.context.load.error');
+            return of(null);
+          }),
+          finalize(() => (this.itemIsSelected = true))
+        )
+      : of(null);
   }
 
   selectedItem(item) {
