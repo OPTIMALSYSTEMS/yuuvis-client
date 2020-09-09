@@ -32,7 +32,7 @@ export class UserConfigService {
     const objectTypeFields = {};
     objectType.fields.forEach((f: ObjectTypeField) => (objectTypeFields[f.id] = f));
 
-    return this.fetchColumnConfig(objectTypeId).pipe(
+    return this.fetchColumnConfig(objectType.id).pipe(
       // maybe there are columns that do not match the type definition anymore
       map((cc: ColumnConfig) => ({ ...cc, columns: cc.columns.filter((c) => !!objectTypeFields[c.id]) }))
     );
