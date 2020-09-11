@@ -298,5 +298,8 @@
   "yuv.client.state.versions.compare.label": "Version {{version}}",
   "yuv.client.state.versions.header.title": "Versionen",
   "yuv.framework.inbox-list.inbox": "Eingangskorb",
-  "yuv.framework.process-list.process": "Meine Prozesse"
+  "yuv.framework.process-list.process": "Meine Prozesse",
+  "yuv.framework.search-result.filter.tooltip": "Ändere von UND nach ODER und vice versa",
+  "yuv.framework.search-result.filter.operator.and": "UND",
+  "yuv.framework.search-result.filter.operator.or": "ODER"
 }

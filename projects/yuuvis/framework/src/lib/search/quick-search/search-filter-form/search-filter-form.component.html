@@ -5,23 +5,30 @@
 
 <ng-template #tmplNode let-node="node">
   <div class="node-item" [attr.data-id]="node.id" [attr.id]="'node-' + node.id">
-    <div class="handle" cdkDragHandle [ngClass]="{'group': node.group}">
+    <div class="handle" cdkDragHandle [ngClass]="{ group: node.group }">
       <yuv-icon [icon]="'dragHandle'" *ngIf="!dragDisabled" title="{{ node.property }}"></yuv-icon>
-      <span *ngIf="node.group" class="operator" (click)="operatorClick(node)">{{ node.operator }}</span>
+      <span title="{{ 'yuv.framework.search-result.filter.tooltip' | translate }}" *ngIf="node.group" class="operator" (click)="operatorClick(node)">{{
+        node.operator === 'AND' ? operatorLabel.and : operatorLabel.or
+      }}</span>
     </div>
-    <div *ngIf="node.group && node.group.length" class="node-group" cdkDropList [cdkDropListData]="node.group"
-      [id]="node.id" [cdkDropListConnectedTo]="dropTargetIds" (cdkDropListDropped)="drop($event)"
-      [cdkDropListSortingDisabled]="true">
-      <div *ngFor="let child of node.group || []" cdkDrag [cdkDragData]="child.id"
-        (cdkDragMoved)="dragMovedSubject.next($event)">
+    <div
+      *ngIf="node.group && node.group.length"
+      class="node-group"
+      cdkDropList
+      [cdkDropListData]="node.group"
+      [id]="node.id"
+      [cdkDropListConnectedTo]="dropTargetIds"
+      (cdkDropListDropped)="drop($event)"
+      [cdkDropListSortingDisabled]="true"
+    >
+      <div *ngFor="let child of node.group || []" cdkDrag [cdkDragData]="child.id" (cdkDragMoved)="dragMovedSubject.next($event)">
         <ng-container *ngTemplateOutlet="tmplNode; context: { node: child }"></ng-container>
       </div>
     </div>
   </div>
   <div class="condition" *ngIf="!node.group">
     <div class="fe-chip">
-      <yuv-object-form-element [situation]="'SEARCH'" [inlineError]="true"
-        [element]="searchFieldsForm.controls[node.id]"> </yuv-object-form-element>
+      <yuv-object-form-element [situation]="'SEARCH'" [inlineError]="true" [element]="searchFieldsForm.controls[node.id]"> </yuv-object-form-element>
     </div>
     <yuv-icon *ngIf="!disabled" class="remove" [icon]="'clear'" (click)="removeFieldEntry(node.id)"> </yuv-icon>
   </div>
