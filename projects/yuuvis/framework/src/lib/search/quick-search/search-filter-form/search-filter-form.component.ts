@@ -1,6 +1,16 @@
 import { Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { BaseObjectTypeField, InternalFieldType, ObjectTypeField, RangeValue, SearchFilter, SearchFilterGroup, SearchQuery, SystemService } from '@yuuvis/core';
+import {
+  BaseObjectTypeField,
+  InternalFieldType,
+  ObjectTypeField,
+  RangeValue,
+  SearchFilter,
+  SearchFilterGroup,
+  SearchQuery,
+  SystemService,
+  TranslateService
+} from '@yuuvis/core';
 import { Subject, Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
@@ -19,7 +29,7 @@ import { clear, dragHandle } from './../../../svg.generated';
 })
 export class SearchFilterFormComponent implements OnInit, OnDestroy {
   @ViewChild('extrasForm') extrasForm: ElementRef;
-
+  operatorLabel: any;
   get filterGroup(): SearchFilterGroup {
     return this.filterQuery.filterGroup;
   }
@@ -69,9 +79,13 @@ export class SearchFilterFormComponent implements OnInit, OnDestroy {
   @Output() controlRemoved = new EventEmitter<string>();
   @Output() valid = new EventEmitter<boolean>();
 
-  constructor(private systemService: SystemService, private fb: FormBuilder, private iconRegistry: IconRegistryService) {
+  constructor(private systemService: SystemService, private fb: FormBuilder, private iconRegistry: IconRegistryService, private translate: TranslateService) {
     this.dragMovedSubject.pipe(debounceTime(50)).subscribe((event) => this.dragMoved(event));
     this.iconRegistry.registerIcons([dragHandle, clear]);
+    this.operatorLabel = {
+      and: this.translate.instant('yuv.framework.search-result.filter.operator.and'),
+      or: this.translate.instant('yuv.framework.search-result.filter.operator.or')
+    };
   }
 
   private initSearchFieldsForm() {
