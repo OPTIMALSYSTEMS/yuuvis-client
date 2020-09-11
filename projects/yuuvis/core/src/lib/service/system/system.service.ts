@@ -307,37 +307,36 @@ export class SystemService {
   }
 
   /**
-   * Checks whether or not the given object type is an Advanced Filing Object (AFO). These types have a special kind of
-   * create lifecycle and may be treated in a different way.
+   * Floating object types (FOT) are object types that can turn into different types using primary FSOTs.
    *
-   * AFOs are object types that require a content stream and have a classification of 'appClient:dlm'. The object type itself
-   * is required to have no mandatory properties, so the content can be uploaded without having to apply some indexdata.
+   * The origin type must have at least one non static (floating) secondary object type (SOT) that has a
+   * classification of 'appClient:primary'. Those primary FSOTs define the types that the floating type may become.
    *
-   * AFOs have at least one Secondary Object Type (SOT) that could be applied later on.
-   *
-   * @param objectType Object type to be checked
-   */
-  isAdvancedFilingObjectType(objectType: ObjectType): boolean {
-    return (
-      objectType.contentStreamAllowed === ContentStreamAllowed.REQUIRED &&
-      Array.isArray(objectType.classification) &&
-      objectType.classification.includes(ObjectTypeClassification.ADVANCED_FILING_OBJECT)
-    );
-  }
-
-  /**
-   * Floating object types (FOT) are object types thet have at least one non static (floating)
-   * secondary object type (SOT).
-   *
-   * Once one primary SOT has been applied to the FOT the SOT will be treated like the main object type.
-   * Using this kind of objects you are able to create types that can turn into any applied primary SOT.
+   * Once one primary FSOT has been applied to the FOT the FSOT will be treated like the main object type (leading type).
    */
   isFloatingObjectType(objectType: ObjectType): boolean {
     return (
       Array.isArray(objectType.classification) &&
       objectType.classification.includes(ObjectTypeClassification.FLOATING_OBJECT_TYPE) &&
-      objectType.secondaryObjectTypes.filter((sot) => !sot.static).length > 0
-      // !!objectType.secondaryObjectTypes.find((sot) => this.getSecondaryObjectType(sot.id).classification?.includes(SecondaryObjectTypeClassification.PRIMARY))
+      !!objectType.secondaryObjectTypes.find((sot) => this.getSecondaryObjectType(sot.id).classification?.includes(SecondaryObjectTypeClassification.PRIMARY))
+    );
+  }
+  /**
+   * Extendable object types (EOT) are object types that can be extended by loatin secondary object types (FSOTs).
+   *
+   * The origin type must have at least one floating object type that does not have a classification of 'appClient:primary'
+   * or 'appClient:required'. These FSOTs can be added to the origin type to extend its set of indexdata.
+   */
+  isExtendableObjectType(objectType: ObjectType): boolean {
+    return (
+      Array.isArray(objectType.classification) &&
+      objectType.classification.includes(ObjectTypeClassification.FLOATING_OBJECT_TYPE) &&
+      objectType.secondaryObjectTypes.filter(
+        (sot) =>
+          !sot.static &&
+          !this.getSecondaryObjectType(sot.id).classification?.includes(SecondaryObjectTypeClassification.PRIMARY) &&
+          !this.getSecondaryObjectType(sot.id).classification?.includes(SecondaryObjectTypeClassification.REQUIRED)
+      ).length > 0
     );
   }
 
