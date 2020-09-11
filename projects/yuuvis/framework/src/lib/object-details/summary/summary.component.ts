@@ -183,8 +183,10 @@ export class SummaryComponent implements OnInit {
       const si: SummaryEntry = {
         label: (def && def.headerName) || key,
         key,
-        value: renderer ? renderer({ value: dmsObject.data[key], data: dmsObject.data }) : dmsObject.data[key],
-        value2: this.dmsObject2 && (renderer ? renderer({ value: this.dmsObject2.data[key], data: this.dmsObject2.data }) : this.dmsObject2.data[key]),
+        value: typeof renderer === 'function' ? renderer({ value: dmsObject.data[key], data: dmsObject.data }) : dmsObject.data[key],
+        value2:
+          this.dmsObject2 &&
+          (typeof renderer === 'function' ? renderer({ value: this.dmsObject2.data[key], data: this.dmsObject2.data }) : this.dmsObject2.data[key]),
         order: null
       };
 

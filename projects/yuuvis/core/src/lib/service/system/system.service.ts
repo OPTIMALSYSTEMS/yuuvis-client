@@ -151,9 +151,12 @@ export class SystemService {
    * Get the secondary object types of an object type that have the `primary`
    * classification.
    * @param objectTypeId ID of the object type
+   * @param withLabel Whether or not to also add the types label
    */
-  getPrimaryFSOTs(objectTypeId: string): SecondaryObjectType[] {
-    return this.getFloatingSecondaryObjectTypes(objectTypeId).filter((sot) => sot.classification?.includes(SecondaryObjectTypeClassification.PRIMARY));
+  getPrimaryFSOTs(objectTypeId: string, withLabel?: boolean): SecondaryObjectType[] {
+    return this.getFloatingSecondaryObjectTypes(objectTypeId, withLabel).filter((sot) =>
+      sot.classification?.includes(SecondaryObjectTypeClassification.PRIMARY)
+    );
   }
 
   /**
