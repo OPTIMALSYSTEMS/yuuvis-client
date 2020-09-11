@@ -41,6 +41,7 @@
 
     .ui-tabview.ui-tabview-top .ui-tabview-panels {
       background: #fff;
+      overflow: initial;
 
       .dark & {
         background: rgba(255, 255, 255, 0.04);
