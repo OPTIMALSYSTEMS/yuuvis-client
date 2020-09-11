@@ -151,9 +151,12 @@ export class SystemService {
    * Get the secondary object types of an object type that have the `primary`
    * classification.
    * @param objectTypeId ID of the object type
+   * @param withLabel Whether or not to also add the types label
    */
-  getPrimaryFSOTs(objectTypeId: string): SecondaryObjectType[] {
-    return this.getFloatingSecondaryObjectTypes(objectTypeId).filter((sot) => sot.classification?.includes(SecondaryObjectTypeClassification.PRIMARY));
+  getPrimaryFSOTs(objectTypeId: string, withLabel?: boolean): SecondaryObjectType[] {
+    return this.getFloatingSecondaryObjectTypes(objectTypeId, withLabel).filter((sot) =>
+      sot.classification?.includes(SecondaryObjectTypeClassification.PRIMARY)
+    );
   }
 
   /**
@@ -221,6 +224,12 @@ export class SystemService {
     // base type contains only fields that are shared by base document and base folder ...
     const folderTypeFieldIDs = sysFolder.fields.map((f) => f.id);
     const baseTypeFields: ObjectTypeField[] = sysDocument.fields.filter((f) => folderTypeFieldIDs.includes(f.id));
+
+    // leading type also needs to be added
+    // TODO: make this a system property that is applied to all types
+    this.getSecondaryObjectType('appClientsystem:leadingType').fields.forEach((f) => {
+      baseTypeFields.push(f);
+    });
 
     if (includeClientDefaults) {
       this.getSecondaryObjectType('appClient:clientdefaults').fields.forEach((f) => {
