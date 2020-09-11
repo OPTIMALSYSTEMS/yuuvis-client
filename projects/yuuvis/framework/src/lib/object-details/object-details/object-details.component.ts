@@ -60,6 +60,7 @@ export class ObjectDetailsComponent implements OnDestroy {
   actionMenuSelection: DmsObject[] = [];
   fileDropLabel: string;
   contextError: string = null;
+  objectTypeId: string;
   private _dmsObject: DmsObject;
   private _objectId: string;
 
@@ -72,16 +73,12 @@ export class ObjectDetailsComponent implements OnDestroy {
     this._dmsObject = object;
     this._objectId = object ? object.id : null;
     if (object) {
-      const params = {
-        value: this.systemService.getLeadingObjectTypeID(object.objectTypeId, object.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS]),
-        context: {
-          system: this.systemService
-        }
-      };
-
+      this.objectTypeId = this.systemService.getLeadingObjectTypeID(object.objectTypeId, object.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS]);
       this.fileDropLabel = !object.content
         ? this.translate.instant('yuv.framework.object-details.filedrop.content.add')
         : this.translate.instant('yuv.framework.object-details.filedrop.content.replace');
+    } else {
+      this.objectTypeId = null;
     }
   }
 

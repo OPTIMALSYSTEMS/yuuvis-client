@@ -108,9 +108,6 @@ export class DmsService {
       switchMap((res) => this.getDmsObject(id)),
       // TODO: enable once permissions are provided
       // map((res) => this.searchResultToDmsObject(this.searchService.toSearchResult(res).items[0])),
-
-      // map((res) => this.searchService.toSearchResult(res)),
-      // map((res: SearchResult) => this.searchResultToDmsObject(res.items[0])),
       tap((_dmsObject: DmsObject) => {
         if (!silent) {
           this.eventService.trigger(YuvEventType.DMS_OBJECT_UPDATED, _dmsObject);
