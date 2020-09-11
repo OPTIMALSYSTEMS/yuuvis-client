@@ -1,6 +1,6 @@
 import { Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { ObjectTypeField, RangeValue, SearchFilter, SearchFilterGroup, SearchQuery, SystemService } from '@yuuvis/core';
+import { BaseObjectTypeField, InternalFieldType, ObjectTypeField, RangeValue, SearchFilter, SearchFilterGroup, SearchQuery, SystemService } from '@yuuvis/core';
 import { Subject, Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
@@ -157,6 +157,11 @@ export class SearchFilterFormComponent implements OnInit, OnDestroy {
     if (formElement.classification) {
       formElement.classifications = formElement.classification;
       formElement._internalType = this.systemService.getInternalFormElementType(formElement, 'type');
+    }
+
+    if (field.id === BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS) {
+      formElement.options = this.systemService.getSecondaryObjectTypes(true).map((s) => ({ label: s.label || s.id, value: s.id }));
+      formElement._internalType = InternalFieldType.STRING_CATALOG;
     }
 
     const formControl = ObjectFormUtils.elementToFormControl(formElement, Situation.SEARCH);

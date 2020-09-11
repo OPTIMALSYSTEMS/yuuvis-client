@@ -35,6 +35,8 @@ export class CatalogComponent implements ControlValueAccessor {
   value: string | string[];
   _options: { label: string; value: string }[];
 
+  getLabel = (value) => (this._options.find((o) => o.value === value) || { label: value }).label;
+
   /**
    * Possibles values are `EDIT` (default),`SEARCH`,`CREATE`. In search situation validation of the form element will be turned off, so you are able to enter search terms that do not meet the elements validators.
    */
@@ -47,11 +49,8 @@ export class CatalogComponent implements ControlValueAccessor {
   /**
    * Array of selectable entries
    */
-  @Input() options(options: string[]) {
-    this._options = options.map((o) => ({
-      label: o,
-      value: o
-    }));
+  @Input() set options(options: (string | any)[]) {
+    this._options = options && typeof options[0] === 'string' ? options.map((o) => ({ label: o, value: o })) : options || [];
   }
   /**
    * Indicator that multiple items could be selected
@@ -63,10 +62,7 @@ export class CatalogComponent implements ControlValueAccessor {
   @Input() set classifications(c: string[]) {
     const ce: ClassificationEntry = this.systemService.getClassifications(c).get(Classification.STRING_CATALOG);
     if (ce && ce.options) {
-      this._options = ce.options.map((o) => ({
-        label: o,
-        value: o
-      }));
+      this.options = ce.options;
     }
   }
   /**

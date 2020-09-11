@@ -5,9 +5,19 @@
     [slaveActive]="itemIsSelected">
     <yuv-process-list class="yuv-master panel" [viewMode]="'standard'" [headerDetails]="headerDetails" [processData]="processData" (refreshList)="refreshList()" (selectedItem)="selectedItem($event)"></yuv-process-list>
     <section class="yuv-slave panel">
-      <yuv-object-details [disableFileDrop]="true" [dmsObject]="dmsObject$ | async"
+      <ng-container *ngIf="dmsObject$ | async as dmsObject; else detailsError">
+
+        <yuv-object-details [disableFileDrop]="true" [dmsObject]="dmsObject"
         [panelOrder]="['summary', 'indexdata', 'preview']" [layoutOptionsKey]="layoutOptionsKey">
       </yuv-object-details>
+    </ng-container>
     </section>
   </yuv-responsive-master-slave>
 </section>
+
+<ng-template #detailsError>
+  <yuv-context-error [contextError]="contextError">
+    <!-- <button (click)="remove()">Remove FollowUp</button> -->
+  </yuv-context-error>
+
+</ng-template>
