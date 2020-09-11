@@ -18,6 +18,7 @@ import {
 } from './system.enum';
 import {
   ClassificationEntry,
+  GroupedObjectType,
   ObjectType,
   ObjectTypeField,
   ObjectTypeGroup,
@@ -61,9 +62,14 @@ export class SystemService {
    * @param withLabels Whether or not to also add the types labels
    */
   getSecondaryObjectTypes(withLabels?: boolean): SecondaryObjectType[] {
-    return withLabels
-      ? this.system.secondaryObjectTypes.map((t) => ({ ...t, label: this.getLocalizedResource(`${t.id}_label`) }))
-      : this.system.secondaryObjectTypes;
+    return (
+      (withLabels
+        ? this.system.secondaryObjectTypes.map((t) => ({ ...t, label: this.getLocalizedResource(`${t.id}_label`) }))
+        : this.system.secondaryObjectTypes
+      )
+        // ignore
+        .filter((t) => t.id !== t.baseId && !t.id.startsWith('system:') && t.id !== 'appClientsystem:leadingType')
+    );
   }
 
   /**
@@ -71,16 +77,29 @@ export class SystemService {
    * This also includes floating object types.
    *
    * @param skipAbstract Whether or not to exclude abstract object types like e.g. 'system:document'
-   * @param includeFloatingTypes Whether or not to include
+   * @param includeFloatingTypes Whether or not to include floating types as well
+   * @param includeExtendableFSOTs Whether or not to include floating SOTs as well
    */
-  getGroupedObjectTypes(skipAbstract?: boolean, includeFloatingTypes: boolean = true): ObjectTypeGroup[] {
+  getGroupedObjectTypes(skipAbstract?: boolean, includeFloatingTypes: boolean = true, includeExtendableFSOTs?: boolean): ObjectTypeGroup[] {
     // TODO: Apply a different property to group once grouping is available
-    const types: ObjectType[] = [];
+    const types: GroupedObjectType[] = [];
     this.getObjectTypes(true)
       .filter((ot) => (!includeFloatingTypes ? !ot.floatingParentType : true && (!skipAbstract || this.isCreatable(ot.id))))
       .forEach((ot) => {
         types.push(ot);
       });
+
+    if (includeExtendableFSOTs) {
+      this.getSecondaryObjectTypes()
+        .filter(
+          (sot) =>
+            !sot.classification?.includes(SecondaryObjectTypeClassification.REQUIRED) &&
+            !sot.classification?.includes(SecondaryObjectTypeClassification.PRIMARY)
+        )
+        .forEach((sot) => {
+          types.push(sot);
+        });
+    }
 
     const grouped = this.groupBy(
       types
@@ -163,9 +182,25 @@ export class SystemService {
    * Get the secondary object types of an object type that have the `required`
    * classification.
    * @param objectTypeId ID of the object type
+   * @param withLabel Whether or not to also add the types label
    */
-  getRequiredFSOTs(objectTypeId: string): SecondaryObjectType[] {
-    return this.getFloatingSecondaryObjectTypes(objectTypeId).filter((sot) => sot.classification?.includes(SecondaryObjectTypeClassification.REQUIRED));
+  getRequiredFSOTs(objectTypeId: string, withLabel?: boolean): SecondaryObjectType[] {
+    return this.getFloatingSecondaryObjectTypes(objectTypeId, withLabel).filter((sot) =>
+      sot.classification?.includes(SecondaryObjectTypeClassification.REQUIRED)
+    );
+  }
+
+  /**
+   * Extendable FSOTs are floating secondary object types that are FSOTs that are not
+   * primary and not required.
+   * @param objectTypeId ID of the object type
+   * @param withLabel Whether or not to also add the types label
+   */
+  getExtendableFSOTs(objectTypeId: string, withLabel?: boolean): SecondaryObjectType[] {
+    return this.getFloatingSecondaryObjectTypes(objectTypeId, withLabel).filter(
+      (sot) =>
+        !sot.classification?.includes(SecondaryObjectTypeClassification.REQUIRED) && !sot.classification?.includes(SecondaryObjectTypeClassification.PRIMARY)
+    );
   }
 
   /**
