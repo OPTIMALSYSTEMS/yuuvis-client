@@ -447,7 +447,7 @@ export class ObjectCreateComponent implements OnDestroy {
             // floating types
             const sot = this.system.getSecondaryObjectType(this.selectedObjectType.id);
             const selectableSOTs = this.system
-              .getFloatingSecondaryObjectTypes(this.selectedObjectType.id, true)
+              .getPrimaryFSOTs(this.selectedObjectType.id, true)
               .filter((sot) => !sot.classification || !sot.classification.includes(SecondaryObjectTypeClassification.REQUIRED));
             this.afoCreate = {
               dmsObject: { items: res, selected: res[0] },
@@ -456,7 +456,7 @@ export class ObjectCreateComponent implements OnDestroy {
             this.afoSelectFloatingSOT(sot);
           } else {
             const selectableSOTs = this.system
-              .getFloatingSecondaryObjectTypes(this.selectedObjectType.id, true)
+              .getPrimaryFSOTs(this.selectedObjectType.id, true)
               .filter((sot) => !sot.classification || !sot.classification.includes(SecondaryObjectTypeClassification.REQUIRED));
             this.afoCreate = {
               dmsObject: { items: res, selected: res[0] },
