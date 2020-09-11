@@ -222,6 +222,12 @@ export class SystemService {
     const folderTypeFieldIDs = sysFolder.fields.map((f) => f.id);
     const baseTypeFields: ObjectTypeField[] = sysDocument.fields.filter((f) => folderTypeFieldIDs.includes(f.id));
 
+    // leading type also needs to be added
+    // TODO: make this a system property that is applied to all types
+    this.getSecondaryObjectType('appClientsystem:leadingType').fields.forEach((f) => {
+      baseTypeFields.push(f);
+    });
+
     if (includeClientDefaults) {
       this.getSecondaryObjectType('appClient:clientdefaults').fields.forEach((f) => {
         baseTypeFields.push(f);
