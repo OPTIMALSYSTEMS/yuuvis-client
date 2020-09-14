@@ -80,13 +80,34 @@ export class SystemService {
    * @param includeFloatingTypes Whether or not to include floating types as well
    * @param includeExtendableFSOTs Whether or not to include floating SOTs as well
    */
-  getGroupedObjectTypes(skipAbstract?: boolean, includeFloatingTypes: boolean = true, includeExtendableFSOTs?: boolean): ObjectTypeGroup[] {
+  getGroupedObjectTypes(
+    skipAbstract?: boolean,
+    includeFloatingTypes: boolean = true,
+    includeExtendableFSOTs?: boolean,
+    situation?: 'search' | 'create'
+  ): ObjectTypeGroup[] {
     // TODO: Apply a different property to group once grouping is available
     const types: GroupedObjectType[] = [];
     this.getObjectTypes(true)
       .filter((ot) => (!includeFloatingTypes ? !ot.floatingParentType : true && (!skipAbstract || this.isCreatable(ot.id))))
       .forEach((ot) => {
-        types.push(ot);
+        switch (situation) {
+          case 'create': {
+            if (!ot.classification?.includes(ObjectTypeClassification.CREATE_FALSE)) {
+              types.push(ot);
+            }
+            break;
+          }
+          case 'search': {
+            if (!ot.classification?.includes(ObjectTypeClassification.SEARCH_FALSE)) {
+              types.push(ot);
+            }
+            break;
+          }
+          default: {
+            types.push(ot);
+          }
+        }
       });
 
     if (includeExtendableFSOTs) {
