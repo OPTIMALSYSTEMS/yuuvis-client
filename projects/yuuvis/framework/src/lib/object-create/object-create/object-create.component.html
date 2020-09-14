@@ -92,9 +92,9 @@
         <div class="box">
           <p>{{'yuv.framework.object-create.afo.upload.info'|translate}}</p>
           <div class="actions">
-            <button (click)="afoUploadCancel()">{{'yuv.framework.shared.cancel'|translate}}</button>
+            <button (click)="afoCreateCancel()">{{'yuv.framework.shared.cancel'|translate}}</button>
             <button class="primary"
-              (click)="afoUploadApprove()">{{'yuv.framework.object-create.afo.upload.approve'|translate}}</button>
+              (click)="afoCreateApprove()">{{'yuv.framework.object-create.afo.upload.approve'|translate}}</button>
           </div>
         </div>
       </div>
@@ -104,13 +104,13 @@
 
         <as-split>
           <!-- SOT select and form -->
-          <as-split-area [size]="!afoCreateWithContent?.floatingSOT.selected ? 30 : 50">
+          <as-split-area [size]="!afoCreate?.floatingSOT.selected ? 30 : 50">
 
-            <ng-container *ngIf="!afoCreateWithContent?.floatingSOT.selected; else tplSOTForm">
+            <ng-container *ngIf="!afoCreate?.floatingSOT.selected; else tplSOTForm">
               <div class="floating-sots list panel">
                 <h2>{{selectedObjectType.label}}<br>
                   <em>{{'yuv.framework.object-create.afo.type.select.title' | translate}}</em></h2>
-                <div class="sots item" *ngFor="let sot of afoCreateWithContent?.floatingSOT.items"
+                <div class="sots item" *ngFor="let sot of afoCreate?.floatingSOT.items"
                   (click)="afoSelectFloatingSOT(sot)">
                   {{sot.label}}
                 </div>
@@ -120,13 +120,13 @@
             <ng-template #tplSOTForm>
               <div class="floating-sot-form panel">
                 <div class="header">
-                  <yuv-icon class="btn" *ngIf="afoCreateWithContent?.floatingSOT.items.length > 1"
-                    (click)="afoCreateWithContent?.floatingSOT.selected = null" icon="navBack"></yuv-icon>
-                  <span>{{afoCreateWithContent.floatingSOT.selected.sot.label}}<br><em>{{selectedObjectType.label}}</em></span>
+                  <yuv-icon class="btn" *ngIf="afoCreate?.floatingSOT.items.length > 1"
+                    (click)="afoCreate?.floatingSOT.selected = null" icon="navBack"></yuv-icon>
+                  <span>{{afoCreate.floatingSOT.selected.sot.label}}<br><em>{{selectedObjectType.label}}</em></span>
                 </div>
                 <div class="form">
                   <yuv-combined-object-form (statusChanged)="onFormStatusChanged($event)"
-                    [objectFormInput]="afoCreateWithContent.floatingSOT.selected.combinedFormInput">
+                    [objectFormInput]="afoCreate.floatingSOT.selected.combinedFormInput">
                   </yuv-combined-object-form>
 
 
@@ -137,21 +137,21 @@
           </as-split-area>
 
           <!-- preview -->
-          <as-split-area class="preview-split panel" [size]="!afoCreateWithContent?.floatingSOT.selected ? 70 : 50">
+          <as-split-area class="preview-split panel" [size]="!afoCreate?.floatingSOT.selected ? 70 : 50">
 
             <as-split unit="pixel">
               <as-split-area size="*">
 
-                <div class="preview" *ngIf="!!afoCreateWithContent?.dmsObject.selected">
-                  <yuv-content-preview [dmsObject]="afoCreateWithContent.dmsObject.selected"></yuv-content-preview>
+                <div class="preview" *ngIf="!!afoCreate?.dmsObject.selected">
+                  <yuv-content-preview [dmsObject]="afoCreate.dmsObject.selected"></yuv-content-preview>
                 </div>
               </as-split-area>
               <!-- objects -->
-              <as-split-area size="200" *ngIf="afoCreateWithContent?.dmsObject.items.length > 1">
+              <as-split-area size="200" *ngIf="afoCreate?.dmsObject.items.length > 1">
                 <div class="objects">
-                  <div class="item" *ngFor="let o of afoCreateWithContent?.dmsObject.items"
-                    [ngClass]="{current: afoCreateWithContent?.dmsObject?.selected?.id === o.id}"
-                    (click)="afoCreateWithContent.dmsObject.selected = o">
+                  <div class="item" *ngFor="let o of afoCreate?.dmsObject.items"
+                    [ngClass]="{current: afoCreate?.dmsObject?.selected?.id === o.id}"
+                    (click)="afoCreate.dmsObject.selected = o">
                     {{o.content.fileName}}</div>
                 </div>
               </as-split-area>

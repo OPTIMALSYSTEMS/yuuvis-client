@@ -99,8 +99,8 @@ export enum Classification {
 
 // classifications applied to object types
 export enum ObjectTypeClassification {
-  ADVANCED_FILING_OBJECT = 'appClient:dlm',
-  FLOATING_OBJECT_TYPE = 'appClient:floatingType'
+  SEARCH_FALSE = 'appClient:search:false',
+  CREATE_FALSE = 'appClient:create:false'
 }
 
 // classifications applied to secondary object types

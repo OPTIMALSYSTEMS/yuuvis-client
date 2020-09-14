@@ -7,15 +7,7 @@ import { BackendService } from '../backend/backend.service';
 import { AppCacheService } from '../cache/app-cache.service';
 import { Logger } from '../logger/logger';
 import { Utils } from './../../util/utils';
-import {
-  BaseObjectTypeField,
-  Classification,
-  ContentStreamAllowed,
-  InternalFieldType,
-  ObjectTypeClassification,
-  SecondaryObjectTypeClassification,
-  SystemType
-} from './system.enum';
+import { BaseObjectTypeField, Classification, ContentStreamAllowed, InternalFieldType, SecondaryObjectTypeClassification, SystemType } from './system.enum';
 import {
   ClassificationEntry,
   ObjectType,
@@ -320,7 +312,6 @@ export class SystemService {
   isFloatingObjectType(objectType: ObjectType): boolean {
     return (
       Array.isArray(objectType.classification) &&
-      objectType.classification.includes(ObjectTypeClassification.FLOATING_OBJECT_TYPE) &&
       !!objectType.secondaryObjectTypes.find((sot) => this.getSecondaryObjectType(sot.id).classification?.includes(SecondaryObjectTypeClassification.PRIMARY))
     );
   }
@@ -333,7 +324,6 @@ export class SystemService {
   isExtendableObjectType(objectType: ObjectType): boolean {
     return (
       Array.isArray(objectType.classification) &&
-      objectType.classification.includes(ObjectTypeClassification.FLOATING_OBJECT_TYPE) &&
       objectType.secondaryObjectTypes.filter(
         (sot) =>
           !sot.static &&
@@ -565,7 +555,10 @@ export class SystemService {
     // deal with floating types
     const floatingTypes: ObjectType[] = [];
     objectTypes.forEach((ot) => {
-      if (this.isFloatingObjectType(ot)) {
+      const isFloatingType = !!ot.secondaryObjectTypes?.find((sot) =>
+        objectTypesQA[sot.id]?.classification?.includes(SecondaryObjectTypeClassification.PRIMARY)
+      );
+      if (isFloatingType) {
         const primaryFSOTs = ot.secondaryObjectTypes
           .filter((sot) => !sot.static)
           .map((sot) => objectTypesQA[sot.id])

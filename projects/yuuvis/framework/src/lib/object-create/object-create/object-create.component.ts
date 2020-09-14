@@ -264,41 +264,6 @@ export class ObjectCreateComponent implements OnDestroy {
     }
   }
 
-  // /**
-  //  * Checks whether or not the given object type is an advanced filing object (AFO). These types have a special kind of
-  //  * create lifecycle and treated in a different way.
-  //  *
-  //  * AFOs are object types that require a content stream and have a classification of 'appClient:dlm'. The object type itself
-  //  * is required to have no mandatory properties, so the content can be uploaded without having to apply some indexdata.
-  //  *
-  //  * AFOs have at least one Secondary Object Type (SOT) that could be applied later on.
-  //  *
-  //  * @param objectType Object type to be checked
-  //  */
-  // private isAdvancedFilingObjectType(objectType: ObjectType): boolean {
-  //   return this.system.isFloatingObjectType(objectType);
-  //   // switch (objectType.contentStreamAllowed) {
-  //   //   case ContentStreamAllowed.ALLOWED: {
-  //   //     // optional file
-  //   //     break;
-  //   //   }
-  //   //   case ContentStreamAllowed.NOT_ALLOWED: {
-  //   //     // no file
-  //   //     break;
-  //   //   }
-  //   //   case ContentStreamAllowed.REQUIRED: {
-  //   //     // file mandatory
-  //   //     break;
-  //   //   }
-  //   // }
-
-  //   // return (
-  //   //   objectType.contentStreamAllowed === ContentStreamAllowed.REQUIRED &&
-  //   //   Array.isArray(objectType.classification) &&
-  //   //   objectType.classification.includes(ObjectTypeClassification.ADVANCED_FILING_OBJECT)
-  //   // );
-  // }
-
   /**
    * Select an object type for the object to be created.
    * @param objectType The object type to be selected
@@ -309,12 +274,7 @@ export class ObjectCreateComponent implements OnDestroy {
     this.title = objectType ? this.system.getLocalizedResource(`${objectType.id}_label`) : this.labels.defaultTitle;
     this.objCreateService.setNewState({ busy: true });
 
-    // if (this.isAdvancedFilingObjectType(objectType)) {
-    //   // DLM object types are treated in a different way
-    //   this.processAFOType(objectType);
-    // } else
-
-    if (this.system.isFloatingObjectType(objectType)) {
+    if (!!objectType.floatingParentType || this.system.isFloatingObjectType(objectType)) {
       // setup the type of AFO we are processing
       switch (objectType.contentStreamAllowed) {
         case ContentStreamAllowed.ALLOWED: {
@@ -376,10 +336,7 @@ export class ObjectCreateComponent implements OnDestroy {
   }
 
   private processAFOTypeWithoutFile() {
-    this.afoUploadApprove();
-    // this.objCreateService.setNewState({ currentStep: CurrentStep.AFO_INDEXDATA });
-    // this.objCreateService.setNewBreadcrumb(CurrentStep.AFO_INDEXDATA);
-    // this.objCreateService.setNewState({ busy: false, done: this.isReady() });
+    this.afoCreateApprove();
   }
 
   afoSelectFloatingSOT(sot: SecondaryObjectType) {
@@ -423,7 +380,7 @@ export class ObjectCreateComponent implements OnDestroy {
     );
   }
 
-  afoUploadApprove() {
+  afoCreateApprove() {
     let data = {};
     if (this.context) {
       data[BaseObjectTypeField.PARENT_ID] = this.context.id;
@@ -446,18 +403,14 @@ export class ObjectCreateComponent implements OnDestroy {
           if (this.selectedObjectType.floatingParentType) {
             // floating types
             const sot = this.system.getSecondaryObjectType(this.selectedObjectType.id);
-            const selectableSOTs = this.system
-              .getPrimaryFSOTs(this.selectedObjectType.id, true)
-              .filter((sot) => !sot.classification || !sot.classification.includes(SecondaryObjectTypeClassification.REQUIRED));
+            const selectableSOTs = this.system.getPrimaryFSOTs(this.selectedObjectType.id, true);
             this.afoCreate = {
               dmsObject: { items: res, selected: res[0] },
               floatingSOT: { items: selectableSOTs }
             };
             this.afoSelectFloatingSOT(sot);
           } else {
-            const selectableSOTs = this.system
-              .getPrimaryFSOTs(this.selectedObjectType.id, true)
-              .filter((sot) => !sot.classification || !sot.classification.includes(SecondaryObjectTypeClassification.REQUIRED));
+            const selectableSOTs = this.system.getPrimaryFSOTs(this.selectedObjectType.id, true);
             this.afoCreate = {
               dmsObject: { items: res, selected: res[0] },
               floatingSOT: { items: selectableSOTs }
@@ -474,7 +427,7 @@ export class ObjectCreateComponent implements OnDestroy {
       );
   }
 
-  afoUploadCancel() {
+  afoCreateCancel() {
     this.resetState();
   }
 
@@ -518,11 +471,9 @@ export class ObjectCreateComponent implements OnDestroy {
     }
     this.objCreateService.setNewState({ busy: true });
 
-    // const isAFO = this.isAdvancedFilingObjectType(this.selectedObjectType) || !!this.selectedObjectType.floatingParentType;
-    (!!this.afoType ? this.createAFO(data) : this.createDefault(data)).subscribe(
+    (!!this.afoType ? this.finishAFO(data) : this.createDefault(data)).subscribe(
       (ids: string[]) => {
         this.objCreateService.setNewState({ busy: false });
-        // this.notify.success(this.translate.instant('yuv.framework.object-create.notify.success'));
         if (this.createAnother || this.afoCreate?.dmsObject.selected) {
           this.selectedObjectType = null;
           this.files = [];
@@ -552,7 +503,7 @@ export class ObjectCreateComponent implements OnDestroy {
    * @param data Data to be allied to the object
    * @returns List of IDs of finished objects
    */
-  private createAFO(data: any): Observable<string[]> {
+  private finishAFO(data: any): Observable<string[]> {
     const objectType = !!this.selectedObjectType.floatingParentType
       ? this.system.getObjectType(this.selectedObjectType.floatingParentType)
       : this.selectedObjectType;
