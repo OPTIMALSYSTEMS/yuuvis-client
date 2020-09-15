@@ -67,7 +67,7 @@ export class QuickSearchService {
         }))
         .sort(Utils.sortValues('label'));
       let i = 0;
-      this.availableObjectTypeGroups = this.systemService.getGroupedObjectTypes(true, true, true).map((otg: ObjectTypeGroup) => ({
+      this.availableObjectTypeGroups = this.systemService.getGroupedObjectTypes(true, true, true, 'search').map((otg: ObjectTypeGroup) => ({
         id: `${i++}`,
         label: otg.label,
         items: otg.types.map((ot: ObjectType) => ({

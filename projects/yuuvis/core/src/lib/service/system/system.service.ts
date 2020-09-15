@@ -111,7 +111,7 @@ export class SystemService {
       });
 
     if (includeExtendableFSOTs) {
-      this.getSecondaryObjectTypes()
+      this.getSecondaryObjectTypes(true)
         .filter(
           (sot) =>
             !sot.classification?.includes(SecondaryObjectTypeClassification.REQUIRED) &&

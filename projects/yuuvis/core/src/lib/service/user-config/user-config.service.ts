@@ -35,11 +35,6 @@ export class UserConfigService {
     } else {
       t = this.getType(objectTypeId);
     }
-
-    // const objectType: {id: string, fields: ObjectTypeField[]} =
-    //   (!objectTypeId || abstractTypes.includes(objectTypeId)
-    //     ? this.systemService.getBaseType(true))
-    //     : this.getType(objectTypeId)).map();
     const objectTypeFields = {};
     t.fields.forEach((f: ObjectTypeField) => (objectTypeFields[f.id] = f));
 
