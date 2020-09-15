@@ -3,7 +3,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { BackendService } from '../backend/backend.service';
 import { SecondaryObjectTypeClassification, SystemType } from '../system/system.enum';
-import { ObjectType, ObjectTypeField } from '../system/system.interface';
+import { ObjectTypeField } from '../system/system.interface';
 import { SystemService } from '../system/system.service';
 import { ColumnConfig } from './user-config.interface';
 
@@ -27,15 +27,38 @@ export class UserConfigService {
     // Abstract types like `system:document` or `system:folder` should also fall back to the
     // mixed column configurations
     const abstractTypes = Object.values(SystemType);
-    const objectType: ObjectType =
-      !objectTypeId || abstractTypes.includes(objectTypeId) ? this.systemService.getBaseType(true) : this.systemService.getObjectType(objectTypeId);
-    const objectTypeFields = {};
-    objectType.fields.forEach((f: ObjectTypeField) => (objectTypeFields[f.id] = f));
 
-    return this.fetchColumnConfig(objectType.id).pipe(
+    let t: { id: string; fields: ObjectTypeField[] };
+    if (!objectTypeId || abstractTypes.includes(objectTypeId)) {
+      const baseType = this.systemService.getBaseType(true);
+      t = { id: baseType.id, fields: baseType.fields };
+    } else {
+      t = this.getType(objectTypeId);
+    }
+    const objectTypeFields = {};
+    t.fields.forEach((f: ObjectTypeField) => (objectTypeFields[f.id] = f));
+
+    return this.fetchColumnConfig(t.id).pipe(
       // maybe there are columns that do not match the type definition anymore
       map((cc: ColumnConfig) => ({ ...cc, columns: cc.columns.filter((c) => !!objectTypeFields[c.id]), fields: objectTypeFields }))
     );
+  }
+
+  private getType(objectTypeId: string): { id: string; fields: ObjectTypeField[] } {
+    const ot = this.systemService.getObjectType(objectTypeId);
+    if (!ot) {
+      const sot = this.systemService.getSecondaryObjectType(objectTypeId);
+      const baseType = this.systemService.getBaseType(true);
+      return {
+        id: sot.id,
+        fields: [...sot.fields, ...baseType.fields]
+      };
+    } else {
+      return {
+        id: ot.id,
+        fields: ot.fields
+      };
+    }
   }
 
   private fetchColumnConfig(objectTypeId: string): Observable<ColumnConfig> {
