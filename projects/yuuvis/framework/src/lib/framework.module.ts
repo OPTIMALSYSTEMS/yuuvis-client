@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
-import { ErrorHandler, ModuleWithProviders, NgModule } from '@angular/core';
+import { ErrorHandler, InjectionToken, ModuleWithProviders, NgModule } from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CoreConfig, CORE_CONFIG, CUSTOM_CONFIG, YuvCoreModule, YuvCoreSharedModule } from '@yuuvis/core';
 import { AngularSplitModule } from 'angular-split';
@@ -23,9 +23,9 @@ import { YuvPopoverModule } from './popover/popover.module';
 import { YuvQuickfinderModule } from './quickfinder/quickfinder.module';
 import { YuvSearchModule } from './search/search.module';
 import { ErrorHandlerService } from './services/error-handler/error-handler.service';
+import { SingleCellRendererComponent } from './services/grid/renderer/single-cell-renderer/single-cell-renderer.component';
 import { YuvUserModule } from './user/user.module';
 import { YuvVersionsModule } from './versions/versions.module';
-import { SingleCellRendererComponent } from './services/grid/renderer/single-cell-renderer/single-cell-renderer.component';
 
 const modules = [
   YuvGroupedSelectModule,
@@ -76,13 +76,41 @@ const modules = [
   declarations: [SingleCellRendererComponent]
 })
 export class YuvFrameworkModule {
-  static forRoot(config?: CoreConfig): ModuleWithProviders<YuvFrameworkModule> {
+  static forRoot(config?: CoreConfig, routes?: YuvRoutes): ModuleWithProviders<YuvFrameworkModule> {
     return {
       ngModule: YuvFrameworkModule,
       providers: [
         { provide: CUSTOM_CONFIG, useValue: config },
-        { provide: CORE_CONFIG, useClass: CoreConfig, deps: [CUSTOM_CONFIG] }
+        { provide: CORE_CONFIG, useClass: CoreConfig, deps: [CUSTOM_CONFIG] },
+        { provide: ROUTES, useValue: routes }
       ]
     };
   }
 }
+
+export interface YuvRoutes {
+  object?: {
+    path: string;
+    params: {
+      id: string;
+    };
+    queryParams?: {
+      query: string;
+    };
+  };
+
+  /**
+   * Version stuff
+   */
+  versions?: {
+    path: string;
+    params: {
+      id: string;
+    };
+    queryParams?: {
+      version: string;
+    };
+  };
+}
+
+export const ROUTES = new InjectionToken<CoreConfig>('ROUTES');

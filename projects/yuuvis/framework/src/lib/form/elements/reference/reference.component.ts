@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, EventEmitter, forwardRef, HostBinding, HostListener, Input, Output, TemplateRef, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, forwardRef, HostBinding, HostListener, Inject, Input, Output, TemplateRef, ViewChild } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import {
   BaseObjectTypeField,
@@ -17,6 +17,7 @@ import { forkJoin, Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { IconRegistryService } from '../../../common/components/icon/service/iconRegistry.service';
 import { reference } from '../../../svg.generated';
+import { ROUTES, YuvRoutes } from './../../../framework.module';
 import { ReferenceEntry } from './reference.interface';
 
 /**
@@ -49,6 +50,7 @@ export class ReferenceComponent implements ControlValueAccessor, AfterViewInit {
   value;
   innerValue: ReferenceEntry[] = [];
   autocompleteRes: any[] = [];
+  path: string;
 
   // prevent ENTER from being propagated, because the component could be located
   // inside some other component that also relys on ENTER
@@ -114,8 +116,14 @@ export class ReferenceComponent implements ControlValueAccessor, AfterViewInit {
    */
   @Output() objectSelect = new EventEmitter<ReferenceEntry[]>();
 
-  constructor(private iconRegistry: IconRegistryService, private systemService: SystemService, private searchService: SearchService) {
+  constructor(
+    private iconRegistry: IconRegistryService,
+    private systemService: SystemService,
+    private searchService: SearchService,
+    @Inject(ROUTES) public routes: YuvRoutes
+  ) {
     this.iconRegistry.registerIcons([reference]);
+    this.path = this.routes && this.routes.object ? this.routes.object.path : null;
   }
   propagateChange = (_: any) => {};
 

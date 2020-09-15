@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 import { TranslateModule } from '@yuuvis/core';
 import { AutoCompleteModule } from 'primeng/autocomplete';
 import { CalendarModule } from 'primeng/calendar';
@@ -73,7 +74,8 @@ import { FormInputComponent } from './form-input/form-input.component';
     DropdownModule,
     ReactiveFormsModule,
     InputMaskModule,
-    MultiSelectModule
+    MultiSelectModule,
+    RouterModule
   ]
 })
 export class YuvFormModule {}
