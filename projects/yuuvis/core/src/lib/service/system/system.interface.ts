@@ -42,8 +42,22 @@ export interface SecondaryObjectType {
  */
 export interface ObjectTypeGroup {
   label: string;
-  types: ObjectType[];
+  types: GroupedObjectType[];
 }
+/**
+ * Object type to be used within ObjectTypeGroup.
+ * Groups may, besides regular objectt types, also include
+ * secondary object types
+ */
+export interface GroupedObjectType {
+  id: string;
+  label?: string;
+  isFolder?: boolean;
+  description: string;
+  baseId: string;
+  fields: ObjectTypeField[];
+}
+
 /**
  * Interface for a secondary object type field
  */

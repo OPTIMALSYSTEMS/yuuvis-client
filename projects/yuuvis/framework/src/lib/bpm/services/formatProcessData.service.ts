@@ -14,7 +14,7 @@ export class FormatProcessDataService {
   // process/inst => processes State
   // task/ => inbox State
   formatTaskDataForTable(processData: TaskData[]): ResponsiveTableData {
-    return this.processDataForTable(processData.map((data) => new InboxItem(data)).sort(Utils.sortValues('expiryDateTime', Sort.DESC)), [
+    return this.processDataForTable(processData.map((data) => new InboxItem(data)).sort(Utils.sortValues('expiryDateTime', Sort.ASC)), [
       'type',
       'subject',
       'expiryDateTime'
@@ -22,7 +22,7 @@ export class FormatProcessDataService {
   }
 
   formatProcessDataForTable(processData: ProcessData[]): ResponsiveTableData {
-    return this.processDataForTable(processData.map((data) => new FollowUp(data)).sort(Utils.sortValues('expiryDateTime', Sort.DESC)), [
+    return this.processDataForTable(processData.map((data) => new FollowUp(data)).sort(Utils.sortValues('expiryDateTime', Sort.ASC)), [
       'type',
       'subject',
       'expiryDateTime',
