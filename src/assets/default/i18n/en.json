@@ -248,6 +248,7 @@
   "yuv.client.frame.app-bar.pwa-update.msg": "Update available",
   "yuv.client.frame.move.notification.failed": "Failed:",
   "yuv.client.frame.move.notification.title": "Move to: {{objectTitle}}",
+  "yuv.client.frame.move.notification.title.root": "Move to: common location",
   "yuv.client.frame.offline.button.refresh": "Reload",
   "yuv.client.frame.offline.message": "You are not connected to the Internet.",
   "yuv.client.frame.offline.title": "Offline",

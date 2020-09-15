@@ -369,7 +369,7 @@ $app-bar-zindex: 6;
     .entry {
       margin: calc(var(--app-pane-padding) / 2) 0;
       display: flex;
-      yuv-icon {
+      yuv-object-type-icon {
         margin-right: calc(var(--app-pane-padding) / 2);
       }
       .description {

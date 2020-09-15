@@ -1,4 +1,3 @@
-// import { openContext } from './../../../../projects/yuuvis/framework/src/lib/svg.generated';
 import { Component, HostBinding, HostListener, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, NavigationExtras, Router } from '@angular/router';
 import { SwUpdate } from '@angular/service-worker';
@@ -137,32 +136,29 @@ export class FrameComponent implements OnInit, OnDestroy {
   }
 
   onObjetcsMove(event) {
-    this.dmsService.getDmsObject(event.data.targetFolderId).subscribe((newParent) => {
-      const title = this.translateService.instant('yuv.client.frame.move.notification.title', { objectTitle: newParent.title });
-      const succeeded = event.data.succeeded.map((o) => {
-        o.icon = this.systemService.getObjectTypeIcon(o.objectTypeId);
-        return o;
+    let popoverConfig = {
+      maxHeight: '70%',
+      width: 300,
+      bottom: 16,
+      right: 16,
+      duration: 10,
+      data: {
+        title: this.translateService.instant('yuv.client.frame.move.notification.title.root'),
+        newParent: null,
+        succeeded: event.data.succeeded,
+        failed: event.data.failed
+      },
+      panelClass: 'move-notification'
+    };
+    if (event.data.targetFolderId) {
+      this.dmsService.getDmsObject(event.data.targetFolderId).subscribe((newParent) => {
+        popoverConfig.data.title = this.translateService.instant('yuv.client.frame.move.notification.title', { objectTitle: newParent.title });
+        popoverConfig.data.newParent = newParent;
+        this.popoverService.open(this.moveNotification, popoverConfig);
       });
-      const failed = event.data.failed.map((o) => {
-        o.icon = this.systemService.getObjectTypeIcon(o.objectTypeId);
-        return o;
-      });
-      const popoverConfig = {
-        maxHeight: '70%',
-        width: 300,
-        bottom: 16,
-        right: 16,
-        duration: 10,
-        data: {
-          title: title,
-          newParent: newParent,
-          succeeded: succeeded,
-          failed: failed
-        },
-        panelClass: 'move-notification'
-      };
+    } else {
       this.popoverService.open(this.moveNotification, popoverConfig);
-    });
+    }
   }
 
   closeNotification(popoverRef?: PopoverRef) {
