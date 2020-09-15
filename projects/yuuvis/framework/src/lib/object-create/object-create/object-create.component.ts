@@ -191,7 +191,7 @@ export class ObjectCreateComponent implements OnDestroy {
 
     let i = 0;
     this.generalObjectTypeGroups = this.system
-      .getGroupedObjectTypes(false, true, true, 'create')
+      .getGroupedObjectTypes(false, true, false, 'create')
       .map((otg: ObjectTypeGroup) => ({
         id: `${i++}`,
         label: otg.label,
