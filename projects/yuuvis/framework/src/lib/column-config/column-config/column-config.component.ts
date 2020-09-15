@@ -214,7 +214,10 @@ export class ColumnConfigComponent implements OnInit {
       (res: ColumnConfig) => {
         this.busy = false;
         this.title =
-          res.type === SystemType.OBJECT ? this.translate.instant('yuv.framework.column-config.type.mixed.label') : this.fetchObjectType(res.type).label;
+          res.type === SystemType.OBJECT
+            ? this.translate.instant('yuv.framework.column-config.type.mixed.label')
+            : this.systemService.getLocalizedResource(`${objectTypeId}_label`);
+
         this._objectTypeFields = this.filterColumns(Object.values(res.fields));
         this.resetConfig({
           type: res.type,
@@ -257,10 +260,6 @@ export class ColumnConfigComponent implements OnInit {
         value: f
       }))
       .sort(Utils.sortValues('label'));
-  }
-
-  private fetchObjectType(id: string): ObjectType {
-    return this.systemService.getObjectType(id, true);
   }
 
   ngOnInit() {
