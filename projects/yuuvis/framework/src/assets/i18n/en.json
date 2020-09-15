@@ -94,7 +94,7 @@
   "yuv.framework.form.reference.noaccess": "Deleted or access denied",
   "yuv.framework.list.configure.columns": "Configure columns",
   "yuv.framework.list.refresh": "Refresh",
-  "yuv.framework.object-create.afo.type.select.title": "Select type",
+  "yuv.framework.object-create.afo.type.select.title": "Specifiy object",
   "yuv.framework.object-create.afo.upload.approve": "Continue",
   "yuv.framework.object-create.afo.upload.info": "Uploading file(s) for further processing. You can finish the filing process in the next step.",
   "yuv.framework.object-create.footer.another": "Create additional object",

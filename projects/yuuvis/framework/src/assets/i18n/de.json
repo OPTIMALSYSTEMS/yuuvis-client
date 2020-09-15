@@ -94,7 +94,7 @@
   "yuv.framework.form.reference.noaccess": "Gelöscht oder Zugriff verweigert",
   "yuv.framework.list.configure.columns": "Spalten konfigurieren",
   "yuv.framework.list.refresh": "Aktualisieren",
-  "yuv.framework.object-create.afo.type.select.title": "Typ wählen",
+  "yuv.framework.object-create.afo.type.select.title": "Objekt spezifizieren",
   "yuv.framework.object-create.afo.upload.approve": "Weiter",
   "yuv.framework.object-create.afo.upload.info": "Hochladen der Datei(en) zur Weiterverarbeitung. Im nächsten Schritt können Sie den Ablageprozess abschließen.",
   "yuv.framework.object-create.footer.another": "Weiteres Objekt erstellen",
