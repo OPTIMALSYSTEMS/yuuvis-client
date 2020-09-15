@@ -250,7 +250,7 @@ export class SystemService {
   /**
    * Get the icon for an object type. This will return an SVG as a string.
    * @param objectTypeId ID of the object type
-   * * @param fallback ID of a fallback icon that should be used if the given object type has no icon yet
+   * @param fallback ID of a fallback icon that should be used if the given object type has no icon yet
    */
   getObjectTypeIcon(objectTypeId: string, fallback?: string): Observable<string> {
     const fb = this.getFallbackIcon(objectTypeId, fallback);

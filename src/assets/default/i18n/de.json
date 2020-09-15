@@ -182,7 +182,10 @@
   "yuv.framework.search-result-panel.header.description.types": "Suche nach '{{term}}' in {{types}}",
   "yuv.framework.search-result-panel.header.title": "Suchergebnis",
   "yuv.framework.search-result.empty": "Keine Treffer",
+  "yuv.framework.search-result.filter.operator.and": "UND",
+  "yuv.framework.search-result.filter.operator.or": "ODER",
   "yuv.framework.search-result.filter.panel.title": "Filter",
+  "yuv.framework.search-result.filter.tooltip": "Ändere von UND nach ODER und vice versa",
   "yuv.framework.search-result.footer.config.mode.default": "Tabelle",
   "yuv.framework.search-result.footer.config.mode.grid": "Galerie",
   "yuv.framework.search-result.footer.config.mode.horizontal": "Liste",
@@ -298,8 +301,5 @@
   "yuv.client.state.versions.compare.label": "Version {{version}}",
   "yuv.client.state.versions.header.title": "Versionen",
   "yuv.framework.inbox-list.inbox": "Eingangskorb",
-  "yuv.framework.process-list.process": "Meine Prozesse",
-  "yuv.framework.search-result.filter.tooltip": "Ändere von UND nach ODER und vice versa",
-  "yuv.framework.search-result.filter.operator.and": "UND",
-  "yuv.framework.search-result.filter.operator.or": "ODER"
+  "yuv.framework.process-list.process": "Meine Prozesse"
 }

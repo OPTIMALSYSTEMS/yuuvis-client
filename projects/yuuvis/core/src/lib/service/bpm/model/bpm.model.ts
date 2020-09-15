@@ -62,6 +62,7 @@ export interface ProcessData extends Processes {
   referenceType: null;
   completed: boolean;
   taskId?: string;
+  icon?: string;
 }
 
 export interface TaskData extends Processes {
@@ -85,6 +86,7 @@ export interface TaskData extends Processes {
   executionUrl: string;
   processInstanceId: string;
   processInstanceUrl: string;
+  icon?: string;
 }
 
 export interface Variable {
@@ -96,76 +98,84 @@ export interface Variable {
 
 export class InboxItem {
   get id() {
-    return this.originaData.id;
+    return this.originalData.id;
   }
 
   get title(): string {
-    return this.originaData.variables.find((v) => v.name === 'whatAbout').value as string;
+    return this.originalData.variables.find((v) => v.name === 'whatAbout').value as string;
   }
 
   get expiryDateTime(): Date {
-    return new Date(this.originaData.variables.find((v) => v.name === 'expiryDateTime').value);
+    return new Date(this.originalData.variables.find((v) => v.name === 'expiryDateTime').value);
   }
 
   get createTime(): Date {
-    return new Date(this.originaData.createTime);
+    return new Date(this.originalData.createTime);
   }
 
   get description(): string {
-    return this.originaData.variables.find((v) => v.name === 'whatAbout').value as string;
+    return this.originalData.variables.find((v) => v.name === 'whatAbout').value as string;
   }
 
   get subject(): string {
-    return this.originaData.variables.find((v) => v.name === 'whatAbout').value as string;
+    return this.originalData.variables.find((v) => v.name === 'whatAbout').value as string;
   }
 
   get documentId(): string {
-    return this.originaData.variables.find((v) => v.name === 'documentId').value as string;
+    return this.originalData.variables.find((v) => v.name === 'documentId').value as string;
   }
 
   get type(): string {
     return 'task';
   }
 
-  constructor(private originaData: TaskData) {}
+  get icon(): string {
+    return this.originalData.icon;
+  }
+
+  constructor(private originalData: TaskData) {}
 }
 
 export class FollowUp {
   get id() {
-    return this.originaData.id;
+    return this.originalData.id;
   }
 
   get title(): string {
-    return this.originaData.variables.find((v) => v.name === 'whatAbout').value as string;
+    return this.originalData.variables.find((v) => v.name === 'whatAbout').value as string;
   }
 
   get expiryDateTime(): Date {
-    return new Date(this.originaData.variables.find((v) => v.name === 'expiryDateTime').value);
+    return new Date(this.originalData.variables.find((v) => v.name === 'expiryDateTime').value);
   }
 
   get description(): string {
-    return this.originaData.variables.find((v) => v.name === 'whatAbout').value as string;
+    return this.originalData.variables.find((v) => v.name === 'whatAbout').value as string;
   }
 
   get type(): string {
-    return this.originaData.name;
+    return this.originalData.name;
   }
 
   get businessKey(): string {
-    return this.originaData.businessKey;
+    return this.originalData.businessKey;
   }
 
   get subject(): string {
-    return this.originaData.variables.find((v) => v.name === 'whatAbout').value as string;
+    return this.originalData.variables.find((v) => v.name === 'whatAbout').value as string;
   }
 
   get documentId(): string {
-    return this.originaData.variables.find((v) => v.name === 'documentId').value as string;
+    return this.originalData.variables.find((v) => v.name === 'documentId').value as string;
   }
 
   get startTime(): Date {
-    return new Date(this.originaData.startTime);
+    return new Date(this.originalData.startTime);
   }
 
-  constructor(private originaData: ProcessData) {}
+  get icon(): string {
+    return this.originalData.icon;
+  }
+
+  constructor(private originalData: ProcessData) {}
 }
