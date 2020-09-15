@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { BpmEvent, DmsObject, DmsService, EventService, InboxService, TaskData, TranslateService } from '@yuuvis/core';
+import { BpmEvent, EventService, InboxService, TaskData, TranslateService } from '@yuuvis/core';
 import {
   arrowNext,
   edit,
@@ -12,8 +12,8 @@ import {
   refresh,
   ResponsiveTableData
 } from '@yuuvis/framework';
-import { Observable, of } from 'rxjs';
-import { catchError, finalize, map, switchMap, take } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { map, switchMap, take } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
 
 @Component({
@@ -23,11 +23,10 @@ import { takeUntilDestroy } from 'take-until-destroy';
 })
 export class InboxComponent implements OnInit, OnDestroy {
   layoutOptionsKey = 'yuv.app.inbox';
-  layoutOptionsKeyList = 'yuv.app.inbox.list';
   contextError: string;
   objectDetailsID: string;
   itemIsSelected = false;
-  dmsObject$: Observable<DmsObject>;
+  objectId: string;
   inboxData$: Observable<ResponsiveTableData> = this.inboxService.inboxData$.pipe(
     map((taskData: TaskData[]) => ({ ...this.formatProcessDataService.formatTaskDataForTable(taskData), currentViewMode: 'horizontal' }))
   );
@@ -37,9 +36,9 @@ export class InboxComponent implements OnInit, OnDestroy {
     description: '',
     icon: 'inbox'
   };
+
   constructor(
     private inboxService: InboxService,
-    private dmsService: DmsService,
     private translateService: TranslateService,
     private formatProcessDataService: FormatProcessDataService,
     private iconRegistry: IconRegistryService,
@@ -52,29 +51,19 @@ export class InboxComponent implements OnInit, OnDestroy {
     return this.inboxService.getTasks().pipe(take(1), takeUntilDestroy(this));
   }
 
-  private getSelectedDetail(businessKey: string) {
-    this.dmsObject$ = businessKey
-      ? this.dmsService.getDmsObject(businessKey).pipe(
-          catchError((error) => {
-            this.contextError = this.translateService.instant('yuv.client.state.object.context.load.error');
-            return of(null);
-          }),
-          finalize(() => (this.itemIsSelected = true))
-        )
-      : of(null);
-  }
-
   selectedItem(item) {
-    this.getSelectedDetail(item[0]?.documentId);
+    this.objectId = item[0]?.documentId;
+    this.itemIsSelected = true;
   }
 
   refreshList() {
     this.getInbox().subscribe();
   }
 
+  onSlaveClosed() {}
+
   ngOnInit(): void {
     this.getInbox().subscribe();
-
     this.eventService
       .on(BpmEvent.BPM_EVENT)
       .pipe(
