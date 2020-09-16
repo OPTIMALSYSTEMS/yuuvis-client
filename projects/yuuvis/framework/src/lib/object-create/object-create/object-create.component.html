@@ -120,7 +120,7 @@
                   <yuv-icon class="btn" *ngIf="afoCreate?.floatingSOT.items.items.length > 1"
                     (click)="afoCreate?.floatingSOT.selected = null" icon="navBack"></yuv-icon>
 
-                  <span>{{afoCreate.floatingSOT.selected.sot?.label || selectedObjectType.label}}</span>
+                  <span>{{afoCreate.floatingSOT.selected.sot.label}}</span>
                 </div>
                 <div class="form">
                   <yuv-combined-object-form (statusChanged)="onFormStatusChanged($event)"

@@ -11,7 +11,6 @@ import {
   ObjectType,
   ObjectTypeGroup,
   SearchService,
-  SecondaryObjectType,
   SecondaryObjectTypeClassification,
   Sort,
   SystemService,
@@ -48,7 +47,7 @@ export interface AFOState {
   floatingSOT: {
     items: SelectableGroup;
     selected?: {
-      sot: SecondaryObjectType | string;
+      sot: { id: string; label: string };
       // may be more than one form model because it is a combination of multiple SOTs
       combinedFormInput: CombinedObjectFormInput;
     };
@@ -339,7 +338,7 @@ export class ObjectCreateComponent implements OnDestroy {
     this.afoCreateApprove();
   }
 
-  afoSelectFloatingSOT(sot: SecondaryObjectType) {
+  afoSelectFloatingSOT(sot: { id: string; label: string }) {
     this.objCreateService.setNewState({ busy: true });
     const objectType = !!this.selectedObjectType.floatingParentType
       ? this.system.getObjectType(this.selectedObjectType.floatingParentType)
@@ -366,7 +365,10 @@ export class ObjectCreateComponent implements OnDestroy {
     this.system.getObjectTypeForms(objectTypeIDs, Situation.CREATE).subscribe(
       (res) => {
         this.afoCreate.floatingSOT.selected = {
-          sot: sot || 'none',
+          sot: {
+            id: sot?.id || 'none',
+            label: sot?.label || this.selectedObjectType.label
+          },
           // TODO: also apply extraction data here
           // TODO: If object is changed form should also get new data
           combinedFormInput: {
@@ -429,7 +431,7 @@ export class ObjectCreateComponent implements OnDestroy {
               dmsObject: { items: res, selected: res[0] },
               floatingSOT: { items: selectableSOTs }
             };
-            this.afoSelectFloatingSOT(sot);
+            this.afoSelectFloatingSOT({ id: sot.id, label: sot.label });
           } else {
             // const selectableSOTs = this.system.getPrimaryFSOTs(this.selectedObjectType.id, true);
             this.afoCreate = {
