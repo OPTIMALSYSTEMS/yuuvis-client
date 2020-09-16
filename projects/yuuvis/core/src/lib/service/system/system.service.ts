@@ -639,7 +639,7 @@ export class SystemService {
           floatingTypes.push({
             id: def.id,
             description: def.description,
-            classification: ot.classification,
+            classification: def.classification,
             floatingParentType: ot.id,
             baseId: ot.baseId,
             creatable: ot.creatable && this.isCreatable(def.id),

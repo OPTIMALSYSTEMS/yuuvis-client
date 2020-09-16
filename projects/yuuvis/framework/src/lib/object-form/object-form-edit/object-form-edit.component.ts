@@ -16,6 +16,7 @@ import {
 } from '@yuuvis/core';
 import { Observable, of } from 'rxjs';
 import { finalize, map, switchMap } from 'rxjs/operators';
+import { SelectableGroup } from '../../grouped-select';
 import { PopoverConfig } from '../../popover/popover.interface';
 import { PopoverRef } from '../../popover/popover.ref';
 import { PopoverService } from '../../popover/popover.service';
@@ -60,8 +61,10 @@ export class ObjectFormEditComponent implements OnDestroy {
   };
 
   fsot: {
-    applicableTypes: SecondaryObjectType[];
-    applicableSOTs: SecondaryObjectType[];
+    // applicableTypes: SecondaryObjectType[];
+    // applicableSOTs: SecondaryObjectType[];
+    applicableTypes: SelectableGroup;
+    applicableSOTs: SelectableGroup;
   };
 
   // Indicator that we are dealing with a floating object type
@@ -241,7 +244,7 @@ export class ObjectFormEditComponent implements OnDestroy {
 
       if (add.length) {
         this.busy = true;
-        this.getCombinedFormAddInput(add, true).subscribe((res: CombinedFormAddInput[]) => {
+        this.getCombinedFormAddInput([this._dmsObject.data[BaseObjectTypeField.OBJECT_TYPE_ID], ...add], true).subscribe((res: CombinedFormAddInput[]) => {
           if (res.length > 0) {
             this.afoObjectForm.addForms(res, this._dmsObject.data);
             this.getApplicableSecondaries(this._dmsObject);
@@ -316,8 +319,22 @@ export class ObjectFormEditComponent implements OnDestroy {
 
   private getApplicableSecondaries(dmsObject: DmsObject) {
     this.fsot = {
-      applicableTypes: [],
-      applicableSOTs: []
+      applicableTypes: {
+        id: 'type',
+        label: this.translate.instant('yuv.framework.object-form-edit.fsot.apply-type'),
+        items: [
+          {
+            id: 'none',
+            label: this.translate.instant('yuv.framework.object-create.afo.type.select.general'),
+            svgSrc: this.systemService.getObjectTypeIconUri(dmsObject.objectTypeId)
+          }
+        ]
+      },
+      applicableSOTs: {
+        id: 'fsot',
+        label: this.translate.instant('yuv.framework.object-form-edit.fsot.add-fsot'),
+        items: []
+      }
     };
     const currentSOTs = dmsObject.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS];
     const alreadyAssignedPrimary =
@@ -332,10 +349,20 @@ export class ObjectFormEditComponent implements OnDestroy {
         const sot = this.systemService.getSecondaryObjectType(sotref.id, true);
         if (sot.classification?.includes(SecondaryObjectTypeClassification.PRIMARY)) {
           if (!alreadyAssignedPrimary) {
-            this.fsot.applicableTypes.push(sot);
+            this.fsot.applicableTypes.items.push({
+              id: sot.id,
+              label: sot.label,
+              svgSrc: this.systemService.getObjectTypeIconUri(sot.id),
+              value: sot
+            });
           }
         } else if (!sot.classification?.includes(SecondaryObjectTypeClassification.REQUIRED)) {
-          this.fsot.applicableSOTs.push(sot);
+          this.fsot.applicableSOTs.items.push({
+            id: sot.id,
+            label: sot.label,
+            svgSrc: this.systemService.getObjectTypeIconUri(sot.id),
+            value: sot
+          });
         }
       });
   }
@@ -367,7 +394,10 @@ export class ObjectFormEditComponent implements OnDestroy {
       this._sotChanged.assignedPrimaryFSOT = true;
     }
     // add the selected FSOT
-    sotsToBeAdded.push(sot.id);
+    // may be NULL if general type is selected
+    if (sot) {
+      sotsToBeAdded.push(sot.id);
+    }
     this._dmsObject.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS] = [...sotIDs, ...sotsToBeAdded];
 
     this.getCombinedFormAddInput(sotsToBeAdded, enableEditSOT).subscribe((res: CombinedFormAddInput[]) => {

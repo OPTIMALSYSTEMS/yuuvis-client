@@ -47,9 +47,8 @@ export interface AFOState {
   // List of floating secondary object types that could be applied to the current AFO(s)
   floatingSOT: {
     items: SelectableGroup;
-    // items: SecondaryObjectType[];
     selected?: {
-      sot: SecondaryObjectType;
+      sot: SecondaryObjectType | string;
       // may be more than one form model because it is a combination of multiple SOTs
       combinedFormInput: CombinedObjectFormInput;
     };
@@ -361,11 +360,13 @@ export class ObjectCreateComponent implements OnDestroy {
           objectTypeIDs.push(t.id);
         }
       });
-
-    this.system.getObjectTypeForms([...objectTypeIDs, sot.id], Situation.CREATE).subscribe(
+    if (!!sot) {
+      objectTypeIDs.push(sot.id);
+    }
+    this.system.getObjectTypeForms(objectTypeIDs, Situation.CREATE).subscribe(
       (res) => {
         this.afoCreate.floatingSOT.selected = {
-          sot: sot,
+          sot: sot || 'none',
           // TODO: also apply extraction data here
           // TODO: If object is changed form should also get new data
           combinedFormInput: {
@@ -404,12 +405,19 @@ export class ObjectCreateComponent implements OnDestroy {
           const selectableSOTs: SelectableGroup = {
             id: 'sots',
             label: this.translate.instant('yuv.framework.object-create.afo.type.select.title'),
-            items: this.system.getPrimaryFSOTs(this.selectedObjectType.id, true).map((sot) => ({
-              id: sot.id,
-              label: sot.label,
-              svgSrc: this.system.getObjectTypeIconUri(sot.id),
-              value: sot
-            }))
+            items: [
+              {
+                id: 'none',
+                label: this.translate.instant('yuv.framework.object-create.afo.type.select.general'),
+                svgSrc: this.system.getObjectTypeIconUri(this.selectedObjectType.id)
+              },
+              ...this.system.getPrimaryFSOTs(this.selectedObjectType.id, true).map((sot) => ({
+                id: sot.id,
+                label: sot.label,
+                svgSrc: this.system.getObjectTypeIconUri(sot.id),
+                value: sot
+              }))
+            ]
           };
 
           if (this.selectedObjectType.floatingParentType) {
@@ -547,7 +555,9 @@ export class ObjectCreateComponent implements OnDestroy {
       })
       .map((sot) => sot.id);
     // add the chosen type as well
-    sotsToBeApplied.push(this.afoCreate.floatingSOT.selected.sot.id);
+    if (typeof this.afoCreate.floatingSOT.selected.sot !== 'string') {
+      sotsToBeApplied.push(this.afoCreate.floatingSOT.selected.sot.id);
+    }
     data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS] = sotsToBeApplied;
 
     // update existing dms object

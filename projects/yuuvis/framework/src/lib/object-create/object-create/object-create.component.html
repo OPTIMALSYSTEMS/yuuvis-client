@@ -108,36 +108,19 @@
 
             <ng-container *ngIf="!afoCreate?.floatingSOT.selected; else tplSOTForm">
               <div class="floating-sots list panel">
-                <!-- <h2>{{selectedObjectType.label}}<br>
-                  <em>{{'yuv.framework.object-create.afo.type.select.title' | translate}}</em></h2> -->
-
-
-
-
                 <yuv-grouped-select [groups]="[afoCreate?.floatingSOT.items]"
                   (select)="afoSelectFloatingSOT($event.value)">
                 </yuv-grouped-select>
-
-
-
-
-
-                <!-- <div class="sots item" (click)="afoSelectFloatingSOT(sot)">
-                  {{'yuv.framework.object-create.afo.type.select.general' | translate}}</div>
-
-                <div class="sots item" *ngFor="let sot of afoCreate?.floatingSOT.items"
-                  (click)="afoSelectFloatingSOT(sot)">
-                  {{sot.label}}
-                </div> -->
               </div>
             </ng-container>
 
             <ng-template #tplSOTForm>
               <div class="floating-sot-form panel">
                 <div class="header">
-                  <yuv-icon class="btn" *ngIf="afoCreate?.floatingSOT.items"
+                  <yuv-icon class="btn" *ngIf="afoCreate?.floatingSOT.items.items.length > 1"
                     (click)="afoCreate?.floatingSOT.selected = null" icon="navBack"></yuv-icon>
-                  <span>{{afoCreate.floatingSOT.selected.sot.label}}<br><em>{{selectedObjectType.label}}</em></span>
+
+                  <span>{{afoCreate.floatingSOT.selected.sot?.label || selectedObjectType.label}}</span>
                 </div>
                 <div class="form">
                   <yuv-combined-object-form (statusChanged)="onFormStatusChanged($event)"
@@ -185,7 +168,8 @@
       <ng-container *ngIf="state.currentStep === 'afo_indexdata'; else tplCreate">
         <button (click)="createAfoCancel()" translate>yuv.framework.object-create.footer.create.afo.cancel</button>
 
-        <button class="primary create" (click)="create()" [disabled]="combinedObjectForm?.combinedFormState?.invalid"
+        <button class="primary create" (click)="create()"
+          [disabled]="!afoCreate?.floatingSOT?.selected || combinedObjectForm?.combinedFormState?.invalid"
           translate>yuv.framework.object-create.footer.create.afo.next</button>
       </ng-container>
 
