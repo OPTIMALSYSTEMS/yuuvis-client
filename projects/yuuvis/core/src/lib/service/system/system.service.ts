@@ -7,7 +7,15 @@ import { BackendService } from '../backend/backend.service';
 import { AppCacheService } from '../cache/app-cache.service';
 import { Logger } from '../logger/logger';
 import { Utils } from './../../util/utils';
-import { BaseObjectTypeField, Classification, ContentStreamAllowed, InternalFieldType, SecondaryObjectTypeClassification, SystemType } from './system.enum';
+import {
+  BaseObjectTypeField,
+  Classification,
+  ContentStreamAllowed,
+  InternalFieldType,
+  ObjectTypeClassification,
+  SecondaryObjectTypeClassification,
+  SystemType
+} from './system.enum';
 import {
   ClassificationEntry,
   GroupedObjectType,

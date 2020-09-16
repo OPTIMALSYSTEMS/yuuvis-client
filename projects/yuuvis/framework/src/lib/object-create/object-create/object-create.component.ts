@@ -46,7 +46,8 @@ export interface AFOState {
   };
   // List of floating secondary object types that could be applied to the current AFO(s)
   floatingSOT: {
-    items: SecondaryObjectType[];
+    items: SelectableGroup;
+    // items: SecondaryObjectType[];
     selected?: {
       sot: SecondaryObjectType;
       // may be more than one form model because it is a combination of multiple SOTs
@@ -294,7 +295,7 @@ export class ObjectCreateComponent implements OnDestroy {
         }
       }
 
-      if (this.afoType !== AFOType.CONTENT_NONE) {
+      if (this.afoType === AFOType.CONTENT_NONE) {
         this.processAFOTypeWithoutFile();
       } else {
         this.processAFOTypeWithFile();
@@ -400,23 +401,34 @@ export class ObjectCreateComponent implements OnDestroy {
           this.objCreateService.setNewState({ currentStep: CurrentStep.AFO_INDEXDATA, busy: false });
           this.objCreateService.setNewBreadcrumb(CurrentStep.AFO_INDEXDATA, CurrentStep.AFO_UPLOAD);
 
+          const selectableSOTs: SelectableGroup = {
+            id: 'sots',
+            items: this.system.getPrimaryFSOTs(this.selectedObjectType.id, true).map((sot) => ({
+              id: sot.id,
+              label: sot.label,
+              svgSrc: this.system.getObjectTypeIconUri(sot.id),
+              value: sot
+            }))
+          };
+
           if (this.selectedObjectType.floatingParentType) {
             // floating types
             const sot = this.system.getSecondaryObjectType(this.selectedObjectType.id);
-            const selectableSOTs = this.system.getPrimaryFSOTs(this.selectedObjectType.id, true);
+            // const selectableSOTs = this.system.getPrimaryFSOTs(this.selectedObjectType.id, true);
+
             this.afoCreate = {
               dmsObject: { items: res, selected: res[0] },
               floatingSOT: { items: selectableSOTs }
             };
             this.afoSelectFloatingSOT(sot);
           } else {
-            const selectableSOTs = this.system.getPrimaryFSOTs(this.selectedObjectType.id, true);
+            // const selectableSOTs = this.system.getPrimaryFSOTs(this.selectedObjectType.id, true);
             this.afoCreate = {
               dmsObject: { items: res, selected: res[0] },
               floatingSOT: { items: selectableSOTs }
             };
-            if (selectableSOTs.length === 1) {
-              this.afoSelectFloatingSOT(selectableSOTs[0]);
+            if (selectableSOTs.items.length === 1) {
+              this.afoSelectFloatingSOT(selectableSOTs.items[0].value);
             }
           }
         },
@@ -455,9 +467,27 @@ export class ObjectCreateComponent implements OnDestroy {
   }
 
   fileSelectContinue() {
-    const nextStep = !this.afoType ? CurrentStep.INDEXDATA : CurrentStep.AFO_UPLOAD;
-    this.goToStep(nextStep);
-    this.objCreateService.setNewBreadcrumb(nextStep);
+    let nextStep;
+    if (this.afoType) {
+      // document file required
+      if (this.afoType === AFOType.CONTENT_REQUIRED) {
+        nextStep = CurrentStep.AFO_UPLOAD;
+      }
+      // document file is not neccessary
+      if (this.afoType === AFOType.CONTENT_OPTIONAL) {
+        if (!this.files || this.files.length === 0) {
+          this.afoCreateApprove();
+        } else {
+          nextStep = CurrentStep.AFO_UPLOAD;
+        }
+      }
+    } else {
+      nextStep = CurrentStep.INDEXDATA;
+    }
+    if (nextStep) {
+      this.goToStep(nextStep);
+      this.objCreateService.setNewBreadcrumb(nextStep);
+    }
   }
 
   private createObject(id: string, data: any, files: File[], silent = false): Observable<string[]> {
