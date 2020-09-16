@@ -403,6 +403,7 @@ export class ObjectCreateComponent implements OnDestroy {
 
           const selectableSOTs: SelectableGroup = {
             id: 'sots',
+            label: this.translate.instant('yuv.framework.object-create.afo.type.select.title'),
             items: this.system.getPrimaryFSOTs(this.selectedObjectType.id, true).map((sot) => ({
               id: sot.id,
               label: sot.label,
