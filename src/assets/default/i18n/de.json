@@ -272,7 +272,7 @@
   "yuv.client.state.not-found.title": "Nicht gefunden",
   "yuv.client.state.process.title": "Meine Prozesse",
   "yuv.client.state.result.title": "Suchergebnis",
-  "yuv.client.state.settings.cache.clear.error": "Anwendungscache leeren",
+  "yuv.client.state.settings.cache.clear.error": "Anwendungscache konnte nicht geleert werden",
   "yuv.client.state.settings.cache.clear.success": "Der Anwendungscache wurde geleert",
   "yuv.client.state.settings.config.cache": "Cache",
   "yuv.client.state.settings.config.cache.clear": "Anwendungscache leeren",
