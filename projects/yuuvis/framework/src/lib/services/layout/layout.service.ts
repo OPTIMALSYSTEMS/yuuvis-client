@@ -21,8 +21,8 @@ export class LayoutService {
    */
   public layoutSettings$: Observable<LayoutSettings> = this.layoutSettingsSource.asObservable();
 
-  private get storageKeyPrefix() {
-    return this.configService.get('storragePrefix') ? `${this.configService.get('storragePrefix')}.` : '';
+  private get storageKeyPrefix(): string {
+    return this.configService.get('appPrefix') ? `${this.configService.get('appPrefix')}.` : '';
   }
 
   /**
