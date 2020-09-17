@@ -23,9 +23,9 @@ import { YuvPopoverModule } from './popover/popover.module';
 import { YuvQuickfinderModule } from './quickfinder/quickfinder.module';
 import { YuvSearchModule } from './search/search.module';
 import { ErrorHandlerService } from './services/error-handler/error-handler.service';
+import { SingleCellRendererComponent } from './services/grid/renderer/single-cell-renderer/single-cell-renderer.component';
 import { YuvUserModule } from './user/user.module';
 import { YuvVersionsModule } from './versions/versions.module';
-import { SingleCellRendererComponent } from './services/grid/renderer/single-cell-renderer/single-cell-renderer.component';
 
 const modules = [
   YuvGroupedSelectModule,
@@ -41,9 +41,9 @@ const modules = [
   YuvObjectCreateModule,
   YuvQuickfinderModule,
   YuvPipesModule,
-  OverlayPanelModule,
   YuvActionModule,
   YuvCoreSharedModule,
+  OverlayPanelModule,
   YuvBpmModule
 ];
 

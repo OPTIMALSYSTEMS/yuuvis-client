@@ -154,7 +154,8 @@ export class SummaryComponent implements OnInit {
       ContentStreamField.REPOSITORY_ID,
       BaseObjectTypeField.OBJECT_ID,
       BaseObjectTypeField.PARENT_ID,
-      BaseObjectTypeField.OBJECT_TYPE_ID
+      BaseObjectTypeField.OBJECT_TYPE_ID,
+      BaseObjectTypeField.LEADING_OBJECT_TYPE_ID
     ];
     baseFields.map((fields) => extraFields.push(fields));
 

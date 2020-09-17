@@ -3,6 +3,7 @@ import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AppCacheService, DmsObject, DmsService, EventService, SearchQuery, TranslateService, YuvEventType } from '@yuuvis/core';
 import { ContextComponent } from '@yuuvis/framework';
+import { finalize } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { FrameService } from '../../components/frame/frame.service';
 
@@ -82,37 +83,36 @@ export class ObjectComponent implements OnInit, OnDestroy {
     }
   }
 
+  private redirect(id: string, fragment: string) {
+    this.router.navigate(['/object', id], { fragment, replaceUrl: true });
+  }
+
   private setupContext(contextID: string) {
     this.contextBusy = true;
-    this.dmsService.getDmsObject(contextID).subscribe(
-      (dmsObject: DmsObject) => {
-        if (!dmsObject.isFolder) {
-          if (dmsObject.parentId) {
-            // got object from within a context, so we'll go there instead
-            this.router.navigate(['/object', dmsObject.parentId], {
-              fragment: dmsObject.id,
-              replaceUrl: true
-            });
+    this.dmsService
+      .getDmsObject(contextID)
+      .pipe(finalize(() => (this.contextBusy = false)))
+      .subscribe(
+        (dmsObject: DmsObject) => {
+          if (!dmsObject) {
+            return;
+          } else if (!dmsObject?.isFolder) {
+            if (dmsObject?.parentId) {
+              // got object from within a context, so we'll go there instead
+              this.redirect(dmsObject.parentId, dmsObject.id);
+            } else {
+              // got object that is just an object without context
+              this.redirect(dmsObject.id, this.standaloneFragment);
+            }
           } else {
-            // got object that is just an object without context
-            this.router.navigate(['/object', dmsObject.id], {
-              fragment: this.standaloneFragment,
-              replaceUrl: true
-            });
+            // TODO: shouldn't context be set always? @anndreasSchulz
+            this.context = dmsObject;
+            this.title.setTitle(this.context.title);
+            this.loadRecentItems();
           }
-        } else {
-          // TODO: shouldn't context be set always? @anndreasSchulz
-          this.context = dmsObject;
-          this.title.setTitle(this.context.title);
-          this.loadRecentItems();
-        }
-        this.contextBusy = false;
-      },
-      (err) => {
-        this.contextBusy = false;
-        this.contextError = this.translate.instant('yuv.client.state.object.context.load.error');
-      }
-    );
+        },
+        (error) => (this.contextError = this.translate.instant('yuv.client.state.object.context.load.error'))
+      );
   }
 
   ngOnInit() {
