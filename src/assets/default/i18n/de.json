@@ -94,6 +94,8 @@
   "yuv.framework.form.reference.noaccess": "Gelöscht oder Zugriff verweigert",
   "yuv.framework.list.configure.columns": "Spalten konfigurieren",
   "yuv.framework.list.refresh": "Aktualisieren",
+  "yuv.framework.object-create.afo.type.select.disabled.content-missing": "",
+  "yuv.framework.object-create.afo.type.select.disabled.content-not-allowed": "",
   "yuv.framework.object-create.afo.type.select.general": "Allgemeiner Typ",
   "yuv.framework.object-create.afo.type.select.title": "Objekt spezifizieren",
   "yuv.framework.object-create.afo.upload.approve": "Weiter",

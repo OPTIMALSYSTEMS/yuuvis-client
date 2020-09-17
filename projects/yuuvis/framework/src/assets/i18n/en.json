@@ -94,6 +94,8 @@
 	"yuv.framework.form.reference.noaccess": "Deleted or access denied",
 	"yuv.framework.list.configure.columns": "Configure columns",
 	"yuv.framework.list.refresh": "Refresh",
+	"yuv.framework.object-create.afo.type.select.disabled.content-missing": "",
+	"yuv.framework.object-create.afo.type.select.disabled.content-not-allowed": "",
 	"yuv.framework.object-create.afo.type.select.general": "General type",
 	"yuv.framework.object-create.afo.type.select.title": "Specifiy object",
 	"yuv.framework.object-create.afo.upload.approve": "Continue",

@@ -33,6 +33,7 @@ export interface SecondaryObjectType {
   id: string;
   label?: string;
   classification?: string[];
+  contentStreamAllowed?: string;
   description: string;
   baseId: string;
   fields: ObjectTypeField[];
@@ -90,7 +91,7 @@ export interface SchemaResponse {
   propertyDefinition: [any];
   typeDocumentDefinition: SchemaResponseDocumentTypeDefinition[];
   typeFolderDefinition: SchemaResponseFolderTypeDefinition[];
-  typeSecondaryDefinition: SchemaResponseTypeDefinition[];
+  typeSecondaryDefinition: SchemaResponseDocumentTypeDefinition[];
 }
 
 /**
