@@ -4,6 +4,7 @@ import {
   ApiBase,
   BackendService,
   BaseObjectTypeField,
+  ContentStreamAllowed,
   DmsObject,
   DmsService,
   ObjectTag,
@@ -16,7 +17,7 @@ import {
 } from '@yuuvis/core';
 import { Observable, of } from 'rxjs';
 import { finalize, map, switchMap } from 'rxjs/operators';
-import { SelectableGroup } from '../../grouped-select';
+import { Selectable, SelectableGroup } from '../../grouped-select';
 import { PopoverConfig } from '../../popover/popover.interface';
 import { PopoverRef } from '../../popover/popover.ref';
 import { PopoverService } from '../../popover/popover.service';
@@ -349,22 +350,52 @@ export class ObjectFormEditComponent implements OnDestroy {
         const sot = this.systemService.getSecondaryObjectType(sotref.id, true);
         if (sot.classification?.includes(SecondaryObjectTypeClassification.PRIMARY)) {
           if (!alreadyAssignedPrimary) {
-            this.fsot.applicableTypes.items.push({
-              id: sot.id,
-              label: sot.label,
-              svgSrc: this.systemService.getObjectTypeIconUri(sot.id),
-              value: sot
-            });
+            this.fsot.applicableTypes.items.push(
+              this.toSelectable(sot)
+              //   {
+              //   id: sot.id,
+              //   label: sot.label,
+              //   svgSrc: this.systemService.getObjectTypeIconUri(sot.id),
+              //   value: sot
+              // }
+            );
           }
         } else if (!sot.classification?.includes(SecondaryObjectTypeClassification.REQUIRED)) {
-          this.fsot.applicableSOTs.items.push({
-            id: sot.id,
-            label: sot.label,
-            svgSrc: this.systemService.getObjectTypeIconUri(sot.id),
-            value: sot
-          });
+          this.fsot.applicableSOTs.items.push(
+            this.toSelectable(sot)
+
+            //   {
+            //   id: sot.id,
+            //   label: sot.label,
+            //   svgSrc: this.systemService.getObjectTypeIconUri(sot.id),
+            //   value: sot
+            // }
+          );
         }
       });
+  }
+
+  private toSelectable(sot: SecondaryObjectType): Selectable {
+    // if we got files but the target FSOT does not support content
+    const contentRequiredButMissing = !this._dmsObject?.content && sot.contentStreamAllowed === ContentStreamAllowed.REQUIRED;
+    // if the target FSOT requires a file, but we don't have one
+    const contentButNotAllowed = !!this._dmsObject?.content && sot.contentStreamAllowed === ContentStreamAllowed.NOT_ALLOWED;
+    const disabled = contentRequiredButMissing || contentButNotAllowed;
+
+    let selectable: Selectable = {
+      id: sot.id,
+      label: sot.label,
+      svgSrc: this.systemService.getObjectTypeIconUri(sot.id),
+      disabled: disabled,
+      value: sot
+    };
+    // add description to tell the user why a selectable is disabled
+    if (disabled) {
+      selectable.description = contentRequiredButMissing
+        ? this.translate.instant('yuv.framework.object-create.afo.type.select.disabled.content-missing')
+        : this.translate.instant('yuv.framework.object-create.afo.type.select.disabled.content-not-allowed');
+    }
+    return selectable;
   }
 
   private isEditable(dmsObject: DmsObject): boolean {
