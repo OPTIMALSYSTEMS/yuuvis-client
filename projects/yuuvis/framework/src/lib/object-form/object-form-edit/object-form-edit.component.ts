@@ -189,7 +189,8 @@ export class ObjectFormEditComponent implements OnDestroy {
                 this._sotChanged = {
                   applied: [],
                   removed: [],
-                  assignedPrimaryFSOT: false
+                  assignedPrimaryFSOT: false,
+                  assignedGeneral: false
                 };
                 this.combinedFormInput.data = updatedObject.data;
                 this.afoObjectForm.setFormPristine();
@@ -253,7 +254,8 @@ export class ObjectFormEditComponent implements OnDestroy {
           this._sotChanged = {
             applied: [],
             removed: [],
-            assignedPrimaryFSOT: false
+            assignedPrimaryFSOT: false,
+            assignedGeneral: false
           };
           this.afoObjectForm.resetForm();
           this.busy = false;
@@ -262,7 +264,8 @@ export class ObjectFormEditComponent implements OnDestroy {
         this._sotChanged = {
           applied: [],
           removed: [],
-          assignedPrimaryFSOT: false
+          assignedPrimaryFSOT: false,
+          assignedGeneral: false
         };
         this.afoObjectForm.resetForm();
         this.getApplicableSecondaries(this._dmsObject);
@@ -339,15 +342,6 @@ export class ObjectFormEditComponent implements OnDestroy {
           .map((id) => this.systemService.getSecondaryObjectType(id))
           .filter((sot) => sot?.classification?.includes(SecondaryObjectTypeClassification.PRIMARY)).length > 0);
 
-    if (!alreadyAssignedPrimary) {
-      // add general target type
-      this.fsot.applicableTypes.items.push({
-        id: 'none',
-        label: this.translate.instant('yuv.framework.object-create.afo.type.select.general'),
-        svgSrc: this.systemService.getObjectTypeIconUri(dmsObject.objectTypeId)
-      });
-    }
-
     this.systemService
       .getObjectType(dmsObject.objectTypeId)
       .secondaryObjectTypes.filter((sot) => !sot.static && !currentSOTs?.includes(sot.id))
@@ -371,6 +365,22 @@ export class ObjectFormEditComponent implements OnDestroy {
           });
         }
       });
+
+    this.fsot.applicableSOTs.items.sort(Utils.sortValues('label'));
+
+    if (!alreadyAssignedPrimary) {
+      this.fsot.applicableTypes.items.sort(Utils.sortValues('label'));
+      // add general target type
+      this.fsot.applicableTypes.items = [
+        {
+          id: 'none',
+          label: this.translate.instant('yuv.framework.object-create.afo.type.select.general'),
+          description: this.systemService.getLocalizedResource(`${dmsObject.objectTypeId}_label`),
+          svgSrc: this.systemService.getObjectTypeIconUri(dmsObject.objectTypeId)
+        },
+        ...this.fsot.applicableTypes.items
+      ];
+    }
   }
 
   private isEditable(dmsObject: DmsObject): boolean {
