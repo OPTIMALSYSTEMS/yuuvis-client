@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
-import { ErrorHandler, InjectionToken, ModuleWithProviders, NgModule } from '@angular/core';
+import { ErrorHandler, ModuleWithProviders, NgModule } from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CoreConfig, CORE_CONFIG, CUSTOM_CONFIG, YuvCoreModule, YuvCoreSharedModule } from '@yuuvis/core';
 import { AngularSplitModule } from 'angular-split';
@@ -21,6 +21,7 @@ import { YuvObjectFormModule } from './object-form/object-form.module';
 import { YuvPipesModule } from './pipes/pipes.module';
 import { YuvPopoverModule } from './popover/popover.module';
 import { YuvQuickfinderModule } from './quickfinder/quickfinder.module';
+import { ROUTES, YuvRoutes } from './Routing/Routes';
 import { YuvSearchModule } from './search/search.module';
 import { ErrorHandlerService } from './services/error-handler/error-handler.service';
 import { SingleCellRendererComponent } from './services/grid/renderer/single-cell-renderer/single-cell-renderer.component';
@@ -87,30 +88,3 @@ export class YuvFrameworkModule {
     };
   }
 }
-
-export interface YuvRoutes {
-  object?: {
-    path: string;
-    params: {
-      id: string;
-    };
-    queryParams?: {
-      query: string;
-    };
-  };
-
-  /**
-   * Version stuff
-   */
-  versions?: {
-    path: string;
-    params: {
-      id: string;
-    };
-    queryParams?: {
-      version: string;
-    };
-  };
-}
-
-export const ROUTES = new InjectionToken<CoreConfig>('ROUTES');

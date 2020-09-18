@@ -498,6 +498,7 @@ export class SystemService {
     const propertiesQA = {};
     const orgTypeFields = [BaseObjectTypeField.MODIFIED_BY, BaseObjectTypeField.CREATED_BY];
     schemaResponse.propertyDefinition.forEach((p: any) => {
+      p.classifications = p.classification;
       // TODO: Remove once schema supports organization classification for base params
       // map certain fields to organization type (fake it until you make it ;-)
       if (orgTypeFields.includes(p.id)) {

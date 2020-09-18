@@ -1,5 +1,5 @@
 import { ColDef } from '@ag-grid-community/core';
-import { Injectable } from '@angular/core';
+import { Inject, Injectable } from '@angular/core';
 import {
   AppCacheService,
   BackendService,
@@ -21,6 +21,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { ObjectTypeIconComponent } from '../../common/components/object-type-icon/object-type-icon.component';
 import { FileSizePipe, LocaleDatePipe, LocaleNumberPipe } from '../../pipes';
+import { ROUTES, YuvRoutes } from '../../Routing/Routes';
 import { CellRenderer } from './grid.cellrenderer';
 
 /**
@@ -45,7 +46,8 @@ export class GridService {
     private searchSvc: SearchService,
     private userConfig: UserConfigService,
     private translate: TranslateService,
-    private backend: BackendService
+    private backend: BackendService,
+    @Inject(ROUTES) private routes: YuvRoutes
   ) {
     this.context = {
       translate,
@@ -133,6 +135,9 @@ export class GridService {
     if (!Array.isArray(classification)) {
       return undefined;
     }
+    if (classification[0].includes(Classification.STRING_REFERENCE)) {
+      return this.customContext(CellRenderer.referenceCellRenderer, params);
+    }
     switch (classification[0]) {
       case Classification.STRING_EMAIL: {
         return CellRenderer.emailCellRenderer;
@@ -180,7 +185,10 @@ export class GridService {
         // }
         colDef.cellClass = field.cardinality === 'multi' ? 'multiCell string' : 'string';
         if (Array.isArray(field?.classifications)) {
-          colDef.cellRenderer = this.fieldClassification(field?.classifications);
+          const params = {
+            url: this.routes && this.routes.object ? this.routes.object.path : null
+          };
+          colDef.cellRenderer = this.fieldClassification(field?.classifications, params);
         }
         break;
       }
