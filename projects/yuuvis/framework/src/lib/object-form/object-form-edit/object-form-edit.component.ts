@@ -348,29 +348,13 @@ export class ObjectFormEditComponent implements OnDestroy {
       .secondaryObjectTypes.filter((sot) => !sot.static && !currentSOTs?.includes(sot.id))
       .forEach((sotref) => {
         const sot = this.systemService.getSecondaryObjectType(sotref.id, true);
+
         if (sot.classification?.includes(SecondaryObjectTypeClassification.PRIMARY)) {
           if (!alreadyAssignedPrimary) {
-            this.fsot.applicableTypes.items.push(
-              this.toSelectable(sot)
-              //   {
-              //   id: sot.id,
-              //   label: sot.label,
-              //   svgSrc: this.systemService.getObjectTypeIconUri(sot.id),
-              //   value: sot
-              // }
-            );
+            this.fsot.applicableTypes.items.push(this.toSelectable(sot));
           }
         } else if (!sot.classification?.includes(SecondaryObjectTypeClassification.REQUIRED)) {
-          this.fsot.applicableSOTs.items.push(
-            this.toSelectable(sot)
-
-            //   {
-            //   id: sot.id,
-            //   label: sot.label,
-            //   svgSrc: this.systemService.getObjectTypeIconUri(sot.id),
-            //   value: sot
-            // }
-          );
+          this.fsot.applicableSOTs.items.push(this.toSelectable(sot));
         }
       });
 

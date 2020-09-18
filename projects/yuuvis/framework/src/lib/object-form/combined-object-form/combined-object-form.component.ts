@@ -135,6 +135,8 @@ export class CombinedObjectFormComponent implements OnInit, IObjectForm {
     this.objectForms.forEach((f) => {
       f.resetForm();
     });
+    this.formStates.clear();
+    this.formsChanged = false;
   }
 
   /**
