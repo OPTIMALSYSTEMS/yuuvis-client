@@ -25,7 +25,7 @@ export class SearchFilterConfigComponent implements OnInit {
   availableFiltersGroups: SelectableGroup[] = [];
   availableObjectTypeFields: Selectable[];
 
-  visibleFilters: string[] = [];
+  hiddenFilters: string[] = [];
   storedFilters: Selectable[] = [];
   selectedFilter: Selectable = { id: '', label: '' };
   mainSelection: string[] = [];
@@ -55,9 +55,9 @@ export class SearchFilterConfigComponent implements OnInit {
       }
     ];
 
-    this.quickSearchService.loadFilterSettings(this.global).subscribe(([storedFilters, visibleFilters]) => {
+    this.quickSearchService.loadFilterSettings(this.global).subscribe(([storedFilters, hiddenFilters]) => {
       this.storedFilters = this.quickSearchService.loadFilters(storedFilters as any, this.availableObjectTypeFields);
-      this.visibleFilters = visibleFilters || this.storedFilters.map((f) => f.id);
+      this.hiddenFilters = hiddenFilters;
 
       this.storedFiltersGroups = [
         {
@@ -101,7 +101,7 @@ export class SearchFilterConfigComponent implements OnInit {
   }
 
   isVisible(filter = this.selectedFilter) {
-    return filter && filter.id && this.visibleFilters.includes(filter.id);
+    return filter && filter.id && !this.hiddenFilters.includes(filter.id);
   }
 
   isDefault(filter = this.selectedFilter) {
@@ -158,12 +158,12 @@ export class SearchFilterConfigComponent implements OnInit {
   }
 
   onVisibilityChange(visible = this.isVisible()) {
-    this.visibleFilters = this.visibleFilters.filter((id) => id !== this.selectedFilter.id).concat(visible ? [] : [this.selectedFilter.id]);
+    this.hiddenFilters = this.hiddenFilters.filter((id) => id !== this.selectedFilter.id).concat(!visible ? [] : [this.selectedFilter.id]);
     this.storedFiltersGroups[0].items = this.getDefaultFilters();
     this.storedFiltersGroups[1].items = this.storedFilters.filter((f) => this.isVisible(f));
     this.storedFiltersGroups[2].items = this.storedFilters.filter((f) => !this.isVisible(f));
     this.availableFiltersGroups[1].items = this.storedFilters.filter((f) => this.isVisible(f));
-    this.quickSearchService.saveFiltersVisibility(this.visibleFilters).subscribe();
+    this.quickSearchService.saveFiltersVisibility(this.hiddenFilters, this.global).subscribe();
   }
 
   onControlRemoved(id: string) {}
