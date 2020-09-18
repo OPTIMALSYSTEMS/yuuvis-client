@@ -29,6 +29,10 @@
       margin-top: 0.5em;
       opacity: 0.5;
 
+      max-width: 190px !important;
+      padding: 0 calc(var(--app-pane-padding) / 2) 0 calc(var(--app-pane-padding) / 2);
+      text-align: center;
+
       @include ellipsis();
     }
   }

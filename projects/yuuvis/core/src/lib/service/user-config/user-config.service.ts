@@ -4,7 +4,7 @@ import { map } from 'rxjs/operators';
 import { BackendService } from '../backend/backend.service';
 import { ConfigService } from '../config/config.service';
 import { SecondaryObjectTypeClassification, SystemType } from '../system/system.enum';
-import { ObjectType, ObjectTypeField } from '../system/system.interface';
+import { ObjectTypeField } from '../system/system.interface';
 import { SystemService } from '../system/system.service';
 import { UserService } from '../user/user.service';
 import { ColumnConfig } from './user-config.interface';
@@ -33,15 +33,38 @@ export class UserConfigService {
     // Abstract types like `system:document` or `system:folder` should also fall back to the
     // mixed column configurations
     const abstractTypes = Object.values(SystemType);
-    const objectType: ObjectType =
-      !objectTypeId || abstractTypes.includes(objectTypeId) ? this.systemService.getBaseType(true) : this.systemService.getObjectType(objectTypeId);
-    const objectTypeFields = {};
-    objectType.fields.forEach((f: ObjectTypeField) => (objectTypeFields[f.id] = f));
 
-    return this.fetchColumnConfig(objectType.id, global).pipe(
+    let t: { id: string; fields: ObjectTypeField[] };
+    if (!objectTypeId || abstractTypes.includes(objectTypeId)) {
+      const baseType = this.systemService.getBaseType(true);
+      t = { id: baseType.id, fields: baseType.fields };
+    } else {
+      t = this.getType(objectTypeId);
+    }
+    const objectTypeFields = {};
+    t.fields.forEach((f: ObjectTypeField) => (objectTypeFields[f.id] = f));
+
+    return this.fetchColumnConfig(t.id, global).pipe(
       // maybe there are columns that do not match the type definition anymore
       map((cc: ColumnConfig) => ({ ...cc, columns: cc.columns.filter((c) => !!objectTypeFields[c.id]), fields: objectTypeFields }))
     );
+  }
+
+  private getType(objectTypeId: string): { id: string; fields: ObjectTypeField[] } {
+    const ot = this.systemService.getObjectType(objectTypeId);
+    if (!ot) {
+      const sot = this.systemService.getSecondaryObjectType(objectTypeId);
+      const baseType = this.systemService.getBaseType(true);
+      return {
+        id: sot.id,
+        fields: [...sot.fields, ...baseType.fields]
+      };
+    } else {
+      return {
+        id: ot.id,
+        fields: ot.fields
+      };
+    }
   }
 
   private fetchColumnConfig(objectTypeId: string, global?: boolean): Observable<ColumnConfig> {
@@ -79,10 +102,16 @@ export class UserConfigService {
    * @param objectType ID of the desired object type
    */
   private getRequestURI(objectTypeId: string, global?: boolean): string {
-    const baseURL = global ? '/user/globalsettings/column-config-' : '/user/config/result/';
+    if (global) {
+      return `/user/globalsettings/column-config-${encodeURIComponent(objectTypeId)}`;
+    }
+    const baseURL = '/user/config/result/';
     const ot = this.systemService.getObjectType(objectTypeId);
-
-    if (!global && ot?.floatingParentType) {
+    if (!ot && this.systemService.getSecondaryObjectType(objectTypeId)) {
+      // Not getting an object type means that the target type is an extendable FSOT.
+      // In this case we'll use the base objects id to store the column config
+      return `${baseURL}${encodeURIComponent(SystemType.OBJECT)}?sots=${objectTypeId}`;
+    } else if (ot?.floatingParentType) {
       const parentType = this.systemService.getObjectType(ot.floatingParentType);
       const sots: string[] = [objectTypeId].concat(
         ...parentType.secondaryObjectTypes

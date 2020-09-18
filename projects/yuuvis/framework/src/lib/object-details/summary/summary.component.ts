@@ -132,7 +132,10 @@ export class SummaryComponent implements OnInit {
       { key: BaseObjectTypeField.VERSION_NUMBER, order: 6 },
       { key: ContentStreamField.FILENAME, order: 7 },
       { key: ContentStreamField.LENGTH, order: 8 },
-      { key: ContentStreamField.MIME_TYPE, order: 9 }
+      { key: ContentStreamField.MIME_TYPE, order: 9 },
+      { key: 'system:rmStartOfRetention', order: 10 },
+      { key: 'system:rmExpirationDate', order: 11 },
+      { key: 'system:rmDestructionDate', order: 12 }
     ];
 
     const patentFields: string[] = [
@@ -146,6 +149,7 @@ export class SummaryComponent implements OnInit {
     let baseFields = dmsObject.isFolder
       ? this.systemService.getBaseFolderType().fields.map((f) => f.id)
       : this.systemService.getBaseDocumentType().fields.map((f) => f.id);
+
     baseFields = baseFields.filter((fields) => defaultBaseFields.filter((defFields) => defFields.key === fields).length === 0);
 
     const extraFields: string[] = [
@@ -154,7 +158,8 @@ export class SummaryComponent implements OnInit {
       ContentStreamField.REPOSITORY_ID,
       BaseObjectTypeField.OBJECT_ID,
       BaseObjectTypeField.PARENT_ID,
-      BaseObjectTypeField.OBJECT_TYPE_ID
+      BaseObjectTypeField.OBJECT_TYPE_ID,
+      BaseObjectTypeField.LEADING_OBJECT_TYPE_ID
     ];
     baseFields.map((fields) => extraFields.push(fields));
 
@@ -183,8 +188,10 @@ export class SummaryComponent implements OnInit {
       const si: SummaryEntry = {
         label: (def && def.headerName) || key,
         key,
-        value: renderer ? renderer({ value: dmsObject.data[key], data: dmsObject.data }) : dmsObject.data[key],
-        value2: this.dmsObject2 && (renderer ? renderer({ value: this.dmsObject2.data[key], data: this.dmsObject2.data }) : this.dmsObject2.data[key]),
+        value: typeof renderer === 'function' ? renderer({ value: dmsObject.data[key], data: dmsObject.data }) : dmsObject.data[key],
+        value2:
+          this.dmsObject2 &&
+          (typeof renderer === 'function' ? renderer({ value: this.dmsObject2.data[key], data: this.dmsObject2.data }) : this.dmsObject2.data[key]),
         order: null
       };
 

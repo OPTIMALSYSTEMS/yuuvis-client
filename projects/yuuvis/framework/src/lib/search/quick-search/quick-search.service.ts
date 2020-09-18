@@ -67,12 +67,12 @@ export class QuickSearchService {
         }))
         .sort(Utils.sortValues('label'));
       let i = 0;
-      this.availableObjectTypeGroups = this.systemService.getGroupedObjectTypes(true).map((otg: ObjectTypeGroup) => ({
+      this.availableObjectTypeGroups = this.systemService.getGroupedObjectTypes(true, true, true, 'search').map((otg: ObjectTypeGroup) => ({
         id: `${i++}`,
         label: otg.label,
         items: otg.types.map((ot: ObjectType) => ({
           id: ot.id,
-          label: ot.label,
+          label: ot.label || ot.id,
           highlight: ot.isFolder,
           svgSrc: this.systemService.getObjectTypeIconUri(ot.id),
           value: ot
@@ -114,7 +114,13 @@ export class QuickSearchService {
   }
 
   getAvailableObjectTypesFields(selectedTypes = [], shared = true): Selectable[] {
-    const selectedObjectTypes = this.systemService.getObjectTypes().filter((t) => (selectedTypes.length ? selectedTypes.includes(t.id) : true));
+    const selectedObjectTypes = [...this.systemService.getObjectTypes(), ...this.systemService.getSecondaryObjectTypes()]
+      .map((t) => ({
+        id: t.id,
+        fields: t.fields
+      }))
+      .filter((t) => (selectedTypes.length ? selectedTypes.includes(t.id) : true));
+
     const sharedFields = shared
       ? selectedObjectTypes.reduce((prev, cur) => cur.fields.filter((f) => prev.find((p) => p.id === f.id)), selectedObjectTypes[0].fields)
       : selectedObjectTypes.reduce((prev, cur) => [...prev, ...cur.fields.filter((f) => !prev.find((p) => p.id === f.id))], []);

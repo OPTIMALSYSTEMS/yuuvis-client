@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { FsotPickerComponent } from './fsot-picker.component';
+import { FsotSelectComponent } from './fsot-select.component';
 
-describe('FsotPickerComponent', () => {
-  let component: FsotPickerComponent;
-  let fixture: ComponentFixture<FsotPickerComponent>;
+describe('FsotSelectComponent', () => {
+  let component: FsotSelectComponent;
+  let fixture: ComponentFixture<FsotSelectComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ FsotPickerComponent ]
+      declarations: [ FsotSelectComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(FsotPickerComponent);
+    fixture = TestBed.createComponent(FsotSelectComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

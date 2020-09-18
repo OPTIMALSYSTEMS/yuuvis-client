@@ -1,6 +1,6 @@
 import { DOCUMENT } from '@angular/common';
 import { Inject, Injectable } from '@angular/core';
-import { AppCacheService, BackendService, Direction, Logger, UserService, YuvUser } from '@yuuvis/core';
+import { AppCacheService, BackendService, ConfigService, Direction, Logger, UserService, YuvUser } from '@yuuvis/core';
 import { Observable, of, ReplaySubject } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 
@@ -12,14 +12,18 @@ import { map, switchMap } from 'rxjs/operators';
   providedIn: 'root'
 })
 export class LayoutService {
-  private STORAGE_KEY = 'yuv.app.framework.layout';
-  private STORAGE_KEY_REGEXP = new RegExp('^yuv.app.');
+  private STORAGE_KEY = `${this.storageKeyPrefix}yuv.app.framework.layout`;
+  private STORAGE_KEY_REGEXP = new RegExp(`^${this.storageKeyPrefix}yuv.app.`);
   private layoutSettings: LayoutSettings = {};
   private layoutSettingsSource = new ReplaySubject<LayoutSettings>();
   /**
    * Return new layout setting dipends on selected mode : light or dark
    */
   public layoutSettings$: Observable<LayoutSettings> = this.layoutSettingsSource.asObservable();
+
+  private get storageKeyPrefix(): string {
+    return this.configService.get('appPrefix') ? `${this.configService.get('appPrefix')}.` : '';
+  }
 
   /**
    *
@@ -30,11 +34,12 @@ export class LayoutService {
     private logger: Logger,
     private appCache: AppCacheService,
     private userService: UserService,
-    private backend: BackendService
+    private backend: BackendService,
+    private configService: ConfigService
   ) {
     // load saved settings
     this.appCache.getItem(this.STORAGE_KEY).subscribe((settings) => this.processLayoutSettings(settings));
-    this.userService.user$.subscribe((user: YuvUser) => this.applyDirection(user ? user.uiDirection : 'yuv-ltr'));
+    this.userService.user$.subscribe((user: YuvUser) => this.applyDirection(user ? user.uiDirection : `yuv-ltr`));
   }
 
   private processLayoutSettings(settings: any) {
@@ -48,9 +53,9 @@ export class LayoutService {
     const bodyClassList = body.classList;
     body.setAttribute('dir', direction);
     if (direction === Direction.RTL) {
-      bodyClassList.add('yuv-rtl');
+      bodyClassList.add(`yuv-rtl`);
     } else {
-      bodyClassList.remove('yuv-rtl');
+      bodyClassList.remove(`yuv-rtl`);
     }
   }
 
