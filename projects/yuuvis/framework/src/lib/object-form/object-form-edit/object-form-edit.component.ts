@@ -57,7 +57,8 @@ export class ObjectFormEditComponent implements OnDestroy {
     // IDs of FSOTs that have been removed
     removed: [],
     // whether or not a primary FSOT has been applied
-    assignedPrimaryFSOT: false
+    assignedPrimaryFSOT: false,
+    assignedGeneral: false
   };
 
   fsot: {
@@ -322,13 +323,7 @@ export class ObjectFormEditComponent implements OnDestroy {
       applicableTypes: {
         id: 'type',
         label: this.translate.instant('yuv.framework.object-form-edit.fsot.apply-type'),
-        items: [
-          {
-            id: 'none',
-            label: this.translate.instant('yuv.framework.object-create.afo.type.select.general'),
-            svgSrc: this.systemService.getObjectTypeIconUri(dmsObject.objectTypeId)
-          }
-        ]
+        items: []
       },
       applicableSOTs: {
         id: 'fsot',
@@ -338,10 +333,21 @@ export class ObjectFormEditComponent implements OnDestroy {
     };
     const currentSOTs = dmsObject.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS];
     const alreadyAssignedPrimary =
-      currentSOTs?.length > 0 &&
-      currentSOTs
-        .map((id) => this.systemService.getSecondaryObjectType(id))
-        .filter((sot) => sot?.classification?.includes(SecondaryObjectTypeClassification.PRIMARY)).length > 0;
+      this._sotChanged.assignedGeneral ||
+      (currentSOTs?.length > 0 &&
+        currentSOTs
+          .map((id) => this.systemService.getSecondaryObjectType(id))
+          .filter((sot) => sot?.classification?.includes(SecondaryObjectTypeClassification.PRIMARY)).length > 0);
+
+    if (!alreadyAssignedPrimary) {
+      // add general target type
+      this.fsot.applicableTypes.items.push({
+        id: 'none',
+        label: this.translate.instant('yuv.framework.object-create.afo.type.select.general'),
+        svgSrc: this.systemService.getObjectTypeIconUri(dmsObject.objectTypeId)
+      });
+    }
+
     this.systemService
       .getObjectType(dmsObject.objectTypeId)
       .secondaryObjectTypes.filter((sot) => !sot.static && !currentSOTs?.includes(sot.id))
@@ -397,6 +403,8 @@ export class ObjectFormEditComponent implements OnDestroy {
     // may be NULL if general type is selected
     if (sot) {
       sotsToBeAdded.push(sot.id);
+    } else {
+      this._sotChanged.assignedGeneral = true;
     }
     this._dmsObject.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS] = [...sotIDs, ...sotsToBeAdded];
 
