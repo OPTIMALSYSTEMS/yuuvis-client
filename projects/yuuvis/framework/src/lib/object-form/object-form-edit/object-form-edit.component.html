@@ -12,18 +12,8 @@
         <button (click)="chooseFSOT(true)">{{'yuv.framework.object-form-edit.fsot.apply-type'|translate}}</button>
         <!-- popover for applying a new floating type -->
         <ng-template #tplFloatingTypePicker let-data let-popover="popover">
-
-
           <yuv-fsot-select [fsots]="fsot.applicableTypes" (fsotSelect)="applyFSOT($event, true, popover)">
           </yuv-fsot-select>
-
-
-          <!-- <yuv-grouped-select [groups]="[fsot.applicableTypes]" (select)="applyFSOT($event.value, true, popover)">
-          </yuv-grouped-select> -->
-
-
-          <!-- <yuv-fsot-picker [title]="'yuv.framework.object-form-edit.fsot.apply-type'|translate"
-            [items]="fsot.applicableTypes" (select)="applyFSOT($event, true, popover)"></yuv-fsot-picker> -->
         </ng-template>
       </ng-container>
 
@@ -31,18 +21,8 @@
         <button (click)="chooseFSOT()">{{'yuv.framework.object-form-edit.fsot.add-fsot'|translate}}</button>
         <!-- popover for adding a new floating secondary object type -->
         <ng-template #tplFloatingSOTypePicker let-data let-popover="popover">
-
-
           <yuv-fsot-select [fsots]="fsot.applicableSOTs" (fsotSelect)="applyFSOT($event, false, popover)">
           </yuv-fsot-select>
-
-          <!--
-          <yuv-grouped-select [groups]="[fsot.applicableSOTs]" (select)="applyFSOT($event.value, false, popover)">
-          </yuv-grouped-select>
-
-
-           <yuv-fsot-picker [title]="'yuv.framework.object-form-edit.fsot.add-fsot'|translate"
-            [items]="fsot.applicableSOTs" (select)="applyFSOT($event, false, popover)"></yuv-fsot-picker> -->
         </ng-template>
       </ng-container>
 

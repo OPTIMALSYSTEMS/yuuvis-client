@@ -23,7 +23,7 @@
         <yuv-icon icon="clear" (click)="removeContext()"></yuv-icon>
         {{'yuv.framework.object-create.status.context'|translate: ({title: context.title})}}
       </div>
-      <div class="files" *ngIf="files?.length">
+      <div class="files" *ngIf="files?.length && state.currentStep !== 'afo_indexdata'">
         <yuv-icon icon="clear" (click)="removeFiles()"></yuv-icon>
         {{'yuv.framework.object-create.status.files'|translate: ({count: files.length})}}
       </div>
@@ -108,21 +108,15 @@
 
             <ng-container *ngIf="!afoCreate?.floatingSOT.selected; else tplSOTForm">
               <div class="floating-sots list panel">
-
                 <yuv-fsot-select [fsots]="afoCreate?.floatingSOT.items" (fsotSelect)="afoSelectFloatingSOT($event)">
                 </yuv-fsot-select>
-
-                <!-- <yuv-grouped-select [groups]="[afoCreate?.floatingSOT.items]"
-                  (select)="afoSelectFloatingSOT($event.value)">
-                </yuv-grouped-select> -->
               </div>
             </ng-container>
 
             <ng-template #tplSOTForm>
               <div class="floating-sot-form panel">
-                <div class="header">
-                  <yuv-icon class="btn" *ngIf="afoCreate?.floatingSOT.items.items.length > 1"
-                    (click)="afoCreate?.floatingSOT.selected = null" icon="navBack"></yuv-icon>
+                <div class="header" *ngIf="afoCreate?.floatingSOT.items.items.length > 1">
+                  <yuv-icon class="btn" (click)="afoCreate?.floatingSOT.selected = null" icon="navBack"></yuv-icon>
 
                   <span>{{afoCreate.floatingSOT.selected.sot.label}}</span>
                 </div>
