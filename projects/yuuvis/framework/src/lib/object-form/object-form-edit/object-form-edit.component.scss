@@ -15,6 +15,11 @@
   yuv-combined-object-form,
   yuv-object-form {
     grid-area: form;
+    overflow-y: auto;
+  }
+
+  yuv-combined-object-form yuv-object-form {
+    overflow-y: initial;
   }
 
   .fsot {
