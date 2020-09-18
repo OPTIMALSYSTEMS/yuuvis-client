@@ -351,10 +351,10 @@ export class ObjectFormEditComponent implements OnDestroy {
 
         if (sot.classification?.includes(SecondaryObjectTypeClassification.PRIMARY)) {
           if (!alreadyAssignedPrimary) {
-            this.fsot.applicableTypes.items.push(this.toSelectable(sot));
+            this.fsot.applicableTypes.items.push(this.toSelectable(sot, dmsObject));
           }
         } else if (!sot.classification?.includes(SecondaryObjectTypeClassification.REQUIRED)) {
-          this.fsot.applicableSOTs.items.push(this.toSelectable(sot));
+          this.fsot.applicableSOTs.items.push(this.toSelectable(sot, dmsObject));
         }
       });
 
@@ -375,11 +375,11 @@ export class ObjectFormEditComponent implements OnDestroy {
     }
   }
 
-  private toSelectable(sot: SecondaryObjectType): Selectable {
+  private toSelectable(sot: SecondaryObjectType, dmsObject?: DmsObject): Selectable {
     // if we got files but the target FSOT does not support content
-    const contentRequiredButMissing = !this._dmsObject?.content && sot.contentStreamAllowed === ContentStreamAllowed.REQUIRED;
+    const contentRequiredButMissing = !dmsObject?.content && sot.contentStreamAllowed === ContentStreamAllowed.REQUIRED;
     // if the target FSOT requires a file, but we don't have one
-    const contentButNotAllowed = !!this._dmsObject?.content && sot.contentStreamAllowed === ContentStreamAllowed.NOT_ALLOWED;
+    const contentButNotAllowed = !!dmsObject?.content && sot.contentStreamAllowed === ContentStreamAllowed.NOT_ALLOWED;
     const disabled = contentRequiredButMissing || contentButNotAllowed;
 
     let selectable: Selectable = {

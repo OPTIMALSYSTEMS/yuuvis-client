@@ -108,9 +108,13 @@
 
             <ng-container *ngIf="!afoCreate?.floatingSOT.selected; else tplSOTForm">
               <div class="floating-sots list panel">
-                <yuv-grouped-select [groups]="[afoCreate?.floatingSOT.items]"
+
+                <yuv-fsot-select [fsots]="afoCreate?.floatingSOT.items" (fsotSelect)="afoSelectFloatingSOT($event)">
+                </yuv-fsot-select>
+
+                <!-- <yuv-grouped-select [groups]="[afoCreate?.floatingSOT.items]"
                   (select)="afoSelectFloatingSOT($event.value)">
-                </yuv-grouped-select>
+                </yuv-grouped-select> -->
               </div>
             </ng-container>
 
