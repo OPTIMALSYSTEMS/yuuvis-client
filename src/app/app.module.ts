@@ -63,7 +63,7 @@ import { VersionsComponent } from './states/versions/versions.component';
           }
         },
         versions: {
-          path: 'object',
+          path: 'versions',
           params: {
             id: 'id'
           },

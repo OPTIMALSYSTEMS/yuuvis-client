@@ -1,20 +1,22 @@
 <div class="yuv-move">
   <h2>{{ 'yuv.framework.action-menu.action.move.dms.object.picker.title' | translate }}</h2>
 
-  <yuv-quickfinder (objectSelect)="onPickerResult($event)"
-    [label]="'yuv.framework.action-menu.action.move.dms.object.picker.input.label'|translate"
-    [entryLinkTemplate]="quickfinderEntryLinkTpl" [allowedTargetTypes]="allowedTypes"></yuv-quickfinder>
+  <yuv-quickfinder
+    (objectSelect)="onPickerResult($event)"
+    [label]="'yuv.framework.action-menu.action.move.dms.object.picker.input.label' | translate"
+    [entryLinkTemplate]="quickfinderEntryLinkTpl"
+    [allowedTargetTypes]="allowedTypes"
+  ></yuv-quickfinder>
 
   <div class="form-buttons">
     <button (click)="cancel()">{{ 'yuv.framework.shared.cancel' | translate }}</button>
     <button class="primary" [disabled]="!contextInfo" (click)="move()">
-      {{'yuv.framework.action-menu.action.move.dms.object.picker.button.move'|translate}}
+      {{ 'yuv.framework.action-menu.action.move.dms.object.picker.button.move' | translate }}
     </button>
   </div>
 </div>
 
 <!-- template to render a link inside the context picker -->
 <ng-template #quickfinderEntryLinkTpl let-entry="entry">
-  <a
-    [routerLink]="['/context', entry.id]">{{'yuv.framework.action-menu.action.move.dms.object.picker.entry.open'|translate}}</a>
+  <a *ngIf="path" [routerLink]="['/' + path, entry.id]">{{ 'yuv.framework.action-menu.action.move.dms.object.picker.entry.open' | translate }}</a>
 </ng-template>

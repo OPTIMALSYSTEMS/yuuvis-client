@@ -156,12 +156,6 @@ export class ObjectDetailsComponent implements OnDestroy {
    */
   @Input() disableFileDrop: boolean;
 
-  /**
-   * Custom template to render version numer within summary and audit
-   * aspect as for example a link.
-   */
-  @Input() versionLinkTemplate: TemplateRef<any>;
-
   undockWinActive = false;
 
   constructor(

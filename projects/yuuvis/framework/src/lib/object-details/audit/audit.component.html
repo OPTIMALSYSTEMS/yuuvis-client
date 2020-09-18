@@ -50,13 +50,11 @@
             <div class="title">
               <span>{{ auditLabels['a' + a.action] }}</span>
 
-              <span *ngIf="!versionLinkTemplate; else versionLink" class="version" title="{{ 'yuv.framework.audit.version' | translate }}">{{
-                a.version
-              }}</span>
+              <span *ngIf="!versionStatePath; else versionLink" class="version" title="{{ 'yuv.framework.audit.version' | translate }}">{{ a.version }}</span>
 
               <ng-template #versionLink>
                 <span class="version">
-                  <ng-container *ngTemplateOutlet="versionLinkTemplate; context: { version: a.version }"> </ng-container>
+                  <a [routerLink]="['/' + versionStatePath, objectID]" [queryParams]="getVersionStateQueryParams(a.version)">{{ a.version }}</a>
                 </span>
               </ng-template>
             </div>
