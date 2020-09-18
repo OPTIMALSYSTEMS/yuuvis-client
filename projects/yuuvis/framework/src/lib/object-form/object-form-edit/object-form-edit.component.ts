@@ -4,6 +4,7 @@ import {
   ApiBase,
   BackendService,
   BaseObjectTypeField,
+  ContentStreamAllowed,
   DmsObject,
   DmsService,
   ObjectTag,
@@ -16,7 +17,7 @@ import {
 } from '@yuuvis/core';
 import { Observable, of } from 'rxjs';
 import { finalize, map, switchMap } from 'rxjs/operators';
-import { SelectableGroup } from '../../grouped-select';
+import { Selectable, SelectableGroup } from '../../grouped-select';
 import { PopoverConfig } from '../../popover/popover.interface';
 import { PopoverRef } from '../../popover/popover.ref';
 import { PopoverService } from '../../popover/popover.service';
@@ -57,7 +58,8 @@ export class ObjectFormEditComponent implements OnDestroy {
     // IDs of FSOTs that have been removed
     removed: [],
     // whether or not a primary FSOT has been applied
-    assignedPrimaryFSOT: false
+    assignedPrimaryFSOT: false,
+    assignedGeneral: false
   };
 
   fsot: {
@@ -188,7 +190,8 @@ export class ObjectFormEditComponent implements OnDestroy {
                 this._sotChanged = {
                   applied: [],
                   removed: [],
-                  assignedPrimaryFSOT: false
+                  assignedPrimaryFSOT: false,
+                  assignedGeneral: false
                 };
                 this.combinedFormInput.data = updatedObject.data;
                 this.afoObjectForm.setFormPristine();
@@ -252,7 +255,8 @@ export class ObjectFormEditComponent implements OnDestroy {
           this._sotChanged = {
             applied: [],
             removed: [],
-            assignedPrimaryFSOT: false
+            assignedPrimaryFSOT: false,
+            assignedGeneral: false
           };
           this.afoObjectForm.resetForm();
           this.busy = false;
@@ -261,7 +265,8 @@ export class ObjectFormEditComponent implements OnDestroy {
         this._sotChanged = {
           applied: [],
           removed: [],
-          assignedPrimaryFSOT: false
+          assignedPrimaryFSOT: false,
+          assignedGeneral: false
         };
         this.afoObjectForm.resetForm();
         this.getApplicableSecondaries(this._dmsObject);
@@ -322,13 +327,7 @@ export class ObjectFormEditComponent implements OnDestroy {
       applicableTypes: {
         id: 'type',
         label: this.translate.instant('yuv.framework.object-form-edit.fsot.apply-type'),
-        items: [
-          {
-            id: 'none',
-            label: this.translate.instant('yuv.framework.object-create.afo.type.select.general'),
-            svgSrc: this.systemService.getObjectTypeIconUri(dmsObject.objectTypeId)
-          }
-        ]
+        items: []
       },
       applicableSOTs: {
         id: 'fsot',
@@ -338,33 +337,65 @@ export class ObjectFormEditComponent implements OnDestroy {
     };
     const currentSOTs = dmsObject.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS];
     const alreadyAssignedPrimary =
-      currentSOTs?.length > 0 &&
-      currentSOTs
-        .map((id) => this.systemService.getSecondaryObjectType(id))
-        .filter((sot) => sot?.classification?.includes(SecondaryObjectTypeClassification.PRIMARY)).length > 0;
+      this._sotChanged.assignedGeneral ||
+      (currentSOTs?.length > 0 &&
+        currentSOTs
+          .map((id) => this.systemService.getSecondaryObjectType(id))
+          .filter((sot) => sot?.classification?.includes(SecondaryObjectTypeClassification.PRIMARY)).length > 0);
+
     this.systemService
       .getObjectType(dmsObject.objectTypeId)
       .secondaryObjectTypes.filter((sot) => !sot.static && !currentSOTs?.includes(sot.id))
       .forEach((sotref) => {
         const sot = this.systemService.getSecondaryObjectType(sotref.id, true);
+
         if (sot.classification?.includes(SecondaryObjectTypeClassification.PRIMARY)) {
           if (!alreadyAssignedPrimary) {
-            this.fsot.applicableTypes.items.push({
-              id: sot.id,
-              label: sot.label,
-              svgSrc: this.systemService.getObjectTypeIconUri(sot.id),
-              value: sot
-            });
+            this.fsot.applicableTypes.items.push(this.toSelectable(sot, dmsObject));
           }
         } else if (!sot.classification?.includes(SecondaryObjectTypeClassification.REQUIRED)) {
-          this.fsot.applicableSOTs.items.push({
-            id: sot.id,
-            label: sot.label,
-            svgSrc: this.systemService.getObjectTypeIconUri(sot.id),
-            value: sot
-          });
+          this.fsot.applicableSOTs.items.push(this.toSelectable(sot, dmsObject));
         }
       });
+
+    this.fsot.applicableSOTs.items.sort(Utils.sortValues('label'));
+
+    if (!alreadyAssignedPrimary) {
+      this.fsot.applicableTypes.items.sort(Utils.sortValues('label'));
+      // add general target type
+      this.fsot.applicableTypes.items = [
+        {
+          id: 'none',
+          label: this.translate.instant('yuv.framework.object-create.afo.type.select.general'),
+          description: this.systemService.getLocalizedResource(`${dmsObject.objectTypeId}_label`),
+          svgSrc: this.systemService.getObjectTypeIconUri(dmsObject.objectTypeId)
+        },
+        ...this.fsot.applicableTypes.items
+      ];
+    }
+  }
+
+  private toSelectable(sot: SecondaryObjectType, dmsObject?: DmsObject): Selectable {
+    // if we got files but the target FSOT does not support content
+    const contentRequiredButMissing = !dmsObject?.content && sot.contentStreamAllowed === ContentStreamAllowed.REQUIRED;
+    // if the target FSOT requires a file, but we don't have one
+    const contentButNotAllowed = !!dmsObject?.content && sot.contentStreamAllowed === ContentStreamAllowed.NOT_ALLOWED;
+    const disabled = contentRequiredButMissing || contentButNotAllowed;
+
+    let selectable: Selectable = {
+      id: sot.id,
+      label: sot.label,
+      svgSrc: this.systemService.getObjectTypeIconUri(sot.id),
+      disabled: disabled,
+      value: sot
+    };
+    // add description to tell the user why a selectable is disabled
+    if (disabled) {
+      selectable.description = contentRequiredButMissing
+        ? this.translate.instant('yuv.framework.object-create.afo.type.select.disabled.content-missing')
+        : this.translate.instant('yuv.framework.object-create.afo.type.select.disabled.content-not-allowed');
+    }
+    return selectable;
   }
 
   private isEditable(dmsObject: DmsObject): boolean {
@@ -397,6 +428,8 @@ export class ObjectFormEditComponent implements OnDestroy {
     // may be NULL if general type is selected
     if (sot) {
       sotsToBeAdded.push(sot.id);
+    } else {
+      this._sotChanged.assignedGeneral = true;
     }
     this._dmsObject.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS] = [...sotIDs, ...sotsToBeAdded];
 

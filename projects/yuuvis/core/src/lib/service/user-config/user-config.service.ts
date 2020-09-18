@@ -98,8 +98,11 @@ export class UserConfigService {
   private getRequestURI(objectTypeId: string): string {
     const baseURL = '/user/config/result/';
     const ot = this.systemService.getObjectType(objectTypeId);
-
-    if (ot?.floatingParentType) {
+    if (!ot && this.systemService.getSecondaryObjectType(objectTypeId)) {
+      // Not getting an object type means that the target type is an extendable FSOT.
+      // In this case we'll use the base objects id to store the column config
+      return `${baseURL}${encodeURIComponent(SystemType.OBJECT)}?sots=${objectTypeId}`;
+    } else if (ot?.floatingParentType) {
       const parentType = this.systemService.getObjectType(ot.floatingParentType);
       const sots: string[] = [objectTypeId].concat(
         ...parentType.secondaryObjectTypes

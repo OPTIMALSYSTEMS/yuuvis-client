@@ -11,6 +11,7 @@ import {
   ObjectType,
   ObjectTypeGroup,
   SearchService,
+  SecondaryObjectType,
   SecondaryObjectTypeClassification,
   Sort,
   SystemService,
@@ -26,7 +27,7 @@ import { catchError, map, switchMap } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { FadeInAnimations } from '../../common/animations/fadein.animation';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
-import { SelectableGroup } from '../../grouped-select';
+import { Selectable, SelectableGroup } from '../../grouped-select';
 import { CombinedObjectFormComponent, CombinedObjectFormInput } from '../../object-form/combined-object-form/combined-object-form.component';
 import { FormStatusChangedEvent, ObjectFormOptions } from '../../object-form/object-form.interface';
 import { Situation } from '../../object-form/object-form.situation';
@@ -411,14 +412,10 @@ export class ObjectCreateComponent implements OnDestroy {
               {
                 id: 'none',
                 label: this.translate.instant('yuv.framework.object-create.afo.type.select.general'),
+                description: this.system.getLocalizedResource(`${this.selectedObjectType.id}_label`),
                 svgSrc: this.system.getObjectTypeIconUri(this.selectedObjectType.id)
               },
-              ...this.system.getPrimaryFSOTs(this.selectedObjectType.id, true).map((sot) => ({
-                id: sot.id,
-                label: sot.label,
-                svgSrc: this.system.getObjectTypeIconUri(sot.id),
-                value: sot
-              }))
+              ...this.mapToSelectables(this.system.getPrimaryFSOTs(this.selectedObjectType.id, true)).sort(Utils.sortValues('label'))
             ]
           };
 
@@ -448,6 +445,31 @@ export class ObjectCreateComponent implements OnDestroy {
           this.notify.error(this.translate.instant('yuv.framework.object-create.notify.error'));
         }
       );
+  }
+
+  private mapToSelectables(sots: SecondaryObjectType[]): Selectable[] {
+    return sots.map((sot) => {
+      // if we got files but the target FSOT does not support content
+      const contentRequiredButMissing = (!this.files || this.files.length === 0) && sot.contentStreamAllowed === ContentStreamAllowed.REQUIRED;
+      // if the target FSOT requires a file, but we don't have one
+      const contentButNotAllowed = this.files && this.files.length && sot.contentStreamAllowed === ContentStreamAllowed.NOT_ALLOWED;
+      const disabled = contentRequiredButMissing || contentButNotAllowed;
+
+      let selectable: Selectable = {
+        id: sot.id,
+        label: sot.label,
+        svgSrc: this.system.getObjectTypeIconUri(sot.id),
+        disabled: disabled,
+        value: sot
+      };
+      // add description to tell the user why a selectable is disabled
+      if (disabled) {
+        selectable.description = contentRequiredButMissing
+          ? this.translate.instant('yuv.framework.object-create.afo.type.select.disabled.content-missing')
+          : this.translate.instant('yuv.framework.object-create.afo.type.select.disabled.content-not-allowed');
+      }
+      return selectable;
+    });
   }
 
   afoCreateCancel() {

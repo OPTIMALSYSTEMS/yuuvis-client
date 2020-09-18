@@ -23,6 +23,7 @@ import {
   ObjectTypeField,
   ObjectTypeGroup,
   SchemaResponse,
+  SchemaResponseDocumentTypeDefinition,
   SchemaResponseFieldDefinition,
   SchemaResponseTypeDefinition,
   SecondaryObjectType,
@@ -612,6 +613,7 @@ export class SystemService {
       id: std.id,
       description: std.description,
       classification: std.classification,
+      contentStreamAllowed: std.contentStreamAllowed,
       baseId: std.baseId,
       fields: this.resolveObjectTypeFields(std, propertiesQA, objectTypesQA)
     }));
@@ -626,7 +628,7 @@ export class SystemService {
         const primaryFSOTs = ot.secondaryObjectTypes
           .filter((sot) => !sot.static)
           .map((sot) => objectTypesQA[sot.id])
-          .filter((def: SchemaResponseTypeDefinition) => def.classification?.includes(SecondaryObjectTypeClassification.PRIMARY));
+          .filter((def: SchemaResponseDocumentTypeDefinition) => def.classification?.includes(SecondaryObjectTypeClassification.PRIMARY));
 
         // take care of 'required' FSOTs as well, because they are applied automatically,
         // so their fields are always part of the floating type
@@ -635,7 +637,7 @@ export class SystemService {
           .map((sot) => objectTypesQA[sot.id])
           .filter((def: SchemaResponseTypeDefinition) => def.classification?.includes(SecondaryObjectTypeClassification.REQUIRED));
 
-        primaryFSOTs.forEach((def: SchemaResponseTypeDefinition) => {
+        primaryFSOTs.forEach((def: SchemaResponseDocumentTypeDefinition) => {
           floatingTypes.push({
             id: def.id,
             description: def.description,
@@ -643,7 +645,8 @@ export class SystemService {
             floatingParentType: ot.id,
             baseId: ot.baseId,
             creatable: ot.creatable && this.isCreatable(def.id),
-            contentStreamAllowed: ot.contentStreamAllowed,
+            // FSOTs may have their own contentstreamAllowed property
+            contentStreamAllowed: def.contentStreamAllowed || ot.contentStreamAllowed,
             isFolder: ot.isFolder,
             secondaryObjectTypes: [],
             fields: [...ot.fields, ...this.resolveObjectTypeFields(objectTypesQA[def.id], propertiesQA, objectTypesQA)].concat(
