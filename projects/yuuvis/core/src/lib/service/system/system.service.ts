@@ -316,7 +316,7 @@ export class SystemService {
 
     const ot = this.getObjectType(objectTypeId);
     if (!ot) {
-      const sot = this.getSecondaryObjectType(objectTypeId);
+      const sot = this.getSecondaryObjectType(objectTypeId) || { id: objectTypeId, fields: [] };
       const baseType = this.getBaseType(true);
       return {
         id: sot.id,
