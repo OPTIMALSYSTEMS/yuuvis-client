@@ -114,12 +114,12 @@ export class QuickSearchService {
   }
 
   getAvailableObjectTypesFields(selectedTypes = [], shared = true): Selectable[] {
-    const selectedObjectTypes = [...this.systemService.getObjectTypes(), ...this.systemService.getSecondaryObjectTypes()]
-      .map((t) => ({
-        id: t.id,
-        fields: t.fields
-      }))
-      .filter((t) => (selectedTypes.length ? selectedTypes.includes(t.id) : true));
+    const selectedObjectTypes = (selectedTypes && selectedTypes.length
+      ? selectedTypes
+      : !shared
+      ? [...this.systemService.getObjectTypes(), ...this.systemService.getSecondaryObjectTypes()].map((t) => t.id)
+      : [undefined]
+    ).map((id) => this.systemService.getResolvedType(id));
 
     const sharedFields = shared
       ? selectedObjectTypes.reduce((prev, cur) => cur.fields.filter((f) => prev.find((p) => p.id === f.id)), selectedObjectTypes[0].fields)
@@ -129,7 +129,7 @@ export class QuickSearchService {
       .filter((f) => !ColumnConfigSkipFields.includes(f.id))
       .map((f) => ({
         id: f.id,
-        label: this.systemService.getLocalizedResource(`${f.id}_label`),
+        label: this.systemService.getLocalizedResource(`${f.id}_label`) || f.id,
         value: f
       }))
       .sort(Utils.sortValues('label'));

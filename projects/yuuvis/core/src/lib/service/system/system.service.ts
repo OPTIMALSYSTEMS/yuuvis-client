@@ -305,6 +305,32 @@ export class SystemService {
   }
 
   /**
+   * Get the resolved object type with all fields ( including fields from related secondary types )
+   */
+  getResolvedType(objectTypeId?: string): { id: string; fields: ObjectTypeField[] } {
+    const abstractTypes = Object.values(SystemType);
+    if (!objectTypeId || abstractTypes.includes(objectTypeId)) {
+      const baseType = this.getBaseType(true);
+      return { id: baseType.id, fields: baseType.fields };
+    }
+
+    const ot = this.getObjectType(objectTypeId);
+    if (!ot) {
+      const sot = this.getSecondaryObjectType(objectTypeId);
+      const baseType = this.getBaseType(true);
+      return {
+        id: sot.id,
+        fields: [...sot.fields, ...baseType.fields]
+      };
+    }
+
+    return {
+      id: ot.id,
+      fields: ot.fields
+    };
+  }
+
+  /**
    * Get the icon for an object type. This will return an SVG as a string.
    * @param objectTypeId ID of the object type
    * @param fallback ID of a fallback icon that should be used if the given object type has no icon yet
