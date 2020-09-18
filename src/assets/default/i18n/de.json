@@ -249,6 +249,7 @@
   "yuv.client.frame.app-bar.pwa-update.msg": "Update verfügbar",
   "yuv.client.frame.move.notification.failed": "Fehlgeschlagen:",
   "yuv.client.frame.move.notification.title": "Verschieben nach: {{objectTitle}}",
+  "yuv.client.frame.move.notification.title.root": "Verschieben nach: Allgemeiner Ablageort",
   "yuv.client.frame.offline.button.refresh": "Neuladen",
   "yuv.client.frame.offline.message": "Sie sind nicht mit dem Internet verbunden.",
   "yuv.client.frame.offline.title": "Offline",
