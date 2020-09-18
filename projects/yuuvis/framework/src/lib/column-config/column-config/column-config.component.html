@@ -1,54 +1,53 @@
 <div class="yuv-column-config" [yuvBusyOverlay]="busy">
   <div class="error" *ngIf="error">
-    <div class="msg"><span>{{error}}</span>
+    <div class="msg">
+      <span>{{ error }}</span>
       <yuv-icon icon="clear" (click)="error = null"></yuv-icon>
     </div>
   </div>
 
   <ng-container *ngIf="columnConfig">
     <div class="header">
-      <div class="title">{{title}}</div>
+      <div class="title">{{ title }}</div>
       <button class="primary" [disabled]="!moreColumnsAvailable" (click)="showColumnPicker()">
         <yuv-icon [icon]="'addCircle'"></yuv-icon>
-        <span>{{'yuv.framework.column-config.column.button.add'|translate}}</span>
+        <span>{{ 'yuv.framework.column-config.column.button.add' | translate }}</span>
       </button>
     </div>
 
     <div class="columns" cdkDropList (cdkDropListDropped)="drop($event)" [cdkDropListData]="columnConfig.columns">
       <div class="column" cdkDrag *ngFor="let c of columnConfig.columns">
         <yuv-icon class="handle" cdkDragHandle [icon]="'dragHandle'"></yuv-icon>
-        <div class="label">{{c.label}}</div>
-        <div class="type">{{c.propertyType}}</div>
+        <div class="label">{{ c.label }}</div>
+        <div class="type">{{ c.propertyType }}</div>
         <div class="buttons">
-
-          <button class="sort" [ngClass]="{asc: c.sort === 'asc', desc: c.sort === 'desc'}" (click)="toggleSort(c)"
-            title="{{labels.sort}}">
+          <button class="sort" [ngClass]="{ asc: c.sort === 'asc', desc: c.sort === 'desc' }" (click)="toggleSort(c)" title="{{ labels.sort }}">
             <yuv-icon class="arrow" icon="arrowDown"></yuv-icon>
             <yuv-icon icon="sort"></yuv-icon>
           </button>
 
-          <button class="pinned" [ngClass]="{active: c.pinned}" (click)="togglePinned(c)" title="{{labels.pinned}}">
+          <button class="pinned" [ngClass]="{ active: c.pinned }" (click)="togglePinned(c)" title="{{ labels.pinned }}">
             <yuv-icon icon="pin"></yuv-icon>
           </button>
-
         </div>
         <yuv-icon class="remove" [icon]="'clear'" (click)="removeColumn(c)"></yuv-icon>
       </div>
     </div>
 
-    <div class="actions" *ngIf="showCancelButton || columnConfigDirty">
+    <div class="actions">
       <div class="left">
-        <button *ngIf="showCancelButton" (click)="cancel.emit()">{{'yuv.framework.shared.cancel'|translate}}</button>
+        <button *ngIf="showCancelButton" (click)="cancel.emit()">{{ 'yuv.framework.shared.cancel' | translate }}</button>
+        <button *ngIf="!hasGlobal" (click)="save(false, true)">{{ 'yuv.framework.column-config.button.reset.global' | translate }}</button>
+        <button *ngIf="hasManageSettingsRole" class="primary" (click)="save(true)">{{ 'yuv.framework.column-config.button.save.global' | translate }}</button>
       </div>
       <div class="right" *ngIf="columnConfigDirty">
-        <button (click)="revert()">{{'yuv.framework.column-config.button.revert'|translate}}</button>
-        <button class="primary" (click)="save()">{{'yuv.framework.column-config.button.save'|translate}}</button>
+        <button (click)="revert()">{{ 'yuv.framework.column-config.button.revert' | translate }}</button>
+        <button class="primary" (click)="save()">{{ 'yuv.framework.column-config.button.save' | translate }}</button>
       </div>
     </div>
   </ng-container>
 
   <ng-template #tplColumnPicker let-data let-popover="popover">
-    <yuv-column-picker [groups]="data.groups" (cancel)="onPickerCancel(popover)"
-      (select)="onPickerResult($event, popover)"></yuv-column-picker>
+    <yuv-column-picker [groups]="data.groups" (cancel)="onPickerCancel(popover)" (select)="onPickerResult($event, popover)"></yuv-column-picker>
   </ng-template>
 </div>

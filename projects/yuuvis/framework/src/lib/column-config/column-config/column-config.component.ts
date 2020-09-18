@@ -56,6 +56,7 @@ export class ColumnConfigComponent implements OnInit {
   showCancelButton: boolean;
   columnConfigDirty: boolean;
   busy: boolean;
+  hasGlobal: boolean = true;
   error: string;
 
   labels: any;
@@ -82,6 +83,10 @@ export class ColumnConfigComponent implements OnInit {
    * once the button has been clicked.
    */
   @Output() cancel = new EventEmitter();
+
+  get hasManageSettingsRole() {
+    return this.userConfig.hasManageSettingsRole;
+  }
 
   constructor(
     private systemService: SystemService,
@@ -173,12 +178,13 @@ export class ColumnConfigComponent implements OnInit {
     this.checkMoreColumnsAvailable();
   }
 
-  save() {
+  save(global = false, reset = false) {
     this.busy = true;
     this.error = null;
-    this.userConfig.saveColumnConfig(this.columnConfig).subscribe(
+    (reset ? this.userConfig.resetColumnConfig(this.columnConfig.type) : this.userConfig.saveColumnConfig(this.columnConfig, global)).subscribe(
       (res) => {
         this.busy = false;
+        this.hasGlobal = reset;
         this.configSaved.emit(this.columnConfig);
         this.resetConfig(this.columnConfig);
         this.columnConfigDirty = false;
@@ -212,6 +218,12 @@ export class ColumnConfigComponent implements OnInit {
     this.error = null;
     this.userConfig.getColumnConfig(objectTypeId).subscribe(
       (res: ColumnConfig) => {
+        // check global settings
+        const original = JSON.stringify(res.columns);
+        this.userConfig.getColumnConfig(objectTypeId, true).subscribe((global) => {
+          this.hasGlobal = original === JSON.stringify(global.columns);
+        });
+
         this.busy = false;
         this.title =
           res.type === SystemType.OBJECT ? this.translate.instant('yuv.framework.column-config.type.mixed.label') : this.fetchObjectType(res.type).label;

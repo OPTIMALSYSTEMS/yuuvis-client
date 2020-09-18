@@ -18,7 +18,7 @@ import {
   Utils
 } from '@yuuvis/core';
 import { forkJoin, Observable, of } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
+import { map, switchMap, tap } from 'rxjs/operators';
 import { DynamicDate } from '../../form/elements/datetime/datepicker/datepicker.interface';
 import { DatepickerService } from '../../form/elements/datetime/datepicker/service/datepicker.service';
 import { Selectable, SelectableGroup } from '../../grouped-select';
@@ -81,12 +81,16 @@ export class QuickSearchService {
     });
   }
 
-  loadFilterSettings() {
-    return forkJoin([this.loadStoredFilters(), this.loadFiltersVisibility(), this.loadLastFilters()]);
+  loadFilterSettings(global = false) {
+    return forkJoin([this.loadStoredFilters(null, global), this.loadFiltersVisibility(), this.loadLastFilters()]);
   }
 
-  getCurrentSettings() {
-    return forkJoin([this.loadStoredFilters(of(this.filters)), of(this.filtersVisibility ? [...this.filtersVisibility] : null), of([...this.filtersLast])]);
+  getCurrentSettings(global = false) {
+    return forkJoin([
+      this.loadStoredFilters(of(this.filters), global),
+      of(this.filtersVisibility ? [...this.filtersVisibility] : null),
+      of([...this.filtersLast])
+    ]);
   }
 
   getAvailableFilterGroups(storedFilters: Selectable[], availableObjectTypeFields: Selectable[]) {
@@ -159,11 +163,18 @@ export class QuickSearchService {
     );
   }
 
-  loadStoredFilters(store?: Observable<any>) {
-    return (store || this.userService.getSettings(this.STORAGE_KEY_FILTERS)).pipe(
+  loadStoredFilters(store?: Observable<any>, global = false) {
+    return (global ? of({}) : store || this.userService.getSettings(this.STORAGE_KEY_FILTERS)).pipe(
       // return (store || this.appCacheService.getItem(this.STORAGE_KEY_FILTERS)).pipe(
       tap((f) => (this.filters = f || {})),
-      map(() => Object.values(this.filters).map((s: any) => ({ ...s, value: [SearchFilterGroup.fromQuery(this.parseStoredFilters(s.value))] })))
+      switchMap(() => this.userService.getGlobalSettings(this.STORAGE_KEY_FILTERS)),
+      tap((filters) => Object.values(filters || {}).forEach((v: any) => (v.id = '__' + v.id))),
+      map((filters) =>
+        Object.values({ ...(filters || {}), ...this.filters }).map((s: any) => ({
+          ...s,
+          value: [SearchFilterGroup.fromQuery(this.parseStoredFilters(s.value))]
+        }))
+      )
     );
   }
 
@@ -207,20 +218,22 @@ export class QuickSearchService {
     return of(this.filtersVisibility);
   }
 
-  saveFilters(filters = this.filters) {
-    this.userService.saveSettings(this.STORAGE_KEY_FILTERS, filters).subscribe();
+  saveFilters(global = false, filters = this.filters) {
+    global
+      ? this.userService.saveGlobalSettings(this.STORAGE_KEY_FILTERS, filters).subscribe()
+      : this.userService.saveSettings(this.STORAGE_KEY_FILTERS, filters).subscribe();
     // this.appCacheService.setItem(this.STORAGE_KEY_FILTERS, filters).subscribe();
-    return this.loadStoredFilters(of(filters));
+    return this.loadStoredFilters(of(filters), global);
   }
 
-  saveFilter(item: Selectable) {
+  saveFilter(item: Selectable, global = false) {
     this.filters[item.id] = { ...item, value: SearchFilterGroup.fromArray(item.value).toShortString() };
-    return this.saveFilters();
+    return this.saveFilters(global);
   }
 
-  removeFilter(item: Selectable) {
+  removeFilter(item: Selectable, global = false) {
     delete this.filters[item.id];
-    return this.saveFilters();
+    return this.saveFilters(global);
   }
 
   getDefaultFiltersList(availableObjectTypeFields: Selectable[]) {

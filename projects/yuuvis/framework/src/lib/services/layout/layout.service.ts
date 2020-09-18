@@ -182,23 +182,19 @@ export class LayoutService {
   /**
    * make it possible for user to import their layout settings as a json file
    */
-  uploadLayout(data: string | any, filter?: (key: string) => boolean, force = false) {
-    const layout = this.cleanupData(typeof data === 'string' ? JSON.parse(data) : data, filter);
-    if (layout.hasOwnProperty(this.STORAGE_KEY) || force) {
+  uploadLayout(data: string | any) {
+    const layout = this.cleanupData(typeof data === 'string' ? JSON.parse(data) : data);
+    if (layout.hasOwnProperty(this.STORAGE_KEY)) {
       this.processLayoutSettings(layout[this.STORAGE_KEY]);
     }
-    return force ? this.clearAll().pipe(switchMap(() => this.appCache.setStorage(layout))) : this.appCache.setStorage(layout);
+    return this.clearLayout().pipe(switchMap(() => this.appCache.setStorage(layout)));
   }
 
   /**
    * make it possible for user to reset their layout settings and return to the default settings
    */
   clearLayout() {
-    return this.appCache.getStorage().pipe(switchMap((data) => this.uploadLayout(data, (key: string) => !!key.match(this.STORAGE_KEY_REGEXP), true)));
-  }
-
-  private clearAll() {
-    return this.appCache.clear();
+    return this.appCache.clear((key: string) => !!key.match(this.STORAGE_KEY_REGEXP));
   }
 }
 

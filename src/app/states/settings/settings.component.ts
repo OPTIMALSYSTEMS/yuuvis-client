@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { Router } from '@angular/router';
-import { AppCacheService, ConfigService, SystemService, TranslateService, UserService, YuvUser } from '@yuuvis/core';
+import { AppCacheService, ConfigService, SystemService, TranslateService, UserConfigService, UserService, YuvUser } from '@yuuvis/core';
 import { IconRegistryService, LayoutService, LayoutSettings, NotificationService } from '@yuuvis/framework';
 import { forkJoin, Observable } from 'rxjs';
 import { shield } from '../../../assets/default/svg/svg';
@@ -25,6 +25,10 @@ export class SettingsComponent implements OnInit {
     layout: true
   };
 
+  get hasManageSettingsRole() {
+    return this.userService.hasManageSettingsRole;
+  }
+
   constructor(
     private translate: TranslateService,
     private router: Router,
@@ -33,6 +37,7 @@ export class SettingsComponent implements OnInit {
     private cacheService: AppCacheService,
     private titleService: Title,
     public config: ConfigService,
+    private userConfig: UserConfigService,
     private userService: UserService,
     private iconRegistry: IconRegistryService,
     private notificationService: NotificationService
@@ -73,8 +78,16 @@ export class SettingsComponent implements OnInit {
     this.router.navigate(['config/column-config']);
   }
 
-  editFilterConfig() {
-    this.router.navigate(['config/filter-config']);
+  editFilterConfig(global = false) {
+    this.router.navigate(['config/filter-config'], global && { queryParams: { global } });
+  }
+
+  importMainConfig(e: any) {
+    this.userConfig.importMainConfig(e).subscribe(() => window.confirm('Application requires reload!') && window.location.reload());
+  }
+
+  exportMainConfig() {
+    this.userConfig.exportMainConfig();
   }
 
   clearCache() {
