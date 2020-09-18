@@ -18,6 +18,10 @@
     overflow-y: auto;
   }
 
+  yuv-combined-object-form yuv-object-form {
+    overflow-y: initial;
+  }
+
   .fsot {
     grid-area: fsot;
     display: flex;

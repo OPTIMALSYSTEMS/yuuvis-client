@@ -412,9 +412,10 @@ export class ObjectCreateComponent implements OnDestroy {
               {
                 id: 'none',
                 label: this.translate.instant('yuv.framework.object-create.afo.type.select.general'),
+                description: this.system.getLocalizedResource(`${this.selectedObjectType.id}_label`),
                 svgSrc: this.system.getObjectTypeIconUri(this.selectedObjectType.id)
               },
-              ...this.mapToSelectables(this.system.getPrimaryFSOTs(this.selectedObjectType.id, true))
+              ...this.mapToSelectables(this.system.getPrimaryFSOTs(this.selectedObjectType.id, true)).sort(Utils.sortValues('label'))
             ]
           };
 

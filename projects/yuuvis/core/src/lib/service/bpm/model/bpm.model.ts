@@ -102,11 +102,11 @@ export class InboxItem {
   }
 
   get title(): string {
-    return this.originalData.variables.find((v) => v.name === 'whatAbout').value as string;
+    return this.originalData.variables.find((v) => v.name === 'whatAbout')?.value as string;
   }
 
   get expiryDateTime(): Date {
-    return new Date(this.originalData.variables.find((v) => v.name === 'expiryDateTime').value);
+    return new Date(this.originalData.variables.find((v) => v.name === 'expiryDateTime')?.value);
   }
 
   get createTime(): Date {
@@ -114,15 +114,15 @@ export class InboxItem {
   }
 
   get description(): string {
-    return this.originalData.variables.find((v) => v.name === 'whatAbout').value as string;
+    return this.originalData.variables.find((v) => v.name === 'whatAbout')?.value as string;
   }
 
   get subject(): string {
-    return this.originalData.variables.find((v) => v.name === 'whatAbout').value as string;
+    return this.originalData.variables.find((v) => v.name === 'whatAbout')?.value as string;
   }
 
   get documentId(): string {
-    return this.originalData.variables.find((v) => v.name === 'documentId').value as string;
+    return this.originalData.variables.find((v) => v.name === 'documentId')?.value as string;
   }
 
   get type(): string {
@@ -142,15 +142,15 @@ export class FollowUp {
   }
 
   get title(): string {
-    return this.originalData.variables.find((v) => v.name === 'whatAbout').value as string;
+    return this.originalData.variables.find((v) => v.name === 'whatAbout')?.value as string;
   }
 
   get expiryDateTime(): Date {
-    return new Date(this.originalData.variables.find((v) => v.name === 'expiryDateTime').value);
+    return new Date(this.originalData.variables.find((v) => v.name === 'expiryDateTime')?.value);
   }
 
   get description(): string {
-    return this.originalData.variables.find((v) => v.name === 'whatAbout').value as string;
+    return this.originalData.variables.find((v) => v.name === 'whatAbout')?.value as string;
   }
 
   get type(): string {
@@ -162,11 +162,11 @@ export class FollowUp {
   }
 
   get subject(): string {
-    return this.originalData.variables.find((v) => v.name === 'whatAbout').value as string;
+    return this.originalData.variables.find((v) => v.name === 'whatAbout')?.value as string;
   }
 
   get documentId(): string {
-    return this.originalData.variables.find((v) => v.name === 'documentId').value as string;
+    return this.originalData.variables.find((v) => v.name === 'documentId')?.value as string;
   }
 
   get startTime(): Date {

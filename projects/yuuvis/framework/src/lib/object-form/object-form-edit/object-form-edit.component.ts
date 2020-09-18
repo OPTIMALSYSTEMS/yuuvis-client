@@ -58,7 +58,8 @@ export class ObjectFormEditComponent implements OnDestroy {
     // IDs of FSOTs that have been removed
     removed: [],
     // whether or not a primary FSOT has been applied
-    assignedPrimaryFSOT: false
+    assignedPrimaryFSOT: false,
+    assignedGeneral: false
   };
 
   fsot: {
@@ -189,7 +190,8 @@ export class ObjectFormEditComponent implements OnDestroy {
                 this._sotChanged = {
                   applied: [],
                   removed: [],
-                  assignedPrimaryFSOT: false
+                  assignedPrimaryFSOT: false,
+                  assignedGeneral: false
                 };
                 this.combinedFormInput.data = updatedObject.data;
                 this.afoObjectForm.setFormPristine();
@@ -253,7 +255,8 @@ export class ObjectFormEditComponent implements OnDestroy {
           this._sotChanged = {
             applied: [],
             removed: [],
-            assignedPrimaryFSOT: false
+            assignedPrimaryFSOT: false,
+            assignedGeneral: false
           };
           this.afoObjectForm.resetForm();
           this.busy = false;
@@ -262,7 +265,8 @@ export class ObjectFormEditComponent implements OnDestroy {
         this._sotChanged = {
           applied: [],
           removed: [],
-          assignedPrimaryFSOT: false
+          assignedPrimaryFSOT: false,
+          assignedGeneral: false
         };
         this.afoObjectForm.resetForm();
         this.getApplicableSecondaries(this._dmsObject);
@@ -323,13 +327,7 @@ export class ObjectFormEditComponent implements OnDestroy {
       applicableTypes: {
         id: 'type',
         label: this.translate.instant('yuv.framework.object-form-edit.fsot.apply-type'),
-        items: [
-          {
-            id: 'none',
-            label: this.translate.instant('yuv.framework.object-create.afo.type.select.general'),
-            svgSrc: this.systemService.getObjectTypeIconUri(dmsObject.objectTypeId)
-          }
-        ]
+        items: []
       },
       applicableSOTs: {
         id: 'fsot',
@@ -339,10 +337,12 @@ export class ObjectFormEditComponent implements OnDestroy {
     };
     const currentSOTs = dmsObject.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS];
     const alreadyAssignedPrimary =
-      currentSOTs?.length > 0 &&
-      currentSOTs
-        .map((id) => this.systemService.getSecondaryObjectType(id))
-        .filter((sot) => sot?.classification?.includes(SecondaryObjectTypeClassification.PRIMARY)).length > 0;
+      this._sotChanged.assignedGeneral ||
+      (currentSOTs?.length > 0 &&
+        currentSOTs
+          .map((id) => this.systemService.getSecondaryObjectType(id))
+          .filter((sot) => sot?.classification?.includes(SecondaryObjectTypeClassification.PRIMARY)).length > 0);
+
     this.systemService
       .getObjectType(dmsObject.objectTypeId)
       .secondaryObjectTypes.filter((sot) => !sot.static && !currentSOTs?.includes(sot.id))
@@ -373,6 +373,22 @@ export class ObjectFormEditComponent implements OnDestroy {
           );
         }
       });
+
+    this.fsot.applicableSOTs.items.sort(Utils.sortValues('label'));
+
+    if (!alreadyAssignedPrimary) {
+      this.fsot.applicableTypes.items.sort(Utils.sortValues('label'));
+      // add general target type
+      this.fsot.applicableTypes.items = [
+        {
+          id: 'none',
+          label: this.translate.instant('yuv.framework.object-create.afo.type.select.general'),
+          description: this.systemService.getLocalizedResource(`${dmsObject.objectTypeId}_label`),
+          svgSrc: this.systemService.getObjectTypeIconUri(dmsObject.objectTypeId)
+        },
+        ...this.fsot.applicableTypes.items
+      ];
+    }
   }
 
   private toSelectable(sot: SecondaryObjectType): Selectable {
@@ -428,6 +444,8 @@ export class ObjectFormEditComponent implements OnDestroy {
     // may be NULL if general type is selected
     if (sot) {
       sotsToBeAdded.push(sot.id);
+    } else {
+      this._sotChanged.assignedGeneral = true;
     }
     this._dmsObject.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS] = [...sotIDs, ...sotsToBeAdded];
 
