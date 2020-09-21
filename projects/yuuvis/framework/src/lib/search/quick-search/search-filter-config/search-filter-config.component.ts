@@ -158,12 +158,13 @@ export class SearchFilterConfigComponent implements OnInit {
   }
 
   onVisibilityChange(visible = this.isVisible()) {
-    this.hiddenFilters = this.hiddenFilters.filter((id) => id !== this.selectedFilter.id).concat(!visible ? [] : [this.selectedFilter.id]);
-    this.storedFiltersGroups[0].items = this.getDefaultFilters();
-    this.storedFiltersGroups[1].items = this.storedFilters.filter((f) => this.isVisible(f));
-    this.storedFiltersGroups[2].items = this.storedFilters.filter((f) => !this.isVisible(f));
-    this.availableFiltersGroups[1].items = this.storedFilters.filter((f) => this.isVisible(f));
-    this.quickSearchService.saveFiltersVisibility(this.hiddenFilters, this.global).subscribe();
+    this.quickSearchService.saveFiltersVisibility(this.selectedFilter.id, !visible, this.global).subscribe((hiddenFilters) => {
+      this.hiddenFilters = hiddenFilters;
+      this.storedFiltersGroups[0].items = this.getDefaultFilters();
+      this.storedFiltersGroups[1].items = this.storedFilters.filter((f) => this.isVisible(f));
+      this.storedFiltersGroups[2].items = this.storedFilters.filter((f) => !this.isVisible(f));
+      this.availableFiltersGroups[1].items = this.storedFilters.filter((f) => this.isVisible(f));
+    });
   }
 
   onControlRemoved(id: string) {}
