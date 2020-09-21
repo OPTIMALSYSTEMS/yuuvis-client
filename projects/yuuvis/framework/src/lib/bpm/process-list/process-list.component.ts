@@ -16,9 +16,10 @@ export class ProcessListComponent {
   @ViewChild('dataTable')
   set dataTable(data: ResponsiveDataTableComponent) {
     setTimeout(() => {
-      data.gridOptions.api.getDisplayedRowAtIndex(0).setSelected(true);
-      data.gridOptions.api.forEachNode((node) => (node.rowIndex === 0 ? node.setSelected(true) : node.setSelected(false)));
-    }, 1500);
+      data.selectRows();
+      // data.gridOptions.api.getDisplayedRowAtIndex(0).setSelected(true);
+      // data.gridOptions.api.forEachNode((node) => (node.rowIndex === 0 ? node.setSelected(true) : node.setSelected(false)));
+    }, 2000);
   }
   private _processData: any;
   private _viewMode: ViewMode;

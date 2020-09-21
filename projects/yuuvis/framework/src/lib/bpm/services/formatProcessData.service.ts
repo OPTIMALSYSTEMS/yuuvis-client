@@ -17,6 +17,10 @@ export class FormatProcessDataService {
   // description => subject
   // process/inst => processes State
   // task/ => inbox State
+
+  /**
+   * Formating process data to fit for Grid in InboxState
+   */
   formatTaskDataForTable(processData: TaskData[]): ResponsiveTableData {
     return this.processDataForTable(
       processData.map((data) => ({ ...data, icon: this.iconRegService.getIcon('task') })).map((data) => new InboxItem(data)),
@@ -24,6 +28,9 @@ export class FormatProcessDataService {
     );
   }
 
+  /**
+   * Formating process data to fit for Grid in ProcessState
+   */
   formatProcessDataForTable(processData: ProcessData[]): ResponsiveTableData {
     return this.processDataForTable(
       processData.map((data) => ({ ...data, icon: this.iconRegService.getIcon('followUp') })).map((data) => new FollowUp(data)),
@@ -31,7 +38,7 @@ export class FormatProcessDataService {
     );
   }
 
-  processDataForTable(rows: (FollowUp | InboxItem)[], fields: string[]): ResponsiveTableData {
+  private processDataForTable(rows: (FollowUp | InboxItem)[], fields: string[]): ResponsiveTableData {
     return {
       columns: fields.map((field) => ({
         field,
