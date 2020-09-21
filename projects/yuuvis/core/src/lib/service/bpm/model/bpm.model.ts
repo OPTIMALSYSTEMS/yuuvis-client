@@ -2,6 +2,9 @@ export enum ProcessDefinitionKey {
   FOLLOW_UP = 'follow-up'
 }
 
+/**
+ * payload returned by bpmService /process
+ */
 export interface ProcessInstance {
   processDefinitionKey: ProcessDefinitionKey;
   name: string;
@@ -11,7 +14,10 @@ export interface ProcessInstance {
   variables?: StartFormVariable[];
 }
 
-// tslint:disable-next-line: no-empty-interface
+/**
+ * payload returned by bpmService /tasks
+ */
+// tslint:disable-next-line: no-empty-interface#
 export interface InboxPayload extends ProcessInstance {}
 
 interface Processes {
@@ -25,11 +31,17 @@ interface Processes {
   tenantId: string;
 }
 
+/**
+ * variables passt to the process
+ */
 export interface StartFormVariable {
   name: string;
   value: string;
 }
 
+/**
+ * bpm Service response /process/instances
+ */
 export interface ProcessResponse {
   data: ProcessData[];
   total: number;
@@ -39,6 +51,9 @@ export interface ProcessResponse {
   size: number;
 }
 
+/**
+ * bpm Service response /tasks
+ */
 export interface TaskDataResponse {
   data: TaskData[];
   total: number;
@@ -48,6 +63,9 @@ export interface TaskDataResponse {
   size: number;
 }
 
+/**
+ * process describing data
+ */
 export interface ProcessData extends Processes {
   businessKey: string;
   ended: boolean;
@@ -64,7 +82,9 @@ export interface ProcessData extends Processes {
   taskId?: string;
   icon?: string;
 }
-
+/**
+ * task describing data
+ */
 export interface TaskData extends Processes {
   owner: null;
   assignee: string;
@@ -89,6 +109,9 @@ export interface TaskData extends Processes {
   icon?: string;
 }
 
+/**
+ * process varibales
+ */
 export interface Variable {
   name: string;
   type?: string;
@@ -96,6 +119,9 @@ export interface Variable {
   scope?: string;
 }
 
+/**
+ * InbosItem wrapper for grid
+ */
 export class InboxItem {
   get id() {
     return this.originalData.id;
@@ -136,6 +162,9 @@ export class InboxItem {
   constructor(private originalData: TaskData) {}
 }
 
+/**
+ * FollowUp wrapper for grid
+ */
 export class FollowUp {
   get id() {
     return this.originalData.id;
