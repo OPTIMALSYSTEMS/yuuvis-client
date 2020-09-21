@@ -132,7 +132,10 @@ export class SummaryComponent implements OnInit {
       { key: BaseObjectTypeField.VERSION_NUMBER, order: 6 },
       { key: ContentStreamField.FILENAME, order: 7 },
       { key: ContentStreamField.LENGTH, order: 8 },
-      { key: ContentStreamField.MIME_TYPE, order: 9 }
+      { key: ContentStreamField.MIME_TYPE, order: 9 },
+      { key: 'system:rmStartOfRetention', order: 10 },
+      { key: 'system:rmExpirationDate', order: 11 },
+      { key: 'system:rmDestructionDate', order: 12 }
     ];
 
     const patentFields: string[] = [
@@ -146,6 +149,7 @@ export class SummaryComponent implements OnInit {
     let baseFields = dmsObject.isFolder
       ? this.systemService.getBaseFolderType().fields.map((f) => f.id)
       : this.systemService.getBaseDocumentType().fields.map((f) => f.id);
+
     baseFields = baseFields.filter((fields) => defaultBaseFields.filter((defFields) => defFields.key === fields).length === 0);
 
     const extraFields: string[] = [

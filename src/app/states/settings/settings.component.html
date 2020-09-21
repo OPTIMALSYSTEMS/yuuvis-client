@@ -110,6 +110,9 @@
         <div class="label" translate>yuv.client.state.settings.config.filter-config</div>
         <div class="value buttons">
           <button (click)="editFilterConfig()">{{ 'yuv.client.state.settings.config.filter-config.open' | translate }}</button>
+          <button *ngIf="hasManageSettingsRole" (click)="editFilterConfig(true)">
+            {{ 'yuv.client.state.settings.config.filter-config.global.open' | translate }}
+          </button>
         </div>
       </div>
       <div class="setting settings__row">
@@ -127,6 +130,18 @@
               <yuv-checkbox [(ngModel)]="cache.layout" [ngModelOptions]="{ standalone: true }"></yuv-checkbox>
             </yuv-form-input>
           </div>
+        </div>
+      </div>
+      <div class="setting settings__row" *ngIf="hasManageSettingsRole">
+        <div class="label" translate>yuv.client.state.settings.config.main-config</div>
+        <div class="value buttons">
+          <yuv-file-picker
+            [label]="'yuv.client.state.settings.config.main-config.import' | translate"
+            [accept]="'.json'"
+            [output]="'text'"
+            (fileSelected)="importMainConfig($event)"
+          ></yuv-file-picker>
+          <button (click)="exportMainConfig()">{{ 'yuv.client.state.settings.config.main-config.export' | translate }}</button>
         </div>
       </div>
     </div>

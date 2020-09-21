@@ -8,7 +8,8 @@ export const SystemType = {
 
 export const AdministrationRoles = {
   ADMIN: 'YUUVIS_TENANT_ADMIN',
-  SYSTEM: 'YUUVIS_SYSTEM_INTEGRATOR'
+  SYSTEM: 'YUUVIS_SYSTEM_INTEGRATOR',
+  MANAGE_SETTINGS: 'YUUVIS_MANAGE_SETTINGS'
 };
 
 export const UserRoles = {

@@ -61,7 +61,7 @@ export class SearchFilterComponent implements OnInit {
   activeFilters: Selectable[] = [];
   lastFilters: Selectable[] = [];
   storedFilters: Selectable[] = [];
-  visibleFilters: string[] = [];
+  hiddenFilters: string[] = [];
 
   filesizePipe: FileSizePipe;
   _query: SearchQuery;
@@ -141,9 +141,9 @@ export class SearchFilterComponent implements OnInit {
   private setupFilters(typeSelection: string[], activeFilters?: Selectable[]) {
     this.availableObjectTypeFields = this.quickSearchService.getAvailableObjectTypesFields(typeSelection);
 
-    this.quickSearchService.getCurrentSettings().subscribe(([storedFilters, visibleFilters, lastFilters]) => {
+    this.quickSearchService.getCurrentSettings().subscribe(([storedFilters, hiddenFilters, lastFilters]) => {
       this.storedFilters = this.quickSearchService.loadFilters(storedFilters as any, this.availableObjectTypeFields);
-      this.visibleFilters = visibleFilters || this.storedFilters.map((f) => f.id);
+      this.hiddenFilters = hiddenFilters;
       this.activeFilters =
         activeFilters ||
         (this._originalFilters = this.quickSearchService.getActiveFilters(this.filterQuery, this.storedFilters, this.availableObjectTypeFields));
@@ -157,7 +157,7 @@ export class SearchFilterComponent implements OnInit {
         {
           id: 'stored',
           label: this.translate.instant('yuv.framework.search.filter.stored.filters'),
-          items: this.storedFilters.filter((f) => this.visibleFilters.includes(f.id))
+          items: this.storedFilters.filter((f) => !this.hiddenFilters.includes(f.id))
         }
       ];
 
@@ -180,7 +180,7 @@ export class SearchFilterComponent implements OnInit {
 
   updateLastFilters(ids: string[]) {
     return (this.lastFilters = (ids || [])
-      .filter((id) => !this.filterSelection.includes(id) && this.visibleFilters.includes(id))
+      .filter((id) => !this.filterSelection.includes(id) && !this.hiddenFilters.includes(id))
       .slice(0, 5)
       .map((id) => this.storedFilters.find((f) => f.id === id))
       .filter((f) => f)).sort(Utils.sortValues('label'));
