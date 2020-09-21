@@ -227,7 +227,7 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
         this.resultCount = null;
         this.error = false;
         this.busy = true;
-        this.searchService.aggregate(this.searchQuery, [BaseObjectTypeField.OBJECT_TYPE_ID]).subscribe(
+        this.searchService.aggregate(this.searchQuery, [BaseObjectTypeField.LEADING_OBJECT_TYPE_ID]).subscribe(
           (res: AggregateResult) => {
             this.processAggregateResult(res);
             this.busy = false;
@@ -393,7 +393,7 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
         res.aggregations[0].entries
           .map((r) => {
             this.resultCount += r.count;
-            return { objectTypeId: r.key, label: this.systemService.getLocalizedResource(`${r.key}_label`), count: r.count };
+            return { objectTypeId: r.key, label: this.systemService.getLocalizedResource(`${r.key}_label`) || r.key, count: r.count };
           })
           .sort(Utils.sortValues('label'))
       );
