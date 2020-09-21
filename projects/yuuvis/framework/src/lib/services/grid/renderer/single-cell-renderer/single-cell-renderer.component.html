@@ -1,10 +1,12 @@
 <div class="rdt-row {{viewMode === 'horizontal' ? 'row-horizontal' : 'row-grid'}}" [attr.data-version]="cell.version">
     <div class="head">
-        <yuv-object-type-icon *ngIf="cell?.objectTypeId && !cell.icon" [objectTypeId]="cell?.objectTypeId"></yuv-object-type-icon>
+        <yuv-object-type-icon *ngIf="cell?.objectTypeId && !cell.icon" [objectTypeId]="cell?.objectTypeId">
+        </yuv-object-type-icon>
         <yuv-icon *ngIf="cell.icon" [svg]="cell?.icon"></yuv-icon>
     </div>
     <div class="main">
-        <div class="title">{{cell?.title || ''}}</div>
+        <div class="title">{{cell?.title || ('yuv.framework.grid.single-cell-renderer.undefined.title' | translate)}}
+        </div>
         <div class="description">{{cell?.description|| ''}}</div>
         <div class="date">{{cell?.modified}}</div>
     </div>
