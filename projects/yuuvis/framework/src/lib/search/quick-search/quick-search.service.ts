@@ -36,13 +36,19 @@ export class QuickSearchService {
   private STORAGE_KEY_FILTERS = 'yuv.framework.search.filters';
 
   private filters = {};
-  private filtersVisibility: string[];
+  private filtersVisibility: { hidden: string[]; __visible: string[]; __hidden: string[] };
   private filtersLast = [];
+  private get filtersHidden() {
+    return [...this.filtersVisibility.hidden, ...this.filtersVisibility.__hidden.filter((id) => !this.filtersVisibility.__visible.includes(id))];
+  }
+
   availableObjectTypes: Selectable[] = [];
   availableObjectTypeGroups: SelectableGroup[] = [];
 
   // object types that one should not search for
   skipTypes = [];
+
+  private isDefaultFilter = (id: string) => id.startsWith('__');
 
   /**
    *
@@ -62,7 +68,7 @@ export class QuickSearchService {
         .filter((t) => !this.skipTypes.includes(t.id))
         .map((ot) => ({
           id: ot.id,
-          label: this.systemService.getLocalizedResource(`${ot.id}_label`),
+          label: this.systemService.getLocalizedResource(`${ot.id}_label`) || ot.id,
           value: ot
         }))
         .sort(Utils.sortValues('label'));
@@ -82,15 +88,11 @@ export class QuickSearchService {
   }
 
   loadFilterSettings(global = false) {
-    return forkJoin([this.loadStoredFilters(null, global), this.loadFiltersVisibility(global), this.loadLastFilters()]);
+    return forkJoin([this.loadStoredFilters(null, global), this.loadHiddenFilters(global), this.loadLastFilters()]);
   }
 
   getCurrentSettings(global = false) {
-    return forkJoin([
-      this.loadStoredFilters(of(this.filters), global),
-      of(this.filtersVisibility ? [...this.filtersVisibility] : null),
-      of([...this.filtersLast])
-    ]);
+    return forkJoin([this.loadStoredFilters(of(this.filters), global), of([...this.filtersHidden]), of([...this.filtersLast])]);
   }
 
   getAvailableFilterGroups(storedFilters: Selectable[], availableObjectTypeFields: Selectable[]) {
@@ -102,11 +104,11 @@ export class QuickSearchService {
   }
 
   getActiveTypes(query: SearchQuery) {
-    return this.searchService.aggregate(query, [BaseObjectTypeField.OBJECT_TYPE_ID]).pipe(
+    return this.searchService.aggregate(query, [BaseObjectTypeField.LEADING_OBJECT_TYPE_ID]).pipe(
       map((res: AggregateResult) => {
         return res.aggregations && res.aggregations.length
           ? res.aggregations[0].entries
-              .map((r) => ({ id: r.key, label: this.systemService.getLocalizedResource(`${r.key}_label`), count: r.count }))
+              .map((r) => ({ id: r.key, label: this.systemService.getLocalizedResource(`${r.key}_label`) || r.key, count: r.count }))
               .sort(Utils.sortValues('label'))
           : [];
       })
@@ -161,14 +163,20 @@ export class QuickSearchService {
     return this.appCacheService.getItem(this.STORAGE_KEY_FILTERS_LAST).pipe(tap((f) => (this.filtersLast = f || [])));
   }
 
-  loadFiltersVisibility(global = false) {
-    return (global
-      ? this.userService.getGlobalSettings(this.STORAGE_KEY_FILTERS_VISIBILITY)
-      : this.userService.getSettings(this.STORAGE_KEY_FILTERS_VISIBILITY)
-    ).pipe(
-      // load global visibility only if there's no user settings
-      switchMap((f) => ((f && f.hidden) || global ? of(f) : this.userService.getGlobalSettings(this.STORAGE_KEY_FILTERS_VISIBILITY))),
-      map((f: any) => (this.filtersVisibility = (f && f.hidden) || []))
+  loadHiddenFilters(global = false) {
+    return forkJoin([
+      this.userService.getGlobalSettings(this.STORAGE_KEY_FILTERS_VISIBILITY),
+      this.userService.getSettings(this.STORAGE_KEY_FILTERS_VISIBILITY)
+    ]).pipe(
+      map(
+        ([globalSettings, settings]) =>
+          (this.filtersVisibility = {
+            hidden: (settings || {}).hidden || [],
+            __visible: (settings || {}).__visible || [],
+            __hidden: (globalSettings || {}).__hidden || []
+          })
+      ),
+      map((f: any) => (global ? [...this.filtersVisibility.__hidden] : this.filtersHidden))
     );
   }
 
@@ -176,7 +184,7 @@ export class QuickSearchService {
     return (global ? of({}) : store || this.userService.getSettings(this.STORAGE_KEY_FILTERS)).pipe(
       tap((f) => (this.filters = f || {})),
       switchMap(() => this.userService.getGlobalSettings(this.STORAGE_KEY_FILTERS)),
-      tap((filters) => Object.values(filters || {}).forEach((v: any) => !v.id.startsWith('__') && (v.id = '__' + v.id))),
+      tap((filters) => !global && Object.values(filters || {}).forEach((v: any) => !this.isDefaultFilter(v.id) && (v.id = '__' + v.id))),
       map((filters) =>
         Object.values({ ...(filters || {}), ...this.filters }).map((s: any) => ({
           ...s,
@@ -199,7 +207,7 @@ export class QuickSearchService {
   loadFilters(storedFilters: Selectable[], availableObjectTypeFields: Selectable[]) {
     const available = availableObjectTypeFields.map((a) => a.id);
     return [...storedFilters.filter((v: Selectable) => this.isMatching(v, available)), ...this.getDefaultFiltersList(availableObjectTypeFields)]
-      .map((f) => ({ ...f, highlight: !f.id.startsWith('__') }))
+      .map((f) => ({ ...f, highlight: !this.isDefaultFilter(f.id) }))
       .sort((a, b) => (a.id.replace(/#.*/, '') === b.id.replace(/#.*/, '') ? 0 : Utils.sortValues('label').call(this, a, b)));
   }
 
@@ -219,12 +227,23 @@ export class QuickSearchService {
     return of(this.filtersLast);
   }
 
-  saveFiltersVisibility(ids: string[], global = false) {
-    this.filtersVisibility = [...ids];
-    global
-      ? this.userService.saveGlobalSettings(this.STORAGE_KEY_FILTERS_VISIBILITY, { hidden: this.filtersVisibility }).subscribe()
-      : this.userService.saveSettings(this.STORAGE_KEY_FILTERS_VISIBILITY, { hidden: this.filtersVisibility }).subscribe();
-    return of(this.filtersVisibility);
+  saveFiltersVisibility(id: string, visible: boolean, global = false) {
+    let { hidden, __visible, __hidden } = this.filtersVisibility;
+
+    if (global) {
+      this.filtersVisibility.__hidden = __hidden = __hidden.filter((i) => i !== id).concat(!visible ? [id] : []);
+      this.userService.saveGlobalSettings(this.STORAGE_KEY_FILTERS_VISIBILITY, { __hidden }).subscribe();
+      return of([...__hidden]);
+    }
+
+    if (visible && __hidden.includes(id)) {
+      __visible.push(id);
+    } else {
+      this.filtersVisibility.hidden = hidden = hidden.filter((i) => i !== id).concat(!visible ? [id] : []);
+      this.filtersVisibility.__visible = __visible = __visible.filter((i) => i !== id);
+    }
+    this.userService.saveSettings(this.STORAGE_KEY_FILTERS_VISIBILITY, { hidden, __visible }).subscribe();
+    return of(this.filtersHidden);
   }
 
   saveFilters(global = false, filters = this.filters) {
