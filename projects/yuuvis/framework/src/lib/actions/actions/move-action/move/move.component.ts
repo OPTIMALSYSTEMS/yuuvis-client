@@ -30,7 +30,8 @@ export class MoveComponent implements OnInit, ActionComponent {
   }
 
   move() {
-    this.dmsService.moveDmsObjects(this.contextInfo.id, this.selection).subscribe();
+    const id = this.contextInfo ? this.contextInfo.id : null;
+    this.dmsService.moveDmsObjects(id, this.selection).subscribe();
     this.finished.emit();
   }
 

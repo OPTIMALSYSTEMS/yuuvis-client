@@ -18,10 +18,12 @@ import {
 } from './system.enum';
 import {
   ClassificationEntry,
+  GroupedObjectType,
   ObjectType,
   ObjectTypeField,
   ObjectTypeGroup,
   SchemaResponse,
+  SchemaResponseDocumentTypeDefinition,
   SchemaResponseFieldDefinition,
   SchemaResponseTypeDefinition,
   SecondaryObjectType,
@@ -61,9 +63,14 @@ export class SystemService {
    * @param withLabels Whether or not to also add the types labels
    */
   getSecondaryObjectTypes(withLabels?: boolean): SecondaryObjectType[] {
-    return withLabels
-      ? this.system.secondaryObjectTypes.map((t) => ({ ...t, label: this.getLocalizedResource(`${t.id}_label`) }))
-      : this.system.secondaryObjectTypes;
+    return (
+      (withLabels
+        ? this.system.secondaryObjectTypes.map((t) => ({ ...t, label: this.getLocalizedResource(`${t.id}_label`) }))
+        : this.system.secondaryObjectTypes
+      )
+        // ignore
+        .filter((t) => t.id !== t.baseId && !t.id.startsWith('system:') && t.id !== 'appClientsystem:leadingType')
+    );
   }
 
   /**
@@ -71,16 +78,50 @@ export class SystemService {
    * This also includes floating object types.
    *
    * @param skipAbstract Whether or not to exclude abstract object types like e.g. 'system:document'
-   * @param includeFloatingTypes Whether or not to include
+   * @param includeFloatingTypes Whether or not to include floating types as well
+   * @param includeExtendableFSOTs Whether or not to include floating SOTs as well
    */
-  getGroupedObjectTypes(skipAbstract?: boolean, includeFloatingTypes: boolean = true): ObjectTypeGroup[] {
+  getGroupedObjectTypes(
+    skipAbstract?: boolean,
+    includeFloatingTypes: boolean = true,
+    includeExtendableFSOTs?: boolean,
+    situation?: 'search' | 'create'
+  ): ObjectTypeGroup[] {
     // TODO: Apply a different property to group once grouping is available
-    const types: ObjectType[] = [];
+    const types: GroupedObjectType[] = [];
     this.getObjectTypes(true)
       .filter((ot) => (!includeFloatingTypes ? !ot.floatingParentType : true && (!skipAbstract || this.isCreatable(ot.id))))
       .forEach((ot) => {
-        types.push(ot);
+        switch (situation) {
+          case 'create': {
+            if (!ot.classification?.includes(ObjectTypeClassification.CREATE_FALSE)) {
+              types.push(ot);
+            }
+            break;
+          }
+          case 'search': {
+            if (!ot.classification?.includes(ObjectTypeClassification.SEARCH_FALSE)) {
+              types.push(ot);
+            }
+            break;
+          }
+          default: {
+            types.push(ot);
+          }
+        }
       });
+
+    if (includeExtendableFSOTs) {
+      this.getSecondaryObjectTypes(true)
+        .filter(
+          (sot) =>
+            !sot.classification?.includes(SecondaryObjectTypeClassification.REQUIRED) &&
+            !sot.classification?.includes(SecondaryObjectTypeClassification.PRIMARY)
+        )
+        .forEach((sot) => {
+          types.push(sot);
+        });
+    }
 
     const grouped = this.groupBy(
       types
@@ -151,18 +192,37 @@ export class SystemService {
    * Get the secondary object types of an object type that have the `primary`
    * classification.
    * @param objectTypeId ID of the object type
+   * @param withLabel Whether or not to also add the types label
    */
-  getPrimaryFSOTs(objectTypeId: string): SecondaryObjectType[] {
-    return this.getFloatingSecondaryObjectTypes(objectTypeId).filter((sot) => sot.classification?.includes(SecondaryObjectTypeClassification.PRIMARY));
+  getPrimaryFSOTs(objectTypeId: string, withLabel?: boolean): SecondaryObjectType[] {
+    return this.getFloatingSecondaryObjectTypes(objectTypeId, withLabel).filter((sot) =>
+      sot.classification?.includes(SecondaryObjectTypeClassification.PRIMARY)
+    );
   }
 
   /**
    * Get the secondary object types of an object type that have the `required`
    * classification.
    * @param objectTypeId ID of the object type
+   * @param withLabel Whether or not to also add the types label
    */
-  getRequiredFSOTs(objectTypeId: string): SecondaryObjectType[] {
-    return this.getFloatingSecondaryObjectTypes(objectTypeId).filter((sot) => sot.classification?.includes(SecondaryObjectTypeClassification.REQUIRED));
+  getRequiredFSOTs(objectTypeId: string, withLabel?: boolean): SecondaryObjectType[] {
+    return this.getFloatingSecondaryObjectTypes(objectTypeId, withLabel).filter((sot) =>
+      sot.classification?.includes(SecondaryObjectTypeClassification.REQUIRED)
+    );
+  }
+
+  /**
+   * Extendable FSOTs are floating secondary object types that are FSOTs that are not
+   * primary and not required.
+   * @param objectTypeId ID of the object type
+   * @param withLabel Whether or not to also add the types label
+   */
+  getExtendableFSOTs(objectTypeId: string, withLabel?: boolean): SecondaryObjectType[] {
+    return this.getFloatingSecondaryObjectTypes(objectTypeId, withLabel).filter(
+      (sot) =>
+        !sot.classification?.includes(SecondaryObjectTypeClassification.REQUIRED) && !sot.classification?.includes(SecondaryObjectTypeClassification.PRIMARY)
+    );
   }
 
   /**
@@ -222,6 +282,12 @@ export class SystemService {
     const folderTypeFieldIDs = sysFolder.fields.map((f) => f.id);
     const baseTypeFields: ObjectTypeField[] = sysDocument.fields.filter((f) => folderTypeFieldIDs.includes(f.id));
 
+    // leading type also needs to be added
+    // TODO: make this a system property that is applied to all types
+    this.getSecondaryObjectType('appClientsystem:leadingType').fields.forEach((f) => {
+      baseTypeFields.push(f);
+    });
+
     if (includeClientDefaults) {
       this.getSecondaryObjectType('appClient:clientdefaults').fields.forEach((f) => {
         baseTypeFields.push(f);
@@ -239,9 +305,35 @@ export class SystemService {
   }
 
   /**
+   * Get the resolved object type with all fields ( including fields from related secondary types )
+   */
+  getResolvedType(objectTypeId?: string): { id: string; fields: ObjectTypeField[] } {
+    const abstractTypes = Object.values(SystemType);
+    if (!objectTypeId || abstractTypes.includes(objectTypeId)) {
+      const baseType = this.getBaseType(true);
+      return { id: baseType.id, fields: baseType.fields };
+    }
+
+    const ot = this.getObjectType(objectTypeId);
+    if (!ot) {
+      const sot = this.getSecondaryObjectType(objectTypeId) || { id: objectTypeId, fields: [] };
+      const baseType = this.getBaseType(true);
+      return {
+        id: sot.id,
+        fields: [...sot.fields, ...baseType.fields]
+      };
+    }
+
+    return {
+      id: ot.id,
+      fields: ot.fields
+    };
+  }
+
+  /**
    * Get the icon for an object type. This will return an SVG as a string.
    * @param objectTypeId ID of the object type
-   * * @param fallback ID of a fallback icon that should be used if the given object type has no icon yet
+   * @param fallback ID of a fallback icon that should be used if the given object type has no icon yet
    */
   getObjectTypeIcon(objectTypeId: string, fallback?: string): Observable<string> {
     const fb = this.getFallbackIcon(objectTypeId, fallback);
@@ -301,37 +393,34 @@ export class SystemService {
   }
 
   /**
-   * Checks whether or not the given object type is an Advanced Filing Object (AFO). These types have a special kind of
-   * create lifecycle and may be treated in a different way.
+   * Floating object types (FOT) are object types that can turn into different types using primary FSOTs.
    *
-   * AFOs are object types that require a content stream and have a classification of 'appClient:dlm'. The object type itself
-   * is required to have no mandatory properties, so the content can be uploaded without having to apply some indexdata.
+   * The origin type must have at least one non static (floating) secondary object type (SOT) that has a
+   * classification of 'appClient:primary'. Those primary FSOTs define the types that the floating type may become.
    *
-   * AFOs have at least one Secondary Object Type (SOT) that could be applied later on.
-   *
-   * @param objectType Object type to be checked
-   */
-  isAdvancedFilingObjectType(objectType: ObjectType): boolean {
-    return (
-      objectType.contentStreamAllowed === ContentStreamAllowed.REQUIRED &&
-      Array.isArray(objectType.classification) &&
-      objectType.classification.includes(ObjectTypeClassification.ADVANCED_FILING_OBJECT)
-    );
-  }
-
-  /**
-   * Floating object types (FOT) are object types thet have at least one non static (floating)
-   * secondary object type (SOT).
-   *
-   * Once one primary SOT has been applied to the FOT the SOT will be treated like the main object type.
-   * Using this kind of objects you are able to create types that can turn into any applied primary SOT.
+   * Once one primary FSOT has been applied to the FOT the FSOT will be treated like the main object type (leading type).
    */
   isFloatingObjectType(objectType: ObjectType): boolean {
     return (
       Array.isArray(objectType.classification) &&
-      objectType.classification.includes(ObjectTypeClassification.FLOATING_OBJECT_TYPE) &&
-      objectType.secondaryObjectTypes.filter((sot) => !sot.static).length > 0
-      // !!objectType.secondaryObjectTypes.find((sot) => this.getSecondaryObjectType(sot.id).classification?.includes(SecondaryObjectTypeClassification.PRIMARY))
+      !!objectType.secondaryObjectTypes.find((sot) => this.getSecondaryObjectType(sot.id).classification?.includes(SecondaryObjectTypeClassification.PRIMARY))
+    );
+  }
+  /**
+   * Extendable object types (EOT) are object types that can be extended by loatin secondary object types (FSOTs).
+   *
+   * The origin type must have at least one floating object type that does not have a classification of 'appClient:primary'
+   * or 'appClient:required'. These FSOTs can be added to the origin type to extend its set of indexdata.
+   */
+  isExtendableObjectType(objectType: ObjectType): boolean {
+    return (
+      Array.isArray(objectType.classification) &&
+      objectType.secondaryObjectTypes.filter(
+        (sot) =>
+          !sot.static &&
+          !this.getSecondaryObjectType(sot.id).classification?.includes(SecondaryObjectTypeClassification.PRIMARY) &&
+          !this.getSecondaryObjectType(sot.id).classification?.includes(SecondaryObjectTypeClassification.REQUIRED)
+      ).length > 0
     );
   }
 
@@ -551,6 +640,7 @@ export class SystemService {
       id: std.id,
       description: std.description,
       classification: std.classification,
+      contentStreamAllowed: std.contentStreamAllowed,
       baseId: std.baseId,
       fields: this.resolveObjectTypeFields(std, propertiesQA, objectTypesQA)
     }));
@@ -558,11 +648,14 @@ export class SystemService {
     // deal with floating types
     const floatingTypes: ObjectType[] = [];
     objectTypes.forEach((ot) => {
-      if (this.isFloatingObjectType(ot)) {
+      const isFloatingType = !!ot.secondaryObjectTypes?.find((sot) =>
+        objectTypesQA[sot.id]?.classification?.includes(SecondaryObjectTypeClassification.PRIMARY)
+      );
+      if (isFloatingType) {
         const primaryFSOTs = ot.secondaryObjectTypes
           .filter((sot) => !sot.static)
           .map((sot) => objectTypesQA[sot.id])
-          .filter((def: SchemaResponseTypeDefinition) => def.classification?.includes(SecondaryObjectTypeClassification.PRIMARY));
+          .filter((def: SchemaResponseDocumentTypeDefinition) => def.classification?.includes(SecondaryObjectTypeClassification.PRIMARY));
 
         // take care of 'required' FSOTs as well, because they are applied automatically,
         // so their fields are always part of the floating type
@@ -571,15 +664,16 @@ export class SystemService {
           .map((sot) => objectTypesQA[sot.id])
           .filter((def: SchemaResponseTypeDefinition) => def.classification?.includes(SecondaryObjectTypeClassification.REQUIRED));
 
-        primaryFSOTs.forEach((def: SchemaResponseTypeDefinition) => {
+        primaryFSOTs.forEach((def: SchemaResponseDocumentTypeDefinition) => {
           floatingTypes.push({
             id: def.id,
             description: def.description,
-            classification: ot.classification,
+            classification: def.classification,
             floatingParentType: ot.id,
             baseId: ot.baseId,
             creatable: ot.creatable && this.isCreatable(def.id),
-            contentStreamAllowed: ot.contentStreamAllowed,
+            // FSOTs may have their own contentstreamAllowed property
+            contentStreamAllowed: def.contentStreamAllowed || ot.contentStreamAllowed,
             isFolder: ot.isFolder,
             secondaryObjectTypes: [],
             fields: [...ot.fields, ...this.resolveObjectTypeFields(objectTypesQA[def.id], propertiesQA, objectTypesQA)].concat(

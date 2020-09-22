@@ -7,10 +7,11 @@
     [entryLinkTemplate]="quickfinderEntryLinkTpl"
     [allowedTargetTypes]="allowedTypes"
   ></yuv-quickfinder>
+  <div class="description">{{ 'yuv.framework.action-menu.action.move.dms.object.picker.input.description' | translate }}</div>
 
   <div class="form-buttons">
     <button (click)="cancel()">{{ 'yuv.framework.shared.cancel' | translate }}</button>
-    <button class="primary" [disabled]="!contextInfo" (click)="move()">
+    <button class="primary" (click)="move()">
       {{ 'yuv.framework.action-menu.action.move.dms.object.picker.button.move' | translate }}
     </button>
   </div>

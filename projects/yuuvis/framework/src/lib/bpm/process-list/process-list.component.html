@@ -4,13 +4,13 @@
 
   <div class="actions" yuvOfflineDisabled>
     <yuv-action-menu-bar class="actions">
-      <yuv-icon (click)="refresh()" [title]="'yuv.framework.list.refresh' | translate" class="button refresh-button"
-        icon="refresh"></yuv-icon>
+      <yuv-icon (click)="refresh()" [title]="'yuv.framework.list.refresh' | translate" class="button refresh-button" icon="refresh"></yuv-icon>
     </yuv-action-menu-bar>
   </div>
 
   <div class="content">
-    <yuv-responsive-data-table yuvOfflineDisabled #dataTable class="data-table process" *ngIf="processData"
+    <yuv-responsive-data-table yuvOfflineDisabled #dataTable class="data-table process" 
+      *ngIf="processData"
       [layoutOptionsKey]="layoutOptionsKey"
       [viewMode]="viewMode"
       [data]="processData"
@@ -30,5 +30,5 @@
       title="{{ 'yuv.framework.version-list.config.mode.horizontal' | translate}}"
       [ngClass]="{'current': dataTable?.currentViewMode === 'horizontal'}" (click)="viewMode = 'horizontal'">
     </yuv-icon>
-  </section> -->
+  </section>
 </yuv-panel>

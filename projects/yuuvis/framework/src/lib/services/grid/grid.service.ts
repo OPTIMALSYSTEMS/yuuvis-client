@@ -19,7 +19,6 @@ import {
 } from '@yuuvis/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { ObjectTypeIconComponent } from '../../common/components/object-type-icon/object-type-icon.component';
 import { FileSizePipe, LocaleDatePipe, LocaleNumberPipe } from '../../pipes';
 import { ROUTES, YuvRoutes } from '../../Routing/Routes';
 import { CellRenderer } from './grid.cellrenderer';
@@ -260,8 +259,9 @@ export class GridService {
    */
   private addColDefAttrsByField(colDef: ColDef, field: ObjectTypeField) {
     switch (field.id) {
-      case BaseObjectTypeField.OBJECT_TYPE_ID: {
-        colDef.cellRendererFramework = ObjectTypeIconComponent;
+      case BaseObjectTypeField.LEADING_OBJECT_TYPE_ID: {
+        colDef.cellRenderer = 'objectTypeCellRenderer';
+        colDef.width = 80;
         colDef.cellClass = 'res-ico';
         break;
       }

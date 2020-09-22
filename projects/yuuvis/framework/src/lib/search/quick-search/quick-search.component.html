@@ -1,6 +1,6 @@
 <div class="upper" [ngClass]="{ zero: resultCount === 0 }"
   *ngIf="searchQuery.term || searchQuery.types?.length || searchQuery.filters?.length">
-  <yuv-icon [icon]="'clear'" (click)="reset()"></yuv-icon>
+  <!-- <yuv-icon [icon]="'clear'" (click)="reset()"></yuv-icon> -->
   <div class="yuv-loader-straight"></div>
   <div class="count" *ngIf="resultCount !== null">{{ resultCount }}</div>
 </div>
@@ -15,7 +15,6 @@
       </button>
 
       <div class="input">
-        <!-- <input #termEl [placeholder]="'yuv.framework.quick-search.term.placeholder'|translate" formControlName="term"> -->
         <p-autoComplete #autoTermEl [placeholder]="'yuv.framework.quick-search.term.placeholder' | translate"
           formControlName="term" [suggestions]="autoSuggestions" [field]="'label'"
           [ngClass]="{ 'quick-search': true, hashtag: lastAutoQuery?.isTypeFields }"
@@ -30,11 +29,12 @@
         {{ 'yuv.framework.quick-search.context-search.chip' | translate }}
       </button>
 
-      <!-- reset button 
+      <!-- reset button -->
       <button type="button" class="reset" (click)="reset()"
-        title="{{ 'yuv.framework.quick-search.reset.tooltip' | trssssssssssssanslate }}">
+        *ngIf="searchQuery.term || searchQuery.types?.length || searchQuery.filters?.length"
+        title="{{ 'yuv.framework.quick-search.reset.tooltip' | translate }}">
         <yuv-icon icon="reset"></yuv-icon>
-      </button>-->
+      </button>
 
       <button type="button" class="field-select" #fieldSelectTrigger (click)="showObjectTypeFieldPicker()"
         *ngIf="availableObjectTypeFields?.length"

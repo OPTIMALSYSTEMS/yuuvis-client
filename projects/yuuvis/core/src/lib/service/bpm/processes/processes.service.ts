@@ -11,6 +11,10 @@ interface CreateFollowUp {
   documentId: string;
 }
 
+/**
+ * ProcessService: responsible for handling all bpm/process/instances route related interactions
+ * facade for BpmService
+ */
 @Injectable({
   providedIn: 'root'
 })
@@ -22,6 +26,9 @@ export class ProcessService {
 
   constructor(private bpmService: BpmService) {}
 
+  /**
+   * get all processes
+   */
   getProcesses(): Observable<ProcessData[]> {
     return this.bpmService.getProcesses(`${this.bpmProcessUrl}?includeProcessVariables=true`).pipe(
       tap(({ data }: ProcessResponse) => this.processSource.next(data)),
@@ -29,10 +36,16 @@ export class ProcessService {
     );
   }
 
+  /**
+   * get a specific follow Up by bisinessKey
+   */
   getFollowUp(businessKey: string): Observable<ProcessData> {
     return this.bpmService.getProcessInstance(ProcessDefinitionKey.FOLLOW_UP, businessKey);
   }
 
+  /**
+   * create a follow Up for a document
+   */
   createFollowUp(documentId: string, payload: CreateFollowUp): Observable<ProcessResponse> {
     const payloadData: ProcessInstance = this.followUpPayloadData(documentId, payload);
     return this.bpmService.createProcess(payloadData);
@@ -61,14 +74,19 @@ export class ProcessService {
       })
     );
   }
+  /**
+   * Edit/Update a follow Up by document and process Instance Id
+   */
   /** TODO: refactor once actual update is available  above */
-
   editFollowUp(documentId: string, processInstanceId: string, payload: CreateFollowUp): Observable<any> {
     const deleteProcess = this.bpmService.deleteProcess(this.bpmProcessUrl, processInstanceId);
     const createProcess = this.updateFollowUp(documentId, payload, processInstanceId);
     return forkJoin([deleteProcess, createProcess]);
   }
 
+  /**
+   * delete a follow Up by process Instance Id
+   */
   deleteFollowUp(processInstanceId: string) {
     return this.bpmService.deleteProcess(this.bpmProcessUrl, processInstanceId).pipe(
       tap((data) => {

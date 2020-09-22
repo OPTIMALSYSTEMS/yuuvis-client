@@ -42,9 +42,9 @@ const modules = [
   YuvObjectCreateModule,
   YuvQuickfinderModule,
   YuvPipesModule,
-  OverlayPanelModule,
   YuvActionModule,
   YuvCoreSharedModule,
+  OverlayPanelModule,
   YuvBpmModule
 ];
 

@@ -151,6 +151,10 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
     return this._currentViewMode;
   }
 
+  private get focusField() {
+    return this._data.columns[0] ? this._data.columns[0].field : BaseObjectTypeField.OBJECT_TYPE_ID;
+  }
+
   private _viewMode: ViewMode = 'standard';
   private _currentViewMode: ViewMode = 'standard';
   private _autoViewMode: ViewMode = 'standard';
@@ -384,7 +388,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
       const n = this.gridOptions.api.getRowNode(id);
       if (n) {
         if (index === 0) {
-          this.gridOptions.api.setFocusedCell(n.rowIndex, focusColId || this._data.columns[0].field);
+          this.gridOptions.api.setFocusedCell(n.rowIndex, focusColId || this.focusField);
           if (ensureVisibility) {
             if (this.isVertical) {
               const shift = Math.floor(this.settings.size.newWidth / this.settings.colWidth.grid / 2);
@@ -444,7 +448,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
       onSortChanged: (event) => this.isStandard && this.sortChanged.emit(this.gridOptions.api.getSortModel()),
       onGridReady: (event) => {
         this.gridOptions.api.setSortModel(this._data.sortModel || []);
-        this.gridOptions.api.setFocusedCell(0, this._data.columns[0].field);
+        this.gridOptions.api.setFocusedCell(0, this.focusField);
       },
       onRowDoubleClicked: (event) => this.rowDoubleClicked.emit(event),
       ...(this._data && this._data.gridOptions)

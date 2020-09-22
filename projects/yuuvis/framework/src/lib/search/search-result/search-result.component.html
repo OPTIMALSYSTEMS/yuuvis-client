@@ -3,7 +3,7 @@
 
   <div class="filterCollapsed" (click)="showFilterPanel = true" *ngIf="!showFilterPanel">
     <div>
-      <yuv-icon icon="filter"></yuv-icon>
+      <yuv-icon icon="filter" [ngClass]="{'active': query?.filters.length}"></yuv-icon>
       {{'yuv.framework.search-result.filter.panel.title'|translate}}
     </div>
     <yuv-icon class="collapse" icon="doubleArrow"></yuv-icon>

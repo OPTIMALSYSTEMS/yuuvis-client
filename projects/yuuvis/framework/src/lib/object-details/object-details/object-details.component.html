@@ -7,7 +7,7 @@
   [description]="dmsObject.description"
   [yuvBusyOverlay]="busy"
 >
-  <yuv-object-type-icon class="header-icon" [objectTypeId]="dmsObject?.objectTypeId"></yuv-object-type-icon>
+  <yuv-object-type-icon class="header-icon" [objectTypeId]="objectTypeId"></yuv-object-type-icon>
 
   <yuv-action-menu-bar class="actions" yuvOfflineDisabled>
     <yuv-icon (click)="refreshDetails()" [title]="'yuv.framework.list.refresh' | translate" class="button refresh-button" [icon]="'refresh'"></yuv-icon>
