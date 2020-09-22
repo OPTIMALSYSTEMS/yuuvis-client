@@ -91,10 +91,14 @@
 
         <div class="box">
           <p>{{'yuv.framework.object-create.afo.upload.info'|translate}}</p>
+          <yuv-form-input class="checkbox" [skipToggle]="true"
+            [label]="'yuv.framework.object-create.afo.upload.skip-notification' | translate">
+            <yuv-checkbox [(ngModel)]="afoUploadNoticeSkip" [ngModelOptions]="{ standalone: true }"></yuv-checkbox>
+          </yuv-form-input>
           <div class="actions">
             <button (click)="afoCreateCancel()">{{'yuv.framework.shared.cancel'|translate}}</button>
             <button class="primary"
-              (click)="afoCreateApprove()">{{'yuv.framework.object-create.afo.upload.approve'|translate}}</button>
+              (click)="afoCreateApprove(afoUploadNoticeSkip)">{{'yuv.framework.object-create.afo.upload.approve'|translate}}</button>
           </div>
         </div>
       </div>

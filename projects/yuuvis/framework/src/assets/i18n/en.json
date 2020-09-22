@@ -104,6 +104,7 @@
 	"yuv.framework.object-create.afo.type.select.title": "Specifiy object",
 	"yuv.framework.object-create.afo.upload.approve": "Continue",
 	"yuv.framework.object-create.afo.upload.info": "Uploading file(s) for further processing. You can conclude the filing process in the next step.",
+	"yuv.framework.object-create.afo.upload.skip-notification": "Do not show again",
 	"yuv.framework.object-create.footer.another": "Create additional object",
 	"yuv.framework.object-create.footer.create": "Create object",
 	"yuv.framework.object-create.footer.create.afo.cancel": "Cancel",

@@ -353,6 +353,11 @@
             line-height: 1.7em;
           }
 
+          yuv-form-input {
+            display: block;
+            padding: 0 var(--app-pane-padding);
+          }
+
           .actions {
             display: flex;
             justify-content: space-between;
