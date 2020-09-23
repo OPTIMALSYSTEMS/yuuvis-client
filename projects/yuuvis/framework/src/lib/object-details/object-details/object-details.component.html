@@ -1,15 +1,22 @@
-<yuv-panel *ngIf="dmsObject; else empty" class="object-details" [title]="dmsObject.title"
+<yuv-panel
+  *ngIf="dmsObject; else empty"
+  class="object-details"
+  [title]="dmsObject.title"
   (yuvFileDrop)="onFileDropped($event)"
-  [yuvFileDropOptions]="{ disabled: (disableFileDrop || dmsObject.contentStreamAllowed === 'notallowed'), label: fileDropLabel }"
-  [description]="dmsObject.description" [yuvBusyOverlay]="busy">
-
+  [yuvFileDropOptions]="{ disabled: disableFileDrop || dmsObject.contentStreamAllowed === 'notallowed', label: fileDropLabel }"
+  [description]="dmsObject.description"
+  [yuvBusyOverlay]="busy"
+>
   <yuv-object-type-icon class="header-icon" [objectTypeId]="objectTypeId"></yuv-object-type-icon>
 
   <yuv-action-menu-bar class="actions" yuvOfflineDisabled>
-    <yuv-icon (click)="refreshDetails()" [title]="'yuv.framework.list.refresh' | translate"
-      class="button refresh-button" [icon]="'refresh'"></yuv-icon>
-    <yuv-icon (click)="openActionMenu()" [title]="'yuv.framework.object-details.tooltip.icon.actions' | translate"
-      class="button actions-button" [icon]="'kebap'"></yuv-icon>
+    <yuv-icon (click)="refreshDetails()" [title]="'yuv.framework.list.refresh' | translate" class="button refresh-button" [icon]="'refresh'"></yuv-icon>
+    <yuv-icon
+      (click)="openActionMenu()"
+      [title]="'yuv.framework.object-details.tooltip.icon.actions' | translate"
+      class="button actions-button"
+      [icon]="'kebap'"
+    ></yuv-icon>
   </yuv-action-menu-bar>
 
   <yuv-action-menu-bar class="status" [className]="'status'">
@@ -22,13 +29,10 @@
     <yuv-icon class="finalized-icon" [icon]="'finalized'"></yuv-icon> -->
   </yuv-action-menu-bar>
 
-  <yuv-responsive-tab-container #tabContainer class="content" [layoutOptionsKey]="layoutOptionsKey"
-    [pluginPanels]="[viewPanels, externalPanels]">
-
+  <yuv-responsive-tab-container #tabContainer class="content" [layoutOptionsKey]="layoutOptionsKey" [pluginPanels]="[viewPanels, externalPanels]">
     <ng-container *ngFor="let templateID of panelOrder" [ngTemplateOutlet]="this[templateID]"></ng-container>
 
     <ng-container *ngTemplateOutlet="content"></ng-container>
-
   </yuv-responsive-tab-container>
 </yuv-panel>
 <yuv-action-menu [(visible)]="actionMenuVisible" [selection]="actionMenuSelection"> </yuv-action-menu>
@@ -38,32 +42,25 @@
   <yuv-empty *ngIf="!contextError" [icon]="nofileIcon"></yuv-empty>
 </ng-template>
 
-
 <!-- PANELS -->
 <ng-template #summary>
-  <p-tabPanel [id]="'summary'" [header]="'yuv.framework.object-details.tabs.summary.title' | translate"
-    [headerStyleClass]="'summary'">
+  <p-tabPanel [id]="'summary'" [header]="'yuv.framework.object-details.tabs.summary.title' | translate" [headerStyleClass]="'summary'">
     <ng-template pTemplate="content">
-      <yuv-summary [dmsObject]="dmsObject" [versionLinkTemplate]="versionLinkTemplate"
-        [showExtrasSection]="userIsAdmin">
-      </yuv-summary>
+      <yuv-summary [dmsObject]="dmsObject" [showExtrasSection]="userIsAdmin"> </yuv-summary>
     </ng-template>
   </p-tabPanel>
 </ng-template>
 
 <ng-template #indexdata>
-  <p-tabPanel [id]="'indexdata'" [header]="'yuv.framework.object-details.tabs.indexdata.title' | translate"
-    [headerStyleClass]="'indexdata'">
+  <p-tabPanel [id]="'indexdata'" [header]="'yuv.framework.object-details.tabs.indexdata.title' | translate" [headerStyleClass]="'indexdata'">
     <ng-template pTemplate="content">
-      <yuv-object-form-edit [dmsObject]="dmsObject" (indexDataSaved)="onIndexdataSaved($event)">
-      </yuv-object-form-edit>
+      <yuv-object-form-edit [dmsObject]="dmsObject" (indexDataSaved)="onIndexdataSaved($event)"> </yuv-object-form-edit>
     </ng-template>
   </p-tabPanel>
 </ng-template>
 
 <ng-template #preview>
-  <p-tabPanel [id]="'preview'" [header]="'yuv.framework.object-details.tabs.content.title' | translate"
-    [headerStyleClass]="'preview'">
+  <p-tabPanel [id]="'preview'" [header]="'yuv.framework.object-details.tabs.content.title' | translate" [headerStyleClass]="'preview'">
     <ng-template pTemplate="content" *ngIf="!undockWinActive; else loadPreview">
       <yuv-content-preview [dmsObject]="dmsObject" [searchTerm]="searchTerm"></yuv-content-preview>
     </ng-template>
@@ -73,12 +70,10 @@
   </p-tabPanel>
 </ng-template>
 
-
 <ng-template #history>
-  <p-tabPanel [id]="'history'" [header]="'yuv.framework.object-details.tabs.history.title' | translate"
-    [headerStyleClass]="'history'">
+  <p-tabPanel [id]="'history'" [header]="'yuv.framework.object-details.tabs.history.title' | translate" [headerStyleClass]="'history'">
     <ng-template pTemplate="content">
-      <yuv-audit [objectID]="objectId" [versionLinkTemplate]="versionLinkTemplate"></yuv-audit>
+      <yuv-audit [objectID]="objectId"></yuv-audit>
     </ng-template>
   </p-tabPanel>
 </ng-template>

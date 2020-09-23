@@ -46,11 +46,33 @@ import { VersionsComponent } from './states/versions/versions.component';
     BrowserModule,
     FormsModule,
     AccordionModule,
-    YuvFrameworkModule.forRoot({
-      main: ['assets/default/config/main.json'],
-      translations: ['assets/default/i18n/'],
-      environment
-    }),
+    YuvFrameworkModule.forRoot(
+      {
+        main: ['assets/default/config/main.json'],
+        translations: ['assets/default/i18n/'],
+        environment
+      },
+      {
+        object: {
+          path: 'object',
+          params: {
+            id: 'id'
+          },
+          queryParams: {
+            query: 'query'
+          }
+        },
+        versions: {
+          path: 'versions',
+          params: {
+            id: 'id'
+          },
+          queryParams: {
+            version: 'version'
+          }
+        }
+      }
+    ),
     AppRoutingModule,
     AboutModule,
     ActionsModule,

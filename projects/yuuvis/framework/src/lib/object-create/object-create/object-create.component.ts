@@ -32,6 +32,7 @@ import { CombinedObjectFormComponent, CombinedObjectFormInput } from '../../obje
 import { FormStatusChangedEvent, ObjectFormOptions } from '../../object-form/object-form.interface';
 import { Situation } from '../../object-form/object-form.situation';
 import { ObjectFormComponent } from '../../object-form/object-form/object-form.component';
+import { LayoutService } from '../../services/layout/layout.service';
 import { NotificationService } from '../../services/notification/notification.service';
 import { clear, navBack } from '../../svg.generated';
 import { ObjectCreateService } from '../object-create.service';
@@ -92,6 +93,9 @@ export enum AFOType {
   providers: [ObjectCreateService]
 })
 export class ObjectCreateComponent implements OnDestroy {
+  private LAYOUT_OPTIONS_KEY = 'yuv.framework.object-create';
+  private LAYOUT_OPTIONS_ELEMENT_KEY = 'yuv-object-create';
+
   @ViewChild(ObjectFormComponent) objectForm: ObjectFormComponent;
   @ViewChild(CombinedObjectFormComponent) combinedObjectForm: CombinedObjectFormComponent;
 
@@ -110,6 +114,7 @@ export class ObjectCreateComponent implements OnDestroy {
 
   afoType: AFOType;
   afoCreate: AFOState;
+  afoUploadNoticeSkip: boolean;
 
   // groups of object types available for the root target
   generalObjectTypeGroups: SelectableGroup[];
@@ -177,6 +182,7 @@ export class ObjectCreateComponent implements OnDestroy {
     private notify: NotificationService,
     private searchService: SearchService,
     private dmsService: DmsService,
+    private layoutService: LayoutService,
     private backend: BackendService,
     private userService: UserService,
     private translate: TranslateService,
@@ -184,6 +190,10 @@ export class ObjectCreateComponent implements OnDestroy {
   ) {
     this.iconRegistry.registerIcons([clear, navBack]);
     this.resetState();
+
+    this.layoutService.loadLayoutOptions(this.LAYOUT_OPTIONS_KEY, this.LAYOUT_OPTIONS_ELEMENT_KEY).subscribe((o: any) => {
+      this.afoUploadNoticeSkip = o?.afoUploadNoticeSkip || false;
+    });
 
     this.labels = {
       defaultTitle: this.translate.instant('yuv.framework.object-create.header.title'),
@@ -385,7 +395,15 @@ export class ObjectCreateComponent implements OnDestroy {
     );
   }
 
-  afoCreateApprove() {
+  afoCreateApprove(afoUploadNoticeSkip?: boolean) {
+    if (afoUploadNoticeSkip) {
+      this.layoutService
+        .saveLayoutOptions(this.LAYOUT_OPTIONS_KEY, this.LAYOUT_OPTIONS_ELEMENT_KEY, {
+          afoUploadNoticeSkip: true
+        })
+        .subscribe();
+    }
+
     let data = {};
     if (this.context) {
       data[BaseObjectTypeField.PARENT_ID] = this.context.id;
@@ -518,8 +536,12 @@ export class ObjectCreateComponent implements OnDestroy {
       nextStep = CurrentStep.INDEXDATA;
     }
     if (nextStep) {
-      this.goToStep(nextStep);
-      this.objCreateService.setNewBreadcrumb(nextStep);
+      if (nextStep === CurrentStep.AFO_UPLOAD && this.afoUploadNoticeSkip) {
+        this.afoCreateApprove();
+      } else {
+        this.goToStep(nextStep);
+        this.objCreateService.setNewBreadcrumb(nextStep);
+      }
     }
   }
 

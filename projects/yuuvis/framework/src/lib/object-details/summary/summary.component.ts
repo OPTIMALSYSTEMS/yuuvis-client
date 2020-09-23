@@ -1,5 +1,5 @@
 import { ColDef, ICellRendererFunc } from '@ag-grid-community/core';
-import { Component, Input, OnInit, TemplateRef } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import {
   AppCacheService,
   BaseObjectTypeField,
@@ -89,11 +89,6 @@ export class SummaryComponent implements OnInit {
    * Whether or not to show the extras section that holds the more technical data for the object
    */
   @Input() showExtrasSection: boolean;
-
-  /**
-   * Custom template to render version as for example a link.
-   */
-  @Input() versionLinkTemplate: TemplateRef<any>;
 
   // isEmpty = v => Utils.isEmpty(v);
   isVersion = (v) => v === BaseObjectTypeField.VERSION_NUMBER;

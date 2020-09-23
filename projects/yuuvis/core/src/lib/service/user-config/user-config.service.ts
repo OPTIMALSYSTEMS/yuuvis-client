@@ -74,15 +74,16 @@ export class UserConfigService {
    * @param objectType ID of the desired object type
    */
   private getRequestURI(objectTypeId: string, global?: boolean): string {
+    const id = encodeURIComponent(objectTypeId);
     if (global) {
-      return `/user/globalsettings/column-config-${encodeURIComponent(objectTypeId)}`;
+      return `/user/globalsettings/column-config-${id}`;
     }
     const baseURL = '/user/config/result/';
     const ot = this.systemService.getObjectType(objectTypeId);
     if (!ot && this.systemService.getSecondaryObjectType(objectTypeId)) {
       // Not getting an object type means that the target type is an extendable FSOT.
       // In this case we'll use the base objects id to store the column config
-      return `${baseURL}${encodeURIComponent(SystemType.OBJECT)}?sots=${objectTypeId}`;
+      return `${baseURL}${encodeURIComponent(SystemType.OBJECT)}?fallback=${id}&sots=${objectTypeId}`;
     } else if (ot?.floatingParentType) {
       const parentType = this.systemService.getObjectType(ot.floatingParentType);
       const sots: string[] = [objectTypeId].concat(
@@ -92,9 +93,9 @@ export class UserConfigService {
           .map((sot) => sot.id)
       );
 
-      return `${baseURL}${encodeURIComponent(ot.floatingParentType)}?sots=${sots.map((sot) => encodeURIComponent(sot)).join('&sots=')}`;
+      return `${baseURL}${encodeURIComponent(ot.floatingParentType)}?fallback=${id}&sots=${sots.map((sot) => encodeURIComponent(sot)).join('&sots=')}`;
     } else {
-      return `${baseURL}${encodeURIComponent(objectTypeId)}`;
+      return `${baseURL}${id}?fallback=${id}`;
     }
   }
 
