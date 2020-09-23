@@ -9,6 +9,7 @@ import {
   Logger,
   ObjectTypeField,
   ParentField,
+  RetentionField,
   SystemService
 } from '@yuuvis/core';
 import { GridService } from '../../services/grid/grid.service';
@@ -128,9 +129,9 @@ export class SummaryComponent implements OnInit {
       { key: ContentStreamField.FILENAME, order: 7 },
       { key: ContentStreamField.LENGTH, order: 8 },
       { key: ContentStreamField.MIME_TYPE, order: 9 },
-      { key: 'system:rmStartOfRetention', order: 10 },
-      { key: 'system:rmExpirationDate', order: 11 },
-      { key: 'system:rmDestructionDate', order: 12 }
+      { key: RetentionField.START_OF_RETENTION, order: 10 },
+      { key: RetentionField.EXPIRATION_DATE, order: 11 },
+      { key: RetentionField.DESTRUCTION_DATE, order: 12 }
     ];
 
     const patentFields: string[] = [
