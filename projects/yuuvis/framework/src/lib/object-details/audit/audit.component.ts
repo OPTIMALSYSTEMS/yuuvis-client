@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { AuditQueryOptions, AuditQueryResult, AuditService, DmsObject, EventService, RangeValue, TranslateService, YuvEvent, YuvEventType } from '@yuuvis/core';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
-import { ROUTES, YuvRoutes } from '../../Routing/Routes';
+import { ROUTES, YuvRoutes } from '../../routing/routes';
 import { arrowNext, filter } from '../../svg.generated';
 
 /**

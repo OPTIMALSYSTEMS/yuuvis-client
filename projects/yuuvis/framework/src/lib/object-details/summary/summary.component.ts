@@ -176,36 +176,40 @@ export class SummaryComponent implements OnInit {
       colDef = [...colDef, ...this.gridService.getColumnDefinitions(fsot.id, true)];
     });
 
-    Object.keys({ ...dmsObject.data, ...this.dmsObject2?.data }).forEach((key: string) => {
-      const prepKey = key.startsWith('parent.') ? key.replace('parent.', '') : key; // todo: pls implement general solution
-      const def: ColDef = colDef.find((cd) => cd.field === prepKey);
-      const renderer: ICellRendererFunc = def ? (def.cellRenderer as ICellRendererFunc) : null;
-      const si: SummaryEntry = {
-        label: (def && def.headerName) || key,
-        key,
-        value: typeof renderer === 'function' ? renderer({ value: dmsObject.data[key], data: dmsObject.data }) : dmsObject.data[key],
-        value2:
-          this.dmsObject2 &&
-          (typeof renderer === 'function' ? renderer({ value: this.dmsObject2.data[key], data: this.dmsObject2.data }) : this.dmsObject2.data[key]),
-        order: null
-      };
+    Object.keys({ ...dmsObject.data, ...this.dmsObject2?.data })
+      .filter((key) => !key.includes('_title'))
+      .forEach((key: string) => {
+        const prepKey = key.startsWith('parent.') ? key.replace('parent.', '') : key; // todo: pls implement general solution
+        const def: ColDef = colDef.find((cd) => cd.field === prepKey);
+        const renderer: ICellRendererFunc = def ? (def.cellRenderer as ICellRendererFunc) : null;
+        const si: SummaryEntry = {
+          label: (def && def.headerName) || key,
+          key,
+          value: renderer
+            ? renderer({ value: dmsObject.data[key], data: dmsObject.data, colDef: def })
+            : dmsObject.data[key + '_title']
+            ? dmsObject.data[key + '_title']
+            : dmsObject.data[key],
+          value2: this.dmsObject2 && (renderer ? renderer({ value: this.dmsObject2.data[key], data: this.dmsObject2.data }) : this.dmsObject2.data[key]),
+          order: null
+        };
 
-      if (key === BaseObjectTypeField.OBJECT_TYPE_ID) {
-        si.value = this.systemService.getLocalizedResource(`${dmsObject.data[key]}_label`);
-      }
-      if (this.dmsObject2 && (si.value === si.value2 || this.isVersion(key))) {
-        // skip equal and irrelevant values
-      } else if (extraFields.includes(prepKey)) {
-        summary.extras.push(si);
-      } else if (defaultBaseFields.find((field) => field.key.startsWith(prepKey))) {
-        defaultBaseFields.map((field) => (field.key === prepKey ? (si.order = field.order) : null));
-        summary.base.push(si);
-      } else if (patentFields.includes(prepKey)) {
-        summary.parent.push(si);
-      } else if (!skipFields.includes(prepKey)) {
-        summary.core.push(si);
-      }
-    });
+        if (key === BaseObjectTypeField.OBJECT_TYPE_ID) {
+          si.value = this.systemService.getLocalizedResource(`${dmsObject.data[key]}_label`);
+        }
+        if (this.dmsObject2 && (si.value === si.value2 || this.isVersion(key))) {
+          // skip equal and irrelevant values
+        } else if (extraFields.includes(prepKey)) {
+          summary.extras.push(si);
+        } else if (defaultBaseFields.find((field) => field.key.startsWith(prepKey))) {
+          defaultBaseFields.map((field) => (field.key === prepKey ? (si.order = field.order) : null));
+          summary.base.push(si);
+        } else if (patentFields.includes(prepKey)) {
+          summary.parent.push(si);
+        } else if (!skipFields.includes(prepKey)) {
+          summary.core.push(si);
+        }
+      });
 
     summary.base.sort((a, b) => a.order - b.order);
     summary.core

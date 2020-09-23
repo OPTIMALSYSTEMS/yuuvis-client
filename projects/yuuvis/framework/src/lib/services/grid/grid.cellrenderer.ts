@@ -128,11 +128,15 @@ export class CellRenderer {
 
   static referenceCellRenderer(param) {
     let text = '';
-    const value = param.value;
+    let value = param.value;
+    if (param.colDef && param.data[param.colDef.field + '_title']) {
+      value = param.data[param.colDef.field + '_title'];
+    }
     if (!Utils.isEmpty(value)) {
+      text += `<div style="display: flex">`;
       (Array.isArray(value) ? value : [value]).forEach((val, index) => {
-        const link = param.url ? param.url + '/' + val : null;
-        const title = Array.isArray(param.value) ? param.value[index] : param.value;
+        const link = param.url ? param.url + '/' + (Array.isArray(param.value) ? param.value[index] : param.value) : null;
+        const title = Array.isArray(value) ? value[index] : value;
 
         // If the user is not allowed to see the reference object or the object was deleted, we don't show the link.
         text += `<div class="chip ref">
@@ -148,6 +152,25 @@ export class CellRenderer {
           }
           <span>${Utils.escapeHtml(title)}</span></div>`;
       });
+      text += `</div>`;
+    }
+
+    return text || param.value;
+  }
+
+  static organizationCellRenderer(param) {
+    let text = '';
+    let value = param.value;
+    if (param.colDef && param.data[param.colDef.field + '_title']) {
+      value = param.data[param.colDef.field + '_title'];
+    }
+    if (!Utils.isEmpty(value)) {
+      text += `<div style="display: flex">`;
+      (Array.isArray(value) ? value : [value]).forEach((val, index) => {
+        const title = Array.isArray(value) ? value[index] : value;
+        text += `<div class="chip"><span>${Utils.escapeHtml(title)}</span></div>`;
+      });
+      text += `</div>`;
     }
 
     return text || param.value;

@@ -1,7 +1,7 @@
 import { Component, EventEmitter, HostBinding, Inject, Input, Output } from '@angular/core';
 import { BaseObjectTypeField, Utils } from '@yuuvis/core';
 import { IconRegistryService } from '../../../common/components/icon/service/iconRegistry.service';
-import { ROUTES, YuvRoutes } from '../../../Routing/Routes';
+import { ROUTES, YuvRoutes } from '../../../routing/routes';
 import { arrowDown } from '../../../svg.generated';
 import { SummaryEntry } from '../summary.interface';
 /**

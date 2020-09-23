@@ -16,7 +16,7 @@ import { AutoComplete } from 'primeng/autocomplete';
 import { forkJoin, Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { IconRegistryService } from '../../../common/components/icon/service/iconRegistry.service';
-import { ROUTES, YuvRoutes } from '../../../Routing/Routes';
+import { ROUTES, YuvRoutes } from '../../../routing/routes';
 import { reference } from '../../../svg.generated';
 import { ReferenceEntry } from './reference.interface';
 

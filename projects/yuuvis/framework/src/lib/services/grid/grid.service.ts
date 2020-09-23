@@ -20,7 +20,7 @@ import {
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { FileSizePipe, LocaleDatePipe, LocaleNumberPipe } from '../../pipes';
-import { ROUTES, YuvRoutes } from '../../Routing/Routes';
+import { ROUTES, YuvRoutes } from '../../routing/routes';
 import { CellRenderer } from './grid.cellrenderer';
 
 /**
@@ -154,6 +154,10 @@ export class GridService {
         return this.customContext(CellRenderer.numberCellRenderer, params);
         break;
       }
+      case Classification.STRING_ORGANIZATION: {
+        return this.customContext(CellRenderer.organizationCellRenderer, params);
+        break;
+      }
       default: {
         return undefined;
       }
@@ -260,7 +264,6 @@ export class GridService {
   private addColDefAttrsByField(colDef: ColDef, field: ObjectTypeField) {
     switch (field.id) {
       case BaseObjectTypeField.LEADING_OBJECT_TYPE_ID: {
-        colDef.cellRenderer = 'objectTypeCellRenderer';
         colDef.width = 80;
         colDef.cellClass = 'res-ico';
         break;

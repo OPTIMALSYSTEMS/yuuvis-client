@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Inject, OnInit } from '@angular/core';
 import { DmsService, SystemType } from '@yuuvis/core';
 import { ReferenceEntry } from '../../../../form/elements/reference/reference.interface';
-import { ROUTES, YuvRoutes } from '../../../../Routing/Routes';
+import { ROUTES, YuvRoutes } from '../../../../routing/routes';
 import { ActionComponent } from './../../../interfaces/action-component.interface';
 
 /**
