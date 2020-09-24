@@ -264,6 +264,7 @@ export class GridService {
   private addColDefAttrsByField(colDef: ColDef, field: ObjectTypeField) {
     switch (field.id) {
       case BaseObjectTypeField.LEADING_OBJECT_TYPE_ID: {
+        colDef.cellRenderer = 'objectTypeCellRenderer';
         colDef.width = 80;
         colDef.cellClass = 'res-ico';
         break;
