@@ -1,8 +1,9 @@
-import { Component, Input, OnDestroy, OnInit, TemplateRef } from '@angular/core';
+import { Component, Inject, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { AuditQueryOptions, AuditQueryResult, AuditService, DmsObject, EventService, RangeValue, TranslateService, YuvEvent, YuvEventType } from '@yuuvis/core';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
+import { ROUTES, YuvRoutes } from '../../routing/routes';
 import { arrowNext, filter } from '../../svg.generated';
 
 /**
@@ -29,6 +30,8 @@ export class AuditComponent implements OnInit, OnDestroy {
   error: boolean;
   busy: boolean;
   searchActions: { label: string; actions: string[] }[] = [];
+  versionStatePath: string;
+  versionStateQueryParam: string;
 
   actionGroups: any = {};
   auditLabels: any = {};
@@ -51,19 +54,16 @@ export class AuditComponent implements OnInit, OnDestroy {
     return this._objectID;
   }
 
-  /**
-   * Custom template to render version numer within summary and audit
-   * aspect as for example a link.
-   */
-  @Input() versionLinkTemplate: TemplateRef<any>;
-
   constructor(
     private auditService: AuditService,
     private eventService: EventService,
     private fb: FormBuilder,
     private translate: TranslateService,
-    private iconRegistry: IconRegistryService
+    private iconRegistry: IconRegistryService,
+    @Inject(ROUTES) private routes: YuvRoutes
   ) {
+    this.versionStatePath = this.routes && this.routes.versions ? this.routes.versions.path : null;
+    this.versionStateQueryParam = this.routes && this.routes.versions ? this.routes.versions.queryParams.version : null;
     this.iconRegistry.registerIcons([filter, arrowNext, arrowNext]);
     this.auditLabels = {
       a100: this.translate.instant('yuv.framework.audit.label.create.metadata'),
@@ -215,6 +215,14 @@ export class AuditComponent implements OnInit, OnDestroy {
         this.onError();
       }
     );
+  }
+
+  getVersionStateQueryParams(version) {
+    let params = {};
+    if (this.versionStateQueryParam) {
+      params[this.versionStateQueryParam] = version;
+    }
+    return params;
   }
 
   private onError() {

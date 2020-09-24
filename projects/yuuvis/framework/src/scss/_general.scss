@@ -57,6 +57,22 @@ body {
     border-color: var(--color-accent);
     color: var(--color-accent);
   }
+
+  &.ref {
+    display: flex;
+    align-items: center;
+    a {
+      margin-right: calc(var(--app-pane-padding) / 4);
+      display: flex;
+      align-items: center;
+      svg {
+        height: 20px;
+        width: 20px;
+        fill: var(--color-accent);
+        pointer-events: none;
+      }
+    }
+  }
 }
 
 .button {

@@ -21,6 +21,7 @@ import { YuvObjectFormModule } from './object-form/object-form.module';
 import { YuvPipesModule } from './pipes/pipes.module';
 import { YuvPopoverModule } from './popover/popover.module';
 import { YuvQuickfinderModule } from './quickfinder/quickfinder.module';
+import { ROUTES, YuvRoutes } from './routing/routes';
 import { YuvSearchModule } from './search/search.module';
 import { ErrorHandlerService } from './services/error-handler/error-handler.service';
 import { SingleCellRendererComponent } from './services/grid/renderer/single-cell-renderer/single-cell-renderer.component';
@@ -76,12 +77,13 @@ const modules = [
   declarations: [SingleCellRendererComponent]
 })
 export class YuvFrameworkModule {
-  static forRoot(config?: CoreConfig): ModuleWithProviders<YuvFrameworkModule> {
+  static forRoot(config?: CoreConfig, routes?: YuvRoutes): ModuleWithProviders<YuvFrameworkModule> {
     return {
       ngModule: YuvFrameworkModule,
       providers: [
         { provide: CUSTOM_CONFIG, useValue: config },
-        { provide: CORE_CONFIG, useClass: CoreConfig, deps: [CUSTOM_CONFIG] }
+        { provide: CORE_CONFIG, useClass: CoreConfig, deps: [CUSTOM_CONFIG] },
+        { provide: ROUTES, useValue: routes }
       ]
     };
   }

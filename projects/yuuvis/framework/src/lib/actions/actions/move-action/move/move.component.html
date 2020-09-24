@@ -19,5 +19,5 @@
 
 <!-- template to render a link inside the context picker -->
 <ng-template #quickfinderEntryLinkTpl let-entry="entry">
-  <a [routerLink]="['/context', entry.id]">{{ 'yuv.framework.action-menu.action.move.dms.object.picker.entry.open' | translate }}</a>
+  <a *ngIf="path" [routerLink]="['/' + path, entry.id]">{{ 'yuv.framework.action-menu.action.move.dms.object.picker.entry.open' | translate }}</a>
 </ng-template>
