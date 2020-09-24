@@ -69,6 +69,7 @@
   "yuv.framework.audit.search.daterange": "Datum",
   "yuv.framework.audit.search.title": "Filtern in Historie",
   "yuv.framework.audit.version": "Version",
+  "yuv.framework.bpm.remove": "BPM Process entfernen",
   "yuv.framework.column-config.add.group.type": "Verfügbare Spalten",
   "yuv.framework.column-config.button.reset.global": "Zurücksetzen auf Standard",
   "yuv.framework.column-config.button.revert": "Zurücksetzen",

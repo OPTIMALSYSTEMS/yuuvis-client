@@ -27,6 +27,7 @@ export class InboxComponent implements OnInit, OnDestroy {
   objectDetailsID: string;
   itemIsSelected = false;
   objectId: string;
+  selectedProcess: any;
   inboxData$: Observable<ResponsiveTableData> = this.inboxService.inboxData$.pipe(
     map((taskData: TaskData[]) => ({ ...this.formatProcessDataService.formatTaskDataForTable(taskData), currentViewMode: 'horizontal' }))
   );
@@ -52,12 +53,20 @@ export class InboxComponent implements OnInit, OnDestroy {
   }
 
   selectedItem(item) {
+    this.selectedProcess = item;
     this.objectId = item[0]?.documentId;
     this.itemIsSelected = true;
   }
 
   refreshList() {
     this.getInbox().subscribe();
+  }
+
+  remove() {
+    this.inboxService
+      .completeTask(this.selectedProcess[0].id)
+      .pipe(switchMap(() => this.getInbox()))
+      .subscribe();
   }
 
   onSlaveClosed() {}

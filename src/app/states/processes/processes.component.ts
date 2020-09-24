@@ -27,6 +27,7 @@ export class ProcessesComponent implements OnInit, OnDestroy {
   objectDetailsID: string;
   itemIsSelected = false;
   objectId: string;
+  selectedProcess: any;
   processData$: Observable<ResponsiveTableData> = this.processService.processData$.pipe(
     map((processData: ProcessData[]) => this.formatProcessDataService.formatProcessDataForTable(processData))
   );
@@ -56,11 +57,18 @@ export class ProcessesComponent implements OnInit, OnDestroy {
     this.itemIsSelected = true;
   }
 
-  onSlaveClosed() {}
-
   refreshList() {
     this.getProcesses().subscribe();
   }
+
+  remove() {
+    this.processService
+      .deleteFollowUp(this.selectedProcess[0].id)
+      .pipe(switchMap(() => this.getProcesses()))
+      .subscribe();
+  }
+
+  onSlaveClosed() {}
 
   ngOnInit(): void {
     this.getProcesses().subscribe();

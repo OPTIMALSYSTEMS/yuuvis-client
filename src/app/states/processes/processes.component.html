@@ -1,5 +1,8 @@
 <section class="processes-wrapper" *ngIf="processData$ | async as processData">
-  <yuv-responsive-master-slave class="state" (slaveClosed)="onSlaveClosed()" [layoutOptionsKey]="layoutOptionsKey" [slaveActive]="itemIsSelected">
+  <yuv-responsive-master-slave class="state"
+    [layoutOptionsKey]="layoutOptionsKey" 
+    [slaveActive]="itemIsSelected"
+    (slaveClosed)="onSlaveClosed()">
     <yuv-process-list
       class="yuv-master panel"
       [showFooter]="true"
@@ -7,16 +10,13 @@
       [layoutOptionsKey]="layoutOptionsKey"
       [processData]="processData"
       (refreshList)="refreshList()"
-      (selectedItem)="selectedItem($event)"
-    ></yuv-process-list>
+      (selectedItem)="selectedItem($event)"></yuv-process-list>
     <section class="yuv-slave panel">
-      <yuv-object-details
-        [disableFileDrop]="true"
+      <yuv-process-details 
         [objectId]="objectId"
-        [panelOrder]="['summary', 'indexdata', 'preview']"
         [layoutOptionsKey]="layoutOptionsKey"
-      >
-      </yuv-object-details>
+        (remove)="remove($event)">
+      </yuv-process-details>
     </section>
   </yuv-responsive-master-slave>
 </section>

@@ -72,6 +72,9 @@ export class ObjectDetailsComponent implements OnDestroy {
   set dmsObject(object: DmsObject) {
     this.contentPreviewService.resetSource();
     this._dmsObject = object;
+
+    console.log(this._dmsObject);
+
     this._objectId = object ? object.id : null;
     if (object) {
       this.objectTypeId = this.systemService.getLeadingObjectTypeID(object.objectTypeId, object.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS]);
@@ -84,6 +87,7 @@ export class ObjectDetailsComponent implements OnDestroy {
   }
 
   get dmsObject() {
+    console.log(this._dmsObject);
     return this._dmsObject;
   }
 
