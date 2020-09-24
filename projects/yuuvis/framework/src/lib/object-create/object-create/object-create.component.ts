@@ -280,6 +280,11 @@ export class ObjectCreateComponent implements OnDestroy {
    */
   selectObjectType(objectType: ObjectType) {
     this.formState = null;
+
+    if (this.selectedObjectType && this.selectedObjectType.id !== objectType.id) {
+      this.resetState();
+    }
+
     this.selectedObjectType = objectType;
     this.title = objectType ? this.system.getLocalizedResource(`${objectType.id}_label`) : this.labels.defaultTitle;
     this.objCreateService.setNewState({ busy: true });
@@ -635,6 +640,7 @@ export class ObjectCreateComponent implements OnDestroy {
 
   resetState() {
     this.afoCreate = null;
+    this.selectedObjectType = null;
     this.objCreateService.resetState();
     this.objCreateService.resetBreadcrumb();
   }

@@ -35,7 +35,7 @@
         (yuvFileDrop)="onFilesDroppedOnType($event)" [yuvFileDropOptions]="{ multiple: true }">
         <h1>{{ 'yuv.framework.object-create.step.type' | translate }}</h1>
         <yuv-grouped-select [groups]="availableObjectTypeGroups" (select)="selectObjectType($event.value)"
-          yuvFocusFirst="200"> </yuv-grouped-select>
+          [selection]="[selectedObjectType?.id]" yuvFocusFirst="200"> </yuv-grouped-select>
       </div>
 
       <!-- STEP 2: Choose file(s) -->
@@ -168,7 +168,8 @@
       </yuv-form-input>
 
       <ng-container *ngIf="state.currentStep === 'afo_indexdata'; else tplCreate">
-        <button (click)="createAfoCancel()" translate>yuv.framework.object-create.footer.create.afo.cancel</button>
+        <button class="secondary" (click)="createAfoCancel()"
+          translate>yuv.framework.object-create.footer.create.afo.cancel</button>
 
         <button class="primary create" (click)="create()"
           [disabled]="!afoCreate?.floatingSOT?.selected || combinedObjectForm?.combinedFormState?.invalid"
@@ -176,6 +177,10 @@
       </ng-container>
 
       <ng-template #tplCreate>
+
+        <button class="secondary" *ngIf="selectedObjectType" (click)="resetState()"
+          translate>yuv.framework.object-create.footer.cancel</button>
+
         <button class="primary create" [disabled]="!state.done" (click)="create()"
           translate>yuv.framework.object-create.footer.create</button>
       </ng-template>

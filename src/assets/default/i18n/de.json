@@ -106,6 +106,7 @@
   "yuv.framework.object-create.afo.upload.info": "Hochladen der Datei(en) zur Weiterverarbeitung. Im nächsten Schritt können Sie den Ablageprozess abschließen.",
   "yuv.framework.object-create.afo.upload.skip-notification": "Nicht mehr anzeigen",
   "yuv.framework.object-create.footer.another": "Weiteres Objekt erstellen",
+  "yuv.framework.object-create.footer.cancel": "Abbrechen",
   "yuv.framework.object-create.footer.create": "Objekt erstellen",
   "yuv.framework.object-create.footer.create.afo.cancel": "Abbrechen",
   "yuv.framework.object-create.footer.create.afo.next": "Abschließen",

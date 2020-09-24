@@ -389,6 +389,10 @@
       yuv-form-input {
         margin: 0 var(--app-pane-padding);
       }
+
+      button.secondary {
+        margin: 0 4px;
+      }
     }
   }
 }
