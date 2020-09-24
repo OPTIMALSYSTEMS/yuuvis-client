@@ -21,3 +21,4 @@ export * from './lib/services/index';
 export * from './lib/svg.generated';
 export * from './lib/user/index';
 export * from './lib/versions/index';
+export {YuvRoutes} from './lib/routing/routes';
