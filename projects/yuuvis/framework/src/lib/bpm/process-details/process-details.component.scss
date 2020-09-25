@@ -5,5 +5,10 @@
     flex-flow: column;
     align-items: center;
     justify-content: center;
+    background-color: val(--panel-background);
+
+    .secondary {
+      margin-top: 10px;
+    }
   }
 }

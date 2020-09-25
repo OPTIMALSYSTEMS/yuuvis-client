@@ -69,7 +69,6 @@
   "yuv.framework.audit.search.daterange": "Date",
   "yuv.framework.audit.search.title": "Filter in history",
   "yuv.framework.audit.version": "Version",
-  "yuv.framework.bpm.remove": "Remove BPM Process",
   "yuv.framework.column-config.add.group.type": "Available columns",
   "yuv.framework.column-config.button.reset.global": "Reset to default",
   "yuv.framework.column-config.button.revert": "Reset",
@@ -279,9 +278,11 @@
   "yuv.client.state.dashboard.title": "Dashboard",
   "yuv.client.state.filter-configuration.panel.description": "Configuration of the search filters by object type",
   "yuv.client.state.filter-configuration.panel.title": "Filter configuration",
+  "yuv.client.state.inbox.list.empty": "Great, there's nothing to do ;-)",
   "yuv.client.state.inbox.title": "Inbox",
   "yuv.client.state.not-found.description": "Unable to load the object.",
   "yuv.client.state.not-found.title": "Not found",
+  "yuv.client.state.process.list.empty": "There are no active processes.",
   "yuv.client.state.process.title": "My processes",
   "yuv.client.state.result.title": "Search result",
   "yuv.client.state.settings.cache.clear.error": "Unable to clear the application cache",
@@ -316,8 +317,8 @@
   "yuv.client.state.settings.title": "Settings",
   "yuv.client.state.versions.compare.label": "version {{version}}",
   "yuv.client.state.versions.header.title": "Versions",
+  "yuv.framework.bpm.inbox.confirm": "Confirm follow-up",
+  "yuv.framework.bpm.process.remove": "Remove process",
   "yuv.framework.inbox-list.inbox": "Inbox",
-  "yuv.framework.process-list.process": "My processes",
-  "yuv.client.state.inbox.list.empty": "Great, there's nothing to do ;-)",
-  "yuv.client.state.process.list.empty": "There are no active processes."
+  "yuv.framework.process-list.process": "My processes"
 }

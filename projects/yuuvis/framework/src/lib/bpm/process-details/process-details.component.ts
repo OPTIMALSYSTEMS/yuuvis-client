@@ -14,6 +14,7 @@ export class ProcessDetailsComponent {
   loaded = false;
   @Input() layoutOptionsKey: string;
   @Input() bpmObject: string;
+  @Input() emptyMessage: string;
   @Input()
   set objectId(id: string) {
     if (id) {
