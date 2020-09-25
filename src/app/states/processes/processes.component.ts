@@ -29,7 +29,8 @@ export class ProcessesComponent implements OnInit, OnDestroy {
   objectId: string;
   selectedProcess: any;
   processData$: Observable<ResponsiveTableData> = this.processService.processData$.pipe(
-    map((processData: ProcessData[]) => this.formatProcessDataService.formatProcessDataForTable(processData))
+    map((processData: ProcessData[]) => this.formatProcessDataService.formatProcessDataForTable(processData)),
+    map((taskData: ResponsiveTableData) => (taskData.rows.length ? taskData : null))
   );
 
   headerDetails = {

@@ -29,7 +29,8 @@ export class InboxComponent implements OnInit, OnDestroy {
   objectId: string;
   selectedProcess: any;
   inboxData$: Observable<ResponsiveTableData> = this.inboxService.inboxData$.pipe(
-    map((taskData: TaskData[]) => ({ ...this.formatProcessDataService.formatTaskDataForTable(taskData), currentViewMode: 'horizontal' }))
+    map((taskData: TaskData[]) => ({ ...this.formatProcessDataService.formatTaskDataForTable(taskData), currentViewMode: 'horizontal' })),
+    map((taskData: ResponsiveTableData) => (taskData.rows.length ? taskData : null))
   );
 
   headerDetails = {

@@ -1,4 +1,4 @@
-<section class="processes-wrapper" *ngIf="processData$ | async as processData">
+<section class="processes-wrapper" *ngIf="processData$ | async as processData; else empty">
   <yuv-responsive-master-slave class="state"
     [layoutOptionsKey]="layoutOptionsKey" 
     [slaveActive]="itemIsSelected"
@@ -20,3 +20,11 @@
     </section>
   </yuv-responsive-master-slave>
 </section>
+<ng-template #empty>
+  <section class="empty-list">
+
+    <yuv-icon class="state-icon" [icon]="'process'"></yuv-icon>
+    <span class="empty-message">{{"yuv.client.state.process.list.empty" | translate }}</span>
+    <yuv-icon (click)="refreshList()" class="refresh-icon" [icon]="'refresh'"></yuv-icon>
+  </section>
+</ng-template>
