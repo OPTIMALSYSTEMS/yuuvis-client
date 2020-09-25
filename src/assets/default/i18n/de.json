@@ -317,5 +317,7 @@
   "yuv.client.state.versions.compare.label": "Version {{version}}",
   "yuv.client.state.versions.header.title": "Versionen",
   "yuv.framework.inbox-list.inbox": "Eingangskorb",
-  "yuv.framework.process-list.process": "Meine Prozesse"
+  "yuv.framework.process-list.process": "Meine Prozesse",
+  "yuv.client.state.inbox.list.empty": "Klasse, nichts zu tun ;-)",
+  "yuv.client.state.process.list.empty": "Es gibt keine aktiven Prozesse"
 }

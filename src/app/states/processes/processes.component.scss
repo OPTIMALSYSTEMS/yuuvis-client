@@ -7,4 +7,32 @@
   .processes-wrapper {
     height: 100%;
   }
+
+  .empty-list {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    .state-icon {
+      width: 100px;
+      height: 100px;
+      opacity: 0.2;
+      padding-bottom: 20px;
+      color: var(--text-color-hint);
+    }
+
+    .empty-message {
+      color: rgba(var(--color-black-rgb), 0.4);
+      padding-bottom: 10px;
+    }
+
+    .refresh-icon {
+      &:hover {
+        opacity: 0.5;
+        cursor: pointer;
+      }
+    }
+  }
 }
