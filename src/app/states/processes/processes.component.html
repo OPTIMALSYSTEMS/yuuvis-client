@@ -21,10 +21,9 @@
   </yuv-responsive-master-slave>
 </section>
 <ng-template #empty>
-  <section class="empty-list">
-
-    <yuv-icon class="state-icon" [icon]="'process'"></yuv-icon>
-    <span class="empty-message">{{"yuv.client.state.process.list.empty" | translate }}</span>
-    <yuv-icon (click)="refreshList()" class="refresh-icon" [icon]="'refresh'"></yuv-icon>
-  </section>
+  <app-process-list-empty 
+    [state]="'process'"
+    [message]="'yuv.client.state.process.list.empty' | translate"
+    (refresh)="refreshList()">
+  </app-process-list-empty>
 </ng-template>
