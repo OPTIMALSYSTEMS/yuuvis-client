@@ -1,7 +1,7 @@
 import { Component, HostBinding, OnInit, ViewChild } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { NavigationExtras, Router } from '@angular/router';
-import { SearchQuery, Utils } from '@yuuvis/core';
+import { SearchQuery, UserRoles, UserService, Utils, YuvUser } from '@yuuvis/core';
 import { ObjectTypeAggregation, QuickSearchComponent, RecentItem } from '@yuuvis/framework';
 import { APP_VARS } from '../../app.vars';
 import { FrameService } from '../../components/frame/frame.service';
@@ -16,9 +16,22 @@ export class DashboardComponent implements OnInit {
   // application wide search query
   appQuery: SearchQuery;
   aggs: ObjectTypeAggregation[];
+  disableFileDrop: boolean;
   @HostBinding('class.aggregations') hasAggs: boolean;
 
-  constructor(private router: Router, private frameService: FrameService, private appSearch: AppSearchService, private titleService: Title) {}
+  constructor(
+    private router: Router,
+    private userService: UserService,
+    private frameService: FrameService,
+    private appSearch: AppSearchService,
+    private titleService: Title
+  ) {
+    this.userService.user$.subscribe((user: YuvUser) => {
+      if (user) {
+        this.disableFileDrop = !user.authorities.includes(UserRoles.CREATE_OBJECT);
+      }
+    });
+  }
 
   onShowAll(q: SearchQuery) {
     this.onQuickSearchQuery(q, true);
