@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, ElementRef, Input, NgZone, OnDestroy, OnInit } from '@angular/core';
 import { DmsObject } from '@yuuvis/core';
 import { fromEvent, Observable } from 'rxjs';
-import { takeWhile } from 'rxjs/operators';
+import { takeWhile, tap } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { FileDropService } from '../../directives/file-drop/file-drop.service';
@@ -25,6 +25,7 @@ import { ContentPreviewService } from './service/content-preview.service';
 export class ContentPreviewComponent implements OnInit, OnDestroy, AfterViewInit {
   private _dmsObject: DmsObject;
   isUndocked: boolean;
+  loading = true;
 
   get undockWin(): Window {
     return ContentPreviewService.getUndockWin();
@@ -168,7 +169,10 @@ export class ContentPreviewComponent implements OnInit, OnDestroy, AfterViewInit
     const iframe = this.iframe;
     if (iframe) {
       fromEvent(iframe, 'load')
-        .pipe(takeUntilDestroy(this))
+        .pipe(
+          tap((val) => (this.loading = false)),
+          takeUntilDestroy(this)
+        )
         .subscribe((res) => {
           setTimeout(() => this.searchPDF(this.searchTerm, iframe), 100);
         });
