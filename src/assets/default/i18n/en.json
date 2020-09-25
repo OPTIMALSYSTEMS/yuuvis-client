@@ -113,6 +113,7 @@
   "yuv.framework.object-create.header.title": "Create object",
   "yuv.framework.object-create.notify.afo.cancel": "The filing process is incomplete. It can be completed later.",
   "yuv.framework.object-create.notify.error": "Error while creating the object",
+  "yuv.framework.object-create.pending-changes.alert": "Should the started creation process be discarded?",
   "yuv.framework.object-create.status.context": "At filing location '{{title}}'",
   "yuv.framework.object-create.status.files": "Files: {{count}}",
   "yuv.framework.object-create.step.afo-indexdata": "Finish",

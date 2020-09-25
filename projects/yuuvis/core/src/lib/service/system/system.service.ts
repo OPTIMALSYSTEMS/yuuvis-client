@@ -401,10 +401,12 @@ export class SystemService {
    * Once one primary FSOT has been applied to the FOT the FSOT will be treated like the main object type (leading type).
    */
   isFloatingObjectType(objectType: ObjectType): boolean {
-    return (
-      Array.isArray(objectType.classification) &&
-      !!objectType.secondaryObjectTypes.find((sot) => this.getSecondaryObjectType(sot.id).classification?.includes(SecondaryObjectTypeClassification.PRIMARY))
-    );
+    return objectType
+      ? Array.isArray(objectType.classification) &&
+          !!objectType.secondaryObjectTypes.find((sot) =>
+            this.getSecondaryObjectType(sot.id).classification?.includes(SecondaryObjectTypeClassification.PRIMARY)
+          )
+      : false;
   }
   /**
    * Extendable object types (EOT) are object types that can be extended by loatin secondary object types (FSOTs).

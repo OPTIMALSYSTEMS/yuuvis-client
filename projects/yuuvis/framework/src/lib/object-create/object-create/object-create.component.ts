@@ -10,6 +10,7 @@ import {
   ObjectTag,
   ObjectType,
   ObjectTypeGroup,
+  PendingChangesService,
   SearchService,
   SecondaryObjectType,
   SecondaryObjectTypeClassification,
@@ -98,7 +99,7 @@ export class ObjectCreateComponent implements OnDestroy {
 
   @ViewChild(ObjectFormComponent) objectForm: ObjectFormComponent;
   @ViewChild(CombinedObjectFormComponent) combinedObjectForm: CombinedObjectFormComponent;
-
+  private pendingTaskId: string;
   context: DmsObject;
   // whether or not the current user is allowed to use the component and create dms objects
   invalidUser: boolean;
@@ -182,6 +183,7 @@ export class ObjectCreateComponent implements OnDestroy {
     private notify: NotificationService,
     private searchService: SearchService,
     private dmsService: DmsService,
+    private pendingChanges: PendingChangesService,
     private layoutService: LayoutService,
     private backend: BackendService,
     private userService: UserService,
@@ -235,6 +237,18 @@ export class ObjectCreateComponent implements OnDestroy {
     this.setupAvailableObjectTypeGroups();
   }
 
+  private startPending() {
+    if (!this.pendingChanges.hasPendingTask(this.pendingTaskId || ' ')) {
+      this.pendingTaskId = this.pendingChanges.startTask(this.translate.instant('yuv.framework.object-create.pending-changes.alert'));
+    }
+  }
+
+  private finishPending() {
+    if (this.pendingTaskId) {
+      this.pendingChanges.finishTask(this.pendingTaskId);
+    }
+  }
+
   private setupAvailableObjectTypeGroups() {
     // it is important to create new instances of the available object types
     // in order to trigger change detection within grouped select component
@@ -284,7 +298,7 @@ export class ObjectCreateComponent implements OnDestroy {
     if (this.selectedObjectType && this.selectedObjectType.id !== objectType.id) {
       this.resetState();
     }
-
+    this.startPending();
     this.selectedObjectType = objectType;
     this.title = objectType ? this.system.getLocalizedResource(`${objectType.id}_label`) : this.labels.defaultTitle;
     this.objCreateService.setNewState({ busy: true });
@@ -570,6 +584,7 @@ export class ObjectCreateComponent implements OnDestroy {
           this.resetState();
           this.reset();
         } else {
+          this.finishPending();
           this.objectCreated.emit(ids);
         }
       },
@@ -639,10 +654,14 @@ export class ObjectCreateComponent implements OnDestroy {
   }
 
   resetState() {
+    if (this.files.length) {
+      this.files = [];
+    }
     this.afoCreate = null;
     this.selectedObjectType = null;
     this.objCreateService.resetState();
     this.objCreateService.resetBreadcrumb();
+    this.finishPending();
   }
 
   reset() {
