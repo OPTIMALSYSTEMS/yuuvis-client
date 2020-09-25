@@ -4,12 +4,12 @@ import { NavigationExtras, Router } from '@angular/router';
 import { SearchQuery, Utils } from '@yuuvis/core';
 import { ObjectTypeAggregation, QuickSearchComponent, RecentItem } from '@yuuvis/framework';
 import { APP_VARS } from '../../app.vars';
+import { FrameService } from '../../components/frame/frame.service';
 import { AppSearchService } from '../../service/app-search.service';
 @Component({
   selector: 'yuv-dashboard',
   templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.scss'],
-  host: { class: 'themeBackground' }
+  styleUrls: ['./dashboard.component.scss']
 })
 export class DashboardComponent implements OnInit {
   @ViewChild('quickSearch', { static: true }) quickSearchEl: QuickSearchComponent;
@@ -18,10 +18,14 @@ export class DashboardComponent implements OnInit {
   aggs: ObjectTypeAggregation[];
   @HostBinding('class.aggregations') hasAggs: boolean;
 
-  constructor(private router: Router, private appSearch: AppSearchService, private titleService: Title) {}
+  constructor(private router: Router, private frameService: FrameService, private appSearch: AppSearchService, private titleService: Title) {}
 
   onShowAll(q: SearchQuery) {
     this.onQuickSearchQuery(q, true);
+  }
+
+  onFilesDropped(files: File[]) {
+    this.frameService.createObject(null, files);
   }
 
   onRecentItemClicked(recentItem: RecentItem) {
