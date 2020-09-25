@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { BpmEvent, DmsObject, DmsService, EventService, ProcessData, ProcessService, TranslateService } from '@yuuvis/core';
+import { BpmEvent, EventService, ProcessData, ProcessService, TranslateService } from '@yuuvis/core';
 import {
   arrowNext,
   edit,
@@ -12,12 +12,12 @@ import {
   refresh,
   ResponsiveTableData
 } from '@yuuvis/framework';
-import { Observable, of } from 'rxjs';
-import { catchError, finalize, map, switchMap, take } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { map, switchMap, take } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
 
 @Component({
-  selector: 'app-processes',
+  selector: 'yuv-processes',
   templateUrl: './processes.component.html',
   styleUrls: ['./processes.component.scss']
 })
@@ -26,9 +26,10 @@ export class ProcessesComponent implements OnInit, OnDestroy {
   contextError: string;
   objectDetailsID: string;
   itemIsSelected = false;
-  dmsObject$: Observable<DmsObject>;
+  objectId: string;
   processData$: Observable<ResponsiveTableData> = this.processService.processData$.pipe(
-    map((processData: ProcessData[]) => this.formatProcessDataService.formatProcessDataForTable(processData))
+    map((processData: ProcessData[]) => this.formatProcessDataService.formatProcessDataForTable(processData)),
+    map((taskData: ResponsiveTableData) => (taskData.rows.length ? taskData : null))
   );
 
   headerDetails = {
@@ -38,7 +39,6 @@ export class ProcessesComponent implements OnInit, OnDestroy {
   };
 
   constructor(
-    private dmsService: DmsService,
     private processService: ProcessService,
     private translateService: TranslateService,
     private formatProcessDataService: FormatProcessDataService,
@@ -52,29 +52,16 @@ export class ProcessesComponent implements OnInit, OnDestroy {
     return this.processService.getProcesses().pipe(take(1), takeUntilDestroy(this));
   }
 
-  private getSelectedDetail(businessKey: string) {
-    this.dmsObject$ = businessKey
-      ? this.dmsService.getDmsObject(businessKey).pipe(
-          catchError((error) => {
-            this.contextError = this.translateService.instant('yuv.client.state.object.context.load.error');
-            return of(null);
-          }),
-          finalize(() => (this.itemIsSelected = true))
-        )
-      : of(null);
+  selectedItem(item) {
+    this.objectId = item[0]?.documentId;
+    this.itemIsSelected = true;
   }
+
+  onSlaveClosed() {}
 
   refreshList() {
     this.getProcesses().subscribe();
   }
-
-  selectedItem(item) {
-    this.getSelectedDetail(item[0]?.documentId);
-  }
-
-  // remove() {
-  // this.processService.deleteFollowUp();
-  // }
 
   ngOnInit(): void {
     this.getProcesses().subscribe();

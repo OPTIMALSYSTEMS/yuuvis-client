@@ -138,8 +138,11 @@ export class Utils {
       let comparison: number;
       const varA = Utils.getProperty(a, key);
       const varB = Utils.getProperty(b, key);
+
       if (typeof varA === 'number' && typeof varB === 'number') {
         comparison = varA - varB;
+      } else if (varA instanceof Date && varB instanceof Date) {
+        comparison = new Date(varA).getTime() - new Date(varB).getTime();
       } else {
         const stringA = varA || varA === 0 ? varA.toString() : '';
         const stringB = varB || varB === 0 ? varB.toString() : '';

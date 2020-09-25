@@ -9,6 +9,8 @@ import { YuvConfig, YuvConfigLanguages } from './config.interface';
   providedIn: 'root'
 })
 export class ConfigService {
+  static GLOBAL_MAIN_CONFIG = '/user/globalsettings/main-config';
+
   private cfg: YuvConfig = null;
   /**
    * @ignore

@@ -7,7 +7,7 @@
 
 <ng-container *ngIf="user; else offlineNoUser">
   <div class="app-bar" *ngIf="!hideAppBar" (yuvFileDrop)="onFilesDropped($event)"
-    [yuvFileDropOptions]="{ label: 'yuv.client.frame.app-bar.filedrop.label' | translate, disabled: disableFileDrop, multiple: true }">
+    [yuvFileDropOptions]="{ label: 'yuv.client.frame.app-bar.filedrop.label' | translate, disabled: disableFileDrop || tab, multiple: true }">
     <yuv-icon class="btn" id="drawer" (click)="showSideBar = true" replaceUrl [icon]="'drawer'"></yuv-icon>
     <a yuvOfflineDisabled routerLink="/" id="logo">
       <yuv-icon class="btn" [iconSrc]="'assets/default/theme/app.icon.svg'"></yuv-icon>
@@ -75,7 +75,7 @@
           translate>yuv.client.state.dashboard.title</a>
         <a routerLink="create" *ngIf="!disableCreate" routerLinkActive="active" (click)="showSideBar = false"
           translate>yuv.client.state.create.title</a>
-        <a routerLink="/result" [queryParams]="{query: pendingAFOsQuery, tmp: true}" routerLinkActive="active"
+        <a routerLink="/result" [queryParams]="{ query: pendingAFOsQuery, tmp: true }" routerLinkActive="active"
           (click)="showSideBar = false" translate>yuv.client.sidebar.create.pending.title</a>
 
         <a routerLink="inbox" routerLinkActive="active" (click)="showSideBar = false"
@@ -112,7 +112,7 @@
     <div class="header">
       <div class="header-title">{{ data.title }}</div>
       <div class="actions">
-        <a routerLink="/object/{{ data.newParent.id }}" (click)="closeNotification(popover)">
+        <a *ngIf="data.newParent" routerLink="/object/{{ data.newParent.id }}" (click)="closeNotification(popover)">
           <yuv-icon class="btn" [title]="'yuv.client.action.open' | translate" [icon]="'openContext'"> </yuv-icon>
         </a>
         <yuv-icon class="btn" [icon]="'close'" (click)="closeNotification(popover)"></yuv-icon>
@@ -121,7 +121,7 @@
 
     <div *ngIf="data.succeeded.length" class="list succeded-list">
       <div *ngFor="let s of data.succeeded" class="entry succeeded-entry">
-        <yuv-icon [svg]="s.icon"></yuv-icon>
+        <yuv-object-type-icon [objectTypeId]="s.objectTypeId"></yuv-object-type-icon>
         <div>
           <div class="title">{{ s.title }}</div>
           <div class="description">{{ s.description }}</div>
@@ -132,7 +132,7 @@
     <div *ngIf="data.failed.length" class="list failed-list">
       <h2 translate>yuv.client.frame.move.notification.failed</h2>
       <div *ngFor="let f of data.failed" class="entry failed-entry">
-        <yuv-icon [svg]="f.icon"></yuv-icon>
+        <yuv-object-type-icon [objectTypeId]="s.objectTypeId"></yuv-object-type-icon>
         <div>
           <div class="title">{{ f.title }}</div>
           <div class="description">{{ f.description }}</div>

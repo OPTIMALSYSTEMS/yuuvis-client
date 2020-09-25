@@ -1,5 +1,5 @@
 import { ColDef } from '@ag-grid-community/core';
-import { Injectable } from '@angular/core';
+import { Inject, Injectable } from '@angular/core';
 import {
   AppCacheService,
   BackendService,
@@ -20,6 +20,7 @@ import {
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { FileSizePipe, LocaleDatePipe, LocaleNumberPipe } from '../../pipes';
+import { ROUTES, YuvRoutes } from '../../routing/routes';
 import { CellRenderer } from './grid.cellrenderer';
 
 /**
@@ -44,7 +45,8 @@ export class GridService {
     private searchSvc: SearchService,
     private userConfig: UserConfigService,
     private translate: TranslateService,
-    private backend: BackendService
+    private backend: BackendService,
+    @Inject(ROUTES) private routes: YuvRoutes
   ) {
     this.context = {
       translate,
@@ -132,6 +134,9 @@ export class GridService {
     if (!Array.isArray(classification)) {
       return undefined;
     }
+    if (classification[0].includes(Classification.STRING_REFERENCE)) {
+      return this.customContext(CellRenderer.referenceCellRenderer, params);
+    }
     switch (classification[0]) {
       case Classification.STRING_EMAIL: {
         return CellRenderer.emailCellRenderer;
@@ -147,6 +152,10 @@ export class GridService {
       }
       case Classification.NUMBER_DIGIT: {
         return this.customContext(CellRenderer.numberCellRenderer, params);
+        break;
+      }
+      case Classification.STRING_ORGANIZATION: {
+        return this.customContext(CellRenderer.organizationCellRenderer, params);
         break;
       }
       default: {
@@ -179,7 +188,10 @@ export class GridService {
         // }
         colDef.cellClass = field.cardinality === 'multi' ? 'multiCell string' : 'string';
         if (Array.isArray(field?.classifications)) {
-          colDef.cellRenderer = this.fieldClassification(field?.classifications);
+          const params = {
+            url: this.routes && this.routes.object ? this.routes.object.path : null
+          };
+          colDef.cellRenderer = this.fieldClassification(field?.classifications, params);
         }
         break;
       }
@@ -252,8 +264,8 @@ export class GridService {
   private addColDefAttrsByField(colDef: ColDef, field: ObjectTypeField) {
     switch (field.id) {
       case BaseObjectTypeField.LEADING_OBJECT_TYPE_ID: {
-        // colDef.cellRendererFramework = ObjectTypeIconComponent;
         colDef.cellRenderer = 'objectTypeCellRenderer';
+        colDef.width = 80;
         colDef.cellClass = 'res-ico';
         break;
       }

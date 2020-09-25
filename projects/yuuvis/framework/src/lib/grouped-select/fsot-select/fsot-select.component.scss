@@ -1,0 +1,13 @@
+:host {
+  yuv-grouped-select::ng-deep {
+    .container {
+      padding: 0;
+
+      > p-panel {
+        margin: 0;
+        border: 0;
+        width: 100% !important;
+      }
+    }
+  }
+}

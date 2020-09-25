@@ -8,21 +8,21 @@
     <!-- FSOT add panel -->
     <div class="fsot">
 
-      <ng-container *ngIf="fsot?.applicableTypes?.length">
+      <ng-container *ngIf="fsot?.applicableTypes?.items.length">
         <button (click)="chooseFSOT(true)">{{'yuv.framework.object-form-edit.fsot.apply-type'|translate}}</button>
         <!-- popover for applying a new floating type -->
         <ng-template #tplFloatingTypePicker let-data let-popover="popover">
-          <yuv-fsot-picker [title]="'yuv.framework.object-form-edit.fsot.apply-type'|translate"
-            [items]="fsot.applicableTypes" (select)="applyFSOT($event, true, popover)"></yuv-fsot-picker>
+          <yuv-fsot-select [fsots]="fsot.applicableTypes" (fsotSelect)="applyFSOT($event, true, popover)">
+          </yuv-fsot-select>
         </ng-template>
       </ng-container>
 
-      <ng-container *ngIf="fsot?.applicableSOTs?.length">
+      <ng-container *ngIf="fsot?.applicableSOTs?.items.length">
         <button (click)="chooseFSOT()">{{'yuv.framework.object-form-edit.fsot.add-fsot'|translate}}</button>
         <!-- popover for adding a new floating secondary object type -->
         <ng-template #tplFloatingSOTypePicker let-data let-popover="popover">
-          <yuv-fsot-picker [title]="'yuv.framework.object-form-edit.fsot.add-fsot'|translate"
-            [items]="fsot.applicableSOTs" (select)="applyFSOT($event, false, popover)"></yuv-fsot-picker>
+          <yuv-fsot-select [fsots]="fsot.applicableSOTs" (fsotSelect)="applyFSOT($event, false, popover)">
+          </yuv-fsot-select>
         </ng-template>
       </ng-container>
 

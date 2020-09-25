@@ -1,5 +1,5 @@
 import { ColDef, ICellRendererFunc } from '@ag-grid-community/core';
-import { Component, Input, OnInit, TemplateRef } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import {
   AppCacheService,
   BaseObjectTypeField,
@@ -9,6 +9,7 @@ import {
   Logger,
   ObjectTypeField,
   ParentField,
+  RetentionField,
   SystemService
 } from '@yuuvis/core';
 import { GridService } from '../../services/grid/grid.service';
@@ -89,11 +90,6 @@ export class SummaryComponent implements OnInit {
    */
   @Input() showExtrasSection: boolean;
 
-  /**
-   * Custom template to render version as for example a link.
-   */
-  @Input() versionLinkTemplate: TemplateRef<any>;
-
   // isEmpty = v => Utils.isEmpty(v);
   isVersion = (v) => v === BaseObjectTypeField.VERSION_NUMBER;
 
@@ -132,7 +128,10 @@ export class SummaryComponent implements OnInit {
       { key: BaseObjectTypeField.VERSION_NUMBER, order: 6 },
       { key: ContentStreamField.FILENAME, order: 7 },
       { key: ContentStreamField.LENGTH, order: 8 },
-      { key: ContentStreamField.MIME_TYPE, order: 9 }
+      { key: ContentStreamField.MIME_TYPE, order: 9 },
+      { key: RetentionField.START_OF_RETENTION, order: 10 },
+      { key: RetentionField.EXPIRATION_DATE, order: 11 },
+      { key: RetentionField.DESTRUCTION_DATE, order: 12 }
     ];
 
     const patentFields: string[] = [
@@ -146,6 +145,7 @@ export class SummaryComponent implements OnInit {
     let baseFields = dmsObject.isFolder
       ? this.systemService.getBaseFolderType().fields.map((f) => f.id)
       : this.systemService.getBaseDocumentType().fields.map((f) => f.id);
+
     baseFields = baseFields.filter((fields) => defaultBaseFields.filter((defFields) => defFields.key === fields).length === 0);
 
     const extraFields: string[] = [
@@ -154,7 +154,8 @@ export class SummaryComponent implements OnInit {
       ContentStreamField.REPOSITORY_ID,
       BaseObjectTypeField.OBJECT_ID,
       BaseObjectTypeField.PARENT_ID,
-      BaseObjectTypeField.OBJECT_TYPE_ID
+      BaseObjectTypeField.OBJECT_TYPE_ID,
+      BaseObjectTypeField.LEADING_OBJECT_TYPE_ID
     ];
     baseFields.map((fields) => extraFields.push(fields));
 
@@ -176,36 +177,43 @@ export class SummaryComponent implements OnInit {
       colDef = [...colDef, ...this.gridService.getColumnDefinitions(fsot.id, true)];
     });
 
-    Object.keys({ ...dmsObject.data, ...this.dmsObject2?.data }).forEach((key: string) => {
-      const prepKey = key.startsWith('parent.') ? key.replace('parent.', '') : key; // todo: pls implement general solution
-      const def: ColDef = colDef.find((cd) => cd.field === prepKey);
-      const renderer: ICellRendererFunc = def ? (def.cellRenderer as ICellRendererFunc) : null;
-      const si: SummaryEntry = {
-        label: (def && def.headerName) || key,
-        key,
-        value: typeof renderer === 'function' ? renderer({ value: dmsObject.data[key], data: dmsObject.data }) : dmsObject.data[key],
-        value2:
-          this.dmsObject2 &&
-          (typeof renderer === 'function' ? renderer({ value: this.dmsObject2.data[key], data: this.dmsObject2.data }) : this.dmsObject2.data[key]),
-        order: null
-      };
+    Object.keys({ ...dmsObject.data, ...this.dmsObject2?.data })
+      .filter((key) => !key.includes('_title'))
+      .forEach((key: string) => {
+        const prepKey = key.startsWith('parent.') ? key.replace('parent.', '') : key; // todo: pls implement general solution
+        const def: ColDef = colDef.find((cd) => cd.field === prepKey);
+        const renderer: ICellRendererFunc = def ? (def.cellRenderer as ICellRendererFunc) : null;
+        const si: SummaryEntry = {
+          label: (def && def.headerName) || key,
+          key,
+          value:
+            typeof renderer === 'function'
+              ? renderer({ value: dmsObject.data[key], data: dmsObject.data, colDef: def })
+              : dmsObject.data[key + '_title']
+              ? dmsObject.data[key + '_title']
+              : dmsObject.data[key],
+          value2:
+            this.dmsObject2 &&
+            (typeof renderer === 'function' ? renderer({ value: this.dmsObject2.data[key], data: this.dmsObject2.data }) : this.dmsObject2.data[key]),
+          order: null
+        };
 
-      if (key === BaseObjectTypeField.OBJECT_TYPE_ID) {
-        si.value = this.systemService.getLocalizedResource(`${dmsObject.data[key]}_label`);
-      }
-      if (this.dmsObject2 && (si.value === si.value2 || this.isVersion(key))) {
-        // skip equal and irrelevant values
-      } else if (extraFields.includes(prepKey)) {
-        summary.extras.push(si);
-      } else if (defaultBaseFields.find((field) => field.key.startsWith(prepKey))) {
-        defaultBaseFields.map((field) => (field.key === prepKey ? (si.order = field.order) : null));
-        summary.base.push(si);
-      } else if (patentFields.includes(prepKey)) {
-        summary.parent.push(si);
-      } else if (!skipFields.includes(prepKey)) {
-        summary.core.push(si);
-      }
-    });
+        if (key === BaseObjectTypeField.OBJECT_TYPE_ID) {
+          si.value = this.systemService.getLocalizedResource(`${dmsObject.data[key]}_label`);
+        }
+        if (this.dmsObject2 && (si.value === si.value2 || this.isVersion(key))) {
+          // skip equal and irrelevant values
+        } else if (extraFields.includes(prepKey)) {
+          summary.extras.push(si);
+        } else if (defaultBaseFields.find((field) => field.key.startsWith(prepKey))) {
+          defaultBaseFields.map((field) => (field.key === prepKey ? (si.order = field.order) : null));
+          summary.base.push(si);
+        } else if (patentFields.includes(prepKey)) {
+          summary.parent.push(si);
+        } else if (!skipFields.includes(prepKey)) {
+          summary.core.push(si);
+        }
+      });
 
     summary.base.sort((a, b) => a.order - b.order);
     summary.core

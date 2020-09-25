@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
+import { BehaviorSubject, Observable, of } from 'rxjs';
+import { map, switchMap, tap } from 'rxjs/operators';
 import { UserSettings, YuvUser } from '../../model/yuv-user.model';
 import { BackendService } from '../backend/backend.service';
 import { Direction } from '../config/config.interface';
@@ -22,6 +22,8 @@ export class UserService {
   private user: YuvUser = null;
   private userSource = new BehaviorSubject<YuvUser>(this.user);
   user$: Observable<YuvUser> = this.userSource.asObservable();
+
+  globalSettings = new Map();
   /**
    * @ignore
    */
@@ -75,6 +77,10 @@ export class UserService {
 
   get hasAdministrationRoles(): boolean {
     return this.hasAdminRole || this.hasSystemRole;
+  }
+
+  get hasManageSettingsRole(): boolean {
+    return new RegExp(AdministrationRoles.MANAGE_SETTINGS).test(this.user?.authorities.join(','));
   }
 
   /**
@@ -139,5 +145,15 @@ export class UserService {
 
   saveSettings(section: string, data: any): Observable<any> {
     return this.backend.post('/user/settings/' + section, data);
+  }
+
+  getGlobalSettings(section: string): Observable<any> {
+    const setting = this.globalSettings.get(section);
+    return setting ? of(setting) : this.backend.get('/user/globalsettings/' + section).pipe(tap((data) => this.globalSettings.set(section, data)));
+  }
+
+  saveGlobalSettings(section: string, data: any): Observable<any> {
+    this.globalSettings.set(section, data);
+    return this.backend.post('/user/globalsettings/' + section, data);
   }
 }

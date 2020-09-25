@@ -299,7 +299,8 @@
             padding: calc(var(--app-pane-padding) / 2);
             display: flex;
             align-items: center;
-            color: var(--color-accent);
+            color: var(--text-color-caption);
+            border-bottom: 1px solid var(--panel-divider-color);
 
             yuv-icon {
               width: 18px;
@@ -312,6 +313,12 @@
           .form {
             overflow-y: auto;
             padding: calc(var(--app-pane-padding) / 2);
+          }
+
+          &::ng-deep {
+            .container.oneCoulmn {
+              padding: 0;
+            }
           }
         }
         .preview-split {
@@ -346,6 +353,11 @@
             line-height: 1.7em;
           }
 
+          yuv-form-input {
+            display: block;
+            padding: 0 var(--app-pane-padding);
+          }
+
           .actions {
             display: flex;
             justify-content: space-between;
@@ -376,6 +388,10 @@
 
       yuv-form-input {
         margin: 0 var(--app-pane-padding);
+      }
+
+      button.secondary {
+        margin: 0 4px;
       }
     }
   }

@@ -10,6 +10,7 @@ import { CoreConfig } from '../config/core-config';
 import { CORE_CONFIG } from '../config/core-config.tokens';
 import { DeviceService } from '../device/device.service';
 import { Logger } from '../logger/logger';
+import { ApiBase } from './../backend/api.enum';
 /**
  * Providing functions,that are are injected at application startup and executed during app initialization.
  */
@@ -50,7 +51,8 @@ export class CoreInit {
     let config = !Array.isArray(this.coreConfig.main)
       ? of([this.coreConfig.main])
       : forkJoin(
-          this.coreConfig.main.map((c) =>
+          // TODO: what if apiWeb path is changed via config?
+          [...this.coreConfig.main, ApiBase.apiWeb + ConfigService.GLOBAL_MAIN_CONFIG].map((c) =>
             this.http.get(`${Utils.getBaseHref()}${c}`).pipe(
               catchError((e) => {
                 this.logger.error('failed to catch config file', e);

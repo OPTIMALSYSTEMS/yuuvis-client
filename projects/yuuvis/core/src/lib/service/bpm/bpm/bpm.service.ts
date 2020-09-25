@@ -5,6 +5,9 @@ import { ApiBase } from '../../backend/api.enum';
 import { BackendService } from '../../backend/backend.service';
 import { ProcessData, ProcessDefinitionKey, ProcessInstance, ProcessResponse, TaskData, TaskDataResponse } from '../model/bpm.model';
 
+/**
+ * BpmService: responsible for handling all bpm/ route related interactions
+ */
 @Injectable({
   providedIn: 'root'
 })

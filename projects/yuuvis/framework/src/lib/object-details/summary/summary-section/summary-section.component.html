@@ -1,28 +1,29 @@
 <div class="section-head" (click)="toggle()">
-  {{label}}
+  {{ label }}
   <yuv-icon icon="arrowDown"></yuv-icon>
 </div>
 <div class="section-content">
-  <div *ngFor="let item of entries" class="entry" [ngClass]="classes(item.value, item.value2)"
-    [attr.data-summary-item]="item.key">
+  <div *ngFor="let item of entries" class="entry" [ngClass]="classes(item.value, item.value2)" [attr.data-summary-item]="item.key">
     <span class="label">{{ item.label }}</span>
     <div class="value-area">
-      <span class="value first"
-        *ngIf="(!isVersion(item.key) || (isVersion(item.key) && item.value === '1') || !versionLinkTemplate); else versionLink"
-        [innerHtml]="item.value ? (item.value | safeHtml) : ''"></span>
+      <span
+        class="value first"
+        *ngIf="!isVersion(item.key) || (isVersion(item.key) && item.value === '1') || !versionStatePath; else versionLink"
+        [innerHtml]="item.value ? (item.value | safeHtml) : ''"
+      ></span>
 
       <ng-container *ngIf="diff">
         <span class="indicator">
           <svg fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="16" viewBox="0 0 24 24" width="16">
-            <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z" /></svg>
+            <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z" />
+          </svg>
         </span>
         <span class="value second" [innerHtml]="item.value2 ? (item.value2 | safeHtml) : ''"></span>
       </ng-container>
 
       <ng-template #versionLink>
         <span class="value first version">
-          <ng-container *ngTemplateOutlet="versionLinkTemplate;context:{version: item.value}">
-          </ng-container>
+          <a [routerLink]="['/' + versionStatePath, dmsObjectID]" [queryParams]="getVersionStateQueryParams(item.value)">{{ item.value }}</a>
         </span>
       </ng-template>
     </div>

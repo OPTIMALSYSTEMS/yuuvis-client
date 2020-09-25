@@ -12,6 +12,7 @@ import {
   YuvEventType
 } from '@yuuvis/core';
 import { TabPanel } from 'primeng/tabview';
+import { finalize } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { kebap, noFile, refresh } from '../../svg.generated';
@@ -153,12 +154,6 @@ export class ObjectDetailsComponent implements OnDestroy {
    */
   @Input() disableFileDrop: boolean;
 
-  /**
-   * Custom template to render version numer within summary and audit
-   * aspect as for example a link.
-   */
-  @Input() versionLinkTemplate: TemplateRef<any>;
-
   undockWinActive = false;
 
   constructor(
@@ -205,16 +200,16 @@ export class ObjectDetailsComponent implements OnDestroy {
   private getDmsObject(id: string) {
     this.busy = true;
     this.contentPreviewService.resetSource();
-    this.dmsService.getDmsObject(id).subscribe(
-      (dmsObject) => {
-        this.dmsObject = dmsObject;
-        this.busy = false;
-      },
-      (error) => {
-        this.busy = false;
-        this.contextError = this.translate.instant('yuv.client.state.object.context.load.error');
-      }
-    );
+    this.dmsService
+      .getDmsObject(id)
+      .pipe(finalize(() => (this.busy = false)))
+      .subscribe(
+        (dmsObject) => (this.dmsObject = dmsObject),
+        (error) => {
+          this.dmsObject = null;
+          this.contextError = this.translate.instant('yuv.client.state.object.context.load.error');
+        }
+      );
   }
 
   refreshDetails() {

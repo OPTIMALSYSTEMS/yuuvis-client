@@ -307,6 +307,9 @@ export class SearchResultComponent implements OnDestroy {
     };
     this._columns.forEach((cd: ColDef) => {
       row[cd.field] = searchResultItem.fields.get(cd.field);
+      if (searchResultItem.fields.get(cd.field + '_title')) {
+        row[cd.field + '_title'] = searchResultItem.fields.get(cd.field + '_title');
+      }
     });
     return row;
   }

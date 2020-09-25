@@ -66,6 +66,10 @@ $yuv-result-header-height: 38px;
         align-self: start;
         transform: rotate(0deg);
       }
+
+      yuv-icon.active {
+        color: var(--color-accent);
+      }
     }
 
     as-split {
