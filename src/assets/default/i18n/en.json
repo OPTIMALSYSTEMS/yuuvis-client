@@ -316,5 +316,7 @@
   "yuv.client.state.versions.compare.label": "version {{version}}",
   "yuv.client.state.versions.header.title": "Versions",
   "yuv.framework.inbox-list.inbox": "Inbox",
-  "yuv.framework.process-list.process": "My processes"
+  "yuv.framework.process-list.process": "My processes",
+  "yuv.client.state.inbox.list.empty": "Great, there's nothing to do ;-)",
+  "yuv.client.state.process.list.empty": "There are no active processes."
 }
