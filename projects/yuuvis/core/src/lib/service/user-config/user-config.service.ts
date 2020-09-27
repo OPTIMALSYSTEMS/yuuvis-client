@@ -103,13 +103,13 @@ export class UserConfigService {
     return this.saveColumnConfig({ type: objectTypeId, columns: [] });
   }
 
-  private generateMainJsonUri() {
-    return this.backend.get(ConfigService.GLOBAL_MAIN_CONFIG).pipe(
+  private generateMainJsonUri(uri = ConfigService.GLOBAL_MAIN_CONFIG) {
+    return this.backend.get(uri).pipe(
       map((data) => {
         const blob = new Blob([JSON.stringify(data || {}, null, 2)], { type: 'text/json' });
-        const uri = URL.createObjectURL(blob);
-        // setTimeout(() => URL.revokeObjectURL(uri), 10000);
-        return uri;
+        const _uri = URL.createObjectURL(blob);
+        // setTimeout(() => URL.revokeObjectURL(_uri), 10000);
+        return _uri;
       })
     );
   }
@@ -118,12 +118,20 @@ export class UserConfigService {
    * make it possible for users to export their main config as a json file
    *
    */
-  exportMainConfig(filename = 'main.json') {
-    this.generateMainJsonUri().subscribe((uri) => this.backend.download(uri, filename));
+  exportMainConfig(filename = 'main.json', uri = ConfigService.GLOBAL_MAIN_CONFIG) {
+    this.generateMainJsonUri(uri).subscribe((_uri) => this.backend.download(_uri, filename));
   }
 
-  importMainConfig(data: string | any) {
+  importMainConfig(data: string | any, uri = ConfigService.GLOBAL_MAIN_CONFIG) {
     const config = typeof data === 'string' ? JSON.parse(data) : data;
-    return this.hasManageSettingsRole ? this.backend.post(ConfigService.GLOBAL_MAIN_CONFIG, config) : of();
+    return this.hasManageSettingsRole ? this.backend.post(uri, config) : of();
+  }
+
+  exportLanguage(iso = 'en') {
+    this.exportMainConfig(iso + '.json', ConfigService.GLOBAL_MAIN_CONFIG_LANG(iso));
+  }
+
+  importLanguage(data: string | any, iso = 'en') {
+    return this.importMainConfig(data, ConfigService.GLOBAL_MAIN_CONFIG_LANG(iso));
   }
 }
