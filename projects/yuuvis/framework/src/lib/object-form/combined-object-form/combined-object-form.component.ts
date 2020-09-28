@@ -6,7 +6,10 @@ import { FormStatusChangedEvent, IObjectForm, ObjectFormOptions } from '../objec
 import { ObjectFormComponent } from '../object-form/object-form.component';
 
 export interface CombinedObjectFormInput {
-  formModels: { [key: string]: any };
+  // main form
+  main: any;
+  // forms for extendables
+  extensions?: { [key: string]: any };
   data: any;
   disabled?: boolean;
   /**
@@ -31,7 +34,8 @@ export interface CombinedFormAddInput {
 export class CombinedObjectFormComponent implements OnInit, IObjectForm {
   @ViewChildren(ObjectFormComponent) objectForms: QueryList<ObjectFormComponent>;
 
-  forms: {
+  mainFormOptions: ObjectFormOptions;
+  extensionForms: {
     id: string;
     label: string;
     enableEditSOT: boolean;
@@ -44,14 +48,21 @@ export class CombinedObjectFormComponent implements OnInit, IObjectForm {
   @Input() set objectFormInput(ofi: CombinedObjectFormInput) {
     this.formsChanged = false;
     this.formStates.clear();
-    this.forms =
-      ofi && ofi.formModels
-        ? Object.keys(ofi.formModels).map((k) => ({
+
+    this.mainFormOptions = {
+      formModel: ofi.main,
+      data: ofi.data,
+      disabled: ofi.disabled
+    };
+
+    this.extensionForms =
+      ofi && ofi.extensions
+        ? Object.keys(ofi.extensions).map((k) => ({
             id: k,
             label: this.system.getLocalizedResource(`${k}_label`),
             enableEditSOT: ofi.enableEditSOT && this.canBeRemoved(k),
             formOptions: {
-              formModel: ofi.formModels[k],
+              formModel: ofi.extensions[k],
               data: ofi.data,
               disabled: ofi.disabled
             }
@@ -88,7 +99,7 @@ export class CombinedObjectFormComponent implements OnInit, IObjectForm {
 
   private getCombinedFormState(): FormStatusChangedEvent {
     this.combinedFormState = {
-      dirty: !!this.formsChanged && this.forms && this.forms.length > 0,
+      dirty: (!!this.formsChanged && !!this.mainFormOptions) || (this.extensionForms && this.extensionForms.length > 0),
       indexdataChanged: false,
       invalid: false,
       data: {}
@@ -147,11 +158,11 @@ export class CombinedObjectFormComponent implements OnInit, IObjectForm {
    * @param disabled Whether ot not to disable all form controls
    */
   addForms(formModels: CombinedFormAddInput[], data: any) {
-    if (!this.forms) {
-      this.forms = [];
+    if (!this.extensionForms) {
+      this.extensionForms = [];
     }
     formModels.forEach((fm) => {
-      this.forms.push({
+      this.extensionForms.push({
         id: fm.id,
         label: this.system.getLocalizedResource(`${fm.id}_label`),
         enableEditSOT: fm.enableEditSOT,
@@ -171,7 +182,7 @@ export class CombinedObjectFormComponent implements OnInit, IObjectForm {
    * @param id ID of the form to be removed
    */
   removeForms(ids: string[]) {
-    this.forms = this.forms.filter((f) => {
+    this.extensionForms = this.extensionForms.filter((f) => {
       const shouldBeRemoved = ids.includes(f.id);
       if (shouldBeRemoved) {
         this.formStates.delete(f.id);

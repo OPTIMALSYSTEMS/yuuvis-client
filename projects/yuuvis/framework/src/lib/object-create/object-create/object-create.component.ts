@@ -373,27 +373,9 @@ export class ObjectCreateComponent implements OnDestroy {
     const objectType = !!this.selectedObjectType.floatingParentType
       ? this.system.getObjectType(this.selectedObjectType.floatingParentType)
       : this.selectedObjectType;
-    const objectTypeIDs = [];
 
-    // main object type may not have own fields
-    if (objectType.fields.filter((f) => !f.id.startsWith('system:')).length) {
-      objectTypeIDs.push(objectType.id);
-    }
-
-    // required SOTs will also be applied
-    objectType.secondaryObjectTypes
-      .filter((otSot) => !otSot.static)
-      .forEach((otSot) => {
-        const t = this.system.getSecondaryObjectType(otSot.id);
-        if (t.fields.length > 0 && t.classification && t.classification.includes(SecondaryObjectTypeClassification.REQUIRED)) {
-          objectTypeIDs.push(t.id);
-        }
-      });
-    if (!!sot) {
-      objectTypeIDs.push(sot.id);
-    }
-    this.system.getObjectTypeForms(objectTypeIDs, Situation.CREATE).subscribe(
-      (res) => {
+    if (this.system.isFloatingObjectType(objectType)) {
+      this.system.getFloatingObjectTypeForm(objectType.id, Situation.CREATE).subscribe((res) => {
         this.afoCreate.floatingSOT.selected = {
           sot: {
             id: sot?.id || 'none',
@@ -402,16 +384,54 @@ export class ObjectCreateComponent implements OnDestroy {
           // TODO: also apply extraction data here
           // TODO: If object is changed form should also get new data
           combinedFormInput: {
-            formModels: res,
+            main: res,
             data: this.afoCreate?.dmsObject.items.length === 1 ? this.afoCreate.dmsObject.selected.data : {}
           }
         };
         this.objCreateService.setNewState({ busy: false });
-      },
-      (err) => {
-        this.objCreateService.setNewState({ busy: false });
-      }
-    );
+      });
+    } else {
+    }
+
+    // const objectTypeIDs = [];
+
+    // // main object type may not have own fields
+    // if (objectType.fields.filter((f) => !f.id.startsWith('system:')).length) {
+    //   objectTypeIDs.push(objectType.id);
+    // }
+
+    // // required SOTs will also be applied
+    // objectType.secondaryObjectTypes
+    //   .filter((otSot) => !otSot.static)
+    //   .forEach((otSot) => {
+    //     const t = this.system.getSecondaryObjectType(otSot.id);
+    //     if (t.fields.length > 0 && t.classification && t.classification.includes(SecondaryObjectTypeClassification.REQUIRED)) {
+    //       objectTypeIDs.push(t.id);
+    //     }
+    //   });
+    // if (!!sot) {
+    //   objectTypeIDs.push(sot.id);
+    // }
+    // this.system.getObjectTypeForms(objectTypeIDs, Situation.CREATE).subscribe(
+    //   (res) => {
+    //     this.afoCreate.floatingSOT.selected = {
+    //       sot: {
+    //         id: sot?.id || 'none',
+    //         label: sot?.label || this.selectedObjectType.label
+    //       },
+    //       // TODO: also apply extraction data here
+    //       // TODO: If object is changed form should also get new data
+    //       combinedFormInput: {
+    //         formModels: res,
+    //         data: this.afoCreate?.dmsObject.items.length === 1 ? this.afoCreate.dmsObject.selected.data : {}
+    //       }
+    //     };
+    //     this.objCreateService.setNewState({ busy: false });
+    //   },
+    //   (err) => {
+    //     this.objCreateService.setNewState({ busy: false });
+    //   }
+    // );
   }
 
   afoCreateApprove(afoUploadNoticeSkip?: boolean) {

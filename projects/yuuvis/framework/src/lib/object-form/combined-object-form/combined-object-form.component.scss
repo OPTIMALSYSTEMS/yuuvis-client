@@ -15,7 +15,7 @@
       }
     }
 
-    yuv-object-form {
+    yuv-object-form:not(.main-form) {
       border: 1px dashed var(--color-accent);
 
       ::ng-deep {

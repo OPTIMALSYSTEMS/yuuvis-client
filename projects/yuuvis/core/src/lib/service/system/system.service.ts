@@ -446,34 +446,74 @@ export class SystemService {
   }
 
   /**
+   * Fetch object form for a floating type.
+   * @param floatingObjectTypeID The ID of a floating object type
+   * @param situation Form situation
+   */
+  getFloatingObjectTypeForm(floatingObjectTypeID: string, situation?: string): Observable<any> {
+    const floatingType = this.getObjectType(floatingObjectTypeID);
+    if (this.isFloatingObjectType(floatingType)) {
+      const querySotIDs = floatingType.secondaryObjectTypes.filter((sot) => {
+        const sotObj = this.getSecondaryObjectType(sot.id);
+        return (
+          !sot.static &&
+          (sotObj.classification?.includes(SecondaryObjectTypeClassification.PRIMARY) ||
+            sotObj.classification?.includes(SecondaryObjectTypeClassification.REQUIRED))
+        );
+      });
+      return this.backend.get(
+        Utils.buildUri(`/dms/form/${floatingType.floatingParentType}${querySotIDs.length ? `?sots=${querySotIDs.join('&sots=')}` : ''}`, { situation })
+      );
+    } else {
+      return of(null);
+    }
+  }
+
+  /**
    * Floating object types use more than one object type form.
    * In fact its a collection of forms that will be combined later on.
    * This method fetches all the forms bound to an floating object type.
    *
-   * @param dmsObject a dms object created from an AFO type
-   * @returns object where property name is the object type key and value is the form model for this type
-   * or null in case the given object does not belong to an AFO type
+   * @param dmsObject a dms objectto get forms for
+   * @returns object where 'main' property is the main object form, and extension is a
+   * collection of all form the current object has been extended by (key: id, value: form model).
    */
-  getFloatingObjectTypeForms(dmsObject: DmsObject, situation?: string): Observable<{ [key: string]: any }> {
+  getDmsObjectForms(dmsObject: DmsObject, situation?: string): Observable<{ main: any; extensions: { [key: string]: any } }> {
     const ot = this.getObjectType(dmsObject.objectTypeId);
-    // make sure that it actually is a floating object type
-    if (this.isFloatingObjectType(ot)) {
-      const objectTypeIDs = [];
-      // if the main type itself has properties, add them
-      if (ot.fields.filter((f) => !this.isSystemProperty(f)).length) {
-        objectTypeIDs.push(ot.id);
-      }
-      const sots: string[] = dmsObject.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS];
-      if (sots) {
-        const sotQA = {};
-        ot.secondaryObjectTypes.forEach((sot) => (sotQA[sot.id] = sot));
-        // don't care about static SOTs because they are already applied to the main object type
-        sots.filter((sot) => sotQA[sot] && !sotQA[sot].static).forEach((sot) => objectTypeIDs.push(sot));
-      }
-      return objectTypeIDs.length ? this.getObjectTypeForms(objectTypeIDs, situation) : of(null);
-    } else {
-      return of(null);
+
+    const querySotIDs = [];
+    const extendableSotIDs = [];
+    const sots: string[] = dmsObject.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS];
+    if (sots) {
+      const sotQA = {};
+      ot.secondaryObjectTypes.forEach((sot: { id: string; static: boolean }) => (sotQA[sot.id] = sot));
+
+      sots.forEach((sot) => {
+        const sotRef = sotQA[sot];
+        const sotObj = this.getSecondaryObjectType(sotRef.id);
+
+        if (sotObj && !sotRef.static) {
+          if (
+            sotObj.classification?.includes(SecondaryObjectTypeClassification.PRIMARY) ||
+            sotObj.classification?.includes(SecondaryObjectTypeClassification.REQUIRED)
+          ) {
+            querySotIDs.push(sot);
+          } else {
+            extendableSotIDs.push(sot);
+          }
+        }
+      });
     }
+    const tasks = [this.backend.get(Utils.buildUri(`/dms/form/${ot.id}${querySotIDs.length ? `?sots=${querySotIDs.join('&sots=')}` : ''}`, { situation }))];
+    if (extendableSotIDs.length) {
+      tasks.push(this.getObjectTypeForms(extendableSotIDs, situation));
+    }
+    return forkJoin(tasks).pipe(
+      map((res) => ({
+        main: res[0],
+        extensions: res.length ? res[1] : null
+      }))
+    );
   }
 
   /**

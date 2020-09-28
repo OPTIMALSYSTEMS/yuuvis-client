@@ -63,15 +63,14 @@ export class ObjectFormEditComponent implements OnDestroy {
   };
 
   fsot: {
-    // applicableTypes: SecondaryObjectType[];
-    // applicableSOTs: SecondaryObjectType[];
     applicableTypes: SelectableGroup;
     applicableSOTs: SelectableGroup;
   };
 
   // Indicator that we are dealing with a floating object type
   // This kind of object will use a combination of multiple forms instaed of a single one
-  isFloatingObjectType: boolean;
+  // isFloatingObjectType: boolean;
+  isExtendableObjectType: boolean;
 
   // fetch a reference to the opbject form component to be able to
   // get the form data
@@ -84,7 +83,8 @@ export class ObjectFormEditComponent implements OnDestroy {
    */
   @Input('dmsObject')
   set dmsObject(dmsObject: DmsObject) {
-    if (this.isFloatingObjectType || (dmsObject && (!this._dmsObject || this._dmsObject.id !== dmsObject.id))) {
+    if (dmsObject && (!this._dmsObject || this._dmsObject.id !== dmsObject.id)) {
+      // if (this.isFloatingObjectType || (dmsObject && (!this._dmsObject || this._dmsObject.id !== dmsObject.id))) {
       // reset the state of the form
       this.formState = null;
       this.controls.saving = false;
@@ -274,53 +274,74 @@ export class ObjectFormEditComponent implements OnDestroy {
     }
   }
 
-  // create the formOptions required by object form component
   private createObjectForm(dmsObject: DmsObject) {
-    this.busy = true;
-    this.isFloatingObjectType = this.systemService.isFloatingObjectType(this.systemService.getObjectType(dmsObject.objectTypeId));
-
-    if (this.isFloatingObjectType) {
-      this.formOptions = null;
-      this.getApplicableSecondaries(dmsObject);
-      this.systemService.getFloatingObjectTypeForms(dmsObject, Situation.EDIT).subscribe(
-        (res) => {
-          this.combinedFormInput = {
-            formModels: res,
-            data: dmsObject.data,
-            disabled: this.formDisabled || !this.isEditable(dmsObject),
-            enableEditSOT: true
-          };
-          this.busy = false;
-        },
-        (err) => {
-          this.busy = false;
-        }
-      );
-    } else {
-      this.systemService.getObjectTypeForm(dmsObject.objectTypeId, Situation.EDIT).subscribe(
-        (model) => {
-          this.combinedFormInput = null;
-          this.formOptions = {
-            formModel: model,
-            data: dmsObject.data,
-            objectId: dmsObject.id,
-            disabled: this.formDisabled || !this.isEditable(dmsObject)
-          };
-          if (dmsObject.contextFolder) {
-            this.formOptions.context = {
-              id: dmsObject.contextFolder.id,
-              title: dmsObject.contextFolder.title,
-              objectTypeId: dmsObject.contextFolder.objectTypeId
-            };
-          }
-          this.busy = false;
-        },
-        (err) => {
-          this.busy = false;
-        }
-      );
-    }
+    this.formOptions = null;
+    this.getApplicableSecondaries(dmsObject);
+    this.systemService.getDmsObjectForms(dmsObject, Situation.EDIT).subscribe(
+      (res) => {
+        this.combinedFormInput = {
+          main: res.main,
+          extensions: res.extensions,
+          data: dmsObject.data,
+          disabled: this.formDisabled || !this.isEditable(dmsObject),
+          enableEditSOT: true
+        };
+        this.busy = false;
+      },
+      (err) => {
+        this.busy = false;
+      }
+    );
   }
+
+  // create the formOptions required by object form component
+  // private creffffffffffffffateObjectForm(dmsObject: DmsObject) {
+  //   this.busy = true;
+  //   this.isExtendableObjectType = this.systemService.isExtendableObjectType(this.systemService.getObjectType(dmsObject.objectTypeId));
+  //   this.isFloatingObjectType = this.systemService.isFloatingObjectType(this.systemService.getObjectType(dmsObject.objectTypeId));
+
+  //   if (this.isFloatingObjectType) {
+  //     this.formOptions = null;
+  //     this.getApplicableSecondaries(dmsObject);
+  //     this.systemService.getFloatingObjectTypeForms(dmsObject, Situation.EDIT).subscribe(
+  //       (res) => {
+  //         this.combinedFormInput = {
+  //           formModels: res,
+  //           data: dmsObject.data,
+  //           disabled: this.formDisabled || !this.isEditable(dmsObject),
+  //           enableEditSOT: true
+  //         };
+  //         this.busy = false;
+  //       },
+  //       (err) => {
+  //         this.busy = false;
+  //       }
+  //     );
+  //   } else {
+  //     this.systemService.getObjectTypeForm(dmsObject.objectTypeId, Situation.EDIT).subscribe(
+  //       (model) => {
+  //         this.combinedFormInput = null;
+  //         this.formOptions = {
+  //           formModel: model,
+  //           data: dmsObject.data,
+  //           objectId: dmsObject.id,
+  //           disabled: this.formDisabled || !this.isEditable(dmsObject)
+  //         };
+  //         if (dmsObject.contextFolder) {
+  //           this.formOptions.context = {
+  //             id: dmsObject.contextFolder.id,
+  //             title: dmsObject.contextFolder.title,
+  //             objectTypeId: dmsObject.contextFolder.objectTypeId
+  //           };
+  //         }
+  //         this.busy = false;
+  //       },
+  //       (err) => {
+  //         this.busy = false;
+  //       }
+  //     );
+  //   }
+  // }
 
   private getApplicableSecondaries(dmsObject: DmsObject) {
     this.fsot = {
@@ -335,6 +356,7 @@ export class ObjectFormEditComponent implements OnDestroy {
         items: []
       }
     };
+    const objectType = this.systemService.getObjectType(dmsObject.objectTypeId);
     const currentSOTs = dmsObject.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS];
     const alreadyAssignedPrimary =
       this._sotChanged.assignedGeneral ||
@@ -343,9 +365,8 @@ export class ObjectFormEditComponent implements OnDestroy {
           .map((id) => this.systemService.getSecondaryObjectType(id))
           .filter((sot) => sot?.classification?.includes(SecondaryObjectTypeClassification.PRIMARY)).length > 0);
 
-    this.systemService
-      .getObjectType(dmsObject.objectTypeId)
-      .secondaryObjectTypes.filter((sot) => !sot.static && !currentSOTs?.includes(sot.id))
+    objectType.secondaryObjectTypes
+      .filter((sot) => !sot.static && !currentSOTs?.includes(sot.id))
       .forEach((sotref) => {
         const sot = this.systemService.getSecondaryObjectType(sotref.id, true);
 
@@ -360,7 +381,7 @@ export class ObjectFormEditComponent implements OnDestroy {
 
     this.fsot.applicableSOTs.items.sort(Utils.sortValues('label'));
 
-    if (!alreadyAssignedPrimary) {
+    if (!alreadyAssignedPrimary && this.systemService.isFloatingObjectType(objectType)) {
       this.fsot.applicableTypes.items.sort(Utils.sortValues('label'));
       // add general target type
       this.fsot.applicableTypes.items = [
@@ -433,14 +454,18 @@ export class ObjectFormEditComponent implements OnDestroy {
     }
     this._dmsObject.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS] = [...sotIDs, ...sotsToBeAdded];
 
-    this.getCombinedFormAddInput(sotsToBeAdded, enableEditSOT).subscribe((res: CombinedFormAddInput[]) => {
-      if (res.length > 0) {
-        this.afoObjectForm.addForms(res, this._dmsObject.data);
-        this.getApplicableSecondaries(this._dmsObject);
-        this._sotChanged.applied = [...this._sotChanged.applied, ...sotsToBeAdded];
-      }
-      this.busy = false;
-    });
+    if (isPrimaryFSOT) {
+      this.createObjectForm(this._dmsObject);
+    } else {
+      this.getCombinedFormAddInput(sotsToBeAdded, enableEditSOT).subscribe((res: CombinedFormAddInput[]) => {
+        if (res.length > 0) {
+          this.afoObjectForm.addForms(res, this._dmsObject.data);
+          this.getApplicableSecondaries(this._dmsObject);
+          this._sotChanged.applied = [...this._sotChanged.applied, ...sotsToBeAdded];
+        }
+        this.busy = false;
+      });
+    }
     if (popoverRef) {
       popoverRef.close();
     }
