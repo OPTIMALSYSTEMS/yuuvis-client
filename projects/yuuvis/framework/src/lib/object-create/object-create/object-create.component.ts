@@ -142,7 +142,8 @@ export class ObjectCreateComponent implements OnDestroy {
    * inside this parent folder. Eventhough you specify the context, the user is
    * able to remove it. So this is more a suggestion.
    */
-  @Input() set contextId(id: string) {
+  @Input()
+  set contextId(id: string) {
     if (id) {
       this.objCreateService.setNewState({ busy: true });
       this.dmsService.getDmsObject(id).subscribe(
@@ -216,14 +217,7 @@ export class ObjectCreateComponent implements OnDestroy {
         id: `${i++}`,
         label: otg.label,
         items: otg.types
-          .filter(
-            (ot) =>
-              ![
-                // types that should not be able to be created
-                SystemType.FOLDER,
-                SystemType.DOCUMENT
-              ].includes(ot.id)
-          )
+          .filter((ot) => ![SystemType.FOLDER, SystemType.DOCUMENT].includes(ot.id)) // types that should not be able to be created
           .map((ot: ObjectType) => ({
             id: ot.id,
             label: this.system.getLocalizedResource(`${ot.id}_label`),
