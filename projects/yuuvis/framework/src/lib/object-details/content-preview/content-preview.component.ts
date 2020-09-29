@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, ElementRef, Input, NgZone, OnDestroy, OnInit } from '@angular/core';
 import { DmsObject } from '@yuuvis/core';
 import { fromEvent, Observable } from 'rxjs';
-import { finalize, takeWhile } from 'rxjs/operators';
+import { takeWhile } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { FileDropService } from '../../directives/file-drop/file-drop.service';
@@ -25,7 +25,7 @@ import { ContentPreviewService } from './service/content-preview.service';
 export class ContentPreviewComponent implements OnInit, OnDestroy, AfterViewInit {
   private _dmsObject: DmsObject;
   isUndocked: boolean;
-  loading = !!this.dmsObject?.content;
+  loading = true;
 
   get undockWin(): Window {
     return ContentPreviewService.getUndockWin();
@@ -41,14 +41,9 @@ export class ContentPreviewComponent implements OnInit, OnDestroy, AfterViewInit
     // generate preview URI with streamID to enable refresh if file was changed
     !object || !object.content || !object.content.size
       ? this.contentPreviewService.resetSource()
-      : this.contentPreviewService.createPreviewUrl(
-          object.id,
-          object.content,
-          object.version,
-          this.dmsObject2 && this.dmsObject2.content,
-          this.dmsObject2 && this.dmsObject2.version
-        );
+      : this.contentPreviewService.createPreviewUrl(object.id, object.content, object.version, this.dmsObject2?.content, this.dmsObject2?.version);
     this._dmsObject = object;
+    this.loading = !object.content ? false : true;
   }
 
   get dmsObject() {
@@ -169,11 +164,13 @@ export class ContentPreviewComponent implements OnInit, OnDestroy, AfterViewInit
     const iframe = this.iframe;
     if (iframe) {
       fromEvent(iframe, 'load')
-        .pipe(
-          takeUntilDestroy(this),
-          finalize(() => (this.loading = false))
-        )
-        .subscribe((res) => setTimeout(() => this.searchPDF(this.searchTerm, iframe), 100));
+        .pipe(takeUntilDestroy(this))
+        .subscribe((res) =>
+          setTimeout(() => {
+            this.loading = false;
+            this.searchPDF(this.searchTerm, iframe);
+          }, 100)
+        );
     }
   }
 
