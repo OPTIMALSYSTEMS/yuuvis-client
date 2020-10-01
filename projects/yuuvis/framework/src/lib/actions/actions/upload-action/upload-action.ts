@@ -37,6 +37,13 @@ export class UploadActionComponent extends DmsObjectTarget implements ComponentA
       this.label = this.translate.instant('yuv.framework.action-menu.action.upload.dms.object.content.add.label');
       this.description = this.translate.instant('yuv.framework.action-menu.action.upload.dms.object.content.add.description');
     }
-    return observableOf(element?.rights?.writeContent && objectType?.contentStreamAllowed !== ContentStreamAllowed.NOT_ALLOWED);
+    let isRetentionActive = false;
+    if (element.data['system:rmStartOfRetention'] && element.data['system:rmExpirationDate']) {
+      const currentDate = new Date();
+      const retentionStart = new Date(element.data['system:rmStartOfRetention']);
+      const retentionEnd = new Date(element.data['system:rmExpirationDate']);
+      isRetentionActive = retentionStart <= currentDate && currentDate <= retentionEnd;
+    }
+    return observableOf(element?.rights?.writeContent && objectType?.contentStreamAllowed !== ContentStreamAllowed.NOT_ALLOWED && !isRetentionActive);
   }
 }

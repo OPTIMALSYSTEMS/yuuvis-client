@@ -32,6 +32,13 @@ export class DeleteActionComponent extends DmsObjectTarget implements ComponentA
   }
 
   isExecutable(element: DmsObject) {
-    return observableOf(element && element.rights && element.rights.deleteObject);
+    let isRetentionActive = false;
+    if (element.data['system:rmStartOfRetention'] && element.data['system:rmExpirationDate']) {
+      const currentDate = new Date();
+      const retentionStart = new Date(element.data['system:rmStartOfRetention']);
+      const retentionEnd = new Date(element.data['system:rmExpirationDate']);
+      isRetentionActive = retentionStart <= currentDate && currentDate <= retentionEnd;
+    }
+    return observableOf(element && element.rights && element.rights.deleteObject && !isRetentionActive);
   }
 }
