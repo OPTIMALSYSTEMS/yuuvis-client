@@ -60,8 +60,8 @@ export class ReferenceActionComponent extends DmsObjectTarget implements LinkAct
   }
 
   createFilter(field, id) {
-    const operator = field.cardinality === 'multi' ? SearchFilter.OPERATOR.IN : SearchFilter.OPERATOR.EQUAL;
-    const value = field.cardinality === 'multi' ? [id] : id;
+    const operator = field.cardinality === 'multi' ? SearchFilter.OPERATOR.IN : SearchFilter.OPERATOR.IN;
+    const value = field.cardinality === 'multi' ? [id] : [id];
     return new SearchFilter(field.id, operator, value);
   }
 }
