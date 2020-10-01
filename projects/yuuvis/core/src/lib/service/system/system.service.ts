@@ -47,7 +47,7 @@ export class SystemService {
   // cached icons to avaoid backend calls (session cache)
   private iconCache = {};
 
-  private system: SystemDefinition;
+  public system: SystemDefinition;
   private systemSource = new ReplaySubject<SystemDefinition>();
   public system$: Observable<SystemDefinition> = this.systemSource.asObservable();
 
@@ -700,7 +700,8 @@ export class SystemService {
       lastModificationDate: schemaResponse.lastModificationDate,
       objectTypes: [...objectTypes, ...floatingTypes],
       secondaryObjectTypes,
-      i18n: localizedResource
+      i18n: localizedResource,
+      allFields: propertiesQA
     };
     this.appCache.setItem(this.STORAGE_KEY, this.system).subscribe();
     this.systemSource.next(this.system);

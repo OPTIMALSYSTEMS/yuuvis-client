@@ -34,6 +34,8 @@
   "yuv.framework.action-menu.action.move.dms.object.picker.input.description": "Andernfalls allgemeiner Ablageort",
   "yuv.framework.action-menu.action.move.dms.object.picker.input.label": "Zielordner",
   "yuv.framework.action-menu.action.move.dms.object.picker.title": "Verschieben nach",
+  "yuv.framework.action-menu.action.show.references.description": "",
+  "yuv.framework.action-menu.action.show.references.label": "",
   "yuv.framework.action-menu.action.upload.dms.object.content.add.description": "Fügt dem Objekt eine Dokumentdatei hinzu.",
   "yuv.framework.action-menu.action.upload.dms.object.content.add.label": "Dokumentdatei hinzufügen",
   "yuv.framework.action-menu.action.upload.dms.object.content.noFile": "Keine Datei ausgewählt",

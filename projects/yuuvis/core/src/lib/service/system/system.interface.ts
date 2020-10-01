@@ -7,6 +7,7 @@ export interface SystemDefinition {
   objectTypes: ObjectType[];
   secondaryObjectTypes: SecondaryObjectType[];
   i18n: any;
+  allFields: any;
 }
 /**
  * Object Type interface

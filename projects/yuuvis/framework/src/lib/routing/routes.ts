@@ -1,6 +1,9 @@
 import { InjectionToken } from '@angular/core';
 
 export interface YuvRoutes {
+  /**
+   * Object state
+   */
   object?: {
     path: string;
     params: {
@@ -21,6 +24,16 @@ export interface YuvRoutes {
     };
     queryParams?: {
       version: string;
+    };
+  };
+
+  /**
+   * Result state
+   */
+  result?: {
+    path: string;
+    queryParams: {
+      query: string;
     };
   };
 }
