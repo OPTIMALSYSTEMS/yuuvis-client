@@ -54,6 +54,7 @@ export class ProcessesComponent implements OnInit, OnDestroy {
   }
 
   selectedItem(item) {
+    this.selectedProcess = item;
     this.objectId = item[0]?.documentId;
     this.itemIsSelected = true;
   }
