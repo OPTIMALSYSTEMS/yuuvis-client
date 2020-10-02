@@ -23,11 +23,11 @@ import { PendingChangesComponent } from './pending-changes-component.interface';
   providedIn: 'root'
 })
 export class PendingChangesService {
-  private tasks: string[] = [];
-  private tasksSource = new ReplaySubject<string[]>();
-  public tasks$: Observable<string[]> = this.tasksSource.asObservable();
+  private tasks: { id: string; message?: string }[] = [];
+  private tasksSource = new ReplaySubject<{ id: string; message?: string }[]>();
+  public tasks$: Observable<{ id: string; message?: string }[]> = this.tasksSource.asObservable();
 
-  private customMsg = '';
+  // private customMsg = '';
   private defaultMsg = 'You are currently editing the index data of a form that has not been saved. Unsaved data will be lost.';
   /**
    * @ignore
@@ -38,9 +38,9 @@ export class PendingChangesService {
    * Registers a task to be pending.
    * @returns Unique id to be used for finishing this task
    */
-  startTask(): string {
+  startTask(message?: string): string {
     const taskId = Utils.uuid();
-    this.tasks.push(taskId);
+    this.tasks.push({ id: taskId, message: message });
     this.logger.debug('started pending task: ' + taskId);
     this.tasksSource.next(this.tasks);
     return taskId;
@@ -52,7 +52,7 @@ export class PendingChangesService {
    */
   finishTask(id: string) {
     if (id) {
-      this.tasks = this.tasks.filter((t) => t !== id);
+      this.tasks = this.tasks.filter((t) => t.id !== id);
       this.tasksSource.next(this.tasks);
       this.logger.debug('finished pending task: ' + id);
     }
@@ -66,7 +66,7 @@ export class PendingChangesService {
    * @returns
    */
   hasPendingTask(id?: string | string[]): boolean {
-    return !id ? !!this.tasks.length : Array.isArray(id) ? this.tasks.some((value) => id.includes(value)) : this.tasks.includes(id);
+    return !id ? !!this.tasks.length : Array.isArray(id) ? this.tasks.some((value) => id.includes(value.id)) : this.tasks.map((t) => t.id).includes(id);
   }
 
   /**
@@ -79,7 +79,7 @@ export class PendingChangesService {
     if (component && component.hasPendingChanges ? !component.hasPendingChanges() : !this.hasPendingTask()) {
       return false;
     } else {
-      const confirmed = confirm(this.customMsg || this.defaultMsg);
+      const confirmed = confirm(this.getConfirmMessage());
       if (confirmed) {
         this.clear();
       }
@@ -89,7 +89,7 @@ export class PendingChangesService {
 
   checkForPendingTasks(taskIds: string | string[]): boolean {
     if (this.hasPendingTask(taskIds)) {
-      const confirmed = confirm(this.customMsg || this.defaultMsg);
+      const confirmed = confirm(this.getConfirmMessage());
       if (confirmed) {
         this.clear();
       }
@@ -99,19 +99,22 @@ export class PendingChangesService {
     }
   }
 
+  private getConfirmMessage(): string {
+    let msg = '';
+    this.tasks.forEach((t) => {
+      // do not apply messages twice
+      if (msg.indexOf(t.message || this.defaultMsg) === -1) {
+        msg = `${msg}${msg.length > 0 ? '\n---\n' : ''}${t.message || this.defaultMsg}`;
+      }
+    });
+    return msg;
+  }
+
   /**
    * Clear list of pending tasks
    */
   clear() {
     this.tasks = [];
     this.tasksSource.next(this.tasks);
-  }
-
-  /**
-   * Enables to set localized message for window alert
-   * @param message that appears inside window alert
-   */
-  setCustomMessage(message: string) {
-    this.customMsg = message;
   }
 }

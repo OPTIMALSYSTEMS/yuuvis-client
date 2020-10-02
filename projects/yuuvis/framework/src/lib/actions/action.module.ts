@@ -20,6 +20,7 @@ import { FollowUpActionComponent } from './actions/follow-up-action/follow-up-ac
 import { FollowUpComponent } from './actions/follow-up-action/follow-up/follow-up.component';
 import { MoveActionComponent } from './actions/move-action/move-action';
 import { MoveComponent } from './actions/move-action/move/move.component';
+import { ReferenceActionComponent } from './actions/reference-action/reference-action';
 import { UploadActionComponent } from './actions/upload-action/upload-action';
 import { UploadComponent } from './actions/upload-action/upload/upload.component';
 
@@ -34,7 +35,8 @@ export const entryComponents = [
   MoveActionComponent,
   MoveComponent,
   FollowUpActionComponent,
-  FollowUpComponent
+  FollowUpComponent,
+  ReferenceActionComponent
 ];
 
 /**
@@ -81,7 +83,8 @@ export const entryComponents = [
     MoveActionComponent,
     MoveComponent,
     FollowUpComponent,
-    FollowUpActionComponent
+    FollowUpActionComponent,
+    ReferenceActionComponent
   ],
   entryComponents
 })

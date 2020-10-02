@@ -25,6 +25,7 @@ import { ContentPreviewService } from './service/content-preview.service';
 export class ContentPreviewComponent implements OnInit, OnDestroy, AfterViewInit {
   private _dmsObject: DmsObject;
   isUndocked: boolean;
+  loading = true;
 
   get undockWin(): Window {
     return ContentPreviewService.getUndockWin();
@@ -40,14 +41,9 @@ export class ContentPreviewComponent implements OnInit, OnDestroy, AfterViewInit
     // generate preview URI with streamID to enable refresh if file was changed
     !object || !object.content || !object.content.size
       ? this.contentPreviewService.resetSource()
-      : this.contentPreviewService.createPreviewUrl(
-          object.id,
-          object.content,
-          object.version,
-          this.dmsObject2 && this.dmsObject2.content,
-          this.dmsObject2 && this.dmsObject2.version
-        );
+      : this.contentPreviewService.createPreviewUrl(object.id, object.content, object.version, this.dmsObject2?.content, this.dmsObject2?.version);
     this._dmsObject = object;
+    this.loading = !object.content ? false : true;
   }
 
   get dmsObject() {
@@ -169,9 +165,12 @@ export class ContentPreviewComponent implements OnInit, OnDestroy, AfterViewInit
     if (iframe) {
       fromEvent(iframe, 'load')
         .pipe(takeUntilDestroy(this))
-        .subscribe((res) => {
-          setTimeout(() => this.searchPDF(this.searchTerm, iframe), 100);
-        });
+        .subscribe((res) =>
+          setTimeout(() => {
+            this.loading = false;
+            this.searchPDF(this.searchTerm, iframe);
+          }, 100)
+        );
     }
   }
 

@@ -130,14 +130,14 @@ export class ObjectFormEditComponent implements OnDestroy {
       this.messages.formError = res['yuv.framework.object-form-edit.save.error'];
     });
 
-    this.pendingChanges.setCustomMessage(this.translate.instant('yuv.framework.object-form-edit.pending-changes.alert'));
+    // this.pendingChanges.setCustomMessage(this.translate.instant('yuv.framework.object-form-edit.pending-changes.alert'));
   }
 
   private startPending() {
     // because this method will be called every time the form status changes,
     // pending task will only be started once until it was finished
     if (!this.pendingChanges.hasPendingTask(this.pendingTaskId || ' ')) {
-      this.pendingTaskId = this.pendingChanges.startTask();
+      this.pendingTaskId = this.pendingChanges.startTask(this.translate.instant('yuv.framework.object-form-edit.pending-changes.alert'));
     }
   }
 

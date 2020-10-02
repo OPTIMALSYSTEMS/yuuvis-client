@@ -10,6 +10,9 @@ import { YuvConfig, YuvConfigLanguages } from './config.interface';
 })
 export class ConfigService {
   static GLOBAL_MAIN_CONFIG = '/user/globalsettings/main-config';
+  static GLOBAL_MAIN_CONFIG_LANG(iso = 'en') {
+    return ConfigService.GLOBAL_MAIN_CONFIG + '-language-' + iso;
+  }
 
   private cfg: YuvConfig = null;
   /**

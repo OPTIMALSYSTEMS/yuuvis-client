@@ -33,22 +33,21 @@ export class CoreInit {
   initialize(): Promise<boolean> {
     return new Promise((resolve, reject) => {
       this.deviceService.init();
-
-      forkJoin(this.loadConfig(), this.authService.init()).subscribe(
-        (res) => {
-          resolve(true);
-        },
-        (err) => {
-          this.logger.error(err);
-          reject();
-        }
-      );
+      this.loadConfig()
+        .pipe(switchMap(() => this.authService.init()))
+        .subscribe(
+          (res) => resolve(true),
+          (err) => {
+            this.logger.error(err);
+            reject();
+          }
+        );
     });
   }
 
   private loadConfig() {
     // getting a string means that we got an URL to load the config from
-    let config = !Array.isArray(this.coreConfig.main)
+    return (!Array.isArray(this.coreConfig.main)
       ? of([this.coreConfig.main])
       : forkJoin(
           // TODO: what if apiWeb path is changed via config?
@@ -60,9 +59,8 @@ export class CoreInit {
               })
             )
           )
-        );
-
-    return config.pipe(
+        )
+    ).pipe(
       map((res) =>
         res.reduce((acc, x) => {
           // merge object values on 2nd level
@@ -71,13 +69,7 @@ export class CoreInit {
         }, {})
       ),
       tap((res: YuvConfig) => this.configService.set(res)),
-      switchMap((res: YuvConfig) => {
-        return this.authService.initUser().pipe(
-          catchError((e) => {
-            return of(true);
-          })
-        );
-      })
+      switchMap((res: YuvConfig) => this.authService.initUser().pipe(catchError((e) => of(true))))
     );
   }
 }

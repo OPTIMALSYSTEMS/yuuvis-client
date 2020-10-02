@@ -90,6 +90,14 @@ export class SettingsComponent implements OnInit {
     this.userConfig.exportMainConfig();
   }
 
+  importLanguage(e: any, iso) {
+    this.userConfig.importLanguage(e, iso).subscribe(() => window.confirm('Application requires reload!') && window.location.reload());
+  }
+
+  exportLanguage(iso) {
+    this.userConfig.exportLanguage(iso);
+  }
+
   clearCache() {
     const actions = [
       this.cache.history && this.cacheService.clear((key: string) => !key.startsWith('yuv.core') && !key.startsWith('yuv.app')),

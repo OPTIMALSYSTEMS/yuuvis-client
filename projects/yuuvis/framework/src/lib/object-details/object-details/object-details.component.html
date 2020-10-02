@@ -3,7 +3,7 @@
   class="object-details"
   [title]="dmsObject.title"
   (yuvFileDrop)="onFileDropped($event)"
-  [yuvFileDropOptions]="{ disabled: disableFileDrop || dmsObject.contentStreamAllowed === 'notallowed', label: fileDropLabel }"
+  [yuvFileDropOptions]="{ disabled: disableFileDrop || dmsObject.contentStreamAllowed === 'notallowed' || isRetentionActive, label: fileDropLabel }"
   [description]="dmsObject.description"
   [yuvBusyOverlay]="busy"
 >

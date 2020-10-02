@@ -144,6 +144,22 @@
           <button (click)="exportMainConfig()">{{ 'yuv.client.state.settings.config.main-config.export' | translate }}</button>
         </div>
       </div>
+
+      <ng-container *ngFor="let locale of clientLocales">
+        <div class="setting settings__row" *ngIf="hasManageSettingsRole">
+          <div class="label">{{ 'yuv.client.state.settings.language' | translate }} ({{ locale.iso }})</div>
+          <div class="value buttons">
+            <yuv-file-picker
+              [label]="'yuv.client.state.settings.config.main-config.import' | translate"
+              [accept]="'.json'"
+              [output]="'text'"
+              (fileSelected)="importLanguage($event, locale.iso)"
+            >
+            </yuv-file-picker>
+            <button (click)="exportLanguage(locale.iso)">{{ 'yuv.client.state.settings.config.main-config.export' | translate }}</button>
+          </div>
+        </div>
+      </ng-container>
     </div>
   </div>
 </div>
