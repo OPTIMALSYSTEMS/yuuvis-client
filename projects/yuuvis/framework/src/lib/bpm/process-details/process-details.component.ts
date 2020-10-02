@@ -17,19 +17,19 @@ export class ProcessDetailsComponent {
   @Input() emptyMessage: string;
   @Input()
   set objectId(id: string) {
-    if (id) {
-      this.dmsObject$ = this.dmsServide.getDmsObject(id).pipe(
-        catchError((error) => {
-          this.contextError = this.translate.instant('yuv.client.state.object.context.load.error');
-          return of(null);
-        })
-      );
-    }
+    this.dmsObject$ = id
+      ? this.dmsServide.getDmsObject(id).pipe(catchError((error) => this.handleObjectError()))
+      : (this.dmsObject$ = this.handleObjectError());
   }
 
   @Output() remove = new EventEmitter<boolean>();
 
   constructor(private dmsServide: DmsService, private translate: TranslateService) {}
+
+  private handleObjectError(): Observable<null> {
+    this.contextError = this.translate.instant('yuv.client.state.object.context.load.error');
+    return of(null);
+  }
 
   removeBpmObject() {
     this.remove.emit(true);
