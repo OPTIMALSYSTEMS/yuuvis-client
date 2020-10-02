@@ -1,7 +1,7 @@
 import { Component, ComponentFactoryResolver, EventEmitter, Input, OnDestroy, Output, Type, ViewChild, ViewContainerRef } from '@angular/core';
 import { NavigationStart, Router } from '@angular/router';
 import { DmsObject } from '@yuuvis/core';
-import { filter, take } from 'rxjs/operators';
+import { filter, finalize, take, tap } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { clear } from '../../svg.generated';
@@ -39,7 +39,8 @@ export class ActionMenuComponent implements OnDestroy {
   /**
    * Specifies the visibility of the menu.
    */
-  @Input() set visible(visible: boolean) {
+  @Input()
+  set visible(visible: boolean) {
     if (!this.showMenu && visible) {
       this.showActionMenu();
     } else if (this.showMenu && !visible) {
@@ -90,16 +91,16 @@ export class ActionMenuComponent implements OnDestroy {
 
   private getActions() {
     this.loading = true;
-    this.actionService.getActionsList(this.selection, this.viewContainerRef).subscribe(
-      (actionsList) => {
-        this.actionLists.common = actionsList.filter((actionListEntry) => actionListEntry.action.group === 'common');
-        this.actionLists.further = actionsList.filter((actionListEntry) => actionListEntry.action.group === 'further');
-        this.loading = false;
-      },
-      (err) => {
-        this.loading = false;
-      }
-    );
+    this.actionService
+      .getActionsList(this.selection, this.viewContainerRef)
+      .pipe(
+        finalize(() => (this.loading = false)),
+        tap((actionsList) => {
+          this.actionLists.common = actionsList.filter((actionListEntry) => actionListEntry.action.group === 'common');
+          this.actionLists.further = actionsList.filter((actionListEntry) => actionListEntry.action.group === 'further');
+        })
+      )
+      .subscribe();
   }
 
   hide() {
