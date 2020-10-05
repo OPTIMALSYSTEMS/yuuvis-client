@@ -320,6 +320,8 @@
   "yuv.client.state.settings.title": "Settings",
   "yuv.client.state.versions.compare.label": "version {{version}}",
   "yuv.client.state.versions.header.title": "Versions",
+  "yuv.framework.bpm.inbox.confirm": "Confirm follow-up",
+  "yuv.framework.bpm.process.remove": "Remove process",
   "yuv.framework.inbox-list.inbox": "Inbox",
   "yuv.framework.process-list.process": "My processes"
 }

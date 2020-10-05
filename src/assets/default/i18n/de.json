@@ -320,6 +320,8 @@
   "yuv.client.state.settings.title": "Einstellungen",
   "yuv.client.state.versions.compare.label": "Version {{version}}",
   "yuv.client.state.versions.header.title": "Versionen",
+  "yuv.framework.bpm.inbox.confirm": "Wiedervorlage bestätiegen",
+  "yuv.framework.bpm.process.remove": "BPM Process entfernen",
   "yuv.framework.inbox-list.inbox": "Eingangskorb",
   "yuv.framework.process-list.process": "Meine Prozesse"
 }

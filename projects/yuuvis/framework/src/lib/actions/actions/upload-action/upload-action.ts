@@ -17,7 +17,7 @@ export class UploadActionComponent extends DmsObjectTarget implements ComponentA
   header: string;
   label: string;
   description: string;
-  priority = 7;
+  priority = 2;
   iconSrc = contentUpload.data;
   group = 'common';
   range = SelectionRange.SINGLE_SELECT;
