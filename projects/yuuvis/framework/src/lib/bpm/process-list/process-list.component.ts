@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { InboxItem } from '@yuuvis/core';
 import { ResponsiveDataTableComponent, ViewMode } from './../../components/responsive-data-table/responsive-data-table.component';
 
 interface HeaderDetails {
@@ -16,10 +17,10 @@ export class ProcessListComponent {
   @ViewChild('dataTable')
   set dataTable(data: ResponsiveDataTableComponent) {
     setTimeout(() => {
-      data.selectRows();
-      // data.gridOptions.api.getDisplayedRowAtIndex(0).setSelected(true);
-      // data.gridOptions.api.forEachNode((node) => (node.rowIndex === 0 ? node.setSelected(true) : node.setSelected(false)));
-    }, 2000);
+      if (this.processData.rows[0] instanceof InboxItem) {
+        data.selectRows();
+      }
+    }, 1500);
   }
   private _processData: any;
   private _viewMode: ViewMode;
@@ -28,6 +29,8 @@ export class ProcessListComponent {
   @Input() layoutOptionsKey: string;
   @Input()
   set processData(data) {
+    console.log(data);
+
     this._processData = data;
   }
   get processData() {

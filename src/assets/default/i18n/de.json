@@ -34,6 +34,8 @@
   "yuv.framework.action-menu.action.move.dms.object.picker.input.description": "Andernfalls allgemeiner Ablageort",
   "yuv.framework.action-menu.action.move.dms.object.picker.input.label": "Zielordner",
   "yuv.framework.action-menu.action.move.dms.object.picker.title": "Verschieben nach",
+  "yuv.framework.action-menu.action.show.references.description": "Zeigt Referenzen auf dieses Objekt in einer Trefferliste an.",
+  "yuv.framework.action-menu.action.show.references.label": "Referenzen anzeigen",
   "yuv.framework.action-menu.action.upload.dms.object.content.add.description": "Fügt dem Objekt eine Dokumentdatei hinzu.",
   "yuv.framework.action-menu.action.upload.dms.object.content.add.label": "Dokumentdatei hinzufügen",
   "yuv.framework.action-menu.action.upload.dms.object.content.noFile": "Keine Datei ausgewählt",
@@ -279,9 +281,11 @@
   "yuv.client.state.dashboard.title": "Dashboard",
   "yuv.client.state.filter-configuration.panel.description": "Konfiguration der Suchfilter nach Objekttyp",
   "yuv.client.state.filter-configuration.panel.title": "Filterkonfiguration",
+  "yuv.client.state.inbox.list.empty": "Klasse, nichts zu tun ;-)",
   "yuv.client.state.inbox.title": "Eingangskorb",
   "yuv.client.state.not-found.description": "Das Objekt konnte nicht geladen werden.",
   "yuv.client.state.not-found.title": "Nicht gefunden",
+  "yuv.client.state.process.list.empty": "Es gibt keine aktiven Prozesse",
   "yuv.client.state.process.title": "Meine Prozesse",
   "yuv.client.state.result.title": "Suchergebnis",
   "yuv.client.state.settings.cache.clear.error": "Anwendungscache konnte nicht geleert werden",
@@ -316,8 +320,8 @@
   "yuv.client.state.settings.title": "Einstellungen",
   "yuv.client.state.versions.compare.label": "Version {{version}}",
   "yuv.client.state.versions.header.title": "Versionen",
+  "yuv.framework.bpm.inbox.confirm": "Wiedervorlage bestätiegen",
+  "yuv.framework.bpm.process.remove": "BPM Process entfernen",
   "yuv.framework.inbox-list.inbox": "Eingangskorb",
-  "yuv.framework.process-list.process": "Meine Prozesse",
-  "yuv.client.state.inbox.list.empty": "Klasse, nichts zu tun ;-)",
-  "yuv.client.state.process.list.empty": "Es gibt keine aktiven Prozesse"
+  "yuv.framework.process-list.process": "Meine Prozesse"
 }

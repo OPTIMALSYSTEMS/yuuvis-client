@@ -390,6 +390,8 @@ export class SearchFilter {
   public static OPERATOR = {
     /** equal */
     EQUAL: 'eq',
+    /** eequal */
+    EEQUAL: 'eeq',
     /** match at least one of the provided values (value has to be an array)  */
     IN: 'in',
     /** greater than */

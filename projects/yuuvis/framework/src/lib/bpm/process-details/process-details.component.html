@@ -1,0 +1,15 @@
+<ng-container *ngIf="dmsObject$ | async as object; else empty">
+  <yuv-object-details 
+    [disableFileDrop]="true"
+    [dmsObject]="object"
+    [panelOrder]="['summary', 'preview']"
+    [layoutOptionsKey]="layoutOptionsKey"
+  ></yuv-object-details>
+</ng-container>
+
+<ng-template #empty>
+  <section class="empty error" *ngIf="contextError">
+    <yuv-context-error  [contextError]="contextError"></yuv-context-error>
+    <button class="secondary" (click)="removeBpmObject()">{{emptyMessage}}</button>
+  </section> 
+</ng-template>

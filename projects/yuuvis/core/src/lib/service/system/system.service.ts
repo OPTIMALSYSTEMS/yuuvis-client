@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
-import { forkJoin, Observable, of, ReplaySubject } from 'rxjs';
-import { catchError, map, tap } from 'rxjs/operators';
+import { EMPTY, forkJoin, Observable, of, ReplaySubject } from 'rxjs';
+import { catchError, map, switchMap, tap } from 'rxjs/operators';
 import { DmsObject } from '../../model/dms-object.model';
 import { ApiBase } from '../backend/api.enum';
 import { BackendService } from '../backend/backend.service';
 import { AppCacheService } from '../cache/app-cache.service';
 import { Logger } from '../logger/logger';
 import { Utils } from './../../util/utils';
+import { AuthData } from './../auth/auth.service';
 import {
   BaseObjectTypeField,
   Classification,
@@ -30,6 +31,10 @@ import {
   SystemDefinition
 } from './system.interface';
 
+interface Localization {
+  [key: string]: string;
+}
+
 /**
  * Providing system definitions.
  */
@@ -38,10 +43,11 @@ import {
 })
 export class SystemService {
   private STORAGE_KEY = 'yuv.core.system.definition';
+  private STORAGE_KEY_AUTH_DATA = 'yuv.core.auth.data';
   // cached icons to avaoid backend calls (session cache)
   private iconCache = {};
 
-  private system: SystemDefinition;
+  public system: SystemDefinition;
   private systemSource = new ReplaySubject<SystemDefinition>();
   public system$: Observable<SystemDefinition> = this.systemSource.asObservable();
 
@@ -611,16 +617,19 @@ export class SystemService {
    * @param user User to fetch definition for
    */
   private fetchSystemDefinition(): Observable<boolean> {
-    const fetchTasks = [this.backend.get('/dms/schema/native.json', ApiBase.core), this.fetchLocalizations()];
-
-    return forkJoin(fetchTasks).pipe(
+    return this.appCache.getItem(this.STORAGE_KEY_AUTH_DATA).pipe(
+      switchMap(({ language }: AuthData) => {
+        this.backend.setHeader('Accept-Language', language);
+        const fetchTasks = [this.backend.get('/dms/schema/native.json', ApiBase.core), this.fetchLocalizations()];
+        return forkJoin(fetchTasks);
+      }),
       catchError((error) => {
         this.logger.error('Error fetching recent version of system definition from server.', error);
         this.systemSource.error('Error fetching recent version of system definition from server.');
         return of(null);
       }),
       map((data) => {
-        if (data && data.length) {
+        if (data?.length) {
           this.setSchema(data[0], data[1]);
         }
         return !!data;
@@ -739,7 +748,8 @@ export class SystemService {
       lastModificationDate: schemaResponse.lastModificationDate,
       objectTypes: [...objectTypes, ...floatingTypes],
       secondaryObjectTypes,
-      i18n: localizedResource
+      i18n: localizedResource,
+      allFields: propertiesQA
     };
     this.appCache.setItem(this.STORAGE_KEY, this.system).subscribe();
     this.systemSource.next(this.system);
@@ -760,17 +770,10 @@ export class SystemService {
       schemaTypeDefinition.secondaryObjectTypeId
         .filter((sot) => sot.static)
         .map((sot) => sot.value)
-        .forEach((sotID) => {
-          objectTypesQA[sotID].propertyReference.forEach((pr) => {
-            objectTypeFieldIDs.push(pr.value);
-          });
-        });
+        .forEach((sotID) => objectTypesQA[sotID].propertyReference.forEach((pr) => objectTypeFieldIDs.push(pr.value)));
     }
 
-    let fields = objectTypeFieldIDs.map((id) => ({
-      ...propertiesQA[id],
-      _internalType: this.getInternalFormElementType(propertiesQA[id], 'propertyType')
-    }));
+    let fields = objectTypeFieldIDs.map((id) => ({ ...propertiesQA[id], _internalType: this.getInternalFormElementType(propertiesQA[id], 'propertyType') }));
 
     // also resolve properties of the base type
     if (schemaTypeDefinition.baseId !== schemaTypeDefinition.id && !!objectTypesQA[schemaTypeDefinition.baseId]) {
@@ -837,8 +840,10 @@ export class SystemService {
     return { ...field, label: this.getLocalizedResource(`${field.id}_label`), name: field.id, type: field.propertyType };
   }
 
-  updateLocalizations(): Observable<any> {
-    return this.fetchLocalizations().pipe(
+  updateLocalizations(iso?: string): Observable<any> {
+    return this.appCache.getItem(this.STORAGE_KEY_AUTH_DATA).pipe(
+      switchMap((authData: any) => (iso ? this.appCache.setItem(this.STORAGE_KEY_AUTH_DATA, { ...authData, language: iso }) : EMPTY)),
+      switchMap(() => this.fetchLocalizations()),
       tap((res) => {
         this.system.i18n = res;
         this.appCache.setItem(this.STORAGE_KEY, this.system).subscribe();
@@ -847,7 +852,7 @@ export class SystemService {
     );
   }
 
-  private fetchLocalizations(): Observable<any> {
+  private fetchLocalizations(): Observable<Localization> {
     return this.backend.get('/resources/text');
   }
 }

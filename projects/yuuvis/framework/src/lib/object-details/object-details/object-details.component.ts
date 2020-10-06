@@ -62,6 +62,7 @@ export class ObjectDetailsComponent implements OnDestroy {
   fileDropLabel: string;
   contextError: string = null;
   objectTypeId: string;
+  isRetentionActive = false;
   private _dmsObject: DmsObject;
   private _objectId: string;
 
@@ -80,6 +81,13 @@ export class ObjectDetailsComponent implements OnDestroy {
         : this.translate.instant('yuv.framework.object-details.filedrop.content.replace');
     } else {
       this.objectTypeId = null;
+    }
+    this.isRetentionActive = false;
+    if (object && object.data['system:rmStartOfRetention'] && object.data['system:rmExpirationDate']) {
+      const currentDate = new Date();
+      const retentionStart = new Date(object.data['system:rmStartOfRetention']);
+      const retentionEnd = new Date(object.data['system:rmExpirationDate']);
+      this.isRetentionActive = retentionStart <= currentDate && currentDate <= retentionEnd;
     }
   }
 
