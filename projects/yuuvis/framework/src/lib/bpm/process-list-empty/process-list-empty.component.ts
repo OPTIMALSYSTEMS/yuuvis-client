@@ -8,6 +8,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 export class ProcessListEmptyComponent {
   @Input() state: string;
   @Input() message: string;
+  @Input() headerDetails: { title: string; description: string; icon: string };
   @Output() refresh = new EventEmitter<boolean>();
 
   constructor() {}

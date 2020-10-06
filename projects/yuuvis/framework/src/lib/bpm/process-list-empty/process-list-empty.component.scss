@@ -24,4 +24,23 @@
       cursor: pointer;
     }
   }
+
+  h1 {
+    position: absolute;
+    top: calc(var(--app-pane-padding) * 3);
+    left: 0;
+    right: 0;
+    display: inline-block;
+    max-width: none;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 5em;
+    margin: 0;
+    padding: var(--app-pane-padding);
+    opacity: 0.1;
+    color: var(--text-color-caption);
+    pointer-events: none;
+    z-index: 0;
+  }
 }
