@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
-import { InboxItem } from './../../../../../core/src/lib/service/bpm/model/bpm.model';
+import { InboxItem } from '@yuuvis/core';
 import { ResponsiveDataTableComponent, ViewMode } from './../../components/responsive-data-table/responsive-data-table.component';
 
 interface HeaderDetails {
