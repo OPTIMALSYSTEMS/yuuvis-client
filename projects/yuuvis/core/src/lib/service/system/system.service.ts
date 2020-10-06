@@ -618,8 +618,8 @@ export class SystemService {
    */
   private fetchSystemDefinition(): Observable<boolean> {
     return this.appCache.getItem(this.STORAGE_KEY_AUTH_DATA).pipe(
-      switchMap(({ language }: AuthData) => {
-        this.backend.setHeader('Accept-Language', language);
+      switchMap((data: AuthData) => {
+        this.backend.setHeader('Accept-Language', data?.language);
         const fetchTasks = [this.backend.get('/dms/schema/native.json', ApiBase.core), this.fetchLocalizations()];
         return forkJoin(fetchTasks);
       }),
