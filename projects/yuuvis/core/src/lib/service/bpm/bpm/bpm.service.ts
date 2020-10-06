@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-import { flatMap, map, tap } from 'rxjs/operators';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { finalize, flatMap, map, tap } from 'rxjs/operators';
 import { ApiBase } from '../../backend/api.enum';
 import { BackendService } from '../../backend/backend.service';
 import { ProcessData, ProcessDefinitionKey, ProcessInstance, ProcessResponse, TaskData, TaskDataResponse } from '../model/bpm.model';
@@ -14,10 +14,15 @@ import { ProcessData, ProcessDefinitionKey, ProcessInstance, ProcessResponse, Ta
 export class BpmService {
   private readonly bpmProcessUrl = '/bpm/process/instances';
   private readonly bpmTaskUrl = '/bpm/tasks';
+
+  private loadingBpmDataSource = new BehaviorSubject<boolean>(false);
+  public loadingBpmData$: Observable<boolean> = this.loadingBpmDataSource.asObservable();
+
   constructor(private backendService: BackendService) {}
 
   getProcesses(url: string): Observable<unknown> {
-    return this.backendService.get(url);
+    this.loadingBpmDataSource.next(true);
+    return this.backendService.get(url).pipe(finalize(() => this.loadingBpmDataSource.next(false)));
   }
 
   getProcessInstances(processDefKey: ProcessDefinitionKey, includeProcessVar = true): Observable<ProcessData[]> {

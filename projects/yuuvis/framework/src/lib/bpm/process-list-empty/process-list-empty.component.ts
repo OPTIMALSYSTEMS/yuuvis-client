@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-
+import { BpmService } from '@yuuvis/core';
+import { Observable } from 'rxjs';
 @Component({
   selector: 'app-process-list-empty',
   templateUrl: './process-list-empty.component.html',
@@ -11,7 +12,8 @@ export class ProcessListEmptyComponent {
   @Input() headerDetails: { title: string; description: string; icon: string };
   @Output() refresh = new EventEmitter<boolean>();
 
-  constructor() {}
+  loading$: Observable<boolean> = this.bpmService.loadingBpmData$;
+  constructor(private bpmService: BpmService) {}
 
   refreshList() {
     this.refresh.emit(true);
