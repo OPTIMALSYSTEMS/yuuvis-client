@@ -370,12 +370,8 @@ export class ObjectCreateComponent implements OnDestroy {
 
   afoSelectFloatingSOT(sot: { id: string; label: string }) {
     this.objCreateService.setNewState({ busy: true });
-    const objectType = !!this.selectedObjectType.floatingParentType
-      ? this.system.getObjectType(this.selectedObjectType.floatingParentType)
-      : this.selectedObjectType;
-
-    if (this.system.isFloatingObjectType(objectType)) {
-      this.system.getFloatingObjectTypeForm(objectType.id, Situation.CREATE).subscribe((res) => {
+    if (!!this.selectedObjectType.floatingParentType) {
+      this.system.getFloatingObjectTypeForm(this.selectedObjectType.id, Situation.CREATE).subscribe((res) => {
         this.afoCreate.floatingSOT.selected = {
           sot: {
             id: sot?.id || 'none',

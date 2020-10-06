@@ -294,55 +294,6 @@ export class ObjectFormEditComponent implements OnDestroy {
     );
   }
 
-  // create the formOptions required by object form component
-  // private creffffffffffffffateObjectForm(dmsObject: DmsObject) {
-  //   this.busy = true;
-  //   this.isExtendableObjectType = this.systemService.isExtendableObjectType(this.systemService.getObjectType(dmsObject.objectTypeId));
-  //   this.isFloatingObjectType = this.systemService.isFloatingObjectType(this.systemService.getObjectType(dmsObject.objectTypeId));
-
-  //   if (this.isFloatingObjectType) {
-  //     this.formOptions = null;
-  //     this.getApplicableSecondaries(dmsObject);
-  //     this.systemService.getFloatingObjectTypeForms(dmsObject, Situation.EDIT).subscribe(
-  //       (res) => {
-  //         this.combinedFormInput = {
-  //           formModels: res,
-  //           data: dmsObject.data,
-  //           disabled: this.formDisabled || !this.isEditable(dmsObject),
-  //           enableEditSOT: true
-  //         };
-  //         this.busy = false;
-  //       },
-  //       (err) => {
-  //         this.busy = false;
-  //       }
-  //     );
-  //   } else {
-  //     this.systemService.getObjectTypeForm(dmsObject.objectTypeId, Situation.EDIT).subscribe(
-  //       (model) => {
-  //         this.combinedFormInput = null;
-  //         this.formOptions = {
-  //           formModel: model,
-  //           data: dmsObject.data,
-  //           objectId: dmsObject.id,
-  //           disabled: this.formDisabled || !this.isEditable(dmsObject)
-  //         };
-  //         if (dmsObject.contextFolder) {
-  //           this.formOptions.context = {
-  //             id: dmsObject.contextFolder.id,
-  //             title: dmsObject.contextFolder.title,
-  //             objectTypeId: dmsObject.contextFolder.objectTypeId
-  //           };
-  //         }
-  //         this.busy = false;
-  //       },
-  //       (err) => {
-  //         this.busy = false;
-  //       }
-  //     );
-  //   }
-  // }
-
   private getApplicableSecondaries(dmsObject: DmsObject) {
     this.fsot = {
       applicableTypes: {

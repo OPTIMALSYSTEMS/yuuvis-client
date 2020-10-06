@@ -39,15 +39,18 @@ export class ContentPreviewComponent implements OnInit, OnDestroy, AfterViewInit
   @Input()
   set dmsObject(object: DmsObject) {
     // generate preview URI with streamID to enable refresh if file was changed
-    !object || !object.content || !object.content.size
-      ? this.contentPreviewService.resetSource()
-      : this.contentPreviewService.createPreviewUrl(
-          object.id,
-          object.content,
-          object.version,
-          this.dmsObject2 && this.dmsObject2.content,
-          this.dmsObject2 && this.dmsObject2.version
-        );
+    if (!object || !object.content || !object.content.size) {
+      this.contentPreviewService.resetSource();
+      this.loading = false;
+    } else {
+      this.contentPreviewService.createPreviewUrl(
+        object.id,
+        object.content,
+        object.version,
+        this.dmsObject2 && this.dmsObject2.content,
+        this.dmsObject2 && this.dmsObject2.version
+      );
+    }
     this._dmsObject = object;
   }
 

@@ -99,7 +99,7 @@ export class CombinedObjectFormComponent implements OnInit, IObjectForm {
 
   private getCombinedFormState(): FormStatusChangedEvent {
     this.combinedFormState = {
-      dirty: (!!this.formsChanged && !!this.mainFormOptions) || (this.extensionForms && this.extensionForms.length > 0),
+      dirty: this.formsChanged && (!!this.mainFormOptions || (this.extensionForms && this.extensionForms.length > 0)),
       indexdataChanged: false,
       invalid: false,
       data: {}

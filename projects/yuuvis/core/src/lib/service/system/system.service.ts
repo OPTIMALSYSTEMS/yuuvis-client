@@ -452,21 +452,28 @@ export class SystemService {
    */
   getFloatingObjectTypeForm(floatingObjectTypeID: string, situation?: string): Observable<any> {
     const floatingType = this.getObjectType(floatingObjectTypeID);
-    if (this.isFloatingObjectType(floatingType)) {
-      const querySotIDs = floatingType.secondaryObjectTypes.filter((sot) => {
-        const sotObj = this.getSecondaryObjectType(sot.id);
-        return (
-          !sot.static &&
-          (sotObj.classification?.includes(SecondaryObjectTypeClassification.PRIMARY) ||
-            sotObj.classification?.includes(SecondaryObjectTypeClassification.REQUIRED))
-        );
-      });
-      return this.backend.get(
-        Utils.buildUri(`/dms/form/${floatingType.floatingParentType}${querySotIDs.length ? `?sots=${querySotIDs.join('&sots=')}` : ''}`, { situation })
-      );
+    if (!!floatingType.floatingParentType) {
+      // get parent type
+      const parentType = this.getObjectType(floatingType.floatingParentType);
+
+      const querySotIDs = parentType.secondaryObjectTypes
+        .filter((sot) => {
+          const sotObj = this.getSecondaryObjectType(sot.id);
+          return !sot.static && sotObj.classification?.includes(SecondaryObjectTypeClassification.REQUIRED);
+        })
+        .map((sot) => sot.id);
+      return this.backend.get(this.buildFormFetchUri(floatingType.floatingParentType, [floatingObjectTypeID, ...querySotIDs], situation));
     } else {
       return of(null);
     }
+  }
+
+  private buildFormFetchUri(objectTypeID: string, sots?: string[], situation?: string): string {
+    const params = sots ? sots.map((sot) => `sots=${sot}`) : [];
+    if (situation) {
+      params.push(`situation=${situation}`);
+    }
+    return `/dms/form/${objectTypeID}${params.length ? `?${params.join('&')}` : ''}`;
   }
 
   /**
@@ -504,7 +511,8 @@ export class SystemService {
         }
       });
     }
-    const tasks = [this.backend.get(Utils.buildUri(`/dms/form/${ot.id}${querySotIDs.length ? `?sots=${querySotIDs.join('&sots=')}` : ''}`, { situation }))];
+    // const tasks = [this.backend.get(Utils.buildUri(`/dms/form/${ot.id}${querySotIDs.length ? `?sots=${querySotIDs.join('&sots=')}` : ''}`, { situation }))];
+    const tasks = [this.backend.get(this.buildFormFetchUri(ot.id, querySotIDs, situation))];
     if (extendableSotIDs.length) {
       tasks.push(this.getObjectTypeForms(extendableSotIDs, situation));
     }
