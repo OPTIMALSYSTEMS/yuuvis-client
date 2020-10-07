@@ -258,6 +258,10 @@ $avatar-size-small: 80px;
               }
             }
           }
+
+          &:last-child {
+            margin-bottom: calc(var(--app-pane-padding));
+          }
         }
       }
     }
