@@ -364,8 +364,18 @@ export class ObjectCreateComponent implements OnDestroy {
 
   afoSelectFloatingSOT(sot: { id: string; label: string }) {
     this.objCreateService.setNewState({ busy: true });
+    // ID of the object type that should be used for retrieving the form
+    let formObjectTypeID;
     if (!!this.selectedObjectType.floatingParentType) {
-      this.system.getFloatingObjectTypeForm(this.selectedObjectType.id, Situation.CREATE).subscribe((res) => {
+      // Object type that has been created from a floating object type
+      formObjectTypeID = this.selectedObjectType.id;
+    } else if (this.system.isFloatingObjectType(this.selectedObjectType)) {
+      // we selected a general object type upfront, and apply a type (primary FSOT) now
+      formObjectTypeID = sot.id;
+    }
+    if (!!formObjectTypeID) {
+      // Object type that has been created from a floating object type
+      this.system.getFloatingObjectTypeForm(formObjectTypeID, Situation.CREATE).subscribe((res) => {
         this.afoCreate.floatingSOT.selected = {
           sot: {
             id: sot?.id || 'none',
@@ -380,48 +390,7 @@ export class ObjectCreateComponent implements OnDestroy {
         };
         this.objCreateService.setNewState({ busy: false });
       });
-    } else {
     }
-
-    // const objectTypeIDs = [];
-
-    // // main object type may not have own fields
-    // if (objectType.fields.filter((f) => !f.id.startsWith('system:')).length) {
-    //   objectTypeIDs.push(objectType.id);
-    // }
-
-    // // required SOTs will also be applied
-    // objectType.secondaryObjectTypes
-    //   .filter((otSot) => !otSot.static)
-    //   .forEach((otSot) => {
-    //     const t = this.system.getSecondaryObjectType(otSot.id);
-    //     if (t.fields.length > 0 && t.classification && t.classification.includes(SecondaryObjectTypeClassification.REQUIRED)) {
-    //       objectTypeIDs.push(t.id);
-    //     }
-    //   });
-    // if (!!sot) {
-    //   objectTypeIDs.push(sot.id);
-    // }
-    // this.system.getObjectTypeForms(objectTypeIDs, Situation.CREATE).subscribe(
-    //   (res) => {
-    //     this.afoCreate.floatingSOT.selected = {
-    //       sot: {
-    //         id: sot?.id || 'none',
-    //         label: sot?.label || this.selectedObjectType.label
-    //       },
-    //       // TODO: also apply extraction data here
-    //       // TODO: If object is changed form should also get new data
-    //       combinedFormInput: {
-    //         formModels: res,
-    //         data: this.afoCreate?.dmsObject.items.length === 1 ? this.afoCreate.dmsObject.selected.data : {}
-    //       }
-    //     };
-    //     this.objCreateService.setNewState({ busy: false });
-    //   },
-    //   (err) => {
-    //     this.objCreateService.setNewState({ busy: false });
-    //   }
-    // );
   }
 
   afoCreateApprove(afoUploadNoticeSkip?: boolean) {

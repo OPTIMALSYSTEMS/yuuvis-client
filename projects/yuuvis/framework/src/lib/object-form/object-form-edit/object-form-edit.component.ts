@@ -49,6 +49,7 @@ export class ObjectFormEditComponent implements OnDestroy {
   // Used to finish the pending task when editing is done
   private pendingTaskId: string;
   private _dmsObject: DmsObject;
+  private _sourceDmsObject: DmsObject;
   private _secondaryObjectTypeIDs: string[];
 
   // will be set once an SOT has been added or removed
@@ -239,38 +240,13 @@ export class ObjectFormEditComponent implements OnDestroy {
     if (this.afoObjectForm) {
       this._dmsObject.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS] = [...this._secondaryObjectTypeIDs];
 
-      // remove ids that are part of both arrays
-      const remove = this._sotChanged.applied.filter((id) => !this._sotChanged.removed.includes(id));
-      const add = this._sotChanged.removed.filter((id) => !this._sotChanged.applied.includes(id));
-
-      this.afoObjectForm.removeForms(remove);
-
-      if (add.length) {
-        this.busy = true;
-        this.getCombinedFormAddInput([this._dmsObject.data[BaseObjectTypeField.OBJECT_TYPE_ID], ...add], true).subscribe((res: CombinedFormAddInput[]) => {
-          if (res.length > 0) {
-            this.afoObjectForm.addForms(res, this._dmsObject.data);
-            this.getApplicableSecondaries(this._dmsObject);
-          }
-          this._sotChanged = {
-            applied: [],
-            removed: [],
-            assignedPrimaryFSOT: false,
-            assignedGeneral: false
-          };
-          this.afoObjectForm.resetForm();
-          this.busy = false;
-        });
-      } else {
-        this._sotChanged = {
-          applied: [],
-          removed: [],
-          assignedPrimaryFSOT: false,
-          assignedGeneral: false
-        };
-        this.afoObjectForm.resetForm();
-        this.getApplicableSecondaries(this._dmsObject);
-      }
+      this.createObjectForm(this._dmsObject);
+      this._sotChanged = {
+        applied: [],
+        removed: [],
+        assignedPrimaryFSOT: false,
+        assignedGeneral: false
+      };
     }
   }
 
@@ -325,7 +301,10 @@ export class ObjectFormEditComponent implements OnDestroy {
           if (!alreadyAssignedPrimary) {
             this.fsot.applicableTypes.items.push(this.toSelectable(sot, dmsObject));
           }
-        } else if (!sot.classification?.includes(SecondaryObjectTypeClassification.REQUIRED)) {
+        } else if (
+          !sot.classification?.includes(SecondaryObjectTypeClassification.REQUIRED) &&
+          !!sot.classification?.includes(SecondaryObjectTypeClassification.NOT_EXTENDABLE)
+        ) {
           this.fsot.applicableSOTs.items.push(this.toSelectable(sot, dmsObject));
         }
       });
@@ -389,11 +368,11 @@ export class ObjectFormEditComponent implements OnDestroy {
     let sotIDs = this._dmsObject.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS] || [];
 
     if (isPrimaryFSOT) {
-      // primary and required FSOTs are not supposed to be edited (removed later on)
-      enableEditSOT = false;
-      // also add required SOTs
-      const rFSOTs = this.systemService.getRequiredFSOTs(this._dmsObject.objectTypeId).map((sot) => sot.id);
-      sotsToBeAdded = [...rFSOTs];
+      // // primary and required FSOTs are not supposed to be edited (removed later on)
+      // enableEditSOT = false;
+      // // also add required SOTs
+      // const rFSOTs = this.systemService.getRequiredFSOTs(this._dmsObject.objectTypeId).map((sot) => sot.id);
+      // sotsToBeAdded = [...rFSOTs];
       this._sotChanged.assignedPrimaryFSOT = true;
     }
     // add the selected FSOT
@@ -413,6 +392,7 @@ export class ObjectFormEditComponent implements OnDestroy {
           this.afoObjectForm.addForms(res, this._dmsObject.data);
           this.getApplicableSecondaries(this._dmsObject);
           this._sotChanged.applied = [...this._sotChanged.applied, ...sotsToBeAdded];
+          this._sotChanged.removed = this._sotChanged.removed.filter((sotId) => !sotsToBeAdded.includes(sotId));
         }
         this.busy = false;
       });
