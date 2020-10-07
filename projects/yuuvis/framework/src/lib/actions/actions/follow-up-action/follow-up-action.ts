@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { DmsObject, SystemService, TranslateService } from '@yuuvis/core';
+import { DmsObject, TranslateService } from '@yuuvis/core';
 import { of as observableOf } from 'rxjs';
 import { resubmission } from '../../../svg.generated';
 import { DmsObjectTarget } from '../../action-target';
@@ -23,7 +23,7 @@ export class FollowUpActionComponent extends DmsObjectTarget implements Componen
   range = SelectionRange.SINGLE_SELECT;
   component = FollowUpComponent;
 
-  constructor(private translate: TranslateService, private system: SystemService) {
+  constructor(private translate: TranslateService) {
     super();
     this.label = this.translate.instant(`yuv.framework.action-menu.action.follow-up.label`);
     this.description = this.translate.instant(`yuv.framework.action-menu.action.follow-up.description`);

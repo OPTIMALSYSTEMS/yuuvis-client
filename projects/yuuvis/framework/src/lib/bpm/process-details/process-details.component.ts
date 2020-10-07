@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { DmsObject, DmsService, TranslateService } from '@yuuvis/core';
+import { DmsObject, DmsService, ProcessDefinitionKey, TranslateService } from '@yuuvis/core';
 import { Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
@@ -17,9 +17,7 @@ export class ProcessDetailsComponent {
   @Input() emptyMessage: string;
   @Input()
   set objectId(id: string) {
-    this.dmsObject$ = id
-      ? this.dmsServide.getDmsObject(id).pipe(catchError((error) => this.handleObjectError(id)))
-      : (this.dmsObject$ = this.handleObjectError(id));
+    this.dmsObject$ = id ? this.dmsServide.getDmsObject(id).pipe(catchError((error) => this.handleObjectError(id))) : this.handleObjectError(id);
   }
 
   @Output() remove = new EventEmitter<boolean>();
@@ -27,7 +25,7 @@ export class ProcessDetailsComponent {
   constructor(private dmsServide: DmsService, private translate: TranslateService) {}
 
   private handleObjectError(id: string): Observable<null> {
-    this.contextError = id ? this.translate.instant('yuv.client.state.object.context.load.error') : null;
+    this.contextError = id || id === ProcessDefinitionKey.INVALID_TYPE ? this.translate.instant('yuv.client.state.object.context.load.error') : null;
     return of(null);
   }
 

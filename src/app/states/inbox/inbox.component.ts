@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { BpmEvent, BpmService, EventService, InboxService, TaskData, TranslateService } from '@yuuvis/core';
+import { BpmEvent, EventService, InboxService, ProcessDefinitionKey, TaskData, TranslateService } from '@yuuvis/core';
 import {
   arrowNext,
   edit,
@@ -42,7 +42,6 @@ export class InboxComponent implements OnInit, OnDestroy {
 
   constructor(
     private inboxService: InboxService,
-    private bpmService: BpmService,
     private translateService: TranslateService,
     private formatProcessDataService: FormatProcessDataService,
     private iconRegistry: IconRegistryService,
@@ -57,7 +56,7 @@ export class InboxComponent implements OnInit, OnDestroy {
 
   selectedItem(item) {
     this.selectedProcess = item;
-    this.objectId = item[0]?.documentId;
+    this.objectId = item[0]?.documentId ? item[0]?.documentId : ProcessDefinitionKey.INVALID_TYPE;
     this.itemIsSelected = true;
   }
 
