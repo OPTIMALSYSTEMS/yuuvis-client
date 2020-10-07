@@ -115,7 +115,7 @@
   "yuv.framework.object-create.header.title": "Objekt erstellen",
   "yuv.framework.object-create.notify.afo.cancel": "Der Ablageprozess ist unvollständig. Er kann später abgeschlossen werden.",
   "yuv.framework.object-create.notify.error": "Fehler beim Erstellen des Objekts",
-  "yuv.framework.object-create.pending-changes.alert": "Soll der begonnene Erstellprozess verworfen werden?",
+  "yuv.framework.object-create.pending-changes.alert": "Möchten Sie den begonnenen Erstellprozess verwerfen?",
   "yuv.framework.object-create.status.context": "Am Ablageort '{{title}}'",
   "yuv.framework.object-create.status.files": "Dateien: {{count}}",
   "yuv.framework.object-create.step.afo-indexdata": "Abschließen",
@@ -321,8 +321,8 @@
   "yuv.client.state.settings.title": "Einstellungen",
   "yuv.client.state.versions.compare.label": "Version {{version}}",
   "yuv.client.state.versions.header.title": "Versionen",
-  "yuv.framework.bpm.inbox.confirm": "Wiedervorlage bestätiegen",
-  "yuv.framework.bpm.process.remove": "BPM Process entfernen",
+  "yuv.framework.bpm.inbox.confirm": "Wiedervorlage bestätigen",
+  "yuv.framework.bpm.process.remove": "Prozess entfernen",
   "yuv.framework.inbox-list.inbox": "Eingangskorb",
   "yuv.framework.process-list.process": "Meine Prozesse"
 }
