@@ -301,7 +301,10 @@ export class ObjectFormEditComponent implements OnDestroy {
           if (!alreadyAssignedPrimary) {
             this.fsot.applicableTypes.items.push(this.toSelectable(sot, dmsObject));
           }
-        } else if (!sot.classification?.includes(SecondaryObjectTypeClassification.REQUIRED)) {
+        } else if (
+          !sot.classification?.includes(SecondaryObjectTypeClassification.REQUIRED) &&
+          !!sot.classification?.includes(SecondaryObjectTypeClassification.NOT_EXTENDABLE)
+        ) {
           this.fsot.applicableSOTs.items.push(this.toSelectable(sot, dmsObject));
         }
       });
