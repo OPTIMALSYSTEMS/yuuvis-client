@@ -22,7 +22,7 @@ export class BpmService {
 
   getProcesses(url: string): Observable<unknown> {
     this.loadingBpmDataSource.next(true);
-    return this.backendService.get(url).pipe(finalize(() => this.loadingBpmDataSource.next(false)));
+    return this.backendService.get(url).pipe(finalize(() => setTimeout(() => this.loadingBpmDataSource.next(false), 200)));
   }
 
   getProcessInstances(processDefKey: ProcessDefinitionKey, includeProcessVar = true): Observable<ProcessData[]> {

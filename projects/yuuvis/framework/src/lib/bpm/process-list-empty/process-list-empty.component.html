@@ -3,5 +3,5 @@
   <yuv-icon class="state-icon" [icon]="state"></yuv-icon>
   <span class="empty-message">{{message}}</span>
 
-  <yuv-icon (click)="refreshList()" class="refresh-icon" [ngClass]="{'loading': loading$ | async }" [icon]="'refresh'"></yuv-icon>
+  <yuv-icon (click)="refreshList()" class="refresh-icon" [ngClass]="{'loading': loading | async }" [icon]="'refresh'"></yuv-icon>
 </section>

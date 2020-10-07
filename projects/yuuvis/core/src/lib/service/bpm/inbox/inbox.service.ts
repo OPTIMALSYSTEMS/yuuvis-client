@@ -19,6 +19,13 @@ export class InboxService {
   constructor(private bpmService: BpmService) {}
 
   /**
+   * bpm Inbox data Loading status
+   */
+  get loadingInboxData$(): Observable<boolean> {
+    return this.bpmService.loadingBpmData$;
+  }
+
+  /**
    * get all Inbox tasks
    */
   getTasks(includeProcessVar = true): Observable<TaskData[]> {
