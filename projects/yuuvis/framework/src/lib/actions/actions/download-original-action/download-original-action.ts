@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { BackendService, DmsObject, TranslateService } from '@yuuvis/core';
 import { Observable, of as observableOf, of } from 'rxjs';
 import { DmsObjectTarget } from '../../action-target';
@@ -21,7 +21,7 @@ export class DownloadOriginalActionComponent extends DmsObjectTarget implements 
   group = 'common';
   range = SelectionRange.MULTI_SELECT;
 
-  constructor(private translate: TranslateService, private backend: BackendService, private router: Router, private route: ActivatedRoute) {
+  constructor(private translate: TranslateService, private backend: BackendService, private route: ActivatedRoute) {
     super();
     this.label = this.translate.instant('yuv.framework.action-menu.action.export.original.label');
     this.description = this.translate.instant('yuv.framework.action-menu.action.export.original.description');
