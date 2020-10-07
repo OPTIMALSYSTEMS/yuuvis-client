@@ -27,6 +27,13 @@ export class ProcessService {
   constructor(private bpmService: BpmService) {}
 
   /**
+   * bpm Process data Loading status
+   */
+  get loadingProcessData$(): Observable<boolean> {
+    return this.bpmService.loadingBpmData$;
+  }
+
+  /**
    * get all processes
    */
   getProcesses(): Observable<ProcessData[]> {

@@ -12,6 +12,7 @@ import {
   SearchFilterGroup,
   SearchQuery,
   SearchService,
+  SecondaryObjectTypeClassification,
   SystemService,
   TranslateService,
   UserService,
@@ -62,6 +63,9 @@ export class QuickSearchService {
     private userService: UserService,
     private searchService: SearchService
   ) {
+    // this.saveFilters(true, {});
+    // this.saveFilters(false, {});
+
     this.systemService.system$.subscribe((_) => {
       this.availableObjectTypes = this.systemService
         .getObjectTypes()
@@ -103,8 +107,8 @@ export class QuickSearchService {
     return Object.keys(groups).map((key) => ({ id: key, label: availableObjectTypeFields.find((f) => f.id === key).label, items: groups[key] }));
   }
 
-  getActiveTypes(query: SearchQuery) {
-    return this.searchService.aggregate(query, [BaseObjectTypeField.LEADING_OBJECT_TYPE_ID]).pipe(
+  getActiveTypes(query: SearchQuery, aggregations = [BaseObjectTypeField.LEADING_OBJECT_TYPE_ID]) {
+    return this.searchService.aggregate(query, aggregations).pipe(
       map((res: AggregateResult) => {
         return res.aggregations && res.aggregations.length
           ? res.aggregations[0].entries
@@ -113,6 +117,12 @@ export class QuickSearchService {
           : [];
       })
     );
+  }
+
+  getActiveSOTS(query: SearchQuery) {
+    return query.sots
+      .map((sot) => ({ id: sot, label: this.systemService.getLocalizedResource(`${sot}_label`) || sot, count: 0 }))
+      .sort(Utils.sortValues('label'));
   }
 
   getAvailableObjectTypesFields(selectedTypes = [], shared = true): Selectable[] {
@@ -135,6 +145,28 @@ export class QuickSearchService {
         value: f
       }))
       .sort(Utils.sortValues('label'));
+  }
+
+  updateTypesAndSots(query: SearchQuery, allTypes: string[], keep = false) {
+    const { types, sots } = query;
+    query.types = (allTypes || []).filter((t) => this.systemService.getObjectTypes().find((o) => o.id === t));
+    query.sots = (allTypes || []).filter((t) =>
+      this.systemService
+        .getSecondaryObjectTypes()
+        .filter(
+          (sot) =>
+            !sot.classification?.includes(SecondaryObjectTypeClassification.REQUIRED) &&
+            !sot.classification?.includes(SecondaryObjectTypeClassification.PRIMARY)
+        )
+        .find((o) => o.id === t)
+    );
+    // TODO:  test all types combination
+    if (keep && !query.types.length) {
+      query.types = types;
+    }
+    if (keep && !query.sots.length) {
+      query.sots = sots;
+    }
   }
 
   getActiveFilters(query: SearchQuery, filters: Selectable[], availableObjectTypeFields: Selectable[]) {
@@ -197,7 +229,7 @@ export class QuickSearchService {
   private parseStoredFilters(filters: string): any {
     let res = {};
     try {
-      res = JSON.parse(filters);
+      res = filters ? JSON.parse(filters) : {};
     } catch (e) {
       console.error(e);
     }

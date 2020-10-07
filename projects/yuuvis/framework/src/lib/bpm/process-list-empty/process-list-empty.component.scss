@@ -23,6 +23,17 @@
       opacity: 0.5;
       cursor: pointer;
     }
+    &.loading {
+      animation: loading infinite 0.8s linear;
+    }
+  }
+  @keyframes loading {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
   }
 
   h1 {
