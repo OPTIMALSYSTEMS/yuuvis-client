@@ -517,7 +517,6 @@ export class SystemService {
         }
       });
     }
-    // const tasks = [this.backend.get(Utils.buildUri(`/dms/form/${ot.id}${querySotIDs.length ? `?sots=${querySotIDs.join('&sots=')}` : ''}`, { situation }))];
     const tasks = [this.backend.get(this.buildFormFetchUri(ot.id, querySotIDs, situation))];
     if (extendableSotIDs.length) {
       tasks.push(this.getObjectTypeForms(extendableSotIDs, situation));

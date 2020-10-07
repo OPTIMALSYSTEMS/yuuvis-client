@@ -303,7 +303,7 @@ export class ObjectFormEditComponent implements OnDestroy {
           }
         } else if (
           !sot.classification?.includes(SecondaryObjectTypeClassification.REQUIRED) &&
-          !!sot.classification?.includes(SecondaryObjectTypeClassification.NOT_EXTENDABLE)
+          !sot.classification?.includes(SecondaryObjectTypeClassification.EXTENSION_ADD_FALSE)
         ) {
           this.fsot.applicableSOTs.items.push(this.toSelectable(sot, dmsObject));
         }
@@ -363,36 +363,34 @@ export class ObjectFormEditComponent implements OnDestroy {
 
   applyFSOT(sot: SecondaryObjectType, isPrimaryFSOT: boolean, popoverRef?: PopoverRef) {
     this.busy = true;
-    let sotsToBeAdded = [];
+    let sotToBeAdded: string;
     let enableEditSOT = true;
     let sotIDs = this._dmsObject.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS] || [];
 
     if (isPrimaryFSOT) {
-      // // primary and required FSOTs are not supposed to be edited (removed later on)
-      // enableEditSOT = false;
-      // // also add required SOTs
-      // const rFSOTs = this.systemService.getRequiredFSOTs(this._dmsObject.objectTypeId).map((sot) => sot.id);
-      // sotsToBeAdded = [...rFSOTs];
       this._sotChanged.assignedPrimaryFSOT = true;
     }
     // add the selected FSOT
     // may be NULL if general type is selected
     if (sot) {
-      sotsToBeAdded.push(sot.id);
+      sotToBeAdded = sot.id;
     } else {
       this._sotChanged.assignedGeneral = true;
     }
-    this._dmsObject.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS] = [...sotIDs, ...sotsToBeAdded];
+    this._dmsObject.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS] = [...sotIDs, sotToBeAdded];
 
     if (isPrimaryFSOT) {
       this.createObjectForm(this._dmsObject);
     } else {
-      this.getCombinedFormAddInput(sotsToBeAdded, enableEditSOT).subscribe((res: CombinedFormAddInput[]) => {
+      enableEditSOT = !this.systemService
+        .getSecondaryObjectType(sotToBeAdded)
+        .classification?.includes(SecondaryObjectTypeClassification.EXTENSION_REMOVE_FALSE);
+      this.getCombinedFormAddInput([sotToBeAdded], enableEditSOT).subscribe((res: CombinedFormAddInput[]) => {
         if (res.length > 0) {
           this.afoObjectForm.addForms(res, this._dmsObject.data);
           this.getApplicableSecondaries(this._dmsObject);
-          this._sotChanged.applied = [...this._sotChanged.applied, ...sotsToBeAdded];
-          this._sotChanged.removed = this._sotChanged.removed.filter((sotId) => !sotsToBeAdded.includes(sotId));
+          this._sotChanged.applied = [...this._sotChanged.applied, sotToBeAdded];
+          this._sotChanged.removed = this._sotChanged.removed.filter((sotId) => sotToBeAdded !== sotId);
         }
         this.busy = false;
       });

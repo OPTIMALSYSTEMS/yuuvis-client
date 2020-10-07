@@ -86,10 +86,7 @@ export class CombinedObjectFormComponent implements OnInit, IObjectForm {
 
   private canBeRemoved(id: string): boolean {
     const sot = this.system.getSecondaryObjectType(id);
-    return sot
-      ? !sot.classification ||
-          (!sot.classification.includes(SecondaryObjectTypeClassification.PRIMARY) && !sot.classification.includes(SecondaryObjectTypeClassification.REQUIRED))
-      : false;
+    return sot ? !sot.classification || !sot.classification.includes(SecondaryObjectTypeClassification.EXTENSION_REMOVE_FALSE) : false;
   }
 
   onFormStatusChanged(formId: string, evt: FormStatusChangedEvent) {
