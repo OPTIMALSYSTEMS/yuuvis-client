@@ -222,7 +222,7 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
    */
   aggregate() {
     // if (this._inline) return;
-    if (this.searchQuery.term || (this.searchQuery.types && this.searchQuery.types.length) || (this.searchQuery.filters && this.searchQuery.filters.length)) {
+    if (this.searchQuery.term || this.searchQuery.allTypes.length || (this.searchQuery.filters && this.searchQuery.filters.length)) {
       if (!this.settingUpQuery && this.formValid) {
         this.resultCount = null;
         this.error = false;
@@ -327,7 +327,7 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
     } else {
       this.objectTypeSelectLabel = this.translate.instant('yuv.framework.quick-search.type.multiple', { size: this.selectedObjectTypes.length });
     }
-    this.searchQuery.types = this.selectedObjectTypes;
+    this.quickSearchService.updateTypesAndSots(this.searchQuery, this.selectedObjectTypes);
     if (aggregate) {
       this.aggregate();
     }
@@ -364,9 +364,9 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
       this.searchForm.patchValue({ term: { label: q.term } }, { emitEvent: false });
 
       // setup target object types
-      if (q.types && q.types.length) {
+      if (q.allTypes.length) {
         this.onObjectTypesSelected(
-          this.availableObjectTypes.filter((t) => q.types.includes(t.id)).map((t) => t.value as ObjectType),
+          this.availableObjectTypes.filter((t) => q.allTypes.includes(t.id)).map((t) => t.value as ObjectType),
           false
         );
       }
@@ -410,7 +410,7 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
   }
 
   applyTypeAggration(agg: ObjectTypeAggregation, execute: boolean) {
-    this.searchQuery.types = [agg.objectTypeId];
+    this.quickSearchService.updateTypesAndSots(this.searchQuery, [agg.objectTypeId], true);
     if (execute) {
       this.executeSearch();
     }
