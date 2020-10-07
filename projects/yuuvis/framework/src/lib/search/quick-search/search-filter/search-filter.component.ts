@@ -134,8 +134,23 @@ export class SearchFilterComponent implements OnInit {
         items: types
       }
     ];
+
+    this.setupSOTS();
+
     this.setupCollapsedGroups();
     return this.setupFilters(this.typeSelection);
+  }
+
+  private setupSOTS() {
+    if (this._query.sots) {
+      const sots = this.quickSearchService.getActiveSOTS(this._query);
+      this.typeSelection = [...this.typeSelection, ...sots.map((s) => s.id)];
+      this.availableTypeGroups[1] = {
+        id: 'sots',
+        label: this.translate.instant('yuv.framework.search.filter.object.sots'),
+        items: sots
+      };
+    }
   }
 
   private setupFilters(typeSelection: string[], activeFilters?: Selectable[]) {
@@ -236,8 +251,12 @@ export class SearchFilterComponent implements OnInit {
   onTypeChange(res: Selectable[]) {
     this.typeSelection = res.map((r) => r.id);
     this.setupFilters(this.typeSelection, this.activeFilters);
-    this.filterQuery.types = [...this.typeSelection];
+    const _sots = [...this.filterQuery.sots];
+    this.quickSearchService.updateTypesAndSots(this.filterQuery, this.typeSelection);
     this.filterChange.emit(this.filterQuery);
+    if (_sots.sort().join() !== this.filterQuery.sots.sort().join()) {
+      this.aggregate();
+    }
   }
 
   saveSearch() {}
@@ -255,7 +274,7 @@ export class SearchFilterComponent implements OnInit {
         i.count = match ? match.count : 0;
       });
       // remove all empty types that are part of original query
-      this.availableTypeGroups[0].items = this.availableObjectTypes.filter((t) => t.count || this._query.types.includes(t.id));
+      this.availableTypeGroups[0].items = this.availableObjectTypes.filter((t) => t.count || this._query.allTypes.includes(t.id));
       this.typeSelection = [...this.typeSelection];
     });
   }
