@@ -1,5 +1,6 @@
 export enum ProcessDefinitionKey {
-  FOLLOW_UP = 'follow-up'
+  FOLLOW_UP = 'follow-up',
+  INVALID_TYPE = 'invalid_type'
 }
 
 /**
