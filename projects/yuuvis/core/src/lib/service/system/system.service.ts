@@ -125,7 +125,23 @@ export class SystemService {
             !sot.classification?.includes(SecondaryObjectTypeClassification.PRIMARY)
         )
         .forEach((sot) => {
-          types.push(sot);
+          switch (situation) {
+            case 'create': {
+              if (!sot.classification?.includes(ObjectTypeClassification.CREATE_FALSE)) {
+                types.push(sot);
+              }
+              break;
+            }
+            case 'search': {
+              if (!sot.classification?.includes(ObjectTypeClassification.SEARCH_FALSE)) {
+                types.push(sot);
+              }
+              break;
+            }
+            default: {
+              types.push(sot);
+            }
+          }
         });
     }
 
