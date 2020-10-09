@@ -1,4 +1,4 @@
-<div class="content-preview-container">
+<div class="content-preview-container" [yuvBusyOverlay]="loading">
   <div class="content">
     <ng-container *ngIf="dmsObject && !isUndocked">
       <ng-container *ngIf="previewSrc; else tplNoPreview">

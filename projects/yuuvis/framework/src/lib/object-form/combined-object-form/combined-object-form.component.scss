@@ -16,11 +16,17 @@
     }
 
     yuv-object-form {
-      border: 1px dashed var(--color-accent);
+      &.main-form {
+        padding: 0 !important;
+      }
 
-      ::ng-deep {
-        .form-element-wrap.core {
-          padding: calc(var(--app-pane-padding) / 2);
+      &:not(.main-form) {
+        border: 1px dashed var(--color-accent);
+
+        ::ng-deep {
+          .form-element-wrap.core {
+            padding: calc(var(--app-pane-padding) / 2);
+          }
         }
       }
     }

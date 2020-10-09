@@ -10,6 +10,7 @@ import {
   ObjectTag,
   ObjectType,
   ObjectTypeGroup,
+  PendingChangesService,
   SearchService,
   SecondaryObjectType,
   SecondaryObjectTypeClassification,
@@ -98,7 +99,7 @@ export class ObjectCreateComponent implements OnDestroy {
 
   @ViewChild(ObjectFormComponent) objectForm: ObjectFormComponent;
   @ViewChild(CombinedObjectFormComponent) combinedObjectForm: CombinedObjectFormComponent;
-
+  private pendingTaskId: string;
   context: DmsObject;
   // whether or not the current user is allowed to use the component and create dms objects
   invalidUser: boolean;
@@ -141,7 +142,8 @@ export class ObjectCreateComponent implements OnDestroy {
    * inside this parent folder. Eventhough you specify the context, the user is
    * able to remove it. So this is more a suggestion.
    */
-  @Input() set contextId(id: string) {
+  @Input()
+  set contextId(id: string) {
     if (id) {
       this.objCreateService.setNewState({ busy: true });
       this.dmsService.getDmsObject(id).subscribe(
@@ -182,6 +184,7 @@ export class ObjectCreateComponent implements OnDestroy {
     private notify: NotificationService,
     private searchService: SearchService,
     private dmsService: DmsService,
+    private pendingChanges: PendingChangesService,
     private layoutService: LayoutService,
     private backend: BackendService,
     private userService: UserService,
@@ -214,14 +217,7 @@ export class ObjectCreateComponent implements OnDestroy {
         id: `${i++}`,
         label: otg.label,
         items: otg.types
-          .filter(
-            (ot) =>
-              ![
-                // types that should not be able to be created
-                SystemType.FOLDER,
-                SystemType.DOCUMENT
-              ].includes(ot.id)
-          )
+          .filter((ot) => ![SystemType.FOLDER, SystemType.DOCUMENT].includes(ot.id)) // types that should not be able to be created
           .map((ot: ObjectType) => ({
             id: ot.id,
             label: this.system.getLocalizedResource(`${ot.id}_label`),
@@ -233,6 +229,18 @@ export class ObjectCreateComponent implements OnDestroy {
       }))
       .filter((group: SelectableGroup) => group.items.length > 0);
     this.setupAvailableObjectTypeGroups();
+  }
+
+  private startPending() {
+    if (!this.pendingChanges.hasPendingTask(this.pendingTaskId || ' ')) {
+      this.pendingTaskId = this.pendingChanges.startTask(this.translate.instant('yuv.framework.object-create.pending-changes.alert'));
+    }
+  }
+
+  private finishPending() {
+    if (this.pendingTaskId) {
+      this.pendingChanges.finishTask(this.pendingTaskId);
+    }
   }
 
   private setupAvailableObjectTypeGroups() {
@@ -284,7 +292,7 @@ export class ObjectCreateComponent implements OnDestroy {
     if (this.selectedObjectType && this.selectedObjectType.id !== objectType.id) {
       this.resetState();
     }
-
+    this.startPending();
     this.selectedObjectType = objectType;
     this.title = objectType ? this.system.getLocalizedResource(`${objectType.id}_label`) : this.labels.defaultTitle;
     this.objCreateService.setNewState({ busy: true });
@@ -356,30 +364,18 @@ export class ObjectCreateComponent implements OnDestroy {
 
   afoSelectFloatingSOT(sot: { id: string; label: string }) {
     this.objCreateService.setNewState({ busy: true });
-    const objectType = !!this.selectedObjectType.floatingParentType
-      ? this.system.getObjectType(this.selectedObjectType.floatingParentType)
-      : this.selectedObjectType;
-    const objectTypeIDs = [];
-
-    // main object type may not have own fields
-    if (objectType.fields.filter((f) => !f.id.startsWith('system:')).length) {
-      objectTypeIDs.push(objectType.id);
+    // ID of the object type that should be used for retrieving the form
+    let formObjectTypeID;
+    if (!!this.selectedObjectType.floatingParentType) {
+      // Object type that has been created from a floating object type
+      formObjectTypeID = this.selectedObjectType.id;
+    } else if (this.system.isFloatingObjectType(this.selectedObjectType)) {
+      // we selected a general object type upfront, and apply a type (primary FSOT) now
+      formObjectTypeID = sot.id;
     }
-
-    // required SOTs will also be applied
-    objectType.secondaryObjectTypes
-      .filter((otSot) => !otSot.static)
-      .forEach((otSot) => {
-        const t = this.system.getSecondaryObjectType(otSot.id);
-        if (t.fields.length > 0 && t.classification && t.classification.includes(SecondaryObjectTypeClassification.REQUIRED)) {
-          objectTypeIDs.push(t.id);
-        }
-      });
-    if (!!sot) {
-      objectTypeIDs.push(sot.id);
-    }
-    this.system.getObjectTypeForms(objectTypeIDs, Situation.CREATE).subscribe(
-      (res) => {
+    if (!!formObjectTypeID) {
+      // Object type that has been created from a floating object type
+      this.system.getFloatingObjectTypeForm(formObjectTypeID, Situation.CREATE).subscribe((res) => {
         this.afoCreate.floatingSOT.selected = {
           sot: {
             id: sot?.id || 'none',
@@ -388,16 +384,13 @@ export class ObjectCreateComponent implements OnDestroy {
           // TODO: also apply extraction data here
           // TODO: If object is changed form should also get new data
           combinedFormInput: {
-            formModels: res,
+            main: res,
             data: this.afoCreate?.dmsObject.items.length === 1 ? this.afoCreate.dmsObject.selected.data : {}
           }
         };
         this.objCreateService.setNewState({ busy: false });
-      },
-      (err) => {
-        this.objCreateService.setNewState({ busy: false });
-      }
-    );
+      });
+    }
   }
 
   afoCreateApprove(afoUploadNoticeSkip?: boolean) {
@@ -570,6 +563,7 @@ export class ObjectCreateComponent implements OnDestroy {
           this.resetState();
           this.reset();
         } else {
+          this.finishPending();
           this.objectCreated.emit(ids);
         }
       },
@@ -639,10 +633,14 @@ export class ObjectCreateComponent implements OnDestroy {
   }
 
   resetState() {
+    if (this.files.length) {
+      this.files = [];
+    }
     this.afoCreate = null;
     this.selectedObjectType = null;
     this.objCreateService.resetState();
     this.objCreateService.resetBreadcrumb();
+    this.finishPending();
   }
 
   reset() {

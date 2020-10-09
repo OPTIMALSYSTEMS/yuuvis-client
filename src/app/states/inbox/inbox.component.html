@@ -1,31 +1,32 @@
 <section class="inbox-wrapper" *ngIf="inboxData$ | async as inboxData; else empty">
-  <yuv-responsive-master-slave class="state" (slaveClosed)="onSlaveClosed()" [layoutOptionsKey]="layoutOptionsKey" [slaveActive]="itemIsSelected">
-    <yuv-process-list
-      class="yuv-master panel"
-      [showFooter]="true"
-      [headerDetails]="headerDetails"
-      [layoutOptionsKey]="layoutOptionsKey"
-      [processData]="inboxData"
-      (refreshList)="refreshList()"
-      (selectedItem)="selectedItem($event)"
-    ></yuv-process-list>
-    <section class="yuv-slave panel">
-      <yuv-object-details
-        [disableFileDrop]="true"
-        [objectId]="objectId"
-        [panelOrder]="['summary', 'indexdata', 'preview']"
-        [layoutOptionsKey]="layoutOptionsKey"
-      >
-      </yuv-object-details>
-    </section>
-  </yuv-responsive-master-slave>
+  <yuv-responsive-master-slave class="state" 
+  [layoutOptionsKey]="layoutOptionsKey"
+  [slaveActive]="itemIsSelected"
+  (slaveClosed)="onSlaveClosed()">
+  <yuv-process-list
+  class="yuv-master panel"
+  [showFooter]="true"
+  [headerDetails]="headerDetails"
+  [layoutOptionsKey]="layoutOptionsKey"
+  [processData]="inboxData"
+  (refreshList)="refreshList()"
+  (selectedItem)="selectedItem($event)"></yuv-process-list>
+  <section class="yuv-slave panel">
+    <yuv-process-details 
+    [objectId]="objectId"
+    [layoutOptionsKey]="layoutOptionsKey"
+    [emptyMessage]="'yuv.framework.bpm.inbox.confirm' | translate"
+    (remove)="remove($event)">
+  </yuv-process-details>
+</section>
+</yuv-responsive-master-slave>
 </section>
 
 <ng-template #empty>
-  <section class="empty-list">
-
-    <yuv-icon class="state-icon" [icon]="'inbox'"></yuv-icon>
-    <span class="empty-message">{{"yuv.client.state.inbox.list.empty" | translate }}</span>
-    <yuv-icon (click)="refreshList()" class="refresh-icon" [icon]="'refresh'"></yuv-icon>
-  </section>
+  <app-process-list-empty
+    [state]="'inbox'" 
+    [headerDetails]="headerDetails"
+    [loading]="loading$"
+    [message]="'yuv.client.state.inbox.list.empty'| translate"
+    (refresh)="refreshList()"></app-process-list-empty>
 </ng-template>

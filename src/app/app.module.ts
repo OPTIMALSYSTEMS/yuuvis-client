@@ -70,6 +70,12 @@ import { VersionsComponent } from './states/versions/versions.component';
           queryParams: {
             version: 'version'
           }
+        },
+        result: {
+          path: 'result',
+          queryParams: {
+            query: 'query'
+          }
         }
       }
     ),

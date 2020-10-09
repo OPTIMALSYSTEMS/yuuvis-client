@@ -49,6 +49,7 @@ export interface SearchQueryProperties {
   aggs?: string[];
   maxItems?: number;
   types?: string[];
+  sots?: string[];
   filters?: any;
   sort?: any;
   tags?: any;

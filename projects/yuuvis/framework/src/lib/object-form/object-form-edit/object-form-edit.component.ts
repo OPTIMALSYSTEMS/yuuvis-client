@@ -49,6 +49,7 @@ export class ObjectFormEditComponent implements OnDestroy {
   // Used to finish the pending task when editing is done
   private pendingTaskId: string;
   private _dmsObject: DmsObject;
+  private _sourceDmsObject: DmsObject;
   private _secondaryObjectTypeIDs: string[];
 
   // will be set once an SOT has been added or removed
@@ -63,15 +64,14 @@ export class ObjectFormEditComponent implements OnDestroy {
   };
 
   fsot: {
-    // applicableTypes: SecondaryObjectType[];
-    // applicableSOTs: SecondaryObjectType[];
     applicableTypes: SelectableGroup;
     applicableSOTs: SelectableGroup;
   };
 
   // Indicator that we are dealing with a floating object type
   // This kind of object will use a combination of multiple forms instaed of a single one
-  isFloatingObjectType: boolean;
+  // isFloatingObjectType: boolean;
+  isExtendableObjectType: boolean;
 
   // fetch a reference to the opbject form component to be able to
   // get the form data
@@ -84,7 +84,8 @@ export class ObjectFormEditComponent implements OnDestroy {
    */
   @Input('dmsObject')
   set dmsObject(dmsObject: DmsObject) {
-    if (this.isFloatingObjectType || (dmsObject && (!this._dmsObject || this._dmsObject.id !== dmsObject.id))) {
+    if (dmsObject && (!this._dmsObject || this._dmsObject.id !== dmsObject.id)) {
+      // if (this.isFloatingObjectType || (dmsObject && (!this._dmsObject || this._dmsObject.id !== dmsObject.id))) {
       // reset the state of the form
       this.formState = null;
       this.controls.saving = false;
@@ -130,14 +131,14 @@ export class ObjectFormEditComponent implements OnDestroy {
       this.messages.formError = res['yuv.framework.object-form-edit.save.error'];
     });
 
-    this.pendingChanges.setCustomMessage(this.translate.instant('yuv.framework.object-form-edit.pending-changes.alert'));
+    // this.pendingChanges.setCustomMessage(this.translate.instant('yuv.framework.object-form-edit.pending-changes.alert'));
   }
 
   private startPending() {
     // because this method will be called every time the form status changes,
     // pending task will only be started once until it was finished
     if (!this.pendingChanges.hasPendingTask(this.pendingTaskId || ' ')) {
-      this.pendingTaskId = this.pendingChanges.startTask();
+      this.pendingTaskId = this.pendingChanges.startTask(this.translate.instant('yuv.framework.object-form-edit.pending-changes.alert'));
     }
   }
 
@@ -147,7 +148,7 @@ export class ObjectFormEditComponent implements OnDestroy {
 
   onFormStatusChanged(evt) {
     this.formState = evt;
-    this.controls.disabled = !this.formState.dirty;
+    this.controls.disabled = !(this.formState.dirty || this._sotChanged.assignedPrimaryFSOT);
     if (this.formState.dirty) {
       this.startPending();
     } else {
@@ -193,6 +194,8 @@ export class ObjectFormEditComponent implements OnDestroy {
                   assignedPrimaryFSOT: false,
                   assignedGeneral: false
                 };
+
+                this._secondaryObjectTypeIDs = [...this._dmsObject.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS]];
                 this.combinedFormInput.data = updatedObject.data;
                 this.afoObjectForm.setFormPristine();
               }
@@ -239,87 +242,34 @@ export class ObjectFormEditComponent implements OnDestroy {
     if (this.afoObjectForm) {
       this._dmsObject.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS] = [...this._secondaryObjectTypeIDs];
 
-      // remove ids that are part of both arrays
-      const remove = this._sotChanged.applied.filter((id) => !this._sotChanged.removed.includes(id));
-      const add = this._sotChanged.removed.filter((id) => !this._sotChanged.applied.includes(id));
-
-      this.afoObjectForm.removeForms(remove);
-
-      if (add.length) {
-        this.busy = true;
-        this.getCombinedFormAddInput([this._dmsObject.data[BaseObjectTypeField.OBJECT_TYPE_ID], ...add], true).subscribe((res: CombinedFormAddInput[]) => {
-          if (res.length > 0) {
-            this.afoObjectForm.addForms(res, this._dmsObject.data);
-            this.getApplicableSecondaries(this._dmsObject);
-          }
-          this._sotChanged = {
-            applied: [],
-            removed: [],
-            assignedPrimaryFSOT: false,
-            assignedGeneral: false
-          };
-          this.afoObjectForm.resetForm();
-          this.busy = false;
-        });
-      } else {
-        this._sotChanged = {
-          applied: [],
-          removed: [],
-          assignedPrimaryFSOT: false,
-          assignedGeneral: false
-        };
-        this.afoObjectForm.resetForm();
-        this.getApplicableSecondaries(this._dmsObject);
-      }
+      this.createObjectForm(this._dmsObject);
+      this._sotChanged = {
+        applied: [],
+        removed: [],
+        assignedPrimaryFSOT: false,
+        assignedGeneral: false
+      };
     }
   }
 
-  // create the formOptions required by object form component
-  private createObjectForm(dmsObject: DmsObject) {
-    this.busy = true;
-    this.isFloatingObjectType = this.systemService.isFloatingObjectType(this.systemService.getObjectType(dmsObject.objectTypeId));
-
-    if (this.isFloatingObjectType) {
-      this.formOptions = null;
-      this.getApplicableSecondaries(dmsObject);
-      this.systemService.getFloatingObjectTypeForms(dmsObject, Situation.EDIT).subscribe(
-        (res) => {
-          this.combinedFormInput = {
-            formModels: res,
-            data: dmsObject.data,
-            disabled: this.formDisabled || !this.isEditable(dmsObject),
-            enableEditSOT: true
-          };
-          this.busy = false;
-        },
-        (err) => {
-          this.busy = false;
-        }
-      );
-    } else {
-      this.systemService.getObjectTypeForm(dmsObject.objectTypeId, Situation.EDIT).subscribe(
-        (model) => {
-          this.combinedFormInput = null;
-          this.formOptions = {
-            formModel: model,
-            data: dmsObject.data,
-            objectId: dmsObject.id,
-            disabled: this.formDisabled || !this.isEditable(dmsObject)
-          };
-          if (dmsObject.contextFolder) {
-            this.formOptions.context = {
-              id: dmsObject.contextFolder.id,
-              title: dmsObject.contextFolder.title,
-              objectTypeId: dmsObject.contextFolder.objectTypeId
-            };
-          }
-          this.busy = false;
-        },
-        (err) => {
-          this.busy = false;
-        }
-      );
-    }
+  private createObjectForm(dmsObject: DmsObject, validate?: boolean) {
+    this.formOptions = null;
+    this.getApplicableSecondaries(dmsObject);
+    this.systemService.getDmsObjectForms(dmsObject, Situation.EDIT).subscribe(
+      (res) => {
+        this.combinedFormInput = {
+          main: res.main,
+          extensions: res.extensions,
+          data: dmsObject.data,
+          disabled: this.formDisabled || !this.isEditable(dmsObject),
+          enableEditSOT: true
+        };
+        this.busy = false;
+      },
+      (err) => {
+        this.busy = false;
+      }
+    );
   }
 
   private getApplicableSecondaries(dmsObject: DmsObject) {
@@ -335,6 +285,7 @@ export class ObjectFormEditComponent implements OnDestroy {
         items: []
       }
     };
+    const objectType = this.systemService.getObjectType(dmsObject.objectTypeId);
     const currentSOTs = dmsObject.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS];
     const alreadyAssignedPrimary =
       this._sotChanged.assignedGeneral ||
@@ -343,9 +294,8 @@ export class ObjectFormEditComponent implements OnDestroy {
           .map((id) => this.systemService.getSecondaryObjectType(id))
           .filter((sot) => sot?.classification?.includes(SecondaryObjectTypeClassification.PRIMARY)).length > 0);
 
-    this.systemService
-      .getObjectType(dmsObject.objectTypeId)
-      .secondaryObjectTypes.filter((sot) => !sot.static && !currentSOTs?.includes(sot.id))
+    objectType.secondaryObjectTypes
+      .filter((sot) => !sot.static && !currentSOTs?.includes(sot.id))
       .forEach((sotref) => {
         const sot = this.systemService.getSecondaryObjectType(sotref.id, true);
 
@@ -353,14 +303,17 @@ export class ObjectFormEditComponent implements OnDestroy {
           if (!alreadyAssignedPrimary) {
             this.fsot.applicableTypes.items.push(this.toSelectable(sot, dmsObject));
           }
-        } else if (!sot.classification?.includes(SecondaryObjectTypeClassification.REQUIRED)) {
+        } else if (
+          !sot.classification?.includes(SecondaryObjectTypeClassification.REQUIRED) &&
+          !sot.classification?.includes(SecondaryObjectTypeClassification.EXTENSION_ADD_FALSE)
+        ) {
           this.fsot.applicableSOTs.items.push(this.toSelectable(sot, dmsObject));
         }
       });
 
     this.fsot.applicableSOTs.items.sort(Utils.sortValues('label'));
 
-    if (!alreadyAssignedPrimary) {
+    if (!alreadyAssignedPrimary && this.systemService.isFloatingObjectType(objectType)) {
       this.fsot.applicableTypes.items.sort(Utils.sortValues('label'));
       // add general target type
       this.fsot.applicableTypes.items = [
@@ -412,14 +365,14 @@ export class ObjectFormEditComponent implements OnDestroy {
 
   applyFSOT(sot: SecondaryObjectType, isPrimaryFSOT: boolean, popoverRef?: PopoverRef) {
     this.busy = true;
-    let sotsToBeAdded = [];
+    let sotsToBeAdded: string[] = [];
     let enableEditSOT = true;
     let sotIDs = this._dmsObject.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS] || [];
 
     if (isPrimaryFSOT) {
-      // primary and required FSOTs are not supposed to be edited (removed later on)
+      // // primary and required FSOTs are not supposed to be edited (removed later on)
       enableEditSOT = false;
-      // also add required SOTs
+      // // also add required SOTs
       const rFSOTs = this.systemService.getRequiredFSOTs(this._dmsObject.objectTypeId).map((sot) => sot.id);
       sotsToBeAdded = [...rFSOTs];
       this._sotChanged.assignedPrimaryFSOT = true;
@@ -433,14 +386,25 @@ export class ObjectFormEditComponent implements OnDestroy {
     }
     this._dmsObject.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS] = [...sotIDs, ...sotsToBeAdded];
 
-    this.getCombinedFormAddInput(sotsToBeAdded, enableEditSOT).subscribe((res: CombinedFormAddInput[]) => {
-      if (res.length > 0) {
-        this.afoObjectForm.addForms(res, this._dmsObject.data);
-        this.getApplicableSecondaries(this._dmsObject);
-        this._sotChanged.applied = [...this._sotChanged.applied, ...sotsToBeAdded];
-      }
-      this.busy = false;
-    });
+    if (isPrimaryFSOT) {
+      this.createObjectForm(this._dmsObject);
+    } else {
+      enableEditSOT =
+        sotsToBeAdded.length === 1 &&
+        !this.systemService.getSecondaryObjectType(sotsToBeAdded[0]).classification?.includes(SecondaryObjectTypeClassification.EXTENSION_REMOVE_FALSE);
+      this.getCombinedFormAddInput(sotsToBeAdded, enableEditSOT).subscribe((res: CombinedFormAddInput[]) => {
+        if (res.length > 0) {
+          this.afoObjectForm.addForms(res, this._dmsObject.data);
+          this.getApplicableSecondaries(this._dmsObject);
+          // this._sotChanged.applied = [...this._sotChanged.applied, ...sotsToBeAdded];
+          // this._sotChanged.removed = this._sotChanged.removed.filter((sotId) => !sotsToBeAdded.includes(sotId));
+        }
+        this.busy = false;
+      });
+    }
+    this._sotChanged.applied = [...this._sotChanged.applied, ...sotsToBeAdded];
+    this._sotChanged.removed = this._sotChanged.removed.filter((sotId) => !sotsToBeAdded.includes(sotId));
+    this.controls.disabled = false;
     if (popoverRef) {
       popoverRef.close();
     }

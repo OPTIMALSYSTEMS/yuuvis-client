@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { BpmEvent, EventService, InboxService, TaskData, TranslateService } from '@yuuvis/core';
+import { BpmEvent, EventService, InboxService, ProcessDefinitionKey, TaskData, TranslateService } from '@yuuvis/core';
 import {
   arrowNext,
   edit,
@@ -32,6 +32,7 @@ export class InboxComponent implements OnInit, OnDestroy {
     map((taskData: TaskData[]) => ({ ...this.formatProcessDataService.formatTaskDataForTable(taskData), currentViewMode: 'horizontal' })),
     map((taskData: ResponsiveTableData) => (taskData.rows.length ? taskData : null))
   );
+  loading$: Observable<boolean> = this.inboxService.loadingInboxData$;
 
   headerDetails = {
     title: this.translateService.instant('yuv.framework.inbox-list.inbox'),
@@ -55,7 +56,7 @@ export class InboxComponent implements OnInit, OnDestroy {
 
   selectedItem(item) {
     this.selectedProcess = item;
-    this.objectId = item[0]?.documentId;
+    this.objectId = item[0]?.documentId ? item[0]?.documentId : ProcessDefinitionKey.INVALID_TYPE;
     this.itemIsSelected = true;
   }
 

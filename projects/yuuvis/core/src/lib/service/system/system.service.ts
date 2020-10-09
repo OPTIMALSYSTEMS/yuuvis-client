@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
-import { forkJoin, Observable, of, ReplaySubject } from 'rxjs';
-import { catchError, map, tap } from 'rxjs/operators';
+import { EMPTY, forkJoin, Observable, of, ReplaySubject } from 'rxjs';
+import { catchError, map, switchMap, tap } from 'rxjs/operators';
 import { DmsObject } from '../../model/dms-object.model';
 import { ApiBase } from '../backend/api.enum';
 import { BackendService } from '../backend/backend.service';
 import { AppCacheService } from '../cache/app-cache.service';
 import { Logger } from '../logger/logger';
 import { Utils } from './../../util/utils';
+import { AuthData } from './../auth/auth.service';
 import {
   BaseObjectTypeField,
   Classification,
@@ -30,6 +31,10 @@ import {
   SystemDefinition
 } from './system.interface';
 
+interface Localization {
+  [key: string]: string;
+}
+
 /**
  * Providing system definitions.
  */
@@ -38,10 +43,11 @@ import {
 })
 export class SystemService {
   private STORAGE_KEY = 'yuv.core.system.definition';
+  private STORAGE_KEY_AUTH_DATA = 'yuv.core.auth.data';
   // cached icons to avaoid backend calls (session cache)
   private iconCache = {};
 
-  private system: SystemDefinition;
+  public system: SystemDefinition;
   private systemSource = new ReplaySubject<SystemDefinition>();
   public system$: Observable<SystemDefinition> = this.systemSource.asObservable();
 
@@ -119,7 +125,23 @@ export class SystemService {
             !sot.classification?.includes(SecondaryObjectTypeClassification.PRIMARY)
         )
         .forEach((sot) => {
-          types.push(sot);
+          switch (situation) {
+            case 'create': {
+              if (!sot.classification?.includes(ObjectTypeClassification.CREATE_FALSE)) {
+                types.push(sot);
+              }
+              break;
+            }
+            case 'search': {
+              if (!sot.classification?.includes(ObjectTypeClassification.SEARCH_FALSE)) {
+                types.push(sot);
+              }
+              break;
+            }
+            default: {
+              types.push(sot);
+            }
+          }
         });
     }
 
@@ -401,10 +423,12 @@ export class SystemService {
    * Once one primary FSOT has been applied to the FOT the FSOT will be treated like the main object type (leading type).
    */
   isFloatingObjectType(objectType: ObjectType): boolean {
-    return (
-      Array.isArray(objectType.classification) &&
-      !!objectType.secondaryObjectTypes.find((sot) => this.getSecondaryObjectType(sot.id).classification?.includes(SecondaryObjectTypeClassification.PRIMARY))
-    );
+    return objectType
+      ? Array.isArray(objectType.classification) &&
+          !!objectType.secondaryObjectTypes.find((sot) =>
+            this.getSecondaryObjectType(sot.id).classification?.includes(SecondaryObjectTypeClassification.PRIMARY)
+          )
+      : false;
   }
   /**
    * Extendable object types (EOT) are object types that can be extended by loatin secondary object types (FSOTs).
@@ -444,34 +468,81 @@ export class SystemService {
   }
 
   /**
+   * Fetch object form for a floating type.
+   * @param floatingObjectTypeID The ID of a floating object type
+   * @param situation Form situation
+   */
+  getFloatingObjectTypeForm(floatingObjectTypeID: string, situation?: string): Observable<any> {
+    const floatingType = this.getObjectType(floatingObjectTypeID);
+    if (!!floatingType.floatingParentType) {
+      // get parent type
+      const parentType = this.getObjectType(floatingType.floatingParentType);
+
+      const querySotIDs = parentType.secondaryObjectTypes
+        .filter((sot) => {
+          const sotObj = this.getSecondaryObjectType(sot.id);
+          return !sot.static && sotObj.classification?.includes(SecondaryObjectTypeClassification.REQUIRED);
+        })
+        .map((sot) => sot.id);
+      return this.backend.get(this.buildFormFetchUri(floatingType.floatingParentType, [floatingObjectTypeID, ...querySotIDs], situation));
+    } else {
+      return of(null);
+    }
+  }
+
+  private buildFormFetchUri(objectTypeID: string, sots?: string[], situation?: string): string {
+    const params = sots ? sots.map((sot) => `sots=${sot}`) : [];
+    if (situation) {
+      params.push(`situation=${situation}`);
+    }
+    return `/dms/form/${objectTypeID}${params.length ? `?${params.join('&')}` : ''}`;
+  }
+
+  /**
    * Floating object types use more than one object type form.
    * In fact its a collection of forms that will be combined later on.
    * This method fetches all the forms bound to an floating object type.
    *
-   * @param dmsObject a dms object created from an AFO type
-   * @returns object where property name is the object type key and value is the form model for this type
-   * or null in case the given object does not belong to an AFO type
+   * @param dmsObject a dms objectto get forms for
+   * @returns object where 'main' property is the main object form, and extension is a
+   * collection of all form the current object has been extended by (key: id, value: form model).
    */
-  getFloatingObjectTypeForms(dmsObject: DmsObject, situation?: string): Observable<{ [key: string]: any }> {
+  getDmsObjectForms(dmsObject: DmsObject, situation?: string): Observable<{ main: any; extensions: { [key: string]: any } }> {
     const ot = this.getObjectType(dmsObject.objectTypeId);
-    // make sure that it actually is a floating object type
-    if (this.isFloatingObjectType(ot)) {
-      const objectTypeIDs = [];
-      // if the main type itself has properties, add them
-      if (ot.fields.filter((f) => !this.isSystemProperty(f)).length) {
-        objectTypeIDs.push(ot.id);
-      }
-      const sots: string[] = dmsObject.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS];
-      if (sots) {
-        const sotQA = {};
-        ot.secondaryObjectTypes.forEach((sot) => (sotQA[sot.id] = sot));
-        // don't care about static SOTs because they are already applied to the main object type
-        sots.filter((sot) => sotQA[sot] && !sotQA[sot].static).forEach((sot) => objectTypeIDs.push(sot));
-      }
-      return objectTypeIDs.length ? this.getObjectTypeForms(objectTypeIDs, situation) : of(null);
-    } else {
-      return of(null);
+
+    const querySotIDs = [];
+    const extendableSotIDs = [];
+    const sots: string[] = dmsObject.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS];
+    if (sots) {
+      const sotQA = {};
+      ot.secondaryObjectTypes.forEach((sot: { id: string; static: boolean }) => (sotQA[sot.id] = sot));
+
+      sots.forEach((sot) => {
+        const sotRef = sotQA[sot];
+        const sotObj = this.getSecondaryObjectType(sotRef.id);
+
+        if (sotObj && !sotRef.static) {
+          if (
+            sotObj.classification?.includes(SecondaryObjectTypeClassification.PRIMARY) ||
+            sotObj.classification?.includes(SecondaryObjectTypeClassification.REQUIRED)
+          ) {
+            querySotIDs.push(sot);
+          } else {
+            extendableSotIDs.push(sot);
+          }
+        }
+      });
     }
+    const tasks = [this.backend.get(this.buildFormFetchUri(ot.id, querySotIDs, situation))];
+    if (extendableSotIDs.length) {
+      tasks.push(this.getObjectTypeForms(extendableSotIDs, situation));
+    }
+    return forkJoin(tasks).pipe(
+      map((res) => ({
+        main: res[0],
+        extensions: res.length ? res[1] : null
+      }))
+    );
   }
 
   /**
@@ -561,16 +632,19 @@ export class SystemService {
    * @param user User to fetch definition for
    */
   private fetchSystemDefinition(): Observable<boolean> {
-    const fetchTasks = [this.backend.get('/dms/schema/native.json', ApiBase.core), this.fetchLocalizations()];
-
-    return forkJoin(fetchTasks).pipe(
+    return this.appCache.getItem(this.STORAGE_KEY_AUTH_DATA).pipe(
+      switchMap((data: AuthData) => {
+        this.backend.setHeader('Accept-Language', data?.language);
+        const fetchTasks = [this.backend.get('/dms/schema/native.json', ApiBase.core), this.fetchLocalizations()];
+        return forkJoin(fetchTasks);
+      }),
       catchError((error) => {
         this.logger.error('Error fetching recent version of system definition from server.', error);
         this.systemSource.error('Error fetching recent version of system definition from server.');
         return of(null);
       }),
       map((data) => {
-        if (data && data.length) {
+        if (data?.length) {
           this.setSchema(data[0], data[1]);
         }
         return !!data;
@@ -689,7 +763,8 @@ export class SystemService {
       lastModificationDate: schemaResponse.lastModificationDate,
       objectTypes: [...objectTypes, ...floatingTypes],
       secondaryObjectTypes,
-      i18n: localizedResource
+      i18n: localizedResource,
+      allFields: propertiesQA
     };
     this.appCache.setItem(this.STORAGE_KEY, this.system).subscribe();
     this.systemSource.next(this.system);
@@ -710,17 +785,10 @@ export class SystemService {
       schemaTypeDefinition.secondaryObjectTypeId
         .filter((sot) => sot.static)
         .map((sot) => sot.value)
-        .forEach((sotID) => {
-          objectTypesQA[sotID].propertyReference.forEach((pr) => {
-            objectTypeFieldIDs.push(pr.value);
-          });
-        });
+        .forEach((sotID) => objectTypesQA[sotID].propertyReference.forEach((pr) => objectTypeFieldIDs.push(pr.value)));
     }
 
-    let fields = objectTypeFieldIDs.map((id) => ({
-      ...propertiesQA[id],
-      _internalType: this.getInternalFormElementType(propertiesQA[id], 'propertyType')
-    }));
+    let fields = objectTypeFieldIDs.map((id) => ({ ...propertiesQA[id], _internalType: this.getInternalFormElementType(propertiesQA[id], 'propertyType') }));
 
     // also resolve properties of the base type
     if (schemaTypeDefinition.baseId !== schemaTypeDefinition.id && !!objectTypesQA[schemaTypeDefinition.baseId]) {
@@ -787,8 +855,10 @@ export class SystemService {
     return { ...field, label: this.getLocalizedResource(`${field.id}_label`), name: field.id, type: field.propertyType };
   }
 
-  updateLocalizations(): Observable<any> {
-    return this.fetchLocalizations().pipe(
+  updateLocalizations(iso?: string): Observable<any> {
+    return this.appCache.getItem(this.STORAGE_KEY_AUTH_DATA).pipe(
+      switchMap((authData: any) => (iso ? this.appCache.setItem(this.STORAGE_KEY_AUTH_DATA, { ...authData, language: iso }) : EMPTY)),
+      switchMap(() => this.fetchLocalizations()),
       tap((res) => {
         this.system.i18n = res;
         this.appCache.setItem(this.STORAGE_KEY, this.system).subscribe();
@@ -797,7 +867,7 @@ export class SystemService {
     );
   }
 
-  private fetchLocalizations(): Observable<any> {
+  private fetchLocalizations(): Observable<Localization> {
     return this.backend.get('/resources/text');
   }
 }

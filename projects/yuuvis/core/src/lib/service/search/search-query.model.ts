@@ -11,6 +11,7 @@ export class SearchQuery {
   aggs: string[];
   from: number;
   types: string[] = [];
+  sots: string[] = [];
   tags: any;
   get targetType(): string | null {
     return this.types && this.types.length === 1 ? this.types[0] : null;
@@ -18,6 +19,10 @@ export class SearchQuery {
   get filters(): SearchFilter[] {
     return this.filterGroup.filters;
   }
+  get allTypes(): string[] {
+    return [...(this.types || []), ...(this.sots || [])];
+  }
+
   filterGroup: SearchFilterGroup = new SearchFilterGroup();
   sortOptions: SortOption[] = [];
 
@@ -26,6 +31,7 @@ export class SearchQuery {
       this.term = searchQueryProperties.term;
       this.from = searchQueryProperties.from;
       this.types = searchQueryProperties.types || [];
+      this.sots = searchQueryProperties.sots || [];
       this.fields = searchQueryProperties.fields || [];
 
       if (searchQueryProperties.size) {
@@ -48,10 +54,10 @@ export class SearchQuery {
   /**
    * Adds a new target type to the query
    *
-   * @param type Object type to be added
+   * @param objectTypeId Object type to be added
    */
   public addType(objectTypeId: string) {
-    if (this.types.indexOf(objectTypeId) === -1) {
+    if (!this.types.includes(objectTypeId)) {
       this.types.push(objectTypeId);
     }
   }
@@ -59,23 +65,38 @@ export class SearchQuery {
   /**
    * Removes a type from the target types list
    *
-   * @param type The object type to be removed
+   * @param objectTypeId The object type to be removed
    */
   public removeType(objectTypeId: string) {
     this.types = this.types.filter((t) => t !== objectTypeId);
   }
 
+  /** Adds a new target sot to the query
+   *
+   * @param sot Object sot to be added
+   */
+  public addSOT(sot: string) {
+    if (this.sots.includes(sot)) {
+      this.sots.push(sot);
+    }
+  }
+
+  /**
+   * Removes a sot from the target sots list
+   *
+   * @param sot The object sot to be removed
+   */
+  public removeSOT(sot: string) {
+    this.sots = this.sots.filter((t) => t !== sot);
+  }
+
   /**
    * Adds or removes the given type based on the current settings
    *
-   * @param type The object type to be toggled
+   * @param objectTypeId The object type to be toggled
    */
   public toggleType(objectTypeId: string) {
-    if (this.types.find((t) => t === objectTypeId)) {
-      this.removeType(objectTypeId);
-    } else {
-      this.types.push(objectTypeId);
-    }
+    return this.types.includes(objectTypeId) ? this.removeType(objectTypeId) : this.addType(objectTypeId);
   }
 
   public addFilterGroup(group: SearchFilterGroup, groupProperty = SearchFilterGroup.DEFAULT) {
@@ -222,6 +243,10 @@ export class SearchQuery {
 
     if (this.types.length) {
       queryJson.types = this.types;
+    }
+
+    if (this.sots.length) {
+      queryJson.sots = this.sots;
     }
 
     if (this.fields && this.fields.length) {
@@ -390,6 +415,8 @@ export class SearchFilter {
   public static OPERATOR = {
     /** equal */
     EQUAL: 'eq',
+    /** eequal */
+    EEQUAL: 'eeq',
     /** match at least one of the provided values (value has to be an array)  */
     IN: 'in',
     /** greater than */

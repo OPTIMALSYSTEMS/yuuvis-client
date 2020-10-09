@@ -51,7 +51,7 @@ export class AuthService {
       tap((data: AuthData) => {
         this.authData = data;
         if (data && data.language) {
-          this.translate.use(data.language ? data.language : 'en');
+          this.translate.use(data.language ? data.language : this.userService.getDefaultUserLanguages()?.iso);
           this.backend.setHeader('Accept-Language', data.language);
         }
         if (data && data.tenant) {
@@ -128,10 +128,11 @@ export class AuthService {
     );
   }
 }
+
 /**
  * Authentication Data
  */
-interface AuthData {
+export interface AuthData {
   /**
    * tenant name
    */

@@ -107,7 +107,9 @@ export enum ObjectTypeClassification {
 // classifications applied to secondary object types
 export enum SecondaryObjectTypeClassification {
   REQUIRED = 'appClient:required',
-  PRIMARY = 'appClient:primary'
+  PRIMARY = 'appClient:primary',
+  EXTENSION_ADD_FALSE = 'appClient:extension:add:false',
+  EXTENSION_REMOVE_FALSE = 'appClient:extension:remove:false'
 }
 
 // special internal types of object type fields

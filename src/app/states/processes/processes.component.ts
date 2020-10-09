@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { BpmEvent, EventService, ProcessData, ProcessService, TranslateService } from '@yuuvis/core';
+import { BpmEvent, BpmService, EventService, ProcessData, ProcessDefinitionKey, ProcessService, TranslateService } from '@yuuvis/core';
 import {
   arrowNext,
   edit,
@@ -27,10 +27,12 @@ export class ProcessesComponent implements OnInit, OnDestroy {
   objectDetailsID: string;
   itemIsSelected = false;
   objectId: string;
+  selectedProcess: any;
   processData$: Observable<ResponsiveTableData> = this.processService.processData$.pipe(
     map((processData: ProcessData[]) => this.formatProcessDataService.formatProcessDataForTable(processData)),
     map((taskData: ResponsiveTableData) => (taskData.rows.length ? taskData : null))
   );
+  loading$: Observable<boolean> = this.processService.loadingProcessData$;
 
   headerDetails = {
     title: this.translateService.instant('yuv.framework.process-list.process'),
@@ -40,6 +42,7 @@ export class ProcessesComponent implements OnInit, OnDestroy {
 
   constructor(
     private processService: ProcessService,
+    private bpmService: BpmService,
     private translateService: TranslateService,
     private formatProcessDataService: FormatProcessDataService,
     private iconRegistry: IconRegistryService,
@@ -53,15 +56,23 @@ export class ProcessesComponent implements OnInit, OnDestroy {
   }
 
   selectedItem(item) {
-    this.objectId = item[0]?.documentId;
+    this.selectedProcess = item;
+    this.objectId = item[0]?.documentId ? item[0]?.documentId : ProcessDefinitionKey.INVALID_TYPE;
     this.itemIsSelected = true;
   }
-
-  onSlaveClosed() {}
 
   refreshList() {
     this.getProcesses().subscribe();
   }
+
+  remove() {
+    this.processService
+      .deleteFollowUp(this.selectedProcess[0].id)
+      .pipe(switchMap(() => this.getProcesses()))
+      .subscribe();
+  }
+
+  onSlaveClosed() {}
 
   ngOnInit(): void {
     this.getProcesses().subscribe();

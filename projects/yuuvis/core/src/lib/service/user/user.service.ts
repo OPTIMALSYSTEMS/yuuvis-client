@@ -4,7 +4,7 @@ import { BehaviorSubject, Observable, of } from 'rxjs';
 import { map, switchMap, tap } from 'rxjs/operators';
 import { UserSettings, YuvUser } from '../../model/yuv-user.model';
 import { BackendService } from '../backend/backend.service';
-import { Direction } from '../config/config.interface';
+import { Direction, YuvConfigLanguages } from '../config/config.interface';
 import { ConfigService } from '../config/config.service';
 import { EventService } from '../event/event.service';
 import { YuvEventType } from '../event/events';
@@ -67,6 +67,10 @@ export class UserService {
     return this.user;
   }
 
+  getDefaultUserLanguages(): YuvConfigLanguages {
+    return this.config.get('languages')?.filter((lang: YuvConfigLanguages) => lang.fallback)[0];
+  }
+
   get hasAdminRole(): boolean {
     return new RegExp(AdministrationRoles.ADMIN).test(this.user?.authorities.join(','));
   }
@@ -101,12 +105,10 @@ export class UserService {
             this.user.uiDirection = this.getUiDirection(iso);
             this.userSource.next(this.user);
             this.logger.debug('Loading system definitions i18n resources for new locale.');
-            return this.system.updateLocalizations();
+            return this.system.updateLocalizations(iso);
           })
         )
-        .subscribe(() => {
-          this.eventService.trigger(YuvEventType.CLIENT_LOCALE_CHANGED, iso);
-        });
+        .subscribe(() => this.eventService.trigger(YuvEventType.CLIENT_LOCALE_CHANGED, iso));
     }
   }
 
