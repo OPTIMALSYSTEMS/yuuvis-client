@@ -52,6 +52,23 @@ export class CellRenderer {
       : '';
   }
 
+  static systemTagsCellRenderer(param) {
+    const { context, value } = param;
+    // tags value is an array of arrays
+    return param.value
+      ? `<table class="cellrenderer-tags">${param.value
+          .map(
+            (v) => `<tr>
+            <td class="tag">${v[0]}</td>
+            <td class="state">${v[1]}</td>
+            <td class="date">${context.datePipe.transform(v[2], 'eoNiceShort')}</td>
+            <td class="traceid">${v[3]}</td>
+            </tr>`
+          )
+          .join('')}</table>`
+      : '';
+  }
+
   static emailCellRenderer(param) {
     return param.value ? `<a href="mailto:${Utils.formatMailTo(param?.value, true)}">${Utils.escapeHtml(param.value)}</a>` : '';
   }
