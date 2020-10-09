@@ -2,6 +2,8 @@
   [yuvFileDropOptions]="{ label: 'yuv.client.frame.app-bar.filedrop.label' | translate, disabled: disableFileDrop, multiple: true }">
 
   <div class="top">
+    <yuv-quick-search #quickSearch [query]="appQuery" (typeAggregation)="onTypeAggregation($event)"
+      (queryReset)="onQuickSearchReset()" (querySubmit)="onQuickSearchQuery($event)"></yuv-quick-search>
 
 
     <div class="aggs" *ngIf="aggs?.length">
@@ -17,8 +19,6 @@
       </div>
     </div>
 
-    <yuv-quick-search #quickSearch [query]="appQuery" (typeAggregation)="onTypeAggregation($event)"
-      (queryReset)="onQuickSearchReset()" (querySubmit)="onQuickSearchQuery($event)"></yuv-quick-search>
 
   </div>
 

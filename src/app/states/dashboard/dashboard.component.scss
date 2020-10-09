@@ -7,6 +7,12 @@
 }
 
 :host {
+  &.aggregations {
+    .bottom {
+      opacity: 0.5;
+    }
+  }
+
   .dashboard {
     display: flex;
     flex-flow: column;
@@ -14,13 +20,6 @@
     padding-top: var(--app-bar-height);
     box-sizing: border-box;
     overflow: hidden;
-
-    &.aggregations {
-      .bottom {
-        opacity: 0.2;
-        transform: translateY(75%);
-      }
-    }
 
     .top {
       display: flex;
@@ -102,19 +101,18 @@
       display: flex;
       flex-flow: column;
       overflow: auto;
-
-      background-color: rgba(255, 255, 255, 0.4);
-      outline: 1000px solid rgba(255, 255, 255, 0.4);
-      .dark & {
-        background-color: rgba(0, 0, 0, 0.4);
-        outline: 1000px solid rgba(0, 0, 0, 0.4);
-      }
+      background-color: var(--panel-background);
+      max-height: 35vh;
+      border-radius: 2px;
+      padding: calc(var(--app-pane-padding) / 2) 0;
+      margin-top: calc(var(--app-pane-padding) / 4);
+      box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.2);
 
       .container {
         > div {
           display: flex;
           align-items: center;
-          padding: var(--app-pane-padding);
+          padding: calc(var(--app-pane-padding) / 2) var(--app-pane-padding);
           .label {
             order: 0;
             font-size: var(--font-subhead);

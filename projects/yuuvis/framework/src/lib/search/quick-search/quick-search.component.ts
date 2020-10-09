@@ -378,9 +378,7 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
       if (this.context && this.searchWithinContext) {
         this.searchQuery.addFilter(this.contextFilter);
       }
-
       this.settingUpQuery = false;
-      this.aggregate();
     }
   }
 
