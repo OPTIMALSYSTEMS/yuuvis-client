@@ -273,6 +273,10 @@ export class GridService {
         colDef.width = 101;
         break;
       }
+      case BaseObjectTypeField.TAGS: {
+        colDef.cellRenderer = this.customContext(CellRenderer.systemTagsCellRenderer);
+        break;
+      }
       case BaseObjectTypeField.VERSION_NUMBER: {
         colDef.width = 80;
         break;

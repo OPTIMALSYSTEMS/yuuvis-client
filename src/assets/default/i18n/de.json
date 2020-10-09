@@ -287,7 +287,7 @@
   "yuv.client.state.not-found.description": "Das Objekt konnte nicht geladen werden.",
   "yuv.client.state.not-found.title": "Nicht gefunden",
   "yuv.client.state.process.list.empty": "Es gibt keine aktiven Prozesse",
-  "yuv.client.state.process.title": "Meine Prozesse",
+  "yuv.client.state.process.title": "Meine Wiedervorlagen",
   "yuv.client.state.result.title": "Suchergebnis",
   "yuv.client.state.settings.cache.clear.error": "Anwendungscache konnte nicht geleert werden",
   "yuv.client.state.settings.cache.clear.success": "Der Anwendungscache wurde geleert",

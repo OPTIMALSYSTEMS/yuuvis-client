@@ -140,6 +140,10 @@ export class ObjectComponent implements OnInit, OnDestroy {
       .on(YuvEventType.DMS_OBJECT_DELETED)
       .pipe(takeUntilDestroy(this))
       .subscribe((event) => {
+        if (this.route.snapshot.fragment && this.route.snapshot.fragment === event.data?.id) {
+          // get rid of the fragment once the deleted item has the same ID
+          this.router.navigate([]);
+        }
         if (this.context?.id === event.data.id || this.contextId === event.data.id) {
           this.router.navigate(['/']);
         }

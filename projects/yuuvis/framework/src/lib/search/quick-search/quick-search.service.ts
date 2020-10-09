@@ -7,6 +7,7 @@ import {
   ColumnConfigSkipFields,
   ContentStreamField,
   ObjectType,
+  ObjectTypeClassification,
   ObjectTypeGroup,
   SearchFilter,
   SearchFilterGroup,
@@ -40,7 +41,9 @@ export class QuickSearchService {
   private filtersVisibility: { hidden: string[]; __visible: string[]; __hidden: string[] };
   private filtersLast = [];
   private get filtersHidden() {
-    return [...this.filtersVisibility.hidden, ...this.filtersVisibility.__hidden.filter((id) => !this.filtersVisibility.__visible.includes(id))];
+    return this.filtersVisibility
+      ? [...this.filtersVisibility.hidden, ...this.filtersVisibility.__hidden.filter((id) => !this.filtersVisibility.__visible.includes(id))]
+      : [];
   }
 
   availableObjectTypes: Selectable[] = [];
@@ -67,15 +70,7 @@ export class QuickSearchService {
     // this.saveFilters(false, {});
 
     this.systemService.system$.subscribe((_) => {
-      this.availableObjectTypes = this.systemService
-        .getObjectTypes()
-        .filter((t) => !this.skipTypes.includes(t.id))
-        .map((ot) => ({
-          id: ot.id,
-          label: this.systemService.getLocalizedResource(`${ot.id}_label`) || ot.id,
-          value: ot
-        }))
-        .sort(Utils.sortValues('label'));
+      this.availableObjectTypes = this.getAvailableObjectTypes();
       let i = 0;
       this.availableObjectTypeGroups = this.systemService.getGroupedObjectTypes(true, true, true, 'search').map((otg: ObjectTypeGroup) => ({
         id: `${i++}`,
@@ -89,6 +84,27 @@ export class QuickSearchService {
         }))
       }));
     });
+  }
+
+  private getAvailableObjectTypes() {
+    // also add extension types that are not excluded from search
+    const extendables = this.systemService
+      .getSecondaryObjectTypes()
+      .filter(
+        (sot) =>
+          !sot.classification?.includes(SecondaryObjectTypeClassification.REQUIRED) &&
+          !sot.classification?.includes(SecondaryObjectTypeClassification.PRIMARY) &&
+          !sot.classification?.includes(ObjectTypeClassification.SEARCH_FALSE)
+      );
+
+    return [...this.systemService.getObjectTypes(), ...extendables]
+      .filter((t) => !this.skipTypes.includes(t.id))
+      .map((ot) => ({
+        id: ot.id,
+        label: this.systemService.getLocalizedResource(`${ot.id}_label`) || ot.id,
+        value: ot
+      }))
+      .sort(Utils.sortValues('label'));
   }
 
   loadFilterSettings(global = false) {
