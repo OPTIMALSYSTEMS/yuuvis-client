@@ -194,6 +194,8 @@ export class ObjectFormEditComponent implements OnDestroy {
                   assignedPrimaryFSOT: false,
                   assignedGeneral: false
                 };
+
+                this._secondaryObjectTypeIDs = [...this._dmsObject.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS]];
                 this.combinedFormInput.data = updatedObject.data;
                 this.afoObjectForm.setFormPristine();
               }
