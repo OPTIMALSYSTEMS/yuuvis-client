@@ -343,11 +343,16 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
         .filter((f) => !hiddenFilters.includes(f.id));
     });
 
-    // remove filters that are not relevant
-    this.searchQuery.filterGroup.filters.forEach(
-      (f) => !this.availableObjectTypeFields.find((t) => t.id === f.property) && this.searchQuery.filterGroup.remove(f.id)
-    );
+    // properties that are required allthough they may not appear in the list of the availableObjectTypesFields
+    const requiredFields = [BaseObjectTypeField.PARENT_ID];
+    const fields = [...requiredFields, ...this.availableObjectTypeFields.map((t) => t.id)];
 
+    // remove filters that are not relevant
+    this.searchQuery.filterGroup.filters.forEach((f) => {
+      if (!fields.includes(f.property)) {
+        this.searchQuery.filterGroup.remove(f.id);
+      }
+    });
     this.formOptions = { filter: { id: 'new', value: [this.searchQuery.filterGroup.clone()] }, availableObjectTypeFields: this.availableObjectTypeFields };
   }
 

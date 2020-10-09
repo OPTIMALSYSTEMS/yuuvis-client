@@ -221,6 +221,7 @@ export class ContextComponent implements OnInit, OnDestroy {
   }
 
   onTabChange(tab: any) {
+    this.activeTabIndex = tab.index;
     setTimeout(() => {
       this.activeSearchResult = this.searchResultComponents.toArray()[tab.index];
       if (this.activeSearchResult) {

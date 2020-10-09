@@ -41,7 +41,9 @@ export class QuickSearchService {
   private filtersVisibility: { hidden: string[]; __visible: string[]; __hidden: string[] };
   private filtersLast = [];
   private get filtersHidden() {
-    return [...this.filtersVisibility.hidden, ...this.filtersVisibility.__hidden.filter((id) => !this.filtersVisibility.__visible.includes(id))];
+    return this.filtersVisibility
+      ? [...this.filtersVisibility.hidden, ...this.filtersVisibility.__hidden.filter((id) => !this.filtersVisibility.__visible.includes(id))]
+      : [];
   }
 
   availableObjectTypes: Selectable[] = [];

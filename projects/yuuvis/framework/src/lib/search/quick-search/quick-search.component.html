@@ -24,7 +24,7 @@
       </div>
 
       <!-- in context -->
-      <button class="context-search" *ngIf="context" [ngClass]="{active: searchWithinContext}"
+      <button type="button" class="context-search" *ngIf="context" [ngClass]="{active: searchWithinContext}"
         (click)="toggleSearchWithinContext()">
         {{ 'yuv.framework.quick-search.context-search.chip' | translate }}
       </button>
