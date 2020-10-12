@@ -142,7 +142,7 @@ export class SearchFilterComponent implements OnInit {
   }
 
   private setupSOTS() {
-    if (this._query.sots) {
+    if (this._query.sots?.length) {
       const sots = this.quickSearchService.getActiveSOTS(this._query);
       this.typeSelection = [...this.typeSelection, ...sots.map((s) => s.id)];
       this.availableTypeGroups[1] = {
