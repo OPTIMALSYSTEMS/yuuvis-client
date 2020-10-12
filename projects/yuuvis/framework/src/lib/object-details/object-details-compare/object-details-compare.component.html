@@ -13,7 +13,7 @@
     <p-tabPanel [id]="'changes'" [header]="'yuv.framework.object-details-compare.tabs.changes.title' | translate"
       [headerStyleClass]="'changes'" [disabled]="!objectCompareInput?.second.item">
       <ng-template pTemplate="content">
-        <yuv-summary *ngIf="objectCompareInput?.second.item"
+        <yuv-summary *ngIf="objectCompareInput?.second.item" [showExtrasSection]="userIsAdmin"
           [compareObjects]="[objectCompareInput?.first.item, objectCompareInput?.second.item]">
         </yuv-summary>
       </ng-template>
