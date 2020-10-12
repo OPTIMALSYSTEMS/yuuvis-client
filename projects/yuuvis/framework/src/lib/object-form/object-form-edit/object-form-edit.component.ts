@@ -202,7 +202,6 @@ export class ObjectFormEditComponent implements OnDestroy {
 
               this.controls.saving = false;
               this.controls.disabled = true;
-              this.notification.success(this._dmsObject.title, this.messages.formSuccess);
               this.indexDataSaved.emit(this._dmsObject);
             },
             Utils.throw(
