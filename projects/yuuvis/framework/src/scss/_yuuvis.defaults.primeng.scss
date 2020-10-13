@@ -247,6 +247,10 @@ body {
         box-shadow: none !important;
       }
 
+      &.ui-state-disabled {
+        opacity: 1;
+      }
+
       .ui-chips-input-token input {
         font-family: 'Roboto';
         font-size: var(--font-body);
