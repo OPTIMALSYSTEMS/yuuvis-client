@@ -22,7 +22,7 @@ import { edit, kebap } from '../../svg.generated';
 import { PopoverConfig } from './../../popover/popover.interface';
 import { PopoverRef } from './../../popover/popover.ref';
 import { PopoverService } from './../../popover/popover.service';
-import { SearchResultComponent } from './../../search/search-result/search-result.component';
+import { FilterPanelConfig, SearchResultComponent } from './../../search/search-result/search-result.component';
 import { refresh, settings } from './../../svg.generated';
 
 /**
@@ -59,7 +59,7 @@ export class ContextComponent implements OnInit, OnDestroy {
   private _contextSearchQuery: SearchQuery;
   actionMenuVisible = false;
   actionMenuSelection: DmsObject[] = [];
-  showFilterPanel: boolean;
+  filterPanelConfig: FilterPanelConfig;
 
   _layoutOptionsKeys = {
     children: null,
@@ -133,7 +133,7 @@ export class ContextComponent implements OnInit, OnDestroy {
 
       // load own settings
       this.layoutService.loadLayoutOptions('yuv-context', 'layout').subscribe((o: any) => {
-        this.showFilterPanel = o ? o.showFilterPanel || false : false;
+        this.filterPanelConfig = o;
       });
     }
   }
@@ -184,9 +184,11 @@ export class ContextComponent implements OnInit, OnDestroy {
     }
   }
 
-  onFilterPanelToggled(visible: boolean) {
-    this.showFilterPanel = visible;
-    this.layoutService.saveLayoutOptions('yuv-context', 'layout', { showFilterPanel: visible }).subscribe();
+  onFilterPanelConfigChanged(cfg: FilterPanelConfig) {
+    this.filterPanelConfig = cfg;
+    if (cfg) {
+      this.layoutService.saveLayoutOptions('yuv-context', 'layout', cfg).subscribe();
+    }
   }
 
   onFilesDropped(files: File[]) {

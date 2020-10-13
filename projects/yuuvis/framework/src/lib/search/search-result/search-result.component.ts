@@ -26,6 +26,11 @@ import { ResponsiveTableData } from '../../components/responsive-data-table/resp
 import { GridService } from '../../services/grid/grid.service';
 import { arrowLast, arrowNext, clear, doubleArrow, filter, listModeDefault, listModeGrid, listModeSimple, search, settings } from '../../svg.generated';
 
+export interface FilterPanelConfig {
+  open: boolean;
+  width: number;
+}
+
 /**
  * Component rendering a search result within a result list.
  * Adding `applyColumnConfig` attribute and set it to true will apply the users
@@ -41,29 +46,53 @@ import { arrowLast, arrowNext, clear, doubleArrow, filter, listModeDefault, list
   host: { class: 'yuv-search-result' }
 })
 export class SearchResultComponent implements OnDestroy {
+  // default and minimal size of the filter panel in pixel
+  filterPanelSize = {
+    default: 250,
+    min: 200
+  };
+
   private _originalQuery: SearchQuery;
   private _searchQuery: SearchQuery;
   private _columns: ColDef[];
   private _rows: any[];
   private _hasPages = false;
   private _itemsSupposedToBeSelected: string[];
-  private _showFilterPanel: boolean;
+  // private _showFilterPanel: boolean;
+  private _filterPanelConfig: FilterPanelConfig = {
+    open: false,
+    width: this.filterPanelSize.default
+  };
   pagingForm: FormGroup;
   busy: boolean;
 
-  /**
-   * Whether or not to expand the filter panel
-   */
-  @Input() set showFilterPanel(b: boolean) {
-    if (this._showFilterPanel !== b) {
-      this._showFilterPanel = b;
-      this.filterPanelToggled.emit(b);
+  @Input() set filterPanelConfig(cfg: FilterPanelConfig) {
+    if (this._filterPanelConfig?.open !== cfg?.open || this._filterPanelConfig.width !== cfg?.width) {
+      this._filterPanelConfig = cfg || {
+        open: false,
+        width: this.filterPanelSize.default
+      };
+      this.filterPanelConfigChanged.emit(cfg);
     }
   }
 
-  get showFilterPanel(): boolean {
-    return this._showFilterPanel;
+  get filterPanelConfig() {
+    return this._filterPanelConfig;
   }
+
+  // /**
+  //  * Whether or not to expand the filter panel
+  //  */
+  // @Input() set showFilterPanel(b: boolean) {
+  //   if (this._showFilterPanel !== b) {
+  //     this._showFilterPanel = b;
+  //     this.filterPanelToggled.emit(b);
+  //   }
+  // }
+
+  // get showFilterPanel(): boolean {
+  //   return this._showFilterPanel;
+  // }
 
   tableData: ResponsiveTableData;
   // object type shown in the result list, will be null for mixed results
@@ -73,12 +102,6 @@ export class SearchResultComponent implements OnDestroy {
   pagination: {
     pages: number;
     page: number;
-  };
-
-  // default and minimal size of the filter panel in pixel
-  filterPanelSize = {
-    default: 250,
-    min: 200
   };
 
   @ViewChild('dataTable') dataTable: ResponsiveDataTableComponent;
@@ -134,9 +157,9 @@ export class SearchResultComponent implements OnDestroy {
    */
   @Output() viewModeChanged = new EventEmitter<ViewMode>();
   /**
-   * Emitted when the visibility of the filter panel changes
+   * Emitted when the visibility or width of the filter panel changes
    */
-  @Output() filterPanelToggled = new EventEmitter<boolean>();
+  @Output() filterPanelConfigChanged = new EventEmitter<FilterPanelConfig>();
 
   set hasPages(count) {
     this._hasPages = count;
@@ -198,6 +221,21 @@ export class SearchResultComponent implements OnDestroy {
       });
   }
 
+  setFilterPanelVisibility(v: boolean) {
+    if (this._filterPanelConfig?.open !== v) {
+      this._filterPanelConfig.open = v;
+      this.filterPanelConfigChanged.emit(this._filterPanelConfig);
+    }
+  }
+
+  gutterDragEnd(evt: any) {
+    console.log(evt);
+    if (this._filterPanelConfig.width !== evt.sizes[0]) {
+      this._filterPanelConfig.width = evt.sizes[0];
+      this.filterPanelConfigChanged.emit(this._filterPanelConfig);
+    }
+  }
+
   /**
    * re-run the current query
    */
@@ -245,6 +283,8 @@ export class SearchResultComponent implements OnDestroy {
       switchMap(() => of(q))
     );
   }
+
+  FilterPanel() {}
 
   // Create actual table data from the search result
   private createTableData(searchResult: SearchResult, pageNumber = 1): void {
