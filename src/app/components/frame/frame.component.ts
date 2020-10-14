@@ -68,7 +68,6 @@ export class FrameComponent implements OnInit, OnDestroy {
   disableCreate: boolean;
   showSideBar: boolean;
   screenSmall: boolean;
-  showSearch: boolean;
   user: YuvUser;
   disabledContextSearch: boolean;
   appQuery: SearchQuery;
@@ -188,10 +187,6 @@ export class FrameComponent implements OnInit, OnDestroy {
     }
   }
 
-  toggleSearch(visible: boolean) {
-    this.showSearch = visible;
-  }
-
   reload() {
     location.reload();
   }
@@ -291,8 +286,6 @@ export class FrameComponent implements OnInit, OnDestroy {
       this.tab = e.urlAfterRedirects.startsWith('/dashboard');
       // disable fileDrop being on create state
       this.disableFileDrop = this.disableCreate || e.urlAfterRedirects.startsWith('/create');
-      // hide open search bar when leaving state
-      this.toggleSearch(false);
     });
   }
 

@@ -92,8 +92,8 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
    * ID of a context folder to restrict search to.
    */
   @Input() set context(c: string) {
+    this._context = c;
     if (c && c !== this.context) {
-      this._context = c;
       this._tmpSearch = this.searchQuery ? this.searchQuery.toQueryJson() : null;
       // enable context search
       this.setQuery(new SearchQuery());

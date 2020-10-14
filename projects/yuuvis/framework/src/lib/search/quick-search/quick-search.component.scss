@@ -13,6 +13,7 @@
     .upper {
       display: none;
     }
+
     .search-box {
       padding: 0;
       height: 100%;
@@ -52,6 +53,7 @@
           > form {
             background-color: var(--panel-background-lightgrey);
             margin-top: 0;
+            border-width: 1px 0 0 0;
           }
         }
       }
@@ -63,9 +65,17 @@
               width: 24px;
               height: 24px;
             }
+            background-color: var(--main-background);
+            color: var(--text-color-hint);
           }
           &.field-select {
             margin: 0;
+          }
+
+          &.context-search {
+            font-size: var(--font-hint);
+            white-space: nowrap;
+            padding: 2px 4px;
           }
         }
       }
@@ -74,6 +84,7 @@
         .input {
           input {
             padding: 0;
+            font-size: var(--font-subhead);
           }
         }
       }
@@ -149,8 +160,10 @@
 
         &.primary {
           padding: calc(var(--app-pane-padding) / 8) calc(var(--app-pane-padding) / 2);
+
           background-color: var(--color-accent);
           color: #fff;
+
           align-self: stretch;
 
           &:focus,

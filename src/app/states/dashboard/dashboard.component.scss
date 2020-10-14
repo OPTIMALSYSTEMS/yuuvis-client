@@ -41,7 +41,6 @@
       .aggs {
         width: 500px;
         max-width: 100%;
-        z-index: 1;
       }
     }
     .bottom {
@@ -95,7 +94,6 @@
 
     .aggs {
       z-index: 0;
-      flex: 1;
       min-height: 0;
       animation: yuvFadeInUp 200ms;
       display: flex;
