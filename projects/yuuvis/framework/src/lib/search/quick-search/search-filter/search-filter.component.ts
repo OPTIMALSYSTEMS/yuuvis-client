@@ -154,7 +154,7 @@ export class SearchFilterComponent implements OnInit {
   }
 
   private setupFilters(typeSelection: string[], activeFilters?: Selectable[]) {
-    this.availableObjectTypeFields = this.quickSearchService.getAvailableObjectTypesFields(typeSelection);
+    this.availableObjectTypeFields = this.quickSearchService.getAvailableObjectTypesFields(typeSelection, this._query?.sots);
 
     this.quickSearchService.getCurrentSettings().subscribe(([storedFilters, hiddenFilters, lastFilters]) => {
       this.storedFilters = this.quickSearchService.loadFilters(storedFilters as any, this.availableObjectTypeFields);

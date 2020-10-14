@@ -335,7 +335,7 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
   }
 
   private setAvailableObjectTypesFields() {
-    this.availableObjectTypeFields = this.quickSearchService.getAvailableObjectTypesFields(this.selectedObjectTypes);
+    this.availableObjectTypeFields = this.quickSearchService.getAvailableObjectTypesFields(this.selectedObjectTypes, this.searchQuery?.sots);
 
     this.quickSearchService.getCurrentSettings().subscribe(([storedFilters, hiddenFilters]) => {
       this.enabledFilters = this.quickSearchService
