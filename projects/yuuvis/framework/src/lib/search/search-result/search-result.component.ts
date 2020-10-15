@@ -117,7 +117,7 @@ export class SearchResultComponent implements OnDestroy {
    */
   @Input() set query(searchQuery: SearchQuery) {
     this._originalQuery = searchQuery && new SearchQuery(searchQuery.toQueryJson());
-    this._searchQuery = searchQuery;
+    this._searchQuery = searchQuery && new SearchQuery(searchQuery.toQueryJson());
     if (searchQuery) {
       this.executeQuery(this.applyColumnConfig);
     } else {
