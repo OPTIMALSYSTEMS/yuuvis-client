@@ -183,7 +183,7 @@
   "yuv.framework.quick-search-picker.button.select": "Select",
   "yuv.framework.quick-search-picker.title": "Restrict to object types",
   "yuv.framework.quick-search.aggregate.error": "The search could not be executed.",
-  "yuv.framework.quick-search.context-search.chip": "in the folder",
+  "yuv.framework.quick-search.context-search.chip": "within folder",
   "yuv.framework.quick-search.field-select.tooltip": "Add search condition",
   "yuv.framework.quick-search.reset.tooltip": "Reset search",
   "yuv.framework.quick-search.term.placeholder": "Search term",
