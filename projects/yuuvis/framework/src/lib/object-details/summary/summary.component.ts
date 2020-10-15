@@ -195,7 +195,11 @@ export class SummaryComponent implements OnInit {
               : dmsObject.data[key],
           value2:
             this.dmsObject2 &&
-            (typeof renderer === 'function' ? renderer({ value: this.dmsObject2.data[key], data: this.dmsObject2.data }) : this.dmsObject2.data[key]),
+            (typeof renderer === 'function'
+              ? renderer({ value: this.dmsObject2.data[key], data: this.dmsObject2.data, colDef: def })
+              : this.dmsObject2.data[key + '_title']
+              ? this.dmsObject2.data[key + '_title']
+              : this.dmsObject2.data[key]),
           order: null
         };
 
