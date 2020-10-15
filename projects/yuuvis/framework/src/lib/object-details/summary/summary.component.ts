@@ -205,6 +205,7 @@ export class SummaryComponent implements OnInit {
 
         if (key === BaseObjectTypeField.OBJECT_TYPE_ID) {
           si.value = this.systemService.getLocalizedResource(`${dmsObject.data[key]}_label`);
+          si.value2 = this.dmsObject2 && this.systemService.getLocalizedResource(`${this.dmsObject2.data[key]}_label`);
         }
         if (this.dmsObject2 && (si.value === si.value2 || this.isVersion(key))) {
           // skip equal and irrelevant values
