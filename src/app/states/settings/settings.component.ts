@@ -29,6 +29,10 @@ export class SettingsComponent implements OnInit {
     return this.userService.hasManageSettingsRole;
   }
 
+  get hasSystemRole() {
+    return this.userService.hasSystemRole;
+  }
+
   constructor(
     private translate: TranslateService,
     private router: Router,
