@@ -31,7 +31,7 @@
 
       <!-- reset button -->
       <button type="button" class="reset" (click)="reset()"
-        [ngStyle]="{'visibility': (searchQuery.term || searchQuery.types?.length || searchQuery.filters?.length) ? 'visible' : 'hidden'}"
+        [ngStyle]="{'visibility': (searchQuery.term || searchQuery.allTypes?.length || searchQuery.filters?.length) ? 'visible' : 'hidden'}"
         title="{{ 'yuv.framework.quick-search.reset.tooltip' | translate }}">
         <yuv-icon icon="reset"></yuv-icon>
       </button>
