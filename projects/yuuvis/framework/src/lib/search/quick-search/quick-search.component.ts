@@ -133,10 +133,9 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
       if (this.context && this.searchWithinContext) {
         // if context has been already set query goes to tmp
         this._tmpSearch = q.toQueryJson();
-      } else {
-        this.setQuery(q);
       }
     }
+    this.setQuery(q);
   }
 
   /**

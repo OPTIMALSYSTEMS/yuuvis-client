@@ -265,6 +265,9 @@ export class FrameComponent implements OnInit, OnDestroy {
       }
     } else {
       this.context = null;
+      if (this.appQuery) {
+        this.appQuery.removeFilter(BaseObjectTypeField.PARENT_ID);
+      }
     }
   }
 
