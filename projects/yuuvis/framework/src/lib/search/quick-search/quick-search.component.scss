@@ -1,5 +1,13 @@
 @import '../../../../../../../src/scss-shared/_mixins';
 
+.cdk-overlay-pane.filters {
+  .highlight .title {
+    font-style: italic;
+    font-weight: normal !important;
+    color: var(--text-color-caption);
+  }
+}
+
 :host {
   position: relative;
   display: block;

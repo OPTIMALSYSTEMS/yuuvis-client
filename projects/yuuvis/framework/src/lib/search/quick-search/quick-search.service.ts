@@ -8,6 +8,7 @@ import {
   ContentStreamField,
   ObjectType,
   ObjectTypeClassification,
+  ObjectTypeField,
   ObjectTypeGroup,
   SearchFilter,
   SearchFilterGroup,
@@ -159,10 +160,11 @@ export class QuickSearchService {
       ...sotsFields,
       ...sharedFields
         .filter((f) => !ColumnConfigSkipFields.includes(f.id) && !sotsFields.find((s) => s.id === f.id))
-        .map((f) => ({
+        .map((f: ObjectTypeField) => ({
           id: f.id,
           label: this.systemService.getLocalizedResource(`${f.id}_label`) || f.id,
-          value: f
+          value: f,
+          highlight: this.systemService.isSystemProperty(f)
         }))
     ].sort(Utils.sortValues('label'));
   }

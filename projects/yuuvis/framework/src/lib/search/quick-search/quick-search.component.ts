@@ -98,6 +98,9 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
       this.setQuery(contextQuery);
     } else {
       this._context = c;
+      if (this.searchQuery) {
+        this.searchQuery.removeFilter(BaseObjectTypeField.PARENT_ID);
+      }
     }
   }
   get context() {
