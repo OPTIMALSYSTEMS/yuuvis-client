@@ -418,6 +418,9 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
    */
   reset() {
     this.searchQuery = new SearchQuery();
+    if (this._context) {
+      this.searchQuery.addFilter(new SearchFilter(BaseObjectTypeField.PARENT_ID, SearchFilter.OPERATOR.EQUAL, this._context));
+    }
     this.resultCount = null;
     this.formValid = true;
     this.resetObjectTypes();
