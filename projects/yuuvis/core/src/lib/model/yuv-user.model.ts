@@ -59,7 +59,7 @@ export class YuvUser {
   }
 
   public getFullName(): string {
-    return `${this.lastname}, ${this.firstname})`;
+    return `${this.lastname}, ${this.firstname}`;
   }
 
   public getDisplayNameName(): string {
