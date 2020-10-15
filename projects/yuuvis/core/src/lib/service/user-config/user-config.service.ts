@@ -20,6 +20,10 @@ export class UserConfigService {
     return this.userService.hasManageSettingsRole;
   }
 
+  get hasSystemRole() {
+    return this.userService.hasSystemRole;
+  }
+
   /**
    * @ignore
    */
@@ -124,7 +128,7 @@ export class UserConfigService {
 
   importMainConfig(data: string | any, uri = ConfigService.GLOBAL_MAIN_CONFIG) {
     const config = typeof data === 'string' ? JSON.parse(data) : data;
-    return this.hasManageSettingsRole ? this.backend.post(uri, config) : of();
+    return this.hasSystemRole ? this.backend.post(uri, config) : of();
   }
 
   exportLanguage(iso = 'en') {

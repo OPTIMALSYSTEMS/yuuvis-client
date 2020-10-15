@@ -14,7 +14,7 @@ export class SearchQuery {
   sots: string[] = [];
   tags: any;
   get targetType(): string | null {
-    return this.allTypes?.length === 1 ? this.allTypes[0] : null;
+    return this.sots?.length === 1 ? this.sots[0] : this.types?.length === 1 ? this.types[0] : null;
   }
   get filters(): SearchFilter[] {
     return this.filterGroup.filters;
