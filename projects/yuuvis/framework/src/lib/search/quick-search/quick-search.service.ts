@@ -339,6 +339,8 @@ export class QuickSearchService {
     const MODIFICATION_DATE = availableObjectTypeFields.find((s) => s.id === BaseObjectTypeField.MODIFICATION_DATE);
     const MIME_TYPE = availableObjectTypeFields.find((s) => s.id === ContentStreamField.MIME_TYPE);
     const LENGTH = availableObjectTypeFields.find((s) => s.id === ContentStreamField.LENGTH);
+    const CREATED_BY = availableObjectTypeFields.find((s) => s.id === BaseObjectTypeField.CREATED_BY);
+    const MODIFIED_BY = availableObjectTypeFields.find((s) => s.id === BaseObjectTypeField.MODIFIED_BY);
 
     return [
       CREATION_DATE && {
@@ -385,6 +387,28 @@ export class QuickSearchService {
             )
           ]
         }))
+      },
+      CREATED_BY && {
+        id: 'created_by',
+        label: CREATED_BY.label,
+        items: [
+          {
+            id: '__' + CREATED_BY.id + '#' + 'ME',
+            label: this.userService.getCurrentUser().getFullName(),
+            value: [new SearchFilter(CREATED_BY.id, SearchFilter.OPERATOR.EQUAL, this.userService.getCurrentUser().id)]
+          }
+        ]
+      },
+      MODIFIED_BY && {
+        id: 'modified_by',
+        label: MODIFIED_BY.label,
+        items: [
+          {
+            id: '__' + MODIFIED_BY.id + '#' + 'ME',
+            label: this.userService.getCurrentUser().getFullName(),
+            value: [new SearchFilter(MODIFIED_BY.id, SearchFilter.OPERATOR.EQUAL, this.userService.getCurrentUser().id)]
+          }
+        ]
       }
     ].filter((v) => v);
   }

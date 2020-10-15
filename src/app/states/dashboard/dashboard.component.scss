@@ -29,6 +29,7 @@
       margin-top: calc((100vh / 4) - var(--app-bar-height));
       flex: 1;
       min-height: 0;
+      z-index: 1;
 
       yuv-quick-search {
         order: 0;
