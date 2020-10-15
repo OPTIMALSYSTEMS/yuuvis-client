@@ -2,6 +2,11 @@
 
 .yuv-follow-up {
   padding: var(--app-pane-padding);
+  ::ng-deep {
+    yuv-form-input .fe-wrapper {
+      margin: 1px 0;
+    }
+  }
 
   h2 {
     font-weight: var(--font-weight-light);
