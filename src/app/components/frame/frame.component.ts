@@ -264,10 +264,13 @@ export class FrameComponent implements OnInit, OnDestroy {
         this.context = ctx;
       }
     } else {
-      this.context = null;
-      if (this.appQuery) {
-        this.appQuery.removeFilter(BaseObjectTypeField.PARENT_ID);
+      // Comming from a context, we'll reset to a new app wide query.
+      // Because, the search that has been created within the context
+      // makes no sense for the dashboard
+      if (this.context) {
+        this.appSearch.setQuery(new SearchQuery());
       }
+      this.context = null;
     }
   }
 
