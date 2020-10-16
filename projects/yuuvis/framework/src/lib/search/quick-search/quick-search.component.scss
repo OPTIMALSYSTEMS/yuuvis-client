@@ -29,10 +29,11 @@
       &:not(:focus-within):not(:hover) {
         .main {
           button.field-select.hasFilters {
+            opacity: 1;
             yuv-icon {
               border-radius: 2px;
-              background-color: var(--text-color-hint);
-              color: #fff;
+              border: 1px solid var(--color-accent);
+              color: var(--color-accent);
             }
           }
         }

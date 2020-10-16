@@ -48,9 +48,11 @@ $yuv-result-header-height: 38px;
       border-right: 1px solid var(--panel-divider-color);
       color: var(--text-color-caption);
       yuv-icon {
-        margin: calc(var(--app-pane-padding) / 2) 0;
+        margin: calc(var(--app-pane-padding) / 2) calc(var(--app-pane-padding) / 8);
         opacity: 0.6;
-        padding: 4px;
+        border: 1px solid transparent;
+        width: 18px;
+        height: 18px;
       }
 
       &:hover {
@@ -68,7 +70,9 @@ $yuv-result-header-height: 38px;
       }
 
       yuv-icon.active {
+        opacity: 1;
         color: var(--color-accent);
+        border-color: var(--color-accent);
       }
     }
 
