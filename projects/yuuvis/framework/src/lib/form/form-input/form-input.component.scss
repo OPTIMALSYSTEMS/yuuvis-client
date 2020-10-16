@@ -19,7 +19,7 @@
 
     &.focusWithin {
       border-color: var(--color-accent);
-      > label {
+      > .form-input__label {
         color: var(--color-accent);
       }
     }
@@ -65,7 +65,7 @@
     }
   }
 
-  &.checkbox .fe-wrapper > label {
+  &.checkbox .fe-wrapper > .form-input__label {
     text-align: start;
   }
 
@@ -77,7 +77,7 @@
   }
 
   &.required .fe-wrapper {
-    > label {
+    > .form-input__label {
       // background-color: var(--item-focus-background-color);
       font-weight: bold;
 
@@ -92,7 +92,7 @@
   &.invalid .fe-wrapper {
     background: rgba(var(--color-error), 0.15);
     border-color: var(--color-error);
-    > label {
+    > .form-input__label {
       background-color: var(--color-error);
       color: #fff;
       margin: 0 4px;
@@ -112,7 +112,7 @@
       > div.control {
         flex: 0 0 auto;
       }
-      > label {
+      > .form-input__label {
         flex: 0 1 auto;
       }
     }
@@ -123,12 +123,12 @@
 .dark .yuv-form-input {
   .fe-wrapper {
     border-color: rgba(255, 255, 255, 0.54);
-    > label {
+    > .form-input__label {
       color: rgba(255, 255, 255, 0.84);
     }
     &.focusWithin {
       border-color: #fff;
-      > label {
+      > .form-input__label {
         color: #fff;
       }
     }
@@ -204,7 +204,7 @@
     border-radius: 2px;
     @include transition();
 
-    label {
+    .form-input__label {
       background: rgba(0, 0, 0, 0.1);
       color: var(--text-color-hint);
     }
@@ -213,7 +213,7 @@
       border-color: transparent;
       outline: 0;
 
-      label {
+      .form-input__label {
         background: var(--color-accent) !important;
         color: #fff;
       }
