@@ -28,7 +28,7 @@
 
       &:not(:focus-within):not(:hover) {
         .main {
-          button.field-select {
+          button.field-select.hasFilters {
             yuv-icon {
               border-radius: 2px;
               background-color: var(--text-color-hint);

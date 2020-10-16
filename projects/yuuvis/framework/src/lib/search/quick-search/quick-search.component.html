@@ -36,7 +36,8 @@
         <yuv-icon icon="reset"></yuv-icon>
       </button>
 
-      <button type="button" class="field-select" #fieldSelectTrigger (click)="showObjectTypeFieldPicker()"
+      <button type="button" class="field-select" #fieldSelectTrigger
+        [ngClass]="{hasFilters: searchQuery.filters?.length}" (click)="showObjectTypeFieldPicker()"
         *ngIf="availableObjectTypeFields?.length"
         title="{{ 'yuv.framework.quick-search.field-select.tooltip' | translate }}">
         <yuv-icon [icon]="'addCircle'"></yuv-icon>
