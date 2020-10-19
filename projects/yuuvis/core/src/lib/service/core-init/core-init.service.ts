@@ -52,7 +52,7 @@ export class CoreInit {
       : forkJoin(
           // TODO: what if apiWeb path is changed via config?
           [...this.coreConfig.main, ApiBase.apiWeb + ConfigService.GLOBAL_MAIN_CONFIG].map((c) =>
-            this.http.get(`${Utils.getBaseHref()}${c}`).pipe(
+            this.http.get(c.startsWith(ApiBase.apiWeb) ? c : `${Utils.getBaseHref()}${c}`).pipe(
               catchError((e) => {
                 this.logger.error('failed to catch config file', e);
                 return of({});
