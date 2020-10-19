@@ -191,7 +191,7 @@ export class SearchQuery {
   /**
    * Retrieves a filter by its property name.
    *
-   * @param propertyName The filters property name (qname of form element)
+   * @param propertyName The filters property name (name of form element)
    * @returns Search Filter Object
    */
   public getFilter(propertyName: string): SearchFilter {

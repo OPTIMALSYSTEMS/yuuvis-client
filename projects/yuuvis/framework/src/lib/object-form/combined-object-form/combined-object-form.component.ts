@@ -119,7 +119,7 @@ export class CombinedObjectFormComponent implements OnInit, IObjectForm {
   /**
    * Extracts the values from the form model. Each form value is represented by one
    * property on the result object holding the fields value. The keys (properties) are the `name`
-   * properties of the form element (in SEARCH situation the `qname` field is used).
+   * properties of the form element.
    *
    * How values are extracted is influenced by the forms situation.
    *
