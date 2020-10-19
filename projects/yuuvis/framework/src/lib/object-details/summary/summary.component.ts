@@ -104,7 +104,7 @@ export class SummaryComponent implements OnInit {
   private excludeTables(objectTypeId): string[] {
     return this.systemService
       .getObjectType(objectTypeId)
-      .fields.filter((fields: ObjectTypeField) => fields.propertyType === 'table')
+      .fields.filter((fields: ObjectTypeField) => fields.id !== BaseObjectTypeField.TAGS && fields.propertyType === 'table')
       .map((field: ObjectTypeField) => field.id);
   }
 
@@ -155,7 +155,8 @@ export class SummaryComponent implements OnInit {
       BaseObjectTypeField.OBJECT_ID,
       BaseObjectTypeField.PARENT_ID,
       BaseObjectTypeField.OBJECT_TYPE_ID,
-      BaseObjectTypeField.LEADING_OBJECT_TYPE_ID
+      BaseObjectTypeField.LEADING_OBJECT_TYPE_ID,
+      BaseObjectTypeField.TAGS
     ];
     baseFields.map((fields) => extraFields.push(fields));
 
@@ -194,12 +195,17 @@ export class SummaryComponent implements OnInit {
               : dmsObject.data[key],
           value2:
             this.dmsObject2 &&
-            (typeof renderer === 'function' ? renderer({ value: this.dmsObject2.data[key], data: this.dmsObject2.data }) : this.dmsObject2.data[key]),
+            (typeof renderer === 'function'
+              ? renderer({ value: this.dmsObject2.data[key], data: this.dmsObject2.data, colDef: def })
+              : this.dmsObject2.data[key + '_title']
+              ? this.dmsObject2.data[key + '_title']
+              : this.dmsObject2.data[key]),
           order: null
         };
 
         if (key === BaseObjectTypeField.OBJECT_TYPE_ID) {
           si.value = this.systemService.getLocalizedResource(`${dmsObject.data[key]}_label`);
+          si.value2 = this.dmsObject2 && this.systemService.getLocalizedResource(`${this.dmsObject2.data[key]}_label`);
         }
         if (this.dmsObject2 && (si.value === si.value2 || this.isVersion(key))) {
           // skip equal and irrelevant values

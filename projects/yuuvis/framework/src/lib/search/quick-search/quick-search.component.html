@@ -1,5 +1,5 @@
 <div class="upper" [ngClass]="{ zero: resultCount === 0 }"
-  *ngIf="searchQuery.term || searchQuery.types?.length || searchQuery.filters?.length">
+  *ngIf="searchQuery.term || searchQuery.types?.length || searchQuery.sots?.length || searchQuery.filters?.length">
   <!-- <yuv-icon [icon]="'clear'" (click)="reset()"></yuv-icon> -->
   <div class="yuv-loader-straight"></div>
   <div class="count" *ngIf="resultCount !== null">{{ resultCount }}</div>
@@ -31,12 +31,13 @@
 
       <!-- reset button -->
       <button type="button" class="reset" (click)="reset()"
-        *ngIf="searchQuery.term || searchQuery.types?.length || searchQuery.filters?.length"
+        [ngStyle]="{'visibility': (searchQuery.term || searchQuery.allTypes?.length || searchQuery.filters?.length) ? 'visible' : 'hidden'}"
         title="{{ 'yuv.framework.quick-search.reset.tooltip' | translate }}">
         <yuv-icon icon="reset"></yuv-icon>
       </button>
 
-      <button type="button" class="field-select" #fieldSelectTrigger (click)="showObjectTypeFieldPicker()"
+      <button type="button" class="field-select" #fieldSelectTrigger
+        [ngClass]="{hasFilters: searchQuery.filters?.length}" (click)="showObjectTypeFieldPicker()"
         *ngIf="availableObjectTypeFields?.length"
         title="{{ 'yuv.framework.quick-search.field-select.tooltip' | translate }}">
         <yuv-icon [icon]="'addCircle'"></yuv-icon>

@@ -14,7 +14,7 @@ export class SearchQuery {
   sots: string[] = [];
   tags: any;
   get targetType(): string | null {
-    return this.types && this.types.length === 1 ? this.types[0] : null;
+    return this.sots?.length === 1 ? this.sots[0] : this.types?.length === 1 ? this.types[0] : null;
   }
   get filters(): SearchFilter[] {
     return this.filterGroup.filters;
@@ -191,7 +191,7 @@ export class SearchQuery {
   /**
    * Retrieves a filter by its property name.
    *
-   * @param propertyName The filters property name (qname of form element)
+   * @param propertyName The filters property name (name of form element)
    * @returns Search Filter Object
    */
   public getFilter(propertyName: string): SearchFilter {

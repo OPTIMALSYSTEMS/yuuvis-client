@@ -7,7 +7,7 @@ import { PopoverConfig } from '../../popover/popover.interface';
 import { PopoverRef } from '../../popover/popover.ref';
 import { PopoverService } from '../../popover/popover.service';
 import { kebap, refresh, search } from '../../svg.generated';
-import { SearchResultComponent } from '../search-result/search-result.component';
+import { FilterPanelConfig, SearchResultComponent } from '../search-result/search-result.component';
 /**
  * This component wraps a `SearchResultComponent`.
  *
@@ -54,10 +54,7 @@ export class SearchResultPanelComponent {
    * will be used to store component specific settings using the layout service.
    */
   @Input() layoutOptionsKey: string;
-  /**
-   * Whether or not to expand the filter panel
-   */
-  @Input() showFilterPanel: boolean;
+  @Input() filterPanelConfig: FilterPanelConfig;
 
   /**
    * Emitted when column sizes of the contained result list table have been changed.
@@ -80,9 +77,9 @@ export class SearchResultPanelComponent {
    */
   @Output() queryDescriptionChange = new EventEmitter<string>();
   /**
-   * Emitted when the visibility of the filter panel changes
+   * Emitted when the visibility or width of the filter panel changes
    */
-  @Output() filterPanelToggled = new EventEmitter<boolean>();
+  @Output() filterPanelConfigChanged = new EventEmitter<FilterPanelConfig>();
 
   constructor(
     @Attribute('applyColumnConfig') public applyColumnConfig: boolean,
@@ -135,9 +132,9 @@ export class SearchResultPanelComponent {
     return emit && this.queryChanged.emit(searchQuery);
   }
 
-  onFilterPanelToggled(visible: boolean) {
-    if (this.filterPanelToggled) {
-      this.filterPanelToggled.emit(visible);
+  onFilterPanelConfigChanged(cfg: FilterPanelConfig) {
+    if (this.filterPanelConfigChanged) {
+      this.filterPanelConfigChanged.emit(cfg);
     }
   }
 

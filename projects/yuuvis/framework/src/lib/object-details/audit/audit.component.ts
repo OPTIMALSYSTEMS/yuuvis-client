@@ -68,15 +68,18 @@ export class AuditComponent implements OnInit, OnDestroy {
     this.auditLabels = {
       a100: this.translate.instant('yuv.framework.audit.label.create.metadata'),
       a101: this.translate.instant('yuv.framework.audit.label.create.metadata.withcontent'),
+      a110: this.translate.instant('yuv.framework.audit.label.create.tag'),
 
       a200: this.translate.instant('yuv.framework.audit.label.delete'),
       a201: this.translate.instant('yuv.framework.audit.label.delete.content'), // #v
       a202: this.translate.instant('yuv.framework.audit.label.delete.marked'),
+      a210: this.translate.instant('yuv.framework.audit.label.delete.tag'), // #v
 
       a300: this.translate.instant('yuv.framework.audit.label.update.metadata'),
       a301: this.translate.instant('yuv.framework.audit.label.update.content'),
       a302: this.translate.instant('yuv.framework.audit.label.update.metadata.withcontent'),
       a303: this.translate.instant('yuv.framework.audit.label.update.move.content'),
+      a310: this.translate.instant('yuv.framework.audit.label.update.tag'),
 
       a400: this.translate.instant('yuv.framework.audit.label.get.content'),
       a401: this.translate.instant('yuv.framework.audit.label.get.metadata'),

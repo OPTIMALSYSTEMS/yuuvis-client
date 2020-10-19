@@ -5,5 +5,5 @@ export { SearchFilterConfigComponent } from './quick-search/search-filter-config
 export { SearchFilterFormComponent } from './quick-search/search-filter-form/search-filter-form.component';
 export { SearchFilterComponent } from './quick-search/search-filter/search-filter.component';
 export { SearchResultPanelComponent } from './search-result-panel/search-result-panel.component';
-export { SearchResultComponent } from './search-result/search-result.component';
+export { FilterPanelConfig, SearchResultComponent } from './search-result/search-result.component';
 export * from './search.module';

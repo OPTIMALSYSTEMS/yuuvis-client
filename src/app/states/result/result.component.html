@@ -1,18 +1,12 @@
-<yuv-responsive-master-slave class="state" [layoutOptionsKey]="layoutOptionsKey" (slaveClosed)="onSlaveClosed()" [slaveActive]="objectDetailsID">
-  <yuv-search-result-panel
-    class="yuv-master panel"
-    [query]="searchQuery"
-    [preSelectItems]="selectedItems"
-    applyColumnConfig="true"
-    (queryDescriptionChange)="onQueryDescriptionChange($event)"
-    [showFilterPanel]="showFilterPanel"
-    [layoutOptionsKey]="layoutOptionsKey"
-    (itemsSelected)="select($event)"
-    (filterPanelToggled)="onFilterPanelToggled($event)"
-    (rowDoubleClicked)="onRowDoubleClicked($event)"
-  >
+<yuv-responsive-master-slave class="state" [layoutOptionsKey]="layoutOptionsKey" (slaveClosed)="onSlaveClosed()"
+  [slaveActive]="objectDetailsID">
+  <yuv-search-result-panel class="yuv-master panel" [query]="searchQuery" [preSelectItems]="selectedItems"
+    applyColumnConfig="true" (queryDescriptionChange)="onQueryDescriptionChange($event)"
+    [filterPanelConfig]="filterPanelConfig" [layoutOptionsKey]="layoutOptionsKey" (itemsSelected)="select($event)"
+    (filterPanelConfigChanged)="onFilterPanelConfigChanged($event)" (rowDoubleClicked)="onRowDoubleClicked($event)">
   </yuv-search-result-panel>
 
-  <yuv-object-details class="yuv-slave panel" [objectId]="objectDetailsID" [searchTerm]="searchQuery?.term" [layoutOptionsKey]="layoutOptionsKey">
+  <yuv-object-details class="yuv-slave panel" [objectId]="objectDetailsID" [searchTerm]="searchQuery?.term"
+    [layoutOptionsKey]="layoutOptionsKey">
   </yuv-object-details>
 </yuv-responsive-master-slave>

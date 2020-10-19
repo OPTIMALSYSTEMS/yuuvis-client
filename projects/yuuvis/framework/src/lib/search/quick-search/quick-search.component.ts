@@ -79,8 +79,6 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
   private TYPES = '@';
   private TYPE_FIELDS = '#';
   private _context: string;
-  // persist former search while switching between regular and context search
-  private _tmpSearch: any;
   lastAutoQuery: any = {};
 
   selectedObjectTypes: string[] = [];
@@ -94,11 +92,15 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
   @Input() set context(c: string) {
     if (c && c !== this.context) {
       this._context = c;
-      this._tmpSearch = this.searchQuery ? this.searchQuery.toQueryJson() : null;
       // enable context search
-      this.setQuery(new SearchQuery());
-    } else if (!c && this._tmpSearch) {
-      this.setQuery(new SearchQuery(this._tmpSearch));
+      const contextQuery = new SearchQuery();
+      contextQuery.addFilter(new SearchFilter(BaseObjectTypeField.PARENT_ID, SearchFilter.OPERATOR.EQUAL, c));
+      this.setQuery(contextQuery);
+    } else {
+      this._context = c;
+      if (this.searchQuery) {
+        this.searchQuery.removeFilter(BaseObjectTypeField.PARENT_ID);
+      }
     }
   }
   get context() {
@@ -127,14 +129,7 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
    * A SearchQuery to be loaded. If not provided a new query will be created.
    */
   @Input() set query(q: SearchQuery) {
-    if (q) {
-      if (this.context && this.searchWithinContext) {
-        // if context has been already set query goes to tmp
-        this._tmpSearch = q.toQueryJson();
-      } else {
-        this.setQuery(q);
-      }
-    }
+    this.setQuery(q);
   }
 
   /**
@@ -335,7 +330,7 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
   }
 
   private setAvailableObjectTypesFields() {
-    this.availableObjectTypeFields = this.quickSearchService.getAvailableObjectTypesFields(this.selectedObjectTypes);
+    this.availableObjectTypeFields = this.quickSearchService.getAvailableObjectTypesFields(this.selectedObjectTypes, this.searchQuery?.sots);
 
     this.quickSearchService.getCurrentSettings().subscribe(([storedFilters, hiddenFilters]) => {
       this.enabledFilters = this.quickSearchService
@@ -407,9 +402,11 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
 
   toggleSearchWithinContext() {
     this.searchWithinContext = !this.searchWithinContext;
-    const s = { ...this.searchQuery.toQueryJson() };
-    this.setQuery(new SearchQuery({ ...this._tmpSearch }));
-    this._tmpSearch = s;
+    this.searchQuery.removeFilter(BaseObjectTypeField.PARENT_ID);
+    if (this.searchWithinContext) {
+      this.searchQuery.addFilter(new SearchFilter(BaseObjectTypeField.PARENT_ID, SearchFilter.OPERATOR.EQUAL, this._context));
+    }
+    this.setQuery(this.searchQuery);
   }
 
   applyTypeAggration(agg: ObjectTypeAggregation, execute: boolean) {
@@ -424,6 +421,9 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
    */
   reset() {
     this.searchQuery = new SearchQuery();
+    if (this._context) {
+      this.searchQuery.addFilter(new SearchFilter(BaseObjectTypeField.PARENT_ID, SearchFilter.OPERATOR.EQUAL, this._context));
+    }
     this.resultCount = null;
     this.formValid = true;
     this.resetObjectTypes();

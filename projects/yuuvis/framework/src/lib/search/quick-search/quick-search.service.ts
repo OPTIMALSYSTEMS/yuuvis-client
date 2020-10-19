@@ -8,6 +8,7 @@ import {
   ContentStreamField,
   ObjectType,
   ObjectTypeClassification,
+  ObjectTypeField,
   ObjectTypeGroup,
   SearchFilter,
   SearchFilterGroup,
@@ -141,8 +142,8 @@ export class QuickSearchService {
       .sort(Utils.sortValues('label'));
   }
 
-  getAvailableObjectTypesFields(selectedTypes = [], shared = true): Selectable[] {
-    const selectedObjectTypes = (selectedTypes && selectedTypes.length
+  getAvailableObjectTypesFields(selectedTypes = [], sots = [], shared = true): Selectable[] {
+    const selectedObjectTypes = (selectedTypes?.length
       ? selectedTypes
       : !shared
       ? [...this.systemService.getObjectTypes(), ...this.systemService.getSecondaryObjectTypes()].map((t) => t.id)
@@ -153,14 +154,19 @@ export class QuickSearchService {
       ? selectedObjectTypes.reduce((prev, cur) => cur.fields.filter((f) => prev.find((p) => p.id === f.id)), selectedObjectTypes[0].fields)
       : selectedObjectTypes.reduce((prev, cur) => [...prev, ...cur.fields.filter((f) => !prev.find((p) => p.id === f.id))], []);
 
-    return sharedFields
-      .filter((f) => !ColumnConfigSkipFields.includes(f.id))
-      .map((f) => ({
-        id: f.id,
-        label: this.systemService.getLocalizedResource(`${f.id}_label`) || f.id,
-        value: f
-      }))
-      .sort(Utils.sortValues('label'));
+    const sotsFields = sots?.length ? this.getAvailableObjectTypesFields(sots) : [];
+
+    return [
+      ...sotsFields,
+      ...sharedFields
+        .filter((f) => !ColumnConfigSkipFields.includes(f.id) && !sotsFields.find((s) => s.id === f.id))
+        .map((f: ObjectTypeField) => ({
+          id: f.id,
+          label: this.systemService.getLocalizedResource(`${f.id}_label`) || f.id,
+          value: f,
+          highlight: this.systemService.isSystemProperty(f)
+        }))
+    ].sort(Utils.sortValues('label'));
   }
 
   updateTypesAndSots(query: SearchQuery, allTypes: string[], keep = false) {
@@ -335,6 +341,8 @@ export class QuickSearchService {
     const MODIFICATION_DATE = availableObjectTypeFields.find((s) => s.id === BaseObjectTypeField.MODIFICATION_DATE);
     const MIME_TYPE = availableObjectTypeFields.find((s) => s.id === ContentStreamField.MIME_TYPE);
     const LENGTH = availableObjectTypeFields.find((s) => s.id === ContentStreamField.LENGTH);
+    const CREATED_BY = availableObjectTypeFields.find((s) => s.id === BaseObjectTypeField.CREATED_BY);
+    const MODIFIED_BY = availableObjectTypeFields.find((s) => s.id === BaseObjectTypeField.MODIFIED_BY);
 
     return [
       CREATION_DATE && {
@@ -381,6 +389,28 @@ export class QuickSearchService {
             )
           ]
         }))
+      },
+      CREATED_BY && {
+        id: 'created_by',
+        label: CREATED_BY.label,
+        items: [
+          {
+            id: '__' + CREATED_BY.id + '#' + 'ME',
+            label: this.userService.getCurrentUser().getFullName(),
+            value: [new SearchFilter(CREATED_BY.id, SearchFilter.OPERATOR.EQUAL, this.userService.getCurrentUser().id)]
+          }
+        ]
+      },
+      MODIFIED_BY && {
+        id: 'modified_by',
+        label: MODIFIED_BY.label,
+        items: [
+          {
+            id: '__' + MODIFIED_BY.id + '#' + 'ME',
+            label: this.userService.getCurrentUser().getFullName(),
+            value: [new SearchFilter(MODIFIED_BY.id, SearchFilter.OPERATOR.EQUAL, this.userService.getCurrentUser().id)]
+          }
+        ]
       }
     ].filter((v) => v);
   }

@@ -6,6 +6,7 @@ import { ContextComponent } from '@yuuvis/framework';
 import { finalize } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { FrameService } from '../../components/frame/frame.service';
+import { AppSearchService } from '../../service/app-search.service';
 
 @Component({
   selector: 'yuv-object',
@@ -34,6 +35,7 @@ export class ObjectComponent implements OnInit, OnDestroy {
   constructor(
     private route: ActivatedRoute,
     private dmsService: DmsService,
+    private appSearch: AppSearchService,
     private translate: TranslateService,
     private title: Title,
     private frameService: FrameService,
@@ -127,6 +129,7 @@ export class ObjectComponent implements OnInit, OnDestroy {
     // query params may provide a query to be executed within this state
     this.route.queryParams.pipe(takeUntilDestroy(this)).subscribe((queryParams: any) => {
       this.contextSearchQuery = !!queryParams.query ? new SearchQuery(JSON.parse(queryParams.query)) : null;
+      this.appSearch.setQuery(this.contextSearchQuery);
     });
     // fragments are used to identify the selected item within the context
     this.route.fragment.pipe(takeUntilDestroy(this)).subscribe((fragment: any) => {

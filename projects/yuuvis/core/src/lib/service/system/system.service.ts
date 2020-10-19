@@ -549,7 +549,7 @@ export class SystemService {
    * Determine whether or not the given object type field is a system field
    * @param field Object type field to be checked
    */
-  private isSystemProperty(field: ObjectTypeField): boolean {
+  isSystemProperty(field: ObjectTypeField): boolean {
     return field.id.startsWith('system:') || field.id === BaseObjectTypeField.LEADING_OBJECT_TYPE_ID;
   }
 

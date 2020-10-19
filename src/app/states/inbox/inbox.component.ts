@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { BpmEvent, EventService, InboxService, ProcessDefinitionKey, TaskData, TranslateService } from '@yuuvis/core';
+import { AppCacheService, BpmEvent, EventService, InboxService, ProcessDefinitionKey, TaskData, TranslateService } from '@yuuvis/core';
 import {
   arrowNext,
   edit,
@@ -45,9 +45,12 @@ export class InboxComponent implements OnInit, OnDestroy {
     private translateService: TranslateService,
     private formatProcessDataService: FormatProcessDataService,
     private iconRegistry: IconRegistryService,
-    private eventService: EventService
+    private eventService: EventService,
+    private appCache: AppCacheService
   ) {
     this.iconRegistry.registerIcons([edit, arrowNext, refresh, inbox, listModeDefault, listModeGrid, listModeSimple]);
+    // TODO: nasty hack: remove once grid renders view mode from extern
+    this.appCache.setItem(this.layoutOptionsKey, { 'yuv-responsive-data-table': { viewMode: 'horizontal' } }).subscribe();
   }
 
   private getInbox(): Observable<TaskData[]> {

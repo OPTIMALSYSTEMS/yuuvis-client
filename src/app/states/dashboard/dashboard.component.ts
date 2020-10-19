@@ -68,6 +68,6 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit() {
     this.titleService.setTitle(APP_VARS.defaultPageTitle);
-    this.appSearch.query$.subscribe((q: SearchQuery) => (this.appQuery = q));
+    this.appQuery = new SearchQuery();
   }
 }
