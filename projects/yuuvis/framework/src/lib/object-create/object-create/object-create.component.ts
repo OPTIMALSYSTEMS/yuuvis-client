@@ -636,6 +636,7 @@ export class ObjectCreateComponent implements OnDestroy {
     if (this.files.length) {
       this.files = [];
     }
+    this.title = this.labels?.defaultTitle;
     this.afoCreate = null;
     this.selectedObjectType = null;
     this.objCreateService.resetState();
