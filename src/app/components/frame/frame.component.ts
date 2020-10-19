@@ -135,7 +135,7 @@ export class FrameComponent implements OnInit, OnDestroy {
   }
 
   onObjetcsMove(event) {
-    let popoverConfig = {
+    const popoverConfig = {
       maxHeight: '70%',
       width: 300,
       bottom: 16,

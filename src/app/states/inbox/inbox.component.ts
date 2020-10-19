@@ -81,9 +81,8 @@ export class InboxComponent implements OnInit, OnDestroy {
     this.eventService
       .on(BpmEvent.BPM_EVENT)
       .pipe(
-        take(1),
-        switchMap(() => this.getInbox()),
-        takeUntilDestroy(this)
+        takeUntilDestroy(this),
+        switchMap(() => this.getInbox())
       )
       .subscribe();
   }
