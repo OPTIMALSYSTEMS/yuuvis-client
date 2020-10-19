@@ -1,5 +1,5 @@
 <div class="upper" [ngClass]="{ zero: resultCount === 0 }"
-  *ngIf="searchQuery.term || searchQuery.types?.length || searchQuery.filters?.length">
+  *ngIf="searchQuery.term || searchQuery.types?.length || searchQuery.sots?.length || searchQuery.filters?.length">
   <!-- <yuv-icon [icon]="'clear'" (click)="reset()"></yuv-icon> -->
   <div class="yuv-loader-straight"></div>
   <div class="count" *ngIf="resultCount !== null">{{ resultCount }}</div>
