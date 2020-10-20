@@ -3,6 +3,7 @@
     .ui-autocomplete-token-label {
       display: flex;
       align-items: center;
+      user-select: text;
       .label {
         padding: 0 calc(var(--app-pane-padding) / 4);
       }
