@@ -112,6 +112,8 @@ export class SearchResultComponent implements OnDestroy {
    * will be used to store component specific settings using the layout service.
    */
   @Input() layoutOptionsKey: string;
+
+  @Input() disableFilterPanel: boolean;
   /**
    * Query to be executed by the component.
    */

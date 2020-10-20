@@ -64,9 +64,9 @@ export class LayoutService {
     if (settings) {
       const body = this.document.getElementsByTagName('body')[0];
       const bodyClassList = body.classList;
-      if (bodyClassList.contains(darkModeClass) && !settings.darkMode) {
+      if (bodyClassList.contains(darkModeClass) && settings?.darkMode === false) {
         bodyClassList.remove(darkModeClass);
-      } else if (!bodyClassList.contains(darkModeClass) && settings.darkMode) {
+      } else if (!bodyClassList.contains(darkModeClass) && settings?.darkMode === true) {
         bodyClassList.add(darkModeClass);
       }
     }
