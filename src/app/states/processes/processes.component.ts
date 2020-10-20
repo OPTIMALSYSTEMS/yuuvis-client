@@ -79,7 +79,6 @@ export class ProcessesComponent implements OnInit, OnDestroy {
     this.eventService
       .on(BpmEvent.BPM_EVENT)
       .pipe(
-        take(1),
         switchMap(() => this.getProcesses()),
         takeUntilDestroy(this)
       )

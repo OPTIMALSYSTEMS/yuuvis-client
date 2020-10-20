@@ -50,7 +50,10 @@ export class InboxComponent implements OnInit, OnDestroy {
   ) {
     this.iconRegistry.registerIcons([edit, arrowNext, refresh, inbox, listModeDefault, listModeGrid, listModeSimple]);
     // TODO: nasty hack: remove once grid renders view mode from extern
-    this.appCache.setItem(this.layoutOptionsKey, { 'yuv-responsive-data-table': { viewMode: 'horizontal' } }).subscribe();
+    this.appCache
+      .getItem(this.layoutOptionsKey)
+      .pipe(switchMap((cache) => this.appCache.setItem(this.layoutOptionsKey, { ...cache, 'yuv-responsive-data-table': { viewMode: 'horizontal' } })))
+      .subscribe();
   }
 
   private getInbox(): Observable<TaskData[]> {
@@ -81,9 +84,8 @@ export class InboxComponent implements OnInit, OnDestroy {
     this.eventService
       .on(BpmEvent.BPM_EVENT)
       .pipe(
-        take(1),
-        switchMap(() => this.getInbox()),
-        takeUntilDestroy(this)
+        takeUntilDestroy(this),
+        switchMap(() => this.getInbox())
       )
       .subscribe();
   }

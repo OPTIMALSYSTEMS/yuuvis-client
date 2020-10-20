@@ -14,6 +14,7 @@ interface HeaderDetails {
   styleUrls: ['./process-list.component.scss']
 })
 export class ProcessListComponent {
+  private _dataTable: ResponsiveDataTableComponent;
   @ViewChild('dataTable')
   set dataTable(data: ResponsiveDataTableComponent) {
     setTimeout(() => {
@@ -21,6 +22,11 @@ export class ProcessListComponent {
         data.selectRows();
       }
     }, 1500);
+    this._dataTable = data;
+  }
+
+  get dataTable() {
+    return this._dataTable;
   }
   private _processData: any;
   private _viewMode: ViewMode;
@@ -29,9 +35,12 @@ export class ProcessListComponent {
   @Input() layoutOptionsKey: string;
   @Input()
   set processData(data) {
-    console.log(data);
-
     this._processData = data;
+    setTimeout(() => {
+      if (this.dataTable) {
+        this.dataTable.selectRows();
+      }
+    }, 10);
   }
   get processData() {
     return this._processData;

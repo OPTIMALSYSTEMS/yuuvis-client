@@ -76,7 +76,7 @@ export class EoxTranslateJsonLoader implements TranslateLoader {
    */
   getTranslation(lang: string): Observable<Object> {
     const t = [...this.config.translations.map((path) => `${path}${lang}.json`), ApiBase.apiWeb + ConfigService.GLOBAL_MAIN_CONFIG_LANG(lang)].map((uri) =>
-      this.http.get(`${Utils.getBaseHref()}${uri}`).pipe(catchError((e) => observableOf({})))
+      this.http.get(`${uri.startsWith(ApiBase.apiWeb) ? '/' : Utils.getBaseHref()}${uri}`).pipe(catchError((e) => observableOf({})))
     );
     return observableForkJoin(t).pipe(
       map((res) => {
