@@ -55,6 +55,7 @@ export class SearchResultPanelComponent {
    */
   @Input() layoutOptionsKey: string;
   @Input() filterPanelConfig: FilterPanelConfig;
+  @Input() disableFilterPanel: boolean;
 
   /**
    * Emitted when column sizes of the contained result list table have been changed.

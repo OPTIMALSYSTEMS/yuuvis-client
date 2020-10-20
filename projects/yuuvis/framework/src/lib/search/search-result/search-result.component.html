@@ -1,7 +1,8 @@
 <div class="content grid-container" [ngClass]="{ 'has-query': !!query }">
 
 
-  <div class="filterCollapsed" (click)="setFilterPanelVisibility(true)" *ngIf="!filterPanelConfig.open">
+  <div class="filterCollapsed" (click)="setFilterPanelVisibility(true)"
+    *ngIf="!disableFilterPanel && !filterPanelConfig.open">
     <div>
       <yuv-icon icon="filter" [ngClass]="{'active': query?.filters.length}"></yuv-icon>
       {{'yuv.framework.search-result.filter.panel.title'|translate}}
@@ -13,7 +14,7 @@
   <as-split unit="pixel" gutterDblClickDuration="300" (dragEnd)="gutterDragEnd($event)"
     (gutterDblClick)="setFilterPanelVisibility(false)">
     <as-split-area [size]="filterPanelConfig?.width" [minSize]="filterPanelSize.min" [order]="0"
-      *ngIf="filterPanelConfig.open">
+      *ngIf="!disableFilterPanel && filterPanelConfig.open">
       <yuv-search-filter [query]="query" [layoutOptionsKey]="layoutOptionsKey" (filterChange)="onFilterChanged($event)">
         <yuv-icon class="actions collapse btn" icon="doubleArrow" (click)="setFilterPanelVisibility(false)"></yuv-icon>
       </yuv-search-filter>
