@@ -313,6 +313,7 @@
   "yuv.client.state.settings.section.config": "Konfiguration",
   "yuv.client.state.settings.section.layout": "Layout",
   "yuv.client.state.settings.section.layout.export": "Export",
+  "yuv.client.state.settings.config.main-config.export.default": "Export Standard",
   "yuv.client.state.settings.section.layout.import": "Import",
   "yuv.client.state.settings.section.layout.reset": "Zurücksetzen",
   "yuv.client.state.settings.theme": "Theme",

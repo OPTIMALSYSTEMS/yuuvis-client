@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { Router } from '@angular/router';
-import { AppCacheService, ConfigService, SystemService, TranslateService, UserConfigService, UserService, YuvUser } from '@yuuvis/core';
+import { AppCacheService, BackendService, ConfigService, SystemService, TranslateService, UserConfigService, UserService, YuvUser } from '@yuuvis/core';
 import { IconRegistryService, LayoutService, LayoutSettings, NotificationService } from '@yuuvis/framework';
 import { forkJoin, Observable } from 'rxjs';
 import { shield } from '../../../assets/default/svg/svg';
@@ -43,6 +43,7 @@ export class SettingsComponent implements OnInit {
     public config: ConfigService,
     private userConfig: UserConfigService,
     private userService: UserService,
+    private backend: BackendService,
     private iconRegistry: IconRegistryService,
     private notificationService: NotificationService
   ) {
@@ -94,12 +95,20 @@ export class SettingsComponent implements OnInit {
     this.userConfig.exportMainConfig();
   }
 
+  exportDefaultMainConfig() {
+    this.backend.download('assets/default/config/main.json', 'main.json');
+  }
+
   importLanguage(e: any, iso) {
     this.userConfig.importLanguage(e, iso).subscribe(() => window.confirm('Application requires reload!') && window.location.reload());
   }
 
   exportLanguage(iso) {
     this.userConfig.exportLanguage(iso);
+  }
+
+  exportDefaultLanguage(iso) {
+    this.backend.download(`assets/default/i18n/${iso}.json`, `${iso}.json`);
   }
 
   clearCache() {
