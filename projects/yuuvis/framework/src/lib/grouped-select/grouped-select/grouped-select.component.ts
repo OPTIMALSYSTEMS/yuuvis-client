@@ -91,6 +91,8 @@ export class GroupedSelectComponent implements AfterViewInit, ControlValueAccess
    */
   @Input() singleSelect = true;
 
+  @Input() hideEmptyGroup = false;
+
   /**
    *  Defines list of items that should be selected by default
    */

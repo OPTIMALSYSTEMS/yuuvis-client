@@ -17,6 +17,7 @@ export class ProcessDetailsComponent {
   @Input() emptyMessage: string;
   @Input()
   set objectId(id: string) {
+    this.contextError = null;
     this.dmsObject$ = id ? this.dmsServide.getDmsObject(id).pipe(catchError((error) => this.handleObjectError(id))) : this.handleObjectError(id);
   }
 
