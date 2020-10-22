@@ -35,7 +35,7 @@
               <div class="lic-row" *ngFor="let lib of __libraries__ | async; trackBy: trackByFn">
                 <div class="name">{{ lib.name }}</div>
                 <div class="licence" *ngIf="lib.license">
-                  <a [href]="lib.link" *ngIf="lib.link">{{ lib.label }}</a>
+                  <a [href]="lib.link" *ngIf="lib.link" target="_blank">{{ lib.label }}</a>
                   <span *ngIf="!lib.link">{{ lib.license }}</span>
                 </div>
               </div>
