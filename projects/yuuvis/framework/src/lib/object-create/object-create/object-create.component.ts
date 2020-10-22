@@ -557,7 +557,7 @@ export class ObjectCreateComponent implements OnDestroy {
     (!!this.afoType ? this.finishAFO(data) : this.createDefault(data)).subscribe(
       (ids: string[]) => {
         this.objCreateService.setNewState({ busy: false });
-        if (this.createAnother || this.afoCreate?.dmsObject.selected) {
+        if (this.createAnother) {
           this.selectedObjectType = null;
           this.files = [];
           this.resetState();
