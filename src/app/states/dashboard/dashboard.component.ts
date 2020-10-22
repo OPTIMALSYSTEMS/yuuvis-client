@@ -1,7 +1,7 @@
 import { Component, HostBinding, OnInit, ViewChild } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { NavigationExtras, Router } from '@angular/router';
-import { SearchQuery, UserRoles, UserService, Utils, YuvUser } from '@yuuvis/core';
+import { SearchQuery, TranslateService, UserRoles, UserService, Utils, YuvUser } from '@yuuvis/core';
 import { ObjectTypeAggregation, QuickSearchComponent, RecentItem } from '@yuuvis/framework';
 import { APP_VARS } from '../../app.vars';
 import { FrameService } from '../../components/frame/frame.service';
@@ -19,17 +19,24 @@ export class DashboardComponent implements OnInit {
   disableFileDrop: boolean;
   @HostBinding('class.aggregations') hasAggs: boolean;
 
+  reloadComponent = true;
+
   constructor(
     private router: Router,
     private userService: UserService,
     private frameService: FrameService,
     private appSearch: AppSearchService,
+    private translateService: TranslateService,
     private titleService: Title
   ) {
     this.userService.user$.subscribe((user: YuvUser) => {
       if (user) {
         this.disableFileDrop = !user.authorities.includes(UserRoles.CREATE_OBJECT);
       }
+    });
+    this.translateService.onLangChange.subscribe(() => {
+      this.reloadComponent = false;
+      setTimeout(() => (this.reloadComponent = true), 1);
     });
   }
 
