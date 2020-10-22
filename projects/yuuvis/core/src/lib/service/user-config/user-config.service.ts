@@ -128,6 +128,10 @@ export class UserConfigService {
 
   importMainConfig(data: string | any, uri = ConfigService.GLOBAL_MAIN_CONFIG) {
     const config = typeof data === 'string' ? JSON.parse(data) : data;
+    if (uri === ConfigService.GLOBAL_MAIN_CONFIG && !config.core && !config.client) {
+      throw new Error('Invalid main configuration');
+      return of();
+    }
     return this.hasSystemRole ? this.backend.post(uri, config) : of();
   }
 
