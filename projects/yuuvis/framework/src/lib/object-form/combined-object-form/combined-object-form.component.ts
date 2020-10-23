@@ -49,11 +49,13 @@ export class CombinedObjectFormComponent implements OnInit, IObjectForm {
     this.formsChanged = false;
     this.formStates.clear();
 
-    this.mainFormOptions = {
-      formModel: ofi.main,
-      data: ofi.data,
-      disabled: ofi.disabled
-    };
+    if (ofi.main?.elements.length) {
+      this.mainFormOptions = {
+        formModel: ofi.main,
+        data: ofi.data,
+        disabled: ofi.disabled
+      };
+    }
 
     this.extensionForms =
       ofi && ofi.extensions

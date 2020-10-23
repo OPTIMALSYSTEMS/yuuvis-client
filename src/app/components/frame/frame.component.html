@@ -22,7 +22,7 @@
       <!-- search -->
       <ng-container *ngIf="!tab">
         <div class="app-bar-search">
-          <yuv-quick-search [inline]="true" [context]="context" [query]="appQuery"
+          <yuv-quick-search *ngIf="reloadComponent" [inline]="true" [context]="context" [query]="appQuery"
             (querySubmit)="onQuickSearchQuery($event)"> </yuv-quick-search>
         </div>
       </ng-container>

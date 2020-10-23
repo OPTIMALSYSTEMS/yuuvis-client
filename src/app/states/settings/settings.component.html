@@ -14,12 +14,8 @@
       <div class="setting settings__row" yuvOfflineDisabled>
         <div class="label" translate>yuv.client.state.settings.language</div>
         <div class="value buttons">
-          <button
-            class="toggle"
-            (click)="changeClientLocale(locale.iso)"
-            [ngClass]="{ active: translate.currentLang === locale.iso }"
-            *ngFor="let locale of clientLocales"
-          >
+          <button class="toggle" (click)="changeClientLocale(locale.iso)"
+            [ngClass]="{ active: translate.currentLang === locale.iso }" *ngFor="let locale of clientLocales">
             {{ locale.label }}
           </button>
         </div>
@@ -44,12 +40,8 @@
       <div class="settings-section">
         <h3>{{ 'yuv.client.state.settings.section.layout' | translate }}</h3>
         <button (click)="downloadLayout()">{{ 'yuv.client.state.settings.section.layout.export' | translate }}</button>
-        <yuv-file-picker
-          [label]="'yuv.client.state.settings.section.layout.import' | translate"
-          [accept]="'.json'"
-          [output]="'text'"
-          (fileSelected)="uploadLayout($event)"
-        ></yuv-file-picker>
+        <yuv-file-picker [label]="'yuv.client.state.settings.section.layout.import' | translate" [accept]="'.json'"
+          [output]="'text'" (fileSelected)="uploadLayout($event)"></yuv-file-picker>
         <button (click)="clearLayout()">{{ 'yuv.client.state.settings.section.layout.reset' | translate }}</button>
       </div>
 
@@ -57,21 +49,18 @@
       <div class="setting settings__row">
         <div class="label" translate>yuv.client.state.settings.theme</div>
         <div class="value buttons">
-          <button [ngClass]="{ active: !darkMode }" (click)="toggleTheme(false)">{{ 'yuv.client.state.settings.theme.light' | translate }}</button>
-          <button [ngClass]="{ active: darkMode }" (click)="toggleTheme(true)">{{ 'yuv.client.state.settings.theme.dark' | translate }}</button>
+          <button [ngClass]="{ active: !darkMode }"
+            (click)="toggleTheme(false)">{{ 'yuv.client.state.settings.theme.light' | translate }}</button>
+          <button [ngClass]="{ active: darkMode }"
+            (click)="toggleTheme(true)">{{ 'yuv.client.state.settings.theme.dark' | translate }}</button>
         </div>
       </div>
 
       <div class="setting">
         <div class="label">{{ 'yuv.client.state.settings.theme.accentcolor' | translate }}</div>
         <div class="value">
-          <button
-            class="color accent"
-            *ngFor="let ac of accentColorRGB"
-            [ngClass]="{ active: ac === accentColor }"
-            [ngStyle]="{ 'background-color': 'rgb(' + ac + ')' }"
-            (click)="setAccentColor(ac)"
-          ></button>
+          <button class="color accent" *ngFor="let ac of accentColorRGB" [ngClass]="{ active: ac === accentColor }"
+            [ngStyle]="{ 'background-color': 'rgb(' + ac + ')' }" (click)="setAccentColor(ac)"></button>
           <button class="color clear" *ngIf="accentColor" (click)="setAccentColor(null)">
             {{ 'yuv.client.state.settings.section.layout.reset' | translate }}
           </button>
@@ -81,13 +70,8 @@
       <div class="setting">
         <div class="label">{{ 'yuv.client.state.settings.theme.background' | translate }}</div>
         <div class="value buttons">
-          <yuv-file-picker
-            [label]="'yuv.client.state.settings.theme.background.choose' | translate"
-            [maxSize]="500000"
-            [accept]="'image/*'"
-            [output]="'dataurl'"
-            (fileSelected)="setBackgroundImage($event)"
-          ></yuv-file-picker>
+          <yuv-file-picker [label]="'yuv.client.state.settings.theme.background.choose' | translate" [maxSize]="500000"
+            [accept]="'image/*'" [output]="'dataurl'" (fileSelected)="setBackgroundImage($event)"></yuv-file-picker>
           <button *ngIf="customDashboardBackground" (click)="setBackgroundImage(null)">
             {{ 'yuv.client.state.settings.section.layout.reset' | translate }}
           </button>
@@ -103,13 +87,15 @@
       <div class="setting settings__row">
         <div class="label" translate>yuv.client.state.settings.config.column-config</div>
         <div class="value buttons">
-          <button (click)="editColumnConfig()">{{ 'yuv.client.state.settings.config.column-config.open' | translate }}</button>
+          <button
+            (click)="editColumnConfig()">{{ 'yuv.client.state.settings.config.column-config.open' | translate }}</button>
         </div>
       </div>
       <div class="setting settings__row">
         <div class="label" translate>yuv.client.state.settings.config.filter-config</div>
         <div class="value buttons">
-          <button (click)="editFilterConfig()">{{ 'yuv.client.state.settings.config.filter-config.open' | translate }}</button>
+          <button
+            (click)="editFilterConfig()">{{ 'yuv.client.state.settings.config.filter-config.open' | translate }}</button>
           <button *ngIf="hasManageSettingsRole" (click)="editFilterConfig(true)">
             {{ 'yuv.client.state.settings.config.filter-config.global.open' | translate }}
           </button>
@@ -120,29 +106,30 @@
         <div class="value buttons">
           <button (click)="clearCache()">{{ 'yuv.client.state.settings.config.cache.clear' | translate }}</button>
           <div class="cache">
-            <yuv-form-input class="checkbox" [skipToggle]="true" [label]="'yuv.client.state.settings.config.cache.system' | translate">
+            <yuv-form-input class="checkbox" [skipToggle]="true"
+              [label]="'yuv.client.state.settings.config.cache.system' | translate">
               <yuv-checkbox [(ngModel)]="cache.system" [ngModelOptions]="{ standalone: true }"></yuv-checkbox>
             </yuv-form-input>
-            <yuv-form-input class="checkbox" [skipToggle]="true" [label]="'yuv.client.state.settings.config.cache.history' | translate">
+            <yuv-form-input class="checkbox" [skipToggle]="true"
+              [label]="'yuv.client.state.settings.config.cache.history' | translate">
               <yuv-checkbox [(ngModel)]="cache.history" [ngModelOptions]="{ standalone: true }"></yuv-checkbox>
             </yuv-form-input>
-            <yuv-form-input class="checkbox" [skipToggle]="true" [label]="'yuv.client.state.settings.config.cache.layout' | translate">
+            <yuv-form-input class="checkbox" [skipToggle]="true"
+              [label]="'yuv.client.state.settings.config.cache.layout' | translate">
               <yuv-checkbox [(ngModel)]="cache.layout" [ngModelOptions]="{ standalone: true }"></yuv-checkbox>
             </yuv-form-input>
           </div>
         </div>
       </div>
-      <div class="setting settings__row" *ngIf="hasManageSettingsRole">
+      <div class="setting settings__row" *ngIf="hasSystemRole">
         <div class="label" translate>yuv.client.state.settings.config.main-config</div>
         <div class="value buttons">
-          <yuv-file-picker
-            [label]="'yuv.client.state.settings.config.main-config.import' | translate"
-            [accept]="'.json'"
-            [output]="'text'"
-            (fileSelected)="importMainConfig($event)"
-          ></yuv-file-picker>
-          <button (click)="exportMainConfig()">{{ 'yuv.client.state.settings.config.main-config.export' | translate }}</button>
-          <button (click)="exportDefaultMainConfig()">{{ 'yuv.client.state.settings.config.main-config.export.default' | translate }}</button>
+          <yuv-file-picker [label]="'yuv.client.state.settings.config.main-config.import' | translate"
+            [accept]="'.json'" [output]="'text'" (fileSelected)="importMainConfig($event)"></yuv-file-picker>
+          <button
+            (click)="exportMainConfig()">{{ 'yuv.client.state.settings.config.main-config.export' | translate }}</button>
+          <button
+            (click)="exportDefaultMainConfig()">{{ 'yuv.client.state.settings.config.main-config.export.default' | translate }}</button>
         </div>
       </div>
 
@@ -150,15 +137,13 @@
         <div class="setting settings__row" *ngIf="hasSystemRole">
           <div class="label">{{ 'yuv.client.state.settings.language' | translate }} ({{ locale.iso }})</div>
           <div class="value buttons">
-            <yuv-file-picker
-              [label]="'yuv.client.state.settings.config.main-config.import' | translate"
-              [accept]="'.json'"
-              [output]="'text'"
-              (fileSelected)="importLanguage($event, locale.iso)"
-            >
+            <yuv-file-picker [label]="'yuv.client.state.settings.config.main-config.import' | translate"
+              [accept]="'.json'" [output]="'text'" (fileSelected)="importLanguage($event, locale.iso)">
             </yuv-file-picker>
-            <button (click)="exportLanguage(locale.iso)">{{ 'yuv.client.state.settings.config.main-config.export' | translate }}</button>
-            <button (click)="exportDefaultLanguage(locale.iso)">{{ 'yuv.client.state.settings.config.main-config.export.default' | translate }}</button>
+            <button
+              (click)="exportLanguage(locale.iso)">{{ 'yuv.client.state.settings.config.main-config.export' | translate }}</button>
+            <button
+              (click)="exportDefaultLanguage(locale.iso)">{{ 'yuv.client.state.settings.config.main-config.export.default' | translate }}</button>
           </div>
         </div>
       </ng-container>

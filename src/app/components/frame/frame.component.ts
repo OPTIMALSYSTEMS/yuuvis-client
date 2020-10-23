@@ -13,7 +13,6 @@ import {
   SearchQuery,
   SystemService,
   TranslateService,
-  UploadResult,
   UserRoles,
   UserService,
   YuvEventType,
@@ -28,7 +27,8 @@ import {
   PopoverRef,
   PopoverService,
   Screen,
-  ScreenService
+  ScreenService,
+  UploadResult
 } from '@yuuvis/framework';
 import { filter } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
@@ -73,6 +73,7 @@ export class FrameComponent implements OnInit, OnDestroy {
   appQuery: SearchQuery;
 
   context: string;
+  reloadComponent = true;
 
   @HostListener('window:dragover', ['$event']) onDragOver(e) {
     let transfer = e.dataTransfer;
@@ -132,6 +133,11 @@ export class FrameComponent implements OnInit, OnDestroy {
       .on(YuvEventType.DMS_OBJECTS_MOVED)
       .pipe(takeUntilDestroy(this))
       .subscribe((event) => this.onObjetcsMove(event));
+
+    this.translateService.onLangChange.subscribe(() => {
+      this.reloadComponent = false;
+      setTimeout(() => (this.reloadComponent = true), 1);
+    });
   }
 
   onObjetcsMove(event) {
