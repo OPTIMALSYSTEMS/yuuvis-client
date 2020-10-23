@@ -1,12 +1,24 @@
 import { Injectable } from '@angular/core';
 import { DynamicDate, PickerDay } from './../datepicker.interface';
 
+/**
+ * Providing a kalender, that based on the user current data(time zone, date and current time).
+ */
 @Injectable({
   providedIn: 'root'
 })
 export class DatepickerService {
+  /**
+   * @ignore
+   */
   constructor() {}
 
+  /**
+   *Build the user current week information for select a date
+   * @param startDate - start date at the week, wich based on country: Monday in Europe, Sunday in USA
+   * @param month - current month
+   * @param isDisabled - is true, when the selected date does not match the date of the current week of the user
+   */
   buildWeek(startDate: Date, month: number, isDisabled?: (date: Date) => boolean): PickerDay[] {
     const date = new Date(startDate);
     return [...new Array(7)].map((a, i) => {
@@ -20,7 +32,12 @@ export class DatepickerService {
       };
     });
   }
-
+  /**
+   * Build the user current month information for select a date
+   * @param monthDate - current month
+   * @param startDay - current user day, based on country
+   * @param isDisabled - is true, when the selected date does not match the date of the current month of the user
+   */
   buildMonth(monthDate: Date, startDay = 0, isDisabled?: (date: Date) => boolean) {
     const weeks = [];
     const month = monthDate.getMonth();
@@ -35,7 +52,12 @@ export class DatepickerService {
     }
     return weeks;
   }
-
+  /**
+   * Provides the ability to select a specific type of date
+   * @param type - type of the date, eg. now, today, yesterday, this week, this month, this year
+   * @param startDay - current user date
+   * @param date - selected date from date picker
+   */
   getDateFromType(type: DynamicDate, startDay = 0, date?: any) {
     const d = date ? new Date(date) : new Date();
     switch (type) {

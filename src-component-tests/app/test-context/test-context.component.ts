@@ -5,7 +5,8 @@ import { ReferenceEntry } from '@yuuvis/framework';
 @Component({
   selector: 'yuv-test-context',
   templateUrl: './test-context.component.html',
-  styleUrls: ['./test-context.component.scss']
+  styleUrls: ['./test-context.component.scss'],
+  host: { class: 'yuv-test-container' }
 })
 export class TestContextComponent {
   contextObject: DmsObject;

@@ -1,9 +1,16 @@
-import {Component, ElementRef, Input, OnDestroy, Renderer2} from '@angular/core';
-import {Classification, TranslateService} from '@yuuvis/core';
-import {takeUntilDestroy} from 'take-until-destroy';
-import {ObjectFormTranslateService} from '../object-form-translate.service';
-import {ObjectFormControlWrapper} from '../object-form.interface';
-import {Situation} from './../object-form.situation';
+import { Component, ElementRef, Input, OnDestroy, Renderer2 } from '@angular/core';
+import { Classification, TranslateService } from '@yuuvis/core';
+import { takeUntilDestroy } from 'take-until-destroy';
+import { ObjectFormTranslateService } from '../object-form-translate.service';
+import { ObjectFormControlWrapper } from '../object-form.interface';
+import { Situation } from './../object-form.situation';
+
+/**
+ * Component rendering a single form element.
+ *
+ * @example
+ *<yuv-object-form-element [element]="someForm.controls[key]" [situation]="situation"></yuv-object-form-element>
+ */
 
 @Component({
   selector: 'yuv-object-form-element',
@@ -20,11 +27,28 @@ export class ObjectFormElementComponent implements OnDestroy {
     title: string;
   };
 
+  /**
+   * Form situation, if not set default will be 'EDIT'
+   */
   @Input() situation: string;
+
+  /**
+   * set a label toggle class to form
+   */
   @Input() skipToggle: boolean;
+
+  /**
+   * Provide an error message if the required field was not filled.
+   */
   @Input() inlineError: boolean;
 
-  // element is supposed to be a special FormGroup holding a single form element
+  get shouldSkipToggle() {
+    return this.skipToggle || this.situation !== 'SEARCH' || this.formElementRef._eoFormElement.readonly;
+  }
+
+  /**
+   *  Element is supposed to be a special FormGroup holding a single form element.
+   */
   @Input('element')
   set elementSetter(el: ObjectFormControlWrapper) {
     if (el) {
@@ -32,7 +56,7 @@ export class ObjectFormElementComponent implements OnDestroy {
       this.formElementRef = el.controls[el._eoFormControlWrapper.controlName];
       this.formElementRef._eoFormElement = this.setGrouping(this.formElementRef?._eoFormElement);
       if (this.formElementRef._eoFormElement.isNotSetValue) {
-        this.labelToggled(true);
+        this.labelToggled(true, false);
       }
       this.fetchTags();
       this.formElementRef?.valueChanges.pipe(takeUntilDestroy(this)).subscribe((_) => this.setupErrors());
@@ -51,11 +75,11 @@ export class ObjectFormElementComponent implements OnDestroy {
    * https://wiki.optimal-systems.de/display/PM/Status+yuuvis+Momentum+-+Flex+client
    */
   private setGrouping(formElement) {
-    return {...formElement, grouping: !!formElement?.classification?.includes(Classification.NUMBER_DIGIT)};
+    return { ...formElement, grouping: !!formElement?.classifications?.includes(Classification.NUMBER_DIGIT) };
   }
 
-  labelToggled(toggled: boolean) {
-    if (!this.skipToggle && this.situation === Situation.SEARCH) {
+  labelToggled(toggled: boolean, readonly = this.formElementRef._eoFormElement.readonly) {
+    if (!this.skipToggle && this.situation === Situation.SEARCH && !readonly) {
       const toggleClass = 'label-toggled';
       this.isNull = toggled;
       if (toggled) {

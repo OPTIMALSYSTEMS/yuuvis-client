@@ -1,5 +1,3 @@
-# yuv-responsive-tab-container
-
 Container component for a tab container. Add `<p-tabPanel>` components to the container to creat a new tab.
 
 ```html

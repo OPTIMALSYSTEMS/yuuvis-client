@@ -14,8 +14,9 @@
       <drag-scroll yuvOfflineDisabled [snap-disabled]="true" [scroll-x-wheel-enabled]="true">
 
         <yuv-dms-object-tile drag-scroll-item *ngFor="let i of recentlyCreated" [title]="i.title"
-          [description]="i.description" [objectTypeIcon]="i.objectTypeIcon" [objectTypeLabel]="i.objectTypeLabel"
-          [date]="i.date" (click)="triggerItemClicked(i, $event)"></yuv-dms-object-tile>
+          [description]="i.description" [objectTypeId]="i.objectTypeId" [objectTypeLabel]="i.objectTypeLabel"
+          [date]="i.date" (click)="triggerItemClicked(i, $event)">
+        </yuv-dms-object-tile>
 
         <button drag-scroll-item *ngIf="recentlyCreated?.length && !data"
           (click)="triggerShowAll()">{{'yuv.framework.recent-activities.header.more'|translate}}</button>
@@ -28,8 +29,9 @@
       <drag-scroll yuvOfflineDisabled [snap-disabled]="true" [scroll-x-wheel-enabled]="true">
 
         <yuv-dms-object-tile drag-scroll-item *ngFor="let i of recentlyModified" [title]="i.title"
-          [description]="i.description" [objectTypeIcon]="i.objectTypeIcon" [objectTypeLabel]="i.objectTypeLabel"
-          [date]="i.date" (click)="triggerItemClicked(i, $event)"></yuv-dms-object-tile>
+          [description]="i.description" [objectTypeId]="i.objectTypeId" [objectTypeLabel]="i.objectTypeLabel"
+          [date]="i.date" (click)="triggerItemClicked(i, $event)">
+        </yuv-dms-object-tile>
 
         <button drag-scroll-item *ngIf="recentlyModified?.length && !data"
           (click)="triggerShowAll()">{{'yuv.framework.recent-activities.header.more'|translate}}</button>

@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 import { TranslateModule } from '@yuuvis/core';
 import { AutoCompleteModule } from 'primeng/autocomplete';
 import { CalendarModule } from 'primeng/calendar';
@@ -8,9 +9,11 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { ChipsModule } from 'primeng/chips';
 import { DropdownModule } from 'primeng/dropdown';
 import { InputMaskModule } from 'primeng/inputmask';
+import { MultiSelectModule } from 'primeng/multiselect';
 import { TriStateCheckboxModule } from 'primeng/tristatecheckbox';
 import { YuvCommonModule } from '../common/common.module';
 import { YuvComponentsModule } from '../components/components.module';
+import { CatalogComponent } from './elements/catalog/catalog.component';
 import { CheckboxComponent } from './elements/checkbox/checkbox.component';
 import { DatetimeRangeComponent } from './elements/datetime-range/datetime-range.component';
 import { DatepickerComponent } from './elements/datetime/datepicker/datepicker.component';
@@ -41,7 +44,8 @@ import { FormInputComponent } from './form-input/form-input.component';
     YearRangeDirective,
     ReferenceComponent,
     ReferenceItemComponent,
-    OrganizationComponent
+    OrganizationComponent,
+    CatalogComponent
   ],
   exports: [
     FormInputComponent,
@@ -53,7 +57,8 @@ import { FormInputComponent } from './form-input/form-input.component';
     NumberRangeComponent,
     YearRangeDirective,
     ReferenceComponent,
-    OrganizationComponent
+    OrganizationComponent,
+    CatalogComponent
   ],
   imports: [
     CommonModule,
@@ -68,7 +73,9 @@ import { FormInputComponent } from './form-input/form-input.component';
     YuvCommonModule,
     DropdownModule,
     ReactiveFormsModule,
-    InputMaskModule
+    InputMaskModule,
+    MultiSelectModule,
+    RouterModule
   ]
 })
 export class YuvFormModule {}

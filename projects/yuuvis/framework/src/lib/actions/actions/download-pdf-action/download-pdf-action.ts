@@ -1,10 +1,13 @@
 import { Component } from '@angular/core';
-import { Router } from '@angular/router';
-import { BackendService, DmsObject, TranslateService } from '@yuuvis/core';
+import { DmsObject, TranslateService } from '@yuuvis/core';
 import { Observable, of as observableOf, of } from 'rxjs';
 import { DmsObjectTarget } from '../../action-target';
 import { SimpleAction } from '../../interfaces/action.interface';
 import { SelectionRange } from '../../selection-range.enum';
+
+/**
+ * @ignore
+ */
 
 @Component({
   selector: 'yuv-download-content-pdf',
@@ -18,7 +21,7 @@ export class DownloadPdfActionComponent extends DmsObjectTarget implements Simpl
   range = SelectionRange.MULTI_SELECT;
   static isSubAction = true;
 
-  constructor(private translate: TranslateService, private backend: BackendService, private router: Router) {
+  constructor(private translate: TranslateService) {
     super();
     this.label = this.translate.instant('yuv.framework.action-menu.action.export.pdf.label');
     this.description = this.translate.instant('yuv.framework.action-menu.action.export.pdf.description');

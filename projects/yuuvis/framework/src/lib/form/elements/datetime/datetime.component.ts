@@ -14,6 +14,8 @@ import { datepicker } from '../../../svg.generated';
  *
  * Implements `ControlValueAccessor` so it can be used within Angular forms.
  *
+ *  [Screenshot](../assets/images/yuv-datetime.gif)
+ *
  * @example
  * <yuv-datetime [pickerTitle]="'Please select a date'"></yuv-datetime>
  *
@@ -120,10 +122,32 @@ export class DatetimeComponent implements OnInit, ControlValueAccessor, Validato
 
   setValueFromMask() {
     try {
-      const d = this.datePipe.transform(this.innerValue, this._datePattern);
+      // bug: angular DatePipe cannot format pattern where day is before month (so I am gonna flip values & hope it works for all languages)
+      const dd = this._datePattern.indexOf('dd');
+      const MM = this._datePattern.indexOf('MM');
+      const innerDate =
+        this.innerValue &&
+        dd < MM &&
+        new Date(
+          [...this.innerValue]
+            .map((c, i) =>
+              i === dd
+                ? this.innerValue[MM]
+                : i === dd + 1
+                ? this.innerValue[MM + 1]
+                : i === MM
+                ? this.innerValue[dd]
+                : i === MM + 1
+                ? this.innerValue[dd + 1]
+                : c
+            )
+            .join('')
+        );
+
+      const d = this.datePipe.transform(innerDate || this.innerValue, this._datePattern);
       this.isValid = !!d;
       if (this.isValid) {
-        this.value = new Date(d);
+        this.value = innerDate || new Date(d);
       }
     } catch {
       this.isValid = false;

@@ -17,7 +17,9 @@
   --font-caption: 12px;
   --font-body: 13px;
 }
-
+.container-fluid.modules {
+  width: 100%;
+}
 body {
   font-family: sans-serif;
 }
@@ -37,6 +39,14 @@ pre[class*='language-'] {
   font-weight: normal;
 }
 
+.card-header {
+  background-color: #ccc;
+}
+
+.card-module {
+  min-height: 40px !important;
+}
+
 .content section > table {
   background-color: #fff;
 }
@@ -51,7 +61,11 @@ pre[class*='language-'] {
 
 .menu,
 .menu .list {
-  background: #6d7276;
+  background: #484f54;
+}
+
+.menu ul.list li.chapter ul.links .readme {
+  margin-left: -20px;
 }
 
 #book-search-input {
@@ -95,6 +109,10 @@ pre[class*='language-'] {
   font-weight: 300;
 }
 
+.menu ul.list li.chapter .simple {
+  padding: 10px 10px;
+}
+
 .menu ul.list li a[data-type='chapter-link'],
 .menu ul.list li.chapter .simple {
   color: white;
@@ -115,9 +133,14 @@ pre[class*='language-'] {
   color: #4c555a;
 }
 
+.btn-default {
+  background-color: var(--color-accent);
+  color: var(--main-background);
+}
+
 a {
   color: var(--color-accent);
-  text-decoration: underline;
+  text-decoration: none;
 }
 a:hover {
   color: var(--color-accent);

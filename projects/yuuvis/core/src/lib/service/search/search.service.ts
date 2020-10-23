@@ -7,13 +7,18 @@ import { BackendService } from '../backend/backend.service';
 import { BaseObjectTypeField, ContentStreamField } from '../system/system.enum';
 import { SearchQuery } from './search-query.model';
 import { AggregateResult, Aggregation, SearchResult, SearchResultContent, SearchResultItem } from './search.service.interface';
-
+/**
+ * Providing searching of dms objects.
+ */
 @Injectable({
   providedIn: 'root'
 })
 export class SearchService {
   private lastSearchQuery: SearchQuery;
 
+  /**
+   * @ignore
+   */
   constructor(private backend: BackendService) {}
 
   /**
@@ -94,9 +99,13 @@ export class SearchService {
     searchResponse.objects.forEach((o) => {
       const fields = new Map();
       // process properties section of result
-      Object.keys(o.properties).forEach((key: string) =>
-        o.properties[key].title ? fields.set(key, o.properties[key].title) : fields.set(key, o.properties[key].value)
-      );
+      Object.keys(o.properties).forEach((key: string) => {
+        // o.properties[key].title ? fields.set(key, o.properties[key].title) : fields.set(key, o.properties[key].value);
+        fields.set(key, o.properties[key].value);
+        if (o.properties[key].title) {
+          fields.set(key + '_title', o.properties[key].title);
+        }
+      });
 
       // process contentStreams section of result if available.
       // Objects that don't have files attached won't have this section

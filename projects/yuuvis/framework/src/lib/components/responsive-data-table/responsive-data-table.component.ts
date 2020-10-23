@@ -1,13 +1,15 @@
 import { ClientSideRowModelModule } from '@ag-grid-community/client-side-row-model';
 import { ColDef, GridOptions, Module, RowEvent, RowNode } from '@ag-grid-community/core';
-import { Component, ElementRef, EventEmitter, HostBinding, HostListener, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, ElementRef, EventEmitter, HostBinding, HostListener, Input, NgZone, OnDestroy, OnInit, Output } from '@angular/core';
 import { BaseObjectTypeField, DeviceService, PendingChangesService, SystemService, Utils } from '@yuuvis/core';
 import { ResizedEvent } from 'angular-resize-event';
 import { Observable, ReplaySubject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
+import { ObjectTypeIconComponent } from '../../common/components/object-type-icon/object-type-icon.component';
 import { LocaleDatePipe } from '../../pipes/locale-date.pipe';
 import { ColumnSizes } from '../../services/grid/grid.interface';
+import { SingleCellRendererComponent } from '../../services/grid/renderer/single-cell-renderer/single-cell-renderer.component';
 import { LayoutService } from '../../services/layout/layout.service';
 import { ResponsiveTableData } from './responsive-data-table.interface';
 
@@ -16,15 +18,32 @@ import { ResponsiveTableData } from './responsive-data-table.interface';
  */
 export type ViewMode = 'standard' | 'horizontal' | 'grid' | 'auto';
 
+/**
+ * Input data for a `ResponsiveDataTableComponent`
+ */
 export interface ResponsiveDataTableOptions {
+  /** View mode type of a data table.
+   * Can be `standard`, `horizontal`, `grid` or `auto`
+   */
   viewMode?: ViewMode;
-  // Object where the properties are the column IDs
-  // and their values are the columns width.
+  /**
+   * Object where the properties are the column IDs
+   * and their values are the columns width.
+   */
+
   columnWidths?: any;
 }
 
 /**
- * Responsive DataTable.
+ * Responsive DataTable to show the search results.
+ * 
+ * [Screenshot](../assets/images/yuv-responsive-data-table.gif)
+ * 
+ * @example
+ *     <yuv-responsive-data-table 
+            [breakpoint]="" [layoutOptionsKey]="layoutOptionsKey" (selectionChanged)="onSelectionChanged($event)"
+            (viewModeChanged)="onViewModeChanged.emit($event)" (sortChanged)="onSortChanged($event)">
+          </yuv-responsive-data-table>
  */
 @Component({
   selector: 'yuv-responsive-data-table',
@@ -81,13 +100,17 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
   /**
    * ResponsiveTableData setter
    */
-  @Input() set data(data: ResponsiveTableData) {
+  @Input()
+  set data(data: ResponsiveTableData) {
     this._data = data;
     if (this.gridOptions) {
       this.applyGridOption();
     } else {
       this.setupGridOptions();
     }
+  }
+  get data(): ResponsiveTableData {
+    return this._data;
   }
 
   /**
@@ -103,18 +126,18 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
   /**
    * view mode of the table
    */
-  @Input() set viewMode(viewMode: ViewMode) {
+  @Input()
+  set viewMode(viewMode: ViewMode) {
     this.setupViewMode(viewMode);
+  }
+  get viewMode() {
+    return this._viewMode;
   }
 
   /**
    * Limit the number of selected rows
    */
   @Input() selectionLimit;
-
-  get viewMode() {
-    return this._viewMode;
-  }
 
   set currentViewMode(viewMode: ViewMode) {
     if (this.currentViewMode !== viewMode) {
@@ -126,6 +149,10 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
 
   get currentViewMode() {
     return this._currentViewMode;
+  }
+
+  private get focusField() {
+    return this._data.columns[0] ? this._data.columns[0].field : BaseObjectTypeField.OBJECT_TYPE_ID;
   }
 
   private _viewMode: ViewMode = 'standard';
@@ -190,7 +217,8 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
     private datePipe: LocaleDatePipe,
     private layoutService: LayoutService,
     private systemService: SystemService,
-    private deviceService: DeviceService
+    private deviceService: DeviceService,
+    private _ngZone: NgZone
   ) {
     // subscribe to the whole components size changing
     this.resize$
@@ -284,6 +312,10 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
         }
       });
     }
+    if (!this.deviceService.isDesktop) {
+      const first = columns.find((c) => c.pinned === 'left' || c.pinned === true) || columns[0];
+      first.checkboxSelection = true;
+    }
     return columns;
   }
 
@@ -328,23 +360,14 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
       cellClass: 'cell-title-description',
       minWidth: this.isGrid ? this._data.rows.length * this.settings.colWidth.grid : 0,
       valueGetter: (params) => JSON.stringify(params.data), // needed to compare value changes & redraw cell
-      cellRenderer: (params) => {
-        const objectTypeId = params.data[BaseObjectTypeField.OBJECT_TYPE_ID];
-        const version = params.data[BaseObjectTypeField.VERSION_NUMBER];
-        const modified = this.datePipe.transform(params.data[BaseObjectTypeField.MODIFICATION_DATE]);
-
-        const title = this.systemService.getLocalizedResource(`${objectTypeId}_label`);
-        return `
-          <div class="rdt-row ${this._currentViewMode === 'horizontal' ? 'row-horizontal' : 'row-grid'}" data-version="${version}">
-            <div class="head" title="${title}">
-            ${this.systemService.getObjectTypeIcon(objectTypeId)}</div>  
-            <div class="main">
-            <div class="title">${params.data[this._data.titleField] || params.data[BaseObjectTypeField.OBJECT_ID] || ''}</div>
-              <div class="description">${params.data[this._data.descriptionField] || ''}</div>
-              <div class="date">${modified}</div>
-            </div>
-          </div>
-          `;
+      cellRenderer: 'singleCellRenderer',
+      cellRendererParams: {
+        _crParams: {
+          titleField: this._data.titleField,
+          descriptionField: this._data.descriptionField,
+          dateField: this._data.dateField,
+          viewMode: this._currentViewMode
+        }
       }
     };
     return colDef;
@@ -365,7 +388,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
       const n = this.gridOptions.api.getRowNode(id);
       if (n) {
         if (index === 0) {
-          this.gridOptions.api.setFocusedCell(n.rowIndex, focusColId || this._data.columns[0].field);
+          this.gridOptions.api.setFocusedCell(n.rowIndex, focusColId || this.focusField);
           if (ensureVisibility) {
             if (this.isVertical) {
               const shift = Math.floor(this.settings.size.newWidth / this.settings.colWidth.grid / 2);
@@ -384,13 +407,9 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
 
   private setupGridOptions() {
     this.gridOptions = {
-      getRowNodeId: (data) => {
-        // defines what to use as ID for each row (important for reselecting a previous selection)
-        return data.id;
-      },
-      getRowHeight: () => {
-        return this.settings.rowHeight[this.currentViewMode];
-      },
+      // defines what to use as ID for each row (important for reselecting a previous selection)
+      getRowNodeId: (data) => data.id,
+      getRowHeight: () => this.settings.rowHeight[this.currentViewMode],
       rowData: this._data.rows,
       columnDefs: this._data.columns,
       headerHeight: this.settings.headerHeight.standard,
@@ -400,6 +419,11 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
       rowDeselection: true,
       suppressNoRowsOverlay: true,
       multiSortKey: 'ctrl',
+
+      frameworkComponents: {
+        objectTypeCellRenderer: ObjectTypeIconComponent,
+        singleCellRenderer: SingleCellRendererComponent
+      },
 
       onRowSelected: (e) => {
         if (this.selectionLimit) {
@@ -414,17 +438,17 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
       onSelectionChanged: (event) => {
         const focused = this.gridOptions.api.getFocusedCell() || { rowIndex: -1 };
         const selection = this.gridOptions.api.getSelectedNodes().sort((n) => (n.rowIndex === focused.rowIndex ? -1 : 0));
-
         if (!event || selection.map((rowNode: RowNode) => rowNode.id).join() !== (this._currentSelection || []).join()) {
           this._currentSelection = selection.map((rowNode: RowNode) => rowNode.id);
-          this.selectionChanged.emit(selection.map((rowNode: RowNode) => rowNode.data));
+          // ag-grid bug on mobile - issue with change detection after touch event
+          this._ngZone.run(() => this.selectionChanged.emit(selection.map((rowNode: RowNode) => rowNode.data)));
         }
       },
       onColumnResized: (event) => this.columnResizeSource.next(),
       onSortChanged: (event) => this.isStandard && this.sortChanged.emit(this.gridOptions.api.getSortModel()),
       onGridReady: (event) => {
         this.gridOptions.api.setSortModel(this._data.sortModel || []);
-        this.gridOptions.api.setFocusedCell(0, this._data.columns[0].field);
+        this.gridOptions.api.setFocusedCell(0, this.focusField);
       },
       onRowDoubleClicked: (event) => this.rowDoubleClicked.emit(event),
       ...(this._data && this._data.gridOptions)
@@ -457,17 +481,16 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
   }
 
   onMouseDown($event: MouseEvent | any) {
-    if ($event.button === 0 && this.gridOptions && this.gridOptions.suppressCellSelection) {
+    // TODO: find the solution for mobile / touch event
+    if (this.deviceService.isDesktop && $event.button === 0 && this.gridOptions && this.gridOptions.suppressCellSelection) {
       if (!this.pendingChanges.check()) {
         this.gridOptions.suppressCellSelection = false;
+
         this.selectEvent($event);
       } else {
         $event.preventDefault();
         $event.stopImmediatePropagation();
       }
-    } else if (this.deviceService.isMobile || this.deviceService.isTablet) {
-      // ag-grid issue with selection on mobile devices
-      this.selectEvent($event);
     }
   }
 

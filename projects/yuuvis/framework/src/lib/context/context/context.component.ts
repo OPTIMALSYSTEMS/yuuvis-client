@@ -9,17 +9,20 @@ import {
   SearchQuery,
   SystemService,
   TranslateService,
-  YuvEventType
+  UserRoles,
+  UserService,
+  YuvEventType,
+  YuvUser
 } from '@yuuvis/core';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { FileDropOptions } from '../../directives/file-drop/file-drop.directive';
-import { CellRenderer } from '../../services/grid/grid.cellrenderer';
+import { LayoutService } from '../../services/layout/layout.service';
 import { edit, kebap } from '../../svg.generated';
 import { PopoverConfig } from './../../popover/popover.interface';
 import { PopoverRef } from './../../popover/popover.ref';
 import { PopoverService } from './../../popover/popover.service';
-import { SearchResultComponent } from './../../search/search-result/search-result.component';
+import { FilterPanelConfig, SearchResultComponent } from './../../search/search-result/search-result.component';
 import { refresh, settings } from './../../svg.generated';
 
 /**
@@ -54,9 +57,9 @@ export class ContextComponent implements OnInit, OnDestroy {
 
   private _context: DmsObject;
   private _contextSearchQuery: SearchQuery;
-  contextIcon: string;
   actionMenuVisible = false;
   actionMenuSelection: DmsObject[] = [];
+  filterPanelConfig: FilterPanelConfig;
 
   _layoutOptionsKeys = {
     children: null,
@@ -69,7 +72,14 @@ export class ContextComponent implements OnInit, OnDestroy {
    */
   @Input() set context(c: DmsObject) {
     this._context = c;
-    this.contextIcon = c && CellRenderer.typeCellRenderer({ value: c.objectTypeId, context: { system: this.systemService } });
+    if (c) {
+      const params = {
+        value: this.systemService.getLeadingObjectTypeID(c.objectTypeId, c.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS]),
+        context: {
+          system: this.systemService
+        }
+      };
+    }
     this.setupContext();
   }
   get context() {
@@ -120,6 +130,11 @@ export class ContextComponent implements OnInit, OnDestroy {
       this._layoutOptionsKeys.children = `${lok}.children`;
       this._layoutOptionsKeys.recent = `${lok}.recent`;
       this._layoutOptionsKeys.search = `${lok}.search`;
+
+      // load own settings
+      this.layoutService.loadLayoutOptions('yuv-context', 'layout').subscribe((o: any) => {
+        this.filterPanelConfig = o;
+      });
     }
   }
 
@@ -138,10 +153,16 @@ export class ContextComponent implements OnInit, OnDestroy {
     private dmsService: DmsService,
     private iconRegistry: IconRegistryService,
     private popoverService: PopoverService,
+    private userService: UserService,
+    private layoutService: LayoutService,
     private eventService: EventService,
     private systemService: SystemService
   ) {
     this.iconRegistry.registerIcons([edit, settings, refresh, kebap]);
+    this.userService.user$.subscribe((user: YuvUser) => {
+      this.fileDropOptions.disabled = !user.authorities.includes(UserRoles.CREATE_OBJECT);
+    });
+
     this.fileDropOptions.label = this.translate.instant('yuv.framework.context.filedrop.label');
     this.eventService
       .on(YuvEventType.DMS_OBJECTS_MOVED)
@@ -160,6 +181,13 @@ export class ContextComponent implements OnInit, OnDestroy {
         this.actionMenuSelection = items;
         this.actionMenuVisible = true;
       });
+    }
+  }
+
+  onFilterPanelConfigChanged(cfg: FilterPanelConfig) {
+    this.filterPanelConfig = cfg;
+    if (cfg) {
+      this.layoutService.saveLayoutOptions('yuv-context', 'layout', cfg).subscribe();
     }
   }
 
@@ -195,11 +223,12 @@ export class ContextComponent implements OnInit, OnDestroy {
   }
 
   onTabChange(tab: any) {
+    this.activeTabIndex = tab.index;
     setTimeout(() => {
       this.activeSearchResult = this.searchResultComponents.toArray()[tab.index];
       if (this.activeSearchResult) {
         this.columnConfigInput = {
-          type: (this.activeSearchResult.query && this.activeSearchResult.query.targetType) || this.systemService.getBaseType(),
+          type: (this.activeSearchResult.query && this.activeSearchResult.query.targetType) || this.systemService.getBaseType(true),
           sortOptions: this.activeSearchResult.query && this.activeSearchResult.query.sortOptions
         };
       }
@@ -221,10 +250,13 @@ export class ContextComponent implements OnInit, OnDestroy {
 
   columnConfigChanged(columnConfig: ColumnConfig, popoverRef?: PopoverRef) {
     this.refresh(true);
-
     if (popoverRef) {
       popoverRef.close();
     }
+  }
+
+  columnConfigCanceled(popoverRef: PopoverRef) {
+    popoverRef.close();
   }
 
   ngOnInit() {}

@@ -1,7 +1,7 @@
 export const stringElements = [
   {
     readonly: false,
-    name: 'string:one',
+    name: 'string:required',
     label: 'required string',
     description: '',
     type: 'string',
@@ -17,7 +17,7 @@ export const stringElements = [
   },
   {
     readonly: true,
-    name: 'string:three',
+    name: 'string:readonly',
     label: 'readonly string',
     description: 'string field supposed to be inactive',
     type: 'string',
@@ -25,7 +25,7 @@ export const stringElements = [
   },
   {
     readonly: false,
-    name: 'string:four',
+    name: 'string:regex',
     label: 'String with RegExp',
     description: 'enter valid time like eg. hh:mm',
     regex: '^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$',
@@ -47,7 +47,7 @@ export const stringElements = [
     name: 'string:email',
     label: 'String Classification email',
     description: 'enter valid email address',
-    classification: ['email'],
+    classifications: ['email'],
     type: 'string',
     required: false
   },
@@ -56,7 +56,7 @@ export const stringElements = [
     name: 'string:url',
     label: 'String Classification url',
     description: 'enter valid url address',
-    classification: ['url'],
+    classifications: ['url'],
     type: 'string',
     required: false
   },
@@ -65,7 +65,7 @@ export const stringElements = [
     name: 'string:phone',
     label: 'String Classification phone',
     description: 'enter a phone number',
-    classification: ['phone'],
+    classifications: ['phone'],
     type: 'string',
     required: false
   },
@@ -74,7 +74,7 @@ export const stringElements = [
     name: 'string:multiline',
     label: 'String multiline',
     description: 'enter multiline string',
-    multiline: true,
+    rows: 3,
     type: 'string',
     required: false
   },
@@ -90,30 +90,40 @@ export const stringElements = [
   {
     readonly: false,
     cardinality: 'multi',
-    name: 'string:chips:email',
+    name: 'string:email:multi',
     label: 'String Classification email multiple',
     description: 'enter multiple email addresses',
-    classification: ['email'],
+    classifications: ['email'],
     type: 'string',
     required: false
   },
   {
     readonly: false,
     cardinality: 'multi',
-    name: 'string:chips:url',
+    name: 'string:url:multi',
     label: 'String Classification URL multiple',
     description: 'enter multiple URL addresses',
-    classification: ['url'],
+    classifications: ['url'],
     type: 'string',
     required: false
   },
   {
     readonly: false,
     cardinality: 'multi',
-    name: 'string:chips:phone',
+    name: 'string:phone:multi',
     label: 'String Classification phone multiple',
     description: 'enter multiple phone numbers',
-    classification: ['phone'],
+    classifications: ['phone'],
+    type: 'string',
+    required: false
+  },
+  {
+    readonly: false,
+    cardinality: 'single',
+    name: 'string:phone:rows',
+    label: 'Multiline string',
+    description: '',
+    rows: 5,
     type: 'string',
     required: false
   }

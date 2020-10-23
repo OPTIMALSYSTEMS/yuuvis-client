@@ -1,0 +1,87 @@
+@import '../../../../../../../../src/scss-shared/_mixins';
+
+:host {
+  display: grid;
+  grid-template-columns: 1fr;
+  height: 100%;
+  grid-template-rows: auto 1fr;
+  grid-template-areas: 'header' 'main';
+
+  ::ng-deep {
+    .as-split-gutter {
+      background-color: var(--panel-background) !important;
+      border: 1px solid var(--panel-divider-color);
+      border-width: 0 1px;
+    }
+  }
+
+  .stored-filter {
+    flex: 1;
+    background-color: var(--panel-background);
+    border: 1px solid var(--panel-divider-color);
+    @include placeholder(rgba(0, 0, 0, 0.2));
+    .dark & {
+      @include placeholder(rgba(255, 255, 255, 0.3));
+    }
+    input {
+      padding: var(--app-pane-padding);
+      font-size: 20px;
+      border: none;
+      width: 100%;
+      background: rgba(0, 0, 0, 0);
+      color: var(--text-color-body);
+      &:focus {
+        border-bottom: 1px solid var(--color-accent);
+      }
+    }
+  }
+
+  header {
+    grid-area: header;
+    padding: var(--app-pane-padding);
+    border-bottom: 1px solid var(--panel-divider-color);
+    label {
+      font-size: var(--font-headline);
+      color: var(--text-color-caption);
+    }
+    @include flex-row();
+    justify-content: space-between;
+  }
+  section.main {
+    grid-area: main;
+    overflow-y: auto;
+    background-color: var(--panel-background-grey);
+  }
+
+  section.filter {
+    display: grid;
+    grid-template-columns: 1fr;
+    height: 100%;
+    grid-template-rows: 1fr auto;
+    grid-template-areas: 'configuration' 'buttons';
+  }
+
+  section.configuration {
+    grid-area: configuration;
+    @include flex-row();
+    overflow: auto;
+    .filter-header {
+      @include flex-row(1);
+    }
+  }
+
+  section.buttons {
+    border-top: 1px solid var(--panel-divider-color);
+    grid-area: buttons;
+    @include flex-row();
+    padding: var(--app-pane-padding);
+    background-color: var(--panel-background);
+    justify-content: flex-end;
+    .primary + .primary {
+      margin-left: calc(var(--app-pane-padding) / 2);
+    }
+    yuv-checkbox {
+      margin: calc(var(--app-pane-padding) / 2);
+    }
+  }
+}

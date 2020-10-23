@@ -7,6 +7,9 @@ import { ListAction } from '../../interfaces/action.interface';
 import { SelectionRange } from '../../selection-range.enum';
 import { DownloadOriginalActionComponent } from '../download-original-action/download-original-action';
 
+/**
+ * @ignore
+ */
 @Component({
   selector: 'yuv-download-content',
   template: ``

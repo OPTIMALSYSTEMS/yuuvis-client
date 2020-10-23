@@ -1,3 +1,7 @@
+/**
+ * Help to providing `DeviceService` for
+ * adapt styles and designs of the client to different devices screen sizes.
+ */
 export interface Screen {
   mode: string;
   orientation: string;

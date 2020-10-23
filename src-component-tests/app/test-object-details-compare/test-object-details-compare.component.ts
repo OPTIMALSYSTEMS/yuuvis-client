@@ -5,7 +5,8 @@ import { ObjectCompareInput } from '@yuuvis/framework';
 @Component({
   selector: 'yuv-test-object-details-compare',
   templateUrl: './test-object-details-compare.component.html',
-  styleUrls: ['./test-object-details-compare.component.scss']
+  styleUrls: ['./test-object-details-compare.component.scss'],
+  host: { class: 'yuv-test-container' }
 })
 export class TestObjectDetailsCompareComponent {
   compare: ObjectCompareInput;
@@ -29,7 +30,7 @@ export class TestObjectDetailsCompareComponent {
           }
         };
       },
-      err => {
+      (err) => {
         console.error(err);
       }
     );
@@ -53,7 +54,7 @@ export class TestObjectDetailsCompareComponent {
           }
         };
       },
-      err => {
+      (err) => {
         console.error(err);
       }
     );

@@ -1,10 +1,14 @@
-import {Subject} from 'rxjs';
-import {OnDestroy} from '@angular/core';
+import { OnDestroy } from '@angular/core';
+import { Subject } from 'rxjs';
 
+/**
+ * Use for any custom cleanup that needs to occur when the instance is destroyed.
+ */
 export abstract class UnsubscribeOnDestroy implements OnDestroy {
-
   protected componentDestroyed$: Subject<void>;
-
+  /**
+   * @ignore
+   */
   constructor() {
     this.componentDestroyed$ = new Subject<void>();
 

@@ -40,6 +40,8 @@ import { TranslateLoader } from '@ngx-translate/core';
 import { forkJoin as observableForkJoin, Observable, of as observableOf } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { Utils } from '../../util/utils';
+import { ApiBase } from '../backend/api.enum';
+import { ConfigService } from '../config/config.service';
 import { CoreConfig } from '../config/core-config';
 import { CORE_CONFIG } from '../config/core-config.tokens';
 
@@ -73,9 +75,11 @@ export class EoxTranslateJsonLoader implements TranslateLoader {
    * @returns Observable<Object>
    */
   getTranslation(lang: string): Observable<Object> {
-    const t = this.config.translations.map(folder => this.http.get(`${Utils.getBaseHref()}${folder}${lang}.json`).pipe(catchError(e => observableOf({}))));
+    const t = [...this.config.translations.map((path) => `${path}${lang}.json`), ApiBase.apiWeb + ConfigService.GLOBAL_MAIN_CONFIG_LANG(lang)].map((uri) =>
+      this.http.get(`${uri.startsWith(ApiBase.apiWeb) ? '/' : Utils.getBaseHref()}${uri}`).pipe(catchError((e) => observableOf({})))
+    );
     return observableForkJoin(t).pipe(
-      map(res => {
+      map((res) => {
         return res.reduce((acc, x) => Object.assign(acc, x), {});
       })
     );

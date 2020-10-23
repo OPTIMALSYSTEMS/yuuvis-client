@@ -1,10 +1,16 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { UserService } from '@yuuvis/core';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { compare } from '../../svg.generated';
 import { ObjectCompareInput } from './object-details-compare.interface';
 
 /**
  * Component comparing two dms objects.
+ *
+ * [Screenshot](../assets/images/yuv-object-details-compare.gif)
+ *
+ * @example
+ *   <yuv-object-details-compare [objectCompareInput]="compare" [layoutOptionsKey]="layoutOptionsKey + '.changes'"></yuv-object-details-compare>
  */
 @Component({
   selector: 'yuv-object-details-compare',
@@ -12,6 +18,8 @@ import { ObjectCompareInput } from './object-details-compare.interface';
   styleUrls: ['./object-details-compare.component.scss']
 })
 export class ObjectDetailsCompareComponent implements OnInit {
+  userIsAdmin: boolean;
+
   /**
    * Objects to be compared
    */
@@ -24,8 +32,9 @@ export class ObjectDetailsCompareComponent implements OnInit {
    */
   @Input() layoutOptionsKey: string;
 
-  constructor(private iconRegistry: IconRegistryService) {
+  constructor(private userService: UserService, private iconRegistry: IconRegistryService) {
     this.iconRegistry.registerIcons([compare]);
+    this.userIsAdmin = this.userService.hasAdministrationRoles;
   }
 
   toggle() {

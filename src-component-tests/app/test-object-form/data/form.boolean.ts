@@ -9,7 +9,7 @@ export const booleanElements = [
   },
   {
     readonly: false,
-    name: 'boolean:one',
+    name: 'boolean:required',
     label: 'required checkbox',
     description: 'mandatory checkbox',
     type: 'boolean',

@@ -1,7 +1,9 @@
 import { Injectable } from '@angular/core';
 import { ConfigService } from '../config/config.service';
 import { ILogger } from './logger.interface';
-
+/**
+ * @ignore
+ */
 @Injectable({
   providedIn: 'root'
 })

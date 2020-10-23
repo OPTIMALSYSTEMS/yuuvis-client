@@ -1,0 +1,96 @@
+:host {
+  display: grid;
+  grid-template-columns: 100%;
+  grid-template-rows: 1fr auto;
+  grid-template-areas: 'main' 'footer';
+  height: 100%;
+
+  .main {
+    grid-area: main;
+    overflow: auto;
+    background-color: var(--panel-background-grey);
+
+    ::ng-deep {
+      yuv-grouped-select {
+        .container {
+          padding: 0;
+        }
+
+        .ui-panel .ui-panel-titlebar {
+          padding: calc(var(--app-pane-padding) / 2) var(--app-pane-padding);
+        }
+      }
+
+      yuv-selectable-item > div {
+        .label {
+          padding: 0;
+          .title {
+            font-size: var(--font-caption);
+          }
+        }
+        .ui-chkbox {
+          font-size: 14px;
+          .ui-chkbox-box.ui-state-active {
+            border-color: var(--text-color-hint) !important;
+            border-width: 1px;
+          }
+          .pi-check:before {
+            font-size: 10px;
+          }
+        }
+      }
+    }
+  }
+
+  .footer {
+    grid-area: footer;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+    align-items: center;
+    white-space: nowrap;
+    border-top: 1px solid var(--panel-divider-color);
+    color: var(--text-color-caption);
+    padding: calc(var(--app-pane-padding) / 4) calc(var(--app-pane-padding) / 2);
+
+    yuv-icon {
+      margin: 0 calc(var(--app-pane-padding) / 2);
+      cursor: pointer;
+      transition: all 200ms;
+
+      &:hover {
+        background-color: var(--panel-divider-color);
+      }
+    }
+
+    .mode {
+      padding: calc(var(--app-pane-padding) / 2);
+      yuv-icon {
+        padding: 4px;
+        margin: 0;
+
+        &.mode {
+          width: 18px;
+          height: 18px;
+          box-sizing: content-box;
+          border-radius: 2px;
+        }
+
+        &.current {
+          background-color: var(--panel-divider-color);
+          color: var(--text-color-body);
+        }
+      }
+    }
+
+    .filter-actions {
+      yuv-icon {
+        width: 18px;
+        height: 18px;
+        box-sizing: content-box;
+        padding: 4px;
+        margin: 0;
+      }
+    }
+  }
+}

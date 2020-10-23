@@ -6,15 +6,22 @@ import { TabViewModule } from 'primeng/tabview';
 import { YuvCommonModule } from '../common/common.module';
 import { YuvComponentsModule } from '../components/components.module';
 import { YuvDirectivesModule } from '../directives/directives.module';
+import { YuvGroupedSelectModule } from '../grouped-select/grouped-select.module';
 import { YuvPipesModule } from '../pipes/pipes.module';
 import { YuvFormModule } from './../form/form.module';
+import { CombinedObjectFormComponent } from './combined-object-form/combined-object-form.component';
 import { ObjectFormEditComponent } from './object-form-edit/object-form-edit.component';
 import { ObjectFormElementComponent } from './object-form-element/object-form-element.component';
 import { ObjectFormGroupComponent } from './object-form-group/object-form-group.component';
 import { ObjectFormComponent } from './object-form/object-form.component';
 
+/**
+ * Module provides components for creating for a dms object.
+ * These include: object form component, object form edit component and object form element component.
+ */
+
 @NgModule({
-  declarations: [ObjectFormComponent, ObjectFormElementComponent, ObjectFormGroupComponent, ObjectFormEditComponent],
+  declarations: [ObjectFormComponent, ObjectFormElementComponent, ObjectFormGroupComponent, ObjectFormEditComponent, CombinedObjectFormComponent],
   imports: [
     CommonModule,
     YuvCommonModule,
@@ -24,8 +31,9 @@ import { ObjectFormComponent } from './object-form/object-form.component';
     TabViewModule,
     TranslateModule,
     YuvComponentsModule,
-    YuvDirectivesModule
+    YuvDirectivesModule,
+    YuvGroupedSelectModule
   ],
-  exports: [ObjectFormComponent, ObjectFormEditComponent, ObjectFormElementComponent]
+  exports: [ObjectFormComponent, ObjectFormEditComponent, ObjectFormElementComponent, CombinedObjectFormComponent]
 })
 export class YuvObjectFormModule {}

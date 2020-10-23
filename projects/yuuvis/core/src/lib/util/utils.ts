@@ -1,7 +1,7 @@
 import { NavigationExtras, Router } from '@angular/router';
 import { EMPTY as observableEmpty, throwError as observableThrowError } from 'rxjs';
 import { YuvError } from '../model/yuv-error.model';
-import { FormatedMailTo, Sort } from './utils.helper.enum';
+import { FormattedMailTo, Sort } from './utils.helper.enum';
 
 export class Utils {
   /**
@@ -19,7 +19,7 @@ export class Utils {
     return uri + (q ? '?' + q : '');
   }
 
-  public static formatMailTo(value: FormatedMailTo, isEmail: boolean): FormatedMailTo {
+  public static formatMailTo(value: FormattedMailTo, isEmail: boolean): FormattedMailTo {
     if (isEmail && !!value) {
       if (Array.isArray(value)) {
         return value.join().replace(/,/g, '; ');
@@ -138,8 +138,11 @@ export class Utils {
       let comparison: number;
       const varA = Utils.getProperty(a, key);
       const varB = Utils.getProperty(b, key);
+
       if (typeof varA === 'number' && typeof varB === 'number') {
         comparison = varA - varB;
+      } else if (varA instanceof Date && varB instanceof Date) {
+        comparison = new Date(varA).getTime() - new Date(varB).getTime();
       } else {
         const stringA = varA || varA === 0 ? varA.toString() : '';
         const stringB = varB || varB === 0 ? varB.toString() : '';
@@ -260,7 +263,7 @@ export class Utils {
 
   /**
    * Truncate a string (first argument) if it is longer than the given maximum string length (second argument).
-   * Return the truncated string with a ... ending ot whats provided.
+   * Return the truncated string with a ... ending or whats provided.
    *
    * @param string str
    * @param number num

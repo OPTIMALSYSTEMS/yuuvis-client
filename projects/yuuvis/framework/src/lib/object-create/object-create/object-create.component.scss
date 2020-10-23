@@ -1,7 +1,31 @@
 @import '../../../../../../../src/scss-shared/_mixins';
 
 :host {
+  height: 100%;
+
+  .pending-afo {
+    .afo {
+      background-color: var(--panel-background);
+      border-bottom: 1px solid var(--panel-divider-color);
+      word-break: break-all;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      padding: var(--app-pane-padding);
+
+      &:not(.current):hover {
+        background-color: var(--item-focus-background-color);
+      }
+
+      &.current {
+        background-color: var(--item-selected-background-color);
+      }
+    }
+  }
+
   .yuv-object-create {
+    // grid-area: main;
+    overflow-y: auto;
     display: grid;
     height: 100%;
     grid-template-columns: 1fr;
@@ -48,6 +72,10 @@
           &.current span {
             border-color: var(--color-accent);
             color: var(--color-accent);
+          }
+          &.disabled {
+            cursor: default;
+            pointer-events: none;
           }
         }
       }
@@ -211,6 +239,132 @@
         justify-content: center;
         justify-self: stretch;
       }
+
+      &.afo-indexdata {
+        padding: calc(var(--app-pane-padding) / 2);
+
+        > as-split {
+          grid-area: main;
+        }
+        ::ng-deep {
+          as-split {
+            .preview-split {
+              background-color: var(--panel-background);
+
+              .as-split-gutter-icon {
+                position: relative;
+                &::before {
+                  content: '';
+                  width: 0px;
+                  position: absolute;
+                  height: 100%;
+                  border-right: 1px solid var(--panel-divider-color);
+                }
+              }
+            }
+          }
+        }
+
+        // list of available floating SOTs
+        .floating-sots {
+          background-color: var(--panel-background);
+          height: 100%;
+          overflow-y: auto;
+
+          h2 {
+            padding: calc(var(--app-pane-padding) / 2);
+            margin: 0 0 var(--app-pane-padding) 0;
+            color: var(--text-color-caption);
+          }
+
+          .item {
+            border-top: 1px solid var(--panel-divider-color);
+            word-break: break-all;
+            cursor: pointer;
+            padding: calc(var(--app-pane-padding) / 2);
+
+            &:hover {
+              background-color: var(--item-focus-background-color);
+            }
+            &.selected {
+              background-color: var(--item-selected-background-color);
+            }
+          }
+        }
+        .floating-sot-form {
+          background-color: var(--panel-background);
+          height: auto;
+
+          .header {
+            padding: calc(var(--app-pane-padding) / 2);
+            display: flex;
+            align-items: center;
+            color: var(--text-color-caption);
+            border-bottom: 1px solid var(--panel-divider-color);
+
+            yuv-icon {
+              width: 18px;
+              height: 18px;
+            }
+            span {
+              padding: 0 calc(var(--app-pane-padding) / 2);
+            }
+          }
+          .form {
+            overflow-y: auto;
+            padding: calc(var(--app-pane-padding) / 2);
+          }
+
+          &::ng-deep {
+            .container.oneCoulmn {
+              padding: 0;
+            }
+          }
+        }
+        .preview-split {
+          .objects {
+            .item {
+              word-break: break-all;
+              cursor: pointer;
+              padding: calc(var(--app-pane-padding) / 2);
+              &.current {
+                color: var(--color-accent);
+              }
+            }
+          }
+          .preview {
+            height: 100%;
+          }
+        }
+      }
+
+      &.afo-upload {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        .box {
+          background-color: var(--panel-background);
+          max-width: 300px;
+
+          p {
+            margin: 0;
+            padding: var(--app-pane-padding);
+            line-height: 1.7em;
+          }
+
+          yuv-form-input {
+            display: block;
+            padding: 0 var(--app-pane-padding);
+          }
+
+          .actions {
+            display: flex;
+            justify-content: space-between;
+            padding: var(--app-pane-padding);
+          }
+        }
+      }
     }
 
     yuv-object-form {
@@ -219,6 +373,7 @@
       box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1);
       margin: var(--app-pane-padding);
       max-width: 800px;
+      min-width: 400px;
     }
 
     footer {
@@ -234,6 +389,10 @@
 
       yuv-form-input {
         margin: 0 var(--app-pane-padding);
+      }
+
+      button.secondary {
+        margin: 0 4px;
       }
     }
   }

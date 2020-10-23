@@ -1,4 +1,4 @@
-import { Utils } from '@yuuvis/core';
+import { SearchFilter, SearchQuery, SecondaryObjectTypeClassification, Utils } from '@yuuvis/core';
 
 /**
  * @ignore
@@ -22,27 +22,52 @@ export class CellRenderer {
     return '';
   }
 
-  static typeCellRenderer(param: any) {
-    const { value, context } = param;
-    const ico = context.system.getObjectTypeIcon(value) || '';
-    const title = context.system.getLocalizedResource(`${value}_label`) || '';
-    return `<span title="${title}">${ico}</span>`;
+  // static typeCellRenderer(param: any) {
+  //   let { value } = param;
+  //   const { context } = param;
+  //   if (param.data && param.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS]) {
+  //     value = context.system.getLeadingObjectTypeID(value, param.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS]);
+  //   }
+  //   const title = context.system.getLocalizedResource(`${value}_label`) || '';
+  //   const ico = context.system.getObjectTypeIconUri(value);
+  //   return `<object width="24" height="24" type="image/svg+xml" title="${title}" data="${ico}" class="svg-object">
+  //   <img src="${ico}" alt="${title}">
+  //   </object>`;
+  // }
+
+  static sotCellRenderer(param: any) {
+    const { context, value } = param;
+    return value
+      ? value
+          .map((v) => context.system.getSecondaryObjectType(v, true))
+          .map((sot) => {
+            if (sot) {
+              const cls = sot.classification?.includes(SecondaryObjectTypeClassification.PRIMARY) ? ' psot' : '';
+              return `<div class="chip${cls}">${Utils.escapeHtml(sot.label)}</div>`;
+            } else {
+              return '';
+            }
+          })
+          .join('')
+      : '';
   }
 
-  // static iconCellRenderer(param) {
-  //   let val = '';
-  //   if (param.value && (param.value.url || param.value.iconId)) {
-  //     let iconUrl = param.value.url
-  //       ? Utils.getBaseHref() + param.value.url
-  //       : param.context.backend.getServiceBase() +
-  //         '/ui/icon/' +
-  //         param.value.iconId +
-  //         '.svg';
-  //     let label = param.value.label;
-  //     val = `<img class="object-type" src="${iconUrl}" title="${label}"><span class="object-type-label">${label}</span>`;
-  //   }
-  //   return val;
-  // }
+  static systemTagsCellRenderer(param) {
+    const { context, value } = param;
+    // tags value is an array of arrays
+    return param.value
+      ? `<table class="cellrenderer-tags">${param.value
+          .map(
+            (v) => `<tr>
+            <td class="tag">${v[0]}</td>
+            <td class="state">${v[1]}</td>
+            <td class="date">${context.datePipe.transform(v[2], 'eoNiceShort')}</td>
+            <td class="traceid">${v[3]}</td>
+            </tr>`
+          )
+          .join('')}</table>`
+      : '';
+  }
 
   static emailCellRenderer(param) {
     return param.value ? `<a href="mailto:${Utils.formatMailTo(param?.value, true)}">${Utils.escapeHtml(param.value)}</a>` : '';
@@ -96,16 +121,15 @@ export class CellRenderer {
     let val = '';
     if (param.value) {
       (Array.isArray(param.value) ? param.value : [param.value]).forEach((value) => {
-        const query = {
-          types: [param.reference.type],
-          filters: {}
-        };
-        query.filters[param.reference.element] = {
-          o: 'eq',
-          v1: value
-        };
         const link = Utils.buildUri('result', {
-          query: encodeURIComponent(JSON.stringify(query))
+          query: encodeURIComponent(
+            JSON.stringify(
+              new SearchQuery({
+                types: [param.reference.type],
+                filters: [new SearchFilter(param.reference.element, SearchFilter.OPERATOR.EQUAL, value).toQuery()]
+              }).toQueryJson()
+            )
+          )
         });
         val += `<div class="chip">
             <a class="link router-link" href="${link}" target="_blank" onclick="return false;">
@@ -121,29 +145,49 @@ export class CellRenderer {
 
   static referenceCellRenderer(param) {
     let text = '';
-    const value = param.data ? param.data[param.colDef.field] : '';
-    const type = param.context.system.getObjectType(param.reference.type);
-    if (!Utils.isEmpty(value) && type) {
+    let value = param.value;
+    if (param.colDef && param.data[param.colDef.field + '_title']) {
+      value = param.data[param.colDef.field + '_title'];
+    }
+    if (!Utils.isEmpty(value)) {
+      text += `<div style="display: flex">`;
       (Array.isArray(value) ? value : [value]).forEach((val, index) => {
-        const link = 'object/' + val + '?type=' + param.reference.type;
-        const iconUrl = param.context.backend.getServiceBase() + '/ui/icon/' + type.iconId + '.svg';
-        const title = Array.isArray(param.value) ? param.value[index] : param.value;
+        const link = param.url ? param.url + '/' + (Array.isArray(param.value) ? param.value[index] : param.value) : null;
+        const title = Array.isArray(value) ? value[index] : value;
 
         // If the user is not allowed to see the reference object or the object was deleted, we don't show the link.
-        text += `<div class="chip">
+        text += `<div class="chip ref">
           ${
-            !title
+            !link
               ? ''
-              : `<a class="link router-link" href="${link}" target="_blank" onclick="return false;">
+              : `<a class="link router-link" href="${link}" target="_blank">
             <svg focusable="false" class="ref-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
             <path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8
             13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"></path>
             </svg>
             </a>`
           }
-          <img class="type-icon" src="${iconUrl}" title="${type.label}">
-          <span>${Utils.escapeHtml(title || type.label)}</span></div>`;
+          <span>${Utils.escapeHtml(title)}</span></div>`;
       });
+      text += `</div>`;
+    }
+
+    return text || param.value;
+  }
+
+  static organizationCellRenderer(param) {
+    let text = '';
+    let value = param.value;
+    if (param.colDef && param.data[param.colDef.field + '_title']) {
+      value = param.data[param.colDef.field + '_title'];
+    }
+    if (!Utils.isEmpty(value)) {
+      text += `<div style="display: flex">`;
+      (Array.isArray(value) ? value : [value]).forEach((val, index) => {
+        const title = Array.isArray(value) ? value[index] : value;
+        text += `<div class="chip"><span>${Utils.escapeHtml(title)}</span></div>`;
+      });
+      text += `</div>`;
     }
 
     return text || param.value;

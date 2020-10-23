@@ -20,7 +20,7 @@ import { Selectable, SelectableGroup, SelectableInternal } from './grouped-selec
 import { SelectableItemComponent } from './selectable-item/selectable-item.component';
 
 /**
- * Component for selecting a single or multiple entries from a set of grouped items. This component is implementing '**ControlValueAccessor**' so you can
+ * Component for selecting a single or multiple entries from a set of grouped items. This component is implementing `ControlValueAccessor` so you can
  * also use it within Angular forms.
  *
  * > Setting the components **multiple** input to **true** will enable the selection of more than one item.
@@ -29,7 +29,7 @@ import { SelectableItemComponent } from './selectable-item/selectable-item.compo
  * > Clicking the label of an item will immediately reset the selection to the
  * > current item only. Hitting ENTER will also immediately select one item as long as there are no other items selected.
  *
- * ### other properties
+ * ### Other properties
  * **enableSelectAll** - When set to true, clicking of the groups title will select all group items (multiple only)
  * **autofocus** - When set to true, the first item of the first group will be focused immediately
  * **singleGroup** - When set to true, styles are applied to render the component for one group only *
@@ -53,7 +53,6 @@ export class GroupedSelectComponent implements AfterViewInit, ControlValueAccess
   @ViewChildren(SelectableItemComponent) items: QueryList<SelectableItemComponent>;
   private keyManager: FocusKeyManager<SelectableItemComponent>;
   private _selectableItemIndex = -1;
-  private _groups: SelectableGroup[];
 
   @HostListener('keydown.Enter') onEnter() {
     if (this.multiple) {
@@ -66,7 +65,6 @@ export class GroupedSelectComponent implements AfterViewInit, ControlValueAccess
     } else {
       this.selectedItems = [this.focusedItem];
     }
-    this.propagateChange(this.selectedItems);
     // Hitting ENTER will in any case trigger the select event, that
     // 'approves' the current selection.
     this.emit();
@@ -79,23 +77,29 @@ export class GroupedSelectComponent implements AfterViewInit, ControlValueAccess
   /**
    * Array of {@link SelectableGroup} items, that contain the actual {@link SelectableGroup}.
    */
-  @Input()
-  set groups(groups: SelectableGroup[]) {
-    this._groups = groups;
-  }
-  get groups() {
-    return this._groups;
-  }
+  @Input() groups: SelectableGroup[];
+
   /**
    *  Whether or not to support selection of multiple items
    */
+  @HostBinding('class.multiple')
   @Input()
-  set multiple(m: boolean) {
-    this._multiple = m;
+  multiple = false;
+
+  /**
+   *  Whether or not to clear selection after single select
+   */
+  @Input() singleSelect = true;
+
+  @Input() hideEmptyGroup = false;
+
+  /**
+   *  Defines list of items that should be selected by default
+   */
+  @Input() set selection(ids: string[]) {
+    this.selectedItems = ids.map((id) => this.findSelectable(id)).filter((v) => v);
   }
-  get multiple() {
-    return this._multiple;
-  }
+
   @Input() columnWidth: number = 250;
 
   /**
@@ -103,20 +107,30 @@ export class GroupedSelectComponent implements AfterViewInit, ControlValueAccess
    */
   @Output() select = new EventEmitter<Selectable | Selectable[]>();
 
+  /**
+   * Emitted on selection change.
+   */
+  @Output() change = new EventEmitter<Selectable | Selectable[]>();
+
+  /**
+   * Emitted on toggle change.
+   */
+  @Output() groupToggle = new EventEmitter<SelectableGroup>();
+
   get selectableItemIndex(): number {
     return this._selectableItemIndex++;
   }
 
-  @HostBinding('class.multiple') _multiple: boolean = false;
   @HostBinding('class.singleGroup') singleGroup: boolean = false;
-  autofocus: boolean;
-  enableSelectAll: boolean;
-  columns: string = '';
+  @Input() autofocus: boolean;
+  @Input() enableSelectAll: boolean;
+  @Input() toggleable: boolean;
+  @Input() columns: string = '';
 
   private _selectedItems: Selectable[] = [];
 
   set selectedItems(items: Selectable[]) {
-    this._selectedItems = items;
+    this._selectedItems = items || [];
     this.selectedItemsCheck = {};
     if (items) {
       items.forEach((s) => (this.selectedItemsCheck[s.id] = true));
@@ -137,11 +151,23 @@ export class GroupedSelectComponent implements AfterViewInit, ControlValueAccess
     @Attribute('autofocus') autofocus: string,
     @Attribute('singleGroup') singleGroup: string,
     @Attribute('enableSelectAll') enableSelectAll: string,
+    @Attribute('toggleable') toggleable: string,
     private elRef: ElementRef
   ) {
     this.autofocus = autofocus === 'true' ? true : false;
     this.enableSelectAll = enableSelectAll === 'true' ? true : false;
     this.singleGroup = singleGroup === 'true' ? true : false;
+    this.toggleable = toggleable === 'true' ? true : false;
+  }
+
+  findSelectable(id: string) {
+    return this.groups.reduce((pre, cur) => (pre = pre.concat(cur.items)), []).find((s) => s.id === id);
+  }
+
+  groupToggled(group: SelectableGroup, state: any) {
+    if (state.originalEvent.fromState !== 'void') {
+      this.groupToggle.emit(group);
+    }
   }
 
   groupFocused(group: SelectableGroup) {
@@ -152,23 +178,18 @@ export class GroupedSelectComponent implements AfterViewInit, ControlValueAccess
   }
 
   itemSelected(item: SelectableInternal) {
-    this.selectedItems = [item];
-    this.propagateChange(this.selectedItems);
+    const selected = !this.isSelected(item);
+    this.selectedItems = this.singleSelect ? [item] : this.selectedItems.filter((i) => i.id !== item.id).concat(selected ? [item] : []);
     this.emit();
   }
 
   itemToggled(selected: boolean, item: SelectableInternal) {
     if (this.multiple) {
-      if (selected) {
-        // needs to be immutable
-        this.selectedItems = [...this.selectedItems, item];
-      } else {
-        this.selectedItems = this.selectedItems.filter((i) => i.id !== item.id);
-      }
-      this.propagateChange(this.selectedItems);
+      this.selectedItems = this.selectedItems.filter((i) => i.id !== item.id).concat(selected ? [item] : []);
     } else {
-      this.selectedItems = [item];
+      this.selectedItems = selected ? [item] : [];
     }
+    this.emit(false);
   }
 
   itemClicked(item: SelectableInternal) {
@@ -184,7 +205,7 @@ export class GroupedSelectComponent implements AfterViewInit, ControlValueAccess
   }
 
   toggleAllOfGroup(group: SelectableGroup) {
-    if (this.enableSelectAll && this._multiple) {
+    if (this.enableSelectAll && this.multiple) {
       const selectedItemsIDs = this.selectedItems.map((i) => i.id);
       const groupItemIDs = group.items.map((i) => i.id);
       const contained = group.items.filter((i) => selectedItemsIDs.includes(i.id));
@@ -197,7 +218,7 @@ export class GroupedSelectComponent implements AfterViewInit, ControlValueAccess
         group.items.filter((i) => !selectedItemsIDs.includes(i.id)).forEach((i) => sel.push(i));
         this.selectedItems = sel;
       }
-      this.propagateChange(this.selectedItems);
+      this.emit(false);
     }
   }
 
@@ -220,9 +241,11 @@ export class GroupedSelectComponent implements AfterViewInit, ControlValueAccess
 
   registerOnTouched(fn: any): void {}
 
-  private emit() {
-    // this.select.emit(this.selectedItems);
-    this.select.emit(this._multiple ? this.selectedItems : this.selectedItems[0]);
+  private emit(select = true) {
+    this.propagateChange(this.selectedItems);
+    const val = this.multiple ? this.selectedItems : this.selectedItems[0];
+    this.change.emit(val);
+    return select && this.select.emit(val);
   }
 
   ngAfterViewInit() {

@@ -1,7 +1,6 @@
-<div class="action-menu dark" *ngIf="showMenu" [ngClass]="{ descriptionsEnabled: showDescriptions }"
-  (yuvOutsideClick)="hide()">
+<div class="action-menu dark" *ngIf="showMenu" [ngClass]="{ descriptionsEnabled: showDescriptions }" (yuvOutsideClick)="hide()">
   <div class="head">
-    <div class="settings">
+    <div class="settings" *ngIf="!showComponent">
       <yuv-form-input class="checkbox" [skipToggle]="true"
         [label]="'yuv.framework.action-menu.settings.descriptions' | translate">
         <yuv-checkbox [(ngModel)]="showDescriptions" [ngModelOptions]="{ standalone: true }"></yuv-checkbox>

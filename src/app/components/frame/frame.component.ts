@@ -1,4 +1,3 @@
-// import { openContext } from './../../../../projects/yuuvis/framework/src/lib/svg.generated';
 import { Component, HostBinding, HostListener, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, NavigationExtras, Router } from '@angular/router';
 import { SwUpdate } from '@angular/service-worker';
@@ -9,11 +8,12 @@ import {
   ConnectionState,
   DmsService,
   EventService,
+  ObjectTag,
   SearchFilter,
   SearchQuery,
   SystemService,
   TranslateService,
-  UploadResult,
+  UserRoles,
   UserService,
   YuvEventType,
   YuvUser
@@ -27,7 +27,8 @@ import {
   PopoverRef,
   PopoverService,
   Screen,
-  ScreenService
+  ScreenService,
+  UploadResult
 } from '@yuuvis/framework';
 import { filter } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
@@ -43,17 +44,36 @@ import { FrameService } from './frame.service';
 export class FrameComponent implements OnInit, OnDestroy {
   @ViewChild('moveNotification') moveNotification: TemplateRef<any>;
 
+  // query for fetching pending AFOs
+  pendingAFOsQuery = JSON.stringify({
+    tags: [
+      {
+        name: ObjectTag.AFO,
+        filters: {
+          filters: [
+            {
+              f: 'state',
+              o: SearchFilter.OPERATOR.EQUAL,
+              v1: '0'
+            }
+          ]
+        }
+      }
+    ]
+  });
+
   swUpdateAvailable: boolean;
   hideAppBar: boolean;
   disableFileDrop: boolean;
+  disableCreate: boolean;
   showSideBar: boolean;
   screenSmall: boolean;
-  showSearch: boolean;
   user: YuvUser;
   disabledContextSearch: boolean;
   appQuery: SearchQuery;
 
   context: string;
+  reloadComponent = true;
 
   @HostListener('window:dragover', ['$event']) onDragOver(e) {
     let transfer = e.dataTransfer;
@@ -94,6 +114,12 @@ export class FrameComponent implements OnInit, OnDestroy {
     this.iconRegistry.registerIcons([search, drawer, refresh, add, userDisabled, offline, close, openContext]);
     this.userService.user$.subscribe((user: YuvUser) => {
       this.user = user;
+      if (user) {
+        this.disableCreate = !user.authorities.includes(UserRoles.CREATE_OBJECT);
+        if (this.disableCreate) {
+          this.disableFileDrop = true;
+        }
+      }
     });
     this.update.available.subscribe((update) => (this.swUpdateAvailable = true));
     this.layoutService.layoutSettings$.subscribe((settings: LayoutSettings) => this.applyLayoutSettings(settings));
@@ -107,35 +133,37 @@ export class FrameComponent implements OnInit, OnDestroy {
       .on(YuvEventType.DMS_OBJECTS_MOVED)
       .pipe(takeUntilDestroy(this))
       .subscribe((event) => this.onObjetcsMove(event));
+
+    this.translateService.onLangChange.subscribe(() => {
+      this.reloadComponent = false;
+      setTimeout(() => (this.reloadComponent = true), 1);
+    });
   }
 
   onObjetcsMove(event) {
-    this.dmsService.getDmsObject(event.data.targetFolderId).subscribe((newParent) => {
-      const title = this.translateService.instant('yuv.client.frame.move.notification.title', { objectTitle: newParent.title });
-      const succeeded = event.data.succeeded.map((o) => {
-        o.icon = this.systemService.getObjectTypeIcon(o.objectTypeId);
-        return o;
+    const popoverConfig = {
+      maxHeight: '70%',
+      width: 300,
+      bottom: 16,
+      right: 16,
+      duration: 10,
+      data: {
+        title: this.translateService.instant('yuv.client.frame.move.notification.title.root'),
+        newParent: null,
+        succeeded: event.data.succeeded,
+        failed: event.data.failed
+      },
+      panelClass: 'move-notification'
+    };
+    if (event.data.targetFolderId) {
+      this.dmsService.getDmsObject(event.data.targetFolderId).subscribe((newParent) => {
+        popoverConfig.data.title = this.translateService.instant('yuv.client.frame.move.notification.title', { objectTitle: newParent.title });
+        popoverConfig.data.newParent = newParent;
+        this.popoverService.open(this.moveNotification, popoverConfig);
       });
-      const failed = event.data.failed.map((o) => {
-        o.icon = this.systemService.getObjectTypeIcon(o.objectTypeId);
-        return o;
-      });
-      const popoverConfig = {
-        maxHeight: '70%',
-        width: 300,
-        bottom: 16,
-        right: 16,
-        duration: 10,
-        data: {
-          title: title,
-          newParent: newParent,
-          succeeded: succeeded,
-          failed: failed
-        },
-        panelClass: 'move-notification'
-      };
+    } else {
       this.popoverService.open(this.moveNotification, popoverConfig);
-    });
+    }
   }
 
   closeNotification(popoverRef?: PopoverRef) {
@@ -163,10 +191,6 @@ export class FrameComponent implements OnInit, OnDestroy {
     } else {
       body.style.removeProperty(dbProperty);
     }
-  }
-
-  toggleSearch(visible: boolean) {
-    this.showSearch = visible;
   }
 
   reload() {
@@ -226,7 +250,12 @@ export class FrameComponent implements OnInit, OnDestroy {
     if (Array.isArray(res.objectId)) {
       const searchQuery = new SearchQuery();
       searchQuery.addFilter(new SearchFilter(BaseObjectTypeField.OBJECT_ID, SearchFilter.OPERATOR.IN, res.objectId));
-      this.router.navigate(['/result'], { queryParams: { query: JSON.stringify(searchQuery.toQueryJson()) } });
+      this.router.navigate(['/result'], {
+        queryParams: {
+          query: JSON.stringify(searchQuery.toQueryJson()),
+          tmp: true
+        }
+      });
     } else {
       this.router.navigate(['/object', res.objectId]);
     }
@@ -241,6 +270,12 @@ export class FrameComponent implements OnInit, OnDestroy {
         this.context = ctx;
       }
     } else {
+      // Comming from a context, we'll reset to a new app wide query.
+      // Because, the search that has been created within the context
+      // makes no sense for the dashboard
+      if (this.context) {
+        this.appSearch.setQuery(new SearchQuery());
+      }
       this.context = null;
     }
   }
@@ -262,9 +297,7 @@ export class FrameComponent implements OnInit, OnDestroy {
       // transparent app-bar?
       this.tab = e.urlAfterRedirects.startsWith('/dashboard');
       // disable fileDrop being on create state
-      this.disableFileDrop = e.urlAfterRedirects.startsWith('/create');
-      // hide open search bar when leaving state
-      this.toggleSearch(false);
+      this.disableFileDrop = this.disableCreate || e.urlAfterRedirects.startsWith('/create');
     });
   }
 

@@ -4,6 +4,10 @@ import { ObjectFormControl } from './object-form.model';
 import { Situation } from './object-form.situation';
 import { FormValidation } from './object-form.validation';
 
+/**
+ * Provides a rendering of form control in `ObjectFormComponent`, `QuickSearchComponent` so wie `SearchFilterFormComponent`.
+ */
+
 export class ObjectFormUtils {
   /**
    * Converts a form element object to an ObjectFormControlWrapper which then can be used to
@@ -46,14 +50,17 @@ export class ObjectFormUtils {
 
     return wrapper;
   }
-
+  /**
+   * Update a form element after change a form element object.
+   * @param formElement - the form element object
+   */
   static updateFormElement(formElement: any) {
     if (formElement.type === 'decimal' && !formElement.scale) {
       formElement.scale = 2;
     }
 
     if (formElement.type === 'integer' && formElement.id === ContentStreamField.LENGTH) {
-      formElement.classification = Classification.NUMBER_FILESIZE;
+      formElement.classifications = [Classification.NUMBER_FILESIZE];
     }
     return formElement;
   }

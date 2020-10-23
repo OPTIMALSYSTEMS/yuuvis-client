@@ -1,7 +1,9 @@
 import { Component, EventEmitter, OnInit, ViewChild } from '@angular/core';
 import { DmsService } from '@yuuvis/core';
 import { ActionComponent } from './../../../interfaces/action-component.interface';
-
+/**
+ * @ignore
+ */
 @Component({
   selector: 'yuv-upload',
   templateUrl: './upload.component.html',

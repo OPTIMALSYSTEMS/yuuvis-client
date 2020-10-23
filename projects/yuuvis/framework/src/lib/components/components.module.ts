@@ -12,8 +12,10 @@ import { OverlayPanelModule } from 'primeng/overlaypanel';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { TabViewModule } from 'primeng/tabview';
 import { YuvCommonModule } from '../common/common.module';
+import { ObjectTypeIconComponent } from '../common/components/object-type-icon/object-type-icon.component';
 import { YuvDirectivesModule } from '../directives/directives.module';
 import { YuvPipesModule } from '../pipes/pipes.module';
+import { SingleCellRendererComponent } from '../services/grid/renderer/single-cell-renderer/single-cell-renderer.component';
 import { ActionMenuBarComponent } from './action-menu-bar/action-menu-bar.component';
 import { IconUploadComponent } from './animated-icons/icon-upload/icon-upload.component';
 import { BusyOverlayDirective } from './busy-overlay/busy-overlay.directive';
@@ -42,6 +44,11 @@ const components = [
   DmsObjectTileComponent
 ];
 
+/**
+ * `YuvComponentsModule` contains components for creating client's basic design elements such as action menu, responsive panels, dialogs,
+ * upload, tabels, file pickers etc.
+ */
+
 @NgModule({
   declarations: [...components],
   exports: [...components, TabViewModule],
@@ -51,7 +58,7 @@ const components = [
     AngularResizedEventModule,
     CdkStepperModule,
     AngularSplitModule,
-    AgGridModule,
+    AgGridModule.withComponents([ObjectTypeIconComponent, SingleCellRendererComponent]),
     RouterModule,
     TabViewModule,
     DialogModule,

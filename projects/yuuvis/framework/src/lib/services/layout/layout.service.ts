@@ -1,29 +1,45 @@
 import { DOCUMENT } from '@angular/common';
 import { Inject, Injectable } from '@angular/core';
-import { AppCacheService, BackendService, Direction, Logger, UserService, YuvUser } from '@yuuvis/core';
+import { AppCacheService, BackendService, ConfigService, Direction, Logger, UserService, YuvUser } from '@yuuvis/core';
 import { Observable, of, ReplaySubject } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
+
+/**
+ * Makes it possible to configure the layout depending on the user's taste: makes it dark or light
+ */
 
 @Injectable({
   providedIn: 'root'
 })
 export class LayoutService {
-  private STORAGE_KEY = 'yuv.app.framework.layout';
-  private STORAGE_KEY_REGEXP = new RegExp('^yuv.app.');
+  private STORAGE_KEY = `${this.storageKeyPrefix}yuv.app.framework.layout`;
+  private STORAGE_KEY_REGEXP = new RegExp(`^${this.storageKeyPrefix}yuv.app.`);
   private layoutSettings: LayoutSettings = {};
   private layoutSettingsSource = new ReplaySubject<LayoutSettings>();
+  /**
+   * Return new layout setting dipends on selected mode : light or dark
+   */
   public layoutSettings$: Observable<LayoutSettings> = this.layoutSettingsSource.asObservable();
 
+  private get storageKeyPrefix(): string {
+    return this.configService.get('appPrefix') ? `${this.configService.get('appPrefix')}.` : '';
+  }
+
+  /**
+   *
+   * @ignore
+   */
   constructor(
     @Inject(DOCUMENT) private document: any,
     private logger: Logger,
     private appCache: AppCacheService,
     private userService: UserService,
-    private backend: BackendService
+    private backend: BackendService,
+    private configService: ConfigService
   ) {
     // load saved settings
-    this.appCache.getItem(this.STORAGE_KEY).subscribe(settings => this.processLayoutSettings(settings));
-    this.userService.user$.subscribe((user: YuvUser) => this.applyDirection(user ? user.uiDirection : 'yuv-ltr'));
+    this.appCache.getItem(this.STORAGE_KEY).subscribe((settings) => this.processLayoutSettings(settings));
+    this.userService.user$.subscribe((user: YuvUser) => this.applyDirection(user ? user.uiDirection : `yuv-ltr`));
   }
 
   private processLayoutSettings(settings: any) {
@@ -37,9 +53,9 @@ export class LayoutService {
     const bodyClassList = body.classList;
     body.setAttribute('dir', direction);
     if (direction === Direction.RTL) {
-      bodyClassList.add('yuv-rtl');
+      bodyClassList.add(`yuv-rtl`);
     } else {
-      bodyClassList.remove('yuv-rtl');
+      bodyClassList.remove(`yuv-rtl`);
     }
   }
 
@@ -48,28 +64,42 @@ export class LayoutService {
     if (settings) {
       const body = this.document.getElementsByTagName('body')[0];
       const bodyClassList = body.classList;
-      if (bodyClassList.contains(darkModeClass) && !settings.darkMode) {
+      if (bodyClassList.contains(darkModeClass) && settings?.darkMode === false) {
         bodyClassList.remove(darkModeClass);
-      } else if (!bodyClassList.contains(darkModeClass) && settings.darkMode) {
+      } else if (!bodyClassList.contains(darkModeClass) && settings?.darkMode === true) {
         bodyClassList.add(darkModeClass);
       }
     }
   }
-
+  /**
+   * get selected layout setting
+   */
   getLayoutSettings() {
     return this.layoutSettings;
   }
 
+  /**
+   * set dark mode if a dark mode has been selected
+   * @param darkMode - whether or not dark mode has been selected
+   */
   setDarkMode(darkMode: boolean) {
     this.layoutSettings.darkMode = darkMode;
     this.saveSettings();
   }
 
+  /**
+   * Providing specific accent color dipends on selected mode setting
+   * @param rgb - a color variable
+   */
   setAccentColor(rgb: string) {
     this.layoutSettings.accentColor = rgb;
     this.saveSettings();
   }
 
+  /**
+   * Set selected mode to a dasboard component
+   * @param dataUrl - url to your dasboard component
+   */
   setDashboardBackground(dataUrl: string) {
     this.layoutSettings.dashboardBackground = dataUrl;
     this.saveSettings();
@@ -106,7 +136,7 @@ export class LayoutService {
     this.logger.debug(layoutOptionsKey ? `saving layout options for '${layoutOptionsKey}-${elementKey}'` : `layout key missing`);
     return layoutOptionsKey
       ? this.appCache.getItem(layoutOptionsKey).pipe(
-          switchMap(res => {
+          switchMap((res) => {
             const v = res || {};
             v[elementKey] = value;
             return this.appCache.setItem(layoutOptionsKey, v);
@@ -122,7 +152,7 @@ export class LayoutService {
    */
   loadLayoutOptions(layoutOptionsKey: string, elementKey?: string): Observable<any> {
     this.logger.debug(layoutOptionsKey ? `loading layout options for '${layoutOptionsKey}-${elementKey}'` : `layout key missing`);
-    return layoutOptionsKey ? this.appCache.getItem(layoutOptionsKey).pipe(map(res => (elementKey && res ? res[elementKey] : res))) : of(null);
+    return layoutOptionsKey ? this.appCache.getItem(layoutOptionsKey).pipe(map((res) => (elementKey && res ? res[elementKey] : res))) : of(null);
   }
 
   private saveSettings() {
@@ -132,13 +162,13 @@ export class LayoutService {
 
   private cleanupData(data: any, filter?: (key: string) => boolean) {
     filter = filter || ((key: string) => !key.match(this.STORAGE_KEY_REGEXP));
-    Object.keys(data).forEach(k => filter(k) && delete data[k]);
+    Object.keys(data).forEach((k) => filter(k) && delete data[k]);
     return data;
   }
 
   private generateStorageJsonUri() {
     return this.appCache.getStorage().pipe(
-      map(data => {
+      map((data) => {
         const blob = new Blob([JSON.stringify(this.cleanupData(data), null, 2)], { type: 'text/json' });
         const uri = URL.createObjectURL(blob);
         // setTimeout(() => URL.revokeObjectURL(uri), 10000);
@@ -147,29 +177,47 @@ export class LayoutService {
     );
   }
 
+  /**
+   * make it possible for users to export their layout settings as a json file
+   *
+   */
   downloadLayout(filename = 'settings.json') {
-    this.generateStorageJsonUri().subscribe(uri => this.backend.download(uri, filename));
+    this.generateStorageJsonUri().subscribe((uri) => this.backend.download(uri, filename));
   }
-
-  uploadLayout(data: string | any, filter?: (key: string) => boolean, force = false) {
-    const layout = this.cleanupData(typeof data === 'string' ? JSON.parse(data) : data, filter);
-    if (layout.hasOwnProperty(this.STORAGE_KEY) || force) {
+  /**
+   * make it possible for user to import their layout settings as a json file
+   */
+  uploadLayout(data: string | any) {
+    const layout = this.cleanupData(typeof data === 'string' ? JSON.parse(data) : data);
+    if (layout.hasOwnProperty(this.STORAGE_KEY)) {
       this.processLayoutSettings(layout[this.STORAGE_KEY]);
     }
-    return force ? this.clearAll().pipe(switchMap(() => this.appCache.setStorage(layout))) : this.appCache.setStorage(layout);
+    return this.clearLayout().pipe(switchMap(() => this.appCache.setStorage(layout)));
   }
 
+  /**
+   * make it possible for user to reset their layout settings and return to the default settings
+   */
   clearLayout() {
-    return this.appCache.getStorage().pipe(switchMap(data => this.uploadLayout(data, (key: string) => !!key.match(this.STORAGE_KEY_REGEXP), true)));
-  }
-
-  clearAll() {
-    return this.appCache.clear();
+    return this.appCache.clear((key: string) => !!key.match(this.STORAGE_KEY_REGEXP));
   }
 }
 
+/**
+ * interface for providing a `LayoutService`
+ */
 export interface LayoutSettings {
+  /**
+   * change the mode of layout to dark
+   */
   darkMode?: boolean;
+  /**
+   * set an accent color for a selected mode
+   */
+
   accentColor?: string;
+  /**
+   * set a background in a dashboard
+   */
   dashboardBackground?: string;
 }

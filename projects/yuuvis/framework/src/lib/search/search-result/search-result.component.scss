@@ -6,26 +6,88 @@ $yuv-result-header-height: 38px;
 
 :host {
   display: block;
+  background-color: var(--panel-background);
+
+  ::ng-deep {
+    .as-split-gutter {
+      border: 1px solid var(--panel-divider-color);
+      border-width: 0 1px;
+    }
+  }
 }
 
 .yuv-search-result {
   height: 100%;
   background-color: var(--panel-background);
 
+  yuv-icon.collapse {
+    transform: rotate(180deg);
+    cursor: pointer;
+    padding: 4px;
+    opacity: 0.6;
+    box-sizing: border-box;
+  }
+
   .grid-container {
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: auto 1fr;
     grid-template-rows: 1fr;
-    grid-template-areas: 'table';
+    grid-template-areas: 'fc table';
     height: 100%;
+
+    &.has-query .filterCollapsed {
+      display: flex;
+    }
+
+    .filterCollapsed {
+      grid-area: fc;
+      display: none;
+      flex-flow: column;
+      justify-content: space-between;
+      background: var(--panel-background-lightgrey);
+      border-right: 1px solid var(--panel-divider-color);
+      color: var(--text-color-caption);
+      yuv-icon {
+        margin: calc(var(--app-pane-padding) / 2) calc(var(--app-pane-padding) / 8);
+        opacity: 0.6;
+        border: 1px solid transparent;
+        width: 18px;
+        height: 18px;
+      }
+
+      &:hover {
+        color: var(--color-accent);
+        cursor: pointer;
+      }
+
+      > div {
+        writing-mode: vertical-lr;
+      }
+
+      yuv-icon.collapse {
+        align-self: start;
+        transform: rotate(0deg);
+      }
+
+      yuv-icon.active {
+        opacity: 1;
+        color: var(--color-accent);
+        border-color: var(--color-accent);
+      }
+    }
+
+    as-split {
+      grid-area: table;
+    }
   }
 
   .table {
+    height: 100%;
     display: grid;
     grid-template-columns: 100%;
     grid-template-rows: 1fr auto;
     grid-template-areas: 'data-table' 'footer';
-    grid-area: table;
+    // grid-area: table;
   }
 
   .empty {

@@ -15,15 +15,35 @@
           background: transparent;
 
           yuv-object-form {
-            overflow: auto;
+            padding: var(--app-pane-padding);
             background: transparent;
 
             .yuv-object-form {
-              margin: var(--app-pane-padding);
               background: var(--panel-background);
               box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1);
             }
           }
+
+          yuv-combined-object-form {
+            padding: var(--app-pane-padding);
+
+            .yuv-combined-object-form {
+              padding: calc(var(--app-pane-padding) / 2);
+              background: var(--panel-background);
+              box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1);
+
+              .yuv-object-form {
+                padding: calc(var(--app-pane-padding) / 2);
+                box-shadow: none;
+                margin: 0;
+
+                .form-element-wrap {
+                  padding: 0;
+                }
+              }
+            }
+          }
+
           .form-controls {
             border-top: 1px solid var(--panel-divider-color);
             background: var(--panel-background);

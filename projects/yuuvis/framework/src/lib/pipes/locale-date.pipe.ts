@@ -2,6 +2,11 @@ import { DatePipe, FormatWidth, getLocaleDateFormat, getLocaleDateTimeFormat, ge
 import { Pipe, PipeTransform } from '@angular/core';
 import { TranslateService } from '@yuuvis/core';
 
+/**
+ * This pipe transforms its input (supposed to be a date) into a more human readable format like for example 'dd.MM.yyyy'
+ * @example
+ *  <div>{{ creationDate | localeDate: 'shortDate' }}</div>
+ */
 @Pipe({
   name: 'localeDate',
   pure: false

@@ -7,6 +7,13 @@ import { ReferenceEntry } from '../../form/elements/reference/reference.interfac
  *
  * This component is based on the `yuv-reference` form control. If you need to
  * select more than one object, you can use this component instead.
+ *
+ * [Screenshot](../assets/images/yuv-quickfinder.gif)
+ *
+ * @example
+ * <yuv-quickfinder [label]="'Some label'" (objectSelect)="onObjectSelect($event)"></yuv-quickfinder>
+ *
+ *
  */
 @Component({
   selector: 'yuv-quickfinder',
@@ -43,11 +50,11 @@ export class QuickfinderComponent {
    * quickfinder result item. Within the provided template you'll get an object
    * representing the current entry:
    *
-   * ```html
-   * <ng-template #quickfinderEntryLinkTpl let-entry="entry">
-   *   <a [routerLink]="['/context', entry.id]" title="Open '{{entry.title}}'">open</a>
-   * </ng-template>
-   * ```
+   *     <ng-template #quickfinderEntryLinkTpl let-entry="entry">
+   *          <a [routerLink]="['/context', entry.id]" title="Open '{{entry.title}}'">open</a>
+   *     </ng-template>
+   *
+   *
    *
    * Use case: Add a router link of your host application that opens
    * the object in a new tab/window.

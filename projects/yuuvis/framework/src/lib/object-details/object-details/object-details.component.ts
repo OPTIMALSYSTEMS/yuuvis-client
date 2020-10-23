@@ -1,9 +1,20 @@
 import { Component, ContentChildren, HostBinding, Input, OnDestroy, QueryList, TemplateRef, ViewChild, ViewChildren } from '@angular/core';
-import { ConfigService, DmsObject, DmsService, EventService, SystemService, TranslateService, UserService, YuvEvent, YuvEventType } from '@yuuvis/core';
+import {
+  BaseObjectTypeField,
+  ConfigService,
+  DmsObject,
+  DmsService,
+  EventService,
+  SystemService,
+  TranslateService,
+  UserService,
+  YuvEvent,
+  YuvEventType
+} from '@yuuvis/core';
 import { TabPanel } from 'primeng/tabview';
+import { finalize } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
-import { CellRenderer } from '../../services/grid/grid.cellrenderer';
 import { kebap, noFile, refresh } from '../../svg.generated';
 import { ContentPreviewService } from '../content-preview/service/content-preview.service';
 import { ResponsiveTabContainerComponent } from './../../components/responsive-tab-container/responsive-tab-container.component';
@@ -44,13 +55,14 @@ export class ObjectDetailsComponent implements OnDestroy {
 
   @HostBinding('class.yuv-object-details') _hostClass = true;
   nofileIcon = noFile.data;
-  objectIcon = '';
   busy: boolean;
   userIsAdmin: boolean;
   actionMenuVisible = false;
   actionMenuSelection: DmsObject[] = [];
   fileDropLabel: string;
   contextError: string = null;
+  objectTypeId: string;
+  isRetentionActive = false;
   private _dmsObject: DmsObject;
   private _objectId: string;
 
@@ -63,11 +75,19 @@ export class ObjectDetailsComponent implements OnDestroy {
     this._dmsObject = object;
     this._objectId = object ? object.id : null;
     if (object) {
-      this.objectIcon = CellRenderer.typeCellRenderer({ value: object.objectTypeId, context: { system: this.systemService } });
-
+      this.objectTypeId = this.systemService.getLeadingObjectTypeID(object.objectTypeId, object.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS]);
       this.fileDropLabel = !object.content
         ? this.translate.instant('yuv.framework.object-details.filedrop.content.add')
         : this.translate.instant('yuv.framework.object-details.filedrop.content.replace');
+    } else {
+      this.objectTypeId = null;
+    }
+    this.isRetentionActive = false;
+    if (object && object.data['system:rmStartOfRetention'] && object.data['system:rmExpirationDate']) {
+      const currentDate = new Date();
+      const retentionStart = new Date(object.data['system:rmStartOfRetention']);
+      const retentionEnd = new Date(object.data['system:rmExpirationDate']);
+      this.isRetentionActive = retentionStart <= currentDate && currentDate <= retentionEnd;
     }
   }
 
@@ -142,12 +162,6 @@ export class ObjectDetailsComponent implements OnDestroy {
    */
   @Input() disableFileDrop: boolean;
 
-  /**
-   * Custom template to render version numer within summary and audit
-   * aspect as for example a link.
-   */
-  @Input() versionLinkTemplate: TemplateRef<any>;
-
   undockWinActive = false;
 
   constructor(
@@ -194,16 +208,16 @@ export class ObjectDetailsComponent implements OnDestroy {
   private getDmsObject(id: string) {
     this.busy = true;
     this.contentPreviewService.resetSource();
-    this.dmsService.getDmsObject(id).subscribe(
-      (dmsObject) => {
-        this.dmsObject = dmsObject;
-        this.busy = false;
-      },
-      (error) => {
-        this.busy = false;
-        this.contextError = this.translate.instant('yuv.client.state.object.context.load.error');
-      }
-    );
+    this.dmsService
+      .getDmsObject(id)
+      .pipe(finalize(() => (this.busy = false)))
+      .subscribe(
+        (dmsObject) => (this.dmsObject = dmsObject),
+        (error) => {
+          this.dmsObject = null;
+          this.contextError = this.translate.instant('yuv.client.state.object.context.load.error');
+        }
+      );
   }
 
   refreshDetails() {

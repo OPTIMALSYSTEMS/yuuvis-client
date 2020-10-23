@@ -7,6 +7,18 @@ import { catchError } from 'rxjs/operators';
 import { IconRegistryService } from '../../../common/components/icon/service/iconRegistry.service';
 import { organization } from '../../../svg.generated';
 
+/**
+ * Creates form input for organisation values.
+ * Implements `ControlValueAccessor` so it can be used within Angular forms.
+ *
+ * [Screenshot](../assets/images/yuv-organization.gif)
+ *
+ * @example
+ * <yuv-organization [multiselect]="true"></yuv-organization>
+ *
+ *
+ */
+
 @Component({
   selector: 'yuv-organization',
   templateUrl: './organization.component.html',
@@ -49,7 +61,7 @@ export class OrganizationComponent implements ControlValueAccessor, AfterViewIni
   /**
    * Additional semantics for the form element.
    */
-  @Input() classification: string[];
+  @Input() classifications: string[];
   /**
    * Will prevent the input from being changed (default: false)
    */

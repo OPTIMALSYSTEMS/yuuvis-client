@@ -2,7 +2,8 @@
   [description]="queryDescription">
 
   <yuv-action-menu-bar class="actions" yuvOfflineDisabled>
-    <yuv-icon class="config" icon="settings" (click)="showColumnConfigEditor()" *ngIf="viewMode === 'standard'">
+    <yuv-icon class="config" icon="settings" (click)="showColumnConfigEditor()" *ngIf="viewMode === 'standard'"
+      [title]="'yuv.framework.list.configure.columns' | translate">
     </yuv-icon>
     <yuv-icon (click)="refresh()" [title]="'yuv.framework.list.refresh' | translate" class="button refresh-button"
       [icon]="'refresh'"></yuv-icon>
@@ -10,14 +11,16 @@
   </yuv-action-menu-bar>
 
   <yuv-search-result class="content" [query]="_searchQuery" applyColumnConfig="true" [preSelectItems]="preSelectItems"
-    [layoutOptionsKey]="layoutOptionsKey" (viewModeChanged)="onViewModeChanged($event)"
-    (itemsSelected)="onItemsSelected($event)" (queryChanged)="onQueryChangedFromWithin($event)"
-    (rowDoubleClicked)="rowDoubleClicked.emit($event)">
+    [disableFilterPanel]="disableFilterPanel" [layoutOptionsKey]="layoutOptionsKey"
+    (viewModeChanged)="onViewModeChanged($event)" [filterPanelConfig]="filterPanelConfig"
+    (filterPanelConfigChanged)="onFilterPanelConfigChanged($event)" (itemsSelected)="onItemsSelected($event)"
+    (queryChanged)="onQueryChangedFromWithin($event)" (rowDoubleClicked)="rowDoubleClicked.emit($event)">
   </yuv-search-result>
 </yuv-panel>
 <yuv-action-menu [(visible)]="actionMenuVisible" [selection]="actionMenuSelection"> </yuv-action-menu>
 
 <!-- column config editor overlay -->
 <ng-template #tplColumnConfigPicker let-data let-popover="popover">
-  <yuv-column-config [options]="data" (configSaved)="columnConfigChanged($event, popover)"></yuv-column-config>
+  <yuv-column-config [options]="data" (cancel)="columnConfigCanceled(popover)"
+    (configSaved)="columnConfigChanged($event, popover)"></yuv-column-config>
 </ng-template>

@@ -1,21 +1,22 @@
-import { AfterViewInit, Component, EventEmitter, forwardRef, HostBinding, HostListener, Input, Output, TemplateRef, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, forwardRef, HostBinding, HostListener, Inject, Input, Output, TemplateRef, ViewChild } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import {
   BaseObjectTypeField,
   Classification,
   ClassificationEntry,
+  ClientDefaultsObjectTypeField,
   SearchFilter,
   SearchQuery,
   SearchQueryProperties,
   SearchResult,
   SearchService,
-  SecondaryObjectTypeField,
   SystemService
 } from '@yuuvis/core';
 import { AutoComplete } from 'primeng/autocomplete';
 import { forkJoin, Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { IconRegistryService } from '../../../common/components/icon/service/iconRegistry.service';
+import { ROUTES, YuvRoutes } from '../../../routing/routes';
 import { reference } from '../../../svg.generated';
 import { ReferenceEntry } from './reference.interface';
 
@@ -49,6 +50,7 @@ export class ReferenceComponent implements ControlValueAccessor, AfterViewInit {
   value;
   innerValue: ReferenceEntry[] = [];
   autocompleteRes: any[] = [];
+  path: string;
 
   // prevent ENTER from being propagated, because the component could be located
   // inside some other component that also relys on ENTER
@@ -76,7 +78,7 @@ export class ReferenceComponent implements ControlValueAccessor, AfterViewInit {
    * Additional semantics for the form element. You could specify restrictions on what object
    * type should be allowed by setting eg. `['id:reference[system:folder]']` to only allow folders
    */
-  @Input() set classification(c: string[]) {
+  @Input() set classifications(c: string[]) {
     const ce: ClassificationEntry = this.systemService.getClassifications(c).get(Classification.STRING_REFERENCE);
     if (ce && ce.options) {
       this.allowedTargetTypes = ce.options;
@@ -88,16 +90,9 @@ export class ReferenceComponent implements ControlValueAccessor, AfterViewInit {
   @Input() readonly: boolean;
   /**
    * You can provide a template reference here that will be rendered at the end of each
-   * quickfinder result item. Within the provided template you'll get an object
-   * representing the current entry:
+   * quickfinder result item.
    *
-   * ```html
-   * <ng-template #quickfinderEntryLinkTpl let-entry="entry">
-   *   <a [routerLink]="['/context', entry.id]" title="Open '{{entry.title}}'">open</a>
-   * </ng-template>
-   * ```
-   *
-   * Use case: Add a router link of your host application that opens
+   *Use case: Add a router link of your host application that opens
    * the object in a new tab/window.
    */
   @Input() entryLinkTemplate: TemplateRef<any>;
@@ -121,8 +116,14 @@ export class ReferenceComponent implements ControlValueAccessor, AfterViewInit {
    */
   @Output() objectSelect = new EventEmitter<ReferenceEntry[]>();
 
-  constructor(private iconRegistry: IconRegistryService, private systemService: SystemService, private searchService: SearchService) {
+  constructor(
+    private iconRegistry: IconRegistryService,
+    private systemService: SystemService,
+    private searchService: SearchService,
+    @Inject(ROUTES) public routes: YuvRoutes
+  ) {
     this.iconRegistry.registerIcons([reference]);
+    this.path = this.routes && this.routes.object ? this.routes.object.path : null;
   }
   propagateChange = (_: any) => {};
 
@@ -169,7 +170,13 @@ export class ReferenceComponent implements ControlValueAccessor, AfterViewInit {
 
   private resolveRefEntries(ids: string[]): Observable<ReferenceEntry[]> {
     const q = new SearchQuery();
-    q.fields = [BaseObjectTypeField.OBJECT_ID, BaseObjectTypeField.OBJECT_TYPE_ID, SecondaryObjectTypeField.TITLE, SecondaryObjectTypeField.DESCRIPTION];
+    q.fields = [
+      BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS,
+      BaseObjectTypeField.OBJECT_ID,
+      BaseObjectTypeField.OBJECT_TYPE_ID,
+      ClientDefaultsObjectTypeField.TITLE,
+      ClientDefaultsObjectTypeField.DESCRIPTION
+    ];
     q.addFilter(new SearchFilter(BaseObjectTypeField.OBJECT_ID, SearchFilter.OPERATOR.IN, ids));
     return this.searchService.search(q).pipe(
       map((res: SearchResult) => {
@@ -177,19 +184,33 @@ export class ReferenceComponent implements ControlValueAccessor, AfterViewInit {
           // some of the IDs could not be retrieved (no permission or deleted)
           const x = {};
           res.items.forEach((r) => (x[r.fields.get(BaseObjectTypeField.OBJECT_ID)] = r));
-          return ids.map((id) => ({
-            id: id,
-            iconSVG: x[id] ? this.systemService.getObjectTypeIcon(x[id].fields.get(BaseObjectTypeField.OBJECT_TYPE_ID)) : null,
-            title: x[id] ? x[id].fields.get(SecondaryObjectTypeField.TITLE) : this.noAccessTitle,
-            description: x[id] ? x[id].fields.get(SecondaryObjectTypeField.DESCRIPTION) : null
-          }));
+          return ids.map((id) => {
+            return {
+              id: id,
+              objectTypeId: x[id].fields.get(BaseObjectTypeField.OBJECT_TYPE_ID),
+              title: x[id] ? x[id].fields.get(ClientDefaultsObjectTypeField.TITLE) : this.noAccessTitle,
+              description: x[id] ? x[id].fields.get(ClientDefaultsObjectTypeField.DESCRIPTION) : null
+            };
+          });
         } else {
-          return res.items.map((i) => ({
-            id: i.fields.get(BaseObjectTypeField.OBJECT_ID),
-            iconSVG: this.systemService.getObjectTypeIcon(i.fields.get(BaseObjectTypeField.OBJECT_TYPE_ID)),
-            title: i.fields.get(SecondaryObjectTypeField.TITLE),
-            description: i.fields.get(SecondaryObjectTypeField.DESCRIPTION)
-          }));
+          return res.items.map((i) => {
+            const crParams = {
+              value: this.systemService.getLeadingObjectTypeID(
+                i.fields.get(BaseObjectTypeField.OBJECT_TYPE_ID),
+                i.fields.get(BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS)
+              ),
+              context: {
+                system: this.systemService
+              }
+            };
+
+            return {
+              id: i.fields.get(BaseObjectTypeField.OBJECT_ID),
+              objectTypeId: i.fields.get(BaseObjectTypeField.OBJECT_TYPE_ID),
+              title: i.fields.get(ClientDefaultsObjectTypeField.TITLE),
+              description: i.fields.get(ClientDefaultsObjectTypeField.DESCRIPTION)
+            };
+          });
         }
       })
     );
@@ -201,12 +222,15 @@ export class ReferenceComponent implements ControlValueAccessor, AfterViewInit {
         .search(new SearchQuery({ ...this.queryJson, term: `*${evt.query}*` }))
         .pipe(
           map((r) =>
-            r.items.map((i) => ({
-              id: i.fields.get(BaseObjectTypeField.OBJECT_ID),
-              iconSVG: this.systemService.getObjectTypeIcon(i.fields.get(BaseObjectTypeField.OBJECT_TYPE_ID)),
-              title: i.fields.get(SecondaryObjectTypeField.TITLE),
-              description: i.fields.get(SecondaryObjectTypeField.DESCRIPTION)
-            }))
+            r.items.map((i) => {
+              return {
+                id: i.fields.get(BaseObjectTypeField.OBJECT_ID),
+                objectTypeId: i.fields.get(BaseObjectTypeField.OBJECT_TYPE_ID),
+                // title and description may not be present
+                title: i.fields.get(ClientDefaultsObjectTypeField.TITLE) || i.fields.get(BaseObjectTypeField.OBJECT_ID),
+                description: i.fields.get(ClientDefaultsObjectTypeField.DESCRIPTION)
+              };
+            })
           )
         )
         .subscribe(
@@ -257,7 +281,12 @@ export class ReferenceComponent implements ControlValueAccessor, AfterViewInit {
 
   ngOnInit(): void {
     this.queryJson = {
-      fields: [BaseObjectTypeField.OBJECT_ID, BaseObjectTypeField.OBJECT_TYPE_ID, SecondaryObjectTypeField.TITLE, SecondaryObjectTypeField.DESCRIPTION],
+      fields: [
+        BaseObjectTypeField.OBJECT_ID,
+        BaseObjectTypeField.OBJECT_TYPE_ID,
+        ClientDefaultsObjectTypeField.TITLE,
+        ClientDefaultsObjectTypeField.DESCRIPTION
+      ],
       types: this.allowedTargetTypes,
       size: this.maxSuggestions
     };

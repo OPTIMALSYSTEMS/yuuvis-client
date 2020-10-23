@@ -6,6 +6,9 @@ import { ObjectFormGroup } from './object-form.model';
 import { Situation } from './object-form.situation';
 import { ObjectFormUtils } from './object-form.utils';
 
+/**
+ * @ignore
+ */
 @Injectable()
 export class ObjectFormService {
   private datePipe = new DatePipe('en');
@@ -65,26 +68,14 @@ export class ObjectFormService {
 
       if (fc._eoFormElement.isNotSetValue === true) {
         // form elements may explicitly set to have NULL value (e.g. from Search form if values are requested that have no values)
-        this.setDataValue(fc._eoFormElement.qname, null, data, fc._eoFormElement, isTableRowEditForm);
+        this.setDataValue(fc._eoFormElement.name, null, data, fc._eoFormElement, isTableRowEditForm);
       } else if (fc.value !== undefined) {
         let val = fc.value;
-
-        // // make sure that meta data are also up to date
-        // if (fc._eoFormElement.type === 'CODESYSTEM') {
-        //   const cs = this.systemService.getCodesystem(fc._eoFormElement.codesystem.id);
-        //   fc._eoFormElement.dataMeta = cs.entries.find(e => e.data === val);
-        // }
 
         switch (situation) {
           case Situation.SEARCH: {
             if (val !== null) {
-              // row editing forms use the name instead of the qname because otherwise the
-              // tables grid isn't able to map the fields
-              if (!isTableRowEditForm) {
-                this.setDataValue(fc._eoFormElement.qname, val, data, fc._eoFormElement, isTableRowEditForm);
-              } else {
-                this.setDataValue(fc._eoFormElement.name, val, data, fc._eoFormElement, isTableRowEditForm);
-              }
+              this.setDataValue(fc._eoFormElement.name, val, data, fc._eoFormElement, isTableRowEditForm);
             }
             break;
           }

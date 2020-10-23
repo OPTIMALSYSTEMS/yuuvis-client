@@ -1,7 +1,12 @@
 export interface PopoverConfig<T = any> {
+  /** @ignore */
   backdropClass?: string;
+  /** @ignore */
   disableClose?: boolean;
+  /** @ignore */
   disableSmallScreenClose?: boolean;
+  disposeOnNavigation?: boolean;
+  /** @ignore */
   panelClass?: string | string[];
   width?: number | string;
   /** The height of the overlay panel. If a number is provided, pixel units are assumed. */
@@ -17,8 +22,12 @@ export interface PopoverConfig<T = any> {
   data?: T;
   /** The time in seconds, that the overlay should exist. */
   duration?: number;
+  /**@ignore */
   top?: number;
+  /**@ignore */
   bottom?: number;
+  /**@ignore */
   left?: number;
+  /**@ignore */
   right?: number;
 }

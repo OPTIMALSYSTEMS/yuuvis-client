@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BaseObjectTypeField, DmsObject, SecondaryObjectTypeField, SystemService } from '@yuuvis/core';
+import { BaseObjectTypeField, ClientDefaultsObjectTypeField, DmsObject, SystemService } from '@yuuvis/core';
 @Injectable({
   providedIn: 'root'
 })
@@ -11,8 +11,8 @@ export class AppDataService {
     fields.set(BaseObjectTypeField.OBJECT_ID, '12345');
 
     fields.set('tristateCheckboxbaseTypeId', 'system:document');
-    fields.set(SecondaryObjectTypeField.TITLE, '51.4');
-    fields.set(SecondaryObjectTypeField.DESCRIPTION, 'Jugendarbeit');
+    fields.set(ClientDefaultsObjectTypeField.TITLE, '51.4');
+    fields.set(ClientDefaultsObjectTypeField.DESCRIPTION, 'Jugendarbeit');
     fields.set(BaseObjectTypeField.BASE_TYPE_ID, 'tristateCheckboxdocument');
     fields.set(BaseObjectTypeField.CREATED_BY, 'Tool Cuckoo');
     fields.set(BaseObjectTypeField.CREATION_DATE, '2019-08-19T12:16:55.210Z');
@@ -43,8 +43,8 @@ export class AppDataService {
   getDmsObjectWithContent() {
     const fields = new Map<string, any>();
     fields.set(BaseObjectTypeField.OBJECT_ID, '12345');
-    fields.set(SecondaryObjectTypeField.TITLE, 'Mail to someone');
-    fields.set(SecondaryObjectTypeField.DESCRIPTION, '...hurz');
+    fields.set(ClientDefaultsObjectTypeField.TITLE, 'Mail to someone');
+    fields.set(ClientDefaultsObjectTypeField.DESCRIPTION, '...hurz');
     fields.set(BaseObjectTypeField.BASE_TYPE_ID, 'system:document');
     fields.set(BaseObjectTypeField.OBJECT_TYPE_ID, 'appAsv:asvemail');
     fields.set(BaseObjectTypeField.TRACE_ID, '59c362b455c0a415');
@@ -52,8 +52,8 @@ export class AppDataService {
     fields.set(BaseObjectTypeField.MODIFICATION_DATE, '2019-04-12T15:29:56.910Z');
     fields.set(BaseObjectTypeField.VERSION_NUMBER, 1);
     fields.set(BaseObjectTypeField.CREATION_DATE, '2019-04-12T15:29:56.910Z');
-    fields.set(BaseObjectTypeField.CREATED_BY, "Martonitz, Bartin (bartin)");
-    fields.set(BaseObjectTypeField.MODIFIED_BY, "Martonitz, Bartin (bartin)");
+    fields.set(BaseObjectTypeField.CREATED_BY, 'Martonitz, Bartin (bartin)');
+    fields.set(BaseObjectTypeField.MODIFIED_BY, 'Martonitz, Bartin (bartin)');
     fields.set(BaseObjectTypeField.OBJECT_ID, 'ebb327ff-d7b2-4657-9f59-a3318fc5796e');
     fields.set('appAsv:asvto', ['Alex Scholz <scholz@optimal-systems.de>', 'Würgen Jidiker <jidiker@optimal-systems.de>']);
     fields.set('system:contentStreamLength', 60416);

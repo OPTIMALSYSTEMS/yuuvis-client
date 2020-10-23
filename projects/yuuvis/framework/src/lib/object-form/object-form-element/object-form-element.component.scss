@@ -50,7 +50,7 @@
   &.ng-dirty:not(.ng-invalid) {
     //noinspection CssInvalidPseudoSelector
     > .form-field:not(.focused)::ng-deep {
-      > label {
+      .fe-wrapper > label {
         background-color: var(--color-dirty-background);
         color: var(--color-dirty-font) !important;
       }

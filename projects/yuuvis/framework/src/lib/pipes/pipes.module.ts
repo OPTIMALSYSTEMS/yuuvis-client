@@ -24,7 +24,9 @@ const pipes = [
   ChipPipe,
   SafeUrlPipe
 ];
-
+/**
+ * `PipesModule` contains pipes to transform and format strings, dates, ranges and other display data.
+ */
 @NgModule({
   imports: [CommonModule],
   declarations: [...pipes],

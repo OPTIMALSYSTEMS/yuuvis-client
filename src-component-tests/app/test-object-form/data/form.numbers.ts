@@ -2,7 +2,7 @@ export const numberElements = [
   // integers
   {
     readonly: false,
-    name: 'integer:one',
+    name: 'integer:required',
     label: 'integer No. 1',
     description: 'required integer',
     type: 'integer',
@@ -10,7 +10,7 @@ export const numberElements = [
   },
   {
     readonly: false,
-    name: 'integer:two',
+    name: 'integer:default',
     label: 'integer No. 2',
     description: 'default integer',
     type: 'integer',
@@ -18,7 +18,7 @@ export const numberElements = [
   },
   {
     readonly: true,
-    name: 'integer:three',
+    name: 'integer:readonly',
     label: 'integer readonly',
     description: 'readonly integer',
     type: 'integer',
@@ -36,18 +36,18 @@ export const numberElements = [
   },
   {
     readonly: false,
-    name: 'integer:five',
+    name: 'integer:class:digit',
     label: 'integer digit',
     description: 'integer classification digit',
     type: 'integer',
-    classification: ['digit'],
+    classifications: ['digit'],
     required: false
   },
 
   // decimals
   {
     readonly: false,
-    name: 'decimal:one',
+    name: 'decimal:required',
     label: 'decimal No. 1',
     description: 'required decimal',
     type: 'decimal',
@@ -55,7 +55,7 @@ export const numberElements = [
   },
   {
     readonly: false,
-    name: 'decimal:two',
+    name: 'decimal:default',
     label: 'decimal No. 2',
     description: 'default decimal',
     type: 'decimal',
@@ -63,7 +63,7 @@ export const numberElements = [
   },
   {
     readonly: true,
-    name: 'decimal:three',
+    name: 'decimal:readonly',
     label: 'decimal readonly',
     description: 'readonly decimal',
     type: 'decimal',
@@ -81,11 +81,11 @@ export const numberElements = [
   },
   {
     readonly: false,
-    name: 'decimal:five',
+    name: 'decimal:class:digit',
     label: 'decimal digit',
     description: 'decimal classification digit',
     type: 'decimal',
-    classification: ['digit'],
+    classifications: ['digit'],
     required: false
   },
 ];

@@ -1,0 +1,26 @@
+<div class="yuv-combined-object-form" *ngIf="!!mainFormOptions || extensionForms?.length > 0; else tplNoForms">
+
+
+    <!-- main form -->
+    <yuv-object-form class="main-form" [formOptions]="mainFormOptions"
+        (statusChanged)="onFormStatusChanged('main', $event)">
+    </yuv-object-form>
+
+    <!-- extension forms -->
+    <div class="extensions" *ngIf="extensionForms?.length">
+        <ng-container *ngFor="let form of extensionForms">
+            <div class="form-head">
+                {{form.label}}
+                <yuv-icon icon="clear" class="btn" *ngIf="form.enableEditSOT"
+                    [title]="'yuv.framework.combined-object-form.fsot.remove.tooltip'|translate"
+                    (click)="sotRemove.emit(form.id)"></yuv-icon>
+            </div>
+            <yuv-object-form [formOptions]="form.formOptions" (statusChanged)="onFormStatusChanged(form.id, $event)">
+            </yuv-object-form>
+        </ng-container>
+    </div>
+</div>
+
+<ng-template #tplNoForms>
+    <div class="no-forms" [attr.data-msg]="'yuv.framework.combined-object-form.no-forms'| translate"></div>
+</ng-template>

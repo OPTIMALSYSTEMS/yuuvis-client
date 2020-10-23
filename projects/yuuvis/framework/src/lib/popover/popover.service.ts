@@ -27,6 +27,14 @@ export class PopoverService {
   private useSmallDeviceLayout: boolean;
   private direction: string;
 
+  get hasActiveOverlay() {
+    const container = this.overlay['_overlayContainer']['_containerElement'];
+    return container && container.children.length;
+  }
+  /**
+   *
+   * @ignore
+   */
   constructor(private overlay: Overlay, private userService: UserService, private injector: Injector, private screenService: ScreenService) {
     this.screenService.screenChange$.subscribe((screen: Screen) => {
       this.useSmallDeviceLayout = screen.mode === ScreenService.MODE.SMALL;
@@ -56,6 +64,7 @@ export class PopoverService {
       hasBackdrop: true,
       backdropClass: config.backdropClass,
       panelClass: config.panelClass,
+      disposeOnNavigation: config.disposeOnNavigation || true,
       positionStrategy,
       scrollStrategy: this.overlay.scrollStrategies.reposition(),
       maxHeight: config.maxHeight,

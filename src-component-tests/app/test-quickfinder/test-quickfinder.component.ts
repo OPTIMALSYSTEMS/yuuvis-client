@@ -5,7 +5,8 @@ import { ReferenceEntry } from '@yuuvis/framework';
 @Component({
   selector: 'yuv-test-quickfinder',
   templateUrl: './test-quickfinder.component.html',
-  styleUrls: ['./test-quickfinder.component.scss']
+  styleUrls: ['./test-quickfinder.component.scss'],
+  host: { class: 'yuv-test-container' }
 })
 export class TestQuickfinderComponent implements OnInit {
   selectedObject: DmsObject;

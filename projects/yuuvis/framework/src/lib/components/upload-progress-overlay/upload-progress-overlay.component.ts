@@ -5,6 +5,12 @@ import { Observable, of } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { clear, done } from './../../svg.generated';
+
+/**
+ * Component is responsible for uploading third-party files to the client.
+ * @example
+ *  <yuv-upload-progress-overlay (onClickFunction)="onClick($event)"></yuv-upload-progress-overlay>
+ */
 @Component({
   selector: 'yuv-upload-progress-overlay',
   templateUrl: './upload-progress-overlay.component.html',
@@ -17,14 +23,17 @@ export class UploadProgressOverlayComponent {
   completed: boolean;
   completedUp$: Observable<boolean>;
   @ViewChild('uploadsOverlay') uploadsOverlay: OverlayPanel;
-
-  // besides listening to the upload service you may want to use
-  // the input to provide the component with data (also nice for testing :)
+  /**
+   * listen to the upload service and provide the component with data
+   */
   @Input()
   set progress(ps: ProgressStatus) {
     this.progressStatus$ = ps ? of(ps) : null;
   }
 
+  /**
+   * Emittet when an upload status panel has been opend.
+   */
   @Output() resultItemClick = new EventEmitter<UploadResult>();
 
   constructor(private uploadService: UploadService, private iconRegistry: IconRegistryService) {

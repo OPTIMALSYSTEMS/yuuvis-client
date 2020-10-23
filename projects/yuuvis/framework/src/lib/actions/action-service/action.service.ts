@@ -9,10 +9,17 @@ import { SelectionRange } from '../selection-range.enum';
 export const ACTIONS = new InjectionToken<any[]>('ACTIONS');
 export const CUSTOM_ACTIONS = new InjectionToken<any[]>('CUSTOM_ACTIONS');
 
+/** @ignore
+ * Use ActionService to provide `actions` for an action menu
+ */
+
 @Injectable()
 export class ActionService {
   private allActionComponents: any[] = [];
 
+  /**
+   * @ignore
+   */
   constructor(
     @Inject(ACTIONS) actions: any[] = [],
     @Inject(CUSTOM_ACTIONS) custom_actions: any[] = [],
@@ -24,6 +31,14 @@ export class ActionService {
       .filter((entry) => entry.target && !entry.isSubAction && !entry.disabled);
   }
 
+  /**
+   * Get the list of all available actions
+   *
+   * @param selection - selection of the action for selected object
+   * @param viewContainerRef - Anchor element that specifies the location of this container in the containing view.
+   * Each view container can have only one anchor element, and each anchor element
+   * can have only a single view container.
+   */
   getActionsList(selection: any[], viewContainerRef: ViewContainerRef): Observable<ActionListEntry[]> {
     // todo: find better solution to exclude components for actions that need to be initialized later
     return this.getExecutableActionsListFromGivenActions(this.allActionComponents, selection, viewContainerRef);
@@ -39,7 +54,14 @@ export class ActionService {
     };
     return entry;
   }
-
+  /**
+   * Get the list of executable actions
+   * @param allActionComponents - components, that providing actions
+   * @param selection - selection of the action for selected object
+   * @param viewContainerRef - Anchor element that specifies the location of this container in the containing view.
+   * Each view container can have only one anchor element, and each anchor element
+   * can have only a single view container.
+   */
   getExecutableActionsListFromGivenActions(allActionComponents: any[], selection: any[], viewContainerRef: ViewContainerRef): Observable<ActionListEntry[]> {
     if (selection && selection.length) {
       const allActionsList: ActionListEntry[] = allActionComponents
@@ -75,8 +97,8 @@ export class ActionService {
 
   /**
    * Checks if the action is allowed for single ot multiple selection
-   * @param action
-   * @param itemsCount
+   * @param action It is an action that will be provided
+   * @param itemsCount The count of selected items, for which the user wants to perform some action
    * @returns
    */
   private isRangeAllowed(action, itemsCount) {

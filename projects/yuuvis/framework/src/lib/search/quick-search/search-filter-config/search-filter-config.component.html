@@ -1,0 +1,54 @@
+<header>
+  <label>{{ 'yuv.framework.search.filter.configuration' | translate }}</label>
+  <yuv-icon class="btn" [icon]="'clear'" (click)="onClose()"></yuv-icon>
+</header>
+<section class="main">
+  <as-split>
+    <as-split-area [size]="30">
+      <yuv-grouped-select toggleable="true" [groups]="storedFiltersGroups" [selection]="mainSelection"
+        (select)="onFilterSelect($event)">
+      </yuv-grouped-select>
+    </as-split-area>
+
+    <as-split-area [size]="70">
+      <section class="filter">
+        <section class="configuration">
+          <yuv-search-filter-form [disabled]="isDefault()" [options]="formOptions"
+            [newFilters]="formOptions?.newFilters" (filterChanged)="onFilterChanged($event)"
+            (controlRemoved)="onControlRemoved($event)" (valid)="formValid = $event">
+            <div class="filter-header">
+              <form class="stored-filter">
+                <input #storedFilterInput type="text" [placeholder]="'yuv.framework.search.filter.name' | translate"
+                  [(ngModel)]="selectedFilter.label" [disabled]="isDefault()" [ngModelOptions]="{ standalone: true }"
+                  (change)="onFilterNameChanged($event.target.value)" />
+              </form>
+              <button type="button" class="field-select" #fieldSelectTrigger (click)="showObjectTypeFieldPicker()"
+                *ngIf="availableObjectTypeFields?.length"
+                title="{{ 'yuv.framework.quick-search.field-select.tooltip' | translate }}">
+                <yuv-icon [icon]="'addCircle'"></yuv-icon>
+              </button>
+
+              <ng-template #tplValuePicker let-data let-popover="popover">
+                <yuv-quick-search-picker cdkTrapFocus yuvOfflineDisabled [data]="data"
+                  (cancel)="onPickerCancel(popover)" (select)="onPickerResult(data.type, $event, popover)">
+                </yuv-quick-search-picker>
+              </ng-template>
+            </div>
+          </yuv-search-filter-form>
+
+        </section>
+        <section class="footer buttons">
+          <button *ngIf="!isDefault() && isStored() && !isVisible()" type="button"
+            (click)="onRemove()">{{ 'yuv.framework.search.filter.remove' | translate }}</button>
+          <button *ngIf="isStored()" class="primary" type="button" (click)="onVisibilityChange()">
+            {{ isVisible() ? ('yuv.framework.search.filter.disable' | translate) : ('yuv.framework.search.filter.enable' | translate) }}
+          </button>
+          <button *ngIf="!isDefault()" [disabled]="!formValid || isEmpty()" class="primary" type="button"
+            (click)="onSave()">
+            {{ 'yuv.framework.search.filter.save' | translate }}
+          </button>
+        </section>
+      </section>
+    </as-split-area>
+  </as-split>
+</section>

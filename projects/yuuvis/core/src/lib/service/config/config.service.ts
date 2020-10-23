@@ -2,13 +2,22 @@ import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Utils } from '../../util/utils';
 import { YuvConfig, YuvConfigLanguages } from './config.interface';
-
+/**
+ * Load and provide configuration for hole apllication while application is inizialized.
+ */
 @Injectable({
   providedIn: 'root'
 })
 export class ConfigService {
-  private cfg: YuvConfig = null;
+  static GLOBAL_MAIN_CONFIG = '/user/globalsettings/main-config';
+  static GLOBAL_MAIN_CONFIG_LANG(iso = 'en') {
+    return ConfigService.GLOBAL_MAIN_CONFIG + '-language-' + iso;
+  }
 
+  private cfg: YuvConfig = null;
+  /**
+   * @ignore
+   */
   constructor(private translate: TranslateService) {}
 
   /**
@@ -17,7 +26,7 @@ export class ConfigService {
    */
   set(cfg: YuvConfig) {
     this.cfg = cfg;
-    const languages = this.getClientLocales().map(lang => lang.iso);
+    const languages = this.getClientLocales().map((lang) => lang.iso);
     this.translate.addLangs(languages);
     this.translate.setDefaultLang(this.getDefaultClientLocale());
   }
@@ -43,7 +52,7 @@ export class ConfigService {
    * @returns ISO string of the locale
    */
   getDefaultClientLocale() {
-    const lang = this.getClientLocales().find(_ => _.fallback);
+    const lang = this.getClientLocales().find((_) => _.fallback);
     return lang ? lang.iso : 'en';
   }
 

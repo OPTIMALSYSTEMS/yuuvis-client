@@ -6,6 +6,11 @@ import { YuvUser } from '@yuuvis/core';
  * Component rendering a users avatar. If there is no avatar image availbale, the
  * component will render the initials of the user, but only if we can fetch a first-
  * and lastname. Otherwise there will be a fallback image.
+ *
+ * [Screenshot](../assets/images/yuv-user-avatar.gif)
+ *
+ *
+ *
  */
 @Component({
   selector: 'yuv-user-avatar',

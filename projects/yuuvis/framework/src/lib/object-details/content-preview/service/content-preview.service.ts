@@ -4,6 +4,10 @@ import { ApiBase, DmsObjectContent, UserService, Utils } from '@yuuvis/core';
 import { Observable, ReplaySubject } from 'rxjs';
 import { LayoutService } from '../../../services/layout/layout.service';
 
+/**
+ * @ignore
+ * Providing a content preview for a dms object.
+ */
 @Injectable()
 export class ContentPreviewService {
   static UNDOCK_WINDOW_NAME = 'eoViewer';
@@ -31,6 +35,10 @@ export class ContentPreviewService {
     return !!ContentPreviewService.getUndockWin() && !ContentPreviewService.getUndockWin().closed;
   }
 
+  /**
+   *
+   * @ignore
+   */
   constructor(private location: PlatformLocation, private userService: UserService, private layoutService: LayoutService) {}
 
   private createPath(id: string, version?: number): { root: string; path: string } {
@@ -48,11 +56,11 @@ export class ContentPreviewService {
     return { darkMode, accentColor, direction, lang };
   }
 
-  private createParams(id: string, content: DmsObjectContent, version?: number) {
+  private createParams(objectId: string, content: DmsObjectContent, version?: number) {
     const { mimeType, size, contentStreamId, fileName } = content;
-    const { root, path } = this.createPath(id, version);
+    const { root, path } = this.createPath(objectId, version);
     const fileExtension = fileName.includes('.') ? fileName.split('.').pop() : '';
-    return { mimeType, path, fileExtension, size, contentStreamId, root, ...this.createSettings() };
+    return { mimeType, path, fileExtension, size, contentStreamId, objectId, root, ...this.createSettings() };
   }
 
   createPreviewUrl(id: string, content: DmsObjectContent, version?: number, content2?: DmsObjectContent, version2?: number): void {

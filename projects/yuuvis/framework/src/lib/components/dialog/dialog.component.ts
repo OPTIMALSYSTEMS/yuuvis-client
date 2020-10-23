@@ -6,6 +6,10 @@ import { filter } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { clear } from '../../svg.generated';
+
+/**
+ * @ignore
+ */
 @Component({
   selector: 'yuv-dialog',
   templateUrl: './dialog.component.html',
@@ -18,7 +22,9 @@ export class DialogComponent implements OnDestroy {
   private id = Utils.uuid();
   private parentId = '';
   contentStyle: any = { 'max-height': '100%' };
+
   @Input() title: string;
+
   @Input() subtitle: string;
   @Input() styleClass = '';
 

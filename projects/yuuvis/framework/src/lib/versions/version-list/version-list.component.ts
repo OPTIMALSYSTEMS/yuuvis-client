@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
-import { BaseObjectTypeField, ContentStreamField, DmsObject, DmsService, RetentionField, SecondaryObjectTypeField, TranslateService } from '@yuuvis/core';
+import { BaseObjectTypeField, ClientDefaultsObjectTypeField, ContentStreamField, DmsObject, DmsService, RetentionField, TranslateService } from '@yuuvis/core';
 import { forkJoin, Observable, of } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
@@ -11,6 +11,15 @@ import { arrowNext, edit, listModeDefault, listModeGrid, listModeSimple, refresh
 
 /**
  * Component showing a list of all versions of a dms object.
+ *
+ * [Screenshot](../assets/images/yuv-version-list.gif)
+ *
+ * @example
+ *
+ * <yuv-version-list [objectID]="objectID" [versions]="versions" (editRecentClick)="onEditRecentClick($event)" (selectionChange)="onSelectionChange($event)"
+ * [layoutOptionsKey]="layoutOptionsKey"></yuv-version-list>
+ *
+ *
  */
 @Component({
   selector: 'yuv-version-list',
@@ -139,8 +148,9 @@ export class VersionListComponent implements OnInit {
 
   private getColumnDefinitions(objectTypeId: string) {
     const defs = this.gridService.getColumnDefinitions(objectTypeId).filter((d) => !this.COLUMN_CONFIG_SKIP_FIELDS.includes(d.field));
-    const coreColumnIds = [BaseObjectTypeField.VERSION_NUMBER, SecondaryObjectTypeField.TITLE, SecondaryObjectTypeField.DESCRIPTION];
-    const coreColumns = coreColumnIds.map((f) => defs.find((d) => d.field === f));
+    const coreColumnIds = [BaseObjectTypeField.VERSION_NUMBER, ClientDefaultsObjectTypeField.TITLE, ClientDefaultsObjectTypeField.DESCRIPTION];
+    // fetching column definitions we need to be aware that title and description may not be present
+    const coreColumns = coreColumnIds.map((f) => defs.find((d) => d.field === f)).filter((def) => !!def);
     coreColumns[0].pinned = true;
     return [...coreColumns, ...defs.filter((d) => !coreColumnIds.includes(d.field))];
   }
@@ -171,11 +181,13 @@ export class VersionListComponent implements OnInit {
         this.tableData = {
           columns: this.getColumnDefinitions(objectTypeId),
           rows: sorted.map((a) => a.data),
-          titleField: SecondaryObjectTypeField.TITLE,
-          descriptionField: SecondaryObjectTypeField.DESCRIPTION,
+          titleField: ClientDefaultsObjectTypeField.TITLE,
+          descriptionField: ClientDefaultsObjectTypeField.DESCRIPTION,
           selectType: 'multiple',
           gridOptions: { getRowNodeId: (o) => this.getRowNodeId(o), rowMultiSelectWithClick: false }
         };
+
+        console.log(this.tableData);
       });
     } else {
       this.tableData = null;

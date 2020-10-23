@@ -36,6 +36,10 @@ export class PanelComponent implements OnInit {
   @Input() description = '';
   @Output() titleClick = new EventEmitter();
 
+  pulsingText = {
+    pulsing: false
+  };
+
   @HostBinding('class.titleClickable') _titleClickable: boolean;
 
   constructor(private iconRegistry: IconRegistryService) {
@@ -44,5 +48,9 @@ export class PanelComponent implements OnInit {
 
   ngOnInit() {
     this._titleClickable = !!this.titleClick.observers.length;
+  }
+
+  ngOnChanges() {
+    this.pulsingText.pulsing = true;
   }
 }

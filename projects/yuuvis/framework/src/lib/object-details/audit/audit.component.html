@@ -1,13 +1,11 @@
-<div class="yuv-audit" [ngClass]="{ singleEntry: auditsRes?.items?.length === 1, onPage: auditsRes?.page > 1 }"
-  [yuvBusyOverlay]="busy">
+<div class="yuv-audit" [ngClass]="{ singleEntry: auditsRes?.items?.length === 1, onPage: auditsRes?.page > 1 }" [yuvBusyOverlay]="busy">
   <div class="error" *ngIf="error">
     <div translate>yuv.framework.audit.fetch.error</div>
   </div>
 
   <ng-container *ngIf="auditsRes">
     <!-- query / filter form -->
-    <form yuvOfflineDisabled (ngSubmit)="query()" [formGroup]="searchForm" class="search" *ngIf="searchPanelShow"
-      (yuvOutsideClick)="closeSearchPanel()">
+    <form yuvOfflineDisabled (ngSubmit)="query()" [formGroup]="searchForm" class="search" *ngIf="searchPanelShow" (yuvOutsideClick)="closeSearchPanel()">
       <h3 translate>yuv.framework.audit.search.title</h3>
       <div class="controls">
         <!-- date range -->
@@ -25,21 +23,23 @@
       <div class="buttons">
         <!-- <button type="button" (click)="closeSearchPanel()" translate>yuv.framework.audit.search.button.close</button> -->
         <button type="button" (click)="resetSearchPanel()" translate>yuv.framework.audit.search.button.reset</button>
-        <button class="primary" type="submit" [disabled]="searchForm.invalid"
-          translate>yuv.framework.audit.search.button.submit</button>
+        <button class="primary" type="submit" [disabled]="searchForm.invalid" translate>yuv.framework.audit.search.button.submit</button>
       </div>
     </form>
 
     <!-- search filter -->
     <button class="btn-search" [ngClass]="{ badge: filtered }" (click)="openSearchPanel()">
-      <yuv-icon [icon]="'search'"></yuv-icon>
+      <yuv-icon [icon]="'filter'"></yuv-icon>
     </button>
 
     <!-- list of audits -->
     <div class="audits" *ngIf="auditsRes.items.length; else tplEmpty">
-
-      <div class="audit-entry" *ngFor="let a of auditsRes.items" class="g{{ a.actionGroup }}"
-        [ngClass]="{ versionEnabled: a.actionGroup === 3 || a.actionGroup === 2 }">
+      <div
+        class="audit-entry"
+        *ngFor="let a of auditsRes.items"
+        class="g{{ a.actionGroup }}"
+        [ngClass]="{ versionEnabled: a.actionGroup === 3 || a.actionGroup === 2 }"
+      >
         <div class="created">
           <div class="date">{{ a.creationDate | localeDate: 'eoShortDate' }}</div>
           <div class="time meta">{{ a.creationDate | localeDate: 'eoShortTime' }}</div>
@@ -50,16 +50,13 @@
             <div class="title">
               <span>{{ auditLabels['a' + a.action] }}</span>
 
-              <span *ngIf="!versionLinkTemplate; else versionLink" class="version"
-                title="{{ 'yuv.framework.audit.version' | translate }}">{{a.version}}</span>
+              <span *ngIf="!versionStatePath; else versionLink" class="version" title="{{ 'yuv.framework.audit.version' | translate }}">{{ a.version }}</span>
 
               <ng-template #versionLink>
                 <span class="version">
-                  <ng-container *ngTemplateOutlet="versionLinkTemplate;context:{version: a.version}">
-                  </ng-container>
+                  <a [routerLink]="['/' + versionStatePath, objectID]" [queryParams]="getVersionStateQueryParams(a.version)">{{ a.version }}</a>
                 </span>
               </ng-template>
-
             </div>
             <div class="creator meta">
               {{ a.createdBy.title }}

@@ -1,5 +1,17 @@
+@keyframes transition {
+  from {
+    opacity: 0;
+    // transform: scaleY(0);
+  }
+  to {
+    opacity: 1;
+    // transform: scaleY(1);
+  }
+}
+
 :host {
   display: block;
+  animation: transition 0.2s ease-in-out;
 
   padding: calc(var(--app-pane-padding) / 4) var(--app-pane-padding);
   border-bottom: 1px solid var(--panel-divider-color);
@@ -10,11 +22,11 @@
   }
 
   &.highlight {
-    background-color: var(--item-focus-background-color);
+    // background-color: var(--item-focus-background-color);
     > div {
       .title {
         font-weight: var(--font-weight-bold);
-        text-decoration: underline;
+        // text-decoration: underline;
       }
     }
     &:focus {
@@ -46,6 +58,16 @@
 
       .title {
         margin: calc(var(--app-pane-padding) / 4) 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .count {
+        color: var(--color-accent);
+        font-size: var(--font-hint);
+        margin: 0 calc(var(--app-pane-padding) / 4);
+        font-family: monospace;
       }
 
       .description {
@@ -57,20 +79,20 @@
     }
   }
 
-  &.multiselect {
-    div.selected {
-      ::ng-deep {
-        .ui-chkbox .ui-chkbox-box.ui-state-active {
-          background-color: rgba(255, 255, 255, 0.2);
-          color: var(--text-color-caption);
-          border-color: var(--text-color-caption);
-        }
+  &.selected.multiselect {
+    ::ng-deep {
+      .ui-chkbox .ui-chkbox-box.ui-state-active {
+        background-color: rgba(255, 255, 255, 0.2);
+        color: var(--text-color-caption);
+        border-color: var(--text-color-caption);
       }
     }
   }
-  &:hover {
-    background-color: var(--item-focus-background-color);
+
+  &.selected:not(.multiselect) {
+    background-color: var(--item-selected-background-color);
   }
+  &:hover,
   &:focus {
     background-color: var(--item-focus-background-color);
     outline: 0;

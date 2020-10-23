@@ -3,6 +3,10 @@ import { BackendService, DmsObject, DmsService, EventService, TranslateService, 
 import { NotificationService } from '../../../../services/notification/notification.service';
 import { ActionComponent } from '../../../interfaces/action-component.interface';
 
+/**
+ * @ignore
+ */
+
 @Component({
   selector: 'yuv-delete',
   templateUrl: './delete.component.html',
@@ -14,7 +18,9 @@ export class DeleteComponent implements OnInit, ActionComponent {
   count = '...';
 
   @Input() selection: any[];
+
   @Output() finished: EventEmitter<any> = new EventEmitter<any>();
+
   @Output() canceled: EventEmitter<any> = new EventEmitter<any>();
 
   constructor(
@@ -37,7 +43,7 @@ export class DeleteComponent implements OnInit, ActionComponent {
 
         this.finished.emit();
       },
-      error => {
+      (error) => {
         switch (error.status) {
           case 403:
             this.notificationService.error(this.translate.instant('yuv.framework.action-menu.action.delete.dms.object.error.403'));

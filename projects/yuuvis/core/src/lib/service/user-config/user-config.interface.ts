@@ -1,15 +1,29 @@
+/**
+ * Interface for a column configuration from object type result list
+ */
 export interface ColumnConfig {
   type: string;
   columns: ColumnConfigColumn[];
+  fields?: any;
 }
-
+/**
+ * Interface for a configuration one column
+ */
 export interface ColumnConfigColumn {
-  // column id (matches the ID of an object type field)
+  /**
+   * column id (matches the ID of an object type field)
+   */
   id: string;
-  // the columns label
+  /**
+   * the columns label
+   */
   label: string;
-  // whether or not to sort by this column ascending or descending
+  /**
+   * whether or not to sort by this column ascending or descending
+   */
   sort?: 'asc' | 'desc';
-  // whether or not this column should be pinned
+  /**
+   * whether or not this column should be pinned
+   */
   pinned?: boolean;
 }

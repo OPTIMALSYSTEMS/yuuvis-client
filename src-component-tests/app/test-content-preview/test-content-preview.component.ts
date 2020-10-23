@@ -3,7 +3,8 @@ import { Component, OnInit } from '@angular/core';
 @Component({
   selector: 'yuv-test-content-preview',
   templateUrl: './test-content-preview.component.html',
-  styleUrls: ['./test-content-preview.component.scss']
+  styleUrls: ['./test-content-preview.component.scss'],
+  host: { class: 'yuv-test-container' }
 })
 export class TestContentPreviewComponent implements OnInit {
   private _source: Source = null;

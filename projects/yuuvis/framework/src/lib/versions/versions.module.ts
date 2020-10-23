@@ -7,11 +7,14 @@ import { YuvComponentsModule } from '../components/components.module';
 import { YuvPipesModule } from '../pipes/pipes.module';
 import { VersionListComponent } from './version-list/version-list.component';
 
-const components = [VersionListComponent];
+const versionComponents = [VersionListComponent];
 
+/**
+ * Module is providing a `VersionListComponent`.
+ */
 @NgModule({
-  declarations: [...components],
-  exports: [...components],
+  declarations: [...versionComponents],
+  exports: [...versionComponents],
   imports: [CommonModule, FormsModule, ReactiveFormsModule, YuvComponentsModule, TranslateModule, YuvPipesModule, YuvCommonModule]
 })
 export class YuvVersionsModule {}

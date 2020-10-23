@@ -17,6 +17,17 @@ $avatar-size-small: 80px;
         }
       }
     }
+
+    .setting.cache__setting {
+      .value.buttons {
+        flex-flow: column;
+
+        .cache {
+          margin-left: 0;
+          margin-top: calc(var(--app-pane-padding) / 4);
+        }
+      }
+    }
   }
 }
 
@@ -60,6 +71,12 @@ $avatar-size-small: 80px;
   overflow: hidden;
   justify-content: center;
 
+  .cache {
+    display: flex;
+    flex-flow: row;
+    margin: 0 var(--app-pane-padding);
+  }
+
   .settings {
     width: calc(800px - calc(var(--app-pane-padding) * 2));
     box-sizing: border-box;
@@ -101,6 +118,7 @@ $avatar-size-small: 80px;
         width: $avatar-size;
         height: $avatar-size;
         overflow: hidden;
+        z-index: 2;
       }
       .user {
         position: relative;
@@ -239,6 +257,10 @@ $avatar-size-small: 80px;
                 padding: 0 calc(var(--app-pane-padding) / 2);
               }
             }
+          }
+
+          &:last-child {
+            margin-bottom: calc(var(--app-pane-padding));
           }
         }
       }

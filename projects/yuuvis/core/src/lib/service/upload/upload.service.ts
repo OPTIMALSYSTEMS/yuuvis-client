@@ -4,11 +4,14 @@ import { BehaviorSubject, Observable, ReplaySubject, Subject, throwError } from 
 import { catchError, filter, map, scan, tap } from 'rxjs/operators';
 import { Utils } from '../../util/utils';
 import { Logger } from '../logger/logger';
-import { BaseObjectTypeField, SecondaryObjectTypeField } from '../system/system.enum';
+import { BaseObjectTypeField, ClientDefaultsObjectTypeField } from '../system/system.enum';
 import { CreatedObject, ProgressStatus, UploadResult } from './upload.interface';
 
-const transformResponse = () => map((res: CreatedObject) => (res && res.body ? res.body.objects.map(val => val) : null));
+const transformResponse = () => map((res: CreatedObject) => (res && res.body ? res.body.objects.map((val) => val) : null));
 
+/**
+ * Service for providing upload of different object types into a client.
+ */
 @Injectable({
   providedIn: 'root'
 })
@@ -19,6 +22,9 @@ export class UploadService {
   private uploadStatus = new BehaviorSubject<boolean>(false);
   public uploadStatus$: Observable<boolean> = this.uploadStatus.asObservable();
 
+  /**
+   * @ignore
+   */
   constructor(private http: HttpClient, private logger: Logger) {}
 
   /**
@@ -27,8 +33,8 @@ export class UploadService {
    * @param file The file to be uploaded
    * @param label A label that will show up in the upload overlay dialog while uploading
    */
-  upload(url: string, file: File, label?: string): Observable<any> {
-    return this.executeUpload(url, file, label || file.name);
+  upload(url: string, file: File, label?: string, silent?: boolean): Observable<any> {
+    return this.executeUpload(url, file, label || file.name, silent);
   }
 
   /**
@@ -38,8 +44,8 @@ export class UploadService {
    * @param data Data to be send along with the files
    * @param label A label that will show up in the upload overlay dialog while uploading
    */
-  uploadMultipart(url: string, files: File[], data?: any, label?: string): Observable<any> {
-    return this.executeMultipartUpload(url, files, label || 'Upload', data);
+  uploadMultipart(url: string, files: File[], data?: any, label?: string, silent?: boolean): Observable<any> {
+    return this.executeMultipartUpload(url, files, label || 'Upload', data, silent);
   }
 
   createDocument(url: string, data: any): Observable<any> {
@@ -48,7 +54,7 @@ export class UploadService {
     return this.http.request(request).pipe(
       filter((obj: any) => obj && obj.body),
       transformResponse(),
-      catchError(err => throwError(err))
+      catchError((err) => throwError(err))
     );
   }
 
@@ -58,13 +64,13 @@ export class UploadService {
    */
   cancelItem(id?: string) {
     if (id) {
-      const match = this.status.items.find(i => i.id === id);
+      const match = this.status.items.find((i) => i.id === id);
       if (match) {
         match.subscription.unsubscribe();
-        this.status.items = this.status.items.filter(i => i.id !== id);
+        this.status.items = this.status.items.filter((i) => i.id !== id);
       }
     } else {
-      this.status.items.forEach(element => element.subscription.unsubscribe());
+      this.status.items.forEach((element) => element.subscription.unsubscribe());
       this.status.items = [];
     }
     this.statusSource.next(this.status);
@@ -76,7 +82,7 @@ export class UploadService {
    */
   private createFormData({ file, data }: { data?: any; file?: File[] }): FormData {
     const formData: FormData = new FormData();
-    (file || []).forEach(f => formData.append('files', f, f.name));
+    (file || []).forEach((f) => formData.append('files', f, f.name));
     data ? formData.append('data', new Blob([JSON.stringify(data)], { type: 'application/json' })) : null;
     return formData;
   }
@@ -107,9 +113,9 @@ export class UploadService {
    * @param file The file to be uploaded
    * @param label A label that will show up in the upload overlay dialog while uploading
    */
-  private executeUpload(url: string, file, label: string): Observable<any> {
+  private executeUpload(url: string, file, label: string, silent = false): Observable<any> {
     const request = this.createHttpRequest(url, { file }, true);
-    return this.startUploadWithFile(request, label).pipe(transformResponse());
+    return silent ? this.http.request(request) : this.startUploadWithFile(request, label).pipe(transformResponse());
   }
 
   /**
@@ -119,31 +125,31 @@ export class UploadService {
    * @param label A label that will show up in the upload overlay dialog while uploading
    * @param data Data to be send along with the files
    */
-  private executeMultipartUpload(url: string, file: File[], label: string, data?: any): Observable<any> {
+  private executeMultipartUpload(url: string, file: File[], label: string, data?: any, silent = false): Observable<any> {
     const formData: FormData = this.createFormData({ file, data });
     const request = this.createHttpRequest(url, { formData }, true);
-    return this.startUploadWithFile(request, label).pipe(transformResponse());
+    return silent ? this.http.request(request) : this.startUploadWithFile(request, label).pipe(transformResponse());
   }
 
   private generateResult(result: CreatedObject): UploadResult[] {
     const { objects } = result.body;
     if (objects.length > 1) {
       const data = objects[0];
-      const label = data.properties[SecondaryObjectTypeField.TITLE] ? data.properties[SecondaryObjectTypeField.TITLE].value : '...';
+      const label = data.properties[ClientDefaultsObjectTypeField.TITLE] ? data.properties[ClientDefaultsObjectTypeField.TITLE].value : '...';
       return [
         {
-          objectId: objects.map(val => val.properties[BaseObjectTypeField.OBJECT_ID].value),
+          objectId: objects.map((val) => val.properties[BaseObjectTypeField.OBJECT_ID].value),
           contentStreamId: data.contentStreams[0]['contentStreamId'],
           filename: data.contentStreams[0]['fileName'],
           label: `(${objects.length}) ${label}`
         }
       ];
     } else {
-      return result.body.objects.map(o => ({
+      return result.body.objects.map((o) => ({
         objectId: o.properties[BaseObjectTypeField.OBJECT_ID].value,
         contentStreamId: o.contentStreams[0]['contentStreamId'],
         filename: o.contentStreams[0]['fileName'],
-        label: o.properties[SecondaryObjectTypeField.TITLE] ? o.properties[SecondaryObjectTypeField.TITLE].value : o.contentStreams[0]['fileName']
+        label: o.properties[ClientDefaultsObjectTypeField.TITLE] ? o.properties[ClientDefaultsObjectTypeField.TITLE].value : o.contentStreams[0]['fileName']
       }));
     }
   }
@@ -156,7 +162,7 @@ export class UploadService {
       progress.complete();
       // add upload response
       // this.status.items = this.status.items.filter(s => s.id !== id);
-      const idx = this.status.items.findIndex(s => s.id === id);
+      const idx = this.status.items.findIndex((s) => s.id === id);
       if (idx !== -1) {
         this.status.items[idx].result = this.generateResult(event);
         this.statusSource.next(this.status);
@@ -165,7 +171,7 @@ export class UploadService {
   }
 
   private createUploadError(err: HttpErrorResponse, progress: Subject<number>, id: string): Observable<HttpErrorResponse> {
-    const statusItem = this.status.items.find(s => s.id === id);
+    const statusItem = this.status.items.find((s) => s.id === id);
     statusItem.err = {
       code: err.status,
       message: err.error ? err.error.errorMessage : err.message
@@ -182,7 +188,7 @@ export class UploadService {
    * @param label A label that will show up in the upload overlay dialog while uploading
    */
   private startUploadWithFile(request: any, label: string): Observable<CreatedObject> {
-    return new Observable(o => {
+    return new Observable((o) => {
       const id = Utils.uuid();
       const progress = new Subject<number>();
       let result;
@@ -193,12 +199,12 @@ export class UploadService {
         .request(request)
         .pipe(
           catchError((err: HttpErrorResponse) => this.createUploadError(err, progress, id)),
-          tap(event => this.createProgressStatus(event, progress, id))
+          tap((event) => this.createProgressStatus(event, progress, id))
         )
         // actual return value of this function
         .subscribe(
           (res: any) => (res.status ? (result = res) : null),
-          err => {
+          (err) => {
             o.error(err);
             this.uploadStatus.next(true);
             o.complete();

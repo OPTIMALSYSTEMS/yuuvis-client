@@ -5,7 +5,9 @@ import { SearchFilter, SearchQuery } from '../search/search-query.model';
 import { SearchService } from '../search/search.service';
 import { AuditField, SystemType } from '../system/system.enum';
 import { AuditQueryOptions, AuditQueryResult } from './audit.interface';
-
+/**
+ * Service for providing an audit component, that shows the history of a dms object by listing its audit entries.
+ */
 @Injectable({
   providedIn: 'root'
 })
@@ -13,8 +15,14 @@ export class AuditService {
   // default number of items to be fetched
   private DEFAULT_RES_SIZE = 50;
 
+  /**
+   * @ignore
+   */
   constructor(private searchService: SearchService) {}
 
+  /**
+   * Get audit entries of a dms object
+   */
   getAuditEntries(id: string, options?: AuditQueryOptions): Observable<AuditQueryResult> {
     const q = new SearchQuery();
     q.size = this.DEFAULT_RES_SIZE;
@@ -46,7 +54,13 @@ export class AuditService {
       //   q.addFilter(new SearchFilter(AuditField.CREATED_BY, SearchFilter.OPERATOR.EQUAL, options.createdBy));
       // }
       if (options.actions && options.actions.length) {
-        q.addFilter(new SearchFilter(AuditField.ACTION, SearchFilter.OPERATOR.IN, options.actions));
+        q.addFilter(
+          new SearchFilter(
+            AuditField.ACTION,
+            SearchFilter.OPERATOR.IN,
+            options.actions.map((a) => a.toString())
+          )
+        );
       }
     }
     return this.fetchAudits(q);
@@ -65,9 +79,9 @@ export class AuditService {
 
   private fetchAudits(q: SearchQuery): Observable<AuditQueryResult> {
     return this.searchService.searchRaw(q).pipe(
-      map(res => ({
+      map((res) => ({
         query: q,
-        items: res.objects.map(o => ({
+        items: res.objects.map((o) => ({
           action: o.properties[AuditField.ACTION].value,
           actionGroup: this.getActionGroup(o.properties[AuditField.ACTION].value),
           detail: o.properties[AuditField.DETAIL].value,

@@ -26,6 +26,9 @@ export class AuthService {
 
   private authData: AuthData;
 
+  /**
+   * @ignore
+   */
   constructor(
     @Inject(CORE_CONFIG) public coreConfig: CoreConfig,
     private eventService: EventService,
@@ -36,14 +39,19 @@ export class AuthService {
     private appCache: AppCacheService
   ) {}
 
-  // called on core init
+  /**
+   * called on core init
+   */
+
   init(): Observable<any> {
-    // load authentication related properties stored from previous sessions
+    /**
+     * load authentication related properties stored from previous sessions
+     */
     return this.appCache.getItem(this.STORAGE_KEY).pipe(
       tap((data: AuthData) => {
         this.authData = data;
         if (data && data.language) {
-          this.translate.use(data.language ? data.language : 'en');
+          this.translate.use(data.language ? data.language : this.userService.getDefaultUserLanguages()?.iso);
           this.backend.setHeader('Accept-Language', data.language);
         }
         if (data && data.tenant) {
@@ -121,7 +129,13 @@ export class AuthService {
   }
 }
 
-interface AuthData {
+/**
+ * Authentication Data
+ */
+export interface AuthData {
+  /**
+   * tenant name
+   */
   tenant: string;
   language: string;
 }

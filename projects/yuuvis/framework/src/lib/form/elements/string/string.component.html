@@ -1,8 +1,8 @@
-<input *ngIf="!multiline && !multiselect" type="text" pInputText (blur)="onBlur()" [readonly]="readonly"
+<input *ngIf="(!rows || rows <= 1) && !multiselect" type="text" pInputText (blur)="onBlur()" [readonly]="readonly"
   [(ngModel)]="value" (ngModelChange)="onValueChange($event)" />
 
 <!-- single line input with multiselect-->
-<p-chips *ngIf="!multiline && multiselect" [addOnTab]="true" [(ngModel)]="value" [disabled]="readonly"
+<p-chips *ngIf="(!rows || rows <= 1) && multiselect" [addOnTab]="true" [(ngModel)]="value" [disabled]="readonly"
   [max]="maxEntryCountIfInvalid" (onBlur)="onBlur()" [addOnBlur]="true" (ngModelChange)="onValueChange($event)"
   [ngClass]="{ invalid: validationErrors.length}">
 
@@ -21,8 +21,8 @@
 </p-chips>
 
 <!-- multi line text inputs -->
-<textarea class="input-textarea size-{{ size }}" pInputTextarea *ngIf="multiline" (blur)="onBlur()" [(ngModel)]="value"
-  [readonly]="readonly" (ngModelChange)="onValueChange($event)"></textarea>
+<textarea class="input-textarea" pInputTextarea *ngIf="rows && rows > 1" (blur)="onBlur()" [(ngModel)]="value"
+  [rows]="rows" [readonly]="readonly" (ngModelChange)="onValueChange($event)"></textarea>
 
 <div *ngIf="classify" class="classify">
   <a href="{{classify.hrefPrefix + formatedValue}}"

@@ -7,7 +7,7 @@ import { debounceTime } from 'rxjs/operators';
 import { UnsubscribeOnDestroy } from '../../common/util/unsubscribe.component';
 import { ObjectFormScriptService } from '../object-form-script/object-form-script.service';
 import { ObjectFormScriptingScope } from '../object-form-script/object-form-scripting-scope';
-import { FormStatusChangedEvent, ObjectFormControlWrapper, ObjectFormOptions } from '../object-form.interface';
+import { FormStatusChangedEvent, IObjectForm, ObjectFormControlWrapper, ObjectFormOptions } from '../object-form.interface';
 import { ObjectFormControl, ObjectFormGroup } from '../object-form.model';
 import { ObjectFormService } from '../object-form.service';
 import { ObjectFormUtils } from '../object-form.utils';
@@ -22,6 +22,8 @@ import { Situation } from './../object-form.situation';
  * the their situation. It also has the ability to run form scripts that interact
  * with the form elements based on events triggered when values change.
  *
+ *  [Screenshot](../assets/images/yuv-object-form.gif)
+ *
  * @example
  * <yuv-object-form [formOptions]="options" (statusChanged)="check($event)"></yuv-object-form>
  */
@@ -31,7 +33,7 @@ import { Situation } from './../object-form.situation';
   providers: [ObjectFormService, ObjectFormScriptService],
   styleUrls: ['./object-form.component.scss']
 })
-export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestroy, AfterViewInit {
+export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestroy, AfterViewInit, IObjectForm {
   /**
    * There are special scenarios where forms are within a form themselves.
    * Setting this property to true, will handle the current form in a
@@ -49,9 +51,14 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
     this.init();
   }
 
-  // triggered when the forms state has been changed
+  /**
+   * triggered when the forms state has been changed
+   */
   @Output() statusChanged = new EventEmitter<FormStatusChangedEvent>();
-  // handler to be executed after the form has been set up
+
+  /**
+   * handler to be executed after the form has been set up
+   */
   @Output() onFormReady = new EventEmitter();
 
   // counter for naming the forms groups
@@ -140,7 +147,7 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
   /**
    * Extracts the values from the form model. Each form value is represented by one
    * property on the result object holding the fields value. The keys (properties) are the `name`
-   * properties of the form element (in SEARCH situation the `qname` field is used).
+   * properties of the form element.
    *
    * How values are extracted is influenced by the forms situation.
    *
@@ -410,11 +417,12 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
 
       ctrl = new ObjectFormGroup({});
       ctrl._eoFormGroup = {
-        label: formElement.label,
-        //layoutgroup: formElement.layoutgroup,
         layout: formElement.layout,
         type: formElement.type
       };
+      if (formElement.name) {
+        ctrl._eoFormGroup.label = this.systemService.getLocalizedResource(`${formElement.name}_label`) || formElement.name;
+      }
 
       if (useName === 'core' || useName === 'data') {
         ctrl._eoFormGroup.label = useName;
@@ -456,6 +464,7 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
         disabled: controlDisabled
       });
 
+      formElement.label = formElement.name ? this.systemService.getLocalizedResource(`${formElement.name}_label`) || formElement.name : '???';
       formElement.readonly = controlDisabled;
       // we are using an internal type to distinguish between the components
       // to be used to render certain form elements

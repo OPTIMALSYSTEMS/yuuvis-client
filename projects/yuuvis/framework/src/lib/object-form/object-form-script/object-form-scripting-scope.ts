@@ -75,7 +75,9 @@ export class ObjectFormScriptingScope {
     }
   }
 }
-
+/**
+ * @ignore
+ */
 class ScopeElement {
   constructor(private element: any, private onScriptingModelChange: Function) {
     if (this.element.value === undefined) {
@@ -259,8 +261,8 @@ class ScopeElement {
     return this.element.maxLength;
   }
 
-  get classification() {
-    return this.element.classification;
+  get classifications() {
+    return this.element.classifications;
   }
 
   get scale() {

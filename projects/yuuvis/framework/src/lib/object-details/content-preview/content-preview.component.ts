@@ -11,6 +11,8 @@ import { ContentPreviewService } from './service/content-preview.service';
 /**
  * Component rendering a content preview for a dms object.
  *
+ * [Screenshot](../assets/images/yuv-content-preview.gif)
+ *
  * @example
  * <yuv-content-preview [dmsObject]="dmsObject"></yuv-content-preview>
  */
@@ -23,6 +25,7 @@ import { ContentPreviewService } from './service/content-preview.service';
 export class ContentPreviewComponent implements OnInit, OnDestroy, AfterViewInit {
   private _dmsObject: DmsObject;
   isUndocked: boolean;
+  loading = true;
 
   get undockWin(): Window {
     return ContentPreviewService.getUndockWin();
@@ -38,13 +41,8 @@ export class ContentPreviewComponent implements OnInit, OnDestroy, AfterViewInit
     // generate preview URI with streamID to enable refresh if file was changed
     !object || !object.content || !object.content.size
       ? this.contentPreviewService.resetSource()
-      : this.contentPreviewService.createPreviewUrl(
-          object.id,
-          object.content,
-          object.version,
-          this.dmsObject2 && this.dmsObject2.content,
-          this.dmsObject2 && this.dmsObject2.version
-        );
+      : this.contentPreviewService.createPreviewUrl(object.id, object.content, object.version, this.dmsObject2?.content, this.dmsObject2?.version);
+    this.loading = !object.content || this.dmsObject ? false : true;
     this._dmsObject = object;
   }
 
@@ -167,9 +165,12 @@ export class ContentPreviewComponent implements OnInit, OnDestroy, AfterViewInit
     if (iframe) {
       fromEvent(iframe, 'load')
         .pipe(takeUntilDestroy(this))
-        .subscribe((res) => {
-          setTimeout(() => this.searchPDF(this.searchTerm, iframe), 100);
-        });
+        .subscribe((res) =>
+          setTimeout(() => {
+            this.loading = false;
+            this.searchPDF(this.searchTerm, iframe);
+          }, 100)
+        );
     }
   }
 

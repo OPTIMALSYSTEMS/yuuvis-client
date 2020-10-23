@@ -7,8 +7,17 @@ import { PopoverConfig } from '../../popover/popover.interface';
 import { PopoverRef } from '../../popover/popover.ref';
 import { PopoverService } from '../../popover/popover.service';
 import { kebap, refresh, search } from '../../svg.generated';
-import { SearchResultComponent } from '../search-result/search-result.component';
-
+import { FilterPanelConfig, SearchResultComponent } from '../search-result/search-result.component';
+/**
+ * This component wraps a `SearchResultComponent`.
+ *
+ * [Screenshot](../assets/images/yuv-search-result-panel.gif)
+ *
+ * @example
+ *  <yuv-search-result-panel [query]="query" [selectItems]="selectedItems"
+ * (queryChanged)="onQueryChange($event)" [showFilterPanel]="showFilterPanel" [layoutOptionsKey]="layoutOptionsKey" (itemsSelected)="select($event)"
+ * (filterPanelToggled)="onFilterPanelToggled($event)" (rowDoubleClicked)="onRowDoubleClicked($event)"></yuv-search-result-panel>
+ */
 @Component({
   selector: 'yuv-search-result-panel',
   templateUrl: './search-result-panel.component.html',
@@ -32,12 +41,7 @@ export class SearchResultPanelComponent {
    */
   @Input() set query(searchQuery: SearchQuery) {
     this._searchQuery = searchQuery;
-    const type = (searchQuery && searchQuery.targetType) || this.systemService.getBaseType();
-    this.columnConfigInput = { type, sortOptions: searchQuery && searchQuery.sortOptions };
-
-    if (searchQuery) {
-      this.generateQueryDescription();
-    }
+    this.onQueryChangedFromWithin(searchQuery, false);
   }
   /**
    * List of result list item IDs supposed to be selected upfront.
@@ -50,6 +54,8 @@ export class SearchResultPanelComponent {
    * will be used to store component specific settings using the layout service.
    */
   @Input() layoutOptionsKey: string;
+  @Input() filterPanelConfig: FilterPanelConfig;
+  @Input() disableFilterPanel: boolean;
 
   /**
    * Emitted when column sizes of the contained result list table have been changed.
@@ -71,6 +77,10 @@ export class SearchResultPanelComponent {
    * Emitted when the query has been changed and a new descriptor has been set
    */
   @Output() queryDescriptionChange = new EventEmitter<string>();
+  /**
+   * Emitted when the visibility or width of the filter panel changes
+   */
+  @Output() filterPanelConfigChanged = new EventEmitter<FilterPanelConfig>();
 
   constructor(
     @Attribute('applyColumnConfig') public applyColumnConfig: boolean,
@@ -94,28 +104,39 @@ export class SearchResultPanelComponent {
     this.preSelectItems = itemIDs;
   }
 
-  generateQueryDescription() {
-    const translateParams = {
-      term: this._searchQuery.term || '',
-      types: this._searchQuery.types.length ? this._searchQuery.types.map((t) => this.systemService.getLocalizedResource(`${t}_label`)).join(', ') : null
-    };
-    if (translateParams.term && !translateParams.types) {
-      this.queryDescription = this.translate.instant('yuv.framework.search-result-panel.header.description', translateParams);
-    } else if (translateParams.types) {
-      this.queryDescription = this.translate.instant('yuv.framework.search-result-panel.header.description.types', translateParams);
-    } else {
-      this.queryDescription = '';
+  generateQueryDescription(searchQuery: SearchQuery) {
+    let description = '';
+    if (searchQuery) {
+      const translateParams = {
+        term: this._searchQuery.term || '',
+        types: this._searchQuery.types.length ? this._searchQuery.types.map((t) => this.systemService.getLocalizedResource(`${t}_label`)).join(', ') : null
+      };
+      if (translateParams.term && !translateParams.types) {
+        description = this.translate.instant('yuv.framework.search-result-panel.header.description', translateParams);
+      } else if (translateParams.types) {
+        description = this.translate.instant('yuv.framework.search-result-panel.header.description.types', translateParams);
+      }
     }
-    this.queryDescriptionChange.emit(this.queryDescription);
+    if (description !== this.queryDescription) {
+      this.queryDescription = description;
+      this.queryDescriptionChange.emit(this.queryDescription);
+    }
   }
 
   onViewModeChanged(mode: ViewMode) {
     this.viewMode = mode;
   }
 
-  onQueryChangedFromWithin(searchQuery: SearchQuery) {
-    this.columnConfigInput.sortOptions = searchQuery && searchQuery.sortOptions;
-    this.queryChanged.emit(searchQuery);
+  onQueryChangedFromWithin(searchQuery: SearchQuery, emit = true) {
+    this.updateColumnConfig(searchQuery);
+    this.generateQueryDescription(searchQuery);
+    return emit && this.queryChanged.emit(searchQuery);
+  }
+
+  onFilterPanelConfigChanged(cfg: FilterPanelConfig) {
+    if (this.filterPanelConfigChanged) {
+      this.filterPanelConfigChanged.emit(cfg);
+    }
   }
 
   // onSearchResultOptionsChanged(options: ResponsiveDataTableOptions) {
@@ -134,6 +155,11 @@ export class SearchResultPanelComponent {
     }
   }
 
+  updateColumnConfig(searchQuery: SearchQuery) {
+    const type = (searchQuery && searchQuery.targetType) || this.systemService.getBaseType();
+    this.columnConfigInput = { type, sortOptions: searchQuery && searchQuery.sortOptions };
+  }
+
   showColumnConfigEditor() {
     const popoverConfig: PopoverConfig = {
       width: '55%',
@@ -145,9 +171,12 @@ export class SearchResultPanelComponent {
 
   columnConfigChanged(columnConfig: ColumnConfig, popoverRef?: PopoverRef) {
     this.refresh(true);
-
     if (popoverRef) {
       popoverRef.close();
     }
+  }
+
+  columnConfigCanceled(popoverRef: PopoverRef) {
+    popoverRef.close();
   }
 }

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { LocalStorage, StorageMap } from '@ngx-pwa/local-storage';
-import { forkJoin, Observable } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
+import { forkJoin, Observable, of } from 'rxjs';
+import { first, map, switchMap } from 'rxjs/operators';
 import { Utils } from '../../util/utils';
 
 /**
@@ -13,6 +13,9 @@ import { Utils } from '../../util/utils';
   providedIn: 'root'
 })
 export class AppCacheService {
+  /**
+   * @ignore
+   */
   constructor(private storage: LocalStorage, private storageMap: StorageMap) {}
 
   setItem(key: string, value: any): Observable<boolean> {
@@ -27,31 +30,44 @@ export class AppCacheService {
     return this.storage.removeItem(key);
   }
 
-  clear(): Observable<boolean> {
-    return this.storage.clear();
+  public clear(filter?: (key) => boolean): Observable<boolean> {
+    return filter
+      ? this.getStorageKeys().pipe(
+          switchMap((keys) => {
+            const list = keys.filter((k) => filter(k)).map((k) => this.removeItem(k));
+            return list.length ? forkJoin(list).pipe(map(() => true)) : of(true);
+          })
+        )
+      : this.storage.clear();
+  }
+
+  getStorageKeys(): Observable<any> {
+    return new Observable<string[]>((observer) => {
+      const keys = [];
+      this.storageMap.keys().subscribe({
+        next: (key) => keys.push(key),
+        complete: () => observer.next(keys)
+      });
+    }).pipe(first());
   }
 
   getStorage(): Observable<any> {
-    return new Observable<string[]>(observer => {
-      const keys = [];
-      this.storageMap.keys().subscribe({
-        next: key => keys.push(key),
-        complete: () => observer.next(keys)
-      });
-    }).pipe(
-      switchMap(keys =>
-        forkJoin(
-          Utils.arrayToObject(
-            keys,
-            o => o,
-            k => this.getItem(k)
-          )
-        )
+    return this.getStorageKeys().pipe(
+      switchMap((keys) =>
+        keys.length
+          ? forkJoin(
+              Utils.arrayToObject(
+                keys,
+                (o) => o,
+                (k) => this.getItem(k)
+              )
+            )
+          : of({})
       )
     );
   }
 
   setStorage(options: any): Observable<any> {
-    return forkJoin(Object.keys(options || {}).map(k => this.setItem(k, options[k])));
+    return forkJoin(Object.keys(options || {}).map((k) => this.setItem(k, options[k])));
   }
 }

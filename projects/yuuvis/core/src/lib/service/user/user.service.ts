@@ -1,17 +1,19 @@
 import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
+import { BehaviorSubject, Observable, of } from 'rxjs';
+import { map, switchMap, tap } from 'rxjs/operators';
 import { UserSettings, YuvUser } from '../../model/yuv-user.model';
 import { BackendService } from '../backend/backend.service';
-import { Direction } from '../config/config.interface';
+import { Direction, YuvConfigLanguages } from '../config/config.interface';
 import { ConfigService } from '../config/config.service';
 import { EventService } from '../event/event.service';
 import { YuvEventType } from '../event/events';
 import { Logger } from '../logger/logger';
 import { AdministrationRoles } from '../system/system.enum';
 import { SystemService } from '../system/system.service';
-
+/**
+ * Service providing user account configurations.
+ */
 @Injectable({
   providedIn: 'root'
 })
@@ -21,6 +23,10 @@ export class UserService {
   private userSource = new BehaviorSubject<YuvUser>(this.user);
   user$: Observable<YuvUser> = this.userSource.asObservable();
 
+  globalSettings = new Map();
+  /**
+   * @ignore
+   */
   constructor(
     private backend: BackendService,
     private translate: TranslateService,
@@ -61,6 +67,10 @@ export class UserService {
     return this.user;
   }
 
+  getDefaultUserLanguages(): YuvConfigLanguages {
+    return this.config.get('languages')?.filter((lang: YuvConfigLanguages) => lang.fallback)[0];
+  }
+
   get hasAdminRole(): boolean {
     return new RegExp(AdministrationRoles.ADMIN).test(this.user?.authorities.join(','));
   }
@@ -71,6 +81,10 @@ export class UserService {
 
   get hasAdministrationRoles(): boolean {
     return this.hasAdminRole || this.hasSystemRole;
+  }
+
+  get hasManageSettingsRole(): boolean {
+    return new RegExp(AdministrationRoles.MANAGE_SETTINGS).test(this.user?.authorities.join(','));
   }
 
   /**
@@ -91,12 +105,10 @@ export class UserService {
             this.user.uiDirection = this.getUiDirection(iso);
             this.userSource.next(this.user);
             this.logger.debug('Loading system definitions i18n resources for new locale.');
-            return this.system.updateLocalizations();
+            return this.system.updateLocalizations(iso);
           })
         )
-        .subscribe(() => {
-          this.eventService.trigger(YuvEventType.CLIENT_LOCALE_CHANGED, iso);
-        });
+        .subscribe(() => this.eventService.trigger(YuvEventType.CLIENT_LOCALE_CHANGED, iso));
     }
   }
 
@@ -124,7 +136,26 @@ export class UserService {
     return this.backend.get(`/user/${id}/info`).pipe(map((user) => new YuvUser(user, this.user.userSettings)));
   }
 
-  logout(): void {
-    (window as any).location.href = '/logout';
+  logout(redirRoute?: string): void {
+    const redir = redirRoute ? `?redir=${redirRoute}` : '';
+    (window as any).location.href = `/logout${redir}`;
+  }
+
+  getSettings(section: string): Observable<any> {
+    return this.backend.get('/user/settings/' + section);
+  }
+
+  saveSettings(section: string, data: any): Observable<any> {
+    return this.backend.post('/user/settings/' + section, data);
+  }
+
+  getGlobalSettings(section: string): Observable<any> {
+    const setting = this.globalSettings.get(section);
+    return setting ? of(setting) : this.backend.get('/user/globalsettings/' + section).pipe(tap((data) => this.globalSettings.set(section, data)));
+  }
+
+  saveGlobalSettings(section: string, data: any): Observable<any> {
+    this.globalSettings.set(section, data);
+    return this.backend.post('/user/globalsettings/' + section, data);
   }
 }

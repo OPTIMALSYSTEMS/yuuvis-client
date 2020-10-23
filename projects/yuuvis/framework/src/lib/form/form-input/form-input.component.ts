@@ -93,7 +93,7 @@ export class FormInputComponent {
   constructor(private renderer: Renderer2) {}
 
   toggle() {
-    if (!this.skipToggle) {
+    if (!this.skipToggle && !this.isDisabled) {
       this.toggled = !this.toggled;
       this.onToggleLabel.emit(this.toggled);
     }

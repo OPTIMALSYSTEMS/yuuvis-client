@@ -3,6 +3,7 @@ import { Attribute, Component, EventEmitter, Input, OnDestroy, Output, ViewChild
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import {
   BaseObjectTypeField,
+  ClientDefaultsObjectTypeField,
   ColumnConfig,
   ColumnConfigColumn,
   DmsObject,
@@ -11,7 +12,6 @@ import {
   SearchResult,
   SearchResultItem,
   SearchService,
-  SecondaryObjectTypeField,
   SortOption,
   UserConfigService,
   YuvEvent,
@@ -24,7 +24,12 @@ import { IconRegistryService } from '../../common/components/icon/service/iconRe
 import { ResponsiveDataTableComponent, ViewMode } from '../../components/responsive-data-table/responsive-data-table.component';
 import { ResponsiveTableData } from '../../components/responsive-data-table/responsive-data-table.interface';
 import { GridService } from '../../services/grid/grid.service';
-import { arrowLast, arrowNext, clear, listModeDefault, listModeGrid, listModeSimple, search, settings } from '../../svg.generated';
+import { arrowLast, arrowNext, clear, doubleArrow, filter, listModeDefault, listModeGrid, listModeSimple, search, settings } from '../../svg.generated';
+
+export interface FilterPanelConfig {
+  open: boolean;
+  width: number;
+}
 
 /**
  * Component rendering a search result within a result list.
@@ -41,13 +46,53 @@ import { arrowLast, arrowNext, clear, listModeDefault, listModeGrid, listModeSim
   host: { class: 'yuv-search-result' }
 })
 export class SearchResultComponent implements OnDestroy {
+  // default and minimal size of the filter panel in pixel
+  filterPanelSize = {
+    default: 250,
+    min: 200
+  };
+
+  private _originalQuery: SearchQuery;
   private _searchQuery: SearchQuery;
   private _columns: ColDef[];
   private _rows: any[];
   private _hasPages = false;
   private _itemsSupposedToBeSelected: string[];
+  // private _showFilterPanel: boolean;
+  private _filterPanelConfig: FilterPanelConfig = {
+    open: false,
+    width: this.filterPanelSize.default
+  };
   pagingForm: FormGroup;
   busy: boolean;
+
+  @Input() set filterPanelConfig(cfg: FilterPanelConfig) {
+    if (this._filterPanelConfig?.open !== cfg?.open || this._filterPanelConfig.width !== cfg?.width) {
+      this._filterPanelConfig = cfg || {
+        open: false,
+        width: this.filterPanelSize.default
+      };
+      this.filterPanelConfigChanged.emit(cfg);
+    }
+  }
+
+  get filterPanelConfig() {
+    return this._filterPanelConfig;
+  }
+
+  // /**
+  //  * Whether or not to expand the filter panel
+  //  */
+  // @Input() set showFilterPanel(b: boolean) {
+  //   if (this._showFilterPanel !== b) {
+  //     this._showFilterPanel = b;
+  //     this.filterPanelToggled.emit(b);
+  //   }
+  // }
+
+  // get showFilterPanel(): boolean {
+  //   return this._showFilterPanel;
+  // }
 
   tableData: ResponsiveTableData;
   // object type shown in the result list, will be null for mixed results
@@ -59,8 +104,6 @@ export class SearchResultComponent implements OnDestroy {
     page: number;
   };
 
-  // @Input() options: ResponsiveDataTableOptions;
-
   @ViewChild('dataTable') dataTable: ResponsiveDataTableComponent;
 
   /**
@@ -69,11 +112,18 @@ export class SearchResultComponent implements OnDestroy {
    * will be used to store component specific settings using the layout service.
    */
   @Input() layoutOptionsKey: string;
+
+  @Input() disableFilterPanel: boolean;
   /**
    * Query to be executed by the component.
    */
   @Input() set query(searchQuery: SearchQuery) {
-    this._searchQuery = searchQuery;
+    if (this.dataTable?.gridOptions?.api.getSelectedNodes().length) {
+      this.itemsSelected.emit([]);
+    }
+
+    this._originalQuery = searchQuery && new SearchQuery(searchQuery.toQueryJson());
+    this._searchQuery = searchQuery && new SearchQuery(searchQuery.toQueryJson());
     if (searchQuery) {
       this.executeQuery(this.applyColumnConfig);
     } else {
@@ -112,6 +162,10 @@ export class SearchResultComponent implements OnDestroy {
    * emitted when the view mode of the underlying data table changes
    */
   @Output() viewModeChanged = new EventEmitter<ViewMode>();
+  /**
+   * Emitted when the visibility or width of the filter panel changes
+   */
+  @Output() filterPanelConfigChanged = new EventEmitter<FilterPanelConfig>();
 
   set hasPages(count) {
     this._hasPages = count;
@@ -143,7 +197,7 @@ export class SearchResultComponent implements OnDestroy {
     private fb: FormBuilder,
     private iconRegistry: IconRegistryService
   ) {
-    this.iconRegistry.registerIcons([settings, clear, search, arrowNext, arrowLast, listModeDefault, listModeGrid, listModeSimple]);
+    this.iconRegistry.registerIcons([doubleArrow, filter, settings, clear, search, arrowNext, arrowLast, listModeDefault, listModeGrid, listModeSimple]);
 
     this.pagingForm = this.fb.group({
       page: ['']
@@ -164,11 +218,28 @@ export class SearchResultComponent implements OnDestroy {
       .on(YuvEventType.DMS_OBJECT_DELETED)
       .pipe(takeUntilDestroy(this))
       .subscribe((event) => {
-        const deleted = this.dataTable.deleteRow(event.data.id);
-        if (deleted) {
-          this.totalNumItems--;
+        if (this.dataTable) {
+          const deleted = this.dataTable.deleteRow(event.data.id);
+          if (deleted) {
+            this.totalNumItems--;
+          }
         }
       });
+  }
+
+  setFilterPanelVisibility(v: boolean) {
+    if (this._filterPanelConfig?.open !== v) {
+      this._filterPanelConfig.open = v;
+      this.filterPanelConfigChanged.emit(this._filterPanelConfig);
+    }
+  }
+
+  gutterDragEnd(evt: any) {
+    console.log(evt);
+    if (this._filterPanelConfig.width !== evt.sizes[0]) {
+      this._filterPanelConfig.width = evt.sizes[0];
+      this.filterPanelConfigChanged.emit(this._filterPanelConfig);
+    }
   }
 
   /**
@@ -202,10 +273,24 @@ export class SearchResultComponent implements OnDestroy {
           });
       }),
       map((cc: ColumnConfig) => cc.columns.map((column: ColumnConfigColumn) => column.id)),
-      tap((fields: string[]) => (q.fields = [BaseObjectTypeField.OBJECT_ID, BaseObjectTypeField.OBJECT_TYPE_ID, ...fields])),
+      tap(
+        (fields: string[]) =>
+          (q.fields = [
+            // required for SingleCellRendering allthough the object may not have those fields
+            ClientDefaultsObjectTypeField.TITLE,
+            ClientDefaultsObjectTypeField.DESCRIPTION,
+            // stuff that's always needed
+            BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS,
+            BaseObjectTypeField.OBJECT_ID,
+            BaseObjectTypeField.OBJECT_TYPE_ID,
+            ...fields
+          ])
+      ),
       switchMap(() => of(q))
     );
   }
+
+  FilterPanel() {}
 
   // Create actual table data from the search result
   private createTableData(searchResult: SearchResult, pageNumber = 1): void {
@@ -242,8 +327,8 @@ export class SearchResultComponent implements OnDestroy {
       this.tableData = {
         columns: this._columns,
         rows: this._rows,
-        titleField: SecondaryObjectTypeField.TITLE,
-        descriptionField: SecondaryObjectTypeField.DESCRIPTION,
+        titleField: ClientDefaultsObjectTypeField.TITLE,
+        descriptionField: ClientDefaultsObjectTypeField.DESCRIPTION,
         selectType: 'multiple',
         sortModel: sortOptions.map((o) => ({
           colId: o.field,
@@ -264,11 +349,15 @@ export class SearchResultComponent implements OnDestroy {
     const row = {
       id: searchResultItem.fields.get(BaseObjectTypeField.OBJECT_ID),
       [BaseObjectTypeField.OBJECT_TYPE_ID]: searchResultItem.fields.get(BaseObjectTypeField.OBJECT_TYPE_ID),
-      [SecondaryObjectTypeField.TITLE]: searchResultItem.fields.get(SecondaryObjectTypeField.TITLE),
-      [SecondaryObjectTypeField.DESCRIPTION]: searchResultItem.fields.get(SecondaryObjectTypeField.DESCRIPTION)
+      [BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS]: searchResultItem.fields.get(BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS),
+      [ClientDefaultsObjectTypeField.TITLE]: searchResultItem.fields.get(ClientDefaultsObjectTypeField.TITLE),
+      [ClientDefaultsObjectTypeField.DESCRIPTION]: searchResultItem.fields.get(ClientDefaultsObjectTypeField.DESCRIPTION)
     };
     this._columns.forEach((cd: ColDef) => {
       row[cd.field] = searchResultItem.fields.get(cd.field);
+      if (searchResultItem.fields.get(cd.field + '_title')) {
+        row[cd.field + '_title'] = searchResultItem.fields.get(cd.field + '_title');
+      }
     });
     return row;
   }
@@ -311,6 +400,12 @@ export class SearchResultComponent implements OnDestroy {
       this._searchQuery.from = 0;
       this.executeQuery();
     }
+  }
+
+  onFilterChanged(filterQuery: SearchQuery) {
+    this._searchQuery.types = filterQuery.types;
+    this._searchQuery.filterGroup = filterQuery.filterGroup;
+    this.executeQuery();
   }
 
   ngOnDestroy() {}

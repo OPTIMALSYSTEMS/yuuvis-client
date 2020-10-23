@@ -1,9 +1,14 @@
 import { Observable, Subscription } from 'rxjs';
-
+/**
+ * Intrefice for providing an uploading status of an object
+ */
 export interface ProgressStatus {
   items: ProgressStatusItem[];
   err: number;
 }
+/**
+ * Is part of the `ProgressStatus` interface
+ */
 export interface ProgressStatusItem {
   id: string;
   filename: string;
@@ -15,7 +20,9 @@ export interface ProgressStatusItem {
     message: string;
   };
 }
-
+/**
+ * is a part of `CreatedObject` interface
+ */
 interface ContentStream {
   contentStreamId: string;
   repositoryId: string;
@@ -25,7 +32,9 @@ interface ContentStream {
   length: number;
   mimeType: string;
 }
-
+/**
+ * Interface providng properties of uploaded object type
+ */
 export interface UploadResult {
   objectId: string | string[];
   contentStreamId: string;
@@ -33,6 +42,9 @@ export interface UploadResult {
   label?: string;
 }
 
+/**
+ * Interface that was used by upload service
+ */
 export interface CreatedObject {
   body?: {
     objects: {

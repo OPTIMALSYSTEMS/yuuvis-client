@@ -10,11 +10,17 @@ import { CoreConfig } from '../config/core-config';
 import { CORE_CONFIG } from '../config/core-config.tokens';
 import { DeviceService } from '../device/device.service';
 import { Logger } from '../logger/logger';
-
+import { ApiBase } from './../backend/api.enum';
+/**
+ * Providing functions,that are are injected at application startup and executed during app initialization.
+ */
 @Injectable({
   providedIn: 'root'
 })
 export class CoreInit {
+  /**
+   * @ignore
+   */
   constructor(
     @Inject(CORE_CONFIG) private coreConfig: CoreConfig,
     private deviceService: DeviceService,
@@ -27,35 +33,34 @@ export class CoreInit {
   initialize(): Promise<boolean> {
     return new Promise((resolve, reject) => {
       this.deviceService.init();
-
-      forkJoin(this.loadConfig(), this.authService.init()).subscribe(
-        (res) => {
-          resolve(true);
-        },
-        (err) => {
-          this.logger.error(err);
-          reject();
-        }
-      );
+      this.loadConfig()
+        .pipe(switchMap(() => this.authService.init()))
+        .subscribe(
+          (res) => resolve(true),
+          (err) => {
+            this.logger.error(err);
+            reject();
+          }
+        );
     });
   }
 
   private loadConfig() {
     // getting a string means that we got an URL to load the config from
-    let config = !Array.isArray(this.coreConfig.main)
+    return (!Array.isArray(this.coreConfig.main)
       ? of([this.coreConfig.main])
       : forkJoin(
-          this.coreConfig.main.map((c) =>
-            this.http.get(`${Utils.getBaseHref()}${c}`).pipe(
+          // TODO: what if apiWeb path is changed via config?
+          [...this.coreConfig.main, ApiBase.apiWeb + ConfigService.GLOBAL_MAIN_CONFIG].map((uri) =>
+            this.http.get(`${uri.startsWith(ApiBase.apiWeb) ? '/' : Utils.getBaseHref()}${uri}`).pipe(
               catchError((e) => {
                 this.logger.error('failed to catch config file', e);
                 return of({});
               })
             )
           )
-        );
-
-    return config.pipe(
+        )
+    ).pipe(
       map((res) =>
         res.reduce((acc, x) => {
           // merge object values on 2nd level
@@ -64,13 +69,7 @@ export class CoreInit {
         }, {})
       ),
       tap((res: YuvConfig) => this.configService.set(res)),
-      switchMap((res: YuvConfig) => {
-        return this.authService.initUser().pipe(
-          catchError((e) => {
-            return of(true);
-          })
-        );
-      })
+      switchMap((res: YuvConfig) => this.authService.initUser().pipe(catchError((e) => of(true))))
     );
   }
 }
