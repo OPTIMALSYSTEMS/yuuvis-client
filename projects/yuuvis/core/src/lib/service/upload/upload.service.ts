@@ -97,9 +97,8 @@ export class UploadService {
   private createHttpRequest(url: string, content: Partial<{ formData: FormData; file: File }>, reportProgress: boolean, method = 'POST'): HttpRequest<any> {
     const { formData, file } = content;
     let headers: any = { 'ngsw-bypass': 'ngsw-bypass' };
-
     if (file) {
-      headers = { ...headers, 'Content-Disposition': `attachment; filename=${file.name}` };
+      headers = { ...headers, 'Content-Disposition': `attachment; filename="${file.name}"` };
     }
     return new HttpRequest(method, url, file || formData, {
       headers: new HttpHeaders(headers),
