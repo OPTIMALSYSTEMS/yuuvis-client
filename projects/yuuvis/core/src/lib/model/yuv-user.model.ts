@@ -54,8 +54,8 @@ export class YuvUser {
    * Gets the users configured client locale
    * @returns locale string
    */
-  public getClientLocale(): string {
-    return this.userSettings.locale || 'en';
+  public getClientLocale(fallback?: string): string {
+    return this.userSettings.locale || fallback || 'en';
   }
 
   public getFullName(): string {

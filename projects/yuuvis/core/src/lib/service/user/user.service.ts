@@ -53,7 +53,7 @@ export class UserService {
       this.backend.setHeader('Accept-Language', this.user.getClientLocale());
 
       const languages = this.config.getClientLocales().map((lang) => lang.iso);
-      const userLang = user.getClientLocale();
+      const userLang = user.getClientLocale(this.config.getDefaultClientLocale());
       if (languages.indexOf(userLang) !== -1) {
         this.logger.debug("Setting client locale to '" + userLang + "'");
         this.translate.use(userLang);
