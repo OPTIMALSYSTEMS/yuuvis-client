@@ -12,7 +12,7 @@ import { AppSearchService } from '../../service/app-search.service';
   styleUrls: ['./dashboard.component.scss']
 })
 export class DashboardComponent implements OnInit {
-  @ViewChild('quickSearch', { static: true }) quickSearchEl: QuickSearchComponent;
+  @ViewChild('quickSearch') quickSearchEl: QuickSearchComponent;
   // application wide search query
   appQuery: SearchQuery;
   aggs: ObjectTypeAggregation[];
@@ -70,7 +70,7 @@ export class DashboardComponent implements OnInit {
   }
 
   applyAggregation(agg: ObjectTypeAggregation) {
-    this.quickSearchEl.applyTypeAggration(agg, true);
+    this.quickSearchEl?.applyTypeAggration(agg, true);
   }
 
   ngOnInit() {
