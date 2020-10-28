@@ -51,7 +51,6 @@ export class AuthService {
       tap((data: AuthData) => {
         this.authData = data;
         if (data && data.language) {
-          this.translate.use(data.language ? data.language : this.userService.getDefaultUserLanguages()?.iso);
           this.backend.setHeader('Accept-Language', data.language);
         }
         if (data && data.tenant) {
@@ -70,9 +69,6 @@ export class AuthService {
    * @ignore
    */
   initUser(host?: string) {
-    // setup default language for translate module
-    let browserLang = this.translate.getBrowserLang();
-    this.translate.use(browserLang.match(/en|de/) ? browserLang : 'en');
     return this.fetchUser();
   }
 
