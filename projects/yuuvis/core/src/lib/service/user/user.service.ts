@@ -4,7 +4,7 @@ import { BehaviorSubject, Observable, of } from 'rxjs';
 import { map, switchMap, tap } from 'rxjs/operators';
 import { UserSettings, YuvUser } from '../../model/yuv-user.model';
 import { BackendService } from '../backend/backend.service';
-import { Direction, YuvConfigLanguages } from '../config/config.interface';
+import { Direction } from '../config/config.interface';
 import { ConfigService } from '../config/config.service';
 import { EventService } from '../event/event.service';
 import { YuvEventType } from '../event/events';
@@ -53,7 +53,7 @@ export class UserService {
       this.backend.setHeader('Accept-Language', this.user.getClientLocale());
 
       const languages = this.config.getClientLocales().map((lang) => lang.iso);
-      const userLang = user.getClientLocale();
+      const userLang = user.getClientLocale(this.config.getDefaultClientLocale());
       if (languages.indexOf(userLang) !== -1) {
         this.logger.debug("Setting client locale to '" + userLang + "'");
         this.translate.use(userLang);
@@ -65,10 +65,6 @@ export class UserService {
 
   getCurrentUser(): YuvUser {
     return this.user;
-  }
-
-  getDefaultUserLanguages(): YuvConfigLanguages {
-    return this.config.get('languages')?.filter((lang: YuvConfigLanguages) => lang.fallback)[0];
   }
 
   get hasAdminRole(): boolean {

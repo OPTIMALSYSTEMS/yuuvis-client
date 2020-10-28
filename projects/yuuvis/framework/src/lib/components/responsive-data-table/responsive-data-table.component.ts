@@ -436,7 +436,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
 
       // EVENTS - add event callback handlers
       onSelectionChanged: (event) => {
-        const focused = this.gridOptions.api.getFocusedCell() || { rowIndex: -1 };
+        const focused = this.gridOptions.api?.getFocusedCell() || { rowIndex: -1 };
         const selection = this.gridOptions.api.getSelectedNodes().sort((n) => (n.rowIndex === focused.rowIndex ? -1 : 0));
         if (!event || selection.map((rowNode: RowNode) => rowNode.id).join() !== (this._currentSelection || []).join()) {
           this._currentSelection = selection.map((rowNode: RowNode) => rowNode.id);
