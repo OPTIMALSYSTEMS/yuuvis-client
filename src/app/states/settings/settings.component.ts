@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { AppCacheService, BackendService, ConfigService, SystemService, TranslateService, UserConfigService, UserService, YuvUser } from '@yuuvis/core';
 import { IconRegistryService, LayoutService, LayoutSettings, NotificationService } from '@yuuvis/framework';
 import { forkJoin, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { shield } from '../../../assets/default/svg/svg';
 
 @Component({
