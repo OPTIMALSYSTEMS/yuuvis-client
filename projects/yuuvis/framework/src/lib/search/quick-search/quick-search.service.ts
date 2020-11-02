@@ -39,6 +39,7 @@ export class QuickSearchService {
   private STORAGE_KEY_FILTERS = 'yuv.framework.search.filters';
 
   private filters = {};
+  private globalFilters = {};
   private filtersVisibility: { hidden: string[]; __visible: string[]; __hidden: string[] };
   private filtersLast = [];
   private get filtersHidden() {
@@ -54,6 +55,7 @@ export class QuickSearchService {
   skipTypes = [];
 
   private isDefaultFilter = (id: string) => id.startsWith('__');
+  private _filters = (global = false) => (!global ? this.filters : this.globalFilters);
 
   /**
    *
@@ -113,7 +115,7 @@ export class QuickSearchService {
   }
 
   getCurrentSettings(global = false) {
-    return forkJoin([this.loadStoredFilters(of(this.filters), global), of([...this.filtersHidden]), of([...this.filtersLast])]);
+    return forkJoin([this.loadStoredFilters(of(this._filters(global)), global), of([...this.filtersHidden]), of([...this.filtersLast])]);
   }
 
   getAvailableFilterGroups(storedFilters: Selectable[], availableObjectTypeFields: Selectable[]) {
@@ -236,11 +238,13 @@ export class QuickSearchService {
 
   loadStoredFilters(store?: Observable<any>, global = false) {
     return (global ? of({}) : store || this.userService.getSettings(this.STORAGE_KEY_FILTERS)).pipe(
-      tap((f) => (this.filters = f || {})),
-      switchMap(() => this.userService.getGlobalSettings(this.STORAGE_KEY_FILTERS)),
-      tap((filters) => !global && Object.values(filters || {}).forEach((v: any) => !this.isDefaultFilter(v.id) && (v.id = '__' + v.id))),
+      tap((filters) => !global && Object.values(filters || {}).map((v: any) => (v.id = v.id.replace(/^__/, '')))),
+      tap((filters) => !global && (this.filters = filters || {})),
+      switchMap(() => (global && store) || this.userService.getGlobalSettings(this.STORAGE_KEY_FILTERS)),
+      tap((filters) => Object.values(filters || {}).map((v: any) => (v.id = (global ? '' : '__') + v.id.replace(/^__/, '')))),
+      tap((filters) => (this.globalFilters = filters)),
       map((filters) =>
-        Object.values({ ...(filters || {}), ...this.filters }).map((s: any) => ({
+        Object.values({ ...(filters || {}), ...(!global ? this.filters : {}) }).map((s: any) => ({
           ...s,
           value: [SearchFilterGroup.fromQuery(this.parseStoredFilters(s.value))]
         }))
@@ -300,7 +304,8 @@ export class QuickSearchService {
     return of(this.filtersHidden);
   }
 
-  saveFilters(global = false, filters = this.filters) {
+  saveFilters(global = false, filters?: any) {
+    filters = filters || this._filters(global);
     global
       ? this.userService.saveGlobalSettings(this.STORAGE_KEY_FILTERS, filters).subscribe()
       : this.userService.saveSettings(this.STORAGE_KEY_FILTERS, filters).subscribe();
@@ -308,12 +313,12 @@ export class QuickSearchService {
   }
 
   saveFilter(item: Selectable, global = false) {
-    this.filters[item.id] = { ...item, value: SearchFilterGroup.fromArray(item.value).toShortString() };
+    this._filters(global)[item.id] = { ...item, value: SearchFilterGroup.fromArray(item.value).toShortString() };
     return this.saveFilters(global);
   }
 
   removeFilter(item: Selectable, global = false) {
-    delete this.filters[item.id];
+    delete this._filters(global)[item.id];
     return this.saveFilters(global);
   }
 
