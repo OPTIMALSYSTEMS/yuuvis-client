@@ -26,8 +26,8 @@ export class ReferenceActionComponent extends DmsObjectTarget implements LinkAct
     this.description = this.translate.instant('yuv.framework.action-menu.action.show.references.description');
   }
 
-  isExecutable(item: DmsObject): Observable<boolean> {
-    return of(!!(this.routes && this.routes.result));
+  isExecutable(dmsObject: DmsObject): Observable<boolean> {
+    return of(!!(this.routes && this.routes.result && this.createSearchFilters(dmsObject).length));
   }
 
   getParams(selection: DmsObject[]): any {
@@ -40,28 +40,34 @@ export class ReferenceActionComponent extends DmsObjectTarget implements LinkAct
     return '/' + this.routes.result.path;
   }
 
-  createQuery(dmsObject: DmsObject): string {
+  private createQuery(dmsObject: DmsObject): string {
     let query = new SearchQuery();
-    const { id, objectTypeId } = dmsObject;
-    const filters = Object.values(this.system.system.allFields)
-      .filter((field) => this.filter(field, objectTypeId))
-      .map((field) => this.createFilter(field, id));
-    let group = SearchFilterGroup.fromArray(filters);
+    let group = SearchFilterGroup.fromArray(this.createSearchFilters(dmsObject));
     group.operator = SearchFilterGroup.OPERATOR.OR;
     query.addFilterGroup(group);
     return JSON.stringify(query.toQueryJson());
   }
 
-  filter(field, objectTypeId) {
+  private createSearchFilters(dmsObject: DmsObject) {
+    return Object.values(this.system.system.allFields)
+      .filter((field) => this.filter(field, dmsObject.objectTypeId))
+      .map((field) => this.createSearchFilter(field, dmsObject.id));
+  }
+
+  private filter(field, objectTypeId) {
+    if (!field.classifications) {
+      return false;
+    }
+    const referenceClassification = field.classifications.find((el) => el.includes(Classification.STRING_REFERENCE));
     return (
-      (field.classifications && field.classifications.includes(Classification.STRING_REFERENCE) && field.classifications.includes(objectTypeId)) ||
-      (field.classifications && field.classifications.includes(Classification.STRING_REFERENCE + '[]'))
+      (referenceClassification && referenceClassification.includes(objectTypeId)) ||
+      (referenceClassification && referenceClassification.includes(Classification.STRING_REFERENCE + '[]'))
     );
   }
 
-  createFilter(field, id) {
+  private createSearchFilter(field, objectId) {
     const operator = field.cardinality === 'multi' ? SearchFilter.OPERATOR.IN : SearchFilter.OPERATOR.EEQUAL;
-    const value = field.cardinality === 'multi' ? [id] : id;
+    const value = field.cardinality === 'multi' ? [objectId] : objectId;
     return new SearchFilter(field.id, operator, value);
   }
 }
