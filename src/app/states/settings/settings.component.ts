@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { AppCacheService, BackendService, ConfigService, SystemService, TranslateService, UserConfigService, UserService, YuvUser } from '@yuuvis/core';
 import { IconRegistryService, LayoutService, LayoutSettings, NotificationService } from '@yuuvis/framework';
 import { forkJoin, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { shield } from '../../../assets/default/svg/svg';
 
 @Component({
@@ -12,7 +13,7 @@ import { shield } from '../../../assets/default/svg/svg';
   styleUrls: ['./settings.component.scss']
 })
 export class SettingsComponent implements OnInit {
-  user$: Observable<YuvUser>;
+  user$: Observable<Partial<YuvUser>>;
   darkMode: boolean;
   accentColor: string;
   customDashboardBackground: boolean;
@@ -128,7 +129,7 @@ export class SettingsComponent implements OnInit {
 
   ngOnInit() {
     this.titleService.setTitle(this.translate.instant('yuv.client.state.settings.title'));
-    this.user$ = this.userService.user$;
+    this.user$ = this.userService.user$.pipe(map((user) => ({ ...user, authorities: user.authorities.sort() })));
     this.layoutService.layoutSettings$.subscribe((settings: LayoutSettings) => {
       this.darkMode = settings.darkMode;
       this.accentColor = settings.accentColor;
