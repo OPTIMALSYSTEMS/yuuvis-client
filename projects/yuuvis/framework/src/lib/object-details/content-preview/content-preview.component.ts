@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, ElementRef, Input, NgZone, OnDestroy, OnInit } from '@angular/core';
-import { DmsObject } from '@yuuvis/core';
-import { fromEvent, Observable } from 'rxjs';
-import { takeWhile } from 'rxjs/operators';
+import { DmsObject, UploadService } from '@yuuvis/core';
+import { fromEvent, Observable, of } from 'rxjs';
+import { switchMap, takeWhile, tap } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { FileDropService } from '../../directives/file-drop/file-drop.service';
@@ -67,17 +67,21 @@ export class ContentPreviewComponent implements OnInit, OnDestroy, AfterViewInit
    * `DmsObject[]` to compare changes between objects
    */
   @Input() set compareObjects(dmsObjects: DmsObject[]) {
-    this.dmsObject2 = dmsObjects[1];
     this.dmsObject = dmsObjects[0];
+    this.dmsObject2 = dmsObjects[1];
   }
 
-  previewSrc$: Observable<string> = this.contentPreviewService.previewSrc$;
+  previewSrc$: Observable<string> = this.uploadService.uploadStatus$.pipe(
+    tap((status) => (this.loading = typeof status === 'boolean' && !status ? true : false)),
+    switchMap((status) => (typeof status === 'boolean' && !status ? of(null) : this.contentPreviewService.previewSrc$))
+  );
 
   constructor(
     public fileDropService: FileDropService,
     private elRef: ElementRef,
     private contentPreviewService: ContentPreviewService,
     private iconRegistry: IconRegistryService,
+    private uploadService: UploadService,
     private _ngZone: NgZone
   ) {
     this.iconRegistry.registerIcons([folder, noFile, undock]);
