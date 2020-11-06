@@ -34,6 +34,8 @@ import { Situation } from './../object-form.situation';
   styleUrls: ['./object-form.component.scss']
 })
 export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestroy, AfterViewInit, IObjectForm {
+  private skipTranslationsFor = ['core', 'data'];
+
   /**
    * There are special scenarios where forms are within a form themselves.
    * Setting this property to true, will handle the current form in a
@@ -420,8 +422,11 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
         layout: formElement.layout,
         type: formElement.type
       };
+
       if (formElement.name) {
-        ctrl._eoFormGroup.label = this.systemService.getLocalizedResource(`${formElement.name}_label`) || formElement.name;
+        ctrl._eoFormGroup.label = this.skipTranslationsFor.includes(formElement.name)
+          ? formElement.name
+          : this.systemService.getLocalizedResource(`${formElement.name}_label`) || formElement.name;
       }
 
       if (useName === 'core' || useName === 'data') {
