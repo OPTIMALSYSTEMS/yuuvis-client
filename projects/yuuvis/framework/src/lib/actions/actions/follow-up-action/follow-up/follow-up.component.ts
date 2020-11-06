@@ -5,6 +5,7 @@ import { BpmEvent, EventService, InboxService, ProcessData, ProcessService, Task
 import { of } from 'rxjs';
 import { finalize, map, switchMap, tap } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
+import { hasRequiredField } from '../../../../form/utils/forms.utils';
 import { NotificationService } from '../../../../services/notification/notification.service';
 import { ActionComponent } from './../../../interfaces/action-component.interface';
 
@@ -42,6 +43,10 @@ export class FollowUpComponent implements OnInit, OnDestroy, ActionComponent {
       whatAbout: ['', Validators.required],
       documentId: null
     });
+  }
+
+  isRequired(field: string): boolean {
+    return hasRequiredField(this.form.controls[field]);
   }
 
   createFollowUp() {
