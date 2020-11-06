@@ -143,7 +143,7 @@
   "yuv.framework.object-details.filedrop.content.replace": "Dokumentdatei ersetzen",
   "yuv.framework.object-details.summary.section.admin": "Administrative Information",
   "yuv.framework.object-details.summary.section.baseparams": "Basismetadaten",
-  "yuv.framework.object-details.summary.section.core": "Benutzerdefinierte Metadaten",
+  "yuv.framework.object-details.summary.section.core": "Typ-Metadaten",
   "yuv.framework.object-details.summary.section.parent": "Geerbte Metadaten",
   "yuv.framework.object-details.tabs.content.title": "Inhalt",
   "yuv.framework.object-details.tabs.history.title": "Historie",
