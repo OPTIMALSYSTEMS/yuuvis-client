@@ -14,6 +14,7 @@ import {
   YuvEventType,
   YuvUser
 } from '@yuuvis/core';
+import { tap } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { FileDropOptions } from '../../directives/file-drop/file-drop.directive';
@@ -165,8 +166,11 @@ export class ContextComponent implements OnInit, OnDestroy {
 
     this.fileDropOptions.label = this.translate.instant('yuv.framework.context.filedrop.label');
     this.eventService
-      .on(YuvEventType.DMS_OBJECTS_MOVED)
-      .pipe(takeUntilDestroy(this))
+      .on(YuvEventType.DMS_OBJECTS_MOVED, YuvEventType.DMS_OBJECT_UPDATED)
+      .pipe(
+        takeUntilDestroy(this),
+        tap(({ type, data }) => (type === YuvEventType.DMS_OBJECT_UPDATED && data.id === this.context.id ? (this.context = data) : null))
+      )
       .subscribe(() => this.refresh());
   }
 
