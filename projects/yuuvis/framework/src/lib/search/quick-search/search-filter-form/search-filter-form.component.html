@@ -5,7 +5,7 @@
 
 <ng-template #tmplNode let-node="node">
   <div class="node-item" [attr.data-id]="node.id" [attr.id]="'node-' + node.id">
-    <div class="handle" cdkDragHandle [ngClass]="{ group: node.group }">
+    <div class="handle" cdkDragHandle [ngClass]="{ group: node.group, single: node.group?.length === 1 }">
       <yuv-icon [icon]="'dragHandle'" *ngIf="!dragDisabled" title="{{ node.property }}"></yuv-icon>
       <span title="{{ 'yuv.framework.search-result.filter.tooltip' | translate }}" *ngIf="node.group" class="operator"
         (click)="operatorClick(node)">{{
