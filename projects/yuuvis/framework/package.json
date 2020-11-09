@@ -28,6 +28,7 @@
     "lodash-es": "^4.17.15",
     "take-until-destroy": "^2.1.0",
     "ngx-drag-scroll": "^8.0.0-beta.2",
-    "ngx-toastr": "^12.0.1"
+    "ngx-toastr": "^12.0.1",
+    "tslib": "^2.0.0"
   }
 }

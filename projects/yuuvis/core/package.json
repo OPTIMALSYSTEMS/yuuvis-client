@@ -15,6 +15,7 @@
   "dependencies": {
     "@ngx-pwa/local-storage": "^9.0.3",
     "@ngx-translate/core": "^12.1.2",
-    "ngx-device-detector": "^1.4.1"
+    "ngx-device-detector": "^1.4.1",
+    "tslib": "^2.0.0"
   }
 }

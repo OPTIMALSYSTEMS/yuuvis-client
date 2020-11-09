@@ -23,10 +23,15 @@
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
             "tsConfig": "src/tsconfig.app.json",
-            "assets": ["src/favicon.ico", "src/assets", "src/manifest.json"],
-            "styles": ["src/styles.scss"],
-            "scripts": [],
-            "es5BrowserSupport": true
+            "assets": [
+              "src/favicon.ico",
+              "src/assets",
+              "src/manifest.json"
+            ],
+            "styles": [
+              "src/styles.scss"
+            ],
+            "scripts": []
           },
           "configurations": {
             "production": {
@@ -244,10 +249,14 @@
             "main": "src-component-tests/main.ts",
             "polyfills": "src-component-tests/polyfills.ts",
             "tsConfig": "src-component-tests/tsconfig.test.json",
-            "assets": ["src-component-tests/favicon.ico", "src-component-tests/assets"],
-            "styles": ["src-component-tests/styles.scss"],
-            "scripts": [],
-            "es5BrowserSupport": true
+            "assets": [
+              "src-component-tests/favicon.ico",
+              "src-component-tests/assets"
+            ],
+            "styles": [
+              "src-component-tests/styles.scss"
+            ],
+            "scripts": []
           },
           "configurations": {
             "test": {
