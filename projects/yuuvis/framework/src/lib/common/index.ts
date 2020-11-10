@@ -1,6 +1,10 @@
 export { FadeInAnimations } from './animations/fadein.animation';
 export * from './common.module';
+export { EmptyComponent } from './components/empty/empty.component';
+export { IconComponent } from './components/icon/component/icon.component';
 export { IconRegistryService } from './components/icon/service/iconRegistry.service';
+export { ObjectTypeIconComponent } from './components/object-type-icon/object-type-icon.component';
+export { SidebarComponent } from './components/sidebar/sidebar.component';
 export * from './components/sidebar/sidebar.enum';
 export * from './directives/focus-within.directive';
 export * from './directives/router-link.directive';
