@@ -45,7 +45,7 @@ export class ObjectComponent implements OnInit, OnDestroy {
   ) {}
 
   onContextFilesDropped(files: File[]) {
-    this.frameService.createObject(this.context.id, files);
+    this.frameService.createObject(this.contextId, files);
   }
 
   objectDetailsVersionClicked(version: number) {
@@ -54,7 +54,7 @@ export class ObjectComponent implements OnInit, OnDestroy {
 
   contextItemsSelected(ids: string[]) {
     if (ids && ids.length === 0) {
-      ids = [this.context.id];
+      ids = [this.contextId];
     }
     if (ids && ids.length === 1) {
       this.router.navigate(['.'], { fragment: ids[0], replaceUrl: !!this.selectedItem, relativeTo: this.route, queryParamsHandling: 'preserve' });
@@ -63,7 +63,7 @@ export class ObjectComponent implements OnInit, OnDestroy {
   }
 
   private getRecentItemsStorageKey() {
-    return this.context ? `${this.layoutOptionsStorageKey}.${this.context.id}` : this.layoutOptionsStorageKey;
+    return this.context ? `${this.layoutOptionsStorageKey}.${this.contextId}` : this.layoutOptionsStorageKey;
   }
 
   private setupSelectedItem(id) {
@@ -72,9 +72,7 @@ export class ObjectComponent implements OnInit, OnDestroy {
   }
 
   private loadRecentItems() {
-    this.appCacheService.getItem(this.getRecentItemsStorageKey()).subscribe((items) => {
-      this.recentItems = items && Array.isArray(items) ? items : [];
-    });
+    this.appCacheService.getItem(this.getRecentItemsStorageKey()).subscribe((items) => (this.recentItems = items && Array.isArray(items) ? items : []));
   }
 
   private addRecentItem(id: string) {

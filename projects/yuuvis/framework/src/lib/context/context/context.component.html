@@ -25,8 +25,7 @@
       </ng-template>
     </p-tabPanel>
 
-    <p-tabPanel [id]="'recent'" [disabled]="!recentItemsQuery"
-      [header]="'yuv.framework.context.tabs.recent.title' | translate">
+    <p-tabPanel [id]="'recent'" [disabled]="!recentItemsQuery" [header]="'yuv.framework.context.tabs.recent.title' | translate">
       <ng-template pTemplate="content">
         <!-- recent item search result -->
         <yuv-search-result [filterPanelConfig]="filterPanelConfig"
