@@ -1,8 +1,7 @@
 <div class="content grid-container" [ngClass]="{ 'has-query': !!query }">
 
 
-  <div class="filterCollapsed" (click)="setFilterPanelVisibility(true)"
-    *ngIf="!disableFilterPanel && !filterPanelConfig.open">
+  <div class="filterCollapsed" (click)="setFilterPanelVisibility(true)" *ngIf="!disableFilterPanel && !filterPanelConfig.open">
     <div>
       <yuv-icon icon="filter" [ngClass]="{'active': query?.filters.length}"></yuv-icon>
       {{'yuv.framework.search-result.filter.panel.title'|translate}}
@@ -28,10 +27,14 @@
 
         <ng-container *ngIf="tableData?.rows.length; else tplEmpty">
 
-          <yuv-responsive-data-table yuvOfflineDisabled #dataTable class="data-table" [data]="tableData"
-            [breakpoint]="400" [layoutOptionsKey]="layoutOptionsKey" (selectionChanged)="onSelectionChanged($event)"
-            (viewModeChanged)="viewModeChanged.emit($event)" (sortChanged)="onSortChanged($event)"
-            (rowDoubleClicked)="rowDoubleClicked.emit($event)">
+          <yuv-responsive-data-table yuvOfflineDisabled #dataTable class="data-table" 
+            [data]="tableData"
+            [breakpoint]="400"
+            [layoutOptionsKey]="layoutOptionsKey"
+            (selectionChanged)="onSelectionChanged($event)"
+            (rowDoubleClicked)="rowDoubleClicked.emit($event)"
+            (viewModeChanged)="viewModeChanged.emit($event)"
+            (sortChanged)="onSortChanged($event)">
           </yuv-responsive-data-table>
 
           <div class="footer" yuvOfflineDisabled>
