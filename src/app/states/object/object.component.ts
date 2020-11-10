@@ -78,8 +78,10 @@ export class ObjectComponent implements OnInit, OnDestroy {
   }
 
   private addRecentItem(id: string) {
-    this.recentItems = this.recentItems.filter((i) => i !== id);
-    this.recentItems.push(id);
+    if (id !== this.contextId) {
+      /* tslint:disable:tslint no-unused-expression */
+      !this.recentItems.includes(id) && this.recentItems.push(id);
+    }
     if (this.context) {
       this.appCacheService.setItem(this.getRecentItemsStorageKey(), this.recentItems).subscribe();
     }
