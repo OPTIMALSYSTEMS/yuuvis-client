@@ -149,7 +149,7 @@
   "yuv.framework.object-details.tabs.history.title": "Historie",
   "yuv.framework.object-details.tabs.indexdata.title": "Metadaten",
   "yuv.framework.object-details.tabs.summary.title": "Übersicht",
-  "yuv.framework.object-details.tooltip.dock": "Docken",
+  "yuv.framework.object-details.tooltip.dock": "Andocken",
   "yuv.framework.object-details.tooltip.icon.actions": "Objektaktionen",
   "yuv.framework.object-details.tooltip.undock": "Abdocken",
   "yuv.framework.object-form-edit.fsot.add-fsot": "Objekt erweitern",
