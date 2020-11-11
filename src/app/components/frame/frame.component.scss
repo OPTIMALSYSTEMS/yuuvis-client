@@ -103,7 +103,6 @@ $app-bar-zindex: 6;
         yuv-quick-search {
           border: 1px solid var(--panel-divider-color);
           position: absolute;
-          top: 2px;
 
           @media (max-width: 699px) {
             width: 100%;
