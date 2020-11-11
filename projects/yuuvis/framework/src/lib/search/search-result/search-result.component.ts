@@ -14,6 +14,7 @@ import {
   SearchService,
   SortOption,
   UserConfigService,
+  Utils,
   YuvEvent,
   YuvEventType
 } from '@yuuvis/core';
@@ -394,7 +395,7 @@ export class SearchResultComponent implements OnDestroy {
   }
 
   onSortChanged(sortModel: { colId: string; sort: string }[]) {
-    if (JSON.stringify(this.tableData.sortModel) !== JSON.stringify(sortModel)) {
+    if (JSON.stringify(this.tableData.sortModel.sort(Utils.sortValues('colId'))) !== JSON.stringify(sortModel.sort(Utils.sortValues('colId')))) {
       // change query to reflect the sort setting from the grid
       this._searchQuery.sortOptions = sortModel.map((m) => new SortOption(m.colId, m.sort));
       this._searchQuery.from = 0;
