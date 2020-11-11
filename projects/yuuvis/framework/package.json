@@ -16,7 +16,7 @@
     "rxjs": "~6.5.5"
   },
   "dependencies": {
-    "@yuuvis/core": "1.0.2",
+    "@yuuvis/core": "1.0.3",
     "primeng": "~9.0.5",
     "primeicons": "~2.0.0",
     "angular-split": "3.0.1",
