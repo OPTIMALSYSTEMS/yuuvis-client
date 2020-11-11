@@ -280,7 +280,7 @@ export class ObjectFormEditComponent implements OnDestroy {
       },
       applicableSOTs: {
         id: 'fsot',
-        label: this.translate.instant('yuv.framework.object-form-edit.fsot.add-fsot'),
+        label: this.translate.instant('yuv.framework.object-form-edit.fsot.add-fsot.dialog.title'),
         items: []
       }
     };
