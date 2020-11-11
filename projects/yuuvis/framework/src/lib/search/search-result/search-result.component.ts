@@ -200,32 +200,29 @@ export class SearchResultComponent implements OnDestroy {
   ) {
     this.iconRegistry.registerIcons([doubleArrow, filter, settings, clear, search, arrowNext, arrowLast, listModeDefault, listModeGrid, listModeSimple]);
 
-    this.pagingForm = this.fb.group({
-      page: ['']
-    });
+    this.pagingForm = this.fb.group({ page: [''] });
 
     this.eventService
-      .on(YuvEventType.DMS_OBJECT_UPDATED)
-      .pipe(takeUntilDestroy(this))
-      .subscribe((e: YuvEvent) => {
-        const dmsObject = e.data as DmsObject;
-        if (this.dataTable) {
-          // Update table data without reloading the whole grid
-          this.dataTable.updateRow(dmsObject.id, dmsObject.data);
-        }
-      });
+      .on(YuvEventType.DMS_OBJECT_UPDATED, YuvEventType.DMS_OBJECT_DELETED)
+      .pipe(takeUntilDestroy(this), tap(this.objectEvent))
+      .subscribe((e: YuvEvent) => {});
+  }
 
-    this.eventService
-      .on(YuvEventType.DMS_OBJECT_DELETED)
-      .pipe(takeUntilDestroy(this))
-      .subscribe((event) => {
-        if (this.dataTable) {
-          const deleted = this.dataTable.deleteRow(event.data.id);
-          if (deleted) {
-            this.totalNumItems--;
-          }
+  private objectEvent({ type, data }: YuvEvent) {
+    if (type === YuvEventType.DMS_OBJECT_UPDATED) {
+      const dmsObject = data as DmsObject;
+      if (this.dataTable) {
+        // Update table data without reloading the whole grid
+        this.dataTable.updateRow(dmsObject.id, dmsObject.data);
+      }
+    } else if (type === YuvEventType.DMS_OBJECT_DELETED) {
+      if (this.dataTable) {
+        const deleted = this.dataTable.deleteRow(data.id);
+        if (deleted) {
+          this.totalNumItems--;
         }
-      });
+      }
+    }
   }
 
   setFilterPanelVisibility(v: boolean) {

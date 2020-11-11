@@ -121,7 +121,7 @@
   "yuv.framework.object-create.pending-changes.alert": "Do you want to discard the creation process?",
   "yuv.framework.object-create.status.context": "At filing location '{{title}}'",
   "yuv.framework.object-create.status.files": "Files: {{count}}",
-  "yuv.framework.object-create.step.afo-indexdata": "Finish",
+  "yuv.framework.object-create.step.afo-indexdata": "Add metadata",
   "yuv.framework.object-create.step.afo-upload": "Confirm",
   "yuv.framework.object-create.step.file": "Add file",
   "yuv.framework.object-create.step.file.choose": "Add file",
@@ -152,7 +152,8 @@
   "yuv.framework.object-details.tooltip.dock": "Dock",
   "yuv.framework.object-details.tooltip.icon.actions": "Object actions",
   "yuv.framework.object-details.tooltip.undock": "Undock",
-  "yuv.framework.object-form-edit.fsot.add-fsot": "Extend object",
+  "yuv.framework.object-form-edit.fsot.add-fsot": "Extend",
+  "yuv.framework.object-form-edit.fsot.add-fsot.dialog.title": "Extend metadata",
   "yuv.framework.object-form-edit.fsot.apply-type": "Assign object type",
   "yuv.framework.object-form-edit.invalid": "The form contains errors. Correct the errors in order to be able to save the entries.",
   "yuv.framework.object-form-edit.pending-changes.alert": "You are currently editing the metadata of a form that has not been saved. Unsaved data will be lost.",
@@ -290,7 +291,7 @@
   "yuv.client.state.inbox.title": "Inbox",
   "yuv.client.state.not-found.description": "Unable to load the object.",
   "yuv.client.state.not-found.title": "Not found",
-  "yuv.client.state.process.list.empty": "There are no active processes",
+  "yuv.client.state.process.list.empty": "There are no active follow-ups",
   "yuv.client.state.process.title": "My follow-ups",
   "yuv.client.state.result.title": "Search result",
   "yuv.client.state.settings.cache.clear.error": "Failed to clear application cache",
@@ -327,7 +328,7 @@
   "yuv.client.state.versions.compare.label": "version {{version}}",
   "yuv.client.state.versions.header.title": "Versions",
   "yuv.framework.bpm.inbox.confirm": "Confirm follow-up",
-  "yuv.framework.bpm.process.remove": "Remove process",
+  "yuv.framework.bpm.process.remove": "Remove follow-up",
   "yuv.framework.inbox-list.inbox": "Inbox",
-  "yuv.framework.process-list.process": "My processes"
+  "yuv.framework.process-list.process": "My follow-ups"
 }

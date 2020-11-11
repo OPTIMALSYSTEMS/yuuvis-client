@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Observable } from 'rxjs';
+import { HeaderDetails } from '../interface/bpm.interface';
 @Component({
   selector: 'app-process-list-empty',
   templateUrl: './process-list-empty.component.html',
@@ -8,7 +9,7 @@ import { Observable } from 'rxjs';
 export class ProcessListEmptyComponent {
   @Input() state: string;
   @Input() message: string;
-  @Input() headerDetails: { title: string; description: string; icon: string };
+  @Input() headerDetails: HeaderDetails;
   @Output() refresh = new EventEmitter<boolean>();
 
   @Input() loading: Observable<boolean>;
