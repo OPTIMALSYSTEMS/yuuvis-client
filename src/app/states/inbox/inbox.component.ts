@@ -4,6 +4,7 @@ import {
   arrowNext,
   edit,
   FormatProcessDataService,
+  HeaderDetails,
   IconRegistryService,
   inbox,
   listModeDefault,
@@ -34,7 +35,7 @@ export class InboxComponent implements OnInit, OnDestroy {
   );
   loading$: Observable<boolean> = this.inboxService.loadingInboxData$;
 
-  headerDetails = {
+  headerDetails: HeaderDetails = {
     title: this.translateService.instant('yuv.framework.inbox-list.inbox'),
     description: '',
     icon: 'inbox'

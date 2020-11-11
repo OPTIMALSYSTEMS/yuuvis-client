@@ -149,6 +149,7 @@
 	"yuv.framework.object-details.tabs.history.title": "History",
 	"yuv.framework.object-details.tabs.indexdata.title": "Metadata",
 	"yuv.framework.object-details.tabs.summary.title": "Summary",
+	"yuv.framework.object-details.tooltip.dock": "Dock",
 	"yuv.framework.object-details.tooltip.icon.actions": "Object actions",
 	"yuv.framework.object-details.tooltip.undock": "Undock",
 	"yuv.framework.object-form-edit.fsot.add-fsot": "Extend",

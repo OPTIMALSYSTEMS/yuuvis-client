@@ -149,6 +149,7 @@
   "yuv.framework.object-details.tabs.history.title": "Historie",
   "yuv.framework.object-details.tabs.indexdata.title": "Metadaten",
   "yuv.framework.object-details.tabs.summary.title": "Übersicht",
+  "yuv.framework.object-details.tooltip.dock": "Andocken",
   "yuv.framework.object-details.tooltip.icon.actions": "Objektaktionen",
   "yuv.framework.object-details.tooltip.undock": "Abdocken",
   "yuv.framework.object-form-edit.fsot.add-fsot": "Erweitern",
@@ -290,7 +291,7 @@
   "yuv.client.state.inbox.title": "Eingangskorb",
   "yuv.client.state.not-found.description": "Das Objekt konnte nicht geladen werden.",
   "yuv.client.state.not-found.title": "Nicht gefunden",
-  "yuv.client.state.process.list.empty": "Es gibt keine aktiven Prozesse",
+  "yuv.client.state.process.list.empty": "Es gibt keine aktiven Wiedervorlagen",
   "yuv.client.state.process.title": "Meine Wiedervorlagen",
   "yuv.client.state.result.title": "Suchergebnis",
   "yuv.client.state.settings.cache.clear.error": "Anwendungscache konnte nicht geleert werden",
@@ -327,7 +328,7 @@
   "yuv.client.state.versions.compare.label": "Version {{version}}",
   "yuv.client.state.versions.header.title": "Versionen",
   "yuv.framework.bpm.inbox.confirm": "Wiedervorlage bestätigen",
-  "yuv.framework.bpm.process.remove": "Prozess entfernen",
+  "yuv.framework.bpm.process.remove": "Wiedervorlage entfernen",
   "yuv.framework.inbox-list.inbox": "Eingangskorb",
-  "yuv.framework.process-list.process": "Meine Prozesse"
+  "yuv.framework.process-list.process": "Meine Wiedervorlagen"
 }
