@@ -83,7 +83,7 @@
     "ngx-drag-scroll": "^9.0.0-beta.4",
     "ngx-toastr": "^13.1.0",
     "primeicons": "^4.0.0",
-    "primeng": "^10.0.3",
+    "primeng": "10.0.2",
     "rxjs": "^6.6.3",
     "take-until-destroy": "^2.1.0",
     "tslib": "^2.0.0",

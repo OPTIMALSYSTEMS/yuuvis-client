@@ -1,7 +1,7 @@
 @import './../../../../../../../src/scss-shared/_mixins';
-body > .ui-dialog.ui-widget,
-p-dialog .ui-dialog.ui-widget {
-  .ui-dialog-content {
+body > .p-dialog.p-component,
+p-dialog .p-dialog.p-component {
+  .p-dialog-content {
     padding: 0;
     overflow: inherit;
   }

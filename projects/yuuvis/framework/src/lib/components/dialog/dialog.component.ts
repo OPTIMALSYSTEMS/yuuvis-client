@@ -71,7 +71,7 @@ export class DialogComponent implements OnDestroy {
   @HostListener('document:mousedown', ['$event.target'])
   onMousedown(targetElement: HTMLElement) {
     // close active dialog on background/mask click
-    if (this.active && targetElement.classList.contains('ui-dialog-mask')) {
+    if (this.active && targetElement.classList.contains('p-dialog-mask')) {
       this.closeDialog();
     }
   }
