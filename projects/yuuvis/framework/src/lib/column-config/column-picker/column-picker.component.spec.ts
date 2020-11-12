@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { ColumnPickerComponent } from './column-picker.component';
 
@@ -6,7 +6,7 @@ describe('ColumnPickerComponent', () => {
   let component: ColumnPickerComponent;
   let fixture: ComponentFixture<ColumnPickerComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ ColumnPickerComponent ]
     })
