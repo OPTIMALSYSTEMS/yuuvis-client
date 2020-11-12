@@ -80,6 +80,7 @@ $app-bar-zindex: 6;
       flex-flow: row nowrap;
       align-items: center;
       padding: 0 calc(var(--app-pane-padding) * 0.5);
+      height: 40px;
 
       > a > yuv-icon,
       > yuv-icon {
@@ -103,6 +104,7 @@ $app-bar-zindex: 6;
         yuv-quick-search {
           border: 1px solid var(--panel-divider-color);
           position: absolute;
+          top: 2px;
 
           @media (max-width: 699px) {
             width: 100%;
