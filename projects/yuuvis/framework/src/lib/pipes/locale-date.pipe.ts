@@ -20,7 +20,7 @@ export class LocaleDatePipe extends DatePipe implements PipeTransform {
     return this.translate.currentLang;
   }
 
-  transform(value: any, format: string = '', timezone?: string, locale?: string): string {
+  transform(value: any, format: string = '', timezone?: string, locale?: string): string | null | any {
     value = Array.isArray(value) ? value[0] : value;
     if (format === 'eoNiceShort') {
       const diff = (new Date(value).setHours(0, 0, 0, 0) - new Date().setHours(0, 0, 0, 0)) / 1000 / 3600 / 24;
