@@ -16,7 +16,7 @@ export class LocaleDecimalPipe extends DecimalPipe implements PipeTransform {
     super(translate.currentLang || 'en');
   }
 
-  public transform(value: any, digits?: string, locale?: string): string | null {
+  public transform(value: any, digits?: string, locale?: string): string | null | any {
     return super.transform(value, digits, locale || this.translate.currentLang || 'en');
   }
 }
@@ -33,7 +33,7 @@ export class LocalePercentPipe extends PercentPipe implements PipeTransform {
     super(translate.currentLang || 'en');
   }
 
-  public transform(value: any, digits?: string, locale?: string): string | null {
+  public transform(value: any, digits?: string, locale?: string): string | null | any {
     return super.transform(value, digits, locale || this.translate.currentLang || 'en');
   }
 }
@@ -56,7 +56,7 @@ export class LocaleCurrencyPipe extends CurrencyPipe implements PipeTransform {
     display?: 'code' | 'symbol' | 'symbol-narrow' | boolean,
     digits?: string,
     locale?: string
-  ): string | null {
+  ): string | null | any {
     return super.transform(value, currencyCode, display, digits, locale || this.translate.currentLang || 'en');
   }
 }
