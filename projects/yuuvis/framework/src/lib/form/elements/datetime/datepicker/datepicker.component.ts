@@ -37,7 +37,7 @@ export class DatepickerComponent implements OnInit {
   @Input() withTime: boolean;
   @Input() withAmPm: boolean;
 
-  @Input() onylFutureDates = false;
+  @Input() onlyFutureDates = false;
 
   @Input() set date(date: any) {
     this.setCalenderDate(date, true, true);
@@ -59,7 +59,7 @@ export class DatepickerComponent implements OnInit {
     } else if (event.key === 'ArrowDown') {
       newDate = new Date(selected.setHours(24 * 7));
     }
-    if (newDate && !this.isDisabledDate(newDate)) {
+    if (newDate && !this.isDisabledDate(newDate, true)) {
       this.setCalenderDate(newDate);
     }
     if (['Enter', 'Escape', 'ArrowLeft', 'ArrowUp', 'ArrowRight', 'ArrowDown'].includes(event.key)) {
@@ -93,8 +93,8 @@ export class DatepickerComponent implements OnInit {
     this.onCanceled.emit({});
   }
 
-  isDisabledDate(date: Date): boolean {
-    return this.onylFutureDates && date ? date.getTime() <= new Date().getTime() : false;
+  isDisabledDate(date: Date, startOfDay = false): boolean {
+    return this.onlyFutureDates && date ? new Date(date).getTime() < (startOfDay ? new Date().setHours(0, 0, 0, 0) : new Date().getTime()) : false;
   }
 
   setCalenderDate(date: Date | string | number, select = true, format = false) {
@@ -109,7 +109,7 @@ export class DatepickerComponent implements OnInit {
       }
       if (!this.current || this.current.getMonth() !== _date.getMonth() || this.current.getFullYear() !== _date.getFullYear()) {
         this.current = _date;
-        this.weeks = this.datepickerService.buildMonth(this.current, this.startDay, (dd) => this.isDisabledDate(dd));
+        this.weeks = this.datepickerService.buildMonth(this.current, this.startDay, (dd) => this.isDisabledDate(dd, true));
       }
     }
   }

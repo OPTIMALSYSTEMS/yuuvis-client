@@ -49,7 +49,7 @@
       </div>
     </div>
 
-    <div class="date-chips">
+    <div class="date-chips" *ngIf="!onlyFutureDates">
       <button class="chip" *ngIf="withTime" (click)="setDateByType('now')" (dblclick)="setDateByType('now', true)"
         translate>yuv.framework.search.agg.time.now</button>
       <button class="chip" (click)="setDateByType('today')" (dblclick)="setDateByType('today', true)"
@@ -97,6 +97,7 @@
 
   <div class="actions">
     <button (click)="cancel()" translate>yuv.framework.shared.cancel</button>
-    <button class="primary" (click)="selectValue()" translate>yuv.framework.form.datepicker.select</button>
+    <button class="primary" (click)="selectValue()" [disabled]="isDisabledDate(selected)"
+      translate>yuv.framework.form.datepicker.select</button>
   </div>
 </div>
