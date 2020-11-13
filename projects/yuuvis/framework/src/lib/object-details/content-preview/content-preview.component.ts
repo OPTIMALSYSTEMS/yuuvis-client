@@ -67,8 +67,8 @@ export class ContentPreviewComponent implements OnInit, OnDestroy, AfterViewInit
    * `DmsObject[]` to compare changes between objects
    */
   @Input() set compareObjects(dmsObjects: DmsObject[]) {
+    this.dmsObject2 = dmsObjects[1]; // previewSrc requires dmsObject2 - should be set before dmsObject
     this.dmsObject = dmsObjects[0];
-    this.dmsObject2 = dmsObjects[1];
   }
 
   previewSrc$: Observable<string> = this.uploadService.uploadStatus$.pipe(
