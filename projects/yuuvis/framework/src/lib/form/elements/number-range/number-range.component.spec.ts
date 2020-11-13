@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { NumberRangeComponent } from './number-range.component';
 
@@ -6,7 +6,7 @@ describe('NumberRangeComponent', () => {
   let component: NumberRangeComponent;
   let fixture: ComponentFixture<NumberRangeComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ NumberRangeComponent ]
     })

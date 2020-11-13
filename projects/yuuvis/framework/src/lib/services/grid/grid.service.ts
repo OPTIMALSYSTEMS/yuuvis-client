@@ -31,6 +31,12 @@ import { CellRenderer } from './grid.cellrenderer';
 })
 export class GridService {
   private COLUMN_WIDTH_CACHE_KEY_BASE = 'yuv.grid.column.width';
+
+  static isSortable(field: ObjectTypeField): boolean {
+    const skipSort = [BaseObjectTypeField.CREATED_BY, BaseObjectTypeField.MODIFIED_BY].map((s) => s.toString());
+    return field?.propertyType !== 'id' && !skipSort.includes(field?.id);
+  }
+
   /**
    * @ignore
    */
@@ -111,15 +117,10 @@ export class GridService {
     colDef.resizable = true;
 
     // TODO: apply conditions whether or not the column should be sortable
-    if (this.isSortable(field)) {
+    if (GridService.isSortable(field)) {
       colDef.sortable = true;
     }
     return colDef;
-  }
-
-  private isSortable(field: ObjectTypeField): boolean {
-    const skipSort = [BaseObjectTypeField.CREATED_BY, BaseObjectTypeField.MODIFIED_BY].map((s) => s.toString());
-    return field?.propertyType !== 'id' && !skipSort.includes(field?.id);
   }
 
   /**

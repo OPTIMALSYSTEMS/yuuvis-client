@@ -81,7 +81,7 @@
 
   &.selected.multiselect {
     ::ng-deep {
-      .ui-chkbox .ui-chkbox-box.ui-state-active {
+      .p-checkbox .p-checkbox-box.p-highlight {
         background-color: rgba(255, 255, 255, 0.2);
         color: var(--text-color-caption);
         border-color: var(--text-color-caption);

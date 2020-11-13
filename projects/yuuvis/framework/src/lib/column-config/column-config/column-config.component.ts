@@ -19,6 +19,7 @@ import { PopoverConfig } from '../../popover/popover.interface';
 import { PopoverRef } from '../../popover/popover.ref';
 import { PopoverService } from '../../popover/popover.service';
 import { addCircle, arrowDown, clear, dragHandle, pin, sort } from '../../svg.generated';
+import { GridService } from './../../services/grid/grid.service';
 
 /**
  * This component is for configuring a result list column configuration for an object.
@@ -60,6 +61,8 @@ export class ColumnConfigComponent implements OnInit {
   error: string;
 
   labels: any;
+
+  isSortable = (field: ObjectTypeField) => GridService.isSortable(field);
 
   /**
    * ColumnConfigInput holding the object type (and maybe the context) & custom sort options

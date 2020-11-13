@@ -72,8 +72,14 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
 
   objectTypeSelectLabel: string;
 
-  availableObjectTypes: Selectable[] = [];
-  availableObjectTypeGroups: SelectableGroup[] = [];
+  get availableObjectTypes(): Selectable[] {
+    return this.quickSearchService.availableObjectTypes;
+  }
+
+  get availableObjectTypeGroups(): SelectableGroup[] {
+    return this.quickSearchService.availableObjectTypeGroups;
+  }
+
   availableObjectTypeFields: Selectable[] = [];
 
   private TYPES = '@';
@@ -166,8 +172,6 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
       searchWithinContext: [false]
     });
 
-    this.availableObjectTypes = this.quickSearchService.availableObjectTypes;
-    this.availableObjectTypeGroups = this.quickSearchService.availableObjectTypeGroups;
     this.selectedObjectTypes = [];
     this.objectTypeSelectLabel = this.translate.instant('yuv.framework.quick-search.type.all');
     // TODO: load only if needed

@@ -1,7 +1,6 @@
 import { HttpClient, HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { APP_INITIALIZER, ModuleWithProviders, NgModule, Optional, SkipSelf } from '@angular/core';
 import { MissingTranslationHandler, TranslateLoader, TranslateModule } from '@ngx-translate/core';
-import { DeviceDetectorModule } from 'ngx-device-detector';
 import { YuvCoreSharedModule } from './core.shared.module';
 import { AuthInterceptor } from './service/auth/auth.interceptor';
 import { CoreConfig } from './service/config/core-config';
@@ -29,7 +28,7 @@ export function init_module(coreInit: CoreInit) {
  */
 
 @NgModule({
-  imports: [HttpClientModule, TranslateModule.forRoot(), DeviceDetectorModule.forRoot()],
+  imports: [HttpClientModule, TranslateModule.forRoot()],
   exports: [YuvCoreSharedModule]
 })
 export class YuvCoreModule {

@@ -1,3 +1,4 @@
+export * from './chip.pipe';
 export * from './filesize.pipe';
 export * from './filter.pipe';
 export * from './keys.pipe';

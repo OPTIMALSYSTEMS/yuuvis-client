@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { CombinedObjectFormComponent } from './combined-object-form.component';
 
@@ -6,7 +6,7 @@ describe('CombinedObjectFormComponent', () => {
   let component: CombinedObjectFormComponent;
   let fixture: ComponentFixture<CombinedObjectFormComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ CombinedObjectFormComponent ]
     })

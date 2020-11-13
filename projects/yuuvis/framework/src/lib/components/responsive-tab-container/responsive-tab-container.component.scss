@@ -13,9 +13,9 @@
     padding: 0;
     as-split-area.secondary {
       ::ng-deep {
-        .ui-tabview.ui-tabview-top .ui-tabview-nav {
+        .p-tabview.p-component .p-tabview-nav {
           margin-right: 0;
-          li.ui-state-active {
+          li.p-highlight {
             border-color: var(--panel-divider-color);
           }
         }
@@ -34,7 +34,7 @@
         display: none;
       }
       ::ng-deep {
-        .ui-tabview .ui-tabview-nav {
+        .p-tabview .p-tabview-nav {
           margin-right: 0;
         }
       }
@@ -61,16 +61,17 @@
     }
   }
 
-  p-tabview::ng-deep > .ui-tabview > .ui-tabview-panels > p-tabpanel > .ui-tabview-panel {
+  p-tabview::ng-deep > .p-tabview > .p-tabview-panels > p-tabpanel > .p-tabview-panel {
     @include frame(0);
     top: 39px; // header height
   }
 }
 
 ::ng-deep {
-  .ui-tabview {
+  .p-tabview {
     border-radius: 0 !important;
-    .ui-tabview-nav {
+    .p-tabview-nav {
+      flex-wrap: nowrap;
       overflow: auto hidden;
       display: flex;
       margin-right: 28px;
@@ -78,33 +79,33 @@
         margin-right: 0;
       }
 
-      // .ui-tabview-close:after {
+      // .p-tabview-close:after {
       //   content: '\0000D7';
       // }
 
-      li.ui-state-disabled {
+      li.p-disabled {
         display: none;
       }
     }
   }
 
-  :host-context(.screen-s) .ui-tabview.ui-tabview-bottom .ui-tabview-nav {
+  :host-context(.screen-s) .p-tabview.p-tabview-bottom .p-tabview-nav {
     margin-top: -35px;
   }
 
-  .ui-tabview-nav::-webkit-scrollbar {
+  .p-tabview-nav::-webkit-scrollbar {
     height: 0;
   }
 
-  .ui-tabview-panels {
+  .p-tabview-panels {
     height: 100%;
     overflow: auto;
     border: none;
     border-top: 1px solid #c8c8c8;
   }
 
-  .split-tab-view .ui-tabview-panel {
-    .ui-tabview {
+  .split-tab-view .p-tabview-panel {
+    .p-tabview {
       padding: 0;
       height: 100%;
     }
@@ -115,7 +116,7 @@
     }
 
     // display original tab panel (disabled by mainTabView)
-    &.ui-helper-hidden {
+    &[hidden] {
       display: block !important;
     }
   }

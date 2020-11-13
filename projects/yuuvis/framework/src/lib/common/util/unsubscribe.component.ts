@@ -1,9 +1,7 @@
-import { OnDestroy } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
 
-/**
- * Use for any custom cleanup that needs to occur when the instance is destroyed.
- */
+@Injectable()
 export abstract class UnsubscribeOnDestroy implements OnDestroy {
   protected componentDestroyed$: Subject<void>;
   /**
