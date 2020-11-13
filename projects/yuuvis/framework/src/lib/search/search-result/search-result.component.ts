@@ -203,7 +203,10 @@ export class SearchResultComponent implements OnDestroy {
 
     this.eventService
       .on(YuvEventType.DMS_OBJECT_UPDATED, YuvEventType.DMS_OBJECT_DELETED)
-      .pipe(takeUntilDestroy(this), tap(this.objectEvent))
+      .pipe(
+        takeUntilDestroy(this),
+        tap((e) => this.objectEvent(e))
+      )
       .subscribe((e: YuvEvent) => {});
   }
 
