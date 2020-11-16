@@ -187,7 +187,7 @@ export class ReferenceComponent implements ControlValueAccessor, AfterViewInit {
           return ids.map((id) => {
             return {
               id: id,
-              objectTypeId: x[id].fields.get(BaseObjectTypeField.OBJECT_TYPE_ID),
+              objectTypeId: x[id]?.fields.get(BaseObjectTypeField.OBJECT_TYPE_ID),
               title: x[id] ? x[id].fields.get(ClientDefaultsObjectTypeField.TITLE) : this.noAccessTitle,
               description: x[id] ? x[id].fields.get(ClientDefaultsObjectTypeField.DESCRIPTION) : null
             };
