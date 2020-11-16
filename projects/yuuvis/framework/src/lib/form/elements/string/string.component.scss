@@ -1,6 +1,6 @@
 :host {
   ::ng-deep {
-    .ui-autocomplete-token-label {
+    .p-autocomplete-token-label {
       display: flex;
       align-items: center;
       user-select: text;
@@ -63,7 +63,7 @@
     }
   }
 
-  .ui-inputtext,
+  .p-inputtext,
   input {
     padding: 0;
     border: 0 !important;

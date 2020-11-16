@@ -4,10 +4,10 @@
 
   &.inputDisabled {
     ::ng-deep {
-      .ui-autocomplete-multiple-container.ui-inputtext {
+      .p-autocomplete-multiple-container.p-inputtext {
         cursor: default;
       }
-      .ui-autocomplete-input-token {
+      .p-autocomplete-input-token {
         display: none !important;
       }
     }

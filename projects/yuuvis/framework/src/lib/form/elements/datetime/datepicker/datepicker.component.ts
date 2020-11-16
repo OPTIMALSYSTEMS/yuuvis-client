@@ -37,7 +37,7 @@ export class DatepickerComponent implements OnInit {
   @Input() withTime: boolean;
   @Input() withAmPm: boolean;
 
-  @Input() onylFutureDates = false;
+  @Input() onlyFutureDates = false;
 
   @Input() set date(date: any) {
     this.setCalenderDate(date, true, true);
@@ -46,30 +46,30 @@ export class DatepickerComponent implements OnInit {
   @HostListener('document:keydown', ['$event']) onKeydownHandler(event: KeyboardEvent) {
     let newDate: Date;
     const selected = new Date(this.selected);
-    if (event.keyCode === 13) {
+    if (event.key === 'Enter') {
       this.selectValue();
-    } else if (event.keyCode === 27) {
+    } else if (event.key === 'Escape') {
       this.cancel();
-    } else if (event.keyCode === 37) {
+    } else if (event.key === 'ArrowLeft') {
       newDate = new Date(selected.setHours(-24));
-    } else if (event.keyCode === 38) {
+    } else if (event.key === 'ArrowUp') {
       newDate = new Date(selected.setHours(-24 * 7));
-    } else if (event.keyCode === 39) {
+    } else if (event.key === 'ArrowRight') {
       newDate = new Date(selected.setHours(24));
-    } else if (event.keyCode === 40) {
+    } else if (event.key === 'ArrowDown') {
       newDate = new Date(selected.setHours(24 * 7));
     }
-    if (newDate && !this.isDisabledDate(newDate)) {
+    if (newDate && !this.isDisabledDate(newDate, true)) {
       this.setCalenderDate(newDate);
     }
-    if (event.keyCode === 13 || event.keyCode === 27) {
+    if (['Enter', 'Escape', 'ArrowLeft', 'ArrowUp', 'ArrowRight', 'ArrowDown'].includes(event.key)) {
       event.preventDefault();
       event.stopPropagation();
     }
   }
 
   onInputKeydown(event: KeyboardEvent) {
-    if (event.keyCode !== 27 && event.keyCode !== 13) {
+    if (event.key !== 'Escape' && event.key !== 'Enter') {
       event.stopPropagation();
     }
   }
@@ -79,7 +79,7 @@ export class DatepickerComponent implements OnInit {
     const days = getLocaleDayNames(translate.currentLang, FormStyle.Format, TranslationWidth.Abbreviated);
 
     this.startDay = getLocaleFirstDayOfWeek(translate.currentLang);
-    this.monthsShort = getLocaleMonthNames(translate.currentLang, FormStyle.Format, TranslationWidth.Abbreviated);
+    this.monthsShort = getLocaleMonthNames(translate.currentLang, FormStyle.Format, TranslationWidth.Abbreviated).map((name) => name.toString());
     this.weekdaysShort = days.slice(this.startDay).concat(days.slice(0, this.startDay));
   }
 
@@ -93,8 +93,8 @@ export class DatepickerComponent implements OnInit {
     this.onCanceled.emit({});
   }
 
-  isDisabledDate(date: Date): boolean {
-    return this.onylFutureDates && date ? date.getTime() <= new Date().getTime() : false;
+  isDisabledDate(date: Date, startOfDay = false): boolean {
+    return this.onlyFutureDates && date ? new Date(date).getTime() < (startOfDay ? new Date().setHours(0, 0, 0, 0) : new Date().getTime()) : false;
   }
 
   setCalenderDate(date: Date | string | number, select = true, format = false) {
@@ -109,7 +109,7 @@ export class DatepickerComponent implements OnInit {
       }
       if (!this.current || this.current.getMonth() !== _date.getMonth() || this.current.getFullYear() !== _date.getFullYear()) {
         this.current = _date;
-        this.weeks = this.datepickerService.buildMonth(this.current, this.startDay, (dd) => this.isDisabledDate(dd));
+        this.weeks = this.datepickerService.buildMonth(this.current, this.startDay, (dd) => this.isDisabledDate(dd, true));
       }
     }
   }

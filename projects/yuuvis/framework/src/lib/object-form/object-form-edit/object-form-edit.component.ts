@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnDestroy, Output, TemplateRef, ViewChild } from '@angular/core';
+import { Attribute, Component, EventEmitter, Input, OnDestroy, Output, TemplateRef, ViewChild } from '@angular/core';
 import {
   AFO_STATE,
   ApiBase,
@@ -102,6 +102,8 @@ export class ObjectFormEditComponent implements OnDestroy {
    */
   @Output() indexDataSaved = new EventEmitter<DmsObject>();
 
+  @Output() statusChanged = new EventEmitter<FormStatusChangedEvent>();
+
   formOptions: ObjectFormOptions;
   combinedFormInput: CombinedObjectFormInput;
   formState: FormStatusChangedEvent;
@@ -118,6 +120,7 @@ export class ObjectFormEditComponent implements OnDestroy {
   };
 
   constructor(
+    @Attribute('actionsDisabled') public actionsDisabled: boolean,
     private systemService: SystemService,
     private backend: BackendService,
     private dmsService: DmsService,
@@ -137,7 +140,7 @@ export class ObjectFormEditComponent implements OnDestroy {
   private startPending() {
     // because this method will be called every time the form status changes,
     // pending task will only be started once until it was finished
-    if (!this.pendingChanges.hasPendingTask(this.pendingTaskId || ' ')) {
+    if (!this.pendingChanges.hasPendingTask(this.pendingTaskId || ' ') && !this.actionsDisabled) {
       this.pendingTaskId = this.pendingChanges.startTask(this.translate.instant('yuv.framework.object-form-edit.pending-changes.alert'));
     }
   }
@@ -147,6 +150,7 @@ export class ObjectFormEditComponent implements OnDestroy {
   }
 
   onFormStatusChanged(evt) {
+    this.statusChanged.emit(evt);
     this.formState = evt;
     this.controls.disabled = !(this.formState.dirty || this._sotChanged.assignedPrimaryFSOT);
     if (this.formState.dirty) {
@@ -154,6 +158,15 @@ export class ObjectFormEditComponent implements OnDestroy {
     } else {
       this.finishPending();
     }
+  }
+
+  getFormData() {
+    let formData = (this.objectForm || this.afoObjectForm).getFormData();
+    // also apply secondary objecttype IDs as they may have changed as well
+    if (this._sotChanged.applied.length > 0 || this._sotChanged.removed.length > 0) {
+      formData[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS] = this._dmsObject.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS];
+    }
+    return formData;
   }
 
   // save the current dms object
@@ -234,7 +247,7 @@ export class ObjectFormEditComponent implements OnDestroy {
   }
 
   // reset the form to its initial state
-  reset() {
+  resetForm() {
     if (this.objectForm) {
       this.objectForm.resetForm();
     }

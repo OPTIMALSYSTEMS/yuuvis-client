@@ -11,7 +11,6 @@ import {
   ObjectTag,
   SearchFilter,
   SearchQuery,
-  SystemService,
   TranslateService,
   UserRoles,
   UserService,
@@ -22,7 +21,6 @@ import {
   IconRegistryService,
   LayoutService,
   LayoutSettings,
-  NotificationService,
   openContext,
   PopoverRef,
   PopoverService,
@@ -76,11 +74,10 @@ export class FrameComponent implements OnInit, OnDestroy {
   reloadComponent = true;
 
   @HostListener('window:dragover', ['$event']) onDragOver(e) {
-    let transfer = e.dataTransfer;
-    if (!transfer) {
+    if (!e.dataTransfer) {
       return;
     }
-    transfer.dropEffect = 'none';
+    e.dataTransfer.dropEffect = 'none';
     e.preventDefault();
   }
   @HostListener('window:drop', ['$event']) onDrop(e) {
@@ -104,11 +101,9 @@ export class FrameComponent implements OnInit, OnDestroy {
     private screenService: ScreenService,
     private userService: UserService,
     private eventService: EventService,
-    private notificationService: NotificationService,
     private translateService: TranslateService,
     private popoverService: PopoverService,
     private dmsService: DmsService,
-    private systemService: SystemService,
     private iconRegistry: IconRegistryService
   ) {
     this.iconRegistry.registerIcons([search, drawer, refresh, add, userDisabled, offline, close, openContext]);
@@ -134,7 +129,7 @@ export class FrameComponent implements OnInit, OnDestroy {
       .pipe(takeUntilDestroy(this))
       .subscribe((event) => this.onObjetcsMove(event));
 
-    this.translateService.onLangChange.subscribe(() => {
+    this.eventService.on(YuvEventType.CLIENT_LOCALE_CHANGED).subscribe(() => {
       this.reloadComponent = false;
       setTimeout(() => (this.reloadComponent = true), 1);
     });

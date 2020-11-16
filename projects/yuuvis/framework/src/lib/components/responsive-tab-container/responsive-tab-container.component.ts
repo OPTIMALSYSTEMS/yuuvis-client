@@ -116,6 +116,7 @@ export class ResponsiveTabContainerComponent implements OnInit, AfterContentInit
     panel.disabled = false;
     this.splitPanels.splice(index, 1);
     this.savePanelOrder();
+    this.mainTabView.cd.markForCheck();
   }
 
   private movePanelContent(panel: TabPanel, tabView: TabView = this.mainTabView) {

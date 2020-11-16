@@ -1,4 +1,4 @@
-import {TestBed, ComponentFixture, async, fakeAsync } from '@angular/core/testing';
+import { TestBed, ComponentFixture, fakeAsync, waitForAsync } from '@angular/core/testing';
 import {AgentService} from '../../../eo-framework-core/agent/agent.service';
 
 import {ActionService} from './action.service';
@@ -34,7 +34,7 @@ describe('ActionService', () => {
   let fixture: ComponentFixture<MockComponent>;
   let service: ActionService;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       schemas: [NO_ERRORS_SCHEMA],
       imports: [RouterTestingModule.withRoutes([]), TranslateModule.forRoot({

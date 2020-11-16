@@ -72,24 +72,25 @@ export class QuickSearchService {
     // this.saveFilters(true, {});
     // this.saveFilters(false, {});
 
-    this.systemService.system$.subscribe((_) => {
-      this.availableObjectTypes = this.getAvailableObjectTypes();
-      let i = 0;
-      this.availableObjectTypeGroups = this.systemService.getGroupedObjectTypes(true, true, true, 'search').map((otg: ObjectTypeGroup) => ({
-        id: `${i++}`,
-        label: otg.label,
-        items: otg.types.map((ot: ObjectType) => ({
-          id: ot.id,
-          label: ot.label || ot.id,
-          highlight: ot.isFolder,
-          svgSrc: this.systemService.getObjectTypeIconUri(ot.id),
-          value: ot
-        }))
-      }));
-    });
+    this.systemService.system$.subscribe(() => this.setupAvailableObjectTypes() && this.setupAvailableObjectTypeGroups());
   }
 
-  private getAvailableObjectTypes() {
+  private setupAvailableObjectTypeGroups() {
+    let i = 0;
+    return (this.availableObjectTypeGroups = this.systemService.getGroupedObjectTypes(true, true, true, 'search').map((otg: ObjectTypeGroup) => ({
+      id: `${i++}`,
+      label: otg.label,
+      items: otg.types.map((ot: ObjectType) => ({
+        id: ot.id,
+        label: ot.label || ot.id,
+        highlight: ot.isFolder,
+        svgSrc: this.systemService.getObjectTypeIconUri(ot.id),
+        value: ot
+      }))
+    })));
+  }
+
+  private setupAvailableObjectTypes() {
     // also add extension types that are not excluded from search
     const extendables = this.systemService
       .getSecondaryObjectTypes()
@@ -100,14 +101,14 @@ export class QuickSearchService {
           !sot.classification?.includes(ObjectTypeClassification.SEARCH_FALSE)
       );
 
-    return [...this.systemService.getObjectTypes(), ...extendables]
+    return (this.availableObjectTypes = [...this.systemService.getObjectTypes(), ...extendables]
       .filter((t) => !this.skipTypes.includes(t.id))
       .map((ot) => ({
         id: ot.id,
         label: this.systemService.getLocalizedResource(`${ot.id}_label`) || ot.id,
         value: ot
       }))
-      .sort(Utils.sortValues('label'));
+      .sort(Utils.sortValues('label')));
   }
 
   loadFilterSettings(global = false) {

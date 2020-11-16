@@ -13,8 +13,14 @@ export class FilterConfigurationComponent implements OnInit {
   @ViewChild('typeSelectTrigger') typeSelectTrigger: ElementRef;
 
   objectTypeSelectLabel: string;
-  availableObjectTypeGroups: SelectableGroup[] = [];
-  availableObjectTypes: Selectable[] = [];
+
+  get availableObjectTypes(): Selectable[] {
+    return this.quickSearchService.availableObjectTypes;
+  }
+
+  get availableObjectTypeGroups(): SelectableGroup[] {
+    return this.quickSearchService.availableObjectTypeGroups;
+  }
 
   data: any = {
     query: new SearchQuery(),
@@ -27,10 +33,7 @@ export class FilterConfigurationComponent implements OnInit {
     return this.data.typeSelection.map((id) => this.availableObjectTypes.find((t) => t.id === id).label).join(', ') || '*';
   }
 
-  constructor(private popoverService: PopoverService, private quickSearchService: QuickSearchService, private route: ActivatedRoute) {
-    this.availableObjectTypeGroups = this.quickSearchService.availableObjectTypeGroups;
-    this.availableObjectTypes = this.quickSearchService.availableObjectTypes;
-  }
+  constructor(private popoverService: PopoverService, private quickSearchService: QuickSearchService, private route: ActivatedRoute) {}
 
   showObjectTypePicker() {
     const pickerData: QuickSearchPickerData = {

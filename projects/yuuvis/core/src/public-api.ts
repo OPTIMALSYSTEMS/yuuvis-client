@@ -1,4 +1,4 @@
-export { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core';
+export { TranslateDirective, TranslateLoader, TranslateModule, TranslatePipe, TranslateService } from '@ngx-translate/core';
 export * from './lib/core.module';
 export * from './lib/core.shared.module';
 export * from './lib/model/dms-object.interface';
