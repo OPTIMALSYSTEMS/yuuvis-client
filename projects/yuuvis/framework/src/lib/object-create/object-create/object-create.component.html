@@ -66,7 +66,8 @@
                 <button *ngIf="files?.length"
                   (click)="filesClear()">{{ 'yuv.framework.object-create.step.file.clear' | translate }}</button>
                 <yuv-file-picker [label]="'yuv.framework.object-create.step.file.choose' | translate" [output]="'file'"
-                  [multiple]="!afoType" (fileSelected)="fileChosen($event)"></yuv-file-picker>
+                  [disabled]="afoType && files.length > 0" [multiple]="!afoType" (fileSelected)="fileChosen($event)">
+                </yuv-file-picker>
                 <button class="primary" (click)="fileSelectContinue()"
                   [disabled]="selectedObjectType.contentStreamAllowed === 'required' && files?.length === 0">
                   {{ 'yuv.framework.object-create.step.file.continue' | translate }}
