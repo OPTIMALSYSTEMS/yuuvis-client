@@ -202,7 +202,7 @@ export class DatetimeComponent implements OnInit, ControlValueAccessor, Validato
     }
   }
 
-  private isValidDate(date: Date): boolean {
+  private isValidDate(date: any): boolean {
     this.isValid = this.onlyFutureDates && date ? new Date(date).getTime() >= new Date().getTime() : !!date;
     return !!date;
   }
