@@ -189,6 +189,10 @@ export class SearchResultComponent implements OnDestroy {
     return this.dataTable ? this.dataTable.viewMode : null;
   }
 
+  get sortOptionsChanged() {
+    return JSON.stringify(this._originalQuery?.sortOptions || []) !== JSON.stringify(this._searchQuery?.sortOptions || []);
+  }
+
   constructor(
     @Attribute('applyColumnConfig') public applyColumnConfig: boolean,
     private gridService: GridService,
@@ -272,6 +276,7 @@ export class SearchResultComponent implements OnDestroy {
           .forEach((c) => {
             q.addSortOption(c.id, c.sort);
           });
+        this._originalQuery = new SearchQuery(q.toQueryJson());
       }),
       map((cc: ColumnConfig) => cc.columns.map((column: ColumnConfigColumn) => column.id)),
       tap(
