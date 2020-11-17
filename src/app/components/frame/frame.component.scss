@@ -2,6 +2,7 @@
 $user-panel-width: 180px;
 $pwa-update-width: 200px;
 $app-bar-zindex: 6;
+$app-bar-icon: 32px;
 
 :host {
   overflow: hidden;
@@ -37,7 +38,7 @@ $app-bar-zindex: 6;
     display: flex;
     flex-flow: row nowrap;
     align-items: center;
-    padding: calc((var(--app-bar-height) - 32px) / 4);
+    padding: calc((var(--app-bar-height) - #{$app-bar-icon}) / 4);
     color: var(--text-color-caption);
     background-color: var(--app-bar-background);
     border-bottom: 1px solid var(--panel-divider-color);
@@ -59,7 +60,7 @@ $app-bar-zindex: 6;
     }
 
     yuv-icon#drawer {
-      padding: calc(((var(--app-bar-height) - 24px) / 2) - ((var(--app-bar-height) - 32px) / 4));
+      padding: calc(((var(--app-bar-height) - 24px) / 2) - ((var(--app-bar-height) - #{$app-bar-icon}) / 4));
     }
 
     a#logo {
@@ -67,8 +68,8 @@ $app-bar-zindex: 6;
       margin: 0 calc(var(--app-pane-padding) / 2);
 
       yuv-icon {
-        width: 32px;
-        padding: calc(((var(--app-bar-height) - 32px) / 2) - ((var(--app-bar-height) - 32px) / 4));
+        width: $app-bar-icon;
+        padding: calc(((var(--app-bar-height) - #{$app-bar-icon}) / 2) - ((var(--app-bar-height) - #{$app-bar-icon}) / 4));
         height: auto;
         background-color: transparent;
       }
@@ -80,6 +81,7 @@ $app-bar-zindex: 6;
       flex-flow: row nowrap;
       align-items: center;
       padding: 0 calc(var(--app-pane-padding) * 0.5);
+      height: calc((var(--app-bar-height) - var(--app-pane-padding)));
 
       > a > yuv-icon,
       > yuv-icon {
@@ -103,6 +105,8 @@ $app-bar-zindex: 6;
         yuv-quick-search {
           border: 1px solid var(--panel-divider-color);
           position: absolute;
+          top: 0;
+          margin: 2px;
 
           @media (max-width: 699px) {
             width: 100%;
@@ -137,8 +141,8 @@ $app-bar-zindex: 6;
       .user {
         border-radius: 50%;
         margin: 0 var(--app-pane-padding);
-        width: 32px;
-        height: 32px;
+        width: $app-bar-icon;
+        height: $app-bar-icon;
         overflow: hidden;
         background-color: rgba(255, 255, 255, 0.1);
         cursor: pointer;

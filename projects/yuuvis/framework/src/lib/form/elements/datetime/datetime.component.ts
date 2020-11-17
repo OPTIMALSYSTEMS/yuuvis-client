@@ -67,7 +67,7 @@ export class DatetimeComponent implements OnInit, ControlValueAccessor, Validato
   /**
    * Whether or not to allow only values in the future (default: false)
    */
-  @Input() onylFutureDates: boolean;
+  @Input() onlyFutureDates: boolean;
   /**
    * Will prevent the input from being changed (default: false)
    */
@@ -145,8 +145,7 @@ export class DatetimeComponent implements OnInit, ControlValueAccessor, Validato
         );
 
       const d = this.datePipe.transform(innerDate || this.innerValue, this._datePattern);
-      this.isValid = !!d;
-      if (this.isValid) {
+      if (this.isValidDate(d)) {
         this.value = innerDate || new Date(d);
       }
     } catch {
@@ -164,7 +163,7 @@ export class DatetimeComponent implements OnInit, ControlValueAccessor, Validato
         value: this.value,
         withTime: this.withTime,
         withAmPm: this.withAmPm,
-        onylFutureDates: this.onylFutureDates
+        onlyFutureDates: this.onlyFutureDates
       }
     };
     this.popoverService.open(this.tplDatePicker, popoverConfig);
@@ -195,13 +194,17 @@ export class DatetimeComponent implements OnInit, ControlValueAccessor, Validato
   private setInnerValue() {
     if (this.value) {
       const d = this.datePipe.transform(this.value, this._datePattern);
-      this.isValid = !!d;
-      if (this.isValid) {
+      if (this.isValidDate(d)) {
         this.innerValue = d;
       }
     } else {
       this.innerValue = null;
     }
+  }
+
+  private isValidDate(date: any): boolean {
+    this.isValid = this.onlyFutureDates && date ? new Date(date).getTime() >= new Date().getTime() : !!date;
+    return !!date;
   }
 
   // returns null when valid else the validation object
