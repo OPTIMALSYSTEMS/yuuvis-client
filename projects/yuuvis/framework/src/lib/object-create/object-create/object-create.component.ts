@@ -251,13 +251,23 @@ export class ObjectCreateComponent implements OnDestroy {
       ag.forEach((g: SelectableGroup) => {
         agFiltered.push({
           ...g,
-          items: g.items.map((i) => ({ ...i, disabled: this.files.length > 0 && i.value.contentStreamAllowed === ContentStreamAllowed.NOT_ALLOWED }))
+          items: g.items.map((i) => ({ ...i, disabled: this.isDisabled(i) }))
         });
       });
       this.availableObjectTypeGroups = agFiltered;
     } else {
       this.availableObjectTypeGroups = ag;
     }
+  }
+
+  private isDisabled(item: Selectable) {
+    const ot: ObjectType = item.value as ObjectType;
+    return (
+      (this.files.length > 0 && item.value.contentStreamAllowed === ContentStreamAllowed.NOT_ALLOWED) ||
+      // floating and general types only support one file for now
+      (!!ot.floatingParentType && this.files.length > 1) ||
+      (this.system.isFloatingObjectType(ot) && this.files.length > 1)
+    );
   }
 
   removeContext() {
@@ -483,10 +493,7 @@ export class ObjectCreateComponent implements OnDestroy {
     this.objCreateService.setNewState({ done: this.isReady() });
   }
 
-  onFilesDroppedOnType(files: File[], type?: ObjectType) {
-    if (type) {
-      this.selectObjectType(type);
-    }
+  onFilesDroppedOnType(files: File[]) {
     this.files = [...this.files, ...files];
     this.objCreateService.setNewState({ done: this.isReady() });
   }
