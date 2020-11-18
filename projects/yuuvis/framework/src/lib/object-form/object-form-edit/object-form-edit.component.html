@@ -1,9 +1,5 @@
 <div class="object-form-edit" [ngClass]="{invalid: formState?.invalid === true}" [yuvBusyOverlay]="busy">
 
-  <yuv-object-form [formOptions]="formOptions" *ngIf="formOptions" (statusChanged)="onFormStatusChanged($event)">
-  </yuv-object-form>
-
-
   <ng-container *ngIf="combinedFormInput">
     <!-- FSOT add panel -->
     <div class="fsot">
