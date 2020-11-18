@@ -1,6 +1,6 @@
 import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
 import { ValidatorFn, Validators } from '@angular/forms';
-import { Logger, RangeValue, SearchFilter, SearchService, SystemService } from '@yuuvis/core';
+import { Logger, RangeValue, SearchFilter, SearchService, SystemService, Utils } from '@yuuvis/core';
 import { cloneDeep } from 'lodash-es';
 import { Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
@@ -453,7 +453,7 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
       let value: any;
       value = formElement?.value
         ? this.patchFormValue(formElement?.value)
-        : formElement?.defaultvalue && this.formOptions.formModel.situation === Situation.CREATE
+        : !Utils.isEmpty(formElement?.defaultvalue) && this.formOptions.formModel.situation === Situation.CREATE
         ? this.patchFormValue(formElement?.defaultvalue)
         : formElement?.value;
 
