@@ -38,8 +38,8 @@
   </section>
 
   <ng-template #deleteFollowUpTemp>
-    <h2>
-      {{ 'yuv.framework.action-menu.action.follow-up.delete.confirm.message' | translate: { item: selection[0].title } }}
+    <h2 *ngIf="selection[0].title; else noTitle">
+      {{ 'yuv.framework.action-menu.action.follow-up.delete.confirm.message.with.title' | translate: { item: selection[0].title } }}
     </h2>
     <div class="form-buttons">
       <button (click)="cancel()">{{ 'yuv.framework.shared.cancel' | translate }}</button>
@@ -56,5 +56,9 @@
     </section>
   </ng-template>
   
+  
+  <ng-template #noTitle>
+    {{ 'yuv.framework.action-menu.action.follow-up.delete.confirm.message' | translate }}
+  </ng-template>
   
 </div>

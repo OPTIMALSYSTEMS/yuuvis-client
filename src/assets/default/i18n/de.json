@@ -1,6 +1,7 @@
 {
   "yuv.client.state.object.context.load.error": "Das Objekt ist nicht verfügbar. Entweder wurde das Objekt gelöscht oder die Zugriffsrechte haben sich geändert.",
   "yuv.framework.action-menu.action.delete.dms.object.confirm.message": "Sind Sie sicher, dass '{{item}}' gelöscht werden soll?",
+  "yuv.framework.action-menu.action.delete.dms.object.confirm.message.with.title": "",
   "yuv.framework.action-menu.action.delete.dms.object.description": "Löscht das Objekt.",
   "yuv.framework.action-menu.action.delete.dms.object.done.message": "Objekt wurde gelöscht.",
   "yuv.framework.action-menu.action.delete.dms.object.done.title": "Löschen",
@@ -18,7 +19,8 @@
   "yuv.framework.action-menu.action.follow-up.confirm.error.message": "Die Aufgabe konnte nicht bestätigt werden",
   "yuv.framework.action-menu.action.follow-up.confirm.success.message": "Die Aufgabe wurde bestätigt",
   "yuv.framework.action-menu.action.follow-up.create.title": "Wiedervorlage erstellen",
-  "yuv.framework.action-menu.action.follow-up.delete.confirm.message": "Sind Sie sicher, dass der Wiedervorlage-Termin gelöscht werden soll '{{item}}'?",
+  "yuv.framework.action-menu.action.follow-up.delete.confirm.message": "Sind Sie sicher, dass der Wiedervorlage-Termin gelöscht werden soll?",
+  "yuv.framework.action-menu.action.follow-up.delete.confirm.message.with.title": "Sind Sie sicher, dass der Wiedervorlage-Termin gelöscht werden soll '{{item}}'?",
   "yuv.framework.action-menu.action.follow-up.delete.message": "Wiedervorlage wurde gelöscht",
   "yuv.framework.action-menu.action.follow-up.description": "Öffnet die Wiedervorlage-Eigenschaften zum Erstellen oder Bearbeiten.",
   "yuv.framework.action-menu.action.follow-up.done.message": "Wiedervorlage wurde erstellt",

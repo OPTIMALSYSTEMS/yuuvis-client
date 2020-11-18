@@ -1,6 +1,7 @@
 {
 	"yuv.client.state.object.context.load.error": "",
-	"yuv.framework.action-menu.action.delete.dms.object.confirm.message": "Are you sure you want to delete '{{item}}'?",
+	"yuv.framework.action-menu.action.delete.dms.object.confirm.message": "Are you sure you want to delete this item?",
+	"yuv.framework.action-menu.action.delete.dms.object.confirm.message.with.title": "Are you sure you want to delete '{{item}}'?",
 	"yuv.framework.action-menu.action.delete.dms.object.description": "Deletes the object.",
 	"yuv.framework.action-menu.action.delete.dms.object.done.message": "Object was deleted.",
 	"yuv.framework.action-menu.action.delete.dms.object.done.title": "Delete",
@@ -18,7 +19,8 @@
 	"yuv.framework.action-menu.action.follow-up.confirm.error.message": "Unable to confirm task",
 	"yuv.framework.action-menu.action.follow-up.confirm.success.message": "The task was confirmed",
 	"yuv.framework.action-menu.action.follow-up.create.title": "Create follow-up",
-	"yuv.framework.action-menu.action.follow-up.delete.confirm.message": "Are you sure you want to delete the follow-up due date '{{item}}'?",
+	"yuv.framework.action-menu.action.follow-up.delete.confirm.message": "Are you sure you want to delete the follow-up due date?",
+	"yuv.framework.action-menu.action.follow-up.delete.confirm.message.with.title": "Are you sure you want to delete the follow-up due date '{{item}}'?",
 	"yuv.framework.action-menu.action.follow-up.delete.message": "Follow-up was deleted",
 	"yuv.framework.action-menu.action.follow-up.description": "Opens the follow-up properties for creating or editing.",
 	"yuv.framework.action-menu.action.follow-up.done.message": "Follow-up was created",
