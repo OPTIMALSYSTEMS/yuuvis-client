@@ -247,7 +247,6 @@ export class ObjectFormEditComponent implements OnDestroy {
   }
 
   private createObjectForm(dmsObject: DmsObject, validate?: boolean) {
-    this.formOptions = null;
     this.getApplicableSecondaries(dmsObject);
     this.systemService.getDmsObjectForms(dmsObject, Situation.EDIT).subscribe(
       (res) => {
