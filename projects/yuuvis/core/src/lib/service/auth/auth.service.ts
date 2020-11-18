@@ -53,9 +53,6 @@ export class AuthService {
         if (data && data.language) {
           this.backend.setHeader('Accept-Language', data.language);
         }
-        if (data && data.tenant) {
-          this.backend.setHeader('X-ID-TENANT-NAME', data.tenant);
-        }
       })
     );
   }
