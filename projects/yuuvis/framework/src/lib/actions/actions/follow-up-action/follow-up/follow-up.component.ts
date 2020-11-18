@@ -39,11 +39,10 @@ export class FollowUpComponent implements OnInit, OnDestroy, ActionComponent {
     private eventService: EventService
   ) {
     this.form = this.fb.group({
-      expiryDateTime: [],
-      whatAbout: '',
+      expiryDateTime: ['', Validators.required],
+      whatAbout: ['', Validators.required],
       documentId: null
     });
-    this.form.controls.expiryDateTime.setValidators(Validators.required);
   }
 
   isRequired(field: string): boolean {
