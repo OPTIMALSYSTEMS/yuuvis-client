@@ -1,0 +1,164 @@
+<div class="object-form-table" [ngClass]="{ medium: _params.size === 'medium', large: _params.size === 'large' }">
+  <div class="label">
+    <span>{{ _params.element.label }}</span>
+    <ng-container *ngIf="_params.situation !== 'SEARCH'">
+      <yuv-icon class="stf" [icon]="'expand'" [title]="'eo.form.table.options.btn.open' | translate" (click)="openDialog()"></yuv-icon>
+      <yuv-icon class="stf" [icon]="'size_to_fit'" [title]="'eo.form.table.options.btn.fit' | translate" (click)="sizeToFit()"></yuv-icon>
+      <yuv-icon
+        class="stf"
+        *ngIf="gridOptions.rowData.length"
+        [icon]="'content-download'"
+        [title]="'eo.form.table.options.btn.csv' | translate"
+        (click)="exportCSV()"
+      ></yuv-icon>
+      <yuv-icon
+        class="stf"
+        *ngIf="!_params.element.readonly"
+        [icon]="'addCircle'"
+        [title]="'eo.form.table.options.btn.add' | translate"
+        (click)="addRow()"
+      ></yuv-icon>
+    </ng-container>
+  </div>
+  <div class="grid-body size-{{ params.size }}">
+    <ag-grid-angular
+      #agGrid
+      *ngIf="gridReady"
+      class="ag-theme-balham"
+      [modules]="modules"
+      [gridOptions]="gridOptions"
+      (rowDoubleClicked)="editRow($event)"
+      (cellClicked)="onCellClicked($event)"
+      (cellValueChanged)="onEditComplete($event)"
+    >
+    </ag-grid-angular>
+  </div>
+</div>
+
+<yuv-dialog
+  [title]="params.element.label"
+  [visible]="showDialog"
+  [dirtyCheck]="rowEdit?.pendingTaskId"
+  [minWidth]="_params.situation === 'SEARCH' ? 500 : null"
+  [fullscreen]="_params.situation !== 'SEARCH'"
+  [styleClass]="'object-form-table-dialog'"
+  (hide)="onClose()"
+  #dialog
+>
+  <div class="body">
+    <!-- <yuv-responsive-master-slave [slaveActive]="true"> -->
+    <div *ngIf="true" class="table-area">
+      <div class="table-body">
+        <div class="object-form-table">
+          <div class="label">
+            <span></span>
+            <ng-container>
+              <yuv-icon class="stf" [icon]="'ic_size_to_fit'" [title]="'eo.form.table.options.btn.fit' | translate" (click)="sizeToFit(true)"></yuv-icon>
+              <yuv-icon
+                class="stf"
+                *ngIf="gridOptions.rowData.length"
+                [icon]="'content-download'"
+                [title]="'eo.form.table.options.btn.csv' | translate"
+                (click)="exportCSV()"
+              ></yuv-icon>
+              <yuv-icon
+                class="stf"
+                *ngIf="!_params.element.readonly"
+                [icon]="'addCircle'"
+                [title]="'eo.form.table.options.btn.add' | translate"
+                (click)="addRow()"
+              ></yuv-icon>
+            </ng-container>
+          </div>
+          <div class="grid-body">
+            <ag-grid-angular
+              #agGrid2
+              *ngIf="gridReady"
+              class="ag-theme-balham"
+              [modules]="modules"
+              [gridOptions]="overlayGridOptions"
+              (cellClicked)="editRow($event)"
+              (mousedown)="onMouseDown($event)"
+              (cellValueChanged)="onEditComplete($event)"
+            >
+            </ag-grid-angular>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="editingRow">
+      <div class="edit-body">
+        <yuv-row-edit
+          [row]="editingRow"
+          #rowEdit
+          (onSave)="updateRow($event)"
+          (onSaveCopy)="copyRow($event)"
+          (onDelete)="deleteRow($event)"
+          (onCancel)="cancelRowEdit()"
+        ></yuv-row-edit>
+      </div>
+    </div>
+    <!-- </yuv-responsive-master-slave> -->
+
+    <!-- <yuv-split [gutterSize]="16" [switchable]="true">
+      <yuv-split-area *ngIf="_params.situation !== 'SEARCH'" class="table-area" [size]="75" [minSizePixel]="100">
+        <div class="table-body">
+          <div class="object-form-table">
+            <div class="label">
+              <span></span>
+              <ng-container>
+                <yuv-icon
+                  class="stf"
+                  [iconSrc]="'assets/svg/ic_size_to_fit.svg'"
+                  [title]="'eo.form.table.options.btn.fit' | translate"
+                  (click)="sizeToFit(true)"
+                ></yuv-icon>
+                <yuv-icon
+                  class="stf"
+                  *ngIf="gridOptions.rowData.length"
+                  [iconSrc]="'assets/svg/ic_content-download.svg'"
+                  [title]="'eo.form.table.options.btn.csv' | translate"
+                  (click)="exportCSV()"
+                ></yuv-icon>
+                <yuv-icon
+                  class="stf"
+                  *ngIf="!_params.element.readonly"
+                  [iconSrc]="'assets/svg/ic_add.svg'"
+                  [title]="'eo.form.table.options.btn.add' | translate"
+                  (click)="addRow()"
+                ></yuv-icon>
+              </ng-container>
+            </div>
+            <div class="grid-body">
+              <ag-grid-angular
+                #agGrid2
+                *ngIf="gridReady"
+                class="ag-theme-balham"
+                [modules]="modules"
+                [gridOptions]="overlayGridOptions"
+                (cellClicked)="editRow($event)"
+                (mousedown)="onMouseDown($event)"
+                (cellValueChanged)="onEditComplete($event)"
+              >
+              </ag-grid-angular>
+            </div>
+          </div>
+        </div>
+      </yuv-split-area>
+
+      <yuv-split-area [size]="25" [minSizePixel]="350" *ngIf="editingRow">
+        <div class="edit-body">
+          <yuv-row-edit
+            [row]="editingRow"
+            #rowEdit
+            (onSave)="updateRow($event)"
+            (onSaveCopy)="copyRow($event)"
+            (onDelete)="deleteRow($event)"
+            (onCancel)="cancelRowEdit()"
+          ></yuv-row-edit>
+        </div>
+      </yuv-split-area>
+    </yuv-split> -->
+  </div>
+</yuv-dialog>

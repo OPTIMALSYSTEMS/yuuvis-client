@@ -1,0 +1,62 @@
+<div class="row-edit">
+  <div class="edit-header" *ngIf="!queryEnabled">
+    <div class="new-indicator" *ngIf="isNewRow" translate>eo.form.table.options.indicator.new</div>
+    <div></div>
+    <yuv-icon [icon]="'clear'" (click)="cancel()" class="button cancel-icon" [title]="'eo.form.table.options.btn.cancel' | translate"></yuv-icon>
+  </div>
+
+  <div class="form">
+    <yuv-object-form
+      [formOptions]="_row.formOptions"
+      #rowForm
+      [isInnerTableForm]="true"
+      (onFormReady)="onFormReady()"
+      (statusChanged)="onFormStatusChanged($event)"
+    >
+    </yuv-object-form>
+  </div>
+
+  <div class="actions">
+    <yuv-checkbox *ngIf="isNewRow" title="{{ 'eo.form.table.options.checkbox.new.title' | translate }}" [formControl]="createNewCheckbox"></yuv-checkbox>
+    <span *ngIf="isNewRow" class="add-label" translate>eo.form.table.options.checkbox.new</span>
+    <button
+      type="button"
+      *ngIf="deleteEnabled && !isNewRow && !_row.formOptions.disabled && !queryEnabled"
+      (click)="showDeleteDialog = true"
+      title="{{ 'eo.form.table.options.btn.delete' | translate }}"
+    >
+      <yuv-icon [icon]="'delete'"></yuv-icon>
+    </button>
+    <button
+      type="button"
+      (click)="saveCopy()"
+      class="primary"
+      *ngIf="copyEnabled && !isNewRow && !_row.formOptions.disabled"
+      [disabled]="formState.invalid"
+      translate
+    >
+      eo.form.table.options.btn.copy
+    </button>
+    <button
+      type="button"
+      (click)="save()"
+      class="primary"
+      *ngIf="saveEnabled && !_row.formOptions.disabled"
+      [disabled]="formState.invalid || (!formState.dirty && !isNewRow)"
+      translate
+    >
+      eo.form.table.options.btn.save{{ isNewRow ? '.new' : '' }}
+    </button>
+    <!-- query button for SEARCH situation -->
+    <button type="button" (click)="save()" class="primary" *ngIf="queryEnabled" [disabled]="formState.invalid || !formState.dirty" translate>
+      eo.form.table.options.btn.save
+    </button>
+  </div>
+</div>
+
+<yuv-dialog [title]="'eo.form.table.options.confirm.delete' | translate" [(visible)]="showDeleteDialog" [minWidth]="400">
+  <div class="action-buttons flex-row" style="padding: 8px">
+    <button type="button" class="button cancel" (click)="showDeleteDialog = false" translate>eo.form.table.options.btn.cancel</button>
+    <button type="button" #confirmDelete (click)="delete()" class="button primary" translate>eo.form.table.options.btn.ok</button>
+  </div>
+</yuv-dialog>

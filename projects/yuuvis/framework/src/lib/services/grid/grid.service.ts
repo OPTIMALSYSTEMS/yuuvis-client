@@ -102,10 +102,10 @@ export class GridService {
    * @param columnConfig Column configuration entry
    * @param field Object type field matching the column config entry
    */
-  private getColumnDefinition(field: ObjectTypeField, columnConfigColumn?: ColumnConfigColumn): ColDef {
+  getColumnDefinition(field: ObjectTypeField, columnConfigColumn?: ColumnConfigColumn): ColDef {
     const colDef: ColDef = {
-      colId: field?.id, // grid needs unique ID
-      field: field?.id,
+      colId: field?.name, // grid needs unique ID
+      field: field?.name,
       headerName: this.system.getLocalizedResource(`${field?.id}_label`),
       pinned: columnConfigColumn ? columnConfigColumn.pinned || false : false
     };
@@ -177,7 +177,7 @@ export class GridService {
     colDef.cellClass = `col-${field?.propertyType}`;
     colDef.headerClass = `col-header-${field?.propertyType}`;
 
-    const internalType = this.system.getInternalFormElementType(field as any, 'propertyType');
+    const internalType = this.system.getInternalFormElementType(field as any, 'type');
 
     switch (internalType) {
       case InternalFieldType.STRING_REFERENCE: {

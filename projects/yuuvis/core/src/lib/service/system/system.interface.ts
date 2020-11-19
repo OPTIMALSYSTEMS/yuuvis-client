@@ -65,6 +65,7 @@ export interface GroupedObjectType {
  */
 export interface ObjectTypeField {
   id: string;
+  name: string;
   propertyType: string;
   description: string;
   cardinality: string;
