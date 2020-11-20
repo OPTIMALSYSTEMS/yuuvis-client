@@ -122,6 +122,7 @@ export class OrganizationComponent implements ControlValueAccessor, AfterViewIni
     });
     return forkJoin(map).subscribe((data) => {
       this.innerValue = data;
+      setTimeout(() => this.autoCompleteInput.cd.markForCheck());
     });
   }
 

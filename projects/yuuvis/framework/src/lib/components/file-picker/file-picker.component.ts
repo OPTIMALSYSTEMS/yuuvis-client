@@ -33,6 +33,8 @@ export class FilePickerComponent {
    * Regulates multiple or single file selection
    */
   @Input() multiple: boolean;
+
+  @Input() disabled: boolean;
   /**
    * Maximum size of the file
    */
@@ -68,7 +70,7 @@ export class FilePickerComponent {
           this.translate.instant('yuv.framework.filepicker.maxsize.exceeded.message', { max: new FileSizePipe(this.translate).transform(this.maxSize) })
         );
       } else {
-        if (this.multiple) {
+        if (this.multiple || this.output === 'file') {
           this.fileSelected.emit(files);
         } else {
           let read: Observable<any>;

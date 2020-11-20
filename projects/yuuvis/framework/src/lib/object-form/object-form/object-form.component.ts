@@ -454,7 +454,7 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
       let value: any;
       value = formElement?.value
         ? this.patchFormValue(formElement?.value)
-        : formElement?.defaultvalue && this.formOptions.formModel.situation === Situation.CREATE
+        : !Utils.isEmpty(formElement?.defaultvalue) && this.formOptions.formModel.situation === Situation.CREATE
         ? this.patchFormValue(formElement?.defaultvalue)
         : formElement?.value;
 

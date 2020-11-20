@@ -1,5 +1,4 @@
 <div class="object-form-edit" [ngClass]="{ invalid: formState?.invalid === true }" [yuvBusyOverlay]="busy">
-  <yuv-object-form [formOptions]="formOptions" *ngIf="formOptions" (statusChanged)="onFormStatusChanged($event)"> </yuv-object-form>
 
   <ng-container *ngIf="combinedFormInput">
     <!-- FSOT add panel -->
@@ -8,7 +7,8 @@
         <button (click)="chooseFSOT(true)">{{ 'yuv.framework.object-form-edit.fsot.apply-type' | translate }}</button>
         <!-- popover for applying a new floating type -->
         <ng-template #tplFloatingTypePicker let-data let-popover="popover">
-          <yuv-fsot-select [fsots]="fsot.applicableTypes" (fsotSelect)="applyFSOT($event, true, popover)"> </yuv-fsot-select>
+          <yuv-fsot-select [fsots]="fsot.applicableTypes" (fsotSelect)="applyFSOT($event, true, popover)">
+          </yuv-fsot-select>
         </ng-template>
       </ng-container>
 
@@ -16,12 +16,14 @@
         <button (click)="chooseFSOT()">{{ 'yuv.framework.object-form-edit.fsot.add-fsot' | translate }}</button>
         <!-- popover for adding a new floating secondary object type -->
         <ng-template #tplFloatingSOTypePicker let-data let-popover="popover">
-          <yuv-fsot-select [fsots]="fsot.applicableSOTs" (fsotSelect)="applyFSOT($event, false, popover)"> </yuv-fsot-select>
+          <yuv-fsot-select [fsots]="fsot.applicableSOTs" (fsotSelect)="applyFSOT($event, false, popover)">
+          </yuv-fsot-select>
         </ng-template>
       </ng-container>
     </div>
 
-    <yuv-combined-object-form (sotRemove)="removeFSOT($event)" (statusChanged)="onFormStatusChanged($event)" [objectFormInput]="combinedFormInput">
+    <yuv-combined-object-form (sotRemove)="removeFSOT($event)" (statusChanged)="onFormStatusChanged($event)"
+      [objectFormInput]="combinedFormInput">
     </yuv-combined-object-form>
   </ng-container>
 
@@ -29,14 +31,10 @@
     <div class="err-msg" *ngIf="formState?.invalid" translate>yuv.framework.object-form-edit.invalid</div>
 
     <div class="buttons" *ngIf="!actionsDisabled" yuvOfflineDisabled>
-      <button class="secondary" (click)="resetForm()" [disabled]="controls.saving || controls.disabled" translate>yuv.framework.object-form-edit.reset</button>
-      <button
-        class="primary"
-        [ngClass]="{ spinning: controls.saving }"
-        [disabled]="formState?.invalid || controls.saving || controls.disabled"
-        (click)="save()"
-        translate
-      >
+      <button class="secondary" (click)="resetForm()" [disabled]="controls.saving || controls.disabled"
+        translate>yuv.framework.object-form-edit.reset</button>
+      <button class="primary" [ngClass]="{ spinning: controls.saving }"
+        [disabled]="formState?.invalid || controls.saving || controls.disabled" (click)="save()" translate>
         yuv.framework.object-form-edit.save
       </button>
     </div>

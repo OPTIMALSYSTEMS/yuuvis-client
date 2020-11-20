@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import {
+  ApiBase,
   BackendService,
   DmsObject,
   DmsService,
@@ -47,7 +48,7 @@ export class PluginsService {
     private searchService: SearchService,
     private userService: UserService
   ) {
-    this.userService.user$.subscribe(user => (this.user = user));
+    this.userService.user$.subscribe((user) => (this.user = user));
   }
 
   /**
@@ -77,7 +78,7 @@ export class PluginsService {
         put: (uri, data, base) => this.put(uri, data, base)
       },
       util: {
-        encodeFileName: filename => this.encodeFileName(filename),
+        encodeFileName: (filename) => this.encodeFileName(filename),
         notifier: {
           success: (text, title) => this.notifications.success(title, text),
           error: (text, title) => this.notifications.error(title, text),
@@ -91,9 +92,9 @@ export class PluginsService {
   /**
    * @ignore
    */
-  public get(uri, base = '') {
+  public get(uri, base?) {
     return this.backend
-      .get(uri, base, { observe: 'response' })
+      .get(uri, base || ApiBase.none, { observe: 'response' })
       .pipe(
         map((res: any) => {
           const { status, body } = res;
@@ -109,22 +110,22 @@ export class PluginsService {
   /**
    * @ignore
    */
-  public put(uri, data, base = '') {
-    return this.backend.put(uri, data, base).toPromise();
+  public put(uri, data, base?) {
+    return this.backend.put(uri, data, base || ApiBase.none).toPromise();
   }
 
   /**
    * @ignore
    */
-  public post(uri, data, base = '') {
-    return this.backend.post(uri, data, base).toPromise();
+  public post(uri, data, base?) {
+    return this.backend.post(uri, data, base || ApiBase.none).toPromise();
   }
 
   /**
    * @ignore
    */
-  public del(uri, base = '') {
-    return this.backend.delete(uri, base).toPromise();
+  public del(uri, base?) {
+    return this.backend.delete(uri, base || ApiBase.none).toPromise();
   }
 
   /**
@@ -150,7 +151,7 @@ export class PluginsService {
    */
   public getResult(fields, type): Promise<DmsObject[]> {
     const searchQuery = new SearchQuery();
-    Object.keys(fields).forEach(f => {
+    Object.keys(fields).forEach((f) => {
       searchQuery.addFilter(new SearchFilter(f, SearchFilter.OPERATOR.EQUAL, fields[f]));
     });
     searchQuery.addType(type);
@@ -179,7 +180,7 @@ export class PluginsService {
     return this.dmsService
       .getDmsObject(id, version)
       .toPromise()
-      .then(response => {
+      .then((response) => {
         return Promise.resolve(response);
       })
       .catch(this.handleError);
