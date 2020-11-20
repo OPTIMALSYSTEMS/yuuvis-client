@@ -165,6 +165,7 @@ export class ReferenceComponent implements ControlValueAccessor, AfterViewInit {
     }
     return forkJoin(tasks).subscribe((data) => {
       this.innerValue = [].concat(...data);
+      setTimeout(() => this.autoCompleteInput.cd.markForCheck());
     });
   }
 
