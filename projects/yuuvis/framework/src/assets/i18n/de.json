@@ -229,7 +229,7 @@
 	"yuv.framework.search.filter.mode.default": "Flache Liste",
 	"yuv.framework.search.filter.mode.groups": "Gruppiert",
 	"yuv.framework.search.filter.name": "Filtername",
-	"yuv.framework.search.filter.object.sots": "Erweiterungen",
+	"yuv.framework.search.filter.object.extensions": "Erweiterungen",
 	"yuv.framework.search.filter.object.types": "Objekttypen",
 	"yuv.framework.search.filter.recent.filters": "Kürzlich aktivierte Filter",
 	"yuv.framework.search.filter.remove": "Entfernen",

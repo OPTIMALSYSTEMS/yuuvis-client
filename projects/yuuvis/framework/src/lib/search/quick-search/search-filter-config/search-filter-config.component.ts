@@ -45,7 +45,7 @@ export class SearchFilterConfigComponent implements OnInit {
   @Input() set options(data: { typeSelection: string[]; query: SearchQuery; sharedFields: boolean; global: boolean }) {
     this.global = data.global;
     this.query = data.query;
-    this.availableObjectTypeFields = this.quickSearchService.getAvailableObjectTypesFields(data.typeSelection, data.query?.sots, data.sharedFields);
+    this.availableObjectTypeFields = this.quickSearchService.getAvailableObjectTypesFields(data.typeSelection, data.query?.lots, data.sharedFields);
 
     this.availableFiltersGroups = [
       {

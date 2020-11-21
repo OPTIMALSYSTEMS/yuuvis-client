@@ -410,6 +410,7 @@ export class SearchResultComponent implements OnDestroy {
 
   onFilterChanged(filterQuery: SearchQuery) {
     this._searchQuery.types = filterQuery.types;
+    this._searchQuery.lots = filterQuery.lots;
     this._searchQuery.filterGroup = filterQuery.filterGroup;
     this.executeQuery();
   }

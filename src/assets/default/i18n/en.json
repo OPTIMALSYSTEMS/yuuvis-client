@@ -229,7 +229,7 @@
   "yuv.framework.search.filter.mode.default": "Flat list",
   "yuv.framework.search.filter.mode.groups": "Grouped",
   "yuv.framework.search.filter.name": "Filter name",
-  "yuv.framework.search.filter.object.sots": "Extensions",
+  "yuv.framework.search.filter.object.extensions": "Extensions",
   "yuv.framework.search.filter.object.types": "Object types",
   "yuv.framework.search.filter.recent.filters": "Recently activated filters",
   "yuv.framework.search.filter.remove": "Remove",

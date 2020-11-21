@@ -108,13 +108,16 @@ export class SearchResultPanelComponent {
     let description = '';
     if (searchQuery) {
       const translateParams = {
-        term: this._searchQuery.term || '',
-        types: this._searchQuery.types.length ? this._searchQuery.types.map((t) => this.systemService.getLocalizedResource(`${t}_label`)).join(', ') : null
+        term: searchQuery.term || '',
+        types: (searchQuery.lots || []).map((t) => this.systemService.getLocalizedResource(`${t}_label`)).join(', '),
+        extensions: (searchQuery.types || []).map((t) => this.systemService.getLocalizedResource(`${t}_label`)).join(', ')
       };
-      if (translateParams.term && !translateParams.types) {
+      if (translateParams.types || translateParams.extensions) {
+        description =
+          this.translate.instant('yuv.framework.search-result-panel.header.description.types', translateParams) +
+          (translateParams.extensions ? ` >>> ${translateParams.extensions}` : '');
+      } else if (translateParams.term) {
         description = this.translate.instant('yuv.framework.search-result-panel.header.description', translateParams);
-      } else if (translateParams.types) {
-        description = this.translate.instant('yuv.framework.search-result-panel.header.description.types', translateParams);
       }
     }
     if (description !== this.queryDescription) {

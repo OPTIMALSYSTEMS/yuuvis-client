@@ -135,26 +135,26 @@ export class SearchFilterComponent implements OnInit {
       }
     ];
 
-    this.setupSOTS();
+    this.setupExtensions();
 
     this.setupCollapsedGroups();
     return this.setupFilters(this.typeSelection);
   }
 
-  private setupSOTS() {
-    if (this._query.sots?.length) {
-      const sots = this.quickSearchService.getActiveSOTS(this._query);
-      this.typeSelection = [...this.typeSelection, ...sots.map((s) => s.id)];
+  private setupExtensions() {
+    const { active, all } = this.quickSearchService.getActiveExtensions(this._query);
+    if (all.length) {
+      this.typeSelection = [...this.typeSelection, ...active];
       this.availableTypeGroups[1] = {
-        id: 'sots',
-        label: this.translate.instant('yuv.framework.search.filter.object.sots'),
-        items: sots
+        id: 'extensions',
+        label: this.translate.instant('yuv.framework.search.filter.object.extensions'),
+        items: all
       };
     }
   }
 
   private setupFilters(typeSelection: string[], activeFilters?: Selectable[]) {
-    this.availableObjectTypeFields = this.quickSearchService.getAvailableObjectTypesFields(typeSelection, this._query?.sots);
+    this.availableObjectTypeFields = this.quickSearchService.getAvailableObjectTypesFields(typeSelection, this._query?.lots);
 
     this.quickSearchService.getCurrentSettings().subscribe(([storedFilters, hiddenFilters, lastFilters]) => {
       this.storedFilters = this.quickSearchService.loadFilters(storedFilters as any, this.availableObjectTypeFields);
@@ -251,10 +251,10 @@ export class SearchFilterComponent implements OnInit {
   onTypeChange(res: Selectable[]) {
     this.typeSelection = res.map((r) => r.id);
     this.setupFilters(this.typeSelection, this.activeFilters);
-    const _sots = [...this.filterQuery.sots];
-    this.quickSearchService.updateTypesAndSots(this.filterQuery, this.typeSelection);
+    const _types = [...this.filterQuery.types];
+    this.quickSearchService.updateTypesAndLots(this.filterQuery, this.typeSelection);
     this.filterChange.emit(this.filterQuery);
-    if (_sots.sort().join() !== this.filterQuery.sots.sort().join()) {
+    if (_types.sort().join() !== this.filterQuery.types.sort().join()) {
       this.aggregate();
     }
   }
@@ -267,8 +267,8 @@ export class SearchFilterComponent implements OnInit {
   }
 
   aggregate() {
-    const queryNoTypes = new SearchQuery({ ...this.filterQuery.toQueryJson(), types: [] });
-    this.quickSearchService.getActiveTypes(queryNoTypes).subscribe((types: any) => {
+    const queryNoLots = new SearchQuery({ ...this.filterQuery.toQueryJson(), lots: [] });
+    this.quickSearchService.getActiveTypes(queryNoLots).subscribe((types: any) => {
       this.availableObjectTypes.forEach((i) => {
         const match = types.find((t) => t.id === i.id);
         i.count = match ? match.count : 0;

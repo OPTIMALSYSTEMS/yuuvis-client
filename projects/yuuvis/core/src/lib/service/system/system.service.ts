@@ -248,6 +248,18 @@ export class SystemService {
   }
 
   /**
+   * Extendable SOTs are secondary object types that are SOTs that are not
+   * primary and not required.
+   * @param withLabel Whether or not to also add the types label
+   */
+  getAllExtendableSOTs(withLabel?: boolean) {
+    return this.getSecondaryObjectTypes(withLabel).filter(
+      (sot) =>
+        !sot.classification?.includes(SecondaryObjectTypeClassification.REQUIRED) && !sot.classification?.includes(SecondaryObjectTypeClassification.PRIMARY)
+    );
+  }
+
+  /**
    * Applicable floating SOTs are SOTs that could be added by a users choice.
    * Regular floating SOTs may also contain SOTs that are applied
    * automatically (classification: 'appClient:required'). Those types will not be
