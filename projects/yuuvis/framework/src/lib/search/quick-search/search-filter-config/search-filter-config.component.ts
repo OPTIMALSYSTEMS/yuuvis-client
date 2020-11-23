@@ -185,6 +185,7 @@ export class SearchFilterConfigComponent implements OnInit {
         this.onVisibilityChange(false);
         // reset form
         this.onFilterSelect(this.selectedFilter);
+        this.mainSelection = [this.selectedFilter.id];
         this.notify.success(this.translate.instant('yuv.framework.search.filter.configuration'), this.translate.instant('yuv.framework.search.filter.saved'));
       });
     } else if (!this.selectedFilter.label) {
