@@ -4,8 +4,6 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import {
   BaseObjectTypeField,
   ClientDefaultsObjectTypeField,
-  ColumnConfig,
-  ColumnConfigColumn,
   DmsObject,
   EventService,
   SearchQuery,
@@ -19,7 +17,7 @@ import {
   YuvEventType
 } from '@yuuvis/core';
 import { Observable, of } from 'rxjs';
-import { map, switchMap, tap } from 'rxjs/operators';
+import { switchMap, tap } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { ResponsiveDataTableComponent, ViewMode } from '../../components/responsive-data-table/responsive-data-table.component';
@@ -96,8 +94,6 @@ export class SearchResultComponent implements OnDestroy {
   // }
 
   tableData: ResponsiveTableData;
-  // object type shown in the result list, will be null for mixed results
-  private resultListObjectTypeId: string;
   totalNumItems: number;
   // state of pagination
   pagination: {
@@ -256,42 +252,41 @@ export class SearchResultComponent implements OnDestroy {
 
   private executeQuery(applyColumnConfig?: boolean) {
     this.busy = true;
+    this._searchQuery.from = 0; // always load 1st page
     (applyColumnConfig ? this.applyColumnConfiguration(this._searchQuery) : of(this._searchQuery))
       .pipe(
         tap((q) => this.queryChanged.emit(q)),
         switchMap((q: SearchQuery) => this.searchService.search(q))
       )
       .subscribe((res: SearchResult) => {
-        this.totalNumItems = res.totalNumItems;
         this.createTableData(res);
       });
   }
 
   private applyColumnConfiguration(q: SearchQuery): Observable<SearchQuery> {
-    return this.userConfig.getColumnConfig(q.targetType).pipe(
-      tap((cc: ColumnConfig) => {
+    return this.gridService.getColumnConfiguration(q.targetType).pipe(
+      tap((colDefs: ColDef[]) => {
         q.sortOptions = [];
-        cc.columns
+        colDefs
           .filter((c) => !!c.sort)
           .forEach((c) => {
-            q.addSortOption(c.id, c.sort);
+            q.addSortOption(c.colId, c.sort);
           });
+
+        q.fields = [
+          // required for SingleCellRendering allthough the object may not have those fields
+          ClientDefaultsObjectTypeField.TITLE,
+          ClientDefaultsObjectTypeField.DESCRIPTION,
+          // stuff that's always needed
+          BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS,
+          BaseObjectTypeField.OBJECT_ID,
+          BaseObjectTypeField.OBJECT_TYPE_ID,
+          ...colDefs.map((c) => c.colId)
+        ];
+
+        this._columns = colDefs;
         this._originalQuery = new SearchQuery(q.toQueryJson());
       }),
-      map((cc: ColumnConfig) => cc.columns.map((column: ColumnConfigColumn) => column.id)),
-      tap(
-        (fields: string[]) =>
-          (q.fields = [
-            // required for SingleCellRendering allthough the object may not have those fields
-            ClientDefaultsObjectTypeField.TITLE,
-            ClientDefaultsObjectTypeField.DESCRIPTION,
-            // stuff that's always needed
-            BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS,
-            BaseObjectTypeField.OBJECT_ID,
-            BaseObjectTypeField.OBJECT_TYPE_ID,
-            ...fields
-          ])
-      ),
       switchMap(() => of(q))
     );
   }
@@ -300,13 +295,11 @@ export class SearchResultComponent implements OnDestroy {
 
   // Create actual table data from the search result
   private createTableData(searchResult: SearchResult, pageNumber = 1): void {
+    this.totalNumItems = searchResult.totalNumItems;
     // object type of the result list items, if NULL we got a mixed result
-    let objecttypeId;
-    if (this._searchQuery) {
-      objecttypeId = this._searchQuery.targetType;
-    }
+    const targetType = this._searchQuery?.targetType;
 
-    this.gridService.getColumnConfiguration(objecttypeId).subscribe((colDefs: ColDef[]) => {
+    (this._columns ? of(this._columns) : this.gridService.getColumnConfiguration(targetType)).subscribe((colDefs: ColDef[]) => {
       // setup pagination form in case of a paged search result chunk
       this.pagination = null;
       this.hasPages = searchResult.items.length !== searchResult.totalNumItems;
@@ -325,7 +318,6 @@ export class SearchResultComponent implements OnDestroy {
       //   colDefs.forEach(col => (col.width = this.options.columnWidths[col.field] || col.width));
       // }
 
-      this.resultListObjectTypeId = objecttypeId;
       this._columns = colDefs;
       this._rows = searchResult.items.map((i) => this.getRow(i));
       const sortOptions = this._searchQuery ? this._searchQuery.sortOptions || [] : [];
@@ -403,16 +395,16 @@ export class SearchResultComponent implements OnDestroy {
     if (JSON.stringify(this.tableData.sortModel.sort(Utils.sortValues('colId'))) !== JSON.stringify(sortModel.sort(Utils.sortValues('colId')))) {
       // change query to reflect the sort setting from the grid
       this._searchQuery.sortOptions = sortModel.map((m) => new SortOption(m.colId, m.sort));
-      this._searchQuery.from = 0;
       this.executeQuery();
     }
   }
 
   onFilterChanged(filterQuery: SearchQuery) {
+    const applyColumnConfig = this._searchQuery.targetType !== filterQuery.targetType;
     this._searchQuery.types = filterQuery.types;
     this._searchQuery.lots = filterQuery.lots;
     this._searchQuery.filterGroup = filterQuery.filterGroup;
-    this.executeQuery();
+    this.executeQuery(applyColumnConfig);
   }
 
   ngOnDestroy() {}

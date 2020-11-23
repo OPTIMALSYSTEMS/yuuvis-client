@@ -107,7 +107,8 @@ export class GridService {
       colId: field?.id, // grid needs unique ID
       field: field?.id,
       headerName: this.system.getLocalizedResource(`${field?.id}_label`),
-      pinned: columnConfigColumn ? columnConfigColumn.pinned || false : false
+      pinned: columnConfigColumn?.pinned || false,
+      sort: columnConfigColumn?.sort || null
     };
 
     this.addColDefAttrsByType(colDef, field);
