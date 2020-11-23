@@ -5,8 +5,8 @@ import { BpmEvent, EventService, InboxService, ProcessData, ProcessService, Task
 import { of } from 'rxjs';
 import { finalize, map, switchMap, tap } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
-import { hasRequiredField } from '../../../../form/utils/forms.utils';
 import { NotificationService } from '../../../../services/notification/notification.service';
+import { hasRequiredField } from '../../../../shared/utils';
 import { ActionComponent } from './../../../interfaces/action-component.interface';
 
 @Component({

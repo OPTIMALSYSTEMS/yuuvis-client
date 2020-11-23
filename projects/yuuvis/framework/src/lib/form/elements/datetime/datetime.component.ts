@@ -145,7 +145,7 @@ export class DatetimeComponent implements OnInit, ControlValueAccessor, Validato
         );
 
       const d = this.datePipe.transform(innerDate || this.innerValue, this._datePattern);
-      if (this.isValidDate(d)) {
+      if (this.isValidDate(innerDate || this.innerValue)) {
         this.value = innerDate || new Date(d);
       }
     } catch {
@@ -156,8 +156,6 @@ export class DatetimeComponent implements OnInit, ControlValueAccessor, Validato
 
   openPicker() {
     const popoverConfig: PopoverConfig = {
-      // width: '55%',
-      // height: '70%',
       disableSmallScreenClose: true,
       data: {
         value: this.value,
@@ -194,7 +192,7 @@ export class DatetimeComponent implements OnInit, ControlValueAccessor, Validato
   private setInnerValue() {
     if (this.value) {
       const d = this.datePipe.transform(this.value, this._datePattern);
-      if (this.isValidDate(d)) {
+      if (this.isValidDate(this.value)) {
         this.innerValue = d;
       }
     } else {
@@ -202,6 +200,11 @@ export class DatetimeComponent implements OnInit, ControlValueAccessor, Validato
     }
   }
 
+  /**
+   * date can not be formated value because european dates are not valid Dates
+   * Date expects MM*DD*YYYY *** not DD*MM*YYYY ***
+   * only relevant if onlyFutureDates is true
+   */
   private isValidDate(date: Date): boolean {
     this.isValid = this.onlyFutureDates && date ? new Date(date).getTime() >= new Date().getTime() : !!date;
     return !!date;
@@ -209,13 +212,7 @@ export class DatetimeComponent implements OnInit, ControlValueAccessor, Validato
 
   // returns null when valid else the validation object
   public validate(c: FormControl) {
-    return this.isValid
-      ? null
-      : {
-          datecontrol: {
-            valid: false
-          }
-        };
+    return this.isValid ? null : { datecontrol: { valid: false } };
   }
 
   ngOnInit() {
