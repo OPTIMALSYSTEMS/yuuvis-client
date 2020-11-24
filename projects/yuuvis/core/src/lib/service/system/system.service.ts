@@ -118,31 +118,25 @@ export class SystemService {
       });
 
     if (includeExtendableFSOTs) {
-      this.getSecondaryObjectTypes(true)
-        .filter(
-          (sot) =>
-            !sot.classification?.includes(SecondaryObjectTypeClassification.REQUIRED) &&
-            !sot.classification?.includes(SecondaryObjectTypeClassification.PRIMARY)
-        )
-        .forEach((sot) => {
-          switch (situation) {
-            case 'create': {
-              if (!sot.classification?.includes(ObjectTypeClassification.CREATE_FALSE)) {
-                types.push(sot);
-              }
-              break;
-            }
-            case 'search': {
-              if (!sot.classification?.includes(ObjectTypeClassification.SEARCH_FALSE)) {
-                types.push(sot);
-              }
-              break;
-            }
-            default: {
+      this.getAllExtendableSOTs(true).forEach((sot) => {
+        switch (situation) {
+          case 'create': {
+            if (!sot.classification?.includes(ObjectTypeClassification.CREATE_FALSE)) {
               types.push(sot);
             }
+            break;
           }
-        });
+          case 'search': {
+            if (!sot.classification?.includes(ObjectTypeClassification.SEARCH_FALSE)) {
+              types.push(sot);
+            }
+            break;
+          }
+          default: {
+            types.push(sot);
+          }
+        }
+      });
     }
 
     const grouped = this.groupBy(

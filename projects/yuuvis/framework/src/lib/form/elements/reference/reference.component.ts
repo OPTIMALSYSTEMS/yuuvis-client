@@ -288,7 +288,7 @@ export class ReferenceComponent implements ControlValueAccessor, AfterViewInit {
         ClientDefaultsObjectTypeField.TITLE,
         ClientDefaultsObjectTypeField.DESCRIPTION
       ],
-      types: this.allowedTargetTypes,
+      lots: this.allowedTargetTypes,
       size: this.maxSuggestions
     };
   }

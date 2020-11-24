@@ -77,6 +77,7 @@ export class QuickSearchService {
 
   private setupAvailableObjectTypeGroups() {
     let i = 0;
+    const extendable = this.systemService.getAllExtendableSOTs().map((o) => o.id);
     return (this.availableObjectTypeGroups = this.systemService.getGroupedObjectTypes(true, true, true, 'search').map((otg: ObjectTypeGroup) => ({
       id: `${i++}`,
       label: otg.label,
@@ -85,7 +86,8 @@ export class QuickSearchService {
         label: ot.label || ot.id,
         highlight: ot.isFolder,
         svgSrc: this.systemService.getObjectTypeIconUri(ot.id),
-        value: ot
+        value: ot,
+        class: extendable.includes(ot.id) && 'extension'
       }))
     })));
   }

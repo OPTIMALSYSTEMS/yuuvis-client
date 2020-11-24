@@ -198,7 +198,7 @@
   "yuv.framework.recent-activities.header.more": "More...",
   "yuv.framework.recent-activities.list.empty": "No entries were found.",
   "yuv.framework.responsive-tab-container.button.split": "Split aspect",
-  "yuv.framework.search-result-panel.header.description": "Search for '{{term}}'",
+  "yuv.framework.search-result-panel.header.description.extended.by": "extended by {{extensions}}",
   "yuv.framework.search-result-panel.header.description.types": "Search for '{{term}}' in {{types}}",
   "yuv.framework.search-result-panel.header.title": "Search result",
   "yuv.framework.search-result.empty": "No hits",

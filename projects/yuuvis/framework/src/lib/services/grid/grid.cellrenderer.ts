@@ -126,7 +126,7 @@ export class CellRenderer {
           query: encodeURIComponent(
             JSON.stringify(
               new SearchQuery({
-                types: [param.reference.type],
+                lots: [param.reference.type],
                 filters: [new SearchFilter(param.reference.element, SearchFilter.OPERATOR.EQUAL, value).toQuery()]
               }).toQueryJson()
             )
