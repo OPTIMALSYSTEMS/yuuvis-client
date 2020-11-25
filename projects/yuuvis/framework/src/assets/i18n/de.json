@@ -231,7 +231,7 @@
 	"yuv.framework.search.filter.name": "Filtername",
 	"yuv.framework.search.filter.object.extensions": "Erweiterungen",
 	"yuv.framework.search.filter.object.types": "Objekttypen",
-	"yuv.framework.search.filter.recent.filters": "Kürzlich aktivierte Filter",
+	"yuv.framework.search.filter.recent.filters": "Zuletzt verwendete Filter",
 	"yuv.framework.search.filter.remove": "Entfernen",
 	"yuv.framework.search.filter.removed": "Der Filter wurde entfernt.",
 	"yuv.framework.search.filter.reset": "Zurücksetzen",
