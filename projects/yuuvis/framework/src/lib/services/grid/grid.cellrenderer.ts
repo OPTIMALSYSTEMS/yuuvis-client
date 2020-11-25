@@ -1,4 +1,5 @@
 import { SearchFilter, SearchQuery, SecondaryObjectTypeClassification, Utils } from '@yuuvis/core';
+import { noAccessTitle } from '../../shared/utils';
 
 /**
  * @ignore
@@ -167,7 +168,7 @@ export class CellRenderer {
             </svg>
             </a>`
           }
-          <span>${Utils.escapeHtml(title)}</span></div>`;
+          <span>${Utils.escapeHtml(title || noAccessTitle)}</span></div>`;
       });
       text += `</div>`;
     }

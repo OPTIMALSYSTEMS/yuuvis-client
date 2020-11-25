@@ -17,6 +17,7 @@ import { forkJoin, Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { IconRegistryService } from '../../../common/components/icon/service/iconRegistry.service';
 import { ROUTES, YuvRoutes } from '../../../routing/routes';
+import { noAccessTitle as noAccess } from '../../../shared/utils';
 import { reference } from '../../../svg.generated';
 import { ReferenceEntry } from './reference.interface';
 
@@ -43,7 +44,7 @@ import { ReferenceEntry } from './reference.interface';
 export class ReferenceComponent implements ControlValueAccessor, AfterViewInit {
   @ViewChild('autocomplete') autoCompleteInput: AutoComplete;
   private queryJson: SearchQueryProperties;
-  noAccessTitle = '! *******';
+  noAccessTitle = noAccess;
 
   minLength = 2;
 
