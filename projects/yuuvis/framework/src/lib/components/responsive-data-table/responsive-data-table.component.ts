@@ -330,6 +330,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
         const cols = this.applyColDefOptions(columns);
         this.gridOptions.columnDefs = cols;
         this.gridOptions.api.setColumnDefs(cols);
+        this.gridOptions.columnApi.resetColumnState();
       }
 
       if (this.isStandard && this._data.sortModel) {
