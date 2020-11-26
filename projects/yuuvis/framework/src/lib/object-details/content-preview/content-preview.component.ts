@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, Input, NgZone, OnDestroy, OnInit } from '@angular/core';
+import { Component, ElementRef, Input, NgZone, OnDestroy, OnInit } from '@angular/core';
 import { DmsObject, UploadService } from '@yuuvis/core';
 import { fromEvent, Observable, of } from 'rxjs';
 import { switchMap, takeWhile, tap } from 'rxjs/operators';
@@ -22,7 +22,7 @@ import { ContentPreviewService } from './service/content-preview.service';
   styleUrls: ['./content-preview.component.scss'],
   providers: [ContentPreviewService]
 })
-export class ContentPreviewComponent implements OnInit, OnDestroy, AfterViewInit {
+export class ContentPreviewComponent implements OnInit, OnDestroy {
   private _dmsObject: DmsObject;
   isUndocked: boolean;
   loading = true;
@@ -113,6 +113,10 @@ export class ContentPreviewComponent implements OnInit, OnDestroy, AfterViewInit
   }
 
   open(src: string) {
+    if (!this.iframe) {
+      // init iframe again in case it was destoryed
+      setTimeout(() => this.iframeInit());
+    }
     this.previewSrc = src;
     if (this.isUndocked) {
       this.openWindow(this.previewSrc);
@@ -132,6 +136,7 @@ export class ContentPreviewComponent implements OnInit, OnDestroy, AfterViewInit
         <div>`
       );
     }
+    this.iframeInit(this.undockWin);
   }
 
   refresh() {
@@ -141,22 +146,34 @@ export class ContentPreviewComponent implements OnInit, OnDestroy, AfterViewInit
   /**
    * Custom search inside PDF.JS based on search term
    * @param term search term
-   * @param pdfjs iframe element
+   * @param win iframe window
    */
-  private searchPDF(term = '', pdfjs: any) {
+  private searchPDF(term = '', win: any) {
     // remove all special characters
     term = (term || '').replace(/[\"|\*]/g, '').trim();
-    if (term && pdfjs && pdfjs.contentWindow && pdfjs.contentWindow.PDFViewerApplication && pdfjs.contentWindow.PDFViewerApplication.findController) {
-      // pdfjs.contentWindow.PDFViewerApplication.findController.executeCommand('find', {
+    if (term && win?.PDFViewerApplication?.appConfig?.findBar) {
+      // win.PDFViewerApplication.findController.executeCommand('find', {
       //   caseSensitive: false,
       //   findPrevious: undefined,
       //   highlightAll: true,
       //   phraseSearch: true,
       //   query: term
       // });
-      pdfjs.contentWindow.PDFViewerApplication.appConfig.findBar.findField.value = term;
-      pdfjs.contentWindow.PDFViewerApplication.appConfig.findBar.highlightAllCheckbox.checked = true;
-      pdfjs.contentWindow.PDFViewerApplication.appConfig.findBar.caseSensitiveCheckbox.checked = false;
+      win.PDFViewerApplication.appConfig.findBar.findField.value = term;
+      win.PDFViewerApplication.appConfig.findBar.highlightAllCheckbox.checked = true;
+      win.PDFViewerApplication.appConfig.findBar.caseSensitiveCheckbox.checked = false;
+    }
+  }
+
+  private preventDropEvent(win: any) {
+    const container = win?.document;
+    if (container) {
+      container.addEventListener('drop', (e) => e.stopPropagation());
+      // dispach drag & drop events to main window
+      container.addEventListener('dragenter', (e) => {
+        window.document.dispatchEvent(new DragEvent('dragenter', e));
+        setTimeout(() => window.document.dispatchEvent(new DragEvent('dragleave', e)), 10);
+      });
     }
   }
 
@@ -164,15 +181,16 @@ export class ContentPreviewComponent implements OnInit, OnDestroy, AfterViewInit
     this.previewSrc$.pipe(takeUntilDestroy(this)).subscribe((src) => this.open(src));
   }
 
-  ngAfterViewInit() {
-    const iframe = this.iframe;
+  private iframeInit(iframe = this.iframe) {
     if (iframe) {
       fromEvent(iframe, 'load')
         .pipe(takeUntilDestroy(this))
-        .subscribe((res) =>
+        .subscribe(() =>
           setTimeout(() => {
             this.loading = false;
-            this.searchPDF(this.searchTerm, iframe);
+            const win = iframe?.contentWindow || iframe;
+            this.searchPDF(this.searchTerm, win);
+            this.preventDropEvent(win);
           }, 100)
         );
     }
