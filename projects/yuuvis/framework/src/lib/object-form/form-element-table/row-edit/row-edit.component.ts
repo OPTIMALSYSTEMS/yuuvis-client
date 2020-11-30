@@ -28,7 +28,6 @@ export class RowEditComponent extends UnsubscribeOnDestroy {
   _row: EditRow;
   isNewRow: boolean;
   formState: any = {};
-  queryEnabled = true;
   copyEnabled = true;
   deleteEnabled = true;
   saveEnabled = true;
@@ -51,10 +50,6 @@ export class RowEditComponent extends UnsubscribeOnDestroy {
   @Input()
   set row(r: EditRow) {
     this._row = r;
-    this.queryEnabled = r.situation === 'SEARCH';
-    this.copyEnabled = !this.queryEnabled;
-    this.saveEnabled = !this.queryEnabled;
-    this.deleteEnabled = !this.queryEnabled;
     this.isNewRow = this._row.index === -1;
   }
 

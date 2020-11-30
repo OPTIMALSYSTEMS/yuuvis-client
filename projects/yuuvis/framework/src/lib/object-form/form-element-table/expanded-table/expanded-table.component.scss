@@ -17,62 +17,6 @@
     width: 100%;
     height: 100%;
     position: relative;
-
-    .ag-theme-balham .ag-header {
-      background-color: unset !important;
-    }
-
-    .ag-theme-balham .ag-root-wrapper {
-      border: none !important;
-    }
-
-    ag-grid-angular {
-      width: 100%;
-      height: 100%;
-      background-color: transparent;
-
-      .new-row {
-        @keyframes new-row {
-          from {
-            background-color: var(--color-accent);
-          }
-          to {
-            background-color: none;
-          }
-        }
-
-        animation-name: new-row;
-        animation-duration: 4s;
-      }
-
-      .ag-cell {
-        display: flex;
-        align-items: center;
-        padding: 0 calc(var(--app-pane-padding) / 4);
-        font-size: var(--font-caption);
-        line-height: var(--oft-row-height);
-
-        svg {
-          pointer-events: none;
-        }
-
-        &.res-ico,
-        &.col-boolean {
-          justify-content: center;
-        }
-        &.col-number {
-          justify-content: flex-end;
-        }
-
-        .action-icon {
-          display: flex;
-          cursor: pointer;
-          svg {
-            fill: var(--text-color-caption);
-          }
-        }
-      }
-    }
   }
 }
 
@@ -108,5 +52,63 @@
     padding: calc(var(--app-pane-padding) / 8) calc(var(--app-pane-padding) / 4);
     font-size: var(--font-hint);
     margin: 0 calc(var(--app-pane-padding) / 4);
+  }
+}
+
+:host ::ng-deep {
+  .ag-theme-balham .ag-header {
+    background-color: unset;
+  }
+
+  .ag-theme-balham .ag-root-wrapper {
+    border: none !important;
+  }
+
+  ag-grid-angular {
+    width: 100%;
+    height: 100%;
+    background-color: transparent;
+
+    .new-row {
+      @keyframes new-row {
+        from {
+          background-color: var(--color-accent);
+        }
+        to {
+          background-color: none;
+        }
+      }
+
+      animation-name: new-row;
+      animation-duration: 4s;
+    }
+
+    .ag-cell {
+      display: flex;
+      align-items: center;
+      padding: 0 calc(var(--app-pane-padding) / 4);
+      font-size: var(--font-caption);
+      line-height: var(--oft-row-height);
+
+      svg {
+        pointer-events: none;
+      }
+
+      &.res-ico,
+      &.col-boolean {
+        justify-content: center;
+      }
+      &.col-number {
+        justify-content: flex-end;
+      }
+
+      .action-icon {
+        display: flex;
+        cursor: pointer;
+        svg {
+          fill: var(--text-color-caption);
+        }
+      }
+    }
   }
 }

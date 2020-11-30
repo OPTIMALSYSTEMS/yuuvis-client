@@ -11,6 +11,12 @@
 .form-element {
   box-sizing: border-box;
 
+  .t-table {
+    margin: 0 !important;
+    .description {
+      margin: 4px;
+    }
+  }
   .form-field {
     margin: calc(var(--app-pane-padding) / 4) calc(var(--app-pane-padding) / 2);
 

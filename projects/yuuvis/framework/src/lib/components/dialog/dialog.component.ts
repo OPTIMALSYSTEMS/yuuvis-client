@@ -101,6 +101,8 @@ export class DialogComponent implements OnDestroy {
     if (!this._visible && val) {
       // TODO: What about nested dialogs?
       this.location.pushState({}, 'dialog', `${this.location.pathname}#dialog`);
+    } else if (this._visible && !val) {
+      this.location.back();
     }
     this._visible = !!val;
     this.visibleChange.emit(this._visible);

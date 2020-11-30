@@ -1,7 +1,7 @@
-<div class="object-form-table" [ngClass]="{ medium: _params.size === 'medium', large: _params.size === 'large' }">
+<div class="object-form-table">
   <div class="label">
-    <span>{{ _params.element.label }}</span>
-    <ng-container *ngIf="_params.situation !== 'SEARCH'">
+    <span>{{ params.element.label }}</span>
+    <ng-container>
       <yuv-icon class="stf" [icon]="'expand'" [title]="'yuv.framework.form.table.options.btn.open' | translate" (click)="openDialog()"></yuv-icon>
       <yuv-icon class="stf" [icon]="'sizeToFit'" [title]="'yuv.framework.form.table.options.btn.fit' | translate" (click)="sizeToFit()"></yuv-icon>
       <yuv-icon
@@ -13,7 +13,7 @@
       ></yuv-icon>
       <yuv-icon
         class="stf"
-        *ngIf="!_params.element.readonly"
+        *ngIf="!params.element.readonly"
         [icon]="'addCircle'"
         [title]="'yuv.framework.form.table.options.btn.add' | translate"
         (click)="addRow()"

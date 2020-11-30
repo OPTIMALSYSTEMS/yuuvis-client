@@ -65,7 +65,7 @@ export class FormElementTableComponent extends UnsubscribeOnDestroy implements C
   @Input()
   set params(p: TableComponentParams) {
     if (p) {
-      p.element.readonly = false; //remove
+      p.element.readonly = false; //todo: remove
       this._params = p;
       this.gridReady = false;
       this._elements = p.element.elements;
@@ -78,7 +78,7 @@ export class FormElementTableComponent extends UnsubscribeOnDestroy implements C
     return this._params;
   }
 
-  _params: TableComponentParams;
+  private _params: TableComponentParams;
   private _elements: any[];
   gridReady = false;
   value: any[];
@@ -86,7 +86,6 @@ export class FormElementTableComponent extends UnsubscribeOnDestroy implements C
   gridOptions: GridOptions;
   overlayGridOptions: GridOptions;
   editingRow: EditRow;
-  showDialog = false;
 
   constructor(
     private systemService: SystemService,
@@ -275,14 +274,12 @@ export class FormElementTableComponent extends UnsubscribeOnDestroy implements C
     };
     if (!this.popoverService.hasActiveOverlay) {
       this.popoverService.open(this.overlay, popoverConfig);
-      this.showDialog = true;
     }
   }
 
   close(popover) {
     popover.close();
     this.editingRow = null;
-    this.showDialog = false;
   }
 
   updateRow(rowResult: any) {

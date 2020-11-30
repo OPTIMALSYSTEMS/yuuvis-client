@@ -1,5 +1,5 @@
 <div class="row-edit">
-  <div class="edit-header" *ngIf="!queryEnabled">
+  <div class="edit-header">
     <div class="new-indicator" *ngIf="isNewRow" translate>yuv.framework.form.table.options.indicator.new</div>
     <div></div>
     <yuv-icon [icon]="'clear'" (click)="cancel()" class="button cancel-icon" [title]="'yuv.framework.form.table.options.btn.cancel' | translate"></yuv-icon>
@@ -25,7 +25,7 @@
     <span *ngIf="isNewRow" class="add-label" translate>yuv.framework.form.table.options.checkbox.new</span>
     <button
       type="button"
-      *ngIf="deleteEnabled && !isNewRow && !_row.formOptions.disabled && !queryEnabled"
+      *ngIf="deleteEnabled && !isNewRow && !_row.formOptions.disabled"
       (click)="showDeleteDialog = true"
       title="{{ 'yuv.framework.form.table.options.btn.delete' | translate }}"
     >
@@ -61,16 +61,12 @@
     >
       yuv.framework.form.table.options.btn.save.new
     </button>
-    <!-- query button for SEARCH situation -->
-    <button type="button" (click)="save()" class="primary" *ngIf="queryEnabled" [disabled]="formState.invalid || !formState.dirty" translate>
-      yuv.framework.form.table.options.btn.save
-    </button>
   </div>
 </div>
 
 <yuv-dialog [title]="'yuv.framework.form.table.options.confirm.delete' | translate" [(visible)]="showDeleteDialog" [minWidth]="400">
-  <div class="action-buttons flex-row" style="padding: 8px">
-    <button type="button" class="button cancel" (click)="showDeleteDialog = false" translate>yuv.framework.form.table.options.btn.cancel</button>
+  <div class="action-buttons" style="padding: 8px; display: flex; flex: 1; flex-direction: row-reverse">
     <button type="button" #confirmDelete (click)="delete()" class="button primary" translate>yuv.framework.form.table.options.btn.ok</button>
+    <button type="button" class="button cancel" (click)="showDeleteDialog = false" translate>yuv.framework.form.table.options.btn.cancel</button>
   </div>
 </yuv-dialog>
