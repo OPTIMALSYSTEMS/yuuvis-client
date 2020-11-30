@@ -105,6 +105,9 @@ export class SearchService {
         if (o.properties[key].title) {
           fields.set(key + '_title', o.properties[key].title);
         }
+        if (o.properties[key].columnNames) {
+          fields.set(key + '_columnNames', o.properties[key].columnNames);
+        }
       });
 
       // process contentStreams section of result if available.

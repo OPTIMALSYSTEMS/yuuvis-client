@@ -2,7 +2,9 @@ import { Component, ElementRef, EventEmitter, Input, Output, ViewChild, ViewEnca
 import { FormBuilder, FormControl } from '@angular/forms';
 import { PendingChangesService } from '@yuuvis/core';
 import { takeUntil } from 'rxjs/operators';
+import { IconRegistryService } from '../../../common/components/icon/service/iconRegistry.service';
 import { UnsubscribeOnDestroy } from '../../../common/util/unsubscribe.component';
+import { clear, deleteIcon } from '../../../svg.generated';
 import { ObjectFormComponent } from '../../object-form/object-form.component';
 import { EditRow, EditRowResult } from '../form-element-table.component';
 
@@ -63,8 +65,9 @@ export class RowEditComponent extends UnsubscribeOnDestroy {
 
   @ViewChild('rowForm') rowForm: ObjectFormComponent;
 
-  constructor(private pendingChanges: PendingChangesService, private fb: FormBuilder) {
+  constructor(private pendingChanges: PendingChangesService, private fb: FormBuilder, private iconRegistry: IconRegistryService) {
     super();
+    this.iconRegistry.registerIcons([deleteIcon, clear]);
     this.createNewCheckbox = this.fb.control(this.createNewRow);
     this.createNewCheckbox.valueChanges.pipe(takeUntil(this.componentDestroyed$)).subscribe((v) => (this.createNewRow = v));
   }

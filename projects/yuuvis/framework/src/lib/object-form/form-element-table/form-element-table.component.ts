@@ -1,15 +1,17 @@
 import { ClientSideRowModelModule } from '@ag-grid-community/client-side-row-model';
 import { ColDef, GridOptions, Module } from '@ag-grid-community/core';
 import { CsvExportModule } from '@ag-grid-community/csv-export';
-import { Component, forwardRef, Input, ViewChild } from '@angular/core';
+import { Component, forwardRef, Input, TemplateRef, ViewChild } from '@angular/core';
 import { ControlValueAccessor, FormControl, NG_VALIDATORS, NG_VALUE_ACCESSOR, Validator } from '@angular/forms';
-import { PendingChangesService, SystemService, TranslateService } from '@yuuvis/core';
-// import {CsvExportModule} from '@ag-grid-community/csv-export';
-import { forkJoin } from 'rxjs';
+import { PendingChangesService, SystemService } from '@yuuvis/core';
 import { takeUntil } from 'rxjs/operators';
+import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { UnsubscribeOnDestroy } from '../../common/util/unsubscribe.component';
+import { PopoverConfig } from '../../popover/popover.interface';
 import { GridService } from '../../services/grid/grid.service';
+import { addCircle, contentDownload, expand, sizeToFit } from '../../svg.generated';
 import { ObjectFormOptions } from '../object-form.interface';
+import { PopoverService } from './../../popover/popover.service';
 import { RowEditComponent } from './row-edit/row-edit.component';
 
 // data to be passed to the table component
@@ -56,35 +58,19 @@ export interface EditRowResult {
 })
 export class FormElementTableComponent extends UnsubscribeOnDestroy implements ControlValueAccessor, Validator {
   public modules: Module[] = [ClientSideRowModelModule, CsvExportModule];
-  // public modules: Module[] = [ClientSideRowModelModule];
 
   @ViewChild('rowEdit') rowEdit: RowEditComponent;
+  @ViewChild('overlay') overlay: TemplateRef<any>;
 
   @Input()
   set params(p: TableComponentParams) {
     if (p) {
+      p.element.readonly = false; //remove
       this._params = p;
-      if (this._params.situation === 'SEARCH') {
-        this._params.size = 'supersmall';
-      } else if (!this._params.size) {
-        this._params.size = 'small';
-      }
       this.gridReady = false;
       this._elements = p.element.elements;
       this.gridOptions.columnDefs = this.createColumnDefinition();
-      if (this._params.situation === 'SEARCH') {
-        this.gridOptions.columnDefs.push({
-          headerName: '',
-          colId: 'actions',
-          width: 34,
-          minWidth: 34,
-          pinned: 'right',
-          cellRenderer: this.actionsCellRenderer
-        });
-      } else {
-        this.overlayGridOptions.columnDefs = this.createColumnDefinition();
-      }
-
+      this.overlayGridOptions.columnDefs = this.createColumnDefinition();
       this.gridReady = true;
     }
   }
@@ -106,9 +92,11 @@ export class FormElementTableComponent extends UnsubscribeOnDestroy implements C
     private systemService: SystemService,
     private pendingChanges: PendingChangesService,
     public gridApi: GridService,
-    private translate: TranslateService
+    private popoverService: PopoverService,
+    private iconRegistry: IconRegistryService
   ) {
     super();
+    this.iconRegistry.registerIcons([expand, sizeToFit, contentDownload, addCircle]);
     this.gridOptions = <GridOptions>{
       context: {},
       headerHeight: 30,
@@ -161,38 +149,9 @@ export class FormElementTableComponent extends UnsubscribeOnDestroy implements C
     });
   }
 
-  actionsCellRenderer(params) {
-    let div = document.createElement('div');
-
-    if (params.context.tableComponent.params.situation === 'SEARCH') {
-      div.innerHTML = `<div class="action-icon" id="actionIcon-${params.rowIndex}">
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-      <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
-      </svg>
-      </div>`;
-      let clearIcon = div.querySelectorAll(`#actionIcon-${params.rowIndex}`)[0];
-      clearIcon.addEventListener('click', () => params.context.tableComponent.clearRow(params.rowIndex));
-    } else {
-      div.innerHTML = `<div class="action-icon" id="actionIcon-${params.rowIndex}">
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-      <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
-      </svg>
-      </div>`;
-      let deleteIcon = div.querySelectorAll(`#actionIcon-${params.rowIndex}`)[0];
-      deleteIcon.addEventListener('click', () => params.context.tableComponent.deleteRow(params.rowIndex));
-    }
-
-    return div;
-  }
-
   propagateChange = (_: any) => {};
 
   writeValue(value: any[]): void {
-    if (!value && this._params.situation === 'SEARCH') {
-      // for search row data will always be one empty row
-      // todo: re-enable again when search in tables is supported
-      value = [{}];
-    }
     this.value = value instanceof Array ? value : [];
     // create a clone of the actual value for internal usage
     this.innerValue = JSON.parse(JSON.stringify(this.value));
@@ -242,46 +201,11 @@ export class FormElementTableComponent extends UnsubscribeOnDestroy implements C
   }
 
   addRow() {
-    const rowData = {};
-    const asyncFetches = [];
-    this._elements.forEach((el) => {
-      if (el.defaultvalue !== undefined) {
-        rowData[el.name] = el.defaultvalue;
-      }
-      // else if (el.defaultvaluefunction) {
-      //   rowData[el.name] = this.systemService.getDefaultValue(el.defaultvaluefunction);
-      //   if (el.defaultvaluefunction === 'CURRENT_USER') {
-      //     asyncFetches.push(this.resolveOrgDataMeta(el.name, rowData[el.name]));
-      //   }
-      // }
-    });
-    if (asyncFetches.length > 0) {
-      forkJoin(asyncFetches).subscribe((res: { key: string; value: any }[]) => {
-        res.forEach((r) => {
-          rowData[r.key] = r.value;
-        });
-        this.setEditRow(-1, rowData);
-      });
-    } else {
-      this.setEditRow(-1, rowData);
-    }
+    this.setEditRow(-1, {});
   }
-
-  // private resolveOrgDataMeta(elementName: string, value: any) {
-  //   return this.systemService.getOrganizationObject(value).pipe(
-  //     map((res) => ({
-  //       key: `${elementName}_meta`,
-  //       value: res
-  //     }))
-  //   );
-  // }
 
   editRow(event) {
     this.setEditRow(event.node.id, event.node.data);
-  }
-
-  onEditComplete(event) {
-    //todo: is it obsolete?
   }
 
   private setEditRow(index: number, data: any) {
@@ -307,7 +231,7 @@ export class FormElementTableComponent extends UnsubscribeOnDestroy implements C
         disabled: this._params.element.readonly
       }
     };
-    this.showDialog = true;
+    this.openDialog();
     setTimeout(() => this.selectEditRow(), 0);
   }
 
@@ -329,6 +253,7 @@ export class FormElementTableComponent extends UnsubscribeOnDestroy implements C
     } else {
       this.overlayGridOptions.rowData = this.innerValue;
     }
+    this.value = this.innerValue;
     this.value = this.innerValue.map((row) => {
       const rowValue = this._elements.map((el) => (row[el.name] ? row[el.name] : null));
       return rowValue;
@@ -341,12 +266,21 @@ export class FormElementTableComponent extends UnsubscribeOnDestroy implements C
       this.rowEdit.finishPending();
     }
     this.editingRow = null;
-    if (this._params.situation === 'SEARCH') {
-      this.showDialog = false;
+  }
+
+  openDialog() {
+    const popoverConfig: PopoverConfig = {
+      width: '95%',
+      height: '95%'
+    };
+    if (!this.popoverService.hasActiveOverlay) {
+      this.popoverService.open(this.overlay, popoverConfig);
+      this.showDialog = true;
     }
   }
 
-  onClose() {
+  close(popover) {
+    popover.close();
     this.editingRow = null;
     this.showDialog = false;
   }
@@ -359,9 +293,7 @@ export class FormElementTableComponent extends UnsubscribeOnDestroy implements C
       this.innerValue[rowResult.index] = rowResult.rowData;
     }
     this.updateTableValue();
-    if (this._params.situation === 'SEARCH') {
-      this.showDialog = false;
-    } else if (isNewRow && !rowResult.createNewRow) {
+    if (isNewRow && !rowResult.createNewRow) {
       this.setEditRow(this.innerValue.length - 1, this.innerValue[this.innerValue.length - 1]);
     } else if (rowResult.createNewRow) {
       this.addRow();
@@ -410,16 +342,7 @@ export class FormElementTableComponent extends UnsubscribeOnDestroy implements C
   }
 
   sizeToFit(overlay?: boolean) {
-    if (overlay) {
-      this.overlayGridOptions.api.sizeColumnsToFit();
-    } else {
-      this.gridOptions.api.sizeColumnsToFit();
-    }
-  }
-
-  openDialog() {
-    this.overlayGridOptions.api.refreshView();
-    this.showDialog = true;
+    this.gridOptions.api.sizeColumnsToFit();
   }
 
   private validateTableData(): boolean {
@@ -442,7 +365,7 @@ export class FormElementTableComponent extends UnsubscribeOnDestroy implements C
       if (!this.pendingChanges.checkForPendingTasks(this.rowEdit.pendingTaskId)) {
         this.overlayGridOptions.suppressRowClickSelection = false;
         this.rowEdit.finishPending();
-        let rowIndex = 1; //this.gridApi.getRowIndex($event.target, 'ag-body');
+        let rowIndex = this.getRowIndex($event.target, 'ag-body');
         if (rowIndex !== null) {
           this.overlayGridOptions.api.getRowNode('' + rowIndex).setSelected(true, true);
           $event.target.click();
@@ -452,6 +375,14 @@ export class FormElementTableComponent extends UnsubscribeOnDestroy implements C
         $event.stopImmediatePropagation();
       }
     }
+  }
+
+  private getRowIndex(el, parentClass: string) {
+    return el && !el.classList.contains(parentClass)
+      ? el.getAttribute('row-index')
+        ? parseInt(el.getAttribute('row-index'), 10)
+        : this.getRowIndex(el.parentElement, parentClass)
+      : null;
   }
 
   onCellClicked($event) {

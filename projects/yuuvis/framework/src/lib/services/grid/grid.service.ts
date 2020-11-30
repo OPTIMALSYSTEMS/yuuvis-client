@@ -209,7 +209,6 @@ export class GridService {
         break;
       }
       case 'string': {
-        colDef.cellRenderer = (params) => Utils.escapeHtml(params.value);
         if (field.cardinality === 'multi') {
           colDef.cellRenderer = this.customContext(CellRenderer.multiSelectCellRenderer);
         }
@@ -217,6 +216,13 @@ export class GridService {
         if (Array.isArray(field?.classifications)) {
           colDef.cellRenderer = this.fieldClassification(field?.classifications);
         }
+        if (!colDef.cellRenderer) {
+          colDef.cellRenderer = (params) => Utils.escapeHtml(params.value);
+        }
+        break;
+      }
+      case 'string:catalog': {
+        colDef.cellRenderer = (params) => Utils.escapeHtml(params.value);
         break;
       }
       case 'datetime': {
@@ -231,7 +237,9 @@ export class GridService {
           pattern: undefined
         };
         colDef.width = 150;
-        colDef.cellRenderer = this.fieldClassification(field?.classifications, params);
+        colDef.cellRenderer = field?.classifications
+          ? this.fieldClassification(field?.classifications, params)
+          : this.customContext(CellRenderer.numberCellRenderer, params);
         break;
       }
       case 'decimal': {
@@ -242,7 +250,9 @@ export class GridService {
           cips: true
         };
         colDef.width = 150;
-        colDef.cellRenderer = this.fieldClassification(field?.classifications, params);
+        colDef.cellRenderer = field?.classifications
+          ? this.fieldClassification(field?.classifications, params)
+          : this.customContext(CellRenderer.numberCellRenderer, params);
         break;
       }
       case 'boolean': {

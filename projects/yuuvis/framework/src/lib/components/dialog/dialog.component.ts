@@ -39,7 +39,6 @@ export class DialogComponent implements OnDestroy {
     this.contentStyle['min-height'] = typeof h === 'string' ? h : (h || 0) + 'px';
   }
   @Input() resizable = false;
-  @Input() fullscreen = false;
   @Output() visibleChange: EventEmitter<any> = new EventEmitter();
   @Output() hide: EventEmitter<any> = new EventEmitter();
   @Output() show: EventEmitter<any> = new EventEmitter();
@@ -128,7 +127,6 @@ export class DialogComponent implements OnDestroy {
       } else {
         this._lastFocused.focus();
       }
-      this.renderer[this.fullscreen ? 'addClass' : 'removeClass'](this.dialog.contentViewChild.nativeElement, 'fullscreen');
     } else if (this.active && this.visible) {
       setTimeout(() => this.toggleActive(true, false), 0);
     }

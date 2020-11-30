@@ -1,6 +1,6 @@
 import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
 import { ValidatorFn, Validators } from '@angular/forms';
-import { Logger, RangeValue, SearchFilter, SearchService, SystemService, UserService } from '@yuuvis/core';
+import { Logger, RangeValue, SearchFilter, SearchService, SystemService, UserService, Utils } from '@yuuvis/core';
 import { cloneDeep } from 'lodash-es';
 import { Observable, of, Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';

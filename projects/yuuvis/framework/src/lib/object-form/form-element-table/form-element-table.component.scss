@@ -1,15 +1,15 @@
 :host-context(.dark) {
   .label {
-    color: var(--color-white);
-    background-color: rgba(var(--color-white-rgb), 0.1);
+    color: white;
+    background-color: rgba(255, 255, 255, 0.1);
   }
 
   //noinspection CssInvalidPseudoSelector
   ::ng-deep {
     .ag-theme-balham {
       .ag-header-cell {
-        color: rgba(var(--color-white-rgb), 0.7);
-        background-color: rgba(var(--color-white-rgb), 0.1);
+        color: rgba(255, 255, 255, 0.7);
+        background-color: rgba(255, 255, 255, 0.1);
       }
       .ag-root {
         background-color: transparent;
@@ -116,19 +116,7 @@
     .grid-body {
       width: 100%;
       position: relative;
-
-      &.size-supersmall {
-        height: 100px;
-      }
-      &.size-small {
-        height: 200px;
-      }
-      &.size-medium {
-        height: 300px;
-      }
-      &.size-large {
-        height: 400px;
-      }
+      height: 200px;
 
       ag-grid-angular {
         width: 100%;
