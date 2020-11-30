@@ -1,10 +1,11 @@
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-import { DmsObject } from '../../model/dms-object.model';
-import { ConfigService } from '../config/config.service';
-import { Logger } from '../logger/logger';
-import { ApiBase } from './api.enum';
+import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
+import {Injectable} from '@angular/core';
+import {Observable} from 'rxjs';
+import {DmsObject} from '../../model/dms-object.model';
+import {ConfigService} from '../config/config.service';
+import {Logger} from '../logger/logger';
+import {ApiBase} from './api.enum';
+
 /**
  * Service for providing an yuuvis Backend
  */
@@ -140,7 +141,7 @@ export class BackendService {
    */
   getApiBase(api?: string): string {
     // return this.getHost() + this.config.getApiBase(api || ApiBase.apiWeb);
-    return this.config.getApiBase(api || ApiBase.apiWeb);
+    return api === "" ? api : this.config.getApiBase(api || ApiBase.apiWeb);
   }
 
   /**
