@@ -5,6 +5,7 @@ import { AutoComplete } from 'primeng/autocomplete';
 import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { IconRegistryService } from '../../../common/components/icon/service/iconRegistry.service';
+import { noAccessTitle as noAccess } from '../../../shared/utils';
 import { organization } from '../../../svg.generated';
 
 /**
@@ -34,7 +35,7 @@ import { organization } from '../../../svg.generated';
 export class OrganizationComponent implements ControlValueAccessor, AfterViewInit {
   @ViewChild('autocomplete') autoCompleteInput: AutoComplete;
 
-  noAccessTitle = '! *******';
+  noAccessTitle = noAccess;
   minLength = 2;
 
   value;

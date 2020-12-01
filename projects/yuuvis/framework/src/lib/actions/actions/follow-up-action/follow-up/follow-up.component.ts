@@ -6,6 +6,7 @@ import { of } from 'rxjs';
 import { finalize, map, switchMap, tap } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { NotificationService } from '../../../../services/notification/notification.service';
+import { hasRequiredField } from '../../../../shared/utils';
 import { ActionComponent } from './../../../interfaces/action-component.interface';
 
 @Component({
@@ -38,11 +39,14 @@ export class FollowUpComponent implements OnInit, OnDestroy, ActionComponent {
     private eventService: EventService
   ) {
     this.form = this.fb.group({
-      expiryDateTime: [],
-      whatAbout: '',
+      expiryDateTime: ['', Validators.required],
+      whatAbout: ['', Validators.required],
       documentId: null
     });
-    this.form.controls.expiryDateTime.setValidators(Validators.required);
+  }
+
+  isRequired(field: string): boolean {
+    return hasRequiredField(this.form.controls[field]);
   }
 
   createFollowUp() {

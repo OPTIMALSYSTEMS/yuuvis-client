@@ -149,6 +149,7 @@
   "yuv.framework.object-details.tabs.history.title": "History",
   "yuv.framework.object-details.tabs.indexdata.title": "Metadata",
   "yuv.framework.object-details.tabs.summary.title": "Summary",
+  "yuv.framework.object-details.tooltip.dock": "Dock",
   "yuv.framework.object-details.tooltip.icon.actions": "Object actions",
   "yuv.framework.object-details.tooltip.undock": "Undock",
   "yuv.framework.object-form-edit.fsot.add-fsot": "Extend object",
@@ -289,7 +290,7 @@
   "yuv.client.state.inbox.title": "Inbox",
   "yuv.client.state.not-found.description": "Unable to load the object.",
   "yuv.client.state.not-found.title": "Not found",
-  "yuv.client.state.process.list.empty": "There are no active processes",
+  "yuv.client.state.process.list.empty": "There are no active follow-ups",
   "yuv.client.state.process.title": "My follow-ups",
   "yuv.client.state.result.title": "Search result",
   "yuv.client.state.settings.cache.clear.error": "Failed to clear application cache",
@@ -326,7 +327,7 @@
   "yuv.client.state.versions.compare.label": "version {{version}}",
   "yuv.client.state.versions.header.title": "Versions",
   "yuv.framework.bpm.inbox.confirm": "Confirm follow-up",
-  "yuv.framework.bpm.process.remove": "Remove process",
+  "yuv.framework.bpm.process.remove": "Remove follow-up",
   "yuv.framework.inbox-list.inbox": "Inbox",
-  "yuv.framework.process-list.process": "My processes"
+  "yuv.framework.process-list.process": "My follow-ups"
 }

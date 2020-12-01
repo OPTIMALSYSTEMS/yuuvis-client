@@ -23,7 +23,7 @@ import { PopoverRef } from '../../popover/popover.ref';
 import { PopoverService } from '../../popover/popover.service';
 import { CombinedFormAddInput, CombinedObjectFormComponent, CombinedObjectFormInput } from '../combined-object-form/combined-object-form.component';
 import { NotificationService } from './../../services/notification/notification.service';
-import { FormStatusChangedEvent, ObjectFormOptions } from './../object-form.interface';
+import { FormStatusChangedEvent } from './../object-form.interface';
 import { Situation } from './../object-form.situation';
 import { ObjectFormComponent } from './../object-form/object-form.component';
 
@@ -84,7 +84,7 @@ export class ObjectFormEditComponent implements OnDestroy {
    */
   @Input('dmsObject')
   set dmsObject(dmsObject: DmsObject) {
-    if (dmsObject && (!this._dmsObject || this._dmsObject.id !== dmsObject.id)) {
+    if (dmsObject && (!this._dmsObject || this._dmsObject !== dmsObject)) {
       // if (this.isFloatingObjectType || (dmsObject && (!this._dmsObject || this._dmsObject.id !== dmsObject.id))) {
       // reset the state of the form
       this.formState = null;
@@ -102,7 +102,6 @@ export class ObjectFormEditComponent implements OnDestroy {
    */
   @Output() indexDataSaved = new EventEmitter<DmsObject>();
 
-  formOptions: ObjectFormOptions;
   combinedFormInput: CombinedObjectFormInput;
   formState: FormStatusChangedEvent;
   busy: boolean;
@@ -183,10 +182,6 @@ export class ObjectFormEditComponent implements OnDestroy {
           .subscribe(
             (updatedObject) => {
               this._dmsObject = updatedObject;
-              if (this.formOptions) {
-                this.formOptions.data = updatedObject.data;
-                this.objectForm.setFormPristine();
-              }
               if (this.combinedFormInput) {
                 this._sotChanged = {
                   applied: [],
@@ -196,7 +191,7 @@ export class ObjectFormEditComponent implements OnDestroy {
                 };
 
                 this._secondaryObjectTypeIDs = [...this._dmsObject.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS]];
-                this.combinedFormInput.data = updatedObject.data;
+                this.combinedFormInput = { ...this.combinedFormInput, data: updatedObject.data };
                 this.afoObjectForm.setFormPristine();
               }
 
@@ -252,7 +247,6 @@ export class ObjectFormEditComponent implements OnDestroy {
   }
 
   private createObjectForm(dmsObject: DmsObject, validate?: boolean) {
-    this.formOptions = null;
     this.getApplicableSecondaries(dmsObject);
     this.systemService.getDmsObjectForms(dmsObject, Situation.EDIT).subscribe(
       (res) => {

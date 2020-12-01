@@ -199,32 +199,32 @@ export class SearchResultComponent implements OnDestroy {
   ) {
     this.iconRegistry.registerIcons([doubleArrow, filter, settings, clear, search, arrowNext, arrowLast, listModeDefault, listModeGrid, listModeSimple]);
 
-    this.pagingForm = this.fb.group({
-      page: ['']
-    });
+    this.pagingForm = this.fb.group({ page: [''] });
 
     this.eventService
-      .on(YuvEventType.DMS_OBJECT_UPDATED)
-      .pipe(takeUntilDestroy(this))
-      .subscribe((e: YuvEvent) => {
-        const dmsObject = e.data as DmsObject;
-        if (this.dataTable) {
-          // Update table data without reloading the whole grid
-          this.dataTable.updateRow(dmsObject.id, dmsObject.data);
-        }
-      });
+      .on(YuvEventType.DMS_OBJECT_UPDATED, YuvEventType.DMS_OBJECT_DELETED)
+      .pipe(
+        takeUntilDestroy(this),
+        tap((e) => this.objectEvent(e))
+      )
+      .subscribe((e: YuvEvent) => {});
+  }
 
-    this.eventService
-      .on(YuvEventType.DMS_OBJECT_DELETED)
-      .pipe(takeUntilDestroy(this))
-      .subscribe((event) => {
-        if (this.dataTable) {
-          const deleted = this.dataTable.deleteRow(event.data.id);
-          if (deleted) {
-            this.totalNumItems--;
-          }
+  private objectEvent({ type, data }: YuvEvent) {
+    if (type === YuvEventType.DMS_OBJECT_UPDATED) {
+      const dmsObject = data as DmsObject;
+      if (this.dataTable) {
+        // Update table data without reloading the whole grid
+        this.dataTable.updateRow(dmsObject.id, dmsObject.data);
+      }
+    } else if (type === YuvEventType.DMS_OBJECT_DELETED) {
+      if (this.dataTable) {
+        const deleted = this.dataTable.deleteRow(data.id);
+        if (deleted) {
+          this.totalNumItems--;
         }
-      });
+      }
+    }
   }
 
   setFilterPanelVisibility(v: boolean) {
@@ -251,13 +251,13 @@ export class SearchResultComponent implements OnDestroy {
 
   private executeQuery(applyColumnConfig?: boolean) {
     this.busy = true;
+    this._searchQuery.from = 0; // always load 1st page
     (applyColumnConfig ? this.applyColumnConfiguration(this._searchQuery) : of(this._searchQuery))
       .pipe(
         tap((q) => this.queryChanged.emit(q)),
         switchMap((q: SearchQuery) => this.searchService.search(q))
       )
       .subscribe((res: SearchResult) => {
-        this.totalNumItems = res.totalNumItems;
         this.createTableData(res);
       });
   }
@@ -294,6 +294,7 @@ export class SearchResultComponent implements OnDestroy {
 
   // Create actual table data from the search result
   private createTableData(searchResult: SearchResult, pageNumber = 1): void {
+    this.totalNumItems = searchResult.totalNumItems;
     // object type of the result list items, if NULL we got a mixed result
     let objecttypeId;
     if (this._searchQuery) {
@@ -397,15 +398,16 @@ export class SearchResultComponent implements OnDestroy {
     if (JSON.stringify(this.tableData.sortModel) !== JSON.stringify(sortModel)) {
       // change query to reflect the sort setting from the grid
       this._searchQuery.sortOptions = sortModel.map((m) => new SortOption(m.colId, m.sort));
-      this._searchQuery.from = 0;
       this.executeQuery();
     }
   }
 
   onFilterChanged(filterQuery: SearchQuery) {
+    const applyColumnConfig = this._searchQuery.targetType !== filterQuery.targetType;
+    this._searchQuery.sots = filterQuery.sots;
     this._searchQuery.types = filterQuery.types;
     this._searchQuery.filterGroup = filterQuery.filterGroup;
-    this.executeQuery();
+    this.executeQuery(applyColumnConfig);
   }
 
   ngOnDestroy() {}

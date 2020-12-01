@@ -53,9 +53,6 @@ export class AuthService {
         if (data && data.language) {
           this.backend.setHeader('Accept-Language', data.language);
         }
-        if (data && data.tenant) {
-          this.backend.setHeader('X-ID-TENANT-NAME', data.tenant);
-        }
       })
     );
   }
@@ -117,7 +114,6 @@ export class AuthService {
           language: currentUser.getClientLocale()
         };
         this.backend.setHeader('Accept-Language', this.authData.language);
-        this.backend.setHeader('X-ID-TENANT-NAME', this.authData.tenant);
         this.appCache.setItem(this.STORAGE_KEY, this.authData).subscribe();
         return of(currentUser);
       })

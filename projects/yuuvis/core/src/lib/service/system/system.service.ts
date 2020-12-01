@@ -488,10 +488,8 @@ export class SystemService {
   }
 
   private buildFormFetchUri(objectTypeID: string, sots?: string[], situation?: string): string {
-    const params = sots ? sots.map((sot) => `sots=${sot}`) : [];
-    if (situation) {
-      params.push(`situation=${situation}`);
-    }
+    // situation = null;
+    const params = [...(sots ? sots.map((sot) => `sots=${sot}`) : []), situation && `situation:${situation}`];
     return `/dms/form/${objectTypeID}${params.length ? `?${params.join('&')}` : ''}`;
   }
 

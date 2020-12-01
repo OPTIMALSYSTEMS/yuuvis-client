@@ -1,9 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { BpmEvent, BpmService, EventService, ProcessData, ProcessDefinitionKey, ProcessService, TranslateService } from '@yuuvis/core';
+import { BpmEvent, EventService, ProcessData, ProcessDefinitionKey, ProcessService, TranslateService } from '@yuuvis/core';
 import {
   arrowNext,
   edit,
   FormatProcessDataService,
+  HeaderDetails,
   IconRegistryService,
   listModeDefault,
   listModeGrid,
@@ -34,7 +35,7 @@ export class ProcessesComponent implements OnInit, OnDestroy {
   );
   loading$: Observable<boolean> = this.processService.loadingProcessData$;
 
-  headerDetails = {
+  headerDetails: HeaderDetails = {
     title: this.translateService.instant('yuv.framework.process-list.process'),
     description: '',
     icon: 'process'
@@ -42,7 +43,6 @@ export class ProcessesComponent implements OnInit, OnDestroy {
 
   constructor(
     private processService: ProcessService,
-    private bpmService: BpmService,
     private translateService: TranslateService,
     private formatProcessDataService: FormatProcessDataService,
     private iconRegistry: IconRegistryService,

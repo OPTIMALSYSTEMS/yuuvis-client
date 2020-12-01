@@ -19,7 +19,7 @@ export class UploadService {
   private status: ProgressStatus = { err: 0, items: [] };
   private statusSource = new ReplaySubject<ProgressStatus>();
   public status$: Observable<ProgressStatus> = this.statusSource.pipe(scan((acc: ProgressStatus, newVal) => ({ ...acc, ...newVal }), this.status));
-  private uploadStatus = new BehaviorSubject<boolean>(false);
+  private uploadStatus = new BehaviorSubject<boolean>(null);
   public uploadStatus$: Observable<boolean> = this.uploadStatus.asObservable();
 
   /**
@@ -138,17 +138,17 @@ export class UploadService {
       return [
         {
           objectId: objects.map((val) => val.properties[BaseObjectTypeField.OBJECT_ID].value),
-          contentStreamId: data.contentStreams[0]['contentStreamId'],
-          filename: data.contentStreams[0]['fileName'],
+          contentStreamId: data.contentStreams[0]?.contentStreamId,
+          filename: data.contentStreams[0]?.fileName,
           label: `(${objects.length}) ${label}`
         }
       ];
     } else {
       return result.body.objects.map((o) => ({
         objectId: o.properties[BaseObjectTypeField.OBJECT_ID].value,
-        contentStreamId: o.contentStreams[0]['contentStreamId'],
-        filename: o.contentStreams[0]['fileName'],
-        label: o.properties[ClientDefaultsObjectTypeField.TITLE] ? o.properties[ClientDefaultsObjectTypeField.TITLE].value : o.contentStreams[0]['fileName']
+        contentStreamId: o.contentStreams[0]?.contentStreamId,
+        filename: o.contentStreams[0]?.fileName,
+        label: o.properties[ClientDefaultsObjectTypeField.TITLE] ? o.properties[ClientDefaultsObjectTypeField.TITLE].value : o.contentStreams[0]?.fileName
       }));
     }
   }
