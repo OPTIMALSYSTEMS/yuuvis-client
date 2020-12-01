@@ -430,10 +430,7 @@ export class SystemService {
    */
   isFloatingObjectType(objectType: ObjectType): boolean {
     return objectType
-      ? Array.isArray(objectType.classification) &&
-          !!objectType.secondaryObjectTypes.find((sot) =>
-            this.getSecondaryObjectType(sot.id).classification?.includes(SecondaryObjectTypeClassification.PRIMARY)
-          )
+      ? !!objectType.secondaryObjectTypes.find((sot) => this.getSecondaryObjectType(sot.id).classification?.includes(SecondaryObjectTypeClassification.PRIMARY))
       : false;
   }
   /**
