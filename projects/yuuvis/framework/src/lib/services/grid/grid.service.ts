@@ -31,6 +31,12 @@ import { CellRenderer } from './grid.cellrenderer';
 })
 export class GridService {
   private COLUMN_WIDTH_CACHE_KEY_BASE = 'yuv.grid.column.width';
+
+  static isSortable(field: ObjectTypeField): boolean {
+    const skipSort = [BaseObjectTypeField.CREATED_BY, BaseObjectTypeField.MODIFIED_BY].map((s) => s.toString());
+    return field?.propertyType !== 'id' && !skipSort.includes(field?.id);
+  }
+
   /**
    * @ignore
    */
@@ -101,7 +107,8 @@ export class GridService {
       colId: field?.id, // grid needs unique ID
       field: field?.id,
       headerName: this.system.getLocalizedResource(`${field?.id}_label`),
-      pinned: columnConfigColumn ? columnConfigColumn.pinned || false : false
+      pinned: columnConfigColumn?.pinned || false,
+      sort: columnConfigColumn?.sort || null
     };
 
     this.addColDefAttrsByType(colDef, field);
@@ -111,15 +118,10 @@ export class GridService {
     colDef.resizable = true;
 
     // TODO: apply conditions whether or not the column should be sortable
-    if (this.isSortable(field)) {
+    if (GridService.isSortable(field)) {
       colDef.sortable = true;
     }
     return colDef;
-  }
-
-  private isSortable(field: ObjectTypeField): boolean {
-    const skipSort = [BaseObjectTypeField.CREATED_BY, BaseObjectTypeField.MODIFIED_BY].map((s) => s.toString());
-    return field?.propertyType !== 'id' && !skipSort.includes(field?.id);
   }
 
   /**

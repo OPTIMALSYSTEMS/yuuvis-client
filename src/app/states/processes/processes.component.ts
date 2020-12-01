@@ -1,9 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { BpmEvent, BpmService, EventService, ProcessData, ProcessDefinitionKey, ProcessService, TranslateService } from '@yuuvis/core';
+import { BpmEvent, EventService, ProcessData, ProcessDefinitionKey, ProcessService, TranslateService } from '@yuuvis/core';
 import {
   arrowNext,
   edit,
   FormatProcessDataService,
+  HeaderDetails,
   IconRegistryService,
   listModeDefault,
   listModeGrid,
@@ -12,8 +13,8 @@ import {
   refresh,
   ResponsiveTableData
 } from '@yuuvis/framework';
-import { Observable } from 'rxjs';
-import { map, switchMap, take } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
+import { map, switchMap, take, tap } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
 
 @Component({
@@ -28,13 +29,10 @@ export class ProcessesComponent implements OnInit, OnDestroy {
   itemIsSelected = false;
   objectId: string;
   selectedProcess: any;
-  processData$: Observable<ResponsiveTableData> = this.processService.processData$.pipe(
-    map((processData: ProcessData[]) => this.formatProcessDataService.formatProcessDataForTable(processData)),
-    map((taskData: ResponsiveTableData) => (taskData.rows.length ? taskData : null))
-  );
+  processData$: Observable<ResponsiveTableData>;
   loading$: Observable<boolean> = this.processService.loadingProcessData$;
 
-  headerDetails = {
+  headerDetails: HeaderDetails = {
     title: this.translateService.instant('yuv.framework.process-list.process'),
     description: '',
     icon: 'process'
@@ -42,7 +40,6 @@ export class ProcessesComponent implements OnInit, OnDestroy {
 
   constructor(
     private processService: ProcessService,
-    private bpmService: BpmService,
     private translateService: TranslateService,
     private formatProcessDataService: FormatProcessDataService,
     private iconRegistry: IconRegistryService,
@@ -51,8 +48,14 @@ export class ProcessesComponent implements OnInit, OnDestroy {
     this.iconRegistry.registerIcons([edit, arrowNext, refresh, process, listModeDefault, listModeGrid, listModeSimple]);
   }
 
-  private getProcesses(): Observable<ProcessData[]> {
-    return this.processService.getProcesses().pipe(take(1), takeUntilDestroy(this));
+  private getProcesses(): Observable<ProcessData[] | ResponsiveTableData> {
+    return this.processService.getProcesses().pipe(
+      take(1),
+      map((processData: ProcessData[]) => this.formatProcessDataService.formatProcessDataForTable(processData)),
+      map((taskData: ResponsiveTableData) => (taskData.rows.length ? taskData : null)),
+      tap((data) => (this.processData$ = of(data))),
+      takeUntilDestroy(this)
+    );
   }
 
   selectedItem(item) {

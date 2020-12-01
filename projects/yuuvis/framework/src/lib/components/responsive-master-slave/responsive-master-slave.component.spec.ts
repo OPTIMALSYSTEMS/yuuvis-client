@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { ResponsiveMasterSlaveComponent } from './responsive-master-slave.component';
 
@@ -6,7 +6,7 @@ describe('ResponsiveMasterSlaveComponent', () => {
   let component: ResponsiveMasterSlaveComponent;
   let fixture: ComponentFixture<ResponsiveMasterSlaveComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ ResponsiveMasterSlaveComponent ]
     })

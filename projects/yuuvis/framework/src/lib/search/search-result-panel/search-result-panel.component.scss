@@ -7,6 +7,10 @@
     border-top: 1px solid var(--panel-divider-color);
     background-color: var(--panel-background);
   }
+
+  yuv-icon.config.badge {
+    color: var(--color-accent);
+  }
 }
 
 .screen-s .search-result .header .header_description {

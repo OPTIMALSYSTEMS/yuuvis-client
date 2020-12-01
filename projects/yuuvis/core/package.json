@@ -8,13 +8,14 @@
     "doc:serve": "./node_modules/.bin/compodoc -s"
   },
   "peerDependencies": {
-    "@angular/common": "~9.1.0",
-    "@angular/core": "~9.1.0",
-    "rxjs": "~6.5.5"
+    "@angular/common": "~10.2.2",
+    "@angular/core": "~10.2.2",
+    "rxjs": "~6.6.3"
   },
   "dependencies": {
-    "@ngx-pwa/local-storage": "^9.0.3",
-    "@ngx-translate/core": "^12.1.2",
-    "ngx-device-detector": "^1.4.1"
+    "@ngx-pwa/local-storage": "^10.1.0",
+    "@ngx-translate/core": "^13.0.0",
+    "ngx-device-detector": "^2.0.0",
+    "tslib": "^2.0.0"
   }
 }

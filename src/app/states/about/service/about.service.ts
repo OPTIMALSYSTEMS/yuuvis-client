@@ -17,7 +17,7 @@ export class AboutService {
   private productDetailsSubject: BehaviorSubject<ProductDetails[]> = new BehaviorSubject<ProductDetails[]>(this.productDetails);
   productDetails$: Observable<ProductDetails[]> = this.productDetailsSubject.asObservable();
 
-  private aboutConfig: string;
+  private aboutConfig: string = null;
   private aboutConfigSubject: BehaviorSubject<string> = new BehaviorSubject<string>(this.aboutConfig);
   aboutConfig$: Observable<string> = this.aboutConfigSubject.asObservable();
 
@@ -87,7 +87,7 @@ export class AboutService {
         this.generateLicenses(libraries);
         this.generateProductDetails(args);
       },
-      error => console.log({ error })
+      (error) => console.log({ error })
     );
   }
 
@@ -100,8 +100,8 @@ export class AboutService {
   }
 
   generateLicenses(data: Libraries[]) {
-    data.map(lib => {
-      const match = this.licenses.find(lic => lic.id === lib.license);
+    data.map((lib) => {
+      const match = this.licenses.find((lic) => lic.id === lib.license);
       if (match) {
         lib.label = match.label;
         lib.link = match.url;
@@ -121,7 +121,7 @@ export class AboutService {
       author: this.translate.instant('yuv.client.state.about.author.label')
     };
 
-    Object.keys(aboutDetails).forEach(key =>
+    Object.keys(aboutDetails).forEach((key) =>
       details.push({
         name: key,
         label: productLabel[key],

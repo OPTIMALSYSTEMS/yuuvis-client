@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnDestroy, Output, TemplateRef, ViewChild } from '@angular/core';
+import { Attribute, Component, EventEmitter, Input, OnDestroy, Output, TemplateRef, ViewChild } from '@angular/core';
 import {
   AFO_STATE,
   ApiBase,
@@ -23,7 +23,7 @@ import { PopoverRef } from '../../popover/popover.ref';
 import { PopoverService } from '../../popover/popover.service';
 import { CombinedFormAddInput, CombinedObjectFormComponent, CombinedObjectFormInput } from '../combined-object-form/combined-object-form.component';
 import { NotificationService } from './../../services/notification/notification.service';
-import { FormStatusChangedEvent, ObjectFormOptions } from './../object-form.interface';
+import { FormStatusChangedEvent } from './../object-form.interface';
 import { Situation } from './../object-form.situation';
 import { ObjectFormComponent } from './../object-form/object-form.component';
 
@@ -84,7 +84,7 @@ export class ObjectFormEditComponent implements OnDestroy {
    */
   @Input('dmsObject')
   set dmsObject(dmsObject: DmsObject) {
-    if (dmsObject && (!this._dmsObject || this._dmsObject.id !== dmsObject.id)) {
+    if (dmsObject && (!this._dmsObject || this._dmsObject !== dmsObject)) {
       // if (this.isFloatingObjectType || (dmsObject && (!this._dmsObject || this._dmsObject.id !== dmsObject.id))) {
       // reset the state of the form
       this.formState = null;
@@ -97,12 +97,14 @@ export class ObjectFormEditComponent implements OnDestroy {
     }
     this._dmsObject = dmsObject;
   }
+
   /**
    * Emits the updated `DmsObject` when a form has been saved.
    */
   @Output() indexDataSaved = new EventEmitter<DmsObject>();
 
-  formOptions: ObjectFormOptions;
+  @Output() statusChanged = new EventEmitter<FormStatusChangedEvent>();
+
   combinedFormInput: CombinedObjectFormInput;
   formState: FormStatusChangedEvent;
   busy: boolean;
@@ -118,6 +120,8 @@ export class ObjectFormEditComponent implements OnDestroy {
   };
 
   constructor(
+    @Attribute('actionsDisabled') public actionsDisabled: boolean,
+    @Attribute('situation') public situation = Situation.EDIT,
     private systemService: SystemService,
     private backend: BackendService,
     private dmsService: DmsService,
@@ -137,7 +141,7 @@ export class ObjectFormEditComponent implements OnDestroy {
   private startPending() {
     // because this method will be called every time the form status changes,
     // pending task will only be started once until it was finished
-    if (!this.pendingChanges.hasPendingTask(this.pendingTaskId || ' ')) {
+    if (!this.pendingChanges.hasPendingTask(this.pendingTaskId || ' ') && !this.actionsDisabled) {
       this.pendingTaskId = this.pendingChanges.startTask(this.translate.instant('yuv.framework.object-form-edit.pending-changes.alert'));
     }
   }
@@ -147,6 +151,7 @@ export class ObjectFormEditComponent implements OnDestroy {
   }
 
   onFormStatusChanged(evt) {
+    this.statusChanged.emit(evt);
     this.formState = evt;
     this.controls.disabled = !(this.formState.dirty || this._sotChanged.assignedPrimaryFSOT);
     if (this.formState.dirty) {
@@ -154,6 +159,15 @@ export class ObjectFormEditComponent implements OnDestroy {
     } else {
       this.finishPending();
     }
+  }
+
+  getFormData() {
+    let formData = (this.objectForm || this.afoObjectForm).getFormData();
+    // also apply secondary objecttype IDs as they may have changed as well
+    if (this._sotChanged.applied.length > 0 || this._sotChanged.removed.length > 0) {
+      formData[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS] = this._dmsObject.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS];
+    }
+    return formData;
   }
 
   // save the current dms object
@@ -183,10 +197,6 @@ export class ObjectFormEditComponent implements OnDestroy {
           .subscribe(
             (updatedObject) => {
               this._dmsObject = updatedObject;
-              if (this.formOptions) {
-                this.formOptions.data = updatedObject.data;
-                this.objectForm.setFormPristine();
-              }
               if (this.combinedFormInput) {
                 this._sotChanged = {
                   applied: [],
@@ -196,7 +206,7 @@ export class ObjectFormEditComponent implements OnDestroy {
                 };
 
                 this._secondaryObjectTypeIDs = [...this._dmsObject.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS]];
-                this.combinedFormInput.data = updatedObject.data;
+                this.combinedFormInput = { ...this.combinedFormInput, data: updatedObject.data };
                 this.afoObjectForm.setFormPristine();
               }
 
@@ -217,7 +227,7 @@ export class ObjectFormEditComponent implements OnDestroy {
   }
 
   private getCombinedFormAddInput(secondaryObjectTypeIDs: string[], enableEditSOT = true): Observable<CombinedFormAddInput[]> {
-    return this.systemService.getObjectTypeForms(secondaryObjectTypeIDs, Situation.EDIT).pipe(
+    return this.systemService.getObjectTypeForms(secondaryObjectTypeIDs, this.situation).pipe(
       map((res: { [key: string]: any }) => {
         const fi: CombinedFormAddInput[] = [];
         Object.keys(res).forEach((k) => {
@@ -234,7 +244,7 @@ export class ObjectFormEditComponent implements OnDestroy {
   }
 
   // reset the form to its initial state
-  reset() {
+  resetForm() {
     if (this.objectForm) {
       this.objectForm.resetForm();
     }
@@ -252,9 +262,8 @@ export class ObjectFormEditComponent implements OnDestroy {
   }
 
   private createObjectForm(dmsObject: DmsObject, validate?: boolean) {
-    this.formOptions = null;
     this.getApplicableSecondaries(dmsObject);
-    this.systemService.getDmsObjectForms(dmsObject, Situation.EDIT).subscribe(
+    this.systemService.getDmsObjectForms(dmsObject, this.situation).subscribe(
       (res) => {
         this.combinedFormInput = {
           main: res.main,
@@ -280,7 +289,7 @@ export class ObjectFormEditComponent implements OnDestroy {
       },
       applicableSOTs: {
         id: 'fsot',
-        label: this.translate.instant('yuv.framework.object-form-edit.fsot.add-fsot'),
+        label: this.translate.instant('yuv.framework.object-form-edit.fsot.add-fsot.dialog.title'),
         items: []
       }
     };

@@ -6,20 +6,9 @@
       (typeAggregation)="onTypeAggregation($event)" (queryReset)="onQuickSearchReset()"
       (querySubmit)="onQuickSearchQuery($event)"></yuv-quick-search>
 
-
-    <div class="aggs" *ngIf="aggs?.length">
-      <div class="container">
-        <div *ngFor="let a of aggs" (click)="applyAggregation(a)">
-          <div class="label">
-            {{a.label}}
-          </div>
-          <div class="count">
-            {{a.count}}
-          </div>
-        </div>
-      </div>
-    </div>
-
+    <yuv-grouped-select #aggs class="aggs" *ngIf="aggs?.length" [toggleable]="false" [enableSelectAll]="false"
+      [multiple]="false" [groups]="aggsGroups" (select)="applyAggregation($event)">
+    </yuv-grouped-select>
 
   </div>
 

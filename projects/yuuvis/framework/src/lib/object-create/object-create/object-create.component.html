@@ -18,14 +18,13 @@
 
     <!-- status indicator -->
     <section class="status-indicator">
-
       <div class="context" *ngIf="context">
         <yuv-icon icon="clear" (click)="removeContext()"></yuv-icon>
-        {{'yuv.framework.object-create.status.context'|translate: ({title: context.title})}}
+        {{ 'yuv.framework.object-create.status.context' | translate: { title: context.title } }}
       </div>
       <div class="files" *ngIf="files?.length && state.currentStep !== 'afo_indexdata'">
         <yuv-icon icon="clear" (click)="removeFiles()"></yuv-icon>
-        {{'yuv.framework.object-create.status.files'|translate: ({count: files.length})}}
+        {{ 'yuv.framework.object-create.status.files' | translate: { count: files.length } }}
       </div>
     </section>
 
@@ -35,12 +34,13 @@
         (yuvFileDrop)="onFilesDroppedOnType($event)" [yuvFileDropOptions]="{ multiple: true }">
         <h1>{{ 'yuv.framework.object-create.step.type' | translate }}</h1>
         <yuv-grouped-select [groups]="availableObjectTypeGroups" (select)="selectObjectType($event.value)"
-          [selection]="[selectedObjectType?.id]" yuvFocusFirst="200"> </yuv-grouped-select>
+          [selection]="[selectedObjectType?.id]" yuvFocusFirst="200">
+        </yuv-grouped-select>
       </div>
 
       <!-- STEP 2: Choose file(s) -->
       <div class="step select" *ngSwitchCase="'files'" (yuvFileDrop)="onFilesDroppedOnType($event)"
-        [yuvFileDropOptions]="{ disabled: selectedObjectType.contentStreamAllowed === 'notallowed', multiple: true }"
+        [yuvFileDropOptions]="{ disabled: selectedObjectType.contentStreamAllowed === 'notallowed', multiple: !afoType }"
         [@fadeIn]="animationTimer">
         <h1>{{ 'yuv.framework.object-create.step.file' | translate }}</h1>
 
@@ -66,7 +66,8 @@
                 <button *ngIf="files?.length"
                   (click)="filesClear()">{{ 'yuv.framework.object-create.step.file.clear' | translate }}</button>
                 <yuv-file-picker [label]="'yuv.framework.object-create.step.file.choose' | translate" [output]="'file'"
-                  [multiple]="true" (fileSelected)="fileChosen($event)"></yuv-file-picker>
+                  [disabled]="afoType && files.length > 0" [multiple]="!afoType" (fileSelected)="fileChosen($event)">
+                </yuv-file-picker>
                 <button class="primary" (click)="fileSelectContinue()"
                   [disabled]="selectedObjectType.contentStreamAllowed === 'required' && files?.length === 0">
                   {{ 'yuv.framework.object-create.step.file.continue' | translate }}
@@ -88,28 +89,25 @@
 
       <!-- STEP: AFO_UPLOAD -->
       <div class="step afo-upload" *ngSwitchCase="'afo_upload'">
-
         <div class="box">
-          <p>{{'yuv.framework.object-create.afo.upload.info'|translate}}</p>
+          <p>{{ 'yuv.framework.object-create.afo.upload.info' | translate }}</p>
           <yuv-form-input class="checkbox" [skipToggle]="true"
             [label]="'yuv.framework.object-create.afo.upload.skip-notification' | translate">
             <yuv-checkbox [(ngModel)]="afoUploadNoticeSkip" [ngModelOptions]="{ standalone: true }"></yuv-checkbox>
           </yuv-form-input>
           <div class="actions">
-            <button (click)="afoCreateCancel()">{{'yuv.framework.shared.cancel'|translate}}</button>
+            <button (click)="afoCreateCancel()">{{ 'yuv.framework.shared.cancel' | translate }}</button>
             <button class="primary"
-              (click)="afoCreateApprove(afoUploadNoticeSkip)">{{'yuv.framework.object-create.afo.upload.approve'|translate}}</button>
+              (click)="afoCreateApprove(afoUploadNoticeSkip)">{{ 'yuv.framework.object-create.afo.upload.approve' | translate }}</button>
           </div>
         </div>
       </div>
 
       <!-- STEP: AFO_INDEXDATA -->
       <div class="step afo-indexdata" *ngSwitchCase="'afo_indexdata'">
-
         <as-split>
           <!-- SOT select and form -->
           <as-split-area [size]="!afoCreate?.floatingSOT.selected ? 30 : 50">
-
             <ng-container *ngIf="!afoCreate?.floatingSOT.selected; else tplSOTForm">
               <div class="floating-sots list panel">
                 <yuv-fsot-select [fsots]="afoCreate?.floatingSOT.items" (fsotSelect)="afoSelectFloatingSOT($event)">
@@ -122,26 +120,21 @@
                 <div class="header" *ngIf="afoCreate?.floatingSOT.items.items.length > 1">
                   <yuv-icon class="btn" (click)="afoCreate?.floatingSOT.selected = null" icon="navBack"></yuv-icon>
 
-                  <span>{{afoCreate.floatingSOT.selected.sot.label}}</span>
+                  <span>{{ afoCreate.floatingSOT.selected.sot.label }}</span>
                 </div>
                 <div class="form">
-                  <yuv-combined-object-form (statusChanged)="onFormStatusChanged($event)"
-                    [objectFormInput]="afoCreate.floatingSOT.selected.combinedFormInput">
-                  </yuv-combined-object-form>
-
-
+                  <yuv-object-form-edit actionsDisabled="true" situation="CREATE"
+                    (statusChanged)="onFormStatusChanged($event)" [dmsObject]="afoCreate?.dmsObject.selected">
+                  </yuv-object-form-edit>
                 </div>
               </div>
             </ng-template>
-
           </as-split-area>
 
           <!-- preview -->
           <as-split-area class="preview-split panel" [size]="!afoCreate?.floatingSOT.selected ? 70 : 50">
-
             <as-split unit="pixel">
               <as-split-area size="*">
-
                 <div class="preview" *ngIf="!!afoCreate?.dmsObject.selected">
                   <yuv-content-preview [dmsObject]="afoCreate.dmsObject.selected"></yuv-content-preview>
                 </div>
@@ -150,9 +143,10 @@
               <as-split-area size="200" *ngIf="afoCreate?.dmsObject.items.length > 1">
                 <div class="objects">
                   <div class="item" *ngFor="let o of afoCreate?.dmsObject.items"
-                    [ngClass]="{current: afoCreate?.dmsObject?.selected?.id === o.id}"
+                    [ngClass]="{ current: afoCreate?.dmsObject?.selected?.id === o.id }"
                     (click)="afoCreate.dmsObject.selected = o">
-                    {{o.content.fileName}}</div>
+                    {{ o.content.fileName }}
+                  </div>
                 </div>
               </as-split-area>
             </as-split>
@@ -172,12 +166,12 @@
           translate>yuv.framework.object-create.footer.create.afo.cancel</button>
 
         <button class="primary create" (click)="create()"
-          [disabled]="!afoCreate?.floatingSOT?.selected || combinedObjectForm?.combinedFormState?.invalid"
-          translate>yuv.framework.object-create.footer.create.afo.next</button>
+          [disabled]="!afoCreate?.floatingSOT?.selected || formState?.invalid" translate>
+          yuv.framework.object-create.footer.create.afo.next
+        </button>
       </ng-container>
 
       <ng-template #tplCreate>
-
         <button class="secondary" *ngIf="selectedObjectType" (click)="resetState()"
           translate>yuv.framework.object-create.footer.cancel</button>
 

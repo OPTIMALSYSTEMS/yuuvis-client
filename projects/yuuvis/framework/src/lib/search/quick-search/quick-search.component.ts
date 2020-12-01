@@ -72,8 +72,14 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
 
   objectTypeSelectLabel: string;
 
-  availableObjectTypes: Selectable[] = [];
-  availableObjectTypeGroups: SelectableGroup[] = [];
+  get availableObjectTypes(): Selectable[] {
+    return this.quickSearchService.availableObjectTypes;
+  }
+
+  get availableObjectTypeGroups(): SelectableGroup[] {
+    return this.quickSearchService.availableObjectTypeGroups;
+  }
+
   availableObjectTypeFields: Selectable[] = [];
 
   private TYPES = '@';
@@ -166,8 +172,6 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
       searchWithinContext: [false]
     });
 
-    this.availableObjectTypes = this.quickSearchService.availableObjectTypes;
-    this.availableObjectTypeGroups = this.quickSearchService.availableObjectTypeGroups;
     this.selectedObjectTypes = [];
     this.objectTypeSelectLabel = this.translate.instant('yuv.framework.quick-search.type.all');
     // TODO: load only if needed
@@ -322,7 +326,7 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
     } else {
       this.objectTypeSelectLabel = this.translate.instant('yuv.framework.quick-search.type.multiple', { size: this.selectedObjectTypes.length });
     }
-    this.quickSearchService.updateTypesAndSots(this.searchQuery, this.selectedObjectTypes);
+    this.quickSearchService.updateTypesAndLots(this.searchQuery, this.selectedObjectTypes);
     if (aggregate) {
       this.aggregate();
     }
@@ -330,7 +334,7 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
   }
 
   private setAvailableObjectTypesFields() {
-    this.availableObjectTypeFields = this.quickSearchService.getAvailableObjectTypesFields(this.selectedObjectTypes, this.searchQuery?.sots);
+    this.availableObjectTypeFields = this.quickSearchService.getAvailableObjectTypesFields(this.selectedObjectTypes, this.searchQuery?.lots);
 
     this.quickSearchService.getCurrentSettings().subscribe(([storedFilters, hiddenFilters]) => {
       this.enabledFilters = this.quickSearchService
@@ -410,7 +414,7 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
   }
 
   applyTypeAggration(agg: ObjectTypeAggregation, execute: boolean) {
-    this.quickSearchService.updateTypesAndSots(this.searchQuery, [agg.objectTypeId], true);
+    this.quickSearchService.updateTypesAndLots(this.searchQuery, [agg.objectTypeId], true);
     if (execute) {
       this.executeSearch();
     }

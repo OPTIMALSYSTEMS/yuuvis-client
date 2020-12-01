@@ -1,6 +1,6 @@
 import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
 import { ValidatorFn, Validators } from '@angular/forms';
-import { Logger, RangeValue, SearchFilter, SearchService, SystemService } from '@yuuvis/core';
+import { Logger, RangeValue, SearchFilter, SearchService, SystemService, Utils } from '@yuuvis/core';
 import { cloneDeep } from 'lodash-es';
 import { Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
@@ -34,6 +34,8 @@ import { Situation } from './../object-form.situation';
   styleUrls: ['./object-form.component.scss']
 })
 export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestroy, AfterViewInit, IObjectForm {
+  private skipTranslationsFor = ['core', 'data'];
+
   /**
    * There are special scenarios where forms are within a form themselves.
    * Setting this property to true, will handle the current form in a
@@ -420,8 +422,11 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
         layout: formElement.layout,
         type: formElement.type
       };
+
       if (formElement.name) {
-        ctrl._eoFormGroup.label = this.systemService.getLocalizedResource(`${formElement.name}_label`) || formElement.name;
+        ctrl._eoFormGroup.label = this.skipTranslationsFor.includes(formElement.name)
+          ? formElement.name
+          : this.systemService.getLocalizedResource(`${formElement.name}_label`) || formElement.name;
       }
 
       if (useName === 'core' || useName === 'data') {
@@ -448,7 +453,7 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
       let value: any;
       value = formElement?.value
         ? this.patchFormValue(formElement?.value)
-        : formElement?.defaultvalue && this.formOptions.formModel.situation === Situation.CREATE
+        : !Utils.isEmpty(formElement?.defaultvalue) && this.formOptions.formModel.situation === Situation.CREATE
         ? this.patchFormValue(formElement?.defaultvalue)
         : formElement?.value;
 

@@ -6,7 +6,7 @@
     .core {
       padding: var(--app-pane-padding) var(--app-pane-padding) calc(var(--app-pane-padding) * 2) var(--app-pane-padding);
     }
-    .ui-tabview {
+    .p-tabview {
       padding: 0;
     }
   }
@@ -22,7 +22,7 @@
     padding: var(--app-pane-padding);
   }
 
-  & > p-tabview > .ui-tabview > .ui-tabview-panels {
+  & > p-tabview > .p-tabview > .p-tabview-panels {
     background-color: var(--panel-background-lightgrey);
   }
 }
