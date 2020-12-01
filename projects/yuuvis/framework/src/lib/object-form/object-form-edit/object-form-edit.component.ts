@@ -97,6 +97,7 @@ export class ObjectFormEditComponent implements OnDestroy {
     }
     this._dmsObject = dmsObject;
   }
+
   /**
    * Emits the updated `DmsObject` when a form has been saved.
    */
@@ -120,6 +121,7 @@ export class ObjectFormEditComponent implements OnDestroy {
 
   constructor(
     @Attribute('actionsDisabled') public actionsDisabled: boolean,
+    @Attribute('situation') public situation = Situation.EDIT,
     private systemService: SystemService,
     private backend: BackendService,
     private dmsService: DmsService,
@@ -225,7 +227,7 @@ export class ObjectFormEditComponent implements OnDestroy {
   }
 
   private getCombinedFormAddInput(secondaryObjectTypeIDs: string[], enableEditSOT = true): Observable<CombinedFormAddInput[]> {
-    return this.systemService.getObjectTypeForms(secondaryObjectTypeIDs, Situation.EDIT).pipe(
+    return this.systemService.getObjectTypeForms(secondaryObjectTypeIDs, this.situation).pipe(
       map((res: { [key: string]: any }) => {
         const fi: CombinedFormAddInput[] = [];
         Object.keys(res).forEach((k) => {
@@ -261,7 +263,7 @@ export class ObjectFormEditComponent implements OnDestroy {
 
   private createObjectForm(dmsObject: DmsObject, validate?: boolean) {
     this.getApplicableSecondaries(dmsObject);
-    this.systemService.getDmsObjectForms(dmsObject, Situation.EDIT).subscribe(
+    this.systemService.getDmsObjectForms(dmsObject, this.situation).subscribe(
       (res) => {
         this.combinedFormInput = {
           main: res.main,

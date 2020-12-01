@@ -123,8 +123,8 @@
                   <span>{{ afoCreate.floatingSOT.selected.sot.label }}</span>
                 </div>
                 <div class="form">
-                  <yuv-object-form-edit actionsDisabled="true" (statusChanged)="onFormStatusChanged($event)"
-                    [dmsObject]="afoCreate?.dmsObject.selected">
+                  <yuv-object-form-edit actionsDisabled="true" situation="CREATE"
+                    (statusChanged)="onFormStatusChanged($event)" [dmsObject]="afoCreate?.dmsObject.selected">
                   </yuv-object-form-edit>
                 </div>
               </div>

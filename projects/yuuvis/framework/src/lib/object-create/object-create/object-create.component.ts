@@ -370,7 +370,7 @@ export class ObjectCreateComponent implements OnDestroy {
   }
 
   afoSelectFloatingSOT(sot: { id: string; label: string }) {
-    this.afoCreate.dmsObject.selected.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS] = sot.id != 'none' ? [sot.id] : null;
+    this.afoCreate.dmsObject.selected.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS] = sot.id != 'none' ? [...this.getSotsToBeApplied(), sot.id] : null;
     this.afoCreate.floatingSOT.selected = {
       sot: {
         id: sot?.id || 'none',
@@ -571,17 +571,7 @@ export class ObjectCreateComponent implements OnDestroy {
    * @returns List of IDs of finished objects
    */
   private finishAFO(data: any): Observable<string[]> {
-    const objectType = !!this.selectedObjectType.floatingParentType
-      ? this.system.getObjectType(this.selectedObjectType.floatingParentType)
-      : this.selectedObjectType;
-    // add selected SOTs
-    const sotsToBeApplied: string[] = objectType.secondaryObjectTypes
-      .filter((sot) => {
-        const soType = this.system.getSecondaryObjectType(sot.id);
-        // add static as well as required SOTs
-        return sot.static || (soType.classification && soType.classification.includes(SecondaryObjectTypeClassification.REQUIRED));
-      })
-      .map((sot) => sot.id);
+    const sotsToBeApplied = this.getSotsToBeApplied();
     data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS] = [...(data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS] || []), ...sotsToBeApplied];
 
     // update existing dms object
@@ -600,6 +590,20 @@ export class ObjectCreateComponent implements OnDestroy {
         )
       )
     );
+  }
+
+  private getSotsToBeApplied(): string[] {
+    const objectType = !!this.selectedObjectType.floatingParentType
+      ? this.system.getObjectType(this.selectedObjectType.floatingParentType)
+      : this.selectedObjectType;
+    // add selected SOTs
+    return objectType.secondaryObjectTypes
+      .filter((sot) => {
+        const soType = this.system.getSecondaryObjectType(sot.id);
+        // add static as well as required SOTs
+        return sot.static || (soType.classification && soType.classification.includes(SecondaryObjectTypeClassification.REQUIRED));
+      })
+      .map((sot) => sot.id);
   }
 
   /**
