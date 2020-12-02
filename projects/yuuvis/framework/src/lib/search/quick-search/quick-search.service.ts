@@ -152,7 +152,7 @@ export class QuickSearchService {
     };
   }
 
-  getAvailableObjectTypesFields(selectedTypes = [], lots = [], shared = true): Selectable[] {
+  private getSharedFields(selectedTypes = [], shared = true): ObjectTypeField[] {
     const selectedObjectTypes = (selectedTypes?.length
       ? selectedTypes
       : !shared
@@ -160,16 +160,26 @@ export class QuickSearchService {
       : [undefined]
     ).map((id) => this.systemService.getResolvedType(id));
 
-    const sharedFields = shared
+    return shared
       ? selectedObjectTypes.reduce((prev, cur) => cur.fields.filter((f) => prev.find((p) => p.id === f.id)), selectedObjectTypes[0].fields)
       : selectedObjectTypes.reduce((prev, cur) => [...prev, ...cur.fields.filter((f) => !prev.find((p) => p.id === f.id))], []);
+  }
 
-    const lotsFields = lots?.length ? this.getAvailableObjectTypesFields(lots) : [];
+  getAvailableObjectTypesFields(selectedTypes = [], shared = true): Selectable[] {
+    const q = new SearchQuery();
+    this.updateTypesAndLots(q, selectedTypes);
+
+    const sharedFields = q.allTypes.length
+      ? [
+          ...[...this.getSharedFields(q.types, shared), ...this.getSharedFields(q.lots, shared)]
+            .reduce((m, item) => (m.has(item.id) || m.set(item.id, item)) && m, new Map())
+            .values()
+        ]
+      : this.getSharedFields([], shared);
 
     return [
-      ...lotsFields,
       ...sharedFields
-        .filter((f) => !ColumnConfigSkipFields.includes(f.id) && !lotsFields.find((s) => s.id === f.id))
+        .filter((f) => !ColumnConfigSkipFields.includes(f.id))
         .map((f: ObjectTypeField) => ({
           id: f.id,
           label: this.systemService.getLocalizedResource(`${f.id}_label`) || f.id,
