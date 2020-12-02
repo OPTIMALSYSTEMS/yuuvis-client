@@ -572,6 +572,10 @@ export class ObjectCreateComponent implements OnDestroy {
    */
   private finishAFO(data: any): Observable<string[]> {
     const sotsToBeApplied = this.getSotsToBeApplied();
+    const pFSOT = this.afoCreate?.floatingSOT?.selected;
+    if (pFSOT && pFSOT.sot.id !== 'none') {
+      sotsToBeApplied.push(pFSOT.sot.id);
+    }
     data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS] = [...(data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS] || []), ...sotsToBeApplied];
 
     // update existing dms object
