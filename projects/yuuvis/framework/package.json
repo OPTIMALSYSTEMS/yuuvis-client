@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@yuuvis/core": "0.9.11",
+    "@yuuvis/styles": "^1.0.0",
     "@ag-grid-community/angular": "~24.1.0",
     "@ag-grid-community/client-side-row-model": "~24.1.0",
     "@ag-grid-community/core": "~24.1.0",
