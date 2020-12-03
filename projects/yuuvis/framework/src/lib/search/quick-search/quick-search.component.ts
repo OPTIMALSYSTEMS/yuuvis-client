@@ -80,6 +80,10 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
     return this.quickSearchService.availableObjectTypeGroups;
   }
 
+  get availableObjectTypeGroupsList(): Selectable[] {
+    return this.availableObjectTypeGroups.reduce((pre, cur) => [...pre, ...cur.items], []);
+  }
+
   availableObjectTypeFields: Selectable[] = [];
 
   private TYPES = '@';
@@ -195,9 +199,14 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
   autocomplete(event: any) {
     const q = (this.lastAutoQuery = this.parseQuery(event.query));
     // TODO : add active filter suggestions
-    const suggestions: any[] = (q.isTypes ? this.availableObjectTypes : [...this.customFilters, ...this.enabledFilters]) || [];
+    const suggestions: any[] = (q.isTypes ? this.availableObjectTypeGroupsList : [...this.customFilters, ...this.enabledFilters]) || [];
     this.autoSuggestions =
-      !q.isTypes && !q.isTypeFields ? [] : suggestions.filter((t) => (t.label || '').toLowerCase().includes(q.text)).map((t) => ({ ...t }));
+      !q.isTypes && !q.isTypeFields
+        ? []
+        : suggestions
+            .filter((t) => (t.label || '').toLowerCase().includes(q.text))
+            .map((t) => ({ ...t }))
+            .sort(Utils.sortValues('label'));
   }
 
   autocompleteSelect(selection) {
@@ -321,7 +330,7 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
 
     if (this.selectedObjectTypes.length === 1) {
       this.objectTypeSelectLabel = this.systemService.getLocalizedResource(`${this.selectedObjectTypes[0]}_label`);
-    } else if (this.selectedObjectTypes.length === this.availableObjectTypes.length || this.selectedObjectTypes.length === 0) {
+    } else if (this.selectedObjectTypes.length === this.availableObjectTypeGroupsList.length || this.selectedObjectTypes.length === 0) {
       this.objectTypeSelectLabel = this.translate.instant('yuv.framework.quick-search.type.all');
     } else {
       this.objectTypeSelectLabel = this.translate.instant('yuv.framework.quick-search.type.multiple', { size: this.selectedObjectTypes.length });
@@ -334,7 +343,7 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
   }
 
   private setAvailableObjectTypesFields() {
-    this.availableObjectTypeFields = this.quickSearchService.getAvailableObjectTypesFields(this.selectedObjectTypes, this.searchQuery?.lots);
+    this.availableObjectTypeFields = this.quickSearchService.getAvailableObjectTypesFields(this.selectedObjectTypes);
 
     this.quickSearchService.getCurrentSettings().subscribe(([storedFilters, hiddenFilters]) => {
       this.enabledFilters = this.quickSearchService
