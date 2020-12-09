@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { PendingChangesGuard } from '@yuuvis/core';
+import { PluginComponent } from '@yuuvis/framework';
 import { AboutComponent } from '../states/about/component/about.component';
 import { ColumnConfigurationComponent } from '../states/column-configuration/column-configuration.component';
 import { CreateComponent } from '../states/create/create.component';
@@ -28,6 +29,7 @@ const routes: Routes = [
   { path: 'processes', component: ProcessesComponent, canDeactivate: [OfflineGuard, PendingChangesGuard] },
   { path: 'object/:id', component: ObjectComponent, canDeactivate: [OfflineGuard, PendingChangesGuard] },
   { path: 'versions/:id', component: VersionsComponent, canDeactivate: [OfflineGuard, PendingChangesGuard] },
+  { path: 'custom/:type', component: PluginComponent },
   // default route
   { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
   // 404 route

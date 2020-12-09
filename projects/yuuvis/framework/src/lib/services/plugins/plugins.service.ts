@@ -1,5 +1,6 @@
-import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { Component, Injectable, Input, NgModule, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import {
   ApiBase,
   BackendService,
@@ -15,11 +16,33 @@ import {
   TranslateService,
   UserService,
   Utils,
+  YuvEventType,
   YuvUser
 } from '@yuuvis/core';
-import { map } from 'rxjs/operators';
+import { of } from 'rxjs';
+import { catchError, map, tap } from 'rxjs/operators';
 import { NotificationService } from '../notification/notification.service';
+import { YuvPipesModule } from './../../pipes/pipes.module';
 import { PluginAPI } from './plugins.interface';
+
+@Component({
+  selector: 'yuv-plugin',
+  template: `<iframe *ngIf="config?.viewer" [src]="config?.viewer | safeUrl" width="100%" height="100%" frameborder="0"></iframe>`,
+  styleUrls: [],
+  providers: []
+})
+export class PluginComponent implements OnInit {
+  @Input() config: any;
+  constructor(private pluginsService: PluginsService, private route: ActivatedRoute) {}
+
+  ngOnInit() {
+    if (!this.config) {
+      // match custom state by url
+      const path = this.route.snapshot.url.map((u) => u.toString()).join('/');
+      this.pluginsService.getViewerPlugins('states', '', path).subscribe((res) => (this.config = res[0]));
+    }
+  }
+}
 
 /**
  * `PluginService` is an abstraction of some framework capabilities that is aimed towards
@@ -33,6 +56,7 @@ import { PluginAPI } from './plugins.interface';
 })
 export class PluginsService {
   private user: YuvUser;
+  private viewerPlugins: any;
 
   /**
    * @ignore
@@ -48,7 +72,46 @@ export class PluginsService {
     private searchService: SearchService,
     private userService: UserService
   ) {
+    // this.getViewerPlugins('links').subscribe();
     this.userService.user$.subscribe((user) => (this.user = user));
+    this.eventService.on(YuvEventType.CLIENT_LOCALE_CHANGED).subscribe((event: any) => this.extendTranslations(event.data));
+  }
+
+  private extendTranslations(lang: string) {
+    const translations = (this.viewerPlugins?.translations || {})[lang];
+    const allKeys = translations && Object.keys(this.translate.store?.translations[lang] || {});
+    if (translations && !Object.keys(translations).every((k) => allKeys.includes(k))) {
+      this.translate.setTranslation(lang, translations, true);
+    }
+  }
+
+  getViewerPlugins(type: 'links' | 'states' | 'actions' | 'plugins', matchType?: string, matchPath?: string) {
+    return (!this.viewerPlugins ? this.backend.get('viewer/plugins', '') : of(this.viewerPlugins)).pipe(
+      catchError(() => {
+        console.warn('Missing plugin service!');
+        return of({});
+      }),
+      tap((res) => {
+        if (!this.viewerPlugins) {
+          this.viewerPlugins = res || {};
+          this.extendTranslations(this.translate.currentLang);
+
+          // TODO: why it doesnt work ???
+          // this.getViewerPlugins('states').forEach((state) => {
+          // debugger;
+          // const config = this.router.config;
+          // config.push({ path: state.path, component: PluginComponent });
+          // this.router.resetConfig(config);
+          // });
+        }
+      }),
+      map((res) => {
+        const viewerPlugins = type === 'links' ? [...(this.viewerPlugins.links || []), ...(this.viewerPlugins.states || [])] : this.viewerPlugins[type] || [];
+        return viewerPlugins.filter((p) =>
+          matchType ? p.matchType && matchType.match(new RegExp(p.matchType)) : matchPath ? (p.path || '').match(new RegExp(matchPath)) : true
+        );
+      })
+    );
   }
 
   /**
@@ -190,3 +253,11 @@ export class PluginsService {
     return Promise.reject(error.message || error);
   }
 }
+
+@NgModule({
+  imports: [CommonModule, YuvPipesModule],
+  declarations: [PluginComponent],
+  exports: [PluginComponent],
+  providers: [PluginsService]
+})
+export class YuvPluginsModule {}

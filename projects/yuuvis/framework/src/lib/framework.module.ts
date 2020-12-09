@@ -25,6 +25,7 @@ import { ROUTES, YuvRoutes } from './routing/routes';
 import { YuvSearchModule } from './search/search.module';
 import { ErrorHandlerService } from './services/error-handler/error-handler.service';
 import { SingleCellRendererComponent } from './services/grid/renderer/single-cell-renderer/single-cell-renderer.component';
+import { YuvPluginsModule } from './services/plugins/plugins.service';
 import { YuvUserModule } from './user/user.module';
 import { YuvVersionsModule } from './versions/versions.module';
 
@@ -45,7 +46,8 @@ const modules = [
   YuvActionModule,
   YuvCoreSharedModule,
   OverlayPanelModule,
-  YuvBpmModule
+  YuvBpmModule,
+  YuvPluginsModule
 ];
 
 /**

@@ -155,7 +155,10 @@ export class ResponsiveTabContainerComponent implements OnInit, AfterContentInit
    * initialize default TabPanels & TabPanel plugins
    */
   init() {
-    this.allPanels = this.pluginPanels.reduce((prev, cur) => [...prev, ...cur.toArray()], this.tabPanels.toArray());
+    this.allPanels = [
+      ...this.pluginPanels.reduce((prev, cur) => [...prev, ...cur.toArray()], []).filter((t) => !this.tabPanels.find((p) => p.id === t.id)),
+      ...this.tabPanels.toArray()
+    ];
 
     this.mainTabView.tabPanels = new QueryList<TabPanel>();
     this.mainTabView.tabPanels.reset(this.allPanels);

@@ -28,10 +28,12 @@ import {
   ScreenService,
   UploadResult
 } from '@yuuvis/framework';
+import { Observable } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { add, close, drawer, offline, refresh, search, userDisabled } from '../../../assets/default/svg/svg';
 import { AppSearchService } from '../../service/app-search.service';
+import { PluginsService } from './../../../../projects/yuuvis/framework/src/lib/services/plugins/plugins.service';
 import { FrameService } from './frame.service';
 
 @Component({
@@ -64,11 +66,14 @@ export class FrameComponent implements OnInit, OnDestroy {
   hideAppBar: boolean;
   disableFileDrop: boolean;
   disableCreate: boolean;
-  showSideBar: boolean;
+  displaySideBar: boolean;
   screenSmall: boolean;
   user: YuvUser;
   disabledContextSearch: boolean;
   appQuery: SearchQuery;
+
+  navigationPlugins: Observable<any[]>;
+  settingsPlugins: Observable<any[]>;
 
   context: string;
   reloadComponent = true;
@@ -104,8 +109,12 @@ export class FrameComponent implements OnInit, OnDestroy {
     private translateService: TranslateService,
     private popoverService: PopoverService,
     private dmsService: DmsService,
-    private iconRegistry: IconRegistryService
+    private iconRegistry: IconRegistryService,
+    private pluginsService: PluginsService
   ) {
+    this.navigationPlugins = this.pluginsService.getViewerPlugins('links', 'sidebar-navigation');
+    this.settingsPlugins = this.pluginsService.getViewerPlugins('links', 'sidebar-settings');
+
     this.iconRegistry.registerIcons([search, drawer, refresh, add, userDisabled, offline, close, openContext]);
     this.userService.user$.subscribe((user: YuvUser) => {
       this.user = user;
@@ -161,6 +170,10 @@ export class FrameComponent implements OnInit, OnDestroy {
     }
   }
 
+  showSideBar(display = true) {
+    setTimeout(() => (this.displaySideBar = display));
+  }
+
   closeNotification(popoverRef?: PopoverRef) {
     if (popoverRef) {
       popoverRef.close();
@@ -199,7 +212,7 @@ export class FrameComponent implements OnInit, OnDestroy {
 
   navigate(state: string) {
     if (this.currentRoute !== state) {
-      this.showSideBar = false;
+      this.showSideBar(false);
       this.router.navigate([state]);
     }
   }

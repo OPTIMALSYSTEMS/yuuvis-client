@@ -9,7 +9,8 @@
     </div>
   </div>
 
-  <yuv-responsive-tab-container #tabContainer class="content" [layoutOptionsKey]="layoutOptionsKey">
+  <yuv-responsive-tab-container *ngIf="(plugins ? (plugins | async) : []) as resolvedPlugins" #tabContainer class="content"
+   [layoutOptionsKey]="layoutOptionsKey">
     <p-tabPanel [id]="'changes'" [header]="'yuv.framework.object-details-compare.tabs.changes.title' | translate"
       [headerStyleClass]="'changes'" [disabled]="!objectCompareInput?.second.item">
       <ng-template pTemplate="content">
@@ -25,5 +26,16 @@
           [compareObjects]="[objectCompareInput?.first.item, objectCompareInput?.second.item]"></yuv-content-preview>
       </ng-template>
     </p-tabPanel>
+
+    <!-- PLUGINS -->
+    <p-tabPanel *ngFor="let config of resolvedPlugins" [disabled]="!objectCompareInput?.second.item"
+      [id]="config.id" [header]="(config.label) | translate" [headerStyleClass]="config.id">
+      <ng-template pTemplate="content">
+        <yuv-plugin [config]="config"></yuv-plugin>
+      </ng-template>
+    </p-tabPanel>
+
+    <ng-content></ng-content>
+
   </yuv-responsive-tab-container>
 </yuv-panel>
