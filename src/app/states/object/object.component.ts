@@ -48,7 +48,7 @@ export class ObjectComponent implements OnInit, OnDestroy {
     private pluginsService: PluginsService
   ) {
     this.plugins = this.pluginsService.getViewerPlugins('plugins', 'yuv-object');
-    this.pluginsContext = this.pluginsService.getViewerPlugins('plugins', 'yuv-context');
+    this.pluginsContext = this.pluginsService.getViewerPlugins('plugins', 'yuv-object-context');
   }
 
   onContextFilesDropped(files: File[]) {
