@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, Injectable, Input, NgModule, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRouteSnapshot, CanActivate, CanDeactivate, Router, RouterModule, RouterStateSnapshot } from '@angular/router';
 import {
   ApiBase,
   BackendService,
@@ -19,7 +19,7 @@ import {
   YuvEventType,
   YuvUser
 } from '@yuuvis/core';
-import { of } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { NotificationService } from '../notification/notification.service';
 import { YuvPipesModule } from './../../pipes/pipes.module';
@@ -32,15 +32,52 @@ import { PluginAPI } from './plugins.interface';
   providers: []
 })
 export class PluginComponent implements OnInit {
+  static findConfig(pluginsService: PluginsService, url?: string): Observable<any> {
+    return pluginsService.getViewerPlugins('states', '', (url || pluginsService.currentUrl).replace('/', '')).pipe(map(([config]) => config));
+  }
+
+  static getFunction(fnc: string) {
+    return fnc.trim().startsWith('function') ? `return (${fnc}).apply(this,arguments)` : !fnc.trim().startsWith('return') ? `return ${fnc}` : fnc;
+  }
+
   @Input() config: any;
-  constructor(private pluginsService: PluginsService, private route: ActivatedRoute) {}
+
+  constructor(private pluginsService: PluginsService) {}
 
   ngOnInit() {
     if (!this.config) {
       // match custom state by url
-      const path = this.route.snapshot.url.map((u) => u.toString()).join('/');
-      this.pluginsService.getViewerPlugins('states', '', path).subscribe((res) => (this.config = res[0]));
+      PluginComponent.findConfig(this.pluginsService).subscribe((config) => (this.config = config));
     }
+  }
+}
+
+@Injectable({
+  providedIn: 'root'
+})
+export class PluginGuard implements CanDeactivate<PluginComponent>, CanActivate {
+  constructor(private pluginsService: PluginsService) {}
+
+  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
+    return PluginComponent.findConfig(this.pluginsService, state.url).pipe(
+      map((config) =>
+        config?.canActivate ? new Function('route', 'state', PluginComponent.getFunction(config?.canActivate)).apply(this.pluginsService.api, arguments) : true
+      )
+    );
+  }
+
+  canDeactivate(
+    component: PluginComponent,
+    currentRoute: ActivatedRouteSnapshot,
+    currentState: RouterStateSnapshot,
+    nextState?: RouterStateSnapshot
+  ): Observable<boolean> | Promise<boolean> | boolean {
+    return component?.config?.canDeactivate
+      ? new Function('component', 'currentRoute', 'currentState', 'nextState', PluginComponent.getFunction(component?.config?.canDeactivate)).apply(
+          this.pluginsService.api,
+          arguments
+        )
+      : true;
   }
 }
 
@@ -58,6 +95,14 @@ export class PluginsService {
   private user: YuvUser;
   private viewerPlugins: any;
 
+  public get currentUrl() {
+    return this.router.url;
+  }
+
+  public get api() {
+    return this.getApi();
+  }
+
   /**
    * @ignore
    */
@@ -72,9 +117,20 @@ export class PluginsService {
     private searchService: SearchService,
     private userService: UserService
   ) {
-    // this.getViewerPlugins('links').subscribe(); // initial call to speed up loading process
+    this.init().subscribe(); // TODO: url that does not match /custom/:type are not available on first load
     this.userService.user$.subscribe((user) => (this.user = user));
     this.eventService.on(YuvEventType.CLIENT_LOCALE_CHANGED).subscribe((event: any) => this.extendTranslations(event.data));
+  }
+
+  private init() {
+    return this.getViewerPlugins('states').pipe(
+      tap((states) =>
+        states.forEach((state: any) => {
+          this.router.config.unshift({ path: state.path, component: PluginComponent, canActivate: [PluginGuard], canDeactivate: [PluginGuard] });
+          this.router.resetConfig(this.router.config);
+        })
+      )
+    );
   }
 
   private extendTranslations(lang: string) {
@@ -85,7 +141,7 @@ export class PluginsService {
     }
   }
 
-  getViewerPlugins(type: 'links' | 'states' | 'actions' | 'plugins', matchType?: string, matchPath?: string) {
+  public getViewerPlugins(type: 'links' | 'states' | 'actions' | 'plugins', matchType?: string, matchPath?: string) {
     return (!this.viewerPlugins ? this.backend.getViaTempCache('viewer/plugins', () => this.backend.get('viewer/plugins', '')) : of(this.viewerPlugins)).pipe(
       catchError(() => {
         console.warn('Missing plugin service!');
@@ -95,14 +151,6 @@ export class PluginsService {
         if (!this.viewerPlugins) {
           this.viewerPlugins = res || {};
           this.extendTranslations(this.translate.currentLang);
-
-          // TODO: why it doesnt work ???
-          // this.getViewerPlugins('states').forEach((state) => {
-          // debugger;
-          // const config = this.router.config;
-          // config.push({ path: state.path, component: PluginComponent });
-          // this.router.resetConfig(config);
-          // });
         }
       }),
       map((res) => {
@@ -255,9 +303,9 @@ export class PluginsService {
 }
 
 @NgModule({
-  imports: [CommonModule, YuvPipesModule],
+  imports: [CommonModule, YuvPipesModule, RouterModule],
   declarations: [PluginComponent],
   exports: [PluginComponent],
-  providers: [PluginsService]
+  providers: [PluginsService, PluginGuard]
 })
 export class YuvPluginsModule {}
