@@ -72,7 +72,7 @@ export class PluginsService {
     private searchService: SearchService,
     private userService: UserService
   ) {
-    // this.getViewerPlugins('links').subscribe();
+    // this.getViewerPlugins('links').subscribe(); // initial call to speed up loading process
     this.userService.user$.subscribe((user) => (this.user = user));
     this.eventService.on(YuvEventType.CLIENT_LOCALE_CHANGED).subscribe((event: any) => this.extendTranslations(event.data));
   }
@@ -86,7 +86,7 @@ export class PluginsService {
   }
 
   getViewerPlugins(type: 'links' | 'states' | 'actions' | 'plugins', matchType?: string, matchPath?: string) {
-    return (!this.viewerPlugins ? this.backend.get('viewer/plugins', '') : of(this.viewerPlugins)).pipe(
+    return (!this.viewerPlugins ? this.backend.getViaTempCache('viewer/plugins', () => this.backend.get('viewer/plugins', '')) : of(this.viewerPlugins)).pipe(
       catchError(() => {
         console.warn('Missing plugin service!');
         return of({});

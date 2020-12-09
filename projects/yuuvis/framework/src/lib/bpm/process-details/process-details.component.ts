@@ -23,6 +23,8 @@ export class ProcessDetailsComponent {
 
   @Output() remove = new EventEmitter<boolean>();
 
+  @Input() plugins: any;
+
   constructor(private dmsServide: DmsService, private translate: TranslateService) {}
 
   private handleObjectError(id: string): Observable<null> {
