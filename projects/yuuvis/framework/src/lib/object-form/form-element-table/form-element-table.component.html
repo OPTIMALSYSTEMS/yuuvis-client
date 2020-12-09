@@ -44,7 +44,7 @@
       padding: var(--app-pane-padding) calc(var(--app-pane-padding) * 2.5) calc(var(--app-pane-padding) * 2) var(--app-pane-padding);
     "
   >
-    <div style="font-size: 24px; margin: 0 25px 0 0; font-weight: 400">{{ params.element.label }}</div>
+    <div style="font-size: 24px; font-weight: 400">{{ params.element.label }}</div>
     <yuv-icon [icon]="'close'" (click)="close(popover)" style="position: absolute; top: 8px; right: 8px; cursor: pointer"></yuv-icon>
   </div>
   <div class="overlay-body" style="padding: 16px; height: calc(100% - 80px); background-color: var(--main-background)">

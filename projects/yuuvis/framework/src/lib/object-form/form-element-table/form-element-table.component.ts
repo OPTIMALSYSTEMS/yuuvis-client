@@ -18,8 +18,6 @@ import { RowEditComponent } from './row-edit/row-edit.component';
 export interface TableComponentParams {
   // current form situation (EDIT, SEARCH or CREATE)
   situation: string;
-  // table size (medium, large)
-  size: string;
   // the tables from element
   element: any;
 }
@@ -65,7 +63,6 @@ export class FormElementTableComponent extends UnsubscribeOnDestroy implements C
   @Input()
   set params(p: TableComponentParams) {
     if (p) {
-      p.element.readonly = false; //todo: remove
       this._params = p;
       this.gridReady = false;
       this._elements = p.element.elements;
@@ -106,7 +103,6 @@ export class FormElementTableComponent extends UnsubscribeOnDestroy implements C
       suppressCellSelection: true,
       rowSelection: 'single',
       suppressMovableColumns: true,
-      enableFilter: false,
       suppressNoRowsOverlay: true,
       suppressLoadingOverlay: true,
       suppressContextMenu: true
@@ -123,7 +119,6 @@ export class FormElementTableComponent extends UnsubscribeOnDestroy implements C
       suppressCellSelection: true,
       rowSelection: 'single',
       suppressMovableColumns: true,
-      enableFilter: false,
       suppressNoRowsOverlay: true,
       suppressLoadingOverlay: true,
       suppressContextMenu: true

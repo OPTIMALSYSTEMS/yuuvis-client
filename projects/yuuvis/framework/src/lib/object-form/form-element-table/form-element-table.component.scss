@@ -51,6 +51,14 @@
 
       svg {
         pointer-events: none;
+        fill: currentColor;
+        width: 24px;
+        height: 24px;
+        opacity: 0.54;
+
+        &.checkbox .null {
+          opacity: 0.4;
+        }
       }
 
       &.res-ico,
