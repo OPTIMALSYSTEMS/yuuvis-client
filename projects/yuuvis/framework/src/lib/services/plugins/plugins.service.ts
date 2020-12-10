@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Injectable, Input, NgModule, OnInit } from '@angular/core';
+import { Component, EventEmitter, Injectable, Input, NgModule, OnInit, Output } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivate, CanDeactivate, Router, RouterModule, RouterStateSnapshot } from '@angular/router';
 import {
   ApiBase,
@@ -21,8 +21,14 @@ import {
 } from '@yuuvis/core';
 import { Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
+import { ActionTarget } from '../../actions/action-target';
+import { SimpleCustomAction } from '../../actions/interfaces/action.interface';
 import { NotificationService } from '../notification/notification.service';
+import { YuvCoreSharedModule } from './../../../../../core/src/lib/core.shared.module';
+import { ActionComponent } from './../../actions/interfaces/action-component.interface';
+import { SelectionRange } from './../../actions/selection-range.enum';
 import { YuvPipesModule } from './../../pipes/pipes.module';
+import { noFile } from './../../svg.generated';
 import { PluginAPI } from './plugins.interface';
 
 @Component({
@@ -32,14 +38,6 @@ import { PluginAPI } from './plugins.interface';
   providers: []
 })
 export class PluginComponent implements OnInit {
-  static findConfig(pluginsService: PluginsService, url?: string): Observable<any> {
-    return pluginsService.getViewerPlugins('states', '', (url || pluginsService.currentUrl).replace('/', '')).pipe(map(([config]) => config));
-  }
-
-  static getFunction(fnc: string) {
-    return fnc.trim().startsWith('function') ? `return (${fnc}).apply(this,arguments)` : !fnc.trim().startsWith('return') ? `return ${fnc}` : fnc;
-  }
-
   @Input() config: any;
 
   constructor(private pluginsService: PluginsService) {}
@@ -47,8 +45,75 @@ export class PluginComponent implements OnInit {
   ngOnInit() {
     if (!this.config) {
       // match custom state by url
-      PluginComponent.findConfig(this.pluginsService).subscribe((config) => (this.config = config));
+      this.pluginsService.getViewerPlugins('states', '', this.pluginsService.currentUrl.replace('/', '')).subscribe(([config]) => (this.config = config));
     }
+  }
+}
+@Component({
+  selector: 'yuv-plugin-action-view',
+  template: `
+    <yuv-plugin style="display: flex;" [config]="action"></yuv-plugin>
+    <div style="display: flex; justify-content: space-between;">
+      <button class="btn" (click)="canceled.emit(true)">{{ 'yuv.framework.shared.cancel' | translate }}</button>
+      <button class="btn primary" (click)="finished.emit(true)">{{ 'yuv.framework.shared.change' | translate }}</button>
+    </div>
+  `
+})
+export class PluginActionViewComponent implements ActionComponent {
+  @Input() action: any;
+
+  @Input() selection: any[];
+
+  @Output() finished: EventEmitter<any> = new EventEmitter<any>();
+
+  @Output() canceled: EventEmitter<any> = new EventEmitter<any>();
+}
+
+@Component({
+  selector: 'yuv-plugin-action',
+  template: ''
+})
+export class PluginActionComponent implements SimpleCustomAction {
+  label: string;
+  description: string;
+  priority: number;
+  iconSrc: string;
+  group: 'common' | 'further';
+  range: SelectionRange;
+
+  private _action: any;
+
+  @Input() set action(action: any) {
+    this._action = action;
+    this.label = this.pluginService.translate.instant(this._action.label) + ' ' + action.type;
+    this.description = this.pluginService.translate.instant(this._action.description);
+    this.priority = Utils.isEmpty(action.priority) ? action.priority : -1;
+    this.iconSrc = action.iconSrc || noFile.data;
+    this.group = action.group || 'common';
+    this.range = action.range ? SelectionRange[action.range as string] : SelectionRange.MULTI_SELECT;
+    if (action.getLink) {
+      ['getLink', 'getParams', 'getFragment'].forEach(
+        (fnc) => (this[fnc] = (selection: any[]) => this.pluginService.applyFunction(action[fnc], 'selection', [selection]))
+      );
+    } else if (action.extViewer) {
+      this['extComponent'] = { action, _component: PluginActionViewComponent };
+    } else if (action.viewer) {
+      this['component'] = { action, _component: PluginActionViewComponent };
+    } else if (action.subActionComponents) {
+      this['subActionComponents'] = this.pluginService.actionWrapper(action.subActionComponents);
+    }
+  }
+
+  constructor(private pluginService: PluginsService) {}
+
+  isExecutable(item: any) {
+    const val = this.pluginService.applyFunction(this._action.isExecutable, 'item', arguments);
+    return val instanceof Observable ? val : of(val);
+  }
+
+  run(selection: any[]) {
+    const val = this.pluginService.applyFunction(this._action.run, 'selection', arguments);
+    return val instanceof Observable ? val : of(val);
   }
 }
 
@@ -59,11 +124,9 @@ export class PluginGuard implements CanDeactivate<PluginComponent>, CanActivate 
   constructor(private pluginsService: PluginsService) {}
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
-    return PluginComponent.findConfig(this.pluginsService, state.url).pipe(
-      map((config) =>
-        config?.canActivate ? new Function('route', 'state', PluginComponent.getFunction(config?.canActivate)).apply(this.pluginsService.api, arguments) : true
-      )
-    );
+    return this.pluginsService
+      .getViewerPlugins('states', '', state.url.replace('/', ''))
+      .pipe(map(([config]) => (config?.canActivate ? this.pluginsService.applyFunction(config?.canActivate, 'route, state', arguments) : true)));
   }
 
   canDeactivate(
@@ -73,10 +136,7 @@ export class PluginGuard implements CanDeactivate<PluginComponent>, CanActivate 
     nextState?: RouterStateSnapshot
   ): Observable<boolean> | Promise<boolean> | boolean {
     return component?.config?.canDeactivate
-      ? new Function('component', 'currentRoute', 'currentState', 'nextState', PluginComponent.getFunction(component?.config?.canDeactivate)).apply(
-          this.pluginsService.api,
-          arguments
-        )
+      ? this.pluginsService.applyFunction(component?.config?.canDeactivate, 'component, currentRoute, currentState, nextState', arguments)
       : true;
   }
 }
@@ -101,6 +161,16 @@ export class PluginsService {
 
   public get api() {
     return this.getApi();
+  }
+
+  public applyFunction(fnc: string, params: string, args: any) {
+    if (!fnc || !fnc.trim()) return;
+    const f = fnc.trim().startsWith('function') ? `return (${fnc}).apply(this,arguments)` : !fnc.trim().startsWith('return') ? `return ${fnc}` : fnc;
+    return new Function(...(params || 'api').split(',').map((a) => a.trim()), f).apply(this.api, args || [this.api]);
+  }
+
+  public actionWrapper(actions: any[]) {
+    return (actions || []).map((a) => ({ ...a, target: a.target || ActionTarget.DMS_OBJECT, action: a, _component: PluginActionComponent }));
   }
 
   /**
@@ -303,9 +373,10 @@ export class PluginsService {
 }
 
 @NgModule({
-  imports: [CommonModule, YuvPipesModule, RouterModule],
-  declarations: [PluginComponent],
-  exports: [PluginComponent],
+  imports: [CommonModule, YuvCoreSharedModule, YuvPipesModule, RouterModule],
+  declarations: [PluginComponent, PluginActionComponent, PluginActionViewComponent],
+  exports: [PluginComponent, PluginActionComponent, PluginActionViewComponent],
+  entryComponents: [PluginComponent, PluginActionComponent, PluginActionViewComponent],
   providers: [PluginsService, PluginGuard]
 })
 export class YuvPluginsModule {}
