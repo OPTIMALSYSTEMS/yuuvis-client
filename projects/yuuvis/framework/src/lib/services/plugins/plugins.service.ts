@@ -16,6 +16,7 @@ import {
   TranslateService,
   UserService,
   Utils,
+  YuvCoreSharedModule,
   YuvEventType,
   YuvUser
 } from '@yuuvis/core';
@@ -24,7 +25,6 @@ import { catchError, map, tap } from 'rxjs/operators';
 import { ActionTarget } from '../../actions/action-target';
 import { SimpleCustomAction } from '../../actions/interfaces/action.interface';
 import { NotificationService } from '../notification/notification.service';
-import { YuvCoreSharedModule } from './../../../../../core/src/lib/core.shared.module';
 import { ActionComponent } from './../../actions/interfaces/action-component.interface';
 import { SelectionRange } from './../../actions/selection-range.enum';
 import { YuvPipesModule } from './../../pipes/pipes.module';
