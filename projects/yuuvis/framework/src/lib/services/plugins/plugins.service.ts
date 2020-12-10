@@ -241,6 +241,7 @@ export class PluginsService {
         get: () => this.router
       },
       events: {
+        yuuvisEventType: YuvEventType,
         on: (type: string) => this.eventService.on(type),
         trigger: (type: string, data?: any) => this.eventService.trigger(type, data)
       },

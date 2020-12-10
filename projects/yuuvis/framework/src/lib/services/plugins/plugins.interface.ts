@@ -15,6 +15,7 @@ export interface PluginAPI {
    *
    */
   events: {
+    yuuvisEventType: any;
     on(type: string): Observable<YuvEvent>;
     /**
      * Trigger a certain type of yuuvis event ({@link YuvEventType})
