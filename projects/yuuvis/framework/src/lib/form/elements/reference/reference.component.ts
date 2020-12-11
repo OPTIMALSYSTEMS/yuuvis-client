@@ -17,6 +17,7 @@ import { forkJoin, Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { IconRegistryService } from '../../../common/components/icon/service/iconRegistry.service';
 import { ROUTES, YuvRoutes } from '../../../routing/routes';
+import { noAccessTitle as noAccess } from '../../../shared/utils';
 import { reference } from '../../../svg.generated';
 import { ReferenceEntry } from './reference.interface';
 
@@ -43,8 +44,7 @@ import { ReferenceEntry } from './reference.interface';
 export class ReferenceComponent implements ControlValueAccessor, AfterViewInit {
   @ViewChild('autocomplete') autoCompleteInput: AutoComplete;
   private queryJson: SearchQueryProperties;
-  noAccessTitle = '! *******';
-
+  noAccessTitle = noAccess;
   minLength = 2;
 
   value;
@@ -185,14 +185,12 @@ export class ReferenceComponent implements ControlValueAccessor, AfterViewInit {
           // some of the IDs could not be retrieved (no permission or deleted)
           const x = {};
           res.items.forEach((r) => (x[r.fields.get(BaseObjectTypeField.OBJECT_ID)] = r));
-          return ids.map((id) => {
-            return {
-              id: id,
-              objectTypeId: x[id]?.fields.get(BaseObjectTypeField.OBJECT_TYPE_ID),
-              title: x[id] ? x[id].fields.get(ClientDefaultsObjectTypeField.TITLE) : this.noAccessTitle,
-              description: x[id] ? x[id].fields.get(ClientDefaultsObjectTypeField.DESCRIPTION) : null
-            };
-          });
+          return ids.map((id) => ({
+            id,
+            objectTypeId: x[id]?.fields.get(BaseObjectTypeField.OBJECT_TYPE_ID),
+            title: x[id] ? x[id].fields.get(ClientDefaultsObjectTypeField.TITLE) : id || this.noAccessTitle,
+            description: x[id] ? x[id].fields.get(ClientDefaultsObjectTypeField.DESCRIPTION) : null
+          }));
         } else {
           return res.items.map((i) => {
             const crParams = {
@@ -288,7 +286,7 @@ export class ReferenceComponent implements ControlValueAccessor, AfterViewInit {
         ClientDefaultsObjectTypeField.TITLE,
         ClientDefaultsObjectTypeField.DESCRIPTION
       ],
-      types: this.allowedTargetTypes,
+      lots: this.allowedTargetTypes,
       size: this.maxSuggestions
     };
   }

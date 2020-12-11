@@ -8,6 +8,7 @@ import { YuvComponentsModule } from '../components/components.module';
 import { YuvDirectivesModule } from '../directives/directives.module';
 import { YuvSearchModule } from '../search/search.module';
 import { YuvPipesModule } from './../pipes/pipes.module';
+import { YuvPluginsModule } from './../services/plugins/plugins.service';
 import { ContextComponent } from './context/context.component';
 
 /**
@@ -25,7 +26,8 @@ import { ContextComponent } from './context/context.component';
     YuvSearchModule,
     YuvCommonModule,
     YuvComponentsModule,
-    YuvColumnConfigModule
+    YuvColumnConfigModule,
+    YuvPluginsModule
   ]
 })
 export class YuvContextModule {}

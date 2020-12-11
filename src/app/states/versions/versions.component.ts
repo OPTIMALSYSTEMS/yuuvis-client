@@ -3,7 +3,7 @@ import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DmsObject, PendingChangesService, Screen, ScreenService, TranslateService } from '@yuuvis/core';
-import { ObjectCompareInput, VersionListComponent } from '@yuuvis/framework';
+import { ObjectCompareInput, PluginsService, VersionListComponent } from '@yuuvis/framework';
 import { takeUntilDestroy } from 'take-until-destroy';
 
 @Component({
@@ -28,6 +28,9 @@ export class VersionsComponent implements OnInit, OnDestroy {
     return this.STORAGE_KEY;
   }
 
+  plugins: any;
+  pluginsCompare: any;
+
   constructor(
     private titleService: Title,
     private screenService: ScreenService,
@@ -35,11 +38,14 @@ export class VersionsComponent implements OnInit, OnDestroy {
     private location: PlatformLocation,
     private pendingChanges: PendingChangesService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private pluginsService: PluginsService
   ) {
     this.screenService.screenChange$.pipe(takeUntilDestroy(this)).subscribe((screen: Screen) => {
       this.smallScreen = screen.mode === ScreenService.MODE.SMALL;
     });
+    this.plugins = this.pluginsService.getViewerPlugins('plugins', 'yuv-versions');
+    this.pluginsCompare = this.pluginsService.getViewerPlugins('plugins', 'yuv-versions-compare');
   }
 
   closeDetails() {

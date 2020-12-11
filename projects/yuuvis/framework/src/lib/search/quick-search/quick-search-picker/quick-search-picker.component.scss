@@ -37,6 +37,15 @@
       }
     }
   }
+
+  ::ng-deep .extension {
+    .title {
+      font-style: italic;
+    }
+    yuv-icon {
+      color: var(--color-accent) !important;
+    }
+  }
 }
 :host-context(.filters) {
   header,

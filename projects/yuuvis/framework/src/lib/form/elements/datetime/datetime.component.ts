@@ -1,6 +1,6 @@
-import { Component, forwardRef, HostListener, Input, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, forwardRef, HostListener, Input, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { ControlValueAccessor, FormControl, NG_VALIDATORS, NG_VALUE_ACCESSOR, Validator } from '@angular/forms';
-import { DeviceService, TranslateService } from '@yuuvis/core';
+import { TranslateService } from '@yuuvis/core';
 import { IconRegistryService } from '../../../common/components/icon/service/iconRegistry.service';
 import { LocaleDatePipe } from '../../../pipes/locale-date.pipe';
 import { PopoverConfig } from '../../../popover/popover.interface';
@@ -48,7 +48,7 @@ export class DatetimeComponent implements OnInit, ControlValueAccessor, Validato
   locale;
   datePipe: LocaleDatePipe;
   showPicker = false;
-  private isValid = true;
+  private isValidInput = true;
   maskPattern: string;
   _datePattern: string;
   datePattern: string;
@@ -91,8 +91,8 @@ export class DatetimeComponent implements OnInit, ControlValueAccessor, Validato
   constructor(
     private translate: TranslateService,
     private popoverService: PopoverService,
-    private device: DeviceService,
-    private iconRegistry: IconRegistryService
+    private iconRegistry: IconRegistryService,
+    private elemRef: ElementRef
   ) {
     this.iconRegistry.registerIcons([datepicker]);
     this.datePipe = new LocaleDatePipe(translate);
@@ -125,39 +125,38 @@ export class DatetimeComponent implements OnInit, ControlValueAccessor, Validato
       // bug: angular DatePipe cannot format pattern where day is before month (so I am gonna flip values & hope it works for all languages)
       const dd = this._datePattern.indexOf('dd');
       const MM = this._datePattern.indexOf('MM');
-      const innerDate =
-        this.innerValue &&
-        dd < MM &&
-        new Date(
-          [...this.innerValue]
-            .map((c, i) =>
-              i === dd
-                ? this.innerValue[MM]
-                : i === dd + 1
-                ? this.innerValue[MM + 1]
-                : i === MM
-                ? this.innerValue[dd]
-                : i === MM + 1
-                ? this.innerValue[dd + 1]
-                : c
-            )
-            .join('')
-        );
 
-      const d = this.datePipe.transform(innerDate || this.innerValue, this._datePattern);
-      if (this.isValidDate(d)) {
-        this.value = innerDate || new Date(d);
+      const innerDate =
+        (this.innerValue &&
+          dd < MM &&
+          new Date(
+            [...this.innerValue]
+              .map((c, i) =>
+                i === dd
+                  ? this.innerValue[MM]
+                  : i === dd + 1
+                  ? this.innerValue[MM + 1]
+                  : i === MM
+                  ? this.innerValue[dd]
+                  : i === MM + 1
+                  ? this.innerValue[dd + 1]
+                  : c
+              )
+              .join('')
+          )) ||
+        this.innerValue;
+
+      if (this.isValidDate(innerDate)) {
+        this.writeValue(innerDate);
       }
     } catch {
-      this.isValid = false;
+      this.isValidInput = false;
     }
     this.propagate();
   }
 
   openPicker() {
     const popoverConfig: PopoverConfig = {
-      // width: '55%',
-      // height: '70%',
       disableSmallScreenClose: true,
       data: {
         value: this.value,
@@ -183,39 +182,37 @@ export class DatetimeComponent implements OnInit, ControlValueAccessor, Validato
     }
   }
 
-  onMaskValueChange(event) {
+  onMaskValueChange(event: string) {
     if (event === this._datePattern || event.length === 0) {
       this.value = null;
-      this.isValid = true;
+      this.isValidInput = true;
       this.propagate();
+    }
+
+    // fixed pm/am formatting
+    if (this.withAmPm && !event.match(/aa$|AM$|PM$/)) {
+      const element = this.elemRef.nativeElement.querySelector('input');
+      const caretPos = element.selectionStart;
+      this.innerValue = element.value = event.slice(0, -2) + (event.match(/ma$|mm$/) ? 'aa' : event.match(/p|P/) ? 'PM' : 'AM');
+      element.setSelectionRange(caretPos, caretPos);
+      this.setValueFromMask(); // hotfix: required for AM/PM changes
     }
   }
 
   private setInnerValue() {
-    if (this.value) {
-      const d = this.datePipe.transform(this.value, this._datePattern);
-      if (this.isValidDate(d)) {
-        this.innerValue = d;
-      }
-    } else {
-      this.innerValue = null;
-    }
+    this.innerValue = this.isValidDate(this.value) ? this.datePipe.transform(this.value, this._datePattern) : null;
   }
 
   private isValidDate(date: Date): boolean {
-    this.isValid = this.onlyFutureDates && date ? new Date(date).getTime() >= new Date().getTime() : !!date;
-    return !!date;
+    const valid = !!date && !isNaN(new Date(date).getTime());
+    // empty input is valid all the time
+    this.isValidInput = this.onlyFutureDates && valid ? new Date(date).getTime() >= new Date().getTime() : valid || !date;
+    return valid;
   }
 
   // returns null when valid else the validation object
   public validate(c: FormControl) {
-    return this.isValid
-      ? null
-      : {
-          datecontrol: {
-            valid: false
-          }
-        };
+    return this.isValidInput ? null : { datecontrol: { valid: false } };
   }
 
   ngOnInit() {

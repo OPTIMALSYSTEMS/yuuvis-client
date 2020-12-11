@@ -77,6 +77,7 @@ export class QuickSearchService {
 
   private setupAvailableObjectTypeGroups() {
     let i = 0;
+    const extendable = this.systemService.getAllExtendableSOTs().map((o) => o.id);
     return (this.availableObjectTypeGroups = this.systemService.getGroupedObjectTypes(true, true, true, 'search').map((otg: ObjectTypeGroup) => ({
       id: `${i++}`,
       label: otg.label,
@@ -85,7 +86,8 @@ export class QuickSearchService {
         label: ot.label || ot.id,
         highlight: ot.isFolder,
         svgSrc: this.systemService.getObjectTypeIconUri(ot.id),
-        value: ot
+        value: ot,
+        class: extendable.includes(ot.id) && 'extension'
       }))
     })));
   }
@@ -139,13 +141,18 @@ export class QuickSearchService {
     );
   }
 
-  getActiveSOTS(query: SearchQuery) {
-    return query.sots
-      .map((sot) => ({ id: sot, label: this.systemService.getLocalizedResource(`${sot}_label`) || sot, count: 0 }))
-      .sort(Utils.sortValues('label'));
+  getActiveExtensions(query: SearchQuery) {
+    return {
+      active: query.types || [],
+      all: this.systemService
+        .getAllExtendableSOTs(true)
+        .map((o) => ({ id: o.id, label: o.label || o.id, count: 0 }))
+        .filter((o) => (query.types || []).includes(o.id))
+        .sort(Utils.sortValues('label'))
+    };
   }
 
-  getAvailableObjectTypesFields(selectedTypes = [], sots = [], shared = true): Selectable[] {
+  private getSharedFields(selectedTypes = [], shared = true): ObjectTypeField[] {
     const selectedObjectTypes = (selectedTypes?.length
       ? selectedTypes
       : !shared
@@ -153,16 +160,26 @@ export class QuickSearchService {
       : [undefined]
     ).map((id) => this.systemService.getResolvedType(id));
 
-    const sharedFields = shared
+    return shared
       ? selectedObjectTypes.reduce((prev, cur) => cur.fields.filter((f) => prev.find((p) => p.id === f.id)), selectedObjectTypes[0].fields)
       : selectedObjectTypes.reduce((prev, cur) => [...prev, ...cur.fields.filter((f) => !prev.find((p) => p.id === f.id))], []);
+  }
 
-    const sotsFields = sots?.length ? this.getAvailableObjectTypesFields(sots) : [];
+  getAvailableObjectTypesFields(selectedTypes = [], shared = true): Selectable[] {
+    const q = new SearchQuery();
+    this.updateTypesAndLots(q, selectedTypes);
+
+    const sharedFields = q.allTypes.length
+      ? [
+          ...[...this.getSharedFields(q.types, shared), ...this.getSharedFields(q.lots, shared)]
+            .reduce((m, item) => (m.has(item.id) || m.set(item.id, item)) && m, new Map())
+            .values()
+        ]
+      : this.getSharedFields([], shared);
 
     return [
-      ...sotsFields,
       ...sharedFields
-        .filter((f) => !ColumnConfigSkipFields.includes(f.id) && !sotsFields.find((s) => s.id === f.id))
+        .filter((f) => !ColumnConfigSkipFields.includes(f.id))
         .map((f: ObjectTypeField) => ({
           id: f.id,
           label: this.systemService.getLocalizedResource(`${f.id}_label`) || f.id,
@@ -172,26 +189,12 @@ export class QuickSearchService {
     ].sort(Utils.sortValues('label'));
   }
 
-  updateTypesAndSots(query: SearchQuery, allTypes: string[], keep = false) {
-    const { types, sots } = query;
-    query.types = (allTypes || []).filter((t) => this.systemService.getObjectTypes().find((o) => o.id === t));
-    query.sots = (allTypes || []).filter((t) =>
-      this.systemService
-        .getSecondaryObjectTypes()
-        .filter(
-          (sot) =>
-            !sot.classification?.includes(SecondaryObjectTypeClassification.REQUIRED) &&
-            !sot.classification?.includes(SecondaryObjectTypeClassification.PRIMARY)
-        )
-        .find((o) => o.id === t)
-    );
-    // TODO:  test all types combination
-    if (keep && !query.types.length) {
-      query.types = types;
-    }
-    if (keep && !query.sots.length) {
-      query.sots = sots;
-    }
+  updateTypesAndLots(query: SearchQuery, allTypes: string[], keep = false) {
+    const extendable = this.systemService.getAllExtendableSOTs().map((o) => o.id);
+    const extensions = (allTypes || []).filter((t) => extendable.includes(t));
+
+    query.types = keep ? query.types : extensions;
+    query.lots = (allTypes || []).filter((t) => !extensions.includes(t));
   }
 
   getActiveFilters(query: SearchQuery, filters: Selectable[], availableObjectTypeFields: Selectable[]) {

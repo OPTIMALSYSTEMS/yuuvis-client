@@ -12,6 +12,7 @@ import { YuvDirectivesModule } from '../directives/directives.module';
 import { YuvFormModule } from '../form/form.module';
 import { YuvObjectFormModule } from '../object-form/object-form.module';
 import { YuvPipesModule } from '../pipes/pipes.module';
+import { YuvPluginsModule } from './../services/plugins/plugins.service';
 import { AuditComponent } from './audit/audit.component';
 import { ContentPreviewComponent } from './content-preview/content-preview.component';
 import { ContextErrorComponent } from './context-error/context-error.component';
@@ -40,7 +41,8 @@ const objectDetails = [ObjectDetailsComponent, ObjectDetailsCompareComponent, Su
     YuvObjectFormModule,
     YuvActionModule,
     RouterModule,
-    CalendarModule
+    CalendarModule,
+    YuvPluginsModule
   ],
   declarations: [...objectDetails, ObjectDetailsCompareComponent, SummarySectionComponent],
   exports: [...objectDetails]

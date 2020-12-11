@@ -1,4 +1,4 @@
-<div>
+<div class="{{item.class || ''}}">
   <yuv-checkbox tabindex="-1" [(ngModel)]="selected" (ngModelChange)="toggleSelected($event)" [readonly]="disabled">
   </yuv-checkbox>
   <div class="label" (click)="!disabled && emitSelect()">

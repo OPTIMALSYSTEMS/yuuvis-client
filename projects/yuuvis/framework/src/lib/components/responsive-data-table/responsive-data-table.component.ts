@@ -87,7 +87,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
     this._layoutOptionsKey = lok;
     this.layoutService.loadLayoutOptions(lok, 'yuv-responsive-data-table').subscribe((o: ResponsiveDataTableOptions) => {
       this._layoutOptions = o || {};
-      if (this.gridOptions && this._data) {
+      if (this.gridOptions?.api && this._data) {
         this.gridOptions.api.setColumnDefs(this.applyColDefOptions(this._data.columns));
       }
       if (o && o.viewMode) {
@@ -330,6 +330,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
         const cols = this.applyColDefOptions(columns);
         this.gridOptions.columnDefs = cols;
         this.gridOptions.api.setColumnDefs(cols);
+        this.gridOptions.columnApi.resetColumnState();
       }
 
       if (this.isStandard && this._data.sortModel) {
@@ -412,7 +413,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
 
   setSortModel(model: any[]) {
     this.gridOptions.columnApi.setColumnState(
-      this.gridOptions.columnApi.getColumnState().map((c) => ({ ...c, ...(model.find((m) => m.colId === c.colId) || {}) }))
+      this.gridOptions.columnApi.getColumnState().map((c) => ({ ...c, ...(model.find((m) => m.colId === c.colId) || { sort: null }) }))
     );
   }
 

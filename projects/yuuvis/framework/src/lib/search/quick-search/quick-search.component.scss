@@ -198,6 +198,11 @@
           margin: 0 4px;
           opacity: 0.4;
 
+          yuv-icon {
+            width: 18px;
+            height: 18px;
+          }
+
           &:focus,
           &:hover {
             opacity: 1;

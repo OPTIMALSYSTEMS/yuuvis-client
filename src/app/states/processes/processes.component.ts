@@ -9,6 +9,7 @@ import {
   listModeDefault,
   listModeGrid,
   listModeSimple,
+  PluginsService,
   process,
   refresh,
   ResponsiveTableData
@@ -38,13 +39,17 @@ export class ProcessesComponent implements OnInit, OnDestroy {
     icon: 'process'
   };
 
+  plugins: any;
+
   constructor(
     private processService: ProcessService,
     private translateService: TranslateService,
     private formatProcessDataService: FormatProcessDataService,
     private iconRegistry: IconRegistryService,
-    private eventService: EventService
+    private eventService: EventService,
+    private pluginsService: PluginsService
   ) {
+    this.plugins = this.pluginsService.getViewerPlugins('plugins', 'yuv-processes');
     this.iconRegistry.registerIcons([edit, arrowNext, refresh, process, listModeDefault, listModeGrid, listModeSimple]);
   }
 

@@ -248,12 +248,19 @@ export class GroupedSelectComponent implements AfterViewInit, ControlValueAccess
     return select && this.select.emit(val);
   }
 
+  focus() {
+    if (this.groups.length) {
+      this.keyManager.setActiveItem(0);
+      this.elRef.nativeElement.querySelector('yuv-selectable-item').focus();
+    }
+  }
+
   ngAfterViewInit() {
     this.keyManager = new FocusKeyManager(this.items).skipPredicate((item) => item.disabled).withWrap();
     let i = 0;
     this.items.forEach((c: SelectableItemComponent) => (c._item.index = i++));
-    if (this.autofocus && this.groups.length > 0) {
-      this.elRef.nativeElement.querySelector('.group').focus();
+    if (this.autofocus) {
+      this.focus();
     }
 
     this.resized$

@@ -9,6 +9,7 @@ import { ActionService } from '../action-service/action.service';
 import { ActionComponent } from '../interfaces/action-component.interface';
 import { ActionListEntry } from '../interfaces/action-list-entry';
 import { ComponentAction, ExternalComponentAction, ListAction, SimpleAction } from '../interfaces/action.interface';
+import { PluginActionViewComponent } from './../../services/plugins/plugins.service';
 import { ActionComponentAnchorDirective } from './action-component-anchor/action-component-anchor.directive';
 
 /**
@@ -163,12 +164,15 @@ export class ActionMenuComponent implements OnDestroy {
     }
   }
 
-  private showActionComponent(component: Type<any>, viewContRef, factoryResolver, showComponent, inputs?: any) {
+  private showActionComponent(component: Type<any> | any, viewContRef, factoryResolver, showComponent, inputs?: any) {
     this.showComponent = showComponent;
-    let componentFactory = factoryResolver.resolveComponentFactory(component);
+    let componentFactory = factoryResolver.resolveComponentFactory(component._component || component);
     let anchorViewContainerRef = viewContRef.viewContainerRef;
     anchorViewContainerRef.clear();
     let componentRef = anchorViewContainerRef.createComponent(componentFactory);
+    if (componentRef.instance instanceof PluginActionViewComponent) {
+      (<PluginActionViewComponent>componentRef.instance).action = component.action;
+    }
     (<ActionComponent>componentRef.instance).selection = this.selection;
     (<ActionComponent>componentRef.instance).canceled.pipe(take(1)).subscribe(() => this.cancel());
     (<ActionComponent>componentRef.instance).finished.pipe(take(1)).subscribe(() => this.finish());

@@ -22,7 +22,7 @@ import { PopoverConfig } from '../../popover/popover.interface';
 import { PopoverRef } from '../../popover/popover.ref';
 import { PopoverService } from '../../popover/popover.service';
 import { NotificationService } from '../../services/notification/notification.service';
-import { addCircle, arrowDown, clear, reset, search } from '../../svg.generated';
+import { arrowDown, clear, filter, reset, search } from '../../svg.generated';
 import { QuickSearchPickerData } from './quick-search-picker/quick-search-picker.component';
 import { QuickSearchService } from './quick-search.service';
 
@@ -78,6 +78,10 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
 
   get availableObjectTypeGroups(): SelectableGroup[] {
     return this.quickSearchService.availableObjectTypeGroups;
+  }
+
+  get availableObjectTypeGroupsList(): Selectable[] {
+    return this.availableObjectTypeGroups.reduce((pre, cur) => [...pre, ...cur.items], []);
   }
 
   availableObjectTypeFields: Selectable[] = [];
@@ -164,7 +168,7 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
     private searchService: SearchService,
     private iconRegistry: IconRegistryService
   ) {
-    this.iconRegistry.registerIcons([arrowDown, addCircle, search, clear, reset]);
+    this.iconRegistry.registerIcons([arrowDown, filter, search, clear, reset]);
     this.autofocus = this.device.isDesktop;
 
     this.searchForm = this.fb.group({
@@ -195,9 +199,14 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
   autocomplete(event: any) {
     const q = (this.lastAutoQuery = this.parseQuery(event.query));
     // TODO : add active filter suggestions
-    const suggestions: any[] = (q.isTypes ? this.availableObjectTypes : [...this.customFilters, ...this.enabledFilters]) || [];
+    const suggestions: any[] = (q.isTypes ? this.availableObjectTypeGroupsList : [...this.customFilters, ...this.enabledFilters]) || [];
     this.autoSuggestions =
-      !q.isTypes && !q.isTypeFields ? [] : suggestions.filter((t) => (t.label || '').toLowerCase().includes(q.text)).map((t) => ({ ...t }));
+      !q.isTypes && !q.isTypeFields
+        ? []
+        : suggestions
+            .filter((t) => (t.label || '').toLowerCase().includes(q.text))
+            .map((t) => ({ ...t }))
+            .sort(Utils.sortValues('label'));
   }
 
   autocompleteSelect(selection) {
@@ -321,12 +330,12 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
 
     if (this.selectedObjectTypes.length === 1) {
       this.objectTypeSelectLabel = this.systemService.getLocalizedResource(`${this.selectedObjectTypes[0]}_label`);
-    } else if (this.selectedObjectTypes.length === this.availableObjectTypes.length || this.selectedObjectTypes.length === 0) {
+    } else if (this.selectedObjectTypes.length === this.availableObjectTypeGroupsList.length || this.selectedObjectTypes.length === 0) {
       this.objectTypeSelectLabel = this.translate.instant('yuv.framework.quick-search.type.all');
     } else {
       this.objectTypeSelectLabel = this.translate.instant('yuv.framework.quick-search.type.multiple', { size: this.selectedObjectTypes.length });
     }
-    this.quickSearchService.updateTypesAndSots(this.searchQuery, this.selectedObjectTypes);
+    this.quickSearchService.updateTypesAndLots(this.searchQuery, this.selectedObjectTypes);
     if (aggregate) {
       this.aggregate();
     }
@@ -334,7 +343,7 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
   }
 
   private setAvailableObjectTypesFields() {
-    this.availableObjectTypeFields = this.quickSearchService.getAvailableObjectTypesFields(this.selectedObjectTypes, this.searchQuery?.sots);
+    this.availableObjectTypeFields = this.quickSearchService.getAvailableObjectTypesFields(this.selectedObjectTypes);
 
     this.quickSearchService.getCurrentSettings().subscribe(([storedFilters, hiddenFilters]) => {
       this.enabledFilters = this.quickSearchService
@@ -414,7 +423,7 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
   }
 
   applyTypeAggration(agg: ObjectTypeAggregation, execute: boolean) {
-    this.quickSearchService.updateTypesAndSots(this.searchQuery, [agg.objectTypeId], true);
+    this.quickSearchService.updateTypesAndLots(this.searchQuery, [agg.objectTypeId], true);
     if (execute) {
       this.executeSearch();
     }
