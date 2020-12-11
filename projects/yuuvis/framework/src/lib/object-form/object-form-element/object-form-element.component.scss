@@ -11,13 +11,6 @@
 .form-element {
   box-sizing: border-box;
 
-  .t-table {
-    .description,
-    .err-msg {
-      margin: calc(var(--app-pane-padding) / 4);
-      padding: 0 !important;
-    }
-  }
   .form-field {
     margin: calc(var(--app-pane-padding) / 4) calc(var(--app-pane-padding) / 2);
 
@@ -39,10 +32,14 @@
     .table {
       flex-flow: column;
       align-items: flex-start;
-      border-color: transparent;
+      border: 1px solid var(--panel-divider-color);
 
       .label {
         padding-bottom: calc(var(--app-pane-padding) / 4);
+      }
+
+      &.invalid {
+        border: 1px solid var(--color-error);
       }
     }
 

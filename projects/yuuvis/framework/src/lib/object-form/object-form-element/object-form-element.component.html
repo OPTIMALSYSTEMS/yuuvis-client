@@ -221,15 +221,17 @@
     </yuv-form-input>
 
     <!-- TABLE -->
-    <div class="table" *ngSwitchCase="'table'">
-      <yuv-table
-        [params]="{
-          situation: situation,
-          element: formElementRef._eoFormElement
-        }"
-        [formControlName]="element._eoFormControlWrapper.controlName"
-      ></yuv-table>
-    </div>
+    <ng-container *ngSwitchCase="'table'">
+      <div class="table" [ngClass]="{ invalid: errors }">
+        <yuv-table
+          [params]="{
+            situation: situation,
+            element: formElementRef._eoFormElement
+          }"
+          [formControlName]="element._eoFormControlWrapper.controlName"
+        ></yuv-table>
+      </div>
+    </ng-container>
 
     <!-- print out the type if it's not matching anything -->
     <div *ngSwitchDefault>
