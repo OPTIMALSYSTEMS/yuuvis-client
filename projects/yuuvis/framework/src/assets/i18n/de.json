@@ -105,7 +105,7 @@
 	"yuv.framework.grid.single-cell-renderer.undefined.title": "Unvollständiges Objekt",
 	"yuv.framework.list.configure.columns": "Spalten konfigurieren",
 	"yuv.framework.list.refresh": "Aktualisieren",
-	"yuv.framework.object-create.afo.cancel": "In den Eingangskorb ablegen",
+	"yuv.framework.object-create.afo.cancel": "In den Ablagekorb speichern",
 	"yuv.framework.object-create.afo.cancel.with-delete": "Objekt entfernen",
 	"yuv.framework.object-create.afo.type.select.disabled.content-missing": "Fehlende Dokumentdatei",
 	"yuv.framework.object-create.afo.type.select.disabled.content-not-allowed": "Dokumentdatei nicht unterstützt",
