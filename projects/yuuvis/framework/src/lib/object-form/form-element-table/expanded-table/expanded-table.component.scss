@@ -18,40 +18,40 @@
     height: 100%;
     position: relative;
   }
-}
 
-.label {
-  display: flex;
-  flex-flow: row nowrap;
-  align-items: flex-start;
-  padding: calc(var(--app-pane-padding) / 4) calc(var(--app-pane-padding) / 4) calc(var(--app-pane-padding) / 2) calc(var(--app-pane-padding) / 4);
-  border-bottom: 0;
-  // margin-right: 16px;
+  .label {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: flex-start;
+    padding: calc(var(--app-pane-padding) / 4) calc(var(--app-pane-padding) / 4) calc(var(--app-pane-padding) / 2) calc(var(--app-pane-padding) / 4);
+    border-bottom: 0;
+    // margin-right: 16px;
 
-  span {
-    display: block;
-    flex: 1 1 auto;
-  }
+    span {
+      display: block;
+      flex: 1 1 auto;
+    }
 
-  yuv-icon.stf {
-    width: 20px;
-    height: 20px;
-    margin: calc(var(--app-pane-padding) / 4);
-    color: var(--text-color-caption);
-    cursor: pointer;
-  }
+    yuv-icon.stf {
+      width: 20px;
+      height: 20px;
+      margin: calc(var(--app-pane-padding) / 4);
+      color: var(--text-color-caption);
+      cursor: pointer;
+    }
 
-  button.add {
-    border-radius: 2px;
-    padding: calc(var(--app-pane-padding) / 2);
-  }
-  button.export {
-    border-radius: 2px;
-    border: 1px solid black;
-    color: black;
-    padding: calc(var(--app-pane-padding) / 8) calc(var(--app-pane-padding) / 4);
-    font-size: var(--font-hint);
-    margin: 0 calc(var(--app-pane-padding) / 4);
+    button.add {
+      border-radius: 2px;
+      padding: calc(var(--app-pane-padding) / 2);
+    }
+    button.export {
+      border-radius: 2px;
+      border: 1px solid black;
+      color: black;
+      padding: calc(var(--app-pane-padding) / 8) calc(var(--app-pane-padding) / 4);
+      font-size: var(--font-hint);
+      margin: 0 calc(var(--app-pane-padding) / 4);
+    }
   }
 }
 
