@@ -41,7 +41,7 @@
       flex-flow: row wrap;
       align-items: center;
       padding-top: var(--app-pane-padding);
-
+      overflow-y: hidden;
       overflow-x: auto;
 
       h1 {

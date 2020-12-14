@@ -121,7 +121,7 @@ export class ObjectFormEditComponent implements OnDestroy {
 
   constructor(
     @Attribute('actionsDisabled') public actionsDisabled: boolean,
-    @Attribute('situation') public situation = Situation.EDIT,
+    @Attribute('situation') public situation: string = Situation.EDIT,
     private systemService: SystemService,
     private backend: BackendService,
     private dmsService: DmsService,
