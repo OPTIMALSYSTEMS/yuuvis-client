@@ -19,13 +19,13 @@ import { YuvObjectCreateModule } from './object-create/object-create.module';
 import { YuvObjectDetailsModule } from './object-details/object-details.module';
 import { YuvObjectFormModule } from './object-form/object-form.module';
 import { YuvPipesModule } from './pipes/pipes.module';
+import { YuvPluginsModule } from './plugins/plugins.module';
 import { YuvPopoverModule } from './popover/popover.module';
 import { YuvQuickfinderModule } from './quickfinder/quickfinder.module';
 import { ROUTES, YuvRoutes } from './routing/routes';
 import { YuvSearchModule } from './search/search.module';
 import { ErrorHandlerService } from './services/error-handler/error-handler.service';
 import { SingleCellRendererComponent } from './services/grid/renderer/single-cell-renderer/single-cell-renderer.component';
-import { YuvPluginsModule } from './services/plugins/plugins.service';
 import { YuvUserModule } from './user/user.module';
 import { YuvVersionsModule } from './versions/versions.module';
 

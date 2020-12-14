@@ -36,7 +36,6 @@ const components = [
   UploadProgressOverlayComponent,
   RecentActivitiesComponent,
   ResponsiveDataTableComponent,
-  BusyOverlayDirective,
   ResponsiveMasterSlaveComponent,
   ActionMenuBarComponent,
   ResponsiveTabContainerComponent,
@@ -50,8 +49,9 @@ const components = [
  */
 
 @NgModule({
-  declarations: [...components],
-  exports: [...components, TabViewModule],
+  declarations: [...components, BusyOverlayDirective],
+  entryComponents: [...components],
+  exports: [...components, TabViewModule, BusyOverlayDirective],
   imports: [
     OverlayPanelModule,
     CommonModule,

@@ -44,8 +44,8 @@ export class VersionsComponent implements OnInit, OnDestroy {
     this.screenService.screenChange$.pipe(takeUntilDestroy(this)).subscribe((screen: Screen) => {
       this.smallScreen = screen.mode === ScreenService.MODE.SMALL;
     });
-    this.plugins = this.pluginsService.getViewerPlugins('plugins', 'yuv-versions');
-    this.pluginsCompare = this.pluginsService.getViewerPlugins('plugins', 'yuv-versions-compare');
+    this.plugins = this.pluginsService.getViewerPlugins('extensions', 'yuv-versions');
+    this.pluginsCompare = this.pluginsService.getViewerPlugins('extensions', 'yuv-versions-compare');
   }
 
   closeDetails() {

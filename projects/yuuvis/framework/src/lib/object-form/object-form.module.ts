@@ -34,6 +34,7 @@ import { ObjectFormComponent } from './object-form/object-form.component';
     YuvDirectivesModule,
     YuvGroupedSelectModule
   ],
-  exports: [ObjectFormComponent, ObjectFormEditComponent, ObjectFormElementComponent, CombinedObjectFormComponent]
+  exports: [ObjectFormComponent, ObjectFormEditComponent, ObjectFormElementComponent, CombinedObjectFormComponent],
+  entryComponents: [ObjectFormComponent, ObjectFormEditComponent, ObjectFormElementComponent, CombinedObjectFormComponent]
 })
 export class YuvObjectFormModule {}
