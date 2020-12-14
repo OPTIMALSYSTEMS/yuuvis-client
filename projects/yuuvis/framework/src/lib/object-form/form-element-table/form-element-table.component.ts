@@ -248,10 +248,6 @@ export class FormElementTableComponent extends UnsubscribeOnDestroy implements C
       this.overlayGridOptions.rowData = this.innerValue;
     }
     this.value = this.innerValue;
-    this.value = this.innerValue.map((row) => {
-      const rowValue = this._elements.map((el) => (row[el.name] ? row[el.name] : null));
-      return rowValue;
-    });
     this.propagateChange(this.value);
   }
 

@@ -90,9 +90,30 @@ export class DmsService {
     return this.backend.get(`/dms/${id}${version ? '/versions/' + version : ''}`).pipe(
       map((res) => {
         const item: SearchResultItem = this.searchService.toSearchResult(res).items[0];
+        this.transformTableData(item);
         return this.searchResultToDmsObject(item);
       })
     );
+  }
+
+  private transformTableData(item: SearchResultItem): SearchResultItem {
+    const objectType = this.systemService.getObjectType(item.objectTypeId);
+    const tables = objectType.fields.filter((f) => f.propertyType === 'table');
+    item.fields.forEach((value, key) => {
+      const table: any = tables.find((t) => t.id === key);
+      if (table) {
+        const columnNames = item.fields.get(key + '_columnNames');
+        let newValue = value.map((rowArray) => {
+          let rowObject = {};
+          table.columnDefinitions.forEach((column) => {
+            rowObject[column.id] = rowArray[columnNames ? columnNames.indexOf(column.id) : -1];
+          });
+          return rowObject;
+        });
+        item.fields.set(key, newValue);
+      }
+    });
+    return item;
   }
 
   /**
