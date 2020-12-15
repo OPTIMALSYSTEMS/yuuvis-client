@@ -101,12 +101,9 @@ export class SearchService {
       // process properties section of result
       Object.keys(o.properties).forEach((key: string) => {
         // o.properties[key].title ? fields.set(key, o.properties[key].title) : fields.set(key, o.properties[key].value);
-        fields.set(key, o.properties[key].value);
+        fields.set(key, o.properties[key].clvalue ? o.properties[key].clvalue : o.properties[key].value);
         if (o.properties[key].title) {
           fields.set(key + '_title', o.properties[key].title);
-        }
-        if (o.properties[key].columnNames) {
-          fields.set(key + '_columnNames', o.properties[key].columnNames);
         }
       });
 

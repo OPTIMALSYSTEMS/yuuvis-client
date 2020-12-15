@@ -316,11 +316,6 @@ export class FormElementTableComponent extends UnsubscribeOnDestroy implements C
     }
   }
 
-  clearRow(index: number) {
-    this.innerValue[index] = {};
-    this.updateTableValue();
-  }
-
   exportCSV() {
     // TODO: dynamic columnSeparator based on settings or language
     this.gridOptions.api.exportDataAsCsv({
@@ -371,15 +366,5 @@ export class FormElementTableComponent extends UnsubscribeOnDestroy implements C
         ? parseInt(el.getAttribute('row-index'), 10)
         : this.getRowIndex(el.parentElement, parentClass)
       : null;
-  }
-
-  onCellClicked($event) {
-    if ($event.rowIndex !== null) {
-      if (!$event.node.group && $event.data) {
-        if ($event.colDef.cellClass === 'router-link-cell') {
-          // this.gridApi.openRouterLink($event.event, 'ag-row');
-        }
-      }
-    }
   }
 }

@@ -21,15 +21,7 @@
     </ng-container>
   </div>
   <div class="grid-body">
-    <ag-grid-angular
-      #agGrid
-      *ngIf="gridReady"
-      class="ag-theme-balham"
-      [modules]="modules"
-      [gridOptions]="gridOptions"
-      (rowDoubleClicked)="editRow($event)"
-      (cellClicked)="onCellClicked($event)"
-    >
+    <ag-grid-angular #agGrid *ngIf="gridReady" class="ag-theme-balham" [modules]="modules" [gridOptions]="gridOptions" (rowDoubleClicked)="editRow($event)">
     </ag-grid-angular>
   </div>
 </div>
