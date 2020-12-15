@@ -11,7 +11,8 @@ import { ProcessListComponent } from './process-list/process-list.component';
 const components = [ProcessDetailsComponent, ProcessListComponent, ProcessListEmptyComponent];
 @NgModule({
   imports: [CommonModule, YuvComponentsModule, YuvCoreModule, TranslateModule, YuvCommonModule, YuvObjectDetailsModule],
-  declarations: components,
-  exports: components
+  declarations: [...components],
+  entryComponents: [...components],
+  exports: [...components]
 })
 export class YuvBpmModule {}

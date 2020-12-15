@@ -5,7 +5,8 @@ import { combineAll, map } from 'rxjs/operators';
 import { ActionListEntry } from '../interfaces/action-list-entry';
 import { Action } from '../interfaces/action.interface';
 import { SelectionRange } from '../selection-range.enum';
-import { PluginActionComponent, PluginsService } from './../../services/plugins/plugins.service';
+import { PluginActionComponent } from './../../plugins/plugin-action.component';
+import { PluginsService } from './../../plugins/plugins.service';
 
 export const ACTIONS = new InjectionToken<any[]>('ACTIONS');
 export const CUSTOM_ACTIONS = new InjectionToken<any[]>('CUSTOM_ACTIONS');
@@ -27,13 +28,16 @@ export class ActionService {
     private _componentFactoryResolver: ComponentFactoryResolver,
     private pluginsService: PluginsService
   ) {
-    this.pluginsService.getViewerPlugins('actions').subscribe((_actions) => {
-      this.allActionComponents = []
-        .concat(...actions)
-        .concat(custom_actions)
-        .concat(this.pluginsService.actionWrapper(_actions))
-        .filter((entry) => entry.target && !entry.isSubAction && !entry.disabled);
-    });
+    this.pluginsService
+      .getViewerPlugins('actions')
+      .pipe(map((_actions: any[]) => PluginActionComponent.actionWrapper(_actions)))
+      .subscribe((_actions) => {
+        this.allActionComponents = []
+          .concat(...actions)
+          .concat(custom_actions)
+          .concat(_actions)
+          .filter((entry) => entry.target && !entry.isSubAction && !entry.disabled);
+      });
   }
 
   /**

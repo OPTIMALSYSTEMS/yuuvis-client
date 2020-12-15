@@ -22,6 +22,8 @@ import {
   LayoutService,
   LayoutSettings,
   openContext,
+  PluginGuard,
+  PluginsService,
   PopoverRef,
   PopoverService,
   Screen,
@@ -33,7 +35,6 @@ import { filter } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { add, close, drawer, offline, refresh, search, userDisabled } from '../../../assets/default/svg/svg';
 import { AppSearchService } from '../../service/app-search.service';
-import { PluginsService } from './../../../../projects/yuuvis/framework/src/lib/services/plugins/plugins.service';
 import { FrameService } from './frame.service';
 
 @Component({
@@ -112,6 +113,7 @@ export class FrameComponent implements OnInit, OnDestroy {
     private iconRegistry: IconRegistryService,
     private pluginsService: PluginsService
   ) {
+    this.pluginsService.getViewerPlugins('states').subscribe((states) => PluginGuard.updateRouter(router, states));
     this.navigationPlugins = this.pluginsService.getViewerPlugins('links', 'yuv-sidebar-navigation');
     this.settingsPlugins = this.pluginsService.getViewerPlugins('links', 'yuv-sidebar-settings');
 

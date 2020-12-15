@@ -15,6 +15,7 @@ export * from './lib/object-create/index';
 export * from './lib/object-details/index';
 export * from './lib/object-form/index';
 export * from './lib/pipes/index';
+export * from './lib/plugins/index';
 export * from './lib/popover/index';
 export * from './lib/quickfinder/index';
 export { YuvRoutes } from './lib/routing/routes';

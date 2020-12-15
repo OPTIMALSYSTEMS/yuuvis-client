@@ -4,13 +4,13 @@ import { DmsObject } from '@yuuvis/core';
 import { filter, finalize, take, tap } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
+import { ComponentAnchorDirective } from '../../directives/component-anchor/component-anchor.directive';
+import { PluginActionViewComponent } from '../../plugins/plugin-action-view.component';
 import { clear } from '../../svg.generated';
 import { ActionService } from '../action-service/action.service';
 import { ActionComponent } from '../interfaces/action-component.interface';
 import { ActionListEntry } from '../interfaces/action-list-entry';
 import { ComponentAction, ExternalComponentAction, ListAction, SimpleAction } from '../interfaces/action.interface';
-import { PluginActionViewComponent } from './../../services/plugins/plugins.service';
-import { ActionComponentAnchorDirective } from './action-component-anchor/action-component-anchor.directive';
 
 /**
  * This component creates a menu of available actions for a selection of items. The action menu includes such actions as `delete`, `download` and `upload`.
@@ -29,8 +29,7 @@ import { ActionComponentAnchorDirective } from './action-component-anchor/action
   host: { class: 'yuv-action-menu' }
 })
 export class ActionMenuComponent implements OnDestroy {
-  @ViewChild(ActionComponentAnchorDirective) eoActionComponentAnchor: ActionComponentAnchorDirective;
-  @ViewChild(ActionComponentAnchorDirective) externalDialog: ActionComponentAnchorDirective;
+  @ViewChild(ComponentAnchorDirective) componentAnchor: ComponentAnchorDirective;
 
   /**
    * Specifies the items for which the actions should be provided.
@@ -73,6 +72,7 @@ export class ActionMenuComponent implements OnDestroy {
   showDescriptions: boolean;
   showMenu = false;
   loading = false;
+  fullscreen = false;
 
   constructor(
     private actionService: ActionService,
@@ -157,10 +157,11 @@ export class ActionMenuComponent implements OnDestroy {
         .subscribe((actionsList: ActionListEntry[]) => (this.subActionsList = actionsList));
     } else if (isComponentAction) {
       const componentAction = actionListEntry.action as ComponentAction;
-      this.showActionComponent(componentAction.component, this.eoActionComponentAnchor, this.componentFactoryResolver, true);
+      this.showActionComponent(componentAction.component, this.componentAnchor, this.componentFactoryResolver, true);
     } else if (isExternalComponentAction) {
+      this.fullscreen = true;
       const extComponentAction = actionListEntry.action as ExternalComponentAction;
-      this.showActionComponent(extComponentAction.extComponent, this.externalDialog, this.componentFactoryResolver, false);
+      this.showActionComponent(extComponentAction.extComponent, this.componentAnchor, this.componentFactoryResolver, true);
     }
   }
 
@@ -176,11 +177,8 @@ export class ActionMenuComponent implements OnDestroy {
     (<ActionComponent>componentRef.instance).selection = this.selection;
     (<ActionComponent>componentRef.instance).canceled.pipe(take(1)).subscribe(() => this.cancel());
     (<ActionComponent>componentRef.instance).finished.pipe(take(1)).subscribe(() => this.finish());
-    if (inputs) {
-      Object.keys(inputs).forEach(function (key) {
-        componentRef.instance[key] = inputs[key];
-      });
-    }
+
+    Object.keys(inputs || {}).forEach((key) => (componentRef.instance[key] = inputs[key]));
   }
 
   isLinkAction(action) {
@@ -189,13 +187,12 @@ export class ActionMenuComponent implements OnDestroy {
   }
 
   private clear() {
+    this.fullscreen = false;
     this.showComponent = false;
     this.subActionsList = null;
     // this.actionDescription = null;
     this.viewContainerRef.clear();
-    if (this.eoActionComponentAnchor) {
-      this.eoActionComponentAnchor.viewContainerRef.clear();
-    }
+    this.componentAnchor?.viewContainerRef.clear();
   }
 
   cancel() {

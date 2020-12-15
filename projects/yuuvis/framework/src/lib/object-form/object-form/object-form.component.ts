@@ -12,8 +12,10 @@ import { ObjectFormControl, ObjectFormGroup } from '../object-form.model';
 import { ObjectFormService } from '../object-form.service';
 import { ObjectFormUtils } from '../object-form.utils';
 import { FormValidation } from '../object-form.validation';
-import { PluginsService } from './../../services/plugins/plugins.service';
+import { PluginsService } from './../../plugins/plugins.service';
 import { Situation } from './../object-form.situation';
+
+export type ObjectFormModelChange = { name: 'value' | 'required' | 'readonly' | 'error' | 'onrowedit' | 'onchange'; newValue: any };
 
 /**
  * Component rendering a model based form.
@@ -92,6 +94,9 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
     private cdRef: ChangeDetectorRef
   ) {
     super();
+    this.pluginService.api.events
+      .on(PluginsService.EVENT_MODEL_CHANGED)
+      .subscribe((event) => event.data && this.onScriptingModelChanged(event.data.formControlName, event.data.change));
   }
 
   // initialize the form based on the provided form options
@@ -257,7 +262,7 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
    * @param formControlName
    * @param change
    */
-  private onScriptingModelChanged = (formControlName, change) => {
+  private onScriptingModelChanged = (formControlName: string, change: ObjectFormModelChange) => {
     // find the target control
     let fc: ObjectFormControl = this.formControls[formControlName] as ObjectFormControl;
     if (fc) {
@@ -314,6 +319,7 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
           break;
         }
       }
+      this.cdRef.detectChanges();
     }
   };
 

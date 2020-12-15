@@ -12,10 +12,9 @@ export const YuvEventType = {
   // DMS_OBJECT_FAVORITE_OFF: 'eo.dms.object.favorite.off',
   DMS_OBJECT_UPDATED: 'yuv.dms.object.updated',
   // DMS_OBJECT_MOVED: 'eo.dms.object.moved',
-  DMS_OBJECTS_MOVED: 'yuv.dms.objects.moved',
+  DMS_OBJECTS_MOVED: 'yuv.dms.objects.moved'
   // DMS_OBJECT_PASTED: 'eo.dms.object.pasted',
   // INBOX_ITEM_CONFIRMED: 'eo.inbox.item.confirmed',
-  DIALOG_STACK_CHANGED: 'yuv.dialog.stack.changed'
   // SYSTEM_STATUS_SCHEMA_CHANGED: 'eo.status.schema',
   // SYSTEM_STATUS_ORG_CHANGED: 'eo.status.org',
   // SYSTEM_STATUS_SEC_CHANGED: 'eo.status.sec',

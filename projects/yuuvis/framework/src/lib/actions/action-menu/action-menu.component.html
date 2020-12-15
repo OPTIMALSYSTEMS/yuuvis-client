@@ -1,4 +1,4 @@
-<div class="action-menu dark" *ngIf="showMenu" [ngClass]="{ descriptionsEnabled: showDescriptions }" (yuvOutsideClick)="hide()">
+<div class="action-menu dark" *ngIf="showMenu" [ngClass]="{ descriptionsEnabled: showDescriptions, fullscreen: fullscreen }" (yuvOutsideClick)="hide()">
   <div class="head">
     <div class="settings" *ngIf="!showComponent">
       <yuv-form-input class="checkbox" [skipToggle]="true"
@@ -76,10 +76,6 @@
   </div>
 
   <div class="menu-sub-actions">
-    <ng-template eoActionComponentAnchor></ng-template>
-  </div>
-
-  <div>
-    <ng-template eoExtActionComponentAnchor></ng-template>
+    <ng-template yuvComponentAnchor #componentAnchor></ng-template>
   </div>
 </div>

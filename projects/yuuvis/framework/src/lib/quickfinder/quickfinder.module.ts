@@ -12,6 +12,7 @@ import { QuickfinderComponent } from './quickfinder/quickfinder.component';
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, YuvCommonModule, YuvFormModule],
   declarations: [QuickfinderComponent, QuickfinderEntryComponent],
+  entryComponents: [QuickfinderComponent, QuickfinderEntryComponent],
   exports: [QuickfinderComponent]
 })
 export class YuvQuickfinderModule {}

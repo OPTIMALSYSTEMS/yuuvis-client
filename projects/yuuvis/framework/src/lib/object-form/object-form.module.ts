@@ -48,6 +48,7 @@ import { ExpandedTableComponent } from './form-element-table/expanded-table/expa
     YuvGroupedSelectModule,
     AgGridModule
   ],
-  exports: [ObjectFormComponent, ObjectFormEditComponent, ObjectFormElementComponent, CombinedObjectFormComponent]
+  exports: [ObjectFormComponent, ObjectFormEditComponent, ObjectFormElementComponent, CombinedObjectFormComponent],
+  entryComponents: [ObjectFormComponent, ObjectFormEditComponent, ObjectFormElementComponent, CombinedObjectFormComponent]
 })
 export class YuvObjectFormModule {}
