@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, NgZone } from '@angular/core';
 import { Router } from '@angular/router';
 import {
   ApiBase,
@@ -15,10 +15,12 @@ import {
   TranslateService,
   UserService,
   Utils,
+  YuvEventType,
   YuvUser
 } from '@yuuvis/core';
-import { map } from 'rxjs/operators';
-import { NotificationService } from '../notification/notification.service';
+import { of } from 'rxjs';
+import { catchError, map, tap } from 'rxjs/operators';
+import { NotificationService } from '../services/notification/notification.service';
 import { PluginAPI } from './plugins.interface';
 
 /**
@@ -32,7 +34,24 @@ import { PluginAPI } from './plugins.interface';
   providedIn: 'root'
 })
 export class PluginsService {
+  static EVENT_MODEL_CHANGED = 'yuv.event.object-form.model.changed';
   private user: YuvUser;
+  private viewerPlugins: any;
+  private componentRegister = new Map<string, any>();
+
+  public get currentUrl() {
+    return this.router.url;
+  }
+
+  public get api() {
+    return this.getApi();
+  }
+
+  public applyFunction(fnc: string, params?: string, args?: any) {
+    if (!fnc || !fnc.trim()) return;
+    const f = fnc.trim().startsWith('function') ? `return (${fnc}).apply(this,arguments)` : !fnc.trim().startsWith('return') ? `return ${fnc}` : fnc;
+    return new Function(...(params || 'api').split(',').map((a) => a.trim()), f).apply(this.api, args || [this.api]);
+  }
 
   /**
    * @ignore
@@ -46,9 +65,44 @@ export class PluginsService {
     private router: Router,
     private eventService: EventService,
     private searchService: SearchService,
-    private userService: UserService
+    private userService: UserService,
+    private ngZone: NgZone
   ) {
+    window['api'] = this.api;
     this.userService.user$.subscribe((user) => (this.user = user));
+    this.eventService.on(YuvEventType.CLIENT_LOCALE_CHANGED).subscribe((event: any) => this.extendTranslations(event.data));
+  }
+
+  private extendTranslations(lang: string) {
+    const translations = (this.viewerPlugins?.translations || {})[lang];
+    const allKeys = translations && Object.keys(this.translate.store?.translations[lang] || {});
+    if (translations && !Object.keys(translations).every((k) => allKeys.includes(k))) {
+      this.translate.setTranslation(lang, translations, true);
+    }
+  }
+
+  public getViewerPlugins(type: 'links' | 'states' | 'actions' | 'extensions', hook?: string, matchPath?: string | RegExp) {
+    return (!this.viewerPlugins ? this.backend.getViaTempCache('viewer/plugins', () => this.backend.get('viewer/plugins', '')) : of(this.viewerPlugins)).pipe(
+      catchError(() => {
+        console.warn('Missing plugin service!');
+        return of({});
+      }),
+      tap((res) => {
+        if (!this.viewerPlugins) {
+          this.viewerPlugins = res || {};
+          this.extendTranslations(this.translate.currentLang);
+        }
+      }),
+      map((res) => {
+        const viewerPlugins = type === 'links' ? [...(this.viewerPlugins.links || []), ...(this.viewerPlugins.states || [])] : this.viewerPlugins[type] || [];
+        return viewerPlugins.filter((p) =>
+          hook ? p.matchHook && hook.match(new RegExp(p.matchHook)) : matchPath ? (p.path || '').match(new RegExp(matchPath)) : true
+        );
+      })
+    );
+  }
+  public register(component: any) {
+    return component?.id && this.componentRegister.set(component?.id, component);
   }
 
   /**
@@ -56,12 +110,18 @@ export class PluginsService {
    */
   public getApi(): PluginAPI {
     return {
+      components: {
+        get: (id) => this.componentRegister.get(id),
+        getParent: (id) => this.componentRegister.get(id)?.parent
+      },
       router: {
-        get: () => this.router
+        get: () => this.ngZone.run(() => this.router),
+        navigate: (commands, extras) => this.ngZone.run(() => this.router.navigate(commands, extras))
       },
       events: {
-        on: (type: string) => this.eventService.on(type),
-        trigger: (type: string, data?: any) => this.eventService.trigger(type, data)
+        yuuvisEventType: YuvEventType,
+        on: (type: string) => this.ngZone.run(() => this.eventService.on(type)),
+        trigger: (type: string, data?: any) => this.ngZone.run(() => this.eventService.trigger(type, data))
       },
       session: {
         getUser: () => this.getCurrentUser()
@@ -76,6 +136,15 @@ export class PluginsService {
         post: (uri, data, base) => this.post(uri, data, base),
         del: (uri, base) => this.del(uri, base),
         put: (uri, data, base) => this.put(uri, data, base)
+      },
+      form: {
+        modelChange: (formControlName, change) =>
+          this.ngZone.run(() =>
+            this.eventService.trigger(PluginsService.EVENT_MODEL_CHANGED, {
+              formControlName,
+              change
+            })
+          )
       },
       util: {
         encodeFileName: (filename) => this.encodeFileName(filename),

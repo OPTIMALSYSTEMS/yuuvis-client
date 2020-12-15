@@ -55,6 +55,9 @@ export class CombinedObjectFormComponent implements OnInit, IObjectForm {
         data: ofi.data,
         disabled: ofi.disabled
       };
+    } else {
+      // could have been reset
+      this.mainFormOptions = null;
     }
 
     this.extensionForms =

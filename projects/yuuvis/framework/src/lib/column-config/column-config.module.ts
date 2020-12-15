@@ -17,6 +17,7 @@ import { ColumnPickerComponent } from './column-picker/column-picker.component';
  */
 @NgModule({
   declarations: [ColumnConfigComponent, ColumnPickerComponent, ColumnConfigSelectComponent],
+  entryComponents: [ColumnConfigComponent, ColumnPickerComponent, ColumnConfigSelectComponent],
   exports: [ColumnConfigComponent, ColumnConfigSelectComponent],
   imports: [YuvComponentsModule, YuvCommonModule, FormsModule, CommonModule, DragDropModule, YuvGroupedSelectModule, TranslateModule]
 })

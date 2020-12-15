@@ -12,6 +12,7 @@ import { YuvDirectivesModule } from '../directives/directives.module';
 import { YuvFormModule } from '../form/form.module';
 import { YuvObjectFormModule } from '../object-form/object-form.module';
 import { YuvPipesModule } from '../pipes/pipes.module';
+import { YuvPluginsModule } from './../plugins/plugins.module';
 import { AuditComponent } from './audit/audit.component';
 import { ContentPreviewComponent } from './content-preview/content-preview.component';
 import { ContextErrorComponent } from './context-error/context-error.component';
@@ -20,7 +21,15 @@ import { ObjectDetailsComponent } from './object-details/object-details.componen
 import { SummarySectionComponent } from './summary/summary-section/summary-section.component';
 import { SummaryComponent } from './summary/summary.component';
 
-const objectDetails = [ObjectDetailsComponent, ObjectDetailsCompareComponent, SummaryComponent, AuditComponent, ContentPreviewComponent, ContextErrorComponent];
+const objectDetails = [
+  ObjectDetailsComponent,
+  ObjectDetailsCompareComponent,
+  SummaryComponent,
+  SummarySectionComponent,
+  AuditComponent,
+  ContentPreviewComponent,
+  ContextErrorComponent
+];
 
 /**
  * Module providing components to display the details of dms - objects such as object summary, context, audit, etc.
@@ -40,9 +49,11 @@ const objectDetails = [ObjectDetailsComponent, ObjectDetailsCompareComponent, Su
     YuvObjectFormModule,
     YuvActionModule,
     RouterModule,
-    CalendarModule
+    CalendarModule,
+    YuvPluginsModule
   ],
-  declarations: [...objectDetails, ObjectDetailsCompareComponent, SummarySectionComponent],
+  declarations: [...objectDetails],
+  entryComponents: [...objectDetails],
   exports: [...objectDetails]
 })
 export class YuvObjectDetailsModule {}

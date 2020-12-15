@@ -101,8 +101,8 @@ export class OrganizationComponent implements ControlValueAccessor, AfterViewIni
   }
 
   resolveFn(value: any) {
-    let map = (value instanceof Array ? value : [value]).map((v) => {
-      let match = this.innerValue.find((iv) => iv.id === v);
+    const map = (value instanceof Array ? value : [value]).map((v) => {
+      const match = this.innerValue.find((iv) => iv.id === v);
       return match
         ? of(match)
         : this.userService.getUserById(v).pipe(
@@ -111,7 +111,7 @@ export class OrganizationComponent implements ControlValueAccessor, AfterViewIni
                 new YuvUser(
                   {
                     id: v.id,
-                    title: this.noAccessTitle,
+                    title: v.id || this.noAccessTitle,
                     image: null
                   },
                   null

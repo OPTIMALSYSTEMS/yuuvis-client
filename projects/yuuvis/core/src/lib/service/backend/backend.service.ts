@@ -1,10 +1,11 @@
-import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
-import {Injectable} from '@angular/core';
-import {Observable} from 'rxjs';
-import {DmsObject} from '../../model/dms-object.model';
-import {ConfigService} from '../config/config.service';
-import {Logger} from '../logger/logger';
-import {ApiBase} from './api.enum';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { Observable, of } from 'rxjs';
+import { finalize, shareReplay, tap } from 'rxjs/operators';
+import { DmsObject } from '../../model/dms-object.model';
+import { ConfigService } from '../config/config.service';
+import { Logger } from '../logger/logger';
+import { ApiBase } from './api.enum';
 
 /**
  * Service for providing an yuuvis Backend
@@ -13,6 +14,8 @@ import {ApiBase} from './api.enum';
   providedIn: 'root'
 })
 export class BackendService {
+  private cache = new Map<string, any>();
+  private temp = new Map<string, Observable<any>>();
   private headers = this.setDefaultHeaders();
   private persistedHeaders: any = {};
   /**
@@ -108,6 +111,42 @@ export class BackendService {
   }
 
   /**
+   * @ignore
+   * Cache for small requests like icons and configs
+   *
+   * @param string uri
+   * @returns Observable<any>
+   */
+  public getViaCache(uri: string): Observable<any> {
+    if (this.cache.has(uri)) {
+      return of(this.cache.get(uri));
+    } else {
+      return this.getViaTempCache(uri, () => this.http.get(uri, { responseType: 'text' }).pipe(tap((text) => this.cache.set(uri, text))));
+    }
+  }
+
+  /**
+   * @ignore
+   * Temporary Cache for multiple identical requests
+   *
+   * @param string id
+   * @param Function request
+   * @returns Observable<any>
+   */
+  public getViaTempCache(id: string, request?: Function): Observable<any> {
+    if (this.temp.has(id)) {
+      return this.temp.get(id);
+    } else {
+      const resp = (request ? request() : this.get(id)).pipe(
+        finalize(() => this.temp.delete(id)),
+        shareReplay(1)
+      );
+      this.temp.set(id, resp);
+      return resp;
+    }
+  }
+
+  /**
    * Downloads the content of dms objects.
    *
    * @param DmsObject[] dmsObjects Array of dms objects to be downloaded
@@ -141,7 +180,7 @@ export class BackendService {
    */
   getApiBase(api?: string): string {
     // return this.getHost() + this.config.getApiBase(api || ApiBase.apiWeb);
-    return api === "" ? api : this.config.getApiBase(api || ApiBase.apiWeb);
+    return api === '' ? api : this.config.getApiBase(api || ApiBase.apiWeb);
   }
 
   /**

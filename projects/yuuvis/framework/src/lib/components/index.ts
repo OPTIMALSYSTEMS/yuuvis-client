@@ -2,7 +2,6 @@ export { ActionMenuBarComponent } from './action-menu-bar/action-menu-bar.compon
 export { IconUploadComponent } from './animated-icons/icon-upload/icon-upload.component';
 export { BusyOverlayDirective } from './busy-overlay/busy-overlay.directive';
 export * from './components.module';
-export { DialogComponent } from './dialog/dialog.component';
 export { DmsObjectTileComponent } from './dms-object-tile/dms-object-tile.component';
 export { FilePickerComponent } from './file-picker/file-picker.component';
 export { PanelComponent } from './panel/panel.component';

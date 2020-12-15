@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { BehaviorSubject, Observable, of } from 'rxjs';
+import { BehaviorSubject, forkJoin, Observable, of } from 'rxjs';
 import { map, switchMap, tap } from 'rxjs/operators';
 import { UserSettings, YuvUser } from '../../model/yuv-user.model';
 import { BackendService } from '../backend/backend.service';
@@ -56,8 +56,11 @@ export class UserService {
       const userLang = user.getClientLocale(this.config.getDefaultClientLocale());
       if (languages.indexOf(userLang) !== -1) {
         this.logger.debug("Setting client locale to '" + userLang + "'");
-        this.translate.use(userLang);
+        const ready = this.translate.use(userLang);
         this.user.uiDirection = this.getUiDirection(userLang);
+        if (this.translate.currentLang !== userLang) {
+          ready.subscribe(() => this.eventService.trigger(YuvEventType.CLIENT_LOCALE_CHANGED, userLang));
+        }
       }
     }
     this.userSource.next(this.user);
@@ -97,11 +100,11 @@ export class UserService {
           switchMap(() => {
             this.backend.setHeader('Accept-Language', iso);
             this.logger.debug("Changed client locale to '" + iso + "'");
-            this.translate.use(iso);
+            const ready = this.translate.use(iso);
             this.user.uiDirection = this.getUiDirection(iso);
             this.userSource.next(this.user);
             this.logger.debug('Loading system definitions i18n resources for new locale.');
-            return this.system.updateLocalizations(iso);
+            return forkJoin([ready, this.system.updateLocalizations(iso)]);
           })
         )
         .subscribe(() => this.eventService.trigger(YuvEventType.CLIENT_LOCALE_CHANGED, iso));

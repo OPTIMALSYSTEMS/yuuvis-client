@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { UserService } from '@yuuvis/core';
+import { Observable } from 'rxjs';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { compare } from '../../svg.generated';
 import { ObjectCompareInput } from './object-details-compare.interface';
@@ -31,6 +32,8 @@ export class ObjectDetailsCompareComponent implements OnInit {
    * will be used to store component specific settings using the layout service.
    */
   @Input() layoutOptionsKey: string;
+
+  @Input() plugins: Observable<any[]>;
 
   constructor(private userService: UserService, private iconRegistry: IconRegistryService) {
     this.iconRegistry.registerIcons([compare]);

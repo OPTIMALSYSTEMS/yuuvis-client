@@ -5,6 +5,8 @@ import { combineAll, map } from 'rxjs/operators';
 import { ActionListEntry } from '../interfaces/action-list-entry';
 import { Action } from '../interfaces/action.interface';
 import { SelectionRange } from '../selection-range.enum';
+import { PluginActionComponent } from './../../plugins/plugin-action.component';
+import { PluginsService } from './../../plugins/plugins.service';
 
 export const ACTIONS = new InjectionToken<any[]>('ACTIONS');
 export const CUSTOM_ACTIONS = new InjectionToken<any[]>('CUSTOM_ACTIONS');
@@ -23,12 +25,19 @@ export class ActionService {
   constructor(
     @Inject(ACTIONS) actions: any[] = [],
     @Inject(CUSTOM_ACTIONS) custom_actions: any[] = [],
-    private _componentFactoryResolver: ComponentFactoryResolver
+    private _componentFactoryResolver: ComponentFactoryResolver,
+    private pluginsService: PluginsService
   ) {
-    this.allActionComponents = []
-      .concat(...actions)
-      .concat(custom_actions)
-      .filter((entry) => entry.target && !entry.isSubAction && !entry.disabled);
+    this.pluginsService
+      .getViewerPlugins('actions')
+      .pipe(map((_actions: any[]) => PluginActionComponent.actionWrapper(_actions)))
+      .subscribe((_actions) => {
+        this.allActionComponents = []
+          .concat(...actions)
+          .concat(custom_actions)
+          .concat(_actions)
+          .filter((entry) => entry.target && !entry.isSubAction && !entry.disabled);
+      });
   }
 
   /**
@@ -45,8 +54,12 @@ export class ActionService {
   }
 
   private createExecutableActionListEntry(actionComponent: any, selection: any[], viewContainerRef: ViewContainerRef): ActionListEntry {
-    const componentFactory = this._componentFactoryResolver.resolveComponentFactory(actionComponent);
+    const componentFactory = this._componentFactoryResolver.resolveComponentFactory(actionComponent._component || actionComponent);
     const componentRef = viewContainerRef.createComponent(componentFactory);
+
+    if (componentRef.instance instanceof PluginActionComponent) {
+      componentRef.instance.action = actionComponent.action;
+    }
     const entry: ActionListEntry = {
       action: componentRef.instance as Action,
       target: actionComponent.target,

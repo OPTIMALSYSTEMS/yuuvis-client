@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnDestroy, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, Output, TemplateRef, ViewChild } from '@angular/core';
 import {
   AFO_STATE,
   ApiBase,
@@ -32,6 +32,7 @@ import { Selectable, SelectableGroup } from '../../grouped-select';
 import { ObjectFormEditComponent } from '../../object-form/object-form-edit/object-form-edit.component';
 import { FormStatusChangedEvent, ObjectFormOptions } from '../../object-form/object-form.interface';
 import { ObjectFormComponent } from '../../object-form/object-form/object-form.component';
+import { PopoverService } from '../../popover/popover.service';
 import { LayoutService } from '../../services/layout/layout.service';
 import { NotificationService } from '../../services/notification/notification.service';
 import { clear, navBack } from '../../svg.generated';
@@ -96,6 +97,8 @@ export class ObjectCreateComponent implements OnDestroy {
 
   @ViewChild(ObjectFormComponent) objectForm: ObjectFormComponent;
   @ViewChild(ObjectFormEditComponent) objectFormEdit: ObjectFormEditComponent;
+  @ViewChild('cancelOverlay') cancelOverlay: TemplateRef<any>;
+
   private pendingTaskId: string;
   context: DmsObject;
   // whether or not the current user is allowed to use the component and create dms objects
@@ -186,6 +189,7 @@ export class ObjectCreateComponent implements OnDestroy {
     private backend: BackendService,
     private userService: UserService,
     private translate: TranslateService,
+    private popoverService: PopoverService,
     private iconRegistry: IconRegistryService
   ) {
     this.iconRegistry.registerIcons([clear, navBack]);
@@ -557,12 +561,32 @@ export class ObjectCreateComponent implements OnDestroy {
     );
   }
 
-  createAfoCancel() {
-    this.notify.info(this.translate.instant('yuv.framework.object-create.notify.afo.cancel'));
+  openCancelDialog() {
+    if (!this.popoverService.hasActiveOverlay) {
+      this.popoverService.open(this.cancelOverlay, {});
+    }
+  }
+
+  closeCancelDialog(popover) {
+    popover.close();
+  }
+
+  createAfoCancel(withDelete = false) {
+    if (withDelete) {
+      this.deleteObjects();
+    }
     this.selectedObjectType = null;
     this.files = [];
     this.resetState();
     this.reset();
+  }
+
+  deleteObjects() {
+    const deleteObservables = this.afoCreate.dmsObject.items.map((item) => this.dmsService.deleteDmsObject(item.id));
+    forkJoin(deleteObservables).subscribe(
+      () => {},
+      () => this.notify.error(this.translate.instant('yuv.framework.object-create.notify.afo.cancel.with-delete.error'))
+    );
   }
 
   /**
@@ -572,6 +596,10 @@ export class ObjectCreateComponent implements OnDestroy {
    */
   private finishAFO(data: any): Observable<string[]> {
     const sotsToBeApplied = this.getSotsToBeApplied();
+    const pFSOT = this.afoCreate?.floatingSOT?.selected;
+    if (pFSOT && pFSOT.sot.id !== 'none') {
+      sotsToBeApplied.push(pFSOT.sot.id);
+    }
     data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS] = [...(data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS] || []), ...sotsToBeApplied];
 
     // update existing dms object

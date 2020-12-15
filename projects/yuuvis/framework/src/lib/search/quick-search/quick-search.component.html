@@ -40,7 +40,7 @@
         [ngClass]="{hasFilters: searchQuery.filters?.length}" (click)="showObjectTypeFieldPicker()"
         *ngIf="availableObjectTypeFields?.length"
         title="{{ 'yuv.framework.quick-search.field-select.tooltip' | translate }}">
-        <yuv-icon [icon]="'addCircle'"></yuv-icon>
+        <yuv-icon icon="filter"></yuv-icon>
       </button>
 
       <button type="button" class="primary submit" [ngClass]="{ active: resultCount > 0 }" (click)="executeSearch()">

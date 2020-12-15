@@ -1,13 +1,27 @@
-import { Router } from '@angular/router';
+import { NavigationExtras, Router } from '@angular/router';
 import { DmsObject, YuvEvent, YuvUser } from '@yuuvis/core';
 import { Observable } from 'rxjs';
+import { ObjectFormModelChange } from '../object-form/object-form/object-form.component';
 
 /**
  * Providing a plugin service and injected into form scripts
  */
 export interface PluginAPI {
+  /**
+   * Get instance of plugin component or parent of plugin component based on plugin ID
+   *
+   */
+  components: {
+    get: (id: string) => any;
+    getParent: (id: string) => any;
+  };
+  /**
+   * Listen to a certain type of yuuvis event ({@link YuvEventType})
+   *
+   */
   router: {
     get(): Router;
+    navigate(commands: any[], extras: NavigationExtras): any;
   };
 
   /**
@@ -15,6 +29,7 @@ export interface PluginAPI {
    *
    */
   events: {
+    yuuvisEventType: any;
     on(type: string): Observable<YuvEvent>;
     /**
      * Trigger a certain type of yuuvis event ({@link YuvEventType})
@@ -49,7 +64,7 @@ export interface PluginAPI {
     downloadContent(dmsObjects: DmsObject[]): void;
   };
   /**
-   * Execute a GET request against yuuvis backend
+   * Execute a requests against yuuvis backend
    */
   http: {
     /**
@@ -80,7 +95,18 @@ export interface PluginAPI {
     put(uri: string, data: any, base?: string): any;
   };
   /**
-   * Encode a filename safe for sending chars beyond ASCII-7bit using quoted printable encoding.
+   * Utilities
+   */
+  form: {
+    /**
+     * Execute a change of form model
+     * @param formControlName form control unique name | identifier
+     * @param change object that contains name of parameter that should be changed ('value', 'required', ...) and newValue
+     */
+    modelChange(formControlName: string, change: ObjectFormModelChange): void;
+  };
+  /**
+   * Utilities
    */
   util: {
     /**

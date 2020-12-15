@@ -9,14 +9,15 @@
     [contextSearchQuery]="contextSearchQuery"
     [layoutOptionsKey]="layoutOptionsStorageKey"
     (itemsSelected)="contextItemsSelected($event)"
+    [plugins]="pluginsContext"
     #yuvContext
   >
   </yuv-context>
 
-  <yuv-object-details class="yuv-slave panel" [objectId]="selectedItem" [searchTerm]="searchQuery?.term" [layoutOptionsKey]="layoutOptionsStorageKey">
+  <yuv-object-details class="yuv-slave panel" [objectId]="selectedItem" [searchTerm]="searchQuery?.term" [layoutOptionsKey]="layoutOptionsStorageKey" [plugins]="plugins">
   </yuv-object-details>
 </yuv-responsive-master-slave>
 
-<yuv-object-details *ngIf="_standalone" class="panel" [objectId]="_standalone" [layoutOptionsKey]="layoutOptionsStorageKey"> </yuv-object-details>
+<yuv-object-details *ngIf="_standalone" class="panel" [objectId]="_standalone" [layoutOptionsKey]="layoutOptionsStorageKey" [plugins]="plugins"></yuv-object-details>
 
 <yuv-context-error *ngIf="contextError" [contextError]="contextError"></yuv-context-error>

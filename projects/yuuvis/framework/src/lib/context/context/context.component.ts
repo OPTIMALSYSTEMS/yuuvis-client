@@ -14,6 +14,7 @@ import {
   YuvEventType,
   YuvUser
 } from '@yuuvis/core';
+import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
@@ -148,6 +149,8 @@ export class ContextComponent implements OnInit, OnDestroy {
     disabled: false,
     multiple: true
   };
+
+  @Input() plugins: Observable<any[]>;
 
   constructor(
     private translate: TranslateService,

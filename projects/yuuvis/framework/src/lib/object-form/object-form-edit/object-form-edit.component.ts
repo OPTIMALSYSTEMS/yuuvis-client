@@ -121,7 +121,7 @@ export class ObjectFormEditComponent implements OnDestroy {
 
   constructor(
     @Attribute('actionsDisabled') public actionsDisabled: boolean,
-    @Attribute('situation') public situation = Situation.EDIT,
+    @Attribute('situation') public situation: string = Situation.EDIT,
     private systemService: SystemService,
     private backend: BackendService,
     private dmsService: DmsService,
@@ -250,7 +250,8 @@ export class ObjectFormEditComponent implements OnDestroy {
     }
     if (this.afoObjectForm) {
       this._dmsObject.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS] = [...this._secondaryObjectTypeIDs];
-
+      this._sotChanged.assignedGeneral = false;
+      this.controls.disabled = true;
       this.createObjectForm(this._dmsObject);
       this._sotChanged = {
         applied: [],

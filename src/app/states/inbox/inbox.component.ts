@@ -10,6 +10,7 @@ import {
   listModeDefault,
   listModeGrid,
   listModeSimple,
+  PluginsService,
   refresh,
   ResponsiveTableData
 } from '@yuuvis/framework';
@@ -41,14 +42,19 @@ export class InboxComponent implements OnInit, OnDestroy {
     icon: 'inbox'
   };
 
+  plugins: any;
+
   constructor(
     private inboxService: InboxService,
     private translateService: TranslateService,
     private formatProcessDataService: FormatProcessDataService,
     private iconRegistry: IconRegistryService,
     private eventService: EventService,
-    private appCache: AppCacheService
+    private appCache: AppCacheService,
+    private pluginsService: PluginsService
   ) {
+    this.plugins = this.pluginsService.getViewerPlugins('extensions', 'yuv-inbox');
+
     this.iconRegistry.registerIcons([edit, arrowNext, refresh, inbox, listModeDefault, listModeGrid, listModeSimple]);
     // TODO: nasty hack: remove once grid renders view mode from extern
     this.appCache

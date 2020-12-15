@@ -12,6 +12,7 @@ import {
   YuvEventType
 } from '@yuuvis/core';
 import { TabPanel } from 'primeng/tabview';
+import { Observable } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
@@ -163,6 +164,8 @@ export class ObjectDetailsComponent implements OnDestroy {
   @Input() disableFileDrop: boolean;
 
   undockWinActive = false;
+
+  @Input() plugins: Observable<any[]>;
 
   constructor(
     private dmsService: DmsService,

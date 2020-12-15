@@ -4,7 +4,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PendingChangesService, Screen, ScreenService, SearchQuery, TranslateService, Utils } from '@yuuvis/core';
-import { FilterPanelConfig, LayoutService } from '@yuuvis/framework';
+import { FilterPanelConfig, LayoutService, PluginsService } from '@yuuvis/framework';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { AppSearchService } from '../../service/app-search.service';
 
@@ -30,6 +30,8 @@ export class ResultComponent implements OnInit, OnDestroy {
     return `${this.STORAGE_KEY}.${(this.searchQuery && this.searchQuery.targetType) || 'mixed'}`;
   }
 
+  plugins: any;
+
   constructor(
     private titleService: Title,
     private screenService: ScreenService,
@@ -40,7 +42,8 @@ export class ResultComponent implements OnInit, OnDestroy {
     private title: Title,
     private layoutService: LayoutService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private pluginsService: PluginsService
   ) {
     this.screenService.screenChange$.pipe(takeUntilDestroy(this)).subscribe((screen: Screen) => {
       this.smallScreen = screen.mode === ScreenService.MODE.SMALL;
@@ -48,6 +51,7 @@ export class ResultComponent implements OnInit, OnDestroy {
     this.layoutService.loadLayoutOptions('yuv-result', 'state').subscribe((o: ResultStateLayoutOptions) => {
       this.filterPanelConfig = o?.filterPanelConfig;
     });
+    this.plugins = this.pluginsService.getViewerPlugins('extensions', 'yuv-result');
   }
 
   closeDetails() {

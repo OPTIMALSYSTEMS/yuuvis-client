@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AppCacheService, DmsObject, DmsService, EventService, SearchQuery, TranslateService, YuvEventType } from '@yuuvis/core';
-import { ContextComponent } from '@yuuvis/framework';
+import { ContextComponent, PluginsService } from '@yuuvis/framework';
 import { finalize } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { FrameService } from '../../components/frame/frame.service';
@@ -32,6 +32,9 @@ export class ObjectComponent implements OnInit, OnDestroy {
   contextSearchQuery: SearchQuery;
   private contextId: string;
 
+  plugins: any;
+  pluginsContext: any;
+
   constructor(
     private route: ActivatedRoute,
     private dmsService: DmsService,
@@ -41,8 +44,12 @@ export class ObjectComponent implements OnInit, OnDestroy {
     private frameService: FrameService,
     private router: Router,
     private eventService: EventService,
-    private appCacheService: AppCacheService
-  ) {}
+    private appCacheService: AppCacheService,
+    private pluginsService: PluginsService
+  ) {
+    this.plugins = this.pluginsService.getViewerPlugins('extensions', 'yuv-object');
+    this.pluginsContext = this.pluginsService.getViewerPlugins('extensions', 'yuv-object-context');
+  }
 
   onContextFilesDropped(files: File[]) {
     this.frameService.createObject(this.contextId, files);

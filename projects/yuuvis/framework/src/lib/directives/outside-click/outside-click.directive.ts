@@ -1,6 +1,4 @@
 import { Directive, ElementRef, EventEmitter, HostListener, OnDestroy, Output } from '@angular/core';
-import { EventService, YuvEventType } from '@yuuvis/core';
-import { takeUntilDestroy } from 'take-until-destroy';
 import { PopoverService } from './../../popover/popover.service';
 
 /**
@@ -36,14 +34,7 @@ export class OutsideClickDirective implements OnDestroy {
    *
    * @ignore
    */
-  constructor(private eventService: EventService, private popoverService: PopoverService, private _elementRef: ElementRef) {
-    this.eventService
-      .on(YuvEventType.DIALOG_STACK_CHANGED)
-      .pipe(takeUntilDestroy(this))
-      .subscribe((event: any) => {
-        this.active = !event.data.active;
-      });
-  }
+  constructor(private popoverService: PopoverService, private _elementRef: ElementRef) {}
 
   private onOutsideEvent(event: Event) {
     this.yuvOutsideClick.emit(event);
