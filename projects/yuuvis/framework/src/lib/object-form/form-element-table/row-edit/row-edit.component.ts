@@ -1,9 +1,10 @@
-import { Component, ElementRef, EventEmitter, Input, Output, ViewChild, ViewEncapsulation } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, Output, TemplateRef, ViewChild, ViewEncapsulation } from '@angular/core';
 import { FormBuilder, FormControl } from '@angular/forms';
 import { PendingChangesService } from '@yuuvis/core';
 import { takeUntil } from 'rxjs/operators';
 import { IconRegistryService } from '../../../common/components/icon/service/iconRegistry.service';
 import { UnsubscribeOnDestroy } from '../../../common/util/unsubscribe.component';
+import { PopoverService } from '../../../popover/popover.service';
 import { clear, deleteIcon } from '../../../svg.generated';
 import { ObjectFormComponent } from '../../object-form/object-form.component';
 import { EditRow, EditRowResult } from '../form-element-table.component';
@@ -19,6 +20,7 @@ import { EditRow, EditRowResult } from '../form-element-table.component';
   encapsulation: ViewEncapsulation.None
 })
 export class RowEditComponent extends UnsubscribeOnDestroy {
+  @ViewChild('deleteOverlay') deleteOverlay: TemplateRef<any>;
   @ViewChild('confirmDelete') confirmDeleteButton: ElementRef;
 
   // ID set by pendingChanges service when editing row data
@@ -33,19 +35,6 @@ export class RowEditComponent extends UnsubscribeOnDestroy {
   saveEnabled = true;
   createNewCheckbox: FormControl;
   createNewRow = false;
-  _showDeleteDialog = false;
-
-  set showDeleteDialog(val: boolean) {
-    this._showDeleteDialog = val;
-
-    if (this._showDeleteDialog) {
-      setTimeout(() => this.confirmDeleteButton.nativeElement.focus(), 0);
-    }
-  }
-
-  get showDeleteDialog() {
-    return this._showDeleteDialog;
-  }
 
   @Input()
   set row(r: EditRow) {
@@ -60,7 +49,12 @@ export class RowEditComponent extends UnsubscribeOnDestroy {
 
   @ViewChild('rowForm') rowForm: ObjectFormComponent;
 
-  constructor(private pendingChanges: PendingChangesService, private fb: FormBuilder, private iconRegistry: IconRegistryService) {
+  constructor(
+    private pendingChanges: PendingChangesService,
+    private fb: FormBuilder,
+    private iconRegistry: IconRegistryService,
+    private popoverService: PopoverService
+  ) {
     super();
     this.iconRegistry.registerIcons([deleteIcon, clear]);
     this.createNewCheckbox = this.fb.control(this.createNewRow);
@@ -135,9 +129,17 @@ export class RowEditComponent extends UnsubscribeOnDestroy {
     }, 500);
   }
 
+  openDeleteDialog() {
+    this.popoverService.open(this.deleteOverlay, { width: '300px' });
+    setTimeout(() => this.confirmDeleteButton.nativeElement.focus(), 0);
+  }
+
+  closeDeleteDialog(popover) {
+    popover.close();
+  }
+
   delete() {
     this.onDelete.emit(this._row.index);
-    this.showDeleteDialog = false;
   }
 
   cancel() {
