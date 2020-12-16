@@ -261,7 +261,8 @@ export class FormElementTableComponent extends UnsubscribeOnDestroy implements C
   openDialog() {
     const popoverConfig: PopoverConfig = {
       width: '95%',
-      height: '95%'
+      height: '95%',
+      disableClose: true
     };
     if (!this.popoverService.hasActiveOverlay) {
       this.popoverService.open(this.overlay, popoverConfig);
@@ -269,8 +270,10 @@ export class FormElementTableComponent extends UnsubscribeOnDestroy implements C
   }
 
   close(popover) {
-    popover.close();
-    this.editingRow = null;
+    if (!this.rowEdit || !this.pendingChanges.checkForPendingTasks(this.rowEdit.pendingTaskId)) {
+      popover.close();
+      this.editingRow = null;
+    }
   }
 
   updateRow(rowResult: any) {
