@@ -18,8 +18,8 @@ import {
   YuvEventType,
   YuvUser
 } from '@yuuvis/core';
-import { of } from 'rxjs';
-import { catchError, map, tap } from 'rxjs/operators';
+import { forkJoin, of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 import { NotificationService } from '../services/notification/notification.service';
 import { ContentPreviewService } from './../object-details/content-preview/service/content-preview.service';
 import { PluginAPI } from './plugins.interface';
@@ -35,9 +35,15 @@ import { PluginAPI } from './plugins.interface';
   providedIn: 'root'
 })
 export class PluginsService {
+  static LOCAL_PLUGIN_CONFIG = '/user/settings/plugin-config';
+  static GLOBAL_PLUGIN_CONFIG = '/user/globalsettings/plugin-config';
+  static VIEWER_PLUGIN_CONFIG = '/viewer/plugins';
+
   static EVENT_MODEL_CHANGED = 'yuv.event.object-form.model.changed';
+
   private user: YuvUser;
-  private customPlugins: any;
+  private pluginConfigs: any;
+  public customPlugins: any;
   private componentRegister = new Map<string, any>();
 
   public get currentUrl() {
@@ -82,26 +88,47 @@ export class PluginsService {
     }
   }
 
-  public getCustomPlugins(type: 'links' | 'states' | 'actions' | 'extensions' | 'triggers', hook?: string, matchPath?: string | RegExp) {
-    return (!this.customPlugins ? this.backend.getViaTempCache('viewer/plugins', () => this.backend.get('viewer/plugins', '')) : of(this.customPlugins)).pipe(
-      catchError(() => {
-        console.warn('Missing plugin service!');
-        return of({});
-      }),
-      tap((res) => {
-        if (!this.customPlugins) {
-          this.customPlugins = res || {};
+  private loadCustomPlugins(force = false) {
+    return forkJoin([
+      this.backend.get(PluginsService.VIEWER_PLUGIN_CONFIG, '').pipe(catchError(() => of({}))),
+      this.backend.get(PluginsService.GLOBAL_PLUGIN_CONFIG).pipe(catchError(() => of({}))),
+      this.backend.get(PluginsService.LOCAL_PLUGIN_CONFIG).pipe(catchError(() => of({})))
+    ]).pipe(
+      map(([viewer, global, local]) => {
+        this.pluginConfigs = { viewer, global, local };
+        if (!this.customPlugins || force) {
+          this.customPlugins = [viewer, global, local].reduce((prev, cur) => {
+            Object.keys(cur || {}).forEach((k) => {
+              Array.isArray(cur[k]) && (prev[k] = (prev[k] || []).filter((p) => !cur[k].find((c) => c.id === p.id)).concat(cur[k]));
+              k === 'translations' && prev[k] ? Object.keys(cur[k]).forEach((t) => (prev[k][t] = { ...(prev[k][t] || {}), ...cur[k][t] })) : (prev[k] = cur[k]);
+            });
+            prev.disabled = cur?.disabled; // LOCAL SETTING
+            return prev;
+          }, {});
           this.extendTranslations(this.translate.currentLang);
         }
-      }),
-      map((res) => {
-        const customPlugins = type === 'links' ? [...(this.customPlugins.links || []), ...(this.customPlugins.states || [])] : this.customPlugins[type] || [];
+        return this.customPlugins;
+      })
+    );
+  }
+
+  public getCustomPlugins(type: 'links' | 'states' | 'actions' | 'extensions' | 'triggers', hook?: string, matchPath?: string | RegExp) {
+    return (!this.customPlugins ? this.backend.getViaTempCache('_plugins', () => this.loadCustomPlugins()) : of(this.customPlugins)).pipe(
+      map((cp) => {
+        if (cp.disabled) return [];
+        const customPlugins = type === 'links' ? [...(cp.links || []), ...(cp.states || [])] : cp[type] || [];
         return customPlugins.filter(
           (p) => !p.disabled && (hook ? p.matchHook && hook.match(new RegExp(p.matchHook)) : matchPath ? (p.path || '').match(new RegExp(matchPath)) : true)
         );
       })
     );
   }
+
+  public disableCustomPlugins(disabled = true) {
+    this.customPlugins.disabled = this.pluginConfigs.local.disabled = !!disabled;
+    return this.backend.post(PluginsService.LOCAL_PLUGIN_CONFIG, this.pluginConfigs.local);
+  }
+
   public register(component: any) {
     return component?.id && this.componentRegister.set(component?.id, component);
   }
