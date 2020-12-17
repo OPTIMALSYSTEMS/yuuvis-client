@@ -1,4 +1,4 @@
-import { Component, HostBinding, Input, TemplateRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostBinding, Input, TemplateRef, ViewChild } from '@angular/core';
 import { Utils } from '@yuuvis/core';
 import { Observable, of } from 'rxjs';
 import { SimpleCustomAction } from '../actions/interfaces/action.interface';
@@ -33,7 +33,10 @@ import { PluginsService } from './plugins.service';
   ]
 })
 export class PluginTriggerComponent implements SimpleCustomAction {
-  @HostBinding('style.display') display: 'flex' | 'none' = 'flex';
+  @HostBinding('hidden') hidden = true;
+  @HostBinding('style.display') get display() {
+    return !this.hidden ? 'flex' : 'none';
+  }
   @ViewChild('popoverRef') popoverRef: TemplateRef<any>;
 
   @Input() parent: any;
@@ -60,11 +63,11 @@ export class PluginTriggerComponent implements SimpleCustomAction {
     return this._action;
   }
 
-  constructor(private pluginService: PluginsService, private popoverService: PopoverService) {}
+  constructor(private pluginService: PluginsService, private popoverService: PopoverService, private elRef: ElementRef) {}
 
   isExecutable(item: any = this.action) {
     const val = this.pluginService.applyFunction(this.action.isExecutable, 'component', [this]);
-    this.display = val ? 'flex' : 'none';
+    this.hidden = !val;
     return val instanceof Observable ? val : of(val);
   }
 
