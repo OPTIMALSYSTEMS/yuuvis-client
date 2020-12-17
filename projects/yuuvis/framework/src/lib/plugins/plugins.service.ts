@@ -99,10 +99,14 @@ export class PluginsService {
         if (!this.customPlugins || force) {
           this.customPlugins = [viewer, global, local].reduce((prev, cur) => {
             Object.keys(cur || {}).forEach((k) => {
-              Array.isArray(cur[k]) && (prev[k] = (prev[k] || []).filter((p) => !cur[k].find((c) => c.id === p.id)).concat(cur[k]));
-              k === 'translations' && prev[k] ? Object.keys(cur[k]).forEach((t) => (prev[k][t] = { ...(prev[k][t] || {}), ...cur[k][t] })) : (prev[k] = cur[k]);
+              if (Array.isArray(cur[k])) {
+                prev[k] = (prev[k] || []).filter((p) => !cur[k].find((c) => c.id === p.id)).concat(cur[k]);
+              } else if (k === 'translations' && prev[k]) {
+                Object.keys(cur[k]).forEach((t) => (prev[k][t] = { ...(prev[k][t] || {}), ...cur[k][t] }));
+              } else {
+                prev[k] = cur[k];
+              }
             });
-            prev.disabled = cur?.disabled; // LOCAL SETTING
             return prev;
           }, {});
           this.extendTranslations(this.translate.currentLang);
