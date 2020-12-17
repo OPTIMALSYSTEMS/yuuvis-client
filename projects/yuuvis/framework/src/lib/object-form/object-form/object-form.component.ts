@@ -4,6 +4,7 @@ import { Logger, RangeValue, SearchFilter, SearchService, SystemService, Utils }
 import { cloneDeep } from 'lodash-es';
 import { Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
+import { takeUntilDestroy } from 'take-until-destroy';
 import { UnsubscribeOnDestroy } from '../../common/util/unsubscribe.component';
 import { ObjectFormScriptService } from '../object-form-script/object-form-script.service';
 import { ObjectFormScriptingScope } from '../object-form-script/object-form-scripting-scope';
@@ -95,6 +96,7 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
     super();
     this.pluginService.api.events
       .on(PluginsService.EVENT_MODEL_CHANGED)
+      .pipe(takeUntilDestroy(this))
       .subscribe((event) => event.data && this.onScriptingModelChanged(event.data.formControlName, event.data.change));
   }
 

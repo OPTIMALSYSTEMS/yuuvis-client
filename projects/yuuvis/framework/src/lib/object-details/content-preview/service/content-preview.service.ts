@@ -24,7 +24,8 @@ export class ContentPreviewService {
   }
 
   static closeWin() {
-    return this.getUndockWin() && this.getUndockWin().close();
+    this.getUndockWin() && this.getUndockWin().close();
+    delete window[ContentPreviewService.UNDOCK_WINDOW_NAME];
   }
 
   static getUndockWin(): Window {

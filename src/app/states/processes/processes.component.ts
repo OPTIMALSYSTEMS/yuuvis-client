@@ -49,7 +49,7 @@ export class ProcessesComponent implements OnInit, OnDestroy {
     private eventService: EventService,
     private pluginsService: PluginsService
   ) {
-    this.plugins = this.pluginsService.getViewerPlugins('extensions', 'yuv-processes');
+    this.plugins = this.pluginsService.getCustomPlugins('extensions', 'yuv-processes');
     this.iconRegistry.registerIcons([edit, arrowNext, refresh, process, listModeDefault, listModeGrid, listModeSimple]);
   }
 

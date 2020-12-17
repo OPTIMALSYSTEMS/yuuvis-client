@@ -38,20 +38,34 @@
         color: #fff;
       }
     }
+    > .triggers {
+      order: 3;
+      display: none;
+      &.visible {
+        order: 2;
+      }
+      &.visible,
+      &:hover {
+        display: flex;
+      }
+    }
     > .form-input__label {
       text-align: end;
       @include transition();
       user-select: none;
-      order: 2;
+      order: 4;
       flex: 0 1 auto;
       padding: 2px calc(var(--app-pane-padding) / 4);
       margin-right: 3px;
       color: var(--text-color-caption);
       border-radius: 2px;
       font-size: var(--font-caption);
+      &:hover + .triggers {
+        display: flex;
+      }
     }
     > .tag {
-      order: 3;
+      order: 5;
       flex: 0 0 auto;
       border-radius: 2px;
       font-size: var(--font-hint);

@@ -106,9 +106,18 @@ export interface PluginAPI {
     modelChange(formControlName: string, change: ObjectFormModelChange): void;
   };
   /**
+   * Content viewer window
+   */
+  content: {
+    viewer: () => Window;
+  };
+  /**
    * Utilities
    */
   util: {
+    $: (selectors, element) => any;
+    $$: (selectors, element) => any;
+    styles: (styles, id) => any;
     /**
      * Encode a filename safe for sending chars beyond ASCII-7bit using quoted printable encoding.
      * @param filename Filename to be encoded

@@ -45,20 +45,6 @@ export abstract class IFrameComponent {
     }
   }
 
-  // TODO: remove this example
-  private copyEvent(win: any) {
-    if (this.iframe?.src?.startsWith(window.location.origin)) {
-      win?.document?.addEventListener('selectionchange', (e) => {
-        const newValue = win.getSelection().toString();
-        if (window.document.activeElement.tagName === 'INPUT' && newValue) {
-          const parent = (el: Element) => (!el || el.parentElement.tagName.startsWith('YUV-') ? el?.parentElement : parent(el.parentElement));
-          const el = parent(window.document.activeElement);
-          if (el) this.pluginsService.api.form.modelChange(el.getAttribute('ng-reflect-name'), { name: 'value', newValue });
-        }
-      });
-    }
-  }
-
   iframeInit(iframe = this.iframe, searchTerm = '') {
     if (iframe) {
       fromEvent(iframe, 'load')
@@ -69,7 +55,6 @@ export abstract class IFrameComponent {
             const win = iframe?.contentWindow || iframe;
             this.searchPDF(searchTerm, win);
             this.preventDropEvent(win);
-            this.copyEvent(win);
           }, 100)
         );
     }

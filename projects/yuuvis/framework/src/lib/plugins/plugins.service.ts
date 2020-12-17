@@ -21,6 +21,7 @@ import {
 import { of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { NotificationService } from '../services/notification/notification.service';
+import { ContentPreviewService } from './../object-details/content-preview/service/content-preview.service';
 import { PluginAPI } from './plugins.interface';
 
 /**
@@ -36,7 +37,7 @@ import { PluginAPI } from './plugins.interface';
 export class PluginsService {
   static EVENT_MODEL_CHANGED = 'yuv.event.object-form.model.changed';
   private user: YuvUser;
-  private viewerPlugins: any;
+  private customPlugins: any;
   private componentRegister = new Map<string, any>();
 
   public get currentUrl() {
@@ -74,29 +75,29 @@ export class PluginsService {
   }
 
   private extendTranslations(lang: string) {
-    const translations = (this.viewerPlugins?.translations || {})[lang];
+    const translations = (this.customPlugins?.translations || {})[lang];
     const allKeys = translations && Object.keys(this.translate.store?.translations[lang] || {});
     if (translations && !Object.keys(translations).every((k) => allKeys.includes(k))) {
       this.translate.setTranslation(lang, translations, true);
     }
   }
 
-  public getViewerPlugins(type: 'links' | 'states' | 'actions' | 'extensions', hook?: string, matchPath?: string | RegExp) {
-    return (!this.viewerPlugins ? this.backend.getViaTempCache('viewer/plugins', () => this.backend.get('viewer/plugins', '')) : of(this.viewerPlugins)).pipe(
+  public getCustomPlugins(type: 'links' | 'states' | 'actions' | 'extensions' | 'triggers', hook?: string, matchPath?: string | RegExp) {
+    return (!this.customPlugins ? this.backend.getViaTempCache('viewer/plugins', () => this.backend.get('viewer/plugins', '')) : of(this.customPlugins)).pipe(
       catchError(() => {
         console.warn('Missing plugin service!');
         return of({});
       }),
       tap((res) => {
-        if (!this.viewerPlugins) {
-          this.viewerPlugins = res || {};
+        if (!this.customPlugins) {
+          this.customPlugins = res || {};
           this.extendTranslations(this.translate.currentLang);
         }
       }),
       map((res) => {
-        const viewerPlugins = type === 'links' ? [...(this.viewerPlugins.links || []), ...(this.viewerPlugins.states || [])] : this.viewerPlugins[type] || [];
-        return viewerPlugins.filter((p) =>
-          hook ? p.matchHook && hook.match(new RegExp(p.matchHook)) : matchPath ? (p.path || '').match(new RegExp(matchPath)) : true
+        const customPlugins = type === 'links' ? [...(this.customPlugins.links || []), ...(this.customPlugins.states || [])] : this.customPlugins[type] || [];
+        return customPlugins.filter(
+          (p) => !p.disabled && (hook ? p.matchHook && hook.match(new RegExp(p.matchHook)) : matchPath ? (p.path || '').match(new RegExp(matchPath)) : true)
         );
       })
     );
@@ -146,7 +147,21 @@ export class PluginsService {
             })
           )
       },
+      content: {
+        viewer: () => ContentPreviewService.getUndockWin() || (window.document.querySelector('yuv-content-preview iframe') || {})['contentWindow']
+      },
       util: {
+        $: (selectors, element) => (element || window.document).querySelector(selectors),
+        $$: (selectors, element) => (element || window.document).querySelectorAll(selectors),
+        styles: (styles, id = '__styles', win: any = window) => {
+          let s = win.document.head.querySelector('#' + id);
+          if (!s) {
+            s = win.document.createElement('style');
+            s.setAttribute('id', id);
+            win.document.head.appendChild(s);
+          }
+          s.innerHTML = styles;
+        },
         encodeFileName: (filename) => this.encodeFileName(filename),
         notifier: {
           success: (text, title) => this.notifications.success(title, text),
