@@ -56,7 +56,7 @@ export class PluginsService {
 
   public applyFunction(fnc: string, params?: string, args?: any) {
     if (!fnc || !fnc.trim()) return;
-    const f = fnc.trim().startsWith('function') ? `return (${fnc}).apply(this,arguments)` : !fnc.trim().startsWith('return') ? `return ${fnc}` : fnc;
+    const f = fnc.trim().match(/^function|^\(.*\)\s*=>/) ? `return (${fnc}).apply(this,arguments)` : !fnc.trim().startsWith('return') ? `return ${fnc}` : fnc;
     return new Function(...(params || 'api').split(',').map((a) => a.trim()), f).apply(this.api, args || [this.api]);
   }
 
