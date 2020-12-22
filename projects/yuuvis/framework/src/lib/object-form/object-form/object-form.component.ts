@@ -431,9 +431,7 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
       };
 
       if (formElement.name) {
-        ctrl._eoFormGroup.label = this.skipTranslationsFor.includes(formElement.name)
-          ? formElement.name
-          : this.systemService.getLocalizedResource(`${formElement.name}_label`) || formElement.name;
+        ctrl._eoFormGroup.label = this.skipTranslationsFor.includes(formElement.name) ? formElement.name : formElement.label;
       }
 
       if (useName === 'core' || useName === 'data') {
