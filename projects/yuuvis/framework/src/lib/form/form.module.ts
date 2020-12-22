@@ -13,6 +13,7 @@ import { MultiSelectModule } from 'primeng/multiselect';
 import { TriStateCheckboxModule } from 'primeng/tristatecheckbox';
 import { YuvCommonModule } from '../common/common.module';
 import { YuvComponentsModule } from '../components/components.module';
+import { YuvPluginsModule } from './../plugins/plugins.module';
 import { CatalogComponent } from './elements/catalog/catalog.component';
 import { CheckboxComponent } from './elements/checkbox/checkbox.component';
 import { DatetimeRangeComponent } from './elements/datetime-range/datetime-range.component';
@@ -64,6 +65,7 @@ const components = [
     ReactiveFormsModule,
     InputMaskModule,
     MultiSelectModule,
+    YuvPluginsModule,
     RouterModule
   ]
 })

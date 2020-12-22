@@ -121,6 +121,27 @@
           </div>
         </div>
       </div>
+
+      <div class="setting settings__row">
+        <div class="label" translate>yuv.client.state.settings.config.plugin-config</div>
+        <div class="value buttons">
+          <yuv-file-picker [label]="'yuv.client.state.settings.config.main-config.import' | translate"
+            [accept]="'.json'" [output]="'text'" (fileSelected)="importPluginConfig($event)"></yuv-file-picker>
+          <button
+            (click)="exportPluginConfig()">{{ 'yuv.client.state.settings.config.main-config.export' | translate }}</button>
+          <yuv-file-picker [label]="'yuv.client.state.settings.config.main-config.import.default' | translate" *ngIf="hasSystemRole"
+            [accept]="'.json'" [output]="'text'" (fileSelected)="importPluginConfig($event, true)"></yuv-file-picker>
+          <button
+            (click)="exportDefaultPluginConfig()">{{ 'yuv.client.state.settings.config.main-config.export.default' | translate }}</button>
+        </div>
+        <div class="value buttons" [style.flex]="0">
+          <button [ngClass]="{ active: !disabledPlugins }"
+            (click)="disablePlugins(false)">{{ 'ON' }}</button>
+          <button [ngClass]="{ active: disabledPlugins }"
+            (click)="disablePlugins(true)">{{ 'OFF'}}</button>
+        </div>
+      </div>
+
       <div class="setting settings__row" *ngIf="hasSystemRole">
         <div class="label" translate>yuv.client.state.settings.config.main-config</div>
         <div class="value buttons">

@@ -69,6 +69,7 @@ export class PluginComponent extends IFrameComponent implements OnInit, OnDestro
       component?: string;
       inputs?: any;
       outputs?: any;
+      popoverConfig?: any;
     };
   };
 
@@ -135,7 +136,7 @@ export class PluginComponent extends IFrameComponent implements OnInit, OnDestro
   ngOnInit() {
     if (!this.config) {
       // match custom state by url
-      this.pluginsService.getViewerPlugins('states', '', this.pluginsService.currentUrl.replace('/', '')).subscribe(([config]) => {
+      this.pluginsService.getCustomPlugins('states', '', this.pluginsService.currentUrl.replace('/', '')).subscribe(([config]) => {
         this.config = config;
         setTimeout(() => this.init(), 0);
       });

@@ -29,7 +29,7 @@ export class ActionService {
     private pluginsService: PluginsService
   ) {
     this.pluginsService
-      .getViewerPlugins('actions')
+      .getCustomPlugins('actions')
       .pipe(map((_actions: any[]) => PluginActionComponent.actionWrapper(_actions)))
       .subscribe((_actions) => {
         this.allActionComponents = []
