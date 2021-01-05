@@ -11,6 +11,7 @@
     "start": "ng serve --port 4400 --proxy-config proxy.config.js",
     "start:dist": "npm run start -- --configuration dist",
     "start:dev": "npm run start -- --configuration dev",
+    "prestart:cmp:test": "npm run prebuild:cmp:test",
     "start:cmp:test": "ng serve component-tests --configuration test --port 4500 --proxy-config proxy.config.js",
     "start:tenant": "ng serve tenant-login --configuration dev --port 4600",
     "prebuild:cmp:test": "node ./tools/scripts/misc/copy-test-assets",
