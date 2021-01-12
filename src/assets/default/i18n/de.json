@@ -331,7 +331,7 @@
   "yuv.client.state.settings.config.main-config.export.default": "Standard exportieren",
   "yuv.client.state.settings.config.main-config.import": "Importieren",
   "yuv.client.state.settings.config.main-config.import.default": "Standard importieren",
-  "yuv.client.state.settings.config.plugin-config": "Pluginkonfiguration",
+  "yuv.client.state.settings.config.plugin-config": "Plug-in-Konfiguration",
   "yuv.client.state.settings.language": "Sprache",
   "yuv.client.state.settings.permission": "Berechtigungen",
   "yuv.client.state.settings.roles": "Rollen",
