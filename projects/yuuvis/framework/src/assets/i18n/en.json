@@ -133,7 +133,7 @@
 	"yuv.framework.object-create.footer.create.afo.cancel": "Cancel",
 	"yuv.framework.object-create.footer.create.afo.next": "Finish",
 	"yuv.framework.object-create.header.title": "Create object",
-	"yuv.framework.object-create.notify.afo.cancel": "The creation process for this object is not finished yet.",
+	"yuv.framework.object-create.notify.afo.cancel": "The creation process for the object is not finished yet.",
 	"yuv.framework.object-create.notify.afo.cancel.with-delete.error": "Deletion failed",
 	"yuv.framework.object-create.notify.error": "Error while creating the object",
 	"yuv.framework.object-create.pending-changes.alert": "Do you want to discard the creation process?",
