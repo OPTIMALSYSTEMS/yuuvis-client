@@ -50,6 +50,7 @@
     "deploy:dist": "npm run docker:create:image && npm run k8s:prepare && npm run k8s:deploy",
     "deploy:dev": "npm run build:pwa && npm run docker:create:image && npm run k8s:prepare && npm run k8s:deploy",
     "i18n:diff": "node ./tools/scripts/common/i18n-diff.js",
+    "i18n:apply": "node ./tools/scripts/common/i18n-apply.js",
     "pack:lib:core": "npm run build:core && cd lib-release &&  npm pack ../dist/yuuvis/core",
     "pack:lib:framework": "npm run build:framework && cd lib-release &&  npm pack ../dist/yuuvis/framework",
     "pack:libs:all": "npm run pack:lib:core && npm run pack:lib:framework",
