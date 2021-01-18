@@ -420,8 +420,10 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
         layout: formElement.layout,
         type: formElement.type
       };
+
       if (formElement.name) {
-        ctrl._eoFormGroup.label = this.systemService.getLocalizedResource(`${formElement.name}_label`) || formElement.name;
+        const skipTranslationsFor = ['core', 'data'];
+        ctrl._eoFormGroup.label = skipTranslationsFor.includes(formElement.name) ? formElement.name : formElement.label;
       }
 
       if (useName === 'core' || useName === 'data') {
