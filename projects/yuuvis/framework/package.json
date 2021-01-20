@@ -1,6 +1,6 @@
 {
   "name": "@yuuvis/framework",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "author": "OPTIMAL SYSTEMS GmbH <npm@optimal-systems.de>",
   "license": "MIT",
   "scripts": {
@@ -16,7 +16,7 @@
     "rxjs": "~6.5.5"
   },
   "dependencies": {
-    "@yuuvis/core": "1.0.9",
+    "@yuuvis/core": "1.0.10",
     "primeng": "~9.0.5",
     "primeicons": "~2.0.0",
     "angular-split": "3.0.1",
