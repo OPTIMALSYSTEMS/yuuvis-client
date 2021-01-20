@@ -51,7 +51,7 @@ export class ResultComponent implements OnInit, OnDestroy {
     this.layoutService.loadLayoutOptions('yuv-result', 'state').subscribe((o: ResultStateLayoutOptions) => {
       this.filterPanelConfig = o?.filterPanelConfig;
     });
-    this.plugins = this.pluginsService.getViewerPlugins('plugins', 'yuv-result');
+    this.plugins = this.pluginsService.getCustomPlugins('extensions', 'yuv-result');
   }
 
   closeDetails() {

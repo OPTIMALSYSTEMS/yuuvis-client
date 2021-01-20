@@ -1,0 +1,36 @@
+<div class="table-body">
+  <div class="object-form-table">
+    <div class="label">
+      <span></span>
+      <ng-container>
+        <yuv-icon class="stf" [icon]="'sizeToFit'" [title]="'yuv.framework.form.table.options.btn.fit' | translate" (click)="sizeToFit()"></yuv-icon>
+        <yuv-icon
+          class="stf"
+          *ngIf="overlayGridOptions.rowData.length"
+          [icon]="'contentDownload'"
+          [title]="'yuv.framework.form.table.options.btn.csv' | translate"
+          (click)="exportCSV()"
+        ></yuv-icon>
+        <yuv-icon
+          class="stf"
+          *ngIf="!params.element.readonly"
+          [icon]="'addCircle'"
+          [title]="'yuv.framework.form.table.options.btn.add' | translate"
+          (click)="onAddRowButtonClicked.emit()"
+        ></yuv-icon>
+      </ng-container>
+    </div>
+    <div class="grid-body">
+      <ag-grid-angular
+        #agGrid2
+        *ngIf="overlayGridOptions"
+        class="ag-theme-balham"
+        [modules]="modules"
+        [gridOptions]="overlayGridOptions"
+        (cellClicked)="onCellClicked.emit($event)"
+        (mousedown)="onMouseDown.emit($event)"
+      >
+      </ag-grid-angular>
+    </div>
+  </div>
+</div>

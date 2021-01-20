@@ -65,6 +65,7 @@ const searchComponents = [
   ],
   providers: [QuickSearchService],
   declarations: [...searchComponents],
-  exports: [...searchComponents]
+  exports: [...searchComponents],
+  entryComponents: [...searchComponents]
 })
 export class YuvSearchModule {}

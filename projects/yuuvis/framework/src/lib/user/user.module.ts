@@ -7,6 +7,7 @@ import { UserAvatarComponent } from './user-avatar/user-avatar.component';
  */
 @NgModule({
   declarations: [UserAvatarComponent],
+  entryComponents: [UserAvatarComponent],
   imports: [CommonModule],
   exports: [UserAvatarComponent]
 })

@@ -1,6 +1,16 @@
 <div class="fe-wrapper" yuvFocusWithin>
   <div class="tag" *ngIf="tag" title="{{tag.title}}">{{tag.label}}</div>
   <label class="form-input__label" #label (click)="toggle()">{{_label}}</label>
+  <div class="triggers">
+    <ng-container *ngFor="let action of hiddenPlugins | async">
+      <yuv-plugin-trigger [action]="action" [parent]="this"></yuv-plugin-trigger>
+    </ng-container>
+  </div>
+  <div class="triggers visible">
+    <ng-container *ngFor="let action of visiblePlugins | async">
+      <yuv-plugin-trigger [action]="action" [parent]="this"></yuv-plugin-trigger>
+    </ng-container>
+  </div>
   <div class="control">
     <ng-content *ngIf="!toggled; else tplnull"></ng-content>
 

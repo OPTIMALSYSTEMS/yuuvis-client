@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { AppCacheService, BackendService, ConfigService, SystemService, TranslateService, UserConfigService, UserService, YuvUser } from '@yuuvis/core';
-import { IconRegistryService, LayoutService, LayoutSettings, NotificationService } from '@yuuvis/framework';
+import { IconRegistryService, LayoutService, LayoutSettings, NotificationService, PluginsService } from '@yuuvis/framework';
 import { forkJoin, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { shield } from '../../../assets/default/svg/svg';
@@ -34,6 +34,12 @@ export class SettingsComponent implements OnInit {
     return this.userService.hasSystemRole;
   }
 
+  private reload = () => window.confirm('Application requires reload!') && window.location.reload();
+
+  get disabledPlugins() {
+    return this.pluginsService.customPlugins?.disabled;
+  }
+
   constructor(
     private translate: TranslateService,
     private router: Router,
@@ -46,7 +52,8 @@ export class SettingsComponent implements OnInit {
     private userService: UserService,
     private backend: BackendService,
     private iconRegistry: IconRegistryService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private pluginsService: PluginsService
   ) {
     this.iconRegistry.registerIcons([shield]);
     this.clientLocales = config.getClientLocales();
@@ -88,8 +95,20 @@ export class SettingsComponent implements OnInit {
     this.router.navigate(['config/filter-config'], global && { queryParams: { global } });
   }
 
+  importPluginConfig(e: any, global = false) {
+    this.userConfig.importMainConfig(e, global ? PluginsService.GLOBAL_PLUGIN_CONFIG : PluginsService.LOCAL_PLUGIN_CONFIG).subscribe(() => this.reload());
+  }
+
+  exportPluginConfig() {
+    this.userConfig.exportMainConfig('my_plugins.json', PluginsService.LOCAL_PLUGIN_CONFIG);
+  }
+
+  exportDefaultPluginConfig() {
+    this.userConfig.exportMainConfig('default_plugins.json', PluginsService.GLOBAL_PLUGIN_CONFIG);
+  }
+
   importMainConfig(e: any) {
-    this.userConfig.importMainConfig(e).subscribe(() => window.confirm('Application requires reload!') && window.location.reload());
+    this.userConfig.importMainConfig(e).subscribe(() => this.reload());
   }
 
   exportMainConfig() {
@@ -101,7 +120,7 @@ export class SettingsComponent implements OnInit {
   }
 
   importLanguage(e: any, iso) {
-    this.userConfig.importLanguage(e, iso).subscribe(() => window.confirm('Application requires reload!') && window.location.reload());
+    this.userConfig.importLanguage(e, iso).subscribe(() => this.reload());
   }
 
   exportLanguage(iso) {
@@ -110,6 +129,10 @@ export class SettingsComponent implements OnInit {
 
   exportDefaultLanguage(iso) {
     this.backend.download(`assets/default/i18n/${iso}.json`, `${iso}.json`);
+  }
+
+  disablePlugins(disabled = true) {
+    this.pluginsService.disableCustomPlugins(disabled).subscribe(() => this.reload());
   }
 
   clearCache() {

@@ -71,6 +71,7 @@ function createDiff() {
 function saveDiff(diff) {
   fs.ensureFileSync(argv.o);
   fs.writeJson(argv.o, diff, {spaces: 2});
+  fs.writeJson(argv.o.split('diff_')[0] + 'diff_latest.json', diff, {spaces: 2});
 }
 
 function getTimestamp() {

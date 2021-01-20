@@ -1,0 +1,76 @@
+yuv-row-edit {
+  background-color: var(--color-white);
+  //   @include flex-col();
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+
+  .row-edit {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+
+    .edit-header {
+      display: flex;
+      justify-content: space-between;
+      background-color: white;
+
+      .new-indicator {
+        margin: 8px 16px 0 16px;
+        color: var(--text-color-caption);
+        font-size: var(--font-title);
+        width: fit-content;
+      }
+
+      .cancel-icon {
+        margin: 8px 8px 0 8px;
+        color: var(--text-color-caption);
+        transition: all 200ms ease-in-out;
+
+        &:hover {
+          cursor: pointer;
+          background: rgba(0, 0, 0, 0.1);
+        }
+      }
+    }
+
+    .form {
+      height: 100%;
+      overflow: auto;
+      background-color: white;
+    }
+
+    .actions {
+      //   @include flex-row(0);
+      display: flex;
+      flex: 1;
+      flex-direction: row;
+      min-height: 0;
+      min-width: 0;
+      justify-content: flex-end;
+      padding-right: var(--app-pane-padding);
+      min-height: 5em;
+      align-items: center;
+      border-top: 1px solid var(--item-focus-border-color);
+      background-color: white;
+
+      button {
+        height: 3em;
+        margin: 0 calc(var(--app-pane-padding) / 8);
+        padding: 0 calc(var(--app-pane-padding) / 2);
+      }
+
+      yuv-checkbox {
+        margin: 0 calc(var(--app-pane-padding) / 2);
+      }
+
+      .add-label {
+        font-size: var(--font-body);
+        color: var(--text-color-caption);
+        margin-right: var(--app-pane-padding);
+      }
+    }
+  }
+}

@@ -1,3 +1,4 @@
+import { AgGridModule } from '@ag-grid-community/angular';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -10,10 +11,13 @@ import { YuvGroupedSelectModule } from '../grouped-select/grouped-select.module'
 import { YuvPipesModule } from '../pipes/pipes.module';
 import { YuvFormModule } from './../form/form.module';
 import { CombinedObjectFormComponent } from './combined-object-form/combined-object-form.component';
+import { FormElementTableComponent } from './form-element-table/form-element-table.component';
+import { RowEditComponent } from './form-element-table/row-edit/row-edit.component';
 import { ObjectFormEditComponent } from './object-form-edit/object-form-edit.component';
 import { ObjectFormElementComponent } from './object-form-element/object-form-element.component';
 import { ObjectFormGroupComponent } from './object-form-group/object-form-group.component';
 import { ObjectFormComponent } from './object-form/object-form.component';
+import { ExpandedTableComponent } from './form-element-table/expanded-table/expanded-table.component';
 
 /**
  * Module provides components for creating for a dms object.
@@ -21,7 +25,16 @@ import { ObjectFormComponent } from './object-form/object-form.component';
  */
 
 @NgModule({
-  declarations: [ObjectFormComponent, ObjectFormElementComponent, ObjectFormGroupComponent, ObjectFormEditComponent, CombinedObjectFormComponent],
+  declarations: [
+    ObjectFormComponent,
+    ObjectFormElementComponent,
+    ObjectFormGroupComponent,
+    ObjectFormEditComponent,
+    CombinedObjectFormComponent,
+    FormElementTableComponent,
+    RowEditComponent,
+    ExpandedTableComponent
+  ],
   imports: [
     CommonModule,
     YuvCommonModule,
@@ -32,8 +45,10 @@ import { ObjectFormComponent } from './object-form/object-form.component';
     TranslateModule,
     YuvComponentsModule,
     YuvDirectivesModule,
-    YuvGroupedSelectModule
+    YuvGroupedSelectModule,
+    AgGridModule
   ],
-  exports: [ObjectFormComponent, ObjectFormEditComponent, ObjectFormElementComponent, CombinedObjectFormComponent]
+  exports: [ObjectFormComponent, ObjectFormEditComponent, ObjectFormElementComponent, CombinedObjectFormComponent],
+  entryComponents: [ObjectFormComponent, ObjectFormEditComponent, ObjectFormElementComponent, CombinedObjectFormComponent]
 })
 export class YuvObjectFormModule {}

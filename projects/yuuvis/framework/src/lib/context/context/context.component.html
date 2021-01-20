@@ -52,7 +52,7 @@
     <!-- <ng-container  *ngIf="(plugins | async) as resolvedPlugins"> -->
       <p-tabPanel *ngFor="let config of resolvedPlugins" [id]="config.id" [header]="(config.label) | translate" [headerStyleClass]="config.id">
         <ng-template pTemplate="content">
-          <yuv-plugin [config]="config"></yuv-plugin>
+          <yuv-plugin [config]="config" [parent]="this"></yuv-plugin>
         </ng-template>
       </p-tabPanel>
     <!-- </ng-container> -->

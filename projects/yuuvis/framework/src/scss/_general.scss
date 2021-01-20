@@ -82,6 +82,12 @@ body {
       cursor: pointer;
     }
   }
+  &.close {
+    padding: 0;
+    &:hover {
+      background: var(--item-focus-background-color);
+    }
+  }
 }
 
 .icon {
