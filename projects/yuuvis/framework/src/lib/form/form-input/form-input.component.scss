@@ -28,6 +28,9 @@
       flex: 1 1 auto;
       padding: 0 calc(var(--app-pane-padding) / 4);
       order: 1;
+      // that's the size of buttons inside the controls (like datepicker)
+      // not setting min-height would result in form elements not lining up
+      min-height: 20px; // (16px icon height + 2*2px padding)
 
       > span {
         display: inline-block;

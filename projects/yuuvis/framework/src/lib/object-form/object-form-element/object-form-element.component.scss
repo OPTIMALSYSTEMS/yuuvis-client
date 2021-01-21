@@ -12,7 +12,7 @@
   box-sizing: border-box;
 
   .form-field {
-    margin: calc(var(--app-pane-padding) / 4) calc(var(--app-pane-padding) / 2);
+    padding: calc(var(--app-pane-padding) / 4) calc(var(--app-pane-padding) / 2);
 
     .description {
       border: 0;
