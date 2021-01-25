@@ -97,7 +97,6 @@
 	"yuv.framework.form.datepicker.select": "Select",
 	"yuv.framework.form.form-input.null": "No value",
 	"yuv.framework.form.organization.classify.icon.title": "Organization object",
-	"yuv.framework.form.organization.noaccess": "Deleted or access denied",
 	"yuv.framework.form.reference.classify.icon.title": "Object reference",
 	"yuv.framework.form.reference.noaccess": "Deleted or access denied",
 	"yuv.framework.grid.single-cell-renderer.undefined.title": "Incomplete object",
