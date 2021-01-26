@@ -102,7 +102,7 @@ export class GridService {
    * @param columnConfig Column configuration entry
    * @param field Object type field matching the column config entry
    */
-  private getColumnDefinition(field: ObjectTypeField, columnConfigColumn?: ColumnConfigColumn): ColDef {
+  getColumnDefinition(field: ObjectTypeField, columnConfigColumn?: ColumnConfigColumn): ColDef {
     const colDef: ColDef = {
       colId: field?.id, // grid needs unique ID
       field: field?.id,
@@ -175,10 +175,12 @@ export class GridService {
    * @returns enriched column definition object
    */
   private addColDefAttrsByType(colDef: ColDef, field: ObjectTypeField) {
-    colDef.cellClass = `col-${field?.propertyType}`;
-    colDef.headerClass = `col-header-${field?.propertyType}`;
-
-    const internalType = this.system.getInternalFormElementType(field as any, 'propertyType');
+    const typeProperty = field['propertyType'] ? 'propertyType' : 'type';
+    if (field) {
+      colDef.cellClass = `col-${field[typeProperty]}`;
+      colDef.headerClass = `col-header-${field[typeProperty]}`;
+    }
+    const internalType = this.system.getInternalFormElementType(field as any, typeProperty);
 
     switch (internalType) {
       case InternalFieldType.STRING_REFERENCE: {
@@ -210,7 +212,6 @@ export class GridService {
         break;
       }
       case 'string': {
-        colDef.cellRenderer = (params) => Utils.escapeHtml(params.value);
         if (field.cardinality === 'multi') {
           colDef.cellRenderer = this.customContext(CellRenderer.multiSelectCellRenderer);
         }
@@ -218,6 +219,13 @@ export class GridService {
         if (Array.isArray(field?.classifications)) {
           colDef.cellRenderer = this.fieldClassification(field?.classifications);
         }
+        if (!colDef.cellRenderer) {
+          colDef.cellRenderer = (params) => Utils.escapeHtml(params.value);
+        }
+        break;
+      }
+      case 'string:catalog': {
+        colDef.cellRenderer = (params) => Utils.escapeHtml(params.value);
         break;
       }
       case 'datetime': {
@@ -232,7 +240,9 @@ export class GridService {
           pattern: undefined
         };
         colDef.width = 150;
-        colDef.cellRenderer = this.fieldClassification(field?.classifications, params);
+        colDef.cellRenderer = field?.classifications
+          ? this.fieldClassification(field?.classifications, params)
+          : this.customContext(CellRenderer.numberCellRenderer, params);
         break;
       }
       case 'decimal': {
@@ -243,7 +253,9 @@ export class GridService {
           cips: true
         };
         colDef.width = 150;
-        colDef.cellRenderer = this.fieldClassification(field?.classifications, params);
+        colDef.cellRenderer = field?.classifications
+          ? this.fieldClassification(field?.classifications, params)
+          : this.customContext(CellRenderer.numberCellRenderer, params);
         break;
       }
       case 'boolean': {

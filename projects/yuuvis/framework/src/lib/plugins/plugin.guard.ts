@@ -20,7 +20,7 @@ export class PluginGuard implements CanDeactivate<PluginComponent>, CanActivate 
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
     return this.pluginsService
-      .getViewerPlugins('states', '', state.url.replace('/', ''))
+      .getCustomPlugins('states', '', state.url.replace('/', ''))
       .pipe(map(([config]) => (config?.canActivate ? this.pluginsService.applyFunction(config?.canActivate, 'route, state', arguments) : true)));
   }
 

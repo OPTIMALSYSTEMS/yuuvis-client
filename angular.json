@@ -269,18 +269,6 @@
                 {
                   "replace": "src-component-tests/environments/environment.ts",
                   "with": "src-component-tests/environments/environment.prod.ts"
-                },
-                {
-                  "replace": "src-component-tests/assets/default/i18n/en.json",
-                  "with": "src/assets/default/i18n/en.json"
-                },
-                {
-                  "replace": "src-component-tests/assets/default/i18n/de.json",
-                  "with": "src/assets/default/i18n/de.json"
-                },
-                {
-                  "replace": "src-component-tests/assets/default/config/main.json",
-                  "with": "src/assets/default/config/main.json"
                 }
               ]
             }

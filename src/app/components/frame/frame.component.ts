@@ -113,9 +113,9 @@ export class FrameComponent implements OnInit, OnDestroy {
     private iconRegistry: IconRegistryService,
     private pluginsService: PluginsService
   ) {
-    this.pluginsService.getViewerPlugins('states').subscribe((states) => PluginGuard.updateRouter(router, states));
-    this.navigationPlugins = this.pluginsService.getViewerPlugins('links', 'yuv-sidebar-navigation');
-    this.settingsPlugins = this.pluginsService.getViewerPlugins('links', 'yuv-sidebar-settings');
+    this.pluginsService.getCustomPlugins('states').subscribe((states) => PluginGuard.updateRouter(router, states));
+    this.navigationPlugins = this.pluginsService.getCustomPlugins('links', 'yuv-sidebar-navigation');
+    this.settingsPlugins = this.pluginsService.getCustomPlugins('links', 'yuv-sidebar-settings');
 
     this.iconRegistry.registerIcons([search, drawer, refresh, add, userDisabled, offline, close, openContext]);
     this.userService.user$.subscribe((user: YuvUser) => {

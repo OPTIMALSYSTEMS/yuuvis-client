@@ -18,9 +18,10 @@ import {
   YuvEventType,
   YuvUser
 } from '@yuuvis/core';
-import { of } from 'rxjs';
-import { catchError, map, tap } from 'rxjs/operators';
+import { forkJoin, of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 import { NotificationService } from '../services/notification/notification.service';
+import { ContentPreviewService } from './../object-details/content-preview/service/content-preview.service';
 import { PluginAPI } from './plugins.interface';
 
 /**
@@ -34,9 +35,15 @@ import { PluginAPI } from './plugins.interface';
   providedIn: 'root'
 })
 export class PluginsService {
+  static LOCAL_PLUGIN_CONFIG = '/user/settings/plugin-config';
+  static GLOBAL_PLUGIN_CONFIG = '/user/globalsettings/plugin-config';
+  static VIEWER_PLUGIN_CONFIG = '/viewer/plugins';
+
   static EVENT_MODEL_CHANGED = 'yuv.event.object-form.model.changed';
+
   private user: YuvUser;
-  private viewerPlugins: any;
+  private pluginConfigs: any;
+  public customPlugins: any;
   private componentRegister = new Map<string, any>();
 
   public get currentUrl() {
@@ -49,7 +56,7 @@ export class PluginsService {
 
   public applyFunction(fnc: string, params?: string, args?: any) {
     if (!fnc || !fnc.trim()) return;
-    const f = fnc.trim().startsWith('function') ? `return (${fnc}).apply(this,arguments)` : !fnc.trim().startsWith('return') ? `return ${fnc}` : fnc;
+    const f = fnc.trim().match(/^function|^\(.*\)\s*=>/) ? `return (${fnc}).apply(this,arguments)` : !fnc.trim().startsWith('return') ? `return ${fnc}` : fnc;
     return new Function(...(params || 'api').split(',').map((a) => a.trim()), f).apply(this.api, args || [this.api]);
   }
 
@@ -74,33 +81,58 @@ export class PluginsService {
   }
 
   private extendTranslations(lang: string) {
-    const translations = (this.viewerPlugins?.translations || {})[lang];
+    const translations = (this.customPlugins?.translations || {})[lang];
     const allKeys = translations && Object.keys(this.translate.store?.translations[lang] || {});
     if (translations && !Object.keys(translations).every((k) => allKeys.includes(k))) {
       this.translate.setTranslation(lang, translations, true);
     }
   }
 
-  public getViewerPlugins(type: 'links' | 'states' | 'actions' | 'extensions', hook?: string, matchPath?: string | RegExp) {
-    return (!this.viewerPlugins ? this.backend.getViaTempCache('viewer/plugins', () => this.backend.get('viewer/plugins', '')) : of(this.viewerPlugins)).pipe(
-      catchError(() => {
-        console.warn('Missing plugin service!');
-        return of({});
-      }),
-      tap((res) => {
-        if (!this.viewerPlugins) {
-          this.viewerPlugins = res || {};
+  private loadCustomPlugins(force = false) {
+    return forkJoin([
+      this.backend.get(PluginsService.VIEWER_PLUGIN_CONFIG, '').pipe(catchError(() => of({}))),
+      this.backend.get(PluginsService.GLOBAL_PLUGIN_CONFIG).pipe(catchError(() => of({}))),
+      this.backend.get(PluginsService.LOCAL_PLUGIN_CONFIG).pipe(catchError(() => of({})))
+    ]).pipe(
+      map(([viewer, global, local]) => {
+        this.pluginConfigs = { viewer, global, local };
+        if (!this.customPlugins || force) {
+          this.customPlugins = [viewer, global, local].reduce((prev, cur) => {
+            Object.keys(cur || {}).forEach((k) => {
+              if (Array.isArray(cur[k])) {
+                prev[k] = (prev[k] || []).filter((p) => !cur[k].find((c) => c.id === p.id)).concat(cur[k]);
+              } else if (k === 'translations' && prev[k]) {
+                Object.keys(cur[k]).forEach((t) => (prev[k][t] = { ...(prev[k][t] || {}), ...cur[k][t] }));
+              } else {
+                prev[k] = cur[k];
+              }
+            });
+            return prev;
+          }, {});
           this.extendTranslations(this.translate.currentLang);
         }
-      }),
-      map((res) => {
-        const viewerPlugins = type === 'links' ? [...(this.viewerPlugins.links || []), ...(this.viewerPlugins.states || [])] : this.viewerPlugins[type] || [];
-        return viewerPlugins.filter((p) =>
-          hook ? p.matchHook && hook.match(new RegExp(p.matchHook)) : matchPath ? (p.path || '').match(new RegExp(matchPath)) : true
+        return this.customPlugins;
+      })
+    );
+  }
+
+  public getCustomPlugins(type: 'links' | 'states' | 'actions' | 'extensions' | 'triggers', hook?: string, matchPath?: string | RegExp) {
+    return (!this.customPlugins ? this.backend.getViaTempCache('_plugins', () => this.loadCustomPlugins()) : of(this.customPlugins)).pipe(
+      map((cp) => {
+        if (cp.disabled) return [];
+        const customPlugins = type === 'links' ? [...(cp.links || []), ...(cp.states || [])] : cp[type] || [];
+        return customPlugins.filter(
+          (p) => !p.disabled && (hook ? p.matchHook && hook.match(new RegExp(p.matchHook)) : matchPath ? (p.path || '').match(new RegExp(matchPath)) : true)
         );
       })
     );
   }
+
+  public disableCustomPlugins(disabled = true) {
+    this.customPlugins.disabled = this.pluginConfigs.local.disabled = !!disabled;
+    return this.backend.post(PluginsService.LOCAL_PLUGIN_CONFIG, this.pluginConfigs.local);
+  }
+
   public register(component: any) {
     return component?.id && this.componentRegister.set(component?.id, component);
   }
@@ -146,7 +178,21 @@ export class PluginsService {
             })
           )
       },
+      content: {
+        viewer: () => ContentPreviewService.getUndockWin() || (window.document.querySelector('yuv-content-preview iframe') || {})['contentWindow']
+      },
       util: {
+        $: (selectors, element) => (element || window.document).querySelector(selectors),
+        $$: (selectors, element) => (element || window.document).querySelectorAll(selectors),
+        styles: (styles, id = '__styles', win: any = window) => {
+          let s = win.document.head.querySelector('#' + id);
+          if (!s) {
+            s = win.document.createElement('style');
+            s.setAttribute('id', id);
+            win.document.head.appendChild(s);
+          }
+          s.innerHTML = styles;
+        },
         encodeFileName: (filename) => this.encodeFileName(filename),
         notifier: {
           success: (text, title) => this.notifications.success(title, text),

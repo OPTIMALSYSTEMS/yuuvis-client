@@ -4,6 +4,13 @@
   width: 100%;
 
   ::ng-deep {
+    yuv-panel .header {
+      .header_title,
+      .header_description {
+        user-select: text;
+      }
+    }
+
     .p-tabview .p-tabview-panels {
       background-color: var(--panel-background-grey);
 
