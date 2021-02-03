@@ -275,11 +275,7 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
     const pickerData: QuickSearchPickerData = {
       type: 'filter',
       items: [
-        {
-          id: 'new',
-          label: this.translate.instant('yuv.framework.search.filter.available.fields'),
-          items: this.customFilters
-        },
+        ...this.quickSearchService.groupFilters(this.customFilters),
         {
           id: 'stored',
           label: this.translate.instant('yuv.framework.search.filter.stored.filters'),

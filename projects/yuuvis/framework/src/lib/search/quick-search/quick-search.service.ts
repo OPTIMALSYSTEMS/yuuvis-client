@@ -132,11 +132,12 @@ export class QuickSearchService {
   getActiveTypes(query: SearchQuery, aggregations = [BaseObjectTypeField.LEADING_OBJECT_TYPE_ID]) {
     return this.searchService.aggregate(query, aggregations).pipe(
       map((res: AggregateResult) => {
-        return res.aggregations && res.aggregations.length
-          ? res.aggregations[0].entries
-              .map((r) => ({ id: r.key, label: this.systemService.getLocalizedResource(`${r.key}_label`) || r.key, count: r.count }))
-              .sort(Utils.sortValues('label'))
-          : [];
+        return (
+          (res.aggregations?.length && res.aggregations[0].entries.length && res.aggregations[0].entries) ||
+          query.allTypes.map((key) => ({ key, count: 0 }))
+        )
+          .map((r) => ({ id: r.key, label: this.systemService.getLocalizedResource(`${r.key}_label`) || r.key, count: r.count }))
+          .sort(Utils.sortValues('label'));
       })
     );
   }
@@ -161,7 +162,7 @@ export class QuickSearchService {
     ).map((id) => this.systemService.getResolvedType(id));
 
     return shared
-      ? selectedObjectTypes.reduce((prev, cur) => cur.fields.filter((f) => prev.find((p) => p.id === f.id)), selectedObjectTypes[0].fields)
+      ? selectedObjectTypes.reduce((prev, cur) => cur.fields.filter((f) => prev.find((p) => p.id === f.id)), [...selectedObjectTypes[0].fields])
       : selectedObjectTypes.reduce((prev, cur) => [...prev, ...cur.fields.filter((f) => !prev.find((p) => p.id === f.id))], []);
   }
 
@@ -171,21 +172,39 @@ export class QuickSearchService {
 
     const sharedFields = q.allTypes.length
       ? [
-          ...[...this.getSharedFields(q.types, shared), ...this.getSharedFields(q.lots, shared)]
+          ...this.getSharedFields(q.allTypes, shared)
             .reduce((m, item) => (m.has(item.id) || m.set(item.id, item)) && m, new Map())
             .values()
         ]
       : this.getSharedFields([], shared);
 
+    const toSelectable = (f: ObjectTypeField) => ({
+      id: f.id,
+      label: this.systemService.getLocalizedResource(`${f.id}_label`) || f.id,
+      value: f,
+      highlight: this.systemService.isSystemProperty(f)
+    });
+
+    const fields = [...sharedFields.filter((f) => !ColumnConfigSkipFields.includes(f.id)).map((f) => toSelectable(f))].sort(Utils.sortValues('label'));
+
     return [
-      ...sharedFields
-        .filter((f) => !ColumnConfigSkipFields.includes(f.id))
-        .map((f: ObjectTypeField) => ({
-          id: f.id,
-          label: this.systemService.getLocalizedResource(`${f.id}_label`) || f.id,
-          value: f,
-          highlight: this.systemService.isSystemProperty(f)
-        }))
+      ...fields.filter((f) => f.value.propertyType !== 'table'),
+      ...fields
+        .filter((f) => f.value.propertyType === 'table')
+        .reduce(
+          (p, c: any) => [
+            ...p,
+            ...c.value.columnDefinitions
+              .map((f) => toSelectable(f))
+              .map((f) => {
+                // TODO : should we remove namespace from column ID???
+                const id = c.id + '[*].' + f.id.replace(/.*:/, '');
+                const label = c.label + ' - ' + f.label;
+                return { ...f, id, label, value: { ...f.value, id } };
+              })
+          ],
+          []
+        )
     ].sort(Utils.sortValues('label'));
   }
 
@@ -324,6 +343,28 @@ export class QuickSearchService {
   removeFilter(item: Selectable, global = false) {
     delete this._filters(global)[item.id];
     return this.saveFilters(global);
+  }
+
+  groupFilters(filters: Selectable[]): SelectableGroup[] {
+    const table = /[*].*/;
+    const tableID = (id) => id.replace(table, '');
+    return [
+      {
+        id: 'available',
+        label: this.translate.instant('yuv.framework.search.filter.available.fields'),
+        items: filters.filter((f) => !f.id.match(table))
+      },
+      ...[
+        ...filters
+          .filter((f) => f.id.match(table))
+          .reduce((p, c) => p.set(tableID(c.id), [...(p.get(tableID(c.id)) || []), c]) && p, new Map())
+          .values()
+      ].map((items) => ({
+        id: tableID(items[0].id),
+        label: items[0].label.replace(/\s-.*/, ''),
+        items
+      }))
+    ];
   }
 
   getDefaultFiltersList(availableObjectTypeFields: Selectable[]) {
