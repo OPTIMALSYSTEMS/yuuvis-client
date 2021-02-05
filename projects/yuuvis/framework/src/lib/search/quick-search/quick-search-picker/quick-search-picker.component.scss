@@ -30,6 +30,7 @@
     padding: var(--app-pane-padding);
     > div {
       flex: 1;
+      display: flex;
     }
     .cancel {
       .screen-s.screen-portrait & {
