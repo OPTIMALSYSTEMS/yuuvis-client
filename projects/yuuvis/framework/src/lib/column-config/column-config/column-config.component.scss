@@ -156,6 +156,11 @@
         display: flex;
         justify-content: flex-end;
       }
+      > .left {
+        display: flex;
+        flex: 1;
+        justify-content: space-between;
+      }
     }
 
     .error {
