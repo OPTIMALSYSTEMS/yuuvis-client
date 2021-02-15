@@ -198,8 +198,8 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
 
   autocomplete(event: any) {
     const q = (this.lastAutoQuery = this.parseQuery(event.query));
-    // TODO : add active filter suggestions
-    const suggestions: any[] = (q.isTypes ? this.availableObjectTypeGroupsList : [...this.customFilters, ...this.enabledFilters]) || [];
+    const allFilters = this.quickSearchService.groupFilters(this.customFilters).reduce((prev, cur) => [...prev, ...cur.items], []);
+    const suggestions: any[] = (q.isTypes ? this.availableObjectTypeGroupsList : [...allFilters, ...this.enabledFilters]) || [];
     this.autoSuggestions =
       !q.isTypes && !q.isTypeFields
         ? []

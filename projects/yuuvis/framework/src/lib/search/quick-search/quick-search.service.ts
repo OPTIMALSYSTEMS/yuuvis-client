@@ -386,7 +386,7 @@ export class QuickSearchService {
           .reduce((p, c) => p.set(tableID(c.id), [...(p.get(tableID(c.id)) || []), c]) && p, new Map())
           .values()
       ].map((items) => ({
-        id: tableID(items[0].id),
+        id: items[0].id.replace(/\].*/, ''),
         label: items[0].label.replace(/\s-.*/, ''),
         collapsed: true,
         items: !items[0].id.startsWith(BaseObjectTypeField.TAGS)
