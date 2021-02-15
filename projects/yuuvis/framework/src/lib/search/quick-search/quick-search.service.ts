@@ -241,8 +241,13 @@ export class QuickSearchService {
     return (query.filterGroup.operator === SearchFilterGroup.OPERATOR.AND ? query.filterGroup.group : [query.filterGroup])
       .reduce((prev, cur) => {
         const g = SearchFilterGroup.fromArray([cur]);
-        // spread groups that have filters with same property
-        return [...prev, ...(g.group.every((f) => f.property === g.filters[0].property) ? g.group.map((f) => SearchFilterGroup.fromArray([f])) : [g])];
+        // spread groups (only AND) that have filters with same property
+        return [
+          ...prev,
+          ...(g.operator === SearchFilterGroup.OPERATOR.AND && g.group.every((f) => f.property === g.filters[0].property)
+            ? g.group.map((f) => SearchFilterGroup.fromArray([f]))
+            : [g])
+        ];
       }, [])
       .filter((g) => !g.filters.find((f) => ColumnConfigSkipFields.includes(f.property)))
       .map((g) => {
