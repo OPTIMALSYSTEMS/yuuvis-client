@@ -1,9 +1,9 @@
 <div class="yuv-datepicker">
-  <p-inputMask [mask]="maskPattern" [(ngModel)]="innerValue" (ngModelChange)="onMaskValueChange($event)"
+  <p-inputMask [mask]="maskPattern" [(ngModel)]="innerValue" (ngModelChange)="onMaskValueChange($event)" (keyup.arrowDown)="openPicker()"
     (onComplete)="setValueFromMask()" [readonly]="readonly" [slotChar]="_datePattern" characterPattern="[PAMpam]">
   </p-inputMask>
 
-  <button class="p-button" data-datepicker="icon" (click)="openPicker()" (keyup.arrowDown)="openPicker()"
+  <button class="p-button" data-datepicker="icon" (click)="openPicker()"
     *ngIf="!readonly">
     <yuv-icon [icon]="'datepicker'"></yuv-icon>
   </button>
