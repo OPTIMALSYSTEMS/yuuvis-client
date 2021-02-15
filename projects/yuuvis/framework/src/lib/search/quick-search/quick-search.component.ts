@@ -122,7 +122,7 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
   }
 
   private get customFilters(): Selectable[] {
-    return this.availableObjectTypeFields.map((o) => ({ ...o, value: [new SearchFilter(o.id, undefined, undefined)] }));
+    return this.availableObjectTypeFields.map((o) => ({ ...o, value: [new SearchFilter(o.id, o.defaultOperator, o.defaultValue)] }));
   }
 
   private enabledFilters: Selectable[] = [];

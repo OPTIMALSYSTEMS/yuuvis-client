@@ -48,7 +48,9 @@ export class SearchFilterConfigComponent implements OnInit {
     this.availableObjectTypeFields = this.quickSearchService.getAvailableObjectTypesFields(data.typeSelection, data.sharedFields);
 
     this.availableFiltersGroups = [
-      ...this.quickSearchService.groupFilters(this.availableObjectTypeFields.map((o) => ({ ...o, value: [new SearchFilter(o.id, undefined, undefined)] })))
+      ...this.quickSearchService.groupFilters(
+        this.availableObjectTypeFields.map((o) => ({ ...o, value: [new SearchFilter(o.id, o.defaultOperator, o.defaultValue)] }))
+      )
     ];
 
     this.quickSearchService.loadFilterSettings(this.global).subscribe(([storedFilters, hiddenFilters]) => {
@@ -133,7 +135,7 @@ export class SearchFilterConfigComponent implements OnInit {
         id: this.CREATE_NEW_ID + '#active',
         svg: addCircle.data,
         label: `${this.translate.instant('yuv.framework.search.filter.create.new')} (${this.translate.instant('yuv.framework.search.filter.from.active')})`,
-        value: [this.query.filterGroup]
+        value: this.query.filterGroup.clone().group
       },
       ...this.storedFilters.filter((f) => this.isVisible(f) && f.highlight)
     ].filter((f) => f);

@@ -187,20 +187,35 @@ export class QuickSearchService {
 
     const fields = [...sharedFields.filter((f) => !ColumnConfigSkipFields.includes(f.id)).map((f) => toSelectable(f))].sort(Utils.sortValues('label'));
 
+    const tags = q.allTypes.reduce(
+      (prev, cur) => this.systemService.getResolvedTags(cur).filter((t) => prev.find((p) => p.tag === t.tag)),
+      this.systemService.getResolvedTags(q.allTypes[0])
+    );
+
+    const tFields = (tags[0]?.fields || []).map((f) => toSelectable(f));
+    const defVals = {
+      [BaseObjectTypeField.TAGS + '[*].name']: tags.map((t) => t.tag.split(',')[0].replace(/.*\[/, '')),
+      [BaseObjectTypeField.TAGS + '[*].state']: 0
+    };
+    const defOps = {
+      [BaseObjectTypeField.TAGS + '[*].name']: SearchFilter.OPERATOR.IN,
+      [BaseObjectTypeField.TAGS + '[*].state']: SearchFilter.OPERATOR.GREATER_OR_EQUAL
+    };
     return [
       ...fields.filter((f) => f.value.propertyType !== 'table'),
-      ...fields
+      ...[...fields, ...tFields]
         .filter((f) => f.value.propertyType === 'table')
         .reduce(
           (p, c: any) => [
             ...p,
             ...c.value.columnDefinitions
+              .filter((f) => (c.id === BaseObjectTypeField.TAGS ? f.id.match(/name|state/) : true))
               .map((f) => toSelectable(f))
               .map((f) => {
                 // TODO : should we remove namespace from column ID???
                 const id = c.id + '[*].' + f.id.replace(/.*:/, '');
                 const label = c.label + ' - ' + f.label;
-                return { ...f, id, label, value: { ...f.value, id } };
+                return { ...f, id, label, class: id, defaultValue: defVals[id], defaultOperator: defOps[id], value: { ...f.value, id } };
               })
           ],
           []
@@ -346,7 +361,7 @@ export class QuickSearchService {
   }
 
   groupFilters(filters: Selectable[]): SelectableGroup[] {
-    const table = /[*].*/;
+    const table = /[.*].*/;
     const tableID = (id) => id.replace(table, '');
     return [
       {
@@ -362,7 +377,22 @@ export class QuickSearchService {
       ].map((items) => ({
         id: tableID(items[0].id),
         label: items[0].label.replace(/\s-.*/, ''),
-        items
+        collapsed: true,
+        items: !items[0].id.startsWith(BaseObjectTypeField.TAGS)
+          ? items
+          : [
+              ...items,
+              ...['All', ...Array(+items[1].value[0].firstValue + 1).keys()].map((v) => ({
+                id: BaseObjectTypeField.TAGS + v,
+                label: `${items[1].label} ( ${v} )`,
+                value: [
+                  new SearchFilterGroup(BaseObjectTypeField.TAGS, SearchFilterGroup.OPERATOR.AND, [
+                    (items[0].value[0] as SearchFilter).clone(),
+                    v === 'All' ? (items[1].value[0] as SearchFilter).clone() : new SearchFilter(items[1].value[0].property, SearchFilter.OPERATOR.EQUAL, v)
+                  ])
+                ]
+              }))
+            ]
       }))
     ];
   }
