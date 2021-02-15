@@ -185,7 +185,8 @@ export class QuickSearchService {
       highlight: this.systemService.isSystemProperty(f)
     });
 
-    const fields = [...sharedFields.filter((f) => !ColumnConfigSkipFields.includes(f.id)).map((f) => toSelectable(f))].sort(Utils.sortValues('label'));
+    const skipFields = [BaseObjectTypeField.TAGS, ...ColumnConfigSkipFields];
+    const fields = [...sharedFields.filter((f) => !skipFields.includes(f.id)).map((f) => toSelectable(f))].sort(Utils.sortValues('label'));
 
     const tags = q.allTypes.reduce(
       (prev, cur) => this.systemService.getResolvedTags(cur).filter((t) => prev.find((p) => p.tag === t.tag)),
@@ -386,7 +387,7 @@ export class QuickSearchService {
           .reduce((p, c) => p.set(tableID(c.id), [...(p.get(tableID(c.id)) || []), c]) && p, new Map())
           .values()
       ].map((items) => ({
-        id: items[0].id.replace(/\].*/, ''),
+        id: items[0].id,
         label: items[0].label.replace(/\s-.*/, ''),
         collapsed: true,
         items: !items[0].id.startsWith(BaseObjectTypeField.TAGS)
@@ -395,9 +396,9 @@ export class QuickSearchService {
               ...items,
               ...[...Array(+items[0].value[0].firstValue + 1).keys()].map((v) => ({
                 id: `${items[0].id}_${v}`,
-                label: `${items[0].label} - ${
-                  this.systemService.getLocalizedResource(`${items[0].id.replace(/.*\[/, '').replace(/\].*/, '')}:${v}_label`) || v
-                }`,
+                label: `${this.systemService.getLocalizedResource(`${items[0].id.replace(/.*\[/, '').replace(/\].*/, '')}:${v}_label`) || v} ( ${
+                  items[0].label
+                } )`,
                 value: [new SearchFilter(items[0].id, SearchFilter.OPERATOR.EQUAL, v)]
               }))
             ]

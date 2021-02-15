@@ -139,7 +139,7 @@ export const ColumnConfigSkipFields = [
   BaseObjectTypeField.PARENT_VERSION_NUMBER,
   BaseObjectTypeField.TENANT,
   BaseObjectTypeField.TRACE_ID,
-  BaseObjectTypeField.TAGS,
+  // BaseObjectTypeField.TAGS,
   BaseObjectTypeField.BASE_TYPE_ID,
   ContentStreamField.ID,
   ContentStreamField.RANGE,
