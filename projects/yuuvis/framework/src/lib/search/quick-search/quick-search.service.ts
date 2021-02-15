@@ -192,34 +192,40 @@ export class QuickSearchService {
       this.systemService.getResolvedTags(q.allTypes[0])
     );
 
-    const tFields = (tags[0]?.fields || []).map((f) => toSelectable(f));
-    const defVals = {
-      [BaseObjectTypeField.TAGS + '[*].name']: tags.map((t) => t.tag.split(',')[0].replace(/.*\[/, '')),
-      [BaseObjectTypeField.TAGS + '[*].state']: 0
-    };
-    const defOps = {
-      [BaseObjectTypeField.TAGS + '[*].name']: SearchFilter.OPERATOR.IN,
-      [BaseObjectTypeField.TAGS + '[*].state']: SearchFilter.OPERATOR.GREATER_OR_EQUAL
-    };
     return [
       ...fields.filter((f) => f.value.propertyType !== 'table'),
-      ...[...fields, ...tFields]
+
+      ...fields
         .filter((f) => f.value.propertyType === 'table')
         .reduce(
           (p, c: any) => [
             ...p,
             ...c.value.columnDefinitions
-              .filter((f) => (c.id === BaseObjectTypeField.TAGS ? f.id.match(/name|state/) : true))
               .map((f) => toSelectable(f))
               .map((f) => {
                 // TODO : should we remove namespace from column ID???
-                const id = c.id + '[*].' + f.id.replace(/.*:/, '');
+                const id = c.id + `[*].` + f.id.replace(/.*:/, '');
                 const label = c.label + ' - ' + f.label;
-                return { ...f, id, label, class: id, defaultValue: defVals[id], defaultOperator: defOps[id], value: { ...f.value, id } };
+                return { ...f, id, label, value: { ...f.value, id } };
               })
           ],
           []
-        )
+        ),
+      ...tags.reduce(
+        (p, c: any) => [
+          ...p,
+          ...c.fields[0].columnDefinitions
+            .filter((f) => f.id.match(/state/))
+            .map((value) => {
+              const name = c.tag.split(',')[0].replace(/.*\[/, '');
+              const val = c.tag.split(',').pop().replace(/\].*/, '');
+              const id = BaseObjectTypeField.TAGS + `[${name}].state`;
+              const label = '#' + (this.systemService.getLocalizedResource(`${name}_label`) || name);
+              return { id, label, class: id, defaultValue: val, defaultOperator: SearchFilter.OPERATOR.LESS_OR_EQUAL, value: { ...value, id } };
+            })
+        ],
+        []
+      )
     ].sort(Utils.sortValues('label'));
   }
 
@@ -382,15 +388,12 @@ export class QuickSearchService {
           ? items
           : [
               ...items,
-              ...['All', ...Array(+items[1].value[0].firstValue + 1).keys()].map((v) => ({
-                id: BaseObjectTypeField.TAGS + v,
-                label: `${items[1].label} ( ${v} )`,
-                value: [
-                  new SearchFilterGroup(BaseObjectTypeField.TAGS, SearchFilterGroup.OPERATOR.AND, [
-                    (items[0].value[0] as SearchFilter).clone(),
-                    v === 'All' ? (items[1].value[0] as SearchFilter).clone() : new SearchFilter(items[1].value[0].property, SearchFilter.OPERATOR.EQUAL, v)
-                  ])
-                ]
+              ...[...Array(+items[0].value[0].firstValue + 1).keys()].map((v) => ({
+                id: `${items[0].id}_${v}`,
+                label: `${items[0].label} - ${
+                  this.systemService.getLocalizedResource(`${items[0].id.replace(/.*\[/, '').replace(/\].*/, '')}:${v}_label`) || v
+                }`,
+                value: [new SearchFilter(items[0].id, SearchFilter.OPERATOR.EQUAL, v)]
               }))
             ]
       }))
