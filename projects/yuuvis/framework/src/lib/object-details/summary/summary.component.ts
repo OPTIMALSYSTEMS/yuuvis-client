@@ -131,10 +131,11 @@ export class SummaryComponent implements OnInit {
       { key: ContentStreamField.MIME_TYPE, order: 9 },
       { key: RetentionField.START_OF_RETENTION, order: 10 },
       { key: RetentionField.EXPIRATION_DATE, order: 11 },
-      { key: RetentionField.DESTRUCTION_DATE, order: 12 }
+      { key: RetentionField.DESTRUCTION_DATE, order: 12 },
+      { key: BaseObjectTypeField.TAGS, order: 13 }
     ];
 
-    const patentFields: string[] = [
+    const parentFields: string[] = [
       ParentField.asvaktenzeichen,
       ParentField.asvaktenzeichentext,
       ParentField.asvsichtrechte,
@@ -160,7 +161,7 @@ export class SummaryComponent implements OnInit {
     ];
     baseFields.map((fields) => extraFields.push(fields));
 
-    return { skipFields, extraFields, patentFields, defaultBaseFields };
+    return { skipFields, extraFields, parentFields, defaultBaseFields };
   }
 
   private generateSummary(dmsObject: DmsObject) {
@@ -171,7 +172,7 @@ export class SummaryComponent implements OnInit {
       parent: []
     };
 
-    const { skipFields, patentFields, extraFields, defaultBaseFields } = this.getSummaryConfiguration(dmsObject);
+    const { skipFields, parentFields, extraFields, defaultBaseFields } = this.getSummaryConfiguration(dmsObject);
     let colDef: ColDef[] = this.gridService.getColumnDefinitions(dmsObject.objectTypeId);
     const fsots = this.systemService.getFloatingSecondaryObjectTypes(dmsObject.objectTypeId);
     fsots.forEach((fsot) => {
@@ -181,7 +182,7 @@ export class SummaryComponent implements OnInit {
     Object.keys({ ...dmsObject.data, ...this.dmsObject2?.data })
       .filter((key) => !key.includes('_title'))
       .forEach((key: string) => {
-        const prepKey = key.startsWith('parent.') ? key.replace('parent.', '') : key; // todo: pls implement general solution
+        const prepKey = key.replace(/^parent./, ''); // todo: pls implement general solution
         const def: ColDef = colDef.find((cd) => cd.field === prepKey);
         const renderer: ICellRendererFunc = def ? (def.cellRenderer as ICellRendererFunc) : null;
         const si: SummaryEntry = {
@@ -209,12 +210,13 @@ export class SummaryComponent implements OnInit {
         }
         if (this.dmsObject2 && (si.value === si.value2 || this.isVersion(key))) {
           // skip equal and irrelevant values
+        } else if (defaultBaseFields.find((field) => field.key.startsWith(prepKey))) {
+          si.order = defaultBaseFields.find((field) => field.key.startsWith(prepKey)).order;
+          summary.base.push(si);
+          if (extraFields.includes(prepKey)) summary.extras.push(si); // TAGS exception
         } else if (extraFields.includes(prepKey)) {
           summary.extras.push(si);
-        } else if (defaultBaseFields.find((field) => field.key.startsWith(prepKey))) {
-          defaultBaseFields.map((field) => (field.key === prepKey ? (si.order = field.order) : null));
-          summary.base.push(si);
-        } else if (patentFields.includes(prepKey)) {
+        } else if (parentFields.includes(prepKey)) {
           summary.parent.push(si);
         } else if (!skipFields.includes(prepKey)) {
           summary.core.push(si);
