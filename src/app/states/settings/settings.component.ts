@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { AppCacheService, BackendService, ConfigService, SystemService, TranslateService, UserConfigService, UserService, YuvUser } from '@yuuvis/core';
-import { IconRegistryService, LayoutService, LayoutSettings, NotificationService, PluginsService } from '@yuuvis/framework';
+import { arrowDown, IconRegistryService, LayoutService, LayoutSettings, NotificationService, PluginsService } from '@yuuvis/framework';
 import { forkJoin, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { shield } from '../../../assets/default/svg/svg';
@@ -18,6 +18,7 @@ export class SettingsComponent implements OnInit {
   accentColor: string;
   customDashboardBackground: boolean;
   clientLocales: any;
+  showPermissions: boolean;
 
   accentColorRGB = ['255, 152, 0', '120, 144, 156', '124, 179, 66', '3,169,244', '126,87,194', '236,64,122'];
   cache = {
@@ -55,7 +56,7 @@ export class SettingsComponent implements OnInit {
     private notificationService: NotificationService,
     private pluginsService: PluginsService
   ) {
-    this.iconRegistry.registerIcons([shield]);
+    this.iconRegistry.registerIcons([shield, arrowDown]);
     this.clientLocales = config.getClientLocales();
   }
 
