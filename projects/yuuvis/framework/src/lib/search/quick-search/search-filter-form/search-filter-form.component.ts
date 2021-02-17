@@ -134,7 +134,7 @@ export class SearchFilterFormComponent implements OnInit, OnDestroy {
     const formPatch = {};
     (filters || []).forEach((filter) => {
       const otf = this.availableObjectTypeFields.find((o) => o.id === filter.property);
-      if (otf) {
+      if (otf?.value) {
         const field = otf.value as ObjectTypeField;
         this.addFieldEntry(field, filter.operator && filter.isEmpty(), filter.id, otf.label);
         if (filter.operator) {

@@ -156,6 +156,8 @@ export class DatetimeComponent implements OnInit, ControlValueAccessor, Validato
   }
 
   openPicker() {
+    if (this.tplDatePicker['_projectedViews']?.length) return; // allows to open only one instance
+
     const popoverConfig: PopoverConfig = {
       disableSmallScreenClose: true,
       data: {
@@ -171,6 +173,7 @@ export class DatetimeComponent implements OnInit, ControlValueAccessor, Validato
   setValueFromPicker(event, popoverRef?: PopoverRef) {
     this.writeValue(event.date);
     this.propagate();
+    this.elemRef.nativeElement.querySelector('input').focus();
     if (popoverRef) {
       popoverRef.close();
     }

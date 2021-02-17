@@ -494,7 +494,7 @@ export class SearchFilter {
   }
 
   isEmpty() {
-    return Utils.isEmpty(this.firstValue) || (this.operator.match(/gt(e)?lt(e)?/) ? Utils.isEmpty(this.secondValue) : false);
+    return Utils.isEmpty(this.firstValue) || (this.operator?.match(/gt(e)?lt(e)?/) ? Utils.isEmpty(this.secondValue) : false);
   }
 
   toQuery() {

@@ -104,7 +104,7 @@
     border-top: 1px solid #c8c8c8;
   }
 
-  .split-tab-view .p-tabview-panel {
+  .split-tab-view p-tabpanel[id] > .p-tabview-panel {
     .p-tabview {
       padding: 0;
       height: 100%;

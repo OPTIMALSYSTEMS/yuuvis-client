@@ -179,7 +179,7 @@ export class ObjectDetailsComponent implements OnDestroy {
   ) {
     this.iconRegistry.registerIcons([refresh, kebap, noFile]);
     this.userIsAdmin = this.userService.hasAdministrationRoles;
-    this.panelOrder = this.config.get('objectDetailsTabs') || this.panelOrder;
+    this.panelOrder = this.config.get('client.objectDetailsTabs') || this.panelOrder;
     this.undockWinActive = ContentPreviewService.undockWinActive();
 
     this.eventService

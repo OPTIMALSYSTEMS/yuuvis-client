@@ -359,6 +359,20 @@ export class SystemService {
   }
 
   /**
+   * Get the resolved object tags
+   */
+  getResolvedTags(objectTypeId?: string): { id: string; tag: string; fields: ObjectTypeField[] }[] {
+    const ot = this.getObjectType(objectTypeId) || this.getSecondaryObjectType(objectTypeId);
+    const tags = ot?.classification?.filter((t) => t.startsWith('tag['));
+
+    return (tags || []).map((tag) => ({
+      id: ot.id,
+      tag,
+      fields: this.getBaseType(true).fields.filter((f) => f.id === BaseObjectTypeField.TAGS)
+    }));
+  }
+
+  /**
    * Get the icon for an object type. This will return an SVG as a string.
    * @param objectTypeId ID of the object type
    * @param fallback ID of a fallback icon that should be used if the given object type has no icon yet

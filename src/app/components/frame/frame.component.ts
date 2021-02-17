@@ -144,6 +144,11 @@ export class FrameComponent implements OnInit, OnDestroy {
       this.reloadComponent = false;
       setTimeout(() => (this.reloadComponent = true), 1);
     });
+
+    // set html lang tag according to the client locale on every language change
+    this.translateService.onLangChange.subscribe((_) => {
+      document.documentElement.setAttribute('lang', this.translateService.currentLang);
+    });
   }
 
   onObjetcsMove(event) {

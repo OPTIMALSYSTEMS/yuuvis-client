@@ -185,10 +185,17 @@ export class QuickSearchService {
       highlight: this.systemService.isSystemProperty(f)
     });
 
-    const fields = [...sharedFields.filter((f) => !ColumnConfigSkipFields.includes(f.id)).map((f) => toSelectable(f))].sort(Utils.sortValues('label'));
+    const skipFields = [BaseObjectTypeField.TAGS, ...ColumnConfigSkipFields];
+    const fields = [...sharedFields.filter((f) => !skipFields.includes(f.id)).map((f) => toSelectable(f))].sort(Utils.sortValues('label'));
+
+    const tags = q.allTypes.reduce(
+      (prev, cur) => this.systemService.getResolvedTags(cur).filter((t) => prev.find((p) => p.tag === t.tag)),
+      this.systemService.getResolvedTags(q.allTypes[0])
+    );
 
     return [
       ...fields.filter((f) => f.value.propertyType !== 'table'),
+
       ...fields
         .filter((f) => f.value.propertyType === 'table')
         .reduce(
@@ -198,13 +205,28 @@ export class QuickSearchService {
               .map((f) => toSelectable(f))
               .map((f) => {
                 // TODO : should we remove namespace from column ID???
-                const id = c.id + '[*].' + f.id.replace(/.*:/, '');
+                const id = c.id + `[*].` + f.id.replace(/.*:/, '');
                 const label = c.label + ' - ' + f.label;
                 return { ...f, id, label, value: { ...f.value, id } };
               })
           ],
           []
-        )
+        ),
+      ...tags.reduce(
+        (p, c: any) => [
+          ...p,
+          ...c.fields[0].columnDefinitions
+            .filter((f) => f.id.match(/state/))
+            .map((value) => {
+              const name = c.tag.split(',')[0].replace(/.*\[/, '');
+              const val = c.tag.split(',').pop().replace(/\].*/, '');
+              const id = BaseObjectTypeField.TAGS + `[${name}].state`;
+              const label = '#' + (this.systemService.getLocalizedResource(`${name}_label`) || name);
+              return { id, label, class: id, defaultValue: val, defaultOperator: SearchFilter.OPERATOR.LESS_OR_EQUAL, value: { ...value, id } };
+            })
+        ],
+        []
+      )
     ].sort(Utils.sortValues('label'));
   }
 
@@ -220,8 +242,13 @@ export class QuickSearchService {
     return (query.filterGroup.operator === SearchFilterGroup.OPERATOR.AND ? query.filterGroup.group : [query.filterGroup])
       .reduce((prev, cur) => {
         const g = SearchFilterGroup.fromArray([cur]);
-        // spread groups that have filters with same property
-        return [...prev, ...(g.group.every((f) => f.property === g.filters[0].property) ? g.group.map((f) => SearchFilterGroup.fromArray([f])) : [g])];
+        // spread groups (only AND) that have filters with same property
+        return [
+          ...prev,
+          ...(g.operator === SearchFilterGroup.OPERATOR.AND && g.group.every((f) => f.property === g.filters[0].property)
+            ? g.group.map((f) => SearchFilterGroup.fromArray([f]))
+            : [g])
+        ];
       }, [])
       .filter((g) => !g.filters.find((f) => ColumnConfigSkipFields.includes(f.property)))
       .map((g) => {
@@ -346,7 +373,7 @@ export class QuickSearchService {
   }
 
   groupFilters(filters: Selectable[]): SelectableGroup[] {
-    const table = /[*].*/;
+    const table = /[.*].*/;
     const tableID = (id) => id.replace(table, '');
     return [
       {
@@ -360,9 +387,21 @@ export class QuickSearchService {
           .reduce((p, c) => p.set(tableID(c.id), [...(p.get(tableID(c.id)) || []), c]) && p, new Map())
           .values()
       ].map((items) => ({
-        id: tableID(items[0].id),
+        id: items[0].id,
         label: items[0].label.replace(/\s-.*/, ''),
-        items
+        collapsed: true,
+        items: !items[0].id.startsWith(BaseObjectTypeField.TAGS)
+          ? items
+          : [
+              ...items,
+              ...[...Array(+items[0].value[0].firstValue + 1).keys()].map((v) => ({
+                id: `${items[0].id}_${v}`,
+                label: `${this.systemService.getLocalizedResource(`${items[0].id.replace(/.*\[/, '').replace(/\].*/, '')}:${v}_label`) || v} ( ${
+                  items[0].label
+                } )`,
+                value: [new SearchFilter(items[0].id, SearchFilter.OPERATOR.EQUAL, v)]
+              }))
+            ]
       }))
     ];
   }

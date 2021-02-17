@@ -121,7 +121,7 @@ export class GroupedSelectComponent implements AfterViewInit, ControlValueAccess
     return this._selectableItemIndex++;
   }
 
-  @HostBinding('class.singleGroup') singleGroup: boolean = false;
+  @HostBinding('class.singleGroup') @Input() singleGroup: boolean = false;
   @Input() autofocus: boolean;
   @Input() enableSelectAll: boolean;
   @Input() toggleable: boolean;
@@ -219,6 +219,8 @@ export class GroupedSelectComponent implements AfterViewInit, ControlValueAccess
         this.selectedItems = sel;
       }
       this.emit(false);
+    } else if (this.toggleable) {
+      group.collapsed = !group.collapsed;
     }
   }
 
@@ -273,14 +275,13 @@ export class GroupedSelectComponent implements AfterViewInit, ControlValueAccess
         })
       )
       .subscribe((v) => {
-        let c = 'oneColumn';
-        if (v.width > 2 * this.columnWidth && v.width < 3 * this.columnWidth) {
-          c = 'twoColumns';
-        }
+        this.columns = 'oneColumn';
+        if (this.singleGroup) return;
         if (v.width > 3 * this.columnWidth) {
-          c = 'threeColumns';
+          this.columns = 'threeColumns';
+        } else if (v.width > 2 * this.columnWidth) {
+          this.columns = 'twoColumns';
         }
-        this.columns = c;
       });
   }
 }
