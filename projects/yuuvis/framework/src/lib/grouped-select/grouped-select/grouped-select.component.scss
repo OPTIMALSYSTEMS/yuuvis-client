@@ -39,10 +39,24 @@
     width: 100%;
 
     p-header.group-label {
+      display: flex;
+      width: 100%;
+      justify-content: space-between;
+      align-items: center;
       vertical-align: middle;
       color: var(--text-color-hint);
       background-color: rgba(0, 0, 0, 0);
-      &.selectable {
+
+      &.toggleable {
+        cursor: pointer;
+      }
+      &:not(.enableSelectAll) {
+        .checkAllBtn {
+          display: none;
+        }
+      }
+
+      .checkAllBtn {
         cursor: pointer;
       }
     }

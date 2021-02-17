@@ -116,6 +116,7 @@
 	"yuv.framework.form.table.options.confirm.delete": "Delete row?",
 	"yuv.framework.form.table.options.indicator.new": "New row",
 	"yuv.framework.grid.single-cell-renderer.undefined.title": "Incomplete object",
+	"yuv.framework.grouped-select.check-all.tooltip": "Select all",
 	"yuv.framework.list.configure.columns": "Configure columns",
 	"yuv.framework.list.refresh": "Refresh",
 	"yuv.framework.object-create.afo.cancel": "File in in-tray",
