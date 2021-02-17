@@ -120,7 +120,7 @@ export const InternalFieldType = {
 };
 
 export enum ObjectTag {
-  AFO = 'appClient:dlm:prepare'
+  AFO = 'appClient:dlmPrepare'
 }
 
 // possible states of a DLM item
