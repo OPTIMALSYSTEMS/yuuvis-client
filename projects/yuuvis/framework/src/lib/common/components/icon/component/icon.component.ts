@@ -5,8 +5,8 @@ import { IconRegistryService } from '../service/iconRegistry.service';
 
 /**
  * Renders an SVG-Icon. There are several ways how to provide the components with the actual SVG.
- * The recommended way is to use the IconRegistryService. This way you'll get the benefits of
- * optimized builds and bundles. But you can alkso reference SVG files from your asstes folder.
+ * Using the IconRegistryService you'll benefit from optimized builds and bundles (treeshaking).
+ * But you can also reference SVG files from your assetes folder.
  * @example
  *  <yuv-icon iconSrc="assets/svg/clear.svg"></yuv-icon>
  *
