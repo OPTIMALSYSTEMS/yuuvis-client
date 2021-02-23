@@ -572,20 +572,21 @@ export class ObjectCreateComponent implements OnDestroy {
   }
 
   createAfoCancel(withDelete = false) {
-    if (withDelete) {
-      this.deleteObjects();
-    }
-    this.selectedObjectType = null;
-    this.files = [];
-    this.resetState();
-    this.reset();
+    (withDelete ? this.deleteObjects() : this.finishAFO({})).subscribe(() => {
+      this.selectedObjectType = null;
+      this.files = [];
+      this.resetState();
+      this.reset();
+    });
   }
 
-  deleteObjects() {
+  private deleteObjects(): Observable<any> {
     const deleteObservables = this.afoCreate.dmsObject.items.map((item) => this.dmsService.deleteDmsObject(item.id));
-    forkJoin(deleteObservables).subscribe(
-      () => {},
-      () => this.notify.error(this.translate.instant('yuv.framework.object-create.notify.afo.cancel.with-delete.error'))
+    return forkJoin(deleteObservables).pipe(
+      catchError((err) => {
+        this.notify.error(this.translate.instant('yuv.framework.object-create.notify.afo.cancel.with-delete.error'));
+        return of(null);
+      })
     );
   }
 

@@ -116,6 +116,7 @@
 	"yuv.framework.form.table.options.confirm.delete": "Zeile löschen?",
 	"yuv.framework.form.table.options.indicator.new": "Neue Zeile",
 	"yuv.framework.grid.single-cell-renderer.undefined.title": "Unvollständiges Objekt",
+	"yuv.framework.grouped-select.check-all.tooltip": "Alle auswählen",
 	"yuv.framework.list.configure.columns": "Spalten konfigurieren",
 	"yuv.framework.list.refresh": "Aktualisieren",
 	"yuv.framework.object-create.afo.cancel": "Im Ablagekorb ablegen",

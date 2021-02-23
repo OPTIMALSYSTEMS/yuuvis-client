@@ -72,6 +72,7 @@
           &.current span {
             border-color: var(--color-accent);
             color: var(--color-accent);
+            font-weight: var(--font-weight-bold);
           }
           &.disabled {
             cursor: default;

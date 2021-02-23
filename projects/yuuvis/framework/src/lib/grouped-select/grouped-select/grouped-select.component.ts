@@ -16,6 +16,8 @@ import {
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { Observable, Subject, timer } from 'rxjs';
 import { debounce, tap } from 'rxjs/operators';
+import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
+import { checkAll } from '../../svg.generated';
 import { Selectable, SelectableGroup, SelectableInternal } from './grouped-select.interface';
 import { SelectableItemComponent } from './selectable-item/selectable-item.component';
 
@@ -152,8 +154,10 @@ export class GroupedSelectComponent implements AfterViewInit, ControlValueAccess
     @Attribute('singleGroup') singleGroup: string,
     @Attribute('enableSelectAll') enableSelectAll: string,
     @Attribute('toggleable') toggleable: string,
-    private elRef: ElementRef
+    private elRef: ElementRef,
+    private iconRegistry: IconRegistryService
   ) {
+    this.iconRegistry.registerIcons([checkAll]);
     this.autofocus = autofocus === 'true' ? true : false;
     this.enableSelectAll = enableSelectAll === 'true' ? true : false;
     this.singleGroup = singleGroup === 'true' ? true : false;
@@ -219,7 +223,11 @@ export class GroupedSelectComponent implements AfterViewInit, ControlValueAccess
         this.selectedItems = sel;
       }
       this.emit(false);
-    } else if (this.toggleable) {
+    }
+  }
+
+  toggleCollapsed(group: SelectableGroup) {
+    if (this.toggleable) {
       group.collapsed = !group.collapsed;
     }
   }
