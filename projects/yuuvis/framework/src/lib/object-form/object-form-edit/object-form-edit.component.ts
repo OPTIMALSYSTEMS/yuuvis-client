@@ -208,6 +208,7 @@ export class ObjectFormEditComponent implements OnDestroy {
                 this._secondaryObjectTypeIDs = [...this._dmsObject.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS]];
                 this.combinedFormInput = { ...this.combinedFormInput, data: updatedObject.data };
                 this.afoObjectForm.setFormPristine();
+                // this.createObjectForm(this._dmsObject);
               }
 
               this.controls.saving = false;
