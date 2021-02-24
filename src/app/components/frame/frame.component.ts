@@ -47,20 +47,6 @@ export class FrameComponent implements OnInit, OnDestroy {
 
   // query for fetching pending AFOs
   pendingAFOsQuery = JSON.stringify({
-    // tags: [
-    //   {
-    //     name: ObjectTag.AFO,
-    //     filters: {
-    //       filters: [
-    //         {
-    //           f: 'state',
-    //           o: SearchFilter.OPERATOR.EQUAL,
-    //           v1: '0'
-    //         }
-    //       ]
-    //     }
-    //   }
-    // ]
     filters: [{ f: `system:tags[${ObjectTag.AFO}].state`, o: SearchFilter.OPERATOR.EQUAL, v1: 0 }]
   });
 
