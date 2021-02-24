@@ -18,6 +18,18 @@ body {
 
   // -------------------------------------------------------------------
   // primeng autocomplete
+  .p-autocomplete-panel .p-autocomplete-items .p-autocomplete-item {
+    color: var(--text-color-body);
+
+    &.p-highlight {
+      background: var(--item-selected-background-color);
+    }
+
+    &:hover {
+      background: var(--item-focus-background-color);
+      color: var(--text-color-body);
+    }
+  }
   .p-autocomplete {
     &.p-autocomplete-multiple {
       width: 100%;

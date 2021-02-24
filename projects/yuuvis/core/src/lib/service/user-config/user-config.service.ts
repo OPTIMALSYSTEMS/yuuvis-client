@@ -126,13 +126,13 @@ export class UserConfigService {
     this.generateMainJsonUri(uri).subscribe((_uri) => this.backend.download(_uri, filename));
   }
 
-  importMainConfig(data: string | any, uri = ConfigService.GLOBAL_MAIN_CONFIG) {
+  importMainConfig(data: string | any, uri = ConfigService.GLOBAL_MAIN_CONFIG, force = false) {
     const config = typeof data === 'string' ? JSON.parse(data) : data;
     if (uri === ConfigService.GLOBAL_MAIN_CONFIG && !config.core && !config.client) {
       throw new Error('Invalid main configuration');
       return of();
     }
-    return this.hasSystemRole ? this.backend.post(uri, config) : of();
+    return force || this.hasSystemRole ? this.backend.post(uri, config) : of();
   }
 
   exportLanguage(iso = 'en') {

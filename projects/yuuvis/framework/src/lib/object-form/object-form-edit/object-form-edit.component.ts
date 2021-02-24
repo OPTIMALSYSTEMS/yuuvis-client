@@ -93,7 +93,7 @@ export class ObjectFormEditComponent implements OnDestroy {
       this._secondaryObjectTypeIDs = dmsObject.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS]
         ? [...dmsObject.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS]]
         : [];
-      this.createObjectForm(dmsObject);
+      this.createObjectForm(dmsObject).subscribe();
     }
     this._dmsObject = dmsObject;
   }
@@ -192,10 +192,7 @@ export class ObjectFormEditComponent implements OnDestroy {
                     .pipe(map((_) => updatedObject))
                 : of(updatedObject);
             }),
-            finalize(() => this.finishPending())
-          )
-          .subscribe(
-            (updatedObject) => {
+            switchMap((updatedObject) => {
               this._dmsObject = updatedObject;
               if (this.combinedFormInput) {
                 this._sotChanged = {
@@ -206,11 +203,16 @@ export class ObjectFormEditComponent implements OnDestroy {
                 };
 
                 this._secondaryObjectTypeIDs = [...this._dmsObject.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS]];
-                this.combinedFormInput = { ...this.combinedFormInput, data: updatedObject.data };
                 this.afoObjectForm.setFormPristine();
-                // this.createObjectForm(this._dmsObject);
+                return this.createObjectForm(this._dmsObject);
+              } else {
+                return of(true);
               }
-
+            }),
+            finalize(() => this.finishPending())
+          )
+          .subscribe(
+            () => {
               this.controls.saving = false;
               this.controls.disabled = true;
               this.indexDataSaved.emit(this._dmsObject);
@@ -253,7 +255,7 @@ export class ObjectFormEditComponent implements OnDestroy {
       this._dmsObject.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS] = [...this._secondaryObjectTypeIDs];
       this._sotChanged.assignedGeneral = false;
       this.controls.disabled = true;
-      this.createObjectForm(this._dmsObject);
+      this.createObjectForm(this._dmsObject).subscribe();
       this._sotChanged = {
         applied: [],
         removed: [],
@@ -263,10 +265,10 @@ export class ObjectFormEditComponent implements OnDestroy {
     }
   }
 
-  private createObjectForm(dmsObject: DmsObject, validate?: boolean) {
+  private createObjectForm(dmsObject: DmsObject, validate?: boolean): Observable<any> {
     this.getApplicableSecondaries(dmsObject);
-    this.systemService.getDmsObjectForms(dmsObject, this.situation).subscribe(
-      (res) => {
+    return this.systemService.getDmsObjectForms(dmsObject, this.situation).pipe(
+      map((res) => {
         this.combinedFormInput = {
           main: res.main,
           extensions: res.extensions,
@@ -274,12 +276,25 @@ export class ObjectFormEditComponent implements OnDestroy {
           disabled: this.formDisabled || !this.isEditable(dmsObject),
           enableEditSOT: true
         };
-        this.busy = false;
-      },
-      (err) => {
-        this.busy = false;
-      }
+        return true;
+      })
     );
+
+    // .subscribe(
+    //   (res) => {
+    //     this.combinedFormInput = {
+    //       main: res.main,
+    //       extensions: res.extensions,
+    //       data: dmsObject.data,
+    //       disabled: this.formDisabled || !this.isEditable(dmsObject),
+    //       enableEditSOT: true
+    //     };
+    //     this.busy = false;
+    //   },
+    //   (err) => {
+    //     this.busy = false;
+    //   }
+    // );
   }
 
   private getApplicableSecondaries(dmsObject: DmsObject) {
@@ -397,7 +412,7 @@ export class ObjectFormEditComponent implements OnDestroy {
     this._dmsObject.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS] = [...sotIDs, ...sotsToBeAdded];
 
     if (isPrimaryFSOT) {
-      this.createObjectForm(this._dmsObject);
+      this.createObjectForm(this._dmsObject).subscribe(() => (this.busy = false));
     } else {
       enableEditSOT =
         sotsToBeAdded.length === 1 &&

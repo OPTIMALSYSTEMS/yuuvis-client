@@ -97,7 +97,9 @@ export class SettingsComponent implements OnInit {
   }
 
   importPluginConfig(e: any, global = false) {
-    this.userConfig.importMainConfig(e, global ? PluginsService.GLOBAL_PLUGIN_CONFIG : PluginsService.LOCAL_PLUGIN_CONFIG).subscribe(() => this.reload());
+    this.userConfig
+      .importMainConfig(e, global ? PluginsService.GLOBAL_PLUGIN_CONFIG : PluginsService.LOCAL_PLUGIN_CONFIG, !global)
+      .subscribe(() => this.reload());
   }
 
   exportPluginConfig() {
