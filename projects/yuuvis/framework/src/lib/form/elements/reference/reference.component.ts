@@ -45,7 +45,6 @@ export class ReferenceComponent implements ControlValueAccessor, AfterViewInit {
   @ViewChild('autocomplete') autoCompleteInput: AutoComplete;
   private queryJson: SearchQueryProperties;
   noAccessTitle = noAccess;
-
   minLength = 2;
 
   value;
@@ -166,6 +165,7 @@ export class ReferenceComponent implements ControlValueAccessor, AfterViewInit {
     }
     return forkJoin(tasks).subscribe((data) => {
       this.innerValue = [].concat(...data);
+      setTimeout(() => this.autoCompleteInput.cd.markForCheck());
     });
   }
 
@@ -188,7 +188,8 @@ export class ReferenceComponent implements ControlValueAccessor, AfterViewInit {
           return ids.map((id) => ({
             id,
             objectTypeId: x[id]?.fields.get(BaseObjectTypeField.OBJECT_TYPE_ID),
-            title: x[id] ? x[id].fields.get(ClientDefaultsObjectTypeField.TITLE) : id || this.noAccessTitle,
+            title:
+              x[id] && x[id].fields.get(ClientDefaultsObjectTypeField.TITLE) ? x[id].fields.get(ClientDefaultsObjectTypeField.TITLE) : id || this.noAccessTitle,
             description: x[id] ? x[id].fields.get(ClientDefaultsObjectTypeField.DESCRIPTION) : null
           }));
         } else {
@@ -203,12 +204,15 @@ export class ReferenceComponent implements ControlValueAccessor, AfterViewInit {
               }
             };
 
-            return {
+            let resolveEntry = {
               id: i.fields.get(BaseObjectTypeField.OBJECT_ID),
               objectTypeId: i.fields.get(BaseObjectTypeField.OBJECT_TYPE_ID),
-              title: i.fields.get(ClientDefaultsObjectTypeField.TITLE),
+              title: i.fields.get(ClientDefaultsObjectTypeField.TITLE)
+                ? i.fields.get(ClientDefaultsObjectTypeField.TITLE)
+                : i.fields.get(BaseObjectTypeField.OBJECT_ID),
               description: i.fields.get(ClientDefaultsObjectTypeField.DESCRIPTION)
             };
+            return resolveEntry;
           });
         }
       })

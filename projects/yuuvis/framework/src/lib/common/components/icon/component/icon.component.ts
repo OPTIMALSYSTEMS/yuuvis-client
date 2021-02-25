@@ -5,8 +5,8 @@ import { IconRegistryService } from '../service/iconRegistry.service';
 
 /**
  * Renders an SVG-Icon. There are several ways how to provide the components with the actual SVG.
- * The recommended way is to use the IconRegistryService. This way you'll get the benefits of
- * optimized builds and bundles. But you can alkso reference SVG files from your asstes folder.
+ * Using the IconRegistryService you'll benefit from optimized builds and bundles (treeshaking).
+ * But you can also reference SVG files from your assetes folder.
  * @example
  *  <yuv-icon iconSrc="assets/svg/clear.svg"></yuv-icon>
  *
@@ -27,15 +27,15 @@ export class IconComponent {
    * Size of the svg array contains width and height in that order...
    */
   @Input()
-  set svgDim(val: any) {
-    this.svgWidth = `${val[0]}px` || this.svgWidth;
-    this.svgHeight = `${val[0]}px` || this.svgHeight;
+  set svgDim(val: number | number[]) {
+    this.svgHeight = `${Array.isArray(val) ? val[0] : val}px` || this.svgHeight;
+    this.svgWidth = `${Array.isArray(val) ? val[1] : val}px` || this.svgWidth;
   }
 
   /**
    * url / local path to the svg
    */
-  @Input('iconSrc')
+  @Input()
   set iconSrc(iconSrc: string) {
     this.removeSVG();
     this.iconService.fetch(iconSrc).subscribe((svg) => this.createSvg(svg));
@@ -44,17 +44,17 @@ export class IconComponent {
   /**
    *  svg data direct
    */
-  @Input('svg')
-  set icon(icon: SVGElement) {
+  @Input()
+  set svg(svg: string | SVGElement) {
     this.removeSVG();
-    this.createSvg(icon);
+    this.createSvg(svg);
   }
 
   /**
    * registert name of the svg
    */
-  @Input('icon')
-  set svg(iconName: string) {
+  @Input()
+  set icon(iconName: string) {
     this.removeSVG();
     try {
       const svgData = this.iconRegService.getIcon(iconName);
@@ -101,7 +101,7 @@ export class IconComponent {
   }
 
   private setAttribute(svg: HTMLElement) {
-    svg.setAttribute('width', `${this.width}`);
-    svg.setAttribute('height', `${this.height}`);
+    svg && svg.setAttribute('width', `${this.width}`);
+    svg && svg.setAttribute('height', `${this.height}`);
   }
 }

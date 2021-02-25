@@ -127,11 +127,11 @@ export class ObjectFormService {
       }
     }
 
-    // if (formElement.type === 'TABLE') {
-    //   (formElement.elements || []).forEach(el => {
-    //     (value || []).forEach(v => v[el.name] = this.formatValue(v[el.name], el));
-    //   });
-    // }
+    if (formElement.type === 'table') {
+      // (formElement.elements || []).forEach((el) => {
+      //   (value || []).forEach((v) => (v[el.name] = this.formatValue(v[el.name], el)));
+      // });
+    }
     return value;
   }
 }

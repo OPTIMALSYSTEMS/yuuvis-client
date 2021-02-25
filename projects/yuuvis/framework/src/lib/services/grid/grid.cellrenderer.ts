@@ -55,15 +55,18 @@ export class CellRenderer {
 
   static systemTagsCellRenderer(param) {
     const { context, value } = param;
+    const titleFnc = (tag, state?) => context.system.getLocalizedResource(`${tag}${state ? ':' + state : ''}_label`) || state || tag;
     // tags value is an array of arrays
     return param.value
       ? `<table class="cellrenderer-tags">${param.value
           .map(
             (v) => `<tr>
-            <td class="tag">${v[0]}</td>
-            <td class="state">${v[1]}</td>
-            <td class="date">${context.datePipe.transform(v[2], 'eoNiceShort')}</td>
-            <td class="traceid">${v[3]}</td>
+            <td class="state_label">${titleFnc(v[0], v[1] + '')}</td>
+            <td class="tag_label">( #${titleFnc(v[0])} )</td>
+            <td hidden class="tag">${v[0]}</td>
+            <td hidden class="state">${v[1]}</td>
+            <td hidden class="date">${context.datePipe.transform(v[2], 'eoNiceShort')}</td>
+            <td hidden class="traceid">${v[3]}</td>
             </tr>`
           )
           .join('')}</table>`
@@ -102,7 +105,7 @@ export class CellRenderer {
     } else if (param.value === false || param.value === 'false') {
       val = `<path class="outline" d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14z"/>`;
     }
-    return `<svg class="checkbox" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">${val}</svg>`;
+    return `<div style="display:flex; align-items:center"><svg class="checkbox" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">${val}</svg></div>`;
   }
 
   static multiSelectCellRenderer(param: any) {
@@ -126,7 +129,7 @@ export class CellRenderer {
           query: encodeURIComponent(
             JSON.stringify(
               new SearchQuery({
-                types: [param.reference.type],
+                lots: [param.reference.type],
                 filters: [new SearchFilter(param.reference.element, SearchFilter.OPERATOR.EQUAL, value).toQuery()]
               }).toQueryJson()
             )

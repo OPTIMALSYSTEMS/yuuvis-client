@@ -16,6 +16,8 @@ import {
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { Observable, Subject, timer } from 'rxjs';
 import { debounce, tap } from 'rxjs/operators';
+import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
+import { checkAll } from '../../svg.generated';
 import { Selectable, SelectableGroup, SelectableInternal } from './grouped-select.interface';
 import { SelectableItemComponent } from './selectable-item/selectable-item.component';
 
@@ -121,7 +123,7 @@ export class GroupedSelectComponent implements AfterViewInit, ControlValueAccess
     return this._selectableItemIndex++;
   }
 
-  @HostBinding('class.singleGroup') singleGroup: boolean = false;
+  @HostBinding('class.singleGroup') @Input() singleGroup: boolean = false;
   @Input() autofocus: boolean;
   @Input() enableSelectAll: boolean;
   @Input() toggleable: boolean;
@@ -152,8 +154,10 @@ export class GroupedSelectComponent implements AfterViewInit, ControlValueAccess
     @Attribute('singleGroup') singleGroup: string,
     @Attribute('enableSelectAll') enableSelectAll: string,
     @Attribute('toggleable') toggleable: string,
-    private elRef: ElementRef
+    private elRef: ElementRef,
+    private iconRegistry: IconRegistryService
   ) {
+    this.iconRegistry.registerIcons([checkAll]);
     this.autofocus = autofocus === 'true' ? true : false;
     this.enableSelectAll = enableSelectAll === 'true' ? true : false;
     this.singleGroup = singleGroup === 'true' ? true : false;
@@ -222,6 +226,12 @@ export class GroupedSelectComponent implements AfterViewInit, ControlValueAccess
     }
   }
 
+  toggleCollapsed(group: SelectableGroup) {
+    if (this.toggleable) {
+      group.collapsed = !group.collapsed;
+    }
+  }
+
   onContainerResized(event) {
     this.sizeSource.next({
       width: event.newWidth,
@@ -248,12 +258,19 @@ export class GroupedSelectComponent implements AfterViewInit, ControlValueAccess
     return select && this.select.emit(val);
   }
 
+  focus() {
+    if (this.groups.length) {
+      this.keyManager.setActiveItem(0);
+      this.elRef.nativeElement.querySelector('yuv-selectable-item').focus();
+    }
+  }
+
   ngAfterViewInit() {
     this.keyManager = new FocusKeyManager(this.items).skipPredicate((item) => item.disabled).withWrap();
     let i = 0;
     this.items.forEach((c: SelectableItemComponent) => (c._item.index = i++));
-    if (this.autofocus && this.groups.length > 0) {
-      this.elRef.nativeElement.querySelector('.group').focus();
+    if (this.autofocus) {
+      this.focus();
     }
 
     this.resized$
@@ -266,14 +283,13 @@ export class GroupedSelectComponent implements AfterViewInit, ControlValueAccess
         })
       )
       .subscribe((v) => {
-        let c = 'oneColumn';
-        if (v.width > 2 * this.columnWidth && v.width < 3 * this.columnWidth) {
-          c = 'twoColumns';
-        }
+        this.columns = 'oneColumn';
+        if (this.singleGroup) return;
         if (v.width > 3 * this.columnWidth) {
-          c = 'threeColumns';
+          this.columns = 'threeColumns';
+        } else if (v.width > 2 * this.columnWidth) {
+          this.columns = 'twoColumns';
         }
-        this.columns = c;
       });
   }
 }

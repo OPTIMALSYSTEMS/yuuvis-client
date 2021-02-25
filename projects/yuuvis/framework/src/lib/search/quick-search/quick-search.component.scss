@@ -146,7 +146,7 @@
   }
 
   ::ng-deep {
-    .ui-autocomplete {
+    .p-autocomplete {
       width: 100%;
     }
   }
@@ -197,6 +197,11 @@
         &.field-select {
           margin: 0 4px;
           opacity: 0.4;
+
+          yuv-icon {
+            width: 18px;
+            height: 18px;
+          }
 
           &:focus,
           &:hover {
@@ -358,16 +363,16 @@
         color: var(--text-color-body);
       }
 
-      .ui-autocomplete-panel {
+      .p-autocomplete-panel {
         color: var(--text-color-body);
         background: var(--panel-background);
         border-color: var(--item-focus-border-color);
         border: none;
         border-radius: 0;
 
-        .ui-autocomplete-list-item {
+        .p-autocomplete-list-item {
           color: var(--text-color-body);
-          &.ui-state-highlight {
+          &.p-highlight {
             background: var(--item-focus-background-color);
             color: var(--text-color-body);
           }
@@ -379,7 +384,7 @@
 
 ::ng-deep .quick-search {
   .list-group-item .label::before,
-  .ui-autocomplete-list-item::before {
+  .p-autocomplete-list-item::before {
     content: '@';
     display: inline;
     font-size: 0.9em;
@@ -388,7 +393,7 @@
   }
 
   &.hashtag .list-group-item .label::before,
-  &.hashtag .ui-autocomplete-list-item::before {
+  &.hashtag .p-autocomplete-list-item::before {
     content: '#';
   }
 }

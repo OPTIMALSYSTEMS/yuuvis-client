@@ -8,7 +8,7 @@ import { YuvComponentsModule } from '../components/components.module';
 import { YuvDirectivesModule } from '../directives/directives.module';
 import { YuvQuickfinderModule } from '../quickfinder/quickfinder.module';
 import { YuvFormModule } from './../form/form.module';
-import { ActionComponentAnchorDirective } from './action-menu/action-component-anchor/action-component-anchor.directive';
+import { YuvPluginsModule } from './../plugins/plugins.module';
 import { ActionMenuComponent } from './action-menu/action-menu.component';
 import { ACTIONS, ActionService, CUSTOM_ACTIONS } from './action-service/action.service';
 import { DeleteActionComponent } from './actions/delete-action/delete-action';
@@ -55,7 +55,8 @@ export const entryComponents = [
     TranslateModule,
     YuvComponentsModule,
     YuvCommonModule,
-    YuvQuickfinderModule
+    YuvQuickfinderModule,
+    YuvPluginsModule
   ],
   exports: [ActionMenuComponent],
   providers: [
@@ -72,7 +73,6 @@ export const entryComponents = [
   ],
   declarations: [
     ActionMenuComponent,
-    ActionComponentAnchorDirective,
     DownloadActionComponent,
     DownloadOriginalActionComponent,
     DownloadPdfActionComponent,

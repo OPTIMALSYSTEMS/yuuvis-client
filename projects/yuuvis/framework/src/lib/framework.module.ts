@@ -19,6 +19,7 @@ import { YuvObjectCreateModule } from './object-create/object-create.module';
 import { YuvObjectDetailsModule } from './object-details/object-details.module';
 import { YuvObjectFormModule } from './object-form/object-form.module';
 import { YuvPipesModule } from './pipes/pipes.module';
+import { YuvPluginsModule } from './plugins/plugins.module';
 import { YuvPopoverModule } from './popover/popover.module';
 import { YuvQuickfinderModule } from './quickfinder/quickfinder.module';
 import { ROUTES, YuvRoutes } from './routing/routes';
@@ -45,7 +46,8 @@ const modules = [
   YuvActionModule,
   YuvCoreSharedModule,
   OverlayPanelModule,
-  YuvBpmModule
+  YuvBpmModule,
+  YuvPluginsModule
 ];
 
 /**

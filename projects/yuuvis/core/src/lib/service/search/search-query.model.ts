@@ -10,17 +10,17 @@ export class SearchQuery {
   size: number = 50;
   aggs: string[];
   from: number;
-  types: string[] = [];
-  sots: string[] = [];
+  types: string[] = []; // mixed list of primary and secondary object types
+  lots: string[] = []; // list of leading object types
   tags: any;
   get targetType(): string | null {
-    return this.sots?.length === 1 ? this.sots[0] : this.types?.length === 1 ? this.types[0] : null;
+    return this.lots?.length === 1 ? this.lots[0] : this.types?.length === 1 ? this.types[0] : null;
   }
   get filters(): SearchFilter[] {
     return this.filterGroup.filters;
   }
   get allTypes(): string[] {
-    return [...(this.types || []), ...(this.sots || [])];
+    return [...(this.types || []), ...(this.lots || [])];
   }
 
   filterGroup: SearchFilterGroup = new SearchFilterGroup();
@@ -31,7 +31,7 @@ export class SearchQuery {
       this.term = searchQueryProperties.term;
       this.from = searchQueryProperties.from;
       this.types = searchQueryProperties.types || [];
-      this.sots = searchQueryProperties.sots || [];
+      this.lots = searchQueryProperties.lots || [];
       this.fields = searchQueryProperties.fields || [];
 
       if (searchQueryProperties.size) {
@@ -63,7 +63,7 @@ export class SearchQuery {
   }
 
   /**
-   * Removes a type from the target types list
+   * Removes a type from the target lots (Leading Object Types) list
    *
    * @param objectTypeId The object type to be removed
    */
@@ -71,23 +71,23 @@ export class SearchQuery {
     this.types = this.types.filter((t) => t !== objectTypeId);
   }
 
-  /** Adds a new target sot to the query
+  /** Adds a new target lot (Leading Object Type) to the query
    *
-   * @param sot Object sot to be added
+   * @param lot The leading object type to be added
    */
-  public addSOT(sot: string) {
-    if (this.sots.includes(sot)) {
-      this.sots.push(sot);
+  public addLOT(lot: string) {
+    if (this.lots.includes(lot)) {
+      this.lots.push(lot);
     }
   }
 
   /**
-   * Removes a sot from the target sots list
+   * Removes a lot from the target lots (Leading Object Types)  list
    *
-   * @param sot The object sot to be removed
+   * @param lot The leading object type to be removed
    */
-  public removeSOT(sot: string) {
-    this.sots = this.sots.filter((t) => t !== sot);
+  public removeLOT(lot: string) {
+    this.lots = this.lots.filter((t) => t !== lot);
   }
 
   /**
@@ -245,8 +245,8 @@ export class SearchQuery {
       queryJson.types = this.types;
     }
 
-    if (this.sots.length) {
-      queryJson.sots = this.sots;
+    if (this.lots.length) {
+      queryJson.lots = this.lots;
     }
 
     if (this.fields && this.fields.length) {
@@ -494,7 +494,7 @@ export class SearchFilter {
   }
 
   isEmpty() {
-    return Utils.isEmpty(this.firstValue) || (this.operator.match(/gt(e)?lt(e)?/) ? Utils.isEmpty(this.secondValue) : false);
+    return Utils.isEmpty(this.firstValue) || (this.operator?.match(/gt(e)?lt(e)?/) ? Utils.isEmpty(this.secondValue) : false);
   }
 
   toQuery() {

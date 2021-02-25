@@ -21,7 +21,9 @@
         <div class="label">{{ c.label }}</div>
         <div class="type">{{ c.propertyType }}</div>
         <div class="buttons">
-          <button class="sort" [ngClass]="{ asc: c.sort === 'asc', desc: c.sort === 'desc' }" (click)="toggleSort(c)" title="{{ labels.sort }}">
+          <button [disabled]="!isSortable(c)" class="sort"
+            [ngClass]="{ asc: c.sort === 'asc', desc: c.sort === 'desc' }" (click)="toggleSort(c)"
+            title="{{ labels.sort }}">
             <yuv-icon class="arrow" icon="arrowDown"></yuv-icon>
             <yuv-icon icon="sort"></yuv-icon>
           </button>
@@ -36,9 +38,12 @@
 
     <div class="actions">
       <div class="left">
-        <button *ngIf="showCancelButton" (click)="cancel.emit()">{{ 'yuv.framework.shared.cancel' | translate }}</button>
-        <button *ngIf="!hasGlobal" (click)="save(false, true)">{{ 'yuv.framework.column-config.button.reset.global' | translate }}</button>
-        <button *ngIf="hasManageSettingsRole" class="primary" (click)="save(true)">{{ 'yuv.framework.column-config.button.save.global' | translate }}</button>
+        <button *ngIf="showCancelButton"
+          (click)="cancel.emit()">{{ 'yuv.framework.shared.cancel' | translate }}</button>
+        <button *ngIf="!hasGlobal"
+          (click)="save(false, true)">{{ 'yuv.framework.column-config.button.reset.global' | translate }}</button>
+        <button *ngIf="hasManageSettingsRole" class="primary"
+          (click)="save(true)">{{ 'yuv.framework.column-config.button.save.global' | translate }}</button>
       </div>
       <div class="right" *ngIf="columnConfigDirty">
         <button (click)="revert()">{{ 'yuv.framework.column-config.button.revert' | translate }}</button>
@@ -48,6 +53,7 @@
   </ng-container>
 
   <ng-template #tplColumnPicker let-data let-popover="popover">
-    <yuv-column-picker [groups]="data.groups" (cancel)="onPickerCancel(popover)" (select)="onPickerResult($event, popover)"></yuv-column-picker>
+    <yuv-column-picker [groups]="data.groups" (cancel)="onPickerCancel(popover)"
+      (select)="onPickerResult($event, popover)"></yuv-column-picker>
   </ng-template>
 </div>

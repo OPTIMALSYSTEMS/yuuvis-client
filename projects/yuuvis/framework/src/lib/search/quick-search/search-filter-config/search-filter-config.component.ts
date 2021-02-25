@@ -45,14 +45,12 @@ export class SearchFilterConfigComponent implements OnInit {
   @Input() set options(data: { typeSelection: string[]; query: SearchQuery; sharedFields: boolean; global: boolean }) {
     this.global = data.global;
     this.query = data.query;
-    this.availableObjectTypeFields = this.quickSearchService.getAvailableObjectTypesFields(data.typeSelection, data.query?.sots, data.sharedFields);
+    this.availableObjectTypeFields = this.quickSearchService.getAvailableObjectTypesFields(data.typeSelection, data.sharedFields);
 
     this.availableFiltersGroups = [
-      {
-        id: 'new',
-        label: this.translate.instant('yuv.framework.search.filter.available.fields'),
-        items: this.availableObjectTypeFields.map((o) => ({ ...o, value: [new SearchFilter(o.id, undefined, undefined)] }))
-      }
+      ...this.quickSearchService.groupFilters(
+        this.availableObjectTypeFields.map((o) => ({ ...o, value: [new SearchFilter(o.id, o.defaultOperator, o.defaultValue)] }))
+      )
     ];
 
     this.quickSearchService.loadFilterSettings(this.global).subscribe(([storedFilters, hiddenFilters]) => {
@@ -137,7 +135,7 @@ export class SearchFilterConfigComponent implements OnInit {
         id: this.CREATE_NEW_ID + '#active',
         svg: addCircle.data,
         label: `${this.translate.instant('yuv.framework.search.filter.create.new')} (${this.translate.instant('yuv.framework.search.filter.from.active')})`,
-        value: [this.query.filterGroup]
+        value: this.query.filterGroup.clone().group
       },
       ...this.storedFilters.filter((f) => this.isVisible(f) && f.highlight)
     ].filter((f) => f);
@@ -148,7 +146,6 @@ export class SearchFilterConfigComponent implements OnInit {
       this.createNew(res.value);
     } else {
       this.selectedFilter = res;
-      this.availableFiltersGroups[0].items = this.availableFiltersGroups[0].items.map((i) => ({ ...i, disabled: this.isDefault() }));
       this.formOptions = { filter: this.selectedFilter, availableObjectTypeFields: this.availableObjectTypeFields };
     }
   }
@@ -163,7 +160,7 @@ export class SearchFilterConfigComponent implements OnInit {
       this.storedFiltersGroups[0].items = this.getDefaultFilters();
       this.storedFiltersGroups[1].items = this.storedFilters.filter((f) => this.isVisible(f));
       this.storedFiltersGroups[2].items = this.storedFilters.filter((f) => !this.isVisible(f));
-      this.availableFiltersGroups[1].items = this.storedFilters.filter((f) => this.isVisible(f));
+      this.availableFiltersGroups.find((g) => g.id === 'stored').items = this.storedFilters.filter((f) => this.isVisible(f));
     });
   }
 
@@ -185,6 +182,7 @@ export class SearchFilterConfigComponent implements OnInit {
         this.onVisibilityChange(false);
         // reset form
         this.onFilterSelect(this.selectedFilter);
+        this.mainSelection = [this.selectedFilter.id];
         this.notify.success(this.translate.instant('yuv.framework.search.filter.configuration'), this.translate.instant('yuv.framework.search.filter.saved'));
       });
     } else if (!this.selectedFilter.label) {

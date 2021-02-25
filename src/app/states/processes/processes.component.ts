@@ -9,12 +9,13 @@ import {
   listModeDefault,
   listModeGrid,
   listModeSimple,
+  PluginsService,
   process,
   refresh,
   ResponsiveTableData
 } from '@yuuvis/framework';
-import { Observable } from 'rxjs';
-import { map, switchMap, take } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
+import { map, switchMap, take, tap } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
 
 @Component({
@@ -29,10 +30,7 @@ export class ProcessesComponent implements OnInit, OnDestroy {
   itemIsSelected = false;
   objectId: string;
   selectedProcess: any;
-  processData$: Observable<ResponsiveTableData> = this.processService.processData$.pipe(
-    map((processData: ProcessData[]) => this.formatProcessDataService.formatProcessDataForTable(processData)),
-    map((taskData: ResponsiveTableData) => (taskData.rows.length ? taskData : null))
-  );
+  processData$: Observable<ResponsiveTableData>;
   loading$: Observable<boolean> = this.processService.loadingProcessData$;
 
   headerDetails: HeaderDetails = {
@@ -41,18 +39,28 @@ export class ProcessesComponent implements OnInit, OnDestroy {
     icon: 'process'
   };
 
+  plugins: any;
+
   constructor(
     private processService: ProcessService,
     private translateService: TranslateService,
     private formatProcessDataService: FormatProcessDataService,
     private iconRegistry: IconRegistryService,
-    private eventService: EventService
+    private eventService: EventService,
+    private pluginsService: PluginsService
   ) {
+    this.plugins = this.pluginsService.getCustomPlugins('extensions', 'yuv-processes');
     this.iconRegistry.registerIcons([edit, arrowNext, refresh, process, listModeDefault, listModeGrid, listModeSimple]);
   }
 
-  private getProcesses(): Observable<ProcessData[]> {
-    return this.processService.getProcesses().pipe(take(1), takeUntilDestroy(this));
+  private getProcesses(): Observable<ProcessData[] | ResponsiveTableData> {
+    return this.processService.getProcesses().pipe(
+      take(1),
+      map((processData: ProcessData[]) => this.formatProcessDataService.formatProcessDataForTable(processData)),
+      map((taskData: ResponsiveTableData) => (taskData.rows.length ? taskData : null)),
+      tap((data) => (this.processData$ = of(data))),
+      takeUntilDestroy(this)
+    );
   }
 
   selectedItem(item) {

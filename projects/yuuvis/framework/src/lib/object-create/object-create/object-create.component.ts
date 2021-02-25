@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnDestroy, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, Output, TemplateRef, ViewChild } from '@angular/core';
 import {
   AFO_STATE,
   ApiBase,
@@ -29,10 +29,10 @@ import { takeUntilDestroy } from 'take-until-destroy';
 import { FadeInAnimations } from '../../common/animations/fadein.animation';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { Selectable, SelectableGroup } from '../../grouped-select';
-import { CombinedObjectFormComponent, CombinedObjectFormInput } from '../../object-form/combined-object-form/combined-object-form.component';
+import { ObjectFormEditComponent } from '../../object-form/object-form-edit/object-form-edit.component';
 import { FormStatusChangedEvent, ObjectFormOptions } from '../../object-form/object-form.interface';
-import { Situation } from '../../object-form/object-form.situation';
 import { ObjectFormComponent } from '../../object-form/object-form/object-form.component';
+import { PopoverService } from '../../popover/popover.service';
 import { LayoutService } from '../../services/layout/layout.service';
 import { NotificationService } from '../../services/notification/notification.service';
 import { clear, navBack } from '../../svg.generated';
@@ -51,8 +51,6 @@ export interface AFOState {
     items: SelectableGroup;
     selected?: {
       sot: { id: string; label: string };
-      // may be more than one form model because it is a combination of multiple SOTs
-      combinedFormInput: CombinedObjectFormInput;
     };
   };
 }
@@ -98,7 +96,9 @@ export class ObjectCreateComponent implements OnDestroy {
   private LAYOUT_OPTIONS_ELEMENT_KEY = 'yuv-object-create';
 
   @ViewChild(ObjectFormComponent) objectForm: ObjectFormComponent;
-  @ViewChild(CombinedObjectFormComponent) combinedObjectForm: CombinedObjectFormComponent;
+  @ViewChild(ObjectFormEditComponent) objectFormEdit: ObjectFormEditComponent;
+  @ViewChild('cancelOverlay') cancelOverlay: TemplateRef<any>;
+
   private pendingTaskId: string;
   context: DmsObject;
   // whether or not the current user is allowed to use the component and create dms objects
@@ -189,6 +189,7 @@ export class ObjectCreateComponent implements OnDestroy {
     private backend: BackendService,
     private userService: UserService,
     private translate: TranslateService,
+    private popoverService: PopoverService,
     private iconRegistry: IconRegistryService
   ) {
     this.iconRegistry.registerIcons([clear, navBack]);
@@ -373,34 +374,13 @@ export class ObjectCreateComponent implements OnDestroy {
   }
 
   afoSelectFloatingSOT(sot: { id: string; label: string }) {
-    this.objCreateService.setNewState({ busy: true });
-    // ID of the object type that should be used for retrieving the form
-    let formObjectTypeID;
-    if (!!this.selectedObjectType.floatingParentType) {
-      // Object type that has been created from a floating object type
-      formObjectTypeID = this.selectedObjectType.id;
-    } else if (this.system.isFloatingObjectType(this.selectedObjectType)) {
-      // we selected a general object type upfront, and apply a type (primary FSOT) now
-      formObjectTypeID = sot.id;
-    }
-    if (!!formObjectTypeID) {
-      // Object type that has been created from a floating object type
-      this.system.getFloatingObjectTypeForm(formObjectTypeID, Situation.CREATE).subscribe((res) => {
-        this.afoCreate.floatingSOT.selected = {
-          sot: {
-            id: sot?.id || 'none',
-            label: sot?.label || this.selectedObjectType.label
-          },
-          // TODO: also apply extraction data here
-          // TODO: If object is changed form should also get new data
-          combinedFormInput: {
-            main: res,
-            data: this.afoCreate?.dmsObject.items.length === 1 ? this.afoCreate.dmsObject.selected.data : {}
-          }
-        };
-        this.objCreateService.setNewState({ busy: false });
-      });
-    }
+    this.afoCreate.dmsObject.selected.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS] = sot.id != 'none' ? [...this.getSotsToBeApplied(), sot.id] : null;
+    this.afoCreate.floatingSOT.selected = {
+      sot: {
+        id: sot?.id || 'none',
+        label: sot?.label || this.selectedObjectType.label
+      }
+    };
   }
 
   afoCreateApprove(afoUploadNoticeSkip?: boolean) {
@@ -517,10 +497,7 @@ export class ObjectCreateComponent implements OnDestroy {
     this.objCreateService.setNewState({ done: this.isReady() });
   }
 
-  onFilesDroppedOnType(files: File[], type?: ObjectType) {
-    if (type) {
-      this.selectObjectType(type);
-    }
+  onFilesDroppedOnType(files: File[]) {
     this.files = [...this.files, ...files];
     this.objCreateService.setNewState({ done: this.isReady() });
   }
@@ -558,7 +535,7 @@ export class ObjectCreateComponent implements OnDestroy {
   }
 
   create() {
-    let data = this.formState.data;
+    let data = (this.objectForm || this.objectFormEdit).getFormData();
     if (this.context) {
       data[BaseObjectTypeField.PARENT_ID] = this.context.id;
     }
@@ -584,12 +561,33 @@ export class ObjectCreateComponent implements OnDestroy {
     );
   }
 
-  createAfoCancel() {
-    this.notify.info(this.translate.instant('yuv.framework.object-create.notify.afo.cancel'));
-    this.selectedObjectType = null;
-    this.files = [];
-    this.resetState();
-    this.reset();
+  openCancelDialog() {
+    if (!this.popoverService.hasActiveOverlay) {
+      this.popoverService.open(this.cancelOverlay, {});
+    }
+  }
+
+  closeCancelDialog(popover) {
+    popover.close();
+  }
+
+  createAfoCancel(withDelete = false) {
+    (withDelete ? this.deleteObjects() : this.finishAFO({})).subscribe(() => {
+      this.selectedObjectType = null;
+      this.files = [];
+      this.resetState();
+      this.reset();
+    });
+  }
+
+  private deleteObjects(): Observable<any> {
+    const deleteObservables = this.afoCreate.dmsObject.items.map((item) => this.dmsService.deleteDmsObject(item.id));
+    return forkJoin(deleteObservables).pipe(
+      catchError((err) => {
+        this.notify.error(this.translate.instant('yuv.framework.object-create.notify.afo.cancel.with-delete.error'));
+        return of(null);
+      })
+    );
   }
 
   /**
@@ -598,22 +596,12 @@ export class ObjectCreateComponent implements OnDestroy {
    * @returns List of IDs of finished objects
    */
   private finishAFO(data: any): Observable<string[]> {
-    const objectType = !!this.selectedObjectType.floatingParentType
-      ? this.system.getObjectType(this.selectedObjectType.floatingParentType)
-      : this.selectedObjectType;
-    // add selected SOTs
-    const sotsToBeApplied: string[] = objectType.secondaryObjectTypes
-      .filter((sot) => {
-        const soType = this.system.getSecondaryObjectType(sot.id);
-        // add static as well as required SOTs
-        return sot.static || (soType.classification && soType.classification.includes(SecondaryObjectTypeClassification.REQUIRED));
-      })
-      .map((sot) => sot.id);
-    // add the chosen type as well
-    if (typeof this.afoCreate.floatingSOT.selected.sot !== 'string') {
-      sotsToBeApplied.push(this.afoCreate.floatingSOT.selected.sot.id);
+    const sotsToBeApplied = this.getSotsToBeApplied();
+    const pFSOT = this.afoCreate?.floatingSOT?.selected;
+    if (pFSOT && pFSOT.sot.id !== 'none') {
+      sotsToBeApplied.push(pFSOT.sot.id);
     }
-    data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS] = sotsToBeApplied;
+    data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS] = [...(data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS] || []), ...sotsToBeApplied];
 
     // update existing dms object
     return forkJoin(
@@ -631,6 +619,20 @@ export class ObjectCreateComponent implements OnDestroy {
         )
       )
     );
+  }
+
+  private getSotsToBeApplied(): string[] {
+    const objectType = !!this.selectedObjectType.floatingParentType
+      ? this.system.getObjectType(this.selectedObjectType.floatingParentType)
+      : this.selectedObjectType;
+    // add selected SOTs
+    return objectType.secondaryObjectTypes
+      .filter((sot) => {
+        const soType = this.system.getSecondaryObjectType(sot.id);
+        // add static as well as required SOTs
+        return sot.static || (soType.classification && soType.classification.includes(SecondaryObjectTypeClassification.REQUIRED));
+      })
+      .map((sot) => sot.id);
   }
 
   /**
@@ -656,7 +658,7 @@ export class ObjectCreateComponent implements OnDestroy {
 
   reset() {
     this.formState = null;
-    (this.afoCreate ? this.combinedObjectForm : this.objectForm)?.resetForm();
+    (this.afoCreate ? this.objectFormEdit : this.objectForm)?.resetForm();
   }
 
   onFormStatusChanged(evt) {

@@ -1,8 +1,9 @@
 <div class="testing-controls">
-  <button (click)="compareVersions()">compare versions</button>
-  <button (click)="compareObjects()">compare objects of same type</button>
-  <button (click)="compare = null">reset</button>
-
+  <div class="buttons">
+    <button (click)="compareVersions()">compare versions</button>
+    <button (click)="compareObjects()">compare objects of same type</button>
+    <button (click)="compare = null">reset</button>
+  </div>
 </div>
 
 <yuv-object-details-compare class="cmp" [objectCompareInput]="compare"></yuv-object-details-compare>

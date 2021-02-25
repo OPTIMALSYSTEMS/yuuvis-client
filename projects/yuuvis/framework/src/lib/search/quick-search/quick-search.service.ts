@@ -72,24 +72,27 @@ export class QuickSearchService {
     // this.saveFilters(true, {});
     // this.saveFilters(false, {});
 
-    this.systemService.system$.subscribe((_) => {
-      this.availableObjectTypes = this.getAvailableObjectTypes();
-      let i = 0;
-      this.availableObjectTypeGroups = this.systemService.getGroupedObjectTypes(true, true, true, 'search').map((otg: ObjectTypeGroup) => ({
-        id: `${i++}`,
-        label: otg.label,
-        items: otg.types.map((ot: ObjectType) => ({
-          id: ot.id,
-          label: ot.label || ot.id,
-          highlight: ot.isFolder,
-          svgSrc: this.systemService.getObjectTypeIconUri(ot.id),
-          value: ot
-        }))
-      }));
-    });
+    this.systemService.system$.subscribe(() => this.setupAvailableObjectTypes() && this.setupAvailableObjectTypeGroups());
   }
 
-  private getAvailableObjectTypes() {
+  private setupAvailableObjectTypeGroups() {
+    let i = 0;
+    const extendable = this.systemService.getAllExtendableSOTs().map((o) => o.id);
+    return (this.availableObjectTypeGroups = this.systemService.getGroupedObjectTypes(true, true, true, 'search').map((otg: ObjectTypeGroup) => ({
+      id: `${i++}`,
+      label: otg.label,
+      items: otg.types.map((ot: ObjectType) => ({
+        id: ot.id,
+        label: ot.label || ot.id,
+        highlight: ot.isFolder,
+        svgSrc: this.systemService.getObjectTypeIconUri(ot.id),
+        value: ot,
+        class: extendable.includes(ot.id) && 'extension'
+      }))
+    })));
+  }
+
+  private setupAvailableObjectTypes() {
     // also add extension types that are not excluded from search
     const extendables = this.systemService
       .getSecondaryObjectTypes()
@@ -100,14 +103,14 @@ export class QuickSearchService {
           !sot.classification?.includes(ObjectTypeClassification.SEARCH_FALSE)
       );
 
-    return [...this.systemService.getObjectTypes(), ...extendables]
+    return (this.availableObjectTypes = [...this.systemService.getObjectTypes(), ...extendables]
       .filter((t) => !this.skipTypes.includes(t.id))
       .map((ot) => ({
         id: ot.id,
         label: this.systemService.getLocalizedResource(`${ot.id}_label`) || ot.id,
         value: ot
       }))
-      .sort(Utils.sortValues('label'));
+      .sort(Utils.sortValues('label')));
   }
 
   loadFilterSettings(global = false) {
@@ -129,22 +132,28 @@ export class QuickSearchService {
   getActiveTypes(query: SearchQuery, aggregations = [BaseObjectTypeField.LEADING_OBJECT_TYPE_ID]) {
     return this.searchService.aggregate(query, aggregations).pipe(
       map((res: AggregateResult) => {
-        return res.aggregations && res.aggregations.length
-          ? res.aggregations[0].entries
-              .map((r) => ({ id: r.key, label: this.systemService.getLocalizedResource(`${r.key}_label`) || r.key, count: r.count }))
-              .sort(Utils.sortValues('label'))
-          : [];
+        return (
+          (res.aggregations?.length && res.aggregations[0].entries.length && res.aggregations[0].entries) ||
+          query.allTypes.map((key) => ({ key, count: 0 }))
+        )
+          .map((r) => ({ id: r.key, label: this.systemService.getLocalizedResource(`${r.key}_label`) || r.key, count: r.count }))
+          .sort(Utils.sortValues('label'));
       })
     );
   }
 
-  getActiveSOTS(query: SearchQuery) {
-    return query.sots
-      .map((sot) => ({ id: sot, label: this.systemService.getLocalizedResource(`${sot}_label`) || sot, count: 0 }))
-      .sort(Utils.sortValues('label'));
+  getActiveExtensions(query: SearchQuery) {
+    return {
+      active: query.types || [],
+      all: this.systemService
+        .getAllExtendableSOTs(true)
+        .map((o) => ({ id: o.id, label: o.label || o.id, count: 0 }))
+        .filter((o) => (query.types || []).includes(o.id))
+        .sort(Utils.sortValues('label'))
+    };
   }
 
-  getAvailableObjectTypesFields(selectedTypes = [], sots = [], shared = true): Selectable[] {
+  private getSharedFields(selectedTypes = [], shared = true): ObjectTypeField[] {
     const selectedObjectTypes = (selectedTypes?.length
       ? selectedTypes
       : !shared
@@ -152,53 +161,94 @@ export class QuickSearchService {
       : [undefined]
     ).map((id) => this.systemService.getResolvedType(id));
 
-    const sharedFields = shared
-      ? selectedObjectTypes.reduce((prev, cur) => cur.fields.filter((f) => prev.find((p) => p.id === f.id)), selectedObjectTypes[0].fields)
+    return shared
+      ? selectedObjectTypes.reduce((prev, cur) => cur.fields.filter((f) => prev.find((p) => p.id === f.id)), [...selectedObjectTypes[0].fields])
       : selectedObjectTypes.reduce((prev, cur) => [...prev, ...cur.fields.filter((f) => !prev.find((p) => p.id === f.id))], []);
+  }
 
-    const sotsFields = sots?.length ? this.getAvailableObjectTypesFields(sots) : [];
+  getAvailableObjectTypesFields(selectedTypes = [], shared = true): Selectable[] {
+    const q = new SearchQuery();
+    this.updateTypesAndLots(q, selectedTypes);
+
+    const sharedFields = q.allTypes.length
+      ? [
+          ...this.getSharedFields(q.allTypes, shared)
+            .reduce((m, item) => (m.has(item.id) || m.set(item.id, item)) && m, new Map())
+            .values()
+        ]
+      : this.getSharedFields([], shared);
+
+    const toSelectable = (f: ObjectTypeField) => ({
+      id: f.id,
+      label: this.systemService.getLocalizedResource(`${f.id}_label`) || f.id,
+      value: f,
+      highlight: this.systemService.isSystemProperty(f)
+    });
+
+    const skipFields = [BaseObjectTypeField.TAGS, ...ColumnConfigSkipFields];
+    const fields = [...sharedFields.filter((f) => !skipFields.includes(f.id)).map((f) => toSelectable(f))].sort(Utils.sortValues('label'));
+
+    const tags = q.allTypes.reduce(
+      (prev, cur) => this.systemService.getResolvedTags(cur).filter((t) => prev.find((p) => p.tag === t.tag)),
+      this.systemService.getResolvedTags(q.allTypes[0])
+    );
 
     return [
-      ...sotsFields,
-      ...sharedFields
-        .filter((f) => !ColumnConfigSkipFields.includes(f.id) && !sotsFields.find((s) => s.id === f.id))
-        .map((f: ObjectTypeField) => ({
-          id: f.id,
-          label: this.systemService.getLocalizedResource(`${f.id}_label`) || f.id,
-          value: f,
-          highlight: this.systemService.isSystemProperty(f)
-        }))
+      ...fields.filter((f) => f.value.propertyType !== 'table'),
+
+      ...fields
+        .filter((f) => f.value.propertyType === 'table')
+        .reduce(
+          (p, c: any) => [
+            ...p,
+            ...c.value.columnDefinitions
+              .map((f) => toSelectable(f))
+              .map((f) => {
+                // TODO : should we remove namespace from column ID???
+                const id = c.id + `[*].` + f.id.replace(/.*:/, '');
+                const label = c.label + ' - ' + f.label;
+                return { ...f, id, label, value: { ...f.value, id } };
+              })
+          ],
+          []
+        ),
+      ...tags.reduce(
+        (p, c: any) => [
+          ...p,
+          ...c.fields[0].columnDefinitions
+            .filter((f) => f.id.match(/state/))
+            .map((value) => {
+              const name = c.tag.split(',')[0].replace(/.*\[/, '');
+              const val = c.tag.split(',').pop().replace(/\].*/, '');
+              const id = BaseObjectTypeField.TAGS + `[${name}].state`;
+              const label = '#' + (this.systemService.getLocalizedResource(`${name}_label`) || name);
+              return { id, label, class: id, defaultValue: val, defaultOperator: SearchFilter.OPERATOR.LESS_OR_EQUAL, value: { ...value, id } };
+            })
+        ],
+        []
+      )
     ].sort(Utils.sortValues('label'));
   }
 
-  updateTypesAndSots(query: SearchQuery, allTypes: string[], keep = false) {
-    const { types, sots } = query;
-    query.types = (allTypes || []).filter((t) => this.systemService.getObjectTypes().find((o) => o.id === t));
-    query.sots = (allTypes || []).filter((t) =>
-      this.systemService
-        .getSecondaryObjectTypes()
-        .filter(
-          (sot) =>
-            !sot.classification?.includes(SecondaryObjectTypeClassification.REQUIRED) &&
-            !sot.classification?.includes(SecondaryObjectTypeClassification.PRIMARY)
-        )
-        .find((o) => o.id === t)
-    );
-    // TODO:  test all types combination
-    if (keep && !query.types.length) {
-      query.types = types;
-    }
-    if (keep && !query.sots.length) {
-      query.sots = sots;
-    }
+  updateTypesAndLots(query: SearchQuery, allTypes: string[], keep = false) {
+    const extendable = this.systemService.getAllExtendableSOTs().map((o) => o.id);
+    const extensions = (allTypes || []).filter((t) => extendable.includes(t));
+
+    query.types = keep ? query.types : extensions;
+    query.lots = (allTypes || []).filter((t) => !extensions.includes(t));
   }
 
   getActiveFilters(query: SearchQuery, filters: Selectable[], availableObjectTypeFields: Selectable[]) {
     return (query.filterGroup.operator === SearchFilterGroup.OPERATOR.AND ? query.filterGroup.group : [query.filterGroup])
       .reduce((prev, cur) => {
         const g = SearchFilterGroup.fromArray([cur]);
-        // spread groups that have filters with same property
-        return [...prev, ...(g.group.every((f) => f.property === g.filters[0].property) ? g.group.map((f) => SearchFilterGroup.fromArray([f])) : [g])];
+        // spread groups (only AND) that have filters with same property
+        return [
+          ...prev,
+          ...(g.operator === SearchFilterGroup.OPERATOR.AND && g.group.every((f) => f.property === g.filters[0].property)
+            ? g.group.map((f) => SearchFilterGroup.fromArray([f]))
+            : [g])
+        ];
       }, [])
       .filter((g) => !g.filters.find((f) => ColumnConfigSkipFields.includes(f.property)))
       .map((g) => {
@@ -320,6 +370,40 @@ export class QuickSearchService {
   removeFilter(item: Selectable, global = false) {
     delete this._filters(global)[item.id];
     return this.saveFilters(global);
+  }
+
+  groupFilters(filters: Selectable[]): SelectableGroup[] {
+    const table = /[.*].*/;
+    const tableID = (id) => id.replace(table, '');
+    return [
+      {
+        id: 'available',
+        label: this.translate.instant('yuv.framework.search.filter.available.fields'),
+        items: filters.filter((f) => !f.id.match(table))
+      },
+      ...[
+        ...filters
+          .filter((f) => f.id.match(table))
+          .reduce((p, c) => p.set(tableID(c.id), [...(p.get(tableID(c.id)) || []), c]) && p, new Map())
+          .values()
+      ].map((items) => ({
+        id: items[0].id,
+        label: items[0].label.replace(/\s-.*/, ''),
+        collapsed: true,
+        items: !items[0].id.startsWith(BaseObjectTypeField.TAGS)
+          ? items
+          : [
+              ...items,
+              ...[...Array(+items[0].value[0].firstValue + 1).keys()].map((v) => ({
+                id: `${items[0].id}_${v}`,
+                label: `${this.systemService.getLocalizedResource(`${items[0].id.replace(/.*\[/, '').replace(/\].*/, '')}:${v}_label`) || v} ( ${
+                  items[0].label
+                } )`,
+                value: [new SearchFilter(items[0].id, SearchFilter.OPERATOR.EQUAL, v)]
+              }))
+            ]
+      }))
+    ];
   }
 
   getDefaultFiltersList(availableObjectTypeFields: Selectable[]) {

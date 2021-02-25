@@ -118,31 +118,25 @@ export class SystemService {
       });
 
     if (includeExtendableFSOTs) {
-      this.getSecondaryObjectTypes(true)
-        .filter(
-          (sot) =>
-            !sot.classification?.includes(SecondaryObjectTypeClassification.REQUIRED) &&
-            !sot.classification?.includes(SecondaryObjectTypeClassification.PRIMARY)
-        )
-        .forEach((sot) => {
-          switch (situation) {
-            case 'create': {
-              if (!sot.classification?.includes(ObjectTypeClassification.CREATE_FALSE)) {
-                types.push(sot);
-              }
-              break;
-            }
-            case 'search': {
-              if (!sot.classification?.includes(ObjectTypeClassification.SEARCH_FALSE)) {
-                types.push(sot);
-              }
-              break;
-            }
-            default: {
+      this.getAllExtendableSOTs(true).forEach((sot) => {
+        switch (situation) {
+          case 'create': {
+            if (!sot.classification?.includes(ObjectTypeClassification.CREATE_FALSE)) {
               types.push(sot);
             }
+            break;
           }
-        });
+          case 'search': {
+            if (!sot.classification?.includes(ObjectTypeClassification.SEARCH_FALSE)) {
+              types.push(sot);
+            }
+            break;
+          }
+          default: {
+            types.push(sot);
+          }
+        }
+      });
     }
 
     const grouped = this.groupBy(
@@ -242,6 +236,18 @@ export class SystemService {
    */
   getExtendableFSOTs(objectTypeId: string, withLabel?: boolean): SecondaryObjectType[] {
     return this.getFloatingSecondaryObjectTypes(objectTypeId, withLabel).filter(
+      (sot) =>
+        !sot.classification?.includes(SecondaryObjectTypeClassification.REQUIRED) && !sot.classification?.includes(SecondaryObjectTypeClassification.PRIMARY)
+    );
+  }
+
+  /**
+   * Extendable SOTs are secondary object types that are SOTs that are not
+   * primary and not required.
+   * @param withLabel Whether or not to also add the types label
+   */
+  getAllExtendableSOTs(withLabel?: boolean) {
+    return this.getSecondaryObjectTypes(withLabel).filter(
       (sot) =>
         !sot.classification?.includes(SecondaryObjectTypeClassification.REQUIRED) && !sot.classification?.includes(SecondaryObjectTypeClassification.PRIMARY)
     );
@@ -350,6 +356,20 @@ export class SystemService {
       id: ot.id,
       fields: ot.fields
     };
+  }
+
+  /**
+   * Get the resolved object tags
+   */
+  getResolvedTags(objectTypeId?: string): { id: string; tag: string; fields: ObjectTypeField[] }[] {
+    const ot = this.getObjectType(objectTypeId) || this.getSecondaryObjectType(objectTypeId);
+    const tags = ot?.classification?.filter((t) => t.startsWith('tag['));
+
+    return (tags || []).map((tag) => ({
+      id: ot.id,
+      tag,
+      fields: this.getBaseType(true).fields.filter((f) => f.id === BaseObjectTypeField.TAGS)
+    }));
   }
 
   /**

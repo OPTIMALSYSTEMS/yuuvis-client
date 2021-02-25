@@ -48,8 +48,8 @@ export interface SearchQueryProperties {
   from?: number;
   aggs?: string[];
   maxItems?: number;
-  types?: string[];
-  sots?: string[];
+  types?: string[]; // mixed list of primary and secondary object types
+  lots?: string[]; // list of leading object types
   filters?: any;
   sort?: any;
   tags?: any;

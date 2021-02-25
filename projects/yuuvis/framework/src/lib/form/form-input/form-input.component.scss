@@ -28,6 +28,9 @@
       flex: 1 1 auto;
       padding: 0 calc(var(--app-pane-padding) / 4);
       order: 1;
+      // that's the size of buttons inside the controls (like datepicker)
+      // not setting min-height would result in form elements not lining up
+      min-height: 20px; // (16px icon height + 2*2px padding)
 
       > span {
         display: inline-block;
@@ -38,20 +41,34 @@
         color: #fff;
       }
     }
+    > .triggers {
+      order: 3;
+      display: none;
+      &.visible {
+        order: 2;
+      }
+      &.visible,
+      &:hover {
+        display: flex;
+      }
+    }
     > .form-input__label {
       text-align: end;
       @include transition();
       user-select: none;
-      order: 2;
+      order: 4;
       flex: 0 1 auto;
       padding: 2px calc(var(--app-pane-padding) / 4);
       margin-right: 3px;
       color: var(--text-color-caption);
       border-radius: 2px;
       font-size: var(--font-caption);
+      &:hover + .triggers {
+        display: flex;
+      }
     }
     > .tag {
-      order: 3;
+      order: 5;
       flex: 0 0 auto;
       border-radius: 2px;
       font-size: var(--font-hint);
@@ -133,7 +150,7 @@
       }
     }
   }
-  .ui-dropdown.range {
+  .p-dropdown.range {
     background-color: rgba(255, 255, 255, 0.1);
   }
 }
@@ -150,7 +167,7 @@
 //noinspection CssInvalidPseudoSelector
 .yuv-form-input {
   input,
-  .ui-inputtext {
+  .p-inputtext {
     padding: 0;
     border: 0 !important;
     display: flex;
@@ -161,7 +178,7 @@
   input {
     background-color: transparent;
   }
-  button.ui-button {
+  button.p-button {
     background: transparent;
     border: 0;
     border-radius: 2px;
@@ -169,6 +186,7 @@
     cursor: pointer;
     width: 20px;
     height: 20px;
+    padding: 0;
 
     &:enabled:active,
     &:enabled:focus {
@@ -177,7 +195,6 @@
       background: var(--color-accent);
       color: #fff;
     }
-    &.ui-spinner-button:enabled:hover,
     &:enabled:active,
     &:enabled:hover {
       border: 0;
@@ -196,7 +213,7 @@
   }
 
   // range selection dropdown button
-  .ui-dropdown.range {
+  .p-dropdown.range {
     width: 20px !important;
     min-width: initial;
     margin: 0 4px;
@@ -209,7 +226,7 @@
       color: var(--text-color-hint);
     }
 
-    &.ui-state-focus {
+    &.p-focus {
       border-color: transparent;
       outline: 0;
 
@@ -219,30 +236,30 @@
       }
     }
 
-    &:not(.ui-state-disabled):hover {
+    &:not(.p-disabled):hover {
       background: rgba(0, 0, 0, 0.2);
     }
 
-    .ui-dropdown-panel {
+    .p-dropdown-panel {
       border-radius: 0;
       border-color: var(--panel-background);
-      .ui-dropdown-items .ui-dropdown-item {
+      .p-dropdown-items .p-dropdown-item {
         padding: calc(var(--app-pane-padding) / 4) calc(var(--app-pane-padding) / 2);
 
-        &.ui-state-highlight {
+        &.p-highlight {
           background-color: var(--color-accent);
         }
       }
     }
 
-    .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item {
+    .p-dropdown-panel .p-dropdown-items .p-dropdown-item {
       padding: calc(var(--app-pane-padding) / 4) calc(var(--app-pane-padding) / 2);
     }
 
-    .ui-dropdown-trigger {
+    .p-dropdown-trigger {
       display: none;
     }
-    .ui-dropdown-item,
+    .p-dropdown-item,
     label {
       text-align: center;
       font-family: monospace;
@@ -252,7 +269,7 @@
     label:after {
       display: none;
     }
-    .ui-dropdown-label-container {
+    .p-dropdown-label-container {
       width: 100%;
     }
   }

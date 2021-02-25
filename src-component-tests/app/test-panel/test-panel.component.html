@@ -1,14 +1,14 @@
 <div class="testing-controls">
-  <button (click)="busy = !busy">toggle Busy</button>
-  <button (click)="showIcon = !showIcon">toggle Icon</button>
-  <button (click)="showActions = !showActions">toggle Actions</button>
-  <button (click)="showStatus = !showStatus">toggle Status</button>
-  <button (click)="showFooter = !showFooter">toggle Footer</button>
-  <button (click)="setRegularSizeTitle()">regular size title strings</button>
-  <button (click)="setLongSizeTitle()">long title strings</button>
+  <div class="buttons">
+    <button (click)="busy = !busy">toggle Busy</button>
+    <button (click)="showIcon = !showIcon">toggle Icon</button>
+    <button (click)="showActions = !showActions">toggle Actions</button>
+    <button (click)="showStatus = !showStatus">toggle Status</button>
+    <button (click)="showFooter = !showFooter">toggle Footer</button>
+    <button (click)="setRegularSizeTitle()">regular size title strings</button>
+    <button (click)="setLongSizeTitle()">long title strings</button>
+  </div>
 </div>
-
-
 
 <yuv-panel [title]="title" [description]="description" class="cmp">
 

@@ -29,8 +29,15 @@
     <yuv-icon class="finalized-icon" [icon]="'finalized'"></yuv-icon> -->
   </yuv-action-menu-bar>
 
-  <yuv-responsive-tab-container #tabContainer class="content" [layoutOptionsKey]="layoutOptionsKey" [pluginPanels]="[viewPanels, externalPanels]">
+  <yuv-responsive-tab-container *ngIf="(plugins ? (plugins | async) : []) as resolvedPlugins" #tabContainer class="content" 
+  [layoutOptionsKey]="layoutOptionsKey" [pluginPanels]="[viewPanels, externalPanels]" [pluginPanelsOrder]="panelOrder">
     <ng-container *ngFor="let templateID of panelOrder" [ngTemplateOutlet]="this[templateID]"></ng-container>
+    <!-- PLUGINS -->
+    <p-tabPanel *ngFor="let config of resolvedPlugins" [id]="config.id" [header]="(config.label) | translate" [headerStyleClass]="config.id">
+      <ng-template pTemplate="content">
+        <yuv-plugin [config]="config" [parent]="this"></yuv-plugin>
+      </ng-template>
+    </p-tabPanel>
 
     <ng-container *ngTemplateOutlet="content"></ng-container>
   </yuv-responsive-tab-container>

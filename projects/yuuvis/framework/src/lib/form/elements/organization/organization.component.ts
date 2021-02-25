@@ -33,7 +33,6 @@ import { organization } from '../../../svg.generated';
 })
 export class OrganizationComponent implements ControlValueAccessor, AfterViewInit {
   @ViewChild('autocomplete') autoCompleteInput: AutoComplete;
-
   minLength = 2;
 
   value;

@@ -120,7 +120,7 @@ export const InternalFieldType = {
 };
 
 export enum ObjectTag {
-  AFO = 'appClient:dlm:prepare'
+  AFO = 'appclient:dlm:prepare'
 }
 
 // possible states of a DLM item
@@ -139,7 +139,7 @@ export const ColumnConfigSkipFields = [
   BaseObjectTypeField.PARENT_VERSION_NUMBER,
   BaseObjectTypeField.TENANT,
   BaseObjectTypeField.TRACE_ID,
-  BaseObjectTypeField.TAGS,
+  // BaseObjectTypeField.TAGS,
   BaseObjectTypeField.BASE_TYPE_ID,
   ContentStreamField.ID,
   ContentStreamField.RANGE,

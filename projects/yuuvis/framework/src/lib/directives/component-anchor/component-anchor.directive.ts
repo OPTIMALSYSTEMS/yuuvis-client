@@ -1,10 +1,11 @@
 import { Directive, ViewContainerRef } from '@angular/core';
+
 /**
  * @ignore
  */
 @Directive({
-  selector: '[eoActionComponentAnchor]'
+  selector: '[yuvComponentAnchor]'
 })
-export class ActionComponentAnchorDirective {
+export class ComponentAnchorDirective {
   constructor(public viewContainerRef: ViewContainerRef) {}
 }

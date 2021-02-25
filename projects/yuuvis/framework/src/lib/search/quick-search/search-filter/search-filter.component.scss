@@ -16,7 +16,7 @@
           padding: 0;
         }
 
-        .ui-panel .ui-panel-titlebar {
+        .p-panel .p-panel-header {
           padding: calc(var(--app-pane-padding) / 2) var(--app-pane-padding);
         }
       }
@@ -28,14 +28,13 @@
             font-size: var(--font-caption);
           }
         }
-        .ui-chkbox {
+        .p-checkbox {
           font-size: 14px;
-          .ui-chkbox-box.ui-state-active {
-            border-color: var(--text-color-hint) !important;
+          .p-checkbox-box {
             border-width: 1px;
           }
           .pi-check:before {
-            font-size: 10px;
+            font-size: 8px;
           }
         }
       }
