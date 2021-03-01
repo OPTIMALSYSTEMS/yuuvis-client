@@ -1,4 +1,4 @@
-import { ColDef } from '@ag-grid-community/core';
+import { ColDef, CsvExportParams } from '@ag-grid-community/core';
 import { Inject, Injectable } from '@angular/core';
 import {
   AppCacheService,
@@ -41,6 +41,18 @@ export class GridService {
    * @ignore
    */
   context;
+
+  get csvExportParams(): CsvExportParams {
+    return {
+      fileName: 'export',
+      columnSeparator: this.context?.numberPipe.decimalSeparator === ',' ? ';' : ',',
+      processCellCallback: (params) => {
+        return ((params.column.getColDef().cellClass as any) || '').includes('col-decimal')
+          ? (params.column.getColDef().cellRenderer as any)(params).replace(new RegExp(`\\` + this.context?.numberPipe.separator, 'g'), '') // removed grouping
+          : params.value;
+      }
+    };
+  }
 
   /**
    * @ignore
