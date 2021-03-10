@@ -28,8 +28,8 @@ export class ExpandedTableComponent {
 
   exportCSV() {
     this.overlayGridOptions.api.exportDataAsCsv({
-      fileName: this.params.element.label,
-      columnSeparator: ';'
+      ...this.gridApi.csvExportParams,
+      fileName: this.params.element.label
     });
   }
 
