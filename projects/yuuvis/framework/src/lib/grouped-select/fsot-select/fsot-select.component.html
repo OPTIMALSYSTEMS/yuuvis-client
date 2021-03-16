@@ -1,1 +1,5 @@
-<yuv-grouped-select [groups]="[fsots]" (select)="fsotSelect.emit($event.value)"> </yuv-grouped-select>
+<!-- <yuv-grouped-select [groups]="[fsots]" (select)="fsotSelect.emit($event.value)"> </yuv-grouped-select> -->
+
+
+<yuv-fsot-select-item tabindex="-1" *ngFor="let item of fsots" (select)="select($event)" [item]="item">
+</yuv-fsot-select-item>

@@ -29,6 +29,7 @@ import { takeUntilDestroy } from 'take-until-destroy';
 import { FadeInAnimations } from '../../common/animations/fadein.animation';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { Selectable, SelectableGroup } from '../../grouped-select';
+import { FSOTSelectable } from '../../grouped-select/grouped-select/grouped-select.interface';
 import { ObjectFormEditComponent } from '../../object-form/object-form-edit/object-form-edit.component';
 import { FormStatusChangedEvent, ObjectFormOptions } from '../../object-form/object-form.interface';
 import { ObjectFormComponent } from '../../object-form/object-form/object-form.component';
@@ -48,7 +49,7 @@ export interface AFOState {
   };
   // List of floating secondary object types that could be applied to the current AFO(s)
   floatingSOT: {
-    items: SelectableGroup;
+    items: FSOTSelectable[];
     selected?: {
       sot: { id: string; label: string };
     };
@@ -374,7 +375,8 @@ export class ObjectCreateComponent implements OnDestroy {
   }
 
   afoSelectFloatingSOT(sot: { id: string; label: string }) {
-    this.afoCreate.dmsObject.selected.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS] = sot.id != 'none' ? [...this.getSotsToBeApplied(), sot.id] : null;
+    this.afoCreate.dmsObject.selected.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS] =
+      !sot || sot.id != 'none' ? [...this.getSotsToBeApplied(), sot.id] : null;
     this.afoCreate.floatingSOT.selected = {
       sot: {
         id: sot?.id || 'none',
@@ -411,19 +413,29 @@ export class ObjectCreateComponent implements OnDestroy {
           this.objCreateService.setNewState({ currentStep: CurrentStep.AFO_INDEXDATA, busy: false });
           this.objCreateService.setNewBreadcrumb(CurrentStep.AFO_INDEXDATA, CurrentStep.AFO_UPLOAD);
 
-          const selectableSOTs: SelectableGroup = {
-            id: 'sots',
-            label: this.translate.instant('yuv.framework.object-create.afo.type.select.title'),
-            items: [
-              {
-                id: 'none',
-                label: this.translate.instant('yuv.framework.object-create.afo.type.select.general'),
-                description: this.system.getLocalizedResource(`${this.selectedObjectType.id}_label`),
-                svgSrc: this.system.getObjectTypeIconUri(this.selectedObjectType.id)
-              },
-              ...this.mapToSelectables(this.system.getPrimaryFSOTs(this.selectedObjectType.id, true)).sort(Utils.sortValues('label'))
-            ]
-          };
+          const selectableSOTs: FSOTSelectable[] = [
+            {
+              id: 'none',
+              label: this.translate.instant('yuv.framework.object-create.afo.type.select.general'),
+              description: this.system.getLocalizedResource(`${this.selectedObjectType.id}_label`),
+              svgSrc: this.system.getObjectTypeIconUri(this.selectedObjectType.id)
+            },
+            ...this.mapToSelectables(this.system.getPrimaryFSOTs(this.selectedObjectType.id, true)).sort(Utils.sortValues('label'))
+            // ]
+          ];
+          // const selectableSOTs: SelectableGroup = {
+          //   id: 'sots',
+          //   label: this.translate.instant('yuv.framework.object-create.afo.type.select.title'),
+          //   items: [
+          //     {
+          //       id: 'none',
+          //       label: this.translate.instant('yuv.framework.object-create.afo.type.select.general'),
+          //       description: this.system.getLocalizedResource(`${this.selectedObjectType.id}_label`),
+          //       svgSrc: this.system.getObjectTypeIconUri(this.selectedObjectType.id)
+          //     },
+          //     ...this.mapToSelectables(this.system.getPrimaryFSOTs(this.selectedObjectType.id, true)).sort(Utils.sortValues('label'))
+          //   ]
+          // };
 
           if (this.selectedObjectType.floatingParentType) {
             // floating types
@@ -441,8 +453,8 @@ export class ObjectCreateComponent implements OnDestroy {
               dmsObject: { items: res, selected: res[0] },
               floatingSOT: { items: selectableSOTs }
             };
-            if (selectableSOTs.items.length === 1) {
-              this.afoSelectFloatingSOT(selectableSOTs.items[0].value);
+            if (selectableSOTs.length === 1) {
+              this.afoSelectFloatingSOT({ id: selectableSOTs[0].value.id, label: selectableSOTs[0].value.label });
             }
           }
         },

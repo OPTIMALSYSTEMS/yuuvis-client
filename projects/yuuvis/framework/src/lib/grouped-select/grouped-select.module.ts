@@ -10,12 +10,13 @@ import { YuvFormModule } from './../form/form.module';
 import { FsotSelectComponent } from './fsot-select/fsot-select.component';
 import { GroupedSelectComponent } from './grouped-select/grouped-select.component';
 import { SelectableItemComponent } from './grouped-select/selectable-item/selectable-item.component';
+import { FsotSelectItemComponent } from './fsot-select/fsot-select-item/fsot-select-item.component';
 
 /**
  * Module providing `GroupedSelectComponent`.
  */
 @NgModule({
-  declarations: [GroupedSelectComponent, SelectableItemComponent, FsotSelectComponent],
+  declarations: [GroupedSelectComponent, SelectableItemComponent, FsotSelectComponent, FsotSelectItemComponent],
   entryComponents: [GroupedSelectComponent, SelectableItemComponent, FsotSelectComponent],
   exports: [GroupedSelectComponent, FsotSelectComponent],
   imports: [CommonModule, YuvFormModule, FormsModule, A11yModule, AngularResizedEventModule, PanelModule, TranslateModule, YuvCommonModule]
