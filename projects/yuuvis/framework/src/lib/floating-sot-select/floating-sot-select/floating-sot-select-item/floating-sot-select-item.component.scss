@@ -1,0 +1,38 @@
+:host {
+  transition: background-color, color 0.3s;
+  display: flex;
+  align-items: center;
+  flex-flow: row-reverse;
+
+  yuv-icon {
+    color: var(--text-color-hint);
+    opacity: 0.75;
+  }
+
+  .label {
+    padding: calc(var(--app-pane-padding) / 2);
+    flex: 1;
+    cursor: pointer;
+
+    .title {
+      margin: calc(var(--app-pane-padding) / 4) 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .prediction {
+      color: var(--color-accent);
+      font-size: var(--font-hint);
+      margin: 0 calc(var(--app-pane-padding) / 4);
+      font-family: monospace;
+    }
+
+    .description {
+      color: var(--text-color-caption);
+      font-size: var(--font-caption);
+
+      font-style: italic;
+    }
+  }
+}

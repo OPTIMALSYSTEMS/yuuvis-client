@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { FsotSelectItemComponent } from './fsot-select-item.component';
+import { FloatingSotSelectComponent } from './floating-sot-select.component';
 
-describe('FsotSelectItemComponent', () => {
-  let component: FsotSelectItemComponent;
-  let fixture: ComponentFixture<FsotSelectItemComponent>;
+describe('FloatingSotSelectComponent', () => {
+  let component: FloatingSotSelectComponent;
+  let fixture: ComponentFixture<FloatingSotSelectComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ FsotSelectItemComponent ]
+      declarations: [ FloatingSotSelectComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(FsotSelectItemComponent);
+    fixture = TestBed.createComponent(FloatingSotSelectComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

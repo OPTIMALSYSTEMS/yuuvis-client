@@ -3,6 +3,7 @@
     "apiBase": {
       "core": "/api",
       "api-web": "/api-web",
+      "predict": "/predict-api",
       "custom": "/custom"
     },
     "languages": [

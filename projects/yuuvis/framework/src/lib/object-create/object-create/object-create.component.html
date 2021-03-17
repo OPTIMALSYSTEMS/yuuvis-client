@@ -111,8 +111,9 @@
             <ng-container *ngIf="!afoCreate?.floatingSOT.selected; else tplSOTForm">
               <div class="floating-sots list panel">
                 <h2>{{'yuv.framework.object-create.afo.type.select.title'|translate}}</h2>
-                <yuv-fsot-select [fsots]="afoCreate?.floatingSOT.items" (fsotSelect)="afoSelectFloatingSOT($event)">
-                </yuv-fsot-select>
+                <yuv-floating-sot-select [fsotSelectInput]="afoCreate?.floatingSOT.items"
+                  (fsotSelect)="afoSelectFloatingSOT($event)">
+                </yuv-floating-sot-select>
               </div>
             </ng-container>
 
