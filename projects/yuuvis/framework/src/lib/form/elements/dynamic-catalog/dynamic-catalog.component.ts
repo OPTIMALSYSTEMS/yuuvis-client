@@ -1,6 +1,6 @@
 import { Component, forwardRef, Input } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { Classification, ClassificationEntry, SystemService } from '@yuuvis/core';
+import { BackendService, Classification, ClassificationEntry, SystemService } from '@yuuvis/core';
 
 @Component({
   selector: 'yuv-dynamic-catalog',
@@ -34,7 +34,7 @@ export class DynamicCatalogComponent implements ControlValueAccessor {
     const ce: ClassificationEntry = this.systemService.getClassifications(c).get(Classification.STRING_CATALOG_DYNAMIC);
     if (ce && ce.options && ce.options.length) {
       // first option is the name of the catalog to load ...
-      const catalog = ce.options[0];
+      this.fetchCatalogEntries(ce.options[0]);
       // ... optional second option indicates whether or not this catalog is readonly
       this.editable = !ce.options[1] || ce.options[1] !== 'readonly';
     }
@@ -44,13 +44,9 @@ export class DynamicCatalogComponent implements ControlValueAccessor {
    */
   @Input() readonly: boolean;
 
-  constructor(private systemService: SystemService) {}
+  constructor(private systemService: SystemService, private backend: BackendService) {}
 
   propagateChange = (_: any) => {};
-
-  private propagate() {
-    this.propagateChange(this.value);
-  }
 
   writeValue(value: any): void {
     this.value = value || null;
@@ -61,4 +57,13 @@ export class DynamicCatalogComponent implements ControlValueAccessor {
   }
 
   registerOnTouched(fn: any): void {}
+
+  onChange(value) {
+    this.value = value;
+    this.propagateChange(this.value);
+  }
+
+  private fetchCatalogEntries(catalog: string) {
+    this.backend.get(`/catalog/`).subscribe();
+  }
 }
