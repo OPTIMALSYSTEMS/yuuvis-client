@@ -20,6 +20,7 @@ import { DatetimeRangeComponent } from './elements/datetime-range/datetime-range
 import { DatepickerComponent } from './elements/datetime/datepicker/datepicker.component';
 import { DatetimeComponent } from './elements/datetime/datetime.component';
 import { YearRangeDirective } from './elements/datetime/year-range/year-range.directive';
+import { DynamicCatalogComponent } from './elements/dynamic-catalog/dynamic-catalog.component';
 import { NumberRangeComponent } from './elements/number-range/number-range.component';
 import { NumberComponent } from './elements/number/number.component';
 import { OrganizationComponent } from './elements/organization/organization.component';
@@ -40,7 +41,8 @@ const components = [
   ReferenceComponent,
   ReferenceItemComponent,
   OrganizationComponent,
-  CatalogComponent
+  CatalogComponent,
+  DynamicCatalogComponent
 ];
 /**
  * `YuvFormModule` bundles form controls like inputs, checkboxes, datepickers and so on.

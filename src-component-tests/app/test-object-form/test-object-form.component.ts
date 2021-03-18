@@ -4,6 +4,7 @@ import { FormStatusChangedEvent } from '@yuuvis/framework';
 import { booleanElements } from './data/form.boolean';
 import { catalogElements } from './data/form.catalog';
 import { datetimeElements } from './data/form.datetime';
+import { dynamicCatalogElements } from './data/form.dynamic-catalog';
 import { groupingModel } from './data/form.grouping';
 import { numberElements } from './data/form.numbers';
 import { organizationElements } from './data/form.organization';
@@ -24,6 +25,13 @@ export class TestObjectFormComponent implements OnInit {
       label: 'Form groups',
       model: {
         formModel: groupingModel,
+        data: {}
+      }
+    },
+    {
+      label: 'Dynamic catalog component',
+      model: {
+        formModel: this.wrap(dynamicCatalogElements),
         data: {}
       }
     },

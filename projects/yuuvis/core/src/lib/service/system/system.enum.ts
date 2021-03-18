@@ -88,6 +88,7 @@ export enum ContentStreamAllowed {
 
 // classifications applied to object type fields
 export enum Classification {
+  STRING_CATALOG_DYNAMIC = 'appClient:catalog',
   STRING_CATALOG = 'catalog',
   STRING_ORGANIZATION = 'id:organization',
   STRING_REFERENCE = 'id:reference',
@@ -116,7 +117,8 @@ export enum SecondaryObjectTypeClassification {
 export const InternalFieldType = {
   STRING_ORGANIZATION: 'string:organization',
   STRING_REFERENCE: 'string:reference',
-  STRING_CATALOG: 'string:catalog'
+  STRING_CATALOG: 'string:catalog',
+  STRING_DYNAMIC_CATALOG: 'string:catalog:dynamic'
 };
 
 export enum ObjectTag {
