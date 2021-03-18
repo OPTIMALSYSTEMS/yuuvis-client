@@ -29,7 +29,8 @@ import { Classification, ClassificationEntry, SystemService } from '@yuuvis/core
       useExisting: forwardRef(() => CatalogComponent),
       multi: true
     }
-  ]
+  ],
+  host: { class: 'yuv-catalog' }
 })
 export class CatalogComponent implements ControlValueAccessor {
   value: string | string[];

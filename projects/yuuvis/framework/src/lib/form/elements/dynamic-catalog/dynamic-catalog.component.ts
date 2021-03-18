@@ -1,6 +1,8 @@
 import { Component, forwardRef, Input } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { BackendService, Classification, ClassificationEntry, SystemService } from '@yuuvis/core';
+import { Catalog, CatalogService, Classification, ClassificationEntry, SystemService } from '@yuuvis/core';
+import { IconRegistryService } from '../../../common/components/icon/service/iconRegistry.service';
+import { edit } from '../../../svg.generated';
 
 @Component({
   selector: 'yuv-dynamic-catalog',
@@ -12,10 +14,13 @@ import { BackendService, Classification, ClassificationEntry, SystemService } fr
       useExisting: forwardRef(() => DynamicCatalogComponent),
       multi: true
     }
-  ]
+  ],
+  host: { class: 'yuv-catalog' }
 })
 export class DynamicCatalogComponent implements ControlValueAccessor {
-  value: string;
+  catalog: Catalog;
+  value: string | string[];
+  innerValue: any;
   // TODO: Take user role into account
   editable: boolean;
 
@@ -27,6 +32,11 @@ export class DynamicCatalogComponent implements ControlValueAccessor {
    * Indicator that multiple items could be selected
    */
   @Input() multiselect: boolean;
+  /**
+   * By default a filter panel will shown if the number of options exceeds 10 entries. You could
+   * change this number.
+   */
+  @Input() enableFilterWhenOptionsExceed: number = 10;
   /**
    * Additional semantics for the form element.
    */
@@ -44,12 +54,15 @@ export class DynamicCatalogComponent implements ControlValueAccessor {
    */
   @Input() readonly: boolean;
 
-  constructor(private systemService: SystemService, private backend: BackendService) {}
+  constructor(private systemService: SystemService, private iconRegistry: IconRegistryService, private catalogService: CatalogService) {
+    this.iconRegistry.registerIcons([edit]);
+  }
 
   propagateChange = (_: any) => {};
 
   writeValue(value: any): void {
     this.value = value || null;
+    this.innerValue = value ? { name: value } : null;
   }
 
   registerOnChange(fn: any): void {
@@ -59,11 +72,27 @@ export class DynamicCatalogComponent implements ControlValueAccessor {
   registerOnTouched(fn: any): void {}
 
   onChange(value) {
-    this.value = value;
+    this.value = value ? (Array.isArray(value) ? value.map((v) => v.name) : value.name) : null;
     this.propagateChange(this.value);
   }
 
+  openManager() {
+    // TODO: open component for managing catalog entries
+  }
+
   private fetchCatalogEntries(catalog: string) {
-    this.backend.get(`/catalog/`).subscribe();
+    this.catalogService.getCatalog(catalog).subscribe(
+      (res: Catalog) => {
+        this.catalog = res;
+      },
+      (err) => {
+        if (err.status === 404) {
+          // we'll get a 404 if the catalog could not be found. Thats fine. Now
+          // we know that we have to POST instead of PATCH if we are going to edit the catalog
+        } else {
+          throw err;
+        }
+      }
+    );
   }
 }

@@ -1,16 +1,22 @@
-<p-multiSelect *ngIf="multiselect; else tplSingleSelect" [filter]="_options?.length > enableFilterWhenOptionsExceed"
-    [showTransitionOptions]="'0ms'" [hideTransitionOptions]="'0ms'" placeholder=" " (ngModelChange)="onChange($event)"
-    [disabled]="readonly" [options]="_options" [(ngModel)]="value">
+<p-multiSelect *ngIf="multiselect; else tplSingleSelect"
+    [filter]="catalog?.entries?.length > enableFilterWhenOptionsExceed" [showTransitionOptions]="'0ms'"
+    optionLabel="name" optionDisabled="disabled" [hideTransitionOptions]="'0ms'" placeholder=" "
+    (ngModelChange)="onChange($event)" [disabled]="readonly" [options]="catalog?.entries" [(ngModel)]="innerValue">
 
     <ng-template let-items pTemplate="selectedItems">
-        <span class="chip" *ngFor="let item of items">{{getLabel(item)}}</span>
+        <span class="chip" *ngFor="let item of items">{{item.name}}</span>
     </ng-template>
 
 </p-multiSelect>
 
 <ng-template #tplSingleSelect>
-    <p-dropdown [options]="_options" placeholder=" " [showTransitionOptions]="'0ms'" [hideTransitionOptions]="'0ms'"
-        [filter]="_options?.length > enableFilterWhenOptionsExceed" (ngModelChange)="onChange($event)"
-        [disabled]="readonly" [showClear]="!readonly" [(ngModel)]="value">
+    <p-dropdown [options]="catalog?.entries" placeholder=" " [showTransitionOptions]="'0ms'" optionLabel="name"
+        optionDisabled="disabled" [hideTransitionOptions]="'0ms'"
+        [filter]="catalog?.entries?.length > enableFilterWhenOptionsExceed" (ngModelChange)="onChange($event)"
+        [disabled]="readonly" [showClear]="!readonly" [(ngModel)]="innerValue">
     </p-dropdown>
 </ng-template>
+
+<button class="p-button" (click)="openManager()" *ngIf="editable">
+    <yuv-icon icon="edit"></yuv-icon>
+</button>

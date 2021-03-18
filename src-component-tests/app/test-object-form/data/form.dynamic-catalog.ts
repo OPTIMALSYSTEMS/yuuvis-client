@@ -4,7 +4,7 @@ export const dynamicCatalogElements = [
     name: 'germanstates',
     label: 'German states',
     description: 'dynamic catalog',
-    classifications: ['appClient:catalog[germancountries]'],
+    classifications: ['dynamic:catalog[germancountries]'],
     type: 'string',
     cardinality: 'single',
     required: false
@@ -14,17 +14,27 @@ export const dynamicCatalogElements = [
     name: 'germanstates:multi',
     label: 'German states',
     description: 'dynamic catalog multiselect',
-    classifications: ['appClient:catalog[germancountries]'],
+    classifications: ['dynamic:catalog[germancountries]'],
+    type: 'string',
+    cardinality: 'multi',
+    required: false
+  },
+  {
+    readonly: true,
+    name: 'germanstates:ro',
+    label: 'German states (readonly)',
+    description: 'dynamic readonly catalog',
+    classifications: ['dynamic:catalog[germancountries]'],
     type: 'string',
     cardinality: 'single',
     required: false
   },
   {
     readonly: false,
-    name: 'germanstates:ro',
-    label: 'German states (readonly)',
-    description: 'dynamic readonly catalog',
-    classifications: ['appClient:catalog[germancountries, readonly]'],
+    name: 'germanstates:noteditable',
+    label: 'German states (not editable)',
+    description: 'dynamic catalog that could not be edited',
+    classifications: ['dynamic:catalog[germancountries, readonly]'],
     type: 'string',
     cardinality: 'single',
     required: false
@@ -34,7 +44,7 @@ export const dynamicCatalogElements = [
     name: 'processstate',
     label: 'Process status',
     description: 'dynamic catalog',
-    classifications: ['appClient:catalog[processtatus]'],
+    classifications: ['dynamic:catalog[processtatus]'],
     type: 'string',
     cardinality: 'single',
     required: false

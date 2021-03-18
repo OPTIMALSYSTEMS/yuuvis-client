@@ -88,7 +88,7 @@ export enum ContentStreamAllowed {
 
 // classifications applied to object type fields
 export enum Classification {
-  STRING_CATALOG_DYNAMIC = 'appClient:catalog',
+  STRING_CATALOG_DYNAMIC = 'dynamic:catalog',
   STRING_CATALOG = 'catalog',
   STRING_ORGANIZATION = 'id:organization',
   STRING_REFERENCE = 'id:reference',
