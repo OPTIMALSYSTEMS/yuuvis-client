@@ -96,6 +96,7 @@
 	"yuv.framework.context.tabs.search-result.title": "Suchergebnis",
 	"yuv.framework.filepicker.maxsize.exceeded.message": "Die Datei darf maximal {{max}} groß sein",
 	"yuv.framework.filepicker.maxsize.exceeded.title": "Zu groß",
+	"yuv.framework.floating-sot-select.prediction.tooltip": "...",
 	"yuv.framework.form.datepicker.select": "Auswählen",
 	"yuv.framework.form.form-input.null": "Ohne Wert",
 	"yuv.framework.form.organization.classify.icon.title": "Organisationsobjekt",

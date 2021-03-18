@@ -1,6 +1,16 @@
 import { FocusKeyManager } from '@angular/cdk/a11y';
 import { Attribute, Component, EventEmitter, HostListener, Input, Output, QueryList, ViewChildren } from '@angular/core';
-import { ContentStreamAllowed, DmsObject, PredictionService, SecondaryObjectType, SystemService, TranslateService } from '@yuuvis/core';
+import {
+  ContentStreamAllowed,
+  DmsObject,
+  PredictionClassifyResult,
+  PredictionService,
+  SecondaryObjectType,
+  SystemService,
+  TranslateService
+} from '@yuuvis/core';
+import { of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { FloatingSotSelectInput, FloatingSotSelectItem } from '../floating-sot-select.interface';
 import { FloatingSotSelectItemComponent } from './floating-sot-select-item/floating-sot-select-item.component';
 
@@ -12,7 +22,8 @@ import { FloatingSotSelectItemComponent } from './floating-sot-select-item/float
 export class FloatingSotSelectComponent {
   @ViewChildren(FloatingSotSelectItemComponent) items: QueryList<FloatingSotSelectItemComponent>;
   private keyManager: FocusKeyManager<FloatingSotSelectItemComponent>;
-  title: string;
+
+  @Input() title: string;
 
   dmsObject: DmsObject;
   sots: FloatingSotSelectItem[];
@@ -28,10 +39,19 @@ export class FloatingSotSelectComponent {
 
   @Input() set fsotSelectInput(i: FloatingSotSelectInput) {
     this.dmsObject = i.dmsObject;
-    this.sots = [...(Array.isArray(i.additionalItems) ? i.additionalItems : []), ...i.sots.map((sot) => this.toSelectable(sot))];
-    this.title = i.isPrimary
-      ? this.translate.instant('yuv.framework.object-form-edit.fsot.apply-type')
-      : this.translate.instant('yuv.framework.object-form-edit.fsot.add-fsot.dialog.title');
+
+    (this.dmsObject && this.dmsObject.content && this.predict ? this.predictionService.classify(this.dmsObject.id) : of(null))
+      .pipe(
+        // just catch error, if we could not get predictions its not that important
+        // otherwise we would get a red toast which looks dangerous
+        catchError((e) => of(null))
+      )
+      .subscribe((prdRes: PredictionClassifyResult) => {
+        this.sots = [
+          ...(Array.isArray(i.additionalItems) ? i.additionalItems : []),
+          ...i.sots.map((sot) => this.toSelectable(sot, prdRes?.predictions[sot.id].probability))
+        ];
+      });
   }
 
   // Emitted once a floating SOT has been selected
@@ -39,16 +59,13 @@ export class FloatingSotSelectComponent {
   @Output() fsotSelect = new EventEmitter<SecondaryObjectType>();
 
   constructor(
-    @Attribute('predict') predict: string,
+    @Attribute('predict') public predict: string,
     private predictionService: PredictionService,
     private translate: TranslateService,
     private systemService: SystemService
-  ) {
-    if (predict) {
-    }
-  }
+  ) {}
 
-  private toSelectable(sot: SecondaryObjectType): FloatingSotSelectItem {
+  private toSelectable(sot: SecondaryObjectType, predictionProbability: number): FloatingSotSelectItem {
     // if we got files but the target FSOT does not support content
     const contentRequiredButMissing = !this.dmsObject?.content && sot.contentStreamAllowed === ContentStreamAllowed.REQUIRED;
     // if the target FSOT requires a file, but we don't have one
@@ -58,6 +75,7 @@ export class FloatingSotSelectComponent {
       label: sot.label,
       svgSrc: this.systemService.getObjectTypeIconUri(sot.id),
       disabled: disabled,
+      prediction: predictionProbability,
       sot: sot
     };
     // add description to tell the user why a selectable is disabled

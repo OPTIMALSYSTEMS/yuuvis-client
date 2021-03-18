@@ -12,7 +12,6 @@ import {
   ObjectTypeGroup,
   PendingChangesService,
   SearchService,
-  SecondaryObjectType,
   SecondaryObjectTypeClassification,
   Sort,
   SystemService,
@@ -49,7 +48,7 @@ export interface AFOState {
   };
   // List of floating secondary object types that could be applied to the current AFO(s)
   floatingSOT: {
-    items: FloatingSotSelectInput;
+    item: FloatingSotSelectInput;
     selected?: {
       sot: { id: string; label: string };
     };
@@ -414,7 +413,7 @@ export class ObjectCreateComponent implements OnDestroy {
           this.objCreateService.setNewBreadcrumb(CurrentStep.AFO_INDEXDATA, CurrentStep.AFO_UPLOAD);
 
           const selectableSOTs: FloatingSotSelectInput = {
-            dmsObject: null,
+            dmsObject: res.length === 1 ? res[0] : null,
             sots: this.system.getPrimaryFSOTs(this.selectedObjectType.id, true).sort(Utils.sortValues('label')),
             additionalItems: [
               {
@@ -427,31 +426,6 @@ export class ObjectCreateComponent implements OnDestroy {
             isPrimary: true
           };
 
-          // const selddddectableSOTs: FSOTSelectable[] = [
-          //   {
-          //     id: 'none',
-          //     label: this.translate.instant('yuv.framework.object-create.afo.type.select.general'),
-          //     description: this.system.getLocalizedResource(`${this.selectedObjectType.id}_label`),
-          //     svgSrc: this.system.getObjectTypeIconUri(this.selectedObjectType.id)
-          //   },
-          //   ...this.mapToSelectables(this.system.getPrimaryFSOTs(this.selectedObjectType.id, true)).sort(Utils.sortValues('label'))
-          //   // ]
-          // ];
-
-          // const selectableSOTs: SelectableGroup = {
-          //   id: 'sots',
-          //   label: this.translate.instant('yuv.framework.object-create.afo.type.select.title'),
-          //   items: [
-          //     {
-          //       id: 'none',
-          //       label: this.translate.instant('yuv.framework.object-create.afo.type.select.general'),
-          //       description: this.system.getLocalizedResource(`${this.selectedObjectType.id}_label`),
-          //       svgSrc: this.system.getObjectTypeIconUri(this.selectedObjectType.id)
-          //     },
-          //     ...this.mapToSelectables(this.system.getPrimaryFSOTs(this.selectedObjectType.id, true)).sort(Utils.sortValues('label'))
-          //   ]
-          // };
-
           if (this.selectedObjectType.floatingParentType) {
             // floating types
             const sot = this.system.getSecondaryObjectType(this.selectedObjectType.id);
@@ -459,14 +433,14 @@ export class ObjectCreateComponent implements OnDestroy {
 
             this.afoCreate = {
               dmsObject: { items: res, selected: res[0] },
-              floatingSOT: { items: selectableSOTs }
+              floatingSOT: { item: selectableSOTs }
             };
             this.afoSelectFloatingSOT({ id: sot.id, label: sot.label });
           } else {
             // const selectableSOTs = this.system.getPrimaryFSOTs(this.selectedObjectType.id, true);
             this.afoCreate = {
               dmsObject: { items: res, selected: res[0] },
-              floatingSOT: { items: selectableSOTs }
+              floatingSOT: { item: selectableSOTs }
             };
             if (selectableSOTs.sots.length === 1) {
               this.afoSelectFloatingSOT({ id: selectableSOTs.sots[0].id, label: selectableSOTs.sots[0].label });
@@ -480,30 +454,30 @@ export class ObjectCreateComponent implements OnDestroy {
       );
   }
 
-  private mapToSelectables(sots: SecondaryObjectType[]): Selectable[] {
-    return sots.map((sot) => {
-      // if we got files but the target FSOT does not support content
-      const contentRequiredButMissing = (!this.files || this.files.length === 0) && sot.contentStreamAllowed === ContentStreamAllowed.REQUIRED;
-      // if the target FSOT requires a file, but we don't have one
-      const contentButNotAllowed = this.files && this.files.length && sot.contentStreamAllowed === ContentStreamAllowed.NOT_ALLOWED;
-      const disabled = contentRequiredButMissing || contentButNotAllowed;
+  // private mapToSelectables(sots: SecondaryObjectType[]): Selectable[] {
+  //   return sots.map((sot) => {
+  //     // if we got files but the target FSOT does not support content
+  //     const contentRequiredButMissing = (!this.files || this.files.length === 0) && sot.contentStreamAllowed === ContentStreamAllowed.REQUIRED;
+  //     // if the target FSOT requires a file, but we don't have one
+  //     const contentButNotAllowed = this.files && this.files.length && sot.contentStreamAllowed === ContentStreamAllowed.NOT_ALLOWED;
+  //     const disabled = contentRequiredButMissing || contentButNotAllowed;
 
-      let selectable: Selectable = {
-        id: sot.id,
-        label: sot.label,
-        svgSrc: this.system.getObjectTypeIconUri(sot.id),
-        disabled: disabled,
-        value: sot
-      };
-      // add description to tell the user why a selectable is disabled
-      if (disabled) {
-        selectable.description = contentRequiredButMissing
-          ? this.translate.instant('yuv.framework.object-create.afo.type.select.disabled.content-missing')
-          : this.translate.instant('yuv.framework.object-create.afo.type.select.disabled.content-not-allowed');
-      }
-      return selectable;
-    });
-  }
+  //     let selectable: Selectable = {
+  //       id: sot.id,
+  //       label: sot.label,
+  //       svgSrc: this.system.getObjectTypeIconUri(sot.id),
+  //       disabled: disabled,
+  //       value: sot
+  //     };
+  //     // add description to tell the user why a selectable is disabled
+  //     if (disabled) {
+  //       selectable.description = contentRequiredButMissing
+  //         ? this.translate.instant('yuv.framework.object-create.afo.type.select.disabled.content-missing')
+  //         : this.translate.instant('yuv.framework.object-create.afo.type.select.disabled.content-not-allowed');
+  //     }
+  //     return selectable;
+  //   });
+  // }
 
   afoCreateCancel() {
     this.resetState();

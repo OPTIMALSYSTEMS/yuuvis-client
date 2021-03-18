@@ -3,6 +3,14 @@
   display: flex;
   align-items: center;
   flex-flow: row-reverse;
+  padding: calc(var(--app-pane-padding) / 4) var(--app-pane-padding);
+  border-bottom: 1px solid var(--panel-divider-color);
+
+  &:hover,
+  &:focus {
+    background-color: var(--item-focus-background-color);
+    outline: 0;
+  }
 
   yuv-icon {
     color: var(--text-color-hint);
@@ -21,18 +29,22 @@
       justify-content: space-between;
     }
 
-    .prediction {
-      color: var(--color-accent);
-      font-size: var(--font-hint);
-      margin: 0 calc(var(--app-pane-padding) / 4);
-      font-family: monospace;
-    }
-
     .description {
       color: var(--text-color-caption);
       font-size: var(--font-caption);
 
       font-style: italic;
+    }
+  }
+
+  .prediction {
+    color: var(--color-accent);
+    font-size: var(--font-hint);
+    margin: 0 calc(var(--app-pane-padding) / 4);
+    font-family: monospace;
+
+    &::after {
+      content: '%';
     }
   }
 }
