@@ -1,5 +1,10 @@
 export interface Catalog {
   name: string;
   namespace: string;
-  entries: { name: string; disabled?: boolean }[];
+  entries: CatalogEntry[];
+}
+
+export interface CatalogEntry {
+  name: string;
+  disabled?: boolean;
 }

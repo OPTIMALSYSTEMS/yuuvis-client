@@ -20,3 +20,8 @@
 <button class="p-button" (click)="openManager()" *ngIf="editable">
     <yuv-icon icon="edit"></yuv-icon>
 </button>
+
+<!-- catalog management overlay -->
+<ng-template #tplCatalogManager let-data let-popover="popover">
+    <yuv-dynamic-catalog-management [catalog]="data.catalog"></yuv-dynamic-catalog-management>
+</ng-template>

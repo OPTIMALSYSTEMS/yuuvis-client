@@ -1,9 +1,20 @@
-import { Component, forwardRef, Input } from '@angular/core';
+import { Component, forwardRef, Input, TemplateRef, ViewChild } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { Catalog, CatalogService, Classification, ClassificationEntry, SystemService } from '@yuuvis/core';
 import { IconRegistryService } from '../../../common/components/icon/service/iconRegistry.service';
+import { PopoverConfig } from '../../../popover/popover.interface';
+import { PopoverRef } from '../../../popover/popover.ref';
+import { PopoverService } from '../../../popover/popover.service';
 import { edit } from '../../../svg.generated';
 
+/**
+ * Form input component for displaying dynamic catalogs.
+ *
+ * Implements `ControlValueAccessor` so it can be used within Angular forms.
+ *
+ * @example
+ * <yuv-dynamic-catalog [multiselect]="true"></yuv-dynamic-catalog>
+ */
 @Component({
   selector: 'yuv-dynamic-catalog',
   templateUrl: './dynamic-catalog.component.html',
@@ -18,6 +29,8 @@ import { edit } from '../../../svg.generated';
   host: { class: 'yuv-catalog' }
 })
 export class DynamicCatalogComponent implements ControlValueAccessor {
+  @ViewChild('tplCatalogManager') tplCatalogManager: TemplateRef<any>;
+
   catalog: Catalog;
   value: string | string[];
   innerValue: any;
@@ -54,7 +67,12 @@ export class DynamicCatalogComponent implements ControlValueAccessor {
    */
   @Input() readonly: boolean;
 
-  constructor(private systemService: SystemService, private iconRegistry: IconRegistryService, private catalogService: CatalogService) {
+  constructor(
+    private systemService: SystemService,
+    private popoverService: PopoverService,
+    private iconRegistry: IconRegistryService,
+    private catalogService: CatalogService
+  ) {
     this.iconRegistry.registerIcons([edit]);
   }
 
@@ -77,7 +95,35 @@ export class DynamicCatalogComponent implements ControlValueAccessor {
   }
 
   openManager() {
-    // TODO: open component for managing catalog entries
+    const popoverConfig: PopoverConfig = {
+      width: '55%',
+      height: '70%',
+      data: {
+        // catalog: this.catalog
+        catalog: {
+          name: 'lala',
+          namespace: 'namespace',
+          entries: [
+            { name: '11', disabled: false },
+            { name: '12', disabled: false },
+            { name: '13', disabled: true },
+            { name: '14', disabled: false }
+          ]
+        }
+      }
+    };
+    this.popoverService.open(this.tplCatalogManager, popoverConfig);
+  }
+
+  /**
+   * Triggered when the catalog management component changed the current catalog.
+   * @param updatedCatalog Updated catalog
+   * @param popoverRef Reference to the popover instance
+   */
+  catalogChanged(updatedCatalog: Catalog, popoverRef?: PopoverRef) {
+    if (popoverRef) {
+      popoverRef.close();
+    }
   }
 
   private fetchCatalogEntries(catalog: string) {

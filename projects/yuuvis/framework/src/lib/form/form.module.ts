@@ -1,3 +1,4 @@
+import { DragDropModule } from '@angular/cdk/drag-drop';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -20,6 +21,7 @@ import { DatetimeRangeComponent } from './elements/datetime-range/datetime-range
 import { DatepickerComponent } from './elements/datetime/datepicker/datepicker.component';
 import { DatetimeComponent } from './elements/datetime/datetime.component';
 import { YearRangeDirective } from './elements/datetime/year-range/year-range.directive';
+import { DynamicCatalogManagementComponent } from './elements/dynamic-catalog/dynamic-catalog-management/dynamic-catalog-management.component';
 import { DynamicCatalogComponent } from './elements/dynamic-catalog/dynamic-catalog.component';
 import { NumberRangeComponent } from './elements/number-range/number-range.component';
 import { NumberComponent } from './elements/number/number.component';
@@ -49,10 +51,11 @@ const components = [
  * To get a label for each form control, you can wrap it using `<yuv-form-input>`.
  */
 @NgModule({
-  declarations: [...components, YearRangeDirective],
+  declarations: [...components, YearRangeDirective, DynamicCatalogManagementComponent],
   entryComponents: [...components],
   exports: [...components, YearRangeDirective],
   imports: [
+    DragDropModule,
     CommonModule,
     FormsModule,
     TranslateModule,
