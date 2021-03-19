@@ -43,7 +43,7 @@ export const dynamicCatalogElements = [
     readonly: false,
     name: 'processstate',
     label: 'Process status',
-    description: 'dynamic catalog',
+    description: "dynamic catalog that isn't there",
     classifications: ['dynamic:catalog[processtatus]'],
     type: 'string',
     cardinality: 'single',

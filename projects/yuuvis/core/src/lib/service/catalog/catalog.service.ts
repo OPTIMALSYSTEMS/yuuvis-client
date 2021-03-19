@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
 import { BackendService } from '../backend/backend.service';
 import { Catalog } from './catalog.interface';
 
@@ -19,7 +19,16 @@ export class CatalogService {
    */
   getCatalog(name: string, namespace?: string): Observable<Catalog> {
     const k = this.cacheKey(name, namespace);
-    return this.catalogCache[k] ? of(this.catalogCache[k]) : this.backend.get(this.getUri(name, namespace)).pipe(tap((res) => (this.catalogCache[k] = res)));
+    return this.catalogCache[k]
+      ? of(this.catalogCache[k])
+      : this.backend.get(this.getUri(name, namespace)).pipe(
+          map((res) => ({
+            name: name,
+            namespace: namespace,
+            entries: res.entries
+          })),
+          tap((catalog: Catalog) => (this.catalogCache[k] = catalog))
+        );
   }
 
   /**
@@ -28,11 +37,17 @@ export class CatalogService {
    * @param patches A collection of JSON-Pathes. See http://jsonpatch.com/ for details
    * @param namespace Optional namespace
    */
-  patch(name: string, patches: any[], namespace?: string) {
-    return this.backend.patch(this.getUri(name, namespace)).pipe(
-      tap((res) => {
-        // TODO: update cache as well
-        // this.updateCache(res)
+  patch(name: string, patches: any[], namespace?: string): Observable<Catalog> {
+    this.backend.setHeader('Content-Type', 'application/json-patch+json');
+    return this.backend.patch(this.getUri(name, namespace), patches).pipe(
+      map((res) => ({
+        name: name,
+        namespace: namespace,
+        entries: res.entries
+      })),
+      tap((catalog: Catalog) => {
+        this.backend.setHeader('Content-Type', 'application/json');
+        this.updateCache(catalog);
       })
     );
   }

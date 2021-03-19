@@ -32,7 +32,10 @@ export class TestObjectFormComponent implements OnInit {
       label: 'Dynamic catalog component',
       model: {
         formModel: this.wrap(dynamicCatalogElements),
-        data: { germanstates: 'Berlin' }
+        data: {
+          germanstates: 'Berlin',
+          'germanstates:multi': ['Berlin', 'Bremen', 'XXX']
+        }
       }
     },
     {

@@ -1,6 +1,6 @@
 import { Component, forwardRef, Input, TemplateRef, ViewChild } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { Catalog, CatalogService, Classification, ClassificationEntry, SystemService } from '@yuuvis/core';
+import { Catalog, CatalogService, Classification, ClassificationEntry, SystemService, UserService } from '@yuuvis/core';
 import { IconRegistryService } from '../../../common/components/icon/service/iconRegistry.service';
 import { PopoverConfig } from '../../../popover/popover.interface';
 import { PopoverRef } from '../../../popover/popover.ref';
@@ -34,7 +34,6 @@ export class DynamicCatalogComponent implements ControlValueAccessor {
   catalog: Catalog;
   value: string | string[];
   innerValue: any;
-  // TODO: Take user role into account
   editable: boolean;
 
   /**
@@ -59,7 +58,7 @@ export class DynamicCatalogComponent implements ControlValueAccessor {
       // first option is the name of the catalog to load ...
       this.fetchCatalogEntries(ce.options[0]);
       // ... optional second option indicates whether or not this catalog is readonly
-      this.editable = !ce.options[1] || ce.options[1] !== 'readonly';
+      this.editable = this.userService.hasManageSettingsRole && (!ce.options[1] || ce.options[1] !== 'readonly');
     }
   }
   /**
@@ -71,7 +70,8 @@ export class DynamicCatalogComponent implements ControlValueAccessor {
     private systemService: SystemService,
     private popoverService: PopoverService,
     private iconRegistry: IconRegistryService,
-    private catalogService: CatalogService
+    private catalogService: CatalogService,
+    private userService: UserService
   ) {
     this.iconRegistry.registerIcons([edit]);
   }
@@ -80,7 +80,7 @@ export class DynamicCatalogComponent implements ControlValueAccessor {
 
   writeValue(value: any): void {
     this.value = value || null;
-    this.innerValue = value ? { name: value } : null;
+    // this.innerValue = value ? { name: value } : null;
   }
 
   registerOnChange(fn: any): void {
@@ -99,17 +99,7 @@ export class DynamicCatalogComponent implements ControlValueAccessor {
       width: '55%',
       height: '70%',
       data: {
-        // catalog: this.catalog
-        catalog: {
-          name: 'lala',
-          namespace: 'namespace',
-          entries: [
-            { name: '11', disabled: false },
-            { name: '12', disabled: false },
-            { name: '13', disabled: true },
-            { name: '14', disabled: false }
-          ]
-        }
+        catalog: this.catalog
       }
     };
     this.popoverService.open(this.tplCatalogManager, popoverConfig);
@@ -120,7 +110,8 @@ export class DynamicCatalogComponent implements ControlValueAccessor {
    * @param updatedCatalog Updated catalog
    * @param popoverRef Reference to the popover instance
    */
-  catalogChanged(updatedCatalog: Catalog, popoverRef?: PopoverRef) {
+  catalogSaved(updatedCatalog: Catalog, popoverRef?: PopoverRef) {
+    this.catalog = updatedCatalog;
     if (popoverRef) {
       popoverRef.close();
     }
@@ -130,11 +121,20 @@ export class DynamicCatalogComponent implements ControlValueAccessor {
     this.catalogService.getCatalog(catalog).subscribe(
       (res: Catalog) => {
         this.catalog = res;
+        // if (this.value) {
+
+        //   this.innerValue = Array.isArray(this.value)
+        //     ? this.catalog.entries.filter((e) => this.value.includes(e.name))
+        //     : this.catalog.entries.find((e) => e.name === this.value);
+        // }
       },
       (err) => {
         if (err.status === 404) {
           // we'll get a 404 if the catalog could not be found. Thats fine. Now
           // we know that we have to POST instead of PATCH if we are going to edit the catalog
+          this.readonly = true;
+          this.editable = false;
+          // TODO: Once there is a POST endpoint on the dms-controller catalog could be created from here
         } else {
           throw err;
         }
