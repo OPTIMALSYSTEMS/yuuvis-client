@@ -1,11 +1,11 @@
 import { Component, forwardRef, Input, TemplateRef, ViewChild } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { Catalog, CatalogService, Classification, ClassificationEntry, SystemService, UserService } from '@yuuvis/core';
+import { Catalog, CatalogEntry, CatalogService, Classification, ClassificationEntry, SystemService, UserService } from '@yuuvis/core';
 import { IconRegistryService } from '../../../common/components/icon/service/iconRegistry.service';
 import { PopoverConfig } from '../../../popover/popover.interface';
 import { PopoverRef } from '../../../popover/popover.ref';
 import { PopoverService } from '../../../popover/popover.service';
-import { edit } from '../../../svg.generated';
+import { clear, edit } from '../../../svg.generated';
 
 /**
  * Form input component for displaying dynamic catalogs.
@@ -32,9 +32,11 @@ export class DynamicCatalogComponent implements ControlValueAccessor {
   @ViewChild('tplCatalogManager') tplCatalogManager: TemplateRef<any>;
 
   catalog: Catalog;
+  enabledCatalogEntries: CatalogEntry[] = [];
   value: string | string[];
   innerValue: any;
   editable: boolean;
+  hasInvalidItems: boolean;
 
   /**
    * Possibles values are `EDIT` (default),`SEARCH`,`CREATE`. In search situation validation of the form element will be turned off, so you are able to enter search terms that do not meet the elements validators.
@@ -73,7 +75,7 @@ export class DynamicCatalogComponent implements ControlValueAccessor {
     private catalogService: CatalogService,
     private userService: UserService
   ) {
-    this.iconRegistry.registerIcons([edit]);
+    this.iconRegistry.registerIcons([edit, clear]);
   }
 
   propagateChange = (_: any) => {};
@@ -111,22 +113,54 @@ export class DynamicCatalogComponent implements ControlValueAccessor {
    * @param popoverRef Reference to the popover instance
    */
   catalogSaved(updatedCatalog: Catalog, popoverRef?: PopoverRef) {
-    this.catalog = updatedCatalog;
+    this.setCatalog(updatedCatalog);
     if (popoverRef) {
       popoverRef.close();
+    }
+  }
+
+  removeInvalidItems() {
+    if (Array.isArray(this.innerValue)) {
+      const fiv = [];
+      this.innerValue.forEach((iv) => {
+        if (iv.missing) {
+          this.value = (this.value as string[]).filter((v) => v !== iv.name);
+        } else {
+          fiv.push(iv);
+        }
+      });
+      this.innerValue = fiv;
+      this.hasInvalidItems = false;
     }
   }
 
   private fetchCatalogEntries(catalog: string) {
     this.catalogService.getCatalog(catalog).subscribe(
       (res: Catalog) => {
-        this.catalog = res;
-        // if (this.value) {
-
-        //   this.innerValue = Array.isArray(this.value)
-        //     ? this.catalog.entries.filter((e) => this.value.includes(e.name))
-        //     : this.catalog.entries.find((e) => e.name === this.value);
-        // }
+        this.setCatalog(res);
+        if (this.value) {
+          if (Array.isArray(this.value)) {
+            const iv = [];
+            this.value.forEach((v) => {
+              const ce = this.catalog.entries.find((e) => e.name === v);
+              iv.push(
+                ce || {
+                  name: v,
+                  missing: true
+                }
+              );
+              if (!ce) this.hasInvalidItems = true;
+            });
+            this.innerValue = iv;
+          } else {
+            const ce = this.catalog.entries.find((e) => e.name === this.value);
+            this.innerValue = ce || {
+              name: this.value,
+              missing: true
+            };
+            if (!ce) this.hasInvalidItems = true;
+          }
+        }
       },
       (err) => {
         if (err.status === 404) {
@@ -140,5 +174,10 @@ export class DynamicCatalogComponent implements ControlValueAccessor {
         }
       }
     );
+  }
+
+  private setCatalog(catalog: Catalog) {
+    this.catalog = catalog;
+    this.enabledCatalogEntries = catalog.entries.filter((e) => !e.disabled);
   }
 }

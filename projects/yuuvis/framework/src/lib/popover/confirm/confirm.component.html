@@ -1,0 +1,6 @@
+<div class="title" *ngIf="data.title">{{data.title}}</div>
+<div class="message">{{data.message}}</div>
+<div class="buttons">
+    <button *ngIf="!data.hideCancelButton" class="secondary" (click)="cancel()">{{data.cancelLabel}}</button>
+    <button class="primary" (click)="confirm()">{{data.confirmLabel}}</button>
+</div>

@@ -60,8 +60,25 @@ export class CatalogService {
     return this.backend.post(this.getUri(catalog.name, catalog.namespace)).pipe(tap((res) => this.updateCache(catalog)));
   }
 
+  /**
+   * Checks whether or not particular entries of a catalog are in use.
+   * @param catalogName The catalogs name
+   * @param catalogNamespace Optional namespace
+   * @param values The entries to be checked
+   * @returns An array of entries that are in use
+   */
+  inUse(catalogName: string, values: string[], catalogNamespace?: string): Observable<string[]> {
+    const queryParams = values.map((v) => `entries=${encodeURIComponent(v)}`);
+    if (catalogNamespace) queryParams.push(`appschemaname=${encodeURIComponent(catalogNamespace)}`);
+    return this.backend.get(`/dms/catalogs/${catalogName}/validate?${queryParams.join('&')}`).pipe(
+      tap((res) => {
+        console.log(res);
+      })
+    );
+  }
+
   private getUri(name: string, namespace?: string): string {
-    return `/dms/catalogs/${name}${namespace ? `?appschemaname=${namespace}` : ''}`;
+    return `/dms/catalogs/${name}${namespace ? `?appschemaname=${encodeURIComponent(namespace)}` : ''}`;
   }
 
   private updateCache(catalog: Catalog) {

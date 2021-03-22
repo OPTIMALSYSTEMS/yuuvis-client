@@ -73,6 +73,10 @@
       background-color: var(--panel-background);
       margin-bottom: 1px;
 
+      &.disabled {
+        color: var(--text-color-caption);
+      }
+
       > * {
         flex: 0 0 auto;
       }

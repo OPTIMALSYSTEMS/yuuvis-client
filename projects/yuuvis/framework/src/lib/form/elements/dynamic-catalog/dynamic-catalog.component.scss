@@ -6,4 +6,17 @@
   p-dropdown {
     flex: 1;
   }
+
+  .chip.missing {
+    border-color: var(--color-error);
+    color: var(--color-error);
+  }
+
+  .actions button {
+    margin: 0 2px;
+    &.error {
+      background-color: var(--color-error);
+      color: #fff;
+    }
+  }
 }
