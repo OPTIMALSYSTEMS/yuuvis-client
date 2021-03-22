@@ -15,6 +15,8 @@ export * from './lib/service/backend/api.enum';
 export * from './lib/service/backend/backend.service';
 export * from './lib/service/bpm/index';
 export * from './lib/service/cache/app-cache.service';
+export * from './lib/service/catalog/catalog.interface';
+export * from './lib/service/catalog/catalog.service';
 export * from './lib/service/config/config.interface';
 export * from './lib/service/config/config.service';
 export * from './lib/service/config/core-config';

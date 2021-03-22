@@ -1,0 +1,22 @@
+:host {
+  background-color: var(--panel-background);
+  width: 100%;
+  padding: var(--app-pane-padding);
+
+  .title {
+    font-weight: var(--font-weight-bold);
+    margin-bottom: var(--app-pane-padding);
+  }
+  .message {
+  }
+  .buttons {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: var(--app-pane-padding) -2px 0 -2px;
+
+    button {
+      margin: 0 2px;
+    }
+  }
+}

@@ -31,3 +31,11 @@ export interface PopoverConfig<T = any> {
   /**@ignore */
   right?: number;
 }
+
+export interface ConfirmPopoverData {
+  title?: string;
+  message: string;
+  confirmLabel?: string;
+  cancelLabel?: string;
+  hideCancelButton?: boolean;
+}

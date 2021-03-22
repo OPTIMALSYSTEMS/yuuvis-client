@@ -1,0 +1,35 @@
+<div class="header">
+    <h2>{{'yuv.framework.dynamic-catalog-management.headline' | translate: ({name: catalog.name}) }}</h2>
+</div>
+
+<div class="add">
+    <form (submit)="addEntry()">
+        <input type="text" [(ngModel)]="newEntryName" [ngModelOptions]="{ standalone: true }">
+        <button type="submit" class="secondary"
+            [disabled]="!newEntryName || newEntryName.length === 0">{{'yuv.framework.dynamic-catalog-management.button.entry.add'
+            | translate }}</button>
+    </form>
+</div>
+
+<main #main cdkDropList (cdkDropListDropped)="drop($event)" [cdkDropListData]="catalog.entries">
+
+    <div class="error" *ngIf="error" (click)="error = null">{{error}}</div>
+
+    <div class="entry" cdkDrag *ngFor="let e of catalog.entries; let i = index" [ngClass]="{disabled: e.disabled}">
+        <yuv-icon class="handle" cdkDragHandle [icon]="'dragHandle'"></yuv-icon>
+        <yuv-checkbox [(ngModel)]="!e.disabled"
+            title="{{'yuv.framework.dynamic-catalog-management.checkbox.tooltip'| translate}}"
+            [ngModelOptions]="{ standalone: true }" (ngModelChange)="setDisabled(i, $event)"></yuv-checkbox>
+        <div class="value">{{e.name}}</div>
+        <button (click)="remove(i)">
+            <yuv-icon [icon]="'clear'"></yuv-icon>
+        </button>
+    </div>
+</main>
+
+<div class="actions">
+    <button (click)="cancel.emit()">{{'yuv.framework.shared.cancel'|translate}}</button>
+    <button class="primary" [ngClass]="{spinning: saving}" [disabled]="saving ||patches.length === 0"
+        (click)="save()">{{
+        'yuv.framework.dynamic-catalog-management.button.save' | translate }}</button>
+</div>

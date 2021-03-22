@@ -6,6 +6,17 @@ body {
   }
 }
 
+// basic styles for cdk-drag-drop
+.cdk-drag-preview {
+  display: none;
+}
+.cdk-drop-list-dragging .cdk-drag {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+.cdk-drag-animating {
+  transition: transform 300ms cubic-bezier(0, 0, 0.2, 1);
+}
+
 .yuvFileDropOverlay {
   display: flex;
   align-items: center;
