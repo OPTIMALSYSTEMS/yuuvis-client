@@ -310,7 +310,9 @@ export class SearchResultComponent implements OnDestroy {
         };
 
         this.pagingForm.get('page').setValue(pageNumber);
-        this.pagingForm.get('page').setValidators([Validators.min(0), Validators.max(this.pagination.pages)]);
+        this.pagingForm
+          .get('page')
+          .setValidators([Validators.required, , Validators.pattern('[0-9]+'), Validators.min(1), Validators.max(this.pagination.pages)]);
       }
 
       // // TODO: setup column width

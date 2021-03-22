@@ -62,19 +62,19 @@
 
               <!-- paging controls -->
               <div class="controls" *ngIf="hasPages">
-                <button [disabled]="pagination.page === 0" (click)="goToPage(1)">
+                <button [disabled]="pagination.page === 1" (click)="goToPage(1)">
                   <yuv-icon class="first" [icon]="'arrowLast'"></yuv-icon>
                 </button>
-                <button [disabled]="pagination.page === 0" (click)="goToPage(pagination.page - 1)">
+                <button [disabled]="pagination.page <= 1" (click)="goToPage(pagination.page - 1)">
                   <yuv-icon class="prev" [icon]="'arrowNext'"></yuv-icon>
                 </button>
 
                 <form (ngSubmit)="onPagingFormSubmit()" [formGroup]="pagingForm">
-                  <input type="text" formControlName="page" />
+                  <input type="number" formControlName="page" />
                   <div>{{ pagination.pages }}</div>
                 </form>
 
-                <button [disabled]="pagination.page === pagination.pages" (click)="goToPage(pagination.page + 1)">
+                <button [disabled]="pagination.page >= pagination.pages" (click)="goToPage(pagination.page + 1)">
                   <yuv-icon class="next" [icon]="'arrowNext'"></yuv-icon>
                 </button>
                 <button [disabled]="pagination.page === pagination.pages" (click)="goToPage(pagination.pages)">
