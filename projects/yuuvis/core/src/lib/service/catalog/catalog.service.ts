@@ -69,7 +69,7 @@ export class CatalogService {
    */
   inUse(catalogName: string, values: string[], catalogNamespace?: string): Observable<string[]> {
     const queryParams = values.map((v) => `entries=${encodeURIComponent(v)}`);
-    if (catalogNamespace) queryParams.push(`appschemaname=${encodeURIComponent(catalogNamespace)}`);
+    if (catalogNamespace) queryParams.push(`namespace=${encodeURIComponent(catalogNamespace)}`);
     return this.backend.get(`/dms/catalogs/${catalogName}/validate?${queryParams.join('&')}`).pipe(
       tap((res) => {
         console.log(res);
@@ -78,7 +78,7 @@ export class CatalogService {
   }
 
   private getUri(name: string, namespace?: string): string {
-    return `/dms/catalogs/${name}${namespace ? `?appschemaname=${encodeURIComponent(namespace)}` : ''}`;
+    return `/dms/catalogs/${name}${namespace ? `?namespace=${encodeURIComponent(namespace)}` : ''}`;
   }
 
   private updateCache(catalog: Catalog) {

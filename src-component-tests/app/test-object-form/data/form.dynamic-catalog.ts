@@ -41,10 +41,20 @@ export const dynamicCatalogElements = [
   },
   {
     readonly: false,
-    name: 'processstate',
+    name: 'notthere',
     label: 'Process status',
     description: "dynamic catalog that isn't there",
-    classifications: ['dynamic:catalog[processtatus]'],
+    classifications: ['dynamic:catalog[xyz]'],
+    type: 'string',
+    cardinality: 'single',
+    required: false
+  },
+  {
+    readonly: false,
+    name: 'processstate:prefix',
+    label: 'Process status',
+    description: 'namespaced dynamic catalog',
+    classifications: ['dynamic:catalog[tenKolibri:processstatus]'],
     type: 'string',
     cardinality: 'single',
     required: false

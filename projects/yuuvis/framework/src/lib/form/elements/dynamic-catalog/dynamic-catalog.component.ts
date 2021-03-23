@@ -135,7 +135,9 @@ export class DynamicCatalogComponent implements ControlValueAccessor {
   }
 
   private fetchCatalogEntries(catalog: string) {
-    this.catalogService.getCatalog(catalog).subscribe(
+    // catalogs name could contain a namespace: [tenKolibri:myCatalog]
+    const tokens = catalog.split(':');
+    (tokens.length === 1 ? this.catalogService.getCatalog(catalog) : this.catalogService.getCatalog(tokens[1], tokens[0])).subscribe(
       (res: Catalog) => {
         this.setCatalog(res);
         if (this.value) {
