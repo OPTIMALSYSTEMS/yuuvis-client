@@ -26,7 +26,11 @@ export class DynamicCatalogManagementComponent {
   error: string;
   entriesToBeRemoved: string[] = [];
 
-  @Input() catalog: Catalog;
+  _catalog: Catalog;
+  @Input() set catalog(c: Catalog) {
+    // deep clone
+    this._catalog = JSON.parse(JSON.stringify(c));
+  }
 
   /**
    * Emitted when the catalog has been saved. Returns the updated catalog.
@@ -45,26 +49,26 @@ export class DynamicCatalogManagementComponent {
   }
 
   drop(event: CdkDragDrop<string[]>) {
-    moveItemInArray(this.catalog.entries, event.previousIndex, event.currentIndex);
+    moveItemInArray(this._catalog.entries, event.previousIndex, event.currentIndex);
     this.patches.push({ op: 'move', from: `/entries/${event.previousIndex}`, path: `/entries/${event.currentIndex}` });
   }
 
   remove(index: number) {
-    this.entriesToBeRemoved.push(this.catalog.entries[index].name);
-    this.catalog.entries.splice(index, 1);
+    this.entriesToBeRemoved.push(this._catalog.entries[index].name);
+    this._catalog.entries.splice(index, 1);
     this.patches.push({ op: 'remove', path: `/entries/${index}` });
   }
 
   setDisabled(index: number, enabled: boolean): void {
-    this.catalog.entries[index].disabled = !enabled;
+    this._catalog.entries[index].disabled = !enabled;
     this.patches.push({ op: 'replace', path: `/entries/${index}/disabled`, value: !enabled });
   }
 
   addEntry() {
-    if (this.newEntryName && !this.catalog.entries.find((e) => e.name === this.newEntryName)) {
+    if (this.newEntryName && !this._catalog.entries.find((e) => e.name === this.newEntryName)) {
       const e = { name: this.newEntryName, disabled: false };
-      this.catalog.entries.push(e);
-      this.patches.push({ op: 'add', path: `/entries/${this.catalog.entries.length - 1}`, value: e });
+      this._catalog.entries.push(e);
+      this.patches.push({ op: 'add', path: `/entries/${this._catalog.entries.length - 1}`, value: e });
       this.scrollToBottom();
     }
     this.newEntryName = null;
@@ -81,7 +85,7 @@ export class DynamicCatalogManagementComponent {
   save(): void {
     this.error = null;
     this.saving = true;
-    (this.entriesToBeRemoved.length ? this.catalogService.inUse(this.catalog.name, this.entriesToBeRemoved, this.catalog.namespace) : of([]))
+    (this.entriesToBeRemoved.length ? this.catalogService.inUse(this._catalog.name, this.entriesToBeRemoved, this._catalog.namespace) : of([]))
       .pipe(
         switchMap((inUse: string[]) =>
           inUse.length > 0
@@ -91,7 +95,7 @@ export class DynamicCatalogManagementComponent {
               })
             : of(true)
         ),
-        switchMap((proceed: boolean) => (proceed ? this.catalogService.patch(this.catalog.name, this.patches, this.catalog.namespace) : of(null)))
+        switchMap((proceed: boolean) => (proceed ? this.catalogService.patch(this._catalog.name, this.patches, this._catalog.namespace) : of(null)))
       )
       .subscribe(
         (catalog: Catalog) => {

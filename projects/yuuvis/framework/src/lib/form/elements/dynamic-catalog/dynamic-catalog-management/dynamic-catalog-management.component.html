@@ -1,5 +1,5 @@
 <div class="header">
-    <h2>{{'yuv.framework.dynamic-catalog-management.headline' | translate: ({name: catalog.name}) }}</h2>
+    <h2>{{'yuv.framework.dynamic-catalog-management.headline' | translate: ({name: _catalog.name}) }}</h2>
 </div>
 
 <div class="add">
@@ -11,11 +11,11 @@
     </form>
 </div>
 
-<main #main cdkDropList (cdkDropListDropped)="drop($event)" [cdkDropListData]="catalog.entries">
+<main #main cdkDropList (cdkDropListDropped)="drop($event)" [cdkDropListData]="_catalog.entries">
 
     <div class="error" *ngIf="error" (click)="error = null">{{error}}</div>
 
-    <div class="entry" cdkDrag *ngFor="let e of catalog.entries; let i = index" [ngClass]="{disabled: e.disabled}">
+    <div class="entry" cdkDrag *ngFor="let e of _catalog.entries; let i = index" [ngClass]="{disabled: e.disabled}">
         <yuv-icon class="handle" cdkDragHandle [icon]="'dragHandle'"></yuv-icon>
         <yuv-checkbox [(ngModel)]="!e.disabled"
             title="{{'yuv.framework.dynamic-catalog-management.checkbox.tooltip'| translate}}"
