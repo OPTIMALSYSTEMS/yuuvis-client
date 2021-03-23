@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
+import { catchError, map, switchMap, tap } from 'rxjs/operators';
 import { BackendService } from '../backend/backend.service';
-import { Catalog } from './catalog.interface';
+import { UserService } from '../user/user.service';
+import { Catalog, CatalogEntry } from './catalog.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -10,25 +11,65 @@ import { Catalog } from './catalog.interface';
 export class CatalogService {
   private catalogCache: { [key: string]: Catalog } = {};
 
-  constructor(private backend: BackendService) {}
+  constructor(private backend: BackendService, private userService: UserService) {}
 
   /**
    * Loads a catalog from the backend.
+   * For regular users that do not have Admin- or System-Role, catalogs that do not have the
+   * namespace of the current users tenant (example: users tenanat is 'tenAcme', catalogs namespace is 'appInvoice'):
+   *
+   * - the catalog will be fetched with the prefix of the current users tenant
+   * (ex: namespace to fetch: 'tenAcme:appInvoice')
+   * - if there is no catalog available under this prefix, the orinal catalog will be
+   * loaded but set to be readonly
+   *
    * @param name The catalogs name
    * @param namespace Optional namespace
    */
   getCatalog(name: string, namespace?: string): Observable<Catalog> {
-    const k = this.cacheKey(name, namespace);
-    return this.catalogCache[k]
-      ? of(this.catalogCache[k])
-      : this.backend.get(this.getUri(name, namespace)).pipe(
-          map((res) => ({
-            name: name,
-            namespace: namespace,
-            entries: res.entries
-          })),
-          tap((catalog: Catalog) => (this.catalogCache[k] = catalog))
-        );
+    // differ between user permissions
+    let readonly = false;
+    const user = this.userService.getCurrentUser();
+    const tenantNamespace =
+      (!this.userService.hasAdminRole || !this.userService.hasSystemRole) && !namespace.startsWith(user.tenant) ? `${user.tenant}${namespace || ''}` : null;
+
+    return (!tenantNamespace
+      ? this.backend.get(this.getUri(name, namespace))
+      : this.backend.get(this.getUri(name, tenantNamespace)).pipe(
+          catchError((e) => {
+            if (e.status === 404) {
+              return of({ entries: [] });
+            } else {
+              throw e;
+            }
+          }),
+          switchMap((tenantCatalog) => {
+            // if tenant catalog is empty, fetch content of the root catalog
+            readonly = tenantCatalog.entries.length === 0;
+            return readonly ? this.backend.get(this.getUri(name, namespace)) : tenantCatalog;
+          })
+        )
+    ).pipe(
+      map((res: { entries: CatalogEntry[] }) => ({
+        name: name,
+        namespace: namespace,
+        entries: res.entries,
+        readonly: readonly
+      }))
+    );
+
+    // const k = this.cacheKey(name, namespace);
+    // return this.catalogCache[k]
+    //   ? of(this.catalogCache[k])
+    //   : this.backend.get(this.getUri(name, namespace)).pipe(
+    //       map((res) => ({
+    //         name: name,
+    //         namespace: namespace,
+    //         entries: res.entries,
+    //         readonly
+    //       })),
+    //       tap((catalog: Catalog) => (this.catalogCache[k] = catalog))
+    //     );
   }
 
   /**

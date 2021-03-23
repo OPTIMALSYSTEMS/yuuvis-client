@@ -83,6 +83,7 @@ export class DynamicCatalogComponent implements ControlValueAccessor {
   writeValue(value: any): void {
     this.value = value || null;
     // this.innerValue = value ? { name: value } : null;
+    this.setupInnerValue();
   }
 
   registerOnChange(fn: any): void {
@@ -140,29 +141,30 @@ export class DynamicCatalogComponent implements ControlValueAccessor {
     (tokens.length === 1 ? this.catalogService.getCatalog(catalog) : this.catalogService.getCatalog(tokens[1], tokens[0])).subscribe(
       (res: Catalog) => {
         this.setCatalog(res);
-        if (this.value) {
-          if (Array.isArray(this.value)) {
-            const iv = [];
-            this.value.forEach((v) => {
-              const ce = this.catalog.entries.find((e) => e.name === v);
-              iv.push(
-                ce || {
-                  name: v,
-                  missing: true
-                }
-              );
-              if (!ce) this.hasInvalidItems = true;
-            });
-            this.innerValue = iv;
-          } else {
-            const ce = this.catalog.entries.find((e) => e.name === this.value);
-            this.innerValue = ce || {
-              name: this.value,
-              missing: true
-            };
-            if (!ce) this.hasInvalidItems = true;
-          }
-        }
+        this.setupInnerValue();
+        // if (this.value) {
+        //   // if (Array.isArray(this.value)) {
+        //   //   const iv = [];
+        //   //   this.value.forEach((v) => {
+        //   //     const ce = this.catalog.entries.find((e) => e.name === v);
+        //   //     iv.push(
+        //   //       ce || {
+        //   //         name: v,
+        //   //         missing: true
+        //   //       }
+        //   //     );
+        //   //     if (!ce) this.hasInvalidItems = true;
+        //   //   });
+        //   //   this.innerValue = iv;
+        //   // } else {
+        //   //   const ce = this.catalog.entries.find((e) => e.name === this.value);
+        //   //   this.innerValue = ce || {
+        //   //     name: this.value,
+        //   //     missing: true
+        //   //   };
+        //   //   if (!ce) this.hasInvalidItems = true;
+        //   // }
+        // }
       },
       (err) => {
         if (err.status === 404) {
@@ -176,6 +178,32 @@ export class DynamicCatalogComponent implements ControlValueAccessor {
         }
       }
     );
+  }
+
+  private setupInnerValue() {
+    if (this.value && this.catalog) {
+      if (Array.isArray(this.value)) {
+        const iv = [];
+        this.value.forEach((v) => {
+          const ce = this.catalog.entries.find((e) => e.name === v);
+          iv.push(
+            ce || {
+              name: v,
+              missing: true
+            }
+          );
+          if (!ce) this.hasInvalidItems = true;
+        });
+        this.innerValue = iv;
+      } else {
+        const ce = this.catalog.entries.find((e) => e.name === this.value);
+        this.innerValue = ce || {
+          name: this.value,
+          missing: true
+        };
+        if (!ce) this.hasInvalidItems = true;
+      }
+    }
   }
 
   private setCatalog(catalog: Catalog) {
