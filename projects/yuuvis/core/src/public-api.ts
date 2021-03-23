@@ -31,13 +31,22 @@ export * from './lib/service/event/events';
 export * from './lib/service/logger/logger';
 export * from './lib/service/pending-changes/pending-changes-guard.service';
 export * from './lib/service/pending-changes/pending-changes.service';
+export * from './lib/service/prediction/prediction.interface';
+export * from './lib/service/prediction/prediction.service';
 export * from './lib/service/screen/screen.interface';
 export * from './lib/service/screen/screen.service';
 export * from './lib/service/search/search-query.model';
 export * from './lib/service/search/search.service';
 export * from './lib/service/search/search.service.interface';
 export * from './lib/service/system/system.enum';
-export { ClassificationEntry, ObjectType, ObjectTypeField, ObjectTypeGroup, SecondaryObjectType } from './lib/service/system/system.interface';
+export {
+  ApplicableSecondaries,
+  ClassificationEntry,
+  ObjectType,
+  ObjectTypeField,
+  ObjectTypeGroup,
+  SecondaryObjectType
+} from './lib/service/system/system.interface';
 export * from './lib/service/system/system.service';
 export * from './lib/service/upload/upload.interface';
 export * from './lib/service/upload/upload.service';

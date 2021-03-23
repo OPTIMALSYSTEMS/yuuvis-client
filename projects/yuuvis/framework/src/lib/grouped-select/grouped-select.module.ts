@@ -7,7 +7,6 @@ import { AngularResizedEventModule } from 'angular-resize-event';
 import { PanelModule } from 'primeng/panel';
 import { YuvCommonModule } from '../common/common.module';
 import { YuvFormModule } from './../form/form.module';
-import { FsotSelectComponent } from './fsot-select/fsot-select.component';
 import { GroupedSelectComponent } from './grouped-select/grouped-select.component';
 import { SelectableItemComponent } from './grouped-select/selectable-item/selectable-item.component';
 
@@ -15,9 +14,9 @@ import { SelectableItemComponent } from './grouped-select/selectable-item/select
  * Module providing `GroupedSelectComponent`.
  */
 @NgModule({
-  declarations: [GroupedSelectComponent, SelectableItemComponent, FsotSelectComponent],
-  entryComponents: [GroupedSelectComponent, SelectableItemComponent, FsotSelectComponent],
-  exports: [GroupedSelectComponent, FsotSelectComponent],
+  declarations: [GroupedSelectComponent, SelectableItemComponent],
+  entryComponents: [GroupedSelectComponent, SelectableItemComponent],
+  exports: [GroupedSelectComponent],
   imports: [CommonModule, YuvFormModule, FormsModule, A11yModule, AngularResizedEventModule, PanelModule, TranslateModule, YuvCommonModule]
 })
 export class YuvGroupedSelectModule {}

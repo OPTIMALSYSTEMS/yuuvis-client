@@ -143,3 +143,10 @@ export interface ClassificationEntry {
   classification: string;
   options: string[];
 }
+/**
+ * Secondary object types that could be applied to a particular dms object
+ */
+export interface ApplicableSecondaries {
+  primarySOTs: SecondaryObjectType[];
+  extendingSOTs: SecondaryObjectType[];
+}
