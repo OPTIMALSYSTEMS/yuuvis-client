@@ -199,6 +199,7 @@ export class LayoutService {
    * make it possible for user to reset their layout settings and return to the default settings
    */
   clearLayout() {
+    this.processLayoutSettings({});
     return this.appCache.clear((key: string) => !!key.match(this.STORAGE_KEY_REGEXP));
   }
 }
