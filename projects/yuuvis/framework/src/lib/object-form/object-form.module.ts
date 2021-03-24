@@ -7,17 +7,18 @@ import { TabViewModule } from 'primeng/tabview';
 import { YuvCommonModule } from '../common/common.module';
 import { YuvComponentsModule } from '../components/components.module';
 import { YuvDirectivesModule } from '../directives/directives.module';
+import { YuvFloatingSotSelectModule } from '../floating-sot-select/floating-sot-select.module';
 import { YuvGroupedSelectModule } from '../grouped-select/grouped-select.module';
 import { YuvPipesModule } from '../pipes/pipes.module';
 import { YuvFormModule } from './../form/form.module';
 import { CombinedObjectFormComponent } from './combined-object-form/combined-object-form.component';
+import { ExpandedTableComponent } from './form-element-table/expanded-table/expanded-table.component';
 import { FormElementTableComponent } from './form-element-table/form-element-table.component';
 import { RowEditComponent } from './form-element-table/row-edit/row-edit.component';
 import { ObjectFormEditComponent } from './object-form-edit/object-form-edit.component';
 import { ObjectFormElementComponent } from './object-form-element/object-form-element.component';
 import { ObjectFormGroupComponent } from './object-form-group/object-form-group.component';
 import { ObjectFormComponent } from './object-form/object-form.component';
-import { ExpandedTableComponent } from './form-element-table/expanded-table/expanded-table.component';
 
 /**
  * Module provides components for creating for a dms object.
@@ -41,6 +42,7 @@ import { ExpandedTableComponent } from './form-element-table/expanded-table/expa
     ReactiveFormsModule,
     YuvPipesModule,
     YuvFormModule,
+    YuvFloatingSotSelectModule,
     TabViewModule,
     TranslateModule,
     YuvComponentsModule,

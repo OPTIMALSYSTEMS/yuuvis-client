@@ -12,7 +12,6 @@ import {
   ObjectTypeGroup,
   PendingChangesService,
   SearchService,
-  SecondaryObjectType,
   SecondaryObjectTypeClassification,
   Sort,
   SystemService,
@@ -28,6 +27,7 @@ import { catchError, map, switchMap } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { FadeInAnimations } from '../../common/animations/fadein.animation';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
+import { FloatingSotSelectInput } from '../../floating-sot-select/floating-sot-select.interface';
 import { Selectable, SelectableGroup } from '../../grouped-select';
 import { ObjectFormEditComponent } from '../../object-form/object-form-edit/object-form-edit.component';
 import { FormStatusChangedEvent, ObjectFormOptions } from '../../object-form/object-form.interface';
@@ -48,7 +48,7 @@ export interface AFOState {
   };
   // List of floating secondary object types that could be applied to the current AFO(s)
   floatingSOT: {
-    items: SelectableGroup;
+    item: FloatingSotSelectInput;
     selected?: {
       sot: { id: string; label: string };
     };
@@ -374,7 +374,8 @@ export class ObjectCreateComponent implements OnDestroy {
   }
 
   afoSelectFloatingSOT(sot: { id: string; label: string }) {
-    this.afoCreate.dmsObject.selected.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS] = sot.id != 'none' ? [...this.getSotsToBeApplied(), sot.id] : null;
+    this.afoCreate.dmsObject.selected.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS] =
+      !sot || sot.id != 'none' ? [...this.getSotsToBeApplied(), sot.id] : null;
     this.afoCreate.floatingSOT.selected = {
       sot: {
         id: sot?.id || 'none',
@@ -411,18 +412,18 @@ export class ObjectCreateComponent implements OnDestroy {
           this.objCreateService.setNewState({ currentStep: CurrentStep.AFO_INDEXDATA, busy: false });
           this.objCreateService.setNewBreadcrumb(CurrentStep.AFO_INDEXDATA, CurrentStep.AFO_UPLOAD);
 
-          const selectableSOTs: SelectableGroup = {
-            id: 'sots',
-            label: this.translate.instant('yuv.framework.object-create.afo.type.select.title'),
-            items: [
+          const selectableSOTs: FloatingSotSelectInput = {
+            dmsObject: res.length === 1 ? res[0] : null,
+            sots: this.system.getPrimaryFSOTs(this.selectedObjectType.id, true).sort(Utils.sortValues('label')),
+            additionalItems: [
               {
-                id: 'none',
                 label: this.translate.instant('yuv.framework.object-create.afo.type.select.general'),
                 description: this.system.getLocalizedResource(`${this.selectedObjectType.id}_label`),
-                svgSrc: this.system.getObjectTypeIconUri(this.selectedObjectType.id)
-              },
-              ...this.mapToSelectables(this.system.getPrimaryFSOTs(this.selectedObjectType.id, true)).sort(Utils.sortValues('label'))
-            ]
+                svgSrc: this.system.getObjectTypeIconUri(this.selectedObjectType.id),
+                sot: null
+              }
+            ],
+            isPrimary: true
           };
 
           if (this.selectedObjectType.floatingParentType) {
@@ -432,17 +433,17 @@ export class ObjectCreateComponent implements OnDestroy {
 
             this.afoCreate = {
               dmsObject: { items: res, selected: res[0] },
-              floatingSOT: { items: selectableSOTs }
+              floatingSOT: { item: selectableSOTs }
             };
             this.afoSelectFloatingSOT({ id: sot.id, label: sot.label });
           } else {
             // const selectableSOTs = this.system.getPrimaryFSOTs(this.selectedObjectType.id, true);
             this.afoCreate = {
               dmsObject: { items: res, selected: res[0] },
-              floatingSOT: { items: selectableSOTs }
+              floatingSOT: { item: selectableSOTs }
             };
-            if (selectableSOTs.items.length === 1) {
-              this.afoSelectFloatingSOT(selectableSOTs.items[0].value);
+            if (selectableSOTs.sots.length === 1) {
+              this.afoSelectFloatingSOT({ id: selectableSOTs.sots[0].id, label: selectableSOTs.sots[0].label });
             }
           }
         },
@@ -453,30 +454,30 @@ export class ObjectCreateComponent implements OnDestroy {
       );
   }
 
-  private mapToSelectables(sots: SecondaryObjectType[]): Selectable[] {
-    return sots.map((sot) => {
-      // if we got files but the target FSOT does not support content
-      const contentRequiredButMissing = (!this.files || this.files.length === 0) && sot.contentStreamAllowed === ContentStreamAllowed.REQUIRED;
-      // if the target FSOT requires a file, but we don't have one
-      const contentButNotAllowed = this.files && this.files.length && sot.contentStreamAllowed === ContentStreamAllowed.NOT_ALLOWED;
-      const disabled = contentRequiredButMissing || contentButNotAllowed;
+  // private mapToSelectables(sots: SecondaryObjectType[]): Selectable[] {
+  //   return sots.map((sot) => {
+  //     // if we got files but the target FSOT does not support content
+  //     const contentRequiredButMissing = (!this.files || this.files.length === 0) && sot.contentStreamAllowed === ContentStreamAllowed.REQUIRED;
+  //     // if the target FSOT requires a file, but we don't have one
+  //     const contentButNotAllowed = this.files && this.files.length && sot.contentStreamAllowed === ContentStreamAllowed.NOT_ALLOWED;
+  //     const disabled = contentRequiredButMissing || contentButNotAllowed;
 
-      let selectable: Selectable = {
-        id: sot.id,
-        label: sot.label,
-        svgSrc: this.system.getObjectTypeIconUri(sot.id),
-        disabled: disabled,
-        value: sot
-      };
-      // add description to tell the user why a selectable is disabled
-      if (disabled) {
-        selectable.description = contentRequiredButMissing
-          ? this.translate.instant('yuv.framework.object-create.afo.type.select.disabled.content-missing')
-          : this.translate.instant('yuv.framework.object-create.afo.type.select.disabled.content-not-allowed');
-      }
-      return selectable;
-    });
-  }
+  //     let selectable: Selectable = {
+  //       id: sot.id,
+  //       label: sot.label,
+  //       svgSrc: this.system.getObjectTypeIconUri(sot.id),
+  //       disabled: disabled,
+  //       value: sot
+  //     };
+  //     // add description to tell the user why a selectable is disabled
+  //     if (disabled) {
+  //       selectable.description = contentRequiredButMissing
+  //         ? this.translate.instant('yuv.framework.object-create.afo.type.select.disabled.content-missing')
+  //         : this.translate.instant('yuv.framework.object-create.afo.type.select.disabled.content-not-allowed');
+  //     }
+  //     return selectable;
+  //   });
+  // }
 
   afoCreateCancel() {
     this.resetState();
