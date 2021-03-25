@@ -95,7 +95,15 @@ export class DynamicCatalogManagementComponent {
               })
             : of(true)
         ),
-        switchMap((proceed: boolean) => (proceed ? this.catalogService.patch(this._catalog.name, this.patches, this._catalog.namespace) : of(null)))
+        switchMap((proceed: boolean) => {
+          if (proceed) {
+            return this._catalog.tenant
+              ? this.catalogService.patch(this._catalog.name, this.patches, this._catalog.namespace)
+              : this.catalogService.post(this._catalog);
+          } else {
+            return of(null);
+          }
+        })
       )
       .subscribe(
         (catalog: Catalog) => {

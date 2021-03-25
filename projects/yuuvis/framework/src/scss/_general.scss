@@ -144,3 +144,24 @@ body {
 .cdk-overlay-pane {
   box-shadow: 0 1px 10px 0 rgba(0, 0, 0, 0.15);
 }
+
+.yuv-dialog {
+  padding: var(--app-pane-padding);
+  > .title {
+    font-size: var(--font-subhead);
+    margin-bottom: 1em;
+  }
+  > .message {
+    margin-bottom: 1em;
+  }
+  > .actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin: var(--app-pane-padding) -2px 0 -2px;
+
+    button {
+      margin: 0 2px;
+    }
+  }
+}

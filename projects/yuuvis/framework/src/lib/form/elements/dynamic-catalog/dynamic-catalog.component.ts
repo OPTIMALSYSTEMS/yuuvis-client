@@ -60,7 +60,7 @@ export class DynamicCatalogComponent implements ControlValueAccessor {
       // first option is the name of the catalog to load ...
       this.fetchCatalogEntries(ce.options[0]);
       // ... optional second option indicates whether or not this catalog is readonly
-      this.editable = this.userService.hasManageSettingsRole && (!ce.options[1] || ce.options[1] !== 'readonly');
+      this.editable = this.situation === 'SEARCH' || (this.userService.hasManageSettingsRole && (!ce.options[1] || ce.options[1] !== 'readonly'));
     }
   }
   /**
@@ -142,29 +142,6 @@ export class DynamicCatalogComponent implements ControlValueAccessor {
       (res: Catalog) => {
         this.setCatalog(res);
         this.setupInnerValue();
-        // if (this.value) {
-        //   // if (Array.isArray(this.value)) {
-        //   //   const iv = [];
-        //   //   this.value.forEach((v) => {
-        //   //     const ce = this.catalog.entries.find((e) => e.name === v);
-        //   //     iv.push(
-        //   //       ce || {
-        //   //         name: v,
-        //   //         missing: true
-        //   //       }
-        //   //     );
-        //   //     if (!ce) this.hasInvalidItems = true;
-        //   //   });
-        //   //   this.innerValue = iv;
-        //   // } else {
-        //   //   const ce = this.catalog.entries.find((e) => e.name === this.value);
-        //   //   this.innerValue = ce || {
-        //   //     name: this.value,
-        //   //     missing: true
-        //   //   };
-        //   //   if (!ce) this.hasInvalidItems = true;
-        //   // }
-        // }
       },
       (err) => {
         if (err.status === 404) {
@@ -208,6 +185,6 @@ export class DynamicCatalogComponent implements ControlValueAccessor {
 
   private setCatalog(catalog: Catalog) {
     this.catalog = catalog;
-    this.enabledCatalogEntries = catalog.entries.filter((e) => !e.disabled);
+    this.enabledCatalogEntries = this.situation === 'SEARCH' ? catalog.entries : catalog.entries.filter((e) => !e.disabled);
   }
 }
