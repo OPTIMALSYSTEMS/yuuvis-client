@@ -30,4 +30,27 @@ export class PredictionService {
       })
     );
   }
+
+  /**
+   * Send feedback to the prediction API. This will help the service to be trained over time
+   * and improve its predictions. So if you fetched a prediction you should also respond to
+   * the service which item was choosen by the user.
+   * @param predictionId ID of the prediction fetched earlier (... by calling classify() for example)
+   * @param objectTypeId The object type ID choosen by the user
+   */
+  sendClassifyFeedback(predictionId: string, objectTypeId: string): void {
+    const postData = {
+      properties: {
+        predictionId: {
+          value: predictionId
+        },
+        feedbackData: {
+          objectTypeId: {
+            value: objectTypeId
+          }
+        }
+      }
+    };
+    this.backend.post(`/predict/classification/feedback`, postData, 'predict').subscribe();
+  }
 }

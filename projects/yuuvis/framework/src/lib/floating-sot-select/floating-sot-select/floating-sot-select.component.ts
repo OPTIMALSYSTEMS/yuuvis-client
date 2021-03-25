@@ -26,6 +26,7 @@ export class FloatingSotSelectComponent {
   @Input() title: string;
 
   dmsObject: DmsObject;
+  predictionClassifyResult: PredictionClassifyResult;
   sots: FloatingSotSelectItem[];
 
   @HostListener('keydown', ['$event']) onKeyDown(event) {
@@ -47,6 +48,7 @@ export class FloatingSotSelectComponent {
         catchError((e) => of(null))
       )
       .subscribe((prdRes: PredictionClassifyResult) => {
+        this.predictionClassifyResult = prdRes;
         this.sots = [
           ...(Array.isArray(i.additionalItems) ? i.additionalItems : []),
           ...i.sots.map((sot) => this.toSelectable(sot, prdRes?.predictions[sot.id].probability))
@@ -88,7 +90,11 @@ export class FloatingSotSelectComponent {
   }
 
   select(item: FloatingSotSelectItem) {
-    if (!item.disabled) {
+    if (item && !item.disabled) {
+      // send feedback to prediction service
+      if (this.predictionClassifyResult) {
+        this.predictionService.sendClassifyFeedback(this.predictionClassifyResult.id, item.sot.id);
+      }
       this.fsotSelect.emit(item.sot);
     }
   }
