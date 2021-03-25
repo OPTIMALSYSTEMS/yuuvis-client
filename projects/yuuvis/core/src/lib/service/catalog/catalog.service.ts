@@ -50,11 +50,12 @@ export class CatalogService {
           })
         )
     ).pipe(
-      map((res: { entries: CatalogEntry[] }) => ({
+      map((res: { tenant: string; entries: CatalogEntry[] }) => ({
         name: name,
         namespace: namespace,
         entries: res.entries,
-        readonly: readonly
+        readonly: readonly,
+        tenant: res.tenant
       }))
     );
 
@@ -91,6 +92,14 @@ export class CatalogService {
         this.updateCache(catalog);
       })
     );
+  }
+
+  post(catalog: Catalog): Observable<Catalog> {
+    return this.backend
+      .post(this.getUri(catalog.name, catalog.namespace), {
+        entries: catalog.entries
+      })
+      .pipe();
   }
 
   /**
