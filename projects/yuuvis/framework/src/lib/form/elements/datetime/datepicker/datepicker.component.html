@@ -11,8 +11,9 @@
           </div>
         </div>
       </div>
-      <input (keydown)="onInputKeydown($event)" type="number" [(ngModel)]="year" [max]="maxYear"
-        (ngModelChange)="setYear($event)" [ngModelOptions]="{ standalone: true }" />
+      <input (keydown)="onInputKeydown($event)" type="number" [(ngModel)]="year" [min]="minYear" [max]="maxYear"
+        (ngModelChange)="setYear($event)" [ngModelOptions]="{ standalone: true }" 
+        oninput="this.value=parseInt(this.value.slice(-4))"/>
       <div class="controls">
         <button class="icon white year-up" (click)="setYear(year + 1)" [disabled]="year === maxYear">
           <yuv-icon [icon]="'arrowDown'"></yuv-icon>
