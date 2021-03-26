@@ -55,13 +55,7 @@ export class DynamicCatalogComponent implements ControlValueAccessor {
    * Additional semantics for the form element.
    */
   @Input() set classifications(c: string[]) {
-    const ce: ClassificationEntry = this.systemService.getClassifications(c).get(Classification.STRING_CATALOG_DYNAMIC);
-    if (ce && ce.options && ce.options.length) {
-      // first option is the name of the catalog to load ...
-      this.fetchCatalogEntries(ce.options[0]);
-      // ... optional second option indicates whether or not this catalog is readonly
-      this.editable = this.situation === 'SEARCH' || (this.userService.hasManageSettingsRole && (!ce.options[1] || ce.options[1] !== 'readonly'));
-    }
+    this.fetchCatalogEntries(this.systemService.getClassifications(c).get(Classification.STRING_CATALOG_DYNAMIC));
   }
   /**
    * Will prevent the input from being changed (default: false)
@@ -82,7 +76,6 @@ export class DynamicCatalogComponent implements ControlValueAccessor {
 
   writeValue(value: any): void {
     this.value = value || null;
-    // this.innerValue = value ? { name: value } : null;
     this.setupInnerValue();
   }
 
@@ -135,26 +128,32 @@ export class DynamicCatalogComponent implements ControlValueAccessor {
     }
   }
 
-  private fetchCatalogEntries(catalog: string) {
-    // catalogs name could contain a namespace: [tenKolibri:myCatalog]
-    const tokens = catalog.split(':');
-    (tokens.length === 1 ? this.catalogService.getCatalog(catalog) : this.catalogService.getCatalog(tokens[1], tokens[0])).subscribe(
-      (res: Catalog) => {
-        this.setCatalog(res);
-        this.setupInnerValue();
-      },
-      (err) => {
-        if (err.status === 404) {
-          // we'll get a 404 if the catalog could not be found. Thats fine. Now
-          // we know that we have to POST instead of PATCH if we are going to edit the catalog
-          this.readonly = true;
-          this.editable = false;
-          // TODO: Once there is a POST endpoint on the dms-controller catalog could be created from here
-        } else {
-          throw err;
+  private fetchCatalogEntries(ce: ClassificationEntry) {
+    if (ce && ce.options && ce.options.length) {
+      // first classification option is the name of the catalog to load ...
+      this.catalogService.getCatalog(ce.options[0]).subscribe(
+        (res: Catalog) => {
+          if (ce.options[1] === 'readonly') {
+            res.readonly = true;
+          }
+          this.setCatalog(res);
+          this.setupInnerValue();
+          // ... optional second option indicates whether or not this catalog is readonly
+          this.editable = this.situation === 'SEARCH' || (this.userService.hasManageSettingsRole && (!ce.options[1] || ce.options[1] !== 'readonly'));
+        },
+        (err) => {
+          if (err.status === 404) {
+            // we'll get a 404 if the catalog could not be found. Thats fine. Now
+            // we know that we have to POST instead of PATCH if we are going to edit the catalog
+            this.readonly = true;
+            this.editable = false;
+            // TODO: Once there is a POST endpoint on the dms-controller catalog could be created from here
+          } else {
+            throw err;
+          }
         }
-      }
-    );
+      );
+    }
   }
 
   private setupInnerValue() {

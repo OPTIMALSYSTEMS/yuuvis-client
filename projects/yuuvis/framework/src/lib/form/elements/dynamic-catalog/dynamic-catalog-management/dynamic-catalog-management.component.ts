@@ -1,6 +1,6 @@
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
-import { Catalog, CatalogService, Logger, TranslateService } from '@yuuvis/core';
+import { Catalog, CatalogService, Logger, SystemService, TranslateService } from '@yuuvis/core';
 import { of } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { IconRegistryService } from '../../../../common/components/icon/service/iconRegistry.service';
@@ -27,9 +27,18 @@ export class DynamicCatalogManagementComponent {
   entriesToBeRemoved: string[] = [];
 
   _catalog: Catalog;
+  _catalogLabel: string;
+  /**
+   * This will enable the component to edit catalogs from an administrors
+   * perspective. It will then use different endpoints to save the changes
+   * after checking for the users permissions. Possible values are 'admin'
+   * and 'system'.
+   */
+  @Input() scope: 'admin' | 'system';
   @Input() set catalog(c: Catalog) {
     // deep clone
     this._catalog = JSON.parse(JSON.stringify(c));
+    this._catalogLabel = this.systemService.getLocalizedResource(this._catalog.qname) || this._catalog.qname;
   }
 
   /**
@@ -42,6 +51,7 @@ export class DynamicCatalogManagementComponent {
     private catalogService: CatalogService,
     private popoverService: PopoverService,
     private translate: TranslateService,
+    private systemService: SystemService,
     private logger: Logger,
     private iconRegistry: IconRegistryService
   ) {
@@ -85,7 +95,7 @@ export class DynamicCatalogManagementComponent {
   save(): void {
     this.error = null;
     this.saving = true;
-    (this.entriesToBeRemoved.length ? this.catalogService.inUse(this._catalog.name, this.entriesToBeRemoved, this._catalog.namespace) : of([]))
+    (this.entriesToBeRemoved.length ? this.catalogService.inUse(this._catalog.qname, this.entriesToBeRemoved) : of([]))
       .pipe(
         switchMap((inUse: string[]) =>
           inUse.length > 0
@@ -97,9 +107,7 @@ export class DynamicCatalogManagementComponent {
         ),
         switchMap((proceed: boolean) => {
           if (proceed) {
-            return this._catalog.tenant
-              ? this.catalogService.patch(this._catalog.name, this.patches, this._catalog.namespace)
-              : this.catalogService.post(this._catalog);
+            return this._catalog.tenant ? this.catalogService.patch(this._catalog.qname, this.patches) : this.catalogService.post(this._catalog, this.scope);
           } else {
             return of(null);
           }

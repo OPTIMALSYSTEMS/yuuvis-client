@@ -1,6 +1,5 @@
 export interface Catalog {
-  name: string;
-  namespace: string;
+  qname: string;
   entries: CatalogEntry[];
   // If a tenant is set the catalog is provided from the tenants scope.
   // Could be NULL if no tenant scoped changes have been made. In this case
