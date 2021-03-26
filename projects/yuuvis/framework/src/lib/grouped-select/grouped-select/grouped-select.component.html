@@ -5,7 +5,7 @@
     <p-header class="group-label" *ngIf="group.label"
       [ngClass]="{ enableSelectAll: enableSelectAll, toggleable: toggleable }" (click)="toggleCollapsed(group)">
       {{ group.label }}
-      <yuv-icon class="checkAllBtn" icon="checkAll" (click)="toggleAllOfGroup(group)"
+      <yuv-icon class="checkAllBtn" icon="checkAll" (click)="toggleAllOfGroup(group);$event.stopPropagation()"
         title="{{'yuv.framework.grouped-select.check-all.tooltip'|translate}}"></yuv-icon>
     </p-header>
     <div class="items">

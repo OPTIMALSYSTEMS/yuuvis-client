@@ -1,1 +1,31 @@
-{}
+{
+  "core": {
+    "apiBase": {
+      "core": "/api",
+      "api-web": "/api-web",
+      "predict": "/predict-api",
+      "custom": "/custom"
+    },
+    "languages": [
+      {
+        "iso": "de",
+        "label": "Deutsch"
+      },
+      {
+        "iso": "en",
+        "label": "English",
+        "fallback": true
+      }
+    ],
+    "logging": {
+      "level": "debug"
+    }
+  },
+  "client": {
+    "docu": {
+      "link": "https://help.optimal-systems.com/yuuvis/client/v23/user/###userLang###/index.html",
+      "version": 23,
+      "language": ["de", "en"]
+    }
+  }
+}

@@ -41,6 +41,7 @@ import { TestSummaryComponent } from './test-summary/test-summary.component';
 import { TestUploadProgressOverlayComponent } from './test-upload-progress-overlay/test-upload-progress-overlay.component';
 import { TestUserAvatarComponent } from './test-user-avatar/test-user-avatar.component';
 import { TestVersionListComponent } from './test-version-list/test-version-list.component';
+import { TestPopoverComponent } from './test-popover/test-popover.component';
 
 @NgModule({
   declarations: [
@@ -71,7 +72,8 @@ import { TestVersionListComponent } from './test-version-list/test-version-list.
     TestVersionListComponent,
     TestObjectDetailsCompareComponent,
     TestQuickfinderComponent,
-    TestContextComponent
+    TestContextComponent,
+    TestPopoverComponent
   ],
   imports: [
     HttpClientModule,

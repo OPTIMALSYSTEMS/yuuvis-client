@@ -2,6 +2,8 @@
  * Interface for a group of`Selectables`
  */
 
+import { SecondaryObjectType } from '@yuuvis/core';
+
 export interface SelectableGroup {
   id: string;
   label?: string;
@@ -34,6 +36,16 @@ export interface Selectable {
   defaultValue?: any;
   defaultOperator?: string;
   class?: string;
+}
+
+export interface FSOTSelectable {
+  id: string;
+  label: string;
+  svgSrc?: string;
+  disabled?: boolean;
+  description?: string;
+  prediction?: number;
+  value?: SecondaryObjectType;
 }
 /**
  * @ignore

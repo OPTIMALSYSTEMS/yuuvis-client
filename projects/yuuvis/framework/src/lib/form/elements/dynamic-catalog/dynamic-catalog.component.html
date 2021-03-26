@@ -1,0 +1,37 @@
+<p-multiSelect *ngIf="multiselect; else tplSingleSelect"
+    [filter]="enabledCatalogEntries?.length > enableFilterWhenOptionsExceed" [showTransitionOptions]="'0ms'"
+    optionLabel="name" optionDisabled="disabled" [hideTransitionOptions]="'0ms'" placeholder=" "
+    (ngModelChange)="onChange($event)" display="chip" [disabled]="readonly" [options]="enabledCatalogEntries"
+    [(ngModel)]="innerValue">
+
+    <ng-template let-items pTemplate="selectedItems">
+        <span class="chip" [ngClass]="{missing: item.missing}" *ngFor="let item of items">{{item.name}}
+        </span>
+    </ng-template>
+
+</p-multiSelect>
+
+<ng-template #tplSingleSelect>
+    <p-dropdown [options]="enabledCatalogEntries" placeholder=" " [showTransitionOptions]="'0ms'" optionLabel="name"
+        optionDisabled="disabled" [hideTransitionOptions]="'0ms'"
+        [filter]="enabledCatalogEntries?.length > enableFilterWhenOptionsExceed" (ngModelChange)="onChange($event)"
+        [disabled]="readonly" [showClear]="!readonly" [(ngModel)]="innerValue">
+    </p-dropdown>
+</ng-template>
+
+<div class="actions">
+    <button class="p-button error" (click)="removeInvalidItems()" *ngIf="hasInvalidItems"
+        title="{{'yuv.framework.dynamic-catalog.remove-invalid.tooltip'|translate}}">
+        <yuv-icon icon="clear"></yuv-icon>
+    </button>
+    <button class="p-button" (click)="openManager()" *ngIf="editable"
+        title="{{'yuv.framework.dynamic-catalog.edit.tooltip'|translate}}">
+        <yuv-icon icon="edit"></yuv-icon>
+    </button>
+</div>
+
+<!-- catalog management overlay -->
+<ng-template #tplCatalogManager let-data let-popover="popover">
+    <yuv-dynamic-catalog-management (catalogSaved)="catalogSaved($event, popover)" (cancel)="popover.close()"
+        [catalog]="data.catalog"></yuv-dynamic-catalog-management>
+</ng-template>

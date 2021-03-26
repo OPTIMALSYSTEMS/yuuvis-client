@@ -18,6 +18,7 @@ import {
   SystemType
 } from './system.enum';
 import {
+  ApplicableSecondaries,
   ClassificationEntry,
   GroupedObjectType,
   ObjectType,
@@ -281,6 +282,57 @@ export class SystemService {
     return this.isFloatingObjectType(this.getObjectType(dmsObject.objectTypeId))
       ? dmsObject.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS].find((sot) => sot.classification?.includes(SecondaryObjectTypeClassification.PRIMARY))
       : null;
+  }
+
+  /**
+   * Get the secondary object types that could be applied to the provided dms object.
+   * @param dmsObject A dms object
+   */
+  getApplicableSecondaries(dmsObject: DmsObject): ApplicableSecondaries {
+    const fsots: ApplicableSecondaries = {
+      primarySOTs: [],
+      extendingSOTs: []
+    };
+    const objectType = this.getObjectType(dmsObject.objectTypeId);
+    const currentSOTs = dmsObject.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS];
+    const alreadyAssignedPrimary =
+      currentSOTs?.length > 0 &&
+      currentSOTs.map((id) => this.getSecondaryObjectType(id)).filter((sot) => sot?.classification?.includes(SecondaryObjectTypeClassification.PRIMARY))
+        .length > 0;
+
+    objectType.secondaryObjectTypes
+      .filter((sot) => !sot.static && !currentSOTs?.includes(sot.id))
+      .forEach((sotref) => {
+        const sot = this.getSecondaryObjectType(sotref.id, true);
+
+        if (sot.classification?.includes(SecondaryObjectTypeClassification.PRIMARY)) {
+          if (!alreadyAssignedPrimary) {
+            fsots.primarySOTs.push(sot);
+          }
+        } else if (
+          !sot.classification?.includes(SecondaryObjectTypeClassification.REQUIRED) &&
+          !sot.classification?.includes(SecondaryObjectTypeClassification.EXTENSION_ADD_FALSE)
+        ) {
+          fsots.extendingSOTs.push(sot);
+        }
+      });
+
+    fsots.extendingSOTs.sort(Utils.sortValues('label'));
+
+    if (!alreadyAssignedPrimary && this.isFloatingObjectType(objectType)) {
+      fsots.primarySOTs.sort(Utils.sortValues('label'));
+      // // add general target type
+      // fsots.primarySOTs = [
+      //   {
+      //     label: generalTypeLabel,
+      //     description: this.getLocalizedResource(`${dmsObject.objectTypeId}_label`),
+      //     svgSrc: this.getObjectTypeIconUri(dmsObject.objectTypeId),
+      //     sot: null
+      //   },
+      //   ...fsots.primarySOTs
+      // ];
+    }
+    return fsots;
   }
 
   /**
@@ -833,6 +885,8 @@ export class SystemService {
       return InternalFieldType.STRING_ORGANIZATION;
     } else if (field[typeProperty] === 'string' && classifications.has(Classification.STRING_CATALOG)) {
       return InternalFieldType.STRING_CATALOG;
+    } else if (field[typeProperty] === 'string' && classifications.has(Classification.STRING_CATALOG_DYNAMIC)) {
+      return InternalFieldType.STRING_DYNAMIC_CATALOG;
     } else {
       // if there are no matching conditions just return the original type
       return field[typeProperty];
