@@ -1,10 +1,10 @@
 export const dynamicCatalogElements = [
   {
     readonly: false,
-    name: 'germanstates',
-    label: 'German states',
+    name: 'personalclass',
+    label: 'class',
     description: 'dynamic catalog',
-    classifications: ['dynamic:catalog[germancountries]'],
+    classifications: ['dynamic:catalog[appPersonalfile:juergen]'],
     type: 'string',
     cardinality: 'single',
     required: false

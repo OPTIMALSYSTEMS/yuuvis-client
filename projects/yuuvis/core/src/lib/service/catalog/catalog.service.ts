@@ -74,11 +74,18 @@ export class CatalogService {
    * will be used to post data to. Possibe values: 'admin' or 'system'.
    * Setting a scope will also check for the users permission to use this scope.
    */
-  post(catalog: Catalog, scope?: 'admin' | 'system'): Observable<any> {
+  post(catalog: Catalog, scope?: 'admin' | 'system'): Observable<Catalog> {
     const ctrl = scope && this.userHasScopePermissions(scope) ? scope : 'dms';
-    return this.backend.post(`/${ctrl}/catalogs/${catalog.qname}`, {
-      entries: catalog.entries
-    });
+    return this.backend
+      .post(`/${ctrl}/catalogs/${catalog.qname}`, {
+        entries: catalog.entries
+      })
+      .pipe(
+        map(() => {
+          catalog.tenant = this.userService.getCurrentUser().tenant;
+          return catalog;
+        })
+      );
   }
 
   /**
