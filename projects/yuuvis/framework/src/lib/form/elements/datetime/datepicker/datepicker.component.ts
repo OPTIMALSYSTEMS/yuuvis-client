@@ -18,7 +18,7 @@ export class DatepickerComponent implements OnInit {
   startDay: number;
   monthsShort: string[];
   weekdaysShort: string[];
-  maxYear = 99999;
+  maxYear = 9999;
   minYear = 0;
 
   // current month shown in the picker

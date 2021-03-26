@@ -122,30 +122,7 @@ export class DatetimeComponent implements OnInit, ControlValueAccessor, Validato
 
   setValueFromMask() {
     try {
-      // bug: angular DatePipe cannot format pattern where day is before month (so I am gonna flip values & hope it works for all languages)
-      const dd = this._datePattern.indexOf('dd');
-      const MM = this._datePattern.indexOf('MM');
-
-      const innerDate =
-        (this.innerValue &&
-          dd < MM &&
-          new Date(
-            [...this.innerValue]
-              .map((c, i) =>
-                i === dd
-                  ? this.innerValue[MM]
-                  : i === dd + 1
-                  ? this.innerValue[MM + 1]
-                  : i === MM
-                  ? this.innerValue[dd]
-                  : i === MM + 1
-                  ? this.innerValue[dd + 1]
-                  : c
-              )
-              .join('')
-          )) ||
-        this.innerValue;
-
+      const innerDate = this.datePipe.parse(this.innerValue, this._datePattern);
       if (this.isValidDate(innerDate)) {
         this.writeValue(innerDate);
       }

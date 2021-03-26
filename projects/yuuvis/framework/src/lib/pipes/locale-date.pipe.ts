@@ -29,6 +29,17 @@ export class LocaleDatePipe extends DatePipe implements PipeTransform {
     return super.transform(value, this.format(format || 'eoShort'), timezone, locale || this.lang);
   }
 
+  parse(value: string, format: string = 'yyyy-MM-dd') {
+    // bug: angular DatePipe cannot format pattern where day is before month (so I am gonna flip values & hope it works for all languages)
+    const dd = format.indexOf('dd');
+    const MM = format.indexOf('MM');
+    const YYYY = format.indexOf('yyyy');
+    const HH = format.toUpperCase().indexOf('HH');
+    return (
+      value && new Date(`${value.substring(YYYY, YYYY + 4)}/${value.substring(MM, MM + 2)}/${value.substring(dd, dd + 2)} ${HH > 0 ? value.substring(HH) : ''}`)
+    );
+  }
+
   format(format?: string) {
     let formatValue = '';
     switch (format) {
