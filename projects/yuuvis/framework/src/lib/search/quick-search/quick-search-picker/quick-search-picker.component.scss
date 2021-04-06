@@ -55,7 +55,7 @@
   }
   section.main {
     padding: 0;
-    background-color: #fff;
+    background-color: var(--main-background);
     ::ng-deep {
       .container {
         max-width: 400px;
