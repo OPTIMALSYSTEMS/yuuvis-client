@@ -42,7 +42,7 @@
   "yuv.framework.action-menu.action.upload.dms.object.content.add.label": "Dokumentdatei hinzufügen",
   "yuv.framework.action-menu.action.upload.dms.object.content.noFile": "Keine Datei ausgewählt",
   "yuv.framework.action-menu.action.upload.dms.object.content.replace.description": "Ersetzt die Dokumentdatei des Objekts.",
-  "yuv.framework.action-menu.action.upload.dms.object.content.replace.label": "Als neue Version hinzufügen",
+  "yuv.framework.action-menu.action.upload.dms.object.content.replace.label": "Datei als neue Version hinzufügen",
   "yuv.framework.action-menu.action.upload.dms.object.content.submit": "Hinzufügen",
   "yuv.framework.action-menu.actions.group.common": "ALLGEMEIN",
   "yuv.framework.action-menu.actions.group.further_actions": "WEITERE AKTIONEN",
