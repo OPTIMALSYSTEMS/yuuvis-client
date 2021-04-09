@@ -337,11 +337,12 @@ $app-bar-icon: 32px;
 
 .move-notification {
   padding: var(--app-pane-padding);
-  background: var(--color-success);
-  color: #fff;
+  background: var(--panel-background);
+  color: var(--text-color-body);
   // border-radius: 2px;
   &.fail {
     background: var(--color-error);
+    color: #fff;
   }
   &.warning {
     background: var(--color-warning);
@@ -353,11 +354,13 @@ $app-bar-icon: 32px;
       display: flex;
       align-items: center;
       font-size: var(--font-subhead);
-      font-weight: bold;
       margin-right: var(--app-pane-padding);
-    }
-    a {
-      color: #fff;
+
+      .bold-text {
+        margin-left: calc(var(--app-pane-padding) / 4);
+        font-size: var(--font-subhead);
+        font-weight: bold;
+      }
     }
   }
   .list {
@@ -372,5 +375,10 @@ $app-bar-icon: 32px;
         margin-top: 2px;
       }
     }
+  }
+  .actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: var(--app-pane-padding);
   }
 }

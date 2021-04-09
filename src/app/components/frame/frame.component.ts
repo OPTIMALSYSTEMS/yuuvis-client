@@ -43,6 +43,8 @@ import { FrameService } from './frame.service';
   styleUrls: ['./frame.component.scss']
 })
 export class FrameComponent implements OnInit, OnDestroy {
+  private LAYOUT_OPTIONS_KEY = 'yuv.client.yuv-frame';
+  private LAYOUT_OPTIONS_ELEMENT_KEY = 'yuv-frame';
   @ViewChild('moveNotification') moveNotification: TemplateRef<any>;
 
   // query for fetching pending AFOs
@@ -50,6 +52,7 @@ export class FrameComponent implements OnInit, OnDestroy {
     filters: [{ f: `system:tags[${ObjectTag.AFO}].state`, o: SearchFilter.OPERATOR.EQUAL, v1: 0 }]
   });
 
+  moveNoticeDialogSkip: boolean;
   swUpdateAvailable: boolean;
   hideAppBar: boolean;
   disableFileDrop: boolean;
@@ -104,6 +107,10 @@ export class FrameComponent implements OnInit, OnDestroy {
     this.navigationPlugins = this.pluginsService.getCustomPlugins('links', 'yuv-sidebar-navigation');
     this.settingsPlugins = this.pluginsService.getCustomPlugins('links', 'yuv-sidebar-settings');
 
+    this.layoutService.loadLayoutOptions(this.LAYOUT_OPTIONS_KEY, this.LAYOUT_OPTIONS_ELEMENT_KEY).subscribe((o: any) => {
+      this.moveNoticeDialogSkip = o?.moveNoticeDialogSkip || false;
+    });
+
     this.iconRegistry.registerIcons([search, drawer, refresh, add, userDisabled, offline, close, openContext]);
     this.userService.user$.subscribe((user: YuvUser) => {
       this.user = user;
@@ -138,17 +145,23 @@ export class FrameComponent implements OnInit, OnDestroy {
     });
   }
 
-  onObjetcsMove(event) {
+  onObjetcsMove(event, moveNoticeDialogSkip?: boolean) {
+    if (moveNoticeDialogSkip) {
+      this.layoutService
+        .saveLayoutOptions(this.LAYOUT_OPTIONS_KEY, this.LAYOUT_OPTIONS_ELEMENT_KEY, {
+          moveNoticeDialogSkip: true
+        })
+        .subscribe();
+    }
     const popoverConfig = {
       maxHeight: '70%',
       width: 300,
-      bottom: 16,
-      right: 16,
-      duration: 10,
+      // duration: 90,
       data: {
         title: this.translateService.instant('yuv.client.frame.move.notification.title.root'),
         newParent: null,
         succeeded: event.data.succeeded,
+        numberMovedFiles: event.data.succeeded.lenght,
         failed: event.data.failed
       },
       panelClass: 'move-notification'
