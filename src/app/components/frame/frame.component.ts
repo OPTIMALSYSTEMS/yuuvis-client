@@ -150,16 +150,19 @@ export class FrameComponent implements OnInit, OnDestroy {
       const popoverConfig = {
         maxHeight: '70%',
         width: 300,
-        // duration: 90,
+        duration: 90,
         data: {
           title: this.translateService.instant('yuv.client.frame.move.notification.title.root'),
           newParent: null,
-          // succeeded: event.data.succeeded,
+          succeeded: event.data.succeeded,
           numberMovedFiles: event.data.succeeded.lenght,
-          // failed: event.data.failed
-          //
-          succeeded: [{ title: 'blabla', description: 'some text', id: '1234556' }],
-          failed: [{ title: 'abcfgfg', description: 'some text', id: '1234' }]
+          failed: event.data.failed
+          // failed: [
+          //   { title: 'abcfgfg', description: 'some text', id: '1234' },
+          //   { title: 'abcfgfg', description: 'some text', id: '1234' },
+          //   { title: 'abcfgfg', description: 'some text', id: '1234' },
+          //   { title: 'abcfgfg', description: 'some text', id: '1234' }
+          // ]
         },
         panelClass: 'move-notification'
       };
