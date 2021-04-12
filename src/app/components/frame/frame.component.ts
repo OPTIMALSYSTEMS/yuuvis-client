@@ -145,35 +145,44 @@ export class FrameComponent implements OnInit, OnDestroy {
     });
   }
 
-  onObjetcsMove(event, moveNoticeDialogSkip?: boolean) {
-    if (moveNoticeDialogSkip) {
+  onObjetcsMove(event) {
+    if (this.moveNoticeDialogSkip === null || this.moveNoticeDialogSkip === false) {
+      const popoverConfig = {
+        maxHeight: '70%',
+        width: 300,
+        // duration: 90,
+        data: {
+          title: this.translateService.instant('yuv.client.frame.move.notification.title.root'),
+          newParent: null,
+          // succeeded: event.data.succeeded,
+          numberMovedFiles: event.data.succeeded.lenght,
+          // failed: event.data.failed
+          //
+          succeeded: [{ title: 'blabla', description: 'some text', id: '1234556' }],
+          failed: [{ title: 'abcfgfg', description: 'some text', id: '1234' }]
+        },
+        panelClass: 'move-notification'
+      };
+      if (event.data.targetFolderId) {
+        this.dmsService.getDmsObject(event.data.targetFolderId).subscribe((newParent) => {
+          popoverConfig.data.title = this.translateService.instant('yuv.client.frame.move.notification.title', { objectTitle: newParent.title });
+          popoverConfig.data.newParent = newParent;
+          this.popoverService.open(this.moveNotification, popoverConfig);
+        });
+      } else {
+        this.popoverService.open(this.moveNotification, popoverConfig);
+      }
+    }
+  }
+
+  skipMoveDialog(skip: boolean) {
+    if (skip !== null) {
+      this.moveNoticeDialogSkip = skip;
       this.layoutService
         .saveLayoutOptions(this.LAYOUT_OPTIONS_KEY, this.LAYOUT_OPTIONS_ELEMENT_KEY, {
-          moveNoticeDialogSkip: true
+          moveNoticeDialogSkip: skip
         })
         .subscribe();
-    }
-    const popoverConfig = {
-      maxHeight: '70%',
-      width: 300,
-      // duration: 90,
-      data: {
-        title: this.translateService.instant('yuv.client.frame.move.notification.title.root'),
-        newParent: null,
-        succeeded: event.data.succeeded,
-        numberMovedFiles: event.data.succeeded.lenght,
-        failed: event.data.failed
-      },
-      panelClass: 'move-notification'
-    };
-    if (event.data.targetFolderId) {
-      this.dmsService.getDmsObject(event.data.targetFolderId).subscribe((newParent) => {
-        popoverConfig.data.title = this.translateService.instant('yuv.client.frame.move.notification.title', { objectTitle: newParent.title });
-        popoverConfig.data.newParent = newParent;
-        this.popoverService.open(this.moveNotification, popoverConfig);
-      });
-    } else {
-      this.popoverService.open(this.moveNotification, popoverConfig);
     }
   }
 

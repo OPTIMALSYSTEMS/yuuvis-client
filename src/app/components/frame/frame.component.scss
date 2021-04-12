@@ -341,11 +341,13 @@ $app-bar-icon: 32px;
   color: var(--text-color-body);
   // border-radius: 2px;
   &.fail {
-    background: var(--color-error);
-    color: #fff;
-  }
-  &.warning {
-    background: var(--color-warning);
+    .header-title {
+      color: var(--color-error);
+      font-weight: bold;
+    }
+    .tryAgain {
+      color: var(--text-color-caption);
+    }
   }
   .header {
     display: flex;
@@ -378,7 +380,11 @@ $app-bar-icon: 32px;
   }
   .actions {
     display: flex;
-    justify-content: space-between;
-    margin-top: var(--app-pane-padding);
+    align-items: center;
+    justify-content: flex-end;
+    margin: var(--app-pane-padding) -2px 0 -2px;
+    .primary {
+      margin-left: calc(var(--app-pane-padding) / 3);
+    }
   }
 }

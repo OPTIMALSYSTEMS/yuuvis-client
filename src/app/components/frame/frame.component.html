@@ -121,55 +121,67 @@
   </div>
 </ng-template>
 
+<!------move notification------>
+
 <ng-template #moveNotification let-data let-popover="popover">
   <div
     class="move-notification"
     [ngClass]="{
-      success: !data.failed.length,
-      fail: !data.succeeded.length,
-      warning: data.succeeded.length && data.failed.length
+      fail: data.failed?.length
     }"
   >
-    <!--succesfull message---------->
-
-    <div *ngIf="data.succeeded.length">
+    <div *ngIf="data.failed?.length && data.succeeded?.length; else tplMoveMessage">
       <div class="header">
-        <div class="header-title">
-          {{ 'yuv.client.frame.move.count.files' | translate: { count: data.succeeded.length } }}
-          <p class="bold-text">{{ data.title }}</p>
-        </div>
-      </div>
-
-      <div class="list succeded-list">
-        <yuv-form-input class="checkbox" [skipToggle]="true" [label]="'yuv.framework.object-create.afo.upload.skip-notification' | translate">
-          <yuv-checkbox [(ngModel)]="moveNoticeDialogSkip" [ngModelOptions]="{ standalone: true }"></yuv-checkbox>
-        </yuv-form-input>
+        <div class="header-title"></div>
       </div>
     </div>
 
-    <!--failed message-->
-    <div *ngIf="data.failed.length">
-      <div class="header">
-        <div class="header-title">
-          {{ 'yuv.client.frame.move.notification.failed' | translate }}
-        </div>
-      </div>
+    <ng-template #tplMoveMessage>
+      <!--succesfull move notification---------->
 
-      <div class="list failed-list">
-        <div *ngFor="let f of data.failed" class="entry failed-entry">
-          <div>
-            <div class="title">{{ f.title }}</div>
-            <div class="description">{{ f.description }}</div>
+      <div *ngIf="data.succeeded?.length">
+        <div class="header">
+          <div class="header-title">
+            {{ 'yuv.client.frame.move.count.files' | translate: { count: data.succeeded.length } }}
+            <p class="bold-text">{{ data.title }}</p>
           </div>
         </div>
-      </div>
-    </div>
 
-    <div class="actions">
-      <a *ngIf="data.newParent" routerLink="/object/{{ data.newParent.id }}" (click)="closeNotification(popover)">
-        <button class="secondary" translate>yuv.client.frame.move.notification.goTo.folder</button>
-      </a>
-      <button class="primary" (click)="closeNotification(popover)" translate>yuv.client.frame.move.notification.ok</button>
-    </div>
+        <div class="list succeded-list">
+          <yuv-form-input class="checkbox" [skipToggle]="true" [label]="'yuv.framework.object-create.afo.upload.skip-notification' | translate">
+            <yuv-checkbox [(ngModel)]="moveNoticeDialogSkip" [ngModelOptions]="{ standalone: true }" (ngModelChange)="skipMoveDialog($event)"></yuv-checkbox>
+          </yuv-form-input>
+        </div>
+        <div class="actions">
+          <a *ngIf="data.newParent" routerLink="/object/{{ data.newParent.id }}" (click)="closeNotification(popover)">
+            <button class="secondary" translate>yuv.client.frame.move.notification.goTo.folder</button>
+          </a>
+          <button class="primary" (click)="closeNotification(popover)" translate>yuv.client.frame.move.notification.ok</button>
+        </div>
+      </div>
+
+      <!--failed move notification-->
+
+      <div *ngIf="data.failed?.length">
+        <div class="header">
+          <div class="header-title">
+            {{ 'yuv.client.frame.move.notification.failed' | translate }}
+          </div>
+        </div>
+
+        <div class="list failed-list">
+          <div *ngFor="let f of data.failed" class="entry failed-entry">
+            <div>
+              <div class="title">{{ f.title }}</div>
+              <div class="description">{{ f.description }}</div>
+            </div>
+          </div>
+          <p class="tryAgain" translate>yuv.client.frame.move.notification.tryAgain</p>
+        </div>
+        <div class="actions">
+          <button class="primary" (click)="closeNotification(popover)" translate>yuv.client.frame.move.notification.ok</button>
+        </div>
+      </div>
+    </ng-template>
   </div>
 </ng-template>
