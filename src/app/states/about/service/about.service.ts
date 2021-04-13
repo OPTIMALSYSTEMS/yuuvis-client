@@ -33,6 +33,11 @@ export class AboutService {
       url: 'http://www.apache.org/licenses/LICENSE-2.0'
     },
     {
+      id: '0BSD',
+      label: 'Zero-Clause BSD',
+      url: 'https://opensource.org/licenses/0BSD'
+    },
+    {
       id: 'BSD-3-Clause-Clear',
       label: 'BSD 3-Clause',
       url: 'http://opensource.org/licenses/BSD-3-Clause'
