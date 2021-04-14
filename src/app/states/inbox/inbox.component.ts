@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { AppCacheService, BpmEvent, EventService, InboxService, ProcessDefinitionKey, TaskData, TranslateService } from '@yuuvis/core';
+import { BpmEvent, EventService, InboxService, ProcessDefinitionKey, TaskData, TranslateService } from '@yuuvis/core';
 import {
   arrowNext,
   edit,
@@ -31,7 +31,7 @@ export class InboxComponent implements OnInit, OnDestroy {
   objectId: string;
   selectedProcess: any;
   inboxData$: Observable<ResponsiveTableData> = this.inboxService.inboxData$.pipe(
-    map((taskData: TaskData[]) => ({ ...this.formatProcessDataService.formatTaskDataForTable(taskData), currentViewMode: 'horizontal' })),
+    map((taskData: TaskData[]) => this.formatProcessDataService.formatTaskDataForTable(taskData)),
     map((taskData: ResponsiveTableData) => (taskData.rows.length ? taskData : null))
   );
   loading$: Observable<boolean> = this.inboxService.loadingInboxData$;
@@ -50,17 +50,10 @@ export class InboxComponent implements OnInit, OnDestroy {
     private formatProcessDataService: FormatProcessDataService,
     private iconRegistry: IconRegistryService,
     private eventService: EventService,
-    private appCache: AppCacheService,
     private pluginsService: PluginsService
   ) {
     this.plugins = this.pluginsService.getCustomPlugins('extensions', 'yuv-inbox');
-
     this.iconRegistry.registerIcons([edit, arrowNext, refresh, inbox, listModeDefault, listModeGrid, listModeSimple]);
-    // TODO: nasty hack: remove once grid renders view mode from extern
-    this.appCache
-      .getItem(this.layoutOptionsKey)
-      .pipe(switchMap((cache) => this.appCache.setItem(this.layoutOptionsKey, { ...cache, 'yuv-responsive-data-table': { viewMode: 'horizontal' } })))
-      .subscribe();
   }
 
   private getInbox(): Observable<TaskData[]> {
