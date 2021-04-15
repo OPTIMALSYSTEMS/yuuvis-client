@@ -39,6 +39,8 @@
         flex: 1;
         margin: 0 2px;
         border: 1px solid var(--panel-divider-color);
+        background-color: var(--panel-background);
+        color: var(--text-color-body);
       }
       button {
         margin: 0 2px;
@@ -72,6 +74,7 @@
       padding: calc(var(--app-pane-padding) / 4);
       background-color: var(--panel-background);
       margin-bottom: 1px;
+      border: 1px solid var(--panel-divider-color);
 
       &.disabled {
         color: var(--text-color-caption);

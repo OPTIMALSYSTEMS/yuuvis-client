@@ -35,7 +35,8 @@
           opacity: 0.54;
           display: block;
           max-height: 2.5em;
-          overflow: auto;
+          overflow: hidden;
+          padding-right: calc(var(--app-pane-padding) / 2);
         }
       }
     }

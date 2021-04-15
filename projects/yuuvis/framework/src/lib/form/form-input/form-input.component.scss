@@ -82,6 +82,10 @@
     }
   }
 
+  &.checkbox {
+    position: relative;
+  }
+
   &.checkbox .fe-wrapper > .form-input__label {
     text-align: start;
   }
