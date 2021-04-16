@@ -32,7 +32,7 @@ export class DownloadOriginalActionComponent extends DmsObjectTarget implements 
   }
 
   run(selection: DmsObject[]): Observable<boolean> {
-    this.backend.downloadContent(selection, !!this.route.snapshot.queryParams.version);
+    // this.backend.downloadContent(selection, !!this.route.snapshot.queryParams.version);
     return of(true);
   }
 }
