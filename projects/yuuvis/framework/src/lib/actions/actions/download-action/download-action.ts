@@ -21,7 +21,7 @@ export class DownloadActionComponent extends DmsObjectTarget implements ListActi
   priority = 2;
   iconSrc = contentDownload.data;
   group = 'common';
-  range = SelectionRange.SINGLE_SELECT;
+  range = SelectionRange.MULTI_SELECT;
   subActionComponents: any[];
 
   constructor(private translate: TranslateService, private backend: BackendService, private route: ActivatedRoute) {
