@@ -2,16 +2,16 @@
 
 :host {
   .action-menu {
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    width: 25vw;
-    min-width: 300px;
-    z-index: 1000;
+    // position: absolute;
+    // top: 0;
+    // right: 0;
+    // bottom: 0;
+    // width: 25vw;
+    // min-width: 300px;
+    // z-index: 1000;
+    // animation: yuvFadeInRight var(--app-default-transition-duration);
+    // box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.3);
     background-color: rgba(var(--color-primary-rgb), 0.95);
-    animation: yuvFadeInRight var(--app-default-transition-duration);
-    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.3);
     color: #fff;
 
     display: grid;

@@ -35,6 +35,11 @@ export class ActionMenuComponent implements OnDestroy {
    * Specifies the items for which the actions should be provided.
    */
   @Input() selection: DmsObject[] = [];
+  /**
+   * Set to true when using dark background color for action menu
+   * eventhough you are not on dark mode
+   */
+  @Input() dark: boolean;
 
   /**
    * Specifies the visibility of the menu.

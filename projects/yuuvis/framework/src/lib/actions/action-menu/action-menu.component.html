@@ -1,4 +1,5 @@
-<div class="action-menu dark" *ngIf="showMenu" [ngClass]="{ descriptionsEnabled: showDescriptions, fullscreen: fullscreen }" (yuvOutsideClick)="hide()">
+<div class="action-menu" *ngIf="showMenu"
+  [ngClass]="{ dark: dark, descriptionsEnabled: showDescriptions, fullscreen: fullscreen }" (yuvOutsideClick)="hide()">
   <div class="head">
     <div class="settings" *ngIf="!showComponent">
       <yuv-form-input class="checkbox" [skipToggle]="true"
