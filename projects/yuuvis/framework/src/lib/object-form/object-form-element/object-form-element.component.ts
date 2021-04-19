@@ -43,7 +43,12 @@ export class ObjectFormElementComponent implements OnDestroy {
   @Input() inlineError: boolean;
 
   get shouldSkipToggle() {
-    return this.skipToggle || this.situation !== 'SEARCH' || this.formElementRef._eoFormElement.readonly;
+    return (
+      this.skipToggle ||
+      this.situation !== 'SEARCH' ||
+      this.formElementRef._eoFormElement.readonly ||
+      !(this.formElementRef._eoFormElement._internalType || '').match('string|integer|decimal')
+    );
   }
 
   /**

@@ -138,6 +138,9 @@
       }
     }
   }
+  &:not(.skipToggle) .form-input__label {
+    cursor: pointer;
+  }
 }
 
 // styles for dark forms
