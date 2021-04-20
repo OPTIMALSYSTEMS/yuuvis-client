@@ -45,7 +45,9 @@ export class FormInputComponent implements AfterViewInit {
    * Clicking the label will by default set a 'Not set' flag to the input. This is useful when you are for
    * example trying to indicate that a value is suposed to be not set instead of beeing just empty.
    */
-  @Input() skipToggle: boolean;
+  @HostBinding('class.skipToggle')
+  @Input()
+  skipToggle: boolean;
 
   @Input('isNull')
   set isNull(n: boolean) {
