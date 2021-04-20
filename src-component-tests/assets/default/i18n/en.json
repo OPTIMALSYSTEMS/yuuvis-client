@@ -299,7 +299,7 @@
   "yuv.client.frame.app-bar.pwa-update.msg": "Update available",
   "yuv.client.frame.move.count.files": "Successfully moved {{count}} file(s) to:",
   "yuv.client.frame.move.notification.failed": "An error occurred when moving the following files:",
-  "yuv.client.frame.move.notification.failedItems": "Not moved, please try again:",
+  "yuv.client.frame.move.notification.failedItems": "Unable to move the object.",
   "yuv.client.frame.move.notification.goTo.folder": "Go to folder",
   "yuv.client.frame.move.notification.ok": "OK",
   "yuv.client.frame.move.notification.some.successfullItems": "Successfully moved to:",
