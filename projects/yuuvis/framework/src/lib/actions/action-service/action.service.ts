@@ -1,7 +1,7 @@
 import { ComponentFactoryResolver, Inject, Injectable, InjectionToken, ViewContainerRef } from '@angular/core';
 import { Utils } from '@yuuvis/core';
-import { merge as observableMerge, Observable, of as observableOf } from 'rxjs';
-import { combineAll, map } from 'rxjs/operators';
+import { merge as observableMerge, Observable, of as observableOf, of } from 'rxjs';
+import { combineAll, map, switchMap, tap } from 'rxjs/operators';
 import { ActionListEntry } from '../interfaces/action-list-entry';
 import { Action } from '../interfaces/action.interface';
 import { SelectionRange } from '../selection-range.enum';
@@ -18,27 +18,16 @@ export const CUSTOM_ACTIONS = new InjectionToken<any[]>('CUSTOM_ACTIONS');
 @Injectable()
 export class ActionService {
   private allActionComponents: any[] = [];
-
+  private pluginActionsLoaded: boolean;
   /**
    * @ignore
    */
   constructor(
-    @Inject(ACTIONS) actions: any[] = [],
-    @Inject(CUSTOM_ACTIONS) custom_actions: any[] = [],
+    @Inject(ACTIONS) private actions: any[] = [],
+    @Inject(CUSTOM_ACTIONS) private custom_actions: any[] = [],
     private _componentFactoryResolver: ComponentFactoryResolver,
     private pluginsService: PluginsService
-  ) {
-    this.pluginsService
-      .getCustomPlugins('actions')
-      .pipe(map((_actions: any[]) => PluginActionComponent.actionWrapper(_actions)))
-      .subscribe((_actions) => {
-        this.allActionComponents = []
-          .concat(...actions)
-          .concat(custom_actions)
-          .concat(_actions)
-          .filter((entry) => entry.target && !entry.isSubAction && !entry.disabled);
-      });
-  }
+  ) {}
 
   /**
    * Get the list of all available actions
@@ -50,7 +39,23 @@ export class ActionService {
    */
   getActionsList(selection: any[], viewContainerRef: ViewContainerRef): Observable<ActionListEntry[]> {
     // todo: find better solution to exclude components for actions that need to be initialized later
-    return this.getExecutableActionsListFromGivenActions(this.allActionComponents, selection, viewContainerRef);
+    return this.getPluginActions().pipe(switchMap((_) => this.getExecutableActionsListFromGivenActions(this.allActionComponents, selection, viewContainerRef)));
+  }
+
+  private getPluginActions() {
+    return !this.pluginActionsLoaded
+      ? this.pluginsService.getCustomPlugins('actions').pipe(
+          map((_actions: any[]) => PluginActionComponent.actionWrapper(_actions)),
+          tap((_actions) => {
+            this.allActionComponents = []
+              .concat(...this.actions)
+              .concat(this.custom_actions)
+              .concat(_actions)
+              .filter((entry) => entry.target && !entry.isSubAction && !entry.disabled);
+            this.pluginActionsLoaded = true;
+          })
+        )
+      : of(null);
   }
 
   private createExecutableActionListEntry(actionComponent: any, selection: any[], viewContainerRef: ViewContainerRef): ActionListEntry {

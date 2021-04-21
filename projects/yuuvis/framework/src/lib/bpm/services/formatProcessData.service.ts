@@ -41,6 +41,7 @@ export class FormatProcessDataService {
   private processDataForTable(rows: (FollowUp | InboxItem)[], fields: string[]): ResponsiveTableData {
     return {
       columns: fields.map((field) => ({
+        colId: field,
         field,
         headerClass: `col-header-type-${field}`,
         headerName: this.systemService.getLocalizedResource(`${field}_label`),

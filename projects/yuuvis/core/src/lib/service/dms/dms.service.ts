@@ -96,6 +96,16 @@ export class DmsService {
   }
 
   /**
+   * Updates a tag on a dms object.
+   * @param id The ID of the object
+   * @param tag The tag to be updated
+   * @param value The tags new value
+   */
+  updateDmsObjectTag(id: string, tag: string, value: any): Observable<any> {
+    return this.backend.post(`/dms/objects/${id}/tags/${tag}/state/${value}?overwrite=true`, {}, ApiBase.core);
+  }
+
+  /**
    * Update indexdata of a dms object.
    * @param id ID of the object to apply the data to
    * @param data Indexdata to be applied

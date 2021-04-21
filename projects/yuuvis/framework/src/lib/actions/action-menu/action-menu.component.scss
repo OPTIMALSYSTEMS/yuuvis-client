@@ -2,17 +2,17 @@
 
 :host {
   .action-menu {
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    width: 25vw;
-    min-width: 300px;
-    z-index: 1000;
-    background-color: rgba(var(--color-primary-rgb), 0.95);
-    animation: yuvFadeInRight var(--app-default-transition-duration);
-    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.3);
-    color: #fff;
+    // position: absolute;
+    // top: 0;
+    // right: 0;
+    // bottom: 0;
+    // width: 25vw;
+    // min-width: 300px;
+    // z-index: 1000;
+    // animation: yuvFadeInRight var(--app-default-transition-duration);
+    // box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.3);
+    // background-color: rgba(var(--color-primary-rgb), 0.95);
+    // color: #fff;
 
     display: grid;
     grid-template-columns: 1fr;
@@ -35,7 +35,8 @@
           opacity: 0.54;
           display: block;
           max-height: 2.5em;
-          overflow: auto;
+          overflow: hidden;
+          padding-right: calc(var(--app-pane-padding) / 2);
         }
       }
     }

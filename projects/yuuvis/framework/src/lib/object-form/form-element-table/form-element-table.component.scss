@@ -1,6 +1,6 @@
 :host-context(.dark) {
   .label {
-    color: white;
+    color: var(--text-color-hint);
     background-color: rgba(255, 255, 255, 0.1);
   }
 
@@ -32,6 +32,7 @@
 
     .ag-root-wrapper {
       border: none !important;
+      background-color: var(--panel-background);
     }
 
     .ag-header {
@@ -48,6 +49,8 @@
       padding: 0 calc(var(--app-pane-padding) / 4);
       font-size: var(--font-caption);
       line-height: var(--oft-row-height);
+      background-color: var(--panel-background);
+      color: var(--text-color-body);
 
       svg {
         pointer-events: none;

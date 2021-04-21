@@ -126,8 +126,8 @@ export class OrganizationComponent implements ControlValueAccessor, AfterViewIni
 
   autocompleteFn(evt) {
     if (evt.query.length >= this.minLength) {
-      this.userService.queryUser(evt.query).subscribe((res: YuvUser[]) => {
-        this.autocompleteRes = res;
+      this.userService.queryUser(evt.query).subscribe((users: YuvUser[]) => {
+        this.autocompleteRes = users.filter((user) => !this.innerValue.some((value) => value.id === user.id));
       });
     } else {
       this.autocompleteRes = [];

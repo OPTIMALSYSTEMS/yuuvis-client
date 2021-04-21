@@ -224,8 +224,8 @@ export class ReferenceComponent implements ControlValueAccessor, AfterViewInit {
       this.searchService
         .search(new SearchQuery({ ...this.queryJson, term: `*${evt.query}*` }))
         .pipe(
-          map((r) =>
-            r.items.map((i) => {
+          map((reference) =>
+            reference.items.map((i) => {
               return {
                 id: i.fields.get(BaseObjectTypeField.OBJECT_ID),
                 objectTypeId: i.fields.get(BaseObjectTypeField.OBJECT_TYPE_ID),
@@ -237,8 +237,8 @@ export class ReferenceComponent implements ControlValueAccessor, AfterViewInit {
           )
         )
         .subscribe(
-          (r) => {
-            this.autocompleteRes = r;
+          (reference) => {
+            this.autocompleteRes = reference.filter((ref) => !this.innerValue.some((value) => value.id === ref.id));
           },
           (e) => {
             this.autocompleteRes = [];
