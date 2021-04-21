@@ -15,7 +15,8 @@
     "take-until-destroy",
     "ngx-drag-scroll",
     "ngx-toastr",
-    "@yuuvis/core"
+    "@yuuvis/core",
+    "@yuuvis/styles"
   ],
   "lib": {
     "entryFile": "src/public-api.ts"

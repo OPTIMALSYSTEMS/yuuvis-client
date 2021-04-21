@@ -1,10 +1,12 @@
-import { AfterViewInit, Component, ElementRef, Input, NgZone, OnDestroy, OnInit } from '@angular/core';
+import { Component, ElementRef, Input, NgZone, OnDestroy, OnInit } from '@angular/core';
 import { DmsObject, UploadService } from '@yuuvis/core';
 import { fromEvent, Observable, of } from 'rxjs';
 import { switchMap, takeWhile, tap } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { FileDropService } from '../../directives/file-drop/file-drop.service';
+import { IFrameComponent } from '../../plugins/iframe.component';
+import { PluginsService } from '../../plugins/plugins.service';
 import { folder, noFile, undock } from '../../svg.generated';
 import { ContentPreviewService } from './service/content-preview.service';
 
@@ -22,10 +24,9 @@ import { ContentPreviewService } from './service/content-preview.service';
   styleUrls: ['./content-preview.component.scss'],
   providers: [ContentPreviewService]
 })
-export class ContentPreviewComponent implements OnInit, OnDestroy, AfterViewInit {
+export class ContentPreviewComponent extends IFrameComponent implements OnInit, OnDestroy {
   private _dmsObject: DmsObject;
   isUndocked: boolean;
-  loading = true;
 
   get undockWin(): Window {
     return ContentPreviewService.getUndockWin();
@@ -57,10 +58,6 @@ export class ContentPreviewComponent implements OnInit, OnDestroy, AfterViewInit
    */
   @Input() searchTerm = '';
 
-  get iframe() {
-    return this.elRef.nativeElement.querySelector('iframe');
-  }
-
   @Input() dmsObject2: DmsObject;
 
   /**
@@ -77,13 +74,15 @@ export class ContentPreviewComponent implements OnInit, OnDestroy, AfterViewInit
   );
 
   constructor(
+    elRef: ElementRef,
+    pluginsService: PluginsService,
     public fileDropService: FileDropService,
-    private elRef: ElementRef,
     private contentPreviewService: ContentPreviewService,
     private iconRegistry: IconRegistryService,
     private uploadService: UploadService,
     private _ngZone: NgZone
   ) {
+    super(elRef, pluginsService);
     this.iconRegistry.registerIcons([folder, noFile, undock]);
     if (ContentPreviewService.undockWinActive()) {
       this.undock(false);
@@ -113,6 +112,10 @@ export class ContentPreviewComponent implements OnInit, OnDestroy, AfterViewInit
   }
 
   open(src: string) {
+    if (!this.iframe) {
+      // init iframe again in case it was destoryed
+      setTimeout(() => this.iframeInit(this.iframe, this.searchTerm));
+    }
     this.previewSrc = src;
     if (this.isUndocked) {
       this.openWindow(this.previewSrc);
@@ -132,50 +135,15 @@ export class ContentPreviewComponent implements OnInit, OnDestroy, AfterViewInit
         <div>`
       );
     }
+    this.iframeInit(this.undockWin);
   }
 
   refresh() {
     return this.previewSrc && this.iframe ? this.iframe.contentWindow.location.reload(true) : this.open(this.previewSrc);
   }
 
-  /**
-   * Custom search inside PDF.JS based on search term
-   * @param term search term
-   * @param pdfjs iframe element
-   */
-  private searchPDF(term = '', pdfjs: any) {
-    // remove all special characters
-    term = (term || '').replace(/[\"|\*]/g, '').trim();
-    if (term && pdfjs && pdfjs.contentWindow && pdfjs.contentWindow.PDFViewerApplication && pdfjs.contentWindow.PDFViewerApplication.findController) {
-      // pdfjs.contentWindow.PDFViewerApplication.findController.executeCommand('find', {
-      //   caseSensitive: false,
-      //   findPrevious: undefined,
-      //   highlightAll: true,
-      //   phraseSearch: true,
-      //   query: term
-      // });
-      pdfjs.contentWindow.PDFViewerApplication.appConfig.findBar.findField.value = term;
-      pdfjs.contentWindow.PDFViewerApplication.appConfig.findBar.highlightAllCheckbox.checked = true;
-      pdfjs.contentWindow.PDFViewerApplication.appConfig.findBar.caseSensitiveCheckbox.checked = false;
-    }
-  }
-
   ngOnInit() {
     this.previewSrc$.pipe(takeUntilDestroy(this)).subscribe((src) => this.open(src));
-  }
-
-  ngAfterViewInit() {
-    const iframe = this.iframe;
-    if (iframe) {
-      fromEvent(iframe, 'load')
-        .pipe(takeUntilDestroy(this))
-        .subscribe((res) =>
-          setTimeout(() => {
-            this.loading = false;
-            this.searchPDF(this.searchTerm, iframe);
-          }, 100)
-        );
-    }
   }
 
   ngOnDestroy() {

@@ -1,9 +1,10 @@
 import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
 import { ValidatorFn, Validators } from '@angular/forms';
-import { Logger, RangeValue, SearchFilter, SearchService, SystemService, Utils } from '@yuuvis/core';
+import { Logger, RangeValue, SearchFilter, SearchService, SystemService, UserService, Utils } from '@yuuvis/core';
 import { cloneDeep } from 'lodash-es';
-import { Subscription } from 'rxjs';
+import { Observable, of, Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
+import { takeUntilDestroy } from 'take-until-destroy';
 import { UnsubscribeOnDestroy } from '../../common/util/unsubscribe.component';
 import { ObjectFormScriptService } from '../object-form-script/object-form-script.service';
 import { ObjectFormScriptingScope } from '../object-form-script/object-form-scripting-scope';
@@ -12,8 +13,10 @@ import { ObjectFormControl, ObjectFormGroup } from '../object-form.model';
 import { ObjectFormService } from '../object-form.service';
 import { ObjectFormUtils } from '../object-form.utils';
 import { FormValidation } from '../object-form.validation';
-import { PluginsService } from './../../services/plugins/plugins.service';
+import { PluginsService } from './../../plugins/plugins.service';
 import { Situation } from './../object-form.situation';
+
+export type ObjectFormModelChange = { name: 'value' | 'required' | 'readonly' | 'error' | 'onrowedit' | 'onchange'; newValue: any };
 
 /**
  * Component rendering a model based form.
@@ -87,9 +90,14 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
     private formScriptService: ObjectFormScriptService,
     private formHelperService: ObjectFormService,
     private pluginService: PluginsService,
+    private userService: UserService,
     private cdRef: ChangeDetectorRef
   ) {
     super();
+    this.pluginService.api.events
+      .on(PluginsService.EVENT_MODEL_CHANGED)
+      .pipe(takeUntilDestroy(this))
+      .subscribe((event) => event.data && this.onScriptingModelChanged(event.data.formControlName, event.data.change));
   }
 
   // initialize the form based on the provided form options
@@ -255,7 +263,7 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
    * @param formControlName
    * @param change
    */
-  private onScriptingModelChanged = (formControlName, change) => {
+  private onScriptingModelChanged = (formControlName: string, change: ObjectFormModelChange) => {
     // find the target control
     let fc: ObjectFormControl = this.formControls[formControlName] as ObjectFormControl;
     if (fc) {
@@ -312,52 +320,53 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
           break;
         }
       }
+      this.cdRef.detectChanges();
     }
   };
 
   private processArrayValueChange(fc, change) {
     const newVal = change.newValue;
-    // const targetType = fc._eoFormElement.type;
-    // // for some types we have to ensure that meta data are provided as well
-    // switch (targetType) {
-    //   case 'ORGANIZATION': {
-    //     this.getDataMeta(fc._eoFormElement, newVal).subscribe(m => {
-    //       fc._eoFormElement.dataMeta = m;
-    //     });
-    //     break;
-    //   }
-    //   case 'CODESYSTEM': {
-    //     if (!fc._eoFormElement.codesystem.entries) {
-    //        fc._eoFormElement.codesystem = this.systemService.getCodesystem(fc._eoFormElement.codesystem.id);
-    //     }
-    //     break;
-    //   }
-    //   case 'TABLE': {
-    //     const dataToBeProcessed = {};
-    //     fc._eoFormElement.elements.forEach(e => {
-    //        if (e.type === 'ORGANIZATION' || e.type === 'CODESYSTEM') {
-    //         dataToBeProcessed[e.name] = e;
-    //       }
-    //     });
-    //     if (Object.keys(dataToBeProcessed).length) {
-    //       newVal.forEach(rowData => {
-    //         Object.keys(rowData).forEach(key => {
-    //           if (dataToBeProcessed[key]) {
-    //             this.getDataMeta(dataToBeProcessed[key], rowData[key]).subscribe(m => {
-    //               if (m) {
-    //                 rowData[key + '_meta'] = m;
-    //               } else {
-    //                 delete rowData[key + '_meta'];
-    //               }
-    //               this.updateArrayValue(fc, newVal);
-    //             });
-    //           }
-    //         });
-    //       });
-    //     }
-    //     break;
-    //   }
-    // }
+    const targetType = fc._eoFormElement.type;
+    // for some types we have to ensure that meta data are provided as well
+    switch (targetType) {
+      case 'ORGANIZATION': {
+        this.getDataMeta(fc._eoFormElement, newVal).subscribe((m) => {
+          fc._eoFormElement.dataMeta = m;
+        });
+        break;
+      }
+      // case 'CODESYSTEM': {
+      //   if (!fc._eoFormElement.codesystem.entries) {
+      //      fc._eoFormElement.codesystem = this.systemService.getCodesystem(fc._eoFormElement.codesystem.id);
+      //   }
+      //   break;
+      // }
+      case 'TABLE': {
+        const dataToBeProcessed = {};
+        fc._eoFormElement.elements.forEach((e) => {
+          if (e.type === 'ORGANIZATION' || e.type === 'CODESYSTEM') {
+            dataToBeProcessed[e.name] = e;
+          }
+        });
+        if (Object.keys(dataToBeProcessed).length) {
+          newVal.forEach((rowData) => {
+            Object.keys(rowData).forEach((key) => {
+              if (dataToBeProcessed[key]) {
+                this.getDataMeta(dataToBeProcessed[key], rowData[key]).subscribe((m) => {
+                  if (m) {
+                    rowData[key + '_meta'] = m;
+                  } else {
+                    delete rowData[key + '_meta'];
+                  }
+                  this.updateArrayValue(fc, newVal);
+                });
+              }
+            });
+          });
+        }
+        break;
+      }
+    }
     this.updateArrayValue(fc, newVal);
   }
 
@@ -368,22 +377,22 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
     fc.markAsDirty();
   }
 
-  // private getDataMeta(formElement: any, newValue: any): Observable<any> {
-  //   if (newValue) {
-  //     switch (formElement.type) {
-  //       case 'ORGANIZATION': {
-  //         return this.systemService.getOrganizationObject(newValue);
-  //       }
-  //       case 'CODESYSTEM': {
-  //         return observableOf(this.systemService.getCodesystem(formElement.codesystem.id).entries.find((entry)=>{
-  //   return entry.defaultrepresentation === newValue;
-  // }));
-  //         break;
-  //       }
-  //     }
-  //   }
-  //   return of(null);
-  // }
+  private getDataMeta(formElement: any, newValue: any): Observable<any> {
+    if (newValue) {
+      switch (formElement.type) {
+        case 'ORGANIZATION': {
+          return this.userService.getUserById(newValue);
+        }
+        // case 'CODESYSTEM': {
+        //   return of(this.systemService.getCodesystem(formElement.codesystem.id).entries.find((entry)=>{
+        //     return entry.defaultrepresentation === newValue;
+        //   }));
+        //   break;
+        // }
+      }
+    }
+    return of(null);
+  }
 
   private patchFormValue(formValue: string[] | string) {
     let value: any;
@@ -421,6 +430,7 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
         layout: formElement.layout,
         type: formElement.type
       };
+
       if (formElement.name) {
         ctrl._eoFormGroup.label = this.skipTranslationsFor.includes(formElement.name) ? formElement.name : formElement.label;
       }
@@ -661,10 +671,8 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
           }
           value = this.searchFilterToValue(filter);
         }
-        //
-        // value = this.isInnerTableForm ?
-        //   data[element.name] :
-        //   this.searchFilterToValue(data.find((filter) => filter.property === element.id));
+
+        value = this.isInnerTableForm ? data[element.name] : this.searchFilterToValue(data.find((filter) => filter.property === element.id));
       }
     } else {
       if (['datetime'].includes(element.type) && data[element.name]) {

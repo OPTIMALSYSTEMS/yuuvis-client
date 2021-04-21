@@ -11,7 +11,6 @@ import {
   ObjectTag,
   SearchFilter,
   SearchQuery,
-  SystemService,
   TranslateService,
   UserRoles,
   UserService,
@@ -22,14 +21,16 @@ import {
   IconRegistryService,
   LayoutService,
   LayoutSettings,
-  NotificationService,
   openContext,
+  PluginGuard,
+  PluginsService,
   PopoverRef,
   PopoverService,
   Screen,
   ScreenService,
   UploadResult
 } from '@yuuvis/framework';
+import { Observable } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { add, close, drawer, offline, refresh, search, userDisabled } from '../../../assets/default/svg/svg';
@@ -46,41 +47,30 @@ export class FrameComponent implements OnInit, OnDestroy {
 
   // query for fetching pending AFOs
   pendingAFOsQuery = JSON.stringify({
-    tags: [
-      {
-        name: ObjectTag.AFO,
-        filters: {
-          filters: [
-            {
-              f: 'state',
-              o: SearchFilter.OPERATOR.EQUAL,
-              v1: '0'
-            }
-          ]
-        }
-      }
-    ]
+    filters: [{ f: `system:tags[${ObjectTag.AFO}].state`, o: SearchFilter.OPERATOR.EQUAL, v1: 0 }]
   });
 
   swUpdateAvailable: boolean;
   hideAppBar: boolean;
   disableFileDrop: boolean;
   disableCreate: boolean;
-  showSideBar: boolean;
+  displaySideBar: boolean;
   screenSmall: boolean;
   user: YuvUser;
   disabledContextSearch: boolean;
   appQuery: SearchQuery;
 
+  navigationPlugins: Observable<any[]>;
+  settingsPlugins: Observable<any[]>;
+
   context: string;
   reloadComponent = true;
 
   @HostListener('window:dragover', ['$event']) onDragOver(e) {
-    let transfer = e.dataTransfer;
-    if (!transfer) {
+    if (!e.dataTransfer) {
       return;
     }
-    transfer.dropEffect = 'none';
+    e.dataTransfer.dropEffect = 'none';
     e.preventDefault();
   }
   @HostListener('window:drop', ['$event']) onDrop(e) {
@@ -104,13 +94,16 @@ export class FrameComponent implements OnInit, OnDestroy {
     private screenService: ScreenService,
     private userService: UserService,
     private eventService: EventService,
-    private notificationService: NotificationService,
     private translateService: TranslateService,
     private popoverService: PopoverService,
     private dmsService: DmsService,
-    private systemService: SystemService,
-    private iconRegistry: IconRegistryService
+    private iconRegistry: IconRegistryService,
+    private pluginsService: PluginsService
   ) {
+    this.pluginsService.getCustomPlugins('states').subscribe((states) => PluginGuard.updateRouter(router, states));
+    this.navigationPlugins = this.pluginsService.getCustomPlugins('links', 'yuv-sidebar-navigation');
+    this.settingsPlugins = this.pluginsService.getCustomPlugins('links', 'yuv-sidebar-settings');
+
     this.iconRegistry.registerIcons([search, drawer, refresh, add, userDisabled, offline, close, openContext]);
     this.userService.user$.subscribe((user: YuvUser) => {
       this.user = user;
@@ -134,9 +127,14 @@ export class FrameComponent implements OnInit, OnDestroy {
       .pipe(takeUntilDestroy(this))
       .subscribe((event) => this.onObjetcsMove(event));
 
-    this.translateService.onLangChange.subscribe(() => {
+    this.eventService.on(YuvEventType.CLIENT_LOCALE_CHANGED).subscribe(() => {
       this.reloadComponent = false;
       setTimeout(() => (this.reloadComponent = true), 1);
+    });
+
+    // set html lang tag according to the client locale on every language change
+    this.translateService.onLangChange.subscribe((_) => {
+      document.documentElement.setAttribute('lang', this.translateService.currentLang);
     });
   }
 
@@ -164,6 +162,10 @@ export class FrameComponent implements OnInit, OnDestroy {
     } else {
       this.popoverService.open(this.moveNotification, popoverConfig);
     }
+  }
+
+  showSideBar(display = true) {
+    setTimeout(() => (this.displaySideBar = display));
   }
 
   closeNotification(popoverRef?: PopoverRef) {
@@ -204,7 +206,7 @@ export class FrameComponent implements OnInit, OnDestroy {
 
   navigate(state: string) {
     if (this.currentRoute !== state) {
-      this.showSideBar = false;
+      this.showSideBar(false);
       this.router.navigate([state]);
     }
   }

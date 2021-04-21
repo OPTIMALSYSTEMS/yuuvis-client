@@ -33,6 +33,7 @@ export class ResponsiveTabContainerComponent implements OnInit, AfterContentInit
    * TabPanel plugins
    */
   @Input() pluginPanels = [new QueryList<TabPanel>()];
+  @Input() pluginPanelsOrder = [];
 
   _layoutOptions = { panelOrder: [], panelSizes: [] };
 
@@ -116,6 +117,7 @@ export class ResponsiveTabContainerComponent implements OnInit, AfterContentInit
     panel.disabled = false;
     this.splitPanels.splice(index, 1);
     this.savePanelOrder();
+    this.mainTabView.cd.markForCheck();
   }
 
   private movePanelContent(panel: TabPanel, tabView: TabView = this.mainTabView) {
@@ -154,7 +156,10 @@ export class ResponsiveTabContainerComponent implements OnInit, AfterContentInit
    * initialize default TabPanels & TabPanel plugins
    */
   init() {
-    this.allPanels = this.pluginPanels.reduce((prev, cur) => [...prev, ...cur.toArray()], this.tabPanels.toArray());
+    this.allPanels = [
+      ...this.pluginPanels.reduce((prev, cur) => [...prev, ...cur.toArray()], []).filter((t) => !this.tabPanels.find((p) => p.id === t.id)),
+      ...this.tabPanels.toArray()
+    ].sort((a, b) => (~this.pluginPanelsOrder.indexOf(b.headerStyleClass) || -99) - (~this.pluginPanelsOrder.indexOf(a.headerStyleClass) || -99));
 
     this.mainTabView.tabPanels = new QueryList<TabPanel>();
     this.mainTabView.tabPanels.reset(this.allPanels);

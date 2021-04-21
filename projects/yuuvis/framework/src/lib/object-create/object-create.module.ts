@@ -20,6 +20,7 @@ import { ObjectCreateComponent } from './object-create/object-create.component';
  */
 @NgModule({
   declarations: [ObjectCreateComponent],
+  entryComponents: [ObjectCreateComponent],
   exports: [ObjectCreateComponent],
   imports: [
     BrowserAnimationsModule,

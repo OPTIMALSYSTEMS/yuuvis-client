@@ -8,7 +8,7 @@
 <ng-container *ngIf="user; else offlineNoUser">
   <div class="app-bar" *ngIf="!hideAppBar" (yuvFileDrop)="onFilesDropped($event)"
     [yuvFileDropOptions]="{ label: 'yuv.client.frame.app-bar.filedrop.label' | translate, disabled: disableFileDrop || tab, multiple: true }">
-    <yuv-icon class="btn" id="drawer" (click)="showSideBar = true" replaceUrl [icon]="'drawer'"></yuv-icon>
+    <yuv-icon class="btn" id="drawer" (click)="showSideBar(true)" replaceUrl [icon]="'drawer'"></yuv-icon>
     <a yuvOfflineDisabled routerLink="/" id="logo">
       <yuv-icon class="btn" [iconSrc]="'assets/default/theme/app.icon.svg'"></yuv-icon>
     </a>
@@ -35,7 +35,7 @@
       </div>
 
       <p-overlayPanel #op>
-        <div class="user-panel">
+        <div class="user-panel" id="sidebar-profile" *ngIf="reloadComponent">
           <div class="avatar" [ngClass]="{ enabled: user?.enabled }">
             <yuv-user-avatar [user]="user"></yuv-user-avatar>
             <div class="user-title">
@@ -46,6 +46,12 @@
               </div>
             </div>
           </div>
+          <ng-container *ngFor="let config of settingsPlugins | async">
+            <div class="nav-item settingsLink" (click)="op.hide()">
+              <ng-container *ngTemplateOutlet="pluginLink; context: { $implicit: config}"></ng-container>
+            </div>
+          </ng-container>
+    
           <div class="nav-item settings" (click)="op.hide()">
             <a routerLink="/settings" translate>yuv.client.state.settings.title</a>
           </div>
@@ -61,29 +67,51 @@
     <router-outlet></router-outlet>
   </div>
 
-  <yuv-sidebar [display]="showSideBar" (hide)="showSideBar = false">
+  <yuv-sidebar [display]="displaySideBar" (hide)="showSideBar(false)" id="sidebar-navigation" *ngIf="reloadComponent">
     <section class="content navigation-list">
       <div class="nav-item">
-        <a routerLink="dashboard" routerLinkActive="active" (click)="showSideBar = false"
+        <a routerLink="dashboard" routerLinkActive="active" (click)="showSideBar(false)"
           translate>yuv.client.state.dashboard.title</a>
-        <a routerLink="create" *ngIf="!disableCreate" routerLinkActive="active" (click)="showSideBar = false"
+      </div>
+      <div class="nav-item">
+        <a routerLink="create" *ngIf="!disableCreate" routerLinkActive="active" (click)="showSideBar(false)"
           translate>yuv.client.state.create.title</a>
+      </div>
+      <div class="nav-item">
         <a routerLink="/result" [queryParams]="{ query: pendingAFOsQuery, tmp: true }" routerLinkActive="active"
-          (click)="showSideBar = false" translate>yuv.client.sidebar.create.pending.title</a>
-
-        <a routerLink="inbox" routerLinkActive="active" (click)="showSideBar = false"
+          (click)="showSideBar(false)" translate>yuv.client.sidebar.create.pending.title</a>
+      </div>
+      <div class="nav-item">
+        <a routerLink="inbox" routerLinkActive="active" (click)="showSideBar(false)"
           translate>yuv.client.state.inbox.title</a>
-        <a routerLink="processes" routerLinkActive="active" (click)="showSideBar = false"
+      </div>
+      <div class="nav-item">
+        <a routerLink="processes" routerLinkActive="active" (click)="showSideBar(false)"
           translate>yuv.client.state.process.title</a>
-
-        <a routerLink="settings" routerLinkActive="active" (click)="showSideBar = false"
+      </div>
+      <div class="nav-item">
+        <a routerLink="settings" routerLinkActive="active" (click)="showSideBar(false)"
           translate>yuv.client.state.settings.title</a>
-        <a routerLink="about" routerLinkActive="active" (click)="showSideBar = false"
+      </div>
+      <div class="nav-item">
+        <a routerLink="about" routerLinkActive="active" (click)="showSideBar(false)"
           translate>yuv.client.state.about.title</a>
       </div>
+    
+      <ng-container *ngFor="let config of navigationPlugins | async">
+        <div class="nav-item plugin-link" (click)="showSideBar(false)">
+          <ng-container *ngTemplateOutlet="pluginLink; context: { $implicit: config}"></ng-container>
+        </div>
+      </ng-container>
+      
     </section>
   </yuv-sidebar>
 </ng-container>
+
+<ng-template #pluginLink let-config>
+  <a *ngIf="config.path.match('^http')" href="{{config.path}}" target="_blank">{{(config.label) | translate}}</a>
+  <a *ngIf="!config.path.match('^http')" routerLink="{{config.path}}"  routerLinkActive="active">{{(config.label) | translate}}</a>
+</ng-template>
 
 <ng-template #offlineNoUser>
   <div class="offline-no-user" *ngIf="isOffline">

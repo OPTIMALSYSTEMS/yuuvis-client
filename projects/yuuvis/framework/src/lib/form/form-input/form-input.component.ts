@@ -1,4 +1,8 @@
-import { Component, ElementRef, EventEmitter, HostBinding, Input, Output, Renderer2, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ContentChild, ElementRef, EventEmitter, HostBinding, Input, Output, Renderer2, ViewChild } from '@angular/core';
+import { NG_VALUE_ACCESSOR } from '@angular/forms';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { PluginsService } from '../../plugins/plugins.service';
 
 /**
  * Component for wrapping a form element. Provides a label and focus behaviour.
@@ -14,8 +18,9 @@ import { Component, ElementRef, EventEmitter, HostBinding, Input, Output, Render
   styleUrls: ['./form-input.component.scss'],
   host: { class: 'yuv-form-input' }
 })
-export class FormInputComponent {
+export class FormInputComponent implements AfterViewInit {
   @ViewChild('label', { static: true }) labelEl: ElementRef;
+  @ContentChild(NG_VALUE_ACCESSOR) childComponent: any;
 
   toggled = false;
   _label: string;
@@ -90,12 +95,32 @@ export class FormInputComponent {
   @HostBinding('class.invalid') isInvalid;
   @HostBinding('class.required') isRequired;
 
-  constructor(private renderer: Renderer2) {}
+  get childElement() {
+    return this.elRef.nativeElement.querySelector('.control').firstElementChild;
+  }
+
+  get formControlName() {
+    return this.childElement.getAttribute('ng-reflect-name');
+  }
+
+  get hook() {
+    return this.childElement?.localName;
+  }
+
+  visiblePlugins: Observable<any[]>;
+  hiddenPlugins: Observable<any[]>;
+
+  constructor(private renderer: Renderer2, private elRef: ElementRef, private pluginsService: PluginsService) {}
 
   toggle() {
     if (!this.skipToggle && !this.isDisabled) {
       this.toggled = !this.toggled;
       this.onToggleLabel.emit(this.toggled);
     }
+  }
+
+  ngAfterViewInit() {
+    this.visiblePlugins = this.pluginsService.getCustomPlugins('triggers', this.hook).pipe(map((t) => t.filter((action: any) => action.group === 'visible')));
+    this.hiddenPlugins = this.pluginsService.getCustomPlugins('triggers', this.hook).pipe(map((t) => t.filter((action: any) => action.group !== 'visible')));
   }
 }

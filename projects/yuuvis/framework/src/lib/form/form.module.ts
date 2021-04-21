@@ -13,6 +13,7 @@ import { MultiSelectModule } from 'primeng/multiselect';
 import { TriStateCheckboxModule } from 'primeng/tristatecheckbox';
 import { YuvCommonModule } from '../common/common.module';
 import { YuvComponentsModule } from '../components/components.module';
+import { YuvPluginsModule } from './../plugins/plugins.module';
 import { CatalogComponent } from './elements/catalog/catalog.component';
 import { CheckboxComponent } from './elements/checkbox/checkbox.component';
 import { DatetimeRangeComponent } from './elements/datetime-range/datetime-range.component';
@@ -27,39 +28,28 @@ import { ReferenceComponent } from './elements/reference/reference.component';
 import { StringComponent } from './elements/string/string.component';
 import { FormInputComponent } from './form-input/form-input.component';
 
+const components = [
+  FormInputComponent,
+  CheckboxComponent,
+  StringComponent,
+  DatetimeComponent,
+  NumberComponent,
+  DatepickerComponent,
+  DatetimeRangeComponent,
+  NumberRangeComponent,
+  ReferenceComponent,
+  ReferenceItemComponent,
+  OrganizationComponent,
+  CatalogComponent
+];
 /**
  * `YuvFormModule` bundles form controls like inputs, checkboxes, datepickers and so on.
  * To get a label for each form control, you can wrap it using `<yuv-form-input>`.
  */
 @NgModule({
-  declarations: [
-    FormInputComponent,
-    CheckboxComponent,
-    StringComponent,
-    DatetimeComponent,
-    NumberComponent,
-    DatepickerComponent,
-    DatetimeRangeComponent,
-    NumberRangeComponent,
-    YearRangeDirective,
-    ReferenceComponent,
-    ReferenceItemComponent,
-    OrganizationComponent,
-    CatalogComponent
-  ],
-  exports: [
-    FormInputComponent,
-    CheckboxComponent,
-    StringComponent,
-    DatetimeComponent,
-    NumberComponent,
-    DatetimeRangeComponent,
-    NumberRangeComponent,
-    YearRangeDirective,
-    ReferenceComponent,
-    OrganizationComponent,
-    CatalogComponent
-  ],
+  declarations: [...components, YearRangeDirective],
+  entryComponents: [...components],
+  exports: [...components, YearRangeDirective],
   imports: [
     CommonModule,
     FormsModule,
@@ -75,6 +65,7 @@ import { FormInputComponent } from './form-input/form-input.component';
     ReactiveFormsModule,
     InputMaskModule,
     MultiSelectModule,
+    YuvPluginsModule,
     RouterModule
   ]
 })

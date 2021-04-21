@@ -3,5 +3,6 @@ export enum ApiBase {
   core = 'core',
   apiWeb = 'api-web',
   // TODO: all custom services are deployed using this base
-  custom = 'custom'
+  custom = 'custom',
+  none = ''
 }

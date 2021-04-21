@@ -24,7 +24,8 @@ export class ContentPreviewService {
   }
 
   static closeWin() {
-    return this.getUndockWin() && this.getUndockWin().close();
+    this.getUndockWin() && this.getUndockWin().close();
+    delete window[ContentPreviewService.UNDOCK_WINDOW_NAME];
   }
 
   static getUndockWin(): Window {
@@ -60,7 +61,7 @@ export class ContentPreviewService {
     const { mimeType, size, contentStreamId, fileName } = content;
     const { root, path } = this.createPath(objectId, version);
     const fileExtension = fileName.includes('.') ? fileName.split('.').pop() : '';
-    return { mimeType, path, fileExtension, size, contentStreamId, objectId, root, ...this.createSettings() };
+    return { mimeType, path, fileName, fileExtension, size, contentStreamId, objectId, root, ...this.createSettings() };
   }
 
   createPreviewUrl(id: string, content: DmsObjectContent, version?: number, content2?: DmsObjectContent, version2?: number): void {

@@ -31,6 +31,9 @@ export interface Selectable {
   disabled?: boolean;
   count?: number;
   value?: any;
+  defaultValue?: any;
+  defaultOperator?: string;
+  class?: string;
 }
 /**
  * @ignore

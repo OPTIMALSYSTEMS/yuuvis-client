@@ -13,7 +13,7 @@
       class="button actions-button" [icon]="'kebap'"></yuv-icon>
   </yuv-action-menu-bar>
 
-  <p-tabView class="content" [activeIndex]="activeTabIndex" (onChange)="onTabChange($event)">
+  <p-tabView *ngIf="(plugins ? (plugins | async) : []) as resolvedPlugins" class="content" [activeIndex]="activeTabIndex" (onChange)="onTabChange($event)">
     <p-tabPanel [id]="'children'" [header]="'yuv.framework.context.tabs.children.title' | translate">
       <ng-template pTemplate="content">
         <!-- context children search result -->
@@ -47,6 +47,18 @@
         </yuv-search-result>
       </ng-template>
     </p-tabPanel>
+
+    <!-- PLUGINS -->
+    <!-- <ng-container  *ngIf="(plugins | async) as resolvedPlugins"> -->
+      <p-tabPanel *ngFor="let config of resolvedPlugins" [id]="config.id" [header]="(config.label) | translate" [headerStyleClass]="config.id">
+        <ng-template pTemplate="content">
+          <yuv-plugin [config]="config" [parent]="this"></yuv-plugin>
+        </ng-template>
+      </p-tabPanel>
+    <!-- </ng-container> -->
+
+    <ng-content></ng-content>
+    
   </p-tabView>
 </yuv-panel>
 

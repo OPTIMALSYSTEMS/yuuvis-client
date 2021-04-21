@@ -8,13 +8,13 @@
   <div class="yuv-slave panel">
 
     <yuv-object-details-compare *ngIf="compare; else tplSingle" [objectCompareInput]="compare"
-      [layoutOptionsKey]="layoutOptionsKey + '.changes'">
+      [layoutOptionsKey]="layoutOptionsKey + '.changes'" [plugins]="pluginsCompare">
     </yuv-object-details-compare>
 
 
     <ng-template #tplSingle>
       <div class="version">{{dmsObject?.version}}</div>
-      <yuv-object-details [disableFileDrop]="true" [dmsObject]="dmsObject"
+      <yuv-object-details [disableFileDrop]="true" [dmsObject]="dmsObject" [plugins]="plugins"
         [panelOrder]="['summary', 'indexdata', 'preview']" [layoutOptionsKey]="layoutOptionsKey">
       </yuv-object-details>
     </ng-template>

@@ -19,7 +19,6 @@ import { SingleCellRendererComponent } from '../services/grid/renderer/single-ce
 import { ActionMenuBarComponent } from './action-menu-bar/action-menu-bar.component';
 import { IconUploadComponent } from './animated-icons/icon-upload/icon-upload.component';
 import { BusyOverlayDirective } from './busy-overlay/busy-overlay.directive';
-import { DialogComponent } from './dialog/dialog.component';
 import { DmsObjectTileComponent } from './dms-object-tile/dms-object-tile.component';
 import { FilePickerComponent } from './file-picker/file-picker.component';
 import { PanelComponent } from './panel/panel.component';
@@ -31,12 +30,10 @@ import { UploadProgressOverlayComponent } from './upload-progress-overlay/upload
 
 const components = [
   PanelComponent,
-  DialogComponent,
   FilePickerComponent,
   UploadProgressOverlayComponent,
   RecentActivitiesComponent,
   ResponsiveDataTableComponent,
-  BusyOverlayDirective,
   ResponsiveMasterSlaveComponent,
   ActionMenuBarComponent,
   ResponsiveTabContainerComponent,
@@ -50,8 +47,9 @@ const components = [
  */
 
 @NgModule({
-  declarations: [...components],
-  exports: [...components, TabViewModule],
+  declarations: [...components, BusyOverlayDirective],
+  entryComponents: [...components],
+  exports: [...components, TabViewModule, BusyOverlayDirective],
   imports: [
     OverlayPanelModule,
     CommonModule,

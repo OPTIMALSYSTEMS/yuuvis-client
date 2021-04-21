@@ -19,6 +19,7 @@ import { RouterLinkDirective } from './directives/router-link.directive';
 @NgModule({
   imports: [CommonModule, HttpClientModule, AccordionModule, SidebarModule],
   declarations: [IconComponent, FocusWithinDirective, SidebarComponent, EmptyComponent, RouterLinkDirective, ObjectTypeIconComponent],
+  entryComponents: [IconComponent, SidebarComponent, EmptyComponent, ObjectTypeIconComponent],
   exports: [IconComponent, FocusWithinDirective, SidebarComponent, EmptyComponent, RouterLinkDirective, ObjectTypeIconComponent],
   providers: [IconService, IconRegistryService]
 })

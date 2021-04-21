@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { GroupedSelectComponent } from './grouped-select.component';
 
@@ -6,7 +6,7 @@ describe('GroupedSelectComponent', () => {
   let component: GroupedSelectComponent;
   let fixture: ComponentFixture<GroupedSelectComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ GroupedSelectComponent ]
     })

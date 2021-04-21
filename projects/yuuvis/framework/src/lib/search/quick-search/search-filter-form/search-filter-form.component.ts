@@ -134,9 +134,9 @@ export class SearchFilterFormComponent implements OnInit, OnDestroy {
     const formPatch = {};
     (filters || []).forEach((filter) => {
       const otf = this.availableObjectTypeFields.find((o) => o.id === filter.property);
-      if (otf) {
+      if (otf?.value) {
         const field = otf.value as ObjectTypeField;
-        this.addFieldEntry(field, filter.operator && filter.isEmpty(), filter.id);
+        this.addFieldEntry(field, filter.operator && filter.isEmpty(), filter.id, otf.label);
         if (filter.operator) {
           // setup values based on whether or not the type supports ranges
           const isRange = ['datetime', 'integer', 'decimal'].includes(field.propertyType);
@@ -154,7 +154,7 @@ export class SearchFilterFormComponent implements OnInit, OnDestroy {
    * Adds a new form field to the query
    * @param field The object type field to be added
    */
-  addFieldEntry(field: ObjectTypeField, isEmpty = false, id?: string, focus = true) {
+  addFieldEntry(field: ObjectTypeField, isEmpty = false, id?: string, label?: string, focus = true) {
     const fcID = `${id || field.id}`;
     if (!this.searchFieldsForm) {
       this.initSearchFieldsForm();
@@ -166,6 +166,7 @@ export class SearchFilterFormComponent implements OnInit, OnDestroy {
     formElement.description = null;
     formElement.isNotSetValue = isEmpty;
     formElement.readonly = this.disabled;
+    formElement.label = label || formElement.label;
 
     // TODO: refactor this crazy stuff - should be handled by FormElement class or service
     if (formElement.classification) {
@@ -176,6 +177,10 @@ export class SearchFilterFormComponent implements OnInit, OnDestroy {
     if (field.id === BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS) {
       formElement.options = this.systemService.getSecondaryObjectTypes(true).map((s) => ({ label: s.label || s.id, value: s.id }));
       formElement._internalType = InternalFieldType.STRING_CATALOG;
+    }
+
+    if (!formElement._internalType) {
+      formElement._internalType = this.systemService.getInternalFormElementType(formElement, 'type');
     }
 
     const formControl = ObjectFormUtils.elementToFormControl(formElement, Situation.SEARCH);

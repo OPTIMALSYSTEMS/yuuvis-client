@@ -29,7 +29,7 @@
     }
   }
 
-  // body .ui-tabview.ui-tabview-top .ui-tabview-panels
+  // body .p-tabview.p-component .p-tabview-panels
   &.o2mGroupStack {
     background: rgba(0, 0, 0, 0.02);
     border: 1px solid rgba(0, 0, 0, 0.1);
@@ -39,7 +39,7 @@
       border: 1px solid rgba(255, 255, 255, 0.1);
     }
 
-    .ui-tabview.ui-tabview-top .ui-tabview-panels {
+    .p-tabview.p-component .p-tabview-panels {
       background: #fff;
       overflow: initial;
 
@@ -49,27 +49,27 @@
     }
 
     // tab headers
-    .ui-tabview.ui-tabview-top > .ui-tabview-nav li.ui-state-active {
+    .p-tabview.p-component > .p-tabview-nav li.p-highlight {
       border-color: rgba(0, 0, 0, 0.26);
       .dark & {
         border-color: rgba(255, 255, 255, 0.26);
       }
     }
-    .ui-tabview.ui-tabview-top > .ui-tabview-nav > li:not(.ui-state-active):not(.ui-state-disabled):hover {
+    .p-tabview.p-component > .p-tabview-nav > li:not(.p-highlight):not(.p-disabled):hover {
       border-color: rgba(0, 0, 0, 0.16);
       .dark & {
         border-color: rgba(255, 255, 255, 0.16);
       }
     }
-    .ui-tabview.ui-tabview-top > .ui-tabview-nav li {
+    .p-tabview.p-component > .p-tabview-nav li {
       &.dirty-true:not(.invalid-true) {
-        a .ui-tabview-title {
+        a .p-tabview-title {
           background-color: var(--color-dirty-background);
           color: var(--color-dirty-font);
         }
       }
       &.invalid-true {
-        a .ui-tabview-title {
+        a .p-tabview-title {
           background-color: var(--color-error);
           color: #fff;
 

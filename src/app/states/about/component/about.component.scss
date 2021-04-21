@@ -160,6 +160,19 @@ $about-max-width: 800px;
     .licenses_content {
       grid-area: licenses_content;
 
+      ::ng-deep {
+        .p-accordion .p-accordion-header .p-accordion-header-link {
+          background-color: var(--button-secondary-background);
+          border-color: var(--panel-divider-color);
+        }
+        .p-accordion .p-accordion-header:not(.p-disabled) .p-accordion-header-link:focus {
+          box-shadow: 0 0 0 0.1rem var(--color-accent);
+        }
+        .p-accordion .p-accordion-content {
+          border-color: var(--panel-divider-color);
+        }
+      }
+
       .lic-row {
         padding-top: var(--app-pane-padding);
         display: flex;

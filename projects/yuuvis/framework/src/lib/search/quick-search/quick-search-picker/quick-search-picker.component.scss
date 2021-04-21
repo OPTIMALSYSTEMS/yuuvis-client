@@ -30,11 +30,21 @@
     padding: var(--app-pane-padding);
     > div {
       flex: 1;
+      display: flex;
     }
     .cancel {
       .screen-s.screen-portrait & {
         display: none;
       }
+    }
+  }
+
+  ::ng-deep .extension {
+    .title {
+      font-style: italic;
+    }
+    yuv-icon {
+      color: var(--color-accent) !important;
     }
   }
 }
@@ -48,9 +58,10 @@
     background-color: #fff;
     ::ng-deep {
       .container {
-        padding: 0;
+        max-width: 400px;
         .group {
-          margin: 0;
+          margin: calc(var(--app-pane-padding) / 2);
+          border: 1px solid var(--panel-divider-color);
         }
       }
     }

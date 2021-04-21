@@ -12,6 +12,7 @@ import {
   YuvEventType
 } from '@yuuvis/core';
 import { TabPanel } from 'primeng/tabview';
+import { Observable } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
@@ -164,6 +165,8 @@ export class ObjectDetailsComponent implements OnDestroy {
 
   undockWinActive = false;
 
+  @Input() plugins: Observable<any[]>;
+
   constructor(
     private dmsService: DmsService,
     private userService: UserService,
@@ -176,7 +179,7 @@ export class ObjectDetailsComponent implements OnDestroy {
   ) {
     this.iconRegistry.registerIcons([refresh, kebap, noFile]);
     this.userIsAdmin = this.userService.hasAdministrationRoles;
-    this.panelOrder = this.config.get('objectDetailsTabs') || this.panelOrder;
+    this.panelOrder = this.config.get('client.objectDetailsTabs') || this.panelOrder;
     this.undockWinActive = ContentPreviewService.undockWinActive();
 
     this.eventService
