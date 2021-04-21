@@ -76,13 +76,6 @@ export class AboutService {
 
   getAboutConfig(userLang) {
     this.generateDocumentationLink(this.configService.get('client.docu'), userLang);
-
-    // return this.http.get('assets/about.config.json').subscribe(
-    //   (config: { docu: AboutDocuConfig }) => {
-    //     this.generateDocumentationLink(config.docu, userLang);
-    //   },
-    //   error => console.log({ error })
-    // );
   }
 
   getAboutData() {
@@ -99,7 +92,7 @@ export class AboutService {
   generateDocumentationLink(docuConfig: AboutDocuConfig, userLang) {
     const { language, link, version } = docuConfig;
     userLang = this.getUserLanguage(language, userLang);
-    const docuLink = link.replace('###userLang###', userLang).replace('###version###', String(version));
+    const docuLink = link.replace('###userLang###', userLang);
 
     this.aboutConfigSubject.next(docuLink);
   }
