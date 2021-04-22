@@ -14,7 +14,9 @@ import { PluginsService } from './plugins.service';
 })
 export class PluginActionComponent implements SimpleCustomAction {
   static actionWrapper(actions: any[]) {
-    const map = (actions || []).map((a) => ({ ...a, target: a.target || ActionTarget.DMS_OBJECT, action: a, _component: PluginActionComponent }));
+    const map = (actions || []).map((a) =>
+      typeof a === 'object' ? { ...a, target: a.target || ActionTarget.DMS_OBJECT, action: a, _component: PluginActionComponent } : a
+    );
     return map;
   }
 

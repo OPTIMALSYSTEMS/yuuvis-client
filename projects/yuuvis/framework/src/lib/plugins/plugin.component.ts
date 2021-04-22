@@ -35,7 +35,7 @@ export class PluginComponent extends IFrameComponent implements OnInit, OnDestro
   @Input() config: {
     id: string;
     label: string;
-    disabled: boolean;
+    disabled?: string;
     // state or link
     path: string;
     matchHook: string;

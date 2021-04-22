@@ -36,8 +36,11 @@ import { PluginAPI } from './plugins.interface';
 })
 export class PluginsService {
   static LOCAL_PLUGIN_CONFIG = '/user/settings/plugin-config';
-  static GLOBAL_PLUGIN_CONFIG = '/user/globalsettings/plugin-config';
-  static VIEWER_PLUGIN_CONFIG = '/viewer/plugins';
+  // static GLOBAL_PLUGIN_CONFIG = '/user/globalsettings/plugin-config'; // not supported anymore (included in RESOURCES_CONFIG)
+  // static VIEWER_PLUGIN_CONFIG = '/viewer/plugins'; // not supported anymore (included in RESOURCES_CONFIG)
+  static RESOURCES_CONFIG = '/resources/config';
+  static ADMIN_RESOURCES_CONFIG = '/admin/resources/config';
+  static SYSTEM_RESOURCES_CONFIG = '/system/resources/config';
 
   static EVENT_MODEL_CHANGED = 'yuv.event.object-form.model.changed';
 
@@ -90,17 +93,17 @@ export class PluginsService {
 
   private loadCustomPlugins(force = false) {
     return forkJoin([
-      this.backend.get(PluginsService.VIEWER_PLUGIN_CONFIG, '').pipe(catchError(() => of({}))),
-      this.backend.get(PluginsService.GLOBAL_PLUGIN_CONFIG).pipe(catchError(() => of({}))),
-      this.backend.get(PluginsService.LOCAL_PLUGIN_CONFIG).pipe(catchError(() => of({})))
+      this.backend.get(PluginsService.LOCAL_PLUGIN_CONFIG).pipe(catchError(() => of({}))),
+      this.backend.get(PluginsService.RESOURCES_CONFIG).pipe(catchError(() => of({})))
     ]).pipe(
-      map(([viewer, global, local]) => {
-        this.pluginConfigs = { viewer, global, local };
+      map(([local, config]) => {
+        const p = (this.pluginConfigs = { local, tenant: config?.tenant || {}, global: config?.global || {} });
         if (!this.customPlugins || force) {
-          this.customPlugins = [viewer, global, local].reduce((prev, cur) => {
+          // merge configs: global >> tenant >> local
+          this.customPlugins = [p.global, p.tenant, p.local].reduce((prev, cur) => {
             Object.keys(cur || {}).forEach((k) => {
               if (Array.isArray(cur[k])) {
-                prev[k] = (prev[k] || []).filter((p) => !cur[k].find((c) => c.id === p.id)).concat(cur[k]);
+                prev[k] = cur[k].concat((prev[k] || []).filter((p) => !cur[k].find((c) => c.id === p.id)));
               } else if (k === 'translations' && prev[k]) {
                 Object.keys(cur[k]).forEach((t) => (prev[k][t] = { ...(prev[k][t] || {}), ...cur[k][t] }));
               } else {
@@ -116,13 +119,15 @@ export class PluginsService {
     );
   }
 
-  public getCustomPlugins(type: 'links' | 'states' | 'actions' | 'extensions' | 'triggers', hook?: string, matchPath?: string | RegExp) {
+  public getCustomPlugins(type: 'links' | 'states' | 'actions' | 'extensions' | 'triggers' | 'viewers', hook?: string, matchPath?: string | RegExp) {
     return (!this.customPlugins ? this.backend.getViaTempCache('_plugins', () => this.loadCustomPlugins()) : of(this.customPlugins)).pipe(
       map((cp) => {
         if (cp.disabled) return [];
         const customPlugins = type === 'links' ? [...(cp.links || []), ...(cp.states || [])] : cp[type] || [];
         return customPlugins.filter(
-          (p) => !p.disabled && (hook ? p.matchHook && hook.match(new RegExp(p.matchHook)) : matchPath ? (p.path || '').match(new RegExp(matchPath)) : true)
+          (p) =>
+            !this.applyFunction(p.disabled && p.disabled.toString(), 'user, state', [this.user, this.router.routerState.snapshot]) &&
+            (hook ? p.matchHook && hook.match(new RegExp(p.matchHook)) : matchPath ? (p.path || '').match(new RegExp(matchPath)) : true)
         );
       })
     );

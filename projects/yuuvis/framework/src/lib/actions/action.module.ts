@@ -14,8 +14,6 @@ import { ACTIONS, ActionService, CUSTOM_ACTIONS } from './action-service/action.
 import { DeleteActionComponent } from './actions/delete-action/delete-action';
 import { DeleteComponent } from './actions/delete-action/delete/delete.component';
 import { DownloadActionComponent } from './actions/download-action/download-action';
-import { DownloadOriginalActionComponent } from './actions/download-original-action/download-original-action';
-import { DownloadPdfActionComponent } from './actions/download-pdf-action/download-pdf-action';
 import { FollowUpActionComponent } from './actions/follow-up-action/follow-up-action';
 import { FollowUpComponent } from './actions/follow-up-action/follow-up/follow-up.component';
 import { MoveActionComponent } from './actions/move-action/move-action';
@@ -26,8 +24,6 @@ import { UploadComponent } from './actions/upload-action/upload/upload.component
 
 export const entryComponents = [
   DownloadActionComponent,
-  DownloadOriginalActionComponent,
-  DownloadPdfActionComponent,
   DeleteActionComponent,
   DeleteComponent,
   UploadComponent,
@@ -71,21 +67,7 @@ export const entryComponents = [
       useValue: []
     }
   ],
-  declarations: [
-    ActionMenuComponent,
-    DownloadActionComponent,
-    DownloadOriginalActionComponent,
-    DownloadPdfActionComponent,
-    DeleteActionComponent,
-    DeleteComponent,
-    UploadComponent,
-    UploadActionComponent,
-    MoveActionComponent,
-    MoveComponent,
-    FollowUpComponent,
-    FollowUpActionComponent,
-    ReferenceActionComponent
-  ],
+  declarations: [ActionMenuComponent, ...entryComponents],
   entryComponents
 })
 export class YuvActionModule {

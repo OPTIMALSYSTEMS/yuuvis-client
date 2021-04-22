@@ -2,6 +2,8 @@ import { PlatformLocation } from '@angular/common';
 import { Injectable } from '@angular/core';
 import { ApiBase, DmsObjectContent, UserService, Utils } from '@yuuvis/core';
 import { Observable, ReplaySubject } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { PluginsService } from '../../../plugins/plugins.service';
 import { LayoutService } from '../../../services/layout/layout.service';
 
 /**
@@ -40,7 +42,12 @@ export class ContentPreviewService {
    *
    * @ignore
    */
-  constructor(private location: PlatformLocation, private userService: UserService, private layoutService: LayoutService) {}
+  constructor(
+    private location: PlatformLocation,
+    private userService: UserService,
+    private layoutService: LayoutService,
+    private pluginsService: PluginsService
+  ) {}
 
   private createPath(id: string, version?: number): { root: string; path: string } {
     let root = `${this.location.protocol}//${this.location.hostname}`;
@@ -64,10 +71,32 @@ export class ContentPreviewService {
     return { mimeType, path, fileName, fileExtension, size, contentStreamId, objectId, root, ...this.createSettings() };
   }
 
+  private resolveCustomViewerConfig(params: any[]) {
+    return this.pluginsService.getCustomPlugins('viewers').pipe(
+      map((viewers) =>
+        params.forEach((param) => {
+          const { mimeType, fileExtension } = param;
+          // shared code from heimdall
+          const config = viewers?.find((c: any) => {
+            const matchMT = (typeof c.mimeType === 'string' ? [c.mimeType] : c.mimeType).includes(mimeType);
+            const matchFE = c.fileExtension
+              ? (typeof c.fileExtension === 'string' ? [c.fileExtension] : c.fileExtension).includes((fileExtension || '').toLowerCase())
+              : true;
+            return matchMT && matchFE;
+          });
+
+          param.viewer = config?.viewer || undefined;
+        })
+      )
+    );
+  }
+
   createPreviewUrl(id: string, content: DmsObjectContent, version?: number, content2?: DmsObjectContent, version2?: number): void {
     const params = this.createParams(id, content, version);
-    const query = content2 ? { compare: [params, this.createParams(id, content2, version2)] } : params;
-    this.previewSrcSource.next(id ? Utils.buildUri(`${params.root}/viewer/`, query) : '');
+    const query: any = content2 ? { compare: [params, this.createParams(id, content2, version2)] } : params;
+    this.resolveCustomViewerConfig(query.compare || [query]).subscribe(() => {
+      this.previewSrcSource.next(id ? Utils.buildUri(`${params.root}/viewer/`, query) : '');
+    });
   }
 
   resetSource() {

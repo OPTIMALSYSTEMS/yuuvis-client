@@ -40,6 +40,10 @@ export class ActionMenuComponent implements OnDestroy {
    * eventhough you are not on dark mode
    */
   @Input() dark: boolean;
+  /**
+   * Set ID of Action that should be shown when menu opens.
+   */
+  @Input() activeAction: string;
 
   /**
    * Specifies the visibility of the menu.
@@ -104,6 +108,8 @@ export class ActionMenuComponent implements OnDestroy {
         tap((actionsList) => {
           this.actionLists.common = actionsList.filter((actionListEntry) => actionListEntry.action.group === 'common');
           this.actionLists.further = actionsList.filter((actionListEntry) => actionListEntry.action.group === 'further');
+
+          this.activeAction && setTimeout(() => this.onClick(actionsList.find((a) => a.id === this.activeAction)));
         })
       )
       .subscribe();
@@ -196,12 +202,13 @@ export class ActionMenuComponent implements OnDestroy {
     this.showComponent = false;
     this.subActionsList = null;
     // this.actionDescription = null;
+    this.activeAction = null;
     this.viewContainerRef.clear();
     this.componentAnchor?.viewContainerRef.clear();
   }
 
   cancel() {
-    this.clear();
+    this.activeAction ? this.finish() : this.clear();
   }
 
   finish() {

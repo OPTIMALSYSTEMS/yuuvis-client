@@ -4,17 +4,17 @@ import { BackendService, DmsObject, TranslateService } from '@yuuvis/core';
 import { Observable, of as observableOf, of } from 'rxjs';
 import { contentDownload } from '../../../svg.generated';
 import { DmsObjectTarget } from '../../action-target';
-import { ListAction } from '../../interfaces/action.interface';
+import { SimpleAction } from '../../interfaces/action.interface';
 import { SelectionRange } from '../../selection-range.enum';
 
 /**
  * @ignore
  */
 @Component({
-  selector: 'yuv-download-content',
+  selector: 'yuv-download-action',
   template: ``
 })
-export class DownloadActionComponent extends DmsObjectTarget implements ListAction {
+export class DownloadActionComponent extends DmsObjectTarget implements SimpleAction {
   header: string;
   label: string;
   description: string;
@@ -29,8 +29,6 @@ export class DownloadActionComponent extends DmsObjectTarget implements ListActi
     this.label = this.translate.instant('yuv.framework.action-menu.action.download.dms.object.content.label');
     this.description = this.translate.instant('yuv.framework.action-menu.action.download.dms.object.content.description');
     this.header = this.translate.instant('yuv.framework.action-menu.action.export.title');
-    // this.subActionComponents = [DownloadOriginalActionComponent, DownloadPdfActionComponent];
-    // this.subActionComponents = [DownloadOriginalActionComponent];
   }
 
   isExecutable(element: DmsObject) {
