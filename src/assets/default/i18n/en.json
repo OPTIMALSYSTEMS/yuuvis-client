@@ -169,6 +169,7 @@
   "yuv.framework.object-details.summary.section.admin": "Administrative information",
   "yuv.framework.object-details.summary.section.baseparams": "Basic metadata",
   "yuv.framework.object-details.summary.section.core": "Type metadata",
+  "yuv.framework.object-details.summary.section.data": "More information",
   "yuv.framework.object-details.summary.section.parent": "Inherited metadata",
   "yuv.framework.object-details.tabs.content.title": "Content",
   "yuv.framework.object-details.tabs.history.title": "History",

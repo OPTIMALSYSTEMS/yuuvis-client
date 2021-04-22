@@ -7,6 +7,10 @@ export interface Summary {
    */
   core: SummaryEntry[];
   /**
+   * Summary entry, that come from a yuuvis data
+   */
+  data: SummaryEntry[];
+  /**
    * Summary entry, that belog to the object
    */
   base: SummaryEntry[];

@@ -13,6 +13,7 @@ import {
   SystemService
 } from '@yuuvis/core';
 import { GridService } from '../../services/grid/grid.service';
+import { Situation } from './../../object-form/object-form.situation';
 import { Summary, SummaryEntry } from './summary.interface';
 
 /**
@@ -48,11 +49,14 @@ export class SummaryComponent implements OnInit {
   visible: any = {
     parent: true,
     core: true,
-    baseparams: true,
+    data: false,
+    baseparams: false,
     admin: true
   };
 
   dmsObjectID: string;
+  form: any;
+  coreFields: any[] = [];
 
   /**
    * `DmsObject` to show the summary for
@@ -60,7 +64,11 @@ export class SummaryComponent implements OnInit {
   @Input()
   set dmsObject(dmsObject: DmsObject) {
     this.dmsObjectID = dmsObject?.id;
-    this.summary = dmsObject ? this.generateSummary(dmsObject) : null;
+    this.systemService.getObjectTypeForm(dmsObject.objectTypeId, Situation.EDIT).subscribe((form) => {
+      this.form = form;
+      this.coreFields = this.getCoreFields(this.form);
+      this.summary = dmsObject ? this.generateSummary(dmsObject) : null;
+    });
   }
 
   dmsObject2: DmsObject;
@@ -167,6 +175,7 @@ export class SummaryComponent implements OnInit {
   private generateSummary(dmsObject: DmsObject) {
     const summary: Summary = {
       core: [],
+      data: [],
       base: [],
       extras: [],
       parent: []
@@ -219,7 +228,11 @@ export class SummaryComponent implements OnInit {
         } else if (parentFields.includes(prepKey)) {
           summary.parent.push(si);
         } else if (!skipFields.includes(prepKey)) {
-          summary.core.push(si);
+          if (this.coreFields.includes(prepKey)) {
+            summary.core.push(si);
+          } else {
+            summary.data.push(si);
+          }
         }
       });
 
@@ -229,6 +242,22 @@ export class SummaryComponent implements OnInit {
       .sort((a, b) => (a.key === ClientDefaultsObjectTypeField.TITLE ? -1 : b.key === ClientDefaultsObjectTypeField.TITLE ? 1 : 0));
 
     return summary;
+  }
+
+  private getCoreFields(form: any) {
+    return this.extractFields(form.elements[0]);
+  }
+
+  private extractFields(element): string[] {
+    let fields = [];
+    if (element.elements && element.type !== 'table') {
+      element.elements.forEach((el) => {
+        fields = fields.concat(this.extractFields(el));
+      });
+    } else {
+      fields.push(element.name);
+    }
+    return fields;
   }
 
   ngOnInit(): void {
