@@ -65,6 +65,12 @@ export class SearchResultComponent implements OnDestroy {
   pagingForm: FormGroup;
   busy: boolean;
 
+  /**
+   * Column configuration to be used for the grid. The query sent to the backend
+   * will be adopted to fetch all the necessary fields.
+   */
+  @Input() columnConfig: ColDef[];
+
   @Input() set filterPanelConfig(cfg: FilterPanelConfig) {
     if (this._filterPanelConfig?.open !== cfg?.open || this._filterPanelConfig.width !== cfg?.width) {
       this._filterPanelConfig = cfg || {
@@ -253,7 +259,7 @@ export class SearchResultComponent implements OnDestroy {
   private executeQuery(applyColumnConfig?: boolean) {
     this.busy = true;
     this._searchQuery.from = 0; // always load 1st page
-    (applyColumnConfig ? this.applyColumnConfiguration(this._searchQuery) : of(this._searchQuery))
+    (applyColumnConfig || this.columnConfig ? this.applyColumnConfiguration(this._searchQuery) : of(this._searchQuery))
       .pipe(
         tap((q) => this.queryChanged.emit(q)),
         switchMap((q: SearchQuery) => this.searchService.search(q))
@@ -264,7 +270,7 @@ export class SearchResultComponent implements OnDestroy {
   }
 
   private applyColumnConfiguration(q: SearchQuery): Observable<SearchQuery> {
-    return this.gridService.getColumnConfiguration(q.targetType).pipe(
+    return (this.columnConfig ? of(this.columnConfig) : this.gridService.getColumnConfiguration(q.targetType)).pipe(
       tap((colDefs: ColDef[]) => {
         q.sortOptions = [];
         colDefs
