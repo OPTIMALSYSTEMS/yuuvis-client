@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
 import { Utils } from '../../util/utils';
 import { BackendService } from '../backend/backend.service';
 import { ConfigService } from '../config/config.service';
@@ -45,9 +45,10 @@ export class UserConfigService {
 
   private fetchColumnConfig(objectTypeId: string, global?: boolean): Observable<ColumnConfig> {
     return this.backend.get(this.getRequestURI(objectTypeId, global)).pipe(
-      map((res) => ({
+      catchError(() => of({ type: objectTypeId, columns: [] })),
+      map((res: any) => ({
         type: objectTypeId,
-        columns: (res.columns || []).map((c) => ({
+        columns: (res?.columns || []).map((c) => ({
           id: c.id,
           label: this.systemService.getLocalizedResource(`${c.id}_label`),
           pinned: c.pinned || false,

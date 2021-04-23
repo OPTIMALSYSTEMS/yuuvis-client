@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { BehaviorSubject, forkJoin, Observable, of } from 'rxjs';
-import { map, switchMap, tap } from 'rxjs/operators';
+import { catchError, map, switchMap, tap } from 'rxjs/operators';
 import { UserSettings, YuvUser } from '../../model/yuv-user.model';
 import { BackendService } from '../backend/backend.service';
 import { Direction } from '../config/config.interface';
@@ -150,7 +150,12 @@ export class UserService {
 
   getGlobalSettings(section: string): Observable<any> {
     const setting = this.globalSettings.get(section);
-    return setting ? of(setting) : this.backend.get('/users/globalsettings/' + section).pipe(tap((data) => this.globalSettings.set(section, data)));
+    return setting
+      ? of(setting)
+      : this.backend.get('/users/globalsettings/' + section).pipe(
+          catchError(() => of({})),
+          tap((data) => this.globalSettings.set(section, data))
+        );
   }
 
   saveGlobalSettings(section: string, data: any): Observable<any> {

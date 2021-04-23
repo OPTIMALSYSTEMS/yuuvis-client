@@ -46,29 +46,30 @@ export class CoreInit {
   }
 
   private loadConfig() {
+    const error = (e) => {
+      this.logger.error('failed to catch config file', e);
+      return of({});
+    };
     // getting a string means that we got an URL to load the config from
     return (!Array.isArray(this.coreConfig.main)
       ? of([this.coreConfig.main])
-      : forkJoin(
-          // TODO: what if apiWeb path is changed via config?
-          [...this.coreConfig.main, ApiBase.apiWeb + '/api' + ConfigService.GLOBAL_MAIN_CONFIG].map((uri) =>
-            this.http.get(`${uri.startsWith(ApiBase.apiWeb) ? '/' : Utils.getBaseHref()}${uri}`).pipe(
-              catchError((e) => {
-                this.logger.error('failed to catch config file', e);
-                return of({});
-              })
-            )
+      : forkJoin([...this.coreConfig.main].map((uri) => this.http.get(`${Utils.getBaseHref()}${uri}`).pipe(catchError(error)))).pipe(
+          switchMap((configs: YuvConfig[]) =>
+            this.http
+              .get(`${configs.reduce((p, c) => (c?.core?.apiBase ? c?.core?.apiBase[ApiBase.apiWeb] || p : p), '')}${ConfigService.GLOBAL_MAIN_CONFIG}`)
+              .pipe(
+                catchError(error),
+                map((global) => [...configs, global])
+              )
           )
         )
     ).pipe(
       map((res) =>
-        res
-          .filter((i) => i !== null)
-          .reduce((acc, x) => {
-            // merge object values on 2nd level
-            Object.keys(x).forEach((k) => (!acc[k] || Array.isArray(x[k]) || typeof x[k] !== 'object' ? (acc[k] = x[k]) : Object.assign(acc[k], x[k])));
-            return acc;
-          }, {})
+        res.reduce((acc, x) => {
+          // merge object values on 2nd level
+          Object.keys(x || {}).forEach((k) => (!acc[k] || Array.isArray(x[k]) || typeof x[k] !== 'object' ? (acc[k] = x[k]) : Object.assign(acc[k], x[k])));
+          return acc;
+        }, {})
       ),
       tap((res: YuvConfig) => this.configService.set(res)),
       switchMap((res: YuvConfig) => this.authService.initUser().pipe(catchError((e) => of(true))))

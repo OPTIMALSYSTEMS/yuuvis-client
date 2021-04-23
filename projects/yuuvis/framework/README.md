@@ -46,7 +46,7 @@ The main configuration file is supposed to be located at `assets/default/config/
   "core": {
     "apiBase": {
       "core": "/api",
-      "api-web": "/api-web"
+      "api-web": "/api-web/api"
     },
     "languages": [
       {
