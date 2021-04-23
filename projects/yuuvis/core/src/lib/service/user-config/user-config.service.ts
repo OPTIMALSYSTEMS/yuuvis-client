@@ -80,9 +80,9 @@ export class UserConfigService {
   private getRequestURI(objectTypeId: string, global?: boolean): string {
     const id = encodeURIComponent(objectTypeId);
     if (global) {
-      return `/user/globalsettings/column-config-${id}`;
+      return `/users/globalsettings/column-config-${id}`;
     }
-    const baseURL = '/user/config/result/';
+    const baseURL = '/users/config/result/';
     const ot = this.systemService.getObjectType(objectTypeId);
     if (!ot && this.systemService.getSecondaryObjectType(objectTypeId)) {
       // Not getting an object type means that the target type is an extendable FSOT.

@@ -35,8 +35,8 @@ import { PluginAPI } from './plugins.interface';
   providedIn: 'root'
 })
 export class PluginsService {
-  static LOCAL_PLUGIN_CONFIG = '/user/settings/plugin-config';
-  static GLOBAL_PLUGIN_CONFIG = '/user/globalsettings/plugin-config';
+  static LOCAL_PLUGIN_CONFIG = '/users/settings/plugin-config';
+  static GLOBAL_PLUGIN_CONFIG = '/users/globalsettings/plugin-config';
   static VIEWER_PLUGIN_CONFIG = '/viewer/plugins';
 
   static EVENT_MODEL_CHANGED = 'yuv.event.object-form.model.changed';

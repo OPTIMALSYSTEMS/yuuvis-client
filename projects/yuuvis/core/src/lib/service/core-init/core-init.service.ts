@@ -51,7 +51,7 @@ export class CoreInit {
       ? of([this.coreConfig.main])
       : forkJoin(
           // TODO: what if apiWeb path is changed via config?
-          [...this.coreConfig.main, ApiBase.apiWeb + ConfigService.GLOBAL_MAIN_CONFIG].map((uri) =>
+          [...this.coreConfig.main, ApiBase.apiWeb + '/api' + ConfigService.GLOBAL_MAIN_CONFIG].map((uri) =>
             this.http.get(`${uri.startsWith(ApiBase.apiWeb) ? '/' : Utils.getBaseHref()}${uri}`).pipe(
               catchError((e) => {
                 this.logger.error('failed to catch config file', e);
@@ -62,11 +62,13 @@ export class CoreInit {
         )
     ).pipe(
       map((res) =>
-        res.reduce((acc, x) => {
-          // merge object values on 2nd level
-          Object.keys(x).forEach((k) => (!acc[k] || Array.isArray(x[k]) || typeof x[k] !== 'object' ? (acc[k] = x[k]) : Object.assign(acc[k], x[k])));
-          return acc;
-        }, {})
+        res
+          .filter((i) => i !== null)
+          .reduce((acc, x) => {
+            // merge object values on 2nd level
+            Object.keys(x).forEach((k) => (!acc[k] || Array.isArray(x[k]) || typeof x[k] !== 'object' ? (acc[k] = x[k]) : Object.assign(acc[k], x[k])));
+            return acc;
+          }, {})
       ),
       tap((res: YuvConfig) => this.configService.set(res)),
       switchMap((res: YuvConfig) => this.authService.initUser().pipe(catchError((e) => of(true))))
