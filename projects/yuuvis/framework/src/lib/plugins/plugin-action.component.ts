@@ -33,7 +33,7 @@ export class PluginActionComponent implements SimpleCustomAction {
     this._action = action;
     this.label = this.pluginService.translate.instant(this._action.label);
     this.description = this.pluginService.translate.instant(this._action.description);
-    this.priority = Utils.isEmpty(action.priority) ? action.priority : -1;
+    this.priority = !Utils.isEmpty(action.priority) ? action.priority : -1;
     this.iconSrc = action.icon || noFile.data;
     this.group = action.group || 'common';
     this.range = action.range ? SelectionRange[action.range as string] : SelectionRange.MULTI_SELECT;
