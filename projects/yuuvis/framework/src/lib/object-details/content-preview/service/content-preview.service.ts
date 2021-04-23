@@ -52,7 +52,7 @@ export class ContentPreviewService {
   private createPath(id: string, version?: number): { root: string; path: string } {
     let root = `${this.location.protocol}//${this.location.hostname}`;
     root = this.location.port.length ? `${root}:${this.location.port}` : root;
-    const path = `${root}/${ApiBase.apiWeb}/dms/${id}/content?asdownload=false${version ? '&version=' + version : ''}`;
+    const path = `${root}/${ApiBase.apiWeb}/dms/objects/${id}/contents/files?asdownload=false${version ? '&version=' + version : ''}`;
     return { root, path };
   }
 

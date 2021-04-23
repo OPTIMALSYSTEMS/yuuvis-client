@@ -62,7 +62,7 @@ export class DmsService {
    * @param id ID of the object to be deleted
    */
   deleteDmsObject(id: string): Observable<any> {
-    const url = `/dms/${id}`;
+    const url = `/dms/objects/${id}`;
     return this.backend.delete(url, ApiBase.apiWeb);
   }
 
@@ -72,7 +72,7 @@ export class DmsService {
    * @param file The file to be uploaded
    */
   uploadContent(objectId: string, file: File): Observable<any> {
-    const url = `${this.backend.getApiBase(ApiBase.apiWeb)}/dms/update/${objectId}/content`;
+    const url = `${this.backend.getApiBase(ApiBase.apiWeb)}/dms/objects/${objectId}/contents/files`;
     return this.uploadService.upload(url, file).pipe(
       tap(() => {
         this.getDmsObject(objectId).subscribe((_dmsObject: DmsObject) => this.eventService.trigger(YuvEventType.DMS_OBJECT_UPDATED, _dmsObject));
@@ -87,7 +87,7 @@ export class DmsService {
    * @param intent
    */
   getDmsObject(id: string, version?: number, intent?: string): Observable<DmsObject> {
-    return this.backend.get(`/dms/${id}${version ? '/versions/' + version : ''}`).pipe(
+    return this.backend.get(`/dms/objects/${id}${version ? '/versions/' + version : ''}`).pipe(
       map((res) => {
         const item: SearchResultItem = this.searchService.toSearchResult(res).items[0];
         return this.searchResultToDmsObject(item);
@@ -112,7 +112,7 @@ export class DmsService {
    * @param silent (optional) If true, no DMS_OBJECT_UPDATED event will be send
    */
   updateDmsObject(id: string, data: any, silent?: boolean) {
-    return this.backend.patch(`/dms/update/${id}`, data).pipe(
+    return this.backend.patch(`/dms/objects/${id}`, data).pipe(
       // update does not return permissions, so we need to re-load the whole dms object
       // TODO: Remove once permissions are provided
       switchMap((res) => this.getDmsObject(id)),
@@ -164,7 +164,7 @@ export class DmsService {
    * @param id ID of the object to be retrieved
    */
   getDmsObjectVersions(id: string): Observable<DmsObject[]> {
-    return this.backend.get('/dms/' + id + '/versions').pipe(
+    return this.backend.get('/dms/objects/' + id + '/versions').pipe(
       map((res) => {
         const items: SearchResultItem[] = this.searchService.toSearchResult(res).items || [];
         return items.map((item) => this.searchResultToDmsObject(item));

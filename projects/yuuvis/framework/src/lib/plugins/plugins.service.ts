@@ -35,8 +35,8 @@ import { PluginAPI } from './plugins.interface';
   providedIn: 'root'
 })
 export class PluginsService {
-  static LOCAL_PLUGIN_CONFIG = '/user/settings/plugin-config';
-  // static GLOBAL_PLUGIN_CONFIG = '/user/globalsettings/plugin-config'; // not supported anymore (included in RESOURCES_CONFIG)
+  static LOCAL_PLUGIN_CONFIG = '/users/settings/plugin-config';
+  // static GLOBAL_PLUGIN_CONFIG = '/users/globalsettings/plugin-config'; // not supported anymore (included in RESOURCES_CONFIG)
   // static VIEWER_PLUGIN_CONFIG = '/viewer/plugins'; // not supported anymore (included in RESOURCES_CONFIG)
   static RESOURCES_CONFIG = '/resources/config';
   static ADMIN_RESOURCES_CONFIG = '/admin/resources/config';

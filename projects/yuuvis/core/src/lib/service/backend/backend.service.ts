@@ -153,7 +153,7 @@ export class BackendService {
    */
   public downloadContent(objects: DmsObject[], withVersion?: boolean) {
     objects.forEach((object) => {
-      const uri = `${this.getApiBase(ApiBase.apiWeb)}/dms/${object.id}/content${withVersion ? '?version=' + object.version : ''}`;
+      const uri = `${this.getApiBase(ApiBase.apiWeb)}/dms/objects/${object.id}/content${withVersion ? '?version=' + object.version : ''}`;
       this.download(uri);
     });
   }
