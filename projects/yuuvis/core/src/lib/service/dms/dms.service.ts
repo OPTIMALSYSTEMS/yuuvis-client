@@ -88,6 +88,19 @@ export class DmsService {
   }
 
   /**
+   * Downloads the content of dms objects.
+   *
+   * @param DmsObject[] dmsObjects Array of dms objects to be downloaded
+   * @param withVersion should download specific version of the object
+   */
+  downloadContent(objects: DmsObject[], withVersion?: boolean) {
+    objects.forEach((object) => {
+      const uri = `${this.getContentPath(object?.id)}${withVersion ? '?version=' + object.version : ''}`;
+      this.backend.download(uri);
+    });
+  }
+
+  /**
    * Fetch a dms object.
    * @param id ID of the object to be retrieved
    * @param version Desired version of the object

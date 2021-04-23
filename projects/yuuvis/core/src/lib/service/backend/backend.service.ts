@@ -2,7 +2,6 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { finalize, shareReplay, tap } from 'rxjs/operators';
-import { DmsObject } from '../../model/dms-object.model';
 import { ConfigService } from '../config/config.service';
 import { Logger } from '../logger/logger';
 import { ApiBase } from './api.enum';
@@ -144,18 +143,6 @@ export class BackendService {
       this.temp.set(id, resp);
       return resp;
     }
-  }
-
-  /**
-   * Downloads the content of dms objects.
-   *
-   * @param DmsObject[] dmsObjects Array of dms objects to be downloaded
-   */
-  public downloadContent(objects: DmsObject[], withVersion?: boolean) {
-    objects.forEach((object) => {
-      const uri = `${this.getApiBase(ApiBase.apiWeb)}/dms/objects/${object.id}/content${withVersion ? '?version=' + object.version : ''}`;
-      this.download(uri);
-    });
   }
 
   public download(uri: string, filename?: string) {
