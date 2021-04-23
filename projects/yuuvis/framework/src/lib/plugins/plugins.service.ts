@@ -21,9 +21,9 @@ import {
 import { forkJoin, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { NotificationService } from '../services/notification/notification.service';
-import { ContentPreviewService } from './../object-details/content-preview/service/content-preview.service';
 import { PluginAPI } from './plugins.interface';
 
+export const UNDOCK_WINDOW_NAME = 'eoViewer';
 /**
  * `PluginService` is an abstraction of some framework capabilities that is aimed towards
  * providing plugin developers with a convenient and reliable interface. This service and the
@@ -184,7 +184,7 @@ export class PluginsService {
           )
       },
       content: {
-        viewer: () => ContentPreviewService.getUndockWin() || (window.document.querySelector('yuv-content-preview iframe') || {})['contentWindow']
+        viewer: () => window[UNDOCK_WINDOW_NAME] || (window.document.querySelector('yuv-content-preview iframe') || {})['contentWindow']
       },
       util: {
         $: (selectors, element) => (element || window.document).querySelector(selectors),
