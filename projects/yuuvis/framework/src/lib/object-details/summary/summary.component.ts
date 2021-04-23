@@ -55,7 +55,6 @@ export class SummaryComponent implements OnInit {
   };
 
   dmsObjectID: string;
-  form: any;
   coreFields: any[] = [];
 
   /**
@@ -65,8 +64,7 @@ export class SummaryComponent implements OnInit {
   set dmsObject(dmsObject: DmsObject) {
     this.dmsObjectID = dmsObject?.id;
     this.systemService.getObjectTypeForm(dmsObject.objectTypeId, Situation.EDIT).subscribe((form) => {
-      this.form = form;
-      this.coreFields = this.getCoreFields(this.form);
+      this.coreFields = this.extractFields(form.elements[0]);
       this.summary = dmsObject ? this.generateSummary(dmsObject) : null;
     });
   }
@@ -242,10 +240,6 @@ export class SummaryComponent implements OnInit {
       .sort((a, b) => (a.key === ClientDefaultsObjectTypeField.TITLE ? -1 : b.key === ClientDefaultsObjectTypeField.TITLE ? 1 : 0));
 
     return summary;
-  }
-
-  private getCoreFields(form: any) {
-    return this.extractFields(form.elements[0]);
   }
 
   private extractFields(element): string[] {
