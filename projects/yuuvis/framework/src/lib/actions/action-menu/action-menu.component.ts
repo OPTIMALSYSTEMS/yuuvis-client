@@ -213,6 +213,7 @@ export class ActionMenuComponent implements OnDestroy {
     this.activeAction = null;
     this.viewContainerRef.clear();
     this.componentAnchor?.viewContainerRef.clear();
+    this.actionSelected.emit();
   }
 
   cancel() {
