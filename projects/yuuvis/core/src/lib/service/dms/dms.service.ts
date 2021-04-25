@@ -41,7 +41,7 @@ export class DmsService {
    * @returns Array of IDs of the objects that have been created
    */
   createDmsObject(objectTypeId: string, indexdata: any, files: File[], label?: string, silent = false): Observable<string[]> {
-    const url = `${this.backend.getApiBase(ApiBase.apiWeb)}/dms/create`;
+    const url = `${this.backend.getApiBase(ApiBase.apiWeb)}/dms/objects`;
     const data = indexdata;
     data[BaseObjectTypeField.OBJECT_TYPE_ID] = objectTypeId;
 
