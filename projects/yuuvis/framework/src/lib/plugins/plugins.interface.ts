@@ -161,19 +161,50 @@ export interface PluginAPI {
 }
 
 /**
- * Providing a plugin service and injected into form scripts
+ * PluginConfig
  */
 export interface PluginConfig {
   id: string;
   label: string;
   disabled?: boolean | string | Function;
-  // state or link
+  plugin?: PluginComponentConfig;
+}
+
+/**
+ * PluginComponentConfig
+ */
+export interface PluginComponentConfig {
+  src?: string; // src for iframe
+  styles?: string[];
+  styleUrls?: string[];
+  html?: string;
+  component?: string; // ID (selector) of Angular Component
+  inputs?: any;
+  outputs?: any;
+  popoverConfig?: any;
+}
+
+/**
+ * PluginLinkConfig
+ */
+export interface PluginLinkConfig extends PluginConfig {
   path: string;
   matchHook: string;
-  // state
+}
+
+/**
+ * PluginStateConfig
+ */
+export interface PluginStateConfig extends PluginLinkConfig {
   canActivate?: string | Function;
   canDeactivate?: string | Function;
-  // action
+  plugin: PluginComponentConfig;
+}
+
+/**
+ * PluginActionConfig
+ */
+export interface PluginActionConfig extends PluginConfig {
   description?: string;
   priority?: string;
   icon?: string;
@@ -191,17 +222,30 @@ export interface PluginConfig {
   // action COMPONENT
   buttons?: { cancel?: string; finish?: string };
   fullscreen?: boolean;
-  // PLUGIN
-  plugin?: {
-    src?: string; // src for iframe
-    styles?: string[];
-    styleUrls?: string[];
-    html?: string;
-    component?: string; // ID (selector) of Angular Component
-    inputs?: any;
-    outputs?: any;
-    popoverConfig?: any;
-  };
+}
+
+/**
+ * PluginTriggerConfig
+ */
+export interface PluginTriggerConfig extends PluginActionConfig {
+  matchHook: string;
+}
+
+/**
+ * PluginExtensionConfig
+ */
+export interface PluginExtensionConfig extends PluginConfig {
+  matchHook: string;
+  plugin: PluginComponentConfig;
+}
+
+/**
+ * PluginViewerConfig
+ */
+export interface PluginViewerConfig {
+  mimeType: string | string[];
+  fileExtension?: string | string[];
+  viewer: string;
 }
 
 /**
@@ -408,11 +452,11 @@ export interface PluginConfig {
  */
 export interface PluginConfigList {
   disabled?: boolean | string | Function;
-  links?: PluginConfig[];
-  states?: PluginConfig[];
-  actions?: string[] | PluginConfig[];
-  extensions?: PluginConfig[];
-  triggers?: PluginConfig[];
-  viewers?: { mimeType: string | string[]; fileExtension?: string | string[]; viewer: string }[];
+  links?: PluginLinkConfig[];
+  states?: PluginStateConfig[];
+  actions?: (PluginActionConfig | string)[];
+  extensions?: PluginExtensionConfig[];
+  triggers?: PluginTriggerConfig[];
+  viewers?: PluginViewerConfig[];
   translations?: { en?: any; de?: any };
 }
