@@ -21,7 +21,7 @@ import {
 import { forkJoin, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { NotificationService } from '../services/notification/notification.service';
-import { PluginAPI } from './plugins.interface';
+import { PluginAPI, PluginConfigList } from './plugins.interface';
 
 export const UNDOCK_WINDOW_NAME = 'eoViewer';
 /**
@@ -44,9 +44,8 @@ export class PluginsService {
 
   static EVENT_MODEL_CHANGED = 'yuv.event.object-form.model.changed';
 
-  private user: YuvUser;
-  private pluginConfigs: any;
-  public customPlugins: any;
+  private pluginConfigs: { local: PluginConfigList; tenant: PluginConfigList; global: PluginConfigList };
+  public customPlugins: PluginConfigList;
   private componentRegister = new Map<string, any>();
 
   public get currentUrl() {
@@ -57,9 +56,10 @@ export class PluginsService {
     return this.getApi();
   }
 
-  public applyFunction(fnc: string, params?: string, args?: any) {
-    if (!fnc || !fnc.trim()) return;
-    const f = fnc.trim().match(/^function|^\(.*\)\s*=>/) ? `return (${fnc}).apply(this,arguments)` : !fnc.trim().startsWith('return') ? `return ${fnc}` : fnc;
+  public applyFunction(fnc: string | Function, params?: string, args?: any) {
+    fnc = fnc?.toString().trim();
+    if (!fnc) return;
+    const f = fnc.match(/^function|^\(.*\)\s*=>/) ? `return (${fnc}).apply(this,arguments)` : !fnc.startsWith('return') ? `return ${fnc}` : fnc;
     return new Function(...(params || 'api').split(',').map((a) => a.trim()), f).apply(this.api, args || [this.api]);
   }
 
@@ -79,7 +79,6 @@ export class PluginsService {
     private ngZone: NgZone
   ) {
     window['api'] = this.api;
-    this.userService.user$.subscribe((user) => (this.user = user));
     this.eventService.on(YuvEventType.CLIENT_LOCALE_CHANGED).subscribe((event: any) => this.extendTranslations(event.data));
   }
 
@@ -122,15 +121,19 @@ export class PluginsService {
   public getCustomPlugins(type: 'links' | 'states' | 'actions' | 'extensions' | 'triggers' | 'viewers', hook?: string, matchPath?: string | RegExp) {
     return (!this.customPlugins ? this.backend.getViaTempCache('_plugins', () => this.loadCustomPlugins()) : of(this.customPlugins)).pipe(
       map((cp) => {
-        if (cp.disabled) return [];
+        if (this.isDisabled(cp.disabled)) return [];
         const customPlugins = type === 'links' ? [...(cp.links || []), ...(cp.states || [])] : cp[type] || [];
         return customPlugins.filter(
           (p) =>
-            !this.applyFunction(p.disabled && p.disabled.toString(), 'user, state', [this.user, this.router.routerState.snapshot]) &&
+            !this.isDisabled(p.disabled) &&
             (hook ? p.matchHook && hook.match(new RegExp(p.matchHook)) : matchPath ? (p.path || '').match(new RegExp(matchPath)) : true)
         );
       })
     );
+  }
+
+  private isDisabled(disabled: any) {
+    return this.applyFunction(disabled && disabled.toString(), 'api, currentState', [this.api, this.router.routerState.snapshot]);
   }
 
   public disableCustomPlugins(disabled = true) {
@@ -161,7 +164,15 @@ export class PluginsService {
         trigger: (type: string, data?: any) => this.ngZone.run(() => this.eventService.trigger(type, data))
       },
       session: {
-        getUser: () => this.getCurrentUser()
+        getUser: () => this.getCurrentUser(),
+        user: {
+          get: () => this.getCurrentUser(),
+          hasRole: (role: string) => this.getCurrentUser().authorities?.includes(role) || false,
+          hasAdminRole: () => this.userService.hasAdminRole,
+          hasSystemRole: () => this.userService.hasSystemRole,
+          hasAdministrationRoles: () => this.userService.hasAdministrationRoles,
+          hasManageSettingsRole: () => this.userService.hasManageSettingsRole
+        }
       },
       dms: {
         getObject: (id, version) => this.getDmsObject(id, version),
@@ -252,7 +263,7 @@ export class PluginsService {
    * @ignore
    */
   public getCurrentUser(): YuvUser {
-    return this.user;
+    return this.userService.getCurrentUser();
   }
 
   /**
