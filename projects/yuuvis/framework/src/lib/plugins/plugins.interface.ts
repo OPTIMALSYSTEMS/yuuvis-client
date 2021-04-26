@@ -369,6 +369,13 @@ export interface PluginConfig {
       "run": "(component) => component.openPopover()"
     }
   ],
+  "viewers":[
+	  {
+		"mimeType": "application/pdf",
+		"fileExtension": ["pdf"],
+		"viewer": "pdf/web/viewer.html?file=${path}#locale=${locale}&direction=${direction}&theme=${theme}&accentColor=${accentColor}"
+	  }
+	],
   "translations": {
     "en": {
       "yuv.custom.action.home_yuuvis.label": "Yuuvis Home",
@@ -406,6 +413,6 @@ export interface PluginConfigList {
   actions?: string[] | PluginConfig[];
   extensions?: PluginConfig[];
   triggers?: PluginConfig[];
-  viewers?: PluginConfig[];
-  translations?: any;
+  viewers?: { mimeType: string | string[]; fileExtension?: string | string[]; viewer: string }[];
+  translations?: { en?: any; de?: any };
 }
