@@ -82,7 +82,7 @@ export class PluginsService {
     this.eventService.on(YuvEventType.CLIENT_LOCALE_CHANGED).subscribe((event: any) => this.extendTranslations(event.data));
   }
 
-  private extendTranslations(lang: string) {
+  extendTranslations(lang: string = this.translate.currentLang) {
     const translations = (this.customPlugins?.translations || {})[lang];
     const allKeys = translations && Object.keys(this.translate.store?.translations[lang] || {});
     if (translations && !Object.keys(translations).every((k) => allKeys.includes(k))) {
