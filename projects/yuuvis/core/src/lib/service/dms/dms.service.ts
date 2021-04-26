@@ -30,6 +30,19 @@ export class DmsService {
     private systemService: SystemService
   ) {}
 
+  // general trigger operator to handle all dms events
+  private triggerEvent(event: YuvEventType, id?: string, silent = false) {
+    return (stream): Observable<any> =>
+      stream.pipe(
+        // update does not return permissions, so we need to re-load the whole dms object
+        // TODO: Remove once permissions are provided
+        switchMap((res) => (!id ? of(res) : this.getDmsObject(id))),
+        // TODO: enable once permissions are provided
+        // map((res) => this.searchResultToDmsObject(this.searchService.toSearchResult(res).items[0])),
+        tap((res: any) => !silent && this.eventService.trigger(event, res))
+      );
+  }
+
   /**
    * Create new dms object(s). Providing an array of files here instead of one will create
    * a new dms object for every file. In this case indexdata will shared across all files.
@@ -41,29 +54,34 @@ export class DmsService {
    * @returns Array of IDs of the objects that have been created
    */
   createDmsObject(objectTypeId: string, indexdata: any, files: File[], label?: string, silent = false): Observable<string[]> {
-    const url = `${this.backend.getApiBase(ApiBase.apiWeb)}/dms/create`;
+    const url = `${this.backend.getApiBase(ApiBase.apiWeb)}/dms/objects`;
     const data = indexdata;
     data[BaseObjectTypeField.OBJECT_TYPE_ID] = objectTypeId;
 
     const upload = files.length ? this.uploadService.uploadMultipart(url, files, data, label, silent) : this.uploadService.createDocument(url, data);
 
-    return upload.pipe(
-      map((res) => res.map((r: any) => r.properties[BaseObjectTypeField.OBJECT_ID].value)),
-      // TODO: Replace by proper solution
-      // Right now there is a gap between when the object was
-      // created and when it is indexed. So delaying here will
-      // give backend time to get its stuff together.
-      delay(1000)
-    );
+    return upload
+      .pipe(
+        map((res) => res.map((r: any) => r.properties[BaseObjectTypeField.OBJECT_ID].value)),
+        // TODO: Replace by proper solution
+        // Right now there is a gap between when the object was
+        // created and when it is indexed. So delaying here will
+        // give backend time to get its stuff together.
+        delay(1000)
+      )
+      .pipe(this.triggerEvent(YuvEventType.DMS_OBJECT_CREATED, '', silent));
   }
 
   /**
    * Delete a dms object.
    * @param id ID of the object to be deleted
    */
-  deleteDmsObject(id: string): Observable<any> {
+  deleteDmsObject(id: string, silent = false): Observable<any> {
     const url = `/dms/objects/${id}`;
-    return this.backend.delete(url, ApiBase.apiWeb);
+    return this.backend
+      .delete(url, ApiBase.apiWeb)
+      .pipe(map(() => ({ id })))
+      .pipe(this.triggerEvent(YuvEventType.DMS_OBJECT_DELETED, '', silent));
   }
 
   /**
@@ -72,11 +90,7 @@ export class DmsService {
    * @param file The file to be uploaded
    */
   uploadContent(objectId: string, file: File): Observable<any> {
-    return this.uploadService.upload(this.getContentPath(objectId), file).pipe(
-      tap(() => {
-        this.getDmsObject(objectId).subscribe((_dmsObject: DmsObject) => this.eventService.trigger(YuvEventType.DMS_OBJECT_UPDATED, _dmsObject));
-      })
-    );
+    return this.uploadService.upload(this.getContentPath(objectId), file).pipe(this.triggerEvent(YuvEventType.DMS_OBJECT_UPDATED, objectId));
   }
 
   /**
@@ -104,15 +118,17 @@ export class DmsService {
    * Fetch a dms object.
    * @param id ID of the object to be retrieved
    * @param version Desired version of the object
-   * @param intent
    */
-  getDmsObject(id: string, version?: number, intent?: string): Observable<DmsObject> {
-    return this.backend.get(`/dms/objects/${id}${version ? '/versions/' + version : ''}`).pipe(
-      map((res) => {
-        const item: SearchResultItem = this.searchService.toSearchResult(res).items[0];
-        return this.searchResultToDmsObject(item);
-      })
-    );
+  getDmsObject(id: string, version?: number, silent = false): Observable<DmsObject> {
+    return this.backend
+      .get(`/dms/objects/${id}${version ? '/versions/' + version : ''}`)
+      .pipe(
+        map((res) => {
+          const item: SearchResultItem = this.searchService.toSearchResult(res).items[0];
+          return this.searchResultToDmsObject(item);
+        })
+      )
+      .pipe(this.triggerEvent(YuvEventType.DMS_OBJECT_LOADED, '', silent));
   }
 
   /**
@@ -121,29 +137,20 @@ export class DmsService {
    * @param tag The tag to be updated
    * @param value The tags new value
    */
-  updateDmsObjectTag(id: string, tag: string, value: any): Observable<any> {
-    return this.backend.post(`/dms/objects/${id}/tags/${tag}/state/${value}?overwrite=true`, {}, ApiBase.core);
+  updateDmsObjectTag(id: string, tag: string, value: any, silent = false): Observable<any> {
+    return this.backend
+      .post(`/dms/objects/${id}/tags/${tag}/state/${value}?overwrite=true`, {}, ApiBase.core)
+      .pipe(this.triggerEvent(YuvEventType.DMS_OBJECT_UPDATED, id, silent));
   }
 
   /**
    * Update indexdata of a dms object.
    * @param id ID of the object to apply the data to
    * @param data Indexdata to be applied
-   * @param silent (optional) If true, no DMS_OBJECT_UPDATED event will be send
+   * @param silent flag to trigger DMS_OBJECT_UPDATED event
    */
-  updateDmsObject(id: string, data: any, silent?: boolean) {
-    return this.backend.patch(`/dms/objects/${id}`, data).pipe(
-      // update does not return permissions, so we need to re-load the whole dms object
-      // TODO: Remove once permissions are provided
-      switchMap((res) => this.getDmsObject(id)),
-      // TODO: enable once permissions are provided
-      // map((res) => this.searchResultToDmsObject(this.searchService.toSearchResult(res).items[0])),
-      tap((_dmsObject: DmsObject) => {
-        if (!silent) {
-          this.eventService.trigger(YuvEventType.DMS_OBJECT_UPDATED, _dmsObject);
-        }
-      })
-    );
+  updateDmsObject(id: string, data: any, silent = false) {
+    return this.backend.patch(`/dms/objects/${id}`, data).pipe(this.triggerEvent(YuvEventType.DMS_OBJECT_UPDATED, id, silent));
   }
 
   /**
@@ -162,7 +169,7 @@ export class DmsService {
         );
       })
     ).pipe(
-      map((results) => {
+      map((results: any[]) => {
         let succeeded = results.filter((res) => !res.isError).map((res) => res.dmsObject);
         let failed = results.filter((res) => res.isError).map((res) => res.dmsObject);
         return { succeeded, failed, targetFolderId };

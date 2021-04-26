@@ -74,6 +74,10 @@ export interface ComponentAction extends Action {
    * Component to be rendered
    */
   component: Type<any>;
+  /**
+   * Component input values
+   */
+  inputs?: any;
 }
 
 /**
@@ -85,6 +89,10 @@ export interface ExternalComponentAction extends Action {
    * Component to be injected into the dialog
    */
   extComponent: Type<any>;
+  /**
+   * Component input values
+   */
+  inputs?: any;
 }
 
 /**
