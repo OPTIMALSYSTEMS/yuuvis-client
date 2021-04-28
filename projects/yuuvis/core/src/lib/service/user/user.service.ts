@@ -71,11 +71,11 @@ export class UserService {
   }
 
   get hasAdminRole(): boolean {
-    return new RegExp(AdministrationRoles.ADMIN).test(this.user?.authorities.join(','));
+    return this.user?.authorities?.includes(AdministrationRoles.ADMIN) || false;
   }
 
   get hasSystemRole(): boolean {
-    return new RegExp(AdministrationRoles.SYSTEM).test(this.user?.authorities.join(','));
+    return this.user?.authorities?.includes(AdministrationRoles.SYSTEM) || false;
   }
 
   get hasAdministrationRoles(): boolean {
@@ -83,7 +83,7 @@ export class UserService {
   }
 
   get hasManageSettingsRole(): boolean {
-    return new RegExp(AdministrationRoles.MANAGE_SETTINGS).test(this.user?.authorities.join(','));
+    return this.user?.authorities?.includes(AdministrationRoles.MANAGE_SETTINGS) || false;
   }
 
   /**

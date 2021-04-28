@@ -14,6 +14,7 @@ import { ActionComponent } from '../actions/interfaces/action-component.interfac
 import { ComponentAnchorDirective } from '../directives/component-anchor/component-anchor.directive';
 import { IFrameComponent } from './iframe.component';
 import { PluginActionViewComponent } from './plugin-action-view.component';
+import { PluginConfig } from './plugins.interface';
 import { PluginsService } from './plugins.service';
 
 @Component({
@@ -32,46 +33,7 @@ export class PluginComponent extends IFrameComponent implements OnInit, OnDestro
 
   @Input() parent: PluginActionViewComponent | any;
 
-  @Input() config: {
-    id: string;
-    label: string;
-    disabled?: string;
-    // state or link
-    path: string;
-    matchHook: string;
-    // state
-    canActivate?: string;
-    canDeactivate?: string;
-    // action
-    description?: string;
-    priority?: string;
-    icon?: string;
-    group: string;
-    range?: string;
-    isExecutable?: string;
-    run?: string;
-    // action LINK
-    getLink?: string;
-    getParams?: string;
-    getFragment?: string;
-    // action LIST
-    header?: string;
-    subActionComponents?: string;
-    // action COMPONENT
-    buttons?: { cancel?: string; finish?: string };
-    fullscreen?: boolean;
-    // PLUGIN
-    plugin?: {
-      src?: string;
-      styles?: string[];
-      styleUrls?: string[];
-      html?: string;
-      component?: string;
-      inputs?: any;
-      outputs?: any;
-      popoverConfig?: any;
-    };
-  };
+  @Input() config: PluginConfig;
 
   get id(): string {
     return this.config?.id;
