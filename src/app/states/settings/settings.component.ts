@@ -97,17 +97,17 @@ export class SettingsComponent implements OnInit {
   }
 
   importPluginConfig(e: any, global = false) {
-    this.userConfig
-      .importMainConfig(e, global ? PluginsService.SYSTEM_RESOURCES_CONFIG : PluginsService.ADMIN_RESOURCES_CONFIG, !global)
-      .subscribe(() => this.reload());
+    // const uri = PluginsService.LOCAL_PLUGIN_CONFIG;
+    const uri = global ? PluginsService.SYSTEM_RESOURCES_CONFIG : PluginsService.ADMIN_RESOURCES_CONFIG;
+    this.userConfig.importMainConfig(e, uri, !global).subscribe(() => this.reload());
   }
 
   exportPluginConfig() {
-    this.userConfig.exportMainConfig('my_plugins.json', PluginsService.ADMIN_RESOURCES_CONFIG);
+    this.userConfig.exportMainConfig('tenant_plugins.json', PluginsService.ADMIN_RESOURCES_CONFIG);
   }
 
   exportDefaultPluginConfig() {
-    this.userConfig.exportMainConfig('default_plugins.json', PluginsService.SYSTEM_RESOURCES_CONFIG);
+    this.userConfig.exportMainConfig('system_plugins.json', PluginsService.SYSTEM_RESOURCES_CONFIG);
   }
 
   importMainConfig(e: any) {

@@ -431,7 +431,7 @@ export class SystemService {
    */
   getObjectTypeIcon(objectTypeId: string, fallback?: string): Observable<string> {
     const fb = this.getFallbackIcon(objectTypeId, fallback);
-    const uri = `/resources/icon/${encodeURIComponent(objectTypeId)}${fb ? `?fb=${encodeURIComponent(fallback)}` : ''}`;
+    const uri = `/resources/icons/${encodeURIComponent(objectTypeId)}${fb ? `?fb=${encodeURIComponent(fallback)}` : ''}`;
     return !!this.iconCache[uri] ? of(this.iconCache[objectTypeId]) : this.backend.get(uri);
   }
 
@@ -442,7 +442,7 @@ export class SystemService {
    */
   getObjectTypeIconUri(objectTypeId: string, fallback?: string): string {
     const fb = this.getFallbackIcon(objectTypeId, fallback);
-    const uri = `/resources/icon/${encodeURIComponent(objectTypeId)}${fb ? `?fallback=${encodeURIComponent(fb)}` : ''}`;
+    const uri = `/resources/icons/${encodeURIComponent(objectTypeId)}${fb ? `?fallback=${encodeURIComponent(fb)}` : ''}`;
     return `${this.backend.getApiBase(ApiBase.apiWeb)}${uri}`;
   }
 
@@ -533,7 +533,7 @@ export class SystemService {
    * @param mode Form mode to fetch (e.g. CONTEXT)
    */
   getObjectTypeForm(objectTypeId: string, situation: string, mode?: string): Observable<any> {
-    return this.backend.get(Utils.buildUri(`/dms/form/${objectTypeId}`, { situation }));
+    return this.backend.get(Utils.buildUri(`/dms/forms/${objectTypeId}`, { situation }));
   }
 
   /**
@@ -562,7 +562,7 @@ export class SystemService {
   private buildFormFetchUri(objectTypeID: string, sots?: string[], situation?: string): string {
     // situation = null;
     const params = [...(sots ? sots.map((sot) => `sots=${sot}`) : []), situation && `situation:${situation}`];
-    return `/dms/form/${objectTypeID}${params.length ? `?${params.join('&')}` : ''}`;
+    return `/dms/forms/${objectTypeID}${params.length ? `?${params.join('&')}` : ''}`;
   }
 
   /**

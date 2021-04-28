@@ -292,7 +292,7 @@ export class QuickSearchService {
       tap((filters) => !global && (this.filters = filters || {})),
       switchMap(() => (global && store) || this.userService.getGlobalSettings(this.STORAGE_KEY_FILTERS)),
       tap((filters) => Object.values(filters || {}).map((v: any) => (v.id = (global ? '' : '__') + v.id.replace(/^__/, '')))),
-      tap((filters) => (this.globalFilters = filters)),
+      tap((filters) => (this.globalFilters = filters || {})),
       map((filters) =>
         Object.values({ ...(filters || {}), ...(!global ? this.filters : {}) }).map((s: any) => ({
           ...s,

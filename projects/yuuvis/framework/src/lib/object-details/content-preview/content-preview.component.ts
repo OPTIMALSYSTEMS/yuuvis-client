@@ -43,7 +43,7 @@ export class ContentPreviewComponent extends IFrameComponent implements OnInit, 
     !object || !object.content || !object.content.size
       ? this.contentPreviewService.resetSource()
       : this.contentPreviewService.createPreviewUrl(object.id, object.content, object.version, this.dmsObject2?.content, this.dmsObject2?.version);
-    this.loading = !object.content || this.dmsObject ? false : true;
+    this.loading = !object || !object.content || this.dmsObject ? false : true;
     this._dmsObject = object;
   }
 

@@ -40,7 +40,7 @@ export class YuvUser {
     this.substituteOf = json.substituteOf;
     this.enabled = json.enabled;
 
-    this.userSettings = userSettings;
+    this.userSettings = userSettings || { locale: null };
     this.setTitle();
   }
 
@@ -55,7 +55,7 @@ export class YuvUser {
    * @returns locale string
    */
   public getClientLocale(fallback?: string): string {
-    return this.userSettings.locale || fallback || 'en';
+    return this.userSettings?.locale || fallback || 'en';
   }
 
   public getFullName(): string {

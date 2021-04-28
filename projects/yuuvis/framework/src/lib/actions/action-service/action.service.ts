@@ -87,13 +87,15 @@ export class ActionService {
    * can have only a single view container.
    */
   getExecutableActionsListFromGivenActions(allActionComponents: any[], selection: any[], viewContainerRef: ViewContainerRef): Observable<ActionListEntry[]> {
-    if (selection && selection.length) {
+    if (selection) {
+      const targetFilter = (actionComponent: any) => (selection[0] ? selection[0] instanceof actionComponent.target : true);
+
       const allActionsList: ActionListEntry[] = allActionComponents
-        .filter((actionComponent) => selection[0] instanceof actionComponent.target)
+        .filter(targetFilter)
         .map((actionComponent: any) => this.createExecutableActionListEntry(actionComponent, [], viewContainerRef));
 
-      const targetActionsList = allActionsList.filter((actionListEntry: any) => selection[0] instanceof actionListEntry.target);
-      const observables = [];
+      const targetActionsList = allActionsList.filter(targetFilter);
+      const observables = [of({})];
       targetActionsList.forEach((actionListEntry) => {
         selection.forEach((item) => {
           let observable = actionListEntry.action.isExecutable(item);

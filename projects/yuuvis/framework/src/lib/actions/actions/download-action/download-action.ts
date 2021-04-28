@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { BackendService, DmsObject, TranslateService } from '@yuuvis/core';
+import { DmsObject, DmsService, TranslateService } from '@yuuvis/core';
 import { Observable, of as observableOf, of } from 'rxjs';
 import { contentDownload } from '../../../svg.generated';
 import { DmsObjectTarget } from '../../action-target';
@@ -24,7 +24,7 @@ export class DownloadActionComponent extends DmsObjectTarget implements SimpleAc
   range = SelectionRange.MULTI_SELECT;
   subActionComponents: any[];
 
-  constructor(private translate: TranslateService, private backend: BackendService, private route: ActivatedRoute) {
+  constructor(private translate: TranslateService, private dmsService: DmsService, private route: ActivatedRoute) {
     super();
     this.label = this.translate.instant('yuv.framework.action-menu.action.download.dms.object.content.label');
     this.description = this.translate.instant('yuv.framework.action-menu.action.download.dms.object.content.description');
@@ -36,7 +36,7 @@ export class DownloadActionComponent extends DmsObjectTarget implements SimpleAc
   }
 
   run(selection: DmsObject[]): Observable<boolean> {
-    this.backend.downloadContent(selection, !!this.route.snapshot.queryParams.version);
+    this.dmsService.downloadContent(selection, !!this.route.snapshot.queryParams.version);
     return of(true);
   }
 }

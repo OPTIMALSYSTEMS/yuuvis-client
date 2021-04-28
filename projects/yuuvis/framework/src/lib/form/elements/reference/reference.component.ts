@@ -107,6 +107,11 @@ export class ReferenceComponent implements ControlValueAccessor, AfterViewInit {
   @Input() maxSuggestions: number = 10;
 
   /**
+   * Set to 'true' reference chips will not contain links to the selected item
+   */
+  @Input() links: boolean = true;
+
+  /**
    * Restrict the suggestions to a list of allowed target object types.
    */
   @Input() allowedTargetTypes: string[] = [];

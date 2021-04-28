@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { BackendService, DmsObject, DmsService, EventService, TranslateService, YuvEventType } from '@yuuvis/core';
+import { BackendService, DmsObject, DmsService, EventService, TranslateService } from '@yuuvis/core';
 import { NotificationService } from '../../../../services/notification/notification.service';
 import { ActionComponent } from '../../../interfaces/action-component.interface';
 
@@ -38,8 +38,6 @@ export class DeleteComponent implements OnInit, ActionComponent {
           this.translate.instant('yuv.framework.action-menu.action.delete.dms.object.done.title'),
           this.translate.instant('yuv.framework.action-menu.action.delete.dms.object.done.message')
         );
-
-        this.eventService.trigger(YuvEventType.DMS_OBJECT_DELETED, this.selection[0]);
 
         this.finished.emit();
       },

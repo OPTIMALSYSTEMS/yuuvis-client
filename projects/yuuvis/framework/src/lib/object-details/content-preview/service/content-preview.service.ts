@@ -1,9 +1,9 @@
 import { PlatformLocation } from '@angular/common';
 import { Injectable } from '@angular/core';
-import { ApiBase, DmsObjectContent, UserService, Utils } from '@yuuvis/core';
+import { DmsObjectContent, DmsService, UserService, Utils } from '@yuuvis/core';
 import { Observable, ReplaySubject } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { PluginsService } from '../../../plugins/plugins.service';
+import { PluginsService, UNDOCK_WINDOW_NAME } from '../../../plugins/plugins.service';
 import { LayoutService } from '../../../services/layout/layout.service';
 
 /**
@@ -12,26 +12,24 @@ import { LayoutService } from '../../../services/layout/layout.service';
  */
 @Injectable()
 export class ContentPreviewService {
-  static UNDOCK_WINDOW_NAME = 'eoViewer';
-
   private previewSrcSource = new ReplaySubject<string>(null);
   public previewSrc$: Observable<string> = this.previewSrcSource.asObservable();
 
   static undockWin(src: string) {
-    return (window[ContentPreviewService.UNDOCK_WINDOW_NAME] = window.open(
+    return (window[UNDOCK_WINDOW_NAME] = window.open(
       src || '',
-      ContentPreviewService.UNDOCK_WINDOW_NAME,
+      UNDOCK_WINDOW_NAME,
       'directories=0, titlebar=0, toolbar=0, location=0, status=0, menubar=0, resizable=1, top=10, left=10'
     ));
   }
 
   static closeWin() {
     this.getUndockWin() && this.getUndockWin().close();
-    delete window[ContentPreviewService.UNDOCK_WINDOW_NAME];
+    delete window[UNDOCK_WINDOW_NAME];
   }
 
   static getUndockWin(): Window {
-    return window[ContentPreviewService.UNDOCK_WINDOW_NAME];
+    return window[UNDOCK_WINDOW_NAME];
   }
 
   static undockWinActive(): boolean {
@@ -44,6 +42,7 @@ export class ContentPreviewService {
    */
   constructor(
     private location: PlatformLocation,
+    private dmsService: DmsService,
     private userService: UserService,
     private layoutService: LayoutService,
     private pluginsService: PluginsService
@@ -52,7 +51,7 @@ export class ContentPreviewService {
   private createPath(id: string, version?: number): { root: string; path: string } {
     let root = `${this.location.protocol}//${this.location.hostname}`;
     root = this.location.port.length ? `${root}:${this.location.port}` : root;
-    const path = `${root}/${ApiBase.apiWeb}/dms/${id}/content?asdownload=false${version ? '&version=' + version : ''}`;
+    const path = `${root}${this.dmsService.getContentPath(id)}?asdownload=false${version ? '&version=' + version : ''}`;
     return { root, path };
   }
 
