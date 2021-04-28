@@ -63,8 +63,8 @@ export class SummaryComponent implements OnInit {
   @Input()
   set dmsObject(dmsObject: DmsObject) {
     this.dmsObjectID = dmsObject?.id;
-    this.systemService.getObjectTypeForm(dmsObject.objectTypeId, Situation.EDIT).subscribe((form) => {
-      this.coreFields = this.extractFields(form.elements[0]);
+    this.systemService.getDmsObjectForms(dmsObject, Situation.EDIT).subscribe((form) => {
+      this.coreFields = this.extractFields(form.main.elements[0]);
       this.summary = dmsObject ? this.generateSummary(dmsObject) : null;
     });
   }
@@ -244,6 +244,9 @@ export class SummaryComponent implements OnInit {
 
   private extractFields(element): string[] {
     let fields = [];
+    if (!element) {
+      return fields;
+    }
     if (element.elements && element.type !== 'table') {
       element.elements.forEach((el) => {
         fields = fields.concat(this.extractFields(el));
