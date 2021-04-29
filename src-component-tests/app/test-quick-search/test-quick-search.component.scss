@@ -6,4 +6,9 @@
   display: grid;
   grid-template-rows: min-content min-content;
   gap: 20px;
+
+  .container {
+    max-width: 500px;
+    margin: 0 auto;
+  }
 }
