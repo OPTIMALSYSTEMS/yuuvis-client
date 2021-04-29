@@ -939,4 +939,13 @@ export class SystemService {
   private fetchLocalizations(): Observable<Localization> {
     return this.backend.get('/resources/text');
   }
+
+  fetchResources(id: string): Observable<{ global: any; tenant: any }> {
+    return this.backend
+      .batch([
+        { uri: `/system/resources/${id}`, base: ApiBase.core },
+        { uri: `/admin/resources/${id}`, base: ApiBase.core }
+      ])
+      .pipe(map(([global, tenant]) => ({ global, tenant })));
+  }
 }

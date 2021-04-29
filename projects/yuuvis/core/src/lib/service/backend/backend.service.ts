@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
-import { finalize, shareReplay, tap } from 'rxjs/operators';
+import { forkJoin, Observable, of } from 'rxjs';
+import { catchError, finalize, shareReplay, tap } from 'rxjs/operators';
 import { ConfigService } from '../config/config.service';
 import { Logger } from '../logger/logger';
 import { ApiBase } from './api.enum';
@@ -210,5 +210,20 @@ export class BackendService {
       'X-os-sync-index': 'true',
       'Access-Control-Allow-Origin': '*'
     });
+  }
+
+  /**
+   * Batch service
+   */
+  batch(requests: { method?: string; uri: string; body?: any; base?: string; requestOptions?: any }[]) {
+    const httpRequests = requests.map((r) =>
+      this[(r.method || 'get').toLowerCase()]
+        .apply(
+          this,
+          [r.uri, r.body, r.base, r.requestOptions].filter((a) => a)
+        )
+        .pipe(catchError((err) => of({ _error: err })))
+    );
+    return forkJoin(httpRequests) as Observable<any[]>;
   }
 }
