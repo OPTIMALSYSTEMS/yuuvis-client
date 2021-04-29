@@ -97,6 +97,16 @@ export class DmsObject {
     // TODO: setup contextfolder
   }
 
+  /**
+   * Get the value (state) of a certain tag
+   * @param name The tags name
+   * @returns The value of the tag or null if the tag does not exist
+   */
+  getTag(name: string): any {
+    const tag = this.data[BaseObjectTypeField.TAGS].find((t) => t[0] === name);
+    return tag ? tag[1] : null;
+  }
+
   private generateData(fields) {
     const result = {};
     for (const [key, val] of fields.entries()) {

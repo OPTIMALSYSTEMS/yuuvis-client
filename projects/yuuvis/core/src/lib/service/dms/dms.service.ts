@@ -151,9 +151,9 @@ export class DmsService {
    * @param tag The tag to be updated
    * @param value The tags new value
    */
-  updateDmsObjectTag(id: string, tag: string, value: any, silent = false): Observable<any> {
+  setDmsObjectTag(id: string, tag: string, value: any, silent = false): Observable<any> {
     return this.backend
-      .post(`/dms/objects/${id}/tags/${tag}/state/${value}?overwrite=true`, {}, ApiBase.core)
+      .post(`/dms/objects/tags/${tag}/state/${value}?query=SELECT * FROM system:object WHERE system:objectId='${id}'`, {}, ApiBase.core)
       .pipe(this.triggerEvent(YuvEventType.DMS_OBJECT_UPDATED, id, silent));
   }
 

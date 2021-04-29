@@ -259,7 +259,7 @@ export class SearchResultComponent implements OnDestroy {
   private executeQuery(applyColumnConfig?: boolean) {
     this.busy = true;
     this._searchQuery.from = 0; // always load 1st page
-    (applyColumnConfig || this.columnConfig ? this.applyColumnConfiguration(this._searchQuery) : of(this._searchQuery))
+    (applyColumnConfig ? this.applyColumnConfiguration(this._searchQuery) : of(this._searchQuery))
       .pipe(
         tap((q) => this.queryChanged.emit(q)),
         switchMap((q: SearchQuery) => this.searchService.search(q))
