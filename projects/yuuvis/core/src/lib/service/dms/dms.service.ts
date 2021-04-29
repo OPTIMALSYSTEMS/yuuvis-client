@@ -250,7 +250,12 @@ export class DmsService {
 
   batchUpdateTag(ids: string[], tag: string, value: any) {
     return this.backend.batch(
-      ids.map((id) => ({ method: 'POST', uri: `/dms/objects/${id}/tags/${tag}/state/${value}?overwrite=true`, base: ApiBase.core, body: {} }))
+      ids.map((id) => ({
+        method: 'POST',
+        uri: `/dms/objects/tags/${tag}/state/${value}?query=SELECT * FROM system:object WHERE system:objectId='${id}'`,
+        base: ApiBase.core,
+        body: {}
+      }))
     );
   }
 
