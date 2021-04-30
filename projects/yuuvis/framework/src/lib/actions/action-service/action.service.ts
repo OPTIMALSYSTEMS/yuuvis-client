@@ -127,8 +127,8 @@ export class ActionService {
    * @param itemsCount The count of selected items, for which the user wants to perform some action
    * @returns
    */
-  private isRangeAllowed(action, itemsCount) {
-    let isRangeAllowed = true;
+  private isRangeAllowed(action: Action, itemsCount: number) {
+    let isRangeAllowed = itemsCount > 0;
     switch (action.range) {
       case SelectionRange.SINGLE_SELECT:
         isRangeAllowed = itemsCount === 1;
