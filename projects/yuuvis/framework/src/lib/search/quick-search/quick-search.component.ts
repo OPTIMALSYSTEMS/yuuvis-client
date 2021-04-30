@@ -1,4 +1,17 @@
-import { AfterViewInit, Component, ElementRef, EventEmitter, HostBinding, HostListener, Input, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  Attribute,
+  Component,
+  ElementRef,
+  EventEmitter,
+  HostBinding,
+  HostListener,
+  Input,
+  OnInit,
+  Output,
+  TemplateRef,
+  ViewChild
+} from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import {
   AggregateResult,
@@ -158,6 +171,7 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
   }
 
   constructor(
+    @Attribute('disableAggregations') private disableAggregations: string,
     private quickSearchService: QuickSearchService,
     private fb: FormBuilder,
     private popoverService: PopoverService,
@@ -229,6 +243,9 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
    * estimated result of the current query.
    */
   aggregate() {
+    if (!!this.disableAggregations) {
+      return;
+    }
     // if (this._inline) return;
     if (this.searchQuery.term || this.searchQuery.allTypes.length || (this.searchQuery.filters && this.searchQuery.filters.length)) {
       if (!this.settingUpQuery && this.formValid) {

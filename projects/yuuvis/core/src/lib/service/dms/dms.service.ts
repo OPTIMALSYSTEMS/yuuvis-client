@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { forkJoin, Observable, of } from 'rxjs';
-import { catchError, delay, map, switchMap, tap } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
+import { delay, map, switchMap, tap } from 'rxjs/operators';
 import { DmsObject } from '../../model/dms-object.model';
 import { Utils } from '../../util/utils';
 import { ApiBase } from '../backend/api.enum';
@@ -40,6 +40,20 @@ export class DmsService {
         // TODO: enable once permissions are provided
         // map((res) => this.searchResultToDmsObject(this.searchService.toSearchResult(res).items[0])),
         tap((res: any) => !silent && this.eventService.trigger(event, res))
+      );
+  }
+
+  // general trigger operator to handle all dms events
+  private triggerEvents(event: YuvEventType, ids?: string[], silent = false) {
+    return (stream): Observable<any> =>
+      stream.pipe(
+        // update does not return permissions, so we need to re-load the whole dms object
+        // TODO: Remove once permissions are provided
+        switchMap((res) => (!ids ? of(res) : this.getDmsObjects(ids))),
+        // TODO: enable once permissions are provided
+        // map((_res: any[]) => _res.map((res) => res._error ? null : this.searchResultToDmsObject(this.searchService.toSearchResult(res).items[0]))),
+        map((_res: any[]) => _res.map((res) => (res?._error ? null : res))),
+        tap((res: any) => !silent && res.forEach((o) => o && this.eventService.trigger(event, o)))
       );
   }
 
@@ -137,9 +151,9 @@ export class DmsService {
    * @param tag The tag to be updated
    * @param value The tags new value
    */
-  updateDmsObjectTag(id: string, tag: string, value: any, silent = false): Observable<any> {
+  setDmsObjectTag(id: string, tag: string, value: any, silent = false): Observable<any> {
     return this.backend
-      .post(`/dms/objects/${id}/tags/${tag}/state/${value}?overwrite=true`, {}, ApiBase.core)
+      .post(`/dms/objects/tags/${tag}/state/${value}?query=SELECT * FROM system:object WHERE system:objectId='${id}'`, {}, ApiBase.core)
       .pipe(this.triggerEvent(YuvEventType.DMS_OBJECT_UPDATED, id, silent));
   }
 
@@ -154,27 +168,39 @@ export class DmsService {
   }
 
   /**
+   * Updates given objects.
+   * @param objects the objects to updated
+   */
+  updateDmsObjects(objects: Partial<DmsObject>[], silent = false) {
+    const ids = objects.map((o) => o.id);
+    return this.batchUpdate(objects).pipe(this.triggerEvents(YuvEventType.DMS_OBJECT_UPDATED, ids, silent));
+  }
+
+  /**
+   * Updates a tag on a dms object.
+   * @param ids List of IDs of objects
+   * @param tag The tag to be updated
+   * @param value The tags new value
+   */
+  updateDmsObjectsTag(ids: string[], tag: string, value: any, silent = false): Observable<any> {
+    return this.batchUpdateTag(ids, tag, value).pipe(this.triggerEvents(YuvEventType.DMS_OBJECT_UPDATED, ids, silent));
+  }
+
+  /**
    * Moves given objects to a different context folder.
    * @param folderId the id of the new context folder of the objects
    * @param ids the ids of objects to move
    */
-  moveDmsObjects(targetFolderId: string, objects: DmsObject[]) {
-    let data = {};
-    data[BaseObjectTypeField.PARENT_ID] = targetFolderId;
-    return forkJoin(
-      objects.map((o) => {
-        return this.updateDmsObject(o.id, data, true).pipe(
-          catchError((err) => of({ isError: true, dmsObject: o })),
-          map((res) => (res instanceof DmsObject ? { isError: false, dmsObject: res } : res))
-        );
-      })
-    ).pipe(
+  moveDmsObjects(targetFolderId: string, objects: DmsObject[], silent = false) {
+    const data = { [BaseObjectTypeField.PARENT_ID]: targetFolderId };
+    return this.batchUpdate(objects.map((o) => ({ ...o, ...data }))).pipe(
       map((results: any[]) => {
-        let succeeded = results.filter((res) => !res.isError).map((res) => res.dmsObject);
-        let failed = results.filter((res) => res.isError).map((res) => res.dmsObject);
+        let succeeded = results.filter((res) => !res._error).map((res) => objects.find((o) => o.id === res.id));
+        let failed = results.filter((res) => res._error).map((res) => objects.find((o) => o.id === res.id));
+        succeeded.forEach((s) => Object.assign(s, data));
         return { succeeded, failed, targetFolderId };
       }),
-      tap((results) => this.eventService.trigger(YuvEventType.DMS_OBJECTS_MOVED, results))
+      tap((res) => !silent && this.eventService.trigger(YuvEventType.DMS_OBJECTS_MOVED, res.succeeded))
     );
   }
 
@@ -182,8 +208,20 @@ export class DmsService {
    * Get a bunch of dms objects.
    * @param ids List of IDs of objects to be retrieved
    */
-  getDmsObjects(ids: string[]): Observable<DmsObject[]> {
-    return forkJoin(ids.map((id) => this.getDmsObject(id)));
+  getDmsObjects(ids: string[], silent = false): Observable<DmsObject[]> {
+    return this.batchGet(ids)
+      .pipe(map((_res: any[]) => _res.map((res) => (res._error ? null : this.searchResultToDmsObject(this.searchService.toSearchResult(res).items[0])))))
+      .pipe(this.triggerEvents(YuvEventType.DMS_OBJECT_LOADED, null, silent));
+  }
+
+  /**
+   * Delete a bunch of dms objects.
+   * @param ids List of IDs of objects to be deleted
+   */
+  deleteDmsObjects(ids: string[], silent = false): Observable<string[]> {
+    return this.batchDelete(ids)
+      .pipe(map((_res: any[]) => _res.map((res, index) => (res._error ? null : ids[index]))))
+      .pipe(this.triggerEvents(YuvEventType.DMS_OBJECT_DELETED, null, silent));
   }
 
   /**
@@ -202,5 +240,34 @@ export class DmsService {
 
   private searchResultToDmsObject(resItem: SearchResultItem): DmsObject {
     return new DmsObject(resItem, this.systemService.getObjectType(resItem.objectTypeId));
+  }
+
+  private getBatchBody(o: any) {
+    const m = { ...o };
+    delete m.id;
+    return m;
+  }
+
+  batchUpdateTag(ids: string[], tag: string, value: any) {
+    return this.backend.batch(
+      ids.map((id) => ({
+        method: 'POST',
+        uri: `/dms/objects/tags/${tag}/state/${value}?query=SELECT * FROM system:object WHERE system:objectId='${id}'`,
+        base: ApiBase.core,
+        body: {}
+      }))
+    );
+  }
+
+  batchUpdate(objects: Partial<DmsObject>[]) {
+    return this.backend.batch(objects.map((o) => ({ method: 'PATCH', uri: `/dms/objects/${o.id}`, body: this.getBatchBody(o) })));
+  }
+
+  batchDelete(ids: string[]) {
+    return this.backend.batch(ids.map((id) => ({ method: 'DELETE', uri: `/dms/objects/${id}` })));
+  }
+
+  batchGet(ids: string[]) {
+    return this.backend.batch(ids.map((id) => ({ method: 'GET', uri: `/dms/objects/${id}` })));
   }
 }

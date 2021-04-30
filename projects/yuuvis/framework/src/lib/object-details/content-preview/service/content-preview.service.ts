@@ -48,11 +48,12 @@ export class ContentPreviewService {
     private pluginsService: PluginsService
   ) {}
 
-  private createPath(id: string, version?: number): { root: string; path: string } {
+  private createPath(id: string, version?: number): { root: string; path: string; pathPdf: string } {
     let root = `${this.location.protocol}//${this.location.hostname}`;
     root = this.location.port.length ? `${root}:${this.location.port}` : root;
     const path = `${root}${this.dmsService.getContentPath(id)}?asdownload=false${version ? '&version=' + version : ''}`;
-    return { root, path };
+    const pathPdf = `${root}/api/dms/objects/${id}${version ? '/versions/' + version : ''}/contents/renditions/pdf`;
+    return { root, path, pathPdf };
   }
 
   private createSettings() {
@@ -65,9 +66,9 @@ export class ContentPreviewService {
 
   private createParams(objectId: string, content: DmsObjectContent, version?: number) {
     const { mimeType, size, contentStreamId, fileName } = content;
-    const { root, path } = this.createPath(objectId, version);
+    const { root, path, pathPdf } = this.createPath(objectId, version);
     const fileExtension = fileName.includes('.') ? fileName.split('.').pop() : '';
-    return { mimeType, path, fileName, fileExtension, size, contentStreamId, objectId, root, ...this.createSettings() };
+    return { mimeType, path, pathPdf, fileName, fileExtension, size, contentStreamId, objectId, root, ...this.createSettings() };
   }
 
   private resolveCustomViewerConfig(params: any[]) {
