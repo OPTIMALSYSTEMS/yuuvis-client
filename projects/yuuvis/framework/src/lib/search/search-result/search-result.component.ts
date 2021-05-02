@@ -99,6 +99,8 @@ export class SearchResultComponent implements OnDestroy {
   //   return this._showFilterPanel;
   // }
 
+  @Input() responsiveTableData: Partial<ResponsiveTableData>;
+
   tableData: ResponsiveTableData;
   totalNumItems: number;
   // state of pagination
@@ -331,11 +333,12 @@ export class SearchResultComponent implements OnDestroy {
       const sortOptions = this._searchQuery ? this._searchQuery.sortOptions || [] : [];
 
       this.tableData = {
-        columns: this._columns,
-        rows: this._rows,
         titleField: ClientDefaultsObjectTypeField.TITLE,
         descriptionField: ClientDefaultsObjectTypeField.DESCRIPTION,
         selectType: 'multiple',
+        ...(this.responsiveTableData || {}),
+        columns: this._columns,
+        rows: this._rows,
         sortModel: sortOptions.map((o) => ({
           colId: o.field,
           sort: o.order
