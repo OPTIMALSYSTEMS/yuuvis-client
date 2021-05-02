@@ -51,8 +51,8 @@ export class DmsService {
         // TODO: Remove once permissions are provided
         switchMap((res) => (!ids ? of(res) : this.getDmsObjects(ids))),
         // TODO: enable once permissions are provided
-        // map((_res: any[]) => _res.map((res) => res._error ? null : this.searchResultToDmsObject(this.searchService.toSearchResult(res).items[0]))),
-        map((_res: any[]) => _res.map((res) => (res?._error ? null : res))),
+        // map((_res: any[]) => _res.map((res, i) => res?._error ? { ...res, id: ids?[i] } : this.searchResultToDmsObject(this.searchService.toSearchResult(res).items[0]))),
+        map((_res: any[]) => _res.map((res, i) => (res?._error && ids ? { ...res, id: ids[i] } : res))),
         tap((res: any) => !silent && res.forEach((o) => o && this.eventService.trigger(event, o)))
       );
   }
@@ -195,8 +195,8 @@ export class DmsService {
     const data = { [BaseObjectTypeField.PARENT_ID]: targetFolderId };
     return this.batchUpdate(objects.map((o) => ({ ...o, ...data }))).pipe(
       map((results: any[]) => {
-        let succeeded = results.filter((res) => !res._error).map((res) => objects.find((o) => o.id === res.id));
-        let failed = results.filter((res) => res._error).map((res) => objects.find((o) => o.id === res.id));
+        let succeeded = results.filter((res) => !res?._error).map((res) => objects.find((o) => o.id === res.id));
+        let failed = results.filter((res) => res?._error).map((res) => objects.find((o) => o.id === res.id));
         succeeded.forEach((s) => Object.assign(s, data));
         return { succeeded, failed, targetFolderId };
       }),
@@ -210,7 +210,11 @@ export class DmsService {
    */
   getDmsObjects(ids: string[], silent = false): Observable<DmsObject[]> {
     return this.batchGet(ids)
-      .pipe(map((_res: any[]) => _res.map((res) => (res._error ? null : this.searchResultToDmsObject(this.searchService.toSearchResult(res).items[0])))))
+      .pipe(
+        map((_res: any[]) =>
+          _res.map((res, i) => (res?._error ? { ...res, id: ids[i] } : this.searchResultToDmsObject(this.searchService.toSearchResult(res).items[0])))
+        )
+      )
       .pipe(this.triggerEvents(YuvEventType.DMS_OBJECT_LOADED, null, silent));
   }
 
@@ -220,7 +224,7 @@ export class DmsService {
    */
   deleteDmsObjects(ids: string[], silent = false): Observable<string[]> {
     return this.batchDelete(ids)
-      .pipe(map((_res: any[]) => _res.map((res, index) => (res._error ? null : ids[index]))))
+      .pipe(map((_res: any[]) => _res.map((res, i) => (res?._error ? { ...res, id: ids[i] } : ids[i]))))
       .pipe(this.triggerEvents(YuvEventType.DMS_OBJECT_DELETED, null, silent));
   }
 
