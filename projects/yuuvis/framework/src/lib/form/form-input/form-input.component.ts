@@ -102,7 +102,7 @@ export class FormInputComponent implements AfterViewInit {
   }
 
   get formControlName() {
-    return this.childElement.getAttribute('ng-reflect-name');
+    return this.childElement.getAttribute('data-name');
   }
 
   get hook() {
