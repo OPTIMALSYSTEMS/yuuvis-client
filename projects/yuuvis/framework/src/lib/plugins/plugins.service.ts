@@ -36,11 +36,9 @@ export const UNDOCK_WINDOW_NAME = 'eoViewer';
 })
 export class PluginsService {
   static LOCAL_PLUGIN_CONFIG = '/users/settings/plugin-config';
-  // static GLOBAL_PLUGIN_CONFIG = '/users/globalsettings/plugin-config'; // not supported anymore (included in RESOURCES_CONFIG)
-  // static VIEWER_PLUGIN_CONFIG = '/viewer/plugins'; // not supported anymore (included in RESOURCES_CONFIG)
-  static RESOURCES_CONFIG = '/resources/config';
-  static ADMIN_RESOURCES_CONFIG = '/admin/resources/config';
-  static SYSTEM_RESOURCES_CONFIG = '/system/resources/config';
+  static RESOURCES_CONFIG = '/resources/config/plugin-config';
+  static ADMIN_RESOURCES_CONFIG = '/admin/resources/config/plugin-config';
+  static SYSTEM_RESOURCES_CONFIG = '/system/resources/config/plugin-config';
 
   static EVENT_MODEL_CHANGED = 'yuv.event.object-form.model.changed';
 
