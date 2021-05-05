@@ -133,13 +133,9 @@ export class DynamicCatalogComponent implements ControlValueAccessor {
       // first classification option is the name of the catalog to load ...
       this.catalogService.getCatalog(ce.options[0]).subscribe(
         (res: Catalog) => {
-          if (ce.options[1] === 'readonly') {
-            res.readonly = true;
-          }
           this.setCatalog(res);
           this.setupInnerValue();
-          // ... optional second option indicates whether or not this catalog is readonly
-          this.editable = this.situation !== 'SEARCH' && this.userService.hasManageSettingsRole && (!ce.options[1] || ce.options[1] !== 'readonly');
+          this.editable = this.situation !== 'SEARCH' && this.userService.hasManageSettingsRole && !res.readonly;
         },
         (err) => {
           if (err.status === 404) {

@@ -40,6 +40,10 @@ export class ActionMenuComponent implements OnDestroy {
    * eventhough you are not on dark mode
    */
   @Input() dark: boolean;
+  /**
+   * Set ID of Action that should be shown when menu opens.
+   */
+  @Input() activeAction: string;
 
   /**
    * Specifies the visibility of the menu.
@@ -61,7 +65,12 @@ export class ActionMenuComponent implements OnDestroy {
   /**
    * Callback to invoke when the action is finished.
    */
-  @Output() onFinish = new EventEmitter();
+  @Output() finished = new EventEmitter();
+
+  /**
+   * Callback to invoke when the action is clicked.
+   */
+  @Output() actionSelected = new EventEmitter<ActionListEntry>();
 
   actionLists: {
     common: ActionListEntry[];
@@ -92,7 +101,7 @@ export class ActionMenuComponent implements OnDestroy {
         takeUntilDestroy(this),
         filter((evt) => evt instanceof NavigationStart)
       )
-      .subscribe(() => this.hide());
+      .subscribe(() => this.finish());
   }
 
   private getActions() {
@@ -104,6 +113,10 @@ export class ActionMenuComponent implements OnDestroy {
         tap((actionsList) => {
           this.actionLists.common = actionsList.filter((actionListEntry) => actionListEntry.action.group === 'common');
           this.actionLists.further = actionsList.filter((actionListEntry) => actionListEntry.action.group === 'further');
+          if (this.activeAction) {
+            const action = actionsList.find((a) => a.id === this.activeAction);
+            setTimeout(() => (action ? this.onClick(action) : this.finish()));
+          }
         })
       )
       .subscribe();
@@ -162,12 +175,13 @@ export class ActionMenuComponent implements OnDestroy {
         .subscribe((actionsList: ActionListEntry[]) => (this.subActionsList = actionsList));
     } else if (isComponentAction) {
       const componentAction = actionListEntry.action as ComponentAction;
-      this.showActionComponent(componentAction.component, this.componentAnchor, this.componentFactoryResolver, true);
+      this.showActionComponent(componentAction.component, this.componentAnchor, this.componentFactoryResolver, true, componentAction.inputs);
     } else if (isExternalComponentAction) {
       this.fullscreen = true;
       const extComponentAction = actionListEntry.action as ExternalComponentAction;
-      this.showActionComponent(extComponentAction.extComponent, this.componentAnchor, this.componentFactoryResolver, true);
+      this.showActionComponent(extComponentAction.extComponent, this.componentAnchor, this.componentFactoryResolver, true, extComponentAction.inputs);
     }
+    this.actionSelected.emit(actionListEntry);
   }
 
   private showActionComponent(component: Type<any> | any, viewContRef, factoryResolver, showComponent, inputs?: any) {
@@ -196,16 +210,18 @@ export class ActionMenuComponent implements OnDestroy {
     this.showComponent = false;
     this.subActionsList = null;
     // this.actionDescription = null;
+    this.activeAction = null;
     this.viewContainerRef.clear();
     this.componentAnchor?.viewContainerRef.clear();
+    this.actionSelected.emit();
   }
 
   cancel() {
-    this.clear();
+    this.activeAction ? this.finish() : this.clear();
   }
 
   finish() {
-    this.onFinish.emit();
+    this.finished.emit();
     this.hideActionMenu();
   }
 

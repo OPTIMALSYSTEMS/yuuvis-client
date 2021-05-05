@@ -38,10 +38,11 @@ export class CatalogService {
           throw e;
         }
       }),
-      map((res: { tenant?: string; entries: CatalogEntry[] }) => ({
+      map((res: { tenant?: string; entries: CatalogEntry[]; readonly: boolean }) => ({
         qname: qname,
         entries: res.entries,
-        tenant: res.tenant
+        tenant: res.tenant,
+        readonly: res.readonly
       }))
     );
   }

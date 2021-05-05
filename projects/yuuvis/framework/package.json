@@ -1,6 +1,6 @@
 {
   "name": "@yuuvis/framework",
-  "version": "1.3.0-rc.1",
+  "version": "2.0.0-rc.1",
   "author": "OPTIMAL SYSTEMS GmbH <npm@optimal-systems.de>",
   "license": "MIT",
   "scripts": {
@@ -16,7 +16,7 @@
     "rxjs": "~6.6.3"
   },
   "dependencies": {
-    "@yuuvis/core": "1.3.0-rc.1",
+    "@yuuvis/core": "1.4.0-beta.3",
     "@yuuvis/styles": "^1.0.0",
     "@ag-grid-community/angular": "~24.1.0",
     "@ag-grid-community/client-side-row-model": "~24.1.0",

@@ -10,7 +10,7 @@
 
   <!-- template for the selected items -->
   <ng-template let-item pTemplate="selectedItem">
-    <a *ngIf="path" class="link router-link" [routerLink]="['/' + path, item.id]">
+    <a *ngIf="links && path" class="link router-link" [routerLink]="['/' + path, item.id]">
       <svg focusable="false" class="ref-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
         viewBox="0 0 24 24">
         <path

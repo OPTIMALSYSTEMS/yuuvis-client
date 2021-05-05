@@ -47,8 +47,13 @@ export class ActionService {
       ? this.pluginsService.getCustomPlugins('actions').pipe(
           map((_actions: any[]) => PluginActionComponent.actionWrapper(_actions)),
           tap((_actions) => {
+            const availableActions = [].concat(...this.actions);
+            // set action selector as ID
+            availableActions.forEach((a) => (a.id = this._componentFactoryResolver.resolveComponentFactory(a)?.selector));
+            window['_availableActions'] = availableActions.map((a) => a.id);
+            // in case there are plugin actions, original actions are visible only if specific IDs are included in the list
             this.allActionComponents = []
-              .concat(...this.actions)
+              .concat(availableActions.filter((originalAction) => (_actions.length ? _actions.includes(originalAction.id) : true)))
               .concat(this.custom_actions)
               .concat(_actions)
               .filter((entry) => entry.target && !entry.isSubAction && !entry.disabled);
@@ -68,6 +73,7 @@ export class ActionService {
     const entry: ActionListEntry = {
       action: componentRef.instance as Action,
       target: actionComponent.target,
+      id: actionComponent.id,
       availableSelection: selection
     };
     return entry;
@@ -81,13 +87,15 @@ export class ActionService {
    * can have only a single view container.
    */
   getExecutableActionsListFromGivenActions(allActionComponents: any[], selection: any[], viewContainerRef: ViewContainerRef): Observable<ActionListEntry[]> {
-    if (selection && selection.length) {
+    if (selection) {
+      const targetFilter = (actionComponent: any) => (selection[0] ? selection[0] instanceof actionComponent.target : true);
+
       const allActionsList: ActionListEntry[] = allActionComponents
-        .filter((actionComponent) => selection[0] instanceof actionComponent.target)
+        .filter(targetFilter)
         .map((actionComponent: any) => this.createExecutableActionListEntry(actionComponent, [], viewContainerRef));
 
-      const targetActionsList = allActionsList.filter((actionListEntry: any) => selection[0] instanceof actionListEntry.target);
-      const observables = [];
+      const targetActionsList = allActionsList.filter(targetFilter);
+      const observables = [of({})];
       targetActionsList.forEach((actionListEntry) => {
         selection.forEach((item) => {
           let observable = actionListEntry.action.isExecutable(item);
@@ -104,7 +112,7 @@ export class ActionService {
         combineAll(),
         map(() =>
           targetActionsList
-            .filter((actionListEntry) => this.isRangeAllowed(actionListEntry.action, actionListEntry.availableSelection.length))
+            .filter((actionListEntry) => this.isRangeAllowed(actionListEntry.action, actionListEntry.availableSelection.length, selection?.length))
             .sort(Utils.sortValues('action.priority'))
         )
       );
@@ -119,8 +127,8 @@ export class ActionService {
    * @param itemsCount The count of selected items, for which the user wants to perform some action
    * @returns
    */
-  private isRangeAllowed(action, itemsCount) {
-    let isRangeAllowed = true;
+  private isRangeAllowed(action: Action, itemsCount: number, length: number) {
+    let isRangeAllowed = itemsCount > 0;
     switch (action.range) {
       case SelectionRange.SINGLE_SELECT:
         isRangeAllowed = itemsCount === 1;
@@ -130,6 +138,9 @@ export class ActionService {
         break;
       case SelectionRange.MULTI_SELECT_ONLY:
         isRangeAllowed = itemsCount > 1;
+        break;
+      case SelectionRange.ANY:
+        isRangeAllowed = itemsCount === length;
         break;
       default:
         break;

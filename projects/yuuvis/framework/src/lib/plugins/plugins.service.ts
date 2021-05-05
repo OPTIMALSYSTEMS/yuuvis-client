@@ -21,9 +21,9 @@ import {
 import { forkJoin, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { NotificationService } from '../services/notification/notification.service';
-import { ContentPreviewService } from './../object-details/content-preview/service/content-preview.service';
-import { PluginAPI } from './plugins.interface';
+import { PluginAPI, PluginConfigList } from './plugins.interface';
 
+export const UNDOCK_WINDOW_NAME = 'eoViewer';
 /**
  * `PluginService` is an abstraction of some framework capabilities that is aimed towards
  * providing plugin developers with a convenient and reliable interface. This service and the
@@ -35,15 +35,15 @@ import { PluginAPI } from './plugins.interface';
   providedIn: 'root'
 })
 export class PluginsService {
-  static LOCAL_PLUGIN_CONFIG = '/user/settings/plugin-config';
-  static GLOBAL_PLUGIN_CONFIG = '/user/globalsettings/plugin-config';
-  static VIEWER_PLUGIN_CONFIG = '/viewer/plugins';
+  static LOCAL_PLUGIN_CONFIG = '/users/settings/plugin-config';
+  static RESOURCES_CONFIG = '/resources/config/plugin-config';
+  static ADMIN_RESOURCES_CONFIG = '/admin/resources/config/plugin-config';
+  static SYSTEM_RESOURCES_CONFIG = '/system/resources/config/plugin-config';
 
   static EVENT_MODEL_CHANGED = 'yuv.event.object-form.model.changed';
 
-  private user: YuvUser;
-  private pluginConfigs: any;
-  public customPlugins: any;
+  private pluginConfigs: { local: PluginConfigList; tenant: PluginConfigList; global: PluginConfigList };
+  public customPlugins: PluginConfigList;
   private componentRegister = new Map<string, any>();
 
   public get currentUrl() {
@@ -54,9 +54,10 @@ export class PluginsService {
     return this.getApi();
   }
 
-  public applyFunction(fnc: string, params?: string, args?: any) {
-    if (!fnc || !fnc.trim()) return;
-    const f = fnc.trim().match(/^function|^\(.*\)\s*=>/) ? `return (${fnc}).apply(this,arguments)` : !fnc.trim().startsWith('return') ? `return ${fnc}` : fnc;
+  public applyFunction(fnc: string | Function, params?: string, args?: any) {
+    fnc = fnc?.toString().trim();
+    if (!fnc) return;
+    const f = fnc.match(/^function|^\(.*\)\s*=>/) ? `return (${fnc}).apply(this,arguments)` : !fnc.startsWith('return') ? `return ${fnc}` : fnc;
     return new Function(...(params || 'api').split(',').map((a) => a.trim()), f).apply(this.api, args || [this.api]);
   }
 
@@ -76,11 +77,10 @@ export class PluginsService {
     private ngZone: NgZone
   ) {
     window['api'] = this.api;
-    this.userService.user$.subscribe((user) => (this.user = user));
     this.eventService.on(YuvEventType.CLIENT_LOCALE_CHANGED).subscribe((event: any) => this.extendTranslations(event.data));
   }
 
-  private extendTranslations(lang: string) {
+  extendTranslations(lang: string = this.translate.currentLang) {
     const translations = (this.customPlugins?.translations || {})[lang];
     const allKeys = translations && Object.keys(this.translate.store?.translations[lang] || {});
     if (translations && !Object.keys(translations).every((k) => allKeys.includes(k))) {
@@ -90,17 +90,17 @@ export class PluginsService {
 
   private loadCustomPlugins(force = false) {
     return forkJoin([
-      this.backend.get(PluginsService.VIEWER_PLUGIN_CONFIG, '').pipe(catchError(() => of({}))),
-      this.backend.get(PluginsService.GLOBAL_PLUGIN_CONFIG).pipe(catchError(() => of({}))),
-      this.backend.get(PluginsService.LOCAL_PLUGIN_CONFIG).pipe(catchError(() => of({})))
+      this.backend.get(PluginsService.LOCAL_PLUGIN_CONFIG).pipe(catchError(() => of({}))),
+      this.backend.get(PluginsService.RESOURCES_CONFIG).pipe(catchError(() => of({})))
     ]).pipe(
-      map(([viewer, global, local]) => {
-        this.pluginConfigs = { viewer, global, local };
+      map(([local, config]) => {
+        const p = (this.pluginConfigs = { local, tenant: config?.tenant || {}, global: config?.global || {} });
         if (!this.customPlugins || force) {
-          this.customPlugins = [viewer, global, local].reduce((prev, cur) => {
+          // merge configs: global >> tenant >> local
+          this.customPlugins = [p.global, p.tenant, p.local].reduce((prev, cur) => {
             Object.keys(cur || {}).forEach((k) => {
               if (Array.isArray(cur[k])) {
-                prev[k] = (prev[k] || []).filter((p) => !cur[k].find((c) => c.id === p.id)).concat(cur[k]);
+                prev[k] = cur[k].concat((prev[k] || []).filter((p) => !cur[k].find((c) => c.id === p.id)));
               } else if (k === 'translations' && prev[k]) {
                 Object.keys(cur[k]).forEach((t) => (prev[k][t] = { ...(prev[k][t] || {}), ...cur[k][t] }));
               } else {
@@ -116,16 +116,22 @@ export class PluginsService {
     );
   }
 
-  public getCustomPlugins(type: 'links' | 'states' | 'actions' | 'extensions' | 'triggers', hook?: string, matchPath?: string | RegExp) {
+  public getCustomPlugins(type: 'links' | 'states' | 'actions' | 'extensions' | 'triggers' | 'viewers', hook?: string, matchPath?: string | RegExp) {
     return (!this.customPlugins ? this.backend.getViaTempCache('_plugins', () => this.loadCustomPlugins()) : of(this.customPlugins)).pipe(
       map((cp) => {
-        if (cp.disabled) return [];
+        if (this.isDisabled(cp.disabled)) return [];
         const customPlugins = type === 'links' ? [...(cp.links || []), ...(cp.states || [])] : cp[type] || [];
         return customPlugins.filter(
-          (p) => !p.disabled && (hook ? p.matchHook && hook.match(new RegExp(p.matchHook)) : matchPath ? (p.path || '').match(new RegExp(matchPath)) : true)
+          (p) =>
+            !this.isDisabled(p.disabled) &&
+            (hook ? p.matchHook && hook.match(new RegExp(p.matchHook)) : matchPath ? (p.path || '').match(new RegExp(matchPath)) : true)
         );
       })
     );
+  }
+
+  private isDisabled(disabled: any) {
+    return this.applyFunction(disabled && disabled.toString(), 'api, currentState', [this.api, this.router.routerState.snapshot]);
   }
 
   public disableCustomPlugins(disabled = true) {
@@ -156,12 +162,20 @@ export class PluginsService {
         trigger: (type: string, data?: any) => this.ngZone.run(() => this.eventService.trigger(type, data))
       },
       session: {
-        getUser: () => this.getCurrentUser()
+        getUser: () => this.getCurrentUser(),
+        user: {
+          get: () => this.getCurrentUser(),
+          hasRole: (role: string) => this.getCurrentUser().authorities?.includes(role) || false,
+          hasAdminRole: () => this.userService.hasAdminRole,
+          hasSystemRole: () => this.userService.hasSystemRole,
+          hasAdministrationRoles: () => this.userService.hasAdministrationRoles,
+          hasManageSettingsRole: () => this.userService.hasManageSettingsRole
+        }
       },
       dms: {
         getObject: (id, version) => this.getDmsObject(id, version),
         getResult: (fields, type) => this.getResult(fields, type),
-        downloadContent: (dmsObjects: DmsObject[]) => this.backend.downloadContent(dmsObjects)
+        downloadContent: (dmsObjects: DmsObject[]) => this.dmsService.downloadContent(dmsObjects)
       },
       http: {
         get: (uri, base) => this.get(uri, base),
@@ -179,7 +193,7 @@ export class PluginsService {
           )
       },
       content: {
-        viewer: () => ContentPreviewService.getUndockWin() || (window.document.querySelector('yuv-content-preview iframe') || {})['contentWindow']
+        viewer: () => window[UNDOCK_WINDOW_NAME] || (window.document.querySelector('yuv-content-preview iframe') || {})['contentWindow']
       },
       util: {
         $: (selectors, element) => (element || window.document).querySelector(selectors),
@@ -247,7 +261,7 @@ export class PluginsService {
    * @ignore
    */
   public getCurrentUser(): YuvUser {
-    return this.user;
+    return this.userService.getCurrentUser();
   }
 
   /**

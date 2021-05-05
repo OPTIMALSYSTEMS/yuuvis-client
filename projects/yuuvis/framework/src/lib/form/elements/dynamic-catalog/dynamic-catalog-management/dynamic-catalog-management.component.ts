@@ -38,7 +38,7 @@ export class DynamicCatalogManagementComponent {
   @Input() set catalog(c: Catalog) {
     // deep clone
     this._catalog = JSON.parse(JSON.stringify(c));
-    this._catalogLabel = this.systemService.getLocalizedResource(this._catalog.qname) || this._catalog.qname;
+    this._catalogLabel = this.systemService.getLocalizedResource(this._catalog.qname + '_label') || this._catalog.qname;
   }
 
   /**
