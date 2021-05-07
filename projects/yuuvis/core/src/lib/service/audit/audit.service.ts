@@ -42,17 +42,6 @@ export class AuditService {
       if (options.dateRange) {
         q.addFilter(new SearchFilter(AuditField.CREATION_DATE, options.dateRange.operator, options.dateRange.firstValue, options.dateRange.secondValue));
       }
-
-      // if (options.from && options.to) {
-      //   // range query
-      //   q.addFilter(new SearchFilter(AuditField.CREATION_DATE, SearchFilter.OPERATOR.INTERVAL_INCLUDE_BOTH, options.from, options.to));
-      // } else if (options.from) {
-      //   // just one date
-      //   q.addFilter(new SearchFilter(AuditField.CREATION_DATE, SearchFilter.OPERATOR.EQUAL, options.from));
-      // }
-      // if (options.createdBy) {
-      //   q.addFilter(new SearchFilter(AuditField.CREATED_BY, SearchFilter.OPERATOR.EQUAL, options.createdBy));
-      // }
       if (options.actions && options.actions.length) {
         q.addFilter(
           new SearchFilter(
