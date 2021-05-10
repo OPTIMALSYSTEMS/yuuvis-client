@@ -416,12 +416,17 @@ export class SystemService {
   getResolvedTags(objectTypeId?: string): { id: string; tag: string; fields: ObjectTypeField[] }[] {
     const ot = this.getObjectType(objectTypeId) || this.getSecondaryObjectType(objectTypeId);
     const tags = ot?.classification?.filter((t) => t.startsWith('tag['));
+    const parentType = ot && (ot as ObjectType).floatingParentType;
+    // filter out parent tags that are overriden
+    const parentTags = parentType && this.getResolvedTags(parentType).filter((t) => !tags.find((tag) => tag.startsWith(t.tag.replace(/\d.*/, ''))));
 
-    return (tags || []).map((tag) => ({
-      id: ot.id,
-      tag,
-      fields: this.getBaseType(true).fields.filter((f) => f.id === BaseObjectTypeField.TAGS)
-    }));
+    return (tags || [])
+      .map((tag) => ({
+        id: ot.id,
+        tag,
+        fields: this.getBaseType(true).fields.filter((f) => f.id === BaseObjectTypeField.TAGS)
+      }))
+      .concat(parentTags || []);
   }
 
   /**
