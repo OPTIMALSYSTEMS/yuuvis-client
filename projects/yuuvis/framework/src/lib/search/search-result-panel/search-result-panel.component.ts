@@ -1,5 +1,5 @@
 import { RowEvent } from '@ag-grid-community/core';
-import { Attribute, Component, EventEmitter, Input, Output, TemplateRef, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, Output, TemplateRef, ViewChild } from '@angular/core';
 import { ColumnConfig, DmsService, SearchQuery, SystemService, TranslateService } from '@yuuvis/core';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { ResponsiveDataTableOptions, ViewMode } from '../../components/responsive-data-table/responsive-data-table.component';
@@ -83,7 +83,6 @@ export class SearchResultPanelComponent {
   @Output() filterPanelConfigChanged = new EventEmitter<FilterPanelConfig>();
 
   constructor(
-    @Attribute('applyColumnConfig') public applyColumnConfig: boolean,
     private translate: TranslateService,
     private systemService: SystemService,
     private popoverService: PopoverService,

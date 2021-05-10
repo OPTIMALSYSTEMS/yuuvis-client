@@ -1,6 +1,7 @@
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { Component, EventEmitter, Input, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
 import {
+  BaseObjectTypeField,
   ColumnConfig,
   ColumnConfigColumn,
   ColumnConfigSkipFields,
@@ -209,7 +210,9 @@ export class ColumnConfigComponent implements OnInit {
   }
 
   private filterColumns(cols: any[]) {
-    return cols.filter((f) => !ColumnConfigSkipFields.includes(f.id));
+    return cols
+      .filter((f) => !ColumnConfigSkipFields.includes(f.id))
+      .filter((fields: ObjectTypeField) => fields.id === BaseObjectTypeField.TAGS || fields.propertyType !== 'table');
   }
 
   private checkMoreColumnsAvailable() {
