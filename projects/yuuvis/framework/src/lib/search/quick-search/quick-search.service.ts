@@ -219,7 +219,11 @@ export class QuickSearchService {
             .filter((f) => f.id.match(/state/))
             .map((value) => {
               const name = c.tag.split(',')[0].replace(/.*\[/, '');
-              const vals = c.tag.replace(/\].*/, '').split(',').slice(1);
+              const vals = c.tag
+                .replace(/\].*/, '')
+                .split(',')
+                .slice(1)
+                .map((n) => parseInt(n));
               const id = BaseObjectTypeField.TAGS + `[${name}].state`;
               const label = '#' + (this.systemService.getLocalizedResource(`${name}_label`) || name);
               return { id, label, class: id, defaultValue: vals, defaultOperator: SearchFilter.OPERATOR.IN, value: { ...value, id } };
@@ -393,11 +397,11 @@ export class QuickSearchService {
         items: !items[0].id.startsWith(BaseObjectTypeField.TAGS)
           ? items
           : [
-              ...items.map((item) => ({
-                ...item,
-                value: [new SearchFilter(item.value[0].property, SearchFilter.OPERATOR.LESS_OR_EQUAL, item.defaultValue.slice(-1))]
-              })),
-              ...items[0].value[0].firstValue.map((v) => ({
+              {
+                ...items[0],
+                value: [new SearchFilter(items[0].value[0].property, SearchFilter.OPERATOR.LESS_OR_EQUAL, items[0].defaultValue.slice(-1)[0])]
+              },
+              ...items[0].defaultValue.map((v) => ({
                 id: `${items[0].id}_${v}`,
                 label: `${this.systemService.getLocalizedResource(`${items[0].id.replace(/.*\[/, '').replace(/\].*/, '')}:${v}_label`) || v} ( ${
                   items[0].label
