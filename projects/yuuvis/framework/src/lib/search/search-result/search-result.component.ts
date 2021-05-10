@@ -198,7 +198,7 @@ export class SearchResultComponent implements OnDestroy {
   }
 
   constructor(
-    @Attribute('applyColumnConfig') public applyColumnConfig: boolean,
+    @Attribute('applyColumnConfig') public applyColumnConfig: any, // string should be resolved
     private gridService: GridService,
     private userConfig: UserConfigService,
     private eventService: EventService,
@@ -206,6 +206,7 @@ export class SearchResultComponent implements OnDestroy {
     private fb: FormBuilder,
     private iconRegistry: IconRegistryService
   ) {
+    this.applyColumnConfig = !applyColumnConfig || applyColumnConfig === 'false' ? false : true;
     this.iconRegistry.registerIcons([doubleArrow, filter, settings, clear, search, arrowNext, arrowLast, listModeDefault, listModeGrid, listModeSimple]);
 
     this.pagingForm = this.fb.group({ page: [''] });

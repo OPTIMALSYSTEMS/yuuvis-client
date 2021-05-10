@@ -185,7 +185,7 @@ export class QuickSearchService {
       highlight: this.systemService.isSystemProperty(f)
     });
 
-    const skipFields = [BaseObjectTypeField.TAGS, ...ColumnConfigSkipFields];
+    const skipFields = [BaseObjectTypeField.TAGS, BaseObjectTypeField.LEADING_OBJECT_TYPE_ID, ...ColumnConfigSkipFields];
     const fields = [...sharedFields.filter((f) => !skipFields.includes(f.id)).map((f) => toSelectable(f))].sort(Utils.sortValues('label'));
 
     const tags = q.allTypes.reduce(
