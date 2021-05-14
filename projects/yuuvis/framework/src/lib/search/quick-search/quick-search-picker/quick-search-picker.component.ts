@@ -30,7 +30,9 @@ export class QuickSearchPickerComponent {
     if (data) {
       this.type = data.type;
       this.groups = data.items || [];
-      this.groups.map((groupItem) => groupItem?.items.sort(Utils.sortValues('label')).sort(Utils.sortValues('value.isFolder', Sort.DESC)));
+      if (this.type === 'type') {
+        this.groups.map((groupItem) => groupItem?.items.sort(Utils.sortValues('label')).sort(Utils.sortValues('value.isFolder', Sort.DESC)));
+      }
 
       if (data.selected) {
         this.selectedItems = [];

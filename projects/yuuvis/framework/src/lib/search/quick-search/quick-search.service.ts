@@ -219,9 +219,13 @@ export class QuickSearchService {
             .filter((f) => f.id.match(/state/))
             .map((value) => {
               const name = c.tag.split(',')[0].replace(/.*\[/, '');
-              const vals = c.tag.replace(/\].*/, '').split(',').slice(1);
+              const vals = c.tag
+                .replace(/\].*/, '')
+                .split(',')
+                .slice(1)
+                .map((n) => parseInt(n));
               const id = BaseObjectTypeField.TAGS + `[${name}].state`;
-              const label = '#' + (this.systemService.getLocalizedResource(`${name}_label`) || name);
+              const label = this.getLocalizedTag(id);
               return { id, label, class: id, defaultValue: vals, defaultOperator: SearchFilter.OPERATOR.IN, value: { ...value, id } };
             })
         ],
@@ -257,8 +261,12 @@ export class QuickSearchService {
             id: '#' + Utils.uuid(),
             highlight: true,
             label: `* ${g.filters
-              .map((f) => (availableObjectTypeFields.find((s) => s.id === f.property) || { label: '?' }).label)
-              .join(` ${SearchFilterGroup.OPERATOR_LABEL[g.operator]} `)} *`,
+              .map((f: SearchFilter) => {
+                if (f.property?.match(/state/) && f.operator === SearchFilter.OPERATOR.EQUAL) return this.getLocalizedTag(f.property, f.firstValue);
+                const otf = availableObjectTypeFields.find((s) => s.id === f.property);
+                return otf?.label || '?';
+              })
+              .join(` ${SearchFilterGroup.OPERATOR_LABEL[g.operator]}\n`)} *`,
             value: [g]
           }
         );
@@ -393,20 +401,24 @@ export class QuickSearchService {
         items: !items[0].id.startsWith(BaseObjectTypeField.TAGS)
           ? items
           : [
-              ...items.map((item) => ({
-                ...item,
-                value: [new SearchFilter(item.value[0].property, SearchFilter.OPERATOR.LESS_OR_EQUAL, item.defaultValue.slice(-1))]
-              })),
-              ...items[0].value[0].firstValue.map((v) => ({
+              {
+                ...items[0],
+                value: [new SearchFilter(items[0].value[0].property, SearchFilter.OPERATOR.LESS_OR_EQUAL, items[0].defaultValue.slice(-1)[0])]
+              },
+              ...items[0].defaultValue.map((v) => ({
                 id: `${items[0].id}_${v}`,
-                label: `${this.systemService.getLocalizedResource(`${items[0].id.replace(/.*\[/, '').replace(/\].*/, '')}:${v}_label`) || v} ( ${
-                  items[0].label
-                } )`,
+                label: this.getLocalizedTag(items[0].id, v),
                 value: [new SearchFilter(items[0].id, SearchFilter.OPERATOR.EQUAL, v)]
               }))
             ]
       }))
     ];
+  }
+
+  getLocalizedTag(id: string, val?: number) {
+    const name = id.replace(/.*\[/, '').replace(/\].*/, '');
+    const label = '#' + (this.systemService.getLocalizedResource(`${name}_label`) || name);
+    return val === undefined ? label : `${this.systemService.getLocalizedResource(`${name}:${val}_label`) || val} ( ${label} )`;
   }
 
   getDefaultFiltersList(availableObjectTypeFields: Selectable[]) {
