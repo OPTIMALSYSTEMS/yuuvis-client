@@ -122,7 +122,7 @@ export class SearchFilterFormComponent implements OnInit, OnDestroy {
       const original = this.filterGroup.find(id);
       if (original) {
         const filter = new SearchFilter(fc._eoFormElement.name, Array.isArray(fc.value) ? SearchFilter.OPERATOR.IN : SearchFilter.OPERATOR.EQUAL, fc.value);
-        if (!filter.isEmpty() || fc._eoFormElement.isNotSetValue) {
+        if (!filter.isEmpty() || fc._eoFormElement.isNotSetValue || fc._eoFormElement._internalType === 'boolean') {
           Object.assign(original, filter, { id: original.id, excludeFromQuery: false });
         } else {
           Object.assign(original, { excludeFromQuery: true });
@@ -133,6 +133,12 @@ export class SearchFilterFormComponent implements OnInit, OnDestroy {
             filter.property,
             filter.operator === SearchFilter.OPERATOR.EQUAL && typeof filter.firstValue === 'number' ? filter.firstValue : undefined
           );
+        }
+        if (fc._eoFormElement._internalType === 'boolean') {
+          // resolve label for boolean filters
+          const label = fc._eoFormElement.label.replace(/\s\(\s.*\)$/, '');
+          const val = typeof filter.firstValue === 'boolean' ? filter.firstValue.toString() : this.translate.instant('yuv.framework.form.form-input.null');
+          fc._eoFormElement.label = `${label} ( ${val} )`;
         }
       }
     });
