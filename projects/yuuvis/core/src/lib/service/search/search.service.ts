@@ -44,7 +44,7 @@ export class SearchService {
 
   searchRaw(q: SearchQuery): Observable<any> {
     this.lastSearchQuery = q;
-    return this.backend.post(`/dms/objects/search`, q.toQueryJson(), ApiBase.apiWeb);
+    return this.backend.post(`/dms/objects/search`, q.toQueryJson(true), ApiBase.apiWeb);
   }
 
   /**
@@ -55,7 +55,7 @@ export class SearchService {
    */
   aggregate(q: SearchQuery, aggregations: string[]) {
     q.aggs = aggregations;
-    return this.backend.post(`/dms/objects/search`, q.toQueryJson(), ApiBase.apiWeb).pipe(map((res) => this.toAggregateResult(res, aggregations)));
+    return this.backend.post(`/dms/objects/search`, q.toQueryJson(true), ApiBase.apiWeb).pipe(map((res) => this.toAggregateResult(res, aggregations)));
   }
 
   getLastSearchQuery() {
