@@ -61,16 +61,16 @@
     }
   }
 
-  p-tabview::ng-deep > .p-tabview > .p-tabview-panels > p-tabpanel > .p-tabview-panel {
-    @include frame(0);
-    top: 39px; // header height
-  }
+  // p-tabview.yuv-split-tab::ng-deep > .p-tabview > .p-tabview-panels > p-tabpanel > .p-tabview-panel {
+  //   @include frame(0);
+  //   top: 39px; // header height
+  // }
 }
 
-::ng-deep {
-  .p-tabview {
+p-tabview.yrt-tab::ng-deep {
+  > .p-tabview {
     border-radius: 0 !important;
-    .p-tabview-nav {
+    > .p-tabview-nav {
       flex-wrap: nowrap;
       overflow: auto hidden;
       display: flex;
@@ -79,13 +79,14 @@
         margin-right: 0;
       }
 
-      // .p-tabview-close:after {
-      //   content: '\0000D7';
-      // }
-
       li.p-disabled {
         display: none;
       }
+    }
+
+    > .p-tabview-panels > p-tabpanel > .p-tabview-panel {
+      @include frame(0);
+      top: 39px; // header height
     }
   }
 
