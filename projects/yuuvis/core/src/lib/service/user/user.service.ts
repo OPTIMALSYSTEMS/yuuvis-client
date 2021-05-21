@@ -132,7 +132,7 @@ export class UserService {
   }
 
   getUserById(id: string): Observable<YuvUser> {
-    return this.backend.get(`/users/${id}/info`).pipe(map((user) => new YuvUser(user, this.user.userSettings)));
+    return this.backend.get(`/users/${id}`).pipe(map((user) => new YuvUser(user, this.user.userSettings)));
   }
 
   logout(redirRoute?: string): void {

@@ -173,9 +173,7 @@ export class BackendService {
   /**
    * @ignore
    */
-  getHttpOptions(
-    requestOptions?: any
-  ): {
+  getHttpOptions(requestOptions?: any): {
     headers?:
       | HttpHeaders
       | {

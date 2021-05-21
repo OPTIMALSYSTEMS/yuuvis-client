@@ -52,11 +52,6 @@ export class ContextComponent implements OnInit, OnDestroy {
   @ViewChildren(SearchResultComponent) searchResultComponents: QueryList<SearchResultComponent>;
   @ViewChild('tplColumnConfigPicker') tplColumnConfigPicker: TemplateRef<any>;
 
-  layoutOptions = {
-    'yuv-search-result-all': null,
-    'yuv-search-result-recent': null
-  };
-
   private _context: DmsObject;
   private _contextSearchQuery: SearchQuery;
   actionMenuVisible = false;
@@ -66,7 +61,8 @@ export class ContextComponent implements OnInit, OnDestroy {
   _layoutOptionsKeys = {
     children: null,
     recent: null,
-    search: null
+    search: null,
+    layout: null
   };
 
   /**
@@ -123,7 +119,7 @@ export class ContextComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Providing a lyout options key will enable the component to persist its layout settings
+   * Providing a layout options key will enable the component to persist its layout settings
    * in relation to a host component. The key is basically a unique key for the host, which
    * will be used to store component specific settings using the layout service.
    */
@@ -132,9 +128,10 @@ export class ContextComponent implements OnInit, OnDestroy {
       this._layoutOptionsKeys.children = `${lok}.children`;
       this._layoutOptionsKeys.recent = `${lok}.recent`;
       this._layoutOptionsKeys.search = `${lok}.search`;
+      this._layoutOptionsKeys.layout = `${lok}.layout`;
 
       // load own settings
-      this.layoutService.loadLayoutOptions('yuv-context', 'layout').subscribe((o: any) => {
+      this.layoutService.loadLayoutOptions(this._layoutOptionsKeys.layout, 'filterPanelConfig').subscribe((o: FilterPanelConfig) => {
         this.filterPanelConfig = o;
       });
     }
@@ -193,9 +190,7 @@ export class ContextComponent implements OnInit, OnDestroy {
 
   onFilterPanelConfigChanged(cfg: FilterPanelConfig) {
     this.filterPanelConfig = cfg;
-    if (cfg) {
-      this.layoutService.saveLayoutOptions('yuv-context', 'layout', cfg).subscribe();
-    }
+    this.layoutService.saveLayoutOptions(this._layoutOptionsKeys.layout, 'filterPanelConfig', cfg).subscribe();
   }
 
   onFilesDropped(files: File[]) {

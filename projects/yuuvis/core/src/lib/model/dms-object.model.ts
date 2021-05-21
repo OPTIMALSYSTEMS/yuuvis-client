@@ -103,7 +103,8 @@ export class DmsObject {
    * @returns The value of the tag or null if the tag does not exist
    */
   getTag(name: string): any {
-    const tag = this.data[BaseObjectTypeField.TAGS].find((t) => t[0] === name);
+    const tags = this.data[BaseObjectTypeField.TAGS];
+    const tag = tags ? tags.find((t) => t[0] === name) : null;
     return tag ? tag[1] : null;
   }
 

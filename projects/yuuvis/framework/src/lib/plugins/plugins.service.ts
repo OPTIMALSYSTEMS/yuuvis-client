@@ -135,7 +135,8 @@ export class PluginsService {
   }
 
   public disableCustomPlugins(disabled = true) {
-    this.customPlugins.disabled = this.pluginConfigs.local.disabled = !!disabled;
+    this.customPlugins = { ...this.customPlugins, disabled: !!disabled };
+    this.pluginConfigs = { ...this.pluginConfigs, local: { ...this.pluginConfigs.local, disabled: !!disabled } };
     return this.backend.post(PluginsService.LOCAL_PLUGIN_CONFIG, this.pluginConfigs.local);
   }
 

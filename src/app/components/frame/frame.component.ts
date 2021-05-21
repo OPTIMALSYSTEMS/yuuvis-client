@@ -155,14 +155,8 @@ export class FrameComponent implements OnInit, OnDestroy {
           title: this.translateService.instant('yuv.client.frame.move.notification.title.root'),
           newParent: null,
           succeeded: event.data.succeeded,
-          numberMovedFiles: event.data.succeeded.lenght,
+          numberMovedFiles: event.data.succeeded.length,
           failed: event.data.failed
-          // failed: [
-          //   { title: 'abcfgfg', description: 'some text', id: '1234' },
-          //   { title: 'abcfgfg', description: 'some text', id: '1234' },
-          //   { title: 'abcfgfg', description: 'some text', id: '1234' },
-          //   { title: 'abcfgfg', description: 'some text', id: '1234' }
-          // ]
         },
         panelClass: 'move-notification'
       };

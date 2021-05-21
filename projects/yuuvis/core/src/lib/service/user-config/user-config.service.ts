@@ -112,7 +112,7 @@ export class UserConfigService {
     return this.backend.get(uri).pipe(
       catchError(() => of({})),
       map((data) => {
-        const blob = new Blob([JSON.stringify(data || {}, null, 2)], { type: 'text/json' });
+        const blob = new Blob([JSON.stringify(data || { core: {}, client: {} }, null, 2)], { type: 'text/json' });
         const _uri = URL.createObjectURL(blob);
         // setTimeout(() => URL.revokeObjectURL(_uri), 10000);
         return _uri;
@@ -132,7 +132,6 @@ export class UserConfigService {
     const config = typeof data === 'string' ? JSON.parse(data) : data;
     if (uri === ConfigService.GLOBAL_MAIN_CONFIG && !config.core && !config.client) {
       throw new Error('Invalid main configuration');
-      return of();
     }
     return force || this.hasSystemRole ? this.backend.post(uri, config) : of();
   }

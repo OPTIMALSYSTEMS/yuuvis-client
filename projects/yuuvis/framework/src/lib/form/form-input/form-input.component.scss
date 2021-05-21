@@ -99,13 +99,11 @@
 
   &.required .fe-wrapper {
     > .form-input__label {
-      // background-color: var(--item-focus-background-color);
       font-weight: bold;
 
       &:after {
         content: '*';
         padding: 0 4px;
-        color: var(--color-error);
       }
     }
   }
