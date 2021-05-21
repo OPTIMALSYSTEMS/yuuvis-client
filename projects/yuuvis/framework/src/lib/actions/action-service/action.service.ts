@@ -131,7 +131,7 @@ export class ActionService {
     let isRangeAllowed = itemsCount > 0;
     switch (action.range) {
       case SelectionRange.SINGLE_SELECT:
-        isRangeAllowed = itemsCount === 1;
+        isRangeAllowed = itemsCount === 1 && length === 1;
         break;
       case SelectionRange.MULTI_SELECT:
         isRangeAllowed = itemsCount >= 1;

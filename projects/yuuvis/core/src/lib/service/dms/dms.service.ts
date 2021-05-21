@@ -193,14 +193,18 @@ export class DmsService {
    */
   moveDmsObjects(targetFolderId: string, objects: DmsObject[], silent = false) {
     const data = { [BaseObjectTypeField.PARENT_ID]: targetFolderId };
-    return this.batchUpdate(objects.map((o) => ({ ...o, ...data }))).pipe(
+    return this.batchUpdate(objects.map(({ id }) => ({ id, ...data }))).pipe(
       map((results: any[]) => {
-        let succeeded = results.filter((res) => !res?._error).map((res) => objects.find((o) => o.id === res.id));
-        let failed = results.filter((res) => res?._error).map((res) => objects.find((o) => o.id === res.id));
-        succeeded.forEach((s) => Object.assign(s, data));
+        const succeeded = [],
+          failed = [];
+        results.forEach((res, index) =>
+          res?._error
+            ? failed.push(objects[index])
+            : succeeded.push(Object.assign(objects[index], { data: Object.assign(objects[index].data, data), parentId: targetFolderId }))
+        );
         return { succeeded, failed, targetFolderId };
       }),
-      tap((res) => !silent && this.eventService.trigger(YuvEventType.DMS_OBJECTS_MOVED, res.succeeded))
+      tap((res) => !silent && this.eventService.trigger(YuvEventType.DMS_OBJECTS_MOVED, res))
     );
   }
 

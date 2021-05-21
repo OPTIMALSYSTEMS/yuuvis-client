@@ -8,10 +8,6 @@ import { FilterPanelConfig, LayoutService, PluginsService } from '@yuuvis/framew
 import { takeUntilDestroy } from 'take-until-destroy';
 import { AppSearchService } from '../../service/app-search.service';
 
-export interface ResultStateLayoutOptions {
-  filterPanelConfig: FilterPanelConfig;
-}
-
 @Component({
   selector: 'yuv-result',
   templateUrl: './result.component.html',
@@ -19,6 +15,7 @@ export interface ResultStateLayoutOptions {
 })
 export class ResultComponent implements OnInit, OnDestroy {
   private STORAGE_KEY = 'yuv.app.result';
+  private LAYOUT_STORAGE_KEY = `${this.STORAGE_KEY}.layout`;
   objectDetailsID: string;
   searchQuery: SearchQuery;
   selectedItems: string[] = [];
@@ -48,8 +45,8 @@ export class ResultComponent implements OnInit, OnDestroy {
     this.screenService.screenChange$.pipe(takeUntilDestroy(this)).subscribe((screen: Screen) => {
       this.smallScreen = screen.mode === ScreenService.MODE.SMALL;
     });
-    this.layoutService.loadLayoutOptions('yuv-result', 'state').subscribe((o: ResultStateLayoutOptions) => {
-      this.filterPanelConfig = o?.filterPanelConfig;
+    this.layoutService.loadLayoutOptions(this.LAYOUT_STORAGE_KEY, 'filterPanelConfig').subscribe((c: FilterPanelConfig) => {
+      this.filterPanelConfig = c;
     });
     this.plugins = this.pluginsService.getCustomPlugins('extensions', 'yuv-result');
   }
@@ -69,14 +66,9 @@ export class ResultComponent implements OnInit, OnDestroy {
     this.objectDetailsID = this.selectedItems[0];
   }
 
-  // onFilterPanelToggled(visible: boolean) {
-  //   this.showFilterPanel = visible;
-  //   this.layoutService.saveLayoutOptions('yuv-result', 'state', { showFilterPanel: visible }).subscribe();
-  // }
-
   onFilterPanelConfigChanged(cfg: FilterPanelConfig) {
     this.filterPanelConfig = cfg;
-    this.layoutService.saveLayoutOptions('yuv-result', 'state', { filterPanelConfig: cfg }).subscribe();
+    this.layoutService.saveLayoutOptions(this.LAYOUT_STORAGE_KEY, 'filterPanelConfig', cfg).subscribe();
   }
 
   onRowDoubleClicked(rowEvent: RowEvent) {
