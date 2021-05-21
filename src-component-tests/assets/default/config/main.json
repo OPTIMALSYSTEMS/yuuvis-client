@@ -1,1 +1,30 @@
-{}
+{
+  "core": {
+    "apiBase": {
+      "core": "/api",
+      "api-web": "/api-web/api",
+      "predict": "/predict-api",
+      "custom": "/custom"
+    },
+    "languages": [
+      {
+        "iso": "de",
+        "label": "Deutsch"
+      },
+      {
+        "iso": "en",
+        "label": "English",
+        "fallback": true
+      }
+    ],
+    "logging": {
+      "level": "debug"
+    }
+  },
+  "client": {
+    "docu": {
+      "link": "https://help.optimal-systems.com/yuuvis/client/2021-summer/user/###userLang###/index.html",
+      "language": ["de", "en"]
+    }
+  }
+}

@@ -43,6 +43,8 @@ import { FrameService } from './frame.service';
   styleUrls: ['./frame.component.scss']
 })
 export class FrameComponent implements OnInit, OnDestroy {
+  private LAYOUT_OPTIONS_KEY = 'yuv.client.yuv-frame';
+  private LAYOUT_OPTIONS_ELEMENT_KEY = 'yuv-frame';
   @ViewChild('moveNotification') moveNotification: TemplateRef<any>;
 
   // query for fetching pending AFOs
@@ -50,6 +52,7 @@ export class FrameComponent implements OnInit, OnDestroy {
     filters: [{ f: `system:tags[${ObjectTag.AFO}].state`, o: SearchFilter.OPERATOR.EQUAL, v1: 0 }]
   });
 
+  moveNoticeDialogSkip: boolean;
   swUpdateAvailable: boolean;
   hideAppBar: boolean;
   disableFileDrop: boolean;
@@ -104,6 +107,10 @@ export class FrameComponent implements OnInit, OnDestroy {
     this.navigationPlugins = this.pluginsService.getCustomPlugins('links', 'yuv-sidebar-navigation');
     this.settingsPlugins = this.pluginsService.getCustomPlugins('links', 'yuv-sidebar-settings');
 
+    this.layoutService.loadLayoutOptions(this.LAYOUT_OPTIONS_KEY, this.LAYOUT_OPTIONS_ELEMENT_KEY).subscribe((o: any) => {
+      this.moveNoticeDialogSkip = o?.moveNoticeDialogSkip || false;
+    });
+
     this.iconRegistry.registerIcons([search, drawer, refresh, add, userDisabled, offline, close, openContext]);
     this.userService.user$.subscribe((user: YuvUser) => {
       this.user = user;
@@ -139,28 +146,40 @@ export class FrameComponent implements OnInit, OnDestroy {
   }
 
   onObjetcsMove(event) {
-    const popoverConfig = {
-      maxHeight: '70%',
-      width: 300,
-      bottom: 16,
-      right: 16,
-      duration: 10,
-      data: {
-        title: this.translateService.instant('yuv.client.frame.move.notification.title.root'),
-        newParent: null,
-        succeeded: event.data.succeeded,
-        failed: event.data.failed
-      },
-      panelClass: 'move-notification'
-    };
-    if (event.data.targetFolderId) {
-      this.dmsService.getDmsObject(event.data.targetFolderId).subscribe((newParent) => {
-        popoverConfig.data.title = this.translateService.instant('yuv.client.frame.move.notification.title', { objectTitle: newParent.title });
-        popoverConfig.data.newParent = newParent;
+    if (this.moveNoticeDialogSkip === null || this.moveNoticeDialogSkip === false) {
+      const popoverConfig = {
+        maxHeight: '70%',
+        width: 300,
+        duration: 90,
+        data: {
+          title: this.translateService.instant('yuv.client.frame.move.notification.title.root'),
+          newParent: null,
+          succeeded: event.data.succeeded,
+          numberMovedFiles: event.data.succeeded.length,
+          failed: event.data.failed
+        },
+        panelClass: 'move-notification'
+      };
+      if (event.data.targetFolderId) {
+        this.dmsService.getDmsObject(event.data.targetFolderId).subscribe((newParent) => {
+          popoverConfig.data.title = this.translateService.instant('yuv.client.frame.move.notification.title', { objectTitle: newParent.title });
+          popoverConfig.data.newParent = newParent;
+          this.popoverService.open(this.moveNotification, popoverConfig);
+        });
+      } else {
         this.popoverService.open(this.moveNotification, popoverConfig);
-      });
-    } else {
-      this.popoverService.open(this.moveNotification, popoverConfig);
+      }
+    }
+  }
+
+  skipMoveDialog(skip: boolean) {
+    if (skip !== null) {
+      this.moveNoticeDialogSkip = skip;
+      this.layoutService
+        .saveLayoutOptions(this.LAYOUT_OPTIONS_KEY, this.LAYOUT_OPTIONS_ELEMENT_KEY, {
+          moveNoticeDialogSkip: skip
+        })
+        .subscribe();
     }
   }
 

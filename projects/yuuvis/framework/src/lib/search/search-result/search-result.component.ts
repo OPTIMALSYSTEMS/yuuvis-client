@@ -65,6 +65,12 @@ export class SearchResultComponent implements OnDestroy {
   pagingForm: FormGroup;
   busy: boolean;
 
+  /**
+   * Column configuration to be used for the grid. The query sent to the backend
+   * will be adopted to fetch all the necessary fields.
+   */
+  @Input() columnConfig: ColDef[];
+
   @Input() set filterPanelConfig(cfg: FilterPanelConfig) {
     if (this._filterPanelConfig?.open !== cfg?.open || this._filterPanelConfig.width !== cfg?.width) {
       this._filterPanelConfig = cfg || {
@@ -92,6 +98,8 @@ export class SearchResultComponent implements OnDestroy {
   // get showFilterPanel(): boolean {
   //   return this._showFilterPanel;
   // }
+
+  @Input() responsiveTableData: Partial<ResponsiveTableData>;
 
   tableData: ResponsiveTableData;
   totalNumItems: number;
@@ -190,7 +198,7 @@ export class SearchResultComponent implements OnDestroy {
   }
 
   constructor(
-    @Attribute('applyColumnConfig') public applyColumnConfig: boolean,
+    @Attribute('applyColumnConfig') public applyColumnConfig: any, // string should be resolved
     private gridService: GridService,
     private userConfig: UserConfigService,
     private eventService: EventService,
@@ -198,6 +206,7 @@ export class SearchResultComponent implements OnDestroy {
     private fb: FormBuilder,
     private iconRegistry: IconRegistryService
   ) {
+    this.applyColumnConfig = !applyColumnConfig || applyColumnConfig === 'false' ? false : true;
     this.iconRegistry.registerIcons([doubleArrow, filter, settings, clear, search, arrowNext, arrowLast, listModeDefault, listModeGrid, listModeSimple]);
 
     this.pagingForm = this.fb.group({ page: [''] });
@@ -264,7 +273,7 @@ export class SearchResultComponent implements OnDestroy {
   }
 
   private applyColumnConfiguration(q: SearchQuery): Observable<SearchQuery> {
-    return this.gridService.getColumnConfiguration(q.targetType).pipe(
+    return (this.columnConfig ? of(this.columnConfig) : this.gridService.getColumnConfiguration(q.targetType)).pipe(
       tap((colDefs: ColDef[]) => {
         q.sortOptions = [];
         colDefs
@@ -310,7 +319,9 @@ export class SearchResultComponent implements OnDestroy {
         };
 
         this.pagingForm.get('page').setValue(pageNumber);
-        this.pagingForm.get('page').setValidators([Validators.min(0), Validators.max(this.pagination.pages)]);
+        this.pagingForm
+          .get('page')
+          .setValidators([Validators.required, , Validators.pattern('[0-9]+'), Validators.min(1), Validators.max(this.pagination.pages)]);
       }
 
       // // TODO: setup column width
@@ -323,11 +334,12 @@ export class SearchResultComponent implements OnDestroy {
       const sortOptions = this._searchQuery ? this._searchQuery.sortOptions || [] : [];
 
       this.tableData = {
-        columns: this._columns,
-        rows: this._rows,
         titleField: ClientDefaultsObjectTypeField.TITLE,
         descriptionField: ClientDefaultsObjectTypeField.DESCRIPTION,
         selectType: 'multiple',
+        ...(this.responsiveTableData || {}),
+        columns: this._columns,
+        rows: this._rows,
         sortModel: sortOptions.map((o) => ({
           colId: o.field,
           sort: o.order

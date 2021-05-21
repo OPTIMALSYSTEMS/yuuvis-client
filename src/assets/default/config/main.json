@@ -2,7 +2,8 @@
   "core": {
     "apiBase": {
       "core": "/api",
-      "api-web": "/api-web",
+      "api-web": "/api-web/api",
+      "predict": "/predict-api",
       "custom": "/custom"
     },
     "languages": [
@@ -22,7 +23,7 @@
   },
   "client": {
     "docu": {
-      "link": "https://help.optimal-systems.com/yuuvis/client/v24/user/###userLang###/index.html",
+      "link": "https://help.optimal-systems.com/yuuvis/client/2021-summer/user/###userLang###/index.html",
       "language": ["de", "en"]
     }
   }

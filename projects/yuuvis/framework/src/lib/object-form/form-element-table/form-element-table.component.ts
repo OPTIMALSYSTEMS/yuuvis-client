@@ -320,10 +320,9 @@ export class FormElementTableComponent extends UnsubscribeOnDestroy implements C
   }
 
   exportCSV() {
-    // TODO: dynamic columnSeparator based on settings or language
     this.gridOptions.api.exportDataAsCsv({
-      fileName: this._params.element.label,
-      columnSeparator: ';'
+      ...this.gridApi.csvExportParams,
+      fileName: this._params.element.label
     });
   }
 

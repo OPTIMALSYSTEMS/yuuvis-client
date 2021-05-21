@@ -64,9 +64,9 @@ export class LayoutService {
     if (settings) {
       const body = this.document.getElementsByTagName('body')[0];
       const bodyClassList = body.classList;
-      if (bodyClassList.contains(darkModeClass) && settings?.darkMode === false) {
+      if (bodyClassList.contains(darkModeClass) && !settings?.darkMode) {
         bodyClassList.remove(darkModeClass);
-      } else if (!bodyClassList.contains(darkModeClass) && settings?.darkMode === true) {
+      } else if (!bodyClassList.contains(darkModeClass) && settings?.darkMode) {
         bodyClassList.add(darkModeClass);
       }
     }
@@ -199,6 +199,7 @@ export class LayoutService {
    * make it possible for user to reset their layout settings and return to the default settings
    */
   clearLayout() {
+    this.processLayoutSettings({});
     return this.appCache.clear((key: string) => !!key.match(this.STORAGE_KEY_REGEXP));
   }
 }

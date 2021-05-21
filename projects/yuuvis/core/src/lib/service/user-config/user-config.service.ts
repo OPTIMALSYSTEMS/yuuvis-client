@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
 import { Utils } from '../../util/utils';
 import { BackendService } from '../backend/backend.service';
 import { ConfigService } from '../config/config.service';
@@ -45,9 +45,10 @@ export class UserConfigService {
 
   private fetchColumnConfig(objectTypeId: string, global?: boolean): Observable<ColumnConfig> {
     return this.backend.get(this.getRequestURI(objectTypeId, global)).pipe(
-      map((res) => ({
+      catchError(() => of({ type: objectTypeId, columns: [] })),
+      map((res: any) => ({
         type: objectTypeId,
-        columns: (res.columns || []).map((c) => ({
+        columns: (res?.columns || []).map((c) => ({
           id: c.id,
           label: this.systemService.getLocalizedResource(`${c.id}_label`),
           pinned: c.pinned || false,
@@ -80,9 +81,9 @@ export class UserConfigService {
   private getRequestURI(objectTypeId: string, global?: boolean): string {
     const id = encodeURIComponent(objectTypeId);
     if (global) {
-      return `/user/globalsettings/column-config-${id}`;
+      return `/users/globalsettings/column-config-${id}`;
     }
-    const baseURL = '/user/config/result/';
+    const baseURL = '/users/config/result/';
     const ot = this.systemService.getObjectType(objectTypeId);
     if (!ot && this.systemService.getSecondaryObjectType(objectTypeId)) {
       // Not getting an object type means that the target type is an extendable FSOT.
@@ -109,8 +110,9 @@ export class UserConfigService {
 
   private generateMainJsonUri(uri = ConfigService.GLOBAL_MAIN_CONFIG) {
     return this.backend.get(uri).pipe(
+      catchError(() => of({})),
       map((data) => {
-        const blob = new Blob([JSON.stringify(data || {}, null, 2)], { type: 'text/json' });
+        const blob = new Blob([JSON.stringify(data || { core: {}, client: {} }, null, 2)], { type: 'text/json' });
         const _uri = URL.createObjectURL(blob);
         // setTimeout(() => URL.revokeObjectURL(_uri), 10000);
         return _uri;
@@ -130,7 +132,6 @@ export class UserConfigService {
     const config = typeof data === 'string' ? JSON.parse(data) : data;
     if (uri === ConfigService.GLOBAL_MAIN_CONFIG && !config.core && !config.client) {
       throw new Error('Invalid main configuration');
-      return of();
     }
     return force || this.hasSystemRole ? this.backend.post(uri, config) : of();
   }

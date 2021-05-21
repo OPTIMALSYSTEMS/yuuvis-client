@@ -82,6 +82,10 @@
     }
   }
 
+  &.checkbox {
+    position: relative;
+  }
+
   &.checkbox .fe-wrapper > .form-input__label {
     text-align: start;
   }
@@ -95,13 +99,11 @@
 
   &.required .fe-wrapper {
     > .form-input__label {
-      // background-color: var(--item-focus-background-color);
       font-weight: bold;
 
       &:after {
         content: '*';
         padding: 0 4px;
-        color: var(--color-error);
       }
     }
   }
@@ -133,6 +135,9 @@
         flex: 0 1 auto;
       }
     }
+  }
+  &:not(.skipToggle) .form-input__label {
+    cursor: pointer;
   }
 }
 

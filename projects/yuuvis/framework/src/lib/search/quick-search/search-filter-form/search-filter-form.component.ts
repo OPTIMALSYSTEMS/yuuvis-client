@@ -18,6 +18,7 @@ import { Selectable } from '../../../grouped-select';
 import { ObjectFormControl } from '../../../object-form/object-form.model';
 import { Situation } from '../../../object-form/object-form.situation';
 import { ObjectFormUtils } from '../../../object-form/object-form.utils';
+import { QuickSearchService } from '../quick-search.service';
 import { IconRegistryService } from './../../../common/components/icon/service/iconRegistry.service';
 import { ObjectFormControlWrapper } from './../../../object-form/object-form.interface';
 import { clear, dragHandle } from './../../../svg.generated';
@@ -79,7 +80,13 @@ export class SearchFilterFormComponent implements OnInit, OnDestroy {
   @Output() controlRemoved = new EventEmitter<string>();
   @Output() valid = new EventEmitter<boolean>();
 
-  constructor(private systemService: SystemService, private fb: FormBuilder, private iconRegistry: IconRegistryService, private translate: TranslateService) {
+  constructor(
+    private systemService: SystemService,
+    private fb: FormBuilder,
+    private iconRegistry: IconRegistryService,
+    private translate: TranslateService,
+    private quickSearchService: QuickSearchService
+  ) {
     this.dragMovedSubject.pipe(debounceTime(50)).subscribe((event) => this.dragMoved(event));
     this.iconRegistry.registerIcons([dragHandle, clear]);
     this.operatorLabel = {
@@ -115,10 +122,23 @@ export class SearchFilterFormComponent implements OnInit, OnDestroy {
       const original = this.filterGroup.find(id);
       if (original) {
         const filter = new SearchFilter(fc._eoFormElement.name, Array.isArray(fc.value) ? SearchFilter.OPERATOR.IN : SearchFilter.OPERATOR.EQUAL, fc.value);
-        if (!filter.isEmpty() || fc._eoFormElement.isNotSetValue) {
+        if (!filter.isEmpty() || fc._eoFormElement.isNotSetValue || fc._eoFormElement._internalType === 'boolean') {
           Object.assign(original, filter, { id: original.id, excludeFromQuery: false });
         } else {
           Object.assign(original, { excludeFromQuery: true });
+        }
+        if (filter.property?.match(/state/)) {
+          // resolve label for tag filters
+          fc._eoFormElement.label = this.quickSearchService.getLocalizedTag(
+            filter.property,
+            filter.operator === SearchFilter.OPERATOR.EQUAL && typeof filter.firstValue === 'number' ? filter.firstValue : undefined
+          );
+        }
+        if (fc._eoFormElement._internalType === 'boolean') {
+          // resolve label for boolean filters
+          const label = fc._eoFormElement.label.replace(/\s\(\s.*\)$/, '');
+          const val = typeof filter.firstValue === 'boolean' ? filter.firstValue.toString() : this.translate.instant('yuv.framework.form.form-input.null');
+          fc._eoFormElement.label = `${label} ( ${val} )`;
         }
       }
     });

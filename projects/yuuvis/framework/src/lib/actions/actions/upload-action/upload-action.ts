@@ -10,7 +10,7 @@ import { UploadComponent } from './upload/upload.component';
  * @ignore
  */
 @Component({
-  selector: 'yuv-update',
+  selector: 'yuv-upload-action',
   template: ``
 })
 export class UploadActionComponent extends DmsObjectTarget implements ComponentAction {

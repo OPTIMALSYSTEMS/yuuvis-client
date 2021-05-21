@@ -3,7 +3,6 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { TranslateModule } from '@yuuvis/core';
 import { AngularSplitModule } from 'angular-split';
 import { AutoCompleteModule } from 'primeng/autocomplete';
@@ -43,7 +42,6 @@ const searchComponents = [
 @NgModule({
   imports: [
     CommonModule,
-    BrowserAnimationsModule,
     ReactiveFormsModule,
     FormsModule,
     YuvObjectFormModule,

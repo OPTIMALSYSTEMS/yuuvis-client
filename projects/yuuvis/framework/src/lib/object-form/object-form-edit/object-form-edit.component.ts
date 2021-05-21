@@ -2,9 +2,9 @@ import { Attribute, Component, EventEmitter, Input, OnDestroy, Output, TemplateR
 import {
   AFO_STATE,
   ApiBase,
+  ApplicableSecondaries,
   BackendService,
   BaseObjectTypeField,
-  ContentStreamAllowed,
   DmsObject,
   DmsService,
   ObjectTag,
@@ -17,7 +17,7 @@ import {
 } from '@yuuvis/core';
 import { Observable, of } from 'rxjs';
 import { finalize, map, switchMap } from 'rxjs/operators';
-import { Selectable, SelectableGroup } from '../../grouped-select';
+import { FloatingSotSelectInput } from '../../floating-sot-select/floating-sot-select.interface';
 import { PopoverConfig } from '../../popover/popover.interface';
 import { PopoverRef } from '../../popover/popover.ref';
 import { PopoverService } from '../../popover/popover.service';
@@ -63,10 +63,10 @@ export class ObjectFormEditComponent implements OnDestroy {
     assignedGeneral: false
   };
 
-  fsot: {
-    applicableTypes: SelectableGroup;
-    applicableSOTs: SelectableGroup;
-  };
+  // fsot: {
+  //   applicableTypes: SelectableGroup;
+  //   applicableSOTs: SelectableGroup;
+  // };
 
   // Indicator that we are dealing with a floating object type
   // This kind of object will use a combination of multiple forms instaed of a single one
@@ -107,6 +107,10 @@ export class ObjectFormEditComponent implements OnDestroy {
 
   combinedFormInput: CombinedObjectFormInput;
   formState: FormStatusChangedEvent;
+  fsotSelectInputs: {
+    primary: FloatingSotSelectInput;
+    extension: FloatingSotSelectInput;
+  };
   busy: boolean;
   controls = {
     disabled: true,
@@ -279,101 +283,21 @@ export class ObjectFormEditComponent implements OnDestroy {
         return true;
       })
     );
-
-    // .subscribe(
-    //   (res) => {
-    //     this.combinedFormInput = {
-    //       main: res.main,
-    //       extensions: res.extensions,
-    //       data: dmsObject.data,
-    //       disabled: this.formDisabled || !this.isEditable(dmsObject),
-    //       enableEditSOT: true
-    //     };
-    //     this.busy = false;
-    //   },
-    //   (err) => {
-    //     this.busy = false;
-    //   }
-    // );
   }
 
   private getApplicableSecondaries(dmsObject: DmsObject) {
-    this.fsot = {
-      applicableTypes: {
-        id: 'type',
-        label: this.translate.instant('yuv.framework.object-form-edit.fsot.apply-type'),
-        items: []
+    const asots: ApplicableSecondaries = this.systemService.getApplicableSecondaries(dmsObject);
+    this.fsotSelectInputs = {
+      primary: {
+        dmsObject: dmsObject,
+        isPrimary: true,
+        sots: asots.primarySOTs
       },
-      applicableSOTs: {
-        id: 'fsot',
-        label: this.translate.instant('yuv.framework.object-form-edit.fsot.add-fsot.dialog.title'),
-        items: []
+      extension: {
+        dmsObject: dmsObject,
+        sots: asots.extendingSOTs
       }
     };
-    const objectType = this.systemService.getObjectType(dmsObject.objectTypeId);
-    const currentSOTs = dmsObject.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS];
-    const alreadyAssignedPrimary =
-      this._sotChanged.assignedGeneral ||
-      (currentSOTs?.length > 0 &&
-        currentSOTs
-          .map((id) => this.systemService.getSecondaryObjectType(id))
-          .filter((sot) => sot?.classification?.includes(SecondaryObjectTypeClassification.PRIMARY)).length > 0);
-
-    objectType.secondaryObjectTypes
-      .filter((sot) => !sot.static && !currentSOTs?.includes(sot.id))
-      .forEach((sotref) => {
-        const sot = this.systemService.getSecondaryObjectType(sotref.id, true);
-
-        if (sot.classification?.includes(SecondaryObjectTypeClassification.PRIMARY)) {
-          if (!alreadyAssignedPrimary) {
-            this.fsot.applicableTypes.items.push(this.toSelectable(sot, dmsObject));
-          }
-        } else if (
-          !sot.classification?.includes(SecondaryObjectTypeClassification.REQUIRED) &&
-          !sot.classification?.includes(SecondaryObjectTypeClassification.EXTENSION_ADD_FALSE)
-        ) {
-          this.fsot.applicableSOTs.items.push(this.toSelectable(sot, dmsObject));
-        }
-      });
-
-    this.fsot.applicableSOTs.items.sort(Utils.sortValues('label'));
-
-    if (!alreadyAssignedPrimary && this.systemService.isFloatingObjectType(objectType)) {
-      this.fsot.applicableTypes.items.sort(Utils.sortValues('label'));
-      // add general target type
-      this.fsot.applicableTypes.items = [
-        {
-          id: 'none',
-          label: this.translate.instant('yuv.framework.object-create.afo.type.select.general'),
-          description: this.systemService.getLocalizedResource(`${dmsObject.objectTypeId}_label`),
-          svgSrc: this.systemService.getObjectTypeIconUri(dmsObject.objectTypeId)
-        },
-        ...this.fsot.applicableTypes.items
-      ];
-    }
-  }
-
-  private toSelectable(sot: SecondaryObjectType, dmsObject?: DmsObject): Selectable {
-    // if we got files but the target FSOT does not support content
-    const contentRequiredButMissing = !dmsObject?.content && sot.contentStreamAllowed === ContentStreamAllowed.REQUIRED;
-    // if the target FSOT requires a file, but we don't have one
-    const contentButNotAllowed = !!dmsObject?.content && sot.contentStreamAllowed === ContentStreamAllowed.NOT_ALLOWED;
-    const disabled = contentRequiredButMissing || contentButNotAllowed;
-
-    let selectable: Selectable = {
-      id: sot.id,
-      label: sot.label,
-      svgSrc: this.systemService.getObjectTypeIconUri(sot.id),
-      disabled: disabled,
-      value: sot
-    };
-    // add description to tell the user why a selectable is disabled
-    if (disabled) {
-      selectable.description = contentRequiredButMissing
-        ? this.translate.instant('yuv.framework.object-create.afo.type.select.disabled.content-missing')
-        : this.translate.instant('yuv.framework.object-create.afo.type.select.disabled.content-not-allowed');
-    }
-    return selectable;
   }
 
   private isEditable(dmsObject: DmsObject): boolean {
@@ -420,9 +344,8 @@ export class ObjectFormEditComponent implements OnDestroy {
       this.getCombinedFormAddInput(sotsToBeAdded, enableEditSOT).subscribe((res: CombinedFormAddInput[]) => {
         if (res.length > 0) {
           this.afoObjectForm.addForms(res, this._dmsObject.data);
+
           this.getApplicableSecondaries(this._dmsObject);
-          // this._sotChanged.applied = [...this._sotChanged.applied, ...sotsToBeAdded];
-          // this._sotChanged.removed = this._sotChanged.removed.filter((sotId) => !sotsToBeAdded.includes(sotId));
         }
         this.busy = false;
       });
@@ -446,6 +369,7 @@ export class ObjectFormEditComponent implements OnDestroy {
       this.afoObjectForm.removeForms([id]);
       this._sotChanged.removed.push(id);
       this._sotChanged.applied = this._sotChanged.applied.filter((sotId) => id !== sotId);
+
       this.getApplicableSecondaries(this._dmsObject);
     }
   }

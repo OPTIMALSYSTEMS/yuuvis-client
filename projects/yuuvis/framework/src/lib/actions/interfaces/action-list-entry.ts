@@ -1,4 +1,4 @@
-import {Action} from './action.interface';
+import { Action } from './action.interface';
 
 /**
  * Interface for entries of the action menu
@@ -14,7 +14,11 @@ export interface ActionListEntry {
    */
   target: any;
   /**
+   * ID of Action component
+   */
+  id: string;
+  /**
    * Sub set of selected items for which the action is executable
    */
-  availableSelection: any[]
+  availableSelection: any[];
 }

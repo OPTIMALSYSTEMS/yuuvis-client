@@ -24,6 +24,7 @@ export class SearchQuery {
   }
 
   filterGroup: SearchFilterGroup = new SearchFilterGroup();
+  hiddenFilterGroup: SearchFilterGroup = new SearchFilterGroup(); // hidden filters that will be combined with SearchQuery filters via search service
   sortOptions: SortOption[] = [];
 
   constructor(searchQueryProperties?: SearchQueryProperties) {
@@ -223,8 +224,9 @@ export class SearchQuery {
   /**
    * Create query JSON from current query that can be send to
    * the search service
+   * @param combineFilters If set to true, will combine original filters and default (hidden) filters
    */
-  toQueryJson(): SearchQueryProperties {
+  toQueryJson(combineFilters = false): SearchQueryProperties {
     const queryJson: SearchQueryProperties = {
       size: this.size
     };
@@ -256,6 +258,16 @@ export class SearchQuery {
     if (this.filterGroup) {
       const fg = this.filterGroup.toShortQuery();
       queryJson.filters = fg.filters.length > 1 && this.filterGroup.operator === SearchFilterGroup.OPERATOR.OR ? [fg] : fg.filters;
+    }
+
+    if (this.hiddenFilterGroup) {
+      const fg = this.hiddenFilterGroup.toShortQuery();
+      const filters = fg.filters.length > 1 && this.filterGroup.operator === SearchFilterGroup.OPERATOR.OR ? [fg] : fg.filters;
+      if (combineFilters) {
+        queryJson.filters = filters.concat(queryJson.filters || []);
+      } else {
+        queryJson.hiddenFilters = filters;
+      }
     }
 
     if (this.aggs && this.aggs.length) {

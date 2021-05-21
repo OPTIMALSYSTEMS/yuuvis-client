@@ -3,6 +3,7 @@ import { ActivatedRouteSnapshot, CanActivate, CanDeactivate, Router, RouterState
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { PluginComponent } from './plugin.component';
+import { PluginStateConfig } from './plugins.interface';
 import { PluginsService } from './plugins.service';
 
 @Injectable({
@@ -30,8 +31,8 @@ export class PluginGuard implements CanDeactivate<PluginComponent>, CanActivate 
     currentState: RouterStateSnapshot,
     nextState?: RouterStateSnapshot
   ): Observable<boolean> | Promise<boolean> | boolean {
-    return component?.config?.canDeactivate
-      ? this.pluginsService.applyFunction(component?.config?.canDeactivate, 'component, currentRoute, currentState, nextState', arguments)
+    return (component?.config as PluginStateConfig).canDeactivate
+      ? this.pluginsService.applyFunction((component?.config as PluginStateConfig).canDeactivate, 'component, currentRoute, currentState, nextState', arguments)
       : true;
   }
 }

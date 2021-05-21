@@ -18,6 +18,15 @@
     [label]="'yuv.framework.object-details.summary.section.core' | translate"
   ></yuv-summary-section>
   <yuv-summary-section
+    [id]="'summary.data'"
+    *ngIf="summary?.data.length"
+    [visible]="visible.data"
+    [entries]="summary?.data"
+    [diff]="!!dmsObject2"
+    (visibilityChange)="onSectionVisibilityChange('data', $event)"
+    [label]="'yuv.framework.object-details.summary.section.data' | translate"
+  ></yuv-summary-section>
+  <yuv-summary-section
     [id]="'summary.baseparams'"
     *ngIf="summary?.base.length"
     [visible]="visible.baseparams"

@@ -18,6 +18,7 @@ import {
   SystemType
 } from './system.enum';
 import {
+  ApplicableSecondaries,
   ClassificationEntry,
   GroupedObjectType,
   ObjectType,
@@ -284,6 +285,57 @@ export class SystemService {
   }
 
   /**
+   * Get the secondary object types that could be applied to the provided dms object.
+   * @param dmsObject A dms object
+   */
+  getApplicableSecondaries(dmsObject: DmsObject): ApplicableSecondaries {
+    const fsots: ApplicableSecondaries = {
+      primarySOTs: [],
+      extendingSOTs: []
+    };
+    const objectType = this.getObjectType(dmsObject.objectTypeId);
+    const currentSOTs = dmsObject.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS];
+    const alreadyAssignedPrimary =
+      currentSOTs?.length > 0 &&
+      currentSOTs.map((id) => this.getSecondaryObjectType(id)).filter((sot) => sot?.classification?.includes(SecondaryObjectTypeClassification.PRIMARY))
+        .length > 0;
+
+    objectType.secondaryObjectTypes
+      .filter((sot) => !sot.static && !currentSOTs?.includes(sot.id))
+      .forEach((sotref) => {
+        const sot = this.getSecondaryObjectType(sotref.id, true);
+
+        if (sot.classification?.includes(SecondaryObjectTypeClassification.PRIMARY)) {
+          if (!alreadyAssignedPrimary) {
+            fsots.primarySOTs.push(sot);
+          }
+        } else if (
+          !sot.classification?.includes(SecondaryObjectTypeClassification.REQUIRED) &&
+          !sot.classification?.includes(SecondaryObjectTypeClassification.EXTENSION_ADD_FALSE)
+        ) {
+          fsots.extendingSOTs.push(sot);
+        }
+      });
+
+    fsots.extendingSOTs.sort(Utils.sortValues('label'));
+
+    if (!alreadyAssignedPrimary && this.isFloatingObjectType(objectType)) {
+      fsots.primarySOTs.sort(Utils.sortValues('label'));
+      // // add general target type
+      // fsots.primarySOTs = [
+      //   {
+      //     label: generalTypeLabel,
+      //     description: this.getLocalizedResource(`${dmsObject.objectTypeId}_label`),
+      //     svgSrc: this.getObjectTypeIconUri(dmsObject.objectTypeId),
+      //     sot: null
+      //   },
+      //   ...fsots.primarySOTs
+      // ];
+    }
+    return fsots;
+  }
+
+  /**
    * Get the base document type all documents belong to
    * @param withLabel Whether or not to also add the types label
    */
@@ -364,12 +416,17 @@ export class SystemService {
   getResolvedTags(objectTypeId?: string): { id: string; tag: string; fields: ObjectTypeField[] }[] {
     const ot = this.getObjectType(objectTypeId) || this.getSecondaryObjectType(objectTypeId);
     const tags = ot?.classification?.filter((t) => t.startsWith('tag['));
+    const parentType = ot && (ot as ObjectType).floatingParentType;
+    // filter out parent tags that are overriden
+    const parentTags = parentType && this.getResolvedTags(parentType).filter((t) => !tags.find((tag) => tag.startsWith(t.tag.replace(/\d.*/, ''))));
 
-    return (tags || []).map((tag) => ({
-      id: ot.id,
-      tag,
-      fields: this.getBaseType(true).fields.filter((f) => f.id === BaseObjectTypeField.TAGS)
-    }));
+    return (tags || [])
+      .map((tag) => ({
+        id: ot.id,
+        tag,
+        fields: this.getBaseType(true).fields.filter((f) => f.id === BaseObjectTypeField.TAGS)
+      }))
+      .concat(parentTags || []);
   }
 
   /**
@@ -379,7 +436,7 @@ export class SystemService {
    */
   getObjectTypeIcon(objectTypeId: string, fallback?: string): Observable<string> {
     const fb = this.getFallbackIcon(objectTypeId, fallback);
-    const uri = `/resources/icon/${encodeURIComponent(objectTypeId)}${fb ? `?fb=${encodeURIComponent(fallback)}` : ''}`;
+    const uri = `/resources/icons/${encodeURIComponent(objectTypeId)}${fb ? `?fb=${encodeURIComponent(fallback)}` : ''}`;
     return !!this.iconCache[uri] ? of(this.iconCache[objectTypeId]) : this.backend.get(uri);
   }
 
@@ -390,7 +447,7 @@ export class SystemService {
    */
   getObjectTypeIconUri(objectTypeId: string, fallback?: string): string {
     const fb = this.getFallbackIcon(objectTypeId, fallback);
-    const uri = `/resources/icon/${encodeURIComponent(objectTypeId)}${fb ? `?fallback=${encodeURIComponent(fb)}` : ''}`;
+    const uri = `/resources/icons/${encodeURIComponent(objectTypeId)}${fb ? `?fallback=${encodeURIComponent(fb)}` : ''}`;
     return `${this.backend.getApiBase(ApiBase.apiWeb)}${uri}`;
   }
 
@@ -481,7 +538,7 @@ export class SystemService {
    * @param mode Form mode to fetch (e.g. CONTEXT)
    */
   getObjectTypeForm(objectTypeId: string, situation: string, mode?: string): Observable<any> {
-    return this.backend.get(Utils.buildUri(`/dms/form/${objectTypeId}`, { situation }));
+    return this.backend.get(Utils.buildUri(`/dms/forms/${objectTypeId}`, { situation }));
   }
 
   /**
@@ -509,8 +566,8 @@ export class SystemService {
 
   private buildFormFetchUri(objectTypeID: string, sots?: string[], situation?: string): string {
     // situation = null;
-    const params = [...(sots ? sots.map((sot) => `sots=${sot}`) : []), situation && `situation:${situation}`];
-    return `/dms/form/${objectTypeID}${params.length ? `?${params.join('&')}` : ''}`;
+    const params = [...(sots ? sots.map((sot) => `sots=${sot}`) : []), situation && `situation=${situation}`];
+    return `/dms/forms/${objectTypeID}${params.length ? `?${params.join('&')}` : ''}`;
   }
 
   /**
@@ -833,6 +890,8 @@ export class SystemService {
       return InternalFieldType.STRING_ORGANIZATION;
     } else if (field[typeProperty] === 'string' && classifications.has(Classification.STRING_CATALOG)) {
       return InternalFieldType.STRING_CATALOG;
+    } else if (field[typeProperty] === 'string' && classifications.has(Classification.STRING_CATALOG_DYNAMIC)) {
+      return InternalFieldType.STRING_DYNAMIC_CATALOG;
     } else {
       // if there are no matching conditions just return the original type
       return field[typeProperty];
@@ -884,5 +943,14 @@ export class SystemService {
 
   private fetchLocalizations(): Observable<Localization> {
     return this.backend.get('/resources/text');
+  }
+
+  fetchResources(id: string): Observable<{ global: any; tenant: any }> {
+    return this.backend
+      .batch([
+        { uri: `/system/resources/${id}`, base: ApiBase.core },
+        { uri: `/admin/resources/${id}`, base: ApiBase.core }
+      ])
+      .pipe(map(([global, tenant]) => ({ global, tenant })));
   }
 }

@@ -14,7 +14,9 @@ import { PluginsService } from './plugins.service';
 })
 export class PluginActionComponent implements SimpleCustomAction {
   static actionWrapper(actions: any[]) {
-    const map = (actions || []).map((a) => ({ ...a, target: a.target || ActionTarget.DMS_OBJECT, action: a, _component: PluginActionComponent }));
+    const map = (actions || []).map((a) =>
+      typeof a === 'object' ? { ...a, target: a.target || ActionTarget.DMS_OBJECT, action: a, _component: PluginActionComponent } : a
+    );
     return map;
   }
 
@@ -31,7 +33,7 @@ export class PluginActionComponent implements SimpleCustomAction {
     this._action = action;
     this.label = this.pluginService.translate.instant(this._action.label);
     this.description = this.pluginService.translate.instant(this._action.description);
-    this.priority = Utils.isEmpty(action.priority) ? action.priority : -1;
+    this.priority = !Utils.isEmpty(action.priority) ? action.priority : -1;
     this.iconSrc = action.icon || noFile.data;
     this.group = action.group || 'common';
     this.range = action.range ? SelectionRange[action.range as string] : SelectionRange.MULTI_SELECT;

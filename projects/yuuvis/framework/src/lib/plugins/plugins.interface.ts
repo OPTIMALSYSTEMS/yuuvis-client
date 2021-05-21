@@ -43,6 +43,14 @@ export interface PluginAPI {
    */
   session: {
     getUser(): YuvUser;
+    user: {
+      get: () => YuvUser;
+      hasRole: (role: string) => boolean;
+      hasAdminRole: () => boolean;
+      hasSystemRole: () => boolean;
+      hasAdministrationRoles: () => boolean;
+      hasManageSettingsRole: () => boolean;
+    };
   };
   /**
    * Fetches a dms object
@@ -150,4 +158,305 @@ export interface PluginAPI {
       warning(text, title): void;
     };
   };
+}
+
+/**
+ * PluginConfig
+ */
+export interface PluginConfig {
+  id: string;
+  label: string;
+  disabled?: boolean | string | Function;
+  plugin?: PluginComponentConfig;
+}
+
+/**
+ * PluginComponentConfig
+ */
+export interface PluginComponentConfig {
+  src?: string; // src for iframe
+  styles?: string[];
+  styleUrls?: string[];
+  html?: string;
+  component?: string; // ID (selector) of Angular Component
+  inputs?: any;
+  outputs?: any;
+  popoverConfig?: any;
+}
+
+/**
+ * PluginLinkConfig
+ */
+export interface PluginLinkConfig extends PluginConfig {
+  path: string;
+  matchHook: string;
+}
+
+/**
+ * PluginStateConfig
+ */
+export interface PluginStateConfig extends PluginLinkConfig {
+  canActivate?: string | Function;
+  canDeactivate?: string | Function;
+  plugin: PluginComponentConfig;
+}
+
+/**
+ * PluginActionConfig
+ */
+export interface PluginActionConfig extends PluginConfig {
+  description?: string;
+  priority?: string;
+  icon?: string;
+  group: string;
+  range?: string;
+  isExecutable?: string | Function;
+  run?: string | Function;
+  // action LINK
+  getLink?: string | Function;
+  getParams?: string | Function;
+  getFragment?: string | Function;
+  // action LIST
+  header?: string;
+  subActionComponents?: string;
+  // action COMPONENT
+  buttons?: { cancel?: string; finish?: string };
+  fullscreen?: boolean;
+}
+
+/**
+ * PluginTriggerConfig
+ */
+export interface PluginTriggerConfig extends PluginActionConfig {
+  matchHook: string;
+}
+
+/**
+ * PluginExtensionConfig
+ */
+export interface PluginExtensionConfig extends PluginConfig {
+  matchHook: string;
+  plugin: PluginComponentConfig;
+}
+
+/**
+ * PluginViewerConfig
+ */
+export interface PluginViewerConfig {
+  mimeType: string | string[];
+  fileExtension?: string | string[];
+  viewer: string;
+}
+
+/**
+ * List of all plugins
+ *
+ * Here is an example of all types of plugins:
+ {
+  "disabled": false,
+  "links": [
+    {
+	  "disabled": "(api, currentState) => !api.session.user.hasAdminRole()",
+      "id": "yuv.custom.link.home_yuuvis",
+      "label": "yuv.custom.action.home_yuuvis.label",
+      "path": "https://help.optimal-systems.com/yuuvis/home_yuuvis_en.html",
+      "matchHook": "yuv-sidebar-navigation|yuv-sidebar-settings"
+    }
+  ],
+  "states": [
+    {
+      "id": "yuv.custom.state.home_yuuvis",
+      "label": "yuv.custom.action.home_yuuvis.label",
+      "path": "custom/home",
+      "matchHook": "yuv-sidebar-navigation",
+      "canActivate": "(currentRoute, currentState) => true",
+      "canDeactivate": "(component, currentRoute, currentState, nextState) => !!nextState.url.match('/dashboard')",
+      "plugin": {
+        "component": "yuv-object-details",
+        "inputs": { "objectId": "'6e97a9ee-90e8-47f5-9e1d-883c1db2d387'" }
+      }
+    }
+  ],
+  "actions": [
+    {
+      "id": "yuv.custom.action.home_yuuvis.simple",
+      "label": "yuv.custom.action.home_yuuvis.simple",
+      "description": "yuv.custom.action.home_yuuvis.description",
+      "priority": 0,
+      "icon": "",
+      "group": "common",
+      "range": "MULTI_SELECT",
+      "isExecutable": "(item) => item.id",
+      "run": "(selection) => this.router.navigate(['dashboard'])"
+    },
+    {
+      "id": "yuv.custom.action.home_yuuvis.component",
+      "label": "yuv.custom.action.home_yuuvis.component",
+      "description": "yuv.custom.action.home_yuuvis.description",
+      "icon": "",
+      "isExecutable": "(item) => item.id",
+      "buttons": {},
+      "plugin": {
+        "component": "yuv-object-form-edit",
+        "inputs": { "dmsObject": "parent.selection[0]" }
+      }
+    },
+    {
+      "id": "yuv.custom.action.home_yuuvis.component.full",
+      "label": "yuv.custom.action.home_yuuvis.component.full",
+      "description": "yuv.custom.action.home_yuuvis.description",
+      "icon": "",
+      "isExecutable": "(item) => item.id",
+      "fullscreen": true,
+      "buttons": { "finish": "yuv.custom.action.home_yuuvis.label" },
+      "plugin": {
+        "src": "https://help.optimal-systems.com/yuuvis/home_yuuvis_en.html"
+      }
+    },
+    {
+      "id": "yuv.custom.action.home_yuuvis.link",
+      "label": "yuv.custom.action.home_yuuvis.link",
+      "description": "yuv.custom.action.home_yuuvis.description",
+      "icon": "",
+      "isExecutable": "(item) => item.id",
+      "getLink": "(selection) => '/dashboard'",
+      "getParams": "(selection) => null",
+      "getFragment": "(selection) => null"
+    },
+    {
+      "id": "yuv.custom.action.home_yuuvis.list",
+      "label": "yuv.custom.action.home_yuuvis.list",
+      "description": "yuv.custom.action.home_yuuvis.description",
+      "icon": "",
+      "isExecutable": "(item) => item.id",
+      "header": "yuv.custom.action.home_yuuvis.label",
+      "subActionComponents": [
+        {
+          "id": "yuv.custom.action.home_yuuvis.sub.simple",
+          "label": "yuv.custom.action.home_yuuvis.simple",
+          "description": "yuv.custom.action.home_yuuvis.description",
+          "priority": 0,
+          "icon": "",
+          "group": "common",
+          "range": "MULTI_SELECT",
+          "isExecutable": "(item) => item.id",
+          "run": "(selection) => this.router.navigate(['dashboard'])"
+        }
+      ]
+    },
+	"yuv-download-action", "yuv-delete-action", "yuv-delete", "yuv-upload", "yuv-upload-action", "yuv-move-action", "yuv-move", "yuv-follow-up-action", "yuv-follow-up", "yuv-reference-action", "yuv-open-context-action", "yuv-open-versions-action", "yuv-clipboard-action", "yuv-clipboard-link-action"
+  ],
+  "extensions": [
+    {
+      "id": "yuv.custom.plugin.home_yuuvis",
+      "label": "yuv.custom.action.home_yuuvis.label",
+      "matchHook": "yuv-*",
+      "plugin": "https://help.optimal-systems.com/yuuvis/home_yuuvis_en.html"
+    },
+    {
+      "id": "yuv.custom.plugin.home_yuuvis.complex",
+      "label": "yuv.custom.action.home_yuuvis.description",
+      "matchHook": "yuv-*",
+      "plugin": {
+        "html": "<a href='https://help.optimal-systems.com/yuuvis/home_yuuvis_en.html'> Yuuvis Home </a> <button onclick=\"api.router.navigate(['dashboard'])\">Go to Dashboard</button>",
+        "styles": ["a {color: red;}"],
+        "styleUrls": []
+      }
+    }
+  ],
+  "triggers": [
+    {
+      "id": "yuv.custom.trigger.paste.clipboard",
+      "label": "yuv.custom.trigger.paste.clipboard",
+      "matchHook": "yuv-*",
+      "icon": "<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" aria-hidden=\"true\" focusable=\"false\" width=\"1em\" height=\"1em\" preserveAspectRatio=\"xMidYMid meet\" viewBox=\"0 0 24 24\"><path opacity=\".3\" d=\"M17 7H7V4H5v16h14V4h-2z\" fill=\"white\"/><path d=\"M19 2h-4.18C14.4.84 13.3 0 12 0S9.6.84 9.18 2H5c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1s-1-.45-1-1s.45-1 1-1zm7 18H5V4h2v3h10V4h2v16z\" fill=\"#626262\"/></svg>",
+      "isExecutable": "(component) => component.parent.formControlName",
+      "run": "(component) => {var _this = this; navigator.clipboard.readText().then((v) => v && _this.form.modelChange(component.parent.formControlName, {name: 'value', newValue: v}))}"
+    },
+    {
+      "id": "yuv.custom.trigger.paste.selection",
+      "label": "yuv.custom.trigger.paste.selection",
+      "matchHook": "yuv-*",
+      "icon": "<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" aria-hidden=\"true\" focusable=\"false\" width=\"1em\" height=\"1em\" preserveAspectRatio=\"xMidYMid meet\" viewBox=\"0 0 24 24\"><path opacity=\".3\" d=\"M17 7H7V4H5v16h14V4h-2z\" fill=\"blue\"/><path d=\"M19 2h-4.18C14.4.84 13.3 0 12 0S9.6.84 9.18 2H5c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1s-1-.45-1-1s.45-1 1-1zm7 18H5V4h2v3h10V4h2v16z\" fill=\"#626262\"/></svg>",
+      "fullscreen": true,
+      "buttons": { "finish": "yuv.custom.action.home_yuuvis.label" },
+      "plugin": {
+        "src": "https://help.optimal-systems.com/yuuvis/home_yuuvis_en.html"
+      },
+      "isExecutable": "(component) => component.parent.formControlName && this.content.viewer()",
+      "run": "(component) => {var w = this.content.viewer(); var v = w && w.getSelection().toString(); v && this.form.modelChange(component.parent.formControlName, {name: 'value', newValue: v}) }"
+    },
+    {
+      "id": "yuv.custom.trigger.paste.suggestion",
+      "label": "yuv.custom.trigger.paste.suggestion",
+      "matchHook": "yuv-*",
+      "group": "visible",
+      "icon": "<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" aria-hidden=\"true\" focusable=\"false\" width=\"1em\" height=\"1em\" preserveAspectRatio=\"xMidYMid meet\" viewBox=\"0 0 24 24\"><path opacity=\".3\" d=\"M17 7H7V4H5v16h14V4h-2z\" fill=\"yellow\"/><path d=\"M19 2h-4.18C14.4.84 13.3 0 12 0S9.6.84 9.18 2H5c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1s-1-.45-1-1s.45-1 1-1zm7 18H5V4h2v3h10V4h2v16z\" fill=\"#626262\"/></svg>",
+      "isExecutable": "(component) => component.parent.formControlName && this.content.viewer()",
+      "run": " (component) => { var api = this, id = '_suggestion', sid = id + 'Styles', w = api.content.viewer(); if (!w) return; var attr = (name) => '[data-name=\"' + name + '\"]'; api.util.styles(attr(component.parent.formControlName) + ' {background-color: rgba(255,255,0,0.3);}', sid); api.util.styles('span:hover {background-color: rgba(255,255,0,1);}', sid, w); if (!w[id]) { w.document.addEventListener('click', (e) => { var v = w.getSelection().toString() || (!e.path[0].children.length && e.path[0].innerText); if (v) { api.form.modelChange(w[id], { name: 'value', newValue: v }); var triggers = Array.from(api.util.$$( '.triggers.visible yuv-plugin-trigger yuv-icon:not([hidden])' )); var nextTriggerIndex = 1 + triggers.findIndex((t) => api.util.$(attr(w[id]), t.parentElement.parentElement.parentElement)); triggers[nextTriggerIndex] && triggers[nextTriggerIndex].click(); } }); w.addEventListener('beforeunload', () => api.util.styles('', sid)); } w[id] = component.parent.formControlName; }"
+    },
+    {
+      "id": "yuv.custom.trigger.home_yuuvis",
+      "label": "yuv.custom.action.home_yuuvis.label",
+      "matchHook": "yuv-*",
+      "icon": "<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" aria-hidden=\"true\" focusable=\"false\" width=\"1em\" height=\"1em\" preserveAspectRatio=\"xMidYMid meet\" viewBox=\"0 0 24 24\"><path opacity=\".3\" d=\"M17 7H7V4H5v16h14V4h-2z\" fill=\"hotpink\"/><path d=\"M19 2h-4.18C14.4.84 13.3 0 12 0S9.6.84 9.18 2H5c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1s-1-.45-1-1s.45-1 1-1zm7 18H5V4h2v3h10V4h2v16z\" fill=\"#626262\"/></svg>",
+      "fullscreen": true,
+      "buttons": { "finish": "yuv.custom.action.home_yuuvis.label" },
+      "plugin": {
+        "src": "https://help.optimal-systems.com/yuuvis/home_yuuvis_en.html",
+        "popoverConfig": {
+          "height": "60%",
+          "width": "60%"
+        }
+      },
+      "isExecutable": "(component) => component.parent.formControlName",
+      "run": "(component) => component.openPopover()"
+    }
+  ],
+  "viewers":[
+	  {
+		"mimeType": "application/pdf",
+		"fileExtension": ["pdf"],
+		"viewer": "pdf/web/viewer.html?file=${path}#locale=${locale}&direction=${direction}&theme=${theme}&accentColor=${accentColor}"
+	  }
+	],
+  "translations": {
+    "en": {
+      "yuv.custom.action.home_yuuvis.label": "Yuuvis Home",
+      "yuv.custom.action.home_yuuvis.description": "Yuuvis Description",
+      "yuv.custom.action.home_yuuvis.simple": "Yuuvis Home simple",
+      "yuv.custom.action.home_yuuvis.component": "Yuuvis Home component",
+      "yuv.custom.action.home_yuuvis.component.full": "Yuuvis Home component full",
+      "yuv.custom.action.home_yuuvis.link": "Yuuvis Home link",
+      "yuv.custom.action.home_yuuvis.list": "Yuuvis Home list",
+      "yuv.custom.trigger.paste.clipboard": "Paste clipboard",
+      "yuv.custom.trigger.paste.selection": "Paste selection",
+      "yuv.custom.trigger.paste.suggestion": "Paste suggestion"
+    },
+    "de": {
+      "yuv.custom.action.home_yuuvis.label": "Yuuvis Home DE",
+      "yuv.custom.action.home_yuuvis.description": "Yuuvis Description DE",
+      "yuv.custom.action.home_yuuvis.simple": "Yuuvis Home simple DE",
+      "yuv.custom.action.home_yuuvis.component": "Yuuvis Home component DE",
+      "yuv.custom.action.home_yuuvis.component.full": "Yuuvis Home component full DE",
+      "yuv.custom.action.home_yuuvis.link": "Yuuvis Home link DE",
+      "yuv.custom.action.home_yuuvis.list": "Yuuvis Home list DE",
+      "yuv.custom.trigger.paste.clipboard": "Paste clipboard DE",
+      "yuv.custom.trigger.paste.selection": "Paste selection DE",
+      "yuv.custom.trigger.paste.suggestion": "Paste suggestion"
+    }
+  }
+}
+
+ *
+ */
+export interface PluginConfigList {
+  disabled?: boolean | string | Function;
+  links?: PluginLinkConfig[];
+  states?: PluginStateConfig[];
+  actions?: (PluginActionConfig | string)[];
+  extensions?: PluginExtensionConfig[];
+  triggers?: PluginTriggerConfig[];
+  viewers?: PluginViewerConfig[];
+  translations?: { en?: any; de?: any };
 }
