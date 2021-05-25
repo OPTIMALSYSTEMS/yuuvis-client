@@ -423,7 +423,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
       getRowNodeId: (data) => data.id,
       getRowHeight: () => this.settings.rowHeight[this.currentViewMode],
       rowData: this._data.rows,
-      columnDefs: this._data.columns,
+      columnDefs: this._layoutOptionsKey ? [] : this._data.columns,
       headerHeight: this.settings.headerHeight.standard,
       rowHeight: this.settings.rowHeight.standard,
       suppressCellSelection: false,
