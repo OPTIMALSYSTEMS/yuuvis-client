@@ -47,6 +47,10 @@ export class SearchQuery {
         this.filterGroup = SearchFilterGroup.fromQuery(searchQueryProperties.filters);
       }
 
+      if (searchQueryProperties.hiddenFilters) {
+        this.hiddenFilterGroup = SearchFilterGroup.fromQuery(searchQueryProperties.hiddenFilters);
+      }
+
       if (searchQueryProperties.sort) {
         searchQueryProperties.sort.forEach((o) => this.addSortOption(o.field, o.order));
       }
