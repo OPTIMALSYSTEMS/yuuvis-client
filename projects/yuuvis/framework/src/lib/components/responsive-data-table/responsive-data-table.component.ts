@@ -355,6 +355,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
 
   private getSmallSizeColDef(): ColDef {
     const colDef: ColDef = {
+      colId: Utils.uuid(), // has to be unique
       field: BaseObjectTypeField.OBJECT_ID,
       cellClass: 'cell-title-description',
       minWidth: this.isGrid ? this._data.rows.length * this.settings.colWidth.grid : 0,
