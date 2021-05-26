@@ -259,12 +259,12 @@ export class SearchQuery {
       queryJson.fields = this.fields;
     }
 
-    if (this.filterGroup) {
+    if (this.filterGroup && !this.filterGroup.isEmpty()) {
       const fg = this.filterGroup.toShortQuery();
       queryJson.filters = fg.filters.length > 1 && this.filterGroup.operator === SearchFilterGroup.OPERATOR.OR ? [fg] : fg.filters;
     }
 
-    if (this.hiddenFilterGroup) {
+    if (this.hiddenFilterGroup && !this.hiddenFilterGroup.isEmpty()) {
       const fg = this.hiddenFilterGroup.toShortQuery();
       const filters = fg.filters.length > 1 && this.filterGroup.operator === SearchFilterGroup.OPERATOR.OR ? [fg] : fg.filters;
       if (combineFilters) {
