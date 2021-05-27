@@ -87,12 +87,10 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
     this._layoutOptionsKey = lok;
     this.layoutService.loadLayoutOptions(lok, 'yuv-responsive-data-table').subscribe((o: ResponsiveDataTableOptions) => {
       this._layoutOptions = o || {};
-      if (this.gridOptions?.api && this._data) {
-        this.gridOptions.api.setColumnDefs(this.applyColDefOptions(this._data.columns));
+      if (this._layoutOptions.viewMode) {
+        this.setupViewMode(this._layoutOptions.viewMode);
       }
-      if (o && o.viewMode) {
-        this.setupViewMode(o.viewMode);
-      }
+      this.applyGridOption(true);
     });
   }
 
@@ -325,11 +323,10 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
       this.gridOptions.api.setRowData(this._data.rows);
       this.gridOptions.api.setHeaderHeight(this.settings.headerHeight[this.currentViewMode]);
 
-      const columns = this.isSmall ? [this.getSmallSizeColDef()] : this._data.columns;
+      const columns = this.applyColDefOptions(this.isSmall ? [this.getSmallSizeColDef()] : this._data.columns);
       if (JSON.stringify(this.gridOptions.columnDefs) !== JSON.stringify(columns)) {
-        const cols = this.applyColDefOptions(columns);
-        this.gridOptions.columnDefs = cols;
-        this.gridOptions.api.setColumnDefs(cols);
+        this.gridOptions.columnDefs = columns;
+        this.gridOptions.api.setColumnDefs(columns);
         this.gridOptions.columnApi.resetColumnState();
       }
 
