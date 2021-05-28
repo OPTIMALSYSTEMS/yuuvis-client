@@ -10,7 +10,7 @@ import { clear } from '../../svg.generated';
 import { ActionService } from '../action-service/action.service';
 import { ActionComponent } from '../interfaces/action-component.interface';
 import { ActionListEntry } from '../interfaces/action-list-entry';
-import { ComponentAction, ExternalComponentAction, ListAction, SimpleAction } from '../interfaces/action.interface';
+import { ComponentAction, ExternalComponentAction, LinkAction, ListAction, SimpleAction } from '../interfaces/action.interface';
 
 /**
  * This component creates a menu of available actions for a selection of items. The action menu includes such actions as `delete`, `download` and `upload`.
@@ -148,7 +148,8 @@ export class ActionMenuComponent implements OnDestroy {
     // It is possible that actions implement more than one action interface
     // so we should be aware of running an action and then open its sub actions
 
-    const isSimpleAction = !!actionListEntry.action['run'];
+    const isSimpleAction = !!(actionListEntry.action as SimpleAction).run;
+    const isLinkAction = !!(actionListEntry.action as LinkAction).getLink;
     const isListAction = actionListEntry.action.hasOwnProperty('subActionComponents');
     const isComponentAction = actionListEntry.action.hasOwnProperty('component');
     const isExternalComponentAction = actionListEntry.action.hasOwnProperty('extComponent');
@@ -165,6 +166,13 @@ export class ActionMenuComponent implements OnDestroy {
             this.finish();
           }
         });
+    } else if (isLinkAction) {
+      const action = actionListEntry.action as LinkAction;
+      this.router.navigate([action.getLink(actionListEntry.availableSelection)], {
+        queryParams: action.getParams ? action.getParams(actionListEntry.availableSelection) : {},
+        fragment: action.getFragment ? action.getFragment(actionListEntry.availableSelection) : null
+      });
+      this.finish();
     }
 
     if (isListAction) {
@@ -181,6 +189,7 @@ export class ActionMenuComponent implements OnDestroy {
       const extComponentAction = actionListEntry.action as ExternalComponentAction;
       this.showActionComponent(extComponentAction.extComponent, this.componentAnchor, this.componentFactoryResolver, true, extComponentAction.inputs);
     }
+
     this.actionSelected.emit(actionListEntry);
   }
 
