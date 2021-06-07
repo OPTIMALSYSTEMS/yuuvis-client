@@ -338,9 +338,13 @@ export class ObjectCreateComponent implements OnDestroy {
       this.system.getObjectTypeForm(objectType.id, 'CREATE').subscribe(
         (model) => {
           this.objCreateService.setNewState({ busy: false });
+          let data = {};
+          if (this.context) {
+            data[BaseObjectTypeField.PARENT_ID] = this.context.id;
+          }
           this.selectedObjectTypeFormOptions = {
             formModel: model,
-            data: {}
+            data: data
           };
           // does selected type support contents?
           if (objectType.isFolder || objectType.contentStreamAllowed === 'notallowed') {
