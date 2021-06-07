@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { DmsObject } from '@yuuvis/core';
 
 @Component({
@@ -7,7 +7,7 @@ import { DmsObject } from '@yuuvis/core';
   styleUrls: ['./test-audit.component.scss'],
   host: { class: 'yuv-test-container' }
 })
-export class TestAuditComponent implements OnInit {
+export class TestAuditComponent {
   dmsObject: DmsObject;
 
   constructor() {}
@@ -15,6 +15,4 @@ export class TestAuditComponent implements OnInit {
   setDmsObject(o: DmsObject) {
     this.dmsObject = o;
   }
-
-  ngOnInit() {}
 }

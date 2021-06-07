@@ -42,7 +42,13 @@ export interface AuditQueryOptions {
    */
   dateRange?: RangeValue;
   /**
-   * Linst of actions (codes) to restricts the audits to
+   * List of actions (codes) to restricts the audits to
    */
   actions?: string[];
+
+  /**
+   * Whether or not to query all audit entries, without the user
+   * or admin filter conditions
+   */
+  allActions?: boolean;
 }

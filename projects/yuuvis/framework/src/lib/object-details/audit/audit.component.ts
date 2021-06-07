@@ -15,6 +15,9 @@ import { arrowNext, filter } from '../../svg.generated';
  *
  * @example
  * <yuv-audit [objectID]="'0815'"></yuv-audit>
+ *
+ * <!-- skipping certain action codes -->
+ * <yuv-audit [objectID]="'0815'" [skipActions]="[100, 200, 202]"></yuv-audit>
  */
 @Component({
   selector: 'yuv-audit',
@@ -49,6 +52,12 @@ export class AuditComponent implements OnInit, OnDestroy {
       this.fetchAuditEntries();
     }
   }
+
+  /**
+   * A list of audits that should not be shown. Use the audit codes (like 100, 301, etc.).
+   * This will also disable the corresponding filters.
+   */
+  @Input() skipActions: number[];
 
   get objectID() {
     return this._objectID;
@@ -87,29 +96,6 @@ export class AuditComponent implements OnInit, OnDestroy {
       a403: this.translate.instant('yuv.framework.audit.label.get.rendition.pdf'),
       a404: this.translate.instant('yuv.framework.audit.label.get.rendition.thumbnail')
     };
-    const actionKeys = Object.keys(this.auditLabels);
-    this.actionGroups = [
-      { label: this.translate.instant('yuv.framework.audit.label.group.update'), actions: actionKeys.filter((k) => k.startsWith('a3')) },
-      { label: this.translate.instant('yuv.framework.audit.label.group.get'), actions: actionKeys.filter((k) => k.startsWith('a4')) },
-      { label: this.translate.instant('yuv.framework.audit.label.group.delete'), actions: actionKeys.filter((k) => k.startsWith('a2')) },
-      { label: this.translate.instant('yuv.framework.audit.label.group.create'), actions: actionKeys.filter((k) => k.startsWith('a1')) }
-    ];
-
-    let fbInput = {
-      dateRange: []
-    };
-
-    this.actionGroups.forEach((g) => {
-      const groupEntry = {
-        label: g.label,
-        actions: g.actions.map((a) => {
-          fbInput[a] = [false];
-          return a;
-        })
-      };
-      this.searchActions.push(groupEntry);
-    });
-    this.searchForm = this.fb.group(fbInput);
 
     this.eventService
       .on(YuvEventType.DMS_OBJECT_UPDATED)
@@ -133,6 +119,9 @@ export class AuditComponent implements OnInit, OnDestroy {
     this.busy = true;
     this.auditService.getAuditEntries(this._objectID, options).subscribe(
       (res: AuditQueryResult) => {
+        if (this.skipActions && this.skipActions.length) {
+          res.items = res.items.filter((e) => !this.skipActions.includes(e.action));
+        }
         this.auditsRes = res;
         this.busy = false;
       },
@@ -154,7 +143,6 @@ export class AuditComponent implements OnInit, OnDestroy {
       options.dateRange = range;
     }
     const actions = [];
-    // this.searchActions.forEach(a => {
     Object.keys(this.auditLabels).forEach((a) => {
       if (this.searchForm.value[a]) {
         actions.push(parseInt(a.substr(1)));
@@ -234,6 +222,36 @@ export class AuditComponent implements OnInit, OnDestroy {
     this.error = true;
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+    let actionKeys = this.auditService.getAuditActions().map((a: number) => `a${a}`);
+    // let actionKeys = Object.keys(this.auditLabels);
+    if (this.skipActions) {
+      const skipActionKeys = this.skipActions.map((a) => `a${a}`);
+      actionKeys = actionKeys.filter((k) => !skipActionKeys.includes(k));
+    }
+    this.actionGroups = [
+      { label: this.translate.instant('yuv.framework.audit.label.group.update'), actions: actionKeys.filter((k) => k.startsWith('a3')) },
+      { label: this.translate.instant('yuv.framework.audit.label.group.get'), actions: actionKeys.filter((k) => k.startsWith('a4')) },
+      { label: this.translate.instant('yuv.framework.audit.label.group.delete'), actions: actionKeys.filter((k) => k.startsWith('a2')) },
+      { label: this.translate.instant('yuv.framework.audit.label.group.create'), actions: actionKeys.filter((k) => k.startsWith('a1')) }
+    ];
+
+    let fbInput = {
+      dateRange: []
+    };
+    this.actionGroups.forEach((g) => {
+      if (g.actions.length) {
+        const groupEntry = {
+          label: g.label,
+          actions: g.actions.map((a) => {
+            fbInput[a] = [false];
+            return a;
+          })
+        };
+        this.searchActions.push(groupEntry);
+      }
+    });
+    this.searchForm = this.fb.group(fbInput);
+  }
   ngOnDestroy() {}
 }
