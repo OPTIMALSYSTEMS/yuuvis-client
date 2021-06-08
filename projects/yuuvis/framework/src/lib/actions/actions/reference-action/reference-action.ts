@@ -50,18 +50,23 @@ export class ReferenceActionComponent extends DmsObjectTarget implements LinkAct
 
   private createSearchFilters(dmsObject: DmsObject) {
     return Object.values(this.system.system.allFields)
-      .filter((field) => this.filter(field, dmsObject.objectTypeId))
+      .filter((field) => this.filter(field, dmsObject))
       .map((field) => this.createSearchFilter(field, dmsObject.id));
   }
 
-  private filter(field, objectTypeId) {
+  private filter(field, dmsObject: DmsObject) {
     if (!field.classifications) {
       return false;
     }
     const referenceClassification = field.classifications.find((el) => el.includes(Classification.STRING_REFERENCE));
     return (
-      (referenceClassification && referenceClassification.includes(objectTypeId)) ||
-      (referenceClassification && referenceClassification.includes(Classification.STRING_REFERENCE + '[]'))
+      referenceClassification &&
+      (referenceClassification.includes(dmsObject.objectTypeId) ||
+        referenceClassification.includes('system:object') ||
+        (referenceClassification.includes('system:document') && !dmsObject.isFolder) ||
+        (referenceClassification.includes('system:folder') && dmsObject.isFolder) ||
+        !!dmsObject.data['system:secondaryObjectTypeIds'].find((sotID) => referenceClassification.includes(sotID)) ||
+        referenceClassification.includes(Classification.STRING_REFERENCE + '[]'))
     );
   }
 
