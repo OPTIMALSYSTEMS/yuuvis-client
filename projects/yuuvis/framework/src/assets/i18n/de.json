@@ -67,6 +67,7 @@
 	"yuv.framework.audit.label.update.move.content": "Dokumentdatei wurde verschoben",
 	"yuv.framework.audit.label.update.tag": "Tag wurde geändert",
 	"yuv.framework.audit.result.empty": "Es wurden keine Historieneinträge gefunden",
+	"yuv.framework.audit.search.button.filter": "Historieneinträge filtern",
 	"yuv.framework.audit.search.button.reset": "Zurücksetzen",
 	"yuv.framework.audit.search.button.submit": "Filtern",
 	"yuv.framework.audit.search.daterange": "Datum",

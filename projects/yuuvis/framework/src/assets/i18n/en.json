@@ -67,6 +67,7 @@
 	"yuv.framework.audit.label.update.move.content": "Document file was moved",
 	"yuv.framework.audit.label.update.tag": "Tag was changed",
 	"yuv.framework.audit.result.empty": "No history entries were found",
+	"yuv.framework.audit.search.button.filter": "Filter history entries",
 	"yuv.framework.audit.search.button.reset": "Reset",
 	"yuv.framework.audit.search.button.submit": "Filter",
 	"yuv.framework.audit.search.daterange": "Date",
