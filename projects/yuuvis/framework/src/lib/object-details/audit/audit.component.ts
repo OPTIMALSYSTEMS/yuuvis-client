@@ -117,11 +117,14 @@ export class AuditComponent implements OnInit, OnDestroy {
   private fetchAuditEntries(options?: AuditQueryOptions) {
     this.error = false;
     this.busy = true;
+
+    if (this.skipActions && this.skipActions.length) {
+      if (!options) options = {};
+      options.skipActions = this.skipActions;
+    }
+
     this.auditService.getAuditEntries(this._objectID, options).subscribe(
       (res: AuditQueryResult) => {
-        if (this.skipActions && this.skipActions.length) {
-          res.items = res.items.filter((e) => !this.skipActions.includes(e.action));
-        }
         this.auditsRes = res;
         this.busy = false;
       },

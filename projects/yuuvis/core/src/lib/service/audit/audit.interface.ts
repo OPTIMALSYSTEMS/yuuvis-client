@@ -45,7 +45,10 @@ export interface AuditQueryOptions {
    * List of actions (codes) to restricts the audits to
    */
   actions?: string[];
-
+  /**
+   * Actions that should explicitly NOT be fetched
+   */
+  skipActions?: number[];
   /**
    * Whether or not to query all audit entries, without the user
    * or admin filter conditions

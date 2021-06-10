@@ -24,7 +24,6 @@ export class AuditService {
   private userAuditActions: number[] = [
     100, // metadata created
     101, // metadata created (with content)
-    200, // deleted
     201, // content deleted
     300, // metadata updated
     301, // content updated
@@ -65,7 +64,7 @@ export class AuditService {
     ];
 
     if (!options || !options.allActions) {
-      q.addFilter(new SearchFilter(AuditField.ACTION, SearchFilter.OPERATOR.IN, this.getAuditActions()));
+      q.addFilter(new SearchFilter(AuditField.ACTION, SearchFilter.OPERATOR.IN, this.getAuditActions(options?.skipActions)));
     }
 
     if (options) {
@@ -92,9 +91,12 @@ export class AuditService {
    * Get an array of action codes that are provided by the service. Based on
    * whether or not the user has admin permissions you'll get a different
    * set of actions.
+   * @param skipActions codes of actions that should not be fetched
    */
-  getAuditActions(): number[] {
-    return this.userService.hasAdministrationRoles ? [...this.userAuditActions, ...this.adminAuditActions] : this.userAuditActions;
+  getAuditActions(skipActions?: number[]): number[] {
+    return (this.userService.hasAdministrationRoles ? [...this.userAuditActions, ...this.adminAuditActions] : this.userAuditActions).filter(
+      (a) => !skipActions || !skipActions.includes(a)
+    );
   }
 
   /**

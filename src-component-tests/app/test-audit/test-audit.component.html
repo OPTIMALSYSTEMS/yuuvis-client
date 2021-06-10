@@ -1,5 +1,5 @@
 <div class="testing-controls">
-  <yuv-dms-object-picker (dmsObject)="setDmsObject($event)"></yuv-dms-object-picker>
+  <yuv-dms-object-picker [objectQuery]="objectQuery" (dmsObject)="setDmsObject($event)"></yuv-dms-object-picker>
   <button (click)="setDmsObject(null)" *ngIf="dmsObject">Clear DmsObject</button>
   <!-- <button (click)="setDmsObjectInput()">Set dmsObject input</button>
   <button (click)="contentDmsObjectInput()">with content</button>
