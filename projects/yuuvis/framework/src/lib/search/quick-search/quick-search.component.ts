@@ -342,7 +342,7 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
     this.setAvailableObjectTypesFields();
 
     if (this.selectedObjectTypes.length === 1) {
-      this.objectTypeSelectLabel = this.systemService.getLocalizedResource(`${this.selectedObjectTypes[0]}_label`);
+      this.objectTypeSelectLabel = this.systemService.getLocalizedResource(`${this.selectedObjectTypes[0]}_label`) || this.selectedObjectTypes[0];
     } else if (this.selectedObjectTypes.length === this.availableObjectTypeGroupsList.length || this.selectedObjectTypes.length === 0) {
       this.objectTypeSelectLabel = this.translate.instant('yuv.framework.quick-search.type.all');
     } else {
