@@ -78,7 +78,7 @@
   <p-tabPanel [id]="'history'" [header]="'yuv.framework.object-details.tabs.history.title' | translate"
     [headerStyleClass]="'history'">
     <ng-template pTemplate="content">
-      <yuv-audit [objectID]="objectId"></yuv-audit>
+      <yuv-audit [skipActions]="skipActions" [objectID]="objectId"></yuv-audit>
     </ng-template>
   </p-tabPanel>
 </ng-template>

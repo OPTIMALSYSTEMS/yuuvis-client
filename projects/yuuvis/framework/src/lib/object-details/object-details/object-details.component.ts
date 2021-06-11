@@ -97,6 +97,12 @@ export class ObjectDetailsComponent implements OnDestroy {
   }
 
   /**
+   * A list of audits that should not be shown. Use the audit codes (like 100, 301, etc.).
+   * This will also disable the corresponding filters.
+   */
+  @Input() skipActions: number[];
+
+  /**
    * ID of a DmsObject. The object will be fetched from the backend upfront.
    */
   @Input()
