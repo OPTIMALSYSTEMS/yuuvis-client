@@ -355,6 +355,7 @@
   "yuv.client.state.settings.section.layout.export": "Export",
   "yuv.client.state.settings.section.layout.import": "Import",
   "yuv.client.state.settings.section.layout.reset": "Zurücksetzen",
+  "yuv.client.state.settings.tenant": "Mandant",
   "yuv.client.state.settings.theme": "Theme",
   "yuv.client.state.settings.theme.accentcolor": "Akzentfarbe",
   "yuv.client.state.settings.theme.background": "Dashboard-Hintergrundbild",
