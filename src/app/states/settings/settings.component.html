@@ -5,6 +5,7 @@
       <div class="meta uname">{{ (user$ | async).username }}</div>
       <h1>{{ (user$ | async).title }}</h1>
       <div class="meta uemail">{{ (user$ | async).email }}</div>
+      <div class="meta utenant">{{'yuv.client.state.settings.tenant' | translate}}: {{ (user$ | async).tenant }}</div>
     </div>
     <yuv-user-avatar class="box panel" [user]="user$ | async"></yuv-user-avatar>
   </div>
