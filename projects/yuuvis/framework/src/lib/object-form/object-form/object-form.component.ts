@@ -677,7 +677,17 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
       }
     } else {
       if (['datetime'].includes(element.type) && data[element.name]) {
-        value = new Date(data[element.name]);
+        let d = data[element.name];
+        if (d.length === 10) {
+          // Got date without time in the format of '2021-06-16'
+          // Creating a new Date object from that string would be done with the timezone of
+          // the host maschine. To equalize the servers timezone (UTC) with the local one we
+          // add the timezone offset to the generated date
+          const dt = new Date(d);
+          value = new Date(dt.getTime() + dt.getTimezoneOffset() * 60 * 1000);
+        } else {
+          value = new Date(d);
+        }
       } else {
         value = data[element.name];
       }
