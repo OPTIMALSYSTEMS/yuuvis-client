@@ -96,7 +96,8 @@ export enum Classification {
   STRING_URL = 'url',
   STRING_PHONE = 'phone',
   NUMBER_FILESIZE = 'filesize',
-  NUMBER_DIGIT = 'digit'
+  NUMBER_DIGIT = 'digit',
+  SYSTEM_SOT = 'systemsot'
 }
 
 // classifications applied to object types
