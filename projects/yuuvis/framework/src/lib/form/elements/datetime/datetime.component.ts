@@ -163,14 +163,14 @@ export class DatetimeComponent implements OnInit, ControlValueAccessor, Validato
   }
 
   onMaskValueChange(event: string) {
-    if (event === this._datePattern || event.length === 0) {
+    if (event === this._datePattern || (event.length === 0 && this.value !== null)) {
       this.value = null;
       this.isValidInput = true;
       this.propagate();
     }
 
     // fixed pm/am formatting
-    if (this.withAmPm && !event.match(/aa$|AM$|PM$/)) {
+    if (event.length && this.withAmPm && !event.match(/aa$|AM$|PM$/)) {
       const element = this.elemRef.nativeElement.querySelector('input');
       const caretPos = element.selectionStart;
       this.innerValue = element.value = event.slice(0, -2) + (event.match(/ma$|mm$/) ? 'aa' : event.match(/p|P/) ? 'PM' : 'AM');

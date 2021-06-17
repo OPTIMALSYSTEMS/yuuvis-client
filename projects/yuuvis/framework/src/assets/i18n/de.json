@@ -67,6 +67,7 @@
 	"yuv.framework.audit.label.update.move.content": "Dokumentdatei wurde verschoben",
 	"yuv.framework.audit.label.update.tag": "Tag wurde geändert",
 	"yuv.framework.audit.result.empty": "Es wurden keine Historieneinträge gefunden",
+	"yuv.framework.audit.search.button.filter": "Historieneinträge filtern",
 	"yuv.framework.audit.search.button.reset": "Zurücksetzen",
 	"yuv.framework.audit.search.button.submit": "Filtern",
 	"yuv.framework.audit.search.daterange": "Datum",
@@ -277,5 +278,7 @@
 	"yuv.framework.version-list.config.mode.grid": "Galerie",
 	"yuv.framework.version-list.config.mode.horizontal": "Liste",
 	"yuv.framework.version-list.edit": "Aktuelle Version öffnen",
+	"yuv.framework.version-list.load.error": "",
+	"yuv.framework.version-list.load.error.not-found": "",
 	"yuv.framework.version-list.title": "Versionen"
 }

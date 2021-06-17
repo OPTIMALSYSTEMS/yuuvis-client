@@ -1,12 +1,24 @@
 <div class="testing-controls">
-  <yuv-dms-object-picker (dmsObject)="setDmsObject($event)"></yuv-dms-object-picker>
+  <yuv-dms-object-picker [objectQuery]="objectQuery" (dmsObject)="setDmsObject($event)"></yuv-dms-object-picker>
   <button (click)="setDmsObject(null)" *ngIf="dmsObject">Clear DmsObject</button>
-  <!-- <button (click)="setDmsObjectInput()">Set dmsObject input</button>
-  <button (click)="contentDmsObjectInput()">with content</button>
-  <button (click)="clearDmsObjectInput()">NULL dmsObject input</button> -->
 </div>
 
 
+<div class="cmp">
 
+  <div>
+    <h2>regular</h2>
+    <yuv-audit [objectID]="dmsObject?.id"></yuv-audit>
+  </div>
 
-<yuv-audit class="cmp" [objectID]="dmsObject?.id"></yuv-audit>
+  <div>
+    <h2>skipping some actions</h2>
+    <yuv-audit [skipActions]="[300, 310]" [objectID]="dmsObject?.id"></yuv-audit>
+  </div>
+
+  <div>
+    <h2>skipping whole modified section</h2>
+    <yuv-audit [skipActions]="[300, 301, 302, 303, 310]" [objectID]="dmsObject?.id"></yuv-audit>
+  </div>
+
+</div>

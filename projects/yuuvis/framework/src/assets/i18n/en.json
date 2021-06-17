@@ -67,6 +67,7 @@
 	"yuv.framework.audit.label.update.move.content": "Document file was moved",
 	"yuv.framework.audit.label.update.tag": "Tag was changed",
 	"yuv.framework.audit.result.empty": "No history entries were found",
+	"yuv.framework.audit.search.button.filter": "Filter history entries",
 	"yuv.framework.audit.search.button.reset": "Reset",
 	"yuv.framework.audit.search.button.submit": "Filter",
 	"yuv.framework.audit.search.daterange": "Date",
@@ -277,5 +278,7 @@
 	"yuv.framework.version-list.config.mode.grid": "Gallery",
 	"yuv.framework.version-list.config.mode.horizontal": "List",
 	"yuv.framework.version-list.edit": "Open current version",
+	"yuv.framework.version-list.load.error": "Failed loading object",
+	"yuv.framework.version-list.load.error.not-found": "Object not found. It may have been deleted or you do not have the appropriate permissions.",
 	"yuv.framework.version-list.title": "Versions"
 }

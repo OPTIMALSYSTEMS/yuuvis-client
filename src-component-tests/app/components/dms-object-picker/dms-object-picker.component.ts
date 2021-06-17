@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { DmsObject, DmsService } from '@yuuvis/core';
+import { BaseObjectTypeField, DmsObject, DmsService, SearchQuery, SearchService, SystemType } from '@yuuvis/core';
 
 @Component({
   selector: 'yuv-dms-object-picker',
@@ -11,10 +11,15 @@ export class DmsObjectPickerComponent implements OnInit {
   form: FormGroup;
   error: string;
 
-  @Input() defaultId: string;
+  // query to fetch item that should be selected upfront
+  @Input() objectQuery: SearchQuery;
   @Output() dmsObject = new EventEmitter<DmsObject>();
 
-  constructor(private fb: FormBuilder, private dmsService: DmsService) {}
+  constructor(private fb: FormBuilder, private searchService: SearchService, private dmsService: DmsService) {
+    this.form = this.fb.group({
+      objectId: ['', Validators.required]
+    });
+  }
 
   fetchDmsObject() {
     this.error = null;
@@ -31,7 +36,7 @@ export class DmsObjectPickerComponent implements OnInit {
             this.dmsObject.emit(o);
           }
         },
-        err => {
+        (err) => {
           this.dmsObject.emit(null);
           this.error = err.message;
         }
@@ -39,9 +44,24 @@ export class DmsObjectPickerComponent implements OnInit {
     }
   }
 
+  private executeObjectQuery(q: SearchQuery) {
+    q.size = 1;
+    q.fields = [BaseObjectTypeField.OBJECT_ID];
+    this.searchService.search(q).subscribe(
+      (res) => {
+        if (res.items.length) {
+          const id = res.items[0].fields.get(BaseObjectTypeField.OBJECT_ID);
+          this.form.patchValue({ objectId: id });
+          this.fetchDmsObject();
+        }
+      },
+      (err) => {
+        this.error = err;
+      }
+    );
+  }
+
   ngOnInit() {
-    this.form = this.fb.group({
-      objectId: [this.defaultId ? this.defaultId : 'aeb19b4b-d44b-4dfb-b852-d0358c7cc294', Validators.required]
-    });
+    this.executeObjectQuery(this.objectQuery || new SearchQuery({ types: [SystemType.DOCUMENT] }));
   }
 }

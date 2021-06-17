@@ -3,5 +3,26 @@
     height: 80vh;
     width: 80vw;
     overflow: hidden;
+    display: flex;
+
+    > div {
+      flex: 1;
+      height: 100%;
+      border-left: 1px solid var(--panel-divider-color);
+      display: grid;
+      grid-template-rows: auto 1fr;
+      grid-template-columns: 1fr;
+      grid-template-areas: 'header' 'main';
+
+      h2 {
+        grid-area: header;
+        margin: 0;
+        padding: var(--app-pane-padding);
+      }
+      yuv-audit {
+        grid-area: main;
+        overflow-y: auto;
+      }
+    }
   }
 }

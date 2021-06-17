@@ -21,6 +21,11 @@
   </h2>
   <yuv-quick-search [inline]="true"></yuv-quick-search>
 
+  <h2>
+    Skipping certain types
+  </h2>
+  <yuv-quick-search [skipTypes]="['tenLdms:ldmsHumanResourceSOT']"></yuv-quick-search>
+
 
   <div class="aggs" *ngIf="aggs">
     <div *ngFor="let a of aggs" (click)="applyAggregation(a)">
