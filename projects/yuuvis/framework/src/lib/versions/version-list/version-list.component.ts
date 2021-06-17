@@ -60,6 +60,11 @@ export class VersionListComponent implements OnInit {
   error: string;
 
   /**
+   * ResponsiveTableData mixin for grid configuration
+   */
+  @Input() responsiveTableData: Partial<ResponsiveTableData>;
+
+  /**
    * ID of the dms object to list the versions for.
    */
   @Input() set objectID(id: string) {
@@ -187,7 +192,8 @@ export class VersionListComponent implements OnInit {
             titleField: ClientDefaultsObjectTypeField.TITLE,
             descriptionField: ClientDefaultsObjectTypeField.DESCRIPTION,
             selectType: 'multiple',
-            gridOptions: { getRowNodeId: (o) => this.getRowNodeId(o), rowMultiSelectWithClick: false }
+            gridOptions: { getRowNodeId: (o) => this.getRowNodeId(o), rowMultiSelectWithClick: false },
+            ...(this.responsiveTableData || {})
           };
         },
         (err) => {
