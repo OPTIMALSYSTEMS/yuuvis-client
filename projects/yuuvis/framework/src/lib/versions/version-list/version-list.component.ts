@@ -57,6 +57,7 @@ export class VersionListComponent implements OnInit {
   dmsObjectID: string;
   // latest version of the current dms object
   activeVersion: DmsObject;
+  error: string;
 
   /**
    * ID of the dms object to list the versions for.
@@ -160,35 +161,43 @@ export class VersionListComponent implements OnInit {
   }
 
   refresh() {
+    this.error = null;
     if (this.dmsObjectID) {
-      this.dmsService.getDmsObjectVersions(this.dmsObjectID).subscribe((rows: DmsObject[]) => {
-        const objectTypeId = rows && rows.length ? rows[0].objectTypeId : null;
-        const sorted = rows.sort((a, b) => this.getVersion(b) - this.getVersion(a));
-        this.activeVersion = sorted[0];
+      this.dmsService.getDmsObjectVersions(this.dmsObjectID).subscribe(
+        (rows: DmsObject[]) => {
+          const objectTypeId = rows && rows.length ? rows[0].objectTypeId : null;
+          const sorted = rows.sort((a, b) => this.getVersion(b) - this.getVersion(a));
+          this.activeVersion = sorted[0];
 
-        // having just one selected version that is also the recent version, will also select the
-        // previous version as long as there are more than just one version, or
-        // `disableAutoSelectOnRecentVersion` has been set to true
-        if (
-          !this.disableAutoSelectOnRecentVersion &&
-          rows.length > 1 &&
-          this.selection.length === 1 &&
-          this.selection[0] === this.getRowNodeId(sorted[0].version)
-        ) {
-          this.selection.push(this.getRowNodeId(sorted[1].version));
+          // having just one selected version that is also the recent version, will also select the
+          // previous version as long as there are more than just one version, or
+          // `disableAutoSelectOnRecentVersion` has been set to true
+          if (
+            !this.disableAutoSelectOnRecentVersion &&
+            rows.length > 1 &&
+            this.selection.length === 1 &&
+            this.selection[0] === this.getRowNodeId(sorted[0].version)
+          ) {
+            this.selection.push(this.getRowNodeId(sorted[1].version));
+          }
+
+          this.tableData = {
+            columns: this.getColumnDefinitions(objectTypeId),
+            rows: sorted.map((a) => a.data),
+            titleField: ClientDefaultsObjectTypeField.TITLE,
+            descriptionField: ClientDefaultsObjectTypeField.DESCRIPTION,
+            selectType: 'multiple',
+            gridOptions: { getRowNodeId: (o) => this.getRowNodeId(o), rowMultiSelectWithClick: false }
+          };
+        },
+        (err) => {
+          if (err.status === 404) {
+            this.error = this.translate.instant('yuv.framework.version-list.load.error.not-found');
+          } else {
+            this.error = this.translate.instant('yuv.framework.version-list.load.error');
+          }
         }
-
-        this.tableData = {
-          columns: this.getColumnDefinitions(objectTypeId),
-          rows: sorted.map((a) => a.data),
-          titleField: ClientDefaultsObjectTypeField.TITLE,
-          descriptionField: ClientDefaultsObjectTypeField.DESCRIPTION,
-          selectType: 'multiple',
-          gridOptions: { getRowNodeId: (o) => this.getRowNodeId(o), rowMultiSelectWithClick: false }
-        };
-
-        console.log(this.tableData);
-      });
+      );
     } else {
       this.tableData = null;
       this.activeVersion = null;

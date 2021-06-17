@@ -278,6 +278,8 @@
   "yuv.framework.version-list.config.mode.grid": "Gallery",
   "yuv.framework.version-list.config.mode.horizontal": "List",
   "yuv.framework.version-list.edit": "Open current version",
+  "yuv.framework.version-list.load.error": "Failed loading object",
+  "yuv.framework.version-list.load.error.not-found": "Object not found. It may have been deleted or you do not have the appropriate permissions.",
   "yuv.framework.version-list.title": "Versions",
   "null.OFF": "",
   "null.ON": "",

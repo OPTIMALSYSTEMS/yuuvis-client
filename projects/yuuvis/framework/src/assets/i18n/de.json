@@ -278,5 +278,7 @@
 	"yuv.framework.version-list.config.mode.grid": "Galerie",
 	"yuv.framework.version-list.config.mode.horizontal": "Liste",
 	"yuv.framework.version-list.edit": "Aktuelle Version öffnen",
+	"yuv.framework.version-list.load.error": "",
+	"yuv.framework.version-list.load.error.not-found": "",
 	"yuv.framework.version-list.title": "Versionen"
 }

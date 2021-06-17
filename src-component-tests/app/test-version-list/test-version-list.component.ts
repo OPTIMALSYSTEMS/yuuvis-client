@@ -8,7 +8,7 @@ import { BaseObjectTypeField, DmsObject, SearchFilter, SearchQuery, SystemType }
   host: { class: 'yuv-test-container' }
 })
 export class TestVersionListComponent implements OnInit {
-  dmsObject: DmsObject;
+  dmsObjectID: string;
   objectQuery: SearchQuery;
 
   constructor() {
@@ -19,7 +19,7 @@ export class TestVersionListComponent implements OnInit {
   }
 
   setDmsObjectInput(dmsObject: DmsObject) {
-    this.dmsObject = dmsObject;
+    this.dmsObjectID = dmsObject?.id;
   }
 
   ngOnInit() {}
