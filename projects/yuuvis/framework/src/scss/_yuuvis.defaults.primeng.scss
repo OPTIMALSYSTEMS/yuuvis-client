@@ -162,7 +162,7 @@ body {
     color: var(--text-color-body);
 
     &.p-highlight {
-      background: var(--item-selected-background-color);
+      background: rgba(var(--color-accent-rgb), 0.8);
     }
 
     &:hover {
