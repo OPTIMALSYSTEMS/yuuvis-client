@@ -32,7 +32,8 @@
   </ng-container>
 
   <div class="form-controls" [ngClass]="{ disabled: controls.disabled }">
-    <div class="err-msg" *ngIf="formState?.invalid" translate>yuv.framework.object-form-edit.invalid</div>
+    <div class="err-msg" *ngIf="formState?.dirty && formState?.invalid" translate>yuv.framework.object-form-edit.invalid
+    </div>
 
     <div class="buttons" *ngIf="!actionsDisabled" yuvOfflineDisabled>
       <button class="secondary" (click)="resetForm()" [disabled]="controls.saving || controls.disabled"
