@@ -29,6 +29,8 @@
     "cleanup:dist": "rimraf dist",
     "doc:framework": "npm run build:framework && cd projects/yuuvis/framework && npm run doc",
     "doc:core": "npm run build:core && cd projects/yuuvis/core && npm run doc",
+    "doc:core:json": "npm run build:core && cd projects/yuuvis/core && npm run doc:json",
+    "doc:framework:json": "npm run build:core && cd projects/yuuvis/framework && npm run doc:json",
     "doc:all": "npm run doc:core && npm run doc:framework",
     "style:libs": "node ./tools/scripts/lib/framework-postbuild",
     "build:core": "ng build @yuuvis/core && node ./tools/scripts/common/node-copy --lib=core",

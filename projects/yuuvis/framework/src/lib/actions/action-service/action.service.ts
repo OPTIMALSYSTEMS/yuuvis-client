@@ -98,13 +98,14 @@ export class ActionService {
       const observables = [of({})];
       targetActionsList.forEach((actionListEntry) => {
         selection.forEach((item) => {
-          let observable = actionListEntry.action.isExecutable(item);
+          let observable = actionListEntry.action.isExecutable(item).pipe(
+            tap((res) => {
+              if (res) {
+                actionListEntry.availableSelection.push(item);
+              }
+            })
+          );
           observables.push(observable);
-          observable.subscribe((res) => {
-            if (res) {
-              actionListEntry.availableSelection.push(item);
-            }
-          });
         });
       });
 
