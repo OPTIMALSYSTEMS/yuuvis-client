@@ -17,10 +17,24 @@ export class BackendService {
   private temp = new Map<string, Observable<any>>();
   private headers = this.setDefaultHeaders();
   private persistedHeaders: any = {};
+
+  private oidc: { host: string };
+
   /**
    * @ignore
    */
   constructor(private http: HttpClient, private logger: Logger, private config: ConfigService) {}
+
+  authUsesOpenIdConnect(): boolean {
+    return !!this.oidc;
+  }
+
+  setOIDC(openIdConfig: any) {
+    this.setHeader('X-ID-TENANT-NAME', openIdConfig.tenant);
+    this.oidc = {
+      host: openIdConfig.host
+    };
+  }
 
   /**
    * Add a new header.
@@ -166,8 +180,8 @@ export class BackendService {
    * @returns Base URI for the given API.
    */
   getApiBase(api?: string): string {
-    // return this.getHost() + this.config.getApiBase(api || ApiBase.apiWeb);
-    return api === '' ? api : this.config.getApiBase(api || ApiBase.apiWeb);
+    const apiBase = api === '' ? api : this.config.getApiBase(api || ApiBase.apiWeb);
+    return `${this.oidc ? this.oidc.host : ''}${apiBase}`;
   }
 
   /**
@@ -202,11 +216,11 @@ export class BackendService {
 
   private setDefaultHeaders(): HttpHeaders {
     return new HttpHeaders({
-      'Content-Type': 'application/json',
-      'X-os-include-links': 'false',
-      'X-os-include-actions': 'false',
-      'X-os-sync-index': 'true',
-      'Access-Control-Allow-Origin': '*'
+      'Content-Type': 'application/json'
+      // 'X-os-include-links': 'false',
+      // 'X-os-include-actions': 'false',
+      // 'X-os-sync-index': 'true'
+      // 'Access-Control-Allow-Origin': '*'
     });
   }
 

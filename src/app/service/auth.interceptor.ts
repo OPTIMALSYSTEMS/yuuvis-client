@@ -1,6 +1,6 @@
 import { HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { UserService } from '@yuuvis/core';
+import { BackendService, UserService } from '@yuuvis/core';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
@@ -14,7 +14,7 @@ export class AuthInterceptor implements HttpInterceptor {
   /**
    * @ignore
    */
-  constructor(private userService: UserService) {}
+  constructor(private userService: UserService, private backend: BackendService) {}
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     return next.handle(request).pipe(
@@ -26,7 +26,7 @@ export class AuthInterceptor implements HttpInterceptor {
         },
         (error: any) => {
           if (error instanceof HttpErrorResponse || error.isHttpErrorResponse) {
-            if (error.status === 401) {
+            if (error.status === 401 && !this.backend.authUsesOpenIdConnect()) {
               // session timed out or we lost the tenant header
               this.userService.logout();
             }
