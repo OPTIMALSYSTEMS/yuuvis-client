@@ -1,6 +1,6 @@
 import { PlatformLocation } from '@angular/common';
 import { Injectable } from '@angular/core';
-import { DmsObjectContent, DmsService, UserService, Utils } from '@yuuvis/core';
+import { BackendService, DmsObjectContent, DmsService, UserService, Utils } from '@yuuvis/core';
 import { Observable, ReplaySubject } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { PluginsService, UNDOCK_WINDOW_NAME } from '../../../plugins/plugins.service';
@@ -44,14 +44,24 @@ export class ContentPreviewService {
     private location: PlatformLocation,
     private dmsService: DmsService,
     private userService: UserService,
+    private backend: BackendService,
     private layoutService: LayoutService,
     private pluginsService: PluginsService
   ) {}
 
   private createPath(id: string, version?: number): { root: string; path: string; pathPdf: string } {
-    let root = `${this.location.protocol}//${this.location.hostname}`;
-    root = this.location.port.length ? `${root}:${this.location.port}` : root;
-    const path = `${root}${this.dmsService.getContentPath(id)}?asdownload=false${version ? '&version=' + version : ''}`;
+    let root;
+    if (this.backend.authUsesOpenIdConnect()) {
+      root = this.backend.oidc.host;
+    } else {
+      root = `${this.location.protocol}//${this.location.hostname}`;
+      if (this.location.port.length) {
+        root += `:${this.location.port}`;
+      }
+    }
+    const path = `${this.backend.authUsesOpenIdConnect() ? '' : root}${this.dmsService.getContentPath(id)}?asdownload=false${
+      version ? '&version=' + version : ''
+    }`;
     const pathPdf = `${root}/api/dms/objects/${id}${version ? '/versions/' + version : ''}/contents/renditions/pdf`;
     return { root, path, pathPdf };
   }

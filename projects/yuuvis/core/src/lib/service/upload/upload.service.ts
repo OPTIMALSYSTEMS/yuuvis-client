@@ -96,12 +96,16 @@ export class UploadService {
    */
   private createHttpRequest(url: string, content: Partial<{ formData: FormData; file: File }>, reportProgress: boolean, method = 'POST'): HttpRequest<any> {
     const { formData, file } = content;
-    let headers: any = { 'ngsw-bypass': 'ngsw-bypass' };
-    if (file) {
-      headers = { ...headers, 'Content-Disposition': `attachment; filename="${file.name}"` };
-    }
+    // add request param to bypass the serviceworker
+    url += `${url.indexOf('?') === -1 ? '?' : '&'}ngsw-bypass=1`;
     return new HttpRequest(method, url, file || formData, {
-      headers: new HttpHeaders(headers),
+      headers: new HttpHeaders(
+        file
+          ? {
+              'Content-Disposition': `attachment; filename="${file.name}"`
+            }
+          : null
+      ),
       reportProgress
     });
   }

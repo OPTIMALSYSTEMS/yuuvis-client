@@ -11,8 +11,9 @@ import { BackendService } from '../backend/backend.service';
   providedIn: 'root'
 })
 export class OidcService {
+  isOIDCConnected: boolean;
+
   constructor(
-    // @Inject(OAuthModuleConfig) private oAuthConfig: OAuthModuleConfig,
     @Optional() private oAuthConfig: OAuthModuleConfig,
     private http: HttpClient,
     private backend: BackendService,
@@ -57,6 +58,7 @@ export class OidcService {
           oidc.host = oidc.host.substring(0, oidc.host.length - 1);
         }
         this.backend.setOIDC(oidc);
+        this.isOIDCConnected = true;
         return oidc;
       })
     );

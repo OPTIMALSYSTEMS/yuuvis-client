@@ -18,7 +18,7 @@ export class BackendService {
   private headers = this.setDefaultHeaders();
   private persistedHeaders: any = {};
 
-  private oidc: { host: string };
+  public oidc: { host: string };
 
   /**
    * @ignore
