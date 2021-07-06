@@ -1,12 +1,11 @@
 import { HttpClient } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
-import { AuthConfig, OAuthService } from 'angular-oauth2-oidc';
-import { forkJoin, from, Observable, of } from 'rxjs';
+import { forkJoin, of } from 'rxjs';
 import { catchError, map, switchMap, tap } from 'rxjs/operators';
 import { Utils } from '../../util/utils';
 import { AuthService } from '../auth/auth.service';
+import { OidcService } from '../auth/oidc.service';
 import { OpenIdConfig } from '../backend/backend.interface';
-import { BackendService } from '../backend/backend.service';
 import { YuvConfig } from '../config/config.interface';
 import { ConfigService } from '../config/config.service';
 import { CoreConfig } from '../config/core-config';
@@ -28,12 +27,11 @@ export class CoreInit {
   constructor(
     @Inject(CORE_CONFIG) private coreConfig: CoreConfig,
     private deviceService: DeviceService,
-    private backend: BackendService,
     private logger: Logger,
     private http: HttpClient,
     private configService: ConfigService,
     private authService: AuthService,
-    private oauthService: OAuthService
+    private oidcService: OidcService
   ) {}
 
   initialize(): Promise<boolean> {
@@ -59,7 +57,7 @@ export class CoreInit {
 
     let openIdConfig: OpenIdConfig;
     let httpOptions;
-    return this.loadOIDC().pipe(
+    return this.oidcService.checkForOIDCConfig().pipe(
       switchMap((oidc: OpenIdConfig) => {
         openIdConfig = oidc;
         httpOptions = oidc
@@ -102,47 +100,5 @@ export class CoreInit {
         );
       })
     );
-  }
-
-  private loadOIDC(): Observable<OpenIdConfig> {
-    const uri = 'assets/oidc.json';
-    return this.http.get(`${Utils.getBaseHref()}${uri}`).pipe(
-      catchError((_) => of(null)),
-      switchMap((oidc: OpenIdConfig) => (oidc ? this.initOpenIdConnect(oidc) : of(null)))
-    );
-  }
-
-  private initOpenIdConnect(oidc: OpenIdConfig): Observable<OpenIdConfig> {
-    if (oidc) {
-      const authConfig: AuthConfig = {
-        issuer: oidc.issuer,
-        redirectUri: oidc.redirectUri || window.location.origin + '/',
-        postLogoutRedirectUri: oidc.postLogoutRedirectUri || window.location.origin + '/login',
-        clientId: oidc.clientId,
-        responseType: 'code',
-        scope: 'openid profile email offline_access',
-        showDebugInformation: false,
-        requireHttps: false,
-        disableAtHashCheck: true,
-        sessionCheckIntervall: 60000,
-        sessionChecksEnabled: true,
-        clearHashAfterLogin: false,
-        silentRefreshTimeout: 5000 // For faster testing
-      };
-
-      this.oauthService.configure(authConfig);
-      this.oauthService.setupAutomaticSilentRefresh();
-      return from(this.oauthService.loadDiscoveryDocumentAndLogin()).pipe(
-        map((_) => {
-          if (oidc.host.endsWith('/')) {
-            oidc.host = oidc.host.substring(0, oidc.host.length - 1);
-          }
-          this.backend.setOIDC(oidc);
-          return oidc;
-        })
-      );
-    } else {
-      return of(null);
-    }
   }
 }

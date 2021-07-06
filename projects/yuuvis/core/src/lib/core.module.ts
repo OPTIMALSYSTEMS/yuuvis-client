@@ -33,13 +33,8 @@ export function init_module(coreInit: CoreInit) {
     HttpClientModule,
     OAuthModule.forRoot({
       resourceServer: {
-        sendAccessToken: true,
-        allowedUrls: [
-          'https://kolibri.enaioci.net'
-          // window.location.origin + '/api-web/**',
-          // window.location.origin + '/oauth/**',
-          // window.location.origin + '/auth/**'
-        ]
+        sendAccessToken: false,
+        allowedUrls: []
       }
     }),
     TranslateModule.forRoot()
