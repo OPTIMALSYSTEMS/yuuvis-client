@@ -2,13 +2,16 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { BackendService } from '../backend/backend.service';
+import { Classification } from '../system/system.enum';
+import { ObjectType } from '../system/system.interface';
+import { SystemService } from '../system/system.service';
 import { PredictionClassifyResult } from './prediction.interface';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PredictionService {
-  constructor(private backend: BackendService) {}
+  constructor(private backend: BackendService, private systemService: SystemService) {}
 
   classify(objectID: string): Observable<PredictionClassifyResult> {
     return this.backend.get(`/predict/classification/${objectID}`, 'predict').pipe(
@@ -28,6 +31,14 @@ export class PredictionService {
         }
       })
     );
+  }
+  /**
+   * Checks whether or not the given object type supports prediction api
+   * @param objectTypeId Object type ID
+   */
+  supportsPrediction(objectTypeId: string): boolean {
+    const ot: ObjectType = this.systemService.getObjectType(objectTypeId);
+    return ot && ot.classification?.includes(Classification.PREDICTION_CLASSIFY);
   }
 
   private mapPredictions(properties: any): {

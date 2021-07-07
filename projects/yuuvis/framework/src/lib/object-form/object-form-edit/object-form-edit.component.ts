@@ -333,7 +333,9 @@ export class ObjectFormEditComponent implements OnDestroy {
       this._sotChanged.assignedGeneral = true;
     }
     this._dmsObject.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS] = [...sotIDs, ...sotsToBeAdded];
-
+    if (fsot.data) {
+      this._dmsObject.data = { ...this._dmsObject.data, ...fsot.data };
+    }
     if (isPrimaryFSOT) {
       this.createObjectForm(this._dmsObject).subscribe(() => (this.busy = false));
     } else {

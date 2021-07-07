@@ -41,7 +41,10 @@ export class FloatingSotSelectComponent {
   @Input() set fsotSelectInput(i: FloatingSotSelectInput) {
     this.dmsObject = i.dmsObject;
 
-    (this.dmsObject && this.dmsObject.content && this.predict ? this.predictionService.classify(this.dmsObject.id) : of(null))
+    (this.dmsObject && this.dmsObject.content && this.predict && this.predictionService.supportsPrediction(this.dmsObject.objectTypeId)
+      ? this.predictionService.classify(this.dmsObject.id)
+      : of(null)
+    )
       .pipe(
         // just catch error, if we could not get predictions its not that important
         // otherwise we would get a red toast which looks dangerous
