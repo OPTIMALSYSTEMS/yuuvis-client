@@ -99,7 +99,8 @@ export enum Classification {
   STRING_PHONE = 'phone',
   NUMBER_FILESIZE = 'filesize',
   NUMBER_DIGIT = 'digit',
-  SYSTEM_SOT = 'systemsot'
+  SYSTEM_SOT = 'systemsot',
+  PREDICTION_CLASSIFY = 'prediction:classify'
 }
 
 // classifications applied to object types

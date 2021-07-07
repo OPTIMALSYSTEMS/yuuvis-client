@@ -377,7 +377,10 @@ export class ObjectCreateComponent implements OnDestroy {
     this.afoCreateApprove();
   }
 
-  afoSelectFloatingSOT(sot: { id: string; label: string }) {
+  afoSelectFloatingSOT(sot: { id: string; label: string }, data?: any) {
+    if (data) {
+      this.afoCreate.dmsObject.selected.data = { ...this.afoCreate.dmsObject.selected.data, ...data };
+    }
     this.afoCreate.dmsObject.selected.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS] =
       !sot || sot.id != 'none' ? [...this.getSotsToBeApplied(), sot.id] : null;
     this.afoCreate.floatingSOT.selected = {

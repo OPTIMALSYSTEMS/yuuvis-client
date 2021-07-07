@@ -41,7 +41,10 @@ export class FloatingSotSelectComponent {
   @Input() set fsotSelectInput(i: FloatingSotSelectInput) {
     this.dmsObject = i.dmsObject;
 
-    (this.dmsObject && this.dmsObject.content && this.predict ? this.predictionService.classify(this.dmsObject.id) : of(null))
+    (this.dmsObject && this.dmsObject.content && this.predict && this.predictionService.supportsPrediction(this.dmsObject.objectTypeId)
+      ? this.predictionService.classify(this.dmsObject.id)
+      : of(null)
+    )
       .pipe(
         // just catch error, if we could not get predictions its not that important
         // otherwise we would get a red toast which looks dangerous
@@ -49,16 +52,13 @@ export class FloatingSotSelectComponent {
       )
       .subscribe((prdRes: PredictionClassifyResult) => {
         this.predictionClassifyResult = prdRes;
-        this.sots = [
-          ...(Array.isArray(i.additionalItems) ? i.additionalItems : []),
-          ...i.sots.map((sot) => this.toSelectable(sot, prdRes?.predictions[sot.id].probability))
-        ];
+        this.sots = [...(Array.isArray(i.additionalItems) ? i.additionalItems : []), ...this.toSelectables(i.sots, prdRes)];
       });
   }
 
   // Emitted once a floating SOT has been selected
   // May be NULL in case the general object type has been selected
-  @Output() fsotSelect = new EventEmitter<SecondaryObjectType>();
+  @Output() fsotSelect = new EventEmitter<FloatingSotSelectItem>();
 
   constructor(
     @Attribute('predict') public predict: string,
@@ -67,7 +67,30 @@ export class FloatingSotSelectComponent {
     private systemService: SystemService
   ) {}
 
-  private toSelectable(sot: SecondaryObjectType, predictionProbability: number): FloatingSotSelectItem {
+  private toSelectables(sots: SecondaryObjectType[], prdRes: PredictionClassifyResult): FloatingSotSelectItem[] {
+    let res: FloatingSotSelectItem[] = [];
+
+    if (prdRes) {
+      sots.forEach((sot) => {
+        if (prdRes.predictions[sot.id]) {
+          prdRes.predictions[sot.id].forEach((p: { probability: number; data: any }) => {
+            res.push(this.toSelectable(sot, p));
+          });
+        }
+      });
+    } else {
+      res = sots.map((sot) => this.toSelectable(sot));
+    }
+    return res;
+  }
+
+  private toSelectable(
+    sot: SecondaryObjectType,
+    prediction?: {
+      probability: number;
+      data?: any;
+    }
+  ): FloatingSotSelectItem {
     // if we got files but the target FSOT does not support content
     const contentRequiredButMissing = !this.dmsObject?.content && sot.contentStreamAllowed === ContentStreamAllowed.REQUIRED;
     // if the target FSOT requires a file, but we don't have one
@@ -77,9 +100,16 @@ export class FloatingSotSelectComponent {
       label: sot.label,
       svgSrc: this.systemService.getObjectTypeIconUri(sot.id),
       disabled: disabled,
-      prediction: predictionProbability,
-      sot: sot
+      prediction: prediction?.probability,
+      sot: sot,
+      data: prediction?.data
     };
+    //
+    if (prediction?.data) {
+      // TODO: find better approach than that
+      const k = Object.keys(prediction.data)[0];
+      selectable.description = `${this.systemService.getLocalizedResource(k + '_label')}: ${prediction.data[k]}`;
+    }
     // add description to tell the user why a selectable is disabled
     if (disabled) {
       selectable.description = contentRequiredButMissing
@@ -95,7 +125,7 @@ export class FloatingSotSelectComponent {
       if (this.predictionClassifyResult) {
         this.predictionService.sendClassifyFeedback(this.predictionClassifyResult.id, item.sot.id);
       }
-      this.fsotSelect.emit(item.sot);
+      this.fsotSelect.emit(item);
     }
   }
 

@@ -1,6 +1,6 @@
 {
   "name": "yuuvis-flokfugl",
-  "version": "2.1.0-beta.4",
+  "version": "2.1.0-beta.5",
   "releaseDate": "Summer 2021",
   "description": "yuuvis® client",
   "author": "OPTIMAL SYSTEMS GmbH",
@@ -41,7 +41,8 @@
     "extract:merge:all": "npm run extract:framework && node ./tools/scripts/common/i18n --lib=framework && npm run extract:app && node ./tools/scripts/common/i18n-merge --run",
     "sass:libs": "node ./tools/scripts/common/sass --lib=framework",
     "build:libs:all": "npm run build:core && npm run build:framework",
-    "build:web": "npm run prebuild:about && npm run build:libs:all && npm run build -- --prod --base-href /client/ && node ./tools/scripts/misc/replace-start-url --url=/client/ && npm run prepare:dist",
+    "build:client:only": "npm run build -- --prod --base-href /client/ && node ./tools/scripts/misc/replace-start-url --url=/client/",
+    "build:web": "npm run prebuild:about && npm run build:libs:all && npm run build:client:only && npm run prepare:dist",
     "build:pwa": "npm run prebuild:about && npm run build:libs:all && npm run build -- --prod --base-href /clientdev/ && node ./tools/scripts/misc/replace-start-url --url=/clientdev/ && npm run prepare:dist",
     "build:pwa:loc": "npm run prebuild:about && npm run build:libs:all && npm run build -- --prod --base-href /yuuvis-flokfugl/ && node ./tools/scripts/misc/replace-start-url --url=/yuuvis-flokfugl/ && npm run prepare:dist",
     "prepare:dist": "node ./tools/scripts/misc/prepare-dist",
