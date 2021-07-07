@@ -41,7 +41,6 @@ import { forkJoin as observableForkJoin, Observable, of as observableOf } from '
 import { catchError, map } from 'rxjs/operators';
 import { Utils } from '../../util/utils';
 import { ApiBase } from '../backend/api.enum';
-import { BackendService } from '../backend/backend.service';
 import { ConfigService } from '../config/config.service';
 import { CoreConfig } from '../config/core-config';
 import { CORE_CONFIG } from '../config/core-config.tokens';
@@ -52,7 +51,7 @@ import { TENANT_HEADER } from '../system/system.enum';
  * @ignore
  */
 export class EoxTranslateJsonLoader implements TranslateLoader {
-  constructor(public http: HttpClient, @Inject(CORE_CONFIG) public config: CoreConfig, public backend: BackendService) {
+  constructor(public http: HttpClient, @Inject(CORE_CONFIG) public config: CoreConfig) {
     registerLocaleData(localeDe, 'de', localeExtraDe); // German
     registerLocaleData(localeAr, 'ar', localeExtraAr); // Arabic
     registerLocaleData(localeEs, 'es', localeExtraEs); // Spanish
@@ -82,10 +81,10 @@ export class EoxTranslateJsonLoader implements TranslateLoader {
         let uri = `${u.startsWith(ApiBase.apiWeb) ? '/' : Utils.getBaseHref()}${u}`;
         let options = { headers: {} };
 
-        if (this.backend.authUsesOpenIdConnect()) {
-          options.headers[TENANT_HEADER] = this.backend.oidc.tenant;
+        if (this.config.oidc) {
+          options.headers[TENANT_HEADER] = this.config.oidc.tenant;
           if (!uri.startsWith('/assets/')) {
-            u = `${this.backend.oidc.host}${uri}`;
+            uri = `${this.config.oidc.host}${uri}`;
           }
         }
         return this.http.get(uri, options).pipe(catchError((e) => observableOf({})));

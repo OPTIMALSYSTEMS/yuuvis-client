@@ -1,20 +1,24 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, Optional } from '@angular/core';
+import { Inject, Injectable, Optional } from '@angular/core';
 import { AuthConfig, OAuthModuleConfig, OAuthService } from 'angular-oauth2-oidc';
 import { from, Observable, of } from 'rxjs';
 import { catchError, map, switchMap } from 'rxjs/operators';
 import { Utils } from '../../util/utils';
 import { OpenIdConfig } from '../backend/backend.interface';
 import { BackendService } from '../backend/backend.service';
+import { CoreConfig } from '../config/core-config';
+import { CORE_CONFIG } from '../config/core-config.tokens';
+import { TENANT_HEADER } from '../system/system.enum';
 
 @Injectable({
   providedIn: 'root'
 })
 export class OidcService {
-  isOIDCConnected: boolean;
+  // isOIDCConnected: boolean;
 
   constructor(
     @Optional() private oAuthConfig: OAuthModuleConfig,
+    @Inject(CORE_CONFIG) public config: CoreConfig,
     private http: HttpClient,
     private backend: BackendService,
     private oauthService: OAuthService
@@ -57,8 +61,8 @@ export class OidcService {
         if (oidc.host.endsWith('/')) {
           oidc.host = oidc.host.substring(0, oidc.host.length - 1);
         }
-        this.backend.setOIDC(oidc);
-        this.isOIDCConnected = true;
+        this.backend.setHeader(TENANT_HEADER, oidc.tenant);
+        this.config.oidc = oidc;
         return oidc;
       })
     );

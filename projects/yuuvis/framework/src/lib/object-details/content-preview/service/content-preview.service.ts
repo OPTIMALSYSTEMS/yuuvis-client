@@ -1,6 +1,6 @@
 import { PlatformLocation } from '@angular/common';
-import { Injectable } from '@angular/core';
-import { BackendService, DmsObjectContent, DmsService, UserService, Utils } from '@yuuvis/core';
+import { Inject, Injectable } from '@angular/core';
+import { BackendService, CoreConfig, CORE_CONFIG, DmsObjectContent, DmsService, UserService, Utils } from '@yuuvis/core';
 import { Observable, ReplaySubject } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { PluginsService, UNDOCK_WINDOW_NAME } from '../../../plugins/plugins.service';
@@ -41,6 +41,7 @@ export class ContentPreviewService {
    * @ignore
    */
   constructor(
+    @Inject(CORE_CONFIG) public coreConfig: CoreConfig,
     private location: PlatformLocation,
     private dmsService: DmsService,
     private userService: UserService,
@@ -52,7 +53,7 @@ export class ContentPreviewService {
   private createPath(id: string, version?: number): { root: string; path: string; pathPdf: string } {
     let root;
     if (this.backend.authUsesOpenIdConnect()) {
-      root = this.backend.oidc.host;
+      root = this.coreConfig.oidc.host;
     } else {
       root = `${this.location.protocol}//${this.location.hostname}`;
       if (this.location.port.length) {

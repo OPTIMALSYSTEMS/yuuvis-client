@@ -1,8 +1,10 @@
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Inject, Injectable } from '@angular/core';
 import { forkJoin, Observable, of } from 'rxjs';
 import { catchError, finalize, shareReplay, tap } from 'rxjs/operators';
 import { ConfigService } from '../config/config.service';
+import { CoreConfig } from '../config/core-config';
+import { CORE_CONFIG } from '../config/core-config.tokens';
 import { Logger } from '../logger/logger';
 import { TENANT_HEADER } from '../system/system.enum';
 import { ApiBase } from './api.enum';
@@ -10,30 +12,22 @@ import { ApiBase } from './api.enum';
 /**
  * Service for providing an yuuvis Backend
  */
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class BackendService {
   private cache = new Map<string, any>();
   private temp = new Map<string, Observable<any>>();
   private headers = this.setDefaultHeaders();
   private persistedHeaders: any = {};
 
-  public oidc: { host: string; tenant: string };
+  // public oidc: { host: string; tenant: string };
 
   /**
    * @ignore
    */
-  constructor(private http: HttpClient, private logger: Logger, private config: ConfigService) {}
+  constructor(private http: HttpClient, private logger: Logger, @Inject(CORE_CONFIG) public coreConfig: CoreConfig, private config: ConfigService) {}
 
   authUsesOpenIdConnect(): boolean {
-    return !!this.oidc;
-  }
-
-  setOIDC(openIdConfig: any) {
-    this.setHeader(TENANT_HEADER, openIdConfig.tenant);
-    this.oidc = {
-      host: openIdConfig.host,
-      tenant: openIdConfig.tenant
-    };
+    return !!this.coreConfig.oidc;
   }
 
   /**
@@ -139,7 +133,7 @@ export class BackendService {
         headers: {}
       };
       if (this.authUsesOpenIdConnect()) {
-        requestOptions.headers[TENANT_HEADER] = this.oidc.tenant;
+        requestOptions.headers[TENANT_HEADER] = this.coreConfig.oidc.tenant;
       }
       return this.getViaTempCache(uri, () => this.http.get(uri, requestOptions).pipe(tap((text) => this.cache.set(uri, text))));
     }
@@ -188,7 +182,7 @@ export class BackendService {
    */
   getApiBase(api?: string): string {
     const apiBase = api === '' ? api : this.config.getApiBase(api || ApiBase.apiWeb);
-    return `${this.oidc ? this.oidc.host : ''}${apiBase}`;
+    return `${this.authUsesOpenIdConnect() ? this.coreConfig.oidc.host : ''}${apiBase}`;
   }
 
   /**

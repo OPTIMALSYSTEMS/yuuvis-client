@@ -4,7 +4,6 @@ import { MissingTranslationHandler, TranslateLoader, TranslateModule } from '@ng
 import { OAuthModule } from 'angular-oauth2-oidc';
 import { YuvCoreSharedModule } from './core.shared.module';
 import { AuthInterceptor } from './service/auth/auth.interceptor';
-import { BackendService } from './service/backend/backend.service';
 import { CoreConfig } from './service/config/core-config';
 import { CORE_CONFIG, CUSTOM_CONFIG } from './service/config/core-config.tokens';
 import { OfflineInterceptor } from './service/connection/offline.interceptor';
@@ -59,7 +58,6 @@ export class YuvCoreModule {
           deps: [CoreInit],
           multi: true
         },
-        BackendService,
         /**
          * overriding translate modules defaults
          * this works because providers are singletons
@@ -67,7 +65,7 @@ export class YuvCoreModule {
         {
           provide: TranslateLoader,
           useClass: EoxTranslateJsonLoader,
-          deps: [HttpClient, CORE_CONFIG, BackendService]
+          deps: [HttpClient, CORE_CONFIG]
         },
         {
           provide: MissingTranslationHandler,
