@@ -1,3 +1,5 @@
+export const TENANT_HEADER = 'X-ID-TENANT-NAME';
+
 export const SystemType = {
   OBJECT: 'system:object',
   DOCUMENT: 'system:document',

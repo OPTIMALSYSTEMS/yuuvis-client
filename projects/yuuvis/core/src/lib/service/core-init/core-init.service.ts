@@ -12,14 +12,13 @@ import { CoreConfig } from '../config/core-config';
 import { CORE_CONFIG } from '../config/core-config.tokens';
 import { DeviceService } from '../device/device.service';
 import { Logger } from '../logger/logger';
+import { TENANT_HEADER } from '../system/system.enum';
 import { ApiBase } from './../backend/api.enum';
 
 /**
  * Providing functions,that are are injected at application startup and executed during app initialization.
  */
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class CoreInit {
   /**
    * @ignore
@@ -60,11 +59,11 @@ export class CoreInit {
     return this.oidcService.checkForOIDCConfig().pipe(
       switchMap((oidc: OpenIdConfig) => {
         openIdConfig = oidc;
-        httpOptions = oidc
-          ? {
-              headers: { 'X-ID-TENANT-NAME': openIdConfig.tenant }
-            }
-          : null;
+        if (oidc) {
+          const headers = {};
+          headers[TENANT_HEADER] = openIdConfig.tenant;
+          httpOptions = { headers };
+        }
         return (
           !Array.isArray(this.coreConfig.main)
             ? of([this.coreConfig.main])
@@ -73,19 +72,16 @@ export class CoreInit {
                   this.http.get(`${oidc && uri.indexOf('assets/') === -1 ? oidc.host : Utils.getBaseHref()}${uri}`, httpOptions).pipe(catchError(error))
                 )
               ).pipe(
-                switchMap((configs: YuvConfig[]) =>
-                  this.http
-                    .get(
-                      `${openIdConfig ? openIdConfig.host : ''}${configs.reduce((p, c) => (c?.core?.apiBase ? c?.core?.apiBase[ApiBase.apiWeb] || p : p), '')}${
-                        ConfigService.GLOBAL_MAIN_CONFIG
-                      }`,
-                      httpOptions
-                    )
-                    .pipe(
-                      catchError(error),
-                      map((global) => [...configs, global])
-                    )
-                )
+                switchMap((configs: YuvConfig[]) => {
+                  const uri = `${openIdConfig ? openIdConfig.host : ''}${configs.reduce(
+                    (p, c) => (c?.core?.apiBase ? c?.core?.apiBase[ApiBase.apiWeb] || p : p),
+                    ''
+                  )}${ConfigService.GLOBAL_MAIN_CONFIG}`;
+                  return this.http.get(uri, httpOptions).pipe(
+                    catchError(error),
+                    map((global) => [...configs, global])
+                  );
+                })
               )
         ).pipe(
           map((res) =>

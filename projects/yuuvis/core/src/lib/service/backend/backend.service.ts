@@ -4,21 +4,20 @@ import { forkJoin, Observable, of } from 'rxjs';
 import { catchError, finalize, shareReplay, tap } from 'rxjs/operators';
 import { ConfigService } from '../config/config.service';
 import { Logger } from '../logger/logger';
+import { TENANT_HEADER } from '../system/system.enum';
 import { ApiBase } from './api.enum';
 
 /**
  * Service for providing an yuuvis Backend
  */
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class BackendService {
   private cache = new Map<string, any>();
   private temp = new Map<string, Observable<any>>();
   private headers = this.setDefaultHeaders();
   private persistedHeaders: any = {};
 
-  public oidc: { host: string };
+  public oidc: { host: string; tenant: string };
 
   /**
    * @ignore
@@ -30,9 +29,10 @@ export class BackendService {
   }
 
   setOIDC(openIdConfig: any) {
-    this.setHeader('X-ID-TENANT-NAME', openIdConfig.tenant);
+    this.setHeader(TENANT_HEADER, openIdConfig.tenant);
     this.oidc = {
-      host: openIdConfig.host
+      host: openIdConfig.host,
+      tenant: openIdConfig.tenant
     };
   }
 
@@ -134,7 +134,14 @@ export class BackendService {
     if (this.cache.has(uri)) {
       return of(this.cache.get(uri));
     } else {
-      return this.getViaTempCache(uri, () => this.http.get(uri, { responseType: 'text' }).pipe(tap((text) => this.cache.set(uri, text))));
+      const requestOptions: any = {
+        responseType: 'text',
+        headers: {}
+      };
+      if (this.authUsesOpenIdConnect()) {
+        requestOptions.headers[TENANT_HEADER] = this.oidc.tenant;
+      }
+      return this.getViaTempCache(uri, () => this.http.get(uri, requestOptions).pipe(tap((text) => this.cache.set(uri, text))));
     }
   }
 
