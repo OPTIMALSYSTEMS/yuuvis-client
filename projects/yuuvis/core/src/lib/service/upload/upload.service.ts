@@ -1,4 +1,4 @@
-import { HttpClient, HttpErrorResponse, HttpEventType, HttpRequest, HttpResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpEventType, HttpHeaders, HttpRequest, HttpResponse } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, ReplaySubject, Subject, throwError } from 'rxjs';
 import { catchError, filter, map, scan, tap } from 'rxjs/operators';
@@ -110,7 +110,7 @@ export class UploadService {
     }
 
     return new HttpRequest(method, url, file || formData, {
-      headers: headers,
+      headers: new HttpHeaders(headers),
       reportProgress
     });
   }
