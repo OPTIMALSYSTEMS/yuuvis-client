@@ -16,4 +16,5 @@ export interface FloatingSotSelectItem {
   disabled?: boolean;
   sot: SecondaryObjectType;
   prediction?: number;
+  data?: any;
 }

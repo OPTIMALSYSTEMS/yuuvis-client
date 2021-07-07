@@ -13,12 +13,11 @@ export class PredictionService {
   classify(objectID: string): Observable<PredictionClassifyResult> {
     return this.backend.get(`/predict/classification/${objectID}`, 'predict').pipe(
       map((res: any) => {
-        // get matching prediction from response array (should be only only one but ...)
+        // get matching prediction from response array
         const mp = res.predictions.find((p) => p['system:objectId']?.value === objectID);
         if (mp) {
           // map response from the prediction service to the internal response type
-          const predictions = {};
-          Object.keys(mp.properties).forEach((k) => (predictions[k] = { probability: mp.properties[k].probability }));
+          const predictions = this.mapPredictions(mp.properties);
           return {
             id: mp.predictionId,
             objectId: mp['system:objectId'],
@@ -29,6 +28,33 @@ export class PredictionService {
         }
       })
     );
+  }
+
+  private mapPredictions(properties: any): {
+    [objectType: string]: [
+      {
+        probability: number;
+        data?: any;
+      }
+    ];
+  } {
+    const predictions = {};
+
+    Object.keys(properties).forEach((k) => {
+      const tokens = k.split('|');
+      const objectTypeKey = tokens.length ? tokens[0] : k;
+      const data: any = {};
+      if (tokens.length) {
+        data[tokens[1]] = tokens[2];
+      }
+
+      if (!predictions[objectTypeKey]) predictions[objectTypeKey] = [];
+      predictions[objectTypeKey].push({
+        probability: properties[k].probability,
+        data: data
+      });
+    });
+    return predictions;
   }
 
   /**
