@@ -9,7 +9,6 @@ import {
   DmsService,
   ObjectTag,
   PendingChangesService,
-  SecondaryObjectType,
   SecondaryObjectTypeClassification,
   SystemService,
   TranslateService,
@@ -17,7 +16,7 @@ import {
 } from '@yuuvis/core';
 import { Observable, of } from 'rxjs';
 import { finalize, map, switchMap } from 'rxjs/operators';
-import { FloatingSotSelectInput } from '../../floating-sot-select/floating-sot-select.interface';
+import { FloatingSotSelectInput, FloatingSotSelectItem } from '../../floating-sot-select/floating-sot-select.interface';
 import { PopoverConfig } from '../../popover/popover.interface';
 import { PopoverRef } from '../../popover/popover.ref';
 import { PopoverService } from '../../popover/popover.service';
@@ -312,7 +311,7 @@ export class ObjectFormEditComponent implements OnDestroy {
     this.popoverService.open(isPrimaryFSOT ? this.tplFloatingTypePicker : this.tplFloatingSOTypePicker, popoverConfig);
   }
 
-  applyFSOT(sot: SecondaryObjectType, isPrimaryFSOT: boolean, popoverRef?: PopoverRef) {
+  applyFSOT(fsot: FloatingSotSelectItem, isPrimaryFSOT: boolean, popoverRef?: PopoverRef) {
     this.busy = true;
     let sotsToBeAdded: string[] = [];
     let enableEditSOT = true;
@@ -328,13 +327,15 @@ export class ObjectFormEditComponent implements OnDestroy {
     }
     // add the selected FSOT
     // may be NULL if general type is selected
-    if (sot) {
-      sotsToBeAdded.push(sot.id);
+    if (fsot) {
+      sotsToBeAdded.push(fsot.sot.id);
     } else {
       this._sotChanged.assignedGeneral = true;
     }
     this._dmsObject.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS] = [...sotIDs, ...sotsToBeAdded];
-
+    if (fsot.data) {
+      this._dmsObject.data = { ...this._dmsObject.data, ...fsot.data };
+    }
     if (isPrimaryFSOT) {
       this.createObjectForm(this._dmsObject).subscribe(() => (this.busy = false));
     } else {
