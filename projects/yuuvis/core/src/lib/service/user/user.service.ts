@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { OAuthService } from 'angular-oauth2-oidc';
 import { BehaviorSubject, forkJoin, Observable, of } from 'rxjs';
 import { catchError, map, switchMap, tap } from 'rxjs/operators';
 import { UserSettings, YuvUser } from '../../model/yuv-user.model';
+import { OidcService } from '../auth/oidc.service';
 import { BackendService } from '../backend/backend.service';
 import { Direction } from '../config/config.interface';
 import { ConfigService } from '../config/config.service';
@@ -34,7 +34,7 @@ export class UserService {
     private translate: TranslateService,
     private logger: Logger,
     private system: SystemService,
-    private oauthService: OAuthService,
+    private oidc: OidcService,
     private eventService: EventService,
     private config: ConfigService
   ) {}
@@ -140,7 +140,7 @@ export class UserService {
 
   logout(redirRoute?: string): void {
     if (this.backend.authUsesOpenIdConnect()) {
-      this.oauthService.logOut();
+      this.oidc.logout();
     } else {
       const redir = redirRoute ? `?redir=${redirRoute}` : '';
       (window as any).location.href = `/logout${redir}`;
