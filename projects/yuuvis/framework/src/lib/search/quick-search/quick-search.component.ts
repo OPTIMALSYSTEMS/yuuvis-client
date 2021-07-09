@@ -203,7 +203,7 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
     // TODO: load only if needed
     this.quickSearchService.loadFilterSettings().subscribe(() => this.setAvailableObjectTypesFields());
 
-    this.searchForm.valueChanges.pipe(distinctUntilChanged(), debounceTime(500)).subscribe(({ term }) => {
+    this.searchForm.valueChanges.pipe(distinctUntilChanged(), debounceTime(1000)).subscribe(({ term }) => {
       const _term = typeof term === 'string' ? term : (term && term.label) || '';
       if (this.searchQuery.term !== _term) {
         this.searchQuery.term = _term;
