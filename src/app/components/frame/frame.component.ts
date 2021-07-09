@@ -57,6 +57,7 @@ export class FrameComponent implements OnInit, OnDestroy {
   hideAppBar: boolean;
   disableFileDrop: boolean;
   disableCreate: boolean;
+  enableTenantSwitch: boolean;
   displaySideBar: boolean;
   screenSmall: boolean;
   user: YuvUser;
@@ -116,6 +117,7 @@ export class FrameComponent implements OnInit, OnDestroy {
       this.user = user;
       if (user) {
         this.disableCreate = !user.authorities.includes(UserRoles.CREATE_OBJECT);
+        this.enableTenantSwitch = user.authorities.includes(UserRoles.MULTI_TENANT);
         if (this.disableCreate) {
           this.disableFileDrop = true;
         }
@@ -218,8 +220,11 @@ export class FrameComponent implements OnInit, OnDestroy {
     location.reload();
   }
 
-  logout(event: MouseEvent) {
+  logout(event: MouseEvent, removeTenantCookie?: boolean) {
     event.preventDefault();
+    if (removeTenantCookie) {
+      document.cookie = 'tenant=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+    }
     this.userService.logout();
   }
 
