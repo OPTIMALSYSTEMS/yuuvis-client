@@ -133,7 +133,8 @@ export class InboxItem {
   }
 
   get expiryDateTime(): Date {
-    return new Date(this.originalData.variables.find((v) => v.name === 'expiryDateTime')?.value);
+    const expiryDateTime = this.originalData.variables.find((v) => v.name === 'expiryDateTime')?.value;
+    return expiryDateTime ? new Date(expiryDateTime) : null;
   }
 
   get createTime(): Date {
