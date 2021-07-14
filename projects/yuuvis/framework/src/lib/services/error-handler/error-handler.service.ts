@@ -1,6 +1,6 @@
 import { HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest, HttpResponse } from '@angular/common/http';
 import { ErrorHandler, Injectable, Injector } from '@angular/core';
-import { AuthService, YuvError } from '@yuuvis/core';
+import { AuthService, BackendService, YuvError } from '@yuuvis/core';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { NotificationService } from '../notification/notification.service';
@@ -11,7 +11,7 @@ import { NotificationService } from '../notification/notification.service';
  */
 @Injectable()
 export class ErrorHandlerService implements ErrorHandler, HttpInterceptor {
-  constructor(private injector: Injector) {}
+  constructor(private injector: Injector, private backend: BackendService) {}
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     const auth = this.injector.get(AuthService);
@@ -25,7 +25,7 @@ export class ErrorHandlerService implements ErrorHandler, HttpInterceptor {
         },
         (error: any) => {
           if (error instanceof HttpErrorResponse || error.isHttpErrorResponse) {
-            if (error.status === 401) {
+            if (error.status === 401 && !this.backend.authUsesOpenIdConnect()) {
               auth.logout();
             }
           }

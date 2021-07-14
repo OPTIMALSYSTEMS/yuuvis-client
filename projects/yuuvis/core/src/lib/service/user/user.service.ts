@@ -3,6 +3,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { BehaviorSubject, forkJoin, Observable, of } from 'rxjs';
 import { catchError, map, switchMap, tap } from 'rxjs/operators';
 import { UserSettings, YuvUser } from '../../model/yuv-user.model';
+import { OidcService } from '../auth/oidc.service';
 import { BackendService } from '../backend/backend.service';
 import { Direction } from '../config/config.interface';
 import { ConfigService } from '../config/config.service';
@@ -11,6 +12,7 @@ import { YuvEventType } from '../event/events';
 import { Logger } from '../logger/logger';
 import { AdministrationRoles } from '../system/system.enum';
 import { SystemService } from '../system/system.service';
+
 /**
  * Service providing user account configurations.
  */
@@ -32,6 +34,7 @@ export class UserService {
     private translate: TranslateService,
     private logger: Logger,
     private system: SystemService,
+    private oidc: OidcService,
     private eventService: EventService,
     private config: ConfigService
   ) {}
@@ -136,8 +139,12 @@ export class UserService {
   }
 
   logout(redirRoute?: string): void {
-    const redir = redirRoute ? `?redir=${redirRoute}` : '';
-    (window as any).location.href = `/logout${redir}`;
+    if (this.backend.authUsesOpenIdConnect()) {
+      this.oidc.logout();
+    } else {
+      const redir = redirRoute ? `?redir=${redirRoute}` : '';
+      (window as any).location.href = `/logout${redir}`;
+    }
   }
 
   getSettings(section: string): Observable<any> {
