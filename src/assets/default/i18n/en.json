@@ -294,7 +294,7 @@
   "yuv.client.action.open.context.description": "Opens the object in its folder.",
   "yuv.client.action.open.versions": "Show versions",
   "yuv.client.action.open.versions.description": "Shows all versions of the object.",
-  "yuv.client.frame.app-bar.change-tenant": "Switch tenant",
+  "yuv.client.frame.app-bar.change-tenant": "Switch tenants",
   "yuv.client.frame.app-bar.filedrop.label": "Create as a new object",
   "yuv.client.frame.app-bar.logout": "Log out",
   "yuv.client.frame.app-bar.pwa-update.msg": "Update available",
