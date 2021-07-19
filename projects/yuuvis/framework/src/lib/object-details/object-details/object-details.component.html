@@ -1,6 +1,8 @@
 <yuv-panel *ngIf="dmsObject; else empty" class="object-details" [title]="dmsObject.title"
   (yuvFileDrop)="onFileDropped($event)"
-  [yuvFileDropOptions]="{ disabled: disableFileDrop || dmsObject.contentStreamAllowed === 'notallowed' || isRetentionActive, label: fileDropLabel }"
+  [yuvFileDropOptions]="{ disabled: disableFileDrop || fileDropOptions?.disabled || dmsObject.contentStreamAllowed === 'notallowed' || isRetentionActive, 
+  label: fileDropOptions?.label || fileDropLabel, multiple: fileDropOptions?.multiple, maxSize: fileDropOptions?.maxSize, accept: fileDropOptions?.accept, 
+  invalidError: fileDropOptions?.invalidError }"
   [description]="dmsObject.description" [yuvBusyOverlay]="busy">
   <yuv-object-type-icon class="header-icon" [objectTypeId]="objectTypeId"></yuv-object-type-icon>
 

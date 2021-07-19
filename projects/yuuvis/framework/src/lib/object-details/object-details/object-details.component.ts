@@ -31,6 +31,7 @@ import { IconRegistryService } from '../../common/components/icon/service/iconRe
 import { kebap, noFile, refresh } from '../../svg.generated';
 import { ContentPreviewService } from '../content-preview/service/content-preview.service';
 import { ResponsiveTabContainerComponent } from './../../components/responsive-tab-container/responsive-tab-container.component';
+import { FileDropOptions } from './../../directives/file-drop/file-drop.directive';
 
 /**
  * High level component displaying detail aspects for a given DmsObject.
@@ -180,6 +181,7 @@ export class ObjectDetailsComponent implements OnDestroy {
    * versions of an object.
    */
   @Input() disableFileDrop: boolean;
+  @Input() fileDropOptions: FileDropOptions;
 
   undockWinActive = false;
 
