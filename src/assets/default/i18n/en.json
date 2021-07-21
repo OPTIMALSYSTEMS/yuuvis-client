@@ -370,5 +370,10 @@
   "yuv.framework.bpm.inbox.confirm": "Confirm follow-up",
   "yuv.framework.bpm.process.remove": "Remove follow-up",
   "yuv.framework.inbox-list.inbox": "Inbox",
-  "yuv.framework.process-list.process": "My follow-ups"
+  "yuv.framework.process-list.process": "My follow-ups",
+  "yuv.framework.process-list.column.type.label": "Type",
+  "yuv.framework.process-list.column.subject.label": "Subject",
+  "yuv.framework.process-list.column.expiryDateTime.label": "Received",
+  "yuv.framework.process-list.column.businessKey.label": "Object",
+  "yuv.framework.process-list.column.startTime.label": "Start time"
 }

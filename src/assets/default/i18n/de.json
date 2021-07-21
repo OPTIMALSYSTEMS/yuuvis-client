@@ -370,5 +370,10 @@
   "yuv.framework.bpm.inbox.confirm": "Wiedervorlage bestätigen",
   "yuv.framework.bpm.process.remove": "Wiedervorlage entfernen",
   "yuv.framework.inbox-list.inbox": "Eingangskorb",
-  "yuv.framework.process-list.process": "Meine Wiedervorlagen"
+  "yuv.framework.process-list.process": "Meine Wiedervorlagen",
+  "yuv.framework.process-list.column.type.label": "Typ",
+  "yuv.framework.process-list.column.subject.label": "Betreff",
+  "yuv.framework.process-list.column.expiryDateTime.label": "Erhalten",
+  "yuv.framework.process-list.column.businessKey.label": "Objekt",
+  "yuv.framework.process-list.column.startTime.label": "Startzeitpunkt"
 }

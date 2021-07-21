@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
-import { FollowUp, InboxItem, ProcessData, SystemService, TaskData } from '@yuuvis/core';
-import { ObjectTypeIconComponent } from '../../common/components/object-type-icon/object-type-icon.component';
+import { FollowUp, InboxItem, ProcessData, TaskData, TranslateService } from '@yuuvis/core';
 import { ResponsiveTableData } from '../../components/responsive-data-table/responsive-data-table.interface';
 import { IconRegistryService } from './../../common/components/icon/service/iconRegistry.service';
 import { GridService } from './../../services/grid/grid.service';
@@ -10,7 +9,7 @@ import { followUp, task } from './../../svg.generated';
   providedIn: 'root'
 })
 export class FormatProcessDataService {
-  constructor(private systemService: SystemService, private gridService: GridService, private iconRegService: IconRegistryService) {
+  constructor(private gridService: GridService, private iconRegService: IconRegistryService, private translate: TranslateService) {
     this.iconRegService.registerIcons([task, followUp]);
   }
 
@@ -23,7 +22,9 @@ export class FormatProcessDataService {
    */
   formatTaskDataForTable(processData: TaskData[]): ResponsiveTableData {
     return this.processDataForTable(
-      processData.map((data) => ({ ...data, icon: this.iconRegService.getIcon('task') })).map((data) => new InboxItem(data)),
+      processData
+        .map((data) => ({ ...data, icon: this.iconRegService.getIcon(data.processDefinitionId.startsWith('follow-up') ? 'followUp' : 'task') }))
+        .map((data) => new InboxItem(data)),
       ['type', 'subject', 'expiryDateTime']
     );
   }
@@ -44,9 +45,8 @@ export class FormatProcessDataService {
         colId: field,
         field,
         headerClass: `col-header-type-${field}`,
-        headerName: this.systemService.getLocalizedResource(`${field}_label`),
+        headerName: this.translate.instant(`yuv.framework.process-list.column.${field}.label`),
         ...(field.toLowerCase().includes('time') && { cellRenderer: this.gridService.dateTimeCellRenderer() }),
-        ...(field.toLowerCase() === 'type' && { cellRendererFramework: ObjectTypeIconComponent }),
         resizable: true,
         sortable: true,
         ...(field.toLowerCase() === 'expirydatetime' && { sort: 'asc' })

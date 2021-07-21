@@ -154,7 +154,7 @@ export class InboxItem {
   }
 
   get type(): string {
-    return 'task';
+    return this.originalData.processDefinitionId.startsWith('follow-up') ? 'follow-up' : 'task';
   }
 
   get icon(): string {
