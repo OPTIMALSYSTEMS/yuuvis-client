@@ -1,3 +1,5 @@
+export const TENANT_HEADER = 'X-ID-TENANT-NAME';
+
 export const SystemType = {
   OBJECT: 'system:object',
   DOCUMENT: 'system:document',
@@ -13,6 +15,7 @@ export const AdministrationRoles = {
 };
 
 export const UserRoles = {
+  MULTI_TENANT: 'YUUVIS_MULTI_TENANT',
   CREATE_OBJECT: 'YUUVIS_CREATE_OBJECT'
 };
 

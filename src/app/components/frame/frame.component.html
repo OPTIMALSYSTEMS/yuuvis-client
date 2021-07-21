@@ -6,12 +6,8 @@
 </div>
 
 <ng-container *ngIf="user; else offlineNoUser">
-  <div
-    class="app-bar"
-    *ngIf="!hideAppBar"
-    (yuvFileDrop)="onFilesDropped($event)"
-    [yuvFileDropOptions]="{ label: 'yuv.client.frame.app-bar.filedrop.label' | translate, disabled: disableFileDrop || tab, multiple: true }"
-  >
+  <div class="app-bar" *ngIf="!hideAppBar" (yuvFileDrop)="onFilesDropped($event)"
+    [yuvFileDropOptions]="{ label: 'yuv.client.frame.app-bar.filedrop.label' | translate, disabled: disableFileDrop || tab, multiple: true }">
     <yuv-icon class="btn" id="drawer" (click)="showSideBar(true)" replaceUrl [icon]="'drawer'"></yuv-icon>
     <a yuvOfflineDisabled routerLink="/" id="logo">
       <yuv-icon class="btn" [iconSrc]="'assets/default/theme/app.icon.svg'"></yuv-icon>
@@ -19,13 +15,15 @@
     <div yuvOfflineDisabled class="main">
       <!-- create -->
       <a routerLink="/create" [queryParams]="{ context: context }" *ngIf="!disableCreate">
-        <yuv-icon class="btn" [title]="'yuv.framework.object-create.header.title' | translate" [icon]="'add'"> </yuv-icon>
+        <yuv-icon class="btn" [title]="'yuv.framework.object-create.header.title' | translate" [icon]="'add'">
+        </yuv-icon>
       </a>
 
       <!-- search -->
       <ng-container *ngIf="!tab">
         <div class="app-bar-search">
-          <yuv-quick-search *ngIf="reloadComponent" [inline]="true" [context]="context" [query]="appQuery" (querySubmit)="onQuickSearchQuery($event)">
+          <yuv-quick-search *ngIf="reloadComponent" [inline]="true" [context]="context" [query]="appQuery"
+            (querySubmit)="onQuickSearchQuery($event)">
           </yuv-quick-search>
         </div>
       </ng-container>
@@ -61,6 +59,8 @@
           <div class="nav-item logout">
             <!-- <a [routerLink]="['/enter', { logout: true }]" translate>yuv.client.frame.app-bar.logout</a> -->
             <a href="logout" (click)="logout($event)" translate>yuv.client.frame.app-bar.logout</a>
+            <a href="logout" *ngIf="enableTenantSwitch" (click)="logout($event, true)"
+              translate>yuv.client.frame.app-bar.change-tenant</a>
           </div>
         </div>
       </p-overlayPanel>
@@ -73,27 +73,32 @@
   <yuv-sidebar [display]="displaySideBar" (hide)="showSideBar(false)" id="sidebar-navigation" *ngIf="reloadComponent">
     <section class="content navigation-list">
       <div class="nav-item">
-        <a routerLink="dashboard" routerLinkActive="active" (click)="showSideBar(false)" translate>yuv.client.state.dashboard.title</a>
+        <a routerLink="dashboard" routerLinkActive="active" (click)="showSideBar(false)"
+          translate>yuv.client.state.dashboard.title</a>
       </div>
       <div class="nav-item">
-        <a routerLink="create" *ngIf="!disableCreate" routerLinkActive="active" (click)="showSideBar(false)" translate>yuv.client.state.create.title</a>
+        <a routerLink="create" *ngIf="!disableCreate" routerLinkActive="active" (click)="showSideBar(false)"
+          translate>yuv.client.state.create.title</a>
       </div>
       <div class="nav-item">
-        <a routerLink="/result" [queryParams]="{ query: pendingAFOsQuery, tmp: true }" routerLinkActive="active" (click)="showSideBar(false)" translate
-          >yuv.client.sidebar.create.pending.title</a
-        >
+        <a routerLink="/result" [queryParams]="{ query: pendingAFOsQuery, tmp: true }" routerLinkActive="active"
+          (click)="showSideBar(false)" translate>yuv.client.sidebar.create.pending.title</a>
       </div>
       <div class="nav-item">
-        <a routerLink="inbox" routerLinkActive="active" (click)="showSideBar(false)" translate>yuv.client.state.inbox.title</a>
+        <a routerLink="inbox" routerLinkActive="active" (click)="showSideBar(false)"
+          translate>yuv.client.state.inbox.title</a>
       </div>
       <div class="nav-item">
-        <a routerLink="processes" routerLinkActive="active" (click)="showSideBar(false)" translate>yuv.client.state.process.title</a>
+        <a routerLink="processes" routerLinkActive="active" (click)="showSideBar(false)"
+          translate>yuv.client.state.process.title</a>
       </div>
       <div class="nav-item">
-        <a routerLink="settings" routerLinkActive="active" (click)="showSideBar(false)" translate>yuv.client.state.settings.title</a>
+        <a routerLink="settings" routerLinkActive="active" (click)="showSideBar(false)"
+          translate>yuv.client.state.settings.title</a>
       </div>
       <div class="nav-item">
-        <a routerLink="about" routerLinkActive="active" (click)="showSideBar(false)" translate>yuv.client.state.about.title</a>
+        <a routerLink="about" routerLinkActive="active" (click)="showSideBar(false)"
+          translate>yuv.client.state.about.title</a>
       </div>
 
       <ng-container *ngFor="let config of navigationPlugins | async">
@@ -107,7 +112,8 @@
 
 <ng-template #pluginLink let-config>
   <a *ngIf="config.path.match('^http')" href="{{ config.path }}" target="_blank">{{ config.label | translate }}</a>
-  <a *ngIf="!config.path.match('^http')" routerLink="{{ config.path }}" routerLinkActive="active">{{ config.label | translate }}</a>
+  <a *ngIf="!config.path.match('^http')" routerLink="{{ config.path }}" routerLinkActive="active">{{ config.label |
+    translate }}</a>
 </ng-template>
 
 <ng-template #offlineNoUser>
@@ -124,13 +130,10 @@
 <!------move notification------>
 
 <ng-template #moveNotification let-data let-popover="popover">
-  <div
-    class="move-notification"
-    [ngClass]="{
+  <div class="move-notification" [ngClass]="{
       fail: data.failed?.length,
       warning: data.failed?.length && data.succeeded?.length
-    }"
-  >
+    }">
     <!---------warning notification--------------->
     <div *ngIf="data.failed?.length && data.succeeded?.length; else tplMoveMessage">
       <div class="succededItems">
@@ -169,7 +172,8 @@
         </div>
       </div>
       <div class="actions">
-        <button class="primary" (click)="closeNotification(popover)" translate>yuv.client.frame.move.notification.ok</button>
+        <button class="primary" (click)="closeNotification(popover)"
+          translate>yuv.client.frame.move.notification.ok</button>
       </div>
     </div>
 
@@ -185,15 +189,18 @@
         </div>
 
         <div class="list succeded-list">
-          <yuv-form-input class="checkbox" [skipToggle]="true" [label]="'yuv.framework.object-create.afo.upload.skip-notification' | translate">
-            <yuv-checkbox [(ngModel)]="moveNoticeDialogSkip" [ngModelOptions]="{ standalone: true }" (ngModelChange)="skipMoveDialog($event)"></yuv-checkbox>
+          <yuv-form-input class="checkbox" [skipToggle]="true"
+            [label]="'yuv.framework.object-create.afo.upload.skip-notification' | translate">
+            <yuv-checkbox [(ngModel)]="moveNoticeDialogSkip" [ngModelOptions]="{ standalone: true }"
+              (ngModelChange)="skipMoveDialog($event)"></yuv-checkbox>
           </yuv-form-input>
         </div>
         <div class="actions">
           <a *ngIf="data.newParent" routerLink="/object/{{ data.newParent.id }}" (click)="closeNotification(popover)">
             <button class="secondary" translate>yuv.client.frame.move.notification.goTo.folder</button>
           </a>
-          <button class="primary" (click)="closeNotification(popover)" translate>yuv.client.frame.move.notification.ok</button>
+          <button class="primary" (click)="closeNotification(popover)"
+            translate>yuv.client.frame.move.notification.ok</button>
         </div>
       </div>
 
@@ -216,7 +223,8 @@
           </div>
         </div>
         <div class="actions">
-          <button class="primary" (click)="closeNotification(popover)" translate>yuv.client.frame.move.notification.ok</button>
+          <button class="primary" (click)="closeNotification(popover)"
+            translate>yuv.client.frame.move.notification.ok</button>
         </div>
       </div>
     </ng-template>

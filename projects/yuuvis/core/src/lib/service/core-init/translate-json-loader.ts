@@ -44,6 +44,7 @@ import { ApiBase } from '../backend/api.enum';
 import { ConfigService } from '../config/config.service';
 import { CoreConfig } from '../config/core-config';
 import { CORE_CONFIG } from '../config/core-config.tokens';
+import { TENANT_HEADER } from '../system/system.enum';
 
 /**
  * Loader that fetches translations based on the configured locations
@@ -75,10 +76,22 @@ export class EoxTranslateJsonLoader implements TranslateLoader {
    * @returns Observable<Object>
    */
   getTranslation(lang: string): Observable<Object> {
-    const t = [
-      ...this.config.translations.map((path) => `${path}${lang}.json`),
-      ApiBase.apiWeb + '/api' + ConfigService.GLOBAL_MAIN_CONFIG_LANG(lang)
-    ].map((uri) => this.http.get(`${uri.startsWith(ApiBase.apiWeb) ? '/' : Utils.getBaseHref()}${uri}`).pipe(catchError((e) => observableOf({}))));
+    const t = [...this.config.translations.map((path) => `${path}${lang}.json`), ApiBase.apiWeb + '/api' + ConfigService.GLOBAL_MAIN_CONFIG_LANG(lang)].map(
+      (u) => {
+        let uri = `${u.startsWith(ApiBase.apiWeb) ? '/' : Utils.getBaseHref()}${u}`;
+        let options = { headers: {} };
+
+        if (this.config.oidc) {
+          options.headers[TENANT_HEADER] = this.config.oidc.tenant;
+          if (!uri.startsWith('/assets/')) {
+            uri = `${this.config.oidc.host}${uri}`;
+          }
+        }
+        return this.http.get(uri, options).pipe(catchError((e) => observableOf({})));
+      }
+    );
+
+    // .map((uri) => this.http.get(`${uri.startsWith(ApiBase.apiWeb) ? '/' : Utils.getBaseHref()}${uri}`).pipe());
     return observableForkJoin(t).pipe(
       map((res) => {
         return res.reduce((acc, x) => Object.assign(acc, x), {});

@@ -1,10 +1,10 @@
 {
   "name": "@yuuvis/framework",
-  "version": "2.1.0-beta.5",
+  "version": "2.1.0-beta.7",
   "author": "OPTIMAL SYSTEMS GmbH <npm@optimal-systems.de>",
   "license": "MIT",
   "scripts": {
-    "doc": "./node_modules/.bin/compodoc",
+    "doc": "../../../node_modules/.bin/compodoc",
     "doc:json": "./node_modules/.bin/compodoc -e json -d ./../../../documentation/output/yuuvis/json/framework --minimal",
     "doc:serve": "./node_modules/.bin/compodoc -s"
   },
@@ -17,20 +17,20 @@
     "rxjs": "~6.6.3"
   },
   "dependencies": {
-    "@yuuvis/core": "2.1.0-beta.5",
-    "@yuuvis/styles": "^1.0.0",
     "@ag-grid-community/angular": "~24.1.0",
     "@ag-grid-community/client-side-row-model": "~24.1.0",
     "@ag-grid-community/core": "~24.1.0",
     "@ag-grid-community/csv-export": "~24.1.0",
     "@angular/cdk": "~10.2.7",
-    "primeng": "10.0.2",
-    "primeicons": "^4.0.0",
+    "@yuuvis/core": "2.1.0-beta.7",
+    "@yuuvis/styles": "^1.0.0",
     "angular-resize-event": "^2.0.1",
     "angular-split": "^4.0.0",
     "lodash-es": "^4.17.15",
     "ngx-drag-scroll": "^11.0.0-beta.1",
     "ngx-toastr": "^13.1.0",
+    "primeicons": "^4.0.0",
+    "primeng": "10.0.2",
     "take-until-destroy": "^2.1.0",
     "tslib": "^2.0.0"
   }

@@ -1,5 +1,4 @@
 import { Inject, Injectable } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { switchMap, tap } from 'rxjs/operators';
 import { UserSettings, YuvUser } from '../../model/yuv-user.model';
@@ -32,7 +31,6 @@ export class AuthService {
   constructor(
     @Inject(CORE_CONFIG) public coreConfig: CoreConfig,
     private eventService: EventService,
-    private translate: TranslateService,
     private userService: UserService,
     private systemService: SystemService,
     private backend: BackendService,
@@ -114,7 +112,6 @@ export class AuthService {
           language: currentUser.getClientLocale()
         };
         this.backend.setHeader('Accept-Language', this.authData.language);
-        // this.backend.setHeader('X-ID-TENANT-NAME', this.authData.tenant);
         this.appCache.setItem(this.STORAGE_KEY, this.authData).subscribe();
         return of(currentUser);
       })
