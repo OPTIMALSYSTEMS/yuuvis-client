@@ -221,6 +221,8 @@
   "yuv.framework.process-list.status.completed.label": "Completed",
   "yuv.framework.process-list.status.suspended.label": "Suspended",
   "yuv.framework.process-list.status.running.label": "Running",
+  "yuv.framework.process-list.type.follow-up.label": "Follow-up",
+  "yuv.framework.process-list.type.task.label": "Task",
   "yuv.framework.quick-search-picker.button.select": "Select",
   "yuv.framework.quick-search-picker.title": "Restrict to object types",
   "yuv.framework.quick-search.aggregate.error": "The search could not be executed.",

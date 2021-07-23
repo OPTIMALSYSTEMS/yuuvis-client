@@ -120,6 +120,11 @@ export interface Variable {
   scope?: string;
 }
 
+export enum InboxItemType {
+  FOLLOW_UP = 'follow-up',
+  TASK = 'task'
+}
+
 /**
  * InbosItem wrapper for grid
  */
@@ -148,8 +153,8 @@ export class InboxItem {
     return this.originalData.variables.find((v) => v.name === 'documentId')?.value as string;
   }
 
-  get type(): string {
-    return this.originalData.processDefinitionId.startsWith('follow-up') ? 'follow-up' : 'task';
+  get type(): InboxItemType {
+    return this.originalData.processDefinitionId.startsWith('follow-up') ? InboxItemType.FOLLOW_UP : InboxItemType.TASK;
   }
 
   get icon(): string {

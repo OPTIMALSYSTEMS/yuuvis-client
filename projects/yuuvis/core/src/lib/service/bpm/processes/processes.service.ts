@@ -36,7 +36,7 @@ export class ProcessService {
   /**
    * get all processes
    */
-  getProcesses(processDefinitionKey?: string): Observable<ProcessData[]> {
+  getProcesses(processDefinitionKey?: ProcessDefinitionKey): Observable<ProcessData[]> {
     let url = `${this.bpmProcessUrl}?includeProcessVariables=true`;
     if (processDefinitionKey) {
       url += `&processDefinitionKey=${processDefinitionKey}`;

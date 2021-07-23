@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { InboxItem, Process, ProcessData, ProcessStatus, TaskData, TranslateService } from '@yuuvis/core';
 import { ResponsiveTableData } from '../../components/responsive-data-table/responsive-data-table.interface';
+import { InboxItemType } from './../../../../../core/src/lib/service/bpm/model/bpm.model';
 import { IconRegistryService } from './../../common/components/icon/service/iconRegistry.service';
 import { GridService } from './../../services/grid/grid.service';
 import { followUp, task } from './../../svg.generated';
@@ -10,11 +11,16 @@ type fieldName = 'type' | 'subject' | 'createTime' | 'startTime' | 'businessKey'
   providedIn: 'root'
 })
 export class FormatProcessDataService {
-  private translations: { [key in fieldName]: string };
+  private columnHeaderTranslations: { [key in fieldName]: string };
 
   constructor(private gridService: GridService, private iconRegService: IconRegistryService, private translate: TranslateService) {
     this.iconRegService.registerIcons([task, followUp]);
-    this.translations = {
+    this.setTranslations();
+    this.translate.onLangChange.subscribe(() => this.setTranslations());
+  }
+
+  private setTranslations() {
+    this.columnHeaderTranslations = {
       type: this.translate.instant(`yuv.framework.process-list.column.type.label`),
       subject: this.translate.instant(`yuv.framework.process-list.column.subject.label`),
       whatAbout: this.translate.instant(`yuv.framework.process-list.column.whatAbout.label`),
@@ -61,9 +67,10 @@ export class FormatProcessDataService {
         colId: field,
         field,
         headerClass: `col-header-type-${field}`,
-        headerName: this.translations[field],
+        headerName: this.columnHeaderTranslations[field],
         ...(field.toLowerCase().includes('time') && { cellRenderer: this.gridService.dateTimeCellRenderer() }),
         ...(field.toLowerCase().includes('status') && { cellRenderer: (params) => this.statusCellRenderer({ ...params, translate: this.translate }) }),
+        ...(field.toLowerCase().includes('type') && { cellRenderer: (params) => this.typeCellRenderer({ ...params, translate: this.translate }) }),
         resizable: true,
         sortable: true,
         ...(field.toLowerCase() === 'createTime' && { sort: 'asc' })
@@ -88,5 +95,18 @@ export class FormatProcessDataService {
         return params.translate.instant('yuv.framework.process-list.status.running.label');
         break;
     }
+  }
+
+  private typeCellRenderer(params): string {
+    let type;
+    switch (params.value) {
+      case InboxItemType.FOLLOW_UP:
+        type = params.translate.instant('yuv.framework.process-list.type.follow-up.label');
+        break;
+      case InboxItemType.TASK:
+        type = params.translate.instant('yuv.framework.process-list.type.task.label');
+        break;
+    }
+    return type ? type : params.value;
   }
 }

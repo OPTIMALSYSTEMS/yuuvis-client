@@ -54,7 +54,7 @@ export class FollowUpsComponent implements OnInit, OnDestroy {
   }
 
   private getProcesses(): Observable<ProcessData[] | ResponsiveTableData> {
-    return this.processService.getProcesses('follow-up').pipe(
+    return this.processService.getProcesses(ProcessDefinitionKey.FOLLOW_UP).pipe(
       take(1),
       map((processData: ProcessData[]) => this.formatProcessDataService.formatProcessDataForTable(processData, ['whatAbout', 'startTime', 'expiryDateTime'])),
       map((taskData: ResponsiveTableData) => (taskData.rows.length ? taskData : null)),
