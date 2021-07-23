@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
-import { InboxItem, Process, ProcessData, ProcessStatus, TaskData, TranslateService } from '@yuuvis/core';
+import { InboxItem, InboxItemType, Process, ProcessData, ProcessStatus, TaskData, TranslateService } from '@yuuvis/core';
 import { ResponsiveTableData } from '../../components/responsive-data-table/responsive-data-table.interface';
-import { InboxItemType } from './../../../../../core/src/lib/service/bpm/model/bpm.model';
 import { IconRegistryService } from './../../common/components/icon/service/iconRegistry.service';
 import { GridService } from './../../services/grid/grid.service';
 import { followUp, task } from './../../svg.generated';
