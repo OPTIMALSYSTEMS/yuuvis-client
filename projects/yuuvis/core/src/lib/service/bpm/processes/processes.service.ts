@@ -19,7 +19,7 @@ interface CreateFollowUp {
   providedIn: 'root'
 })
 export class ProcessService {
-  private readonly bpmProcessUrl = '/bpm/process/instances';
+  private readonly bpmProcessUrl = '/bpm/processes';
 
   private processSource = new BehaviorSubject<ProcessData[]>([]);
   public processData$: Observable<ProcessData[]> = this.processSource.asObservable();
@@ -36,10 +36,14 @@ export class ProcessService {
   /**
    * get all processes
    */
-  getProcesses(): Observable<ProcessData[]> {
-    return this.bpmService.getProcesses(`${this.bpmProcessUrl}?includeProcessVariables=true`).pipe(
-      tap(({ data }: ProcessResponse) => this.processSource.next(data)),
-      map(({ data }: ProcessResponse) => data)
+  getProcesses(processDefinitionKey?: string): Observable<ProcessData[]> {
+    let url = `${this.bpmProcessUrl}?includeProcessVariables=true`;
+    if (processDefinitionKey) {
+      url += `&processDefinitionKey=${processDefinitionKey}`;
+    }
+    return this.bpmService.getProcesses(url).pipe(
+      tap(({ objects }: ProcessResponse) => this.processSource.next(objects)),
+      map(({ objects }: ProcessResponse) => objects)
     );
   }
 
