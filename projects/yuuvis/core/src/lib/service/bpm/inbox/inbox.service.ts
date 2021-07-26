@@ -30,8 +30,8 @@ export class InboxService {
    */
   getTasks(includeProcessVar = true): Observable<TaskData[]> {
     return this.bpmService.getProcesses(`${this.bpmTaskUrl}?active=true&includeProcessVariables=${includeProcessVar}`).pipe(
-      tap(({ data }: TaskDataResponse) => this.inboxDataSource.next(data)),
-      map(({ data }: TaskDataResponse) => data)
+      tap(({ objects }: TaskDataResponse) => this.inboxDataSource.next(objects)),
+      map(({ objects }: TaskDataResponse) => objects)
     );
   }
 
@@ -41,7 +41,7 @@ export class InboxService {
   getTask(processInstanceId: string, includeProcessVar = true): Observable<TaskData[]> {
     return this.bpmService
       .getProcesses(`${this.bpmTaskUrl}?active=true&includeProcessVariables=${includeProcessVar}&processInstanceId=${processInstanceId}`)
-      .pipe(map(({ data }: TaskDataResponse) => data));
+      .pipe(map(({ objects }: TaskDataResponse) => objects));
   }
 
   /**

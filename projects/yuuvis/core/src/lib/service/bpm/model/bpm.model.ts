@@ -44,7 +44,7 @@ export interface StartFormVariable {
  * bpm Service response /process/instances
  */
 export interface ProcessResponse {
-  data: ProcessData[];
+  objects: ProcessData[];
   total: number;
   start: number;
   sort: string;
@@ -56,7 +56,7 @@ export interface ProcessResponse {
  * bpm Service response /tasks
  */
 export interface TaskDataResponse {
-  data: TaskData[];
+  objects: TaskData[];
   total: number;
   start: number;
   sort: string;
@@ -120,6 +120,11 @@ export interface Variable {
   scope?: string;
 }
 
+export enum InboxItemType {
+  FOLLOW_UP = 'follow-up',
+  TASK = 'task'
+}
+
 /**
  * InbosItem wrapper for grid
  */
@@ -132,11 +137,6 @@ export class InboxItem {
     return this.originalData.variables.find((v) => v.name === 'whatAbout')?.value as string;
   }
 
-  get expiryDateTime(): Date {
-    const expiryDateTime = this.originalData.variables.find((v) => v.name === 'expiryDateTime')?.value;
-    return expiryDateTime ? new Date(expiryDateTime) : null;
-  }
-
   get createTime(): Date {
     return new Date(this.originalData.createTime);
   }
@@ -145,7 +145,7 @@ export class InboxItem {
     return this.originalData.variables.find((v) => v.name === 'whatAbout')?.value as string;
   }
 
-  get subject(): string {
+  get task(): string {
     return this.originalData.variables.find((v) => v.name === 'whatAbout')?.value as string;
   }
 
@@ -153,8 +153,8 @@ export class InboxItem {
     return this.originalData.variables.find((v) => v.name === 'documentId')?.value as string;
   }
 
-  get type(): string {
-    return 'task';
+  get type(): InboxItemType {
+    return this.originalData.processDefinitionId.startsWith('follow-up') ? InboxItemType.FOLLOW_UP : InboxItemType.TASK;
   }
 
   get icon(): string {
@@ -164,10 +164,16 @@ export class InboxItem {
   constructor(private originalData: TaskData) {}
 }
 
+export enum ProcessStatus {
+  RUNNING = 'running',
+  SUSPENDED = 'suspended',
+  COMPLETED = 'completed'
+}
+
 /**
- * FollowUp wrapper for grid
+ * Process wrapper for grid
  */
-export class FollowUp {
+export class Process {
   get id() {
     return this.originalData.id;
   }
@@ -185,7 +191,7 @@ export class FollowUp {
   }
 
   get type(): string {
-    return this.originalData.name;
+    return this.originalData.processDefinitionName;
   }
 
   get businessKey(): string {
@@ -193,6 +199,10 @@ export class FollowUp {
   }
 
   get subject(): string {
+    return this.originalData.name;
+  }
+
+  get whatAbout(): string {
     return this.originalData.variables.find((v) => v.name === 'whatAbout')?.value as string;
   }
 
@@ -206,6 +216,18 @@ export class FollowUp {
 
   get icon(): string {
     return this.originalData.icon;
+  }
+
+  get status(): ProcessStatus {
+    let status: ProcessStatus;
+    if (this.originalData.suspended) {
+      status = ProcessStatus.SUSPENDED;
+    } else if (this.originalData.completed) {
+      status = ProcessStatus.COMPLETED;
+    } else {
+      status = ProcessStatus.RUNNING;
+    }
+    return status;
   }
 
   constructor(private originalData: ProcessData) {}

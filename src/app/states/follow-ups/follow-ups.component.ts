@@ -10,21 +10,21 @@ import {
   listModeGrid,
   listModeSimple,
   PluginsService,
-  process,
   refresh,
   ResponsiveTableData
 } from '@yuuvis/framework';
 import { Observable, of } from 'rxjs';
 import { map, switchMap, take, tap } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
+import { followUp } from './../../../../projects/yuuvis/framework/src/lib/svg.generated';
 
 @Component({
-  selector: 'yuv-processes',
-  templateUrl: './processes.component.html',
-  styleUrls: ['./processes.component.scss']
+  selector: 'yuv-follow-ups',
+  templateUrl: './follow-ups.component.html',
+  styleUrls: ['./follow-ups.component.scss']
 })
-export class ProcessesComponent implements OnInit, OnDestroy {
-  layoutOptionsKey = 'yuv.app.processes';
+export class FollowUpsComponent implements OnInit, OnDestroy {
+  layoutOptionsKey = 'yuv.app.follow-ups';
   contextError: string;
   objectDetailsID: string;
   itemIsSelected = false;
@@ -34,9 +34,9 @@ export class ProcessesComponent implements OnInit, OnDestroy {
   loading$: Observable<boolean> = this.processService.loadingProcessData$;
 
   headerDetails: HeaderDetails = {
-    title: this.translateService.instant('yuv.client.state.process.title'),
+    title: this.translateService.instant('yuv.client.state.follow-ups.title'),
     description: '',
-    icon: 'process'
+    icon: 'followUp'
   };
 
   plugins: any;
@@ -50,13 +50,13 @@ export class ProcessesComponent implements OnInit, OnDestroy {
     private pluginsService: PluginsService
   ) {
     this.plugins = this.pluginsService.getCustomPlugins('extensions', 'yuv-processes');
-    this.iconRegistry.registerIcons([edit, arrowNext, refresh, process, listModeDefault, listModeGrid, listModeSimple]);
+    this.iconRegistry.registerIcons([edit, arrowNext, refresh, followUp, listModeDefault, listModeGrid, listModeSimple]);
   }
 
   private getProcesses(): Observable<ProcessData[] | ResponsiveTableData> {
-    return this.processService.getProcesses().pipe(
+    return this.processService.getProcesses(ProcessDefinitionKey.FOLLOW_UP).pipe(
       take(1),
-      map((processData: ProcessData[]) => this.formatProcessDataService.formatProcessDataForTable(processData, ['type', 'subject', 'startTime', 'status'])),
+      map((processData: ProcessData[]) => this.formatProcessDataService.formatProcessDataForTable(processData, ['whatAbout', 'startTime', 'expiryDateTime'])),
       map((taskData: ResponsiveTableData) => (taskData.rows.length ? taskData : null)),
       tap((data) => (this.processData$ = of(data))),
       takeUntilDestroy(this)

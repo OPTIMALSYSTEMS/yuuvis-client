@@ -218,11 +218,12 @@ export class StringComponent implements ControlValueAccessor, Validator {
     } else {
       let pattern;
       if (classification === Classification.STRING_EMAIL) {
-        pattern = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        pattern =
+          /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
       } else if (classification === Classification.STRING_URL) {
         pattern = /(http|ftp|https):\/\/[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:\/~+#-]*[\w@?^=%&amp;\/~+#-])?/;
       } else if (classification === Classification.STRING_PHONE) {
-        pattern = /^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$/g;
+        pattern = /^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-x\s\./0-9]*$/g;
       }
       return pattern ? pattern.test(string) : true;
     }

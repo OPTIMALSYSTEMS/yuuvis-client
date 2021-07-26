@@ -73,12 +73,22 @@ export class FileDropDirective implements OnDestroy {
       return;
     }
     this.preventAndStop(evt);
+    if (!this._invalid && this._options.maxSize) {
+      this._invalid = Array.from(transfer.files).reduce((p: any, c: File) => p + c.size, 0) > this._options.maxSize;
+    }
+    if (!this._invalid && this._options.accept) {
+      this._invalid = !Array.from(transfer.files).every((c: File) => this._options.accept.find((a) => c.name?.endsWith(a)));
+    }
     // check for directories
     const invalidInput = this._options.disabled || this._invalid || Array.from(transfer.items).some((i: any) => (i.webkitGetAsEntry() || {}).isDirectory);
     if (!invalidInput) {
       this.onFilesDropped(Array.from(transfer.files));
     }
     this.fileDropService.clear();
+
+    if (this._invalid && this._options.invalidError) {
+      throw new Error(this._options.invalidError);
+    }
   }
 
   /**
@@ -173,4 +183,16 @@ export interface FileDropOptions {
    * if set to true supports multiple files being dropped
    */
   multiple?: boolean;
+  /**
+   * maximum size of files being dropped
+   */
+  maxSize?: number;
+  /**
+   * list of file extensions that should be accepted
+   */
+  accept?: string[];
+  /**
+   * error to be displayed when dropped files are invalid
+   */
+  invalidError?: string;
 }
