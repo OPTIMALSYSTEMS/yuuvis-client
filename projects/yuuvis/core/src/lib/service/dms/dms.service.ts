@@ -122,10 +122,15 @@ export class DmsService {
    * @param withVersion should download specific version of the object
    */
   downloadContent(objects: DmsObject[], withVersion?: boolean) {
-    objects.forEach((object) => {
-      const uri = `${this.getContentPath(object?.id)}${withVersion ? '?version=' + object.version : ''}`;
-      this.backend.download(uri);
-    });
+    objects.forEach((object, i) =>
+      setTimeout(
+        () => {
+          const uri = `${this.getContentPath(object?.id)}${withVersion ? '?version=' + object.version : ''}`;
+          this.backend.download(uri);
+        },
+        Utils.isSafari() ? i * 1000 : 0 // Safari does not allow multi download
+      )
+    );
   }
 
   /**

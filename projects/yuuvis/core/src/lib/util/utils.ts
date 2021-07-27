@@ -286,7 +286,15 @@ export class Utils {
   }
 
   public static isEdge(): boolean {
-    return !!navigator.userAgent && navigator.userAgent.indexOf('Edge') > -1;
+    return new RegExp('Edge', 'i').test(navigator.userAgent);
+  }
+
+  public static isFirefox(): boolean {
+    return new RegExp('firefox', 'i').test(navigator.userAgent);
+  }
+
+  public static isSafari(): boolean {
+    return new RegExp('^((?!chrome|android|crios|fxios).)*safari', 'i').test(navigator.userAgent);
   }
 
   public static isEmpty(obj) {
