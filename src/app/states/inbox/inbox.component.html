@@ -16,7 +16,7 @@
       [objectId]="objectId"
       [layoutOptionsKey]="layoutOptionsKey"
       [plugins]="plugins"
-      [emptyMessage]="'yuv.framework.bpm.inbox.confirm' | translate"
+      [emptyMessage]="'yuv.client.state.inbox.confirm' | translate"
       (remove)="remove($event)">
     </yuv-process-details>
   </section>
@@ -24,10 +24,10 @@
 </section>
 
 <ng-template #empty>
-  <app-process-list-empty
+  <yuv-process-list-empty
     [state]="'inbox'" 
     [headerDetails]="headerDetails"
     [loading]="loading$"
     [message]="'yuv.client.state.inbox.list.empty'| translate"
-    (refresh)="refreshList()"></app-process-list-empty>
+    (refresh)="refreshList()"></yuv-process-list-empty>
 </ng-template>

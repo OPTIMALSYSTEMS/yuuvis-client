@@ -339,12 +339,16 @@
   "yuv.client.state.dashboard.title": "Dashboard",
   "yuv.client.state.filter-configuration.panel.description": "Konfiguration der Suchfilter nach Objekttyp",
   "yuv.client.state.filter-configuration.panel.title": "Filterkonfiguration",
+  "yuv.client.state.follow-ups.list.empty": "Es gibt keine aktiven Wiedervorlagen",
+  "yuv.client.state.follow-ups.remove": "Wiedervorlage entfernen",
   "yuv.client.state.follow-ups.title": "Meine Wiedervorlagen",
+  "yuv.client.state.inbox.confirm": "Aufgabe bestätigen",
   "yuv.client.state.inbox.list.empty": "Klasse, nichts zu tun ;-)",
   "yuv.client.state.inbox.title": "Eingangskorb",
   "yuv.client.state.not-found.description": "Das Objekt konnte nicht geladen werden.",
   "yuv.client.state.not-found.title": "Nicht gefunden",
-  "yuv.client.state.process.list.empty": "Es gibt keine aktiven Wiedervorlagen",
+  "yuv.client.state.process.list.empty": "Es gibt keine aktiven Prozesse",
+  "yuv.client.state.process.remove": "Prozess entfernen",
   "yuv.client.state.process.title": "Meine Prozesse",
   "yuv.client.state.result.title": "Suchergebnis",
   "yuv.client.state.settings.cache.clear.error": "Anwendungscache konnte nicht geleert werden",
@@ -382,8 +386,5 @@
   "yuv.client.state.settings.theme.light": "Light",
   "yuv.client.state.settings.title": "Einstellungen",
   "yuv.client.state.versions.compare.label": "Version {{version}}",
-  "yuv.client.state.versions.header.title": "Versionen",
-  "yuv.framework.bpm.inbox.confirm": "Wiedervorlage bestätigen",
-  "yuv.framework.bpm.process.remove": "Wiedervorlage entfernen",
-  "yuv.framework.inbox-list.inbox": "Eingangskorb"
+  "yuv.client.state.versions.header.title": "Versionen"
 }
