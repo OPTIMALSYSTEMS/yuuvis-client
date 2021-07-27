@@ -208,6 +208,7 @@ export class PluginsService {
           }
           s.innerHTML = styles;
         },
+        translate: (key, data) => this.translate.instant(key, data),
         encodeFileName: (filename) => this.encodeFileName(filename),
         notifier: {
           success: (text, title) => this.notifications.success(title, text),
