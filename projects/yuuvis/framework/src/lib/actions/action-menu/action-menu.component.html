@@ -37,7 +37,7 @@
     <div class="group common" *ngIf="actionLists?.common.length > 0">
       <div class="group-title">{{ 'yuv.framework.action-menu.actions.group.common' | translate }}</div>
       <div class="action" *ngFor="let actionListEntry of actionLists.common; index as i"
-        (click)="onClick(actionListEntry)">
+        yuvThrottleClick (throttleClick)="onClick(actionListEntry, $event)">
         <ng-container *ngTemplateOutlet="action; context: { $implicit: actionListEntry, id: +i }"></ng-container>
       </div>
     </div>
@@ -46,7 +46,7 @@
       <div class="group further" *ngIf="actionLists?.further.length > 0">
         <div class="group-title">{{ 'yuv.framework.action-menu.actions.group.further_actions' | translate }}</div>
         <div class="action" *ngFor="let actionListEntry of actionLists.further; index as i"
-          yuvDebounceClick (debounceClick)="onClick(actionListEntry)">
+          yuvThrottleClick (throttleClick)="onClick(actionListEntry, $event)">
           <ng-container *ngTemplateOutlet="action; context: { $implicit: actionListEntry, id: 'f' + i }"></ng-container>
         </div>
       </div>
@@ -67,7 +67,7 @@
     <div class="sub-actions">
       <div class="group-title">{{ subActionsListHeader }}</div>
       <div class="action sub" *ngFor="let actionListEntry of subActionsList; index as i"
-        (click)="onClick(actionListEntry)">
+        yuvThrottleClick (throttleClick)="onClick(actionListEntry, $event)">
         <ng-container *ngTemplateOutlet="action; context: { $implicit: actionListEntry, id: 's' + i }"></ng-container>
       </div>
     </div>

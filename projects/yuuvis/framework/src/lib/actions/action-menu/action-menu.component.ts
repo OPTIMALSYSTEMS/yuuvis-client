@@ -144,7 +144,7 @@ export class ActionMenuComponent implements OnDestroy {
     this.visibleChange.emit(false);
   }
 
-  onClick(actionListEntry: ActionListEntry) {
+  onClick(actionListEntry: ActionListEntry, evt?: MouseEvent) {
     // It is possible that actions implement more than one action interface
     // so we should be aware of running an action and then open its sub actions
 
@@ -168,10 +168,12 @@ export class ActionMenuComponent implements OnDestroy {
         });
     } else if (isLinkAction) {
       const action = actionListEntry.action as LinkAction;
-      this.router.navigate([action.getLink(actionListEntry.availableSelection)], {
-        queryParams: action.getParams ? action.getParams(actionListEntry.availableSelection) : {},
-        fragment: action.getFragment ? action.getFragment(actionListEntry.availableSelection) : null
-      });
+      if (!evt?.ctrlKey) {
+        this.router.navigate([action.getLink(actionListEntry.availableSelection)], {
+          queryParams: action.getParams ? action.getParams(actionListEntry.availableSelection) : {},
+          fragment: action.getFragment ? action.getFragment(actionListEntry.availableSelection) : null
+        });
+      }
       this.finish();
     }
 
