@@ -9,6 +9,7 @@ import { IconService } from './components/icon/service/icon.service';
 import { IconRegistryService } from './components/icon/service/iconRegistry.service';
 import { ObjectTypeIconComponent } from './components/object-type-icon/object-type-icon.component';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
+import { DebounceClickDirective } from './directives/debounce-click.directive';
 import { FocusWithinDirective } from './directives/focus-within.directive';
 import { RouterLinkDirective } from './directives/router-link.directive';
 
@@ -18,9 +19,9 @@ import { RouterLinkDirective } from './directives/router-link.directive';
  */
 @NgModule({
   imports: [CommonModule, HttpClientModule, AccordionModule, SidebarModule],
-  declarations: [IconComponent, FocusWithinDirective, SidebarComponent, EmptyComponent, RouterLinkDirective, ObjectTypeIconComponent],
+  declarations: [IconComponent, FocusWithinDirective, SidebarComponent, EmptyComponent, RouterLinkDirective, ObjectTypeIconComponent, DebounceClickDirective],
   entryComponents: [IconComponent, SidebarComponent, EmptyComponent, ObjectTypeIconComponent],
-  exports: [IconComponent, FocusWithinDirective, SidebarComponent, EmptyComponent, RouterLinkDirective, ObjectTypeIconComponent],
+  exports: [IconComponent, FocusWithinDirective, SidebarComponent, EmptyComponent, RouterLinkDirective, ObjectTypeIconComponent, DebounceClickDirective],
   providers: [IconService, IconRegistryService]
 })
 export class YuvCommonModule {}

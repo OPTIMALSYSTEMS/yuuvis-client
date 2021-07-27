@@ -25,7 +25,7 @@
       </ng-template>
 
       <ng-template #default>
-        <yuv-icon *ngIf="entry.action.iconSrc && !entry.action?.iconId" [svg]="entry.action.iconSrc"></yuv-icon>
+        <yuv-icon *ngIf="entry.action.iconSrc" [svg]="entry.action.iconSrc"></yuv-icon>
         <div class="label">{{ entry.action.label }}</div>
         <div class="description">{{ entry.action.description }}</div>
         <div class="available-count" *ngIf="entry.availableSelection?.length != selection?.length">
@@ -45,8 +45,8 @@
     <ng-container *ngIf="!loading; else loader">
       <div class="group further" *ngIf="actionLists?.further.length > 0">
         <div class="group-title">{{ 'yuv.framework.action-menu.actions.group.further_actions' | translate }}</div>
-        <div class="action" *ngFor="let actionListEntry of actionLists.further; index as i" eoPreventDoubleClick
-          (debounceClick)="onClick(actionListEntry)">
+        <div class="action" *ngFor="let actionListEntry of actionLists.further; index as i"
+          yuvDebounceClick (debounceClick)="onClick(actionListEntry)">
           <ng-container *ngTemplateOutlet="action; context: { $implicit: actionListEntry, id: 'f' + i }"></ng-container>
         </div>
       </div>
