@@ -197,10 +197,8 @@ export class VersionListComponent implements OnInit {
           };
         },
         (err) => {
-          if (err.status === 404) {
-            this.error = this.translate.instant('yuv.framework.version-list.load.error.not-found');
-          } else {
-            this.error = this.translate.instant('yuv.framework.version-list.load.error');
+          if (err) {
+            this.error = this.translate.instant('yuv.framework.object-details.context.load.error');
           }
         }
       );

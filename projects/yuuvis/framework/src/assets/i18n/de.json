@@ -1,5 +1,4 @@
 {
-	"yuv.client.state.object.context.load.error": "",
 	"yuv.framework.action-menu.action.delete.dms.object.confirm.message": "Sind Sie sicher, dass das Objekt gelöscht werden soll?",
 	"yuv.framework.action-menu.action.delete.dms.object.confirm.message.with.title": "Sind Sie sicher, dass '{{item}}' gelöscht werden soll?",
 	"yuv.framework.action-menu.action.delete.dms.object.description": "Löscht das Objekt.",
@@ -165,6 +164,7 @@
 	"yuv.framework.object-details-compare.tabs.changes.title": "Änderungen Metadaten",
 	"yuv.framework.object-details-compare.tabs.content.title": "Änderungen Inhalt",
 	"yuv.framework.object-details-compare.title": "Vergleichen",
+	"yuv.framework.object-details.context.load.error": "Das Objekt ist nicht verfügbar. Entweder wurde das Objekt gelöscht oder die Zugriffsrechte haben sich geändert.",
 	"yuv.framework.object-details.filedrop.content.add": "Dokumentdatei hinzufügen",
 	"yuv.framework.object-details.filedrop.content.replace": "Datei als neue Version hinzufügen",
 	"yuv.framework.object-details.summary.section.admin": "Administrative Information",
@@ -210,9 +210,9 @@
 	"yuv.framework.object-form-element.tag.df": "Standardwert (default)",
 	"yuv.framework.object-form-element.tag.ex": "Extrahiert aus Dokument",
 	"yuv.framework.process-list.column.businessKey.label": "Objekt",
-	"yuv.framework.process-list.column.createTime.label": "Erhalten",
+	"yuv.framework.process-list.column.createTime.label": "Erhalten am",
 	"yuv.framework.process-list.column.expiryDateTime.label": "Wiedervorlagetermin",
-	"yuv.framework.process-list.column.startTime.label": "Startzeitpunkt",
+	"yuv.framework.process-list.column.startTime.label": "Erstellt am",
 	"yuv.framework.process-list.column.status.label": "Status",
 	"yuv.framework.process-list.column.subject.label": "Prozess",
 	"yuv.framework.process-list.column.task.label": "Aufgabe",
@@ -284,7 +284,7 @@
 	"yuv.framework.shared.ok": "OK",
 	"yuv.framework.shared.remove": "Entfernen",
 	"yuv.framework.shared.reset": "Zurücksetzen",
-	"yuv.framework.upload-progress-overlay.icon": "",
+	"yuv.framework.upload-progress-overlay.icon": "Verarbeitung...",
 	"yuv.framework.upload-progress-overlay.remove": "Entfernen",
 	"yuv.framework.upload-progress-overlay.remove-all": "Alle entfernen",
 	"yuv.framework.upload-progress-overlay.title": "Hinzufügestatus",
@@ -292,7 +292,5 @@
 	"yuv.framework.version-list.config.mode.grid": "Galerie",
 	"yuv.framework.version-list.config.mode.horizontal": "Liste",
 	"yuv.framework.version-list.edit": "Aktuelle Version öffnen",
-	"yuv.framework.version-list.load.error": "",
-	"yuv.framework.version-list.load.error.not-found": "",
 	"yuv.framework.version-list.title": "Versionen"
 }

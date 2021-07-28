@@ -1,5 +1,4 @@
 {
-	"yuv.client.state.object.context.load.error": "",
 	"yuv.framework.action-menu.action.delete.dms.object.confirm.message": "Are you sure you want to delete the object?",
 	"yuv.framework.action-menu.action.delete.dms.object.confirm.message.with.title": "Are you sure you want to delete '{{item}}'?",
 	"yuv.framework.action-menu.action.delete.dms.object.description": "Deletes the object.",
@@ -165,6 +164,7 @@
 	"yuv.framework.object-details-compare.tabs.changes.title": "Changes to metadata",
 	"yuv.framework.object-details-compare.tabs.content.title": "Changes to content",
 	"yuv.framework.object-details-compare.title": "Compare",
+	"yuv.framework.object-details.context.load.error": "The object is not available. The object was either deleted or the access rights were modified.",
 	"yuv.framework.object-details.filedrop.content.add": "Add document file",
 	"yuv.framework.object-details.filedrop.content.replace": "Add file as new version",
 	"yuv.framework.object-details.summary.section.admin": "Administrative information",
@@ -284,7 +284,7 @@
 	"yuv.framework.shared.ok": "OK",
 	"yuv.framework.shared.remove": "Remove",
 	"yuv.framework.shared.reset": "Reset",
-	"yuv.framework.upload-progress-overlay.icon": "",
+	"yuv.framework.upload-progress-overlay.icon": "Processing...",
 	"yuv.framework.upload-progress-overlay.remove": "Remove",
 	"yuv.framework.upload-progress-overlay.remove-all": "Remove all",
 	"yuv.framework.upload-progress-overlay.title": "Upload status",
@@ -292,7 +292,5 @@
 	"yuv.framework.version-list.config.mode.grid": "Gallery",
 	"yuv.framework.version-list.config.mode.horizontal": "List",
 	"yuv.framework.version-list.edit": "Open current version",
-	"yuv.framework.version-list.load.error": "Failed loading object",
-	"yuv.framework.version-list.load.error.not-found": "Object not found. It may have been deleted or you do not have the appropriate permissions.",
 	"yuv.framework.version-list.title": "Versions"
 }

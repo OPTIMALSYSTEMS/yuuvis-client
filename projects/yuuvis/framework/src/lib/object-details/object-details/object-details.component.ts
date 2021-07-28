@@ -245,7 +245,7 @@ export class ObjectDetailsComponent implements OnDestroy {
         },
         (error) => {
           this.dmsObject = null;
-          this.contextError = this.translate.instant('yuv.client.state.object.context.load.error');
+          this.contextError = this.translate.instant('yuv.framework.object-details.context.load.error');
         }
       );
   }
