@@ -120,6 +120,13 @@ export interface PluginAPI {
     viewer: () => Window;
   };
   /**
+   * Application storage
+   */
+  storage: {
+    getItem: (key) => any;
+    setItem: (key, value) => any;
+  };
+  /**
    * Utilities
    */
   util: {
