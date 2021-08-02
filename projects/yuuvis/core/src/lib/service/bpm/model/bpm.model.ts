@@ -146,7 +146,7 @@ export class InboxItem {
   }
 
   get task(): string {
-    return this.originalData.variables.find((v) => v.name === 'whatAbout')?.value as string;
+    return this.originalData.name;
   }
 
   get documentId(): string {

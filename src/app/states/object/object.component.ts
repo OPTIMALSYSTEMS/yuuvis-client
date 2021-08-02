@@ -120,7 +120,7 @@ export class ObjectComponent implements OnInit, OnDestroy {
             this.loadRecentItems();
           }
         },
-        (error) => (this.contextError = this.translate.instant('yuv.client.state.object.context.load.error'))
+        (error) => (this.contextError = this.translate.instant('yuv.framework.object-details.context.load.error'))
       );
   }
 

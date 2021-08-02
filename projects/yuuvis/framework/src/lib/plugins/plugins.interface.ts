@@ -120,12 +120,20 @@ export interface PluginAPI {
     viewer: () => Window;
   };
   /**
+   * Application storage
+   */
+  storage: {
+    getItem: (key) => any;
+    setItem: (key, value) => any;
+  };
+  /**
    * Utilities
    */
   util: {
     $: (selectors, element) => any;
     $$: (selectors, element) => any;
     styles: (styles, id) => any;
+    translate: (key: string, data?: any) => string;
     /**
      * Encode a filename safe for sending chars beyond ASCII-7bit using quoted printable encoding.
      * @param filename Filename to be encoded

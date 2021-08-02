@@ -6,7 +6,9 @@ export { IconRegistryService } from './components/icon/service/iconRegistry.serv
 export { ObjectTypeIconComponent } from './components/object-type-icon/object-type-icon.component';
 export { SidebarComponent } from './components/sidebar/sidebar.component';
 export * from './components/sidebar/sidebar.enum';
+export * from './directives/debounce-click.directive';
 export * from './directives/focus-within.directive';
 export * from './directives/router-link.directive';
+export * from './directives/throttle-click.directive';
 export * from './util/helpers';
 export { UnsubscribeOnDestroy } from './util/unsubscribe.component';

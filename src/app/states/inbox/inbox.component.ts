@@ -37,7 +37,7 @@ export class InboxComponent implements OnInit, OnDestroy {
   loading$: Observable<boolean> = this.inboxService.loadingInboxData$;
 
   headerDetails: HeaderDetails = {
-    title: this.translateService.instant('yuv.framework.inbox-list.inbox'),
+    title: this.translateService.instant('yuv.client.state.inbox.title'),
     description: '',
     icon: 'inbox'
   };

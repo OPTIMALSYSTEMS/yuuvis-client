@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Observable } from 'rxjs';
 import { HeaderDetails } from '../interface/bpm.interface';
 @Component({
-  selector: 'app-process-list-empty',
+  selector: 'yuv-process-list-empty',
   templateUrl: './process-list-empty.component.html',
   styleUrls: ['./process-list-empty.component.scss']
 })

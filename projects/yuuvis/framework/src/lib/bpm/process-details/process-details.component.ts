@@ -18,17 +18,17 @@ export class ProcessDetailsComponent {
   @Input()
   set objectId(id: string) {
     this.contextError = null;
-    this.dmsObject$ = id ? this.dmsServide.getDmsObject(id).pipe(catchError((error) => this.handleObjectError(id))) : this.handleObjectError(id);
+    this.dmsObject$ = id ? this.dmsService.getDmsObject(id).pipe(catchError((error) => this.handleObjectError(id))) : this.handleObjectError(id);
   }
 
   @Output() remove = new EventEmitter<boolean>();
 
   @Input() plugins: any;
 
-  constructor(private dmsServide: DmsService, private translate: TranslateService) {}
+  constructor(private dmsService: DmsService, private translate: TranslateService) {}
 
   private handleObjectError(id: string): Observable<null> {
-    this.contextError = id || id === ProcessDefinitionKey.INVALID_TYPE ? this.translate.instant('yuv.client.state.object.context.load.error') : null;
+    this.contextError = id || id === ProcessDefinitionKey.INVALID_TYPE ? this.translate.instant('yuv.framework.object-details.context.load.error') : null;
     return of(null);
   }
 

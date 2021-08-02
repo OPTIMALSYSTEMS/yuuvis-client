@@ -67,7 +67,7 @@ export class ProcessService {
   private followUpPayloadData(documentId: string, payload: CreateFollowUp): ProcessInstance {
     return {
       processDefinitionKey: ProcessDefinitionKey.FOLLOW_UP,
-      name: ProcessDefinitionKey.FOLLOW_UP,
+      name: payload.whatAbout,
       businessKey: documentId,
       variables: Object.keys(payload).map((value) => ({ name: value, value: payload[value] }))
     };
