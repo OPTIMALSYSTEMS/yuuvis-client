@@ -154,11 +154,12 @@ export class QuickSearchService {
   }
 
   private getSharedFields(selectedTypes = [], shared = true): ObjectTypeField[] {
-    const selectedObjectTypes = (selectedTypes?.length
-      ? selectedTypes
-      : !shared
-      ? [...this.systemService.getObjectTypes(), ...this.systemService.getSecondaryObjectTypes()].map((t) => t.id)
-      : [undefined]
+    const selectedObjectTypes = (
+      selectedTypes?.length
+        ? selectedTypes
+        : !shared
+        ? [...this.systemService.getObjectTypes(), ...this.systemService.getSecondaryObjectTypes()].map((t) => t.id)
+        : [undefined]
     ).map((id) => this.systemService.getResolvedType(id));
 
     return shared
@@ -206,7 +207,7 @@ export class QuickSearchService {
               .map((f) => {
                 // TODO : should we remove namespace from column ID???
                 const id = c.id + `[*].` + f.id.replace(/.*:/, '');
-                const label = c.label + ' - ' + f.label;
+                const label = '☷ ' + c.label + ' - ' + f.label;
                 return { ...f, id, label, value: { ...f.value, id } };
               })
           ],
