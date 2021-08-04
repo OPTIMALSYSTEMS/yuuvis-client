@@ -124,7 +124,7 @@
         </div>
       </div>
 
-      <div class="setting settings__row">
+      <div class="setting settings__row" *ngIf="hasSystemRole">
         <div class="label" translate>yuv.client.state.settings.config.plugin-config</div>
         <div class="value buttons">
           <yuv-file-picker [label]="'yuv.client.state.settings.config.main-config.import' | translate"

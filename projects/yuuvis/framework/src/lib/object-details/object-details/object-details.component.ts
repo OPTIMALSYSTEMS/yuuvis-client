@@ -80,6 +80,10 @@ export class ObjectDetailsComponent implements OnDestroy {
   private _dmsObject: DmsObject;
   private _objectId: string;
 
+  @HostBinding('attr.data-type') get dataType() {
+    return this.dmsObject?.objectTypeId || 'none';
+  }
+
   /**
    * DmsObject to show the details for.
    */
