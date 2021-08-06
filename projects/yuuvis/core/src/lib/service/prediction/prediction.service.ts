@@ -54,9 +54,11 @@ export class PredictionService {
     Object.keys(properties).forEach((k) => {
       const tokens = k.split('|');
       const objectTypeKey = tokens.length ? tokens[0] : k;
-      const data: any = {};
-      if (tokens.length) {
+      let data: any = {};
+      if (tokens.length > 1) {
         data[tokens[1]] = tokens[2];
+      } else {
+        data = null;
       }
 
       if (!predictions[objectTypeKey]) predictions[objectTypeKey] = [];

@@ -306,7 +306,7 @@
   "yuv.client.action.open.context.description": "Öffnet das Objekt in seinem Ordner.",
   "yuv.client.action.open.versions": "Versionen anzeigen",
   "yuv.client.action.open.versions.description": "Zeigt alle Versionen des Objekts.",
-  "yuv.client.frame.app-bar.change-tenant": "Mandanten wechseln",
+  "yuv.client.frame.app-bar.change-tenant": "Mandant wechseln",
   "yuv.client.frame.app-bar.filedrop.label": "Als neues Objekt erstellen",
   "yuv.client.frame.app-bar.logout": "Abmelden",
   "yuv.client.frame.app-bar.pwa-update.msg": "Update verfügbar",
