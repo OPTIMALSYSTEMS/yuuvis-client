@@ -1,4 +1,4 @@
-export { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core';
+export { TranslateDirective, TranslateLoader, TranslateModule, TranslatePipe, TranslateService } from '@ngx-translate/core';
 export * from './lib/core.module';
 export * from './lib/core.shared.module';
 export * from './lib/model/dms-object.interface';
@@ -11,10 +11,14 @@ export * from './lib/service/audit/audit.interface';
 export * from './lib/service/audit/audit.service';
 export * from './lib/service/auth/auth.interface';
 export * from './lib/service/auth/auth.service';
+export * from './lib/service/auth/oidc.service';
 export * from './lib/service/backend/api.enum';
+export * from './lib/service/backend/backend.interface';
 export * from './lib/service/backend/backend.service';
 export * from './lib/service/bpm/index';
 export * from './lib/service/cache/app-cache.service';
+export * from './lib/service/catalog/catalog.interface';
+export * from './lib/service/catalog/catalog.service';
 export * from './lib/service/config/config.interface';
 export * from './lib/service/config/config.service';
 export * from './lib/service/config/core-config';
@@ -29,13 +33,22 @@ export * from './lib/service/event/events';
 export * from './lib/service/logger/logger';
 export * from './lib/service/pending-changes/pending-changes-guard.service';
 export * from './lib/service/pending-changes/pending-changes.service';
+export * from './lib/service/prediction/prediction.interface';
+export * from './lib/service/prediction/prediction.service';
 export * from './lib/service/screen/screen.interface';
 export * from './lib/service/screen/screen.service';
 export * from './lib/service/search/search-query.model';
 export * from './lib/service/search/search.service';
 export * from './lib/service/search/search.service.interface';
 export * from './lib/service/system/system.enum';
-export { ClassificationEntry, ObjectType, ObjectTypeField, ObjectTypeGroup, SecondaryObjectType } from './lib/service/system/system.interface';
+export {
+  ApplicableSecondaries,
+  ClassificationEntry,
+  ObjectType,
+  ObjectTypeField,
+  ObjectTypeGroup,
+  SecondaryObjectType
+} from './lib/service/system/system.interface';
 export * from './lib/service/system/system.service';
 export * from './lib/service/upload/upload.interface';
 export * from './lib/service/upload/upload.service';

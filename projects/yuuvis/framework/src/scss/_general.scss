@@ -4,6 +4,28 @@ body {
     color: var(--color-accent);
     text-decoration: none;
   }
+  /* Chrome, Safari, Edge, Opera */
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  /* Firefox */
+  input[type='number'] {
+    -moz-appearance: textfield;
+  }
+}
+
+// basic styles for cdk-drag-drop
+.cdk-drag-preview {
+  display: none;
+}
+.cdk-drop-list-dragging .cdk-drag {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+.cdk-drag-animating {
+  transition: transform 300ms cubic-bezier(0, 0, 0.2, 1);
 }
 
 .yuvFileDropOverlay {
@@ -57,6 +79,22 @@ body {
     border-color: var(--color-accent);
     color: var(--color-accent);
   }
+
+  &.ref {
+    display: flex;
+    align-items: center;
+    a {
+      margin-right: calc(var(--app-pane-padding) / 4);
+      display: flex;
+      align-items: center;
+      svg {
+        height: 20px;
+        width: 20px;
+        fill: var(--color-accent);
+        pointer-events: none;
+      }
+    }
+  }
 }
 
 .button {
@@ -64,6 +102,12 @@ body {
   &.actions-button {
     &:hover {
       cursor: pointer;
+    }
+  }
+  &.close {
+    padding: 0;
+    &:hover {
+      background: var(--item-focus-background-color);
     }
   }
 }
@@ -98,7 +142,7 @@ body {
   display: flex;
   flex-flow: column;
   align-items: center;
-  z-index: 500;
+  z-index: 5;
   justify-content: center;
 
   // dark mode
@@ -110,4 +154,25 @@ body {
 // popover service
 .cdk-overlay-pane {
   box-shadow: 0 1px 10px 0 rgba(0, 0, 0, 0.15);
+}
+
+.yuv-dialog {
+  padding: var(--app-pane-padding);
+  > .title {
+    font-size: var(--font-subhead);
+    margin-bottom: 1em;
+  }
+  > .message {
+    margin-bottom: 1em;
+  }
+  > .actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin: var(--app-pane-padding) -2px 0 -2px;
+
+    button {
+      margin: 0 2px;
+    }
+  }
 }

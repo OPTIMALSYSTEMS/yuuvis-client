@@ -27,7 +27,7 @@ export class TestActionMenuComponent implements OnInit {
   getDmsObjectDummy() {
     return new DmsObject(
       {
-        objectTypeId: 'appAsv:asvemail',
+        objectTypeId: 'tenKolibri:qadossier',
         fields: new Map<string, any>(),
         permissions: {
           read: ['metadata', 'content'],
@@ -35,7 +35,7 @@ export class TestActionMenuComponent implements OnInit {
           delete: ['object', 'content']
         }
       },
-      this.systemService.getObjectType('appAsv:asvemail')
+      this.systemService.getObjectType('tenKolibri:qadossier')
     );
   }
 

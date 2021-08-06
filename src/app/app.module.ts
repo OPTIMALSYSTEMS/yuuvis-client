@@ -24,6 +24,7 @@ import { ProcessesComponent } from './states/processes/processes.component';
 import { ResultComponent } from './states/result/result.component';
 import { SettingsComponent } from './states/settings/settings.component';
 import { VersionsComponent } from './states/versions/versions.component';
+import { FollowUpsComponent } from './states/follow-ups/follow-ups.component';
 
 @NgModule({
   declarations: [
@@ -40,17 +41,46 @@ import { VersionsComponent } from './states/versions/versions.component';
     ColumnConfigurationComponent,
     InboxComponent,
     FilterConfigurationComponent,
-    ProcessesComponent
+    ProcessesComponent,
+    FollowUpsComponent
   ],
   imports: [
     BrowserModule,
     FormsModule,
     AccordionModule,
-    YuvFrameworkModule.forRoot({
-      main: ['assets/default/config/main.json'],
-      translations: ['assets/default/i18n/'],
-      environment
-    }),
+    YuvFrameworkModule.forRoot(
+      {
+        main: ['assets/default/config/main.json'],
+        translations: ['assets/default/i18n/'],
+        environment
+      },
+      {
+        object: {
+          path: 'object',
+          params: {
+            id: 'id'
+          },
+          queryParams: {
+            query: 'query'
+          }
+        },
+        versions: {
+          path: 'versions',
+          params: {
+            id: 'id'
+          },
+          queryParams: {
+            version: 'version'
+          }
+        },
+        result: {
+          path: 'result',
+          queryParams: {
+            query: 'query'
+          }
+        }
+      }
+    ),
     AppRoutingModule,
     AboutModule,
     ActionsModule,

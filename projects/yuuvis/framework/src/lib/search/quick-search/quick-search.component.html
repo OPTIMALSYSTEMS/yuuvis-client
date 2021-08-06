@@ -1,6 +1,6 @@
 <div class="upper" [ngClass]="{ zero: resultCount === 0 }"
-  *ngIf="searchQuery.term || searchQuery.types?.length || searchQuery.filters?.length">
-  <yuv-icon [icon]="'clear'" (click)="reset()"></yuv-icon>
+  *ngIf="searchQuery.term || searchQuery.allTypes?.length || searchQuery.filters?.length">
+  <!-- <yuv-icon [icon]="'clear'" (click)="reset()"></yuv-icon> -->
   <div class="yuv-loader-straight"></div>
   <div class="count" *ngIf="resultCount !== null">{{ resultCount }}</div>
 </div>
@@ -15,7 +15,6 @@
       </button>
 
       <div class="input">
-        <!-- <input #termEl [placeholder]="'yuv.framework.quick-search.term.placeholder'|translate" formControlName="term"> -->
         <p-autoComplete #autoTermEl [placeholder]="'yuv.framework.quick-search.term.placeholder' | translate"
           formControlName="term" [suggestions]="autoSuggestions" [field]="'label'"
           [ngClass]="{ 'quick-search': true, hashtag: lastAutoQuery?.isTypeFields }"
@@ -25,21 +24,23 @@
       </div>
 
       <!-- in context -->
-      <button class="context-search" *ngIf="context" [ngClass]="{active: searchWithinContext}"
+      <button type="button" class="context-search" *ngIf="context" [ngClass]="{active: searchWithinContext}"
         (click)="toggleSearchWithinContext()">
         {{ 'yuv.framework.quick-search.context-search.chip' | translate }}
       </button>
 
-      <!-- reset button 
+      <!-- reset button -->
       <button type="button" class="reset" (click)="reset()"
-        title="{{ 'yuv.framework.quick-search.reset.tooltip' | trssssssssssssanslate }}">
+        [ngStyle]="{'visibility': (searchQuery.term || searchQuery.allTypes?.length || searchQuery.filters?.length) ? 'visible' : 'hidden'}"
+        title="{{ 'yuv.framework.quick-search.reset.tooltip' | translate }}">
         <yuv-icon icon="reset"></yuv-icon>
-      </button>-->
+      </button>
 
-      <button type="button" class="field-select" #fieldSelectTrigger (click)="showObjectTypeFieldPicker()"
+      <button type="button" class="field-select" #fieldSelectTrigger
+        [ngClass]="{hasFilters: searchQuery.filters?.length}" (click)="showObjectTypeFieldPicker()"
         *ngIf="availableObjectTypeFields?.length"
         title="{{ 'yuv.framework.quick-search.field-select.tooltip' | translate }}">
-        <yuv-icon [icon]="'addCircle'"></yuv-icon>
+        <yuv-icon icon="filter"></yuv-icon>
       </button>
 
       <button type="button" class="primary submit" [ngClass]="{ active: resultCount > 0 }" (click)="executeSearch()">

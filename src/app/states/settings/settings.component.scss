@@ -17,6 +17,17 @@ $avatar-size-small: 80px;
         }
       }
     }
+
+    .setting.cache__setting {
+      .value.buttons {
+        flex-flow: column;
+
+        .cache {
+          margin-left: 0;
+          margin-top: calc(var(--app-pane-padding) / 4);
+        }
+      }
+    }
   }
 }
 
@@ -62,7 +73,7 @@ $avatar-size-small: 80px;
 
   .cache {
     display: flex;
-    flex-flow: row;
+    flex-flow: row wrap;
     margin: 0 var(--app-pane-padding);
   }
 
@@ -107,6 +118,7 @@ $avatar-size-small: 80px;
         width: $avatar-size;
         height: $avatar-size;
         overflow: hidden;
+        z-index: 2;
       }
       .user {
         position: relative;
@@ -184,16 +196,21 @@ $avatar-size-small: 80px;
           .value {
             color: var(--text-color-caption);
             display: flex;
+            flex-flow: wrap;
             flex: 1;
 
             &.buttons {
               margin: 0 calc(var(--app-pane-padding) / 8 * -1);
+
+              &.plugin-enable {
+                flex: 0 1 auto;
+              }
             }
 
             ::ng-deep {
               button {
                 background-color: var(--panel-background-grey);
-                margin: 0 calc(var(--app-pane-padding) / 8);
+                margin: 2px calc(var(--app-pane-padding) / 8);
                 padding: calc(var(--app-pane-padding) / 4) calc(var(--app-pane-padding) / 2);
 
                 &.active {
@@ -231,6 +248,23 @@ $avatar-size-small: 80px;
           }
 
           .content.permissions {
+            button.dropbown {
+              width: 100%;
+              display: flex;
+              justify-content: space-between;
+              padding: calc(var(--app-pane-padding) / 4) var(--app-pane-padding);
+
+              &.open {
+                yuv-icon {
+                  transform: rotate(180deg);
+                }
+              }
+            }
+            .dropdown-content {
+              border: 1px solid var(--button-secondary-background);
+              padding: var(--app-pane-padding);
+            }
+
             .role {
               display: flex;
               align-items: center;
@@ -245,6 +279,10 @@ $avatar-size-small: 80px;
                 padding: 0 calc(var(--app-pane-padding) / 2);
               }
             }
+          }
+
+          &:last-child {
+            margin-bottom: calc(var(--app-pane-padding));
           }
         }
       }

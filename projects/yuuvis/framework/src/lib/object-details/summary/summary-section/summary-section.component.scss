@@ -63,6 +63,7 @@
       grid-area: value;
       height: 100%;
       color: var(--text-color-body);
+      line-height: 1.5em;
       @include flex-row();
       .value {
         align-self: center;

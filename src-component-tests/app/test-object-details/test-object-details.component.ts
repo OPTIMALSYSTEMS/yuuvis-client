@@ -21,6 +21,10 @@ export class TestObjectDetailsComponent implements OnInit {
     this.summaryObject = null;
   }
 
+  onObjectRefreshed() {
+    alert('REFRESH');
+  }
+
   contentDmsObjectInput() {
     this.summaryObject = this.data.getDmsObjectWithContent();
   }

@@ -80,3 +80,22 @@
     }
   }
 }
+
+// some styles for the cell renderers
+table.cellrenderer-tags {
+  border-collapse: collapse;
+  background: var(--item-focus-background-color);
+  border: 1px solid var(--item-focus-border-color);
+  color: var(--text-color-caption);
+
+  tr:not(:last-child) td {
+    border-bottom: 1px solid var(--item-focus-border-color);
+  }
+  td {
+    padding: 2px 4px;
+    font-size: var(--font-hint);
+    &.tag {
+      color: var(--text-color-body);
+    }
+  }
+}

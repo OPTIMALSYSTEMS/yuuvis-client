@@ -14,6 +14,7 @@ const versionComponents = [VersionListComponent];
  */
 @NgModule({
   declarations: [...versionComponents],
+  entryComponents: [...versionComponents],
   exports: [...versionComponents],
   imports: [CommonModule, FormsModule, ReactiveFormsModule, YuvComponentsModule, TranslateModule, YuvPipesModule, YuvCommonModule]
 })

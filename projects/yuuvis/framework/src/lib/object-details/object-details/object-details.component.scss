@@ -4,10 +4,17 @@
   width: 100%;
 
   ::ng-deep {
-    .ui-tabview .ui-tabview-panels {
+    yuv-panel .header {
+      .header_title,
+      .header_description {
+        user-select: text;
+      }
+    }
+
+    .p-tabview .p-tabview-panels {
       background-color: var(--panel-background-grey);
 
-      #indexdata > .ui-tabview-panel {
+      #indexdata > .p-tabview-panel {
         overflow: hidden;
 
         .object-form-edit {
@@ -73,7 +80,7 @@
     color: var(--color-success);
   }
 
-  .ui-tabview .ui-tabview-panels {
+  .p-tabview .p-tabview-panels {
     background-color: var(--panel-background-grey);
   }
   yuv-responsive-tab-container.content {

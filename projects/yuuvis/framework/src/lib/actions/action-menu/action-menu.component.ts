@@ -1,15 +1,16 @@
 import { Component, ComponentFactoryResolver, EventEmitter, Input, OnDestroy, Output, Type, ViewChild, ViewContainerRef } from '@angular/core';
 import { NavigationStart, Router } from '@angular/router';
 import { DmsObject } from '@yuuvis/core';
-import { filter, take } from 'rxjs/operators';
+import { filter, finalize, take, tap } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
+import { ComponentAnchorDirective } from '../../directives/component-anchor/component-anchor.directive';
+import { PluginActionViewComponent } from '../../plugins/plugin-action-view.component';
 import { clear } from '../../svg.generated';
 import { ActionService } from '../action-service/action.service';
 import { ActionComponent } from '../interfaces/action-component.interface';
 import { ActionListEntry } from '../interfaces/action-list-entry';
-import { ComponentAction, ExternalComponentAction, ListAction, SimpleAction } from '../interfaces/action.interface';
-import { ActionComponentAnchorDirective } from './action-component-anchor/action-component-anchor.directive';
+import { ComponentAction, ExternalComponentAction, LinkAction, ListAction, SimpleAction } from '../interfaces/action.interface';
 
 /**
  * This component creates a menu of available actions for a selection of items. The action menu includes such actions as `delete`, `download` and `upload`.
@@ -28,18 +29,27 @@ import { ActionComponentAnchorDirective } from './action-component-anchor/action
   host: { class: 'yuv-action-menu' }
 })
 export class ActionMenuComponent implements OnDestroy {
-  @ViewChild(ActionComponentAnchorDirective) eoActionComponentAnchor: ActionComponentAnchorDirective;
-  @ViewChild(ActionComponentAnchorDirective) externalDialog: ActionComponentAnchorDirective;
+  @ViewChild(ComponentAnchorDirective) componentAnchor: ComponentAnchorDirective;
 
   /**
    * Specifies the items for which the actions should be provided.
    */
   @Input() selection: DmsObject[] = [];
+  /**
+   * Set to true when using dark background color for action menu
+   * eventhough you are not on dark mode
+   */
+  @Input() dark: boolean;
+  /**
+   * Set ID of Action that should be shown when menu opens.
+   */
+  @Input() activeAction: string;
 
   /**
    * Specifies the visibility of the menu.
    */
-  @Input() set visible(visible: boolean) {
+  @Input()
+  set visible(visible: boolean) {
     if (!this.showMenu && visible) {
       this.showActionMenu();
     } else if (this.showMenu && !visible) {
@@ -55,7 +65,12 @@ export class ActionMenuComponent implements OnDestroy {
   /**
    * Callback to invoke when the action is finished.
    */
-  @Output() onFinish = new EventEmitter();
+  @Output() finished = new EventEmitter();
+
+  /**
+   * Callback to invoke when the action is clicked.
+   */
+  @Output() actionSelected = new EventEmitter<ActionListEntry>();
 
   actionLists: {
     common: ActionListEntry[];
@@ -71,6 +86,7 @@ export class ActionMenuComponent implements OnDestroy {
   showDescriptions: boolean;
   showMenu = false;
   loading = false;
+  fullscreen = false;
 
   constructor(
     private actionService: ActionService,
@@ -85,21 +101,25 @@ export class ActionMenuComponent implements OnDestroy {
         takeUntilDestroy(this),
         filter((evt) => evt instanceof NavigationStart)
       )
-      .subscribe(() => this.hide());
+      .subscribe(() => this.finish());
   }
 
   private getActions() {
     this.loading = true;
-    this.actionService.getActionsList(this.selection, this.viewContainerRef).subscribe(
-      (actionsList) => {
-        this.actionLists.common = actionsList.filter((actionListEntry) => actionListEntry.action.group === 'common');
-        this.actionLists.further = actionsList.filter((actionListEntry) => actionListEntry.action.group === 'further');
-        this.loading = false;
-      },
-      (err) => {
-        this.loading = false;
-      }
-    );
+    this.actionService
+      .getActionsList(this.selection, this.viewContainerRef)
+      .pipe(
+        finalize(() => (this.loading = false)),
+        tap((actionsList) => {
+          this.actionLists.common = actionsList.filter((actionListEntry) => actionListEntry.action.group === 'common');
+          this.actionLists.further = actionsList.filter((actionListEntry) => actionListEntry.action.group === 'further');
+          if (this.activeAction) {
+            const action = actionsList.find((a) => a.id === this.activeAction);
+            setTimeout(() => (action ? this.onClick(action) : this.finish()));
+          }
+        })
+      )
+      .subscribe();
   }
 
   hide() {
@@ -124,11 +144,12 @@ export class ActionMenuComponent implements OnDestroy {
     this.visibleChange.emit(false);
   }
 
-  onClick(actionListEntry: ActionListEntry) {
+  onClick(actionListEntry: ActionListEntry, evt?: MouseEvent) {
     // It is possible that actions implement more than one action interface
     // so we should be aware of running an action and then open its sub actions
 
-    const isSimpleAction = !!actionListEntry.action['run'];
+    const isSimpleAction = !!(actionListEntry.action as SimpleAction).run;
+    const isLinkAction = !!(actionListEntry.action as LinkAction).getLink;
     const isListAction = actionListEntry.action.hasOwnProperty('subActionComponents');
     const isComponentAction = actionListEntry.action.hasOwnProperty('component');
     const isExternalComponentAction = actionListEntry.action.hasOwnProperty('extComponent');
@@ -145,6 +166,15 @@ export class ActionMenuComponent implements OnDestroy {
             this.finish();
           }
         });
+    } else if (isLinkAction) {
+      const action = actionListEntry.action as LinkAction;
+      if (!evt?.ctrlKey) {
+        this.router.navigate([action.getLink(actionListEntry.availableSelection)], {
+          queryParams: action.getParams ? action.getParams(actionListEntry.availableSelection) : {},
+          fragment: action.getFragment ? action.getFragment(actionListEntry.availableSelection) : null
+        });
+      }
+      this.finish();
     }
 
     if (isListAction) {
@@ -155,27 +185,30 @@ export class ActionMenuComponent implements OnDestroy {
         .subscribe((actionsList: ActionListEntry[]) => (this.subActionsList = actionsList));
     } else if (isComponentAction) {
       const componentAction = actionListEntry.action as ComponentAction;
-      this.showActionComponent(componentAction.component, this.eoActionComponentAnchor, this.componentFactoryResolver, true);
+      this.showActionComponent(componentAction.component, this.componentAnchor, this.componentFactoryResolver, true, componentAction.inputs);
     } else if (isExternalComponentAction) {
+      this.fullscreen = true;
       const extComponentAction = actionListEntry.action as ExternalComponentAction;
-      this.showActionComponent(extComponentAction.extComponent, this.externalDialog, this.componentFactoryResolver, false);
+      this.showActionComponent(extComponentAction.extComponent, this.componentAnchor, this.componentFactoryResolver, true, extComponentAction.inputs);
     }
+
+    this.actionSelected.emit(actionListEntry);
   }
 
-  private showActionComponent(component: Type<any>, viewContRef, factoryResolver, showComponent, inputs?: any) {
+  private showActionComponent(component: Type<any> | any, viewContRef, factoryResolver, showComponent, inputs?: any) {
     this.showComponent = showComponent;
-    let componentFactory = factoryResolver.resolveComponentFactory(component);
+    let componentFactory = factoryResolver.resolveComponentFactory(component._component || component);
     let anchorViewContainerRef = viewContRef.viewContainerRef;
     anchorViewContainerRef.clear();
     let componentRef = anchorViewContainerRef.createComponent(componentFactory);
+    if (componentRef.instance instanceof PluginActionViewComponent) {
+      (<PluginActionViewComponent>componentRef.instance).action = component.action;
+    }
     (<ActionComponent>componentRef.instance).selection = this.selection;
     (<ActionComponent>componentRef.instance).canceled.pipe(take(1)).subscribe(() => this.cancel());
     (<ActionComponent>componentRef.instance).finished.pipe(take(1)).subscribe(() => this.finish());
-    if (inputs) {
-      Object.keys(inputs).forEach(function (key) {
-        componentRef.instance[key] = inputs[key];
-      });
-    }
+
+    Object.keys(inputs || {}).forEach((key) => (componentRef.instance[key] = inputs[key]));
   }
 
   isLinkAction(action) {
@@ -184,21 +217,22 @@ export class ActionMenuComponent implements OnDestroy {
   }
 
   private clear() {
+    this.fullscreen = false;
     this.showComponent = false;
     this.subActionsList = null;
     // this.actionDescription = null;
+    this.activeAction = null;
     this.viewContainerRef.clear();
-    if (this.eoActionComponentAnchor) {
-      this.eoActionComponentAnchor.viewContainerRef.clear();
-    }
+    this.componentAnchor?.viewContainerRef.clear();
+    this.actionSelected.emit();
   }
 
   cancel() {
-    this.clear();
+    this.activeAction ? this.finish() : this.clear();
   }
 
   finish() {
-    this.onFinish.emit();
+    this.finished.emit();
     this.hideActionMenu();
   }
 

@@ -1,0 +1,7 @@
+<section class="empty-list">
+  <h1>{{headerDetails.title}}</h1>
+  <yuv-icon class="state-icon" [icon]="state"></yuv-icon>
+  <span class="empty-message">{{message}}</span>
+
+  <yuv-icon (click)="refreshList()" class="refresh-icon" [ngClass]="{'loading': loading | async }" [icon]="'refresh'"></yuv-icon>
+</section>

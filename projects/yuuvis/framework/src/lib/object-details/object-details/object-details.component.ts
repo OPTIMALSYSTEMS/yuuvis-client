@@ -1,4 +1,16 @@
-import { Component, ContentChildren, HostBinding, Input, OnDestroy, QueryList, TemplateRef, ViewChild, ViewChildren } from '@angular/core';
+import {
+  Component,
+  ContentChildren,
+  EventEmitter,
+  HostBinding,
+  Input,
+  OnDestroy,
+  Output,
+  QueryList,
+  TemplateRef,
+  ViewChild,
+  ViewChildren
+} from '@angular/core';
 import {
   BaseObjectTypeField,
   ConfigService,
@@ -12,11 +24,14 @@ import {
   YuvEventType
 } from '@yuuvis/core';
 import { TabPanel } from 'primeng/tabview';
+import { Observable } from 'rxjs';
+import { finalize } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { kebap, noFile, refresh } from '../../svg.generated';
 import { ContentPreviewService } from '../content-preview/service/content-preview.service';
 import { ResponsiveTabContainerComponent } from './../../components/responsive-tab-container/responsive-tab-container.component';
+import { FileDropOptions } from './../../directives/file-drop/file-drop.directive';
 
 /**
  * High level component displaying detail aspects for a given DmsObject.
@@ -60,6 +75,8 @@ export class ObjectDetailsComponent implements OnDestroy {
   actionMenuSelection: DmsObject[] = [];
   fileDropLabel: string;
   contextError: string = null;
+  objectTypeId: string;
+  isRetentionActive = false;
   private _dmsObject: DmsObject;
   private _objectId: string;
 
@@ -72,22 +89,31 @@ export class ObjectDetailsComponent implements OnDestroy {
     this._dmsObject = object;
     this._objectId = object ? object.id : null;
     if (object) {
-      const params = {
-        value: this.systemService.getLeadingObjectTypeID(object.objectTypeId, object.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS]),
-        context: {
-          system: this.systemService
-        }
-      };
-
+      this.objectTypeId = this.systemService.getLeadingObjectTypeID(object.objectTypeId, object.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS]);
       this.fileDropLabel = !object.content
         ? this.translate.instant('yuv.framework.object-details.filedrop.content.add')
         : this.translate.instant('yuv.framework.object-details.filedrop.content.replace');
+    } else {
+      this.objectTypeId = null;
+    }
+    this.isRetentionActive = false;
+    if (object && object.data['system:rmStartOfRetention'] && object.data['system:rmExpirationDate']) {
+      const currentDate = new Date();
+      const retentionStart = new Date(object.data['system:rmStartOfRetention']);
+      const retentionEnd = new Date(object.data['system:rmExpirationDate']);
+      this.isRetentionActive = retentionStart <= currentDate && currentDate <= retentionEnd;
     }
   }
 
   get dmsObject() {
     return this._dmsObject;
   }
+
+  /**
+   * A list of audits that should not be shown. Use the audit codes (like 100, 301, etc.).
+   * This will also disable the corresponding filters.
+   */
+  @Input() skipActions: number[];
 
   /**
    * ID of a DmsObject. The object will be fetched from the backend upfront.
@@ -155,14 +181,13 @@ export class ObjectDetailsComponent implements OnDestroy {
    * versions of an object.
    */
   @Input() disableFileDrop: boolean;
-
-  /**
-   * Custom template to render version numer within summary and audit
-   * aspect as for example a link.
-   */
-  @Input() versionLinkTemplate: TemplateRef<any>;
+  @Input() fileDropOptions: FileDropOptions;
 
   undockWinActive = false;
+
+  @Input() plugins: Observable<any[]>;
+
+  @Output() objectRefresh = new EventEmitter();
 
   constructor(
     private dmsService: DmsService,
@@ -176,7 +201,7 @@ export class ObjectDetailsComponent implements OnDestroy {
   ) {
     this.iconRegistry.registerIcons([refresh, kebap, noFile]);
     this.userIsAdmin = this.userService.hasAdministrationRoles;
-    this.panelOrder = this.config.get('objectDetailsTabs') || this.panelOrder;
+    this.panelOrder = this.config.get('client.objectDetailsTabs') || this.panelOrder;
     this.undockWinActive = ContentPreviewService.undockWinActive();
 
     this.eventService
@@ -205,24 +230,29 @@ export class ObjectDetailsComponent implements OnDestroy {
     this.actionMenuVisible = true;
   }
 
-  private getDmsObject(id: string) {
+  private getDmsObject(id: string, emitRefresh?: boolean) {
     this.busy = true;
     this.contentPreviewService.resetSource();
-    this.dmsService.getDmsObject(id).subscribe(
-      (dmsObject) => {
-        this.dmsObject = dmsObject;
-        this.busy = false;
-      },
-      (error) => {
-        this.busy = false;
-        this.contextError = this.translate.instant('yuv.client.state.object.context.load.error');
-      }
-    );
+    this.dmsService
+      .getDmsObject(id)
+      .pipe(finalize(() => (this.busy = false)))
+      .subscribe(
+        (dmsObject) => {
+          this.dmsObject = dmsObject;
+          if (emitRefresh) {
+            this.objectRefresh.emit();
+          }
+        },
+        (error) => {
+          this.dmsObject = null;
+          this.contextError = this.translate.instant('yuv.framework.object-details.context.load.error');
+        }
+      );
   }
 
   refreshDetails() {
     if (this._objectId) {
-      this.getDmsObject(this._objectId);
+      this.getDmsObject(this._objectId, true);
     }
   }
 

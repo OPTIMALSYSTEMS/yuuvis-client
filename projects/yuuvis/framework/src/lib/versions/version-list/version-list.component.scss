@@ -65,6 +65,23 @@
     }
   }
 
+  .error {
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+
+    .message {
+      display: block;
+      margin: var(--app-pane-padding);
+      background-color: var(--color-error);
+      color: #fff;
+      border-radius: calc(var(--app-pane-padding) / 4);
+      padding: var(--app-pane-padding);
+    }
+  }
+
   .content {
     background-color: var(--panel-background);
   }

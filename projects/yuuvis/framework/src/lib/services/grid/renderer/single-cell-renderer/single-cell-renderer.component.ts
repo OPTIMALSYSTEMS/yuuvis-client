@@ -16,6 +16,7 @@ export class SingleCellRendererComponent implements ICellRendererAngularComp {
   viewMode: string;
 
   cell: {
+    icon: string;
     version: any;
     modified: any;
     title: string;
@@ -35,9 +36,15 @@ export class SingleCellRendererComponent implements ICellRendererAngularComp {
 
     this.cell = {
       objectTypeId,
+      icon: params.data.icon,
       version: params.data[BaseObjectTypeField.VERSION_NUMBER],
       modified: this.datePipe.transform(params.data[params._crParams.dateField || BaseObjectTypeField.MODIFICATION_DATE]),
-      title: (params._crParams.titleField ? params.data[params._crParams.titleField] : this.systemService.getLocalizedResource(`${objectTypeId}_label`)) || '',
+      title:
+        (params._crParams.titleField
+          ? params.data[params._crParams.titleField]
+          : objectTypeId
+          ? this.systemService.getLocalizedResource(`${objectTypeId}_label`)
+          : this.systemService.getLocalizedResource(`${params?.data?.type}_label`)) || '',
       description: params.data[params._crParams.descriptionField] || ''
     };
     return true;

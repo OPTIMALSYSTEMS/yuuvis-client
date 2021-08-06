@@ -1,0 +1,21 @@
+:host {
+  display: flex;
+  align-items: center;
+
+  p-multiSelect,
+  p-dropdown {
+    flex: 1;
+  }
+
+  .chip.missing {
+    border-color: var(--color-error);
+    color: var(--color-error);
+  }
+
+  .actions button {
+    &.error {
+      background-color: var(--color-error);
+      color: #fff;
+    }
+  }
+}

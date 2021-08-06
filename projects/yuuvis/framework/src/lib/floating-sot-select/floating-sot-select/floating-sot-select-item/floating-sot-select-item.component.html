@@ -1,0 +1,7 @@
+<div class="prediction" *ngIf="_item.prediction"
+    title="{{'yuv.framework.floating-sot-select.prediction.tooltip'|translate}}">{{_item.prediction}}</div>
+<div class="label">
+    <div class="title">{{_item.label}}</div>
+    <div class="description">{{_item.description}}</div>
+</div>
+<yuv-icon *ngIf="_item.svgSrc" [iconSrc]="_item.svgSrc"></yuv-icon>

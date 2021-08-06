@@ -1,4 +1,5 @@
 import { Component, ElementRef, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { SearchQuery } from '@yuuvis/core';
 import { PopoverConfig, PopoverRef, PopoverService, QuickSearchPickerData, QuickSearchService, Selectable, SelectableGroup } from '@yuuvis/framework';
 
@@ -12,23 +13,27 @@ export class FilterConfigurationComponent implements OnInit {
   @ViewChild('typeSelectTrigger') typeSelectTrigger: ElementRef;
 
   objectTypeSelectLabel: string;
-  availableObjectTypeGroups: SelectableGroup[] = [];
-  availableObjectTypes: Selectable[] = [];
+
+  get availableObjectTypes(): Selectable[] {
+    return this.quickSearchService.availableObjectTypes;
+  }
+
+  get availableObjectTypeGroups(): SelectableGroup[] {
+    return this.quickSearchService.availableObjectTypeGroups;
+  }
 
   data: any = {
     query: new SearchQuery(),
     typeSelection: [],
-    sharedFields: false
+    sharedFields: false,
+    global: !!this.route.snapshot.queryParamMap.get('global')
   };
 
   get types() {
     return this.data.typeSelection.map((id) => this.availableObjectTypes.find((t) => t.id === id).label).join(', ') || '*';
   }
 
-  constructor(private popoverService: PopoverService, private quickSearchService: QuickSearchService) {
-    this.availableObjectTypeGroups = this.quickSearchService.availableObjectTypeGroups;
-    this.availableObjectTypes = this.quickSearchService.availableObjectTypes;
-  }
+  constructor(private popoverService: PopoverService, private quickSearchService: QuickSearchService, private route: ActivatedRoute) {}
 
   showObjectTypePicker() {
     const pickerData: QuickSearchPickerData = {

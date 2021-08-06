@@ -4,13 +4,9 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PendingChangesService, Screen, ScreenService, SearchQuery, TranslateService, Utils } from '@yuuvis/core';
-import { LayoutService } from '@yuuvis/framework';
+import { FilterPanelConfig, LayoutService, PluginsService } from '@yuuvis/framework';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { AppSearchService } from '../../service/app-search.service';
-
-export interface ResultStateLayoutOptions {
-  showFilterPanel: boolean;
-}
 
 @Component({
   selector: 'yuv-result',
@@ -19,15 +15,19 @@ export interface ResultStateLayoutOptions {
 })
 export class ResultComponent implements OnInit, OnDestroy {
   private STORAGE_KEY = 'yuv.app.result';
+  private LAYOUT_STORAGE_KEY = `${this.STORAGE_KEY}.layout`;
   objectDetailsID: string;
   searchQuery: SearchQuery;
   selectedItems: string[] = [];
   smallScreen: boolean;
-  showFilterPanel: boolean;
+  // showFilterPanel: boolean;
+  filterPanelConfig: FilterPanelConfig;
 
   get layoutOptionsKey() {
     return `${this.STORAGE_KEY}.${(this.searchQuery && this.searchQuery.targetType) || 'mixed'}`;
   }
+
+  plugins: any;
 
   constructor(
     private titleService: Title,
@@ -39,14 +39,16 @@ export class ResultComponent implements OnInit, OnDestroy {
     private title: Title,
     private layoutService: LayoutService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private pluginsService: PluginsService
   ) {
     this.screenService.screenChange$.pipe(takeUntilDestroy(this)).subscribe((screen: Screen) => {
       this.smallScreen = screen.mode === ScreenService.MODE.SMALL;
     });
-    this.layoutService.loadLayoutOptions('yuv-result', 'state').subscribe((o: ResultStateLayoutOptions) => {
-      this.showFilterPanel = o ? o.showFilterPanel || false : false;
+    this.layoutService.loadLayoutOptions(this.LAYOUT_STORAGE_KEY, 'filterPanelConfig').subscribe((c: FilterPanelConfig) => {
+      this.filterPanelConfig = c;
     });
+    this.plugins = this.pluginsService.getCustomPlugins('extensions', 'yuv-result');
   }
 
   closeDetails() {
@@ -64,9 +66,9 @@ export class ResultComponent implements OnInit, OnDestroy {
     this.objectDetailsID = this.selectedItems[0];
   }
 
-  onFilterPanelToggled(visible: boolean) {
-    this.showFilterPanel = visible;
-    this.layoutService.saveLayoutOptions('yuv-result', 'state', { showFilterPanel: visible }).subscribe();
+  onFilterPanelConfigChanged(cfg: FilterPanelConfig) {
+    this.filterPanelConfig = cfg;
+    this.layoutService.saveLayoutOptions(this.LAYOUT_STORAGE_KEY, 'filterPanelConfig', cfg).subscribe();
   }
 
   onRowDoubleClicked(rowEvent: RowEvent) {

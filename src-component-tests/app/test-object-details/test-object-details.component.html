@@ -1,10 +1,14 @@
 <div class="testing-controls">
-  <yuv-dms-object-picker (dmsObject)="setDmsObjectInput($event)"></yuv-dms-object-picker>
-  <button (click)="contentDmsObjectInput()">with content</button>
-  <button (click)="clearDmsObjectInput()">NULL dmsObject input</button>
+  <div class="object-picker">
+    <yuv-dms-object-picker (dmsObject)="setDmsObjectInput($event)"></yuv-dms-object-picker>
+  </div>
+  <div class="buttons">
+    <button (click)="contentDmsObjectInput()">with content</button>
+    <button (click)="clearDmsObjectInput()">NULL dmsObject input</button>
+  </div>
 </div>
 
 
 
 
-<yuv-object-details class="cmp" [dmsObject]="summaryObject"></yuv-object-details>
+<yuv-object-details class="cmp" [dmsObject]="summaryObject" (objectRefresh)="onObjectRefreshed()"></yuv-object-details>

@@ -4,8 +4,6 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import {
   BaseObjectTypeField,
   ClientDefaultsObjectTypeField,
-  ColumnConfig,
-  ColumnConfigColumn,
   DmsObject,
   EventService,
   SearchQuery,
@@ -14,17 +12,23 @@ import {
   SearchService,
   SortOption,
   UserConfigService,
+  Utils,
   YuvEvent,
   YuvEventType
 } from '@yuuvis/core';
 import { Observable, of } from 'rxjs';
-import { map, switchMap, tap } from 'rxjs/operators';
+import { switchMap, tap } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { ResponsiveDataTableComponent, ViewMode } from '../../components/responsive-data-table/responsive-data-table.component';
 import { ResponsiveTableData } from '../../components/responsive-data-table/responsive-data-table.interface';
 import { GridService } from '../../services/grid/grid.service';
 import { arrowLast, arrowNext, clear, doubleArrow, filter, listModeDefault, listModeGrid, listModeSimple, search, settings } from '../../svg.generated';
+
+export interface FilterPanelConfig {
+  open: boolean;
+  width: number;
+}
 
 /**
  * Component rendering a search result within a result list.
@@ -41,44 +45,68 @@ import { arrowLast, arrowNext, clear, doubleArrow, filter, listModeDefault, list
   host: { class: 'yuv-search-result' }
 })
 export class SearchResultComponent implements OnDestroy {
+  // default and minimal size of the filter panel in pixel
+  filterPanelSize = {
+    default: 250,
+    min: 200
+  };
+
   private _originalQuery: SearchQuery;
   private _searchQuery: SearchQuery;
   private _columns: ColDef[];
   private _rows: any[];
   private _hasPages = false;
   private _itemsSupposedToBeSelected: string[];
-  private _showFilterPanel: boolean;
+  // private _showFilterPanel: boolean;
+  private _filterPanelConfig: FilterPanelConfig = {
+    open: false,
+    width: this.filterPanelSize.default
+  };
   pagingForm: FormGroup;
   busy: boolean;
 
   /**
-   * Whether or not to expand the filter panel
+   * Column configuration to be used for the grid. The query sent to the backend
+   * will be adopted to fetch all the necessary fields.
    */
-  @Input() set showFilterPanel(b: boolean) {
-    if (this._showFilterPanel !== b) {
-      this._showFilterPanel = b;
-      this.filterPanelToggled.emit(b);
+  @Input() columnConfig: ColDef[];
+
+  @Input() set filterPanelConfig(cfg: FilterPanelConfig) {
+    if (this._filterPanelConfig?.open !== cfg?.open || this._filterPanelConfig.width !== cfg?.width) {
+      this._filterPanelConfig = cfg || {
+        open: false,
+        width: this.filterPanelSize.default
+      };
+      this.filterPanelConfigChanged.emit(cfg);
     }
   }
 
-  get showFilterPanel(): boolean {
-    return this._showFilterPanel;
+  get filterPanelConfig() {
+    return this._filterPanelConfig;
   }
 
+  // /**
+  //  * Whether or not to expand the filter panel
+  //  */
+  // @Input() set showFilterPanel(b: boolean) {
+  //   if (this._showFilterPanel !== b) {
+  //     this._showFilterPanel = b;
+  //     this.filterPanelToggled.emit(b);
+  //   }
+  // }
+
+  // get showFilterPanel(): boolean {
+  //   return this._showFilterPanel;
+  // }
+
+  @Input() responsiveTableData: Partial<ResponsiveTableData>;
+
   tableData: ResponsiveTableData;
-  // object type shown in the result list, will be null for mixed results
-  private resultListObjectTypeId: string;
   totalNumItems: number;
   // state of pagination
   pagination: {
     pages: number;
     page: number;
-  };
-
-  // default and minimal size of the filter panel in pixel
-  filterPanelSize = {
-    default: 250,
-    min: 200
   };
 
   @ViewChild('dataTable') dataTable: ResponsiveDataTableComponent;
@@ -89,12 +117,18 @@ export class SearchResultComponent implements OnDestroy {
    * will be used to store component specific settings using the layout service.
    */
   @Input() layoutOptionsKey: string;
+
+  @Input() disableFilterPanel: boolean;
   /**
    * Query to be executed by the component.
    */
   @Input() set query(searchQuery: SearchQuery) {
+    if (this.dataTable?.gridOptions?.api.getSelectedNodes().length) {
+      this.itemsSelected.emit([]);
+    }
+
     this._originalQuery = searchQuery && new SearchQuery(searchQuery.toQueryJson());
-    this._searchQuery = searchQuery;
+    this._searchQuery = searchQuery && new SearchQuery(searchQuery.toQueryJson());
     if (searchQuery) {
       this.executeQuery(this.applyColumnConfig);
     } else {
@@ -134,9 +168,9 @@ export class SearchResultComponent implements OnDestroy {
    */
   @Output() viewModeChanged = new EventEmitter<ViewMode>();
   /**
-   * Emitted when the visibility of the filter panel changes
+   * Emitted when the visibility or width of the filter panel changes
    */
-  @Output() filterPanelToggled = new EventEmitter<boolean>();
+  @Output() filterPanelConfigChanged = new EventEmitter<FilterPanelConfig>();
 
   set hasPages(count) {
     this._hasPages = count;
@@ -159,8 +193,12 @@ export class SearchResultComponent implements OnDestroy {
     return this.dataTable ? this.dataTable.viewMode : null;
   }
 
+  get sortOptionsChanged() {
+    return JSON.stringify(this._originalQuery?.sortOptions || []) !== JSON.stringify(this._searchQuery?.sortOptions || []);
+  }
+
   constructor(
-    @Attribute('applyColumnConfig') public applyColumnConfig: boolean,
+    @Attribute('applyColumnConfig') public applyColumnConfig: any, // string should be resolved
     private gridService: GridService,
     private userConfig: UserConfigService,
     private eventService: EventService,
@@ -168,32 +206,50 @@ export class SearchResultComponent implements OnDestroy {
     private fb: FormBuilder,
     private iconRegistry: IconRegistryService
   ) {
+    this.applyColumnConfig = !applyColumnConfig || applyColumnConfig === 'false' ? false : true;
     this.iconRegistry.registerIcons([doubleArrow, filter, settings, clear, search, arrowNext, arrowLast, listModeDefault, listModeGrid, listModeSimple]);
 
-    this.pagingForm = this.fb.group({
-      page: ['']
-    });
+    this.pagingForm = this.fb.group({ page: [''] });
 
     this.eventService
-      .on(YuvEventType.DMS_OBJECT_UPDATED)
-      .pipe(takeUntilDestroy(this))
-      .subscribe((e: YuvEvent) => {
-        const dmsObject = e.data as DmsObject;
-        if (this.dataTable) {
-          // Update table data without reloading the whole grid
-          this.dataTable.updateRow(dmsObject.id, dmsObject.data);
-        }
-      });
+      .on(YuvEventType.DMS_OBJECT_UPDATED, YuvEventType.DMS_OBJECT_DELETED)
+      .pipe(
+        takeUntilDestroy(this),
+        tap((e) => this.objectEvent(e))
+      )
+      .subscribe((e: YuvEvent) => {});
+  }
 
-    this.eventService
-      .on(YuvEventType.DMS_OBJECT_DELETED)
-      .pipe(takeUntilDestroy(this))
-      .subscribe((event) => {
-        const deleted = this.dataTable.deleteRow(event.data.id);
+  private objectEvent({ type, data }: YuvEvent) {
+    if (type === YuvEventType.DMS_OBJECT_UPDATED) {
+      const dmsObject = data as DmsObject;
+      if (this.dataTable) {
+        // Update table data without reloading the whole grid
+        this.dataTable.updateRow(dmsObject.id, dmsObject.data);
+      }
+    } else if (type === YuvEventType.DMS_OBJECT_DELETED) {
+      if (this.dataTable) {
+        const deleted = this.dataTable.deleteRow(data.id);
         if (deleted) {
           this.totalNumItems--;
         }
-      });
+      }
+    }
+  }
+
+  setFilterPanelVisibility(v: boolean) {
+    if (this._filterPanelConfig?.open !== v) {
+      this._filterPanelConfig.open = v;
+      this.filterPanelConfigChanged.emit(this._filterPanelConfig);
+    }
+  }
+
+  gutterDragEnd(evt: any) {
+    console.log(evt);
+    if (this._filterPanelConfig.width !== evt.sizes[0]) {
+      this._filterPanelConfig.width = evt.sizes[0];
+      this.filterPanelConfigChanged.emit(this._filterPanelConfig);
+    }
   }
 
   /**
@@ -205,54 +261,54 @@ export class SearchResultComponent implements OnDestroy {
 
   private executeQuery(applyColumnConfig?: boolean) {
     this.busy = true;
+    this._searchQuery.from = 0; // always load 1st page
     (applyColumnConfig ? this.applyColumnConfiguration(this._searchQuery) : of(this._searchQuery))
       .pipe(
         tap((q) => this.queryChanged.emit(q)),
         switchMap((q: SearchQuery) => this.searchService.search(q))
       )
       .subscribe((res: SearchResult) => {
-        this.totalNumItems = res.totalNumItems;
         this.createTableData(res);
       });
   }
 
   private applyColumnConfiguration(q: SearchQuery): Observable<SearchQuery> {
-    return this.userConfig.getColumnConfig(q.targetType).pipe(
-      tap((cc: ColumnConfig) => {
+    return (this.columnConfig ? of(this.columnConfig) : this.gridService.getColumnConfiguration(q.targetType)).pipe(
+      tap((colDefs: ColDef[]) => {
         q.sortOptions = [];
-        cc.columns
+        colDefs
           .filter((c) => !!c.sort)
           .forEach((c) => {
-            q.addSortOption(c.id, c.sort);
+            q.addSortOption(c.colId, c.sort);
           });
+
+        q.fields = [
+          // required for SingleCellRendering allthough the object may not have those fields
+          ClientDefaultsObjectTypeField.TITLE,
+          ClientDefaultsObjectTypeField.DESCRIPTION,
+          // stuff that's always needed
+          BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS,
+          BaseObjectTypeField.OBJECT_ID,
+          BaseObjectTypeField.OBJECT_TYPE_ID,
+          ...colDefs.map((c) => c.colId)
+        ];
+
+        this._columns = colDefs;
+        this._originalQuery = new SearchQuery(q.toQueryJson());
       }),
-      map((cc: ColumnConfig) => cc.columns.map((column: ColumnConfigColumn) => column.id)),
-      tap(
-        (fields: string[]) =>
-          (q.fields = [
-            // required for SingleCellRendering allthough the object may not have those fields
-            ClientDefaultsObjectTypeField.TITLE,
-            ClientDefaultsObjectTypeField.DESCRIPTION,
-            // stuff that's always needed
-            BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS,
-            BaseObjectTypeField.OBJECT_ID,
-            BaseObjectTypeField.OBJECT_TYPE_ID,
-            ...fields
-          ])
-      ),
       switchMap(() => of(q))
     );
   }
 
+  FilterPanel() {}
+
   // Create actual table data from the search result
   private createTableData(searchResult: SearchResult, pageNumber = 1): void {
+    this.totalNumItems = searchResult.totalNumItems;
     // object type of the result list items, if NULL we got a mixed result
-    let objecttypeId;
-    if (this._searchQuery) {
-      objecttypeId = this._searchQuery.targetType;
-    }
+    const targetType = this._searchQuery?.targetType;
 
-    this.gridService.getColumnConfiguration(objecttypeId).subscribe((colDefs: ColDef[]) => {
+    (this._columns ? of(this._columns) : this.gridService.getColumnConfiguration(targetType)).subscribe((colDefs: ColDef[]) => {
       // setup pagination form in case of a paged search result chunk
       this.pagination = null;
       this.hasPages = searchResult.items.length !== searchResult.totalNumItems;
@@ -263,7 +319,9 @@ export class SearchResultComponent implements OnDestroy {
         };
 
         this.pagingForm.get('page').setValue(pageNumber);
-        this.pagingForm.get('page').setValidators([Validators.min(0), Validators.max(this.pagination.pages)]);
+        this.pagingForm
+          .get('page')
+          .setValidators([Validators.required, , Validators.pattern('[0-9]+'), Validators.min(1), Validators.max(this.pagination.pages)]);
       }
 
       // // TODO: setup column width
@@ -271,17 +329,17 @@ export class SearchResultComponent implements OnDestroy {
       //   colDefs.forEach(col => (col.width = this.options.columnWidths[col.field] || col.width));
       // }
 
-      this.resultListObjectTypeId = objecttypeId;
       this._columns = colDefs;
       this._rows = searchResult.items.map((i) => this.getRow(i));
       const sortOptions = this._searchQuery ? this._searchQuery.sortOptions || [] : [];
 
       this.tableData = {
-        columns: this._columns,
-        rows: this._rows,
         titleField: ClientDefaultsObjectTypeField.TITLE,
         descriptionField: ClientDefaultsObjectTypeField.DESCRIPTION,
         selectType: 'multiple',
+        ...(this.responsiveTableData || {}),
+        columns: this._columns,
+        rows: this._rows,
         sortModel: sortOptions.map((o) => ({
           colId: o.field,
           sort: o.order
@@ -307,6 +365,9 @@ export class SearchResultComponent implements OnDestroy {
     };
     this._columns.forEach((cd: ColDef) => {
       row[cd.field] = searchResultItem.fields.get(cd.field);
+      if (searchResultItem.fields.get(cd.field + '_title')) {
+        row[cd.field + '_title'] = searchResultItem.fields.get(cd.field + '_title');
+      }
     });
     return row;
   }
@@ -343,18 +404,19 @@ export class SearchResultComponent implements OnDestroy {
   }
 
   onSortChanged(sortModel: { colId: string; sort: string }[]) {
-    if (JSON.stringify(this.tableData.sortModel) !== JSON.stringify(sortModel)) {
+    if (JSON.stringify(this.tableData.sortModel.sort(Utils.sortValues('colId'))) !== JSON.stringify(sortModel.sort(Utils.sortValues('colId')))) {
       // change query to reflect the sort setting from the grid
       this._searchQuery.sortOptions = sortModel.map((m) => new SortOption(m.colId, m.sort));
-      this._searchQuery.from = 0;
       this.executeQuery();
     }
   }
 
   onFilterChanged(filterQuery: SearchQuery) {
+    const applyColumnConfig = this._searchQuery.targetType !== filterQuery.targetType;
     this._searchQuery.types = filterQuery.types;
+    this._searchQuery.lots = filterQuery.lots;
     this._searchQuery.filterGroup = filterQuery.filterGroup;
-    this.executeQuery();
+    this.executeQuery(applyColumnConfig);
   }
 
   ngOnDestroy() {}

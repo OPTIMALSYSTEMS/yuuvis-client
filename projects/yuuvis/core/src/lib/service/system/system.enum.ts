@@ -1,3 +1,5 @@
+export const TENANT_HEADER = 'X-ID-TENANT-NAME';
+
 export const SystemType = {
   OBJECT: 'system:object',
   DOCUMENT: 'system:document',
@@ -8,10 +10,12 @@ export const SystemType = {
 
 export const AdministrationRoles = {
   ADMIN: 'YUUVIS_TENANT_ADMIN',
-  SYSTEM: 'YUUVIS_SYSTEM_INTEGRATOR'
+  SYSTEM: 'YUUVIS_SYSTEM_INTEGRATOR',
+  MANAGE_SETTINGS: 'YUUVIS_MANAGE_SETTINGS'
 };
 
 export const UserRoles = {
+  MULTI_TENANT: 'YUUVIS_MULTI_TENANT',
   CREATE_OBJECT: 'YUUVIS_CREATE_OBJECT'
 };
 
@@ -87,6 +91,7 @@ export enum ContentStreamAllowed {
 
 // classifications applied to object type fields
 export enum Classification {
+  STRING_CATALOG_DYNAMIC = 'dynamic:catalog',
   STRING_CATALOG = 'catalog',
   STRING_ORGANIZATION = 'id:organization',
   STRING_REFERENCE = 'id:reference',
@@ -94,30 +99,35 @@ export enum Classification {
   STRING_URL = 'url',
   STRING_PHONE = 'phone',
   NUMBER_FILESIZE = 'filesize',
-  NUMBER_DIGIT = 'digit'
+  NUMBER_DIGIT = 'digit',
+  SYSTEM_SOT = 'systemsot',
+  PREDICTION_CLASSIFY = 'prediction:classify'
 }
 
 // classifications applied to object types
 export enum ObjectTypeClassification {
-  ADVANCED_FILING_OBJECT = 'appClient:dlm',
-  FLOATING_OBJECT_TYPE = 'appClient:floatingType'
+  SEARCH_FALSE = 'appClient:search:false',
+  CREATE_FALSE = 'appClient:create:false'
 }
 
 // classifications applied to secondary object types
 export enum SecondaryObjectTypeClassification {
   REQUIRED = 'appClient:required',
-  PRIMARY = 'appClient:primary'
+  PRIMARY = 'appClient:primary',
+  EXTENSION_ADD_FALSE = 'appClient:extension:add:false',
+  EXTENSION_REMOVE_FALSE = 'appClient:extension:remove:false'
 }
 
 // special internal types of object type fields
 export const InternalFieldType = {
   STRING_ORGANIZATION: 'string:organization',
   STRING_REFERENCE: 'string:reference',
-  STRING_CATALOG: 'string:catalog'
+  STRING_CATALOG: 'string:catalog',
+  STRING_DYNAMIC_CATALOG: 'string:catalog:dynamic'
 };
 
 export enum ObjectTag {
-  AFO = 'appClient:dlm:prepare'
+  AFO = 'appclient:dlm:prepare'
 }
 
 // possible states of a DLM item
@@ -136,7 +146,7 @@ export const ColumnConfigSkipFields = [
   BaseObjectTypeField.PARENT_VERSION_NUMBER,
   BaseObjectTypeField.TENANT,
   BaseObjectTypeField.TRACE_ID,
-  BaseObjectTypeField.TAGS,
+  // BaseObjectTypeField.TAGS,
   BaseObjectTypeField.BASE_TYPE_ID,
   ContentStreamField.ID,
   ContentStreamField.RANGE,

@@ -3,6 +3,13 @@
 .yuv-move {
   padding: var(--app-pane-padding);
 
+  .description {
+    font-size: var(--font-hint);
+    font-style: italic;
+    padding: calc(var(--app-pane-padding) / 8) calc(var(--app-pane-padding) / 8) 0 calc(var(--app-pane-padding) / 8);
+    color: var(--text-color-caption);
+  }
+
   .form-buttons {
     display: flex;
     margin: var(--app-pane-padding);

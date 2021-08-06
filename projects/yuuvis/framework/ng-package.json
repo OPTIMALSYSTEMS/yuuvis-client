@@ -10,12 +10,14 @@
     "@ag-grid-community/core",
     "@ag-grid-community/angular",
     "@ag-grid-community/client-side-row-model",
+    "@ag-grid-community/csv-export",
     "angular-resize-event",
     "lodash-es",
     "take-until-destroy",
     "ngx-drag-scroll",
     "ngx-toastr",
-    "@yuuvis/core"
+    "@yuuvis/core",
+    "@yuuvis/styles"
   ],
   "lib": {
     "entryFile": "src/public-api.ts"

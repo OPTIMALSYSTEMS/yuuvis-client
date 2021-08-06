@@ -11,8 +11,9 @@
           </div>
         </div>
       </div>
-      <input (keydown)="onInputKeydown($event)" type="number" [(ngModel)]="year" [max]="maxYear"
-        (ngModelChange)="setYear($event)" [ngModelOptions]="{ standalone: true }" />
+      <input (keydown)="onInputKeydown($event)" type="number" [(ngModel)]="year" [min]="minYear" [max]="maxYear"
+        (ngModelChange)="setYear($event)" [ngModelOptions]="{ standalone: true }" 
+        oninput="this.value=parseInt(this.value.slice(-4))"/>
       <div class="controls">
         <button class="icon white year-up" (click)="setYear(year + 1)" [disabled]="year === maxYear">
           <yuv-icon [icon]="'arrowDown'"></yuv-icon>
@@ -49,7 +50,7 @@
       </div>
     </div>
 
-    <div class="date-chips">
+    <div class="date-chips" *ngIf="!onlyFutureDates">
       <button class="chip" *ngIf="withTime" (click)="setDateByType('now')" (dblclick)="setDateByType('now', true)"
         translate>yuv.framework.search.agg.time.now</button>
       <button class="chip" (click)="setDateByType('today')" (dblclick)="setDateByType('today', true)"
@@ -97,6 +98,7 @@
 
   <div class="actions">
     <button (click)="cancel()" translate>yuv.framework.shared.cancel</button>
-    <button class="primary" (click)="selectValue()" translate>yuv.framework.form.datepicker.select</button>
+    <button class="primary" (click)="selectValue()" [disabled]="isDisabledDate(selected)"
+      translate>yuv.framework.form.datepicker.select</button>
   </div>
 </div>

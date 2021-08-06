@@ -14,6 +14,8 @@ import {
   YuvEventType,
   YuvUser
 } from '@yuuvis/core';
+import { Observable } from 'rxjs';
+import { tap } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { FileDropOptions } from '../../directives/file-drop/file-drop.directive';
@@ -22,7 +24,7 @@ import { edit, kebap } from '../../svg.generated';
 import { PopoverConfig } from './../../popover/popover.interface';
 import { PopoverRef } from './../../popover/popover.ref';
 import { PopoverService } from './../../popover/popover.service';
-import { SearchResultComponent } from './../../search/search-result/search-result.component';
+import { FilterPanelConfig, SearchResultComponent } from './../../search/search-result/search-result.component';
 import { refresh, settings } from './../../svg.generated';
 
 /**
@@ -50,21 +52,17 @@ export class ContextComponent implements OnInit, OnDestroy {
   @ViewChildren(SearchResultComponent) searchResultComponents: QueryList<SearchResultComponent>;
   @ViewChild('tplColumnConfigPicker') tplColumnConfigPicker: TemplateRef<any>;
 
-  layoutOptions = {
-    'yuv-search-result-all': null,
-    'yuv-search-result-recent': null
-  };
-
   private _context: DmsObject;
   private _contextSearchQuery: SearchQuery;
   actionMenuVisible = false;
   actionMenuSelection: DmsObject[] = [];
-  showFilterPanel: boolean;
+  filterPanelConfig: FilterPanelConfig;
 
   _layoutOptionsKeys = {
     children: null,
     recent: null,
-    search: null
+    search: null,
+    layout: null
   };
 
   /**
@@ -121,7 +119,7 @@ export class ContextComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Providing a lyout options key will enable the component to persist its layout settings
+   * Providing a layout options key will enable the component to persist its layout settings
    * in relation to a host component. The key is basically a unique key for the host, which
    * will be used to store component specific settings using the layout service.
    */
@@ -130,10 +128,11 @@ export class ContextComponent implements OnInit, OnDestroy {
       this._layoutOptionsKeys.children = `${lok}.children`;
       this._layoutOptionsKeys.recent = `${lok}.recent`;
       this._layoutOptionsKeys.search = `${lok}.search`;
+      this._layoutOptionsKeys.layout = `${lok}.layout`;
 
       // load own settings
-      this.layoutService.loadLayoutOptions('yuv-context', 'layout').subscribe((o: any) => {
-        this.showFilterPanel = o ? o.showFilterPanel || false : false;
+      this.layoutService.loadLayoutOptions(this._layoutOptionsKeys.layout, 'filterPanelConfig').subscribe((o: FilterPanelConfig) => {
+        this.filterPanelConfig = o;
       });
     }
   }
@@ -147,6 +146,8 @@ export class ContextComponent implements OnInit, OnDestroy {
     disabled: false,
     multiple: true
   };
+
+  @Input() plugins: Observable<any[]>;
 
   constructor(
     private translate: TranslateService,
@@ -165,8 +166,11 @@ export class ContextComponent implements OnInit, OnDestroy {
 
     this.fileDropOptions.label = this.translate.instant('yuv.framework.context.filedrop.label');
     this.eventService
-      .on(YuvEventType.DMS_OBJECTS_MOVED)
-      .pipe(takeUntilDestroy(this))
+      .on(YuvEventType.DMS_OBJECTS_MOVED, YuvEventType.DMS_OBJECT_UPDATED)
+      .pipe(
+        takeUntilDestroy(this),
+        tap(({ type, data }) => (type === YuvEventType.DMS_OBJECT_UPDATED && data.id === this.context.id ? (this.context = data) : null))
+      )
       .subscribe(() => this.refresh());
   }
 
@@ -184,9 +188,9 @@ export class ContextComponent implements OnInit, OnDestroy {
     }
   }
 
-  onFilterPanelToggled(visible: boolean) {
-    this.showFilterPanel = visible;
-    this.layoutService.saveLayoutOptions('yuv-context', 'layout', { showFilterPanel: visible }).subscribe();
+  onFilterPanelConfigChanged(cfg: FilterPanelConfig) {
+    this.filterPanelConfig = cfg;
+    this.layoutService.saveLayoutOptions(this._layoutOptionsKeys.layout, 'filterPanelConfig', cfg).subscribe();
   }
 
   onFilesDropped(files: File[]) {
@@ -221,6 +225,7 @@ export class ContextComponent implements OnInit, OnDestroy {
   }
 
   onTabChange(tab: any) {
+    this.activeTabIndex = tab.index;
     setTimeout(() => {
       this.activeSearchResult = this.searchResultComponents.toArray()[tab.index];
       if (this.activeSearchResult) {

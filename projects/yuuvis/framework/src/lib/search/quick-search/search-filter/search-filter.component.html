@@ -5,8 +5,9 @@
       (groupToggle)="onToggle($event)">
     </yuv-grouped-select>
 
-    <yuv-grouped-select toggleable="true" [multiple]="true" [singleSelect]="false" [groups]="availableFilterGroups"
-      [selection]="filterSelection" (change)="onFilterChange($event)" (groupToggle)="onToggle($event)">
+    <yuv-grouped-select toggleable="true" [multiple]="true" [singleSelect]="false" [hideEmptyGroup]="true"
+      [groups]="availableFilterGroups" [selection]="filterSelection" (change)="onFilterChange($event)"
+      (groupToggle)="onToggle($event)">
     </yuv-grouped-select>
   </section>
 

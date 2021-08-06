@@ -1,10 +1,12 @@
-import { AfterViewInit, Component, ElementRef, Input, NgZone, OnDestroy, OnInit } from '@angular/core';
-import { DmsObject } from '@yuuvis/core';
-import { fromEvent, Observable } from 'rxjs';
-import { takeWhile } from 'rxjs/operators';
+import { Component, ElementRef, Input, NgZone, OnDestroy, OnInit } from '@angular/core';
+import { DmsObject, UploadService } from '@yuuvis/core';
+import { fromEvent, Observable, of } from 'rxjs';
+import { switchMap, takeWhile, tap } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { FileDropService } from '../../directives/file-drop/file-drop.service';
+import { IFrameComponent } from '../../plugins/iframe.component';
+import { PluginsService } from '../../plugins/plugins.service';
 import { folder, noFile, undock } from '../../svg.generated';
 import { ContentPreviewService } from './service/content-preview.service';
 
@@ -22,7 +24,7 @@ import { ContentPreviewService } from './service/content-preview.service';
   styleUrls: ['./content-preview.component.scss'],
   providers: [ContentPreviewService]
 })
-export class ContentPreviewComponent implements OnInit, OnDestroy, AfterViewInit {
+export class ContentPreviewComponent extends IFrameComponent implements OnInit, OnDestroy {
   private _dmsObject: DmsObject;
   isUndocked: boolean;
 
@@ -40,13 +42,8 @@ export class ContentPreviewComponent implements OnInit, OnDestroy, AfterViewInit
     // generate preview URI with streamID to enable refresh if file was changed
     !object || !object.content || !object.content.size
       ? this.contentPreviewService.resetSource()
-      : this.contentPreviewService.createPreviewUrl(
-          object.id,
-          object.content,
-          object.version,
-          this.dmsObject2 && this.dmsObject2.content,
-          this.dmsObject2 && this.dmsObject2.version
-        );
+      : this.contentPreviewService.createPreviewUrl(object.id, object.content, object.version, this.dmsObject2?.content, this.dmsObject2?.version);
+    this.loading = !object || !object.content || this.dmsObject ? false : true;
     this._dmsObject = object;
   }
 
@@ -61,29 +58,31 @@ export class ContentPreviewComponent implements OnInit, OnDestroy, AfterViewInit
    */
   @Input() searchTerm = '';
 
-  get iframe() {
-    return this.elRef.nativeElement.querySelector('iframe');
-  }
-
   @Input() dmsObject2: DmsObject;
 
   /**
    * `DmsObject[]` to compare changes between objects
    */
   @Input() set compareObjects(dmsObjects: DmsObject[]) {
-    this.dmsObject2 = dmsObjects[1];
+    this.dmsObject2 = dmsObjects[1]; // previewSrc requires dmsObject2 - should be set before dmsObject
     this.dmsObject = dmsObjects[0];
   }
 
-  previewSrc$: Observable<string> = this.contentPreviewService.previewSrc$;
+  previewSrc$: Observable<string> = this.uploadService.uploadStatus$.pipe(
+    tap((status) => (this.loading = typeof status === 'boolean' && !status ? true : false)),
+    switchMap((status) => (typeof status === 'boolean' && !status ? of(null) : this.contentPreviewService.previewSrc$))
+  );
 
   constructor(
+    elRef: ElementRef,
+    pluginsService: PluginsService,
     public fileDropService: FileDropService,
-    private elRef: ElementRef,
     private contentPreviewService: ContentPreviewService,
     private iconRegistry: IconRegistryService,
+    private uploadService: UploadService,
     private _ngZone: NgZone
   ) {
+    super(elRef, pluginsService);
     this.iconRegistry.registerIcons([folder, noFile, undock]);
     if (ContentPreviewService.undockWinActive()) {
       this.undock(false);
@@ -113,6 +112,10 @@ export class ContentPreviewComponent implements OnInit, OnDestroy, AfterViewInit
   }
 
   open(src: string) {
+    if (!this.iframe) {
+      // init iframe again in case it was destoryed
+      setTimeout(() => this.iframeInit(this.iframe, this.searchTerm));
+    }
     this.previewSrc = src;
     if (this.isUndocked) {
       this.openWindow(this.previewSrc);
@@ -132,47 +135,15 @@ export class ContentPreviewComponent implements OnInit, OnDestroy, AfterViewInit
         <div>`
       );
     }
+    this.iframeInit(this.undockWin);
   }
 
   refresh() {
     return this.previewSrc && this.iframe ? this.iframe.contentWindow.location.reload(true) : this.open(this.previewSrc);
   }
 
-  /**
-   * Custom search inside PDF.JS based on search term
-   * @param term search term
-   * @param pdfjs iframe element
-   */
-  private searchPDF(term = '', pdfjs: any) {
-    // remove all special characters
-    term = (term || '').replace(/[\"|\*]/g, '').trim();
-    if (term && pdfjs && pdfjs.contentWindow && pdfjs.contentWindow.PDFViewerApplication && pdfjs.contentWindow.PDFViewerApplication.findController) {
-      // pdfjs.contentWindow.PDFViewerApplication.findController.executeCommand('find', {
-      //   caseSensitive: false,
-      //   findPrevious: undefined,
-      //   highlightAll: true,
-      //   phraseSearch: true,
-      //   query: term
-      // });
-      pdfjs.contentWindow.PDFViewerApplication.appConfig.findBar.findField.value = term;
-      pdfjs.contentWindow.PDFViewerApplication.appConfig.findBar.highlightAllCheckbox.checked = true;
-      pdfjs.contentWindow.PDFViewerApplication.appConfig.findBar.caseSensitiveCheckbox.checked = false;
-    }
-  }
-
   ngOnInit() {
     this.previewSrc$.pipe(takeUntilDestroy(this)).subscribe((src) => this.open(src));
-  }
-
-  ngAfterViewInit() {
-    const iframe = this.iframe;
-    if (iframe) {
-      fromEvent(iframe, 'load')
-        .pipe(takeUntilDestroy(this))
-        .subscribe((res) => {
-          setTimeout(() => this.searchPDF(this.searchTerm, iframe), 100);
-        });
-    }
   }
 
   ngOnDestroy() {

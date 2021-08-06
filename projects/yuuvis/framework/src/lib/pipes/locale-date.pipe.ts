@@ -20,13 +20,24 @@ export class LocaleDatePipe extends DatePipe implements PipeTransform {
     return this.translate.currentLang;
   }
 
-  transform(value: any, format: string = '', timezone?: string, locale?: string): string {
+  transform(value: any, format: string = '', timezone?: string, locale?: string): string | null | any {
     value = Array.isArray(value) ? value[0] : value;
     if (format === 'eoNiceShort') {
       const diff = (new Date(value).setHours(0, 0, 0, 0) - new Date().setHours(0, 0, 0, 0)) / 1000 / 3600 / 24;
       format = diff === 0 ? 'eoShortTime' : diff > -7 && diff < 0 ? 'eoShortDayTime' : format;
     }
     return super.transform(value, this.format(format || 'eoShort'), timezone, locale || this.lang);
+  }
+
+  parse(value: string, format: string = 'yyyy-MM-dd') {
+    // bug: angular DatePipe cannot format pattern where day is before month (so I am gonna flip values & hope it works for all languages)
+    const dd = format.indexOf('dd');
+    const MM = format.indexOf('MM');
+    const YYYY = format.indexOf('yyyy');
+    const HH = format.toUpperCase().indexOf('HH');
+    return (
+      value && new Date(`${value.substring(YYYY, YYYY + 4)}/${value.substring(MM, MM + 2)}/${value.substring(dd, dd + 2)} ${HH > 0 ? value.substring(HH) : ''}`)
+    );
   }
 
   format(format?: string) {

@@ -1,20 +1,20 @@
 import { Component } from '@angular/core';
-import { DmsObject, TranslateService } from '@yuuvis/core';
-import { of as observableOf } from 'rxjs';
+import { ActivatedRoute } from '@angular/router';
+import { DmsObject, DmsService, TranslateService } from '@yuuvis/core';
+import { Observable, of as observableOf, of } from 'rxjs';
 import { contentDownload } from '../../../svg.generated';
 import { DmsObjectTarget } from '../../action-target';
-import { ListAction } from '../../interfaces/action.interface';
+import { SimpleAction } from '../../interfaces/action.interface';
 import { SelectionRange } from '../../selection-range.enum';
-import { DownloadOriginalActionComponent } from '../download-original-action/download-original-action';
 
 /**
  * @ignore
  */
 @Component({
-  selector: 'yuv-download-content',
+  selector: 'yuv-download-action',
   template: ``
 })
-export class DownloadActionComponent extends DmsObjectTarget implements ListAction {
+export class DownloadActionComponent extends DmsObjectTarget implements SimpleAction {
   header: string;
   label: string;
   description: string;
@@ -24,16 +24,19 @@ export class DownloadActionComponent extends DmsObjectTarget implements ListActi
   range = SelectionRange.MULTI_SELECT;
   subActionComponents: any[];
 
-  constructor(private translate: TranslateService) {
+  constructor(private translate: TranslateService, private dmsService: DmsService, private route: ActivatedRoute) {
     super();
     this.label = this.translate.instant('yuv.framework.action-menu.action.download.dms.object.content.label');
     this.description = this.translate.instant('yuv.framework.action-menu.action.download.dms.object.content.description');
     this.header = this.translate.instant('yuv.framework.action-menu.action.export.title');
-    // this.subActionComponents = [DownloadOriginalActionComponent, DownloadPdfActionComponent];
-    this.subActionComponents = [DownloadOriginalActionComponent];
   }
 
   isExecutable(element: DmsObject) {
     return observableOf(!!element.content);
+  }
+
+  run(selection: DmsObject[]): Observable<boolean> {
+    this.dmsService.downloadContent(selection, !!this.route.snapshot.queryParams.version);
+    return of(true);
   }
 }

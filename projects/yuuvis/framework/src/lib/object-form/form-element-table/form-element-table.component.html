@@ -1,0 +1,68 @@
+<div class="object-form-table">
+  <div class="label">
+    <span>{{ params.element.label }}</span>
+    <ng-container>
+      <yuv-icon class="stf" [icon]="'expand'" [title]="'yuv.framework.form.table.options.btn.open' | translate" (click)="openDialog()"></yuv-icon>
+      <yuv-icon class="stf" [icon]="'sizeToFit'" [title]="'yuv.framework.form.table.options.btn.fit' | translate" (click)="sizeToFit()"></yuv-icon>
+      <yuv-icon
+        class="stf"
+        *ngIf="gridOptions.rowData.length"
+        [icon]="'contentDownload'"
+        [title]="'yuv.framework.form.table.options.btn.csv' | translate"
+        (click)="exportCSV()"
+      ></yuv-icon>
+      <yuv-icon
+        class="stf"
+        *ngIf="!params.element.readonly"
+        [icon]="'addCircle'"
+        [title]="'yuv.framework.form.table.options.btn.add' | translate"
+        (click)="addRow()"
+      ></yuv-icon>
+    </ng-container>
+  </div>
+  <div class="grid-body">
+    <ag-grid-angular #agGrid *ngIf="gridReady" class="ag-theme-balham" [modules]="modules" [gridOptions]="gridOptions" (rowDoubleClicked)="editRow($event)">
+    </ag-grid-angular>
+  </div>
+</div>
+
+<ng-template #overlay let-popover="popover">
+  <div
+    class="overlay-header"
+    style="
+      height: 80px;
+      background-color: var(--color-accent);
+      color: white;
+      padding: var(--app-pane-padding) calc(var(--app-pane-padding) * 2.5) calc(var(--app-pane-padding) * 2) var(--app-pane-padding);
+    "
+  >
+    <div style="font-size: 24px; font-weight: 400">{{ params.element.label }}</div>
+    <yuv-icon [icon]="'close'" (click)="close(popover)" style="position: absolute; top: 8px; right: 8px; cursor: pointer"></yuv-icon>
+  </div>
+  <div class="overlay-body" style="padding: 16px; height: calc(100% - 80px); background-color: var(--main-background)">
+    <yuv-responsive-master-slave [slaveActive]="!!editingRow" style="height: 100%">
+      <yuv-expanded-table
+        class="yuv-master"
+        [overlayGridOptions]="overlayGridOptions"
+        [params]="params"
+        (onMouseDown)="onMouseDown($event)"
+        (onCellClicked)="editRow($event)"
+        (onAddRowButtonClicked)="addRow()"
+        style="box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.2)"
+      ></yuv-expanded-table>
+      <div class="yuv-slave" *ngIf="editingRow" style="box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.2)">
+        <div class="edit-body" style="height: 100%">
+          <yuv-row-edit
+            style="height: 100%"
+            [row]="editingRow"
+            #rowEdit
+            (onSave)="updateRow($event)"
+            (onSaveCopy)="copyRow($event)"
+            (onDelete)="deleteRow($event)"
+            (onCancel)="cancelRowEdit()"
+          ></yuv-row-edit>
+        </div>
+      </div>
+    </yuv-responsive-master-slave>
+  </div>
+</ng-template>

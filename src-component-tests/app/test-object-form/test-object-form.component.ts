@@ -4,6 +4,7 @@ import { FormStatusChangedEvent } from '@yuuvis/framework';
 import { booleanElements } from './data/form.boolean';
 import { catalogElements } from './data/form.catalog';
 import { datetimeElements } from './data/form.datetime';
+import { dynamicCatalogElements } from './data/form.dynamic-catalog';
 import { groupingModel } from './data/form.grouping';
 import { numberElements } from './data/form.numbers';
 import { organizationElements } from './data/form.organization';
@@ -25,6 +26,16 @@ export class TestObjectFormComponent implements OnInit {
       model: {
         formModel: groupingModel,
         data: {}
+      }
+    },
+    {
+      label: 'Dynamic catalog component',
+      model: {
+        formModel: this.wrap(dynamicCatalogElements),
+        data: {
+          germanstates: 'Berlin',
+          'germanstates:multi': ['Berlin', 'Bremen', 'XXX']
+        }
       }
     },
     {
@@ -96,8 +107,8 @@ export class TestObjectFormComponent implements OnInit {
       model: {
         formModel: this.wrap(organizationElements),
         data: {
-          'id:organization:value': ['a69a0eb6-3662-4c00-8096-38fbb2c4a922', 'shouldfail'],
-          'id:organization:readonly': ['shouldfail', 'a69a0eb6-3662-4c00-8096-38fbb2c4a922']
+          'id:organization:value': ['a69a0eb6-3662-4c00-8096-38fbb2c4a922', 'the-id'],
+          'id:organization:readonly': ['the-id', 'a69a0eb6-3662-4c00-8096-38fbb2c4a922']
         }
       }
     },

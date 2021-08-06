@@ -15,6 +15,7 @@ import { SelectableItemComponent } from './grouped-select/selectable-item/select
  */
 @NgModule({
   declarations: [GroupedSelectComponent, SelectableItemComponent],
+  entryComponents: [GroupedSelectComponent, SelectableItemComponent],
   exports: [GroupedSelectComponent],
   imports: [CommonModule, YuvFormModule, FormsModule, A11yModule, AngularResizedEventModule, PanelModule, TranslateModule, YuvCommonModule]
 })

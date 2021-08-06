@@ -38,7 +38,7 @@ export interface SearchResultContent {
   mimeType: string;
 }
 /**
- * Interface providing dearch query properties, that can be send to
+ * Interface providing search query properties, that can be send to
  * the search service
  */
 export interface SearchQueryProperties {
@@ -48,8 +48,10 @@ export interface SearchQueryProperties {
   from?: number;
   aggs?: string[];
   maxItems?: number;
-  types?: string[];
+  types?: string[]; // mixed list of primary and secondary object types
+  lots?: string[]; // list of leading object types
   filters?: any;
+  hiddenFilters?: any; // hidden filters that will be combined with SearchQuery filters via search service
   sort?: any;
   tags?: any;
 }

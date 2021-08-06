@@ -1,12 +1,10 @@
 <div class="testing-controls">
-  <button (click)="styled = !styled">Toggle styles</button>
+  <div class="buttons">
+    <button (click)="styled = !styled">Toggle styles</button>
+  </div>
 </div>
 
-
-
-
 <yuv-responsive-tab-container class="cmp">
-
 
   <p-tabPanel [id]="'panel-one'" [header]="'Tab one'">
     <ng-template pTemplate="content">

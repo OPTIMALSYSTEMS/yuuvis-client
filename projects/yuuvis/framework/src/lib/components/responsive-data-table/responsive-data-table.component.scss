@@ -318,11 +318,16 @@ $range-selection-highlight-color: $primary-color;
           }
           .ag-cell {
             padding: calc(var(--app-pane-padding) / 2);
+            .ag-cell-wrapper,
+            .ag-cell-wrapper > span,
             > span {
               display: flex;
               width: 100%;
               height: 100%;
             }
+          }
+          .ag-selection-checkbox {
+            position: absolute;
           }
         }
         .ag-pinned-left-cols-container,

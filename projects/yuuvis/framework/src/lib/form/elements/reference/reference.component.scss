@@ -2,12 +2,29 @@
   display: flex;
   align-items: center;
 
+  ::ng-deep {
+    .p-autocomplete-token {
+      display: flex;
+      align-items: center;
+      .link {
+        margin-right: calc(var(--app-pane-padding) / 4);
+        height: 20px;
+        width: 20px;
+        svg {
+          height: 20px;
+          width: 20px;
+          fill: var(--text-color-caption);
+        }
+      }
+    }
+  }
+
   &.inputDisabled {
     ::ng-deep {
-      .ui-autocomplete-multiple-container.ui-inputtext {
+      .p-autocomplete-multiple-container.p-inputtext {
         cursor: default;
       }
-      .ui-autocomplete-input-token {
+      .p-autocomplete-input-token {
         display: none !important;
       }
     }

@@ -1,4 +1,17 @@
-import { AfterViewInit, Component, ElementRef, EventEmitter, HostBinding, HostListener, Input, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  Attribute,
+  Component,
+  ElementRef,
+  EventEmitter,
+  HostBinding,
+  HostListener,
+  Input,
+  OnInit,
+  Output,
+  TemplateRef,
+  ViewChild
+} from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import {
   AggregateResult,
@@ -22,7 +35,7 @@ import { PopoverConfig } from '../../popover/popover.interface';
 import { PopoverRef } from '../../popover/popover.ref';
 import { PopoverService } from '../../popover/popover.service';
 import { NotificationService } from '../../services/notification/notification.service';
-import { addCircle, arrowDown, clear, reset, search } from '../../svg.generated';
+import { arrowDown, clear, filter, reset, search } from '../../svg.generated';
 import { QuickSearchPickerData } from './quick-search-picker/quick-search-picker.component';
 import { QuickSearchService } from './quick-search.service';
 
@@ -72,15 +85,28 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
 
   objectTypeSelectLabel: string;
 
-  availableObjectTypes: Selectable[] = [];
-  availableObjectTypeGroups: SelectableGroup[] = [];
+  get availableObjectTypes(): Selectable[] {
+    return this.quickSearchService.availableObjectTypes;
+  }
+
+  get availableObjectTypeGroups(): SelectableGroup[] {
+    const sg = JSON.parse(JSON.stringify(this.quickSearchService.availableObjectTypeGroups));
+    if (this.skipTypes) {
+      sg.forEach((g) => (g.items = g.items.filter((i) => !this.skipTypes.includes(i.id))));
+    }
+    return sg;
+  }
+
+  get availableObjectTypeGroupsList(): Selectable[] {
+    const selectables = this.availableObjectTypeGroups.reduce((pre, cur) => [...pre, ...cur.items], []);
+    return this.skipTypes?.length ? selectables.filter((s) => !this.skipTypes.includes(s.id)) : selectables;
+  }
+
   availableObjectTypeFields: Selectable[] = [];
 
   private TYPES = '@';
   private TYPE_FIELDS = '#';
   private _context: string;
-  // persist former search while switching between regular and context search
-  private _tmpSearch: any;
   lastAutoQuery: any = {};
 
   selectedObjectTypes: string[] = [];
@@ -94,23 +120,30 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
   @Input() set context(c: string) {
     if (c && c !== this.context) {
       this._context = c;
-      this._tmpSearch = this.searchQuery ? this.searchQuery.toQueryJson() : null;
       // enable context search
-      this.setQuery(new SearchQuery());
-    } else if (!c && this._tmpSearch) {
-      this.setQuery(new SearchQuery(this._tmpSearch));
+      const contextQuery = new SearchQuery();
+      contextQuery.addFilter(new SearchFilter(BaseObjectTypeField.PARENT_ID, SearchFilter.OPERATOR.EQUAL, c));
+      this.setQuery(contextQuery);
+    } else {
+      this._context = c;
+      if (this.searchQuery) {
+        this.searchQuery.removeFilter(BaseObjectTypeField.PARENT_ID);
+      }
     }
   }
   get context() {
     return this._context;
   }
 
+  // list of types (object type IDs) that should not be shown in the object type picker
+  @Input() skipTypes: string[];
+
   private get contextFilter() {
     return new SearchFilter(BaseObjectTypeField.PARENT_ID, SearchFilter.OPERATOR.EQUAL, this.context);
   }
 
   private get customFilters(): Selectable[] {
-    return this.availableObjectTypeFields.map((o) => ({ ...o, value: [new SearchFilter(o.id, undefined, undefined)] }));
+    return this.availableObjectTypeFields.map((o) => ({ ...o, value: [new SearchFilter(o.id, o.defaultOperator, o.defaultValue)] }));
   }
 
   private enabledFilters: Selectable[] = [];
@@ -127,14 +160,7 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
    * A SearchQuery to be loaded. If not provided a new query will be created.
    */
   @Input() set query(q: SearchQuery) {
-    if (q) {
-      if (this.context && this.searchWithinContext) {
-        // if context has been already set query goes to tmp
-        this._tmpSearch = q.toQueryJson();
-      } else {
-        this.setQuery(q);
-      }
-    }
+    this.setQuery(q);
   }
 
   /**
@@ -153,6 +179,7 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
   }
 
   constructor(
+    @Attribute('disableAggregations') private disableAggregations: string,
     private quickSearchService: QuickSearchService,
     private fb: FormBuilder,
     private popoverService: PopoverService,
@@ -163,7 +190,7 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
     private searchService: SearchService,
     private iconRegistry: IconRegistryService
   ) {
-    this.iconRegistry.registerIcons([arrowDown, addCircle, search, clear, reset]);
+    this.iconRegistry.registerIcons([arrowDown, filter, search, clear, reset]);
     this.autofocus = this.device.isDesktop;
 
     this.searchForm = this.fb.group({
@@ -171,14 +198,12 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
       searchWithinContext: [false]
     });
 
-    this.availableObjectTypes = this.quickSearchService.availableObjectTypes;
-    this.availableObjectTypeGroups = this.quickSearchService.availableObjectTypeGroups;
     this.selectedObjectTypes = [];
     this.objectTypeSelectLabel = this.translate.instant('yuv.framework.quick-search.type.all');
     // TODO: load only if needed
     this.quickSearchService.loadFilterSettings().subscribe(() => this.setAvailableObjectTypesFields());
 
-    this.searchForm.valueChanges.pipe(distinctUntilChanged(), debounceTime(500)).subscribe(({ term }) => {
+    this.searchForm.valueChanges.pipe(distinctUntilChanged(), debounceTime(1000)).subscribe(({ term }) => {
       const _term = typeof term === 'string' ? term : (term && term.label) || '';
       if (this.searchQuery.term !== _term) {
         this.searchQuery.term = _term;
@@ -195,10 +220,15 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
 
   autocomplete(event: any) {
     const q = (this.lastAutoQuery = this.parseQuery(event.query));
-    // TODO : add active filter suggestions
-    const suggestions: any[] = (q.isTypes ? this.availableObjectTypes : [...this.customFilters, ...this.enabledFilters]) || [];
+    const allFilters = this.quickSearchService.groupFilters(this.customFilters).reduce((prev, cur) => [...prev, ...cur.items], []);
+    const suggestions: any[] = (q.isTypes ? this.availableObjectTypeGroupsList : [...allFilters, ...this.enabledFilters]) || [];
     this.autoSuggestions =
-      !q.isTypes && !q.isTypeFields ? [] : suggestions.filter((t) => (t.label || '').toLowerCase().includes(q.text)).map((t) => ({ ...t }));
+      !q.isTypes && !q.isTypeFields
+        ? []
+        : suggestions
+            .filter((t) => (t.label || '').toLowerCase().includes(q.text))
+            .map((t) => ({ ...t }))
+            .sort(Utils.sortValues('label'));
   }
 
   autocompleteSelect(selection) {
@@ -221,13 +251,16 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
    * estimated result of the current query.
    */
   aggregate() {
+    if (!!this.disableAggregations) {
+      return;
+    }
     // if (this._inline) return;
-    if (this.searchQuery.term || (this.searchQuery.types && this.searchQuery.types.length) || (this.searchQuery.filters && this.searchQuery.filters.length)) {
+    if (this.searchQuery.term || this.searchQuery.allTypes.length || (this.searchQuery.filters && this.searchQuery.filters.length)) {
       if (!this.settingUpQuery && this.formValid) {
         this.resultCount = null;
         this.error = false;
         this.busy = true;
-        this.searchService.aggregate(this.searchQuery, [BaseObjectTypeField.OBJECT_TYPE_ID]).subscribe(
+        this.searchService.aggregate(this.searchQuery, [BaseObjectTypeField.LEADING_OBJECT_TYPE_ID]).subscribe(
           (res: AggregateResult) => {
             this.processAggregateResult(res);
             this.busy = false;
@@ -267,11 +300,7 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
     const pickerData: QuickSearchPickerData = {
       type: 'filter',
       items: [
-        {
-          id: 'new',
-          label: this.translate.instant('yuv.framework.search.filter.available.fields'),
-          items: this.customFilters
-        },
+        ...this.quickSearchService.groupFilters(this.customFilters),
         {
           id: 'stored',
           label: this.translate.instant('yuv.framework.search.filter.stored.filters'),
@@ -321,13 +350,13 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
     this.setAvailableObjectTypesFields();
 
     if (this.selectedObjectTypes.length === 1) {
-      this.objectTypeSelectLabel = this.systemService.getLocalizedResource(`${this.selectedObjectTypes[0]}_label`);
-    } else if (this.selectedObjectTypes.length === this.availableObjectTypes.length || this.selectedObjectTypes.length === 0) {
+      this.objectTypeSelectLabel = this.systemService.getLocalizedResource(`${this.selectedObjectTypes[0]}_label`) || this.selectedObjectTypes[0];
+    } else if (this.selectedObjectTypes.length === this.availableObjectTypeGroupsList.length || this.selectedObjectTypes.length === 0) {
       this.objectTypeSelectLabel = this.translate.instant('yuv.framework.quick-search.type.all');
     } else {
       this.objectTypeSelectLabel = this.translate.instant('yuv.framework.quick-search.type.multiple', { size: this.selectedObjectTypes.length });
     }
-    this.searchQuery.types = this.selectedObjectTypes;
+    this.quickSearchService.updateTypesAndLots(this.searchQuery, this.selectedObjectTypes);
     if (aggregate) {
       this.aggregate();
     }
@@ -337,17 +366,22 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
   private setAvailableObjectTypesFields() {
     this.availableObjectTypeFields = this.quickSearchService.getAvailableObjectTypesFields(this.selectedObjectTypes);
 
-    this.quickSearchService.getCurrentSettings().subscribe(([storedFilters, visibleFilters]) => {
+    this.quickSearchService.getCurrentSettings().subscribe(([storedFilters, hiddenFilters]) => {
       this.enabledFilters = this.quickSearchService
         .loadFilters(storedFilters as any, this.availableObjectTypeFields)
-        .filter((f) => (visibleFilters ? visibleFilters.includes(f.id) : true));
+        .filter((f) => !hiddenFilters.includes(f.id));
     });
 
-    // remove filters that are not relevant
-    this.searchQuery.filterGroup.filters.forEach(
-      (f) => !this.availableObjectTypeFields.find((t) => t.id === f.property) && this.searchQuery.filterGroup.remove(f.id)
-    );
+    // properties that are required allthough they may not appear in the list of the availableObjectTypesFields
+    const requiredFields = [BaseObjectTypeField.PARENT_ID];
+    const fields = [...requiredFields, ...this.availableObjectTypeFields.map((t) => t.id)];
 
+    // remove filters that are not relevant
+    this.searchQuery.filterGroup.filters.forEach((f) => {
+      if (!fields.includes(f.property)) {
+        this.searchQuery.filterGroup.remove(f.id);
+      }
+    });
     this.formOptions = { filter: { id: 'new', value: [this.searchQuery.filterGroup.clone()] }, availableObjectTypeFields: this.availableObjectTypeFields };
   }
 
@@ -364,18 +398,16 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
       this.searchForm.patchValue({ term: { label: q.term } }, { emitEvent: false });
 
       // setup target object types
-      if (q.types && q.types.length) {
+      if (q.allTypes.length) {
         this.onObjectTypesSelected(
-          this.availableObjectTypes.filter((t) => q.types.includes(t.id)).map((t) => t.value as ObjectType),
+          this.availableObjectTypes.filter((t) => q.allTypes.includes(t.id)).map((t) => t.value as ObjectType),
           false
         );
       }
       if (this.context && this.searchWithinContext) {
         this.searchQuery.addFilter(this.contextFilter);
       }
-
       this.settingUpQuery = false;
-      this.aggregate();
     }
   }
 
@@ -393,7 +425,7 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
         res.aggregations[0].entries
           .map((r) => {
             this.resultCount += r.count;
-            return { objectTypeId: r.key, label: this.systemService.getLocalizedResource(`${r.key}_label`), count: r.count };
+            return { objectTypeId: r.key, label: this.systemService.getLocalizedResource(`${r.key}_label`) || r.key, count: r.count };
           })
           .sort(Utils.sortValues('label'))
       );
@@ -404,13 +436,15 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
 
   toggleSearchWithinContext() {
     this.searchWithinContext = !this.searchWithinContext;
-    const s = { ...this.searchQuery.toQueryJson() };
-    this.setQuery(new SearchQuery({ ...this._tmpSearch }));
-    this._tmpSearch = s;
+    this.searchQuery.removeFilter(BaseObjectTypeField.PARENT_ID);
+    if (this.searchWithinContext) {
+      this.searchQuery.addFilter(new SearchFilter(BaseObjectTypeField.PARENT_ID, SearchFilter.OPERATOR.EQUAL, this._context));
+    }
+    this.setQuery(this.searchQuery);
   }
 
   applyTypeAggration(agg: ObjectTypeAggregation, execute: boolean) {
-    this.searchQuery.types = [agg.objectTypeId];
+    this.quickSearchService.updateTypesAndLots(this.searchQuery, [agg.objectTypeId], true);
     if (execute) {
       this.executeSearch();
     }
@@ -421,6 +455,9 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
    */
   reset() {
     this.searchQuery = new SearchQuery();
+    if (this._context) {
+      this.searchQuery.addFilter(new SearchFilter(BaseObjectTypeField.PARENT_ID, SearchFilter.OPERATOR.EQUAL, this._context));
+    }
     this.resultCount = null;
     this.formValid = true;
     this.resetObjectTypes();

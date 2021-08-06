@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { ResponsiveTabContainerComponent } from './responsive-tab-container.component';
 
@@ -6,7 +6,7 @@ describe('ResponsiveTabContainerComponent', () => {
   let component: ResponsiveTabContainerComponent;
   let fixture: ComponentFixture<ResponsiveTabContainerComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ ResponsiveTabContainerComponent ]
     })

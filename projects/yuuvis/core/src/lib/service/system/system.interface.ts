@@ -7,6 +7,7 @@ export interface SystemDefinition {
   objectTypes: ObjectType[];
   secondaryObjectTypes: SecondaryObjectType[];
   i18n: any;
+  allFields: any;
 }
 /**
  * Object Type interface
@@ -33,6 +34,7 @@ export interface SecondaryObjectType {
   id: string;
   label?: string;
   classification?: string[];
+  contentStreamAllowed?: string;
   description: string;
   baseId: string;
   fields: ObjectTypeField[];
@@ -42,13 +44,28 @@ export interface SecondaryObjectType {
  */
 export interface ObjectTypeGroup {
   label: string;
-  types: ObjectType[];
+  types: GroupedObjectType[];
 }
+/**
+ * Object type to be used within ObjectTypeGroup.
+ * Groups may, besides regular objectt types, also include
+ * secondary object types
+ */
+export interface GroupedObjectType {
+  id: string;
+  label?: string;
+  isFolder?: boolean;
+  description: string;
+  baseId: string;
+  fields: ObjectTypeField[];
+}
+
 /**
  * Interface for a secondary object type field
  */
 export interface ObjectTypeField {
   id: string;
+  name: string;
   propertyType: string;
   description: string;
   cardinality: string;
@@ -76,7 +93,7 @@ export interface SchemaResponse {
   propertyDefinition: [any];
   typeDocumentDefinition: SchemaResponseDocumentTypeDefinition[];
   typeFolderDefinition: SchemaResponseFolderTypeDefinition[];
-  typeSecondaryDefinition: SchemaResponseTypeDefinition[];
+  typeSecondaryDefinition: SchemaResponseDocumentTypeDefinition[];
 }
 
 /**
@@ -125,4 +142,11 @@ export interface SchemaResponseFieldDefinition {
 export interface ClassificationEntry {
   classification: string;
   options: string[];
+}
+/**
+ * Secondary object types that could be applied to a particular dms object
+ */
+export interface ApplicableSecondaries {
+  primarySOTs: SecondaryObjectType[];
+  extendingSOTs: SecondaryObjectType[];
 }

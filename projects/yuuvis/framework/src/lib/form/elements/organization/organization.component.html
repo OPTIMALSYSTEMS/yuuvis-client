@@ -1,16 +1,21 @@
-<p-autoComplete [(ngModel)]="innerValue" #autocomplete [minLength]="minLength" (onSelect)="onSelect($event)"
-    [readonly]="!multiselect && innerValue.length === 1" (completeMethod)="autocompleteFn($event)"
-    (onUnselect)="onUnselect($event)" (onBlur)="onAutoCompleteBlur()" field="title" [suggestions]="autocompleteRes"
-    [disabled]="readonly" [multiple]="true">
-
-    <!-- template for the selected items -->
-    <ng-template let-item pTemplate="selectedItem">
-        <span class="ui-autocomplete-token-label"
-            [title]="item.title === noAccessTitle ? ('yuv.framework.form.organization.noaccess'|translate) : ''"
-            [ngClass]="{noAccess: item.title === noAccessTitle}">{{item.title}}</span>
-    </ng-template>
-
+<p-autoComplete
+  [(ngModel)]="innerValue"
+  #autocomplete
+  [minLength]="minLength"
+  (onSelect)="onSelect($event)"
+  [readonly]="!multiselect && innerValue.length === 1"
+  (completeMethod)="autocompleteFn($event)"
+  (onUnselect)="onUnselect($event)"
+  (onBlur)="onAutoCompleteBlur()"
+  field="title"
+  [suggestions]="autocompleteRes"
+  [disabled]="readonly"
+  [multiple]="true"
+>
+  <!-- template for the selected items -->
+  <ng-template let-item pTemplate="selectedItem">
+    <span class="p-autocomplete-token-label">{{ item.title }}</span>
+  </ng-template>
 </p-autoComplete>
 
-<yuv-icon class="classify" [title]="'yuv.framework.form.organization.classify.icon.title'|translate"
-    icon="organization"></yuv-icon>
+<yuv-icon class="classify" [title]="'yuv.framework.form.organization.classify.icon.title' | translate" icon="organization"></yuv-icon>

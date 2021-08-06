@@ -1,20 +1,23 @@
 {
   "name": "@yuuvis/core",
-  "version": "0.9.7",
+  "version": "2.1.0-rc.11",
   "author": "OPTIMAL SYSTEMS GmbH <npm@optimal-systems.de>",
   "license": "MIT",
   "scripts": {
-    "doc": "./node_modules/.bin/compodoc",
+    "doc": "../../../node_modules/.bin/compodoc",
+    "doc:json": "./node_modules/.bin/compodoc -e json",
     "doc:serve": "./node_modules/.bin/compodoc -s"
   },
   "peerDependencies": {
-    "@angular/common": "~9.1.0",
-    "@angular/core": "~9.1.0",
-    "rxjs": "~6.5.5"
+    "@angular/common": "~11.0.0",
+    "@angular/core": "~11.0.0",
+    "rxjs": "~6.6.3"
   },
   "dependencies": {
-    "@ngx-pwa/local-storage": "^9.0.3",
-    "@ngx-translate/core": "^12.1.2",
-    "ngx-device-detector": "^1.4.1"
+    "@ngx-pwa/local-storage": "^10.1.0",
+    "@ngx-translate/core": "^13.0.0",
+    "ngx-device-detector": "^2.0.0",
+    "angular-oauth2-oidc": "^10.0.3",
+    "tslib": "^2.0.0"
   }
 }

@@ -5,6 +5,7 @@
   flex-flow: column;
   justify-content: center;
   margin: var(--app-pane-padding);
+  min-height: 100px;
 
   h2 {
     font-weight: var(--font-weight-light);
@@ -12,6 +13,8 @@
   }
 
   .form-buttons {
+    display: flex;
+    justify-content: flex-end;
     padding: 5px 0;
     text-align: right;
 

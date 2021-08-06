@@ -1,6 +1,16 @@
 import { Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { BaseObjectTypeField, InternalFieldType, ObjectTypeField, RangeValue, SearchFilter, SearchFilterGroup, SearchQuery, SystemService } from '@yuuvis/core';
+import {
+  BaseObjectTypeField,
+  InternalFieldType,
+  ObjectTypeField,
+  RangeValue,
+  SearchFilter,
+  SearchFilterGroup,
+  SearchQuery,
+  SystemService,
+  TranslateService
+} from '@yuuvis/core';
 import { Subject, Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
@@ -8,6 +18,7 @@ import { Selectable } from '../../../grouped-select';
 import { ObjectFormControl } from '../../../object-form/object-form.model';
 import { Situation } from '../../../object-form/object-form.situation';
 import { ObjectFormUtils } from '../../../object-form/object-form.utils';
+import { QuickSearchService } from '../quick-search.service';
 import { IconRegistryService } from './../../../common/components/icon/service/iconRegistry.service';
 import { ObjectFormControlWrapper } from './../../../object-form/object-form.interface';
 import { clear, dragHandle } from './../../../svg.generated';
@@ -19,7 +30,7 @@ import { clear, dragHandle } from './../../../svg.generated';
 })
 export class SearchFilterFormComponent implements OnInit, OnDestroy {
   @ViewChild('extrasForm') extrasForm: ElementRef;
-
+  operatorLabel: any;
   get filterGroup(): SearchFilterGroup {
     return this.filterQuery.filterGroup;
   }
@@ -69,9 +80,19 @@ export class SearchFilterFormComponent implements OnInit, OnDestroy {
   @Output() controlRemoved = new EventEmitter<string>();
   @Output() valid = new EventEmitter<boolean>();
 
-  constructor(private systemService: SystemService, private fb: FormBuilder, private iconRegistry: IconRegistryService) {
+  constructor(
+    private systemService: SystemService,
+    private fb: FormBuilder,
+    private iconRegistry: IconRegistryService,
+    private translate: TranslateService,
+    private quickSearchService: QuickSearchService
+  ) {
     this.dragMovedSubject.pipe(debounceTime(50)).subscribe((event) => this.dragMoved(event));
     this.iconRegistry.registerIcons([dragHandle, clear]);
+    this.operatorLabel = {
+      and: this.translate.instant('yuv.framework.search-result.filter.operator.and'),
+      or: this.translate.instant('yuv.framework.search-result.filter.operator.or')
+    };
   }
 
   private initSearchFieldsForm() {
@@ -101,10 +122,23 @@ export class SearchFilterFormComponent implements OnInit, OnDestroy {
       const original = this.filterGroup.find(id);
       if (original) {
         const filter = new SearchFilter(fc._eoFormElement.name, Array.isArray(fc.value) ? SearchFilter.OPERATOR.IN : SearchFilter.OPERATOR.EQUAL, fc.value);
-        if (!filter.isEmpty() || fc._eoFormElement.isNotSetValue) {
+        if (!filter.isEmpty() || fc._eoFormElement.isNotSetValue || fc._eoFormElement._internalType === 'boolean') {
           Object.assign(original, filter, { id: original.id, excludeFromQuery: false });
         } else {
           Object.assign(original, { excludeFromQuery: true });
+        }
+        if (filter.property?.match(/state/)) {
+          // resolve label for tag filters
+          fc._eoFormElement.label = this.quickSearchService.getLocalizedTag(
+            filter.property,
+            filter.operator === SearchFilter.OPERATOR.EQUAL && typeof filter.firstValue === 'number' ? filter.firstValue : undefined
+          );
+        }
+        if (fc._eoFormElement._internalType === 'boolean') {
+          // resolve label for boolean filters
+          const label = fc._eoFormElement.label.replace(/\s\(\s.*\)$/, '');
+          const val = typeof filter.firstValue === 'boolean' ? filter.firstValue.toString() : this.translate.instant('yuv.framework.form.form-input.null');
+          fc._eoFormElement.label = `${label} ( ${val} )`;
         }
       }
     });
@@ -120,9 +154,9 @@ export class SearchFilterFormComponent implements OnInit, OnDestroy {
     const formPatch = {};
     (filters || []).forEach((filter) => {
       const otf = this.availableObjectTypeFields.find((o) => o.id === filter.property);
-      if (otf) {
+      if (otf?.value) {
         const field = otf.value as ObjectTypeField;
-        this.addFieldEntry(field, filter.operator && filter.isEmpty(), filter.id);
+        this.addFieldEntry(field, filter.operator && filter.isEmpty(), filter.id, otf.label);
         if (filter.operator) {
           // setup values based on whether or not the type supports ranges
           const isRange = ['datetime', 'integer', 'decimal'].includes(field.propertyType);
@@ -140,7 +174,7 @@ export class SearchFilterFormComponent implements OnInit, OnDestroy {
    * Adds a new form field to the query
    * @param field The object type field to be added
    */
-  addFieldEntry(field: ObjectTypeField, isEmpty = false, id?: string, focus = true) {
+  addFieldEntry(field: ObjectTypeField, isEmpty = false, id?: string, label?: string, focus = true) {
     const fcID = `${id || field.id}`;
     if (!this.searchFieldsForm) {
       this.initSearchFieldsForm();
@@ -152,6 +186,7 @@ export class SearchFilterFormComponent implements OnInit, OnDestroy {
     formElement.description = null;
     formElement.isNotSetValue = isEmpty;
     formElement.readonly = this.disabled;
+    formElement.label = label || formElement.label;
 
     // TODO: refactor this crazy stuff - should be handled by FormElement class or service
     if (formElement.classification) {
@@ -162,6 +197,10 @@ export class SearchFilterFormComponent implements OnInit, OnDestroy {
     if (field.id === BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS) {
       formElement.options = this.systemService.getSecondaryObjectTypes(true).map((s) => ({ label: s.label || s.id, value: s.id }));
       formElement._internalType = InternalFieldType.STRING_CATALOG;
+    }
+
+    if (!formElement._internalType) {
+      formElement._internalType = this.systemService.getInternalFormElementType(formElement, 'type');
     }
 
     const formControl = ObjectFormUtils.elementToFormControl(formElement, Situation.SEARCH);

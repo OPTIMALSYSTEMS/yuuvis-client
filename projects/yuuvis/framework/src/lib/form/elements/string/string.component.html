@@ -7,7 +7,7 @@
   [ngClass]="{ invalid: validationErrors.length}">
 
   <ng-template let-item pTemplate="item">
-    <span class="ui-autocomplete-token-label">
+    <span class="p-autocomplete-token-label">
       <div *ngIf="classify && !validationErrors.length" class="classify inchip">
         <a href="{{classify.hrefPrefix + item}}">
           <yuv-icon [icon]="classify.icon"></yuv-icon>

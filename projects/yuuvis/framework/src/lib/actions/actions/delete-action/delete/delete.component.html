@@ -1,8 +1,7 @@
 <div class="yuv-delete" [yuvBusyOverlay]="deleting">
-  <h2 *ngIf="!folder">
-    {{ 'yuv.framework.action-menu.action.delete.dms.object.confirm.message' | translate: { item: selection[0].title } }}
-  </h2>
-
+  <h2 *ngIf="selection[0].title; else noTitle">
+    {{ 'yuv.framework.action-menu.action.delete.dms.object.confirm.message.with.title' | translate: { item: selection[0].title } }}
+  </h2>  
   <div *ngIf="!deleting">
     <div class="form-buttons">
       <button (click)="cancel()">{{ 'yuv.framework.shared.cancel' | translate }}</button>
@@ -10,3 +9,6 @@
     </div>
   </div>
 </div>
+<ng-template #noTitle>
+  {{ 'yuv.framework.action-menu.action.delete.dms.object.confirm.message' | translate}}
+</ng-template>

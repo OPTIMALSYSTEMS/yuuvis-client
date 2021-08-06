@@ -1,6 +1,7 @@
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { Component, EventEmitter, Input, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
 import {
+  BaseObjectTypeField,
   ColumnConfig,
   ColumnConfigColumn,
   ColumnConfigSkipFields,
@@ -19,6 +20,7 @@ import { PopoverConfig } from '../../popover/popover.interface';
 import { PopoverRef } from '../../popover/popover.ref';
 import { PopoverService } from '../../popover/popover.service';
 import { addCircle, arrowDown, clear, dragHandle, pin, sort } from '../../svg.generated';
+import { GridService } from './../../services/grid/grid.service';
 
 /**
  * This component is for configuring a result list column configuration for an object.
@@ -56,9 +58,12 @@ export class ColumnConfigComponent implements OnInit {
   showCancelButton: boolean;
   columnConfigDirty: boolean;
   busy: boolean;
+  hasGlobal: boolean = true;
   error: string;
 
   labels: any;
+
+  isSortable = (field: ObjectTypeField) => GridService.isSortable(field);
 
   /**
    * ColumnConfigInput holding the object type (and maybe the context) & custom sort options
@@ -82,6 +87,10 @@ export class ColumnConfigComponent implements OnInit {
    * once the button has been clicked.
    */
   @Output() cancel = new EventEmitter();
+
+  get hasManageSettingsRole() {
+    return this.userConfig.hasManageSettingsRole;
+  }
 
   constructor(
     private systemService: SystemService,
@@ -173,12 +182,13 @@ export class ColumnConfigComponent implements OnInit {
     this.checkMoreColumnsAvailable();
   }
 
-  save() {
+  save(global = false, reset = false) {
     this.busy = true;
     this.error = null;
-    this.userConfig.saveColumnConfig(this.columnConfig).subscribe(
+    (reset ? this.userConfig.resetColumnConfig(this.columnConfig.type) : this.userConfig.saveColumnConfig(this.columnConfig, global)).subscribe(
       (res) => {
         this.busy = false;
+        this.hasGlobal = reset;
         this.configSaved.emit(this.columnConfig);
         this.resetConfig(this.columnConfig);
         this.columnConfigDirty = false;
@@ -200,7 +210,9 @@ export class ColumnConfigComponent implements OnInit {
   }
 
   private filterColumns(cols: any[]) {
-    return cols.filter((f) => !ColumnConfigSkipFields.includes(f.id));
+    return cols
+      .filter((f) => !ColumnConfigSkipFields.includes(f.id))
+      .filter((fields: ObjectTypeField) => fields.id === BaseObjectTypeField.TAGS || fields.propertyType !== 'table');
   }
 
   private checkMoreColumnsAvailable() {
@@ -212,9 +224,18 @@ export class ColumnConfigComponent implements OnInit {
     this.error = null;
     this.userConfig.getColumnConfig(objectTypeId).subscribe(
       (res: ColumnConfig) => {
+        // check global settings
+        const original = JSON.stringify(res.columns);
+        this.userConfig.getColumnConfig(objectTypeId, true).subscribe((global) => {
+          this.hasGlobal = original === JSON.stringify(global.columns);
+        });
+
         this.busy = false;
         this.title =
-          res.type === SystemType.OBJECT ? this.translate.instant('yuv.framework.column-config.type.mixed.label') : this.fetchObjectType(res.type).label;
+          res.type === SystemType.OBJECT
+            ? this.translate.instant('yuv.framework.column-config.type.mixed.label')
+            : this.systemService.getLocalizedResource(`${objectTypeId}_label`);
+
         this._objectTypeFields = this.filterColumns(Object.values(res.fields));
         this.resetConfig({
           type: res.type,
@@ -257,10 +278,6 @@ export class ColumnConfigComponent implements OnInit {
         value: f
       }))
       .sort(Utils.sortValues('label'));
-  }
-
-  private fetchObjectType(id: string): ObjectType {
-    return this.systemService.getObjectType(id, true);
   }
 
   ngOnInit() {

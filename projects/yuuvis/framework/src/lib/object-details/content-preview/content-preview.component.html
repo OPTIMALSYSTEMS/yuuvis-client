@@ -1,4 +1,4 @@
-<div class="content-preview-container">
+<div class="content-preview-container" [yuvBusyOverlay]="loading">
   <div class="content">
     <ng-container *ngIf="dmsObject && !isUndocked">
       <ng-container *ngIf="previewSrc; else tplNoPreview">
@@ -20,6 +20,7 @@
 
   </div>
   <div class="undock_btn">
-    <span (click)="undock()">{{'yuv.framework.object-details.tooltip.undock' | translate}}</span>
+    <span
+      (click)="undock()">{{isUndocked ? ('yuv.framework.object-details.tooltip.dock' | translate) : ('yuv.framework.object-details.tooltip.undock' | translate)}}</span>
   </div>
 </div>

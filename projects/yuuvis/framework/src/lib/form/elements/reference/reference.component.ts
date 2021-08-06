@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, EventEmitter, forwardRef, HostBinding, HostListener, Input, Output, TemplateRef, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, forwardRef, HostBinding, HostListener, Inject, Input, Output, TemplateRef, ViewChild } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import {
   BaseObjectTypeField,
@@ -16,6 +16,8 @@ import { AutoComplete } from 'primeng/autocomplete';
 import { forkJoin, Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { IconRegistryService } from '../../../common/components/icon/service/iconRegistry.service';
+import { ROUTES, YuvRoutes } from '../../../routing/routes';
+import { noAccessTitle as noAccess } from '../../../shared/utils';
 import { reference } from '../../../svg.generated';
 import { ReferenceEntry } from './reference.interface';
 
@@ -42,13 +44,13 @@ import { ReferenceEntry } from './reference.interface';
 export class ReferenceComponent implements ControlValueAccessor, AfterViewInit {
   @ViewChild('autocomplete') autoCompleteInput: AutoComplete;
   private queryJson: SearchQueryProperties;
-  noAccessTitle = '! *******';
-
+  noAccessTitle = noAccess;
   minLength = 2;
 
   value;
   innerValue: ReferenceEntry[] = [];
   autocompleteRes: any[] = [];
+  path: string;
 
   // prevent ENTER from being propagated, because the component could be located
   // inside some other component that also relys on ENTER
@@ -105,6 +107,11 @@ export class ReferenceComponent implements ControlValueAccessor, AfterViewInit {
   @Input() maxSuggestions: number = 10;
 
   /**
+   * Set to 'true' reference chips will not contain links to the selected item
+   */
+  @Input() links: boolean = true;
+
+  /**
    * Restrict the suggestions to a list of allowed target object types.
    */
   @Input() allowedTargetTypes: string[] = [];
@@ -114,8 +121,14 @@ export class ReferenceComponent implements ControlValueAccessor, AfterViewInit {
    */
   @Output() objectSelect = new EventEmitter<ReferenceEntry[]>();
 
-  constructor(private iconRegistry: IconRegistryService, private systemService: SystemService, private searchService: SearchService) {
+  constructor(
+    private iconRegistry: IconRegistryService,
+    private systemService: SystemService,
+    private searchService: SearchService,
+    @Inject(ROUTES) public routes: YuvRoutes
+  ) {
     this.iconRegistry.registerIcons([reference]);
+    this.path = this.routes && this.routes.object ? this.routes.object.path : null;
   }
   propagateChange = (_: any) => {};
 
@@ -123,6 +136,7 @@ export class ReferenceComponent implements ControlValueAccessor, AfterViewInit {
     if (value) {
       this.value = value;
       this.resolveFn(value);
+      this._inputDisabled = !this.multiselect && this.value.length >= 1;
     } else {
       this.value = null;
       this.innerValue = [];
@@ -157,6 +171,7 @@ export class ReferenceComponent implements ControlValueAccessor, AfterViewInit {
     }
     return forkJoin(tasks).subscribe((data) => {
       this.innerValue = [].concat(...data);
+      setTimeout(() => this.autoCompleteInput.cd.markForCheck());
     });
   }
 
@@ -176,14 +191,13 @@ export class ReferenceComponent implements ControlValueAccessor, AfterViewInit {
           // some of the IDs could not be retrieved (no permission or deleted)
           const x = {};
           res.items.forEach((r) => (x[r.fields.get(BaseObjectTypeField.OBJECT_ID)] = r));
-          return ids.map((id) => {
-            return {
-              id: id,
-              objectTypeId: x[id].fields.get(BaseObjectTypeField.OBJECT_TYPE_ID),
-              title: x[id] ? x[id].fields.get(ClientDefaultsObjectTypeField.TITLE) : this.noAccessTitle,
-              description: x[id] ? x[id].fields.get(ClientDefaultsObjectTypeField.DESCRIPTION) : null
-            };
-          });
+          return ids.map((id) => ({
+            id,
+            objectTypeId: x[id]?.fields.get(BaseObjectTypeField.OBJECT_TYPE_ID),
+            title:
+              x[id] && x[id].fields.get(ClientDefaultsObjectTypeField.TITLE) ? x[id].fields.get(ClientDefaultsObjectTypeField.TITLE) : id || this.noAccessTitle,
+            description: x[id] ? x[id].fields.get(ClientDefaultsObjectTypeField.DESCRIPTION) : null
+          }));
         } else {
           return res.items.map((i) => {
             const crParams = {
@@ -196,12 +210,15 @@ export class ReferenceComponent implements ControlValueAccessor, AfterViewInit {
               }
             };
 
-            return {
+            let resolveEntry = {
               id: i.fields.get(BaseObjectTypeField.OBJECT_ID),
               objectTypeId: i.fields.get(BaseObjectTypeField.OBJECT_TYPE_ID),
-              title: i.fields.get(ClientDefaultsObjectTypeField.TITLE),
+              title: i.fields.get(ClientDefaultsObjectTypeField.TITLE)
+                ? i.fields.get(ClientDefaultsObjectTypeField.TITLE)
+                : i.fields.get(BaseObjectTypeField.OBJECT_ID),
               description: i.fields.get(ClientDefaultsObjectTypeField.DESCRIPTION)
             };
+            return resolveEntry;
           });
         }
       })
@@ -213,8 +230,8 @@ export class ReferenceComponent implements ControlValueAccessor, AfterViewInit {
       this.searchService
         .search(new SearchQuery({ ...this.queryJson, term: `*${evt.query}*` }))
         .pipe(
-          map((r) =>
-            r.items.map((i) => {
+          map((reference) =>
+            reference.items.map((i) => {
               return {
                 id: i.fields.get(BaseObjectTypeField.OBJECT_ID),
                 objectTypeId: i.fields.get(BaseObjectTypeField.OBJECT_TYPE_ID),
@@ -226,8 +243,8 @@ export class ReferenceComponent implements ControlValueAccessor, AfterViewInit {
           )
         )
         .subscribe(
-          (r) => {
-            this.autocompleteRes = r;
+          (reference) => {
+            this.autocompleteRes = reference.filter((ref) => !this.innerValue.some((value) => value.id === ref.id));
           },
           (e) => {
             this.autocompleteRes = [];

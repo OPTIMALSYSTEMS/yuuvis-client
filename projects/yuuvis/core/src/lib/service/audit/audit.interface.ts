@@ -37,14 +37,21 @@ export interface AuditQueryOptions {
    * max number of items to be fetched (default: 50)
    */
   size?: number;
+  /**
+   * Data range to search within
+   */
   dateRange?: RangeValue;
-  actions?: AuditQueryOptionAction[];
-}
-
-/**
- * is a part of `AuditQueryOptions` interface
- */
-export interface AuditQueryOptionAction {
-  action: number;
-  value: boolean;
+  /**
+   * List of actions (codes) to restricts the audits to
+   */
+  actions?: string[];
+  /**
+   * Actions that should explicitly NOT be fetched
+   */
+  skipActions?: number[];
+  /**
+   * Whether or not to query all audit entries, without the user
+   * or admin filter conditions
+   */
+  allActions?: boolean;
 }

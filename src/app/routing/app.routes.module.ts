@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { PendingChangesGuard } from '@yuuvis/core';
+import { PluginComponent, PluginGuard } from '@yuuvis/framework';
 import { AboutComponent } from '../states/about/component/about.component';
 import { ColumnConfigurationComponent } from '../states/column-configuration/column-configuration.component';
 import { CreateComponent } from '../states/create/create.component';
@@ -12,11 +13,13 @@ import { ProcessesComponent } from '../states/processes/processes.component';
 import { ResultComponent } from '../states/result/result.component';
 import { SettingsComponent } from '../states/settings/settings.component';
 import { FilterConfigurationComponent } from './../states/filter-configuration/filter-configuration.component';
+import { FollowUpsComponent } from './../states/follow-ups/follow-ups.component';
 import { InboxComponent } from './../states/inbox/inbox.component';
 import { VersionsComponent } from './../states/versions/versions.component';
 import { OfflineGuard } from './offline-guard/offline-guard.service';
 
 const routes: Routes = [
+  { path: 'custom/:type', component: PluginComponent, canActivate: [PluginGuard], canDeactivate: [PluginGuard, OfflineGuard] },
   { path: 'dashboard', component: DashboardComponent, canDeactivate: [OfflineGuard] },
   { path: 'settings', component: SettingsComponent, canDeactivate: [OfflineGuard] },
   { path: 'config/column-config', component: ColumnConfigurationComponent, canDeactivate: [OfflineGuard] },
@@ -25,6 +28,7 @@ const routes: Routes = [
   { path: 'create', component: CreateComponent, canDeactivate: [OfflineGuard, PendingChangesGuard] },
   { path: 'result', component: ResultComponent, canDeactivate: [OfflineGuard, PendingChangesGuard] },
   { path: 'inbox', component: InboxComponent, canDeactivate: [OfflineGuard, PendingChangesGuard] },
+  { path: 'follow-ups', component: FollowUpsComponent, canDeactivate: [OfflineGuard, PendingChangesGuard] },
   { path: 'processes', component: ProcessesComponent, canDeactivate: [OfflineGuard, PendingChangesGuard] },
   { path: 'object/:id', component: ObjectComponent, canDeactivate: [OfflineGuard, PendingChangesGuard] },
   { path: 'versions/:id', component: VersionsComponent, canDeactivate: [OfflineGuard, PendingChangesGuard] },
@@ -37,7 +41,7 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [CommonModule, RouterModule.forRoot(routes, { initialNavigation: 'enabled' })],
+  imports: [CommonModule, RouterModule.forRoot(routes, { initialNavigation: 'enabled', relativeLinkResolution: 'legacy' })],
   exports: [RouterModule]
 })
 export class AppRoutingModule {}

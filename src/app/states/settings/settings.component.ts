@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { Router } from '@angular/router';
-import { AppCacheService, ConfigService, SystemService, TranslateService, UserService, YuvUser } from '@yuuvis/core';
-import { IconRegistryService, LayoutService, LayoutSettings, NotificationService } from '@yuuvis/framework';
+import { AppCacheService, BackendService, ConfigService, SystemService, TranslateService, UserConfigService, UserService, YuvUser } from '@yuuvis/core';
+import { arrowDown, IconRegistryService, LayoutService, LayoutSettings, NotificationService, PluginsService } from '@yuuvis/framework';
 import { forkJoin, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { shield } from '../../../assets/default/svg/svg';
 
 @Component({
@@ -12,11 +13,12 @@ import { shield } from '../../../assets/default/svg/svg';
   styleUrls: ['./settings.component.scss']
 })
 export class SettingsComponent implements OnInit {
-  user$: Observable<YuvUser>;
+  user$: Observable<Partial<YuvUser>>;
   darkMode: boolean;
   accentColor: string;
   customDashboardBackground: boolean;
   clientLocales: any;
+  showPermissions: boolean;
 
   accentColorRGB = ['255, 152, 0', '120, 144, 156', '124, 179, 66', '3,169,244', '126,87,194', '236,64,122'];
   cache = {
@@ -24,6 +26,20 @@ export class SettingsComponent implements OnInit {
     history: true,
     layout: true
   };
+
+  get hasManageSettingsRole() {
+    return this.userService.hasManageSettingsRole;
+  }
+
+  get hasSystemRole() {
+    return this.userService.hasSystemRole;
+  }
+
+  private reload = () => window.confirm('Application requires reload!') && window.location.reload();
+
+  get disabledPlugins() {
+    return this.pluginsService.customPlugins?.disabled;
+  }
 
   constructor(
     private translate: TranslateService,
@@ -33,11 +49,14 @@ export class SettingsComponent implements OnInit {
     private cacheService: AppCacheService,
     private titleService: Title,
     public config: ConfigService,
+    private userConfig: UserConfigService,
     private userService: UserService,
+    private backend: BackendService,
     private iconRegistry: IconRegistryService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private pluginsService: PluginsService
   ) {
-    this.iconRegistry.registerIcons([shield]);
+    this.iconRegistry.registerIcons([shield, arrowDown]);
     this.clientLocales = config.getClientLocales();
   }
 
@@ -73,8 +92,50 @@ export class SettingsComponent implements OnInit {
     this.router.navigate(['config/column-config']);
   }
 
-  editFilterConfig() {
-    this.router.navigate(['config/filter-config']);
+  editFilterConfig(global = false) {
+    this.router.navigate(['config/filter-config'], global && { queryParams: { global } });
+  }
+
+  importPluginConfig(e: any, global = false) {
+    // const uri = PluginsService.LOCAL_PLUGIN_CONFIG;
+    const uri = global ? PluginsService.SYSTEM_RESOURCES_CONFIG : PluginsService.ADMIN_RESOURCES_CONFIG;
+    this.userConfig.importMainConfig(e, uri, !global).subscribe(() => this.reload());
+  }
+
+  exportPluginConfig() {
+    this.userConfig.exportMainConfig('tenant_plugins.json', PluginsService.ADMIN_RESOURCES_CONFIG);
+  }
+
+  exportDefaultPluginConfig() {
+    this.userConfig.exportMainConfig('system_plugins.json', PluginsService.SYSTEM_RESOURCES_CONFIG);
+  }
+
+  importMainConfig(e: any) {
+    this.userConfig.importMainConfig(e).subscribe(() => this.reload());
+  }
+
+  exportMainConfig() {
+    this.userConfig.exportMainConfig();
+  }
+
+  exportDefaultMainConfig() {
+    this.backend.download('assets/default/config/main.json', 'main.json');
+  }
+
+  importLanguage(e: any, iso) {
+    this.userConfig.importLanguage(e, iso).subscribe(() => this.reload());
+  }
+
+  exportLanguage(iso) {
+    this.userConfig.exportLanguage(iso);
+  }
+
+  exportDefaultLanguage(iso) {
+    this.backend.download(`assets/default/i18n/${iso}.json`, `${iso}.json`);
+  }
+
+  disablePlugins(disabled = true) {
+    this.pluginsService.disableCustomPlugins(disabled).subscribe(() => this.reload());
   }
 
   clearCache() {
@@ -94,7 +155,7 @@ export class SettingsComponent implements OnInit {
 
   ngOnInit() {
     this.titleService.setTitle(this.translate.instant('yuv.client.state.settings.title'));
-    this.user$ = this.userService.user$;
+    this.user$ = this.userService.user$.pipe(map((user) => ({ ...user, authorities: user.authorities.sort() })));
     this.layoutService.layoutSettings$.subscribe((settings: LayoutSettings) => {
       this.darkMode = settings.darkMode;
       this.accentColor = settings.accentColor;

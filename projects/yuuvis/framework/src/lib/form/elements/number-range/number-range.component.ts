@@ -101,12 +101,12 @@ export class NumberRangeComponent implements ControlValueAccessor, Validator {
       if (value.secondValue == null) {
         this.rangeForm.setValue({
           numberValueFrom: null,
-          numberValue: value.firstValue ? value.firstValue : null
+          numberValue: value.firstValue != null ? value.firstValue : null
         });
       } else {
         this.rangeForm.setValue({
-          numberValueFrom: value.firstValue ? value.firstValue : null,
-          numberValue: value.secondValue ? value.secondValue : null
+          numberValueFrom: value.firstValue != null ? value.firstValue : null,
+          numberValue: value.secondValue
         });
       }
     } else {

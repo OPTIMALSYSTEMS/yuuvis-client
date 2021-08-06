@@ -1,4 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { UserService } from '@yuuvis/core';
+import { Observable } from 'rxjs';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { compare } from '../../svg.generated';
 import { ObjectCompareInput } from './object-details-compare.interface';
@@ -17,6 +19,8 @@ import { ObjectCompareInput } from './object-details-compare.interface';
   styleUrls: ['./object-details-compare.component.scss']
 })
 export class ObjectDetailsCompareComponent implements OnInit {
+  userIsAdmin: boolean;
+
   /**
    * Objects to be compared
    */
@@ -29,8 +33,11 @@ export class ObjectDetailsCompareComponent implements OnInit {
    */
   @Input() layoutOptionsKey: string;
 
-  constructor(private iconRegistry: IconRegistryService) {
+  @Input() plugins: Observable<any[]>;
+
+  constructor(private userService: UserService, private iconRegistry: IconRegistryService) {
     this.iconRegistry.registerIcons([compare]);
+    this.userIsAdmin = this.userService.hasAdministrationRoles;
   }
 
   toggle() {

@@ -17,7 +17,7 @@ export class AboutService {
   private productDetailsSubject: BehaviorSubject<ProductDetails[]> = new BehaviorSubject<ProductDetails[]>(this.productDetails);
   productDetails$: Observable<ProductDetails[]> = this.productDetailsSubject.asObservable();
 
-  private aboutConfig: string;
+  private aboutConfig: string = null;
   private aboutConfigSubject: BehaviorSubject<string> = new BehaviorSubject<string>(this.aboutConfig);
   aboutConfig$: Observable<string> = this.aboutConfigSubject.asObservable();
 
@@ -31,6 +31,11 @@ export class AboutService {
       id: 'Apache-2.0',
       label: 'Apache 2.0',
       url: 'http://www.apache.org/licenses/LICENSE-2.0'
+    },
+    {
+      id: '0BSD',
+      label: 'Zero-Clause BSD',
+      url: 'https://opensource.org/licenses/0BSD'
     },
     {
       id: 'BSD-3-Clause-Clear',
@@ -71,13 +76,6 @@ export class AboutService {
 
   getAboutConfig(userLang) {
     this.generateDocumentationLink(this.configService.get('client.docu'), userLang);
-
-    // return this.http.get('assets/about.config.json').subscribe(
-    //   (config: { docu: AboutDocuConfig }) => {
-    //     this.generateDocumentationLink(config.docu, userLang);
-    //   },
-    //   error => console.log({ error })
-    // );
   }
 
   getAboutData() {
@@ -87,21 +85,21 @@ export class AboutService {
         this.generateLicenses(libraries);
         this.generateProductDetails(args);
       },
-      error => console.log({ error })
+      (error) => console.log({ error })
     );
   }
 
   generateDocumentationLink(docuConfig: AboutDocuConfig, userLang) {
     const { language, link, version } = docuConfig;
     userLang = this.getUserLanguage(language, userLang);
-    const docuLink = link.replace('###userLang###', userLang).replace('###version###', String(version));
+    const docuLink = link.replace('###userLang###', userLang);
 
     this.aboutConfigSubject.next(docuLink);
   }
 
   generateLicenses(data: Libraries[]) {
-    data.map(lib => {
-      const match = this.licenses.find(lic => lic.id === lib.license);
+    data.map((lib) => {
+      const match = this.licenses.find((lic) => lic.id === lib.license);
       if (match) {
         lib.label = match.label;
         lib.link = match.url;
@@ -121,7 +119,7 @@ export class AboutService {
       author: this.translate.instant('yuv.client.state.about.author.label')
     };
 
-    Object.keys(aboutDetails).forEach(key =>
+    Object.keys(aboutDetails).forEach((key) =>
       details.push({
         name: key,
         label: productLabel[key],

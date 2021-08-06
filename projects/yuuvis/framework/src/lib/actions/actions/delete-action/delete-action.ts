@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 import { DmsObject, TranslateService } from '@yuuvis/core';
 import { of as observableOf } from 'rxjs';
 import { deleteIcon } from '../../../svg.generated';
@@ -25,13 +26,21 @@ export class DeleteActionComponent extends DmsObjectTarget implements ComponentA
   range = SelectionRange.SINGLE_SELECT;
   component = DeleteComponent;
 
-  constructor(private translate: TranslateService) {
+  constructor(private translate: TranslateService, private router: Router) {
     super();
     this.label = this.translate.instant('yuv.framework.action-menu.action.delete.dms.object.label');
     this.description = this.translate.instant('yuv.framework.action-menu.action.delete.dms.object.description');
   }
 
   isExecutable(element: DmsObject) {
-    return observableOf(element && element.rights && element.rights.deleteObject);
+    let isRetentionActive = false;
+    if (element.data['system:rmStartOfRetention'] && element.data['system:rmExpirationDate']) {
+      const currentDate = new Date();
+      const retentionStart = new Date(element.data['system:rmStartOfRetention']);
+      const retentionEnd = new Date(element.data['system:rmExpirationDate']);
+      isRetentionActive = retentionStart <= currentDate && currentDate <= retentionEnd;
+    }
+    const validState = !/\/inbox|\/processes/.test(this.router.url);
+    return observableOf(validState && element && element.rights && element.rights.deleteObject && !isRetentionActive);
   }
 }

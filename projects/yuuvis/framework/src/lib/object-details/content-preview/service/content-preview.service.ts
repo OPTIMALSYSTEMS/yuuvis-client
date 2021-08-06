@@ -1,7 +1,9 @@
 import { PlatformLocation } from '@angular/common';
-import { Injectable } from '@angular/core';
-import { ApiBase, DmsObjectContent, UserService, Utils } from '@yuuvis/core';
+import { Inject, Injectable } from '@angular/core';
+import { BackendService, CoreConfig, CORE_CONFIG, DmsObjectContent, DmsService, UserService, Utils } from '@yuuvis/core';
 import { Observable, ReplaySubject } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { PluginsService, UNDOCK_WINDOW_NAME } from '../../../plugins/plugins.service';
 import { LayoutService } from '../../../services/layout/layout.service';
 
 /**
@@ -10,25 +12,24 @@ import { LayoutService } from '../../../services/layout/layout.service';
  */
 @Injectable()
 export class ContentPreviewService {
-  static UNDOCK_WINDOW_NAME = 'eoViewer';
-
   private previewSrcSource = new ReplaySubject<string>(null);
   public previewSrc$: Observable<string> = this.previewSrcSource.asObservable();
 
   static undockWin(src: string) {
-    return (window[ContentPreviewService.UNDOCK_WINDOW_NAME] = window.open(
+    return (window[UNDOCK_WINDOW_NAME] = window.open(
       src || '',
-      ContentPreviewService.UNDOCK_WINDOW_NAME,
+      UNDOCK_WINDOW_NAME,
       'directories=0, titlebar=0, toolbar=0, location=0, status=0, menubar=0, resizable=1, top=10, left=10'
     ));
   }
 
   static closeWin() {
-    return this.getUndockWin() && this.getUndockWin().close();
+    this.getUndockWin() && this.getUndockWin().close();
+    delete window[UNDOCK_WINDOW_NAME];
   }
 
   static getUndockWin(): Window {
-    return window[ContentPreviewService.UNDOCK_WINDOW_NAME];
+    return window[UNDOCK_WINDOW_NAME];
   }
 
   static undockWinActive(): boolean {
@@ -39,13 +40,31 @@ export class ContentPreviewService {
    *
    * @ignore
    */
-  constructor(private location: PlatformLocation, private userService: UserService, private layoutService: LayoutService) {}
+  constructor(
+    @Inject(CORE_CONFIG) public coreConfig: CoreConfig,
+    private location: PlatformLocation,
+    private dmsService: DmsService,
+    private userService: UserService,
+    private backend: BackendService,
+    private layoutService: LayoutService,
+    private pluginsService: PluginsService
+  ) {}
 
-  private createPath(id: string, version?: number): { root: string; path: string } {
-    let root = `${this.location.protocol}//${this.location.hostname}`;
-    root = this.location.port.length ? `${root}:${this.location.port}` : root;
-    const path = `${root}/${ApiBase.apiWeb}/dms/${id}/content?asdownload=false${version ? '&version=' + version : ''}`;
-    return { root, path };
+  private createPath(id: string, version?: number): { root: string; path: string; pathPdf: string } {
+    let root;
+    if (this.backend.authUsesOpenIdConnect()) {
+      root = this.coreConfig.oidc.host;
+    } else {
+      root = `${this.location.protocol}//${this.location.hostname}`;
+      if (this.location.port.length) {
+        root += `:${this.location.port}`;
+      }
+    }
+    const path = `${this.backend.authUsesOpenIdConnect() ? '' : root}${this.dmsService.getContentPath(id)}?asdownload=false${
+      version ? '&version=' + version : ''
+    }`;
+    const pathPdf = `${root}/api/dms/objects/${id}${version ? '/versions/' + version : ''}/contents/renditions/pdf`;
+    return { root, path, pathPdf };
   }
 
   private createSettings() {
@@ -58,15 +77,37 @@ export class ContentPreviewService {
 
   private createParams(objectId: string, content: DmsObjectContent, version?: number) {
     const { mimeType, size, contentStreamId, fileName } = content;
-    const { root, path } = this.createPath(objectId, version);
+    const { root, path, pathPdf } = this.createPath(objectId, version);
     const fileExtension = fileName.includes('.') ? fileName.split('.').pop() : '';
-    return { mimeType, path, fileExtension, size, contentStreamId, objectId, root, ...this.createSettings() };
+    return { mimeType, path, pathPdf, fileName, fileExtension, size, contentStreamId, objectId, root, ...this.createSettings() };
+  }
+
+  private resolveCustomViewerConfig(params: any[]) {
+    return this.pluginsService.getCustomPlugins('viewers').pipe(
+      map((viewers) =>
+        params.forEach((param) => {
+          const { mimeType, fileExtension } = param;
+          // shared code from heimdall
+          const config = viewers?.find((c: any) => {
+            const matchMT = (typeof c.mimeType === 'string' ? [c.mimeType] : c.mimeType).includes(mimeType);
+            const matchFE = c.fileExtension
+              ? (typeof c.fileExtension === 'string' ? [c.fileExtension] : c.fileExtension).includes((fileExtension || '').toLowerCase())
+              : true;
+            return matchMT && matchFE;
+          });
+
+          param.viewer = config?.viewer || undefined;
+        })
+      )
+    );
   }
 
   createPreviewUrl(id: string, content: DmsObjectContent, version?: number, content2?: DmsObjectContent, version2?: number): void {
     const params = this.createParams(id, content, version);
-    const query = content2 ? { compare: [params, this.createParams(id, content2, version2)] } : params;
-    this.previewSrcSource.next(id ? Utils.buildUri(`${params.root}/viewer/`, query) : '');
+    const query: any = content2 ? { compare: [params, this.createParams(id, content2, version2)] } : params;
+    this.resolveCustomViewerConfig(query.compare || [query]).subscribe(() => {
+      this.previewSrcSource.next(id ? Utils.buildUri(`${params.root}/viewer/`, query) : '');
+    });
   }
 
   resetSource() {

@@ -33,8 +33,6 @@ import { organization } from '../../../svg.generated';
 })
 export class OrganizationComponent implements ControlValueAccessor, AfterViewInit {
   @ViewChild('autocomplete') autoCompleteInput: AutoComplete;
-
-  noAccessTitle = '! *******';
   minLength = 2;
 
   value;
@@ -101,8 +99,8 @@ export class OrganizationComponent implements ControlValueAccessor, AfterViewIni
   }
 
   resolveFn(value: any) {
-    let map = (value instanceof Array ? value : [value]).map((v) => {
-      let match = this.innerValue.find((iv) => iv.id === v);
+    const map = (value instanceof Array ? value : [value]).map((v) => {
+      const match = this.innerValue.find((iv) => iv.id === v);
       return match
         ? of(match)
         : this.userService.getUserById(v).pipe(
@@ -110,8 +108,8 @@ export class OrganizationComponent implements ControlValueAccessor, AfterViewIni
               of(
                 new YuvUser(
                   {
-                    id: v.id,
-                    title: this.noAccessTitle,
+                    id: v,
+                    title: v,
                     image: null
                   },
                   null
@@ -122,13 +120,14 @@ export class OrganizationComponent implements ControlValueAccessor, AfterViewIni
     });
     return forkJoin(map).subscribe((data) => {
       this.innerValue = data;
+      setTimeout(() => this.autoCompleteInput.cd.markForCheck());
     });
   }
 
   autocompleteFn(evt) {
     if (evt.query.length >= this.minLength) {
-      this.userService.queryUser(evt.query).subscribe((res: YuvUser[]) => {
-        this.autocompleteRes = res;
+      this.userService.queryUser(evt.query).subscribe((users: YuvUser[]) => {
+        this.autocompleteRes = users.filter((user) => !this.innerValue.some((value) => value.id === user.id));
       });
     } else {
       this.autocompleteRes = [];

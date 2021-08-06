@@ -1,6 +1,6 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, fakeAsync, TestBed } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, waitForAsync } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 // import { BackendService, Config, Logger } from '@eo-sdk/core';
 import { AutoCompleteModule } from 'primeng/autocomplete';
@@ -14,7 +14,7 @@ describe('StringComponent', () => {
   let fixture: ComponentFixture<StringComponent>;
   let service: BackendService;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       schemas: [NO_ERRORS_SCHEMA],
       declarations: [StringComponent],

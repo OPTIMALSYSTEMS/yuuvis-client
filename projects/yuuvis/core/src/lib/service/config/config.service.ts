@@ -9,6 +9,11 @@ import { YuvConfig, YuvConfigLanguages } from './config.interface';
   providedIn: 'root'
 })
 export class ConfigService {
+  static GLOBAL_MAIN_CONFIG = '/users/globalsettings/main-config';
+  static GLOBAL_MAIN_CONFIG_LANG(iso = 'en') {
+    return ConfigService.GLOBAL_MAIN_CONFIG + '-language-' + iso;
+  }
+
   private cfg: YuvConfig = null;
   /**
    * @ignore
@@ -23,7 +28,10 @@ export class ConfigService {
     this.cfg = cfg;
     const languages = this.getClientLocales().map((lang) => lang.iso);
     this.translate.addLangs(languages);
-    this.translate.setDefaultLang(this.getDefaultClientLocale());
+    const iso = this.getDefaultClientLocale() || this.translate.getBrowserLang();
+    const defaultLang = languages.includes(iso) ? iso : languages[0];
+    this.translate.setDefaultLang(defaultLang);
+    this.translate.use(defaultLang);
   }
 
   get(configKey: string): any {

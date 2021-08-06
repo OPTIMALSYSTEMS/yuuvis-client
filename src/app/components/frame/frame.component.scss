@@ -2,6 +2,7 @@
 $user-panel-width: 180px;
 $pwa-update-width: 200px;
 $app-bar-zindex: 6;
+$app-bar-icon: 32px;
 
 :host {
   overflow: hidden;
@@ -37,7 +38,7 @@ $app-bar-zindex: 6;
     display: flex;
     flex-flow: row nowrap;
     align-items: center;
-    padding: calc((var(--app-bar-height) - 32px) / 4);
+    padding: calc((var(--app-bar-height) - #{$app-bar-icon}) / 4);
     color: var(--text-color-caption);
     background-color: var(--app-bar-background);
     border-bottom: 1px solid var(--panel-divider-color);
@@ -59,7 +60,7 @@ $app-bar-zindex: 6;
     }
 
     yuv-icon#drawer {
-      padding: calc(((var(--app-bar-height) - 24px) / 2) - ((var(--app-bar-height) - 32px) / 4));
+      padding: calc(((var(--app-bar-height) - 24px) / 2) - ((var(--app-bar-height) - #{$app-bar-icon}) / 4));
     }
 
     a#logo {
@@ -67,8 +68,8 @@ $app-bar-zindex: 6;
       margin: 0 calc(var(--app-pane-padding) / 2);
 
       yuv-icon {
-        width: 32px;
-        padding: calc(((var(--app-bar-height) - 32px) / 2) - ((var(--app-bar-height) - 32px) / 4));
+        width: $app-bar-icon;
+        padding: calc(((var(--app-bar-height) - #{$app-bar-icon}) / 2) - ((var(--app-bar-height) - #{$app-bar-icon}) / 4));
         height: auto;
         background-color: transparent;
       }
@@ -80,6 +81,7 @@ $app-bar-zindex: 6;
       flex-flow: row nowrap;
       align-items: center;
       padding: 0 calc(var(--app-pane-padding) * 0.5);
+      height: calc((var(--app-bar-height) - var(--app-pane-padding)));
 
       > a > yuv-icon,
       > yuv-icon {
@@ -93,35 +95,28 @@ $app-bar-zindex: 6;
       }
 
       .app-bar-search {
+        align-self: stretch;
         display: flex;
-        position: absolute;
-        left: 0;
-        right: 0;
-        top: 0;
-        height: var(--app-bar-height);
-        box-shadow: 0 0 10px 10px rgba(0, 0, 0, 0.1);
-        background-color: var(--main-background);
-        animation: yuvFadeInDown 200ms;
+        flex: 1;
+        position: relative;
+        align-items: center;
+        padding: 0 calc(var(--app-pane-padding) / 2);
 
-        .dark & {
-          border-bottom: 1px solid var(--panel-divider-color);
-        }
-
-        > button.close {
-          flex: 0 0 auto;
-          color: var(--text-color-hint);
-          padding: 0;
-          width: var(--app-bar-height);
-          height: var(--app-bar-height);
-          border: 0;
-
-          yuv-icon {
-            box-sizing: content-box;
-          }
-        }
         yuv-quick-search {
-          flex: 1;
-          @include bidi-style(border-left, 1px solid var(--panel-divider-color), border-right, 1px solid var(--panel-divider-color));
+          border: 1px solid var(--panel-divider-color);
+          position: absolute;
+          top: 0;
+          margin: 2px;
+
+          @media (max-width: 699px) {
+            width: 100%;
+          }
+          @media (min-width: 700px) and (max-width: 1249px) {
+            width: 40vw;
+          }
+          @media (min-width: 1250px) {
+            width: 500px;
+          }
         }
       }
     }
@@ -146,8 +141,8 @@ $app-bar-zindex: 6;
       .user {
         border-radius: 50%;
         margin: 0 var(--app-pane-padding);
-        width: 32px;
-        height: 32px;
+        width: $app-bar-icon;
+        height: $app-bar-icon;
         overflow: hidden;
         background-color: rgba(255, 255, 255, 0.1);
         cursor: pointer;
@@ -342,14 +337,33 @@ $app-bar-zindex: 6;
 
 .move-notification {
   padding: var(--app-pane-padding);
-  background: var(--color-success);
-  color: #fff;
+  background: var(--panel-background);
+  color: var(--text-color-body);
   // border-radius: 2px;
   &.fail {
-    background: var(--color-error);
+    .header-title {
+      color: var(--color-error);
+    }
+    .list.failed-list {
+      max-height: 100px;
+      overflow: auto;
+      margin-top: calc(var(--app-pane-padding) / 2);
+    }
   }
   &.warning {
-    background: var(--color-warning);
+    .succededItems .header-title {
+      color: var(--color-success);
+      .bold-text {
+        margin-left: calc(var(--app-pane-padding) / 4);
+        font-size: var(--font-subhead);
+        font-weight: bold;
+      }
+    }
+    .list.succeded-list {
+      margin-bottom: var(--app-pane-padding);
+      max-height: 100px;
+      overflow: auto;
+    }
   }
   .header {
     display: flex;
@@ -358,24 +372,36 @@ $app-bar-zindex: 6;
       display: flex;
       align-items: center;
       font-size: var(--font-subhead);
-      font-weight: bold;
       margin-right: var(--app-pane-padding);
-    }
-    a {
-      color: #fff;
+
+      .bold-text {
+        margin-left: calc(var(--app-pane-padding) / 4);
+        font-size: var(--font-subhead);
+        font-weight: bold;
+      }
     }
   }
   .list {
     .entry {
       margin: calc(var(--app-pane-padding) / 2) 0;
       display: flex;
-      yuv-icon {
+      yuv-object-type-icon {
         margin-right: calc(var(--app-pane-padding) / 2);
+        color: var(--text-color-caption);
       }
       .description {
         font-size: var(--font-hint);
         margin-top: 2px;
       }
+    }
+  }
+  .actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin: var(--app-pane-padding) -2px 0 -2px;
+    .primary {
+      margin-left: calc(var(--app-pane-padding) / 3);
     }
   }
 }

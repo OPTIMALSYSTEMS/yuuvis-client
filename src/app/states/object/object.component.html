@@ -1,24 +1,23 @@
-<yuv-responsive-master-slave *ngIf="context" class="state" [layoutOptionsKey]="layoutOptionsStorageKey"
-  (slaveClosed)="onSlaveClosed()" [slaveActive]="true">
-
-  <yuv-context class="yuv-master panel" [context]="context" [yuvBusyOverlay]="contextBusy" [recentItems]="recentItems"
-    (filesDropped)="onContextFilesDropped($event)" [preSelectItems]="[selectedItem]"
-    [contextSearchQuery]="contextSearchQuery" [layoutOptionsKey]="layoutOptionsStorageKey"
-    (itemsSelected)="contextItemsSelected($event)" #yuvContext>
+<yuv-responsive-master-slave *ngIf="context" class="state" [layoutOptionsKey]="layoutOptionsStorageKey" (slaveClosed)="onSlaveClosed()" [slaveActive]="true">
+  <yuv-context
+    class="yuv-master panel"
+    [context]="context"
+    [yuvBusyOverlay]="contextBusy"
+    [recentItems]="recentItems"
+    (filesDropped)="onContextFilesDropped($event)"
+    [preSelectItems]="[selectedItem]"
+    [contextSearchQuery]="contextSearchQuery"
+    [layoutOptionsKey]="layoutOptionsStorageKey"
+    (itemsSelected)="contextItemsSelected($event)"
+    [plugins]="pluginsContext"
+    #yuvContext
+  >
   </yuv-context>
 
-  <yuv-object-details class="yuv-slave panel" [objectId]="selectedItem" [searchTerm]="searchQuery?.term"
-    [versionLinkTemplate]="versionLinkTpl" [layoutOptionsKey]="layoutOptionsStorageKey">
+  <yuv-object-details class="yuv-slave panel" [objectId]="selectedItem" [searchTerm]="searchQuery?.term" [layoutOptionsKey]="layoutOptionsStorageKey" [plugins]="plugins">
   </yuv-object-details>
 </yuv-responsive-master-slave>
 
-<yuv-object-details *ngIf="_standalone" class="panel" [objectId]="_standalone" [versionLinkTemplate]="versionLinkTpl"
-  [layoutOptionsKey]="layoutOptionsStorageKey">
-</yuv-object-details>
+<yuv-object-details *ngIf="_standalone" class="panel" [objectId]="_standalone" [layoutOptionsKey]="layoutOptionsStorageKey" [plugins]="plugins"></yuv-object-details>
 
 <yuv-context-error *ngIf="contextError" [contextError]="contextError"></yuv-context-error>
-
-<!-- template to render the version link withing object details summary and audit aspects -->
-<ng-template #versionLinkTpl let-version="version">
-  <a [routerLink]="['/versions', selectedItem || _standalone]" [queryParams]="({version: version})">{{version}}</a>
-</ng-template>

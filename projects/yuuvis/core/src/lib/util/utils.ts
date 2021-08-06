@@ -138,8 +138,11 @@ export class Utils {
       let comparison: number;
       const varA = Utils.getProperty(a, key);
       const varB = Utils.getProperty(b, key);
+
       if (typeof varA === 'number' && typeof varB === 'number') {
         comparison = varA - varB;
+      } else if (varA instanceof Date && varB instanceof Date) {
+        comparison = new Date(varA).getTime() - new Date(varB).getTime();
       } else {
         const stringA = varA || varA === 0 ? varA.toString() : '';
         const stringB = varB || varB === 0 ? varB.toString() : '';
@@ -255,7 +258,7 @@ export class Utils {
 
   public static getBaseHref(removeTrailingSlash?: boolean) {
     const baseHref = document.getElementsByTagName('base')[0].getAttribute('href');
-    return removeTrailingSlash ? baseHref.substr(0, baseHref.length - 1) : baseHref;
+    return baseHref ? (removeTrailingSlash ? baseHref.substr(0, baseHref.length - 1) : baseHref) : '';
   }
 
   /**
@@ -283,7 +286,15 @@ export class Utils {
   }
 
   public static isEdge(): boolean {
-    return !!navigator.userAgent && navigator.userAgent.indexOf('Edge') > -1;
+    return new RegExp('Edge', 'i').test(navigator.userAgent);
+  }
+
+  public static isFirefox(): boolean {
+    return new RegExp('firefox', 'i').test(navigator.userAgent);
+  }
+
+  public static isSafari(): boolean {
+    return new RegExp('^((?!chrome|android|crios|fxios).)*safari', 'i').test(navigator.userAgent);
   }
 
   public static isEmpty(obj) {

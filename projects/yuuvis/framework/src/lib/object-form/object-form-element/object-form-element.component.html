@@ -1,8 +1,8 @@
 <div class="form-element" [formGroup]="element" *ngIf="element">
   <div class="form-field t-{{ formElementRef._eoFormElement.type }}" #formField
+    [attr.data-name]="element._eoFormControlWrapper.controlName"
     [ngSwitch]="formElementRef._eoFormElement._internalType"
     [ngClass]="{ disabled: !!formElementRef._eoFormElement.readonly, inlineError: inlineError }">
-
     <!-- STRING -->
     <yuv-form-input *ngSwitchCase="'string'" [tag]="tag" [label]="formElementRef._eoFormElement.label" [isNull]="isNull"
       [skipToggle]="shouldSkipToggle" (onToggleLabel)="labelToggled($event)"
@@ -10,7 +10,8 @@
       <!-- *ngIf="!formElementRef._eoFormElement.reference && formElementRef._eoFormElement.classification !== 'selector' && formElementRef._eoFormElement.classification !== 'id:organization'" -->
       <yuv-string [situation]="element._eoFormControlWrapper.situation"
         [formControlName]="element._eoFormControlWrapper.controlName"
-        [multiselect]="formElementRef._eoFormElement.cardinality === 'multi'  || situation === 'SEARCH'"
+        [attr.data-name]="element._eoFormControlWrapper.controlName"
+        [multiselect]="formElementRef._eoFormElement.cardinality === 'multi' || situation === 'SEARCH'"
         [rows]="formElementRef._eoFormElement.rows" [classifications]="formElementRef._eoFormElement.classifications"
         [regex]="formElementRef._eoFormElement.regex" [readonly]="formElementRef._eoFormElement.readonly"
         [minLength]="formElementRef._eoFormElement.minLength" [maxLength]="formElementRef._eoFormElement.maxLength">
@@ -23,7 +24,8 @@
       [required]="formElementRef._eoFormElement.required" [invalid]="errors">
       <yuv-reference [situation]="element._eoFormControlWrapper.situation"
         [formControlName]="element._eoFormControlWrapper.controlName"
-        [multiselect]="formElementRef._eoFormElement.cardinality === 'multi'  || situation === 'SEARCH'"
+        [attr.data-name]="element._eoFormControlWrapper.controlName"
+        [multiselect]="formElementRef._eoFormElement.cardinality === 'multi' || situation === 'SEARCH'"
         [classifications]="formElementRef._eoFormElement.classifications"
         [readonly]="formElementRef._eoFormElement.readonly">
       </yuv-reference>
@@ -34,8 +36,9 @@
       [isNull]="isNull" [skipToggle]="shouldSkipToggle" (onToggleLabel)="labelToggled($event)"
       [required]="formElementRef._eoFormElement.required" [invalid]="errors">
       <yuv-organization [situation]="element._eoFormControlWrapper.situation"
-        [multiselect]="formElementRef._eoFormElement.cardinality === 'multi'  || situation === 'SEARCH'"
+        [multiselect]="formElementRef._eoFormElement.cardinality === 'multi' || situation === 'SEARCH'"
         [formControlName]="element._eoFormControlWrapper.controlName"
+        [attr.data-name]="element._eoFormControlWrapper.controlName"
         [classifications]="formElementRef._eoFormElement.classifications"
         [readonly]="formElementRef._eoFormElement.readonly">
       </yuv-organization>
@@ -45,22 +48,36 @@
     <yuv-form-input *ngSwitchCase="'string:catalog'" [tag]="tag" [label]="formElementRef._eoFormElement.label"
       [isNull]="isNull" [skipToggle]="skipToggle || situation !== 'SEARCH'" (onToggleLabel)="labelToggled($event)"
       [required]="formElementRef._eoFormElement.required" [invalid]="errors">
-
       <yuv-catalog [situation]="element._eoFormControlWrapper.situation"
         [formControlName]="element._eoFormControlWrapper.controlName"
-        [multiselect]="formElementRef._eoFormElement.cardinality === 'multi'  || situation === 'SEARCH'"
+        [attr.data-name]="element._eoFormControlWrapper.controlName"
+        [multiselect]="formElementRef._eoFormElement.cardinality === 'multi' || situation === 'SEARCH'"
         [options]="formElementRef._eoFormElement.options"
         [classifications]="formElementRef._eoFormElement.classifications"
         [readonly]="formElementRef._eoFormElement.readonly">
       </yuv-catalog>
     </yuv-form-input>
 
+    <!-- STRING:CATALOG:DYNAMIC -->
+    <yuv-form-input *ngSwitchCase="'string:catalog:dynamic'" [tag]="tag" [label]="formElementRef._eoFormElement.label"
+      [isNull]="isNull" [skipToggle]="skipToggle || situation !== 'SEARCH'" (onToggleLabel)="labelToggled($event)"
+      [required]="formElementRef._eoFormElement.required" [invalid]="errors">
+      <yuv-dynamic-catalog [situation]="element._eoFormControlWrapper.situation"
+        [formControlName]="element._eoFormControlWrapper.controlName"
+        [attr.data-name]="element._eoFormControlWrapper.controlName"
+        [multiselect]="formElementRef._eoFormElement.cardinality === 'multi' || situation === 'SEARCH'"
+        [classifications]="formElementRef._eoFormElement.classifications"
+        [readonly]="formElementRef._eoFormElement.readonly">
+      </yuv-dynamic-catalog>
+    </yuv-form-input>
 
     <!-- BOOLEAN -->
     <yuv-form-input *ngSwitchCase="'boolean'" [tag]="tag" class="checkbox" [label]="formElementRef._eoFormElement.label"
       [isNull]="isNull" [skipToggle]="shouldSkipToggle" [required]="formElementRef._eoFormElement.required"
       (onToggleLabel)="labelToggled($event)" [invalid]="errors">
-      <yuv-checkbox [formControlName]="element._eoFormControlWrapper.controlName"
+      <yuv-checkbox
+        [formControlName]="element._eoFormControlWrapper.controlName"
+        [attr.data-name]="element._eoFormControlWrapper.controlName"
         [readonly]="formElementRef._eoFormElement.readonly" [tristate]="true"></yuv-checkbox>
     </yuv-form-input>
 
@@ -72,13 +89,15 @@
         [readonly]="formElementRef._eoFormElement.readonly"
         [withTime]="formElementRef._eoFormElement.resolution !== 'date'"
         [pickerTitle]="formElementRef._eoFormElement.label"
-        [formControlName]="element._eoFormControlWrapper.controlName"></yuv-datetime>
+        [formControlName]="element._eoFormControlWrapper.controlName"
+        [attr.data-name]="element._eoFormControlWrapper.controlName"></yuv-datetime>
 
       <ng-template #tplDateTimeRange>
         <yuv-datetime-range [pickerTitle]="formElementRef._eoFormElement.label"
           [readonly]="formElementRef._eoFormElement.readonly"
           [withTime]="formElementRef._eoFormElement.resolution !== 'date'"
-          [formControlName]="element._eoFormControlWrapper.controlName"></yuv-datetime-range>
+          [formControlName]="element._eoFormControlWrapper.controlName"
+          [attr.data-name]="element._eoFormControlWrapper.controlName"></yuv-datetime-range>
       </ng-template>
     </yuv-form-input>
 
@@ -91,6 +110,7 @@
         [scale]="0" [grouping]="formElementRef._eoFormElement.grouping"
         [minValue]="formElementRef._eoFormElement.minValue" [maxValue]="formElementRef._eoFormElement.maxValue"
         [formControlName]="element._eoFormControlWrapper.controlName"
+        [attr.data-name]="element._eoFormControlWrapper.controlName"
         [classifications]="formElementRef._eoFormElement.classifications">
       </yuv-number>
 
@@ -100,6 +120,7 @@
           [grouping]="formElementRef._eoFormElement.grouping" [minValue]="formElementRef._eoFormElement.minValue"
           [maxValue]="formElementRef._eoFormElement.maxValue" [pattern]="formElementRef._eoFormElement.pattern"
           [formControlName]="element._eoFormControlWrapper.controlName"
+          [attr.data-name]="element._eoFormControlWrapper.controlName"
           [classifications]="formElementRef._eoFormElement.classifications"></yuv-number-range>
       </ng-template>
     </yuv-form-input>
@@ -113,7 +134,8 @@
         [scale]="formElementRef._eoFormElement.scale" [grouping]="formElementRef._eoFormElement.grouping"
         [pattern]="formElementRef._eoFormElement.pattern" [minValue]="formElementRef._eoFormElement.minValue"
         [maxValue]="formElementRef._eoFormElement.maxValue"
-        [formControlName]="element._eoFormControlWrapper.controlName">
+        [formControlName]="element._eoFormControlWrapper.controlName"
+        [attr.data-name]="element._eoFormControlWrapper.controlName">
       </yuv-number>
 
       <ng-template #tplDecimalRange>
@@ -121,9 +143,19 @@
           [precision]="formElementRef._eoFormElement.precision" [scale]="formElementRef._eoFormElement.scale"
           [pattern]="formElementRef._eoFormElement.pattern" [grouping]="formElementRef._eoFormElement.grouping"
           [minValue]="formElementRef._eoFormElement.minValue" [maxValue]="formElementRef._eoFormElement.maxValue"
-          [formControlName]="element._eoFormControlWrapper.controlName"></yuv-number-range>
+          [formControlName]="element._eoFormControlWrapper.controlName"
+          [attr.data-name]="element._eoFormControlWrapper.controlName"></yuv-number-range>
       </ng-template>
     </yuv-form-input>
+
+    <!-- TABLE -->
+    <div class="table" *ngSwitchCase="'table'" [ngClass]="{ invalid: errors }">
+      <yuv-table [params]="{
+          situation: situation,
+          element: formElementRef._eoFormElement
+        }" [formControlName]="element._eoFormControlWrapper.controlName"
+          [attr.data-name]="element._eoFormControlWrapper.controlName"></yuv-table>
+    </div>
 
     <!-- print out the type if it's not matching anything -->
     <div *ngSwitchDefault>

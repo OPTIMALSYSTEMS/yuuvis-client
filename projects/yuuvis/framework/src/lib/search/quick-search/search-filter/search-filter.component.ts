@@ -61,7 +61,7 @@ export class SearchFilterComponent implements OnInit {
   activeFilters: Selectable[] = [];
   lastFilters: Selectable[] = [];
   storedFilters: Selectable[] = [];
-  visibleFilters: string[] = [];
+  hiddenFilters: string[] = [];
 
   filesizePipe: FileSizePipe;
   _query: SearchQuery;
@@ -134,16 +134,31 @@ export class SearchFilterComponent implements OnInit {
         items: types
       }
     ];
+
+    this.setupExtensions();
+
     this.setupCollapsedGroups();
     return this.setupFilters(this.typeSelection);
+  }
+
+  private setupExtensions() {
+    const { active, all } = this.quickSearchService.getActiveExtensions(this._query);
+    if (all.length) {
+      this.typeSelection = [...this.typeSelection, ...active];
+      this.availableTypeGroups[1] = {
+        id: 'extensions',
+        label: this.translate.instant('yuv.framework.search.filter.object.extensions'),
+        items: all
+      };
+    }
   }
 
   private setupFilters(typeSelection: string[], activeFilters?: Selectable[]) {
     this.availableObjectTypeFields = this.quickSearchService.getAvailableObjectTypesFields(typeSelection);
 
-    this.quickSearchService.getCurrentSettings().subscribe(([storedFilters, visibleFilters, lastFilters]) => {
+    this.quickSearchService.getCurrentSettings().subscribe(([storedFilters, hiddenFilters, lastFilters]) => {
       this.storedFilters = this.quickSearchService.loadFilters(storedFilters as any, this.availableObjectTypeFields);
-      this.visibleFilters = visibleFilters || this.storedFilters.map((f) => f.id);
+      this.hiddenFilters = hiddenFilters;
       this.activeFilters =
         activeFilters ||
         (this._originalFilters = this.quickSearchService.getActiveFilters(this.filterQuery, this.storedFilters, this.availableObjectTypeFields));
@@ -157,7 +172,7 @@ export class SearchFilterComponent implements OnInit {
         {
           id: 'stored',
           label: this.translate.instant('yuv.framework.search.filter.stored.filters'),
-          items: this.storedFilters.filter((f) => this.visibleFilters.includes(f.id))
+          items: this.storedFilters.filter((f) => !this.hiddenFilters.includes(f.id))
         }
       ];
 
@@ -180,7 +195,7 @@ export class SearchFilterComponent implements OnInit {
 
   updateLastFilters(ids: string[]) {
     return (this.lastFilters = (ids || [])
-      .filter((id) => !this.filterSelection.includes(id) && this.visibleFilters.includes(id))
+      .filter((id) => !this.filterSelection.includes(id) && !this.hiddenFilters.includes(id))
       .slice(0, 5)
       .map((id) => this.storedFilters.find((f) => f.id === id))
       .filter((f) => f)).sort(Utils.sortValues('label'));
@@ -236,8 +251,12 @@ export class SearchFilterComponent implements OnInit {
   onTypeChange(res: Selectable[]) {
     this.typeSelection = res.map((r) => r.id);
     this.setupFilters(this.typeSelection, this.activeFilters);
-    this.filterQuery.types = [...this.typeSelection];
+    const _types = [...this.filterQuery.types];
+    this.quickSearchService.updateTypesAndLots(this.filterQuery, this.typeSelection);
     this.filterChange.emit(this.filterQuery);
+    if (_types.sort().join() !== this.filterQuery.types.sort().join()) {
+      this.aggregate();
+    }
   }
 
   saveSearch() {}
@@ -248,14 +267,14 @@ export class SearchFilterComponent implements OnInit {
   }
 
   aggregate() {
-    const queryNoTypes = new SearchQuery({ ...this.filterQuery.toQueryJson(), types: [] });
-    this.quickSearchService.getActiveTypes(queryNoTypes).subscribe((types: any) => {
+    const queryNoLots = new SearchQuery({ ...this.filterQuery.toQueryJson(), lots: [] });
+    this.quickSearchService.getActiveTypes(queryNoLots).subscribe((types: any) => {
       this.availableObjectTypes.forEach((i) => {
         const match = types.find((t) => t.id === i.id);
         i.count = match ? match.count : 0;
       });
       // remove all empty types that are part of original query
-      this.availableTypeGroups[0].items = this.availableObjectTypes.filter((t) => t.count || this._query.types.includes(t.id));
+      this.availableTypeGroups[0].items = this.availableObjectTypes.filter((t) => t.count || this._query.allTypes.includes(t.id));
       this.typeSelection = [...this.typeSelection];
     });
   }

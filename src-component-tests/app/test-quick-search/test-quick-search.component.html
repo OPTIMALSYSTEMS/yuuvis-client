@@ -1,17 +1,35 @@
 <div class="testing-controls">
+  <div class="buttons">
     <button (click)="setQuery(storedQuery)">load query</button>
     <button (click)="setQuery(null)">clear query</button>
+  </div>
 </div>
 
 <!-- <yuv-quick-search [query]="query" (querySubmit)="onSubmit($event)"></yuv-quick-search> -->
-<yuv-quick-search #quickSearch [query]="query" (typeAggregation)="onTypeAggregation($event)"
+<div class="container">
+  <yuv-quick-search #quickSearch [query]="query" (typeAggregation)="onTypeAggregation($event)"
     (querySubmit)="onSubmit($event)"></yuv-quick-search>
 
-<yuv-quick-search [inline]="true"></yuv-quick-search>
+  <h2>
+    Aggregations disabled
+  </h2>
+  <yuv-quick-search [query]="query" disableAggregations="true" (typeAggregation)="onTypeAggregation($event)"
+    (querySubmit)="onSubmit($event)"></yuv-quick-search>
+
+  <h2>
+    inline
+  </h2>
+  <yuv-quick-search [inline]="true"></yuv-quick-search>
+
+  <h2>
+    Skipping certain types
+  </h2>
+  <yuv-quick-search [skipTypes]="['tenLdms:ldmsHumanResourceSOT']"></yuv-quick-search>
 
 
-<div class="aggs" *ngIf="aggs">
+  <div class="aggs" *ngIf="aggs">
     <div *ngFor="let a of aggs" (click)="applyAggregation(a)">
-        {{a.label}}/{{a.count}}
+      {{a.label}}/{{a.count}}
     </div>
+  </div>
 </div>

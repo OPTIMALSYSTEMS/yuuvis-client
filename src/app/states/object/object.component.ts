@@ -2,9 +2,11 @@ import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AppCacheService, DmsObject, DmsService, EventService, SearchQuery, TranslateService, YuvEventType } from '@yuuvis/core';
-import { ContextComponent } from '@yuuvis/framework';
+import { ContextComponent, PluginsService } from '@yuuvis/framework';
+import { finalize } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { FrameService } from '../../components/frame/frame.service';
+import { AppSearchService } from '../../service/app-search.service';
 
 @Component({
   selector: 'yuv-object',
@@ -30,19 +32,27 @@ export class ObjectComponent implements OnInit, OnDestroy {
   contextSearchQuery: SearchQuery;
   private contextId: string;
 
+  plugins: any;
+  pluginsContext: any;
+
   constructor(
     private route: ActivatedRoute,
     private dmsService: DmsService,
+    private appSearch: AppSearchService,
     private translate: TranslateService,
     private title: Title,
     private frameService: FrameService,
     private router: Router,
     private eventService: EventService,
-    private appCacheService: AppCacheService
-  ) {}
+    private appCacheService: AppCacheService,
+    private pluginsService: PluginsService
+  ) {
+    this.plugins = this.pluginsService.getCustomPlugins('extensions', 'yuv-object');
+    this.pluginsContext = this.pluginsService.getCustomPlugins('extensions', 'yuv-object-context');
+  }
 
   onContextFilesDropped(files: File[]) {
-    this.frameService.createObject(this.context.id, files);
+    this.frameService.createObject(this.contextId, files);
   }
 
   objectDetailsVersionClicked(version: number) {
@@ -51,7 +61,7 @@ export class ObjectComponent implements OnInit, OnDestroy {
 
   contextItemsSelected(ids: string[]) {
     if (ids && ids.length === 0) {
-      ids = [this.context.id];
+      ids = [this.contextId];
     }
     if (ids && ids.length === 1) {
       this.router.navigate(['.'], { fragment: ids[0], replaceUrl: !!this.selectedItem, relativeTo: this.route, queryParamsHandling: 'preserve' });
@@ -60,7 +70,7 @@ export class ObjectComponent implements OnInit, OnDestroy {
   }
 
   private getRecentItemsStorageKey() {
-    return this.context ? `${this.layoutOptionsStorageKey}.${this.context.id}` : this.layoutOptionsStorageKey;
+    return this.context ? `${this.layoutOptionsStorageKey}.${this.contextId}` : this.layoutOptionsStorageKey;
   }
 
   private setupSelectedItem(id) {
@@ -69,50 +79,49 @@ export class ObjectComponent implements OnInit, OnDestroy {
   }
 
   private loadRecentItems() {
-    this.appCacheService.getItem(this.getRecentItemsStorageKey()).subscribe((items) => {
-      this.recentItems = items && Array.isArray(items) ? items : [];
-    });
+    this.appCacheService.getItem(this.getRecentItemsStorageKey()).subscribe((items) => (this.recentItems = items && Array.isArray(items) ? items : []));
   }
 
   private addRecentItem(id: string) {
-    this.recentItems = this.recentItems.filter((i) => i !== id);
-    this.recentItems.push(id);
+    if (id !== this.contextId) {
+      /* tslint:disable:tslint no-unused-expression */
+      !this.recentItems.includes(id) && this.recentItems.push(id);
+    }
     if (this.context) {
       this.appCacheService.setItem(this.getRecentItemsStorageKey(), this.recentItems).subscribe();
     }
   }
 
+  private redirect(id: string, fragment: string) {
+    this.router.navigate(['/object', id], { fragment, replaceUrl: true });
+  }
+
   private setupContext(contextID: string) {
     this.contextBusy = true;
-    this.dmsService.getDmsObject(contextID).subscribe(
-      (dmsObject: DmsObject) => {
-        if (!dmsObject.isFolder) {
-          if (dmsObject.parentId) {
-            // got object from within a context, so we'll go there instead
-            this.router.navigate(['/object', dmsObject.parentId], {
-              fragment: dmsObject.id,
-              replaceUrl: true
-            });
+    this.dmsService
+      .getDmsObject(contextID)
+      .pipe(finalize(() => (this.contextBusy = false)))
+      .subscribe(
+        (dmsObject: DmsObject) => {
+          if (!dmsObject) {
+            return;
+          } else if (!dmsObject?.isFolder) {
+            if (dmsObject?.parentId) {
+              // got object from within a context, so we'll go there instead
+              this.redirect(dmsObject.parentId, dmsObject.id);
+            } else {
+              // got object that is just an object without context
+              this.redirect(dmsObject.id, this.standaloneFragment);
+            }
           } else {
-            // got object that is just an object without context
-            this.router.navigate(['/object', dmsObject.id], {
-              fragment: this.standaloneFragment,
-              replaceUrl: true
-            });
+            // TODO: shouldn't context be set always? @anndreasSchulz
+            this.context = dmsObject;
+            this.title.setTitle(this.context.title);
+            this.loadRecentItems();
           }
-        } else {
-          // TODO: shouldn't context be set always? @anndreasSchulz
-          this.context = dmsObject;
-          this.title.setTitle(this.context.title);
-          this.loadRecentItems();
-        }
-        this.contextBusy = false;
-      },
-      (err) => {
-        this.contextBusy = false;
-        this.contextError = this.translate.instant('yuv.client.state.object.context.load.error');
-      }
-    );
+        },
+        (error) => (this.contextError = this.translate.instant('yuv.framework.object-details.context.load.error'))
+      );
   }
 
   ngOnInit() {
@@ -127,6 +136,7 @@ export class ObjectComponent implements OnInit, OnDestroy {
     // query params may provide a query to be executed within this state
     this.route.queryParams.pipe(takeUntilDestroy(this)).subscribe((queryParams: any) => {
       this.contextSearchQuery = !!queryParams.query ? new SearchQuery(JSON.parse(queryParams.query)) : null;
+      this.appSearch.setQuery(this.contextSearchQuery);
     });
     // fragments are used to identify the selected item within the context
     this.route.fragment.pipe(takeUntilDestroy(this)).subscribe((fragment: any) => {
@@ -140,6 +150,10 @@ export class ObjectComponent implements OnInit, OnDestroy {
       .on(YuvEventType.DMS_OBJECT_DELETED)
       .pipe(takeUntilDestroy(this))
       .subscribe((event) => {
+        if (this.route.snapshot.fragment && this.route.snapshot.fragment === event.data?.id) {
+          // get rid of the fragment once the deleted item has the same ID
+          this.router.navigate([]);
+        }
         if (this.context?.id === event.data.id || this.contextId === event.data.id) {
           this.router.navigate(['/']);
         }

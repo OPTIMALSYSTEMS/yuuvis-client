@@ -1,6 +1,6 @@
 import { DOCUMENT } from '@angular/common';
 import { Inject, Injectable } from '@angular/core';
-import { AppCacheService, BackendService, Direction, Logger, UserService, YuvUser } from '@yuuvis/core';
+import { AppCacheService, BackendService, ConfigService, Direction, Logger, UserService, YuvUser } from '@yuuvis/core';
 import { Observable, of, ReplaySubject } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 
@@ -12,14 +12,18 @@ import { map, switchMap } from 'rxjs/operators';
   providedIn: 'root'
 })
 export class LayoutService {
-  private STORAGE_KEY = 'yuv.app.framework.layout';
-  private STORAGE_KEY_REGEXP = new RegExp('^yuv.app.');
+  private STORAGE_KEY = `${this.storageKeyPrefix}yuv.app.framework.layout`;
+  private STORAGE_KEY_REGEXP = new RegExp(`^${this.storageKeyPrefix}yuv.app.`);
   private layoutSettings: LayoutSettings = {};
   private layoutSettingsSource = new ReplaySubject<LayoutSettings>();
   /**
    * Return new layout setting dipends on selected mode : light or dark
    */
   public layoutSettings$: Observable<LayoutSettings> = this.layoutSettingsSource.asObservable();
+
+  private get storageKeyPrefix(): string {
+    return this.configService.get('appPrefix') ? `${this.configService.get('appPrefix')}.` : '';
+  }
 
   /**
    *
@@ -30,11 +34,12 @@ export class LayoutService {
     private logger: Logger,
     private appCache: AppCacheService,
     private userService: UserService,
-    private backend: BackendService
+    private backend: BackendService,
+    private configService: ConfigService
   ) {
     // load saved settings
     this.appCache.getItem(this.STORAGE_KEY).subscribe((settings) => this.processLayoutSettings(settings));
-    this.userService.user$.subscribe((user: YuvUser) => this.applyDirection(user ? user.uiDirection : 'yuv-ltr'));
+    this.userService.user$.subscribe((user: YuvUser) => this.applyDirection(user ? user.uiDirection : `yuv-ltr`));
   }
 
   private processLayoutSettings(settings: any) {
@@ -48,9 +53,9 @@ export class LayoutService {
     const bodyClassList = body.classList;
     body.setAttribute('dir', direction);
     if (direction === Direction.RTL) {
-      bodyClassList.add('yuv-rtl');
+      bodyClassList.add(`yuv-rtl`);
     } else {
-      bodyClassList.remove('yuv-rtl');
+      bodyClassList.remove(`yuv-rtl`);
     }
   }
 
@@ -59,9 +64,9 @@ export class LayoutService {
     if (settings) {
       const body = this.document.getElementsByTagName('body')[0];
       const bodyClassList = body.classList;
-      if (bodyClassList.contains(darkModeClass) && !settings.darkMode) {
+      if (bodyClassList.contains(darkModeClass) && !settings?.darkMode) {
         bodyClassList.remove(darkModeClass);
-      } else if (!bodyClassList.contains(darkModeClass) && settings.darkMode) {
+      } else if (!bodyClassList.contains(darkModeClass) && settings?.darkMode) {
         bodyClassList.add(darkModeClass);
       }
     }
@@ -182,23 +187,20 @@ export class LayoutService {
   /**
    * make it possible for user to import their layout settings as a json file
    */
-  uploadLayout(data: string | any, filter?: (key: string) => boolean, force = false) {
-    const layout = this.cleanupData(typeof data === 'string' ? JSON.parse(data) : data, filter);
-    if (layout.hasOwnProperty(this.STORAGE_KEY) || force) {
+  uploadLayout(data: string | any) {
+    const layout = this.cleanupData(typeof data === 'string' ? JSON.parse(data) : data);
+    if (layout.hasOwnProperty(this.STORAGE_KEY)) {
       this.processLayoutSettings(layout[this.STORAGE_KEY]);
     }
-    return force ? this.clearAll().pipe(switchMap(() => this.appCache.setStorage(layout))) : this.appCache.setStorage(layout);
+    return this.clearLayout().pipe(switchMap(() => this.appCache.setStorage(layout)));
   }
 
   /**
    * make it possible for user to reset their layout settings and return to the default settings
    */
   clearLayout() {
-    return this.appCache.getStorage().pipe(switchMap((data) => this.uploadLayout(data, (key: string) => !!key.match(this.STORAGE_KEY_REGEXP), true)));
-  }
-
-  private clearAll() {
-    return this.appCache.clear();
+    this.processLayoutSettings({});
+    return this.appCache.clear((key: string) => !!key.match(this.STORAGE_KEY_REGEXP));
   }
 }
 

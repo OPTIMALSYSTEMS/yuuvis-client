@@ -1,10 +1,12 @@
 import { HttpClient, HttpErrorResponse, HttpEventType, HttpHeaders, HttpRequest, HttpResponse } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Inject, Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, ReplaySubject, Subject, throwError } from 'rxjs';
 import { catchError, filter, map, scan, tap } from 'rxjs/operators';
 import { Utils } from '../../util/utils';
+import { CoreConfig } from '../config/core-config';
+import { CORE_CONFIG } from '../config/core-config.tokens';
 import { Logger } from '../logger/logger';
-import { BaseObjectTypeField, ClientDefaultsObjectTypeField } from '../system/system.enum';
+import { BaseObjectTypeField, ClientDefaultsObjectTypeField, TENANT_HEADER } from '../system/system.enum';
 import { CreatedObject, ProgressStatus, UploadResult } from './upload.interface';
 
 const transformResponse = () => map((res: CreatedObject) => (res && res.body ? res.body.objects.map((val) => val) : null));
@@ -19,13 +21,13 @@ export class UploadService {
   private status: ProgressStatus = { err: 0, items: [] };
   private statusSource = new ReplaySubject<ProgressStatus>();
   public status$: Observable<ProgressStatus> = this.statusSource.pipe(scan((acc: ProgressStatus, newVal) => ({ ...acc, ...newVal }), this.status));
-  private uploadStatus = new BehaviorSubject<boolean>(false);
+  private uploadStatus = new BehaviorSubject<boolean>(null);
   public uploadStatus$: Observable<boolean> = this.uploadStatus.asObservable();
 
   /**
    * @ignore
    */
-  constructor(private http: HttpClient, private logger: Logger) {}
+  constructor(@Inject(CORE_CONFIG) public config: CoreConfig, private http: HttpClient, private logger: Logger) {}
 
   /**
    * Upload a file.
@@ -96,11 +98,17 @@ export class UploadService {
    */
   private createHttpRequest(url: string, content: Partial<{ formData: FormData; file: File }>, reportProgress: boolean, method = 'POST'): HttpRequest<any> {
     const { formData, file } = content;
-    let headers: any = { 'ngsw-bypass': 'ngsw-bypass' };
+    // add request param to bypass the serviceworker
+    url += `${url.indexOf('?') === -1 ? '?' : '&'}ngsw-bypass=1`;
 
+    const headers: any = {};
     if (file) {
-      headers = { ...headers, 'Content-Disposition': `attachment; filename=${file.name}` };
+      headers['Content-Disposition'] = `attachment; filename="${file.name}"`;
     }
+    if (!!this.config.oidc) {
+      headers[TENANT_HEADER] = this.config.oidc.tenant;
+    }
+
     return new HttpRequest(method, url, file || formData, {
       headers: new HttpHeaders(headers),
       reportProgress
@@ -139,17 +147,17 @@ export class UploadService {
       return [
         {
           objectId: objects.map((val) => val.properties[BaseObjectTypeField.OBJECT_ID].value),
-          contentStreamId: data.contentStreams[0]['contentStreamId'],
-          filename: data.contentStreams[0]['fileName'],
+          contentStreamId: data.contentStreams[0]?.contentStreamId,
+          filename: data.contentStreams[0]?.fileName,
           label: `(${objects.length}) ${label}`
         }
       ];
     } else {
       return result.body.objects.map((o) => ({
         objectId: o.properties[BaseObjectTypeField.OBJECT_ID].value,
-        contentStreamId: o.contentStreams[0]['contentStreamId'],
-        filename: o.contentStreams[0]['fileName'],
-        label: o.properties[ClientDefaultsObjectTypeField.TITLE] ? o.properties[ClientDefaultsObjectTypeField.TITLE].value : o.contentStreams[0]['fileName']
+        contentStreamId: o.contentStreams[0]?.contentStreamId,
+        filename: o.contentStreams[0]?.fileName,
+        label: o.properties[ClientDefaultsObjectTypeField.TITLE] ? o.properties[ClientDefaultsObjectTypeField.TITLE].value : o.contentStreams[0]?.fileName
       }));
     }
   }

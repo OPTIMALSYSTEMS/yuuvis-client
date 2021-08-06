@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnDestroy, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, Output, TemplateRef, ViewChild } from '@angular/core';
 import {
   AFO_STATE,
   ApiBase,
@@ -10,8 +10,8 @@ import {
   ObjectTag,
   ObjectType,
   ObjectTypeGroup,
+  PendingChangesService,
   SearchService,
-  SecondaryObjectType,
   SecondaryObjectTypeClassification,
   Sort,
   SystemService,
@@ -27,11 +27,13 @@ import { catchError, map, switchMap } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { FadeInAnimations } from '../../common/animations/fadein.animation';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
-import { SelectableGroup } from '../../grouped-select';
-import { CombinedObjectFormComponent, CombinedObjectFormInput } from '../../object-form/combined-object-form/combined-object-form.component';
+import { FloatingSotSelectInput } from '../../floating-sot-select/floating-sot-select.interface';
+import { Selectable, SelectableGroup } from '../../grouped-select';
+import { ObjectFormEditComponent } from '../../object-form/object-form-edit/object-form-edit.component';
 import { FormStatusChangedEvent, ObjectFormOptions } from '../../object-form/object-form.interface';
-import { Situation } from '../../object-form/object-form.situation';
 import { ObjectFormComponent } from '../../object-form/object-form/object-form.component';
+import { PopoverService } from '../../popover/popover.service';
+import { LayoutService } from '../../services/layout/layout.service';
 import { NotificationService } from '../../services/notification/notification.service';
 import { clear, navBack } from '../../svg.generated';
 import { ObjectCreateService } from '../object-create.service';
@@ -46,13 +48,18 @@ export interface AFOState {
   };
   // List of floating secondary object types that could be applied to the current AFO(s)
   floatingSOT: {
-    items: SecondaryObjectType[];
+    item: FloatingSotSelectInput;
     selected?: {
-      sot: SecondaryObjectType;
-      // may be more than one form model because it is a combination of multiple SOTs
-      combinedFormInput: CombinedObjectFormInput;
+      sot: { id: string; label: string };
     };
   };
+}
+
+// Type of AFO
+export enum AFOType {
+  CONTENT_OPTIONAL = 'afo:content:optional',
+  CONTENT_REQUIRED = 'afo:content:required',
+  CONTENT_NONE = 'afo:content:none'
 }
 
 /**
@@ -85,23 +92,30 @@ export interface AFOState {
   providers: [ObjectCreateService]
 })
 export class ObjectCreateComponent implements OnDestroy {
-  @ViewChild(ObjectFormComponent) objectForm: ObjectFormComponent;
-  @ViewChild(CombinedObjectFormComponent) combinedObjectForm: CombinedObjectFormComponent;
+  private LAYOUT_OPTIONS_KEY = 'yuv.framework.object-create';
+  private LAYOUT_OPTIONS_ELEMENT_KEY = 'yuv-object-create';
 
+  @ViewChild(ObjectFormComponent) objectForm: ObjectFormComponent;
+  @ViewChild(ObjectFormEditComponent) objectFormEdit: ObjectFormEditComponent;
+  @ViewChild('cancelOverlay') cancelOverlay: TemplateRef<any>;
+
+  private pendingTaskId: string;
   context: DmsObject;
   // whether or not the current user is allowed to use the component and create dms objects
   invalidUser: boolean;
   animationTimer = { value: true, params: { time: '400ms' } };
   // state of creation progress
-  state$: Observable<CreateState> = this.objCreateServcice.state$;
-  breadcrumb$: Observable<Breadcrumb[]> = this.objCreateServcice.breadcrumb$;
+  state$: Observable<CreateState> = this.objCreateService.state$;
+  breadcrumb$: Observable<Breadcrumb[]> = this.objCreateService.breadcrumb$;
 
   // busy: boolean = false;
   createAnother: boolean = false;
   selectedObjectType: ObjectType;
   selectedObjectTypeFormOptions: ObjectFormOptions;
 
+  afoType: AFOType;
   afoCreate: AFOState;
+  afoUploadNoticeSkip: boolean;
 
   // groups of object types available for the root target
   generalObjectTypeGroups: SelectableGroup[];
@@ -128,16 +142,17 @@ export class ObjectCreateComponent implements OnDestroy {
    * inside this parent folder. Eventhough you specify the context, the user is
    * able to remove it. So this is more a suggestion.
    */
-  @Input() set contextId(id: string) {
+  @Input()
+  set contextId(id: string) {
     if (id) {
-      this.objCreateServcice.setNewState({ busy: true });
+      this.objCreateService.setNewState({ busy: true });
       this.dmsService.getDmsObject(id).subscribe(
         (res: DmsObject) => {
           this.context = res;
           this.setupContextTypeGroups();
-          this.objCreateServcice.setNewState({ busy: false });
+          this.objCreateService.setNewState({ busy: false });
         },
-        (err) => this.objCreateServcice.setNewState({ busy: false })
+        (err) => this.objCreateService.setNewState({ busy: false })
       );
     } else {
       this.context = null;
@@ -164,18 +179,25 @@ export class ObjectCreateComponent implements OnDestroy {
   @Output() objectCreated = new EventEmitter<string[]>();
 
   constructor(
-    private objCreateServcice: ObjectCreateService,
+    private objCreateService: ObjectCreateService,
     private system: SystemService,
     private notify: NotificationService,
     private searchService: SearchService,
     private dmsService: DmsService,
+    private pendingChanges: PendingChangesService,
+    private layoutService: LayoutService,
     private backend: BackendService,
     private userService: UserService,
     private translate: TranslateService,
+    private popoverService: PopoverService,
     private iconRegistry: IconRegistryService
   ) {
     this.iconRegistry.registerIcons([clear, navBack]);
     this.resetState();
+
+    this.layoutService.loadLayoutOptions(this.LAYOUT_OPTIONS_KEY, this.LAYOUT_OPTIONS_ELEMENT_KEY).subscribe((o: any) => {
+      this.afoUploadNoticeSkip = o?.afoUploadNoticeSkip || false;
+    });
 
     this.labels = {
       defaultTitle: this.translate.instant('yuv.framework.object-create.header.title'),
@@ -191,19 +213,12 @@ export class ObjectCreateComponent implements OnDestroy {
 
     let i = 0;
     this.generalObjectTypeGroups = this.system
-      .getGroupedObjectTypes()
+      .getGroupedObjectTypes(false, true, false, 'create')
       .map((otg: ObjectTypeGroup) => ({
         id: `${i++}`,
         label: otg.label,
         items: otg.types
-          .filter(
-            (ot) =>
-              ![
-                // types that should not be able to be created
-                SystemType.FOLDER,
-                SystemType.DOCUMENT
-              ].includes(ot.id)
-          )
+          .filter((ot) => ![SystemType.FOLDER, SystemType.DOCUMENT].includes(ot.id)) // types that should not be able to be created
           .map((ot: ObjectType) => ({
             id: ot.id,
             label: this.system.getLocalizedResource(`${ot.id}_label`),
@@ -217,6 +232,18 @@ export class ObjectCreateComponent implements OnDestroy {
     this.setupAvailableObjectTypeGroups();
   }
 
+  private startPending() {
+    if (!this.pendingChanges.hasPendingTask(this.pendingTaskId || ' ')) {
+      this.pendingTaskId = this.pendingChanges.startTask(this.translate.instant('yuv.framework.object-create.pending-changes.alert'));
+    }
+  }
+
+  private finishPending() {
+    if (this.pendingTaskId) {
+      this.pendingChanges.finishTask(this.pendingTaskId);
+    }
+  }
+
   private setupAvailableObjectTypeGroups() {
     // it is important to create new instances of the available object types
     // in order to trigger change detection within grouped select component
@@ -228,13 +255,23 @@ export class ObjectCreateComponent implements OnDestroy {
       ag.forEach((g: SelectableGroup) => {
         agFiltered.push({
           ...g,
-          items: g.items.map((i) => ({ ...i, disabled: this.files.length > 0 && i.value.contentStreamAllowed === ContentStreamAllowed.NOT_ALLOWED }))
+          items: g.items.map((i) => ({ ...i, disabled: this.isDisabled(i) }))
         });
       });
       this.availableObjectTypeGroups = agFiltered;
     } else {
       this.availableObjectTypeGroups = ag;
     }
+  }
+
+  private isDisabled(item: Selectable) {
+    const ot: ObjectType = item.value as ObjectType;
+    return (
+      (this.files.length > 0 && item.value.contentStreamAllowed === ContentStreamAllowed.NOT_ALLOWED) ||
+      // floating and general types only support one file for now
+      (!!ot.floatingParentType && this.files.length > 1) ||
+      (this.system.isFloatingObjectType(ot) && this.files.length > 1)
+    );
   }
 
   removeContext() {
@@ -247,7 +284,7 @@ export class ObjectCreateComponent implements OnDestroy {
   }
 
   goToStep(step: CurrentStep) {
-    this.objCreateServcice.setNewState({ currentStep: step });
+    this.objCreateService.setNewState({ currentStep: step });
     if (step === CurrentStep.INDEXDATA && this.formState) {
       this.selectedObjectTypeFormOptions.data = this.formState.data;
     }
@@ -262,37 +299,65 @@ export class ObjectCreateComponent implements OnDestroy {
    */
   selectObjectType(objectType: ObjectType) {
     this.formState = null;
+
+    if (this.selectedObjectType && this.selectedObjectType.id !== objectType.id) {
+      this.resetState();
+    }
+    this.startPending();
     this.selectedObjectType = objectType;
     this.title = objectType ? this.system.getLocalizedResource(`${objectType.id}_label`) : this.labels.defaultTitle;
-    this.objCreateServcice.setNewState({ busy: true });
+    this.objCreateService.setNewState({ busy: true });
 
-    if (this.system.isAdvancedFilingObjectType(objectType)) {
-      // DLM object types are treated in a different way
-      this.processAFOType(objectType);
-    } else if (this.system.isFloatingObjectType(objectType)) {
-      // same as AFO but just one primary target type
+    if (!!objectType.floatingParentType || this.system.isFloatingObjectType(objectType)) {
+      // setup the type of AFO we are processing
+      switch (objectType.contentStreamAllowed) {
+        case ContentStreamAllowed.ALLOWED: {
+          // optional file
+          this.afoType = AFOType.CONTENT_OPTIONAL;
+          break;
+        }
+        case ContentStreamAllowed.NOT_ALLOWED: {
+          // no file
+          this.afoType = AFOType.CONTENT_NONE;
+          break;
+        }
+        case ContentStreamAllowed.REQUIRED: {
+          // file mandatory
+          this.afoType = AFOType.CONTENT_REQUIRED;
+          break;
+        }
+      }
 
-      this.processAFOType(objectType);
+      if (this.afoType === AFOType.CONTENT_NONE) {
+        this.processAFOTypeWithoutFile();
+      } else {
+        this.processAFOTypeWithFile();
+      }
     } else {
+      this.afoType = null;
       this.system.getObjectTypeForm(objectType.id, 'CREATE').subscribe(
         (model) => {
-          this.objCreateServcice.setNewState({ busy: false });
+          this.objCreateService.setNewState({ busy: false });
+          let data = {};
+          if (this.context) {
+            data[BaseObjectTypeField.PARENT_ID] = this.context.id;
+          }
           this.selectedObjectTypeFormOptions = {
             formModel: model,
-            data: {}
+            data: data
           };
           // does selected type support contents?
           if (objectType.isFolder || objectType.contentStreamAllowed === 'notallowed') {
-            this.objCreateServcice.setNewState({ currentStep: CurrentStep.INDEXDATA });
-            this.objCreateServcice.setNewBreadcrumb(CurrentStep.INDEXDATA, CurrentStep.FILES);
+            this.objCreateService.setNewState({ currentStep: CurrentStep.INDEXDATA });
+            this.objCreateService.setNewBreadcrumb(CurrentStep.INDEXDATA, CurrentStep.FILES);
           } else {
-            this.objCreateServcice.setNewState({ currentStep: CurrentStep.FILES });
-            this.objCreateServcice.setNewBreadcrumb(CurrentStep.FILES, CurrentStep.INDEXDATA);
+            this.objCreateService.setNewState({ currentStep: CurrentStep.FILES });
+            this.objCreateService.setNewBreadcrumb(CurrentStep.FILES, CurrentStep.INDEXDATA);
           }
-          this.objCreateServcice.setNewState({ done: this.isReady() });
+          this.objCreateService.setNewState({ done: this.isReady() });
         },
         (err) => {
-          this.objCreateServcice.setNewState({
+          this.objCreateService.setNewState({
             busy: false,
             done: this.isReady()
           });
@@ -302,51 +367,39 @@ export class ObjectCreateComponent implements OnDestroy {
     }
   }
 
-  private processAFOType(objectType: ObjectType) {
-    this.objCreateServcice.setNewState({ currentStep: CurrentStep.FILES });
-    this.objCreateServcice.setNewBreadcrumb(CurrentStep.FILES);
-    this.objCreateServcice.setNewState({ busy: false, done: this.isReady() });
+  private processAFOTypeWithFile() {
+    this.objCreateService.setNewState({ currentStep: CurrentStep.FILES });
+    this.objCreateService.setNewBreadcrumb(CurrentStep.FILES);
+    this.objCreateService.setNewState({ busy: false, done: this.isReady() });
   }
 
-  afoSelectFloatingSOT(sot: SecondaryObjectType) {
-    this.objCreateServcice.setNewState({ busy: true });
-    const objectType = !!this.selectedObjectType.floatingParentType
-      ? this.system.getObjectType(this.selectedObjectType.floatingParentType)
-      : this.selectedObjectType;
-    const objectTypeIDs = [];
+  private processAFOTypeWithoutFile() {
+    this.afoCreateApprove();
+  }
 
-    // main object type may not have own fields
-    if (objectType.fields.filter((f) => !f.id.startsWith('system:')).length) {
-      objectTypeIDs.push(objectType.id);
+  afoSelectFloatingSOT(sot: { id: string; label: string }, data?: any) {
+    if (data) {
+      this.afoCreate.dmsObject.selected.data = { ...this.afoCreate.dmsObject.selected.data, ...data };
+    }
+    this.afoCreate.dmsObject.selected.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS] =
+      !sot || sot.id != 'none' ? [...this.getSotsToBeApplied(), sot.id] : null;
+    this.afoCreate.floatingSOT.selected = {
+      sot: {
+        id: sot?.id || 'none',
+        label: sot?.label || this.selectedObjectType.label
+      }
+    };
+  }
+
+  afoCreateApprove(afoUploadNoticeSkip?: boolean) {
+    if (afoUploadNoticeSkip) {
+      this.layoutService
+        .saveLayoutOptions(this.LAYOUT_OPTIONS_KEY, this.LAYOUT_OPTIONS_ELEMENT_KEY, {
+          afoUploadNoticeSkip: true
+        })
+        .subscribe();
     }
 
-    // required SOTs will also be applied
-    objectType.secondaryObjectTypes
-      .filter((otSot) => !otSot.static)
-      .forEach((otSot) => {
-        const t = this.system.getSecondaryObjectType(otSot.id);
-        if (t.fields.length > 0 && t.classification && t.classification.includes(SecondaryObjectTypeClassification.REQUIRED)) {
-          objectTypeIDs.push(t.id);
-        }
-      });
-
-    this.system.getObjectTypeForms([...objectTypeIDs, sot.id], Situation.CREATE).subscribe(
-      (res) => {
-        this.afoCreate.floatingSOT.selected = {
-          sot: sot,
-          // TODO: also apply extraction data here
-          // TODO: If object is changed form should also get new data
-          combinedFormInput: { formModels: res, data: this.afoCreate?.dmsObject.items.length === 1 ? this.afoCreate.dmsObject.selected.data : {} }
-        };
-        this.objCreateServcice.setNewState({ busy: false });
-      },
-      (err) => {
-        this.objCreateServcice.setNewState({ busy: false });
-      }
-    );
-  }
-
-  afoUploadApprove() {
     let data = {};
     if (this.context) {
       data[BaseObjectTypeField.PARENT_ID] = this.context.id;
@@ -354,7 +407,7 @@ export class ObjectCreateComponent implements OnDestroy {
     data[BaseObjectTypeField.TAGS] = [[ObjectTag.AFO, AFO_STATE.IN_PROGRESS]];
     // this.busy = true;
 
-    this.objCreateServcice.setNewState({ busy: true });
+    this.objCreateService.setNewState({ busy: true });
 
     this.createObject(this.selectedObjectType.floatingParentType || this.selectedObjectType.id, data, this.files)
       .pipe(
@@ -363,71 +416,131 @@ export class ObjectCreateComponent implements OnDestroy {
       )
       .subscribe(
         (res: DmsObject[]) => {
-          this.objCreateServcice.setNewState({ currentStep: CurrentStep.AFO_INDEXDATA, busy: false });
-          this.objCreateServcice.setNewBreadcrumb(CurrentStep.AFO_INDEXDATA, CurrentStep.AFO_UPLOAD);
+          this.objCreateService.setNewState({ currentStep: CurrentStep.AFO_INDEXDATA, busy: false });
+          this.objCreateService.setNewBreadcrumb(CurrentStep.AFO_INDEXDATA, CurrentStep.AFO_UPLOAD);
+
+          const selectableSOTs: FloatingSotSelectInput = {
+            dmsObject: res.length === 1 ? res[0] : null,
+            sots: this.system.getPrimaryFSOTs(this.selectedObjectType.id, true).sort(Utils.sortValues('label')),
+            additionalItems: [
+              {
+                label: this.translate.instant('yuv.framework.object-create.afo.type.select.general'),
+                description: this.system.getLocalizedResource(`${this.selectedObjectType.id}_label`),
+                svgSrc: this.system.getObjectTypeIconUri(this.selectedObjectType.id),
+                sot: {
+                  id: 'none',
+                  baseId: null,
+                  description: null,
+                  fields: []
+                }
+              }
+            ],
+            isPrimary: true
+          };
 
           if (this.selectedObjectType.floatingParentType) {
             // floating types
             const sot = this.system.getSecondaryObjectType(this.selectedObjectType.id);
-            const selectableSOTs = this.system
-              .getFloatingSecondaryObjectTypes(this.selectedObjectType.id, true)
-              .filter((sot) => !sot.classification || !sot.classification.includes(SecondaryObjectTypeClassification.REQUIRED));
+            // const selectableSOTs = this.system.getPrimaryFSOTs(this.selectedObjectType.id, true);
+
             this.afoCreate = {
               dmsObject: { items: res, selected: res[0] },
-              floatingSOT: { items: selectableSOTs }
+              floatingSOT: { item: selectableSOTs }
             };
-            this.afoSelectFloatingSOT(sot);
+            this.afoSelectFloatingSOT({ id: sot.id, label: sot.label });
           } else {
-            const selectableSOTs = this.system
-              .getFloatingSecondaryObjectTypes(this.selectedObjectType.id, true)
-              .filter((sot) => !sot.classification || !sot.classification.includes(SecondaryObjectTypeClassification.REQUIRED));
+            // const selectableSOTs = this.system.getPrimaryFSOTs(this.selectedObjectType.id, true);
             this.afoCreate = {
               dmsObject: { items: res, selected: res[0] },
-              floatingSOT: { items: selectableSOTs }
+              floatingSOT: { item: selectableSOTs }
             };
-            if (selectableSOTs.length === 1) {
-              this.afoSelectFloatingSOT(selectableSOTs[0]);
+            if (selectableSOTs.sots.length === 1) {
+              this.afoSelectFloatingSOT({ id: selectableSOTs.sots[0].id, label: selectableSOTs.sots[0].label });
             }
           }
         },
         (err) => {
-          this.objCreateServcice.setNewState({ busy: false });
+          this.objCreateService.setNewState({ busy: false });
           this.notify.error(this.translate.instant('yuv.framework.object-create.notify.error'));
         }
       );
   }
 
-  afoUploadCancel() {
+  // private mapToSelectables(sots: SecondaryObjectType[]): Selectable[] {
+  //   return sots.map((sot) => {
+  //     // if we got files but the target FSOT does not support content
+  //     const contentRequiredButMissing = (!this.files || this.files.length === 0) && sot.contentStreamAllowed === ContentStreamAllowed.REQUIRED;
+  //     // if the target FSOT requires a file, but we don't have one
+  //     const contentButNotAllowed = this.files && this.files.length && sot.contentStreamAllowed === ContentStreamAllowed.NOT_ALLOWED;
+  //     const disabled = contentRequiredButMissing || contentButNotAllowed;
+
+  //     let selectable: Selectable = {
+  //       id: sot.id,
+  //       label: sot.label,
+  //       svgSrc: this.system.getObjectTypeIconUri(sot.id),
+  //       disabled: disabled,
+  //       value: sot
+  //     };
+  //     // add description to tell the user why a selectable is disabled
+  //     if (disabled) {
+  //       selectable.description = contentRequiredButMissing
+  //         ? this.translate.instant('yuv.framework.object-create.afo.type.select.disabled.content-missing')
+  //         : this.translate.instant('yuv.framework.object-create.afo.type.select.disabled.content-not-allowed');
+  //     }
+  //     return selectable;
+  //   });
+  // }
+
+  afoCreateCancel() {
     this.resetState();
   }
 
   fileChosen(files: File[]) {
     this.files = [...this.files, ...files];
-    this.objCreateServcice.setNewState({ done: this.isReady() });
+    this.objCreateService.setNewState({ done: this.isReady() });
   }
 
   filesClear() {
     this.files = [];
-    this.objCreateServcice.setNewState({ done: this.isReady() });
+    this.objCreateService.setNewState({ done: this.isReady() });
   }
 
   removeFile(file: File, fileIndex: number) {
     this.files.splice(fileIndex, 1);
-    this.objCreateServcice.setNewState({ done: this.isReady() });
+    this.objCreateService.setNewState({ done: this.isReady() });
   }
 
-  onFilesDroppedOnType(files: File[], type?: ObjectType) {
-    if (type) {
-      this.selectObjectType(type);
-    }
+  onFilesDroppedOnType(files: File[]) {
     this.files = [...this.files, ...files];
-    this.objCreateServcice.setNewState({ done: this.isReady() });
+    this.objCreateService.setNewState({ done: this.isReady() });
   }
 
   fileSelectContinue() {
-    const nextStep = this.system.isAdvancedFilingObjectType(this.selectedObjectType) ? CurrentStep.AFO_UPLOAD : CurrentStep.INDEXDATA;
-    this.goToStep(nextStep);
-    this.objCreateServcice.setNewBreadcrumb(nextStep);
+    let nextStep;
+    if (this.afoType) {
+      // document file required
+      if (this.afoType === AFOType.CONTENT_REQUIRED) {
+        nextStep = CurrentStep.AFO_UPLOAD;
+      }
+      // document file is not neccessary
+      if (this.afoType === AFOType.CONTENT_OPTIONAL) {
+        if (!this.files || this.files.length === 0) {
+          this.afoCreateApprove();
+        } else {
+          nextStep = CurrentStep.AFO_UPLOAD;
+        }
+      }
+    } else {
+      nextStep = CurrentStep.INDEXDATA;
+    }
+    if (nextStep) {
+      if (nextStep === CurrentStep.AFO_UPLOAD && this.afoUploadNoticeSkip) {
+        this.afoCreateApprove();
+      } else {
+        this.goToStep(nextStep);
+        this.objCreateService.setNewBreadcrumb(nextStep);
+      }
+    }
   }
 
   private createObject(id: string, data: any, files: File[], silent = false): Observable<string[]> {
@@ -435,39 +548,59 @@ export class ObjectCreateComponent implements OnDestroy {
   }
 
   create() {
-    let data = this.formState.data;
+    let data = (this.objectForm || this.objectFormEdit).getFormData();
     if (this.context) {
       data[BaseObjectTypeField.PARENT_ID] = this.context.id;
     }
-    this.objCreateServcice.setNewState({ busy: true });
+    this.objCreateService.setNewState({ busy: true });
 
-    const isAFO = this.system.isAdvancedFilingObjectType(this.selectedObjectType) || !!this.selectedObjectType.floatingParentType;
-    (isAFO ? this.createAFO(data) : this.createDefault(data)).subscribe(
+    (!!this.afoType ? this.finishAFO(data) : this.createDefault(data)).subscribe(
       (ids: string[]) => {
-        this.objCreateServcice.setNewState({ busy: false });
-        // this.notify.success(this.translate.instant('yuv.framework.object-create.notify.success'));
-        if (this.createAnother || this.afoCreate?.dmsObject.selected) {
+        this.objCreateService.setNewState({ busy: false });
+        if (this.createAnother) {
           this.selectedObjectType = null;
           this.files = [];
           this.resetState();
           this.reset();
         } else {
+          this.finishPending();
           this.objectCreated.emit(ids);
         }
       },
       (err) => {
-        this.objCreateServcice.setNewState({ busy: false });
+        this.objCreateService.setNewState({ busy: false });
         this.notify.error(this.translate.instant('yuv.framework.object-create.notify.error'));
       }
     );
   }
 
-  createAfoCancel() {
-    this.notify.info(this.translate.instant('yuv.framework.object-create.notify.afo.cancel'));
-    this.selectedObjectType = null;
-    this.files = [];
-    this.resetState();
-    this.reset();
+  openCancelDialog() {
+    if (!this.popoverService.hasActiveOverlay) {
+      this.popoverService.open(this.cancelOverlay, {});
+    }
+  }
+
+  closeCancelDialog(popover) {
+    popover.close();
+  }
+
+  createAfoCancel(withDelete = false) {
+    (withDelete ? this.deleteObjects() : this.finishAFO({})).subscribe(() => {
+      this.selectedObjectType = null;
+      this.files = [];
+      this.resetState();
+      this.reset();
+    });
+  }
+
+  private deleteObjects(): Observable<any> {
+    const deleteObservables = this.afoCreate.dmsObject.items.map((item) => this.dmsService.deleteDmsObject(item.id));
+    return forkJoin(deleteObservables).pipe(
+      catchError((err) => {
+        this.notify.error(this.translate.instant('yuv.framework.object-create.notify.afo.cancel.with-delete.error'));
+        return of(null);
+      })
+    );
   }
 
   /**
@@ -475,21 +608,13 @@ export class ObjectCreateComponent implements OnDestroy {
    * @param data Data to be allied to the object
    * @returns List of IDs of finished objects
    */
-  private createAFO(data: any): Observable<string[]> {
-    const objectType = !!this.selectedObjectType.floatingParentType
-      ? this.system.getObjectType(this.selectedObjectType.floatingParentType)
-      : this.selectedObjectType;
-    // add selected SOTs
-    const sotsToBeApplied: string[] = objectType.secondaryObjectTypes
-      .filter((sot) => {
-        const soType = this.system.getSecondaryObjectType(sot.id);
-        // add static as well as required SOTs
-        return sot.static || (soType.classification && soType.classification.includes(SecondaryObjectTypeClassification.REQUIRED));
-      })
-      .map((sot) => sot.id);
-    // add the chosen type as well
-    sotsToBeApplied.push(this.afoCreate.floatingSOT.selected.sot.id);
-    data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS] = sotsToBeApplied;
+  private finishAFO(data: any): Observable<string[]> {
+    const sotsToBeApplied = this.getSotsToBeApplied();
+    const pFSOT = this.afoCreate?.floatingSOT?.selected;
+    if (pFSOT && pFSOT.sot.id !== 'none') {
+      sotsToBeApplied.push(pFSOT.sot.id);
+    }
+    data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS] = [...(data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS] || []), ...sotsToBeApplied];
 
     // update existing dms object
     return forkJoin(
@@ -509,6 +634,20 @@ export class ObjectCreateComponent implements OnDestroy {
     );
   }
 
+  private getSotsToBeApplied(): string[] {
+    const objectType = !!this.selectedObjectType.floatingParentType
+      ? this.system.getObjectType(this.selectedObjectType.floatingParentType)
+      : this.selectedObjectType;
+    // add selected SOTs
+    return objectType.secondaryObjectTypes
+      .filter((sot) => {
+        const soType = this.system.getSecondaryObjectType(sot.id);
+        // add static as well as required SOTs
+        return sot.static || (soType.classification && soType.classification.includes(SecondaryObjectTypeClassification.REQUIRED));
+      })
+      .map((sot) => sot.id);
+  }
+
   /**
    * Create an object the default way (not an AFO)
    * @param data Data to be allied to the object
@@ -519,19 +658,25 @@ export class ObjectCreateComponent implements OnDestroy {
   }
 
   resetState() {
+    if (this.files.length) {
+      this.files = [];
+    }
+    this.title = this.labels?.defaultTitle;
     this.afoCreate = null;
-    this.objCreateServcice.resetState();
-    this.objCreateServcice.resetBreadcrumb();
+    this.selectedObjectType = null;
+    this.objCreateService.resetState();
+    this.objCreateService.resetBreadcrumb();
+    this.finishPending();
   }
 
   reset() {
     this.formState = null;
-    (this.afoCreate ? this.combinedObjectForm : this.objectForm)?.resetForm();
+    (this.afoCreate ? this.objectFormEdit : this.objectForm)?.resetForm();
   }
 
   onFormStatusChanged(evt) {
     this.formState = evt;
-    this.objCreateServcice.setNewState({ done: this.isReady() });
+    this.objCreateService.setNewState({ done: this.isReady() });
   }
 
   // Set up object types that are available for the given context

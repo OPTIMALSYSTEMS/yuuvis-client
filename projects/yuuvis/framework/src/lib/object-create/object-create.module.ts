@@ -9,6 +9,7 @@ import { AngularSplitModule } from 'angular-split';
 import { YuvCommonModule } from '../common/common.module';
 import { YuvComponentsModule } from '../components/components.module';
 import { YuvDirectivesModule } from '../directives/directives.module';
+import { YuvFloatingSotSelectModule } from '../floating-sot-select/floating-sot-select.module';
 import { YuvFormModule } from '../form/form.module';
 import { YuvGroupedSelectModule } from '../grouped-select/grouped-select.module';
 import { YuvObjectDetailsModule } from '../object-details/object-details.module';
@@ -20,12 +21,14 @@ import { ObjectCreateComponent } from './object-create/object-create.component';
  */
 @NgModule({
   declarations: [ObjectCreateComponent],
+  entryComponents: [ObjectCreateComponent],
   exports: [ObjectCreateComponent],
   imports: [
     BrowserAnimationsModule,
     CommonModule,
     YuvCommonModule,
     YuvComponentsModule,
+    YuvFloatingSotSelectModule,
     FormsModule,
     YuvFormModule,
     YuvGroupedSelectModule,

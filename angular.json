@@ -23,10 +23,15 @@
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
             "tsConfig": "src/tsconfig.app.json",
-            "assets": ["src/favicon.ico", "src/assets", "src/manifest.json"],
-            "styles": ["src/styles.scss"],
-            "scripts": [],
-            "es5BrowserSupport": true
+            "assets": [
+              "src/favicon.ico",
+              "src/assets",
+              "src/manifest.json"
+            ],
+            "styles": [
+              "src/styles.scss"
+            ],
+            "scripts": []
           },
           "configurations": {
             "production": {
@@ -39,7 +44,6 @@
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
-              "extractCss": true,
               "namedChunks": false,
               "aot": true,
               "extractLicenses": true,
@@ -156,7 +160,7 @@
       "prefix": "yuv",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-ng-packagr:build",
+          "builder": "@angular-devkit/build-angular:ng-packagr",
           "options": {
             "tsConfig": "projects/yuuvis/core/tsconfig.lib.json",
             "project": "projects/yuuvis/core/ng-package.json"
@@ -196,7 +200,7 @@
       },
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-ng-packagr:build",
+          "builder": "@angular-devkit/build-angular:ng-packagr",
           "options": {
             "tsConfig": "projects/yuuvis/framework/tsconfig.lib.json",
             "project": "projects/yuuvis/framework/ng-package.json"
@@ -244,10 +248,14 @@
             "main": "src-component-tests/main.ts",
             "polyfills": "src-component-tests/polyfills.ts",
             "tsConfig": "src-component-tests/tsconfig.test.json",
-            "assets": ["src-component-tests/favicon.ico", "src-component-tests/assets"],
-            "styles": ["src-component-tests/styles.scss"],
-            "scripts": [],
-            "es5BrowserSupport": true
+            "assets": [
+              "src-component-tests/favicon.ico",
+              "src-component-tests/assets"
+            ],
+            "styles": [
+              "src-component-tests/styles.scss"
+            ],
+            "scripts": []
           },
           "configurations": {
             "test": {
@@ -261,18 +269,6 @@
                 {
                   "replace": "src-component-tests/environments/environment.ts",
                   "with": "src-component-tests/environments/environment.prod.ts"
-                },
-                {
-                  "replace": "src-component-tests/assets/default/i18n/en.json",
-                  "with": "src/assets/default/i18n/en.json"
-                },
-                {
-                  "replace": "src-component-tests/assets/default/i18n/de.json",
-                  "with": "src/assets/default/i18n/de.json"
-                },
-                {
-                  "replace": "src-component-tests/assets/default/config/main.json",
-                  "with": "src/assets/default/config/main.json"
                 }
               ]
             }
@@ -332,7 +328,6 @@
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
-              "extractCss": true,
               "namedChunks": false,
               "aot": true,
               "extractLicenses": true,

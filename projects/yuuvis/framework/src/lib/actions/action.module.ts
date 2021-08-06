@@ -8,25 +8,22 @@ import { YuvComponentsModule } from '../components/components.module';
 import { YuvDirectivesModule } from '../directives/directives.module';
 import { YuvQuickfinderModule } from '../quickfinder/quickfinder.module';
 import { YuvFormModule } from './../form/form.module';
-import { ActionComponentAnchorDirective } from './action-menu/action-component-anchor/action-component-anchor.directive';
+import { YuvPluginsModule } from './../plugins/plugins.module';
 import { ActionMenuComponent } from './action-menu/action-menu.component';
 import { ACTIONS, ActionService, CUSTOM_ACTIONS } from './action-service/action.service';
 import { DeleteActionComponent } from './actions/delete-action/delete-action';
 import { DeleteComponent } from './actions/delete-action/delete/delete.component';
 import { DownloadActionComponent } from './actions/download-action/download-action';
-import { DownloadOriginalActionComponent } from './actions/download-original-action/download-original-action';
-import { DownloadPdfActionComponent } from './actions/download-pdf-action/download-pdf-action';
 import { FollowUpActionComponent } from './actions/follow-up-action/follow-up-action';
 import { FollowUpComponent } from './actions/follow-up-action/follow-up/follow-up.component';
 import { MoveActionComponent } from './actions/move-action/move-action';
 import { MoveComponent } from './actions/move-action/move/move.component';
+import { ReferenceActionComponent } from './actions/reference-action/reference-action';
 import { UploadActionComponent } from './actions/upload-action/upload-action';
 import { UploadComponent } from './actions/upload-action/upload/upload.component';
 
 export const entryComponents = [
   DownloadActionComponent,
-  DownloadOriginalActionComponent,
-  DownloadPdfActionComponent,
   DeleteActionComponent,
   DeleteComponent,
   UploadComponent,
@@ -34,7 +31,8 @@ export const entryComponents = [
   MoveActionComponent,
   MoveComponent,
   FollowUpActionComponent,
-  FollowUpComponent
+  FollowUpComponent,
+  ReferenceActionComponent
 ];
 
 /**
@@ -53,7 +51,8 @@ export const entryComponents = [
     TranslateModule,
     YuvComponentsModule,
     YuvCommonModule,
-    YuvQuickfinderModule
+    YuvQuickfinderModule,
+    YuvPluginsModule
   ],
   exports: [ActionMenuComponent],
   providers: [
@@ -68,21 +67,7 @@ export const entryComponents = [
       useValue: []
     }
   ],
-  declarations: [
-    ActionMenuComponent,
-    ActionComponentAnchorDirective,
-    DownloadActionComponent,
-    DownloadOriginalActionComponent,
-    DownloadPdfActionComponent,
-    DeleteActionComponent,
-    DeleteComponent,
-    UploadComponent,
-    UploadActionComponent,
-    MoveActionComponent,
-    MoveComponent,
-    FollowUpComponent,
-    FollowUpActionComponent
-  ],
+  declarations: [ActionMenuComponent, ...entryComponents],
   entryComponents
 })
 export class YuvActionModule {

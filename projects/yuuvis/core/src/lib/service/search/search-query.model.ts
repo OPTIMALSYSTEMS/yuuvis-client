@@ -10,15 +10,21 @@ export class SearchQuery {
   size: number = 50;
   aggs: string[];
   from: number;
-  types: string[] = [];
+  types: string[] = []; // mixed list of primary and secondary object types
+  lots: string[] = []; // list of leading object types
   tags: any;
   get targetType(): string | null {
-    return this.types && this.types.length === 1 ? this.types[0] : null;
+    return this.lots?.length === 1 ? this.lots[0] : this.types?.length === 1 ? this.types[0] : null;
   }
   get filters(): SearchFilter[] {
     return this.filterGroup.filters;
   }
+  get allTypes(): string[] {
+    return [...(this.types || []), ...(this.lots || [])];
+  }
+
   filterGroup: SearchFilterGroup = new SearchFilterGroup();
+  hiddenFilterGroup: SearchFilterGroup = new SearchFilterGroup(); // hidden filters that will be combined with SearchQuery filters via search service
   sortOptions: SortOption[] = [];
 
   constructor(searchQueryProperties?: SearchQueryProperties) {
@@ -26,6 +32,7 @@ export class SearchQuery {
       this.term = searchQueryProperties.term;
       this.from = searchQueryProperties.from;
       this.types = searchQueryProperties.types || [];
+      this.lots = searchQueryProperties.lots || [];
       this.fields = searchQueryProperties.fields || [];
 
       if (searchQueryProperties.size) {
@@ -40,6 +47,10 @@ export class SearchQuery {
         this.filterGroup = SearchFilterGroup.fromQuery(searchQueryProperties.filters);
       }
 
+      if (searchQueryProperties.hiddenFilters) {
+        this.hiddenFilterGroup = SearchFilterGroup.fromQuery(searchQueryProperties.hiddenFilters);
+      }
+
       if (searchQueryProperties.sort) {
         searchQueryProperties.sort.forEach((o) => this.addSortOption(o.field, o.order));
       }
@@ -48,34 +59,49 @@ export class SearchQuery {
   /**
    * Adds a new target type to the query
    *
-   * @param type Object type to be added
+   * @param objectTypeId Object type to be added
    */
   public addType(objectTypeId: string) {
-    if (this.types.indexOf(objectTypeId) === -1) {
+    if (!this.types.includes(objectTypeId)) {
       this.types.push(objectTypeId);
     }
   }
 
   /**
-   * Removes a type from the target types list
+   * Removes a type from the target lots (Leading Object Types) list
    *
-   * @param type The object type to be removed
+   * @param objectTypeId The object type to be removed
    */
   public removeType(objectTypeId: string) {
     this.types = this.types.filter((t) => t !== objectTypeId);
   }
 
+  /** Adds a new target lot (Leading Object Type) to the query
+   *
+   * @param lot The leading object type to be added
+   */
+  public addLOT(lot: string) {
+    if (this.lots.includes(lot)) {
+      this.lots.push(lot);
+    }
+  }
+
+  /**
+   * Removes a lot from the target lots (Leading Object Types)  list
+   *
+   * @param lot The leading object type to be removed
+   */
+  public removeLOT(lot: string) {
+    this.lots = this.lots.filter((t) => t !== lot);
+  }
+
   /**
    * Adds or removes the given type based on the current settings
    *
-   * @param type The object type to be toggled
+   * @param objectTypeId The object type to be toggled
    */
   public toggleType(objectTypeId: string) {
-    if (this.types.find((t) => t === objectTypeId)) {
-      this.removeType(objectTypeId);
-    } else {
-      this.types.push(objectTypeId);
-    }
+    return this.types.includes(objectTypeId) ? this.removeType(objectTypeId) : this.addType(objectTypeId);
   }
 
   public addFilterGroup(group: SearchFilterGroup, groupProperty = SearchFilterGroup.DEFAULT) {
@@ -170,7 +196,7 @@ export class SearchQuery {
   /**
    * Retrieves a filter by its property name.
    *
-   * @param propertyName The filters property name (qname of form element)
+   * @param propertyName The filters property name (name of form element)
    * @returns Search Filter Object
    */
   public getFilter(propertyName: string): SearchFilter {
@@ -202,8 +228,9 @@ export class SearchQuery {
   /**
    * Create query JSON from current query that can be send to
    * the search service
+   * @param combineFilters If set to true, will combine original filters and default (hidden) filters
    */
-  toQueryJson(): SearchQueryProperties {
+  toQueryJson(combineFilters = false): SearchQueryProperties {
     const queryJson: SearchQueryProperties = {
       size: this.size
     };
@@ -224,13 +251,27 @@ export class SearchQuery {
       queryJson.types = this.types;
     }
 
+    if (this.lots.length) {
+      queryJson.lots = this.lots;
+    }
+
     if (this.fields && this.fields.length) {
       queryJson.fields = this.fields;
     }
 
-    if (this.filterGroup) {
+    if (this.filterGroup && !this.filterGroup.isEmpty()) {
       const fg = this.filterGroup.toShortQuery();
       queryJson.filters = fg.filters.length > 1 && this.filterGroup.operator === SearchFilterGroup.OPERATOR.OR ? [fg] : fg.filters;
+    }
+
+    if (this.hiddenFilterGroup && !this.hiddenFilterGroup.isEmpty()) {
+      const fg = this.hiddenFilterGroup.toShortQuery();
+      const filters = fg.filters.length > 1 && this.filterGroup.operator === SearchFilterGroup.OPERATOR.OR ? [fg] : fg.filters;
+      if (combineFilters) {
+        queryJson.filters = filters.concat(queryJson.filters || []);
+      } else {
+        queryJson.hiddenFilters = filters;
+      }
     }
 
     if (this.aggs && this.aggs.length) {
@@ -390,6 +431,8 @@ export class SearchFilter {
   public static OPERATOR = {
     /** equal */
     EQUAL: 'eq',
+    /** eequal */
+    EEQUAL: 'eeq',
     /** match at least one of the provided values (value has to be an array)  */
     IN: 'in',
     /** greater than */
@@ -467,7 +510,7 @@ export class SearchFilter {
   }
 
   isEmpty() {
-    return Utils.isEmpty(this.firstValue) || (this.operator.match(/gt(e)?lt(e)?/) ? Utils.isEmpty(this.secondValue) : false);
+    return Utils.isEmpty(this.firstValue) || (this.operator?.match(/gt(e)?lt(e)?/) ? Utils.isEmpty(this.secondValue) : false);
   }
 
   toQuery() {

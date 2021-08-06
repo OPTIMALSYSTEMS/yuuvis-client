@@ -1,23 +1,34 @@
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-import { DmsObject } from '../../model/dms-object.model';
+import { Inject, Injectable } from '@angular/core';
+import { forkJoin, Observable, of } from 'rxjs';
+import { catchError, finalize, shareReplay, tap } from 'rxjs/operators';
 import { ConfigService } from '../config/config.service';
+import { CoreConfig } from '../config/core-config';
+import { CORE_CONFIG } from '../config/core-config.tokens';
 import { Logger } from '../logger/logger';
+import { TENANT_HEADER } from '../system/system.enum';
 import { ApiBase } from './api.enum';
+
 /**
  * Service for providing an yuuvis Backend
  */
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class BackendService {
+  private cache = new Map<string, any>();
+  private temp = new Map<string, Observable<any>>();
   private headers = this.setDefaultHeaders();
   private persistedHeaders: any = {};
+
+  // public oidc: { host: string; tenant: string };
+
   /**
    * @ignore
    */
-  constructor(private http: HttpClient, private logger: Logger, private config: ConfigService) {}
+  constructor(private http: HttpClient, private logger: Logger, @Inject(CORE_CONFIG) public coreConfig: CoreConfig, private config: ConfigService) {}
+
+  authUsesOpenIdConnect(): boolean {
+    return !!this.coreConfig.oidc;
+  }
 
   /**
    * Add a new header.
@@ -107,15 +118,46 @@ export class BackendService {
   }
 
   /**
-   * Downloads the content of dms objects.
+   * @ignore
+   * Cache for small requests like icons and configs
    *
-   * @param DmsObject[] dmsObjects Array of dms objects to be downloaded
+   * @param string uri
+   * @returns Observable<any>
    */
-  public downloadContent(objects: DmsObject[], withVersion?: boolean) {
-    objects.forEach((object) => {
-      const uri = `${this.getApiBase(ApiBase.apiWeb)}/dms/${object.id}/content${withVersion ? '?version=' + object.version : ''}`;
-      this.download(uri);
-    });
+  public getViaCache(uri: string): Observable<any> {
+    if (this.cache.has(uri)) {
+      return of(this.cache.get(uri));
+    } else {
+      const requestOptions: any = {
+        responseType: 'text',
+        headers: {}
+      };
+      if (this.authUsesOpenIdConnect()) {
+        requestOptions.headers[TENANT_HEADER] = this.coreConfig.oidc.tenant;
+      }
+      return this.getViaTempCache(uri, () => this.http.get(uri, requestOptions).pipe(tap((text) => this.cache.set(uri, text))));
+    }
+  }
+
+  /**
+   * @ignore
+   * Temporary Cache for multiple identical requests
+   *
+   * @param string id
+   * @param Function request
+   * @returns Observable<any>
+   */
+  public getViaTempCache(id: string, request?: Function): Observable<any> {
+    if (this.temp.has(id)) {
+      return this.temp.get(id);
+    } else {
+      const resp = (request ? request() : this.get(id)).pipe(
+        finalize(() => this.temp.delete(id)),
+        shareReplay(1)
+      );
+      this.temp.set(id, resp);
+      return resp;
+    }
   }
 
   public download(uri: string, filename?: string) {
@@ -139,16 +181,14 @@ export class BackendService {
    * @returns Base URI for the given API.
    */
   getApiBase(api?: string): string {
-    // return this.getHost() + this.config.getApiBase(api || ApiBase.apiWeb);
-    return this.config.getApiBase(api || ApiBase.apiWeb);
+    const apiBase = api === '' ? api : this.config.getApiBase(api || ApiBase.apiWeb);
+    return `${this.authUsesOpenIdConnect() ? this.coreConfig.oidc.host : ''}${apiBase}`;
   }
 
   /**
    * @ignore
    */
-  getHttpOptions(
-    requestOptions?: any
-  ): {
+  getHttpOptions(requestOptions?: any): {
     headers?:
       | HttpHeaders
       | {
@@ -177,11 +217,26 @@ export class BackendService {
 
   private setDefaultHeaders(): HttpHeaders {
     return new HttpHeaders({
-      'Content-Type': 'application/json',
-      'X-os-include-links': 'false',
-      'X-os-include-actions': 'false',
-      'X-os-sync-index': 'true',
-      'Access-Control-Allow-Origin': '*'
+      'Content-Type': 'application/json'
+      // 'X-os-include-links': 'false',
+      // 'X-os-include-actions': 'false',
+      // 'X-os-sync-index': 'true'
+      // 'Access-Control-Allow-Origin': '*'
     });
+  }
+
+  /**
+   * Batch service
+   */
+  batch(requests: { method?: string; uri: string; body?: any; base?: string; requestOptions?: any }[]) {
+    const httpRequests = requests.map((r) =>
+      this[(r.method || 'get').toLowerCase()]
+        .apply(
+          this,
+          [r.uri, r.body, r.base, r.requestOptions].filter((a) => a)
+        )
+        .pipe(catchError((err) => of({ _error: err })))
+    );
+    return forkJoin(httpRequests) as Observable<any[]>;
   }
 }

@@ -7,130 +7,123 @@
 }
 
 :host {
-  display: flex;
-  flex-flow: column;
-  height: 100%;
-  padding-top: var(--app-bar-height);
-  box-sizing: border-box;
-  overflow: hidden;
-
   &.aggregations {
     .bottom {
-      opacity: 0.2;
-      transform: translateY(75%);
+      opacity: 0.5;
+
+      &:hover {
+        opacity: 1;
+      }
     }
   }
 
-  .top {
+  .dashboard {
     display: flex;
     flex-flow: column;
-    padding: 0 var(--app-pane-padding);
-    align-items: center;
-    margin-top: calc((100vh / 4) - var(--app-bar-height));
-    flex: 1;
-    min-height: 0;
+    height: 100%;
+    padding-top: var(--app-bar-height);
+    box-sizing: border-box;
+    overflow: hidden;
 
-    yuv-quick-search {
-      order: 0;
-    }
-    .aggs {
-      order: 1;
-    }
+    .top {
+      display: flex;
+      flex-flow: column;
+      padding: 0 var(--app-pane-padding);
+      align-items: center;
+      margin-top: calc((100vh / 4) - var(--app-bar-height));
+      flex: 1;
+      min-height: 0;
 
-    yuv-quick-search,
-    .aggs {
-      width: 500px;
-      max-width: 100%;
-      z-index: 1;
-    }
-  }
-  .bottom {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    transition: all 200ms;
-
-    yuv-recent-activities::ng-deep {
-      background-color: transparent;
-      padding: 0;
-
-      .header {
-        padding: calc(var(--app-pane-padding) / 2) var(--app-pane-padding);
-        background-color: rgba(255, 255, 255, 0.6);
-        margin: 0;
-        display: flex;
-        justify-content: center;
-        order: 2;
-
-        .dark & {
-          background-color: rgba(0, 0, 0, 0.2);
-        }
-        .tabs {
-          flex: 0 0 auto;
-        }
+      yuv-quick-search {
+        order: 0;
       }
-      .outer {
-        padding-bottom: calc(var(--app-pane-padding) / 2);
-        display: flex;
-        justify-content: center;
+      .aggs {
+        order: 1;
+        z-index: 1;
+      }
 
-        drag-scroll {
+      yuv-quick-search,
+      .aggs {
+        width: 500px;
+        max-width: 100%;
+      }
+    }
+    .bottom {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      transition: all 200ms;
+
+      yuv-recent-activities::ng-deep {
+        background-color: transparent;
+        padding: 0;
+
+        .header {
+          padding: calc(var(--app-pane-padding) / 2) var(--app-pane-padding);
+          background-color: rgba(255, 255, 255, 0.6);
+          margin: 0;
           display: flex;
           justify-content: center;
-          padding-bottom: var(--app-pane-padding);
-        }
-      }
-      yuv-recent-acitivities-item {
-        &:first-child {
-          margin-left: var(--app-pane-padding);
-        }
+          order: 2;
 
-        .pre {
-          margin: calc(var(--app-pane-padding) / 4);
+          .dark & {
+            background-color: rgba(0, 0, 0, 0.2);
+          }
+          .tabs {
+            flex: 0 0 auto;
+          }
+        }
+        .outer {
+          padding-bottom: calc(var(--app-pane-padding) / 2);
+          display: flex;
+          justify-content: center;
+
+          drag-scroll {
+            display: flex;
+            justify-content: center;
+            padding-bottom: var(--app-pane-padding);
+          }
+        }
+        yuv-recent-acitivities-item {
+          &:first-child {
+            margin-left: var(--app-pane-padding);
+          }
+
+          .pre {
+            margin: calc(var(--app-pane-padding) / 4);
+          }
         }
       }
     }
-  }
 
-  .aggs {
-    z-index: 0;
-    flex: 1;
-    min-height: 0;
-    animation: yuvFadeInUp 200ms;
-    display: flex;
-    flex-flow: column;
-    overflow: auto;
-
-    background-color: rgba(255, 255, 255, 0.4);
-    outline: 1000px solid rgba(255, 255, 255, 0.4);
-    .dark & {
-      background-color: rgba(0, 0, 0, 0.4);
-      outline: 1000px solid rgba(0, 0, 0, 0.4);
+    .aggs {
+      z-index: 0;
+      min-height: 0;
+      animation: yuvFadeInUp 200ms;
+      display: flex;
+      flex-flow: column;
+      overflow: auto;
+      background-color: var(--panel-background);
+      max-height: 35vh;
+      border-radius: 2px;
+      margin-top: calc(var(--app-pane-padding) / 4);
+      box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.2);
     }
 
-    .container {
-      > div {
-        display: flex;
-        align-items: center;
-        padding: var(--app-pane-padding);
-        .label {
-          order: 0;
-          font-size: var(--font-subhead);
-          opacity: 0.75;
-          flex: 1;
-          @include bidi-style(margin-right, var(--app-pane-padding), margin-left, var(--app-pane-padding));
-        }
-        .count {
-          color: var(--color-accent);
-          border-radius: 2px;
-          order: 1;
-        }
+    ::ng-deep .aggs {
+      p-panel,
+      .container {
+        padding: 0;
+        margin: 0;
+      }
 
-        &:hover {
-          background-color: var(--item-focus-background-color);
-          cursor: pointer;
-        }
+      .p-panel-header {
+        display: none;
+      }
+
+      .label .count {
+        font-size: 1em !important;
       }
     }
   }
