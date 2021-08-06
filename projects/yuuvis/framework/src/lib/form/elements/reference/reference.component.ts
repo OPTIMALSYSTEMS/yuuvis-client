@@ -136,6 +136,7 @@ export class ReferenceComponent implements ControlValueAccessor, AfterViewInit {
     if (value) {
       this.value = value;
       this.resolveFn(value);
+      this._inputDisabled = !this.multiselect && this.value.length >= 1;
     } else {
       this.value = null;
       this.innerValue = [];
