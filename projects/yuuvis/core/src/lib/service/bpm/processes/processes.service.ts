@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, forkJoin, Observable } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
+import { BehaviorSubject, EMPTY, forkJoin, Observable } from 'rxjs';
+import { expand, map, skipWhile, tap } from 'rxjs/operators';
 import { BpmService } from '../bpm/bpm.service';
 import { ProcessDefinitionKey, ProcessInstance, ProcessResponse } from '../model/bpm.model';
 import { ProcessData } from './../model/bpm.model';
@@ -19,6 +19,8 @@ interface CreateFollowUp {
   providedIn: 'root'
 })
 export class ProcessService {
+  private PROCESSES_PAGE_SIZE = 100;
+
   private readonly bpmProcessUrl = '/bpm/processes';
 
   private processSource = new BehaviorSubject<ProcessData[]>([]);
@@ -37,14 +39,32 @@ export class ProcessService {
    * get all processes
    */
   getProcesses(processDefinitionKey?: ProcessDefinitionKey): Observable<ProcessData[]> {
-    let url = `${this.bpmProcessUrl}?includeProcessVariables=true`;
+    let params = `&includeProcessVariables=true`;
     if (processDefinitionKey) {
-      url += `&processDefinitionKey=${processDefinitionKey}`;
+      params += `&processDefinitionKey=${processDefinitionKey}`;
     }
-    return this.bpmService.getProcesses(url).pipe(
-      tap(({ objects }: ProcessResponse) => this.processSource.next(objects)),
-      map(({ objects }: ProcessResponse) => objects)
+    return this.getAllPages(params).pipe(
+      tap((res: ProcessData[]) => this.processSource.next(res)),
+      map((res: ProcessData[]) => res)
     );
+  }
+
+  private getAllPages(requestParams: string): Observable<ProcessData[]> {
+    let items = [];
+    let i = 0;
+    return this.getPage(requestParams, i).pipe(
+      expand((res: any) => {
+        i++;
+        return res.hasMoreItems ? this.getPage(requestParams, i) : EMPTY;
+      }),
+      tap((res: any) => (items = [...items, ...res.objects])),
+      skipWhile((res: any) => res.hasMoreItems),
+      map((_) => items)
+    );
+  }
+
+  private getPage(requestParams: string, index?: number) {
+    return this.bpmService.getProcesses(`${this.bpmProcessUrl}?size=${this.PROCESSES_PAGE_SIZE}&page=${index || 0}${requestParams}`);
   }
 
   /**

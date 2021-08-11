@@ -229,6 +229,8 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
         if (this.viewMode === 'auto') {
           this.currentViewMode = this._autoViewMode;
         }
+        const nodes = this.gridOptions.api?.getSelectedNodes();
+        nodes?.length && this.ensureVisibility(nodes[0].rowIndex);
       });
     // subscribe to columns beeing resized
     this.columnResize$.pipe(takeUntilDestroy(this), debounceTime(500)).subscribe((e: ResizedEvent) => {
@@ -387,19 +389,23 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
         if (index === 0) {
           this.gridOptions.api.setFocusedCell(n.rowIndex, focusColId || this.focusField);
           if (ensureVisibility) {
-            if (this.isVertical) {
-              const shift = Math.floor(this.settings.size.newWidth / this.settings.colWidth.grid / 2);
-              this.gridOptions.api['gridPanel'].setCenterViewportScrollLeft(Math.max(0, (n.rowIndex - shift) * this.settings.colWidth.grid));
-            } else if (this.isGrid) {
-              this.gridOptions.api.ensureIndexVisible(Math.floor(n.rowIndex / Math.floor(this.settings.size.newWidth / this.settings.colWidth.grid)));
-            } else {
-              this.gridOptions.api.ensureIndexVisible(n.rowIndex);
-            }
+            this.ensureVisibility(n.rowIndex);
           }
         }
         n.setSelected(true, index === 0);
       }
     });
+  }
+
+  private ensureVisibility(rowIndex = 0) {
+    if (this.isVertical) {
+      const shift = Math.floor(this.settings.size.newWidth / this.settings.colWidth.grid / 2);
+      this.gridOptions.api['gridPanel'].setCenterViewportScrollLeft(Math.max(0, (rowIndex - shift) * this.settings.colWidth.grid));
+    } else if (this.isGrid) {
+      this.gridOptions.api.ensureIndexVisible(Math.floor(rowIndex / Math.floor(this.settings.size.newWidth / this.settings.colWidth.grid)));
+    } else {
+      this.gridOptions.api.ensureIndexVisible(rowIndex);
+    }
   }
 
   getSortModel() {
