@@ -1,6 +1,7 @@
 import { Component, forwardRef, Input, TemplateRef, ViewChild } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { Catalog, CatalogEntry, CatalogService, Classification, ClassificationEntry, SystemService, UserService } from '@yuuvis/core';
+import { BaseCatalog, Catalog, CatalogEntry, CatalogService, Classification, ClassificationEntry, SystemService, UserService } from '@yuuvis/core';
+import { Observable } from 'rxjs';
 import { IconRegistryService } from '../../../common/components/icon/service/iconRegistry.service';
 import { PopoverConfig } from '../../../popover/popover.interface';
 import { PopoverRef } from '../../../popover/popover.ref';
@@ -31,7 +32,7 @@ import { clear, edit } from '../../../svg.generated';
 export class DynamicCatalogComponent implements ControlValueAccessor {
   @ViewChild('tplCatalogManager') tplCatalogManager: TemplateRef<any>;
 
-  catalog: Catalog;
+  catalog: BaseCatalog | Catalog;
   enabledCatalogEntries: CatalogEntry[] = [];
   value: string | string[];
   innerValue: any;
@@ -55,7 +56,10 @@ export class DynamicCatalogComponent implements ControlValueAccessor {
    * Additional semantics for the form element.
    */
   @Input() set classifications(c: string[]) {
-    this.fetchCatalogEntries(this.systemService.getClassifications(c).get(Classification.STRING_CATALOG_DYNAMIC));
+    const ces = this.systemService.getClassifications(c);
+    this.fetchCatalogEntries(
+      ces.get(ces.has(Classification.STRING_CATALOG_DYNAMIC) ? Classification.STRING_CATALOG_DYNAMIC : Classification.STRING_CATALOG_CUSTOM)
+    );
   }
   /**
    * Will prevent the input from being changed (default: false)
@@ -131,11 +135,15 @@ export class DynamicCatalogComponent implements ControlValueAccessor {
   private fetchCatalogEntries(ce: ClassificationEntry) {
     if (ce && ce.options && ce.options.length) {
       // first classification option is the name of the catalog to load ...
-      this.catalogService.getCatalog(ce.options[0]).subscribe(
-        (res: Catalog) => {
+      this.loadCatalog(ce).subscribe(
+        (res: BaseCatalog) => {
           this.setCatalog(res);
           this.setupInnerValue();
-          this.editable = this.situation !== 'SEARCH' && this.userService.hasManageSettingsRole && !res.readonly;
+          this.editable =
+            this.situation !== 'SEARCH' &&
+            this.userService.hasManageSettingsRole &&
+            !res.readonly &&
+            ce.classification === Classification.STRING_CATALOG_DYNAMIC;
         },
         (err) => {
           if (err.status === 404) {
@@ -150,6 +158,12 @@ export class DynamicCatalogComponent implements ControlValueAccessor {
         }
       );
     }
+  }
+
+  private loadCatalog(ce: ClassificationEntry): Observable<BaseCatalog> {
+    return ce.classification === Classification.STRING_CATALOG_CUSTOM
+      ? this.catalogService.getCustomCatalog(ce.options[0])
+      : this.catalogService.getCatalog(ce.options[0]);
   }
 
   private setupInnerValue() {
@@ -178,7 +192,7 @@ export class DynamicCatalogComponent implements ControlValueAccessor {
     }
   }
 
-  private setCatalog(catalog: Catalog) {
+  private setCatalog(catalog: BaseCatalog | Catalog) {
     this.catalog = catalog;
     this.enabledCatalogEntries = this.situation === 'SEARCH' ? catalog.entries : catalog.entries.filter((e) => !e.disabled);
   }

@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
+import { ApiBase } from '../backend/api.enum';
 import { BackendService } from '../backend/backend.service';
 import { UserService } from '../user/user.service';
-import { Catalog, CatalogEntry } from './catalog.interface';
+import { BaseCatalog, Catalog, CatalogEntry } from './catalog.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -42,6 +43,22 @@ export class CatalogService {
         qname: qname,
         entries: res.entries,
         tenant: res.tenant,
+        readonly: res.readonly
+      }))
+    );
+  }
+
+  getCustomCatalog(uri: string): Observable<BaseCatalog> {
+    return this.backend.get(uri, ApiBase.none).pipe(
+      catchError((e) => {
+        if (e.status === 404) {
+          return of({ entries: [] });
+        } else {
+          throw e;
+        }
+      }),
+      map((res: { entries: CatalogEntry[]; readonly: boolean }) => ({
+        entries: res.entries,
         readonly: res.readonly
       }))
     );

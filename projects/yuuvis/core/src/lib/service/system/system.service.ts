@@ -71,9 +71,10 @@ export class SystemService {
    */
   getSecondaryObjectTypes(withLabels?: boolean): SecondaryObjectType[] {
     return (
-      (withLabels
-        ? this.system.secondaryObjectTypes.map((t) => ({ ...t, label: this.getLocalizedResource(`${t.id}_label`) }))
-        : this.system.secondaryObjectTypes
+      (
+        withLabels
+          ? this.system.secondaryObjectTypes.map((t) => ({ ...t, label: this.getLocalizedResource(`${t.id}_label`) }))
+          : this.system.secondaryObjectTypes
       )
         // ignore
         .filter((t) => t.id !== t.baseId && !t.id.startsWith('system:') && t.id !== 'appClientsystem:leadingType')
@@ -890,7 +891,10 @@ export class SystemService {
       return InternalFieldType.STRING_ORGANIZATION;
     } else if (field[typeProperty] === 'string' && classifications.has(Classification.STRING_CATALOG)) {
       return InternalFieldType.STRING_CATALOG;
-    } else if (field[typeProperty] === 'string' && classifications.has(Classification.STRING_CATALOG_DYNAMIC)) {
+    } else if (
+      field[typeProperty] === 'string' &&
+      (classifications.has(Classification.STRING_CATALOG_DYNAMIC) || classifications.has(Classification.STRING_CATALOG_CUSTOM))
+    ) {
       return InternalFieldType.STRING_DYNAMIC_CATALOG;
     } else {
       // if there are no matching conditions just return the original type
