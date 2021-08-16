@@ -5,6 +5,15 @@
   flex-flow: row-reverse;
   padding: calc(var(--app-pane-padding) / 4) var(--app-pane-padding);
   border-bottom: 1px solid var(--panel-divider-color);
+  cursor: pointer;
+
+  &.disabled {
+    pointer-events: none;
+    .label,
+    yuv-icon {
+      opacity: 0.7;
+    }
+  }
 
   &:hover,
   &:focus {
@@ -20,7 +29,6 @@
   .label {
     padding: calc(var(--app-pane-padding) / 2);
     flex: 1;
-    cursor: pointer;
 
     .title {
       margin: calc(var(--app-pane-padding) / 4) 0;

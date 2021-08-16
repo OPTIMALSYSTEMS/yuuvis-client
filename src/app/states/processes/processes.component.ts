@@ -34,7 +34,7 @@ export class ProcessesComponent implements OnInit, OnDestroy {
   loading$: Observable<boolean> = this.processService.loadingProcessData$;
 
   headerDetails: HeaderDetails = {
-    title: this.translateService.instant('yuv.framework.process-list.process'),
+    title: this.translateService.instant('yuv.client.state.process.title'),
     description: '',
     icon: 'process'
   };
@@ -56,7 +56,7 @@ export class ProcessesComponent implements OnInit, OnDestroy {
   private getProcesses(): Observable<ProcessData[] | ResponsiveTableData> {
     return this.processService.getProcesses().pipe(
       take(1),
-      map((processData: ProcessData[]) => this.formatProcessDataService.formatProcessDataForTable(processData)),
+      map((processData: ProcessData[]) => this.formatProcessDataService.formatProcessDataForTable(processData, ['type', 'subject', 'startTime', 'status'])),
       map((taskData: ResponsiveTableData) => (taskData.rows.length ? taskData : null)),
       tap((data) => (this.processData$ = of(data))),
       takeUntilDestroy(this)

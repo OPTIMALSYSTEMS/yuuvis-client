@@ -5,6 +5,7 @@
       <div class="meta uname">{{ (user$ | async).username }}</div>
       <h1>{{ (user$ | async).title }}</h1>
       <div class="meta uemail">{{ (user$ | async).email }}</div>
+      <div class="meta utenant">{{'yuv.client.state.settings.tenant' | translate}}: {{ (user$ | async).tenant }}</div>
     </div>
     <yuv-user-avatar class="box panel" [user]="user$ | async"></yuv-user-avatar>
   </div>
@@ -123,7 +124,7 @@
         </div>
       </div>
 
-      <div class="setting settings__row">
+      <div class="setting settings__row" *ngIf="hasSystemRole">
         <div class="label" translate>yuv.client.state.settings.config.plugin-config</div>
         <div class="value buttons">
           <yuv-file-picker [label]="'yuv.client.state.settings.config.main-config.import' | translate"

@@ -87,12 +87,10 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
     this._layoutOptionsKey = lok;
     this.layoutService.loadLayoutOptions(lok, 'yuv-responsive-data-table').subscribe((o: ResponsiveDataTableOptions) => {
       this._layoutOptions = o || {};
-      if (this.gridOptions?.api && this._data) {
-        this.gridOptions.api.setColumnDefs(this.applyColDefOptions(this._data.columns));
+      if (this._layoutOptions.viewMode) {
+        this.setupViewMode(this._layoutOptions.viewMode);
       }
-      if (o && o.viewMode) {
-        this.setupViewMode(o.viewMode);
-      }
+      this.applyGridOption(true);
     });
   }
 
@@ -231,6 +229,8 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
         if (this.viewMode === 'auto') {
           this.currentViewMode = this._autoViewMode;
         }
+        const nodes = this.gridOptions.api?.getSelectedNodes();
+        nodes?.length && this.ensureVisibility(nodes[0].rowIndex);
       });
     // subscribe to columns beeing resized
     this.columnResize$.pipe(takeUntilDestroy(this), debounceTime(500)).subscribe((e: ResizedEvent) => {
@@ -325,11 +325,10 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
       this.gridOptions.api.setRowData(this._data.rows);
       this.gridOptions.api.setHeaderHeight(this.settings.headerHeight[this.currentViewMode]);
 
-      const columns = this.isSmall ? [this.getSmallSizeColDef()] : this._data.columns;
+      const columns = this.applyColDefOptions(this.isSmall ? [this.getSmallSizeColDef()] : this._data.columns);
       if (JSON.stringify(this.gridOptions.columnDefs) !== JSON.stringify(columns)) {
-        const cols = this.applyColDefOptions(columns);
-        this.gridOptions.columnDefs = cols;
-        this.gridOptions.api.setColumnDefs(cols);
+        this.gridOptions.columnDefs = columns;
+        this.gridOptions.api.setColumnDefs(columns);
         this.gridOptions.columnApi.resetColumnState();
       }
 
@@ -355,6 +354,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
 
   private getSmallSizeColDef(): ColDef {
     const colDef: ColDef = {
+      colId: Utils.uuid(), // has to be unique
       field: BaseObjectTypeField.OBJECT_ID,
       cellClass: 'cell-title-description',
       minWidth: this.isGrid ? this._data.rows.length * this.settings.colWidth.grid : 0,
@@ -389,19 +389,23 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
         if (index === 0) {
           this.gridOptions.api.setFocusedCell(n.rowIndex, focusColId || this.focusField);
           if (ensureVisibility) {
-            if (this.isVertical) {
-              const shift = Math.floor(this.settings.size.newWidth / this.settings.colWidth.grid / 2);
-              this.gridOptions.api['gridPanel'].setCenterViewportScrollLeft(Math.max(0, (n.rowIndex - shift) * this.settings.colWidth.grid));
-            } else if (this.isGrid) {
-              this.gridOptions.api.ensureIndexVisible(Math.floor(n.rowIndex / Math.floor(this.settings.size.newWidth / this.settings.colWidth.grid)));
-            } else {
-              this.gridOptions.api.ensureIndexVisible(n.rowIndex);
-            }
+            this.ensureVisibility(n.rowIndex);
           }
         }
         n.setSelected(true, index === 0);
       }
     });
+  }
+
+  private ensureVisibility(rowIndex = 0) {
+    if (this.isVertical) {
+      const shift = Math.floor(this.settings.size.newWidth / this.settings.colWidth.grid / 2);
+      this.gridOptions.api['gridPanel'].setCenterViewportScrollLeft(Math.max(0, (rowIndex - shift) * this.settings.colWidth.grid));
+    } else if (this.isGrid) {
+      this.gridOptions.api.ensureIndexVisible(Math.floor(rowIndex / Math.floor(this.settings.size.newWidth / this.settings.colWidth.grid)));
+    } else {
+      this.gridOptions.api.ensureIndexVisible(rowIndex);
+    }
   }
 
   getSortModel() {
@@ -423,7 +427,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
       getRowNodeId: (data) => data.id,
       getRowHeight: () => this.settings.rowHeight[this.currentViewMode],
       rowData: this._data.rows,
-      columnDefs: this._data.columns,
+      columnDefs: this._layoutOptionsKey ? [] : this._data.columns,
       headerHeight: this.settings.headerHeight.standard,
       rowHeight: this.settings.rowHeight.standard,
       suppressCellSelection: false,

@@ -1,5 +1,6 @@
-import { Component, EventEmitter, HostBinding, Input, OnDestroy, Output } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, HostBinding, Input, NgZone, OnDestroy, Output, ViewChild } from '@angular/core';
 import { Screen, ScreenService } from '@yuuvis/core';
+import { SplitComponent } from 'angular-split';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { LayoutService } from '../../services/layout/layout.service';
 import { ResponsiveMasterSlaveOptions } from './responsive-master-slave.interface';
@@ -28,7 +29,8 @@ import { ResponsiveMasterSlaveOptions } from './responsive-master-slave.interfac
   templateUrl: './responsive-master-slave.component.html',
   styleUrls: ['./responsive-master-slave.component.scss']
 })
-export class ResponsiveMasterSlaveComponent implements OnDestroy {
+export class ResponsiveMasterSlaveComponent implements OnDestroy, AfterViewInit {
+  @ViewChild(SplitComponent) splitEl: SplitComponent;
   useSmallDeviceLayout: boolean;
   visible = {
     master: true,
@@ -47,9 +49,9 @@ export class ResponsiveMasterSlaveComponent implements OnDestroy {
 
   private verticalOptions: ResponsiveMasterSlaveOptions = {
     masterSize: 40,
-    masterMinSize: 0,
+    masterMinSize: 30,
     slaveSize: 60,
-    slaveMinSize: 0,
+    slaveMinSize: 40,
     direction: 'vertical',
     resizable: true,
     useStateLayout: false
@@ -91,7 +93,7 @@ export class ResponsiveMasterSlaveComponent implements OnDestroy {
 
   @Output() slaveClosed = new EventEmitter();
 
-  constructor(private screenService: ScreenService, private layoutService: LayoutService) {
+  constructor(private screenService: ScreenService, private layoutService: LayoutService, private ngZone: NgZone) {
     this.screenService.screenChange$.pipe(takeUntilDestroy(this)).subscribe((screen: Screen) => {
       this.useSmallDeviceLayout = screen.isSmall;
       this.setDirection(this._layoutOptions);
@@ -106,6 +108,11 @@ export class ResponsiveMasterSlaveComponent implements OnDestroy {
     };
   }
 
+  private saveOptions() {
+    const { masterSize, slaveSize, direction } = this._layoutOptions;
+    this.layoutService.saveLayoutOptions(this._layoutOptionsKey, 'yuv-responsive-master-slave', { masterSize, slaveSize, direction }).subscribe();
+  }
+
   closeSlave() {
     this.slaveClosed.emit();
   }
@@ -113,13 +120,32 @@ export class ResponsiveMasterSlaveComponent implements OnDestroy {
   gutterDblClick() {
     this._layoutOptions.direction = this._layoutOptions.direction === 'vertical' ? 'horizontal' : 'vertical';
     this.setDirection(this._layoutOptions);
-    this.layoutService.saveLayoutOptions(this._layoutOptionsKey, 'yuv-responsive-master-slave', this._layoutOptions).subscribe();
+    this.saveOptions();
   }
 
   dragEnd(evt: any) {
     this._layoutOptions.masterSize = evt.sizes[0];
     this._layoutOptions.slaveSize = evt.sizes[1];
-    this.layoutService.saveLayoutOptions(this._layoutOptionsKey, 'yuv-responsive-master-slave', this._layoutOptions).subscribe();
+    if (evt.sizes.every((s) => s > 0)) {
+      this.saveOptions();
+    }
+  }
+
+  ngAfterViewInit() {
+    this.splitEl?.dragProgress$.pipe(takeUntilDestroy(this)).subscribe((x) => {
+      const { masterMinSize, slaveMinSize } = this._layoutOptions;
+      if (x.sizes[0] < masterMinSize) {
+        // automatic collapse/expand of master area
+        this.splitEl.displayedAreas[0].size = x.sizes[0] > masterMinSize / 2 ? masterMinSize : 0;
+        this.splitEl.displayedAreas[1].size = 100 - this.splitEl.displayedAreas[0].size;
+        this.splitEl['refreshStyleSizes']();
+      } else if (x.sizes[1] < slaveMinSize) {
+        // automatic collapse/expand of slave area
+        this.splitEl.displayedAreas[0].size = x.sizes[1] > slaveMinSize / 2 ? 100 - slaveMinSize : 100;
+        this.splitEl.displayedAreas[1].size = 100 - this.splitEl.displayedAreas[0].size;
+        this.splitEl['refreshStyleSizes']();
+      }
+    });
   }
 
   ngOnDestroy() {}

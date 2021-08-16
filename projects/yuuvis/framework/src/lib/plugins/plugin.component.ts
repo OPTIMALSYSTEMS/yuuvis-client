@@ -91,7 +91,8 @@ export class PluginComponent extends IFrameComponent implements OnInit, OnDestro
       }
     }
     if (this.src) {
-      this.iframeInit();
+      const onload = () => this.pluginsService.applyFunction(this.config.plugin.outputs.load, 'iframe, parent', [this.iframe, this.parent]);
+      this.iframeInit(this.iframe, '', this.config.plugin?.outputs?.load && onload);
     }
   }
 

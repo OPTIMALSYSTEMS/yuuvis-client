@@ -90,11 +90,16 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
   }
 
   get availableObjectTypeGroups(): SelectableGroup[] {
-    return this.quickSearchService.availableObjectTypeGroups;
+    const sg = JSON.parse(JSON.stringify(this.quickSearchService.availableObjectTypeGroups));
+    if (this.skipTypes) {
+      sg.forEach((g) => (g.items = g.items.filter((i) => !this.skipTypes.includes(i.id))));
+    }
+    return sg;
   }
 
   get availableObjectTypeGroupsList(): Selectable[] {
-    return this.availableObjectTypeGroups.reduce((pre, cur) => [...pre, ...cur.items], []);
+    const selectables = this.availableObjectTypeGroups.reduce((pre, cur) => [...pre, ...cur.items], []);
+    return this.skipTypes?.length ? selectables.filter((s) => !this.skipTypes.includes(s.id)) : selectables;
   }
 
   availableObjectTypeFields: Selectable[] = [];
@@ -129,6 +134,9 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
   get context() {
     return this._context;
   }
+
+  // list of types (object type IDs) that should not be shown in the object type picker
+  @Input() skipTypes: string[];
 
   private get contextFilter() {
     return new SearchFilter(BaseObjectTypeField.PARENT_ID, SearchFilter.OPERATOR.EQUAL, this.context);
@@ -195,7 +203,7 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
     // TODO: load only if needed
     this.quickSearchService.loadFilterSettings().subscribe(() => this.setAvailableObjectTypesFields());
 
-    this.searchForm.valueChanges.pipe(distinctUntilChanged(), debounceTime(500)).subscribe(({ term }) => {
+    this.searchForm.valueChanges.pipe(distinctUntilChanged(), debounceTime(1000)).subscribe(({ term }) => {
       const _term = typeof term === 'string' ? term : (term && term.label) || '';
       if (this.searchQuery.term !== _term) {
         this.searchQuery.term = _term;
@@ -342,7 +350,7 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
     this.setAvailableObjectTypesFields();
 
     if (this.selectedObjectTypes.length === 1) {
-      this.objectTypeSelectLabel = this.systemService.getLocalizedResource(`${this.selectedObjectTypes[0]}_label`);
+      this.objectTypeSelectLabel = this.systemService.getLocalizedResource(`${this.selectedObjectTypes[0]}_label`) || this.selectedObjectTypes[0];
     } else if (this.selectedObjectTypes.length === this.availableObjectTypeGroupsList.length || this.selectedObjectTypes.length === 0) {
       this.objectTypeSelectLabel = this.translate.instant('yuv.framework.quick-search.type.all');
     } else {

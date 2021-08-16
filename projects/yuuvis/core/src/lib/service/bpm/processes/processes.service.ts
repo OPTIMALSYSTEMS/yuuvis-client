@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, forkJoin, Observable } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
+import { BehaviorSubject, EMPTY, forkJoin, Observable } from 'rxjs';
+import { expand, map, skipWhile, tap } from 'rxjs/operators';
 import { BpmService } from '../bpm/bpm.service';
 import { ProcessDefinitionKey, ProcessInstance, ProcessResponse } from '../model/bpm.model';
 import { ProcessData } from './../model/bpm.model';
@@ -19,7 +19,9 @@ interface CreateFollowUp {
   providedIn: 'root'
 })
 export class ProcessService {
-  private readonly bpmProcessUrl = '/bpm/process/instances';
+  private PROCESSES_PAGE_SIZE = 100;
+
+  private readonly bpmProcessUrl = '/bpm/processes';
 
   private processSource = new BehaviorSubject<ProcessData[]>([]);
   public processData$: Observable<ProcessData[]> = this.processSource.asObservable();
@@ -36,11 +38,33 @@ export class ProcessService {
   /**
    * get all processes
    */
-  getProcesses(): Observable<ProcessData[]> {
-    return this.bpmService.getProcesses(`${this.bpmProcessUrl}?includeProcessVariables=true`).pipe(
-      tap(({ data }: ProcessResponse) => this.processSource.next(data)),
-      map(({ data }: ProcessResponse) => data)
+  getProcesses(processDefinitionKey?: ProcessDefinitionKey): Observable<ProcessData[]> {
+    let params = `&includeProcessVariables=true`;
+    if (processDefinitionKey) {
+      params += `&processDefinitionKey=${processDefinitionKey}`;
+    }
+    return this.getAllPages(params).pipe(
+      tap((res: ProcessData[]) => this.processSource.next(res)),
+      map((res: ProcessData[]) => res)
     );
+  }
+
+  private getAllPages(requestParams: string): Observable<ProcessData[]> {
+    let items = [];
+    let i = 0;
+    return this.getPage(requestParams, i).pipe(
+      expand((res: any) => {
+        i++;
+        return res.hasMoreItems ? this.getPage(requestParams, i) : EMPTY;
+      }),
+      tap((res: any) => (items = [...items, ...res.objects])),
+      skipWhile((res: any) => res.hasMoreItems),
+      map((_) => items)
+    );
+  }
+
+  private getPage(requestParams: string, index?: number) {
+    return this.bpmService.getProcesses(`${this.bpmProcessUrl}?size=${this.PROCESSES_PAGE_SIZE}&page=${index || 0}${requestParams}`);
   }
 
   /**
@@ -63,7 +87,7 @@ export class ProcessService {
   private followUpPayloadData(documentId: string, payload: CreateFollowUp): ProcessInstance {
     return {
       processDefinitionKey: ProcessDefinitionKey.FOLLOW_UP,
-      name: ProcessDefinitionKey.FOLLOW_UP,
+      name: payload.whatAbout,
       businessKey: documentId,
       variables: Object.keys(payload).map((value) => ({ name: value, value: payload[value] }))
     };

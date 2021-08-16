@@ -1,6 +1,7 @@
 <div class="testing-controls">
-  <yuv-dms-object-picker [defaultId]="'39bd9f91-aeff-45cc-a6e7-a9c4743afc9a'" (dmsObject)="setDmsObjectInput($event)">
+  <yuv-dms-object-picker [objectQuery]="objectQuery" (dmsObject)="setDmsObjectInput($event)">
   </yuv-dms-object-picker>
+  <button (click)="dmsObjectID = '1234'">Force 404</button>
 </div>
 
-<yuv-version-list class="cmp" [objectID]="dmsObject?.id"></yuv-version-list>
+<yuv-version-list class="cmp" [objectID]="dmsObjectID"></yuv-version-list>

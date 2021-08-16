@@ -1,4 +1,16 @@
-import { Component, ContentChildren, HostBinding, Input, OnDestroy, QueryList, TemplateRef, ViewChild, ViewChildren } from '@angular/core';
+import {
+  Component,
+  ContentChildren,
+  EventEmitter,
+  HostBinding,
+  Input,
+  OnDestroy,
+  Output,
+  QueryList,
+  TemplateRef,
+  ViewChild,
+  ViewChildren
+} from '@angular/core';
 import {
   BaseObjectTypeField,
   ConfigService,
@@ -19,6 +31,7 @@ import { IconRegistryService } from '../../common/components/icon/service/iconRe
 import { kebap, noFile, refresh } from '../../svg.generated';
 import { ContentPreviewService } from '../content-preview/service/content-preview.service';
 import { ResponsiveTabContainerComponent } from './../../components/responsive-tab-container/responsive-tab-container.component';
+import { FileDropOptions } from './../../directives/file-drop/file-drop.directive';
 
 /**
  * High level component displaying detail aspects for a given DmsObject.
@@ -67,6 +80,10 @@ export class ObjectDetailsComponent implements OnDestroy {
   private _dmsObject: DmsObject;
   private _objectId: string;
 
+  @HostBinding('attr.data-type') get dataType() {
+    return this.dmsObject?.objectTypeId || 'none';
+  }
+
   /**
    * DmsObject to show the details for.
    */
@@ -95,6 +112,12 @@ export class ObjectDetailsComponent implements OnDestroy {
   get dmsObject() {
     return this._dmsObject;
   }
+
+  /**
+   * A list of audits that should not be shown. Use the audit codes (like 100, 301, etc.).
+   * This will also disable the corresponding filters.
+   */
+  @Input() skipActions: number[];
 
   /**
    * ID of a DmsObject. The object will be fetched from the backend upfront.
@@ -162,10 +185,13 @@ export class ObjectDetailsComponent implements OnDestroy {
    * versions of an object.
    */
   @Input() disableFileDrop: boolean;
+  @Input() fileDropOptions: FileDropOptions;
 
   undockWinActive = false;
 
   @Input() plugins: Observable<any[]>;
+
+  @Output() objectRefresh = new EventEmitter();
 
   constructor(
     private dmsService: DmsService,
@@ -208,24 +234,29 @@ export class ObjectDetailsComponent implements OnDestroy {
     this.actionMenuVisible = true;
   }
 
-  private getDmsObject(id: string) {
+  private getDmsObject(id: string, emitRefresh?: boolean) {
     this.busy = true;
     this.contentPreviewService.resetSource();
     this.dmsService
       .getDmsObject(id)
       .pipe(finalize(() => (this.busy = false)))
       .subscribe(
-        (dmsObject) => (this.dmsObject = dmsObject),
+        (dmsObject) => {
+          this.dmsObject = dmsObject;
+          if (emitRefresh) {
+            this.objectRefresh.emit();
+          }
+        },
         (error) => {
           this.dmsObject = null;
-          this.contextError = this.translate.instant('yuv.client.state.object.context.load.error');
+          this.contextError = this.translate.instant('yuv.framework.object-details.context.load.error');
         }
       );
   }
 
   refreshDetails() {
     if (this._objectId) {
-      this.getDmsObject(this._objectId);
+      this.getDmsObject(this._objectId, true);
     }
   }
 

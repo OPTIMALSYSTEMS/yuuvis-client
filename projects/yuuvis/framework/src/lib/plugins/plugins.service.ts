@@ -2,6 +2,7 @@ import { Injectable, NgZone } from '@angular/core';
 import { Router } from '@angular/router';
 import {
   ApiBase,
+  AppCacheService,
   BackendService,
   DmsObject,
   DmsService,
@@ -74,6 +75,7 @@ export class PluginsService {
     private eventService: EventService,
     private searchService: SearchService,
     private userService: UserService,
+    private appCache: AppCacheService,
     private ngZone: NgZone
   ) {
     window['api'] = this.api;
@@ -118,9 +120,9 @@ export class PluginsService {
 
   public getCustomPlugins(type: 'links' | 'states' | 'actions' | 'extensions' | 'triggers' | 'viewers', hook?: string, matchPath?: string | RegExp) {
     return (!this.customPlugins ? this.backend.getViaTempCache('_plugins', () => this.loadCustomPlugins()) : of(this.customPlugins)).pipe(
-      map((cp) => {
+      map((cp: PluginConfigList) => {
         if (this.isDisabled(cp.disabled)) return [];
-        const customPlugins = type === 'links' ? [...(cp.links || []), ...(cp.states || [])] : cp[type] || [];
+        const customPlugins: any[] = type === 'links' ? [...(cp.links || []), ...(cp.states || [])] : cp[type] || [];
         return customPlugins.filter(
           (p) =>
             !this.isDisabled(p.disabled) &&
@@ -196,6 +198,10 @@ export class PluginsService {
       content: {
         viewer: () => window[UNDOCK_WINDOW_NAME] || (window.document.querySelector('yuv-content-preview iframe') || {})['contentWindow']
       },
+      storage: {
+        getItem: (key) => this.appCache.getItem(key).toPromise(),
+        setItem: (key, value) => this.appCache.setItem(key, value).toPromise()
+      },
       util: {
         $: (selectors, element) => (element || window.document).querySelector(selectors),
         $$: (selectors, element) => (element || window.document).querySelectorAll(selectors),
@@ -208,6 +214,7 @@ export class PluginsService {
           }
           s.innerHTML = styles;
         },
+        translate: (key, data) => this.translate.instant(key, data),
         encodeFileName: (filename) => this.encodeFileName(filename),
         notifier: {
           success: (text, title) => this.notifications.success(title, text),

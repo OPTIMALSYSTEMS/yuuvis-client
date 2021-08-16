@@ -16,18 +16,18 @@
         [objectId]="objectId"
         [layoutOptionsKey]="layoutOptionsKey"
         [plugins]="plugins"
-        [emptyMessage]="'yuv.framework.bpm.process.remove' | translate"
+        [emptyMessage]="'yuv.client.state.process.remove' | translate"
         (remove)="remove($event)">
       </yuv-process-details>
     </section>
   </yuv-responsive-master-slave>
 </section>
 <ng-template #empty>
-  <app-process-list-empty 
+  <yuv-process-list-empty 
     [state]="'process'"
     [headerDetails]="headerDetails"
     [loading]="loading$"
     [message]="'yuv.client.state.process.list.empty' | translate"
     (refresh)="refreshList()">
-  </app-process-list-empty>
+  </yuv-process-list-empty>
 </ng-template>

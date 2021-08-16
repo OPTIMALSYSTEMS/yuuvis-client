@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { DmsObject } from '@yuuvis/core';
+import { Component } from '@angular/core';
+import { BaseObjectTypeField, DmsObject, SearchFilter, SearchQuery, SystemType } from '@yuuvis/core';
 
 @Component({
   selector: 'yuv-test-audit',
@@ -7,14 +7,18 @@ import { DmsObject } from '@yuuvis/core';
   styleUrls: ['./test-audit.component.scss'],
   host: { class: 'yuv-test-container' }
 })
-export class TestAuditComponent implements OnInit {
+export class TestAuditComponent {
   dmsObject: DmsObject;
+  objectQuery: SearchQuery;
 
-  constructor() {}
+  constructor() {
+    const q = new SearchQuery();
+    q.addFilter(new SearchFilter(BaseObjectTypeField.VERSION_NUMBER, SearchFilter.OPERATOR.GREATER_THAN, 2));
+    q.types = [SystemType.DOCUMENT];
+    this.objectQuery = q;
+  }
 
   setDmsObject(o: DmsObject) {
     this.dmsObject = o;
   }
-
-  ngOnInit() {}
 }

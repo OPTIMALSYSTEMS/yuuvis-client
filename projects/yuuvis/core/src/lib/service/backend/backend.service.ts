@@ -1,26 +1,34 @@
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Inject, Injectable } from '@angular/core';
 import { forkJoin, Observable, of } from 'rxjs';
 import { catchError, finalize, shareReplay, tap } from 'rxjs/operators';
 import { ConfigService } from '../config/config.service';
+import { CoreConfig } from '../config/core-config';
+import { CORE_CONFIG } from '../config/core-config.tokens';
 import { Logger } from '../logger/logger';
+import { TENANT_HEADER } from '../system/system.enum';
 import { ApiBase } from './api.enum';
 
 /**
  * Service for providing an yuuvis Backend
  */
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class BackendService {
   private cache = new Map<string, any>();
   private temp = new Map<string, Observable<any>>();
   private headers = this.setDefaultHeaders();
   private persistedHeaders: any = {};
+
+  // public oidc: { host: string; tenant: string };
+
   /**
    * @ignore
    */
-  constructor(private http: HttpClient, private logger: Logger, private config: ConfigService) {}
+  constructor(private http: HttpClient, private logger: Logger, @Inject(CORE_CONFIG) public coreConfig: CoreConfig, private config: ConfigService) {}
+
+  authUsesOpenIdConnect(): boolean {
+    return !!this.coreConfig.oidc;
+  }
 
   /**
    * Add a new header.
@@ -120,7 +128,14 @@ export class BackendService {
     if (this.cache.has(uri)) {
       return of(this.cache.get(uri));
     } else {
-      return this.getViaTempCache(uri, () => this.http.get(uri, { responseType: 'text' }).pipe(tap((text) => this.cache.set(uri, text))));
+      const requestOptions: any = {
+        responseType: 'text',
+        headers: {}
+      };
+      if (this.authUsesOpenIdConnect()) {
+        requestOptions.headers[TENANT_HEADER] = this.coreConfig.oidc.tenant;
+      }
+      return this.getViaTempCache(uri, () => this.http.get(uri, requestOptions).pipe(tap((text) => this.cache.set(uri, text))));
     }
   }
 
@@ -166,8 +181,8 @@ export class BackendService {
    * @returns Base URI for the given API.
    */
   getApiBase(api?: string): string {
-    // return this.getHost() + this.config.getApiBase(api || ApiBase.apiWeb);
-    return api === '' ? api : this.config.getApiBase(api || ApiBase.apiWeb);
+    const apiBase = api === '' ? api : this.config.getApiBase(api || ApiBase.apiWeb);
+    return `${this.authUsesOpenIdConnect() ? this.coreConfig.oidc.host : ''}${apiBase}`;
   }
 
   /**
@@ -202,11 +217,11 @@ export class BackendService {
 
   private setDefaultHeaders(): HttpHeaders {
     return new HttpHeaders({
-      'Content-Type': 'application/json',
-      'X-os-include-links': 'false',
-      'X-os-include-actions': 'false',
-      'X-os-sync-index': 'true',
-      'Access-Control-Allow-Origin': '*'
+      'Content-Type': 'application/json'
+      // 'X-os-include-links': 'false',
+      // 'X-os-include-actions': 'false',
+      // 'X-os-sync-index': 'true'
+      // 'Access-Control-Allow-Origin': '*'
     });
   }
 

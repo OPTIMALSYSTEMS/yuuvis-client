@@ -1,6 +1,8 @@
 <yuv-panel *ngIf="dmsObject; else empty" class="object-details" [title]="dmsObject.title"
   (yuvFileDrop)="onFileDropped($event)"
-  [yuvFileDropOptions]="{ disabled: disableFileDrop || dmsObject.contentStreamAllowed === 'notallowed' || isRetentionActive, label: fileDropLabel }"
+  [yuvFileDropOptions]="{ disabled: disableFileDrop || fileDropOptions?.disabled || dmsObject.contentStreamAllowed === 'notallowed' || isRetentionActive, 
+  label: fileDropOptions?.label || fileDropLabel, multiple: fileDropOptions?.multiple, maxSize: fileDropOptions?.maxSize, accept: fileDropOptions?.accept, 
+  invalidError: fileDropOptions?.invalidError }"
   [description]="dmsObject.description" [yuvBusyOverlay]="busy">
   <yuv-object-type-icon class="header-icon" [objectTypeId]="objectTypeId"></yuv-object-type-icon>
 
@@ -27,7 +29,7 @@
     <ng-container *ngFor="let templateID of panelOrder" [ngTemplateOutlet]="this[templateID]"></ng-container>
     <!-- PLUGINS -->
     <p-tabPanel *ngFor="let config of resolvedPlugins" [id]="config.id" [header]="(config.label) | translate"
-      [headerStyleClass]="config.id">
+      [headerStyleClass]="config.id" class="{{config.id}}">
       <ng-template pTemplate="content">
         <yuv-plugin [config]="config" [parent]="this"></yuv-plugin>
       </ng-template>
@@ -78,7 +80,7 @@
   <p-tabPanel [id]="'history'" [header]="'yuv.framework.object-details.tabs.history.title' | translate"
     [headerStyleClass]="'history'">
     <ng-template pTemplate="content">
-      <yuv-audit [objectID]="objectId"></yuv-audit>
+      <yuv-audit [skipActions]="skipActions" [objectID]="objectId"></yuv-audit>
     </ng-template>
   </p-tabPanel>
 </ng-template>

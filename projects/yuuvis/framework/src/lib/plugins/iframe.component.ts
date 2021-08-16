@@ -45,18 +45,19 @@ export abstract class IFrameComponent {
     }
   }
 
-  iframeInit(iframe = this.iframe, searchTerm = '') {
+  iframeInit(iframe = this.iframe, searchTerm = '', onload?: Function) {
     if (iframe) {
       fromEvent(iframe, 'load')
         .pipe(takeUntilDestroy(this))
-        .subscribe(() =>
+        .subscribe(() => {
+          onload && onload();
           setTimeout(() => {
             this.loading = false;
             const win = iframe?.contentWindow || iframe;
             this.searchPDF(searchTerm, win);
             this.preventDropEvent(win);
-          }, 100)
-        );
+          }, 100);
+        });
     }
   }
 }

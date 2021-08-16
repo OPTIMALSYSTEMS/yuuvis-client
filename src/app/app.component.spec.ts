@@ -30,4 +30,5 @@ describe('AppComponent', () => {
       'Welcome to yuuvis-web!'
     );
   });
+
 });

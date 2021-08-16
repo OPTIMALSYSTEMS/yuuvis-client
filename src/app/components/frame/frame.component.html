@@ -61,6 +61,7 @@
           <div class="nav-item logout">
             <!-- <a [routerLink]="['/enter', { logout: true }]" translate>yuv.client.frame.app-bar.logout</a> -->
             <a href="logout" (click)="logout($event)" translate>yuv.client.frame.app-bar.logout</a>
+            <a href="logout" *ngIf="enableTenantSwitch" (click)="logout($event, true)" translate>yuv.client.frame.app-bar.change-tenant</a>
           </div>
         </div>
       </p-overlayPanel>
@@ -85,6 +86,9 @@
       </div>
       <div class="nav-item">
         <a routerLink="inbox" routerLinkActive="active" (click)="showSideBar(false)" translate>yuv.client.state.inbox.title</a>
+      </div>
+      <div class="nav-item">
+        <a routerLink="follow-ups" routerLinkActive="active" (click)="showSideBar(false)" translate>yuv.client.state.follow-ups.title</a>
       </div>
       <div class="nav-item">
         <a routerLink="processes" routerLinkActive="active" (click)="showSideBar(false)" translate>yuv.client.state.process.title</a>

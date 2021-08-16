@@ -1,6 +1,7 @@
 import { HttpClient, HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { APP_INITIALIZER, ModuleWithProviders, NgModule, Optional, SkipSelf } from '@angular/core';
 import { MissingTranslationHandler, TranslateLoader, TranslateModule } from '@ngx-translate/core';
+import { OAuthModule, OAuthStorage } from 'angular-oauth2-oidc';
 import { YuvCoreSharedModule } from './core.shared.module';
 import { AuthInterceptor } from './service/auth/auth.interceptor';
 import { CoreConfig } from './service/config/core-config';
@@ -21,6 +22,10 @@ export function init_module(coreInit: CoreInit) {
   return fnc;
 }
 
+export function storageFactory(): OAuthStorage {
+  return localStorage;
+}
+
 /**
  * `YuvCoreModule` provides a bunch of services to interact with a yuuvis backend.
  *
@@ -28,7 +33,16 @@ export function init_module(coreInit: CoreInit) {
  */
 
 @NgModule({
-  imports: [HttpClientModule, TranslateModule.forRoot()],
+  imports: [
+    HttpClientModule,
+    OAuthModule.forRoot({
+      resourceServer: {
+        sendAccessToken: false,
+        allowedUrls: []
+      }
+    }),
+    TranslateModule.forRoot()
+  ],
   exports: [YuvCoreSharedModule]
 })
 export class YuvCoreModule {
@@ -60,7 +74,8 @@ export class YuvCoreModule {
         {
           provide: MissingTranslationHandler,
           useClass: EoxMissingTranslationHandler
-        }
+        },
+        { provide: OAuthStorage, useFactory: storageFactory }
       ]
     };
   }

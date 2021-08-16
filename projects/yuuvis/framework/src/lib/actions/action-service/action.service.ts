@@ -46,17 +46,18 @@ export class ActionService {
     return !this.pluginActionsLoaded
       ? this.pluginsService.getCustomPlugins('actions').pipe(
           map((_actions: any[]) => PluginActionComponent.actionWrapper(_actions)),
-          tap((_actions) => {
+          tap((_actions: any[]) => {
             const availableActions = [].concat(...this.actions);
             // set action selector as ID
             availableActions.forEach((a) => (a.id = this._componentFactoryResolver.resolveComponentFactory(a)?.selector));
             window['_availableActions'] = availableActions.map((a) => a.id);
-            // in case there are plugin actions, original actions are visible only if specific IDs are included in the list
+            // in case there are plugin actions, original actions are visible only if specific IDs are included in the list OR '*' means include all
             this.allActionComponents = []
-              .concat(availableActions.filter((originalAction) => (_actions.length ? _actions.includes(originalAction.id) : true)))
+              .concat(availableActions.filter((originalAction) => (!_actions.includes('*') && _actions.length ? _actions.includes(originalAction.id) : true)))
               .concat(this.custom_actions)
               .concat(_actions)
               .filter((entry) => entry.target && !entry.isSubAction && !entry.disabled);
+
             this.pluginActionsLoaded = true;
           })
         )
@@ -98,13 +99,14 @@ export class ActionService {
       const observables = [of({})];
       targetActionsList.forEach((actionListEntry) => {
         selection.forEach((item) => {
-          let observable = actionListEntry.action.isExecutable(item);
+          let observable = actionListEntry.action.isExecutable(item).pipe(
+            tap((res) => {
+              if (res) {
+                actionListEntry.availableSelection.push(item);
+              }
+            })
+          );
           observables.push(observable);
-          observable.subscribe((res) => {
-            if (res) {
-              actionListEntry.availableSelection.push(item);
-            }
-          });
         });
       });
 

@@ -12,7 +12,7 @@ import { ProcessData, ProcessDefinitionKey, ProcessInstance, ProcessResponse, Ta
   providedIn: 'root'
 })
 export class BpmService {
-  private readonly bpmProcessUrl = '/bpm/process/instances';
+  private readonly bpmProcessUrl = '/bpm/processes';
   private readonly bpmTaskUrl = '/bpm/tasks';
 
   private loadingBpmDataSource = new BehaviorSubject<boolean>(false);
@@ -33,7 +33,7 @@ export class BpmService {
     const businessKeyValue = businessKey ? `&businessKey=${businessKey}` : '';
     return this.backendService
       .get(`${this.bpmProcessUrl}?processDefinitionKey=${processDefKey}&includeProcessVariables=${includeProcessVar}${businessKeyValue}`, ApiBase.apiWeb)
-      .pipe(map(({ data }: ProcessResponse) => data[0]));
+      .pipe(map(({ objects }: ProcessResponse) => objects[0]));
   }
 
   createProcess(payload: ProcessInstance): Observable<ProcessResponse> {
@@ -55,13 +55,13 @@ export class BpmService {
   getTasks(): Observable<TaskData[]> {
     return this.backendService.get(`${this.bpmTaskUrl}?active=true&includeProcessVariables=true`).pipe(
       tap((val) => console.log({ val })),
-      map(({ data }: TaskDataResponse) => data)
+      map(({ objects }: TaskDataResponse) => objects)
     );
   }
 
   getTask(processInstanceId: string, businessKey?: string): Observable<TaskData> {
     return this.backendService
       .get(`${this.bpmTaskUrl}?active=true&includeProcessVariables=true&businessKey=${businessKey}&processInstanceId=${processInstanceId}`)
-      .pipe(map(({ data }: TaskDataResponse) => data[0]));
+      .pipe(map(({ objects }: TaskDataResponse) => objects[0]));
   }
 }

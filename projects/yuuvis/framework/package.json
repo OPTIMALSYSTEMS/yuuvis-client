@@ -1,10 +1,11 @@
 {
   "name": "@yuuvis/framework",
-  "version": "2.0.3",
+  "version": "2.1.0-rc.13",
   "author": "OPTIMAL SYSTEMS GmbH <npm@optimal-systems.de>",
   "license": "MIT",
   "scripts": {
     "doc": "../../../node_modules/.bin/compodoc",
+    "doc:json": "./node_modules/.bin/compodoc -e json -d ./../../../documentation/output/yuuvis/json/framework --minimal",
     "doc:serve": "./node_modules/.bin/compodoc -s"
   },
   "peerDependencies": {
@@ -21,7 +22,7 @@
     "@ag-grid-community/core": "~24.1.0",
     "@ag-grid-community/csv-export": "~24.1.0",
     "@angular/cdk": "~10.2.7",
-    "@yuuvis/core": "2.0.3",
+    "@yuuvis/core": "2.1.0-rc.13",
     "@yuuvis/styles": "^1.0.0",
     "angular-resize-event": "^2.0.1",
     "angular-split": "^4.0.0",
