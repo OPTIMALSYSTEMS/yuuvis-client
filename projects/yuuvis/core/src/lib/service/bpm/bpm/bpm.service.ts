@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { finalize, flatMap, map, tap } from 'rxjs/operators';
+import { finalize, flatMap, map } from 'rxjs/operators';
 import { ApiBase } from '../../backend/api.enum';
 import { BackendService } from '../../backend/backend.service';
-import { ProcessData, ProcessDefinitionKey, ProcessInstance, ProcessResponse, TaskData, TaskDataResponse } from '../model/bpm.model';
+import { ProcessData, ProcessDefinitionKey, ProcessInstance, ProcessResponse } from '../model/bpm.model';
 
 /**
  * BpmService: responsible for handling all bpm/ route related interactions
@@ -13,7 +13,7 @@ import { ProcessData, ProcessDefinitionKey, ProcessInstance, ProcessResponse, Ta
 })
 export class BpmService {
   private readonly bpmProcessUrl = '/bpm/processes';
-  private readonly bpmTaskUrl = '/bpm/tasks';
+  // private readonly bpmTaskUrl = '/bpm/tasks';
 
   private loadingBpmDataSource = new BehaviorSubject<boolean>(false);
   public loadingBpmData$: Observable<boolean> = this.loadingBpmDataSource.asObservable();
@@ -52,16 +52,16 @@ export class BpmService {
     return this.backendService.delete(`${url}/${processInstanceId}`, ApiBase.apiWeb);
   }
 
-  getTasks(): Observable<TaskData[]> {
-    return this.backendService.get(`${this.bpmTaskUrl}?active=true&includeProcessVariables=true`).pipe(
-      tap((val) => console.log({ val })),
-      map(({ objects }: TaskDataResponse) => objects)
-    );
-  }
+  // getTasks(): Observable<TaskData[]> {
+  //   return this.backendService.get(`${this.bpmTaskUrl}?active=true&includeProcessVariables=true`).pipe(
+  //     tap((val) => console.log({ val })),
+  //     map(({ objects }: TaskDataResponse) => objects)
+  //   );
+  // }
 
-  getTask(processInstanceId: string, businessKey?: string): Observable<TaskData> {
-    return this.backendService
-      .get(`${this.bpmTaskUrl}?active=true&includeProcessVariables=true&businessKey=${businessKey}&processInstanceId=${processInstanceId}`)
-      .pipe(map(({ objects }: TaskDataResponse) => objects[0]));
-  }
+  // getTask(processInstanceId: string, businessKey?: string): Observable<TaskData> {
+  //   return this.backendService
+  //     .get(`${this.bpmTaskUrl}?active=true&includeProcessVariables=true&businessKey=${businessKey}&processInstanceId=${processInstanceId}`)
+  //     .pipe(map(({ objects }: TaskDataResponse) => objects[0]));
+  // }
 }

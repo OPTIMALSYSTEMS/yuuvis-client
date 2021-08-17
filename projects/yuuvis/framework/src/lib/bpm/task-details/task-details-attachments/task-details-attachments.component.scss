@@ -1,0 +1,10 @@
+:host {
+  .attachments {
+    display: flex;
+    flex-flow: row wrap;
+
+    span {
+      background-color: var(--color-accent);
+    }
+  }
+}

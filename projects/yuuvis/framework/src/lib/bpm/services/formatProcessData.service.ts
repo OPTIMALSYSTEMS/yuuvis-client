@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { InboxItem, InboxItemType, Process, ProcessData, ProcessStatus, TaskData, TranslateService } from '@yuuvis/core';
+import { Process, ProcessData, ProcessStatus, Task, TaskData, TaskType, TranslateService } from '@yuuvis/core';
 import { ResponsiveTableData } from '../../components/responsive-data-table/responsive-data-table.interface';
 import { IconRegistryService } from './../../common/components/icon/service/iconRegistry.service';
 import { GridService } from './../../services/grid/grid.service';
@@ -48,7 +48,7 @@ export class FormatProcessDataService {
     return this.processDataForTable(
       processData
         .map((data) => ({ ...data, icon: this.iconRegService.getIcon(data.processDefinitionId.startsWith('follow-up') ? 'followUp' : 'task') }))
-        .map((data) => new InboxItem(data)),
+        .map((data) => new Task(data)),
       ['type', 'task', 'createTime']
     );
   }
@@ -65,7 +65,7 @@ export class FormatProcessDataService {
     );
   }
 
-  private processDataForTable(rows: (Process | InboxItem)[], fields: fieldName[]): ResponsiveTableData {
+  private processDataForTable(rows: (Process | Task)[], fields: fieldName[]): ResponsiveTableData {
     return {
       columns: fields.map((field) => ({
         colId: field,
@@ -106,10 +106,10 @@ export class FormatProcessDataService {
   private typeCellRenderer(params): string {
     let type;
     switch (params.value) {
-      case InboxItemType.FOLLOW_UP:
+      case TaskType.FOLLOW_UP:
         type = params.translations.followUpType;
         break;
-      case InboxItemType.TASK:
+      case TaskType.TASK:
         type = params.translations.taskType;
         break;
     }

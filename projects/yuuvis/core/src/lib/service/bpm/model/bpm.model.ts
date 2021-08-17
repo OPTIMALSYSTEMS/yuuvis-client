@@ -120,15 +120,15 @@ export interface Variable {
   scope?: string;
 }
 
-export enum InboxItemType {
+export enum TaskType {
   FOLLOW_UP = 'follow-up',
   TASK = 'task'
 }
 
 /**
- * InbosItem wrapper for grid
+ * Task wrapper for grid
  */
-export class InboxItem {
+export class Task {
   get id() {
     return this.originalData.id;
   }
@@ -153,12 +153,16 @@ export class InboxItem {
     return this.originalData.variables.find((v) => v.name === 'documentId')?.value as string;
   }
 
-  get type(): InboxItemType {
-    return this.originalData.processDefinitionId.startsWith('follow-up') ? InboxItemType.FOLLOW_UP : InboxItemType.TASK;
+  get type(): TaskType {
+    return this.originalData.processDefinitionId.startsWith('follow-up') ? TaskType.FOLLOW_UP : TaskType.TASK;
   }
 
   get icon(): string {
     return this.originalData.icon;
+  }
+
+  get taskData() {
+    return this.originalData;
   }
 
   constructor(private originalData: TaskData) {}

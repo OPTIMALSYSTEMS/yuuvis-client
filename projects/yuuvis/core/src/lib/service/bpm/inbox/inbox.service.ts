@@ -28,13 +28,15 @@ export class InboxService {
   }
 
   /**
-   * get all Inbox tasks
+   * updates inboxData$
    */
-  getTasks(includeProcessVar = true): Observable<TaskData[]> {
-    return this.getTasksPaged({ includeProcessVariables: includeProcessVar }).pipe(
-      tap((res: TaskData[]) => this.inboxDataSource.next(res)),
-      map((res: TaskData[]) => res)
-    );
+  fetchTasks(includeProcessVar = true): void {
+    this.getTasksPaged({ includeProcessVariables: includeProcessVar })
+      .pipe(
+        tap((res: TaskData[]) => this.inboxDataSource.next(res)),
+        map((res: TaskData[]) => res)
+      )
+      .subscribe();
   }
 
   private getTasksPaged(options?: { active?: boolean; includeProcessVariables?: boolean; processInstanceId?: string }) {
@@ -74,7 +76,7 @@ export class InboxService {
    * set task status to comlete
    */
   completeTask(taskId: string): Observable<any> {
-    return this.bpmService.updateProcess(`${this.bpmTaskUrl}/${taskId}`, { action: 'complete' });
+    return this.bpmService.updateProcess(`${this.bpmTaskUrl}/${taskId}`, { action: 'complete' }).pipe(tap((_) => this.fetchTasks()));
   }
   // updateTask(taskId: string, payload: any): Observable<any> {
   //   return this.bpmService.createProcess(url, payload);

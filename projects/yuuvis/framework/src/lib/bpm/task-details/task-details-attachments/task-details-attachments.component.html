@@ -1,0 +1,4 @@
+<div class="attachments"><span *ngFor="let o of objectIDs">{{o}}</span></div>
+
+<yuv-object-details *ngIf="objectIDs?.length" [disableFileDrop]="true" [objectId]="objectIDs[0]"
+    [layoutOptionsKey]="layoutOptionsKey"></yuv-object-details>
