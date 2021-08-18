@@ -440,20 +440,13 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
         singleCellRenderer: SingleCellRendererComponent
       },
 
-      onRowSelected: (e) => {
-        if (this.selectionLimit) {
-          const selected = e.api.getSelectedNodes();
-          if (selected.length > this.selectionLimit) {
-            selected[0].setSelected(false);
-          }
-        }
-      },
-
       // EVENTS - add event callback handlers
       onSelectionChanged: (event) => {
         const focused = this.gridOptions.api?.getFocusedCell() || { rowIndex: -1 };
         const selection = this.gridOptions.api.getSelectedNodes().sort((n) => (n.rowIndex === focused.rowIndex ? -1 : 0));
-        if (!event || selection.map((rowNode: RowNode) => rowNode.id).join() !== (this._currentSelection || []).join()) {
+        if (this.selectionLimit && selection.length > this.selectionLimit) {
+          selection.forEach((node, i) => i >= this.selectionLimit && node.setSelected(false));
+        } else if (!event || selection.map((rowNode: RowNode) => rowNode.id).join() !== (this._currentSelection || []).join()) {
           this._currentSelection = selection.map((rowNode: RowNode) => rowNode.id);
           // ag-grid bug on mobile - issue with change detection after touch event
           this._ngZone.run(() => this.selectionChanged.emit(selection.map((rowNode: RowNode) => rowNode.data)));
