@@ -1,5 +1,5 @@
 <section class="processes-wrapper" *ngIf="processData$ | async as processData; else empty">
-  <yuv-responsive-master-slave class="state" [layoutOptionsKey]="layoutOptionsKey" [slaveActive]="itemIsSelected" (slaveClosed)="onSlaveClosed()">
+  <yuv-responsive-master-slave class="state" [layoutOptionsKey]="layoutOptionsKey" [slaveActive]="objectId" (slaveClosed)="onSlaveClosed()">
     <yuv-process-list
       class="yuv-master panel"
       [showFooter]="true"
