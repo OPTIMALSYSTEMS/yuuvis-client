@@ -68,10 +68,10 @@
   <p-tabPanel [id]="'preview'" [header]="'yuv.framework.object-details.tabs.content.title' | translate"
     [headerStyleClass]="'preview'">
     <ng-template pTemplate="content" *ngIf="!undockWinActive; else loadPreview">
-      <yuv-content-preview [dmsObject]="dmsObject" [searchTerm]="searchTerm"></yuv-content-preview>
+      <yuv-content-preview [dmsObject]="dmsObject" [searchTerm]="searchTerm" [activeVersion]="activeVersion"></yuv-content-preview>
     </ng-template>
     <ng-template #loadPreview>
-      <yuv-content-preview [dmsObject]="dmsObject" [searchTerm]="searchTerm"></yuv-content-preview>
+      <yuv-content-preview [dmsObject]="dmsObject" [searchTerm]="searchTerm" [activeVersion]="activeVersion"></yuv-content-preview>
     </ng-template>
   </p-tabPanel>
 </ng-template>

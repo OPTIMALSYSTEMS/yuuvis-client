@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { UserService } from '@yuuvis/core';
+import { DmsObject, UserService } from '@yuuvis/core';
 import { Observable } from 'rxjs';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { compare } from '../../svg.generated';
@@ -20,6 +20,8 @@ import { ObjectCompareInput } from './object-details-compare.interface';
 })
 export class ObjectDetailsCompareComponent implements OnInit {
   userIsAdmin: boolean;
+
+  @Input() activeVersion: DmsObject;
 
   /**
    * Objects to be compared

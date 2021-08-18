@@ -84,6 +84,8 @@ export class ObjectDetailsComponent implements OnDestroy {
     return this.dmsObject?.objectTypeId || 'none';
   }
 
+  @Input() activeVersion: DmsObject;
+
   /**
    * DmsObject to show the details for.
    */
