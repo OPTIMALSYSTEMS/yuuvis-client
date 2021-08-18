@@ -58,6 +58,7 @@ export class ResponsiveMasterSlaveComponent implements OnDestroy, AfterViewInit 
   };
 
   _layoutOptions: ResponsiveMasterSlaveOptions = {};
+  _direction: any;
 
   @HostBinding('class.yuv-responsive-master-slave') _hostClass = true;
   @HostBinding('class.slaveActive') _slaveActive: boolean;
@@ -72,7 +73,7 @@ export class ResponsiveMasterSlaveComponent implements OnDestroy, AfterViewInit 
   @Input() set layoutOptionsKey(lok: string) {
     this._layoutOptionsKey = lok;
     this.layoutService.loadLayoutOptions(lok, 'yuv-responsive-master-slave').subscribe((o: ResponsiveMasterSlaveOptions) => {
-      this.setDirection(o);
+      this.setDirection(o?.direction, o);
     });
   }
   /**
@@ -96,12 +97,13 @@ export class ResponsiveMasterSlaveComponent implements OnDestroy, AfterViewInit 
   constructor(private screenService: ScreenService, private layoutService: LayoutService, private ngZone: NgZone) {
     this.screenService.screenChange$.pipe(takeUntilDestroy(this)).subscribe((screen: Screen) => {
       this.useSmallDeviceLayout = screen.isSmall;
-      this.setDirection(this._layoutOptions);
+      this.setDirection(this._direction, this._layoutOptions);
     });
   }
 
-  private setDirection(options: ResponsiveMasterSlaveOptions) {
-    const direction = this.useSmallDeviceLayout ? 'vertical' : options ? options.direction : 'horizontal';
+  private setDirection(_direction: 'vertical' | 'horizontal', options: ResponsiveMasterSlaveOptions) {
+    this._direction = _direction || 'horizontal';
+    const direction = this.useSmallDeviceLayout ? 'vertical' : this._direction;
     this._layoutOptions = {
       ...(direction === 'vertical' ? this.verticalOptions : this.horizontalOptions),
       ...(options && direction === options.direction ? options : {})
@@ -118,8 +120,8 @@ export class ResponsiveMasterSlaveComponent implements OnDestroy, AfterViewInit 
   }
 
   gutterDblClick() {
-    this._layoutOptions.direction = this._layoutOptions.direction === 'vertical' ? 'horizontal' : 'vertical';
-    this.setDirection(this._layoutOptions);
+    const direction = this.useSmallDeviceLayout || this._layoutOptions.direction === 'horizontal' ? 'vertical' : 'horizontal';
+    this.setDirection(direction, this._layoutOptions);
     this.saveOptions();
   }
 
