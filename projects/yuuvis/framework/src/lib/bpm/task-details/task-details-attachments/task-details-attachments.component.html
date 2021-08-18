@@ -1,4 +1,25 @@
-<div class="attachments"><span *ngFor="let o of objectIDs">{{o}}</span></div>
+<div class="yuv-task-details-attachments" [yuvBusyOverlay]="busy">
 
-<yuv-object-details *ngIf="objectIDs?.length" [disableFileDrop]="true" [objectId]="objectIDs[0]"
-    [layoutOptionsKey]="layoutOptionsKey"></yuv-object-details>
+
+    <ng-container *ngIf="attachedObjects.length">
+        <div class="attachments">
+            <span class="label">{{'yuv.framework.task-details-attachments.attachments.label'|translate}}</span>
+            <button>#1</button>
+            <button *ngFor="let o of attachedObjects" (click)="selectAttachment(o.id)"
+                [ngClass]="{selected: o.id === selectedObject}">
+                <yuv-object-type-icon [objectTypeId]="o.objectTypeId"></yuv-object-type-icon>
+                {{o.title}}
+            </button>
+            <button>#2</button>
+            <button>#3333</button>
+        </div>
+
+        <yuv-object-details *ngIf="selectedObject" [disableFileDrop]="true" [objectId]="selectedObject"
+            [layoutOptionsKey]="layoutOptionsKey"></yuv-object-details>
+    </ng-container>
+
+
+
+
+
+</div>

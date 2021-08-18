@@ -284,6 +284,7 @@
 	"yuv.framework.shared.ok": "OK",
 	"yuv.framework.shared.remove": "Remove",
 	"yuv.framework.shared.reset": "Reset",
+	"yuv.framework.task-details-attachments.attachments.label": "Attachments",
 	"yuv.framework.task-details.tabs.attachments.title": "Attachments",
 	"yuv.framework.task-details.tabs.history.title": "History",
 	"yuv.framework.task-details.tabs.task.title": "Task",

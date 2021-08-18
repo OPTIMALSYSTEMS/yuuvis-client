@@ -1,4 +1,4 @@
-<yuv-panel *ngIf="task; else empty" [title]="task.title" [description]="task.description">
+<yuv-panel *ngIf="task; else empty" class="task-details" [title]="task.title" [description]="task.description">
 
     <yuv-responsive-tab-container *ngIf="(plugins ? (plugins | async) : []) as resolvedPlugins" #tabContainer
         class="content" [layoutOptionsKey]="layoutOptionsKey" [pluginPanels]="[viewPanels, externalPanels]"
@@ -39,7 +39,8 @@
     <p-tabPanel [id]="'attachmentsTab'" [header]="'yuv.framework.task-details.tabs.attachments.title' | translate"
         [headerStyleClass]="'attachments'">
         <ng-template pTemplate="content">
-            <yuv-task-details-attachments [objectIDs]="[task?.documentId]"></yuv-task-details-attachments>
+            <yuv-task-details-attachments [objectIDs]="task?.documentId ? [task.documentId] : []">
+            </yuv-task-details-attachments>
         </ng-template>
     </p-tabPanel>
 </ng-template>
