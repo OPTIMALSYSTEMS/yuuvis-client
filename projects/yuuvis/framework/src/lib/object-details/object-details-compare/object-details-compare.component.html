@@ -22,7 +22,7 @@
     <p-tabPanel [id]="'compare'" [header]="'yuv.framework.object-details-compare.tabs.content.title' | translate"
       [headerStyleClass]="'compare'" [disabled]="!objectCompareInput?.second.item">
       <ng-template pTemplate="content">
-        <yuv-content-preview *ngIf="objectCompareInput?.second.item"
+        <yuv-content-preview *ngIf="objectCompareInput?.second.item" [activeVersion]="activeVersion"
           [compareObjects]="[objectCompareInput?.first.item, objectCompareInput?.second.item]"></yuv-content-preview>
       </ng-template>
     </p-tabPanel>

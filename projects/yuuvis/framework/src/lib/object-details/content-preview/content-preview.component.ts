@@ -34,16 +34,25 @@ export class ContentPreviewComponent extends IFrameComponent implements OnInit, 
 
   previewSrc: string;
 
+  @Input() activeVersion: DmsObject;
+
   /**
    * DmsObject to show the preview for.
    */
   @Input()
   set dmsObject(object: DmsObject) {
+    // exclude old (non existent) office documents renditions
+    const getContent = (o) =>
+      this.activeVersion &&
+      this.activeVersion?.content?.contentStreamId !== o?.content?.contentStreamId &&
+      o?.content?.mimeType?.match(/application\/(msword|vnd.ms|vnd.openxmlformats)/)
+        ? null
+        : o?.content;
     // generate preview URI with streamID to enable refresh if file was changed
-    !object || !object.content || !object.content.size
+    !getContent(object)?.size || (this.dmsObject2 && !getContent(this.dmsObject2)?.size)
       ? this.contentPreviewService.resetSource()
-      : this.contentPreviewService.createPreviewUrl(object.id, object.content, object.version, this.dmsObject2?.content, this.dmsObject2?.version);
-    this.loading = !object || !object.content || this.dmsObject ? false : true;
+      : this.contentPreviewService.createPreviewUrl(object.id, getContent(object), object.version, getContent(this.dmsObject2), this.dmsObject2?.version);
+    this.loading = !getContent(object) || this.dmsObject ? false : true;
     this._dmsObject = object;
   }
 

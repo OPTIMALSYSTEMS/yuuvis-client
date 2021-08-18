@@ -77,25 +77,21 @@ export class VersionsComponent implements OnInit, OnDestroy {
   }
 
   versionSelected(objects: DmsObject[]) {
-    if (objects && objects.length) {
-      if (objects.length === 1) {
-        this.compare = null;
-        this.dmsObject = objects[0];
-      } else {
-        this.dmsObject = null;
-        this.compare = {
-          title: this.versionList.activeVersion.title,
-          second: {
-            label: this.translate.instant('yuv.client.state.versions.compare.label', { version: objects[0].version }),
-            item: objects[0]
-          },
-          first: {
-            label: this.translate.instant('yuv.client.state.versions.compare.label', { version: objects[1].version }),
-            item: objects[1]
+    this.dmsObject = objects?.length === 1 ? objects[0] : null;
+    this.compare =
+      objects?.length > 1
+        ? {
+            title: this.versionList.activeVersion.title,
+            second: {
+              label: this.translate.instant('yuv.client.state.versions.compare.label', { version: objects[0].version }),
+              item: objects[0]
+            },
+            first: {
+              label: this.translate.instant('yuv.client.state.versions.compare.label', { version: objects[1].version }),
+              item: objects[1]
+            }
           }
-        };
-      }
-    }
+        : null;
     this.selection = objects;
   }
 
