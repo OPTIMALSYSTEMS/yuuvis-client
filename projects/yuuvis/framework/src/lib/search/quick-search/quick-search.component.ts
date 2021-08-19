@@ -90,16 +90,16 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
   }
 
   get availableObjectTypeGroups(): SelectableGroup[] {
-    const sg = JSON.parse(JSON.stringify(this.quickSearchService.availableObjectTypeGroups));
+    let sg = JSON.parse(JSON.stringify(this.quickSearchService.availableObjectTypeGroups));
     if (this.skipTypes) {
-      sg.forEach((g) => (g.items = g.items.filter((i) => !this.skipTypes.includes(i.id))));
+      sg.forEach((g: SelectableGroup) => (g.items = g.items.filter((i) => !this.skipTypes.includes(i.id))));
+      sg = sg.filter((g: SelectableGroup) => g.items?.length);
     }
     return sg;
   }
 
   get availableObjectTypeGroupsList(): Selectable[] {
-    const selectables = this.availableObjectTypeGroups.reduce((pre, cur) => [...pre, ...cur.items], []);
-    return this.skipTypes?.length ? selectables.filter((s) => !this.skipTypes.includes(s.id)) : selectables;
+    return this.availableObjectTypeGroups.reduce((pre, cur) => [...pre, ...cur.items], []);
   }
 
   availableObjectTypeFields: Selectable[] = [];
