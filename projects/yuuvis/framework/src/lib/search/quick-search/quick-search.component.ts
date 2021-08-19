@@ -288,7 +288,7 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
       selected: this.selectedObjectTypes
     };
     const popoverConfig: PopoverConfig = {
-      width: '55%',
+      width: pickerData.items.length <= 1 ? 'auto' : pickerData.items.length === 2 ? `${18 * 2}%` : `${18 * 3}%`,
       height: '70%',
       disableSmallScreenClose: true,
       data: pickerData
