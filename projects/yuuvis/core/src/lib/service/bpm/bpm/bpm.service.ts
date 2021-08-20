@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { finalize, flatMap, map } from 'rxjs/operators';
+import { Utils } from '../../../util/utils';
 import { ApiBase } from '../../backend/api.enum';
 import { BackendService } from '../../backend/backend.service';
 import { ProcessData, ProcessDefinitionKey, ProcessInstance, ProcessInstanceHistoryEntry, ProcessResponse } from '../model/bpm.model';
@@ -53,9 +54,23 @@ export class BpmService {
   }
 
   getProcessHistory(processInstanceId: string): Observable<ProcessInstanceHistoryEntry[]> {
-    // TODO: Use api-web instead
-    return this.backendService
-      .get(`/bpm-engine/api/processes/${processInstanceId}/history`, ApiBase.none)
-      .pipe(map((res) => (res && res.tasks ? (res.tasks as ProcessInstanceHistoryEntry[]) : [])));
+    return this.backendService.get(`/bpm/processes/${processInstanceId}/history`).pipe(
+      map((res) =>
+        res && res.tasks
+          ? res.tasks
+              .map((t) => ({
+                id: t.id,
+                name: t.name,
+                description: t.description,
+                assignee: t.assignee,
+                createTime: new Date(t.createTime),
+                claimTime: new Date(t.claimTime),
+                endTime: new Date(t.endTime)
+              }))
+              .sort(Utils.sortValues('createTime'))
+              .reverse()
+          : []
+      )
+    );
   }
 }

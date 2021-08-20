@@ -1,18 +1,24 @@
 :host {
   height: 100%;
   display: grid;
-  grid-template-rows: 1fr auto;
+  grid-template-rows: auto 1fr auto;
   grid-template-columns: 1fr;
-  grid-template-areas: 'form' 'buttons';
+  grid-template-areas: 'desc' 'form' 'buttons';
   background-color: var(--panel-background-grey);
 
-  yuv-object-form {
+  .task-description {
+    grid-area: desc;
+    padding: var(--app-pane-padding);
+  }
+  .task-data {
     grid-area: form;
     overflow-y: auto;
   }
-  .buttons {
+  .actions {
     grid-area: buttons;
-    padding: var(--app-pane-padding);
+    background-color: var(--panel-background);
+    border-top: 1px solid var(--panel-divider-color);
+    padding: calc(var(--app-pane-padding) / 2);
     display: flex;
     justify-content: flex-end;
   }

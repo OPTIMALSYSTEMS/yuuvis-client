@@ -70,6 +70,7 @@ export class FormatProcessDataService {
       columns: fields.map((field) => ({
         colId: field,
         field,
+        width: field.toLowerCase().includes('type') ? 50 : undefined,
         headerClass: `col-header-type-${field}`,
         headerName: this.translations[field],
         ...(field.toLowerCase().includes('time') && { cellRenderer: this.gridService.dateTimeCellRenderer() }),
@@ -104,15 +105,17 @@ export class FormatProcessDataService {
   }
 
   private typeCellRenderer(params): string {
-    let type;
+    let type, icon;
     switch (params.value) {
       case TaskType.FOLLOW_UP:
         type = params.translations.followUpType;
+        icon = this.iconRegService.getIcon('followUp');
         break;
       case TaskType.TASK:
         type = params.translations.taskType;
+        icon = this.iconRegService.getIcon('task');
         break;
     }
-    return type ? type : params.value;
+    return `<div title="${type}">${icon}</div>`;
   }
 }

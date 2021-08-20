@@ -1,10 +1,15 @@
-<!-- <div class="yuv-task-details-task"> -->
+<div class="task-description">
+    lala {{task?.description}}
+</div>
 
-<yuv-object-form *ngIf="formOptions" [formOptions]="formOptions" (statusChanged)="onFormStatusChanged($event)">
-</yuv-object-form>
+<div class="task-data">
 
-<div class="buttons"><button class="primary" (click)="confirm()">
-        {{'yuv.framework.task-details-task.button.confirm'|translate}}
+    <yuv-object-form *ngIf="formOptions" [formOptions]="formOptions" (statusChanged)="onFormStatusChanged($event)">
+    </yuv-object-form>
+</div>
 
-    </button></div>
-<!-- </div> -->
+
+<div class="actions">
+    <button class="primary" (click)="confirm()"> {{'yuv.framework.task-details-task.button.confirm'|translate}}
+    </button>
+</div>

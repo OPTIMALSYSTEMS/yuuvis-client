@@ -2,6 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { BpmEvent, EventService, InboxService, TaskData, TranslateService } from '@yuuvis/core';
 import {
   arrowNext,
+  BpmService,
   edit,
   FormatProcessDataService,
   HeaderDetails,
@@ -29,7 +30,9 @@ export class InboxComponent implements OnInit, OnDestroy {
   contextError: string;
   selectedTasks: Task[];
   detailsTask: Task;
+  td: TaskData[];
   inboxData$: Observable<ResponsiveTableData> = this.inboxService.inboxData$.pipe(
+    tap((taskData: TaskData[]) => (this.td = taskData)),
     map((taskData: TaskData[]) => this.formatProcessDataService.formatTaskDataForTable(taskData)),
     map((taskData: ResponsiveTableData) => (taskData.rows.length ? taskData : null))
   );
@@ -49,6 +52,7 @@ export class InboxComponent implements OnInit, OnDestroy {
     private formatProcessDataService: FormatProcessDataService,
     private iconRegistry: IconRegistryService,
     private eventService: EventService,
+    private bpmService: BpmService,
     private pluginsService: PluginsService
   ) {
     this.plugins = this.pluginsService.getCustomPlugins('extensions', 'yuv-inbox');
@@ -66,10 +70,6 @@ export class InboxComponent implements OnInit, OnDestroy {
 
   refreshList() {
     this.inboxService.fetchTasks();
-  }
-
-  remove() {
-    this.inboxService.completeTask(this.selectedTasks[0].id).subscribe();
   }
 
   onSlaveClosed() {}

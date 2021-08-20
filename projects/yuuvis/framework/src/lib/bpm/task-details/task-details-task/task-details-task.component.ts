@@ -8,9 +8,15 @@ import { FormStatusChangedEvent, ObjectFormOptions } from '../../../object-form/
   styleUrls: ['./task-details-task.component.scss']
 })
 export class TaskDetailsTaskComponent implements OnInit {
+  private _taskData: TaskData;
   @Input() set task(t: Task) {
     console.log(t.taskData);
-    this.formOptions = this.varsToFormOptions(t.taskData);
+    this._taskData = t.taskData;
+    this.formOptions = t.taskData.variables?.length ? this.varsToFormOptions(t.taskData) : null;
+  }
+
+  get taskData() {
+    return this._taskData;
   }
 
   formOptions: ObjectFormOptions;
@@ -22,7 +28,7 @@ export class TaskDetailsTaskComponent implements OnInit {
   }
 
   confirm() {
-    this.inboxService.completeTask(this.task.id).subscribe(
+    this.inboxService.completeTask(this._taskData.id).subscribe(
       (res) => console.log(res),
       (err) => console.error(err)
     );
