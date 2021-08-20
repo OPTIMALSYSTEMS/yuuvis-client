@@ -47,7 +47,7 @@ export class FormatProcessDataService {
   formatTaskDataForTable(processData: TaskData[]): ResponsiveTableData {
     return this.processDataForTable(
       processData
-        .map((data) => ({ ...data, icon: this.iconRegService.getIcon(data.processDefinitionId.startsWith('follow-up') ? 'followUp' : 'task') }))
+        .map((data) => ({ ...data, icon: this.iconRegService.getIcon(data.processDefinition.id.startsWith('follow-up') ? 'followUp' : 'task') }))
         .map((data) => new Task(data)),
       ['type', 'task', 'createTime']
     );
@@ -59,7 +59,7 @@ export class FormatProcessDataService {
   formatProcessDataForTable(processData: ProcessData[], fields: fieldName[]): ResponsiveTableData {
     return this.processDataForTable(
       processData
-        .map((data) => ({ ...data, icon: this.iconRegService.getIcon(data.processDefinitionId.startsWith('follow-up') ? 'followUp' : 'task') }))
+        .map((data) => ({ ...data, icon: this.iconRegService.getIcon(data.processDefinition.id.startsWith('follow-up') ? 'followUp' : 'task') }))
         .map((data) => new Process(data)),
       fields
     );

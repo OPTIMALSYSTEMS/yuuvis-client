@@ -4,6 +4,8 @@ import { TranslateModule, YuvCoreModule } from '@yuuvis/core';
 import { YuvCommonModule } from '../common/common.module';
 import { YuvComponentsModule } from '../components/components.module';
 import { YuvObjectDetailsModule } from '../object-details/object-details.module';
+import { YuvObjectFormModule } from '../object-form/object-form.module';
+import { YuvPipesModule } from '../pipes/pipes.module';
 import { YuvPluginsModule } from '../plugins/plugins.module';
 import { ProcessDetailsComponent } from './process-details/process-details.component';
 import { ProcessListEmptyComponent } from './process-list-empty/process-list-empty.component';
@@ -23,7 +25,17 @@ const components = [
   TaskDetailsAttachmentsComponent
 ];
 @NgModule({
-  imports: [CommonModule, YuvComponentsModule, YuvPluginsModule, YuvCoreModule, TranslateModule, YuvCommonModule, YuvObjectDetailsModule],
+  imports: [
+    CommonModule,
+    YuvObjectFormModule,
+    YuvPipesModule,
+    YuvComponentsModule,
+    YuvPluginsModule,
+    YuvCoreModule,
+    TranslateModule,
+    YuvCommonModule,
+    YuvObjectDetailsModule
+  ],
   declarations: [...components],
   entryComponents: [...components],
   exports: [...components]

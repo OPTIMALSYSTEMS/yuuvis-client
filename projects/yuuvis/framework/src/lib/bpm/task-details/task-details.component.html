@@ -30,7 +30,7 @@
     <p-tabPanel [id]="'historyTab'" [header]="'yuv.framework.task-details.tabs.history.title' | translate"
         [headerStyleClass]="'history'">
         <ng-template pTemplate="content">
-            <yuv-task-details-history [processInstanceId]="task?.processInstanceId"></yuv-task-details-history>
+            <yuv-task-details-history [processInstanceId]="task?.taskData.processInstanceId"></yuv-task-details-history>
         </ng-template>
     </p-tabPanel>
 </ng-template>
@@ -39,7 +39,7 @@
     <p-tabPanel [id]="'attachmentsTab'" [header]="'yuv.framework.task-details.tabs.attachments.title' | translate"
         [headerStyleClass]="'attachments'">
         <ng-template pTemplate="content">
-            <yuv-task-details-attachments [objectIDs]="task?.documentId ? [task.documentId] : []">
+            <yuv-task-details-attachments [objectIDs]="task?.attachments">
             </yuv-task-details-attachments>
         </ng-template>
     </p-tabPanel>

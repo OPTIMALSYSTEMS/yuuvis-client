@@ -1,16 +1,33 @@
 :host {
   .yuv-task-details-attachments {
     height: 100%;
+    background-color: var(--panel-background-grey);
   }
+
+  .empty {
+    height: 100%;
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-color-caption);
+
+    yuv-icon {
+      color: var(--panel-divider-color);
+      width: 20%;
+      height: auto;
+    }
+  }
+
   .attachments {
     display: flex;
     flex-flow: row wrap;
     padding: calc(var(--app-pane-padding) / 4) 0 0 calc(var(--app-pane-padding) / 4);
-    border-bottom: 1px solid var(--panel-divider-color);
     background-color: var(--panel-background-lightgrey);
 
     .label {
-      color: var(--text-color-caption);
+      box-sizing: content-box;
+      color: var(--text-color-hint);
       padding: calc(var(--app-pane-padding) / 4) var(--app-pane-padding);
     }
 
@@ -33,6 +50,9 @@
   ::ng-deep {
     yuv-panel > .header {
       display: none;
+    }
+    .yuv-object-details yuv-responsive-tab-container.content {
+      background-color: var(--panel-background-lightgrey);
     }
   }
 }

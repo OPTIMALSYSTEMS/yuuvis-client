@@ -37,8 +37,8 @@
     </button>
 
     <!-- list of audits -->
-    <div class="audits" *ngIf="auditsRes.items.length; else tplEmpty">
-      <div class="audit-entry" *ngFor="let a of auditsRes.items" class="g{{ a.actionGroup }}"
+    <div class="audits yuv-timeline" *ngIf="auditsRes.items.length; else tplEmpty">
+      <div class="audit-entry yuv-timeline-node" *ngFor="let a of auditsRes.items" class="g{{ a.actionGroup }}"
         [ngClass]="{ versionEnabled: a.actionGroup === 3 || a.actionGroup === 2 }">
         <div class="created">
           <div class="date">{{ a.creationDate | localeDate: 'eoShortDate' }}</div>

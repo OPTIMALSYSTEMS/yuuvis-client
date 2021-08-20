@@ -1,3 +1,10 @@
-<button (click)="zzz()">zzz</button>
+<!-- <div class="yuv-task-details-task"> -->
 
-<button (click)="confirm()">Confirm</button>
+<yuv-object-form *ngIf="formOptions" [formOptions]="formOptions" (statusChanged)="onFormStatusChanged($event)">
+</yuv-object-form>
+
+<div class="buttons"><button class="primary" (click)="confirm()">
+        {{'yuv.framework.task-details-task.button.confirm'|translate}}
+
+    </button></div>
+<!-- </div> -->

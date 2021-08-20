@@ -1,0 +1,19 @@
+:host {
+  height: 100%;
+  display: grid;
+  grid-template-rows: 1fr auto;
+  grid-template-columns: 1fr;
+  grid-template-areas: 'form' 'buttons';
+  background-color: var(--panel-background-grey);
+
+  yuv-object-form {
+    grid-area: form;
+    overflow-y: auto;
+  }
+  .buttons {
+    grid-area: buttons;
+    padding: var(--app-pane-padding);
+    display: flex;
+    justify-content: flex-end;
+  }
+}

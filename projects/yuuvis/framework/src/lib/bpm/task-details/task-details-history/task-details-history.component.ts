@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { BpmService, ProcessInstanceHistoryEntry, TranslateService } from '@yuuvis/core';
 
 @Component({
   selector: 'yuv-task-details-history',
@@ -7,12 +8,34 @@ import { Component, Input, OnInit } from '@angular/core';
 })
 export class TaskDetailsHistoryComponent implements OnInit {
   @Input() set processInstanceId(pid: string) {
-    this.fetchProcessHistory(pid);
+    if (pid) {
+      this.fetchProcessHistory(pid);
+    } else {
+      this.entries = [];
+    }
   }
 
-  constructor() {}
+  busy: boolean;
+  error: any;
+  entries: ProcessInstanceHistoryEntry[] = [];
 
-  private fetchProcessHistory(processInstanceId: string) {}
+  constructor(private bpmService: BpmService, private translate: TranslateService) {}
+
+  private fetchProcessHistory(processInstanceId: string) {
+    this.error = null;
+    this.busy = true;
+    this.bpmService.getProcessHistory(processInstanceId).subscribe(
+      (res) => {
+        this.entries = res;
+        this.busy = false;
+      },
+      (err) => {
+        console.error(err);
+        this.error = err;
+        this.busy = false;
+      }
+    );
+  }
 
   ngOnInit(): void {}
 }

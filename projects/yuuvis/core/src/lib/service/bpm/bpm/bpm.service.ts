@@ -3,7 +3,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { finalize, flatMap, map } from 'rxjs/operators';
 import { ApiBase } from '../../backend/api.enum';
 import { BackendService } from '../../backend/backend.service';
-import { ProcessData, ProcessDefinitionKey, ProcessInstance, ProcessResponse } from '../model/bpm.model';
+import { ProcessData, ProcessDefinitionKey, ProcessInstance, ProcessInstanceHistoryEntry, ProcessResponse } from '../model/bpm.model';
 
 /**
  * BpmService: responsible for handling all bpm/ route related interactions
@@ -52,16 +52,10 @@ export class BpmService {
     return this.backendService.delete(`${url}/${processInstanceId}`, ApiBase.apiWeb);
   }
 
-  // getTasks(): Observable<TaskData[]> {
-  //   return this.backendService.get(`${this.bpmTaskUrl}?active=true&includeProcessVariables=true`).pipe(
-  //     tap((val) => console.log({ val })),
-  //     map(({ objects }: TaskDataResponse) => objects)
-  //   );
-  // }
-
-  // getTask(processInstanceId: string, businessKey?: string): Observable<TaskData> {
-  //   return this.backendService
-  //     .get(`${this.bpmTaskUrl}?active=true&includeProcessVariables=true&businessKey=${businessKey}&processInstanceId=${processInstanceId}`)
-  //     .pipe(map(({ objects }: TaskDataResponse) => objects[0]));
-  // }
+  getProcessHistory(processInstanceId: string): Observable<ProcessInstanceHistoryEntry[]> {
+    // TODO: Use api-web instead
+    return this.backendService
+      .get(`/bpm-engine/api/processes/${processInstanceId}/history`, ApiBase.none)
+      .pipe(map((res) => (res && res.tasks ? (res.tasks as ProcessInstanceHistoryEntry[]) : [])));
+  }
 }

@@ -1,5 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { BaseObjectTypeField, ClientDefaultsObjectTypeField, SearchFilter, SearchFilterGroup, SearchQuery, SearchResult, SearchService } from '@yuuvis/core';
+import { IconRegistryService } from '../../../common/components/icon/service/iconRegistry.service';
+import { attachment, noFile } from '../../../svg.generated';
 
 @Component({
   selector: 'yuv-task-details-attachments',
@@ -10,11 +12,17 @@ export class TaskDetailsAttachmentsComponent implements OnInit {
   @Input() set objectIDs(oids: string[]) {
     this.fetchAttachmentDetails(oids);
   }
+  _layoutOptionsKey: string;
+  @Input() set layoutOptionsKey(k: string) {
+    this._layoutOptionsKey = `${k}.attachments`;
+  }
   attachedObjects: { id: string; objectTypeId: string; title: string }[] = [];
   selectedObject: string;
   busy: boolean;
 
-  constructor(private searchService: SearchService) {}
+  constructor(private searchService: SearchService, private iconRegistry: IconRegistryService) {
+    this.iconRegistry.registerIcons([attachment, noFile]);
+  }
 
   selectAttachment(id: string) {
     this.selectedObject = id;

@@ -15,6 +15,17 @@ export interface ProcessInstance {
   variables?: StartFormVariable[];
 }
 
+export interface ProcessInstanceHistoryEntry {
+  id: string;
+  name: string;
+  description: string;
+  assignee: string;
+  // owner: null,
+  createTime: string;
+  claimTime: null;
+  endTime: null;
+}
+
 /**
  * payload returned by bpmService /tasks
  */
@@ -25,8 +36,7 @@ interface Processes {
   id: string;
   url: string;
   name: string;
-  processDefinitionId: string;
-  processDefinitionUrl: string;
+  processDefinition: { id: string; name: string };
   suspended: boolean;
   variables: Variable[];
   tenantId: string;
@@ -87,27 +97,34 @@ export interface ProcessData extends Processes {
  * task describing data
  */
 export interface TaskData extends Processes {
-  owner: null;
-  assignee: string;
-  delegationState: null;
-  description: null;
+  subject: string;
+  owner: ProcessUser;
+  assignee: ProcessUser;
+  // delegationState: null;
+  description: string;
   createTime: Date;
-  dueDate: null;
+  // dueDate: null;
   priority: number;
-  claimTime: null;
+  // claimTime: null;
   taskDefinitionKey: string;
-  scopeDefinitionId: null;
-  scopeId: null;
-  scopeType: null;
-  category: null;
-  formKey: null;
-  parentTaskId: null;
-  parentTaskUrl: null;
+  // scopeDefinitionId: null;
+  // scopeId: null;
+  // scopeType: null;
+  category: string;
+  formKey: string;
+  parentTaskId: string;
+  parentTaskUrl: string;
   executionId: string;
   executionUrl: string;
   processInstanceId: string;
   processInstanceUrl: string;
+  attachments: string[];
   icon?: string;
+}
+
+export interface ProcessUser {
+  id: string;
+  name: string;
 }
 
 /**
@@ -129,43 +146,27 @@ export enum TaskType {
  * Task wrapper for grid
  */
 export class Task {
-  get id() {
-    return this.originalData.id;
-  }
+  id: string;
+  title: string;
+  description: string;
+  createTime: Date;
+  task: string;
+  attachments: string[];
+  type: TaskType;
+  icon: string;
+  taskData: any;
 
-  get title(): string {
-    return this.originalData.variables.find((v) => v.name === 'whatAbout')?.value as string;
+  constructor(private originalData: TaskData) {
+    this.id = originalData.id;
+    this.title = originalData.subject;
+    this.description = ''; // TODO: create meaningfull description from Task data
+    this.createTime = new Date(this.originalData.createTime);
+    this.task = originalData.name;
+    this.attachments = this.originalData.attachments ? this.originalData.attachments : [];
+    this.type = this.originalData.processDefinition.id.startsWith('follow-up') ? TaskType.FOLLOW_UP : TaskType.TASK;
+    this.icon = originalData.icon;
+    this.taskData = originalData;
   }
-
-  get createTime(): Date {
-    return new Date(this.originalData.createTime);
-  }
-
-  get description(): string {
-    return this.originalData.variables.find((v) => v.name === 'whatAbout')?.value as string;
-  }
-
-  get task(): string {
-    return this.originalData.name;
-  }
-
-  get documentId(): string {
-    return this.originalData.variables.find((v) => v.name === 'documentId')?.value as string;
-  }
-
-  get type(): TaskType {
-    return this.originalData.processDefinitionId.startsWith('follow-up') ? TaskType.FOLLOW_UP : TaskType.TASK;
-  }
-
-  get icon(): string {
-    return this.originalData.icon;
-  }
-
-  get taskData() {
-    return this.originalData;
-  }
-
-  constructor(private originalData: TaskData) {}
 }
 
 export enum ProcessStatus {
