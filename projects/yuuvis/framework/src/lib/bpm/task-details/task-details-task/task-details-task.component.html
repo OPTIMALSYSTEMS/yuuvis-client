@@ -1,13 +1,11 @@
-<div class="task-description">
-    lala {{task?.description}}
+<div class="task-description" *ngIf="task?.description">
+    {{task.description}}
 </div>
 
 <div class="task-data">
-
     <yuv-object-form *ngIf="formOptions" [formOptions]="formOptions" (statusChanged)="onFormStatusChanged($event)">
     </yuv-object-form>
 </div>
-
 
 <div class="actions">
     <button class="primary" (click)="confirm()"> {{'yuv.framework.task-details-task.button.confirm'|translate}}

@@ -13,6 +13,7 @@
   .task-data {
     grid-area: form;
     overflow-y: auto;
+    padding: var(--app-pane-padding);
   }
   .actions {
     grid-area: buttons;

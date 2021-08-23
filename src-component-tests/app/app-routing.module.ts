@@ -24,6 +24,7 @@ import { TestResponsiveTabContainerComponent } from './test-responsive-tab-conta
 import { TestSearchResultPanelComponent } from './test-search-result-panel/test-search-result-panel.component';
 import { TestSearchResultComponent } from './test-search-result/test-search-result.component';
 import { TestSummaryComponent } from './test-summary/test-summary.component';
+import { TestTaskDetailsComponent } from './test-task-details/test-task-details.component';
 import { TestUploadProgressOverlayComponent } from './test-upload-progress-overlay/test-upload-progress-overlay.component';
 import { TestUserAvatarComponent } from './test-user-avatar/test-user-avatar.component';
 import { TestVersionListComponent } from './test-version-list/test-version-list.component';
@@ -52,6 +53,7 @@ const routes: Routes = [
   { path: 'search-result-panel', component: TestSearchResultPanelComponent },
   { path: 'recent-activities', component: TestRecentActivitiesComponent },
   { path: 'summary', component: TestSummaryComponent },
+  { path: 'task-details', component: TestTaskDetailsComponent },
   { path: 'user-avatar', component: TestUserAvatarComponent },
   { path: 'upload-progress-overlay', component: TestUploadProgressOverlayComponent },
   { path: 'version-list', component: TestVersionListComponent },

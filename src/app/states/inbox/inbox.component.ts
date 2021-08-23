@@ -2,7 +2,6 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { BpmEvent, EventService, InboxService, TaskData, TranslateService } from '@yuuvis/core';
 import {
   arrowNext,
-  BpmService,
   edit,
   FormatProcessDataService,
   HeaderDetails,
@@ -52,7 +51,6 @@ export class InboxComponent implements OnInit, OnDestroy {
     private formatProcessDataService: FormatProcessDataService,
     private iconRegistry: IconRegistryService,
     private eventService: EventService,
-    private bpmService: BpmService,
     private pluginsService: PluginsService
   ) {
     this.plugins = this.pluginsService.getCustomPlugins('extensions', 'yuv-inbox');

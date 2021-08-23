@@ -5,7 +5,7 @@ import { IconRegistryService } from './../../common/components/icon/service/icon
 import { GridService } from './../../services/grid/grid.service';
 import { followUp, task } from './../../svg.generated';
 
-type fieldName = 'type' | 'subject' | 'createTime' | 'startTime' | 'businessKey' | 'expiryDateTime' | 'whatAbout' | 'status' | 'task';
+type fieldName = 'title' | 'type' | 'subject' | 'createTime' | 'startTime' | 'businessKey' | 'expiryDateTime' | 'whatAbout' | 'status' | 'task';
 @Injectable({
   providedIn: 'root'
 })
@@ -49,7 +49,7 @@ export class FormatProcessDataService {
       processData
         .map((data) => ({ ...data, icon: this.iconRegService.getIcon(data.processDefinition.id.startsWith('follow-up') ? 'followUp' : 'task') }))
         .map((data) => new Task(data)),
-      ['type', 'task', 'createTime']
+      ['type', 'task', 'title', 'createTime']
     );
   }
 

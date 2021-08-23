@@ -18,13 +18,8 @@ export class TaskDetailsComponent implements OnInit {
   @Input() panelOrder = ['taskTab', 'historyTab', 'attachmentsTab'];
   @Input() layoutOptionsKey: string;
   @Input() plugins: any;
-  @Input() emptyMessage: string;
 
   constructor() {}
-
-  zzz() {
-    console.log(this.task.taskData);
-  }
 
   ngOnInit(): void {}
 }

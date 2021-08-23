@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { InboxService, Task, TaskData } from '@yuuvis/core';
+import { InboxService, Task, TaskData, Variable } from '@yuuvis/core';
 import { FormStatusChangedEvent, ObjectFormOptions } from '../../../object-form/object-form.interface';
 
 @Component({
@@ -39,12 +39,7 @@ export class TaskDetailsTaskComponent implements OnInit {
     const values: any = {};
     const coreGroupElements = taskData.variables.map((v) => {
       values[v.name] = v.value;
-      return {
-        name: v.name,
-        type: v.type,
-        readonly: true,
-        label: v.name
-      };
+      return this.varToFormElement(v);
     });
     return {
       formModel: {
@@ -52,6 +47,29 @@ export class TaskDetailsTaskComponent implements OnInit {
       },
       data: values
     };
+  }
+
+  private varToFormElement(v: Variable): any {
+    const fe = {
+      name: v.name,
+      type: v.type,
+      readonly: true,
+      label: v.name
+    };
+
+    // map bpm vars to form element types
+    switch (v.type) {
+      case 'date': {
+        fe.type = 'datetime';
+        break;
+      }
+      case 'short': {
+        // TODO: apply right range
+        fe.type = 'integer';
+        break;
+      }
+    }
+    return fe;
   }
 
   ngOnInit(): void {}

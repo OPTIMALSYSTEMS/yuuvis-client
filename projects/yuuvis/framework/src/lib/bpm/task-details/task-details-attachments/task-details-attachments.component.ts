@@ -53,6 +53,8 @@ export class TaskDetailsAttachmentsComponent implements OnInit {
           this.busy = false;
         }
       );
+    } else {
+      this.attachedObjects = [];
     }
   }
 

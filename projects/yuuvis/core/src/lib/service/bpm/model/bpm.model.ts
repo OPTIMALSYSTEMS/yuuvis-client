@@ -34,12 +34,11 @@ export interface InboxPayload extends ProcessInstance {}
 
 interface Processes {
   id: string;
-  url: string;
+  // url: string;
   name: string;
   processDefinition: { id: string; name: string };
   suspended: boolean;
   variables: Variable[];
-  tenantId: string;
 }
 
 /**
@@ -98,33 +97,35 @@ export interface ProcessData extends Processes {
  */
 export interface TaskData extends Processes {
   subject: string;
-  owner: ProcessUser;
   assignee: ProcessUser;
+  owner: ProcessUser;
+  initiator: ProcessUser;
+
   // delegationState: null;
   description: string;
   createTime: Date;
   // dueDate: null;
-  priority: number;
+  priority?: number;
   // claimTime: null;
-  taskDefinitionKey: string;
+  taskDefinitionKey?: string;
   // scopeDefinitionId: null;
   // scopeId: null;
   // scopeType: null;
-  category: string;
+  category?: string;
   formKey: string;
   parentTaskId: string;
-  parentTaskUrl: string;
-  executionId: string;
-  executionUrl: string;
+  // parentTaskUrl: string;
+  executionId?: string;
+  executionUrl?: string;
   processInstanceId: string;
-  processInstanceUrl: string;
+  processInstanceUrl?: string;
   attachments: string[];
   icon?: string;
 }
 
 export interface ProcessUser {
   id: string;
-  name: string;
+  title: string;
 }
 
 /**
@@ -133,7 +134,7 @@ export interface ProcessUser {
 export interface Variable {
   name: string;
   type?: string;
-  value: string | Date;
+  value: any;
   scope?: string;
 }
 

@@ -1,0 +1,10 @@
+<div class="testing-controls">
+    <div class="buttons">
+        <button (click)="setTask(0)">Default Task</button>
+        <button (click)="setTask(1)">Task with VARS</button>
+        <button (click)="setEmptyTask()">Empty Task</button>
+    </div>
+</div>
+<div class="cmp">
+    <yuv-task-details [task]="task"></yuv-task-details>
+</div>
