@@ -21,6 +21,7 @@ import {
   ApplicableSecondaries,
   ClassificationEntry,
   GroupedObjectType,
+  Localization,
   ObjectType,
   ObjectTypeField,
   ObjectTypeGroup,
@@ -31,10 +32,6 @@ import {
   SecondaryObjectType,
   SystemDefinition
 } from './system.interface';
-
-interface Localization {
-  [key: string]: string;
-}
 
 /**
  * Providing system definitions.
@@ -729,7 +726,7 @@ export class SystemService {
    * Create the schema from the servers schema response
    * @param schemaResponse Response from the backend
    */
-  private setSchema(schemaResponse: SchemaResponse, localizedResource: any) {
+  setSchema(schemaResponse: SchemaResponse, localizedResource: Localization = {}) {
     // prepare a quick access object for the fields
     const propertiesQA = {};
     const orgTypeFields = [BaseObjectTypeField.MODIFIED_BY, BaseObjectTypeField.CREATED_BY];
