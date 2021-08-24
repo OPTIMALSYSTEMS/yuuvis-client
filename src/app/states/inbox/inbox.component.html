@@ -1,7 +1,7 @@
 <section class="inbox-wrapper" *ngIf="inboxData$ | async as inboxData; else empty">
   <yuv-responsive-master-slave class="state" 
     [layoutOptionsKey]="layoutOptionsKey"
-    [slaveActive]="itemIsSelected"
+    [slaveActive]="objectId"
     (slaveClosed)="onSlaveClosed()">
   <yuv-process-list
     class="yuv-master panel"

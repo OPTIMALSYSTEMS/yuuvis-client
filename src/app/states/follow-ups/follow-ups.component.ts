@@ -27,7 +27,6 @@ export class FollowUpsComponent implements OnInit, OnDestroy {
   layoutOptionsKey = 'yuv.app.follow-ups';
   contextError: string;
   objectDetailsID: string;
-  itemIsSelected = false;
   objectId: string;
   selectedProcess: any;
   processData$: Observable<ResponsiveTableData>;
@@ -63,10 +62,9 @@ export class FollowUpsComponent implements OnInit, OnDestroy {
     );
   }
 
-  selectedItem(item) {
+  selectedItem(item: any[]) {
     this.selectedProcess = item;
-    this.objectId = item[0]?.documentId ? item[0]?.documentId : ProcessDefinitionKey.INVALID_TYPE;
-    this.itemIsSelected = true;
+    this.objectId = item[0] ? item[0]?.documentId || ProcessDefinitionKey.INVALID_TYPE : null;
   }
 
   refreshList() {

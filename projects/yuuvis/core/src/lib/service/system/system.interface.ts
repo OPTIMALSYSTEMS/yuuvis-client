@@ -6,7 +6,7 @@ export interface SystemDefinition {
   lastModificationDate: any;
   objectTypes: ObjectType[];
   secondaryObjectTypes: SecondaryObjectType[];
-  i18n: any;
+  i18n: Localization;
   allFields: any;
 }
 /**
@@ -149,4 +149,8 @@ export interface ClassificationEntry {
 export interface ApplicableSecondaries {
   primarySOTs: SecondaryObjectType[];
   extendingSOTs: SecondaryObjectType[];
+}
+
+export interface Localization {
+  [key: string]: string;
 }

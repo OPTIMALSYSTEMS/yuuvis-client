@@ -61,7 +61,7 @@
               </div>
 
               <!-- paging controls -->
-              <div class="controls" *ngIf="hasPages">
+              <div class="controls" *ngIf="pagination">
                 <button [disabled]="pagination.page === 1" (click)="goToPage(1)">
                   <yuv-icon class="first" [icon]="'arrowLast'"></yuv-icon>
                 </button>

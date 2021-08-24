@@ -21,6 +21,7 @@ import {
   ApplicableSecondaries,
   ClassificationEntry,
   GroupedObjectType,
+  Localization,
   ObjectType,
   ObjectTypeField,
   ObjectTypeGroup,
@@ -31,10 +32,6 @@ import {
   SecondaryObjectType,
   SystemDefinition
 } from './system.interface';
-
-interface Localization {
-  [key: string]: string;
-}
 
 /**
  * Providing system definitions.
@@ -71,9 +68,10 @@ export class SystemService {
    */
   getSecondaryObjectTypes(withLabels?: boolean): SecondaryObjectType[] {
     return (
-      (withLabels
-        ? this.system.secondaryObjectTypes.map((t) => ({ ...t, label: this.getLocalizedResource(`${t.id}_label`) }))
-        : this.system.secondaryObjectTypes
+      (
+        withLabels
+          ? this.system.secondaryObjectTypes.map((t) => ({ ...t, label: this.getLocalizedResource(`${t.id}_label`) }))
+          : this.system.secondaryObjectTypes
       )
         // ignore
         .filter((t) => t.id !== t.baseId && !t.id.startsWith('system:') && t.id !== 'appClientsystem:leadingType')
@@ -728,7 +726,7 @@ export class SystemService {
    * Create the schema from the servers schema response
    * @param schemaResponse Response from the backend
    */
-  private setSchema(schemaResponse: SchemaResponse, localizedResource: any) {
+  setSchema(schemaResponse: SchemaResponse, localizedResource: Localization = {}) {
     // prepare a quick access object for the fields
     const propertiesQA = {};
     const orgTypeFields = [BaseObjectTypeField.MODIFIED_BY, BaseObjectTypeField.CREATED_BY];
@@ -890,7 +888,10 @@ export class SystemService {
       return InternalFieldType.STRING_ORGANIZATION;
     } else if (field[typeProperty] === 'string' && classifications.has(Classification.STRING_CATALOG)) {
       return InternalFieldType.STRING_CATALOG;
-    } else if (field[typeProperty] === 'string' && classifications.has(Classification.STRING_CATALOG_DYNAMIC)) {
+    } else if (
+      field[typeProperty] === 'string' &&
+      (classifications.has(Classification.STRING_CATALOG_DYNAMIC) || classifications.has(Classification.STRING_CATALOG_CUSTOM))
+    ) {
       return InternalFieldType.STRING_DYNAMIC_CATALOG;
     } else {
       // if there are no matching conditions just return the original type

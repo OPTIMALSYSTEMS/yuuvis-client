@@ -81,7 +81,7 @@ export class FollowUpComponent implements OnInit, OnDestroy, ActionComponent {
           this.translate.instant('yuv.framework.action-menu.action.follow-up.edit.done.message')
         );
         this.finished.emit();
-        // this.eventService.trigger(BpmEvent.BPM_EVENT);
+        this.eventService.trigger(BpmEvent.BPM_EVENT);
       });
   }
 
