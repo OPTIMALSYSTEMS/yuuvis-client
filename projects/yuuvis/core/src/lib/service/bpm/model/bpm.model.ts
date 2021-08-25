@@ -8,11 +8,13 @@ export enum ProcessDefinitionKey {
  */
 export interface ProcessInstance {
   processDefinitionKey: ProcessDefinitionKey;
-  name: string;
+  name?: string;
   businessKey: string;
   returnVariables?: boolean;
   // startFormVariables?: StartFormVariable[];
   variables?: StartFormVariable[];
+  attachments: string[];
+  subject: string;
 }
 
 export interface ProcessInstanceHistoryEntry {
@@ -141,6 +143,11 @@ export interface Variable {
 export enum TaskType {
   FOLLOW_UP = 'follow-up',
   TASK = 'task'
+}
+
+export interface CreateFollowUp {
+  expiryDateTime: Date;
+  whatAbout: string;
 }
 
 /**

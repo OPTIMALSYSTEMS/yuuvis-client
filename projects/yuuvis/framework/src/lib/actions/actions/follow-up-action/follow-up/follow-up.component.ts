@@ -40,8 +40,7 @@ export class FollowUpComponent implements OnInit, OnDestroy, ActionComponent {
   ) {
     this.form = this.fb.group({
       expiryDateTime: ['', Validators.required],
-      whatAbout: ['', Validators.required],
-      documentId: null
+      whatAbout: ['', Validators.required]
     });
   }
 
@@ -52,7 +51,7 @@ export class FollowUpComponent implements OnInit, OnDestroy, ActionComponent {
   createFollowUp() {
     this.loading = true;
     this.processService
-      .createFollowUp(this.selection[0].id, this.form.value)
+      .createFollowUp(this.selection[0].id, this.form.get('whatAbout').value, this.form.value)
       .pipe(
         finalize(() => (this.loading = false)),
         takeUntilDestroy(this)
@@ -70,7 +69,7 @@ export class FollowUpComponent implements OnInit, OnDestroy, ActionComponent {
   editFollowUp() {
     this.loading = true;
     this.processService
-      .editFollowUp(this.selection[0].id, this.currentFollowUp.id, this.form.value)
+      .editFollowUp(this.selection[0].id, this.currentFollowUp.id, this.form.get('whatAbout').value, this.form.value)
       .pipe(
         finalize(() => (this.loading = false)),
         takeUntilDestroy(this)
