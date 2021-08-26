@@ -102,6 +102,12 @@ export interface CreateFollowUp {
   whatAbout: string;
 }
 
+export enum ProcessStatus {
+  RUNNING = 'running',
+  SUSPENDED = 'suspended',
+  COMPLETED = 'completed'
+}
+
 /**
  * Task wrapper for grid
  */
@@ -123,12 +129,6 @@ export class TaskRow {
   }
 }
 
-export enum ProcessStatus {
-  RUNNING = 'running',
-  SUSPENDED = 'suspended',
-  COMPLETED = 'completed'
-}
-
 export class ProcessRow {
   id: string;
   subject: string;
@@ -136,12 +136,22 @@ export class ProcessRow {
   status: ProcessStatus;
   startTime: Date;
 
-  constructor(private data: Process) {
+  constructor(protected data: Process) {
     this.id = data.id;
     this.subject = data.subject || data.processDefinition.name;
     this.startTime = data.startTime;
+  }
+}
 
-    // only availableon follow-up ?!?
-    // this.expiryDateTime = data.variables.find(v => v.name === )
+// special type of ProcessRow
+export class FollowUpRow extends ProcessRow {
+  expiryDateTime: Date;
+
+  constructor(protected data: Process) {
+    super(data);
+    const exDateVar = data.variables.find((v) => v.name === 'expiryDateTime');
+    if (exDateVar) {
+      this.expiryDateTime = new Date(exDateVar.value);
+    }
   }
 }

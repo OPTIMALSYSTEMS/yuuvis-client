@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Process, ProcessRow, ProcessStatus, Task, TaskRow, TaskType, TranslateService } from '@yuuvis/core';
+import { FollowUpRow, Process, ProcessRow, ProcessStatus, Task, TaskRow, TaskType, TranslateService } from '@yuuvis/core';
 import { ResponsiveTableData } from '../../components/responsive-data-table/responsive-data-table.interface';
 import { IconRegistryService } from './../../common/components/icon/service/iconRegistry.service';
 import { GridService } from './../../services/grid/grid.service';
@@ -61,6 +61,16 @@ export class FormatProcessDataService {
       processData
         .map((data) => ({ ...data, icon: this.iconRegService.getIcon(data.processDefinition.id.startsWith('follow-up') ? 'followUp' : 'task') }))
         .map((data) => new ProcessRow(data)),
+      fields
+    );
+  }
+
+  /**
+   * Formating follow-up data to fit for Grid in ProcessState
+   */
+  formatFollowUpDataForTable(processData: Process[], fields: fieldName[]): ResponsiveTableData {
+    return this.processDataForTable(
+      processData.map((data) => ({ ...data, icon: this.iconRegService.getIcon('followUp') })).map((data) => new FollowUpRow(data)),
       fields
     );
   }
