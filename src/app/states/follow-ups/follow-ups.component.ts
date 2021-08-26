@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { BpmEvent, EventService, ProcessData, ProcessDefinitionKey, ProcessService, TranslateService } from '@yuuvis/core';
+import { BpmEvent, EventService, Process, ProcessDefinitionKey, ProcessService, TranslateService } from '@yuuvis/core';
 import {
   arrowNext,
   edit,
@@ -53,10 +53,10 @@ export class FollowUpsComponent implements OnInit, OnDestroy {
     this.iconRegistry.registerIcons([edit, arrowNext, refresh, followUp, listModeDefault, listModeGrid, listModeSimple]);
   }
 
-  private getProcesses(): Observable<ProcessData[] | ResponsiveTableData> {
+  private getProcesses(): Observable<ResponsiveTableData> {
     return this.processService.getProcesses(ProcessDefinitionKey.FOLLOW_UP).pipe(
       take(1),
-      map((processData: ProcessData[]) => this.formatProcessDataService.formatProcessDataForTable(processData, ['whatAbout', 'startTime', 'expiryDateTime'])),
+      map((processData: Process[]) => this.formatProcessDataService.formatProcessDataForTable(processData, ['subject', 'startTime', 'expiryDateTime'])),
       map((taskData: ResponsiveTableData) => (taskData.rows.length ? taskData : null)),
       tap((data) => (this.processData$ = of(data))),
       takeUntilDestroy(this)

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Task } from '@yuuvis/core';
-import { TaskData1, TaskData2 } from './task.data';
+import { Task1, Task2 } from './task.data';
 
 @Component({
   selector: 'yuv-test-task-details',
@@ -9,13 +9,13 @@ import { TaskData1, TaskData2 } from './task.data';
   host: { class: 'yuv-test-container' }
 })
 export class TestTaskDetailsComponent implements OnInit {
-  private tasks = [TaskData1, TaskData2];
-  task: Task = new Task(TaskData1);
+  private tasks = [Task1, Task2];
+  task: Task = Task1;
 
   constructor() {}
 
   setTask(idx: number) {
-    this.task = new Task(this.tasks[idx]);
+    this.task = this.tasks[idx];
   }
 
   setEmptyTask() {

@@ -1,4 +1,6 @@
-export const TaskData1 = {
+import { Task } from '@yuuvis/core';
+
+export const Task1: Task = {
   assignee: { id: 'c13c0dc6-c006-4eb7-b292-00ca49352549', title: 'Bartonitz, Martin (bartonitz)' },
   owner: null,
   initiator: { id: 'c13c0dc6-c006-4eb7-b292-00ca49352549', title: 'Bartonitz, Martin (bartonitz)' },
@@ -20,7 +22,7 @@ export const TaskData1 = {
   claimTime: null
 };
 
-export const TaskData2 = {
+export const Task2: Task = {
   assignee: { id: 'c13c0dc6-c006-4eb7-b292-00ca49352549', title: 'Bartonitz, Martin (bartonitz)' },
   owner: null,
   initiator: { id: 'c13c0dc6-c006-4eb7-b292-00ca49352549', title: 'Bartonitz, Martin (bartonitz)' },

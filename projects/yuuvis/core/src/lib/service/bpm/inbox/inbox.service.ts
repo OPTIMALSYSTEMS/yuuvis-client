@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { EMPTY, Observable, Subject } from 'rxjs';
 import { expand, map, skipWhile, tap } from 'rxjs/operators';
-import { TaskData } from '../model/bpm.model';
+import { Task } from '../model/bpm.model';
 import { BpmService } from './../bpm/bpm.service';
 
 /**
@@ -15,8 +15,8 @@ export class InboxService {
   private INBOX_PAGE_SIZE = 100;
 
   private readonly bpmTaskUrl = '/bpm/tasks';
-  private inboxDataSource = new Subject<TaskData[]>();
-  public inboxData$: Observable<TaskData[]> = this.inboxDataSource.asObservable();
+  private inboxDataSource = new Subject<Task[]>();
+  public inboxData$: Observable<Task[]> = this.inboxDataSource.asObservable();
 
   constructor(private bpmService: BpmService) {}
 
@@ -33,8 +33,8 @@ export class InboxService {
   fetchTasks(includeProcessVar = true): void {
     this.getTasksPaged({ includeProcessVariables: includeProcessVar })
       .pipe(
-        tap((res: TaskData[]) => this.inboxDataSource.next(res)),
-        map((res: TaskData[]) => res)
+        tap((res: Task[]) => this.inboxDataSource.next(res)),
+        map((res: Task[]) => res)
       )
       .subscribe();
   }
@@ -47,7 +47,7 @@ export class InboxService {
     return this.getAllPages(`&${p.join('&')}`);
   }
 
-  private getAllPages(requestParams: string): Observable<TaskData[]> {
+  private getAllPages(requestParams: string): Observable<Task[]> {
     let items = [];
     let i = 0;
     return this.getPage(requestParams, i).pipe(
@@ -68,8 +68,8 @@ export class InboxService {
   /**
    * get a specific task by processInstanceId
    */
-  getTask(processInstanceId: string, includeProcessVar = true): Observable<TaskData[]> {
-    return this.getTasksPaged({ includeProcessVariables: includeProcessVar, processInstanceId: processInstanceId }).pipe(map((res: TaskData[]) => res));
+  getTask(processInstanceId: string, includeProcessVar = true): Observable<Task[]> {
+    return this.getTasksPaged({ includeProcessVariables: includeProcessVar, processInstanceId: processInstanceId }).pipe(map((res: Task[]) => res));
   }
 
   /**

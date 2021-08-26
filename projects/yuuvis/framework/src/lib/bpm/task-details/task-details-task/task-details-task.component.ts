@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { InboxService, Task, TaskData, Variable } from '@yuuvis/core';
+import { InboxService, ProcessVariable, Task } from '@yuuvis/core';
 import { FormStatusChangedEvent, ObjectFormOptions } from '../../../object-form/object-form.interface';
 
 @Component({
@@ -8,15 +8,10 @@ import { FormStatusChangedEvent, ObjectFormOptions } from '../../../object-form/
   styleUrls: ['./task-details-task.component.scss']
 })
 export class TaskDetailsTaskComponent implements OnInit {
-  private _taskData: TaskData;
+  private _task: Task;
   @Input() set task(t: Task) {
-    console.log(t.taskData);
-    this._taskData = t.taskData;
-    this.formOptions = t.taskData.variables?.length ? this.varsToFormOptions(t.taskData) : null;
-  }
-
-  get taskData() {
-    return this._taskData;
+    this._task = t;
+    this.formOptions = t.variables?.length ? this.varsToFormOptions(t) : null;
   }
 
   formOptions: ObjectFormOptions;
@@ -28,16 +23,16 @@ export class TaskDetailsTaskComponent implements OnInit {
   }
 
   confirm() {
-    this.inboxService.completeTask(this._taskData.id).subscribe(
+    this.inboxService.completeTask(this._task.id).subscribe(
       (res) => console.log(res),
       (err) => console.error(err)
     );
   }
 
   // Create form model from task variables
-  private varsToFormOptions(taskData: TaskData): ObjectFormOptions {
+  private varsToFormOptions(task: Task): ObjectFormOptions {
     const values: any = {};
-    const coreGroupElements = taskData.variables.map((v) => {
+    const coreGroupElements = task.variables.map((v) => {
       values[v.name] = v.value;
       return this.varToFormElement(v);
     });
@@ -49,7 +44,7 @@ export class TaskDetailsTaskComponent implements OnInit {
     };
   }
 
-  private varToFormElement(v: Variable): any {
+  private varToFormElement(v: ProcessVariable): any {
     const fe = {
       name: v.name,
       type: v.type,

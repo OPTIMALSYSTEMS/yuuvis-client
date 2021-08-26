@@ -1,4 +1,4 @@
-<yuv-panel *ngIf="task" class="task-details" [title]="task.title" [description]="task.description">
+<yuv-panel *ngIf="task" class="task-details" [title]="task.subject || task.name" [description]="task.description">
 
     <yuv-responsive-tab-container *ngIf="(plugins ? (plugins | async) : []) as resolvedPlugins" #tabContainer
         class="content" [layoutOptionsKey]="layoutOptionsKey" [pluginPanels]="[viewPanels, externalPanels]"
@@ -30,7 +30,7 @@
     <p-tabPanel [id]="'historyTab'" [header]="'yuv.framework.task-details.tabs.history.title' | translate"
         [headerStyleClass]="'history'">
         <ng-template pTemplate="content">
-            <yuv-task-details-history [processInstanceId]="task?.taskData.processInstanceId"></yuv-task-details-history>
+            <yuv-task-details-history [processInstanceId]="task?.processInstanceId"></yuv-task-details-history>
         </ng-template>
     </p-tabPanel>
 </ng-template>

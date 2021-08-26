@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
-import { Task } from '@yuuvis/core';
+import { TaskRow } from '@yuuvis/core';
 import { ResponsiveDataTableComponent, ViewMode } from './../../components/responsive-data-table/responsive-data-table.component';
 
 interface HeaderDetails {
@@ -18,7 +18,7 @@ export class ProcessListComponent {
   @ViewChild('dataTable')
   set dataTable(data: ResponsiveDataTableComponent) {
     setTimeout(() => {
-      if (this.processData.rows[0] instanceof Task) {
+      if (this.processData.rows[0] instanceof TaskRow) {
         data.selectRows();
       }
     }, 1500);

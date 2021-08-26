@@ -4,7 +4,7 @@ import { finalize, flatMap, map } from 'rxjs/operators';
 import { Utils } from '../../../util/utils';
 import { ApiBase } from '../../backend/api.enum';
 import { BackendService } from '../../backend/backend.service';
-import { ProcessData, ProcessDefinitionKey, ProcessInstance, ProcessInstanceHistoryEntry, ProcessResponse } from '../model/bpm.model';
+import { Process, ProcessCreatePayload, ProcessDefinitionKey, ProcessInstanceHistoryEntry } from '../model/bpm.model';
 
 /**
  * BpmService: responsible for handling all bpm/ route related interactions
@@ -26,18 +26,18 @@ export class BpmService {
     return this.backendService.get(url).pipe(finalize(() => setTimeout(() => this.loadingBpmDataSource.next(false), 200)));
   }
 
-  getProcessInstances(processDefKey: ProcessDefinitionKey, includeProcessVar = true): Observable<ProcessData[]> {
+  getProcessInstances(processDefKey: ProcessDefinitionKey, includeProcessVar = true): Observable<Process[]> {
     return this.backendService.get(`${this.bpmProcessUrl}?processDefinitionKey=${processDefKey}&includeProcessVariables=${includeProcessVar}`, ApiBase.apiWeb);
   }
 
-  getProcessInstance(processDefKey: ProcessDefinitionKey, businessKey: string, includeProcessVar = true): Observable<ProcessData> {
+  getProcessInstance(processDefKey: ProcessDefinitionKey, businessKey: string, includeProcessVar = true): Observable<Process> {
     const businessKeyValue = businessKey ? `&businessKey=${businessKey}` : '';
     return this.backendService
       .get(`${this.bpmProcessUrl}?processDefinitionKey=${processDefKey}&includeProcessVariables=${includeProcessVar}${businessKeyValue}`, ApiBase.apiWeb)
-      .pipe(map(({ objects }: ProcessResponse) => objects[0]));
+      .pipe(map(({ objects }) => objects[0]));
   }
 
-  createProcess(payload: ProcessInstance): Observable<ProcessResponse> {
+  createProcess(payload: ProcessCreatePayload): Observable<any> {
     return this.backendService.post(this.bpmProcessUrl, payload, ApiBase.apiWeb);
   }
 
@@ -45,7 +45,7 @@ export class BpmService {
     return this.backendService.post(url, payload, ApiBase.apiWeb);
   }
 
-  editFollowUp(url: string, processInstanceId: string, payload: ProcessInstance): Observable<any> {
+  editFollowUp(url: string, processInstanceId: string, payload: ProcessCreatePayload): Observable<any> {
     return this.deleteProcess(url, processInstanceId).pipe(flatMap(() => this.createProcess(payload)));
   }
 

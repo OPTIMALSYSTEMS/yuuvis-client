@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { BpmEvent, EventService, InboxService, TaskData, TranslateService } from '@yuuvis/core';
+import { BpmEvent, EventService, InboxService, Task, TaskRow, TranslateService } from '@yuuvis/core';
 import {
   arrowNext,
   edit,
@@ -12,8 +12,7 @@ import {
   listModeSimple,
   PluginsService,
   refresh,
-  ResponsiveTableData,
-  Task
+  ResponsiveTableData
 } from '@yuuvis/framework';
 import { Observable } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
@@ -27,12 +26,10 @@ import { takeUntilDestroy } from 'take-until-destroy';
 export class InboxComponent implements OnInit, OnDestroy {
   layoutOptionsKey = 'yuv.app.inbox';
   contextError: string;
-  selectedTasks: Task[];
+  selectedTasks: TaskRow[];
   detailsTask: Task;
-  td: TaskData[];
   inboxData$: Observable<ResponsiveTableData> = this.inboxService.inboxData$.pipe(
-    tap((taskData: TaskData[]) => (this.td = taskData)),
-    map((taskData: TaskData[]) => this.formatProcessDataService.formatTaskDataForTable(taskData)),
+    map((taskData: Task[]) => this.formatProcessDataService.formatTaskDataForTable(taskData)),
     map((taskData: ResponsiveTableData) => (taskData.rows.length ? taskData : null))
   );
   loading$: Observable<boolean> = this.inboxService.loadingInboxData$;
@@ -61,9 +58,9 @@ export class InboxComponent implements OnInit, OnDestroy {
     return this.inboxService.fetchTasks();
   }
 
-  selectedItem(items: Task[]) {
+  selectedItem(items: TaskRow[]) {
     this.selectedTasks = items;
-    this.detailsTask = items ? items[items.length - 1] : null;
+    this.detailsTask = items ? items[items.length - 1].task : null;
   }
 
   refreshList() {

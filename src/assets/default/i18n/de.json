@@ -347,7 +347,6 @@
   "yuv.client.state.follow-ups.list.empty": "Es gibt keine aktiven Wiedervorlagen",
   "yuv.client.state.follow-ups.remove": "Wiedervorlage entfernen",
   "yuv.client.state.follow-ups.title": "Meine Wiedervorlagen",
-  "yuv.client.state.inbox.confirm": "Aufgabe bestätigen",
   "yuv.client.state.inbox.list.empty": "Klasse, nichts zu tun ;-)",
   "yuv.client.state.inbox.title": "Eingangskorb",
   "yuv.client.state.not-found.description": "Das Objekt konnte nicht geladen werden.",

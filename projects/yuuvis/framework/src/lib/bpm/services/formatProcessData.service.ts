@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
-import { Process, ProcessData, ProcessStatus, Task, TaskData, TaskType, TranslateService } from '@yuuvis/core';
+import { Process, ProcessRow, ProcessStatus, Task, TaskRow, TaskType, TranslateService } from '@yuuvis/core';
 import { ResponsiveTableData } from '../../components/responsive-data-table/responsive-data-table.interface';
 import { IconRegistryService } from './../../common/components/icon/service/iconRegistry.service';
 import { GridService } from './../../services/grid/grid.service';
 import { followUp, task } from './../../svg.generated';
 
-type fieldName = 'title' | 'type' | 'subject' | 'createTime' | 'startTime' | 'businessKey' | 'expiryDateTime' | 'whatAbout' | 'status' | 'task';
+type fieldName = 'taskName' | 'type' | 'subject' | 'createTime' | 'startTime' | 'businessKey' | 'expiryDateTime' | 'whatAbout' | 'status' | 'task';
 @Injectable({
   providedIn: 'root'
 })
@@ -22,7 +22,7 @@ export class FormatProcessDataService {
     this.translations = {
       type: this.translate.instant(`yuv.framework.process-list.column.type.label`),
       subject: this.translate.instant(`yuv.framework.process-list.column.subject.label`),
-      whatAbout: this.translate.instant(`yuv.framework.process-list.column.whatAbout.label`),
+      taskName: this.translate.instant(`yuv.framework.process-list.column.whatAbout.label`),
       task: this.translate.instant(`yuv.framework.process-list.column.task.label`),
       createTime: this.translate.instant(`yuv.framework.process-list.column.createTime.label`),
       expiryDateTime: this.translate.instant(`yuv.framework.process-list.column.expiryDateTime.label`),
@@ -44,28 +44,28 @@ export class FormatProcessDataService {
   /**
    * Formating process data to fit for Grid in InboxState
    */
-  formatTaskDataForTable(processData: TaskData[]): ResponsiveTableData {
+  formatTaskDataForTable(processData: Task[]): ResponsiveTableData {
     return this.processDataForTable(
       processData
         .map((data) => ({ ...data, icon: this.iconRegService.getIcon(data.processDefinition.id.startsWith('follow-up') ? 'followUp' : 'task') }))
-        .map((data) => new Task(data)),
-      ['type', 'task', 'title', 'createTime']
+        .map((data) => new TaskRow(data)),
+      ['type', 'taskName', 'subject', 'createTime']
     );
   }
 
   /**
    * Formating process data to fit for Grid in ProcessState
    */
-  formatProcessDataForTable(processData: ProcessData[], fields: fieldName[]): ResponsiveTableData {
+  formatProcessDataForTable(processData: Process[], fields: fieldName[]): ResponsiveTableData {
     return this.processDataForTable(
       processData
         .map((data) => ({ ...data, icon: this.iconRegService.getIcon(data.processDefinition.id.startsWith('follow-up') ? 'followUp' : 'task') }))
-        .map((data) => new Process(data)),
+        .map((data) => new ProcessRow(data)),
       fields
     );
   }
 
-  private processDataForTable(rows: (Process | Task)[], fields: fieldName[]): ResponsiveTableData {
+  private processDataForTable(rows: (ProcessRow | TaskRow)[], fields: fieldName[]): ResponsiveTableData {
     return {
       columns: fields.map((field) => ({
         colId: field,

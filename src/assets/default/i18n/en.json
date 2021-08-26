@@ -347,7 +347,6 @@
   "yuv.client.state.follow-ups.list.empty": "There are no active follow-ups.",
   "yuv.client.state.follow-ups.remove": "Remove follow-up",
   "yuv.client.state.follow-ups.title": "My follow-ups",
-  "yuv.client.state.inbox.confirm": "Confirm task",
   "yuv.client.state.inbox.list.empty": "Great, there's nothing to do ;-)",
   "yuv.client.state.inbox.title": "Inbox",
   "yuv.client.state.not-found.description": "Unable to load the object.",
