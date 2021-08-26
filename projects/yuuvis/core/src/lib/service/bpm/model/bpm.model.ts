@@ -97,6 +97,11 @@ export enum TaskType {
   TASK = 'task'
 }
 
+export interface CreateFollowUp {
+  expiryDateTime: Date;
+  whatAbout: string;
+}
+
 /**
  * Task wrapper for grid
  */
