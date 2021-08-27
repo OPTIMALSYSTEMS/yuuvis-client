@@ -1,7 +1,9 @@
 import { Injectable } from '@angular/core';
 import { EMPTY, Observable, Subject } from 'rxjs';
 import { expand, map, skipWhile, tap } from 'rxjs/operators';
-import { Task } from '../model/bpm.model';
+import { ApiBase } from '../../backend/api.enum';
+import { BackendService } from '../../backend/backend.service';
+import { ProcessAction, ProcessPostPayload, Task } from '../model/bpm.model';
 import { BpmService } from './../bpm/bpm.service';
 
 /**
@@ -18,7 +20,7 @@ export class InboxService {
   private inboxDataSource = new Subject<Task[]>();
   public inboxData$: Observable<Task[]> = this.inboxDataSource.asObservable();
 
-  constructor(private bpmService: BpmService) {}
+  constructor(private bpmService: BpmService, private backendService: BackendService) {}
 
   /**
    * bpm Inbox data Loading status
@@ -73,12 +75,25 @@ export class InboxService {
   }
 
   /**
-   * set task status to comlete
+   * Finsihes a task.
+   * @param taskId ID of the taks to finish
+   * @param payload Data to be send with the complete request (may contain attachments, a new subject or variables)
    */
-  completeTask(taskId: string): Observable<any> {
-    return this.bpmService.updateProcess(`${this.bpmTaskUrl}/${taskId}`, { action: 'complete' }).pipe(tap((_) => this.fetchTasks()));
+  completeTask(taskId: string, payload?: ProcessPostPayload): Observable<any> {
+    return this.postTask(taskId, ProcessAction.complete, payload || {});
   }
-  // updateTask(taskId: string, payload: any): Observable<any> {
-  //   return this.bpmService.createProcess(url, payload);
-  // }
+
+  /**
+   * Updates a task.
+   * @param taskId ID of the taks to be updated
+   * @param payload Data to be send with the complete request (may contain attachments, a new subject or variables)
+   */
+  updateTask(taskId: string, payload?: ProcessPostPayload): Observable<any> {
+    return this.postTask(taskId, ProcessAction.save, payload || {});
+  }
+
+  private postTask(taskId: string, action: string, payload: ProcessPostPayload) {
+    const pl = { ...payload, action: action };
+    return this.backendService.post(`${this.bpmTaskUrl}/${taskId}`, pl, ApiBase.apiWeb).pipe(tap((_) => this.fetchTasks()));
+  }
 }

@@ -51,9 +51,7 @@ export class FollowUpComponent implements OnInit, OnDestroy, ActionComponent {
   createFollowUp() {
     this.loading = true;
     this.processService
-      .createFollowUp(this.selection[0].id, this.form.value.whatAbout, {
-        expiryDateTime: this.form.value.expiryDateTime
-      })
+      .createFollowUp(this.selection[0].id, this.form.value.whatAbout, this.form.value.expiryDateTime)
       .pipe(
         finalize(() => (this.loading = false)),
         takeUntilDestroy(this)
@@ -71,9 +69,7 @@ export class FollowUpComponent implements OnInit, OnDestroy, ActionComponent {
   editFollowUp() {
     this.loading = true;
     this.processService
-      .editFollowUp(this.selection[0].id, this.currentFollowUp.id, this.form.value.whatAbout, {
-        expiryDateTime: this.form.value.expiryDateTime
-      })
+      .editFollowUp(this.selection[0].id, this.currentFollowUp.id, this.form.value.whatAbout, this.form.value.expiryDateTime)
       .pipe(
         finalize(() => (this.loading = false)),
         takeUntilDestroy(this)

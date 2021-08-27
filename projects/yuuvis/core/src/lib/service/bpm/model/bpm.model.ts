@@ -1,3 +1,12 @@
+export const ProcessAction = {
+  complete: 'complete',
+  save: 'save'
+};
+
+export const FollowUpVars = {
+  expiryDateTime: 'expiryDateTime'
+};
+
 /**
  * In BPM you can create process models that define a couple of variables and
  * activities belonging to the process model.
@@ -56,12 +65,15 @@ export enum ProcessDefinitionKey {
   FOLLOW_UP = 'follow-up',
   INVALID_TYPE = 'invalid_type'
 }
-
-export interface ProcessCreatePayload {
+// payload for starting a new process
+export interface ProcessCreatePayload extends ProcessPostPayload {
   processDefinitionKey: ProcessDefinitionKey;
   name?: string;
   businessKey?: string;
   returnVariables?: boolean;
+}
+// payload for post requests to the bpm backend
+export interface ProcessPostPayload {
   variables?: ProcessVariable[];
   attachments?: string[];
   subject?: string;
@@ -89,6 +101,8 @@ export interface ProcessVariable {
   name: string;
   type?: string;
   value: any;
+  // TODO: Not yet supported by BPM-Engine
+  readonly?: boolean;
   scope?: string;
 }
 
@@ -149,7 +163,7 @@ export class FollowUpRow extends ProcessRow {
 
   constructor(protected data: Process) {
     super(data);
-    const exDateVar = data.variables.find((v) => v.name === 'expiryDateTime');
+    const exDateVar = data.variables.find((v) => v.name === FollowUpVars.expiryDateTime);
     if (exDateVar) {
       this.expiryDateTime = new Date(exDateVar.value);
     }

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, EMPTY, forkJoin, Observable } from 'rxjs';
 import { expand, map, skipWhile, tap } from 'rxjs/operators';
 import { BpmService } from '../bpm/bpm.service';
-import { Process, ProcessCreatePayload, ProcessDefinitionKey } from '../model/bpm.model';
+import { FollowUpVars, Process, ProcessCreatePayload, ProcessDefinitionKey } from '../model/bpm.model';
 
 interface CreateFollowUpPayload {
   expiryDateTime: Date;
@@ -74,12 +74,12 @@ export class ProcessService {
   /**
    * create a follow Up for a document
    */
-  createFollowUp(documentId: string, subject: string, payload: CreateFollowUpPayload): Observable<any> {
-    return this.bpmService.createProcess(this.followUpPayloadData(documentId, subject, payload));
+  createFollowUp(documentId: string, subject: string, expiryDateTime: Date): Observable<any> {
+    return this.bpmService.createProcess(this.followUpPayloadData(documentId, subject, expiryDateTime));
   }
 
-  private updateFollowUp(documentId: string, subject: string, payload: CreateFollowUpPayload, processInstanceId: string): Observable<any> {
-    const payloadData: ProcessCreatePayload = this.followUpPayloadData(documentId, subject, payload);
+  private updateFollowUp(documentId: string, subject: string, expiryDateTime: Date, processInstanceId: string): Observable<any> {
+    const payloadData: ProcessCreatePayload = this.followUpPayloadData(documentId, subject, expiryDateTime);
     return this.bpmService.createProcess(payloadData).pipe(
       tap((data) => {
         let currentValue = this.processSource.getValue();
@@ -94,9 +94,9 @@ export class ProcessService {
    * Edit/Update a follow Up by document and process Instance Id
    */
   /** TODO: refactor once actual update is available  above */
-  editFollowUp(documentId: string, processInstanceId: string, subject: string, payload: CreateFollowUpPayload): Observable<any> {
+  editFollowUp(documentId: string, processInstanceId: string, subject: string, expiryDateTime: Date): Observable<any> {
     const deleteProcess = this.bpmService.deleteProcess(this.bpmProcessUrl, processInstanceId);
-    const createProcess = this.updateFollowUp(documentId, subject, payload, processInstanceId);
+    const createProcess = this.updateFollowUp(documentId, subject, expiryDateTime, processInstanceId);
     return forkJoin([deleteProcess, createProcess]);
   }
 
@@ -115,11 +115,17 @@ export class ProcessService {
     );
   }
 
-  private followUpPayloadData(documentId: string, subject: string, payload: CreateFollowUpPayload): ProcessCreatePayload {
+  private followUpPayloadData(documentId: string, subject: string, expiryDateTime: Date): ProcessCreatePayload {
     return {
       processDefinitionKey: ProcessDefinitionKey.FOLLOW_UP,
       businessKey: documentId,
-      variables: Object.keys(payload).map((value) => ({ name: value, value: payload[value] })),
+      variables: [
+        {
+          name: FollowUpVars.expiryDateTime,
+          type: 'date',
+          value: expiryDateTime.toISOString()
+        }
+      ],
       subject,
       attachments: [documentId]
     };

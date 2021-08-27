@@ -15,6 +15,7 @@ import { TestObjectDetailsCompareComponent } from './test-object-details-compare
 import { TestObjectDetailsComponent } from './test-object-details/test-object-details.component';
 import { TestObjectFormEditComponent } from './test-object-form-edit/test-object-form-edit.component';
 import { TestObjectFormComponent } from './test-object-form/test-object-form.component';
+import { TestObjectPickerComponent } from './test-object-picker/test-object-picker.component';
 import { TestPanelComponent } from './test-panel/test-panel.component';
 import { TestPopoverComponent } from './test-popover/test-popover.component';
 import { TestQuickSearchComponent } from './test-quick-search/test-quick-search.component';
@@ -45,6 +46,7 @@ const routes: Routes = [
   { path: 'object-details-compare', component: TestObjectDetailsCompareComponent },
   { path: 'object-form', component: TestObjectFormComponent },
   { path: 'object-form-edit', component: TestObjectFormEditComponent },
+  { path: 'object-picker', component: TestObjectPickerComponent },
   { path: 'panel', component: TestPanelComponent },
   { path: 'popover', component: TestPopoverComponent },
   { path: 'quickfinder', component: TestQuickfinderComponent },

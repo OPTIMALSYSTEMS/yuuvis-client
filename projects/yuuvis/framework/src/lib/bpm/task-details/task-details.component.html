@@ -39,7 +39,7 @@
     <p-tabPanel [id]="'attachmentsTab'" [header]="'yuv.framework.task-details.tabs.attachments.title' | translate"
         [headerStyleClass]="'attachments'">
         <ng-template pTemplate="content">
-            <yuv-task-details-attachments [objectIDs]="task?.attachments">
+            <yuv-task-details-attachments [task]="task">
             </yuv-task-details-attachments>
         </ng-template>
     </p-tabPanel>

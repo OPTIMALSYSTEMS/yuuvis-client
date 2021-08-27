@@ -168,6 +168,7 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
    */
   @Output() querySubmit = new EventEmitter<SearchQuery>();
   @Output() queryReset = new EventEmitter();
+  @Output() queryChange = new EventEmitter<SearchQuery>();
   @Output() typeAggregation = new EventEmitter<ObjectTypeAggregation[]>();
 
   @HostBinding('class.busy') busy: boolean;
@@ -251,6 +252,7 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
    * estimated result of the current query.
    */
   aggregate() {
+    this.queryChange.emit(this.searchQuery);
     if (!!this.disableAggregations) {
       return;
     }

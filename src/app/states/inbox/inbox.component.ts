@@ -60,7 +60,7 @@ export class InboxComponent implements OnInit, OnDestroy {
 
   selectedItem(items: TaskRow[]) {
     this.selectedTasks = items;
-    this.detailsTask = items ? items[items.length - 1].task : null;
+    this.detailsTask = items && items.length ? items[items.length - 1].task : null;
   }
 
   refreshList() {

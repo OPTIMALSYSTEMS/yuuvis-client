@@ -1,7 +1,17 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { BaseObjectTypeField, ClientDefaultsObjectTypeField, SearchFilter, SearchFilterGroup, SearchQuery, SearchResult, SearchService } from '@yuuvis/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import {
+  BaseObjectTypeField,
+  ClientDefaultsObjectTypeField,
+  InboxService,
+  SearchFilter,
+  SearchFilterGroup,
+  SearchQuery,
+  SearchResult,
+  SearchService,
+  Task
+} from '@yuuvis/core';
 import { IconRegistryService } from '../../../common/components/icon/service/iconRegistry.service';
-import { attachment, noFile } from '../../../svg.generated';
+import { attachment, clear, noFile } from '../../../svg.generated';
 
 @Component({
   selector: 'yuv-task-details-attachments',
@@ -9,24 +19,40 @@ import { attachment, noFile } from '../../../svg.generated';
   styleUrls: ['./task-details-attachments.component.scss']
 })
 export class TaskDetailsAttachmentsComponent implements OnInit {
-  @Input() set objectIDs(oids: string[]) {
-    this.fetchAttachmentDetails(oids);
+  private _task: Task;
+  @Input() set task(t: Task) {
+    this._task = t;
+    if (t.attachments?.length) this.fetchAttachmentDetails(t.attachments);
   }
   _layoutOptionsKey: string;
   @Input() set layoutOptionsKey(k: string) {
     this._layoutOptionsKey = `${k}.attachments`;
   }
+
+  @Output() attachmentRemove = new EventEmitter<string>();
+  @Output() attachmentAdd = new EventEmitter();
+
   attachedObjects: { id: string; objectTypeId: string; title: string }[] = [];
   selectedObject: string;
   busy: boolean;
 
-  constructor(private searchService: SearchService, private iconRegistry: IconRegistryService) {
-    this.iconRegistry.registerIcons([attachment, noFile]);
+  constructor(private searchService: SearchService, private inboxService: InboxService, private iconRegistry: IconRegistryService) {
+    this.iconRegistry.registerIcons([attachment, noFile, clear]);
   }
 
   selectAttachment(id: string) {
     this.selectedObject = id;
   }
+
+  removeAttachment(id: string) {
+    this._task.attachments = this._task.attachments.filter((a) => a !== id);
+    this.inboxService.updateTask(this._task.id, { attachments: this._task.attachments }).subscribe(
+      (res) => console.log(res),
+      (err) => console.error(err)
+    );
+  }
+
+  addAttachment() {}
 
   private fetchAttachmentDetails(oids: string[]) {
     if (oids?.length) {

@@ -31,18 +31,37 @@
       padding: calc(var(--app-pane-padding) / 4) var(--app-pane-padding);
     }
 
-    button {
+    .attachment {
+      display: flex;
+      align-items: center;
       background: var(--item-focus-background-color);
       color: var(--text-color-caption);
       border: 1px solid var(--item-focus-background-color);
       cursor: pointer;
-      padding: calc(var(--app-pane-padding) / 4);
       border-radius: 4px;
       margin: 0 calc(var(--app-pane-padding) / 4) calc(var(--app-pane-padding) / 4) 0;
 
       &.selected {
         background-color: var(--color-accent);
-        color: #fff;
+        button {
+          color: #fff;
+        }
+      }
+
+      button {
+        background-color: transparent;
+
+        &.remove {
+          padding: 0;
+          yuv-icon {
+            width: 18px;
+            height: 18px;
+          }
+        }
+
+        &.item {
+          padding: calc(var(--app-pane-padding) / 4) calc(var(--app-pane-padding) / 2);
+        }
       }
     }
   }

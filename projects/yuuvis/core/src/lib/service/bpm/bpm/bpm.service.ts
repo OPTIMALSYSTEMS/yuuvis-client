@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { finalize, flatMap, map } from 'rxjs/operators';
+import { finalize, map } from 'rxjs/operators';
 import { Utils } from '../../../util/utils';
 import { ApiBase } from '../../backend/api.enum';
 import { BackendService } from '../../backend/backend.service';
@@ -39,14 +39,6 @@ export class BpmService {
 
   createProcess(payload: ProcessCreatePayload): Observable<any> {
     return this.backendService.post(this.bpmProcessUrl, payload, ApiBase.apiWeb);
-  }
-
-  updateProcess(url: string, payload: any): Observable<any> {
-    return this.backendService.post(url, payload, ApiBase.apiWeb);
-  }
-
-  editFollowUp(url: string, processInstanceId: string, payload: ProcessCreatePayload): Observable<any> {
-    return this.deleteProcess(url, processInstanceId).pipe(flatMap(() => this.createProcess(payload)));
   }
 
   deleteProcess(url, processInstanceId: string): Observable<any> {

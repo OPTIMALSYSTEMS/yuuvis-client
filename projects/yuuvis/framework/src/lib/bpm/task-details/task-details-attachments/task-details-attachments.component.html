@@ -2,11 +2,19 @@
     <ng-container *ngIf="attachedObjects.length; else tplEmpty">
         <div class="attachments">
             <yuv-icon class="label" icon="attachment"></yuv-icon>
-            <button *ngFor="let o of attachedObjects" (click)="selectAttachment(o.id)"
-                [ngClass]="{selected: o.id === selectedObject}">
-                <yuv-object-type-icon [objectTypeId]="o.objectTypeId"></yuv-object-type-icon>
-                {{o.title}}
-            </button>
+
+
+
+
+            <div class="attachment" *ngFor="let o of attachedObjects" [ngClass]="{selected: o.id === selectedObject}">
+                <button class="item" (click)="selectAttachment(o.id)">
+                    <yuv-object-type-icon [objectTypeId]="o.objectTypeId"></yuv-object-type-icon>
+                    {{o.title}}
+                </button>
+                <button class="remove" (click)="removeAttachment(o.id)">
+                    <yuv-icon class="btn" icon="clear"></yuv-icon>
+                </button>
+            </div>
         </div>
         <yuv-object-details *ngIf="selectedObject" [disableFileDrop]="true" [objectId]="selectedObject"
             [layoutOptionsKey]="_layoutOptionsKey"></yuv-object-details>

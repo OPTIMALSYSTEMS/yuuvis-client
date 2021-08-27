@@ -1,0 +1,8 @@
+<yuv-quick-search disableAggregations="true" (queryReset)="onQuickSearchReset()"
+    (queryChange)="onQuickSearchQueryChange($event)" (querySubmit)="onQuickSearchQuery($event)"></yuv-quick-search>
+
+<div class="result" *ngIf="searchResult">
+    <div class="item" *ngFor="let item of searchResult">
+        {{item.title}}
+    </div>
+</div>

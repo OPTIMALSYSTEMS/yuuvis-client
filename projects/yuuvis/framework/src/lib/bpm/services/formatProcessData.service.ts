@@ -22,7 +22,7 @@ export class FormatProcessDataService {
     this.translations = {
       type: this.translate.instant(`yuv.framework.process-list.column.type.label`),
       subject: this.translate.instant(`yuv.framework.process-list.column.subject.label`),
-      taskName: this.translate.instant(`yuv.framework.process-list.column.whatAbout.label`),
+      taskName: this.translate.instant(`yuv.framework.process-list.column.task.label`),
       task: this.translate.instant(`yuv.framework.process-list.column.task.label`),
       createTime: this.translate.instant(`yuv.framework.process-list.column.createTime.label`),
       expiryDateTime: this.translate.instant(`yuv.framework.process-list.column.expiryDateTime.label`),

@@ -9,6 +9,7 @@ import {
   YuvDirectivesModule,
   YuvFrameworkModule,
   YuvGroupedSelectModule,
+  YuvObjectPickerModule,
   YuvQuickfinderModule
 } from '@yuuvis/framework';
 import { environment } from '../environments/environment';
@@ -30,7 +31,9 @@ import { TestObjectDetailsCompareComponent } from './test-object-details-compare
 import { TestObjectDetailsComponent } from './test-object-details/test-object-details.component';
 import { TestObjectFormEditComponent } from './test-object-form-edit/test-object-form-edit.component';
 import { TestObjectFormComponent } from './test-object-form/test-object-form.component';
+import { TestObjectPickerComponent } from './test-object-picker/test-object-picker.component';
 import { TestPanelComponent } from './test-panel/test-panel.component';
+import { TestPopoverComponent } from './test-popover/test-popover.component';
 import { TestQuickSearchComponent } from './test-quick-search/test-quick-search.component';
 import { TestQuickfinderComponent } from './test-quickfinder/test-quickfinder.component';
 import { TestRecentActivitiesComponent } from './test-recent-activities/test-recent-activities.component';
@@ -38,11 +41,10 @@ import { TestResponsiveTabContainerComponent } from './test-responsive-tab-conta
 import { TestSearchResultPanelComponent } from './test-search-result-panel/test-search-result-panel.component';
 import { TestSearchResultComponent } from './test-search-result/test-search-result.component';
 import { TestSummaryComponent } from './test-summary/test-summary.component';
+import { TestTaskDetailsComponent } from './test-task-details/test-task-details.component';
 import { TestUploadProgressOverlayComponent } from './test-upload-progress-overlay/test-upload-progress-overlay.component';
 import { TestUserAvatarComponent } from './test-user-avatar/test-user-avatar.component';
 import { TestVersionListComponent } from './test-version-list/test-version-list.component';
-import { TestPopoverComponent } from './test-popover/test-popover.component';
-import { TestTaskDetailsComponent } from './test-task-details/test-task-details.component';
 
 @NgModule({
   declarations: [
@@ -75,7 +77,8 @@ import { TestTaskDetailsComponent } from './test-task-details/test-task-details.
     TestQuickfinderComponent,
     TestContextComponent,
     TestPopoverComponent,
-    TestTaskDetailsComponent
+    TestTaskDetailsComponent,
+    TestObjectPickerComponent
   ],
   imports: [
     HttpClientModule,
@@ -93,7 +96,8 @@ import { TestTaskDetailsComponent } from './test-task-details/test-task-details.
     YuvGroupedSelectModule,
     YuvQuickfinderModule,
     YuvColumnConfigModule,
-    YuvContextModule
+    YuvContextModule,
+    YuvObjectPickerModule
   ],
   providers: [],
   bootstrap: [AppComponent]
