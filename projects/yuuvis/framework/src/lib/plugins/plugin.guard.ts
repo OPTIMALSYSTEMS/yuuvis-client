@@ -22,7 +22,7 @@ export class PluginGuard implements CanDeactivate<PluginComponent>, CanActivate 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
     return this.pluginsService
       .getCustomPlugins('states', '', state.url.replace('/', ''))
-      .pipe(map(([config]) => (config?.canActivate ? this.pluginsService.applyFunction(config?.canActivate, 'route, state', arguments) : true)));
+      .pipe(map(([config]) => (config?.canActivate ? this.pluginsService.applyFunction(config.canActivate, 'route, state', arguments) : true)));
   }
 
   canDeactivate(
@@ -31,8 +31,8 @@ export class PluginGuard implements CanDeactivate<PluginComponent>, CanActivate 
     currentState: RouterStateSnapshot,
     nextState?: RouterStateSnapshot
   ): Observable<boolean> | Promise<boolean> | boolean {
-    return (component?.config as PluginStateConfig).canDeactivate
-      ? this.pluginsService.applyFunction((component?.config as PluginStateConfig).canDeactivate, 'component, currentRoute, currentState, nextState', arguments)
+    return (component?.config as PluginStateConfig)?.canDeactivate
+      ? this.pluginsService.applyFunction((component.config as PluginStateConfig).canDeactivate, 'component, currentRoute, currentState, nextState', arguments)
       : true;
   }
 }
