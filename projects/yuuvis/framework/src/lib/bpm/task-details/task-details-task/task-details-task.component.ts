@@ -13,15 +13,53 @@ export class TaskDetailsTaskComponent implements OnInit {
 
   @Input() set task(t: Task) {
     this._task = t;
-    this.formOptions = t.variables?.length ? this.varsToFormOptions(t) : null;
+    if (t.formKey) {
+      // load referenced form
+      this.createReferencedForm(t);
+    } else {
+      // create default form from process vars
+      this.createDefaultForm(t);
+    }
   }
 
   formOptions: ObjectFormOptions;
 
   constructor(private inboxService: InboxService, private system: SystemService) {}
 
+  private createDefaultForm(t: Task) {
+    this.formOptions = t.variables?.length ? this.varsToFormOptions(t) : null;
+  }
+
+  private createReferencedForm(t: Task) {
+    this.inboxService.getTaskForm(t.formKey).subscribe(
+      (res) => {
+        if (res) {
+          const formData: any = {};
+          if (t.variables) {
+            t.variables.forEach((v) => {
+              formData[v.name] = v.value;
+            });
+          }
+          this.formOptions = {
+            formModel: res,
+            data: formData
+          };
+        } else {
+          this.createDefaultForm(t);
+        }
+      },
+      (err) => {
+        if (err.status === 404) {
+          // referenced form is not available
+          this.createDefaultForm(t);
+          console.error(`Task is referencing a form that could not be found (${t.formKey})`);
+        }
+        console.error('Error loading referenced task form', err);
+      }
+    );
+  }
+
   onFormStatusChanged(e: FormStatusChangedEvent) {
-    console.log(e.data);
     this.formState = e;
   }
 
