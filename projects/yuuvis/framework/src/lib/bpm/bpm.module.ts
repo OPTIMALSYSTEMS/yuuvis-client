@@ -5,6 +5,7 @@ import { YuvCommonModule } from '../common/common.module';
 import { YuvComponentsModule } from '../components/components.module';
 import { YuvObjectDetailsModule } from '../object-details/object-details.module';
 import { YuvObjectFormModule } from '../object-form/object-form.module';
+import { YuvObjectPickerModule } from '../object-picker/object-picker.module';
 import { YuvPipesModule } from '../pipes/pipes.module';
 import { YuvPluginsModule } from '../plugins/plugins.module';
 import { ProcessDetailsComponent } from './process-details/process-details.component';
@@ -34,6 +35,7 @@ const components = [
     YuvCoreModule,
     TranslateModule,
     YuvCommonModule,
+    YuvObjectPickerModule,
     YuvObjectDetailsModule
   ],
   declarations: [...components],

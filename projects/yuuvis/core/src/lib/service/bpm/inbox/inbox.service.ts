@@ -29,6 +29,10 @@ export class InboxService {
     return this.bpmService.loadingBpmData$;
   }
 
+  getTaskForm(formKey: string): any {
+    return this.backendService.get(`/resources/config/${formKey}`).pipe(map((res) => (res ? res.tenant : null)));
+  }
+
   /**
    * updates inboxData$
    */

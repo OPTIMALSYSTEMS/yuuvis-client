@@ -21,5 +21,12 @@ export class TaskDetailsComponent implements OnInit {
 
   constructor() {}
 
+  addAttachment(id: string) {
+    console.log('ADD ID', id);
+  }
+  removeAttachment(id: string) {
+    console.log('REMOVE ID', id);
+  }
+
   ngOnInit(): void {}
 }

@@ -6,15 +6,20 @@
 
 
 
-            <div class="attachment" *ngFor="let o of attachedObjects" [ngClass]="{selected: o.id === selectedObject}">
-                <button class="item" (click)="selectAttachment(o.id)">
-                    <yuv-object-type-icon [objectTypeId]="o.objectTypeId"></yuv-object-type-icon>
-                    {{o.title}}
-                </button>
-                <button class="remove" (click)="removeAttachment(o.id)">
-                    <yuv-icon class="btn" icon="clear"></yuv-icon>
-                </button>
+            <div class="attachment-list">
+                <div class="attachment" *ngFor="let o of attachedObjects"
+                    [ngClass]="{selected: o.id === selectedObject}">
+                    <button class="item" (click)="selectAttachment(o.id)">
+                        <yuv-object-type-icon [objectTypeId]="o.objectTypeId"></yuv-object-type-icon>
+                        {{o.title}}
+                    </button>
+                    <button class="remove" (click)="removeAttachment(o.id)">
+                        <yuv-icon class="btn" icon="clear"></yuv-icon>
+                    </button>
+                </div>
             </div>
+
+            <yuv-icon class="btn" icon="addCircle" (click)="openAddAttachmentDialog()"></yuv-icon>
         </div>
         <yuv-object-details *ngIf="selectedObject" [disableFileDrop]="true" [objectId]="selectedObject"
             [layoutOptionsKey]="_layoutOptionsKey"></yuv-object-details>
@@ -27,3 +32,8 @@
         </div>
     </ng-template>
 </div>
+
+<ng-template #addAttachmentOverlay let-popover="popover">
+    <yuv-object-picker headline="Pick something" (select)="onAttachmentSelect($event)"></yuv-object-picker>
+    <button (click)="popover.close()">x</button>
+</ng-template>

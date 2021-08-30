@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
 import {
   BaseObjectTypeField,
   ClientDefaultsObjectTypeField,
@@ -10,8 +10,11 @@ import {
   SearchService,
   Task
 } from '@yuuvis/core';
+import { tap } from 'rxjs/operators';
 import { IconRegistryService } from '../../../common/components/icon/service/iconRegistry.service';
-import { attachment, clear, noFile } from '../../../svg.generated';
+import { PopoverRef } from '../../../popover/popover.ref';
+import { PopoverService } from '../../../popover/popover.service';
+import { addCircle, attachment, clear, noFile } from '../../../svg.generated';
 
 @Component({
   selector: 'yuv-task-details-attachments',
@@ -19,6 +22,8 @@ import { attachment, clear, noFile } from '../../../svg.generated';
   styleUrls: ['./task-details-attachments.component.scss']
 })
 export class TaskDetailsAttachmentsComponent implements OnInit {
+  @ViewChild('addAttachmentOverlay') addAttachmentOverlay: TemplateRef<any>;
+
   private _task: Task;
   @Input() set task(t: Task) {
     this._task = t;
@@ -29,15 +34,22 @@ export class TaskDetailsAttachmentsComponent implements OnInit {
     this._layoutOptionsKey = `${k}.attachments`;
   }
 
-  @Output() attachmentRemove = new EventEmitter<string>();
-  @Output() attachmentAdd = new EventEmitter();
+  @Output() attachmentRemoved = new EventEmitter<string>();
+  @Output() attachmentAdded = new EventEmitter<string>();
 
   attachedObjects: { id: string; objectTypeId: string; title: string }[] = [];
   selectedObject: string;
   busy: boolean;
 
-  constructor(private searchService: SearchService, private inboxService: InboxService, private iconRegistry: IconRegistryService) {
-    this.iconRegistry.registerIcons([attachment, noFile, clear]);
+  private popoverRef: PopoverRef;
+
+  constructor(
+    private searchService: SearchService,
+    private popoverService: PopoverService,
+    private inboxService: InboxService,
+    private iconRegistry: IconRegistryService
+  ) {
+    this.iconRegistry.registerIcons([attachment, noFile, clear, addCircle]);
   }
 
   selectAttachment(id: string) {
@@ -46,13 +58,28 @@ export class TaskDetailsAttachmentsComponent implements OnInit {
 
   removeAttachment(id: string) {
     this._task.attachments = this._task.attachments.filter((a) => a !== id);
-    this.inboxService.updateTask(this._task.id, { attachments: this._task.attachments }).subscribe(
-      (res) => console.log(res),
-      (err) => console.error(err)
-    );
+    this.updateAttachments().subscribe((res) => {
+      this.attachmentRemoved.emit(id);
+    });
   }
 
-  addAttachment() {}
+  private updateAttachments() {
+    return this.inboxService
+      .updateTask(this._task.id, { attachments: this._task.attachments })
+      .pipe(tap((_) => this.fetchAttachmentDetails(this._task.attachments)));
+  }
+
+  openAddAttachmentDialog() {
+    this.popoverRef = this.popoverService.open(this.addAttachmentOverlay, {});
+  }
+
+  onAttachmentSelect(e) {
+    this.popoverRef.close();
+    this._task.attachments = [...(this._task.attachments ? this._task.attachments : []), e.id];
+    this.updateAttachments().subscribe((res) => {
+      this.attachmentRemoved.emit(e.id);
+    });
+  }
 
   private fetchAttachmentDetails(oids: string[]) {
     if (oids?.length) {

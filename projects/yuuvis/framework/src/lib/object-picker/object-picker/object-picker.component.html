@@ -1,8 +1,12 @@
-<yuv-quick-search disableAggregations="true" (queryReset)="onQuickSearchReset()"
-    (queryChange)="onQuickSearchQueryChange($event)" (querySubmit)="onQuickSearchQuery($event)"></yuv-quick-search>
-
-<div class="result" *ngIf="searchResult">
-    <div class="item" *ngFor="let item of searchResult">
-        {{item.title}}
+<header>
+    <h2 *ngIf="headline">{{headline}}</h2>
+    <yuv-quick-search [inline]="true" disableAggregations="true" (queryReset)="onQuickSearchReset()"
+        (queryChange)="onQuickSearchQueryChange($event)"></yuv-quick-search>
+</header>
+<main [yuvBusyOverlay]="loading">
+    <div class="result" *ngIf="searchResult">
+        <yuv-selectable-item tabindex="-1" *ngFor="let item of searchResult" (focus)="itemFocused(item)"
+            (blur)="itemFocused(null)" (select)="onResultItemSelect($event)" [item]="item">
+        </yuv-selectable-item>
     </div>
-</div>
+</main>

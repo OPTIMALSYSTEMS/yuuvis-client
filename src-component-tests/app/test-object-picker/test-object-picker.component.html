@@ -1,1 +1,5 @@
-<yuv-object-picker (select)="objectSelect($event)"></yuv-object-picker>
+<div class="cmp">
+    <yuv-object-picker headline="Pick something" (select)="objectSelect($event)"></yuv-object-picker>
+</div>
+
+<div class="result" *ngIf="selected">{{selected.label}}({{selected.id}})</div>
