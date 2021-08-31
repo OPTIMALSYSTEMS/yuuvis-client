@@ -1,7 +1,8 @@
 import { FocusKeyManager } from '@angular/cdk/a11y';
 import { Component, EventEmitter, HostListener, Input, OnInit, Output, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { BaseObjectTypeField, ClientDefaultsObjectTypeField, SearchQuery, SearchResult, SearchService, SystemService } from '@yuuvis/core';
-import { Selectable, SelectableItemComponent } from '../../grouped-select';
+import { Selectable } from '../../grouped-select/grouped-select/grouped-select.interface';
+import { SelectableItemComponent } from '../../grouped-select/grouped-select/selectable-item/selectable-item.component';
 import { QuickSearchComponent } from '../../search/quick-search/quick-search.component';
 
 @Component({
