@@ -7,7 +7,8 @@
     <section class="yuv-slave panel">
 
 
-      <yuv-task-details [task]="detailsTask" [layoutOptionsKey]="layoutOptionsKey" [plugins]="plugins">
+      <yuv-task-details [task]="detailsTask" (attachmentOpenExternal)="onAttachmentOpenExternal($event)"
+        [layoutOptionsKey]="layoutOptionsKey" [plugins]="plugins">
       </yuv-task-details>
     </section>
   </yuv-responsive-master-slave>

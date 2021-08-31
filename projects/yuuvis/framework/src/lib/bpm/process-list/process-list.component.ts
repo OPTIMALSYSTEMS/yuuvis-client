@@ -36,11 +36,11 @@ export class ProcessListComponent {
   @Input()
   set processData(data) {
     this._processData = data;
-    setTimeout(() => {
-      if (this.dataTable) {
-        this.dataTable.selectRows();
-      }
-    }, 10);
+    // setTimeout(() => {
+    //   if (this.dataTable) {
+    //     this.dataTable.selectRows(this.dataTable.);
+    //   }
+    // }, 10);
   }
   get processData() {
     return this._processData;

@@ -8,7 +8,8 @@ import {
   SearchQuery,
   SearchResult,
   SearchService,
-  Task
+  Task,
+  TranslateService
 } from '@yuuvis/core';
 import { tap } from 'rxjs/operators';
 import { IconRegistryService } from '../../../common/components/icon/service/iconRegistry.service';
@@ -27,7 +28,11 @@ export class TaskDetailsAttachmentsComponent implements OnInit {
   private _task: Task;
   @Input() set task(t: Task) {
     this._task = t;
-    if (t.attachments?.length) this.fetchAttachmentDetails(t.attachments);
+    if (t.attachments?.length) {
+      this.fetchAttachmentDetails(t.attachments);
+    } else {
+      this.attachedObjects = [];
+    }
   }
   _layoutOptionsKey: string;
   @Input() set layoutOptionsKey(k: string) {
@@ -36,6 +41,7 @@ export class TaskDetailsAttachmentsComponent implements OnInit {
 
   @Output() attachmentRemoved = new EventEmitter<string>();
   @Output() attachmentAdded = new EventEmitter<string>();
+  @Output() attachmentOpenExternal = new EventEmitter<string>();
 
   attachedObjects: { id: string; objectTypeId: string; title: string }[] = [];
   selectedObject: string;
@@ -45,6 +51,7 @@ export class TaskDetailsAttachmentsComponent implements OnInit {
 
   constructor(
     private searchService: SearchService,
+    private translate: TranslateService,
     private popoverService: PopoverService,
     private inboxService: InboxService,
     private iconRegistry: IconRegistryService
@@ -52,15 +59,26 @@ export class TaskDetailsAttachmentsComponent implements OnInit {
     this.iconRegistry.registerIcons([attachment, noFile, clear, addCircle]);
   }
 
-  selectAttachment(id: string) {
+  selectAttachment(id: string, evt: MouseEvent) {
+    if (evt && evt.ctrlKey) {
+      this.attachmentOpenExternal.emit(id);
+    }
     this.selectedObject = id;
   }
 
   removeAttachment(id: string) {
-    this._task.attachments = this._task.attachments.filter((a) => a !== id);
-    this.updateAttachments().subscribe((res) => {
-      this.attachmentRemoved.emit(id);
-    });
+    this.popoverService
+      .confirm({
+        message: this.translate.instant('yuv.framework.task-details-attachments.dialog.remove.message')
+      })
+      .subscribe((confirmed: boolean) => {
+        if (confirmed) {
+          this._task.attachments = this._task.attachments.filter((a) => a !== id);
+          this.updateAttachments().subscribe((res) => {
+            this.attachmentRemoved.emit(id);
+          });
+        }
+      });
   }
 
   private updateAttachments() {

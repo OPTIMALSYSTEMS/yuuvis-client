@@ -17,6 +17,7 @@ import {
 import { Observable } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
+import { FrameService } from '../../components/frame/frame.service';
 
 @Component({
   selector: 'yuv-inbox',
@@ -48,6 +49,7 @@ export class InboxComponent implements OnInit, OnDestroy {
     private formatProcessDataService: FormatProcessDataService,
     private iconRegistry: IconRegistryService,
     private eventService: EventService,
+    private frameService: FrameService,
     private pluginsService: PluginsService
   ) {
     this.plugins = this.pluginsService.getCustomPlugins('extensions', 'yuv-inbox');
@@ -60,7 +62,7 @@ export class InboxComponent implements OnInit, OnDestroy {
 
   selectedItem(items: TaskRow[]) {
     this.selectedTasks = items;
-    this.detailsTask = items && items.length ? items[items.length - 1].task : null;
+    this.detailsTask = items && items.length ? items[items.length - 1].originalData : null;
   }
 
   refreshList() {
@@ -68,6 +70,10 @@ export class InboxComponent implements OnInit, OnDestroy {
   }
 
   onSlaveClosed() {}
+
+  onAttachmentOpenExternal(id: string) {
+    window.open(`${this.frameService.getAppRootPath()}/object/${id}`, 'xxx');
+  }
 
   ngOnInit(): void {
     this.getInbox();

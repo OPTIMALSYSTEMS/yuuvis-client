@@ -1,5 +1,5 @@
-import { Component, ContentChildren, Input, OnInit, QueryList, TemplateRef, ViewChild, ViewChildren } from '@angular/core';
-import { Task } from '@yuuvis/core';
+import { Component, ContentChildren, EventEmitter, Input, OnInit, Output, QueryList, TemplateRef, ViewChild, ViewChildren } from '@angular/core';
+import { SystemService, Task } from '@yuuvis/core';
 import { TabPanel } from 'primeng/tabview';
 
 @Component({
@@ -14,19 +14,30 @@ export class TaskDetailsComponent implements OnInit {
   @ViewChild('historyTab') historyTab: TemplateRef<any>;
   @ViewChild('attachmentsTab') attachmentsTab: TemplateRef<any>;
 
-  @Input() task: Task;
+  _task: Task;
+  header: {
+    title: string;
+    description: string;
+  };
+  @Input() set task(t: Task) {
+    this._task = t;
+    this.header = t
+      ? {
+          title: t.subject,
+          description: this.system.getLocalizedResource(`${t.name}_label`) || t.name
+        }
+      : null;
+  }
   @Input() panelOrder = ['taskTab', 'historyTab', 'attachmentsTab'];
-  @Input() layoutOptionsKey: string;
+  // @Input() layoutOptionsKey: string;
+  _layoutOptionsKey: string;
+  @Input() set layoutOptionsKey(k: string) {
+    this._layoutOptionsKey = `${k}.task-details`;
+  }
   @Input() plugins: any;
+  @Output() attachmentOpenExternal = new EventEmitter<string>();
 
-  constructor() {}
-
-  addAttachment(id: string) {
-    console.log('ADD ID', id);
-  }
-  removeAttachment(id: string) {
-    console.log('REMOVE ID', id);
-  }
+  constructor(private system: SystemService) {}
 
   ngOnInit(): void {}
 }

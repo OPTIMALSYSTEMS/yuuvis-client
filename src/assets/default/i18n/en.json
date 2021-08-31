@@ -283,6 +283,8 @@
   "yuv.framework.shared.ok": "OK",
   "yuv.framework.shared.remove": "Remove",
   "yuv.framework.shared.reset": "Reset",
+  "yuv.framework.task-details-attachments.add": "Add attachment",
+  "yuv.framework.task-details-attachments.dialog.remove.message": "Should the attachment be removed from the task?",
   "yuv.framework.task-details-attachments.empty": "This task has no attachments",
   "yuv.framework.task-details-history.empty": "",
   "yuv.framework.task-details-history.load.error": "Task history could not  be loaded",

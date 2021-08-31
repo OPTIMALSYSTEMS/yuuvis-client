@@ -39,7 +39,7 @@ export class InboxService {
   fetchTasks(includeProcessVar = true): void {
     this.getTasksPaged({ includeProcessVariables: includeProcessVar })
       .pipe(
-        tap((res: Task[]) => this.inboxDataSource.next(res)),
+        tap((res: Task[]) => this.inboxDataSource.next(res.reverse())),
         map((res: Task[]) => res)
       )
       .subscribe();
@@ -68,7 +68,7 @@ export class InboxService {
   }
 
   private getPage(requestParams: string, index?: number) {
-    return this.bpmService.getProcesses(`${this.bpmTaskUrl}?size=${this.INBOX_PAGE_SIZE}&page=${index || 0}${requestParams}`);
+    return this.bpmService.getProcesses(`${this.bpmTaskUrl}?size=${this.INBOX_PAGE_SIZE}&sort=createTime&page=${index || 0}${requestParams}`);
   }
 
   /**

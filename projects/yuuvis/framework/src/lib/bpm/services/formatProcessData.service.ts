@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { FollowUpRow, Process, ProcessRow, ProcessStatus, Task, TaskRow, TaskType, TranslateService } from '@yuuvis/core';
+import { FollowUpRow, Process, ProcessRow, ProcessStatus, SystemService, Task, TaskRow, TaskType, TranslateService } from '@yuuvis/core';
 import { ResponsiveTableData } from '../../components/responsive-data-table/responsive-data-table.interface';
 import { IconRegistryService } from './../../common/components/icon/service/iconRegistry.service';
 import { GridService } from './../../services/grid/grid.service';
@@ -12,7 +12,12 @@ type fieldName = 'taskName' | 'type' | 'subject' | 'createTime' | 'startTime' | 
 export class FormatProcessDataService {
   private translations: any;
 
-  constructor(private gridService: GridService, private iconRegService: IconRegistryService, private translate: TranslateService) {
+  constructor(
+    private gridService: GridService,
+    private iconRegService: IconRegistryService,
+    private system: SystemService,
+    private translate: TranslateService
+  ) {
     this.iconRegService.registerIcons([task, followUp]);
     this.setTranslations();
     this.translate.onLangChange.subscribe(() => this.setTranslations());
@@ -85,7 +90,12 @@ export class FormatProcessDataService {
         headerName: this.translations[field],
         ...(field.toLowerCase().includes('time') && { cellRenderer: this.gridService.dateTimeCellRenderer() }),
         ...(field.toLowerCase().includes('status') && { cellRenderer: (params) => this.statusCellRenderer({ ...params, translations: this.translations }) }),
-        ...(field.toLowerCase().includes('type') && { cellRenderer: (params) => this.typeCellRenderer({ ...params, translations: this.translations }) }),
+        ...(field.toLowerCase().includes('taskName') && {
+          cellRenderer: (params) => this.taskNameCellRenderer({ ...params, context: { system: this.system } })
+        }),
+        ...(field.toLowerCase().includes('type') && {
+          cellRenderer: (params) => this.typeCellRenderer({ ...params, translations: this.translations, context: { system: this.system } })
+        }),
         resizable: true,
         sortable: true,
         ...(field.toLowerCase() === 'createTime' && { sort: 'asc' })
@@ -96,6 +106,10 @@ export class FormatProcessDataService {
       dateField: 'createTime',
       selectType: 'single'
     };
+  }
+
+  private taskNameCellRenderer(params): string {
+    return params.context.system.getLocalizedResource(`${params.value}_label`) || params.value;
   }
 
   private statusCellRenderer(params): string {
@@ -116,16 +130,18 @@ export class FormatProcessDataService {
 
   private typeCellRenderer(params): string {
     let type, icon;
+    const pdn = params.data.processDefinitionName;
+    const label = params.context.system.getLocalizedResource(`${pdn}_label`) || pdn;
     switch (params.value) {
       case TaskType.FOLLOW_UP:
-        type = params.translations.followUpType;
+        // type = params.translations.followUpType;
         icon = this.iconRegService.getIcon('followUp');
         break;
       case TaskType.TASK:
-        type = params.translations.taskType;
+        // type = params.translations.taskType;
         icon = this.iconRegService.getIcon('task');
         break;
     }
-    return `<div title="${type}">${icon}</div>`;
+    return `<div title="${label}">${icon}</div>`;
   }
 }

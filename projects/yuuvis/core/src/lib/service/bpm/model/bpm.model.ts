@@ -30,7 +30,8 @@ export interface Process {
   startTime: Date;
   startUserId: string;
   subject: string;
-  suspended: boolean;
+  suspended?: boolean;
+  completed?: boolean;
   variables: ProcessVariable[];
 }
 
@@ -128,32 +129,48 @@ export enum ProcessStatus {
 export class TaskRow {
   id: string;
   createTime: Date;
+  processDefinitionName: string;
   subject: string;
   type: TaskType;
-  task: Task;
+  originalData: Task;
   taskName: string;
 
-  constructor(private originalData: Task) {
-    this.id = originalData.id;
-    this.subject = originalData.subject || originalData.processDefinition.name;
-    this.createTime = new Date(this.originalData.createTime);
-    this.task = originalData;
-    this.taskName = this.task.name;
-    this.type = this.originalData.processDefinition.id.startsWith('follow-up') ? TaskType.FOLLOW_UP : TaskType.TASK;
+  constructor(private data: Task) {
+    this.id = data.id;
+    this.subject = data.subject || data.processDefinition.name;
+    this.createTime = new Date(this.data.createTime);
+    this.originalData = data;
+    this.processDefinitionName = data.processDefinition.name;
+    this.taskName = data.name;
+    this.type = this.data.processDefinition.id.startsWith('follow-up') ? TaskType.FOLLOW_UP : TaskType.TASK;
   }
 }
 
 export class ProcessRow {
   id: string;
   subject: string;
+  processDefinitionName: string;
   expiryDateTime: Date;
   status: ProcessStatus;
+  originalData: Process;
+  type: TaskType;
   startTime: Date;
 
   constructor(protected data: Process) {
-    this.id = data.id;
+    this.id = data.processDefinition.id;
     this.subject = data.subject || data.processDefinition.name;
     this.startTime = data.startTime;
+    this.originalData = data;
+    this.processDefinitionName = data.processDefinition.name;
+    this.type = data.processDefinition.id.startsWith('follow-up') ? TaskType.FOLLOW_UP : TaskType.TASK;
+
+    if (data.suspended) {
+      this.status = ProcessStatus.SUSPENDED;
+    } else if (data.completed) {
+      this.status = ProcessStatus.COMPLETED;
+    } else {
+      this.status = ProcessStatus.RUNNING;
+    }
   }
 }
 

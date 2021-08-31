@@ -11,6 +11,7 @@ import {
   listModeSimple,
   PluginsService,
   process,
+  ProcessRow,
   refresh,
   ResponsiveTableData
 } from '@yuuvis/framework';
@@ -63,10 +64,10 @@ export class ProcessesComponent implements OnInit, OnDestroy {
     );
   }
 
-  selectedItem(item) {
-    this.selectedProcess = item;
-    this.objectId = item[0]?.documentId ? item[0]?.documentId : ProcessDefinitionKey.INVALID_TYPE;
-    this.itemIsSelected = true;
+  selectedItem(items: ProcessRow[]) {
+    this.itemIsSelected = items?.length === 1;
+    this.selectedProcess = items;
+    this.objectId = items[0]?.originalData.attachments?.length ? items[0].originalData.attachments[0] : ProcessDefinitionKey.INVALID_TYPE;
   }
 
   refreshList() {

@@ -12,13 +12,16 @@ export class TaskDetailsTaskComponent implements OnInit {
   @ViewChild(ObjectFormComponent) taskForm: ObjectFormComponent;
 
   private _task: Task;
+  taskDescription: string;
   formState: FormStatusChangedEvent;
 
   @Input() set task(t: Task) {
     this._task = t;
-    if (t.formKey) {
-      // load referenced form
+    this.taskDescription = t ? this.system.getLocalizedResource(`${t.name}_description`) : null;
+    if (t && t.formKey) {
       this.createReferencedForm(t);
+    } else {
+      this.formOptions = null;
     }
   }
 

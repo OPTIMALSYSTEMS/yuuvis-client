@@ -3,15 +3,12 @@
         <div class="attachments">
             <yuv-icon class="label" icon="attachment"></yuv-icon>
 
-
-
-
             <div class="attachment-list">
                 <div class="attachment" *ngFor="let o of attachedObjects"
                     [ngClass]="{selected: o.id === selectedObject}">
-                    <button class="item" (click)="selectAttachment(o.id)">
+                    <button title="{{o.title}}" class="item" (click)="selectAttachment(o.id, $event)">
                         <yuv-object-type-icon [objectTypeId]="o.objectTypeId"></yuv-object-type-icon>
-                        {{o.title}}
+                        <span>{{o.title}}</span>
                     </button>
                     <button class="remove" (click)="removeAttachment(o.id)">
                         <yuv-icon class="btn" icon="clear"></yuv-icon>
@@ -19,16 +16,23 @@
                 </div>
             </div>
 
-            <yuv-icon class="btn" icon="addCircle" (click)="openAddAttachmentDialog()"></yuv-icon>
+            <button class="add secondary" (click)="openAddAttachmentDialog()">
+                <yuv-icon icon="addCircle" title="{{'yuv.framework.task-details-attachments.add'|translate}}">
+                </yuv-icon>
+            </button>
         </div>
         <yuv-object-details *ngIf="selectedObject" [disableFileDrop]="true" [objectId]="selectedObject"
             [layoutOptionsKey]="_layoutOptionsKey"></yuv-object-details>
     </ng-container>
 
     <ng-template #tplEmpty>
-        <div class="empty">
-            <yuv-icon icon="noFile"></yuv-icon>
+        <div class="empty" *ngIf="!busy">
+            <yuv-icon class="ico" icon="noFile"></yuv-icon>
             {{'yuv.framework.task-details-attachments.empty'|translate}}
+            <button class="primary" (click)="openAddAttachmentDialog()">
+                <yuv-icon icon="addCircle"></yuv-icon>
+                {{'yuv.framework.task-details-attachments.add'|translate}}
+            </button>
         </div>
     </ng-template>
 </div>
