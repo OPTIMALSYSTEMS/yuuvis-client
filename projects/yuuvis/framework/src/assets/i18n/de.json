@@ -209,6 +209,8 @@
 	"yuv.framework.object-form-element.error.string.whitespaces": "Die Eingabe enthält nur Leerzeichen.",
 	"yuv.framework.object-form-element.tag.df": "Standardwert (default)",
 	"yuv.framework.object-form-element.tag.ex": "Extrahiert aus Dokument",
+	"yuv.framework.process-details.attachment-picker.headline": "Anhang hinzufügen",
+	"yuv.framework.process-details.tabs.summary.title": "Prozessdetails",
 	"yuv.framework.process-list.column.businessKey.label": "Objekt",
 	"yuv.framework.process-list.column.createTime.label": "Erhalten am",
 	"yuv.framework.process-list.column.expiryDateTime.label": "Wiedervorlagetermin",

@@ -17,10 +17,23 @@
 
   header {
     grid-area: header;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto;
+    grid-template-areas: 'title close' 'search search';
 
     h2 {
+      grid-area: title;
       padding: var(--app-pane-padding);
       margin: 0;
+    }
+    yuv-icon {
+      grid-area: close;
+      color: var(--text-color-hint);
+      margin: calc(var(--app-pane-padding) / 2);
+    }
+    yuv-quick-search {
+      grid-area: search;
     }
   }
   main {

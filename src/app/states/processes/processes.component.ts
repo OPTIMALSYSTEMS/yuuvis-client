@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { BpmEvent, EventService, Process, ProcessDefinitionKey, ProcessService, TranslateService } from '@yuuvis/core';
+import { BpmEvent, EventService, Process, ProcessService, TranslateService } from '@yuuvis/core';
 import {
   arrowNext,
   edit,
@@ -27,10 +27,7 @@ import { takeUntilDestroy } from 'take-until-destroy';
 export class ProcessesComponent implements OnInit, OnDestroy {
   layoutOptionsKey = 'yuv.app.processes';
   contextError: string;
-  objectDetailsID: string;
-  itemIsSelected = false;
-  objectId: string;
-  selectedProcess: any;
+  selectedProcess: Process;
   processData$: Observable<ResponsiveTableData>;
   loading$: Observable<boolean> = this.processService.loadingProcessData$;
 
@@ -65,9 +62,7 @@ export class ProcessesComponent implements OnInit, OnDestroy {
   }
 
   selectedItem(items: ProcessRow[]) {
-    this.itemIsSelected = items?.length === 1;
-    this.selectedProcess = items;
-    this.objectId = items[0]?.originalData.attachments?.length ? items[0].originalData.attachments[0] : ProcessDefinitionKey.INVALID_TYPE;
+    this.selectedProcess = items?.length ? items[0].originalData : null;
   }
 
   refreshList() {

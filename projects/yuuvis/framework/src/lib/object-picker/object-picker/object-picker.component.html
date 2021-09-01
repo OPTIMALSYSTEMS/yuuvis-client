@@ -1,4 +1,5 @@
 <header>
+    <yuv-icon class="btn" icon="clear" (click)="popoverRef.close()" *ngIf="!!popoverRef"></yuv-icon>
     <h2 *ngIf="headline">{{headline}}</h2>
     <yuv-quick-search [inline]="true" disableAggregations="true" (queryReset)="onQuickSearchReset()"
         (queryChange)="onQuickSearchQueryChange($event)"></yuv-quick-search>

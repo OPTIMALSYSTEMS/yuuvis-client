@@ -1,7 +1,6 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { DmsObject, DmsService, ProcessDefinitionKey, TranslateService } from '@yuuvis/core';
-import { Observable, of } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { Component, ContentChildren, EventEmitter, Input, Output, QueryList, TemplateRef, ViewChild, ViewChildren } from '@angular/core';
+import { Process, SystemService } from '@yuuvis/core';
+import { TabPanel } from 'primeng/tabview';
 
 @Component({
   selector: 'yuv-process-details',
@@ -9,30 +8,30 @@ import { catchError } from 'rxjs/operators';
   styleUrls: ['./process-details.component.scss']
 })
 export class ProcessDetailsComponent {
-  dmsObject$: Observable<DmsObject> = of(null);
-  contextError: string = null;
-  loaded = false;
+  @ContentChildren(TabPanel) externalPanels: QueryList<TabPanel>;
+  @ViewChildren(TabPanel) viewPanels: QueryList<TabPanel>;
+  @ViewChild('summaryTab') summaryTab: TemplateRef<any>;
+  @ViewChild('attachmentsTab') attachmentsTab: TemplateRef<any>;
+
+  _process: Process;
+  header: {
+    title: string;
+    description: string;
+  };
+  panelOrder = ['summaryTab', 'attachmentsTab'];
+
+  @Input() set process(p: Process) {
+    this._process = p;
+    this.header = p
+      ? {
+          title: p.subject,
+          description: this.system.getLocalizedResource(`${p.name}_label`) || p.name
+        }
+      : null;
+  }
   @Input() layoutOptionsKey: string;
-  @Input() bpmObject: string;
-  @Input() emptyMessage: string;
-  @Input()
-  set objectId(id: string) {
-    this.contextError = null;
-    this.dmsObject$ = id ? this.dmsService.getDmsObject(id).pipe(catchError((error) => this.handleObjectError(id))) : this.handleObjectError(id);
-  }
-
-  @Output() remove = new EventEmitter<boolean>();
-
   @Input() plugins: any;
+  @Output() attachmentOpenExternal = new EventEmitter<string>();
 
-  constructor(private dmsService: DmsService, private translate: TranslateService) {}
-
-  private handleObjectError(id: string): Observable<null> {
-    this.contextError = id || id === ProcessDefinitionKey.INVALID_TYPE ? this.translate.instant('yuv.framework.object-details.context.load.error') : null;
-    return of(null);
-  }
-
-  removeBpmObject() {
-    this.remove.emit(true);
-  }
+  constructor(private system: SystemService) {}
 }

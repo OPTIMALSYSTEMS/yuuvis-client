@@ -29,7 +29,6 @@ export class TaskDetailsComponent implements OnInit {
       : null;
   }
   @Input() panelOrder = ['taskTab', 'historyTab', 'attachmentsTab'];
-  // @Input() layoutOptionsKey: string;
   _layoutOptionsKey: string;
   @Input() set layoutOptionsKey(k: string) {
     this._layoutOptionsKey = `${k}.task-details`;

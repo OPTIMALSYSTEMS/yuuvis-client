@@ -15,6 +15,8 @@ import { TaskDetailsAttachmentsComponent } from './task-details/task-details-att
 import { TaskDetailsHistoryComponent } from './task-details/task-details-history/task-details-history.component';
 import { TaskDetailsTaskComponent } from './task-details/task-details-task/task-details-task.component';
 import { TaskDetailsComponent } from './task-details/task-details.component';
+import { ProcessDetailsSummaryComponent } from './process-details/process-details-summary/process-details-summary.component';
+import { ProcessAttachmentsComponent } from './process-attachments/process-attachments.component';
 
 const components = [
   ProcessDetailsComponent,
@@ -38,7 +40,7 @@ const components = [
     YuvObjectPickerModule,
     YuvObjectDetailsModule
   ],
-  declarations: [...components],
+  declarations: [...components, ProcessDetailsSummaryComponent, ProcessAttachmentsComponent],
   entryComponents: [...components],
   exports: [...components]
 })

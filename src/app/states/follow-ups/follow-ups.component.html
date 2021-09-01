@@ -1,12 +1,11 @@
 <section class="processes-wrapper" *ngIf="processData$ | async as processData; else empty">
-  <yuv-responsive-master-slave class="state" [layoutOptionsKey]="layoutOptionsKey" [slaveActive]="itemIsSelected"
+  <yuv-responsive-master-slave class="state" [layoutOptionsKey]="layoutOptionsKey" [slaveActive]="!!selectedProcess"
     (slaveClosed)="onSlaveClosed()">
     <yuv-process-list class="yuv-master panel" [showFooter]="true" [headerDetails]="headerDetails"
       [layoutOptionsKey]="layoutOptionsKey" [processData]="processData" (refreshList)="refreshList()"
       (selectedItem)="selectedItem($event)"></yuv-process-list>
     <section class="yuv-slave panel">
-      <yuv-process-details [objectId]="objectId" [layoutOptionsKey]="layoutOptionsKey" [plugins]="plugins"
-        [emptyMessage]="'yuv.client.state.follow-ups.remove' | translate" (remove)="remove($event)">
+      <yuv-process-details [process]="selectedProcess" [layoutOptionsKey]="layoutOptionsKey" [plugins]="plugins">
       </yuv-process-details>
     </section>
   </yuv-responsive-master-slave>

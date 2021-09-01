@@ -1,16 +1,42 @@
-<ng-container *ngIf="dmsObject$ | async as object; else empty">
-  <yuv-object-details 
-  [disableFileDrop]="true"
-  [dmsObject]="object"
-  [panelOrder]="['summary', 'preview']"
-  [layoutOptionsKey]="layoutOptionsKey"
-  [plugins]="plugins"
-  ></yuv-object-details>
-</ng-container>
+<yuv-panel *ngIf="_process" class="process-details" [title]="header?.title" [description]="header?.description">
 
-<ng-template #empty>
-  <section class="empty error" *ngIf="contextError">
-    <yuv-context-error  [contextError]="contextError"></yuv-context-error>
-    <button class="secondary" (click)="removeBpmObject()">{{emptyMessage}}</button>
-  </section> 
+  <yuv-responsive-tab-container *ngIf="(plugins ? (plugins | async) : []) as resolvedPlugins" #tabContainer
+    class="content" [layoutOptionsKey]="layoutOptionsKey" [pluginPanels]="[viewPanels, externalPanels]"
+    [pluginPanelsOrder]="panelOrder">
+    <ng-container *ngFor="let templateID of panelOrder" [ngTemplateOutlet]="this[templateID]"></ng-container>
+    <!-- PLUGINS -->
+    <p-tabPanel *ngFor="let config of resolvedPlugins" [id]="config.id" [header]="(config.label) | translate"
+      [headerStyleClass]="config.id" class="{{config.id}}">
+      <ng-template pTemplate="content">
+        <yuv-plugin [config]="config" [parent]="this"></yuv-plugin>
+      </ng-template>
+    </p-tabPanel>
+
+    <ng-container *ngTemplateOutlet="content"></ng-container>
+  </yuv-responsive-tab-container>
+</yuv-panel>
+
+<!-- PANELS -->
+<ng-template #summaryTab>
+  <p-tabPanel [id]="'summaryTab'" [header]="'yuv.framework.process-details.tabs.summary.title' | translate"
+    [headerStyleClass]="'task'">
+    <ng-template pTemplate="content">
+
+      SUMMARY
+
+    </ng-template>
+  </p-tabPanel>
+</ng-template>
+
+<ng-template #attachmentsTab>
+  <p-tabPanel [id]="'attachmentsTab'" [header]="'yuv.framework.task-details.tabs.attachments.title' | translate"
+    [headerStyleClass]="'attachments'">
+    <ng-template pTemplate="content">
+      <yuv-process-attachments [attachments]="_process?.attachments"></yuv-process-attachments>
+    </ng-template>
+  </p-tabPanel>
+</ng-template>
+
+<ng-template #content>
+  <ng-content></ng-content>
 </ng-template>

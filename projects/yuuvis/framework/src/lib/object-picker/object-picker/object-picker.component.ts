@@ -3,6 +3,7 @@ import { Component, EventEmitter, HostListener, Input, OnInit, Output, QueryList
 import { BaseObjectTypeField, ClientDefaultsObjectTypeField, SearchQuery, SearchResult, SearchService, SystemService } from '@yuuvis/core';
 import { Selectable } from '../../grouped-select/grouped-select/grouped-select.interface';
 import { SelectableItemComponent } from '../../grouped-select/grouped-select/selectable-item/selectable-item.component';
+import { PopoverRef } from '../../popover/popover.ref';
 import { QuickSearchComponent } from '../../search/quick-search/quick-search.component';
 
 @Component({
@@ -15,7 +16,8 @@ export class ObjectPickerComponent implements OnInit {
   @ViewChildren(SelectableItemComponent) items: QueryList<SelectableItemComponent>;
   @ViewChild(QuickSearchComponent) quickSearchComponent: QuickSearchComponent;
 
-  @Input('headline') headline: string;
+  @Input() headline: string;
+  @Input() popoverRef: PopoverRef;
   @Output() select = new EventEmitter<string>();
   @Output() cancel = new EventEmitter();
 

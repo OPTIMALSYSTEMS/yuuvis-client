@@ -10,6 +10,7 @@ import {
   listModeGrid,
   listModeSimple,
   PluginsService,
+  ProcessRow,
   refresh,
   ResponsiveTableData
 } from '@yuuvis/framework';
@@ -25,11 +26,11 @@ import { followUp } from './../../../../projects/yuuvis/framework/src/lib/svg.ge
 })
 export class FollowUpsComponent implements OnInit, OnDestroy {
   layoutOptionsKey = 'yuv.app.follow-ups';
-  contextError: string;
-  objectDetailsID: string;
-  itemIsSelected = false;
-  objectId: string;
-  selectedProcess: any;
+  // contextError: string;
+  // objectDetailsID: string;
+  // itemIsSelected = false;
+  // objectId: string;
+  selectedProcess: Process;
   processData$: Observable<ResponsiveTableData>;
   loading$: Observable<boolean> = this.processService.loadingProcessData$;
 
@@ -63,10 +64,8 @@ export class FollowUpsComponent implements OnInit, OnDestroy {
     );
   }
 
-  selectedItem(item) {
-    this.selectedProcess = item;
-    this.objectId = item[0]?.documentId ? item[0]?.documentId : ProcessDefinitionKey.INVALID_TYPE;
-    this.itemIsSelected = true;
+  selectedItem(items: ProcessRow[]) {
+    this.selectedProcess = items?.length ? items[0].originalData : null;
   }
 
   refreshList() {
