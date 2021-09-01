@@ -30,7 +30,7 @@ export class FollowUpsComponent implements OnInit, OnDestroy {
   // objectDetailsID: string;
   // itemIsSelected = false;
   // objectId: string;
-  selectedProcess: Process;
+  selectedObjectId: string;
   processData$: Observable<ResponsiveTableData>;
   loading$: Observable<boolean> = this.processService.loadingProcessData$;
 
@@ -65,7 +65,7 @@ export class FollowUpsComponent implements OnInit, OnDestroy {
   }
 
   selectedItem(items: ProcessRow[]) {
-    this.selectedProcess = items?.length ? items[0].originalData : null;
+    this.selectedObjectId = items?.length && items[0].originalData.attachments?.length ? items[0].originalData.attachments[0] : null;
   }
 
   refreshList() {
@@ -73,10 +73,10 @@ export class FollowUpsComponent implements OnInit, OnDestroy {
   }
 
   remove() {
-    this.processService
-      .deleteFollowUp(this.selectedProcess[0].id)
-      .pipe(switchMap(() => this.getProcesses()))
-      .subscribe();
+    // this.processService
+    //   .deleteFollowUp(this.selectedProcess[0].id)
+    //   .pipe(switchMap(() => this.getProcesses()))
+    //   .subscribe();
   }
 
   onSlaveClosed() {}

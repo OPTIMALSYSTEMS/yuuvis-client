@@ -18,21 +18,21 @@ export interface Process {
   id: string;
   // objects (IDs) attached to the process
   attachments: string[];
-  businessKey: string;
+  businessKey: string; //
   deleteReason: string;
-  durationInMillis: number;
+  durationInMillis: number; //
   endActivityId: string;
   endTime: Date;
   initiator: ProcessUser;
   name: string;
-  processDefinition: { description: string; id: string; name: string };
+  processDefinition: { description: string; id: string; idPrefix: string; name: string };
   startActivityId: string;
   startTime: Date;
   startUserId: string;
   subject: string;
   suspended?: boolean;
   completed?: boolean;
-  variables: ProcessVariable[];
+  variables: ProcessVariable[]; // tenant admin only
 }
 
 /**
@@ -54,7 +54,7 @@ export interface Task {
   parentTaskId: string;
   processDefinition: {
     id: string;
-    name: string;
+    idPrefix: string;
   };
   subject: string;
   suspended: false;
@@ -137,10 +137,10 @@ export class TaskRow {
 
   constructor(private data: Task) {
     this.id = data.id;
-    this.subject = data.subject || data.processDefinition.name;
+    this.subject = data.subject || data.processDefinition.idPrefix;
     this.createTime = new Date(this.data.createTime);
     this.originalData = data;
-    this.processDefinitionName = data.processDefinition.name;
+    this.processDefinitionName = data.processDefinition.idPrefix;
     this.taskName = data.name;
     this.type = this.data.processDefinition.id.startsWith('follow-up') ? TaskType.FOLLOW_UP : TaskType.TASK;
   }
@@ -157,8 +157,8 @@ export class ProcessRow {
   startTime: Date;
 
   constructor(protected data: Process) {
-    this.id = data.processDefinition.id;
-    this.subject = data.subject || data.processDefinition.name;
+    this.id = data.id;
+    this.subject = data.subject;
     this.startTime = data.startTime;
     this.originalData = data;
     this.processDefinitionName = data.processDefinition.name;

@@ -36,13 +36,13 @@ export class ProcessService {
    * get all processes
    */
   getProcesses(processDefinitionKey?: string): Observable<Process[]> {
-    let params = `&includeProcessVariables=true`;
+    let params = `&includeProcessVariables=true&sort=startTime`;
     if (processDefinitionKey) {
       params += `&processDefinitionKey=${processDefinitionKey}`;
     }
     return this.getAllPages(params).pipe(
       tap((res: Process[]) => this.processSource.next(res)),
-      map((res: Process[]) => res)
+      map((res: Process[]) => res.reverse())
     );
   }
 

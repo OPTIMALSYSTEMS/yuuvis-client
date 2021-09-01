@@ -22,8 +22,17 @@
     [headerStyleClass]="'task'">
     <ng-template pTemplate="content">
 
-      SUMMARY
+      <yuv-process-details-summary [process]="_process"></yuv-process-details-summary>
 
+    </ng-template>
+  </p-tabPanel>
+</ng-template>
+
+<ng-template #historyTab>
+  <p-tabPanel [id]="'historyTab'" [header]="'yuv.framework.task-details.tabs.history.title' | translate"
+    [headerStyleClass]="'history'">
+    <ng-template pTemplate="content">
+      <yuv-task-details-history [processInstanceId]="_process.id"></yuv-task-details-history>
     </ng-template>
   </p-tabPanel>
 </ng-template>

@@ -1,1 +1,41 @@
-<p>process-details-summary works!</p>
+<table *ngIf="_process">
+    <tr>
+        <th>{{'yuv.framework.process-details-summary.status'|translate}}</th>
+        <td><span class="status {{processState.css}}">{{processState.label}}</span></td>
+    </tr>
+    <tr>
+        <th>{{'yuv.framework.process-details-summary.id'|translate}}</th>
+        <td>{{_process.id}}</td>
+    </tr>
+    <tr>
+        <th>{{'yuv.framework.process-details-summary.initiator'|translate}}</th>
+        <td>{{_process.initiator.title}}</td>
+    </tr>
+    <tr>
+        <th>{{'yuv.framework.process-details-summary.startTime'|translate}}</th>
+        <td>{{_process.startTime | localeDate: 'eoShortDate'}}</td>
+    </tr>
+    <tr>
+        <th>{{'yuv.framework.process-details-summary.businessKey'|translate}}</th>
+        <td>{{_process.businessKey}}</td>
+    </tr>
+    <tr *ngIf="isAdmin">
+        <th>{{'yuv.framework.process-details-summary.valiables'|translate}}</th>
+        <td>
+            <table class="vars">
+                <tr>
+                    <th>{{'yuv.framework.process-details-summary.vars.name'|translate}}</th>
+                    <th>{{'yuv.framework.process-details-summary.vars.type'|translate}}</th>
+                    <th>{{'yuv.framework.process-details-summary.vars.scope'|translate}}</th>
+                    <th>{{'yuv.framework.process-details-summary.vars.value'|translate}}</th>
+                </tr>
+                <tr *ngFor="let v of _process.variables">
+                    <td>{{v.name}}</td>
+                    <td>{{v.type}}</td>
+                    <td>{{v.scope}}</td>
+                    <td>{{v.value}}</td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>

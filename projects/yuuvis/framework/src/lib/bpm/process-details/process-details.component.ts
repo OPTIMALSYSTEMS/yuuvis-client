@@ -11,6 +11,7 @@ export class ProcessDetailsComponent {
   @ContentChildren(TabPanel) externalPanels: QueryList<TabPanel>;
   @ViewChildren(TabPanel) viewPanels: QueryList<TabPanel>;
   @ViewChild('summaryTab') summaryTab: TemplateRef<any>;
+  @ViewChild('historyTab') historyTab: TemplateRef<any>;
   @ViewChild('attachmentsTab') attachmentsTab: TemplateRef<any>;
 
   _process: Process;
@@ -18,14 +19,14 @@ export class ProcessDetailsComponent {
     title: string;
     description: string;
   };
-  panelOrder = ['summaryTab', 'attachmentsTab'];
+  panelOrder = ['summaryTab', 'historyTab', 'attachmentsTab'];
 
   @Input() set process(p: Process) {
     this._process = p;
     this.header = p
       ? {
-          title: p.subject,
-          description: this.system.getLocalizedResource(`${p.name}_label`) || p.name
+          title: this.system.getLocalizedResource(`${p.processDefinition.idPrefix}_label`) || p.processDefinition.idPrefix,
+          description: p.subject
         }
       : null;
   }

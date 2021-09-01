@@ -91,7 +91,14 @@ export class TaskDetailsTaskComponent implements OnInit {
     switch (formElement.type) {
       case 'datetime': {
         pv.type = 'date';
-        pv.value = (<Date>formValue).toISOString();
+        if (formValue) {
+          pv.value = new Date(formValue).toISOString();
+        }
+        break;
+      }
+      case 'decimal': {
+        pv.type = 'long';
+        pv.value = formValue;
         break;
       }
       case 'table': {
