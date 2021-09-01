@@ -36,7 +36,6 @@ export class ResultComponent implements OnInit, OnDestroy {
     public translate: TranslateService,
     private location: PlatformLocation,
     private pendingChanges: PendingChangesService,
-    private title: Title,
     private layoutService: LayoutService,
     private route: ActivatedRoute,
     private router: Router,
@@ -78,11 +77,10 @@ export class ResultComponent implements OnInit, OnDestroy {
   }
 
   onQueryDescriptionChange(desc: string) {
-    this.title.setTitle(desc && desc.length ? desc : this.translate.instant('yuv.framework.search-result-panel.header.title'));
+    this.titleService.setTitle(desc && desc.length ? desc : this.translate.instant('yuv.framework.search-result-panel.header.title'));
   }
 
   ngOnInit() {
-    this.titleService.setTitle(this.translate.instant('yuv.client.state.result.title'));
     // extract the query from the route params
     this.route.queryParamMap.pipe(takeUntilDestroy(this)).subscribe((params) => {
       this.searchQuery = params.get('query') ? new SearchQuery(JSON.parse(params.get('query'))) : null;

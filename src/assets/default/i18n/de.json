@@ -330,7 +330,7 @@
   "yuv.client.state.about.license.title": "Lizenzhinweise",
   "yuv.client.state.about.product.label": "Komponente:",
   "yuv.client.state.about.releasedate.label": "Produktversion:",
-  "yuv.client.state.about.title": "Über yuuvis® client",
+  "yuv.client.state.about.title": "Über",
   "yuv.client.state.column-configuration.panel.description": "Konfiguration der Trefferlisten nach Objekttyp",
   "yuv.client.state.column-configuration.panel.title": "Spaltenkonfiguration",
   "yuv.client.state.create.title": "Objekt erstellen",
@@ -383,6 +383,7 @@
   "yuv.client.state.settings.theme.dark": "Dark",
   "yuv.client.state.settings.theme.light": "Light",
   "yuv.client.state.settings.title": "Einstellungen",
+  "yuv.client.state.title": "yuuvis® client",
   "yuv.client.state.versions.compare.label": "Version {{version}}",
   "yuv.client.state.versions.header.title": "Versionen"
 }

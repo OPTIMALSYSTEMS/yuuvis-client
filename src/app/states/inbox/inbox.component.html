@@ -1,3 +1,4 @@
+<ng-container [yuvTitle]="('yuv.client.state.inbox.title' | translate)"></ng-container>
 <section class="inbox-wrapper" *ngIf="inboxData$ | async as inboxData; else empty">
   <yuv-responsive-master-slave class="state" 
     [layoutOptionsKey]="layoutOptionsKey"

@@ -10,5 +10,6 @@ export * from './directives/debounce-click.directive';
 export * from './directives/focus-within.directive';
 export * from './directives/router-link.directive';
 export * from './directives/throttle-click.directive';
+export * from './directives/title.directive';
 export * from './util/helpers';
 export { UnsubscribeOnDestroy } from './util/unsubscribe.component';

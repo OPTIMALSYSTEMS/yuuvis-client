@@ -1,3 +1,4 @@
+<ng-container [yuvTitle]="('yuv.client.state.versions.header.title' | translate)"></ng-container>
 <yuv-responsive-master-slave class="state" (slaveClosed)="onSlaveClosed()" [slaveActive]="dmsObject || compare"
   [layoutOptionsKey]="layoutOptionsKey">
   <yuv-version-list class="yuv-master panel" #versionList [objectID]="dmsObjectID" [versions]="versions"

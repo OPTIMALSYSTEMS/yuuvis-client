@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { Title } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { AppCacheService, BackendService, ConfigService, SystemService, TranslateService, UserConfigService, UserService, YuvUser } from '@yuuvis/core';
 import { arrowDown, IconRegistryService, LayoutService, LayoutSettings, NotificationService, PluginsService } from '@yuuvis/framework';
@@ -47,7 +46,6 @@ export class SettingsComponent implements OnInit {
     private layoutService: LayoutService,
     private systemService: SystemService,
     private cacheService: AppCacheService,
-    private titleService: Title,
     public config: ConfigService,
     private userConfig: UserConfigService,
     private userService: UserService,
@@ -154,7 +152,6 @@ export class SettingsComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.titleService.setTitle(this.translate.instant('yuv.client.state.settings.title'));
     this.user$ = this.userService.user$.pipe(map((user) => ({ ...user, authorities: user.authorities.sort() })));
     this.layoutService.layoutSettings$.subscribe((settings: LayoutSettings) => {
       this.darkMode = settings.darkMode;

@@ -1,8 +1,6 @@
 import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { Title } from '@angular/platform-browser';
-import { ActivatedRoute, Router } from '@angular/router';
-import { TranslateService } from '@yuuvis/core';
+import { ActivatedRoute } from '@angular/router';
 import { FrameService } from '../../components/frame/frame.service';
 
 @Component({
@@ -15,14 +13,7 @@ export class CreateComponent implements OnInit {
   context: string;
   files: File[];
 
-  constructor(
-    private translate: TranslateService,
-    private location: Location,
-    private frameService: FrameService,
-    private router: Router,
-    private route: ActivatedRoute,
-    private titleService: Title
-  ) {}
+  constructor(private location: Location, private frameService: FrameService, private route: ActivatedRoute) {}
 
   onObjectCreated(createdObjectsIds: string[]) {
     this.location.back();
@@ -36,6 +27,5 @@ export class CreateComponent implements OnInit {
         this.files = files;
       }
     }
-    this.titleService.setTitle(this.translate.instant('yuv.framework.object-create.header.title'));
   }
 }

@@ -1,3 +1,4 @@
+<ng-container [yuvTitle]="('yuv.client.state.result.title' | translate)"></ng-container>
 <yuv-responsive-master-slave class="state" [layoutOptionsKey]="layoutOptionsKey" (slaveClosed)="onSlaveClosed()"
   [slaveActive]="objectDetailsID">
   <yuv-search-result-panel class="yuv-master panel" [query]="searchQuery" [preSelectItems]="selectedItems"
