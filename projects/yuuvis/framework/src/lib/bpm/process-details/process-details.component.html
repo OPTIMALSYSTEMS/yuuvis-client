@@ -41,7 +41,8 @@
   <p-tabPanel [id]="'attachmentsTab'" [header]="'yuv.framework.task-details.tabs.attachments.title' | translate"
     [headerStyleClass]="'attachments'">
     <ng-template pTemplate="content">
-      <yuv-process-attachments [attachments]="_process?.attachments"></yuv-process-attachments>
+      <yuv-process-attachments [layoutOptionsKey]="layoutOptionsKey" [attachments]="_process?.attachments">
+      </yuv-process-attachments>
     </ng-template>
   </p-tabPanel>
 </ng-template>

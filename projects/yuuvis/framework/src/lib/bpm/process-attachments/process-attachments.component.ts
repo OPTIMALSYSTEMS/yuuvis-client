@@ -32,6 +32,10 @@ export class ProcessAttachmentsComponent implements OnInit {
   @Input() enableAdd: boolean;
   @Input() enableRemove: boolean;
   @Input() attachmentPickerTitle: string;
+  _layoutOptionsKey: string;
+  @Input() set layoutOptionsKey(k: string) {
+    this._layoutOptionsKey = `${k}.attachments`;
+  }
 
   @Output() attachmentRemove = new EventEmitter<string>();
   @Output() attachmentAdd = new EventEmitter<string>();
