@@ -8,6 +8,9 @@ import { YuvObjectFormModule } from '../object-form/object-form.module';
 import { YuvObjectPickerModule } from '../object-picker/object-picker.module';
 import { YuvPipesModule } from '../pipes/pipes.module';
 import { YuvPluginsModule } from '../plugins/plugins.module';
+import { FollowUpDetailsComponent } from './follow-up-details/follow-up-details.component';
+import { ProcessAttachmentsComponent } from './process-attachments/process-attachments.component';
+import { ProcessDetailsSummaryComponent } from './process-details/process-details-summary/process-details-summary.component';
 import { ProcessDetailsComponent } from './process-details/process-details.component';
 import { ProcessListEmptyComponent } from './process-list-empty/process-list-empty.component';
 import { ProcessListComponent } from './process-list/process-list.component';
@@ -15,8 +18,6 @@ import { TaskDetailsAttachmentsComponent } from './task-details/task-details-att
 import { TaskDetailsHistoryComponent } from './task-details/task-details-history/task-details-history.component';
 import { TaskDetailsTaskComponent } from './task-details/task-details-task/task-details-task.component';
 import { TaskDetailsComponent } from './task-details/task-details.component';
-import { ProcessDetailsSummaryComponent } from './process-details/process-details-summary/process-details-summary.component';
-import { ProcessAttachmentsComponent } from './process-attachments/process-attachments.component';
 
 const components = [
   ProcessDetailsComponent,
@@ -25,7 +26,10 @@ const components = [
   ProcessListEmptyComponent,
   TaskDetailsTaskComponent,
   TaskDetailsHistoryComponent,
-  TaskDetailsAttachmentsComponent
+  TaskDetailsAttachmentsComponent,
+  ProcessDetailsSummaryComponent,
+  ProcessAttachmentsComponent,
+  FollowUpDetailsComponent
 ];
 @NgModule({
   imports: [
@@ -40,7 +44,7 @@ const components = [
     YuvObjectPickerModule,
     YuvObjectDetailsModule
   ],
-  declarations: [...components, ProcessDetailsSummaryComponent, ProcessAttachmentsComponent],
+  declarations: [...components],
   entryComponents: [...components],
   exports: [...components]
 })

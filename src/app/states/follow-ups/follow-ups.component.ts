@@ -26,11 +26,7 @@ import { followUp } from './../../../../projects/yuuvis/framework/src/lib/svg.ge
 })
 export class FollowUpsComponent implements OnInit, OnDestroy {
   layoutOptionsKey = 'yuv.app.follow-ups';
-  // contextError: string;
-  // objectDetailsID: string;
-  // itemIsSelected = false;
-  // objectId: string;
-  selectedObjectId: string;
+  selectedFollowUp: Process;
   processData$: Observable<ResponsiveTableData>;
   loading$: Observable<boolean> = this.processService.loadingProcessData$;
 
@@ -65,18 +61,18 @@ export class FollowUpsComponent implements OnInit, OnDestroy {
   }
 
   selectedItem(items: ProcessRow[]) {
-    this.selectedObjectId = items?.length && items[0].originalData.attachments?.length ? items[0].originalData.attachments[0] : null;
+    this.selectedFollowUp = items?.length ? items[0].originalData : null;
   }
 
   refreshList() {
     this.getProcesses().subscribe();
   }
 
-  remove() {
-    // this.processService
-    //   .deleteFollowUp(this.selectedProcess[0].id)
-    //   .pipe(switchMap(() => this.getProcesses()))
-    //   .subscribe();
+  removeFollowUp(id: string) {
+    this.processService
+      .deleteFollowUp(id)
+      .pipe(switchMap(() => this.getProcesses()))
+      .subscribe();
   }
 
   onSlaveClosed() {}
