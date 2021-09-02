@@ -15,6 +15,7 @@ import { TestObjectDetailsCompareComponent } from './test-object-details-compare
 import { TestObjectDetailsComponent } from './test-object-details/test-object-details.component';
 import { TestObjectFormEditComponent } from './test-object-form-edit/test-object-form-edit.component';
 import { TestObjectFormComponent } from './test-object-form/test-object-form.component';
+import { TestObjectPickerComponent } from './test-object-picker/test-object-picker.component';
 import { TestPanelComponent } from './test-panel/test-panel.component';
 import { TestPopoverComponent } from './test-popover/test-popover.component';
 import { TestQuickSearchComponent } from './test-quick-search/test-quick-search.component';
@@ -24,6 +25,7 @@ import { TestResponsiveTabContainerComponent } from './test-responsive-tab-conta
 import { TestSearchResultPanelComponent } from './test-search-result-panel/test-search-result-panel.component';
 import { TestSearchResultComponent } from './test-search-result/test-search-result.component';
 import { TestSummaryComponent } from './test-summary/test-summary.component';
+import { TestTaskDetailsComponent } from './test-task-details/test-task-details.component';
 import { TestUploadProgressOverlayComponent } from './test-upload-progress-overlay/test-upload-progress-overlay.component';
 import { TestUserAvatarComponent } from './test-user-avatar/test-user-avatar.component';
 import { TestVersionListComponent } from './test-version-list/test-version-list.component';
@@ -44,6 +46,7 @@ const routes: Routes = [
   { path: 'object-details-compare', component: TestObjectDetailsCompareComponent },
   { path: 'object-form', component: TestObjectFormComponent },
   { path: 'object-form-edit', component: TestObjectFormEditComponent },
+  { path: 'object-picker', component: TestObjectPickerComponent },
   { path: 'panel', component: TestPanelComponent },
   { path: 'popover', component: TestPopoverComponent },
   { path: 'quickfinder', component: TestQuickfinderComponent },
@@ -52,6 +55,7 @@ const routes: Routes = [
   { path: 'search-result-panel', component: TestSearchResultPanelComponent },
   { path: 'recent-activities', component: TestRecentActivitiesComponent },
   { path: 'summary', component: TestSummaryComponent },
+  { path: 'task-details', component: TestTaskDetailsComponent },
   { path: 'user-avatar', component: TestUserAvatarComponent },
   { path: 'upload-progress-overlay', component: TestUploadProgressOverlayComponent },
   { path: 'version-list', component: TestVersionListComponent },

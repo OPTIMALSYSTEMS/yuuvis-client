@@ -1,0 +1,13 @@
+<header>
+    <yuv-icon class="btn" icon="clear" (click)="popoverRef.close()" *ngIf="!!popoverRef"></yuv-icon>
+    <h2 *ngIf="headline">{{headline}}</h2>
+    <yuv-quick-search [inline]="true" disableAggregations="true" (queryReset)="onQuickSearchReset()"
+        (queryChange)="onQuickSearchQueryChange($event)"></yuv-quick-search>
+</header>
+<main [yuvBusyOverlay]="loading">
+    <div class="result" *ngIf="searchResult">
+        <yuv-selectable-item tabindex="-1" *ngFor="let item of searchResult" (focus)="itemFocused(item)"
+            (blur)="itemFocused(null)" (select)="onResultItemSelect($event)" [item]="item">
+        </yuv-selectable-item>
+    </div>
+</main>

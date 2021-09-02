@@ -47,9 +47,6 @@ import { QuickSearchService } from './quick-search.service';
  * Setting up the ID of a context folder will restrict the search to only return results from
  * within the given context folder.
  *
- * Adding a class of `inline` to the component will apply a different layout more suitable
- * for embedding the component somwhere else.
- *
  * [Screenshot](../assets/images/yuv-quick-search.gif)
  * 
  * @example
@@ -168,6 +165,7 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
    */
   @Output() querySubmit = new EventEmitter<SearchQuery>();
   @Output() queryReset = new EventEmitter();
+  @Output() queryChange = new EventEmitter<SearchQuery>();
   @Output() typeAggregation = new EventEmitter<ObjectTypeAggregation[]>();
 
   @HostBinding('class.busy') busy: boolean;
@@ -251,6 +249,7 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
    * estimated result of the current query.
    */
   aggregate() {
+    this.queryChange.emit(this.searchQuery);
     if (!!this.disableAggregations) {
       return;
     }

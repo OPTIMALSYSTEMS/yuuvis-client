@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { BpmEvent, EventService, ProcessData, ProcessDefinitionKey, ProcessService, TranslateService } from '@yuuvis/core';
+import { BpmEvent, EventService, Process, ProcessDefinitionKey, ProcessService, TranslateService } from '@yuuvis/core';
 import {
   arrowNext,
   edit,
@@ -10,11 +10,12 @@ import {
   listModeGrid,
   listModeSimple,
   PluginsService,
+  ProcessRow,
   refresh,
   ResponsiveTableData
 } from '@yuuvis/framework';
-import { Observable, of } from 'rxjs';
-import { map, switchMap, take, tap } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { map, tap } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { followUp } from './../../../../projects/yuuvis/framework/src/lib/svg.generated';
 
@@ -25,11 +26,11 @@ import { followUp } from './../../../../projects/yuuvis/framework/src/lib/svg.ge
 })
 export class FollowUpsComponent implements OnInit, OnDestroy {
   layoutOptionsKey = 'yuv.app.follow-ups';
-  contextError: string;
-  objectDetailsID: string;
-  objectId: string;
-  selectedProcess: any;
-  processData$: Observable<ResponsiveTableData>;
+  selectedFollowUp: Process;
+  processData$: Observable<ResponsiveTableData> = this.processService.processData$.pipe(
+    map((processData: Process[]) => this.formatProcessDataService.formatFollowUpDataForTable(processData, ['type', 'subject', 'startTime', 'status'])),
+    map((taskData: ResponsiveTableData) => (taskData.rows.length ? taskData : null))
+  );
   loading$: Observable<boolean> = this.processService.loadingProcessData$;
 
   headerDetails: HeaderDetails = {
@@ -52,40 +53,29 @@ export class FollowUpsComponent implements OnInit, OnDestroy {
     this.iconRegistry.registerIcons([edit, arrowNext, refresh, followUp, listModeDefault, listModeGrid, listModeSimple]);
   }
 
-  private getProcesses(): Observable<ProcessData[] | ResponsiveTableData> {
-    return this.processService.getProcesses(ProcessDefinitionKey.FOLLOW_UP).pipe(
-      take(1),
-      map((processData: ProcessData[]) => this.formatProcessDataService.formatProcessDataForTable(processData, ['whatAbout', 'startTime', 'expiryDateTime'])),
-      map((taskData: ResponsiveTableData) => (taskData.rows.length ? taskData : null)),
-      tap((data) => (this.processData$ = of(data))),
-      takeUntilDestroy(this)
-    );
-  }
-
-  selectedItem(item: any[]) {
-    this.selectedProcess = item;
-    this.objectId = item[0] ? item[0]?.documentId || ProcessDefinitionKey.INVALID_TYPE : null;
+  selectedItem(items: ProcessRow[]) {
+    this.selectedFollowUp = items?.length ? items[0].originalData : null;
   }
 
   refreshList() {
-    this.getProcesses().subscribe();
+    this.processService.fetchProcesses(ProcessDefinitionKey.FOLLOW_UP);
   }
 
-  remove() {
+  removeFollowUp(id: string) {
     this.processService
-      .deleteFollowUp(this.selectedProcess[0].id)
-      .pipe(switchMap(() => this.getProcesses()))
+      .deleteProcess(id)
+      .pipe(tap(() => this.processService.fetchProcesses(ProcessDefinitionKey.FOLLOW_UP)))
       .subscribe();
   }
 
   onSlaveClosed() {}
 
   ngOnInit(): void {
-    this.getProcesses().subscribe();
+    this.processService.fetchProcesses(ProcessDefinitionKey.FOLLOW_UP);
     this.eventService
       .on(BpmEvent.BPM_EVENT)
       .pipe(
-        switchMap(() => this.getProcesses()),
+        tap(() => this.processService.fetchProcesses(ProcessDefinitionKey.FOLLOW_UP)),
         takeUntilDestroy(this)
       )
       .subscribe();

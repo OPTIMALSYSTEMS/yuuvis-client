@@ -1,0 +1,18 @@
+<header>
+    <h2>{{'yuv.framework.process-attachments-order.title'|translate}}</h2>
+</header>
+<main>
+    <div class="attachments" cdkDropList (cdkDropListDropped)="attachmentOrderDrop($event)"
+        [cdkDropListData]="_attachments">
+        <div class="attachment" [ngClass]="{error: a.error}" cdkDrag *ngFor="let a of _attachments">
+            <yuv-icon class="handle" cdkDragHandle [icon]="'dragHandle'"></yuv-icon>
+            {{a.error ? '???' : a.title}}
+        </div>
+    </div>
+</main>
+<footer>
+    <button *ngIf="popoverRef"
+        (click)="cancel()">{{'yuv.framework.process-attachments-order.button.cancel'|translate}}</button>
+    <button class="primary"
+        (click)="emitOrderChange()">{{'yuv.framework.process-attachments-order.button.save'|translate}}</button>
+</footer>

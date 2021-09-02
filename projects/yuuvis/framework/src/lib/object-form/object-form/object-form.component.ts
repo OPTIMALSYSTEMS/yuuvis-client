@@ -167,6 +167,14 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
     return this.formToData();
   }
 
+  getFormElements() {
+    const formElements: any = {};
+    Object.keys(this.formControls).forEach((k) => {
+      formElements[k] = this.formControls[k].__eoFormElement;
+    });
+    return formElements;
+  }
+
   public setFormPristine() {
     this.form.markAsPristine();
   }
