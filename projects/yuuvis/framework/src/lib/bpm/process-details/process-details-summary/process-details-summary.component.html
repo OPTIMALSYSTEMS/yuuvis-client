@@ -1,5 +1,12 @@
 <table *ngIf="_process">
     <tr>
+        <th></th>
+        <td><button (click)="deleteProcess()">
+                <yuv-icon icon="deleteIcon"></yuv-icon>
+                {{'yuv.framework.process-details-summary.action.delete'|translate}}
+            </button></td>
+    </tr>
+    <tr>
         <th>{{'yuv.framework.process-details-summary.status'|translate}}</th>
         <td><span class="status {{processState.css}}">{{processState.label}}</span></td>
     </tr>

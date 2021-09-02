@@ -12,7 +12,8 @@ import {
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { PopoverRef } from '../../popover/popover.ref';
 import { PopoverService } from '../../popover/popover.service';
-import { addCircle, attachment, clear, noFile } from '../../svg.generated';
+import { addCircle, attachment, clear, dragHandle, noFile, sort } from '../../svg.generated';
+import { ProcessAttachment } from './process-attachments.interface';
 
 @Component({
   selector: 'yuv-process-attachments',
@@ -21,6 +22,7 @@ import { addCircle, attachment, clear, noFile } from '../../svg.generated';
 })
 export class ProcessAttachmentsComponent implements OnInit {
   @ViewChild('addAttachmentOverlay') addAttachmentOverlay: TemplateRef<any>;
+  @ViewChild('orderAttachmentOverlay') orderAttachmentOverlay: TemplateRef<any>;
 
   @Input() set attachments(a: string[]) {
     if (a?.length) {
@@ -39,9 +41,10 @@ export class ProcessAttachmentsComponent implements OnInit {
 
   @Output() attachmentRemove = new EventEmitter<string>();
   @Output() attachmentAdd = new EventEmitter<string>();
+  @Output() attachmentOrderChange = new EventEmitter<string[]>();
   @Output() attachmentOpenExternal = new EventEmitter<string>();
 
-  attachedObjects: { id: string; objectTypeId: string; title: string }[] = [];
+  attachedObjects: ProcessAttachment[] = [];
   selectedObject: string;
   busy: boolean;
 
@@ -53,7 +56,7 @@ export class ProcessAttachmentsComponent implements OnInit {
     private searchService: SearchService,
     private popoverService: PopoverService
   ) {
-    this.iconRegistry.registerIcons([attachment, clear, noFile, addCircle]);
+    this.iconRegistry.registerIcons([dragHandle, sort, attachment, clear, noFile, addCircle]);
   }
 
   // select an attachmemnt from the attachments list to show its details
@@ -80,9 +83,13 @@ export class ProcessAttachmentsComponent implements OnInit {
     this.popoverRef = this.popoverService.open(this.addAttachmentOverlay, {});
   }
 
-  onAttachmentSelect(e) {
+  onAttachmentDialogSelect(e) {
     this.popoverRef.close();
     this.attachmentAdd.emit(e.id);
+  }
+
+  openOrderAttachmentDialog() {
+    this.popoverRef = this.popoverService.open(this.orderAttachmentOverlay, {});
   }
 
   private fetchAttachmentDetails(oids: string[]) {
@@ -95,13 +102,30 @@ export class ProcessAttachmentsComponent implements OnInit {
       query.addFilterGroup(group);
       this.searchService.search(query).subscribe(
         (res: SearchResult) => {
-          this.attachedObjects = res.items.map((i) => ({
-            id: i.fields.get(BaseObjectTypeField.OBJECT_ID),
-            objectTypeId: i.fields.get(BaseObjectTypeField.OBJECT_TYPE_ID),
-            title: i.fields.get(ClientDefaultsObjectTypeField.TITLE)
-          }));
+          // map result to maintain the correct order
+          const qa: any = {};
+          res.items.forEach((i) => {
+            qa[i.fields.get(BaseObjectTypeField.OBJECT_ID)] = {
+              id: i.fields.get(BaseObjectTypeField.OBJECT_ID),
+              objectTypeId: i.fields.get(BaseObjectTypeField.OBJECT_TYPE_ID),
+              title: i.fields.get(ClientDefaultsObjectTypeField.TITLE)
+            };
+          });
+          this.attachedObjects = oids.map((id) => {
+            // some of the attachments may not be resolved due to a lack of permissions
+            return qa[id]
+              ? qa[id]
+              : {
+                  id: id,
+                  error: true
+                };
+          });
           if (this.attachedObjects.length > 0) {
-            this.selectedObject = this.attachedObjects[0].id;
+            // select the first item that has no error
+            const valid = this.attachedObjects.find((o) => !o.error);
+            if (valid) {
+              this.selectedObject = valid.id;
+            }
           }
           this.busy = false;
         },

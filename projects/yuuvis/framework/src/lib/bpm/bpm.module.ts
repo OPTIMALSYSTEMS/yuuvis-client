@@ -1,3 +1,4 @@
+import { DragDropModule } from '@angular/cdk/drag-drop';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { TranslateModule, YuvCoreModule } from '@yuuvis/core';
@@ -18,6 +19,7 @@ import { TaskDetailsAttachmentsComponent } from './task-details/task-details-att
 import { TaskDetailsHistoryComponent } from './task-details/task-details-history/task-details-history.component';
 import { TaskDetailsTaskComponent } from './task-details/task-details-task/task-details-task.component';
 import { TaskDetailsComponent } from './task-details/task-details.component';
+import { ProcessAttachmentsOrderComponent } from './process-attachments/process-attachments-order/process-attachments-order.component';
 
 const components = [
   ProcessDetailsComponent,
@@ -41,10 +43,11 @@ const components = [
     YuvCoreModule,
     TranslateModule,
     YuvCommonModule,
+    DragDropModule,
     YuvObjectPickerModule,
     YuvObjectDetailsModule
   ],
-  declarations: [...components],
+  declarations: [...components, ProcessAttachmentsOrderComponent],
   entryComponents: [...components],
   exports: [...components]
 })

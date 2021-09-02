@@ -35,15 +35,14 @@ export class ProcessService {
   /**
    * get all processes
    */
-  getProcesses(processDefinitionKey?: string): Observable<Process[]> {
+  fetchProcesses(processDefinitionKey?: string): void {
     let params = `&includeProcessVariables=true&sort=startTime`;
     if (processDefinitionKey) {
       params += `&processDefinitionKey=${processDefinitionKey}`;
     }
-    return this.getAllPages(params).pipe(
-      tap((res: Process[]) => this.processSource.next(res)),
-      map((res: Process[]) => res.reverse())
-    );
+    this.getAllPages(params)
+      .pipe(tap((res: Process[]) => this.processSource.next(res.reverse())))
+      .subscribe();
   }
 
   private getAllPages(requestParams: string): Observable<Process[]> {
@@ -61,7 +60,8 @@ export class ProcessService {
   }
 
   private getPage(requestParams: string, index?: number) {
-    return this.bpmService.getProcesses(`${this.bpmProcessUrl}?size=${this.PROCESSES_PAGE_SIZE}&page=${index || 0}${requestParams}`);
+    return this.bpmService.getProcesses(`${this.bpmProcessUrl}?size=${this.PROCESSES_PAGE_SIZE}
+    &page=${index || 0}${requestParams}`);
   }
 
   /**
@@ -103,7 +103,7 @@ export class ProcessService {
   /**
    * delete a follow Up by process Instance Id
    */
-  deleteFollowUp(processInstanceId: string) {
+  deleteProcess(processInstanceId: string) {
     return this.bpmService.deleteProcess(this.bpmProcessUrl, processInstanceId).pipe(
       tap((data) => {
         let currentValue = this.processSource.getValue();

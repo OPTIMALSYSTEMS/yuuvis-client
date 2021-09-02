@@ -18,7 +18,7 @@ export class ObjectPickerComponent implements OnInit {
 
   @Input() headline: string;
   @Input() popoverRef: PopoverRef;
-  @Output() select = new EventEmitter<string>();
+  @Output() objectSelect = new EventEmitter<string>();
   @Output() cancel = new EventEmitter();
 
   @HostListener('keydown', ['$event']) onKeyDown(event) {
@@ -76,7 +76,7 @@ export class ObjectPickerComponent implements OnInit {
   }
 
   onResultItemSelect(e) {
-    this.select.emit(e);
+    this.objectSelect.emit(e);
     this.reset();
   }
 

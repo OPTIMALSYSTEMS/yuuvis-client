@@ -1,5 +1,5 @@
 <div class="cmp">
-    <yuv-object-picker headline="Pick something" (select)="objectSelect($event)"></yuv-object-picker>
+    <yuv-object-picker headline="Pick something" (objectSelect)="objectSelect($event)"></yuv-object-picker>
 </div>
 
 <div class="result" *ngIf="selected">{{selected.label}}({{selected.id}})</div>

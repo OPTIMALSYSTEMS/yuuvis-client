@@ -36,6 +36,11 @@ export class TaskDetailsAttachmentsComponent implements OnInit {
     });
   }
 
+  onAttachmentOrderChange(orderedAttachments: string[]) {
+    this._task.attachments = orderedAttachments;
+    this.updateAttachments().subscribe((res) => {});
+  }
+
   private updateAttachments() {
     return this.inboxService.updateTask(this._task.id, { attachments: this._task.attachments });
   }

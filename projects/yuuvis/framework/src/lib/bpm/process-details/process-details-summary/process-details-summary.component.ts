@@ -1,6 +1,9 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { Process, TranslateService, UserService } from '@yuuvis/core';
+import { Process, ProcessService, TranslateService, UserService } from '@yuuvis/core';
 import { takeUntilDestroy } from 'take-until-destroy';
+import { IconRegistryService } from '../../../common/components/icon/service/iconRegistry.service';
+import { PopoverService } from '../../../popover/popover.service';
+import { deleteIcon } from '../../../svg.generated';
 
 @Component({
   selector: 'yuv-process-details-summary',
@@ -41,12 +44,27 @@ export class ProcessDetailsSummaryComponent implements OnInit, OnDestroy {
     }
   }
 
-  constructor(private translate: TranslateService, private userService: UserService) {
+  constructor(
+    private translate: TranslateService,
+    private iconRegistry: IconRegistryService,
+    private processService: ProcessService,
+    private popoverService: PopoverService,
+    private userService: UserService
+  ) {
+    this.iconRegistry.registerIcons([deleteIcon]);
     this.userService.user$.pipe(takeUntilDestroy(this)).subscribe((_) => (this.isAdmin = this.userService.hasAdminRole));
   }
 
   deleteProcess() {
-    // TODO: implement
+    this.popoverService
+      .confirm({
+        message: this.translate.instant('yuv.framework.process-details-summary.dialog.remove.message')
+      })
+      .subscribe((confirmed: boolean) => {
+        if (confirmed) {
+          this.processService.deleteProcess(this._process.id).subscribe();
+        }
+      });
   }
 
   ngOnInit(): void {}

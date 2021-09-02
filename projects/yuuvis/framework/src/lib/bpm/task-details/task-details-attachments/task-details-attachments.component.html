@@ -1,3 +1,4 @@
 <yuv-process-attachments [enableAdd]="true" [enableRemove]="true" (attachmentAdd)="onAttachmentAdd($event)"
-    (attachmentOpenExternal)="attachmentOpenExternal.emit($event)" (attachmentRemove)="onAttachmentRemove($event)"
+    (attachmentOpenExternal)="attachmentOpenExternal.emit($event)"
+    (attachmentOrderChange)="onAttachmentOrderChange($event)" (attachmentRemove)="onAttachmentRemove($event)"
     [attachments]="_task?.attachments"></yuv-process-attachments>

@@ -87,7 +87,7 @@ export class FollowUpComponent implements OnInit, OnDestroy, ActionComponent {
   deleteFollowUp() {
     this.loading = true;
     this.processService
-      .deleteFollowUp(this.currentFollowUp.id)
+      .deleteProcess(this.currentFollowUp.id)
       .pipe(
         finalize(() => {
           this.loading = false;
