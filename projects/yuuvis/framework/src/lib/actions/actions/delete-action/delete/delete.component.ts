@@ -42,12 +42,20 @@ export class DeleteComponent implements OnInit, ActionComponent {
         this.finished.emit();
       },
       (error) => {
-        switch (error.status) {
+        let status = error.status;
+        if (error.error) {
+          status = error.error.serviceErrorCode;
+        }
+        switch (status) {
           case 403:
             this.notificationService.error(this.translate.instant('yuv.framework.action-menu.action.delete.dms.object.error.403'));
             break;
           case 409:
             this.notificationService.error(this.translate.instant('yuv.framework.action-menu.action.delete.dms.object.error.409'));
+            break;
+          // serviceErrorCode: A non-empty folder cannot be deleted
+          case 2800:
+            this.notificationService.error(this.translate.instant('yuv.framework.action-menu.action.delete.dms.object.error.2800'));
             break;
         }
         this.finished.emit();
