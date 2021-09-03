@@ -1,0 +1,26 @@
+:host {
+  height: 100%;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  grid-template-columns: 1fr;
+  grid-template-areas: 'desc' 'form' 'buttons';
+  background-color: var(--panel-background-grey);
+
+  .task-description {
+    grid-area: desc;
+    padding: var(--app-pane-padding);
+  }
+  .task-data {
+    grid-area: form;
+    overflow-y: auto;
+    padding: var(--app-pane-padding);
+  }
+  .actions {
+    grid-area: buttons;
+    background-color: var(--panel-background);
+    border-top: 1px solid var(--panel-divider-color);
+    padding: calc(var(--app-pane-padding) / 2);
+    display: flex;
+    justify-content: flex-end;
+  }
+}

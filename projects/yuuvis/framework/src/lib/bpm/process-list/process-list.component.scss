@@ -16,6 +16,11 @@
     background-color: var(--panel-background);
     display: flex;
     justify-content: flex-end;
+    align-items: center;
+
+    .status {
+      flex: 1;
+    }
 
     yuv-icon.mode {
       width: 18px;

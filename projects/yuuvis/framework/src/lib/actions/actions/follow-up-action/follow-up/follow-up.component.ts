@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { BpmEvent, EventService, InboxService, ProcessData, ProcessService, TaskData, TranslateService, Utils } from '@yuuvis/core';
+import { BpmEvent, EventService, InboxService, Process, ProcessService, Task, TranslateService, Utils } from '@yuuvis/core';
 import { of } from 'rxjs';
 import { finalize, map, switchMap, tap } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
@@ -16,7 +16,7 @@ import { ActionComponent } from './../../../interfaces/action-component.interfac
 })
 export class FollowUpComponent implements OnInit, OnDestroy, ActionComponent {
   form: FormGroup;
-  currentFollowUp: ProcessData;
+  currentFollowUp: Process;
   showDeleteTemp = false;
   folder = '';
   secondForm: FormGroup;
@@ -40,8 +40,7 @@ export class FollowUpComponent implements OnInit, OnDestroy, ActionComponent {
   ) {
     this.form = this.fb.group({
       expiryDateTime: ['', Validators.required],
-      whatAbout: ['', Validators.required],
-      documentId: null
+      whatAbout: ['', Validators.required]
     });
   }
 
@@ -52,7 +51,7 @@ export class FollowUpComponent implements OnInit, OnDestroy, ActionComponent {
   createFollowUp() {
     this.loading = true;
     this.processService
-      .createFollowUp(this.selection[0].id, this.form.value)
+      .createFollowUp(this.selection[0].id, this.form.value.whatAbout, this.form.value.expiryDateTime)
       .pipe(
         finalize(() => (this.loading = false)),
         takeUntilDestroy(this)
@@ -70,7 +69,7 @@ export class FollowUpComponent implements OnInit, OnDestroy, ActionComponent {
   editFollowUp() {
     this.loading = true;
     this.processService
-      .editFollowUp(this.selection[0].id, this.currentFollowUp.id, this.form.value)
+      .editFollowUp(this.selection[0].id, this.currentFollowUp.id, this.form.value.whatAbout, this.form.value.expiryDateTime)
       .pipe(
         finalize(() => (this.loading = false)),
         takeUntilDestroy(this)
@@ -88,7 +87,7 @@ export class FollowUpComponent implements OnInit, OnDestroy, ActionComponent {
   deleteFollowUp() {
     this.loading = true;
     this.processService
-      .deleteFollowUp(this.currentFollowUp.id)
+      .deleteProcess(this.currentFollowUp.id)
       .pipe(
         finalize(() => {
           this.loading = false;
@@ -114,7 +113,7 @@ export class FollowUpComponent implements OnInit, OnDestroy, ActionComponent {
   confirmTask() {
     this.loading = true;
     this.inboxService
-      .completeTask(this.currentFollowUp.taskId)
+      .completeTask(this.currentFollowUp.id)
       .pipe(
         tap(() => {
           this.finished.emit();
@@ -143,7 +142,7 @@ export class FollowUpComponent implements OnInit, OnDestroy, ActionComponent {
     return !Utils.isEmpty(this.currentFollowUp);
   }
 
-  private processProcessData(process: ProcessData, task: TaskData) {
+  private processProcessData(process: Process, task: Task) {
     this.currentFollowUp = { ...process, ...(task && { taskId: task?.id }) };
     const { id: documentId, title } = this.selection[0];
     const variables = process?.variables;
@@ -173,10 +172,10 @@ export class FollowUpComponent implements OnInit, OnDestroy, ActionComponent {
     this.processService
       .getFollowUp(this.selection[0].id)
       .pipe(
-        switchMap((process: ProcessData) =>
+        switchMap((process: Process) =>
           process ? this.inboxService.getTask(process?.id).pipe(map((task) => ({ process, task: task[0] }))) : of({ process: null, task: null })
         ),
-        map(({ process, task }: { process: ProcessData; task: TaskData }) => this.processProcessData(process, task)),
+        map(({ process, task }: { process: Process; task: Task }) => this.processProcessData(process, task)),
         takeUntilDestroy(this),
         finalize(() => (this.loading = false))
       )

@@ -4,3 +4,4 @@ export { ProcessDetailsComponent } from './process-details/process-details.compo
 export { ProcessListEmptyComponent } from './process-list-empty/process-list-empty.component';
 export { ProcessListComponent } from './process-list/process-list.component';
 export { FormatProcessDataService } from './services/formatProcessData.service';
+export { TaskDetailsComponent } from './task-details/task-details.component';

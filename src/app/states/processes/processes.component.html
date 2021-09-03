@@ -1,34 +1,18 @@
 <ng-container [yuvTitle]="('yuv.client.state.process.title' | translate)"></ng-container>
 <section class="processes-wrapper" *ngIf="processData$ | async as processData; else empty">
-  <yuv-responsive-master-slave class="state"
-    [layoutOptionsKey]="layoutOptionsKey" 
-    [slaveActive]="objectId"
+  <yuv-responsive-master-slave class="state" [layoutOptionsKey]="layoutOptionsKey" [slaveActive]="!!selectedProcess"
     (slaveClosed)="onSlaveClosed()">
-    <yuv-process-list
-      class="yuv-master panel"
-      [showFooter]="true"
-      [headerDetails]="headerDetails"
-      [layoutOptionsKey]="layoutOptionsKey"
-      [processData]="processData"
-      (refreshList)="refreshList()"
+    <yuv-process-list class="yuv-master panel" [showFooter]="true" [headerDetails]="headerDetails"
+      [layoutOptionsKey]="layoutOptionsKey" [processData]="processData" (refreshList)="refreshList()"
       (selectedItem)="selectedItem($event)"></yuv-process-list>
     <section class="yuv-slave panel">
-      <yuv-process-details 
-        [objectId]="objectId"
-        [layoutOptionsKey]="layoutOptionsKey"
-        [plugins]="plugins"
-        [emptyMessage]="'yuv.client.state.process.remove' | translate"
-        (remove)="remove($event)">
+      <yuv-process-details [process]="selectedProcess" [layoutOptionsKey]="layoutOptionsKey" [plugins]="plugins">
       </yuv-process-details>
     </section>
   </yuv-responsive-master-slave>
 </section>
 <ng-template #empty>
-  <yuv-process-list-empty 
-    [state]="'process'"
-    [headerDetails]="headerDetails"
-    [loading]="loading$"
-    [message]="'yuv.client.state.process.list.empty' | translate"
-    (refresh)="refreshList()">
+  <yuv-process-list-empty [state]="'process'" [headerDetails]="headerDetails" [loading]="loading$"
+    [message]="'yuv.client.state.process.list.empty' | translate" (refresh)="refreshList()">
   </yuv-process-list-empty>
 </ng-template>

@@ -1,0 +1,44 @@
+:host {
+  height: 100%;
+  display: block;
+  overflow-y: auto;
+
+  th,
+  td {
+    padding: calc(var(--app-pane-padding) / 2) var(--app-pane-padding);
+  }
+  th {
+    text-align: right;
+    vertical-align: top;
+  }
+
+  .status {
+    border-radius: 4px;
+    font-family: monospace;
+    padding: 2px 4px;
+
+    &.running {
+      background-color: var(--color-accent);
+      color: #fff;
+    }
+    &.completed {
+      background-color: var(--color-success);
+      color: #fff;
+    }
+    &.suspended {
+      background-color: var(--color-warning);
+      color: #fff;
+    }
+  }
+
+  table.vars {
+    border: 1px solid var(--panel-divider-color);
+    th {
+      text-align: left;
+      background-color: var(--panel-background-grey);
+    }
+    td {
+      background-color: var(--panel-background-lightgrey);
+    }
+  }
+}
