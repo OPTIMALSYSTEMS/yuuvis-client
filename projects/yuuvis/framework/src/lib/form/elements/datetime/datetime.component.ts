@@ -99,18 +99,19 @@ export class DatetimeComponent implements OnInit, ControlValueAccessor, Validato
     this.locale = this.translate.currentLang;
   }
 
-  formatDate(value: Date) {
-    return !value ? null : this.withTime ? value.toISOString().replace(':00.000', '') : this.datePipe.transform(value, 'yyyy-MM-dd');
+  formatDate(value: Date | string) {
+    const val = value instanceof Date ? value.toISOString().replace(':00.000', '') : value || null;
+    return val && !this.withTime ? this.datePipe.transform(val, 'yyyy-MM-dd') : val;
   }
 
   propagateChange = (_: any) => {};
 
   private propagate() {
-    this.propagateChange(this.withTime ? this.value : this.datePipe.transform(this.value, 'yyyy-MM-dd'));
+    this.propagateChange(this.value);
   }
 
   writeValue(value: any): void {
-    this.value = value ? new Date(new Date(value).setSeconds(0, 0)) : null;
+    this.value = this.formatDate(value);
     this.setInnerValue();
   }
 
@@ -138,7 +139,7 @@ export class DatetimeComponent implements OnInit, ControlValueAccessor, Validato
     const popoverConfig: PopoverConfig = {
       disableSmallScreenClose: true,
       data: {
-        value: this.value,
+        value: this.datePipe.fixTimezone(this.value),
         withTime: this.withTime,
         withAmPm: this.withAmPm,
         onlyFutureDates: this.onlyFutureDates
@@ -183,7 +184,7 @@ export class DatetimeComponent implements OnInit, ControlValueAccessor, Validato
     this.innerValue = this.isValidDate(this.value) ? this.datePipe.transform(this.value, this._datePattern) : null;
   }
 
-  private isValidDate(date: Date): boolean {
+  private isValidDate(date: Date | string): boolean {
     const valid = !!date && !isNaN(new Date(date).getTime());
     // empty input is valid all the time
     this.isValidInput = this.onlyFutureDates && valid ? new Date(date).getTime() >= new Date().getTime() : valid || !date;

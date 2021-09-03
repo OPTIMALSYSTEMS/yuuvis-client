@@ -1,6 +1,8 @@
 @import './../../../../../src/scss-shared/_vars';
 
 body {
+  .yuv-datetime-range,
+  .yuv-number-range,
   .yuv-catalog {
     .p-disabled {
       opacity: 0.8;
@@ -40,6 +42,7 @@ body {
 
     .p-dropdown:not(.p-disabled).p-focus {
       box-shadow: none;
+      outline: none;
     }
 
     .p-dropdown-panel {
