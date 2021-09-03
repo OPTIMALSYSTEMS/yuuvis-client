@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { TaskRow } from '@yuuvis/core';
+import { ResponsiveTableData } from '../../components/responsive-data-table/responsive-data-table.interface';
 import { ResponsiveDataTableComponent, ViewMode } from './../../components/responsive-data-table/responsive-data-table.component';
 
 interface HeaderDetails {
@@ -31,11 +32,13 @@ export class ProcessListComponent {
   private _processData: any;
   private _viewMode: ViewMode;
   header: HeaderDetails;
+  totalNumItems: number;
 
   @Input() layoutOptionsKey: string;
   @Input()
-  set processData(data) {
+  set processData(data: ResponsiveTableData) {
     this._processData = data;
+    this.totalNumItems = data ? data.rows.length : 0;
     // setTimeout(() => {
     //   if (this.dataTable) {
     //     this.dataTable.selectRows(this.dataTable.);
