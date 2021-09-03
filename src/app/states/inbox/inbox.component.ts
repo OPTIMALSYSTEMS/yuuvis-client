@@ -72,7 +72,7 @@ export class InboxComponent implements OnInit, OnDestroy {
   onSlaveClosed() {}
 
   onAttachmentOpenExternal(id: string) {
-    window.open(`${this.frameService.getAppRootPath()}/object/${id}`, 'xxx');
+    window.open(`${this.frameService.getAppRootPath()}/object/${id}`);
   }
 
   ngOnInit(): void {

@@ -6,12 +6,13 @@
 
   header {
     grid-area: header;
+    padding: var(--app-pane-padding);
   }
   main {
     grid-area: main;
-    overflow-y: auto;
     background-color: var(--panel-background-grey);
     padding: var(--app-pane-padding);
+    overflow-y: auto;
 
     .attachment {
       background-color: var(--panel-background);
