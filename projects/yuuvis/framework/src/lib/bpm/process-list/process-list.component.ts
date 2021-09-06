@@ -1,3 +1,4 @@
+import { RowNode } from '@ag-grid-community/core';
 import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { TaskRow } from '@yuuvis/core';
 import { ResponsiveTableData } from '../../components/responsive-data-table/responsive-data-table.interface';
@@ -37,13 +38,21 @@ export class ProcessListComponent {
   @Input() layoutOptionsKey: string;
   @Input()
   set processData(data: ResponsiveTableData) {
+    let rowsToBeSelected: RowNode[] = [];
+    if (this.dataTable) {
+      rowsToBeSelected = this.dataTable.gridOptions.api.getSelectedNodes();
+    }
+
     this._processData = data;
     this.totalNumItems = data ? data.rows.length : 0;
-    // setTimeout(() => {
-    //   if (this.dataTable) {
-    //     this.dataTable.selectRows(this.dataTable.);
-    //   }
-    // }, 10);
+
+    if (this.dataTable && rowsToBeSelected.length) {
+      let index = rowsToBeSelected[0].rowIndex;
+      if (index >= data.rows.length) index = data.rows.length - 1;
+      setTimeout(() => {
+        this.dataTable.gridOptions.api.selectIndex(index, false, false);
+      }, 50);
+    }
   }
   get processData() {
     return this._processData;
