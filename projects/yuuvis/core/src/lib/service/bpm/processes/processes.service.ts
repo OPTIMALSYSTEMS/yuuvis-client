@@ -123,7 +123,7 @@ export class ProcessService {
         {
           name: FollowUpVars.expiryDateTime,
           type: 'date',
-          value: expiryDateTime.toISOString()
+          value: expiryDateTime && expiryDateTime instanceof Date ? expiryDateTime.toISOString() : expiryDateTime
         }
       ],
       subject,

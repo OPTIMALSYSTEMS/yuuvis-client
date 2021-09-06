@@ -28,7 +28,9 @@ export class FollowUpsComponent implements OnInit, OnDestroy {
   layoutOptionsKey = 'yuv.app.follow-ups';
   selectedFollowUp: Process;
   processData$: Observable<ResponsiveTableData> = this.processService.processData$.pipe(
-    map((processData: Process[]) => this.formatProcessDataService.formatFollowUpDataForTable(processData, ['type', 'subject', 'startTime', 'status'])),
+    map((processData: Process[]) =>
+      this.formatProcessDataService.formatFollowUpDataForTable(processData, ['type', 'subject', 'startTime', 'expiryDateTime', 'status'])
+    ),
     map((taskData: ResponsiveTableData) => (taskData.rows.length ? taskData : null))
   );
   loading$: Observable<boolean> = this.processService.loadingProcessData$;
