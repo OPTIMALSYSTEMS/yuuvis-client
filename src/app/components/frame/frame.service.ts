@@ -80,6 +80,6 @@ export class FrameService {
         root += `:${this.location.port}`;
       }
     }
-    return root;
+    return `${root}${Utils.getBaseHref()}`;
   }
 }
