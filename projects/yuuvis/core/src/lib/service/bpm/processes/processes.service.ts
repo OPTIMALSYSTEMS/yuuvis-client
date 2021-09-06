@@ -74,11 +74,11 @@ export class ProcessService {
   /**
    * create a follow Up for a document
    */
-  createFollowUp(documentId: string, subject: string, expiryDateTime: Date): Observable<any> {
+  createFollowUp(documentId: string, subject: string, expiryDateTime: string): Observable<any> {
     return this.bpmService.createProcess(this.followUpPayloadData(documentId, subject, expiryDateTime));
   }
 
-  private updateFollowUp(documentId: string, subject: string, expiryDateTime: Date, processInstanceId: string): Observable<any> {
+  private updateFollowUp(documentId: string, subject: string, expiryDateTime: string, processInstanceId: string): Observable<any> {
     const payloadData: ProcessCreatePayload = this.followUpPayloadData(documentId, subject, expiryDateTime);
     return this.bpmService.createProcess(payloadData).pipe(
       tap((data) => {
@@ -94,7 +94,7 @@ export class ProcessService {
    * Edit/Update a follow Up by document and process Instance Id
    */
   /** TODO: refactor once actual update is available  above */
-  editFollowUp(documentId: string, processInstanceId: string, subject: string, expiryDateTime: Date): Observable<any> {
+  editFollowUp(documentId: string, processInstanceId: string, subject: string, expiryDateTime: string): Observable<any> {
     const deleteProcess = this.bpmService.deleteProcess(this.bpmProcessUrl, processInstanceId);
     const createProcess = this.updateFollowUp(documentId, subject, expiryDateTime, processInstanceId);
     return forkJoin([deleteProcess, createProcess]);
@@ -115,7 +115,7 @@ export class ProcessService {
     );
   }
 
-  private followUpPayloadData(documentId: string, subject: string, expiryDateTime: Date): ProcessCreatePayload {
+  private followUpPayloadData(documentId: string, subject: string, expiryDateTime: string): ProcessCreatePayload {
     return {
       processDefinitionKey: ProcessDefinitionKey.FOLLOW_UP,
       businessKey: documentId,
@@ -123,7 +123,7 @@ export class ProcessService {
         {
           name: FollowUpVars.expiryDateTime,
           type: 'date',
-          value: expiryDateTime && expiryDateTime instanceof Date ? expiryDateTime.toISOString() : expiryDateTime
+          value: expiryDateTime
         }
       ],
       subject,

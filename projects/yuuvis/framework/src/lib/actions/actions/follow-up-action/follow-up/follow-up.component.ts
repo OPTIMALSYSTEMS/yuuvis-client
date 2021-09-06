@@ -143,14 +143,14 @@ export class FollowUpComponent implements OnInit, OnDestroy, ActionComponent {
   }
 
   private processProcessData(process: Process, task: Task) {
-    this.currentFollowUp = { ...process, ...(task && { taskId: task?.id }) };
+    this.currentFollowUp = process;
     const { id: documentId, title } = this.selection[0];
     const variables = process?.variables;
 
     this.hasCurrentFollowUp
       ? this.form.patchValue({
-          expiryDateTime: variables?.find((v) => v.name === 'expiryDateTime').value,
-          whatAbout: variables?.find((v) => v.name === 'whatAbout').value as string,
+          expiryDateTime: variables?.find((v) => v.name === 'expiryDateTime')?.value,
+          whatAbout: this.currentFollowUp.subject,
           documentId
         })
       : this.form.patchValue({ whatAbout: (title ? `${title}: ` : '') as string, documentId });
@@ -159,7 +159,7 @@ export class FollowUpComponent implements OnInit, OnDestroy, ActionComponent {
       : this.translate.instant('yuv.framework.action-menu.action.follow-up.create.title');
     this.form.markAsPristine();
 
-    if (!!task || this.activatedRoute.snapshot.url[0].path === 'inbox') {
+    if (task) {
       this.canConfirmTask = true;
       this.form.disable();
       this.disabledForm = true;
