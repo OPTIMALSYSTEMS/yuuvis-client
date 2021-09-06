@@ -475,7 +475,9 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
         disabled: controlDisabled
       });
 
-      formElement.label = formElement.name ? this.systemService.getLocalizedResource(`${formElement.name}_label`) || formElement.name : '???';
+      if (!formElement.label) {
+        formElement.label = formElement.name ? this.systemService.getLocalizedResource(`${formElement.name}_label`) || formElement.name : '???';
+      }
       formElement.readonly = controlDisabled;
       // we are using an internal type to distinguish between the components
       // to be used to render certain form elements
