@@ -2,6 +2,8 @@
   .yuv-process-details-attachments {
     height: 100%;
     background-color: var(--panel-background-grey);
+    display: flex;
+    flex-flow: column;
   }
 
   .empty {
