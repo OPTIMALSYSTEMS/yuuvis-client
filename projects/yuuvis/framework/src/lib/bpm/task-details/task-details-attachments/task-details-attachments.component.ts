@@ -11,10 +11,8 @@ export class TaskDetailsAttachmentsComponent implements OnInit {
   @Input() set task(t: Task) {
     this._task = t;
   }
-  _layoutOptionsKey: string;
-  @Input() set layoutOptionsKey(k: string) {
-    this._layoutOptionsKey = `${k}.attachments`;
-  }
+
+  @Input() layoutOptionsKey: string;
 
   @Output() attachmentRemoved = new EventEmitter<string>();
   @Output() attachmentAdded = new EventEmitter<string>();

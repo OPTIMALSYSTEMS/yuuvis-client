@@ -45,7 +45,7 @@
                         <td>{{v.name}}</td>
                         <td>{{v.type}}</td>
                         <td>{{v.scope}}</td>
-                        <td>{{v.value}}</td>
+                        <td>{{(v.value | localeDate)}}<br/>{{'(' + v.value + ')'}}</td>
                     </tr>
                 </table>
             </td>
