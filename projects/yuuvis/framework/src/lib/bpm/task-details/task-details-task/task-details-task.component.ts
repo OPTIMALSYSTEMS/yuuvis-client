@@ -1,5 +1,5 @@
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
-import { InboxService, ProcessPostPayload, ProcessVariable, SystemService, Task } from '@yuuvis/core';
+import { InboxService, PendingChangesService, ProcessPostPayload, ProcessVariable, SystemService, Task } from '@yuuvis/core';
 import { FormStatusChangedEvent, ObjectFormOptions } from '../../../object-form/object-form.interface';
 import { ObjectFormComponent } from '../../../object-form/object-form/object-form.component';
 
@@ -10,7 +10,7 @@ import { ObjectFormComponent } from '../../../object-form/object-form/object-for
 })
 export class TaskDetailsTaskComponent implements OnInit {
   @ViewChild(ObjectFormComponent) taskForm: ObjectFormComponent;
-
+  private pendingTaskId: string;
   private _task: Task;
   taskDescription: string;
   formState: FormStatusChangedEvent;
@@ -27,7 +27,7 @@ export class TaskDetailsTaskComponent implements OnInit {
 
   formOptions: ObjectFormOptions;
 
-  constructor(private inboxService: InboxService, private system: SystemService) {}
+  constructor(private inboxService: InboxService, private pendingChanges: PendingChangesService, private system: SystemService) {}
 
   private createReferencedForm(t: Task) {
     this.inboxService.getTaskForm(t.formKey).subscribe(
@@ -54,6 +54,9 @@ export class TaskDetailsTaskComponent implements OnInit {
 
   onFormStatusChanged(e: FormStatusChangedEvent) {
     this.formState = e;
+    if (e.dirty) {
+      this.startPending();
+    }
   }
 
   update() {
@@ -65,9 +68,23 @@ export class TaskDetailsTaskComponent implements OnInit {
 
   confirm() {
     this.inboxService.completeTask(this._task.id, this.getUpdatePayload()).subscribe(
-      (res) => console.log(res),
+      (res) => {
+        this.finishPending();
+      },
       (err) => console.error(err)
     );
+  }
+
+  private startPending() {
+    if (!this.pendingChanges.hasPendingTask(this.pendingTaskId || ' ')) {
+      this.pendingTaskId = this.pendingChanges.startTask();
+    }
+  }
+
+  private finishPending() {
+    if (this.pendingTaskId) {
+      this.pendingChanges.finishTask(this.pendingTaskId);
+    }
   }
 
   private getUpdatePayload(): ProcessPostPayload {
