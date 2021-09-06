@@ -1,6 +1,6 @@
 import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
 import { ValidatorFn, Validators } from '@angular/forms';
-import { Logger, RangeValue, SearchFilter, SearchService, SystemService, UserService, Utils } from '@yuuvis/core';
+import { Logger, SystemService, UserService, Utils } from '@yuuvis/core';
 import { cloneDeep } from 'lodash-es';
 import { Observable, of, Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
@@ -344,12 +344,6 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
         });
         break;
       }
-      // case 'CODESYSTEM': {
-      //   if (!fc._eoFormElement.codesystem.entries) {
-      //      fc._eoFormElement.codesystem = this.systemService.getCodesystem(fc._eoFormElement.codesystem.id);
-      //   }
-      //   break;
-      // }
       case 'TABLE': {
         const dataToBeProcessed = {};
         fc._eoFormElement.elements.forEach((e) => {
@@ -392,12 +386,6 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
         case 'ORGANIZATION': {
           return this.userService.getUserById(newValue);
         }
-        // case 'CODESYSTEM': {
-        //   return of(this.systemService.getCodesystem(formElement.codesystem.id).entries.find((entry)=>{
-        //     return entry.defaultrepresentation === newValue;
-        //   }));
-        //   break;
-        // }
       }
     }
     return of(null);
@@ -480,11 +468,6 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
         ? this.patchFormValue(formElement?.defaultvalue)
         : formElement?.value;
 
-      // // for codesystem elements add entries if not yet provided
-      // if (formElement.type === 'CODESYSTEM' && !formElement.codesystem.entries) {
-      //   formElement.codesystem = this.systemService.getCodesystem(formElement.codesystem.id);
-      // }
-
       // create the actual form control
       const controlDisabled = this.formOptions.disabled || !!formElement.readonly;
       const formControl = new ObjectFormControl({
@@ -530,18 +513,6 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
         }
       }
 
-      // if (formElement.type === 'CODESYSTEM' || (formElement.type === 'STRING' && formElement.classification === 'selector')) {
-      //   formControl._eoFormElement.applyFilter = (func: Function) => {
-      //     formControl._eoFormElement.filterFunction = func;
-      //   };
-      // }
-
-      // if (formElement.type === 'STRING' && formElement.classification === 'selector') {
-      //   formControl._eoFormElement.setList = (listObject: any) => {
-      //     formControl._eoFormElement.list = listObject;
-      //   };
-      // }
-
       if (formElement._internalType === 'string:organization') {
         formControl._eoFormElement.setFilter = (filterObject: any) => {
           formControl._eoFormElement.filter = filterObject;
@@ -549,13 +520,6 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
       }
 
       ObjectFormUtils.updateFormElement(formElement);
-
-      if (this.formOptions.formModel.situation === Situation.SEARCH) {
-        // in search situation even readonly fields should be editable ...
-        formControl._eoFormElement.readonly = false;
-        // ... and required makes no sense here
-        formControl._eoFormElement.required = false;
-      }
 
       // remove empty descriptions
       const desc = formControl._eoFormElement.description;
@@ -625,10 +589,6 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
     elements.forEach((element) => {
       if (this.hasValue(data, element)) {
         element.value = this.getValue(data, element);
-        if (element.value) {
-          // add meta data for some of the types
-          this.fetchMetaData(data, element);
-        }
       } else {
         delete element.value;
       }
@@ -636,25 +596,6 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
         this.setElementValues(element.elements, data);
       }
     });
-  }
-
-  // in some cases required meta data may not be available on the element itself
-  // so they have to be fetched and added to the element for the form to be able
-  // to render the element correctly
-  private fetchMetaData(data, element) {
-    if (this.formOptions.formModel.situation === Situation.SEARCH) {
-      // TODO: how to fetch meta data in search situation
-    } else {
-      // TODO: Not supported right now
-      // if (element.type === 'ORGANIZATION' && data[element.name + '_meta']) {
-      //   element.dataMeta = data[element.name + '_meta'];
-      // } else if (element.type === 'CODESYSTEM' && data[element.name + '_meta']) {
-      //   element.dataMeta = data[element.name + '_meta'];
-      //   element.defaultrepresentation = data[element.name + '_meta'].defaultrepresentation;
-      // } else if (element.type === 'REFERENCE' && data[element.name + '_meta']) {
-      //   element.dataMeta = data[element.name + '_meta'];
-      // }
-    }
   }
 
   private hasValue(data, element) {
@@ -667,67 +608,7 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
   }
 
   private getValue(data, element) {
-    let value;
-    if (this.formOptions.formModel.situation === Situation.SEARCH) {
-      // Differ between fields that support ranges and the ones that don't.
-      // In search situation fields get their values from SearchFilters. The so called
-      // inner table forms are the ones used by the table lement to edit its rows. They
-      // have to be treated differently to provide the right value.
-      if (['datetime', 'integer', 'decimal'].includes(element.type)) {
-        value = this.isInnerTableForm
-          ? SearchService.toRangeValue(data[element.name])
-          : this.searchFilterToRangeValue(data.find((filter) => filter.property === element.id));
-      } else {
-        if (this.isInnerTableForm) {
-          value = data[element.name];
-        } else {
-          const filter: SearchFilter = data.find((f) => f.property === element.id);
-          // take care of searches for explicit NULL values
-          if (filter.operator === SearchFilter.OPERATOR.EQUAL && filter.firstValue === null) {
-            element.isNotSetValue = true;
-          }
-          value = this.searchFilterToValue(filter);
-        }
-
-        value = this.isInnerTableForm ? data[element.name] : this.searchFilterToValue(data.find((filter) => filter.property === element.id));
-      }
-    } else {
-      if (['datetime'].includes(element.type) && data[element.name]) {
-        let d = data[element.name];
-        if (d.length === 10) {
-          // Got date without time in the format of '2021-06-16'
-          // Creating a new Date object from that string would be done with the timezone of
-          // the host maschine. To equalize the servers timezone (UTC) with the local one we
-          // add the timezone offset to the generated date
-          const dt = new Date(d);
-          value = new Date(dt.getTime() + dt.getTimezoneOffset() * 60 * 1000);
-        } else {
-          value = new Date(d);
-        }
-      } else {
-        value = data[element.name];
-      }
-    }
-    return value;
-  }
-
-  // transforms a searchFilter into a value consumable by the form elements that not support ranges
-  private searchFilterToValue(searchFilter: SearchFilter): any {
-    if (searchFilter) {
-      return searchFilter.firstValue;
-    } else {
-      return undefined;
-    }
-  }
-
-  // transforms a searchFilter int a rangeValue instance which then can be used
-  // as value for form controls that support ranges
-  private searchFilterToRangeValue(searchFilter: SearchFilter): RangeValue {
-    if (searchFilter) {
-      return new RangeValue(searchFilter.operator, searchFilter.firstValue, searchFilter.secondValue);
-    } else {
-      return undefined;
-    }
+    return data[element.name];
   }
 
   ngOnDestroy() {
