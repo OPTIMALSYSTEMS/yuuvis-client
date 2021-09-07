@@ -1,5 +1,5 @@
 import { Component, ContentChildren, EventEmitter, Input, OnInit, Output, QueryList, TemplateRef, ViewChild, ViewChildren } from '@angular/core';
-import { SystemService, Task } from '@yuuvis/core';
+import { SystemService, Task, TaskType, TranslateService } from '@yuuvis/core';
 import { TabPanel } from 'primeng/tabview';
 
 @Component({
@@ -24,7 +24,7 @@ export class TaskDetailsComponent implements OnInit {
     this.header = t
       ? {
           title: t.subject,
-          description: this.system.getLocalizedResource(`${t.name}_label`) || t.name
+          description: this.getDescription(t)
         }
       : null;
   }
@@ -36,7 +36,15 @@ export class TaskDetailsComponent implements OnInit {
   @Input() plugins: any;
   @Output() attachmentOpenExternal = new EventEmitter<string>();
 
-  constructor(private system: SystemService) {}
+  constructor(private system: SystemService, private translate: TranslateService) {}
+
+  private getDescription(t: Task): string {
+    let label = this.system.getLocalizedResource(`${t.name}_label`);
+    if (!label && t.name === TaskType.FOLLOW_UP) {
+      label = this.translate.instant(`yuv.framework.process.type.follow-up.defaultTaskName`);
+    }
+    return label || t.name;
+  }
 
   ngOnInit(): void {}
 }

@@ -38,6 +38,8 @@ export class FormatProcessDataService {
       suspended: this.translate.instant(`yuv.framework.process.status.suspended.label`),
       running: this.translate.instant(`yuv.framework.process.status.running.label`),
       followUpType: this.translate.instant(`yuv.framework.process-list.type.follow-up.label`),
+      defaultFollowUpTaskName: this.translate.instant(`yuv.framework.process.type.follow-up.defaultTaskName`),
+      defaultFollowUpProcessName: this.translate.instant(`yuv.framework.process.type.follow-up.defaultProcessName`),
       taskType: this.translate.instant(`yuv.framework.process-list.type.task.label`)
     };
   }
@@ -90,8 +92,8 @@ export class FormatProcessDataService {
         headerName: this.translations[field],
         ...(field.toLowerCase().includes('time') && { cellRenderer: this.gridService.dateTimeCellRenderer() }),
         ...(field.toLowerCase().includes('status') && { cellRenderer: (params) => this.statusCellRenderer({ ...params, translations: this.translations }) }),
-        ...(field.toLowerCase().includes('taskName') && {
-          cellRenderer: (params) => this.taskNameCellRenderer({ ...params, context: { system: this.system } })
+        ...(field.toLowerCase().includes('taskname') && {
+          cellRenderer: (params) => this.taskNameCellRenderer({ ...params, context: { system: this.system, translations: this.translations } })
         }),
         ...(field.toLowerCase().includes('type') && {
           cellRenderer: (params) => this.typeCellRenderer({ ...params, translations: this.translations, context: { system: this.system } })
@@ -109,7 +111,11 @@ export class FormatProcessDataService {
   }
 
   private taskNameCellRenderer(params): string {
-    return params.context.system.getLocalizedResource(`${params.value}_label`) || params.value;
+    let label = params.context.system.getLocalizedResource(`${params.value}_label`);
+    if (!label && params.value === TaskType.FOLLOW_UP) {
+      label = params.context.translations.defaultFollowUpTaskName;
+    }
+    return label || params.value;
   }
 
   private statusCellRenderer(params): string {
@@ -132,19 +138,20 @@ export class FormatProcessDataService {
   }
 
   private typeCellRenderer(params): string {
-    let type, icon;
+    let icon;
     const pdn = params.data.processDefinitionName;
-    const label = params.context.system.getLocalizedResource(`${pdn}_label`) || pdn;
+    let label = params.context.system.getLocalizedResource(`${pdn}_label`);
+    if (!label && pdn === TaskType.FOLLOW_UP) {
+      label = params.context.translations.defaultFollowUpProcessName;
+    }
     switch (params.value) {
       case TaskType.FOLLOW_UP:
-        // type = params.translations.followUpType;
         icon = this.iconRegService.getIcon('followUp');
         break;
       case TaskType.TASK:
-        // type = params.translations.taskType;
         icon = this.iconRegService.getIcon('task');
         break;
     }
-    return `<div title="${label}">${icon}</div>`;
+    return `<div title="${label || pdn}">${icon}</div>`;
   }
 }

@@ -21,7 +21,7 @@ export class ProcessDetailsSummaryComponent implements OnInit, OnDestroy {
       css: 'completed'
     },
     suspended: {
-      label: this.translate.instant('yuv.framework.process.status.susspended.label'),
+      label: this.translate.instant('yuv.framework.process.status.suspended.label'),
       css: 'suspended'
     }
   };

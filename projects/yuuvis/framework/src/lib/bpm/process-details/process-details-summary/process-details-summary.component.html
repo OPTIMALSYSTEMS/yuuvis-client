@@ -46,7 +46,7 @@
                         <td>{{v.type}}</td>
                         <td>{{v.scope}}</td>
                         <td *ngIf="v.type !== 'date'">{{v.value}}</td>
-                        <td *ngIf="v.type === 'date'">{{(v.value | localeDate)}}<br />{{'(' + v.value + ')'}}</td>
+                        <td *ngIf="v.type === 'date'">{{(v.value | localeDate)}}<br />({{v.value}})</td>
                     </tr>
                 </table>
             </td>

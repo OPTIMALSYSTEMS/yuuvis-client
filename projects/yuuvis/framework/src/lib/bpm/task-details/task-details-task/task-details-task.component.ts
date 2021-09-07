@@ -1,5 +1,5 @@
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
-import { InboxService, PendingChangesService, ProcessPostPayload, ProcessVariable, SystemService, Task } from '@yuuvis/core';
+import { InboxService, PendingChangesService, ProcessPostPayload, ProcessVariable, SystemService, Task, TaskType, TranslateService } from '@yuuvis/core';
 import { FormStatusChangedEvent, ObjectFormOptions } from '../../../object-form/object-form.interface';
 import { ObjectFormComponent } from '../../../object-form/object-form/object-form.component';
 
@@ -17,7 +17,7 @@ export class TaskDetailsTaskComponent implements OnInit {
 
   @Input() set task(t: Task) {
     this._task = t;
-    this.taskDescription = t ? this.system.getLocalizedResource(`${t.name}_description`) : null;
+    this.taskDescription = this.getDescription(t);
     if (t && t.formKey) {
       this.createReferencedForm(t);
     } else {
@@ -27,7 +27,20 @@ export class TaskDetailsTaskComponent implements OnInit {
 
   formOptions: ObjectFormOptions;
 
-  constructor(private inboxService: InboxService, private pendingChanges: PendingChangesService, private system: SystemService) {}
+  constructor(
+    private inboxService: InboxService,
+    private pendingChanges: PendingChangesService,
+    private translate: TranslateService,
+    private system: SystemService
+  ) {}
+
+  private getDescription(t: Task): string {
+    let label = this.system.getLocalizedResource(`${t.name}_description`);
+    if (!label && t.name === TaskType.FOLLOW_UP) {
+      label = this.translate.instant(`yuv.framework.process.type.follow-up.defaultTaskDescription`);
+    }
+    return t ? label || t.name : null;
+  }
 
   private createReferencedForm(t: Task) {
     this.inboxService.getTaskForm(t.formKey).subscribe(

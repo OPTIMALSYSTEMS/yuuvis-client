@@ -72,7 +72,8 @@ export class InboxComponent implements OnInit, OnDestroy {
   onSlaveClosed() {}
 
   onAttachmentOpenExternal(id: string) {
-    window.open(`${this.frameService.getAppRootPath()}/object/${id}`);
+    let uri = `${this.frameService.getAppRootPath()}object/${id}`;
+    window.open(uri);
   }
 
   ngOnInit(): void {
