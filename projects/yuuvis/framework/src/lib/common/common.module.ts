@@ -13,6 +13,7 @@ import { DebounceClickDirective } from './directives/debounce-click.directive';
 import { FocusWithinDirective } from './directives/focus-within.directive';
 import { RouterLinkDirective } from './directives/router-link.directive';
 import { ThrottleClickDirective } from './directives/throttle-click.directive';
+import { TitleDirective } from './directives/title.directive';
 
 /**
  * `YuvCommonModule` is a shared module containing components that are (re)used by other modules of the framework.
@@ -28,7 +29,8 @@ import { ThrottleClickDirective } from './directives/throttle-click.directive';
     RouterLinkDirective,
     ObjectTypeIconComponent,
     DebounceClickDirective,
-    ThrottleClickDirective
+    ThrottleClickDirective,
+    TitleDirective
   ],
   entryComponents: [IconComponent, SidebarComponent, EmptyComponent, ObjectTypeIconComponent],
   exports: [
@@ -39,7 +41,8 @@ import { ThrottleClickDirective } from './directives/throttle-click.directive';
     RouterLinkDirective,
     ObjectTypeIconComponent,
     DebounceClickDirective,
-    ThrottleClickDirective
+    ThrottleClickDirective,
+    TitleDirective
   ],
   providers: [IconService, IconRegistryService]
 })

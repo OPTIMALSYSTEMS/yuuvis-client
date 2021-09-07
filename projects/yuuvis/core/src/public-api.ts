@@ -3,7 +3,6 @@ export * from './lib/core.module';
 export * from './lib/core.shared.module';
 export * from './lib/model/dms-object.interface';
 export * from './lib/model/dms-object.model';
-// export * from './lib/model/object-type.model';
 export * from './lib/model/range-value.model';
 export * from './lib/model/yuv-error.model';
 export * from './lib/model/yuv-user.model';

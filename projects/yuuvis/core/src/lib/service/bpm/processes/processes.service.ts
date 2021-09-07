@@ -2,13 +2,10 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, EMPTY, forkJoin, Observable } from 'rxjs';
 import { expand, map, skipWhile, tap } from 'rxjs/operators';
 import { BpmService } from '../bpm/bpm.service';
-import { ProcessDefinitionKey, ProcessInstance, ProcessResponse } from '../model/bpm.model';
-import { ProcessData } from './../model/bpm.model';
+import { FollowUpVars, Process, ProcessCreatePayload, ProcessDefinitionKey } from '../model/bpm.model';
 
-interface CreateFollowUp {
+interface CreateFollowUpPayload {
   expiryDateTime: Date;
-  whatAbout: string;
-  documentId: string;
 }
 
 /**
@@ -23,8 +20,8 @@ export class ProcessService {
 
   private readonly bpmProcessUrl = '/bpm/processes';
 
-  private processSource = new BehaviorSubject<ProcessData[]>([]);
-  public processData$: Observable<ProcessData[]> = this.processSource.asObservable();
+  private processSource = new BehaviorSubject<Process[]>([]);
+  public processData$: Observable<Process[]> = this.processSource.asObservable();
 
   constructor(private bpmService: BpmService) {}
 
@@ -38,18 +35,17 @@ export class ProcessService {
   /**
    * get all processes
    */
-  getProcesses(processDefinitionKey?: ProcessDefinitionKey): Observable<ProcessData[]> {
-    let params = `&includeProcessVariables=true`;
+  fetchProcesses(processDefinitionKey?: string): void {
+    let params = `&includeProcessVariables=true&sort=startTime`;
     if (processDefinitionKey) {
       params += `&processDefinitionKey=${processDefinitionKey}`;
     }
-    return this.getAllPages(params).pipe(
-      tap((res: ProcessData[]) => this.processSource.next(res)),
-      map((res: ProcessData[]) => res)
-    );
+    this.getAllPages(params)
+      .pipe(tap((res: Process[]) => this.processSource.next(res.reverse())))
+      .subscribe();
   }
 
-  private getAllPages(requestParams: string): Observable<ProcessData[]> {
+  private getAllPages(requestParams: string): Observable<Process[]> {
     let items = [];
     let i = 0;
     return this.getPage(requestParams, i).pipe(
@@ -64,37 +60,26 @@ export class ProcessService {
   }
 
   private getPage(requestParams: string, index?: number) {
-    return this.bpmService.getProcesses(`${this.bpmProcessUrl}?size=${this.PROCESSES_PAGE_SIZE}&page=${index || 0}${requestParams}`);
+    return this.bpmService.getProcesses(`${this.bpmProcessUrl}?size=${this.PROCESSES_PAGE_SIZE}
+    &page=${index || 0}${requestParams}`);
   }
 
   /**
    * get a specific follow Up by bisinessKey
    */
-  getFollowUp(businessKey: string): Observable<ProcessData> {
+  getFollowUp(businessKey: string): Observable<Process> {
     return this.bpmService.getProcessInstance(ProcessDefinitionKey.FOLLOW_UP, businessKey);
   }
 
   /**
    * create a follow Up for a document
    */
-  createFollowUp(documentId: string, payload: CreateFollowUp): Observable<ProcessResponse> {
-    const payloadData: ProcessInstance = this.followUpPayloadData(documentId, payload);
-    return this.bpmService.createProcess(payloadData);
+  createFollowUp(documentId: string, subject: string, expiryDateTime: string): Observable<any> {
+    return this.bpmService.createProcess(this.followUpPayloadData(documentId, subject, expiryDateTime));
   }
 
-  /** TODO: refactor once actual update is available below */
-
-  private followUpPayloadData(documentId: string, payload: CreateFollowUp): ProcessInstance {
-    return {
-      processDefinitionKey: ProcessDefinitionKey.FOLLOW_UP,
-      name: payload.whatAbout,
-      businessKey: documentId,
-      variables: Object.keys(payload).map((value) => ({ name: value, value: payload[value] }))
-    };
-  }
-
-  private updateFollowUp(documentId: string, payload: CreateFollowUp, processInstanceId: string): Observable<any> {
-    const payloadData: ProcessInstance = this.followUpPayloadData(documentId, payload);
+  private updateFollowUp(documentId: string, subject: string, expiryDateTime: string, processInstanceId: string): Observable<any> {
+    const payloadData: ProcessCreatePayload = this.followUpPayloadData(documentId, subject, expiryDateTime);
     return this.bpmService.createProcess(payloadData).pipe(
       tap((data) => {
         let currentValue = this.processSource.getValue();
@@ -109,16 +94,16 @@ export class ProcessService {
    * Edit/Update a follow Up by document and process Instance Id
    */
   /** TODO: refactor once actual update is available  above */
-  editFollowUp(documentId: string, processInstanceId: string, payload: CreateFollowUp): Observable<any> {
+  editFollowUp(documentId: string, processInstanceId: string, subject: string, expiryDateTime: string): Observable<any> {
     const deleteProcess = this.bpmService.deleteProcess(this.bpmProcessUrl, processInstanceId);
-    const createProcess = this.updateFollowUp(documentId, payload, processInstanceId);
+    const createProcess = this.updateFollowUp(documentId, subject, expiryDateTime, processInstanceId);
     return forkJoin([deleteProcess, createProcess]);
   }
 
   /**
    * delete a follow Up by process Instance Id
    */
-  deleteFollowUp(processInstanceId: string) {
+  deleteProcess(processInstanceId: string) {
     return this.bpmService.deleteProcess(this.bpmProcessUrl, processInstanceId).pipe(
       tap((data) => {
         let currentValue = this.processSource.getValue();
@@ -128,5 +113,21 @@ export class ProcessService {
         }
       })
     );
+  }
+
+  private followUpPayloadData(documentId: string, subject: string, expiryDateTime: string): ProcessCreatePayload {
+    return {
+      processDefinitionKey: ProcessDefinitionKey.FOLLOW_UP,
+      businessKey: documentId,
+      variables: [
+        {
+          name: FollowUpVars.expiryDateTime,
+          type: 'date',
+          value: expiryDateTime
+        }
+      ],
+      subject,
+      attachments: [documentId]
+    };
   }
 }

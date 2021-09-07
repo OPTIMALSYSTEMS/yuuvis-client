@@ -1,6 +1,7 @@
-import { Injectable } from '@angular/core';
+import { PlatformLocation } from '@angular/common';
+import { Inject, Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { Utils } from '@yuuvis/core';
+import { BackendService, CoreConfig, CORE_CONFIG, Utils } from '@yuuvis/core';
 
 /**
  * This service is used for sharing data across the clients states (pages).
@@ -19,7 +20,12 @@ import { Utils } from '@yuuvis/core';
 export class FrameService {
   private items: Map<string, any> = new Map<string, any>();
 
-  constructor(private router: Router) {}
+  constructor(
+    @Inject(CORE_CONFIG) public coreConfig: CoreConfig,
+    private router: Router,
+    private backend: BackendService,
+    private location: PlatformLocation
+  ) {}
 
   /**
    * Add temporary data item.
@@ -62,5 +68,18 @@ export class FrameService {
       params['filesRef'] = refId;
     }
     this.router.navigate(['/create'], { queryParams: params });
+  }
+
+  getAppRootPath(): string {
+    let root;
+    if (this.backend.authUsesOpenIdConnect()) {
+      root = this.coreConfig.oidc.host;
+    } else {
+      root = `${this.location.protocol}//${this.location.hostname}`;
+      if (this.location.port.length) {
+        root += `:${this.location.port}`;
+      }
+    }
+    return `${root}${Utils.getBaseHref()}`;
   }
 }

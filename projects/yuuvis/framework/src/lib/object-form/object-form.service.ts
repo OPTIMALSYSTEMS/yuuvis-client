@@ -1,6 +1,6 @@
 import { DatePipe } from '@angular/common';
 import { Injectable } from '@angular/core';
-import { Logger, RangeValue, SystemService } from '@yuuvis/core';
+import { Logger, SystemService } from '@yuuvis/core';
 import { ObjectFormControlWrapper, ObjectFormModel } from './object-form.interface';
 import { ObjectFormGroup } from './object-form.model';
 import { Situation } from './object-form.situation';
@@ -106,32 +106,11 @@ export class ObjectFormService {
   }
 
   private setDataValue(key, value, data, formElement, isTableRowEditForm) {
-    data[key] = this.formatValue(value, formElement);
+    data[key] = value;
 
     if (isTableRowEditForm && formElement.dataMeta) {
       // inner tables need to set up the meta data as well
       data[key + '_meta'] = formElement.dataMeta;
     }
-  }
-
-  formatValue(value, formElement) {
-    if (formElement.type === 'datetime' && formElement.resolution === 'date') {
-      if (typeof value === 'string' || value instanceof Date) {
-        return this.datePipe.transform(value, 'yyyy-MM-dd');
-      } else if (value instanceof RangeValue) {
-        return new RangeValue(
-          value.operator,
-          value.firstValue && this.datePipe.transform(value.firstValue, 'yyyy-MM-dd'),
-          value.secondValue && this.datePipe.transform(value.secondValue, 'yyyy-MM-dd')
-        );
-      }
-    }
-
-    if (formElement.type === 'table') {
-      // (formElement.elements || []).forEach((el) => {
-      //   (value || []).forEach((v) => (v[el.name] = this.formatValue(v[el.name], el)));
-      // });
-    }
-    return value;
   }
 }

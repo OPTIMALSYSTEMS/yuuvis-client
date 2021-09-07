@@ -1,3 +1,4 @@
+<ng-container [yuvTitle]="('yuv.client.state.title' | translate)"></ng-container>
 <yuv-responsive-master-slave *ngIf="context" class="state" [layoutOptionsKey]="layoutOptionsStorageKey" (slaveClosed)="onSlaveClosed()" [slaveActive]="true">
   <yuv-context
     class="yuv-master panel"

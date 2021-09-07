@@ -1,0 +1,26 @@
+:host {
+  .follow-up-details {
+    height: 100%;
+
+    .notFound {
+      height: 100%;
+      display: flex;
+      flex-flow: column;
+      align-items: center;
+      justify-content: center;
+
+      p {
+        margin: var(--app-pane-padding);
+        max-width: 250px;
+        line-height: 1.7em;
+        text-align: center;
+      }
+
+      .error {
+        margin: var(--app-pane-padding);
+        background-color: var(--color-error);
+        color: #fff;
+      }
+    }
+  }
+}

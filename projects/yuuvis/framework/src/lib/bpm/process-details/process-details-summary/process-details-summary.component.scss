@@ -1,0 +1,26 @@
+:host {
+  height: 100%;
+  display: block;
+  overflow-y: auto;
+  background-color: var(--panel-background);
+
+  th,
+  td {
+    padding: calc(var(--app-pane-padding) / 2) var(--app-pane-padding);
+  }
+  th {
+    text-align: right;
+    vertical-align: top;
+  }
+
+  table.vars {
+    border: 1px solid var(--panel-divider-color);
+    th {
+      text-align: left;
+      background-color: var(--panel-background-grey);
+    }
+    td {
+      background-color: var(--panel-background-lightgrey);
+    }
+  }
+}

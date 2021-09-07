@@ -26,7 +26,12 @@ export class LocaleDatePipe extends DatePipe implements PipeTransform {
       const diff = (new Date(value).setHours(0, 0, 0, 0) - new Date().setHours(0, 0, 0, 0)) / 1000 / 3600 / 24;
       format = diff === 0 ? 'eoShortTime' : diff > -7 && diff < 0 ? 'eoShortDayTime' : format;
     }
-    return super.transform(value, this.format(format || 'eoShort'), timezone, locale || this.lang);
+    return super.transform(this.fixTimezone(value), this.format(format || 'eoShort'), timezone, locale || this.lang);
+  }
+
+  fixTimezone(value: any): Date {
+    const date = value && new Date(value);
+    return value?.length === 10 ? new Date(date.getTime() + date.getTimezoneOffset() * 60 * 1000) : date;
   }
 
   parse(value: string, format: string = 'yyyy-MM-dd') {
@@ -36,7 +41,8 @@ export class LocaleDatePipe extends DatePipe implements PipeTransform {
     const YYYY = format.indexOf('yyyy');
     const HH = format.toUpperCase().indexOf('HH');
     return (
-      value && new Date(`${value.substring(YYYY, YYYY + 4)}/${value.substring(MM, MM + 2)}/${value.substring(dd, dd + 2)} ${HH > 0 ? value.substring(HH) : ''}`)
+      value &&
+      this.fixTimezone(`${value.substring(YYYY, YYYY + 4)}/${value.substring(MM, MM + 2)}/${value.substring(dd, dd + 2)} ${HH > 0 ? value.substring(HH) : ''}`)
     );
   }
 

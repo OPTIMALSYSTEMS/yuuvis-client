@@ -1,0 +1,31 @@
+<div class="yuv-task-details-history" [yuvBusyOverlay]="busy">
+
+    <div class="yuv-timeline" *ngIf="entries.length; else tplEmpty" [ngClass]="{singleEntry: entries.length === 1}">
+        <div class="yuv-timeline-node" *ngFor="let e of entries">
+            <div class="created">
+                <div class="date">{{ e.createTime | localeDate: 'eoShortDate' }}</div>
+                <div class="time meta">{{ e.createTime | localeDate: 'eoShortTime' }}</div>
+            </div>
+            <div class="timeline"></div>
+            <div class="content">
+                <div class="entry">
+                    <div class="title">{{e.name}} </div>
+                    <div class="meta">
+                        {{ e.assignee?.title }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <ng-template #tplEmpty>
+        <ng-container *ngIf="!busy">
+            <div class="empty" *ngIf="!error; else tplError" translate>yuv.framework.task-details-history.empty</div>
+        </ng-container>
+    </ng-template>
+
+    <ng-template #tplError>
+        <yuv-context-error [contextError]="'yuv.framework.task-details-history.load.error'|translate">
+        </yuv-context-error>
+    </ng-template>
+</div>

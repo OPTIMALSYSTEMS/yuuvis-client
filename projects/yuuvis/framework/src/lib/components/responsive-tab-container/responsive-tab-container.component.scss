@@ -11,11 +11,11 @@
 :host {
   as-split {
     padding: 0;
-    as-split-area.secondary {
+    as-split-area.secondary > p-tabview {
       ::ng-deep {
-        .p-tabview.p-component .p-tabview-nav {
+        & > .p-tabview.p-component > .p-tabview-nav {
           margin-right: 0;
-          li.p-highlight {
+          & > li.p-highlight {
             border-color: var(--panel-divider-color);
           }
         }
@@ -105,7 +105,7 @@
     border-top: 1px solid #c8c8c8;
   }
 
-  &.split-tab-view p-tabpanel[id] > .p-tabview-panel {
+  &.split-tab-view > .p-tabview > .p-tabview-panels > p-tabpanel[id] > .p-tabview-panel {
     .p-tabview {
       padding: 0;
       height: 100%;

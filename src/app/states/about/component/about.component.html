@@ -1,3 +1,4 @@
+<ng-container [yuvTitle]="('yuv.client.state.about.title' | translate) + ' ' + ('yuv.client.state.title' | translate)"></ng-container>
 <div class="yuv-about-state">
   <div class="about">
     <div class="header themeBackground">
@@ -32,7 +33,7 @@
 
             <p-accordionTab [transitionOptions]="'0ms'" header="{{'yuv.client.state.about.license.title'|translate}}">
 
-              <div class="lic-row" *ngFor="let lib of __libraries__ | async; trackBy: trackByFn">
+              <div class="lic-row" *ngFor="let lib of __libraries__ | async">
                 <div class="name">{{ lib.name }}</div>
                 <div class="licence" *ngIf="lib.license">
                   <a [href]="lib.link" *ngIf="lib.link" target="_blank">{{ lib.label }}</a>

@@ -16,6 +16,11 @@
     background-color: var(--panel-background);
     display: flex;
     justify-content: flex-end;
+    align-items: center;
+
+    .status {
+      flex: 1;
+    }
 
     yuv-icon.mode {
       width: 18px;
@@ -34,12 +39,18 @@
     }
   }
 
-  ::ng-deep .rdt-row .main {
-    .date {
-      display: block !important;
+  ::ng-deep {
+    .yuv-panel-wrapper > .header .header_description {
+      min-height: 1em;
     }
-    .description {
-      display: none !important;
+
+    .rdt-row .main {
+      .date {
+        display: block !important;
+      }
+      .description {
+        display: none !important;
+      }
     }
   }
 }

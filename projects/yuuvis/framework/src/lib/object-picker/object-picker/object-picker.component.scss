@@ -1,0 +1,49 @@
+:host {
+  display: grid;
+  background-color: var(--panel-background);
+  grid-template-columns: 1fr;
+  grid-template-rows: auto 1 fr;
+  grid-template-areas: 'header' 'main';
+
+  yuv-quick-search {
+    border-top: 1px solid var(--panel-divider-color);
+    border-bottom: 1px solid var(--panel-divider-color);
+    ::ng-deep {
+      .search-box .main button.primary.submit {
+        display: none;
+      }
+    }
+  }
+
+  header {
+    grid-area: header;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto;
+    grid-template-areas: 'title close' 'search search';
+
+    h2 {
+      grid-area: title;
+      padding: var(--app-pane-padding);
+      margin: 0;
+    }
+    yuv-icon {
+      grid-area: close;
+      color: var(--text-color-hint);
+      margin: calc(var(--app-pane-padding) / 2);
+    }
+    yuv-quick-search {
+      grid-area: search;
+    }
+  }
+  main {
+    overflow-y: auto;
+    height: 200px;
+    grid-area: main;
+    ::ng-deep {
+      yuv-checkbox {
+        display: none;
+      }
+    }
+  }
+}

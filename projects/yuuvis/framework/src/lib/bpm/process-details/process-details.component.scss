@@ -1,14 +1,9 @@
-.empty {
-  &.error {
-    height: 100%;
-    display: flex;
-    flex-flow: column;
-    align-items: center;
-    justify-content: center;
-    background-color: val(--panel-background);
+:host {
+  yuv-panel.process-details {
+    background-color: var(--panel-background);
 
-    .secondary {
-      margin-top: 10px;
+    yuv-responsive-tab-container {
+      background-color: transparent;
     }
   }
 }

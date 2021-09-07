@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { BpmEvent, EventService, InboxService, ProcessDefinitionKey, TaskData, TranslateService } from '@yuuvis/core';
+import { BpmEvent, EventService, InboxService, Task, TaskRow, TranslateService } from '@yuuvis/core';
 import {
   arrowNext,
   edit,
@@ -15,8 +15,9 @@ import {
   ResponsiveTableData
 } from '@yuuvis/framework';
 import { Observable } from 'rxjs';
-import { map, switchMap, take } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
+import { FrameService } from '../../components/frame/frame.service';
 
 @Component({
   selector: 'yuv-inbox',
@@ -26,11 +27,10 @@ import { takeUntilDestroy } from 'take-until-destroy';
 export class InboxComponent implements OnInit, OnDestroy {
   layoutOptionsKey = 'yuv.app.inbox';
   contextError: string;
-  objectDetailsID: string;
-  objectId: string;
-  selectedProcess: any;
+  selectedTasks: TaskRow[];
+  detailsTask: Task;
   inboxData$: Observable<ResponsiveTableData> = this.inboxService.inboxData$.pipe(
-    map((taskData: TaskData[]) => this.formatProcessDataService.formatTaskDataForTable(taskData)),
+    map((taskData: Task[]) => this.formatProcessDataService.formatTaskDataForTable(taskData)),
     map((taskData: ResponsiveTableData) => (taskData.rows.length ? taskData : null))
   );
   loading$: Observable<boolean> = this.inboxService.loadingInboxData$;
@@ -49,41 +49,40 @@ export class InboxComponent implements OnInit, OnDestroy {
     private formatProcessDataService: FormatProcessDataService,
     private iconRegistry: IconRegistryService,
     private eventService: EventService,
+    private frameService: FrameService,
     private pluginsService: PluginsService
   ) {
     this.plugins = this.pluginsService.getCustomPlugins('extensions', 'yuv-inbox');
     this.iconRegistry.registerIcons([edit, arrowNext, refresh, inbox, listModeDefault, listModeGrid, listModeSimple]);
   }
 
-  private getInbox(): Observable<TaskData[]> {
-    return this.inboxService.getTasks().pipe(take(1), takeUntilDestroy(this));
+  private getInbox(): void {
+    return this.inboxService.fetchTasks();
   }
 
-  selectedItem(item: any[]) {
-    this.selectedProcess = item;
-    this.objectId = item[0] ? item[0]?.documentId || ProcessDefinitionKey.INVALID_TYPE : null;
+  selectedItem(items: TaskRow[]) {
+    this.selectedTasks = items;
+    this.detailsTask = items && items.length ? items[items.length - 1].originalData : null;
   }
 
   refreshList() {
-    this.getInbox().subscribe();
-  }
-
-  remove() {
-    this.inboxService
-      .completeTask(this.selectedProcess[0].id)
-      .pipe(switchMap(() => this.getInbox()))
-      .subscribe();
+    this.inboxService.fetchTasks();
   }
 
   onSlaveClosed() {}
 
+  onAttachmentOpenExternal(id: string) {
+    let uri = `${this.frameService.getAppRootPath()}object/${id}`;
+    window.open(uri);
+  }
+
   ngOnInit(): void {
-    this.getInbox().subscribe();
+    this.getInbox();
     this.eventService
       .on(BpmEvent.BPM_EVENT)
       .pipe(
         takeUntilDestroy(this),
-        switchMap(() => this.getInbox())
+        tap(() => this.inboxService.fetchTasks())
       )
       .subscribe();
   }
