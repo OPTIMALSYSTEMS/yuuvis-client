@@ -125,7 +125,7 @@ export class TaskDetailsTaskComponent implements OnInit {
         break;
       }
       case 'decimal': {
-        pv.type = 'long';
+        pv.type = 'double';
         pv.value = formValue;
         break;
       }
