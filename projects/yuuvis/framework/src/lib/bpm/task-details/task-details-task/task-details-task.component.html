@@ -8,6 +8,8 @@
 </div>
 
 <div class="actions">
+    <button class="" (click)="resetForm()" *ngIf="formState?.dirty">
+        {{'yuv.framework.task-details-task.button.reset'|translate}}</button>
     <button class="" (click)="update()" *ngIf="formOptions" [disabled]="!formState?.dirty || formState?.invalid">
         {{'yuv.framework.task-details-task.button.update'|translate}}</button>
     <button class="primary" (click)="confirm()"> {{'yuv.framework.task-details-task.button.confirm'|translate}}

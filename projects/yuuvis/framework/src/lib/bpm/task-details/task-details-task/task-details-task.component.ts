@@ -10,6 +10,7 @@ import { ObjectFormComponent } from '../../../object-form/object-form/object-for
 })
 export class TaskDetailsTaskComponent implements OnInit {
   @ViewChild(ObjectFormComponent) taskForm: ObjectFormComponent;
+
   private pendingTaskId: string;
   private _task: Task;
   taskDescription: string;
@@ -70,6 +71,10 @@ export class TaskDetailsTaskComponent implements OnInit {
     if (e.dirty) {
       this.startPending();
     }
+  }
+
+  resetForm() {
+    this.taskForm.resetForm();
   }
 
   update() {
