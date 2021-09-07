@@ -74,7 +74,10 @@ export class TaskDetailsTaskComponent implements OnInit {
 
   update() {
     this.inboxService.updateTask(this._task.id, this.getUpdatePayload()).subscribe(
-      (res) => console.log(res),
+      (res) => {
+        this.finishPending();
+        this.formState = null;
+      },
       (err) => console.error(err)
     );
   }
@@ -83,6 +86,7 @@ export class TaskDetailsTaskComponent implements OnInit {
     this.inboxService.completeTask(this._task.id, this.getUpdatePayload()).subscribe(
       (res) => {
         this.finishPending();
+        this.formState = null;
       },
       (err) => console.error(err)
     );
