@@ -31,7 +31,6 @@ export interface Process {
   startUserId: string;
   subject: string;
   suspended?: boolean;
-  completed?: boolean;
   variables: ProcessVariable[]; // tenant admin only
 }
 
@@ -166,7 +165,7 @@ export class ProcessRow {
 
     if (data.suspended) {
       this.status = ProcessStatus.SUSPENDED;
-    } else if (data.completed) {
+    } else if (!data.endTime) {
       this.status = ProcessStatus.COMPLETED;
     } else {
       this.status = ProcessStatus.RUNNING;

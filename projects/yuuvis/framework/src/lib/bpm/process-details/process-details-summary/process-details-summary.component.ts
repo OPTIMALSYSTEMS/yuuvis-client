@@ -13,15 +13,15 @@ import { deleteIcon } from '../../../svg.generated';
 export class ProcessDetailsSummaryComponent implements OnInit, OnDestroy {
   private processStates = {
     running: {
-      label: this.translate.instant('yuv.framework.process-details-summary.status.running'),
+      label: this.translate.instant('yuv.framework.process.status.running.label'),
       css: 'running'
     },
     completed: {
-      label: this.translate.instant('yuv.framework.process-details-summary.status.completed'),
+      label: this.translate.instant('yuv.framework.process.status.completed.label'),
       css: 'completed'
     },
     suspended: {
-      label: this.translate.instant('yuv.framework.process-details-summary.status.suspended'),
+      label: this.translate.instant('yuv.framework.process.status.susspended.label'),
       css: 'suspended'
     }
   };
@@ -34,7 +34,7 @@ export class ProcessDetailsSummaryComponent implements OnInit, OnDestroy {
     if (p) {
       if (p.suspended) {
         this.processState = this.processStates.suspended;
-      } else if (p.completed) {
+      } else if (!p.endTime) {
         this.processState = this.processStates.completed;
       } else {
         this.processState = this.processStates.running;

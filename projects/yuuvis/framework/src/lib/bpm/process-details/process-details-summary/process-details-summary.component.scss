@@ -13,25 +13,6 @@
     vertical-align: top;
   }
 
-  .status {
-    border-radius: 4px;
-    font-family: monospace;
-    padding: 2px 4px;
-
-    &.running {
-      background-color: var(--color-accent);
-      color: #fff;
-    }
-    &.completed {
-      background-color: var(--color-success);
-      color: #fff;
-    }
-    &.suspended {
-      background-color: var(--color-warning);
-      color: #fff;
-    }
-  }
-
   table.vars {
     border: 1px solid var(--panel-divider-color);
     th {

@@ -8,7 +8,7 @@
     </tr>
     <tr>
         <th>{{'yuv.framework.process-details-summary.status'|translate}}</th>
-        <td><span class="status {{processState.css}}">{{processState.label}}</span></td>
+        <td><span class="yuv-process-status {{processState.css}}">{{processState.label}}</span></td>
     </tr>
     <tr>
         <th>{{'yuv.framework.process-details-summary.id'|translate}}</th>
@@ -46,7 +46,7 @@
                         <td>{{v.type}}</td>
                         <td>{{v.scope}}</td>
                         <td *ngIf="v.type !== 'date'">{{v.value}}</td>
-                        <td *ngIf="v.type === 'date'">{{(v.value | localeDate)}}<br/>{{'(' + v.value + ')'}}</td>
+                        <td *ngIf="v.type === 'date'">{{(v.value | localeDate)}}<br />{{'(' + v.value + ')'}}</td>
                     </tr>
                 </table>
             </td>

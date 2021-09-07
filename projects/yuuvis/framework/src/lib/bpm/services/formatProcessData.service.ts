@@ -34,9 +34,9 @@ export class FormatProcessDataService {
       startTime: this.translate.instant(`yuv.framework.process-list.column.startTime.label`),
       businessKey: this.translate.instant(`yuv.framework.process-list.column.businessKey.label`),
       status: this.translate.instant(`yuv.framework.process-list.column.status.label`),
-      completed: this.translate.instant(`yuv.framework.process-list.status.completed.label`),
-      suspended: this.translate.instant(`yuv.framework.process-list.status.suspended.label`),
-      running: this.translate.instant(`yuv.framework.process-list.status.running.label`),
+      completed: this.translate.instant(`yuv.framework.process.status.completed.label`),
+      suspended: this.translate.instant(`yuv.framework.process.status.suspended.label`),
+      running: this.translate.instant(`yuv.framework.process.status.running.label`),
       followUpType: this.translate.instant(`yuv.framework.process-list.type.follow-up.label`),
       taskType: this.translate.instant(`yuv.framework.process-list.type.task.label`)
     };
@@ -113,19 +113,22 @@ export class FormatProcessDataService {
   }
 
   private statusCellRenderer(params): string {
-    let status;
+    let status, cssClass;
     switch (params.value) {
       case ProcessStatus.COMPLETED:
         status = params.translations.completed;
+        cssClass = 'completed';
         break;
       case ProcessStatus.SUSPENDED:
         status = params.translations.suspended;
+        cssClass = 'suspended';
         break;
       case ProcessStatus.RUNNING:
         status = params.translations.running;
+        cssClass = 'running';
         break;
     }
-    return status;
+    return `<span class="yuv-process-status ${cssClass}">${status}</span>`;
   }
 
   private typeCellRenderer(params): string {
