@@ -96,7 +96,7 @@ export class FormatProcessDataService {
           cellRenderer: (params) => this.taskNameCellRenderer({ ...params, context: { system: this.system, translations: this.translations } })
         }),
         ...(field.toLowerCase().includes('type') && {
-          cellRenderer: (params) => this.typeCellRenderer({ ...params, translations: this.translations, context: { system: this.system } })
+          cellRenderer: (params) => this.typeCellRenderer({ ...params, context: { translations: this.translations, system: this.system } })
         }),
         resizable: true,
         sortable: true,
@@ -141,7 +141,7 @@ export class FormatProcessDataService {
     let icon;
     const pdn = params.data.processDefinitionName;
     let label = params.context.system.getLocalizedResource(`${pdn}_label`);
-    if (!label && pdn === TaskType.FOLLOW_UP) {
+    if (!label && params.data.originalData.processDefinition.idPrefix === TaskType.FOLLOW_UP) {
       label = params.context.translations.defaultFollowUpProcessName;
     }
     switch (params.value) {
