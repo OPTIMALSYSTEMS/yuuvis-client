@@ -32,6 +32,7 @@ export class ProcessAttachmentsComponent implements OnInit {
     }
   }
   @Input() enableAdd: boolean;
+  @Input() enableOrder: boolean;
   @Input() enableRemove: boolean;
   @Input() attachmentPickerTitle: string;
   _layoutOptionsKey: string;

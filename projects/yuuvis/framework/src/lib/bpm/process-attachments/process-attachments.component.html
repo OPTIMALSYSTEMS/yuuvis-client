@@ -20,7 +20,7 @@
             </div>
 
             <div class="buttons">
-                <button class="order" (click)="openOrderAttachmentDialog()">
+                <button class="order" (click)="openOrderAttachmentDialog()" *ngIf="enableOrder">
                     <yuv-icon icon="sort" title="{{'yuv.framework.task-details-attachments.order'|translate}}">
                     </yuv-icon>
                 </button>
