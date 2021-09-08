@@ -154,18 +154,20 @@ export class ProcessRow {
   originalData: Process;
   type: TaskType;
   startTime: Date;
+  endTime: Date;
 
   constructor(protected data: Process) {
     this.id = data.id;
     this.subject = data.subject;
     this.startTime = data.startTime;
+    this.endTime = data.endTime;
     this.originalData = data;
     this.processDefinitionName = data.processDefinition.name;
     this.type = data.processDefinition.id.startsWith('follow-up') ? TaskType.FOLLOW_UP : TaskType.TASK;
 
     if (data.suspended) {
       this.status = ProcessStatus.SUSPENDED;
-    } else if (!data.endTime) {
+    } else if (!!data.endTime) {
       this.status = ProcessStatus.COMPLETED;
     } else {
       this.status = ProcessStatus.RUNNING;

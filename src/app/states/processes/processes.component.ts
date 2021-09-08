@@ -28,7 +28,9 @@ export class ProcessesComponent implements OnInit, OnDestroy {
   contextError: string;
   selectedProcess: Process;
   processData$: Observable<ResponsiveTableData> = this.processService.processData$.pipe(
-    map((processData: Process[]) => this.formatProcessDataService.formatProcessDataForTable(processData, ['type', 'subject', 'startTime', 'status'])),
+    map((processData: Process[]) =>
+      this.formatProcessDataService.formatProcessDataForTable(processData, ['type', 'subject', 'startTime', 'status', 'endTime'])
+    ),
     map((taskData: ResponsiveTableData) => (taskData.rows.length ? taskData : null))
   );
   loading$: Observable<boolean> = this.processService.loadingProcessData$;
