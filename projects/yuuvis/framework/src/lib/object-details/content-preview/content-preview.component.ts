@@ -45,11 +45,11 @@ export class ContentPreviewComponent extends IFrameComponent implements OnInit, 
     const getContent = (o) =>
       this.activeVersion &&
       this.activeVersion?.content?.contentStreamId !== o?.content?.contentStreamId &&
-      o?.content?.mimeType?.match(/application\/(msword|vnd.ms|vnd.openxmlformats)/)
+      o?.content?.mimeType?.match(/application\/(msword|vnd.ms-excel|vnd.ms-powerpoint|vnd.openxmlformats)/)
         ? null
         : o?.content;
     // generate preview URI with streamID to enable refresh if file was changed
-    !getContent(object)?.size || (this.dmsObject2 && !getContent(this.dmsObject2)?.size)
+    !getContent(object)?.size && !this.dmsObject2
       ? this.contentPreviewService.resetSource()
       : this.contentPreviewService.createPreviewUrl(object.id, getContent(object), object.version, getContent(this.dmsObject2), this.dmsObject2?.version);
     this.loading = !getContent(object) || this.dmsObject ? false : true;
