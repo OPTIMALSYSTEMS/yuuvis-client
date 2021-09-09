@@ -23,7 +23,7 @@ export class TaskDetailsAttachmentsComponent implements OnInit {
   onAttachmentAdd(id: string) {
     this._task.attachments = [...(this._task.attachments ? this._task.attachments : []), id];
     this.updateAttachments().subscribe((res) => {
-      this.attachmentRemoved.emit(id);
+      this.attachmentAdded.emit(id);
     });
   }
 

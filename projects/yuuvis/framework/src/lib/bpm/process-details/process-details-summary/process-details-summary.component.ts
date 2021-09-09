@@ -34,7 +34,7 @@ export class ProcessDetailsSummaryComponent implements OnInit, OnDestroy {
     if (p) {
       if (p.suspended) {
         this.processState = this.processStates.suspended;
-      } else if (!p.endTime) {
+      } else if (!!p.endTime) {
         this.processState = this.processStates.completed;
       } else {
         this.processState = this.processStates.running;

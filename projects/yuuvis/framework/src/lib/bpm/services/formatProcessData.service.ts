@@ -5,7 +5,7 @@ import { IconRegistryService } from './../../common/components/icon/service/icon
 import { GridService } from './../../services/grid/grid.service';
 import { followUp, task } from './../../svg.generated';
 
-type fieldName = 'taskName' | 'type' | 'subject' | 'createTime' | 'startTime' | 'businessKey' | 'expiryDateTime' | 'whatAbout' | 'status' | 'task';
+type fieldName = 'taskName' | 'type' | 'subject' | 'createTime' | 'endTime' | 'startTime' | 'businessKey' | 'expiryDateTime' | 'whatAbout' | 'status' | 'task';
 @Injectable({
   providedIn: 'root'
 })

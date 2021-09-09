@@ -32,6 +32,7 @@ export class ProcessAttachmentsComponent implements OnInit {
     }
   }
   @Input() enableAdd: boolean;
+  @Input() enableOrder: boolean;
   @Input() enableRemove: boolean;
   @Input() attachmentPickerTitle: string;
   _layoutOptionsKey: string;
@@ -109,7 +110,7 @@ export class ProcessAttachmentsComponent implements OnInit {
       this.searchService.search(query).subscribe(
         (res: SearchResult) => {
           // map result to maintain the correct order
-          const qa: any = {};
+          const qa: { [key: string]: any } = {};
           res.items.forEach((i) => {
             qa[i.fields.get(BaseObjectTypeField.OBJECT_ID)] = {
               id: i.fields.get(BaseObjectTypeField.OBJECT_ID),

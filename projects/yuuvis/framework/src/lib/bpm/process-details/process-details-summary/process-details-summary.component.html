@@ -20,7 +20,11 @@
     </tr>
     <tr>
         <th>{{'yuv.framework.process-details-summary.startTime'|translate}}</th>
-        <td>{{_process.startTime | localeDate: 'eoShortDate'}}</td>
+        <td>{{_process.startTime | localeDate: 'eoShort'}}</td>
+    </tr>
+    <tr *ngIf="_process.endTime">
+        <th>{{'yuv.framework.process-details-summary.endTime'|translate}}</th>
+        <td>{{_process.endTime | localeDate: 'eoShort'}}</td>
     </tr>
     <tr>
         <th>{{'yuv.framework.process-details-summary.businessKey'|translate}}</th>
