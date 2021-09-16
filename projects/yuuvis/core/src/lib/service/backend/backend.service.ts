@@ -178,11 +178,12 @@ export class BackendService {
    * Gets the base URI for an API endpoint
    * @param api The API to get the base URI for. Leaving this blank will return
    * base URI for the web API
+   * @param origin The flag to include location origin
    * @returns Base URI for the given API.
    */
-  getApiBase(api?: string): string {
-    const apiBase = api === '' ? api : this.config.getApiBase(api || ApiBase.apiWeb);
-    return `${this.authUsesOpenIdConnect() ? this.coreConfig.oidc.host : ''}${apiBase}`;
+  getApiBase(api?: string, origin = false): string {
+    const apiBase = api === ApiBase.none ? api : this.config.getApiBase(api || ApiBase.apiWeb);
+    return `${this.authUsesOpenIdConnect() ? this.coreConfig.oidc.host : origin ? location.origin : ''}${apiBase || ''}`;
   }
 
   /**
