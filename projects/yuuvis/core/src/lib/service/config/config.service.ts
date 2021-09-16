@@ -28,8 +28,8 @@ export class ConfigService {
     this.cfg = cfg;
     const languages = this.getClientLocales().map((lang) => lang.iso);
     this.translate.addLangs(languages);
-    const iso = this.getDefaultClientLocale() || this.translate.getBrowserLang();
-    const defaultLang = languages.includes(iso) ? iso : languages[0];
+    const browserLang = this.translate.getBrowserLang();
+    const defaultLang = languages.includes(browserLang) ? browserLang : this.getDefaultClientLocale() || languages[0];
     this.translate.setDefaultLang(defaultLang);
     this.translate.use(defaultLang);
   }
