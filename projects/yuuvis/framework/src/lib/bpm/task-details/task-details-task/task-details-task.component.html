@@ -6,7 +6,7 @@
     <yuv-object-form *ngIf="formOptions" [formOptions]="formOptions" (statusChanged)="onFormStatusChanged($event)">
     </yuv-object-form>
 
-    <div class="error">{{'yuv.framework.task-details-task.form.load.error'|translate}}</div>
+    <div class="error" *ngIf="error">{{'yuv.framework.task-details-task.form.load.error'|translate}}</div>
 </div>
 
 <div class="actions">
