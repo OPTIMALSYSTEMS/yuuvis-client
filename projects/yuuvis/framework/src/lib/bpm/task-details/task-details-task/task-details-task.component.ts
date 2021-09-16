@@ -46,27 +46,29 @@ export class TaskDetailsTaskComponent implements OnInit {
   }
 
   private createReferencedForm(t: Task) {
-    this.inboxService.getTaskForm(t.formKey).subscribe(
-      (res) => {
-        if (res) {
-          const formData: any = {};
-          if (t.variables) {
-            t.variables.forEach((v) => {
-              formData[v.name] = v.value;
-            });
+    if (t.formKey) {
+      this.inboxService.getTaskForm(t.formKey).subscribe(
+        (res) => {
+          if (res) {
+            const formData: any = {};
+            if (t.variables) {
+              t.variables.forEach((v) => {
+                formData[v.name] = v.value;
+              });
+            }
+            this.formOptions = {
+              formModel: res,
+              data: formData
+            };
           }
-          this.formOptions = {
-            formModel: res,
-            data: formData
-          };
+        },
+        (err) => {
+          this.formOptions = null;
+          console.error('Error loading referenced task form', err);
+          this.error = err;
         }
-      },
-      (err) => {
-        this.formOptions = null;
-        console.error('Error loading referenced task form', err);
-        this.error = err;
-      }
-    );
+      );
+    }
   }
 
   onFormStatusChanged(e: FormStatusChangedEvent) {
