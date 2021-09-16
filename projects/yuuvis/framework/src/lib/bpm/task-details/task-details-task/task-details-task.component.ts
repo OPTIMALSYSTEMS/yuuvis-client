@@ -42,7 +42,7 @@ export class TaskDetailsTaskComponent implements OnInit {
     if (!label && t.processDefinition.idPrefix === TaskType.FOLLOW_UP) {
       label = this.translate.instant(`yuv.framework.process.type.follow-up.defaultTaskDescription`);
     }
-    return t ? label || t.name : null;
+    return t ? label : null;
   }
 
   private createReferencedForm(t: Task) {
