@@ -14,6 +14,15 @@
     grid-area: form;
     overflow-y: auto;
     padding: var(--app-pane-padding);
+
+    .error {
+      background: var(--color-error);
+      color: #fff;
+      padding: calc(var(--app-pane-padding) / 2);
+      margin: calc(var(--app-pane-padding) / 4);
+      margin-top: 0;
+      border-radius: 2px;
+    }
   }
   .actions {
     grid-area: buttons;

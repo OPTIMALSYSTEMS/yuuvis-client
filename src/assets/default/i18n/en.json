@@ -318,6 +318,7 @@
   "yuv.framework.task-details-task.button.confirm": "Confirm",
   "yuv.framework.task-details-task.button.reset": "Reset",
   "yuv.framework.task-details-task.button.update": "Save changes",
+  "yuv.framework.task-details-task.form.load.error": "The task form could not be loaded.",
   "yuv.framework.task-details.tabs.attachments.title": "Attachments",
   "yuv.framework.task-details.tabs.history.title": "Audit",
   "yuv.framework.task-details.tabs.task.title": "Task",

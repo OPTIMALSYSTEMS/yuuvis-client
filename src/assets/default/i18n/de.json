@@ -318,6 +318,7 @@
   "yuv.framework.task-details-task.button.confirm": "Bestätigen",
   "yuv.framework.task-details-task.button.reset": "Zurücksetzen",
   "yuv.framework.task-details-task.button.update": "Änderungen speichern",
+  "yuv.framework.task-details-task.form.load.error": "Das Aufgabenformular konnte nicht geladen werden.",
   "yuv.framework.task-details.tabs.attachments.title": "Anlagen",
   "yuv.framework.task-details.tabs.history.title": "Verlauf",
   "yuv.framework.task-details.tabs.task.title": "Aufgabe",

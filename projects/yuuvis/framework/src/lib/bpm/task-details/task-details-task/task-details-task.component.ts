@@ -18,6 +18,7 @@ export class TaskDetailsTaskComponent implements OnInit {
 
   @Input() set task(t: Task) {
     this._task = t;
+    this.error = null;
     this.taskDescription = this.getDescription(t);
     if (t && t.formKey) {
       this.createReferencedForm(t);
@@ -27,6 +28,7 @@ export class TaskDetailsTaskComponent implements OnInit {
   }
 
   formOptions: ObjectFormOptions;
+  error: any;
 
   constructor(
     private inboxService: InboxService,
@@ -62,6 +64,7 @@ export class TaskDetailsTaskComponent implements OnInit {
       (err) => {
         this.formOptions = null;
         console.error('Error loading referenced task form', err);
+        this.error = err;
       }
     );
   }
