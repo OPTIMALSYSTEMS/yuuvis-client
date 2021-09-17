@@ -4,7 +4,7 @@
       "core": "/api",
       "api-web": "/api-web/api",
       "predict": "/predict-api",
-      "custom": "/custom"
+      "viewer": "/viewer"
     },
     "languages": [
       {

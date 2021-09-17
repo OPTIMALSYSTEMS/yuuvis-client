@@ -136,7 +136,7 @@ export class TaskRow {
 
   constructor(private data: Task) {
     this.id = data.id;
-    this.subject = data.subject || data.processDefinition.idPrefix;
+    this.subject = data.subject;
     this.createTime = new Date(this.data.createTime);
     this.originalData = data;
     this.processDefinitionName = data.processDefinition.idPrefix;

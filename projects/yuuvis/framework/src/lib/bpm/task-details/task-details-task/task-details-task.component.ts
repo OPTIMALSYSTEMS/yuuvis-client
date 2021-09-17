@@ -18,6 +18,7 @@ export class TaskDetailsTaskComponent implements OnInit {
 
   @Input() set task(t: Task) {
     this._task = t;
+    this.error = null;
     this.taskDescription = this.getDescription(t);
     if (t && t.formKey) {
       this.createReferencedForm(t);
@@ -27,6 +28,7 @@ export class TaskDetailsTaskComponent implements OnInit {
   }
 
   formOptions: ObjectFormOptions;
+  error: any;
 
   constructor(
     private inboxService: InboxService,
@@ -40,30 +42,33 @@ export class TaskDetailsTaskComponent implements OnInit {
     if (!label && t.processDefinition.idPrefix === TaskType.FOLLOW_UP) {
       label = this.translate.instant(`yuv.framework.process.type.follow-up.defaultTaskDescription`);
     }
-    return t ? label || t.name : null;
+    return t ? label : null;
   }
 
   private createReferencedForm(t: Task) {
-    this.inboxService.getTaskForm(t.formKey).subscribe(
-      (res) => {
-        if (res) {
-          const formData: any = {};
-          if (t.variables) {
-            t.variables.forEach((v) => {
-              formData[v.name] = v.value;
-            });
+    if (t.formKey) {
+      this.inboxService.getTaskForm(t.formKey).subscribe(
+        (res) => {
+          if (res) {
+            const formData: any = {};
+            if (t.variables) {
+              t.variables.forEach((v) => {
+                formData[v.name] = v.value;
+              });
+            }
+            this.formOptions = {
+              formModel: res,
+              data: formData
+            };
           }
-          this.formOptions = {
-            formModel: res,
-            data: formData
-          };
+        },
+        (err) => {
+          this.formOptions = null;
+          console.error('Error loading referenced task form', err);
+          this.error = err;
         }
-      },
-      (err) => {
-        this.formOptions = null;
-        console.error('Error loading referenced task form', err);
-      }
-    );
+      );
+    }
   }
 
   onFormStatusChanged(e: FormStatusChangedEvent) {
