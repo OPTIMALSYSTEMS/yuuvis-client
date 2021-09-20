@@ -162,7 +162,7 @@ export class ProcessRow {
     this.startTime = data.startTime;
     this.endTime = data.endTime;
     this.originalData = data;
-    this.processDefinitionName = data.processDefinition.name;
+    this.processDefinitionName = data.processDefinition.idPrefix;
     this.type = data.processDefinition.id.startsWith('follow-up') ? TaskType.FOLLOW_UP : TaskType.TASK;
 
     if (data.suspended) {
