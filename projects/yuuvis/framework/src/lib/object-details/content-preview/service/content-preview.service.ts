@@ -48,7 +48,10 @@ export class ContentPreviewService {
   ) {}
 
   getBaseUrl() {
-    return this.backend.getApiBase('viewer', true) || this.backend.getApiBase(ApiBase.none, true) + '/viewer';
+    const base = this.backend.getApiBase(ApiBase.none, true);
+    const viewer = this.backend.getApiBase('viewer', true);
+    // default baseUrl in case it is not specified in main.json
+    return base === viewer ?  base + '/viewer' : viewer;
   }
 
   private createPath(id: string, version?: number): { baseUrl: string; path: string; pathPdf: string } {
