@@ -475,8 +475,16 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
         disabled: controlDisabled
       });
 
+      // if form element has a 'label' property it will be shown as is ...
       if (!formElement.label) {
-        formElement.label = formElement.name ? this.systemService.getLocalizedResource(`${formElement.name}_label`) || formElement.name : '???';
+        // ... if there is no label but a 'labelKey' property we are going to localize that key ...
+        if (formElement.labelkey) {
+          formElement.label = this.systemService.getLocalizedResource(`${formElement.labelkey}_label`) || formElement.labelkey;
+          formElement.description = this.systemService.getLocalizedResource(`${formElement.labelkey}_description`);
+        } else {
+          // ... no 'label' and also no 'labelKey' means that we are showing technical name instead
+          formElement.label = formElement.name;
+        }
       }
       formElement.readonly = controlDisabled;
       // we are using an internal type to distinguish between the components
