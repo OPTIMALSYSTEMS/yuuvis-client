@@ -4,6 +4,7 @@ import { Observable, of } from 'rxjs';
 import { SimpleCustomAction } from '../actions/interfaces/action.interface';
 import { SelectionRange } from '../actions/selection-range.enum';
 import { PopoverConfig } from '../popover/popover.interface';
+import { PopoverRef } from '../popover/popover.ref';
 import { PopoverService } from '../popover/popover.service';
 import { noFile } from '../svg.generated';
 import { PluginsService } from './plugins.service';
@@ -38,6 +39,7 @@ export class PluginTriggerComponent implements SimpleCustomAction {
     return !this.hidden ? 'flex' : 'none';
   }
   @ViewChild('popoverRef') popoverRef: TemplateRef<any>;
+  popover: PopoverRef<any>;
 
   @Input() parent: any;
 
@@ -84,6 +86,6 @@ export class PluginTriggerComponent implements SimpleCustomAction {
         component: this
       }
     };
-    return this.action?.plugin ? this.popoverService.open(this.popoverRef, popoverConfig) : false;
+    return (this.popover = this.action?.plugin ? this.popoverService.open(this.popoverRef, popoverConfig) : null);
   }
 }
