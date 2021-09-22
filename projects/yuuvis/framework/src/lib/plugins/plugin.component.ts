@@ -81,7 +81,7 @@ export class PluginComponent extends IFrameComponent implements OnInit, OnDestro
         Object.keys(this.config?.plugin?.outputs || {}).forEach((opt) =>
           this.componentRef.instance[opt].subscribe((event: any) =>
             typeof this.config.plugin.outputs[opt] === 'string'
-              ? this.pluginsService.applyFunction(this.config.plugin.outputs[opt], 'event', [event])
+              ? this.pluginsService.applyFunction(this.config.plugin.outputs[opt], 'event, component, parent', [event, this, this.parent])
               : this.config.plugin.outputs[opt]
           )
         );
@@ -91,7 +91,7 @@ export class PluginComponent extends IFrameComponent implements OnInit, OnDestro
       }
     }
     if (this.src) {
-      const onload = () => this.pluginsService.applyFunction(this.config.plugin.outputs.load, 'iframe, parent', [this.iframe, this.parent]);
+      const onload = () => this.pluginsService.applyFunction(this.config.plugin.outputs.load, 'iframe, component, parent', [this.iframe, this, this.parent]);
       this.iframeInit(this.iframe, '', this.config.plugin?.outputs?.load && onload);
     }
   }

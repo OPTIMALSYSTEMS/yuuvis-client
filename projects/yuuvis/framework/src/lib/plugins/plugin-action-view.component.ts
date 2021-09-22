@@ -53,12 +53,12 @@ export class PluginActionViewComponent implements ActionComponent {
   }
 
   onCancel(trigger = false) {
-    trigger && this.pluginsService.api.events.trigger(PluginActionViewComponent.EVENT_CANCELED);
+    trigger && this.pluginsService.api.events.trigger(PluginActionViewComponent.EVENT_CANCELED, this);
     this.canceled.emit(true);
   }
 
   onFinish(trigger = false) {
-    trigger && this.pluginsService.api.events.trigger(PluginActionViewComponent.EVENT_FINISHED);
+    trigger && this.pluginsService.api.events.trigger(PluginActionViewComponent.EVENT_FINISHED, this);
     this.finished.emit(true);
   }
 }

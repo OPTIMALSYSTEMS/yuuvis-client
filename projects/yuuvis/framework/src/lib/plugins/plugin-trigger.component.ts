@@ -17,7 +17,7 @@ import { PluginsService } from './plugins.service';
         *ngIf="data.component.action?.plugin"
         [action]="data.component.action"
         [parent]="data.component.parent || data.component"
-        (finished)="popover?.close()"
+        (finished)="popover?.close(true)"
         (canceled)="popover?.close()"
       ></yuv-plugin-action-view>
     </ng-template>
