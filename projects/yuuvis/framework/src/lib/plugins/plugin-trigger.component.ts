@@ -68,13 +68,13 @@ export class PluginTriggerComponent implements SimpleCustomAction {
   constructor(private pluginService: PluginsService, private popoverService: PopoverService, private elRef: ElementRef) {}
 
   isExecutable(item: any = this.action) {
-    const val = this.pluginService.applyFunction(this.action.isExecutable, 'component', [this]);
+    const val = this.pluginService.applyFunction(this.action.isExecutable, 'trigger, parent', [this, this.parent]);
     this.hidden = !val;
     return val instanceof Observable ? val : of(val);
   }
 
   run(selection: any[] = [this.action]) {
-    const val = this.action?.run ? this.pluginService.applyFunction(this.action.run, 'component', [this]) : this.openPopover();
+    const val = this.action?.run ? this.pluginService.applyFunction(this.action.run, 'trigger, parent', [this, this.parent]) : this.openPopover();
     return val instanceof Observable ? val : of(val);
   }
 
