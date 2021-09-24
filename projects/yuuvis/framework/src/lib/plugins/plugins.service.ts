@@ -7,6 +7,7 @@ import {
   DmsObject,
   DmsService,
   EventService,
+  HttpOptions,
   SearchFilter,
   SearchQuery,
   SearchResult,
@@ -181,10 +182,10 @@ export class PluginsService {
         downloadContent: (dmsObjects: DmsObject[]) => this.dmsService.downloadContent(dmsObjects)
       },
       http: {
-        get: (uri, base) => this.get(uri, base),
-        post: (uri, data, base) => this.post(uri, data, base),
-        del: (uri, base) => this.del(uri, base),
-        put: (uri, data, base) => this.put(uri, data, base)
+        get: (uri, base, options) => this.get(uri, base, options),
+        post: (uri, data, base, options) => this.post(uri, data, base, options),
+        del: (uri, base, options) => this.del(uri, base, options),
+        put: (uri, data, base, options) => this.put(uri, data, base, options)
       },
       form: {
         modelChange: (formControlName, change) =>
@@ -229,9 +230,9 @@ export class PluginsService {
   /**
    * @ignore
    */
-  public get(uri, base?) {
+  public get(uri, base?, options?: HttpOptions) {
     return this.backend
-      .get(uri, base || ApiBase.none, { observe: 'response' })
+      .get(uri, base || ApiBase.none, options || { observe: 'response' })
       .pipe(
         map((res: any) => {
           const { status, body } = res;
@@ -247,22 +248,22 @@ export class PluginsService {
   /**
    * @ignore
    */
-  public put(uri, data, base?) {
-    return this.backend.put(uri, data, base || ApiBase.none).toPromise();
+  public put(uri, data, base?, options?: HttpOptions) {
+    return this.backend.put(uri, data, base || ApiBase.none, options).toPromise();
   }
 
   /**
    * @ignore
    */
-  public post(uri, data, base?) {
-    return this.backend.post(uri, data, base || ApiBase.none).toPromise();
+  public post(uri, data, base?, options?: HttpOptions) {
+    return this.backend.post(uri, data, base || ApiBase.none, options).toPromise();
   }
 
   /**
    * @ignore
    */
-  public del(uri, base?) {
-    return this.backend.delete(uri, base || ApiBase.none).toPromise();
+  public del(uri, base?, options?: HttpOptions) {
+    return this.backend.delete(uri, base || ApiBase.none, options).toPromise();
   }
 
   /**
