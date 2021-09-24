@@ -10,6 +10,7 @@ import {
   OnInit,
   ViewChild
 } from '@angular/core';
+import { takeUntilDestroy } from 'take-until-destroy';
 import { ActionComponent } from '../actions/interfaces/action-component.interface';
 import { ComponentAnchorDirective } from '../directives/component-anchor/component-anchor.directive';
 import { IFrameComponent } from './iframe.component';
@@ -50,6 +51,10 @@ export class PluginComponent extends IFrameComponent implements OnInit, OnDestro
     );
   }
 
+  get cmp() {
+    return this.componentRef.instance;
+  }
+
   private componentRef: ComponentRef<any>;
 
   constructor(elRef: ElementRef, pluginsService: PluginsService, private componentFactoryResolver: ComponentFactoryResolver, private cdRef: ChangeDetectorRef) {
@@ -65,25 +70,27 @@ export class PluginComponent extends IFrameComponent implements OnInit, OnDestro
         this.componentRef = this.componentAnchor.viewContainerRef.createComponent(componentFactory) as any;
 
         if (this.parent instanceof PluginActionViewComponent) {
-          (<ActionComponent>this.componentRef.instance).selection = this.parent.selection;
-          (<ActionComponent>this.componentRef.instance).canceled?.subscribe(() => this.parent.onCancel());
-          (<ActionComponent>this.componentRef.instance).finished?.subscribe(() => this.parent.onFinish());
+          (<ActionComponent>this.cmp).selection = this.parent.selection;
+          (<ActionComponent>this.cmp).canceled?.pipe(takeUntilDestroy(this)).subscribe(() => this.parent.onCancel());
+          (<ActionComponent>this.cmp).finished?.pipe(takeUntilDestroy(this)).subscribe(() => this.parent.onFinish());
         }
 
         // map all input | output values to the instance
         Object.keys(this.config?.plugin?.inputs || {}).forEach(
           (opt) =>
-            (this.componentRef.instance[opt] =
+            (this.cmp[opt] =
               typeof this.config.plugin.inputs[opt] === 'string'
                 ? this.pluginsService.applyFunction(this.config.plugin.inputs[opt], 'component, parent', [this, this.parent])
                 : this.config.plugin.inputs[opt])
         );
         Object.keys(this.config?.plugin?.outputs || {}).forEach((opt) =>
-          this.componentRef.instance[opt].subscribe((event: any) =>
-            typeof this.config.plugin.outputs[opt] === 'string'
-              ? this.pluginsService.applyFunction(this.config.plugin.outputs[opt], 'event, component, parent', [event, this, this.parent])
-              : this.config.plugin.outputs[opt]
-          )
+          this.cmp[opt]
+            .pipe(takeUntilDestroy(this))
+            .subscribe((event: any) =>
+              typeof this.config.plugin.outputs[opt] === 'string'
+                ? this.pluginsService.applyFunction(this.config.plugin.outputs[opt], 'event, component, parent', [event, this, this.parent])
+                : this.config.plugin.outputs[opt]
+            )
         );
         this.cdRef.detectChanges();
       } else {
