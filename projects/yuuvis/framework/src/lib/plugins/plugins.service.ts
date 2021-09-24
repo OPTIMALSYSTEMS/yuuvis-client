@@ -235,11 +235,7 @@ export class PluginsService {
       .get(uri, base || ApiBase.none, options || { observe: 'response' })
       .pipe(
         map((res: any) => {
-          const { status, body } = res;
-          return {
-            status,
-            data: body
-          };
+          return options ? res : { status: res.status, data: res.body };
         })
       )
       .toPromise();
