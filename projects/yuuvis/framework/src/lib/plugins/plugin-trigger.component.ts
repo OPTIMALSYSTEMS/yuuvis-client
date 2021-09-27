@@ -4,6 +4,7 @@ import { Observable, of } from 'rxjs';
 import { SimpleCustomAction } from '../actions/interfaces/action.interface';
 import { SelectionRange } from '../actions/selection-range.enum';
 import { PopoverConfig } from '../popover/popover.interface';
+import { PopoverRef } from '../popover/popover.ref';
 import { PopoverService } from '../popover/popover.service';
 import { noFile } from '../svg.generated';
 import { PluginsService } from './plugins.service';
@@ -17,7 +18,7 @@ import { PluginsService } from './plugins.service';
         *ngIf="data.component.action?.plugin"
         [action]="data.component.action"
         [parent]="data.component.parent || data.component"
-        (finished)="popover?.close()"
+        (finished)="popover?.close(true)"
         (canceled)="popover?.close()"
       ></yuv-plugin-action-view>
     </ng-template>
@@ -38,6 +39,7 @@ export class PluginTriggerComponent implements SimpleCustomAction {
     return !this.hidden ? 'flex' : 'none';
   }
   @ViewChild('popoverRef') popoverRef: TemplateRef<any>;
+  popover: PopoverRef<any>;
 
   @Input() parent: any;
 
@@ -66,13 +68,13 @@ export class PluginTriggerComponent implements SimpleCustomAction {
   constructor(private pluginService: PluginsService, private popoverService: PopoverService, private elRef: ElementRef) {}
 
   isExecutable(item: any = this.action) {
-    const val = this.pluginService.applyFunction(this.action.isExecutable, 'component', [this]);
+    const val = this.pluginService.applyFunction(this.action.isExecutable, 'trigger, parent', [this, this.parent]);
     this.hidden = !val;
     return val instanceof Observable ? val : of(val);
   }
 
   run(selection: any[] = [this.action]) {
-    const val = this.action?.run ? this.pluginService.applyFunction(this.action.run, 'component', [this]) : this.openPopover();
+    const val = this.action?.run ? this.pluginService.applyFunction(this.action.run, 'trigger, parent', [this, this.parent]) : this.openPopover();
     return val instanceof Observable ? val : of(val);
   }
 
@@ -84,6 +86,6 @@ export class PluginTriggerComponent implements SimpleCustomAction {
         component: this
       }
     };
-    return this.action?.plugin ? this.popoverService.open(this.popoverRef, popoverConfig) : false;
+    return (this.popover = this.action?.plugin ? this.popoverService.open(this.popoverRef, popoverConfig) : null);
   }
 }

@@ -1,5 +1,5 @@
 import { NavigationExtras, Router } from '@angular/router';
-import { DmsObject, YuvEvent, YuvUser } from '@yuuvis/core';
+import { DmsObject, HttpOptions, YuvEvent, YuvUser } from '@yuuvis/core';
 import { Observable } from 'rxjs';
 import { ObjectFormModelChange } from '../object-form/object-form/object-form.component';
 
@@ -79,28 +79,32 @@ export interface PluginAPI {
      * Execute a GET request against yuuvis backend
      * @param uri URI the request should be sent to
      * @param base URI part of the service this request belongs to
+     * @param options additional HttpOptions
      */
-    get(uri: string, base?: string): any;
+    get(uri: string, base?: string, options?: HttpOptions): any;
     /**
      * Execute a POST request against yuuvis backend
      * @param uri URI the request should be sent to
      * @param data Data to be send along with the request
      * @param base URI part of the service this request belongs to
+     * @param options additional HttpOptions
      */
-    post(uri: string, data: any, base?: string): any;
+    post(uri: string, data: any, base?: string, options?: HttpOptions): any;
     /**
      * Execute a DELETE request against yuuvis backend
      * @param uri URI the request should be sent to
      * @param base URI part of the service this request belongs to
+     * @param options additional HttpOptions
      */
-    del(uri: string, base?: string): any;
+    del(uri: string, base?: string, options?: HttpOptions): any;
     /**
      * Execute a PUT request against yuuvis backend
      * @param uri URI the request should be sent to
      * @param data Data to be send along with the request
      * @param base URI part of the service this request belongs to
+     * @param options additional HttpOptions
      */
-    put(uri: string, data: any, base?: string): any;
+    put(uri: string, data: any, base?: string, options?: HttpOptions): any;
   };
   /**
    * Utilities

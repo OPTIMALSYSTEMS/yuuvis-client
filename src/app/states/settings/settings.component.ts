@@ -19,7 +19,7 @@ export class SettingsComponent implements OnInit {
   clientLocales: any;
   showPermissions: boolean;
 
-  accentColorRGB = ['255, 152, 0', '120, 144, 156', '124, 179, 66', '3,169,244', '126,87,194', '236,64,122'];
+  accentColorRGB = ['255,152,0', '120,144,156', '124,179,66', '3,169,244', '126,87,194', '236,64,122'];
   cache = {
     system: true,
     history: true,
