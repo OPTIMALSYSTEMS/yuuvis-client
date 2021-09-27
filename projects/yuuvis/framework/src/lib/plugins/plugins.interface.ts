@@ -233,7 +233,7 @@ export interface PluginActionConfig extends PluginConfig {
   subActionComponents?: string;
   // action COMPONENT
   buttons?: { cancel?: string; finish?: string };
-  fullscreen?: boolean;
+  fullscreen?: boolean | string;
 }
 
 /**

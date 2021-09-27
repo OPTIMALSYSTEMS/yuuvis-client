@@ -46,8 +46,8 @@ export class PluginComponent extends IFrameComponent implements OnInit, OnDestro
 
   get htmlStyles() {
     return (
-      (this.config?.plugin?.styles?.map((s) => `<style> yuv-plugin[${this.elRef.nativeElement.attributes[0].name}] ${s} </style>`) || '') +
-      (this.config?.plugin?.html || '')
+      (this.config?.plugin?.styles?.map((s) => `<style> yuv-plugin[${this.elRef.nativeElement.attributes[0].name}] ${s} </style>`).join('') || '') +
+      (this.pluginsService.applyFunction(this.config?.plugin?.html || '', 'component, parent', [this, this.parent]) || '')
     );
   }
 
