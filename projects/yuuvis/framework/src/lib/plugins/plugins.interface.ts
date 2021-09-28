@@ -464,6 +464,7 @@ export interface PluginViewerConfig {
  */
 export interface PluginConfigList {
   disabled?: boolean | string | Function;
+  load?: string | Function;
   links?: PluginLinkConfig[];
   states?: PluginStateConfig[];
   actions?: (PluginActionConfig | string)[];

@@ -121,6 +121,7 @@ export class PluginsService {
               return prev;
             }, {});
             this.extendTranslations(this.translate.currentLang);
+            this.run(this.customPlugins?.load);
           }
           return this.customPlugins;
         })
@@ -130,19 +131,19 @@ export class PluginsService {
   public getCustomPlugins(type: 'links' | 'states' | 'actions' | 'extensions' | 'triggers' | 'viewers', hook?: string, matchPath?: string | RegExp) {
     return (!this.customPlugins ? this.backend.getViaTempCache('_plugins', () => this.loadCustomPlugins()) : of(this.customPlugins)).pipe(
       map((cp: PluginConfigList) => {
-        if (this.isDisabled(cp.disabled)) return [];
+        if (this.run(cp.disabled)) return [];
         const customPlugins: any[] = type === 'links' ? [...(cp.links || []), ...(cp.states || [])] : cp[type] || [];
         return customPlugins.filter(
           (p) =>
-            !this.isDisabled(p.disabled) &&
+            !this.run(p.disabled) &&
             (hook ? p.matchHook && hook.match(new RegExp(p.matchHook)) : matchPath ? (p.path || '').match(new RegExp(matchPath)) : true)
         );
       })
     );
   }
 
-  private isDisabled(disabled: any) {
-    return this.applyFunction(disabled && disabled.toString(), 'api, currentState', [this.api, this.router.routerState.snapshot]);
+  private run(fnc: any) {
+    return this.applyFunction(fnc && fnc.toString(), 'api, currentState', [this.api, this.router.routerState.snapshot]);
   }
 
   public disableCustomPlugins(disabled = true) {
