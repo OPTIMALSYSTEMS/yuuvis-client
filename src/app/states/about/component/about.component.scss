@@ -26,25 +26,14 @@ $about-max-width: 800px;
     .header {
       position: relative;
       height: var(--about-header-height);
+      background-color: rgba(var(--color-accent-rgb), 0.7);
 
-      &:after {
-        content: '';
-        position: absolute;
-        left: 0;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        background-color: var(--color-accent);
-        opacity: 0.5;
-      }
-
-      svg {
-        fill: white;
-        right: 8%;
-        bottom: 18%;
-        position: absolute;
-        z-index: 5;
-        width: 40%;
+      #logo-big {
+        @include frame(50px);
+        background: var(--theme-logo-big);
+        background-repeat: no-repeat;
+        background-position: bottom right;
+        background-size: 60%;
       }
     }
 

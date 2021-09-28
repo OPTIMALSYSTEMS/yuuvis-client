@@ -1,4 +1,8 @@
+@import './../../../../../../../../src/scss-shared/_mixins';
+
 .sidebar {
+  --sidebar-header-height: 220px;
+
   &.p-sidebar {
     color: white;
     padding: 0;
@@ -9,12 +13,28 @@
       display: none;
     }
   }
-  &-header {
-    height: 250px;
-    background-color: var(--color-accent);
-    background-image: var(--theme-nav-header);
-    background-size: cover;
+
+  // .sidebar-header {
+  //   height: var(--sidebar-header-height);
+  //   background: var(--theme-nav-header);
+  //   background-repeat: no-repeat;
+  //   background-color: var(--color-accent);
+  //   padding: calc(var(--app-pane-padding) / 2);
+  // }
+
+  .sidebar-header {
+    position: relative;
+    height: var(--sidebar-header-height);
+    background-color: rgba(var(--color-accent-rgb), 0.7);
     padding: calc(var(--app-pane-padding) / 2);
+
+    #logo-big {
+      @include frame(40px);
+      background: var(--theme-logo-big);
+      background-repeat: no-repeat;
+      background-position: bottom right;
+      background-size: 80%;
+    }
   }
 
   header {

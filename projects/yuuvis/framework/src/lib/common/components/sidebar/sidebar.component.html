@@ -8,17 +8,14 @@
   [position]="position"
   [showCloseIcon]="false"
 >
-  <header
-    #wrapper
-    [class.sidebar-header]="!hasHeaderContent"
-    [ngStyle]="externalHeaderStyle"
-  >
+  <header *ngIf="showHeader" [ngStyle]="externalHeaderStyle" class="sidebar-header themeBackground">
     <ng-content class="content" select=".header-content"></ng-content>
     <div class="close">
       <button class="icon light">
         <yuv-icon (click)="onHide()" [svg]="closeIcon"></yuv-icon>
       </button>
     </div>
+    <div id="logo-big"></div>
   </header>
 
   <section class="sidebar-content" [ngStyle]="externalContentStyles">

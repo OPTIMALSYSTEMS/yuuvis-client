@@ -64,15 +64,15 @@ $app-bar-icon: 32px;
     }
 
     a#logo {
+      position: relative;
       color: currentColor;
       margin: 0 calc(var(--app-pane-padding) / 2);
-
-      yuv-icon {
-        width: $app-bar-icon;
-        padding: calc(((var(--app-bar-height) - #{$app-bar-icon}) / 2) - ((var(--app-bar-height) - #{$app-bar-icon}) / 4));
-        height: auto;
-        background-color: transparent;
-      }
+      display: block;
+      background: var(--theme-logo);
+      background-repeat: no-repeat;
+      background-color: var(--color-accent);
+      height: $app-bar-icon;
+      width: var(--theme-logo-width);
     }
 
     .main {
@@ -303,7 +303,7 @@ $app-bar-icon: 32px;
     }
   }
 
-  &.transparentAppBar {
+  &.transparentAppBar:not(.transparentOff) {
     .app-bar {
       background-color: transparent;
       color: var(--theme-transparent-app-bar-color);
