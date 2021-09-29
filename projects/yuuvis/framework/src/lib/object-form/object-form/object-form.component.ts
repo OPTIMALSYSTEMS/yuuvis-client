@@ -417,7 +417,8 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
     // add a form group
     if (formElement.type === 'o2mGroup' || formElement.type === 'o2mGroupStack') {
       // do not add groups that are empty
-      if (!formElement.elements || formElement.elements.length === 0) {
+      const isRootGroup = formElement.name && (formElement.name !== 'data' || formElement.name !== 'core');
+      if (!isRootGroup && (!formElement.elements || formElement.elements.length === 0)) {
         this.logger.error('Found empty form group', formElement);
         return;
       }
