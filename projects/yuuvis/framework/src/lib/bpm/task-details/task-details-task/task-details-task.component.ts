@@ -2,6 +2,7 @@ import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { InboxService, PendingChangesService, ProcessPostPayload, ProcessVariable, SystemService, Task, TaskType, TranslateService } from '@yuuvis/core';
 import { FormStatusChangedEvent, ObjectFormOptions } from '../../../object-form/object-form.interface';
 import { ObjectFormComponent } from '../../../object-form/object-form/object-form.component';
+import { NotificationService } from '../../../services/notification/notification.service';
 
 @Component({
   selector: 'yuv-task-details-task',
@@ -12,7 +13,7 @@ export class TaskDetailsTaskComponent implements OnInit {
   @ViewChild(ObjectFormComponent) taskForm: ObjectFormComponent;
 
   private pendingTaskId: string;
-  private _task: Task;
+  _task: Task;
   taskDescription: string;
   formState: FormStatusChangedEvent;
 
@@ -21,19 +22,26 @@ export class TaskDetailsTaskComponent implements OnInit {
     this.error = null;
     this.taskDescription = this.getDescription(t);
     if (t && t.formKey) {
-      this.createReferencedForm(t);
+      // check for claiming ability
+      // If there is no assignee yet you have to claim the task. If there is an assignee
+      // but no claimTime it means that claining is no option whatsoever
+      this.claimable = !t.assignee || !!t.claimTime;
+      this.createReferencedForm(t, !t.assignee);
     } else {
       this.formOptions = null;
     }
   }
 
   formOptions: ObjectFormOptions;
+  // whether or not claiming is an option
+  claimable: boolean;
   error: any;
 
   constructor(
     private inboxService: InboxService,
     private pendingChanges: PendingChangesService,
     private translate: TranslateService,
+    private notificationService: NotificationService,
     private system: SystemService
   ) {}
 
@@ -45,7 +53,7 @@ export class TaskDetailsTaskComponent implements OnInit {
     return t ? label : null;
   }
 
-  private createReferencedForm(t: Task) {
+  private createReferencedForm(t: Task, disabled: boolean = false) {
     if (t.formKey) {
       this.inboxService.getTaskForm(t.formKey).subscribe(
         (res) => {
@@ -58,6 +66,7 @@ export class TaskDetailsTaskComponent implements OnInit {
             }
             this.formOptions = {
               formModel: res,
+              disabled: disabled,
               data: formData
             };
           }
@@ -88,7 +97,10 @@ export class TaskDetailsTaskComponent implements OnInit {
         this.finishPending();
         this.formState = null;
       },
-      (err) => console.error(err)
+      (err) => {
+        console.error(err);
+        this.notificationService.error(this.translate.instant('yuv.framework.task-details-task.update.fail'));
+      }
     );
   }
 
@@ -98,7 +110,22 @@ export class TaskDetailsTaskComponent implements OnInit {
         this.finishPending();
         this.formState = null;
       },
-      (err) => console.error(err)
+      (err) => {
+        console.error(err);
+        this.notificationService.error(this.translate.instant('yuv.framework.task-details-task.update.fail'));
+      }
+    );
+  }
+
+  claim(claim: boolean) {
+    this.inboxService.claimTask(this._task.id, claim).subscribe(
+      (res) => {
+        this.task = res;
+      },
+      (err) => {
+        console.error(err);
+        this.notificationService.error(this.translate.instant('yuv.framework.task-details-task.update.fail'));
+      }
     );
   }
 

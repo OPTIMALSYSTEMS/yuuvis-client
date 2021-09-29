@@ -31,5 +31,10 @@
     padding: calc(var(--app-pane-padding) / 2);
     display: flex;
     justify-content: flex-end;
+    margin: 0 -2px;
+
+    button {
+      margin: 0 2px;
+    }
   }
 }

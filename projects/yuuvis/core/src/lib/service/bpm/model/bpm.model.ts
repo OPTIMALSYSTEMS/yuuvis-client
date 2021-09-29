@@ -1,5 +1,6 @@
 export const ProcessAction = {
   complete: 'complete',
+  claim: 'claim',
   save: 'save'
 };
 
