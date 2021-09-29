@@ -21,6 +21,8 @@ export class TaskDetailsTaskComponent implements OnInit {
   @Input() set task(t: Task) {
     this._task = t;
     this.error = null;
+    this.formOptions = null;
+    this.formState = null;
     this.taskDescription = this.getDescription(t);
     if (t && t.formKey) {
       // check for claiming ability
@@ -28,8 +30,6 @@ export class TaskDetailsTaskComponent implements OnInit {
       // but no claimTime it means that claining is no option whatsoever
       this.claimable = !t.assignee || !!t.claimTime;
       this.createReferencedForm(t, !t.assignee);
-    } else {
-      this.formOptions = null;
     }
   }
 
