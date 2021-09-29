@@ -9,7 +9,7 @@
     <div class="error" *ngIf="error">{{'yuv.framework.task-details-task.form.load.error'|translate}}</div>
 </div>
 
-<div class="actions">
+<div class="actions" [ngClass]="{disabled: busy}">
     <button class="" (click)="resetForm()" *ngIf="formState?.dirty">
         {{'yuv.framework.task-details-task.button.reset'|translate}}</button>
     <button class="" (click)="update()" *ngIf="formOptions"

@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { InboxService, PendingChangesService, ProcessPostPayload, ProcessVariable, SystemService, Task, TaskType, TranslateService } from '@yuuvis/core';
 import { FormStatusChangedEvent, ObjectFormOptions } from '../../../object-form/object-form.interface';
 import { ObjectFormComponent } from '../../../object-form/object-form/object-form.component';
@@ -13,6 +13,7 @@ export class TaskDetailsTaskComponent implements OnInit {
   @ViewChild(ObjectFormComponent) taskForm: ObjectFormComponent;
 
   private pendingTaskId: string;
+  busy: boolean;
   _task: Task;
   taskDescription: string;
   formState: FormStatusChangedEvent;
@@ -36,6 +37,8 @@ export class TaskDetailsTaskComponent implements OnInit {
   // whether or not claiming is an option
   claimable: boolean;
   error: any;
+
+  @Output() taskUpdated = new EventEmitter<Task>();
 
   constructor(
     private inboxService: InboxService,
@@ -92,12 +95,15 @@ export class TaskDetailsTaskComponent implements OnInit {
   }
 
   update() {
+    this.busy = true;
     this.inboxService.updateTask(this._task.id, this.getUpdatePayload()).subscribe(
       (res) => {
+        this.busy = false;
         this.finishPending();
         this.formState = null;
       },
       (err) => {
+        this.busy = false;
         console.error(err);
         this.notificationService.error(this.translate.instant('yuv.framework.task-details-task.update.fail'));
       }
@@ -105,12 +111,15 @@ export class TaskDetailsTaskComponent implements OnInit {
   }
 
   confirm() {
+    this.busy = true;
     this.inboxService.completeTask(this._task.id, this.getUpdatePayload()).subscribe(
       (res) => {
+        this.busy = false;
         this.finishPending();
         this.formState = null;
       },
       (err) => {
+        this.busy = false;
         console.error(err);
         this.notificationService.error(this.translate.instant('yuv.framework.task-details-task.update.fail'));
       }
@@ -118,11 +127,14 @@ export class TaskDetailsTaskComponent implements OnInit {
   }
 
   claim(claim: boolean) {
+    this.busy = true;
     this.inboxService.claimTask(this._task.id, claim).subscribe(
       (res) => {
-        this.task = res;
+        this.busy = false;
+        this.taskUpdated.emit(res);
       },
       (err) => {
+        this.busy = false;
         console.error(err);
         this.notificationService.error(this.translate.instant('yuv.framework.task-details-task.update.fail'));
       }

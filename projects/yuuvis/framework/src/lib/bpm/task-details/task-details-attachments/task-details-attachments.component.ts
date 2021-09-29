@@ -7,9 +7,12 @@ import { InboxService, Task } from '@yuuvis/core';
   styleUrls: ['./task-details-attachments.component.scss']
 })
 export class TaskDetailsAttachmentsComponent implements OnInit {
+  disabled: boolean;
   _task: Task;
   @Input() set task(t: Task) {
     this._task = t;
+    // editing of attachments should only be allowed if the task has an assignee
+    this.disabled = !t.assignee;
   }
 
   @Input() layoutOptionsKey: string;
