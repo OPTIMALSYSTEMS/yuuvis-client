@@ -175,10 +175,17 @@ export class TaskDetailsTaskComponent implements OnInit {
         pv.value = formValue;
         break;
       }
-      default: {
-        pv.type = formElement.type;
-        pv.value = formValue;
-      }
+      default:
+        {
+          pv.type = formElement.type;
+          pv.value = formValue;
+        }
+
+        // form elements width mutiple values will always be submitted as JSON
+        // because Flowable does not support arrays right now
+        if (formElement.cardinality === 'multi') {
+          pv.type = 'json';
+        }
     }
     return pv;
   }
