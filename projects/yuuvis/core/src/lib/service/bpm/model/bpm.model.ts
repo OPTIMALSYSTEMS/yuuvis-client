@@ -188,3 +188,10 @@ export class FollowUpRow extends ProcessRow {
     }
   }
 }
+
+export interface FetchTaskOptions {
+  includeProcessVar?: boolean;
+  isCompleted?: boolean;
+  businessKey?: string;
+  processDefinitionKey?: string;
+}
