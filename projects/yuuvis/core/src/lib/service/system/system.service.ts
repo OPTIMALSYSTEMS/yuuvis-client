@@ -926,6 +926,20 @@ export class SystemService {
     return res;
   }
 
+  /**
+   * Resolve object types to =>
+   * types: default system types & extendable SOTs
+   * lots: leading object types
+   *
+   * @param allTypes Mixed object types
+   */
+  resolveTypesLots(allTypes: string[]) {
+    const extendable = Object.values(SystemType).concat(this.getAllExtendableSOTs().map((o) => o.id));
+    const types = (allTypes || []).filter((t) => extendable.includes(t));
+    const lots = (allTypes || []).filter((t) => !types.includes(t));
+    return { types, lots };
+  }
+
   toFormElement(field: ObjectTypeField): any {
     return { ...field, label: this.getLocalizedResource(`${field.id}_label`), name: field.id, type: field.propertyType };
   }
