@@ -114,14 +114,6 @@ export class UserService {
     }
   }
 
-  setUserLocale(locale: string): string {
-    if (locale) {
-      this.changeClientLocale(this.config.getDefaultClientLocale());
-      return this.config.getDefaultClientLocale();
-    }
-    return locale;
-  }
-
   fetchUserSettings(): Observable<UserSettings> {
     return this.backend.get('/users/settings');
   }
