@@ -5,7 +5,6 @@ import {
   ElementRef,
   EventEmitter,
   HostBinding,
-  Inject,
   Input,
   Output,
   QueryList,
@@ -15,7 +14,6 @@ import {
 } from '@angular/core';
 import { NG_VALUE_ACCESSOR } from '@angular/forms';
 import { PluginsService } from '../../plugins/plugins.service';
-import { ObjectFormComponent } from './../../object-form/object-form/object-form.component';
 import { PluginTriggerComponent } from './../../plugins/plugin-trigger.component';
 
 /**
@@ -128,12 +126,7 @@ export class FormInputComponent implements AfterViewInit {
   visiblePlugins = [];
   hiddenPlugins = [];
 
-  constructor(
-    private renderer: Renderer2,
-    private elRef: ElementRef,
-    private pluginsService: PluginsService,
-    @Inject(ObjectFormComponent) private objectForm: ObjectFormComponent
-  ) {}
+  constructor(private renderer: Renderer2, private elRef: ElementRef, private pluginsService: PluginsService) {}
 
   toggle() {
     if (!this.skipToggle && !this.isDisabled) {
