@@ -83,23 +83,22 @@ export class InboxService {
   /**
    * Finsihes a task.
    * @param taskId ID of the taks to finish
-   * @param claim whether to claim or unclaim (true = claim, false = unclaim)
    * @param payload Data to be send with the complete request (may contain attachments, a new subject or variables)
    */
   completeTask(taskId: string, payload?: ProcessPostPayload): Observable<any> {
-    return this.postTask(taskId, ProcessAction.complete, payload || {});
+    return this.putTask(taskId, ProcessAction.complete, payload || {});
   }
 
   /**
    * Claim or unclaim a task.
    * @param taskId ID of the taks to finish
-   * @param claim Whether or not to clam (true) or unclaim (false)
+   * @param claim Whether or not to claim (true) or unclaim (false)
    */
   claimTask(taskId: string, claim: boolean): Observable<Task> {
     const payload: any = {
       assignee: claim ? { id: this.userService.getCurrentUser().id } : null
     };
-    return this.postTask(taskId, ProcessAction.claim, payload || {});
+    return this.putTask(taskId, ProcessAction.claim, payload || {});
   }
 
   /**
@@ -108,10 +107,10 @@ export class InboxService {
    * @param payload Data to be send with the complete request (may contain attachments, a new subject or variables)
    */
   updateTask(taskId: string, payload?: ProcessPostPayload): Observable<any> {
-    return this.postTask(taskId, ProcessAction.save, payload || {});
+    return this.putTask(taskId, ProcessAction.save, payload || {});
   }
 
-  private postTask(taskId: string, action: string, payload: ProcessPostPayload) {
+  private putTask(taskId: string, action: string, payload: ProcessPostPayload) {
     const pl = { ...payload, action: action };
     return this.backendService.put(`/bpm/tasks/${taskId}`, pl, ApiBase.apiWeb).pipe(tap((_) => this.fetchTasks()));
   }
