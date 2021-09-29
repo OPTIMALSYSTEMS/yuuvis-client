@@ -79,14 +79,14 @@ export class ActionMenuComponent implements OnDestroy {
     common: [],
     further: []
   };
-  subActionsListHeader = '';
+  subActionsHeader = '';
   subActionsList: ActionListEntry[];
   showComponent = false;
   // actionDescription: string;
   showDescriptions: boolean;
   showMenu = false;
   loading = false;
-  fullscreen = false;
+  fullscreen = '';
 
   constructor(
     private actionService: ActionService,
@@ -179,7 +179,6 @@ export class ActionMenuComponent implements OnDestroy {
 
     if (isListAction) {
       const listAction = actionListEntry.action as ListAction;
-      this.subActionsListHeader = listAction.header;
       this.actionService
         .getExecutableActionsListFromGivenActions(listAction.subActionComponents, this.selection, this.viewContainerRef)
         .subscribe((actionsList: ActionListEntry[]) => (this.subActionsList = actionsList));
@@ -187,11 +186,13 @@ export class ActionMenuComponent implements OnDestroy {
       const componentAction = actionListEntry.action as ComponentAction;
       this.showActionComponent(componentAction.component, this.componentAnchor, this.componentFactoryResolver, true, componentAction.inputs);
     } else if (isExternalComponentAction) {
-      this.fullscreen = true;
       const extComponentAction = actionListEntry.action as ExternalComponentAction;
+      const fullscreen = (extComponentAction.extComponent as any)?.action?.fullscreen || '';
+      this.fullscreen = typeof fullscreen === 'string' ? fullscreen : '100vw';
       this.showActionComponent(extComponentAction.extComponent, this.componentAnchor, this.componentFactoryResolver, true, extComponentAction.inputs);
     }
 
+    this.subActionsHeader = (actionListEntry.action as any)?.header;
     this.actionSelected.emit(actionListEntry);
   }
 
@@ -217,7 +218,7 @@ export class ActionMenuComponent implements OnDestroy {
   }
 
   private clear() {
-    this.fullscreen = false;
+    this.fullscreen = '';
     this.showComponent = false;
     this.subActionsList = null;
     // this.actionDescription = null;

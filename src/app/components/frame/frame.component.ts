@@ -3,6 +3,7 @@ import { ActivatedRoute, NavigationEnd, NavigationExtras, Router } from '@angula
 import { SwUpdate } from '@angular/service-worker';
 import {
   AuthService,
+  BackendService,
   BaseObjectTypeField,
   ConnectionService,
   ConnectionState,
@@ -102,7 +103,8 @@ export class FrameComponent implements OnInit, OnDestroy {
     private popoverService: PopoverService,
     private dmsService: DmsService,
     private iconRegistry: IconRegistryService,
-    private pluginsService: PluginsService
+    private pluginsService: PluginsService,
+    private backend: BackendService
   ) {
     this.pluginsService.getCustomPlugins('states').subscribe((states) => PluginGuard.updateRouter(router, states));
     this.navigationPlugins = this.pluginsService.getCustomPlugins('links', 'yuv-sidebar-navigation');
@@ -311,7 +313,7 @@ export class FrameComponent implements OnInit, OnDestroy {
       if (!authenticated) {
         const tenant = this.authService.getTenant();
         if (tenant) {
-          (window as any).location.href = `/oauth/${tenant}`;
+          (window as any).location.href = `${this.backend.getApiBase('oauth') || '/oauth'}/${tenant}`;
         }
       }
     });

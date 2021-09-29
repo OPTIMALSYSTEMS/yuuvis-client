@@ -46,8 +46,8 @@ export class PluginComponent extends IFrameComponent implements OnInit, OnDestro
 
   get htmlStyles() {
     return (
-      (this.config?.plugin?.styles?.map((s) => `<style> yuv-plugin[${this.elRef.nativeElement.attributes[0].name}] ${s} </style>`) || '') +
-      (this.config?.plugin?.html || '')
+      (this.config?.plugin?.styles?.map((s) => `<style> yuv-plugin[${this.elRef.nativeElement.attributes[0].name}] ${s} </style>`).join('') || '') +
+      (this.pluginsService.applyFunction(this.config?.plugin?.html || '', 'component, parent', [this, this.parent]) || '')
     );
   }
 
@@ -56,6 +56,7 @@ export class PluginComponent extends IFrameComponent implements OnInit, OnDestro
   }
 
   private componentRef: ComponentRef<any>;
+  private _afterViewInit = false;
 
   constructor(elRef: ElementRef, pluginsService: PluginsService, private componentFactoryResolver: ComponentFactoryResolver, private cdRef: ChangeDetectorRef) {
     super(elRef, pluginsService);
@@ -108,14 +109,16 @@ export class PluginComponent extends IFrameComponent implements OnInit, OnDestro
       // match custom state by url
       this.pluginsService.getCustomPlugins('states', '', this.pluginsService.currentUrl.replace('/', '')).subscribe(([config]) => {
         this.config = config;
-        setTimeout(() => this.init(), 0);
+        this._afterViewInit && this.init();
       });
     }
   }
 
   ngAfterViewInit() {
     this.init();
+    this._afterViewInit = true;
   }
+
   ngOnDestroy() {
     this.componentRef?.destroy();
   }

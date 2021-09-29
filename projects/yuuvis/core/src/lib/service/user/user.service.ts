@@ -143,7 +143,7 @@ export class UserService {
       this.oidc.logout();
     } else {
       const redir = redirRoute ? `?redir=${redirRoute}` : '';
-      (window as any).location.href = `/logout${redir}`;
+      (window as any).location.href = `${this.backend.getApiBase('logout') || '/logout'}${redir}`;
     }
   }
 

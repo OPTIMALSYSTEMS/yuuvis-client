@@ -60,6 +60,6 @@ export class ConfigService {
   }
 
   private getCoreConfig(key: string): any {
-    return this.cfg.core[key];
+    return this.cfg?.core[key];
   }
 }

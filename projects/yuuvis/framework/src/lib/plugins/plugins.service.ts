@@ -21,7 +21,7 @@ import {
   YuvUser
 } from '@yuuvis/core';
 import { forkJoin, of } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { catchError, filter, map, switchMap, take } from 'rxjs/operators';
 import { NotificationService } from '../services/notification/notification.service';
 import { PluginAPI, PluginConfigList } from './plugins.interface';
 
@@ -92,49 +92,58 @@ export class PluginsService {
   }
 
   private loadCustomPlugins(force = false) {
-    return forkJoin([
-      this.backend.get(PluginsService.LOCAL_PLUGIN_CONFIG).pipe(catchError(() => of({}))),
-      this.backend.get(PluginsService.RESOURCES_CONFIG).pipe(catchError(() => of({})))
-    ]).pipe(
-      map(([local, config]) => {
-        const p = (this.pluginConfigs = { local, tenant: config?.tenant || {}, global: config?.global || {} });
-        if (!this.customPlugins || force) {
-          // merge configs: global >> tenant >> local
-          this.customPlugins = [p.global, p.tenant, p.local].reduce((prev, cur) => {
-            Object.keys(cur || {}).forEach((k) => {
-              if (Array.isArray(cur[k])) {
-                prev[k] = cur[k].concat((prev[k] || []).filter((p) => !cur[k].find((c) => c.id === p.id)));
-              } else if (k === 'translations' && prev[k]) {
-                Object.keys(cur[k]).forEach((t) => (prev[k][t] = { ...(prev[k][t] || {}), ...cur[k][t] }));
-              } else {
-                prev[k] = cur[k];
-              }
-            });
-            return prev;
-          }, {});
-          this.extendTranslations(this.translate.currentLang);
-        }
-        return this.customPlugins;
-      })
-    );
+    return this.userService.user$
+      .pipe(filter((v) => !!v))
+      .pipe(take(1))
+      .pipe(
+        switchMap((user) =>
+          forkJoin([
+            this.backend.get(PluginsService.LOCAL_PLUGIN_CONFIG).pipe(catchError(() => of({}))),
+            this.backend.get(PluginsService.RESOURCES_CONFIG).pipe(catchError(() => of({})))
+          ])
+        )
+      )
+      .pipe(
+        map(([local, config]) => {
+          const p = (this.pluginConfigs = { local, tenant: config?.tenant || {}, global: config?.global || {} });
+          if (!this.customPlugins || force) {
+            // merge configs: global >> tenant >> local
+            this.customPlugins = [p.global, p.tenant, p.local].reduce((prev, cur) => {
+              Object.keys(cur || {}).forEach((k) => {
+                if (Array.isArray(cur[k])) {
+                  prev[k] = cur[k].concat((prev[k] || []).filter((p) => !cur[k].find((c) => c.id === p.id)));
+                } else if (k === 'translations' && prev[k]) {
+                  Object.keys(cur[k]).forEach((t) => (prev[k][t] = { ...(prev[k][t] || {}), ...cur[k][t] }));
+                } else {
+                  prev[k] = cur[k];
+                }
+              });
+              return prev;
+            }, {});
+            this.extendTranslations(this.translate.currentLang);
+            this.run(this.customPlugins?.load);
+          }
+          return this.customPlugins;
+        })
+      );
   }
 
   public getCustomPlugins(type: 'links' | 'states' | 'actions' | 'extensions' | 'triggers' | 'viewers', hook?: string, matchPath?: string | RegExp) {
     return (!this.customPlugins ? this.backend.getViaTempCache('_plugins', () => this.loadCustomPlugins()) : of(this.customPlugins)).pipe(
       map((cp: PluginConfigList) => {
-        if (this.isDisabled(cp.disabled)) return [];
+        if (this.run(cp.disabled)) return [];
         const customPlugins: any[] = type === 'links' ? [...(cp.links || []), ...(cp.states || [])] : cp[type] || [];
         return customPlugins.filter(
           (p) =>
-            !this.isDisabled(p.disabled) &&
+            !this.run(p.disabled) &&
             (hook ? p.matchHook && hook.match(new RegExp(p.matchHook)) : matchPath ? (p.path || '').match(new RegExp(matchPath)) : true)
         );
       })
     );
   }
 
-  private isDisabled(disabled: any) {
-    return this.applyFunction(disabled && disabled.toString(), 'api, currentState', [this.api, this.router.routerState.snapshot]);
+  private run(fnc: any) {
+    return this.applyFunction(fnc && fnc.toString(), 'api, currentState', [this.api, this.router.routerState.snapshot]);
   }
 
   public disableCustomPlugins(disabled = true) {

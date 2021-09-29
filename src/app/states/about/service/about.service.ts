@@ -119,6 +119,9 @@ export class AboutService {
       author: this.translate.instant('yuv.client.state.about.author.label')
     };
 
+    // enable to display product name in different languages
+    aboutDetails.product = this.translate.instant('yuv.client.state.title') || aboutDetails.product;
+
     Object.keys(aboutDetails).forEach((key) =>
       details.push({
         name: key,

@@ -4,7 +4,9 @@
       "core": "/api",
       "api-web": "/api-web/api",
       "predict": "/predict-api",
-      "viewer": "/viewer"
+      "viewer": "/viewer",
+      "logout": "/logout",
+      "oauth": "/oauth"
     },
     "languages": [
       {

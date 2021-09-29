@@ -1,5 +1,5 @@
 <div class="action-menu" *ngIf="showMenu"
-  [ngClass]="{ dark: dark, descriptionsEnabled: showDescriptions, fullscreen: fullscreen }" (yuvOutsideClick)="hide()">
+  [ngClass]="{ dark: dark, descriptionsEnabled: showDescriptions }" [style.width]="fullscreen" (yuvOutsideClick)="hide()">
   <div class="head">
     <div class="settings" *ngIf="!showComponent">
       <yuv-form-input class="checkbox" [skipToggle]="true"
@@ -65,7 +65,7 @@
 
   <div class="group sub" *ngIf="subActionsList && !showComponent">
     <div class="sub-actions">
-      <div class="group-title">{{ subActionsListHeader }}</div>
+      <div class="group-title">{{ subActionsHeader }}</div>
       <div class="action sub" *ngFor="let actionListEntry of subActionsList; index as i"
         yuvThrottleClick (throttleClick)="onClick(actionListEntry, $event)">
         <ng-container *ngTemplateOutlet="action; context: { $implicit: actionListEntry, id: 's' + i }"></ng-container>
@@ -77,6 +77,7 @@
   </div>
 
   <div class="menu-sub-actions">
+    <h2 *ngIf="subActionsHeader" class="title">{{ subActionsHeader }}</h2>
     <ng-template yuvComponentAnchor #componentAnchor></ng-template>
   </div>
 </div>

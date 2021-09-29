@@ -1,8 +1,8 @@
 <div class="header">
   <div class="tabs">
-    <div class="tab" *ngIf="created" [ngClass]="{active: selected === 'created'}" (click)="select('created')">
+    <div class="tab" *ngIf="created" [ngClass]="{active: selected === 'created'}" (click)="select('created')" (keyup.enter)="select('created')" tabindex="0">
       {{'yuv.framework.recent-activities.header.created'|translate}}</div>
-    <div class="tab" *ngIf="modified" [ngClass]="{active: selected === 'modified'}" (click)="select('modified')">
+    <div class="tab" *ngIf="modified" [ngClass]="{active: selected === 'modified'}" (click)="select('modified')" (keyup.enter)="select('modified')" tabindex="0">
       {{'yuv.framework.recent-activities.header.modified'|translate}}</div>
   </div>
 </div>
