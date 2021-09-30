@@ -240,7 +240,7 @@
   "yuv.framework.process-list.column.subject.label": "Subject",
   "yuv.framework.process-list.column.task.label": "Task",
   "yuv.framework.process-list.column.type.label": "Type",
-  "yuv.framework.process-list.task.state.not-assigned": "Not assigned",
+  "yuv.framework.process-list.task.state.not-assigned": "Not taken over",
   "yuv.framework.process-list.type.follow-up.label": "Follow-up",
   "yuv.framework.process-list.type.task.label": "Task",
   "yuv.framework.process.status.completed.label": "Completed",
