@@ -120,6 +120,7 @@ export class PluginComponent extends IFrameComponent implements OnInit, OnDestro
   }
 
   ngOnDestroy() {
+    this.pluginsService.unregister(this);
     this.componentRef?.destroy();
   }
 }
