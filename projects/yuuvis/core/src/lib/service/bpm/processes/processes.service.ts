@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, EMPTY, forkJoin, Observable } from 'rxjs';
 import { expand, map, skipWhile, tap } from 'rxjs/operators';
 import { BpmService } from '../bpm/bpm.service';
-import { FetchTaskOptions, FollowUpVars, Process, ProcessCreatePayload, ProcessDefinitionKey } from '../model/bpm.model';
+import { FetchProcessOptions, FetchTaskOptions, FollowUpVars, Process, ProcessCreatePayload, ProcessDefinitionKey } from '../model/bpm.model';
 
 interface CreateFollowUpPayload {
   expiryDateTime: Date;
@@ -35,12 +35,18 @@ export class ProcessService {
   /**
    * get all processes
    */
-  fetchProcesses(processDefinitionKey?: string): void {
-    let params = `&includeProcessVariables=true&sort=startTime`;
+  fetchProcesses(processDefinitionKey?: string, options?: FetchProcessOptions): void {
+    const defaultOptions: any = {
+      includeProcessVariables: true,
+      sort: 'startTime'
+    };
+
     if (processDefinitionKey) {
-      params += `&processDefinitionKey=${processDefinitionKey}`;
+      defaultOptions['processDefinitionKey'] = processDefinitionKey;
     }
-    this.getAllPages(params)
+    const mergedOptions = { ...defaultOptions, ...options };
+    const params = Object.keys(mergedOptions).map((k) => `${k}=${mergedOptions[k]}`);
+    this.getAllPages(params.join('&'))
       .pipe(tap((res: Process[]) => this.processSource.next(res.reverse())))
       .subscribe();
   }
@@ -61,7 +67,7 @@ export class ProcessService {
 
   private getPage(requestParams: string, index?: number) {
     return this.bpmService.getProcesses(`${this.bpmProcessUrl}?size=${this.PROCESSES_PAGE_SIZE}
-    &page=${index || 0}${requestParams}`);
+    &page=${index || 0}&${requestParams}`);
   }
 
   /**
