@@ -110,6 +110,9 @@ export interface PluginAPI {
    * Utilities
    */
   form: {
+    activeForms(): any[];
+    getValue(formControlName: string): any;
+    setValue(formControlName: string, newValue: any): void;
     /**
      * Execute a change of form model
      * @param formControlName form control unique name | identifier

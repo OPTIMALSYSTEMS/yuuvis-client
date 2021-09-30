@@ -156,6 +156,10 @@ export class PluginsService {
     return component?.id && this.componentRegister.set(component?.id, component);
   }
 
+  public unregister(component: any) {
+    return component?.id && this.componentRegister.delete(component?.id);
+  }
+
   /**
    * Returns plugin API
    */
@@ -197,6 +201,9 @@ export class PluginsService {
         put: (uri, data, base, options) => this.put(uri, data, base, options)
       },
       form: {
+        activeForms: () => [...this.componentRegister.values()].filter((v) => v.id.startsWith('#form_')),
+        getValue: (formControlName) => this.api.form.activeForms().reduce((prev, cur) => ({ ...prev, ...(cur.formData || {}) }), {})[formControlName],
+        setValue: (formControlName, newValue) => this.api.form.modelChange(formControlName, { name: 'value', newValue }),
         modelChange: (formControlName, change) =>
           this.ngZone.run(() =>
             this.eventService.trigger(PluginsService.EVENT_MODEL_CHANGED, {
