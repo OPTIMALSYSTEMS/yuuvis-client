@@ -18,6 +18,7 @@
     grid-template-columns: 1fr;
     grid-template-rows: auto 1fr;
     grid-template-areas: 'head' 'content';
+    max-width: 100%;
 
     &.descriptionsEnabled {
       .action .row {

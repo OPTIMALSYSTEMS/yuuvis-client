@@ -180,36 +180,36 @@ export class ActionMenuComponent implements OnDestroy {
     if (isListAction) {
       const listAction = actionListEntry.action as ListAction;
       this.actionService
-        .getExecutableActionsListFromGivenActions(listAction.subActionComponents, this.selection, this.viewContainerRef)
+        .getExecutableActionsListFromGivenActions(listAction.subActionComponents, actionListEntry.availableSelection, this.viewContainerRef)
         .subscribe((actionsList: ActionListEntry[]) => (this.subActionsList = actionsList));
     } else if (isComponentAction) {
       const componentAction = actionListEntry.action as ComponentAction;
-      this.showActionComponent(componentAction.component, this.componentAnchor, this.componentFactoryResolver, true, componentAction.inputs);
+      this.showActionComponent(componentAction.component, componentAction, actionListEntry.availableSelection);
     } else if (isExternalComponentAction) {
       const extComponentAction = actionListEntry.action as ExternalComponentAction;
       const fullscreen = (extComponentAction.extComponent as any)?.action?.fullscreen || '';
       this.fullscreen = typeof fullscreen === 'string' ? fullscreen : '100vw';
-      this.showActionComponent(extComponentAction.extComponent, this.componentAnchor, this.componentFactoryResolver, true, extComponentAction.inputs);
+      this.showActionComponent(extComponentAction.extComponent, extComponentAction, actionListEntry.availableSelection);
     }
 
     this.subActionsHeader = (actionListEntry.action as any)?.header;
     this.actionSelected.emit(actionListEntry);
   }
 
-  private showActionComponent(component: Type<any> | any, viewContRef, factoryResolver, showComponent, inputs?: any) {
-    this.showComponent = showComponent;
-    let componentFactory = factoryResolver.resolveComponentFactory(component._component || component);
-    let anchorViewContainerRef = viewContRef.viewContainerRef;
+  private showActionComponent(component: Type<any> | any, action: ComponentAction | ExternalComponentAction, selection: any[]) {
+    this.showComponent = true;
+    let componentFactory = this.componentFactoryResolver.resolveComponentFactory(component._component || component);
+    let anchorViewContainerRef = this.componentAnchor.viewContainerRef;
     anchorViewContainerRef.clear();
     let componentRef = anchorViewContainerRef.createComponent(componentFactory);
     if (componentRef.instance instanceof PluginActionViewComponent) {
       (<PluginActionViewComponent>componentRef.instance).action = component.action;
     }
-    (<ActionComponent>componentRef.instance).selection = this.selection;
+    (<ActionComponent>componentRef.instance).selection = selection;
     (<ActionComponent>componentRef.instance).canceled.pipe(take(1)).subscribe(() => this.cancel());
     (<ActionComponent>componentRef.instance).finished.pipe(take(1)).subscribe(() => this.finish());
 
-    Object.keys(inputs || {}).forEach((key) => (componentRef.instance[key] = inputs[key]));
+    Object.keys(action.inputs || {}).forEach((key) => (componentRef.instance[key] = action.inputs[key]));
   }
 
   isLinkAction(action) {
