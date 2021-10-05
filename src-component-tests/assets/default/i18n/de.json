@@ -283,7 +283,7 @@
   "yuv.framework.shared.ok": "OK",
   "yuv.framework.shared.remove": "Entfernen",
   "yuv.framework.shared.reset": "Zurücksetzen",
-  "yuv.framework.task-details-attachments.empty": "Diese Aufgabe hat keine Anhänge",
+  "yuv.framework.task-details-attachments.empty": "Diese Aufgabe hat keine Anhänge.",
   "yuv.framework.task-details-history.empty": "",
   "yuv.framework.task-details-history.load.error": "Die Aufgabenhistorie konnte nicht geladen werden",
   "yuv.framework.task-details-task.button.confirm": "Bestätigen",
