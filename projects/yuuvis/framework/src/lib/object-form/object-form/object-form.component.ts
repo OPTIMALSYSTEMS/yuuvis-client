@@ -38,6 +38,7 @@ export type ObjectFormModelChange = { name: 'value' | 'required' | 'readonly' | 
 })
 export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestroy, AfterViewInit, IObjectForm {
   private skipTranslationsFor = ['core', 'data'];
+  private id = '#form_' + Utils.uuid();
 
   /**
    * There are special scenarios where forms are within a form themselves.
@@ -90,12 +91,13 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
     private systemService: SystemService,
     private formScriptService: ObjectFormScriptService,
     private formHelperService: ObjectFormService,
-    private pluginService: PluginsService,
+    private pluginsService: PluginsService,
     private userService: UserService,
     private cdRef: ChangeDetectorRef
   ) {
     super();
-    this.pluginService.api.events
+    this.pluginsService.register(this);
+    this.pluginsService.api.events
       .on(PluginsService.EVENT_MODEL_CHANGED)
       .pipe(takeUntilDestroy(this))
       .subscribe((event) => event.data && this.onScriptingModelChanged(event.data.formControlName, event.data.change));
@@ -207,7 +209,12 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
     // current form
     if (this.isInnerTableForm || (formModel.script && formModel.script.length > 0)) {
       this.logger.debug('adding form scripting scope');
-      this.scriptingScope = new ObjectFormScriptingScope(formModel.situation, this.onScriptingModelChanged, this.pluginService.getApi(), this.isInnerTableForm);
+      this.scriptingScope = new ObjectFormScriptingScope(
+        formModel.situation,
+        this.onScriptingModelChanged,
+        this.pluginsService.getApi(),
+        this.isInnerTableForm
+      );
       this.scriptingScope.objectId = this.formOptions.objectId;
     }
 
@@ -417,7 +424,8 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
     // add a form group
     if (formElement.type === 'o2mGroup' || formElement.type === 'o2mGroupStack') {
       // do not add groups that are empty
-      if (!formElement.elements || formElement.elements.length === 0) {
+      const isRootGroup = formElement.name && (formElement.name !== 'data' || formElement.name !== 'core');
+      if (!isRootGroup && (!formElement.elements || formElement.elements.length === 0)) {
         this.logger.error('Found empty form group', formElement);
         return;
       }
@@ -622,6 +630,7 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
   }
 
   ngOnDestroy() {
+    this.pluginsService.unregister(this);
     this.unsubscribeAll();
   }
 

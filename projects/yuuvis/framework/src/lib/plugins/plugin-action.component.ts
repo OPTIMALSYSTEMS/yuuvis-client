@@ -26,6 +26,7 @@ export class PluginActionComponent implements SimpleCustomAction {
   iconSrc: string;
   group: 'common' | 'further';
   range: SelectionRange;
+  header: string;
 
   private _action: any;
 
@@ -33,6 +34,7 @@ export class PluginActionComponent implements SimpleCustomAction {
     this._action = action;
     this.label = this.pluginService.translate.instant(this._action.label);
     this.description = this.pluginService.translate.instant(this._action.description);
+    this.header = this._action.header && this.pluginService.translate.instant(this._action.header);
     this.priority = !Utils.isEmpty(action.priority) ? action.priority : -1;
     this.iconSrc = action.icon || noFile.data;
     this.group = action.group || 'common';

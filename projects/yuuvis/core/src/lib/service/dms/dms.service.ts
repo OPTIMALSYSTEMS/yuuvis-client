@@ -176,6 +176,15 @@ export class DmsService {
   }
 
   /**
+   * Deletes a tag from a dms object.
+   * @param id The ID of the object
+   * @param tag The tag to be deleted
+   */
+  deleteDmsObjectTag(id: string, tag: string, silent = false): Observable<any> {
+    return this.backend.delete(`/dms/objects/${id}/tags/${tag}`, ApiBase.core).pipe(this.triggerEvent(YuvEventType.DMS_OBJECT_UPDATED, id, silent));
+  }
+
+  /**
    * Update indexdata of a dms object.
    * @param id ID of the object to apply the data to
    * @param data Indexdata to be applied

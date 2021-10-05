@@ -13,8 +13,6 @@ import {
   ViewChildren
 } from '@angular/core';
 import { NG_VALUE_ACCESSOR } from '@angular/forms';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
 import { PluginsService } from '../../plugins/plugins.service';
 import { PluginTriggerComponent } from './../../plugins/plugin-trigger.component';
 
@@ -125,8 +123,8 @@ export class FormInputComponent implements AfterViewInit {
     return this.childElement?.localName;
   }
 
-  visiblePlugins: Observable<any[]>;
-  hiddenPlugins: Observable<any[]>;
+  visiblePlugins = [];
+  hiddenPlugins = [];
 
   constructor(private renderer: Renderer2, private elRef: ElementRef, private pluginsService: PluginsService) {}
 
@@ -150,7 +148,9 @@ export class FormInputComponent implements AfterViewInit {
   }
 
   ngAfterViewInit() {
-    this.visiblePlugins = this.pluginsService.getCustomPlugins('triggers', this.hook).pipe(map((t) => t.filter((action: any) => action.group === 'visible')));
-    this.hiddenPlugins = this.pluginsService.getCustomPlugins('triggers', this.hook).pipe(map((t) => t.filter((action: any) => action.group !== 'visible')));
+    this.pluginsService.getCustomPlugins('triggers', this.hook).subscribe((t) => {
+      this.visiblePlugins = t.filter((action: any) => action.group === 'visible');
+      this.hiddenPlugins = t.filter((action: any) => action.group !== 'visible');
+    });
   }
 }

@@ -9,12 +9,26 @@
     <div class="error" *ngIf="error">{{'yuv.framework.task-details-task.form.load.error'|translate}}</div>
 </div>
 
-<div class="actions">
+<div class="actions" [ngClass]="{disabled: busy}">
     <button class="" (click)="resetForm()" *ngIf="formState?.dirty">
         {{'yuv.framework.task-details-task.button.reset'|translate}}</button>
     <button class="" (click)="update()" *ngIf="formOptions"
         [disabled]="error || !formState?.dirty || formState?.invalid">
         {{'yuv.framework.task-details-task.button.update'|translate}}</button>
-    <button class="primary" (click)="confirm()"> {{'yuv.framework.task-details-task.button.confirm'|translate}}
+
+
+    <ng-container *ngIf="claimable">
+        <button *ngIf="!_task.assignee; else tplUnClaim" class="primary" (click)="claim(true)">
+            {{'yuv.framework.task-details-task.button.claim'|translate}}
+        </button>
+        <ng-template #tplUnClaim>
+            <button class="secondary" (click)="claim(false)">
+                {{'yuv.framework.task-details-task.button.unclaim'|translate}}
+            </button>
+        </ng-template>
+    </ng-container>
+
+    <button *ngIf="!claimable || _task.assignee" class="primary" (click)="confirm()">
+        {{'yuv.framework.task-details-task.button.confirm'|translate}}
     </button>
 </div>

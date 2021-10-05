@@ -36,9 +36,10 @@ export class PendingChangesService {
 
   /**
    * Registers a task to be pending.
+   * @param message alert message
    * @returns Unique id to be used for finishing this task
    */
-  startTask(message?: string): string {
+  startTask(message: string): string {
     const taskId = Utils.uuid();
     this.tasks.push({ id: taskId, message: message });
     this.logger.debug('started pending task: ' + taskId);

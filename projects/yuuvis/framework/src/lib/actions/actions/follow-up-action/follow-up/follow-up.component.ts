@@ -170,7 +170,10 @@ export class FollowUpComponent implements OnInit, OnDestroy, ActionComponent {
   ngOnInit() {
     this.loading = true;
     this.processService
-      .getFollowUp(this.selection[0].id)
+      .getFollowUp(this.selection[0].id, {
+        includeProcessVar: true,
+        isCompleted: false
+      })
       .pipe(
         switchMap((process: Process) =>
           process ? this.inboxService.getTask(process?.id).pipe(map((task) => ({ process, task: task[0] }))) : of({ process: null, task: null })

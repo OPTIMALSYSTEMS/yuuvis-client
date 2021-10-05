@@ -46,5 +46,9 @@ export class TaskDetailsComponent implements OnInit {
     return label || t.name;
   }
 
+  onTaskUpdated(task: Task) {
+    this.task = task;
+  }
+
   ngOnInit(): void {}
 }

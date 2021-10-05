@@ -1,5 +1,6 @@
 export const ProcessAction = {
   complete: 'complete',
+  claim: 'claim',
   save: 'save'
 };
 
@@ -186,4 +187,17 @@ export class FollowUpRow extends ProcessRow {
       this.expiryDateTime = new Date(exDateVar.value);
     }
   }
+}
+
+export interface FetchTaskOptions {
+  businessKey?: string;
+  includeProcessVar?: boolean;
+  isCompleted?: boolean;
+  processDefinitionKey?: string;
+}
+export interface FetchProcessOptions {
+  businessKey?: string;
+  includeProcessVar?: boolean;
+  isCompleted?: boolean;
+  processDefinitionKey?: string;
 }

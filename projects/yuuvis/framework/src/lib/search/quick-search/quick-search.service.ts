@@ -236,11 +236,9 @@ export class QuickSearchService {
   }
 
   updateTypesAndLots(query: SearchQuery, allTypes: string[], keep = false) {
-    const extendable = this.systemService.getAllExtendableSOTs().map((o) => o.id);
-    const extensions = (allTypes || []).filter((t) => extendable.includes(t));
-
-    query.types = keep ? query.types : extensions;
-    query.lots = (allTypes || []).filter((t) => !extensions.includes(t));
+    const { types, lots } = this.systemService.resolveTypesLots(allTypes || []);
+    query.types = keep ? query.types : types;
+    query.lots = lots;
   }
 
   getActiveFilters(query: SearchQuery, filters: Selectable[], availableObjectTypeFields: Selectable[]) {

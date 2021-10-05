@@ -114,14 +114,6 @@ export class UserService {
     }
   }
 
-  setUserLocale(locale: string): string {
-    if (locale) {
-      this.changeClientLocale(this.config.getDefaultClientLocale());
-      return this.config.getDefaultClientLocale();
-    }
-    return locale;
-  }
-
   fetchUserSettings(): Observable<UserSettings> {
     return this.backend.get('/users/settings');
   }
@@ -143,7 +135,7 @@ export class UserService {
       this.oidc.logout();
     } else {
       const redir = redirRoute ? `?redir=${redirRoute}` : '';
-      (window as any).location.href = `/logout${redir}`;
+      (window as any).location.href = `${this.backend.getApiBase('logout') || '/logout'}${redir}`;
     }
   }
 

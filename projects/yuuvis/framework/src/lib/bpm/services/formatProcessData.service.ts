@@ -40,7 +40,8 @@ export class FormatProcessDataService {
       followUpType: this.translate.instant(`yuv.framework.process-list.type.follow-up.label`),
       defaultFollowUpTaskName: this.translate.instant(`yuv.framework.process.type.follow-up.defaultTaskName`),
       defaultFollowUpProcessName: this.translate.instant(`yuv.framework.process.type.follow-up.defaultProcessName`),
-      taskType: this.translate.instant(`yuv.framework.process-list.type.task.label`)
+      taskType: this.translate.instant(`yuv.framework.process-list.type.task.label`),
+      taskStateNotAssigned: this.translate.instant(`yuv.framework.process-list.task.state.not-assigned`)
     };
   }
 
@@ -56,7 +57,8 @@ export class FormatProcessDataService {
       processData
         .map((data) => ({ ...data, icon: this.iconRegService.getIcon(data.processDefinition.id.startsWith('follow-up') ? 'followUp' : 'task') }))
         .map((data) => new TaskRow(data)),
-      ['type', 'taskName', 'subject', 'createTime']
+      ['type', 'taskName', 'subject', 'createTime'],
+      true
     );
   }
 
@@ -68,7 +70,8 @@ export class FormatProcessDataService {
       processData
         .map((data) => ({ ...data, icon: this.iconRegService.getIcon(data.processDefinition.id.startsWith('follow-up') ? 'followUp' : 'task') }))
         .map((data) => new ProcessRow(data)),
-      fields
+      fields,
+      false
     );
   }
 
@@ -78,16 +81,17 @@ export class FormatProcessDataService {
   formatFollowUpDataForTable(processData: Process[], fields: fieldName[]): ResponsiveTableData {
     return this.processDataForTable(
       processData.map((data) => ({ ...data, icon: this.iconRegService.getIcon('followUp') })).map((data) => new FollowUpRow(data)),
-      fields
+      fields,
+      false
     );
   }
 
-  private processDataForTable(rows: (ProcessRow | TaskRow)[], fields: fieldName[]): ResponsiveTableData {
+  private processDataForTable(rows: (ProcessRow | TaskRow)[], fields: fieldName[], isTask: boolean): ResponsiveTableData {
     return {
       columns: fields.map((field) => ({
         colId: field,
         field,
-        width: field.toLowerCase().includes('type') ? 50 : undefined,
+        width: field.toLowerCase().includes('type') ? 60 : undefined,
         headerClass: `col-header-type-${field}`,
         headerName: this.translations[field],
         ...(field.toLowerCase().includes('time') && { cellRenderer: this.gridService.dateTimeCellRenderer() }),
@@ -96,7 +100,7 @@ export class FormatProcessDataService {
           cellRenderer: (params) => this.taskNameCellRenderer({ ...params, context: { system: this.system, translations: this.translations } })
         }),
         ...(field.toLowerCase().includes('type') && {
-          cellRenderer: (params) => this.typeCellRenderer({ ...params, context: { translations: this.translations, system: this.system } })
+          cellRenderer: (params) => this.typeCellRenderer({ ...params, context: { translations: this.translations, system: this.system, isTask } })
         }),
         resizable: true,
         sortable: true,
@@ -152,6 +156,12 @@ export class FormatProcessDataService {
         icon = this.iconRegService.getIcon('task');
         break;
     }
-    return `<div title="${label || pdn}">${icon}</div>`;
+
+    let state = '';
+    if (params.context.isTask && !params.data.data.assignee) {
+      state = `<span title="${params.context.translations.taskStateNotAssigned}"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" style="width: 12px; height: 12px; fill: var(--color-accent); opacity: 1"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg></span>`;
+    }
+
+    return `<span title="${label || pdn}">${icon}</span>${state}`;
   }
 }

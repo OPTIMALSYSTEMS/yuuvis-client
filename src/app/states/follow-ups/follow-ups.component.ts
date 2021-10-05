@@ -60,24 +60,30 @@ export class FollowUpsComponent implements OnInit, OnDestroy {
   }
 
   refreshList() {
-    this.processService.fetchProcesses(ProcessDefinitionKey.FOLLOW_UP);
+    this.fetchProcesses();
   }
 
   removeFollowUp(id: string) {
     this.processService
       .deleteProcess(id)
-      .pipe(tap(() => this.processService.fetchProcesses(ProcessDefinitionKey.FOLLOW_UP)))
+      .pipe(tap(() => this.fetchProcesses()))
       .subscribe();
   }
 
   onSlaveClosed() {}
 
+  private fetchProcesses() {
+    this.processService.fetchProcesses(ProcessDefinitionKey.FOLLOW_UP, {
+      isCompleted: false
+    });
+  }
+
   ngOnInit(): void {
-    this.processService.fetchProcesses(ProcessDefinitionKey.FOLLOW_UP);
+    this.fetchProcesses();
     this.eventService
       .on(BpmEvent.BPM_EVENT)
       .pipe(
-        tap(() => this.processService.fetchProcesses(ProcessDefinitionKey.FOLLOW_UP)),
+        tap(() => this.fetchProcesses()),
         takeUntilDestroy(this)
       )
       .subscribe();

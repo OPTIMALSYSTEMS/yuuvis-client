@@ -110,6 +110,9 @@ export interface PluginAPI {
    * Utilities
    */
   form: {
+    activeForms(): any[];
+    getValue(formControlName: string): any;
+    setValue(formControlName: string, newValue: any): void;
     /**
      * Execute a change of form model
      * @param formControlName form control unique name | identifier
@@ -233,7 +236,7 @@ export interface PluginActionConfig extends PluginConfig {
   subActionComponents?: string;
   // action COMPONENT
   buttons?: { cancel?: string; finish?: string };
-  fullscreen?: boolean;
+  fullscreen?: boolean | string;
 }
 
 /**
@@ -464,6 +467,7 @@ export interface PluginViewerConfig {
  */
 export interface PluginConfigList {
   disabled?: boolean | string | Function;
+  load?: string | Function;
   links?: PluginLinkConfig[];
   states?: PluginStateConfig[];
   actions?: (PluginActionConfig | string)[];

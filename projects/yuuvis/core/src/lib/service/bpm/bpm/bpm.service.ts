@@ -4,7 +4,7 @@ import { finalize, map } from 'rxjs/operators';
 import { Utils } from '../../../util/utils';
 import { ApiBase } from '../../backend/api.enum';
 import { BackendService } from '../../backend/backend.service';
-import { Process, ProcessCreatePayload, ProcessDefinitionKey, ProcessInstanceHistoryEntry } from '../model/bpm.model';
+import { FetchTaskOptions, Process, ProcessCreatePayload, ProcessDefinitionKey, ProcessInstanceHistoryEntry } from '../model/bpm.model';
 
 /**
  * BpmService: responsible for handling all bpm/ route related interactions
@@ -26,15 +26,24 @@ export class BpmService {
     return this.backendService.get(url).pipe(finalize(() => setTimeout(() => this.loadingBpmDataSource.next(false), 200)));
   }
 
-  getProcessInstances(processDefKey: ProcessDefinitionKey, includeProcessVar = true): Observable<Process[]> {
-    return this.backendService.get(`${this.bpmProcessUrl}?processDefinitionKey=${processDefKey}&includeProcessVariables=${includeProcessVar}`, ApiBase.apiWeb);
+  getProcessInstances(processDefinitionKey: ProcessDefinitionKey, options: FetchTaskOptions = { includeProcessVar: true }): Observable<Process[]> {
+    return this.backendService.get(`${this.bpmProcessUrl}${this.optionsToParams({ ...options, processDefinitionKey })}`, ApiBase.apiWeb);
   }
 
-  getProcessInstance(processDefKey: ProcessDefinitionKey, businessKey: string, includeProcessVar = true): Observable<Process> {
-    const businessKeyValue = businessKey ? `&businessKey=${businessKey}` : '';
+  getProcessInstance(processDefinitionKey: ProcessDefinitionKey, options?: FetchTaskOptions): Observable<Process> {
     return this.backendService
-      .get(`${this.bpmProcessUrl}?processDefinitionKey=${processDefKey}&includeProcessVariables=${includeProcessVar}${businessKeyValue}`, ApiBase.apiWeb)
+      .get(`${this.bpmProcessUrl}${this.optionsToParams({ ...options, processDefinitionKey })}`, ApiBase.apiWeb)
       .pipe(map(({ objects }) => objects[0]));
+  }
+
+  private optionsToParams(options: FetchTaskOptions): string {
+    if (!options) return '';
+
+    const params = [];
+    Object.keys(options).forEach((o) => {
+      params.push(`${o}=${options[o]}`);
+    });
+    return `?${params.join('&')}`;
   }
 
   createProcess(payload: ProcessCreatePayload): Observable<any> {

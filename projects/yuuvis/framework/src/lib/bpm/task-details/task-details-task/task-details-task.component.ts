@@ -1,7 +1,8 @@
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { InboxService, PendingChangesService, ProcessPostPayload, ProcessVariable, SystemService, Task, TaskType, TranslateService } from '@yuuvis/core';
 import { FormStatusChangedEvent, ObjectFormOptions } from '../../../object-form/object-form.interface';
 import { ObjectFormComponent } from '../../../object-form/object-form/object-form.component';
+import { NotificationService } from '../../../services/notification/notification.service';
 
 @Component({
   selector: 'yuv-task-details-task',
@@ -12,28 +13,38 @@ export class TaskDetailsTaskComponent implements OnInit {
   @ViewChild(ObjectFormComponent) taskForm: ObjectFormComponent;
 
   private pendingTaskId: string;
-  private _task: Task;
+  busy: boolean;
+  _task: Task;
   taskDescription: string;
   formState: FormStatusChangedEvent;
 
   @Input() set task(t: Task) {
     this._task = t;
     this.error = null;
+    this.formOptions = null;
+    this.formState = null;
     this.taskDescription = this.getDescription(t);
     if (t && t.formKey) {
-      this.createReferencedForm(t);
-    } else {
-      this.formOptions = null;
+      // check for claiming ability
+      // If there is no assignee yet you have to claim the task. If there is an assignee
+      // but no claimTime it means that claining is no option whatsoever
+      this.claimable = !t.assignee || !!t.claimTime;
+      this.createReferencedForm(t, !t.assignee);
     }
   }
 
   formOptions: ObjectFormOptions;
+  // whether or not claiming is an option
+  claimable: boolean;
   error: any;
+
+  @Output() taskUpdated = new EventEmitter<Task>();
 
   constructor(
     private inboxService: InboxService,
     private pendingChanges: PendingChangesService,
     private translate: TranslateService,
+    private notificationService: NotificationService,
     private system: SystemService
   ) {}
 
@@ -45,7 +56,7 @@ export class TaskDetailsTaskComponent implements OnInit {
     return t ? label : null;
   }
 
-  private createReferencedForm(t: Task) {
+  private createReferencedForm(t: Task, disabled: boolean = false) {
     if (t.formKey) {
       this.inboxService.getTaskForm(t.formKey).subscribe(
         (res) => {
@@ -58,6 +69,7 @@ export class TaskDetailsTaskComponent implements OnInit {
             }
             this.formOptions = {
               formModel: res,
+              disabled: disabled,
               data: formData
             };
           }
@@ -83,28 +95,55 @@ export class TaskDetailsTaskComponent implements OnInit {
   }
 
   update() {
+    this.busy = true;
     this.inboxService.updateTask(this._task.id, this.getUpdatePayload()).subscribe(
       (res) => {
+        this.busy = false;
         this.finishPending();
         this.formState = null;
       },
-      (err) => console.error(err)
+      (err) => {
+        this.busy = false;
+        console.error(err);
+        this.notificationService.error(this.translate.instant('yuv.framework.task-details-task.update.fail'));
+      }
     );
   }
 
   confirm() {
+    this.busy = true;
     this.inboxService.completeTask(this._task.id, this.getUpdatePayload()).subscribe(
       (res) => {
+        this.busy = false;
         this.finishPending();
         this.formState = null;
       },
-      (err) => console.error(err)
+      (err) => {
+        this.busy = false;
+        console.error(err);
+        this.notificationService.error(this.translate.instant('yuv.framework.task-details-task.update.fail'));
+      }
+    );
+  }
+
+  claim(claim: boolean) {
+    this.busy = true;
+    this.inboxService.claimTask(this._task.id, claim).subscribe(
+      (res) => {
+        this.busy = false;
+        this.taskUpdated.emit(res);
+      },
+      (err) => {
+        this.busy = false;
+        console.error(err);
+        this.notificationService.error(this.translate.instant('yuv.framework.task-details-task.update.fail'));
+      }
     );
   }
 
   private startPending() {
     if (!this.pendingChanges.hasPendingTask(this.pendingTaskId || ' ')) {
-      this.pendingTaskId = this.pendingChanges.startTask();
+      this.pendingTaskId = this.pendingChanges.startTask(this.translate.instant('yuv.framework.object-form-edit.pending-changes.alert'));
     }
   }
 
@@ -152,6 +191,12 @@ export class TaskDetailsTaskComponent implements OnInit {
         pv.type = formElement.type;
         pv.value = formValue;
       }
+    }
+
+    // form elements width mutiple values will always be submitted as JSON
+    // because Flowable does not support arrays right now
+    if (formElement.cardinality === 'multi') {
+      pv.type = 'json';
     }
     return pv;
   }

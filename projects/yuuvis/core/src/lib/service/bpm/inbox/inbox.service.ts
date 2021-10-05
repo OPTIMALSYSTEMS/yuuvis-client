@@ -3,6 +3,7 @@ import { EMPTY, Observable, Subject } from 'rxjs';
 import { expand, map, skipWhile, tap } from 'rxjs/operators';
 import { ApiBase } from '../../backend/api.enum';
 import { BackendService } from '../../backend/backend.service';
+import { UserService } from '../../user/user.service';
 import { ProcessAction, ProcessPostPayload, Task } from '../model/bpm.model';
 import { BpmService } from './../bpm/bpm.service';
 
@@ -16,11 +17,10 @@ import { BpmService } from './../bpm/bpm.service';
 export class InboxService {
   private INBOX_PAGE_SIZE = 100;
 
-  private readonly bpmTaskUrl = '/bpm/tasks';
   private inboxDataSource = new Subject<Task[]>();
   public inboxData$: Observable<Task[]> = this.inboxDataSource.asObservable();
 
-  constructor(private bpmService: BpmService, private backendService: BackendService) {}
+  constructor(private bpmService: BpmService, private userService: UserService, private backendService: BackendService) {}
 
   /**
    * bpm Inbox data Loading status
@@ -68,14 +68,16 @@ export class InboxService {
   }
 
   private getPage(requestParams: string, index?: number) {
-    return this.bpmService.getProcesses(`${this.bpmTaskUrl}?size=${this.INBOX_PAGE_SIZE}&sort=createTime&page=${index || 0}${requestParams}`);
+    return this.bpmService.getProcesses(`/bpm/tasks?size=${this.INBOX_PAGE_SIZE}&sort=createTime&page=${index || 0}${requestParams}`);
   }
 
   /**
    * get a specific task by processInstanceId
    */
-  getTask(processInstanceId: string, includeProcessVar = true): Observable<Task[]> {
-    return this.getTasksPaged({ includeProcessVariables: includeProcessVar, processInstanceId: processInstanceId }).pipe(map((res: Task[]) => res));
+  getTask(processInstanceId: string, includeProcessVar = true): Observable<Task> {
+    return this.bpmService
+      .getProcesses(`/bpm/tasks/${processInstanceId}${includeProcessVar ? '?includeProcessVariables=true' : ''}`)
+      .pipe(map((res) => res as Task));
   }
 
   /**
@@ -84,7 +86,19 @@ export class InboxService {
    * @param payload Data to be send with the complete request (may contain attachments, a new subject or variables)
    */
   completeTask(taskId: string, payload?: ProcessPostPayload): Observable<any> {
-    return this.postTask(taskId, ProcessAction.complete, payload || {});
+    return this.putTask(taskId, ProcessAction.complete, payload || {});
+  }
+
+  /**
+   * Claim or unclaim a task.
+   * @param taskId ID of the taks to finish
+   * @param claim Whether or not to claim (true) or unclaim (false)
+   */
+  claimTask(taskId: string, claim: boolean): Observable<Task> {
+    const payload: any = {
+      assignee: claim ? { id: this.userService.getCurrentUser().id } : null
+    };
+    return this.putTask(taskId, ProcessAction.claim, payload || {});
   }
 
   /**
@@ -93,11 +107,11 @@ export class InboxService {
    * @param payload Data to be send with the complete request (may contain attachments, a new subject or variables)
    */
   updateTask(taskId: string, payload?: ProcessPostPayload): Observable<any> {
-    return this.postTask(taskId, ProcessAction.save, payload || {});
+    return this.putTask(taskId, ProcessAction.save, payload || {});
   }
 
-  private postTask(taskId: string, action: string, payload: ProcessPostPayload) {
+  private putTask(taskId: string, action: string, payload: ProcessPostPayload) {
     const pl = { ...payload, action: action };
-    return this.backendService.post(`${this.bpmTaskUrl}/${taskId}`, pl, ApiBase.apiWeb).pipe(tap((_) => this.fetchTasks()));
+    return this.backendService.put(`/bpm/tasks/${taskId}`, pl, ApiBase.apiWeb).pipe(tap((_) => this.fetchTasks()));
   }
 }

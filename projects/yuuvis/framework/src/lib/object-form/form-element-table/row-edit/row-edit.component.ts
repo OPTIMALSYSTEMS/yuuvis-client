@@ -1,6 +1,6 @@
 import { Component, ElementRef, EventEmitter, Input, Output, TemplateRef, ViewChild, ViewEncapsulation } from '@angular/core';
 import { FormBuilder, FormControl } from '@angular/forms';
-import { PendingChangesService } from '@yuuvis/core';
+import { PendingChangesService, TranslateService } from '@yuuvis/core';
 import { takeUntil } from 'rxjs/operators';
 import { IconRegistryService } from '../../../common/components/icon/service/iconRegistry.service';
 import { UnsubscribeOnDestroy } from '../../../common/util/unsubscribe.component';
@@ -53,7 +53,8 @@ export class RowEditComponent extends UnsubscribeOnDestroy {
     private pendingChanges: PendingChangesService,
     private fb: FormBuilder,
     private iconRegistry: IconRegistryService,
-    private popoverService: PopoverService
+    private popoverService: PopoverService,
+    private translate: TranslateService
   ) {
     super();
     this.iconRegistry.registerIcons([deleteIcon, clear]);
@@ -96,7 +97,7 @@ export class RowEditComponent extends UnsubscribeOnDestroy {
     // because this method will be called every time the form status changes,
     // pending task will only be started once until it was finished
     if (!this.pendingChanges.hasPendingTask(this.pendingTaskId || ' ')) {
-      this.pendingTaskId = this.pendingChanges.startTask();
+      this.pendingTaskId = this.pendingChanges.startTask(this.translate.instant('yuv.framework.object-form-edit.pending-changes.alert'));
     }
   }
 
