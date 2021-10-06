@@ -32,7 +32,7 @@
     { "name": "tslib", "version": "2.0.3", "license": "0BSD" },
     { "name": "zone.js", "version": "0.10.3", "license": "MIT" }
   ],
-  "version": "2.2.0-beta.7",
+  "version": "2.2.0-beta.8",
   "releasedate": "Winter 2021",
   "author": "OPTIMAL SYSTEMS GmbH",
   "product": "yuuvis® client"
