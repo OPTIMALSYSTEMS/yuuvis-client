@@ -186,7 +186,8 @@ export class VersionListComponent implements OnInit {
             this.selection.push(this.getRowNodeId(sorted[1].version));
           }
 
-          this.tableData = {
+          const setter = this.responsiveTableData?.set || ((t) => t);
+          this.tableData = setter.call(this, {
             columns: this.getColumnDefinitions(objectTypeId),
             rows: sorted.map((a) => a.data),
             titleField: ClientDefaultsObjectTypeField.TITLE,
@@ -194,7 +195,7 @@ export class VersionListComponent implements OnInit {
             selectType: 'multiple',
             gridOptions: { getRowNodeId: (o) => this.getRowNodeId(o), rowMultiSelectWithClick: false },
             ...(this.responsiveTableData || {})
-          };
+          });
         },
         (err) => {
           if (err) {
