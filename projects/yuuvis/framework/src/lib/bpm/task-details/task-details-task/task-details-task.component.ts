@@ -25,6 +25,7 @@ export class TaskDetailsTaskComponent implements OnInit {
     this.error = null;
     this.formOptions = null;
     this.formState = null;
+    this.claimable = false;
     this.taskDescription = this.getDescription(t);
     if (t && t.formKey) {
       // check for claiming ability
@@ -34,6 +35,7 @@ export class TaskDetailsTaskComponent implements OnInit {
       this.createReferencedForm(t, !t.assignee);
     }
     this.delegatable = t && !t.delegationState;
+    if (t?.delegationState === 'pending') this.claimable = false;
   }
 
   formOptions: ObjectFormOptions;
