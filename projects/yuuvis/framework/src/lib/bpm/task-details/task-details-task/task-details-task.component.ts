@@ -33,11 +33,13 @@ export class TaskDetailsTaskComponent implements OnInit {
       this.claimable = !t.assignee || !!t.claimTime;
       this.createReferencedForm(t, !t.assignee);
     }
+    this.delegatable = t && !t.delegationState;
   }
 
   formOptions: ObjectFormOptions;
   // whether or not claiming is an option
   claimable: boolean;
+  delegatable: boolean;
   error: any;
 
   @Output() taskUpdated = new EventEmitter<Task>();
@@ -119,6 +121,23 @@ export class TaskDetailsTaskComponent implements OnInit {
       (res) => {
         this.busy = false;
         this.finishPending();
+        this.formState = null;
+      },
+      (err) => {
+        this.busy = false;
+        console.error(err);
+        this.notificationService.error(this.translate.instant('yuv.framework.task-details-task.update.fail'));
+      }
+    );
+  }
+
+  resolve() {
+    this.busy = true;
+    this.inboxService.resolveTask(this._task.id, this.getUpdatePayload()).subscribe(
+      (res) => {
+        this.busy = false;
+        this.finishPending();
+        this.taskUpdated.emit(res);
         this.formState = null;
       },
       (err) => {

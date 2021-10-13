@@ -108,9 +108,18 @@ export class InboxService {
    */
   delegateTask(taskId: string, assignee: string): Observable<Task> {
     const payload: any = {
-      assignee: assignee
+      assignee: { id: assignee }
     };
     return this.putTask(taskId, ProcessAction.delegate, payload || {});
+  }
+
+  /**
+   * Resolves a task that has been delegated
+   * @param taskId ID of the task to be resolved
+   * @param payload Data to be send with the resolve request (may contain attachments, a new subject or variables)
+   */
+  resolveTask(taskId: string, payload?: ProcessPostPayload): Observable<Task> {
+    return this.putTask(taskId, ProcessAction.resolve, payload || {});
   }
 
   /**
