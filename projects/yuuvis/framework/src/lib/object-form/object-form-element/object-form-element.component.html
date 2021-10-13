@@ -75,10 +75,9 @@
     <yuv-form-input *ngSwitchCase="'boolean'" [tag]="tag" class="checkbox" [label]="formElementRef._eoFormElement.label"
       [isNull]="isNull" [skipToggle]="shouldSkipToggle" [required]="formElementRef._eoFormElement.required"
       (onToggleLabel)="labelToggled($event)" [invalid]="errors">
-      <yuv-checkbox
-        [formControlName]="element._eoFormControlWrapper.controlName"
-        [attr.data-name]="element._eoFormControlWrapper.controlName"
-        [readonly]="formElementRef._eoFormElement.readonly" [tristate]="true"></yuv-checkbox>
+      <yuv-checkbox [formControlName]="element._eoFormControlWrapper.controlName"
+        [attr.data-name]="element._eoFormControlWrapper.controlName" [readonly]="formElementRef._eoFormElement.readonly"
+        [tristate]="true"></yuv-checkbox>
     </yuv-form-input>
 
     <!-- DATE / DATETIME -->
@@ -154,7 +153,7 @@
           situation: situation,
           element: formElementRef._eoFormElement
         }" [formControlName]="element._eoFormControlWrapper.controlName"
-          [attr.data-name]="element._eoFormControlWrapper.controlName"></yuv-table>
+        [attr.data-name]="element._eoFormControlWrapper.controlName"></yuv-table>
     </div>
 
     <!-- print out the type if it's not matching anything -->
@@ -164,7 +163,8 @@
 
     <!-- the fields description -->
     <div class="description" *ngIf="formElementRef._eoFormElement.description">
-      {{ formElementRef._eoFormElement.description }}
+      <yuv-form-element-description [description]="formElementRef._eoFormElement.description">
+      </yuv-form-element-description>
     </div>
 
     <!-- error/validation messages -->
