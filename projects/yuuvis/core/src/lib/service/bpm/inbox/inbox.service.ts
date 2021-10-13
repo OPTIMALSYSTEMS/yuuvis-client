@@ -91,7 +91,7 @@ export class InboxService {
 
   /**
    * Claim or unclaim a task.
-   * @param taskId ID of the taks to finish
+   * @param taskId ID of the taks to (un)claim
    * @param claim Whether or not to claim (true) or unclaim (false)
    */
   claimTask(taskId: string, claim: boolean): Observable<Task> {
@@ -99,6 +99,18 @@ export class InboxService {
       assignee: claim ? { id: this.userService.getCurrentUser().id } : null
     };
     return this.putTask(taskId, ProcessAction.claim, payload || {});
+  }
+
+  /**
+   * Delegates a task to a new assignee
+   * @param taskId ID of the task to be delegated
+   * @param assignee ID of the new assignee
+   */
+  delegateTask(taskId: string, assignee: string): Observable<Task> {
+    const payload: any = {
+      assignee: assignee
+    };
+    return this.putTask(taskId, ProcessAction.delegate, payload || {});
   }
 
   /**

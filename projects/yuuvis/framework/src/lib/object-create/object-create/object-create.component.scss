@@ -46,7 +46,7 @@
 
       h1 {
         font-size: var(--font-headline);
-        margin: 0 var(--app-pane-padding);
+        margin: 0 0 var(--app-pane-padding) 0;
         font-weight: normal;
         color: var(--text-color-caption);
         white-space: nowrap;

@@ -1,6 +1,7 @@
 export const ProcessAction = {
   complete: 'complete',
   claim: 'claim',
+  delegate: 'delegate',
   save: 'save'
 };
 

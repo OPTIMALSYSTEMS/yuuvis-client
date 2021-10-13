@@ -1,0 +1,11 @@
+<h1>{{'yuv.framework.task-details-task.delegate-picker.title'|translate}}</h1>
+<p>{{'yuv.framework.task-details-task.delegate-picker.message'|translate}}</p>
+<yuv-form-input [label]="'yuv.framework.task-details-task.delegate-picker.user'|translate">
+    <yuv-organization [(ngModel)]="assignee"></yuv-organization>
+</yuv-form-input>
+
+<div class="actions">
+    <button (click)="popover.close()">{{'yuv.framework.shared.cancel'|translate}}</button>
+    <button class="primary" (click)="assigneePicked.emit(assignee)"
+        [disabled]="!assignee">{{'yuv.framework.task-details-task.delegate-picker.action.delegate'|translate}}</button>
+</div>

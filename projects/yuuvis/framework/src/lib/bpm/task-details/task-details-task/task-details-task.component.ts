@@ -1,7 +1,8 @@
-import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
 import { InboxService, PendingChangesService, ProcessPostPayload, ProcessVariable, SystemService, Task, TaskType, TranslateService } from '@yuuvis/core';
 import { FormStatusChangedEvent, ObjectFormOptions } from '../../../object-form/object-form.interface';
 import { ObjectFormComponent } from '../../../object-form/object-form/object-form.component';
+import { PopoverService } from '../../../popover/popover.service';
 import { NotificationService } from '../../../services/notification/notification.service';
 
 @Component({
@@ -11,6 +12,7 @@ import { NotificationService } from '../../../services/notification/notification
 })
 export class TaskDetailsTaskComponent implements OnInit {
   @ViewChild(ObjectFormComponent) taskForm: ObjectFormComponent;
+  @ViewChild('tplDelegationAssignee') tplDelegationAssignee: TemplateRef<any>;
 
   private pendingTaskId: string;
   busy: boolean;
@@ -42,6 +44,7 @@ export class TaskDetailsTaskComponent implements OnInit {
 
   constructor(
     private inboxService: InboxService,
+    private popoverService: PopoverService,
     private pendingChanges: PendingChangesService,
     private translate: TranslateService,
     private notificationService: NotificationService,
@@ -139,6 +142,28 @@ export class TaskDetailsTaskComponent implements OnInit {
         this.notificationService.error(this.translate.instant('yuv.framework.task-details-task.update.fail'));
       }
     );
+  }
+
+  delegate(userId: string) {
+    this.busy = true;
+    this.inboxService.delegateTask(this._task.id, userId).subscribe(
+      (res) => {
+        this.busy = false;
+        this.taskUpdated.emit(res);
+      },
+      (err) => {
+        this.busy = false;
+        console.error(err);
+        this.notificationService.error(this.translate.instant('yuv.framework.task-details-task.update.fail'));
+      }
+    );
+  }
+
+  getDelegationAssignee() {
+    this.popoverService.open(this.tplDelegationAssignee, {
+      minWidth: 200,
+      maxWidth: 400
+    });
   }
 
   private startPending() {
