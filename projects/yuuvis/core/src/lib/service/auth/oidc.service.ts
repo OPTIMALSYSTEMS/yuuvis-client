@@ -45,6 +45,7 @@ export class OidcService {
     };
 
     const authConfig: AuthConfig = {
+      strictDiscoveryDocumentValidation: false,
       issuer: oidc.issuer,
       redirectUri: oidc.redirectUri || window.location.origin + '/',
       postLogoutRedirectUri: oidc.postLogoutRedirectUri || window.location.origin + '/login',

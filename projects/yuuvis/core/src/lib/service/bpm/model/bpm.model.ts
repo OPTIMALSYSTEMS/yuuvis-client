@@ -47,6 +47,11 @@ export interface Task {
   claimTime: Date;
   createTime: Date;
   description: string;
+  taskForm: {
+    schemaProperties?: string[];
+    model?: any;
+    data?: any;
+  };
   formKey: string;
   initiator: ProcessUser;
   name: string;

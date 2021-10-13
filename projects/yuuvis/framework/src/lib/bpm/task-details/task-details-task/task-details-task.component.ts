@@ -24,7 +24,19 @@ export class TaskDetailsTaskComponent implements OnInit {
     this.formOptions = null;
     this.formState = null;
     this.taskDescription = this.getDescription(t);
-    if (t && t.formKey) {
+    if (t?.taskForm) {
+      if (t.taskForm.model) {
+        this.formOptions = {
+          formModel: t.taskForm.model,
+          data: t.taskForm.data
+        };
+      } else if (t.taskForm.schemaProperties) {
+        this.formOptions = {
+          formModel: this.getFormModelFromSchemaProperties(t.taskForm.schemaProperties),
+          data: t.taskForm.data
+        };
+      }
+    } else if (t && t.formKey) {
       // check for claiming ability
       // If there is no assignee yet you have to claim the task. If there is an assignee
       // but no claimTime it means that claining is no option whatsoever
@@ -47,6 +59,25 @@ export class TaskDetailsTaskComponent implements OnInit {
     private notificationService: NotificationService,
     private system: SystemService
   ) {}
+
+  getFormModelFromSchemaProperties(schemaProperties: string[]): any {
+    const elements = [];
+    schemaProperties.forEach((p) => {
+      const otp = this.system.system.allFields[p];
+      if (otp) {
+        elements.push(this.system.toFormElement(otp));
+      }
+    });
+    return {
+      elements: [
+        {
+          name: 'core',
+          type: 'o2mGroup',
+          elements
+        }
+      ]
+    };
+  }
 
   private getDescription(t: Task): string {
     let label = this.system.getLocalizedResource(`${t.name}_description`);
