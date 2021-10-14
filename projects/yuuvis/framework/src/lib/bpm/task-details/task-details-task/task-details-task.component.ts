@@ -28,12 +28,12 @@ export class TaskDetailsTaskComponent implements OnInit {
       if (t.taskForm.model) {
         this.formOptions = {
           formModel: t.taskForm.model,
-          data: t.taskForm.data
+          data: this.getFormDataFromProcessVars(t)
         };
       } else if (t.taskForm.schemaProperties) {
         this.formOptions = {
           formModel: this.getFormModelFromSchemaProperties(t.taskForm.schemaProperties),
-          data: t.taskForm.data
+          data: this.getFormDataFromProcessVars(t)
         };
       }
     } else if (t && t.formKey) {
@@ -87,17 +87,22 @@ export class TaskDetailsTaskComponent implements OnInit {
     return t ? label : null;
   }
 
+  private getFormDataFromProcessVars(t: Task) {
+    const formData: any = {};
+    if (t.variables) {
+      t.variables.forEach((v) => {
+        formData[v.name] = v.value;
+      });
+    }
+    return formData;
+  }
+
   private createReferencedForm(t: Task, disabled: boolean = false) {
     if (t.formKey) {
       this.inboxService.getTaskForm(t.formKey).subscribe(
         (res) => {
           if (res) {
-            const formData: any = {};
-            if (t.variables) {
-              t.variables.forEach((v) => {
-                formData[v.name] = v.value;
-              });
-            }
+            const formData = this.getFormDataFromProcessVars(t);
             this.formOptions = {
               formModel: res,
               disabled: disabled,

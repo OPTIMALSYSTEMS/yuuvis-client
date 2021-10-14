@@ -66,7 +66,7 @@ export class FormElementTableComponent extends UnsubscribeOnDestroy implements C
       this._params = p;
       this.gridReady = false;
       this._elements = p.element.elements;
-      this.gridOptions.columnDefs = this.createColumnDefinition();
+      this.gridOptions.columnDefs = this.createColumnDefinition(true);
       this.overlayGridOptions.columnDefs = this.createColumnDefinition();
       this.gridReady = true;
     }
@@ -83,6 +83,16 @@ export class FormElementTableComponent extends UnsubscribeOnDestroy implements C
   gridOptions: GridOptions;
   overlayGridOptions: GridOptions;
   editingRow: EditRow;
+
+  private onRowDragEnd = (e) => {
+    console.log(e);
+    const v = [];
+    this.gridOptions.api.forEachNode((rowNode, index) => {
+      v.push(rowNode.data);
+    });
+    this.innerValue = v;
+    this.updateTableValue();
+  };
 
   constructor(
     private systemService: SystemService,
@@ -105,7 +115,11 @@ export class FormElementTableComponent extends UnsubscribeOnDestroy implements C
       suppressMovableColumns: true,
       suppressNoRowsOverlay: true,
       suppressLoadingOverlay: true,
-      suppressContextMenu: true
+      suppressContextMenu: true,
+      rowDragManaged: true,
+      // suppressMoveWhenRowDragging: true,
+      animateRows: true,
+      onRowDragEnd: this.onRowDragEnd
     };
     this.gridOptions.context.tableComponent = this;
 
@@ -174,10 +188,11 @@ export class FormElementTableComponent extends UnsubscribeOnDestroy implements C
    * Create column definition from form element.
    * @returns column definition to be added to the gridOptions
    */
-  private createColumnDefinition(): ColDef[] {
-    return this._elements.map((el) => {
+  private createColumnDefinition(dragEnabled?: boolean): ColDef[] {
+    return this._elements.map((el, i) => {
       let col: ColDef = this.gridApi.getColumnDefinition(el);
       Object.assign(col, {
+        rowDrag: dragEnabled && i === 0,
         headerName: el.label,
         suppressMenu: true,
         filter: false,
