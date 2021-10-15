@@ -42,12 +42,11 @@ export class TaskDetailsTaskComponent implements OnInit {
         };
       }
     } else if (t && t.formKey) {
-      // check for claiming ability
-      // If there is no assignee yet you have to claim the task. If there is an assignee
-      // but no claimTime it means that claining is no option whatsoever
-      this.claimable = !t.assignee || !!t.claimTime;
       this.createReferencedForm(t, !t.assignee);
-    }
+    } // check for claiming ability
+    // If there is no assignee yet you have to claim the task. If there is an assignee
+    // but no claimTime it means that claining is no option whatsoever
+    this.claimable = !t.assignee || !!t.claimTime;
   }
 
   formOptions: ObjectFormOptions;

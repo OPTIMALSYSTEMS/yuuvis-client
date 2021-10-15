@@ -47,6 +47,10 @@ export interface Task {
   claimTime: Date;
   createTime: Date;
   description: string;
+  taskMessages: {
+    level;
+    message: string;
+  }[];
   taskForm: {
     schemaProperties?: string[];
     model?: any;

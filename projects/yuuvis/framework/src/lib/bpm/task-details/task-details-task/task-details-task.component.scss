@@ -3,17 +3,17 @@
   display: grid;
   grid-template-rows: auto auto 1fr auto;
   grid-template-columns: 1fr;
-  gap: var(--app-pane-padding);
+  padding: calc(var(--app-pane-padding) / 2) 0;
   grid-template-areas: 'desc' 'messages' 'form' 'buttons';
   background-color: var(--panel-background-grey);
 
   .task-description {
     grid-area: desc;
-    padding: 0 var(--app-pane-padding);
+    padding: calc(var(--app-pane-padding) / 2) var(--app-pane-padding);
   }
   .task-messages {
     grid-area: messages;
-    padding: 0 var(--app-pane-padding);
+    padding: calc(var(--app-pane-padding) / 2) var(--app-pane-padding);
 
     .message {
       &.info {
@@ -30,7 +30,7 @@
   .task-data {
     grid-area: form;
     overflow-y: auto;
-    padding: 0 var(--app-pane-padding);
+    padding: var(--app-pane-padding);
 
     .error {
       background: var(--color-error);
