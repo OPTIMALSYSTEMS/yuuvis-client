@@ -1,19 +1,36 @@
 :host {
   height: 100%;
   display: grid;
-  grid-template-rows: auto 1fr auto;
+  grid-template-rows: auto auto 1fr auto;
   grid-template-columns: 1fr;
-  grid-template-areas: 'desc' 'form' 'buttons';
+  gap: var(--app-pane-padding);
+  grid-template-areas: 'desc' 'messages' 'form' 'buttons';
   background-color: var(--panel-background-grey);
 
   .task-description {
     grid-area: desc;
-    padding: var(--app-pane-padding);
+    padding: 0 var(--app-pane-padding);
+  }
+  .task-messages {
+    grid-area: messages;
+    padding: 0 var(--app-pane-padding);
+
+    .message {
+      &.info {
+        color: var(--color-accent);
+      }
+      &.warning {
+        color: var(--color-warning);
+      }
+      &.error {
+        color: var(--color-error);
+      }
+    }
   }
   .task-data {
     grid-area: form;
     overflow-y: auto;
-    padding: var(--app-pane-padding);
+    padding: 0 var(--app-pane-padding);
 
     .error {
       background: var(--color-error);

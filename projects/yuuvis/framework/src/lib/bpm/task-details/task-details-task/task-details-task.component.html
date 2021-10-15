@@ -2,6 +2,10 @@
     {{taskDescription}}
 </div>
 
+<div class="task-messages" *ngIf="taskMessages?.length">
+    <div class="message {{m.level}}" *ngFor="let m of taskMessages">{{m.message}}</div>
+</div>
+
 <div class="task-data">
     <yuv-object-form *ngIf="formOptions" [formOptions]="formOptions" (statusChanged)="onFormStatusChanged($event)">
     </yuv-object-form>

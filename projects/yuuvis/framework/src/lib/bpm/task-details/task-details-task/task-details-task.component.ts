@@ -16,6 +16,10 @@ export class TaskDetailsTaskComponent implements OnInit {
   busy: boolean;
   _task: Task;
   taskDescription: string;
+  taskMessages: {
+    level: string;
+    message: string;
+  }[] = [];
   formState: FormStatusChangedEvent;
 
   @Input() set task(t: Task) {
@@ -24,6 +28,7 @@ export class TaskDetailsTaskComponent implements OnInit {
     this.formOptions = null;
     this.formState = null;
     this.taskDescription = this.getDescription(t);
+    this.taskMessages = this.getMessages(t);
     if (t?.taskForm) {
       if (t.taskForm.model) {
         this.formOptions = {
@@ -77,6 +82,18 @@ export class TaskDetailsTaskComponent implements OnInit {
         }
       ]
     };
+  }
+
+  private getMessages(t: Task): {
+    level: string;
+    message: string;
+  }[] {
+    return (this.taskMessages = t?.taskMessages?.length
+      ? t.taskMessages.map((m) => ({
+          level: m.level,
+          message: this.system.getLocalizedResource(m.message) || m.message
+        }))
+      : []);
   }
 
   private getDescription(t: Task): string {
