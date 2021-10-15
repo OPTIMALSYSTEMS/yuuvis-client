@@ -3,7 +3,7 @@
   display: grid;
   grid-template-rows: auto auto 1fr auto;
   grid-template-columns: 1fr;
-  padding: calc(var(--app-pane-padding) / 2) 0;
+  padding: calc(var(--app-pane-padding) / 2) 0 0 0;
   grid-template-areas: 'desc' 'messages' 'form' 'buttons';
   background-color: var(--panel-background-grey);
 
