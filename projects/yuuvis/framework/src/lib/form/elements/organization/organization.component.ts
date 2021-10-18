@@ -71,6 +71,11 @@ export class OrganizationComponent implements ControlValueAccessor, AfterViewIni
    */
   @Input() autofocus: boolean;
 
+  /**
+   * ID of user to be excluded from the autocomplete result
+   */
+  @Input() exclude: string;
+
   constructor(private iconRegistry: IconRegistryService, private userService: UserService) {
     this.iconRegistry.registerIcons([organization]);
   }
@@ -126,7 +131,7 @@ export class OrganizationComponent implements ControlValueAccessor, AfterViewIni
 
   autocompleteFn(evt) {
     if (evt.query.length >= this.minLength) {
-      this.userService.queryUser(evt.query).subscribe((users: YuvUser[]) => {
+      this.userService.queryUser(evt.query, this.exclude).subscribe((users: YuvUser[]) => {
         this.autocompleteRes = users.filter((user) => !this.innerValue.some((value) => value.id === user.id));
       });
     } else {

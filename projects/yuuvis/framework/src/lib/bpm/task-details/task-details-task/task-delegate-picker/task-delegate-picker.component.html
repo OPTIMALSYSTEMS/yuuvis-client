@@ -1,7 +1,7 @@
 <h1>{{'yuv.framework.task-details-task.delegate-picker.title'|translate}}</h1>
 <p>{{'yuv.framework.task-details-task.delegate-picker.message'|translate}}</p>
 <yuv-form-input [label]="'yuv.framework.task-details-task.delegate-picker.user'|translate">
-    <yuv-organization [(ngModel)]="assignee"></yuv-organization>
+    <yuv-organization [(ngModel)]="assignee" [exclude]="user?.id"></yuv-organization>
 </yuv-form-input>
 
 <div class="actions">
