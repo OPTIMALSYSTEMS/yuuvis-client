@@ -47,13 +47,20 @@
     border-top: 1px solid var(--panel-divider-color);
     padding: calc(var(--app-pane-padding) / 2);
     display: flex;
-    justify-content: flex-end;
     margin: 0 -2px;
 
     &.disabled {
       opacity: 0.6;
       button {
         pointer-events: none;
+      }
+    }
+
+    > div {
+      display: flex;
+      &.right {
+        flex: 1;
+        justify-content: flex-end;
       }
     }
 

@@ -1,6 +1,8 @@
 export const ProcessAction = {
   complete: 'complete',
   claim: 'claim',
+  delegate: 'delegate',
+  resolve: 'resolve',
   save: 'save'
 };
 
@@ -56,6 +58,7 @@ export interface Task {
     model?: any;
     data?: any;
   };
+  delegationState: string;
   formKey: string;
   initiator: ProcessUser;
   name: string;

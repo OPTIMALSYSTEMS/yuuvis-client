@@ -334,5 +334,13 @@
   "yuv.framework.version-list.config.mode.grid": "Galerie",
   "yuv.framework.version-list.config.mode.horizontal": "Liste",
   "yuv.framework.version-list.edit": "Aktuelle Version öffnen",
-  "yuv.framework.version-list.title": "Versionen"
+  "yuv.framework.version-list.title": "Versionen",
+  "yuv.framework.process-list.task.state.delegated": "delegiert",
+  "yuv.framework.process-list.task.state.resolved": "delegiert und erledigt",
+  "yuv.framework.task-details-task.button.delegate": "Delegieren",
+  "yuv.framework.task-details-task.button.resolve": "Aufgabe abschließen",
+  "yuv.framework.task-details-task.delegate-picker.action.delegate": "Delegieren",
+  "yuv.framework.task-details-task.delegate-picker.message": "Aufgabe zur Erledigung an einen anderen Benutzer übertragen.",
+  "yuv.framework.task-details-task.delegate-picker.title": "Aufgabe delegieren",
+  "yuv.framework.task-details-task.delegate-picker.user": "Delegieren an"
 }

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { EMPTY, Observable, Subject } from 'rxjs';
-import { expand, map, skipWhile, tap } from 'rxjs/operators';
+import { EMPTY, Observable, of, Subject } from 'rxjs';
+import { expand, map, skipWhile, switchMap, tap } from 'rxjs/operators';
 import { ApiBase } from '../../backend/api.enum';
 import { BackendService } from '../../backend/backend.service';
 import { UserService } from '../../user/user.service';
@@ -91,7 +91,7 @@ export class InboxService {
 
   /**
    * Claim or unclaim a task.
-   * @param taskId ID of the taks to finish
+   * @param taskId ID of the taks to (un)claim
    * @param claim Whether or not to claim (true) or unclaim (false)
    */
   claimTask(taskId: string, claim: boolean): Observable<Task> {
@@ -99,6 +99,27 @@ export class InboxService {
       assignee: claim ? { id: this.userService.getCurrentUser().id } : null
     };
     return this.putTask(taskId, ProcessAction.claim, payload || {});
+  }
+
+  /**
+   * Delegates a task to a new assignee
+   * @param taskId ID of the task to be delegated
+   * @param assignee ID of the new assignee
+   */
+  delegateTask(taskId: string, assignee: string): Observable<Task> {
+    const payload: any = {
+      assignee: { id: assignee }
+    };
+    return this.putTask(taskId, ProcessAction.delegate, payload || {});
+  }
+
+  /**
+   * Resolves a task that has been delegated
+   * @param taskId ID of the task to be resolved
+   * @param payload Data to be send with the resolve request (may contain attachments, a new subject or variables)
+   */
+  resolveTask(taskId: string, payload?: ProcessPostPayload): Observable<Task> {
+    return (payload ? this.updateTask(taskId, payload) : of(true)).pipe(switchMap((_) => this.putTask(taskId, ProcessAction.resolve, payload || {})));
   }
 
   /**
