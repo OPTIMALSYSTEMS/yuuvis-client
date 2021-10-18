@@ -4,6 +4,10 @@
 
 <div class="task-messages" *ngIf="taskMessages?.length">
     <div class="message {{m.level}}" *ngFor="let m of taskMessages">{{m.message}}</div>
+    <ul *ngIf="taskMessages?.length">
+        <li class="message {{m.level}}" *ngFor="let m of taskMessagesList">{{m.message}}</li>
+    </ul>
+    <!-- <div class="message {{m.level}}" *ngFor="let m of taskMessages">{{m.message}}</div> -->
 </div>
 
 <div class="task-data">

@@ -1,5 +1,15 @@
 import { Component, EventEmitter, Input, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
-import { InboxService, PendingChangesService, ProcessPostPayload, ProcessVariable, SystemService, Task, TaskType, TranslateService } from '@yuuvis/core';
+import {
+  InboxService,
+  PendingChangesService,
+  ProcessPostPayload,
+  ProcessVariable,
+  SystemService,
+  Task,
+  TaskMessage,
+  TaskType,
+  TranslateService
+} from '@yuuvis/core';
 import { FormStatusChangedEvent, ObjectFormOptions } from '../../../object-form/object-form.interface';
 import { ObjectFormComponent } from '../../../object-form/object-form/object-form.component';
 import { PopoverService } from '../../../popover/popover.service';
@@ -18,10 +28,8 @@ export class TaskDetailsTaskComponent implements OnInit {
   busy: boolean;
   _task: Task;
   taskDescription: string;
-  taskMessages: {
-    level: string;
-    message: string;
-  }[] = [];
+  taskMessages: TaskMessage[] = [];
+  taskMessagesList: TaskMessage[] = [];
   formState: FormStatusChangedEvent;
 
   @Input() set task(t: Task) {
@@ -31,7 +39,8 @@ export class TaskDetailsTaskComponent implements OnInit {
     this.formState = null;
     this.claimable = false;
     this.taskDescription = this.getDescription(t);
-    this.taskMessages = this.getMessages(t);
+    this.getMessages(t);
+
     if (t?.taskForm) {
       if (t.taskForm.model) {
         this.formOptions = {
@@ -90,16 +99,22 @@ export class TaskDetailsTaskComponent implements OnInit {
     };
   }
 
-  private getMessages(t: Task): {
-    level: string;
-    message: string;
-  }[] {
-    return (this.taskMessages = t?.taskMessages?.length
-      ? t.taskMessages.map((m) => ({
+  private getMessages(t: Task) {
+    this.taskMessages = [];
+    this.taskMessagesList = [];
+    if (t?.taskMessages?.length) {
+      t.taskMessages.forEach((m) => {
+        const msg = {
           level: m.level,
           message: this.system.getLocalizedResource(m.message) || m.message
-        }))
-      : []);
+        };
+        if (m.type === 'ul') {
+          this.taskMessagesList.push(msg);
+        } else {
+          this.taskMessages.push(msg);
+        }
+      });
+    }
   }
 
   private getDescription(t: Task): string {

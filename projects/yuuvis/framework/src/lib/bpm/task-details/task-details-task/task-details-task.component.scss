@@ -15,7 +15,13 @@
     grid-area: messages;
     padding: calc(var(--app-pane-padding) / 2) var(--app-pane-padding);
 
+    ul {
+      margin: calc(var(--app-pane-padding) / 2) 0 0 0;
+      padding: 0 var(--app-pane-padding);
+    }
+
     .message {
+      line-height: 1.5em;
       &.info {
         color: var(--color-accent);
       }
