@@ -51,14 +51,30 @@ export class ContentPreviewService {
     const base = this.backend.getApiBase(ApiBase.none, true);
     const viewer = this.backend.getApiBase('viewer', true);
     // default baseUrl in case it is not specified in main.json
-    return base === viewer ?  base + '/viewer' : viewer;
+    return base === viewer ? base + '/viewer' : viewer;
   }
 
-  private createPath(id: string, version?: number): { baseUrl: string; path: string; pathPdf: string } {
+  validateUrl(src: string) {
+    if (src && this.backend.authUsesOpenIdConnect()) {
+      // validate/update authorization token
+      const reg = new RegExp(encodeURIComponent(encodeURIComponent('.*"Bearer (.*)"')));
+      const token = src.match(reg)?.[1];
+      if (token !== localStorage.access_token) {
+        src = src.replace(new RegExp(token, 'g'), localStorage.access_token);
+        this.previewSrcSource.next(src);
+      }
+    }
+    return src;
+  }
+
+  private createPath(id: string, version?: number): { baseUrl: string; path: string } {
     const baseUrl = this.getBaseUrl();
-    const path = this.dmsService.getFullContentPath(id, version);
-    const pathPdf = this.dmsService.getFullContentPath(id, version, true);
-    return { baseUrl, path, pathPdf };
+    let path = this.dmsService.getFullContentPath(id, version);
+    if (this.backend.authUsesOpenIdConnect()) {
+      const headers = this.backend.getAuthHeaders();
+      path = Utils.buildUri(`${baseUrl}/download`, { path, headers });
+    }
+    return { baseUrl, path };
   }
 
   private createSettings() {
@@ -72,9 +88,9 @@ export class ContentPreviewService {
   private createParams(objectId: string, content: DmsObjectContent, version?: number) {
     if (!content) return {};
     const { mimeType, size, contentStreamId, fileName } = content;
-    const { baseUrl, path, pathPdf } = this.createPath(objectId, version);
+    const { baseUrl, path } = this.createPath(objectId, version);
     const fileExtension = fileName.includes('.') ? fileName.split('.').pop() : '';
-    return { mimeType, path, pathPdf, fileName, fileExtension, size, contentStreamId, baseUrl, objectId, version, ...this.createSettings() };
+    return { mimeType, path, fileName, fileExtension, size, contentStreamId, baseUrl, objectId, version, ...this.createSettings() };
   }
 
   private resolveCustomViewerConfig(params: any[]) {
