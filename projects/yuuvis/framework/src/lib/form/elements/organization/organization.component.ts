@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, forwardRef, HostBinding, HostListener, Input, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, forwardRef, HostBinding, HostListener, Input, Output, ViewChild } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { UserService, YuvUser } from '@yuuvis/core';
 import { AutoComplete } from 'primeng/autocomplete';
@@ -36,7 +36,14 @@ export class OrganizationComponent implements ControlValueAccessor, AfterViewIni
   minLength = 2;
 
   value;
-  innerValue: YuvUser[] = [];
+  _innerValue: YuvUser[] = [];
+  set innerValue(iv: YuvUser[]) {
+    this._innerValue = iv;
+    this.userSelect.emit(iv);
+  }
+  get innerValue() {
+    return this._innerValue;
+  }
   autocompleteRes: YuvUser[] = [];
 
   // prevent ENTER from being propagated, because the component could be located
@@ -75,6 +82,8 @@ export class OrganizationComponent implements ControlValueAccessor, AfterViewIni
    * ID of user to be excluded from the autocomplete result
    */
   @Input() exclude: string;
+
+  @Output() userSelect = new EventEmitter<YuvUser[]>();
 
   constructor(private iconRegistry: IconRegistryService, private userService: UserService) {
     this.iconRegistry.registerIcons([organization]);

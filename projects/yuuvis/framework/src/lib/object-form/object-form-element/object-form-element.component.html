@@ -26,7 +26,7 @@
         [formControlName]="element._eoFormControlWrapper.controlName"
         [attr.data-name]="element._eoFormControlWrapper.controlName"
         [multiselect]="formElementRef._eoFormElement.cardinality === 'multi' || situation === 'SEARCH'"
-        [classifications]="formElementRef._eoFormElement.classifications"
+        (objectSelect)="onDataMetaChange($event)" [classifications]="formElementRef._eoFormElement.classifications"
         [readonly]="formElementRef._eoFormElement.readonly">
       </yuv-reference>
     </yuv-form-input>
@@ -37,7 +37,7 @@
       [required]="formElementRef._eoFormElement.required" [invalid]="errors">
       <yuv-organization [situation]="element._eoFormControlWrapper.situation"
         [multiselect]="formElementRef._eoFormElement.cardinality === 'multi' || situation === 'SEARCH'"
-        [formControlName]="element._eoFormControlWrapper.controlName"
+        (userSelect)="onDataMetaChange($event)" [formControlName]="element._eoFormControlWrapper.controlName"
         [attr.data-name]="element._eoFormControlWrapper.controlName"
         [classifications]="formElementRef._eoFormElement.classifications"
         [readonly]="formElementRef._eoFormElement.readonly">

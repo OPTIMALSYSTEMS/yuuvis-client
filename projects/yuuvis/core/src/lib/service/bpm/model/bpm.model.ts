@@ -55,13 +55,13 @@ export interface Task {
   claimTime: Date;
   createTime: Date;
   description: string;
-  taskMessages: TaskMessage[];
-  taskForm: {
+  taskMessages?: TaskMessage[];
+  taskForm?: {
     schemaProperties?: string[];
     model?: any;
     data?: any;
   };
-  delegationState: string;
+  delegationState?: string;
   formKey: string;
   initiator: ProcessUser;
   name: string;

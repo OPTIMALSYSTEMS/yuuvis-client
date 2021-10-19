@@ -37,13 +37,13 @@ yuv-row-edit {
       }
     }
 
-    .form {
+    > .form {
       height: 100%;
       overflow: auto;
       background-color: var(--panel-background);
     }
 
-    .actions {
+    > .actions {
       //   @include flex-row(0);
       display: flex;
       flex: 1;
