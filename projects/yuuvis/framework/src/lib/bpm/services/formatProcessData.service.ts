@@ -32,6 +32,7 @@ export class FormatProcessDataService {
       createTime: this.translate.instant(`yuv.framework.process-list.column.createTime.label`),
       expiryDateTime: this.translate.instant(`yuv.framework.process-list.column.expiryDateTime.label`),
       startTime: this.translate.instant(`yuv.framework.process-list.column.startTime.label`),
+      endTime: this.translate.instant(`yuv.framework.process-list.column.endTime.label`),
       businessKey: this.translate.instant(`yuv.framework.process-list.column.businessKey.label`),
       status: this.translate.instant(`yuv.framework.process-list.column.status.label`),
       completed: this.translate.instant(`yuv.framework.process.status.completed.label`),
