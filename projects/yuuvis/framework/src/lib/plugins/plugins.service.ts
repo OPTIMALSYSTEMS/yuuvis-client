@@ -56,10 +56,14 @@ export class PluginsService {
     return this.getApi();
   }
 
-  public applyFunction(fnc: string | Function, params?: string, args?: any) {
-    fnc = fnc?.toString().trim();
+  public applyFunction(value: string | Function | any, params?: string, args?: any) {
+    const fnc = value?.toString().trim();
     if (!fnc) return;
-    const f = fnc.match(/^function|^\(.*\)\s*=>/) ? `return (${fnc}).apply(this,arguments)` : !fnc.startsWith('return') ? `return ${fnc}` : fnc;
+    const f = fnc.match(/^function|^\(.*\)\s*=>/)
+      ? `return (${fnc}).apply(this,arguments)`
+      : typeof value === 'string' && !fnc.startsWith("'")
+      ? `return '${fnc}'`
+      : `return ${fnc}`;
     return new Function(...(params || 'api').split(',').map((a) => a.trim()), f).apply(this.api, args || [this.api]);
   }
 

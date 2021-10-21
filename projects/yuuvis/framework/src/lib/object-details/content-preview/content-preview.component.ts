@@ -123,9 +123,9 @@ export class ContentPreviewComponent extends IFrameComponent implements OnInit, 
   open(src: string) {
     if (!this.iframe) {
       // init iframe again in case it was destoryed
-      setTimeout(() => this.iframeInit(this.iframe, this.searchTerm));
+      setTimeout(() => this.iframeInit(this.iframe, this.searchTerm, () => this.contentPreviewService.validateUrl(this.previewSrc)));
     }
-    this.previewSrc = src;
+    this.previewSrc = this.contentPreviewService.validateUrl(src);
     if (this.isUndocked) {
       this.openWindow(this.previewSrc);
     }
@@ -144,7 +144,7 @@ export class ContentPreviewComponent extends IFrameComponent implements OnInit, 
         <div>`
       );
     }
-    this.iframeInit(this.undockWin);
+    this.iframeInit(this.undockWin, this.searchTerm);
   }
 
   refresh() {

@@ -17,10 +17,9 @@ import { HttpOptions } from './backend.interface';
 export class BackendService {
   private cache = new Map<string, any>();
   private temp = new Map<string, Observable<any>>();
-  private headers = this.setDefaultHeaders();
-  private persistedHeaders: any = {};
-
-  // public oidc: { host: string; tenant: string };
+  private headers = new HttpHeaders({
+    'Content-Type': 'application/json'
+  });
 
   /**
    * @ignore
@@ -29,6 +28,18 @@ export class BackendService {
 
   authUsesOpenIdConnect(): boolean {
     return !!this.coreConfig.oidc;
+  }
+
+  /**
+   * OpenIdConnect authorization headers
+   */
+  getAuthHeaders(): any {
+    return this.authUsesOpenIdConnect()
+      ? {
+          [TENANT_HEADER]: this.coreConfig.oidc.tenant,
+          authorization: 'Bearer ' + localStorage.access_token
+        }
+      : {};
   }
 
   /**
@@ -192,25 +203,7 @@ export class BackendService {
    * @ignore
    */
   getHttpOptions(requestOptions?: HttpOptions): HttpOptions {
-    return Object.assign({ headers: this.getHeaders() }, requestOptions);
-  }
-
-  /**
-   * Retrieves the current headers
-   * @returns The `HttpHeaders` that are currently set up
-   */
-  private getHeaders(): HttpHeaders {
-    return this.headers;
-  }
-
-  private setDefaultHeaders(): HttpHeaders {
-    return new HttpHeaders({
-      'Content-Type': 'application/json'
-      // 'X-os-include-links': 'false',
-      // 'X-os-include-actions': 'false',
-      // 'X-os-sync-index': 'true'
-      // 'Access-Control-Allow-Origin': '*'
-    });
+    return Object.assign({ headers: this.headers }, requestOptions);
   }
 
   /**
