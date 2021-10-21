@@ -100,8 +100,24 @@ export class SearchService {
       const fields = new Map();
       // process properties section of result
       Object.keys(o.properties).forEach((key: string) => {
-        // o.properties[key].title ? fields.set(key, o.properties[key].title) : fields.set(key, o.properties[key].value);
-        fields.set(key, o.properties[key].clvalue ? o.properties[key].clvalue : o.properties[key].value);
+        let value = o.properties[key].value;
+        if (o.properties[key].clvalue) {
+          // table fields will have a clientValue too ...
+          value = o.properties[key].clvalue;
+          // ... and also may contain values that need to be resolved
+          if (o.properties[key].resolvedValues) {
+            value.forEach((v) => {
+              Object.keys(v).forEach((k) => {
+                const resValue = o.properties[key].resolvedValues[v[k]];
+                if (resValue) {
+                  v[`${k}_title`] = resValue;
+                }
+              });
+            });
+          }
+        }
+
+        fields.set(key, value);
         if (o.properties[key].title) {
           fields.set(key + '_title', o.properties[key].title);
         }
