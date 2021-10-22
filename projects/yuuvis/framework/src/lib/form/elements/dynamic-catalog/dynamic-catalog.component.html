@@ -19,7 +19,7 @@
     </p-dropdown>
 </ng-template>
 
-<div class="actions">
+<div class="actions" *ngIf="!readonly">
     <button class="p-button error" (click)="removeInvalidItems()" *ngIf="hasInvalidItems"
         title="{{'yuv.framework.dynamic-catalog.remove-invalid.tooltip'|translate}}">
         <yuv-icon icon="clear"></yuv-icon>
