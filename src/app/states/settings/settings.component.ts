@@ -95,7 +95,6 @@ export class SettingsComponent implements OnInit {
   }
 
   importPluginConfig(e: any, global = false) {
-    // const uri = PluginsService.LOCAL_PLUGIN_CONFIG;
     const uri = global ? PluginsService.SYSTEM_RESOURCES_CONFIG : PluginsService.ADMIN_RESOURCES_CONFIG;
     this.userConfig.importMainConfig(e, uri, !global).subscribe(() => this.reload());
   }
