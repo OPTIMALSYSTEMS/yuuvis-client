@@ -79,9 +79,9 @@ export class OrganizationComponent implements ControlValueAccessor, AfterViewIni
   @Input() autofocus: boolean;
 
   /**
-   * ID of user to be excluded from the autocomplete result
+   * Whether or not to exclude the current user from autocomplete result
    */
-  @Input() exclude: string;
+  @Input() excludeMe: boolean;
 
   @Output() userSelect = new EventEmitter<YuvUser[]>();
 
@@ -140,7 +140,7 @@ export class OrganizationComponent implements ControlValueAccessor, AfterViewIni
 
   autocompleteFn(evt) {
     if (evt.query.length >= this.minLength) {
-      this.userService.queryUser(evt.query, this.exclude).subscribe((users: YuvUser[]) => {
+      this.userService.queryUser(evt.query, this.excludeMe).subscribe((users: YuvUser[]) => {
         this.autocompleteRes = users.filter((user) => !this.innerValue.some((value) => value.id === user.id));
       });
     } else {
