@@ -115,9 +115,9 @@ export class UserService {
    * Search for a user based on a search term
    * @param term Search term
    */
-  queryUser(term: string, exclude?: string): Observable<YuvUser[]> {
+  queryUser(term: string, excludeMe?: boolean): Observable<YuvUser[]> {
     return this.backend
-      .get(`/users/users?search=${term}${exclude ? `&exclude=${exclude}` : ''}`)
+      .get(`/users/users?search=${term}${excludeMe ? `&excludeMe=true` : ''}`)
       .pipe(map((users) => (!users ? [] : users.map((u) => new YuvUser(u, null)))));
   }
 
