@@ -87,15 +87,17 @@ export class ContentPreviewService {
     if (!content) return {};
     const { mimeType, size, contentStreamId, fileName } = content;
     const fileExtension = fileName.includes('.') ? fileName.split('.').pop() : '';
-    return { mimeType, fileName, fileExtension, size, contentStreamId, objectId, version, ...this.createPath(objectId, version), ...this.createSettings() };
+    return { mimeType, ...this.createPath(objectId, version), fileName, fileExtension, size, contentStreamId, objectId, version, ...this.createSettings() };
   }
 
   private resolveHash(params: any[]) {
-    const uri = Utils.buildUri(`${this.getBaseUrl()}/hash`, { tenant: this.userService.getCurrentUser().tenant });
+    const uri = Utils.buildUri(`/hash`, { tenant: this.userService.getCurrentUser().tenant });
     const viewers = this.pluginsService.customPlugins.viewers || [];
     const translations = this.pluginsService.customPlugins.translations || {};
     const hasConfig = viewers?.length || JSON.stringify(translations).match('yuv.viewer.');
-    return hasConfig ? this.backend.post(uri, { viewers, translations }, '').pipe(map((c) => !!params.map((p) => (this.hash = p.hash = c?.hash)))) : of(true);
+    return hasConfig
+      ? this.backend.post(uri, { viewers, translations }, 'viewer').pipe(map((c) => !!params.map((p) => (this.hash = p.hash = c?.hash))))
+      : of(true);
   }
 
   private resolveCustomViewerConfig(params: any[], dmsObjects: DmsObject[]) {

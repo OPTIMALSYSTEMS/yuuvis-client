@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AppCacheService, BackendService, ConfigService, SystemService, TranslateService, UserConfigService, UserService, YuvUser } from '@yuuvis/core';
 import { arrowDown, IconRegistryService, LayoutService, LayoutSettings, NotificationService, PluginsService } from '@yuuvis/framework';
 import { forkJoin, Observable } from 'rxjs';
@@ -18,6 +18,7 @@ export class SettingsComponent implements OnInit {
   customDashboardBackground: boolean;
   clientLocales: any;
   showPermissions: boolean;
+  enableConfig: any = false;
 
   accentColorRGB = ['255,152,0', '120,144,156', '124,179,66', '3,169,244', '126,87,194', '236,64,122'];
   cache = {
@@ -43,6 +44,7 @@ export class SettingsComponent implements OnInit {
   constructor(
     private translate: TranslateService,
     private router: Router,
+    private route: ActivatedRoute,
     private layoutService: LayoutService,
     private systemService: SystemService,
     private cacheService: AppCacheService,
@@ -56,6 +58,8 @@ export class SettingsComponent implements OnInit {
   ) {
     this.iconRegistry.registerIcons([shield, arrowDown]);
     this.clientLocales = config.getClientLocales();
+    this.enableConfig = this.route.snapshot.queryParamMap.get('config');
+    this.enableConfig === 'old' && (ConfigService.GLOBAL_RESOURCES_PATH = (section) => UserService.GLOBAL_SETTINGS + encodeURIComponent(section));
   }
 
   changeClientLocale(iso: string) {

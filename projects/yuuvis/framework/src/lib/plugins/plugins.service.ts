@@ -4,6 +4,7 @@ import {
   ApiBase,
   AppCacheService,
   BackendService,
+  ConfigService,
   DmsObject,
   DmsService,
   EventService,
@@ -80,6 +81,7 @@ export class PluginsService {
     private eventService: EventService,
     private searchService: SearchService,
     private userService: UserService,
+    private configService: ConfigService,
     private appCache: AppCacheService,
     private ngZone: NgZone
   ) {
@@ -89,10 +91,7 @@ export class PluginsService {
 
   extendTranslations(lang: string = this.translate.currentLang) {
     const translations = (this.customPlugins?.translations || {})[lang];
-    const allKeys = translations && Object.keys(this.translate.store?.translations[lang] || {});
-    if (translations && !Object.keys(translations).every((k) => allKeys.includes(k))) {
-      this.translate.setTranslation(lang, translations, true);
-    }
+    this.configService.extendTranslations(translations, lang);
   }
 
   private loadCustomPlugins(force = false) {
@@ -103,13 +102,13 @@ export class PluginsService {
       .pipe(
         map((config) => {
           const p = (this.pluginConfigs = {
-            local: JSON.parse(localStorage[PluginsService.LOCAL_PLUGIN_CONFIG] || ''),
+            local: JSON.parse(localStorage[PluginsService.LOCAL_PLUGIN_CONFIG] || '{}'),
             resolved: config?.resolved,
             tenant: config?.tenant,
             global: config?.global
           });
           if (!this.customPlugins || force) {
-            this.customPlugins = { ...(p.resolved || p.tenant || p.global), ...p.local };
+            this.customPlugins = { ...ConfigService.PARSER(p), ...p.local };
             this.extendTranslations(this.translate.currentLang);
             this.run(this.customPlugins?.load);
           }

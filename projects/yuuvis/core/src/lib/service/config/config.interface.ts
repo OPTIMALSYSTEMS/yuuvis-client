@@ -1,3 +1,4 @@
+import { OpenIdConfig } from '../backend/backend.interface';
 /**
  * Interface for the applications main config file
  * @ignore
@@ -9,7 +10,11 @@ export interface YuvConfig {
       'api-web': string;
     };
     languages: YuvConfigLanguages[];
+    logging?: {
+      level: 'debug' | 'error' | 'warn' | 'info';
+    };
   };
+  oidc?: OpenIdConfig;
 }
 /**
  * interface providing localization of application

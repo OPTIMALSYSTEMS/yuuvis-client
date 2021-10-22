@@ -82,19 +82,19 @@
       </div>
 
       <!-- SECTION CONFIG -->
-      <div class="settings-section">
+      <div class="settings-section" *ngIf="enableConfig">
         <h3>{{ 'yuv.client.state.settings.section.config' | translate }}</h3>
       </div>
 
       <!-- other settings -->
-      <div class="setting settings__row">
+      <div class="setting settings__row" *ngIf="enableConfig">
         <div class="label" translate>yuv.client.state.settings.config.column-config</div>
         <div class="value buttons">
           <button (click)="editColumnConfig()">{{ 'yuv.client.state.settings.config.column-config.open' | translate
             }}</button>
         </div>
       </div>
-      <div class="setting settings__row">
+      <div class="setting settings__row" *ngIf="enableConfig">
         <div class="label" translate>yuv.client.state.settings.config.filter-config</div>
         <div class="value buttons">
           <button (click)="editFilterConfig()">{{ 'yuv.client.state.settings.config.filter-config.open' | translate
@@ -104,7 +104,7 @@
           </button>
         </div>
       </div>
-      <div class="setting settings__row cache__setting">
+      <div class="setting settings__row cache__setting" *ngIf="enableConfig">
         <div class="label" translate>yuv.client.state.settings.config.cache</div>
         <div class="value buttons">
           <button (click)="clearCache()">{{ 'yuv.client.state.settings.config.cache.clear' | translate }}</button>
@@ -125,7 +125,7 @@
         </div>
       </div>
 
-      <div class="setting settings__row" *ngIf="hasSystemRole">
+      <div class="setting settings__row" *ngIf="hasSystemRole && enableConfig">
         <div class="label" translate>yuv.client.state.settings.config.plugin-config</div>
         <div class="value buttons">
           <yuv-file-picker [label]="'yuv.client.state.settings.config.main-config.import' | translate"
@@ -144,7 +144,7 @@
         </div>
       </div>
 
-      <div class="setting settings__row" *ngIf="hasSystemRole">
+      <div class="setting settings__row" *ngIf="hasSystemRole && enableConfig">
         <div class="label" translate>yuv.client.state.settings.config.main-config</div>
         <div class="value buttons">
           <yuv-file-picker [label]="'yuv.client.state.settings.config.main-config.import' | translate"
@@ -157,7 +157,7 @@
       </div>
 
       <ng-container *ngFor="let locale of clientLocales">
-        <div class="setting settings__row" *ngIf="hasSystemRole">
+        <div class="setting settings__row" *ngIf="hasSystemRole && enableConfig">
           <div class="label">{{ 'yuv.client.state.settings.language' | translate }} ({{ locale.iso }})</div>
           <div class="value buttons">
             <yuv-file-picker [label]="'yuv.client.state.settings.config.main-config.import' | translate"
