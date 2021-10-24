@@ -92,7 +92,7 @@ export class UserService {
         this.backend.setHeader('Accept-Language', iso);
         this.user.uiDirection = this.getUiDirection(iso);
         this.user.userSettings.locale = iso;
-        if (this.translate.currentLang !== iso) {
+        if (this.translate.currentLang !== iso || this.system.authData?.language !== iso) {
           const ob = persist
             ? forkJoin([
                 this.translate.use(iso),

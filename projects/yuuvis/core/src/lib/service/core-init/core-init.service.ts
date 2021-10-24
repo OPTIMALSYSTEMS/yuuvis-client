@@ -31,15 +31,13 @@ export class CoreInit {
   initialize(): Promise<boolean> {
     return new Promise((resolve, reject) => {
       this.deviceService.init();
-      this.loadConfig()
-        .pipe(switchMap(() => this.authService.init()))
-        .subscribe(
-          (res) => resolve(true),
-          (err) => {
-            this.logger.error(err);
-            reject();
-          }
-        );
+      this.loadConfig().subscribe(
+        (res) => resolve(true),
+        (err) => {
+          this.logger.error(err);
+          reject();
+        }
+      );
     });
   }
 
