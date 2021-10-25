@@ -46,9 +46,8 @@ export class UserConfigService {
   private fetchColumnConfig(objectTypeId: string, global?: boolean): Observable<ColumnConfig> {
     return forkJoin([this.userService.getGlobalSettings(objectTypeId), global ? of({}) : this.backend.get(this.getRequestURI(objectTypeId))]).pipe(
       catchError(() => of([{}, {}])),
-      map(([gc, lc]) => {
-        // TODO: mixed list not supported (needs backend refactoring)
-        return lc?.type === objectTypeId || !gc?.type ? lc : gc;
+      map(([globalColumns, userColumns]) => {
+        return userColumns?.isDefault === false || !globalColumns?.type ? userColumns : globalColumns;
       }),
       map((res: any) => ({
         type: objectTypeId,
