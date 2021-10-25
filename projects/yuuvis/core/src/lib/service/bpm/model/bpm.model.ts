@@ -1,6 +1,8 @@
 export const ProcessAction = {
   complete: 'complete',
   claim: 'claim',
+  delegate: 'delegate',
+  resolve: 'resolve',
   save: 'save'
 };
 
@@ -35,6 +37,12 @@ export interface Process {
   variables: ProcessVariable[]; // tenant admin only
 }
 
+export interface TaskMessage {
+  level?: string;
+  type?: string;
+  message: string;
+}
+
 /**
  * Tasks are basically activities defined by a process.
  * Processes may contain several tasks.
@@ -47,6 +55,13 @@ export interface Task {
   claimTime: Date;
   createTime: Date;
   description: string;
+  taskMessages?: TaskMessage[];
+  taskForm?: {
+    schemaProperties?: string[];
+    model?: any;
+    data?: any;
+  };
+  delegationState?: string;
   formKey: string;
   initiator: ProcessUser;
   name: string;

@@ -48,12 +48,11 @@ export class ContentPreviewComponent extends IFrameComponent implements OnInit, 
       o?.content?.mimeType?.match(/application\/(msword|vnd.ms-excel|vnd.ms-powerpoint|vnd.openxmlformats)/)
         ? null
         : o?.content;
-    // generate preview URI with streamID to enable refresh if file was changed
-    !getContent(object)?.size && !this.dmsObject2
-      ? this.contentPreviewService.resetSource()
-      : this.contentPreviewService.createPreviewUrl(object.id, getContent(object), object.version, getContent(this.dmsObject2), this.dmsObject2?.version);
-    this.loading = !getContent(object) || this.dmsObject ? false : true;
+
     this._dmsObject = object;
+    this.loading = true;
+    // generate preview URI with streamID to enable refresh if file was changed
+    this.contentPreviewService.createPreviewUrl(object.id, getContent(object), object, getContent(this.dmsObject2), this.dmsObject2);
   }
 
   get dmsObject() {
@@ -123,9 +122,10 @@ export class ContentPreviewComponent extends IFrameComponent implements OnInit, 
   open(src: string) {
     if (!this.iframe) {
       // init iframe again in case it was destoryed
-      setTimeout(() => this.iframeInit(this.iframe, this.searchTerm));
+      setTimeout(() => this.iframeInit(this.iframe, this.searchTerm, () => this.contentPreviewService.validateUrl(this.previewSrc)));
     }
-    this.previewSrc = src;
+    this.loading = false;
+    this.previewSrc = this.contentPreviewService.validateUrl(src);
     if (this.isUndocked) {
       this.openWindow(this.previewSrc);
     }
@@ -144,7 +144,7 @@ export class ContentPreviewComponent extends IFrameComponent implements OnInit, 
         <div>`
       );
     }
-    this.iframeInit(this.undockWin);
+    this.iframeInit(this.undockWin, this.searchTerm);
   }
 
   refresh() {

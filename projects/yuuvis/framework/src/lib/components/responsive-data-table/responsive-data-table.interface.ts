@@ -21,4 +21,8 @@ export interface ResponsiveTableData {
    * grid setting from ag-grid definition
    */
   gridOptions?: Partial<GridOptions>;
+  /**
+   * setter function for ResponsiveTableData
+   */
+  set?: (responsiveTableData: ResponsiveTableData) => ResponsiveTableData;
 }

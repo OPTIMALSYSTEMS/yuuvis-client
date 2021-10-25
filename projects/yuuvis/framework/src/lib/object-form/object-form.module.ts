@@ -19,6 +19,7 @@ import { ObjectFormEditComponent } from './object-form-edit/object-form-edit.com
 import { ObjectFormElementComponent } from './object-form-element/object-form-element.component';
 import { ObjectFormGroupComponent } from './object-form-group/object-form-group.component';
 import { ObjectFormComponent } from './object-form/object-form.component';
+import { FormElementDescriptionComponent } from './object-form-element/form-element-description/form-element-description.component';
 
 /**
  * Module provides components for creating for a dms object.
@@ -34,7 +35,8 @@ import { ObjectFormComponent } from './object-form/object-form.component';
     CombinedObjectFormComponent,
     FormElementTableComponent,
     RowEditComponent,
-    ExpandedTableComponent
+    ExpandedTableComponent,
+    FormElementDescriptionComponent
   ],
   imports: [
     CommonModule,

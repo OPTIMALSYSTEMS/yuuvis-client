@@ -83,6 +83,10 @@ export class ObjectFormElementComponent implements OnDestroy {
     return { ...formElement, grouping: !!formElement?.classifications?.includes(Classification.NUMBER_DIGIT) };
   }
 
+  onDataMetaChange(data: any) {
+    this.formElementRef._eoFormElement.dataMeta = data;
+  }
+
   labelToggled(toggled: boolean, readonly = this.formElementRef._eoFormElement.readonly) {
     if (!this.skipToggle && this.situation === Situation.SEARCH && !readonly) {
       const toggleClass = 'label-toggled';

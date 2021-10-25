@@ -84,20 +84,6 @@ export class SearchResultComponent implements OnDestroy {
     return this._filterPanelConfig;
   }
 
-  // /**
-  //  * Whether or not to expand the filter panel
-  //  */
-  // @Input() set showFilterPanel(b: boolean) {
-  //   if (this._showFilterPanel !== b) {
-  //     this._showFilterPanel = b;
-  //     this.filterPanelToggled.emit(b);
-  //   }
-  // }
-
-  // get showFilterPanel(): boolean {
-  //   return this._showFilterPanel;
-  // }
-
   @Input() responsiveTableData: Partial<ResponsiveTableData>;
 
   tableData: ResponsiveTableData;
@@ -294,8 +280,6 @@ export class SearchResultComponent implements OnDestroy {
     );
   }
 
-  FilterPanel() {}
-
   // Create actual table data from the search result
   private createTableData(searchResult: SearchResult, pageNumber = 1): void {
     this.totalNumItems = searchResult.totalNumItems;
@@ -326,18 +310,19 @@ export class SearchResultComponent implements OnDestroy {
       this._rows = searchResult.items.map((i) => this.getRow(i));
       const sortOptions = this._searchQuery ? this._searchQuery.sortOptions || [] : [];
 
-      this.tableData = {
+      const setter = this.responsiveTableData?.set || ((t) => t);
+      this.tableData = setter.call(this, {
         titleField: ClientDefaultsObjectTypeField.TITLE,
         descriptionField: ClientDefaultsObjectTypeField.DESCRIPTION,
         selectType: 'multiple',
-        ...(this.responsiveTableData || {}),
         columns: this._columns,
         rows: this._rows,
         sortModel: sortOptions.map((o) => ({
           colId: o.field,
           sort: o.order
-        }))
-      };
+        })),
+        ...(this.responsiveTableData || {})
+      });
       this.busy = false;
       setTimeout((_) => {
         this.setSelection(this._itemsSupposedToBeSelected);

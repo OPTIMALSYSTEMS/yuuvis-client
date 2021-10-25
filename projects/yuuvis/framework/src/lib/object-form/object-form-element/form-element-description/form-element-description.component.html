@@ -1,0 +1,10 @@
+<ng-container *ngIf="descriptionStub; else tplRegular">
+    <span (click)="openTooltip()">{{descriptionStub}} ...</span>
+</ng-container>
+
+<ng-template #tplRegular>{{_description}}</ng-template>
+
+<ng-template #tplTooltip let-data let-popover="popover">
+    <div style="background-color: var(--panel-background); padding: var(--app-pane-padding); line-height: 1.7em;">
+        {{_description}}</div>
+</ng-template>

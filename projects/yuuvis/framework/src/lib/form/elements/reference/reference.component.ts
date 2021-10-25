@@ -48,7 +48,14 @@ export class ReferenceComponent implements ControlValueAccessor, AfterViewInit {
   minLength = 2;
 
   value;
-  innerValue: ReferenceEntry[] = [];
+  _innerValue: ReferenceEntry[] = [];
+  set innerValue(iv: ReferenceEntry[]) {
+    this._innerValue = iv;
+    this.objectSelect.emit(iv);
+  }
+  get innerValue() {
+    return this._innerValue;
+  }
   autocompleteRes: any[] = [];
   path: string;
 

@@ -166,6 +166,16 @@ export class Utils {
   }
 
   /**
+   * @param object
+   * @param key
+   * @param value
+   */
+  public static setProperty(object: any, key = '', value: any): any {
+    const [head, ...rest] = key.split('.');
+    !rest.length ? (object[head] = value) : Utils.setProperty(object[head] || (object[head] = {}), value, rest.join('.'));
+  }
+
+  /**
    * Use on Observable.catch or Observable.subscribe to return empty value
    * [ng-packagr issues 696]{@link https://github.com/dherges/ng-packagr/issues/696}
    *

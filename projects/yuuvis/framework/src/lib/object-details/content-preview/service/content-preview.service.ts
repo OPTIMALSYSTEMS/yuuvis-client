@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { ApiBase, BackendService, DmsObjectContent, DmsService, UserService, Utils } from '@yuuvis/core';
-import { Observable, ReplaySubject } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { ApiBase, BackendService, DmsObject, DmsObjectContent, DmsService, UserService, Utils } from '@yuuvis/core';
+import { Observable, of, ReplaySubject } from 'rxjs';
+import { map, switchMap } from 'rxjs/operators';
 import { PluginsService, UNDOCK_WINDOW_NAME } from '../../../plugins/plugins.service';
 import { LayoutService } from '../../../services/layout/layout.service';
 
@@ -11,6 +11,7 @@ import { LayoutService } from '../../../services/layout/layout.service';
  */
 @Injectable()
 export class ContentPreviewService {
+  private hash: string;
   private previewSrcSource = new ReplaySubject<string>(null);
   public previewSrc$: Observable<string> = this.previewSrcSource.asObservable();
 
@@ -51,14 +52,26 @@ export class ContentPreviewService {
     const base = this.backend.getApiBase(ApiBase.none, true);
     const viewer = this.backend.getApiBase('viewer', true);
     // default baseUrl in case it is not specified in main.json
-    return base === viewer ?  base + '/viewer' : viewer;
+    return base === viewer ? base + '/viewer' : viewer;
   }
 
-  private createPath(id: string, version?: number): { baseUrl: string; path: string; pathPdf: string } {
+  validateUrl(src: string) {
+    if (src && this.backend.authUsesOpenIdConnect()) {
+      // validate/update authorization token
+      const reg = new RegExp(encodeURIComponent('.*"Bearer (.*)"'));
+      const token = src.match(reg)?.[1];
+      if (token !== localStorage.access_token) {
+        src = src.replace(new RegExp(token, 'g'), localStorage.access_token);
+        this.previewSrcSource.next(src);
+      }
+    }
+    return src;
+  }
+
+  private createPath(id: string, version?: number): { baseUrl: string; path: string } {
     const baseUrl = this.getBaseUrl();
     const path = this.dmsService.getFullContentPath(id, version);
-    const pathPdf = this.dmsService.getFullContentPath(id, version, true);
-    return { baseUrl, path, pathPdf };
+    return { baseUrl, path };
   }
 
   private createSettings() {
@@ -66,22 +79,34 @@ export class ContentPreviewService {
     const user = this.userService.getCurrentUser();
     const direction = user.uiDirection;
     const lang = this.mapLang(user.getClientLocale());
-    return { darkMode, accentColor, direction, lang };
+    const tenant = this.userService.getCurrentUser().tenant;
+    return { darkMode, accentColor, direction, lang, username: user.firstname || user.username, tenant, hash: this.hash };
   }
 
   private createParams(objectId: string, content: DmsObjectContent, version?: number) {
     if (!content) return {};
     const { mimeType, size, contentStreamId, fileName } = content;
-    const { baseUrl, path, pathPdf } = this.createPath(objectId, version);
     const fileExtension = fileName.includes('.') ? fileName.split('.').pop() : '';
-    return { mimeType, path, pathPdf, fileName, fileExtension, size, contentStreamId, baseUrl, objectId, version, ...this.createSettings() };
+    return { mimeType, ...this.createPath(objectId, version), fileName, fileExtension, size, contentStreamId, objectId, version, ...this.createSettings() };
   }
 
-  private resolveCustomViewerConfig(params: any[]) {
+  private resolveHash(params: any[]) {
+    const uri = Utils.buildUri(`/hash`, { tenant: this.userService.getCurrentUser().tenant });
+    const viewers = this.pluginsService.customPlugins.viewers || [];
+    const translations = this.pluginsService.customPlugins.translations || {};
+    const hasConfig = viewers?.length || JSON.stringify(translations).match('yuv.viewer.');
+    return hasConfig
+      ? this.backend.post(uri, { viewers, translations }, 'viewer').pipe(map((c) => !!params.map((p) => (this.hash = p.hash = c?.hash))))
+      : of(true);
+  }
+
+  private resolveCustomViewerConfig(params: any[], dmsObjects: DmsObject[]) {
     return this.pluginsService.getCustomPlugins('viewers').pipe(
       map((viewers) =>
-        params.forEach((param) => {
-          const { mimeType, fileExtension } = param;
+        params.map((param, i) => {
+          const o = dmsObjects[i];
+          const p: any = this.createParams(o?.id, o?.content, o?.version);
+          const { mimeType, fileExtension } = p;
           // shared code from heimdall
           const config = viewers?.find((c: any) => {
             const matchMT = (typeof c.mimeType === 'string' ? [c.mimeType] : c.mimeType).includes(mimeType);
@@ -91,17 +116,26 @@ export class ContentPreviewService {
             return matchMT && matchFE;
           });
 
-          param.viewer = config?.viewer || undefined;
+          param.viewer = this.pluginsService.applyFunction(config?.viewer, 'api, dmsObject, parameters, createParams', [
+            this.pluginsService.api,
+            o,
+            param,
+            () => Object.assign(param, p)
+          ]);
+
+          return param;
         })
-      )
+      ),
+      switchMap((p) => (!p.find((o) => o.size) ? of(false) : this.hash ? of(true) : this.resolveHash(params)))
     );
   }
 
-  createPreviewUrl(id: string, content: DmsObjectContent, version?: number, content2?: DmsObjectContent, version2?: number): void {
-    const params = this.createParams(id, content, version);
-    const query: any = version2 ? { compare: [params, this.createParams(id, content2, version2)] } : params;
-    this.resolveCustomViewerConfig(query.compare || [query]).subscribe(() => {
-      this.previewSrcSource.next(id ? Utils.buildUri(`${this.getBaseUrl()}/`, query) : '');
+  createPreviewUrl(id: string, content: DmsObjectContent, dmsObject?: DmsObject, content2?: DmsObjectContent, dmsObject2?: DmsObject): void {
+    const params = this.createParams(id, content, dmsObject?.version);
+    const headers = this.backend.authUsesOpenIdConnect() ? JSON.stringify(this.backend.getAuthHeaders()) : undefined;
+    const query: any = dmsObject2?.version ? { compare: [params, this.createParams(id, content2, dmsObject2?.version)] } : params;
+    this.resolveCustomViewerConfig(query.compare || [query], [dmsObject, dmsObject2]).subscribe((hasConfig) => {
+      this.previewSrcSource.next(id && hasConfig ? Utils.buildUri(`${this.getBaseUrl()}/`, { ...query, headers }) : '');
     });
   }
 

@@ -4,6 +4,7 @@ import {
   ApiBase,
   AppCacheService,
   BackendService,
+  ConfigService,
   DmsObject,
   DmsService,
   EventService,
@@ -20,7 +21,7 @@ import {
   YuvEventType,
   YuvUser
 } from '@yuuvis/core';
-import { forkJoin, of } from 'rxjs';
+import { of } from 'rxjs';
 import { catchError, filter, map, switchMap, take } from 'rxjs/operators';
 import { NotificationService } from '../services/notification/notification.service';
 import { PluginAPI, PluginConfigList } from './plugins.interface';
@@ -37,14 +38,14 @@ export const UNDOCK_WINDOW_NAME = 'eoViewer';
   providedIn: 'root'
 })
 export class PluginsService {
-  static LOCAL_PLUGIN_CONFIG = '/users/settings/plugin-config';
+  static LOCAL_PLUGIN_CONFIG = 'yuv.local.plugin-config';
   static RESOURCES_CONFIG = '/resources/config/plugin-config';
   static ADMIN_RESOURCES_CONFIG = '/admin/resources/config/plugin-config';
   static SYSTEM_RESOURCES_CONFIG = '/system/resources/config/plugin-config';
 
   static EVENT_MODEL_CHANGED = 'yuv.event.object-form.model.changed';
 
-  private pluginConfigs: { local: PluginConfigList; tenant: PluginConfigList; global: PluginConfigList };
+  private pluginConfigs: { local: PluginConfigList; resolved: PluginConfigList; tenant: PluginConfigList; global: PluginConfigList };
   public customPlugins: PluginConfigList;
   private componentRegister = new Map<string, any>();
 
@@ -56,10 +57,14 @@ export class PluginsService {
     return this.getApi();
   }
 
-  public applyFunction(fnc: string | Function, params?: string, args?: any) {
-    fnc = fnc?.toString().trim();
+  public applyFunction(value: string | Function | any, params?: string, args?: any) {
+    const fnc = value?.toString().trim();
     if (!fnc) return;
-    const f = fnc.match(/^function|^\(.*\)\s*=>/) ? `return (${fnc}).apply(this,arguments)` : !fnc.startsWith('return') ? `return ${fnc}` : fnc;
+    const f = fnc.match(/^function|^\(.*\)\s*=>/)
+      ? `return (${fnc}).apply(this,arguments)`
+      : typeof value === 'string' && !fnc.startsWith("'")
+      ? `return '${fnc}'`
+      : `return ${fnc}`;
     return new Function(...(params || 'api').split(',').map((a) => a.trim()), f).apply(this.api, args || [this.api]);
   }
 
@@ -76,6 +81,7 @@ export class PluginsService {
     private eventService: EventService,
     private searchService: SearchService,
     private userService: UserService,
+    private configService: ConfigService,
     private appCache: AppCacheService,
     private ngZone: NgZone
   ) {
@@ -85,41 +91,24 @@ export class PluginsService {
 
   extendTranslations(lang: string = this.translate.currentLang) {
     const translations = (this.customPlugins?.translations || {})[lang];
-    const allKeys = translations && Object.keys(this.translate.store?.translations[lang] || {});
-    if (translations && !Object.keys(translations).every((k) => allKeys.includes(k))) {
-      this.translate.setTranslation(lang, translations, true);
-    }
+    this.configService.extendTranslations(translations, lang);
   }
 
   private loadCustomPlugins(force = false) {
     return this.userService.user$
       .pipe(filter((v) => !!v))
       .pipe(take(1))
+      .pipe(switchMap((user) => this.backend.get(PluginsService.RESOURCES_CONFIG).pipe(catchError(() => of({})))))
       .pipe(
-        switchMap((user) =>
-          forkJoin([
-            this.backend.get(PluginsService.LOCAL_PLUGIN_CONFIG).pipe(catchError(() => of({}))),
-            this.backend.get(PluginsService.RESOURCES_CONFIG).pipe(catchError(() => of({})))
-          ])
-        )
-      )
-      .pipe(
-        map(([local, config]) => {
-          const p = (this.pluginConfigs = { local, tenant: config?.tenant || {}, global: config?.global || {} });
+        map((config) => {
+          const p = (this.pluginConfigs = {
+            local: JSON.parse(localStorage[PluginsService.LOCAL_PLUGIN_CONFIG] || '{}'),
+            resolved: config?.resolved,
+            tenant: config?.tenant,
+            global: config?.global
+          });
           if (!this.customPlugins || force) {
-            // merge configs: global >> tenant >> local
-            this.customPlugins = [p.global, p.tenant, p.local].reduce((prev, cur) => {
-              Object.keys(cur || {}).forEach((k) => {
-                if (Array.isArray(cur[k])) {
-                  prev[k] = cur[k].concat((prev[k] || []).filter((p) => !cur[k].find((c) => c.id === p.id)));
-                } else if (k === 'translations' && prev[k]) {
-                  Object.keys(cur[k]).forEach((t) => (prev[k][t] = { ...(prev[k][t] || {}), ...cur[k][t] }));
-                } else {
-                  prev[k] = cur[k];
-                }
-              });
-              return prev;
-            }, {});
+            this.customPlugins = { ...ConfigService.PARSER(p), ...p.local };
             this.extendTranslations(this.translate.currentLang);
             this.run(this.customPlugins?.load);
           }
@@ -149,7 +138,7 @@ export class PluginsService {
   public disableCustomPlugins(disabled = true) {
     this.customPlugins = { ...this.customPlugins, disabled: !!disabled };
     this.pluginConfigs = { ...this.pluginConfigs, local: { ...this.pluginConfigs.local, disabled: !!disabled } };
-    return this.backend.post(PluginsService.LOCAL_PLUGIN_CONFIG, this.pluginConfigs.local);
+    return of((localStorage[PluginsService.LOCAL_PLUGIN_CONFIG] = JSON.stringify(this.pluginConfigs.local || {})));
   }
 
   public register(component: any) {

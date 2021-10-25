@@ -28,7 +28,7 @@ import {
 } from '@yuuvis/core';
 import { AutoComplete } from 'primeng/autocomplete';
 import { timer } from 'rxjs';
-import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { Selectable, SelectableGroup } from '../../grouped-select';
 import { PopoverConfig } from '../../popover/popover.interface';
@@ -201,13 +201,27 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
     // TODO: load only if needed
     this.quickSearchService.loadFilterSettings().subscribe(() => this.setAvailableObjectTypesFields());
 
-    this.searchForm.valueChanges.pipe(distinctUntilChanged(), debounceTime(1000)).subscribe(({ term }) => {
-      const _term = typeof term === 'string' ? term : (term && term.label) || '';
-      if (this.searchQuery.term !== _term) {
-        this.searchQuery.term = _term;
-        this.aggregate();
-      }
-    });
+    this.searchForm.valueChanges
+      .pipe(
+        distinctUntilChanged(),
+        map(({ term }) => this.updateSearchTerm()),
+        debounceTime(1000)
+      )
+      .subscribe((aggregate: boolean) => {
+        if (aggregate) {
+          this.aggregate();
+        }
+      });
+  }
+
+  updateSearchTerm(): boolean {
+    const value = this.searchForm.get('term')?.value;
+    const term = (typeof value === 'string' ? value : value?.label) || '';
+    const termUpdated = this.searchQuery.term !== term;
+    if (termUpdated) {
+      this.searchQuery.term = term;
+    }
+    return termUpdated;
   }
 
   private parseQuery(query: string): any {
@@ -412,6 +426,10 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
 
   executeSearch() {
     this.searchQuery.aggs = null;
+    const aggregate = this.updateSearchTerm();
+    if (aggregate) {
+      this.aggregate();
+    }
     this.querySubmit.emit(this.searchQuery);
   }
 

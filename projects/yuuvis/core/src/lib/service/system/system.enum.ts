@@ -102,7 +102,8 @@ export enum Classification {
   NUMBER_FILESIZE = 'filesize',
   NUMBER_DIGIT = 'digit',
   SYSTEM_SOT = 'systemsot',
-  PREDICTION_CLASSIFY = 'prediction:classify'
+  PREDICTION_CLASSIFY = 'prediction:classify',
+  TABLE_SORTABLE = 'sortable'
 }
 
 // classifications applied to object types

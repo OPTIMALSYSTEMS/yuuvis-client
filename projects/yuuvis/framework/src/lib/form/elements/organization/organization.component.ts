@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, forwardRef, HostBinding, HostListener, Input, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, forwardRef, HostBinding, HostListener, Input, Output, ViewChild } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { UserService, YuvUser } from '@yuuvis/core';
 import { AutoComplete } from 'primeng/autocomplete';
@@ -36,7 +36,14 @@ export class OrganizationComponent implements ControlValueAccessor, AfterViewIni
   minLength = 2;
 
   value;
-  innerValue: YuvUser[] = [];
+  _innerValue: YuvUser[] = [];
+  set innerValue(iv: YuvUser[]) {
+    this._innerValue = iv;
+    this.userSelect.emit(iv);
+  }
+  get innerValue() {
+    return this._innerValue;
+  }
   autocompleteRes: YuvUser[] = [];
 
   // prevent ENTER from being propagated, because the component could be located
@@ -70,6 +77,13 @@ export class OrganizationComponent implements ControlValueAccessor, AfterViewIni
    * later and also try to be focused, they will 'win', because there can only be one focus.
    */
   @Input() autofocus: boolean;
+
+  /**
+   * Whether or not to exclude the current user from autocomplete result
+   */
+  @Input() excludeMe: boolean;
+
+  @Output() userSelect = new EventEmitter<YuvUser[]>();
 
   constructor(private iconRegistry: IconRegistryService, private userService: UserService) {
     this.iconRegistry.registerIcons([organization]);
@@ -126,7 +140,7 @@ export class OrganizationComponent implements ControlValueAccessor, AfterViewIni
 
   autocompleteFn(evt) {
     if (evt.query.length >= this.minLength) {
-      this.userService.queryUser(evt.query).subscribe((users: YuvUser[]) => {
+      this.userService.queryUser(evt.query, this.excludeMe).subscribe((users: YuvUser[]) => {
         this.autocompleteRes = users.filter((user) => !this.innerValue.some((value) => value.id === user.id));
       });
     } else {

@@ -1,14 +1,37 @@
 :host {
   height: 100%;
   display: grid;
-  grid-template-rows: auto 1fr auto;
+  grid-template-rows: auto auto 1fr auto;
   grid-template-columns: 1fr;
-  grid-template-areas: 'desc' 'form' 'buttons';
+  padding: calc(var(--app-pane-padding) / 2) 0 0 0;
+  grid-template-areas: 'desc' 'messages' 'form' 'buttons';
   background-color: var(--panel-background-grey);
 
   .task-description {
     grid-area: desc;
-    padding: var(--app-pane-padding);
+    padding: calc(var(--app-pane-padding) / 2) var(--app-pane-padding);
+  }
+  .task-messages {
+    grid-area: messages;
+    padding: calc(var(--app-pane-padding) / 2) var(--app-pane-padding);
+
+    ul {
+      margin: calc(var(--app-pane-padding) / 2) 0 0 0;
+      padding: 0 var(--app-pane-padding);
+    }
+
+    .message {
+      line-height: 1.5em;
+      &.info {
+        color: var(--color-accent);
+      }
+      &.warning {
+        color: var(--color-warning);
+      }
+      &.error {
+        color: var(--color-error);
+      }
+    }
   }
   .task-data {
     grid-area: form;
@@ -30,13 +53,20 @@
     border-top: 1px solid var(--panel-divider-color);
     padding: calc(var(--app-pane-padding) / 2);
     display: flex;
-    justify-content: flex-end;
     margin: 0 -2px;
 
     &.disabled {
       opacity: 0.6;
       button {
         pointer-events: none;
+      }
+    }
+
+    > div {
+      display: flex;
+      &.right {
+        flex: 1;
+        justify-content: flex-end;
       }
     }
 
