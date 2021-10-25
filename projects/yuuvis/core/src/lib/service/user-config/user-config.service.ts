@@ -44,7 +44,7 @@ export class UserConfigService {
   }
 
   private fetchColumnConfig(objectTypeId: string, global?: boolean): Observable<ColumnConfig> {
-    return this.backend.get(this.getRequestURI(objectTypeId, global)).pipe(
+    return (global ? this.userService.getGlobalSettings(objectTypeId) : this.backend.get(this.getRequestURI(objectTypeId))).pipe(
       catchError(() => of({ type: objectTypeId, columns: [] })),
       map((res: any) => ({
         type: objectTypeId,
@@ -62,7 +62,7 @@ export class UserConfigService {
    * save result list configuration of available objects
    */
   saveColumnConfig(columnConfig: ColumnConfig, global?: boolean): Observable<any> {
-    return this.backend.post(this.getRequestURI(columnConfig.type, global && this.hasManageSettingsRole), {
+    const data = {
       type: columnConfig.type,
       columns: columnConfig.columns.map((c) => ({
         id: c.id,
@@ -71,18 +71,18 @@ export class UserConfigService {
           order: c.sort
         }
       }))
-    });
+    };
+    return global
+      ? this.hasManageSettingsRole && this.userService.saveGlobalSettings(columnConfig.type, data)
+      : this.backend.post(this.getRequestURI(columnConfig.type), data);
   }
 
   /**
    * Generate request URI for getting and setting an object types column configuration
    * @param objectType ID of the desired object type
    */
-  private getRequestURI(objectTypeId: string, global?: boolean): string {
-    const id = encodeURIComponent(objectTypeId);
-    if (global) {
-      return `/users/globalsettings/column-config-${id}`;
-    }
+  private getRequestURI(objectTypeId: string): string {
+    const id = '' || encodeURIComponent(objectTypeId);
     const baseURL = '/users/config/result/';
     const ot = this.systemService.getObjectType(objectTypeId);
     if (!ot && this.systemService.getSecondaryObjectType(objectTypeId)) {
@@ -108,7 +108,7 @@ export class UserConfigService {
     return this.saveColumnConfig({ type: objectTypeId, columns: [] });
   }
 
-  private generateMainJsonUri(uri = ConfigService.GLOBAL_MAIN_CONFIG) {
+  private generateMainJsonUri(uri = ConfigService.GLOBAL_MAIN_CONFIG('admin')) {
     return this.backend.get(uri).pipe(
       catchError(() => of({})),
       map((data) => {
@@ -124,23 +124,23 @@ export class UserConfigService {
    * make it possible for users to export their main config as a json file
    *
    */
-  exportMainConfig(filename = 'main.json', uri = ConfigService.GLOBAL_MAIN_CONFIG) {
+  exportMainConfig(filename = 'main.json', uri = ConfigService.GLOBAL_MAIN_CONFIG('admin')) {
     this.generateMainJsonUri(uri).subscribe((_uri) => this.backend.download(_uri, filename));
   }
 
-  importMainConfig(data: string | any, uri = ConfigService.GLOBAL_MAIN_CONFIG, force = false) {
+  importMainConfig(data: string | any, uri = ConfigService.GLOBAL_MAIN_CONFIG('admin'), force = false) {
     const config = typeof data === 'string' ? JSON.parse(data) : data;
-    if (uri === ConfigService.GLOBAL_MAIN_CONFIG && !config.core && !config.client) {
+    if (uri === ConfigService.GLOBAL_MAIN_CONFIG('admin') && !config.core && !config.client) {
       throw new Error('Invalid main configuration');
     }
     return force || this.hasSystemRole ? this.backend.post(uri, config) : of();
   }
 
   exportLanguage(iso = 'en') {
-    this.exportMainConfig(iso + '.json', ConfigService.GLOBAL_MAIN_CONFIG_LANG(iso));
+    this.exportMainConfig(iso + '.json', ConfigService.GLOBAL_MAIN_CONFIG_LANG(iso, 'admin'));
   }
 
   importLanguage(data: string | any, iso = 'en') {
-    return this.importMainConfig(data, ConfigService.GLOBAL_MAIN_CONFIG_LANG(iso));
+    return this.importMainConfig(data, ConfigService.GLOBAL_MAIN_CONFIG_LANG(iso, 'admin'));
   }
 }

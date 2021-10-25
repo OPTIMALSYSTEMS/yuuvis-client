@@ -1,44 +1,24 @@
-import { HttpClient } from '@angular/common/http';
 import { Inject, Injectable, Optional } from '@angular/core';
 import { AuthConfig, OAuthModuleConfig, OAuthService } from 'angular-oauth2-oidc';
 import { from, Observable, of } from 'rxjs';
-import { catchError, map, switchMap } from 'rxjs/operators';
-import { Utils } from '../../util/utils';
+import { map } from 'rxjs/operators';
 import { OpenIdConfig } from '../backend/backend.interface';
-import { BackendService } from '../backend/backend.service';
-import { AppCacheService } from '../cache/app-cache.service';
+import { YuvConfig } from '../config/config.interface';
 import { CoreConfig } from '../config/core-config';
 import { CORE_CONFIG } from '../config/core-config.tokens';
-import { TENANT_HEADER } from '../system/system.enum';
 
 @Injectable({
   providedIn: 'root'
 })
 export class OidcService {
-  private APP_CACHE_KEY = 'yuv.oidc.config';
+  constructor(@Optional() private oAuthConfig: OAuthModuleConfig, @Inject(CORE_CONFIG) public config: CoreConfig, private oauthService: OAuthService) {}
 
-  constructor(
-    @Optional() private oAuthConfig: OAuthModuleConfig,
-    @Inject(CORE_CONFIG) public config: CoreConfig,
-    private http: HttpClient,
-    private backend: BackendService,
-    private oauthService: OAuthService,
-    private appCache: AppCacheService
-  ) {}
+  initOpenIdConnect(): Observable<OpenIdConfig> {
+    const oidc = (this.config.oidc = this.config.oidc || (this.config.main as YuvConfig).oidc);
+    if (oidc?.host) {
+      oidc.host = oidc.host.endsWith('/') ? oidc.host.substring(0, -1) : oidc.host;
+    } else return of(null);
 
-  checkForOIDCConfig(): Observable<OpenIdConfig> {
-    const uri = 'assets/oidc.json';
-    return (
-      this.config.oidc
-        ? of(this.config.oidc)
-        : this.appCache.getItem(this.APP_CACHE_KEY).pipe(switchMap((cfg) => (cfg ? of(cfg) : this.http.get(`${Utils.getBaseHref()}${uri}`))))
-    ).pipe(
-      catchError((_) => of(null)),
-      switchMap((oidc: OpenIdConfig) => (oidc ? this.initOpenIdConnect(oidc) : of(null)))
-    );
-  }
-
-  private initOpenIdConnect(oidc: OpenIdConfig): Observable<OpenIdConfig> {
     this.oAuthConfig.resourceServer = {
       sendAccessToken: true,
       allowedUrls: [oidc.host]
@@ -63,20 +43,10 @@ export class OidcService {
 
     this.oauthService.configure(authConfig);
     this.oauthService.setupAutomaticSilentRefresh();
-    return from(this.oauthService.loadDiscoveryDocumentAndLogin()).pipe(
-      switchMap((_) => this.appCache.setItem(this.APP_CACHE_KEY, oidc)),
-      map((_) => {
-        if (oidc.host.endsWith('/')) {
-          oidc.host = oidc.host.substring(0, oidc.host.length - 1);
-        }
-        this.backend.setHeader(TENANT_HEADER, oidc.tenant);
-        this.config.oidc = oidc;
-        return oidc;
-      })
-    );
+    return from(this.oauthService.loadDiscoveryDocumentAndLogin()).pipe(map(() => this.config.oidc));
   }
 
   logout() {
-    this.appCache.removeItem(this.APP_CACHE_KEY).subscribe((_) => this.oauthService.logOut());
+    this.oauthService.logOut();
   }
 }

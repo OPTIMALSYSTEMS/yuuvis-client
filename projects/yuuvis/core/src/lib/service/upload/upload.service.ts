@@ -1,12 +1,11 @@
 import { HttpClient, HttpErrorResponse, HttpEventType, HttpHeaders, HttpRequest, HttpResponse } from '@angular/common/http';
-import { Inject, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, ReplaySubject, Subject, throwError } from 'rxjs';
 import { catchError, filter, map, scan, tap } from 'rxjs/operators';
 import { Utils } from '../../util/utils';
-import { CoreConfig } from '../config/core-config';
-import { CORE_CONFIG } from '../config/core-config.tokens';
+import { BackendService } from '../backend/backend.service';
 import { Logger } from '../logger/logger';
-import { BaseObjectTypeField, ClientDefaultsObjectTypeField, TENANT_HEADER } from '../system/system.enum';
+import { BaseObjectTypeField, ClientDefaultsObjectTypeField } from '../system/system.enum';
 import { CreatedObject, ProgressStatus, UploadResult } from './upload.interface';
 
 const transformResponse = () => map((res: CreatedObject) => (res && res.body ? res.body.objects.map((val) => val) : null));
@@ -27,7 +26,7 @@ export class UploadService {
   /**
    * @ignore
    */
-  constructor(@Inject(CORE_CONFIG) public config: CoreConfig, private http: HttpClient, private logger: Logger) {}
+  constructor(private backend: BackendService, private http: HttpClient, private logger: Logger) {}
 
   /**
    * Upload a file.
@@ -101,12 +100,9 @@ export class UploadService {
     // add request param to bypass the serviceworker
     url += `${url.indexOf('?') === -1 ? '?' : '&'}ngsw-bypass=1`;
 
-    const headers: any = {};
+    const headers: any = this.backend.getAuthHeaders();
     if (file) {
       headers['Content-Disposition'] = `attachment; filename="${file.name}"`;
-    }
-    if (!!this.config.oidc) {
-      headers[TENANT_HEADER] = this.config.oidc.tenant;
     }
 
     return new HttpRequest(method, url, file || formData, {

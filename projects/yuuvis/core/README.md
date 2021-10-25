@@ -126,17 +126,22 @@ Proof Key for Code Exchange Code Challenge Method: 'S256'
 
 There are several ways how to setup your project to support this kind of authentication:
 
-#### Use oidc.json config file
+#### Use main.json config file
 
-Create a file `oidc.json` and put it into the root directory of your assets folder:
+Create a file `main.json` and put it into the root directory of your assets folder:
 
 ```ts
-// ./src/assets/oidc.json
+// ./src/assets/default/main.json
 {
-  "host": "https://kolibri.enaioci.net",  // yuuvis backend URI
-  "tenant": "kolibri",  // yuuvis tenant (equals Keycloak realm)
-  "issuer": "https://auth.enaioci.net/auth/realms/kolibri",
-  "clientId": "spa-client",
+  core: {
+    ...
+  },
+  oidc: {
+    "host": "https://kolibri.enaioci.net",  // yuuvis backend URI
+    "tenant": "kolibri",  // yuuvis tenant (equals Keycloak realm)
+    "issuer": "https://auth.enaioci.net/auth/realms/kolibri",
+    "clientId": "spa-client",
+  }
 }
 
 ```

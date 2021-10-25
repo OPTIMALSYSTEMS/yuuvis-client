@@ -20,6 +20,10 @@ import { SystemService } from '../system/system.service';
   providedIn: 'root'
 })
 export class UserService {
+  static GLOBAL_SETTINGS = '/users/globalsettings/';
+  static USERS_SETTINGS = '/users/settings/';
+  static DEFAULT_SETTINGS = '/users/settings';
+
   USER_FETCH_URI = '/users/whoami';
   private user: YuvUser = null;
   private userSource = new BehaviorSubject<YuvUser>(this.user);
@@ -88,12 +92,12 @@ export class UserService {
         this.backend.setHeader('Accept-Language', iso);
         this.user.uiDirection = this.getUiDirection(iso);
         this.user.userSettings.locale = iso;
-        if (this.translate.currentLang !== iso) {
+        if (this.translate.currentLang !== iso || this.system.authData?.language !== iso) {
           const ob = persist
             ? forkJoin([
                 this.translate.use(iso),
                 this.system.updateLocalizations(iso),
-                this.backend.post('/users/settings', this.user.userSettings).pipe(
+                this.backend.post(UserService.DEFAULT_SETTINGS, this.user.userSettings).pipe(
                   tap(() => {
                     this.userSource.next(this.user);
                     this.logger.debug('Loading system definitions i18n resources for new locale.');
@@ -108,7 +112,7 @@ export class UserService {
   }
 
   fetchUserSettings(): Observable<UserSettings> {
-    return this.backend.get('/users/settings');
+    return this.backend.get(UserService.DEFAULT_SETTINGS);
   }
 
   /**
@@ -130,30 +134,44 @@ export class UserService {
       this.oidc.logout();
     } else {
       const redir = redirRoute ? `?redir=${redirRoute}` : '';
-      (window as any).location.href = `${this.backend.getApiBase('logout') || '/logout'}${redir}`;
+      (window as any).location.href = `${this.backend.getApiBase('logout')}${redir}`;
     }
   }
 
   getSettings(section: string): Observable<any> {
-    return this.backend.get('/users/settings/' + section);
+    return this.backend.get(UserService.USERS_SETTINGS + encodeURIComponent(section));
   }
 
   saveSettings(section: string, data: any): Observable<any> {
-    return this.backend.post('/users/settings/' + section, data);
+    return this.backend.post(UserService.USERS_SETTINGS + encodeURIComponent(section), data);
   }
 
-  getGlobalSettings(section: string): Observable<any> {
+  /**
+   * getGlobalSettings
+   * @param section
+   * @param global
+   * @returns
+   */
+  getGlobalSettings(section: string, global = false): Observable<any> {
     const setting = this.globalSettings.get(section);
     return setting
       ? of(setting)
-      : this.backend.get('/users/globalsettings/' + section).pipe(
+      : this.backend.get(ConfigService.GLOBAL_RESOURCES_PATH(section)).pipe(
           catchError(() => of({})),
+          map((data) => ConfigService.PARSER(data)),
           tap((data) => this.globalSettings.set(section, data))
         );
   }
 
-  saveGlobalSettings(section: string, data: any): Observable<any> {
+  /**
+   * saveGlobalSettings
+   * @param section
+   * @param data
+   * @param global
+   * @returns
+   */
+  saveGlobalSettings(section: string, data: any, global = false): Observable<any> {
     this.globalSettings.set(section, data);
-    return this.backend.post('/users/globalsettings/' + section, data);
+    return this.backend.post(ConfigService.GLOBAL_RESOURCES_PATH(section, global ? 'system' : 'admin'), data);
   }
 }

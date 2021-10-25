@@ -22,7 +22,7 @@ export class LayoutService {
   public layoutSettings$: Observable<LayoutSettings> = this.layoutSettingsSource.asObservable();
 
   private get storageKeyPrefix(): string {
-    return this.configService.get('appPrefix') ? `${this.configService.get('appPrefix')}.` : '';
+    return this.configService.get('client.appPrefix') ? `${this.configService.get('client.appPrefix')}.` : '';
   }
 
   /**

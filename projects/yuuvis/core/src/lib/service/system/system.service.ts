@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { EMPTY, forkJoin, Observable, of, ReplaySubject } from 'rxjs';
+import { forkJoin, Observable, of, ReplaySubject } from 'rxjs';
 import { catchError, map, switchMap, tap } from 'rxjs/operators';
 import { DmsObject } from '../../model/dms-object.model';
 import { ApiBase } from '../backend/api.enum';
@@ -48,6 +48,8 @@ export class SystemService {
   public system: SystemDefinition;
   private systemSource = new ReplaySubject<SystemDefinition>();
   public system$: Observable<SystemDefinition> = this.systemSource.asObservable();
+
+  authData: AuthData;
 
   /**
    * @ignore
@@ -676,9 +678,9 @@ export class SystemService {
    *
    * @param user The user to load the system definition for
    */
-  getSystemDefinition(): Observable<boolean> {
+  getSystemDefinition(authData?: AuthData): Observable<boolean> {
     // TODO: Supposed to return 304 if nothing changes
-    return this.fetchSystemDefinition();
+    return this.fetchSystemDefinition(authData);
 
     // TODO: remove when 304 is there???
     // // try to fetch system definition from cache first
@@ -701,10 +703,10 @@ export class SystemService {
    * Actually fetch the system definition from the backend.
    * @param user User to fetch definition for
    */
-  private fetchSystemDefinition(): Observable<boolean> {
-    return this.appCache.getItem(this.STORAGE_KEY_AUTH_DATA).pipe(
+  private fetchSystemDefinition(authData?: AuthData): Observable<boolean> {
+    return (authData ? of(authData) : this.appCache.getItem(this.STORAGE_KEY_AUTH_DATA)).pipe(
       switchMap((data: AuthData) => {
-        this.backend.setHeader('Accept-Language', data?.language);
+        this.updateAuthData({ language: 'en', ...data }).subscribe();
         const fetchTasks = [this.backend.get('/dms/schema/native.json', ApiBase.core), this.fetchLocalizations()];
         return forkJoin(fetchTasks);
       }),
@@ -944,9 +946,14 @@ export class SystemService {
     return { ...field, label: this.getLocalizedResource(`${field.id}_label`), name: field.id, type: field.propertyType };
   }
 
-  updateLocalizations(iso?: string): Observable<any> {
-    return this.appCache.getItem(this.STORAGE_KEY_AUTH_DATA).pipe(
-      switchMap((authData: any) => (iso ? this.appCache.setItem(this.STORAGE_KEY_AUTH_DATA, { ...authData, language: iso }) : EMPTY)),
+  updateAuthData(data: Partial<AuthData>) {
+    this.authData = { ...this.authData, ...data };
+    this.backend.setHeader('Accept-Language', this.authData.language);
+    return this.appCache.setItem(this.STORAGE_KEY_AUTH_DATA, this.authData);
+  }
+
+  updateLocalizations(iso: string): Observable<any> {
+    return this.updateAuthData({ language: iso }).pipe(
       switchMap(() => this.fetchLocalizations()),
       tap((res) => {
         this.system.i18n = res;

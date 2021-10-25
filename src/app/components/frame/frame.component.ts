@@ -313,7 +313,7 @@ export class FrameComponent implements OnInit, OnDestroy {
       if (!authenticated) {
         const tenant = this.authService.getTenant();
         if (tenant) {
-          (window as any).location.href = `${this.backend.getApiBase('oauth') || '/oauth'}/${tenant}`;
+          (window as any).location.href = `${this.backend.getApiBase('oauth')}/${tenant}`;
         }
       }
     });
