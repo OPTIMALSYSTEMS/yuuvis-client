@@ -3,7 +3,7 @@ import { ColDef, GridOptions, Module } from '@ag-grid-community/core';
 import { CsvExportModule } from '@ag-grid-community/csv-export';
 import { Component, forwardRef, Input, NgZone, TemplateRef, ViewChild } from '@angular/core';
 import { ControlValueAccessor, FormControl, NG_VALIDATORS, NG_VALUE_ACCESSOR, Validator } from '@angular/forms';
-import { PendingChangesService } from '@yuuvis/core';
+import { Classification, PendingChangesService } from '@yuuvis/core';
 import { takeUntil } from 'rxjs/operators';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { UnsubscribeOnDestroy } from '../../common/util/unsubscribe.component';
@@ -66,7 +66,8 @@ export class FormElementTableComponent extends UnsubscribeOnDestroy implements C
       this._params = p;
       this.gridReady = false;
       this._elements = p.element.elements;
-      this.gridOptions.columnDefs = this.createColumnDefinition(true);
+
+      this.gridOptions.columnDefs = this.createColumnDefinition(p.element?.classifications?.includes(Classification.TABLE_SORTABLE));
       this.overlayGridOptions.columnDefs = this.createColumnDefinition();
       this.gridReady = true;
     }
@@ -116,7 +117,6 @@ export class FormElementTableComponent extends UnsubscribeOnDestroy implements C
       suppressLoadingOverlay: true,
       suppressContextMenu: true,
       rowDragManaged: true,
-      // suppressMoveWhenRowDragging: true,
       animateRows: true,
       onRowDragEnd: this.onRowDragEnd
     };
