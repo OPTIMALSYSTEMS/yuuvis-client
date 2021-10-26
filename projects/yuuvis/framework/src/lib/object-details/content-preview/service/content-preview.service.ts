@@ -80,7 +80,7 @@ export class ContentPreviewService {
     const direction = user.uiDirection;
     const lang = this.mapLang(user.getClientLocale());
     const tenant = this.userService.getCurrentUser().tenant;
-    return { darkMode, accentColor, direction, lang, username: user.firstname || user.username, tenant, hash: this.hash };
+    return { darkMode, accentColor, direction, lang, tenant, hash: this.hash };
   }
 
   private createParams(objectId: string, content: DmsObjectContent, version?: number) {
