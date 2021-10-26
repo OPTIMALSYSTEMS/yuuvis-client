@@ -1,7 +1,7 @@
 <div class="object-form-table">
   <div class="label">
     <span>{{ params.element.label }}</span>
-    <ng-container>
+    <ng-container *ngIf="!disableOptions">
       <yuv-icon class="stf" [icon]="'expand'" [title]="'yuv.framework.form.table.options.btn.open' | translate"
         (click)="openDialog()"></yuv-icon>
       <yuv-icon class="stf" [icon]="'sizeToFit'" [title]="'yuv.framework.form.table.options.btn.fit' | translate"
