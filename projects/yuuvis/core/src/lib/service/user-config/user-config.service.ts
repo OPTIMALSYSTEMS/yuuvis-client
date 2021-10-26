@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { forkJoin, Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { Utils } from '../../util/utils';
 import { BackendService } from '../backend/backend.service';
@@ -44,8 +44,11 @@ export class UserConfigService {
   }
 
   private fetchColumnConfig(objectTypeId: string, global?: boolean): Observable<ColumnConfig> {
-    return (global ? this.userService.getGlobalSettings(objectTypeId) : this.backend.get(this.getRequestURI(objectTypeId))).pipe(
-      catchError(() => of({ type: objectTypeId, columns: [] })),
+    return forkJoin([this.userService.getGlobalSettings(objectTypeId), global ? of({}) : this.backend.get(this.getRequestURI(objectTypeId))]).pipe(
+      catchError(() => of([{}, {}])),
+      map(([globalColumns, userColumns]) => {
+        return userColumns?.isDefault === false || !globalColumns?.type ? userColumns : globalColumns;
+      }),
       map((res: any) => ({
         type: objectTypeId,
         columns: (res?.columns || []).map((c) => ({

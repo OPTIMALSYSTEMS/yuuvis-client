@@ -32,7 +32,7 @@ export class ConfigService {
   }
 
   static GLOBAL_RESOURCES_PATH(section = '', prefix: 'system' | 'admin' | '' = '') {
-    return (prefix ? `/${prefix}` : '') + ConfigService.GLOBAL_RESOURCES + encodeURIComponent(section);
+    return (prefix ? `/${prefix}` : '') + ConfigService.GLOBAL_RESOURCES + encodeURIComponent(section) + '?filter=resolved';
   }
 
   get oidc() {
