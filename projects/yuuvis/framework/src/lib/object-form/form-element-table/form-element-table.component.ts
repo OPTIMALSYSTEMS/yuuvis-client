@@ -65,7 +65,7 @@ export class FormElementTableComponent extends UnsubscribeOnDestroy implements C
     if (p) {
       this._params = p;
       this.gridReady = false;
-      this._elements = p.element.elements;
+      this._elements = p.element?.elements || [];
 
       this.gridOptions.columnDefs = this.createColumnDefinition(p.element?.classifications?.includes(Classification.TABLE_SORTABLE));
       this.overlayGridOptions.columnDefs = this.createColumnDefinition();
