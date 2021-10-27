@@ -47,6 +47,8 @@ export abstract class IFrameComponent {
 
   iframeInit(iframe = this.iframe, searchTerm = '', onload?: Function) {
     if (iframe) {
+      const win = iframe?.contentWindow || iframe;
+      win['api'] = window['api'];
       fromEvent(iframe, 'load')
         .pipe(takeUntilDestroy(this))
         .subscribe(() => {
