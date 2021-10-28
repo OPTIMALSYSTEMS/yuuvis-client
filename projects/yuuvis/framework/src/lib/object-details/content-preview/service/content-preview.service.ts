@@ -16,11 +16,15 @@ export class ContentPreviewService {
   public previewSrc$: Observable<string> = this.previewSrcSource.asObservable();
 
   static undockWin(src: string) {
-    return (window[UNDOCK_WINDOW_NAME] = window.open(
+    const w = (window[UNDOCK_WINDOW_NAME] = window.open(
       src || '',
       UNDOCK_WINDOW_NAME,
       'directories=0, titlebar=0, toolbar=0, location=0, status=0, menubar=0, resizable=1, top=10, left=10'
     ));
+
+    // set api to iframe window
+    w['api'] = window['api'];
+    return w;
   }
 
   static closeWin() {
@@ -85,9 +89,9 @@ export class ContentPreviewService {
 
   private createParams(objectId: string, content: DmsObjectContent, version?: number) {
     if (!content) return {};
-    const { mimeType, size, contentStreamId, fileName } = content;
+    const { mimeType, size, digest, fileName } = content;
     const fileExtension = fileName.includes('.') ? fileName.split('.').pop() : '';
-    return { mimeType, ...this.createPath(objectId, version), fileName, fileExtension, size, contentStreamId, objectId, version, ...this.createSettings() };
+    return { mimeType, ...this.createPath(objectId, version), fileName, fileExtension, size, digest, objectId, version, ...this.createSettings() };
   }
 
   private resolveHash(params: any[]) {
@@ -109,10 +113,9 @@ export class ContentPreviewService {
           const { mimeType, fileExtension } = p;
           // shared code from heimdall
           const config = viewers?.find((c: any) => {
-            const matchMT = (typeof c.mimeType === 'string' ? [c.mimeType] : c.mimeType).includes(mimeType);
-            const matchFE = c.fileExtension
-              ? (typeof c.fileExtension === 'string' ? [c.fileExtension] : c.fileExtension).includes((fileExtension || '').toLowerCase())
-              : true;
+            const matchMT = !c.mimeType || (typeof c.mimeType === 'string' ? [c.mimeType] : c.mimeType).includes(mimeType);
+            const matchFE =
+              !c.fileExtension || (typeof c.fileExtension === 'string' ? [c.fileExtension] : c.fileExtension).includes((fileExtension || '').toLowerCase());
             return matchMT && matchFE;
           });
 
