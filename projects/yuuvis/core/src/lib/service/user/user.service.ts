@@ -24,6 +24,7 @@ export class UserService {
   static USERS_SETTINGS = '/users/settings/';
   static DEFAULT_SETTINGS = '/users/settings';
 
+  LOGOUT_EVENT_KEY = 'yuv.event.logout';
   USER_FETCH_URI = '/users/whoami';
   private user: YuvUser = null;
   private userSource = new BehaviorSubject<YuvUser>(this.user);
@@ -130,6 +131,7 @@ export class UserService {
   }
 
   logout(redirRoute?: string): void {
+    window.localStorage.setItem(this.LOGOUT_EVENT_KEY, 'true');
     if (this.backend.authUsesOpenIdConnect()) {
       this.oidc.logout();
     } else {

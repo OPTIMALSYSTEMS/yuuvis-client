@@ -32,7 +32,13 @@ export class AuthService {
     private userService: UserService,
     private systemService: SystemService,
     private backend: BackendService
-  ) {}
+  ) {
+    window.addEventListener('storage', (evt) => {
+      if (evt.key === this.userService.LOGOUT_EVENT_KEY) {
+        this.userService.logout();
+      }
+    });
+  }
 
   isLoggedIn() {
     return this.authenticated;
