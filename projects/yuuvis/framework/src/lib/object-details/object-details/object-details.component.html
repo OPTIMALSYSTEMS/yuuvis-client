@@ -1,9 +1,7 @@
 <yuv-panel *ngIf="dmsObject; else empty" class="object-details" [title]="dmsObject.title"
-  (yuvFileDrop)="onFileDropped($event)"
-  [yuvFileDropOptions]="{ disabled: disableFileDrop || fileDropOptions?.disabled || dmsObject.contentStreamAllowed === 'notallowed' || isRetentionActive, 
+  (yuvFileDrop)="onFileDropped($event)" [yuvFileDropOptions]="{ disabled: disableFileDrop || fileDropOptions?.disabled || dmsObject.contentStreamAllowed === 'notallowed' || isRetentionActive, 
   label: fileDropOptions?.label || fileDropLabel, multiple: fileDropOptions?.multiple, maxSize: fileDropOptions?.maxSize, accept: fileDropOptions?.accept, 
-  invalidError: fileDropOptions?.invalidError }"
-  [description]="dmsObject.description" [yuvBusyOverlay]="busy">
+  invalidError: fileDropOptions?.invalidError }" [description]="dmsObject.description" [yuvBusyOverlay]="busy">
   <yuv-object-type-icon class="header-icon" [objectTypeId]="objectTypeId"></yuv-object-type-icon>
 
   <yuv-action-menu-bar class="actions" yuvOfflineDisabled>
@@ -68,10 +66,12 @@
   <p-tabPanel [id]="'preview'" [header]="'yuv.framework.object-details.tabs.content.title' | translate"
     [headerStyleClass]="'preview'">
     <ng-template pTemplate="content" *ngIf="!undockWinActive; else loadPreview">
-      <yuv-content-preview [dmsObject]="dmsObject" [searchTerm]="searchTerm" [activeVersion]="activeVersion"></yuv-content-preview>
+      <yuv-content-preview [dmsObject]="dmsObject" [searchTerm]="searchTerm" [activeVersion]="activeVersion">
+      </yuv-content-preview>
     </ng-template>
     <ng-template #loadPreview>
-      <yuv-content-preview [dmsObject]="dmsObject" [searchTerm]="searchTerm" [activeVersion]="activeVersion"></yuv-content-preview>
+      <yuv-content-preview [dmsObject]="dmsObject" [searchTerm]="searchTerm" [activeVersion]="activeVersion">
+      </yuv-content-preview>
     </ng-template>
   </p-tabPanel>
 </ng-template>
@@ -80,7 +80,7 @@
   <p-tabPanel [id]="'history'" [header]="'yuv.framework.object-details.tabs.history.title' | translate"
     [headerStyleClass]="'history'">
     <ng-template pTemplate="content">
-      <yuv-audit [skipActions]="skipActions" [objectID]="objectId"></yuv-audit>
+      <yuv-audit [allActions]="allActions" [skipActions]="skipActions" [objectID]="objectId"></yuv-audit>
     </ng-template>
   </p-tabPanel>
 </ng-template>

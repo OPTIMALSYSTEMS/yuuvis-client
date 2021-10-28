@@ -26,6 +26,7 @@ import { arrowNext, filter } from '../../svg.generated';
 })
 export class AuditComponent implements OnInit, OnDestroy {
   private _objectID: string;
+  private initialFetch: boolean;
   searchForm: FormGroup;
   auditsRes: AuditQueryResult;
   searchPanelShow: boolean;
@@ -48,8 +49,9 @@ export class AuditComponent implements OnInit, OnDestroy {
       this.auditsRes = null;
     } else if (!this._objectID || this._objectID !== id) {
       this._objectID = id;
-      // load audits
-      this.fetchAuditEntries();
+      if (this.initialFetch) {
+        this.fetchAuditEntries();
+      }
     }
   }
 
@@ -58,6 +60,11 @@ export class AuditComponent implements OnInit, OnDestroy {
    * This will also disable the corresponding filters.
    */
   @Input() skipActions: number[];
+
+  /**
+   * Whether or not to ignore admin and user separation of audit entries
+   */
+  @Input() allActions: boolean;
 
   get objectID() {
     return this._objectID;
@@ -118,10 +125,11 @@ export class AuditComponent implements OnInit, OnDestroy {
     this.error = false;
     this.busy = true;
 
+    if (!options) options = {};
     if (this.skipActions && this.skipActions.length) {
-      if (!options) options = {};
       options.skipActions = this.skipActions;
     }
+    options.allActions = !!this.allActions;
 
     this.auditService.getAuditEntries(this._objectID, options).subscribe(
       (res: AuditQueryResult) => {
@@ -226,7 +234,7 @@ export class AuditComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    let actionKeys = this.auditService.getAuditActions().map((a: number) => `a${a}`);
+    let actionKeys = this.auditService.getAuditActions(this.allActions).map((a: number) => `a${a}`);
     // let actionKeys = Object.keys(this.auditLabels);
     if (this.skipActions) {
       const skipActionKeys = this.skipActions.map((a) => `a${a}`);
@@ -255,6 +263,10 @@ export class AuditComponent implements OnInit, OnDestroy {
       }
     });
     this.searchForm = this.fb.group(fbInput);
+    if (!this.initialFetch) {
+      this.fetchAuditEntries();
+      this.initialFetch = true;
+    }
   }
   ngOnDestroy() {}
 }
