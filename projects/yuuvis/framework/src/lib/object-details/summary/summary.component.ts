@@ -14,6 +14,7 @@ import {
   SystemService
 } from '@yuuvis/core';
 import { takeUntilDestroy } from 'take-until-destroy';
+import { CellRenderer } from '../../services/grid/grid.cellrenderer';
 import { GridService } from '../../services/grid/grid.service';
 import { Situation } from './../../object-form/object-form.situation';
 import { Summary, SummaryEntry } from './summary.interface';
@@ -183,6 +184,8 @@ export class SummaryComponent implements OnInit, OnDestroy {
   }
 
   private generateValue(data, key: string, renderer: ICellRendererFunc, def: ColDef): string | HTMLElement {
+    // tags cell renderer differs from the one used in the grid
+    if (key === BaseObjectTypeField.TAGS) renderer = this.gridService.customContext(CellRenderer.systemTagsSummaryRenderer);
     return typeof renderer === 'function' ? renderer({ value: data[key], data: data, colDef: def }) : data[key + '_title'] ? data[key + '_title'] : data[key];
   }
 

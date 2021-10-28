@@ -321,7 +321,7 @@ export class GridService {
     return colDef;
   }
 
-  private customContext(fnc, mixin?) {
+  customContext(fnc, mixin?) {
     return (params) => fnc({ ...params, context: this.context, ...(mixin && mixin) });
   }
   /**

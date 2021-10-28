@@ -53,7 +53,7 @@ export class CellRenderer {
       : '';
   }
 
-  static systemTagsCellRenderer(param) {
+  static systemTagsSummaryRenderer(param) {
     const { context, value } = param;
     const titleFnc = (tag, state?) => context.system.getLocalizedResource(`${tag}${state ? ':' + state : ''}_label`) || state || tag;
     // tags value is an array of arrays
@@ -61,16 +61,21 @@ export class CellRenderer {
       ? `<table class="cellrenderer-tags">${param.value
           .map(
             (v) => `<tr>
+            <td class="tag_label">#${titleFnc(v[0])}</td>
             <td class="state_label">${titleFnc(v[0], v[1] + '')}</td>
-            <td class="tag_label">( #${titleFnc(v[0])} )</td>
-            <td hidden class="tag">${v[0]}</td>
-            <td hidden class="state">${v[1]}</td>
-            <td hidden class="date">${context.datePipe.transform(v[2], 'eoNiceShort')}</td>
-            <td hidden class="traceid">${v[3]}</td>
+            <td class="tag">${v[0]}</td>
+            <td class="state">${v[1]}</td>
+            <td class="date">${context.datePipe.transform(v[2], 'eoNiceShort')}</td>
             </tr>`
           )
           .join('')}</table>`
       : '';
+  }
+
+  static systemTagsCellRenderer(param) {
+    const { context, value } = param;
+    const titleFnc = (tag, state?) => context.system.getLocalizedResource(`${tag}${state ? ':' + state : ''}_label`) || state || tag;
+    return param.value ? param.value.map((v) => `<span class="chip">${titleFnc(v[0], v[1] + '')}</span>`).join('') : '';
   }
 
   static emailCellRenderer(param) {
