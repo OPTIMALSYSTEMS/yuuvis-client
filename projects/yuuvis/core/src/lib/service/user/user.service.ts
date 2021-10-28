@@ -131,7 +131,7 @@ export class UserService {
   }
 
   logout(redirRoute?: string): void {
-    window.localStorage.setItem(this.LOGOUT_EVENT_KEY, 'true');
+    window.localStorage.setItem(this.LOGOUT_EVENT_KEY, `${Date.now()}`);
     if (this.backend.authUsesOpenIdConnect()) {
       this.oidc.logout();
     } else {
