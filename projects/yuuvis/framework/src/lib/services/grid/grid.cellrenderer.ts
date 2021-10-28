@@ -75,7 +75,7 @@ export class CellRenderer {
   static systemTagsCellRenderer(param) {
     const { context, value } = param;
     const titleFnc = (tag, state?) => context.system.getLocalizedResource(`${tag}${state ? ':' + state : ''}_label`) || state || tag;
-    return param.value ? param.value.map((v) => `<span class="chip">${titleFnc(v[0], v[1] + '')}</span>`).join('') : '';
+    return param.value ? param.value.map((v) => `<span class="chip">${titleFnc(v[0], v[1] + '')} (#${titleFnc(v[0])})</span>`).join('') : '';
   }
 
   static emailCellRenderer(param) {
