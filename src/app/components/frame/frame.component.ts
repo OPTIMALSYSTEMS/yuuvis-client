@@ -31,7 +31,7 @@ import {
   ScreenService,
   UploadResult
 } from '@yuuvis/framework';
-import { Observable } from 'rxjs';
+import { forkJoin, Observable } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { add, close, drawer, offline, refresh, search, userDisabled } from '../../../assets/default/svg/svg';
@@ -333,9 +333,23 @@ export class FrameComponent implements OnInit, OnDestroy {
         this.checkedForLogoutRoute = true;
         // redirect to the page the user logged out from the last time
         // but only if current route is not a deep link
-        if (this.userService.getCurrentUser && ['/dashboard', '/', ''].includes(this.router.routerState.snapshot.url)) {
-          this.frameService.getRouteOnLogout().subscribe((url) => {
-            if (url) this.router.navigateByUrl(url);
+        const ignoreRoutes = ['/dashboard', '/', ''];
+        const routes = this.router.config.map((c) => c.path);
+        if (this.userService.getCurrentUser() && ignoreRoutes.includes(this.router.routerState.snapshot.url)) {
+          forkJoin([this.frameService.getRouteOnLogout(), this.authService.getInitialRequestUri()]).subscribe((res: { uri: string; timestamp: number }[]) => {
+            const logoutRes = res[0];
+            const loginRes = res[1] && !ignoreRoutes.includes(res[1].uri) ? res[1] : null;
+
+            if (logoutRes && loginRes) {
+              // got logout and initial uri
+              this.router.navigateByUrl((logoutRes.timestamp > loginRes.timestamp ? logoutRes : loginRes).uri);
+            } else if (logoutRes) {
+              // got only logout uri
+              this.router.navigateByUrl(logoutRes.uri);
+            } else if (loginRes) {
+              // got only initial uri
+              this.router.navigateByUrl(loginRes.uri);
+            }
           });
         }
       }
