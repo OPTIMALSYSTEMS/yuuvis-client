@@ -374,7 +374,7 @@
   "yuv.client.frame.offline.title": "Offline",
   "yuv.client.sidebar.create.pending.title": "In-tray",
   "yuv.client.state.about.author.label": "Manufacturer:",
-  "yuv.client.state.about.claim": "yuuvis® is our content services platform, a framework for solution developers who wish to create specialist content-centric applications on open standards with short time to market. Create. Scalable. Framework.",
+  "yuv.client.state.about.claim": "yuuvis® client as reference implementation demonstrates a possible implementation of a GUI (Graphical User Interface) based on yuuvis® API and developer libraries.\n\nThis demo version offers you the opportunity to test our components. To assist you in implementing a client according to your own requirements and needs, we provide the source code of the reference client for further development.\n\nOur user documentation is example documentation without any claim to completeness.",
   "yuv.client.state.about.client.version.label": "Component version:",
   "yuv.client.state.about.documentation.link.label": "Documentation",
   "yuv.client.state.about.license.intro": "This document contains licensing information with supplementary conditions for third-party components integrated into yuuvis® client. The licensing information and supplementary conditions become a part of the OPTIMAL SYSTEMS software licensing agreement as a result of this reference.",
