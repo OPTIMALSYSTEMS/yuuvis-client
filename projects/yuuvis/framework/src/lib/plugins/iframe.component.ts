@@ -47,19 +47,26 @@ export abstract class IFrameComponent {
 
   iframeInit(iframe = this.iframe, searchTerm = '', onload?: Function) {
     if (iframe) {
-      const win = iframe?.contentWindow || iframe;
-      win['api'] = window['api'];
-      fromEvent(iframe, 'load')
-        .pipe(takeUntilDestroy(this))
-        .subscribe(() => {
-          onload && onload();
-          setTimeout(() => {
-            this.loading = false;
-            const win = iframe?.contentWindow || iframe;
-            this.searchPDF(searchTerm, win);
-            this.preventDropEvent(win);
-          }, 100);
-        });
+      iframe._init ||
+        fromEvent(iframe, 'load')
+          .pipe(takeUntilDestroy(this))
+          .subscribe(() => {
+            const win = this.setApi(iframe);
+            onload && onload();
+            setTimeout(() => {
+              this.loading = false;
+              this.searchPDF(searchTerm, win);
+              this.preventDropEvent(win);
+            }, 100);
+          });
+      iframe._init = !!this.setApi(iframe);
     }
+  }
+
+  private setApi(iframe: any) {
+    // set api to iframe window
+    const win = iframe?.contentWindow || iframe;
+    win['api'] = window['api'];
+    return win;
   }
 }
