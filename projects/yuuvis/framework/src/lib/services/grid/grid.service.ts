@@ -15,6 +15,7 @@ import {
   SystemService,
   TranslateService,
   UserConfigService,
+  UserService,
   Utils
 } from '@yuuvis/core';
 import { Observable } from 'rxjs';
@@ -63,6 +64,7 @@ export class GridService {
     private searchSvc: SearchService,
     private userConfig: UserConfigService,
     private translate: TranslateService,
+    private userService: UserService,
     private backend: BackendService,
     @Inject(ROUTES) private routes: YuvRoutes
   ) {
@@ -73,6 +75,7 @@ export class GridService {
       fileSizePipe: new FileSizePipe(translate),
       numberPipe: new LocaleNumberPipe(translate),
       datePipe: new LocaleDatePipe(translate),
+      userService,
       cr: CellRenderer
       // fileSizeOpts: [],
       // mimetypegroupOpts: [],

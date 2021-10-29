@@ -49,6 +49,9 @@ export class SystemService {
   private systemSource = new ReplaySubject<SystemDefinition>();
   public system$: Observable<SystemDefinition> = this.systemSource.asObservable();
 
+  // cache for resolved visible tags because they are used in lists and therefore should not be re-evaluated all the time
+  private visibleTagsCache: { [objectId: string]: { [tagName: string]: any[] } } = {};
+
   authData: AuthData;
 
   /**
@@ -413,20 +416,52 @@ export class SystemService {
   /**
    * Get the resolved object tags
    */
-  getResolvedTags(objectTypeId?: string): { id: string; tag: string; fields: ObjectTypeField[] }[] {
-    const ot = this.getObjectType(objectTypeId) || this.getSecondaryObjectType(objectTypeId);
-    const tags = ot?.classification?.filter((t) => t.startsWith('tag['));
-    const parentType = ot && (ot as ObjectType).floatingParentType;
-    // filter out parent tags that are overriden
-    const parentTags = parentType && this.getResolvedTags(parentType).filter((t) => !tags.find((tag) => tag.startsWith(t.tag.replace(/\d.*/, ''))));
+  getResolvedTags(objectTypeId?: string): { id: string; tagName: string; tagValues: any; fields: ObjectTypeField[] }[] {
+    const vTags = this.getVisibleTags(objectTypeId);
+    return Object.keys(vTags).map((k) => ({
+      id: objectTypeId,
+      tagName: k,
+      tagValues: vTags[k],
+      fields: this.getBaseType(true).fields.filter((f) => f.id === BaseObjectTypeField.TAGS)
+    }));
+  }
 
-    return (tags || [])
-      .map((tag) => ({
-        id: ot.id,
-        tag,
-        fields: this.getBaseType(true).fields.filter((f) => f.id === BaseObjectTypeField.TAGS)
-      }))
-      .concat(parentTags || []);
+  /**
+   * Visible tags are defined by a classification on the object type (e.g. 'tag[tenkolibri:process,1,2,3]').
+   *
+   * The example will only return tags with the name 'tenkolibri:process'
+   * and values of either 1, 2 or 3. All other tags will be ignored.
+   *
+   * @param objectTypeId ID of the object type to get the visible tags for
+   * @returns object where the property name is the name of the tag and its value are the visible values
+   * for that tag (if values is emoty all values are allowed)
+   */
+  getVisibleTags(objectTypeId: string): { [tagName: string]: any[] } {
+    return this.visibleTagsCache[objectTypeId] || this.fetchVisibleTags(objectTypeId);
+  }
+
+  private fetchVisibleTags(objectTypeId: string): { [tagName: string]: any[] } {
+    const ot = this.getObjectType(objectTypeId) || this.getSecondaryObjectType(objectTypeId);
+    const tagClassifications = ot?.classification?.filter((t) => t.startsWith('tag['));
+    const parentType = ot && (ot as ObjectType).floatingParentType;
+
+    const to: { [tagName: string]: any[] } = {};
+    (tagClassifications || []).forEach((tag) => {
+      const m = tag.match(/\[(.*)\]/i)[1].split(',');
+      const tagName = m.splice(0, 1)[0];
+      const tagValues = m.map((v) => parseInt(v.trim()));
+      to[tagName] = tagValues;
+    });
+
+    this.visibleTagsCache[objectTypeId] = parentType ? { ...this.getVisibleTags(parentType), ...to } : to;
+    return this.visibleTagsCache[objectTypeId];
+  }
+
+  filterVisibleTags(objectTypeId: string, tagsValue: Array<Array<any>>): Array<Array<any>> {
+    if (!tagsValue) return [];
+    const vTags: { [tagName: string]: any[] } = this.getVisibleTags(objectTypeId);
+    // Tag value looks like this: [tagName: string, state: number, date: Date, traceId: string]
+    return tagsValue.filter((v: any[]) => !!vTags[v[0]] && vTags[v[0]].includes(v[1]));
   }
 
   /**

@@ -82,6 +82,13 @@ export interface ObjectTypeField {
   classifications?: string[];
 }
 
+export interface VisibleObjectTag {
+  // the tags name
+  tagName: string;
+  // values that should be visible. If this property is not set all values of that tag are visible
+  tagValues?: any[];
+}
+
 /**
  * Base definition of the kind of data we'll receive
  * from the backend asking for native schema
