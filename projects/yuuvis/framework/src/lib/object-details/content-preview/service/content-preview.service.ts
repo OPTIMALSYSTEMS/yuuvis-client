@@ -21,9 +21,6 @@ export class ContentPreviewService {
       UNDOCK_WINDOW_NAME,
       'directories=0, titlebar=0, toolbar=0, location=0, status=0, menubar=0, resizable=1, top=10, left=10'
     ));
-
-    // set api to iframe window
-    w['api'] = window['api'];
     return w;
   }
 
@@ -39,6 +36,28 @@ export class ContentPreviewService {
   static undockWinActive(): boolean {
     return !!ContentPreviewService.getUndockWin() && !ContentPreviewService.getUndockWin().closed;
   }
+
+  defaultViewers = [
+    { mimeType: ['application/json'], viewer: 'api/monaco/?path=${path}&lang=${lang}&theme=${theme}&language=javascript' },
+    { mimeType: ['text/plain'], viewer: 'api/monaco/?path=${path}&lang=${lang}&theme=${theme}' },
+    { mimeType: ['text/xml'], viewer: 'api/monaco/?path=${path}&lang=${lang}&theme=${theme}&language=xml' },
+    { mimeType: ['text/java'], viewer: 'api/monaco/?path=${path}&lang=${lang}&theme=${theme}&language=java' },
+    { mimeType: ['text/javascript'], viewer: 'api/monaco/?path=${path}&lang=${lang}&theme=${theme}&language=javascript' },
+    { mimeType: ['text/html'], viewer: 'api/monaco/?path=${path}&lang=${lang}&theme=${theme}&language=html' },
+    {
+      mimeType: ['text/markdown', 'text/x-web-markdown', 'text/x-markdown'],
+      viewer: 'api/monaco/?path=${path}&lang=${lang}&theme=${theme}&language=markdown'
+    },
+    {
+      mimeType: ['audio/mp3', 'audio/webm', 'audio/ogg', 'audio/mpeg', 'video/mp4', 'video/webm', 'video/ogg', 'application/ogg'],
+      viewer: 'api/video/?path=${path}&lang=${lang}&theme=${theme}'
+    },
+    {
+      mimeType: ['image/jpeg', 'image/png', 'image/apng', 'image/gif', 'image/svg+xml', 'image/webp'],
+      viewer: 'api/img/?path=${path}&lang=${lang}&theme=${theme}'
+    },
+    { mimeType: ['application/pdf'], viewer: 'api/pdf/web/viewer.html?file=&path=${path}&lang=${lang}&theme=${theme}' }
+  ];
 
   /**
    *
@@ -80,11 +99,12 @@ export class ContentPreviewService {
 
   private createSettings() {
     const { darkMode, accentColor } = this.layoutService.getLayoutSettings();
+    const theme = darkMode === true ? 'dark' : null;
     const user = this.userService.getCurrentUser();
     const direction = user.uiDirection;
     const lang = this.mapLang(user.getClientLocale());
     const tenant = this.userService.getCurrentUser().tenant;
-    return { darkMode, accentColor, direction, lang, tenant, hash: this.hash };
+    return { darkMode, theme, accentColor, direction, lang, tenant, hash: this.hash };
   }
 
   private createParams(objectId: string, content: DmsObjectContent, version?: number) {
@@ -106,8 +126,9 @@ export class ContentPreviewService {
 
   private resolveCustomViewerConfig(params: any[], dmsObjects: DmsObject[]) {
     return this.pluginsService.getCustomPlugins('viewers').pipe(
-      map((viewers) =>
-        params.map((param, i) => {
+      map((_viewers) => {
+        const viewers = [..._viewers, ...this.defaultViewers];
+        return params.map((param, i) => {
           const o = dmsObjects[i];
           const p: any = this.createParams(o?.id, o?.content, o?.version);
           const { mimeType, fileExtension } = p;
@@ -127,9 +148,10 @@ export class ContentPreviewService {
           ]);
 
           return param;
-        })
-      ),
+        });
+      }),
       switchMap((p) => (!p.find((o) => o.size) ? of(false) : this.hash ? of(true) : this.resolveHash(params)))
+      // switchMap((p) => (!p.find((o) => o.size) ? of(false) : of(true)))
     );
   }
 
