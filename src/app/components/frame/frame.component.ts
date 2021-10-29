@@ -15,6 +15,7 @@ import {
   TranslateService,
   UserRoles,
   UserService,
+  Utils,
   YuvEventType,
   YuvUser
 } from '@yuuvis/core';
@@ -333,8 +334,8 @@ export class FrameComponent implements OnInit, OnDestroy {
         this.checkedForLogoutRoute = true;
         // redirect to the page the user logged out from the last time
         // but only if current route is not a deep link
-        const ignoreRoutes = ['/dashboard', '/', ''];
-        const routes = this.router.config.map((c) => c.path);
+        const ignoreRoutes = ['dashboard', 'index.html'].map((s) => Utils.getBaseHref() + s);
+        // const routes = this.router.config.map((c) => c.path);
         if (this.userService.getCurrentUser() && ignoreRoutes.includes(this.router.routerState.snapshot.url)) {
           forkJoin([this.frameService.getRouteOnLogout(), this.authService.getInitialRequestUri()]).subscribe((res: { uri: string; timestamp: number }[]) => {
             const logoutRes = res[0];
