@@ -145,6 +145,13 @@ body {
     }
   }
 
+  .p-tabview {
+    .p-tabview-panels,
+    .p-tabview-panel {
+      background-color: var(--panel-background-grey);
+    }
+  }
+
   .p-inputtext {
     color: var(--text-color-body);
     font-size: var(--font-body);

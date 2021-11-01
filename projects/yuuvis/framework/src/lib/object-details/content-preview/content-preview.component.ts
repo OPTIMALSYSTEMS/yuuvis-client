@@ -44,7 +44,7 @@ export class ContentPreviewComponent extends IFrameComponent implements OnInit, 
     // exclude old (non existent) office documents renditions
     const getContent = (o) =>
       this.activeVersion &&
-      this.activeVersion?.content?.contentStreamId !== o?.content?.contentStreamId &&
+      this.activeVersion?.content?.digest !== o?.content?.digest &&
       o?.content?.mimeType?.match(/application\/(msword|vnd.ms-excel|vnd.ms-powerpoint|vnd.openxmlformats)/)
         ? null
         : o?.content;

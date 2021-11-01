@@ -16,11 +16,12 @@ export class ContentPreviewService {
   public previewSrc$: Observable<string> = this.previewSrcSource.asObservable();
 
   static undockWin(src: string) {
-    return (window[UNDOCK_WINDOW_NAME] = window.open(
+    const w = (window[UNDOCK_WINDOW_NAME] = window.open(
       src || '',
       UNDOCK_WINDOW_NAME,
       'directories=0, titlebar=0, toolbar=0, location=0, status=0, menubar=0, resizable=1, top=10, left=10'
     ));
+    return w;
   }
 
   static closeWin() {
@@ -35,6 +36,28 @@ export class ContentPreviewService {
   static undockWinActive(): boolean {
     return !!ContentPreviewService.getUndockWin() && !ContentPreviewService.getUndockWin().closed;
   }
+
+  defaultViewers = [
+    { mimeType: ['application/json'], viewer: 'api/monaco/?path=${path}&lang=${lang}&theme=${theme}&language=javascript' },
+    { mimeType: ['text/plain'], viewer: 'api/monaco/?path=${path}&lang=${lang}&theme=${theme}' },
+    { mimeType: ['text/xml'], viewer: 'api/monaco/?path=${path}&lang=${lang}&theme=${theme}&language=xml' },
+    { mimeType: ['text/java'], viewer: 'api/monaco/?path=${path}&lang=${lang}&theme=${theme}&language=java' },
+    { mimeType: ['text/javascript'], viewer: 'api/monaco/?path=${path}&lang=${lang}&theme=${theme}&language=javascript' },
+    { mimeType: ['text/html'], viewer: 'api/monaco/?path=${path}&lang=${lang}&theme=${theme}&language=html' },
+    {
+      mimeType: ['text/markdown', 'text/x-web-markdown', 'text/x-markdown'],
+      viewer: 'api/monaco/?path=${path}&lang=${lang}&theme=${theme}&language=markdown'
+    },
+    {
+      mimeType: ['audio/mp3', 'audio/webm', 'audio/ogg', 'audio/mpeg', 'video/mp4', 'video/webm', 'video/ogg', 'application/ogg'],
+      viewer: 'api/video/?path=${path}&lang=${lang}&theme=${theme}'
+    },
+    {
+      mimeType: ['image/jpeg', 'image/png', 'image/apng', 'image/gif', 'image/svg+xml', 'image/webp'],
+      viewer: 'api/img/?path=${path}&lang=${lang}&theme=${theme}'
+    },
+    { mimeType: ['application/pdf'], viewer: 'api/pdf/web/viewer.html?file=&path=${path}&lang=${lang}&theme=${theme}' }
+  ];
 
   /**
    *
@@ -76,18 +99,19 @@ export class ContentPreviewService {
 
   private createSettings() {
     const { darkMode, accentColor } = this.layoutService.getLayoutSettings();
+    const theme = darkMode === true ? 'dark' : null;
     const user = this.userService.getCurrentUser();
     const direction = user.uiDirection;
     const lang = this.mapLang(user.getClientLocale());
     const tenant = this.userService.getCurrentUser().tenant;
-    return { darkMode, accentColor, direction, lang, username: user.firstname || user.username, tenant, hash: this.hash };
+    return { darkMode, theme, accentColor, direction, lang, tenant, hash: this.hash };
   }
 
   private createParams(objectId: string, content: DmsObjectContent, version?: number) {
     if (!content) return {};
-    const { mimeType, size, contentStreamId, fileName } = content;
+    const { mimeType, size, digest, fileName } = content;
     const fileExtension = fileName.includes('.') ? fileName.split('.').pop() : '';
-    return { mimeType, ...this.createPath(objectId, version), fileName, fileExtension, size, contentStreamId, objectId, version, ...this.createSettings() };
+    return { mimeType, ...this.createPath(objectId, version), fileName, fileExtension, size, digest, objectId, version, ...this.createSettings() };
   }
 
   private resolveHash(params: any[]) {
@@ -102,17 +126,17 @@ export class ContentPreviewService {
 
   private resolveCustomViewerConfig(params: any[], dmsObjects: DmsObject[]) {
     return this.pluginsService.getCustomPlugins('viewers').pipe(
-      map((viewers) =>
-        params.map((param, i) => {
+      map((_viewers) => {
+        const viewers = [..._viewers, ...this.defaultViewers];
+        return params.map((param, i) => {
           const o = dmsObjects[i];
           const p: any = this.createParams(o?.id, o?.content, o?.version);
           const { mimeType, fileExtension } = p;
           // shared code from heimdall
           const config = viewers?.find((c: any) => {
-            const matchMT = (typeof c.mimeType === 'string' ? [c.mimeType] : c.mimeType).includes(mimeType);
-            const matchFE = c.fileExtension
-              ? (typeof c.fileExtension === 'string' ? [c.fileExtension] : c.fileExtension).includes((fileExtension || '').toLowerCase())
-              : true;
+            const matchMT = !c.mimeType || (typeof c.mimeType === 'string' ? [c.mimeType] : c.mimeType).includes(mimeType);
+            const matchFE =
+              !c.fileExtension || (typeof c.fileExtension === 'string' ? [c.fileExtension] : c.fileExtension).includes((fileExtension || '').toLowerCase());
             return matchMT && matchFE;
           });
 
@@ -124,9 +148,10 @@ export class ContentPreviewService {
           ]);
 
           return param;
-        })
-      ),
+        });
+      }),
       switchMap((p) => (!p.find((o) => o.size) ? of(false) : this.hash ? of(true) : this.resolveHash(params)))
+      // switchMap((p) => (!p.find((o) => o.size) ? of(false) : of(true)))
     );
   }
 

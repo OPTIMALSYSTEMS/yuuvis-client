@@ -52,8 +52,10 @@
     background-color: var(--panel-background);
     border-top: 1px solid var(--panel-divider-color);
     padding: calc(var(--app-pane-padding) / 2);
+    flex-flow: row wrap;
     display: flex;
-    margin: 0 -2px;
+    align-items: center;
+    margin: -2px;
 
     &.disabled {
       opacity: 0.6;
@@ -64,6 +66,8 @@
 
     > div {
       display: flex;
+      align-items: center;
+      flex-flow: row wrap;
       &.right {
         flex: 1;
         justify-content: flex-end;
@@ -71,7 +75,7 @@
     }
 
     button {
-      margin: 0 2px;
+      margin: 2px;
     }
   }
 }

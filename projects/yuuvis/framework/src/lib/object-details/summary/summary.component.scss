@@ -3,11 +3,4 @@
   height: 100%;
   overflow: auto;
   padding: var(--app-pane-padding);
-
-  ::ng-deep .admin .cellrenderer-tags {
-    .tag,
-    .state {
-      display: inline-block !important;
-    }
-  }
 }

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { ApiBase, BackendService, Utils } from '@yuuvis/core';
+import { ApiBase, AppCacheService, BackendService, UserService, Utils, YuvUser } from '@yuuvis/core';
+import { Observable } from 'rxjs';
 
 /**
  * This service is used for sharing data across the clients states (pages).
@@ -18,8 +19,15 @@ import { ApiBase, BackendService, Utils } from '@yuuvis/core';
 })
 export class FrameService {
   private items: Map<string, any> = new Map<string, any>();
+  private APP_LOGOUT_EVENT_KEY = 'yuv.app.event.logout';
 
-  constructor(private router: Router, private backend: BackendService) {}
+  constructor(private router: Router, private userService: UserService, private appCache: AppCacheService, private backend: BackendService) {
+    window.addEventListener('storage', (evt) => {
+      if (evt.key === this.APP_LOGOUT_EVENT_KEY) {
+        this.appLogout(true);
+      }
+    });
+  }
 
   /**
    * Add temporary data item.
@@ -67,5 +75,26 @@ export class FrameService {
   getAppRootPath(): string {
     let root = this.backend.getApiBase(ApiBase.none, true);
     return `${root}${Utils.getBaseHref()}`;
+  }
+
+  // logout triggered by the app (or the apps auth interceptor)
+  appLogout(triggeredFromOtherTab?: boolean) {
+    if (!triggeredFromOtherTab) {
+      // persist the current route to be able to enter it again once the user logs back in
+      this.appCache.setItem(this.getRouteOnLogoutStorageKey(), this.router.routerState.snapshot.url).subscribe((_) => {
+        window.localStorage.setItem(this.APP_LOGOUT_EVENT_KEY, `${Date.now()}`);
+      });
+    }
+    this.userService.logout();
+  }
+
+  // get the route the current user was on when logging out
+  getRouteOnLogout(): Observable<string> {
+    return this.appCache.getItem(this.getRouteOnLogoutStorageKey());
+  }
+
+  private getRouteOnLogoutStorageKey() {
+    const currentUser: YuvUser = this.userService.getCurrentUser();
+    return `yuv.client.logout.route.${currentUser ? currentUser.id : 'undefined'}`;
   }
 }

@@ -190,7 +190,7 @@ export class QuickSearchService {
     const fields = [...sharedFields.filter((f) => !skipFields.includes(f.id)).map((f) => toSelectable(f))].sort(Utils.sortValues('label'));
 
     const tags = q.allTypes.reduce(
-      (prev, cur) => this.systemService.getResolvedTags(cur).filter((t) => prev.find((p) => p.tag === t.tag)),
+      (prev, cur) => this.systemService.getResolvedTags(cur).filter((t) => prev.find((p) => p.tagName === t.tagName)),
       this.systemService.getResolvedTags(q.allTypes[0])
     );
 
@@ -219,15 +219,9 @@ export class QuickSearchService {
           ...c.fields[0].columnDefinitions
             .filter((f) => f.id.match(/state/))
             .map((value) => {
-              const name = c.tag.split(',')[0].replace(/.*\[/, '');
-              const vals = c.tag
-                .replace(/\].*/, '')
-                .split(',')
-                .slice(1)
-                .map((n) => parseInt(n));
-              const id = BaseObjectTypeField.TAGS + `[${name}].state`;
+              const id = BaseObjectTypeField.TAGS + `[${c.tagName}].state`;
               const label = this.getLocalizedTag(id);
-              return { id, label, class: id, defaultValue: vals, defaultOperator: SearchFilter.OPERATOR.IN, value: { ...value, id } };
+              return { id, label, class: id, defaultValue: c.tagValues, defaultOperator: SearchFilter.OPERATOR.IN, value: { ...value, id } };
             })
         ],
         []

@@ -71,10 +71,12 @@
       grid-area: header_title;
       font-weight: var(--font-weight-normal);
       font-size: var(--font-title);
+      user-select: text;
       @include ellipsis();
     }
 
     .header_description {
+      user-select: text;
       grid-area: header_description;
       font-weight: var(--font-weight-normal);
       font-size: var(--font-subhead);
