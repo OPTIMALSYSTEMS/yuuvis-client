@@ -81,7 +81,6 @@ export class CheckboxComponent implements ControlValueAccessor {
   registerOnTouched(fn: any): void {}
 
   onChange(value) {
-    this.value = value;
     this.change.emit(this.value);
     this.propagateChange(this.value);
   }
