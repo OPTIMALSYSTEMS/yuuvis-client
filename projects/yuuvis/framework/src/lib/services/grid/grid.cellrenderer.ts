@@ -76,8 +76,9 @@ export class CellRenderer {
   }
 
   private static getSystemTagsRendererInput(param): { titleFnc: Function; value: any[] } {
+    const titleFnc = (tag, state?) => param.context.system.getLocalizedResource(`${tag}${state ? ':' + state : ''}_label`) || state || tag;
     return {
-      titleFnc: (tag, state?) => param.context.system.getLocalizedResource(`${tag}${state ? ':' + state : ''}_label`) || state || tag,
+      titleFnc,
       value: param.context.userService.hasAdminRole
         ? param.value || []
         : param.context.system.filterVisibleTags(param.data[BaseObjectTypeField.OBJECT_TYPE_ID], param.value)
