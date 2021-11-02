@@ -1,7 +1,8 @@
-import { Attribute, Component, EventEmitter, forwardRef, Input, Output } from '@angular/core';
+import { Attribute, Component, ElementRef, EventEmitter, forwardRef, Input, Output, ViewChild } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { IconRegistryService } from '../../../common/components/icon/service/iconRegistry.service';
 import { clear } from '../../../svg.generated';
+
 /**
  * Creates form input for boolean values (checkbox).
  *
@@ -25,7 +26,9 @@ import { clear } from '../../../svg.generated';
   ]
 })
 export class CheckboxComponent implements ControlValueAccessor {
-  // value: boolean = null;
+  @ViewChild('cb', { static: true }) input: ElementRef;
+
+  _value: boolean = null;
   _tabindex;
 
   /**
@@ -37,7 +40,21 @@ export class CheckboxComponent implements ControlValueAccessor {
    * Will prevent the input from being changed (default: false)
    */
   @Input() readonly: boolean;
-  @Input() value: boolean = null;
+  @Input() set value(v: boolean) {
+    if (this.tristate && this.value === false && v === true) {
+      this._value = undefined;
+    } else {
+      this._value = v;
+    }
+
+    // this._value = v;
+    this.input.nativeElement.indeterminate = this._value === undefined || this.value === null;
+  }
+
+  get value() {
+    return this._value;
+  }
+
   //@Input() filter: any;
   @Output() change = new EventEmitter<boolean>();
 
@@ -64,9 +81,7 @@ export class CheckboxComponent implements ControlValueAccessor {
   registerOnTouched(fn: any): void {}
 
   onChange(value) {
-    if (value === null) {
-      this.value = true;
-    }
+    this.value = value;
     this.change.emit(this.value);
     this.propagateChange(this.value);
   }

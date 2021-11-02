@@ -1,5 +1,10 @@
 :host {
   display: block;
+
+  input:indeterminate {
+    opacity: 0.2;
+  }
+
   p-triStateCheckbox:focus,
   p-checkbox:focus {
     outline: 0;

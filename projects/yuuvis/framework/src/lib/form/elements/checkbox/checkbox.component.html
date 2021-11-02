@@ -8,3 +8,5 @@
   <p-checkbox binary="true" tabindex="{{_tabindex}}" [(ngModel)]="value" (ngModelChange)="onChange($event)"
     [disabled]="readonly" [ngClass]="{undefined: value === null}"></p-checkbox>
 </ng-template>
+
+<input class="switch" #cb [(ngModel)]="value" type="checkbox" (ngModelChange)="onChange($event)">
