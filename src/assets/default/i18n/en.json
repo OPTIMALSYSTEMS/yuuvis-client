@@ -216,7 +216,7 @@
   "yuv.framework.process-attachments-order.button.cancel": "Cancel",
   "yuv.framework.process-attachments-order.button.save": "Save",
   "yuv.framework.process-attachments-order.title": "Change order of attachments",
-  "yuv.framework.process-details-summary.action.delete": "Deletes process",
+  "yuv.framework.process-details-summary.action.delete": "Delete process",
   "yuv.framework.process-details-summary.businessKey": "Business key",
   "yuv.framework.process-details-summary.dialog.remove.message": "Do you really want to delete the process?",
   "yuv.framework.process-details-summary.endTime": "Ended on",
