@@ -101,7 +101,7 @@ export enum Classification {
   STRING_PHONE = 'phone',
   NUMBER_FILESIZE = 'filesize',
   NUMBER_DIGIT = 'digit',
-  BOOLEAN_SWITCH = 'appClient:switch',
+  BOOLEAN_SWITCH = 'switch',
   SYSTEM_SOT = 'systemsot',
   PREDICTION_CLASSIFY = 'prediction:classify',
   TABLE_SORTABLE = 'sortable'

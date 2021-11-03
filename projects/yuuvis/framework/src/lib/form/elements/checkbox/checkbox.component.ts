@@ -1,4 +1,4 @@
-import { Attribute, Component, ElementRef, EventEmitter, forwardRef, Input, Output, ViewChild } from '@angular/core';
+import { AfterViewInit, Attribute, Component, ElementRef, EventEmitter, forwardRef, Input, Output, ViewChild } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { IconRegistryService } from '../../../common/components/icon/service/iconRegistry.service';
 import { clear } from '../../../svg.generated';
@@ -25,7 +25,7 @@ import { clear } from '../../../svg.generated';
     }
   ]
 })
-export class CheckboxComponent implements ControlValueAccessor {
+export class CheckboxComponent implements ControlValueAccessor, AfterViewInit {
   @ViewChild('cb') input: ElementRef;
 
   _value: boolean = null;
@@ -41,7 +41,8 @@ export class CheckboxComponent implements ControlValueAccessor {
    */
   @Input() readonly: boolean;
   @Input() set value(v: boolean) {
-    if (this.isSwitch && this.tristate && this.value === false && v === true) {
+    if (this.isSwitch && this.tristate && v !== null && this._value) {
+      // if (this.isSwitch && this.tristate && v !== null && ((this.value && this._value === false) || this._value === true)) {
       this._value = undefined;
     } else {
       this._value = v;
@@ -79,7 +80,16 @@ export class CheckboxComponent implements ControlValueAccessor {
   registerOnTouched(fn: any): void {}
 
   onChange(value) {
+    if (!this.isSwitch && value === null) {
+      this.value = true;
+    }
     this.change.emit(this.value);
     this.propagateChange(this.value);
+  }
+
+  ngAfterViewInit() {
+    if (this.isSwitch) {
+      this.input.nativeElement.indeterminate = this._value === undefined || this.value === null;
+    }
   }
 }
