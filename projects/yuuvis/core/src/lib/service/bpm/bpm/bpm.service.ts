@@ -4,6 +4,7 @@ import { finalize, map } from 'rxjs/operators';
 import { Utils } from '../../../util/utils';
 import { ApiBase } from '../../backend/api.enum';
 import { BackendService } from '../../backend/backend.service';
+import { SystemService } from '../../system/system.service';
 import { FetchTaskOptions, Process, ProcessCreatePayload, ProcessDefinitionKey, ProcessInstanceHistoryEntry } from '../model/bpm.model';
 
 /**
@@ -19,7 +20,7 @@ export class BpmService {
   private loadingBpmDataSource = new BehaviorSubject<boolean>(false);
   public loadingBpmData$: Observable<boolean> = this.loadingBpmDataSource.asObservable();
 
-  constructor(private backendService: BackendService) {}
+  constructor(private backendService: BackendService, private system: SystemService) {}
 
   getProcesses(url: string): Observable<unknown> {
     this.loadingBpmDataSource.next(true);
@@ -61,7 +62,7 @@ export class BpmService {
           ? res.tasks
               .map((t) => ({
                 id: t.id,
-                name: t.name,
+                name: this.system.getLocalizedResource(`${t.name}_label`) || t.name,
                 description: t.description,
                 assignee: t.assignee,
                 createTime: new Date(t.createTime),

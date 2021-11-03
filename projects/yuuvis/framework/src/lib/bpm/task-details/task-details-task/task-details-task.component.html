@@ -25,9 +25,10 @@
     <div class="right">
         <button (click)="resetForm()" *ngIf="formState?.dirty">
             {{'yuv.framework.task-details-task.button.reset'|translate}}</button>
-        <button class="" (click)="update()" *ngIf="formOptions"
+        <button class="" (click)="update()" *ngIf="_task.assignee && formOptions"
             [disabled]="error || !formState?.dirty || formState?.invalid">
             {{'yuv.framework.task-details-task.button.update'|translate}}</button>
+
         <ng-container *ngIf="claimable">
             <button *ngIf="!_task.assignee; else tplUnClaim" class="primary" (click)="claim(true)">
                 {{'yuv.framework.task-details-task.button.claim'|translate}}
