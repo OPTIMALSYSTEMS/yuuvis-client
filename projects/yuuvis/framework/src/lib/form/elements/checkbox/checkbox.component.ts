@@ -26,7 +26,7 @@ import { clear } from '../../../svg.generated';
   ]
 })
 export class CheckboxComponent implements ControlValueAccessor {
-  @ViewChild('cb', { static: true }) input: ElementRef;
+  @ViewChild('cb') input: ElementRef;
 
   _value: boolean = null;
   _tabindex;
@@ -41,24 +41,22 @@ export class CheckboxComponent implements ControlValueAccessor {
    */
   @Input() readonly: boolean;
   @Input() set value(v: boolean) {
-    if (this.tristate && this.value === false && v === true) {
+    if (this.isSwitch && this.tristate && this.value === false && v === true) {
       this._value = undefined;
     } else {
       this._value = v;
     }
-
-    // this._value = v;
-    this.input.nativeElement.indeterminate = this._value === undefined || this.value === null;
+    if (this.isSwitch && this.input) {
+      this.input.nativeElement.indeterminate = this._value === undefined || this.value === null;
+    }
   }
 
   get value() {
     return this._value;
   }
-
-  //@Input() filter: any;
   @Output() change = new EventEmitter<boolean>();
 
-  constructor(@Attribute('tabindex') tabindex: string, private iconRegistry: IconRegistryService) {
+  constructor(@Attribute('tabindex') tabindex: string, @Attribute('switch') private isSwitch: boolean, private iconRegistry: IconRegistryService) {
     this.iconRegistry.registerIcons([clear]);
     this._tabindex = tabindex || '0';
   }
