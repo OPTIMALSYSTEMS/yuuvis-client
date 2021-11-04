@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, EMPTY, forkJoin, Observable } from 'rxjs';
 import { expand, map, skipWhile, tap } from 'rxjs/operators';
 import { BpmService } from '../bpm/bpm.service';
-import { FetchProcessOptions, FetchTaskOptions, FollowUpVars, Process, ProcessCreatePayload, ProcessDefinitionKey } from '../model/bpm.model';
+import { FetchProcessOptions, FetchTaskOptions, FollowUpVars, Process, ProcessCreatePayload, ProcessDefinitionKey, Task } from '../model/bpm.model';
 
 interface CreateFollowUpPayload {
   expiryDateTime: Date;
@@ -75,6 +75,15 @@ export class ProcessService {
    */
   getFollowUp(businessKey: string, options?: FetchTaskOptions): Observable<Process> {
     return this.bpmService.getProcessInstance(ProcessDefinitionKey.FOLLOW_UP, { ...options, businessKey });
+  }
+
+  getFollowUpTask(objectId: string): Observable<Task> {
+    return this.bpmService.getProcesses(`/bpm/tasks?businessKey=${objectId}&processDefinitionKey=${ProcessDefinitionKey.FOLLOW_UP}`).pipe(
+      map((res: any) => {
+        const tasks = res.objects as Task[];
+        return tasks.length ? tasks[0] : null;
+      })
+    );
   }
 
   /**
