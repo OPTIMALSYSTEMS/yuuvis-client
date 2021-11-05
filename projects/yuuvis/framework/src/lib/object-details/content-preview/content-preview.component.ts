@@ -42,17 +42,16 @@ export class ContentPreviewComponent extends IFrameComponent implements OnInit, 
   @Input()
   set dmsObject(object: DmsObject) {
     // exclude old (non existent) office documents renditions
-    const getContent = (o) =>
+    const exclude = (params: any) =>
       this.activeVersion &&
-      this.activeVersion?.content?.digest !== o?.content?.digest &&
-      o?.content?.mimeType?.match(/application\/(msword|vnd.ms-excel|vnd.ms-powerpoint|vnd.openxmlformats)/)
-        ? null
-        : o?.content;
+      this.activeVersion?.content?.digest !== params?.digest &&
+      params?.mimeType?.match(/application\/(msword|vnd.ms-excel|vnd.ms-powerpoint|vnd.openxmlformats)/) &&
+      params?.viewer?.startsWith('api/pdf');
 
     this._dmsObject = object;
     this.loading = true;
     // generate preview URI with streamID to enable refresh if file was changed
-    this.contentPreviewService.createPreviewUrl(object.id, getContent(object), object, getContent(this.dmsObject2), this.dmsObject2);
+    this.contentPreviewService.createPreviewUrl(this.dmsObject, this.dmsObject2, (o: DmsObject) => exclude(o));
   }
 
   get dmsObject() {
@@ -122,10 +121,11 @@ export class ContentPreviewComponent extends IFrameComponent implements OnInit, 
   open(src: string) {
     this.loading = false;
     this.previewSrc = this.contentPreviewService.validateUrl(src);
+    const sameOrigin = src.startsWith(location.origin);
     if (this.isUndocked) {
       ContentPreviewService.undockWin(this.previewSrc);
-      this.iframeInit(this.undockWin, this.searchTerm, () => this.contentPreviewService.validateUrl(this.previewSrc));
-    } else if (!this.iframe) {
+      sameOrigin && this.iframeInit(this.undockWin, this.searchTerm, () => this.contentPreviewService.validateUrl(this.previewSrc));
+    } else if (!this.iframe && sameOrigin) {
       // init iframe again in case it was destoryed
       setTimeout(() => this.iframeInit(this.iframe, this.searchTerm, () => this.contentPreviewService.validateUrl(this.previewSrc)));
     }

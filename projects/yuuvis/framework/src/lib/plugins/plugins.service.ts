@@ -151,9 +151,8 @@ export class PluginsService {
   }
 
   public resolveViewerParams(params: any, dmsObject: any) {
-    // shared code from heimdall
     const config = this.viewers.find((c: any) => {
-      const matchMT = !c.mimeType || (typeof c.mimeType === 'string' ? [c.mimeType] : c.mimeType).includes(params?.mimeType);
+      const matchMT = !c.mimeType || (typeof c.mimeType === 'string' ? [c.mimeType] : c.mimeType).includes((params?.mimeType || '').toLowerCase());
       const matchFE =
         !c.fileExtension || (typeof c.fileExtension === 'string' ? [c.fileExtension] : c.fileExtension).includes((params?.fileExtension || '').toLowerCase());
       return matchMT && matchFE;
@@ -306,7 +305,7 @@ export class PluginsService {
   }
 
   public updateHeaders(src: string) {
-    return this.backend.authUsesOpenIdConnect()
+    return src && this.backend.authUsesOpenIdConnect()
       ? src.replace(/&headers=.*/, '') + '&headers=' + encodeURIComponent(JSON.stringify(this.backend.getAuthHeaders()))
       : src;
   }

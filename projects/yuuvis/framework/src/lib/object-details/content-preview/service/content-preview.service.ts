@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
-import { BackendService, DmsObject, DmsObjectContent, DmsService } from '@yuuvis/core';
-import { Observable, of, ReplaySubject } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
+import { BackendService, DmsObject, DmsService } from '@yuuvis/core';
+import { Observable, ReplaySubject } from 'rxjs';
 import { PluginsService, UNDOCK_WINDOW_NAME } from '../../../plugins/plugins.service';
 
 /**
@@ -10,7 +9,6 @@ import { PluginsService, UNDOCK_WINDOW_NAME } from '../../../plugins/plugins.ser
  */
 @Injectable()
 export class ContentPreviewService {
-  private hash: string;
   private previewSrcSource = new ReplaySubject<string>(null);
   public previewSrc$: Observable<string> = this.previewSrcSource.asObservable();
 
@@ -63,35 +61,25 @@ export class ContentPreviewService {
     return src;
   }
 
-  private createParams(objectId: string, content: DmsObjectContent, version?: number) {
-    if (!content) return {};
-    const { mimeType, size, digest, fileName } = content;
-    const fileExtension = fileName.includes('.') ? fileName.split('.').pop() : '';
-    const path = this.dmsService.getFullContentPath(objectId, version);
-    return { mimeType, path, fileName, fileExtension, size, digest, objectId, version };
+  private createParams(dmsObject: DmsObject) {
+    const { mimeType, size, digest, fileName } = dmsObject?.content || {};
+    const fileExtension = fileName?.includes('.') ? fileName.split('.').pop() : '';
+    const id = dmsObject?.id;
+    const version = dmsObject?.version;
+    const path = size ? this.dmsService.getFullContentPath(id, version) : '';
+    return { mimeType, size, digest, fileName, fileExtension, id, version, path };
   }
 
-  private resolveCustomViewerConfig(params: any[], dmsObjects: DmsObject[]) {
-    return this.pluginsService.getCustomPlugins('viewers').pipe(
-      map(() => {
-        return params.map((param, i) => {
-          const o = dmsObjects[i];
-          const p: any = this.createParams(o?.id, o?.content, o?.version);
-          const pp = this.pluginsService.resolveViewerParams(p, o);
-          return param.size || !pp.viewer.startsWith('api/pdf') ? pp : {};
-        });
-      }),
-      // switchMap((p) => (!p.find((o) => o.size) ? of(false) : this.hash ? of(true) : this.resolveHash(params)))
-      switchMap((p) => (!p.find((o) => o.size) ? of(false) : of(p)))
-    );
+  private resolveCustomViewerConfig(dmsObject: DmsObject, exclude: Function) {
+    const params: any = this.pluginsService.resolveViewerParams(this.createParams(dmsObject), dmsObject);
+    return exclude && exclude(dmsObject) ? this.pluginsService.resolveViewerParams({ path: params.path }, dmsObject) : params;
   }
 
-  createPreviewUrl(id: string, content: DmsObjectContent, dmsObject?: DmsObject, content2?: DmsObjectContent, dmsObject2?: DmsObject): void {
-    const params = this.createParams(id, content, dmsObject?.version);
-    const query: any = dmsObject2?.version ? { compare: [params, this.createParams(id, content2, dmsObject2?.version)] } : params;
-    this.resolveCustomViewerConfig(query.compare || [query], [dmsObject, dmsObject2]).subscribe((hasConfig) => {
-      // this.previewSrcSource.next(id && hasConfig ? Utils.buildUri(`${this.getBaseUrl()}/`, { ...query, headers }) : '');
-      this.previewSrcSource.next(id && hasConfig ? this.pluginsService.resolveUri(hasConfig) : '');
+  createPreviewUrl(dmsObject: DmsObject, dmsObject2?: DmsObject, exclude?: Function): void {
+    this.pluginsService.getCustomPlugins('viewers').subscribe(() => {
+      const params = [this.resolveCustomViewerConfig(dmsObject, exclude)];
+      dmsObject2?.version && params.push(this.resolveCustomViewerConfig(dmsObject2, exclude));
+      this.previewSrcSource.next(this.pluginsService.resolveUri(params));
     });
   }
 
