@@ -311,7 +311,8 @@ export class SearchFilterGroup {
   public static fromQuery(query: any) {
     if (query) {
       const group = (Array.isArray(query) ? query : query.filters || []).map((g) => (g.filters ? SearchFilterGroup.fromQuery(g) : SearchFilter.fromQuery(g)));
-      return new SearchFilterGroup(query.property, query.lo, group);
+      const single = group.length === 1 && group[0].group && group[0];
+      return new SearchFilterGroup(query.property, single?.operator || query.lo, single?.group || group);
     } else {
       return undefined;
     }
