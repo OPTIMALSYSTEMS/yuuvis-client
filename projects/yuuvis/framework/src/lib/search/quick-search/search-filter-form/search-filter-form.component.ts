@@ -121,7 +121,11 @@ export class SearchFilterFormComponent implements OnInit, OnDestroy {
       const fc = wrapper.controls[wrapper._eoFormControlWrapper.controlName] as ObjectFormControl;
       const original = this.filterGroup.find(id);
       if (original) {
-        const filter = new SearchFilter(fc._eoFormElement.name, Array.isArray(fc.value) ? SearchFilter.OPERATOR.IN : SearchFilter.OPERATOR.EQUAL, fc.value);
+        const filter = new SearchFilter(
+          fc._eoFormElement.name,
+          Array.isArray(fc.value) ? SearchFilter.OPERATOR.IN : SearchFilter.OPERATOR.EQUAL,
+          fc._eoFormElement.isNotSetValue ? null : fc.value
+        );
         if (!filter.isEmpty() || fc._eoFormElement.isNotSetValue || fc._eoFormElement._internalType === 'boolean') {
           Object.assign(original, filter, { id: original.id, excludeFromQuery: false });
         } else {
