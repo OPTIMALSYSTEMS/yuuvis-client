@@ -41,13 +41,13 @@ export class CheckboxComponent implements ControlValueAccessor, AfterViewInit {
    */
   @Input() readonly: boolean;
   @Input() set value(v: boolean) {
-    if (this.isSwitch && this.tristate && v !== null && this._value) {
+    if (this.tristate && v !== null && this._value === false) {
       // if (this.isSwitch && this.tristate && v !== null && ((this.value && this._value === false) || this._value === true)) {
       this._value = undefined;
     } else {
       this._value = v;
     }
-    if (this.isSwitch && this.input) {
+    if (this.tristate && this.input) {
       this.input.nativeElement.indeterminate = this._value === undefined || this.value === null;
     }
   }
@@ -57,7 +57,7 @@ export class CheckboxComponent implements ControlValueAccessor, AfterViewInit {
   }
   @Output() change = new EventEmitter<boolean>();
 
-  constructor(@Attribute('tabindex') tabindex: string, @Attribute('switch') private isSwitch: boolean, private iconRegistry: IconRegistryService) {
+  constructor(@Attribute('tabindex') tabindex: string, @Attribute('switch') public isSwitch: boolean, private iconRegistry: IconRegistryService) {
     this.iconRegistry.registerIcons([clear]);
     this._tabindex = tabindex || '0';
   }

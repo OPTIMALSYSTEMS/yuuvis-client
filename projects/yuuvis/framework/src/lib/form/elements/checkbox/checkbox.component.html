@@ -1,7 +1,24 @@
-<input class="switch" #cb [(ngModel)]="value" *ngIf="isSwitch; else tplCheckbox" type="checkbox"
+<input [ngClass]="{switch: isSwitch}" #cb [(ngModel)]="value" type="checkbox" (ngModelChange)="onChange($event)"
+  [disabled]="readonly">
+
+
+
+
+
+
+
+<!-- <input class="switch" #cb [(ngModel)]="value" *ngIf="isSwitch; else tplCheckbox" type="checkbox"
   (ngModelChange)="onChange($event)">
 
 <ng-template #tplCheckbox>
+
+
+
+
+
+
+
+
   <div [class.tristate]="tristate" *ngIf="tristate; else twostate">
     <p-triStateCheckbox tabindex="{{_tabindex}}" [(ngModel)]="value" (ngModelChange)="onChange($event)"
       [disabled]="readonly" [ngClass]="{undefined: value === null}"></p-triStateCheckbox>
@@ -12,4 +29,4 @@
 <ng-template #twostate>
   <p-checkbox binary="true" tabindex="{{_tabindex}}" [(ngModel)]="value" (ngModelChange)="onChange($event)"
     [disabled]="readonly" [ngClass]="{undefined: value === null}"></p-checkbox>
-</ng-template>
+</ng-template> -->

@@ -1,6 +1,19 @@
 :host {
   display: block;
 
+  input[type='checkbox']:indeterminate::before {
+    // background-image: repeating-linear-gradient(-45deg, transparent 0 1px, red 1px 3px);
+    background-image: linear-gradient(
+      135deg,
+      transparent 0%,
+      transparent 45%,
+      var(--text-color-caption) 45%,
+      var(--text-color-caption) 55%,
+      transparent 55%,
+      transparent 100%
+    );
+  }
+
   p-triStateCheckbox:focus,
   p-checkbox:focus {
     outline: 0;
