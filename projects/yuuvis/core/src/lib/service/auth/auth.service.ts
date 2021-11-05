@@ -2,6 +2,7 @@ import { Inject, Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map, switchMap, tap } from 'rxjs/operators';
 import { UserSettings, YuvUser } from '../../model/yuv-user.model';
+import { Utils } from '../../util/utils';
 import { BackendService } from '../backend/backend.service';
 import { AppCacheService } from '../cache/app-cache.service';
 import { CoreConfig } from '../config/core-config';
@@ -81,6 +82,7 @@ export class AuthService {
 
   // called on core init
   setInitialRequestUri() {
+    const uri = location.pathname.replace(Utils.getBaseHref(), '');
     this.appCache
       .setItem(this.INITAL_REQUEST_STORAGE_KEY, {
         uri: location.pathname,
