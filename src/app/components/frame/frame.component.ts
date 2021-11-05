@@ -357,7 +357,9 @@ export class FrameComponent implements OnInit, OnDestroy {
               this.router.navigateByUrl(logoutRes.uri);
             } else if (loginRes) {
               // got only initial uri
-              this.router.navigateByUrl(loginRes.uri);
+              this.authService.resetInitialRequestUri().subscribe((_) => {
+                this.router.navigateByUrl(loginRes.uri);
+              });
             }
           });
         }

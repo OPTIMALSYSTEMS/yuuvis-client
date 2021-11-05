@@ -104,6 +104,10 @@ export class AuthService {
     return this.appCache.getItem(this.INITAL_REQUEST_STORAGE_KEY);
   }
 
+  resetInitialRequestUri(): Observable<any> {
+    return this.appCache.removeItem(this.INITAL_REQUEST_STORAGE_KEY);
+  }
+
   /**
    * Initialize/setup the application for a given user. This involves fetching
    * settings and schema information.
