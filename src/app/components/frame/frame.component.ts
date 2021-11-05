@@ -347,20 +347,19 @@ export class FrameComponent implements OnInit, OnDestroy {
           ]).subscribe((res: { uri: string; timestamp: number }[]) => {
             const logoutRes = res[0];
             const loginRes = res[1] && !ignoreRoutes.includes(res[1].uri) ? res[1] : null;
-
-            if (logoutRes && loginRes) {
-              // got logout and initial uri
-              // redirect will happen based on which one has been saved last
-              this.router.navigateByUrl((logoutRes.timestamp > loginRes.timestamp ? logoutRes : loginRes).uri);
-            } else if (logoutRes) {
-              // got only logout uri
-              this.router.navigateByUrl(logoutRes.uri);
-            } else if (loginRes) {
-              // got only initial uri
-              this.authService.resetInitialRequestUri().subscribe((_) => {
+            this.authService.resetInitialRequestUri().subscribe((_) => {
+              if (logoutRes && loginRes) {
+                // got logout and initial uri
+                // redirect will happen based on which one has been saved last
+                this.router.navigateByUrl((logoutRes.timestamp > loginRes.timestamp ? logoutRes : loginRes).uri);
+              } else if (logoutRes) {
+                // got only logout uri
+                this.router.navigateByUrl(logoutRes.uri);
+              } else if (loginRes) {
+                // got only initial uri
                 this.router.navigateByUrl(loginRes.uri);
-              });
-            }
+              }
+            });
           });
         }
       }
