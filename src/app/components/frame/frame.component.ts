@@ -335,8 +335,9 @@ export class FrameComponent implements OnInit, OnDestroy {
         // redirect to the page the user logged out from the last time
         // but only if current route is not a deep link
         const ignoreRoutes = ['', 'dashboard', 'index.html'].map((s) => Utils.getBaseHref() + s);
+        const currentRoute = (Utils.getBaseHref() + this.router.routerState.snapshot.url).replace('//', '/');
 
-        if (this.userService.getCurrentUser() && ignoreRoutes.includes(this.router.routerState.snapshot.url)) {
+        if (this.userService.getCurrentUser() && ignoreRoutes.includes(currentRoute)) {
           // get persisted routes to decide where to redirect the logged in user to
           forkJoin([
             // route the user left the app the last time (on logout)
