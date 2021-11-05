@@ -351,13 +351,13 @@ export class FrameComponent implements OnInit, OnDestroy {
             if (logoutRes && loginRes) {
               // got logout and initial uri
               // redirect will happen based on which one has been saved last
-              this.router.navigateByUrl(this.routeWithBaseHref((logoutRes.timestamp > loginRes.timestamp ? logoutRes : loginRes).uri));
+              this.router.navigateByUrl((logoutRes.timestamp > loginRes.timestamp ? logoutRes : loginRes).uri);
             } else if (logoutRes) {
               // got only logout uri
-              this.router.navigateByUrl(this.routeWithBaseHref(logoutRes.uri));
+              this.router.navigateByUrl(logoutRes.uri);
             } else if (loginRes) {
               // got only initial uri
-              this.router.navigateByUrl(this.routeWithBaseHref(loginRes.uri));
+              this.router.navigateByUrl(loginRes.uri);
             }
           });
         }

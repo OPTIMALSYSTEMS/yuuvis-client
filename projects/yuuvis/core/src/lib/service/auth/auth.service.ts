@@ -89,7 +89,7 @@ export class AuthService {
     if (!ignore.includes(uri)) {
       this.appCache
         .setItem(this.INITAL_REQUEST_STORAGE_KEY, {
-          uri: location.pathname,
+          uri: uri,
           timestamp: Date.now()
         })
         .subscribe();
