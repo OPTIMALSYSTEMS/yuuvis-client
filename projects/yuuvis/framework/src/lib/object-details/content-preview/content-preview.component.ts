@@ -120,42 +120,20 @@ export class ContentPreviewComponent extends IFrameComponent implements OnInit, 
   }
 
   open(src: string) {
-    if (!this.iframe) {
-      // init iframe again in case it was destoryed
-      setTimeout(() => this.iframeInit(this.iframe, this.searchTerm, () => this.contentPreviewService.validateUrl(this.previewSrc)));
-    }
     this.loading = false;
     this.previewSrc = this.contentPreviewService.validateUrl(src);
     if (this.isUndocked) {
-      this.openWindow(this.previewSrc);
+      ContentPreviewService.undockWin(this.previewSrc);
+      this.iframeInit(this.undockWin, this.searchTerm, () => this.contentPreviewService.validateUrl(this.previewSrc));
+    } else if (!this.iframe) {
+      // init iframe again in case it was destoryed
+      setTimeout(() => this.iframeInit(this.iframe, this.searchTerm, () => this.contentPreviewService.validateUrl(this.previewSrc)));
     }
-  }
-
-  openWindow(src: string, clean = false) {
-    ContentPreviewService.undockWin(src);
-    if (clean) {
-      while (this.undockWin.document.body.firstChild) {
-        this.undockWin.document.body.firstChild.remove();
-      }
-    } else if (!src && !this.undockWin.document.querySelector('#no-file')) {
-      this.undockWin.document.write(
-        `<div id="no-file" style="opacity: 0.1; display: flex; height: 100%; width: 100%; align-items: center; justify-content: center;"> 
-         ${noFile.data.replace(/"48"/g, '"100"')}
-        <div>`
-      );
-    }
-    this.iframeInit(this.undockWin, this.searchTerm);
-  }
-
-  refresh() {
-    return this.previewSrc && this.iframe ? this.iframe.contentWindow.location.reload(true) : this.open(this.previewSrc);
   }
 
   ngOnInit() {
     this.previewSrc$.pipe(takeUntilDestroy(this)).subscribe((src) => this.open(src));
   }
 
-  ngOnDestroy() {
-    // return ContentPreviewService.undockWinActive() && this.openWindow('', true);
-  }
+  ngOnDestroy() {}
 }
