@@ -263,6 +263,8 @@ $avatar-size-small: 80px;
             .dropdown-content {
               border: 1px solid var(--button-secondary-background);
               padding: var(--app-pane-padding);
+              max-height: 200px;
+              overflow-y: auto;
             }
 
             .role {
@@ -277,6 +279,7 @@ $avatar-size-small: 80px;
               }
               .name {
                 padding: 0 calc(var(--app-pane-padding) / 2);
+                word-wrap: break-word;
               }
             }
           }
