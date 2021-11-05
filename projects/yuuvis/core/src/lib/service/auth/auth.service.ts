@@ -82,13 +82,18 @@ export class AuthService {
 
   // called on core init
   setInitialRequestUri() {
-    const uri = location.pathname.replace(Utils.getBaseHref(), '');
-    this.appCache
-      .setItem(this.INITAL_REQUEST_STORAGE_KEY, {
-        uri: location.pathname,
-        timestamp: Date.now()
-      })
-      .subscribe();
+    const ignore = ['/', '/index.html'];
+    let uri = location.pathname.replace(Utils.getBaseHref(), '');
+    uri = !uri.startsWith('/') ? `/${uri}` : uri;
+
+    if (!ignore.includes(uri)) {
+      this.appCache
+        .setItem(this.INITAL_REQUEST_STORAGE_KEY, {
+          uri: location.pathname,
+          timestamp: Date.now()
+        })
+        .subscribe();
+    }
   }
 
   /**

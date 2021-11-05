@@ -334,8 +334,8 @@ export class FrameComponent implements OnInit, OnDestroy {
         this.checkedForLogoutRoute = true;
         // redirect to the page the user logged out from the last time
         // but only if current route is not a deep link
-        const ignoreRoutes = ['', 'dashboard', 'index.html'].map((s) => Utils.getBaseHref() + s);
-        const currentRoute = (Utils.getBaseHref() + this.router.routerState.snapshot.url).replace('//', '/');
+        const ignoreRoutes = ['', 'dashboard', 'index.html'].map((s) => `${Utils.getBaseHref()}${s}`.replace('//', '/'));
+        const currentRoute = this.routeWithBaseHref(this.router.routerState.snapshot.url);
 
         if (this.userService.getCurrentUser() && ignoreRoutes.includes(currentRoute)) {
           // get persisted routes to decide where to redirect the logged in user to
@@ -351,18 +351,22 @@ export class FrameComponent implements OnInit, OnDestroy {
             if (logoutRes && loginRes) {
               // got logout and initial uri
               // redirect will happen based on which one has been saved last
-              this.router.navigateByUrl((logoutRes.timestamp > loginRes.timestamp ? logoutRes : loginRes).uri);
+              this.router.navigateByUrl(this.routeWithBaseHref((logoutRes.timestamp > loginRes.timestamp ? logoutRes : loginRes).uri));
             } else if (logoutRes) {
               // got only logout uri
-              this.router.navigateByUrl(logoutRes.uri);
+              this.router.navigateByUrl(this.routeWithBaseHref(logoutRes.uri));
             } else if (loginRes) {
               // got only initial uri
-              this.router.navigateByUrl(loginRes.uri);
+              this.router.navigateByUrl(this.routeWithBaseHref(loginRes.uri));
             }
           });
         }
       }
     });
+  }
+
+  private routeWithBaseHref(r: string): string {
+    return `${Utils.getBaseHref()}${r}`.replace('//', '/');
   }
 
   ngOnDestroy() {}
