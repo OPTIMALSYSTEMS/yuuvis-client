@@ -83,7 +83,7 @@ export class FrameService {
       // persist the current route to be able to enter it again once the user logs back in
       this.appCache
         .setItem(this.getRouteOnLogoutStorageKey(), {
-          uri: this.router.routerState.snapshot.url,
+          uri: (Utils.getBaseHref() + this.router.routerState.snapshot.url).replace('//', '/'),
           timestamp: Date.now()
         })
         .subscribe((_) => {
