@@ -89,6 +89,10 @@ export class AuthService {
       .subscribe();
   }
 
+  /**
+   * Get the URL that entered the app. May be a deep link that could then be
+   * picked up again after user has been authenticated.
+   */
   getInitialRequestUri(): Observable<{ uri: string; timestamp: number }> {
     return this.appCache.getItem(this.INITAL_REQUEST_STORAGE_KEY);
   }
