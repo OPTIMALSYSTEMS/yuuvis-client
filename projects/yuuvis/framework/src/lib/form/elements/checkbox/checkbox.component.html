@@ -1,5 +1,4 @@
-<input [ngClass]="{switch: isSwitch}" #cb [(ngModel)]="value" type="checkbox" (ngModelChange)="onChange($event)"
-  [disabled]="readonly">
+<input [(ngModel)]="value" type="checkbox" (ngModelChange)="onChange($event)" [disabled]="readonly">
 
 
 

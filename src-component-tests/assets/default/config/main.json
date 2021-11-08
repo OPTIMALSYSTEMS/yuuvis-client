@@ -4,7 +4,9 @@
       "core": "/api",
       "api-web": "/api-web/api",
       "predict": "/predict-api",
-      "custom": "/custom"
+      "viewer": "/viewer",
+      "logout": "/logout",
+      "oauth": "/oauth"
     },
     "languages": [
       {
@@ -23,7 +25,7 @@
   },
   "client": {
     "docu": {
-      "link": "https://help.optimal-systems.com/yuuvis/client/2021-autumn/user/###userLang###/index.html",
+      "link": "https://help.optimal-systems.com/yuuvis/client/2021-winter/user/###userLang###/index.html",
       "language": ["de", "en"]
     }
   }
