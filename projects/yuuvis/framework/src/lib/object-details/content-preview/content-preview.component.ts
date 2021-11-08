@@ -42,17 +42,16 @@ export class ContentPreviewComponent extends IFrameComponent implements OnInit, 
   @Input()
   set dmsObject(object: DmsObject) {
     // exclude old (non existent) office documents renditions
-    const getContent = (o) =>
+    const exclude = (params: any) =>
       this.activeVersion &&
-      this.activeVersion?.content?.digest !== o?.content?.digest &&
-      o?.content?.mimeType?.match(/application\/(msword|vnd.ms-excel|vnd.ms-powerpoint|vnd.openxmlformats)/)
-        ? null
-        : o?.content;
+      this.activeVersion?.content?.digest !== params?.digest &&
+      params?.mimeType?.match(/application\/(msword|vnd.ms-excel|vnd.ms-powerpoint|vnd.openxmlformats)/) &&
+      params?.viewer?.startsWith('api/pdf');
 
     this._dmsObject = object;
     this.loading = true;
     // generate preview URI with streamID to enable refresh if file was changed
-    this.contentPreviewService.createPreviewUrl(object.id, getContent(object), object, getContent(this.dmsObject2), this.dmsObject2);
+    this.contentPreviewService.createPreviewUrl(this.dmsObject, this.dmsObject2, (o: DmsObject) => exclude(o));
   }
 
   get dmsObject() {
@@ -120,42 +119,21 @@ export class ContentPreviewComponent extends IFrameComponent implements OnInit, 
   }
 
   open(src: string) {
-    if (!this.iframe) {
+    this.loading = false;
+    this.previewSrc = this.contentPreviewService.validateUrl(src);
+    const sameOrigin = src.startsWith(location.origin);
+    if (this.isUndocked) {
+      ContentPreviewService.undockWin(this.previewSrc);
+      sameOrigin && this.iframeInit(this.undockWin, this.searchTerm, () => this.contentPreviewService.validateUrl(this.previewSrc));
+    } else if (!this.iframe && sameOrigin) {
       // init iframe again in case it was destoryed
       setTimeout(() => this.iframeInit(this.iframe, this.searchTerm, () => this.contentPreviewService.validateUrl(this.previewSrc)));
     }
-    this.loading = false;
-    this.previewSrc = this.contentPreviewService.validateUrl(src);
-    if (this.isUndocked) {
-      this.openWindow(this.previewSrc);
-    }
-  }
-
-  openWindow(src: string, clean = false) {
-    ContentPreviewService.undockWin(src);
-    if (clean) {
-      while (this.undockWin.document.body.firstChild) {
-        this.undockWin.document.body.firstChild.remove();
-      }
-    } else if (!src && !this.undockWin.document.querySelector('#no-file')) {
-      this.undockWin.document.write(
-        `<div id="no-file" style="opacity: 0.1; display: flex; height: 100%; width: 100%; align-items: center; justify-content: center;"> 
-         ${noFile.data.replace(/"48"/g, '"100"')}
-        <div>`
-      );
-    }
-    this.iframeInit(this.undockWin, this.searchTerm);
-  }
-
-  refresh() {
-    return this.previewSrc && this.iframe ? this.iframe.contentWindow.location.reload(true) : this.open(this.previewSrc);
   }
 
   ngOnInit() {
     this.previewSrc$.pipe(takeUntilDestroy(this)).subscribe((src) => this.open(src));
   }
 
-  ngOnDestroy() {
-    // return ContentPreviewService.undockWinActive() && this.openWindow('', true);
-  }
+  ngOnDestroy() {}
 }

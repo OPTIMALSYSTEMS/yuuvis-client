@@ -626,9 +626,9 @@ export class SystemService {
 
       sots.forEach((sot) => {
         const sotRef = sotQA[sot];
-        const sotObj = this.getSecondaryObjectType(sotRef.id);
+        const sotObj = sotRef?.id && this.getSecondaryObjectType(sotRef.id);
 
-        if (sotObj && !sotRef.static) {
+        if (sotObj && !sotRef?.static) {
           if (
             sotObj.classification?.includes(SecondaryObjectTypeClassification.PRIMARY) ||
             sotObj.classification?.includes(SecondaryObjectTypeClassification.REQUIRED)

@@ -59,7 +59,7 @@ export class TaskDetailsTaskComponent implements OnInit {
     // If there is no assignee yet you have to claim the task. If there is an assignee
     // but no claimTime it means that claining is no option whatsoever
     this.claimable = !t.assignee || !!t.claimTime;
-    this.delegatable = t && !t.delegationState;
+    this.delegatable = t && t.processDefinition.idPrefix !== TaskType.FOLLOW_UP && !t.delegationState;
     if (t?.delegationState === 'pending') this.claimable = false;
   }
 

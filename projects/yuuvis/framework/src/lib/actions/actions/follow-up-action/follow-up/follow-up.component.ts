@@ -176,7 +176,9 @@ export class FollowUpComponent implements OnInit, OnDestroy, ActionComponent {
       })
       .pipe(
         switchMap((process: Process) =>
-          process ? this.inboxService.getTask(process?.id).pipe(map((task) => ({ process, task: task[0] }))) : of({ process: null, task: null })
+          process
+            ? this.processService.getFollowUpTask(process?.id).pipe(map((task) => ({ process, task: task ? task[0] : null })))
+            : of({ process: null, task: null })
         ),
         map(({ process, task }: { process: Process; task: Task }) => this.processProcessData(process, task)),
         takeUntilDestroy(this),

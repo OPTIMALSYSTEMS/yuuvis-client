@@ -48,7 +48,7 @@ export abstract class IFrameComponent {
   iframeInit(iframe = this.iframe, searchTerm = '', onload?: Function) {
     if (iframe) {
       iframe._init ||
-        fromEvent(iframe, 'load')
+        fromEvent(this.setApi(iframe, true), 'load')
           .pipe(takeUntilDestroy(this))
           .subscribe(() => {
             const win = this.setApi(iframe);
@@ -59,14 +59,19 @@ export abstract class IFrameComponent {
               this.preventDropEvent(win);
             }, 100);
           });
-      iframe._init = !!this.setApi(iframe);
     }
   }
 
-  private setApi(iframe: any) {
+  private setApi(iframe: any, init = false) {
     // set api to iframe window
     const win = iframe?.contentWindow || iframe;
     win['api'] = window['api'];
+
+    if (init) {
+      iframe._init = true;
+      setTimeout(() => this.setApi(iframe), 500);
+      return iframe;
+    }
     return win;
   }
 }
