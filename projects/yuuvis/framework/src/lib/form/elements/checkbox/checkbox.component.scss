@@ -137,7 +137,7 @@
     --checkbox-size: calc(var(--switch-handle-size) + (var(--switch-border-width) * 2) + (var(--switch-indent) * 2));
 
     --switch-width: calc(var(--checkbox-size) * 2.5);
-    --switch-indent: 1px;
+    --switch-indent: 2px;
 
     position: relative;
 
@@ -195,7 +195,7 @@
       background-color: var(--text-color-caption);
       top: calc(var(--switch-border-width) + var(--switch-indent));
       right: 0;
-      transform: translateX(calc((var(--switch-width) - var(--switch-handle-size) + var(--switch-indent)) * -1));
+      transform: translateX(calc((var(--switch-width) - var(--switch-handle-size)) * -1));
       z-index: 2;
     }
 
