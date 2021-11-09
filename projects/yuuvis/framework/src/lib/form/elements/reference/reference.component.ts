@@ -10,10 +10,11 @@ import {
   SearchQueryProperties,
   SearchResult,
   SearchService,
-  SystemService
+  SystemService,
+  Utils
 } from '@yuuvis/core';
 import { AutoComplete } from 'primeng/autocomplete';
-import { forkJoin, Observable, of } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { IconRegistryService } from '../../../common/components/icon/service/iconRegistry.service';
 import { ROUTES, YuvRoutes } from '../../../routing/routes';
@@ -43,12 +44,18 @@ import { ReferenceEntry } from './reference.interface';
 })
 export class ReferenceComponent implements ControlValueAccessor, AfterViewInit {
   @ViewChild('autocomplete') autoCompleteInput: AutoComplete;
-  private queryJson: SearchQueryProperties;
   noAccessTitle = noAccess;
   minLength = 2;
 
   value;
-  innerValue: ReferenceEntry[] = [];
+  _innerValue: ReferenceEntry[] = [];
+  set innerValue(iv: ReferenceEntry[]) {
+    this._innerValue = iv;
+    this.objectSelect.emit(iv);
+  }
+  get innerValue() {
+    return this._innerValue;
+  }
   autocompleteRes: any[] = [];
   path: string;
 
@@ -117,9 +124,57 @@ export class ReferenceComponent implements ControlValueAccessor, AfterViewInit {
   @Input() allowedTargetTypes: string[] = [];
 
   /**
+   * Restrict the suggestions based on custom filters.
+   */
+  @Input() filters: any[] = [];
+
+  /**
+   * Fields to be returned in SearchResult.
+   */
+  @Input() objectTypeFields: string[] = [];
+
+  /**
+   * Function to search via custom SearchQueryProperties | SearchQuery
+   */
+  @Input() searchFnc = (term = ''): SearchQueryProperties | SearchQuery => ({ ...this.queryJson, term: `*${term}*` });
+
+  @Input() titleField = ClientDefaultsObjectTypeField.TITLE;
+
+  @Input() descriptionField = ClientDefaultsObjectTypeField.DESCRIPTION;
+
+  /**
+   * Function to map SearchResult to ReferenceItem
+   */
+  @Input() referenceItemFnc = (i: any) => ({
+    id: i?.fields.get(BaseObjectTypeField.OBJECT_ID),
+    objectTypeId: i?.fields.get(BaseObjectTypeField.OBJECT_TYPE_ID),
+    leadingObjectTypeId: i?.fields.get(BaseObjectTypeField.LEADING_OBJECT_TYPE_ID),
+    // title and description may not be present
+    title: i?.fields.get(this.titleField) || i.fields.get(BaseObjectTypeField.OBJECT_ID),
+    description: i?.fields.get(this.descriptionField) || '',
+    data: i?.fields || new Map()
+  });
+
+  /**
    * Emitted once an object has been selected
    */
   @Output() objectSelect = new EventEmitter<ReferenceEntry[]>();
+
+  get queryJson(): SearchQueryProperties {
+    return {
+      ...this.systemService.resolveTypesLots(this.allowedTargetTypes),
+      fields: [
+        BaseObjectTypeField.OBJECT_ID,
+        BaseObjectTypeField.OBJECT_TYPE_ID,
+        BaseObjectTypeField.LEADING_OBJECT_TYPE_ID,
+        this.titleField,
+        this.descriptionField,
+        ...this.objectTypeFields
+      ],
+      filters: this.filters,
+      size: this.maxSuggestions
+    };
+  }
 
   constructor(
     private iconRegistry: IconRegistryService,
@@ -156,99 +211,42 @@ export class ReferenceComponent implements ControlValueAccessor, AfterViewInit {
   }
 
   private resolveFn(value: any) {
-    const tasks: Observable<any>[] = [];
-    const resolveIds: string[] = [];
-    (value instanceof Array ? value : [value]).forEach((v) => {
-      let match = this.innerValue.find((iv) => iv.id === v);
-      if (match) {
-        tasks.push(of(match));
-      } else {
-        resolveIds.push(v);
-      }
-    });
-    if (resolveIds.length) {
-      tasks.push(this.resolveRefEntries(resolveIds));
-    }
-    return forkJoin(tasks).subscribe((data) => {
-      this.innerValue = [].concat(...data);
-      setTimeout(() => this.autoCompleteInput.cd.markForCheck());
-    });
+    const ids: string[] = !value || value instanceof Array ? value || [] : [value];
+    const resolveIds = ids.filter((id) => !this.innerValue?.find((v) => v.id === id));
+
+    return this.resolveRefEntries(resolveIds)
+      .pipe(map((res) => res.concat(this.innerValue || [])))
+      .subscribe((items) => {
+        this.innerValue = ids.map((id) => items.find((v) => v.id === id));
+        setTimeout(() => this.autoCompleteInput.cd.markForCheck());
+      });
   }
 
   private resolveRefEntries(ids: string[]): Observable<ReferenceEntry[]> {
-    const q = new SearchQuery();
-    q.fields = [
-      BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS,
-      BaseObjectTypeField.OBJECT_ID,
-      BaseObjectTypeField.OBJECT_TYPE_ID,
-      ClientDefaultsObjectTypeField.TITLE,
-      ClientDefaultsObjectTypeField.DESCRIPTION
-    ];
+    if (!ids?.length) return of([]);
+    const { fields } = this.searchFnc();
+    const q = new SearchQuery({ fields });
     q.addFilter(new SearchFilter(BaseObjectTypeField.OBJECT_ID, SearchFilter.OPERATOR.IN, ids));
     return this.searchService.search(q).pipe(
       map((res: SearchResult) => {
-        if (ids.length !== res.items.length) {
-          // some of the IDs could not be retrieved (no permission or deleted)
-          const x = {};
-          res.items.forEach((r) => (x[r.fields.get(BaseObjectTypeField.OBJECT_ID)] = r));
-          return ids.map((id) => ({
-            id,
-            objectTypeId: x[id]?.fields.get(BaseObjectTypeField.OBJECT_TYPE_ID),
-            title:
-              x[id] && x[id].fields.get(ClientDefaultsObjectTypeField.TITLE) ? x[id].fields.get(ClientDefaultsObjectTypeField.TITLE) : id || this.noAccessTitle,
-            description: x[id] ? x[id].fields.get(ClientDefaultsObjectTypeField.DESCRIPTION) : null
-          }));
-        } else {
-          return res.items.map((i) => {
-            const crParams = {
-              value: this.systemService.getLeadingObjectTypeID(
-                i.fields.get(BaseObjectTypeField.OBJECT_TYPE_ID),
-                i.fields.get(BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS)
-              ),
-              context: {
-                system: this.systemService
-              }
-            };
-
-            let resolveEntry = {
-              id: i.fields.get(BaseObjectTypeField.OBJECT_ID),
-              objectTypeId: i.fields.get(BaseObjectTypeField.OBJECT_TYPE_ID),
-              title: i.fields.get(ClientDefaultsObjectTypeField.TITLE)
-                ? i.fields.get(ClientDefaultsObjectTypeField.TITLE)
-                : i.fields.get(BaseObjectTypeField.OBJECT_ID),
-              description: i.fields.get(ClientDefaultsObjectTypeField.DESCRIPTION)
-            };
-            return resolveEntry;
-          });
-        }
+        // some of the IDs could not be retrieved (no permission or deleted)
+        const x = Utils.arrayToObject(res.items, (o) => o.fields.get(BaseObjectTypeField.OBJECT_ID));
+        return ids.map((id) =>
+          this.referenceItemFnc(x[id] || { fields: new Map(Object.entries({ [BaseObjectTypeField.OBJECT_ID]: id, [this.titleField]: this.noAccessTitle })) })
+        );
       })
     );
   }
 
   autocompleteFn(evt) {
     if (evt.query.length >= this.minLength) {
+      const q = this.searchFnc(evt.query);
       this.searchService
-        .search(new SearchQuery({ ...this.queryJson, term: `*${evt.query}*` }))
-        .pipe(
-          map((reference) =>
-            reference.items.map((i) => {
-              return {
-                id: i.fields.get(BaseObjectTypeField.OBJECT_ID),
-                objectTypeId: i.fields.get(BaseObjectTypeField.OBJECT_TYPE_ID),
-                // title and description may not be present
-                title: i.fields.get(ClientDefaultsObjectTypeField.TITLE) || i.fields.get(BaseObjectTypeField.OBJECT_ID),
-                description: i.fields.get(ClientDefaultsObjectTypeField.DESCRIPTION)
-              };
-            })
-          )
-        )
+        .search(q instanceof SearchQuery ? q : new SearchQuery(q))
+        .pipe(map((reference) => reference.items.map((i) => this.referenceItemFnc(i))))
         .subscribe(
-          (reference) => {
-            this.autocompleteRes = reference.filter((ref) => !this.innerValue.some((value) => value.id === ref.id));
-          },
-          (e) => {
-            this.autocompleteRes = [];
-          }
+          (reference) => (this.autocompleteRes = reference.filter((ref) => !this.innerValue.some((value) => value.id === ref.id))),
+          (e) => (this.autocompleteRes = [])
         );
     } else {
       this.autocompleteRes = [];
@@ -288,18 +286,7 @@ export class ReferenceComponent implements ControlValueAccessor, AfterViewInit {
     }
   }
 
-  ngOnInit(): void {
-    this.queryJson = {
-      fields: [
-        BaseObjectTypeField.OBJECT_ID,
-        BaseObjectTypeField.OBJECT_TYPE_ID,
-        ClientDefaultsObjectTypeField.TITLE,
-        ClientDefaultsObjectTypeField.DESCRIPTION
-      ],
-      types: this.allowedTargetTypes,
-      size: this.maxSuggestions
-    };
-  }
+  ngOnInit(): void {}
 
   ngAfterViewInit() {
     if (this.autoCompleteInput.multiInputEL && this.autofocus) {

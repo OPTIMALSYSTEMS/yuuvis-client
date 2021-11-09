@@ -1,13 +1,11 @@
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { Inject, Injectable } from '@angular/core';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Injectable } from '@angular/core';
 import { forkJoin, Observable, of } from 'rxjs';
 import { catchError, finalize, shareReplay, tap } from 'rxjs/operators';
 import { ConfigService } from '../config/config.service';
-import { CoreConfig } from '../config/core-config';
-import { CORE_CONFIG } from '../config/core-config.tokens';
 import { Logger } from '../logger/logger';
-import { TENANT_HEADER } from '../system/system.enum';
 import { ApiBase } from './api.enum';
+import { HttpOptions } from './backend.interface';
 
 /**
  * Service for providing an yuuvis Backend
@@ -16,18 +14,24 @@ import { ApiBase } from './api.enum';
 export class BackendService {
   private cache = new Map<string, any>();
   private temp = new Map<string, Observable<any>>();
-  private headers = this.setDefaultHeaders();
-  private persistedHeaders: any = {};
-
-  // public oidc: { host: string; tenant: string };
+  private headers = new HttpHeaders({
+    'Content-Type': 'application/json'
+  });
 
   /**
    * @ignore
    */
-  constructor(private http: HttpClient, private logger: Logger, @Inject(CORE_CONFIG) public coreConfig: CoreConfig, private config: ConfigService) {}
+  constructor(private http: HttpClient, private logger: Logger, public configService: ConfigService) {}
 
   authUsesOpenIdConnect(): boolean {
-    return !!this.coreConfig.oidc;
+    return this.configService.authUsesOpenIdConnect();
+  }
+
+  /**
+   * OpenIdConnect authorization headers
+   */
+  getAuthHeaders(): any {
+    return this.configService.getAuthHeaders();
   }
 
   /**
@@ -51,7 +55,7 @@ export class BackendService {
    * @param requestOptions Additional request options
    * @returns The data retrieved from the given endpoint
    */
-  get(uri: string, base?: string, requestOptions?: any): Observable<any> {
+  get(uri: string, base?: string, requestOptions?: HttpOptions): Observable<any> {
     return this.http.get(this.getApiBase(base) + uri, this.getHttpOptions(requestOptions));
   }
 
@@ -63,7 +67,7 @@ export class BackendService {
    * @param requestOptions Additional request options
    * @returns The return value of the target POST endpoint
    */
-  public post(uri: string, data?, base?: string, requestOptions?: any): Observable<any> {
+  public post(uri: string, data?, base?: string, requestOptions?: HttpOptions): Observable<any> {
     const baseUri = this.getApiBase(base);
     const payload = data ? JSON.stringify(data) : '';
     return this.http.post(`${baseUri}${uri}`, payload, this.getHttpOptions(requestOptions));
@@ -77,7 +81,7 @@ export class BackendService {
    * @param requestOptions Additional request options
    * @returns The return value of the target POST endpoint
    */
-  public postMultiPart(uri: string, formData: FormData, base?: string, requestOptions?: any): Observable<any> {
+  public postMultiPart(uri: string, formData: FormData, base?: string, requestOptions?: HttpOptions): Observable<any> {
     return this.http.post(`${this.getApiBase(base)}${uri}`, formData, this.getHttpOptions(requestOptions));
   }
 
@@ -89,7 +93,7 @@ export class BackendService {
    * @param requestOptions Additional request options
    * @returns The return value of the target PATCH endpoint
    */
-  public patch(uri: string, data?, base?: string, requestOptions?: any): Observable<any> {
+  public patch(uri: string, data?, base?: string, requestOptions?: HttpOptions): Observable<any> {
     const baseUri = this.getApiBase(base);
     const payload = data ? JSON.stringify(data) : '';
     return this.http.patch(`${baseUri}${uri}`, payload, this.getHttpOptions(requestOptions));
@@ -100,10 +104,11 @@ export class BackendService {
    * @param uri The target REST URI
    * @param data Data to be 'posted'
    * @param base The Base URI (backend service) to be used
+   * @param requestOptions Additional request options
    * @returns The return value of the target PUT endpoint
    */
-  public put(uri: string, data?: any, base?: string): Observable<any> {
-    return this.http.put(this.getApiBase(base) + uri, data, this.getHttpOptions());
+  public put(uri: string, data?: any, base?: string, requestOptions?: HttpOptions): Observable<any> {
+    return this.http.put(this.getApiBase(base) + uri, data, this.getHttpOptions(requestOptions));
   }
 
   /**
@@ -113,7 +118,7 @@ export class BackendService {
    * @param requestOptions Additional request options
    * @returns The return value of the target DELETE endpoint
    */
-  public delete(uri: string, base?: string, requestOptions?: any): Observable<any> {
+  public delete(uri: string, base?: string, requestOptions?: HttpOptions): Observable<any> {
     return this.http.delete(this.getApiBase(base) + uri, this.getHttpOptions(requestOptions));
   }
 
@@ -130,11 +135,8 @@ export class BackendService {
     } else {
       const requestOptions: any = {
         responseType: 'text',
-        headers: {}
+        headers: this.getAuthHeaders()
       };
-      if (this.authUsesOpenIdConnect()) {
-        requestOptions.headers[TENANT_HEADER] = this.coreConfig.oidc.tenant;
-      }
       return this.getViaTempCache(uri, () => this.http.get(uri, requestOptions).pipe(tap((text) => this.cache.set(uri, text))));
     }
   }
@@ -178,57 +180,25 @@ export class BackendService {
    * Gets the base URI for an API endpoint
    * @param api The API to get the base URI for. Leaving this blank will return
    * base URI for the web API
+   * @param origin The flag to include location origin
    * @returns Base URI for the given API.
    */
-  getApiBase(api?: string): string {
-    const apiBase = api === '' ? api : this.config.getApiBase(api || ApiBase.apiWeb);
-    return `${this.authUsesOpenIdConnect() ? this.coreConfig.oidc.host : ''}${apiBase}`;
+  getApiBase(api: string = ApiBase.apiWeb, origin = false): string {
+    return this.configService.getApiBase(api, origin);
   }
 
   /**
    * @ignore
    */
-  getHttpOptions(requestOptions?: any): {
-    headers?:
-      | HttpHeaders
-      | {
-          [header: string]: string | string[];
-        };
-    observe?: 'body';
-    params?:
-      | HttpParams
-      | {
-          [param: string]: string | string[];
-        };
-    reportProgress?: boolean;
-    responseType: 'arraybuffer';
-    withCredentials?: boolean;
-  } {
-    return Object.assign({ headers: this.getHeaders() }, requestOptions);
-  }
-
-  /**
-   * Retrieves the current headers
-   * @returns The `HttpHeaders` that are currently set up
-   */
-  private getHeaders(): HttpHeaders {
-    return this.headers;
-  }
-
-  private setDefaultHeaders(): HttpHeaders {
-    return new HttpHeaders({
-      'Content-Type': 'application/json'
-      // 'X-os-include-links': 'false',
-      // 'X-os-include-actions': 'false',
-      // 'X-os-sync-index': 'true'
-      // 'Access-Control-Allow-Origin': '*'
-    });
+  getHttpOptions(requestOptions?: HttpOptions): HttpOptions {
+    Object.entries(this.getAuthHeaders()).forEach(([h, v]) => this.setHeader(h, v as string));
+    return Object.assign({ headers: this.headers }, requestOptions);
   }
 
   /**
    * Batch service
    */
-  batch(requests: { method?: string; uri: string; body?: any; base?: string; requestOptions?: any }[]) {
+  batch(requests: { method?: string; uri: string; body?: any; base?: string; requestOptions?: HttpOptions }[]) {
     const httpRequests = requests.map((r) =>
       this[(r.method || 'get').toLowerCase()]
         .apply(

@@ -7,6 +7,7 @@
   background: var(--panel-background);
   min-width: 300px;
   overflow: auto;
+  overflow-y: hidden;
   display: grid;
   grid-template-columns: 1fr;
   grid-template-rows: auto 1fr auto;

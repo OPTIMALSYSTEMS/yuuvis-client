@@ -2,7 +2,7 @@
 
   <ng-container *ngIf="combinedFormInput">
     <!-- FSOT add panel -->
-    <div class="fsot">
+    <div class="fsot" *ngIf="isEditable()">
       <ng-container *ngIf="fsotSelectInputs?.primary?.sots.length">
         <button (click)="chooseFSOT(true)">{{ 'yuv.framework.object-form-edit.fsot.apply-type' | translate }}</button>
         <!-- popover for applying a new floating type -->

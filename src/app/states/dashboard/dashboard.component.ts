@@ -1,9 +1,7 @@
 import { Component, HostBinding, HostListener, OnInit, ViewChild } from '@angular/core';
-import { Title } from '@angular/platform-browser';
 import { NavigationExtras, Router } from '@angular/router';
 import { EventService, SearchQuery, SystemService, UserRoles, UserService, Utils, YuvEventType, YuvUser } from '@yuuvis/core';
 import { GroupedSelectComponent, ObjectTypeAggregation, QuickSearchComponent, RecentItem, Selectable, SelectableGroup } from '@yuuvis/framework';
-import { APP_VARS } from '../../app.vars';
 import { FrameService } from '../../components/frame/frame.service';
 import { AppSearchService } from '../../service/app-search.service';
 @Component({
@@ -36,8 +34,7 @@ export class DashboardComponent implements OnInit {
     private frameService: FrameService,
     private appSearch: AppSearchService,
     private eventService: EventService,
-    private systemService: SystemService,
-    private titleService: Title
+    private systemService: SystemService
   ) {
     this.userService.user$.subscribe((user: YuvUser) => {
       if (user) {
@@ -97,7 +94,6 @@ export class DashboardComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.titleService.setTitle(APP_VARS.defaultPageTitle);
     this.appQuery = new SearchQuery();
   }
 }

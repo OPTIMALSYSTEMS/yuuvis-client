@@ -1,0 +1,11 @@
+:host {
+  .yuv-task-details-history {
+    height: 100%;
+    background-color: var(--panel-background-grey);
+
+    .error {
+      padding: var(--app-pane-padding);
+      color: var(--color-error);
+    }
+  }
+}

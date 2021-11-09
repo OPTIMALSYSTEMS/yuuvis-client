@@ -55,7 +55,6 @@ export class SearchResultComponent implements OnDestroy {
   private _searchQuery: SearchQuery;
   private _columns: ColDef[];
   private _rows: any[];
-  private _hasPages = false;
   private _itemsSupposedToBeSelected: string[];
   // private _showFilterPanel: boolean;
   private _filterPanelConfig: FilterPanelConfig = {
@@ -84,20 +83,6 @@ export class SearchResultComponent implements OnDestroy {
   get filterPanelConfig() {
     return this._filterPanelConfig;
   }
-
-  // /**
-  //  * Whether or not to expand the filter panel
-  //  */
-  // @Input() set showFilterPanel(b: boolean) {
-  //   if (this._showFilterPanel !== b) {
-  //     this._showFilterPanel = b;
-  //     this.filterPanelToggled.emit(b);
-  //   }
-  // }
-
-  // get showFilterPanel(): boolean {
-  //   return this._showFilterPanel;
-  // }
 
   @Input() responsiveTableData: Partial<ResponsiveTableData>;
 
@@ -172,14 +157,6 @@ export class SearchResultComponent implements OnDestroy {
    */
   @Output() filterPanelConfigChanged = new EventEmitter<FilterPanelConfig>();
 
-  set hasPages(count) {
-    this._hasPages = count;
-  }
-
-  get hasPages(): boolean {
-    return this._hasPages;
-  }
-
   /**
    * view mode of the table
    */
@@ -232,6 +209,9 @@ export class SearchResultComponent implements OnDestroy {
         const deleted = this.dataTable.deleteRow(data.id);
         if (deleted) {
           this.totalNumItems--;
+          if (this.pagination?.pages) {
+            this.pagination.pages = Math.ceil(this.totalNumItems / this._searchQuery.size);
+          }
         }
       }
     }
@@ -300,8 +280,6 @@ export class SearchResultComponent implements OnDestroy {
     );
   }
 
-  FilterPanel() {}
-
   // Create actual table data from the search result
   private createTableData(searchResult: SearchResult, pageNumber = 1): void {
     this.totalNumItems = searchResult.totalNumItems;
@@ -311,7 +289,6 @@ export class SearchResultComponent implements OnDestroy {
     (this._columns ? of(this._columns) : this.gridService.getColumnConfiguration(targetType)).subscribe((colDefs: ColDef[]) => {
       // setup pagination form in case of a paged search result chunk
       this.pagination = null;
-      this.hasPages = searchResult.items.length !== searchResult.totalNumItems;
       if (this._searchQuery && searchResult.totalNumItems > this._searchQuery.size) {
         this.pagination = {
           pages: Math.ceil(searchResult.totalNumItems / this._searchQuery.size),
@@ -333,18 +310,19 @@ export class SearchResultComponent implements OnDestroy {
       this._rows = searchResult.items.map((i) => this.getRow(i));
       const sortOptions = this._searchQuery ? this._searchQuery.sortOptions || [] : [];
 
-      this.tableData = {
+      const setter = this.responsiveTableData?.set || ((t) => t);
+      this.tableData = setter.call(this, {
         titleField: ClientDefaultsObjectTypeField.TITLE,
         descriptionField: ClientDefaultsObjectTypeField.DESCRIPTION,
         selectType: 'multiple',
-        ...(this.responsiveTableData || {}),
         columns: this._columns,
         rows: this._rows,
         sortModel: sortOptions.map((o) => ({
           colId: o.field,
           sort: o.order
-        }))
-      };
+        })),
+        ...(this.responsiveTableData || {})
+      });
       this.busy = false;
       setTimeout((_) => {
         this.setSelection(this._itemsSupposedToBeSelected);

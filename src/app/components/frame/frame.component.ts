@@ -3,6 +3,7 @@ import { ActivatedRoute, NavigationEnd, NavigationExtras, Router } from '@angula
 import { SwUpdate } from '@angular/service-worker';
 import {
   AuthService,
+  BackendService,
   BaseObjectTypeField,
   ConnectionService,
   ConnectionState,
@@ -57,6 +58,7 @@ export class FrameComponent implements OnInit, OnDestroy {
   hideAppBar: boolean;
   disableFileDrop: boolean;
   disableCreate: boolean;
+  checkedForLogoutRoute: boolean;
   enableTenantSwitch: boolean;
   displaySideBar: boolean;
   screenSmall: boolean;
@@ -102,7 +104,8 @@ export class FrameComponent implements OnInit, OnDestroy {
     private popoverService: PopoverService,
     private dmsService: DmsService,
     private iconRegistry: IconRegistryService,
-    private pluginsService: PluginsService
+    private pluginsService: PluginsService,
+    private backend: BackendService
   ) {
     this.pluginsService.getCustomPlugins('states').subscribe((states) => PluginGuard.updateRouter(router, states));
     this.navigationPlugins = this.pluginsService.getCustomPlugins('links', 'yuv-sidebar-navigation');
@@ -114,14 +117,15 @@ export class FrameComponent implements OnInit, OnDestroy {
 
     this.iconRegistry.registerIcons([search, drawer, refresh, add, userDisabled, offline, close, openContext]);
     this.userService.user$.subscribe((user: YuvUser) => {
-      this.user = user;
       if (user) {
+        this.checkedForLogoutRoute = !(!this.user || this.user.id !== user.id);
         this.disableCreate = !user.authorities.includes(UserRoles.CREATE_OBJECT);
         this.enableTenantSwitch = user.authorities.includes(UserRoles.MULTI_TENANT);
         if (this.disableCreate) {
           this.disableFileDrop = true;
         }
       }
+      this.user = user;
     });
     this.update.available.subscribe((update) => (this.swUpdateAvailable = true));
     this.layoutService.layoutSettings$.subscribe((settings: LayoutSettings) => this.applyLayoutSettings(settings));
@@ -225,7 +229,7 @@ export class FrameComponent implements OnInit, OnDestroy {
     if (removeTenantCookie) {
       document.cookie = 'tenant=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
     }
-    this.userService.logout();
+    this.frameService.appLogout();
   }
 
   navigate(state: string) {
@@ -311,7 +315,7 @@ export class FrameComponent implements OnInit, OnDestroy {
       if (!authenticated) {
         const tenant = this.authService.getTenant();
         if (tenant) {
-          (window as any).location.href = `/oauth/${tenant}`;
+          (window as any).location.href = `${this.backend.getApiBase('oauth')}/${tenant}`;
         }
       }
     });
@@ -324,6 +328,17 @@ export class FrameComponent implements OnInit, OnDestroy {
       this.tab = e.urlAfterRedirects.startsWith('/dashboard');
       // disable fileDrop being on create state
       this.disableFileDrop = this.disableCreate || e.urlAfterRedirects.startsWith('/create');
+
+      if (!this.checkedForLogoutRoute) {
+        this.checkedForLogoutRoute = true;
+        // redirect to the page the user logged out from the last time
+        // but only if current route is not a deep link
+        if (this.userService.getCurrentUser && ['/dashboard', '/', ''].includes(this.router.routerState.snapshot.url)) {
+          this.frameService.getRouteOnLogout().subscribe((url) => {
+            if (url) this.router.navigateByUrl(url);
+          });
+        }
+      }
     });
   }
 

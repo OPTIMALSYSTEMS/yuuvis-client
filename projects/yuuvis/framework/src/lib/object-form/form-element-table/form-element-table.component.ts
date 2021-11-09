@@ -1,9 +1,9 @@
 import { ClientSideRowModelModule } from '@ag-grid-community/client-side-row-model';
 import { ColDef, GridOptions, Module } from '@ag-grid-community/core';
 import { CsvExportModule } from '@ag-grid-community/csv-export';
-import { Component, forwardRef, Input, TemplateRef, ViewChild } from '@angular/core';
+import { Component, forwardRef, Input, NgZone, TemplateRef, ViewChild } from '@angular/core';
 import { ControlValueAccessor, FormControl, NG_VALIDATORS, NG_VALUE_ACCESSOR, Validator } from '@angular/forms';
-import { PendingChangesService, SystemService } from '@yuuvis/core';
+import { Classification, PendingChangesService } from '@yuuvis/core';
 import { takeUntil } from 'rxjs/operators';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { UnsubscribeOnDestroy } from '../../common/util/unsubscribe.component';
@@ -65,9 +65,12 @@ export class FormElementTableComponent extends UnsubscribeOnDestroy implements C
     if (p) {
       this._params = p;
       this.gridReady = false;
-      this._elements = p.element.elements;
-      this.gridOptions.columnDefs = this.createColumnDefinition();
+      this._elements = p.element?.elements || [];
+
+      this.gridOptions.columnDefs = this.createColumnDefinition(p.element?.classifications?.includes(Classification.TABLE_SORTABLE));
       this.overlayGridOptions.columnDefs = this.createColumnDefinition();
+
+      this.disableOptions = this.gridOptions.columnDefs.length === 0;
       this.gridReady = true;
     }
   }
@@ -83,9 +86,19 @@ export class FormElementTableComponent extends UnsubscribeOnDestroy implements C
   gridOptions: GridOptions;
   overlayGridOptions: GridOptions;
   editingRow: EditRow;
+  disableOptions: boolean;
+
+  private onRowDragEnd = (e) => {
+    const v = [];
+    this.gridOptions.api.forEachNode((rowNode, index) => {
+      v.push(rowNode.data);
+    });
+    this.innerValue = v;
+    this.updateTableValueAndRunChangeDetection();
+  };
 
   constructor(
-    private systemService: SystemService,
+    private ngZone: NgZone,
     private pendingChanges: PendingChangesService,
     public gridApi: GridService,
     private popoverService: PopoverService,
@@ -105,7 +118,10 @@ export class FormElementTableComponent extends UnsubscribeOnDestroy implements C
       suppressMovableColumns: true,
       suppressNoRowsOverlay: true,
       suppressLoadingOverlay: true,
-      suppressContextMenu: true
+      suppressContextMenu: true,
+      rowDragManaged: true,
+      animateRows: true,
+      onRowDragEnd: this.onRowDragEnd
     };
     this.gridOptions.context.tableComponent = this;
 
@@ -174,24 +190,28 @@ export class FormElementTableComponent extends UnsubscribeOnDestroy implements C
    * Create column definition from form element.
    * @returns column definition to be added to the gridOptions
    */
-  private createColumnDefinition(): ColDef[] {
-    return this._elements.map((el) => {
-      let col: ColDef = this.gridApi.getColumnDefinition(el);
-      Object.assign(col, {
-        headerName: el.label,
-        suppressMenu: true,
-        filter: false,
-        sortable: true,
-        resizable: true,
-        field: el.name,
-        refData: {
-          ...col.refData,
-          _eoFormElement: el,
-          _situation: this._params.situation
-        }
-      });
-      return col;
-    });
+  private createColumnDefinition(dragEnabled?: boolean): ColDef[] {
+    const hasElements = Array.isArray(this._elements);
+    return hasElements
+      ? this._elements.map((el, i) => {
+          let col: ColDef = this.gridApi.getColumnDefinition(el);
+          Object.assign(col, {
+            rowDrag: dragEnabled && i === 0,
+            headerName: el.label,
+            suppressMenu: true,
+            filter: false,
+            sortable: true,
+            resizable: true,
+            field: el.name,
+            refData: {
+              ...col.refData,
+              _eoFormElement: el,
+              _situation: this._params.situation
+            }
+          });
+          return col;
+        })
+      : [];
   }
 
   addRow() {
@@ -238,6 +258,12 @@ export class FormElementTableComponent extends UnsubscribeOnDestroy implements C
         this.overlayGridOptions.api.ensureNodeVisible(rowNode);
       }
     }
+  }
+
+  private updateTableValueAndRunChangeDetection() {
+    this.ngZone.run(() => {
+      this.updateTableValue();
+    });
   }
 
   private updateTableValue() {

@@ -28,7 +28,7 @@ import {
 } from '@yuuvis/core';
 import { AutoComplete } from 'primeng/autocomplete';
 import { timer } from 'rxjs';
-import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { Selectable, SelectableGroup } from '../../grouped-select';
 import { PopoverConfig } from '../../popover/popover.interface';
@@ -46,9 +46,6 @@ import { QuickSearchService } from './quick-search.service';
  *
  * Setting up the ID of a context folder will restrict the search to only return results from
  * within the given context folder.
- *
- * Adding a class of `inline` to the component will apply a different layout more suitable
- * for embedding the component somwhere else.
  *
  * [Screenshot](../assets/images/yuv-quick-search.gif)
  * 
@@ -90,16 +87,16 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
   }
 
   get availableObjectTypeGroups(): SelectableGroup[] {
-    const sg = JSON.parse(JSON.stringify(this.quickSearchService.availableObjectTypeGroups));
+    let sg = JSON.parse(JSON.stringify(this.quickSearchService.availableObjectTypeGroups));
     if (this.skipTypes) {
-      sg.forEach((g) => (g.items = g.items.filter((i) => !this.skipTypes.includes(i.id))));
+      sg.forEach((g: SelectableGroup) => (g.items = g.items.filter((i) => !this.skipTypes.includes(i.id))));
+      sg = sg.filter((g: SelectableGroup) => g.items?.length);
     }
     return sg;
   }
 
   get availableObjectTypeGroupsList(): Selectable[] {
-    const selectables = this.availableObjectTypeGroups.reduce((pre, cur) => [...pre, ...cur.items], []);
-    return this.skipTypes?.length ? selectables.filter((s) => !this.skipTypes.includes(s.id)) : selectables;
+    return this.availableObjectTypeGroups.reduce((pre, cur) => [...pre, ...cur.items], []);
   }
 
   availableObjectTypeFields: Selectable[] = [];
@@ -168,6 +165,7 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
    */
   @Output() querySubmit = new EventEmitter<SearchQuery>();
   @Output() queryReset = new EventEmitter();
+  @Output() queryChange = new EventEmitter<SearchQuery>();
   @Output() typeAggregation = new EventEmitter<ObjectTypeAggregation[]>();
 
   @HostBinding('class.busy') busy: boolean;
@@ -203,13 +201,27 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
     // TODO: load only if needed
     this.quickSearchService.loadFilterSettings().subscribe(() => this.setAvailableObjectTypesFields());
 
-    this.searchForm.valueChanges.pipe(distinctUntilChanged(), debounceTime(1000)).subscribe(({ term }) => {
-      const _term = typeof term === 'string' ? term : (term && term.label) || '';
-      if (this.searchQuery.term !== _term) {
-        this.searchQuery.term = _term;
-        this.aggregate();
-      }
-    });
+    this.searchForm.valueChanges
+      .pipe(
+        distinctUntilChanged(),
+        map(({ term }) => this.updateSearchTerm()),
+        debounceTime(1000)
+      )
+      .subscribe((aggregate: boolean) => {
+        if (aggregate) {
+          this.aggregate();
+        }
+      });
+  }
+
+  updateSearchTerm(): boolean {
+    const value = this.searchForm.get('term')?.value;
+    const term = (typeof value === 'string' ? value : value?.label) || '';
+    const termUpdated = this.searchQuery.term !== term;
+    if (termUpdated) {
+      this.searchQuery.term = term;
+    }
+    return termUpdated;
   }
 
   private parseQuery(query: string): any {
@@ -251,6 +263,7 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
    * estimated result of the current query.
    */
   aggregate() {
+    this.queryChange.emit(this.searchQuery);
     if (!!this.disableAggregations) {
       return;
     }
@@ -288,7 +301,7 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
       selected: this.selectedObjectTypes
     };
     const popoverConfig: PopoverConfig = {
-      width: '55%',
+      width: pickerData.items.length <= 1 ? 'auto' : pickerData.items.length === 2 ? `${18 * 2}%` : `${18 * 3}%`,
       height: '70%',
       disableSmallScreenClose: true,
       data: pickerData
@@ -413,6 +426,10 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
 
   executeSearch() {
     this.searchQuery.aggs = null;
+    const aggregate = this.updateSearchTerm();
+    if (aggregate) {
+      this.aggregate();
+    }
     this.querySubmit.emit(this.searchQuery);
   }
 

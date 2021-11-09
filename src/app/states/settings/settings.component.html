@@ -1,3 +1,4 @@
+<ng-container [yuvTitle]="('yuv.client.state.settings.title' | translate)"></ng-container>
 <div class="settings panel">
   <div class="head">
     <yuv-user-avatar class="background" [user]="user$ | async"></yuv-user-avatar>
@@ -124,7 +125,7 @@
         </div>
       </div>
 
-      <div class="setting settings__row" *ngIf="hasSystemRole">
+      <div class="setting settings__row" *ngIf="hasSystemRole && enableConfig">
         <div class="label" translate>yuv.client.state.settings.config.plugin-config</div>
         <div class="value buttons">
           <yuv-file-picker [label]="'yuv.client.state.settings.config.main-config.import' | translate"
@@ -143,7 +144,7 @@
         </div>
       </div>
 
-      <div class="setting settings__row" *ngIf="hasSystemRole">
+      <div class="setting settings__row" *ngIf="hasSystemRole && enableConfig">
         <div class="label" translate>yuv.client.state.settings.config.main-config</div>
         <div class="value buttons">
           <yuv-file-picker [label]="'yuv.client.state.settings.config.main-config.import' | translate"
@@ -156,7 +157,7 @@
       </div>
 
       <ng-container *ngFor="let locale of clientLocales">
-        <div class="setting settings__row" *ngIf="hasSystemRole">
+        <div class="setting settings__row" *ngIf="hasSystemRole && enableConfig">
           <div class="label">{{ 'yuv.client.state.settings.language' | translate }} ({{ locale.iso }})</div>
           <div class="value buttons">
             <yuv-file-picker [label]="'yuv.client.state.settings.config.main-config.import' | translate"

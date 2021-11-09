@@ -135,7 +135,7 @@ export class SearchFilterConfigComponent implements OnInit {
         id: this.CREATE_NEW_ID + '#active',
         svg: addCircle.data,
         label: `${this.translate.instant('yuv.framework.search.filter.create.new')} (${this.translate.instant('yuv.framework.search.filter.from.active')})`,
-        value: this.query.filterGroup.clone().group
+        value: [this.query.filterGroup.clone()]
       },
       ...this.storedFilters.filter((f) => this.isVisible(f) && f.highlight)
     ].filter((f) => f);

@@ -1,6 +1,5 @@
 import { PlatformLocation } from '@angular/common';
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DmsObject, PendingChangesService, Screen, ScreenService, TranslateService } from '@yuuvis/core';
 import { ObjectCompareInput, PluginsService, VersionListComponent } from '@yuuvis/framework';
@@ -32,7 +31,6 @@ export class VersionsComponent implements OnInit, OnDestroy {
   pluginsCompare: any;
 
   constructor(
-    private titleService: Title,
     private screenService: ScreenService,
     public translate: TranslateService,
     private location: PlatformLocation,
@@ -96,7 +94,6 @@ export class VersionsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.titleService.setTitle(this.translate.instant('yuv.client.state.versions.header.title'));
     this.route.params.pipe(takeUntilDestroy(this)).subscribe((params: any) => {
       if (params.id) {
         this.dmsObjectID = params.id;

@@ -120,6 +120,10 @@ export class ObjectDetailsComponent implements OnDestroy {
    * This will also disable the corresponding filters.
    */
   @Input() skipActions: number[];
+  /**
+   * Whether or not to ignore admin and user separation of audit entries
+   */
+  @Input() allActions: boolean;
 
   /**
    * ID of a DmsObject. The object will be fetched from the backend upfront.

@@ -63,9 +63,7 @@ export class AuditService {
       }
     ];
 
-    if (!options || !options.allActions) {
-      q.addFilter(new SearchFilter(AuditField.ACTION, SearchFilter.OPERATOR.IN, this.getAuditActions(options?.skipActions)));
-    }
+    q.addFilter(new SearchFilter(AuditField.ACTION, SearchFilter.OPERATOR.IN, this.getAuditActions(!!options.allActions, options?.skipActions)));
 
     if (options) {
       if (options.size) {
@@ -93,10 +91,9 @@ export class AuditService {
    * set of actions.
    * @param skipActions codes of actions that should not be fetched
    */
-  getAuditActions(skipActions?: number[]): number[] {
-    return (this.userService.hasAdministrationRoles ? [...this.userAuditActions, ...this.adminAuditActions] : this.userAuditActions).filter(
-      (a) => !skipActions || !skipActions.includes(a)
-    );
+  getAuditActions(allActions: boolean, skipActions?: number[]): number[] {
+    const actions = allActions || this.userService.hasAdministrationRoles ? [...this.userAuditActions, ...this.adminAuditActions] : this.userAuditActions;
+    return actions.filter((a) => !skipActions || !skipActions.includes(a));
   }
 
   /**

@@ -1,6 +1,8 @@
 @import './../../../../../src/scss-shared/_vars';
 
 body {
+  .yuv-datetime-range,
+  .yuv-number-range,
   .yuv-catalog {
     .p-disabled {
       opacity: 0.8;
@@ -40,11 +42,17 @@ body {
 
     .p-dropdown:not(.p-disabled).p-focus {
       box-shadow: none;
+      outline: none;
     }
 
     .p-dropdown-panel {
       background-color: var(--panel-background);
       border-color: var(--panel-divider-color);
+
+      .p-dropdown-header {
+        background-color: var(--panel-background);
+        border-color: var(--panel-divider-color);
+      }
 
       .p-dropdown-items .p-dropdown-item {
         color: var(--text-color-body);
@@ -139,6 +147,13 @@ body {
         display: flex;
         flex-flow: row wrap;
       }
+    }
+  }
+
+  .p-tabview {
+    .p-tabview-panels,
+    .p-tabview-panel {
+      background-color: var(--panel-background-grey);
     }
   }
 

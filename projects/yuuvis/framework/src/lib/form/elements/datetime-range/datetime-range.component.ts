@@ -81,16 +81,10 @@ export class DatetimeRangeComponent implements OnInit, ControlValueAccessor, Val
       this.searchOption = match ? match.value : this.availableSearchOptions[0].value;
 
       this.value = value;
-      if (!value.secondValue) {
-        this.rangeForm.patchValue({
-          dateValue: value.firstValue ? new Date(value.firstValue) : null
-        });
-      } else {
-        this.rangeForm.patchValue({
-          dateValueFrom: value.firstValue ? new Date(value.firstValue) : null,
-          dateValue: value.secondValue ? new Date(value.secondValue) : null
-        });
-      }
+      this.rangeForm.patchValue({
+        dateValueFrom: value.secondValue && value.firstValue,
+        dateValue: value.secondValue || value.firstValue
+      });
     } else {
       this.value = null;
       this.rangeForm.reset();
@@ -104,9 +98,9 @@ export class DatetimeRangeComponent implements OnInit, ControlValueAccessor, Val
   registerOnTouched(fn: any): void {}
 
   onValueChange() {
-    let dateValue = this.formatDate(this.rangeForm.get('dateValue').value);
+    let dateValue = this.rangeForm.get('dateValue').value;
     if (this.searchOption === SearchFilter.OPERATOR.INTERVAL_INCLUDE_BOTH) {
-      let dateValueFrom = this.formatDate(this.rangeForm.get('dateValueFrom').value);
+      let dateValueFrom = this.rangeForm.get('dateValueFrom').value;
 
       if (dateValueFrom || dateValue) {
         this.isValid = this.rangeForm.valid && !!dateValueFrom && !!dateValue;
@@ -118,10 +112,6 @@ export class DatetimeRangeComponent implements OnInit, ControlValueAccessor, Val
     }
 
     this.propagateChange(this.value);
-  }
-
-  formatDate(value: Date) {
-    return !value ? null : this.withTime ? value.toISOString().replace(':00.000', '') : this.datePipe.transform(value, 'yyyy-MM-dd');
   }
 
   // returns null when valid else the validation object

@@ -1,7 +1,10 @@
 import { Injectable } from '@angular/core';
-import { EMPTY, Observable, Subject } from 'rxjs';
-import { expand, map, skipWhile, tap } from 'rxjs/operators';
-import { TaskData } from '../model/bpm.model';
+import { EMPTY, Observable, of, Subject } from 'rxjs';
+import { expand, map, skipWhile, switchMap, tap } from 'rxjs/operators';
+import { ApiBase } from '../../backend/api.enum';
+import { BackendService } from '../../backend/backend.service';
+import { UserService } from '../../user/user.service';
+import { ProcessAction, ProcessPostPayload, Task } from '../model/bpm.model';
 import { BpmService } from './../bpm/bpm.service';
 
 /**
@@ -14,11 +17,10 @@ import { BpmService } from './../bpm/bpm.service';
 export class InboxService {
   private INBOX_PAGE_SIZE = 100;
 
-  private readonly bpmTaskUrl = '/bpm/tasks';
-  private inboxDataSource = new Subject<TaskData[]>();
-  public inboxData$: Observable<TaskData[]> = this.inboxDataSource.asObservable();
+  private inboxDataSource = new Subject<Task[]>();
+  public inboxData$: Observable<Task[]> = this.inboxDataSource.asObservable();
 
-  constructor(private bpmService: BpmService) {}
+  constructor(private bpmService: BpmService, private userService: UserService, private backendService: BackendService) {}
 
   /**
    * bpm Inbox data Loading status
@@ -27,14 +29,20 @@ export class InboxService {
     return this.bpmService.loadingBpmData$;
   }
 
+  getTaskForm(formKey: string): any {
+    return this.backendService.get(`/resources/config/${formKey}`).pipe(map((res) => (res ? res.tenant : null)));
+  }
+
   /**
-   * get all Inbox tasks
+   * updates inboxData$
    */
-  getTasks(includeProcessVar = true): Observable<TaskData[]> {
-    return this.getTasksPaged({ includeProcessVariables: includeProcessVar }).pipe(
-      tap((res: TaskData[]) => this.inboxDataSource.next(res)),
-      map((res: TaskData[]) => res)
-    );
+  fetchTasks(includeProcessVar = true): void {
+    this.getTasksPaged({ includeProcessVariables: includeProcessVar })
+      .pipe(
+        tap((res: Task[]) => this.inboxDataSource.next(res.reverse())),
+        map((res: Task[]) => res)
+      )
+      .subscribe();
   }
 
   private getTasksPaged(options?: { active?: boolean; includeProcessVariables?: boolean; processInstanceId?: string }) {
@@ -45,7 +53,7 @@ export class InboxService {
     return this.getAllPages(`&${p.join('&')}`);
   }
 
-  private getAllPages(requestParams: string): Observable<TaskData[]> {
+  private getAllPages(requestParams: string): Observable<Task[]> {
     let items = [];
     let i = 0;
     return this.getPage(requestParams, i).pipe(
@@ -60,23 +68,71 @@ export class InboxService {
   }
 
   private getPage(requestParams: string, index?: number) {
-    return this.bpmService.getProcesses(`${this.bpmTaskUrl}?size=${this.INBOX_PAGE_SIZE}&page=${index || 0}${requestParams}`);
+    return this.bpmService.getProcesses(`/bpm/tasks?size=${this.INBOX_PAGE_SIZE}&sort=createTime&page=${index || 0}${requestParams}`);
   }
 
   /**
    * get a specific task by processInstanceId
    */
-  getTask(processInstanceId: string, includeProcessVar = true): Observable<TaskData[]> {
-    return this.getTasksPaged({ includeProcessVariables: includeProcessVar, processInstanceId: processInstanceId }).pipe(map((res: TaskData[]) => res));
+  getTask(processInstanceId: string, includeProcessVar = true): Observable<Task> {
+    return this.bpmService
+      .getProcesses(`/bpm/tasks/${processInstanceId}${includeProcessVar ? '?includeProcessVariables=true' : ''}`)
+      .pipe(map((res) => res as Task));
   }
 
   /**
-   * set task status to comlete
+   * Finsihes a task.
+   * @param taskId ID of the taks to finish
+   * @param payload Data to be send with the complete request (may contain attachments, a new subject or variables)
    */
-  completeTask(taskId: string): Observable<any> {
-    return this.bpmService.updateProcess(`${this.bpmTaskUrl}/${taskId}`, { action: 'complete' });
+  completeTask(taskId: string, payload?: ProcessPostPayload): Observable<any> {
+    return this.putTask(taskId, ProcessAction.complete, payload || {});
   }
-  // updateTask(taskId: string, payload: any): Observable<any> {
-  //   return this.bpmService.createProcess(url, payload);
-  // }
+
+  /**
+   * Claim or unclaim a task.
+   * @param taskId ID of the taks to (un)claim
+   * @param claim Whether or not to claim (true) or unclaim (false)
+   */
+  claimTask(taskId: string, claim: boolean): Observable<Task> {
+    const payload: any = {
+      assignee: claim ? { id: this.userService.getCurrentUser().id } : null
+    };
+    return this.putTask(taskId, ProcessAction.claim, payload || {});
+  }
+
+  /**
+   * Delegates a task to a new assignee
+   * @param taskId ID of the task to be delegated
+   * @param assignee ID of the new assignee
+   */
+  delegateTask(taskId: string, assignee: string): Observable<Task> {
+    const payload: any = {
+      assignee: { id: assignee }
+    };
+    return this.putTask(taskId, ProcessAction.delegate, payload || {});
+  }
+
+  /**
+   * Resolves a task that has been delegated
+   * @param taskId ID of the task to be resolved
+   * @param payload Data to be send with the resolve request (may contain attachments, a new subject or variables)
+   */
+  resolveTask(taskId: string, payload?: ProcessPostPayload): Observable<Task> {
+    return (payload ? this.updateTask(taskId, payload) : of(true)).pipe(switchMap((_) => this.putTask(taskId, ProcessAction.resolve, payload || {})));
+  }
+
+  /**
+   * Updates a task.
+   * @param taskId ID of the taks to be updated
+   * @param payload Data to be send with the complete request (may contain attachments, a new subject or variables)
+   */
+  updateTask(taskId: string, payload?: ProcessPostPayload): Observable<any> {
+    return this.putTask(taskId, ProcessAction.save, payload || {});
+  }
+
+  private putTask(taskId: string, action: string, payload: ProcessPostPayload) {
+    const pl = { ...payload, action: action };
+    return this.backendService.put(`/bpm/tasks/${taskId}`, pl, ApiBase.apiWeb).pipe(tap((_) => this.fetchTasks()));
+  }
 }

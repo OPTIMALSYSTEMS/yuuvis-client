@@ -47,7 +47,7 @@ export class ObjectFormElementComponent implements OnDestroy {
       this.skipToggle ||
       this.situation !== 'SEARCH' ||
       this.formElementRef._eoFormElement.readonly ||
-      !(this.formElementRef._eoFormElement._internalType || '').match('string|integer|decimal')
+      (this.formElementRef._eoFormElement._internalType || '').match('boolean')
     );
   }
 
@@ -81,6 +81,10 @@ export class ObjectFormElementComponent implements OnDestroy {
    */
   private setGrouping(formElement) {
     return { ...formElement, grouping: !!formElement?.classifications?.includes(Classification.NUMBER_DIGIT) };
+  }
+
+  onDataMetaChange(data: any) {
+    this.formElementRef._eoFormElement.dataMeta = data;
   }
 
   labelToggled(toggled: boolean, readonly = this.formElementRef._eoFormElement.readonly) {

@@ -13,6 +13,10 @@ export class IconRegistryService {
     icons.forEach((icon: Icon) => this.registry.set(icon.name, icon.data));
   }
 
+  hasIcon(iconName: string): boolean {
+    return this.registry.has(iconName);
+  }
+
   public getIcon(iconName: string): string | undefined {
     if (!this.registry.has(iconName)) {
       // console.warn(`The Icon ${iconName} coult not be found, are you shure you added to the icon Registry?`);

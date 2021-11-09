@@ -3,6 +3,7 @@
  */
 export interface DmsObjectContent {
   contentStreamId: string;
+  digest: string;
   fileName: string;
   size: number;
   mimeType: string;

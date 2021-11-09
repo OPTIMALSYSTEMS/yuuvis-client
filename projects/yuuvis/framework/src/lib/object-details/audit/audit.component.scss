@@ -142,23 +142,7 @@
     }
   }
 
-  .audits {
-    display: flex;
-    flex-flow: column;
-    overflow-y: auto;
-    align-items: center;
-    padding: var(--app-pane-padding) 0;
-  }
   .audit-entry {
-    display: grid;
-    grid-template-rows: 1fr;
-    grid-template-columns: 1fr auto 1fr;
-    grid-template-areas: 'created timeline content';
-
-    width: 100%;
-    line-height: 1.7em;
-    // min-height: 6em; // safari fix
-
     // group 300+ (edit)
     &.g3 .timeline::before {
       box-shadow: 0 0 0 3px var(--color-accent);
@@ -198,101 +182,19 @@
       }
     }
 
-    &:first-child {
-      .timeline::after {
-        top: initial;
-        height: 50%;
-      }
-    }
-    &:last-child {
-      .timeline::after {
-        bottom: initial;
-        height: 50%;
-      }
-    }
-
-    .meta {
-      color: var(--text-color-caption);
-      font-size: var(--font-caption);
-    }
-
-    .created {
-      grid-area: created;
-      display: flex;
-      flex-flow: column;
-      justify-content: center;
-      align-items: flex-end;
-      padding: 0 var(--app-pane-padding);
-
-      .date {
-        color: var(--text-color-body);
-      }
-    }
-
-    .timeline {
-      grid-area: timeline;
-      display: flex;
-      flex-flow: column;
-      justify-content: center;
-      width: var(--app-pane-padding);
-      position: relative;
-
-      &::before {
-        content: '';
-        display: block;
-        width: calc(var(--app-pane-padding) - 6px);
-        height: calc(var(--app-pane-padding) - 6px);
-        border-radius: 50%;
-        background-color: var(--panel-background);
-        box-sizing: border-box;
-        z-index: 1;
-        align-self: center;
-        box-shadow: 0 0 0 3px var(--panel-divider-color);
-      }
-
-      &::after {
-        content: '';
-        display: block;
-        width: calc(50% - 1px);
-        border-width: 0 2px 0 0;
-        border-style: solid;
-        border-color: var(--panel-divider-color);
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        z-index: 0;
-      }
-    }
-
     .content {
-      // flex: 2;
-      grid-area: content;
-      padding: calc(var(--app-pane-padding) / 2) var(--app-pane-padding);
-      box-sizing: border-box;
-      display: flex;
-
-      .entry {
-        word-break: break-all;
-        border-radius: calc(var(--app-pane-padding) / 2);
-        background-color: var(--panel-background);
-        padding: calc(var(--app-pane-padding) / 2) var(--app-pane-padding);
-        color: var(--text-color-body);
-        border: 1px solid var(--panel-divider-color);
-
-        .title {
-          display: flex;
-          span {
-            flex: 1;
-            &.version {
-              flex: 0 0 auto;
-              @include bidi-style(margin-right, calc(var(--app-pane-padding) / 2 * -1), margin-left, calc(var(--app-pane-padding) / 2 * -1));
-            }
+      .title {
+        display: flex;
+        span {
+          flex: 1;
+          &.version {
+            flex: 0 0 auto;
+            @include bidi-style(margin-right, calc(var(--app-pane-padding) / 2 * -1), margin-left, calc(var(--app-pane-padding) / 2 * -1));
           }
         }
-
-        .version {
-          display: none;
-        }
+      }
+      .version {
+        display: none;
       }
     }
   }

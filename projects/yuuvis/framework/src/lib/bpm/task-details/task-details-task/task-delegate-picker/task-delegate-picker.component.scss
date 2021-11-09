@@ -1,0 +1,22 @@
+:host {
+  display: block;
+  padding: var(--app-pane-padding);
+
+  h1 {
+    font-size: var(--font-headline);
+    margin: 0 var(--app-pane-padding);
+    font-weight: normal;
+    color: var(--text-color-caption);
+  }
+
+  .actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin: var(--app-pane-padding) -2px 0 -2px;
+
+    button {
+      margin: 0 2px;
+    }
+  }
+}

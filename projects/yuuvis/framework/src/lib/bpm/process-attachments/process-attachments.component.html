@@ -1,0 +1,58 @@
+<div class="yuv-process-details-attachments" [yuvBusyOverlay]="busy">
+    <ng-container *ngIf="attachedObjects.length; else tplEmpty">
+        <div class="attachments">
+            <yuv-icon class="label" icon="attachment"></yuv-icon>
+
+            <div class="attachment-list">
+                <div class="attachment" *ngFor="let o of attachedObjects"
+                    [ngClass]="{error: o.error, selected: o.id === selectedObject}">
+                    <yuv-icon class="error" icon="noFile" [title]="o.id" *ngIf="o.error; else tplAttachment"></yuv-icon>
+                    <ng-template #tplAttachment>
+                        <button title="{{o.title}}" class="item" (click)="selectAttachment(o.id, $event)">
+                            <yuv-object-type-icon [objectTypeId]="o.objectTypeId"></yuv-object-type-icon>
+                            <span>{{o.title}}</span>
+                        </button>
+                        <button class="remove" (click)="removeAttachment(o.id)" *ngIf="enableRemove">
+                            <yuv-icon class="btn" icon="clear"></yuv-icon>
+                        </button>
+                    </ng-template>
+                </div>
+            </div>
+
+            <div class="buttons">
+                <button class="order" (click)="openOrderAttachmentDialog()" *ngIf="enableOrder">
+                    <yuv-icon icon="sort" title="{{'yuv.framework.task-details-attachments.order'|translate}}">
+                    </yuv-icon>
+                </button>
+                <button class="add secondary" (click)="openAddAttachmentDialog()" *ngIf="enableAdd">
+                    <yuv-icon icon="addCircle" title="{{'yuv.framework.task-details-attachments.add'|translate}}">
+                    </yuv-icon>
+                </button>
+            </div>
+        </div>
+        <yuv-object-details *ngIf="selectedObject" [disableFileDrop]="true" [objectId]="selectedObject"
+            [layoutOptionsKey]="_layoutOptionsKey"></yuv-object-details>
+    </ng-container>
+
+    <ng-template #tplEmpty>
+        <div class="empty" *ngIf="!busy">
+            <yuv-icon class="ico" icon="noFile"></yuv-icon>
+            {{'yuv.framework.task-details-attachments.empty'|translate}}
+            <button class="primary" (click)="openAddAttachmentDialog()" *ngIf="enableAdd">
+                <yuv-icon icon="addCircle"></yuv-icon>
+                {{'yuv.framework.task-details-attachments.add'|translate}}
+            </button>
+        </div>
+    </ng-template>
+</div>
+
+<ng-template #addAttachmentOverlay let-popover="popover">
+    <yuv-object-picker [popoverRef]="popover"
+        [headline]="attachmentPickerTitle || 'yuv.framework.process-details.attachment-picker.headline' | translate"
+        (objectSelect)="onAttachmentDialogSelect($event)"></yuv-object-picker>
+</ng-template>
+
+<ng-template #orderAttachmentOverlay let-popover="popover">
+    <yuv-process-attachments-order [popoverRef]="popover" (orderChange)="attachmentOrderChange.emit($event)"
+        [attachments]="attachedObjects"></yuv-process-attachments-order>
+</ng-template>

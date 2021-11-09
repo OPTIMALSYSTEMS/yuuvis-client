@@ -5,6 +5,7 @@ import { BackendService } from '../backend/backend.service';
 import { Classification } from '../system/system.enum';
 import { ObjectType } from '../system/system.interface';
 import { SystemService } from '../system/system.service';
+import { ApiBase } from './../backend/api.enum';
 import { PredictionClassifyResult } from './prediction.interface';
 
 @Injectable({
@@ -14,7 +15,7 @@ export class PredictionService {
   constructor(private backend: BackendService, private systemService: SystemService) {}
 
   classify(objectID: string): Observable<PredictionClassifyResult> {
-    return this.backend.get(`/predict/classification/${objectID}`, 'predict').pipe(
+    return this.backend.get(`/predict/classification/${objectID}`, ApiBase.predict).pipe(
       map((res: any) => {
         // get matching prediction from response array
         const mp = res.predictions.find((p) => p['system:objectId']?.value === objectID);
@@ -90,6 +91,6 @@ export class PredictionService {
         }
       }
     };
-    this.backend.post(`/predict/classification/feedback`, postData, 'predict').subscribe();
+    this.backend.post(`/predict/classification/feedback`, postData, ApiBase.predict).subscribe();
   }
 }

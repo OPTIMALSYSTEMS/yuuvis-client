@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { BehaviorSubject, forkJoin, Observable, of } from 'rxjs';
-import { catchError, map, switchMap, tap } from 'rxjs/operators';
+import { catchError, map, tap } from 'rxjs/operators';
 import { UserSettings, YuvUser } from '../../model/yuv-user.model';
 import { OidcService } from '../auth/oidc.service';
 import { BackendService } from '../backend/backend.service';
@@ -20,6 +20,10 @@ import { SystemService } from '../system/system.service';
   providedIn: 'root'
 })
 export class UserService {
+  static GLOBAL_SETTINGS = '/users/globalsettings/';
+  static USERS_SETTINGS = '/users/settings/';
+  static DEFAULT_SETTINGS = '/users/settings';
+
   USER_FETCH_URI = '/users/whoami';
   private user: YuvUser = null;
   private userSource = new BehaviorSubject<YuvUser>(this.user);
@@ -51,21 +55,7 @@ export class UserService {
    */
   public setCurrentUser(user: YuvUser) {
     this.user = user;
-    // this.user.setImageBase(this.backend.getServiceBase());
-    if (user) {
-      this.backend.setHeader('Accept-Language', this.user.getClientLocale());
-
-      const languages = this.config.getClientLocales().map((lang) => lang.iso);
-      const userLang = user.getClientLocale(this.config.getDefaultClientLocale());
-      if (languages.indexOf(userLang) !== -1) {
-        this.logger.debug("Setting client locale to '" + userLang + "'");
-        const ready = this.translate.use(userLang);
-        this.user.uiDirection = this.getUiDirection(userLang);
-        if (this.translate.currentLang !== userLang) {
-          ready.subscribe(() => this.eventService.trigger(YuvEventType.CLIENT_LOCALE_CHANGED, userLang));
-        }
-      }
-    }
+    this.changeClientLocale('', false);
     this.userSource.next(this.user);
   }
 
@@ -93,45 +83,46 @@ export class UserService {
    * Change the users client locale
    * @param iso ISO locale string to be set as new client locale
    */
-  changeClientLocale(iso: string): void {
-    if (this.user.userSettings.locale !== iso) {
-      this.user.userSettings.locale = iso;
-
-      this.backend
-        .post('/users/settings', this.user.userSettings)
-        .pipe(
-          switchMap(() => {
-            this.backend.setHeader('Accept-Language', iso);
-            this.logger.debug("Changed client locale to '" + iso + "'");
-            const ready = this.translate.use(iso);
-            this.user.uiDirection = this.getUiDirection(iso);
-            this.userSource.next(this.user);
-            this.logger.debug('Loading system definitions i18n resources for new locale.');
-            return forkJoin([ready, this.system.updateLocalizations(iso)]);
-          })
-        )
-        .subscribe(() => this.eventService.trigger(YuvEventType.CLIENT_LOCALE_CHANGED, iso));
+  changeClientLocale(iso: string, persist = true): void {
+    if (this.user) {
+      const languages = this.config.getClientLocales().map((lang) => lang.iso);
+      iso = iso || this.user.getClientLocale(this.config.getDefaultClientLocale());
+      if (languages.includes(iso)) {
+        this.logger.debug("Changed client locale to '" + iso + "'");
+        this.backend.setHeader('Accept-Language', iso);
+        this.user.uiDirection = this.getUiDirection(iso);
+        this.user.userSettings.locale = iso;
+        if (this.translate.currentLang !== iso || this.system.authData?.language !== iso) {
+          const ob = persist
+            ? forkJoin([
+                this.translate.use(iso),
+                this.system.updateLocalizations(iso),
+                this.backend.post(UserService.DEFAULT_SETTINGS, this.user.userSettings).pipe(
+                  tap(() => {
+                    this.userSource.next(this.user);
+                    this.logger.debug('Loading system definitions i18n resources for new locale.');
+                  })
+                )
+              ])
+            : this.translate.use(iso);
+          ob.subscribe(() => this.eventService.trigger(YuvEventType.CLIENT_LOCALE_CHANGED, iso));
+        }
+      }
     }
-  }
-
-  setUserLocale(locale: string): string {
-    if (locale) {
-      this.changeClientLocale(this.config.getDefaultClientLocale());
-      return this.config.getDefaultClientLocale();
-    }
-    return locale;
   }
 
   fetchUserSettings(): Observable<UserSettings> {
-    return this.backend.get('/users/settings');
+    return this.backend.get(UserService.DEFAULT_SETTINGS);
   }
 
   /**
    * Search for a user based on a search term
    * @param term Search term
    */
-  queryUser(term: string): Observable<YuvUser[]> {
-    return this.backend.get(`/users/users?search=${term}`).pipe(map((users) => (!users ? [] : users.map((u) => new YuvUser(u, null)))));
+  queryUser(term: string, excludeMe?: boolean): Observable<YuvUser[]> {
+    return this.backend
+      .get(`/users/users?search=${term}${excludeMe ? `&excludeMe=true` : ''}`)
+      .pipe(map((users) => (!users ? [] : users.map((u) => new YuvUser(u, null)))));
   }
 
   getUserById(id: string): Observable<YuvUser> {
@@ -143,30 +134,44 @@ export class UserService {
       this.oidc.logout();
     } else {
       const redir = redirRoute ? `?redir=${redirRoute}` : '';
-      (window as any).location.href = `/logout${redir}`;
+      (window as any).location.href = `${this.backend.getApiBase('logout')}${redir}`;
     }
   }
 
   getSettings(section: string): Observable<any> {
-    return this.backend.get('/users/settings/' + section);
+    return this.backend.get(UserService.USERS_SETTINGS + encodeURIComponent(section));
   }
 
   saveSettings(section: string, data: any): Observable<any> {
-    return this.backend.post('/users/settings/' + section, data);
+    return this.backend.post(UserService.USERS_SETTINGS + encodeURIComponent(section), data);
   }
 
-  getGlobalSettings(section: string): Observable<any> {
+  /**
+   * getGlobalSettings
+   * @param section
+   * @param global
+   * @returns
+   */
+  getGlobalSettings(section: string, global = false): Observable<any> {
     const setting = this.globalSettings.get(section);
     return setting
       ? of(setting)
-      : this.backend.get('/users/globalsettings/' + section).pipe(
+      : this.backend.get(ConfigService.GLOBAL_RESOURCES_PATH(section)).pipe(
           catchError(() => of({})),
+          map((data) => ConfigService.PARSER(data)),
           tap((data) => this.globalSettings.set(section, data))
         );
   }
 
-  saveGlobalSettings(section: string, data: any): Observable<any> {
+  /**
+   * saveGlobalSettings
+   * @param section
+   * @param data
+   * @param global
+   * @returns
+   */
+  saveGlobalSettings(section: string, data: any, global = false): Observable<any> {
     this.globalSettings.set(section, data);
-    return this.backend.post('/users/globalsettings/' + section, data);
+    return this.backend.post(ConfigService.GLOBAL_RESOURCES_PATH(section, global ? 'system' : 'admin'), data);
   }
 }

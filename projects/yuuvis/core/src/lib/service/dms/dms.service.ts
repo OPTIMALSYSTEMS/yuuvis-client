@@ -110,9 +110,22 @@ export class DmsService {
   /**
    * Path of dms object content file.
    * @param objectId ID of the dms object
+   * @param version version number of the dms object
    */
-  getContentPath(objectId: string) {
-    return `${this.backend.getApiBase(ApiBase.apiWeb)}/dms/objects/${objectId}/contents/file`;
+  getContentPath(objectId: string, version?: number) {
+    return `${this.backend.getApiBase(ApiBase.apiWeb)}/dms/objects/${objectId}/contents/file${version ? '?version=' + version : ''}`;
+  }
+
+  /**
+   * Original API Path of dms object content file.
+   * @param objectId ID of the dms object
+   * @param version version number of the dms object
+   * @param rendition should return rendition path of the dms object
+   */
+  getFullContentPath(objectId: string, version?: number, rendition = false) {
+    return `${this.backend.getApiBase(ApiBase.core, true)}/dms/objects/${objectId}${version ? '/versions/' + version : ''}/contents/${
+      rendition ? 'renditions/pdf' : 'file'
+    }`;
   }
 
   /**
@@ -125,7 +138,7 @@ export class DmsService {
     objects.forEach((object, i) =>
       setTimeout(
         () => {
-          const uri = `${this.getContentPath(object?.id)}${withVersion ? '?version=' + object.version : ''}`;
+          const uri = `${this.getContentPath(object?.id, withVersion && object?.version)}`;
           this.backend.download(uri);
         },
         Utils.isSafari() ? i * 1000 : 0 // Safari does not allow multi download
@@ -160,6 +173,15 @@ export class DmsService {
     return this.backend
       .post(`/dms/objects/tags/${tag}/state/${value}?query=SELECT * FROM system:object WHERE system:objectId='${id}'`, {}, ApiBase.core)
       .pipe(this.triggerEvent(YuvEventType.DMS_OBJECT_UPDATED, id, silent));
+  }
+
+  /**
+   * Deletes a tag from a dms object.
+   * @param id The ID of the object
+   * @param tag The tag to be deleted
+   */
+  deleteDmsObjectTag(id: string, tag: string, silent = false): Observable<any> {
+    return this.backend.delete(`/dms/objects/${id}/tags/${tag}`, ApiBase.core).pipe(this.triggerEvent(YuvEventType.DMS_OBJECT_UPDATED, id, silent));
   }
 
   /**

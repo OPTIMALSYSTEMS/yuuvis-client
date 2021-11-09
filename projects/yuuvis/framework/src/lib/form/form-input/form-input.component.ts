@@ -1,8 +1,20 @@
-import { AfterViewInit, Component, ContentChild, ElementRef, EventEmitter, HostBinding, Input, Output, Renderer2, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ContentChild,
+  ElementRef,
+  EventEmitter,
+  HostBinding,
+  Input,
+  Output,
+  QueryList,
+  Renderer2,
+  ViewChild,
+  ViewChildren
+} from '@angular/core';
 import { NG_VALUE_ACCESSOR } from '@angular/forms';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
 import { PluginsService } from '../../plugins/plugins.service';
+import { PluginTriggerComponent } from './../../plugins/plugin-trigger.component';
 
 /**
  * Component for wrapping a form element. Provides a label and focus behaviour.
@@ -19,6 +31,8 @@ import { PluginsService } from '../../plugins/plugins.service';
   host: { class: 'yuv-form-input' }
 })
 export class FormInputComponent implements AfterViewInit {
+  @ViewChildren(PluginTriggerComponent) triggers: QueryList<PluginTriggerComponent>;
+
   @ViewChild('label', { static: true }) labelEl: ElementRef;
   @ContentChild(NG_VALUE_ACCESSOR) childComponent: any;
 
@@ -109,8 +123,8 @@ export class FormInputComponent implements AfterViewInit {
     return this.childElement?.localName;
   }
 
-  visiblePlugins: Observable<any[]>;
-  hiddenPlugins: Observable<any[]>;
+  visiblePlugins = [];
+  hiddenPlugins = [];
 
   constructor(private renderer: Renderer2, private elRef: ElementRef, private pluginsService: PluginsService) {}
 
@@ -121,8 +135,22 @@ export class FormInputComponent implements AfterViewInit {
     }
   }
 
+  getTrigger(id?: string) {
+    return id ? this.triggers?.find((t) => t.action.id === id) : this.triggers?.first;
+  }
+
+  runTrigger(id?: string) {
+    return this.getTrigger(id)?.run();
+  }
+
+  closeTrigger(result = false, id?: string) {
+    return this.getTrigger(id)?.popover?.close(result);
+  }
+
   ngAfterViewInit() {
-    this.visiblePlugins = this.pluginsService.getCustomPlugins('triggers', this.hook).pipe(map((t) => t.filter((action: any) => action.group === 'visible')));
-    this.hiddenPlugins = this.pluginsService.getCustomPlugins('triggers', this.hook).pipe(map((t) => t.filter((action: any) => action.group !== 'visible')));
+    this.pluginsService.getCustomPlugins('triggers', this.hook).subscribe((t) => {
+      this.visiblePlugins = t.filter((action: any) => action.group === 'visible');
+      this.hiddenPlugins = t.filter((action: any) => action.group !== 'visible');
+    });
   }
 }

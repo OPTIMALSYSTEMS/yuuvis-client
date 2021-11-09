@@ -79,6 +79,7 @@ export class DmsObject {
     if (searchResultItem.content) {
       this.content = {
         contentStreamId: searchResultItem.content.contentStreamId,
+        digest: searchResultItem.content.digest,
         fileName: searchResultItem.content.fileName,
         size: searchResultItem.content.size,
         mimeType: searchResultItem.content.mimeType

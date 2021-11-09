@@ -18,10 +18,7 @@
     grid-template-columns: 1fr;
     grid-template-rows: auto 1fr;
     grid-template-areas: 'head' 'content';
-
-    &.fullscreen {
-      width: 100vw;
-    }
+    max-width: 100%;
 
     &.descriptionsEnabled {
       .action .row {
@@ -56,6 +53,14 @@
       position: relative;
       grid-area: content;
       overflow: auto;
+    }
+
+    .menu-sub-actions {
+      .title {
+        padding: 0 var(--app-pane-padding);
+        font-weight: var(--font-weight-light);
+        font-size: var(--font-subhead);
+      }
     }
 
     .no-actions,

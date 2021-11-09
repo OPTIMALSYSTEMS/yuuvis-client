@@ -12,10 +12,10 @@
     (yuvFileDrop)="onFilesDropped($event)"
     [yuvFileDropOptions]="{ label: 'yuv.client.frame.app-bar.filedrop.label' | translate, disabled: disableFileDrop || tab, multiple: true }"
   >
-    <yuv-icon class="btn" id="drawer" (click)="showSideBar(true)" replaceUrl [icon]="'drawer'"></yuv-icon>
-    <a yuvOfflineDisabled routerLink="/" id="logo">
-      <yuv-icon class="btn" [iconSrc]="'assets/default/theme/app.icon.svg'"></yuv-icon>
-    </a>
+    <div (click)="showSideBar(true)" (keyup.enter)="showSideBar(true)" tabindex="0">
+      <yuv-icon class="btn" id="drawer" [icon]="'drawer'"></yuv-icon>
+    </div>
+    <a yuvOfflineDisabled routerLink="/" id="logo" class="btn"></a>
     <div yuvOfflineDisabled class="main">
       <!-- create -->
       <a routerLink="/create" [queryParams]="{ context: context }" *ngIf="!disableCreate">
@@ -33,7 +33,7 @@
     <div class="right">
       <yuv-upload-progress-overlay (resultItemClick)="onResultItemClick($event)"></yuv-upload-progress-overlay>
       <yuv-icon *ngIf="isOffline" class="offline-icon" [icon]="'offline'" title="offline"></yuv-icon>
-      <div yuvOfflineDisabled class="user" (click)="op.toggle($event)">
+      <div yuvOfflineDisabled class="user" (click)="op.toggle($event)" (keyup.enter)="op.toggle($event)" tabindex="0">
         <yuv-user-avatar [user]="user"></yuv-user-avatar>
       </div>
 

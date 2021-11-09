@@ -1,9 +1,8 @@
 import { Inject, Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, of } from 'rxjs';
-import { switchMap, tap } from 'rxjs/operators';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { map, switchMap, tap } from 'rxjs/operators';
 import { UserSettings, YuvUser } from '../../model/yuv-user.model';
 import { BackendService } from '../backend/backend.service';
-import { AppCacheService } from '../cache/app-cache.service';
 import { CoreConfig } from '../config/core-config';
 import { CORE_CONFIG } from '../config/core-config.tokens';
 import { EventService } from '../event/event.service';
@@ -18,7 +17,6 @@ import { UserService } from '../user/user.service';
   providedIn: 'root'
 })
 export class AuthService {
-  private STORAGE_KEY = 'yuv.core.auth.data';
   private authenticated: boolean;
   private authSource = new BehaviorSubject<boolean>(false);
   authenticated$: Observable<boolean> = this.authSource.asObservable();
@@ -33,27 +31,8 @@ export class AuthService {
     private eventService: EventService,
     private userService: UserService,
     private systemService: SystemService,
-    private backend: BackendService,
-    private appCache: AppCacheService
+    private backend: BackendService
   ) {}
-
-  /**
-   * called on core init
-   */
-
-  init(): Observable<any> {
-    /**
-     * load authentication related properties stored from previous sessions
-     */
-    return this.appCache.getItem(this.STORAGE_KEY).pipe(
-      tap((data: AuthData) => {
-        this.authData = data;
-        if (data && data.language) {
-          this.backend.setHeader('Accept-Language', data.language);
-        }
-      })
-    );
-  }
 
   isLoggedIn() {
     return this.authenticated;
@@ -71,7 +50,7 @@ export class AuthService {
    * Get the current tenant or the previous one persisted locally
    */
   getTenant(): string {
-    return this.authData ? this.authData.tenant : null;
+    return this.authData?.tenant;
   }
 
   /**
@@ -102,8 +81,7 @@ export class AuthService {
    * @param userJson Data retrieved from the backend
    */
   private initApp(userJson: any): Observable<YuvUser> {
-    return this.systemService.getSystemDefinition().pipe(
-      switchMap(() => this.userService.fetchUserSettings()),
+    return this.userService.fetchUserSettings().pipe(
       switchMap((userSettings: UserSettings) => {
         const currentUser = new YuvUser(userJson, userSettings);
         this.userService.setCurrentUser(currentUser);
@@ -111,9 +89,7 @@ export class AuthService {
           tenant: currentUser.tenant,
           language: currentUser.getClientLocale()
         };
-        this.backend.setHeader('Accept-Language', this.authData.language);
-        this.appCache.setItem(this.STORAGE_KEY, this.authData).subscribe();
-        return of(currentUser);
+        return this.systemService.getSystemDefinition(this.authData).pipe(map(() => currentUser));
       })
     );
   }

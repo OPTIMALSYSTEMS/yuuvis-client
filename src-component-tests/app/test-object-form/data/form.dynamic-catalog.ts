@@ -58,5 +58,15 @@ export const dynamicCatalogElements = [
     type: 'string',
     cardinality: 'single',
     required: false
+  },
+  {
+    readonly: false,
+    name: 'customcatalog',
+    label: 'Custom Catalog',
+    description: 'Catalog with custom target URL (custom:catalog[...])',
+    classifications: ['custom:catalog[/api-web/api/dms/catalogs/germancountries]'],
+    type: 'string',
+    cardinality: 'single',
+    required: false
   }
 ];

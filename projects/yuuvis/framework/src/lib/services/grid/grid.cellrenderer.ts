@@ -1,4 +1,4 @@
-import { SearchFilter, SearchQuery, SecondaryObjectTypeClassification, Utils } from '@yuuvis/core';
+import { BaseObjectTypeField, SearchFilter, SearchQuery, SecondaryObjectTypeClassification, Utils } from '@yuuvis/core';
 import { noAccessTitle } from '../../shared/utils';
 
 /**
@@ -53,24 +53,36 @@ export class CellRenderer {
       : '';
   }
 
-  static systemTagsCellRenderer(param) {
-    const { context, value } = param;
-    const titleFnc = (tag, state?) => context.system.getLocalizedResource(`${tag}${state ? ':' + state : ''}_label`) || state || tag;
-    // tags value is an array of arrays
-    return param.value
-      ? `<table class="cellrenderer-tags">${param.value
+  static systemTagsSummaryRenderer(param) {
+    const i = CellRenderer.getSystemTagsRendererInput(param);
+    return i.value?.length
+      ? `<table class="cellrenderer-tags">${i.value
           .map(
             (v) => `<tr>
-            <td class="state_label">${titleFnc(v[0], v[1] + '')}</td>
-            <td class="tag_label">( #${titleFnc(v[0])} )</td>
-            <td hidden class="tag">${v[0]}</td>
-            <td hidden class="state">${v[1]}</td>
-            <td hidden class="date">${context.datePipe.transform(v[2], 'eoNiceShort')}</td>
-            <td hidden class="traceid">${v[3]}</td>
+            <td class="tag_label">#${i.titleFnc(v[0])}</td>
+            <td class="state_label">${i.titleFnc(v[0], v[1] + '')}</td>
+            <td class="tag">${v[0]}</td>
+            <td class="state">${v[1]}</td>
+            <td class="date">${param.context.datePipe.transform(v[2], 'eoNiceShort')}</td>
             </tr>`
           )
           .join('')}</table>`
       : '';
+  }
+
+  static systemTagsCellRenderer(param) {
+    const i = CellRenderer.getSystemTagsRendererInput(param);
+    return i.value?.length ? i.value.map((v) => `<span class="chip">${i.titleFnc(v[0], v[1] + '')} (#${i.titleFnc(v[0])})</span>`).join('') : '';
+  }
+
+  private static getSystemTagsRendererInput(param): { titleFnc: Function; value: any[] } {
+    const titleFnc = (tag, state?) => param.context.system.getLocalizedResource(`${tag}${state ? ':' + state : ''}_label`) || state || tag;
+    return {
+      titleFnc,
+      value: param.context.userService.hasAdminRole
+        ? param.value || []
+        : param.context.system.filterVisibleTags(param.data[BaseObjectTypeField.OBJECT_TYPE_ID], param.value)
+    };
   }
 
   static emailCellRenderer(param) {

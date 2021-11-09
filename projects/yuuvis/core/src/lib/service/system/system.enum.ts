@@ -91,6 +91,7 @@ export enum ContentStreamAllowed {
 
 // classifications applied to object type fields
 export enum Classification {
+  STRING_CATALOG_CUSTOM = 'custom:catalog',
   STRING_CATALOG_DYNAMIC = 'dynamic:catalog',
   STRING_CATALOG = 'catalog',
   STRING_ORGANIZATION = 'id:organization',
@@ -101,7 +102,8 @@ export enum Classification {
   NUMBER_FILESIZE = 'filesize',
   NUMBER_DIGIT = 'digit',
   SYSTEM_SOT = 'systemsot',
-  PREDICTION_CLASSIFY = 'prediction:classify'
+  PREDICTION_CLASSIFY = 'prediction:classify',
+  TABLE_SORTABLE = 'sortable'
 }
 
 // classifications applied to object types

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { EMPTY, forkJoin, Observable, of, ReplaySubject } from 'rxjs';
+import { forkJoin, Observable, of, ReplaySubject } from 'rxjs';
 import { catchError, map, switchMap, tap } from 'rxjs/operators';
 import { DmsObject } from '../../model/dms-object.model';
 import { ApiBase } from '../backend/api.enum';
@@ -21,6 +21,7 @@ import {
   ApplicableSecondaries,
   ClassificationEntry,
   GroupedObjectType,
+  Localization,
   ObjectType,
   ObjectTypeField,
   ObjectTypeGroup,
@@ -31,10 +32,6 @@ import {
   SecondaryObjectType,
   SystemDefinition
 } from './system.interface';
-
-interface Localization {
-  [key: string]: string;
-}
 
 /**
  * Providing system definitions.
@@ -51,6 +48,11 @@ export class SystemService {
   public system: SystemDefinition;
   private systemSource = new ReplaySubject<SystemDefinition>();
   public system$: Observable<SystemDefinition> = this.systemSource.asObservable();
+
+  // cache for resolved visible tags because they are used in lists and therefore should not be re-evaluated all the time
+  private visibleTagsCache: { [objectId: string]: { [tagName: string]: any[] } } = {};
+
+  authData: AuthData;
 
   /**
    * @ignore
@@ -71,9 +73,10 @@ export class SystemService {
    */
   getSecondaryObjectTypes(withLabels?: boolean): SecondaryObjectType[] {
     return (
-      (withLabels
-        ? this.system.secondaryObjectTypes.map((t) => ({ ...t, label: this.getLocalizedResource(`${t.id}_label`) }))
-        : this.system.secondaryObjectTypes
+      (
+        withLabels
+          ? this.system.secondaryObjectTypes.map((t) => ({ ...t, label: this.getLocalizedResource(`${t.id}_label`) }))
+          : this.system.secondaryObjectTypes
       )
         // ignore
         .filter((t) => t.id !== t.baseId && !t.id.startsWith('system:') && t.id !== 'appClientsystem:leadingType')
@@ -413,20 +416,52 @@ export class SystemService {
   /**
    * Get the resolved object tags
    */
-  getResolvedTags(objectTypeId?: string): { id: string; tag: string; fields: ObjectTypeField[] }[] {
-    const ot = this.getObjectType(objectTypeId) || this.getSecondaryObjectType(objectTypeId);
-    const tags = ot?.classification?.filter((t) => t.startsWith('tag['));
-    const parentType = ot && (ot as ObjectType).floatingParentType;
-    // filter out parent tags that are overriden
-    const parentTags = parentType && this.getResolvedTags(parentType).filter((t) => !tags.find((tag) => tag.startsWith(t.tag.replace(/\d.*/, ''))));
+  getResolvedTags(objectTypeId?: string): { id: string; tagName: string; tagValues: any; fields: ObjectTypeField[] }[] {
+    const vTags = this.getVisibleTags(objectTypeId);
+    return Object.keys(vTags).map((k) => ({
+      id: objectTypeId,
+      tagName: k,
+      tagValues: vTags[k],
+      fields: this.getBaseType(true).fields.filter((f) => f.id === BaseObjectTypeField.TAGS)
+    }));
+  }
 
-    return (tags || [])
-      .map((tag) => ({
-        id: ot.id,
-        tag,
-        fields: this.getBaseType(true).fields.filter((f) => f.id === BaseObjectTypeField.TAGS)
-      }))
-      .concat(parentTags || []);
+  /**
+   * Visible tags are defined by a classification on the object type (e.g. 'tag[tenkolibri:process,1,2,3]').
+   *
+   * The example will only return tags with the name 'tenkolibri:process'
+   * and values of either 1, 2 or 3. All other tags will be ignored.
+   *
+   * @param objectTypeId ID of the object type to get the visible tags for
+   * @returns object where the property name is the name of the tag and its value are the visible values
+   * for that tag (if values is emoty all values are allowed)
+   */
+  getVisibleTags(objectTypeId: string): { [tagName: string]: any[] } {
+    return this.visibleTagsCache[objectTypeId] || this.fetchVisibleTags(objectTypeId);
+  }
+
+  private fetchVisibleTags(objectTypeId: string): { [tagName: string]: any[] } {
+    const ot = this.getObjectType(objectTypeId) || this.getSecondaryObjectType(objectTypeId);
+    const tagClassifications = ot?.classification?.filter((t) => t.startsWith('tag['));
+    const parentType = ot && (ot as ObjectType).floatingParentType;
+
+    const to: { [tagName: string]: any[] } = {};
+    (tagClassifications || []).forEach((tag) => {
+      const m = tag.match(/\[(.*)\]/i)[1].split(',');
+      const tagName = m.splice(0, 1)[0];
+      const tagValues = m.map((v) => parseInt(v.trim()));
+      to[tagName] = tagValues;
+    });
+
+    this.visibleTagsCache[objectTypeId] = parentType ? { ...this.getVisibleTags(parentType), ...to } : to;
+    return this.visibleTagsCache[objectTypeId];
+  }
+
+  filterVisibleTags(objectTypeId: string, tagsValue: Array<Array<any>>): Array<Array<any>> {
+    if (!tagsValue) return [];
+    const vTags: { [tagName: string]: any[] } = this.getVisibleTags(objectTypeId);
+    // Tag value looks like this: [tagName: string, state: number, date: Date, traceId: string]
+    return tagsValue.filter((v: any[]) => !!vTags[v[0]] && vTags[v[0]].includes(v[1]));
   }
 
   /**
@@ -591,9 +626,9 @@ export class SystemService {
 
       sots.forEach((sot) => {
         const sotRef = sotQA[sot];
-        const sotObj = this.getSecondaryObjectType(sotRef.id);
+        const sotObj = sotRef?.id && this.getSecondaryObjectType(sotRef.id);
 
-        if (sotObj && !sotRef.static) {
+        if (sotObj && !sotRef?.static) {
           if (
             sotObj.classification?.includes(SecondaryObjectTypeClassification.PRIMARY) ||
             sotObj.classification?.includes(SecondaryObjectTypeClassification.REQUIRED)
@@ -678,9 +713,9 @@ export class SystemService {
    *
    * @param user The user to load the system definition for
    */
-  getSystemDefinition(): Observable<boolean> {
+  getSystemDefinition(authData?: AuthData): Observable<boolean> {
     // TODO: Supposed to return 304 if nothing changes
-    return this.fetchSystemDefinition();
+    return this.fetchSystemDefinition(authData);
 
     // TODO: remove when 304 is there???
     // // try to fetch system definition from cache first
@@ -703,10 +738,10 @@ export class SystemService {
    * Actually fetch the system definition from the backend.
    * @param user User to fetch definition for
    */
-  private fetchSystemDefinition(): Observable<boolean> {
-    return this.appCache.getItem(this.STORAGE_KEY_AUTH_DATA).pipe(
+  private fetchSystemDefinition(authData?: AuthData): Observable<boolean> {
+    return (authData ? of(authData) : this.appCache.getItem(this.STORAGE_KEY_AUTH_DATA)).pipe(
       switchMap((data: AuthData) => {
-        this.backend.setHeader('Accept-Language', data?.language);
+        this.updateAuthData({ language: 'en', ...data }).subscribe();
         const fetchTasks = [this.backend.get('/dms/schema/native.json', ApiBase.core), this.fetchLocalizations()];
         return forkJoin(fetchTasks);
       }),
@@ -728,7 +763,7 @@ export class SystemService {
    * Create the schema from the servers schema response
    * @param schemaResponse Response from the backend
    */
-  private setSchema(schemaResponse: SchemaResponse, localizedResource: any) {
+  setSchema(schemaResponse: SchemaResponse, localizedResource: Localization = {}) {
     // prepare a quick access object for the fields
     const propertiesQA = {};
     const orgTypeFields = [BaseObjectTypeField.MODIFIED_BY, BaseObjectTypeField.CREATED_BY];
@@ -890,7 +925,10 @@ export class SystemService {
       return InternalFieldType.STRING_ORGANIZATION;
     } else if (field[typeProperty] === 'string' && classifications.has(Classification.STRING_CATALOG)) {
       return InternalFieldType.STRING_CATALOG;
-    } else if (field[typeProperty] === 'string' && classifications.has(Classification.STRING_CATALOG_DYNAMIC)) {
+    } else if (
+      field[typeProperty] === 'string' &&
+      (classifications.has(Classification.STRING_CATALOG_DYNAMIC) || classifications.has(Classification.STRING_CATALOG_CUSTOM))
+    ) {
       return InternalFieldType.STRING_DYNAMIC_CATALOG;
     } else {
       // if there are no matching conditions just return the original type
@@ -925,13 +963,32 @@ export class SystemService {
     return res;
   }
 
+  /**
+   * Resolve object types to =>
+   * types: default system types & extendable SOTs
+   * lots: leading object types
+   *
+   * @param allTypes Mixed object types
+   */
+  resolveTypesLots(allTypes: string[]) {
+    const extendable = Object.values(SystemType).concat(this.getAllExtendableSOTs().map((o) => o.id));
+    const types = (allTypes || []).filter((t) => extendable.includes(t));
+    const lots = (allTypes || []).filter((t) => !types.includes(t));
+    return { types, lots };
+  }
+
   toFormElement(field: ObjectTypeField): any {
     return { ...field, label: this.getLocalizedResource(`${field.id}_label`), name: field.id, type: field.propertyType };
   }
 
-  updateLocalizations(iso?: string): Observable<any> {
-    return this.appCache.getItem(this.STORAGE_KEY_AUTH_DATA).pipe(
-      switchMap((authData: any) => (iso ? this.appCache.setItem(this.STORAGE_KEY_AUTH_DATA, { ...authData, language: iso }) : EMPTY)),
+  updateAuthData(data: Partial<AuthData>) {
+    this.authData = { ...this.authData, ...data };
+    this.backend.setHeader('Accept-Language', this.authData.language);
+    return this.appCache.setItem(this.STORAGE_KEY_AUTH_DATA, this.authData);
+  }
+
+  updateLocalizations(iso: string): Observable<any> {
+    return this.updateAuthData({ language: iso }).pipe(
       switchMap(() => this.fetchLocalizations()),
       tap((res) => {
         this.system.i18n = res;

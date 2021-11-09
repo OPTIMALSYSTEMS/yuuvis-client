@@ -299,8 +299,8 @@ export class ObjectFormEditComponent implements OnDestroy {
     };
   }
 
-  private isEditable(dmsObject: DmsObject): boolean {
-    return dmsObject.hasOwnProperty('rights') && dmsObject.rights.writeIndexData;
+  isEditable(dmsObject: DmsObject = this._dmsObject): boolean {
+    return !!dmsObject?.rights?.writeIndexData;
   }
 
   chooseFSOT(isPrimaryFSOT?: boolean) {

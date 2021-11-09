@@ -4,9 +4,11 @@ import {
   ApiBase,
   AppCacheService,
   BackendService,
+  ConfigService,
   DmsObject,
   DmsService,
   EventService,
+  HttpOptions,
   SearchFilter,
   SearchQuery,
   SearchResult,
@@ -19,10 +21,11 @@ import {
   YuvEventType,
   YuvUser
 } from '@yuuvis/core';
-import { forkJoin, of } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { of } from 'rxjs';
+import { catchError, filter, map, switchMap, take } from 'rxjs/operators';
+import { LayoutService } from '../services/layout/layout.service';
 import { NotificationService } from '../services/notification/notification.service';
-import { PluginAPI, PluginConfigList } from './plugins.interface';
+import { PluginAPI, PluginConfigList, PluginViewerConfig } from './plugins.interface';
 
 export const UNDOCK_WINDOW_NAME = 'eoViewer';
 /**
@@ -36,14 +39,86 @@ export const UNDOCK_WINDOW_NAME = 'eoViewer';
   providedIn: 'root'
 })
 export class PluginsService {
-  static LOCAL_PLUGIN_CONFIG = '/users/settings/plugin-config';
+  static LOCAL_PLUGIN_CONFIG = 'yuv.local.plugin-config';
   static RESOURCES_CONFIG = '/resources/config/plugin-config';
   static ADMIN_RESOURCES_CONFIG = '/admin/resources/config/plugin-config';
   static SYSTEM_RESOURCES_CONFIG = '/system/resources/config/plugin-config';
 
   static EVENT_MODEL_CHANGED = 'yuv.event.object-form.model.changed';
 
-  private pluginConfigs: { local: PluginConfigList; tenant: PluginConfigList; global: PluginConfigList };
+  static VIEWERS: PluginViewerConfig[] = [
+    // { mimeType: ['text/plain', 'application/json'], viewer: 'api/text/?path=${path}&mimeType=${mimeType}&fileExtension=${fileExtension}&lang=${lang}&theme=${theme}' },
+    {
+      mimeType: ['application/json'],
+      viewer: 'api/monaco/?path=${path}&mimeType=${mimeType}&fileExtension=${fileExtension}&lang=${lang}&theme=${theme}&language=javascript'
+    },
+    { mimeType: ['text/plain'], viewer: 'api/monaco/?path=${path}&mimeType=${mimeType}&fileExtension=${fileExtension}&lang=${lang}&theme=${theme}' },
+    { mimeType: ['text/xml'], viewer: 'api/monaco/?path=${path}&mimeType=${mimeType}&fileExtension=${fileExtension}&lang=${lang}&theme=${theme}&language=xml' },
+    {
+      mimeType: ['text/java'],
+      viewer: 'api/monaco/?path=${path}&mimeType=${mimeType}&fileExtension=${fileExtension}&lang=${lang}&theme=${theme}&language=java'
+    },
+    {
+      mimeType: ['text/javascript'],
+      viewer: 'api/monaco/?path=${path}&mimeType=${mimeType}&fileExtension=${fileExtension}&lang=${lang}&theme=${theme}&language=javascript'
+    },
+    {
+      mimeType: ['text/html'],
+      viewer: 'api/monaco/?path=${path}&mimeType=${mimeType}&fileExtension=${fileExtension}&lang=${lang}&theme=${theme}&language=html'
+    },
+    {
+      mimeType: ['text/markdown', 'text/x-web-markdown', 'text/x-markdown'],
+      viewer: 'api/monaco/?path=${path}&mimeType=${mimeType}&fileExtension=${fileExtension}&lang=${lang}&theme=${theme}&language=markdown'
+    },
+    {
+      mimeType: ['audio/mp3', 'audio/webm', 'audio/ogg', 'audio/mpeg', 'video/mp4', 'video/webm', 'video/ogg', 'application/ogg'],
+      viewer: 'api/video/?path=${path}&mimeType=${mimeType}&fileExtension=${fileExtension}&lang=${lang}&theme=${theme}'
+    },
+    {
+      mimeType: ['image/tiff', 'image/jpeg', 'image/png', 'image/apng', 'image/gif', 'image/svg+xml', 'image/webp'],
+      viewer: 'api/img/?path=${path}&mimeType=${mimeType}&fileExtension=${fileExtension}&lang=${lang}&theme=${theme}'
+    },
+    {
+      mimeType: ['message/rfc822', 'application/vnd.ms-outlook'],
+      viewer: 'api/mail/?path=${path}&mimeType=${mimeType}&fileExtension=${fileExtension}&lang=${lang}&theme=${theme}'
+    },
+    {
+      mimeType: ['application/pdf'],
+      viewer: 'api/pdf/web/viewer.html?file=&path=${path}&mimeType=${mimeType}&fileExtension=${fileExtension}&lang=${lang}&theme=${theme}'
+    },
+    {
+      mimeType: [
+        'application/msword',
+        'application/vnd.ms-excel',
+        'application/vnd.ms-powerpoint',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.template',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.template',
+        'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+        'application/vnd.openxmlformats-officedocument.presentationml.template',
+        'application/vnd.openxmlformats-officedocument.presentationml.slideshow',
+        'application/vnd.ms-word.document.macroEnabled.12',
+        'application/vnd.ms-word.template.macroEnabled.12',
+        'application/vnd.ms-excel.sheet.macroEnabled.12',
+        'application/vnd.ms-excel.template.macroEnabled.12',
+        'application/vnd.ms-excel.addin.macroEnabled.12',
+        'application/vnd.ms-excel.sheet.binary.macroEnabled.12',
+        'application/vnd.ms-powerpoint.addin.macroEnabled.12',
+        'application/vnd.ms-powerpoint.presentation.macroEnabled.12',
+        'application/vnd.ms-powerpoint.template.macroEnabled.12',
+        'application/vnd.ms-powerpoint.slideshow.macroEnabled.12'
+      ],
+      viewer: 'api/pdf/web/viewer.html?file=&path=${path}&pathPdf=${pathPdf}&mimeType=${mimeType}&fileExtension=${fileExtension}&lang=${lang}&theme=${theme}'
+    },
+    { error: true, viewer: 'api/error/?path=${path}&mimeType=${mimeType}&fileExtension=${fileExtension}&lang=${lang}&theme=${theme}' },
+    {
+      compare: true,
+      viewer: 'api/compare/?compare=${compare}&mimeType=${mimeType}&fileExtension=${fileExtension}&lang=${lang}&theme=${theme}&accentColor=${accentColor}'
+    }
+  ];
+
+  private pluginConfigs: { local: PluginConfigList; resolved: PluginConfigList; tenant: PluginConfigList; global: PluginConfigList };
   public customPlugins: PluginConfigList;
   private componentRegister = new Map<string, any>();
 
@@ -55,11 +130,89 @@ export class PluginsService {
     return this.getApi();
   }
 
-  public applyFunction(fnc: string | Function, params?: string, args?: any) {
-    fnc = fnc?.toString().trim();
+  public get viewers() {
+    return [...(this.customPlugins?.viewers || []), ...PluginsService.VIEWERS];
+  }
+
+  public applyFunction(value: string | Function | any, params?: string, args?: any) {
+    const fnc = value?.toString().trim();
     if (!fnc) return;
-    const f = fnc.match(/^function|^\(.*\)\s*=>/) ? `return (${fnc}).apply(this,arguments)` : !fnc.startsWith('return') ? `return ${fnc}` : fnc;
-    return new Function(...(params || 'api').split(',').map((a) => a.trim()), f).apply(this.api, args || [this.api]);
+    const f = fnc.match(/^function|^\(.*\)\s*=>/)
+      ? `return (${fnc}).apply(this,arguments)`
+      : typeof value === 'string' && !fnc.startsWith("'")
+      ? `return '${fnc}'`
+      : `return ${fnc}`;
+    try {
+      return new Function(...(params || 'api').split(',').map((a) => a.trim()), f).apply(this.api, args || [this.api]);
+    } catch (error) {
+      console.warn(error);
+      return;
+    }
+  }
+
+  public resolveViewerParams(params: any, dmsObject: any) {
+    const config = this.viewers.find((c: any) => {
+      const matchMT = !c.mimeType || (typeof c.mimeType === 'string' ? [c.mimeType] : c.mimeType).includes((params?.mimeType || '').toLowerCase());
+      const matchFE =
+        !c.fileExtension || (typeof c.fileExtension === 'string' ? [c.fileExtension] : c.fileExtension).includes((params?.fileExtension || '').toLowerCase());
+      return matchMT && matchFE;
+    });
+
+    Object.assign(params, this.createSettings());
+
+    params.viewer = this.applyFunction(config?.viewer, 'api, dmsObject, parameters', [this.api, dmsObject, params]);
+
+    params.uri = this.resolveUri(params);
+    return params;
+  }
+
+  private mapLang(lang: string) {
+    switch (lang) {
+      case 'en':
+        return 'en-US';
+      case 'es':
+        return 'es-ES';
+      case 'pt':
+        return 'pt-PT';
+      case 'zh':
+        return 'zh-CN';
+      case 'hi':
+        return 'hi-IN';
+      case 'bn':
+        return 'bn-BD';
+      default:
+        return lang;
+    }
+  }
+
+  private getBaseUrl() {
+    const base = this.backend.getApiBase(ApiBase.none, true);
+    const viewer = this.backend.getApiBase('viewer', true);
+    // default baseUrl in case it is not specified in main.json
+    return base === viewer ? base + '/viewer' : viewer;
+  }
+
+  private createSettings() {
+    const { darkMode, accentColor } = this.layoutService.getLayoutSettings();
+    const theme = darkMode === true ? 'dark' : null;
+    const user = this.userService.getCurrentUser();
+    const direction = user.uiDirection;
+    const tenant = user.tenant;
+    const lang = this.mapLang(user.getClientLocale());
+    const baseUrl = this.getBaseUrl();
+    return { darkMode, theme, accentColor, direction, lang, tenant, baseUrl };
+  }
+
+  public resolveUri(param: any) {
+    if (Array.isArray(param)) {
+      return this.updateHeaders(
+        param.length === 1
+          ? param[0].uri
+          : this.resolveUri({ ...param[0], viewer: this.viewers.find((v) => v.compare).viewer, compare: JSON.stringify(param.map((p) => p.uri)) })
+      );
+    }
+    const _path = param.viewer.replace(/\$\{(\w*)\}/g, (a, b) => (b === 'file' ? param[b] || '' : encodeURIComponent(param[b] || '')));
+    return _path.match(/^\/|^http/) ? _path : `${param.baseUrl}/view/${_path}`;
   }
 
   /**
@@ -75,6 +228,8 @@ export class PluginsService {
     private eventService: EventService,
     private searchService: SearchService,
     private userService: UserService,
+    private configService: ConfigService,
+    private layoutService: LayoutService,
     private appCache: AppCacheService,
     private ngZone: NgZone
   ) {
@@ -84,66 +239,75 @@ export class PluginsService {
 
   extendTranslations(lang: string = this.translate.currentLang) {
     const translations = (this.customPlugins?.translations || {})[lang];
-    const allKeys = translations && Object.keys(this.translate.store?.translations[lang] || {});
-    if (translations && !Object.keys(translations).every((k) => allKeys.includes(k))) {
-      this.translate.setTranslation(lang, translations, true);
-    }
+    this.configService.extendTranslations(translations, lang);
   }
 
   private loadCustomPlugins(force = false) {
-    return forkJoin([
-      this.backend.get(PluginsService.LOCAL_PLUGIN_CONFIG).pipe(catchError(() => of({}))),
-      this.backend.get(PluginsService.RESOURCES_CONFIG).pipe(catchError(() => of({})))
-    ]).pipe(
-      map(([local, config]) => {
-        const p = (this.pluginConfigs = { local, tenant: config?.tenant || {}, global: config?.global || {} });
-        if (!this.customPlugins || force) {
-          // merge configs: global >> tenant >> local
-          this.customPlugins = [p.global, p.tenant, p.local].reduce((prev, cur) => {
-            Object.keys(cur || {}).forEach((k) => {
-              if (Array.isArray(cur[k])) {
-                prev[k] = cur[k].concat((prev[k] || []).filter((p) => !cur[k].find((c) => c.id === p.id)));
-              } else if (k === 'translations' && prev[k]) {
-                Object.keys(cur[k]).forEach((t) => (prev[k][t] = { ...(prev[k][t] || {}), ...cur[k][t] }));
-              } else {
-                prev[k] = cur[k];
-              }
-            });
-            return prev;
-          }, {});
-          this.extendTranslations(this.translate.currentLang);
-        }
-        return this.customPlugins;
-      })
-    );
+    return this.userService.user$
+      .pipe(filter((v) => !!v))
+      .pipe(take(1))
+      .pipe(switchMap((user) => this.backend.get(PluginsService.RESOURCES_CONFIG).pipe(catchError(() => of({})))))
+      .pipe(
+        map((config) => {
+          const p = (this.pluginConfigs = {
+            local: JSON.parse(localStorage.getItem(PluginsService.LOCAL_PLUGIN_CONFIG) || '{}'),
+            resolved: config?.resolved,
+            tenant: config?.tenant,
+            global: config?.global
+          });
+          if (!this.customPlugins || force) {
+            this.customPlugins = { ...ConfigService.PARSER(p), ...p.local };
+            this.extendTranslations(this.translate.currentLang);
+            this.run(this.customPlugins?.load);
+          }
+          return this.customPlugins;
+        })
+      );
   }
 
   public getCustomPlugins(type: 'links' | 'states' | 'actions' | 'extensions' | 'triggers' | 'viewers', hook?: string, matchPath?: string | RegExp) {
     return (!this.customPlugins ? this.backend.getViaTempCache('_plugins', () => this.loadCustomPlugins()) : of(this.customPlugins)).pipe(
       map((cp: PluginConfigList) => {
-        if (this.isDisabled(cp.disabled)) return [];
+        if (this.run(cp.disabled)) return [];
         const customPlugins: any[] = type === 'links' ? [...(cp.links || []), ...(cp.states || [])] : cp[type] || [];
         return customPlugins.filter(
           (p) =>
-            !this.isDisabled(p.disabled) &&
+            !this.run(p.disabled) &&
             (hook ? p.matchHook && hook.match(new RegExp(p.matchHook)) : matchPath ? (p.path || '').match(new RegExp(matchPath)) : true)
         );
       })
     );
   }
 
-  private isDisabled(disabled: any) {
-    return this.applyFunction(disabled && disabled.toString(), 'api, currentState', [this.api, this.router.routerState.snapshot]);
+  private run(fnc: any) {
+    return this.applyFunction(fnc && fnc.toString(), 'api, currentState', [this.api, this.router.routerState.snapshot]);
   }
 
   public disableCustomPlugins(disabled = true) {
     this.customPlugins = { ...this.customPlugins, disabled: !!disabled };
     this.pluginConfigs = { ...this.pluginConfigs, local: { ...this.pluginConfigs.local, disabled: !!disabled } };
-    return this.backend.post(PluginsService.LOCAL_PLUGIN_CONFIG, this.pluginConfigs.local);
+    return of((localStorage[PluginsService.LOCAL_PLUGIN_CONFIG] = JSON.stringify(this.pluginConfigs.local || {})));
   }
 
   public register(component: any) {
     return component?.id && this.componentRegister.set(component?.id, component);
+  }
+
+  public unregister(component: any) {
+    return component?.id && this.componentRegister.delete(component?.id);
+  }
+
+  public validateUrl(src: string) {
+    // validate/update authorization token
+    const reg = new RegExp(encodeURIComponent('.*"Bearer (.*)"'));
+    const token = src?.match(reg)?.[1];
+    return token && token !== localStorage.getItem('access_token') ? src.replace(new RegExp(token, 'g'), localStorage.getItem('access_token')) : src;
+  }
+
+  public updateHeaders(src: string) {
+    return src && this.backend.authUsesOpenIdConnect()
+      ? src.replace(/&headers=.*/, '') + '&headers=' + encodeURIComponent(JSON.stringify(this.backend.getAuthHeaders()))
+      : src;
   }
 
   /**
@@ -181,12 +345,15 @@ export class PluginsService {
         downloadContent: (dmsObjects: DmsObject[]) => this.dmsService.downloadContent(dmsObjects)
       },
       http: {
-        get: (uri, base) => this.get(uri, base),
-        post: (uri, data, base) => this.post(uri, data, base),
-        del: (uri, base) => this.del(uri, base),
-        put: (uri, data, base) => this.put(uri, data, base)
+        get: (uri, base, options) => this.get(uri, base, options),
+        post: (uri, data, base, options) => this.post(uri, data, base, options),
+        del: (uri, base, options) => this.del(uri, base, options),
+        put: (uri, data, base, options) => this.put(uri, data, base, options)
       },
       form: {
+        activeForms: () => [...this.componentRegister.values()].filter((v) => v.id.startsWith('#form_')),
+        getValue: (formControlName) => this.api.form.activeForms().reduce((prev, cur) => ({ ...prev, ...(cur.formData || {}) }), {})[formControlName],
+        setValue: (formControlName, newValue) => this.api.form.modelChange(formControlName, { name: 'value', newValue }),
         modelChange: (formControlName, change) =>
           this.ngZone.run(() =>
             this.eventService.trigger(PluginsService.EVENT_MODEL_CHANGED, {
@@ -196,7 +363,11 @@ export class PluginsService {
           )
       },
       content: {
-        viewer: () => window[UNDOCK_WINDOW_NAME] || (window.document.querySelector('yuv-content-preview iframe') || {})['contentWindow']
+        viewer: () => window[UNDOCK_WINDOW_NAME] || (window.document.querySelector('yuv-content-preview iframe') || {})['contentWindow'],
+        triggerError: (err, win, parameters) => this.ngZone.run(() => this.eventService.trigger(UNDOCK_WINDOW_NAME + 'Error', { err, win, parameters })),
+        catchError: () => this.ngZone.run(() => this.eventService.on(UNDOCK_WINDOW_NAME + 'Error')),
+        resolveViewerParams: (parameters, dmsObject) => this.resolveViewerParams(parameters, dmsObject),
+        validateUrl: (uri) => this.validateUrl(uri)
       },
       storage: {
         getItem: (key) => this.appCache.getItem(key).toPromise(),
@@ -229,16 +400,12 @@ export class PluginsService {
   /**
    * @ignore
    */
-  public get(uri, base?) {
+  public get(uri, base?, options?: HttpOptions) {
     return this.backend
-      .get(uri, base || ApiBase.none, { observe: 'response' })
+      .get(uri, base || ApiBase.none, options || { observe: 'response' })
       .pipe(
         map((res: any) => {
-          const { status, body } = res;
-          return {
-            status,
-            data: body
-          };
+          return options ? res : { status: res.status, data: res.body };
         })
       )
       .toPromise();
@@ -247,22 +414,22 @@ export class PluginsService {
   /**
    * @ignore
    */
-  public put(uri, data, base?) {
-    return this.backend.put(uri, data, base || ApiBase.none).toPromise();
+  public put(uri, data, base?, options?: HttpOptions) {
+    return this.backend.put(uri, data, base || ApiBase.none, options).toPromise();
   }
 
   /**
    * @ignore
    */
-  public post(uri, data, base?) {
-    return this.backend.post(uri, data, base || ApiBase.none).toPromise();
+  public post(uri, data, base?, options?: HttpOptions) {
+    return this.backend.post(uri, data, base || ApiBase.none, options).toPromise();
   }
 
   /**
    * @ignore
    */
-  public del(uri, base?) {
-    return this.backend.delete(uri, base || ApiBase.none).toPromise();
+  public del(uri, base?, options?: HttpOptions) {
+    return this.backend.delete(uri, base || ApiBase.none, options).toPromise();
   }
 
   /**

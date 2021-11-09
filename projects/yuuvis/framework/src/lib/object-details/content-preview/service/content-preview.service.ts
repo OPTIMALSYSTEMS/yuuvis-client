@@ -1,10 +1,7 @@
-import { PlatformLocation } from '@angular/common';
-import { Inject, Injectable } from '@angular/core';
-import { BackendService, CoreConfig, CORE_CONFIG, DmsObjectContent, DmsService, UserService, Utils } from '@yuuvis/core';
+import { Injectable } from '@angular/core';
+import { BackendService, DmsObject, DmsService } from '@yuuvis/core';
 import { Observable, ReplaySubject } from 'rxjs';
-import { map } from 'rxjs/operators';
 import { PluginsService, UNDOCK_WINDOW_NAME } from '../../../plugins/plugins.service';
-import { LayoutService } from '../../../services/layout/layout.service';
 
 /**
  * @ignore
@@ -16,11 +13,12 @@ export class ContentPreviewService {
   public previewSrc$: Observable<string> = this.previewSrcSource.asObservable();
 
   static undockWin(src: string) {
-    return (window[UNDOCK_WINDOW_NAME] = window.open(
+    const w = (window[UNDOCK_WINDOW_NAME] = window.open(
       src || '',
       UNDOCK_WINDOW_NAME,
       'directories=0, titlebar=0, toolbar=0, location=0, status=0, menubar=0, resizable=1, top=10, left=10'
     ));
+    return w;
   }
 
   static closeWin() {
@@ -40,96 +38,46 @@ export class ContentPreviewService {
    *
    * @ignore
    */
-  constructor(
-    @Inject(CORE_CONFIG) public coreConfig: CoreConfig,
-    private location: PlatformLocation,
-    private dmsService: DmsService,
-    private userService: UserService,
-    private backend: BackendService,
-    private layoutService: LayoutService,
-    private pluginsService: PluginsService
-  ) {}
+  constructor(private dmsService: DmsService, private backend: BackendService, private pluginsService: PluginsService) {
+    this.pluginsService.api.content.catchError().subscribe((evt: any) => {
+      const { err, win, parameters } = evt.data;
+      const params = this.pluginsService.resolveViewerParams({ path: parameters.path }, err);
+      win.location.href = params.uri;
+    });
+  }
 
-  private createPath(id: string, version?: number): { root: string; path: string; pathPdf: string } {
-    let root;
-    if (this.backend.authUsesOpenIdConnect()) {
-      root = this.coreConfig.oidc.host;
-    } else {
-      root = `${this.location.protocol}//${this.location.hostname}`;
-      if (this.location.port.length) {
-        root += `:${this.location.port}`;
-      }
+  validateUrl(src: string) {
+    if (src && this.backend.authUsesOpenIdConnect()) {
+      const newsrc = this.pluginsService.validateUrl(src);
+      newsrc !== src && this.previewSrcSource.next(src);
+      return newsrc;
     }
-    const path = `${this.backend.authUsesOpenIdConnect() ? '' : root}${this.dmsService.getContentPath(id)}?asdownload=false${
-      version ? '&version=' + version : ''
-    }`;
-    const pathPdf = `${root}/api/dms/objects/${id}${version ? '/versions/' + version : ''}/contents/renditions/pdf`;
-    return { root, path, pathPdf };
+    return src;
   }
 
-  private createSettings() {
-    const { darkMode, accentColor } = this.layoutService.getLayoutSettings();
-    const user = this.userService.getCurrentUser();
-    const direction = user.uiDirection;
-    const lang = this.mapLang(user.getClientLocale());
-    return { darkMode, accentColor, direction, lang };
+  private createParams(dmsObject: DmsObject) {
+    const { mimeType, size, digest, fileName } = dmsObject?.content || {};
+    const fileExtension = fileName?.includes('.') ? fileName.split('.').pop() : '';
+    const id = dmsObject?.id;
+    const version = dmsObject?.version;
+    const path = size ? this.dmsService.getFullContentPath(id, version) : '';
+    return { mimeType, size, digest, fileName, fileExtension, id, version, path };
   }
 
-  private createParams(objectId: string, content: DmsObjectContent, version?: number) {
-    const { mimeType, size, contentStreamId, fileName } = content;
-    const { root, path, pathPdf } = this.createPath(objectId, version);
-    const fileExtension = fileName.includes('.') ? fileName.split('.').pop() : '';
-    return { mimeType, path, pathPdf, fileName, fileExtension, size, contentStreamId, objectId, root, ...this.createSettings() };
+  private resolveCustomViewerConfig(dmsObject: DmsObject, exclude: Function) {
+    const params: any = this.pluginsService.resolveViewerParams(this.createParams(dmsObject), dmsObject);
+    return exclude && exclude(dmsObject) ? this.pluginsService.resolveViewerParams({ path: params.path }, dmsObject) : params;
   }
 
-  private resolveCustomViewerConfig(params: any[]) {
-    return this.pluginsService.getCustomPlugins('viewers').pipe(
-      map((viewers) =>
-        params.forEach((param) => {
-          const { mimeType, fileExtension } = param;
-          // shared code from heimdall
-          const config = viewers?.find((c: any) => {
-            const matchMT = (typeof c.mimeType === 'string' ? [c.mimeType] : c.mimeType).includes(mimeType);
-            const matchFE = c.fileExtension
-              ? (typeof c.fileExtension === 'string' ? [c.fileExtension] : c.fileExtension).includes((fileExtension || '').toLowerCase())
-              : true;
-            return matchMT && matchFE;
-          });
-
-          param.viewer = config?.viewer || undefined;
-        })
-      )
-    );
-  }
-
-  createPreviewUrl(id: string, content: DmsObjectContent, version?: number, content2?: DmsObjectContent, version2?: number): void {
-    const params = this.createParams(id, content, version);
-    const query: any = content2 ? { compare: [params, this.createParams(id, content2, version2)] } : params;
-    this.resolveCustomViewerConfig(query.compare || [query]).subscribe(() => {
-      this.previewSrcSource.next(id ? Utils.buildUri(`${params.root}/viewer/`, query) : '');
+  createPreviewUrl(dmsObject: DmsObject, dmsObject2?: DmsObject, exclude?: Function): void {
+    this.pluginsService.getCustomPlugins('viewers').subscribe(() => {
+      const params = [this.resolveCustomViewerConfig(dmsObject, exclude)];
+      dmsObject2?.version && params.push(this.resolveCustomViewerConfig(dmsObject2, exclude));
+      this.previewSrcSource.next(this.pluginsService.resolveUri(params));
     });
   }
 
   resetSource() {
     this.previewSrcSource.next();
-  }
-
-  mapLang(lang: string) {
-    switch (lang) {
-      case 'en':
-        return 'en-US';
-      case 'es':
-        return 'es-ES';
-      case 'pt':
-        return 'pt-PT';
-      case 'zh':
-        return 'zh-CN';
-      case 'hi':
-        return 'hi-IN';
-      case 'bn':
-        return 'bn-BD';
-      default:
-        return lang;
-    }
   }
 }

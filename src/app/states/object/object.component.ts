@@ -40,7 +40,7 @@ export class ObjectComponent implements OnInit, OnDestroy {
     private dmsService: DmsService,
     private appSearch: AppSearchService,
     private translate: TranslateService,
-    private title: Title,
+    private titleService: Title,
     private frameService: FrameService,
     private router: Router,
     private eventService: EventService,
@@ -112,11 +112,12 @@ export class ObjectComponent implements OnInit, OnDestroy {
             } else {
               // got object that is just an object without context
               this.redirect(dmsObject.id, this.standaloneFragment);
+              this.titleService.setTitle(dmsObject.title);
             }
           } else {
             // TODO: shouldn't context be set always? @anndreasSchulz
             this.context = dmsObject;
-            this.title.setTitle(this.context.title);
+            this.titleService.setTitle(this.context.title);
             this.loadRecentItems();
           }
         },

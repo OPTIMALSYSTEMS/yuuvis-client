@@ -1,8 +1,9 @@
 import { HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BackendService, UserService } from '@yuuvis/core';
+import { BackendService } from '@yuuvis/core';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
+import { FrameService } from '../components/frame/frame.service';
 
 /**
  * Prevent app from running into 401 issues related to gateway timeouts.
@@ -14,7 +15,7 @@ export class AuthInterceptor implements HttpInterceptor {
   /**
    * @ignore
    */
-  constructor(private userService: UserService, private backend: BackendService) {}
+  constructor(private frameService: FrameService, private backend: BackendService) {}
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     return next.handle(request).pipe(
@@ -27,8 +28,7 @@ export class AuthInterceptor implements HttpInterceptor {
         (error: any) => {
           if (error instanceof HttpErrorResponse || error.isHttpErrorResponse) {
             if (error.status === 401 && !this.backend.authUsesOpenIdConnect()) {
-              // session timed out or we lost the tenant header
-              this.userService.logout();
+              this.frameService.appLogout();
             }
           }
         }
