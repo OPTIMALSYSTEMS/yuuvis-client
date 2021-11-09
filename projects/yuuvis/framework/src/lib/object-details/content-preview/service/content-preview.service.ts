@@ -61,7 +61,8 @@ export class ContentPreviewService {
     const id = dmsObject?.id;
     const version = dmsObject?.version;
     const path = size ? this.dmsService.getFullContentPath(id, version) : '';
-    return { mimeType, size, digest, fileName, fileExtension, id, version, path };
+    const pathPdf = size ? this.dmsService.getFullContentPath(id, version, true) : '';
+    return { mimeType, size, digest, fileName, fileExtension, id, version, path, pathPdf };
   }
 
   private resolveCustomViewerConfig(dmsObject: DmsObject, exclude: Function) {
