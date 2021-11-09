@@ -132,22 +132,27 @@
 
   &.switch {
     --switch-handle-size: 1em;
+
     --switch-border-width: 2px;
-    --checkbox-size: 1em;
-    --switch-width: calc(var(--checkbox-size) * 3);
+    --checkbox-size: calc(var(--switch-handle-size) + (var(--switch-border-width) * 2) + (var(--switch-indent) * 2));
+
+    --switch-width: calc(var(--checkbox-size) * 2.5);
     --switch-indent: 1px;
 
     position: relative;
 
     input[type='checkbox'] {
-      width: calc(var(--switch-width) + var(--switch-border-width) * 2);
-      height: calc(var(--switch-indent) + var(--checkbox-size) + var(--switch-border-width) * 2);
+      width: calc(var(--switch-width) + (var(--switch-border-width) * 2));
+      height: var(--checkbox-size);
     }
 
     &.small {
       --switch-handle-size: 8px;
       --switch-border-width: 1px;
-      --checkbox-size: 8px;
+
+      &::before {
+        transform: translateX(calc((var(--switch-width) - var(--switch-handle-size)) * -1));
+      }
     }
 
     &.disabled {
