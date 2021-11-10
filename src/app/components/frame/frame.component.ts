@@ -33,7 +33,7 @@ import {
   UploadResult
 } from '@yuuvis/framework';
 import { forkJoin, Observable } from 'rxjs';
-import { filter } from 'rxjs/operators';
+import { filter, map, switchMap } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { add, close, drawer, offline, refresh, search, userDisabled } from '../../../assets/default/svg/svg';
 import { AppSearchService } from '../../service/app-search.service';
@@ -344,10 +344,12 @@ export class FrameComponent implements OnInit, OnDestroy {
             this.frameService.getRouteOnLogout(),
             // route the user initially requested when entering the app (may be deep link from e.g. a link)
             this.authService.getInitialRequestUri()
-          ]).subscribe((res: { uri: string; timestamp: number }[]) => {
-            const logoutRes = res[0];
-            const loginRes = res[1] && !ignoreRoutes.includes(res[1].uri) ? res[1] : null;
-            this.authService.resetInitialRequestUri().subscribe((_) => {
+          ])
+            .pipe(switchMap((res) => this.authService.resetInitialRequestUri().pipe(map((_) => res))))
+            .subscribe((res: { uri: string; timestamp: number }[]) => {
+              const logoutRes = res[0];
+              const loginRes = res[1] && !ignoreRoutes.includes(res[1].uri) ? res[1] : null;
+
               if (logoutRes && loginRes) {
                 // got logout and initial uri
                 // redirect will happen based on which one has been saved last
@@ -360,7 +362,6 @@ export class FrameComponent implements OnInit, OnDestroy {
                 this.router.navigateByUrl(loginRes.uri);
               }
             });
-          });
         }
       }
     });
