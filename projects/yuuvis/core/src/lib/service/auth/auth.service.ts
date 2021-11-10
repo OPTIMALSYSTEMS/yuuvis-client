@@ -2,7 +2,9 @@ import { Inject, Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map, switchMap, tap } from 'rxjs/operators';
 import { UserSettings, YuvUser } from '../../model/yuv-user.model';
+import { Utils } from '../../util/utils';
 import { BackendService } from '../backend/backend.service';
+import { AppCacheService } from '../cache/app-cache.service';
 import { CoreConfig } from '../config/core-config';
 import { CORE_CONFIG } from '../config/core-config.tokens';
 import { EventService } from '../event/event.service';
@@ -17,6 +19,8 @@ import { UserService } from '../user/user.service';
   providedIn: 'root'
 })
 export class AuthService {
+  private INITAL_REQUEST_STORAGE_KEY = 'yuv.core.auth.initialrequest';
+
   private authenticated: boolean;
   private authSource = new BehaviorSubject<boolean>(false);
   authenticated$: Observable<boolean> = this.authSource.asObservable();
@@ -30,6 +34,7 @@ export class AuthService {
     @Inject(CORE_CONFIG) public coreConfig: CoreConfig,
     private eventService: EventService,
     private userService: UserService,
+    private appCache: AppCacheService,
     private systemService: SystemService,
     private backend: BackendService
   ) {}
@@ -73,6 +78,34 @@ export class AuthService {
     this.authenticated = false;
     this.authSource.next(this.authenticated);
     this.eventService.trigger(YuvEventType.LOGOUT);
+  }
+
+  // called on core init
+  setInitialRequestUri() {
+    const ignore = ['/', '/index.html'];
+    let uri = location.pathname.replace(Utils.getBaseHref(), '');
+    uri = !uri.startsWith('/') ? `/${uri}` : uri;
+
+    if (!ignore.includes(uri)) {
+      this.appCache
+        .setItem(this.INITAL_REQUEST_STORAGE_KEY, {
+          uri: uri,
+          timestamp: Date.now()
+        })
+        .subscribe();
+    }
+  }
+
+  /**
+   * Get the URL that entered the app. May be a deep link that could then be
+   * picked up again after user has been authenticated.
+   */
+  getInitialRequestUri(): Observable<{ uri: string; timestamp: number }> {
+    return this.appCache.getItem(this.INITAL_REQUEST_STORAGE_KEY);
+  }
+
+  resetInitialRequestUri(): Observable<any> {
+    return this.appCache.removeItem(this.INITAL_REQUEST_STORAGE_KEY);
   }
 
   /**

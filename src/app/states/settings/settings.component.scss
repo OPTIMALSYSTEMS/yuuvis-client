@@ -279,7 +279,7 @@ $avatar-size-small: 80px;
               }
               .name {
                 padding: 0 calc(var(--app-pane-padding) / 2);
-                word-wrap: break-word;
+                word-break: break-all;
               }
             }
           }
