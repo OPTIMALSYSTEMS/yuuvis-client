@@ -136,7 +136,7 @@
     --switch-border-width: 2px;
     --checkbox-size: calc(var(--switch-handle-size) + (var(--switch-border-width) * 2) + (var(--switch-indent) * 2));
 
-    --switch-width: calc(var(--checkbox-size) * 2.5);
+    --switch-width: calc(var(--checkbox-size) * 2);
     --switch-indent: 2px;
 
     position: relative;
@@ -211,28 +211,4 @@
       box-shadow: 0 0 0 2px rgba(var(--color-accent-rgb), 0.3);
     }
   }
-
-  // }
-
-  // p-triStateCheckbox:focus,
-  // p-checkbox:focus {
-  //   outline: 0;
-  // }
-
-  // .tristate {
-  //   display: flex;
-  //   align-items: center;
-
-  //   yuv-icon {
-  //     height: 16px;
-  //     width: 16px;
-  //     color: var(--text-color-hint);
-  //     cursor: pointer;
-  //     margin: 1px 0 0 4px;
-
-  //     :host-context(.dark) & {
-  //       color: rgba(255, 255, 255, 0.8);
-  //     }
-  //   }
-  // }
 }
