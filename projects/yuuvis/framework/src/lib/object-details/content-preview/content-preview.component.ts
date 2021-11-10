@@ -120,8 +120,8 @@ export class ContentPreviewComponent extends IFrameComponent implements OnInit, 
 
   open(src: string) {
     this.loading = false;
-    this.previewSrc = this.contentPreviewService.validateUrl(src);
-    const sameOrigin = src.startsWith(location.origin);
+    this.previewSrc = src && this.contentPreviewService.validateUrl(src);
+    const sameOrigin = src?.startsWith(location.origin);
     if (this.isUndocked) {
       ContentPreviewService.undockWin(this.previewSrc);
       sameOrigin && this.iframeInit(this.undockWin, this.searchTerm, () => this.contentPreviewService.validateUrl(this.previewSrc));

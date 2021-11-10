@@ -41,14 +41,8 @@ export class ContentPreviewService {
   constructor(private dmsService: DmsService, private backend: BackendService, private pluginsService: PluginsService) {
     this.pluginsService.api.content.catchError().subscribe((evt: any) => {
       const { err, win, parameters } = evt.data;
-      const uri = this.pluginsService.applyFunction(this.pluginsService.customPlugins?.viewers?.find((v) => v.error)?.viewer, 'api, err, win, parameters', [
-        this.pluginsService.api,
-        err,
-        win,
-        parameters
-      ]);
-
-      uri && (win.location.href = uri);
+      const params = this.pluginsService.resolveViewerParams({ path: parameters.path }, err);
+      win.location.href = params.uri;
     });
   }
 
@@ -67,7 +61,8 @@ export class ContentPreviewService {
     const id = dmsObject?.id;
     const version = dmsObject?.version;
     const path = size ? this.dmsService.getFullContentPath(id, version) : '';
-    return { mimeType, size, digest, fileName, fileExtension, id, version, path };
+    const pathPdf = size ? this.dmsService.getFullContentPath(id, version, true) : '';
+    return { mimeType, size, digest, fileName, fileExtension, id, version, path, pathPdf };
   }
 
   private resolveCustomViewerConfig(dmsObject: DmsObject, exclude: Function) {
