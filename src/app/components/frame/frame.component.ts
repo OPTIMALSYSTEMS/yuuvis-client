@@ -120,7 +120,7 @@ export class FrameComponent implements OnInit, OnDestroy {
     this.userService.user$.subscribe((user: YuvUser) => {
       if (user) {
         this.checkedForLogoutRoute = !(!this.user || this.user.id !== user.id);
-        this.disableCreate = !user.authorities.includes(UserRoles.CREATE_OBJECT);
+        this.disableCreate = !this.userService.canCreateObjects;
         this.enableTenantSwitch = user.authorities.includes(UserRoles.MULTI_TENANT);
         if (this.disableCreate) {
           this.disableFileDrop = true;
