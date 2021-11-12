@@ -1,3 +1,4 @@
+import { RowNode } from '@ag-grid-community/core';
 import { Injectable } from '@angular/core';
 import { FollowUpRow, Process, ProcessRow, ProcessStatus, SystemService, Task, TaskRow, TaskType, TranslateService } from '@yuuvis/core';
 import { LocaleDatePipe } from '@yuuvis/framework';
@@ -104,8 +105,10 @@ export class FormatProcessDataService {
       })),
       rows,
       singleColumnCellRenderer: isTask
-        ? (rowData) => {
-            return 'hallo';
+        ? (rowNode: RowNode) => {
+            const taskRow: TaskRow = rowNode.data;
+
+            return `<div class="yuvTaskSingleRowCell"></div>`;
           }
         : undefined,
       titleField: 'subject',
