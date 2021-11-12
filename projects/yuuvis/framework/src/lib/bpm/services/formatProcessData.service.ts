@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { FollowUpRow, Process, ProcessRow, ProcessStatus, SystemService, Task, TaskRow, TaskType, TranslateService } from '@yuuvis/core';
+import { LocaleDatePipe } from '@yuuvis/framework';
 import { ResponsiveTableData } from '../../components/responsive-data-table/responsive-data-table.interface';
 import { IconRegistryService } from './../../common/components/icon/service/iconRegistry.service';
 import { GridService } from './../../services/grid/grid.service';
 import { followUp, task } from './../../svg.generated';
 
-type fieldName = 'taskName' | 'type' | 'subject' | 'createTime' | 'endTime' | 'startTime' | 'businessKey' | 'expiryDateTime' | 'whatAbout' | 'status' | 'task';
 @Injectable({
   providedIn: 'root'
 })
@@ -60,7 +60,7 @@ export class FormatProcessDataService {
       processData
         .map((data) => ({ ...data, icon: this.iconRegService.getIcon(data.processDefinition.id.startsWith('follow-up') ? 'followUp' : 'task') }))
         .map((data) => new TaskRow(data)),
-      ['type', 'taskName', 'subject', 'createTime'],
+      ['type', 'taskName', 'subject', 'createTime', 'dueDate'],
       true
     );
   }
@@ -68,7 +68,7 @@ export class FormatProcessDataService {
   /**
    * Formating process data to fit for Grid in ProcessState
    */
-  formatProcessDataForTable(processData: Process[], fields: fieldName[]): ResponsiveTableData {
+  formatProcessDataForTable(processData: Process[], fields: string[]): ResponsiveTableData {
     return this.processDataForTable(
       processData
         .map((data) => ({ ...data, icon: this.iconRegService.getIcon(data.processDefinition.id.startsWith('follow-up') ? 'followUp' : 'task') }))
@@ -81,7 +81,7 @@ export class FormatProcessDataService {
   /**
    * Formating follow-up data to fit for Grid in ProcessState
    */
-  formatFollowUpDataForTable(processData: Process[], fields: fieldName[]): ResponsiveTableData {
+  formatFollowUpDataForTable(processData: Process[], fields: string[]): ResponsiveTableData {
     return this.processDataForTable(
       processData.map((data) => ({ ...data, icon: this.iconRegService.getIcon('followUp') })).map((data) => new FollowUpRow(data)),
       fields,
@@ -89,7 +89,7 @@ export class FormatProcessDataService {
     );
   }
 
-  private processDataForTable(rows: (ProcessRow | TaskRow)[], fields: fieldName[], isTask: boolean): ResponsiveTableData {
+  private processDataForTable(rows: (ProcessRow | TaskRow)[], fields: string[], isTask: boolean): ResponsiveTableData {
     return {
       columns: fields.map((field) => ({
         colId: field,
@@ -97,24 +97,44 @@ export class FormatProcessDataService {
         width: field.toLowerCase().includes('type') ? 60 : undefined,
         headerClass: `col-header-type-${field}`,
         headerName: this.translations[field],
-        ...(field.toLowerCase().includes('time') && { cellRenderer: this.gridService.dateTimeCellRenderer() }),
-        ...(field.toLowerCase().includes('status') && { cellRenderer: (params) => this.statusCellRenderer({ ...params, translations: this.translations }) }),
-        ...(field.toLowerCase().includes('taskname') && {
-          cellRenderer: (params) => this.taskNameCellRenderer({ ...params, context: { system: this.system, translations: this.translations } })
-        }),
-        ...(field.toLowerCase().includes('type') && {
-          cellRenderer: (params) => this.typeCellRenderer({ ...params, context: { translations: this.translations, system: this.system, isTask } })
-        }),
+        cellRenderer: this.getCellRenderer(field, isTask),
+        // ...(field.toLowerCase().includes('duedate') && { cellRenderer: this.gridService.dateTimeCellRenderer() }),
+        // ...(field.toLowerCase().includes('time') && { cellRenderer: this.gridService.dateTimeCellRenderer() }),
+        // ...(field.toLowerCase().includes('status') && { cellRenderer: (params) => this.statusCellRenderer({ ...params, translations: this.translations }) }),
+        // ...(field.toLowerCase().includes('taskname') && {
+        //   cellRenderer: (params) => this.taskNameCellRenderer({ ...params, context: { system: this.system, translations: this.translations } })
+        // }),
+        // ...(field.toLowerCase().includes('type') && {
+        //   cellRenderer: (params) => this.typeCellRenderer({ ...params, context: { translations: this.translations, system: this.system, isTask } })
+        // }),
         resizable: true,
         sortable: true,
         ...(field.toLowerCase() === 'createTime' && { sort: 'asc' })
       })),
       rows,
-      titleField: 'title',
+      titleField: 'subject',
       descriptionField: 'description',
-      dateField: 'createTime',
+      dateField: 'dueDate',
       selectType: 'single'
     };
+  }
+
+  private getCellRenderer(field: string, isTask?: boolean) {
+    if (['startTime', 'endTime', 'createTime', 'expiryDateTime'].includes(field)) {
+      return this.gridService.dateTimeCellRenderer();
+    } else if (field === 'type') {
+      return (params) => this.typeCellRenderer({ ...params, context: { translations: this.translations, system: this.system, isTask } });
+    } else if (field === 'taskName') {
+      return (params) => this.taskNameCellRenderer({ ...params, context: { system: this.system, translations: this.translations } });
+    } else if (field === 'status') {
+      return (params) => this.statusCellRenderer({ ...params, translations: this.translations });
+    } else if (field === 'dueDate') {
+      return (params) => this.dueDateCellRenderer({ ...params, context: { datePipe: new LocaleDatePipe(this.translate) } });
+    } else {
+      return (params) => {
+        return params.value;
+      };
+    }
   }
 
   private taskNameCellRenderer(params): string {
@@ -123,6 +143,14 @@ export class FormatProcessDataService {
       label = params.context.translations.defaultFollowUpTaskName;
     }
     return label || params.value;
+  }
+
+  private dueDateCellRenderer(params): string {
+    params.value = new Date(2000, 12, 5);
+
+    if (!params.value) return '';
+    const overDueClass = new Date(params.value).getTime() < Date.now() ? 'over-due' : '';
+    return `<span class="due-date ${overDueClass}">${params.context.datePipe.transform(params.value, 'eoNiceShort')}</span>`;
   }
 
   private statusCellRenderer(params): string {

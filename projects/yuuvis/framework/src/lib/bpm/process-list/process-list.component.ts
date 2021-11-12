@@ -31,7 +31,7 @@ export class ProcessListComponent {
     return this._dataTable;
   }
   private _processData: any;
-  private _viewMode: ViewMode;
+  private _viewMode: ViewMode = 'horizontal';
   header: HeaderDetails;
   totalNumItems: number;
 
