@@ -4,6 +4,7 @@ import { MissingTranslationHandler, TranslateLoader, TranslateModule } from '@ng
 import { OAuthModule, OAuthStorage } from 'angular-oauth2-oidc';
 import { YuvCoreSharedModule } from './core.shared.module';
 import { AuthInterceptor } from './service/auth/auth.interceptor';
+import { CookieStorageService } from './service/auth/cookieStorage.service';
 import { CoreConfig } from './service/config/core-config';
 import { CORE_CONFIG, CUSTOM_CONFIG } from './service/config/core-config.tokens';
 import { OfflineInterceptor } from './service/connection/offline.interceptor';
@@ -75,7 +76,8 @@ export class YuvCoreModule {
           provide: MissingTranslationHandler,
           useClass: EoxMissingTranslationHandler
         },
-        { provide: OAuthStorage, useFactory: storageFactory }
+        { provide: OAuthStorage, useClass: CookieStorageService }
+        // { provide: OAuthStorage, useFactory: storageFactory }
       ]
     };
   }
