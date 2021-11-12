@@ -130,7 +130,7 @@ export class SystemService {
       });
 
     if (includeExtendableFSOTs) {
-      this.getAllExtendableSOTs(true).forEach((sot) => {
+      this.getAllExtendableSOTs(true, situation).forEach((sot) => {
         switch (situation) {
           case 'create': {
             if (!sot.classification?.includes(ObjectTypeClassification.CREATE_FALSE)) {
@@ -258,8 +258,8 @@ export class SystemService {
    * primary and not required.
    * @param withLabel Whether or not to also add the types label
    */
-  getAllExtendableSOTs(withLabel?: boolean) {
-    return this.getSecondaryObjectTypes(withLabel).filter(
+  getAllExtendableSOTs(withLabel?: boolean, situation?: 'search' | 'create') {
+    return this.getSecondaryObjectTypes(withLabel, situation).filter(
       (sot) =>
         !sot.classification?.includes(SecondaryObjectTypeClassification.REQUIRED) && !sot.classification?.includes(SecondaryObjectTypeClassification.PRIMARY)
     );
