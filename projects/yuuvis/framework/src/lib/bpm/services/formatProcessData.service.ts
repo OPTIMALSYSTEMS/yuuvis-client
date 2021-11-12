@@ -98,20 +98,16 @@ export class FormatProcessDataService {
         headerClass: `col-header-type-${field}`,
         headerName: this.translations[field],
         cellRenderer: this.getCellRenderer(field, isTask),
-        // ...(field.toLowerCase().includes('duedate') && { cellRenderer: this.gridService.dateTimeCellRenderer() }),
-        // ...(field.toLowerCase().includes('time') && { cellRenderer: this.gridService.dateTimeCellRenderer() }),
-        // ...(field.toLowerCase().includes('status') && { cellRenderer: (params) => this.statusCellRenderer({ ...params, translations: this.translations }) }),
-        // ...(field.toLowerCase().includes('taskname') && {
-        //   cellRenderer: (params) => this.taskNameCellRenderer({ ...params, context: { system: this.system, translations: this.translations } })
-        // }),
-        // ...(field.toLowerCase().includes('type') && {
-        //   cellRenderer: (params) => this.typeCellRenderer({ ...params, context: { translations: this.translations, system: this.system, isTask } })
-        // }),
         resizable: true,
         sortable: true,
         ...(field.toLowerCase() === 'createTime' && { sort: 'asc' })
       })),
       rows,
+      singleColumnCellRenderer: isTask
+        ? (rowData) => {
+            return 'hallo';
+          }
+        : undefined,
       titleField: 'subject',
       descriptionField: 'description',
       dateField: 'dueDate',

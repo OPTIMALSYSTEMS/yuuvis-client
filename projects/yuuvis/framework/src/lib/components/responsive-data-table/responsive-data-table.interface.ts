@@ -13,6 +13,8 @@ export interface ResponsiveTableData {
    */
   rows: any[];
   sortModel?: { colId: string; sort: string }[];
+  /** Cell renderer function to be used in list mode */
+  singleColumnCellRenderer?: (rowData: any) => string;
   titleField: string;
   descriptionField: string;
   dateField?: string;

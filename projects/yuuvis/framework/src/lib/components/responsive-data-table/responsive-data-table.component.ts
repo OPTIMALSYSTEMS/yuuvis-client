@@ -358,17 +358,24 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
       field: BaseObjectTypeField.OBJECT_ID,
       cellClass: 'cell-title-description',
       minWidth: this.isGrid ? this._data.rows.length * this.settings.colWidth.grid : 0,
-      valueGetter: (params) => JSON.stringify(params.data), // needed to compare value changes & redraw cell
-      cellRenderer: 'singleCellRenderer',
-      cellRendererParams: {
+      valueGetter: (params) => JSON.stringify(params.data) // needed to compare value changes & redraw cell
+    };
+
+    if (this._data.singleColumnCellRenderer) {
+      colDef.cellRenderer = this._data.singleColumnCellRenderer;
+      // colDef.cellRendererParams = this._data
+    } else {
+      colDef.cellRenderer = 'singleCellRenderer';
+      colDef.cellRendererParams = {
         _crParams: {
           titleField: this._data.titleField,
           descriptionField: this._data.descriptionField,
           dateField: this._data.dateField,
           viewMode: this._currentViewMode
         }
-      }
-    };
+      };
+    }
+
     return colDef;
   }
 

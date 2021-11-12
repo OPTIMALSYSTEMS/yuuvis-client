@@ -371,7 +371,7 @@ export class SystemService {
       baseTypeFields.push(f);
     });
 
-    if (includeClientDefaults) {
+    if (includeClientDefaults && this.getSecondaryObjectType('appClient:clientdefaults')) {
       this.getSecondaryObjectType('appClient:clientdefaults').fields.forEach((f) => {
         baseTypeFields.push(f);
       });
