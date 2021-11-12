@@ -16,6 +16,7 @@ import { ColumnConfigurationComponent } from './states/column-configuration/colu
 import { CreateComponent } from './states/create/create.component';
 import { DashboardComponent } from './states/dashboard/dashboard.component';
 import { FilterConfigurationComponent } from './states/filter-configuration/filter-configuration.component';
+import { FollowUpsComponent } from './states/follow-ups/follow-ups.component';
 import { InboxComponent } from './states/inbox/inbox.component';
 import { NotFoundComponent } from './states/not-found/not-found.component';
 import { ObjectComponent } from './states/object/object.component';
@@ -24,7 +25,6 @@ import { ProcessesComponent } from './states/processes/processes.component';
 import { ResultComponent } from './states/result/result.component';
 import { SettingsComponent } from './states/settings/settings.component';
 import { VersionsComponent } from './states/versions/versions.component';
-import { FollowUpsComponent } from './states/follow-ups/follow-ups.component';
 
 @NgModule({
   declarations: [
@@ -50,6 +50,12 @@ import { FollowUpsComponent } from './states/follow-ups/follow-ups.component';
     AccordionModule,
     YuvFrameworkModule.forRoot(
       {
+        oidc: {
+          host: 'https://kolibri.enaioci.net',
+          tenant: 'kolibri',
+          issuer: 'https://kc001.auth.enaioci.net/auth/realms/kolibri',
+          clientId: 'spa-client'
+        },
         main: ['assets/default/config/main.json'],
         translations: ['assets/default/i18n/'],
         environment
