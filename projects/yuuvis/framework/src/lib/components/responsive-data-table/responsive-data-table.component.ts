@@ -356,14 +356,13 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
     const colDef: ColDef = {
       colId: Utils.uuid(), // has to be unique
       field: BaseObjectTypeField.OBJECT_ID,
-      cellClass: 'cell-title-description',
+      cellClass: this._data.singleColumnCellClass || 'cell-title-description',
       minWidth: this.isGrid ? this._data.rows.length * this.settings.colWidth.grid : 0,
       valueGetter: (params) => JSON.stringify(params.data) // needed to compare value changes & redraw cell
     };
 
     if (this._data.singleColumnCellRenderer) {
       colDef.cellRenderer = this._data.singleColumnCellRenderer;
-      // colDef.cellRendererParams = this._data
     } else {
       colDef.cellRenderer = 'singleCellRenderer';
       colDef.cellRendererParams = {
@@ -375,7 +374,6 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
         }
       };
     }
-
     return colDef;
   }
 

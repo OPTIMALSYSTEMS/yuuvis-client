@@ -212,21 +212,3 @@ table.cellrenderer-tags {
     color: #fff;
   }
 }
-
-.ag-cell {
-  .yuvTaskSingleRowCell {
-    background-color: red;
-  }
-
-  .due-date {
-    display: block;
-    padding: 0.25em;
-    border-radius: 2px;
-    background-color: var(--panel-divider-color);
-
-    &.over-due {
-      background-color: var(--color-error);
-      color: #fff;
-    }
-  }
-}

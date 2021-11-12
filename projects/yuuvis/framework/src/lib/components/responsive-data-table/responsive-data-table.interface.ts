@@ -14,6 +14,7 @@ export interface ResponsiveTableData {
   rows: any[];
   sortModel?: { colId: string; sort: string }[];
   /** Cell renderer function to be used in list mode */
+  singleColumnCellClass?: string;
   singleColumnCellRenderer?: (rowNode: RowNode) => string;
   titleField: string;
   descriptionField: string;

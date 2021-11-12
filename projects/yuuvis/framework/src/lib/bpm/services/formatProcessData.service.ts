@@ -91,7 +91,7 @@ export class FormatProcessDataService {
   }
 
   private processDataForTable(rows: (ProcessRow | TaskRow)[], fields: string[], isTask: boolean): ResponsiveTableData {
-    return {
+    let tableData: ResponsiveTableData = {
       columns: fields.map((field) => ({
         colId: field,
         field,
@@ -104,19 +104,48 @@ export class FormatProcessDataService {
         ...(field.toLowerCase() === 'createTime' && { sort: 'asc' })
       })),
       rows,
-      singleColumnCellRenderer: isTask
-        ? (rowNode: RowNode) => {
-            const taskRow: TaskRow = rowNode.data;
-
-            return `<div class="yuvTaskSingleRowCell"></div>`;
-          }
-        : undefined,
       titleField: 'subject',
       descriptionField: 'description',
       dateField: 'dueDate',
       selectType: 'single'
     };
+
+    if (isTask) {
+      tableData.singleColumnCellClass = 'yuvTaskSingleRowCell';
+      tableData.singleColumnCellRenderer = this.taskSingleColumnCellRenderer;
+    }
+
+    return tableData;
   }
+
+  private taskSingleColumnCellRenderer = (rowNode: RowNode) => {
+    const data: TaskRow = rowNode.data;
+    const context = {
+      system: this.system,
+      translations: this.translations,
+      datePipe: new LocaleDatePipe(this.translate),
+      isTask: true
+    };
+
+    let tpl = `
+    <div class="icon">${this.typeCellRenderer({
+      value: data.type,
+      data,
+      context
+    })}</div>
+    <div class="taskName">${this.taskNameCellRenderer({ value: data.taskName, context })}</div>
+    <div class="subject">${data.subject}</div>
+    `;
+
+    if (data.dueDate) {
+      tpl += this.dueDateCellRenderer({
+        value: data.dueDate,
+        data,
+        context
+      });
+    }
+    return tpl;
+  };
 
   private getCellRenderer(field: string, isTask?: boolean) {
     if (['startTime', 'endTime', 'createTime', 'expiryDateTime'].includes(field)) {
@@ -145,9 +174,7 @@ export class FormatProcessDataService {
   }
 
   private dueDateCellRenderer(params): string {
-    params.value = new Date(2000, 12, 5);
-
-    if (!params.value) return '';
+    if (!params.value?.length) return '';
     const overDueClass = new Date(params.value).getTime() < Date.now() ? 'over-due' : '';
     return `<span class="due-date ${overDueClass}">${params.context.datePipe.transform(params.value, 'eoNiceShort')}</span>`;
   }
