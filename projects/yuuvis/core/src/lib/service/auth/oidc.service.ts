@@ -3,7 +3,6 @@ import { AuthConfig, OAuthModuleConfig, OAuthService } from 'angular-oauth2-oidc
 import { from, Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { OpenIdConfig } from '../backend/backend.interface';
-import { YuvConfig } from '../config/config.interface';
 import { CoreConfig } from '../config/core-config';
 import { CORE_CONFIG } from '../config/core-config.tokens';
 
@@ -13,8 +12,8 @@ import { CORE_CONFIG } from '../config/core-config.tokens';
 export class OidcService {
   constructor(@Optional() private oAuthConfig: OAuthModuleConfig, @Inject(CORE_CONFIG) public config: CoreConfig, private oauthService: OAuthService) {}
 
-  initOpenIdConnect(): Observable<OpenIdConfig> {
-    const oidc = (this.config.oidc = this.config.oidc || (this.config.main as YuvConfig).oidc);
+  initOpenIdConnect(oidc: OpenIdConfig): Observable<OpenIdConfig> {
+    oidc = this.config.oidc = oidc || this.config.oidc;
     if (oidc?.host) {
       oidc.host = oidc.host.endsWith('/') ? oidc.host.substring(0, -1) : oidc.host;
     } else return of(null);
@@ -28,7 +27,7 @@ export class OidcService {
       strictDiscoveryDocumentValidation: false,
       issuer: oidc.issuer,
       redirectUri: oidc.redirectUri || window.location.origin + '/',
-      postLogoutRedirectUri: oidc.postLogoutRedirectUri || window.location.origin + '/login',
+      postLogoutRedirectUri: oidc.postLogoutRedirectUri || window.location.origin + '/',
       clientId: oidc.clientId,
       responseType: 'code',
       scope: 'openid profile email offline_access',
@@ -48,5 +47,25 @@ export class OidcService {
 
   logout() {
     this.oauthService.logOut();
+  }
+
+  setupCookie(viewer: string, path: string, headers: any) {
+    return new Observable((subscriber) => {
+      let iframe: any = document.querySelector('body > iframe#__oidc') as HTMLIFrameElement;
+      if (!iframe) {
+        iframe = document.createElement('iframe');
+        iframe.style.display = 'none';
+        iframe.id = '__oidc';
+        iframe.onload = () => {
+          iframe.subscriber.next({});
+          iframe.subscriber.complete();
+        };
+      }
+
+      iframe.subscriber = subscriber;
+
+      iframe.setAttribute('src', `${viewer}/download?setCookie=/&path=${encodeURIComponent(path)}&headers=${encodeURIComponent(JSON.stringify(headers))}`);
+      document.body.appendChild(iframe);
+    });
   }
 }

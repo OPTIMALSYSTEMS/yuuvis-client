@@ -89,7 +89,6 @@
     "angular-split": "^4.0.0",
     "core-js": "^3.7.0",
     "lodash-es": "^4.17.15",
-    "ngx-cookie-service": "^12.0.3",
     "ngx-device-detector": "^2.1.1",
     "ngx-drag-scroll": "^11.0.0-beta.1",
     "ngx-toastr": "^13.1.0",
