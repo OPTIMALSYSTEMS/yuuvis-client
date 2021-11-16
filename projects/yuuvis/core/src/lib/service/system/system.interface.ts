@@ -132,16 +132,6 @@ export interface SchemaResponseFieldDefinition {
   classifications?: string[];
   resolution: string;
 }
-// export interface SchemaResponseTypeDefinition {
-//   id: string;
-//   localNamespace: string;
-//   description: string;
-//   baseId: string;
-//   creatable: boolean;
-//   fileable: boolean;
-//   contentStreamAllowed?: string;
-//   fields: SchemaResponseFieldDefinition[];
-// }
 
 /**
  * Object type fields classification property (schema)
@@ -160,4 +150,24 @@ export interface ApplicableSecondaries {
 
 export interface Localization {
   [key: string]: string;
+}
+
+export interface UserPermissions {
+  create: UserPermissionsSection;
+  read: UserPermissionsSection;
+  write: UserPermissionsSection;
+  delete: UserPermissionsSection;
+}
+export interface UserPermissionsSection {
+  folderTypes: string[];
+  objectTypes: string[];
+  secondaryObjectTypes: string[];
+}
+
+export interface ObjectTypePermissions {
+  createableObjectTypes: string[];
+  searchableObjectTypes: string[];
+  // read: string[];
+  // write: string[];
+  // delete: string[];
 }

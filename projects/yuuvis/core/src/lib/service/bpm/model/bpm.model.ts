@@ -54,6 +54,7 @@ export interface Task {
   assignee: ProcessUser;
   claimTime: Date;
   createTime: Date;
+  dueDate: Date;
   description: string;
   taskMessages?: TaskMessage[];
   taskForm?: {
@@ -144,6 +145,7 @@ export enum ProcessStatus {
 export class TaskRow {
   id: string;
   createTime: Date;
+  dueDate: Date;
   processDefinitionName: string;
   subject: string;
   type: TaskType;
@@ -153,11 +155,12 @@ export class TaskRow {
   constructor(private data: Task) {
     this.id = data.id;
     this.subject = data.subject;
-    this.createTime = new Date(this.data.createTime);
+    this.createTime = new Date(data.createTime);
+    this.dueDate = data.dueDate ? new Date(data.dueDate) : undefined;
     this.originalData = data;
     this.processDefinitionName = data.processDefinition.idPrefix;
     this.taskName = data.name;
-    this.type = this.data.processDefinition.id.startsWith('follow-up') ? TaskType.FOLLOW_UP : TaskType.TASK;
+    this.type = data.processDefinition.id.startsWith('follow-up') ? TaskType.FOLLOW_UP : TaskType.TASK;
   }
 }
 

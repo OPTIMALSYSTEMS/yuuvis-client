@@ -15,8 +15,7 @@ export const AdministrationRoles = {
 };
 
 export const UserRoles = {
-  MULTI_TENANT: 'YUUVIS_MULTI_TENANT',
-  CREATE_OBJECT: 'YUUVIS_CREATE_OBJECT'
+  MULTI_TENANT: 'YUUVIS_MULTI_TENANT'
 };
 
 export const RetentionField = {

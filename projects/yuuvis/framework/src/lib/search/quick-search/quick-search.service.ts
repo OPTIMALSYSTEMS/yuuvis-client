@@ -103,7 +103,7 @@ export class QuickSearchService {
           !sot.classification?.includes(ObjectTypeClassification.SEARCH_FALSE)
       );
 
-    return (this.availableObjectTypes = [...this.systemService.getObjectTypes(), ...extendables]
+    return (this.availableObjectTypes = [...this.systemService.getObjectTypes(false, 'search'), ...extendables]
       .filter((t) => !this.skipTypes.includes(t.id))
       .map((ot) => ({
         id: ot.id,

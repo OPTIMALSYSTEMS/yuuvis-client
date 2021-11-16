@@ -234,6 +234,7 @@
 	"yuv.framework.process-details.tabs.summary.title": "Summary",
 	"yuv.framework.process-list.column.businessKey.label": "Object",
 	"yuv.framework.process-list.column.createTime.label": "Received on",
+	"yuv.framework.process-list.column.dueDate.label": "Due date",
 	"yuv.framework.process-list.column.endTime.label": "Ended on",
 	"yuv.framework.process-list.column.expiryDateTime.label": "Follow-up date",
 	"yuv.framework.process-list.column.startTime.label": "Created on",
