@@ -1,8 +1,8 @@
 import { RowNode } from '@ag-grid-community/core';
 import { Injectable } from '@angular/core';
 import { FollowUpRow, Process, ProcessRow, ProcessStatus, SystemService, Task, TaskRow, TaskType, TranslateService } from '@yuuvis/core';
-import { LocaleDatePipe } from '@yuuvis/framework';
 import { ResponsiveTableData } from '../../components/responsive-data-table/responsive-data-table.interface';
+import { LocaleDatePipe } from '../../pipes/locale-date.pipe';
 import { IconRegistryService } from './../../common/components/icon/service/iconRegistry.service';
 import { GridService } from './../../services/grid/grid.service';
 import { followUp, task } from './../../svg.generated';
