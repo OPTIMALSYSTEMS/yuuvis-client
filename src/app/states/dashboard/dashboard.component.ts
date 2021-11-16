@@ -1,6 +1,6 @@
 import { Component, HostBinding, HostListener, OnInit, ViewChild } from '@angular/core';
 import { NavigationExtras, Router } from '@angular/router';
-import { EventService, SearchQuery, SystemService, UserRoles, UserService, Utils, YuvEventType, YuvUser } from '@yuuvis/core';
+import { EventService, SearchQuery, SystemService, UserService, Utils, YuvEventType, YuvUser } from '@yuuvis/core';
 import { GroupedSelectComponent, ObjectTypeAggregation, QuickSearchComponent, RecentItem, Selectable, SelectableGroup } from '@yuuvis/framework';
 import { FrameService } from '../../components/frame/frame.service';
 import { AppSearchService } from '../../service/app-search.service';
@@ -38,7 +38,7 @@ export class DashboardComponent implements OnInit {
   ) {
     this.userService.user$.subscribe((user: YuvUser) => {
       if (user) {
-        this.disableFileDrop = !user.authorities.includes(UserRoles.CREATE_OBJECT);
+        this.disableFileDrop = !this.userService.canCreateObjects;
       }
     });
     this.eventService.on(YuvEventType.CLIENT_LOCALE_CHANGED).subscribe(() => {
