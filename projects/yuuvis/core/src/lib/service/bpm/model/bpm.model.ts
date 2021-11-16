@@ -155,12 +155,12 @@ export class TaskRow {
   constructor(private data: Task) {
     this.id = data.id;
     this.subject = data.subject;
-    this.createTime = new Date(this.data.createTime);
-    this.dueDate = new Date(this.data.dueDate);
+    this.createTime = new Date(data.createTime);
+    this.dueDate = data.dueDate ? new Date(data.dueDate) : undefined;
     this.originalData = data;
     this.processDefinitionName = data.processDefinition.idPrefix;
     this.taskName = data.name;
-    this.type = this.data.processDefinition.id.startsWith('follow-up') ? TaskType.FOLLOW_UP : TaskType.TASK;
+    this.type = data.processDefinition.id.startsWith('follow-up') ? TaskType.FOLLOW_UP : TaskType.TASK;
   }
 }
 

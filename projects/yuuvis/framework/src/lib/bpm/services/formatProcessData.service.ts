@@ -27,6 +27,7 @@ export class FormatProcessDataService {
   private setTranslations() {
     this.translations = {
       type: this.translate.instant(`yuv.framework.process-list.column.type.label`),
+      dueDate: this.translate.instant(`yuv.framework.process-list.column.dueDate.label`),
       subject: this.translate.instant(`yuv.framework.process-list.column.subject.label`),
       taskName: this.translate.instant(`yuv.framework.process-list.column.task.label`),
       task: this.translate.instant(`yuv.framework.process-list.column.task.label`),
@@ -174,7 +175,7 @@ export class FormatProcessDataService {
   }
 
   private dueDateCellRenderer(params): string {
-    if (!params.value?.length) return '';
+    if (!params.value) return '';
     const overDueClass = new Date(params.value).getTime() < Date.now() ? 'over-due' : '';
     return `<span class="due-date ${overDueClass}">${params.context.datePipe.transform(params.value, 'eoNiceShort')}</span>`;
   }
