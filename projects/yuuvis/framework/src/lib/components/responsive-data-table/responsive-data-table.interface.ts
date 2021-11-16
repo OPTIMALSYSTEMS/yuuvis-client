@@ -1,4 +1,4 @@
-import { ColDef, GridOptions } from '@ag-grid-community/core';
+import { ColDef, GridOptions, RowNode } from '@ag-grid-community/core';
 
 /**
  * Responsive TableData
@@ -13,6 +13,9 @@ export interface ResponsiveTableData {
    */
   rows: any[];
   sortModel?: { colId: string; sort: string }[];
+  /** Cell renderer function to be used in list mode */
+  singleColumnCellClass?: string;
+  singleColumnCellRenderer?: (rowNode: RowNode) => string;
   titleField: string;
   descriptionField: string;
   dateField?: string;

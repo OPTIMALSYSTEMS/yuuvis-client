@@ -19,5 +19,16 @@
     <div class="status">
       {{ 'yuv.framework.search-result.footer.hits' | translate: { count: totalNumItems } }}
     </div>
+
+    <div class="mode">
+      <yuv-icon class="mode" icon="listModeDefault"
+        title="{{ 'yuv.framework.search-result.footer.config.mode.default' | translate}}"
+        [ngClass]="{'current': viewMode === 'standard'}" (click)="viewMode = 'standard'">
+      </yuv-icon>
+      <yuv-icon class="mode" icon="listModeSimple"
+        title="{{ 'yuv.framework.search-result.footer.config.mode.horizontal' | translate}}"
+        [ngClass]="{'current': viewMode === 'horizontal'}" (click)="viewMode = 'horizontal'">
+      </yuv-icon>
+    </div>
   </section>
 </yuv-panel>
