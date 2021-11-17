@@ -248,12 +248,10 @@ export class PluginsService {
       .pipe(take(1))
       .pipe(switchMap((user) => this.backend.get(PluginsService.RESOURCES_CONFIG).pipe(catchError(() => of({})))))
       .pipe(
-        map((config) => {
+        map((config: any) => {
           const p = (this.pluginConfigs = {
             local: JSON.parse(localStorage.getItem(PluginsService.LOCAL_PLUGIN_CONFIG) || '{}'),
-            resolved: config?.resolved,
-            tenant: config?.tenant,
-            global: config?.global
+            ...(config || {})
           });
           if (!this.customPlugins || force) {
             this.customPlugins = { ...ConfigService.PARSER(p), ...p.local };
@@ -298,15 +296,18 @@ export class PluginsService {
   }
 
   public validateUrl(src: string) {
+    if (!window['api']?.allowHeaders) return src;
     // validate/update authorization token
-    const reg = new RegExp(encodeURIComponent('.*"Bearer (.*)"'));
+    const reg = new RegExp(encodeURIComponent('.*"(Bearer .*)"'));
     const token = src?.match(reg)?.[1];
-    return token && token !== localStorage.getItem('access_token') ? src.replace(new RegExp(token, 'g'), localStorage.getItem('access_token')) : src;
+    const authorization = encodeURIComponent(this.configService.getAuthHeaders(true).authorization);
+    return token && token !== authorization ? src.replace(new RegExp(token, 'g'), authorization) : src;
   }
 
   public updateHeaders(src: string) {
-    return src && this.backend.authUsesOpenIdConnect()
-      ? src.replace(/&headers=.*/, '') + '&headers=' + encodeURIComponent(JSON.stringify(this.backend.getAuthHeaders()))
+    if (!window['api']?.allowHeaders) return src;
+    return src && this.configService.authUsesOpenIdConnect()
+      ? src.replace(/&headers=.*/, '') + '&headers=' + encodeURIComponent(JSON.stringify(this.configService.getAuthHeaders(true)))
       : src;
   }
 

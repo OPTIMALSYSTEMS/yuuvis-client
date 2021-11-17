@@ -96,7 +96,7 @@ export class ConfigService {
     setTimeout(() => this.setupCookie().subscribe(), 5 * 60 * 1000);
 
     const path = this.getApiBase(ApiBase.apiWeb) + ConfigService.GLOBAL_MAIN_CONFIG();
-    return this.oidcService.setupCookie(this.getApiBase('viewer'), path, this.getAuthHeaders(true));
+    return this.oidcService.setupCookie(this.getApiBase('viewer', true), path, this.getAuthHeaders(true));
   }
 
   extendTranslations(translations: any, lang = this.translate.currentLang) {
