@@ -135,7 +135,7 @@ export class SearchFilterFormComponent implements OnInit, OnDestroy {
           // resolve label for tag filters
           fc._eoFormElement.label = this.quickSearchService.getLocalizedTag(
             filter.property,
-            filter.operator === SearchFilter.OPERATOR.EQUAL && typeof filter.firstValue === 'number' ? filter.firstValue : undefined
+            filter.operator?.match(SearchFilter.OPERATOR.EQUAL) && typeof filter.firstValue === 'number' ? filter.firstValue : undefined
           );
         }
         if (fc._eoFormElement._internalType === 'boolean') {
@@ -160,12 +160,12 @@ export class SearchFilterFormComponent implements OnInit, OnDestroy {
       const otf = this.availableObjectTypeFields.find((o) => o.id === filter.property);
       if (otf?.value) {
         const field = otf.value as ObjectTypeField;
-        this.addFieldEntry(field, filter.operator && filter.isEmpty(), filter.id, otf.label);
         if (filter.operator) {
           // setup values based on whether or not the type supports ranges
           const isRange = ['datetime', 'integer', 'decimal'].includes(field.propertyType);
           formPatch[filter.id] = { [otf.id]: !isRange ? filter.firstValue : new RangeValue(filter.operator, filter.firstValue, filter.secondValue) };
         }
+        this.addFieldEntry(field, filter.operator && filter.isEmpty() && field._internalType !== 'boolean', filter.id, otf.label);
       }
     });
 
