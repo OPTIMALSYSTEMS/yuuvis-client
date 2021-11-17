@@ -10,5 +10,9 @@ export class TestFormElementsComponent implements OnInit {
 
   constructor() {}
 
+  checkboxChanged(e: any) {
+    console.log(e);
+  }
+
   ngOnInit(): void {}
 }

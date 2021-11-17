@@ -1,1 +1,2 @@
-<input [(ngModel)]="value" type="checkbox" (ngModelChange)="onChange($event)" [disabled]="readonly">
+<input [(ngModel)]="value" type="checkbox" (change)="captureChange($event)" (ngModelChange)="onChange($event)"
+    [disabled]="readonly">

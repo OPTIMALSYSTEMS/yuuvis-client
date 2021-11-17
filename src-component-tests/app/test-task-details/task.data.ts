@@ -3,6 +3,7 @@ import { Task } from '@yuuvis/core';
 export const Task1: Task = {
   assignee: { id: 'c13c0dc6-c006-4eb7-b292-00ca49352549', title: 'Bartonitz, Martin (bartonitz)' },
   owner: null,
+  dueDate: null,
   initiator: { id: 'c13c0dc6-c006-4eb7-b292-00ca49352549', title: 'Bartonitz, Martin (bartonitz)' },
   processDefinition: { id: 'twosteptest_proc:2:f8e5a97c-e88f-11eb-bbdd-5a20cd388fd7', idPrefix: 'twosteptest_proc' },
   attachments: ['f74fbb98-c477-4da3-9262-b8d07b7f3ffa', 'c18493b8-7734-4ce7-b6e8-96322fe10790'],
@@ -25,6 +26,7 @@ export const Task1: Task = {
 export const Task2: Task = {
   assignee: { id: 'c13c0dc6-c006-4eb7-b292-00ca49352549', title: 'Bartonitz, Martin (bartonitz)' },
   owner: null,
+  dueDate: null,
   initiator: { id: 'c13c0dc6-c006-4eb7-b292-00ca49352549', title: 'Bartonitz, Martin (bartonitz)' },
   processDefinition: { id: 'twosteptest_proc:2:f8e5a97c-e88f-11eb-bbdd-5a20cd388fd7', idPrefix: 'twosteptest_proc' },
   attachments: [],

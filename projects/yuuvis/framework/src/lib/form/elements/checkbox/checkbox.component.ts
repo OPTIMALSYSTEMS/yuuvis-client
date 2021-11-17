@@ -93,4 +93,11 @@ export class CheckboxComponent implements ControlValueAccessor {
     this.change.emit(this.value);
     this.propagateChange(this.value);
   }
+
+  captureChange(e: Event) {
+    // change event needs to be canceled because otherwise (change) of form element
+    // will fire twice (first time with the value second time with the change event object)
+    e.preventDefault();
+    e.stopPropagation();
+  }
 }
