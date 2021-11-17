@@ -31,14 +31,15 @@ export class FileDropService {
    * @ignore
    */
   constructor() {
-    merge(fromEvent(document, 'dragenter'), fromEvent(document, 'dragleave'))
+    merge(fromEvent(document, 'dragenter'), fromEvent(document, 'dragleave'), fromEvent(document, 'drop'))
       .pipe(
         map((event: DragEvent) => {
           if (event.type === 'dragenter' && this.dragContainsFiles(event) > 0) {
             this.dragEventCount++;
-          }
-          if (event.type === 'dragleave') {
+          } else if (event.type === 'dragleave') {
             this.dragEventCount--;
+          } else if (event.type === 'drop') {
+            this.dragEventCount = 0;
           }
           return this.dragEventCount !== 0;
         }),

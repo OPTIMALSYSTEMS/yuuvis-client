@@ -159,7 +159,7 @@ export class QuickSearchService {
         ? selectedTypes
         : !shared
         ? [...this.systemService.getObjectTypes(), ...this.systemService.getSecondaryObjectTypes()].map((t) => t.id)
-        : [undefined]
+        : this.availableObjectTypeGroups?.reduce((p, c) => [...p, ...c.items.map((t) => t.id)], []) || []
     ).map((id) => this.systemService.getResolvedType(id));
 
     return shared
