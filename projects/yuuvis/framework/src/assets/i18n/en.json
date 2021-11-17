@@ -334,7 +334,7 @@
 	"yuv.framework.task-details-task.form.load.error": "Unable to load the task form.",
 	"yuv.framework.task-details-task.update.fail": "Unable to update the task.",
 	"yuv.framework.task-details.tabs.attachments.title": "Attachments",
-	"yuv.framework.task-details.tabs.history.title": "History",
+	"yuv.framework.task-details.tabs.progress.title": "Progress",
 	"yuv.framework.task-details.tabs.task.title": "Task",
 	"yuv.framework.upload-progress-overlay.icon": "Processing...",
 	"yuv.framework.upload-progress-overlay.remove": "Remove",
