@@ -80,14 +80,23 @@ export class ConfigService {
 
   extendConfig(configs: YuvConfig[]) {
     this.cfg = this.mergeConfigs(configs || []); // preset config to resolve ApiBase
-    return this.oidcService.initOpenIdConnect().pipe(
-      switchMap(() =>
-        this.getGlobalResources(ConfigService.GLOBAL_MAIN_CONFIG()).pipe(
+    return this.oidcService.initOpenIdConnect(this.cfg.oidc).pipe(
+      switchMap((oidc) =>
+        this.getGlobalResources(ConfigService.GLOBAL_MAIN_CONFIG(), ConfigService.PARSER).pipe(
           map((c: any) => [...configs, c]),
-          map((configs: YuvConfig[]) => this.set(this.mergeConfigs(configs)))
+          map((configs: YuvConfig[]) => this.set(this.mergeConfigs(configs))),
+          switchMap(() => (oidc ? this.setupCookie() : of({})))
         )
       )
     );
+  }
+
+  setupCookie() {
+    // update cookie every 5 minutes
+    setTimeout(() => this.setupCookie().subscribe(), 5 * 60 * 1000);
+
+    const path = this.getApiBase(ApiBase.apiWeb) + ConfigService.GLOBAL_MAIN_CONFIG();
+    return this.oidcService.setupCookie(this.getApiBase('viewer', true), path, this.getAuthHeaders(true));
   }
 
   extendTranslations(translations: any, lang = this.translate.currentLang) {
@@ -111,11 +120,11 @@ export class ConfigService {
   /**
    * OpenIdConnect authorization headers
    */
-  getAuthHeaders(): any {
+  getAuthHeaders(authorization = false): any {
     return this.authUsesOpenIdConnect()
       ? {
           [TENANT_HEADER]: this.oidc.tenant,
-          authorization: 'Bearer ' + localStorage.access_token
+          ...(authorization ? { authorization: 'Bearer ' + localStorage.getItem('access_token') } : {})
         }
       : {};
   }
