@@ -1,6 +1,6 @@
 {
   "name": "yuuvis-flokfugl",
-  "version": "2.2.0-beta.9",
+  "version": "2.2.2-beta.0",
   "releaseDate": "Winter 2021",
   "description": "yuuvis® client",
   "author": "OPTIMAL SYSTEMS GmbH",
@@ -84,7 +84,7 @@
     "@ngx-pwa/local-storage": "^10.1.0",
     "@ngx-translate/core": "^13.0.0",
     "@yuuvis/styles": "^1.0.5",
-    "angular-oauth2-oidc": "^10.0.3",
+    "angular-oauth2-oidc": "12.1.0",
     "angular-resize-event": "^2.0.1",
     "angular-split": "^4.0.0",
     "core-js": "^3.7.0",
