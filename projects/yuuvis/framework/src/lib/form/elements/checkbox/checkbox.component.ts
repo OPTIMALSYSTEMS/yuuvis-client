@@ -1,7 +1,8 @@
-import { Attribute, Component, EventEmitter, forwardRef, Input, Output } from '@angular/core';
+import { Attribute, Component, ElementRef, EventEmitter, forwardRef, HostBinding, Input, Output, ViewChild } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { IconRegistryService } from '../../../common/components/icon/service/iconRegistry.service';
 import { clear } from '../../../svg.generated';
+
 /**
  * Creates form input for boolean values (checkbox).
  *
@@ -25,7 +26,9 @@ import { clear } from '../../../svg.generated';
   ]
 })
 export class CheckboxComponent implements ControlValueAccessor {
-  // value: boolean = null;
+  @ViewChild('cb') input: ElementRef;
+
+  _value: boolean = null;
   _tabindex;
 
   /**
@@ -36,12 +39,32 @@ export class CheckboxComponent implements ControlValueAccessor {
   /**
    * Will prevent the input from being changed (default: false)
    */
-  @Input() readonly: boolean;
-  @Input() value: boolean = null;
-  //@Input() filter: any;
+  @Input() @HostBinding('class.disabled') readonly: boolean;
+  @Input() set value(v: boolean) {
+    if (this.tristate && v !== null && this._value === false) {
+      this._value = undefined;
+    } else {
+      this._value = v;
+    }
+    if (this.tristate) {
+      this.indeterminate = this._value === undefined || this.value === null;
+    }
+    this.checked = this._value === true;
+  }
+
+  get value() {
+    return this._value;
+  }
   @Output() change = new EventEmitter<boolean>();
 
-  constructor(@Attribute('tabindex') tabindex: string, private iconRegistry: IconRegistryService) {
+  @HostBinding('class.indeterminate') indeterminate: boolean;
+  @HostBinding('class.checked') checked: boolean;
+  @HostBinding('class.switch')
+  get cssSwitch() {
+    return this.isSwitch;
+  }
+
+  constructor(@Attribute('tabindex') tabindex: string, @Attribute('switch') public isSwitch: boolean, private iconRegistry: IconRegistryService) {
     this.iconRegistry.registerIcons([clear]);
     this._tabindex = tabindex || '0';
   }
@@ -64,10 +87,17 @@ export class CheckboxComponent implements ControlValueAccessor {
   registerOnTouched(fn: any): void {}
 
   onChange(value) {
-    if (value === null) {
+    if (!this.isSwitch && value === null) {
       this.value = true;
     }
     this.change.emit(this.value);
     this.propagateChange(this.value);
+  }
+
+  captureChange(e: Event) {
+    // change event needs to be canceled because otherwise (change) of form element
+    // will fire twice (first time with the value second time with the change event object)
+    e.preventDefault();
+    e.stopPropagation();
   }
 }

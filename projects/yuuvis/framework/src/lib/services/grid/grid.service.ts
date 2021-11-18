@@ -278,6 +278,11 @@ export class GridService {
         colDef.width = 100;
         break;
       }
+      case InternalFieldType.BOOLEAN_SWITCH: {
+        colDef.cellRenderer = this.customContext(CellRenderer.booleanSwitchCellRenderer);
+        colDef.width = 100;
+        break;
+      }
     }
     return colDef;
   }

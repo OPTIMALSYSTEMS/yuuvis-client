@@ -171,7 +171,7 @@
 // general styles of contained controls
 //noinspection CssInvalidPseudoSelector
 .yuv-form-input {
-  input,
+  input:not([type='checkbox']),
   .p-inputtext {
     padding: 0;
     border: 0 !important;

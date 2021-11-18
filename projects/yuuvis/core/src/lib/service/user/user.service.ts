@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { BehaviorSubject, forkJoin, Observable, of } from 'rxjs';
-import { catchError, map, tap } from 'rxjs/operators';
+import { catchError, map, switchMap, tap } from 'rxjs/operators';
 import { UserSettings, YuvUser } from '../../model/yuv-user.model';
 import { OidcService } from '../auth/oidc.service';
 import { BackendService } from '../backend/backend.service';
@@ -11,6 +11,7 @@ import { EventService } from '../event/event.service';
 import { YuvEventType } from '../event/events';
 import { Logger } from '../logger/logger';
 import { AdministrationRoles } from '../system/system.enum';
+import { UserPermissions, UserPermissionsSection } from '../system/system.interface';
 import { SystemService } from '../system/system.service';
 
 /**
@@ -30,6 +31,8 @@ export class UserService {
   user$: Observable<YuvUser> = this.userSource.asObservable();
 
   globalSettings = new Map();
+  userPermissions: UserPermissions;
+
   /**
    * @ignore
    */
@@ -79,6 +82,8 @@ export class UserService {
     return this.user?.authorities?.includes(AdministrationRoles.MANAGE_SETTINGS) || false;
   }
 
+  canCreateObjects: boolean;
+
   /**
    * Change the users client locale
    * @param iso ISO locale string to be set as new client locale
@@ -112,7 +117,44 @@ export class UserService {
   }
 
   fetchUserSettings(): Observable<UserSettings> {
-    return this.backend.get(UserService.DEFAULT_SETTINGS);
+    return this.backend.get('/dms/permissions').pipe(
+      switchMap((res) => {
+        this.setUserPermissions(res);
+        return this.backend.get(UserService.DEFAULT_SETTINGS);
+      })
+    );
+  }
+
+  private setUserPermissions(res: any): void {
+    this.userPermissions = {
+      create: this.mapPermissions('CREATE', res),
+      write: this.mapPermissions('WRITE', res),
+      read: this.mapPermissions('READ', res),
+      delete: this.mapPermissions('DELETE', res)
+    };
+    const sp = {
+      createableObjectTypes: [
+        ...this.userPermissions.create.folderTypes,
+        ...this.userPermissions.create.objectTypes,
+        ...this.userPermissions.create.secondaryObjectTypes
+      ],
+      searchableObjectTypes: [
+        ...this.userPermissions.read.folderTypes,
+        ...this.userPermissions.read.objectTypes,
+        ...this.userPermissions.read.secondaryObjectTypes
+      ]
+    };
+    this.system.setPermissions(sp);
+    this.canCreateObjects = sp.createableObjectTypes.length > 0;
+  }
+
+  private mapPermissions(section: 'CREATE' | 'READ' | 'WRITE' | 'DELETE', apiResponse: any): UserPermissionsSection {
+    const res = apiResponse[section] || {};
+    return {
+      folderTypes: res['folderTypeIds'] || [],
+      objectTypes: res['objectTypeIds'] || [],
+      secondaryObjectTypes: res['secondaryObjectTypeIds'] || []
+    };
   }
 
   /**

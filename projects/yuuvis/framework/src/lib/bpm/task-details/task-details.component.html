@@ -1,5 +1,8 @@
 <yuv-panel *ngIf="_task" class="task-details" [title]="header?.title" [description]="header?.description">
 
+    <div class="actions" *ngIf="dueDate">{{'yuv.framework.process-list.column.dueDate.label'|translate}}<span
+            class="dueDate" [ngClass]="{overDue: dueDate.overDue}">{{dueDate.date|localeDate}}</span></div>
+
     <yuv-responsive-tab-container *ngIf="(plugins ? (plugins | async) : []) as resolvedPlugins" #tabContainer
         class="content" [layoutOptionsKey]="_layoutOptionsKey" [pluginPanels]="[viewPanels, externalPanels]"
         [pluginPanelsOrder]="panelOrder">
@@ -27,7 +30,7 @@
 </ng-template>
 
 <ng-template #historyTab>
-    <p-tabPanel [id]="'historyTab'" [header]="'yuv.framework.task-details.tabs.history.title' | translate"
+    <p-tabPanel [id]="'historyTab'" [header]="'yuv.framework.task-details.tabs.progress.title' | translate"
         [headerStyleClass]="'history'">
         <ng-template pTemplate="content">
             <yuv-task-details-history [processInstanceId]="_task?.processInstanceId"></yuv-task-details-history>

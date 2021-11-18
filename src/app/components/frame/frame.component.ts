@@ -15,6 +15,7 @@ import {
   TranslateService,
   UserRoles,
   UserService,
+  Utils,
   YuvEventType,
   YuvUser
 } from '@yuuvis/core';
@@ -31,8 +32,8 @@ import {
   ScreenService,
   UploadResult
 } from '@yuuvis/framework';
-import { Observable } from 'rxjs';
-import { filter } from 'rxjs/operators';
+import { forkJoin, Observable } from 'rxjs';
+import { filter, map, switchMap } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { add, close, drawer, offline, refresh, search, userDisabled } from '../../../assets/default/svg/svg';
 import { AppSearchService } from '../../service/app-search.service';
@@ -119,7 +120,7 @@ export class FrameComponent implements OnInit, OnDestroy {
     this.userService.user$.subscribe((user: YuvUser) => {
       if (user) {
         this.checkedForLogoutRoute = !(!this.user || this.user.id !== user.id);
-        this.disableCreate = !user.authorities.includes(UserRoles.CREATE_OBJECT);
+        this.disableCreate = !this.userService.canCreateObjects;
         this.enableTenantSwitch = user.authorities.includes(UserRoles.MULTI_TENANT);
         if (this.disableCreate) {
           this.disableFileDrop = true;
@@ -333,13 +334,41 @@ export class FrameComponent implements OnInit, OnDestroy {
         this.checkedForLogoutRoute = true;
         // redirect to the page the user logged out from the last time
         // but only if current route is not a deep link
-        if (this.userService.getCurrentUser && ['/dashboard', '/', ''].includes(this.router.routerState.snapshot.url)) {
-          this.frameService.getRouteOnLogout().subscribe((url) => {
-            if (url) this.router.navigateByUrl(url);
-          });
+        const ignoreRoutes = ['', 'dashboard', 'index.html'].map((s) => `${Utils.getBaseHref()}${s}`.replace('//', '/'));
+        const currentRoute = this.routeWithBaseHref(this.router.routerState.snapshot.url);
+
+        if (this.userService.getCurrentUser() && ignoreRoutes.includes(currentRoute)) {
+          // get persisted routes to decide where to redirect the logged in user to
+          forkJoin([
+            // route the user left the app the last time (on logout)
+            this.frameService.getRouteOnLogout(),
+            // route the user initially requested when entering the app (may be deep link from e.g. a link)
+            this.authService.getInitialRequestUri()
+          ])
+            .pipe(switchMap((res) => this.authService.resetInitialRequestUri().pipe(map((_) => res))))
+            .subscribe((res: { uri: string; timestamp: number }[]) => {
+              const logoutRes = res[0];
+              const loginRes = res[1] && !ignoreRoutes.includes(res[1].uri) ? res[1] : null;
+
+              if (logoutRes && loginRes) {
+                // got logout and initial uri
+                // redirect will happen based on which one has been saved last
+                this.router.navigateByUrl((logoutRes.timestamp > loginRes.timestamp ? logoutRes : loginRes).uri);
+              } else if (logoutRes) {
+                // got only logout uri
+                this.router.navigateByUrl(logoutRes.uri);
+              } else if (loginRes) {
+                // got only initial uri
+                this.router.navigateByUrl(loginRes.uri);
+              }
+            });
         }
       }
     });
+  }
+
+  private routeWithBaseHref(r: string): string {
+    return `${Utils.getBaseHref()}${r}`.replace('//', '/');
   }
 
   ngOnDestroy() {}

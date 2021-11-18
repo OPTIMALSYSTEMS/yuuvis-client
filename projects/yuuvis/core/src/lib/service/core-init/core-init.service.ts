@@ -30,6 +30,7 @@ export class CoreInit {
 
   initialize(): Promise<boolean> {
     return new Promise((resolve, reject) => {
+      this.authService.setInitialRequestUri();
       this.deviceService.init();
       this.loadConfig().subscribe(
         (res) => resolve(true),

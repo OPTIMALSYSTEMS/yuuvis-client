@@ -1,0 +1,16 @@
+:host {
+  display: block;
+  width: 100%;
+
+  .row {
+    display: flex;
+    gap: 1em;
+    border-bottom: 1px solid var(--panel-divider-color);
+    padding: var(--app-pane-padding);
+
+    // &.indeterminate {
+    //   pointer-events: none;
+    //   cursor: not-allowed;
+    // }
+  }
+}

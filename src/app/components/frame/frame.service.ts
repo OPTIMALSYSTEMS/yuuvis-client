@@ -81,15 +81,20 @@ export class FrameService {
   appLogout(triggeredFromOtherTab?: boolean) {
     if (!triggeredFromOtherTab) {
       // persist the current route to be able to enter it again once the user logs back in
-      this.appCache.setItem(this.getRouteOnLogoutStorageKey(), this.router.routerState.snapshot.url).subscribe((_) => {
-        window.localStorage.setItem(this.APP_LOGOUT_EVENT_KEY, `${Date.now()}`);
-      });
+      this.appCache
+        .setItem(this.getRouteOnLogoutStorageKey(), {
+          uri: this.router.routerState.snapshot.url,
+          timestamp: Date.now()
+        })
+        .subscribe((_) => {
+          window.localStorage.setItem(this.APP_LOGOUT_EVENT_KEY, `${Date.now()}`);
+        });
     }
     this.userService.logout();
   }
 
   // get the route the current user was on when logging out
-  getRouteOnLogout(): Observable<string> {
+  getRouteOnLogout(): Observable<{ uri: string; timestamp: number }> {
     return this.appCache.getItem(this.getRouteOnLogoutStorageKey());
   }
 

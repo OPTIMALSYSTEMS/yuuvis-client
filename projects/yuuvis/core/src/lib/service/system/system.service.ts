@@ -25,6 +25,7 @@ import {
   ObjectType,
   ObjectTypeField,
   ObjectTypeGroup,
+  ObjectTypePermissions,
   SchemaResponse,
   SchemaResponseDocumentTypeDefinition,
   SchemaResponseFieldDefinition,
@@ -51,6 +52,7 @@ export class SystemService {
 
   // cache for resolved visible tags because they are used in lists and therefore should not be re-evaluated all the time
   private visibleTagsCache: { [objectId: string]: { [tagName: string]: any[] } } = {};
+  private permissions: ObjectTypePermissions;
 
   authData: AuthData;
 
@@ -63,24 +65,30 @@ export class SystemService {
    * Get all object types
    * @param withLabels Whether or not to also add the types labels
    */
-  getObjectTypes(withLabels?: boolean): ObjectType[] {
-    return withLabels ? this.system.objectTypes.map((t) => ({ ...t, label: this.getLocalizedResource(`${t.id}_label`) })) : this.system.objectTypes;
+  getObjectTypes(withLabels?: boolean, situation?: 'search' | 'create'): ObjectType[] {
+    // Filter by user permissions based on situation
+    const objectTypes = this.filterByPermissions(this.system.objectTypes, situation) as ObjectType[];
+    return withLabels ? objectTypes.map((t) => ({ ...t, label: this.getLocalizedResource(`${t.id}_label`) })) : objectTypes;
   }
 
   /**
    * Get all secondary object types
    * @param withLabels Whether or not to also add the types labels
    */
-  getSecondaryObjectTypes(withLabels?: boolean): SecondaryObjectType[] {
+  getSecondaryObjectTypes(withLabels?: boolean, situation?: 'search' | 'create'): SecondaryObjectType[] {
+    const sots = this.filterByPermissions(this.system.secondaryObjectTypes, situation) as SecondaryObjectType[];
+
     return (
-      (
-        withLabels
-          ? this.system.secondaryObjectTypes.map((t) => ({ ...t, label: this.getLocalizedResource(`${t.id}_label`) }))
-          : this.system.secondaryObjectTypes
-      )
+      (withLabels ? sots.map((t) => ({ ...t, label: this.getLocalizedResource(`${t.id}_label`) })) : sots)
         // ignore
         .filter((t) => t.id !== t.baseId && !t.id.startsWith('system:') && t.id !== 'appClientsystem:leadingType')
     );
+  }
+
+  private filterByPermissions(types: (ObjectType | SecondaryObjectType)[], situation?: 'search' | 'create'): (ObjectType | SecondaryObjectType)[] {
+    if (!situation) return types;
+    const allowedTypes = situation === 'search' ? this.permissions.searchableObjectTypes : this.permissions.createableObjectTypes;
+    return types.filter((t) => allowedTypes.includes(t.id));
   }
 
   /**
@@ -99,7 +107,7 @@ export class SystemService {
   ): ObjectTypeGroup[] {
     // TODO: Apply a different property to group once grouping is available
     const types: GroupedObjectType[] = [];
-    this.getObjectTypes(true)
+    this.getObjectTypes(true, situation)
       .filter((ot) => (!includeFloatingTypes ? !ot.floatingParentType : true && (!skipAbstract || this.isCreatable(ot.id))))
       .forEach((ot) => {
         switch (situation) {
@@ -122,7 +130,7 @@ export class SystemService {
       });
 
     if (includeExtendableFSOTs) {
-      this.getAllExtendableSOTs(true).forEach((sot) => {
+      this.getAllExtendableSOTs(true, situation).forEach((sot) => {
         switch (situation) {
           case 'create': {
             if (!sot.classification?.includes(ObjectTypeClassification.CREATE_FALSE)) {
@@ -250,8 +258,8 @@ export class SystemService {
    * primary and not required.
    * @param withLabel Whether or not to also add the types label
    */
-  getAllExtendableSOTs(withLabel?: boolean) {
-    return this.getSecondaryObjectTypes(withLabel).filter(
+  getAllExtendableSOTs(withLabel?: boolean, situation?: 'search' | 'create') {
+    return this.getSecondaryObjectTypes(withLabel, situation).filter(
       (sot) =>
         !sot.classification?.includes(SecondaryObjectTypeClassification.REQUIRED) && !sot.classification?.includes(SecondaryObjectTypeClassification.PRIMARY)
     );
@@ -371,7 +379,7 @@ export class SystemService {
       baseTypeFields.push(f);
     });
 
-    if (includeClientDefaults) {
+    if (includeClientDefaults && this.getSecondaryObjectType('appClient:clientdefaults')) {
       this.getSecondaryObjectType('appClient:clientdefaults').fields.forEach((f) => {
         baseTypeFields.push(f);
       });
@@ -759,6 +767,10 @@ export class SystemService {
     );
   }
 
+  setPermissions(p: ObjectTypePermissions) {
+    this.permissions = p;
+  }
+
   /**
    * Create the schema from the servers schema response
    * @param schemaResponse Response from the backend
@@ -925,6 +937,8 @@ export class SystemService {
       return InternalFieldType.STRING_ORGANIZATION;
     } else if (field[typeProperty] === 'string' && classifications.has(Classification.STRING_CATALOG)) {
       return InternalFieldType.STRING_CATALOG;
+    } else if (field[typeProperty] === 'boolean' && classifications.has(Classification.BOOLEAN_SWITCH)) {
+      return InternalFieldType.BOOLEAN_SWITCH;
     } else if (
       field[typeProperty] === 'string' &&
       (classifications.has(Classification.STRING_CATALOG_DYNAMIC) || classifications.has(Classification.STRING_CATALOG_CUSTOM))
