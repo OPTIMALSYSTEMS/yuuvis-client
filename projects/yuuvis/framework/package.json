@@ -1,6 +1,6 @@
 {
   "name": "@yuuvis/framework",
-  "version": "2.3.0-beta.0",
+  "version": "3.0.0-beta.0",
   "author": "OPTIMAL SYSTEMS GmbH <npm@optimal-systems.de>",
   "license": "MIT",
   "scripts": {
