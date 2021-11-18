@@ -19,8 +19,19 @@ export class TaskDetailsComponent implements OnInit {
     title: string;
     description: string;
   };
+  dueDate: {
+    date: Date;
+    overDue: boolean;
+  };
   @Input() set task(t: Task) {
     this._task = t;
+    this.dueDate =
+      t && t.dueDate
+        ? {
+            date: new Date(t.dueDate),
+            overDue: new Date(t.dueDate).getTime() < Date.now()
+          }
+        : undefined;
     this.header = t
       ? {
           title: t.subject,
