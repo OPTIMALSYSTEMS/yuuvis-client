@@ -159,6 +159,40 @@ table.cellrenderer-tags {
   }
 }
 
+.yc-indeterminate-questionmark .yuv-cr-checkbox:not(.false):not(.true) {
+  &::after {
+    opacity: 0;
+  }
+  &::before {
+    content: '?';
+    font-family: monospace;
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1em;
+    color: var(--text-color-caption);
+    font-weight: bold;
+  }
+}
+.yc-indeterminate-dash .yuv-cr-checkbox:not(.false):not(.true) {
+  &::before {
+    background-image: none;
+  }
+  &::after {
+    content: ' ';
+    opacity: 1;
+    border: 0;
+    background-color: var(--text-color-caption);
+    height: 2px;
+    width: 60%;
+    transform: rotate(0deg);
+    top: calc(50% - 1px);
+    left: 20%;
+  }
+}
+
 // SWITCH cell renderer
 .yuv-cr-switch {
   --switch-handle-size: 0.6em;
