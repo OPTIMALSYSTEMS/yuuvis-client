@@ -5,7 +5,8 @@ import { RangeValue } from '../../model/range-value.model';
 import { ApiBase } from '../backend/api.enum';
 import { BackendService } from '../backend/backend.service';
 import { BaseObjectTypeField, ContentStreamField } from '../system/system.enum';
-import { SearchQuery } from './search-query.model';
+import { SystemService } from '../system/system.service';
+import { SearchFilter, SearchQuery } from './search-query.model';
 import { AggregateResult, Aggregation, SearchResult, SearchResultContent, SearchResultItem } from './search.service.interface';
 /**
  * Providing searching of dms objects.
@@ -15,11 +16,18 @@ import { AggregateResult, Aggregation, SearchResult, SearchResultContent, Search
 })
 export class SearchService {
   private lastSearchQuery: SearchQuery;
+  private _datetimeFields = [];
 
   /**
    * @ignore
    */
-  constructor(private backend: BackendService) {}
+  constructor(private backend: BackendService, private systemService: SystemService) {
+    this.systemService.system$.subscribe((system) => {
+      this._datetimeFields = Object.values(system.allFields)
+        .filter((f: any) => f.resolution !== 'date' && f.propertyType === 'datetime')
+        .map((f: any) => f.id);
+    });
+  }
 
   /**
    * Creates a RangeValue instance from the given value object.
@@ -44,7 +52,7 @@ export class SearchService {
 
   searchRaw(q: SearchQuery): Observable<any> {
     this.lastSearchQuery = q;
-    return this.backend.post(`/dms/objects/search`, q.toQueryJson(true), ApiBase.apiWeb);
+    return this.backend.post(`/dms/objects/search`, this.transformDateFilters(q.toQueryJson(true)), ApiBase.apiWeb);
   }
 
   /**
@@ -55,7 +63,9 @@ export class SearchService {
    */
   aggregate(q: SearchQuery, aggregations: string[]) {
     q.aggs = aggregations;
-    return this.backend.post(`/dms/objects/search`, q.toQueryJson(true), ApiBase.apiWeb).pipe(map((res) => this.toAggregateResult(res, aggregations)));
+    return this.backend
+      .post(`/dms/objects/search`, this.transformDateFilters(q.toQueryJson(true)), ApiBase.apiWeb)
+      .pipe(map((res) => this.toAggregateResult(res, aggregations)));
   }
 
   getLastSearchQuery() {
@@ -182,5 +192,47 @@ export class SearchService {
   getPage(query: SearchQuery, page: number): Observable<SearchResult> {
     query.from = (page - 1) * query.size;
     return this.search(query);
+  }
+
+  /**
+   * Transform date filters to support exact search with seconds & milliseconds
+   */
+  private transformDateFilters(queryJson: any) {
+    queryJson.filters?.forEach((f: any) => {
+      if (f.filters) return this.transformDateFilters(f);
+      if (f.v1 && this._datetimeFields.includes(f.f)) {
+        const from = (v: any) => v && new Date(v).toISOString(); // :00.000Z
+        const to = (v: any) => v && new Date(new Date(v).getTime() + 60 * 1000 - 1).toISOString(); // :59.999Z
+        switch (f.o) {
+          case SearchFilter.OPERATOR.LESS_OR_EQUAL:
+          case SearchFilter.OPERATOR.GREATER_THAN:
+            f.v1 = to(f.v1);
+            break;
+          case SearchFilter.OPERATOR.LESS_THAN:
+          case SearchFilter.OPERATOR.GREATER_OR_EQUAL:
+            f.v1 = from(f.v1);
+            break;
+          case SearchFilter.OPERATOR.EQUAL:
+            f.o = SearchFilter.OPERATOR.INTERVAL_INCLUDE_BOTH;
+          case SearchFilter.OPERATOR.INTERVAL_INCLUDE_BOTH:
+            f.v1 = from(f.v1);
+            f.v2 = to(f.v2 || f.v1);
+            break;
+          case SearchFilter.OPERATOR.INTERVAL_INCLUDE_FROM:
+            f.v1 = from(f.v1);
+            f.v2 = from(f.v2);
+            break;
+          case SearchFilter.OPERATOR.INTERVAL_INCLUDE_TO:
+            f.v1 = to(f.v1);
+            f.v2 = to(f.v2);
+            break;
+          case SearchFilter.OPERATOR.INTERVAL:
+            f.v1 = to(f.v1);
+            f.v2 = from(f.v2);
+            break;
+        }
+      }
+    });
+    return queryJson;
   }
 }
