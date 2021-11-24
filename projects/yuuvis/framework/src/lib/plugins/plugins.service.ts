@@ -47,44 +47,59 @@ export class PluginsService {
   static EVENT_MODEL_CHANGED = 'yuv.event.object-form.model.changed';
 
   static VIEWERS: PluginViewerConfig[] = [
-    // { mimeType: ['text/plain', 'application/json'], viewer: 'api/text/?path=${path}&mimeType=${mimeType}&fileExtension=${fileExtension}&lang=${lang}&theme=${theme}' },
+    // {
+    //   mimeType: ['text/plain'],
+    //   viewer: 'api/text/?path=${path}&mimeType=${mimeType}&fileExtension=${fileExtension}&lang=${lang}&theme=${theme}&accentColor=${accentColor}'
+    // },
     {
       mimeType: ['application/json'],
-      viewer: 'api/monaco/?path=${path}&mimeType=${mimeType}&fileExtension=${fileExtension}&lang=${lang}&theme=${theme}&language=javascript'
+      viewer:
+        'api/monaco/?path=${path}&mimeType=${mimeType}&fileExtension=${fileExtension}&lang=${lang}&theme=${theme}&accentColor=${accentColor}&language=javascript'
     },
-    { mimeType: ['text/plain'], viewer: 'api/monaco/?path=${path}&mimeType=${mimeType}&fileExtension=${fileExtension}&lang=${lang}&theme=${theme}' },
-    { mimeType: ['text/xml'], viewer: 'api/monaco/?path=${path}&mimeType=${mimeType}&fileExtension=${fileExtension}&lang=${lang}&theme=${theme}&language=xml' },
+    {
+      mimeType: ['text/plain'],
+      viewer: 'api/monaco/?path=${path}&mimeType=${mimeType}&fileExtension=${fileExtension}&lang=${lang}&theme=${theme}&accentColor=${accentColor}'
+    },
+    {
+      mimeType: ['text/xml'],
+      viewer: 'api/monaco/?path=${path}&mimeType=${mimeType}&fileExtension=${fileExtension}&lang=${lang}&theme=${theme}&accentColor=${accentColor}&language=xml'
+    },
     {
       mimeType: ['text/java'],
-      viewer: 'api/monaco/?path=${path}&mimeType=${mimeType}&fileExtension=${fileExtension}&lang=${lang}&theme=${theme}&language=java'
+      viewer:
+        'api/monaco/?path=${path}&mimeType=${mimeType}&fileExtension=${fileExtension}&lang=${lang}&theme=${theme}&accentColor=${accentColor}&language=java'
     },
     {
       mimeType: ['text/javascript'],
-      viewer: 'api/monaco/?path=${path}&mimeType=${mimeType}&fileExtension=${fileExtension}&lang=${lang}&theme=${theme}&language=javascript'
+      viewer:
+        'api/monaco/?path=${path}&mimeType=${mimeType}&fileExtension=${fileExtension}&lang=${lang}&theme=${theme}&accentColor=${accentColor}&language=javascript'
     },
     {
       mimeType: ['text/html'],
-      viewer: 'api/monaco/?path=${path}&mimeType=${mimeType}&fileExtension=${fileExtension}&lang=${lang}&theme=${theme}&language=html'
+      viewer:
+        'api/monaco/?path=${path}&mimeType=${mimeType}&fileExtension=${fileExtension}&lang=${lang}&theme=${theme}&accentColor=${accentColor}&language=html'
     },
     {
       mimeType: ['text/markdown', 'text/x-web-markdown', 'text/x-markdown'],
-      viewer: 'api/monaco/?path=${path}&mimeType=${mimeType}&fileExtension=${fileExtension}&lang=${lang}&theme=${theme}&language=markdown'
+      viewer:
+        'api/monaco/?path=${path}&mimeType=${mimeType}&fileExtension=${fileExtension}&lang=${lang}&theme=${theme}&accentColor=${accentColor}&language=markdown'
     },
     {
       mimeType: ['audio/mp3', 'audio/webm', 'audio/ogg', 'audio/mpeg', 'video/mp4', 'video/webm', 'video/ogg', 'application/ogg'],
-      viewer: 'api/video/?path=${path}&mimeType=${mimeType}&fileExtension=${fileExtension}&lang=${lang}&theme=${theme}'
+      viewer: 'api/video/?path=${path}&mimeType=${mimeType}&fileExtension=${fileExtension}&lang=${lang}&theme=${theme}&accentColor=${accentColor}'
     },
     {
       mimeType: ['image/tiff', 'image/jpeg', 'image/png', 'image/apng', 'image/gif', 'image/svg+xml', 'image/webp'],
-      viewer: 'api/img/?path=${path}&mimeType=${mimeType}&fileExtension=${fileExtension}&lang=${lang}&theme=${theme}'
+      viewer: 'api/img/?path=${path}&mimeType=${mimeType}&fileExtension=${fileExtension}&lang=${lang}&theme=${theme}&accentColor=${accentColor}'
     },
     {
       mimeType: ['message/rfc822', 'application/vnd.ms-outlook'],
-      viewer: 'api/mail/?path=${path}&mimeType=${mimeType}&fileExtension=${fileExtension}&lang=${lang}&theme=${theme}'
+      viewer: 'api/mail/?path=${path}&mimeType=${mimeType}&fileExtension=${fileExtension}&lang=${lang}&theme=${theme}&accentColor=${accentColor}'
     },
     {
       mimeType: ['application/pdf'],
-      viewer: 'api/pdf/web/viewer.html?file=&path=${path}&mimeType=${mimeType}&fileExtension=${fileExtension}&lang=${lang}&theme=${theme}'
+      viewer:
+        'api/pdf/web/viewer.html?file=&path=${path}&mimeType=${mimeType}&fileExtension=${fileExtension}&lang=${lang}&theme=${theme}&accentColor=${accentColor}'
     },
     {
       mimeType: [
@@ -109,9 +124,13 @@ export class PluginsService {
         'application/vnd.ms-powerpoint.template.macroEnabled.12',
         'application/vnd.ms-powerpoint.slideshow.macroEnabled.12'
       ],
-      viewer: 'api/pdf/web/viewer.html?file=&path=${path}&pathPdf=${pathPdf}&mimeType=${mimeType}&fileExtension=${fileExtension}&lang=${lang}&theme=${theme}'
+      viewer:
+        'api/pdf/web/viewer.html?file=&path=${path}&pathPdf=${pathPdf}&mimeType=${mimeType}&fileExtension=${fileExtension}&lang=${lang}&theme=${theme}&accentColor=${accentColor}'
     },
-    { error: true, viewer: 'api/error/?path=${path}&mimeType=${mimeType}&fileExtension=${fileExtension}&lang=${lang}&theme=${theme}' },
+    {
+      error: true,
+      viewer: 'api/error/?path=${path}&mimeType=${mimeType}&fileExtension=${fileExtension}&lang=${lang}&theme=${theme}&accentColor=${accentColor}'
+    },
     {
       compare: true,
       viewer: 'api/compare/?compare=${compare}&mimeType=${mimeType}&fileExtension=${fileExtension}&lang=${lang}&theme=${theme}&accentColor=${accentColor}'
