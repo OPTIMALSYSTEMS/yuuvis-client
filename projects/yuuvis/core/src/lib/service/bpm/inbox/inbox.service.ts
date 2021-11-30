@@ -106,11 +106,8 @@ export class InboxService {
    * @param taskId ID of the task to be delegated
    * @param assignee ID of the new assignee
    */
-  delegateTask(taskId: string, assignee: string): Observable<Task> {
-    const payload: any = {
-      assignee: { id: assignee }
-    };
-    return this.putTask(taskId, ProcessAction.delegate, payload || {});
+  delegateTask(taskId: string, assignee: string, payload?: ProcessPostPayload): Observable<Task> {
+    return this.putTask(taskId, ProcessAction.delegate, { ...(payload || {}), ...{ assignee: { id: assignee } } });
   }
 
   /**

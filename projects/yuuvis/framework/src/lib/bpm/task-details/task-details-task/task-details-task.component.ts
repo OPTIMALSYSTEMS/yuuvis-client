@@ -234,7 +234,7 @@ export class TaskDetailsTaskComponent implements OnInit {
 
   delegate(userId: string) {
     this.busy = true;
-    this.inboxService.delegateTask(this._task.id, userId).subscribe(
+    this.inboxService.delegateTask(this._task.id, userId, this.getUpdatePayload()).subscribe(
       (res) => {
         this.busy = false;
         this.taskUpdated.emit(res);
