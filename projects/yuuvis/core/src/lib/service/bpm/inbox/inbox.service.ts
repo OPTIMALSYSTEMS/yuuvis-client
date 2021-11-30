@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { EMPTY, Observable, of, Subject } from 'rxjs';
-import { expand, map, skipWhile, switchMap, tap } from 'rxjs/operators';
+import { EMPTY, Observable, Subject } from 'rxjs';
+import { expand, map, skipWhile, tap } from 'rxjs/operators';
 import { ApiBase } from '../../backend/api.enum';
 import { BackendService } from '../../backend/backend.service';
 import { UserService } from '../../user/user.service';
@@ -119,7 +119,7 @@ export class InboxService {
    * @param payload Data to be send with the resolve request (may contain attachments, a new subject or variables)
    */
   resolveTask(taskId: string, payload?: ProcessPostPayload): Observable<Task> {
-    return (payload ? this.updateTask(taskId, payload) : of(true)).pipe(switchMap((_) => this.putTask(taskId, ProcessAction.resolve, payload || {})));
+    return this.putTask(taskId, ProcessAction.resolve, payload || {});
   }
 
   /**
