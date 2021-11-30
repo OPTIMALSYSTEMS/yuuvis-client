@@ -1,6 +1,7 @@
 import { Component, HostBinding, HostListener, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, NavigationExtras, Router } from '@angular/router';
 import { SwUpdate } from '@angular/service-worker';
+import { CommandPaletteCommand, CommandPaletteService } from '@yuuvis/command-palette';
 import {
   AuthService,
   BackendService,
@@ -94,6 +95,7 @@ export class FrameComponent implements OnInit, OnDestroy {
     private frameService: FrameService,
     private route: ActivatedRoute,
     private layoutService: LayoutService,
+    private cmpService: CommandPaletteService,
     private update: SwUpdate,
     private appSearch: AppSearchService,
     private connectionService: ConnectionService,
@@ -149,6 +151,18 @@ export class FrameComponent implements OnInit, OnDestroy {
     // set html lang tag according to the client locale on every language change
     this.translateService.onLangChange.subscribe((_) => {
       document.documentElement.setAttribute('lang', this.translateService.currentLang);
+    });
+
+    const commands = [
+      { id: '1', label: 'Navigate: Open inbox' },
+      { id: '2', label: 'Navigate: Open settings page' },
+      { id: '3', label: 'Action: Print document' },
+      { id: '4', label: 'Action: Delete document' },
+      { id: '5', label: 'Do epic shit!' }
+    ];
+
+    cmpService.registerCommands(commands).subscribe((c: CommandPaletteCommand) => {
+      console.log(c);
     });
   }
 
