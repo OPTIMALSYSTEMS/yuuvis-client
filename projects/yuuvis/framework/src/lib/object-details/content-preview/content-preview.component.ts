@@ -1,5 +1,6 @@
 import { Component, ElementRef, Input, NgZone, OnDestroy, OnInit } from '@angular/core';
-import { DmsObject, UploadService } from '@yuuvis/core';
+import { CommandPaletteService } from '@yuuvis/command-palette';
+import { DmsObject, TranslateService, UploadService } from '@yuuvis/core';
 import { fromEvent, Observable, of } from 'rxjs';
 import { switchMap, takeWhile, tap } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
@@ -25,6 +26,8 @@ import { ContentPreviewService } from './service/content-preview.service';
   providers: [ContentPreviewService]
 })
 export class ContentPreviewComponent extends IFrameComponent implements OnInit, OnDestroy {
+  private CMP_KEY = 'yuv-content-preview.cmp.undock';
+
   private _dmsObject: DmsObject;
   isUndocked: boolean;
 
@@ -84,7 +87,9 @@ export class ContentPreviewComponent extends IFrameComponent implements OnInit, 
     elRef: ElementRef,
     pluginsService: PluginsService,
     public fileDropService: FileDropService,
+    private translate: TranslateService,
     private contentPreviewService: ContentPreviewService,
+    private cmpService: CommandPaletteService,
     private iconRegistry: IconRegistryService,
     private uploadService: UploadService,
     private _ngZone: NgZone
@@ -133,7 +138,20 @@ export class ContentPreviewComponent extends IFrameComponent implements OnInit, 
 
   ngOnInit() {
     this.previewSrc$.pipe(takeUntilDestroy(this)).subscribe((src) => this.open(src));
+    this.cmpService
+      .registerCommand({
+        id: this.CMP_KEY,
+        label: this.isUndocked
+          ? this.translate.instant('yuv.framework.object-details.tooltip.dock')
+          : this.translate.instant('yuv.framework.object-details.tooltip.undock')
+      })
+      .pipe(takeUntilDestroy(this))
+      .subscribe((c) => {
+        this.undock();
+      });
   }
 
-  ngOnDestroy() {}
+  ngOnDestroy() {
+    this.cmpService.unregisterCommand(this.CMP_KEY);
+  }
 }

@@ -3,7 +3,7 @@ import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { ServiceWorkerModule } from '@angular/service-worker';
-import { CommandPaletteModule } from '@yuuvis/command-palette';
+import { CommandPaletteComponent, CommandPaletteModule } from '@yuuvis/command-palette';
 import { YuvColumnConfigModule, YuvCommonModule, YuvComponentsModule, YuvDirectivesModule, YuvFrameworkModule } from '@yuuvis/framework';
 import { AccordionModule } from 'primeng/accordion';
 import { environment } from '../environments/environment';
@@ -49,7 +49,7 @@ import { VersionsComponent } from './states/versions/versions.component';
     BrowserModule,
     FormsModule,
     AccordionModule,
-    CommandPaletteModule.forRoot(),
+    CommandPaletteModule.forRoot({}),
     YuvFrameworkModule.forRoot(
       {
         main: ['assets/default/config/main.json'],
@@ -93,6 +93,7 @@ import { VersionsComponent } from './states/versions/versions.component';
     ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production })
   ],
   providers: [{ provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
+  entryComponents: [CommandPaletteComponent]
 })
 export class AppModule {}
