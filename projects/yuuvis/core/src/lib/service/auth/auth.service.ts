@@ -83,7 +83,7 @@ export class AuthService {
   // called on core init
   setInitialRequestUri() {
     const ignore = ['/', '/index.html'];
-    let uri = location.pathname.replace(Utils.getBaseHref(), '');
+    let uri = `${location.pathname}${location.search}`.replace(Utils.getBaseHref(), '');
     uri = !uri.startsWith('/') ? `/${uri}` : uri;
 
     if (!ignore.includes(uri)) {
