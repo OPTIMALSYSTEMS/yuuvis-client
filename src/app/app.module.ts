@@ -49,7 +49,9 @@ import { VersionsComponent } from './states/versions/versions.component';
     BrowserModule,
     FormsModule,
     AccordionModule,
-    CommandPaletteModule.forRoot({}),
+    CommandPaletteModule.forRoot({
+      searchModeIndicator: '?'
+    }),
     YuvFrameworkModule.forRoot(
       {
         main: ['assets/default/config/main.json'],

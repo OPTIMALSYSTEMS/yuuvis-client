@@ -358,6 +358,7 @@
   "yuv.client.action.open.context.description": "Öffnet das Objekt in seinem Ordner.",
   "yuv.client.action.open.versions": "Versionen anzeigen",
   "yuv.client.action.open.versions.description": "Zeigt alle Versionen des Objekts.",
+  "yuv.client.cmp.disabled.cause.pending-changes": "Deaktiviert wegen ungespeicherter Änderungen. Bitte speichern Sie ihre Änderungen.",
   "yuv.client.cmp.navigate.dashboard": "Navigation: Zur Startseite",
   "yuv.client.cmp.navigate.inbox": "Navigation: Öffne Eingangskorb",
   "yuv.client.cmp.navigate.logout": "Navigation: Abmelden",
