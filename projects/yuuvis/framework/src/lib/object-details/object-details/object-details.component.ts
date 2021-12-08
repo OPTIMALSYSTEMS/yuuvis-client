@@ -202,7 +202,7 @@ export class ObjectDetailsComponent implements OnDestroy {
   @Input() fileDropOptions: FileDropOptions;
 
   undockWinActive = false;
-  componentStateId: string;
+  private componentStateId: string;
 
   @Input() plugins: Observable<any[]>;
 
