@@ -82,19 +82,11 @@ export class FileDropService {
 
   /**
    * Indicates whether or not the current drag event contains one or more files.
-   * Microsoft Edge 42.17134.1.0 will always includes 'File' there for we need to check for Edge and dataTransfer length.
-   *
    * @param event - the drag event to be checked
-   * @returns the number of files dragged
+   * @returns number of files
    */
-  dragContainsFiles(event: DragEvent): number {
-    const { types } = event.dataTransfer;
-    if (types) {
-      if (types.includes('Files')) {
-        return event.dataTransfer.items.length;
-      }
-    }
-    return 0;
+  private dragContainsFiles(event: DragEvent): number {
+    return Array.from(event.dataTransfer.items || []).filter((i) => i.kind === 'file' && i.type).length;
   }
 
   private setActive(id) {
