@@ -4,6 +4,8 @@ import { CommandPaletteCommand, CommandPaletteService } from '@yuuvis/command-pa
 import {
   BaseObjectTypeField,
   ClientDefaultsObjectTypeField,
+  DmsObject,
+  DmsService,
   PendingChangesService,
   SearchQuery,
   SearchResult,
@@ -11,6 +13,8 @@ import {
   SystemService,
   TranslateService
 } from '@yuuvis/core';
+import { ComponentStateChangeEvent, ComponentStateService } from '@yuuvis/framework';
+import { Subscription } from 'rxjs';
 import { FrameService } from './components/frame/frame.service';
 
 @Component({
@@ -20,6 +24,7 @@ import { FrameService } from './components/frame/frame.service';
 })
 export class AppComponent {
   private DISABLED_CAUSE_KEY = 'cmp.disabled.cause.pending.';
+  private dmsObjectCommandSubscription: Subscription;
 
   constructor(
     private system: SystemService,
@@ -27,7 +32,9 @@ export class AppComponent {
     private searchService: SearchService,
     private pendingChangesService: PendingChangesService,
     private frameService: FrameService,
+    private dmsService: DmsService,
     private cmpService: CommandPaletteService,
+    private componentStateService: ComponentStateService,
     private translate: TranslateService
   ) {
     this.translate.onLangChange.subscribe((_) => {
@@ -69,6 +76,20 @@ export class AppComponent {
           );
         });
     };
+
+    // listen to components state changes to add new commands based on them
+    this.componentStateService.componentStateChange$.subscribe((e: ComponentStateChangeEvent) => {
+      if (e.action === 'add') {
+        if (e.state.component === 'ObjectDetailsComponent') {
+          this.addDmsObjectCommands(e.state.data as DmsObject);
+        }
+      } else if (e.action === 'remove') {
+        this.removeDmsObjectCommands();
+      } else if (e.action === 'update') {
+        this.removeDmsObjectCommands();
+        this.addDmsObjectCommands(e.state.data as DmsObject);
+      }
+    });
   }
 
   private initCommandPalette() {
@@ -106,5 +127,23 @@ export class AppComponent {
     });
 
     return commands;
+  }
+
+  private addDmsObjectCommands(dmsObject: DmsObject) {
+    const commands: CommandPaletteCommand[] = [{ id: `dmsobject__download`, label: this.translate.instant('yuv.client.cmp.dmsobject.download') }];
+
+    this.dmsObjectCommandSubscription = this.cmpService.registerCommands(commands).subscribe((c: CommandPaletteCommand) => {
+      if (c.id === `dmsobject__download`) {
+        this.dmsService.downloadContent([dmsObject]);
+      }
+    });
+  }
+
+  private removeDmsObjectCommands() {
+    if (this.dmsObjectCommandSubscription) {
+      this.dmsObjectCommandSubscription.unsubscribe();
+      this.dmsObjectCommandSubscription = undefined;
+    }
+    this.cmpService.unregisterCommands([`dmsobject__download`]);
   }
 }

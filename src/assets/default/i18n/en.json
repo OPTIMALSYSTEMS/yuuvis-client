@@ -359,6 +359,7 @@
   "yuv.client.action.open.versions": "Show versions",
   "yuv.client.action.open.versions.description": "Shows all versions of the object.",
   "yuv.client.cmp.disabled.cause.pending-changes": "Disabled due to pending changes. Please save your changes before you continue.",
+  "yuv.client.cmp.dmsobject.download": "Download document",
   "yuv.client.cmp.navigate.dashboard": "Navigate: Open dashboard",
   "yuv.client.cmp.navigate.inbox": "Navigate: Open inbox",
   "yuv.client.cmp.navigate.logout": "Navigate: Logout",
