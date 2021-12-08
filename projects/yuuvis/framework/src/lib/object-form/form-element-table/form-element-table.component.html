@@ -2,13 +2,13 @@
   <div class="label">
     <span>{{ params.element.label }}</span>
     <ng-container *ngIf="!disableOptions">
-      <yuv-icon class="stf" [icon]="'expand'" [title]="'yuv.framework.form.table.options.btn.open' | translate"
+      <yuv-icon class="action" [icon]="'expand'" [title]="'yuv.framework.form.table.options.btn.open' | translate"
         (click)="openDialog()"></yuv-icon>
-      <yuv-icon class="stf" [icon]="'sizeToFit'" [title]="'yuv.framework.form.table.options.btn.fit' | translate"
+      <yuv-icon class="action" [icon]="'sizeToFit'" [title]="'yuv.framework.form.table.options.btn.fit' | translate"
         (click)="sizeToFit()"></yuv-icon>
-      <yuv-icon class="stf" *ngIf="gridOptions.rowData.length" [icon]="'contentDownload'"
+      <yuv-icon class="action" *ngIf="gridOptions.rowData.length" [icon]="'contentDownload'"
         [title]="'yuv.framework.form.table.options.btn.csv' | translate" (click)="exportCSV()"></yuv-icon>
-      <yuv-icon class="stf" *ngIf="!params.element.readonly" [icon]="'addCircle'"
+      <yuv-icon class="action add-row" *ngIf="!params.element.readonly" [icon]="'addCircle'"
         [title]="'yuv.framework.form.table.options.btn.add' | translate" (click)="addRow()"></yuv-icon>
     </ng-container>
   </div>
