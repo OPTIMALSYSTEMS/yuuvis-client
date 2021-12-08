@@ -85,7 +85,7 @@ export class FileDropService {
    * @param event - the drag event to be checked
    * @returns number of files
    */
-  private dragContainsFiles(event: DragEvent): number {
+  dragContainsFiles(event: DragEvent): number {
     return Array.from(event.dataTransfer.items || []).filter((i) => i.kind === 'file' && i.type).length;
   }
 
