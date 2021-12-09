@@ -112,9 +112,13 @@ export class ObjectDetailsComponent implements OnDestroy {
     }
     if (object) {
       if (!this.componentStateId) {
-        this.componentStateId = this.componentStateService.addComponentState('ObjectDetailsComponent', { ...this._dmsObject });
+        this.componentStateId = this.componentStateService.addComponentState('ObjectDetailsComponent', {
+          data: { ...this._dmsObject }
+        });
       } else {
-        this.componentStateService.updateComponentState(this.componentStateId, { ...this._dmsObject });
+        this.componentStateService.updateComponentState(this.componentStateId, {
+          data: { ...this._dmsObject }
+        });
       }
     }
   }

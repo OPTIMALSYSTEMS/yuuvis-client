@@ -1,6 +1,6 @@
 import { Component, ElementRef, Input, NgZone, OnDestroy, OnInit } from '@angular/core';
 import { CommandPaletteService } from '@yuuvis/command-palette';
-import { DmsObject, UploadService } from '@yuuvis/core';
+import { DmsObject, TranslateService, UploadService } from '@yuuvis/core';
 import { fromEvent, Observable, of } from 'rxjs';
 import { switchMap, takeWhile, tap } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
@@ -8,6 +8,7 @@ import { IconRegistryService } from '../../common/components/icon/service/iconRe
 import { FileDropService } from '../../directives/file-drop/file-drop.service';
 import { IFrameComponent } from '../../plugins/iframe.component';
 import { PluginsService } from '../../plugins/plugins.service';
+import { ComponentStateService } from '../../services/component-state/component-state.service';
 import { folder, noFile, undock } from '../../svg.generated';
 import { ContentPreviewService } from './service/content-preview.service';
 
@@ -30,6 +31,7 @@ export class ContentPreviewComponent extends IFrameComponent implements OnInit, 
 
   private _dmsObject: DmsObject;
   isUndocked: boolean;
+  componentStateId: string;
 
   get undockWin(): Window {
     return ContentPreviewService.getUndockWin();
@@ -87,6 +89,8 @@ export class ContentPreviewComponent extends IFrameComponent implements OnInit, 
     elRef: ElementRef,
     pluginsService: PluginsService,
     public fileDropService: FileDropService,
+    private translate: TranslateService,
+    private componentStateService: ComponentStateService,
     private contentPreviewService: ContentPreviewService,
     private cmpService: CommandPaletteService,
     private iconRegistry: IconRegistryService,
@@ -137,9 +141,31 @@ export class ContentPreviewComponent extends IFrameComponent implements OnInit, 
 
   ngOnInit() {
     this.previewSrc$.pipe(takeUntilDestroy(this)).subscribe((src) => this.open(src));
+    this.componentStateId = this.componentStateService.addComponentState('ContentPreviewComponent', {
+      actions: [
+        {
+          label: this.translate.instant('yuv.framework.object-details.tooltip.dock'),
+          callback: () => {
+            this.undock();
+          }
+        }
+      ]
+    });
+    // this.cmpService
+    //   .registerCommand({
+    //     id: this.CMP_KEY,
+    //     label: this.isUndocked
+    //       ? this.translate.instant('yuv.framework.object-details.tooltip.dock')
+    //       : this.translate.instant('yuv.framework.object-details.tooltip.undock')
+    //   })
+    //   .pipe(takeUntilDestroy(this))
+    //   .subscribe((c) => {
+    //     this.undock();
+    //   });
   }
 
   ngOnDestroy() {
+    this.componentStateService.removeComponentState(this.componentStateId);
     this.cmpService.unregisterCommand(this.CMP_KEY);
   }
 }

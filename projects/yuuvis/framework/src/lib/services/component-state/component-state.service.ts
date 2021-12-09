@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Utils } from '@yuuvis/core';
 import { Observable, ReplaySubject } from 'rxjs';
-import { ComponentState, ComponentStateChangeEvent } from './component-state.interface';
+import { ComponentState, ComponentStateChangeEvent, ComponentStateParams } from './component-state.interface';
 
 /**
  * Service for managing component states within an application.
@@ -41,12 +41,12 @@ export class ComponentStateService {
    * @returns ID that will be needed to reference this state entry later on (e.g. for
    * updating its data or remove it from the state service)
    */
-  addComponentState(component: string, data: any): string {
+  addComponentState(component: string, params: ComponentStateParams): string {
     const stateId = Utils.uuid();
     const state = {
       id: stateId,
       component,
-      data
+      params
     };
 
     this.componentStates.push(state);
@@ -74,10 +74,10 @@ export class ComponentStateService {
    * @param id ID of the component state you got when calling `componentEnter(...)`
    * @param data New state data
    */
-  updateComponentState(id: string, data: any) {
+  updateComponentState(id: string, params: any) {
     const idx = this.componentStates.findIndex((s) => s.id === id);
     if (idx !== -1) {
-      this.componentStates[idx] = { ...this.componentStates[idx], data };
+      this.componentStates[idx] = { ...this.componentStates[idx], params };
       this.componentStatesSource.next(this.componentStates);
       this.componentStateChangeSource.next({ action: 'update', state: { ...this.componentStates[idx] } });
     }

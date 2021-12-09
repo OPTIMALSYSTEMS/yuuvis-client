@@ -13,7 +13,7 @@ import {
   SystemService,
   TranslateService
 } from '@yuuvis/core';
-import { ActionService, ComponentStateChangeEvent, ComponentStateService, LayoutService, LayoutSettings } from '@yuuvis/framework';
+import { ActionService, ComponentStateChangeEvent, ComponentStateParams, ComponentStateService, LayoutService, LayoutSettings } from '@yuuvis/framework';
 import { Subscription } from 'rxjs';
 import { FrameService } from '../../components/frame/frame.service';
 
@@ -40,7 +40,9 @@ export class AppCommandPaletteService {
     private actionService: ActionService,
     private layoutService: LayoutService
   ) {
+    this.cmpService.searchModeExplaination = this.translate.instant('yuv.client.cmp.searchmode.explain');
     this.translate.onLangChange.subscribe((_) => {
+      this.cmpService.searchModeExplaination = this.translate.instant('yuv.client.cmp.searchmode.explain');
       this.cmpService.updateCommands(this.getCommandPaletteCommands());
     });
 
@@ -84,12 +86,12 @@ export class AppCommandPaletteService {
     // listen to components state changes to add new commands based on them
     this.componentStateService.componentStateChange$.subscribe((e: ComponentStateChangeEvent) => {
       if (e.action === 'add') {
-        this.addComponentCommands(e.state.component, e.state.data);
+        this.addComponentCommands(e.state.component, e.state.params);
       } else if (e.action === 'remove') {
-        this.removeComponentCommands(e.state.component);
+        this.removeComponentCommands(e.state.component, e.state.params);
       } else if (e.action === 'update') {
-        this.removeComponentCommands(e.state.component);
-        this.addComponentCommands(e.state.component, e.state.data);
+        this.removeComponentCommands(e.state.component, e.state.params);
+        this.addComponentCommands(e.state.component, e.state.params);
       }
     });
   }
@@ -134,25 +136,37 @@ export class AppCommandPaletteService {
     return commands;
   }
 
-  private addComponentCommands(component: string, data?: any) {
+  private addComponentCommands(component: string, params: ComponentStateParams) {
     switch (component) {
       case 'ObjectDetailsComponent': {
-        this.addDmsObjectCommands(data as DmsObject);
+        this.addDmsObjectCommands(params.data as DmsObject);
         break;
       }
       case 'ContentPreviewComponent': {
+        const commands = [];
+        params.actions.forEach((a, i) => {
+          commands.push({
+            id: `contentpreviewcmp__a${i}`,
+            label: a.label,
+            callback: () => {
+              a.callback();
+            }
+          });
+        });
+        this.cmpService.registerCommands(commands).subscribe();
         break;
       }
     }
   }
 
-  private removeComponentCommands(component: string) {
+  private removeComponentCommands(component: string, params?: ComponentStateParams) {
     switch (component) {
       case 'ObjectDetailsComponent': {
         this.removeDmsObjectCommands();
         break;
       }
       case 'ContentPreviewComponent': {
+        this.cmpService.unregisterCommands(params.actions.map((a, i) => `contentpreviewcmp__a${i}`));
         break;
       }
     }

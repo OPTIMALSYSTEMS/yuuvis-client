@@ -366,6 +366,7 @@
   "yuv.client.cmp.navigate.inbox": "Navigate: Open inbox",
   "yuv.client.cmp.navigate.logout": "Navigate: Logout",
   "yuv.client.cmp.navigate.settings": "Navigate: Open settings",
+  "yuv.client.cmp.searchmode.explain": "Search mode: You are searching for objects now",
   "yuv.client.cmp.settings.darkmode": "Settings: Toggle dark mode",
   "yuv.client.frame.app-bar.change-tenant": "Switch tenant",
   "yuv.client.frame.app-bar.filedrop.label": "Create as a new object",
