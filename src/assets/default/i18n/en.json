@@ -358,6 +358,7 @@
   "yuv.client.action.open.context.description": "Opens the object in its folder.",
   "yuv.client.action.open.versions": "Show versions",
   "yuv.client.action.open.versions.description": "Shows all versions of the object.",
+  "yuv.client.cmp.create": "Create: {{name}}",
   "yuv.client.cmp.disabled.cause.pending-changes": "Disabled due to pending changes. Please save your changes before you continue.",
   "yuv.client.cmp.dmsobject.delete": "Delete object",
   "yuv.client.cmp.dmsobject.download": "Download document",

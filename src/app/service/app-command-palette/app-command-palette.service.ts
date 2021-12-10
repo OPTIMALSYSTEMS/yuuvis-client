@@ -26,6 +26,7 @@ export class AppCommandPaletteService {
 
   private registeredDmsObjectCommands: string[] = [];
   private layoutSettings: LayoutSettings;
+  private createCommandsAdded: boolean;
 
   constructor(
     private system: SystemService,
@@ -43,10 +44,32 @@ export class AppCommandPaletteService {
     this.cmpService.searchModeExplaination = this.translate.instant('yuv.client.cmp.searchmode.explain');
     this.translate.onLangChange.subscribe((_) => {
       this.cmpService.searchModeExplaination = this.translate.instant('yuv.client.cmp.searchmode.explain');
+
+      // we need to defer this a little bit because translations need to be fetched from the backend
       this.cmpService.updateCommands(this.getCommandPaletteCommands());
     });
 
     this.layoutService.layoutSettings$.subscribe((s: LayoutSettings) => (this.layoutSettings = s));
+
+    this.system.system$.subscribe((_) => {
+      const createCommands = this.system.getObjectTypes(true, 'create').map((t) => ({
+        id: `create__${t.id}`,
+        label: this.translate.instant('yuv.client.cmp.create', { name: t.label })
+      }));
+      if (this.createCommandsAdded) {
+        this.cmpService.updateCommands(createCommands);
+      } else {
+        this.cmpService.registerCommands(createCommands).subscribe((c: CommandPaletteCommand) => {
+          const tokens = c.id.split('__');
+          const objectTypeID = tokens[1];
+          this.router.navigate(['create'], {
+            queryParams: {
+              objectType: encodeURIComponent(objectTypeID)
+            }
+          });
+        });
+      }
+    });
 
     this.pendingChangesService.tasks$.subscribe((tasks: { id: string; message?: string }[]) => {
       // disable command palette if there are pending changes
@@ -103,14 +126,14 @@ export class AppCommandPaletteService {
       } else if (c.id.startsWith('nav__')) {
         const tokens = c.id.split('__');
         this.router.navigate([tokens[1]]);
-      } else if (c.id.startsWith('create__')) {
-        const tokens = c.id.split('__');
-        const objectTypeID = tokens[1];
-        this.router.navigate(['create'], {
-          queryParams: {
-            objectType: encodeURIComponent(objectTypeID)
-          }
-        });
+        // } else if (c.id.startsWith('create__')) {
+        //   const tokens = c.id.split('__');
+        //   const objectTypeID = tokens[1];
+        //   this.router.navigate(['create'], {
+        //     queryParams: {
+        //       objectType: encodeURIComponent(objectTypeID)
+        //     }
+        //   });
       } else if (c.id === 'settings__darkmode') {
         this.layoutService.setDarkMode(!this.layoutSettings.darkMode);
       }
@@ -125,14 +148,6 @@ export class AppCommandPaletteService {
       { id: 'settings__darkmode', label: this.translate.instant('yuv.client.cmp.settings.darkmode') },
       { id: 'logout', label: this.translate.instant('yuv.client.cmp.navigate.logout') }
     ];
-
-    this.system.getObjectTypes(true, 'create').forEach((t) => {
-      commands.push({
-        id: `create__${t.id}`,
-        label: `Create: ${t.label}`
-      });
-    });
-
     return commands;
   }
 

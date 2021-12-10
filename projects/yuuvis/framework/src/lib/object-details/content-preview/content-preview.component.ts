@@ -151,17 +151,6 @@ export class ContentPreviewComponent extends IFrameComponent implements OnInit, 
         }
       ]
     });
-    // this.cmpService
-    //   .registerCommand({
-    //     id: this.CMP_KEY,
-    //     label: this.isUndocked
-    //       ? this.translate.instant('yuv.framework.object-details.tooltip.dock')
-    //       : this.translate.instant('yuv.framework.object-details.tooltip.undock')
-    //   })
-    //   .pipe(takeUntilDestroy(this))
-    //   .subscribe((c) => {
-    //     this.undock();
-    //   });
   }
 
   ngOnDestroy() {
