@@ -40,7 +40,7 @@
     <div class="audits yuv-timeline" *ngIf="auditsRes.items.length; else tplEmpty"
       [ngClass]="{singleEntry: auditsRes.items.length === 1}">
       <div class="audit-entry yuv-timeline-node" *ngFor="let a of auditsRes.items" class="g{{ a.actionGroup }}"
-        [ngClass]="{ versionEnabled: a.actionGroup === 3 || a.actionGroup === 2 }">
+        [ngClass]="{ versionEnabled: (a.actionGroup === 3 || a.actionGroup === 2) && a.action !== 310 && a.action !== 210 }">
         <div class="created">
           <div class="date">{{ a.creationDate | localeDate: 'eoShortDate' }}</div>
           <div class="time meta">{{ a.creationDate | localeDate: 'eoShortTime' }}</div>
@@ -50,6 +50,7 @@
           <div class="entry">
             <div class="title">
               <span>{{ auditLabels['a' + a.action] }}</span>
+
 
               <span *ngIf="!versionStatePath; else versionLink" class="version"
                 title="{{ 'yuv.framework.audit.version' | translate }}">{{ a.version }}</span>
@@ -61,6 +62,7 @@
                 </span>
               </ng-template>
             </div>
+            <div class="more meta" *ngIf="a.more">{{ a.more }}</div>
             <div class="creator meta">
               {{ a.createdBy.title }}
             </div>

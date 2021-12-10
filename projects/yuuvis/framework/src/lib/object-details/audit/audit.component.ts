@@ -133,6 +133,18 @@ export class AuditComponent implements OnInit, OnDestroy {
 
     this.auditService.getAuditEntries(this._objectID, options).subscribe(
       (res: AuditQueryResult) => {
+        res.items.forEach((i) => {
+          // tag related audits
+          if ([110, 210, 310].includes(i.action)) {
+            const m = i.detail.match(/\[(.*?)\]/);
+
+            if (m) {
+              const tag = m[1];
+              i.more = tag;
+            }
+          }
+        });
+
         this.auditsRes = res;
         this.busy = false;
       },
