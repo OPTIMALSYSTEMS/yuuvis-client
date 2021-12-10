@@ -79,6 +79,7 @@ export interface Task {
 }
 
 export enum ProcessDefinitionKey {
+  TASK_FLOW = 'dms-lite-taskflow',
   FOLLOW_UP = 'follow-up',
   INVALID_TYPE = 'invalid_type'
 }

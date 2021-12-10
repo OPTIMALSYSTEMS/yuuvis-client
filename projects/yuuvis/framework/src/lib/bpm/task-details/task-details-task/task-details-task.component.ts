@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, OnInit, Output, TemplateRef, ViewChild 
 import {
   InboxService,
   PendingChangesService,
+  ProcessDefinitionKey,
   ProcessPostPayload,
   ProcessVariable,
   SystemService,
@@ -31,6 +32,7 @@ export class TaskDetailsTaskComponent implements OnInit {
   taskMessages: TaskMessage[] = [];
   taskMessagesList: TaskMessage[] = [];
   formState: FormStatusChangedEvent;
+  isTaskFlow: boolean;
 
   @Input() set task(t: Task) {
     this._task = t;
@@ -40,6 +42,8 @@ export class TaskDetailsTaskComponent implements OnInit {
     this.claimable = false;
     this.taskDescription = this.getDescription(t);
     this.getMessages(t);
+
+    this.isTaskFlow = t.processDefinition.idPrefix === ProcessDefinitionKey.TASK_FLOW;
 
     if (t?.taskForm) {
       if (t.taskForm.model) {
