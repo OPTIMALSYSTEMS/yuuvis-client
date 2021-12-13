@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { SearchFilter, SearchQuery } from '../search/search-query.model';
+import { SearchFilter, SearchFilterGroup, SearchQuery } from '../search/search-query.model';
 import { SearchService } from '../search/search.service';
-import { AuditField, SystemType } from '../system/system.enum';
+import { AuditField, BaseObjectTypeField, SystemType } from '../system/system.enum';
+import { SystemService } from '../system/system.service';
 import { UserService } from '../user/user.service';
 import { AuditQueryOptions, AuditQueryResult } from './audit.interface';
 /**
@@ -18,7 +19,7 @@ import { AuditQueryOptions, AuditQueryResult } from './audit.interface';
 })
 export class AuditService {
   // default number of items to be fetched
-  private DEFAULT_RES_SIZE = 50;
+  private DEFAULT_RES_SIZE = 5;
 
   // audit action codes that should be visible to regular users
   private userAuditActions: number[] = [
@@ -46,12 +47,12 @@ export class AuditService {
   /**
    * @ignore
    */
-  constructor(private searchService: SearchService, private userService: UserService) {}
+  constructor(private searchService: SearchService, private system: SystemService, private userService: UserService) {}
 
   /**
    * Get audit entries of a dms object
    */
-  getAuditEntries(id: string, options?: AuditQueryOptions): Observable<AuditQueryResult> {
+  getAuditEntries(id: string, objectTypeId: string, options?: AuditQueryOptions): Observable<AuditQueryResult> {
     const q = new SearchQuery();
     q.size = this.DEFAULT_RES_SIZE;
     q.addType(SystemType.AUDIT);
@@ -63,7 +64,42 @@ export class AuditService {
       }
     ];
 
-    q.addFilter(new SearchFilter(AuditField.ACTION, SearchFilter.OPERATOR.IN, this.getAuditActions(!!options.allActions, options?.skipActions)));
+    const auditActions = this.getAuditActions(!!options.allActions, options?.skipActions);
+
+    if (objectTypeId) {
+      console.log(this.system.getVisibleTags(objectTypeId));
+
+      const vTags = this.system.getVisibleTags(objectTypeId);
+      const tagAudits = [110, 210, 310];
+      const actionFilterGroup: SearchFilterGroup = new SearchFilterGroup(SearchFilterGroup.DEFAULT, SearchFilterGroup.OPERATOR.AND, [
+        new SearchFilter(
+          AuditField.ACTION,
+          SearchFilter.OPERATOR.IN,
+          auditActions.filter((a) => !tagAudits.includes(a))
+        )
+      ]);
+
+      const filters = Object.keys(vTags).map((tag) => new SearchFilter(`${BaseObjectTypeField.TAGS}[${tag}].state`, SearchFilter.OPERATOR.IN, vTags[tag]));
+      const actionFilterTagsGroup: SearchFilterGroup = new SearchFilterGroup(SearchFilterGroup.DEFAULT, SearchFilterGroup.OPERATOR.OR, filters);
+
+      // const allowedTagActions = auditActions.filter()
+
+      const ag = new SearchFilterGroup(SearchFilterGroup.DEFAULT, SearchFilterGroup.OPERATOR.OR, [actionFilterGroup, actionFilterTagsGroup]);
+
+      // only request audit entries for tags
+
+      // const filters = [new SearchFilter(AuditField.ACTION, SearchFilter.OPERATOR.)];
+
+      // Object.keys(vTags).forEach((tag) => {
+      //   filters.push(new SearchFilter(`${BaseObjectTypeField.TAGS}[${tag}].state`, SearchFilter.OPERATOR.IN, vTags[tag]));
+      // });
+      // const filterGroup: SearchFilterGroup = new SearchFilterGroup();
+      // filterGroup.operator = SearchFilterGroup.OPERATOR.OR;
+      // filterGroup.group = filters;
+      q.addFilterGroup(ag);
+    } else {
+      q.addFilter(new SearchFilter(AuditField.ACTION, SearchFilter.OPERATOR.IN, auditActions));
+    }
 
     if (options) {
       if (options.size) {

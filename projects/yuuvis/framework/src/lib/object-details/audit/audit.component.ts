@@ -26,6 +26,7 @@ import { arrowNext, filter } from '../../svg.generated';
 })
 export class AuditComponent implements OnInit, OnDestroy {
   private _objectID: string;
+  private _objectTypeID: string;
   private initialFetch: boolean;
   searchForm: FormGroup;
   auditsRes: AuditQueryResult;
@@ -43,12 +44,26 @@ export class AuditComponent implements OnInit, OnDestroy {
   /**
    * ID of the `DmsObject` to list the audits for
    */
-  @Input() set objectID(id: string) {
-    if (!id) {
+  // @Input() set objectID(id: string) {
+  //   if (!id) {
+  //     this._objectID = null;
+  //     this.auditsRes = null;
+  //   } else if (!this._objectID || this._objectID !== id) {
+  //     this._objectID = id;
+  //     if (this.initialFetch) {
+  //       this.fetchAuditEntries();
+  //     }
+  //   }
+  // }
+
+  @Input() set dmsObject(o: DmsObject) {
+    if (!o) {
       this._objectID = null;
+      this._objectTypeID = null;
       this.auditsRes = null;
-    } else if (!this._objectID || this._objectID !== id) {
-      this._objectID = id;
+    } else if (!this._objectID || this._objectID !== o.id) {
+      this._objectID = o.id;
+      this._objectTypeID = o.objectTypeId;
       if (this.initialFetch) {
         this.fetchAuditEntries();
       }
@@ -131,17 +146,13 @@ export class AuditComponent implements OnInit, OnDestroy {
     }
     options.allActions = !!this.allActions;
 
-    this.auditService.getAuditEntries(this._objectID, options).subscribe(
+    this.auditService.getAuditEntries(this._objectID, this._objectTypeID, options).subscribe(
       (res: AuditQueryResult) => {
         res.items.forEach((i) => {
           // tag related audits
           if ([110, 210, 310].includes(i.action)) {
             const m = i.detail.match(/\[(.*?)\]/);
-
-            if (m) {
-              const tag = m[1];
-              i.more = tag;
-            }
+            i.more = m ? m[1] : undefined;
           }
         });
 

@@ -80,7 +80,7 @@
   <p-tabPanel [id]="'history'" [header]="'yuv.framework.object-details.tabs.history.title' | translate"
     [headerStyleClass]="'history'">
     <ng-template pTemplate="content">
-      <yuv-audit [allActions]="allActions" [skipActions]="skipActions" [objectID]="objectId"></yuv-audit>
+      <yuv-audit [allActions]="allActions" [skipActions]="skipActions" [dmsObject]="dmsObject"></yuv-audit>
     </ng-template>
   </p-tabPanel>
 </ng-template>
