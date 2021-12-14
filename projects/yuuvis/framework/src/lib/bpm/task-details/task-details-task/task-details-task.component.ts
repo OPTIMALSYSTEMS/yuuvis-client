@@ -2,7 +2,6 @@ import { Component, EventEmitter, Input, OnInit, Output, TemplateRef, ViewChild 
 import {
   InboxService,
   PendingChangesService,
-  ProcessDefinitionKey,
   ProcessPostPayload,
   ProcessVariable,
   SystemService,
@@ -43,7 +42,8 @@ export class TaskDetailsTaskComponent implements OnInit {
     this.taskDescription = this.getDescription(t);
     this.getMessages(t);
 
-    this.isTaskFlow = t.processDefinition.idPrefix === ProcessDefinitionKey.TASK_FLOW;
+    // TODO: Enable to support special rendering for taskflows
+    // this.isTaskFlow = t.processDefinition.idPrefix === ProcessDefinitionKey.TASK_FLOW;
 
     if (t?.taskForm) {
       if (t.taskForm.model) {
