@@ -10,6 +10,15 @@ export const FollowUpVars = {
   expiryDateTime: 'expiryDateTime'
 };
 
+export const TaskflowVars = {
+  title: 'title',
+  comment: 'comment',
+  taskStatus: 'taskStatus',
+  expiryDateTime: 'expiryDateTime',
+  nextAssignee: 'nextAssignee',
+  initiator: 'nextAssignee'
+};
+
 /**
  * In BPM you can create process models that define a couple of variables and
  * activities belonging to the process model.

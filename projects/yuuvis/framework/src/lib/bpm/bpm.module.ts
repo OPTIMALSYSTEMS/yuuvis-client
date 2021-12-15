@@ -1,7 +1,7 @@
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TranslateModule, YuvCoreModule } from '@yuuvis/core';
 import { YuvCommonModule } from '../common/common.module';
 import { YuvComponentsModule } from '../components/components.module';
@@ -22,8 +22,8 @@ import { TaskDetailsAttachmentsComponent } from './task-details/task-details-att
 import { TaskDetailsHistoryComponent } from './task-details/task-details-history/task-details-history.component';
 import { TaskDelegatePickerComponent } from './task-details/task-details-task/task-delegate-picker/task-delegate-picker.component';
 import { TaskDetailsTaskComponent } from './task-details/task-details-task/task-details-task.component';
-import { TaskDetailsComponent } from './task-details/task-details.component';
 import { TaskflowComponent } from './task-details/task-details-task/taskflow/taskflow.component';
+import { TaskDetailsComponent } from './task-details/task-details.component';
 
 const components = [
   ProcessDetailsComponent,
@@ -40,6 +40,7 @@ const components = [
 @NgModule({
   imports: [
     CommonModule,
+    ReactiveFormsModule,
     FormsModule,
     YuvObjectFormModule,
     YuvPipesModule,

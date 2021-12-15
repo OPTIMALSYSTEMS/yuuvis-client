@@ -1,9 +1,8 @@
-<div class="task-description" *ngIf="taskDescription">
-    {{taskDescription}}
-</div>
-
-
 <ng-container *ngIf="!isTaskFlow; else tplTaskFlow">
+    <div class="task-description" *ngIf="taskDescription">
+        {{taskDescription}}
+    </div>
+
     <div class="task-messages" *ngIf="taskMessages?.length">
         <div class="message {{m.level}}" *ngFor="let m of taskMessages">{{m.message}}</div>
         <ul *ngIf="taskMessages?.length">

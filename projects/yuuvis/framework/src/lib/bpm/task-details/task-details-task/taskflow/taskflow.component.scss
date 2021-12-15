@@ -1,0 +1,53 @@
+:host {
+  display: grid;
+  grid-template-rows: 1fr auto;
+  grid-template-columns: 1fr;
+  grid-template-areas: 'form' 'actions';
+
+  .form {
+    grid-area: form;
+    overflow-y: auto;
+    padding: var(--app-pane-padding);
+
+    h2 {
+      margin: 0 0 2em 0;
+    }
+
+    .initiator {
+      color: var(--text-color-aption);
+      font-style: italic;
+    }
+
+    .forward-panel {
+      background-color: var(--panel-background);
+      padding: var(--app-pane-padding);
+      border-radius: 2px;
+      animation: yuvFadeInUp 200ms ease-in-out;
+      margin-top: var(--app-pane-padding);
+      height: auto;
+
+      .forward-form-title {
+        margin-bottom: var(--app-pane-padding);
+        display: flex;
+        flex-flow: row wrap;
+        justify-content: space-between;
+        align-items: center;
+
+        button {
+          padding: 2px 0.5em;
+        }
+      }
+
+      .buttons {
+        margin-top: var(--app-pane-padding);
+        display: flex;
+        flex-flow: row wrap;
+        justify-content: space-between;
+      }
+    }
+  }
+  .actions {
+    grid-area: actions;
+    justify-content: flex-end;
+  }
+}
