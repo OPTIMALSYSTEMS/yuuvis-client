@@ -16,7 +16,7 @@ export const TaskflowVars = {
   taskStatus: 'taskStatus',
   expiryDateTime: 'expiryDateTime',
   nextAssignee: 'nextAssignee',
-  initiator: 'nextAssignee'
+  note: 'note'
 };
 
 /**

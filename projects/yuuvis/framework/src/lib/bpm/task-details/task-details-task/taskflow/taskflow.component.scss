@@ -18,6 +18,29 @@
       font-style: italic;
     }
 
+    form.note {
+      background-color: var(--panel-divider-color);
+      border-radius: 2px;
+      padding: calc(var(--app-pane-padding) / 2);
+
+      yuv-string {
+        background-color: var(--panel-background-lightgrey);
+        border: 1px solid var(--panel-divider-color);
+      }
+
+      .buttons {
+        display: flex;
+        flex-flow: row wrap;
+        align-items: center;
+        justify-content: flex-end;
+        margin: calc(var(--app-pane-padding) / 2) -2px 0 -2px;
+
+        button {
+          margin: 2px;
+        }
+      }
+    }
+
     .forward-panel {
       background-color: var(--panel-background);
       padding: var(--app-pane-padding);

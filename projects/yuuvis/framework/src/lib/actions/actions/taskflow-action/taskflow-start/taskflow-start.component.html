@@ -1,0 +1,25 @@
+<form [formGroup]="taskflowStartForm" (ngSubmit)="startTaskflow()" [yuvBusyOverlay]="busy">
+
+    <yuv-form-input [label]="'yuv.framework.action-menu.action.taskflow.form.title'|translate" [required]="true">
+        <yuv-string formControlName="title">
+        </yuv-string>
+    </yuv-form-input>
+
+    <yuv-form-input [label]="'yuv.framework.action-menu.action.taskflow.form.due-date' | translate" [skipToggle]="true">
+        <yuv-datetime [withTime]="true" [onlyFutureDates]="true" [formControlName]="'expiryDateTime'"></yuv-datetime>
+    </yuv-form-input>
+
+    <yuv-form-input [label]="'yuv.framework.action-menu.action.taskflow.form.assignee'|translate" [skipToggle]="true"
+        [required]="true">
+        <yuv-organization formControlName="nextAssignee">
+        </yuv-organization>
+    </yuv-form-input>
+
+    <yuv-form-input [label]="'yuv.framework.action-menu.action.taskflow.form.comment'|translate">
+        <yuv-string formControlName="comment" [rows]="5">
+        </yuv-string>
+    </yuv-form-input>
+    <button (click)="cancel()">{{ 'yuv.framework.shared.cancel' | translate }}</button>
+    <button [disabled]="!taskflowStartForm.dirty || taskflowStartForm.invalid"
+        type="submit">{{'yuv.framework.action-menu.action.taskflow.startform.submit'|translate}}</button>
+</form>

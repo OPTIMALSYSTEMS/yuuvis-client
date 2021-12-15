@@ -1,7 +1,9 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { InboxService, ProcessVariable, Task, TaskflowVars, TranslateService } from '@yuuvis/core';
+import { IconRegistryService } from '../../../../common/components/icon/service/iconRegistry.service';
 import { NotificationService } from '../../../../services/notification/notification.service';
+import { deleteIcon, edit } from '../../../../svg.generated';
 
 @Component({
   selector: 'yuv-taskflow',
@@ -12,28 +14,40 @@ export class TaskflowComponent implements OnInit {
   _task: Task;
   title: string;
   comment: string;
+  note: string;
   commentHTML: string;
   initiator: string;
   status: string;
 
   forwardForm: FormGroup;
+  noteForm: FormGroup;
 
   showForwardPanel: boolean;
+  editMode: boolean;
   busy: boolean;
 
   @Input() set task(t: Task) {
     this._task = t;
+    this.forwardForm.reset();
+    this.noteForm.reset();
     this.extractTaskflowParams();
   }
   constructor(
     private fb: FormBuilder,
     private translate: TranslateService,
     private notificationService: NotificationService,
-    private inboxService: InboxService
+    private inboxService: InboxService,
+    private iconRegistry: IconRegistryService
   ) {
+    this.iconRegistry.registerIcons([edit, deleteIcon]);
     this.forwardForm = this.fb.group({
-      assignee: ['', Validators.required],
+      nextAssignee: ['', Validators.required],
+      expiryDateTime: [''],
       comment: ['']
+    });
+
+    this.noteForm = this.fb.group({
+      note: ['']
     });
   }
 
@@ -43,8 +57,12 @@ export class TaskflowComponent implements OnInit {
 
     this.title = qa[TaskflowVars.title].value;
     this.initiator = this._task.initiator.title;
-    this.status = qa[TaskflowVars.taskStatus].value;
+    this.status = qa[TaskflowVars.taskStatus] ? qa[TaskflowVars.taskStatus].value : 'Open';
     this.comment = qa[TaskflowVars.comment].value;
+
+    this.note = qa[TaskflowVars.note] ? qa[TaskflowVars.note].value : undefined;
+    if (this.note) this.noteForm.patchValue({ note: this.note });
+    if (qa[TaskflowVars.expiryDateTime]) this.forwardForm.patchValue({ expiryDateTime: qa[TaskflowVars.expiryDateTime].value });
     if (this.comment) this.commentHTML = this.comment.replace(/\n\n/g, '<br><br>');
   }
 
@@ -54,21 +72,40 @@ export class TaskflowComponent implements OnInit {
     });
   }
 
+  saveNote() {
+    this.note = this.noteForm.value.note;
+    this.inboxService
+      .updateTask(this._task.id, {
+        variables: [
+          {
+            name: TaskflowVars.note,
+            type: 'string',
+            value: this.note
+          }
+        ]
+      })
+      .subscribe((_) => this.noteForm.markAsPristine());
+  }
+
   forward() {
     if (!this.showForwardPanel) {
       this.showForwardPanel = true;
     } else {
-      console.log(this.forwardForm.value.assignee);
-      console.log(this.forwardForm.value.comment);
-
       const processVars: ProcessVariable[] = [
         {
           name: TaskflowVars.nextAssignee,
-          value: this.forwardForm.value.assignee
+          type: 'string',
+          value: this.forwardForm.value.nextAssignee
         },
         {
           name: TaskflowVars.comment,
+          type: 'string',
           value: this.forwardForm.value.comment
+        },
+        {
+          name: TaskflowVars.note,
+          type: 'string',
+          value: ''
         }
       ];
 
@@ -76,6 +113,8 @@ export class TaskflowComponent implements OnInit {
       this.inboxService.updateTask(this._task.id, { variables: processVars }).subscribe(
         (res) => {
           this.busy = false;
+          this.forwardForm.reset();
+          this.showForwardPanel = false;
         },
         (err) => {
           this.busy = false;
@@ -105,6 +144,21 @@ export class TaskflowComponent implements OnInit {
         this.notificationService.error(this.translate.instant('yuv.framework.task-details-task.update.fail'));
       }
     );
+  }
+
+  removeNote() {
+    this.inboxService
+      .updateTask(this._task.id, {
+        variables: [
+          {
+            name: TaskflowVars.note,
+            value: ''
+          }
+        ]
+      })
+      .subscribe((res) => {
+        this.noteForm.reset();
+      });
   }
 
   ngOnInit(): void {}
