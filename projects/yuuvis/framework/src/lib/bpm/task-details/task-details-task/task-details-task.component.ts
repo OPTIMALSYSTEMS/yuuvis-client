@@ -31,6 +31,7 @@ export class TaskDetailsTaskComponent implements OnInit {
   taskMessages: TaskMessage[] = [];
   taskMessagesList: TaskMessage[] = [];
   formState: FormStatusChangedEvent;
+  isTaskFlow: boolean;
 
   @Input() set task(t: Task) {
     this._task = t;
@@ -40,6 +41,9 @@ export class TaskDetailsTaskComponent implements OnInit {
     this.claimable = false;
     this.taskDescription = this.getDescription(t);
     this.getMessages(t);
+
+    // TODO: Enable to support special rendering for taskflows
+    // this.isTaskFlow = t.processDefinition.idPrefix === ProcessDefinitionKey.TASK_FLOW;
 
     if (t?.taskForm) {
       if (t.taskForm.model) {

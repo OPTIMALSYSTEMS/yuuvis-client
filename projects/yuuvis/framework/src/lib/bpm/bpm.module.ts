@@ -23,6 +23,7 @@ import { TaskDetailsHistoryComponent } from './task-details/task-details-history
 import { TaskDelegatePickerComponent } from './task-details/task-details-task/task-delegate-picker/task-delegate-picker.component';
 import { TaskDetailsTaskComponent } from './task-details/task-details-task/task-details-task.component';
 import { TaskDetailsComponent } from './task-details/task-details.component';
+import { TaskflowComponent } from './task-details/task-details-task/taskflow/taskflow.component';
 
 const components = [
   ProcessDetailsComponent,
@@ -52,7 +53,7 @@ const components = [
     YuvObjectPickerModule,
     YuvObjectDetailsModule
   ],
-  declarations: [...components, ProcessAttachmentsOrderComponent, TaskDelegatePickerComponent],
+  declarations: [...components, ProcessAttachmentsOrderComponent, TaskDelegatePickerComponent, TaskflowComponent],
   entryComponents: [...components],
   exports: [...components]
 })

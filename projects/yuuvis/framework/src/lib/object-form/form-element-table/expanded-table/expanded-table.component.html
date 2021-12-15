@@ -3,11 +3,11 @@
     <div class="label">
       <span></span>
       <ng-container>
-        <yuv-icon class="stf" [icon]="'sizeToFit'" [title]="'yuv.framework.form.table.options.btn.fit' | translate"
+        <yuv-icon class="action" [icon]="'sizeToFit'" [title]="'yuv.framework.form.table.options.btn.fit' | translate"
           (click)="sizeToFit()"></yuv-icon>
-        <yuv-icon class="stf" *ngIf="overlayGridOptions.rowData.length" [icon]="'contentDownload'"
+        <yuv-icon class="action" *ngIf="overlayGridOptions.rowData.length" [icon]="'contentDownload'"
           [title]="'yuv.framework.form.table.options.btn.csv' | translate" (click)="exportCSV()"></yuv-icon>
-        <yuv-icon class="stf" *ngIf="!params.element.readonly" [icon]="'addCircle'"
+        <yuv-icon class="action add-row" *ngIf="!params.element.readonly" [icon]="'addCircle'"
           [title]="'yuv.framework.form.table.options.btn.add' | translate" (click)="onAddRowButtonClicked.emit()">
         </yuv-icon>
       </ng-container>
