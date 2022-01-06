@@ -12,8 +12,8 @@
         </div>
       </div>
       <input (keydown)="onInputKeydown($event)" type="number" [(ngModel)]="year" [min]="minYear" [max]="maxYear"
-        (ngModelChange)="setYear($event)" [ngModelOptions]="{ standalone: true }" 
-        oninput="this.value=parseInt(this.value.slice(-4))"/>
+        (ngModelChange)="setYear($event)" [ngModelOptions]="{ standalone: true }"
+        oninput="this.value=parseInt(this.value.slice(-4))" />
       <div class="controls">
         <button class="icon white year-up" (click)="setYear(year + 1)" [disabled]="year === maxYear">
           <yuv-icon [icon]="'arrowDown'"></yuv-icon>
@@ -42,10 +42,11 @@
         <div *ngFor="let day of week.days; trackBy: trackByFn">
           <span class="day" *ngIf="!day.disabled"
             [ngClass]="{ today: day.isToday, 'different-month': !day.isCurrentMonth, selected: isSelectedDay(day.date) }"
-            (click)="setCalenderDate(day.date)"
-            (dblclick)="setCalenderDate(day.date);selectValue()">{{ day.number }}</span>
+            (click)="setCalenderDate(day.date)" (dblclick)="setCalenderDate(day.date);selectValue()">{{ day.number
+            }}</span>
           <span class="day disabled" *ngIf="day.disabled"
-            [ngClass]="{ today: day.isToday, 'different-month': !day.isCurrentMonth, selected: isSelectedDay(day.date) }">{{ day.number }}</span>
+            [ngClass]="{ today: day.isToday, 'different-month': !day.isCurrentMonth, selected: isSelectedDay(day.date) }">{{
+            day.number }}</span>
         </div>
       </div>
     </div>

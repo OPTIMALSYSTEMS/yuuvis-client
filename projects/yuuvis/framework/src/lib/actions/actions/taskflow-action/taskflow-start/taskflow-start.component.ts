@@ -7,7 +7,8 @@ import { ActionComponent } from '../../../interfaces/action-component.interface'
 @Component({
   selector: 'yuv-taskflow-start',
   templateUrl: './taskflow-start.component.html',
-  styleUrls: ['./taskflow-start.component.scss']
+  styleUrls: ['./taskflow-start.component.scss'],
+  host: { class: 'yuv-action-component-form' }
 })
 export class TaskflowStartComponent implements OnInit, ActionComponent {
   taskflowStartForm: FormGroup;

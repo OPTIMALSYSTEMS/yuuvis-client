@@ -1,5 +1,5 @@
 <form [formGroup]="taskflowStartForm" (ngSubmit)="startTaskflow()" [yuvBusyOverlay]="busy">
-
+    <h2>{{'yuv.framework.action-menu.action.taskflow.label'| translate}}</h2>
     <yuv-form-input [label]="'yuv.framework.action-menu.action.taskflow.form.title'|translate" [required]="true">
         <yuv-string formControlName="title">
         </yuv-string>
@@ -19,7 +19,10 @@
         <yuv-string formControlName="comment" [rows]="5">
         </yuv-string>
     </yuv-form-input>
-    <button (click)="cancel()">{{ 'yuv.framework.shared.cancel' | translate }}</button>
-    <button [disabled]="!taskflowStartForm.dirty || taskflowStartForm.invalid"
-        type="submit">{{'yuv.framework.action-menu.action.taskflow.startform.submit'|translate}}</button>
+
+    <div class="form-buttons">
+        <button (click)="cancel()">{{ 'yuv.framework.shared.cancel' | translate }}</button>
+        <button class="primary" [disabled]="!taskflowStartForm.dirty || taskflowStartForm.invalid"
+            type="submit">{{'yuv.framework.action-menu.action.taskflow.startform.submit'|translate}}</button>
+    </div>
 </form>
