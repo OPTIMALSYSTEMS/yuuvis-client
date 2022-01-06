@@ -1,11 +1,11 @@
 import { RowNode } from '@ag-grid-community/core';
 import { Injectable } from '@angular/core';
-import { FollowUpRow, Process, ProcessRow, ProcessStatus, SystemService, Task, TaskRow, TaskType, TranslateService } from '@yuuvis/core';
+import { FollowUpRow, Process, ProcessDefinitionKey, ProcessRow, ProcessStatus, SystemService, Task, TaskRow, TaskType, TranslateService } from '@yuuvis/core';
 import { ResponsiveTableData } from '../../components/responsive-data-table/responsive-data-table.interface';
 import { LocaleDatePipe } from '../../pipes/locale-date.pipe';
 import { IconRegistryService } from './../../common/components/icon/service/iconRegistry.service';
 import { GridService } from './../../services/grid/grid.service';
-import { followUp, task } from './../../svg.generated';
+import { followUp, task, taskflow } from './../../svg.generated';
 
 @Injectable({
   providedIn: 'root'
@@ -19,7 +19,7 @@ export class FormatProcessDataService {
     private system: SystemService,
     private translate: TranslateService
   ) {
-    this.iconRegService.registerIcons([task, followUp]);
+    this.iconRegService.registerIcons([task, followUp, taskflow]);
     this.setTranslations();
     this.translate.onLangChange.subscribe(() => this.setTranslations());
   }
@@ -43,6 +43,7 @@ export class FormatProcessDataService {
       followUpType: this.translate.instant(`yuv.framework.process-list.type.follow-up.label`),
       defaultFollowUpTaskName: this.translate.instant(`yuv.framework.process.type.follow-up.defaultTaskName`),
       defaultFollowUpProcessName: this.translate.instant(`yuv.framework.process.type.follow-up.defaultProcessName`),
+      defaultTaskflowProcessName: this.translate.instant(`yuv.framework.process.type.taskflow.defaultProcessName`),
       taskType: this.translate.instant(`yuv.framework.process-list.type.task.label`),
       taskStateNotAssigned: this.translate.instant(`yuv.framework.process-list.task.state.not-assigned`),
       taskStateDelegated: this.translate.instant(`yuv.framework.process-list.task.state.delegated`),
@@ -60,7 +61,15 @@ export class FormatProcessDataService {
   formatTaskDataForTable(processData: Task[]): ResponsiveTableData {
     return this.processDataForTable(
       processData
-        .map((data) => ({ ...data, icon: this.iconRegService.getIcon(data.processDefinition.id.startsWith('follow-up') ? 'followUp' : 'task') }))
+        .map((data) => {
+          let typeIconKey = 'task';
+          if (data.processDefinition.id.startsWith(ProcessDefinitionKey.FOLLOW_UP)) {
+            typeIconKey = 'followUp';
+          } else if (data.processDefinition.id.startsWith(ProcessDefinitionKey.TASK_FLOW)) {
+            typeIconKey = 'taskflow';
+          }
+          return { ...data, icon: this.iconRegService.getIcon(typeIconKey) };
+        })
         .map((data) => new TaskRow(data)),
       ['type', 'taskName', 'subject', 'createTime', 'dueDate'],
       true
@@ -205,13 +214,19 @@ export class FormatProcessDataService {
     let label = params.context.system.getLocalizedResource(`${pdn}_label`);
     if (!label && params.data.originalData.processDefinition.idPrefix === TaskType.FOLLOW_UP) {
       label = params.context.translations.defaultFollowUpProcessName;
+    } else if (!label && params.data.originalData.processDefinition.idPrefix === TaskType.TASKFLOW) {
+      label = params.context.translations.defaultTaskflowProcessName;
     }
+
     switch (params.value) {
       case TaskType.FOLLOW_UP:
         icon = this.iconRegService.getIcon('followUp');
         break;
       case TaskType.TASK:
         icon = this.iconRegService.getIcon('task');
+        break;
+      case TaskType.TASKFLOW:
+        icon = this.iconRegService.getIcon('taskflow');
         break;
     }
 

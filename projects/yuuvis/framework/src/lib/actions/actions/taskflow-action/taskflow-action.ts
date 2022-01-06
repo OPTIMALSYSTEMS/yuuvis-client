@@ -1,11 +1,12 @@
 import { Component } from '@angular/core';
 import { DmsObject, TranslateService } from '@yuuvis/core';
 import { of as observableOf } from 'rxjs';
-import { resubmission } from '../../../svg.generated';
+import { taskflow } from '../../../svg.generated';
 import { DmsObjectTarget } from '../../action-target';
 import { ComponentAction } from '../../interfaces/action.interface';
 import { SelectionRange } from '../../selection-range.enum';
 import { TaskflowStartComponent } from './taskflow-start/taskflow-start.component';
+
 /**
  * @ignore
  */
@@ -18,7 +19,7 @@ export class TaskFlowActionComponent extends DmsObjectTarget implements Componen
   label: string;
   description: string;
   priority = 3;
-  iconSrc = resubmission.data;
+  iconSrc = taskflow.data;
   group = 'common';
   range = SelectionRange.SINGLE_SELECT;
   component = TaskflowStartComponent;

@@ -135,7 +135,8 @@ export interface ProcessVariable {
 
 export enum TaskType {
   FOLLOW_UP = 'follow-up',
-  TASK = 'task'
+  TASK = 'task',
+  TASKFLOW = 'taskflow'
 }
 
 export interface CreateFollowUp {
@@ -170,7 +171,14 @@ export class TaskRow {
     this.originalData = data;
     this.processDefinitionName = data.processDefinition.idPrefix;
     this.taskName = data.name;
-    this.type = data.processDefinition.id.startsWith('follow-up') ? TaskType.FOLLOW_UP : TaskType.TASK;
+
+    if (data.processDefinition.id.startsWith(ProcessDefinitionKey.FOLLOW_UP)) {
+      this.type = TaskType.FOLLOW_UP;
+    } else if (data.processDefinition.id.startsWith(ProcessDefinitionKey.TASK_FLOW)) {
+      this.type = TaskType.TASKFLOW;
+    } else {
+      this.type = TaskType.TASK;
+    }
   }
 }
 

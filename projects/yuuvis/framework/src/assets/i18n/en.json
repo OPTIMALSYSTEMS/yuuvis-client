@@ -261,6 +261,7 @@
 	"yuv.framework.process.type.follow-up.defaultProcessName": "Follow-up",
 	"yuv.framework.process.type.follow-up.defaultTaskDescription": "This is a reminder to view this attachment.",
 	"yuv.framework.process.type.follow-up.defaultTaskName": "View",
+	"yuv.framework.process.type.taskflow.defaultProcessName": "",
 	"yuv.framework.quick-search-picker.button.select": "Select",
 	"yuv.framework.quick-search-picker.title": "Restrict to object types",
 	"yuv.framework.quick-search.aggregate.error": "The search could not be executed.",

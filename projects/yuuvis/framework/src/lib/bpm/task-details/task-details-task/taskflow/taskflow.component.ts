@@ -30,6 +30,7 @@ export class TaskflowComponent implements OnInit {
     this._task = t;
     this.forwardForm.reset();
     this.noteForm.reset();
+    this.commentHTML = undefined;
     this.extractTaskflowParams();
   }
   constructor(

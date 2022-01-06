@@ -261,6 +261,7 @@
 	"yuv.framework.process.type.follow-up.defaultProcessName": "Wiedervorlage",
 	"yuv.framework.process.type.follow-up.defaultTaskDescription": "Dies ist eine Erinnerung, diese Anlage zu sichten.",
 	"yuv.framework.process.type.follow-up.defaultTaskName": "Sichten",
+	"yuv.framework.process.type.taskflow.defaultProcessName": "",
 	"yuv.framework.quick-search-picker.button.select": "Auswählen",
 	"yuv.framework.quick-search-picker.title": "Einschränken auf Objekttypen",
 	"yuv.framework.quick-search.aggregate.error": "Die Anfrage konnte nicht ausgeführt werden.",

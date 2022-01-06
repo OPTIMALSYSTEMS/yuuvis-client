@@ -1,22 +1,30 @@
 <div class="form">
 
-    <h2>{{title}}</h2>
-    <p [innerHTML]="commentHTML"></p>
+    <div class="task">{{title}}</div>
     <div class="initiator">{{initiator}}</div>
 
+    <div *ngIf="commentHTML" class="message" [innerHTML]="commentHTML"></div>
 
     <form class="note" [formGroup]="noteForm" (ngSubmit)="saveNote()">
+        <header><label for="note">{{'yuv.framework.task-details-task.tasklow.form.note.label'|translate}}</label>
+            <button type="button" class="secondary" *ngIf="note?.length"
+                (click)="removeNote()">{{'yuv.framework.task-details-task.tasklow.form.note.delete'|translate}}</button>
+            <button type="submit" [disabled]="!noteForm.dirty"
+                class="primary">{{'yuv.framework.task-details-task.tasklow.form.note.save'|translate}}</button>
+        </header>
+        <yuv-string id="note" formControlName="note" [rows]="5"> </yuv-string>
 
-        <label>
+
+        <!-- <label>
             {{'yuv.framework.task-details-task.tasklow.form.note.label'|translate}}
-            <yuv-string formControlName="note" [rows]="5"> </yuv-string>
-        </label>
+            <yuv-string pla formControlName="note" [rows]="5"> </yuv-string>
+        </label> 
         <div class="buttons">
             <button type="button" *ngIf="note?.length"
                 (click)="removeNote()">{{'yuv.framework.task-details-task.tasklow.form.note.delete'|translate}}</button>
             <button type="submit" *ngIf="noteForm.dirty"
                 class="primary">{{'yuv.framework.task-details-task.tasklow.form.note.save'|translate}}</button>
-        </div>
+        </div>-->
 
     </form>
 
