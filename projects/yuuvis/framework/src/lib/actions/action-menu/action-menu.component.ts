@@ -122,6 +122,12 @@ export class ActionMenuComponent implements OnDestroy {
       .subscribe();
   }
 
+  onOutsideClick() {
+    if (!this.showComponent) {
+      this.hide();
+    }
+  }
+
   hide() {
     this.visible = false;
   }
