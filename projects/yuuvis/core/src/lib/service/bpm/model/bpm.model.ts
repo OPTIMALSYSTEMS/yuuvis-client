@@ -14,7 +14,7 @@ export const TaskflowVars = {
   title: 'title',
   comment: 'comment',
   taskStatus: 'taskStatus',
-  expiryDateTime: 'expiryDateTime',
+  expiryDateTime: 'expiryDatetime',
   nextAssignee: 'nextAssignee',
   note: 'note'
 };

@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { DmsObject, TranslateService } from '@yuuvis/core';
+import { BpmService, DmsObject, TranslateService } from '@yuuvis/core';
 import { of as observableOf } from 'rxjs';
 import { taskflow } from '../../../svg.generated';
 import { DmsObjectTarget } from '../../action-target';
@@ -24,13 +24,13 @@ export class TaskFlowActionComponent extends DmsObjectTarget implements Componen
   range = SelectionRange.SINGLE_SELECT;
   component = TaskflowStartComponent;
 
-  constructor(private translate: TranslateService) {
+  constructor(private translate: TranslateService, private bpmService: BpmService) {
     super();
     this.label = this.translate.instant(`yuv.framework.action-menu.action.taskflow.label`);
     this.description = this.translate.instant(`yuv.framework.action-menu.action.taskflow.description`);
   }
 
   isExecutable(element: DmsObject) {
-    return observableOf(true);
+    return observableOf(this.bpmService.supports.taskflow);
   }
 }
