@@ -51,6 +51,7 @@ export class TaskflowStartComponent implements OnInit, ActionComponent {
       businessKey: dmsObject.id,
       name: dmsObject.title || dmsObject.id,
       subject: dmsObject.title,
+      attachments: this.selection.map((s) => s.id),
       variables: vars
     };
 

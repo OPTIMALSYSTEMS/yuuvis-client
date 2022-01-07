@@ -21,7 +21,7 @@ export class TaskFlowActionComponent extends DmsObjectTarget implements Componen
   priority = 3;
   iconSrc = taskflow.data;
   group = 'common';
-  range = SelectionRange.SINGLE_SELECT;
+  range = SelectionRange.MULTI_SELECT;
   component = TaskflowStartComponent;
 
   constructor(private translate: TranslateService, private bpmService: BpmService) {
@@ -30,7 +30,7 @@ export class TaskFlowActionComponent extends DmsObjectTarget implements Componen
     this.description = this.translate.instant(`yuv.framework.action-menu.action.taskflow.description`);
   }
 
-  isExecutable(element: DmsObject) {
+  isExecutable(elements: DmsObject[]) {
     return observableOf(this.bpmService.supports.taskflow);
   }
 }
