@@ -3,7 +3,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { SearchFilter, SearchFilterGroup, SearchQuery } from '../search/search-query.model';
 import { SearchService } from '../search/search.service';
-import { AuditField, BaseObjectTypeField, SystemType } from '../system/system.enum';
+import { AuditField, SystemType } from '../system/system.enum';
 import { SystemService } from '../system/system.service';
 import { UserService } from '../user/user.service';
 import { AuditQueryOptions, AuditQueryResult } from './audit.interface';
@@ -19,7 +19,7 @@ import { AuditQueryOptions, AuditQueryResult } from './audit.interface';
 })
 export class AuditService {
   // default number of items to be fetched
-  private DEFAULT_RES_SIZE = 5;
+  private DEFAULT_RES_SIZE = 20;
 
   // audit action codes that should be visible to regular users
   private userAuditActions: number[] = [
@@ -79,7 +79,14 @@ export class AuditService {
         )
       ]);
 
-      const filters = Object.keys(vTags).map((tag) => new SearchFilter(`${BaseObjectTypeField.TAGS}[${tag}].state`, SearchFilter.OPERATOR.LIKE, vTags[tag]));
+      const values: string[] = [];
+      Object.keys(vTags).forEach((tag) => {
+        vTags[tag].forEach((tagValue) => {
+          values.push(`*${tag}, ${tagValue}*`);
+        });
+      });
+
+      const filters = values.map((v) => new SearchFilter(AuditField.DETAIL, SearchFilter.OPERATOR.LIKE, v));
       const actionFilterTagsGroup: SearchFilterGroup = new SearchFilterGroup(SearchFilterGroup.DEFAULT, SearchFilterGroup.OPERATOR.OR, filters);
       const ag = new SearchFilterGroup(SearchFilterGroup.DEFAULT, SearchFilterGroup.OPERATOR.OR, [actionFilterGroup, actionFilterTagsGroup]);
 

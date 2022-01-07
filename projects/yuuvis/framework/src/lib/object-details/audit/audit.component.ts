@@ -1,6 +1,17 @@
 import { Component, Inject, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { AuditQueryOptions, AuditQueryResult, AuditService, DmsObject, EventService, RangeValue, TranslateService, YuvEvent, YuvEventType } from '@yuuvis/core';
+import {
+  AuditQueryOptions,
+  AuditQueryResult,
+  AuditService,
+  DmsObject,
+  EventService,
+  RangeValue,
+  SystemService,
+  TranslateService,
+  YuvEvent,
+  YuvEventType
+} from '@yuuvis/core';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { ROUTES, YuvRoutes } from '../../routing/routes';
@@ -88,6 +99,7 @@ export class AuditComponent implements OnInit, OnDestroy {
   constructor(
     private auditService: AuditService,
     private eventService: EventService,
+    private system: SystemService,
     private fb: FormBuilder,
     private translate: TranslateService,
     private iconRegistry: IconRegistryService,
@@ -148,21 +160,29 @@ export class AuditComponent implements OnInit, OnDestroy {
 
     this.auditService.getAuditEntries(this._objectID, this._objectTypeID, options).subscribe(
       (res: AuditQueryResult) => {
-        res.items.forEach((i) => {
-          // tag related audits
-          if ([110, 210, 310].includes(i.action)) {
-            const m = i.detail.match(/\[(.*?)\]/);
-            i.more = m ? m[1] : undefined;
-          }
-        });
-
-        this.auditsRes = res;
+        this.auditsRes = this.mapResult(res);
         this.busy = false;
       },
       (err) => {
         this.onError();
       }
     );
+  }
+
+  private mapResult(res: AuditQueryResult): AuditQueryResult {
+    res.items.forEach((i) => {
+      // tag related audits
+      if ([110, 210, 310].includes(i.action)) {
+        const m = i.detail.match(/\[(.*?)\]/);
+        if (m && m[1]) {
+          const t = m[1].split(',');
+          i.more = `
+          ${this.system.getLocalizedResource(t[0].trim() + '_label')}: ${this.system.getLocalizedResource(`${t[0].trim()}:${t[1].trim()}_label`)}
+          `;
+        }
+      }
+    });
+    return res;
   }
 
   /**
@@ -233,7 +253,7 @@ export class AuditComponent implements OnInit, OnDestroy {
     this.busy = true;
     this.auditService.getPage(this.auditsRes, page).subscribe(
       (res: AuditQueryResult) => {
-        this.auditsRes = res;
+        this.auditsRes = this.mapResult(res);
         this.busy = false;
       },
       (err) => {
