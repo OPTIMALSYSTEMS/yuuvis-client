@@ -200,7 +200,14 @@ export class ProcessRow {
     this.endTime = data.endTime;
     this.originalData = data;
     this.processDefinitionName = data.processDefinition.idPrefix;
-    this.type = data.processDefinition.id.startsWith('follow-up') ? TaskType.FOLLOW_UP : TaskType.TASK;
+
+    if (data.processDefinition.id.startsWith(ProcessDefinitionKey.FOLLOW_UP)) {
+      this.type = TaskType.FOLLOW_UP;
+    } else if (data.processDefinition.id.startsWith(ProcessDefinitionKey.TASK_FLOW)) {
+      this.type = TaskType.TASKFLOW;
+    } else {
+      this.type = TaskType.TASK;
+    }
 
     if (data.suspended) {
       this.status = ProcessStatus.SUSPENDED;

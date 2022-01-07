@@ -62,13 +62,13 @@ export class FormatProcessDataService {
     return this.processDataForTable(
       processData
         .map((data) => {
-          let typeIconKey = 'task';
-          if (data.processDefinition.id.startsWith(ProcessDefinitionKey.FOLLOW_UP)) {
-            typeIconKey = 'followUp';
-          } else if (data.processDefinition.id.startsWith(ProcessDefinitionKey.TASK_FLOW)) {
-            typeIconKey = 'taskflow';
-          }
-          return { ...data, icon: this.iconRegService.getIcon(typeIconKey) };
+          // let typeIconKey = 'task';
+          // if (data.processDefinition.id.startsWith(ProcessDefinitionKey.FOLLOW_UP)) {
+          //   typeIconKey = 'followUp';
+          // } else if (data.processDefinition.id.startsWith(ProcessDefinitionKey.TASK_FLOW)) {
+          //   typeIconKey = 'taskflow';
+          // }
+          return { ...data, icon: this.getTypeIcon(data.processDefinition.id) };
         })
         .map((data) => new TaskRow(data)),
       ['type', 'taskName', 'subject', 'createTime', 'dueDate'],
@@ -81,9 +81,7 @@ export class FormatProcessDataService {
    */
   formatProcessDataForTable(processData: Process[], fields: string[]): ResponsiveTableData {
     return this.processDataForTable(
-      processData
-        .map((data) => ({ ...data, icon: this.iconRegService.getIcon(data.processDefinition.id.startsWith('follow-up') ? 'followUp' : 'task') }))
-        .map((data) => new ProcessRow(data)),
+      processData.map((data) => ({ ...data, icon: this.getTypeIcon(data.processDefinition.id) })).map((data) => new ProcessRow(data)),
       fields,
       false
     );
@@ -94,10 +92,20 @@ export class FormatProcessDataService {
    */
   formatFollowUpDataForTable(processData: Process[], fields: string[]): ResponsiveTableData {
     return this.processDataForTable(
-      processData.map((data) => ({ ...data, icon: this.iconRegService.getIcon('followUp') })).map((data) => new FollowUpRow(data)),
+      processData.map((data) => ({ ...data, icon: this.getTypeIcon(data.processDefinition.id) })).map((data) => new FollowUpRow(data)),
       fields,
       false
     );
+  }
+
+  private getTypeIcon(processDefinitionId: string): string {
+    let typeIconKey = 'task';
+    if (processDefinitionId.startsWith(ProcessDefinitionKey.FOLLOW_UP)) {
+      typeIconKey = 'followUp';
+    } else if (processDefinitionId.startsWith(ProcessDefinitionKey.TASK_FLOW)) {
+      typeIconKey = 'taskflow';
+    }
+    return this.iconRegService.getIcon(typeIconKey);
   }
 
   private processDataForTable(rows: (ProcessRow | TaskRow)[], fields: string[], isTask: boolean): ResponsiveTableData {
