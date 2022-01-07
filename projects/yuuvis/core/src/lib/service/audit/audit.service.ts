@@ -79,23 +79,10 @@ export class AuditService {
         )
       ]);
 
-      const filters = Object.keys(vTags).map((tag) => new SearchFilter(`${BaseObjectTypeField.TAGS}[${tag}].state`, SearchFilter.OPERATOR.IN, vTags[tag]));
+      const filters = Object.keys(vTags).map((tag) => new SearchFilter(`${BaseObjectTypeField.TAGS}[${tag}].state`, SearchFilter.OPERATOR.LIKE, vTags[tag]));
       const actionFilterTagsGroup: SearchFilterGroup = new SearchFilterGroup(SearchFilterGroup.DEFAULT, SearchFilterGroup.OPERATOR.OR, filters);
-
-      // const allowedTagActions = auditActions.filter()
-
       const ag = new SearchFilterGroup(SearchFilterGroup.DEFAULT, SearchFilterGroup.OPERATOR.OR, [actionFilterGroup, actionFilterTagsGroup]);
 
-      // only request audit entries for tags
-
-      // const filters = [new SearchFilter(AuditField.ACTION, SearchFilter.OPERATOR.)];
-
-      // Object.keys(vTags).forEach((tag) => {
-      //   filters.push(new SearchFilter(`${BaseObjectTypeField.TAGS}[${tag}].state`, SearchFilter.OPERATOR.IN, vTags[tag]));
-      // });
-      // const filterGroup: SearchFilterGroup = new SearchFilterGroup();
-      // filterGroup.operator = SearchFilterGroup.OPERATOR.OR;
-      // filterGroup.group = filters;
       q.addFilterGroup(ag);
     } else {
       q.addFilter(new SearchFilter(AuditField.ACTION, SearchFilter.OPERATOR.IN, auditActions));
