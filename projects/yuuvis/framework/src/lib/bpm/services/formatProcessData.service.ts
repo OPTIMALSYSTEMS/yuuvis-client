@@ -62,12 +62,6 @@ export class FormatProcessDataService {
     return this.processDataForTable(
       processData
         .map((data) => {
-          // let typeIconKey = 'task';
-          // if (data.processDefinition.id.startsWith(ProcessDefinitionKey.FOLLOW_UP)) {
-          //   typeIconKey = 'followUp';
-          // } else if (data.processDefinition.id.startsWith(ProcessDefinitionKey.TASK_FLOW)) {
-          //   typeIconKey = 'taskflow';
-          // }
           return { ...data, icon: this.getTypeIcon(data.processDefinition.id) };
         })
         .map((data) => new TaskRow(data)),

@@ -119,7 +119,6 @@ export class TaskflowComponent implements OnInit {
         },
         (err) => {
           this.busy = false;
-          console.error(err);
           this.notificationService.error(this.translate.instant('yuv.framework.task-details-task.update.fail'));
         }
       );
@@ -141,7 +140,6 @@ export class TaskflowComponent implements OnInit {
       },
       (err) => {
         this.busy = false;
-        console.error(err);
         this.notificationService.error(this.translate.instant('yuv.framework.task-details-task.update.fail'));
       }
     );
