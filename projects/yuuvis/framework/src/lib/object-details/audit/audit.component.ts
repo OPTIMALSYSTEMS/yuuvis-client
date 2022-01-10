@@ -52,21 +52,6 @@ export class AuditComponent implements OnInit, OnDestroy {
   actionGroups: any = {};
   auditLabels: any = {};
 
-  /**
-   * ID of the `DmsObject` to list the audits for
-   */
-  // @Input() set objectID(id: string) {
-  //   if (!id) {
-  //     this._objectID = null;
-  //     this.auditsRes = null;
-  //   } else if (!this._objectID || this._objectID !== id) {
-  //     this._objectID = id;
-  //     if (this.initialFetch) {
-  //       this.fetchAuditEntries();
-  //     }
-  //   }
-  // }
-
   @Input() set dmsObject(o: DmsObject) {
     if (!o) {
       this._objectID = null;
