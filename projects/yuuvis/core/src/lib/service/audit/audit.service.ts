@@ -66,7 +66,7 @@ export class AuditService {
 
     const auditActions = this.getAuditActions(!!options.allActions, options?.skipActions);
 
-    if (objectTypeId) {
+    if (objectTypeId && !this.userService.hasAdministrationRoles) {
       const vTags = this.system.getVisibleTags(objectTypeId);
       const tagAudits = [110, 210, 310];
       const actionFilterGroup: SearchFilterGroup = new SearchFilterGroup(SearchFilterGroup.DEFAULT, SearchFilterGroup.OPERATOR.AND, [
