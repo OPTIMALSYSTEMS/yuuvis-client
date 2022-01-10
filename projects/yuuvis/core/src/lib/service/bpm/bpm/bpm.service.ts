@@ -20,7 +20,31 @@ export class BpmService {
   private loadingBpmDataSource = new BehaviorSubject<boolean>(false);
   public loadingBpmData$: Observable<boolean> = this.loadingBpmDataSource.asObservable();
 
+  public supports = {
+    taskflow: false,
+    followUp: false
+  };
+
   constructor(private backendService: BackendService, private system: SystemService) {}
+
+  // called on core init
+  init() {
+    // check availability of certain workflows
+    // TODO: point to Web-API-Gateway once the endpoint is available there
+    this.backendService.get(`bpm-engine/api/process-definitions?latest=true&page=0&size=1000`, ApiBase.none).subscribe((res) => {
+      console.log(res);
+      const availableProcesses = res.objects.map((o) => {
+        if (o.id.startsWith(ProcessDefinitionKey.TASK_FLOW)) {
+          this.supports.taskflow = true;
+        } else if (o.id.startsWith(ProcessDefinitionKey.FOLLOW_UP)) {
+          this.supports.followUp = true;
+        }
+        return {
+          id: o.id
+        };
+      });
+    });
+  }
 
   getProcesses(url: string): Observable<unknown> {
     this.loadingBpmDataSource.next(true);

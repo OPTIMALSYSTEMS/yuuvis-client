@@ -4,6 +4,7 @@ import { map, switchMap, tap } from 'rxjs/operators';
 import { UserSettings, YuvUser } from '../../model/yuv-user.model';
 import { Utils } from '../../util/utils';
 import { BackendService } from '../backend/backend.service';
+import { BpmService } from '../bpm/bpm/bpm.service';
 import { AppCacheService } from '../cache/app-cache.service';
 import { CoreConfig } from '../config/core-config';
 import { CORE_CONFIG } from '../config/core-config.tokens';
@@ -34,6 +35,7 @@ export class AuthService {
     @Inject(CORE_CONFIG) public coreConfig: CoreConfig,
     private eventService: EventService,
     private userService: UserService,
+    private bpmService: BpmService,
     private appCache: AppCacheService,
     private systemService: SystemService,
     private backend: BackendService
@@ -118,6 +120,7 @@ export class AuthService {
       switchMap((userSettings: UserSettings) => {
         const currentUser = new YuvUser(userJson, userSettings);
         this.userService.setCurrentUser(currentUser);
+        this.bpmService.init();
         this.authData = {
           tenant: currentUser.tenant,
           language: currentUser.getClientLocale()
