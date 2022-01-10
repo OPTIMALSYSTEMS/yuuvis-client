@@ -1,7 +1,7 @@
 import { ClientSideRowModelModule } from '@ag-grid-community/client-side-row-model';
 import { ColDef, GridOptions, Module, RowEvent, RowNode } from '@ag-grid-community/core';
 import { Component, ElementRef, EventEmitter, HostBinding, HostListener, Input, NgZone, OnDestroy, OnInit, Output } from '@angular/core';
-import { BaseObjectTypeField, DeviceService, PendingChangesService, SystemService, Utils } from '@yuuvis/core';
+import { BaseObjectTypeField, DeviceService, PendingChangesService, Utils } from '@yuuvis/core';
 import { ResizedEvent } from 'angular-resize-event';
 import { Observable, ReplaySubject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
@@ -11,6 +11,7 @@ import { LocaleDatePipe } from '../../pipes/locale-date.pipe';
 import { ColumnSizes } from '../../services/grid/grid.interface';
 import { SingleCellRendererComponent } from '../../services/grid/renderer/single-cell-renderer/single-cell-renderer.component';
 import { LayoutService } from '../../services/layout/layout.service';
+import { GridService } from './../../services/grid/grid.service';
 import { ResponsiveTableData } from './responsive-data-table.interface';
 
 /**
@@ -197,23 +198,19 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
     return this.currentViewMode === 'grid';
   }
 
+  @HostListener('keydown.control.alt.shift.c', ['$event'])
+  @HostListener('keydown.control.shift.c', ['$event'])
+  @HostListener('keydown.control.alt.c', ['$event'])
   @HostListener('keydown.control.c', ['$event'])
   copyCellHandler(event: KeyboardEvent) {
-    // copy cell
-    this.copyToClipboard('cell');
-  }
-  @HostListener('keydown.control.shift.c', ['$event'])
-  copyRowHandler(event: KeyboardEvent) {
-    // copy row
-    this.copyToClipboard('row');
+    this.gridApi.copyToClipboard(event, this.gridOptions);
   }
 
   constructor(
     private pendingChanges: PendingChangesService,
     private elRef: ElementRef,
-    private datePipe: LocaleDatePipe,
+    public gridApi: GridService,
     private layoutService: LayoutService,
-    private systemService: SystemService,
     private deviceService: DeviceService,
     private _ngZone: NgZone
   ) {
@@ -386,6 +383,8 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
    * @param selection default is first row
    */
   selectRows(selection?: string[], focusColId?: string, ensureVisibility: boolean = true) {
+    const _selection = this.gridOptions.api.getSelectedNodes().map((n) => n.id);
+    if ((selection ? [...selection] : []).sort().join() === _selection.sort().join()) return;
     this.gridOptions.api.clearFocusedCell();
     this.gridOptions.api.deselectAll();
     (selection || [this._data.rows[0].id]).forEach((id: string, index: number) => {
@@ -466,31 +465,6 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
       onRowDoubleClicked: (event) => this.rowDoubleClicked.emit(event),
       ...(this._data && this._data.gridOptions)
     };
-  }
-
-  // copy content of either row or table cell to clipboard
-  private copyToClipboard(type: 'row' | 'cell') {
-    let content = '';
-    const focusedCell = this.gridOptions.api.getFocusedCell();
-    const row: RowNode = this.gridOptions.api.getDisplayedRowAtIndex(focusedCell.rowIndex);
-    switch (type) {
-      case 'row': {
-        // TODO: define how data should be formatted in clipboard.
-        content = Object.values(row.data).join(',');
-        break;
-      }
-      case 'cell': {
-        content = this.gridOptions.api.getValue(focusedCell.column, row);
-        break;
-      }
-    }
-
-    const textArea = document.createElement('textarea');
-    textArea.value = content;
-    document.body.appendChild(textArea);
-    textArea.select();
-    const copySuccess = document.execCommand('copy');
-    document.body.removeChild(textArea);
   }
 
   onMouseDown($event: MouseEvent | any) {
