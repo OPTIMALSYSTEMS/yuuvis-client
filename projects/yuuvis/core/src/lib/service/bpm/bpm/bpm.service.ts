@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { finalize, map } from 'rxjs/operators';
+import { BehaviorSubject, EMPTY, Observable } from 'rxjs';
+import { expand, finalize, map, skipWhile, tap } from 'rxjs/operators';
 import { Utils } from '../../../util/utils';
 import { ApiBase } from '../../backend/api.enum';
 import { BackendService } from '../../backend/backend.service';
 import { SystemService } from '../../system/system.service';
-import { FetchTaskOptions, Process, ProcessCreatePayload, ProcessDefinitionKey, ProcessInstanceHistoryEntry } from '../model/bpm.model';
+import { FetchTaskOptions, Process, ProcessCreatePayload, ProcessDefinition, ProcessDefinitionKey, ProcessInstanceHistoryEntry } from '../model/bpm.model';
 
 /**
  * BpmService: responsible for handling all bpm/ route related interactions
@@ -20,6 +20,9 @@ export class BpmService {
   private loadingBpmDataSource = new BehaviorSubject<boolean>(false);
   public loadingBpmData$: Observable<boolean> = this.loadingBpmDataSource.asObservable();
 
+  // TODO: Use later on to decide which processes could be started by the current user
+  private availableProcessDefinitions: ProcessDefinition[] = [];
+
   public supports = {
     taskflow: false,
     followUp: false
@@ -30,20 +33,34 @@ export class BpmService {
   // called on core init
   init() {
     // check availability of certain workflows
-    // TODO: point to Web-API-Gateway once the endpoint is available there
-    this.backendService.get(`bpm-engine/api/process-definitions?latest=true&page=0&size=1000`, ApiBase.none).subscribe((res) => {
-      console.log(res);
-      const availableProcesses = res.objects.map((o) => {
-        if (o.id.startsWith(ProcessDefinitionKey.TASK_FLOW)) {
+    this.getAllProcessDefinitions().subscribe((res: ProcessDefinition[]) => {
+      this.availableProcessDefinitions = res;
+      res.forEach((pd) => {
+        if (pd.id.startsWith(ProcessDefinitionKey.TASK_FLOW)) {
           this.supports.taskflow = true;
-        } else if (o.id.startsWith(ProcessDefinitionKey.FOLLOW_UP)) {
+        } else if (pd.id.startsWith(ProcessDefinitionKey.FOLLOW_UP)) {
           this.supports.followUp = true;
         }
-        return {
-          id: o.id
-        };
       });
     });
+  }
+
+  private getAllProcessDefinitions(): Observable<ProcessDefinition[]> {
+    let items = [];
+    let i = 0;
+    return this.getPage(i).pipe(
+      expand((res: any) => {
+        i++;
+        return res.hasMoreItems ? this.getPage(i) : EMPTY;
+      }),
+      tap((res: any) => (items = [...items, ...res.objects])),
+      skipWhile((res: any) => res.hasMoreItems),
+      map((_) => items)
+    );
+  }
+
+  private getPage(index?: number) {
+    return this.backendService.get(`/bpm/process-definitions?page=${index || 0}`);
   }
 
   getProcesses(url: string): Observable<unknown> {
