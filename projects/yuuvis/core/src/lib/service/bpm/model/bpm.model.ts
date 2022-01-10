@@ -19,6 +19,18 @@ export const TaskflowVars = {
   note: 'note'
 };
 
+export interface ProcessDefinition {
+  category: string;
+  description: string;
+  global: boolean;
+  id: string;
+  key: string;
+  name: string;
+  startFormDefined: true;
+  suspended: false;
+  version: number;
+}
+
 /**
  * In BPM you can create process models that define a couple of variables and
  * activities belonging to the process model.
