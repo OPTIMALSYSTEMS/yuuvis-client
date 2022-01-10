@@ -73,6 +73,7 @@
 	"yuv.framework.audit.label.update.metadata": "Metadaten wurden geändert",
 	"yuv.framework.audit.label.update.metadata.withcontent": "Metadaten und Dokumentdatei wurden geändert",
 	"yuv.framework.audit.label.update.move.content": "Dokumentdatei wurde verschoben",
+	"yuv.framework.audit.label.update.restore": "Objekt wurde restauriert",
 	"yuv.framework.audit.label.update.tag": "Tag wurde geändert",
 	"yuv.framework.audit.result.empty": "Es wurden keine Historieneinträge gefunden",
 	"yuv.framework.audit.search.button.filter": "Historieneinträge filtern",

@@ -1,8 +1,20 @@
 import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
-import { BaseObjectTypeField, ClientDefaultsObjectTypeField, ContentStreamField, DmsObject, DmsService, RetentionField, TranslateService } from '@yuuvis/core';
+import {
+  BaseObjectTypeField,
+  ClientDefaultsObjectTypeField,
+  ContentStreamField,
+  DmsObject,
+  DmsService,
+  EventService,
+  RetentionField,
+  TranslateService,
+  YuvEvent,
+  YuvEventType
+} from '@yuuvis/core';
 import { forkJoin, Observable, of } from 'rxjs';
 import { tap } from 'rxjs/operators';
+import { takeUntilDestroy } from 'take-until-destroy';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { ResponsiveDataTableComponent, ViewMode } from '../../components';
 import { ResponsiveTableData } from '../../components/responsive-data-table/responsive-data-table.interface';
@@ -125,7 +137,8 @@ export class VersionListComponent implements OnInit {
     private fb: FormBuilder,
     private dmsService: DmsService,
     private iconRegistry: IconRegistryService,
-    private gridService: GridService
+    private gridService: GridService,
+    private eventService: EventService
   ) {
     this.iconRegistry.registerIcons([edit, arrowNext, refresh, versions, listModeDefault, listModeGrid, listModeSimple]);
   }
@@ -165,7 +178,7 @@ export class VersionListComponent implements OnInit {
     this.editRecentClick.emit(this.dmsObjectID);
   }
 
-  refresh() {
+  refresh(versions = null) {
     this.error = null;
     if (this.dmsObjectID) {
       this.dmsService.getDmsObjectVersions(this.dmsObjectID).subscribe(
@@ -185,6 +198,8 @@ export class VersionListComponent implements OnInit {
           ) {
             this.selection.push(this.getRowNodeId(sorted[1].version));
           }
+
+          if (versions) this.versions = versions;
 
           const setter = this.responsiveTableData?.set || ((t) => t);
           this.tableData = setter.call(this, {
@@ -212,5 +227,17 @@ export class VersionListComponent implements OnInit {
   ngOnInit() {
     // only enable edit button if somone subscribed to the output emitter
     this.enableEdit = !!this.editRecentClick.observers.length;
+    this.eventService
+      .on(YuvEventType.DMS_OBJECT_UPDATED)
+      .pipe(takeUntilDestroy(this))
+      .subscribe((e: YuvEvent) => {
+        const dmsObject = e.data as DmsObject;
+        // reload versions when update belongs to the current dms object
+        if (dmsObject.id === this.dmsObjectID) {
+          this.refresh([dmsObject.version]);
+        }
+      });
   }
+
+  ngOnDestroy(): void {}
 }
