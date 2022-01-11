@@ -1,6 +1,6 @@
 <form [formGroup]="taskflowStartForm" (ngSubmit)="startTaskflow()" [yuvBusyOverlay]="busy">
     <h2>{{'yuv.framework.action-menu.action.taskflow.label'| translate}}</h2>
-    <yuv-form-input [label]="'yuv.framework.action-menu.action.taskflow.form.title'|translate" [required]="true">
+    <yuv-form-input [label]="'yuv.framework.action-menu.action.taskflow.form.task'|translate" [required]="true">
         <yuv-string formControlName="title">
         </yuv-string>
     </yuv-form-input>
