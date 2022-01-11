@@ -39,7 +39,7 @@
   "yuv.framework.action-menu.action.taskflow.form.assignee": "Empfänger",
   "yuv.framework.action-menu.action.taskflow.form.comment": "Kommentar",
   "yuv.framework.action-menu.action.taskflow.form.due-date": "fällig am",
-  "yuv.framework.action-menu.action.taskflow.form.title": "Aufgabe",
+  "yuv.framework.action-menu.action.taskflow.form.task": "",
   "yuv.framework.action-menu.action.taskflow.label": "Taskflow starten",
   "yuv.framework.action-menu.action.taskflow.startform.submit": "Starten",
   "yuv.framework.action-menu.action.upload.dms.object.content.add.description": "Fügt dem Objekt eine Dokumentdatei hinzu.",
