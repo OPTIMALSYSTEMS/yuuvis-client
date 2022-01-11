@@ -16,6 +16,17 @@
     display: flex;
     flex-flow: row wrap;
     padding: calc(var(--app-pane-padding) / 2);
+
+    &:not(.oneColumn) {
+      p-panel.group {
+        &:focus,
+        &:focus-within {
+          outline: 2px solid rgba(var(--color-accent-rgb), 0.4);
+          outline-offset: -2px;
+          color: #fff;
+        }
+      }
+    }
   }
 
   &:not(.multiple) {
@@ -63,13 +74,6 @@
 
     .disabled {
       opacity: 0.5;
-    }
-
-    &:focus,
-    &:focus-within {
-      outline: 2px solid rgba(var(--color-accent-rgb), 0.4);
-      outline-offset: -2px;
-      color: #fff;
     }
   }
 
