@@ -63,6 +63,8 @@ export class AuditComponent implements OnInit, OnDestroy {
       if (this.initialFetch) {
         this.fetchAuditEntries();
       }
+    } else {
+      this.fetchAuditEntries();
     }
   }
 
