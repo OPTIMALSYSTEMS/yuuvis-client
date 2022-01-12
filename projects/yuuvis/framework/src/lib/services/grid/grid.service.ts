@@ -55,7 +55,7 @@ export class GridService {
       const cell = getCell(col, row);
       if (!cell) return '';
       const chips = cell.querySelectorAll('.chip') || [];
-      const val = Array.from(chips.length ? chips : [cell]).map((c: any) => (c && c.textContent) || '');
+      const val = Array.from(chips.length ? chips : [cell]).map((c: any) => (c && c.textContent && c.textContent.trim()) || '');
       const value = val.toString() || gridOptions.api.getValue(col, row);
       return !Utils.isEmpty(value) ? value.toString().replace(new RegExp('\n', 'g'), ' ') : '';
     };
