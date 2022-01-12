@@ -36,10 +36,14 @@ export class ActionService {
    * @param viewContainerRef - Anchor element that specifies the location of this container in the containing view.
    * Each view container can have only one anchor element, and each anchor element
    * can have only a single view container.
+   * @param skipActions List of actions (IDs) that should be excluded
    */
-  getActionsList(selection: any[], viewContainerRef: ViewContainerRef): Observable<ActionListEntry[]> {
+  getActionsList(selection: any[], viewContainerRef: ViewContainerRef, skipActions?: string[]): Observable<ActionListEntry[]> {
     // todo: find better solution to exclude components for actions that need to be initialized later
-    return this.getPluginActions().pipe(switchMap((_) => this.getExecutableActionsListFromGivenActions(this.allActionComponents, selection, viewContainerRef)));
+    return this.getPluginActions().pipe(
+      switchMap((_) => this.getExecutableActionsListFromGivenActions(this.allActionComponents, selection, viewContainerRef)),
+      map((res: ActionListEntry[]) => (skipActions ? res.filter((a) => !skipActions.includes(a.id)) : res))
+    );
   }
 
   private getPluginActions() {
