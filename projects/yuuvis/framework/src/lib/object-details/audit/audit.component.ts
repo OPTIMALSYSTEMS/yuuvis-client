@@ -61,10 +61,10 @@ export class AuditComponent implements OnInit, OnDestroy {
       this._objectID = o.id;
       this._objectTypeID = o.objectTypeId;
       if (this.initialFetch) {
-        this.fetchAuditEntries();
+        this.query();
       }
     } else {
-      this.fetchAuditEntries();
+      this.query();
     }
   }
 
@@ -126,12 +126,7 @@ export class AuditComponent implements OnInit, OnDestroy {
         const dmsObject = e.data as DmsObject;
         // reload audit entries when update belongs to the current dms object
         if (dmsObject.id === this.objectID) {
-          // check if a search is set
-          if (this.filtered) {
-            this.query();
-          } else {
-            this.fetchAuditEntries();
-          }
+          this.query();
         }
       });
   }
@@ -177,7 +172,6 @@ export class AuditComponent implements OnInit, OnDestroy {
    * Execute a query from the search panel.
    */
   query() {
-    this.searchForm.value;
     const range: RangeValue = this.searchForm.value.dateRange;
 
     let options: AuditQueryOptions = {};
@@ -210,7 +204,8 @@ export class AuditComponent implements OnInit, OnDestroy {
       dateRange: null
     };
     Object.keys(this.auditLabels).forEach((a) => {
-      patch[a] = null;
+      // exclude read actions
+      patch[a] = a.startsWith('a4') ? false : true;
     });
     this.searchForm.patchValue(patch);
     this.filtered = false;
@@ -286,7 +281,7 @@ export class AuditComponent implements OnInit, OnDestroy {
         const groupEntry = {
           label: g.label,
           actions: g.actions.map((a) => {
-            fbInput[a] = [false];
+            fbInput[a] = [a.startsWith('a4') ? false : true];
             return a;
           })
         };
@@ -295,7 +290,7 @@ export class AuditComponent implements OnInit, OnDestroy {
     });
     this.searchForm = this.fb.group(fbInput);
     if (!this.initialFetch) {
-      this.fetchAuditEntries();
+      this.query();
       this.initialFetch = true;
     }
   }
