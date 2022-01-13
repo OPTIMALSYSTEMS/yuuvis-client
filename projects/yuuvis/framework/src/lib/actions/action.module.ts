@@ -19,10 +19,14 @@ import { FollowUpComponent } from './actions/follow-up-action/follow-up/follow-u
 import { MoveActionComponent } from './actions/move-action/move-action';
 import { MoveComponent } from './actions/move-action/move/move.component';
 import { ReferenceActionComponent } from './actions/reference-action/reference-action';
+import { TaskFlowActionComponent } from './actions/taskflow-action/taskflow-action';
+import { TaskflowStartComponent } from './actions/taskflow-action/taskflow-start/taskflow-start.component';
 import { UploadActionComponent } from './actions/upload-action/upload-action';
 import { UploadComponent } from './actions/upload-action/upload/upload.component';
 
 export const entryComponents = [
+  TaskFlowActionComponent,
+  TaskflowStartComponent,
   DownloadActionComponent,
   DeleteActionComponent,
   DeleteComponent,

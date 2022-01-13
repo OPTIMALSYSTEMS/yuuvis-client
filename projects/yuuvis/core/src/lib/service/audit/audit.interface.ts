@@ -14,6 +14,7 @@ export interface AuditEntry {
     id: string;
     title: string;
   };
+  more?: string;
 }
 /**
  * Interface for a result object of a former audits query

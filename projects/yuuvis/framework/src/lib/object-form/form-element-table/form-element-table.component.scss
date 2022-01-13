@@ -43,13 +43,26 @@
       background-color: #fff;
     }
 
+    .copy-cell {
+      @keyframes copy-cell {
+        from {
+          background-color: var(--color-accent);
+        }
+        to {
+          background-color: none;
+        }
+      }
+
+      animation-name: copy-cell;
+      animation-duration: 4s;
+    }
+
     .ag-cell {
       display: flex;
       align-items: center;
       padding: 0 calc(var(--app-pane-padding) / 4);
       font-size: var(--font-caption);
       line-height: var(--oft-row-height);
-      background-color: var(--panel-background);
       color: var(--text-color-body);
 
       svg {

@@ -1,18 +1,22 @@
-<div class="yuv-follow-up" [yuvBusyOverlay]="loading">
+<div class="yuv-follow-up yuv-action-component-form" [yuvBusyOverlay]="loading">
   <h2>{{headline}}</h2>
   <section *ngIf="!showDeleteTemp; else deleteFollowUpTemp">
     <form [formGroup]="form">
-      <yuv-form-input [label]="'yuv.framework.action-menu.action.follow-up.due-date.label' | translate" [disabled]="disabledForm" [required]="isRequired('expiryDateTime')" [skipToggle]="true">
-        <yuv-datetime [withTime]="true" [onlyFutureDates]="true" [pickerTitle]="'hurz'" [readonly]="disabledForm" [formControlName]="'expiryDateTime'"></yuv-datetime>
+      <yuv-form-input [label]="'yuv.framework.action-menu.action.follow-up.due-date.label' | translate"
+        [disabled]="disabledForm" [required]="isRequired('expiryDateTime')" [skipToggle]="true">
+        <yuv-datetime [withTime]="true" [onlyFutureDates]="true" [readonly]="disabledForm"
+          [formControlName]="'expiryDateTime'"></yuv-datetime>
       </yuv-form-input>
       <div class="err-msg" *ngIf="form.controls.expiryDateTime.errors && form.dirty">
         <div *ngIf="form.controls.expiryDateTime.errors.required && !form.controls.expiryDateTime.errors.datecontrol">
           {{ 'yuv.framework.object-form-element.error.required' | translate }}
         </div>
-        <div *ngIf="form.controls.expiryDateTime.errors.datecontrol">{{ 'yuv.framework.object-form-element.error.date.invalid' | translate }}</div>
+        <div *ngIf="form.controls.expiryDateTime.errors.datecontrol">{{
+          'yuv.framework.object-form-element.error.date.invalid' | translate }}</div>
       </div>
-      
-      <yuv-form-input [label]="'yuv.framework.action-menu.action.follow-up.what-about.label' | translate" [disabled]="disabledForm" [required]="isRequired('whatAbout')" [skipToggle]="true">
+
+      <yuv-form-input [label]="'yuv.framework.action-menu.action.follow-up.what-about.label' | translate"
+        [disabled]="disabledForm" [required]="isRequired('whatAbout')" [skipToggle]="true">
         <yuv-string [rows]="4" [maxLength]="100" [formControlName]="'whatAbout'" [readonly]="disabledForm"></yuv-string>
       </yuv-form-input>
       <div class="err-msg" *ngIf="form.controls.whatAbout.errors && form.dirty">
@@ -27,7 +31,8 @@
 
     <div class="form-buttons" *ngIf="!canConfirmTask; else confirmTaskRef">
       <button (click)="cancel()">{{ 'yuv.framework.shared.cancel' | translate }}</button>
-      <button *ngIf="hasCurrentFollowUp" (click)="showDeleteTemp = true">{{ 'yuv.framework.shared.remove' | translate }}</button>
+      <button *ngIf="hasCurrentFollowUp" (click)="showDeleteTemp = true">{{ 'yuv.framework.shared.remove' | translate
+        }}</button>
       <button *ngIf="hasCurrentFollowUp" class="primary" [disabled]="form.invalid" (click)="editFollowUp()">
         {{ 'yuv.framework.shared.change' | translate }}
       </button>
@@ -39,26 +44,29 @@
 
   <ng-template #deleteFollowUpTemp>
     <h2 *ngIf="selection[0].title; else noTitle">
-      {{ 'yuv.framework.action-menu.action.follow-up.delete.confirm.message.with.title' | translate: { item: selection[0].title } }}
+      {{ 'yuv.framework.action-menu.action.follow-up.delete.confirm.message.with.title' | translate: { item:
+      selection[0].title } }}
     </h2>
     <div class="form-buttons">
       <button (click)="cancel()">{{ 'yuv.framework.shared.cancel' | translate }}</button>
-      <button *ngIf="hasCurrentFollowUp" (click)="deleteFollowUp()" class="primary">{{ 'yuv.framework.shared.remove' | translate }}</button>
+      <button *ngIf="hasCurrentFollowUp" (click)="deleteFollowUp()" class="primary">{{ 'yuv.framework.shared.remove' |
+        translate }}</button>
     </div>
   </ng-template>
-  
+
   <ng-template #confirmTaskRef>
-    <section >
+    <section>
       <div class="form-buttons">
         <button (click)="cancel()">{{ 'yuv.framework.shared.cancel' | translate }}</button>
-        <button (click)="confirmTask()" class="primary">{{ 'yuv.framework.action-menu.action.follow-up.confirm' | translate }}</button>
+        <button (click)="confirmTask()" class="primary">{{ 'yuv.framework.action-menu.action.follow-up.confirm' |
+          translate }}</button>
       </div>
     </section>
   </ng-template>
-  
-  
+
+
   <ng-template #noTitle>
     {{ 'yuv.framework.action-menu.action.follow-up.delete.confirm.message' | translate }}
   </ng-template>
-  
+
 </div>

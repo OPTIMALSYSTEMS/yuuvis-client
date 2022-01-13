@@ -126,6 +126,11 @@ export class ObjectDetailsComponent implements OnDestroy {
   @Input() allActions: boolean;
 
   /**
+   * Action menu options (action IDs) that should be excluded eventhought their 'isExecutable()` function passes
+   */
+  @Input() excludeObjectActions: string[];
+
+  /**
    * ID of a DmsObject. The object will be fetched from the backend upfront.
    */
   @Input()

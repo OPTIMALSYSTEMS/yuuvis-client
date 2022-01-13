@@ -1,5 +1,5 @@
-<div class="action-menu" *ngIf="showMenu"
-  [ngClass]="{ dark: dark, descriptionsEnabled: showDescriptions }" [style.width]="fullscreen" (yuvOutsideClick)="hide()">
+<div class="action-menu" *ngIf="showMenu" [ngClass]="{ dark: dark, descriptionsEnabled: showDescriptions }"
+  [style.width]="fullscreen" (yuvOutsideClick)="onOutsideClick()">
   <div class="head">
     <div class="settings" *ngIf="!showComponent">
       <yuv-form-input class="checkbox" [skipToggle]="true"
@@ -36,8 +36,8 @@
 
     <div class="group common" *ngIf="actionLists?.common.length > 0">
       <div class="group-title">{{ 'yuv.framework.action-menu.actions.group.common' | translate }}</div>
-      <div class="action" *ngFor="let actionListEntry of actionLists.common; index as i"
-        yuvThrottleClick (throttleClick)="onClick(actionListEntry, $event)">
+      <div class="action" *ngFor="let actionListEntry of actionLists.common; index as i" yuvThrottleClick
+        (throttleClick)="onClick(actionListEntry, $event)">
         <ng-container *ngTemplateOutlet="action; context: { $implicit: actionListEntry, id: +i }"></ng-container>
       </div>
     </div>
@@ -45,8 +45,8 @@
     <ng-container *ngIf="!loading; else loader">
       <div class="group further" *ngIf="actionLists?.further.length > 0">
         <div class="group-title">{{ 'yuv.framework.action-menu.actions.group.further_actions' | translate }}</div>
-        <div class="action" *ngFor="let actionListEntry of actionLists.further; index as i"
-          yuvThrottleClick (throttleClick)="onClick(actionListEntry, $event)">
+        <div class="action" *ngFor="let actionListEntry of actionLists.further; index as i" yuvThrottleClick
+          (throttleClick)="onClick(actionListEntry, $event)">
           <ng-container *ngTemplateOutlet="action; context: { $implicit: actionListEntry, id: 'f' + i }"></ng-container>
         </div>
       </div>
@@ -66,8 +66,8 @@
   <div class="group sub" *ngIf="subActionsList && !showComponent">
     <div class="sub-actions">
       <div class="group-title">{{ subActionsHeader }}</div>
-      <div class="action sub" *ngFor="let actionListEntry of subActionsList; index as i"
-        yuvThrottleClick (throttleClick)="onClick(actionListEntry, $event)">
+      <div class="action sub" *ngFor="let actionListEntry of subActionsList; index as i" yuvThrottleClick
+        (throttleClick)="onClick(actionListEntry, $event)">
         <ng-container *ngTemplateOutlet="action; context: { $implicit: actionListEntry, id: 's' + i }"></ng-container>
       </div>
     </div>

@@ -19,8 +19,7 @@ export class IconRegistryService {
 
   public getIcon(iconName: string): string | undefined {
     if (!this.registry.has(iconName)) {
-      // console.warn(`The Icon ${iconName} coult not be found, are you shure you added to the icon Registry?`);
-      throw new Error(`The Icon ${iconName} coult not be found, are you shure you added to the icon Registry?`);
+      throw new Error(`The Icon ${iconName} could not be found, are you sure you added to the icon registry?`);
     }
     return this.registry.get(iconName);
   }

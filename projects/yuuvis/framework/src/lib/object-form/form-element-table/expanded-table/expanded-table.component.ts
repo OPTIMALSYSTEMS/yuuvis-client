@@ -1,7 +1,7 @@
 import { ClientSideRowModelModule } from '@ag-grid-community/client-side-row-model';
 import { GridOptions, Module } from '@ag-grid-community/core';
 import { CsvExportModule } from '@ag-grid-community/csv-export';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, HostListener, Input, Output } from '@angular/core';
 import { IconRegistryService } from '../../../common/components/icon/service/iconRegistry.service';
 import { GridService } from '../../../services/grid/grid.service';
 import { addCircle, contentDownload, sizeToFit } from '../../../svg.generated';
@@ -21,6 +21,14 @@ export class ExpandedTableComponent {
   @Output() onMouseDown: EventEmitter<any> = new EventEmitter();
   @Output() onCellClicked: EventEmitter<any> = new EventEmitter();
   @Output() onAddRowButtonClicked: EventEmitter<any> = new EventEmitter();
+
+  @HostListener('keydown.control.alt.shift.c', ['$event'])
+  @HostListener('keydown.control.shift.c', ['$event'])
+  @HostListener('keydown.control.alt.c', ['$event'])
+  @HostListener('keydown.control.c', ['$event'])
+  copyCellHandler(event: KeyboardEvent) {
+    this.gridApi.copyToClipboard(event, this.overlayGridOptions);
+  }
 
   constructor(public gridApi: GridService, private iconRegistry: IconRegistryService) {
     this.iconRegistry.registerIcons([sizeToFit, contentDownload, addCircle]);

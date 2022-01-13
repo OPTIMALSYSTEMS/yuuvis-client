@@ -1,1 +1,70 @@
-<pre>{{task | json}}</pre>
+<div class="form">
+
+    <div class="task">{{title}}</div>
+    <div class="initiator">{{initiator}}</div>
+
+    <div *ngIf="commentHTML" class="message" [innerHTML]="commentHTML"></div>
+
+    <form class="note" [formGroup]="noteForm" (ngSubmit)="saveNote()">
+        <header><label for="note">{{'yuv.framework.task-details-task.tasklow.form.note.label'|translate}}</label>
+            <button type="button" class="secondary" *ngIf="note?.length"
+                (click)="removeNote()">{{'yuv.framework.task-details-task.tasklow.form.note.delete'|translate}}</button>
+            <button type="submit" [disabled]="!noteForm.dirty"
+                class="primary">{{'yuv.framework.task-details-task.tasklow.form.note.save'|translate}}</button>
+        </header>
+        <yuv-string id="note" formControlName="note" [rows]="5"> </yuv-string>
+    </form>
+
+
+
+    <div class="forward-panel panel" *ngIf="showForwardPanel">
+        <form [formGroup]="forwardForm">
+            <div class="forward-form-title">
+                {{'yuv.framework.task-details-task.tasklow.form.title'|translate}}
+                <button class="secondary"
+                    (click)="includeFormerComment()">{{'yuv.framework.task-details-task.tasklow.form.include-comment'|
+                    translate}}</button>
+            </div>
+            <yuv-form-input [label]="'yuv.framework.task-details-task.tasklow.form.assignee'|translate"
+                [skipToggle]="true" [required]="true">
+                <yuv-organization formControlName="nextAssignee">
+                </yuv-organization>
+            </yuv-form-input>
+
+
+            <yuv-form-input [label]="'yuv.framework.task-details-task.tasklow.form.due-date' | translate"
+                [skipToggle]="true">
+                <yuv-datetime [withTime]="true" [onlyFutureDates]="true" [formControlName]="'expiryDateTime'">
+                </yuv-datetime>
+            </yuv-form-input>
+
+            <yuv-form-input [label]="'yuv.framework.task-details-task.tasklow.form.comment'|translate">
+                <yuv-string formControlName="comment" [rows]="5">
+                </yuv-string>
+            </yuv-form-input>
+
+            <div class="buttons">
+                <button (click)="showForwardPanel = false">{{'yuv.framework.shared.cancel'| translate}}</button>
+                <button class="primary forward" [disabled]="forwardForm.invalid"
+                    (click)="forward()">{{'yuv.framework.task-details-task.tasklow.action.forward'|translate}}</button>
+            </div>
+        </form>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+</div>
+<div class="actions" *ngIf="!showForwardPanel">
+    <button class="secondary forward"
+        (click)="forward()">{{'yuv.framework.task-details-task.tasklow.action.forward'|translate}}</button>
+    <button class="primary confirm"
+        (click)="confirm()">{{'yuv.framework.task-details-task.tasklow.action.confirm'|translate}}</button>
+</div>

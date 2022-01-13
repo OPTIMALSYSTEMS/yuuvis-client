@@ -9,6 +9,7 @@
     height: 100%;
     color: var(--text-color-body);
     background-color: var(--panel-background);
+    overflow: auto;
 
     .header {
       grid-area: header;

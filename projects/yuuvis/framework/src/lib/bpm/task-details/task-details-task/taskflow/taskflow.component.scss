@@ -1,0 +1,89 @@
+:host {
+  display: grid;
+  grid-template-rows: 1fr auto;
+  grid-template-columns: 1fr;
+  grid-template-areas: 'form' 'actions';
+
+  .form {
+    grid-area: form;
+    overflow-y: auto;
+    padding: var(--app-pane-padding);
+
+    .task {
+      font-size: var(--font-title);
+      margin-bottom: 0.2em;
+    }
+
+    .initiator {
+      color: var(--text-color-caption);
+      font-style: italic;
+      margin-bottom: 1em;
+    }
+    .message {
+      background-color: var(--panel-background);
+      padding: var(--app-pane-padding);
+      margin-bottom: 1em;
+      border-radius: calc(var(--app-pane-padding) / 2);
+    }
+
+    form.note {
+      background-color: var(--panel-divider-color);
+      border-radius: 2px;
+      padding: calc(var(--app-pane-padding) / 2);
+      border-radius: calc(var(--app-pane-padding) / 2);
+
+      header {
+        display: flex;
+        align-items: center;
+        margin: 0 -2px calc(var(--app-pane-padding) / 4) 0;
+
+        label {
+          flex: 1;
+          color: var(--text-color-caption);
+        }
+        button {
+          margin: 2px;
+          padding: calc(var(--app-pane-padding) / 4) calc(var(--app-pane-padding) / 2);
+        }
+      }
+
+      yuv-string {
+        background-color: var(--panel-background-lightgrey);
+        border: 1px solid var(--panel-divider-color);
+        border-radius: 2px;
+      }
+    }
+
+    .forward-panel {
+      background-color: var(--panel-background);
+      padding: var(--app-pane-padding);
+      border-radius: 2px;
+      animation: yuvFadeInUp 200ms ease-in-out;
+      margin-top: var(--app-pane-padding);
+      height: auto;
+
+      .forward-form-title {
+        margin-bottom: var(--app-pane-padding);
+        display: flex;
+        flex-flow: row wrap;
+        justify-content: space-between;
+        align-items: center;
+
+        button {
+          padding: 2px 0.5em;
+        }
+      }
+
+      .buttons {
+        margin-top: var(--app-pane-padding);
+        display: flex;
+        flex-flow: row wrap;
+        justify-content: space-between;
+      }
+    }
+  }
+  .actions {
+    grid-area: actions;
+    justify-content: flex-end;
+  }
+}
