@@ -34,7 +34,7 @@
   "yuv.framework.action-menu.action.move.dms.object.picker.title": "Verschieben nach",
   "yuv.framework.action-menu.action.show.references.description": "Zeigt Referenzen auf dieses Objekt in einer Trefferliste an.",
   "yuv.framework.action-menu.action.show.references.label": "Referenzen anzeigen",
-  "yuv.framework.action-menu.action.taskflow.description": "Startet einen Taskflow",
+  "yuv.framework.action-menu.action.taskflow.description": "Startet einen Taskflow.",
   "yuv.framework.action-menu.action.taskflow.done.message": "Der Taskflow wurde erfolgreich gestartet",
   "yuv.framework.action-menu.action.taskflow.form.assignee": "Empfänger",
   "yuv.framework.action-menu.action.taskflow.form.comment": "Kommentar",
