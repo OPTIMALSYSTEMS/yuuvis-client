@@ -116,7 +116,9 @@ export class AuditComponent implements OnInit, OnDestroy {
       a401: this.translate.instant('yuv.framework.audit.label.get.metadata'),
       a402: this.translate.instant('yuv.framework.audit.label.get.rendition.text'),
       a403: this.translate.instant('yuv.framework.audit.label.get.rendition.pdf'),
-      a404: this.translate.instant('yuv.framework.audit.label.get.rendition.thumbnail')
+      a404: this.translate.instant('yuv.framework.audit.label.get.rendition.thumbnail'),
+
+      a1000: this.translate.instant('yuv.framework.audit.label.get.custom')
     };
 
     this.eventService
@@ -270,7 +272,8 @@ export class AuditComponent implements OnInit, OnDestroy {
       { label: this.translate.instant('yuv.framework.audit.label.group.update'), actions: actionKeys.filter((k) => k.startsWith('a3')) },
       { label: this.translate.instant('yuv.framework.audit.label.group.get'), actions: actionKeys.filter((k) => k.startsWith('a4')) },
       { label: this.translate.instant('yuv.framework.audit.label.group.delete'), actions: actionKeys.filter((k) => k.startsWith('a2')) },
-      { label: this.translate.instant('yuv.framework.audit.label.group.create'), actions: actionKeys.filter((k) => k.startsWith('a1')) }
+      { label: this.translate.instant('yuv.framework.audit.label.group.create'), actions: actionKeys.filter((k) => k.startsWith('a1')) },
+      { label: this.translate.instant('yuv.framework.audit.label.group.custom'), actions: actionKeys.filter((k) => k.startsWith('a1000')) }
     ];
 
     let fbInput = {
