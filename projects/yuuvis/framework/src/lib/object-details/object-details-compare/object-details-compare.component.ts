@@ -19,7 +19,7 @@ import { ObjectCompareInput } from './object-details-compare.interface';
   styleUrls: ['./object-details-compare.component.scss']
 })
 export class ObjectDetailsCompareComponent implements OnInit {
-  userIsAdmin: boolean;
+  isAdvancedUser: boolean;
 
   @Input() activeVersion: DmsObject;
 
@@ -39,7 +39,7 @@ export class ObjectDetailsCompareComponent implements OnInit {
 
   constructor(private userService: UserService, private iconRegistry: IconRegistryService) {
     this.iconRegistry.registerIcons([compare]);
-    this.userIsAdmin = this.userService.hasAdministrationRoles;
+    this.isAdvancedUser = this.userService.isAdvancedUser;
   }
 
   toggle() {

@@ -79,18 +79,14 @@ export class UserService {
   }
 
   get hasManageSettingsRole(): boolean {
-    return this.user?.authorities?.includes(AdministrationRoles.MANAGE_SETTINGS) || false;
+    const customRole = this.config.get('core.permissions.manageSettingsRole');
+    const manageSettingsRole = customRole || AdministrationRoles.MANAGE_SETTINGS;
+    return this.user?.authorities?.includes(manageSettingsRole) || false;
   }
 
-  /**
-   * Advanced users will have access to more detailed information.
-   */
   get isAdvancedUser(): boolean {
-    // advanced user role can be customized using config ...
     const customRole = this.config.get('core.permissions.advancedUserRole');
     const advancedUserRole = customRole || UserRoles.ADVANCED_USER;
-    console.log(advancedUserRole);
-
     return this.user?.authorities?.includes(advancedUserRole) || false;
   }
 

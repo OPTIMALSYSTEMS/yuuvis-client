@@ -15,6 +15,7 @@ export interface YuvConfig {
     };
     permissions?: {
       advancedUserRole?: string;
+      manageSettingsRole?: string;
     };
   };
   oidc?: OpenIdConfig;
