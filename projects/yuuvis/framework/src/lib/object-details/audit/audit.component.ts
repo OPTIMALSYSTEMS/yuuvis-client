@@ -163,9 +163,18 @@ export class AuditComponent implements OnInit, OnDestroy {
           ${this.system.getLocalizedResource(t[0].trim() + '_label')}: ${this.system.getLocalizedResource(`${t[0].trim()}:${t[1].trim()}_label`)}
           `;
         }
+      } else if (i.action === 325) {
+        // version restore audit
+        i.more = this.translate.instant('yuv.framework.audit.label.update.restore.more', { version: 1 });
       }
     });
     return res;
+  }
+
+  private getParams() {
+    // OBJECT_RESTORED: [1]
+    // OBJECT_TAG_: [tagname, 1]
+    // const m = i.detail.match(/\[(.*?)\]/);
   }
 
   /**
