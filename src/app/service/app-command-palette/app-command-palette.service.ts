@@ -191,9 +191,6 @@ export class AppCommandPaletteService {
   private addDmsObjectCommands(dmsObject: DmsObject) {
     const commands: CommandPaletteCommand[] = [];
 
-    if (this.actionService.isExecutableSync('yuv-open-versions-action', dmsObject)) {
-      commands.push({ id: `dmsobject__versions`, label: this.translate.instant('yuv.client.cmp.dmsobject.versions') });
-    }
     if (this.actionService.isExecutableSync('yuv-delete-action', dmsObject)) {
       commands.push({ id: `dmsobject__delete`, label: this.translate.instant('yuv.client.cmp.dmsobject.delete') });
     }
@@ -213,10 +210,6 @@ export class AppCommandPaletteService {
           }
           case 'dmsobject__delete': {
             this.dmsService.deleteDmsObject(dmsObject.id).subscribe();
-            break;
-          }
-          case 'dmsobject__versions': {
-            this.router.navigate(['versions', dmsObject.id]);
             break;
           }
         }

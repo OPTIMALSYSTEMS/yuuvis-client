@@ -178,6 +178,7 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
 
   constructor(
     @Attribute('disableAggregations') private disableAggregations: string,
+    @Attribute('autofocus') private af: string,
     private quickSearchService: QuickSearchService,
     private fb: FormBuilder,
     private popoverService: PopoverService,
@@ -189,7 +190,7 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
     private iconRegistry: IconRegistryService
   ) {
     this.iconRegistry.registerIcons([arrowDown, filter, search, clear, reset]);
-    this.autofocus = this.device.isDesktop;
+    this.autofocus = !!af;
 
     this.searchForm = this.fb.group({
       term: [''],

@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 import { DmsObject, TranslateService } from '@yuuvis/core';
-import { ActionService, DmsObjectTarget, LinkAction, SelectionRange, versions } from '@yuuvis/framework';
+import { DmsObjectTarget, LinkAction, SelectionRange, versions } from '@yuuvis/framework';
 import { of } from 'rxjs';
 
 @Component({
@@ -15,16 +16,15 @@ export class OpenVersionsActionComponent extends DmsObjectTarget implements Link
   group = 'common';
   range = SelectionRange.SINGLE_SELECT;
 
-  constructor(private actionService: ActionService, private translate: TranslateService) {
+  constructor(private router: Router, private translate: TranslateService) {
     super();
     this.label = this.translate.instant('yuv.client.action.open.versions');
     this.description = this.translate.instant('yuv.client.action.open.versions.description');
   }
 
   isExecutable(item: DmsObject) {
-    // const oneVersion = item.version > 1;
-    // return observableOf(this.isAllowedState() && oneVersion);
-    return of(this.actionService.isExecutableSync('yuv-open-versions-action', item));
+    const oneVersion = item.version > 1;
+    return of(this.isAllowedState() && oneVersion);
   }
 
   getParams(selection: DmsObject[]) {
@@ -37,8 +37,8 @@ export class OpenVersionsActionComponent extends DmsObjectTarget implements Link
     return `/versions/${item.id}`;
   }
 
-  // isAllowedState() {
-  //   const disabledStates = ['/versions'];
-  //   return !disabledStates.some((s) => this.router.url.startsWith(s));
-  // }
+  isAllowedState() {
+    const disabledStates = ['/versions'];
+    return !disabledStates.some((s) => this.router.url.startsWith(s));
+  }
 }

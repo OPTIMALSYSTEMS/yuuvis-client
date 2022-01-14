@@ -169,9 +169,5 @@ export class ActionService {
       const validState = !/\/inbox|\/processes/.test(this.router.url);
       return validState && element && element.rights && element.rights.deleteObject && !isRetentionActive;
     }
-    // open versions action
-    else if (action === 'yuv-open-versions-action') {
-      return element.version > 1 && !['/versions'].some((s) => this.router.url.startsWith(s));
-    }
   }
 }
