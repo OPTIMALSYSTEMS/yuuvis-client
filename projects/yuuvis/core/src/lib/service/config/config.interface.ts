@@ -13,6 +13,9 @@ export interface YuvConfig {
     logging?: {
       level: 'debug' | 'error' | 'warn' | 'info';
     };
+    permissions?: {
+      advancedUserRole?: string;
+    };
   };
   oidc?: OpenIdConfig;
 }

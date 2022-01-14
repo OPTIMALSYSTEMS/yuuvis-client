@@ -10,7 +10,7 @@ import { ConfigService } from '../config/config.service';
 import { EventService } from '../event/event.service';
 import { YuvEventType } from '../event/events';
 import { Logger } from '../logger/logger';
-import { AdministrationRoles } from '../system/system.enum';
+import { AdministrationRoles, UserRoles } from '../system/system.enum';
 import { UserPermissions, UserPermissionsSection } from '../system/system.interface';
 import { SystemService } from '../system/system.service';
 
@@ -80,6 +80,18 @@ export class UserService {
 
   get hasManageSettingsRole(): boolean {
     return this.user?.authorities?.includes(AdministrationRoles.MANAGE_SETTINGS) || false;
+  }
+
+  /**
+   * Advanced users will have access to more detailed information.
+   */
+  get isAdvancedUser(): boolean {
+    // advanced user role can be customized using config ...
+    const customRole = this.config.get('core.permissions.advancedUserRole');
+    const advancedUserRole = customRole || UserRoles.ADVANCED_USER;
+    console.log(advancedUserRole);
+
+    return this.user?.authorities?.includes(advancedUserRole) || false;
   }
 
   canCreateObjects: boolean;
