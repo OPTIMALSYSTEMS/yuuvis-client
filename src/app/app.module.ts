@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { ServiceWorkerModule } from '@angular/service-worker';
+import { CommandPaletteComponent, CommandPaletteModule } from '@yuuvis/command-palette';
 import { YuvColumnConfigModule, YuvCommonModule, YuvComponentsModule, YuvDirectivesModule, YuvFrameworkModule } from '@yuuvis/framework';
 import { AccordionModule } from 'primeng/accordion';
 import { environment } from '../environments/environment';
@@ -16,6 +17,7 @@ import { ColumnConfigurationComponent } from './states/column-configuration/colu
 import { CreateComponent } from './states/create/create.component';
 import { DashboardComponent } from './states/dashboard/dashboard.component';
 import { FilterConfigurationComponent } from './states/filter-configuration/filter-configuration.component';
+import { FollowUpsComponent } from './states/follow-ups/follow-ups.component';
 import { InboxComponent } from './states/inbox/inbox.component';
 import { NotFoundComponent } from './states/not-found/not-found.component';
 import { ObjectComponent } from './states/object/object.component';
@@ -24,7 +26,6 @@ import { ProcessesComponent } from './states/processes/processes.component';
 import { ResultComponent } from './states/result/result.component';
 import { SettingsComponent } from './states/settings/settings.component';
 import { VersionsComponent } from './states/versions/versions.component';
-import { FollowUpsComponent } from './states/follow-ups/follow-ups.component';
 
 @NgModule({
   declarations: [
@@ -48,6 +49,9 @@ import { FollowUpsComponent } from './states/follow-ups/follow-ups.component';
     BrowserModule,
     FormsModule,
     AccordionModule,
+    CommandPaletteModule.forRoot({
+      searchModeIndicator: '?'
+    }),
     YuvFrameworkModule.forRoot(
       {
         main: ['assets/default/config/main.json'],
@@ -91,6 +95,7 @@ import { FollowUpsComponent } from './states/follow-ups/follow-ups.component';
     ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production })
   ],
   providers: [{ provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
+  entryComponents: [CommandPaletteComponent]
 })
 export class AppModule {}

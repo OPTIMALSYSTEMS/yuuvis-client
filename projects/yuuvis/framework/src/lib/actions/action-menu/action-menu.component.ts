@@ -44,6 +44,12 @@ export class ActionMenuComponent implements OnDestroy {
    * Set ID of Action that should be shown when menu opens.
    */
   @Input() activeAction: string;
+  /**
+   * List of actions (action IDs = actions selector) that should not be shown.
+   * Those actions will then not be shown in the action menue even if their
+   * `isExecutable()` function passes.
+   */
+  @Input() skipActions: string[];
 
   /**
    * Specifies the visibility of the menu.
@@ -107,7 +113,7 @@ export class ActionMenuComponent implements OnDestroy {
   private getActions() {
     this.loading = true;
     this.actionService
-      .getActionsList(this.selection, this.viewContainerRef)
+      .getActionsList(this.selection, this.viewContainerRef, this.skipActions)
       .pipe(
         finalize(() => (this.loading = false)),
         tap((actionsList) => {

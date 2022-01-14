@@ -360,9 +360,12 @@ export class ObjectCreateComponent implements OnDestroy {
   }
 
   private processAFOTypeWithFile() {
-    this.objCreateService.setNewState({ currentStep: CurrentStep.FILES });
+    this.objCreateService.setNewState({
+      currentStep: CurrentStep.FILES,
+      busy: false,
+      done: this.isReady()
+    });
     this.objCreateService.setNewBreadcrumb(CurrentStep.FILES);
-    this.objCreateService.setNewState({ busy: false, done: this.isReady() });
   }
 
   private processAFOTypeWithoutFile() {

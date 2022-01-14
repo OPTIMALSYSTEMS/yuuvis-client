@@ -1,5 +1,6 @@
 import { ComponentFactoryResolver, Inject, Injectable, InjectionToken, ViewContainerRef } from '@angular/core';
-import { Utils } from '@yuuvis/core';
+import { Router } from '@angular/router';
+import { DmsObject, Utils } from '@yuuvis/core';
 import { merge as observableMerge, Observable, of as observableOf, of } from 'rxjs';
 import { combineAll, map, switchMap, tap } from 'rxjs/operators';
 import { ActionListEntry } from '../interfaces/action-list-entry';
@@ -26,7 +27,8 @@ export class ActionService {
     @Inject(ACTIONS) private actions: any[] = [],
     @Inject(CUSTOM_ACTIONS) private custom_actions: any[] = [],
     private _componentFactoryResolver: ComponentFactoryResolver,
-    private pluginsService: PluginsService
+    private pluginsService: PluginsService,
+    private router: Router
   ) {}
 
   /**
@@ -36,10 +38,14 @@ export class ActionService {
    * @param viewContainerRef - Anchor element that specifies the location of this container in the containing view.
    * Each view container can have only one anchor element, and each anchor element
    * can have only a single view container.
+   * @param skipActions List of actions (IDs) that should be excluded
    */
-  getActionsList(selection: any[], viewContainerRef: ViewContainerRef): Observable<ActionListEntry[]> {
+  getActionsList(selection: any[], viewContainerRef: ViewContainerRef, skipActions?: string[]): Observable<ActionListEntry[]> {
     // todo: find better solution to exclude components for actions that need to be initialized later
-    return this.getPluginActions().pipe(switchMap((_) => this.getExecutableActionsListFromGivenActions(this.allActionComponents, selection, viewContainerRef)));
+    return this.getPluginActions().pipe(
+      switchMap((_) => this.getExecutableActionsListFromGivenActions(this.allActionComponents, selection, viewContainerRef)),
+      map((res: ActionListEntry[]) => (skipActions ? res.filter((a) => !skipActions.includes(a.id)) : res))
+    );
   }
 
   private getPluginActions() {
@@ -148,5 +154,20 @@ export class ActionService {
         break;
     }
     return isRangeAllowed;
+  }
+
+  isExecutableSync(action: string, element: DmsObject): boolean {
+    // delete object action
+    if (action === 'yuv-delete-action') {
+      let isRetentionActive = false;
+      if (element.data['system:rmStartOfRetention'] && element.data['system:rmExpirationDate']) {
+        const currentDate = new Date();
+        const retentionStart = new Date(element.data['system:rmStartOfRetention']);
+        const retentionEnd = new Date(element.data['system:rmExpirationDate']);
+        isRetentionActive = retentionStart <= currentDate && currentDate <= retentionEnd;
+      }
+      const validState = !/\/inbox|\/processes/.test(this.router.url);
+      return validState && element && element.rights && element.rights.deleteObject && !isRetentionActive;
+    }
   }
 }
