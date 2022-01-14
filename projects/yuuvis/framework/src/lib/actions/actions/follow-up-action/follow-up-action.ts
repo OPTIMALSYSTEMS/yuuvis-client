@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { DmsObject, TranslateService } from '@yuuvis/core';
+import { BpmService, DmsObject, TranslateService } from '@yuuvis/core';
 import { of as observableOf } from 'rxjs';
 import { resubmission } from '../../../svg.generated';
 import { DmsObjectTarget } from '../../action-target';
@@ -23,13 +23,13 @@ export class FollowUpActionComponent extends DmsObjectTarget implements Componen
   range = SelectionRange.SINGLE_SELECT;
   component = FollowUpComponent;
 
-  constructor(private translate: TranslateService) {
+  constructor(private translate: TranslateService, private bpmService: BpmService) {
     super();
     this.label = this.translate.instant(`yuv.framework.action-menu.action.follow-up.label`);
     this.description = this.translate.instant(`yuv.framework.action-menu.action.follow-up.description`);
   }
 
   isExecutable(element: DmsObject) {
-    return observableOf(true);
+    return observableOf(this.bpmService.supports.followUp);
   }
 }

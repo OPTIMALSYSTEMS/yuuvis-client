@@ -1,9 +1,9 @@
 import { ClientSideRowModelModule } from '@ag-grid-community/client-side-row-model';
 import { ColDef, GridOptions, Module } from '@ag-grid-community/core';
 import { CsvExportModule } from '@ag-grid-community/csv-export';
-import { Component, forwardRef, Input, NgZone, TemplateRef, ViewChild } from '@angular/core';
+import { Component, forwardRef, HostListener, Input, NgZone, TemplateRef, ViewChild } from '@angular/core';
 import { ControlValueAccessor, FormControl, NG_VALIDATORS, NG_VALUE_ACCESSOR, Validator } from '@angular/forms';
-import { Classification, PendingChangesService } from '@yuuvis/core';
+import { Classification, PendingChangesService, SystemService } from '@yuuvis/core';
 import { takeUntil } from 'rxjs/operators';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { UnsubscribeOnDestroy } from '../../common/util/unsubscribe.component';
@@ -97,12 +97,21 @@ export class FormElementTableComponent extends UnsubscribeOnDestroy implements C
     this.updateTableValueAndRunChangeDetection();
   };
 
+  @HostListener('keydown.control.alt.shift.c', ['$event'])
+  @HostListener('keydown.control.shift.c', ['$event'])
+  @HostListener('keydown.control.alt.c', ['$event'])
+  @HostListener('keydown.control.c', ['$event'])
+  copyCellHandler(event: KeyboardEvent) {
+    this.gridApi.copyToClipboard(event, this.gridOptions);
+  }
+
   constructor(
     private ngZone: NgZone,
     private pendingChanges: PendingChangesService,
     public gridApi: GridService,
     private popoverService: PopoverService,
-    private iconRegistry: IconRegistryService
+    private iconRegistry: IconRegistryService,
+    private systemService: SystemService
   ) {
     super();
     this.iconRegistry.registerIcons([expand, sizeToFit, contentDownload, addCircle]);
@@ -195,6 +204,10 @@ export class FormElementTableComponent extends UnsubscribeOnDestroy implements C
     return hasElements
       ? this._elements.map((el, i) => {
           let col: ColDef = this.gridApi.getColumnDefinition(el);
+          if (el.labelkey) {
+            el.label = this.systemService.getLocalizedResource(`${el.labelkey}_label`) || el.labelkey;
+          }
+
           Object.assign(col, {
             rowDrag: dragEnabled && i === 0,
             headerName: el.label,

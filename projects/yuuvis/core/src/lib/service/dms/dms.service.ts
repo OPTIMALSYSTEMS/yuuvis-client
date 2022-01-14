@@ -99,6 +99,16 @@ export class DmsService {
   }
 
   /**
+   * Restore older version of a dms object.
+   * @param id ID of the object to be restored
+   * @param version version of the object to be restored
+   */
+  restoreDmsObject(id: string, version: number, silent = false): Observable<any> {
+    const url = `/dms/objects/${id}/versions/${version}/actions/restore`;
+    return this.backend.post(url, {}, ApiBase.apiWeb).pipe(this.triggerEvent(YuvEventType.DMS_OBJECT_UPDATED, id, silent));
+  }
+
+  /**
    * Upload (add/replace) content to a dms object.
    * @param objectId ID of the dms object to upload the file to
    * @param file The file to be uploaded

@@ -1,0 +1,28 @@
+// action component containing a form (e.g. BPM start forms)
+.yuv-action-component-form {
+  padding: var(--app-pane-padding);
+  display: block;
+  h2 {
+    font-weight: var(--font-weight-light);
+    font-size: var(--font-subhead);
+  }
+
+  .err-msg {
+    font-size: var(--font-hint);
+    color: var(--color-error);
+    padding: calc(var(--app-pane-padding) / 4) 0;
+    border: 0;
+  }
+
+  .form-buttons {
+    display: flex;
+    flex-flow: wrap;
+    padding: var(--app-pane-padding) 0;
+    justify-content: flex-end;
+    margin: -2px;
+
+    button {
+      margin: 0 2px;
+    }
+  }
+}

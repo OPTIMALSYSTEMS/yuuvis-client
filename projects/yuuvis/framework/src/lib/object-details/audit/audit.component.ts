@@ -1,6 +1,17 @@
 import { Component, Inject, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { AuditQueryOptions, AuditQueryResult, AuditService, DmsObject, EventService, RangeValue, TranslateService, YuvEvent, YuvEventType } from '@yuuvis/core';
+import {
+  AuditQueryOptions,
+  AuditQueryResult,
+  AuditService,
+  DmsObject,
+  EventService,
+  RangeValue,
+  SystemService,
+  TranslateService,
+  YuvEvent,
+  YuvEventType
+} from '@yuuvis/core';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { ROUTES, YuvRoutes } from '../../routing/routes';
@@ -26,6 +37,7 @@ import { arrowNext, filter } from '../../svg.generated';
 })
 export class AuditComponent implements OnInit, OnDestroy {
   private _objectID: string;
+  private _objectTypeID: string;
   private initialFetch: boolean;
   searchForm: FormGroup;
   auditsRes: AuditQueryResult;
@@ -40,18 +52,19 @@ export class AuditComponent implements OnInit, OnDestroy {
   actionGroups: any = {};
   auditLabels: any = {};
 
-  /**
-   * ID of the `DmsObject` to list the audits for
-   */
-  @Input() set objectID(id: string) {
-    if (!id) {
+  @Input() set dmsObject(o: DmsObject) {
+    if (!o) {
       this._objectID = null;
+      this._objectTypeID = null;
       this.auditsRes = null;
-    } else if (!this._objectID || this._objectID !== id) {
-      this._objectID = id;
+    } else if (!this._objectID || this._objectID !== o.id) {
+      this._objectID = o.id;
+      this._objectTypeID = o.objectTypeId;
       if (this.initialFetch) {
-        this.fetchAuditEntries();
+        this.query();
       }
+    } else {
+      this.query();
     }
   }
 
@@ -73,6 +86,7 @@ export class AuditComponent implements OnInit, OnDestroy {
   constructor(
     private auditService: AuditService,
     private eventService: EventService,
+    private system: SystemService,
     private fb: FormBuilder,
     private translate: TranslateService,
     private iconRegistry: IconRegistryService,
@@ -96,6 +110,7 @@ export class AuditComponent implements OnInit, OnDestroy {
       a302: this.translate.instant('yuv.framework.audit.label.update.metadata.withcontent'),
       a303: this.translate.instant('yuv.framework.audit.label.update.move.content'),
       a310: this.translate.instant('yuv.framework.audit.label.update.tag'),
+      a325: this.translate.instant('yuv.framework.audit.label.update.restore'),
 
       a400: this.translate.instant('yuv.framework.audit.label.get.content'),
       a401: this.translate.instant('yuv.framework.audit.label.get.metadata'),
@@ -111,12 +126,7 @@ export class AuditComponent implements OnInit, OnDestroy {
         const dmsObject = e.data as DmsObject;
         // reload audit entries when update belongs to the current dms object
         if (dmsObject.id === this.objectID) {
-          // check if a search is set
-          if (this.filtered) {
-            this.query();
-          } else {
-            this.fetchAuditEntries();
-          }
+          this.query();
         }
       });
   }
@@ -131,9 +141,9 @@ export class AuditComponent implements OnInit, OnDestroy {
     }
     options.allActions = !!this.allActions;
 
-    this.auditService.getAuditEntries(this._objectID, options).subscribe(
+    this.auditService.getAuditEntries(this._objectID, this._objectTypeID, options).subscribe(
       (res: AuditQueryResult) => {
-        this.auditsRes = res;
+        this.auditsRes = this.mapResult(res);
         this.busy = false;
       },
       (err) => {
@@ -142,11 +152,26 @@ export class AuditComponent implements OnInit, OnDestroy {
     );
   }
 
+  private mapResult(res: AuditQueryResult): AuditQueryResult {
+    res.items.forEach((i) => {
+      // tag related audits
+      if ([110, 210, 310].includes(i.action)) {
+        const m = i.detail.match(/\[(.*?)\]/);
+        if (m && m[1]) {
+          const t = m[1].split(',');
+          i.more = `
+          ${this.system.getLocalizedResource(t[0].trim() + '_label')}: ${this.system.getLocalizedResource(`${t[0].trim()}:${t[1].trim()}_label`)}
+          `;
+        }
+      }
+    });
+    return res;
+  }
+
   /**
    * Execute a query from the search panel.
    */
   query() {
-    this.searchForm.value;
     const range: RangeValue = this.searchForm.value.dateRange;
 
     let options: AuditQueryOptions = {};
@@ -179,7 +204,8 @@ export class AuditComponent implements OnInit, OnDestroy {
       dateRange: null
     };
     Object.keys(this.auditLabels).forEach((a) => {
-      patch[a] = null;
+      // exclude read actions
+      patch[a] = a.startsWith('a4') ? false : true;
     });
     this.searchForm.patchValue(patch);
     this.filtered = false;
@@ -210,7 +236,7 @@ export class AuditComponent implements OnInit, OnDestroy {
     this.busy = true;
     this.auditService.getPage(this.auditsRes, page).subscribe(
       (res: AuditQueryResult) => {
-        this.auditsRes = res;
+        this.auditsRes = this.mapResult(res);
         this.busy = false;
       },
       (err) => {
@@ -255,7 +281,7 @@ export class AuditComponent implements OnInit, OnDestroy {
         const groupEntry = {
           label: g.label,
           actions: g.actions.map((a) => {
-            fbInput[a] = [false];
+            fbInput[a] = [a.startsWith('a4') ? false : true];
             return a;
           })
         };
@@ -264,7 +290,7 @@ export class AuditComponent implements OnInit, OnDestroy {
     });
     this.searchForm = this.fb.group(fbInput);
     if (!this.initialFetch) {
-      this.fetchAuditEntries();
+      this.query();
       this.initialFetch = true;
     }
   }

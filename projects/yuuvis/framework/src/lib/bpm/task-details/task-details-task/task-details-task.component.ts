@@ -1,7 +1,8 @@
-import { Component, EventEmitter, Input, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
+import { Component, EventEmitter, HostBinding, Input, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
 import {
   InboxService,
   PendingChangesService,
+  ProcessDefinitionKey,
   ProcessPostPayload,
   ProcessVariable,
   SystemService,
@@ -32,6 +33,8 @@ export class TaskDetailsTaskComponent implements OnInit {
   taskMessagesList: TaskMessage[] = [];
   formState: FormStatusChangedEvent;
 
+  @HostBinding('class.taskflow') isTaskFlow: boolean;
+
   @Input() set task(t: Task) {
     this._task = t;
     this.error = null;
@@ -40,6 +43,8 @@ export class TaskDetailsTaskComponent implements OnInit {
     this.claimable = false;
     this.taskDescription = this.getDescription(t);
     this.getMessages(t);
+
+    this.isTaskFlow = t.processDefinition.idPrefix === ProcessDefinitionKey.TASK_FLOW;
 
     if (t?.taskForm) {
       if (t.taskForm.model) {

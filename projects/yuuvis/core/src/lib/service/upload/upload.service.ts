@@ -102,7 +102,7 @@ export class UploadService {
 
     const headers: any = this.backend.getAuthHeaders();
     if (file) {
-      headers['Content-Disposition'] = `attachment; filename="${file.name}"`;
+      headers['Content-Disposition'] = `attachment; filename*=utf-8''${encodeURIComponent(file.name)}`;
     }
 
     return new HttpRequest(method, url, file || formData, {

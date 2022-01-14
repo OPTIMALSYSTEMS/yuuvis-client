@@ -125,7 +125,9 @@ export class ColumnConfigComponent implements OnInit {
     ];
 
     const popoverConfig: PopoverConfig = {
-      maxHeight: '70%',
+      maxHeight: '80%',
+      width: '55%',
+      minWidth: '400px',
       data: {
         groups: groups
       }

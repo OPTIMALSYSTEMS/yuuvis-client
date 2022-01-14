@@ -1,57 +1,63 @@
-<div class="task-description" *ngIf="taskDescription">
-    {{taskDescription}}
-</div>
-
-<div class="task-messages" *ngIf="taskMessages?.length">
-    <div class="message {{m.level}}" *ngFor="let m of taskMessages">{{m.message}}</div>
-    <ul *ngIf="taskMessages?.length">
-        <li class="message {{m.level}}" *ngFor="let m of taskMessagesList">{{m.message}}</li>
-    </ul>
-    <!-- <div class="message {{m.level}}" *ngFor="let m of taskMessages">{{m.message}}</div> -->
-</div>
-
-<div class="task-data">
-    <yuv-object-form *ngIf="formOptions" [formOptions]="formOptions" (statusChanged)="onFormStatusChanged($event)">
-    </yuv-object-form>
-
-    <div class="error" *ngIf="error">{{'yuv.framework.task-details-task.form.load.error'|translate}}</div>
-</div>
-
-<div class="actions" [ngClass]="{disabled: busy}">
-    <div class="left" *ngIf="(!claimable || _task.assignee) && delegatable">
-        <button class="secondary" (click)="getDelegationAssignee()">
-            {{'yuv.framework.task-details-task.button.delegate'|translate}}</button>
+<ng-container *ngIf="!isTaskFlow; else tplTaskFlow">
+    <div class="task-description" *ngIf="taskDescription">
+        {{taskDescription}}
     </div>
-    <div class="right">
-        <button (click)="resetForm()" *ngIf="formState?.dirty">
-            {{'yuv.framework.task-details-task.button.reset'|translate}}</button>
-        <button class="" (click)="update()" *ngIf="_task.assignee && formOptions"
-            [disabled]="error || !formState?.dirty || formState?.invalid">
-            {{'yuv.framework.task-details-task.button.update'|translate}}</button>
 
-        <ng-container *ngIf="claimable">
-            <button *ngIf="!_task.assignee; else tplUnClaim" class="primary" (click)="claim(true)">
-                {{'yuv.framework.task-details-task.button.claim'|translate}}
-            </button>
-            <ng-template #tplUnClaim>
-                <button class="secondary" (click)="claim(false)">
-                    {{'yuv.framework.task-details-task.button.unclaim'|translate}}
+    <div class="task-messages" *ngIf="taskMessages?.length">
+        <div class="message {{m.level}}" *ngFor="let m of taskMessages">{{m.message}}</div>
+        <ul *ngIf="taskMessages?.length">
+            <li class="message {{m.level}}" *ngFor="let m of taskMessagesList">{{m.message}}</li>
+        </ul>
+        <!-- <div class="message {{m.level}}" *ngFor="let m of taskMessages">{{m.message}}</div> -->
+    </div>
+
+    <div class="task-data">
+        <yuv-object-form *ngIf="formOptions" [formOptions]="formOptions" (statusChanged)="onFormStatusChanged($event)">
+        </yuv-object-form>
+
+        <div class="error" *ngIf="error">{{'yuv.framework.task-details-task.form.load.error'|translate}}</div>
+    </div>
+
+    <div class="actions" [ngClass]="{disabled: busy}">
+        <div class="left" *ngIf="(!claimable || _task.assignee) && delegatable">
+            <button class="secondary" (click)="getDelegationAssignee()">
+                {{'yuv.framework.task-details-task.button.delegate'|translate}}</button>
+        </div>
+        <div class="right">
+            <button (click)="resetForm()" *ngIf="formState?.dirty">
+                {{'yuv.framework.task-details-task.button.reset'|translate}}</button>
+            <button class="" (click)="update()" *ngIf="_task.assignee && formOptions"
+                [disabled]="error || !formState?.dirty || formState?.invalid">
+                {{'yuv.framework.task-details-task.button.update'|translate}}</button>
+
+            <ng-container *ngIf="claimable">
+                <button *ngIf="!_task.assignee; else tplUnClaim" class="primary" (click)="claim(true)">
+                    {{'yuv.framework.task-details-task.button.claim'|translate}}
                 </button>
-            </ng-template>
-        </ng-container>
+                <ng-template #tplUnClaim>
+                    <button class="secondary" (click)="claim(false)">
+                        {{'yuv.framework.task-details-task.button.unclaim'|translate}}
+                    </button>
+                </ng-template>
+            </ng-container>
 
-        <!-- confirm -->
-        <button *ngIf="_task?.delegationState !== 'pending' && (!claimable || _task.assignee)" class="primary"
-            (click)="confirm()">
-            {{'yuv.framework.task-details-task.button.confirm'|translate}}
-        </button>
+            <!-- confirm -->
+            <button *ngIf="_task?.delegationState !== 'pending' && (!claimable || _task.assignee)" class="primary"
+                (click)="confirm()">
+                {{'yuv.framework.task-details-task.button.confirm'|translate}}
+            </button>
 
-        <!-- resolve -->
-        <button *ngIf="_task?.delegationState === 'pending'" class="primary" (click)="resolve()">
-            {{'yuv.framework.task-details-task.button.resolve'|translate}}
-        </button>
+            <!-- resolve -->
+            <button *ngIf="_task?.delegationState === 'pending'" class="primary" (click)="resolve()">
+                {{'yuv.framework.task-details-task.button.resolve'|translate}}
+            </button>
+        </div>
     </div>
-</div>
+</ng-container>
+
+<ng-template #tplTaskFlow>
+    <yuv-taskflow [task]="_task"></yuv-taskflow>
+</ng-template>
 
 <ng-template #tplDelegationAssignee let-popover="popover">
     <yuv-task-delegate-picker [popover]="popover" (assigneePicked)="delegate($event); popover.close()">

@@ -13,6 +13,20 @@ $range-selection-highlight-color: $primary-color;
       display: flex;
     }
 
+    .copy-cell {
+      @keyframes copy-cell {
+        from {
+          background-color: var(--color-accent);
+        }
+        to {
+          background-color: none;
+        }
+      }
+
+      animation-name: copy-cell;
+      animation-duration: 4s;
+    }
+
     .ag-cell {
       &.yuvTaskSingleRowCell > span {
         width: 100%;
@@ -78,19 +92,8 @@ $range-selection-highlight-color: $primary-color;
         left: -9999px;
       }
 
-      &:active {
-        box-shadow: none;
-        background-color: rgba(255, 255, 255, 0.2);
-        color: var(--text-color-caption);
-        border-color: var(--text-color-caption);
-      }
-      &:focus-within {
-        box-shadow: none;
-        background-color: rgba(255, 255, 255, 0.2);
-        color: var(--text-color-caption);
-        border-color: var(--text-color-caption);
-        outline: 0;
-      }
+      &:active,
+      &:focus-within,
       &:focus {
         box-shadow: none;
         background-color: rgba(255, 255, 255, 0.2);
@@ -138,18 +141,8 @@ $range-selection-highlight-color: $primary-color;
         margin-left: -2px;
       }
 
-      &:active {
-        box-shadow: none;
-        background-color: rgba(255, 255, 255, 0.2);
-        color: var(--text-color-caption);
-        border-color: var(--text-color-caption);
-      }
-      &:focus-within {
-        box-shadow: none;
-        background-color: rgba(255, 255, 255, 0.2);
-        color: var(--text-color-caption);
-        border-color: var(--text-color-caption);
-      }
+      &:active,
+      &:focus-within,
       &:focus {
         box-shadow: none;
         background-color: rgba(255, 255, 255, 0.2);

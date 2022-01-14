@@ -10,6 +10,27 @@ export const FollowUpVars = {
   expiryDateTime: 'expiryDateTime'
 };
 
+export const TaskflowVars = {
+  title: 'title',
+  comment: 'comment',
+  taskStatus: 'taskStatus',
+  expiryDateTime: 'expiryDatetime',
+  nextAssignee: 'nextAssignee',
+  note: 'note'
+};
+
+export interface ProcessDefinition {
+  category: string;
+  description: string;
+  global: boolean;
+  id: string;
+  key: string;
+  name: string;
+  startFormDefined: true;
+  suspended: false;
+  version: number;
+}
+
 /**
  * In BPM you can create process models that define a couple of variables and
  * activities belonging to the process model.
@@ -79,6 +100,7 @@ export interface Task {
 }
 
 export enum ProcessDefinitionKey {
+  TASK_FLOW = 'dms-lite-taskflow',
   FOLLOW_UP = 'follow-up',
   INVALID_TYPE = 'invalid_type'
 }
@@ -125,7 +147,8 @@ export interface ProcessVariable {
 
 export enum TaskType {
   FOLLOW_UP = 'follow-up',
-  TASK = 'task'
+  TASK = 'task',
+  TASKFLOW = 'taskflow'
 }
 
 export interface CreateFollowUp {
@@ -160,7 +183,14 @@ export class TaskRow {
     this.originalData = data;
     this.processDefinitionName = data.processDefinition.idPrefix;
     this.taskName = data.name;
-    this.type = data.processDefinition.id.startsWith('follow-up') ? TaskType.FOLLOW_UP : TaskType.TASK;
+
+    if (data.processDefinition.id.startsWith(ProcessDefinitionKey.FOLLOW_UP)) {
+      this.type = TaskType.FOLLOW_UP;
+    } else if (data.processDefinition.id.startsWith(ProcessDefinitionKey.TASK_FLOW)) {
+      this.type = TaskType.TASKFLOW;
+    } else {
+      this.type = TaskType.TASK;
+    }
   }
 }
 
@@ -182,7 +212,14 @@ export class ProcessRow {
     this.endTime = data.endTime;
     this.originalData = data;
     this.processDefinitionName = data.processDefinition.idPrefix;
-    this.type = data.processDefinition.id.startsWith('follow-up') ? TaskType.FOLLOW_UP : TaskType.TASK;
+
+    if (data.processDefinition.id.startsWith(ProcessDefinitionKey.FOLLOW_UP)) {
+      this.type = TaskType.FOLLOW_UP;
+    } else if (data.processDefinition.id.startsWith(ProcessDefinitionKey.TASK_FLOW)) {
+      this.type = TaskType.TASKFLOW;
+    } else {
+      this.type = TaskType.TASK;
+    }
 
     if (data.suspended) {
       this.status = ProcessStatus.SUSPENDED;
