@@ -356,7 +356,8 @@ export class PluginsService {
           hasAdminRole: () => this.userService.hasAdminRole,
           hasSystemRole: () => this.userService.hasSystemRole,
           hasAdministrationRoles: () => this.userService.hasAdministrationRoles,
-          hasManageSettingsRole: () => this.userService.hasManageSettingsRole
+          hasManageSettingsRole: () => this.userService.hasManageSettingsRole,
+          hasAdvancedUserRole: () => this.userService.isAdvancedUser
         }
       },
       dms: {

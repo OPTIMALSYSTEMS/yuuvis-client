@@ -67,7 +67,7 @@ export class AuditService {
 
     const auditActions = this.getAuditActions(!!options.allActions, options?.skipActions);
 
-    if (objectTypeId && !this.userService.hasAdministrationRoles) {
+    if (objectTypeId && !this.userService.isAdvancedUser) {
       const vTags = this.system.getVisibleTags(objectTypeId);
       const tagAudits = [110, 210, 310];
       const actionFilterGroup: SearchFilterGroup = new SearchFilterGroup(SearchFilterGroup.DEFAULT, SearchFilterGroup.OPERATOR.AND, [
@@ -121,7 +121,7 @@ export class AuditService {
    * @param skipActions codes of actions that should not be fetched
    */
   getAuditActions(allActions: boolean, skipActions?: number[]): number[] {
-    const actions = allActions || this.userService.hasAdministrationRoles ? [...this.userAuditActions, ...this.adminAuditActions] : this.userAuditActions;
+    const actions = allActions || this.userService.isAdvancedUser ? [...this.userAuditActions, ...this.adminAuditActions] : this.userAuditActions;
     return actions.filter((a) => !skipActions || !skipActions.includes(a));
   }
 
