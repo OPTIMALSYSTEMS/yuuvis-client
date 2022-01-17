@@ -26,7 +26,7 @@ export class ProcessDetailsSummaryComponent implements OnInit, OnDestroy {
     }
   };
   processState: { label: string; css: string };
-  isAdmin: boolean;
+  isAdvancedUser: boolean;
 
   _process: Process;
   @Input() set process(p: Process) {
@@ -52,7 +52,7 @@ export class ProcessDetailsSummaryComponent implements OnInit, OnDestroy {
     private userService: UserService
   ) {
     this.iconRegistry.registerIcons([deleteIcon]);
-    this.userService.user$.pipe(takeUntilDestroy(this)).subscribe((_) => (this.isAdmin = this.userService.hasAdminRole));
+    this.userService.user$.pipe(takeUntilDestroy(this)).subscribe((_) => (this.isAdvancedUser = this.userService.isAdvancedUser));
   }
 
   deleteProcess() {

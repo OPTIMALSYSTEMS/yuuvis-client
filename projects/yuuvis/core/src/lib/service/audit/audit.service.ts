@@ -121,7 +121,7 @@ export class AuditService {
    * @param skipActions codes of actions that should not be fetched
    */
   getAuditActions(allActions: boolean, skipActions?: number[]): number[] {
-    const actions = allActions || this.userService.hasAdministrationRoles ? [...this.userAuditActions, ...this.adminAuditActions] : this.userAuditActions;
+    const actions = allActions || this.userService.isAdvancedUser ? [...this.userAuditActions, ...this.adminAuditActions] : this.userAuditActions;
     return actions.filter((a) => !skipActions || !skipActions.includes(a));
   }
 

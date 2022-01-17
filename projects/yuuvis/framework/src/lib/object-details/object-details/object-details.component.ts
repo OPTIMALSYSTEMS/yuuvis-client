@@ -71,7 +71,7 @@ export class ObjectDetailsComponent implements OnDestroy {
   @HostBinding('class.yuv-object-details') _hostClass = true;
   nofileIcon = noFile.data;
   busy: boolean;
-  userIsAdmin: boolean;
+  isAdvancedUser: boolean;
   actionMenuVisible = false;
   actionMenuSelection: DmsObject[] = [];
   fileDropLabel: string;
@@ -229,7 +229,7 @@ export class ObjectDetailsComponent implements OnDestroy {
     private iconRegistry: IconRegistryService
   ) {
     this.iconRegistry.registerIcons([refresh, kebap, noFile]);
-    this.userIsAdmin = this.userService.hasAdministrationRoles;
+    this.isAdvancedUser = this.userService.isAdvancedUser;
     this.panelOrder = this.config.get('client.objectDetailsTabs') || this.panelOrder;
     this.undockWinActive = ContentPreviewService.undockWinActive();
 

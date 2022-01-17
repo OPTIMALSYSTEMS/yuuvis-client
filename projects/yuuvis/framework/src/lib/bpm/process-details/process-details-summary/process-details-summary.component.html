@@ -30,7 +30,7 @@
         <th>{{'yuv.framework.process-details-summary.businessKey'|translate}}</th>
         <td>{{_process.businessKey}}</td>
     </tr>
-    <ng-container *ngIf="isAdmin">
+    <ng-container *ngIf="isAdvancedUser">
         <tr>
             <th>{{'yuv.framework.process-details-summary.processDefinitionId'|translate}}</th>
             <td>{{_process.processDefinition.id}}</td>

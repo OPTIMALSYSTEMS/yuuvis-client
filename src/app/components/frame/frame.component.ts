@@ -121,6 +121,7 @@ export class FrameComponent implements OnInit, OnDestroy {
     this.iconRegistry.registerIcons([search, drawer, refresh, add, userDisabled, offline, close, openContext]);
     this.userService.user$.subscribe((user: YuvUser) => {
       if (user) {
+        this.userService.isAdvancedUser;
         this.checkedForLogoutRoute = !(!this.user || this.user.id !== user.id);
         this.disableCreate = !this.userService.canCreateObjects;
         this.enableTenantSwitch = user.authorities.includes(UserRoles.MULTI_TENANT);
