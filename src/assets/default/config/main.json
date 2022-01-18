@@ -21,10 +21,6 @@
     ],
     "logging": {
       "level": "debug"
-    },
-    "permissions": {
-      "advancedUserRole": "TENANT_REP",
-      "manageSettingsRole": "TENANT_REoooooooooooP"
     }
   },
   "client": {
