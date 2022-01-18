@@ -24,7 +24,6 @@ export class BpmService {
   private availableProcessDefinitions: ProcessDefinition[] = [];
 
   public supports = {
-    taskflow: false,
     followUp: false
   };
 
@@ -36,9 +35,7 @@ export class BpmService {
     this.getAllProcessDefinitions().subscribe((res: ProcessDefinition[]) => {
       this.availableProcessDefinitions = res;
       res.forEach((pd) => {
-        if (pd.id.startsWith(ProcessDefinitionKey.TASK_FLOW)) {
-          this.supports.taskflow = true;
-        } else if (pd.id.startsWith(ProcessDefinitionKey.FOLLOW_UP)) {
+        if (pd.id.startsWith(ProcessDefinitionKey.FOLLOW_UP)) {
           this.supports.followUp = true;
         }
       });

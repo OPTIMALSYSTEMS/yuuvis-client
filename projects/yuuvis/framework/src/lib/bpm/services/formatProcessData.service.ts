@@ -5,7 +5,7 @@ import { ResponsiveTableData } from '../../components/responsive-data-table/resp
 import { LocaleDatePipe } from '../../pipes/locale-date.pipe';
 import { IconRegistryService } from './../../common/components/icon/service/iconRegistry.service';
 import { GridService } from './../../services/grid/grid.service';
-import { followUp, task, taskflow } from './../../svg.generated';
+import { followUp, task } from './../../svg.generated';
 
 @Injectable({
   providedIn: 'root'
@@ -19,7 +19,7 @@ export class FormatProcessDataService {
     private system: SystemService,
     private translate: TranslateService
   ) {
-    this.iconRegService.registerIcons([task, followUp, taskflow]);
+    this.iconRegService.registerIcons([task, followUp]);
     this.setTranslations();
     this.translate.onLangChange.subscribe(() => this.setTranslations());
   }
@@ -43,7 +43,6 @@ export class FormatProcessDataService {
       followUpType: this.translate.instant(`yuv.framework.process-list.type.follow-up.label`),
       defaultFollowUpTaskName: this.translate.instant(`yuv.framework.process.type.follow-up.defaultTaskName`),
       defaultFollowUpProcessName: this.translate.instant(`yuv.framework.process.type.follow-up.defaultProcessName`),
-      defaultTaskflowProcessName: this.translate.instant(`yuv.framework.process.type.taskflow.defaultProcessName`),
       taskType: this.translate.instant(`yuv.framework.process-list.type.task.label`),
       taskStateNotAssigned: this.translate.instant(`yuv.framework.process-list.task.state.not-assigned`),
       taskStateDelegated: this.translate.instant(`yuv.framework.process-list.task.state.delegated`),
@@ -96,8 +95,6 @@ export class FormatProcessDataService {
     let typeIconKey = 'task';
     if (processDefinitionId.startsWith(ProcessDefinitionKey.FOLLOW_UP)) {
       typeIconKey = 'followUp';
-    } else if (processDefinitionId.startsWith(ProcessDefinitionKey.TASK_FLOW)) {
-      typeIconKey = 'taskflow';
     }
     return this.iconRegService.getIcon(typeIconKey);
   }
@@ -216,8 +213,6 @@ export class FormatProcessDataService {
     let label = params.context.system.getLocalizedResource(`${pdn}_label`);
     if (!label && params.data.originalData.processDefinition.idPrefix === TaskType.FOLLOW_UP) {
       label = params.context.translations.defaultFollowUpProcessName;
-    } else if (!label && params.data.originalData.processDefinition.idPrefix === TaskType.TASKFLOW) {
-      label = params.context.translations.defaultTaskflowProcessName;
     }
 
     switch (params.value) {
@@ -226,9 +221,6 @@ export class FormatProcessDataService {
         break;
       case TaskType.TASK:
         icon = this.iconRegService.getIcon('task');
-        break;
-      case TaskType.TASKFLOW:
-        icon = this.iconRegService.getIcon('taskflow');
         break;
     }
 

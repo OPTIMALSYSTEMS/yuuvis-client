@@ -7,10 +7,6 @@
   grid-template-areas: 'desc' 'messages' 'form' 'buttons';
   background-color: var(--panel-background-grey);
 
-  &.taskflow {
-    padding: 0;
-  }
-
   .task-description {
     grid-area: desc;
     padding: calc(var(--app-pane-padding) / 2) var(--app-pane-padding);
@@ -81,11 +77,5 @@
     button {
       margin: 2px;
     }
-  }
-
-  yuv-taskflow {
-    height: 100%;
-    grid-row: 1 / span 4;
-    overflow: hidden;
   }
 }
