@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { EMPTY, Observable, of, Subject } from 'rxjs';
+import { EMPTY, Observable, Subject } from 'rxjs';
 import { expand, map, skipWhile, tap } from 'rxjs/operators';
 import { ApiBase } from '../../backend/api.enum';
 import { BackendService } from '../../backend/backend.service';
@@ -86,10 +86,7 @@ export class InboxService {
    * @param payload Data to be send with the complete request (may contain attachments, a new subject or variables)
    */
   completeTask(taskId: string, payload?: ProcessPostPayload): Observable<any> {
-    console.log('complete', payload);
-    return of(null);
-
-    // return this.putTask(taskId, ProcessAction.complete, payload || {});
+    return this.putTask(taskId, ProcessAction.complete, payload || {});
   }
 
   /**
