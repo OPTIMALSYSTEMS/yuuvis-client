@@ -46,6 +46,10 @@
       margin-top: 0;
       border-radius: 2px;
     }
+
+    yuv-object-form.outcomeForm {
+      margin-top: var(--app-pane-padding);
+    }
   }
   ::ng-deep .actions {
     grid-area: buttons;
