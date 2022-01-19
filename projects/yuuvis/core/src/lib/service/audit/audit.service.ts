@@ -30,7 +30,8 @@ export class AuditService {
     301, // content updated
     302, // metadata and content updated
     303, // content moved
-    325 // object restored form version
+    325, // object restored form version
+    340 // object moved
   ];
   // audit action codes that should be visible to admin users
   private adminAuditActions: number[] = [
@@ -90,7 +91,7 @@ export class AuditService {
       const ag = new SearchFilterGroup(SearchFilterGroup.DEFAULT, SearchFilterGroup.OPERATOR.OR, [actionFilterGroup, actionFilterTagsGroup]);
 
       q.addFilterGroup(ag);
-    } else {
+    } else if (!options?.actions) {
       q.addFilter(new SearchFilter(AuditField.ACTION, SearchFilter.OPERATOR.IN, auditActions));
     }
 
