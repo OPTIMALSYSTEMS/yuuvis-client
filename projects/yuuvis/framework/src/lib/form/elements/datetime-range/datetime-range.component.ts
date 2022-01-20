@@ -86,6 +86,7 @@ export class DatetimeRangeComponent implements OnInit, ControlValueAccessor, Val
         dateValue: value.secondValue || value.firstValue
       });
     } else {
+      this.searchOption = this.availableSearchOptions[0].value;
       this.value = null;
       this.rangeForm.reset();
     }

@@ -110,6 +110,7 @@ export class NumberRangeComponent implements ControlValueAccessor, Validator {
         });
       }
     } else {
+      this.searchOption = this.availableSearchOptions[0].value;
       this.value = null;
       this.rangeForm.reset();
     }
