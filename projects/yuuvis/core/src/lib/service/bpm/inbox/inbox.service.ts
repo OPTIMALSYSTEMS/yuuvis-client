@@ -39,7 +39,7 @@ export class InboxService {
   fetchTasks(includeProcessVar = true): void {
     this.getTasksPaged({ includeProcessVariables: includeProcessVar })
       .pipe(
-        tap((res: Task[]) => this.inboxDataSource.next(res.reverse())),
+        tap((res: Task[]) => this.inboxDataSource.next([...res.reverse()])),
         map((res: Task[]) => res)
       )
       .subscribe();
