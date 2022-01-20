@@ -566,11 +566,7 @@ export class SystemService {
   }
 
   getLocalizedResource(key: string): string {
-    const v = this.system.i18n[key];
-    if (!v) {
-      this.logger.warn(`No translation for '${key}'`);
-    }
-    return v;
+    return this.system.i18n[key];
   }
 
   /**
