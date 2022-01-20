@@ -3,7 +3,6 @@ import { CdkStepperModule } from '@angular/cdk/stepper';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { TranslateModule } from '@yuuvis/core';
 import { AngularSplitModule } from 'angular-split';
 import { YuvCommonModule } from '../common/common.module';
@@ -24,7 +23,6 @@ import { ObjectCreateComponent } from './object-create/object-create.component';
   entryComponents: [ObjectCreateComponent],
   exports: [ObjectCreateComponent],
   imports: [
-    BrowserAnimationsModule,
     CommonModule,
     YuvCommonModule,
     YuvComponentsModule,
