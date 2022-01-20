@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { EMPTY, Observable, Subject } from 'rxjs';
+import { EMPTY, Observable, ReplaySubject } from 'rxjs';
 import { expand, map, skipWhile, tap } from 'rxjs/operators';
 import { ApiBase } from '../../backend/api.enum';
 import { BackendService } from '../../backend/backend.service';
@@ -17,7 +17,7 @@ import { BpmService } from './../bpm/bpm.service';
 export class InboxService {
   private INBOX_PAGE_SIZE = 100;
 
-  private inboxDataSource = new Subject<Task[]>();
+  private inboxDataSource = new ReplaySubject<Task[]>(1);
   public inboxData$: Observable<Task[]> = this.inboxDataSource.asObservable();
 
   constructor(private bpmService: BpmService, private userService: UserService, private backendService: BackendService) {}
