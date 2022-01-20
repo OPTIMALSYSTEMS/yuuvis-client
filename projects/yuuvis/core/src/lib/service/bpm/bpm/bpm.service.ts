@@ -65,11 +65,11 @@ export class BpmService {
     return this.backendService.get(url).pipe(finalize(() => setTimeout(() => this.loadingBpmDataSource.next(false), 200)));
   }
 
-  getProcessInstances(processDefinitionKey: ProcessDefinitionKey, options: FetchTaskOptions = { includeProcessVar: true }): Observable<Process[]> {
+  getProcessInstances(processDefinitionKey: string, options: FetchTaskOptions = { includeProcessVar: true }): Observable<Process[]> {
     return this.backendService.get(`${this.bpmProcessUrl}${this.optionsToParams({ ...options, processDefinitionKey })}`, ApiBase.apiWeb);
   }
 
-  getProcessInstance(processDefinitionKey: ProcessDefinitionKey, options?: FetchTaskOptions): Observable<Process> {
+  getProcessInstance(processDefinitionKey: string, options?: FetchTaskOptions): Observable<Process> {
     return this.backendService
       .get(`${this.bpmProcessUrl}${this.optionsToParams({ ...options, processDefinitionKey })}`, ApiBase.apiWeb)
       .pipe(map(({ objects }) => objects[0]));
