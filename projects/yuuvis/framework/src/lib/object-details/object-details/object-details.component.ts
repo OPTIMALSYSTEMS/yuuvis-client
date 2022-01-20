@@ -28,6 +28,7 @@ import { Observable } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
+import { ComponentStateService } from '../../services/component-state/component-state.service';
 import { kebap, noFile, refresh } from '../../svg.generated';
 import { ContentPreviewService } from '../content-preview/service/content-preview.service';
 import { ResponsiveTabContainerComponent } from './../../components/responsive-tab-container/responsive-tab-container.component';
@@ -70,7 +71,7 @@ export class ObjectDetailsComponent implements OnDestroy {
   @HostBinding('class.yuv-object-details') _hostClass = true;
   nofileIcon = noFile.data;
   busy: boolean;
-  userIsAdmin: boolean;
+  isAdvancedUser: boolean;
   actionMenuVisible = false;
   actionMenuSelection: DmsObject[] = [];
   fileDropLabel: string;
@@ -108,6 +109,17 @@ export class ObjectDetailsComponent implements OnDestroy {
       const retentionStart = new Date(object.data['system:rmStartOfRetention']);
       const retentionEnd = new Date(object.data['system:rmExpirationDate']);
       this.isRetentionActive = retentionStart <= currentDate && currentDate <= retentionEnd;
+    }
+    if (object) {
+      if (!this.componentStateId) {
+        this.componentStateId = this.componentStateService.addComponentState('ObjectDetailsComponent', {
+          data: { ...this._dmsObject }
+        });
+      } else {
+        this.componentStateService.updateComponentState(this.componentStateId, {
+          data: { ...this._dmsObject }
+        });
+      }
     }
   }
 
@@ -199,6 +211,7 @@ export class ObjectDetailsComponent implements OnDestroy {
   @Input() fileDropOptions: FileDropOptions;
 
   undockWinActive = false;
+  private componentStateId: string;
 
   @Input() plugins: Observable<any[]>;
 
@@ -211,11 +224,12 @@ export class ObjectDetailsComponent implements OnDestroy {
     private eventService: EventService,
     private translate: TranslateService,
     private config: ConfigService,
+    private componentStateService: ComponentStateService,
     private contentPreviewService: ContentPreviewService,
     private iconRegistry: IconRegistryService
   ) {
     this.iconRegistry.registerIcons([refresh, kebap, noFile]);
-    this.userIsAdmin = this.userService.hasAdministrationRoles;
+    this.isAdvancedUser = this.userService.isAdvancedUser;
     this.panelOrder = this.config.get('client.objectDetailsTabs') || this.panelOrder;
     this.undockWinActive = ContentPreviewService.undockWinActive();
 
@@ -271,5 +285,7 @@ export class ObjectDetailsComponent implements OnDestroy {
     }
   }
 
-  ngOnDestroy() {}
+  ngOnDestroy() {
+    this.componentStateService.removeComponentState(this.componentStateId);
+  }
 }

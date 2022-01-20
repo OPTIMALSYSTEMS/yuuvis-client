@@ -50,6 +50,7 @@ export interface PluginAPI {
       hasSystemRole: () => boolean;
       hasAdministrationRoles: () => boolean;
       hasManageSettingsRole: () => boolean;
+      hasAdvancedUserRole: () => boolean;
     };
   };
   /**

@@ -1,6 +1,7 @@
 import { Component, Inject, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import {
+  AuditEntry,
   AuditQueryOptions,
   AuditQueryResult,
   AuditService,
@@ -111,6 +112,7 @@ export class AuditComponent implements OnInit, OnDestroy {
       a303: this.translate.instant('yuv.framework.audit.label.update.move.content'),
       a310: this.translate.instant('yuv.framework.audit.label.update.tag'),
       a325: this.translate.instant('yuv.framework.audit.label.update.restore'),
+      a340: this.translate.instant('yuv.framework.audit.label.update.move'),
 
       a400: this.translate.instant('yuv.framework.audit.label.get.content'),
       a401: this.translate.instant('yuv.framework.audit.label.get.metadata'),
@@ -158,16 +160,26 @@ export class AuditComponent implements OnInit, OnDestroy {
     res.items.forEach((i) => {
       // tag related audits
       if ([110, 210, 310].includes(i.action)) {
-        const m = i.detail.match(/\[(.*?)\]/);
-        if (m && m[1]) {
-          const t = m[1].split(',');
+        const params = this.getAuditEntryParams(i);
+        if (params) {
           i.more = `
-          ${this.system.getLocalizedResource(t[0].trim() + '_label')}: ${this.system.getLocalizedResource(`${t[0].trim()}:${t[1].trim()}_label`)}
+          ${this.system.getLocalizedResource(params[0] + '_label')}: ${this.system.getLocalizedResource(`${params[0]}:${params[1]}_label`)}
           `;
         }
+      } else if (i.action === 325) {
+        const params = this.getAuditEntryParams(i);
+        i.more = this.translate.instant('yuv.framework.audit.label.update.restore.more', { version: params[0] || '[?]' });
       }
     });
     return res;
+  }
+
+  private getAuditEntryParams(auditItem: AuditEntry): string[] {
+    // details with params look like this:
+    // OBJECT_RESTORED: [1]
+    // OBJECT_TAG_UPDATED: [tagname, 1]
+    const m = auditItem.detail.match(/\[(.*?)\]/);
+    return m && m[1] ? m[1].split(',').map((i) => i.trim()) : [];
   }
 
   /**

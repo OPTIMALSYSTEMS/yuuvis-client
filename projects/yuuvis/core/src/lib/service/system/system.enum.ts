@@ -15,7 +15,8 @@ export const AdministrationRoles = {
 };
 
 export const UserRoles = {
-  MULTI_TENANT: 'YUUVIS_MULTI_TENANT'
+  MULTI_TENANT: 'YUUVIS_MULTI_TENANT',
+  ADVANCED_USER: 'YUUVIS_ADVANCED_USER'
 };
 
 export const RetentionField = {

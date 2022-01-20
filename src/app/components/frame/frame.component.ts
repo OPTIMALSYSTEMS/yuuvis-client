@@ -1,6 +1,7 @@
 import { Component, HostBinding, HostListener, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, NavigationExtras, Router } from '@angular/router';
 import { SwUpdate } from '@angular/service-worker';
+import { CommandPaletteService } from '@yuuvis/command-palette';
 import {
   AuthService,
   BackendService,
@@ -94,6 +95,7 @@ export class FrameComponent implements OnInit, OnDestroy {
     private frameService: FrameService,
     private route: ActivatedRoute,
     private layoutService: LayoutService,
+    private cmpService: CommandPaletteService,
     private update: SwUpdate,
     private appSearch: AppSearchService,
     private connectionService: ConnectionService,
@@ -119,6 +121,7 @@ export class FrameComponent implements OnInit, OnDestroy {
     this.iconRegistry.registerIcons([search, drawer, refresh, add, userDisabled, offline, close, openContext]);
     this.userService.user$.subscribe((user: YuvUser) => {
       if (user) {
+        this.userService.isAdvancedUser;
         this.checkedForLogoutRoute = !(!this.user || this.user.id !== user.id);
         this.disableCreate = !this.userService.canCreateObjects;
         this.enableTenantSwitch = user.authorities.includes(UserRoles.MULTI_TENANT);

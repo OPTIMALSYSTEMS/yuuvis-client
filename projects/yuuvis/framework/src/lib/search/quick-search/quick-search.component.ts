@@ -178,6 +178,7 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
 
   constructor(
     @Attribute('disableAggregations') private disableAggregations: string,
+    @Attribute('autofocus') private af: string,
     private quickSearchService: QuickSearchService,
     private fb: FormBuilder,
     private popoverService: PopoverService,
@@ -189,7 +190,7 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
     private iconRegistry: IconRegistryService
   ) {
     this.iconRegistry.registerIcons([arrowDown, filter, search, clear, reset]);
-    this.autofocus = this.device.isDesktop;
+    this.autofocus = !!af;
 
     this.searchForm = this.fb.group({
       term: [''],
@@ -382,7 +383,7 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
     this.quickSearchService.getCurrentSettings().subscribe(([storedFilters, hiddenFilters]) => {
       this.enabledFilters = this.quickSearchService
         .loadFilters(storedFilters as any, this.availableObjectTypeFields)
-        .filter((f) => !hiddenFilters.includes(f.id));
+        .filter((f) => !(hiddenFilters as any).includes(f.id));
     });
 
     // properties that are required allthough they may not appear in the list of the availableObjectTypesFields
@@ -405,18 +406,16 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
       if (this._inline) {
         q.aggs = [];
       }
-      this.resetObjectTypes();
 
       this.searchQuery = q;
       this.searchForm.patchValue({ term: { label: q.term } }, { emitEvent: false });
 
       // setup target object types
-      if (q.allTypes.length) {
-        this.onObjectTypesSelected(
-          this.availableObjectTypes.filter((t) => q.allTypes.includes(t.id)).map((t) => t.value as ObjectType),
-          false
-        );
-      }
+      this.onObjectTypesSelected(
+        q.allTypes.length ? this.availableObjectTypes.filter((t) => q.allTypes.includes(t.id)).map((t) => t.value as ObjectType) : [],
+        false
+      );
+
       if (this.context && this.searchWithinContext) {
         this.searchQuery.addFilter(this.contextFilter);
       }
@@ -477,13 +476,9 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
     }
     this.resultCount = null;
     this.formValid = true;
-    this.resetObjectTypes();
+    this.onObjectTypesSelected([]);
     this.searchForm.patchValue({ term: null }, { emitEvent: false });
     this.queryReset.emit();
-  }
-
-  private resetObjectTypes() {
-    this.onObjectTypesSelected([]);
   }
 
   focusInput() {
