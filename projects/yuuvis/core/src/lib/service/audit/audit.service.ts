@@ -25,20 +25,20 @@ export class AuditService {
   private userAuditActions: number[] = [
     100, // metadata created
     101, // metadata created (with content)
+    110, // tag created
     201, // content deleted
+    210, // tag deleted
     300, // metadata updated
     301, // content updated
     302, // metadata and content updated
     303, // content moved
+    310, // tag updated
     325, // object restored form version
     340 // object moved
   ];
   // audit action codes that should be visible to admin users
   private adminAuditActions: number[] = [
-    110, // tag created
     202, // marked for delete
-    210, // tag deleted
-    310, // tag updated
     400, // content read
     401, // metadata read
     402, // rendition read (text)
