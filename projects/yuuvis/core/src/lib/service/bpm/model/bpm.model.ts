@@ -91,13 +91,13 @@ export interface Task {
   attachments: string[];
 }
 
-export enum ProcessDefinitionKey {
-  FOLLOW_UP = 'follow-up',
-  INVALID_TYPE = 'invalid_type'
-}
+export const ProcessDefinitionKey = {
+  FOLLOW_UP: 'follow-up',
+  INVALID_TYPE: 'invalid_type'
+};
 // payload for starting a new process
 export interface ProcessCreatePayload extends ProcessPostPayload {
-  processDefinitionKey: ProcessDefinitionKey;
+  processDefinitionKey: string;
   name?: string;
   businessKey?: string;
   returnVariables?: boolean;

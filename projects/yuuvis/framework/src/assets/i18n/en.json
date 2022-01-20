@@ -64,6 +64,7 @@
 	"yuv.framework.audit.label.update.content": "Document file was changed",
 	"yuv.framework.audit.label.update.metadata": "Metadata was changed",
 	"yuv.framework.audit.label.update.metadata.withcontent": "Metadata and document file were changed",
+	"yuv.framework.audit.label.update.move": "Object was moved",
 	"yuv.framework.audit.label.update.move.content": "Document file was moved",
 	"yuv.framework.audit.label.update.restore": "Older version was restored",
 	"yuv.framework.audit.label.update.restore.more": "Restored from version {{version}}.",
