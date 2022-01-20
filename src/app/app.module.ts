@@ -2,6 +2,7 @@ import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { CommandPaletteComponent, CommandPaletteModule } from '@yuuvis/command-palette';
 import { YuvColumnConfigModule, YuvCommonModule, YuvComponentsModule, YuvDirectivesModule, YuvFrameworkModule } from '@yuuvis/framework';
@@ -47,6 +48,7 @@ import { VersionsComponent } from './states/versions/versions.component';
   ],
   imports: [
     BrowserModule,
+    BrowserAnimationsModule,
     FormsModule,
     AccordionModule,
     CommandPaletteModule.forRoot({
