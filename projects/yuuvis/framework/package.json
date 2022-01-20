@@ -32,6 +32,7 @@
     "primeicons": "^4.0.0",
     "primeng": "10.0.2",
     "take-until-destroy": "^2.1.0",
-    "tslib": "^2.0.0"
+    "tslib": "^2.0.0",
+    "@yuuvis/command-palette": "^0.2.6"
   }
 }
