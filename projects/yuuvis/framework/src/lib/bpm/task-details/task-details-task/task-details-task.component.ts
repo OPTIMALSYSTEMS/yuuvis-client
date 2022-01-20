@@ -185,7 +185,8 @@ export class TaskDetailsTaskComponent implements OnInit {
   }
 
   private processOutcomes(outcomes: TaskOutcome[]) {
-    const fetchTasks: Observable<any>[] = outcomes.reverse().map((o) => {
+    const o = [...outcomes].reverse();
+    const fetchTasks: Observable<any>[] = o.map((o) => {
       return !o.model
         ? of({ outcome: o })
         : typeof o.model === 'string'
