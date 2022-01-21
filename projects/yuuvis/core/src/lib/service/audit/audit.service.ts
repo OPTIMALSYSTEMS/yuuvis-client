@@ -34,7 +34,8 @@ export class AuditService {
     303, // content moved
     310, // tag updated
     325, // object restored form version
-    340 // object moved
+    340, // object moved
+    10000 // custom audit entries
   ];
   // audit action codes that should be visible to admin users
   private adminAuditActions: number[] = [

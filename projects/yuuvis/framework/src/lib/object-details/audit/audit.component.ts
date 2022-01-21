@@ -42,6 +42,7 @@ export class AuditComponent implements OnInit, OnDestroy {
   private initialFetch: boolean;
   searchForm: FormGroup;
   auditsRes: AuditQueryResult;
+  resolvedItems: ReslovedAuditEntry[];
   searchPanelShow: boolean;
   filtered: boolean;
   error: boolean;
@@ -120,7 +121,7 @@ export class AuditComponent implements OnInit, OnDestroy {
       a403: this.translate.instant('yuv.framework.audit.label.get.rendition.pdf'),
       a404: this.translate.instant('yuv.framework.audit.label.get.rendition.thumbnail'),
 
-      a1000: this.translate.instant('yuv.framework.audit.label.get.custom')
+      a10000: this.translate.instant('yuv.framework.audit.label.get.custom')
     };
 
     this.eventService
@@ -147,7 +148,8 @@ export class AuditComponent implements OnInit, OnDestroy {
 
     this.auditService.getAuditEntries(this._objectID, this._objectTypeID, options).subscribe(
       (res: AuditQueryResult) => {
-        this.auditsRes = this.mapResult(res);
+        this.auditsRes = res;
+        this.resolvedItems = this.mapResult(res);
         this.busy = false;
       },
       (err) => {
@@ -156,22 +158,38 @@ export class AuditComponent implements OnInit, OnDestroy {
     );
   }
 
-  private mapResult(res: AuditQueryResult): AuditQueryResult {
-    res.items.forEach((i) => {
+  private mapResult(res: AuditQueryResult): ReslovedAuditEntry[] {
+    return res.items.map((i) => {
+      const r: ReslovedAuditEntry = { ...i, label: this.auditLabels['a' + i.action] };
       // tag related audits
       if ([110, 210, 310].includes(i.action)) {
         const params = this.getAuditEntryParams(i);
         if (params) {
-          i.more = `
+          r.more = `
           ${this.system.getLocalizedResource(params[0] + '_label')}: ${this.system.getLocalizedResource(`${params[0]}:${params[1]}_label`)}
           `;
         }
-      } else if (i.action === 325) {
-        const params = this.getAuditEntryParams(i);
-        i.more = this.translate.instant('yuv.framework.audit.label.update.restore.more', { version: params[0] || '[?]' });
       }
+      // restore audit
+      else if (i.action === 325) {
+        const params = this.getAuditEntryParams(i);
+        r.more = this.translate.instant('yuv.framework.audit.label.update.restore.more', { version: params[0] || '[?]' });
+      }
+      // custom audits
+      else if (i.action === 10000) {
+        r.label = this.system.getLocalizedResource(this.getAuditEntryKey(i)) || this.auditLabels['a' + i.action];
+        const param = this.getAuditEntryParams(i);
+        if (param.length) {
+          r.more = this.system.getLocalizedResource(param[0]);
+        }
+      }
+      return r;
     });
-    return res;
+  }
+
+  private getAuditEntryKey(auditItem: AuditEntry): string {
+    const detail = auditItem.detail;
+    return detail.indexOf(':') !== -1 ? detail.split(':')[0].trim() : detail;
   }
 
   private getAuditEntryParams(auditItem: AuditEntry): string[] {
@@ -250,7 +268,8 @@ export class AuditComponent implements OnInit, OnDestroy {
     this.busy = true;
     this.auditService.getPage(this.auditsRes, page).subscribe(
       (res: AuditQueryResult) => {
-        this.auditsRes = this.mapResult(res);
+        this.auditsRes = res;
+        this.resolvedItems = this.mapResult(res);
         this.busy = false;
       },
       (err) => {
@@ -310,4 +329,8 @@ export class AuditComponent implements OnInit, OnDestroy {
     }
   }
   ngOnDestroy() {}
+}
+
+interface ReslovedAuditEntry extends AuditEntry {
+  label: string;
 }
