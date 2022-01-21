@@ -177,11 +177,15 @@ export class AuditComponent implements OnInit, OnDestroy {
       }
       // custom audits
       else if (i.action === 10000) {
-        r.label = this.system.getLocalizedResource(this.getAuditEntryKey(i)) || this.auditLabels['a' + i.action];
-        const param = this.getAuditEntryParams(i);
-        if (param.length) {
-          r.more = this.system.getLocalizedResource(param[0]);
+        // Custom tags detail look like this: SERVICENAME: [TITLE_KEY, META_KEY]
+        const serviceName = this.getAuditEntryKey(i);
+        let title = '';
+        const params = this.getAuditEntryParams(i);
+        if (params.length) {
+          title = this.system.getLocalizedResource(params[0]);
+          r.more = params[1] ? this.system.getLocalizedResource(params[1]) : undefined;
         }
+        r.label = `${this.system.getLocalizedResource(serviceName) || serviceName}: ${title}`;
       }
       return r;
     });
