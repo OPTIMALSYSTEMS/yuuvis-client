@@ -73,6 +73,7 @@ export interface Task {
     schemaProperties?: string[];
     model?: any;
     data?: any;
+    outcomes?: TaskOutcome[];
   };
   delegationState?: string;
   formKey: string;
@@ -240,4 +241,27 @@ export interface FetchProcessOptions {
   includeProcessVar?: boolean;
   isCompleted?: boolean;
   processDefinitionKey?: string;
+}
+
+export interface TaskOutcome {
+  // the outcomes technical name (also used for translations)
+  name: string;
+  // Name of the variable that this outcome will write to process vars
+  variable: string;
+  // The vaue that this outcome will write to process vars
+  value: any;
+  /**
+   * Optional form model. Could be the model object as well as a string (Id
+   * to fetch a form model from the backend).
+   *
+   * If you provide a model, triggering the outcome will display/render this form
+   * alongside with the tasks form. Values of all rendered forms will be put into
+   * the process variables
+   */
+  model?: any;
+  /**
+   * Outcomes will be rendered as primary buttons. If you want an outcome
+   * to be less prominent you could set this property to 'true'
+   */
+  secondary?: boolean;
 }

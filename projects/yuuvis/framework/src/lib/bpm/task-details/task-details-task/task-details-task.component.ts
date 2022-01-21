@@ -7,13 +7,23 @@ import {
   SystemService,
   Task,
   TaskMessage,
+  TaskOutcome,
   TaskType,
   TranslateService
 } from '@yuuvis/core';
+import { forkJoin, Observable, of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 import { FormStatusChangedEvent, ObjectFormOptions } from '../../../object-form/object-form.interface';
 import { ObjectFormComponent } from '../../../object-form/object-form/object-form.component';
 import { PopoverService } from '../../../popover/popover.service';
 import { NotificationService } from '../../../services/notification/notification.service';
+
+export interface ResolvedTaskOutcome {
+  outcome: TaskOutcome;
+  label: string;
+  resolvedFormModel?: any;
+  formData?: any;
+}
 
 @Component({
   selector: 'yuv-task-details-task',
@@ -21,7 +31,8 @@ import { NotificationService } from '../../../services/notification/notification
   styleUrls: ['./task-details-task.component.scss']
 })
 export class TaskDetailsTaskComponent implements OnInit {
-  @ViewChild(ObjectFormComponent) taskForm: ObjectFormComponent;
+  @ViewChild('taskForm') taskForm: ObjectFormComponent;
+  @ViewChild('outcomeForm') outcomeForm: ObjectFormComponent;
   @ViewChild('tplDelegationAssignee') tplDelegationAssignee: TemplateRef<any>;
 
   private pendingTaskId: string;
@@ -38,6 +49,9 @@ export class TaskDetailsTaskComponent implements OnInit {
     this.formOptions = null;
     this.formState = null;
     this.claimable = false;
+    this.outcomes = undefined;
+    this.currentFormOutcome = undefined;
+
     this.taskDescription = this.getDescription(t);
     this.getMessages(t);
 
@@ -53,9 +67,14 @@ export class TaskDetailsTaskComponent implements OnInit {
           data: this.getFormDataFromProcessVars(t)
         };
       }
+
+      if (t.taskForm.outcomes) {
+        this.processOutcomes(t.taskForm.outcomes);
+      }
     } else if (t && t.formKey) {
       this.createReferencedForm(t, !t.assignee);
-    } // check for claiming ability
+    }
+    // check for claiming ability
     // If there is no assignee yet you have to claim the task. If there is an assignee
     // but no claimTime it means that claining is no option whatsoever
     this.claimable = !t.assignee || !!t.claimTime;
@@ -64,10 +83,12 @@ export class TaskDetailsTaskComponent implements OnInit {
   }
 
   formOptions: ObjectFormOptions;
+  currentFormOutcome: ResolvedTaskOutcome;
   // whether or not claiming is an option
   claimable: boolean;
   delegatable: boolean;
   error: any;
+  outcomes: ResolvedTaskOutcome[];
 
   @Output() taskUpdated = new EventEmitter<Task>();
 
@@ -140,12 +161,18 @@ export class TaskDetailsTaskComponent implements OnInit {
       this.inboxService.getTaskForm(t.formKey).subscribe(
         (res) => {
           if (res) {
+            // result could be just the model itself or an object also containing
+            // outcomes:
+            // {model: any, outcomes: []}
             const formData = this.getFormDataFromProcessVars(t);
             this.formOptions = {
-              formModel: res,
+              formModel: res.model || res,
               disabled: disabled,
               data: formData
             };
+            if (res.outcomes) {
+              this.processOutcomes(res.outcomes);
+            }
           }
         },
         (err) => {
@@ -155,6 +182,62 @@ export class TaskDetailsTaskComponent implements OnInit {
         }
       );
     }
+  }
+
+  private processOutcomes(outcomes: TaskOutcome[]) {
+    const o = [...outcomes].reverse();
+    const fetchTasks: Observable<any>[] = o.map((o) => {
+      return !o.model
+        ? of({ outcome: o })
+        : typeof o.model === 'string'
+        ? this.inboxService.getTaskForm(o.model).pipe(
+            catchError((e) => of(null)),
+            map((res) => ({ outcome: o, resolvedFormModel: res }))
+          )
+        : of({
+            outcome: o,
+            resolvedFormModel: o.model
+          });
+    });
+    if (fetchTasks.length) {
+      forkJoin(fetchTasks).subscribe((res: { outcome: TaskOutcome; resolvedFormModel: any }[]) => {
+        this.outcomes = res.map((r) => ({
+          ...r,
+          formData: this.getFormDataFromProcessVars(this._task),
+          label: this.system.getLocalizedResource(`${r.outcome.name}`)
+        }));
+      });
+    } else {
+      this.outcomes = undefined;
+    }
+  }
+
+  triggerCurrentFormOutcome(o: ResolvedTaskOutcome) {
+    if (o.resolvedFormModel) {
+      this.currentFormOutcome = o;
+    } else {
+      this.confirm(this.getOutcomeProcessVars(o));
+    }
+  }
+
+  submitOutcomeForm() {
+    const vars = this.formState && !this.formState.invalid ? this.formToProcessVars(this.outcomeForm) : null;
+    this.confirm(vars);
+  }
+
+  cancelOutcomeForm() {
+    this.currentFormOutcome = undefined;
+    this.taskForm.form.updateValueAndValidity();
+  }
+
+  private getOutcomeProcessVars(o: ResolvedTaskOutcome): ProcessVariable[] {
+    return [
+      {
+        name: o.outcome.variable,
+        type: 'string',
+        value: o.outcome.value
+      }
+    ];
   }
 
   onFormStatusChanged(e: FormStatusChangedEvent) {
@@ -184,9 +267,13 @@ export class TaskDetailsTaskComponent implements OnInit {
     );
   }
 
-  confirm() {
+  confirm(additionalVars?: ProcessVariable[]) {
     this.busy = true;
-    this.inboxService.completeTask(this._task.id, this.getUpdatePayload()).subscribe(
+    const payload = this.getUpdatePayload();
+    if (additionalVars) {
+      payload.variables = [...payload.variables, ...additionalVars];
+    }
+    this.inboxService.completeTask(this._task.id, payload).subscribe(
       (res) => {
         this.busy = false;
         this.finishPending();
@@ -266,14 +353,14 @@ export class TaskDetailsTaskComponent implements OnInit {
     }
   }
 
-  private getUpdatePayload(): ProcessPostPayload {
-    const vars = this.formState && !this.formState.invalid ? this.formToProcessVars() : null;
+  private getUpdatePayload(data?: any): ProcessPostPayload {
+    const vars = this.formState && !this.formState.invalid ? this.formToProcessVars(this.taskForm) : null;
     return vars ? { variables: vars } : {};
   }
 
   // map form values to process variables
-  private formToProcessVars(): ProcessVariable[] {
-    const formElements = this.taskForm.getFormElements();
+  private formToProcessVars(form: ObjectFormComponent): ProcessVariable[] {
+    const formElements = form.getFormElements();
     return Object.keys(formElements).map((k) => this.mapFormElementToProcessVar(formElements[k]));
   }
 
