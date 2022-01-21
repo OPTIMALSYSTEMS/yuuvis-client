@@ -19,7 +19,7 @@
 
     <!-- outcome form -->
     <yuv-object-form class="outcomeForm" #outcomeForm *ngIf="currentFormOutcome"
-        [formOptions]="{formModel: currentFormOutcome.resolvedFormModel, data: formData}"
+        [formOptions]="{formModel: currentFormOutcome.resolvedFormModel, data: getFormDataFromProcessVars(_task)}"
         (statusChanged)="onFormStatusChanged($event)">
     </yuv-object-form>
 

@@ -146,7 +146,7 @@ export class TaskDetailsTaskComponent implements OnInit {
     return t ? label : null;
   }
 
-  private getFormDataFromProcessVars(t: Task) {
+  getFormDataFromProcessVars(t: Task) {
     const formData: any = {};
     if (t.variables) {
       t.variables.forEach((v) => {
