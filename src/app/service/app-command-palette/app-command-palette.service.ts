@@ -126,14 +126,6 @@ export class AppCommandPaletteService {
       } else if (c.id.startsWith('nav__')) {
         const tokens = c.id.split('__');
         this.router.navigate([tokens[1]]);
-        // } else if (c.id.startsWith('create__')) {
-        //   const tokens = c.id.split('__');
-        //   const objectTypeID = tokens[1];
-        //   this.router.navigate(['create'], {
-        //     queryParams: {
-        //       objectType: encodeURIComponent(objectTypeID)
-        //     }
-        //   });
       } else if (c.id === 'settings__darkmode') {
         this.layoutService.setDarkMode(!this.layoutSettings.darkMode);
       }

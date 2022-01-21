@@ -191,10 +191,7 @@ export class TaskDetailsTaskComponent implements OnInit {
         ? of({ outcome: o })
         : typeof o.model === 'string'
         ? this.inboxService.getTaskForm(o.model).pipe(
-            catchError((e) => {
-              console.error(e);
-              return of(null);
-            }),
+            catchError((e) => of(null)),
             map((res) => ({ outcome: o, resolvedFormModel: res }))
           )
         : of({
