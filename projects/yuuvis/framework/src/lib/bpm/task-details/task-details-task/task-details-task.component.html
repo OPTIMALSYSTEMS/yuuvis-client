@@ -10,7 +10,7 @@
     <!-- <div class="message {{m.level}}" *ngFor="let m of taskMessages">{{m.message}}</div> -->
 </div>
 
-<div class="task-data">
+<div class="task-data" [yuvBusyOverlay]="busy">
     <yuv-object-form #taskForm *ngIf="formOptions" [style.display]="!!outComeFormOptions ? 'none' : 'block'"
         [formOptions]="formOptions" (statusChanged)="onFormStatusChanged($event)">
     </yuv-object-form>

@@ -210,12 +210,14 @@ export class TaskDetailsTaskComponent implements OnInit {
           });
     });
     if (fetchTasks.length) {
+      this.busy = true;
       forkJoin(fetchTasks).subscribe((res: { outcome: TaskOutcome; resolvedFormModel: any }[]) => {
         this.outcomes = res.map((r) => ({
           ...r,
           formData: this.getFormDataFromProcessVars(this._task),
           label: this.system.getLocalizedResource(`${r.outcome.name}`)
         }));
+        this.busy = false;
       });
     } else {
       this.outcomes = undefined;
