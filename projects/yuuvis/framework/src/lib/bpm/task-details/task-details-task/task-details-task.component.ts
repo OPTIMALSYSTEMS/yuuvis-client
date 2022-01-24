@@ -234,7 +234,7 @@ export class TaskDetailsTaskComponent implements OnInit {
 
   submitOutcomeForm() {
     const vars = this.formState && !this.formState.invalid ? this.formToProcessVars(this.outcomeForm) : null;
-    this.confirm(vars);
+    this.confirm([...this.getOutcomeProcessVars(this._currentFormOutcome), ...vars]);
   }
 
   cancelOutcomeForm() {
@@ -283,7 +283,14 @@ export class TaskDetailsTaskComponent implements OnInit {
     this.busy = true;
     const payload = this.getUpdatePayload();
     if (additionalVars) {
-      payload.variables = [...payload.variables, ...additionalVars];
+      const payloadQA = {};
+      payload.variables.forEach((p) => {
+        payloadQA[p.name] = p;
+      });
+      additionalVars.forEach((p) => {
+        payloadQA[p.name] = p;
+      });
+      payload.variables = Object.keys(payloadQA).map((k) => payloadQA[k]); //[...payload.variables, ...additionalVars];
     }
     this.inboxService.completeTask(this._task.id, payload).subscribe(
       (res) => {
