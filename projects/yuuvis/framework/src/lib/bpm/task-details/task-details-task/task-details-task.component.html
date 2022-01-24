@@ -11,15 +11,14 @@
 </div>
 
 <div class="task-data">
-    <yuv-object-form #taskForm *ngIf="formOptions" [style.display]="!!currentFormOutcome ? 'none' : 'block'"
+    <yuv-object-form #taskForm *ngIf="formOptions" [style.display]="!!outComeFormOptions ? 'none' : 'block'"
         [formOptions]="formOptions" (statusChanged)="onFormStatusChanged($event)">
     </yuv-object-form>
 
     <div class="error" *ngIf="error">{{'yuv.framework.task-details-task.form.load.error'|translate}}</div>
 
     <!-- outcome form -->
-    <yuv-object-form class="outcomeForm" #outcomeForm *ngIf="currentFormOutcome"
-        [formOptions]="{formModel: currentFormOutcome.resolvedFormModel, data: getFormDataFromProcessVars(_task)}"
+    <yuv-object-form class="outcomeForm" #outcomeForm *ngIf="outComeFormOptions" [formOptions]="outComeFormOptions"
         (statusChanged)="onFormStatusChanged($event)">
     </yuv-object-form>
 
@@ -36,11 +35,11 @@
         </div>
         <div class="right">
             <button class="primary" [disabled]="error || formState?.invalid"
-                (click)="submitOutcomeForm()">{{currentFormOutcome.label}}</button>
+                (click)="submitOutcomeForm()">{{_currentFormOutcome.label}}</button>
         </div>
     </ng-template>
 
-    <ng-container *ngIf="!currentFormOutcome; else tplOutcomeActions">
+    <ng-container *ngIf="!_currentFormOutcome; else tplOutcomeActions">
 
         <div class="left" *ngIf="(!claimable || _task.assignee) && delegatable">
             <button class="secondary" (click)="getDelegationAssignee()">
@@ -76,7 +75,7 @@
 
             <!-- outcomes -->
             <ng-template #tplOutcomeActions>
-                <button [ngClass]="{primary: !o.secondary}" *ngFor="let o of outcomes"
+                <button class="{{o.outcome.secondary ? 'secondary' : 'primary'}}" *ngFor="let o of outcomes"
                     [disabled]="error || formState?.invalid" (click)="triggerCurrentFormOutcome(o)">{{o.label}}</button>
             </ng-template>
 

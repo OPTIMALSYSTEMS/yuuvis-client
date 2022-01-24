@@ -83,7 +83,17 @@ export class TaskDetailsTaskComponent implements OnInit {
   }
 
   formOptions: ObjectFormOptions;
-  currentFormOutcome: ResolvedTaskOutcome;
+  outComeFormOptions: ObjectFormOptions;
+  _currentFormOutcome: ResolvedTaskOutcome;
+  set currentFormOutcome(co: ResolvedTaskOutcome) {
+    this._currentFormOutcome = co;
+    this.outComeFormOptions = co
+      ? {
+          formModel: co.resolvedFormModel || {},
+          data: this.getFormDataFromProcessVars(this._task)
+        }
+      : undefined;
+  }
   // whether or not claiming is an option
   claimable: boolean;
   delegatable: boolean;
@@ -146,7 +156,7 @@ export class TaskDetailsTaskComponent implements OnInit {
     return t ? label : null;
   }
 
-  getFormDataFromProcessVars(t: Task) {
+  private getFormDataFromProcessVars(t: Task) {
     const formData: any = {};
     if (t.variables) {
       t.variables.forEach((v) => {
