@@ -53,8 +53,8 @@ export class DmsObject {
     this.version = searchResultItem.fields.get(BaseObjectTypeField.VERSION_NUMBER);
     this.objectTypeId = searchResultItem.objectTypeId;
 
-    this.title = objectType.baseProperties.title;
-    this.description = objectType.baseProperties.description;
+    this.title = searchResultItem.fields.get(objectType.baseProperties.title);
+    this.description = searchResultItem.fields.get(objectType.baseProperties.description);
 
     this.parentId = searchResultItem.fields.get(BaseObjectTypeField.PARENT_ID);
     this.data = this.generateData(searchResultItem.fields);

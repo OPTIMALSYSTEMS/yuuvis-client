@@ -65,7 +65,7 @@ export class SystemService {
   constructor(private backend: BackendService, private config: ConfigService, private appCache: AppCacheService, private logger: Logger) {}
 
   getBaseProperties(): ObjectTypeBaseProperties {
-    const baseProps = this.config.get('core.schema');
+    const baseProps = this.config.get('core.clientdefaults');
     return {
       title: baseProps?.titleProperty ? baseProps.titleProperty : ClientDefaultsObjectTypeField.TITLE,
       description: baseProps?.descriptionProperty ? baseProps.descriptionProperty : ClientDefaultsObjectTypeField.DESCRIPTION

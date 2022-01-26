@@ -17,7 +17,7 @@ export interface YuvConfig {
       advancedUserRole?: string;
       manageSettingsRole?: string;
     };
-    schema?: {
+    clientdefaults?: {
       titleProperty?: string;
       descriptionProperty?: string;
     };
