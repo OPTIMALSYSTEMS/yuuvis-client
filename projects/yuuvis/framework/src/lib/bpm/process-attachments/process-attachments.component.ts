@@ -1,14 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
-import {
-  BaseObjectTypeField,
-  ClientDefaultsObjectTypeField,
-  SearchFilter,
-  SearchFilterGroup,
-  SearchQuery,
-  SearchResult,
-  SearchService,
-  TranslateService
-} from '@yuuvis/core';
+import { BaseObjectTypeField, SearchFilter, SearchFilterGroup, SearchQuery, SearchResult, SearchService, SystemService, TranslateService } from '@yuuvis/core';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { PopoverRef } from '../../popover/popover.ref';
 import { PopoverService } from '../../popover/popover.service';
@@ -53,6 +44,7 @@ export class ProcessAttachmentsComponent implements OnInit {
 
   constructor(
     private translate: TranslateService,
+    private system: SystemService,
     private iconRegistry: IconRegistryService,
     private searchService: SearchService,
     private popoverService: PopoverService
@@ -102,8 +94,10 @@ export class ProcessAttachmentsComponent implements OnInit {
   private fetchAttachmentDetails(oids: string[]) {
     if (oids?.length) {
       this.busy = true;
+      const bp = this.system.getBaseProperties();
+
       let query = new SearchQuery();
-      query.fields = [BaseObjectTypeField.OBJECT_ID, BaseObjectTypeField.OBJECT_TYPE_ID, ClientDefaultsObjectTypeField.TITLE];
+      query.fields = [BaseObjectTypeField.OBJECT_ID, BaseObjectTypeField.OBJECT_TYPE_ID, bp.title];
       let group = SearchFilterGroup.fromArray(oids.map((id) => new SearchFilter(BaseObjectTypeField.OBJECT_ID, SearchFilter.OPERATOR.EEQUAL, id)));
       group.operator = SearchFilterGroup.OPERATOR.OR;
       query.addFilterGroup(group);
@@ -115,7 +109,7 @@ export class ProcessAttachmentsComponent implements OnInit {
             qa[i.fields.get(BaseObjectTypeField.OBJECT_ID)] = {
               id: i.fields.get(BaseObjectTypeField.OBJECT_ID),
               objectTypeId: i.fields.get(BaseObjectTypeField.OBJECT_TYPE_ID),
-              title: i.fields.get(ClientDefaultsObjectTypeField.TITLE)
+              title: i.fields.get(bp.title)
             };
           });
           this.attachedObjects = oids.map((id) => {

@@ -5,12 +5,14 @@ import { DmsObject } from '../../model/dms-object.model';
 import { ApiBase } from '../backend/api.enum';
 import { BackendService } from '../backend/backend.service';
 import { AppCacheService } from '../cache/app-cache.service';
+import { ConfigService } from '../config/config.service';
 import { Logger } from '../logger/logger';
 import { Utils } from './../../util/utils';
 import { AuthData } from './../auth/auth.service';
 import {
   BaseObjectTypeField,
   Classification,
+  ClientDefaultsObjectTypeField,
   ContentStreamAllowed,
   InternalFieldType,
   ObjectTypeClassification,
@@ -23,6 +25,7 @@ import {
   GroupedObjectType,
   Localization,
   ObjectType,
+  ObjectTypeBaseProperties,
   ObjectTypeField,
   ObjectTypeGroup,
   ObjectTypePermissions,
@@ -59,7 +62,15 @@ export class SystemService {
   /**
    * @ignore
    */
-  constructor(private backend: BackendService, private appCache: AppCacheService, private logger: Logger) {}
+  constructor(private backend: BackendService, private config: ConfigService, private appCache: AppCacheService, private logger: Logger) {}
+
+  getBaseProperties(): ObjectTypeBaseProperties {
+    const baseProps = this.config.get('core.schema');
+    return {
+      title: baseProps?.titleProperty ? baseProps.titleProperty : ClientDefaultsObjectTypeField.TITLE,
+      description: baseProps?.descriptionProperty ? baseProps.descriptionProperty : ClientDefaultsObjectTypeField.DESCRIPTION
+    };
+  }
 
   /**
    * Get all object types
@@ -391,7 +402,8 @@ export class SystemService {
       creatable: false,
       isFolder: false,
       secondaryObjectTypes: [],
-      fields: baseTypeFields
+      fields: baseTypeFields,
+      baseProperties: this.getBaseProperties()
     };
   }
 
@@ -808,7 +820,8 @@ export class SystemService {
         contentStreamAllowed: ContentStreamAllowed.NOT_ALLOWED,
         isFolder: true,
         secondaryObjectTypes: fd.secondaryObjectTypeId ? fd.secondaryObjectTypeId.map((t) => ({ id: t.value, static: t.static })) : [],
-        fields: this.resolveObjectTypeFields(fd, propertiesQA, objectTypesQA)
+        fields: this.resolveObjectTypeFields(fd, propertiesQA, objectTypesQA),
+        baseProperties: this.getBaseProperties()
       })),
       // document types
       ...schemaResponse.typeDocumentDefinition.map((dd) => ({
@@ -821,7 +834,8 @@ export class SystemService {
         contentStreamAllowed: dd.contentStreamAllowed,
         isFolder: false,
         secondaryObjectTypes: dd.secondaryObjectTypeId ? dd.secondaryObjectTypeId.map((t) => ({ id: t.value, static: t.static })) : [],
-        fields: this.resolveObjectTypeFields(dd, propertiesQA, objectTypesQA)
+        fields: this.resolveObjectTypeFields(dd, propertiesQA, objectTypesQA),
+        baseProperties: this.getBaseProperties()
       }))
     ];
 
@@ -867,7 +881,8 @@ export class SystemService {
             secondaryObjectTypes: [],
             fields: [...ot.fields, ...this.resolveObjectTypeFields(objectTypesQA[def.id], propertiesQA, objectTypesQA)].concat(
               ...requiredFSOTs.map((fsot) => this.resolveObjectTypeFields(objectTypesQA[fsot.id], propertiesQA, objectTypesQA))
-            )
+            ),
+            baseProperties: this.getBaseProperties()
           });
         });
       }

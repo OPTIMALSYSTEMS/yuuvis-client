@@ -1,9 +1,12 @@
 import { Injectable } from '@angular/core';
-import { BaseObjectTypeField, ClientDefaultsObjectTypeField, DmsObject, SystemService } from '@yuuvis/core';
+import { BaseObjectTypeField, DmsObject, SystemService } from '@yuuvis/core';
+
 @Injectable({
   providedIn: 'root'
 })
 export class AppDataService {
+  private objectTypeBaseProperties = this.systemService.getBaseProperties();
+
   constructor(private systemService: SystemService) {}
 
   getDmsObject(): DmsObject {
@@ -11,8 +14,8 @@ export class AppDataService {
     fields.set(BaseObjectTypeField.OBJECT_ID, '12345');
 
     fields.set('tristateCheckboxbaseTypeId', 'system:document');
-    fields.set(ClientDefaultsObjectTypeField.TITLE, '51.4');
-    fields.set(ClientDefaultsObjectTypeField.DESCRIPTION, 'Jugendarbeit');
+    fields.set(this.objectTypeBaseProperties.title, '51.4');
+    fields.set(this.objectTypeBaseProperties.description, 'Jugendarbeit');
     fields.set(BaseObjectTypeField.BASE_TYPE_ID, 'tristateCheckboxdocument');
     fields.set(BaseObjectTypeField.CREATED_BY, 'Tool Cuckoo');
     fields.set(BaseObjectTypeField.CREATION_DATE, '2019-08-19T12:16:55.210Z');
@@ -43,8 +46,8 @@ export class AppDataService {
   getDmsObjectWithContent() {
     const fields = new Map<string, any>();
     fields.set(BaseObjectTypeField.OBJECT_ID, '12345');
-    fields.set(ClientDefaultsObjectTypeField.TITLE, 'Mail to someone');
-    fields.set(ClientDefaultsObjectTypeField.DESCRIPTION, '...hurz');
+    fields.set(this.objectTypeBaseProperties.title, 'Mail to someone');
+    fields.set(this.objectTypeBaseProperties.description, '...hurz');
     fields.set(BaseObjectTypeField.BASE_TYPE_ID, 'system:document');
     fields.set(BaseObjectTypeField.OBJECT_TYPE_ID, 'appAsv:asvemail');
     fields.set(BaseObjectTypeField.TRACE_ID, '59c362b455c0a415');

@@ -1,5 +1,5 @@
 import { SearchResultItem } from '../service/search/search.service.interface';
-import { BaseObjectTypeField, ClientDefaultsObjectTypeField } from '../service/system/system.enum';
+import { BaseObjectTypeField } from '../service/system/system.enum';
 import { ObjectType } from '../service/system/system.interface';
 import { DmsObjectContent, DmsObjectContext, DmsObjectRights } from './dms-object.interface';
 /**
@@ -53,9 +53,8 @@ export class DmsObject {
     this.version = searchResultItem.fields.get(BaseObjectTypeField.VERSION_NUMBER);
     this.objectTypeId = searchResultItem.objectTypeId;
 
-    // title and description are provided by the client defaults SOT that may not be present all the time
-    this.title = searchResultItem.fields.get(ClientDefaultsObjectTypeField.TITLE);
-    this.description = searchResultItem.fields.get(ClientDefaultsObjectTypeField.DESCRIPTION);
+    this.title = objectType.baseProperties.title;
+    this.description = objectType.baseProperties.description;
 
     this.parentId = searchResultItem.fields.get(BaseObjectTypeField.PARENT_ID);
     this.data = this.generateData(searchResultItem.fields);

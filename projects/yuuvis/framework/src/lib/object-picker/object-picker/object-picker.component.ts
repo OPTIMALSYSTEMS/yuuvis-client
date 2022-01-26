@@ -1,6 +1,6 @@
 import { FocusKeyManager } from '@angular/cdk/a11y';
 import { Component, EventEmitter, HostListener, Input, OnInit, Output, QueryList, ViewChild, ViewChildren } from '@angular/core';
-import { BaseObjectTypeField, ClientDefaultsObjectTypeField, SearchQuery, SearchResult, SearchService, SystemService } from '@yuuvis/core';
+import { BaseObjectTypeField, SearchQuery, SearchResult, SearchService, SystemService } from '@yuuvis/core';
 import { Selectable } from '../../grouped-select/grouped-select/grouped-select.interface';
 import { SelectableItemComponent } from '../../grouped-select/grouped-select/selectable-item/selectable-item.component';
 import { PopoverRef } from '../../popover/popover.ref';
@@ -40,13 +40,9 @@ export class ObjectPickerComponent implements OnInit {
   constructor(private searchService: SearchService, private system: SystemService) {}
 
   onQuickSearchQueryChange(q: SearchQuery) {
+    const bp = this.system.getBaseProperties();
     if (q.filterGroup.filters.length || q.term?.length || q.types.length || q.lots.length) {
-      q.fields = [
-        BaseObjectTypeField.OBJECT_ID,
-        BaseObjectTypeField.OBJECT_TYPE_ID,
-        ClientDefaultsObjectTypeField.TITLE,
-        ClientDefaultsObjectTypeField.DESCRIPTION
-      ];
+      q.fields = [BaseObjectTypeField.OBJECT_ID, BaseObjectTypeField.OBJECT_TYPE_ID, bp.title, bp.description];
       q.size = 10;
       this.loading = true;
       this.searchService.search(q).subscribe(
@@ -55,8 +51,8 @@ export class ObjectPickerComponent implements OnInit {
           this.searchResult = res.items.map((i) => ({
             id: i.fields.get(BaseObjectTypeField.OBJECT_ID),
             svgSrc: this.system.getObjectTypeIconUri(i.fields.get(BaseObjectTypeField.OBJECT_TYPE_ID)),
-            label: i.fields.get(ClientDefaultsObjectTypeField.TITLE),
-            description: i.fields.get(ClientDefaultsObjectTypeField.DESCRIPTION)
+            label: i.fields.get(bp.title),
+            description: i.fields.get(bp.description)
           }));
           this.keyManager = new FocusKeyManager(this.items);
           this.loading = false;
