@@ -1,6 +1,6 @@
 import { Location } from '@angular/common';
 import { Component } from '@angular/core';
-import { ClientDefaultsObjectTypeField, DmsObject, TranslateService } from '@yuuvis/core';
+import { DmsObject, SystemService, TranslateService } from '@yuuvis/core';
 import { DmsObjectTarget, NotificationService, SelectionRange, SimpleAction } from '@yuuvis/framework';
 import { of as observableOf, of } from 'rxjs';
 
@@ -16,7 +16,7 @@ export class ClipboardLinkActionComponent extends DmsObjectTarget implements Sim
   range = SelectionRange.MULTI_SELECT;
   static isSubAction = true;
 
-  constructor(private translate: TranslateService, private toast: NotificationService, private location: Location) {
+  constructor(private translate: TranslateService, private toast: NotificationService, private system: SystemService, private location: Location) {
     super();
     this.label = this.translate.instant('yuv.client.action.clipboard.link.label');
     this.description = this.translate.instant('yuv.client.action.clipboard.link.description');
@@ -31,7 +31,7 @@ export class ClipboardLinkActionComponent extends DmsObjectTarget implements Sim
     let clipboardText = '';
 
     selection.forEach((element) => {
-      const title = `${element.data[ClientDefaultsObjectTypeField.TITLE]}`;
+      const title = `${element.data[this.system.getBaseProperties().title]}`;
       if (window.location.href.includes('/versions')) {
         clipboardText += `${title}: ${urlPrefix}/versions/${element.id}&version=${element.version}\n`;
       } else {

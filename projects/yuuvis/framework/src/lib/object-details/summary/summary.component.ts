@@ -4,7 +4,6 @@ import {
   AppCacheService,
   BaseObjectTypeField,
   Classification,
-  ClientDefaultsObjectTypeField,
   ContentStreamField,
   DmsObject,
   Logger,
@@ -246,13 +245,14 @@ export class SummaryComponent implements OnInit, OnDestroy {
           }
         }
       });
+    const bp = this.systemService.getBaseProperties();
 
     return {
       ...summary,
       base: summary.base.sort((a, b) => a.order - b.order),
       core: summary.core
-        .sort((a, b) => (a.key === ClientDefaultsObjectTypeField.DESCRIPTION ? -1 : b.key === ClientDefaultsObjectTypeField.DESCRIPTION ? 1 : 0))
-        .sort((a, b) => (a.key === ClientDefaultsObjectTypeField.TITLE ? -1 : b.key === ClientDefaultsObjectTypeField.TITLE ? 1 : 0))
+        .sort((a, b) => (a.key === bp.description ? -1 : b.key === bp.description ? 1 : 0))
+        .sort((a, b) => (a.key === bp.title ? -1 : b.key === bp.title ? 1 : 0))
     };
   }
 

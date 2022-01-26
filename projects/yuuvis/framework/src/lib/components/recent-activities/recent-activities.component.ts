@@ -2,7 +2,6 @@ import { Attribute, Component, EventEmitter, HostBinding, Input, OnInit, Output 
 import {
   AppCacheService,
   BaseObjectTypeField,
-  ClientDefaultsObjectTypeField,
   SearchFilter,
   SearchQuery,
   SearchResult,
@@ -134,18 +133,12 @@ export class RecentActivitiesComponent implements OnInit {
       resItem.fields.get(BaseObjectTypeField.OBJECT_TYPE_ID),
       resItem.fields.get(BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS)
     );
-
+    const bp = this.systemService.getBaseProperties();
     return {
-      title: resItem.fields.get(ClientDefaultsObjectTypeField.TITLE),
-      description: resItem.fields.get(ClientDefaultsObjectTypeField.DESCRIPTION),
+      title: resItem.fields.get(bp.title),
+      description: resItem.fields.get(bp.description),
       objectId: resItem.fields.get(BaseObjectTypeField.OBJECT_ID),
       objectTypeId,
-      // objectTypeIconHTML: CellRenderer.typeCellRenderer({
-      //   value: objectTypeId,
-      //   context: {
-      //     system: this.systemService
-      //   }
-      // }),
       objectTypeLabel: this.systemService.getLocalizedResource(`${objectTypeId}_label`),
       date
     };
