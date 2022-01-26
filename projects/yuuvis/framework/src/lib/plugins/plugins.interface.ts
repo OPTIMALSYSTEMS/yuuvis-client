@@ -267,7 +267,7 @@ export interface PluginViewerConfig {
   fileExtension?: string | string[];
   viewer: string;
   error?: boolean;
-  compare?: boolean;
+  type?: 'compare' | 'extend' | 'error' | 'default';
 }
 
 /**
