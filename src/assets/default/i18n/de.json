@@ -372,7 +372,7 @@
   "yuv.client.cmp.navigate.logout": "Navigation: Abmelden",
   "yuv.client.cmp.navigate.settings": "Navigation: Einstellungen öffnen",
   "yuv.client.cmp.searchmode.explain": "Suchmodus: Sie suchen jetzt nach Objekten",
-  "yuv.client.cmp.settings.darkmode": "Einstellungen: Zum dunklen Modus wechseln",
+  "yuv.client.cmp.settings.darkmode": "Einstellungen: Theme wechseln (hell/dunkel)",
   "yuv.client.frame.app-bar.change-tenant": "Mandant wechseln",
   "yuv.client.frame.app-bar.filedrop.label": "Als neues Objekt erstellen",
   "yuv.client.frame.app-bar.logout": "Abmelden",

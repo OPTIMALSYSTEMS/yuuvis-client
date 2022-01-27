@@ -14,3 +14,12 @@
   // --cmp-width: 30vw;
   // --cmp-min-width: 300px;
 }
+
+.commands {
+  .command {
+    mark {
+      color: #fff !important;
+      text-decoration: underline;
+    }
+  }
+}
