@@ -215,7 +215,7 @@ export class TaskDetailsTaskComponent implements OnInit {
         this.outcomes = res.map((r) => ({
           ...r,
           formData: this.getFormDataFromProcessVars(this._task),
-          label: this.system.getLocalizedResource(`${r.outcome.name}`)
+          label: this.system.getLocalizedResource(`${r.outcome.name}`) || r.outcome.name
         }));
         this.busy = false;
       });
