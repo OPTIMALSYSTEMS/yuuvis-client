@@ -80,6 +80,7 @@
   "yuv.framework.audit.version": "Version",
   "yuv.framework.column-config.add.group.type": "Available columns",
   "yuv.framework.column-config.button.reset.global": "Reset to default",
+  "yuv.framework.column-config.button.save": "Save",
   "yuv.framework.column-config.button.save.global": "Save as default",
   "yuv.framework.column-config.column.button.add": "Add column",
   "yuv.framework.column-config.column.button.pinned.title": "Pin column",
