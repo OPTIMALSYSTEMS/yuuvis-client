@@ -268,7 +268,7 @@ export class ColumnConfigComponent implements OnInit {
       .filter((f) => !existingColumnIDs.includes(f.id))
       .map((f) => ({
         id: f.id,
-        label: this.systemService.getLocalizedResource(`${f.id}_label`),
+        label: this.systemService.getLocalizedResource(`${f.id}_label`) || f.id,
         description: this.systemService.getLocalizedResource(`${f.id}_description`),
         value: f
       }))
