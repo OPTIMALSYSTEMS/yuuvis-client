@@ -41,7 +41,7 @@
 
     <ng-container *ngIf="!_currentFormOutcome; else tplOutcomeActions">
 
-        <div class="left" *ngIf="(!claimable || _task.assignee) && delegatable">
+        <div class="left" *ngIf="(!claimable || _task.assignee) && delegatable && !outcomes">
             <button class="secondary" (click)="getDelegationAssignee()">
                 {{'yuv.framework.task-details-task.button.delegate'|translate}}</button>
         </div>
