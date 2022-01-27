@@ -3,7 +3,6 @@ import { Router } from '@angular/router';
 import { CommandPaletteCommand, CommandPaletteService } from '@yuuvis/command-palette';
 import {
   BaseObjectTypeField,
-  ClientDefaultsObjectTypeField,
   DmsObject,
   DmsService,
   PendingChangesService,
@@ -23,6 +22,7 @@ import { FrameService } from '../../components/frame/frame.service';
 export class AppCommandPaletteService {
   private DISABLED_CAUSE_KEY = 'cmp.disabled.cause.pending.';
   private dmsObjectCommandSubscription: Subscription;
+  private objectTypeBaseProperties = this.system.getBaseProperties();
 
   private registeredDmsObjectCommands: string[] = [];
   private layoutSettings: LayoutSettings;
@@ -92,15 +92,15 @@ export class AppCommandPaletteService {
         .search(
           new SearchQuery({
             term: term,
-            fields: [BaseObjectTypeField.OBJECT_ID, ClientDefaultsObjectTypeField.TITLE, ClientDefaultsObjectTypeField.DESCRIPTION]
+            fields: [BaseObjectTypeField.OBJECT_ID, this.objectTypeBaseProperties.title, this.objectTypeBaseProperties.description]
           })
         )
         .subscribe((res: SearchResult) => {
           cb(
             res.items.map((i) => ({
               id: `sr__${i.fields.get(BaseObjectTypeField.OBJECT_ID)}`,
-              label: i.fields.get(ClientDefaultsObjectTypeField.TITLE),
-              description: i.fields.get(ClientDefaultsObjectTypeField.DESCRIPTION)
+              label: i.fields.get(this.objectTypeBaseProperties.title),
+              description: i.fields.get(this.objectTypeBaseProperties.description)
             }))
           );
         });
@@ -126,14 +126,6 @@ export class AppCommandPaletteService {
       } else if (c.id.startsWith('nav__')) {
         const tokens = c.id.split('__');
         this.router.navigate([tokens[1]]);
-        // } else if (c.id.startsWith('create__')) {
-        //   const tokens = c.id.split('__');
-        //   const objectTypeID = tokens[1];
-        //   this.router.navigate(['create'], {
-        //     queryParams: {
-        //       objectType: encodeURIComponent(objectTypeID)
-        //     }
-        //   });
       } else if (c.id === 'settings__darkmode') {
         this.layoutService.setDarkMode(!this.layoutSettings.darkMode);
       }

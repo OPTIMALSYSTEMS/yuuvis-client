@@ -3,7 +3,6 @@ import { Attribute, Component, EventEmitter, Input, OnDestroy, Output, ViewChild
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import {
   BaseObjectTypeField,
-  ClientDefaultsObjectTypeField,
   DmsObject,
   EventService,
   SearchQuery,
@@ -11,6 +10,7 @@ import {
   SearchResultItem,
   SearchService,
   SortOption,
+  SystemService,
   UserConfigService,
   Utils,
   YuvEvent,
@@ -63,7 +63,7 @@ export class SearchResultComponent implements OnDestroy {
   };
   pagingForm: FormGroup;
   busy: boolean;
-
+  private objectTypeBaseProperties = this.system.getBaseProperties();
   /**
    * Column configuration to be used for the grid. The query sent to the backend
    * will be adopted to fetch all the necessary fields.
@@ -178,6 +178,7 @@ export class SearchResultComponent implements OnDestroy {
     @Attribute('applyColumnConfig') public applyColumnConfig: any, // string should be resolved
     private gridService: GridService,
     private userConfig: UserConfigService,
+    private system: SystemService,
     private eventService: EventService,
     private searchService: SearchService,
     private fb: FormBuilder,
@@ -264,8 +265,8 @@ export class SearchResultComponent implements OnDestroy {
 
         q.fields = [
           // required for SingleCellRendering allthough the object may not have those fields
-          ClientDefaultsObjectTypeField.TITLE,
-          ClientDefaultsObjectTypeField.DESCRIPTION,
+          this.objectTypeBaseProperties.title,
+          this.objectTypeBaseProperties.description,
           // stuff that's always needed
           BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS,
           BaseObjectTypeField.OBJECT_ID,
@@ -312,8 +313,8 @@ export class SearchResultComponent implements OnDestroy {
 
       const setter = this.responsiveTableData?.set || ((t) => t);
       this.tableData = setter.call(this, {
-        titleField: ClientDefaultsObjectTypeField.TITLE,
-        descriptionField: ClientDefaultsObjectTypeField.DESCRIPTION,
+        titleField: this.objectTypeBaseProperties.title,
+        descriptionField: this.objectTypeBaseProperties.description,
         selectType: 'multiple',
         columns: this._columns,
         rows: this._rows,
@@ -338,8 +339,8 @@ export class SearchResultComponent implements OnDestroy {
       id: searchResultItem.fields.get(BaseObjectTypeField.OBJECT_ID),
       [BaseObjectTypeField.OBJECT_TYPE_ID]: searchResultItem.fields.get(BaseObjectTypeField.OBJECT_TYPE_ID),
       [BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS]: searchResultItem.fields.get(BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS),
-      [ClientDefaultsObjectTypeField.TITLE]: searchResultItem.fields.get(ClientDefaultsObjectTypeField.TITLE),
-      [ClientDefaultsObjectTypeField.DESCRIPTION]: searchResultItem.fields.get(ClientDefaultsObjectTypeField.DESCRIPTION)
+      [this.objectTypeBaseProperties.title]: searchResultItem.fields.get(this.objectTypeBaseProperties.title),
+      [this.objectTypeBaseProperties.description]: searchResultItem.fields.get(this.objectTypeBaseProperties.description)
     };
     this._columns.forEach((cd: ColDef) => {
       row[cd.field] = searchResultItem.fields.get(cd.field);

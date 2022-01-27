@@ -11,7 +11,7 @@
       <h3 translate>yuv.framework.audit.search.title</h3>
       <div class="controls">
         <!-- date range -->
-        <yuv-form-input [label]="'yuv.framework.audit.search.daterange' | translate" [skipToggle]="true">
+        <yuv-form-input [label]="'yuv.framework.audit.search.daterange' | translate" [skipToggle]="true" [invalid]="searchForm.invalid">
           <yuv-datetime-range [withTime]="true" formControlName="dateRange"></yuv-datetime-range>
         </yuv-form-input>
         <!-- actions -->

@@ -1,13 +1,12 @@
 import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
 import {
   BaseObjectTypeField,
-  ClientDefaultsObjectTypeField,
   ContentStreamField,
   DmsObject,
   DmsService,
   EventService,
   RetentionField,
+  SystemService,
   TranslateService,
   YuvEvent,
   YuvEventType
@@ -41,6 +40,7 @@ import { arrowNext, edit, listModeDefault, listModeGrid, listModeSimple, refresh
 export class VersionListComponent implements OnInit {
   @ViewChild('dataTable') dataTable: ResponsiveDataTableComponent;
 
+  private objectTypeBaseProperties = this.system.getBaseProperties();
   private COLUMN_CONFIG_SKIP_FIELDS = [
     ...Object.keys(RetentionField).map((k) => RetentionField[k]),
     BaseObjectTypeField.CREATED_BY,
@@ -134,7 +134,7 @@ export class VersionListComponent implements OnInit {
 
   constructor(
     public translate: TranslateService,
-    private fb: FormBuilder,
+    private system: SystemService,
     private dmsService: DmsService,
     private iconRegistry: IconRegistryService,
     private gridService: GridService,
@@ -167,7 +167,7 @@ export class VersionListComponent implements OnInit {
 
   private getColumnDefinitions(objectTypeId: string) {
     const defs = this.gridService.getColumnDefinitions(objectTypeId).filter((d) => !this.COLUMN_CONFIG_SKIP_FIELDS.includes(d.field));
-    const coreColumnIds = [BaseObjectTypeField.VERSION_NUMBER, ClientDefaultsObjectTypeField.TITLE, ClientDefaultsObjectTypeField.DESCRIPTION];
+    const coreColumnIds = [BaseObjectTypeField.VERSION_NUMBER, this.objectTypeBaseProperties.title, this.objectTypeBaseProperties.description];
     // fetching column definitions we need to be aware that title and description may not be present
     const coreColumns = coreColumnIds.map((f) => defs.find((d) => d.field === f)).filter((def) => !!def);
     coreColumns[0].pinned = true;
@@ -205,8 +205,8 @@ export class VersionListComponent implements OnInit {
           this.tableData = setter.call(this, {
             columns: this.getColumnDefinitions(objectTypeId),
             rows: sorted.map((a) => a.data),
-            titleField: ClientDefaultsObjectTypeField.TITLE,
-            descriptionField: ClientDefaultsObjectTypeField.DESCRIPTION,
+            titleField: this.objectTypeBaseProperties.title,
+            descriptionField: this.objectTypeBaseProperties.description,
             selectType: 'multiple',
             gridOptions: { getRowNodeId: (o) => this.getRowNodeId(o), rowMultiSelectWithClick: false },
             ...(this.responsiveTableData || {})
