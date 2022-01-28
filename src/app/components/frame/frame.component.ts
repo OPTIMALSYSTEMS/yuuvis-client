@@ -10,7 +10,6 @@ import {
   ConnectionState,
   DmsService,
   EventService,
-  ObjectTag,
   SearchFilter,
   SearchQuery,
   TranslateService,
@@ -50,11 +49,6 @@ export class FrameComponent implements OnInit, OnDestroy {
   private LAYOUT_OPTIONS_ELEMENT_KEY = 'yuv-frame';
   @ViewChild('moveNotification') moveNotification: TemplateRef<any>;
 
-  // query for fetching pending AFOs
-  pendingAFOsQuery = JSON.stringify({
-    filters: [{ f: `system:tags[${ObjectTag.AFO}].state`, o: SearchFilter.OPERATOR.EQUAL, v1: 0 }]
-  });
-
   moveNoticeDialogSkip: boolean;
   swUpdateAvailable: boolean;
   hideAppBar: boolean;
@@ -70,6 +64,8 @@ export class FrameComponent implements OnInit, OnDestroy {
 
   navigationPlugins: Observable<any[]>;
   settingsPlugins: Observable<any[]>;
+
+  pendingAFOsQuery = this.frameService.pendingAFOsQuery;
 
   context: string;
   reloadComponent = true;

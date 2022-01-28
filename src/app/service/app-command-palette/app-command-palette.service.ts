@@ -123,6 +123,8 @@ export class AppCommandPaletteService {
     this.cmpService.registerCommands(this.getCommandPaletteCommands()).subscribe((c: CommandPaletteCommand) => {
       if (c.id === 'logout') {
         this.frameService.appLogout();
+      } else if (c.id === 'nav__intray') {
+        this.router.navigate(['/result'], { queryParams: { query: this.frameService.pendingAFOsQuery, tmp: true } });
       } else if (c.id.startsWith('nav__')) {
         const tokens = c.id.split('__');
         this.router.navigate([tokens[1]]);
@@ -137,6 +139,10 @@ export class AppCommandPaletteService {
       { id: 'nav__dashboard', label: this.translate.instant('yuv.client.cmp.navigate.dashboard') },
       { id: 'nav__inbox', label: this.translate.instant('yuv.client.cmp.navigate.inbox') },
       { id: 'nav__settings', label: this.translate.instant('yuv.client.cmp.navigate.settings') },
+      { id: 'nav__processes', label: this.translate.instant('yuv.client.cmp.navigate.processes') },
+      { id: 'nav__follow-ups', label: this.translate.instant('yuv.client.cmp.navigate.follow-ups') },
+      { id: 'nav__intray', label: this.translate.instant('yuv.client.cmp.navigate.intray') },
+
       { id: 'settings__darkmode', label: this.translate.instant('yuv.client.cmp.settings.darkmode') },
       { id: 'logout', label: this.translate.instant('yuv.client.cmp.navigate.logout') }
     ];

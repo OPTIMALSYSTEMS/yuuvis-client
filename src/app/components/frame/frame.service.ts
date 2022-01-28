@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { ApiBase, AppCacheService, BackendService, UserService, Utils, YuvUser } from '@yuuvis/core';
+import { ApiBase, AppCacheService, BackendService, ObjectTag, SearchFilter, UserService, Utils, YuvUser } from '@yuuvis/core';
 import { Observable } from 'rxjs';
 
 /**
@@ -20,6 +20,11 @@ import { Observable } from 'rxjs';
 export class FrameService {
   private items: Map<string, any> = new Map<string, any>();
   private APP_LOGOUT_EVENT_KEY = 'yuv.app.event.logout';
+
+  // query for fetching pending AFOs
+  pendingAFOsQuery = JSON.stringify({
+    filters: [{ f: `system:tags[${ObjectTag.AFO}].state`, o: SearchFilter.OPERATOR.EQUAL, v1: 0 }]
+  });
 
   constructor(private router: Router, private userService: UserService, private appCache: AppCacheService, private backend: BackendService) {
     window.addEventListener('storage', (evt) => {
