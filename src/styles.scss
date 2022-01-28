@@ -34,6 +34,8 @@ body {
 .themeBackground {
   background-color: var(--theme-background-color);
   background-image: var(--theme-background);
+  background-position: center center;
+  background-size: cover;
 }
 
 yuv-action-menu .action-menu {
