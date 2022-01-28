@@ -1,6 +1,7 @@
 import { Component, Inject, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import {
+  AuditEntry,
   AuditQueryOptions,
   AuditQueryResult,
   AuditService,
@@ -41,6 +42,7 @@ export class AuditComponent implements OnInit, OnDestroy {
   private initialFetch: boolean;
   searchForm: FormGroup;
   auditsRes: AuditQueryResult;
+  resolvedItems: ReslovedAuditEntry[];
   searchPanelShow: boolean;
   filtered: boolean;
   error: boolean;
@@ -61,10 +63,10 @@ export class AuditComponent implements OnInit, OnDestroy {
       this._objectID = o.id;
       this._objectTypeID = o.objectTypeId;
       if (this.initialFetch) {
-        this.fetchAuditEntries();
+        this.query();
       }
     } else {
-      this.fetchAuditEntries();
+      this.query();
     }
   }
 
@@ -111,12 +113,15 @@ export class AuditComponent implements OnInit, OnDestroy {
       a303: this.translate.instant('yuv.framework.audit.label.update.move.content'),
       a310: this.translate.instant('yuv.framework.audit.label.update.tag'),
       a325: this.translate.instant('yuv.framework.audit.label.update.restore'),
+      a340: this.translate.instant('yuv.framework.audit.label.update.move'),
 
       a400: this.translate.instant('yuv.framework.audit.label.get.content'),
       a401: this.translate.instant('yuv.framework.audit.label.get.metadata'),
       a402: this.translate.instant('yuv.framework.audit.label.get.rendition.text'),
       a403: this.translate.instant('yuv.framework.audit.label.get.rendition.pdf'),
-      a404: this.translate.instant('yuv.framework.audit.label.get.rendition.thumbnail')
+      a404: this.translate.instant('yuv.framework.audit.label.get.rendition.thumbnail'),
+
+      a10000: this.translate.instant('yuv.framework.audit.label.get.custom')
     };
 
     this.eventService
@@ -126,12 +131,7 @@ export class AuditComponent implements OnInit, OnDestroy {
         const dmsObject = e.data as DmsObject;
         // reload audit entries when update belongs to the current dms object
         if (dmsObject.id === this.objectID) {
-          // check if a search is set
-          if (this.filtered) {
-            this.query();
-          } else {
-            this.fetchAuditEntries();
-          }
+          this.query();
         }
       });
   }
@@ -148,7 +148,8 @@ export class AuditComponent implements OnInit, OnDestroy {
 
     this.auditService.getAuditEntries(this._objectID, this._objectTypeID, options).subscribe(
       (res: AuditQueryResult) => {
-        this.auditsRes = this.mapResult(res);
+        this.auditsRes = res;
+        this.resolvedItems = this.mapResult(res);
         this.busy = false;
       },
       (err) => {
@@ -157,27 +158,56 @@ export class AuditComponent implements OnInit, OnDestroy {
     );
   }
 
-  private mapResult(res: AuditQueryResult): AuditQueryResult {
-    res.items.forEach((i) => {
+  private mapResult(res: AuditQueryResult): ReslovedAuditEntry[] {
+    return res.items.map((i) => {
+      const r: ReslovedAuditEntry = { ...i, label: this.auditLabels['a' + i.action] };
       // tag related audits
       if ([110, 210, 310].includes(i.action)) {
-        const m = i.detail.match(/\[(.*?)\]/);
-        if (m && m[1]) {
-          const t = m[1].split(',');
-          i.more = `
-          ${this.system.getLocalizedResource(t[0].trim() + '_label')}: ${this.system.getLocalizedResource(`${t[0].trim()}:${t[1].trim()}_label`)}
+        const params = this.getAuditEntryParams(i);
+        if (params) {
+          r.more = `
+          ${this.system.getLocalizedResource(params[0] + '_label')}: ${this.system.getLocalizedResource(`${params[0]}:${params[1]}_label`)}
           `;
         }
       }
+      // restore audit
+      else if (i.action === 325) {
+        const params = this.getAuditEntryParams(i);
+        r.more = this.translate.instant('yuv.framework.audit.label.update.restore.more', { version: params[0] || '[?]' });
+      }
+      // custom audits
+      else if (i.action === 10000) {
+        // Custom tags detail look like this: SERVICENAME: [TITLE_KEY, META_KEY]
+        const serviceName = this.getAuditEntryKey(i);
+        let title = '';
+        const params = this.getAuditEntryParams(i);
+        if (params.length) {
+          title = this.system.getLocalizedResource(params[0]);
+          r.more = params[1] ? this.system.getLocalizedResource(params[1]) : undefined;
+        }
+        r.label = `${this.system.getLocalizedResource(serviceName) || serviceName}: ${title}`;
+      }
+      return r;
     });
-    return res;
+  }
+
+  private getAuditEntryKey(auditItem: AuditEntry): string {
+    const detail = auditItem.detail;
+    return detail.indexOf(':') !== -1 ? detail.split(':')[0].trim() : detail;
+  }
+
+  private getAuditEntryParams(auditItem: AuditEntry): string[] {
+    // details with params look like this:
+    // OBJECT_RESTORED: [1]
+    // OBJECT_TAG_UPDATED: [tagname, 1]
+    const m = auditItem.detail.match(/\[(.*?)\]/);
+    return m && m[1] ? m[1].split(',').map((i) => i.trim()) : [];
   }
 
   /**
    * Execute a query from the search panel.
    */
   query() {
-    this.searchForm.value;
     const range: RangeValue = this.searchForm.value.dateRange;
 
     let options: AuditQueryOptions = {};
@@ -210,7 +240,8 @@ export class AuditComponent implements OnInit, OnDestroy {
       dateRange: null
     };
     Object.keys(this.auditLabels).forEach((a) => {
-      patch[a] = null;
+      // exclude read actions
+      patch[a] = a.startsWith('a4') ? false : true;
     });
     this.searchForm.patchValue(patch);
     this.filtered = false;
@@ -241,7 +272,8 @@ export class AuditComponent implements OnInit, OnDestroy {
     this.busy = true;
     this.auditService.getPage(this.auditsRes, page).subscribe(
       (res: AuditQueryResult) => {
-        this.auditsRes = this.mapResult(res);
+        this.auditsRes = res;
+        this.resolvedItems = this.mapResult(res);
         this.busy = false;
       },
       (err) => {
@@ -275,7 +307,8 @@ export class AuditComponent implements OnInit, OnDestroy {
       { label: this.translate.instant('yuv.framework.audit.label.group.update'), actions: actionKeys.filter((k) => k.startsWith('a3')) },
       { label: this.translate.instant('yuv.framework.audit.label.group.get'), actions: actionKeys.filter((k) => k.startsWith('a4')) },
       { label: this.translate.instant('yuv.framework.audit.label.group.delete'), actions: actionKeys.filter((k) => k.startsWith('a2')) },
-      { label: this.translate.instant('yuv.framework.audit.label.group.create'), actions: actionKeys.filter((k) => k.startsWith('a1')) }
+      { label: this.translate.instant('yuv.framework.audit.label.group.create'), actions: actionKeys.filter((k) => k.startsWith('a1')) },
+      { label: this.translate.instant('yuv.framework.audit.label.group.custom'), actions: actionKeys.filter((k) => k.startsWith('a1000')) }
     ];
 
     let fbInput = {
@@ -286,7 +319,7 @@ export class AuditComponent implements OnInit, OnDestroy {
         const groupEntry = {
           label: g.label,
           actions: g.actions.map((a) => {
-            fbInput[a] = [false];
+            fbInput[a] = [a.startsWith('a4') ? false : true];
             return a;
           })
         };
@@ -295,9 +328,13 @@ export class AuditComponent implements OnInit, OnDestroy {
     });
     this.searchForm = this.fb.group(fbInput);
     if (!this.initialFetch) {
-      this.fetchAuditEntries();
+      this.query();
       this.initialFetch = true;
     }
   }
   ngOnDestroy() {}
+}
+
+interface ReslovedAuditEntry extends AuditEntry {
+  label: string;
 }

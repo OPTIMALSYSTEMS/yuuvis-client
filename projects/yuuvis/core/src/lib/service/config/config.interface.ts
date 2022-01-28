@@ -13,6 +13,14 @@ export interface YuvConfig {
     logging?: {
       level: 'debug' | 'error' | 'warn' | 'info';
     };
+    permissions?: {
+      advancedUserRole?: string;
+      manageSettingsRole?: string;
+    };
+    clientdefaults?: {
+      titleProperty?: string;
+      descriptionProperty?: string;
+    };
   };
   oidc?: OpenIdConfig;
 }

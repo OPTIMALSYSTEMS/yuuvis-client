@@ -21,6 +21,7 @@ export * from './lib/popover/index';
 export * from './lib/quickfinder/index';
 export { YuvRoutes } from './lib/routing/routes';
 export * from './lib/search/index';
+export * from './lib/services/component-state/component-state.interface';
 export * from './lib/services/index';
 export * from './lib/svg.generated';
 export * from './lib/user/index';

@@ -10,15 +10,6 @@ export const FollowUpVars = {
   expiryDateTime: 'expiryDateTime'
 };
 
-export const TaskflowVars = {
-  title: 'title',
-  comment: 'comment',
-  taskStatus: 'taskStatus',
-  expiryDateTime: 'expiryDatetime',
-  nextAssignee: 'nextAssignee',
-  note: 'note'
-};
-
 export interface ProcessDefinition {
   category: string;
   description: string;
@@ -82,6 +73,7 @@ export interface Task {
     schemaProperties?: string[];
     model?: any;
     data?: any;
+    outcomes?: TaskOutcome[];
   };
   delegationState?: string;
   formKey: string;
@@ -99,14 +91,13 @@ export interface Task {
   attachments: string[];
 }
 
-export enum ProcessDefinitionKey {
-  TASK_FLOW = 'dms-lite-taskflow',
-  FOLLOW_UP = 'follow-up',
-  INVALID_TYPE = 'invalid_type'
-}
+export const ProcessDefinitionKey = {
+  FOLLOW_UP: 'follow-up',
+  INVALID_TYPE: 'invalid_type'
+};
 // payload for starting a new process
 export interface ProcessCreatePayload extends ProcessPostPayload {
-  processDefinitionKey: ProcessDefinitionKey;
+  processDefinitionKey: string;
   name?: string;
   businessKey?: string;
   returnVariables?: boolean;
@@ -147,8 +138,7 @@ export interface ProcessVariable {
 
 export enum TaskType {
   FOLLOW_UP = 'follow-up',
-  TASK = 'task',
-  TASKFLOW = 'taskflow'
+  TASK = 'task'
 }
 
 export interface CreateFollowUp {
@@ -186,8 +176,6 @@ export class TaskRow {
 
     if (data.processDefinition.id.startsWith(ProcessDefinitionKey.FOLLOW_UP)) {
       this.type = TaskType.FOLLOW_UP;
-    } else if (data.processDefinition.id.startsWith(ProcessDefinitionKey.TASK_FLOW)) {
-      this.type = TaskType.TASKFLOW;
     } else {
       this.type = TaskType.TASK;
     }
@@ -215,8 +203,6 @@ export class ProcessRow {
 
     if (data.processDefinition.id.startsWith(ProcessDefinitionKey.FOLLOW_UP)) {
       this.type = TaskType.FOLLOW_UP;
-    } else if (data.processDefinition.id.startsWith(ProcessDefinitionKey.TASK_FLOW)) {
-      this.type = TaskType.TASKFLOW;
     } else {
       this.type = TaskType.TASK;
     }
@@ -255,4 +241,27 @@ export interface FetchProcessOptions {
   includeProcessVar?: boolean;
   isCompleted?: boolean;
   processDefinitionKey?: string;
+}
+
+export interface TaskOutcome {
+  // the outcomes technical name (also used for translations)
+  name: string;
+  // Name of the variable that this outcome will write to process vars
+  variable: string;
+  // The vaue that this outcome will write to process vars
+  value: any;
+  /**
+   * Optional form model. Could be the model object as well as a string (Id
+   * to fetch a form model from the backend).
+   *
+   * If you provide a model, triggering the outcome will display/render this form
+   * alongside with the tasks form. Values of all rendered forms will be put into
+   * the process variables
+   */
+  model?: any;
+  /**
+   * Outcomes will be rendered as primary buttons. If you want an outcome
+   * to be less prominent you could set this property to 'true'
+   */
+  secondary?: boolean;
 }

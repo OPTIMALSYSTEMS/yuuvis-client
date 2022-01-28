@@ -24,7 +24,6 @@ export class BpmService {
   private availableProcessDefinitions: ProcessDefinition[] = [];
 
   public supports = {
-    taskflow: false,
     followUp: false
   };
 
@@ -36,9 +35,7 @@ export class BpmService {
     this.getAllProcessDefinitions().subscribe((res: ProcessDefinition[]) => {
       this.availableProcessDefinitions = res;
       res.forEach((pd) => {
-        if (pd.id.startsWith(ProcessDefinitionKey.TASK_FLOW)) {
-          this.supports.taskflow = true;
-        } else if (pd.id.startsWith(ProcessDefinitionKey.FOLLOW_UP)) {
+        if (pd.id.startsWith(ProcessDefinitionKey.FOLLOW_UP)) {
           this.supports.followUp = true;
         }
       });
@@ -68,11 +65,11 @@ export class BpmService {
     return this.backendService.get(url).pipe(finalize(() => setTimeout(() => this.loadingBpmDataSource.next(false), 200)));
   }
 
-  getProcessInstances(processDefinitionKey: ProcessDefinitionKey, options: FetchTaskOptions = { includeProcessVar: true }): Observable<Process[]> {
+  getProcessInstances(processDefinitionKey: string, options: FetchTaskOptions = { includeProcessVar: true }): Observable<Process[]> {
     return this.backendService.get(`${this.bpmProcessUrl}${this.optionsToParams({ ...options, processDefinitionKey })}`, ApiBase.apiWeb);
   }
 
-  getProcessInstance(processDefinitionKey: ProcessDefinitionKey, options?: FetchTaskOptions): Observable<Process> {
+  getProcessInstance(processDefinitionKey: string, options?: FetchTaskOptions): Observable<Process> {
     return this.backendService
       .get(`${this.bpmProcessUrl}${this.optionsToParams({ ...options, processDefinitionKey })}`, ApiBase.apiWeb)
       .pipe(map(({ objects }) => objects[0]));

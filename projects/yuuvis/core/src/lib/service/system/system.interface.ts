@@ -26,7 +26,14 @@ export interface ObjectType {
   floatingParentType?: string;
   secondaryObjectTypes: { id: string; static?: boolean }[];
   fields: ObjectTypeField[];
+  baseProperties: ObjectTypeBaseProperties;
 }
+
+export interface ObjectTypeBaseProperties {
+  title: string;
+  description: string;
+}
+
 /**
  * Interface providing secondary object type
  */

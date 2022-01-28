@@ -17,9 +17,8 @@
     <ng-template #tplSingle>
       <div class="version">{{dmsObject?.version}}</div>
       <yuv-object-details [disableFileDrop]="true" [dmsObject]="dmsObject" [plugins]="plugins"
-        [excludeObjectActions]="['yuv-taskflow-action', 'yuv-follow-up-action']"
-        [activeVersion]="versionList?.activeVersion" [panelOrder]="['summary', 'indexdata', 'preview']"
-        [layoutOptionsKey]="layoutOptionsKey">
+        [excludeObjectActions]="['yuv-follow-up-action']" [activeVersion]="versionList?.activeVersion"
+        [panelOrder]="['summary', 'indexdata', 'preview']" [layoutOptionsKey]="layoutOptionsKey">
       </yuv-object-details>
     </ng-template>
 

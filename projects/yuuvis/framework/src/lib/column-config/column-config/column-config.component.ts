@@ -127,7 +127,7 @@ export class ColumnConfigComponent implements OnInit {
     const popoverConfig: PopoverConfig = {
       maxHeight: '80%',
       width: '55%',
-      minWidth: '400px',
+      maxWidth: '400px',
       data: {
         groups: groups
       }
@@ -175,13 +175,6 @@ export class ColumnConfigComponent implements OnInit {
   togglePinned(column: ColumnConfigColumn) {
     column.pinned = !column.pinned;
     this.columnConfigDirty = true;
-  }
-
-  revert() {
-    this.error = null;
-    this.resetConfig({ ...this._loadedColumnConfig });
-    this.columnConfigDirty = false;
-    this.checkMoreColumnsAvailable();
   }
 
   save(global = false, reset = false) {
@@ -275,7 +268,7 @@ export class ColumnConfigComponent implements OnInit {
       .filter((f) => !existingColumnIDs.includes(f.id))
       .map((f) => ({
         id: f.id,
-        label: this.systemService.getLocalizedResource(`${f.id}_label`),
+        label: this.systemService.getLocalizedResource(`${f.id}_label`) || f.id,
         description: this.systemService.getLocalizedResource(`${f.id}_description`),
         value: f
       }))

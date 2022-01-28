@@ -44,7 +44,7 @@ export class ReferenceActionComponent extends DmsObjectTarget implements LinkAct
     let query = new SearchQuery();
     let group = SearchFilterGroup.fromArray(this.createSearchFilters(dmsObject));
     group.operator = SearchFilterGroup.OPERATOR.OR;
-    query.addFilterGroup(group);
+    query.hiddenFilterGroup = group;
     return JSON.stringify(query.toQueryJson());
   }
 

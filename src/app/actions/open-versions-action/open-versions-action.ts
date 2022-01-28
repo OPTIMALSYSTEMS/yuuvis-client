@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { DmsObject, TranslateService } from '@yuuvis/core';
 import { DmsObjectTarget, LinkAction, SelectionRange, versions } from '@yuuvis/framework';
-import { of as observableOf } from 'rxjs';
+import { of } from 'rxjs';
 
 @Component({
   selector: 'yuv-open-versions-action',
@@ -16,7 +16,7 @@ export class OpenVersionsActionComponent extends DmsObjectTarget implements Link
   group = 'common';
   range = SelectionRange.SINGLE_SELECT;
 
-  constructor(private translate: TranslateService, private router: Router) {
+  constructor(private router: Router, private translate: TranslateService) {
     super();
     this.label = this.translate.instant('yuv.client.action.open.versions');
     this.description = this.translate.instant('yuv.client.action.open.versions.description');
@@ -24,7 +24,7 @@ export class OpenVersionsActionComponent extends DmsObjectTarget implements Link
 
   isExecutable(item: DmsObject) {
     const oneVersion = item.version > 1;
-    return observableOf(this.isAllowedState() && oneVersion);
+    return of(this.isAllowedState() && oneVersion);
   }
 
   getParams(selection: DmsObject[]) {

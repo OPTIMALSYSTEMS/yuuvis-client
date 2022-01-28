@@ -133,6 +133,8 @@
       justify-content: space-between;
       padding: calc(var(--app-pane-padding) / 2) var(--app-pane-padding);
 
+      gap: calc(var(--app-pane-padding) / 2);
+
       > .right {
         display: flex;
         justify-content: flex-end;
