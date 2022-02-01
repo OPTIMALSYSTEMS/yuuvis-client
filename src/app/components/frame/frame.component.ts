@@ -222,10 +222,13 @@ export class FrameComponent implements OnInit, OnDestroy {
     }
 
     const dbProperty = '--theme-background';
+    const dbSizeProperty = '--theme-background-size';
     if (settings.dashboardBackground) {
       body.style.setProperty(dbProperty, 'url("' + settings.dashboardBackground + '")', 'important');
+      body.style.setProperty(dbSizeProperty, 'cover', 'important');
     } else {
       body.style.removeProperty(dbProperty);
+      body.style.removeProperty(dbSizeProperty);
     }
   }
 
