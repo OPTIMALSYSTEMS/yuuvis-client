@@ -12,7 +12,8 @@
                             <yuv-object-type-icon [objectTypeId]="o.objectTypeId"></yuv-object-type-icon>
                             <span>{{o.title}}</span>
                         </button>
-                        <button class="remove" (click)="removeAttachment(o.id)" *ngIf="enableRemove">
+                        <button class="remove" (click)="removeAttachment(o.id)"
+                            *ngIf="enableRemove && !o.preventRemove">
                             <yuv-icon class="btn" icon="clear"></yuv-icon>
                         </button>
                     </ng-template>

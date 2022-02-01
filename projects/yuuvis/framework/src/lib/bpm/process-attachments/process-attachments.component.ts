@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
+import { Attribute, Component, EventEmitter, Input, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
 import { BaseObjectTypeField, SearchFilter, SearchFilterGroup, SearchQuery, SearchResult, SearchService, SystemService, TranslateService } from '@yuuvis/core';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { PopoverRef } from '../../popover/popover.ref';
@@ -43,6 +43,7 @@ export class ProcessAttachmentsComponent implements OnInit {
   private popoverRef: PopoverRef;
 
   constructor(
+    @Attribute('keepPrimary') public keepPrimary: string,
     private translate: TranslateService,
     private system: SystemService,
     private iconRegistry: IconRegistryService,
@@ -125,6 +126,7 @@ export class ProcessAttachmentsComponent implements OnInit {
             // select the first item that has no error
             const valid = this.attachedObjects.find((o) => !o.error);
             if (valid) {
+              valid.preventRemove = this.keepPrimary === 'true';
               this.selectedObject = valid.id;
             }
           }
