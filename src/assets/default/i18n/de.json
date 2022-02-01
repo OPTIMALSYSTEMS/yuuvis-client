@@ -368,6 +368,7 @@
   "yuv.client.cmp.disabled.cause.pending-changes": "Deaktiviert wegen ungespeicherter Änderungen. Bitte speichern Sie Ihre Änderungen.",
   "yuv.client.cmp.dmsobject.delete": "Objekt löschen",
   "yuv.client.cmp.dmsobject.download": "Dokument herunterladen",
+  "yuv.client.cmp.input.placeholder": "Kommando suchen",
   "yuv.client.cmp.navigate.dashboard": "Navigation: Dashboard",
   "yuv.client.cmp.navigate.follow-ups": "Navigation: Meine Wiedervorlagen",
   "yuv.client.cmp.navigate.inbox": "Navigation: Eingangskorb",

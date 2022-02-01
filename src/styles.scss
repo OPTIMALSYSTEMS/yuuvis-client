@@ -52,3 +52,9 @@ yuv-action-menu .action-menu {
   background-color: rgba(var(--color-primary-rgb), 0.95);
   color: #fff;
 }
+
+yuv-command-palette {
+  input::placeholder {
+    color: #fff;
+  }
+}

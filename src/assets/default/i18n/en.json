@@ -368,6 +368,7 @@
   "yuv.client.cmp.disabled.cause.pending-changes": "Disabled due to pending changes. Please save your changes before you continue.",
   "yuv.client.cmp.dmsobject.delete": "Delete object",
   "yuv.client.cmp.dmsobject.download": "Download document",
+  "yuv.client.cmp.input.placeholder": "Search command",
   "yuv.client.cmp.navigate.dashboard": "Navigate: Dashboard",
   "yuv.client.cmp.navigate.follow-ups": "Navigate: My follow-ups",
   "yuv.client.cmp.navigate.inbox": "Navigate: Inbox",

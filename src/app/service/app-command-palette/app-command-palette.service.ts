@@ -41,10 +41,9 @@ export class AppCommandPaletteService {
     private actionService: ActionService,
     private layoutService: LayoutService
   ) {
-    this.cmpService.searchModeExplaination = this.translate.instant('yuv.client.cmp.searchmode.explain');
+    this.setLabels();
     this.translate.onLangChange.subscribe((_) => {
-      this.cmpService.searchModeExplaination = this.translate.instant('yuv.client.cmp.searchmode.explain');
-
+      this.setLabels();
       // we need to defer this a little bit because translations need to be fetched from the backend
       this.cmpService.updateCommands(this.getCommandPaletteCommands());
     });
@@ -117,6 +116,11 @@ export class AppCommandPaletteService {
         this.addComponentCommands(e.state.component, e.state.params);
       }
     });
+  }
+
+  private setLabels() {
+    this.cmpService.placeholder = this.translate.instant('yuv.client.cmp.input.placeholder');
+    this.cmpService.searchModeExplaination = this.translate.instant('yuv.client.cmp.searchmode.explain');
   }
 
   initCommandPalette() {
