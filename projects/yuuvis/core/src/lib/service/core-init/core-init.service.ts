@@ -54,7 +54,17 @@ export class CoreInit {
         : forkJoin([...this.coreConfig.main].map((uri: string) => this.http.get(`${Utils.getBaseHref()}${uri}`).pipe(catchError(error))))
     ).pipe(
       switchMap((configs: YuvConfig[]) => this.configService.extendConfig(configs)),
-      switchMap(() => this.authService.initUser().pipe(catchError((e) => of(true))))
+      switchMap(() =>
+        this.authService.initUser().pipe(
+          catchError((e) => {
+            this.authService.initError = {
+              status: e.status,
+              key: e.error.error
+            };
+            return of(true);
+          })
+        )
+      )
     );
   }
 }

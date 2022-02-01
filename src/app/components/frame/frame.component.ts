@@ -69,6 +69,7 @@ export class FrameComponent implements OnInit, OnDestroy {
 
   context: string;
   reloadComponent = true;
+  initError: string;
 
   @HostListener('window:dragover', ['$event']) onDragOver(e) {
     if (!e.dataTransfer) {
@@ -106,6 +107,14 @@ export class FrameComponent implements OnInit, OnDestroy {
     private pluginsService: PluginsService,
     private backend: BackendService
   ) {
+    const ie = this.authService.initError;
+    if (ie) {
+      this.initError =
+        ie.key === 'invalid_grant'
+          ? this.translateService.instant('yuv.client.frame.init.fail.invalidgrant')
+          : this.translateService.instant('yuv.client.frame.init.fail');
+    }
+
     this.pluginsService.getCustomPlugins('states').subscribe((states) => PluginGuard.updateRouter(router, states));
     this.navigationPlugins = this.pluginsService.getCustomPlugins('links', 'yuv-sidebar-navigation');
     this.settingsPlugins = this.pluginsService.getCustomPlugins('links', 'yuv-sidebar-settings');

@@ -8,6 +8,37 @@ $app-bar-icon: 32px;
   overflow: hidden;
   @include frame(0);
 
+  .initError {
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background-color: var(--main-background);
+
+    div {
+      font-size: var(--font-title);
+      color: var(--color-accent);
+      display: flex;
+      flex-flow: column;
+      align-items: center;
+
+      yuv-icon {
+        margin-bottom: calc(var(--app-pane-padding) * 2);
+        width: 300px;
+        height: auto;
+
+        ::ng-deep {
+          svg {
+            path {
+              fill: var(--color-accent);
+            }
+          }
+        }
+      }
+    }
+  }
+
   .pwa-update {
     position: absolute;
     width: $pwa-update-width;

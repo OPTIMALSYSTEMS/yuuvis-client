@@ -30,3 +30,8 @@ export enum LoginStateName {
   STATE_DONE = 'login.done',
   STATE_CANCELED = 'login.canceled'
 }
+
+export interface YuvInitError {
+  status: number;
+  key: string;
+}
