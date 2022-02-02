@@ -203,9 +203,11 @@
             height: 18px;
           }
 
-          &:focus,
-          &:hover {
-            opacity: 1;
+          &:not([disabled]) {
+            &:focus,
+            &:hover {
+              opacity: 1;
+            }
           }
         }
         &.type-select {
