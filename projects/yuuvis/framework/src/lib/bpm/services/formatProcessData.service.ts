@@ -142,7 +142,7 @@ export class FormatProcessDataService {
       data,
       context
     })}</div>
-    <div class="taskName">${this.taskNameCellRenderer({ value: data.taskName, context })}</div>
+    <div class="taskName">${context.datePipe.transform(data.createTime)} - ${this.taskNameCellRenderer({ value: data.taskName, context })}</div>
     <div class="subject">${data.subject}</div>
     `;
 
