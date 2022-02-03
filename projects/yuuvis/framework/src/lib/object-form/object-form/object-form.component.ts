@@ -114,7 +114,7 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
   }
 
   private initOptions() {
-    this.options = this.defaultFormOptions;
+    this.options = cloneDeep(this.defaultFormOptions);
   }
 
   private initScriptingScope(formOptions, dataFormModel) {
