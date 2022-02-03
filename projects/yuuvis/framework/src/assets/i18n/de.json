@@ -175,7 +175,7 @@
 	"yuv.framework.object-details.context.load.error": "Das Objekt ist nicht verfügbar. Entweder wurde das Objekt gelöscht oder die Zugriffsrechte haben sich geändert.",
 	"yuv.framework.object-details.filedrop.content.add": "Dokumentdatei hinzufügen",
 	"yuv.framework.object-details.filedrop.content.replace": "Datei als neue Version hinzufügen",
-	"yuv.framework.object-details.summary.section.admin": "Erweiterte Informationen",
+	"yuv.framework.object-details.summary.section.admin": "Erweiterte Information",
 	"yuv.framework.object-details.summary.section.baseparams": "Basismetadaten",
 	"yuv.framework.object-details.summary.section.core": "Typ-Metadaten",
 	"yuv.framework.object-details.summary.section.data": "Mehr Informationen",
