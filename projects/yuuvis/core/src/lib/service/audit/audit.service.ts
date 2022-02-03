@@ -103,14 +103,32 @@ export class AuditService {
       if (options.dateRange) {
         q.addFilter(new SearchFilter(AuditField.CREATION_DATE, options.dateRange.operator, options.dateRange.firstValue, options.dateRange.secondValue));
       }
-      if (options.actions && options.actions.length) {
-        q.addFilter(
-          new SearchFilter(
+
+      const actionsFilter = options.actions?.length
+        ? new SearchFilter(
             AuditField.ACTION,
             SearchFilter.OPERATOR.IN,
             options.actions.map((a) => a.toString())
           )
-        );
+        : null;
+      // TODO: Make this a group and add condition of action=10000 to not mess with subsctions of tags
+      const customActionsFilterGroup = options.customActions?.length
+        ? new SearchFilterGroup(SearchFilterGroup.DEFAULT, SearchFilterGroup.OPERATOR.AND, [
+            new SearchFilter(
+              AuditField.SUBACTION,
+              SearchFilter.OPERATOR.IN,
+              options.customActions.map((a) => a.toString())
+            ),
+            new SearchFilter(AuditField.ACTION, SearchFilter.OPERATOR.EEQUAL, 10000)
+          ])
+        : null;
+
+      if (actionsFilter && customActionsFilterGroup) {
+        q.addFilterGroup(new SearchFilterGroup(SearchFilterGroup.DEFAULT, SearchFilterGroup.OPERATOR.OR, [actionsFilter, customActionsFilterGroup]));
+      } else if (actionsFilter) {
+        q.addFilter(actionsFilter);
+      } else if (customActionsFilterGroup) {
+        q.addFilterGroup(customActionsFilterGroup);
       }
     }
     return this.fetchAudits(q);
@@ -146,6 +164,7 @@ export class AuditService {
           action: o.properties[AuditField.ACTION].value,
           actionGroup: this.getActionGroup(o.properties[AuditField.ACTION].value),
           detail: o.properties[AuditField.DETAIL].value,
+          subaction: o.properties[AuditField.SUBACTION] ? o.properties[AuditField.SUBACTION].value : null,
           version: o.properties[AuditField.VERSION].value,
           creationDate: o.properties[AuditField.CREATION_DATE].value,
           createdBy: {

@@ -71,7 +71,8 @@ export const AuditField = {
   VERSION: 'system:versionNumber',
   DETAIL: 'system:detail',
   CREATED_BY: 'system:createdBy',
-  ACTION: 'system:action'
+  ACTION: 'system:action',
+  SUBACTION: 'system:subaction'
 };
 
 export const ParentField = {
