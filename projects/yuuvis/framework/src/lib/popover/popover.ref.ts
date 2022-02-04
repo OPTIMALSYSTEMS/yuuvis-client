@@ -8,6 +8,9 @@ import { PopoverConfig } from './popover.interface';
  */
 export class PopoverRef<T = any> {
   private afterClosedSubject = new Subject<T>();
+  public preventClose: () => boolean = () => {
+    return false;
+  };
 
   /**
    * @ignore
@@ -34,10 +37,11 @@ export class PopoverRef<T = any> {
    * @param dialogResult
    */
   close(dialogResult?: T): void {
-    this.afterClosedSubject.next(dialogResult);
-    this.afterClosedSubject.complete();
-
-    this.overlayRef.dispose();
+    if (!this.preventClose) {
+      this.afterClosedSubject.next(dialogResult);
+      this.afterClosedSubject.complete();
+      this.overlayRef.dispose();
+    }
   }
   /**
    * After closing a popover dialog will be clean a cash and return new values
