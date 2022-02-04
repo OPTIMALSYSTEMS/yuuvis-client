@@ -37,7 +37,7 @@ export class PopoverRef<T = any> {
    * @param dialogResult
    */
   close(dialogResult?: T): void {
-    if (!this.preventClose) {
+    if (!this.preventClose()) {
       this.afterClosedSubject.next(dialogResult);
       this.afterClosedSubject.complete();
       this.overlayRef.dispose();
