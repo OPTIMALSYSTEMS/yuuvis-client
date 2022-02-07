@@ -189,11 +189,11 @@ export class UserService {
   }
 
   getSettings(section: string): Observable<any> {
-    return this.backend.get(UserService.USERS_SETTINGS + encodeURIComponent(section));
+    return this.user ? this.backend.get(UserService.USERS_SETTINGS + encodeURIComponent(section)) : of(null);
   }
 
   saveSettings(section: string, data: any): Observable<any> {
-    return this.backend.post(UserService.USERS_SETTINGS + encodeURIComponent(section), data);
+    return this.user ? this.backend.post(UserService.USERS_SETTINGS + encodeURIComponent(section), data) : of(null);
   }
 
   /**
