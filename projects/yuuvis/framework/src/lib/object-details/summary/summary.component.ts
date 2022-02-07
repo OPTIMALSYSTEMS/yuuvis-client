@@ -65,7 +65,9 @@ export class SummaryComponent implements OnInit, OnDestroy {
   @Input()
   set dmsObject(dmsObject: DmsObject) {
     this.dmsObjectID = dmsObject?.id;
-    this.systemService.getDmsObjectForms(dmsObject, Situation.EDIT).subscribe((form) => {
+    // always loads form for the latest dmsObject
+    const obj = this.dmsObject2?.version > dmsObject.version ? this.dmsObject2 : dmsObject;
+    this.systemService.getDmsObjectForms(obj, Situation.EDIT).subscribe((form) => {
       this.coreFields = this.extractFields(form.main.elements[0]);
       this.summary = dmsObject ? this.generateSummary(dmsObject) : null;
     });
@@ -176,7 +178,7 @@ export class SummaryComponent implements OnInit, OnDestroy {
     const sotIndex: number[] = [];
     const systemsot: string[] = [];
     data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS]?.map(
-      (sot, index) => this.systemService.getSecondaryObjectType(sot).classification?.includes(classification) && sotIndex.unshift(index) && systemsot.push(sot)
+      (sot, index) => this.systemService.getSecondaryObjectType(sot)?.classification?.includes(classification) && sotIndex.unshift(index) && systemsot.push(sot)
     );
     sotIndex.forEach((value, index) => data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS].splice(value[index], 1));
     return { ...data, 'classification[systemsot]': systemsot };
@@ -229,8 +231,8 @@ export class SummaryComponent implements OnInit, OnDestroy {
 
         if (this.dmsObject2 && (si.value === si.value2 || this.isVersion(key))) {
           // skip equal and irrelevant values
-        } else if (defaultBaseFields.find((field) => field.key.startsWith(prepKey))) {
-          si.order = defaultBaseFields.find((field) => field.key.startsWith(prepKey)).order;
+        } else if (defaultBaseFields.find((field) => field.key === prepKey)) {
+          si.order = defaultBaseFields.find((field) => field.key === prepKey).order;
           summary.base.push(si);
           if (extraFields.includes(prepKey)) summary.extras.push(si); // TAGS exception
         } else if (extraFields.includes(prepKey)) {
