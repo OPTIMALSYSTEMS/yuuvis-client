@@ -306,8 +306,9 @@ export class PluginsService {
   }
 
   public disableCustomPlugins(disabled = true) {
-    this.customPlugins = { ...this.customPlugins, disabled: !!disabled };
-    this.pluginConfigs = { ...this.pluginConfigs, local: { ...this.pluginConfigs.local, disabled: !!disabled } };
+    this.customPlugins = { ...this.customPlugins, disabled: disabled.toString() };
+    this.pluginConfigs = { ...this.pluginConfigs, local: { ...this.pluginConfigs.local, disabled: disabled.toString() } };
+    !disabled && delete this.pluginConfigs.local.disabled;
     return of((localStorage[PluginsService.LOCAL_PLUGIN_CONFIG] = JSON.stringify(this.pluginConfigs.local || {})));
   }
 
