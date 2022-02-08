@@ -1,7 +1,6 @@
 import { Component, HostBinding, HostListener, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, NavigationExtras, Router } from '@angular/router';
 import { SwUpdate } from '@angular/service-worker';
-import { CommandPaletteService } from '@yuuvis/command-palette';
 import {
   AuthService,
   BackendService,
@@ -20,6 +19,7 @@ import {
   YuvUser
 } from '@yuuvis/core';
 import {
+  help,
   IconRegistryService,
   LayoutService,
   LayoutSettings,
@@ -37,6 +37,7 @@ import { filter, map, switchMap } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { add, close, drawer, offline, refresh, search, userDisabled } from '../../../assets/default/svg/svg';
 import { AppSearchService } from '../../service/app-search.service';
+import { AboutService } from '../../states/about/service/about.service';
 import { FrameService } from './frame.service';
 
 @Component({
@@ -70,7 +71,7 @@ export class FrameComponent implements OnInit, OnDestroy {
   context: string;
   reloadComponent = true;
   initError: string;
-
+  docuLink: string;
   @HostListener('window:dragover', ['$event']) onDragOver(e) {
     if (!e.dataTransfer) {
       return;
@@ -92,8 +93,8 @@ export class FrameComponent implements OnInit, OnDestroy {
     private frameService: FrameService,
     private route: ActivatedRoute,
     private layoutService: LayoutService,
-    private cmpService: CommandPaletteService,
     private update: SwUpdate,
+    private aboutService: AboutService,
     private appSearch: AppSearchService,
     private connectionService: ConnectionService,
     private authService: AuthService,
@@ -107,6 +108,7 @@ export class FrameComponent implements OnInit, OnDestroy {
     private pluginsService: PluginsService,
     private backend: BackendService
   ) {
+    this.docuLink = this.aboutService.getDocumentationLink();
     const ie = this.authService.initError;
     if (ie) {
       this.initError =
@@ -123,7 +125,7 @@ export class FrameComponent implements OnInit, OnDestroy {
       this.moveNoticeDialogSkip = o?.moveNoticeDialogSkip || false;
     });
 
-    this.iconRegistry.registerIcons([search, drawer, refresh, add, userDisabled, offline, close, openContext]);
+    this.iconRegistry.registerIcons([help, search, drawer, refresh, add, userDisabled, offline, close, openContext]);
     this.userService.user$.subscribe((user: YuvUser) => {
       if (user) {
         this.userService.isAdvancedUser;

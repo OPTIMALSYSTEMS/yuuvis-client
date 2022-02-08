@@ -158,6 +158,10 @@ $app-bar-icon: 32px;
       align-items: center;
       flex: 0 0 auto;
 
+      .action yuv-icon {
+        color: var(--text-color-caption);
+      }
+
       .offline-icon {
         background-color: var(--color-accent);
         border-radius: 50%;
