@@ -75,8 +75,9 @@ export class ProcessAttachmentsComponent implements OnInit {
 
   openAddAttachmentDialog() {
     this.popoverRef = this.popoverService.open(this.addAttachmentOverlay, {
-      minWidth: 350,
-      maxHeight: '70%'
+      width: '400px',
+      // maxHeight: '70%',
+      height: '350px'
     });
   }
 
@@ -87,7 +88,7 @@ export class ProcessAttachmentsComponent implements OnInit {
 
   openOrderAttachmentDialog() {
     this.popoverRef = this.popoverService.open(this.orderAttachmentOverlay, {
-      minWidth: 350,
+      width: '400px',
       maxHeight: '70%'
     });
   }
