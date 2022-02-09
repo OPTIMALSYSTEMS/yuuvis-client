@@ -86,7 +86,7 @@ export class FileDropService {
    * @returns number of files
    */
   dragContainsFiles(event: DragEvent): number {
-    return Array.from(event.dataTransfer.items || []).filter((i) => i.kind === 'file' && i.type).length;
+    return Array.from(event.dataTransfer.items || []).filter((i) => i.kind === 'file').length;
   }
 
   private setActive(id) {

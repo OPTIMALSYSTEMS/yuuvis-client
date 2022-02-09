@@ -11,7 +11,8 @@
       <h3 translate>yuv.framework.audit.search.title</h3>
       <div class="controls">
         <!-- date range -->
-        <yuv-form-input [label]="'yuv.framework.audit.search.daterange' | translate" [skipToggle]="true" [invalid]="searchForm.invalid">
+        <yuv-form-input [label]="'yuv.framework.audit.search.daterange' | translate" [skipToggle]="true"
+          [invalid]="searchForm.invalid">
           <yuv-datetime-range [withTime]="true" formControlName="dateRange"></yuv-datetime-range>
         </yuv-form-input>
         <!-- actions -->
@@ -49,7 +50,8 @@
         <div class="content">
           <div class="entry">
             <div class="title">
-              <span>{{ auditLabels['a' + a.action] }}</span>
+              <!-- <span>{{ auditLabels['a' + a.action] }}</span> -->
+              <span>{{ a.label }}</span>
 
 
               <span *ngIf="!versionStatePath; else versionLink" class="version"

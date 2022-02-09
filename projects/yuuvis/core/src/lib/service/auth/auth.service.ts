@@ -12,6 +12,7 @@ import { EventService } from '../event/event.service';
 import { YuvEventType } from '../event/events';
 import { SystemService } from '../system/system.service';
 import { UserService } from '../user/user.service';
+import { YuvInitError } from './auth.interface';
 
 /**
  * Service handling authentication related issues.
@@ -27,6 +28,8 @@ export class AuthService {
   authenticated$: Observable<boolean> = this.authSource.asObservable();
 
   private authData: AuthData;
+  // set by core-init
+  initError: YuvInitError;
 
   /**
    * @ignore

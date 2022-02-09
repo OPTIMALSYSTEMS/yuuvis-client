@@ -265,10 +265,11 @@ export class TaskDetailsTaskComponent implements OnInit {
 
   update() {
     this.busy = true;
-    this.inboxService.updateTask(this._task.id, this.getUpdatePayload()).subscribe(
+    const data = this.inboxService.updateTask(this._task.id, this.getUpdatePayload()).subscribe(
       (res) => {
         this.busy = false;
         this.finishPending();
+        this.taskForm.defaultFormOptions = { ...this.taskForm.formOptions, data: this.taskForm.getFormData() };
         this.formState = null;
       },
       (err) => {

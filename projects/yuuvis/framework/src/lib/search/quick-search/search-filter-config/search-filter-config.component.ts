@@ -1,5 +1,5 @@
 import { Component, ElementRef, EventEmitter, Input, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
-import { SearchFilter, SearchFilterGroup, SearchQuery, TranslateService, UserConfigService, Utils } from '@yuuvis/core';
+import { BaseObjectTypeField, SearchFilter, SearchFilterGroup, SearchQuery, TranslateService, UserConfigService, Utils } from '@yuuvis/core';
 import { IconRegistryService } from '../../../common/components/icon/service/iconRegistry.service';
 import { Selectable } from '../../../grouped-select';
 import { PopoverConfig } from '../../../popover/popover.interface';
@@ -124,6 +124,11 @@ export class SearchFilterConfigComponent implements OnInit {
   }
 
   getDefaultFilters() {
+    const group = this.query.filterGroup.clone();
+    // ignore context search filter
+    const parent = group.filters.find((f) => f.property === BaseObjectTypeField.PARENT_ID);
+    parent && group.remove(parent.id);
+
     return [
       {
         id: this.CREATE_NEW_ID,
@@ -131,11 +136,11 @@ export class SearchFilterConfigComponent implements OnInit {
         label: this.translate.instant('yuv.framework.search.filter.create.new'),
         value: []
       },
-      this.query.filters.length && {
+      group.filters.length && {
         id: this.CREATE_NEW_ID + '#active',
         svg: addCircle.data,
         label: `${this.translate.instant('yuv.framework.search.filter.create.new')} (${this.translate.instant('yuv.framework.search.filter.from.active')})`,
-        value: [this.query.filterGroup.clone()]
+        value: [group]
       },
       ...this.storedFilters.filter((f) => this.isVisible(f) && f.highlight)
     ].filter((f) => f);

@@ -4,7 +4,7 @@
     (slaveClosed)="onSlaveClosed()">
     <yuv-process-list class="yuv-master panel" [showFooter]="true" [headerDetails]="headerDetails"
       [layoutOptionsKey]="layoutOptionsKey" [processData]="inboxData" (refreshList)="refreshList()"
-      (selectedItem)="selectedItem($event)"></yuv-process-list>
+      (selectedItem)="selectedItem($event)" [yuvBusyOverlay]="loading$ | async"></yuv-process-list>
     <section class="yuv-slave panel">
 
 

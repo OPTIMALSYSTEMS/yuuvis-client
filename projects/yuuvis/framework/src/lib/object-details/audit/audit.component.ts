@@ -1,18 +1,23 @@
 import { Component, Inject, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import {
+  ApiBase,
   AuditEntry,
   AuditQueryOptions,
   AuditQueryResult,
   AuditService,
+  BackendService,
   DmsObject,
   EventService,
   RangeValue,
   SystemService,
+  SystemType,
   TranslateService,
   YuvEvent,
   YuvEventType
 } from '@yuuvis/core';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { ROUTES, YuvRoutes } from '../../routing/routes';
@@ -51,7 +56,7 @@ export class AuditComponent implements OnInit, OnDestroy {
   versionStatePath: string;
   versionStateQueryParam: string;
 
-  actionGroups: any = {};
+  actionGroups: ActionGroup[] = [];
   auditLabels: any = {};
 
   @Input() set dmsObject(o: DmsObject) {
@@ -87,6 +92,7 @@ export class AuditComponent implements OnInit, OnDestroy {
 
   constructor(
     private auditService: AuditService,
+    private backend: BackendService,
     private eventService: EventService,
     private system: SystemService,
     private fb: FormBuilder,
@@ -177,23 +183,10 @@ export class AuditComponent implements OnInit, OnDestroy {
       }
       // custom audits
       else if (i.action === 10000) {
-        // Custom tags detail look like this: SERVICENAME: [TITLE_KEY, META_KEY]
-        const serviceName = this.getAuditEntryKey(i);
-        let title = '';
-        const params = this.getAuditEntryParams(i);
-        if (params.length) {
-          title = this.system.getLocalizedResource(params[0]);
-          r.more = params[1] ? this.system.getLocalizedResource(params[1]) : undefined;
-        }
-        r.label = `${this.system.getLocalizedResource(serviceName) || serviceName}: ${title}`;
+        r.label = this.system.getLocalizedResource(`audit:custom:${i.subaction}_label`) || `${i.subaction}`;
       }
       return r;
     });
-  }
-
-  private getAuditEntryKey(auditItem: AuditEntry): string {
-    const detail = auditItem.detail;
-    return detail.indexOf(':') !== -1 ? detail.split(':')[0].trim() : detail;
   }
 
   private getAuditEntryParams(auditItem: AuditEntry): string[] {
@@ -215,14 +208,23 @@ export class AuditComponent implements OnInit, OnDestroy {
       options.dateRange = range;
     }
     const actions = [];
+    const customActions = [];
     Object.keys(this.auditLabels).forEach((a) => {
       if (this.searchForm.value[a]) {
-        actions.push(parseInt(a.substr(1)));
+        if (a.startsWith('c')) {
+          // custom audits
+          customActions.push(parseInt(a.substr(1)));
+        } else {
+          actions.push(parseInt(a.substr(1)));
+        }
       }
     });
 
     if (actions.length) {
       options.actions = actions;
+    }
+    if (customActions.length) {
+      options.customActions = customActions;
     }
     this.filtered = Object.keys(options).length > 0;
     this.fetchAuditEntries(options);
@@ -296,45 +298,80 @@ export class AuditComponent implements OnInit, OnDestroy {
     this.error = true;
   }
 
-  ngOnInit() {
-    let actionKeys = this.auditService.getAuditActions(this.allActions).map((a: number) => `a${a}`);
-    // let actionKeys = Object.keys(this.auditLabels);
-    if (this.skipActions) {
-      const skipActionKeys = this.skipActions.map((a) => `a${a}`);
-      actionKeys = actionKeys.filter((k) => !skipActionKeys.includes(k));
-    }
-    this.actionGroups = [
-      { label: this.translate.instant('yuv.framework.audit.label.group.update'), actions: actionKeys.filter((k) => k.startsWith('a3')) },
-      { label: this.translate.instant('yuv.framework.audit.label.group.get'), actions: actionKeys.filter((k) => k.startsWith('a4')) },
-      { label: this.translate.instant('yuv.framework.audit.label.group.delete'), actions: actionKeys.filter((k) => k.startsWith('a2')) },
-      { label: this.translate.instant('yuv.framework.audit.label.group.create'), actions: actionKeys.filter((k) => k.startsWith('a1')) },
-      { label: this.translate.instant('yuv.framework.audit.label.group.custom'), actions: actionKeys.filter((k) => k.startsWith('a1000')) }
-    ];
+  private getCustomAuditFilterGroup(): Observable<ActionGroup> {
+    return this.backend
+      .post(
+        `/dms/objects/search`,
+        {
+          query: {
+            statement: `SELECT subaction FROM ${SystemType.AUDIT} WHERE action=10000 AND referredObjectId='${this._objectID}' GROUP BY subaction`
+          }
+        },
+        ApiBase.core
+      )
+      .pipe(
+        map((res: any) => {
+          const subactions = [];
+          res.objects.forEach((o) => {
+            const subaction = o.properties['system:subaction'].value;
+            if (subaction !== null) {
+              const actionKey = `c${subaction}`;
+              this.auditLabels[actionKey] = this.system.getLocalizedResource(`audit:custom:${subaction}_label`) || subaction;
+              subactions.push(actionKey);
+            }
+          });
+          return {
+            label: this.translate.instant('yuv.framework.audit.label.group.custom'),
+            actions: subactions
+          };
+        })
+      );
+  }
 
-    let fbInput = {
-      dateRange: []
-    };
-    this.actionGroups.forEach((g) => {
-      if (g.actions.length) {
-        const groupEntry = {
-          label: g.label,
-          actions: g.actions.map((a) => {
-            fbInput[a] = [a.startsWith('a4') ? false : true];
-            return a;
-          })
-        };
-        this.searchActions.push(groupEntry);
+  ngOnInit() {
+    this.getCustomAuditFilterGroup().subscribe((customActionGroup: ActionGroup) => {
+      let actionKeys = this.auditService.getAuditActions(this.allActions).map((a: number) => `a${a}`);
+      if (this.skipActions) {
+        const skipActionKeys = this.skipActions.map((a) => `a${a}`);
+        actionKeys = actionKeys.filter((k) => !skipActionKeys.includes(k));
+      }
+      this.actionGroups = [
+        { label: this.translate.instant('yuv.framework.audit.label.group.update'), actions: actionKeys.filter((k) => k.startsWith('a3')) },
+        { label: this.translate.instant('yuv.framework.audit.label.group.get'), actions: actionKeys.filter((k) => k.startsWith('a4')) },
+        { label: this.translate.instant('yuv.framework.audit.label.group.delete'), actions: actionKeys.filter((k) => k.startsWith('a2')) },
+        { label: this.translate.instant('yuv.framework.audit.label.group.create'), actions: actionKeys.filter((k) => k.startsWith('a1')) }
+      ];
+
+      let fbInput = {
+        dateRange: []
+      };
+      [...this.actionGroups, customActionGroup].forEach((g) => {
+        if (g.actions.length) {
+          const groupEntry = {
+            label: g.label,
+            actions: g.actions.map((a) => {
+              fbInput[a] = [a.startsWith('a4') ? false : true];
+              return a;
+            })
+          };
+          this.searchActions.push(groupEntry);
+        }
+      });
+      this.searchForm = this.fb.group(fbInput);
+      if (!this.initialFetch) {
+        this.query();
+        this.initialFetch = true;
       }
     });
-    this.searchForm = this.fb.group(fbInput);
-    if (!this.initialFetch) {
-      this.query();
-      this.initialFetch = true;
-    }
   }
   ngOnDestroy() {}
 }
 
 interface ReslovedAuditEntry extends AuditEntry {
   label: string;
+}
+
+interface ActionGroup {
+  label: string;
+  actions: string[];
 }

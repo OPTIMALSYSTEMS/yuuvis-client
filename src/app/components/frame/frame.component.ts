@@ -1,7 +1,6 @@
 import { Component, HostBinding, HostListener, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, NavigationExtras, Router } from '@angular/router';
 import { SwUpdate } from '@angular/service-worker';
-import { CommandPaletteService } from '@yuuvis/command-palette';
 import {
   AuthService,
   BackendService,
@@ -10,7 +9,6 @@ import {
   ConnectionState,
   DmsService,
   EventService,
-  ObjectTag,
   SearchFilter,
   SearchQuery,
   TranslateService,
@@ -21,6 +19,7 @@ import {
   YuvUser
 } from '@yuuvis/core';
 import {
+  help,
   IconRegistryService,
   LayoutService,
   LayoutSettings,
@@ -38,6 +37,7 @@ import { filter, map, switchMap } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { add, close, drawer, offline, refresh, search, userDisabled } from '../../../assets/default/svg/svg';
 import { AppSearchService } from '../../service/app-search.service';
+import { AboutService } from '../../states/about/service/about.service';
 import { FrameService } from './frame.service';
 
 @Component({
@@ -49,11 +49,6 @@ export class FrameComponent implements OnInit, OnDestroy {
   private LAYOUT_OPTIONS_KEY = 'yuv.client.yuv-frame';
   private LAYOUT_OPTIONS_ELEMENT_KEY = 'yuv-frame';
   @ViewChild('moveNotification') moveNotification: TemplateRef<any>;
-
-  // query for fetching pending AFOs
-  pendingAFOsQuery = JSON.stringify({
-    filters: [{ f: `system:tags[${ObjectTag.AFO}].state`, o: SearchFilter.OPERATOR.EQUAL, v1: 0 }]
-  });
 
   moveNoticeDialogSkip: boolean;
   swUpdateAvailable: boolean;
@@ -71,9 +66,12 @@ export class FrameComponent implements OnInit, OnDestroy {
   navigationPlugins: Observable<any[]>;
   settingsPlugins: Observable<any[]>;
 
+  pendingAFOsQuery = this.frameService.pendingAFOsQuery;
+
   context: string;
   reloadComponent = true;
-
+  initError: string;
+  docuLink: string;
   @HostListener('window:dragover', ['$event']) onDragOver(e) {
     if (!e.dataTransfer) {
       return;
@@ -95,8 +93,8 @@ export class FrameComponent implements OnInit, OnDestroy {
     private frameService: FrameService,
     private route: ActivatedRoute,
     private layoutService: LayoutService,
-    private cmpService: CommandPaletteService,
     private update: SwUpdate,
+    private aboutService: AboutService,
     private appSearch: AppSearchService,
     private connectionService: ConnectionService,
     private authService: AuthService,
@@ -110,6 +108,15 @@ export class FrameComponent implements OnInit, OnDestroy {
     private pluginsService: PluginsService,
     private backend: BackendService
   ) {
+    this.docuLink = this.aboutService.getDocumentationLink();
+    const ie = this.authService.initError;
+    if (ie) {
+      this.initError =
+        ie.key === 'invalid_grant'
+          ? this.translateService.instant('yuv.client.frame.init.fail.invalidgrant')
+          : this.translateService.instant('yuv.client.frame.init.fail');
+    }
+
     this.pluginsService.getCustomPlugins('states').subscribe((states) => PluginGuard.updateRouter(router, states));
     this.navigationPlugins = this.pluginsService.getCustomPlugins('links', 'yuv-sidebar-navigation');
     this.settingsPlugins = this.pluginsService.getCustomPlugins('links', 'yuv-sidebar-settings');
@@ -118,7 +125,7 @@ export class FrameComponent implements OnInit, OnDestroy {
       this.moveNoticeDialogSkip = o?.moveNoticeDialogSkip || false;
     });
 
-    this.iconRegistry.registerIcons([search, drawer, refresh, add, userDisabled, offline, close, openContext]);
+    this.iconRegistry.registerIcons([help, search, drawer, refresh, add, userDisabled, offline, close, openContext]);
     this.userService.user$.subscribe((user: YuvUser) => {
       if (user) {
         this.userService.isAdvancedUser;
@@ -217,10 +224,13 @@ export class FrameComponent implements OnInit, OnDestroy {
     }
 
     const dbProperty = '--theme-background';
+    const dbSizeProperty = '--theme-background-size';
     if (settings.dashboardBackground) {
       body.style.setProperty(dbProperty, 'url("' + settings.dashboardBackground + '")', 'important');
+      body.style.setProperty(dbSizeProperty, 'cover', 'important');
     } else {
       body.style.removeProperty(dbProperty);
+      body.style.removeProperty(dbSizeProperty);
     }
   }
 
