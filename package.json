@@ -122,7 +122,7 @@
     "ngx-translate-extract": "^1.0.0",
     "node": "^12.16.1",
     "node-dir": "^0.1.17",
-    "node-sass": "^4.13.1",
+    "node-sass": "^7.0.0",
     "protractor": "~7.0.0",
     "randomhex": "^0.1.5",
     "replace-in-file": "^4.3.1",
