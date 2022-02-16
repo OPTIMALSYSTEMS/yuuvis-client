@@ -92,7 +92,7 @@ export class UserService {
 
   get isRetentionManager(): boolean {
     const customRole = this.config.get('core.permissions.retentionManagerRole');
-    const retenetionManagerRole = customRole || AdministrationRoles.ADMIN;
+    const retenetionManagerRole = customRole || AdministrationRoles.MANAGE_SETTINGS;
     return this.user?.authorities?.includes(retenetionManagerRole) || false;
   }
 

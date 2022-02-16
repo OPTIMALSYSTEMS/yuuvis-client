@@ -39,6 +39,7 @@
   "yuv.framework.action-menu.action.retention.error.endBeforeStart": "Der Aufbewahrungsbeginn muss vor dem Aufbewahrungsende liegen",
   "yuv.framework.action-menu.action.retention.error.retentionPeriodMissing": "Es muss ein Aufbewahrungszeitraum festgelegt werden",
   "yuv.framework.action-menu.action.retention.label": "Aufbewahrungszeit festlegen",
+  "yuv.framework.action-menu.action.retention.prolongform.submit": "Verlängern",
   "yuv.framework.action-menu.action.retention.startform.destructionDate": "Entfernen bis",
   "yuv.framework.action-menu.action.retention.startform.expirationDate": "Ende der Aufbewahrung",
   "yuv.framework.action-menu.action.retention.startform.startOfRetention": "Beginn der Aufbewahrung",
