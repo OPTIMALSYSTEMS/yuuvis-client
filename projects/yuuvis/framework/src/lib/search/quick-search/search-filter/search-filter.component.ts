@@ -189,16 +189,19 @@ export class SearchFilterComponent implements OnInit {
         ];
       }
 
+      this.quickSearchService.saveLastFilters(this.filterSelection.filter((id) => this.storedFilters.find((s) => s.id === id))).subscribe();
+
       this.setupCollapsedGroups();
     });
   }
 
   updateLastFilters(ids: string[]) {
+    const stored = this.storedFilters.map((f) => f.id);
     return (this.lastFilters = (ids || [])
-      .filter((id) => !this.filterSelection.includes(id) && !this.hiddenFilters.includes(id))
+      .filter((id) => !this.filterSelection.includes(id) && !this.hiddenFilters.includes(id) && stored.includes(id))
       .slice(0, 5)
       .map((id) => this.storedFilters.find((f) => f.id === id))
-      .filter((f) => f)).sort(Utils.sortValues('label'));
+      .sort(Utils.sortValues('label')));
   }
 
   showFilterConfig() {
@@ -222,11 +225,12 @@ export class SearchFilterComponent implements OnInit {
   onFilterChange(res: Selectable[]) {
     // todo: find best UX (maybe css animation)
     this.activeFilters = [...res];
-    this.quickSearchService.saveLastFilters(this.filterSelection).subscribe((lastFilters) => {
+    this.quickSearchService.saveLastFilters(this.filterSelection.filter((id) => this.storedFilters.find((s) => s.id === id))).subscribe((lastFilters) => {
       this.availableFilterGroups[0].items = [
         ...this.activeFilters,
         ...this._originalFilters.filter((o) => !this.filterSelection.includes(o.id)),
-        ...this.updateLastFilters(lastFilters)
+        ...this.lastFilters.filter((o) => !this.filterSelection.includes(o.id))
+        // ...this.updateLastFilters(lastFilters)
       ];
     });
 

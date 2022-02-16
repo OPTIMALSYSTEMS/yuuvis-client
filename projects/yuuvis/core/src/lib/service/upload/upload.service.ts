@@ -5,7 +5,8 @@ import { catchError, filter, map, scan, tap } from 'rxjs/operators';
 import { Utils } from '../../util/utils';
 import { BackendService } from '../backend/backend.service';
 import { Logger } from '../logger/logger';
-import { BaseObjectTypeField, ClientDefaultsObjectTypeField } from '../system/system.enum';
+import { BaseObjectTypeField } from '../system/system.enum';
+import { SystemService } from '../system/system.service';
 import { CreatedObject, ProgressStatus, UploadResult } from './upload.interface';
 
 const transformResponse = () => map((res: CreatedObject) => (res && res.body ? res.body.objects.map((val) => val) : null));
@@ -26,7 +27,7 @@ export class UploadService {
   /**
    * @ignore
    */
-  constructor(private backend: BackendService, private http: HttpClient, private logger: Logger) {}
+  constructor(private backend: BackendService, private http: HttpClient, private system: SystemService, private logger: Logger) {}
 
   /**
    * Upload a file.
@@ -102,7 +103,7 @@ export class UploadService {
 
     const headers: any = this.backend.getAuthHeaders();
     if (file) {
-      headers['Content-Disposition'] = `attachment; filename="${file.name}"`;
+      headers['Content-Disposition'] = `attachment; filename*=utf-8''${encodeURIComponent(file.name)}`;
     }
 
     return new HttpRequest(method, url, file || formData, {
@@ -137,9 +138,10 @@ export class UploadService {
 
   private generateResult(result: CreatedObject): UploadResult[] {
     const { objects } = result.body;
+    const bp = this.system.getBaseProperties();
     if (objects.length > 1) {
       const data = objects[0];
-      const label = data.properties[ClientDefaultsObjectTypeField.TITLE] ? data.properties[ClientDefaultsObjectTypeField.TITLE].value : '...';
+      const label = data.properties[bp.title] ? data.properties[bp.title].value : '...';
       return [
         {
           objectId: objects.map((val) => val.properties[BaseObjectTypeField.OBJECT_ID].value),
@@ -153,7 +155,7 @@ export class UploadService {
         objectId: o.properties[BaseObjectTypeField.OBJECT_ID].value,
         contentStreamId: o.contentStreams[0]?.contentStreamId,
         filename: o.contentStreams[0]?.fileName,
-        label: o.properties[ClientDefaultsObjectTypeField.TITLE] ? o.properties[ClientDefaultsObjectTypeField.TITLE].value : o.contentStreams[0]?.fileName
+        label: o.properties[bp.title] ? o.properties[bp.title].value : o.contentStreams[0]?.fileName
       }));
     }
   }

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { EMPTY, Observable, of, Subject } from 'rxjs';
-import { expand, map, skipWhile, switchMap, tap } from 'rxjs/operators';
+import { EMPTY, Observable, ReplaySubject } from 'rxjs';
+import { expand, map, skipWhile, tap } from 'rxjs/operators';
 import { ApiBase } from '../../backend/api.enum';
 import { BackendService } from '../../backend/backend.service';
 import { UserService } from '../../user/user.service';
@@ -17,7 +17,7 @@ import { BpmService } from './../bpm/bpm.service';
 export class InboxService {
   private INBOX_PAGE_SIZE = 100;
 
-  private inboxDataSource = new Subject<Task[]>();
+  private inboxDataSource = new ReplaySubject<Task[]>(1);
   public inboxData$: Observable<Task[]> = this.inboxDataSource.asObservable();
 
   constructor(private bpmService: BpmService, private userService: UserService, private backendService: BackendService) {}
@@ -39,7 +39,7 @@ export class InboxService {
   fetchTasks(includeProcessVar = true): void {
     this.getTasksPaged({ includeProcessVariables: includeProcessVar })
       .pipe(
-        tap((res: Task[]) => this.inboxDataSource.next(res.reverse())),
+        tap((res: Task[]) => this.inboxDataSource.next([...res.reverse()])),
         map((res: Task[]) => res)
       )
       .subscribe();
@@ -106,11 +106,8 @@ export class InboxService {
    * @param taskId ID of the task to be delegated
    * @param assignee ID of the new assignee
    */
-  delegateTask(taskId: string, assignee: string): Observable<Task> {
-    const payload: any = {
-      assignee: { id: assignee }
-    };
-    return this.putTask(taskId, ProcessAction.delegate, payload || {});
+  delegateTask(taskId: string, assignee: string, payload?: ProcessPostPayload): Observable<Task> {
+    return this.putTask(taskId, ProcessAction.delegate, { ...(payload || {}), ...{ assignee: { id: assignee } } });
   }
 
   /**
@@ -119,7 +116,7 @@ export class InboxService {
    * @param payload Data to be send with the resolve request (may contain attachments, a new subject or variables)
    */
   resolveTask(taskId: string, payload?: ProcessPostPayload): Observable<Task> {
-    return (payload ? this.updateTask(taskId, payload) : of(true)).pipe(switchMap((_) => this.putTask(taskId, ProcessAction.resolve, payload || {})));
+    return this.putTask(taskId, ProcessAction.resolve, payload || {});
   }
 
   /**

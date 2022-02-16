@@ -7,6 +7,7 @@ import { TestColumnConfigComponent } from './test-column-config/test-column-conf
 import { TestContentPreviewComponent } from './test-content-preview/test-content-preview.component';
 import { TestContextComponent } from './test-context/test-context.component';
 import { TestFileDropComponent } from './test-file-drop/test-file-drop.component';
+import { TestFormElementsComponent } from './test-form-elements/test-form-elements.component';
 import { TestGroupedSelectComponent } from './test-grouped-select/test-grouped-select.component';
 import { TestIconsComponent } from './test-icons/test-icons/test-icons.component';
 import { TestLoadingSpinnerComponent } from './test-loading-spinner/test-loading-spinner.component';
@@ -38,6 +39,7 @@ const routes: Routes = [
   { path: 'content-preview', component: TestContentPreviewComponent },
   { path: 'context', component: TestContextComponent },
   { path: 'file-drop', component: TestFileDropComponent },
+  { path: 'form-elements', component: TestFormElementsComponent },
   { path: 'grouped-select', component: TestGroupedSelectComponent },
   { path: 'loading spinner', component: TestLoadingSpinnerComponent },
   { path: 'responsive-tab-container', component: TestResponsiveTabContainerComponent },

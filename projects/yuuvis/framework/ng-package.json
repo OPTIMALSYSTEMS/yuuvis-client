@@ -17,7 +17,8 @@
     "ngx-drag-scroll",
     "ngx-toastr",
     "@yuuvis/core",
-    "@yuuvis/styles"
+    "@yuuvis/styles",
+    "@yuuvis/command-palette"
   ],
   "lib": {
     "entryFile": "src/public-api.ts"

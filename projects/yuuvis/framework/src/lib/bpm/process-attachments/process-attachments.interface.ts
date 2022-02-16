@@ -3,4 +3,5 @@ export interface ProcessAttachment {
   objectTypeId?: string;
   title?: string;
   error?: boolean;
+  preventRemove?: boolean;
 }

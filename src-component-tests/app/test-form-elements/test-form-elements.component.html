@@ -1,0 +1,42 @@
+<h2>Checkboxes and switches</h2>
+
+<div class="row">
+    <yuv-checkbox (change)="checkboxChanged($event)"></yuv-checkbox> Regular checkbox (change)
+</div>
+
+<div class="row">
+    <yuv-checkbox></yuv-checkbox> Regular checkbox
+</div>
+<div class="row">
+    <yuv-checkbox [readonly]="true"></yuv-checkbox> Readonly/disabled checkbox
+</div>
+<div class="row">
+    <yuv-checkbox class="small"></yuv-checkbox> Small checkbox
+</div>
+
+
+<div class="row indeterminate">
+    <yuv-checkbox [tristate]="true" [(ngModel)]="cbIndeterminate"></yuv-checkbox> Tri-state checkbox
+</div>
+<div class="row indeterminate yc-indeterminate-dash">
+    <yuv-checkbox [tristate]="true" [(ngModel)]="cbIndeterminate"></yuv-checkbox> Tri-state checkbox (class:
+    yc-indeterminate-dash)
+</div>
+<div class="row indeterminate yc-indeterminate-questionmark">
+    <yuv-checkbox [tristate]="true" [(ngModel)]="cbIndeterminate"></yuv-checkbox> Tri-state checkbox (class:
+    yc-indeterminate-questionmark)
+</div>
+
+<!-- switches -->
+<div class="row">
+    <yuv-checkbox switch="true"></yuv-checkbox> Regular switch
+</div>
+<div class="row">
+    <yuv-checkbox class="small" switch="true"></yuv-checkbox> Small switch
+</div>
+<div class="row">
+    <yuv-checkbox switch="true" [readonly]="true"></yuv-checkbox> Readonly/disabled switch
+</div>
+<div class="row">
+    <yuv-checkbox switch="true" [tristate]="true" [(ngModel)]="cbIndeterminate"></yuv-checkbox> Tri-state switch
+</div>

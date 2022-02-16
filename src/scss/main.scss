@@ -1,3 +1,25 @@
 * {
   -webkit-tap-highlight-color: rgba(var(--color-accent), 0.2);
 }
+
+:root {
+  --cmp-color-accent: var(--color-accent);
+  // --cmp-color-accent-text: #fff;
+  --cmp-color-accent-text-highlight: var(--color-primary);
+  // --cmp-color-text: #fff;
+  --cmp-color-text-highlight: var(--cmp-color-accent);
+  --cmp-font-size: 2em;
+  // --cmp-hover-background: rgba(255, 255, 255, 0.1);
+  --cmp-backdrop-color: rgba(var(--color-primary-rgb), 0.95);
+  // --cmp-width: 30vw;
+  // --cmp-min-width: 300px;
+}
+
+.commands {
+  .command {
+    mark {
+      color: #fff !important;
+      text-decoration: underline;
+    }
+  }
+}

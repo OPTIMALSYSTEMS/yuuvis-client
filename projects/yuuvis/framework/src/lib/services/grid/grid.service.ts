@@ -1,4 +1,4 @@
-import { ColDef, CsvExportParams } from '@ag-grid-community/core';
+import { ColDef, Column, CsvExportParams, GridOptions, RowNode } from '@ag-grid-community/core';
 import { Inject, Injectable } from '@angular/core';
 import {
   AppCacheService,
@@ -36,6 +36,48 @@ export class GridService {
   static isSortable(field: ObjectTypeField): boolean {
     const skipSort = [BaseObjectTypeField.CREATED_BY, BaseObjectTypeField.MODIFIED_BY].map((s) => s.toString());
     return field?.propertyType !== 'id' && !skipSort.includes(field?.id);
+  }
+
+  // copy content of either row or table cell to clipboard
+  public copyToClipboard(event: KeyboardEvent, gridOptions: GridOptions) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const viewport = gridOptions.api['gridPanel'].eCenterViewport;
+    const scrollLeft = viewport.scrollLeft;
+
+    const focusedCell = gridOptions.api.getFocusedCell();
+    const rows: RowNode[] = event.shiftKey ? gridOptions.api.getSelectedNodes() : [gridOptions.api.getDisplayedRowAtIndex(focusedCell.rowIndex)];
+    const cols: Column[] = event.shiftKey ? gridOptions.columnApi.getAllDisplayedColumns() : [focusedCell.column];
+    const getCell = (col, row) => gridOptions.api['gridPanel'].eGui.querySelector(`div[row-index="${row.rowIndex}"] [col-id="${col.colId}"]`);
+    const value = (col, row) => {
+      gridOptions.api.ensureColumnVisible(col);
+      const cell = getCell(col, row);
+      if (!cell) return '';
+      const chips = cell.querySelectorAll('.chip') || [];
+      const val = Array.from(chips.length ? chips : [cell]).map((c: any) => (c && c.textContent && c.textContent.trim()) || '');
+      const value = val.toString() || gridOptions.api.getValue(col, row);
+      return !Utils.isEmpty(value) ? value.toString().replace(new RegExp('\n', 'g'), ' ') : '';
+    };
+
+    let content = '';
+    if (event.altKey) content += cols.map((col: Column) => col.getColDef().headerName).join('	') + '\n';
+    content += rows.map((row) => cols.map((col: Column) => value(col, row)).join('	')).join('\n');
+
+    viewport.scrollLeft = scrollLeft;
+    setTimeout(
+      () =>
+        rows.map((row) =>
+          cols.map((col: Column) => {
+            const cell = getCell(col, row);
+            cell && cell.classList.add('copy-cell');
+            cell && setTimeout(() => cell && cell.classList.remove('copy-cell'), 4000);
+          })
+        ),
+      100
+    );
+
+    navigator.clipboard.writeText(content);
   }
 
   /**
@@ -275,6 +317,11 @@ export class GridService {
       }
       case 'boolean': {
         colDef.cellRenderer = this.customContext(CellRenderer.booleanCellRenderer);
+        colDef.width = 100;
+        break;
+      }
+      case InternalFieldType.BOOLEAN_SWITCH: {
+        colDef.cellRenderer = this.customContext(CellRenderer.booleanSwitchCellRenderer);
         colDef.width = 100;
         break;
       }

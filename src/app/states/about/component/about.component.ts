@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { UserService } from '@yuuvis/core';
 import { Observable } from 'rxjs';
 import { Libraries, ProductDetails } from '../about.data.interface';
 import { AboutService } from '../service/about.service';
@@ -12,16 +11,14 @@ import { AboutService } from '../service/about.service';
 export class AboutComponent implements OnInit {
   licenseShow: boolean = true;
   __libraries__: Observable<Libraries[]> = this.aboutService.libraries$;
-  userLang: string;
-  docuLink: Observable<string> = this.aboutService.aboutConfig$;
+  docuLink: string;
 
   ctrl: Observable<ProductDetails[]> = this.aboutService.productDetails$;
 
-  constructor(private userService: UserService, private aboutService: AboutService) {}
+  constructor(private aboutService: AboutService) {}
 
   ngOnInit() {
-    this.userLang = this.userService.getCurrentUser().getClientLocale();
-    this.aboutService.getAboutConfig(this.userLang);
     this.aboutService.getAboutData();
+    this.docuLink = this.aboutService.getDocumentationLink();
   }
 }

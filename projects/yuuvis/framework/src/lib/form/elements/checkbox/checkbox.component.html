@@ -1,10 +1,2 @@
-<div [class.tristate]="tristate" *ngIf="tristate; else twostate">
-  <p-triStateCheckbox tabindex="{{_tabindex}}" [(ngModel)]="value" (ngModelChange)="onChange($event)"
-    [disabled]="readonly" [ngClass]="{undefined: value === null}"></p-triStateCheckbox>
-  <yuv-icon *ngIf="!readonly && value !== null && tristate" [icon]="'clear'" (click)="reset()"></yuv-icon>
-</div>
-
-<ng-template #twostate>
-  <p-checkbox binary="true" tabindex="{{_tabindex}}" [(ngModel)]="value" (ngModelChange)="onChange($event)"
-    [disabled]="readonly" [ngClass]="{undefined: value === null}"></p-checkbox>
-</ng-template>
+<input [(ngModel)]="value" type="checkbox" (change)="captureChange($event)" (ngModelChange)="onChange($event)"
+    [disabled]="readonly">

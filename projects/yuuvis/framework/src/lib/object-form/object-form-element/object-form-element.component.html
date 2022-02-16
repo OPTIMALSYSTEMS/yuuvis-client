@@ -80,6 +80,15 @@
         [tristate]="true"></yuv-checkbox>
     </yuv-form-input>
 
+    <!-- BOOLEAN:SWITCH -->
+    <yuv-form-input *ngSwitchCase="'boolean:switch'" [tag]="tag" class="checkbox"
+      [label]="formElementRef._eoFormElement.label" [isNull]="isNull" [skipToggle]="shouldSkipToggle"
+      [required]="formElementRef._eoFormElement.required" (onToggleLabel)="labelToggled($event)" [invalid]="errors">
+      <yuv-checkbox [formControlName]="element._eoFormControlWrapper.controlName" switch="true"
+        [attr.data-name]="element._eoFormControlWrapper.controlName" [readonly]="formElementRef._eoFormElement.readonly"
+        [tristate]="true"></yuv-checkbox>
+    </yuv-form-input>
+
     <!-- DATE / DATETIME -->
     <yuv-form-input *ngSwitchCase="'datetime'" [tag]="tag" [label]="formElementRef._eoFormElement.label"
       [isNull]="isNull" [skipToggle]="shouldSkipToggle" (onToggleLabel)="labelToggled($event)"

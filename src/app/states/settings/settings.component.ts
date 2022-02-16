@@ -18,6 +18,7 @@ export class SettingsComponent implements OnInit {
   customDashboardBackground: boolean;
   clientLocales: any;
   showPermissions: boolean;
+  bgImageSet: boolean;
   enableConfig: any = false;
 
   accentColorRGB = ['255,152,0', '120,144,156', '124,179,66', '3,169,244', '126,87,194', '236,64,122'];
@@ -76,6 +77,10 @@ export class SettingsComponent implements OnInit {
 
   setBackgroundImage(e) {
     this.layoutService.setDashboardBackground(!!e ? e : null);
+    this.bgImageSet = true;
+    setTimeout(() => {
+      this.bgImageSet = false;
+    }, 1000);
   }
 
   downloadLayout() {

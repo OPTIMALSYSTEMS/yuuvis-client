@@ -45,6 +45,7 @@ import { TestTaskDetailsComponent } from './test-task-details/test-task-details.
 import { TestUploadProgressOverlayComponent } from './test-upload-progress-overlay/test-upload-progress-overlay.component';
 import { TestUserAvatarComponent } from './test-user-avatar/test-user-avatar.component';
 import { TestVersionListComponent } from './test-version-list/test-version-list.component';
+import { TestFormElementsComponent } from './test-form-elements/test-form-elements.component';
 
 @NgModule({
   declarations: [
@@ -78,7 +79,8 @@ import { TestVersionListComponent } from './test-version-list/test-version-list.
     TestContextComponent,
     TestPopoverComponent,
     TestTaskDetailsComponent,
-    TestObjectPickerComponent
+    TestObjectPickerComponent,
+    TestFormElementsComponent
   ],
   imports: [
     HttpClientModule,

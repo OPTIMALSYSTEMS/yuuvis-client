@@ -2,7 +2,7 @@
   display: grid;
   background-color: var(--panel-background);
   grid-template-columns: 1fr;
-  grid-template-rows: auto 1 fr;
+  grid-template-rows: auto 1fr;
   grid-template-areas: 'header' 'main';
 
   yuv-quick-search {
@@ -38,7 +38,7 @@
   }
   main {
     overflow-y: auto;
-    height: 200px;
+    max-height: 300px;
     grid-area: main;
     ::ng-deep {
       yuv-checkbox {

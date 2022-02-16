@@ -40,7 +40,7 @@ export class FileDropDirective implements OnDestroy {
 
   @HostListener('dragenter', ['$event']) onDragEnter(evt: DragEvent) {
     const draggedFiles = this.fileDropService.dragContainsFiles(evt);
-    this._invalid = !this._options.multiple && draggedFiles > 1;
+    this._invalid = this._options.multiple ? draggedFiles === 0 : draggedFiles !== 1;
     if (!this.fileOver) {
       this.dragEventCount = 1;
       this.fileOver = true;

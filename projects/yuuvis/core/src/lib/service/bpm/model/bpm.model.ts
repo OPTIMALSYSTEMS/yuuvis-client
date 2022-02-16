@@ -10,6 +10,18 @@ export const FollowUpVars = {
   expiryDateTime: 'expiryDateTime'
 };
 
+export interface ProcessDefinition {
+  category: string;
+  description: string;
+  global: boolean;
+  id: string;
+  key: string;
+  name: string;
+  startFormDefined: true;
+  suspended: false;
+  version: number;
+}
+
 /**
  * In BPM you can create process models that define a couple of variables and
  * activities belonging to the process model.
@@ -54,12 +66,14 @@ export interface Task {
   assignee: ProcessUser;
   claimTime: Date;
   createTime: Date;
+  dueDate: Date;
   description: string;
   taskMessages?: TaskMessage[];
   taskForm?: {
     schemaProperties?: string[];
     model?: any;
     data?: any;
+    outcomes?: TaskOutcome[];
   };
   delegationState?: string;
   formKey: string;
@@ -77,13 +91,13 @@ export interface Task {
   attachments: string[];
 }
 
-export enum ProcessDefinitionKey {
-  FOLLOW_UP = 'follow-up',
-  INVALID_TYPE = 'invalid_type'
-}
+export const ProcessDefinitionKey = {
+  FOLLOW_UP: 'follow-up',
+  INVALID_TYPE: 'invalid_type'
+};
 // payload for starting a new process
 export interface ProcessCreatePayload extends ProcessPostPayload {
-  processDefinitionKey: ProcessDefinitionKey;
+  processDefinitionKey: string;
   name?: string;
   businessKey?: string;
   returnVariables?: boolean;
@@ -144,6 +158,7 @@ export enum ProcessStatus {
 export class TaskRow {
   id: string;
   createTime: Date;
+  dueDate: Date;
   processDefinitionName: string;
   subject: string;
   type: TaskType;
@@ -153,11 +168,17 @@ export class TaskRow {
   constructor(private data: Task) {
     this.id = data.id;
     this.subject = data.subject;
-    this.createTime = new Date(this.data.createTime);
+    this.createTime = new Date(data.createTime);
+    this.dueDate = data.dueDate ? new Date(data.dueDate) : undefined;
     this.originalData = data;
     this.processDefinitionName = data.processDefinition.idPrefix;
     this.taskName = data.name;
-    this.type = this.data.processDefinition.id.startsWith('follow-up') ? TaskType.FOLLOW_UP : TaskType.TASK;
+
+    if (data.processDefinition.id.startsWith(ProcessDefinitionKey.FOLLOW_UP)) {
+      this.type = TaskType.FOLLOW_UP;
+    } else {
+      this.type = TaskType.TASK;
+    }
   }
 }
 
@@ -179,7 +200,12 @@ export class ProcessRow {
     this.endTime = data.endTime;
     this.originalData = data;
     this.processDefinitionName = data.processDefinition.idPrefix;
-    this.type = data.processDefinition.id.startsWith('follow-up') ? TaskType.FOLLOW_UP : TaskType.TASK;
+
+    if (data.processDefinition.id.startsWith(ProcessDefinitionKey.FOLLOW_UP)) {
+      this.type = TaskType.FOLLOW_UP;
+    } else {
+      this.type = TaskType.TASK;
+    }
 
     if (data.suspended) {
       this.status = ProcessStatus.SUSPENDED;
@@ -215,4 +241,27 @@ export interface FetchProcessOptions {
   includeProcessVar?: boolean;
   isCompleted?: boolean;
   processDefinitionKey?: string;
+}
+
+export interface TaskOutcome {
+  // the outcomes technical name (also used for translations)
+  name: string;
+  // Name of the variable that this outcome will write to process vars
+  variable: string;
+  // The vaue that this outcome will write to process vars
+  value: any;
+  /**
+   * Optional form model. Could be the model object as well as a string (Id
+   * to fetch a form model from the backend).
+   *
+   * If you provide a model, triggering the outcome will display/render this form
+   * alongside with the tasks form. Values of all rendered forms will be put into
+   * the process variables
+   */
+  model?: any;
+  /**
+   * Outcomes will be rendered as primary buttons. If you want an outcome
+   * to be less prominent you could set this property to 'true'
+   */
+  secondary?: boolean;
 }

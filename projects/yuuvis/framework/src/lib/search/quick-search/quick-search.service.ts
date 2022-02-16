@@ -103,7 +103,7 @@ export class QuickSearchService {
           !sot.classification?.includes(ObjectTypeClassification.SEARCH_FALSE)
       );
 
-    return (this.availableObjectTypes = [...this.systemService.getObjectTypes(), ...extendables]
+    return (this.availableObjectTypes = [...this.systemService.getObjectTypes(false, 'search'), ...extendables]
       .filter((t) => !this.skipTypes.includes(t.id))
       .map((ot) => ({
         id: ot.id,
@@ -154,13 +154,7 @@ export class QuickSearchService {
   }
 
   private getSharedFields(selectedTypes = [], shared = true): ObjectTypeField[] {
-    const selectedObjectTypes = (
-      selectedTypes?.length
-        ? selectedTypes
-        : !shared
-        ? [...this.systemService.getObjectTypes(), ...this.systemService.getSecondaryObjectTypes()].map((t) => t.id)
-        : this.availableObjectTypeGroups?.reduce((p, c) => [...p, ...c.items.map((t) => t.id)], []) || []
-    ).map((id) => this.systemService.getResolvedType(id));
+    const selectedObjectTypes = selectedTypes.map((id) => this.systemService.getResolvedType(id));
 
     return shared
       ? selectedObjectTypes.reduce((prev, cur) => cur.fields.filter((f) => prev.find((p) => p.id === f.id)), [...selectedObjectTypes[0].fields])
@@ -171,13 +165,13 @@ export class QuickSearchService {
     const q = new SearchQuery();
     this.updateTypesAndLots(q, selectedTypes);
 
-    const sharedFields = q.allTypes.length
-      ? [
-          ...this.getSharedFields(q.allTypes, shared)
-            .reduce((m, item) => (m.has(item.id) || m.set(item.id, item)) && m, new Map())
-            .values()
-        ]
-      : this.getSharedFields([], shared);
+    const allTypes = q.allTypes.length ? q.allTypes : this.availableObjectTypeGroups?.reduce((p, c) => [...p, ...c.items.map((t) => t.id)], []) || [];
+
+    const sharedFields = [
+      ...this.getSharedFields(allTypes, shared)
+        .reduce((m, item) => (m.has(item.id) || m.set(item.id, item)) && m, new Map())
+        .values()
+    ];
 
     const toSelectable = (f: ObjectTypeField) => ({
       id: f.id,
@@ -189,9 +183,9 @@ export class QuickSearchService {
     const skipFields = [BaseObjectTypeField.TAGS, BaseObjectTypeField.LEADING_OBJECT_TYPE_ID, ...ColumnConfigSkipFields];
     const fields = [...sharedFields.filter((f) => !skipFields.includes(f.id)).map((f) => toSelectable(f))].sort(Utils.sortValues('label'));
 
-    const tags = q.allTypes.reduce(
+    const tags = allTypes.reduce(
       (prev, cur) => this.systemService.getResolvedTags(cur).filter((t) => prev.find((p) => p.tagName === t.tagName)),
-      this.systemService.getResolvedTags(q.allTypes[0])
+      this.systemService.getResolvedTags(allTypes[0])
     );
 
     return [
@@ -332,7 +326,7 @@ export class QuickSearchService {
   saveLastFilters(ids: string[]) {
     // persist last 20 filters
     this.filtersLast = [...ids].concat(this.filtersLast.filter((f) => !ids.includes(f))).slice(0, 20);
-    this.appCacheService.setItem(this.STORAGE_KEY_FILTERS_LAST, this.filtersLast).subscribe();
+    this.filtersLast.length && this.appCacheService.setItem(this.STORAGE_KEY_FILTERS_LAST, this.filtersLast).subscribe();
     return of(this.filtersLast);
   }
 

@@ -17,10 +17,8 @@ import {
   SystemService,
   SystemType,
   TranslateService,
-  UserRoles,
   UserService,
-  Utils,
-  YuvUser
+  Utils
 } from '@yuuvis/core';
 import { forkJoin, Observable, of } from 'rxjs';
 import { catchError, map, switchMap } from 'rxjs/operators';
@@ -101,8 +99,6 @@ export class ObjectCreateComponent implements OnDestroy {
 
   private pendingTaskId: string;
   context: DmsObject;
-  // whether or not the current user is allowed to use the component and create dms objects
-  invalidUser: boolean;
   animationTimer = { value: true, params: { time: '400ms' } };
   // state of creation progress
   state$: Observable<CreateState> = this.objCreateService.state$;
@@ -206,10 +202,6 @@ export class ObjectCreateComponent implements OnDestroy {
       required: this.translate.instant('yuv.framework.object-create.step.type.content.required')
     };
     this.title = this.labels.defaultTitle;
-
-    this.userService.user$.subscribe((user: YuvUser) => {
-      this.invalidUser = !user.authorities.includes(UserRoles.CREATE_OBJECT);
-    });
 
     let i = 0;
     this.generalObjectTypeGroups = this.system
@@ -368,9 +360,12 @@ export class ObjectCreateComponent implements OnDestroy {
   }
 
   private processAFOTypeWithFile() {
-    this.objCreateService.setNewState({ currentStep: CurrentStep.FILES });
+    this.objCreateService.setNewState({
+      currentStep: CurrentStep.FILES,
+      busy: false,
+      done: this.isReady()
+    });
     this.objCreateService.setNewBreadcrumb(CurrentStep.FILES);
-    this.objCreateService.setNewState({ busy: false, done: this.isReady() });
   }
 
   private processAFOTypeWithoutFile() {

@@ -27,6 +27,7 @@
       .handle {
         color: var(--text-color-caption);
         cursor: move;
+        flex: 0 0 auto;
       }
 
       &.error {

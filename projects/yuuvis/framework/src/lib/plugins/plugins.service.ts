@@ -129,10 +129,11 @@ export class PluginsService {
     },
     {
       error: true,
+      type: 'error',
       viewer: 'api/error/?path=${path}&mimeType=${mimeType}&fileExtension=${fileExtension}&lang=${lang}&theme=${theme}&accentColor=${accentColor}'
     },
     {
-      compare: true,
+      type: 'compare',
       viewer: 'api/compare/?compare=${compare}&mimeType=${mimeType}&fileExtension=${fileExtension}&lang=${lang}&theme=${theme}&accentColor=${accentColor}'
     }
   ];
@@ -170,16 +171,20 @@ export class PluginsService {
   }
 
   public resolveViewerParams(params: any, dmsObject: any) {
-    const config = this.viewers.find((c: any) => {
-      const matchMT = !c.mimeType || (typeof c.mimeType === 'string' ? [c.mimeType] : c.mimeType).includes((params?.mimeType || '').toLowerCase());
-      const matchFE =
-        !c.fileExtension || (typeof c.fileExtension === 'string' ? [c.fileExtension] : c.fileExtension).includes((params?.fileExtension || '').toLowerCase());
-      return matchMT && matchFE;
-    });
+    const config =
+      this.viewers.find((c: any) => {
+        const matchMT = !c.mimeType || (typeof c.mimeType === 'string' ? [c.mimeType] : c.mimeType).includes((params?.mimeType || '').toLowerCase());
+        const matchFE =
+          !c.fileExtension || (typeof c.fileExtension === 'string' ? [c.fileExtension] : c.fileExtension).includes((params?.fileExtension || '').toLowerCase());
+        return matchMT && matchFE && (!c.type || c.type === 'default');
+      }) || this.viewers.find((c) => c.type === 'error');
 
     Object.assign(params, this.createSettings());
 
     params.viewer = this.applyFunction(config?.viewer, 'api, dmsObject, parameters', [this.api, dmsObject, params]);
+
+    const extend = this.viewers.find((c) => c.type === 'extend');
+    if (extend) params.viewer = this.applyFunction(extend?.viewer, 'api, dmsObject, parameters', [this.api, dmsObject, params]);
 
     params.uri = this.resolveUri(params);
     return params;
@@ -227,7 +232,7 @@ export class PluginsService {
       return this.updateHeaders(
         param.length === 1
           ? param[0].uri
-          : this.resolveUri({ ...param[0], viewer: this.viewers.find((v) => v.compare).viewer, compare: JSON.stringify(param.map((p) => p.uri)) })
+          : this.resolveUri({ ...param[0], viewer: this.viewers.find((v) => v.type === 'compare').viewer, compare: JSON.stringify(param.map((p) => p.uri)) })
       );
     }
     const _path = param.viewer.replace(/\$\{(\w*)\}/g, (a, b) => (b === 'file' ? param[b] || '' : encodeURIComponent(param[b] || '')));
@@ -301,8 +306,9 @@ export class PluginsService {
   }
 
   public disableCustomPlugins(disabled = true) {
-    this.customPlugins = { ...this.customPlugins, disabled: !!disabled };
-    this.pluginConfigs = { ...this.pluginConfigs, local: { ...this.pluginConfigs.local, disabled: !!disabled } };
+    this.customPlugins = { ...this.customPlugins, disabled: disabled.toString() };
+    this.pluginConfigs = { ...this.pluginConfigs, local: { ...this.pluginConfigs.local, disabled: disabled.toString() } };
+    !disabled && delete this.pluginConfigs.local.disabled;
     return of((localStorage[PluginsService.LOCAL_PLUGIN_CONFIG] = JSON.stringify(this.pluginConfigs.local || {})));
   }
 
@@ -356,7 +362,8 @@ export class PluginsService {
           hasAdminRole: () => this.userService.hasAdminRole,
           hasSystemRole: () => this.userService.hasSystemRole,
           hasAdministrationRoles: () => this.userService.hasAdministrationRoles,
-          hasManageSettingsRole: () => this.userService.hasManageSettingsRole
+          hasManageSettingsRole: () => this.userService.hasManageSettingsRole,
+          hasAdvancedUserRole: () => this.userService.isAdvancedUser
         }
       },
       dms: {
