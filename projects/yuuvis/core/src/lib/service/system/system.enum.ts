@@ -18,12 +18,24 @@ export const UserRoles = {
   MULTI_TENANT: 'YUUVIS_MULTI_TENANT'
 };
 
-export const RetentionField = {
-  EXPIRATION_DATE: 'system:rmExpirationDate',
-  START_OF_RETENTION: 'system:rmStartOfRetention',
-  DESTRUCTION_DATE: 'system:rmDestructionDate',
+export const SystemSOT = {
   DESTRUCTION_RETENTION: 'system:rmDestructionRetention'
 };
+
+export const RetentionField = {
+  RETENTION_END: 'system:rmExpirationDate',
+  RETENTION_START: 'system:rmStartOfRetention',
+  DESTRUCTION_DATE: 'system:rmDestructionDate'
+};
+
+export enum RetentionState {
+  // no retention
+  NONE = 0,
+  // retention is active
+  ACTIVE = 1,
+  // supposed to be destructed
+  DESTRUCT = 2
+}
 
 export const BaseObjectTypeField = {
   OBJECT_TYPE_ID: 'system:objectTypeId',

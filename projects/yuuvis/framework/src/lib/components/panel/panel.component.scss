@@ -128,6 +128,20 @@
         height: 18px;
         width: 18px;
       }
+
+      span.chip {
+        font-size: var(--font-hint);
+        display: inline-block;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+
+        &.error {
+          background-color: var(--color-error);
+          border-color: var(--color-error);
+          color: #fff;
+        }
+      }
     }
   }
 

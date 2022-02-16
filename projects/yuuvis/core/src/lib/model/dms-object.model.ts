@@ -1,5 +1,5 @@
 import { SearchResultItem } from '../service/search/search.service.interface';
-import { BaseObjectTypeField } from '../service/system/system.enum';
+import { BaseObjectTypeField, RetentionField, RetentionState } from '../service/system/system.enum';
 import { ObjectType } from '../service/system/system.interface';
 import { DmsObjectContent, DmsObjectContext, DmsObjectRights } from './dms-object.interface';
 /**
@@ -106,6 +106,17 @@ export class DmsObject {
     const tags = this.data[BaseObjectTypeField.TAGS];
     const tag = tags ? tags.find((t) => t[0] === name) : null;
     return tag ? tag[1] : null;
+  }
+
+  getRetentionState(): RetentionState {
+    if (!!this.data[RetentionField.RETENTION_START]) {
+      const retentionStart = new Date(this.data[RetentionField.RETENTION_START]);
+      const retentionEnd = new Date(this.data[RetentionField.RETENTION_END]);
+      const today = new Date();
+      return retentionStart <= today && today <= retentionEnd ? RetentionState.ACTIVE : RetentionState.DESTRUCT;
+    } else {
+      return RetentionState.NONE;
+    }
   }
 
   private generateData(fields) {

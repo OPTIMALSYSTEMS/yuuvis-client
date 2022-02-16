@@ -138,8 +138,8 @@ export class SummaryComponent implements OnInit, OnDestroy {
       { key: ContentStreamField.FILENAME, order: 7 },
       { key: ContentStreamField.LENGTH, order: 8 },
       { key: ContentStreamField.MIME_TYPE, order: 9 },
-      { key: RetentionField.START_OF_RETENTION, order: 10 },
-      { key: RetentionField.EXPIRATION_DATE, order: 11 },
+      { key: RetentionField.RETENTION_START, order: 10 },
+      { key: RetentionField.RETENTION_END, order: 11 },
       { key: RetentionField.DESTRUCTION_DATE, order: 12 },
       { key: BaseObjectTypeField.TAGS, order: 13 }
     ];
