@@ -48,7 +48,7 @@ export class RetentionProlongComponent implements OnInit {
         // calculate the difference between old and new retention end date
         const diff = new Date(rmExpirationDate).getTime() - new Date(o.data[RetentionField.RETENTION_END]).getTime();
         const newDestructionDate = new Date(o.data[RetentionField.DESTRUCTION_DATE]).getTime() + diff;
-        console.debug(`Also increasing destruction date by ${diff / 1000 / 60 / 60 / 24} days.`);
+        console.debug(`Extending retention expiration date. Also increasing destruction date by ${diff / 1000 / 60 / 60 / 24} days.`);
         data[RetentionField.DESTRUCTION_DATE] = new Date(newDestructionDate);
       }
       payload.push({ id: o.id, data });
