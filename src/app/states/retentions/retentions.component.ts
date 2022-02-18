@@ -123,7 +123,7 @@ export class RetentionsComponent implements OnInit {
     const q = new SearchQuery();
     q.fields = [RetentionField.RETENTION_START, RetentionField.RETENTION_END, RetentionField.DESTRUCTION_DATE];
     q.addFilter(new SearchFilter(BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS, SearchFilter.OPERATOR.IN, [SystemSOT.DESTRUCTION_RETENTION]));
-    // q.addFilter(new SearchFilter(RetentionField.RETENTION_START, SearchFilter.OPERATOR.EQUAL, null));
+    q.addFilter(new SearchFilter(RetentionField.RETENTION_START, SearchFilter.OPERATOR.EQUAL, null, null, true));
     this.searchQuery = q;
   }
 }
