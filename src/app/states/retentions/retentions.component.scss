@@ -1,0 +1,26 @@
+:host {
+  display: block;
+  height: 100%;
+  box-sizing: border-box;
+  padding: var(--app-pane-padding);
+
+  yuv-search-result.content {
+    border-top: 1px solid var(--panel-divider-color);
+    background-color: var(--panel-background);
+  }
+
+  ::ng-deep {
+    .ag-cell.aggDone {
+      span {
+        &.red {
+          color: #fff;
+          background-color: var(--color-error);
+        }
+        &.green {
+          color: #fff;
+          background-color: var(--color-success);
+        }
+      }
+    }
+  }
+}

@@ -11,6 +11,7 @@ import { NotFoundComponent } from '../states/not-found/not-found.component';
 import { ObjectComponent } from '../states/object/object.component';
 import { ProcessesComponent } from '../states/processes/processes.component';
 import { ResultComponent } from '../states/result/result.component';
+import { RetentionsComponent } from '../states/retentions/retentions.component';
 import { SettingsComponent } from '../states/settings/settings.component';
 import { FilterConfigurationComponent } from './../states/filter-configuration/filter-configuration.component';
 import { FollowUpsComponent } from './../states/follow-ups/follow-ups.component';
@@ -27,6 +28,7 @@ const routes: Routes = [
   { path: 'about', component: AboutComponent },
   { path: 'create', component: CreateComponent, canDeactivate: [OfflineGuard, PendingChangesGuard] },
   { path: 'result', component: ResultComponent, canDeactivate: [OfflineGuard, PendingChangesGuard] },
+  { path: 'retentions', component: RetentionsComponent, canDeactivate: [OfflineGuard, PendingChangesGuard] },
   { path: 'inbox', component: InboxComponent, canDeactivate: [OfflineGuard, PendingChangesGuard] },
   { path: 'follow-ups', component: FollowUpsComponent, canDeactivate: [OfflineGuard, PendingChangesGuard] },
   { path: 'processes', component: ProcessesComponent, canDeactivate: [OfflineGuard, PendingChangesGuard] },
