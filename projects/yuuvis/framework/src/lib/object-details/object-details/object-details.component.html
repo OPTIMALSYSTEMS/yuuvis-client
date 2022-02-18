@@ -7,8 +7,9 @@
   <yuv-action-menu-bar class="actions" yuvOfflineDisabled>
     <yuv-icon (click)="refreshDetails()" [title]="'yuv.framework.list.refresh' | translate"
       class="button refresh-button" [icon]="'refresh'"></yuv-icon>
-    <yuv-icon (click)="openActionMenu()" [title]="'yuv.framework.object-details.tooltip.icon.actions' | translate"
-      class="button actions-button" [icon]="'kebap'"></yuv-icon>
+    <yuv-action-menu-button (click)="openActionMenu()" [disabled]="!selectedItems?.length"
+      [title]="'yuv.framework.object-details.tooltip.icon.actions' | translate">
+    </yuv-action-menu-button>
   </yuv-action-menu-bar>
 
   <yuv-action-menu-bar class="status" [className]="'status'">

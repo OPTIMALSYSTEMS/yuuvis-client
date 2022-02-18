@@ -8,10 +8,9 @@
                 <yuv-icon (click)="refresh()" [title]="'yuv.framework.list.refresh' | translate"
                     class="button refresh-button" [icon]="'refresh'"></yuv-icon>
 
-                <yuv-action-menu-button (click)="openActionMenu()" [disabled]="!selectedItems?.length">
+                <yuv-action-menu-button (click)="openActionMenu()" [loading]="loading"
+                    [disabled]="!selectedItems?.length">
                 </yuv-action-menu-button>
-                <!-- <yuv-icon (click)="openActionMenu()" [icon]="'kebap'" [ngClass]="{ disabled: !selectedItems?.length }">
-                </yuv-icon> -->
             </yuv-action-menu-bar>
 
             <yuv-search-result class="content" [query]="searchQuery" applyColumnConfig="true"

@@ -33,6 +33,8 @@ export class SearchResultPanelComponent {
   actionMenuVisible = false;
   actionMenuSelection = [];
 
+  loading: boolean;
+
   @ViewChild(SearchResultComponent) searchResultComponent: SearchResultComponent;
   @ViewChild('tplColumnConfigPicker') tplColumnConfigPicker: TemplateRef<any>;
 
@@ -140,18 +142,13 @@ export class SearchResultPanelComponent {
     }
   }
 
-  // onSearchResultOptionsChanged(options: ResponsiveDataTableOptions) {
-  //   if (options) {
-  //     this.viewMode = options.viewMode;
-  //   }
-  //   this.optionsChanged.emit(options);
-  // }
-
   openActionMenu() {
     if (this.preSelectItems) {
+      this.loading = true;
       this.dmsService.getDmsObjects(this.preSelectItems).subscribe((items) => {
         this.actionMenuSelection = items;
         this.actionMenuVisible = true;
+        this.loading = false;
       });
     }
   }

@@ -27,6 +27,8 @@ export class RetentionsComponent implements OnInit {
   actionMenuSelection = [];
   columnConfig: ColDef[];
 
+  loading: boolean;
+
   constructor(
     public translate: TranslateService,
     private dmsService: DmsService,
@@ -108,9 +110,11 @@ export class RetentionsComponent implements OnInit {
 
   openActionMenu() {
     if (this.selectedItems) {
+      this.loading = true;
       this.dmsService.getDmsObjects(this.selectedItems).subscribe((items) => {
         this.actionMenuSelection = items;
         this.actionMenuVisible = true;
+        this.loading = false;
       });
     }
   }
