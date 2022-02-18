@@ -119,11 +119,8 @@ export class FormatProcessDataService {
       selectType: 'single'
     };
 
-    if (isTask) {
-      tableData.singleColumnCellClass = 'yuvTaskSingleRowCell';
-      tableData.singleColumnCellRenderer = this.taskSingleColumnCellRenderer;
-    }
-
+    tableData.singleColumnCellClass = 'singleRowCell';
+    tableData.singleColumnCellRenderer = isTask ? this.taskSingleColumnCellRenderer : this.processSingleColumnCellRenderer;
     return tableData;
   }
 
@@ -142,8 +139,8 @@ export class FormatProcessDataService {
       data,
       context
     })}</div>
-    <div class="taskName">${context.datePipe.transform(data.createTime)} - ${this.taskNameCellRenderer({ value: data.taskName, context })}</div>
-    <div class="subject">${data.subject}</div>
+    <div class="description">${context.datePipe.transform(data.createTime)} - ${this.taskNameCellRenderer({ value: data.taskName, context })}</div>
+    <div class="title">${data.subject}</div>
     `;
 
     if (data.dueDate) {
@@ -153,6 +150,28 @@ export class FormatProcessDataService {
         context
       });
     }
+    return tpl;
+  };
+
+  private processSingleColumnCellRenderer = (rowNode: RowNode) => {
+    const data: ProcessRow = rowNode.data;
+    const context = {
+      system: this.system,
+      translations: this.translations,
+      datePipe: new LocaleDatePipe(this.translate),
+      isTask: true
+    };
+
+    let tpl = `
+    <div class="icon">${this.typeCellRenderer({
+      value: data.type,
+      data,
+      context
+    })}</div>
+    <div class="description">${context.datePipe.transform(data.startTime)}${data.endTime ? ` - ${context.datePipe.transform(data.endTime)}` : ''}</div>
+    <div class="title">${data.subject || '???'}</div>
+    <div class="meta">${this.getStatusTemplate(data.status, context.translations)}</div>
+    `;
     return tpl;
   };
 
@@ -185,22 +204,26 @@ export class FormatProcessDataService {
   private dueDateCellRenderer(params): string {
     if (!params.value) return '';
     const overDueClass = new Date(params.value).getTime() < Date.now() ? 'over-due' : '';
-    return `<span class="due-date ${overDueClass}">${params.context.datePipe.transform(params.value, 'eoNiceShort')}</span>`;
+    return `<span class="meta due-date ${overDueClass}">${params.context.datePipe.transform(params.value, 'eoNiceShort')}</span>`;
   }
 
   private statusCellRenderer(params): string {
+    return this.getStatusTemplate(params.value, params.translations);
+  }
+
+  private getStatusTemplate(value: string, translations: { [key: string]: string }): string {
     let status, cssClass;
-    switch (params.value) {
+    switch (value) {
       case ProcessStatus.COMPLETED:
-        status = params.translations.completed;
+        status = translations.completed;
         cssClass = 'completed';
         break;
       case ProcessStatus.SUSPENDED:
-        status = params.translations.suspended;
+        status = translations.suspended;
         cssClass = 'suspended';
         break;
       case ProcessStatus.RUNNING:
-        status = params.translations.running;
+        status = translations.running;
         cssClass = 'running';
         break;
     }
