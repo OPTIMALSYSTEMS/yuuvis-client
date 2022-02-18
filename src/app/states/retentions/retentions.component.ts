@@ -50,7 +50,8 @@ export class RetentionsComponent implements OnInit {
         cellClass: 'aggDone',
         resizable: true,
         sortable: false,
-        cellRenderer: (params) => {
+        cellRenderer: this.gridService.customContext((params) => {
+          const context = params.context;
           const rtStart = params.data[RetentionField.RETENTION_START] ? new Date(params.data[RetentionField.RETENTION_START]) : null;
           const rtEnd = params.data[RetentionField.RETENTION_END] ? new Date(params.data[RetentionField.RETENTION_END]) : null;
           const rtDestruct = params.data[RetentionField.DESTRUCTION_DATE] ? new Date(params.data[RetentionField.DESTRUCTION_DATE]) : null;
@@ -60,13 +61,22 @@ export class RetentionsComponent implements OnInit {
             const period = rtEnd.getTime() - rtStart.getTime();
             const diffNow = today.getTime() - rtStart.getTime();
             const p = (100 / period) * diffNow;
-            return p > 100 && rtDestruct
-              ? `<span class="chip red">${Math.round(((rtEnd.getTime() - today.getTime()) / 1000 / 60 / 60) * 100) / 100}h</span>`
-              : `<span class="chip ${p < 100 ? 'green' : 'red'}">${Math.round(p * 100) / 100}%</span>`;
+
+            const destcructUntil = p > 100 && rtDestruct ? Math.round(((rtEnd.getTime() - today.getTime()) / 1000 / 60 / 60) * 100) / 100 : null;
+            const percentageDone = p <= 100 ? Math.round(p * 100) / 100 : null;
+
+            const title = percentageDone
+              ? this.translate.instant('yuv.client.state.retentions.renderer.status.inretention', { p: percentageDone })
+              : destcructUntil >= 0
+              ? this.translate.instant('yuv.client.state.retentions.renderer.status.indestruct', { d: destcructUntil })
+              : this.translate.instant('yuv.client.state.retentions.renderer.status.pastdestruct', { d: destcructUntil * -1 });
+            return destcructUntil !== null
+              ? `<span title="${title}" class="chip red">${destcructUntil}h</span>`
+              : `<span title="${title}" class="chip ${p < 100 ? 'green' : 'red'}">${percentageDone}%</span>`;
           } else {
             return '';
           }
-        }
+        })
       },
       this.gridService.getColumnDefinition(this.systemService.system.allFields[RetentionField.RETENTION_START]),
       this.gridService.getColumnDefinition(this.systemService.system.allFields[RetentionField.RETENTION_END]),
