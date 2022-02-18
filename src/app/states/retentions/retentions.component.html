@@ -1,23 +1,28 @@
 <ng-container [yuvTitle]="('yuv.client.state.retentions.title' | translate)"></ng-container>
 <yuv-responsive-master-slave class="state" [layoutOptionsKey]="layoutOptionsKey" [slaveActive]=" objectDetailsID">
 
-    <yuv-panel class="yuv-master panel" [title]="'yuv.client.state.retentions.title' | translate">
+    <div class="retention-list yuv-master panel">
+        <yuv-panel [title]="'yuv.client.state.retentions.title' | translate">
 
-        <yuv-action-menu-bar class="actions" yuvOfflineDisabled>
-            <yuv-icon (click)="refresh()" [title]="'yuv.framework.list.refresh' | translate"
-                class="button refresh-button" [icon]="'refresh'"></yuv-icon>
-            <yuv-icon (click)="openActionMenu()" [icon]="'kebap'" [ngClass]="{ disabled: !selectedItems?.length }">
-            </yuv-icon>
-        </yuv-action-menu-bar>
+            <yuv-action-menu-bar class="actions" yuvOfflineDisabled>
+                <yuv-icon (click)="refresh()" [title]="'yuv.framework.list.refresh' | translate"
+                    class="button refresh-button" [icon]="'refresh'"></yuv-icon>
 
-        <yuv-search-result class="content" [query]="searchQuery" applyColumnConfig="true" [columnConfig]="columnConfig"
-            [preSelectItems]="selectedItems" [layoutOptionsKey]="layoutOptionsKey"
-            [filterPanelConfig]="filterPanelConfig" (filterPanelConfigChanged)="onFilterPanelConfigChanged($event)"
-            (itemsSelected)="select($event)" (rowDoubleClicked)="onRowDoubleClicked($event)">
-        </yuv-search-result>
-    </yuv-panel>
+                <yuv-action-menu-button (click)="openActionMenu()" [disabled]="!selectedItems?.length">
+                </yuv-action-menu-button>
+                <!-- <yuv-icon (click)="openActionMenu()" [icon]="'kebap'" [ngClass]="{ disabled: !selectedItems?.length }">
+                </yuv-icon> -->
+            </yuv-action-menu-bar>
 
-    <yuv-action-menu [(visible)]="actionMenuVisible" [dark]="true" [selection]="actionMenuSelection"> </yuv-action-menu>
+            <yuv-search-result class="content" [query]="searchQuery" applyColumnConfig="true"
+                [columnConfig]="columnConfig" [preSelectItems]="selectedItems" [layoutOptionsKey]="layoutOptionsKey"
+                [filterPanelConfig]="filterPanelConfig" (filterPanelConfigChanged)="onFilterPanelConfigChanged($event)"
+                (itemsSelected)="select($event)" (rowDoubleClicked)="onRowDoubleClicked($event)">
+            </yuv-search-result>
+        </yuv-panel>
+        <yuv-action-menu [(visible)]="actionMenuVisible" [dark]="true" [selection]="actionMenuSelection">
+        </yuv-action-menu>
+    </div>
 
     <yuv-object-details class="yuv-slave panel" [objectId]="objectDetailsID" [layoutOptionsKey]="layoutOptionsKey"
         [plugins]="plugins">
