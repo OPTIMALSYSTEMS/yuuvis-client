@@ -159,7 +159,7 @@ export class FormatProcessDataService {
       system: this.system,
       translations: this.translations,
       datePipe: new LocaleDatePipe(this.translate),
-      isTask: true
+      isTask: false
     };
 
     let tpl = `
