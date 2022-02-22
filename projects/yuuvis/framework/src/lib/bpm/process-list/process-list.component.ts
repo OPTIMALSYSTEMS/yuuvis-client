@@ -70,10 +70,10 @@ export class ProcessListComponent {
   get viewMode(): ViewMode {
     return this._viewMode;
   }
-  statusFilter: 'all' | 'running' | 'completed' = 'all';
   showStatusFilter: boolean;
 
   @Input() showFooter = true;
+  @Input() statusFilter: 'all' | 'running' | 'completed' = 'all';
 
   @Output() selectedItem: EventEmitter<any> = new EventEmitter<any>();
   @Output() refreshList: EventEmitter<any> = new EventEmitter<any>();

@@ -34,6 +34,7 @@ export class ProcessesComponent implements OnInit, OnDestroy {
     map((taskData: ResponsiveTableData) => (taskData.rows.length ? taskData : null))
   );
   loading$: Observable<boolean> = this.processService.loadingProcessData$;
+  statusFilter;
 
   headerDetails: HeaderDetails = {
     title: this.translateService.instant('yuv.client.state.process.title'),
@@ -59,10 +60,15 @@ export class ProcessesComponent implements OnInit, OnDestroy {
   }
 
   refreshList() {
-    this.processService.fetchProcesses();
+    this.fetchProcesses(this.statusFilter);
   }
 
   onStatusFilterChange(statusFilter: 'all' | 'running' | 'completed') {
+    this.statusFilter = statusFilter;
+    this.fetchProcesses(this.statusFilter || 'all');
+  }
+
+  private fetchProcesses(statusFilter: 'all' | 'running' | 'completed' = 'all') {
     if (statusFilter === 'all') {
       this.processService.fetchProcesses();
     } else {
@@ -75,14 +81,14 @@ export class ProcessesComponent implements OnInit, OnDestroy {
   remove() {
     this.processService
       .deleteProcess(this.selectedProcess[0].id)
-      .pipe(tap(() => this.processService.fetchProcesses()))
+      .pipe(tap(() => this.fetchProcesses(this.statusFilter)))
       .subscribe();
   }
 
   onSlaveClosed() {}
 
   ngOnInit(): void {
-    this.processService.fetchProcesses();
+    this.fetchProcesses('running');
     this.eventService
       .on(BpmEvent.BPM_EVENT)
       .pipe(

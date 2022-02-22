@@ -265,6 +265,7 @@
 	"yuv.framework.process-list.task.state.resolved": "delegiert und erledigt",
 	"yuv.framework.process-list.type.follow-up.label": "Wiedervorlage",
 	"yuv.framework.process-list.type.task.label": "Aufgabe",
+	"yuv.framework.process.status.all.label": "Alle",
 	"yuv.framework.process.status.completed.label": "Beendet",
 	"yuv.framework.process.status.running.label": "Laufend",
 	"yuv.framework.process.status.suspended.label": "Ausgesetzt",
