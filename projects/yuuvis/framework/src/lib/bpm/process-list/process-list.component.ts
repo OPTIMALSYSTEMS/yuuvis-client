@@ -70,13 +70,21 @@ export class ProcessListComponent {
   get viewMode(): ViewMode {
     return this._viewMode;
   }
+  statusFilter: 'all' | 'running' | 'completed' = 'all';
+  showStatusFilter: boolean;
 
   @Input() showFooter = true;
 
   @Output() selectedItem: EventEmitter<any> = new EventEmitter<any>();
   @Output() refreshList: EventEmitter<any> = new EventEmitter<any>();
+  @Output() statusFilterChange: EventEmitter<'all' | 'running' | 'completed'> = new EventEmitter<'all' | 'running' | 'completed'>();
 
   constructor() {}
+
+  setStatusFilter(statusFilter: 'all' | 'running' | 'completed') {
+    this.statusFilter = statusFilter;
+    this.statusFilterChange.emit(this.statusFilter);
+  }
 
   select(event) {
     this.selectedItem.emit(event);
@@ -84,5 +92,9 @@ export class ProcessListComponent {
 
   refresh() {
     this.refreshList.emit();
+  }
+
+  ngOnInit() {
+    this.showStatusFilter = this.statusFilterChange.observers && this.statusFilterChange.observers.length > 0;
   }
 }

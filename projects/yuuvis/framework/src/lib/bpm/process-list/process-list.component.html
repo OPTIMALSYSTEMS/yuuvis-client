@@ -1,6 +1,15 @@
 <yuv-panel class="process-list" [title]="header?.title" [description]="header?.description">
   <yuv-icon class="header-icon" [icon]="header?.icon"></yuv-icon>
 
+  <div class="status status-filters" *ngIf="showStatusFilter">
+    <button class="secondary" [ngClass]="{primary: statusFilter === 'all'}"
+      (click)="setStatusFilter('all')">All</button>
+    <button class="secondary" [ngClass]="{primary: statusFilter === 'running'}"
+      (click)="setStatusFilter('running')">Running</button>
+    <button class="secondary" [ngClass]="{primary: statusFilter === 'completed'}"
+      (click)="setStatusFilter('completed')">Completed</button>
+  </div>
+
   <div class="actions" yuvOfflineDisabled>
     <yuv-action-menu-bar class="actions">
       <yuv-icon (click)="refresh()" [title]="'yuv.framework.list.refresh' | translate" class="button refresh-button"

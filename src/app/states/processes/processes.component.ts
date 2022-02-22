@@ -40,7 +40,6 @@ export class ProcessesComponent implements OnInit, OnDestroy {
     description: '',
     icon: 'process'
   };
-
   plugins: any;
 
   constructor(
@@ -61,6 +60,16 @@ export class ProcessesComponent implements OnInit, OnDestroy {
 
   refreshList() {
     this.processService.fetchProcesses();
+  }
+
+  onStatusFilterChange(statusFilter: 'all' | 'running' | 'completed') {
+    if (statusFilter === 'all') {
+      this.processService.fetchProcesses();
+    } else {
+      this.processService.fetchProcesses(null, {
+        isCompleted: statusFilter === 'completed'
+      });
+    }
   }
 
   remove() {
