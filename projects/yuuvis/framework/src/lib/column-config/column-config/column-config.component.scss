@@ -25,6 +25,7 @@
         font-size: var(--font-title);
         font-weight: var(--font-weight-normal);
         color: var(--text-color-caption);
+        margin-right: var(--app-pane-padding);
       }
       button {
         padding: calc(var(--app-pane-padding) / 4) calc(var(--app-pane-padding) / 2);

@@ -161,7 +161,7 @@ export class SearchResultPanelComponent {
   showColumnConfigEditor() {
     const popoverConfig: PopoverConfig = {
       height: '70%',
-      maxWidth: '400px',
+      maxWidth: '440px',
       data: this.columnConfigInput
     };
     this.popoverService.open(this.tplColumnConfigPicker, popoverConfig);
