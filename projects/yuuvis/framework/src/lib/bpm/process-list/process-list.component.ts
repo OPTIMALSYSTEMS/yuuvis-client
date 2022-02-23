@@ -1,7 +1,9 @@
 import { RowNode } from '@ag-grid-community/core';
 import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { TaskRow } from '@yuuvis/core';
+import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { ResponsiveTableData } from '../../components/responsive-data-table/responsive-data-table.interface';
+import { listModeDefault, listModeSimple } from '../../svg.generated';
 import { ResponsiveDataTableComponent, ViewMode } from './../../components/responsive-data-table/responsive-data-table.component';
 
 interface HeaderDetails {
@@ -79,7 +81,9 @@ export class ProcessListComponent {
   @Output() refreshList: EventEmitter<any> = new EventEmitter<any>();
   @Output() statusFilterChange: EventEmitter<'all' | 'running' | 'completed'> = new EventEmitter<'all' | 'running' | 'completed'>();
 
-  constructor() {}
+  constructor(private iconRegistry: IconRegistryService) {
+    this.iconRegistry.registerIcons([listModeDefault, listModeSimple]);
+  }
 
   setStatusFilter(statusFilter: 'all' | 'running' | 'completed') {
     this.statusFilter = statusFilter;
