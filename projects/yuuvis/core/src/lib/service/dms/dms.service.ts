@@ -208,9 +208,15 @@ export class DmsService {
    * Updates given objects.
    * @param objects the objects to updated
    */
-  updateDmsObjects(objects: Partial<DmsObject>[], silent = false) {
-    const ids = objects.map((o) => o.id);
-    return this.batchUpdate(objects).pipe(this.triggerEvents(YuvEventType.DMS_OBJECT_UPDATED, ids, silent));
+  updateDmsObjects(objects: { id: string; data: { [key: string]: any } }[], silent = false) {
+    const payload = objects.map((o) => ({ id: o.id, ...o.data }));
+    return this.batchUpdate(payload).pipe(
+      this.triggerEvents(
+        YuvEventType.DMS_OBJECT_UPDATED,
+        objects.map((o) => o.id),
+        silent
+      )
+    );
   }
 
   /**
@@ -304,8 +310,8 @@ export class DmsService {
     );
   }
 
-  batchUpdate(objects: Partial<DmsObject>[]) {
-    return this.backend.batch(objects.map((o) => ({ method: 'PATCH', uri: `/dms/objects/${o.id}`, body: this.getBatchBody(o) })));
+  batchUpdate(payload: any[]) {
+    return this.backend.batch(payload.map((o) => ({ method: 'PATCH', uri: `/dms/objects/${o.id}`, body: this.getBatchBody(o) })));
   }
 
   batchDelete(ids: string[]) {

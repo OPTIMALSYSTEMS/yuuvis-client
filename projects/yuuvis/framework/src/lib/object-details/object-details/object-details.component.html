@@ -1,5 +1,5 @@
 <yuv-panel *ngIf="dmsObject; else empty" class="object-details" [title]="dmsObject.title"
-  (yuvFileDrop)="onFileDropped($event)" [yuvFileDropOptions]="{ disabled: disableFileDrop || fileDropOptions?.disabled || dmsObject.contentStreamAllowed === 'notallowed' || isRetentionActive, 
+  (yuvFileDrop)="onFileDropped($event)" [yuvFileDropOptions]="{ disabled: disableFileDrop || fileDropOptions?.disabled || dmsObject.contentStreamAllowed === 'notallowed' || !!retentionEnd || !!retentionDestructUntil, 
   label: fileDropOptions?.label || fileDropLabel, multiple: fileDropOptions?.multiple, maxSize: fileDropOptions?.maxSize, accept: fileDropOptions?.accept, 
   invalidError: fileDropOptions?.invalidError }" [description]="dmsObject.description" [yuvBusyOverlay]="busy">
   <yuv-object-type-icon class="header-icon" [objectTypeId]="objectTypeId"></yuv-object-type-icon>
@@ -7,16 +7,26 @@
   <yuv-action-menu-bar class="actions" yuvOfflineDisabled>
     <yuv-icon (click)="refreshDetails()" [title]="'yuv.framework.list.refresh' | translate"
       class="button refresh-button" [icon]="'refresh'"></yuv-icon>
-    <yuv-icon (click)="openActionMenu()" [title]="'yuv.framework.object-details.tooltip.icon.actions' | translate"
-      class="button actions-button" [icon]="'kebap'"></yuv-icon>
+    <yuv-action-menu-button (click)="openActionMenu()"
+      [title]="'yuv.framework.object-details.tooltip.icon.actions' | translate">
+    </yuv-action-menu-button>
   </yuv-action-menu-bar>
 
   <yuv-action-menu-bar class="status" [className]="'status'">
+
+    <span class="chip"
+      *ngIf="!retentionDestructUntil && retentionEnd">{{'yuv.framework.object-details.status.retentionActive'|translate:
+      ({date: retentionEnd | localeDate: 'shortDate'})}}</span>
+    <span class="chip error"
+      *ngIf="retentionEnd && retentionDestructUntil">{{'yuv.framework.object-details.status.retentionDestruction'|translate:
+      ({date:
+      retentionDestructUntil | localeDate: 'shortDate'})}}</span>
+
     <!--   <a class="content-link">
-      <span translate>yuv.object.contentlink</span>
-    </a>
-    <yuv-icon class="subscription-icon" [icon]="'subscription'"></yuv-icon>
-    <yuv-icon class="resubmission-icon" [icon]="'resubmission'"></yuv-icon>
+        <span translate>yuv.object.contentlink</span>
+      </a>
+      <yuv-icon class="subscription-icon" [icon]="'subscription'"></yuv-icon>
+      <yuv-icon class="resubmission-icon" [icon]="'resubmission'"></yuv-icon>
     <yuv-icon class="lock" [icon]="'lock'"></yuv-icon>
     <yuv-icon class="finalized-icon" [icon]="'finalized'"></yuv-icon> -->
   </yuv-action-menu-bar>

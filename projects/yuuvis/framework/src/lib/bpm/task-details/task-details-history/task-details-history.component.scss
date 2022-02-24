@@ -2,6 +2,7 @@
   .yuv-task-details-history {
     height: 100%;
     background-color: var(--panel-background-grey);
+    user-select: text;
 
     .error {
       padding: var(--app-pane-padding);

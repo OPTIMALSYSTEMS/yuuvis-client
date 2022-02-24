@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ContentStreamAllowed, DmsObject, SystemService, TranslateService } from '@yuuvis/core';
+import { ContentStreamAllowed, DmsObject, RetentionState, SystemService, TranslateService } from '@yuuvis/core';
 import { of as observableOf } from 'rxjs';
 import { contentUpload } from '../../../svg.generated';
 import { DmsObjectTarget } from '../../action-target';
@@ -37,13 +37,8 @@ export class UploadActionComponent extends DmsObjectTarget implements ComponentA
       this.label = this.translate.instant('yuv.framework.action-menu.action.upload.dms.object.content.add.label');
       this.description = this.translate.instant('yuv.framework.action-menu.action.upload.dms.object.content.add.description');
     }
-    let isRetentionActive = false;
-    if (element.data['system:rmStartOfRetention'] && element.data['system:rmExpirationDate']) {
-      const currentDate = new Date();
-      const retentionStart = new Date(element.data['system:rmStartOfRetention']);
-      const retentionEnd = new Date(element.data['system:rmExpirationDate']);
-      isRetentionActive = retentionStart <= currentDate && currentDate <= retentionEnd;
-    }
+    const retentionState = element.getRetentionState();
+    let isRetentionActive = retentionState === RetentionState.ACTIVE;
     return observableOf(element?.rights?.writeContent && objectType?.contentStreamAllowed !== ContentStreamAllowed.NOT_ALLOWED && !isRetentionActive);
   }
 }

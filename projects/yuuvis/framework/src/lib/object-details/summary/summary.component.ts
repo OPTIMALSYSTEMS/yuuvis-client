@@ -59,6 +59,9 @@ export class SummaryComponent implements OnInit, OnDestroy {
   dmsObjectID: string;
   coreFields: any[] = [];
 
+  private _objectData;
+  private _objectData2;
+
   /**
    * `DmsObject` to show the summary for
    */
@@ -73,7 +76,14 @@ export class SummaryComponent implements OnInit, OnDestroy {
     });
   }
 
-  dmsObject2: DmsObject;
+  private _dmsObject2: DmsObject;
+  set dmsObject2(o: DmsObject) {
+    this._dmsObject2 = o;
+    this._objectData2 = { ...o.data };
+  }
+  get dmsObject2() {
+    return this._dmsObject2;
+  }
 
   /**
    * Two dms object to be compared against each other. They need to share
@@ -138,8 +148,8 @@ export class SummaryComponent implements OnInit, OnDestroy {
       { key: ContentStreamField.FILENAME, order: 7 },
       { key: ContentStreamField.LENGTH, order: 8 },
       { key: ContentStreamField.MIME_TYPE, order: 9 },
-      { key: RetentionField.START_OF_RETENTION, order: 10 },
-      { key: RetentionField.EXPIRATION_DATE, order: 11 },
+      { key: RetentionField.RETENTION_START, order: 10 },
+      { key: RetentionField.RETENTION_END, order: 11 },
       { key: RetentionField.DESTRUCTION_DATE, order: 12 },
       { key: BaseObjectTypeField.TAGS, order: 13 }
     ];
@@ -174,13 +184,14 @@ export class SummaryComponent implements OnInit, OnDestroy {
     return { skipFields, extraFields, parentFields, defaultBaseFields };
   }
 
-  private restructureByClassification(data, classification: string) {
+  private restructureByClassification(d, classification: string) {
+    const data = { ...d };
     const sotIndex: number[] = [];
     const systemsot: string[] = [];
     data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS]?.map(
       (sot, index) => this.systemService.getSecondaryObjectType(sot)?.classification?.includes(classification) && sotIndex.unshift(index) && systemsot.push(sot)
     );
-    sotIndex.forEach((value, index) => data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS].splice(value[index], 1));
+    sotIndex.forEach((value, index) => [...data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS]].splice(value[index], 1));
     return { ...data, 'classification[systemsot]': systemsot };
   }
 
@@ -199,9 +210,9 @@ export class SummaryComponent implements OnInit, OnDestroy {
       parent: []
     };
 
-    dmsObject.data = this.restructureByClassification(dmsObject.data, Classification.SYSTEM_SOT);
+    this._objectData = this.restructureByClassification(dmsObject.data, Classification.SYSTEM_SOT);
     if (this.dmsObject2) {
-      this.dmsObject2.data = this.restructureByClassification(this.dmsObject2.data, Classification.SYSTEM_SOT);
+      this._objectData2 = this.restructureByClassification(this.dmsObject2.data, Classification.SYSTEM_SOT);
     }
 
     const { skipFields, parentFields, extraFields, defaultBaseFields } = this.getSummaryConfiguration(dmsObject);
@@ -209,7 +220,7 @@ export class SummaryComponent implements OnInit, OnDestroy {
     const fsots = this.systemService.getFloatingSecondaryObjectTypes(dmsObject.objectTypeId);
     fsots.forEach((fsot) => (colDef = [...colDef, ...this.gridService.getColumnDefinitions(fsot.id, true)]));
 
-    Object.keys({ ...dmsObject.data, ...this.dmsObject2?.data })
+    Object.keys({ ...this._objectData, ...this._objectData2 })
       .filter((key) => !key.includes('_title'))
       .forEach((key: string) => {
         const prepKey = key.replace(/^parent./, ''); // todo: pls implement general solution
@@ -219,14 +230,14 @@ export class SummaryComponent implements OnInit, OnDestroy {
         const si: SummaryEntry = {
           label: (def && def.headerName) || key,
           key,
-          value: this.generateValue(dmsObject.data, key, renderer, def),
-          value2: this.dmsObject2 && this.generateValue(this.dmsObject2.data, key, renderer, def),
+          value: this.generateValue(this._objectData, key, renderer, def),
+          value2: this.dmsObject2 && this.generateValue(this._objectData2, key, renderer, def),
           order: null
         };
 
         if (key === BaseObjectTypeField.OBJECT_TYPE_ID) {
-          si.value = this.systemService.getLocalizedResource(`${dmsObject.data[key]}_label`);
-          si.value2 = this.dmsObject2 && this.systemService.getLocalizedResource(`${this.dmsObject2.data[key]}_label`);
+          si.value = this.systemService.getLocalizedResource(`${this._objectData[key]}_label`);
+          si.value2 = this.dmsObject2 && this.systemService.getLocalizedResource(`${this._objectData2[key]}_label`);
         }
 
         if (this.dmsObject2 && (si.value === si.value2 || this.isVersion(key))) {

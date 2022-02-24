@@ -68,6 +68,25 @@
       }
     }
   }
+
+  yuv-action-menu-bar.status {
+    ::ng-deep {
+      yuv-icon {
+        color: var(--text-color-hint);
+      }
+
+      .finalized-icon {
+        color: var(--color-success);
+      }
+
+      .retention-icon {
+        color: var(--color-success);
+        &.destruction {
+          color: var(--color-error);
+        }
+      }
+    }
+  }
 }
 
 .yuv-object-details {
@@ -75,10 +94,6 @@
   .status,
   .header-icon {
     opacity: 54;
-  }
-
-  .finalized-icon {
-    color: var(--color-success);
   }
 
   .p-tabview .p-tabview-panels {

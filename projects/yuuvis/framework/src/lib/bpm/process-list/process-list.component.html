@@ -1,5 +1,14 @@
-<yuv-panel class="process-list" [title]="header.title" [description]="header.description">
-  <yuv-icon class="header-icon" [icon]="header.icon"></yuv-icon>
+<yuv-panel class="process-list" [title]="header?.title" [description]="header?.description">
+  <yuv-icon class="header-icon" [icon]="header?.icon"></yuv-icon>
+
+  <div class="status status-filters" *ngIf="showStatusFilter">
+    <button class="secondary" [ngClass]="{primary: statusFilter === 'all'}"
+      (click)="setStatusFilter('all')">{{'yuv.framework.process.status.all.label'|translate}}</button>
+    <button class="secondary" [ngClass]="{primary: statusFilter === 'running'}"
+      (click)="setStatusFilter('running')">{{'yuv.framework.process.status.running.label'|translate}}</button>
+    <button class="secondary" [ngClass]="{primary: statusFilter === 'completed'}"
+      (click)="setStatusFilter('completed')">{{'yuv.framework.process.status.completed.label'|translate}}</button>
+  </div>
 
   <div class="actions" yuvOfflineDisabled>
     <yuv-action-menu-bar class="actions">

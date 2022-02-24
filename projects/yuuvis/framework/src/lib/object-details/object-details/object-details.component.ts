@@ -17,6 +17,7 @@ import {
   DmsObject,
   DmsService,
   EventService,
+  RetentionField,
   SystemService,
   TranslateService,
   UserService,
@@ -29,7 +30,7 @@ import { finalize } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { ComponentStateService } from '../../services/component-state/component-state.service';
-import { kebap, noFile, refresh } from '../../svg.generated';
+import { kebap, noFile, refresh, retention } from '../../svg.generated';
 import { ContentPreviewService } from '../content-preview/service/content-preview.service';
 import { ResponsiveTabContainerComponent } from './../../components/responsive-tab-container/responsive-tab-container.component';
 import { FileDropOptions } from './../../directives/file-drop/file-drop.directive';
@@ -77,7 +78,8 @@ export class ObjectDetailsComponent implements OnDestroy {
   fileDropLabel: string;
   contextError: string = null;
   objectTypeId: string;
-  isRetentionActive = false;
+  retentionEnd: Date;
+  retentionDestructUntil: Date;
   private _dmsObject: DmsObject;
   private _objectId: string;
 
@@ -103,13 +105,12 @@ export class ObjectDetailsComponent implements OnDestroy {
     } else {
       this.objectTypeId = null;
     }
-    this.isRetentionActive = false;
-    if (object && object.data['system:rmStartOfRetention'] && object.data['system:rmExpirationDate']) {
-      const currentDate = new Date();
-      const retentionStart = new Date(object.data['system:rmStartOfRetention']);
-      const retentionEnd = new Date(object.data['system:rmExpirationDate']);
-      this.isRetentionActive = retentionStart <= currentDate && currentDate <= retentionEnd;
-    }
+
+    this.retentionEnd = object?.data[RetentionField.RETENTION_END] ? new Date(object.data[RetentionField.RETENTION_END]) : undefined;
+    const destructDate = object?.data[RetentionField.DESTRUCTION_DATE] ? new Date(object.data[RetentionField.DESTRUCTION_DATE]) : undefined;
+    const today = new Date();
+    this.retentionDestructUntil = destructDate && today > this.retentionEnd ? destructDate : undefined;
+
     if (object) {
       if (!this.componentStateId) {
         this.componentStateId = this.componentStateService.addComponentState('ObjectDetailsComponent', {
@@ -228,7 +229,7 @@ export class ObjectDetailsComponent implements OnDestroy {
     private contentPreviewService: ContentPreviewService,
     private iconRegistry: IconRegistryService
   ) {
-    this.iconRegistry.registerIcons([refresh, kebap, noFile]);
+    this.iconRegistry.registerIcons([retention, refresh, kebap, noFile]);
     this.isAdvancedUser = this.userService.isAdvancedUser;
     this.panelOrder = this.config.get('client.objectDetailsTabs') || this.panelOrder;
     this.undockWinActive = ContentPreviewService.undockWinActive();

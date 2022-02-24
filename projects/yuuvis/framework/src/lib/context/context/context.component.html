@@ -9,8 +9,9 @@
       *ngIf="activeSearchResult?.viewMode === 'standard'"> </yuv-icon>
     <yuv-icon (click)="refresh()" [title]="'yuv.framework.list.refresh' | translate" class="button refresh-button"
       [icon]="'refresh'"></yuv-icon>
-    <yuv-icon (click)="openActionMenu()" [ngClass]="{ disabled: !preSelectItems || preSelectItems?.length === 0 }"
-      class="button actions-button" [icon]="'kebap'"></yuv-icon>
+    <yuv-action-menu-button (click)="openActionMenu()" [loading]="loading"
+      [disabled]="!preSelectItems || preSelectItems?.length === 0">
+    </yuv-action-menu-button>
   </yuv-action-menu-bar>
 
   <p-tabView *ngIf="(plugins ? (plugins | async) : []) as resolvedPlugins" class="content"

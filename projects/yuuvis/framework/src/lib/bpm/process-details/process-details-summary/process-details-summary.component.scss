@@ -3,7 +3,7 @@
   display: block;
   overflow-y: auto;
   background-color: var(--panel-background);
-
+  user-select: text;
   th,
   td {
     padding: calc(var(--app-pane-padding) / 2) var(--app-pane-padding);
@@ -15,6 +15,7 @@
 
   table.vars {
     border: 1px solid var(--panel-divider-color);
+
     th {
       text-align: left;
       background-color: var(--panel-background-grey);

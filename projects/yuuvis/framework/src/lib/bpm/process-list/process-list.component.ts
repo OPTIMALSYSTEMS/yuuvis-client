@@ -1,7 +1,9 @@
 import { RowNode } from '@ag-grid-community/core';
 import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { TaskRow } from '@yuuvis/core';
+import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { ResponsiveTableData } from '../../components/responsive-data-table/responsive-data-table.interface';
+import { listModeDefault, listModeSimple } from '../../svg.generated';
 import { ResponsiveDataTableComponent, ViewMode } from './../../components/responsive-data-table/responsive-data-table.component';
 
 interface HeaderDetails {
@@ -70,13 +72,23 @@ export class ProcessListComponent {
   get viewMode(): ViewMode {
     return this._viewMode;
   }
+  showStatusFilter: boolean;
 
   @Input() showFooter = true;
+  @Input() statusFilter: 'all' | 'running' | 'completed' = 'all';
 
   @Output() selectedItem: EventEmitter<any> = new EventEmitter<any>();
   @Output() refreshList: EventEmitter<any> = new EventEmitter<any>();
+  @Output() statusFilterChange: EventEmitter<'all' | 'running' | 'completed'> = new EventEmitter<'all' | 'running' | 'completed'>();
 
-  constructor() {}
+  constructor(private iconRegistry: IconRegistryService) {
+    this.iconRegistry.registerIcons([listModeDefault, listModeSimple]);
+  }
+
+  setStatusFilter(statusFilter: 'all' | 'running' | 'completed') {
+    this.statusFilter = statusFilter;
+    this.statusFilterChange.emit(this.statusFilter);
+  }
 
   select(event) {
     this.selectedItem.emit(event);
@@ -84,5 +96,9 @@ export class ProcessListComponent {
 
   refresh() {
     this.refreshList.emit();
+  }
+
+  ngOnInit() {
+    this.showStatusFilter = this.statusFilterChange.observers && this.statusFilterChange.observers.length > 0;
   }
 }

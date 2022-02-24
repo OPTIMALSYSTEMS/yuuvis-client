@@ -67,6 +67,7 @@ export class FrameComponent implements OnInit, OnDestroy {
   settingsPlugins: Observable<any[]>;
 
   pendingAFOsQuery = this.frameService.pendingAFOsQuery;
+  sidebarShowRetentions: boolean;
 
   context: string;
   reloadComponent = true;
@@ -128,7 +129,7 @@ export class FrameComponent implements OnInit, OnDestroy {
     this.iconRegistry.registerIcons([help, search, drawer, refresh, add, userDisabled, offline, close, openContext]);
     this.userService.user$.subscribe((user: YuvUser) => {
       if (user) {
-        this.userService.isAdvancedUser;
+        this.sidebarShowRetentions = this.userService.isRetentionManager;
         this.checkedForLogoutRoute = !(!this.user || this.user.id !== user.id);
         this.disableCreate = !this.userService.canCreateObjects;
         this.enableTenantSwitch = user.authorities.includes(UserRoles.MULTI_TENANT);

@@ -14,6 +14,7 @@ export interface YuvConfig {
       level: 'debug' | 'error' | 'warn' | 'info';
     };
     permissions?: {
+      retentionManagerRole?: string;
       advancedUserRole?: string;
       manageSettingsRole?: string;
     };

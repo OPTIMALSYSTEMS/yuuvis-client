@@ -33,6 +33,8 @@ import { CellRenderer } from './grid.cellrenderer';
 export class GridService {
   private COLUMN_WIDTH_CACHE_KEY_BASE = 'yuv.grid.column.width';
 
+  static AGGREGATED_COLUMN_PREFIX = 'agg:';
+
   static isSortable(field: ObjectTypeField): boolean {
     const skipSort = [BaseObjectTypeField.CREATED_BY, BaseObjectTypeField.MODIFIED_BY].map((s) => s.toString());
     return field?.propertyType !== 'id' && !skipSort.includes(field?.id);
