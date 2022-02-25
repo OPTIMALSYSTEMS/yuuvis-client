@@ -79,7 +79,7 @@ export class CellRenderer {
 
   private static getSystemTagsRendererInput(param): { value: any[] } {
     return {
-      value: param.context.userService.hasAdminRole
+      value: param.context.userService.isAdvancedUser
         ? param.value || []
         : param.context.system.filterVisibleTags(param.data[BaseObjectTypeField.OBJECT_TYPE_ID], param.value)
     };
