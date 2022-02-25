@@ -274,8 +274,7 @@ export class TaskDetailsTaskComponent implements OnInit {
       },
       (err) => {
         this.busy = false;
-        console.error(err);
-        this.notificationService.error(this.translate.instant('yuv.framework.task-details-task.update.fail'));
+        this.processUpdateError(err);
       }
     );
   }
@@ -301,10 +300,29 @@ export class TaskDetailsTaskComponent implements OnInit {
       },
       (err) => {
         this.busy = false;
-        console.error(err);
-        this.notificationService.error(this.translate.instant('yuv.framework.task-details-task.update.fail'));
+        this.processUpdateError(err);
       }
     );
+  }
+
+  private processUpdateError(err: any): void {
+    if (err.status === 404) {
+      // task does not exist any more
+      this.popoverService
+        .confirm({
+          hideCancelButton: true,
+          message: this.translate.instant('yuv.framework.task-details-task.update.404.confirm.message')
+        })
+        .subscribe(() => {
+          this.taskUpdated.emit(this.task);
+          this.finishPending();
+          this.formState = null;
+          this.inboxService.fetchTasks();
+        });
+    } else {
+      console.error(err);
+      this.notificationService.error(this.translate.instant('yuv.framework.task-details-task.update.fail'));
+    }
   }
 
   resolve() {
@@ -318,8 +336,7 @@ export class TaskDetailsTaskComponent implements OnInit {
       },
       (err) => {
         this.busy = false;
-        console.error(err);
-        this.notificationService.error(this.translate.instant('yuv.framework.task-details-task.update.fail'));
+        this.processUpdateError(err);
       }
     );
   }
@@ -333,8 +350,7 @@ export class TaskDetailsTaskComponent implements OnInit {
       },
       (err) => {
         this.busy = false;
-        console.error(err);
-        this.notificationService.error(this.translate.instant('yuv.framework.task-details-task.update.fail'));
+        this.processUpdateError(err);
       }
     );
   }
@@ -348,8 +364,7 @@ export class TaskDetailsTaskComponent implements OnInit {
       },
       (err) => {
         this.busy = false;
-        console.error(err);
-        this.notificationService.error(this.translate.instant('yuv.framework.task-details-task.update.fail'));
+        this.processUpdateError(err);
       }
     );
   }
