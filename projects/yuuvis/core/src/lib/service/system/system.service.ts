@@ -464,7 +464,7 @@ export class SystemService {
       const staticSOTs: string[] = ot.secondaryObjectTypes.filter((sot) => sot.static).map((sot) => sot.id);
       staticSOTs.forEach((id) => {
         const sot = this.getSecondaryObjectType(id);
-        classifications = [...classifications, ...sot.classification];
+        classifications = sot?.classification ? [...classifications, ...sot.classification] : classifications;
       });
       this.resolvedClassificationsCache[objectTypeId] = classifications;
     }
