@@ -460,7 +460,7 @@ export class SystemService {
     let classifications: string[] = [];
     const ot = this.getObjectType(objectTypeId);
     if (ot) {
-      let classifications: string[] = ot.classification || [];
+      classifications = ot.classification || [];
       const staticSOTs: string[] = ot.secondaryObjectTypes.filter((sot) => sot.static).map((sot) => sot.id);
       staticSOTs.forEach((id) => {
         const sot = this.getSecondaryObjectType(id);
