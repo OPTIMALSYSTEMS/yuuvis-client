@@ -1,4 +1,4 @@
-import { BaseObjectTypeField, SearchFilter, SearchQuery, SecondaryObjectTypeClassification, Utils } from '@yuuvis/core';
+import { BaseObjectTypeField, Classification, SearchFilter, SearchQuery, SecondaryObjectTypeClassification, Utils } from '@yuuvis/core';
 import { noAccessTitle } from '../../shared/utils';
 
 /**
@@ -42,7 +42,7 @@ export class CellRenderer {
       ? value
           .map((v) => context.system.getSecondaryObjectType(v, true))
           .map((sot) => {
-            if (sot) {
+            if (sot && !sot.classification?.includes(Classification.SYSTEM_SOT)) {
               const cls = sot.classification?.includes(SecondaryObjectTypeClassification.PRIMARY) ? ' psot' : '';
               return `<div class="chip${cls}">${Utils.escapeHtml(sot.label)}</div>`;
             } else {
