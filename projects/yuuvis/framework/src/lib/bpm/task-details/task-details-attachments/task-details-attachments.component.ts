@@ -24,10 +24,12 @@ export class TaskDetailsAttachmentsComponent implements OnInit {
   constructor(private inboxService: InboxService) {}
 
   onAttachmentAdd(id: string) {
-    this._task.attachments = [...(this._task.attachments ? this._task.attachments : []), id];
-    this.updateAttachments().subscribe((res) => {
-      this.attachmentAdded.emit(id);
-    });
+    if (!this._task.attachments.includes(id)) {
+      this._task.attachments = [...(this._task.attachments ? this._task.attachments : []), id];
+      this.updateAttachments().subscribe((res) => {
+        this.attachmentAdded.emit(id);
+      });
+    }
   }
 
   onAttachmentRemove(id: string) {
