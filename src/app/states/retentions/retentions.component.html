@@ -15,8 +15,8 @@
 
             <yuv-search-result class="content" [query]="searchQuery" applyColumnConfig="true"
                 [columnConfig]="columnConfig" [preSelectItems]="selectedItems" [layoutOptionsKey]="layoutOptionsKey"
-                [filterPanelConfig]="filterPanelConfig" (filterPanelConfigChanged)="onFilterPanelConfigChanged($event)"
-                (itemsSelected)="select($event)" (rowDoubleClicked)="onRowDoubleClicked($event)">
+                [disableFilterPanel]="true" (itemsSelected)="select($event)"
+                (rowDoubleClicked)="onRowDoubleClicked($event)">
             </yuv-search-result>
         </yuv-panel>
         <yuv-action-menu [(visible)]="actionMenuVisible" [dark]="true" [selection]="actionMenuSelection">

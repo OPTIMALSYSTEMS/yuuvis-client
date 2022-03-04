@@ -72,14 +72,18 @@ export class RetentionsComponent implements OnInit {
               : destcructUntil >= 0
               ? this.translate.instant('yuv.client.state.retentions.renderer.status.indestruct', { d: destcructUntil })
               : this.translate.instant('yuv.client.state.retentions.renderer.status.pastdestruct', { d: destcructUntil * -1 });
-            return destcructUntil !== null
-              ? `<span title="${title}" class="chip red">${destcructUntil}h</span>`
-              : `<span title="${title}" class="chip ${p < 100 ? 'green' : 'red'}">${percentageDone}%</span>`;
+            return percentageDone || destcructUntil
+              ? destcructUntil !== null
+                ? `<span title="${title}" class="chip red">${destcructUntil}h</span>`
+                : `<span title="${title}" class="chip ${p < 100 ? 'green' : 'red'}">${percentageDone}%</span>`
+              : '';
           } else {
             return '';
           }
         })
       },
+      this.gridService.getColumnDefinition(this.systemService.system.allFields[BaseObjectTypeField.LEADING_OBJECT_TYPE_ID]),
+      this.gridService.getColumnDefinition(this.systemService.system.allFields[this.systemService.getBaseProperties().title]),
       this.gridService.getColumnDefinition(this.systemService.system.allFields[RetentionField.RETENTION_START]),
       this.gridService.getColumnDefinition(this.systemService.system.allFields[RetentionField.RETENTION_END]),
       this.gridService.getColumnDefinition(this.systemService.system.allFields[RetentionField.DESTRUCTION_DATE])
@@ -95,11 +99,6 @@ export class RetentionsComponent implements OnInit {
   select(items: string[]) {
     this.selectedItems = items;
     this.objectDetailsID = this.selectedItems[0];
-  }
-
-  onFilterPanelConfigChanged(cfg: FilterPanelConfig) {
-    this.filterPanelConfig = cfg;
-    this.layoutService.saveLayoutOptions(this.LAYOUT_STORAGE_KEY, 'filterPanelConfig', cfg).subscribe();
   }
 
   onRowDoubleClicked(rowEvent: RowEvent) {

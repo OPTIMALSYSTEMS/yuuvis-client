@@ -397,8 +397,6 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
           }
         }
         n.setSelected(true, index === 0);
-      } else {
-        // if node to be selected could not be found it may have been removed
       }
     });
   }
