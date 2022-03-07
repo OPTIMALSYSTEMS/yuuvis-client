@@ -2,11 +2,11 @@
   <yuv-icon class="header-icon" [icon]="header?.icon"></yuv-icon>
 
   <div class="status status-filters" *ngIf="showStatusFilter">
-    <button class="secondary" [ngClass]="{primary: statusFilter === 'all'}"
+    <button class="toggle-btn" [ngClass]="{active: statusFilter === 'all'}"
       (click)="setStatusFilter('all')">{{'yuv.framework.process.status.all.label'|translate}}</button>
-    <button class="secondary" [ngClass]="{primary: statusFilter === 'running'}"
+    <button class="toggle-btn" [ngClass]="{active: statusFilter === 'running'}"
       (click)="setStatusFilter('running')">{{'yuv.framework.process.status.running.label'|translate}}</button>
-    <button class="secondary" [ngClass]="{primary: statusFilter === 'completed'}"
+    <button class="toggle-btn" [ngClass]="{active: statusFilter === 'completed'}"
       (click)="setStatusFilter('completed')">{{'yuv.framework.process.status.completed.label'|translate}}</button>
   </div>
 

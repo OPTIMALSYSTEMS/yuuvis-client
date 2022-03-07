@@ -15,15 +15,6 @@
 
   .status-filters {
     display: flex;
-
-    button {
-      padding: 4px;
-      border-radius: 4px;
-      margin: 1px;
-      &.primary {
-        background-color: var(--text-color-caption);
-      }
-    }
   }
 
   .content {

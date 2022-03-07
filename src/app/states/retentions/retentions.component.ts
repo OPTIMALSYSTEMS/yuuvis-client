@@ -2,7 +2,7 @@ import { ColDef, RowEvent } from '@ag-grid-community/core';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { BaseObjectTypeField, DmsService, RetentionField, SearchFilter, SearchQuery, SystemService, SystemSOT, Utils } from '@yuuvis/core';
+import { BaseObjectTypeField, DmsService, RetentionField, SearchFilter, SearchQuery, SortOption, SystemService, SystemSOT, Utils } from '@yuuvis/core';
 import { FilterPanelConfig, GridService, LayoutService, PluginsService, SearchResultComponent } from '@yuuvis/framework';
 
 @Component({
@@ -16,6 +16,7 @@ export class RetentionsComponent implements OnInit {
   private STORAGE_KEY = 'yuv.app.retentions';
   private LAYOUT_STORAGE_KEY = `${this.STORAGE_KEY}.layout`;
   layoutOptionsKey = this.STORAGE_KEY;
+  currentFilter: string;
 
   filterPanelConfig: FilterPanelConfig;
   selectedItems: string[] = [];
@@ -110,19 +111,41 @@ export class RetentionsComponent implements OnInit {
   openActionMenu() {
     if (this.selectedItems) {
       this.loading = true;
-      this.dmsService.getDmsObjects(this.selectedItems).subscribe((items) => {
-        this.actionMenuSelection = items;
-        this.actionMenuVisible = true;
-        this.loading = false;
-      });
+      this.dmsService.getDmsObjects(this.selectedItems).subscribe(
+        (items) => {
+          this.actionMenuSelection = items;
+          this.actionMenuVisible = true;
+          this.loading = false;
+        },
+        (err) => {
+          this.loading = false;
+        }
+      );
     }
   }
 
-  ngOnInit(): void {
+  setFilter(filter: 'next' | 'destruct') {
+    this.currentFilter = filter;
+
     const q = new SearchQuery();
     q.fields = [RetentionField.RETENTION_START, RetentionField.RETENTION_END, RetentionField.DESTRUCTION_DATE];
     q.addFilter(new SearchFilter(BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS, SearchFilter.OPERATOR.IN, [SystemSOT.DESTRUCTION_RETENTION]));
     q.addFilter(new SearchFilter(RetentionField.RETENTION_START, SearchFilter.OPERATOR.EQUAL, null, null, true));
+
+    if (filter === 'next') {
+      // apply filter to only get the recent ending retention
+      const d = new Date();
+      q.addFilter(new SearchFilter(RetentionField.RETENTION_END, SearchFilter.OPERATOR.LESS_OR_EQUAL, d.setDate(d.getDate() + 30)));
+      q.addFilter(new SearchFilter(RetentionField.RETENTION_END, SearchFilter.OPERATOR.GREATER_OR_EQUAL, new Date()));
+    } else if (filter === 'destruct') {
+      // apply filter to only get the destruct ...
+      q.addFilter(new SearchFilter(RetentionField.RETENTION_END, SearchFilter.OPERATOR.LESS_OR_EQUAL, new Date()));
+    }
+    q.sortOptions = [new SortOption(RetentionField.RETENTION_END, 'asc')];
     this.searchQuery = q;
+  }
+
+  ngOnInit(): void {
+    this.setFilter('next');
   }
 }

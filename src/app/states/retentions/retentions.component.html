@@ -4,6 +4,17 @@
     <div class="retention-list yuv-master panel">
         <yuv-panel [title]="'yuv.client.state.retentions.title' | translate">
 
+
+            <div class="status">
+                <button class="toggle-btn" [ngClass]="{active: !currentFilter}"
+                    (click)="setFilter(null)">{{'yuv.client.state.retentions.list.filter.all'|translate}}</button>
+                <button class="toggle-btn" [ngClass]="{active: currentFilter === 'next'}"
+                    (click)="setFilter('next')">{{'yuv.client.state.retentions.list.filter.next'|translate}}</button>
+                <button class="toggle-btn" [ngClass]="{active: currentFilter === 'destruct'}"
+                    (click)="setFilter('destruct')">{{'yuv.client.state.retentions.list.filter.destruct'|translate}}</button>
+            </div>
+
+
             <yuv-action-menu-bar class="actions" yuvOfflineDisabled>
                 <yuv-icon (click)="refresh()" [title]="'yuv.framework.list.refresh' | translate"
                     class="button refresh-button" [icon]="'refresh'"></yuv-icon>
