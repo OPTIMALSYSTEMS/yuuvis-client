@@ -39,7 +39,7 @@ export class PredictionService {
    */
   supportsPrediction(objectTypeId: string): boolean {
     const ot: ObjectType = this.systemService.getObjectType(objectTypeId);
-    return ot && ot.classification?.includes(Classification.PREDICTION_CLASSIFY);
+    return ot && this.systemService.getResolvedClassifications(ot.id).includes(Classification.PREDICTION_CLASSIFY);
   }
 
   private mapPredictions(properties: any): {

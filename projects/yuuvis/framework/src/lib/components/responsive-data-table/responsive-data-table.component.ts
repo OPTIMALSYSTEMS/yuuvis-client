@@ -453,7 +453,12 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
         } else if (!event || selection.map((rowNode: RowNode) => rowNode.id).join() !== (this._currentSelection || []).join()) {
           this._currentSelection = selection.map((rowNode: RowNode) => rowNode.id);
           // ag-grid bug on mobile - issue with change detection after touch event
-          this._ngZone.run(() => this.selectionChanged.emit(selection.map((rowNode: RowNode) => rowNode.data)));
+          this._ngZone.run(() => {
+            this.selectionChanged.emit(selection.map((rowNode: RowNode) => rowNode.data));
+            if (this.selection?.length) {
+              this.ensureVisibility(selection[0].rowIndex);
+            }
+          });
         }
       },
       onColumnResized: (event) => this.columnResizeSource.next(),

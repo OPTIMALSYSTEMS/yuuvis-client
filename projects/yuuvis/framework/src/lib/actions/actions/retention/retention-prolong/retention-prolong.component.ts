@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { DmsObject, DmsService, RetentionField } from '@yuuvis/core';
 
 @Component({
@@ -11,6 +11,7 @@ import { DmsObject, DmsService, RetentionField } from '@yuuvis/core';
 export class RetentionProlongComponent implements OnInit {
   rtProlongForm: FormGroup;
   busy: boolean;
+  private initialRetentionEnd: Date;
 
   get rmExpirationDate() {
     return this.rtProlongForm.get('rmExpirationDate');
@@ -21,6 +22,7 @@ export class RetentionProlongComponent implements OnInit {
     this._selection = s;
     if (s?.length === 1) {
       const o = s[0];
+      this.initialRetentionEnd = o.data[RetentionField.RETENTION_END];
       this.rtProlongForm.patchValue({
         rmExpirationDate: o.data[RetentionField.RETENTION_END]
       });
@@ -31,8 +33,15 @@ export class RetentionProlongComponent implements OnInit {
 
   constructor(private dms: DmsService, private fb: FormBuilder) {
     this.rtProlongForm = this.fb.group({
-      rmExpirationDate: ['', Validators.required]
+      rmExpirationDate: ['', [Validators.required, this.afterInitialRetentionEndValidator()]]
     });
+  }
+
+  private afterInitialRetentionEndValidator(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const forbidden = this.initialRetentionEnd > control.value;
+      return forbidden ? { afterInitialRetentionEnd: { value: control.value } } : null;
+    };
   }
 
   submit() {

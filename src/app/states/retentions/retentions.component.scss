@@ -10,6 +10,14 @@
   }
 
   ::ng-deep {
+    .yuv-panel-wrapper > .header .status {
+      display: flex;
+      width: 100%;
+      justify-content: flex-end;
+    }
+  }
+
+  ::ng-deep {
     .ag-cell.aggDone {
       span {
         &.red {

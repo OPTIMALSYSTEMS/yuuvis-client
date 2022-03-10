@@ -19,6 +19,10 @@
         "fallback": true
       }
     ],
+    "permissions": {
+      "advancedUserRole": "TENANT_MANAGER",
+      "manageSettingsRole": "TENANT_MANAGER"
+    },
     "logging": {
       "level": "debug"
     }
