@@ -117,7 +117,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
   @Input() set selection(selection: string[]) {
     setTimeout(() => {
       this.selectRows(selection);
-      this.gridOptions.onSelectionChanged(null);
+      this.onSelectionChanged(null);
     }, 100);
   }
 
@@ -491,7 +491,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
     const colEl = ($event.composedPath ? $event.composedPath() : []).find((el) => el && el.getAttribute('col-id'));
     if (colEl) {
       this.selectRows([colEl.parentElement.getAttribute('row-id')], colEl.getAttribute('col-id'), false);
-      this.gridOptions.onSelectionChanged(null);
+      this.onSelectionChanged(null);
       console.log(colEl.parentElement.getAttribute('row-id'));
     }
   }
