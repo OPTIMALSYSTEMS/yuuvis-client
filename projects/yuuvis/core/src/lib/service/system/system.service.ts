@@ -464,7 +464,15 @@ export class SystemService {
       const staticSOTs: string[] = ot.secondaryObjectTypes.filter((sot) => sot.static).map((sot) => sot.id);
       staticSOTs.forEach((id) => {
         const sot = this.getSecondaryObjectType(id);
-        classifications = sot?.classification ? [...classifications, ...sot.classification] : classifications;
+        classifications = sot?.classification
+          ? [
+              ...classifications,
+              ...sot.classification.filter((c) => {
+                // also filter classifications that should not be inherited
+                return c !== ObjectTypeClassification.CREATE_FALSE && c !== ObjectTypeClassification.SEARCH_FALSE;
+              })
+            ]
+          : classifications;
       });
       this.resolvedClassificationsCache[objectTypeId] = classifications;
     }
