@@ -1,5 +1,6 @@
 import { Component, ElementRef, Input, NgZone, OnDestroy, OnInit } from '@angular/core';
-import { DmsObject, UploadService } from '@yuuvis/core';
+import { CommandPaletteService } from '@yuuvis/command-palette';
+import { DmsObject, TranslateService, UploadService } from '@yuuvis/core';
 import { fromEvent, Observable, of } from 'rxjs';
 import { switchMap, takeWhile, tap } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
@@ -7,6 +8,7 @@ import { IconRegistryService } from '../../common/components/icon/service/iconRe
 import { FileDropService } from '../../directives/file-drop/file-drop.service';
 import { IFrameComponent } from '../../plugins/iframe.component';
 import { PluginsService } from '../../plugins/plugins.service';
+import { ComponentStateService } from '../../services/component-state/component-state.service';
 import { folder, noFile, undock } from '../../svg.generated';
 import { ContentPreviewService } from './service/content-preview.service';
 
@@ -25,8 +27,11 @@ import { ContentPreviewService } from './service/content-preview.service';
   providers: [ContentPreviewService]
 })
 export class ContentPreviewComponent extends IFrameComponent implements OnInit, OnDestroy {
+  private CMP_KEY = 'yuv-content-preview.cmp.undock';
+
   private _dmsObject: DmsObject;
   isUndocked: boolean;
+  componentStateId: string;
 
   get undockWin(): Window {
     return ContentPreviewService.getUndockWin();
@@ -84,7 +89,10 @@ export class ContentPreviewComponent extends IFrameComponent implements OnInit, 
     elRef: ElementRef,
     pluginsService: PluginsService,
     public fileDropService: FileDropService,
+    private translate: TranslateService,
+    private componentStateService: ComponentStateService,
     private contentPreviewService: ContentPreviewService,
+    private cmpService: CommandPaletteService,
     private iconRegistry: IconRegistryService,
     private uploadService: UploadService,
     private _ngZone: NgZone
@@ -133,7 +141,20 @@ export class ContentPreviewComponent extends IFrameComponent implements OnInit, 
 
   ngOnInit() {
     this.previewSrc$.pipe(takeUntilDestroy(this)).subscribe((src) => this.open(src));
+    this.componentStateId = this.componentStateService.addComponentState('ContentPreviewComponent', {
+      actions: [
+        {
+          label: this.translate.instant('yuv.framework.object-details.tooltip.dock'),
+          callback: () => {
+            this.undock();
+          }
+        }
+      ]
+    });
   }
 
-  ngOnDestroy() {}
+  ngOnDestroy() {
+    this.componentStateService.removeComponentState(this.componentStateId);
+    this.cmpService.unregisterCommand(this.CMP_KEY);
+  }
 }

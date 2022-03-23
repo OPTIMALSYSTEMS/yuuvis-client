@@ -446,7 +446,8 @@ export class SearchFilter {
     INTERVAL_INCLUDE_BOTH: 'gtelte', // interval include left and right
     INTERVAL_INCLUDE_TO: 'gtlte', // interval include right
     INTERVAL_INCLUDE_FROM: 'gtelt', // interval include left
-    RANGE: 'rg' // aggegation ranges
+    RANGE: 'rg', // aggegation ranges
+    LIKE: 'like'
   };
 
   /**

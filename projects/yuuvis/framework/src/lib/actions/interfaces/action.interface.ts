@@ -15,6 +15,10 @@ export interface BaseAction {
  */
 export interface Action extends BaseAction {
   /**
+   * Equals the selector of the actions selector (will be set by the action service)
+   */
+  id?: string;
+  /**
    * label to be displayed inside the action menu
    */
   label: string;

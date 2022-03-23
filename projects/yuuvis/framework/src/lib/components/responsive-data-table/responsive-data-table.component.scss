@@ -13,6 +13,57 @@ $range-selection-highlight-color: $primary-color;
       display: flex;
     }
 
+    .copy-cell {
+      @keyframes copy-cell {
+        from {
+          background-color: var(--color-accent);
+        }
+        to {
+          background-color: none;
+        }
+      }
+
+      animation-name: copy-cell;
+      animation-duration: 4s;
+    }
+
+    .ag-cell {
+      &.yuvTaskSingleRowCell > span {
+        width: 100%;
+        height: 100%;
+        display: grid;
+        grid-template-rows: calc(var(--app-pane-padding) / 2) 1fr 1fr calc(var(--app-pane-padding) / 2);
+        grid-template-columns: calc(var(--app-pane-padding) / 2) 40px calc(var(--app-pane-padding) / 2) 1fr auto calc(var(--app-pane-padding) / 2);
+        grid-template-areas:
+          '. . . . . .'
+          '. ico . title due .'
+          '. ico . desc desc .'
+          '. . . . . .';
+
+        .icon {
+          grid-area: ico;
+          align-self: center;
+          justify-self: center;
+        }
+        .taskName {
+          grid-area: desc;
+          line-height: 2em;
+        }
+        .subject {
+          grid-area: title;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          align-self: end;
+          font-size: var(--font-subhead);
+          line-height: 1em;
+        }
+        .due-date {
+          grid-area: due;
+          align-self: baseline;
+        }
+      }
+    }
+
     //ag-grid checkboxes
     .ag-theme-balham .ag-checkbox-input-wrapper {
       font-size: 16px;
@@ -41,19 +92,8 @@ $range-selection-highlight-color: $primary-color;
         left: -9999px;
       }
 
-      &:active {
-        box-shadow: none;
-        background-color: rgba(255, 255, 255, 0.2);
-        color: var(--text-color-caption);
-        border-color: var(--text-color-caption);
-      }
-      &:focus-within {
-        box-shadow: none;
-        background-color: rgba(255, 255, 255, 0.2);
-        color: var(--text-color-caption);
-        border-color: var(--text-color-caption);
-        outline: 0;
-      }
+      &:active,
+      &:focus-within,
       &:focus {
         box-shadow: none;
         background-color: rgba(255, 255, 255, 0.2);
@@ -101,18 +141,8 @@ $range-selection-highlight-color: $primary-color;
         margin-left: -2px;
       }
 
-      &:active {
-        box-shadow: none;
-        background-color: rgba(255, 255, 255, 0.2);
-        color: var(--text-color-caption);
-        border-color: var(--text-color-caption);
-      }
-      &:focus-within {
-        box-shadow: none;
-        background-color: rgba(255, 255, 255, 0.2);
-        color: var(--text-color-caption);
-        border-color: var(--text-color-caption);
-      }
+      &:active,
+      &:focus-within,
       &:focus {
         box-shadow: none;
         background-color: rgba(255, 255, 255, 0.2);

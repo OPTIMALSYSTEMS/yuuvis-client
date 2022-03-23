@@ -15,8 +15,7 @@ export const AdministrationRoles = {
 };
 
 export const UserRoles = {
-  MULTI_TENANT: 'YUUVIS_MULTI_TENANT',
-  CREATE_OBJECT: 'YUUVIS_CREATE_OBJECT'
+  MULTI_TENANT: 'YUUVIS_MULTI_TENANT'
 };
 
 export const RetentionField = {
@@ -72,7 +71,8 @@ export const AuditField = {
   VERSION: 'system:versionNumber',
   DETAIL: 'system:detail',
   CREATED_BY: 'system:createdBy',
-  ACTION: 'system:action'
+  ACTION: 'system:action',
+  SUBACTION: 'system:subaction'
 };
 
 export const ParentField = {
@@ -101,6 +101,7 @@ export enum Classification {
   STRING_PHONE = 'phone',
   NUMBER_FILESIZE = 'filesize',
   NUMBER_DIGIT = 'digit',
+  BOOLEAN_SWITCH = 'switch',
   SYSTEM_SOT = 'systemsot',
   PREDICTION_CLASSIFY = 'prediction:classify',
   TABLE_SORTABLE = 'sortable'
@@ -125,7 +126,8 @@ export const InternalFieldType = {
   STRING_ORGANIZATION: 'string:organization',
   STRING_REFERENCE: 'string:reference',
   STRING_CATALOG: 'string:catalog',
-  STRING_DYNAMIC_CATALOG: 'string:catalog:dynamic'
+  STRING_DYNAMIC_CATALOG: 'string:catalog:dynamic',
+  BOOLEAN_SWITCH: 'boolean:switch'
 };
 
 export enum ObjectTag {

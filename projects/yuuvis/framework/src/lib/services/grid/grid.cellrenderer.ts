@@ -54,13 +54,14 @@ export class CellRenderer {
   }
 
   static systemTagsSummaryRenderer(param) {
+    const titleFnc = (tag, state?) => param.context.system.getLocalizedResource(`${tag}${state ? ':' + state : ''}_label`) || state || tag;
     const i = CellRenderer.getSystemTagsRendererInput(param);
     return i.value?.length
       ? `<table class="cellrenderer-tags">${i.value
           .map(
             (v) => `<tr>
-            <td class="tag_label">#${i.titleFnc(v[0])}</td>
-            <td class="state_label">${i.titleFnc(v[0], v[1] + '')}</td>
+            <td class="tag_label">#${titleFnc(v[0])}</td>
+            <td class="state_label">${titleFnc(v[0], v[1] + '')}</td>
             <td class="tag">${v[0]}</td>
             <td class="state">${v[1]}</td>
             <td class="date">${param.context.datePipe.transform(v[2], 'eoNiceShort')}</td>
@@ -71,14 +72,13 @@ export class CellRenderer {
   }
 
   static systemTagsCellRenderer(param) {
+    const titleFnc = (tag, state?) => param.context.system.getLocalizedResource(`${tag}${state ? ':' + state : ''}_label`) || state || tag;
     const i = CellRenderer.getSystemTagsRendererInput(param);
-    return i.value?.length ? i.value.map((v) => `<span class="chip">${i.titleFnc(v[0], v[1] + '')} (#${i.titleFnc(v[0])})</span>`).join('') : '';
+    return i.value?.length ? i.value.map((v) => `<span class="chip">${titleFnc(v[0], v[1] + '')} (#${titleFnc(v[0])})</span>`).join('') : '';
   }
 
-  private static getSystemTagsRendererInput(param): { titleFnc: Function; value: any[] } {
-    const titleFnc = (tag, state?) => param.context.system.getLocalizedResource(`${tag}${state ? ':' + state : ''}_label`) || state || tag;
+  private static getSystemTagsRendererInput(param): { value: any[] } {
     return {
-      titleFnc,
       value: param.context.userService.hasAdminRole
         ? param.value || []
         : param.context.system.filterVisibleTags(param.data[BaseObjectTypeField.OBJECT_TYPE_ID], param.value)
@@ -109,15 +109,23 @@ export class CellRenderer {
   }
 
   static booleanCellRenderer(param) {
-    let val = `<path class="null" d="M19,3H5C3.9,3,3,3.9,3,5v14c0,1.1,0.9,2,2,2h14c1.1,0,2-0.9,2-2V5C21,3.9,20.1,3,19,3z"/>`;
-
+    let cssValue = '';
     if (param.value === true || param.value === 'true') {
-      val = `<path class="outline" d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14z"/>
-               <polyline class="checkmark" points="6.3,11.8 7.8,10.3 10.8,13.3 16.3,7.8 17.8,9.3 10.8,16.3 6.3,11.8"/>`;
+      cssValue = ' true';
     } else if (param.value === false || param.value === 'false') {
-      val = `<path class="outline" d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14z"/>`;
+      cssValue = ' false';
     }
-    return `<div style="display:flex; align-items:center"><svg class="checkbox" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">${val}</svg></div>`;
+    return `<div class="yuv-cr-checkbox${cssValue}"></div>`;
+  }
+
+  static booleanSwitchCellRenderer(param) {
+    let cssValue = '';
+    if (param.value === true || param.value === 'true') {
+      cssValue = ' true';
+    } else if (param.value === false || param.value === 'false') {
+      cssValue = ' false';
+    }
+    return `<div class="yuv-cr-switch${cssValue}"></div>`;
   }
 
   static multiSelectCellRenderer(param: any) {

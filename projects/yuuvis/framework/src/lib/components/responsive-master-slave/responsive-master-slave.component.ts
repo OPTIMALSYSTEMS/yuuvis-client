@@ -96,8 +96,9 @@ export class ResponsiveMasterSlaveComponent implements OnDestroy, AfterViewInit 
 
   constructor(private screenService: ScreenService, private layoutService: LayoutService, private ngZone: NgZone) {
     this.screenService.screenChange$.pipe(takeUntilDestroy(this)).subscribe((screen: Screen) => {
+      const maximize = this.useSmallDeviceLayout === true && !screen.isSmall;
       this.useSmallDeviceLayout = screen.isSmall;
-      this.setDirection(this._direction, this._layoutOptions);
+      this.setDirection(maximize ? 'horizontal' : this._direction, this._layoutOptions);
     });
   }
 

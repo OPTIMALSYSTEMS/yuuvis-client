@@ -1,5 +1,6 @@
 <div class="{{item.class || ''}}">
-  <yuv-checkbox tabindex="-1" [(ngModel)]="selected" (ngModelChange)="toggleSelected($event)" [readonly]="disabled">
+  <yuv-checkbox class="small" tabindex="-1" [(ngModel)]="selected" (ngModelChange)="toggleSelected($event)"
+    [readonly]="disabled">
   </yuv-checkbox>
   <div class="label" (click)="!disabled && emitSelect()">
     <div class="title">{{item.label}}<span class="count" *ngIf="item.count">{{item.count}}</span></div>

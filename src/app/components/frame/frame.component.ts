@@ -9,16 +9,17 @@ import {
   ConnectionState,
   DmsService,
   EventService,
-  ObjectTag,
   SearchFilter,
   SearchQuery,
   TranslateService,
   UserRoles,
   UserService,
+  Utils,
   YuvEventType,
   YuvUser
 } from '@yuuvis/core';
 import {
+  help,
   IconRegistryService,
   LayoutService,
   LayoutSettings,
@@ -31,11 +32,12 @@ import {
   ScreenService,
   UploadResult
 } from '@yuuvis/framework';
-import { Observable } from 'rxjs';
-import { filter } from 'rxjs/operators';
+import { forkJoin, Observable } from 'rxjs';
+import { filter, map, switchMap } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { add, close, drawer, offline, refresh, search, userDisabled } from '../../../assets/default/svg/svg';
 import { AppSearchService } from '../../service/app-search.service';
+import { AboutService } from '../../states/about/service/about.service';
 import { FrameService } from './frame.service';
 
 @Component({
@@ -47,11 +49,6 @@ export class FrameComponent implements OnInit, OnDestroy {
   private LAYOUT_OPTIONS_KEY = 'yuv.client.yuv-frame';
   private LAYOUT_OPTIONS_ELEMENT_KEY = 'yuv-frame';
   @ViewChild('moveNotification') moveNotification: TemplateRef<any>;
-
-  // query for fetching pending AFOs
-  pendingAFOsQuery = JSON.stringify({
-    filters: [{ f: `system:tags[${ObjectTag.AFO}].state`, o: SearchFilter.OPERATOR.EQUAL, v1: 0 }]
-  });
 
   moveNoticeDialogSkip: boolean;
   swUpdateAvailable: boolean;
@@ -69,9 +66,12 @@ export class FrameComponent implements OnInit, OnDestroy {
   navigationPlugins: Observable<any[]>;
   settingsPlugins: Observable<any[]>;
 
+  pendingAFOsQuery = this.frameService.pendingAFOsQuery;
+
   context: string;
   reloadComponent = true;
-
+  initError: string;
+  docuLink: string;
   @HostListener('window:dragover', ['$event']) onDragOver(e) {
     if (!e.dataTransfer) {
       return;
@@ -94,6 +94,7 @@ export class FrameComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private layoutService: LayoutService,
     private update: SwUpdate,
+    private aboutService: AboutService,
     private appSearch: AppSearchService,
     private connectionService: ConnectionService,
     private authService: AuthService,
@@ -107,6 +108,15 @@ export class FrameComponent implements OnInit, OnDestroy {
     private pluginsService: PluginsService,
     private backend: BackendService
   ) {
+    this.docuLink = this.aboutService.getDocumentationLink();
+    const ie = this.authService.initError;
+    if (ie) {
+      this.initError =
+        ie.key === 'invalid_grant'
+          ? this.translateService.instant('yuv.client.frame.init.fail.invalidgrant')
+          : this.translateService.instant('yuv.client.frame.init.fail');
+    }
+
     this.pluginsService.getCustomPlugins('states').subscribe((states) => PluginGuard.updateRouter(router, states));
     this.navigationPlugins = this.pluginsService.getCustomPlugins('links', 'yuv-sidebar-navigation');
     this.settingsPlugins = this.pluginsService.getCustomPlugins('links', 'yuv-sidebar-settings');
@@ -115,11 +125,12 @@ export class FrameComponent implements OnInit, OnDestroy {
       this.moveNoticeDialogSkip = o?.moveNoticeDialogSkip || false;
     });
 
-    this.iconRegistry.registerIcons([search, drawer, refresh, add, userDisabled, offline, close, openContext]);
+    this.iconRegistry.registerIcons([help, search, drawer, refresh, add, userDisabled, offline, close, openContext]);
     this.userService.user$.subscribe((user: YuvUser) => {
       if (user) {
+        this.userService.isAdvancedUser;
         this.checkedForLogoutRoute = !(!this.user || this.user.id !== user.id);
-        this.disableCreate = !user.authorities.includes(UserRoles.CREATE_OBJECT);
+        this.disableCreate = !this.userService.canCreateObjects;
         this.enableTenantSwitch = user.authorities.includes(UserRoles.MULTI_TENANT);
         if (this.disableCreate) {
           this.disableFileDrop = true;
@@ -213,10 +224,13 @@ export class FrameComponent implements OnInit, OnDestroy {
     }
 
     const dbProperty = '--theme-background';
+    const dbSizeProperty = '--theme-background-size';
     if (settings.dashboardBackground) {
       body.style.setProperty(dbProperty, 'url("' + settings.dashboardBackground + '")', 'important');
+      body.style.setProperty(dbSizeProperty, 'cover', 'important');
     } else {
       body.style.removeProperty(dbProperty);
+      body.style.removeProperty(dbSizeProperty);
     }
   }
 
@@ -333,13 +347,41 @@ export class FrameComponent implements OnInit, OnDestroy {
         this.checkedForLogoutRoute = true;
         // redirect to the page the user logged out from the last time
         // but only if current route is not a deep link
-        if (this.userService.getCurrentUser && ['/dashboard', '/', ''].includes(this.router.routerState.snapshot.url)) {
-          this.frameService.getRouteOnLogout().subscribe((url) => {
-            if (url) this.router.navigateByUrl(url);
-          });
+        const ignoreRoutes = ['', 'dashboard', 'index.html'].map((s) => `${Utils.getBaseHref()}${s}`.replace('//', '/'));
+        const currentRoute = this.routeWithBaseHref(this.router.routerState.snapshot.url);
+
+        if (this.userService.getCurrentUser() && ignoreRoutes.includes(currentRoute)) {
+          // get persisted routes to decide where to redirect the logged in user to
+          forkJoin([
+            // route the user left the app the last time (on logout)
+            this.frameService.getRouteOnLogout(),
+            // route the user initially requested when entering the app (may be deep link from e.g. a link)
+            this.authService.getInitialRequestUri()
+          ])
+            .pipe(switchMap((res) => this.authService.resetInitialRequestUri().pipe(map((_) => res))))
+            .subscribe((res: { uri: string; timestamp: number }[]) => {
+              const logoutRes = res[0];
+              const loginRes = res[1] && !ignoreRoutes.includes(res[1].uri) ? res[1] : null;
+
+              if (logoutRes && loginRes) {
+                // got logout and initial uri
+                // redirect will happen based on which one has been saved last
+                this.router.navigateByUrl((logoutRes.timestamp > loginRes.timestamp ? logoutRes : loginRes).uri);
+              } else if (logoutRes) {
+                // got only logout uri
+                this.router.navigateByUrl(logoutRes.uri);
+              } else if (loginRes) {
+                // got only initial uri
+                this.router.navigateByUrl(loginRes.uri);
+              }
+            });
         }
       }
     });
+  }
+
+  private routeWithBaseHref(r: string): string {
+    return `${Utils.getBaseHref()}${r}`.replace('//', '/');
   }
 
   ngOnDestroy() {}

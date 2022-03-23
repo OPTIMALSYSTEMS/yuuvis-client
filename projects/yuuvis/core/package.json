@@ -1,6 +1,6 @@
 {
   "name": "@yuuvis/core",
-  "version": "2.2.2",
+  "version": "3.0.1",
   "author": "OPTIMAL SYSTEMS GmbH <npm@optimal-systems.de>",
   "license": "MIT",
   "scripts": {
@@ -17,7 +17,7 @@
     "@ngx-pwa/local-storage": "^10.1.0",
     "@ngx-translate/core": "^13.0.0",
     "ngx-device-detector": "^2.1.1",
-    "angular-oauth2-oidc": "^10.0.3",
+    "angular-oauth2-oidc": "^12.1.0",
     "tslib": "^2.0.0"
   }
 }

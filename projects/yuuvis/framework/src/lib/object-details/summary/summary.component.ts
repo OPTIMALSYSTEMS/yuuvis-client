@@ -4,7 +4,6 @@ import {
   AppCacheService,
   BaseObjectTypeField,
   Classification,
-  ClientDefaultsObjectTypeField,
   ContentStreamField,
   DmsObject,
   Logger,
@@ -66,7 +65,9 @@ export class SummaryComponent implements OnInit, OnDestroy {
   @Input()
   set dmsObject(dmsObject: DmsObject) {
     this.dmsObjectID = dmsObject?.id;
-    this.systemService.getDmsObjectForms(dmsObject, Situation.EDIT).subscribe((form) => {
+    // always loads form for the latest dmsObject
+    const obj = this.dmsObject2?.version > dmsObject.version ? this.dmsObject2 : dmsObject;
+    this.systemService.getDmsObjectForms(obj, Situation.EDIT).subscribe((form) => {
       this.coreFields = this.extractFields(form.main.elements[0]);
       this.summary = dmsObject ? this.generateSummary(dmsObject) : null;
     });
@@ -177,7 +178,7 @@ export class SummaryComponent implements OnInit, OnDestroy {
     const sotIndex: number[] = [];
     const systemsot: string[] = [];
     data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS]?.map(
-      (sot, index) => this.systemService.getSecondaryObjectType(sot).classification?.includes(classification) && sotIndex.unshift(index) && systemsot.push(sot)
+      (sot, index) => this.systemService.getSecondaryObjectType(sot)?.classification?.includes(classification) && sotIndex.unshift(index) && systemsot.push(sot)
     );
     sotIndex.forEach((value, index) => data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS].splice(value[index], 1));
     return { ...data, 'classification[systemsot]': systemsot };
@@ -230,8 +231,8 @@ export class SummaryComponent implements OnInit, OnDestroy {
 
         if (this.dmsObject2 && (si.value === si.value2 || this.isVersion(key))) {
           // skip equal and irrelevant values
-        } else if (defaultBaseFields.find((field) => field.key.startsWith(prepKey))) {
-          si.order = defaultBaseFields.find((field) => field.key.startsWith(prepKey)).order;
+        } else if (defaultBaseFields.find((field) => field.key === prepKey)) {
+          si.order = defaultBaseFields.find((field) => field.key === prepKey).order;
           summary.base.push(si);
           if (extraFields.includes(prepKey)) summary.extras.push(si); // TAGS exception
         } else if (extraFields.includes(prepKey)) {
@@ -246,13 +247,14 @@ export class SummaryComponent implements OnInit, OnDestroy {
           }
         }
       });
+    const bp = this.systemService.getBaseProperties();
 
     return {
       ...summary,
       base: summary.base.sort((a, b) => a.order - b.order),
       core: summary.core
-        .sort((a, b) => (a.key === ClientDefaultsObjectTypeField.DESCRIPTION ? -1 : b.key === ClientDefaultsObjectTypeField.DESCRIPTION ? 1 : 0))
-        .sort((a, b) => (a.key === ClientDefaultsObjectTypeField.TITLE ? -1 : b.key === ClientDefaultsObjectTypeField.TITLE ? 1 : 0))
+        .sort((a, b) => (a.key === bp.description ? -1 : b.key === bp.description ? 1 : 0))
+        .sort((a, b) => (a.key === bp.title ? -1 : b.key === bp.title ? 1 : 0))
     };
   }
 

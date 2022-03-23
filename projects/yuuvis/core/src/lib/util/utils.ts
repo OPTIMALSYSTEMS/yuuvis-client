@@ -267,7 +267,8 @@ export class Utils {
   }
 
   public static getBaseHref(removeTrailingSlash?: boolean) {
-    const baseHref = document.getElementsByTagName('base')[0].getAttribute('href');
+    const baseEl = document.getElementsByTagName('base')[0];
+    const baseHref = baseEl ? baseEl.getAttribute('href') : undefined;
     return baseHref ? (removeTrailingSlash ? baseHref.substr(0, baseHref.length - 1) : baseHref) : '';
   }
 

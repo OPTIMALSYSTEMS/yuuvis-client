@@ -1,6 +1,8 @@
 import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { SystemService } from '@yuuvis/core';
+import { ObjectTypePreset } from '@yuuvis/framework';
 import { FrameService } from '../../components/frame/frame.service';
 
 @Component({
@@ -12,8 +14,9 @@ import { FrameService } from '../../components/frame/frame.service';
 export class CreateComponent implements OnInit {
   context: string;
   files: File[];
+  objectTypePreset: ObjectTypePreset;
 
-  constructor(private location: Location, private frameService: FrameService, private route: ActivatedRoute) {}
+  constructor(private location: Location, private system: SystemService, private frameService: FrameService, private route: ActivatedRoute) {}
 
   onObjectCreated(createdObjectsIds: string[]) {
     this.location.back();
@@ -26,6 +29,12 @@ export class CreateComponent implements OnInit {
       if (files && files.length) {
         this.files = files;
       }
+    }
+    if (this.route.snapshot.queryParamMap.has('objectType')) {
+      this.objectTypePreset = {
+        objectType: this.system.getObjectType(decodeURIComponent(this.route.snapshot.queryParamMap.get('objectType'))),
+        data: {}
+      };
     }
   }
 }

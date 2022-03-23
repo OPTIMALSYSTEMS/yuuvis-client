@@ -2,13 +2,17 @@ import { Inject, Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map, switchMap, tap } from 'rxjs/operators';
 import { UserSettings, YuvUser } from '../../model/yuv-user.model';
+import { Utils } from '../../util/utils';
 import { BackendService } from '../backend/backend.service';
+import { BpmService } from '../bpm/bpm/bpm.service';
+import { AppCacheService } from '../cache/app-cache.service';
 import { CoreConfig } from '../config/core-config';
 import { CORE_CONFIG } from '../config/core-config.tokens';
 import { EventService } from '../event/event.service';
 import { YuvEventType } from '../event/events';
 import { SystemService } from '../system/system.service';
 import { UserService } from '../user/user.service';
+import { YuvInitError } from './auth.interface';
 
 /**
  * Service handling authentication related issues.
@@ -17,11 +21,15 @@ import { UserService } from '../user/user.service';
   providedIn: 'root'
 })
 export class AuthService {
+  private INITAL_REQUEST_STORAGE_KEY = 'yuv.core.auth.initialrequest';
+
   private authenticated: boolean;
   private authSource = new BehaviorSubject<boolean>(false);
   authenticated$: Observable<boolean> = this.authSource.asObservable();
 
   private authData: AuthData;
+  // set by core-init
+  initError: YuvInitError;
 
   /**
    * @ignore
@@ -30,6 +38,8 @@ export class AuthService {
     @Inject(CORE_CONFIG) public coreConfig: CoreConfig,
     private eventService: EventService,
     private userService: UserService,
+    private bpmService: BpmService,
+    private appCache: AppCacheService,
     private systemService: SystemService,
     private backend: BackendService
   ) {}
@@ -75,6 +85,34 @@ export class AuthService {
     this.eventService.trigger(YuvEventType.LOGOUT);
   }
 
+  // called on core init
+  setInitialRequestUri() {
+    const ignore = ['/', '/index.html'];
+    let uri = `${location.pathname}${location.search}`.replace(Utils.getBaseHref(), '');
+    uri = !uri.startsWith('/') ? `/${uri}` : uri;
+
+    if (!ignore.includes(uri)) {
+      this.appCache
+        .setItem(this.INITAL_REQUEST_STORAGE_KEY, {
+          uri: uri,
+          timestamp: Date.now()
+        })
+        .subscribe();
+    }
+  }
+
+  /**
+   * Get the URL that entered the app. May be a deep link that could then be
+   * picked up again after user has been authenticated.
+   */
+  getInitialRequestUri(): Observable<{ uri: string; timestamp: number }> {
+    return this.appCache.getItem(this.INITAL_REQUEST_STORAGE_KEY);
+  }
+
+  resetInitialRequestUri(): Observable<any> {
+    return this.appCache.removeItem(this.INITAL_REQUEST_STORAGE_KEY);
+  }
+
   /**
    * Initialize/setup the application for a given user. This involves fetching
    * settings and schema information.
@@ -85,6 +123,7 @@ export class AuthService {
       switchMap((userSettings: UserSettings) => {
         const currentUser = new YuvUser(userJson, userSettings);
         this.userService.setCurrentUser(currentUser);
+        this.bpmService.init();
         this.authData = {
           tenant: currentUser.tenant,
           language: currentUser.getClientLocale()

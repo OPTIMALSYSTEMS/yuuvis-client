@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { ErrorHandler, ModuleWithProviders, NgModule } from '@angular/core';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CoreConfig, CORE_CONFIG, CUSTOM_CONFIG, YuvCoreModule, YuvCoreSharedModule } from '@yuuvis/core';
 import { AngularSplitModule } from 'angular-split';
 import { ToastrModule } from 'ngx-toastr';
@@ -62,7 +61,7 @@ const modules = [
  */
 
 @NgModule({
-  imports: [CommonModule, BrowserAnimationsModule, ...modules, AngularSplitModule.forRoot(), YuvCoreModule.forRoot(), ToastrModule.forRoot()],
+  imports: [CommonModule, ...modules, AngularSplitModule.forRoot(), YuvCoreModule.forRoot(), ToastrModule.forRoot()],
   exports: [YuvDirectivesModule, ...modules, YuvObjectFormModule, YuvContextModule, YuvCoreModule, AngularSplitModule, ToastrModule],
   providers: [
     {

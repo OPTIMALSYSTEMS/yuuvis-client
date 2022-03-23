@@ -4,7 +4,6 @@ import {
   BaseObjectTypeField,
   Classification,
   ClassificationEntry,
-  ClientDefaultsObjectTypeField,
   SearchFilter,
   SearchQuery,
   SearchQueryProperties,
@@ -44,6 +43,7 @@ import { ReferenceEntry } from './reference.interface';
 })
 export class ReferenceComponent implements ControlValueAccessor, AfterViewInit {
   @ViewChild('autocomplete') autoCompleteInput: AutoComplete;
+  private objectTypeBaseProperties = this.systemService.getBaseProperties();
   noAccessTitle = noAccess;
   minLength = 2;
 
@@ -138,22 +138,20 @@ export class ReferenceComponent implements ControlValueAccessor, AfterViewInit {
    */
   @Input() searchFnc = (term = ''): SearchQueryProperties | SearchQuery => ({ ...this.queryJson, term: `*${term}*` });
 
-  @Input() titleField = ClientDefaultsObjectTypeField.TITLE;
-
-  @Input() descriptionField = ClientDefaultsObjectTypeField.DESCRIPTION;
-
   /**
    * Function to map SearchResult to ReferenceItem
    */
-  @Input() referenceItemFnc = (i: any) => ({
-    id: i?.fields.get(BaseObjectTypeField.OBJECT_ID),
-    objectTypeId: i?.fields.get(BaseObjectTypeField.OBJECT_TYPE_ID),
-    leadingObjectTypeId: i?.fields.get(BaseObjectTypeField.LEADING_OBJECT_TYPE_ID),
-    // title and description may not be present
-    title: i?.fields.get(this.titleField) || i.fields.get(BaseObjectTypeField.OBJECT_ID),
-    description: i?.fields.get(this.descriptionField) || '',
-    data: i?.fields || new Map()
-  });
+  @Input() referenceItemFnc = (i: any) => {
+    return {
+      id: i?.fields.get(BaseObjectTypeField.OBJECT_ID),
+      objectTypeId: i?.fields.get(BaseObjectTypeField.OBJECT_TYPE_ID),
+      leadingObjectTypeId: i?.fields.get(BaseObjectTypeField.LEADING_OBJECT_TYPE_ID),
+      // title and description may not be present
+      title: i?.fields.get(this.objectTypeBaseProperties.title) || i.fields.get(BaseObjectTypeField.OBJECT_ID),
+      description: i?.fields.get(this.objectTypeBaseProperties.description) || '',
+      data: i?.fields || new Map()
+    };
+  };
 
   /**
    * Emitted once an object has been selected
@@ -167,8 +165,8 @@ export class ReferenceComponent implements ControlValueAccessor, AfterViewInit {
         BaseObjectTypeField.OBJECT_ID,
         BaseObjectTypeField.OBJECT_TYPE_ID,
         BaseObjectTypeField.LEADING_OBJECT_TYPE_ID,
-        this.titleField,
-        this.descriptionField,
+        this.objectTypeBaseProperties.title,
+        this.objectTypeBaseProperties.description,
         ...this.objectTypeFields
       ],
       filters: this.filters,
@@ -232,7 +230,11 @@ export class ReferenceComponent implements ControlValueAccessor, AfterViewInit {
         // some of the IDs could not be retrieved (no permission or deleted)
         const x = Utils.arrayToObject(res.items, (o) => o.fields.get(BaseObjectTypeField.OBJECT_ID));
         return ids.map((id) =>
-          this.referenceItemFnc(x[id] || { fields: new Map(Object.entries({ [BaseObjectTypeField.OBJECT_ID]: id, [this.titleField]: this.noAccessTitle })) })
+          this.referenceItemFnc(
+            x[id] || {
+              fields: new Map(Object.entries({ [BaseObjectTypeField.OBJECT_ID]: id, [this.systemService.getBaseProperties().title]: this.noAccessTitle }))
+            }
+          )
         );
       })
     );

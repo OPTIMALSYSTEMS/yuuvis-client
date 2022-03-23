@@ -8,12 +8,14 @@ export interface AuditEntry {
   action: number;
   actionGroup: number;
   detail: string;
+  subaction?: number;
   creationDate: Date;
   version: number;
   createdBy: {
     id: string;
     title: string;
   };
+  more?: string;
 }
 /**
  * Interface for a result object of a former audits query
@@ -45,6 +47,10 @@ export interface AuditQueryOptions {
    * List of actions (codes) to restricts the audits to
    */
   actions?: string[];
+  /**
+   * Custom audit entries (subactions of audits with action code 10000)
+   */
+  customActions?: string[];
   /**
    * Actions that should explicitly NOT be fetched
    */

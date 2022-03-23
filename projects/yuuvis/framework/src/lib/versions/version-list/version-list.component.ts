@@ -1,8 +1,19 @@
 import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
-import { BaseObjectTypeField, ClientDefaultsObjectTypeField, ContentStreamField, DmsObject, DmsService, RetentionField, TranslateService } from '@yuuvis/core';
+import {
+  BaseObjectTypeField,
+  ContentStreamField,
+  DmsObject,
+  DmsService,
+  EventService,
+  RetentionField,
+  SystemService,
+  TranslateService,
+  YuvEvent,
+  YuvEventType
+} from '@yuuvis/core';
 import { forkJoin, Observable, of } from 'rxjs';
 import { tap } from 'rxjs/operators';
+import { takeUntilDestroy } from 'take-until-destroy';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { ResponsiveDataTableComponent, ViewMode } from '../../components';
 import { ResponsiveTableData } from '../../components/responsive-data-table/responsive-data-table.interface';
@@ -29,6 +40,7 @@ import { arrowNext, edit, listModeDefault, listModeGrid, listModeSimple, refresh
 export class VersionListComponent implements OnInit {
   @ViewChild('dataTable') dataTable: ResponsiveDataTableComponent;
 
+  private objectTypeBaseProperties = this.system.getBaseProperties();
   private COLUMN_CONFIG_SKIP_FIELDS = [
     ...Object.keys(RetentionField).map((k) => RetentionField[k]),
     BaseObjectTypeField.CREATED_BY,
@@ -122,10 +134,11 @@ export class VersionListComponent implements OnInit {
 
   constructor(
     public translate: TranslateService,
-    private fb: FormBuilder,
+    private system: SystemService,
     private dmsService: DmsService,
     private iconRegistry: IconRegistryService,
-    private gridService: GridService
+    private gridService: GridService,
+    private eventService: EventService
   ) {
     this.iconRegistry.registerIcons([edit, arrowNext, refresh, versions, listModeDefault, listModeGrid, listModeSimple]);
   }
@@ -154,7 +167,7 @@ export class VersionListComponent implements OnInit {
 
   private getColumnDefinitions(objectTypeId: string) {
     const defs = this.gridService.getColumnDefinitions(objectTypeId).filter((d) => !this.COLUMN_CONFIG_SKIP_FIELDS.includes(d.field));
-    const coreColumnIds = [BaseObjectTypeField.VERSION_NUMBER, ClientDefaultsObjectTypeField.TITLE, ClientDefaultsObjectTypeField.DESCRIPTION];
+    const coreColumnIds = [BaseObjectTypeField.VERSION_NUMBER, this.objectTypeBaseProperties.title, this.objectTypeBaseProperties.description];
     // fetching column definitions we need to be aware that title and description may not be present
     const coreColumns = coreColumnIds.map((f) => defs.find((d) => d.field === f)).filter((def) => !!def);
     coreColumns[0].pinned = true;
@@ -165,7 +178,7 @@ export class VersionListComponent implements OnInit {
     this.editRecentClick.emit(this.dmsObjectID);
   }
 
-  refresh() {
+  refresh(versions = null) {
     this.error = null;
     if (this.dmsObjectID) {
       this.dmsService.getDmsObjectVersions(this.dmsObjectID).subscribe(
@@ -186,12 +199,14 @@ export class VersionListComponent implements OnInit {
             this.selection.push(this.getRowNodeId(sorted[1].version));
           }
 
+          if (versions) this.versions = versions;
+
           const setter = this.responsiveTableData?.set || ((t) => t);
           this.tableData = setter.call(this, {
             columns: this.getColumnDefinitions(objectTypeId),
             rows: sorted.map((a) => a.data),
-            titleField: ClientDefaultsObjectTypeField.TITLE,
-            descriptionField: ClientDefaultsObjectTypeField.DESCRIPTION,
+            titleField: this.objectTypeBaseProperties.title,
+            descriptionField: this.objectTypeBaseProperties.description,
             selectType: 'multiple',
             gridOptions: { getRowNodeId: (o) => this.getRowNodeId(o), rowMultiSelectWithClick: false },
             ...(this.responsiveTableData || {})
@@ -212,5 +227,17 @@ export class VersionListComponent implements OnInit {
   ngOnInit() {
     // only enable edit button if somone subscribed to the output emitter
     this.enableEdit = !!this.editRecentClick.observers.length;
+    this.eventService
+      .on(YuvEventType.DMS_OBJECT_UPDATED)
+      .pipe(takeUntilDestroy(this))
+      .subscribe((e: YuvEvent) => {
+        const dmsObject = e.data as DmsObject;
+        // reload versions when update belongs to the current dms object
+        if (dmsObject.id === this.dmsObjectID) {
+          this.refresh([dmsObject.version]);
+        }
+      });
   }
+
+  ngOnDestroy(): void {}
 }

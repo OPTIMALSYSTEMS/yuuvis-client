@@ -1,4 +1,4 @@
-<ng-container *ngIf="!invalidUser">
+<ng-container>
   <div yuvOfflineDisabled class="yuv-object-create panel" [yuvBusyOverlay]="state.busy" *ngIf="state$ | async as state"
     cdkTrapFocus>
     <header>
@@ -68,7 +68,7 @@
                 <yuv-file-picker [label]="'yuv.framework.object-create.step.file.choose' | translate" [output]="'file'"
                   [disabled]="afoType && files.length > 0" [multiple]="!afoType" (fileSelected)="fileChosen($event)">
                 </yuv-file-picker>
-                <button class="primary" (click)="fileSelectContinue()"
+                <button autofocus class="primary" (click)="fileSelectContinue()"
                   [disabled]="selectedObjectType.contentStreamAllowed === 'required' && files?.length === 0">
                   {{ 'yuv.framework.object-create.step.file.continue' | translate }}
                 </button>

@@ -1,7 +1,7 @@
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TranslateModule, YuvCoreModule } from '@yuuvis/core';
 import { YuvCommonModule } from '../common/common.module';
 import { YuvComponentsModule } from '../components/components.module';
@@ -39,6 +39,7 @@ const components = [
 @NgModule({
   imports: [
     CommonModule,
+    ReactiveFormsModule,
     FormsModule,
     YuvObjectFormModule,
     YuvPipesModule,

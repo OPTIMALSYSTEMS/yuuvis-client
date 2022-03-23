@@ -1,6 +1,18 @@
 const PROXY_CONFIG = [
   {
-    context: ['/api/**', '/api-web/**', '/dashlet365/**', '/office365/**', '/predict-api/**', '/tenant/**', '/login**', '/oauth/**', '/auth/**', '/logout**'],
+    context: [
+      '/bpm-engine/**',
+      '/api/**',
+      '/api-web/**',
+      '/dashlet365/**',
+      '/office365/**',
+      '/predict-api/**',
+      '/tenant/**',
+      '/login**',
+      '/oauth/**',
+      '/auth/**',
+      '/logout**'
+    ],
     target: 'http://127.0.0.1:4300/',
     changeOrigin: true,
     secure: false,

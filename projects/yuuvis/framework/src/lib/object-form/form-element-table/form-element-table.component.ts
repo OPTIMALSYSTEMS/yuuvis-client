@@ -1,7 +1,7 @@
 import { ClientSideRowModelModule } from '@ag-grid-community/client-side-row-model';
 import { ColDef, GridOptions, Module } from '@ag-grid-community/core';
 import { CsvExportModule } from '@ag-grid-community/csv-export';
-import { Component, forwardRef, Input, NgZone, TemplateRef, ViewChild } from '@angular/core';
+import { Component, forwardRef, HostListener, Input, NgZone, TemplateRef, ViewChild } from '@angular/core';
 import { ControlValueAccessor, FormControl, NG_VALIDATORS, NG_VALUE_ACCESSOR, Validator } from '@angular/forms';
 import { Classification, PendingChangesService, SystemService } from '@yuuvis/core';
 import { takeUntil } from 'rxjs/operators';
@@ -96,6 +96,14 @@ export class FormElementTableComponent extends UnsubscribeOnDestroy implements C
     this.innerValue = v;
     this.updateTableValueAndRunChangeDetection();
   };
+
+  @HostListener('keydown.control.alt.shift.c', ['$event'])
+  @HostListener('keydown.control.shift.c', ['$event'])
+  @HostListener('keydown.control.alt.c', ['$event'])
+  @HostListener('keydown.control.c', ['$event'])
+  copyCellHandler(event: KeyboardEvent) {
+    this.gridApi.copyToClipboard(event, this.gridOptions);
+  }
 
   constructor(
     private ngZone: NgZone,

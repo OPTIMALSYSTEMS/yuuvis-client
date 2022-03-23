@@ -5,7 +5,7 @@
   <div class="top">
     <yuv-quick-search *ngIf="reloadComponent" #quickSearch [query]="appQuery"
       (typeAggregation)="onTypeAggregation($event)" (queryReset)="onQuickSearchReset()"
-      (querySubmit)="onQuickSearchQuery($event)"></yuv-quick-search>
+      (querySubmit)="onQuickSearchQuery($event)" autofocus="true"></yuv-quick-search>
 
     <yuv-grouped-select #aggs class="aggs" *ngIf="aggs?.length" [toggleable]="false" [enableSelectAll]="false"
       [multiple]="false" [groups]="aggsGroups" (select)="applyAggregation($event)">

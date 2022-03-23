@@ -24,6 +24,7 @@
       font-size: var(--font-title);
       font-weight: var(--font-weight-normal);
       color: var(--text-color-caption);
+      white-space: normal;
     }
   }
 
@@ -32,12 +33,14 @@
     border-bottom: 1px solid var(--panel-background-grey);
     form {
       display: flex;
+      flex-flow: row wrap;
       margin: 0 -2px;
       padding: 0 var(--app-pane-padding) var(--app-pane-padding) var(--app-pane-padding);
 
       input {
         flex: 1;
         margin: 0 2px;
+        padding: 0.5em;
         border: 1px solid var(--panel-divider-color);
         background-color: var(--panel-background);
         color: var(--text-color-body);
@@ -86,6 +89,9 @@
       .value {
         flex: 1;
         padding: 0 var(--app-pane-padding);
+        display: inline-block;
+        text-overflow: ellipsis;
+        overflow: hidden;
       }
 
       > button {

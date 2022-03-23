@@ -1,5 +1,5 @@
 <yuv-process-attachments [enableAdd]="!disabled" [enableOrder]="!disabled && _task?.attachments?.length > 1"
-    [enableRemove]="!disabled" (attachmentAdd)="onAttachmentAdd($event)"
+    keepPrimary="true" [enableRemove]="!disabled" (attachmentAdd)="onAttachmentAdd($event)"
     (attachmentOpenExternal)="attachmentOpenExternal.emit($event)"
     (attachmentOrderChange)="onAttachmentOrderChange($event)" (attachmentRemove)="onAttachmentRemove($event)"
     [attachments]="_task?.attachments" [layoutOptionsKey]="layoutOptionsKey"></yuv-process-attachments>

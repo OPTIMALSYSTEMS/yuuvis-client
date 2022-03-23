@@ -1,8 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { ConfigService, Sort, TranslateService, Utils } from '@yuuvis/core';
+import { ConfigService, Sort, TranslateService, UserService, Utils } from '@yuuvis/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { AboutData, AboutDocuConfig, Libraries, ProductDetails } from '../about.data.interface';
+import { AboutData, Libraries, ProductDetails } from '../about.data.interface';
 import { About, AboutInfo } from '../about.enum';
 
 @Injectable({
@@ -16,10 +16,6 @@ export class AboutService {
   private productDetails: ProductDetails[] = [];
   private productDetailsSubject: BehaviorSubject<ProductDetails[]> = new BehaviorSubject<ProductDetails[]>(this.productDetails);
   productDetails$: Observable<ProductDetails[]> = this.productDetailsSubject.asObservable();
-
-  private aboutConfig: string = null;
-  private aboutConfigSubject: BehaviorSubject<string> = new BehaviorSubject<string>(this.aboutConfig);
-  aboutConfig$: Observable<string> = this.aboutConfigSubject.asObservable();
 
   licenses = [
     {
@@ -68,14 +64,10 @@ export class AboutService {
     }
   ];
 
-  constructor(private http: HttpClient, private configService: ConfigService, private translate: TranslateService) {}
+  constructor(private http: HttpClient, private userService: UserService, private configService: ConfigService, private translate: TranslateService) {}
 
   private getUserLanguage(language: string[], userLang: string): string {
     return language.includes(userLang) ? userLang : About.defaultLang;
-  }
-
-  getAboutConfig(userLang) {
-    this.generateDocumentationLink(this.configService.get('client.docu'), userLang);
   }
 
   getAboutData() {
@@ -89,12 +81,15 @@ export class AboutService {
     );
   }
 
-  generateDocumentationLink(docuConfig: AboutDocuConfig, userLang) {
-    const { language, link, version } = docuConfig;
-    userLang = this.getUserLanguage(language, userLang);
-    const docuLink = link.replace('###userLang###', userLang);
-
-    this.aboutConfigSubject.next(docuLink);
+  getDocumentationLink(): string {
+    const clientDocu = this.configService.get('client.docu');
+    if (clientDocu) {
+      const { language, link } = clientDocu;
+      const userLang = this.getUserLanguage(language, this.userService.getCurrentUser().getClientLocale());
+      return link.replace('###userLang###', userLang);
+    } else {
+      return null;
+    }
   }
 
   generateLicenses(data: Libraries[]) {

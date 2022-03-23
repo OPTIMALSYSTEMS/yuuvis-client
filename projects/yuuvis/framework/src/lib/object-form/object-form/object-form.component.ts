@@ -72,7 +72,7 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
   public formOptions: ObjectFormOptions;
   public defaultFormOptions: ObjectFormOptions;
   // the actual form instance
-  public form;
+  public form: ObjectFormGroup;
   // property for holding the forms data used for comparison when a form-changed-event
   // is fetched to indicate wher or not the indexdata were changed or just the properties
   // of the form elements (eg. form script setting fields to readonly)
@@ -114,7 +114,7 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
   }
 
   private initOptions() {
-    this.options = this.defaultFormOptions;
+    this.options = cloneDeep(this.defaultFormOptions);
   }
 
   private initScriptingScope(formOptions, dataFormModel) {

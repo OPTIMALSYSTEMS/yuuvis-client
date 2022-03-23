@@ -9,7 +9,6 @@ import {
   SearchQuery,
   SystemService,
   TranslateService,
-  UserRoles,
   UserService,
   YuvEventType,
   YuvUser
@@ -161,7 +160,7 @@ export class ContextComponent implements OnInit, OnDestroy {
   ) {
     this.iconRegistry.registerIcons([edit, settings, refresh, kebap]);
     this.userService.user$.subscribe((user: YuvUser) => {
-      this.fileDropOptions.disabled = !user.authorities.includes(UserRoles.CREATE_OBJECT);
+      this.fileDropOptions.disabled = !this.userService.canCreateObjects;
     });
 
     this.fileDropOptions.label = this.translate.instant('yuv.framework.context.filedrop.label');
