@@ -6,10 +6,12 @@ import { HttpClient } from '@angular/common/http';
 import localeAr from '@angular/common/locales/ar';
 import localeBn from '@angular/common/locales/bn';
 import localeDe from '@angular/common/locales/de';
+import localeDeCh from '@angular/common/locales/de-CH';
 import localeEs from '@angular/common/locales/es';
 import localeExtraAr from '@angular/common/locales/extra/ar';
 import localeExtraBn from '@angular/common/locales/extra/bn';
 import localeExtraDe from '@angular/common/locales/extra/de';
+import localeExtraDeCh from '@angular/common/locales/extra/de-CH';
 import localeExtraEs from '@angular/common/locales/extra/es';
 import localeExtraFr from '@angular/common/locales/extra/fr';
 import localeExtraHi from '@angular/common/locales/extra/hi';
@@ -65,6 +67,7 @@ export class EoxTranslateJsonLoader implements TranslateLoader {
     registerLocaleData(localeKo, 'ko', localeExtraKo); // Korean
     registerLocaleData(localeHi, 'hi', localeExtraHi); // Hindi
     registerLocaleData(localeBn, 'bn', localeExtraBn); // Bengalese
+    registerLocaleData(localeDeCh, 'de-CH', localeExtraDeCh); // German Swiss
   }
 
   /**
