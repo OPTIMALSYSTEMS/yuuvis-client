@@ -117,7 +117,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
   @Input() set selection(selection: string[]) {
     setTimeout(() => {
       this.selectRows(selection);
-      this.gridOptions.onSelectionChanged(null);
+      this.onSelectionChanged(null);
     }, 100);
   }
 
@@ -438,38 +438,39 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
       rowSelection: this._data.selectType || 'single',
       suppressNoRowsOverlay: true,
       multiSortKey: 'ctrl',
-
+      ...this._data?.gridOptions,
       frameworkComponents: {
         objectTypeCellRenderer: ObjectTypeIconComponent,
-        singleCellRenderer: SingleCellRendererComponent
-      },
-
-      // EVENTS - add event callback handlers
-      onSelectionChanged: (event) => {
-        const focused = this.gridOptions.api?.getFocusedCell() || { rowIndex: -1 };
-        const selection = this.gridOptions.api.getSelectedNodes().sort((n) => (n.rowIndex === focused.rowIndex ? -1 : 0));
-        if (this.selectionLimit && selection.length > this.selectionLimit) {
-          selection.forEach((node, i) => i >= this.selectionLimit && node.setSelected(false));
-        } else if (!event || selection.map((rowNode: RowNode) => rowNode.id).join() !== (this._currentSelection || []).join()) {
-          this._currentSelection = selection.map((rowNode: RowNode) => rowNode.id);
-          // ag-grid bug on mobile - issue with change detection after touch event
-          this._ngZone.run(() => {
-            this.selectionChanged.emit(selection.map((rowNode: RowNode) => rowNode.data));
-            if (this.selection?.length) {
-              this.ensureVisibility(selection[0].rowIndex);
-            }
-          });
-        }
-      },
-      onColumnResized: (event) => this.columnResizeSource.next(),
-      onSortChanged: (event) => this.isStandard && this.sortChanged.emit(this.getSortModel()),
-      onGridReady: (event) => {
-        this.setSortModel(this._data.sortModel || []);
-        this.gridOptions.api.setFocusedCell(0, this.focusField);
-      },
-      onRowDoubleClicked: (event) => this.rowDoubleClicked.emit(event),
-      ...(this._data && this._data.gridOptions)
+        singleCellRenderer: SingleCellRendererComponent,
+        ...this._data?.gridOptions?.frameworkComponents
+      }
     };
+  }
+
+  onSelectionChanged(event) {
+    const focused = this.gridOptions.api?.getFocusedCell() || { rowIndex: -1 };
+    const selection = this.gridOptions.api.getSelectedNodes().sort((n) => (n.rowIndex === focused.rowIndex ? -1 : 0));
+    if (this.selectionLimit && selection.length > this.selectionLimit) {
+      selection.forEach((node, i) => i >= this.selectionLimit && node.setSelected(false));
+    } else if (!event || selection.map((rowNode: RowNode) => rowNode.id).join() !== (this._currentSelection || []).join()) {
+      this._currentSelection = selection.map((rowNode: RowNode) => rowNode.id);
+      // ag-grid bug on mobile - issue with change detection after touch event
+      this._ngZone.run(() => {
+        this.selectionChanged.emit(selection.map((rowNode: RowNode) => rowNode.data));
+        if (this.selection?.length) {
+          this.ensureVisibility(selection[0].rowIndex);
+        }
+      });
+    }
+  }
+
+  onRowDoubleClicked = (event) => this.rowDoubleClicked.emit(event);
+  onColumnResized = (event) => this.columnResizeSource.next();
+  onSortChanged = (event) => this.isStandard && this.sortChanged.emit(this.getSortModel());
+
+  onGridReady(event) {
+    this.setSortModel(this._data.sortModel || []);
+    this.gridOptions.api.setFocusedCell(0, this.focusField);
   }
 
   onMouseDown($event: MouseEvent | any) {
@@ -490,7 +491,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
     const colEl = ($event.composedPath ? $event.composedPath() : []).find((el) => el && el.getAttribute('col-id'));
     if (colEl) {
       this.selectRows([colEl.parentElement.getAttribute('row-id')], colEl.getAttribute('col-id'), false);
-      this.gridOptions.onSelectionChanged(null);
+      this.onSelectionChanged(null);
       console.log(colEl.parentElement.getAttribute('row-id'));
     }
   }
