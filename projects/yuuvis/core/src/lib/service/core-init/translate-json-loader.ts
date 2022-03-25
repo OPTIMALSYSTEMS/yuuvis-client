@@ -76,7 +76,18 @@ export class EoxTranslateJsonLoader implements TranslateLoader {
    * @returns Observable<Object>
    */
   getTranslation(lang: string): Observable<Object> {
-    const t = this.config.translations.map((path) => this.http.get(`${Utils.getBaseHref()}${path}${lang}.json`).pipe(catchError((e) => of({}))));
+    const t = this.config.translations.map((path) => this.loadTranslationFile(path, lang));
     return forkJoin(t).pipe(map((res) => res.reduce((acc, x) => Object.assign(acc, x), {})));
+  }
+
+  private loadTranslationFile(path: string, lang: string): Observable<any> {
+    return this.http.get(`${Utils.getBaseHref()}${path}${lang}.json`).pipe(
+      catchError((e) => {
+        // ISO codes with more than 2 characters are sub-languages like de-CH.
+        // If there is no translation file for that sub-language we'll try to load
+        // the file for the base language (in this case de).
+        return lang.length > 2 ? this.loadTranslationFile(path, lang.substring(0, 2)) : of({});
+      })
+    );
   }
 }
