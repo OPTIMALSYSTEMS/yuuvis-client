@@ -269,6 +269,7 @@
   "yuv.framework.process.status.completed.label": "Completed",
   "yuv.framework.process.status.running.label": "Running",
   "yuv.framework.process.status.suspended.label": "Suspended",
+  "yuv.framework.process.status.termfilter.submit": "Filter",
   "yuv.framework.process.type.follow-up.defaultProcessName": "Follow-up",
   "yuv.framework.process.type.follow-up.defaultTaskDescription": "This is a reminder to view this attachment.",
   "yuv.framework.process.type.follow-up.defaultTaskName": "View",

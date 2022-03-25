@@ -76,6 +76,10 @@ export class InboxComponent implements OnInit, OnDestroy {
     window.open(uri);
   }
 
+  onTermFilterChange(term) {
+    console.log(term);
+  }
+
   ngOnInit(): void {
     this.getInbox();
     this.eventService
