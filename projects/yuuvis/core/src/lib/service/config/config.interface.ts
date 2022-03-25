@@ -22,6 +22,10 @@ export interface YuvConfig {
       titleProperty?: string;
       descriptionProperty?: string;
     };
+    app?: {
+      // tasks are loaded in chunks. InboxPageSize defines the size of those chunks
+      inboxPageSize?: number;
+    };
   };
   oidc?: OpenIdConfig;
 }

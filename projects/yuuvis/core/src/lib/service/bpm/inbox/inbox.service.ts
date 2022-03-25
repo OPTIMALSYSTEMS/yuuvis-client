@@ -3,6 +3,7 @@ import { EMPTY, Observable, ReplaySubject } from 'rxjs';
 import { expand, map, skipWhile, tap } from 'rxjs/operators';
 import { ApiBase } from '../../backend/api.enum';
 import { BackendService } from '../../backend/backend.service';
+import { ConfigService } from '../../config/config.service';
 import { UserService } from '../../user/user.service';
 import { ProcessAction, ProcessPostPayload, Task } from '../model/bpm.model';
 import { BpmService } from './../bpm/bpm.service';
@@ -20,7 +21,7 @@ export class InboxService {
   private inboxDataSource = new ReplaySubject<Task[]>(1);
   public inboxData$: Observable<Task[]> = this.inboxDataSource.asObservable();
 
-  constructor(private bpmService: BpmService, private userService: UserService, private backendService: BackendService) {}
+  constructor(private bpmService: BpmService, private config: ConfigService, private userService: UserService, private backendService: BackendService) {}
 
   /**
    * bpm Inbox data Loading status
@@ -68,7 +69,8 @@ export class InboxService {
   }
 
   private getPage(requestParams: string, index?: number) {
-    return this.bpmService.getProcesses(`/bpm/tasks?size=${this.INBOX_PAGE_SIZE}&sort=createTime&page=${index || 0}${requestParams}`);
+    const pageSize = this.config.get('core.app.inboxPageSize') || this.INBOX_PAGE_SIZE;
+    return this.bpmService.getProcesses(`/bpm/tasks?size=${pageSize}&sort=createTime&page=${index || 0}${requestParams}`);
   }
 
   /**

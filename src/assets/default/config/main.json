@@ -25,6 +25,9 @@
     },
     "logging": {
       "level": "debug"
+    },
+    "app": {
+      "inboxPageSize": 200
     }
   },
   "client": {
