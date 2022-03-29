@@ -32,7 +32,6 @@ export class InboxComponent implements OnInit, OnDestroy {
   detailsTask: Task;
   inboxData$: Observable<ResponsiveTableData> = this.inboxService.inboxData$.pipe(
     map((taskData: Task[]) => {
-      // TODO: Filter by term if set
       const td = this.filterTerm
         ? taskData.filter((t: Task) => {
             const l = this.system.getLocalizedResource(`${t.name}_label`);
@@ -41,7 +40,6 @@ export class InboxComponent implements OnInit, OnDestroy {
         : taskData;
       return this.formatProcessDataService.formatTaskDataForTable([...td]);
     })
-    // map((taskData: ResponsiveTableData) => (taskData.rows.length ? taskData : null))
   );
   loading$: Observable<boolean> = this.inboxService.loadingInboxData$;
 

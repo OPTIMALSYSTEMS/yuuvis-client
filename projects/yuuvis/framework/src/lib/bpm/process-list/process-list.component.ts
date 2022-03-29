@@ -100,7 +100,6 @@ export class ProcessListComponent {
 
   filterByTerm() {
     this.appliedTermFilter = this.termFilterForm.value.term;
-    console.log(this.termFilterForm.value.term);
     this.termFilterChange.emit(this.appliedTermFilter);
   }
 

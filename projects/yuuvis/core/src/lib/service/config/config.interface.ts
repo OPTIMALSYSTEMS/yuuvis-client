@@ -25,6 +25,7 @@ export interface YuvConfig {
     app?: {
       // tasks are loaded in chunks. InboxPageSize defines the size of those chunks
       inboxPageSize?: number;
+      processesPageSize?: number;
     };
   };
   oidc?: OpenIdConfig;
