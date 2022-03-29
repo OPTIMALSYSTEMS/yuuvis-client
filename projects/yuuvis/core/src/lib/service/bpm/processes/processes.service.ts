@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, EMPTY, forkJoin, Observable } from 'rxjs';
 import { expand, map, skipWhile, tap } from 'rxjs/operators';
+import { ConfigService } from '../../config/config.service';
 import { BpmService } from '../bpm/bpm.service';
 import { FetchProcessOptions, FetchTaskOptions, FollowUpVars, Process, ProcessCreatePayload, ProcessDefinitionKey, Task } from '../model/bpm.model';
 
@@ -24,7 +25,7 @@ export class ProcessService {
   private processSource = new BehaviorSubject<Process[]>([]);
   public processData$: Observable<Process[]> = this.processSource.asObservable();
 
-  constructor(private bpmService: BpmService) {}
+  constructor(private bpmService: BpmService, private config: ConfigService) {}
 
   /**
    * bpm Process data Loading status
@@ -76,7 +77,9 @@ export class ProcessService {
   }
 
   private getPage(requestParams: string, index?: number) {
-    return this.bpmService.getProcesses(`${this.bpmProcessUrl}?size=${this.PROCESSES_PAGE_SIZE}
+    const pageSize = this.config.get('core.app.processesPageSize') || this.PROCESSES_PAGE_SIZE;
+
+    return this.bpmService.getProcesses(`${this.bpmProcessUrl}?size=${pageSize}
     &page=${index || 0}&${requestParams}`);
   }
 

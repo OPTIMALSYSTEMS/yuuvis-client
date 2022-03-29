@@ -27,7 +27,8 @@
       "level": "debug"
     },
     "app": {
-      "inboxPageSize": 200
+      "inboxPageSize": 200,
+      "processesPageSize": 200
     }
   },
   "client": {
