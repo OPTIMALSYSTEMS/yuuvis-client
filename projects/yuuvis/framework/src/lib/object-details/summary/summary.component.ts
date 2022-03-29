@@ -213,6 +213,9 @@ export class SummaryComponent implements OnInit, OnDestroy {
     this._objectData = this.restructureByClassification(dmsObject.data, Classification.SYSTEM_SOT);
     if (this.dmsObject2) {
       this._objectData2 = this.restructureByClassification(this.dmsObject2.data, Classification.SYSTEM_SOT);
+      // for versions comparison tags do not make sense
+      delete this._objectData[BaseObjectTypeField.TAGS];
+      delete this._objectData2[BaseObjectTypeField.TAGS];
     }
 
     const { skipFields, parentFields, extraFields, defaultBaseFields } = this.getSummaryConfiguration(dmsObject);
