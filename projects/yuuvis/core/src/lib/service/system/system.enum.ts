@@ -122,7 +122,8 @@ export enum Classification {
 // classifications applied to object types
 export enum ObjectTypeClassification {
   SEARCH_FALSE = 'appClient:search:false',
-  CREATE_FALSE = 'appClient:create:false'
+  CREATE_FALSE = 'appClient:create:false',
+  OBJECT_TYPE_ICON = 'appClient:icon'
 }
 
 // classifications applied to secondary object types
