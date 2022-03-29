@@ -101,11 +101,13 @@ export class ProcessListComponent {
   filterByTerm() {
     this.appliedTermFilter = this.termFilterForm.value.term;
     console.log(this.termFilterForm.value.term);
+    this.termFilterChange.emit(this.appliedTermFilter);
   }
 
   resetTermFilter() {
     this.appliedTermFilter = null;
     this.termFilterForm.patchValue({ term: null });
+    this.termFilterChange.emit(null);
   }
 
   select(event) {

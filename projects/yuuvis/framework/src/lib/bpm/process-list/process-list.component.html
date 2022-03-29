@@ -9,7 +9,7 @@
       <button type="button" class="clear" [ngClass]="{visible: !!appliedTermFilter}" (click)="resetTermFilter()">
         <yuv-icon icon="clear"></yuv-icon>
       </button>
-      <button type="submit" class="secondary">{{'yuv.framework.process.status.termfilter.submit'|translate}}</button>
+      <button type="submit">{{'yuv.framework.process.status.termfilter.submit'|translate}}</button>
     </form>
 
     <div class="status-filters" *ngIf="showStatusFilter">

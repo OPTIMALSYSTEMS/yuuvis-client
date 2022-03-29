@@ -12,7 +12,8 @@ import {
   listModeSimple,
   PluginsService,
   refresh,
-  ResponsiveTableData
+  ResponsiveTableData,
+  SystemService
 } from '@yuuvis/framework';
 import { Observable } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
@@ -30,8 +31,17 @@ export class InboxComponent implements OnInit, OnDestroy {
   selectedTasks: TaskRow[];
   detailsTask: Task;
   inboxData$: Observable<ResponsiveTableData> = this.inboxService.inboxData$.pipe(
-    map((taskData: Task[]) => this.formatProcessDataService.formatTaskDataForTable(taskData)),
-    map((taskData: ResponsiveTableData) => (taskData.rows.length ? taskData : null))
+    map((taskData: Task[]) => {
+      // TODO: Filter by term if set
+      const td = this.filterTerm
+        ? taskData.filter((t: Task) => {
+            const l = this.system.getLocalizedResource(`${t.name}_label`);
+            return (t.subject && t.subject.toLowerCase().indexOf(this.filterTerm) !== -1) || (l && l.toLowerCase().indexOf(this.filterTerm) !== -1);
+          })
+        : taskData;
+      return this.formatProcessDataService.formatTaskDataForTable([...td]);
+    })
+    // map((taskData: ResponsiveTableData) => (taskData.rows.length ? taskData : null))
   );
   loading$: Observable<boolean> = this.inboxService.loadingInboxData$;
 
@@ -42,6 +52,7 @@ export class InboxComponent implements OnInit, OnDestroy {
   };
 
   plugins: any;
+  filterTerm: string;
 
   constructor(
     private inboxService: InboxService,
@@ -50,6 +61,7 @@ export class InboxComponent implements OnInit, OnDestroy {
     private iconRegistry: IconRegistryService,
     private eventService: EventService,
     private frameService: FrameService,
+    private system: SystemService,
     private pluginsService: PluginsService
   ) {
     this.plugins = this.pluginsService.getCustomPlugins('extensions', 'yuv-inbox');
@@ -77,7 +89,8 @@ export class InboxComponent implements OnInit, OnDestroy {
   }
 
   onTermFilterChange(term) {
-    console.log(term);
+    this.filterTerm = term;
+    this.inboxService.reEmitInboxData();
   }
 
   ngOnInit(): void {

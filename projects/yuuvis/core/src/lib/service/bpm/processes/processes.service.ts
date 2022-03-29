@@ -20,6 +20,7 @@ export class ProcessService {
 
   private readonly bpmProcessUrl = '/bpm/processes';
 
+  private processData: Process[] = [];
   private processSource = new BehaviorSubject<Process[]>([]);
   public processData$: Observable<Process[]> = this.processSource.asObservable();
 
@@ -47,8 +48,17 @@ export class ProcessService {
     const mergedOptions = { ...defaultOptions, ...options };
     const params = Object.keys(mergedOptions).map((k) => `${k}=${mergedOptions[k]}`);
     this.getAllPages(params.join('&'))
-      .pipe(tap((res: Process[]) => this.processSource.next(res.reverse())))
+      .pipe(
+        tap((res: Process[]) => {
+          this.processData = [...res.reverse()];
+          this.processSource.next(this.processData);
+        })
+      )
       .subscribe();
+  }
+
+  reEmitProcessData() {
+    this.processSource.next(this.processData);
   }
 
   private getAllPages(requestParams: string): Observable<Process[]> {

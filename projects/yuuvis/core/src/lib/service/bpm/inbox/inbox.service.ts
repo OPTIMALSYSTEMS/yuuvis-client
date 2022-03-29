@@ -18,6 +18,7 @@ import { BpmService } from './../bpm/bpm.service';
 export class InboxService {
   private INBOX_PAGE_SIZE = 100;
 
+  private inboxData: Task[] = [];
   private inboxDataSource = new ReplaySubject<Task[]>(1);
   public inboxData$: Observable<Task[]> = this.inboxDataSource.asObservable();
 
@@ -40,10 +41,16 @@ export class InboxService {
   fetchTasks(includeProcessVar = true): void {
     this.getTasksPaged({ includeProcessVariables: includeProcessVar })
       .pipe(
-        tap((res: Task[]) => this.inboxDataSource.next([...res.reverse()])),
-        map((res: Task[]) => res)
+        tap((res: Task[]) => {
+          this.inboxData = [...res.reverse()];
+          this.inboxDataSource.next(this.inboxData);
+        })
       )
       .subscribe();
+  }
+
+  reEmitInboxData() {
+    this.inboxDataSource.next(this.inboxData);
   }
 
   private getTasksPaged(options?: { active?: boolean; includeProcessVariables?: boolean; processInstanceId?: string }) {

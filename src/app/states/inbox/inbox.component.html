@@ -1,5 +1,5 @@
 <ng-container [yuvTitle]="('yuv.client.state.inbox.title' | translate)"></ng-container>
-<section class="inbox-wrapper" *ngIf="inboxData$ | async as inboxData; else empty">
+<section class="inbox-wrapper" *ngIf="inboxData$ | async as inboxData">
   <yuv-responsive-master-slave class="state" [layoutOptionsKey]="layoutOptionsKey" [slaveActive]="!!detailsTask"
     (slaveClosed)="onSlaveClosed()">
     <yuv-process-list class="yuv-master panel" [showFooter]="true" [headerDetails]="headerDetails"
@@ -15,8 +15,3 @@
     </section>
   </yuv-responsive-master-slave>
 </section>
-
-<ng-template #empty>
-  <yuv-process-list-empty [state]="'inbox'" [headerDetails]="headerDetails" [loading]="loading$"
-    [message]="'yuv.client.state.inbox.list.empty'| translate" (refresh)="refreshList()"></yuv-process-list-empty>
-</ng-template>
