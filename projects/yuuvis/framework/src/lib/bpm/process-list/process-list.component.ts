@@ -1,9 +1,10 @@
 import { RowNode } from '@ag-grid-community/core';
 import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { FormControl, FormGroup } from '@angular/forms';
 import { TaskRow } from '@yuuvis/core';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { ResponsiveTableData } from '../../components/responsive-data-table/responsive-data-table.interface';
-import { listModeDefault, listModeSimple } from '../../svg.generated';
+import { clear, listModeDefault, listModeSimple, refresh } from '../../svg.generated';
 import { ResponsiveDataTableComponent, ViewMode } from './../../components/responsive-data-table/responsive-data-table.component';
 
 interface HeaderDetails {
@@ -73,6 +74,7 @@ export class ProcessListComponent {
     return this._viewMode;
   }
   showStatusFilter: boolean;
+  showTermFilter: boolean;
 
   @Input() showFooter = true;
   @Input() statusFilter: 'all' | 'running' | 'completed' = 'all';
@@ -80,14 +82,31 @@ export class ProcessListComponent {
   @Output() selectedItem: EventEmitter<any> = new EventEmitter<any>();
   @Output() refreshList: EventEmitter<any> = new EventEmitter<any>();
   @Output() statusFilterChange: EventEmitter<'all' | 'running' | 'completed'> = new EventEmitter<'all' | 'running' | 'completed'>();
+  @Output() termFilterChange: EventEmitter<string> = new EventEmitter<string>();
+
+  termFilterForm: FormGroup = new FormGroup({
+    term: new FormControl('')
+  });
+  appliedTermFilter: string;
 
   constructor(private iconRegistry: IconRegistryService) {
-    this.iconRegistry.registerIcons([listModeDefault, listModeSimple]);
+    this.iconRegistry.registerIcons([listModeDefault, listModeSimple, refresh, clear]);
   }
 
   setStatusFilter(statusFilter: 'all' | 'running' | 'completed') {
     this.statusFilter = statusFilter;
     this.statusFilterChange.emit(this.statusFilter);
+  }
+
+  filterByTerm() {
+    this.appliedTermFilter = this.termFilterForm.value.term;
+    this.termFilterChange.emit(this.appliedTermFilter);
+  }
+
+  resetTermFilter() {
+    this.appliedTermFilter = null;
+    this.termFilterForm.patchValue({ term: null });
+    this.termFilterChange.emit(null);
   }
 
   select(event) {
@@ -99,6 +118,7 @@ export class ProcessListComponent {
   }
 
   ngOnInit() {
+    this.showTermFilter = this.termFilterChange.observers && this.termFilterChange.observers.length > 0;
     this.showStatusFilter = this.statusFilterChange.observers && this.statusFilterChange.observers.length > 0;
   }
 }

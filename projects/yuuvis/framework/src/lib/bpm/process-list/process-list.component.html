@@ -1,13 +1,27 @@
 <yuv-panel class="process-list" [title]="header?.title" [description]="header?.description">
   <yuv-icon class="header-icon" [icon]="header?.icon"></yuv-icon>
 
-  <div class="status status-filters" *ngIf="showStatusFilter">
-    <button class="toggle-btn" [ngClass]="{active: statusFilter === 'all'}"
-      (click)="setStatusFilter('all')">{{'yuv.framework.process.status.all.label'|translate}}</button>
-    <button class="toggle-btn" [ngClass]="{active: statusFilter === 'running'}"
-      (click)="setStatusFilter('running')">{{'yuv.framework.process.status.running.label'|translate}}</button>
-    <button class="toggle-btn" [ngClass]="{active: statusFilter === 'completed'}"
-      (click)="setStatusFilter('completed')">{{'yuv.framework.process.status.completed.label'|translate}}</button>
+  <div class="status">
+
+    <form class="term-filter" [formGroup]="termFilterForm" (ngSubmit)="filterByTerm()" *ngIf="showTermFilter">
+      <!-- TODO: add text input -->
+      <yuv-string formControlName="term"></yuv-string>
+      <button type="button" class="clear" [ngClass]="{visible: !!appliedTermFilter}" (click)="resetTermFilter()">
+        <yuv-icon icon="clear"></yuv-icon>
+      </button>
+      <button type="submit">{{'yuv.framework.process.status.termfilter.submit'|translate}}</button>
+    </form>
+
+    <div class="status-filters" *ngIf="showStatusFilter">
+
+      <button class="toggle-btn" [ngClass]="{active: statusFilter === 'all'}"
+        (click)="setStatusFilter('all')">{{'yuv.framework.process.status.all.label'|translate}}</button>
+      <button class="toggle-btn" [ngClass]="{active: statusFilter === 'running'}"
+        (click)="setStatusFilter('running')">{{'yuv.framework.process.status.running.label'|translate}}</button>
+      <button class="toggle-btn" [ngClass]="{active: statusFilter === 'completed'}"
+        (click)="setStatusFilter('completed')">{{'yuv.framework.process.status.completed.label'|translate}}</button>
+
+    </div>
   </div>
 
   <div class="actions" yuvOfflineDisabled>
