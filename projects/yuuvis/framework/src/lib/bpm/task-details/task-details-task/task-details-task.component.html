@@ -67,7 +67,8 @@
 
             <!-- confirm -->
             <ng-container *ngIf="!outcomes; else tplOutcomeActions">
-                <button *ngIf="_task?.delegationState !== 'pending' && (!claimable || _task.assignee)" class="primary"
+                <button [disabled]="formState?.invalid"
+                    *ngIf="_task?.delegationState !== 'pending' && (!claimable || _task.assignee)" class="primary"
                     (click)="confirm()">
                     {{'yuv.framework.task-details-task.button.confirm'|translate}}
                 </button>
