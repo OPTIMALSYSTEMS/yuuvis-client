@@ -19,16 +19,8 @@
         "fallback": true
       }
     ],
-    "permissions": {
-      "advancedUserRole": "TENANT_MANAGER",
-      "manageSettingsRole": "TENANT_MANAGER"
-    },
     "logging": {
       "level": "debug"
-    },
-    "app": {
-      "inboxPageSize": 200,
-      "processesPageSize": 200
     }
   },
   "client": {
