@@ -262,6 +262,7 @@ export class PluginsService {
   }
 
   extendTranslations(lang: string = this.translate.currentLang) {
+    // TODO: respect sub-languages
     const translations = (this.customPlugins?.translations || {})[lang];
     this.configService.extendTranslations(translations, lang);
   }
