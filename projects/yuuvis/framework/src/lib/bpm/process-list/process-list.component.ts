@@ -50,7 +50,9 @@ export class ProcessListComponent {
     this.totalNumItems = data ? data.rows.length : 0;
 
     if (this.dataTable && rowsToBeSelected.length) {
-      let index = rowsToBeSelected[0].rowIndex;
+      // try to find index by ID first
+      const rowNode = this.dataTable.gridOptions.api.getRowNode(rowsToBeSelected[0].data.id);
+      let index = rowNode ? rowNode.rowIndex : rowsToBeSelected[0].rowIndex;
       if (index >= data.rows.length) index = data.rows.length - 1;
       setTimeout(() => {
         this.dataTable.gridOptions.api.selectIndex(index, false, false);
