@@ -111,7 +111,7 @@ export class SearchFilterConfigComponent implements OnInit {
   }
 
   isEmpty(filter = this.selectedFilter) {
-    return filter && filter.id && SearchFilterGroup.fromArray(filter.value || []).isEmpty();
+    return filter?.id && SearchFilterGroup.fromQuery(SearchFilterGroup.fromArray(filter.value || []).toShortQuery()).isEmpty();
   }
 
   createNew(value: (SearchFilter | SearchFilterGroup)[] = []) {
