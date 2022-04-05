@@ -436,7 +436,7 @@
   "yuv.client.state.result.title": "Suchergebnis",
   "yuv.client.state.retentions.list.filter.all": "Alle",
   "yuv.client.state.retentions.list.filter.destruct": "Zu entfernen",
-  "yuv.client.state.retentions.list.filter.next": "Nächsten Monat",
+  "yuv.client.state.retentions.list.filter.next": "Nächster Monat",
   "yuv.client.state.retentions.renderer.status.indestruct": "Das Objekt wird in {{d}} Stunde(n) ausgesondert.",
   "yuv.client.state.retentions.renderer.status.inretention": "{{p}} % des Aufbewahrungszeitraums vergangen",
   "yuv.client.state.retentions.renderer.status.pastdestruct": "Das Objekt hätte vor {{d}} Stunde(n) ausgesondert worden sein sollen.",
