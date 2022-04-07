@@ -28,10 +28,14 @@ export class ProcessesComponent implements OnInit, OnDestroy {
   contextError: string;
   selectedProcess: Process;
   processData$: Observable<ResponsiveTableData> = this.processService.processData$.pipe(
-    map((processData: Process[]) =>
-      this.formatProcessDataService.formatProcessDataForTable(processData, ['type', 'subject', 'startTime', 'status', 'endTime'])
-    ),
-    map((taskData: ResponsiveTableData) => (taskData.rows.length ? taskData : null))
+    map((processData: Process[]) => {
+      const pd = this.filterTerm
+        ? processData.filter((t: Process) => {
+            return t.subject && t.subject.toLowerCase().indexOf(this.filterTerm) !== -1;
+          })
+        : processData;
+      return this.formatProcessDataService.formatProcessDataForTable(pd, ['type', 'subject', 'startTime', 'status', 'endTime']);
+    })
   );
   loading$: Observable<boolean> = this.processService.loadingProcessData$;
   statusFilter;
@@ -42,6 +46,7 @@ export class ProcessesComponent implements OnInit, OnDestroy {
     icon: 'process'
   };
   plugins: any;
+  filterTerm: string;
 
   constructor(
     private processService: ProcessService,
@@ -57,6 +62,11 @@ export class ProcessesComponent implements OnInit, OnDestroy {
 
   selectedItem(items: ProcessRow[]) {
     this.selectedProcess = items?.length ? items[0].originalData : null;
+  }
+
+  onTermFilterChange(term) {
+    this.filterTerm = term;
+    this.processService.reEmitProcessData();
   }
 
   refreshList() {

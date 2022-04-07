@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, EventEmitter, forwardRef, HostBinding, HostListener, Input, Output, ViewChild } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { UserService, YuvUser } from '@yuuvis/core';
+import { Classification, SystemService, UserService, YuvUser } from '@yuuvis/core';
 import { AutoComplete } from 'primeng/autocomplete';
 import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
@@ -45,6 +45,7 @@ export class OrganizationComponent implements ControlValueAccessor, AfterViewIni
     return this._innerValue;
   }
   autocompleteRes: YuvUser[] = [];
+  private filterRoles: string[] = [];
 
   // prevent ENTER from being propagated, because the component could be located
   // inside some other component that also relys on ENTER
@@ -66,7 +67,24 @@ export class OrganizationComponent implements ControlValueAccessor, AfterViewIni
   /**
    * Additional semantics for the form element.
    */
-  @Input() classifications: string[];
+  private _classifications: string[];
+  @Input() set classifications(c: string[]) {
+    this._classifications = c;
+    if (c?.length) {
+      // check for roles classification (id:organization[roles:APPROVER1,APPROVER2])
+      const classifications = this.system.getClassifications(c);
+      if (classifications.has(Classification.STRING_ORGANIZATION)) {
+        const options = classifications.get(Classification.STRING_ORGANIZATION).options;
+        this.filterRoles = options;
+      }
+    } else {
+      this.filterRoles = [];
+    }
+  }
+  get classifications() {
+    return this._classifications;
+  }
+
   /**
    * Will prevent the input from being changed (default: false)
    */
@@ -85,7 +103,7 @@ export class OrganizationComponent implements ControlValueAccessor, AfterViewIni
 
   @Output() userSelect = new EventEmitter<YuvUser[]>();
 
-  constructor(private iconRegistry: IconRegistryService, private userService: UserService) {
+  constructor(private iconRegistry: IconRegistryService, private system: SystemService, private userService: UserService) {
     this.iconRegistry.registerIcons([organization]);
   }
 
@@ -140,7 +158,7 @@ export class OrganizationComponent implements ControlValueAccessor, AfterViewIni
 
   autocompleteFn(evt) {
     if (evt.query.length >= this.minLength) {
-      this.userService.queryUser(evt.query, this.excludeMe).subscribe((users: YuvUser[]) => {
+      this.userService.queryUser(evt.query, this.excludeMe, this.filterRoles).subscribe((users: YuvUser[]) => {
         this.autocompleteRes = users.filter((user) => !this.innerValue.some((value) => value.id === user.id));
       });
     } else {

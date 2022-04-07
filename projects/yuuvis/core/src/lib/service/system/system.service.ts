@@ -46,8 +46,13 @@ import {
 export class SystemService {
   private STORAGE_KEY = 'yuv.core.system.definition';
   private STORAGE_KEY_AUTH_DATA = 'yuv.core.auth.data';
-  // cached icons to avaoid backend calls (session cache)
-  private iconCache = {};
+  // cached icons to avoid backend calls (session cache)
+  private iconCache: {
+    [objectTypeId: string]: {
+      uri: string;
+      icon?: string;
+    };
+  } = {};
   private resolvedClassificationsCache = {};
 
   public system: SystemDefinition;
@@ -523,9 +528,12 @@ export class SystemService {
    * @param fallback ID of a fallback icon that should be used if the given object type has no icon yet
    */
   getObjectTypeIcon(objectTypeId: string, fallback?: string): Observable<string> {
-    const fb = this.getFallbackIcon(objectTypeId, fallback);
-    const uri = `/resources/icons/${encodeURIComponent(objectTypeId)}${fb ? `?fb=${encodeURIComponent(fallback)}` : ''}`;
-    return !!this.iconCache[uri] ? of(this.iconCache[objectTypeId]) : this.backend.get(uri);
+    if (this.iconCache[objectTypeId] && this.iconCache[objectTypeId].icon) {
+      return of(this.iconCache[objectTypeId].icon);
+    } else {
+      const iconUri = this.getObjectTypeIconUri(objectTypeId, fallback);
+      return this.backend.get(iconUri).pipe(tap((icon) => (this.iconCache[objectTypeId] = { uri: iconUri, icon })));
+    }
   }
 
   /**
@@ -534,9 +542,15 @@ export class SystemService {
    * @param fallback ID of a fallback icon that should be used if the given object type has no icon yet
    */
   getObjectTypeIconUri(objectTypeId: string, fallback?: string): string {
-    const fb = this.getFallbackIcon(objectTypeId, fallback);
-    const uri = `/resources/icons/${encodeURIComponent(objectTypeId)}${fb ? `?fallback=${encodeURIComponent(fb)}` : ''}`;
-    return `${this.backend.getApiBase(ApiBase.apiWeb)}${uri}`;
+    if (this.iconCache[objectTypeId]) {
+      return this.iconCache[objectTypeId].uri;
+    } else {
+      const ci = this.getIconFromClassification(objectTypeId);
+      const fb = this.getFallbackIcon(objectTypeId, fallback);
+      const uri = `/resources/icons/${encodeURIComponent(ci || objectTypeId)}${fb ? `?fallback=${encodeURIComponent(fb)}` : ''}`;
+      this.iconCache[objectTypeId] = { uri: `${this.backend.getApiBase(ApiBase.apiWeb)}${uri}` };
+      return this.iconCache[objectTypeId].uri;
+    }
   }
 
   private getFallbackIcon(objectTypeId: string, fallback?: string): string {
@@ -550,6 +564,11 @@ export class SystemService {
       }
     }
     return fallback;
+  }
+
+  private getIconFromClassification(objectTypeId: string) {
+    const ce: Map<string, ClassificationEntry> = this.getClassifications(this.getResolvedClassifications(objectTypeId));
+    return ce.has(ObjectTypeClassification.OBJECT_TYPE_ICON) ? ce.get(ObjectTypeClassification.OBJECT_TYPE_ICON).options[0] : null;
   }
 
   /**

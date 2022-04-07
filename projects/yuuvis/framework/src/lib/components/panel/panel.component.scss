@@ -146,16 +146,18 @@
       button {
         &.toggle-btn {
           padding: 4px;
-          border-radius: 4px;
+          border-radius: 0;
           margin: 1px;
-          background-color: var(--button-secondary-background);
+          background-color: var(--main-background) !important;
+          border: 1px solid var(--panel-divider-color);
 
           &:not([disabled]):not(.active):hover {
-            background-color: var(--button-secondary-background-hover);
+            background-color: var(--button-secondary-background-hover) !important;
+            border-color: var(--button-secondary-background-hover) !important;
           }
 
           &.active {
-            background-color: var(--text-color-caption);
+            background-color: var(--text-color-caption) !important;
             color: #fff;
           }
         }

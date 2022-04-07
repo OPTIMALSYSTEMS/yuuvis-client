@@ -61,7 +61,7 @@ export class PluginsService {
       viewer: 'api/monaco/?path=${path}&mimeType=${mimeType}&fileExtension=${fileExtension}&lang=${lang}&theme=${theme}&accentColor=${accentColor}'
     },
     {
-      mimeType: ['text/xml'],
+      mimeType: ['text/xml', 'application/xml'],
       viewer: 'api/monaco/?path=${path}&mimeType=${mimeType}&fileExtension=${fileExtension}&lang=${lang}&theme=${theme}&accentColor=${accentColor}&language=xml'
     },
     {
@@ -262,6 +262,7 @@ export class PluginsService {
   }
 
   extendTranslations(lang: string = this.translate.currentLang) {
+    // TODO: respect sub-languages
     const translations = (this.customPlugins?.translations || {})[lang];
     this.configService.extendTranslations(translations, lang);
   }
