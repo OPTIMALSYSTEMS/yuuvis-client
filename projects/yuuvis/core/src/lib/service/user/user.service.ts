@@ -106,26 +106,27 @@ export class UserService {
     if (this.user) {
       const languages = this.config.getClientLocales().map((lang) => lang.iso);
       iso = iso || this.user.getClientLocale(this.config.getDefaultClientLocale());
-      if (languages.includes(iso)) {
-        this.logger.debug("Changed client locale to '" + iso + "'");
-        this.backend.setHeader('Accept-Language', iso);
-        this.user.uiDirection = this.getUiDirection(iso);
-        this.user.userSettings.locale = iso;
-        if (this.translate.currentLang !== iso || this.system.authData?.language !== iso) {
-          const ob = persist
-            ? forkJoin([
-                this.translate.use(iso),
-                this.system.updateLocalizations(iso),
-                this.backend.post(UserService.DEFAULT_SETTINGS, this.user.userSettings).pipe(
-                  tap(() => {
-                    this.userSource.next(this.user);
-                    this.logger.debug('Loading system definitions i18n resources for new locale.');
-                  })
-                )
-              ])
-            : this.translate.use(iso);
-          ob.subscribe(() => this.eventService.trigger(YuvEventType.CLIENT_LOCALE_CHANGED, iso));
-        }
+      if (!languages.includes(iso)) {
+        iso = this.config.getDefaultClientLocale();
+      }
+      this.logger.debug("Changed client locale to '" + iso + "'");
+      this.backend.setHeader('Accept-Language', iso);
+      this.user.uiDirection = this.getUiDirection(iso);
+      this.user.userSettings.locale = iso;
+      if (this.translate.currentLang !== iso || this.system.authData?.language !== iso) {
+        const ob = persist
+          ? forkJoin([
+              this.translate.use(iso),
+              this.system.updateLocalizations(iso),
+              this.backend.post(UserService.DEFAULT_SETTINGS, this.user.userSettings).pipe(
+                tap(() => {
+                  this.userSource.next(this.user);
+                  this.logger.debug('Loading system definitions i18n resources for new locale.');
+                })
+              )
+            ])
+          : this.translate.use(iso);
+        ob.subscribe(() => this.eventService.trigger(YuvEventType.CLIENT_LOCALE_CHANGED, iso));
       }
     }
   }

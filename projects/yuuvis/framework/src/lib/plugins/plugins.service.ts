@@ -262,9 +262,8 @@ export class PluginsService {
   }
 
   extendTranslations(lang: string = this.translate.currentLang) {
-    // TODO: respect sub-languages
-    const translations = (this.customPlugins?.translations || {})[lang];
-    this.configService.extendTranslations(translations, lang);
+    const translations = this.customPlugins?.translations?.[lang] || this.customPlugins?.translations?.[lang.substring(0, 2)];
+    translations && this.configService.extendTranslations(translations, lang);
   }
 
   private loadCustomPlugins(force = false) {
