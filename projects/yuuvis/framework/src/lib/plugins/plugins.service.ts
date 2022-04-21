@@ -190,25 +190,6 @@ export class PluginsService {
     return params;
   }
 
-  private mapLang(lang: string) {
-    switch (lang) {
-      case 'en':
-        return 'en-US';
-      case 'es':
-        return 'es-ES';
-      case 'pt':
-        return 'pt-PT';
-      case 'zh':
-        return 'zh-CN';
-      case 'hi':
-        return 'hi-IN';
-      case 'bn':
-        return 'bn-BD';
-      default:
-        return lang;
-    }
-  }
-
   private getBaseUrl() {
     const base = this.backend.getApiBase(ApiBase.none, true);
     const viewer = this.backend.getApiBase('viewer', true);
@@ -222,7 +203,7 @@ export class PluginsService {
     const user = this.userService.getCurrentUser();
     const direction = user.uiDirection;
     const tenant = user.tenant;
-    const lang = this.mapLang(user.getClientLocale());
+    const lang = user.getClientLocale();
     const baseUrl = this.getBaseUrl();
     return { darkMode, theme, accentColor, direction, lang, tenant, baseUrl };
   }
@@ -262,9 +243,8 @@ export class PluginsService {
   }
 
   extendTranslations(lang: string = this.translate.currentLang) {
-    // TODO: respect sub-languages
-    const translations = (this.customPlugins?.translations || {})[lang];
-    this.configService.extendTranslations(translations, lang);
+    const translations = this.customPlugins?.translations?.[lang] || this.customPlugins?.translations?.[lang.substring(0, 2)];
+    translations && this.configService.extendTranslations(translations, lang);
   }
 
   private loadCustomPlugins(force = false) {
