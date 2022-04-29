@@ -196,17 +196,21 @@ export class SummaryComponent implements OnInit, OnDestroy {
       renderer = (param: any) => {
         const f: any = this.systemService.system.allFields[key];
         const cdQA = {};
-        f.columnDefinitions.forEach((e) => (cdQA[e.id] = this.gridService.getColumnDefinition(e)));
+        f.columnDefinitions.forEach((e) => {
+          // need to map classification to classification(s)
+          e.classifications = e.classification;
+          cdQA[e.id] = this.gridService.getColumnDefinition(e);
+        });
 
         return `<table class="summary-table-value">
           <tr>${Object.keys(cdQA)
-            .map((k) => `<th>${this.systemService.getLocalizedResource(cdQA[k].colId + '_label')}</th>`)
+            .map((k) => `<th>${this.systemService.getLocalizedResource(cdQA[k].colId + '_label') || cdQA[k].colId}</th>`)
             .join('')}</tr>
           ${param.value
             .map(
               (row) =>
                 `<tr>${Object.keys(cdQA)
-                  .map((k) => `<td>${this.gridService.customContext(cdQA[k].cellRenderer)({ value: row[k] })}</td>`)
+                  .map((k) => `<td>${this.gridService.customContext(cdQA[k].cellRenderer)({ value: row[k], data: row, colDef: cdQA[k] })}</td>`)
                   .join('')}</tr>`
             )
             .join('')}

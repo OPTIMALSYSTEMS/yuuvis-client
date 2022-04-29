@@ -205,7 +205,7 @@ export class SystemService {
     const objectType: ObjectType = objectTypeId === SystemType.OBJECT ? this.getBaseType() : this.system.objectTypes.find((ot) => ot.id === objectTypeId);
 
     if (objectType && withLabel) {
-      objectType.label = this.getLocalizedResource(`${objectType.id}_label`);
+      objectType.label = this.getLocalizedResource(`${objectType.id}_label`) || objectTypeId;
     }
     return objectType;
   }
