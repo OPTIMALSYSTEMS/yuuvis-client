@@ -120,13 +120,6 @@ export class SummaryComponent implements OnInit, OnDestroy {
     this.appCacheService.setItem(this.STORAGE_KEY_SECTION_VISIBLE, this.visible).pipe(takeUntilDestroy(this)).subscribe();
   }
 
-  private excludeTables(objectTypeId): string[] {
-    return this.systemService
-      .getObjectType(objectTypeId)
-      .fields.filter((fields: ObjectTypeField) => fields.id !== BaseObjectTypeField.TAGS && fields.propertyType === 'table')
-      .map((field: ObjectTypeField) => field.id);
-  }
-
   private getSummaryConfiguration(dmsObject: DmsObject) {
     const skipFields: string[] = [
       ContentStreamField.ID,
@@ -134,8 +127,7 @@ export class SummaryComponent implements OnInit, OnDestroy {
       BaseObjectTypeField.ACL,
       BaseObjectTypeField.PARENT_ID,
       BaseObjectTypeField.PARENT_OBJECT_TYPE_ID,
-      BaseObjectTypeField.PARENT_VERSION_NUMBER,
-      ...this.excludeTables(dmsObject.objectTypeId)
+      BaseObjectTypeField.PARENT_VERSION_NUMBER
     ];
 
     const defaultBaseFields: { key: string; order: number }[] = [
@@ -195,9 +187,32 @@ export class SummaryComponent implements OnInit, OnDestroy {
     return { ...data, 'classification[systemsot]': systemsot };
   }
 
-  private generateValue(data, key: string, renderer: ICellRendererFunc, def: ColDef): string | HTMLElement {
-    // tags cell renderer differs from the one used in the grid
-    if (key === BaseObjectTypeField.TAGS) renderer = this.gridService.customContext(CellRenderer.systemTagsSummaryRenderer);
+  private generateValue(data, key: string, renderer: ICellRendererFunc, def: ColDef, type?: string): string | HTMLElement {
+    if (key === BaseObjectTypeField.TAGS) {
+      // tags cell renderer differs from the one used in the grid
+      renderer = this.gridService.customContext(CellRenderer.systemTagsSummaryRenderer);
+    } else if (type && type.toLowerCase() === 'table') {
+      // handle tables
+      renderer = (param: any) => {
+        const f: any = this.systemService.system.allFields[key];
+        const cdQA = {};
+        f.columnDefinitions.forEach((e) => (cdQA[e.id] = this.gridService.getColumnDefinition(e)));
+
+        return `<table class="summary-table-value">
+          <tr>${Object.keys(cdQA)
+            .map((k) => `<th>${this.systemService.getLocalizedResource(cdQA[k].colId + '_label')}</th>`)
+            .join('')}</tr>
+          ${param.value
+            .map(
+              (row) =>
+                `<tr>${Object.keys(cdQA)
+                  .map((k) => `<td>${this.gridService.customContext(cdQA[k].cellRenderer)({ value: row[k] })}</td>`)
+                  .join('')}</tr>`
+            )
+            .join('')}
+          </table>`;
+      };
+    }
     return typeof renderer === 'function' ? renderer({ value: data[key], data: data, colDef: def }) : data[key + '_title'] ? data[key + '_title'] : data[key];
   }
 
@@ -209,6 +224,11 @@ export class SummaryComponent implements OnInit, OnDestroy {
       extras: [], // Admin
       parent: []
     };
+
+    const fieldsTypeQA = {};
+    this.systemService.getObjectType(dmsObject.objectTypeId).fields.forEach((f: ObjectTypeField) => {
+      fieldsTypeQA[f.id] = f.propertyType;
+    });
 
     this._objectData = this.restructureByClassification(dmsObject.data, Classification.SYSTEM_SOT);
     if (this.dmsObject2) {
@@ -233,8 +253,8 @@ export class SummaryComponent implements OnInit, OnDestroy {
         const si: SummaryEntry = {
           label: (def && def.headerName) || key,
           key,
-          value: this.generateValue(this._objectData, key, renderer, def),
-          value2: this.dmsObject2 && this.generateValue(this._objectData2, key, renderer, def),
+          value: this.generateValue(this._objectData, key, renderer, def, fieldsTypeQA[key]),
+          value2: this.dmsObject2 && this.generateValue(this._objectData2, key, renderer, def, fieldsTypeQA[key]),
           order: null
         };
 
@@ -277,8 +297,9 @@ export class SummaryComponent implements OnInit, OnDestroy {
     if (!element) {
       return fields;
     }
-    element.elements && element.type !== 'table'
-      ? element.elements.forEach((el) => (fields = fields.concat(this.extractFields(el))))
+    element.elements
+      ? // && element.type !== 'table'
+        element.elements.forEach((el) => (fields = fields.concat(this.extractFields(el))))
       : fields.push(element.name);
     return fields;
   }
