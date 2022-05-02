@@ -266,7 +266,7 @@ export class SearchQuery {
 
     if (this.hiddenFilterGroup && !this.hiddenFilterGroup.isEmpty()) {
       const fg = this.hiddenFilterGroup.toShortQuery();
-      const filters = fg.filters.length > 1 && this.filterGroup.operator === SearchFilterGroup.OPERATOR.OR ? [fg] : fg.filters;
+      const filters = fg.filters.length > 1 && this.hiddenFilterGroup.operator === SearchFilterGroup.OPERATOR.OR ? [fg] : fg.filters;
       if (combineFilters) {
         queryJson.filters = filters.concat(queryJson.filters || []);
       } else {

@@ -283,7 +283,11 @@ export class GridService {
         }
         break;
       }
-      case 'string:catalog': {
+      case InternalFieldType.STRING_CATALOG: {
+        colDef.cellRenderer = (params) => Utils.escapeHtml(params.value);
+        break;
+      }
+      case InternalFieldType.STRING_DYNAMIC_CATALOG: {
         colDef.cellRenderer = (params) => Utils.escapeHtml(params.value);
         break;
       }
