@@ -1,7 +1,7 @@
 <ng-container [yuvTitle]="('yuv.client.state.process.title' | translate)"></ng-container>
 <section class="processes-wrapper" *ngIf="processData$ | async as processData">
   <yuv-responsive-master-slave class="state" [layoutOptionsKey]="layoutOptionsKey"
-    #splitpane [slaveActive]="!!selectedProcess || !splitpane.useSmallDeviceLayout"
+    #splitpane [slaveActive]="!!selectedProcess"
     (slaveClosed)="onSlaveClosed()">
     <yuv-process-list class="yuv-master panel" [showFooter]="true" [headerDetails]="headerDetails"
       [layoutOptionsKey]="layoutOptionsKey" [processData]="processData" [statusFilter]="'running'"

@@ -34,7 +34,7 @@
   <div class="content">
     <yuv-responsive-data-table yuvOfflineDisabled #dataTable class="data-table process" *ngIf="processData"
       [layoutOptionsKey]="layoutOptionsKey" [viewMode]="viewMode" [data]="processData"
-      (selectionChanged)="select($event)">
+      (selectionChanged)="select($event)" [selection]="0">
     </yuv-responsive-data-table>
   </div>
 

@@ -1,7 +1,6 @@
 import { RowNode } from '@ag-grid-community/core';
 import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { TaskRow } from '@yuuvis/core';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { ResponsiveTableData } from '../../components/responsive-data-table/responsive-data-table.interface';
 import { clear, listModeDefault, listModeSimple, refresh } from '../../svg.generated';
@@ -19,20 +18,7 @@ interface HeaderDetails {
   styleUrls: ['./process-list.component.scss']
 })
 export class ProcessListComponent {
-  private _dataTable: ResponsiveDataTableComponent;
-  @ViewChild('dataTable')
-  set dataTable(data: ResponsiveDataTableComponent) {
-    setTimeout(() => {
-      if (this.processData.rows[0] instanceof TaskRow) {
-        data.selectRows();
-      }
-    }, 1500);
-    this._dataTable = data;
-  }
-
-  get dataTable() {
-    return this._dataTable;
-  }
+  @ViewChild('dataTable') dataTable: ResponsiveDataTableComponent;
   private _processData: any;
   private _viewMode: ViewMode = 'horizontal';
   header: HeaderDetails;
@@ -41,15 +27,11 @@ export class ProcessListComponent {
   @Input() layoutOptionsKey: string;
   @Input()
   set processData(data: ResponsiveTableData) {
-    let rowsToBeSelected: RowNode[] = [];
-    if (this.dataTable) {
-      rowsToBeSelected = this.dataTable.gridOptions.api.getSelectedNodes();
-    }
-
     this._processData = data;
     this.totalNumItems = data ? data.rows.length : 0;
 
-    if (this.dataTable && rowsToBeSelected.length) {
+    let rowsToBeSelected: RowNode[] = this.dataTable?.gridOptions.api.getSelectedNodes();
+    if (rowsToBeSelected?.length) {
       // try to find index by ID first
       const rowNode = this.dataTable.gridOptions.api.getRowNode(rowsToBeSelected[0].data.id);
       let index = rowNode ? rowNode.rowIndex : rowsToBeSelected[0].rowIndex;

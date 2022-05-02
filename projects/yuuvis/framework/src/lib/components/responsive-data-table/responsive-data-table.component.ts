@@ -114,7 +114,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
   /**
    * set selected rows for the table
    */
-  @Input() set selection(selection: string[]) {
+  @Input() set selection(selection: number | string[]) {
     setTimeout(() => {
       this.selectRows(selection);
       this.onSelectionChanged(null);
@@ -382,12 +382,13 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
    * select rows based on list of IDs
    * @param selection default is first row
    */
-  selectRows(selection?: string[], focusColId?: string, ensureVisibility: boolean = true) {
+  selectRows(selection: number | string[] = 0, focusColId?: string, ensureVisibility: boolean = true) {
     const _selection = this.gridOptions.api.getSelectedNodes().map((n) => n.id);
-    if ((selection ? [...selection] : []).sort().join() === _selection.sort().join()) return;
+    const sel = typeof selection === 'number' ? [this._data.rows[selection]?.id] : selection || [];
+    if (sel.sort().join() === _selection.sort().join()) return;
     this.gridOptions.api.clearFocusedCell();
     this.gridOptions.api.deselectAll();
-    (selection || [this._data.rows[0].id]).forEach((id: string, index: number) => {
+    sel.forEach((id: string, index: number) => {
       const n = this.gridOptions.api.getRowNode(id);
       if (n) {
         if (index === 0) {
@@ -457,7 +458,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
       // ag-grid bug on mobile - issue with change detection after touch event
       this._ngZone.run(() => {
         this.selectionChanged.emit(selection.map((rowNode: RowNode) => rowNode.data));
-        if (this.selection?.length) {
+        if (selection?.length) {
           this.ensureVisibility(selection[0].rowIndex);
         }
       });
