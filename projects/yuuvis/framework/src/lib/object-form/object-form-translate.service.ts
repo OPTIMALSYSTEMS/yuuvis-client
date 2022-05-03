@@ -60,6 +60,8 @@ export class ObjectFormTranslateService {
         return this.translate.instant('yuv.framework.object-form-element.error.minvalue', params);
       case 'maxvalue':
         return this.translate.instant('yuv.framework.object-form-element.error.maxvalue', params);
+      case 'empty':
+        return this.translate.instant('yuv.framework.recent-activities.list.empty', params);
       default:
         return this.translate.instant(error, params);
     }
