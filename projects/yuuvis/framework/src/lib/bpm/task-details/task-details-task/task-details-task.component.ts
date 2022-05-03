@@ -279,18 +279,17 @@ export class TaskDetailsTaskComponent implements OnInit {
     );
   }
 
-  confirm(additionalVars?: ProcessVariable[]) {
+  confirm(vars?: ProcessVariable[]) {
     this.busy = true;
-    const payload = this.getUpdatePayload();
-    if (additionalVars) {
+    let payload: any = {};
+    if (vars) {
       const payloadQA = {};
-      payload.variables.forEach((p) => {
-        payloadQA[p.name] = p;
-      });
-      additionalVars.forEach((p) => {
+      vars.forEach((p) => {
         payloadQA[p.name] = p;
       });
       payload.variables = Object.keys(payloadQA).map((k) => payloadQA[k]); //[...payload.variables, ...additionalVars];
+    } else {
+      payload = this.getUpdatePayload();
     }
     this.inboxService.completeTask(this._task.id, payload).subscribe(
       (res) => {
