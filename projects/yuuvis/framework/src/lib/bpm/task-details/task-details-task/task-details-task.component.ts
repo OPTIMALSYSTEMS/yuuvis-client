@@ -281,7 +281,7 @@ export class TaskDetailsTaskComponent implements OnInit {
 
   confirm(vars?: ProcessVariable[]) {
     this.busy = true;
-    let payload;
+    let payload: any = {};
     if (vars) {
       const payloadQA = {};
       vars.forEach((p) => {
