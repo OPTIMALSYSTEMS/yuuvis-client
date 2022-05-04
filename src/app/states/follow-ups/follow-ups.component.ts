@@ -35,8 +35,7 @@ export class FollowUpsComponent implements OnInit, OnDestroy {
           })
         : processData;
       return this.formatProcessDataService.formatFollowUpDataForTable(pd, ['type', 'subject', 'startTime', 'expiryDateTime', 'status']);
-    }),
-    map((taskData: ResponsiveTableData) => (taskData.rows.length ? taskData : null))
+    })
   );
   loading$: Observable<boolean> = this.processService.loadingProcessData$;
 
