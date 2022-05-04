@@ -7,7 +7,6 @@ import {
   ContentStreamField,
   DmsObject,
   Logger,
-  ObjectTypeField,
   ParentField,
   RetentionField,
   SystemService
@@ -229,11 +228,6 @@ export class SummaryComponent implements OnInit, OnDestroy {
       parent: []
     };
 
-    const fieldsTypeQA = {};
-    this.systemService.getObjectType(dmsObject.objectTypeId).fields.forEach((f: ObjectTypeField) => {
-      fieldsTypeQA[f.id] = f.propertyType;
-    });
-
     this._objectData = this.restructureByClassification(dmsObject.data, Classification.SYSTEM_SOT);
     if (this.dmsObject2) {
       this._objectData2 = this.restructureByClassification(this.dmsObject2.data, Classification.SYSTEM_SOT);
@@ -257,8 +251,22 @@ export class SummaryComponent implements OnInit, OnDestroy {
         const si: SummaryEntry = {
           label: (def && def.headerName) || key,
           key,
-          value: this.generateValue(this._objectData, key, renderer, def, fieldsTypeQA[key]),
-          value2: this.dmsObject2 && this.generateValue(this._objectData2, key, renderer, def, fieldsTypeQA[key]),
+          value: this.generateValue(
+            this._objectData,
+            key,
+            renderer,
+            def,
+            this.systemService.system.allFields[key] ? this.systemService.system.allFields[key].propertyType : undefined
+          ),
+          value2:
+            this.dmsObject2 &&
+            this.generateValue(
+              this._objectData2,
+              key,
+              renderer,
+              def,
+              this.systemService.system.allFields[key] ? this.systemService.system.allFields[key].propertyType : undefined
+            ),
           order: null
         };
 
