@@ -125,7 +125,7 @@ export class SearchFilterComponent implements OnInit {
   }
 
   private setupTypes(types: Selectable[]) {
-    this.typeSelection = types.map((t) => t.id);
+    this.typeSelection = this.filterQuery.allTypes.length ? types.map((t) => t.id) : [];
     this.availableObjectTypes = [...types];
     this.availableTypeGroups = [
       {

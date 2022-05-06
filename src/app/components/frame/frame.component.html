@@ -100,6 +100,10 @@
         <a routerLink="processes" routerLinkActive="active" (click)="showSideBar(false)"
           translate>yuv.client.state.process.title</a>
       </div>
+      <div class="nav-item" *ngIf="sidebarShowRetentions">
+        <a routerLink="retentions" routerLinkActive="active" (click)="showSideBar(false)"
+          translate>yuv.client.state.retentions.title</a>
+      </div>
       <div class="nav-item">
         <a routerLink="settings" routerLinkActive="active" (click)="showSideBar(false)"
           translate>yuv.client.state.settings.title</a>

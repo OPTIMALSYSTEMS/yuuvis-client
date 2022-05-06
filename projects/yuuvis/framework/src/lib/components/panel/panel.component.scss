@@ -128,6 +128,39 @@
         height: 18px;
         width: 18px;
       }
+
+      span.chip {
+        font-size: var(--font-hint);
+        display: inline-block;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+
+        &.error {
+          background-color: var(--color-error);
+          border-color: var(--color-error);
+          color: #fff;
+        }
+      }
+
+      button {
+        &.toggle-btn {
+          padding: 4px;
+          border-radius: 0;
+          margin: 1px;
+          background-color: var(--main-background) !important;
+          border: 1px solid var(--panel-divider-color);
+
+          &:not([disabled]):not(.active):hover {
+            background-color: var(--button-secondary-background-hover) !important;
+            border-color: var(--button-secondary-background-hover) !important;
+          }
+
+          &.active {
+            background-color: var(--button-secondary-background-hover) !important;
+          }
+        }
+      }
     }
   }
 

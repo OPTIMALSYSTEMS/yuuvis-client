@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, EventEmitter, forwardRef, HostBinding, HostListener, Inject, Input, Output, TemplateRef, ViewChild } from '@angular/core';
-import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { ControlValueAccessor, FormControl, NG_VALIDATORS, NG_VALUE_ACCESSOR, Validator } from '@angular/forms';
 import {
   BaseObjectTypeField,
   Classification,
@@ -38,15 +38,21 @@ import { ReferenceEntry } from './reference.interface';
       provide: NG_VALUE_ACCESSOR,
       useExisting: forwardRef(() => ReferenceComponent),
       multi: true
+    },
+    {
+      provide: NG_VALIDATORS,
+      useExisting: forwardRef(() => ReferenceComponent),
+      multi: true
     }
   ]
 })
-export class ReferenceComponent implements ControlValueAccessor, AfterViewInit {
+export class ReferenceComponent implements ControlValueAccessor, Validator, AfterViewInit {
   @ViewChild('autocomplete') autoCompleteInput: AutoComplete;
   private objectTypeBaseProperties = this.systemService.getBaseProperties();
   noAccessTitle = noAccess;
   minLength = 2;
 
+  private isValidInput = true;
   value;
   _innerValue: ReferenceEntry[] = [];
   set innerValue(iv: ReferenceEntry[]) {
@@ -247,11 +253,29 @@ export class ReferenceComponent implements ControlValueAccessor, AfterViewInit {
         .search(q instanceof SearchQuery ? q : new SearchQuery(q))
         .pipe(map((reference) => reference.items.map((i) => this.referenceItemFnc(i))))
         .subscribe(
-          (reference) => (this.autocompleteRes = reference.filter((ref) => !this.innerValue.some((value) => value.id === ref.id))),
-          (e) => (this.autocompleteRes = [])
+          (reference) => {
+            this.autocompleteRes = reference.filter((ref) => !this.innerValue.some((value) => value.id === ref.id));
+            this.propagateValidity(this.autocompleteRes.length > 0);
+          },
+          (e) => {
+            this.autocompleteRes = [];
+            this.propagateValidity(this.autocompleteRes.length > 0);
+          }
         );
     } else {
       this.autocompleteRes = [];
+    }
+  }
+
+  // returns null when valid else the validation object
+  public validate(c: FormControl) {
+    return this.isValidInput ? null : { empty: { valid: false } };
+  }
+
+  propagateValidity(valid = true) {
+    if (this.isValidInput !== valid) {
+      this.isValidInput = valid;
+      this.propagate();
     }
   }
 
@@ -285,16 +309,13 @@ export class ReferenceComponent implements ControlValueAccessor, AfterViewInit {
   private clearInnerInput() {
     if (this.autoCompleteInput.multiInputEL) {
       this.autoCompleteInput.multiInputEL.nativeElement.value = '';
+      this.propagateValidity(true);
     }
   }
 
-  ngOnInit(): void {}
-
   ngAfterViewInit() {
-    if (this.autoCompleteInput.multiInputEL && this.autofocus) {
-      setTimeout((_) => {
-        this.autoCompleteInput.multiInputEL.nativeElement.focus();
-      });
+    if (this.autofocus) {
+      setTimeout(() => this.autoCompleteInput.multiInputEL?.nativeElement.focus());
     }
   }
 }

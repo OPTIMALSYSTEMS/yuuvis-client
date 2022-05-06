@@ -3,4 +3,30 @@
   height: 100%;
   overflow: auto;
   padding: var(--app-pane-padding);
+
+  ::ng-deep {
+    table.summary-table-value {
+      border: 1px solid var(--panel-divider-color);
+      border-width: 1px 0 0 1px;
+      border-spacing: 0;
+      border-collapse: collapse;
+      max-width: 100%;
+      overflow: auto;
+      max-height: 80px;
+
+      th {
+        text-align: left;
+        color: var(--text-color-caption);
+        font-weight: normal;
+        font-style: italic;
+        background-color: var(--panel-background-grey);
+      }
+      th,
+      td {
+        border: 1px solid var(--panel-divider-color);
+        border-width: 0 1px 1px 0;
+        padding: calc(var(--app-pane-padding) / 4) calc(var(--app-pane-padding) / 2);
+      }
+    }
+  }
 }

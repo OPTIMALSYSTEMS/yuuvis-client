@@ -90,6 +90,12 @@ export class UserService {
     return this.user?.authorities?.includes(advancedUserRole) || false;
   }
 
+  get isRetentionManager(): boolean {
+    const customRole = this.config.get('core.permissions.retentionManagerRole');
+    const retenetionManagerRole = customRole || AdministrationRoles.MANAGE_SETTINGS;
+    return this.user?.authorities?.includes(retenetionManagerRole) || false;
+  }
+
   canCreateObjects: boolean;
 
   /**
@@ -100,26 +106,27 @@ export class UserService {
     if (this.user) {
       const languages = this.config.getClientLocales().map((lang) => lang.iso);
       iso = iso || this.user.getClientLocale(this.config.getDefaultClientLocale());
-      if (languages.includes(iso)) {
-        this.logger.debug("Changed client locale to '" + iso + "'");
-        this.backend.setHeader('Accept-Language', iso);
-        this.user.uiDirection = this.getUiDirection(iso);
-        this.user.userSettings.locale = iso;
-        if (this.translate.currentLang !== iso || this.system.authData?.language !== iso) {
-          const ob = persist
-            ? forkJoin([
-                this.translate.use(iso),
-                this.system.updateLocalizations(iso),
-                this.backend.post(UserService.DEFAULT_SETTINGS, this.user.userSettings).pipe(
-                  tap(() => {
-                    this.userSource.next(this.user);
-                    this.logger.debug('Loading system definitions i18n resources for new locale.');
-                  })
-                )
-              ])
-            : this.translate.use(iso);
-          ob.subscribe(() => this.eventService.trigger(YuvEventType.CLIENT_LOCALE_CHANGED, iso));
-        }
+      if (!languages.includes(iso)) {
+        iso = this.config.getDefaultClientLocale();
+      }
+      this.logger.debug("Changed client locale to '" + iso + "'");
+      this.backend.setHeader('Accept-Language', iso);
+      this.user.uiDirection = this.getUiDirection(iso);
+      this.user.userSettings.locale = iso;
+      if (this.translate.currentLang !== iso || this.system.authData?.language !== iso) {
+        const ob = persist
+          ? forkJoin([
+              this.translate.use(iso),
+              this.system.updateLocalizations(iso),
+              this.backend.post(UserService.DEFAULT_SETTINGS, this.user.userSettings).pipe(
+                tap(() => {
+                  this.userSource.next(this.user);
+                  this.logger.debug('Loading system definitions i18n resources for new locale.');
+                })
+              )
+            ])
+          : this.translate.use(iso);
+        ob.subscribe(() => this.eventService.trigger(YuvEventType.CLIENT_LOCALE_CHANGED, iso));
       }
     }
   }
@@ -168,10 +175,14 @@ export class UserService {
   /**
    * Search for a user based on a search term
    * @param term Search term
+   * @param excludeMe whether or not to exclude myself from the result list
+   * @param roles narrow down the search results by certain roles
    */
-  queryUser(term: string, excludeMe?: boolean): Observable<YuvUser[]> {
+  queryUser(term: string, excludeMe?: boolean, roles?: string[]): Observable<YuvUser[]> {
+    const params = roles?.length ? roles.map((r) => `roles=${r}`) : [];
+    if (excludeMe) params.push('excludeMe=true');
     return this.backend
-      .get(`/users/users?search=${term}${excludeMe ? `&excludeMe=true` : ''}`)
+      .get(`/users/users?search=${term}${`&${params.join('&')}`}`)
       .pipe(map((users) => (!users ? [] : users.map((u) => new YuvUser(u, null)))));
   }
 

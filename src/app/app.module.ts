@@ -27,6 +27,7 @@ import { ProcessesComponent } from './states/processes/processes.component';
 import { ResultComponent } from './states/result/result.component';
 import { SettingsComponent } from './states/settings/settings.component';
 import { VersionsComponent } from './states/versions/versions.component';
+import { RetentionsComponent } from './states/retentions/retentions.component';
 
 @NgModule({
   declarations: [
@@ -44,7 +45,8 @@ import { VersionsComponent } from './states/versions/versions.component';
     InboxComponent,
     FilterConfigurationComponent,
     ProcessesComponent,
-    FollowUpsComponent
+    FollowUpsComponent,
+    RetentionsComponent
   ],
   imports: [
     BrowserModule,

@@ -99,7 +99,7 @@ export class ProcessAttachmentsComponent implements OnInit {
       const bp = this.system.getBaseProperties();
 
       let query = new SearchQuery();
-      query.fields = [BaseObjectTypeField.OBJECT_ID, BaseObjectTypeField.OBJECT_TYPE_ID, bp.title];
+      query.fields = [BaseObjectTypeField.OBJECT_ID, BaseObjectTypeField.LEADING_OBJECT_TYPE_ID, bp.title];
       let group = SearchFilterGroup.fromArray(oids.map((id) => new SearchFilter(BaseObjectTypeField.OBJECT_ID, SearchFilter.OPERATOR.EEQUAL, id)));
       group.operator = SearchFilterGroup.OPERATOR.OR;
       query.addFilterGroup(group);
@@ -110,7 +110,7 @@ export class ProcessAttachmentsComponent implements OnInit {
           res.items.forEach((i) => {
             qa[i.fields.get(BaseObjectTypeField.OBJECT_ID)] = {
               id: i.fields.get(BaseObjectTypeField.OBJECT_ID),
-              objectTypeId: i.fields.get(BaseObjectTypeField.OBJECT_TYPE_ID),
+              leadingTypeId: i.fields.get(BaseObjectTypeField.LEADING_OBJECT_TYPE_ID),
               title: i.fields.get(bp.title)
             };
           });

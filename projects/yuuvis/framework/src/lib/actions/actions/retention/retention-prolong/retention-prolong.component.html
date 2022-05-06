@@ -1,0 +1,15 @@
+<h2>{{ 'yuv.framework.action-menu.action.retention-prolong.label' | translate }}</h2>
+
+<form [formGroup]="rtProlongForm" (ngSubmit)="submit()" [yuvBusyOverlay]="busy">
+
+    <yuv-form-input [invalid]="rmExpirationDate.dirty && rmExpirationDate.invalid" [skipToggle]="true" [required]="true"
+        [label]="'yuv.framework.action-menu.action.retention.startform.expirationDate' | translate" [skipToggle]="true">
+        <yuv-datetime [onlyFutureDates]="true" formControlName="rmExpirationDate"></yuv-datetime>
+    </yuv-form-input>
+
+    <div class="form-buttons">
+        <button (click)="cancel()">{{ 'yuv.framework.shared.cancel' | translate }}</button>
+        <button class="primary" [disabled]="!rtProlongForm.dirty || rtProlongForm.invalid"
+            type="submit">{{'yuv.framework.action-menu.action.retention.prolongform.submit'|translate}}</button>
+    </div>
+</form>
