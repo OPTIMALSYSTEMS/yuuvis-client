@@ -104,7 +104,7 @@ export class DmsService {
    * @param version version of the object to be restored
    */
   restoreDmsObject(id: string, version: number, silent = false): Observable<any> {
-    const url = `/dms/objects/${id}/versions/${version}/actions/restore`;
+    const url = `/dms/objects/${id}/versions/${version}/actions/restore?restoreParentId=false`;
     return this.backend.post(url, {}, ApiBase.apiWeb).pipe(this.triggerEvent(YuvEventType.DMS_OBJECT_UPDATED, id, silent));
   }
 
