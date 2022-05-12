@@ -7,6 +7,8 @@ import {
   ContentStreamField,
   DmsObject,
   Logger,
+  ObjectTypeField,
+  ObjectTypePropertyClassification,
   ParentField,
   RetentionField,
   SystemService
@@ -242,7 +244,7 @@ export class SummaryComponent implements OnInit, OnDestroy {
     fsots.forEach((fsot) => (colDef = [...colDef, ...this.gridService.getColumnDefinitions(fsot.id, true)]));
 
     Object.keys({ ...this._objectData, ...this._objectData2 })
-      .filter((key) => !key.includes('_title'))
+      .filter((key) => !key.includes('_title') && !this.shouldBeHidden(key))
       .forEach((key: string) => {
         const prepKey = key.replace(/^parent./, ''); // todo: pls implement general solution
         const def: ColDef = colDef.find((cd) => cd.field === prepKey);
@@ -302,6 +304,11 @@ export class SummaryComponent implements OnInit, OnDestroy {
         .sort((a, b) => (a.key === bp.description ? -1 : b.key === bp.description ? 1 : 0))
         .sort((a, b) => (a.key === bp.title ? -1 : b.key === bp.title ? 1 : 0))
     };
+  }
+
+  private shouldBeHidden(key: string): boolean {
+    const otf: ObjectTypeField = this.systemService.system.allFields[key];
+    return otf?.classifications?.includes(ObjectTypePropertyClassification.SUMMARY_HIDDEN);
   }
 
   private extractFields(element): string[] {
