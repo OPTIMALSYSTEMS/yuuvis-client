@@ -28,20 +28,25 @@ export class ProcessesComponent implements OnInit, OnDestroy {
   contextError: string;
   selectedProcess: Process;
   processData$: Observable<ResponsiveTableData> = this.processService.processData$.pipe(
-    map((processData: Process[]) =>
-      this.formatProcessDataService.formatProcessDataForTable(processData, ['type', 'subject', 'startTime', 'status', 'endTime'])
-    ),
-    map((taskData: ResponsiveTableData) => (taskData.rows.length ? taskData : null))
+    map((processData: Process[]) => {
+      const pd = this.filterTerm
+        ? processData.filter((t: Process) => {
+            return t.subject && t.subject.toLowerCase().indexOf(this.filterTerm) !== -1;
+          })
+        : processData;
+      return this.formatProcessDataService.formatProcessDataForTable(pd, ['type', 'subject', 'startTime', 'status', 'endTime']);
+    })
   );
   loading$: Observable<boolean> = this.processService.loadingProcessData$;
+  statusFilter;
 
   headerDetails: HeaderDetails = {
     title: this.translateService.instant('yuv.client.state.process.title'),
     description: '',
     icon: 'process'
   };
-
   plugins: any;
+  filterTerm: string;
 
   constructor(
     private processService: ProcessService,
@@ -59,21 +64,41 @@ export class ProcessesComponent implements OnInit, OnDestroy {
     this.selectedProcess = items?.length ? items[0].originalData : null;
   }
 
+  onTermFilterChange(term) {
+    this.filterTerm = term;
+    this.processService.reEmitProcessData();
+  }
+
   refreshList() {
-    this.processService.fetchProcesses();
+    this.fetchProcesses(this.statusFilter);
+  }
+
+  onStatusFilterChange(statusFilter: 'all' | 'running' | 'completed') {
+    this.statusFilter = statusFilter;
+    this.fetchProcesses(this.statusFilter || 'all');
+  }
+
+  private fetchProcesses(statusFilter: 'all' | 'running' | 'completed' = 'all') {
+    if (statusFilter === 'all') {
+      this.processService.fetchProcesses();
+    } else {
+      this.processService.fetchProcesses(null, {
+        isCompleted: statusFilter === 'completed'
+      });
+    }
   }
 
   remove() {
     this.processService
       .deleteProcess(this.selectedProcess[0].id)
-      .pipe(tap(() => this.processService.fetchProcesses()))
+      .pipe(tap(() => this.fetchProcesses(this.statusFilter)))
       .subscribe();
   }
 
   onSlaveClosed() {}
 
   ngOnInit(): void {
-    this.processService.fetchProcesses();
+    this.fetchProcesses('running');
     this.eventService
       .on(BpmEvent.BPM_EVENT)
       .pipe(

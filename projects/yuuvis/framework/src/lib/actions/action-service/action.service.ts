@@ -1,6 +1,6 @@
 import { ComponentFactoryResolver, Inject, Injectable, InjectionToken, ViewContainerRef } from '@angular/core';
 import { Router } from '@angular/router';
-import { DmsObject, Utils } from '@yuuvis/core';
+import { DmsObject, RetentionField, Utils } from '@yuuvis/core';
 import { merge as observableMerge, Observable, of as observableOf, of } from 'rxjs';
 import { combineAll, map, switchMap, tap } from 'rxjs/operators';
 import { ActionListEntry } from '../interfaces/action-list-entry';
@@ -160,10 +160,10 @@ export class ActionService {
     // delete object action
     if (action === 'yuv-delete-action') {
       let isRetentionActive = false;
-      if (element.data['system:rmStartOfRetention'] && element.data['system:rmExpirationDate']) {
+      if (element.data[RetentionField.RETENTION_START] && element.data[RetentionField.RETENTION_END]) {
         const currentDate = new Date();
-        const retentionStart = new Date(element.data['system:rmStartOfRetention']);
-        const retentionEnd = new Date(element.data['system:rmExpirationDate']);
+        const retentionStart = new Date(element.data[RetentionField.RETENTION_START]);
+        const retentionEnd = new Date(element.data[RetentionField.RETENTION_END]);
         isRetentionActive = retentionStart <= currentDate && currentDate <= retentionEnd;
       }
       const validState = !/\/inbox|\/processes/.test(this.router.url);

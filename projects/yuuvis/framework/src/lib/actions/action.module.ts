@@ -19,6 +19,10 @@ import { FollowUpComponent } from './actions/follow-up-action/follow-up/follow-u
 import { MoveActionComponent } from './actions/move-action/move-action';
 import { MoveComponent } from './actions/move-action/move/move.component';
 import { ReferenceActionComponent } from './actions/reference-action/reference-action';
+import { RetentionProlongActionComponent } from './actions/retention/retention-prolong.action';
+import { RetentionProlongComponent } from './actions/retention/retention-prolong/retention-prolong.component';
+import { RetentionStartComponent } from './actions/retention/retention-start/retention-start.component';
+import { RetentionActionComponent } from './actions/retention/retention.action';
 import { UploadActionComponent } from './actions/upload-action/upload-action';
 import { UploadComponent } from './actions/upload-action/upload/upload.component';
 
@@ -32,7 +36,11 @@ export const entryComponents = [
   MoveComponent,
   FollowUpActionComponent,
   FollowUpComponent,
-  ReferenceActionComponent
+  ReferenceActionComponent,
+  RetentionActionComponent,
+  RetentionStartComponent,
+  RetentionProlongActionComponent,
+  RetentionProlongComponent
 ];
 
 /**

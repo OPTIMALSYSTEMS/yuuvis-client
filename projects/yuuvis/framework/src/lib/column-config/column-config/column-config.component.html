@@ -42,11 +42,11 @@
           }}</button>
         <button *ngIf="!hasGlobal" (click)="save(false, true)">{{ 'yuv.framework.column-config.button.reset.global' |
           translate }}</button>
-        <button *ngIf="hasManageSettingsRole" class="primary" (click)="save(true)">{{
-          'yuv.framework.column-config.button.save.global' | translate }}</button>
-      </div>
-      <div class="right" *ngIf="columnConfigDirty">
-        <button class="primary" (click)="save()">{{ 'yuv.framework.column-config.button.save' | translate }}</button>
+        </div>
+        <div class="right">
+          <button [disabled]="!columnConfigDirty" [style.margin]="'0 4px'" class="primary" (click)="save()">{{ 'yuv.framework.column-config.button.save' | translate }}</button>
+          <button *ngIf="hasManageSettingsRole" class="primary" (click)="save(true)">{{
+            'yuv.framework.column-config.button.save.global' | translate }}</button>
       </div>
     </div>
   </ng-container>

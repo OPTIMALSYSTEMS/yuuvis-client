@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, EventEmitter, forwardRef, HostBinding, HostListener, Input, Output, ViewChild } from '@angular/core';
-import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { UserService, YuvUser } from '@yuuvis/core';
+import { ControlValueAccessor, FormControl, NG_VALIDATORS, NG_VALUE_ACCESSOR, Validator } from '@angular/forms';
+import { Classification, SystemService, UserService, YuvUser } from '@yuuvis/core';
 import { AutoComplete } from 'primeng/autocomplete';
 import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
@@ -28,13 +28,19 @@ import { organization } from '../../../svg.generated';
       provide: NG_VALUE_ACCESSOR,
       useExisting: forwardRef(() => OrganizationComponent),
       multi: true
+    },
+    {
+      provide: NG_VALIDATORS,
+      useExisting: forwardRef(() => OrganizationComponent),
+      multi: true
     }
   ]
 })
-export class OrganizationComponent implements ControlValueAccessor, AfterViewInit {
+export class OrganizationComponent implements ControlValueAccessor, Validator, AfterViewInit {
   @ViewChild('autocomplete') autoCompleteInput: AutoComplete;
   minLength = 2;
 
+  private isValidInput = true;
   value;
   _innerValue: YuvUser[] = [];
   set innerValue(iv: YuvUser[]) {
@@ -45,6 +51,7 @@ export class OrganizationComponent implements ControlValueAccessor, AfterViewIni
     return this._innerValue;
   }
   autocompleteRes: YuvUser[] = [];
+  private filterRoles: string[] = [];
 
   // prevent ENTER from being propagated, because the component could be located
   // inside some other component that also relys on ENTER
@@ -66,7 +73,24 @@ export class OrganizationComponent implements ControlValueAccessor, AfterViewIni
   /**
    * Additional semantics for the form element.
    */
-  @Input() classifications: string[];
+  private _classifications: string[];
+  @Input() set classifications(c: string[]) {
+    this._classifications = c;
+    if (c?.length) {
+      // check for roles classification (id:organization[roles:APPROVER1,APPROVER2])
+      const classifications = this.system.getClassifications(c);
+      if (classifications.has(Classification.STRING_ORGANIZATION)) {
+        const options = classifications.get(Classification.STRING_ORGANIZATION).options;
+        this.filterRoles = options;
+      }
+    } else {
+      this.filterRoles = [];
+    }
+  }
+  get classifications() {
+    return this._classifications;
+  }
+
   /**
    * Will prevent the input from being changed (default: false)
    */
@@ -85,7 +109,7 @@ export class OrganizationComponent implements ControlValueAccessor, AfterViewIni
 
   @Output() userSelect = new EventEmitter<YuvUser[]>();
 
-  constructor(private iconRegistry: IconRegistryService, private userService: UserService) {
+  constructor(private iconRegistry: IconRegistryService, private system: SystemService, private userService: UserService) {
     this.iconRegistry.registerIcons([organization]);
   }
 
@@ -140,11 +164,30 @@ export class OrganizationComponent implements ControlValueAccessor, AfterViewIni
 
   autocompleteFn(evt) {
     if (evt.query.length >= this.minLength) {
-      this.userService.queryUser(evt.query, this.excludeMe).subscribe((users: YuvUser[]) => {
-        this.autocompleteRes = users.filter((user) => !this.innerValue.some((value) => value.id === user.id));
-      });
+      this.userService.queryUser(evt.query, this.excludeMe, this.filterRoles).subscribe(
+        (users: YuvUser[]) => {
+          this.autocompleteRes = users.filter((user) => !this.innerValue.some((value) => value.id === user.id));
+          this.propagateValidity(this.autocompleteRes.length > 0);
+        },
+        (e) => {
+          this.autocompleteRes = [];
+          this.propagateValidity(this.autocompleteRes.length > 0);
+        }
+      );
     } else {
       this.autocompleteRes = [];
+    }
+  }
+
+  // returns null when valid else the validation object
+  public validate(c: FormControl) {
+    return this.isValidInput ? null : { empty: { valid: false } };
+  }
+
+  propagateValidity(valid = true) {
+    if (this.isValidInput !== valid) {
+      this.isValidInput = valid;
+      this.propagate();
     }
   }
 
@@ -178,14 +221,13 @@ export class OrganizationComponent implements ControlValueAccessor, AfterViewIni
   private clearInnerInput() {
     if (this.autoCompleteInput.multiInputEL) {
       this.autoCompleteInput.multiInputEL.nativeElement.value = '';
+      this.propagateValidity(true);
     }
   }
 
   ngAfterViewInit() {
-    if (this.autoCompleteInput.multiInputEL && this.autofocus) {
-      setTimeout((_) => {
-        this.autoCompleteInput.multiInputEL.nativeElement.focus();
-      });
+    if (this.autofocus) {
+      setTimeout(() => this.autoCompleteInput.multiInputEL?.nativeElement.focus());
     }
   }
 }

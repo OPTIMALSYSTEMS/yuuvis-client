@@ -50,10 +50,10 @@ export class ColumnConfigComponent implements OnInit {
 
   title: string = '';
 
+  // The global column config that has been fetched from the backend (for being able to reset)
+  globalColumnConfig: ColumnConfig;
   // Columns that are part of the current column configuration
   columnConfig: ColumnConfig;
-  // The column config that has been fetched from the backend (for being able to reset)
-  private _loadedColumnConfig: ColumnConfig;
   moreColumnsAvailable: boolean;
   showCancelButton: boolean;
   columnConfigDirty: boolean;
@@ -183,9 +183,10 @@ export class ColumnConfigComponent implements OnInit {
     (reset ? this.userConfig.resetColumnConfig(this.columnConfig.type) : this.userConfig.saveColumnConfig(this.columnConfig, global)).subscribe(
       (res) => {
         this.busy = false;
+        if (global) this.globalColumnConfig = this.columnConfig;
         this.hasGlobal = reset;
+        this.resetConfig(reset ? this.globalColumnConfig : this.columnConfig);
         this.configSaved.emit(this.columnConfig);
-        this.resetConfig(this.columnConfig);
         this.columnConfigDirty = false;
       },
       (err) => {
@@ -196,12 +197,11 @@ export class ColumnConfigComponent implements OnInit {
     );
   }
 
-  private resetConfig(config: ColumnConfig): ColumnConfig {
-    this._loadedColumnConfig = {
+  private resetConfig(config: ColumnConfig) {
+    this.columnConfig = {
       type: config.type,
       columns: config.columns.map((c) => ({ ...c }))
     };
-    return (this.columnConfig = config);
   }
 
   private filterColumns(cols: any[]) {
@@ -220,9 +220,9 @@ export class ColumnConfigComponent implements OnInit {
     this.userConfig.getColumnConfig(objectTypeId).subscribe(
       (res: ColumnConfig) => {
         // check global settings
-        const original = JSON.stringify(res.columns);
         this.userConfig.getColumnConfig(objectTypeId, true).subscribe((global) => {
-          this.hasGlobal = original === JSON.stringify(global.columns);
+          this.globalColumnConfig = { type: global?.type, columns: this.filterColumns(global?.columns || []) };
+          this.hasGlobal = JSON.stringify(res.columns) === JSON.stringify(this.globalColumnConfig.columns);
         });
 
         this.busy = false;
@@ -232,10 +232,7 @@ export class ColumnConfigComponent implements OnInit {
             : this.systemService.getLocalizedResource(`${objectTypeId}_label`);
 
         this._objectTypeFields = this.filterColumns(Object.values(res.fields));
-        this.resetConfig({
-          type: res.type,
-          columns: this.filterColumns(res.columns)
-        });
+        this.resetConfig({ type: res.type, columns: this.filterColumns(res.columns) });
         this.checkMoreColumnsAvailable();
 
         // preset sort options with custom values

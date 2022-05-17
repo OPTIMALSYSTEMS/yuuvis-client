@@ -28,10 +28,14 @@ export class FollowUpsComponent implements OnInit, OnDestroy {
   layoutOptionsKey = 'yuv.app.follow-ups';
   selectedFollowUp: Process;
   processData$: Observable<ResponsiveTableData> = this.processService.processData$.pipe(
-    map((processData: Process[]) =>
-      this.formatProcessDataService.formatFollowUpDataForTable(processData, ['type', 'subject', 'startTime', 'expiryDateTime', 'status'])
-    ),
-    map((taskData: ResponsiveTableData) => (taskData.rows.length ? taskData : null))
+    map((processData: Process[]) => {
+      const pd = this.filterTerm
+        ? processData.filter((t: Process) => {
+            return t.subject && t.subject.toLowerCase().indexOf(this.filterTerm) !== -1;
+          })
+        : processData;
+      return this.formatProcessDataService.formatFollowUpDataForTable(pd, ['type', 'subject', 'startTime', 'expiryDateTime', 'status']);
+    })
   );
   loading$: Observable<boolean> = this.processService.loadingProcessData$;
 
@@ -42,6 +46,7 @@ export class FollowUpsComponent implements OnInit, OnDestroy {
   };
 
   plugins: any;
+  filterTerm: string;
 
   constructor(
     private processService: ProcessService,
@@ -76,6 +81,11 @@ export class FollowUpsComponent implements OnInit, OnDestroy {
     this.processService.fetchProcesses(ProcessDefinitionKey.FOLLOW_UP, {
       isCompleted: false
     });
+  }
+
+  onTermFilterChange(term) {
+    this.filterTerm = term;
+    this.processService.reEmitProcessData();
   }
 
   ngOnInit(): void {

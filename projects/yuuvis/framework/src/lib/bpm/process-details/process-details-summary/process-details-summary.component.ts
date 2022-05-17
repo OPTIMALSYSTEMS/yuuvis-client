@@ -58,7 +58,8 @@ export class ProcessDetailsSummaryComponent implements OnInit, OnDestroy {
   deleteProcess() {
     this.popoverService
       .confirm({
-        message: this.translate.instant('yuv.framework.process-details-summary.dialog.remove.message')
+        message: this.translate.instant('yuv.framework.process-details-summary.dialog.remove.message'),
+        confirmLabel: this.translate.instant('yuv.framework.process-details-summary.action.delete')
       })
       .subscribe((confirmed: boolean) => {
         if (confirmed) {

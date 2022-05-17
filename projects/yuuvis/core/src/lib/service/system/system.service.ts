@@ -46,8 +46,14 @@ import {
 export class SystemService {
   private STORAGE_KEY = 'yuv.core.system.definition';
   private STORAGE_KEY_AUTH_DATA = 'yuv.core.auth.data';
-  // cached icons to avaoid backend calls (session cache)
-  private iconCache = {};
+  // cached icons to avoid backend calls (session cache)
+  private iconCache: {
+    [objectTypeId: string]: {
+      uri: string;
+      icon?: string;
+    };
+  } = {};
+  private resolvedClassificationsCache = {};
 
   public system: SystemDefinition;
   private systemSource = new ReplaySubject<SystemDefinition>();
@@ -123,13 +129,13 @@ export class SystemService {
       .forEach((ot) => {
         switch (situation) {
           case 'create': {
-            if (!ot.classification?.includes(ObjectTypeClassification.CREATE_FALSE)) {
+            if (!this.getResolvedClassifications(ot.id).includes(ObjectTypeClassification.CREATE_FALSE)) {
               types.push(ot);
             }
             break;
           }
           case 'search': {
-            if (!ot.classification?.includes(ObjectTypeClassification.SEARCH_FALSE)) {
+            if (!this.getResolvedClassifications(ot.id).includes(ObjectTypeClassification.SEARCH_FALSE)) {
               types.push(ot);
             }
             break;
@@ -199,7 +205,7 @@ export class SystemService {
     const objectType: ObjectType = objectTypeId === SystemType.OBJECT ? this.getBaseType() : this.system.objectTypes.find((ot) => ot.id === objectTypeId);
 
     if (objectType && withLabel) {
-      objectType.label = this.getLocalizedResource(`${objectType.id}_label`);
+      objectType.label = this.getLocalizedResource(`${objectType.id}_label`) || objectTypeId;
     }
     return objectType;
   }
@@ -447,6 +453,38 @@ export class SystemService {
   }
 
   /**
+   * Get a list of classifications for a given object type including the
+   * classifications of its static secondary object types
+   * @param objectTypeId ID of the object type
+   */
+  getResolvedClassifications(objectTypeId: string): string[] {
+    return this.resolvedClassificationsCache[objectTypeId] || this.resolveClassifications(objectTypeId);
+  }
+
+  private resolveClassifications(objectTypeId: string): string[] {
+    let classifications: string[] = [];
+    const ot = this.getObjectType(objectTypeId);
+    if (ot) {
+      classifications = ot.classification || [];
+      const staticSOTs: string[] = ot.secondaryObjectTypes.filter((sot) => sot.static).map((sot) => sot.id);
+      staticSOTs.forEach((id) => {
+        const sot = this.getSecondaryObjectType(id);
+        classifications = sot?.classification
+          ? [
+              ...classifications,
+              ...sot.classification.filter((c) => {
+                // also filter classifications that should not be inherited
+                return c !== ObjectTypeClassification.CREATE_FALSE && c !== ObjectTypeClassification.SEARCH_FALSE;
+              })
+            ]
+          : classifications;
+      });
+      this.resolvedClassificationsCache[objectTypeId] = classifications;
+    }
+    return classifications;
+  }
+
+  /**
    * Visible tags are defined by a classification on the object type (e.g. 'tag[tenkolibri:process,1,2,3]').
    *
    * The example will only return tags with the name 'tenkolibri:process'
@@ -462,7 +500,7 @@ export class SystemService {
 
   private fetchVisibleTags(objectTypeId: string): { [tagName: string]: any[] } {
     const ot = this.getObjectType(objectTypeId) || this.getSecondaryObjectType(objectTypeId);
-    const tagClassifications = ot?.classification?.filter((t) => t.startsWith('tag['));
+    const tagClassifications = this.getResolvedClassifications(objectTypeId).filter((t) => t.startsWith('tag['));
     const parentType = ot && (ot as ObjectType).floatingParentType;
 
     const to: { [tagName: string]: any[] } = {};
@@ -490,9 +528,12 @@ export class SystemService {
    * @param fallback ID of a fallback icon that should be used if the given object type has no icon yet
    */
   getObjectTypeIcon(objectTypeId: string, fallback?: string): Observable<string> {
-    const fb = this.getFallbackIcon(objectTypeId, fallback);
-    const uri = `/resources/icons/${encodeURIComponent(objectTypeId)}${fb ? `?fb=${encodeURIComponent(fallback)}` : ''}`;
-    return !!this.iconCache[uri] ? of(this.iconCache[objectTypeId]) : this.backend.get(uri);
+    if (this.iconCache[objectTypeId] && this.iconCache[objectTypeId].icon) {
+      return of(this.iconCache[objectTypeId].icon);
+    } else {
+      const iconUri = this.getObjectTypeIconUri(objectTypeId, fallback);
+      return this.backend.get(iconUri).pipe(tap((icon) => (this.iconCache[objectTypeId] = { uri: iconUri, icon })));
+    }
   }
 
   /**
@@ -501,9 +542,15 @@ export class SystemService {
    * @param fallback ID of a fallback icon that should be used if the given object type has no icon yet
    */
   getObjectTypeIconUri(objectTypeId: string, fallback?: string): string {
-    const fb = this.getFallbackIcon(objectTypeId, fallback);
-    const uri = `/resources/icons/${encodeURIComponent(objectTypeId)}${fb ? `?fallback=${encodeURIComponent(fb)}` : ''}`;
-    return `${this.backend.getApiBase(ApiBase.apiWeb)}${uri}`;
+    if (this.iconCache[objectTypeId]) {
+      return this.iconCache[objectTypeId].uri;
+    } else {
+      const ci = this.getIconFromClassification(objectTypeId);
+      const fb = this.getFallbackIcon(objectTypeId, fallback);
+      const uri = `/resources/icons/${encodeURIComponent(ci || objectTypeId)}${fb ? `?fallback=${encodeURIComponent(fb)}` : ''}`;
+      this.iconCache[objectTypeId] = { uri: `${this.backend.getApiBase(ApiBase.apiWeb)}${uri}` };
+      return this.iconCache[objectTypeId].uri;
+    }
   }
 
   private getFallbackIcon(objectTypeId: string, fallback?: string): string {
@@ -517,6 +564,11 @@ export class SystemService {
       }
     }
     return fallback;
+  }
+
+  private getIconFromClassification(objectTypeId: string) {
+    const ce: Map<string, ClassificationEntry> = this.getClassifications(this.getResolvedClassifications(objectTypeId));
+    return ce.has(ObjectTypeClassification.OBJECT_TYPE_ICON) ? ce.get(ObjectTypeClassification.OBJECT_TYPE_ICON).options[0] : null;
   }
 
   /**

@@ -42,11 +42,6 @@
           opacity: 0;
           pointer-events: none;
           height: 0;
-          position: absolute;
-          overflow: hidden;
-          margin: 0;
-          padding: 0;
-          width: 100%;
         }
       }
 
@@ -58,6 +53,11 @@
       }
 
       .extras {
+        z-index: 1;
+        margin: 0;
+        padding: 0;
+        width: 100%;
+
         ::ng-deep {
           > form {
             background-color: var(--panel-background-lightgrey);

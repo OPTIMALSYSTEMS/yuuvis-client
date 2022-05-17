@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, EMPTY, forkJoin, Observable } from 'rxjs';
 import { expand, map, skipWhile, tap } from 'rxjs/operators';
+import { ConfigService } from '../../config/config.service';
 import { BpmService } from '../bpm/bpm.service';
 import { FetchProcessOptions, FetchTaskOptions, FollowUpVars, Process, ProcessCreatePayload, ProcessDefinitionKey, Task } from '../model/bpm.model';
 
@@ -20,10 +21,11 @@ export class ProcessService {
 
   private readonly bpmProcessUrl = '/bpm/processes';
 
+  private processData: Process[] = [];
   private processSource = new BehaviorSubject<Process[]>([]);
   public processData$: Observable<Process[]> = this.processSource.asObservable();
 
-  constructor(private bpmService: BpmService) {}
+  constructor(private bpmService: BpmService, private config: ConfigService) {}
 
   /**
    * bpm Process data Loading status
@@ -47,8 +49,17 @@ export class ProcessService {
     const mergedOptions = { ...defaultOptions, ...options };
     const params = Object.keys(mergedOptions).map((k) => `${k}=${mergedOptions[k]}`);
     this.getAllPages(params.join('&'))
-      .pipe(tap((res: Process[]) => this.processSource.next(res.reverse())))
+      .pipe(
+        tap((res: Process[]) => {
+          this.processData = [...res.reverse()];
+          this.processSource.next(this.processData);
+        })
+      )
       .subscribe();
+  }
+
+  reEmitProcessData() {
+    this.processSource.next(this.processData);
   }
 
   private getAllPages(requestParams: string): Observable<Process[]> {
@@ -66,7 +77,9 @@ export class ProcessService {
   }
 
   private getPage(requestParams: string, index?: number) {
-    return this.bpmService.getProcesses(`${this.bpmProcessUrl}?size=${this.PROCESSES_PAGE_SIZE}
+    const pageSize = this.config.get('core.app.processesPageSize') || this.PROCESSES_PAGE_SIZE;
+
+    return this.bpmService.getProcesses(`${this.bpmProcessUrl}?size=${pageSize}
     &page=${index || 0}&${requestParams}`);
   }
 

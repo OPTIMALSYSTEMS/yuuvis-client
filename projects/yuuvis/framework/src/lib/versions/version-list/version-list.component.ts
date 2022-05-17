@@ -49,6 +49,7 @@ export class VersionListComponent implements OnInit {
     BaseObjectTypeField.CREATION_DATE,
     BaseObjectTypeField.CREATED_BY,
     BaseObjectTypeField.OBJECT_TYPE_ID,
+    BaseObjectTypeField.TAGS,
     BaseObjectTypeField.PARENT_ID,
     BaseObjectTypeField.PARENT_OBJECT_TYPE_ID,
     BaseObjectTypeField.PARENT_VERSION_NUMBER,

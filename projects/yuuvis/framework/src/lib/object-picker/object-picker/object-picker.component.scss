@@ -34,6 +34,21 @@
     }
     yuv-quick-search {
       grid-area: search;
+
+      ::ng-deep {
+        yuv-checkbox {
+          display: none;
+        }
+
+        .search-box {
+          height: unset !important;
+
+          .extras {
+            position: absolute;
+            border-bottom: 1px solid var(--panel-divider-color);
+          }
+        }
+      }
     }
   }
   main {

@@ -1,11 +1,16 @@
 .action-bar {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(24px, 1fr));
+  grid-template-columns: repeat(auto-fit, auto);
   grid-gap: 20px 5px;
   grid-auto-flow: column dense;
   align-items: center;
 
   &.status {
-    grid-template-columns: repeat(auto-fit, minmax(18px, 1fr));
+    display: flex;
+    margin: 0 -2px;
+    > * {
+      margin: 0 2px;
+    }
+    align-items: center;
   }
 }

@@ -8,6 +8,7 @@ import {
   DmsObject,
   Logger,
   ObjectTypeField,
+  ObjectTypePropertyClassification,
   ParentField,
   RetentionField,
   SystemService
@@ -59,6 +60,9 @@ export class SummaryComponent implements OnInit, OnDestroy {
   dmsObjectID: string;
   coreFields: any[] = [];
 
+  private _objectData;
+  private _objectData2;
+
   /**
    * `DmsObject` to show the summary for
    */
@@ -73,7 +77,14 @@ export class SummaryComponent implements OnInit, OnDestroy {
     });
   }
 
-  dmsObject2: DmsObject;
+  private _dmsObject2: DmsObject;
+  set dmsObject2(o: DmsObject) {
+    this._dmsObject2 = o;
+    this._objectData2 = { ...o.data };
+  }
+  get dmsObject2() {
+    return this._dmsObject2;
+  }
 
   /**
    * Two dms object to be compared against each other. They need to share
@@ -110,13 +121,6 @@ export class SummaryComponent implements OnInit, OnDestroy {
     this.appCacheService.setItem(this.STORAGE_KEY_SECTION_VISIBLE, this.visible).pipe(takeUntilDestroy(this)).subscribe();
   }
 
-  private excludeTables(objectTypeId): string[] {
-    return this.systemService
-      .getObjectType(objectTypeId)
-      .fields.filter((fields: ObjectTypeField) => fields.id !== BaseObjectTypeField.TAGS && fields.propertyType === 'table')
-      .map((field: ObjectTypeField) => field.id);
-  }
-
   private getSummaryConfiguration(dmsObject: DmsObject) {
     const skipFields: string[] = [
       ContentStreamField.ID,
@@ -124,8 +128,7 @@ export class SummaryComponent implements OnInit, OnDestroy {
       BaseObjectTypeField.ACL,
       BaseObjectTypeField.PARENT_ID,
       BaseObjectTypeField.PARENT_OBJECT_TYPE_ID,
-      BaseObjectTypeField.PARENT_VERSION_NUMBER,
-      ...this.excludeTables(dmsObject.objectTypeId)
+      BaseObjectTypeField.PARENT_VERSION_NUMBER
     ];
 
     const defaultBaseFields: { key: string; order: number }[] = [
@@ -138,8 +141,8 @@ export class SummaryComponent implements OnInit, OnDestroy {
       { key: ContentStreamField.FILENAME, order: 7 },
       { key: ContentStreamField.LENGTH, order: 8 },
       { key: ContentStreamField.MIME_TYPE, order: 9 },
-      { key: RetentionField.START_OF_RETENTION, order: 10 },
-      { key: RetentionField.EXPIRATION_DATE, order: 11 },
+      { key: RetentionField.RETENTION_START, order: 10 },
+      { key: RetentionField.RETENTION_END, order: 11 },
       { key: RetentionField.DESTRUCTION_DATE, order: 12 },
       { key: BaseObjectTypeField.TAGS, order: 13 }
     ];
@@ -174,19 +177,47 @@ export class SummaryComponent implements OnInit, OnDestroy {
     return { skipFields, extraFields, parentFields, defaultBaseFields };
   }
 
-  private restructureByClassification(data, classification: string) {
+  private restructureByClassification(d, classification: string) {
+    const data = { ...d };
     const sotIndex: number[] = [];
     const systemsot: string[] = [];
     data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS]?.map(
       (sot, index) => this.systemService.getSecondaryObjectType(sot)?.classification?.includes(classification) && sotIndex.unshift(index) && systemsot.push(sot)
     );
-    sotIndex.forEach((value, index) => data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS].splice(value[index], 1));
+    sotIndex.forEach((value, index) => [...data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS]].splice(value[index], 1));
     return { ...data, 'classification[systemsot]': systemsot };
   }
 
-  private generateValue(data, key: string, renderer: ICellRendererFunc, def: ColDef): string | HTMLElement {
-    // tags cell renderer differs from the one used in the grid
-    if (key === BaseObjectTypeField.TAGS) renderer = this.gridService.customContext(CellRenderer.systemTagsSummaryRenderer);
+  private generateValue(data, key: string, renderer: ICellRendererFunc, def: ColDef, type?: string): string | HTMLElement {
+    if (key === BaseObjectTypeField.TAGS) {
+      // tags cell renderer differs from the one used in the grid
+      renderer = this.gridService.customContext(CellRenderer.systemTagsSummaryRenderer);
+    } else if (type && type.toLowerCase() === 'table') {
+      // handle tables
+      renderer = (param: any) => {
+        const f: any = this.systemService.system.allFields[key];
+        const cdQA = {};
+        f.columnDefinitions.forEach((e) => {
+          // need to map classification to classification(s)
+          e.classifications = e.classification;
+          cdQA[e.id] = this.gridService.getColumnDefinition(e);
+        });
+
+        return `<table class="summary-table-value">
+          <tr>${Object.keys(cdQA)
+            .map((k) => `<th>${this.systemService.getLocalizedResource(cdQA[k].colId + '_label') || cdQA[k].colId}</th>`)
+            .join('')}</tr>
+          ${param.value
+            .map(
+              (row) =>
+                `<tr>${Object.keys(cdQA)
+                  .map((k) => `<td>${this.gridService.customContext(cdQA[k].cellRenderer)({ value: row[k], data: row, colDef: cdQA[k] })}</td>`)
+                  .join('')}</tr>`
+            )
+            .join('')}
+          </table>`;
+      };
+    }
     return typeof renderer === 'function' ? renderer({ value: data[key], data: data, colDef: def }) : data[key + '_title'] ? data[key + '_title'] : data[key];
   }
 
@@ -199,9 +230,12 @@ export class SummaryComponent implements OnInit, OnDestroy {
       parent: []
     };
 
-    dmsObject.data = this.restructureByClassification(dmsObject.data, Classification.SYSTEM_SOT);
+    this._objectData = this.restructureByClassification(dmsObject.data, Classification.SYSTEM_SOT);
     if (this.dmsObject2) {
-      this.dmsObject2.data = this.restructureByClassification(this.dmsObject2.data, Classification.SYSTEM_SOT);
+      this._objectData2 = this.restructureByClassification(this.dmsObject2.data, Classification.SYSTEM_SOT);
+      // for versions comparison tags do not make sense
+      delete this._objectData[BaseObjectTypeField.TAGS];
+      delete this._objectData2[BaseObjectTypeField.TAGS];
     }
 
     const { skipFields, parentFields, extraFields, defaultBaseFields } = this.getSummaryConfiguration(dmsObject);
@@ -209,8 +243,8 @@ export class SummaryComponent implements OnInit, OnDestroy {
     const fsots = this.systemService.getFloatingSecondaryObjectTypes(dmsObject.objectTypeId);
     fsots.forEach((fsot) => (colDef = [...colDef, ...this.gridService.getColumnDefinitions(fsot.id, true)]));
 
-    Object.keys({ ...dmsObject.data, ...this.dmsObject2?.data })
-      .filter((key) => !key.includes('_title'))
+    Object.keys({ ...this._objectData, ...this._objectData2 })
+      .filter((key) => !key.includes('_title') && !this.shouldBeHidden(key))
       .forEach((key: string) => {
         const prepKey = key.replace(/^parent./, ''); // todo: pls implement general solution
         const def: ColDef = colDef.find((cd) => cd.field === prepKey);
@@ -219,14 +253,28 @@ export class SummaryComponent implements OnInit, OnDestroy {
         const si: SummaryEntry = {
           label: (def && def.headerName) || key,
           key,
-          value: this.generateValue(dmsObject.data, key, renderer, def),
-          value2: this.dmsObject2 && this.generateValue(this.dmsObject2.data, key, renderer, def),
+          value: this.generateValue(
+            this._objectData,
+            key,
+            renderer,
+            def,
+            this.systemService.system.allFields[key] ? this.systemService.system.allFields[key].propertyType : undefined
+          ),
+          value2:
+            this.dmsObject2 &&
+            this.generateValue(
+              this._objectData2,
+              key,
+              renderer,
+              def,
+              this.systemService.system.allFields[key] ? this.systemService.system.allFields[key].propertyType : undefined
+            ),
           order: null
         };
 
         if (key === BaseObjectTypeField.OBJECT_TYPE_ID) {
-          si.value = this.systemService.getLocalizedResource(`${dmsObject.data[key]}_label`);
-          si.value2 = this.dmsObject2 && this.systemService.getLocalizedResource(`${this.dmsObject2.data[key]}_label`);
+          si.value = this.systemService.getLocalizedResource(`${this._objectData[key]}_label`);
+          si.value2 = this.dmsObject2 && this.systemService.getLocalizedResource(`${this._objectData2[key]}_label`);
         }
 
         if (this.dmsObject2 && (si.value === si.value2 || this.isVersion(key))) {
@@ -258,13 +306,19 @@ export class SummaryComponent implements OnInit, OnDestroy {
     };
   }
 
+  private shouldBeHidden(key: string): boolean {
+    const otf: ObjectTypeField = this.systemService.system.allFields[key];
+    return otf?.classifications?.includes(ObjectTypePropertyClassification.SUMMARY_HIDDEN);
+  }
+
   private extractFields(element): string[] {
     let fields = [];
     if (!element) {
       return fields;
     }
-    element.elements && element.type !== 'table'
-      ? element.elements.forEach((el) => (fields = fields.concat(this.extractFields(el))))
+    element.elements
+      ? // && element.type !== 'table'
+        element.elements.forEach((el) => (fields = fields.concat(this.extractFields(el))))
       : fields.push(element.name);
     return fields;
   }

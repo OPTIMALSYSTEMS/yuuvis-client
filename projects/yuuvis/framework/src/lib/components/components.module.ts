@@ -17,6 +17,7 @@ import { YuvDirectivesModule } from '../directives/directives.module';
 import { YuvPipesModule } from '../pipes/pipes.module';
 import { SingleCellRendererComponent } from '../services/grid/renderer/single-cell-renderer/single-cell-renderer.component';
 import { ActionMenuBarComponent } from './action-menu-bar/action-menu-bar.component';
+import { ActionMenuButtonComponent } from './action-menu-bar/action-menu-button/action-menu-button.component';
 import { IconUploadComponent } from './animated-icons/icon-upload/icon-upload.component';
 import { BusyOverlayDirective } from './busy-overlay/busy-overlay.directive';
 import { DmsObjectTileComponent } from './dms-object-tile/dms-object-tile.component';
@@ -38,7 +39,8 @@ const components = [
   ActionMenuBarComponent,
   ResponsiveTabContainerComponent,
   IconUploadComponent,
-  DmsObjectTileComponent
+  DmsObjectTileComponent,
+  ActionMenuButtonComponent
 ];
 
 /**

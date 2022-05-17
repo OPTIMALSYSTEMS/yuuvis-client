@@ -1,7 +1,9 @@
 import { RowNode } from '@ag-grid-community/core';
 import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
-import { TaskRow } from '@yuuvis/core';
+import { FormControl, FormGroup } from '@angular/forms';
+import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { ResponsiveTableData } from '../../components/responsive-data-table/responsive-data-table.interface';
+import { clear, listModeDefault, listModeSimple, refresh } from '../../svg.generated';
 import { ResponsiveDataTableComponent, ViewMode } from './../../components/responsive-data-table/responsive-data-table.component';
 
 interface HeaderDetails {
@@ -16,20 +18,7 @@ interface HeaderDetails {
   styleUrls: ['./process-list.component.scss']
 })
 export class ProcessListComponent {
-  private _dataTable: ResponsiveDataTableComponent;
-  @ViewChild('dataTable')
-  set dataTable(data: ResponsiveDataTableComponent) {
-    setTimeout(() => {
-      if (this.processData.rows[0] instanceof TaskRow) {
-        data.selectRows();
-      }
-    }, 1500);
-    this._dataTable = data;
-  }
-
-  get dataTable() {
-    return this._dataTable;
-  }
+  @ViewChild('dataTable') dataTable: ResponsiveDataTableComponent;
   private _processData: any;
   private _viewMode: ViewMode = 'horizontal';
   header: HeaderDetails;
@@ -38,15 +27,11 @@ export class ProcessListComponent {
   @Input() layoutOptionsKey: string;
   @Input()
   set processData(data: ResponsiveTableData) {
-    let rowsToBeSelected: RowNode[] = [];
-    if (this.dataTable) {
-      rowsToBeSelected = this.dataTable.gridOptions.api.getSelectedNodes();
-    }
-
     this._processData = data;
     this.totalNumItems = data ? data.rows.length : 0;
 
-    if (this.dataTable && rowsToBeSelected.length) {
+    let rowsToBeSelected: RowNode[] = this.dataTable?.gridOptions.api.getSelectedNodes();
+    if (rowsToBeSelected?.length) {
       // try to find index by ID first
       const rowNode = this.dataTable.gridOptions.api.getRowNode(rowsToBeSelected[0].data.id);
       let index = rowNode ? rowNode.rowIndex : rowsToBeSelected[0].rowIndex;
@@ -72,13 +57,41 @@ export class ProcessListComponent {
   get viewMode(): ViewMode {
     return this._viewMode;
   }
+  showStatusFilter: boolean;
+  showTermFilter: boolean;
 
   @Input() showFooter = true;
+  @Input() statusFilter: 'all' | 'running' | 'completed' = 'all';
 
   @Output() selectedItem: EventEmitter<any> = new EventEmitter<any>();
   @Output() refreshList: EventEmitter<any> = new EventEmitter<any>();
+  @Output() statusFilterChange: EventEmitter<'all' | 'running' | 'completed'> = new EventEmitter<'all' | 'running' | 'completed'>();
+  @Output() termFilterChange: EventEmitter<string> = new EventEmitter<string>();
 
-  constructor() {}
+  termFilterForm: FormGroup = new FormGroup({
+    term: new FormControl('')
+  });
+  appliedTermFilter: string;
+
+  constructor(private iconRegistry: IconRegistryService) {
+    this.iconRegistry.registerIcons([listModeDefault, listModeSimple, refresh, clear]);
+  }
+
+  setStatusFilter(statusFilter: 'all' | 'running' | 'completed') {
+    this.statusFilter = statusFilter;
+    this.statusFilterChange.emit(this.statusFilter);
+  }
+
+  filterByTerm() {
+    this.appliedTermFilter = this.termFilterForm.value.term;
+    this.termFilterChange.emit(this.appliedTermFilter);
+  }
+
+  resetTermFilter() {
+    this.appliedTermFilter = null;
+    this.termFilterForm.patchValue({ term: null });
+    this.termFilterChange.emit(null);
+  }
 
   select(event) {
     this.selectedItem.emit(event);
@@ -86,5 +99,10 @@ export class ProcessListComponent {
 
   refresh() {
     this.refreshList.emit();
+  }
+
+  ngOnInit() {
+    this.showTermFilter = this.termFilterChange.observers && this.termFilterChange.observers.length > 0;
+    this.showStatusFilter = this.statusFilterChange.observers && this.statusFilterChange.observers.length > 0;
   }
 }

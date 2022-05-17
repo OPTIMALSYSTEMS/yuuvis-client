@@ -42,6 +42,7 @@ import { refresh, settings } from './../../svg.generated';
 })
 export class ContextComponent implements OnInit, OnDestroy {
   busy: boolean;
+  loading: boolean;
   activeTabIndex: number;
   contextChildrenQuery: SearchQuery;
   recentItemsQuery: SearchQuery;
@@ -180,9 +181,11 @@ export class ContextComponent implements OnInit, OnDestroy {
 
   openActionMenu() {
     if (this.preSelectItems) {
+      this.loading = true;
       this.dmsService.getDmsObjects(this.preSelectItems).subscribe((items) => {
         this.actionMenuSelection = items;
         this.actionMenuVisible = true;
+        this.loading = false;
       });
     }
   }

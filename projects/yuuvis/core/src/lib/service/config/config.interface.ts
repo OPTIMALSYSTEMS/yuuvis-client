@@ -14,12 +14,18 @@ export interface YuvConfig {
       level: 'debug' | 'error' | 'warn' | 'info';
     };
     permissions?: {
+      retentionManagerRole?: string;
       advancedUserRole?: string;
       manageSettingsRole?: string;
     };
     clientdefaults?: {
       titleProperty?: string;
       descriptionProperty?: string;
+    };
+    app?: {
+      // tasks are loaded in chunks. InboxPageSize defines the size of those chunks
+      inboxPageSize?: number;
+      processesPageSize?: number;
     };
   };
   oidc?: OpenIdConfig;

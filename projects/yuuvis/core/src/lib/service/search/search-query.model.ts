@@ -266,7 +266,7 @@ export class SearchQuery {
 
     if (this.hiddenFilterGroup && !this.hiddenFilterGroup.isEmpty()) {
       const fg = this.hiddenFilterGroup.toShortQuery();
-      const filters = fg.filters.length > 1 && this.filterGroup.operator === SearchFilterGroup.OPERATOR.OR ? [fg] : fg.filters;
+      const filters = fg.filters.length > 1 && this.hiddenFilterGroup.operator === SearchFilterGroup.OPERATOR.OR ? [fg] : fg.filters;
       if (combineFilters) {
         queryJson.filters = filters.concat(queryJson.filters || []);
       } else {
@@ -472,7 +472,7 @@ export class SearchFilter {
   };
 
   public static fromQuery(query: any) {
-    return new SearchFilter(query.f, query.o, query.v1, query.v2);
+    return new SearchFilter(query.f, query.o, query.v1, query.v2, query.useNot);
   }
 
   id = Utils.uuid();
@@ -491,7 +491,7 @@ export class SearchFilter {
    * @param firstValue The filters value
    * @param secondValue Optional second value for filters that for example define ranges of values
    */
-  constructor(public property: string, public operator: string, public firstValue: any, public secondValue?: any) {
+  constructor(public property: string, public operator: string, public firstValue: any, public secondValue?: any, public useNot?: boolean) {
     if (firstValue instanceof RangeValue) {
       this.operator = firstValue.operator;
       this.firstValue = firstValue.firstValue;
@@ -502,10 +502,11 @@ export class SearchFilter {
   /**
    * @ignore
    */
-  match(property: string, operator: string, firstValue: any, secondValue?: any) {
+  match(property: string, operator: string, firstValue: any, secondValue?: any, useNot?: boolean) {
     return (
       this.property === property &&
       this.operator === operator &&
+      this.useNot === useNot &&
       this.secondValue === secondValue &&
       (this.firstValue instanceof Array ? !!this.firstValue.find((v) => v === firstValue) : this.firstValue === firstValue)
     );
@@ -516,7 +517,7 @@ export class SearchFilter {
   }
 
   toQuery() {
-    return { f: this.property, o: this.operator, v1: this.firstValue, v2: this.secondValue };
+    return { f: this.property, o: this.operator, v1: this.firstValue, v2: this.secondValue, useNot: this.useNot };
   }
 
   toString() {

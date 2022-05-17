@@ -1,0 +1,34 @@
+<h2>{{ 'yuv.framework.action-menu.action.retention.label' | translate }}</h2>
+
+<form [formGroup]="rtStartForm" (ngSubmit)="submit()" [yuvBusyOverlay]="busy">
+
+    <!-- <yuv-form-input [invalid]="rmStartOfRetention.invalid" [skipToggle]="true"
+        [label]="'yuv.framework.action-menu.action.retention.startform.startOfRetention' | translate"
+        [skipToggle]="true">
+        <yuv-datetime [onlyFutureDates]="true" formControlName="rmStartOfRetention"></yuv-datetime>
+    </yuv-form-input> -->
+
+    <yuv-form-input [invalid]="rmExpirationDate.dirty && rmExpirationDate.invalid" [skipToggle]="true" [required]="true"
+        [label]="'yuv.framework.action-menu.action.retention.startform.expirationDate' | translate" [skipToggle]="true">
+        <yuv-datetime [onlyFutureDates]="true" formControlName="rmExpirationDate"></yuv-datetime>
+    </yuv-form-input>
+
+    <yuv-form-input [invalid]="rmDestructionDate.invalid" [skipToggle]="true"
+        [label]="'yuv.framework.action-menu.action.retention.startform.destructionDate' | translate"
+        [skipToggle]="true">
+        <yuv-datetime [onlyFutureDates]="true" formControlName="rmDestructionDate"></yuv-datetime>
+    </yuv-form-input>
+    <div class="error" *ngIf="rmDestructionDate.errors?.retentionPeriodMissing">
+        {{'yuv.framework.action-menu.action.retention.error.retentionPeriodMissing'|translate}}</div>
+    <div class="error" *ngIf="rmDestructionDate.errors?.destructBeforeEnd">
+        {{'yuv.framework.action-menu.action.retention.error.destructBeforeEnd'|translate}}</div>
+
+    <div class="error formGroup" *ngIf="rtStartForm.errors?.endBeforeStart">
+        {{'yuv.framework.action-menu.action.retention.error.endBeforeStart'|translate}}</div>
+
+    <div class="form-buttons">
+        <button (click)="cancel()">{{ 'yuv.framework.shared.cancel' | translate }}</button>
+        <button class="primary" [disabled]="!rtStartForm.dirty || rtStartForm.invalid"
+            type="submit">{{'yuv.framework.action-menu.action.retention.startform.submit'|translate}}</button>
+    </div>
+</form>
