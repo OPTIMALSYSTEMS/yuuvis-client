@@ -32,7 +32,7 @@ import {
   UploadResult
 } from '@yuuvis/framework';
 import { Observable } from 'rxjs';
-import { filter } from 'rxjs/operators';
+import { filter, map, switchMap } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { add, close, drawer, offline, refresh, search, userDisabled } from '../../../assets/default/svg/svg';
 import { AppSearchService } from '../../service/app-search.service';
@@ -334,9 +334,12 @@ export class FrameComponent implements OnInit, OnDestroy {
         // redirect to the page the user logged out from the last time
         // but only if current route is not a deep link
         if (this.userService.getCurrentUser && ['/dashboard', '/', ''].includes(this.router.routerState.snapshot.url)) {
-          this.frameService.getRouteOnLogout().subscribe((url) => {
-            if (url) this.router.navigateByUrl(url);
-          });
+          this.frameService
+            .getRouteOnLogout()
+            .pipe(switchMap((res) => this.frameService.resetRouteOnLogout().pipe(map((_) => res))))
+            .subscribe((url: string) => {
+              if (url) this.router.navigateByUrl(url);
+            });
         }
       }
     });
