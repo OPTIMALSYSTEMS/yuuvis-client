@@ -103,6 +103,10 @@ export class FrameService {
     return this.appCache.getItem(this.getRouteOnLogoutStorageKey());
   }
 
+  resetRouteOnLogout(): Observable<boolean> {
+    return this.appCache.removeItem(this.getRouteOnLogoutStorageKey());
+  }
+
   private getRouteOnLogoutStorageKey() {
     const currentUser: YuvUser = this.userService.getCurrentUser();
     return `yuv.client.logout.route.${currentUser ? currentUser.id : 'undefined'}`;
