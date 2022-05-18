@@ -171,7 +171,7 @@ export class DatetimeComponent implements OnInit, ControlValueAccessor, Validato
     }
 
     // fixed pm/am formatting
-    if (event.length && this.withAmPm && !event.match(/aa$|AM$|PM$/)) {
+    if (event.length && this.withAmPm && this._datePattern.match(/a$/) && !event.match(/aa$|AM$|PM$/)) {
       const element = this.elemRef.nativeElement.querySelector('input');
       const caretPos = element.selectionStart;
       this.innerValue = element.value = event.slice(0, -2) + (event.match(/ma$|mm$/) ? 'aa' : event.match(/p|P/) ? 'PM' : 'AM');
