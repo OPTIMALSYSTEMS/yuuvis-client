@@ -126,6 +126,11 @@ export enum ObjectTypeClassification {
   OBJECT_TYPE_ICON = 'appClient:icon'
 }
 
+// classifications applied to object types
+export enum ObjectTypePropertyClassification {
+  SUMMARY_HIDDEN = 'appClient:summary:hidden'
+}
+
 // classifications applied to secondary object types
 export enum SecondaryObjectTypeClassification {
   REQUIRED = 'appClient:required',

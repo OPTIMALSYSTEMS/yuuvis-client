@@ -262,12 +262,15 @@ export interface PluginExtensionConfig extends PluginConfig {
 /**
  * PluginViewerConfig
  */
+
+export type PluginViewerConfigType = 'compare' | 'extend' | 'error' | 'default';
+
 export interface PluginViewerConfig {
   mimeType?: string | string[];
   fileExtension?: string | string[];
   viewer: string;
   error?: boolean;
-  type?: 'compare' | 'extend' | 'error' | 'default';
+  type?: PluginViewerConfigType;
 }
 
 /**
