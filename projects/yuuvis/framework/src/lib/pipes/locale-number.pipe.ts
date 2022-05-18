@@ -98,7 +98,7 @@ export class LocaleNumberPipe extends UnsubscribeOnDestroy implements PipeTransf
   }
 
   stringToNumber(value: string) {
-    value = (value || '').replace(new RegExp('\\' + this.separator, 'g'), '').replace(this.decimalSeparator, '.');
+    value = (value || '').replace(new RegExp('\\' + this.separator + "|\\s|'| ", 'g'), '').replace(this.decimalSeparator, '.');
     if (typeof value === 'string' && !isNaN(Number(value) - parseFloat(value))) {
       return Number(value);
     }
