@@ -40,9 +40,15 @@ export class LocaleDatePipe extends DatePipe implements PipeTransform {
     const MM = format.indexOf('MM');
     const YYYY = format.indexOf('yyyy');
     const HH = format.toUpperCase().indexOf('HH');
+    const mm = format.indexOf('mm');
+    const aa = format.indexOf('aa');
     return (
       value &&
-      this.fixTimezone(`${value.substring(YYYY, YYYY + 4)}/${value.substring(MM, MM + 2)}/${value.substring(dd, dd + 2)} ${HH > 0 ? value.substring(HH) : ''}`)
+      this.fixTimezone(
+        `${value.substring(YYYY, YYYY + 4)}/${value.substring(MM, MM + 2)}/${value.substring(dd, dd + 2)}${
+          HH > -1 ? ' ' + value.substring(HH, HH + 2) + ':' + value.substring(mm, mm + 2) : ''
+        }${(aa > -1 ? ' ' + value.substring(aa, aa + 2) : '').replace(/上午|ص/, 'AM').replace(/下午|م/, 'PM')}`
+      )
     );
   }
 
@@ -71,6 +77,8 @@ export class LocaleDatePipe extends DatePipe implements PipeTransform {
           .replace('{1}', this.format('eoShortDay'));
         break;
     }
+
+    if (this.lang === 'zh' || this.lang === 'ar') formatValue = formatValue.replace('aa', '').replace('hh', 'HH'); // hotfix for chinesse and arabic special charcters
 
     return formatValue || format;
   }
