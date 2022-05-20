@@ -126,7 +126,7 @@ export class ObjectCreateComponent implements OnDestroy {
   set objectTypePreset(preset: ObjectTypePreset) {
     if (preset) {
       const { objectType, data } = preset;
-      this.selectObjectType(objectType);
+      this.selectObjectType(objectType, data);
       this.formState = { ...this.formState, data };
     }
   }
@@ -284,8 +284,9 @@ export class ObjectCreateComponent implements OnDestroy {
   /**
    * Select an object type for the object to be created.
    * @param objectType The object type to be selected
+   * @param presetData Data that should be past to the form upfront
    */
-  selectObjectType(objectType: ObjectType) {
+  selectObjectType(objectType: ObjectType, presetData?: { [key: string]: any }) {
     this.formState = null;
 
     if (this.selectedObjectType && this.selectedObjectType.id !== objectType.id) {
@@ -326,7 +327,7 @@ export class ObjectCreateComponent implements OnDestroy {
       this.system.getObjectTypeForm(objectType.id, 'CREATE').subscribe(
         (model) => {
           this.objCreateService.setNewState({ busy: false });
-          let data = {};
+          let data = presetData || {};
           if (this.context) {
             data[BaseObjectTypeField.PARENT_ID] = this.context.id;
           }
