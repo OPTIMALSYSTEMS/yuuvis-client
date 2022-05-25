@@ -31,7 +31,7 @@ export class ProcessesComponent implements OnInit, OnDestroy {
     map((processData: Process[]) => {
       const pd = this.filterTerm
         ? processData.filter((t: Process) => {
-            return t.subject && t.subject.toLowerCase().indexOf(this.filterTerm) !== -1;
+            return t.subject && t.subject.toLowerCase().indexOf(this.filterTerm.toLowerCase()) !== -1;
           })
         : processData;
       return this.formatProcessDataService.formatProcessDataForTable(pd, ['type', 'subject', 'startTime', 'status', 'endTime']);
