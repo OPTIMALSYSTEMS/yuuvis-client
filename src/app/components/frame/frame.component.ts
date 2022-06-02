@@ -359,7 +359,10 @@ export class FrameComponent implements OnInit, OnDestroy {
             // route the user initially requested when entering the app (may be deep link from e.g. a link)
             this.authService.getInitialRequestUri()
           ])
-            .pipe(switchMap((res) => this.authService.resetInitialRequestUri().pipe(map((_) => res))))
+            .pipe(
+              switchMap((res) => this.authService.resetInitialRequestUri().pipe(map((_) => res))),
+              switchMap((res) => this.frameService.resetRouteOnLogout().pipe(map((_) => res)))
+            )
             .subscribe((res: { uri: string; timestamp: number }[]) => {
               const logoutRes = res[0];
               const loginRes = res[1] && !ignoreRoutes.includes(res[1].uri) ? res[1] : null;

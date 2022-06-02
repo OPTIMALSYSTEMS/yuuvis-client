@@ -88,6 +88,7 @@ export interface Task {
   subject: string;
   suspended: false;
   variables: ProcessVariable[];
+  resolvedValues?: { [id: string]: string };
   attachments: string[];
 }
 

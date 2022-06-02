@@ -35,7 +35,10 @@ export class InboxComponent implements OnInit, OnDestroy {
       const td = this.filterTerm
         ? taskData.filter((t: Task) => {
             const l = this.system.getLocalizedResource(`${t.name}_label`);
-            return (t.subject && t.subject.toLowerCase().indexOf(this.filterTerm) !== -1) || (l && l.toLowerCase().indexOf(this.filterTerm) !== -1);
+            return (
+              (t.subject && t.subject.toLowerCase().indexOf(this.filterTerm.toLowerCase()) !== -1) ||
+              (l && l.toLowerCase().indexOf(this.filterTerm.toLowerCase()) !== -1)
+            );
           })
         : taskData;
       return this.formatProcessDataService.formatTaskDataForTable([...td]);

@@ -338,6 +338,7 @@ export class SystemService {
             fsots.primarySOTs.push(sot);
           }
         } else if (
+          !sot.classification?.includes(Classification.SYSTEM_SOT) &&
           !sot.classification?.includes(SecondaryObjectTypeClassification.REQUIRED) &&
           !sot.classification?.includes(SecondaryObjectTypeClassification.EXTENSION_ADD_FALSE)
         ) {

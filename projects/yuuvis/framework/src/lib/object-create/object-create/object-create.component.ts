@@ -11,17 +11,15 @@ import {
   ObjectType,
   ObjectTypeGroup,
   PendingChangesService,
-  SearchService,
   SecondaryObjectTypeClassification,
   Sort,
   SystemService,
   SystemType,
   TranslateService,
-  UserService,
   Utils
 } from '@yuuvis/core';
 import { forkJoin, Observable, of } from 'rxjs';
-import { catchError, map, switchMap } from 'rxjs/operators';
+import { catchError, map, switchMap, tap } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { FadeInAnimations } from '../../common/animations/fadein.animation';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
@@ -128,7 +126,7 @@ export class ObjectCreateComponent implements OnDestroy {
   set objectTypePreset(preset: ObjectTypePreset) {
     if (preset) {
       const { objectType, data } = preset;
-      this.selectObjectType(objectType);
+      this.selectObjectType(objectType, data);
       this.formState = { ...this.formState, data };
     }
   }
@@ -178,12 +176,10 @@ export class ObjectCreateComponent implements OnDestroy {
     private objCreateService: ObjectCreateService,
     private system: SystemService,
     private notify: NotificationService,
-    private searchService: SearchService,
     private dmsService: DmsService,
     private pendingChanges: PendingChangesService,
     private layoutService: LayoutService,
     private backend: BackendService,
-    private userService: UserService,
     private translate: TranslateService,
     private popoverService: PopoverService,
     private iconRegistry: IconRegistryService
@@ -288,8 +284,9 @@ export class ObjectCreateComponent implements OnDestroy {
   /**
    * Select an object type for the object to be created.
    * @param objectType The object type to be selected
+   * @param presetData Data that should be past to the form upfront
    */
-  selectObjectType(objectType: ObjectType) {
+  selectObjectType(objectType: ObjectType, presetData?: { [key: string]: any }) {
     this.formState = null;
 
     if (this.selectedObjectType && this.selectedObjectType.id !== objectType.id) {
@@ -330,7 +327,7 @@ export class ObjectCreateComponent implements OnDestroy {
       this.system.getObjectTypeForm(objectType.id, 'CREATE').subscribe(
         (model) => {
           this.objCreateService.setNewState({ busy: false });
-          let data = {};
+          let data = presetData || {};
           if (this.context) {
             data[BaseObjectTypeField.PARENT_ID] = this.context.id;
           }
@@ -589,12 +586,15 @@ export class ObjectCreateComponent implements OnDestroy {
   }
 
   private deleteObjects(): Observable<any> {
+    this.objCreateService.setNewState({ busy: true });
     const deleteObservables = this.afoCreate.dmsObject.items.map((item) => this.dmsService.deleteDmsObject(item.id));
     return forkJoin(deleteObservables).pipe(
       catchError((err) => {
+        this.objCreateService.setNewState({ busy: false });
         this.notify.error(this.translate.instant('yuv.framework.object-create.notify.afo.cancel.with-delete.error'));
         return of(null);
-      })
+      }),
+      tap((_) => this.objCreateService.setNewState({ busy: false }))
     );
   }
 
