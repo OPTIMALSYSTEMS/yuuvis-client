@@ -3,8 +3,8 @@
   <yuv-responsive-master-slave class="state" [layoutOptionsKey]="layoutOptionsKey" [slaveActive]="!!detailsTask"
     (slaveClosed)="onSlaveClosed()">
     <yuv-process-list class="yuv-master panel" [showFooter]="true" [headerDetails]="headerDetails"
-      [layoutOptionsKey]="layoutOptionsKey" [processData]="inboxData" (refreshList)="refreshList()"
-      (selectedItem)="selectedItem($event)" [yuvBusyOverlay]="loading$ | async"
+      [filterTerm]="filterTerm" [layoutOptionsKey]="layoutOptionsKey" [processData]="inboxData"
+      (refreshList)="refreshList()" (selectedItem)="selectedItem($event)" [yuvBusyOverlay]="loading$ | async"
       (termFilterChange)="onTermFilterChange($event)"></yuv-process-list>
     <section class="yuv-slave panel">
 
