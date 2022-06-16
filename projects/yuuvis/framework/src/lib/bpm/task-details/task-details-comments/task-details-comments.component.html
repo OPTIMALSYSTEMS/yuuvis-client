@@ -1,0 +1,18 @@
+<div class="comments">
+    <div class="empty" *ngIf="!comments?.length">{{'yuv.framework.task-details-comments.empty'|translate}}</div>
+    <div class="wrapper">
+        <div class="comment" *ngFor="let c of comments; trackBy: trackByFn">
+            <div class="time">{{c.time | localeDate}}</div>
+            <div class="message">{{c.message}}</div>
+            <div class="author">{{c.author}}</div>
+        </div>
+    </div>
+</div>
+<form [formGroup]="commentForm">
+    <div class="wrapper">
+        <input type="text" formControlName="comment"
+            [placeholder]="'yuv.framework.task-details-comments.form.message.placeholder' | translate" />
+        <button type="button" class="primary" [disabled]="commentForm.invalid"
+            (click)="addComment()">{{'yuv.framework.task-details-comments.form.submit'|translate}}</button>
+    </div>
+</form>

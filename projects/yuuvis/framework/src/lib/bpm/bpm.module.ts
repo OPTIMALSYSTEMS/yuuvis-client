@@ -19,6 +19,7 @@ import { ProcessDetailsComponent } from './process-details/process-details.compo
 import { ProcessListEmptyComponent } from './process-list-empty/process-list-empty.component';
 import { ProcessListComponent } from './process-list/process-list.component';
 import { TaskDetailsAttachmentsComponent } from './task-details/task-details-attachments/task-details-attachments.component';
+import { TaskDetailsCommentsComponent } from './task-details/task-details-comments/task-details-comments.component';
 import { TaskDetailsHistoryComponent } from './task-details/task-details-history/task-details-history.component';
 import { TaskDelegatePickerComponent } from './task-details/task-details-task/task-delegate-picker/task-delegate-picker.component';
 import { TaskDetailsTaskComponent } from './task-details/task-details-task/task-details-task.component';
@@ -53,7 +54,7 @@ const components = [
     YuvObjectPickerModule,
     YuvObjectDetailsModule
   ],
-  declarations: [...components, ProcessAttachmentsOrderComponent, TaskDelegatePickerComponent],
+  declarations: [...components, ProcessAttachmentsOrderComponent, TaskDelegatePickerComponent, TaskDetailsCommentsComponent],
   entryComponents: [...components],
   exports: [...components]
 })

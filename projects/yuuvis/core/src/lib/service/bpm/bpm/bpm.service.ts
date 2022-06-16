@@ -5,7 +5,15 @@ import { Utils } from '../../../util/utils';
 import { ApiBase } from '../../backend/api.enum';
 import { BackendService } from '../../backend/backend.service';
 import { SystemService } from '../../system/system.service';
-import { FetchTaskOptions, Process, ProcessCreatePayload, ProcessDefinition, ProcessDefinitionKey, ProcessInstanceHistoryEntry } from '../model/bpm.model';
+import {
+  FetchTaskOptions,
+  Process,
+  ProcessCreatePayload,
+  ProcessDefinition,
+  ProcessDefinitionKey,
+  ProcessInstanceComment,
+  ProcessInstanceHistoryEntry
+} from '../model/bpm.model';
 
 /**
  * BpmService: responsible for handling all bpm/ route related interactions
@@ -111,6 +119,50 @@ export class BpmService {
               .reverse()
           : []
       )
+    );
+  }
+
+  /**
+   * Get the comments for a process instance
+   * @param processInstanceId ID of the process instance
+   * @returns List of comments
+   */
+  getProcessComments(processInstanceId: string): Observable<ProcessInstanceComment[]> {
+    return this.backendService.get(`/bpm/processes/${processInstanceId}/history?includeComments=true`).pipe(
+      map((res) =>
+        res && res.comments
+          ? res.comments
+              .map((c) => ({
+                id: c.id,
+                author: c.author,
+                message: c.message,
+                processInstanceId: c.processInstanceId,
+                time: new Date(c.time),
+                taskId: c.taskId
+              }))
+              .sort(Utils.sortValues('time'))
+              .reverse()
+          : []
+      )
+    );
+  }
+
+  /**
+   * Adds a new comment to a task
+   * @param taskId ID of the task
+   * @param comment The comment message string
+   * @returns The comment that has been created
+   */
+  addProcessComment(taskId: string, comment: string): Observable<ProcessInstanceComment> {
+    return this.backendService.post(`/bpm/tasks/${taskId}/comment`, comment).pipe(
+      map((res) => ({
+        id: res.id,
+        author: res.author,
+        message: res.message,
+        processInstanceId: res.processInstanceId,
+        time: new Date(res.time),
+        taskId: res.taskId
+      }))
     );
   }
 }
