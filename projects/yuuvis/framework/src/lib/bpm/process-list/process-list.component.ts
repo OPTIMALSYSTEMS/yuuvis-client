@@ -62,6 +62,12 @@ export class ProcessListComponent {
 
   @Input() showFooter = true;
   @Input() statusFilter: 'all' | 'running' | 'completed' = 'all';
+  @Input() set filterTerm(t: string) {
+    if (t && this.appliedTermFilter !== t) {
+      this.termFilterForm.patchValue({ term: t });
+      this.filterByTerm();
+    }
+  }
 
   @Output() selectedItem: EventEmitter<any> = new EventEmitter<any>();
   @Output() refreshList: EventEmitter<any> = new EventEmitter<any>();
