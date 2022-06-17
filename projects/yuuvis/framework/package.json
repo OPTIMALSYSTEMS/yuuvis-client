@@ -1,6 +1,6 @@
 {
   "name": "@yuuvis/framework",
-  "version": "3.2.0-rc.1",
+  "version": "3.2.0-rc.2",
   "author": "OPTIMAL SYSTEMS GmbH <npm@optimal-systems.de>",
   "license": "MIT",
   "scripts": {
@@ -23,7 +23,7 @@
     "@ag-grid-community/csv-export": "~24.1.0",
     "@angular/cdk": "~10.2.7",
     "@yuuvis/command-palette": "^0.2.9",
-    "@yuuvis/core": "3.2.0-rc.1",
+    "@yuuvis/core": "3.2.0-rc.2",
     "@yuuvis/styles": "^1.0.0",
     "angular-resize-event": "^2.0.1",
     "angular-split": "^4.0.0",
