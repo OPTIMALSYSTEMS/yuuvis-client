@@ -23,11 +23,10 @@ import { Component, Input } from '@angular/core';
         justify-content: center;
       }
       .error .message {
-          padding: var(--app-pane-padding);
-          border-radius: 2px;
-          background-color: var(--color-error);
-          color: #fff;
-        }
+        padding: var(--app-pane-padding);
+        border-radius: 2px;
+        background-color: var(--color-error);
+        color: #fff;
       }
     `
   ]
