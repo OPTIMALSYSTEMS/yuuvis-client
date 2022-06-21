@@ -1,20 +1,9 @@
-import {
-  AfterViewInit,
-  ChangeDetectorRef,
-  Component,
-  ComponentFactoryResolver,
-  ComponentRef,
-  ElementRef,
-  Input,
-  OnDestroy,
-  OnInit,
-  ViewChild
-} from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ComponentRef, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { ActionComponent } from '../actions/interfaces/action-component.interface';
 import { ComponentAnchorDirective } from '../directives/component-anchor/component-anchor.directive';
+import { YuvComponentRegister } from './../shared/utils/utils';
 import { IFrameComponent } from './iframe.component';
-import { PluginActionViewComponent } from './plugin-action-view.component';
 import { PluginConfig } from './plugins.interface';
 import { PluginsService } from './plugins.service';
 
@@ -32,7 +21,7 @@ import { PluginsService } from './plugins.service';
 export class PluginComponent extends IFrameComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild(ComponentAnchorDirective) componentAnchor: ComponentAnchorDirective;
 
-  @Input() parent: PluginActionViewComponent | any;
+  @Input() parent: any; // PluginActionViewComponent | any;
 
   @Input() config: PluginConfig;
 
@@ -58,19 +47,18 @@ export class PluginComponent extends IFrameComponent implements OnInit, OnDestro
   private componentRef: ComponentRef<any>;
   private _afterViewInit = false;
 
-  constructor(elRef: ElementRef, pluginsService: PluginsService, private componentFactoryResolver: ComponentFactoryResolver, private cdRef: ChangeDetectorRef) {
+  constructor(elRef: ElementRef, pluginsService: PluginsService, private cdRef: ChangeDetectorRef) {
     super(elRef, pluginsService);
   }
 
   init() {
     this.pluginsService.register(this);
     if (this.config?.plugin?.component) {
-      const comp = [...this.componentFactoryResolver['_factories']].find(([key, value]) => this.config.plugin.component === value.selector);
+      const comp = YuvComponentRegister.getComponent(this.config.plugin.component);
       if (comp) {
-        const componentFactory = this.componentFactoryResolver.resolveComponentFactory(comp[0]);
-        this.componentRef = this.componentAnchor.viewContainerRef.createComponent(componentFactory) as any;
+        this.componentRef = this.componentAnchor.viewContainerRef.createComponent(comp as any) as any;
 
-        if (this.parent instanceof PluginActionViewComponent) {
+        if (this.parent?.onCancel && this.parent?.onFinish) {
           (<ActionComponent>this.cmp).selection = this.parent.selection;
           (<ActionComponent>this.cmp).canceled?.pipe(takeUntilDestroy(this)).subscribe(() => this.parent.onCancel());
           (<ActionComponent>this.cmp).finished?.pipe(takeUntilDestroy(this)).subscribe(() => this.parent.onFinish());

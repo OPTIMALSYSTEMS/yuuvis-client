@@ -1,4 +1,4 @@
-import { ComponentFactoryResolver, Inject, Injectable, InjectionToken, ViewContainerRef } from '@angular/core';
+import { Inject, Injectable, InjectionToken, ViewContainerRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { DmsObject, RetentionField, Utils } from '@yuuvis/core';
 import { merge as observableMerge, Observable, of as observableOf, of } from 'rxjs';
@@ -26,7 +26,6 @@ export class ActionService {
   constructor(
     @Inject(ACTIONS) private actions: any[] = [],
     @Inject(CUSTOM_ACTIONS) private custom_actions: any[] = [],
-    private _componentFactoryResolver: ComponentFactoryResolver,
     private pluginsService: PluginsService,
     private router: Router
   ) {}
@@ -71,8 +70,7 @@ export class ActionService {
   }
 
   private createExecutableActionListEntry(actionComponent: any, selection: any[], viewContainerRef: ViewContainerRef): ActionListEntry {
-    const componentFactory = this._componentFactoryResolver.resolveComponentFactory(actionComponent._component || actionComponent);
-    const componentRef = viewContainerRef.createComponent(componentFactory);
+    const componentRef = viewContainerRef.createComponent(actionComponent._component || actionComponent);
 
     if (componentRef.instance instanceof PluginActionComponent) {
       componentRef.instance.action = actionComponent.action;

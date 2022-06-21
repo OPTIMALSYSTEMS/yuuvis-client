@@ -113,3 +113,5 @@ export interface FormStatusChangedEvent {
 
   data?: any;
 }
+
+export type ObjectFormModelChange = { name: 'value' | 'required' | 'readonly' | 'error' | 'onrowedit' | 'onchange'; newValue: any };
