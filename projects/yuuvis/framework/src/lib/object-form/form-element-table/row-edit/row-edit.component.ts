@@ -7,7 +7,7 @@ import { UnsubscribeOnDestroy } from '../../../common/util/unsubscribe.component
 import { PopoverService } from '../../../popover/popover.service';
 import { clear, deleteIcon } from '../../../svg.generated';
 import { ObjectFormComponent } from '../../object-form/object-form.component';
-import { EditRow, EditRowResult } from '../form-element-table.component';
+import { EditRow, EditRowResult } from '../form-element-table.interface';
 
 /**
  * Component for editing a row from an object forms table.

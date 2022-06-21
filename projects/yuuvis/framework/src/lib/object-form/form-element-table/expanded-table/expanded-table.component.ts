@@ -5,7 +5,7 @@ import { Component, EventEmitter, HostListener, Input, Output } from '@angular/c
 import { IconRegistryService } from '../../../common/components/icon/service/iconRegistry.service';
 import { GridService } from '../../../services/grid/grid.service';
 import { addCircle, contentDownload, sizeToFit } from '../../../svg.generated';
-import { TableComponentParams } from '../form-element-table.component';
+import { TableComponentParams } from '../form-element-table.interface';
 
 @Component({
   selector: 'yuv-expanded-table',

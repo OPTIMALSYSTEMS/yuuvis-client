@@ -4,6 +4,7 @@ export { DatetimeRangeComponent } from './elements/datetime-range/datetime-range
 export { DatepickerComponent } from './elements/datetime/datepicker/datepicker.component';
 export { DatetimeComponent } from './elements/datetime/datetime.component';
 export { YearRangeDirective } from './elements/datetime/year-range/year-range.directive';
+export { DynamicCatalogComponent } from './elements/dynamic-catalog/dynamic-catalog.component';
 export { NumberRangeComponent } from './elements/number-range/number-range.component';
 export { NumberComponent } from './elements/number/number.component';
 export { OrganizationComponent } from './elements/organization/organization.component';

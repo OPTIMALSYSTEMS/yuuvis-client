@@ -10,32 +10,9 @@ import { UnsubscribeOnDestroy } from '../../common/util/unsubscribe.component';
 import { PopoverConfig } from '../../popover/popover.interface';
 import { GridService } from '../../services/grid/grid.service';
 import { addCircle, contentDownload, expand, sizeToFit } from '../../svg.generated';
-import { ObjectFormOptions } from '../object-form.interface';
 import { PopoverService } from './../../popover/popover.service';
+import { EditRow, TableComponentParams } from './form-element-table.interface';
 import { RowEditComponent } from './row-edit/row-edit.component';
-
-// data to be passed to the table component
-export interface TableComponentParams {
-  // current form situation (EDIT, SEARCH or CREATE)
-  situation: string;
-  // the tables from element
-  element: any;
-}
-
-// representation of a row while editing
-export interface EditRow {
-  situation: string;
-  index: number;
-  formOptions: ObjectFormOptions;
-  tableElement: any;
-}
-
-// result of editing a tables row
-export interface EditRowResult {
-  index: number;
-  rowData: any;
-  createNewRow: boolean;
-}
 
 @Component({
   selector: 'yuv-table',

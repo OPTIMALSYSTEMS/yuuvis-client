@@ -1,3 +1,4 @@
+export { ActionMenuButtonComponent } from './/action-menu-bar/action-menu-button/action-menu-button.component';
 export { ActionMenuBarComponent } from './action-menu-bar/action-menu-bar.component';
 export { IconUploadComponent } from './animated-icons/icon-upload/icon-upload.component';
 export { BusyOverlayDirective } from './busy-overlay/busy-overlay.directive';
