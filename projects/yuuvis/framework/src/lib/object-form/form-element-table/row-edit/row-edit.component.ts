@@ -1,5 +1,5 @@
 import { Component, ElementRef, EventEmitter, Input, Output, TemplateRef, ViewChild, ViewEncapsulation } from '@angular/core';
-import { FormBuilder, FormControl } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormControl } from '@angular/forms';
 import { PendingChangesService, TranslateService } from '@yuuvis/core';
 import { takeUntil } from 'rxjs/operators';
 import { IconRegistryService } from '../../../common/components/icon/service/iconRegistry.service';
@@ -33,7 +33,7 @@ export class RowEditComponent extends UnsubscribeOnDestroy {
   copyEnabled = true;
   deleteEnabled = true;
   saveEnabled = true;
-  createNewCheckbox: FormControl;
+  createNewCheckbox: UntypedFormControl;
   createNewRow = false;
 
   @Input()
@@ -51,7 +51,7 @@ export class RowEditComponent extends UnsubscribeOnDestroy {
 
   constructor(
     private pendingChanges: PendingChangesService,
-    private fb: FormBuilder,
+    private fb: UntypedFormBuilder,
     private iconRegistry: IconRegistryService,
     private popoverService: PopoverService,
     private translate: TranslateService

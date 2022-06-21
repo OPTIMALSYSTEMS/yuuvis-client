@@ -2,7 +2,7 @@ import { ClientSideRowModelModule } from '@ag-grid-community/client-side-row-mod
 import { ColDef, GridOptions, Module } from '@ag-grid-community/core';
 import { CsvExportModule } from '@ag-grid-community/csv-export';
 import { Component, forwardRef, HostListener, Input, NgZone, TemplateRef, ViewChild } from '@angular/core';
-import { ControlValueAccessor, FormControl, NG_VALIDATORS, NG_VALUE_ACCESSOR, Validator } from '@angular/forms';
+import { ControlValueAccessor, UntypedFormControl, NG_VALIDATORS, NG_VALUE_ACCESSOR, Validator } from '@angular/forms';
 import { Classification, PendingChangesService, SystemService } from '@yuuvis/core';
 import { takeUntil } from 'rxjs/operators';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
@@ -351,7 +351,7 @@ export class FormElementTableComponent extends UnsubscribeOnDestroy implements C
     return true;
   }
 
-  validate(c: FormControl) {
+  validate(c: UntypedFormControl) {
     return this.validateTableData()
       ? null
       : {

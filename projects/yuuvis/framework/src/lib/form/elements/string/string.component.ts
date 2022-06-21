@@ -1,5 +1,5 @@
 import { Component, ElementRef, forwardRef, Input } from '@angular/core';
-import { ControlValueAccessor, FormControl, NG_VALIDATORS, NG_VALUE_ACCESSOR, Validator } from '@angular/forms';
+import { ControlValueAccessor, UntypedFormControl, NG_VALIDATORS, NG_VALUE_ACCESSOR, Validator } from '@angular/forms';
 import { Classification, ClassificationPrefix, FormattedMailTo, Utils } from '@yuuvis/core';
 import { IconRegistryService } from '../../../common/components/icon/service/iconRegistry.service';
 import { envelope, globe, phone } from '../../../svg.generated';
@@ -232,7 +232,7 @@ export class StringComponent implements ControlValueAccessor, Validator {
   /**
    * returns null when valid else the validation object
    */
-  public validate(c: FormControl) {
+  public validate(c: UntypedFormControl) {
     if (this.validationErrors.length) {
       this.valid = false;
       return Utils.arrayToObject(this.validationErrors, 'key', (err) => ({ valid: false, ...err }));

@@ -1,5 +1,5 @@
 import { Component, forwardRef, Input, OnInit } from '@angular/core';
-import { ControlValueAccessor, FormBuilder, FormControl, FormGroup, NG_VALIDATORS, NG_VALUE_ACCESSOR, Validator } from '@angular/forms';
+import { ControlValueAccessor, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, NG_VALIDATORS, NG_VALUE_ACCESSOR, Validator } from '@angular/forms';
 import { RangeValue, SearchFilter, TranslateService } from '@yuuvis/core';
 import { LocaleDatePipe } from '../../../pipes/locale-date.pipe';
 
@@ -43,7 +43,7 @@ export class DatetimeRangeComponent implements OnInit, ControlValueAccessor, Val
    */
   @Input() readonly: boolean;
 
-  rangeForm: FormGroup;
+  rangeForm: UntypedFormGroup;
   value: RangeValue;
   private isValid = true;
 
@@ -58,7 +58,7 @@ export class DatetimeRangeComponent implements OnInit, ControlValueAccessor, Val
   public searchOption = this.availableSearchOptions[1].value;
   datePipe: LocaleDatePipe;
 
-  constructor(private fb: FormBuilder, public translate: TranslateService) {
+  constructor(private fb: UntypedFormBuilder, public translate: TranslateService) {
     this.datePipe = new LocaleDatePipe(translate);
   }
 
@@ -116,7 +116,7 @@ export class DatetimeRangeComponent implements OnInit, ControlValueAccessor, Val
   }
 
   // returns null when valid else the validation object
-  public validate(c: FormControl) {
+  public validate(c: UntypedFormControl) {
     let err;
     if (this.searchOption === SearchFilter.OPERATOR.EQUAL) {
       err = {

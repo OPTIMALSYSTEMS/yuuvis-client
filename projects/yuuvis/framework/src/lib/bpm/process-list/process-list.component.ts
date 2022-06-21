@@ -1,6 +1,6 @@
 import { RowNode } from '@ag-grid-community/core';
 import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { ResponsiveTableData } from '../../components/responsive-data-table/responsive-data-table.interface';
 import { clear, listModeDefault, listModeSimple, refresh } from '../../svg.generated';
@@ -74,8 +74,8 @@ export class ProcessListComponent {
   @Output() statusFilterChange: EventEmitter<'all' | 'running' | 'completed'> = new EventEmitter<'all' | 'running' | 'completed'>();
   @Output() termFilterChange: EventEmitter<string> = new EventEmitter<string>();
 
-  termFilterForm: FormGroup = new FormGroup({
-    term: new FormControl('')
+  termFilterForm: UntypedFormGroup = new UntypedFormGroup({
+    term: new UntypedFormControl('')
   });
   appliedTermFilter: string;
 

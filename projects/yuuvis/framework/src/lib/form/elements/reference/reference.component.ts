@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, EventEmitter, forwardRef, HostBinding, HostListener, Inject, Input, Output, TemplateRef, ViewChild } from '@angular/core';
-import { ControlValueAccessor, FormControl, NG_VALIDATORS, NG_VALUE_ACCESSOR, Validator } from '@angular/forms';
+import { ControlValueAccessor, UntypedFormControl, NG_VALIDATORS, NG_VALUE_ACCESSOR, Validator } from '@angular/forms';
 import {
   BaseObjectTypeField,
   Classification,
@@ -268,7 +268,7 @@ export class ReferenceComponent implements ControlValueAccessor, Validator, Afte
   }
 
   // returns null when valid else the validation object
-  public validate(c: FormControl) {
+  public validate(c: UntypedFormControl) {
     return this.isValidInput ? null : { empty: { valid: false } };
   }
 

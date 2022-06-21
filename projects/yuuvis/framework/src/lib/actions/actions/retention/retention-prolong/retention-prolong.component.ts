@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
+import { AbstractControl, UntypedFormBuilder, UntypedFormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { DmsObject, DmsService, RetentionField } from '@yuuvis/core';
 
 @Component({
@@ -9,7 +9,7 @@ import { DmsObject, DmsService, RetentionField } from '@yuuvis/core';
   host: { class: 'yuv-action-component-form' }
 })
 export class RetentionProlongComponent implements OnInit {
-  rtProlongForm: FormGroup;
+  rtProlongForm: UntypedFormGroup;
   busy: boolean;
   private initialRetentionEnd: Date;
 
@@ -31,7 +31,7 @@ export class RetentionProlongComponent implements OnInit {
   @Output() finished: EventEmitter<any> = new EventEmitter<any>();
   @Output() canceled: EventEmitter<any> = new EventEmitter<any>();
 
-  constructor(private dms: DmsService, private fb: FormBuilder) {
+  constructor(private dms: DmsService, private fb: UntypedFormBuilder) {
     this.rtProlongForm = this.fb.group({
       rmExpirationDate: ['', [Validators.required, this.afterInitialRetentionEndValidator()]]
     });

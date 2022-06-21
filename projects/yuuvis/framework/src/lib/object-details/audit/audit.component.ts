@@ -1,5 +1,5 @@
 import { Component, Inject, Input, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import {
   ApiBase,
   AuditEntry,
@@ -45,7 +45,7 @@ export class AuditComponent implements OnInit, OnDestroy {
   private _objectID: string;
   private _objectTypeID: string;
   private initialFetch: boolean;
-  searchForm: FormGroup;
+  searchForm: UntypedFormGroup;
   auditsRes: AuditQueryResult;
   resolvedItems: ReslovedAuditEntry[];
   searchPanelShow: boolean;
@@ -95,7 +95,7 @@ export class AuditComponent implements OnInit, OnDestroy {
     private backend: BackendService,
     private eventService: EventService,
     private system: SystemService,
-    private fb: FormBuilder,
+    private fb: UntypedFormBuilder,
     private translate: TranslateService,
     private iconRegistry: IconRegistryService,
     @Inject(ROUTES) private routes: YuvRoutes
