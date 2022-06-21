@@ -154,6 +154,7 @@ export class BpmService {
    * @returns The comment that has been created
    */
   addProcessComment(taskId: string, comment: string): Observable<ProcessInstanceComment> {
+    this.backendService.setHeader('Content-Type', 'text/plain');
     return this.backendService.post(`/bpm/tasks/${taskId}/comment`, comment).pipe(
       map((res) => ({
         id: res.id,

@@ -4,7 +4,7 @@
         <div class="comment" *ngFor="let c of comments; trackBy: trackByFn">
             <div class="time">{{c.time | localeDate}}</div>
             <div class="message">{{c.message}}</div>
-            <div class="author">{{c.author}}</div>
+            <div class="author">{{c.author?.title}}</div>
         </div>
     </div>
 </div>
