@@ -15,6 +15,7 @@ import { TriStateCheckboxModule } from 'primeng/tristatecheckbox';
 import { YuvCommonModule } from '../common/common.module';
 import { YuvComponentsModule } from '../components/components.module';
 import { YuvPluginsModule } from './../plugins/plugins.module';
+import { YuvComponentRegister } from './../shared/utils/utils';
 import { CatalogComponent } from './elements/catalog/catalog.component';
 import { CheckboxComponent } from './elements/checkbox/checkbox.component';
 import { DatetimeRangeComponent } from './elements/datetime-range/datetime-range.component';
@@ -44,15 +45,18 @@ const components = [
   ReferenceItemComponent,
   OrganizationComponent,
   CatalogComponent,
-  DynamicCatalogComponent
+  DynamicCatalogComponent,
+  DynamicCatalogManagementComponent
 ];
+
+YuvComponentRegister.register(components);
+
 /**
  * `YuvFormModule` bundles form controls like inputs, checkboxes, datepickers and so on.
  * To get a label for each form control, you can wrap it using `<yuv-form-input>`.
  */
 @NgModule({
-  declarations: [...components, YearRangeDirective, DynamicCatalogManagementComponent],
-  entryComponents: [...components],
+  declarations: [...components, YearRangeDirective],
   exports: [...components, YearRangeDirective],
   imports: [
     DragDropModule,

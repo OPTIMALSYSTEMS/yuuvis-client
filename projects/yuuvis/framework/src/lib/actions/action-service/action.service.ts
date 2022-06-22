@@ -8,6 +8,7 @@ import { Action } from '../interfaces/action.interface';
 import { SelectionRange } from '../selection-range.enum';
 import { PluginActionComponent } from './../../plugins/plugin-action.component';
 import { PluginsService } from './../../plugins/plugins.service';
+import { YuvComponentRegister } from './../../shared/utils/utils';
 
 export const ACTIONS = new InjectionToken<any[]>('ACTIONS');
 export const CUSTOM_ACTIONS = new InjectionToken<any[]>('CUSTOM_ACTIONS');
@@ -54,7 +55,7 @@ export class ActionService {
           tap((_actions: any[]) => {
             const availableActions = [].concat(...this.actions);
             // set action selector as ID
-            availableActions.forEach((a) => (a.id = this._componentFactoryResolver.resolveComponentFactory(a)?.selector));
+            availableActions.forEach((a) => (a.id = YuvComponentRegister.getSelector(a)));
             window['_availableActions'] = availableActions.map((a) => a.id);
             // in case there are plugin actions, original actions are visible only if specific IDs are included in the list OR '*' means include all
             this.allActionComponents = []

@@ -23,6 +23,7 @@ export { YuvRoutes } from './lib/routing/routes';
 export * from './lib/search/index';
 export * from './lib/services/component-state/component-state.interface';
 export * from './lib/services/index';
+export * from './lib/shared/utils/index';
 export * from './lib/svg.generated';
 export * from './lib/user/index';
 export * from './lib/versions/index';

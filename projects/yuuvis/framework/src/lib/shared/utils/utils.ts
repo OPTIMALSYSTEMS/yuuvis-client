@@ -8,7 +8,11 @@ export class YuvComponentRegister {
   }
 
   static setComponent(value: any, name?: string) {
-    this.reg.set(name || value.ɵcmp.selectors[0][0], value);
+    this.reg.set(name || this.getSelector(value), value);
+  }
+
+  static getSelector(value: any) {
+    return value.ɵcmp.selectors[0][0];
   }
 
   static getComponent(name: string): any | undefined {

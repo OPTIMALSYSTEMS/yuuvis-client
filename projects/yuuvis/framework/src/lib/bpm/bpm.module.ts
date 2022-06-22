@@ -11,6 +11,7 @@ import { YuvObjectFormModule } from '../object-form/object-form.module';
 import { YuvObjectPickerModule } from '../object-picker/object-picker.module';
 import { YuvPipesModule } from '../pipes/pipes.module';
 import { YuvPluginsModule } from '../plugins/plugins.module';
+import { YuvComponentRegister } from '../shared/utils/utils';
 import { FollowUpDetailsComponent } from './follow-up-details/follow-up-details.component';
 import { ProcessAttachmentsOrderComponent } from './process-attachments/process-attachments-order/process-attachments-order.component';
 import { ProcessAttachmentsComponent } from './process-attachments/process-attachments.component';
@@ -36,6 +37,9 @@ const components = [
   ProcessAttachmentsComponent,
   FollowUpDetailsComponent
 ];
+
+YuvComponentRegister.register(components);
+
 @NgModule({
   imports: [
     CommonModule,
@@ -54,7 +58,6 @@ const components = [
     YuvObjectDetailsModule
   ],
   declarations: [...components, ProcessAttachmentsOrderComponent, TaskDelegatePickerComponent],
-  entryComponents: [...components],
   exports: [...components]
 })
 export class YuvBpmModule {}

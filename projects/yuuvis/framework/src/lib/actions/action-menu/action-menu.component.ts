@@ -98,7 +98,6 @@ export class ActionMenuComponent implements OnDestroy {
     private actionService: ActionService,
     private router: Router,
     public viewContainerRef: ViewContainerRef,
-    private componentFactoryResolver: ComponentFactoryResolver,
     private iconRegistry: IconRegistryService
   ) {
     this.iconRegistry.registerIcons([clear]);

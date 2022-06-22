@@ -5,7 +5,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { CommandPaletteComponent, CommandPaletteModule } from '@yuuvis/command-palette';
-import { YuvColumnConfigModule, YuvCommonModule, YuvComponentsModule, YuvDirectivesModule, YuvFrameworkModule } from '@yuuvis/framework';
+import { YuvColumnConfigModule, YuvCommonModule, YuvComponentRegister, YuvComponentsModule, YuvDirectivesModule, YuvFrameworkModule } from '@yuuvis/framework';
 import { AccordionModule } from 'primeng/accordion';
 import { environment } from '../environments/environment';
 import { ActionsModule } from './actions/actions.module';
@@ -25,29 +25,34 @@ import { ObjectComponent } from './states/object/object.component';
 import { OfflineComponent } from './states/offline/offline.component';
 import { ProcessesComponent } from './states/processes/processes.component';
 import { ResultComponent } from './states/result/result.component';
+import { RetentionsComponent } from './states/retentions/retentions.component';
 import { SettingsComponent } from './states/settings/settings.component';
 import { VersionsComponent } from './states/versions/versions.component';
-import { RetentionsComponent } from './states/retentions/retentions.component';
+
+const components = [
+  AppComponent,
+  DashboardComponent,
+  ResultComponent,
+  FrameComponent,
+  SettingsComponent,
+  NotFoundComponent,
+  ObjectComponent,
+  CreateComponent,
+  OfflineComponent,
+  VersionsComponent,
+  ColumnConfigurationComponent,
+  InboxComponent,
+  FilterConfigurationComponent,
+  ProcessesComponent,
+  FollowUpsComponent,
+  RetentionsComponent
+];
+
+YuvComponentRegister.register(components);
+YuvComponentRegister.register([CommandPaletteComponent]);
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    DashboardComponent,
-    ResultComponent,
-    FrameComponent,
-    SettingsComponent,
-    NotFoundComponent,
-    ObjectComponent,
-    CreateComponent,
-    OfflineComponent,
-    VersionsComponent,
-    ColumnConfigurationComponent,
-    InboxComponent,
-    FilterConfigurationComponent,
-    ProcessesComponent,
-    FollowUpsComponent,
-    RetentionsComponent
-  ],
+  declarations: [...components],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
@@ -99,7 +104,6 @@ import { RetentionsComponent } from './states/retentions/retentions.component';
     ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production })
   ],
   providers: [{ provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }],
-  bootstrap: [AppComponent],
-  entryComponents: [CommandPaletteComponent]
+  bootstrap: [AppComponent]
 })
 export class AppModule {}

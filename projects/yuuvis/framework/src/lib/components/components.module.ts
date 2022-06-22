@@ -16,6 +16,7 @@ import { ObjectTypeIconComponent } from '../common/components/object-type-icon/o
 import { YuvDirectivesModule } from '../directives/directives.module';
 import { YuvPipesModule } from '../pipes/pipes.module';
 import { SingleCellRendererComponent } from '../services/grid/renderer/single-cell-renderer/single-cell-renderer.component';
+import { YuvComponentRegister } from './../shared/utils/utils';
 import { ActionMenuBarComponent } from './action-menu-bar/action-menu-bar.component';
 import { ActionMenuButtonComponent } from './action-menu-bar/action-menu-button/action-menu-button.component';
 import { IconUploadComponent } from './animated-icons/icon-upload/icon-upload.component';
@@ -43,6 +44,8 @@ const components = [
   ActionMenuButtonComponent
 ];
 
+YuvComponentRegister.register(components);
+
 /**
  * `YuvComponentsModule` contains components for creating client's basic design elements such as action menu, responsive panels, dialogs,
  * upload, tabels, file pickers etc.
@@ -50,7 +53,6 @@ const components = [
 
 @NgModule({
   declarations: [...components, BusyOverlayDirective],
-  entryComponents: [...components],
   exports: [...components, TabViewModule, BusyOverlayDirective],
   imports: [
     OverlayPanelModule,
