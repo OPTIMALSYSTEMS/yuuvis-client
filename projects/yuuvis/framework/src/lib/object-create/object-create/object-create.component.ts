@@ -619,7 +619,7 @@ export class ObjectCreateComponent implements OnDestroy {
           switchMap((dmsObject: DmsObject) =>
             this.backend
               .post(`/dms/objects/${dmsObject.id}/tags/${ObjectTag.AFO}/state/${AFO_STATE.READY}?overwrite=true`, {}, ApiBase.core)
-              .pipe(map((_) => of(dmsObject)))
+              .pipe(map((_) => dmsObject.id))
           ),
           catchError((e) => {
             return of(null);

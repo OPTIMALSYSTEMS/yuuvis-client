@@ -59,7 +59,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
   public resize$: Observable<ResizedEvent> = this.resizeSource.asObservable();
   // internal subject column size changes used for debouncing column resize events
   private columnResizeSource = new ReplaySubject<any>();
-  public columnResize$: Observable<ResizedEvent> = this.columnResizeSource.asObservable();
+  public columnResize$: Observable<any> = this.columnResizeSource.asObservable();
   private _data: ResponsiveTableData;
   private _layoutOptions: ResponsiveDataTableOptions = {};
   // array of row IDs that are currently selected
@@ -220,7 +220,9 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
         takeUntilDestroy(this)
         // debounceTime(500)
       )
-      .subscribe(({ newHeight, newWidth }: ResizedEvent) => {
+      .subscribe(({ newRect }: ResizedEvent) => {
+        const newHeight = newRect.height;
+        const newWidth = newRect.width;
         this.settings.size = { newHeight, newWidth };
         this._autoViewMode = newHeight < this.breakpoint ? 'grid' : newWidth < this.breakpoint ? 'horizontal' : 'standard';
         if (this.viewMode === 'auto') {
@@ -230,7 +232,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
         nodes?.length && this.ensureVisibility(nodes[0].rowIndex);
       });
     // subscribe to columns beeing resized
-    this.columnResize$.pipe(takeUntilDestroy(this), debounceTime(500)).subscribe((e: ResizedEvent) => {
+    this.columnResize$.pipe(takeUntilDestroy(this), debounceTime(500)).subscribe(() => {
       if (this.isStandard) {
         this.columnResized.emit({
           columns: this.gridOptions.columnApi.getColumnState().map((columnState) => ({
@@ -466,7 +468,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
   }
 
   onRowDoubleClicked = (event) => this.rowDoubleClicked.emit(event);
-  onColumnResized = (event) => this.columnResizeSource.next();
+  onColumnResized = (event) => this.columnResizeSource.next(event);
   onSortChanged = (event) => this.isStandard && this.sortChanged.emit(this.getSortModel());
 
   onGridReady(event) {
