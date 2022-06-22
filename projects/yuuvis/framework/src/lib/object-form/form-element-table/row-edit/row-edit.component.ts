@@ -4,9 +4,9 @@ import { PendingChangesService, TranslateService } from '@yuuvis/core';
 import { takeUntil } from 'rxjs/operators';
 import { IconRegistryService } from '../../../common/components/icon/service/iconRegistry.service';
 import { UnsubscribeOnDestroy } from '../../../common/util/unsubscribe.component';
+import { PluginComponent } from '../../../plugins/plugin.component';
 import { PopoverService } from '../../../popover/popover.service';
 import { clear, deleteIcon } from '../../../svg.generated';
-import { ObjectFormComponent } from '../../object-form/object-form.component';
 import { EditRow, EditRowResult } from '../form-element-table.interface';
 
 /**
@@ -40,6 +40,7 @@ export class RowEditComponent extends UnsubscribeOnDestroy {
   set row(r: EditRow) {
     this._row = r;
     this.isNewRow = this._row.index === -1;
+    setTimeout(() => (this.rowForm.options = r.formOptions), 0);
   }
 
   @Output() onCancel = new EventEmitter();
@@ -47,7 +48,26 @@ export class RowEditComponent extends UnsubscribeOnDestroy {
   @Output() onSaveCopy = new EventEmitter<EditRowResult>();
   @Output() onDelete = new EventEmitter<number>();
 
-  @ViewChild('rowForm') rowForm: ObjectFormComponent;
+  @ViewChild('plugin') plugin: PluginComponent;
+
+  // plugin prevents circular dependency on object-form
+  pluginConfig = {
+    id: 'yuv.row-edit.object-form',
+    plugin: {
+      component: 'yuv-object-form',
+      inputs: {
+        isInnerTableForm: true
+      },
+      outputs: {
+        onFormReady: () => this.onFormReady(),
+        statusChanged: ($event: any) => this.onFormStatusChanged($event)
+      }
+    }
+  };
+
+  get rowForm() {
+    return this.plugin?.cmp; // ObjectFormComponent;
+  }
 
   constructor(
     private pendingChanges: PendingChangesService,

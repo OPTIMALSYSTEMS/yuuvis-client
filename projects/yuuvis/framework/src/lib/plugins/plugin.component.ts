@@ -78,7 +78,7 @@ export class PluginComponent extends IFrameComponent implements OnInit, OnDestro
             .subscribe((event: any) =>
               typeof this.config.plugin.outputs[opt] === 'string'
                 ? this.pluginsService.applyFunction(this.config.plugin.outputs[opt], 'event, component, parent', [event, this, this.parent])
-                : this.config.plugin.outputs[opt]
+                : this.config.plugin.outputs[opt].call(this, event)
             )
         );
         this.cdRef.detectChanges();

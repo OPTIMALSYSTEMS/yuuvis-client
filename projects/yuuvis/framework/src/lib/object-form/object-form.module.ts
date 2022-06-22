@@ -11,6 +11,7 @@ import { YuvFloatingSotSelectModule } from '../floating-sot-select/floating-sot-
 import { YuvGroupedSelectModule } from '../grouped-select/grouped-select.module';
 import { YuvPipesModule } from '../pipes/pipes.module';
 import { YuvFormModule } from './../form/form.module';
+import { YuvPluginsModule } from './../plugins/plugins.module';
 import { YuvComponentRegister } from './../shared/utils/utils';
 import { CombinedObjectFormComponent } from './combined-object-form/combined-object-form.component';
 import { ExpandedTableComponent } from './form-element-table/expanded-table/expanded-table.component';
@@ -56,6 +57,7 @@ YuvComponentRegister.register(components);
     YuvComponentsModule,
     YuvDirectivesModule,
     YuvGroupedSelectModule,
+    YuvPluginsModule,
     AgGridModule
   ]
 })
