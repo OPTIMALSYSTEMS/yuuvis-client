@@ -29,6 +29,7 @@ import { Observable } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
+import { TabPanelComponent } from '../../components/responsive-tab-container/tab-panel.component';
 import { ComponentStateService } from '../../services/component-state/component-state.service';
 import { kebap, noFile, refresh, retention } from '../../svg.generated';
 import { ContentPreviewService } from '../content-preview/service/content-preview.service';
@@ -61,8 +62,8 @@ import { FileDropOptions } from './../../directives/file-drop/file-drop.directiv
   providers: [ContentPreviewService]
 })
 export class ObjectDetailsComponent implements OnDestroy {
-  @ContentChildren(TabPanel) externalPanels: QueryList<TabPanel>;
-  @ViewChildren(TabPanel) viewPanels: QueryList<TabPanel>;
+  @ContentChildren(TabPanelComponent) externalPanels: QueryList<TabPanelComponent>;
+  @ViewChildren(TabPanelComponent) viewPanels: QueryList<TabPanelComponent>;
   @ViewChild(ResponsiveTabContainerComponent) tabContainer: ResponsiveTabContainerComponent;
   @ViewChild('summary') summary: TemplateRef<any>;
   @ViewChild('indexdata') indexdata: TemplateRef<any>;

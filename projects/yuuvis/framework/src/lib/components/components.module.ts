@@ -28,9 +28,11 @@ import { RecentActivitiesComponent } from './recent-activities/recent-activities
 import { ResponsiveDataTableComponent } from './responsive-data-table/responsive-data-table.component';
 import { ResponsiveMasterSlaveComponent } from './responsive-master-slave/responsive-master-slave.component';
 import { ResponsiveTabContainerComponent } from './responsive-tab-container/responsive-tab-container.component';
+import { TabPanelComponent } from './responsive-tab-container/tab-panel.component';
 import { UploadProgressOverlayComponent } from './upload-progress-overlay/upload-progress-overlay.component';
 
 const components = [
+  TabPanelComponent,
   PanelComponent,
   FilePickerComponent,
   UploadProgressOverlayComponent,

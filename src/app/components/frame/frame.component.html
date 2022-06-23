@@ -8,7 +8,7 @@
 <ng-container *ngIf="user; else offlineNoUser">
   <div class="app-bar" *ngIf="!hideAppBar" (yuvFileDrop)="onFilesDropped($event)"
     [yuvFileDropOptions]="{ label: 'yuv.client.frame.app-bar.filedrop.label' | translate, disabled: disableFileDrop || tab, multiple: true }">
-    <div (click)="showSideBar(true)" (keyup.enter)="showSideBar(true)" tabindex="0">
+    <div (click)="showSideBar(true)" (keyup.enter)="showSideBar(true)" tabindex="0" #sidebar>
       <yuv-icon class="btn" id="drawer" [icon]="'drawer'"></yuv-icon>
     </div>
     <a yuvOfflineDisabled routerLink="/" id="logo" class="btn"></a>
@@ -35,11 +35,11 @@
         <yuv-icon class="btn" icon="help" title="{{'yuv.client.state.about.documentation.link.label'|translate}}">
         </yuv-icon>
       </a>
-      <div yuvOfflineDisabled class="user" (click)="op.toggle($event)" (keyup.enter)="op.toggle($event)" tabindex="0">
+      <div yuvOfflineDisabled class="user" (click)="op.toggle($event)" (keyup.enter)="op.toggle($event)" tabindex="0" #user>
         <yuv-user-avatar [user]="user"></yuv-user-avatar>
       </div>
 
-      <p-overlayPanel #op>
+      <p-overlayPanel #op [dismissable]="true" [appendTo]="user">
         <div class="user-panel" id="sidebar-profile" *ngIf="reloadComponent">
           <div class="avatar" [ngClass]="{ enabled: user?.enabled }">
             <yuv-user-avatar [user]="user"></yuv-user-avatar>

@@ -11,4 +11,5 @@ export { ResponsiveDataTableComponent, ResponsiveDataTableOptions, ViewMode } fr
 export { ResponsiveTableData } from './responsive-data-table/responsive-data-table.interface';
 export { ResponsiveMasterSlaveComponent } from './responsive-master-slave/responsive-master-slave.component';
 export { ResponsiveTabContainerComponent } from './responsive-tab-container/responsive-tab-container.component';
+export { TabPanelComponent } from './responsive-tab-container/tab-panel.component';
 export { UploadProgressOverlayComponent } from './upload-progress-overlay/upload-progress-overlay.component';

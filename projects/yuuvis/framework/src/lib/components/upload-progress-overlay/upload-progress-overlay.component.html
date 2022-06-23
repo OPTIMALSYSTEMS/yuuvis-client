@@ -2,13 +2,13 @@
   <div class="uploadProgress" *ngIf="ps.items.length || ps.result?.length"
     [ngClass]="{panelError: ps.err > 0, allErr: ps.err === ps.items.length, 'finished': allDone}">
 
-    <header class="uploadProgress__header" (click)="uploadsOverlay.toggle($event)">
+    <header class="uploadProgress__header" (click)="uploadsOverlay.toggle($event)" #uploadProgress__header>
       <yuv-icon-upload [active]="!(completedUp$ | async)"
         title="{{'yuv.framework.upload-progress-overlay.title'|translate}}"></yuv-icon-upload>
     </header>
   </div>
 
-  <p-overlayPanel #uploadsOverlay>
+  <p-overlayPanel #uploadsOverlay [dismissable]="true" [appendTo]="uploadProgress__header">
     <section class="upload-files dark">
       <div class="title" [ngClass]="{complete: completed}">{{'yuv.framework.upload-progress-overlay.title'|translate}}
       </div>

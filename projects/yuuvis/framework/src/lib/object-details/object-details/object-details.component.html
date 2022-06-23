@@ -36,12 +36,12 @@
     [pluginPanelsOrder]="panelOrder">
     <ng-container *ngFor="let templateID of panelOrder" [ngTemplateOutlet]="this[templateID]"></ng-container>
     <!-- PLUGINS -->
-    <p-tabPanel *ngFor="let config of resolvedPlugins" [id]="config.id" [header]="(config.label) | translate"
+    <yuv-tab-panel *ngFor="let config of resolvedPlugins" [id]="config.id" [header]="(config.label) | translate"
       [headerStyleClass]="config.id" class="{{config.id}}">
       <ng-template pTemplate="content">
         <yuv-plugin [config]="config" [parent]="this"></yuv-plugin>
       </ng-template>
-    </p-tabPanel>
+    </yuv-tab-panel>
 
     <ng-container *ngTemplateOutlet="content"></ng-container>
   </yuv-responsive-tab-container>
@@ -56,25 +56,25 @@
 
 <!-- PANELS -->
 <ng-template #summary>
-  <p-tabPanel [id]="'summary'" [header]="'yuv.framework.object-details.tabs.summary.title' | translate"
+  <yuv-tab-panel [id]="'summary'" [header]="'yuv.framework.object-details.tabs.summary.title' | translate"
     [headerStyleClass]="'summary'">
     <ng-template pTemplate="content">
       <yuv-summary [dmsObject]="dmsObject" [showExtrasSection]="isAdvancedUser"> </yuv-summary>
     </ng-template>
-  </p-tabPanel>
+  </yuv-tab-panel>
 </ng-template>
 
 <ng-template #indexdata>
-  <p-tabPanel [id]="'indexdata'" [header]="'yuv.framework.object-details.tabs.indexdata.title' | translate"
+  <yuv-tab-panel [id]="'indexdata'" [header]="'yuv.framework.object-details.tabs.indexdata.title' | translate"
     [headerStyleClass]="'indexdata'">
     <ng-template pTemplate="content">
       <yuv-object-form-edit [dmsObject]="dmsObject" (indexDataSaved)="onIndexdataSaved($event)"> </yuv-object-form-edit>
     </ng-template>
-  </p-tabPanel>
+  </yuv-tab-panel>
 </ng-template>
 
 <ng-template #preview>
-  <p-tabPanel [id]="'preview'" [header]="'yuv.framework.object-details.tabs.content.title' | translate"
+  <yuv-tab-panel [id]="'preview'" [header]="'yuv.framework.object-details.tabs.content.title' | translate"
     [headerStyleClass]="'preview'">
     <ng-template pTemplate="content" *ngIf="!undockWinActive; else loadPreview">
       <yuv-content-preview [dmsObject]="dmsObject" [searchTerm]="searchTerm" [activeVersion]="activeVersion">
@@ -84,16 +84,16 @@
       <yuv-content-preview [dmsObject]="dmsObject" [searchTerm]="searchTerm" [activeVersion]="activeVersion">
       </yuv-content-preview>
     </ng-template>
-  </p-tabPanel>
+  </yuv-tab-panel>
 </ng-template>
 
 <ng-template #history>
-  <p-tabPanel [cache]="false" [id]="'history'" [header]="'yuv.framework.object-details.tabs.history.title' | translate"
+  <yuv-tab-panel [cache]="false" [id]="'history'" [header]="'yuv.framework.object-details.tabs.history.title' | translate"
     [headerStyleClass]="'history'">
     <ng-template pTemplate="content">
       <yuv-audit [allActions]="allActions" [skipActions]="skipActions" [dmsObject]="dmsObject"></yuv-audit>
     </ng-template>
-  </p-tabPanel>
+  </yuv-tab-panel>
 </ng-template>
 
 <ng-template #content>

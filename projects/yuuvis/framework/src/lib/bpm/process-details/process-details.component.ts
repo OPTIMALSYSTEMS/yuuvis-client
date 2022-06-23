@@ -1,6 +1,6 @@
 import { Component, ContentChildren, EventEmitter, Input, Output, QueryList, TemplateRef, ViewChild, ViewChildren } from '@angular/core';
 import { Process, SystemService } from '@yuuvis/core';
-import { TabPanel } from 'primeng/tabview';
+import { TabPanelComponent } from '../../components/responsive-tab-container/tab-panel.component';
 
 @Component({
   selector: 'yuv-process-details',
@@ -8,8 +8,8 @@ import { TabPanel } from 'primeng/tabview';
   styleUrls: ['./process-details.component.scss']
 })
 export class ProcessDetailsComponent {
-  @ContentChildren(TabPanel) externalPanels: QueryList<TabPanel>;
-  @ViewChildren(TabPanel) viewPanels: QueryList<TabPanel>;
+  @ContentChildren(TabPanelComponent) externalPanels: QueryList<TabPanelComponent>;
+  @ViewChildren(TabPanelComponent) viewPanels: QueryList<TabPanelComponent>;
   @ViewChild('summaryTab') summaryTab: TemplateRef<any>;
   @ViewChild('historyTab') historyTab: TemplateRef<any>;
   @ViewChild('attachmentsTab') attachmentsTab: TemplateRef<any>;
