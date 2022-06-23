@@ -44,7 +44,7 @@ export class LocaleDatePipe extends DatePipe implements PipeTransform {
     const aa = format.indexOf('aa');
     return (
       value &&
-      this.fixTimezone(
+      new Date(
         `${value.substring(YYYY, YYYY + 4)}/${value.substring(MM, MM + 2)}/${value.substring(dd, dd + 2)}${
           HH > -1 ? ' ' + value.substring(HH, HH + 2) + ':' + value.substring(mm, mm + 2) : ''
         }${(aa > -1 ? ' ' + value.substring(aa, aa + 2) : '').replace(/上午|ص/, 'AM').replace(/下午|م/, 'PM')}`
