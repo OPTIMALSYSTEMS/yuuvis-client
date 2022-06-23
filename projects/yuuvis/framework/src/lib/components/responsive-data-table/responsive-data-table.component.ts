@@ -423,9 +423,9 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
   }
 
   setSortModel(model: any[]) {
-    this.gridOptions.columnApi.setColumnState(
-      this.gridOptions.columnApi.getColumnState().map((c) => ({ ...c, ...(model.find((m) => m.colId === c.colId) || { sort: null }) }))
-    );
+    this.gridOptions.columnApi.applyColumnState({
+      state: this.gridOptions.columnApi.getColumnState().map((c) => ({ ...c, ...(model.find((m) => m.colId === c.colId) || { sort: null }) }))
+    });
   }
 
   private setupGridOptions() {
