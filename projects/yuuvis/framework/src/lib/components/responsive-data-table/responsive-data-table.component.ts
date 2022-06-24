@@ -431,7 +431,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
   private setupGridOptions() {
     this.gridOptions = {
       // defines what to use as ID for each row (important for reselecting a previous selection)
-      getRowNodeId: (data) => data.id,
+      getRowId: (params) => params.data?.id,
       getRowHeight: () => this.settings.rowHeight[this.currentViewMode],
       rowData: this._data.rows,
       columnDefs: this._layoutOptionsKey ? [] : this._data.columns,
@@ -442,7 +442,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
       suppressNoRowsOverlay: true,
       multiSortKey: 'ctrl',
       ...this._data?.gridOptions,
-      frameworkComponents: {
+      components: {
         objectTypeCellRenderer: ObjectTypeIconComponent,
         singleCellRenderer: SingleCellRendererComponent,
         ...this._data?.gridOptions?.frameworkComponents

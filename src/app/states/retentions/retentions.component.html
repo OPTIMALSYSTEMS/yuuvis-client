@@ -30,8 +30,7 @@
                 (rowDoubleClicked)="onRowDoubleClicked($event)">
             </yuv-search-result>
         </yuv-panel>
-        <yuv-action-menu [(visible)]="actionMenuVisible" [dark]="true" [selection]="actionMenuSelection">
-        </yuv-action-menu>
+        <yuv-action-menu [selection]="actionMenuSelection" [(visible)]="actionMenuVisible" [dark]="true"></yuv-action-menu>
     </div>
 
     <yuv-object-details class="yuv-slave panel" [objectId]="objectDetailsID" [layoutOptionsKey]="layoutOptionsKey"

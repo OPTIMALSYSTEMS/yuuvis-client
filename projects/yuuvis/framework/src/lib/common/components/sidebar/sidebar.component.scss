@@ -12,6 +12,11 @@
     .p-sidebar-close {
       display: none;
     }
+
+    .p-sidebar-content,
+    .p-sidebar-header {
+      padding: 0;
+    }
   }
 
   // .sidebar-header {

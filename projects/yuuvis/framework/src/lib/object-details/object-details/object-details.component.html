@@ -46,8 +46,7 @@
     <ng-container *ngTemplateOutlet="content"></ng-container>
   </yuv-responsive-tab-container>
 </yuv-panel>
-<yuv-action-menu [(visible)]="actionMenuVisible" [dark]="true" [skipActions]="excludeObjectActions"
-  [selection]="actionMenuSelection"> </yuv-action-menu>
+<yuv-action-menu [selection]="actionMenuSelection" [skipActions]="excludeObjectActions" [(visible)]="actionMenuVisible" [dark]="true"></yuv-action-menu>
 
 <ng-template #empty>
   <yuv-context-error *ngIf="contextError" [contextError]="contextError"></yuv-context-error>

@@ -61,7 +61,7 @@ const modules = [
  */
 
 @NgModule({
-  imports: [CommonModule, ...modules, AngularSplitModule.forRoot(), YuvCoreModule.forRoot(), ToastrModule.forRoot()],
+  imports: [CommonModule, ...modules, AngularSplitModule, YuvCoreModule.forRoot(), ToastrModule.forRoot()],
   exports: [YuvDirectivesModule, ...modules, YuvObjectFormModule, YuvContextModule, YuvCoreModule, AngularSplitModule, ToastrModule],
   providers: [
     {

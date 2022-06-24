@@ -19,7 +19,7 @@ import { ComponentAction, ExternalComponentAction, LinkAction, ListAction, Simpl
  * [Screenshot](../assets/images/yuv-action-menu.gif)
  *
  * @example
- * <yuv-action-menu [(visible)]="showActionMenu" [selection]="selection"></yuv-action-menu>
+ * <yuv-action-menu [selection]="actionMenuSelection" [(visible)]="showActionMenu"></yuv-action-menu>
  *
  */
 @Component({
