@@ -97,6 +97,10 @@ export class ObjectFormService {
             break;
           }
         }
+      } else if (fc._eoFormElement.type === 'boolean') {
+        // tri-state boolean fields could have a value of 'undefined' that needs to be transformed
+        // into 'null' to be correctly be processed by the backend
+        this.setDataValue(fc._eoFormElement.name, null, data, fc._eoFormElement, isTableRowEditForm);
       }
     } else {
       Object.keys(formControl.controls).forEach((controlKey) => {
