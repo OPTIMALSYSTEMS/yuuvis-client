@@ -158,7 +158,7 @@ export class BpmService {
     // this.backendService.setHeader('Content-Type', 'text/plain');
     const httpOptions = this.backendService.getHttpOptions();
     httpOptions.headers = (httpOptions.headers as HttpHeaders).set('Content-Type', 'text/plain');
-    return this.backendService.post(`/bpm/tasks/${taskId}/comment`, JSON.parse(comment), ApiBase.apiWeb, httpOptions).pipe(
+    return this.backendService.post(`/bpm/tasks/${taskId}/comment`, comment, ApiBase.apiWeb, httpOptions).pipe(
       map((res) => ({
         id: res.id,
         author: res.author,
