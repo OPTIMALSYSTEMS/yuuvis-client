@@ -1,3 +1,4 @@
+import { HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, EMPTY, Observable } from 'rxjs';
 import { expand, finalize, map, skipWhile, tap } from 'rxjs/operators';
@@ -154,8 +155,10 @@ export class BpmService {
    * @returns The comment that has been created
    */
   addProcessComment(taskId: string, comment: string): Observable<ProcessInstanceComment> {
-    this.backendService.setHeader('Content-Type', 'text/plain');
-    return this.backendService.post(`/bpm/tasks/${taskId}/comment`, comment).pipe(
+    // this.backendService.setHeader('Content-Type', 'text/plain');
+    const httpOptions = this.backendService.getHttpOptions();
+    httpOptions.headers = (httpOptions.headers as HttpHeaders).set('Content-Type', 'text/plain');
+    return this.backendService.post(`/bpm/tasks/${taskId}/comment`, JSON.parse(comment), ApiBase.apiWeb, httpOptions).pipe(
       map((res) => ({
         id: res.id,
         author: res.author,
