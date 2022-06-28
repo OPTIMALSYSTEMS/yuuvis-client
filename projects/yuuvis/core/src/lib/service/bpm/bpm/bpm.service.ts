@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, EMPTY, Observable } from 'rxjs';
 import { expand, finalize, map, skipWhile, tap } from 'rxjs/operators';
 import { Utils } from '../../../util/utils';
+import { Sort } from '../../../util/utils.helper.enum';
 import { ApiBase } from '../../backend/api.enum';
 import { BackendService } from '../../backend/backend.service';
 import { SystemService } from '../../system/system.service';
@@ -141,8 +142,7 @@ export class BpmService {
                 time: new Date(c.time),
                 taskId: c.taskId
               }))
-              .sort(Utils.sortValues('time'))
-              .reverse()
+              .sort(Utils.sortValues('time'), Sort.DESC)
           : []
       )
     );

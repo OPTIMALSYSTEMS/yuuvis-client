@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, ElementRef, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { BpmService, ProcessInstanceComment, Task } from '@yuuvis/core';
 
@@ -26,22 +26,28 @@ export class TaskDetailsCommentsComponent implements OnInit {
     }
   }
 
-  constructor(private bpmService: BpmService, private fb: FormBuilder) {}
+  constructor(private bpmService: BpmService, private fb: FormBuilder, private elRef: ElementRef) {}
 
   addComment() {
-    this.bpmService.addProcessComment(this._task.id, this.commentForm.value.comment).subscribe((_) => {
+    this.bpmService.addProcessComment(this._task.id, this.commentForm.value.comment).subscribe((comment: ProcessInstanceComment) => {
       this.commentForm.reset();
-      this.fetchComments(this._task.processInstanceId);
+      this.fetchComments(this._task.processInstanceId, comment.id);
     });
   }
 
-  private fetchComments(processInstanceId: string) {
+  /**
+   * Fetch comments for a particular process instance
+   * @param processInstanceId ID of the process instance to fetch comments for
+   * @param focusId ID of the comment to be focused (scrolled into view to ensure visibility)
+   */
+  private fetchComments(processInstanceId: string, focusId?: string) {
     this.error = null;
     this.busy = true;
     this.bpmService.getProcessComments(processInstanceId).subscribe(
-      (res) => {
+      (res: ProcessInstanceComment[]) => {
         this.comments = res;
         this.busy = false;
+        this.focusComment(focusId);
       },
       (err) => {
         console.error(err);
@@ -49,6 +55,12 @@ export class TaskDetailsCommentsComponent implements OnInit {
         this.busy = false;
       }
     );
+  }
+
+  private focusComment(id: string) {
+    setTimeout(() => {
+      this.elRef.nativeElement.querySelector(id ? `#c${id}` : `.comment:last-child`).scrollIntoView();
+    }, 200);
   }
 
   trackByFn(index, item) {

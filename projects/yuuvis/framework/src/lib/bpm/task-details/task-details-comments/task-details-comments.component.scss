@@ -19,13 +19,14 @@
   .comments {
     grid-area: list;
     overflow-y: auto;
+    padding: var(--app-pane-padding) 0;
 
     .comment {
       background-color: var(--panel-background);
       border: 1px solid var(--panel-divider-color);
       padding: var(--app-pane-padding);
       border-radius: calc(var(--app-pane-padding) / 4);
-      margin-top: var(--app-pane-padding);
+      margin-bottom: var(--app-pane-padding);
 
       .time {
         color: var(--text-color-caption);
@@ -33,6 +34,7 @@
       }
       .message {
         margin: calc(var(--app-pane-padding) / 2) 0;
+        word-break: break-all;
       }
       .author {
         color: var(--text-color-caption);
