@@ -67,7 +67,7 @@
 
       &.error {
         background-color: var(--color-error);
-        cursor: default;
+        cursor: pointer;
         color: #fff;
         yuv-icon {
           transform: scale(0.7);
@@ -111,6 +111,17 @@
         }
       }
     }
+  }
+
+  .error-panel {
+    height: 100%;
+    box-sizing: border-box;
+    padding: var(--app-pane-padding);
+    text-align: center;
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+    justify-content: center;
   }
 
   ::ng-deep {
