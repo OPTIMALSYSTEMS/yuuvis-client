@@ -1,10 +1,10 @@
 const fs = require('fs-extra');
 const path = require('path');
-const sass = require('node-sass');
+const sass = require('sass');
 const bundleScss = require('bundle-scss');
 const { copyToNodeModules } = require('./node-copy');
 
-const processSass = async library => {
+const processSass = async (library) => {
   const destPath = path.resolve(__dirname, '..', '..', '..', 'dist', 'yuuvis', library, `${library}.css`);
   const tmpScssPath = path.resolve(__dirname, 'dist', `${library}.scss`);
   try {
@@ -27,7 +27,7 @@ const processSass = async library => {
   }
 };
 
-process.argv.forEach(function(val, index, array) {
+process.argv.forEach(function (val, index, array) {
   if (val.indexOf('--lib') !== -1) {
     const lib = val.substr(val.lastIndexOf('=') + 1);
     processSass(lib);
