@@ -337,6 +337,7 @@
   "yuv.framework.task-details-attachments.add": "Add attachment",
   "yuv.framework.task-details-attachments.dialog.remove.message": "Do you really want to remove the attachment from the process?",
   "yuv.framework.task-details-attachments.empty": "This task has no attachments.",
+  "yuv.framework.task-details-attachments.notfound": "The object has been deleted or its access rights have been changed.",
   "yuv.framework.task-details-attachments.order": "Sort attachments",
   "yuv.framework.task-details-history.empty": "",
   "yuv.framework.task-details-history.load.error": "Unable to load the task history.",

@@ -129,6 +129,8 @@ export class ProcessAttachmentsComponent implements OnInit {
             if (valid) {
               valid.preventRemove = this.keepPrimary === 'true';
               this.selectedObject = valid.id;
+            } else {
+              this.selectedObject = 'error';
             }
           }
           this.busy = false;
