@@ -49,6 +49,15 @@
     </yuv-tab-panel>
 </ng-template>
 
+<ng-template #commentsTab>
+    <p-tabPanel [id]="'commentsTab'" [header]="'yuv.framework.task-details.tabs.comments.title' | translate"
+        [headerStyleClass]="'comments'">
+        <ng-template pTemplate="content">
+            <yuv-task-details-comments [task]="_task"></yuv-task-details-comments>
+        </ng-template>
+    </p-tabPanel>
+</ng-template>
+
 <ng-template #content>
     <ng-content></ng-content>
 </ng-template>

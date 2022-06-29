@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
-import { BaseObjectTypeField, SearchFilter, SearchFilterGroup, SearchQuery, TranslateService, Utils } from '@yuuvis/core';
+import { BaseObjectTypeField, SearchFilter, SearchFilterGroup, SearchQuery, TranslateService } from '@yuuvis/core';
 import { forkJoin } from 'rxjs';
 import { IconRegistryService } from '../../../common/components/icon/service/iconRegistry.service';
 import { Selectable } from '../../../grouped-select';
@@ -57,11 +57,10 @@ export class SearchFilterComponent implements OnInit {
     return (this.activeFilters || []).map((f) => f.id);
   }
 
-  _originalFilters: Selectable[] = [];
   activeFilters: Selectable[] = [];
-  lastFilters: Selectable[] = [];
   storedFilters: Selectable[] = [];
   hiddenFilters: string[] = [];
+  allFilters: Selectable[] = [];
 
   filesizePipe: FileSizePipe;
   _query: SearchQuery;
@@ -77,6 +76,10 @@ export class SearchFilterComponent implements OnInit {
       this._query = null;
       this.filterQuery = null;
     }
+  }
+
+  private get customFilters(): Selectable[] {
+    return this.availableObjectTypeFields.map((o) => ({ ...o, value: [new SearchFilter(o.id, o.defaultOperator, o.defaultValue)] }));
   }
 
   @Output() filterChange = new EventEmitter<SearchQuery>();
@@ -155,13 +158,16 @@ export class SearchFilterComponent implements OnInit {
 
   private setupFilters(typeSelection: string[], activeFilters?: Selectable[]) {
     this.availableObjectTypeFields = this.quickSearchService.getAvailableObjectTypesFields(typeSelection);
+    const tagGroups = this.quickSearchService
+      .groupFilters(this.customFilters)
+      .filter((g) => g.id !== 'available')
+      .map((g) => g.items.shift() && g);
 
     this.quickSearchService.getCurrentSettings().subscribe(([storedFilters, hiddenFilters, lastFilters]) => {
       this.storedFilters = this.quickSearchService.loadFilters(storedFilters as any, this.availableObjectTypeFields);
       this.hiddenFilters = hiddenFilters;
-      this.activeFilters =
-        activeFilters ||
-        (this._originalFilters = this.quickSearchService.getActiveFilters(this.filterQuery, this.storedFilters, this.availableObjectTypeFields));
+      this.allFilters = [...this.storedFilters, ...tagGroups.reduce((prev, cur) => [...prev, ...cur.items], [])];
+      this.activeFilters = activeFilters || this.quickSearchService.getActiveFilters(this.filterQuery, this.allFilters, this.availableObjectTypeFields);
 
       this.availableFilterGroups = [
         {
@@ -169,6 +175,7 @@ export class SearchFilterComponent implements OnInit {
           label: this.translate.instant('yuv.framework.search.filter.recent.filters'),
           items: [...this.activeFilters, ...this.updateLastFilters(lastFilters)]
         },
+        ...tagGroups,
         {
           id: 'stored',
           label: this.translate.instant('yuv.framework.search.filter.stored.filters'),
@@ -177,9 +184,10 @@ export class SearchFilterComponent implements OnInit {
       ];
 
       if (this.viewMode === 'groups') {
-        const filters = this.availableFilterGroups[1].items;
+        const filters = this.availableFilterGroups[this.availableFilterGroups.length - 1].items;
         this.availableFilterGroups = [
           this.availableFilterGroups[0],
+          ...tagGroups,
           {
             id: 'custom',
             label: this.translate.instant('yuv.framework.search.filter.custom.filters'),
@@ -189,19 +197,18 @@ export class SearchFilterComponent implements OnInit {
         ];
       }
 
-      this.quickSearchService.saveLastFilters(this.filterSelection.filter((id) => this.storedFilters.find((s) => s.id === id))).subscribe();
+      this.quickSearchService.saveLastFilters(this.filterSelection.filter((f) => !f.startsWith('#'))).subscribe();
 
       this.setupCollapsedGroups();
     });
   }
 
   updateLastFilters(ids: string[]) {
-    const stored = this.storedFilters.map((f) => f.id);
-    return (this.lastFilters = (ids || [])
-      .filter((id) => !this.filterSelection.includes(id) && !this.hiddenFilters.includes(id) && stored.includes(id))
+    const all = this.allFilters.map((f) => f.id);
+    return (ids || [])
+      .filter((id) => !this.filterSelection.includes(id) && !this.hiddenFilters.includes(id) && all.includes(id))
       .slice(0, 5)
-      .map((id) => this.storedFilters.find((f) => f.id === id))
-      .sort(Utils.sortValues('label')));
+      .map((id) => this.allFilters.find((f) => f.id === id));
   }
 
   showFilterConfig() {
@@ -224,15 +231,15 @@ export class SearchFilterComponent implements OnInit {
 
   onFilterChange(res: Selectable[]) {
     // todo: find best UX (maybe css animation)
+    const active = this.filterSelection;
+    const added = res.find((r) => !active.includes(r.id));
     this.activeFilters = [...res];
-    this.quickSearchService.saveLastFilters(this.filterSelection.filter((id) => this.storedFilters.find((s) => s.id === id))).subscribe((lastFilters) => {
-      this.availableFilterGroups[0].items = [
-        ...this.activeFilters,
-        ...this._originalFilters.filter((o) => !this.filterSelection.includes(o.id)),
-        ...this.lastFilters.filter((o) => !this.filterSelection.includes(o.id))
-        // ...this.updateLastFilters(lastFilters)
-      ];
-    });
+
+    if (added && !this.availableFilterGroups[0].items.find((i) => i.id === added.id)) {
+      this.availableFilterGroups[0].items = [added, ...this.availableFilterGroups[0].items];
+    }
+
+    this.quickSearchService.saveLastFilters(this.filterSelection.filter((f) => !f.startsWith('#'))).subscribe();
 
     const groups = res.map((v) => SearchFilterGroup.fromArray(v.value)).concat(this.parentID ? SearchFilterGroup.fromArray([this.parentID]) : []);
 

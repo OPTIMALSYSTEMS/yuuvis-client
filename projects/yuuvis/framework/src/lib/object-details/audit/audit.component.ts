@@ -2,6 +2,7 @@ import { Component, Inject, Input, OnDestroy, OnInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import {
   ApiBase,
+  AppCacheService,
   AuditEntry,
   AuditQueryOptions,
   AuditQueryResult,
@@ -17,7 +18,7 @@ import {
   YuvEventType
 } from '@yuuvis/core';
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, switchMap, tap } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { ROUTES, YuvRoutes } from '../../routing/routes';
@@ -42,6 +43,8 @@ import { arrowNext, filter } from '../../svg.generated';
   styleUrls: ['./audit.component.scss']
 })
 export class AuditComponent implements OnInit, OnDestroy {
+  private FILTER_CACHE_KEY = 'yuv.audit.filters';
+
   private _objectID: string;
   private _objectTypeID: string;
   private initialFetch: boolean;
@@ -93,6 +96,7 @@ export class AuditComponent implements OnInit, OnDestroy {
   constructor(
     private auditService: AuditService,
     private backend: BackendService,
+    private appCache: AppCacheService,
     private eventService: EventService,
     private system: SystemService,
     private fb: UntypedFormBuilder,
@@ -201,6 +205,8 @@ export class AuditComponent implements OnInit, OnDestroy {
    * Execute a query from the search panel.
    */
   query() {
+    // persist current filter settings
+    this.appCache.setItem(this.FILTER_CACHE_KEY, this.searchForm.value).subscribe();
     const range: RangeValue = this.searchForm.value.dateRange;
 
     let options: AuditQueryOptions = {};
@@ -238,6 +244,7 @@ export class AuditComponent implements OnInit, OnDestroy {
     this.searchPanelShow = false;
   }
   resetSearchPanel() {
+    this.appCache.removeItem(this.FILTER_CACHE_KEY).subscribe();
     const patch = {
       dateRange: null
     };
@@ -329,40 +336,48 @@ export class AuditComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.getCustomAuditFilterGroup().subscribe((customActionGroup: ActionGroup) => {
-      let actionKeys = this.auditService.getAuditActions(this.allActions).map((a: number) => `a${a}`);
-      if (this.skipActions) {
-        const skipActionKeys = this.skipActions.map((a) => `a${a}`);
-        actionKeys = actionKeys.filter((k) => !skipActionKeys.includes(k));
-      }
-      this.actionGroups = [
-        { label: this.translate.instant('yuv.framework.audit.label.group.update'), actions: actionKeys.filter((k) => k.startsWith('a3')) },
-        { label: this.translate.instant('yuv.framework.audit.label.group.get'), actions: actionKeys.filter((k) => k.startsWith('a4')) },
-        { label: this.translate.instant('yuv.framework.audit.label.group.delete'), actions: actionKeys.filter((k) => k.startsWith('a2')) },
-        { label: this.translate.instant('yuv.framework.audit.label.group.create'), actions: actionKeys.filter((k) => k.startsWith('a1')) }
-      ];
+    let filterSettings: any;
+    this.appCache
+      .getItem(this.FILTER_CACHE_KEY)
+      .pipe(
+        tap((fs) => (filterSettings = fs)),
+        switchMap((fs) => this.getCustomAuditFilterGroup())
+      )
+      .subscribe((customActionGroup: ActionGroup) => {
+        let actionKeys = this.auditService.getAuditActions(this.allActions).map((a: number) => `a${a}`);
+        if (this.skipActions) {
+          const skipActionKeys = this.skipActions.map((a) => `a${a}`);
+          actionKeys = actionKeys.filter((k) => !skipActionKeys.includes(k));
+        }
+        this.actionGroups = [
+          { label: this.translate.instant('yuv.framework.audit.label.group.update'), actions: actionKeys.filter((k) => k.startsWith('a3')) },
+          { label: this.translate.instant('yuv.framework.audit.label.group.get'), actions: actionKeys.filter((k) => k.startsWith('a4')) },
+          { label: this.translate.instant('yuv.framework.audit.label.group.delete'), actions: actionKeys.filter((k) => k.startsWith('a2')) },
+          { label: this.translate.instant('yuv.framework.audit.label.group.create'), actions: actionKeys.filter((k) => k.startsWith('a1')) }
+        ];
 
-      let fbInput = {
-        dateRange: []
-      };
-      [...this.actionGroups, customActionGroup].forEach((g) => {
-        if (g.actions.length) {
-          const groupEntry = {
-            label: g.label,
-            actions: g.actions.map((a) => {
-              fbInput[a] = [a.startsWith('a4') ? false : true];
-              return a;
-            })
-          };
-          this.searchActions.push(groupEntry);
+        let fbInput = {
+          dateRange: []
+        };
+        [...this.actionGroups, customActionGroup].forEach((g) => {
+          if (g.actions.length) {
+            const groupEntry = {
+              label: g.label,
+              actions: g.actions.map((a) => {
+                fbInput[a] = [a.startsWith('a4') ? false : true];
+                return a;
+              })
+            };
+            this.searchActions.push(groupEntry);
+          }
+        });
+        this.searchForm = this.fb.group(fbInput);
+        if (filterSettings) this.searchForm.patchValue(filterSettings);
+        if (!this.initialFetch) {
+          this.query();
+          this.initialFetch = true;
         }
       });
-      this.searchForm = this.fb.group(fbInput);
-      if (!this.initialFetch) {
-        this.query();
-        this.initialFetch = true;
-      }
-    });
   }
   ngOnDestroy() {}
 }

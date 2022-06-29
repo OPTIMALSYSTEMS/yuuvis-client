@@ -312,7 +312,7 @@ export class SummaryComponent implements OnInit, OnDestroy {
 
   private shouldBeHidden(key: string): boolean {
     const otf: ObjectTypeField = this.systemService.system.allFields[key];
-    return otf?.classifications?.includes(ObjectTypePropertyClassification.SUMMARY_HIDDEN);
+    return !this.dmsObject2 && otf?.classifications?.includes(ObjectTypePropertyClassification.SUMMARY_HIDDEN);
   }
 
   private extractFields(element): string[] {

@@ -20,22 +20,26 @@ import { ProcessDetailsComponent } from './process-details/process-details.compo
 import { ProcessListEmptyComponent } from './process-list-empty/process-list-empty.component';
 import { ProcessListComponent } from './process-list/process-list.component';
 import { TaskDetailsAttachmentsComponent } from './task-details/task-details-attachments/task-details-attachments.component';
+import { TaskDetailsCommentsComponent } from './task-details/task-details-comments/task-details-comments.component';
 import { TaskDetailsHistoryComponent } from './task-details/task-details-history/task-details-history.component';
 import { TaskDelegatePickerComponent } from './task-details/task-details-task/task-delegate-picker/task-delegate-picker.component';
 import { TaskDetailsTaskComponent } from './task-details/task-details-task/task-details-task.component';
 import { TaskDetailsComponent } from './task-details/task-details.component';
 
 const components = [
+  FollowUpDetailsComponent,
+  ProcessAttachmentsComponent,
+  ProcessAttachmentsOrderComponent,
+  ProcessDetailsSummaryComponent,
   ProcessDetailsComponent,
   ProcessListComponent,
-  TaskDetailsComponent,
   ProcessListEmptyComponent,
-  TaskDetailsTaskComponent,
-  TaskDetailsHistoryComponent,
   TaskDetailsAttachmentsComponent,
-  ProcessDetailsSummaryComponent,
-  ProcessAttachmentsComponent,
-  FollowUpDetailsComponent
+  TaskDetailsComponent,
+  TaskDetailsHistoryComponent,
+  TaskDetailsTaskComponent,
+  TaskDelegatePickerComponent,
+  TaskDetailsCommentsComponent
 ];
 
 YuvComponentRegister.register(components);
@@ -57,7 +61,7 @@ YuvComponentRegister.register(components);
     YuvObjectPickerModule,
     YuvObjectDetailsModule
   ],
-  declarations: [...components, ProcessAttachmentsOrderComponent, TaskDelegatePickerComponent],
+  declarations: [...components],
   exports: [...components]
 })
 export class YuvBpmModule {}

@@ -310,6 +310,16 @@ export class DmsService {
     );
   }
 
+  batchDeleteTag(ids: string[], tag: string) {
+    return this.backend.batch(
+      ids.map((id) => ({
+        method: 'DELETE',
+        uri: `/dms/objects/${id}/tags/${tag}`,
+        base: ApiBase.core
+      }))
+    );
+  }
+
   batchUpdate(payload: any[]) {
     return this.backend.batch(payload.map((o) => ({ method: 'PATCH', uri: `/dms/objects/${o.id}`, body: this.getBatchBody(o) })));
   }

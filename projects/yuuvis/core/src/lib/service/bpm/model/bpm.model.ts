@@ -92,6 +92,15 @@ export interface Task {
   attachments: string[];
 }
 
+export interface ProcessInstanceComment {
+  id: string;
+  author: string;
+  message: string;
+  time: Date;
+  processInstanceId: string;
+  taskId: string;
+}
+
 export const ProcessDefinitionKey = {
   FOLLOW_UP: 'follow-up',
   INVALID_TYPE: 'invalid_type'
