@@ -1,6 +1,6 @@
 @import './../../../../../../../../src/scss-shared/_mixins';
 
-.sidebar {
+::ng-deep .sidebar {
   --sidebar-header-height: 220px;
 
   &.p-sidebar {
@@ -9,13 +9,13 @@
     background-color: var(--color-primary);
     border: none;
 
-    .p-sidebar-close {
-      display: none;
-    }
-
     .p-sidebar-content,
     .p-sidebar-header {
       padding: 0;
+    }
+
+    .p-sidebar-close {
+      display: none;
     }
   }
 
