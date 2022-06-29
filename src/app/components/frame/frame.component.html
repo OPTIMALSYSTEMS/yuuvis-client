@@ -35,11 +35,11 @@
         <yuv-icon class="btn" icon="help" title="{{'yuv.client.state.about.documentation.link.label'|translate}}">
         </yuv-icon>
       </a>
-      <div yuvOfflineDisabled class="user" (click)="op.toggle($event)" (keyup.enter)="op.toggle($event)" tabindex="0" #user>
+      <div yuvOfflineDisabled class="user" (click)="op.toggle($event)" (keyup.enter)="op.toggle($event)" tabindex="0" #userBtn>
         <yuv-user-avatar [user]="user"></yuv-user-avatar>
       </div>
 
-      <p-overlayPanel #op [dismissable]="true" [appendTo]="user">
+      <p-overlayPanel #op [dismissable]="true" [appendTo]="userBtn">
         <div class="user-panel" id="sidebar-profile" *ngIf="reloadComponent">
           <div class="avatar" [ngClass]="{ enabled: user?.enabled }">
             <yuv-user-avatar [user]="user"></yuv-user-avatar>
@@ -52,12 +52,12 @@
             </div>
           </div>
           <ng-container *ngFor="let config of settingsPlugins | async">
-            <div class="nav-item settingsLink" (click)="op.hide()">
+            <div class="nav-item settingsLink">
               <ng-container *ngTemplateOutlet="pluginLink; context: { $implicit: config }"></ng-container>
             </div>
           </ng-container>
 
-          <div class="nav-item settings" (click)="op.hide()">
+          <div class="nav-item settings">
             <a routerLink="/settings" translate>yuv.client.state.settings.title</a>
           </div>
           <div class="nav-item logout">
