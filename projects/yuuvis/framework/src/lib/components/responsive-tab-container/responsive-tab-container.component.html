@@ -1,7 +1,7 @@
 <as-split (dragEnd)="dragEnd($event)">
   <as-split-area [size]="(_layoutOptions?.panelSizes)[0]">
     <p-tabView class="yrt-tab" yuvOfflineDisabled="ul" #mainTabView (onChange)="onChange($event)"
-      orientation="{{ orientation }}" [ngClass]="{noSplit: disableSplit}" [scrollable]="true">
+      orientation="{{ orientation }}" [ngClass]="{noSplit: disableSplit}" [scrollable]="scrollable">
       <span yuvOfflineDisabled class="tab-navigation"
         [title]="'yuv.framework.responsive-tab-container.button.split' | translate">
         <yuv-icon *ngIf="!(isSmallScreen$ | async)" class="split-btn" (click)="splitPanelAdd()"

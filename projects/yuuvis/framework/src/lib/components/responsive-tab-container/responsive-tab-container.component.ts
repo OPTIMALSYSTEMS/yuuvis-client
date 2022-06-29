@@ -76,6 +76,7 @@ export class ResponsiveTabContainerComponent implements OnInit, AfterContentInit
 
   constructor(
     @Attribute('disable-split') public disableSplit: boolean,
+    @Attribute('scrollable') public scrollable: boolean,
     private layoutService: LayoutService,
     private screenService: ScreenService,
     private iconRegistry: IconRegistryService
