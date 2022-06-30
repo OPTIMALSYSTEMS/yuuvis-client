@@ -28,7 +28,7 @@ export class ProcessListComponent {
   @Input()
   set processData(data: ResponsiveTableData) {
     this._processData = data;
-    this.totalNumItems = data ? data.rows.length : 0;
+    this.totalNumItems = data ? data.rows?.length : 0;
 
     let rowsToBeSelected: RowNode[] = this.dataTable?.gridOptions.api.getSelectedNodes();
     if (rowsToBeSelected?.length) {
