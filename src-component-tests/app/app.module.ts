@@ -2,6 +2,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {
   YuvColumnConfigModule,
   YuvComponentsModule,
@@ -23,6 +24,7 @@ import { TestColumnConfigComponent } from './test-column-config/test-column-conf
 import { TestContentPreviewComponent } from './test-content-preview/test-content-preview.component';
 import { TestContextComponent } from './test-context/test-context.component';
 import { TestFileDropComponent } from './test-file-drop/test-file-drop.component';
+import { TestFormElementsComponent } from './test-form-elements/test-form-elements.component';
 import { TestGroupedSelectComponent } from './test-grouped-select/test-grouped-select.component';
 import { TestIconsComponent } from './test-icons/test-icons/test-icons.component';
 import { TestLoadingSpinnerComponent } from './test-loading-spinner/test-loading-spinner.component';
@@ -45,7 +47,6 @@ import { TestTaskDetailsComponent } from './test-task-details/test-task-details.
 import { TestUploadProgressOverlayComponent } from './test-upload-progress-overlay/test-upload-progress-overlay.component';
 import { TestUserAvatarComponent } from './test-user-avatar/test-user-avatar.component';
 import { TestVersionListComponent } from './test-version-list/test-version-list.component';
-import { TestFormElementsComponent } from './test-form-elements/test-form-elements.component';
 
 @NgModule({
   declarations: [
@@ -85,6 +86,7 @@ import { TestFormElementsComponent } from './test-form-elements/test-form-elemen
   imports: [
     HttpClientModule,
     BrowserModule,
+    BrowserAnimationsModule,
     AppRoutingModule,
     FormsModule,
     ReactiveFormsModule,
