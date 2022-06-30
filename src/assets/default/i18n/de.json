@@ -337,7 +337,7 @@
   "yuv.framework.task-details-attachments.add": "Anlage hinzufügen",
   "yuv.framework.task-details-attachments.dialog.remove.message": "Möchten Sie die Anlage aus dem Prozess wirklich entfernen?",
   "yuv.framework.task-details-attachments.empty": "Diese Aufgabe hat keine Anlagen.",
-  "yuv.framework.task-details-attachments.notfound": "Das Objekt wurde gelöscht oder seine Zugriffsrechte wurden geändert.",
+  "yuv.framework.task-details-attachments.notfound": "Das Objekt wurde gelöscht oder die Zugriffsrechte sind nicht ausreichend.",
   "yuv.framework.task-details-attachments.order": "Anlagen sortieren",
   "yuv.framework.task-details-comments.empty": "Für die Aufgabe sind noch keine Kommentare abgegeben worden.",
   "yuv.framework.task-details-comments.form.message.placeholder": "Kommentar",

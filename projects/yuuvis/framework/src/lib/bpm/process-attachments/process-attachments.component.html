@@ -61,7 +61,7 @@
 </div>
 
 <ng-template #addAttachmentOverlay let-popover="popover">
-    <yuv-object-picker [popoverRef]="popover"
+    <yuv-object-picker [skipTypes]="attachmentsSkipTypes" [popoverRef]="popover"
         [headline]="attachmentPickerTitle || 'yuv.framework.process-details.attachment-picker.headline' | translate"
         (objectSelect)="onAttachmentDialogSelect($event)"></yuv-object-picker>
 </ng-template>
