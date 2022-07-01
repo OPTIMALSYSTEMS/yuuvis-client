@@ -54,6 +54,7 @@ export class InboxComponent implements OnInit, OnDestroy {
   };
 
   plugins: any;
+  attachmentPlugins: any;
   filterTerm: string;
 
   constructor(
@@ -69,6 +70,7 @@ export class InboxComponent implements OnInit, OnDestroy {
     private pluginsService: PluginsService
   ) {
     this.plugins = this.pluginsService.getCustomPlugins('extensions', 'yuv-inbox');
+    this.attachmentPlugins = this.pluginsService.getCustomPlugins('extensions', 'yuv-inbox-attachments');
     this.iconRegistry.registerIcons([edit, arrowNext, refresh, inbox, listModeDefault, listModeGrid, listModeSimple]);
   }
 
