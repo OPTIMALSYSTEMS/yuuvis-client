@@ -46,6 +46,7 @@ export class TaskDetailsComponent implements OnInit {
     this._layoutOptionsKey = `${k}.task-details`;
   }
   @Input() plugins: any;
+  @Input() attachmentPlugins: any;
   @Output() attachmentOpenExternal = new EventEmitter<string>();
 
   constructor(private system: SystemService, private translate: TranslateService) {}
