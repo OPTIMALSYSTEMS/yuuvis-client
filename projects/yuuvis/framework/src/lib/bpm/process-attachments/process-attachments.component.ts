@@ -15,7 +15,7 @@ export class ProcessAttachmentsComponent implements OnInit {
   @ViewChild('addAttachmentOverlay') addAttachmentOverlay: TemplateRef<any>;
   @ViewChild('orderAttachmentOverlay') orderAttachmentOverlay: TemplateRef<any>;
 
-  @Input() plugins: any[];
+  @Input() plugins: any;
 
   @Input() set attachments(a: string[]) {
     if (a?.length) {
