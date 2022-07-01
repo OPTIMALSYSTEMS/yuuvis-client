@@ -32,6 +32,7 @@ export class ProcessDetailsComponent {
   }
   @Input() layoutOptionsKey: string;
   @Input() plugins: any;
+  @Input() attachmentPlugins: any;
   // bpm variables that should be shown in the process summary
   @Input() displayVars: string[] = [];
   @Output() attachmentOpenExternal = new EventEmitter<string>();
