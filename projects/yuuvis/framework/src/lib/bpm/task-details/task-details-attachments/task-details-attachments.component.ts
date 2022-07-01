@@ -18,6 +18,8 @@ export class TaskDetailsAttachmentsComponent implements OnInit {
   @Input() layoutOptionsKey: string;
 
   @Input() plugins: any[];
+  // list of types (object type IDs) that should not be offered when adding new attachments
+  @Input() attachmentsSkipTypes: string[];
 
   @Output() attachmentRemoved = new EventEmitter<string>();
   @Output() attachmentAdded = new EventEmitter<string>();
