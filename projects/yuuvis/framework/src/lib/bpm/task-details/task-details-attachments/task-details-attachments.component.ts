@@ -17,7 +17,7 @@ export class TaskDetailsAttachmentsComponent implements OnInit {
 
   @Input() layoutOptionsKey: string;
 
-  @Input() plugins: any[];
+  @Input() plugins: any;
 
   @Output() attachmentRemoved = new EventEmitter<string>();
   @Output() attachmentAdded = new EventEmitter<string>();
