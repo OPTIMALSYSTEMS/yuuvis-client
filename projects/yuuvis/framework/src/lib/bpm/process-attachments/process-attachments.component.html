@@ -35,7 +35,7 @@
 
         <ng-container *ngIf="selectedObject">
             <yuv-object-details *ngIf="selectedObject !== 'error'; else tplError" [disableFileDrop]="true"
-                [objectId]="selectedObject" [layoutOptionsKey]="_layoutOptionsKey"></yuv-object-details>
+                [objectId]="selectedObject" [layoutOptionsKey]="_layoutOptionsKey" [plugins]="plugins"></yuv-object-details>
         </ng-container>
 
     </ng-container>

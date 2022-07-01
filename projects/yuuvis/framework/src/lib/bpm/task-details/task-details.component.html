@@ -42,7 +42,7 @@
     <p-tabPanel [id]="'attachmentsTab'" [header]="'yuv.framework.task-details.tabs.attachments.title' | translate"
         [headerStyleClass]="'attachments'">
         <ng-template pTemplate="content">
-            <yuv-task-details-attachments [layoutOptionsKey]="_layoutOptionsKey" [task]="_task"
+            <yuv-task-details-attachments [layoutOptionsKey]="_layoutOptionsKey" [task]="_task" [plugins]="attachmentPlugins"
                 (attachmentOpenExternal)="attachmentOpenExternal.emit($event)">
             </yuv-task-details-attachments>
         </ng-template>
