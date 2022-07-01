@@ -16,6 +16,8 @@ export class TaskDetailsAttachmentsComponent implements OnInit {
   }
 
   @Input() layoutOptionsKey: string;
+  // list of types (object type IDs) that should not be offered when adding new attachments
+  @Input() attachmentsSkipTypes: string[];
 
   @Input() plugins: any;
 
