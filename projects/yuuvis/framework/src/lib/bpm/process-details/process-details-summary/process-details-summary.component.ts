@@ -1,5 +1,5 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { Process, ProcessService, TranslateService, UserService } from '@yuuvis/core';
+import { Process, ProcessService, ProcessVariable, TranslateService, UserService } from '@yuuvis/core';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { IconRegistryService } from '../../../common/components/icon/service/iconRegistry.service';
 import { PopoverService } from '../../../popover/popover.service';
@@ -31,6 +31,7 @@ export class ProcessDetailsSummaryComponent implements OnInit, OnDestroy {
   _process: Process;
   @Input() set process(p: Process) {
     this._process = p;
+    this.resolveDisplayVariables();
     if (p) {
       if (p.suspended) {
         this.processState = this.processStates.suspended;
@@ -43,6 +44,13 @@ export class ProcessDetailsSummaryComponent implements OnInit, OnDestroy {
       this.processState = null;
     }
   }
+  // bpm variables that should be shown in the process summary
+  private _displayVars: string[];
+  @Input() set displayVars(dv: string[]) {
+    this._displayVars = dv;
+    this.resolveDisplayVariables();
+  }
+  _displayVarsResolved: ProcessVariable[] = [];
 
   constructor(
     private translate: TranslateService,
@@ -53,6 +61,10 @@ export class ProcessDetailsSummaryComponent implements OnInit, OnDestroy {
   ) {
     this.iconRegistry.registerIcons([deleteIcon]);
     this.userService.user$.pipe(takeUntilDestroy(this)).subscribe((_) => (this.isAdvancedUser = this.userService.isAdvancedUser));
+  }
+
+  private resolveDisplayVariables() {
+    this._displayVarsResolved = this._process && this._displayVars ? this._process.variables.filter((v) => this._displayVars.includes(v.name)) : [];
   }
 
   deleteProcess() {

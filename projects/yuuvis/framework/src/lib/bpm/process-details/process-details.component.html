@@ -22,7 +22,7 @@
     [headerStyleClass]="'task'">
     <ng-template pTemplate="content">
 
-      <yuv-process-details-summary [process]="_process"></yuv-process-details-summary>
+      <yuv-process-details-summary [displayVars]="displayVars" [process]="_process"></yuv-process-details-summary>
 
     </ng-template>
   </p-tabPanel>
@@ -42,7 +42,8 @@
     [headerStyleClass]="'attachments'">
     <ng-template pTemplate="content">
       <yuv-process-attachments keepPrimary="true" [layoutOptionsKey]="layoutOptionsKey"
-        [attachments]="_process?.attachments">
+        [attachmentsSkipTypes]="attachmentsSkipTypes" [attachments]="_process?.attachments"
+        [plugins]="attachmentPlugins">
       </yuv-process-attachments>
     </ng-template>
   </p-tabPanel>

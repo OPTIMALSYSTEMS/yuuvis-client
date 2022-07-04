@@ -28,7 +28,7 @@ export class ProcessListComponent {
   @Input()
   set processData(data: ResponsiveTableData) {
     this._processData = data;
-    this.totalNumItems = data ? data.rows.length : 0;
+    this.totalNumItems = data ? data.rows?.length : 0;
 
     let rowsToBeSelected: RowNode[] = this.dataTable?.gridOptions.api.getSelectedNodes();
     if (rowsToBeSelected?.length) {
@@ -51,11 +51,13 @@ export class ProcessListComponent {
   }
 
   @Input()
-  set viewMode(mode: ViewMode) {
-    this._viewMode = mode;
+  set viewMode(viewMode: ViewMode) {
+    if (this.dataTable) {
+      this.dataTable.viewMode = this.dataTable.viewMode !== viewMode ? viewMode : 'auto';
+    }
   }
   get viewMode(): ViewMode {
-    return this._viewMode;
+    return this.dataTable ? this.dataTable.viewMode : null;
   }
   showStatusFilter: boolean;
   showTermFilter: boolean;

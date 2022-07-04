@@ -42,9 +42,18 @@
     <p-tabPanel [id]="'attachmentsTab'" [header]="'yuv.framework.task-details.tabs.attachments.title' | translate"
         [headerStyleClass]="'attachments'">
         <ng-template pTemplate="content">
-            <yuv-task-details-attachments [layoutOptionsKey]="_layoutOptionsKey" [task]="_task"
+            <yuv-task-details-attachments [layoutOptionsKey]="_layoutOptionsKey" [task]="_task" [plugins]="attachmentPlugins"
                 (attachmentOpenExternal)="attachmentOpenExternal.emit($event)">
             </yuv-task-details-attachments>
+        </ng-template>
+    </p-tabPanel>
+</ng-template>
+
+<ng-template #commentsTab>
+    <p-tabPanel [id]="'commentsTab'" [header]="'yuv.framework.task-details.tabs.comments.title' | translate"
+        [headerStyleClass]="'comments'">
+        <ng-template pTemplate="content">
+            <yuv-task-details-comments [task]="_task"></yuv-task-details-comments>
         </ng-template>
     </p-tabPanel>
 </ng-template>

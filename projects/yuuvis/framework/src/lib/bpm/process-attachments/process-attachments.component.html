@@ -6,7 +6,9 @@
             <div class="attachment-list">
                 <div class="attachment" *ngFor="let o of attachedObjects"
                     [ngClass]="{error: o.error, selected: o.id === selectedObject}">
-                    <yuv-icon class="error" icon="noFile" [title]="o.id" *ngIf="o.error; else tplAttachment"></yuv-icon>
+                    <yuv-icon class="error" icon="noFile" [title]="o.id" (click)="selectAttachment('error', $event)"
+                        *ngIf="o.error; else tplAttachment"></yuv-icon>
+
                     <ng-template #tplAttachment>
                         <button title="{{o.title}}" class="item" (click)="selectAttachment(o.id, $event)">
                             <yuv-object-type-icon [objectTypeId]="o.leadingTypeId"></yuv-object-type-icon>
@@ -31,9 +33,20 @@
                 </button>
             </div>
         </div>
-        <yuv-object-details *ngIf="selectedObject" [disableFileDrop]="true" [objectId]="selectedObject"
-            [layoutOptionsKey]="_layoutOptionsKey"></yuv-object-details>
+
+        <ng-container *ngIf="selectedObject">
+            <yuv-object-details *ngIf="selectedObject !== 'error'; else tplError" [disableFileDrop]="true"
+                [objectId]="selectedObject" [layoutOptionsKey]="_layoutOptionsKey" [plugins]="plugins"></yuv-object-details>
+        </ng-container>
+
     </ng-container>
+
+
+    <ng-template #tplError>
+        <div class="error-panel">
+            {{'yuv.framework.task-details-attachments.notfound'|translate}}
+        </div>
+    </ng-template>
 
     <ng-template #tplEmpty>
         <div class="empty" *ngIf="!busy">
@@ -48,7 +61,7 @@
 </div>
 
 <ng-template #addAttachmentOverlay let-popover="popover">
-    <yuv-object-picker [popoverRef]="popover"
+    <yuv-object-picker [skipTypes]="attachmentsSkipTypes" [popoverRef]="popover"
         [headline]="attachmentPickerTitle || 'yuv.framework.process-details.attachment-picker.headline' | translate"
         (objectSelect)="onAttachmentDialogSelect($event)"></yuv-object-picker>
 </ng-template>

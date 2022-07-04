@@ -1,0 +1,17 @@
+:host {
+  display: grid;
+  grid-template-columns: 30% 1fr;
+  grid-template-areas: 'list details';
+  width: 100%;
+  height: 100%;
+  gap: var(--app-pane-padding);
+  padding: var(--app-pane-padding);
+
+  yuv-process-list {
+    grid-area: list;
+  }
+
+  yuv-process-details {
+    grid-area: details;
+  }
+}

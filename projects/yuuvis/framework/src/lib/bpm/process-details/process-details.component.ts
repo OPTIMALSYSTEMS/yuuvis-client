@@ -31,7 +31,12 @@ export class ProcessDetailsComponent {
       : null;
   }
   @Input() layoutOptionsKey: string;
+  // list of types (object type IDs) that should not be offered when adding new attachments
+  @Input() attachmentsSkipTypes: string[];
   @Input() plugins: any;
+  @Input() attachmentPlugins: any;
+  // bpm variables that should be shown in the process summary
+  @Input() displayVars: string[] = [];
   @Output() attachmentOpenExternal = new EventEmitter<string>();
 
   constructor(private system: SystemService) {}

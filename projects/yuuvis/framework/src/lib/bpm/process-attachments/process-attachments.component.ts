@@ -15,6 +15,8 @@ export class ProcessAttachmentsComponent implements OnInit {
   @ViewChild('addAttachmentOverlay') addAttachmentOverlay: TemplateRef<any>;
   @ViewChild('orderAttachmentOverlay') orderAttachmentOverlay: TemplateRef<any>;
 
+  @Input() plugins: any;
+
   @Input() set attachments(a: string[]) {
     if (a?.length) {
       this.fetchAttachmentDetails(a);
@@ -30,6 +32,8 @@ export class ProcessAttachmentsComponent implements OnInit {
   @Input() set layoutOptionsKey(k: string) {
     this._layoutOptionsKey = `${k}.attachments`;
   }
+  // list of types (object type IDs) that should not be offered when adding new attachments
+  @Input() attachmentsSkipTypes: string[];
 
   @Output() attachmentRemove = new EventEmitter<string>();
   @Output() attachmentAdd = new EventEmitter<string>();

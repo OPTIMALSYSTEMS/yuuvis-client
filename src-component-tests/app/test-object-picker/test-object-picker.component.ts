@@ -10,6 +10,7 @@ import { Selectable } from '@yuuvis/framework';
 export class TestObjectPickerComponent implements OnInit {
   constructor() {}
   selected: Selectable;
+  skipTypes = ['appPersonalfile:pfpersonalfile'];
 
   objectSelect(e: Selectable) {
     console.log(e);

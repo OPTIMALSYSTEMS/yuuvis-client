@@ -1,0 +1,5 @@
+<yuv-process-list class="yuv-master panel" [showFooter]="true" [processData]="processData$ | async"
+    (selectedItem)="selectedItem($event)"></yuv-process-list>
+
+<yuv-process-details *ngIf="selectedProcess" [displayVars]="displayVars" [process]="selectedProcess">
+</yuv-process-details>

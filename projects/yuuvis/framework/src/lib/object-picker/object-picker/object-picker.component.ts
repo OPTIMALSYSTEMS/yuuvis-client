@@ -18,6 +18,8 @@ export class ObjectPickerComponent implements OnInit {
 
   @Input() headline: string;
   @Input() popoverRef: PopoverRef;
+  // list of types (object type IDs) that should not be shown in the object type picker
+  @Input() skipTypes: string[];
   @Output() objectSelect = new EventEmitter<string>();
   @Output() cancel = new EventEmitter();
 

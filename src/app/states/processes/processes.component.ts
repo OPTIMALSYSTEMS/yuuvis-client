@@ -46,6 +46,7 @@ export class ProcessesComponent implements OnInit, OnDestroy {
     icon: 'process'
   };
   plugins: any;
+  attachmentPlugins: any;
   filterTerm: string;
 
   constructor(
@@ -57,6 +58,7 @@ export class ProcessesComponent implements OnInit, OnDestroy {
     private pluginsService: PluginsService
   ) {
     this.plugins = this.pluginsService.getCustomPlugins('extensions', 'yuv-processes');
+    this.attachmentPlugins = this.pluginsService.getCustomPlugins('extensions', 'yuv-processes-attachments');
     this.iconRegistry.registerIcons([edit, arrowNext, refresh, process, listModeDefault, listModeGrid, listModeSimple]);
   }
 

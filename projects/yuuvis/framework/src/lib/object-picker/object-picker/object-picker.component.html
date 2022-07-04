@@ -1,7 +1,7 @@
 <header>
     <h2 *ngIf="headline">{{headline}}</h2>
-    <yuv-quick-search autofocus="true" [inline]="true" disableAggregations="true" (queryReset)="onQuickSearchReset()"
-        (queryChange)="onQuickSearchQueryChange($event)"></yuv-quick-search>
+    <yuv-quick-search autofocus="true" [skipTypes]="skipTypes" [inline]="true" disableAggregations="true"
+        (queryReset)="onQuickSearchReset()" (queryChange)="onQuickSearchQueryChange($event)"></yuv-quick-search>
 </header>
 <main [yuvBusyOverlay]="loading">
     <div class="result" *ngIf="searchResult">

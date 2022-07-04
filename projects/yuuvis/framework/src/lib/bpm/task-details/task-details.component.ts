@@ -13,6 +13,7 @@ export class TaskDetailsComponent implements OnInit {
   @ViewChild('taskTab') taskTab: TemplateRef<any>;
   @ViewChild('historyTab') historyTab: TemplateRef<any>;
   @ViewChild('attachmentsTab') attachmentsTab: TemplateRef<any>;
+  @ViewChild('commentsTab') commentsTab: TemplateRef<any>;
 
   _task: Task;
   header: {
@@ -39,12 +40,13 @@ export class TaskDetailsComponent implements OnInit {
         }
       : null;
   }
-  @Input() panelOrder = ['taskTab', 'historyTab', 'attachmentsTab'];
+  @Input() panelOrder = ['taskTab', 'historyTab', 'attachmentsTab', 'commentsTab'];
   _layoutOptionsKey: string;
   @Input() set layoutOptionsKey(k: string) {
     this._layoutOptionsKey = `${k}.task-details`;
   }
   @Input() plugins: any;
+  @Input() attachmentPlugins: any;
   @Output() attachmentOpenExternal = new EventEmitter<string>();
 
   constructor(private system: SystemService, private translate: TranslateService) {}

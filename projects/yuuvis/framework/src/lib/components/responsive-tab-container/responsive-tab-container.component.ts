@@ -91,6 +91,7 @@ export class ResponsiveTabContainerComponent implements OnInit, AfterContentInit
     const panel = id ? this.allPanels.find((p) => this.pID(p) === id) : this.mainTabView.findSelectedTab();
     if (panel && this.allPanels.length > this.splitPanels.length + 1) {
       panel.loaded = true;
+      panel.cache = true;
       panel.disabled = true;
       this.splitPanels.push(panel);
       setTimeout(
