@@ -1,5 +1,10 @@
 <div class="cmp">
     <yuv-object-picker headline="Pick something" (objectSelect)="objectSelect($event)"></yuv-object-picker>
+
+    <p>Should not show 'appPersonalfile:pfpersonalfile' when selecting object type</p>
+
+    <yuv-object-picker headline="Picker with skipTypes" [skipTypes]="skipTypes" (objectSelect)="objectSelect($event)">
+    </yuv-object-picker>
 </div>
 
 <div class="result" *ngIf="selected">{{selected.label}}({{selected.id}})</div>

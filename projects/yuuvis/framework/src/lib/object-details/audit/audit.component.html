@@ -19,7 +19,7 @@
         <div class="form-control" *ngFor="let group of searchActions">
           <button type="button" class="group" (click)="toggleGroupActions(group.actions)">{{ group.label }}</button>
           <yuv-form-input class="checkbox" [skipToggle]="true" [label]="auditLabels[c]" *ngFor="let c of group.actions">
-            <yuv-checkbox [formControlName]="c"></yuv-checkbox>
+            <yuv-checkbox [formControlName]="c" [attr.data-name]="c"></yuv-checkbox>
           </yuv-form-input>
         </div>
       </div>

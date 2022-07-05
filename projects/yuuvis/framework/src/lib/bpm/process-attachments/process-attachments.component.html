@@ -36,7 +36,7 @@
 
         <ng-container *ngIf="selectedObject">
             <yuv-object-details *ngIf="selectedObject !== 'error'; else tplError" [disableFileDrop]="true"
-                [objectId]="selectedObject" [layoutOptionsKey]="_layoutOptionsKey"></yuv-object-details>
+                [objectId]="selectedObject" [layoutOptionsKey]="_layoutOptionsKey" [plugins]="plugins"></yuv-object-details>
         </ng-container>
 
     </ng-container>
@@ -61,7 +61,7 @@
 </div>
 
 <ng-template #addAttachmentOverlay let-popover="popover">
-    <yuv-object-picker [popoverRef]="popover"
+    <yuv-object-picker [skipTypes]="attachmentsSkipTypes" [popoverRef]="popover"
         [headline]="attachmentPickerTitle || 'yuv.framework.process-details.attachment-picker.headline' | translate"
         (objectSelect)="onAttachmentDialogSelect($event)"></yuv-object-picker>
 </ng-template>
