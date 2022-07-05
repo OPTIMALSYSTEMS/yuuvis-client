@@ -35,4 +35,5 @@ export interface SummaryEntry {
    */
   value2?: any;
   order?: number;
+  type?: string;
 }
