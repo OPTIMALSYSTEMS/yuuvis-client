@@ -271,6 +271,7 @@ export class SearchResultComponent implements OnDestroy {
           BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS,
           BaseObjectTypeField.OBJECT_ID,
           BaseObjectTypeField.OBJECT_TYPE_ID,
+          BaseObjectTypeField.PARENT_ID,
           ...colDefs.filter((c) => !c.colId.startsWith(GridService.AGGREGATED_COLUMN_PREFIX)).map((c) => c.colId)
         ];
 
