@@ -61,7 +61,7 @@
     }
   }
 
-  // p-tabview.yuv-split-tab::ng-deep > .p-tabview > .p-tabview-panels > p-tabpanel > .p-tabview-panel {
+  // p-tabview.yuv-split-tab::ng-deep > .p-tabview > .p-tabview-panels > yuv-tab-panel > .p-tabview-panel {
   //   @include frame(0);
   //   top: 39px; // header height
   // }
@@ -70,10 +70,10 @@
 ::ng-deep p-tabview.yrt-tab {
   & > .p-tabview {
     border-radius: 0 !important;
-    & > .p-tabview-nav {
-      flex-wrap: nowrap;
-      overflow: auto hidden;
-      display: flex;
+    & > .p-tabview-nav-container .p-tabview-nav {
+      // flex-wrap: nowrap;
+      // overflow: auto hidden;
+      // display: flex;
       margin-right: 28px;
       :host-context(.screen-s) & {
         margin-right: 0;
@@ -84,7 +84,7 @@
       }
     }
 
-    & > .p-tabview-panels > p-tabpanel > .p-tabview-panel {
+    & > .p-tabview-panels > yuv-tab-panel > .p-tabview-panel {
       @include frame(0);
       top: 39px; // header height
     }
@@ -105,15 +105,15 @@
     border-top: 1px solid #c8c8c8;
   }
 
-  &.split-tab-view > .p-tabview > .p-tabview-panels > p-tabpanel[id] > .p-tabview-panel {
+  &.split-tab-view > .p-tabview > .p-tabview-panels > p-tabPanel[id] {
+    // hide first empty/fake tab panel
+    display: none !important;
+  }
+
+  &.split-tab-view > .p-tabview > .p-tabview-panels > yuv-tab-panel[id] > .p-tabview-panel {
     .p-tabview {
       padding: 0;
       height: 100%;
-    }
-
-    // hide first empty/fake tab panel
-    &:first-child {
-      display: none !important;
     }
 
     // display original tab panel (disabled by mainTabView)

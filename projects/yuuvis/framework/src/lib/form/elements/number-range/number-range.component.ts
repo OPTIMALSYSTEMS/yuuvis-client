@@ -1,5 +1,5 @@
 import { Component, forwardRef, Input } from '@angular/core';
-import { ControlValueAccessor, FormControl, FormGroup, NG_VALIDATORS, NG_VALUE_ACCESSOR, Validator } from '@angular/forms';
+import { ControlValueAccessor, UntypedFormControl, UntypedFormGroup, NG_VALIDATORS, NG_VALUE_ACCESSOR, Validator } from '@angular/forms';
 import { RangeValue, SearchFilter } from '@yuuvis/core';
 
 /**
@@ -66,9 +66,9 @@ export class NumberRangeComponent implements ControlValueAccessor, Validator {
    */
   @Input() maxValue: number;
 
-  public rangeForm = new FormGroup({
-    numberValue: new FormControl(),
-    numberValueFrom: new FormControl()
+  public rangeForm = new UntypedFormGroup({
+    numberValue: new UntypedFormControl(),
+    numberValueFrom: new UntypedFormControl()
   });
 
   value: RangeValue;
@@ -136,7 +136,7 @@ export class NumberRangeComponent implements ControlValueAccessor, Validator {
   }
 
   // returns null when valid else the validation object
-  public validate(c: FormControl) {
+  public validate(c: UntypedFormControl) {
     let err: any;
     if (this.searchOption === SearchFilter.OPERATOR.EQUAL) {
       err = { number: { valid: false } };

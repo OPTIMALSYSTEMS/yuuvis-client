@@ -14,6 +14,7 @@ import {
   ViewChildren
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { ResizedEvent } from 'angular-resize-event';
 import { Observable, Subject, timer } from 'rxjs';
 import { debounce, tap } from 'rxjs/operators';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
@@ -232,11 +233,8 @@ export class GroupedSelectComponent implements AfterViewInit, ControlValueAccess
     }
   }
 
-  onContainerResized(event) {
-    this.sizeSource.next({
-      width: event.newWidth,
-      height: event.newHeight
-    });
+  onContainerResized(event: ResizedEvent) {
+    this.sizeSource.next(event.newRect);
   }
 
   propagateChange = (_: any) => {};

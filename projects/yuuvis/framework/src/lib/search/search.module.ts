@@ -17,6 +17,7 @@ import { YuvGroupedSelectModule } from '../grouped-select/grouped-select.module'
 import { YuvObjectFormModule } from '../object-form/object-form.module';
 import { YuvPipesModule } from '../pipes/pipes.module';
 import { YuvPopoverModule } from '../popover/popover.module';
+import { YuvComponentRegister } from '../shared/utils/utils';
 import { QuickSearchPickerComponent } from './quick-search/quick-search-picker/quick-search-picker.component';
 import { QuickSearchComponent } from './quick-search/quick-search.component';
 import { QuickSearchService } from './quick-search/quick-search.service';
@@ -26,7 +27,7 @@ import { SearchFilterComponent } from './quick-search/search-filter/search-filte
 import { SearchResultPanelComponent } from './search-result-panel/search-result-panel.component';
 import { SearchResultComponent } from './search-result/search-result.component';
 
-const searchComponents = [
+const components = [
   QuickSearchComponent,
   SearchResultComponent,
   SearchResultPanelComponent,
@@ -35,6 +36,9 @@ const searchComponents = [
   SearchFilterConfigComponent,
   SearchFilterFormComponent
 ];
+
+YuvComponentRegister.register(components);
+
 /**
  * Module providing components for extensible search of target object types, filter those objects and rendering a search result as well.
  *
@@ -62,8 +66,7 @@ const searchComponents = [
     DragDropModule
   ],
   providers: [QuickSearchService],
-  declarations: [...searchComponents],
-  exports: [...searchComponents],
-  entryComponents: [...searchComponents]
+  declarations: [...components],
+  exports: [...components]
 })
 export class YuvSearchModule {}

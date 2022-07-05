@@ -7,9 +7,10 @@
   </div>
 
   <div class="form">
-    <yuv-object-form [formOptions]="_row.formOptions" #rowForm [isInnerTableForm]="true" (onFormReady)="onFormReady()"
+    <!-- <yuv-object-form [formOptions]="_row.formOptions" #rowForm [isInnerTableForm]="true" (onFormReady)="onFormReady()"
       (statusChanged)="onFormStatusChanged($event)">
-    </yuv-object-form>
+    </yuv-object-form> -->
+    <yuv-plugin #plugin [config]="pluginConfig"></yuv-plugin>
   </div>
 
   <div class="actions">

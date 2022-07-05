@@ -1,5 +1,5 @@
 import { Component, forwardRef, Input } from '@angular/core';
-import { ControlValueAccessor, FormControl, NG_VALIDATORS, NG_VALUE_ACCESSOR, Validator } from '@angular/forms';
+import { ControlValueAccessor, UntypedFormControl, NG_VALIDATORS, NG_VALUE_ACCESSOR, Validator } from '@angular/forms';
 import { Classification, TranslateService, Utils } from '@yuuvis/core';
 import { LocaleNumberPipe } from '../../../pipes/locale-number.pipe';
 import { FileSizePipe } from './../../../pipes/filesize.pipe';
@@ -189,7 +189,7 @@ export class NumberComponent implements ControlValueAccessor, Validator {
   }
 
   // returns null when valid else the validation object
-  public validate(c: FormControl) {
+  public validate(c: UntypedFormControl) {
     return this.validationErrors.length ? Utils.arrayToObject(this.validationErrors, 'key', (err) => ({ valid: false, ...err })) : null;
   }
 }

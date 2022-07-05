@@ -18,6 +18,7 @@ import { filter, map, take, tap } from 'rxjs/operators';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { LayoutService } from '../../services/layout/layout.service';
 import { verticalSplit } from './../../svg.generated';
+import { TabPanelComponent } from './tab-panel.component';
 /**
  * Responsive Split TabContainer + plugin support.
  *
@@ -32,7 +33,7 @@ export class ResponsiveTabContainerComponent implements OnInit, AfterContentInit
   /**
    * TabPanel plugins
    */
-  @Input() pluginPanels = [new QueryList<TabPanel>()];
+  @Input() pluginPanels = [new QueryList<TabPanelComponent>()];
   @Input() pluginPanelsOrder = [];
 
   _layoutOptions = { panelOrder: [], panelSizes: [] };
@@ -57,8 +58,7 @@ export class ResponsiveTabContainerComponent implements OnInit, AfterContentInit
     });
   }
 
-  @ContentChildren(TabPanel) tabPanels: QueryList<TabPanel>;
-  @ViewChildren(TabPanel) viewTabPanels: QueryList<TabPanel>;
+  @ContentChildren(TabPanelComponent) tabPanels: QueryList<TabPanelComponent>;
 
   @ViewChild('mainTabView', { static: true }) mainTabView: TabView;
   @ViewChildren('splitTabView') splitTabViews: QueryList<TabView>;
@@ -76,6 +76,7 @@ export class ResponsiveTabContainerComponent implements OnInit, AfterContentInit
 
   constructor(
     @Attribute('disable-split') public disableSplit: boolean,
+    @Attribute('scrollable') public scrollable: boolean,
     private layoutService: LayoutService,
     private screenService: ScreenService,
     private iconRegistry: IconRegistryService

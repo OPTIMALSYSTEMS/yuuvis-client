@@ -218,7 +218,11 @@ export class SummaryComponent implements OnInit, OnDestroy {
           </table>`;
       };
     }
-    return typeof renderer === 'function' ? renderer({ value: data[key], data: data, colDef: def }) : data[key + '_title'] ? data[key + '_title'] : data[key];
+    return typeof renderer === 'function'
+      ? renderer({ value: data[key], data: data, colDef: def } as any)
+      : data[key + '_title']
+      ? data[key + '_title']
+      : data[key];
   }
 
   private generateSummary(dmsObject: DmsObject) {

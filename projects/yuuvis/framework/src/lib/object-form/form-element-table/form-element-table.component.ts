@@ -2,7 +2,7 @@ import { ClientSideRowModelModule } from '@ag-grid-community/client-side-row-mod
 import { ColDef, GridOptions, Module } from '@ag-grid-community/core';
 import { CsvExportModule } from '@ag-grid-community/csv-export';
 import { Component, forwardRef, HostListener, Input, NgZone, TemplateRef, ViewChild } from '@angular/core';
-import { ControlValueAccessor, FormControl, NG_VALIDATORS, NG_VALUE_ACCESSOR, Validator } from '@angular/forms';
+import { ControlValueAccessor, UntypedFormControl, NG_VALIDATORS, NG_VALUE_ACCESSOR, Validator } from '@angular/forms';
 import { Classification, PendingChangesService, SystemService } from '@yuuvis/core';
 import { takeUntil } from 'rxjs/operators';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
@@ -10,32 +10,9 @@ import { UnsubscribeOnDestroy } from '../../common/util/unsubscribe.component';
 import { PopoverConfig } from '../../popover/popover.interface';
 import { GridService } from '../../services/grid/grid.service';
 import { addCircle, contentDownload, expand, sizeToFit } from '../../svg.generated';
-import { ObjectFormOptions } from '../object-form.interface';
 import { PopoverService } from './../../popover/popover.service';
+import { EditRow, TableComponentParams } from './form-element-table.interface';
 import { RowEditComponent } from './row-edit/row-edit.component';
-
-// data to be passed to the table component
-export interface TableComponentParams {
-  // current form situation (EDIT, SEARCH or CREATE)
-  situation: string;
-  // the tables from element
-  element: any;
-}
-
-// representation of a row while editing
-export interface EditRow {
-  situation: string;
-  index: number;
-  formOptions: ObjectFormOptions;
-  tableElement: any;
-}
-
-// result of editing a tables row
-export interface EditRowResult {
-  index: number;
-  rowData: any;
-  createNewRow: boolean;
-}
 
 @Component({
   selector: 'yuv-table',
@@ -374,7 +351,7 @@ export class FormElementTableComponent extends UnsubscribeOnDestroy implements C
     return true;
   }
 
-  validate(c: FormControl) {
+  validate(c: UntypedFormControl) {
     return this.validateTableData()
       ? null
       : {

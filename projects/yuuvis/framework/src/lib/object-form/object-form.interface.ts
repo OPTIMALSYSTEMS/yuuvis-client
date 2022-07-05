@@ -1,4 +1,4 @@
-import { FormGroup } from '@angular/forms';
+import { UntypedFormGroup } from '@angular/forms';
 import { ObjectFormGroup } from './object-form.model';
 
 export interface IObjectForm {
@@ -67,7 +67,7 @@ export interface YuvFormGroupWrapper {
  * Extend angulars default FormGroup for implementation of a form group wrapping
  * a form control.
  */
-export class ObjectFormControlWrapper extends FormGroup {
+export class ObjectFormControlWrapper extends UntypedFormGroup {
   _eoFormControlWrapper: YuvFormGroupWrapper;
 }
 
@@ -113,3 +113,5 @@ export interface FormStatusChangedEvent {
 
   data?: any;
 }
+
+export type ObjectFormModelChange = { name: 'value' | 'required' | 'readonly' | 'error' | 'onrowedit' | 'onchange'; newValue: any };
