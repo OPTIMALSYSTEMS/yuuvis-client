@@ -291,7 +291,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
    * @returns
    */
   deleteRow(id: string): boolean {
-    const rowNode = this.gridOptions.api.getRowNode(id);
+    const rowNode = this.gridOptions.api ? this.gridOptions.api.getRowNode(id) : undefined;
     if (rowNode) {
       this.gridOptions.api.applyTransaction({ remove: [rowNode] });
       return true;
