@@ -10,6 +10,7 @@ import { ProcessAttachment } from '../process-attachments.interface';
 })
 export class ProcessAttachmentsOrderComponent implements OnInit {
   _attachments: ProcessAttachment[] = [];
+  dirty: boolean = false;
   @Input() popoverRef: PopoverRef;
   @Input() set attachments(a: ProcessAttachment[]) {
     // deep copy
@@ -20,6 +21,7 @@ export class ProcessAttachmentsOrderComponent implements OnInit {
   constructor() {}
 
   attachmentOrderDrop(event: CdkDragDrop<string[]>) {
+    this.dirty = true;
     moveItemInArray(this._attachments, event.previousIndex, event.currentIndex);
   }
 
