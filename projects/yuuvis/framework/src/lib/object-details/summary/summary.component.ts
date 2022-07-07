@@ -250,26 +250,14 @@ export class SummaryComponent implements OnInit, OnDestroy {
         const def: ColDef = colDef.find((cd) => cd.field === prepKey);
         const renderer: ICellRendererFunc = def ? (def.cellRenderer as ICellRendererFunc) : null;
 
+        const propertyType = this.systemService.system.allFields[key] ? this.systemService.system.allFields[key].propertyType : undefined;
         const si: SummaryEntry = {
           label: (def && def.headerName) || key,
           key,
-          value: this.generateValue(
-            this._objectData,
-            key,
-            renderer,
-            def,
-            this.systemService.system.allFields[key] ? this.systemService.system.allFields[key].propertyType : undefined
-          ),
-          value2:
-            this.dmsObject2 &&
-            this.generateValue(
-              this._objectData2,
-              key,
-              renderer,
-              def,
-              this.systemService.system.allFields[key] ? this.systemService.system.allFields[key].propertyType : undefined
-            ),
-          order: null
+          value: this.generateValue(this._objectData, key, renderer, def, propertyType),
+          value2: this.dmsObject2 && this.generateValue(this._objectData2, key, renderer, def, propertyType),
+          order: null,
+          type: propertyType
         };
 
         if (key === BaseObjectTypeField.OBJECT_TYPE_ID) {

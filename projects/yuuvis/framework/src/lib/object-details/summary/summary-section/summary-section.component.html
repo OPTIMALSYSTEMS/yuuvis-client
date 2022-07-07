@@ -3,7 +3,7 @@
   <yuv-icon icon="arrowDown"></yuv-icon>
 </div>
 <div class="section-content">
-  <div *ngFor="let item of entries" class="entry" [ngClass]="classes(item.value, item.value2)"
+  <div *ngFor="let item of entries" class="entry {{item.type}}" [ngClass]="classes(item.value, item.value2)"
     [attr.data-summary-item]="item.key">
     <span class="label">{{ item.label }}</span>
     <div class="value-area">

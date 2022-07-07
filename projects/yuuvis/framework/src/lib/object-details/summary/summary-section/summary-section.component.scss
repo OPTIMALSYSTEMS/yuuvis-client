@@ -84,6 +84,34 @@
       }
     }
 
+    &.table {
+      display: flex;
+      flex-flow: column;
+      overflow-x: auto;
+      th {
+        min-width: 100px;
+      }
+      &.diffActive .value-area {
+        display: flex;
+        flex-flow: column;
+
+        span {
+          display: block;
+          align-self: flex-start;
+
+          &.value {
+            overflow: auto;
+            max-height: 300px;
+          }
+        }
+
+        .indicator {
+          transform: rotate(90deg);
+          margin: 0 var(--app-pane-padding);
+        }
+      }
+    }
+
     &.diffActive {
       $ise-color-new: #9abd1e;
       $ise-color-gone: #ed5564;
@@ -129,7 +157,7 @@
           word-break: break-word;
           height: 100%;
           position: relative;
-          padding: calc(var(--app-pane-padding) / 2);
+          margin: calc(var(--app-pane-padding) / 2);
         }
       }
     }
