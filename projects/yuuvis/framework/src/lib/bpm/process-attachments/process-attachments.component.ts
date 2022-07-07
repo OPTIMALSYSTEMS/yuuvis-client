@@ -1,5 +1,15 @@
 import { Attribute, Component, EventEmitter, Input, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
-import { BaseObjectTypeField, SearchFilter, SearchFilterGroup, SearchQuery, SearchResult, SearchService, SystemService, TranslateService } from '@yuuvis/core';
+import {
+  BaseObjectTypeField,
+  PendingChangesService,
+  SearchFilter,
+  SearchFilterGroup,
+  SearchQuery,
+  SearchResult,
+  SearchService,
+  SystemService,
+  TranslateService
+} from '@yuuvis/core';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { PopoverRef } from '../../popover/popover.ref';
 import { PopoverService } from '../../popover/popover.service';
@@ -52,7 +62,8 @@ export class ProcessAttachmentsComponent implements OnInit {
     private system: SystemService,
     private iconRegistry: IconRegistryService,
     private searchService: SearchService,
-    private popoverService: PopoverService
+    private popoverService: PopoverService,
+    private pendingChanges: PendingChangesService
   ) {
     this.iconRegistry.registerIcons([dragHandle, sort, attachment, clear, noFile, addCircle]);
   }
@@ -62,7 +73,7 @@ export class ProcessAttachmentsComponent implements OnInit {
     if (evt && evt.ctrlKey) {
       this.attachmentOpenExternal.emit(id);
     }
-    this.selectedObject = id;
+    if (!this.pendingChanges.check()) this.selectedObject = id;
   }
 
   removeAttachment(id: string) {
