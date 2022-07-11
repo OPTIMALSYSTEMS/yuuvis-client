@@ -241,7 +241,7 @@
 	"yuv.framework.process-details-summary.id": "ID",
 	"yuv.framework.process-details-summary.initiator": "Initiator",
 	"yuv.framework.process-details-summary.processDefinitionId": "ID der Prozessdefinition",
-	"yuv.framework.process-details-summary.startTime": "Gestartet am",
+	"yuv.framework.process-details-summary.startTime": "Erstellt am",
 	"yuv.framework.process-details-summary.status": "Status",
 	"yuv.framework.process-details-summary.valiables": "Prozessvariablen",
 	"yuv.framework.process-details-summary.vars.name": "Name",
