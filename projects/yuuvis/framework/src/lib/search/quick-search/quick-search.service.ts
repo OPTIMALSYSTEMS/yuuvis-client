@@ -457,7 +457,7 @@ export class QuickSearchService {
       MIME_TYPE && {
         id: 'mime',
         label: MIME_TYPE.label,
-        items: ['*word*', '*pdf*', '*image*', '*audio*', '*video*', '*excel*', '*mail*', '*text*'].sort().map((r) => ({
+        items: ['*word*', '*pdf*', '*image*', '*audio*', '*video*', '*excel*', '*mail*', '*text*', '*powerpoint*'].sort().map((r) => ({
           id: '__' + MIME_TYPE.id + '#' + r,
           label: r.replace(/\*/g, ''),
           value: [

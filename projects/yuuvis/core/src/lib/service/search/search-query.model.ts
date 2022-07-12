@@ -14,6 +14,11 @@ export class SearchQuery {
   lots: string[] = []; // list of leading object types
   tags: any;
   get targetType(): string | null {
+    if (this.allTypes.length > 1) {
+      const deps = window['__objectTypeDeps'];
+      const objectType = Object.keys(deps).find((k) => this.allTypes.filter((t) => t !== k).every((l) => deps[k].includes(l)));
+      if (objectType) return objectType;
+    }
     return this.lots?.length === 1 ? this.lots[0] : this.types?.length === 1 ? this.types[0] : null;
   }
   get filters(): SearchFilter[] {
