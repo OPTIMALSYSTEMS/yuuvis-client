@@ -951,6 +951,9 @@ export class SystemService {
     };
     this.appCache.setItem(this.STORAGE_KEY, this.system).subscribe();
     this.systemSource.next(this.system);
+
+    // resolve objectType dependencies
+    window['__objectTypeDeps'] = objectTypes?.reduce((prev, cur) => (prev[cur.id] = cur.secondaryObjectTypes?.map((s) => s.id)) && prev, {});
   }
 
   /**
