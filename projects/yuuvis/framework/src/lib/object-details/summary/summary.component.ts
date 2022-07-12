@@ -203,7 +203,8 @@ export class SummaryComponent implements OnInit, OnDestroy {
           cdQA[e.id] = this.gridService.getColumnDefinition(e);
         });
 
-        return `<table class="summary-table-value">
+        return param?.value && Array.isArray(param.value)
+          ? `<table class="summary-table-value">
           <tr>${Object.keys(cdQA)
             .map((k) => `<th>${this.systemService.getLocalizedResource(cdQA[k].colId + '_label') || cdQA[k].colId}</th>`)
             .join('')}</tr>
@@ -215,7 +216,8 @@ export class SummaryComponent implements OnInit, OnDestroy {
                   .join('')}</tr>`
             )
             .join('')}
-          </table>`;
+          </table>`
+          : '';
       };
     }
     return typeof renderer === 'function'
