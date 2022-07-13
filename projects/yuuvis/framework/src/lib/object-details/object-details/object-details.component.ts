@@ -81,7 +81,7 @@ export class ObjectDetailsComponent implements OnDestroy {
   objectTypeId: string;
   retentionEnd: Date;
   retentionDestructUntil: Date;
-  private _dmsObject: DmsObject;
+  _dmsObject: DmsObject;
   private _objectId: string;
 
   @HostBinding('attr.data-type') get dataType() {
