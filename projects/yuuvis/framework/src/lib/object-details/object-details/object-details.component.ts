@@ -95,7 +95,7 @@ export class ObjectDetailsComponent implements OnDestroy {
   @Input()
   set dmsObject(o: DmsObject | { _error: any }) {
     this.contentPreviewService.resetSource();
-    if (o['_error']) {
+    if (o && o['_error']) {
       // batch calls in backend service may produce error objects
       this._dmsObject = null;
       this.contextError = this.translate.instant('yuv.framework.object-details.context.load.error');
