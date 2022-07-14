@@ -1,6 +1,6 @@
 {
   "name": "@yuuvis/framework",
-  "version": "3.1.0-beta.6",
+  "version": "4.0.0-beta.2",
   "author": "OPTIMAL SYSTEMS GmbH <npm@optimal-systems.de>",
   "license": "MIT",
   "scripts": {
@@ -9,30 +9,30 @@
     "doc:serve": "./node_modules/.bin/compodoc -s"
   },
   "peerDependencies": {
-    "@angular/common": "~11.0.0",
-    "@angular/animations": "~11.0.0",
-    "@angular/core": "~11.0.0",
-    "@angular/router": "~11.0.0",
-    "@angular/forms": "~11.0.0",
-    "rxjs": "~6.6.3"
+    "@angular/common": "^14.0.6",
+    "@angular/animations": "^14.0.6",
+    "@angular/core": "^14.0.6",
+    "@angular/router": "^14.0.6",
+    "@angular/forms": "^14.0.6",
+    "rxjs": "^7.5.5"
   },
   "dependencies": {
-    "@ag-grid-community/angular": "~24.1.0",
-    "@ag-grid-community/client-side-row-model": "~24.1.0",
-    "@ag-grid-community/core": "~24.1.0",
-    "@ag-grid-community/csv-export": "~24.1.0",
-    "@angular/cdk": "~10.2.7",
+    "@ag-grid-community/angular": "~28.0.0",
+    "@ag-grid-community/client-side-row-model": "~28.0.2",
+    "@ag-grid-community/core": "~28.0.2",
+    "@ag-grid-community/csv-export": "~28.0.2",
+    "@angular/cdk": "~14.0.4",
     "@yuuvis/command-palette": "^0.2.9",
-    "@yuuvis/core": "3.1.0-beta.6",
-    "@yuuvis/styles": "^1.0.0",
-    "angular-resize-event": "^2.0.1",
-    "angular-split": "^4.0.0",
-    "lodash-es": "^4.17.15",
-    "ngx-drag-scroll": "^11.0.0-beta.1",
-    "ngx-toastr": "^13.1.0",
-    "primeicons": "^4.0.0",
-    "primeng": "10.0.2",
+    "@yuuvis/core": "4.0.0-beta.2",
+    "@yuuvis/styles": "^1.0.5",
+    "angular-resize-event": "^3.1.1",
+    "angular-split": "^13.2.0",
+    "lodash-es": "^4.17.21",
+    "ngx-drag-scroll": "^13.0.2",
+    "ngx-toastr": "^15.0.0",
+    "primeicons": "^5.0.0",
+    "primeng": "14.0.0-rc.1",
     "take-until-destroy": "^2.1.0",
-    "tslib": "^2.0.0"
+    "tslib": "^2.4.0"
   }
 }
