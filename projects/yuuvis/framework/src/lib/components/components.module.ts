@@ -12,10 +12,8 @@ import { OverlayPanelModule } from 'primeng/overlaypanel';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { TabViewModule } from 'primeng/tabview';
 import { YuvCommonModule } from '../common/common.module';
-import { ObjectTypeIconComponent } from '../common/components/object-type-icon/object-type-icon.component';
 import { YuvDirectivesModule } from '../directives/directives.module';
 import { YuvPipesModule } from '../pipes/pipes.module';
-import { SingleCellRendererComponent } from '../services/grid/renderer/single-cell-renderer/single-cell-renderer.component';
 import { YuvComponentRegister } from './../shared/utils/utils';
 import { ActionMenuBarComponent } from './action-menu-bar/action-menu-bar.component';
 import { ActionMenuButtonComponent } from './action-menu-bar/action-menu-button/action-menu-button.component';
@@ -62,7 +60,7 @@ YuvComponentRegister.register(components);
     AngularResizeEventModule,
     CdkStepperModule,
     AngularSplitModule,
-    AgGridModule.withComponents([ObjectTypeIconComponent, SingleCellRendererComponent]),
+    AgGridModule,
     RouterModule,
     TabViewModule,
     DialogModule,
