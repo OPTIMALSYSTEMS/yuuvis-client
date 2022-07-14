@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
-import { ACTIONS } from '@yuuvis/framework';
+import { ACTIONS, YuvComponentRegister } from '@yuuvis/framework';
 import { ClipboardActionComponent } from './clipboard/clipboard-action';
 import { ClipboardLinkActionComponent } from './clipboard/clipboard-link-action';
 import { OpenContextActionComponent } from './open-context-action/open-context-action';
@@ -16,6 +16,8 @@ export const appActionsComponents = [
   RestoreActionComponent
 ];
 
+YuvComponentRegister.register(appActionsComponents);
+
 @NgModule({
   declarations: appActionsComponents,
   imports: [CommonModule],
@@ -25,7 +27,6 @@ export const appActionsComponents = [
       useValue: appActionsComponents,
       multi: true
     }
-  ],
-  entryComponents: appActionsComponents
+  ]
 })
 export class ActionsModule {}

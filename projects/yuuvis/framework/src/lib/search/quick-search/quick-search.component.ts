@@ -12,7 +12,7 @@ import {
   TemplateRef,
   ViewChild
 } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import {
   AggregateResult,
   BaseObjectTypeField,
@@ -69,7 +69,7 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
   @ViewChild('tplValuePicker') tplValuePicker: TemplateRef<any>;
 
   autofocus: boolean = false;
-  searchForm: FormGroup;
+  searchForm: UntypedFormGroup;
   invalidTerm: boolean;
   error: boolean;
   resultCount: number = null;
@@ -180,7 +180,7 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
     @Attribute('disableAggregations') private disableAggregations: string,
     @Attribute('autofocus') private af: string,
     private quickSearchService: QuickSearchService,
-    private fb: FormBuilder,
+    private fb: UntypedFormBuilder,
     private popoverService: PopoverService,
     private translate: TranslateService,
     private systemService: SystemService,

@@ -1,6 +1,12 @@
 export { CombinedObjectFormComponent } from './combined-object-form/combined-object-form.component';
+export { ExpandedTableComponent } from './form-element-table/expanded-table/expanded-table.component';
+export { FormElementTableComponent } from './form-element-table/form-element-table.component';
+export * from './form-element-table/form-element-table.interface';
+export { RowEditComponent } from './form-element-table/row-edit/row-edit.component';
 export { ObjectFormEditComponent } from './object-form-edit/object-form-edit.component';
+export { FormElementDescriptionComponent } from './object-form-element/form-element-description/form-element-description.component';
 export { ObjectFormElementComponent } from './object-form-element/object-form-element.component';
+export { ObjectFormGroupComponent } from './object-form-group/object-form-group.component';
 export * from './object-form.interface';
 export * from './object-form.module';
-export { ObjectFormComponent, ObjectFormModelChange } from './object-form/object-form.component';
+export { ObjectFormComponent } from './object-form/object-form.component';

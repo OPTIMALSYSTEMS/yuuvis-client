@@ -203,7 +203,8 @@ export class SummaryComponent implements OnInit, OnDestroy {
           cdQA[e.id] = this.gridService.getColumnDefinition(e);
         });
 
-        return `<table class="summary-table-value">
+        return param?.value && Array.isArray(param.value)
+          ? `<table class="summary-table-value">
           <tr>${Object.keys(cdQA)
             .map((k) => `<th>${this.systemService.getLocalizedResource(cdQA[k].colId + '_label') || cdQA[k].colId}</th>`)
             .join('')}</tr>
@@ -215,10 +216,15 @@ export class SummaryComponent implements OnInit, OnDestroy {
                   .join('')}</tr>`
             )
             .join('')}
-          </table>`;
+          </table>`
+          : '';
       };
     }
-    return typeof renderer === 'function' ? renderer({ value: data[key], data: data, colDef: def }) : data[key + '_title'] ? data[key + '_title'] : data[key];
+    return typeof renderer === 'function'
+      ? renderer({ value: data[key], data: data, colDef: def } as any)
+      : data[key + '_title']
+      ? data[key + '_title']
+      : data[key];
   }
 
   private generateSummary(dmsObject: DmsObject) {
@@ -250,26 +256,14 @@ export class SummaryComponent implements OnInit, OnDestroy {
         const def: ColDef = colDef.find((cd) => cd.field === prepKey);
         const renderer: ICellRendererFunc = def ? (def.cellRenderer as ICellRendererFunc) : null;
 
+        const propertyType = this.systemService.system.allFields[key] ? this.systemService.system.allFields[key].propertyType : undefined;
         const si: SummaryEntry = {
           label: (def && def.headerName) || key,
           key,
-          value: this.generateValue(
-            this._objectData,
-            key,
-            renderer,
-            def,
-            this.systemService.system.allFields[key] ? this.systemService.system.allFields[key].propertyType : undefined
-          ),
-          value2:
-            this.dmsObject2 &&
-            this.generateValue(
-              this._objectData2,
-              key,
-              renderer,
-              def,
-              this.systemService.system.allFields[key] ? this.systemService.system.allFields[key].propertyType : undefined
-            ),
-          order: null
+          value: this.generateValue(this._objectData, key, renderer, def, propertyType),
+          value2: this.dmsObject2 && this.generateValue(this._objectData2, key, renderer, def, propertyType),
+          order: null,
+          type: propertyType
         };
 
         if (key === BaseObjectTypeField.OBJECT_TYPE_ID) {

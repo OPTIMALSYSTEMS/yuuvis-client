@@ -29,6 +29,7 @@ import { Observable } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
+import { TabPanelComponent } from '../../components/responsive-tab-container/tab-panel.component';
 import { ComponentStateService } from '../../services/component-state/component-state.service';
 import { kebap, noFile, refresh, retention } from '../../svg.generated';
 import { ContentPreviewService } from '../content-preview/service/content-preview.service';
@@ -61,8 +62,8 @@ import { FileDropOptions } from './../../directives/file-drop/file-drop.directiv
   providers: [ContentPreviewService]
 })
 export class ObjectDetailsComponent implements OnDestroy {
-  @ContentChildren(TabPanel) externalPanels: QueryList<TabPanel>;
-  @ViewChildren(TabPanel) viewPanels: QueryList<TabPanel>;
+  @ContentChildren(TabPanelComponent) externalPanels: QueryList<TabPanelComponent>;
+  @ViewChildren(TabPanelComponent) viewPanels: QueryList<TabPanelComponent>;
   @ViewChild(ResponsiveTabContainerComponent) tabContainer: ResponsiveTabContainerComponent;
   @ViewChild('summary') summary: TemplateRef<any>;
   @ViewChild('indexdata') indexdata: TemplateRef<any>;
@@ -80,11 +81,11 @@ export class ObjectDetailsComponent implements OnDestroy {
   objectTypeId: string;
   retentionEnd: Date;
   retentionDestructUntil: Date;
-  private _dmsObject: DmsObject;
+  _dmsObject: DmsObject;
   private _objectId: string;
 
   @HostBinding('attr.data-type') get dataType() {
-    return this.dmsObject?.objectTypeId || 'none';
+    return (this.dmsObject as DmsObject)?.objectTypeId || 'none';
   }
 
   @Input() activeVersion: DmsObject;
@@ -93,33 +94,41 @@ export class ObjectDetailsComponent implements OnDestroy {
    * DmsObject to show the details for.
    */
   @Input()
-  set dmsObject(object: DmsObject) {
+  set dmsObject(o: DmsObject | { _error: any }) {
     this.contentPreviewService.resetSource();
-    this._dmsObject = object;
-    this._objectId = object ? object.id : null;
-    if (object) {
-      this.objectTypeId = this.systemService.getLeadingObjectTypeID(object.objectTypeId, object.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS]);
-      this.fileDropLabel = !object.content
-        ? this.translate.instant('yuv.framework.object-details.filedrop.content.add')
-        : this.translate.instant('yuv.framework.object-details.filedrop.content.replace');
+
+    if (o && o['_error']) {
+      // batch calls in backend service may produce error objects
+      this._dmsObject = null;
+      this.contextError = this.translate.instant('yuv.framework.object-details.context.load.error');
     } else {
-      this.objectTypeId = null;
-    }
-
-    this.retentionEnd = object?.data[RetentionField.RETENTION_END] ? new Date(object.data[RetentionField.RETENTION_END]) : undefined;
-    const destructDate = object?.data[RetentionField.DESTRUCTION_DATE] ? new Date(object.data[RetentionField.DESTRUCTION_DATE]) : undefined;
-    const today = new Date();
-    this.retentionDestructUntil = destructDate && today > this.retentionEnd ? destructDate : undefined;
-
-    if (object) {
-      if (!this.componentStateId) {
-        this.componentStateId = this.componentStateService.addComponentState('ObjectDetailsComponent', {
-          data: { ...this._dmsObject }
-        });
+      const object = o as DmsObject;
+      this._dmsObject = object;
+      this._objectId = object ? object.id : null;
+      if (object) {
+        this.objectTypeId = this.systemService.getLeadingObjectTypeID(object.objectTypeId, object.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS]);
+        this.fileDropLabel = !object.content
+          ? this.translate.instant('yuv.framework.object-details.filedrop.content.add')
+          : this.translate.instant('yuv.framework.object-details.filedrop.content.replace');
       } else {
-        this.componentStateService.updateComponentState(this.componentStateId, {
-          data: { ...this._dmsObject }
-        });
+        this.objectTypeId = null;
+      }
+
+      this.retentionEnd = object?.data[RetentionField.RETENTION_END] ? new Date(object.data[RetentionField.RETENTION_END]) : undefined;
+      const destructDate = object?.data[RetentionField.DESTRUCTION_DATE] ? new Date(object.data[RetentionField.DESTRUCTION_DATE]) : undefined;
+      const today = new Date();
+      this.retentionDestructUntil = destructDate && today > this.retentionEnd ? destructDate : undefined;
+
+      if (object) {
+        if (!this.componentStateId) {
+          this.componentStateId = this.componentStateService.addComponentState('ObjectDetailsComponent', {
+            data: { ...this._dmsObject }
+          });
+        } else {
+          this.componentStateService.updateComponentState(this.componentStateId, {
+            data: { ...this._dmsObject }
+          });
+        }
       }
     }
   }
@@ -239,15 +248,15 @@ export class ObjectDetailsComponent implements OnDestroy {
       .pipe(takeUntilDestroy(this))
       .subscribe((e: YuvEvent) => {
         const dmsObject = e.data as DmsObject;
-        if (dmsObject.id === this.dmsObject.id) {
+        if (dmsObject.id === this._dmsObject.id) {
           this.dmsObject = dmsObject;
         }
       });
   }
 
   onFileDropped(files: File[]) {
-    if (files && files.length === 1 && this.dmsObject.rights && this.dmsObject.rights.writeContent) {
-      this.dmsService.uploadContent(this.dmsObject.id, files[0]).subscribe();
+    if (files && files.length === 1 && this._dmsObject.rights && this._dmsObject.rights.writeContent) {
+      this.dmsService.uploadContent(this._dmsObject.id, files[0]).subscribe();
     }
   }
 
@@ -256,7 +265,7 @@ export class ObjectDetailsComponent implements OnDestroy {
   }
 
   openActionMenu() {
-    this.actionMenuSelection = [this.dmsObject];
+    this.actionMenuSelection = [this._dmsObject];
     this.actionMenuVisible = true;
   }
 

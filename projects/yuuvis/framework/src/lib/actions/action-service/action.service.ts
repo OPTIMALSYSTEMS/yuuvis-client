@@ -1,4 +1,4 @@
-import { ComponentFactoryResolver, Inject, Injectable, InjectionToken, ViewContainerRef } from '@angular/core';
+import { Inject, Injectable, InjectionToken, ViewContainerRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { DmsObject, RetentionField, Utils } from '@yuuvis/core';
 import { merge as observableMerge, Observable, of as observableOf, of } from 'rxjs';
@@ -8,6 +8,7 @@ import { Action } from '../interfaces/action.interface';
 import { SelectionRange } from '../selection-range.enum';
 import { PluginActionComponent } from './../../plugins/plugin-action.component';
 import { PluginsService } from './../../plugins/plugins.service';
+import { YuvComponentRegister } from './../../shared/utils/utils';
 
 export const ACTIONS = new InjectionToken<any[]>('ACTIONS');
 export const CUSTOM_ACTIONS = new InjectionToken<any[]>('CUSTOM_ACTIONS');
@@ -26,7 +27,6 @@ export class ActionService {
   constructor(
     @Inject(ACTIONS) private actions: any[] = [],
     @Inject(CUSTOM_ACTIONS) private custom_actions: any[] = [],
-    private _componentFactoryResolver: ComponentFactoryResolver,
     private pluginsService: PluginsService,
     private router: Router
   ) {}
@@ -55,7 +55,7 @@ export class ActionService {
           tap((_actions: any[]) => {
             const availableActions = [].concat(...this.actions);
             // set action selector as ID
-            availableActions.forEach((a) => (a.id = this._componentFactoryResolver.resolveComponentFactory(a)?.selector));
+            availableActions.forEach((a) => (a.id = YuvComponentRegister.getSelector(a)));
             window['_availableActions'] = availableActions.map((a) => a.id);
             // in case there are plugin actions, original actions are visible only if specific IDs are included in the list OR '*' means include all
             this.allActionComponents = []
@@ -71,8 +71,7 @@ export class ActionService {
   }
 
   private createExecutableActionListEntry(actionComponent: any, selection: any[], viewContainerRef: ViewContainerRef): ActionListEntry {
-    const componentFactory = this._componentFactoryResolver.resolveComponentFactory(actionComponent._component || actionComponent);
-    const componentRef = viewContainerRef.createComponent(componentFactory);
+    const componentRef = viewContainerRef.createComponent(actionComponent._component || actionComponent);
 
     if (componentRef.instance instanceof PluginActionComponent) {
       componentRef.instance.action = actionComponent.action;

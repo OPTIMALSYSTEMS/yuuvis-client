@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ANALYZE_FOR_ENTRY_COMPONENTS, ModuleWithProviders, NgModule } from '@angular/core';
+import { ModuleWithProviders, NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { TranslateModule } from '@yuuvis/core';
@@ -75,19 +75,13 @@ export const entryComponents = [
       useValue: []
     }
   ],
-  declarations: [ActionMenuComponent, ...entryComponents],
-  entryComponents
+  declarations: [ActionMenuComponent, ...entryComponents]
 })
 export class YuvActionModule {
   static forRoot(components: any[] = []): ModuleWithProviders<YuvActionModule> {
     return {
       ngModule: YuvActionModule,
       providers: [
-        {
-          provide: ANALYZE_FOR_ENTRY_COMPONENTS,
-          useValue: components,
-          multi: true
-        },
         {
           provide: ACTIONS,
           useValue: entryComponents

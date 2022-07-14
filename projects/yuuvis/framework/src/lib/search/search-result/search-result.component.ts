@@ -1,6 +1,6 @@
 import { ColDef, RowEvent } from '@ag-grid-community/core';
 import { Attribute, Component, EventEmitter, Input, OnDestroy, Output, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import {
   BaseObjectTypeField,
   DmsObject,
@@ -61,7 +61,7 @@ export class SearchResultComponent implements OnDestroy {
     open: false,
     width: this.filterPanelSize.default
   };
-  pagingForm: FormGroup;
+  pagingForm: UntypedFormGroup;
   busy: boolean;
   private objectTypeBaseProperties = this.system.getBaseProperties();
   /**
@@ -181,7 +181,7 @@ export class SearchResultComponent implements OnDestroy {
     private system: SystemService,
     private eventService: EventService,
     private searchService: SearchService,
-    private fb: FormBuilder,
+    private fb: UntypedFormBuilder,
     private iconRegistry: IconRegistryService
   ) {
     this.applyColumnConfig = !applyColumnConfig || applyColumnConfig === 'false' ? false : true;
@@ -271,6 +271,7 @@ export class SearchResultComponent implements OnDestroy {
           BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS,
           BaseObjectTypeField.OBJECT_ID,
           BaseObjectTypeField.OBJECT_TYPE_ID,
+          BaseObjectTypeField.PARENT_ID,
           ...colDefs.filter((c) => !c.colId.startsWith(GridService.AGGREGATED_COLUMN_PREFIX)).map((c) => c.colId)
         ];
 

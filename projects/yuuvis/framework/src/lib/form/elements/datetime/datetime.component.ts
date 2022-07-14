@@ -1,5 +1,5 @@
 import { Component, ElementRef, forwardRef, HostListener, Input, OnInit, TemplateRef, ViewChild } from '@angular/core';
-import { ControlValueAccessor, FormControl, NG_VALIDATORS, NG_VALUE_ACCESSOR, Validator } from '@angular/forms';
+import { ControlValueAccessor, UntypedFormControl, NG_VALIDATORS, NG_VALUE_ACCESSOR, Validator } from '@angular/forms';
 import { TranslateService } from '@yuuvis/core';
 import { IconRegistryService } from '../../../common/components/icon/service/iconRegistry.service';
 import { LocaleDatePipe } from '../../../pipes/locale-date.pipe';
@@ -192,7 +192,7 @@ export class DatetimeComponent implements OnInit, ControlValueAccessor, Validato
   }
 
   // returns null when valid else the validation object
-  public validate(c: FormControl) {
+  public validate(c: UntypedFormControl) {
     return this.isValidInput ? null : { datecontrol: { valid: false } };
   }
 

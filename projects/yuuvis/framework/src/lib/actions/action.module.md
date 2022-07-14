@@ -28,8 +28,7 @@ export const appActionsComponents = [OpenContextActionComponent];
       useValue: appActionsComponents,
       multi: true
     }
-  ],
-  entryComponents: appActionsComponents
+  ]
 })
 export class ActionsModule {}
 ```

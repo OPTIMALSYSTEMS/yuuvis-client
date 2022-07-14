@@ -11,11 +11,11 @@ import {
   PendingChangesService,
   SecondaryObjectTypeClassification,
   SystemService,
-  TranslateService,
-  Utils
+  TranslateService
 } from '@yuuvis/core';
 import { Observable, of } from 'rxjs';
 import { finalize, map, switchMap } from 'rxjs/operators';
+import { takeUntilDestroy } from 'take-until-destroy';
 import { FloatingSotSelectInput, FloatingSotSelectItem } from '../../floating-sot-select/floating-sot-select.interface';
 import { PopoverConfig } from '../../popover/popover.interface';
 import { PopoverRef } from '../../popover/popover.ref';
@@ -119,7 +119,8 @@ export class ObjectFormEditComponent implements OnDestroy {
   // private _dmsObject: DmsObject;
   private messages = {
     formSuccess: null,
-    formError: null
+    formError: null,
+    formErrorNotFound: null
   };
 
   constructor(
@@ -128,17 +129,21 @@ export class ObjectFormEditComponent implements OnDestroy {
     private systemService: SystemService,
     private backend: BackendService,
     private dmsService: DmsService,
-    private notification: NotificationService,
+    private notificationService: NotificationService,
     private pendingChanges: PendingChangesService,
     public translate: TranslateService,
     private popoverService: PopoverService
   ) {
-    this.translate.get(['yuv.framework.object-form-edit.save.success', 'yuv.framework.object-form-edit.save.error']).subscribe((res) => {
-      this.messages.formSuccess = res['yuv.framework.object-form-edit.save.success'];
-      this.messages.formError = res['yuv.framework.object-form-edit.save.error'];
+    this.setMessages();
+    this.translate.onLangChange.pipe(takeUntilDestroy(this)).subscribe((_) => {
+      this.setMessages();
     });
+  }
 
-    // this.pendingChanges.setCustomMessage(this.translate.instant('yuv.framework.object-form-edit.pending-changes.alert'));
+  private setMessages() {
+    this.messages.formSuccess = this.translate.instant('yuv.framework.object-form-edit.save.success');
+    this.messages.formError = this.translate.instant('yuv.framework.object-form-edit.save.error');
+    this.messages.formErrorNotFound = this.translate.instant('yuv.framework.object-details.context.load.error');
   }
 
   private startPending() {
@@ -220,13 +225,10 @@ export class ObjectFormEditComponent implements OnDestroy {
               this.controls.disabled = true;
               this.indexDataSaved.emit(this._dmsObject);
             },
-            Utils.throw(
-              () => {
-                this.controls.saving = false;
-              },
-              this._dmsObject.title,
-              this.messages.formError
-            )
+            (err) => {
+              this.controls.saving = false;
+              this.notificationService.error(this._dmsObject.title, err.status === 404 ? this.messages.formErrorNotFound : this.messages.formError);
+            }
           );
       }
     }, 500);

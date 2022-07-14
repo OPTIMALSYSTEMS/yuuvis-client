@@ -96,7 +96,7 @@ export class VersionListComponent implements OnInit {
    * Array of version numbers to be selected upfront.
    */
   @Input() set versions(vs: string[]) {
-    this.selection = (vs || []).filter((v) => v).map((v) => this.getRowNodeId(v));
+    this.selection = (vs || []).filter((v) => v).map((v) => this.getRowId(v));
   }
 
   /**
@@ -148,7 +148,7 @@ export class VersionListComponent implements OnInit {
     return o[BaseObjectTypeField.VERSION_NUMBER] || o.version || o;
   }
 
-  private getRowNodeId(o: any) {
+  private getRowId(o: any) {
     return o ? this.dmsObjectID + '_' + this.getVersion(o) : '';
   }
 
@@ -195,9 +195,9 @@ export class VersionListComponent implements OnInit {
             !this.disableAutoSelectOnRecentVersion &&
             rows.length > 1 &&
             this.selection.length === 1 &&
-            this.selection[0] === this.getRowNodeId(sorted[0].version)
+            this.selection[0] === this.getRowId(sorted[0].version)
           ) {
-            this.selection.push(this.getRowNodeId(sorted[1].version));
+            this.selection.push(this.getRowId(sorted[1].version));
           }
 
           if (versions) this.versions = versions;
@@ -209,7 +209,7 @@ export class VersionListComponent implements OnInit {
             titleField: this.objectTypeBaseProperties.title,
             descriptionField: this.objectTypeBaseProperties.description,
             selectType: 'multiple',
-            gridOptions: { getRowNodeId: (o) => this.getRowNodeId(o), rowMultiSelectWithClick: false },
+            gridOptions: { getRowId: (p) => this.getRowId(p.data), rowMultiSelectWithClick: false },
             ...(this.responsiveTableData || {})
           });
         },

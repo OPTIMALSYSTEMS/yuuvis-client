@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { BaseObjectTypeField, DmsObject, DmsService, RetentionField, SystemSOT } from '@yuuvis/core';
 import { NotificationService } from '../../../../services/notification/notification.service';
 
@@ -10,7 +10,7 @@ import { NotificationService } from '../../../../services/notification/notificat
   host: { class: 'yuv-action-component-form' }
 })
 export class RetentionStartComponent implements OnInit {
-  rtStartForm: FormGroup;
+  rtStartForm: UntypedFormGroup;
   busy: boolean;
 
   get rmExpirationDate() {
@@ -24,7 +24,7 @@ export class RetentionStartComponent implements OnInit {
   @Output() finished: EventEmitter<any> = new EventEmitter<any>();
   @Output() canceled: EventEmitter<any> = new EventEmitter<any>();
 
-  constructor(private fb: FormBuilder, private notificationService: NotificationService, private dms: DmsService) {
+  constructor(private fb: UntypedFormBuilder, private notificationService: NotificationService, private dms: DmsService) {
     this.rtStartForm = this.fb.group({
       rmExpirationDate: ['', Validators.required],
       rmDestructionDate: ['']
@@ -33,7 +33,7 @@ export class RetentionStartComponent implements OnInit {
   }
 
   public startFormValidator(): ValidatorFn {
-    return (group: FormGroup): ValidationErrors => {
+    return (group: UntypedFormGroup): ValidationErrors => {
       const rtStart = new Date();
       const rtEnd = group.controls['rmExpirationDate'];
       const rtDestruct = group.controls['rmDestructionDate'];

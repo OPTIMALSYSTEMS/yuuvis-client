@@ -3,9 +3,11 @@
   <yuv-icon icon="arrowDown"></yuv-icon>
 </div>
 <div class="section-content">
-  <div *ngFor="let item of entries" class="entry" [ngClass]="classes(item.value, item.value2)"
+  <div *ngFor="let item of entries" class="entry {{item.type}}" [ngClass]="classes(item.value, item.value2)"
     [attr.data-summary-item]="item.key">
     <span class="label">{{ item.label }}</span>
+
+
     <div class="value-area">
       <span class="value first"
         *ngIf="!isVersion(item.key) || (isVersion(item.key) && item.value === 1) || !versionStatePath; else versionLink"
@@ -25,5 +27,6 @@
           [queryParams]="getVersionStateQueryParams(item.value)">{{ item.value }}</a>
       </ng-template>
     </div>
+
   </div>
 </div>

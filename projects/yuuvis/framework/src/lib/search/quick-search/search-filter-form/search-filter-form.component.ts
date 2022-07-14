@@ -1,5 +1,5 @@
 import { Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import {
   BaseObjectTypeField,
   InternalFieldType,
@@ -41,7 +41,7 @@ export class SearchFilterFormComponent implements OnInit, OnDestroy {
   } = null;
   dragMovedSubject = new Subject();
 
-  searchFieldsForm: FormGroup;
+  searchFieldsForm: UntypedFormGroup;
   formFields = [];
   formSubscription: Subscription;
   filter: Selectable = { id: '', label: '' };
@@ -82,7 +82,7 @@ export class SearchFilterFormComponent implements OnInit, OnDestroy {
 
   constructor(
     private systemService: SystemService,
-    private fb: FormBuilder,
+    private fb: UntypedFormBuilder,
     private iconRegistry: IconRegistryService,
     private translate: TranslateService,
     private quickSearchService: QuickSearchService

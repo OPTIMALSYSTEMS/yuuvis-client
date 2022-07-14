@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, EventEmitter, forwardRef, HostBinding, HostListener, Input, Output, ViewChild } from '@angular/core';
-import { ControlValueAccessor, FormControl, NG_VALIDATORS, NG_VALUE_ACCESSOR, Validator } from '@angular/forms';
+import { ControlValueAccessor, UntypedFormControl, NG_VALIDATORS, NG_VALUE_ACCESSOR, Validator } from '@angular/forms';
 import { Classification, SystemService, UserService, YuvUser } from '@yuuvis/core';
 import { AutoComplete } from 'primeng/autocomplete';
 import { forkJoin, of } from 'rxjs';
@@ -180,7 +180,7 @@ export class OrganizationComponent implements ControlValueAccessor, Validator, A
   }
 
   // returns null when valid else the validation object
-  public validate(c: FormControl) {
+  public validate(c: UntypedFormControl) {
     return this.isValidInput ? null : { empty: { valid: false } };
   }
 

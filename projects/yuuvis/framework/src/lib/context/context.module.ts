@@ -9,14 +9,16 @@ import { YuvDirectivesModule } from '../directives/directives.module';
 import { YuvSearchModule } from '../search/search.module';
 import { YuvPipesModule } from './../pipes/pipes.module';
 import { YuvPluginsModule } from './../plugins/plugins.module';
+import { YuvComponentRegister } from './../shared/utils/utils';
 import { ContextComponent } from './context/context.component';
+
+YuvComponentRegister.register([ContextComponent]);
 
 /**
  * `YuvContextModule` contains component for rendering a context and its contents.
  */
 @NgModule({
   declarations: [ContextComponent],
-  entryComponents: [ContextComponent],
   exports: [ContextComponent],
   imports: [
     CommonModule,

@@ -21,6 +21,10 @@ export class TestObjectDetailsComponent implements OnInit {
     this.summaryObject = null;
   }
 
+  setDmsErrorInput() {
+    this.summaryObject = { _error: 'this is an _error', id: '4711' };
+  }
+
   onObjectRefreshed() {
     alert('REFRESH');
   }

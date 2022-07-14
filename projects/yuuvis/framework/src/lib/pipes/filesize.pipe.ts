@@ -22,9 +22,9 @@ export class FileSizePipe extends LocaleNumberPipe implements PipeTransform {
   }
 
   stringToNumber(value: string) {
-    const sizes = this.sizes.map(s => s.toLowerCase());
+    const sizes = this.sizes.map((s) => s.toLowerCase());
     const match = value.toLowerCase().match(new RegExp(`(.*)(${sizes.join('|')})`));
     const number = super.stringToNumber((match ? match[1] : value).trim());
-    return isNaN(number) ? number : number * Math.pow(1024, match ? sizes.indexOf(match[2]) : 0);
+    return isNaN(number) ? number : Math.round(number * Math.pow(1024, match ? sizes.indexOf(match[2]) : 0));
   }
 }

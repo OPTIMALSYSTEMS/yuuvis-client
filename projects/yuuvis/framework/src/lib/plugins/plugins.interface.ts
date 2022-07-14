@@ -1,7 +1,7 @@
 import { NavigationExtras, Router } from '@angular/router';
 import { DmsObject, HttpOptions, YuvEvent, YuvUser } from '@yuuvis/core';
 import { Observable } from 'rxjs';
-import { ObjectFormModelChange } from '../object-form/object-form/object-form.component';
+import { ObjectFormModelChange } from '../object-form/object-form.interface';
 
 /**
  * Providing a plugin service and injected into form scripts
