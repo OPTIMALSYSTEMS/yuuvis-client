@@ -44,6 +44,16 @@
     </button>
 </div>
 
+<div class="templates" *ngIf="templatesEnabled">
+
+    <button class="load"
+        (click)="openTemplatePickerOverlay()">{{'yuv.framework.sequence-list.template.button.loadFromTemplate' |
+        translate}}</button>
+    <button class="primary save"
+        (click)="openTemplateSaveOverlay()">{{'yuv.framework.sequence-list.template.button.saveAsTemplate' |
+        translate}}</button>
+</div>
+
 <div class="entries" cdkDropList (cdkDropListDropped)="dragDrop($event)" [cdkDropListData]="entries">
 
     <div class="entry" cdkDrag *ngFor="let entry of entries; let i = index" [cdkDragDisabled]="!!entryForm"
@@ -74,3 +84,30 @@
             (click)="showEntryForm(i, true)"></yuv-icon>
     </div>
 </div>
+
+<!-- template picker overlay -->
+<ng-template #tplTemplatePicker>
+
+    {{'yuv.framework.sequence-list.template.picker.headline' | translate}}
+
+    <div class="template" *ngFor="let tpl of templates" (click)="setEntriesFromTemplate(tpl)">
+        {{tpl.name}}
+    </div>
+</ng-template>
+
+<!-- template save overlay -->
+<ng-template #tplTemplateSave>
+    <div class="templateSave" [yuvBusyOverlay]="savingTemplates">
+
+        <yuv-form-input [skipToggle]="true" [label]="'yuv.framework.sequence-list.form.templateName' | translate"
+            [required]="true">
+            <yuv-string [autofocus]="true" [required]="true" maxLength="128" [(ngModel)]="templateName"> </yuv-string>
+        </yuv-form-input>
+        <div class="buttons">
+            <button (click)="saveAsTemplate()"
+                [disabled]="!templateName || entries.length === 0">{{'yuv.framework.sequence-list.template.button.saveAsTemplate'
+                | translate}}</button>
+        </div>
+    </div>
+
+</ng-template>

@@ -1,5 +1,5 @@
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
-import { Attribute, Component, ElementRef, EventEmitter, forwardRef, OnDestroy, Output, ViewChild } from '@angular/core';
+import { Attribute, Component, ElementRef, EventEmitter, forwardRef, Input, OnDestroy, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
 import {
   AbstractControl,
   ControlValueAccessor,
@@ -12,12 +12,14 @@ import {
   Validators
 } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
+import { AppCacheService, BackendService } from '@yuuvis/core';
 import { Subscription } from 'rxjs';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { OrganizationComponent } from '../../form/elements/organization/organization.component';
+import { PopoverRef } from '../../popover/popover.ref';
 import { PopoverService } from '../../popover/popover.service';
 import { addCircle, deleteIcon, dragHandle, edit } from '../../svg.generated';
-import { SequenceItem } from './sequence-list.interface';
+import { SequenceItem, SequenceListTemplate } from './sequence-list.interface';
 
 @Component({
   selector: 'yuv-sequence-list',
@@ -36,11 +38,16 @@ import { SequenceItem } from './sequence-list.interface';
     }
   ]
 })
-export class SequenceListComponent implements ControlValueAccessor, Validator, OnDestroy {
+export class SequenceListComponent implements ControlValueAccessor, Validator, OnInit, OnDestroy {
   @ViewChild(OrganizationComponent) orgComponent: OrganizationComponent;
+  @ViewChild('tplTemplatePicker') tplTemplatePicker: TemplateRef<any>;
+  @ViewChild('tplTemplateSave') tplTemplateSave: TemplateRef<any>;
+
+  private TEMPLATE_STORAGE_KEY = 'yuv.sequence.list.templates';
 
   entryForm: FormGroup;
   entryFormSubscription: Subscription | undefined;
+  templates: SequenceListTemplate[] = [];
   entries: SequenceItem[] = [];
   editIndex: number;
   addTargetIndex: number;
@@ -50,12 +57,29 @@ export class SequenceListComponent implements ControlValueAccessor, Validator, O
     editTitle: this.translate.instant('yuv.framework.sequence-list.form.title.edit'),
     editButton: this.translate.instant('yuv.framework.sequence-list.form.button.edit')
   };
+  private popoverRef: PopoverRef;
+  savingTemplates: boolean;
+  templateName: string;
 
+  private _templatesEnabled = false;
+  @Input() set templatesEnabled(b: boolean) {
+    this._templatesEnabled = b;
+    if (b) {
+      this.loadTemplates();
+    } else {
+      this.templates = [];
+    }
+  }
+  get templatesEnabled() {
+    return this._templatesEnabled;
+  }
   @Output() itemEdit = new EventEmitter<boolean>();
 
   constructor(
     @Attribute('form-open') public formOpen: string,
     private elRef: ElementRef,
+    private backend: BackendService,
+    private appCache: AppCacheService,
     private fb: FormBuilder,
     private popover: PopoverService,
     private translate: TranslateService,
@@ -96,9 +120,6 @@ export class SequenceListComponent implements ControlValueAccessor, Validator, O
       expiryDatetime: [entry?.expiryDatetime || '']
     });
     this.itemEdit.emit(true);
-    // this.entryFormSubscription = this.entryForm.statusChanges.subscribe((status) => {
-    //   this.propagate();
-    // });
   }
 
   hideEntryForm() {
@@ -106,7 +127,6 @@ export class SequenceListComponent implements ControlValueAccessor, Validator, O
     this.addTargetIndex = undefined;
     this.editIndex = undefined;
     this.entryForm = undefined;
-    // this.propagate();
     this.itemEdit.emit(false);
 
     setTimeout(() => {
@@ -170,6 +190,53 @@ export class SequenceListComponent implements ControlValueAccessor, Validator, O
       : null;
   }
 
+  // TEMPLATES
+  openTemplatePickerOverlay() {
+    this.popoverRef = this.popover.open(this.tplTemplatePicker, {
+      width: '55%',
+      height: '70%'
+    });
+  }
+  openTemplateSaveOverlay() {
+    this.popoverRef = this.popover.open(this.tplTemplateSave, {
+      width: '55%',
+      height: '70%'
+    });
+  }
+
+  saveAsTemplate() {
+    if (this.templateName && this.entries.length) {
+      this.templates.push({
+        name: this.templateName,
+        sequence: this.entries
+      });
+      this.saveTemplates();
+    }
+  }
+
+  setEntriesFromTemplate(template: SequenceListTemplate) {
+    this.entries = template.sequence;
+    this.popoverRef.close();
+  }
+
+  private saveTemplates() {
+    this.savingTemplates = true;
+    this.appCache.setItem(this.TEMPLATE_STORAGE_KEY, this.templates).subscribe(
+      (res) => {
+        this.savingTemplates = false;
+        this.popoverRef.close();
+      },
+      (err) => (this.savingTemplates = false)
+    );
+  }
+
+  private loadTemplates() {
+    // TODO: Write to userservice
+    // this.backend.get('users/settings').subscribe()
+    this.appCache.getItem(this.TEMPLATE_STORAGE_KEY).subscribe((res) => (this.templates = res || []));
+  }
+
+  ngOnInit(): void {}
   ngOnDestroy(): void {
     if (this.entryFormSubscription) this.entryFormSubscription.unsubscribe();
   }

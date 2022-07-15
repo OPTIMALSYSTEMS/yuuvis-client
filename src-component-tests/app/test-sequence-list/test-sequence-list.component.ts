@@ -26,6 +26,7 @@ export class TestSequenceListComponent implements OnInit {
     }
   ];
 
+  enableTemplates = false;
   sequenceList: SequenceItem[] = this.preset;
   sequenceListIsInEditMode: boolean;
 
@@ -36,5 +37,8 @@ export class TestSequenceListComponent implements OnInit {
   onItemEdit(isEditing: boolean) {
     this.sequenceListIsInEditMode = isEditing;
   }
+
+  save() {}
+
   ngOnInit(): void {}
 }

@@ -14,10 +14,10 @@
   form.entryForm {
     display: grid;
     grid-template-rows: auto auto auto auto;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
     padding: calc(var(--app-pane-padding) / 2);
     gap: calc(var(--app-pane-padding) / 2);
-    grid-template-areas: 'title title' 'task task' 'nextAssignee expiryDatetime' 'buttons buttons';
+    grid-template-areas: 'title' 'task' 'nextAssignee' 'expiryDatetime' 'buttons';
     border: 1px solid var(--panel-divider-color);
 
     h2 {

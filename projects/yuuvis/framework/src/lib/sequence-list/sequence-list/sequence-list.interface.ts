@@ -5,13 +5,7 @@ export interface SequenceItem {
   nextAssignee_title: string;
 }
 
-export enum SequenceListChangeMode {
-  EDIT = 'edit',
-  DELETE = 'delete',
-  INSERT = 'insert'
-}
-
-export interface SequenceListChangeOutput {
-  index: number;
-  mode: SequenceListChangeMode;
+export interface SequenceListTemplate {
+  name: string;
+  sequence: SequenceItem[];
 }
