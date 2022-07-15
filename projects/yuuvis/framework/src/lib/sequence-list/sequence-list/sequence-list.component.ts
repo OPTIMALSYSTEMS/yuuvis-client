@@ -1,5 +1,5 @@
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
-import { Attribute, Component, ElementRef, forwardRef, OnDestroy, ViewChild } from '@angular/core';
+import { Attribute, Component, ElementRef, EventEmitter, forwardRef, OnDestroy, Output, ViewChild } from '@angular/core';
 import {
   AbstractControl,
   ControlValueAccessor,
@@ -51,6 +51,8 @@ export class SequenceListComponent implements ControlValueAccessor, Validator, O
     editButton: this.translate.instant('yuv.framework.sequence-list.form.button.edit')
   };
 
+  @Output() itemEdit = new EventEmitter<boolean>();
+
   constructor(
     @Attribute('form-open') public formOpen: string,
     private elRef: ElementRef,
@@ -93,9 +95,10 @@ export class SequenceListComponent implements ControlValueAccessor, Validator, O
       nextAssignee: [entry?.nextAssignee || '', Validators.required],
       expiryDatetime: [entry?.expiryDatetime || '']
     });
-    this.entryFormSubscription = this.entryForm.statusChanges.subscribe((status) => {
-      this.propagate();
-    });
+    this.itemEdit.emit(true);
+    // this.entryFormSubscription = this.entryForm.statusChanges.subscribe((status) => {
+    //   this.propagate();
+    // });
   }
 
   hideEntryForm() {
@@ -103,7 +106,8 @@ export class SequenceListComponent implements ControlValueAccessor, Validator, O
     this.addTargetIndex = undefined;
     this.editIndex = undefined;
     this.entryForm = undefined;
-    this.propagate();
+    // this.propagate();
+    this.itemEdit.emit(false);
 
     setTimeout(() => {
       this.elRef.nativeElement.querySelector('#add-item ').focus();

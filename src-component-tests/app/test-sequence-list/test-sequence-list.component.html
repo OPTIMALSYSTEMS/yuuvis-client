@@ -1,1 +1,7 @@
-<yuv-sequence-list [(ngModel)]="sequenceList"></yuv-sequence-list>
+<div class="testing-controls">
+    <div class="status">Component <span>{{sequenceListIsInEditMode ? 'is' : 'is not'}}</span> in edit mode.</div>
+</div>
+<div class="cmp">
+    <yuv-sequence-list [(ngModel)]="sequenceList" (itemEdit)="onItemEdit($event)" (ngModelChange)="onModelChange()">
+    </yuv-sequence-list>
+</div>

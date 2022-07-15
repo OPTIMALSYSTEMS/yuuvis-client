@@ -12,6 +12,4 @@ export { ResponsiveTableData } from './responsive-data-table/responsive-data-tab
 export { ResponsiveMasterSlaveComponent } from './responsive-master-slave/responsive-master-slave.component';
 export { ResponsiveTabContainerComponent } from './responsive-tab-container/responsive-tab-container.component';
 export { TabPanelComponent } from './responsive-tab-container/tab-panel.component';
-export { SequenceListComponent } from './sequence-list/sequence-list.component';
-export { SequenceItem } from './sequence-list/sequence-list.interface';
 export { UploadProgressOverlayComponent } from './upload-progress-overlay/upload-progress-overlay.component';

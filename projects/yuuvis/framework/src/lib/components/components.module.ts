@@ -30,8 +30,6 @@ import { ResponsiveDataTableComponent } from './responsive-data-table/responsive
 import { ResponsiveMasterSlaveComponent } from './responsive-master-slave/responsive-master-slave.component';
 import { ResponsiveTabContainerComponent } from './responsive-tab-container/responsive-tab-container.component';
 import { TabPanelComponent } from './responsive-tab-container/tab-panel.component';
-import { SequenceListItemComponent } from './sequence-list/sequence-list-item/sequence-list-item.component';
-import { SequenceListComponent } from './sequence-list/sequence-list.component';
 import { UploadProgressOverlayComponent } from './upload-progress-overlay/upload-progress-overlay.component';
 
 const components = [
@@ -46,7 +44,6 @@ const components = [
   ResponsiveTabContainerComponent,
   IconUploadComponent,
   DmsObjectTileComponent,
-  SequenceListComponent,
   ActionMenuButtonComponent
 ];
 
@@ -58,7 +55,7 @@ YuvComponentRegister.register(components);
  */
 
 @NgModule({
-  declarations: [...components, SequenceListItemComponent, BusyOverlayDirective],
+  declarations: [...components, BusyOverlayDirective],
   exports: [...components, TabViewModule, BusyOverlayDirective],
   imports: [
     OverlayPanelModule,

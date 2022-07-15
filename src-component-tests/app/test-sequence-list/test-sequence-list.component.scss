@@ -1,0 +1,19 @@
+:host {
+  height: 100%;
+  align-items: center;
+
+  justify-content: center;
+
+  .status {
+    > span {
+      font-weight: bold;
+    }
+  }
+
+  .cmp {
+    padding: var(--app-pane-padding);
+    background-color: var(--panel-background);
+    resize: both;
+    overflow: auto;
+  }
+}

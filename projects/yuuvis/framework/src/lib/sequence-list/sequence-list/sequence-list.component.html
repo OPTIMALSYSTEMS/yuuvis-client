@@ -46,14 +46,63 @@
 
 <div class="entries" cdkDropList (cdkDropListDropped)="dragDrop($event)" [cdkDropListData]="entries">
 
-    <yuv-sequence-list-item cdkDrag *ngFor="let entry of entries; let i = index"
-        [ngClass]="{ disabled: !!entryForm, single: entries.length === 1 }" [index]="i"
+
+
+    <div class="entry" cdkDrag *ngFor="let entry of entries; let i = index" [cdkDragDisabled]="!!entryForm"
+        [ngClass]="{ disabled: !!entryForm, current: i === editIndex,single: entries.length === 1 }" [index]="i">
+        <yuv-icon class="handle" cdkDragHandle icon="dragHandle"></yuv-icon>
+        <div class="index">
+            <span>{{ i + 1 }}</span><span>&darr;</span>
+        </div>
+
+        <div class="action">
+            <button class="edit" type="button" (click)="editEntry(i)"
+                title="{{ 'yuv.framework.sequence-list.button.edit.tooltip' | translate }}">
+                <yuv-icon icon="edit"></yuv-icon>
+            </button>
+            <button class="remove" type="button" (click)="removeEntry(i)"
+                title="{{ 'yuv.framework.sequence-list.button.delete.tooltip' | translate }}">
+                <yuv-icon icon="deleteIcon"></yuv-icon>
+            </button>
+        </div>
+
+        <div class="content">
+            <div class="task">{{ entry.title }}</div>
+            <div class="nextAssignee">{{ entry.nextAssignee_title }}</div>
+            <div class="expiryDatetime">{{ entry.expiryDatetime | localeDate: 'eoShortDate' }}</div>
+        </div>
+
+        <yuv-icon class="innerAdd" [ngClass]="{ active: addTargetIndex === i }" icon="addCircle" *ngIf="i !== 0"
+            (click)="showEntryForm(i, true)"></yuv-icon>
+    </div>
+
+
+
+
+
+
+
+    <!-- <yuv-sequence-list-item cdkDrag *ngFor="let entry of entries; let i = index" [cdkDragDisabled]="!!entryForm"
+        [ngClass]="{ disabled: !!entryForm, current: i === editIndex,single: entries.length === 1 }" [index]="i"
         [addTargetIndex]="addTargetIndex" (edit)="editEntry($event)" (delete)="removeEntry($event)"
         (insert)="showEntryForm($event, true)">
+
+
+
+
+
+
+
         <div class="list-entry">
             <div class="task">{{ entry.title }}</div>
             <div class="nextAssignee">{{ entry.nextAssignee_title }}</div>
             <div class="expiryDatetime">{{ entry.expiryDatetime | localeDate: 'eoShortDate' }}</div>
         </div>
-    </yuv-sequence-list-item>
+
+
+
+
+
+
+    </yuv-sequence-list-item> -->
 </div>
