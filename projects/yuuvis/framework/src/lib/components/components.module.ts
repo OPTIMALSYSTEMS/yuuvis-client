@@ -1,4 +1,5 @@
 import { AgGridModule } from '@ag-grid-community/angular';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 import { CdkStepperModule } from '@angular/cdk/stepper';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
@@ -29,6 +30,8 @@ import { ResponsiveDataTableComponent } from './responsive-data-table/responsive
 import { ResponsiveMasterSlaveComponent } from './responsive-master-slave/responsive-master-slave.component';
 import { ResponsiveTabContainerComponent } from './responsive-tab-container/responsive-tab-container.component';
 import { TabPanelComponent } from './responsive-tab-container/tab-panel.component';
+import { SequenceListItemComponent } from './sequence-list/sequence-list-item/sequence-list-item.component';
+import { SequenceListComponent } from './sequence-list/sequence-list.component';
 import { UploadProgressOverlayComponent } from './upload-progress-overlay/upload-progress-overlay.component';
 
 const components = [
@@ -43,6 +46,7 @@ const components = [
   ResponsiveTabContainerComponent,
   IconUploadComponent,
   DmsObjectTileComponent,
+  SequenceListComponent,
   ActionMenuButtonComponent
 ];
 
@@ -54,10 +58,11 @@ YuvComponentRegister.register(components);
  */
 
 @NgModule({
-  declarations: [...components, BusyOverlayDirective],
+  declarations: [...components, SequenceListItemComponent, BusyOverlayDirective],
   exports: [...components, TabViewModule, BusyOverlayDirective],
   imports: [
     OverlayPanelModule,
+    DragDropModule,
     CommonModule,
     AngularResizeEventModule,
     CdkStepperModule,
