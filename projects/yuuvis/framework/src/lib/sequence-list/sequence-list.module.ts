@@ -6,11 +6,10 @@ import { TranslateModule } from '@yuuvis/core';
 import { YuvCommonModule } from '../common/common.module';
 import { YuvFormModule } from '../form/form.module';
 import { YuvPipesModule } from '../pipes/pipes.module';
-import { SequenceListItemComponent } from './sequence-list/sequence-list-item/sequence-list-item.component';
 import { SequenceListComponent } from './sequence-list/sequence-list.component';
 
 @NgModule({
-  declarations: [SequenceListComponent, SequenceListItemComponent],
+  declarations: [SequenceListComponent],
   exports: [SequenceListComponent],
   imports: [CommonModule, YuvCommonModule, YuvPipesModule, ReactiveFormsModule, TranslateModule, YuvFormModule, DragDropModule]
 })
