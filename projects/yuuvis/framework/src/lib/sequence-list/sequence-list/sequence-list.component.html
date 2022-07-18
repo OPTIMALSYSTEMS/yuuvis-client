@@ -38,20 +38,11 @@
 
 <div class="toolbar" *ngIf="!entryForm; else tplEntryForm">
     <h2>{{ 'yuv.framework.sequence-list.toolbar.title' | translate }}</h2>
+    <button *ngIf="templatesEnabled" (click)="openTemplatePickerOverlay()">TPL</button>
     <button id="add-item" type="button" class="add primary"
         title="{{ 'yuv.framework.sequence-list.button.add.tooltip' | translate }}" (click)="showEntryForm()">
         <yuv-icon icon="addCircle"></yuv-icon>
     </button>
-</div>
-
-<div class="templates" *ngIf="templatesEnabled">
-
-    <button class="load"
-        (click)="openTemplatePickerOverlay()">{{'yuv.framework.sequence-list.template.button.loadFromTemplate' |
-        translate}}</button>
-    <button class="primary save"
-        (click)="openTemplateSaveOverlay()">{{'yuv.framework.sequence-list.template.button.saveAsTemplate' |
-        translate}}</button>
 </div>
 
 <div class="entries" cdkDropList (cdkDropListDropped)="dragDrop($event)" [cdkDropListData]="entries">
@@ -85,29 +76,25 @@
     </div>
 </div>
 
+<!-- template manager overlay -->
+<ng-template #tplTemplateManager>
+    <yuv-sequence-list-template-manage [entries]="entries"></yuv-sequence-list-template-manage>
+</ng-template>
+
 <!-- template picker overlay -->
-<ng-template #tplTemplatePicker>
+<!-- <ng-template #tplTemplatePicker>
 
     {{'yuv.framework.sequence-list.template.picker.headline' | translate}}
 
     <div class="template" *ngFor="let tpl of templates" (click)="setEntriesFromTemplate(tpl)">
         {{tpl.name}}
     </div>
-</ng-template>
+</ng-template> -->
 
 <!-- template save overlay -->
-<ng-template #tplTemplateSave>
+<!-- <ng-template #tplTemplateSave>
     <div class="templateSave" [yuvBusyOverlay]="savingTemplates">
-
-        <yuv-form-input [skipToggle]="true" [label]="'yuv.framework.sequence-list.form.templateName' | translate"
-            [required]="true">
-            <yuv-string [autofocus]="true" [required]="true" maxLength="128" [(ngModel)]="templateName"> </yuv-string>
-        </yuv-form-input>
-        <div class="buttons">
-            <button (click)="saveAsTemplate()"
-                [disabled]="!templateName || entries.length === 0">{{'yuv.framework.sequence-list.template.button.saveAsTemplate'
-                | translate}}</button>
-        </div>
+        <yuv-sequence-list-template-save [entries]="entries" (submitted)="saveAsTemplate($event)">
+        </yuv-sequence-list-template-save>
     </div>
-
-</ng-template>
+</ng-template> -->

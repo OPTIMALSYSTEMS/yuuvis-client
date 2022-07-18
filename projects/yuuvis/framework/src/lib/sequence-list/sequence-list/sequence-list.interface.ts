@@ -6,6 +6,10 @@ export interface SequenceItem {
 }
 
 export interface SequenceListTemplate {
+  id?: string;
   name: string;
   sequence: SequenceItem[];
+}
+export interface SequenceListTemplateSaveResponse {
+  templateName: string;
 }

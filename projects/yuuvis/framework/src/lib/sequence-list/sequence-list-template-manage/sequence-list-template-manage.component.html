@@ -1,0 +1,29 @@
+<div class="template-list">
+    <div (click)="currentTemplate = tpl" [ngClass]="{current: currentTemplate?.id === tpl.id}"
+        *ngFor="let tpl of templates">{{tpl.name}}</div>
+</div>
+
+
+
+<form class="template" [formGroup]="form" (ngSubmit)="submit()" *ngIf="currentTemplate">
+    <h2>{{ currentTemplate?.id ? labels.headline : labels.headlineNew}}</h2>
+
+    <yuv-form-input [skipToggle]="true" [label]="'yuv.framework.sequence-list.form.templateName' | translate"
+        [required]="true">
+        <yuv-string [autofocus]="true" [required]="true" maxLength="128" formControlName="templateName"> </yuv-string>
+    </yuv-form-input>
+
+
+    <yuv-sequence-list formControlName="sequence">
+    </yuv-sequence-list>
+
+
+    <div class="buttons">
+        <button type="button" *ngIf="this.currentTemplate.id"
+            (click)="deleteTemplate()">{{'yuv.framework.sequence-list.template.button.delete'
+            | translate}}</button>
+
+
+        <button type="submit" [disabled]="form.invalid">{{ currentTemplate?.id ? labels.save : labels.saveNew}}</button>
+    </div>
+</form>

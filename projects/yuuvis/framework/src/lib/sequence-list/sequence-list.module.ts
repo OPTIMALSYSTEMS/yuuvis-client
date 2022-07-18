@@ -1,16 +1,17 @@
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TranslateModule } from '@yuuvis/core';
 import { YuvCommonModule } from '../common/common.module';
 import { YuvFormModule } from '../form/form.module';
 import { YuvPipesModule } from '../pipes/pipes.module';
+import { SequenceListTemplateManageComponent } from './sequence-list-template-manage/sequence-list-template-manage.component';
 import { SequenceListComponent } from './sequence-list/sequence-list.component';
 
 @NgModule({
-  declarations: [SequenceListComponent],
+  declarations: [SequenceListComponent, SequenceListTemplateManageComponent],
   exports: [SequenceListComponent],
-  imports: [CommonModule, YuvCommonModule, YuvPipesModule, ReactiveFormsModule, TranslateModule, YuvFormModule, DragDropModule]
+  imports: [CommonModule, YuvCommonModule, YuvPipesModule, ReactiveFormsModule, FormsModule, TranslateModule, YuvFormModule, DragDropModule]
 })
 export class YuvSequenceListModule {}

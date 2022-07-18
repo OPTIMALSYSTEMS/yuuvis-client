@@ -40,14 +40,15 @@ import { SequenceItem, SequenceListTemplate } from './sequence-list.interface';
 })
 export class SequenceListComponent implements ControlValueAccessor, Validator, OnInit, OnDestroy {
   @ViewChild(OrganizationComponent) orgComponent: OrganizationComponent;
-  @ViewChild('tplTemplatePicker') tplTemplatePicker: TemplateRef<any>;
-  @ViewChild('tplTemplateSave') tplTemplateSave: TemplateRef<any>;
+  @ViewChild('tplTemplateManager') tplTemplateManager: TemplateRef<any>;
+  // @ViewChild('tplTemplatePicker') tplTemplatePicker: TemplateRef<any>;
+  // @ViewChild('tplTemplateSave') tplTemplateSave: TemplateRef<any>;
 
-  private TEMPLATE_STORAGE_KEY = 'yuv.sequence.list.templates';
+  // private TEMPLATE_STORAGE_KEY = 'yuv.sequence.list.templates';
 
   entryForm: FormGroup;
   entryFormSubscription: Subscription | undefined;
-  templates: SequenceListTemplate[] = [];
+  // templates: SequenceListTemplate[] = [];
   entries: SequenceItem[] = [];
   editIndex: number;
   addTargetIndex: number;
@@ -58,21 +59,21 @@ export class SequenceListComponent implements ControlValueAccessor, Validator, O
     editButton: this.translate.instant('yuv.framework.sequence-list.form.button.edit')
   };
   private popoverRef: PopoverRef;
-  savingTemplates: boolean;
-  templateName: string;
+  // savingTemplates: boolean;
 
-  private _templatesEnabled = false;
-  @Input() set templatesEnabled(b: boolean) {
-    this._templatesEnabled = b;
-    if (b) {
-      this.loadTemplates();
-    } else {
-      this.templates = [];
-    }
-  }
-  get templatesEnabled() {
-    return this._templatesEnabled;
-  }
+  @Input() templatesEnabled: boolean;
+  // private _templatesEnabled = false;
+  // @Input() set templatesEnabled(b: boolean) {
+  //   this._templatesEnabled = b;
+  //   if (b) {
+  //     this.loadTemplates();
+  //   } else {
+  //     this.templates = [];
+  //   }
+  // }
+  // get templatesEnabled() {
+  //   return this._templatesEnabled;
+  // }
   @Output() itemEdit = new EventEmitter<boolean>();
 
   constructor(
@@ -192,49 +193,50 @@ export class SequenceListComponent implements ControlValueAccessor, Validator, O
 
   // TEMPLATES
   openTemplatePickerOverlay() {
-    this.popoverRef = this.popover.open(this.tplTemplatePicker, {
+    this.popoverRef = this.popover.open(this.tplTemplateManager, {
       width: '55%',
       height: '70%'
     });
   }
-  openTemplateSaveOverlay() {
-    this.popoverRef = this.popover.open(this.tplTemplateSave, {
-      width: '55%',
-      height: '70%'
-    });
-  }
+  // openTemplatePickerOverlay() {
+  //   this.popoverRef = this.popover.open(this.tplTemplatePicker, {
+  //     width: '55%',
+  //     height: '70%'
+  //   });
+  // }
+  // openTemplateSaveOverlay() {
+  //   this.popoverRef = this.popover.open(this.tplTemplateSave, {
+  //     // width: '55%',
+  //     // height: '70%'
+  //   });
+  // }
 
-  saveAsTemplate() {
-    if (this.templateName && this.entries.length) {
-      this.templates.push({
-        name: this.templateName,
-        sequence: this.entries
-      });
-      this.saveTemplates();
-    }
-  }
+  // saveAsTemplate(res: SequenceListTemplateSaveResponse) {
+  //   this.popoverRef.close();
+  //   if (res.templateName && this.entries.length) {
+  //     this.templates.push({
+  //       name: res.templateName,
+  //       sequence: [...this.entries]
+  //     });
+  //     this.saveTemplates();
+  //   }
+  // }
 
   setEntriesFromTemplate(template: SequenceListTemplate) {
     this.entries = template.sequence;
     this.popoverRef.close();
   }
 
-  private saveTemplates() {
-    this.savingTemplates = true;
-    this.appCache.setItem(this.TEMPLATE_STORAGE_KEY, this.templates).subscribe(
-      (res) => {
-        this.savingTemplates = false;
-        this.popoverRef.close();
-      },
-      (err) => (this.savingTemplates = false)
-    );
-  }
-
-  private loadTemplates() {
-    // TODO: Write to userservice
-    // this.backend.get('users/settings').subscribe()
-    this.appCache.getItem(this.TEMPLATE_STORAGE_KEY).subscribe((res) => (this.templates = res || []));
-  }
+  // private saveTemplates() {
+  //   this.savingTemplates = true;
+  //   this.appCache.setItem(this.TEMPLATE_STORAGE_KEY, this.templates).subscribe(
+  //     (res) => {
+  //       this.savingTemplates = false;
+  //       this.popoverRef.close();
+  //     },
+  //     (err) => (this.savingTemplates = false)
+  //   );
+  // }
 
   ngOnInit(): void {}
   ngOnDestroy(): void {
