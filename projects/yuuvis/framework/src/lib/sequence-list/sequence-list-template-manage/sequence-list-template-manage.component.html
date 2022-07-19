@@ -1,9 +1,23 @@
 <div class="template-list">
     <header>{{'yuv.framework.sequence-list.template-list.headline'|translate}}</header>
-    <div class="templates">
-        <div (click)="selectedTemplate = tpl" [ngClass]="{current: selectedTemplate?.id === tpl.id}"
-            *ngFor="let tpl of templates">{{tpl.name}}</div>
+
+    <!-- current entries -->
+    <div class="currententries item" (click)="selectCurrentEntries()"
+        [ngClass]="{current: selectedTemplate?.id === CURRENT_ENTRIES_ID}">
+        {{'yuv.framework.sequence-list.template.headlineNew' | translate}}</div>
+
+    <div class="filter">
+        <yuv-form-input [skipToggle]="true" [label]="'yuv.framework.sequence-list.form.filter' | translate">
+            <yuv-string [(ngModel)]="filterTerm">
+            </yuv-string>
+        </yuv-form-input>
     </div>
+
+    <div class="templates">
+        <div class="item" (click)="selectedTemplate = tpl" [ngClass]="{current: selectedTemplate?.id === tpl.id}"
+            *ngFor="let tpl of templates | filter: 'name': filterTerm">{{tpl.name}}</div>
+    </div>
+
 </div>
 
 

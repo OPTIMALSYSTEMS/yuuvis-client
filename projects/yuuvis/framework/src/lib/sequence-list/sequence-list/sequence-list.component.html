@@ -38,7 +38,7 @@
 
 <div class="toolbar" *ngIf="!entryForm; else tplEntryForm">
     <h2>{{ 'yuv.framework.sequence-list.toolbar.title' | translate }}</h2>
-    <button class="btn-templates" *ngIf="templatesEnabled" (click)="openTemplateManager()">{{
+    <button class="btn-templates secondary" *ngIf="templatesEnabled" (click)="openTemplateManager()">{{
         'yuv.framework.sequence-list.button.templates' |
         translate }}</button>
     <button id="add-item" type="button" class="add primary"

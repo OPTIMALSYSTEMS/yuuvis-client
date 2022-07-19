@@ -1,5 +1,18 @@
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
-import { Attribute, Component, ElementRef, EventEmitter, forwardRef, Input, OnDestroy, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
+import {
+  Attribute,
+  Component,
+  ElementRef,
+  EventEmitter,
+  forwardRef,
+  HostListener,
+  Input,
+  OnDestroy,
+  OnInit,
+  Output,
+  TemplateRef,
+  ViewChild
+} from '@angular/core';
 import {
   AbstractControl,
   ControlValueAccessor,
@@ -12,7 +25,6 @@ import {
   Validators
 } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
-import { AppCacheService, BackendService } from '@yuuvis/core';
 import { Subscription } from 'rxjs';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { OrganizationComponent } from '../../form/elements/organization/organization.component';
@@ -36,19 +48,17 @@ import { SequenceItem, SequenceListTemplate } from './sequence-list.interface';
       useExisting: forwardRef(() => SequenceListComponent),
       multi: true
     }
-  ]
+  ],
+  host: {
+    tabindex: '0'
+  }
 })
 export class SequenceListComponent implements ControlValueAccessor, Validator, OnInit, OnDestroy {
   @ViewChild(OrganizationComponent) orgComponent: OrganizationComponent;
   @ViewChild('tplTemplateManager') tplTemplateManager: TemplateRef<any>;
-  // @ViewChild('tplTemplatePicker') tplTemplatePicker: TemplateRef<any>;
-  // @ViewChild('tplTemplateSave') tplTemplateSave: TemplateRef<any>;
-
-  // private TEMPLATE_STORAGE_KEY = 'yuv.sequence.list.templates';
 
   entryForm: FormGroup;
   entryFormSubscription: Subscription | undefined;
-  // templates: SequenceListTemplate[] = [];
   entries: SequenceItem[] = [];
   editIndex: number;
   addTargetIndex: number;
@@ -59,28 +69,37 @@ export class SequenceListComponent implements ControlValueAccessor, Validator, O
     editButton: this.translate.instant('yuv.framework.sequence-list.form.button.edit')
   };
   private popoverRef: PopoverRef;
-  // savingTemplates: boolean;
-
   @Input() templatesEnabled: boolean;
-  // private _templatesEnabled = false;
-  // @Input() set templatesEnabled(b: boolean) {
-  //   this._templatesEnabled = b;
-  //   if (b) {
-  //     this.loadTemplates();
-  //   } else {
-  //     this.templates = [];
-  //   }
-  // }
-  // get templatesEnabled() {
-  //   return this._templatesEnabled;
-  // }
   @Output() itemEdit = new EventEmitter<boolean>();
+
+  @HostListener('keydown.control.+', ['$event'])
+  controlPlusHandler(event: KeyboardEvent) {
+    this.showEntryForm();
+    event.preventDefault();
+    event.stopPropagation();
+  }
+
+  @HostListener('keydown.enter', ['$event'])
+  controlEnterHandler(event: KeyboardEvent) {
+    if (this.entryForm?.dirty && this.entryForm.valid) {
+      this.saveEntry();
+      event.preventDefault();
+      event.stopPropagation();
+    }
+  }
+
+  @HostListener('keydown.escape', ['$event'])
+  escapeHandler(event: KeyboardEvent) {
+    if (this.entryForm) {
+      this.hideEntryForm();
+      event.preventDefault();
+      event.stopPropagation();
+    }
+  }
 
   constructor(
     @Attribute('form-open') public formOpen: string,
     private elRef: ElementRef,
-    private backend: BackendService,
-    private appCache: AppCacheService,
     private fb: FormBuilder,
     private popover: PopoverService,
     private translate: TranslateService,
@@ -212,17 +231,6 @@ export class SequenceListComponent implements ControlValueAccessor, Validator, O
     this.entries = template.sequence;
     this.popoverRef.close();
   }
-
-  // private saveTemplates() {
-  //   this.savingTemplates = true;
-  //   this.appCache.setItem(this.TEMPLATE_STORAGE_KEY, this.templates).subscribe(
-  //     (res) => {
-  //       this.savingTemplates = false;
-  //       this.popoverRef.close();
-  //     },
-  //     (err) => (this.savingTemplates = false)
-  //   );
-  // }
 
   ngOnInit(): void {}
   ngOnDestroy(): void {
