@@ -38,7 +38,9 @@
 
 <div class="toolbar" *ngIf="!entryForm; else tplEntryForm">
     <h2>{{ 'yuv.framework.sequence-list.toolbar.title' | translate }}</h2>
-    <button *ngIf="templatesEnabled" (click)="openTemplatePickerOverlay()">TPL</button>
+    <button class="btn-templates" *ngIf="templatesEnabled" (click)="openTemplateManager()">{{
+        'yuv.framework.sequence-list.button.templates' |
+        translate }}</button>
     <button id="add-item" type="button" class="add primary"
         title="{{ 'yuv.framework.sequence-list.button.add.tooltip' | translate }}" (click)="showEntryForm()">
         <yuv-icon icon="addCircle"></yuv-icon>
@@ -78,23 +80,7 @@
 
 <!-- template manager overlay -->
 <ng-template #tplTemplateManager>
-    <yuv-sequence-list-template-manage [entries]="entries"></yuv-sequence-list-template-manage>
+    <yuv-sequence-list-template-manage (cancel)="popoverRef.close()" (templateSelect)="templateManagerSelect($event)"
+        [currentEntries]="entries">
+    </yuv-sequence-list-template-manage>
 </ng-template>
-
-<!-- template picker overlay -->
-<!-- <ng-template #tplTemplatePicker>
-
-    {{'yuv.framework.sequence-list.template.picker.headline' | translate}}
-
-    <div class="template" *ngFor="let tpl of templates" (click)="setEntriesFromTemplate(tpl)">
-        {{tpl.name}}
-    </div>
-</ng-template> -->
-
-<!-- template save overlay -->
-<!-- <ng-template #tplTemplateSave>
-    <div class="templateSave" [yuvBusyOverlay]="savingTemplates">
-        <yuv-sequence-list-template-save [entries]="entries" (submitted)="saveAsTemplate($event)">
-        </yuv-sequence-list-template-save>
-    </div>
-</ng-template> -->

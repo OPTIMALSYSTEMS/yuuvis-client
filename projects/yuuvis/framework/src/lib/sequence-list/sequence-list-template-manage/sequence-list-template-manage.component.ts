@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AppCacheService, TranslateService, Utils } from '@yuuvis/core';
 import { SequenceItem, SequenceListTemplate } from '../sequence-list/sequence-list.interface';
@@ -10,20 +10,23 @@ import { SequenceItem, SequenceListTemplate } from '../sequence-list/sequence-li
 })
 export class SequenceListTemplateManageComponent implements OnInit {
   private TEMPLATE_STORAGE_KEY = 'yuv.sequence.list.templates';
+  CURRENT_ENTRIES_ID = 'current';
+
   templates: SequenceListTemplate[] = [];
 
-  private _currentTemplate: SequenceListTemplate;
-  set currentTemplate(s: SequenceListTemplate) {
-    this._currentTemplate = s;
+  private _selectedTemplate: SequenceListTemplate;
+  set selectedTemplate(s: SequenceListTemplate) {
+    this._selectedTemplate = s;
 
     if (s)
       this.form.patchValue({
-        templateName: s.name,
+        templateName: s.id === this.CURRENT_ENTRIES_ID ? '' : s.name,
         sequence: s.sequence
       });
+    this.form.markAsPristine();
   }
-  get currentTemplate() {
-    return this._currentTemplate;
+  get selectedTemplate() {
+    return this._selectedTemplate;
   }
 
   busy: boolean;
@@ -32,13 +35,15 @@ export class SequenceListTemplateManageComponent implements OnInit {
     sequence: [[], Validators.minLength(1)]
   });
 
-  // private _entries: SequenceItem[] = [];
-  @Input() set entries(e: SequenceItem[]) {
-    this.currentTemplate = {
-      name: '',
-      sequence: e
-    };
+  private _currentEntries: SequenceItem[];
+  @Input() set currentEntries(e: SequenceItem[]) {
+    this._currentEntries = e;
+    this.addCurrentEntries();
   }
+
+  // emitted once a template has been selected
+  @Output() templateSelect = new EventEmitter<SequenceItem[]>();
+  @Output() cancel = new EventEmitter<any>();
 
   labels = {
     save: this.translate.instant('yuv.framework.sequence-list.template.button.save'),
@@ -49,30 +54,37 @@ export class SequenceListTemplateManageComponent implements OnInit {
 
   constructor(private appCache: AppCacheService, private fb: FormBuilder, private translate: TranslateService) {}
 
+  applyTemplate() {
+    this.templateSelect.emit(this.selectedTemplate.sequence);
+  }
+
   deleteTemplate() {
-    this.templates = this.templates.filter((t) => t.id !== this.currentTemplate.id);
-    this.currentTemplate = undefined;
+    this.templates = this.templates.filter((t) => t.id !== this.selectedTemplate.id);
+    this.selectedTemplate = undefined;
     this.saveTemplates();
   }
 
   submit() {
-    if (this.currentTemplate) {
-      // update existing template
-      const i = this.templates.findIndex((e) => e.id === this.currentTemplate.id);
-      if (i !== -1) {
-        this.templates[i] = {
-          id: this.currentTemplate.id,
-          name: this.form.value.templateName,
-          sequence: this.form.value.sequence
-        };
-      } else {
+    if (this.selectedTemplate) {
+      if (this.selectedTemplate.id === this.CURRENT_ENTRIES_ID) {
+        // save current list as new template
         this.templates.push({
           id: Utils.uuid(),
           name: this.form.value.templateName,
           sequence: this.form.value.sequence
         });
+      } else {
+        // update existing template
+        const i = this.templates.findIndex((e) => e.id === this.selectedTemplate.id);
+        if (i !== -1) {
+          this.templates[i] = {
+            id: this.selectedTemplate.id,
+            name: this.form.value.templateName,
+            sequence: this.form.value.sequence
+          };
+        }
       }
-      this.currentTemplate = undefined;
+      this.selectedTemplate = undefined;
       this.saveTemplates();
     }
   }
@@ -101,7 +113,20 @@ export class SequenceListTemplateManageComponent implements OnInit {
   private loadTemplates() {
     // TODO: Write to userservice
     // this.backend.get('users/settings').subscribe()
-    this.appCache.getItem(this.TEMPLATE_STORAGE_KEY).subscribe((res) => (this.templates = res || []));
+    this.appCache.getItem(this.TEMPLATE_STORAGE_KEY).subscribe((res) => {
+      this.templates = res || [];
+      this.addCurrentEntries();
+    });
+  }
+
+  private addCurrentEntries() {
+    if (this._currentEntries?.length && this.templates && this.templates.findIndex((t) => t.id === this.CURRENT_ENTRIES_ID) === -1) {
+      this.templates.unshift({
+        id: this.CURRENT_ENTRIES_ID,
+        name: this.translate.instant('yuv.framework.sequence-list.template.headlineNew'),
+        sequence: this._currentEntries
+      });
+    }
   }
 
   ngOnInit(): void {

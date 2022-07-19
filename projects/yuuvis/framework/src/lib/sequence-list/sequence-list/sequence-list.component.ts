@@ -192,35 +192,21 @@ export class SequenceListComponent implements ControlValueAccessor, Validator, O
   }
 
   // TEMPLATES
-  openTemplatePickerOverlay() {
+  openTemplateManager() {
     this.popoverRef = this.popover.open(this.tplTemplateManager, {
       width: '55%',
       height: '70%'
     });
   }
-  // openTemplatePickerOverlay() {
-  //   this.popoverRef = this.popover.open(this.tplTemplatePicker, {
-  //     width: '55%',
-  //     height: '70%'
-  //   });
-  // }
-  // openTemplateSaveOverlay() {
-  //   this.popoverRef = this.popover.open(this.tplTemplateSave, {
-  //     // width: '55%',
-  //     // height: '70%'
-  //   });
-  // }
 
-  // saveAsTemplate(res: SequenceListTemplateSaveResponse) {
-  //   this.popoverRef.close();
-  //   if (res.templateName && this.entries.length) {
-  //     this.templates.push({
-  //       name: res.templateName,
-  //       sequence: [...this.entries]
-  //     });
-  //     this.saveTemplates();
-  //   }
-  // }
+  templateManagerCancel() {
+    this.popoverRef.close();
+  }
+
+  templateManagerSelect(entries: SequenceItem[]) {
+    this.entries = entries;
+    this.popoverRef.close();
+  }
 
   setEntriesFromTemplate(template: SequenceListTemplate) {
     this.entries = template.sequence;
