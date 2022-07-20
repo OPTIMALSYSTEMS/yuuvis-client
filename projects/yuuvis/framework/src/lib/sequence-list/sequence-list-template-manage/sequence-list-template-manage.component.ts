@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { AppCacheService, TranslateService, Utils } from '@yuuvis/core';
+import { BackendService, TranslateService, Utils } from '@yuuvis/core';
 import { PopoverService } from '../../popover/popover.service';
 import { SequenceItem, SequenceListTemplate } from '../sequence-list/sequence-list.interface';
 
@@ -10,7 +10,7 @@ import { SequenceItem, SequenceListTemplate } from '../sequence-list/sequence-li
   styleUrls: ['./sequence-list-template-manage.component.scss']
 })
 export class SequenceListTemplateManageComponent implements OnInit {
-  private TEMPLATE_STORAGE_KEY = 'yuv.sequence.list.templates';
+  private DEFAULT_TEMPLATE_STORAGE_SECTION = 'sequencelist';
   CURRENT_ENTRIES_ID = 'current';
 
   templates: SequenceListTemplate[] = [];
@@ -37,6 +37,10 @@ export class SequenceListTemplateManageComponent implements OnInit {
     sequence: [[], Validators.minLength(1)]
   });
 
+  /**
+   * Name of the section to store templates in user service (usersettings)
+   */
+  @Input() storageSection: string = this.DEFAULT_TEMPLATE_STORAGE_SECTION;
   @Input() currentEntries: SequenceItem[];
 
   // emitted once a template has been selected
@@ -50,7 +54,7 @@ export class SequenceListTemplateManageComponent implements OnInit {
     headlineNew: this.translate.instant('yuv.framework.sequence-list.template.headlineNew')
   };
 
-  constructor(private appCache: AppCacheService, private popover: PopoverService, private fb: FormBuilder, private translate: TranslateService) {}
+  constructor(private backend: BackendService, private popover: PopoverService, private fb: FormBuilder, private translate: TranslateService) {}
 
   selectCurrentEntries() {
     this.selectedTemplate = {
@@ -105,45 +109,21 @@ export class SequenceListTemplateManageComponent implements OnInit {
     }
   }
 
-  // saveAsTemplate(templateName: string, entries: SequenceItem[]) {
-  //   if (templateName && entries.length) {
-  //     this.templates.push({
-  //       name: templateName,
-  //       sequence: [...entries]
-  //     });
-  //     this.saveTemplates();
-  //   }
-  // }
-
   private saveTemplates() {
     this.busy = true;
-    this.appCache.setItem(this.TEMPLATE_STORAGE_KEY, this.templates).subscribe(
+    this.backend.post(`/users/settings/${this.storageSection}`, { templates: this.templates }).subscribe(
       (res) => {
         this.busy = false;
-        // this.popoverRef.close();
       },
       (err) => (this.busy = false)
     );
   }
 
   private loadTemplates() {
-    // TODO: Write to userservice
-    // this.backend.get('users/settings').subscribe()
-    this.appCache.getItem(this.TEMPLATE_STORAGE_KEY).subscribe((res) => {
-      this.templates = res || [];
-      // this.addCurrentEntries();
+    this.backend.get(`/users/settings/${this.storageSection}`).subscribe((res) => {
+      this.templates = res ? res.templates || [] : [];
     });
   }
-
-  // private addCurrentEntries() {
-  //   if (this._currentEntries?.length && this.templates && this.templates.findIndex((t) => t.id === this.CURRENT_ENTRIES_ID) === -1) {
-  //     this.templates.unshift({
-  //       id: this.CURRENT_ENTRIES_ID,
-  //       name: this.translate.instant('yuv.framework.sequence-list.template.headlineNew'),
-  //       sequence: this._currentEntries
-  //     });
-  //   }
-  // }
 
   ngOnInit(): void {
     this.loadTemplates();

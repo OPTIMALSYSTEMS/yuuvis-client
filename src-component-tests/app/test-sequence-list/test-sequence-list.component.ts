@@ -26,7 +26,9 @@ export class TestSequenceListComponent implements OnInit {
     }
   ];
 
-  enableTemplates = false;
+  STORAGE_SECTION = 'taskList';
+
+  templateStorageSection: string;
   sequenceList: SequenceItem[] = this.preset;
   sequenceListIsInEditMode: boolean;
 

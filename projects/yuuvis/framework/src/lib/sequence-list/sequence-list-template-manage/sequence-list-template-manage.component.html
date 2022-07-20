@@ -17,10 +17,7 @@
         <div class="item" (click)="selectedTemplate = tpl" [ngClass]="{current: selectedTemplate?.id === tpl.id}"
             *ngFor="let tpl of templates | filter: 'name': filterTerm">{{tpl.name}}</div>
     </div>
-
 </div>
-
-
 
 <form class="template" [formGroup]="form" *ngIf="selectedTemplate">
     <header>{{ selectedTemplate.id !== CURRENT_ENTRIES_ID ? labels.headline : labels.headlineNew}}</header>
@@ -30,16 +27,11 @@
         <yuv-string [autofocus]="true" [required]="true" maxLength="128" formControlName="templateName"> </yuv-string>
     </yuv-form-input>
 
-
     <yuv-sequence-list formControlName="sequence">
     </yuv-sequence-list>
-
-
-
 </form>
 
 <div class="buttons">
-
     <div class="left">
         <button type="button" class="secondary"
             (click)="cancel.emit()">{{'yuv.framework.shared.cancel'|translate}}</button>
@@ -66,11 +58,4 @@
             ? labels.save :
             labels.saveNew}}</button>
     </div>
-
-
-
-
-
-
-
 </div>

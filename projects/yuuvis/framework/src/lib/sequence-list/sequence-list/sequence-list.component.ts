@@ -69,7 +69,8 @@ export class SequenceListComponent implements ControlValueAccessor, Validator, O
     editButton: this.translate.instant('yuv.framework.sequence-list.form.button.edit')
   };
   private popoverRef: PopoverRef;
-  @Input() templatesEnabled: boolean;
+  @Input() templateStorageSection: string;
+
   @Output() itemEdit = new EventEmitter<boolean>();
 
   @HostListener('keydown.control.+', ['$event'])
