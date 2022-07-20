@@ -84,7 +84,7 @@
       }
     }
 
-    &.table {
+    &.table:not([data-summary-item='system:tags']) {
       display: flex;
       flex-flow: column;
       overflow-x: auto;
