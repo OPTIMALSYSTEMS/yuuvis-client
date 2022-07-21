@@ -1,5 +1,5 @@
 import { ClientSideRowModelModule } from '@ag-grid-community/client-side-row-model';
-import { ColDef, GridOptions, Module, RowEvent, RowNode } from '@ag-grid-community/core';
+import { ColDef, GridOptions, Module, RowEvent, RowHeightParams, RowNode } from '@ag-grid-community/core';
 import { Component, ElementRef, EventEmitter, HostBinding, HostListener, Input, NgZone, OnDestroy, OnInit, Output } from '@angular/core';
 import { BaseObjectTypeField, DeviceService, PendingChangesService, Utils } from '@yuuvis/core';
 import { ResizedEvent } from 'angular-resize-event';
@@ -250,6 +250,10 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
 
     // subscribe to pending hanges
     this.pendingChanges.tasks$.pipe(takeUntilDestroy(this)).subscribe((tasks) => this.gridOptions && (this.gridOptions.suppressCellSelection = !!tasks.length));
+  }
+
+  getRowHeight(params: RowHeightParams): number {
+    return 70;
   }
 
   /**
