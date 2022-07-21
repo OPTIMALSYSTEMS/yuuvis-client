@@ -25,6 +25,7 @@ import {
   Validators
 } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
+import { PendingChangesService } from '@yuuvis/core';
 import { Subscription } from 'rxjs';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { OrganizationComponent } from '../../form/elements/organization/organization.component';
@@ -101,6 +102,7 @@ export class SequenceListComponent implements ControlValueAccessor, Validator, O
   constructor(
     @Attribute('form-open') public formOpen: string,
     private elRef: ElementRef,
+    private pendingChanges: PendingChangesService,
     private fb: FormBuilder,
     private popover: PopoverService,
     private translate: TranslateService,
@@ -217,6 +219,7 @@ export class SequenceListComponent implements ControlValueAccessor, Validator, O
       width: '55%',
       height: '70%'
     });
+    this.popoverRef.preventClose = () => this.pendingChanges.check();
   }
 
   templateManagerCancel() {

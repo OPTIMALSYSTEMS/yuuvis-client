@@ -349,6 +349,7 @@
   "yuv.framework.sequence-list.template.button.delete": "Delete template",
   "yuv.framework.sequence-list.template.button.save": "Save",
   "yuv.framework.sequence-list.template.button.saveNew": "Save as new template",
+  "yuv.framework.sequence-list.template.errors.forbiddenName": "There already is a template with this name",
   "yuv.framework.sequence-list.template.headline": "Edit template",
   "yuv.framework.sequence-list.template.headlineNew": "Current list",
   "yuv.framework.sequence-list.template.remove.confirm.message": "Are you sure you want to remove template '{{template}}'?",

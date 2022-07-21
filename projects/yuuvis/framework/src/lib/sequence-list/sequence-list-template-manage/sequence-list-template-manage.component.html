@@ -23,9 +23,11 @@
     <header>{{ selectedTemplate.id !== CURRENT_ENTRIES_ID ? labels.headline : labels.headlineNew}}</header>
 
     <yuv-form-input [skipToggle]="true" [label]="'yuv.framework.sequence-list.form.templateName' | translate"
-        [required]="true">
-        <yuv-string [autofocus]="true" [required]="true" maxLength="128" formControlName="templateName"> </yuv-string>
+        [required]="true" [invalid]="formErrors.length">
+        <yuv-string [autofocus]="true" [required]="true" formControlName="templateName"> </yuv-string>
     </yuv-form-input>
+    <div class="errors" *ngFor="let e of formErrors">{{e}}</div>
+
 
     <yuv-sequence-list formControlName="sequence">
     </yuv-sequence-list>

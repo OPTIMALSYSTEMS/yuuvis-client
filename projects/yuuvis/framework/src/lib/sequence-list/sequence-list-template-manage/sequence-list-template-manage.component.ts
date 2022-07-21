@@ -1,6 +1,7 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { BackendService, TranslateService, Utils } from '@yuuvis/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
+import { BackendService, PendingChangesService, TranslateService, Utils } from '@yuuvis/core';
+import { takeUntilDestroy } from 'take-until-destroy';
 import { PopoverService } from '../../popover/popover.service';
 import { SequenceItem, SequenceListTemplate } from '../sequence-list/sequence-list.interface';
 
@@ -9,23 +10,31 @@ import { SequenceItem, SequenceListTemplate } from '../sequence-list/sequence-li
   templateUrl: './sequence-list-template-manage.component.html',
   styleUrls: ['./sequence-list-template-manage.component.scss']
 })
-export class SequenceListTemplateManageComponent implements OnInit {
+export class SequenceListTemplateManageComponent implements OnInit, OnDestroy {
   private DEFAULT_TEMPLATE_STORAGE_SECTION = 'sequencelist';
   CURRENT_ENTRIES_ID = 'current';
+  TEMPLATE_NAME_MAX_LENGTH = 128;
 
   templates: SequenceListTemplate[] = [];
   filterTerm: string;
+  pendingTaskId: string;
 
   private _selectedTemplate: SequenceListTemplate;
   set selectedTemplate(s: SequenceListTemplate) {
-    this._selectedTemplate = s;
+    if (!this.pendingChanges.check()) {
+      this.pendingTaskId = undefined;
+      this._selectedTemplate = s;
 
-    if (s)
-      this.form.patchValue({
-        templateName: s.id === this.CURRENT_ENTRIES_ID ? '' : s.name,
-        sequence: s.sequence
-      });
-    this.form.markAsPristine();
+      if (s)
+        this.form.patchValue(
+          {
+            templateName: s.id === this.CURRENT_ENTRIES_ID ? '' : s.name,
+            sequence: s.sequence
+          },
+          { emitEvent: false }
+        );
+      this.form.markAsPristine();
+    }
   }
   get selectedTemplate() {
     return this._selectedTemplate;
@@ -33,7 +42,7 @@ export class SequenceListTemplateManageComponent implements OnInit {
 
   busy: boolean;
   form: FormGroup = this.fb.group({
-    templateName: ['', [Validators.required, Validators.maxLength(128)]],
+    templateName: ['', [Validators.required, Validators.maxLength(this.TEMPLATE_NAME_MAX_LENGTH), this.forbiddenNameValidator()]],
     sequence: [[], Validators.minLength(1)]
   });
 
@@ -51,10 +60,41 @@ export class SequenceListTemplateManageComponent implements OnInit {
     save: this.translate.instant('yuv.framework.sequence-list.template.button.save'),
     saveNew: this.translate.instant('yuv.framework.sequence-list.template.button.saveNew'),
     headline: this.translate.instant('yuv.framework.sequence-list.template.headline'),
-    headlineNew: this.translate.instant('yuv.framework.sequence-list.template.headlineNew')
+    headlineNew: this.translate.instant('yuv.framework.sequence-list.template.headlineNew'),
+    errors: {
+      maxlength: this.translate.instant('yuv.framework.object-form-element.error.maxlength', { maxLength: this.TEMPLATE_NAME_MAX_LENGTH }),
+      forbiddenName: this.translate.instant('yuv.framework.sequence-list.template.errors.forbiddenName')
+    }
   };
 
-  constructor(private backend: BackendService, private popover: PopoverService, private fb: FormBuilder, private translate: TranslateService) {}
+  get formErrors() {
+    const errors = this.form.get('templateName').errors;
+    return errors ? Object.keys(errors).map((k) => this.labels.errors[k]) : [];
+  }
+
+  constructor(
+    private backend: BackendService,
+    private popover: PopoverService,
+    private pendingChanges: PendingChangesService,
+    private fb: FormBuilder,
+    private translate: TranslateService
+  ) {
+    this.form.statusChanges.pipe(takeUntilDestroy(this)).subscribe((res) => {
+      if (this.form.dirty && !this.pendingChanges.hasPendingTask(this.pendingTaskId || ' ')) {
+        this.pendingTaskId = this.pendingChanges.startTask(this.translate.instant('yuv.framework.sequence-list.template.pending-changes.alert'));
+      }
+    });
+  }
+
+  private forbiddenNameValidator(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const forbidden = this.templates
+        .filter((t) => t.id !== this.selectedTemplate.id)
+        .map((t) => t.name)
+        .includes(control.value);
+      return forbidden ? { forbiddenName: { value: control.value } } : null;
+    };
+  }
 
   selectCurrentEntries() {
     this.selectedTemplate = {
@@ -104,16 +144,18 @@ export class SequenceListTemplateManageComponent implements OnInit {
           };
         }
       }
-      this.selectedTemplate = undefined;
+      // this.selectedTemplate = undefined;
       this.saveTemplates();
     }
   }
 
   private saveTemplates() {
     this.busy = true;
-    this.backend.post(`/users/settings/${this.storageSection}`, { templates: this.templates }).subscribe(
+    return this.backend.post(`/users/settings/${this.storageSection}`, { templates: this.templates }).subscribe(
       (res) => {
         this.busy = false;
+        this.form.markAsPristine();
+        if (this.pendingTaskId) this.pendingChanges.finishTask(this.pendingTaskId);
       },
       (err) => (this.busy = false)
     );
@@ -128,4 +170,5 @@ export class SequenceListTemplateManageComponent implements OnInit {
   ngOnInit(): void {
     this.loadTemplates();
   }
+  ngOnDestroy(): void {}
 }
