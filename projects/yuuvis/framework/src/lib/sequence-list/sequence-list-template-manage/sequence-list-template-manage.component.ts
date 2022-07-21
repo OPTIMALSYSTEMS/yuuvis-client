@@ -23,13 +23,13 @@ export class SequenceListTemplateManageComponent implements OnInit, OnDestroy {
   set selectedTemplate(s: SequenceListTemplate) {
     if (!this.pendingChanges.check()) {
       this.pendingTaskId = undefined;
-      this._selectedTemplate = s;
+      this._selectedTemplate = { ...s };
 
-      if (s)
+      if (this._selectedTemplate)
         this.form.patchValue(
           {
-            templateName: s.id === this.CURRENT_ENTRIES_ID ? '' : s.name,
-            sequence: s.sequence
+            templateName: this._selectedTemplate.id === this.CURRENT_ENTRIES_ID ? '' : this._selectedTemplate.name,
+            sequence: [...this._selectedTemplate.sequence]
           },
           { emitEvent: false }
         );
@@ -43,7 +43,7 @@ export class SequenceListTemplateManageComponent implements OnInit, OnDestroy {
   busy: boolean;
   form: FormGroup = this.fb.group({
     templateName: ['', [Validators.required, Validators.maxLength(this.TEMPLATE_NAME_MAX_LENGTH), this.forbiddenNameValidator()]],
-    sequence: [[], Validators.minLength(1)]
+    sequence: [[], Validators.required]
   });
 
   /**
@@ -144,7 +144,6 @@ export class SequenceListTemplateManageComponent implements OnInit, OnDestroy {
           };
         }
       }
-      // this.selectedTemplate = undefined;
       this.saveTemplates();
     }
   }

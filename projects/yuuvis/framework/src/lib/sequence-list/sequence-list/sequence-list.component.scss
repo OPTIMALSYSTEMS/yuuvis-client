@@ -6,6 +6,9 @@
   &:focus {
     border-color: var(--color-accent);
   }
+  &.ng-invalid {
+    border-color: var(--color-error);
+  }
 
   &.dense {
     form.entryForm {
