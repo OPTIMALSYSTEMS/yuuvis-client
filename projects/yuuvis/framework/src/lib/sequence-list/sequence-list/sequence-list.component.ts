@@ -1,18 +1,5 @@
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
-import {
-  Attribute,
-  Component,
-  ElementRef,
-  EventEmitter,
-  forwardRef,
-  HostListener,
-  Input,
-  OnDestroy,
-  OnInit,
-  Output,
-  TemplateRef,
-  ViewChild
-} from '@angular/core';
+import { Attribute, Component, ElementRef, EventEmitter, forwardRef, HostListener, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import {
   AbstractControl,
   ControlValueAccessor,
@@ -25,11 +12,9 @@ import {
   Validators
 } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
-import { PendingChangesService } from '@yuuvis/core';
 import { Subscription } from 'rxjs';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { OrganizationComponent } from '../../form/elements/organization/organization.component';
-import { PopoverRef } from '../../popover/popover.ref';
 import { PopoverService } from '../../popover/popover.service';
 import { addCircle, deleteIcon, dragHandle, edit } from '../../svg.generated';
 import { SequenceItem } from './sequence-list.interface';
@@ -56,7 +41,6 @@ import { SequenceItem } from './sequence-list.interface';
 })
 export class SequenceListComponent implements ControlValueAccessor, Validator, OnInit, OnDestroy {
   @ViewChild(OrganizationComponent) orgComponent: OrganizationComponent;
-  @ViewChild('tplTemplateManager') tplTemplateManager: TemplateRef<any>;
 
   entryForm: FormGroup;
   entryFormSubscription: Subscription | undefined;
@@ -69,8 +53,6 @@ export class SequenceListComponent implements ControlValueAccessor, Validator, O
     editTitle: this.translate.instant('yuv.framework.sequence-list.form.title.edit'),
     editButton: this.translate.instant('yuv.framework.sequence-list.form.button.edit')
   };
-  private popoverRef: PopoverRef;
-  @Input() templateStorageSection: string;
 
   @Output() itemEdit = new EventEmitter<boolean>();
 
@@ -102,7 +84,6 @@ export class SequenceListComponent implements ControlValueAccessor, Validator, O
   constructor(
     @Attribute('form-open') public formOpen: string,
     private elRef: ElementRef,
-    private pendingChanges: PendingChangesService,
     private fb: FormBuilder,
     private popover: PopoverService,
     private translate: TranslateService,
@@ -212,29 +193,6 @@ export class SequenceListComponent implements ControlValueAccessor, Validator, O
         }
       : null;
   }
-
-  // TEMPLATES
-  openTemplateManager() {
-    this.popoverRef = this.popover.open(this.tplTemplateManager, {
-      width: '55%',
-      height: '70%'
-    });
-    this.popoverRef.preventClose = () => this.pendingChanges.check();
-  }
-
-  templateManagerCancel() {
-    this.popoverRef.close();
-  }
-
-  templateManagerSelect(entries: SequenceItem[]) {
-    this.entries = entries;
-    this.popoverRef.close();
-  }
-
-  // setEntriesFromTemplate(template: SequenceListTemplate) {
-  //   this.entries = template.sequence;
-  //   this.popoverRef.close();
-  // }
 
   ngOnInit(): void {}
   ngOnDestroy(): void {
