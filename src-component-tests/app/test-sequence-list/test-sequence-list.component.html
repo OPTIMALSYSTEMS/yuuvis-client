@@ -1,0 +1,10 @@
+<div class="testing-controls">
+    <button (click)="templateStorageSection = templateStorageSection ? undefined : STORAGE_SECTION">Toggle
+        templates</button>
+    <div class="status">Component <span>{{sequenceListIsInEditMode ? 'is' : 'is not'}}</span> in edit mode.</div>
+</div>
+<div class="cmp">
+    <yuv-sequence-list [templateStorageSection]="templateStorageSection" [(ngModel)]="sequenceList"
+        (itemEdit)="onItemEdit($event)" (ngModelChange)="onModelChange()">
+    </yuv-sequence-list>
+</div>

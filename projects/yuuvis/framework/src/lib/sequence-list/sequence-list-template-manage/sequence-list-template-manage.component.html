@@ -1,0 +1,63 @@
+<div class="template-list">
+    <header>{{'yuv.framework.sequence-list.template-list.headline'|translate}}</header>
+
+    <!-- current entries -->
+    <div class="currententries item" (click)="selectCurrentEntries()"
+        [ngClass]="{current: selectedTemplate?.id === CURRENT_ENTRIES_ID}">
+        {{'yuv.framework.sequence-list.template.headlineNew' | translate}}</div>
+
+    <div class="filter">
+        <yuv-form-input [skipToggle]="true" [label]="'yuv.framework.sequence-list.form.filter' | translate">
+            <yuv-string [(ngModel)]="filterTerm">
+            </yuv-string>
+        </yuv-form-input>
+    </div>
+
+    <div class="templates">
+        <div class="item" (click)="selectedTemplate = tpl" [ngClass]="{current: selectedTemplate?.id === tpl.id}"
+            *ngFor="let tpl of templates | filter: 'name': filterTerm">{{tpl.name}}</div>
+    </div>
+</div>
+
+<form class="template" [formGroup]="form" *ngIf="selectedTemplate">
+    <header>{{ selectedTemplate.id !== CURRENT_ENTRIES_ID ? labels.headline : labels.headlineNew}}</header>
+
+    <yuv-form-input [skipToggle]="true" [label]="'yuv.framework.sequence-list.form.templateName' | translate"
+        [required]="true" [invalid]="formErrors.length">
+        <yuv-string [autofocus]="true" [required]="true" formControlName="templateName"> </yuv-string>
+    </yuv-form-input>
+    <div class="errors" *ngFor="let e of formErrors">{{e}}</div>
+
+
+    <yuv-sequence-list formControlName="sequence">
+    </yuv-sequence-list>
+</form>
+
+<div class="buttons">
+    <div class="left">
+        <button type="button" class="secondary"
+            (click)="cancel.emit()">{{'yuv.framework.shared.cancel'|translate}}</button>
+    </div>
+    <div class="right" *ngIf="selectedTemplate">
+        <ng-container *ngIf="selectedTemplate?.id !== CURRENT_ENTRIES_ID">
+
+            <button class="secondary delete" type="button"
+                (click)="deleteTemplate()">{{'yuv.framework.sequence-list.template.button.delete'
+                | translate}}</button>
+
+            <button class="primary apply" type="button" [disabled]="form.invalid || form.dirty"
+                (click)="applyTemplate()">{{'yuv.framework.sequence-list.template.button.apply'
+                | translate}}</button>
+        </ng-container>
+
+        <!-- save -->
+        <button class="{{selectedTemplate?.id !==
+            CURRENT_ENTRIES_ID
+            ? 'primary' :
+            'primary'}} save" (click)="submit()" type="button" [disabled]="form.invalid || form.pristine">{{
+            selectedTemplate?.id !==
+            CURRENT_ENTRIES_ID
+            ? labels.save :
+            labels.saveNew}}</button>
+    </div>
+</div>

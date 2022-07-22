@@ -1,4 +1,8 @@
 :host {
+  display: block;
+  height: 100%;
+  overflow-y: auto;
+
   .yuv-task-details-history {
     height: 100%;
     background-color: var(--panel-background-grey);
