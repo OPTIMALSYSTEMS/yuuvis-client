@@ -6,7 +6,7 @@ export interface SequenceItem {
 }
 
 export interface SequenceListTemplate {
-  id?: string;
+  id: string;
   name: string;
   sequence: SequenceItem[];
 }

@@ -23,7 +23,7 @@ export class SequenceListTemplateManageComponent implements OnInit, OnDestroy {
   set selectedTemplate(s: SequenceListTemplate) {
     if (!this.pendingChanges.check()) {
       this.pendingTaskId = undefined;
-      this._selectedTemplate = { ...s };
+      this._selectedTemplate = s ? { ...s } : undefined;
 
       if (this._selectedTemplate)
         this.form.patchValue(
@@ -118,7 +118,6 @@ export class SequenceListTemplateManageComponent implements OnInit, OnDestroy {
       .subscribe((confirmed: boolean) => {
         if (confirmed) {
           this.templates = this.templates.filter((t) => t.id !== this.selectedTemplate.id);
-          this.selectedTemplate = undefined;
           this.saveTemplates();
         }
       });
@@ -126,13 +125,16 @@ export class SequenceListTemplateManageComponent implements OnInit, OnDestroy {
 
   submit() {
     if (this.selectedTemplate) {
+      let selectAfterSave: string;
       if (this.selectedTemplate.id === this.CURRENT_ENTRIES_ID) {
         // save current list as new template
+        const id = Utils.uuid();
         this.templates.push({
-          id: Utils.uuid(),
+          id,
           name: this.form.value.templateName,
           sequence: this.form.value.sequence
         });
+        selectAfterSave = id;
       } else {
         // update existing template
         const i = this.templates.findIndex((e) => e.id === this.selectedTemplate.id);
@@ -142,19 +144,26 @@ export class SequenceListTemplateManageComponent implements OnInit, OnDestroy {
             name: this.form.value.templateName,
             sequence: this.form.value.sequence
           };
+          selectAfterSave = this.selectedTemplate.id;
         }
       }
-      this.saveTemplates();
+      this.saveTemplates(selectAfterSave);
     }
   }
 
-  private saveTemplates() {
+  private saveTemplates(templateToBeSelectedAfterSave?: string) {
     this.busy = true;
     return this.backend.post(`/users/settings/${this.storageSection}`, { templates: this.templates }).subscribe(
       (res) => {
         this.busy = false;
         this.form.markAsPristine();
         if (this.pendingTaskId) this.pendingChanges.finishTask(this.pendingTaskId);
+
+        if (!templateToBeSelectedAfterSave) {
+          this.selectedTemplate = undefined;
+        } else if (templateToBeSelectedAfterSave !== this.selectedTemplate.id) {
+          this.selectedTemplate = this.templates.find((t) => templateToBeSelectedAfterSave === t.id);
+        }
       },
       (err) => (this.busy = false)
     );

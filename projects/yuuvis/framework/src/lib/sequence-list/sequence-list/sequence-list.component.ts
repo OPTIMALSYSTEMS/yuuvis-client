@@ -32,7 +32,7 @@ import { OrganizationComponent } from '../../form/elements/organization/organiza
 import { PopoverRef } from '../../popover/popover.ref';
 import { PopoverService } from '../../popover/popover.service';
 import { addCircle, deleteIcon, dragHandle, edit } from '../../svg.generated';
-import { SequenceItem, SequenceListTemplate } from './sequence-list.interface';
+import { SequenceItem } from './sequence-list.interface';
 
 @Component({
   selector: 'yuv-sequence-list',
@@ -231,10 +231,10 @@ export class SequenceListComponent implements ControlValueAccessor, Validator, O
     this.popoverRef.close();
   }
 
-  setEntriesFromTemplate(template: SequenceListTemplate) {
-    this.entries = template.sequence;
-    this.popoverRef.close();
-  }
+  // setEntriesFromTemplate(template: SequenceListTemplate) {
+  //   this.entries = template.sequence;
+  //   this.popoverRef.close();
+  // }
 
   ngOnInit(): void {}
   ngOnDestroy(): void {

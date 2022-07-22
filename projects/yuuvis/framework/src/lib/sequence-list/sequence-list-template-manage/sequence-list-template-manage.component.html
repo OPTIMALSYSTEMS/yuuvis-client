@@ -45,7 +45,7 @@
                 (click)="deleteTemplate()">{{'yuv.framework.sequence-list.template.button.delete'
                 | translate}}</button>
 
-            <button class="primary apply" type="button"
+            <button class="primary apply" type="button" [disabled]="form.invalid || form.dirty"
                 (click)="applyTemplate()">{{'yuv.framework.sequence-list.template.button.apply'
                 | translate}}</button>
         </ng-container>
@@ -53,7 +53,7 @@
         <!-- save -->
         <button class="{{selectedTemplate?.id !==
             CURRENT_ENTRIES_ID
-            ? 'secondary' :
+            ? 'primary' :
             'primary'}} save" (click)="submit()" type="button" [disabled]="form.invalid || form.pristine">{{
             selectedTemplate?.id !==
             CURRENT_ENTRIES_ID
