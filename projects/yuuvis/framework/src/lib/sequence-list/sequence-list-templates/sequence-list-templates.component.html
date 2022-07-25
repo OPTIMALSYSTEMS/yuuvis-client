@@ -1,0 +1,14 @@
+<form [formGroup]="form">
+    <yuv-sequence-list formControlName="sequence" (itemEdit)="itemEdit.emit($event)">
+        <button class="btn-templates secondary" *ngIf="!!templateStorageSection" (click)="openTemplateManager()">{{
+            'yuv.framework.sequence-list.button.templates' |
+            translate }}</button>
+    </yuv-sequence-list>
+</form>
+
+<!-- template manager overlay -->
+<ng-template #tplTemplateManager>
+    <yuv-sequence-list-template-manage (cancel)="popoverRef.close()" (templateSelect)="templateManagerSelect($event)"
+        [storageSection]="templateStorageSection" [currentEntries]="entries">
+    </yuv-sequence-list-template-manage>
+</ng-template>

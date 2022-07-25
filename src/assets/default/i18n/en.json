@@ -352,6 +352,7 @@
   "yuv.framework.sequence-list.template.errors.forbiddenName": "There already is a template with this name",
   "yuv.framework.sequence-list.template.headline": "Edit template",
   "yuv.framework.sequence-list.template.headlineNew": "Current list",
+  "yuv.framework.sequence-list.template.pending-changes.alert": "",
   "yuv.framework.sequence-list.template.remove.confirm.message": "Are you sure you want to remove template '{{template}}'?",
   "yuv.framework.sequence-list.toolbar.title": "Task list",
   "yuv.framework.shared.cancel": "Cancel",

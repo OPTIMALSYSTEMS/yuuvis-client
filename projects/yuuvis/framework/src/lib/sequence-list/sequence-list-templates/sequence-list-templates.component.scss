@@ -1,0 +1,8 @@
+:host {
+  ::ng-deep {
+    .btn-templates {
+      margin: 0 4px;
+      padding: calc(var(--app-pane-padding) / 4) calc(var(--app-pane-padding) / 2);
+    }
+  }
+}

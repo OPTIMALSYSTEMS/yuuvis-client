@@ -4,7 +4,7 @@
     <div class="status">Component <span>{{sequenceListIsInEditMode ? 'is' : 'is not'}}</span> in edit mode.</div>
 </div>
 <div class="cmp">
-    <yuv-sequence-list [templateStorageSection]="templateStorageSection" [(ngModel)]="sequenceList"
+    <yuv-sequence-list-templates [templateStorageSection]="templateStorageSection" [(ngModel)]="sequenceList"
         (itemEdit)="onItemEdit($event)" (ngModelChange)="onModelChange()">
-    </yuv-sequence-list>
+    </yuv-sequence-list-templates>
 </div>
