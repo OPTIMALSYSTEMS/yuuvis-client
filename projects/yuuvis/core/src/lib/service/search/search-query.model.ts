@@ -265,12 +265,12 @@ export class SearchQuery {
     }
 
     if (this.filterGroup && !this.filterGroup.isEmpty()) {
-      const fg = this.filterGroup.toShortQuery();
+      const fg = this.filterGroup.toShortQuery(combineFilters);
       queryJson.filters = fg.filters.length > 1 && this.filterGroup.operator === SearchFilterGroup.OPERATOR.OR ? [fg] : fg.filters;
     }
 
     if (this.hiddenFilterGroup && !this.hiddenFilterGroup.isEmpty()) {
-      const fg = this.hiddenFilterGroup.toShortQuery();
+      const fg = this.hiddenFilterGroup.toShortQuery(combineFilters);
       const filters = fg.filters.length > 1 && this.hiddenFilterGroup.operator === SearchFilterGroup.OPERATOR.OR ? [fg] : fg.filters;
       if (combineFilters) {
         queryJson.filters = filters.concat(queryJson.filters || []);
@@ -405,7 +405,7 @@ export class SearchFilterGroup {
     };
   }
 
-  toShortQuery() {
+  toShortQuery(resolved = false) {
     return {
       ...(this.property !== SearchFilterGroup.DEFAULT ? { property: this.property } : {}),
       ...(this.operator !== SearchFilterGroup.OPERATOR.AND ? { lo: this.operator } : {}),
@@ -414,9 +414,9 @@ export class SearchFilterGroup {
         .map((g) =>
           g instanceof SearchFilterGroup
             ? g.filters.filter((f) => !f.excludeFromQuery).length === 1
-              ? g.filters.filter((f) => !f.excludeFromQuery)[0].toQuery()
-              : g.toShortQuery()
-            : g.toQuery()
+              ? g.filters.filter((f) => !f.excludeFromQuery)[0][resolved ? 'toResolvedQuery' : 'toQuery']()
+              : g.toShortQuery(resolved)
+            : g[resolved ? 'toResolvedQuery' : 'toQuery']()
         )
     };
   }
@@ -476,6 +476,29 @@ export class SearchFilter {
     RANGE: '=' // aggegation ranges
   };
 
+  /**
+   * available variables for a search filter
+   */
+   public static VARIABLES = {
+    CURRENT_USER: '$CURRENT_USER$',
+    NOW: '$NOW$',
+    TODAY: '$TODAY$',
+    YESTERDAY: '$YESTERDAY$',
+    THISWEEK: '$THISWEEK$',
+    THISMONTH: '$THISMONTH$',
+    THISYEAR: '$THISYEAR$',
+  };
+
+  public static parseVariable(value: string): { value: string, key: string, base: string, operator: string } {
+    return Object.values(SearchFilter.VARIABLES).includes(value?.replace && value.replace(new RegExp('\\|.*'), '')) 
+      && {
+        value,
+        key: value?.replace(new RegExp('\\$', 'g'), '').replace(new RegExp('\\|.*'), ''),
+        base: value?.replace(new RegExp('\\|.*'), ''),
+        operator: value?.replace(new RegExp('.*\\|'), '') || SearchFilter.OPERATOR.EQUAL
+      };
+  }
+
   public static fromQuery(query: any) {
     return new SearchFilter(query.f, query.o, query.v1, query.v2, query.useNot);
   }
@@ -519,6 +542,29 @@ export class SearchFilter {
 
   isEmpty() {
     return Utils.isEmpty(this.firstValue) || (this.operator?.match(/gt(e)?lt(e)?/) ? Utils.isEmpty(this.secondValue) : false);
+  }
+
+  toResolvedQuery() {
+    const query = this.toQuery();
+    query.v1 = this.resloveValue(query.v1);
+    query.v2 = this.resloveValue(query.v2);
+    return query;
+  }
+
+  resloveValue(value: any) {
+    const date = new Date();
+    date.setHours(0, 0, 0, 0);
+
+    switch(SearchFilter.parseVariable(value)?.base) {
+      case SearchFilter.VARIABLES.CURRENT_USER: return window['api'].session.user.get().id;
+      case SearchFilter.VARIABLES.NOW: return new Date().toISOString();
+      case SearchFilter.VARIABLES.TODAY: return date.toISOString();
+      case SearchFilter.VARIABLES.YESTERDAY: return date.setHours(-24) && date;
+      case SearchFilter.VARIABLES.THISWEEK: return  date.setHours(-24 * 7) && date;
+      case SearchFilter.VARIABLES.THISMONTH: return date.setMonth(date.getMonth() - 1) && date;
+      case SearchFilter.VARIABLES.THISYEAR: return date.setFullYear(date.getFullYear() - 1) && date;
+    }
+    return value;
   }
 
   toQuery() {
