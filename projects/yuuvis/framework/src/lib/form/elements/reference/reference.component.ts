@@ -225,7 +225,7 @@ export class ReferenceComponent implements ControlValueAccessor, AfterViewInit {
   private resolveRefEntries(ids: string[]): Observable<ReferenceEntry[]> {
     if (!ids?.length) return of([]);
     const { fields } = this.searchFnc();
-    const q = new SearchQuery({ fields });
+    const q = new SearchQuery({ fields, size: ids.length });
     q.addFilter(new SearchFilter(BaseObjectTypeField.OBJECT_ID, SearchFilter.OPERATOR.IN, ids));
     return this.searchService.search(q).pipe(
       map((res: SearchResult) => {
