@@ -59,7 +59,7 @@ export class TaskDetailsCommentsComponent implements OnInit {
 
   private focusComment(id: string) {
     setTimeout(() => {
-      this.elRef.nativeElement.querySelector(id ? `#c${id}` : `.comment:last-child`).scrollIntoView();
+      this.elRef.nativeElement.querySelector(id ? `#c${id}` : `.comment:last-child`)?.scrollIntoView();
     }, 200);
   }
 

@@ -121,10 +121,11 @@ export class SearchFilterFormComponent implements OnInit, OnDestroy {
       const fc = wrapper.controls[wrapper._eoFormControlWrapper.controlName] as ObjectFormControl;
       const original = this.filterGroup.find(id);
       if (original) {
+        const variable = SearchFilter.parseVariable(fc._eoFormElement.variable) || null;
         const filter = new SearchFilter(
           fc._eoFormElement.name,
-          Array.isArray(fc.value) ? SearchFilter.OPERATOR.IN : SearchFilter.OPERATOR.EQUAL,
-          fc._eoFormElement.isNotSetValue ? null : fc.value
+          Array.isArray(fc.value) && !variable ? SearchFilter.OPERATOR.IN : variable?.operator || fc?.value?.operator || SearchFilter.OPERATOR.EQUAL,
+          fc._eoFormElement.isNotSetValue ? fc._eoFormElement.variable : fc.value
         );
         if (!filter.isEmpty() || fc._eoFormElement.isNotSetValue || fc._eoFormElement._internalType === 'boolean') {
           Object.assign(original, filter, { id: original.id, excludeFromQuery: false });
@@ -160,12 +161,14 @@ export class SearchFilterFormComponent implements OnInit, OnDestroy {
       const otf = this.availableObjectTypeFields.find((o) => o.id === filter.property);
       if (otf?.value) {
         const field = otf.value as ObjectTypeField;
+        const variable = SearchFilter.parseVariable(filter.firstValue) || null;
+        const firstValue = variable?.value ? null : filter.firstValue;
         if (filter.operator) {
           // setup values based on whether or not the type supports ranges
           const isRange = ['datetime', 'integer', 'decimal'].includes(field.propertyType);
-          formPatch[filter.id] = { [otf.id]: !isRange ? filter.firstValue : new RangeValue(filter.operator, filter.firstValue, filter.secondValue) };
+          formPatch[filter.id] = { [otf.id]: !isRange ? firstValue : new RangeValue(variable?.operator || filter.operator, firstValue, filter.secondValue) };
         }
-        this.addFieldEntry(field, filter.operator && filter.isEmpty() && field._internalType !== 'boolean', filter.id, otf.label);
+        this.addFieldEntry(field, filter.operator && filter.isEmpty() && field._internalType !== 'boolean', variable?.value, filter.id, otf.label);
       }
     });
 
@@ -178,7 +181,7 @@ export class SearchFilterFormComponent implements OnInit, OnDestroy {
    * Adds a new form field to the query
    * @param field The object type field to be added
    */
-  addFieldEntry(field: ObjectTypeField, isEmpty = false, id?: string, label?: string, focus = true) {
+  addFieldEntry(field: ObjectTypeField, isEmpty = false, variable = null, id?: string, label?: string, focus = true) {
     const fcID = `${id || field.id}`;
     if (!this.searchFieldsForm) {
       this.initSearchFieldsForm();
@@ -188,7 +191,8 @@ export class SearchFilterFormComponent implements OnInit, OnDestroy {
     formElement.required = false;
     // disable descriptions as well in order to keep the UI clean
     formElement.description = null;
-    formElement.isNotSetValue = isEmpty;
+    formElement.isNotSetValue = isEmpty || !!variable;
+    formElement.variable = variable;
     formElement.readonly = this.disabled;
     formElement.label = label || formElement.label;
 

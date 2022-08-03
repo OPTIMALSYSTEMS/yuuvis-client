@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, EventEmitter, forwardRef, HostBinding, HostListener, Inject, Input, Output, TemplateRef, ViewChild } from '@angular/core';
-import { ControlValueAccessor, UntypedFormControl, NG_VALIDATORS, NG_VALUE_ACCESSOR, Validator } from '@angular/forms';
+import { ControlValueAccessor, NG_VALIDATORS, NG_VALUE_ACCESSOR, UntypedFormControl, Validator } from '@angular/forms';
 import {
   BaseObjectTypeField,
   Classification,
@@ -229,19 +229,19 @@ export class ReferenceComponent implements ControlValueAccessor, Validator, Afte
   private resolveRefEntries(ids: string[]): Observable<ReferenceEntry[]> {
     if (!ids?.length) return of([]);
     const { fields } = this.searchFnc();
-    const q = new SearchQuery({ fields });
+    const q = new SearchQuery({ fields, size: ids.length });
     q.addFilter(new SearchFilter(BaseObjectTypeField.OBJECT_ID, SearchFilter.OPERATOR.IN, ids));
     return this.searchService.search(q).pipe(
       map((res: SearchResult) => {
         // some of the IDs could not be retrieved (no permission or deleted)
         const x = Utils.arrayToObject(res.items, (o) => o.fields.get(BaseObjectTypeField.OBJECT_ID));
-        return ids.map((id) =>
-          this.referenceItemFnc(
+        return ids.map((id) => {
+          return this.referenceItemFnc(
             x[id] || {
               fields: new Map(Object.entries({ [BaseObjectTypeField.OBJECT_ID]: id, [this.systemService.getBaseProperties().title]: this.noAccessTitle }))
             }
-          )
-        );
+          );
+        });
       })
     );
   }

@@ -1,5 +1,5 @@
-import { Component, ElementRef, forwardRef, Input } from '@angular/core';
-import { ControlValueAccessor, UntypedFormControl, NG_VALIDATORS, NG_VALUE_ACCESSOR, Validator } from '@angular/forms';
+import { AfterViewInit, Component, ElementRef, forwardRef, Input } from '@angular/core';
+import { ControlValueAccessor, NG_VALIDATORS, NG_VALUE_ACCESSOR, UntypedFormControl, Validator } from '@angular/forms';
 import { Classification, ClassificationPrefix, FormattedMailTo, Utils } from '@yuuvis/core';
 import { IconRegistryService } from '../../../common/components/icon/service/iconRegistry.service';
 import { envelope, globe, phone } from '../../../svg.generated';
@@ -39,7 +39,7 @@ import { Situation } from './../../../object-form/object-form.situation';
     }
   ]
 })
-export class StringComponent implements ControlValueAccessor, Validator {
+export class StringComponent implements ControlValueAccessor, Validator, AfterViewInit {
   maxEntryCountIfInvalid = null;
 
   /**
@@ -239,6 +239,15 @@ export class StringComponent implements ControlValueAccessor, Validator {
     } else {
       this.valid = true;
       return null;
+    }
+  }
+
+  ngAfterViewInit(): void {
+    if (this.autofocus) {
+      if (!this.multiselect) {
+        const el = this.elementRef.nativeElement.querySelector(this.rows && this.rows > 1 ? 'textarea' : 'input');
+        if (el) el.focus();
+      }
     }
   }
 }

@@ -1,4 +1,5 @@
 import { AgGridModule } from '@ag-grid-community/angular';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 import { CdkStepperModule } from '@angular/cdk/stepper';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
@@ -56,6 +57,7 @@ YuvComponentRegister.register(components);
   exports: [...components, TabViewModule, BusyOverlayDirective],
   imports: [
     OverlayPanelModule,
+    DragDropModule,
     CommonModule,
     AngularResizeEventModule,
     CdkStepperModule,

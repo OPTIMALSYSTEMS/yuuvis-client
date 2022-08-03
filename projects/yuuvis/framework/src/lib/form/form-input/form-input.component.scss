@@ -35,7 +35,8 @@
       > span {
         display: inline-block;
         border-radius: 2px;
-        font-size: var(--font-hint);
+        font-size: var(--font-body);
+        line-height: 1.5em;
         background-color: var(--color-accent);
         padding: 0 calc(var(--app-pane-padding) / 4);
         color: #fff;
@@ -71,9 +72,9 @@
       order: 5;
       flex: 0 0 auto;
       border-radius: 2px;
-      font-size: var(--font-hint);
+      font-size: var(--font-body);
       display: inline-block;
-      line-height: 1em;
+      line-height: 1.5em;
       padding: 2px;
       cursor: default;
       background-color: rgba(var(--color-accent-rgb), 0.2);
