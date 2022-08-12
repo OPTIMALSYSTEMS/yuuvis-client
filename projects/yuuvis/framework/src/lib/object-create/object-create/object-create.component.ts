@@ -19,7 +19,7 @@ import {
   Utils
 } from '@yuuvis/core';
 import { forkJoin, Observable, of } from 'rxjs';
-import { catchError, map, switchMap, tap } from 'rxjs/operators';
+import { catchError, finalize, map, switchMap } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { FadeInAnimations } from '../../common/animations/fadein.animation';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
@@ -587,14 +587,17 @@ export class ObjectCreateComponent implements OnDestroy {
 
   private deleteObjects(): Observable<any> {
     this.objCreateService.setNewState({ busy: true });
-    const deleteObservables = this.afoCreate.dmsObject.items.map((item) => this.dmsService.deleteDmsObject(item.id));
-    return forkJoin(deleteObservables).pipe(
-      catchError((err) => {
-        this.objCreateService.setNewState({ busy: false });
-        this.notify.error(this.translate.instant('yuv.framework.object-create.notify.afo.cancel.with-delete.error'));
-        return of(null);
-      }),
-      tap((_) => this.objCreateService.setNewState({ busy: false }))
+    return forkJoin(
+      this.afoCreate.dmsObject.items.map((item) =>
+        this.dmsService.deleteDmsObject(item.id).pipe(
+          catchError((err) => {
+            this.objCreateService.setNewState({ busy: false });
+            this.notify.error(this.translate.instant('yuv.framework.object-create.notify.afo.cancel.with-delete.error'));
+            return of(null);
+          }),
+          finalize(() => this.objCreateService.setNewState({ busy: false }))
+        )
+      )
     );
   }
 
