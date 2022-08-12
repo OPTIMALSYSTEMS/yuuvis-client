@@ -383,7 +383,7 @@
 	"yuv.framework.task-details-task.delegate-picker.title": "Aufgabe delegieren",
 	"yuv.framework.task-details-task.delegate-picker.user": "Delegieren an",
 	"yuv.framework.task-details-task.form.load.error": "Das Aufgabenformular konnte nicht geladen werden.",
-	"yuv.framework.task-details-task.update.404.confirm.message": "Die Aufgabe wurde zurückgenommen",
+	"yuv.framework.task-details-task.update.404.confirm.message": "Die Aufgabe wurde zurückgenommen.",
 	"yuv.framework.task-details-task.update.fail": "Die Aufgabe konnte nicht aktualisiert werden.",
 	"yuv.framework.task-details.tabs.attachments.title": "Anlagen",
 	"yuv.framework.task-details.tabs.comments.title": "Kommentare",
