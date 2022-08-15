@@ -178,6 +178,15 @@ export class DatetimeComponent implements OnInit, ControlValueAccessor, Validato
       element.setSelectionRange(caretPos, caretPos);
       this.setValueFromMask(); // hotfix: required for AM/PM changes
     }
+
+    // hotfix for Korean time
+    if (event.match(/am|pm/) && event.match(/\d\d:\d\d/)) {
+      const element = this.elemRef.nativeElement.querySelector('input');
+      const caretPos = element.selectionStart;
+      element.value = event.replace('am', 'AM').replace('pm', 'PM');
+      element.setSelectionRange(caretPos, caretPos);
+      this.setValueFromMask();
+    }
   }
 
   private setInnerValue() {
