@@ -37,7 +37,7 @@ export class ProcessListComponent {
       let index = rowNode ? rowNode.rowIndex : rowsToBeSelected[0].rowIndex;
       if (index >= data.rows.length) index = data.rows.length - 1;
       setTimeout(() => {
-        this.dataTable.gridOptions.api.selectIndex(index, false, false);
+        this.dataTable.gridOptions.api?.selectIndex(index, false, false);
       }, 50);
     }
   }
