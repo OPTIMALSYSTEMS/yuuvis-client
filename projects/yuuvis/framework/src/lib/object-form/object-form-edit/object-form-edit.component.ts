@@ -20,8 +20,8 @@ import { FloatingSotSelectInput, FloatingSotSelectItem } from '../../floating-so
 import { PopoverConfig } from '../../popover/popover.interface';
 import { PopoverRef } from '../../popover/popover.ref';
 import { PopoverService } from '../../popover/popover.service';
-import { NotificationService } from '../../services/notification/notification.service';
 import { CombinedFormAddInput, CombinedObjectFormComponent, CombinedObjectFormInput } from '../combined-object-form/combined-object-form.component';
+import { NotificationService } from './../../services/notification/notification.service';
 import { FormStatusChangedEvent } from './../object-form.interface';
 import { Situation } from './../object-form.situation';
 import { ObjectFormComponent } from './../object-form/object-form.component';
@@ -127,7 +127,6 @@ export class ObjectFormEditComponent implements OnDestroy {
     @Attribute('actionsDisabled') public actionsDisabled: boolean,
     @Attribute('situation') public situation: string = Situation.EDIT,
     private systemService: SystemService,
-    private notificationService: NotificationService,
     private backend: BackendService,
     private dmsService: DmsService,
     private notificationService: NotificationService,
