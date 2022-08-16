@@ -1,4 +1,4 @@
-import { Component, ComponentFactoryResolver, EventEmitter, Input, OnDestroy, Output, Type, ViewChild, ViewContainerRef } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, Output, Type, ViewChild, ViewContainerRef } from '@angular/core';
 import { NavigationStart, Router } from '@angular/router';
 import { DmsObject } from '@yuuvis/core';
 import { filter, finalize, take, tap } from 'rxjs/operators';
@@ -19,7 +19,7 @@ import { ComponentAction, ExternalComponentAction, LinkAction, ListAction, Simpl
  * [Screenshot](../assets/images/yuv-action-menu.gif)
  *
  * @example
- * <yuv-action-menu [(visible)]="showActionMenu" [selection]="selection"></yuv-action-menu>
+ * <yuv-action-menu [selection]="actionMenuSelection" [(visible)]="showActionMenu"></yuv-action-menu>
  *
  */
 @Component({
@@ -98,7 +98,6 @@ export class ActionMenuComponent implements OnDestroy {
     private actionService: ActionService,
     private router: Router,
     public viewContainerRef: ViewContainerRef,
-    private componentFactoryResolver: ComponentFactoryResolver,
     private iconRegistry: IconRegistryService
   ) {
     this.iconRegistry.registerIcons([clear]);
@@ -210,10 +209,9 @@ export class ActionMenuComponent implements OnDestroy {
 
   private showActionComponent(component: Type<any> | any, action: ComponentAction | ExternalComponentAction, selection: any[]) {
     this.showComponent = true;
-    let componentFactory = this.componentFactoryResolver.resolveComponentFactory(component._component || component);
     let anchorViewContainerRef = this.componentAnchor.viewContainerRef;
     anchorViewContainerRef.clear();
-    let componentRef = anchorViewContainerRef.createComponent(componentFactory);
+    let componentRef = anchorViewContainerRef.createComponent(component._component || component);
     if (componentRef.instance instanceof PluginActionViewComponent) {
       (<PluginActionViewComponent>componentRef.instance).action = component.action;
     }

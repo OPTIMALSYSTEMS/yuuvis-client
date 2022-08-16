@@ -11,7 +11,8 @@ import {
   YuvFrameworkModule,
   YuvGroupedSelectModule,
   YuvObjectPickerModule,
-  YuvQuickfinderModule
+  YuvQuickfinderModule,
+  YuvSequenceListModule
 } from '@yuuvis/framework';
 import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
@@ -23,6 +24,7 @@ import { TestAuditComponent } from './test-audit/test-audit.component';
 import { TestColumnConfigComponent } from './test-column-config/test-column-config.component';
 import { TestContentPreviewComponent } from './test-content-preview/test-content-preview.component';
 import { TestContextComponent } from './test-context/test-context.component';
+import { TestDirectivesComponent } from './test-directives/test-directives.component';
 import { TestFileDropComponent } from './test-file-drop/test-file-drop.component';
 import { TestFormElementsComponent } from './test-form-elements/test-form-elements.component';
 import { TestGroupedSelectComponent } from './test-grouped-select/test-grouped-select.component';
@@ -36,12 +38,14 @@ import { TestObjectFormComponent } from './test-object-form/test-object-form.com
 import { TestObjectPickerComponent } from './test-object-picker/test-object-picker.component';
 import { TestPanelComponent } from './test-panel/test-panel.component';
 import { TestPopoverComponent } from './test-popover/test-popover.component';
+import { TestProcessDetailsComponent } from './test-process-details/test-process-details.component';
 import { TestQuickSearchComponent } from './test-quick-search/test-quick-search.component';
 import { TestQuickfinderComponent } from './test-quickfinder/test-quickfinder.component';
 import { TestRecentActivitiesComponent } from './test-recent-activities/test-recent-activities.component';
 import { TestResponsiveTabContainerComponent } from './test-responsive-tab-container/test-responsive-tab-container.component';
 import { TestSearchResultPanelComponent } from './test-search-result-panel/test-search-result-panel.component';
 import { TestSearchResultComponent } from './test-search-result/test-search-result.component';
+import { TestSequenceListComponent } from './test-sequence-list/test-sequence-list.component';
 import { TestSummaryComponent } from './test-summary/test-summary.component';
 import { TestTaskDetailsComponent } from './test-task-details/test-task-details.component';
 import { TestUploadProgressOverlayComponent } from './test-upload-progress-overlay/test-upload-progress-overlay.component';
@@ -81,7 +85,10 @@ import { TestVersionListComponent } from './test-version-list/test-version-list.
     TestPopoverComponent,
     TestTaskDetailsComponent,
     TestObjectPickerComponent,
-    TestFormElementsComponent
+    TestFormElementsComponent,
+    TestDirectivesComponent,
+    TestProcessDetailsComponent,
+    TestSequenceListComponent
   ],
   imports: [
     HttpClientModule,
@@ -101,7 +108,8 @@ import { TestVersionListComponent } from './test-version-list/test-version-list.
     YuvQuickfinderModule,
     YuvColumnConfigModule,
     YuvContextModule,
-    YuvObjectPickerModule
+    YuvObjectPickerModule,
+    YuvSequenceListModule
   ],
   providers: [],
   bootstrap: [AppComponent]

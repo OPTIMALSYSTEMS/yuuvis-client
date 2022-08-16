@@ -8,15 +8,13 @@ import { takeUntilDestroy } from 'take-until-destroy';
 import { UnsubscribeOnDestroy } from '../../common/util/unsubscribe.component';
 import { ObjectFormScriptService } from '../object-form-script/object-form-script.service';
 import { ObjectFormScriptingScope } from '../object-form-script/object-form-scripting-scope';
-import { FormStatusChangedEvent, IObjectForm, ObjectFormControlWrapper, ObjectFormOptions } from '../object-form.interface';
+import { FormStatusChangedEvent, IObjectForm, ObjectFormControlWrapper, ObjectFormModelChange, ObjectFormOptions } from '../object-form.interface';
 import { ObjectFormControl, ObjectFormGroup } from '../object-form.model';
 import { ObjectFormService } from '../object-form.service';
 import { ObjectFormUtils } from '../object-form.utils';
 import { FormValidation } from '../object-form.validation';
 import { PluginsService } from './../../plugins/plugins.service';
 import { Situation } from './../object-form.situation';
-
-export type ObjectFormModelChange = { name: 'value' | 'required' | 'readonly' | 'error' | 'onrowedit' | 'onchange'; newValue: any };
 
 /**
  * Component rendering a model based form.

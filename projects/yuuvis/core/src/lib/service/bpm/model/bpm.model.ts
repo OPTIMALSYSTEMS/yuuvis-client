@@ -88,7 +88,17 @@ export interface Task {
   subject: string;
   suspended: false;
   variables: ProcessVariable[];
+  resolvedValues?: { [id: string]: string };
   attachments: string[];
+}
+
+export interface ProcessInstanceComment {
+  id: string;
+  author: string;
+  message: string;
+  time: Date;
+  processInstanceId: string;
+  taskId: string;
 }
 
 export const ProcessDefinitionKey = {

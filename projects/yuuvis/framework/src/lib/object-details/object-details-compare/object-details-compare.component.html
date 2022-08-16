@@ -11,29 +11,29 @@
 
   <yuv-responsive-tab-container *ngIf="(plugins ? (plugins | async) : []) as resolvedPlugins" #tabContainer
     class="content" [layoutOptionsKey]="layoutOptionsKey">
-    <p-tabPanel [id]="'changes'" [header]="'yuv.framework.object-details-compare.tabs.changes.title' | translate"
+    <yuv-tab-panel [id]="'changes'" [header]="'yuv.framework.object-details-compare.tabs.changes.title' | translate"
       [headerStyleClass]="'changes'" [disabled]="!objectCompareInput?.second.item">
       <ng-template pTemplate="content">
         <yuv-summary *ngIf="objectCompareInput?.second.item" [showExtrasSection]="isAdvancedUser"
           [compareObjects]="[objectCompareInput?.first.item, objectCompareInput?.second.item]">
         </yuv-summary>
       </ng-template>
-    </p-tabPanel>
-    <p-tabPanel [id]="'compare'" [header]="'yuv.framework.object-details-compare.tabs.content.title' | translate"
+    </yuv-tab-panel>
+    <yuv-tab-panel [id]="'compare'" [header]="'yuv.framework.object-details-compare.tabs.content.title' | translate"
       [headerStyleClass]="'compare'" [disabled]="!objectCompareInput?.second.item">
       <ng-template pTemplate="content">
         <yuv-content-preview *ngIf="objectCompareInput?.second.item" [activeVersion]="activeVersion"
           [compareObjects]="[objectCompareInput?.first.item, objectCompareInput?.second.item]"></yuv-content-preview>
       </ng-template>
-    </p-tabPanel>
+    </yuv-tab-panel>
 
     <!-- PLUGINS -->
-    <p-tabPanel *ngFor="let config of resolvedPlugins" [disabled]="!objectCompareInput?.second.item" [id]="config.id"
+    <yuv-tab-panel *ngFor="let config of resolvedPlugins" [disabled]="!objectCompareInput?.second.item" [id]="config.id"
       [header]="(config.label) | translate" [headerStyleClass]="config.id">
       <ng-template pTemplate="content">
         <yuv-plugin [config]="config" [parent]="this"></yuv-plugin>
       </ng-template>
-    </p-tabPanel>
+    </yuv-tab-panel>
 
     <ng-content></ng-content>
 

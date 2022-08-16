@@ -61,7 +61,7 @@ export class ObjectFormElementComponent implements OnDestroy {
       this.formElementRef = el.controls[el._eoFormControlWrapper.controlName];
       this.formElementRef._eoFormElement = this.setGrouping(this.formElementRef?._eoFormElement);
       if (this.formElementRef._eoFormElement.isNotSetValue) {
-        this.labelToggled(true, false);
+        this.labelToggled({ toggled: true, variable: this.formElementRef._eoFormElement.variable }, false);
       }
       this.fetchTags();
       this.formElementRef?.valueChanges.pipe(takeUntilDestroy(this)).subscribe((_) => this.setupErrors());
@@ -87,7 +87,7 @@ export class ObjectFormElementComponent implements OnDestroy {
     this.formElementRef._eoFormElement.dataMeta = data;
   }
 
-  labelToggled(toggled: boolean, readonly = this.formElementRef._eoFormElement.readonly) {
+  labelToggled({ toggled, variable }, readonly = this.formElementRef._eoFormElement.readonly) {
     if (!this.skipToggle && this.situation === Situation.SEARCH && !readonly) {
       const toggleClass = 'label-toggled';
       this.isNull = toggled;
@@ -97,6 +97,7 @@ export class ObjectFormElementComponent implements OnDestroy {
         this.renderer.removeClass(this.el.nativeElement, toggleClass);
       }
       this.formElementRef._eoFormElement.isNotSetValue = toggled;
+      this.formElementRef._eoFormElement.variable = variable;
       this.element.updateValueAndValidity();
     }
   }

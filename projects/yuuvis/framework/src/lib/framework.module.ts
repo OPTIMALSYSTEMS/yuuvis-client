@@ -23,6 +23,7 @@ import { YuvPopoverModule } from './popover/popover.module';
 import { YuvQuickfinderModule } from './quickfinder/quickfinder.module';
 import { ROUTES, YuvRoutes } from './routing/routes';
 import { YuvSearchModule } from './search/search.module';
+import { YuvSequenceListModule } from './sequence-list/sequence-list.module';
 import { ErrorHandlerService } from './services/error-handler/error-handler.service';
 import { SingleCellRendererComponent } from './services/grid/renderer/single-cell-renderer/single-cell-renderer.component';
 import { YuvUserModule } from './user/user.module';
@@ -40,6 +41,7 @@ const modules = [
   YuvObjectDetailsModule,
   YuvColumnConfigModule,
   YuvObjectCreateModule,
+  YuvSequenceListModule,
   YuvQuickfinderModule,
   YuvPipesModule,
   YuvActionModule,
@@ -61,7 +63,7 @@ const modules = [
  */
 
 @NgModule({
-  imports: [CommonModule, ...modules, AngularSplitModule.forRoot(), YuvCoreModule.forRoot(), ToastrModule.forRoot()],
+  imports: [CommonModule, ...modules, AngularSplitModule, YuvCoreModule.forRoot(), ToastrModule.forRoot()],
   exports: [YuvDirectivesModule, ...modules, YuvObjectFormModule, YuvContextModule, YuvCoreModule, AngularSplitModule, ToastrModule],
   providers: [
     {

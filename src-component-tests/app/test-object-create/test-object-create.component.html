@@ -5,8 +5,17 @@
     </div>
     <yuv-dms-object-picker defaultId="55e18e64-3e63-4144-bf12-0d5d0bda42bf" (dmsObject)="setContext($event)">
     </yuv-dms-object-picker>
+
   </div>
   <!-- <button (click)="setContext('55e18e64-3e63-4144-bf12-0d5d0bda42bf')">set context</button> -->
 </div>
 
+<h2>Default</h2>
+<yuv-object-create class="cmp"></yuv-object-create>
+<h2>With context</h2>
 <yuv-object-create class="cmp" [contextId]="contextId" (contextRemoved)="onContextRemoved()"></yuv-object-create>
+<h2>With preset</h2>
+<yuv-object-create class="cmp" [objectTypePreset]="objectTypePreset"></yuv-object-create>
+<h2>With preset and context</h2>
+<yuv-object-create class="cmp" [contextId]="objectTypePresetContext" [objectTypePreset]="objectTypePresetForContext">
+</yuv-object-create>

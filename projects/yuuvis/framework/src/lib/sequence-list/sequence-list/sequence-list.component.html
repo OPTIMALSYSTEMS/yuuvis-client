@@ -1,0 +1,77 @@
+<ng-template #tplEntryForm>
+    <form class="entryForm" [formGroup]="entryForm" *ngIf="entryForm" (ngSubmit)="saveEntry()">
+        <h2>{{ editIndex !== undefined ? labels.editTitle : labels.addTitle }}{{ addTargetIndex !== undefined ? ' #' +
+            (addTargetIndex + 1) : '' }}</h2>
+        <yuv-form-input class="task"
+            [invalid]="entryForm.controls['title'].dirty && entryForm.controls['title'].invalid" [skipToggle]="true"
+            [label]="'yuv.framework.sequence-list.form.task' | translate" [required]="true">
+            <yuv-string [autofocus]="true" maxLength="128" formControlName="title"> </yuv-string>
+        </yuv-form-input>
+
+        <yuv-form-input class="nextAssignee"
+            [invalid]="entryForm.controls['nextAssignee'].dirty && entryForm.controls['nextAssignee'].invalid"
+            [skipToggle]="true" [label]="'yuv.framework.sequence-list.form.assignee' | translate" [skipToggle]="true"
+            [required]="true">
+            <yuv-organization formControlName="nextAssignee"> </yuv-organization>
+        </yuv-form-input>
+
+        <yuv-form-input class="expiryDatetime" [invalid]="entryForm.controls['expiryDatetime'].invalid"
+            [skipToggle]="true" [label]="'yuv.framework.sequence-list.form.due-date' | translate" [skipToggle]="true">
+            <yuv-datetime [withTime]="true" [onlyFutureDates]="true" [formControlName]="'expiryDatetime'">
+            </yuv-datetime>
+        </yuv-form-input>
+        <div class="error"
+            *ngIf="entryForm.controls['expiryDatetime'].invalid && (entryForm.controls['expiryDatetime'].dirty || entryForm.controls['expiryDatetime'].touched)">
+            <ng-container *ngIf="entryForm.controls['expiryDatetime'].errors?.datecontrol"> {{
+                'yuv.framework.sequence-list.form.datetime.futuredatesonly' | translate }}</ng-container>
+        </div>
+        <div class="buttons">
+            <button type="button" (click)="hideEntryForm()">{{ 'yuv.framework.sequence-list.form.button.cancel' |
+                translate
+                }}</button>
+            <button class="primary" [disabled]="entryForm.pristine || entryForm.invalid">{{ editIndex !== undefined ?
+                labels.editButton :
+                labels.addButton }}</button>
+        </div>
+    </form>
+</ng-template>
+
+<div class="toolbar" *ngIf="!entryForm; else tplEntryForm">
+    <h2>{{ 'yuv.framework.sequence-list.toolbar.title' | translate }}</h2>
+    <ng-content></ng-content>
+    <button id="add-item" type="button" class="add primary"
+        title="{{ 'yuv.framework.sequence-list.button.add.tooltip' | translate }}" (click)="showEntryForm()">
+        <yuv-icon icon="addCircle"></yuv-icon>
+    </button>
+</div>
+
+<div class="entries" cdkDropList (cdkDropListDropped)="dragDrop($event)" [cdkDropListData]="entries">
+
+    <div class="entry" cdkDrag *ngFor="let entry of entries; let i = index" [cdkDragDisabled]="!!entryForm"
+        [ngClass]="{ disabled: !!entryForm, current: i === editIndex,single: entries.length === 1 }">
+        <yuv-icon class="handle" cdkDragHandle icon="dragHandle"></yuv-icon>
+        <div class="index">
+            <span>{{ i + 1 }}</span><span>&darr;</span>
+        </div>
+
+        <div class="action">
+            <button class="edit" type="button" (click)="editEntry(i)"
+                title="{{ 'yuv.framework.sequence-list.button.edit.tooltip' | translate }}">
+                <yuv-icon icon="edit"></yuv-icon>
+            </button>
+            <button class="remove" type="button" (click)="removeEntry(i)"
+                title="{{ 'yuv.framework.sequence-list.button.delete.tooltip' | translate }}">
+                <yuv-icon icon="deleteIcon"></yuv-icon>
+            </button>
+        </div>
+
+        <div class="content">
+            <div class="task">{{ entry.title }}</div>
+            <div class="nextAssignee">{{ entry.nextAssignee_title }}</div>
+            <div class="expiryDatetime">{{ entry.expiryDatetime | localeDate: 'eoShortDate' }}</div>
+        </div>
+
+        <yuv-icon class="innerAdd" [ngClass]="{ active: addTargetIndex === i }" icon="addCircle" *ngIf="i !== 0"
+            (click)="showEntryForm(i, true)"></yuv-icon>
+    </div>
+</div>

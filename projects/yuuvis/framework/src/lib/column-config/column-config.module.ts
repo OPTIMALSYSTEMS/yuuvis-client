@@ -6,9 +6,15 @@ import { TranslateModule } from '@yuuvis/core';
 import { YuvCommonModule } from '../common/common.module';
 import { YuvComponentsModule } from '../components/components.module';
 import { YuvGroupedSelectModule } from '../grouped-select/grouped-select.module';
+import { YuvComponentRegister } from '../shared/utils/utils';
 import { ColumnConfigSelectComponent } from './column-config-select/column-config-select.component';
 import { ColumnConfigComponent } from './column-config/column-config.component';
 import { ColumnPickerComponent } from './column-picker/column-picker.component';
+
+const components = [ColumnConfigComponent, ColumnPickerComponent, ColumnConfigSelectComponent];
+
+YuvComponentRegister.register(components);
+
 /**
  * `YuvColumntConfigModule` contains components related to column configuration.
  * The concept of a column configuration defines a set of columns that should be
@@ -16,9 +22,8 @@ import { ColumnPickerComponent } from './column-picker/column-picker.component';
  * the result.
  */
 @NgModule({
-  declarations: [ColumnConfigComponent, ColumnPickerComponent, ColumnConfigSelectComponent],
-  entryComponents: [ColumnConfigComponent, ColumnPickerComponent, ColumnConfigSelectComponent],
-  exports: [ColumnConfigComponent, ColumnConfigSelectComponent],
+  declarations: [...components],
+  exports: [...components],
   imports: [YuvComponentsModule, YuvCommonModule, FormsModule, CommonModule, DragDropModule, YuvGroupedSelectModule, TranslateModule]
 })
 export class YuvColumnConfigModule {}

@@ -8,6 +8,7 @@
                     [ngClass]="{error: o.error, selected: o.id === selectedObject}">
                     <yuv-icon class="error" icon="noFile" [title]="o.id" (click)="selectAttachment('error', $event)"
                         *ngIf="o.error; else tplAttachment"></yuv-icon>
+
                     <ng-template #tplAttachment>
                         <button title="{{o.title}}" class="item" (click)="selectAttachment(o.id, $event)">
                             <yuv-object-type-icon [objectTypeId]="o.leadingTypeId"></yuv-object-type-icon>
@@ -40,11 +41,13 @@
 
     </ng-container>
 
+
     <ng-template #tplError>
         <div class="error-panel">
             {{'yuv.framework.task-details-attachments.notfound'|translate}}
         </div>
     </ng-template>
+
     <ng-template #tplEmpty>
         <div class="empty" *ngIf="!busy">
             <yuv-icon class="ico" icon="noFile"></yuv-icon>

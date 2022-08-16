@@ -1,6 +1,6 @@
 import { Component, HostBinding, HostListener, OnInit, ViewChild } from '@angular/core';
 import { NavigationExtras, Router } from '@angular/router';
-import { EventService, SearchQuery, SystemService, UserService, Utils, YuvEventType, YuvUser } from '@yuuvis/core';
+import { EventService, SearchQuery, Sort, SystemService, UserService, Utils, YuvEventType, YuvUser } from '@yuuvis/core';
 import { GroupedSelectComponent, ObjectTypeAggregation, QuickSearchComponent, RecentItem, Selectable, SelectableGroup } from '@yuuvis/framework';
 import { FrameService } from '../../components/frame/frame.service';
 import { AppSearchService } from '../../service/app-search.service';
@@ -78,13 +78,19 @@ export class DashboardComponent implements OnInit {
       {
         id: 'aggs',
         label: '',
-        items: (this.aggs || []).map((a) => ({
-          id: a.objectTypeId,
-          label: a.label || a.objectTypeId,
-          svgSrc: this.systemService.getObjectTypeIconUri(a.objectTypeId),
-          count: a.count,
-          value: a
-        }))
+        items: (this.aggs || [])
+          .map((a) => {
+            const ot = this.systemService.getObjectType(a.objectTypeId);
+            return {
+              id: a.objectTypeId,
+              highlight: ot ? ot.isFolder : false,
+              label: a.label || a.objectTypeId,
+              svgSrc: this.systemService.getObjectTypeIconUri(a.objectTypeId),
+              count: a.count,
+              value: a
+            };
+          })
+          .sort(Utils.sortValues('highlight', Sort.DESC))
       }
     ];
   }

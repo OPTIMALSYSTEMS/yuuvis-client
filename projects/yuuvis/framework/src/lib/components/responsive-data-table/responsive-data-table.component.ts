@@ -1,5 +1,5 @@
 import { ClientSideRowModelModule } from '@ag-grid-community/client-side-row-model';
-import { ColDef, GridOptions, Module, RowEvent, RowNode } from '@ag-grid-community/core';
+import { ColDef, GridOptions, Module, RowEvent, RowHeightParams, RowNode } from '@ag-grid-community/core';
 import { Component, ElementRef, EventEmitter, HostBinding, HostListener, Input, NgZone, OnDestroy, OnInit, Output } from '@angular/core';
 import { BaseObjectTypeField, DeviceService, PendingChangesService, Utils } from '@yuuvis/core';
 import { ResizedEvent } from 'angular-resize-event';
@@ -59,7 +59,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
   public resize$: Observable<ResizedEvent> = this.resizeSource.asObservable();
   // internal subject column size changes used for debouncing column resize events
   private columnResizeSource = new ReplaySubject<any>();
-  public columnResize$: Observable<ResizedEvent> = this.columnResizeSource.asObservable();
+  public columnResize$: Observable<any> = this.columnResizeSource.asObservable();
   private _data: ResponsiveTableData;
   private _layoutOptions: ResponsiveDataTableOptions = {};
   // array of row IDs that are currently selected
@@ -220,7 +220,9 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
         takeUntilDestroy(this)
         // debounceTime(500)
       )
-      .subscribe(({ newHeight, newWidth }: ResizedEvent) => {
+      .subscribe(({ newRect }: ResizedEvent) => {
+        const newHeight = newRect.height;
+        const newWidth = newRect.width;
         this.settings.size = { newHeight, newWidth };
         this._autoViewMode = newHeight < this.breakpoint ? 'grid' : newWidth < this.breakpoint ? 'horizontal' : 'standard';
         if (this.viewMode === 'auto') {
@@ -230,7 +232,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
         nodes?.length && this.ensureVisibility(nodes[0].rowIndex);
       });
     // subscribe to columns beeing resized
-    this.columnResize$.pipe(takeUntilDestroy(this), debounceTime(500)).subscribe((e: ResizedEvent) => {
+    this.columnResize$.pipe(takeUntilDestroy(this), debounceTime(500)).subscribe(() => {
       if (this.isStandard) {
         this.columnResized.emit({
           columns: this.gridOptions.columnApi.getColumnState().map((columnState) => ({
@@ -248,6 +250,10 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
 
     // subscribe to pending hanges
     this.pendingChanges.tasks$.pipe(takeUntilDestroy(this)).subscribe((tasks) => this.gridOptions && (this.gridOptions.suppressCellSelection = !!tasks.length));
+  }
+
+  getRowHeight(params: RowHeightParams): number {
+    return 70;
   }
 
   /**
@@ -421,15 +427,15 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
   }
 
   setSortModel(model: any[]) {
-    this.gridOptions.columnApi.setColumnState(
-      this.gridOptions.columnApi.getColumnState().map((c) => ({ ...c, ...(model.find((m) => m.colId === c.colId) || { sort: null }) }))
-    );
+    this.gridOptions.columnApi.applyColumnState({
+      state: this.gridOptions.columnApi.getColumnState().map((c) => ({ ...c, ...(model.find((m) => m.colId === c.colId) || { sort: null }) }))
+    });
   }
 
   private setupGridOptions() {
     this.gridOptions = {
       // defines what to use as ID for each row (important for reselecting a previous selection)
-      getRowNodeId: (data) => data.id,
+      getRowId: (params) => params.data?.id,
       getRowHeight: () => this.settings.rowHeight[this.currentViewMode],
       rowData: this._data.rows,
       columnDefs: this._layoutOptionsKey ? [] : this._data.columns,
@@ -440,7 +446,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
       suppressNoRowsOverlay: true,
       multiSortKey: 'ctrl',
       ...this._data?.gridOptions,
-      frameworkComponents: {
+      components: {
         objectTypeCellRenderer: ObjectTypeIconComponent,
         singleCellRenderer: SingleCellRendererComponent,
         ...this._data?.gridOptions?.frameworkComponents
@@ -466,7 +472,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
   }
 
   onRowDoubleClicked = (event) => this.rowDoubleClicked.emit(event);
-  onColumnResized = (event) => this.columnResizeSource.next();
+  onColumnResized = (event) => this.columnResizeSource.next(event);
   onSortChanged = (event) => this.isStandard && this.sortChanged.emit(this.getSortModel());
 
   onGridReady(event) {

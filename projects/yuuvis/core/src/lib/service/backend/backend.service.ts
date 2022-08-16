@@ -69,7 +69,7 @@ export class BackendService {
    */
   public post(uri: string, data?, base?: string, requestOptions?: HttpOptions): Observable<any> {
     const baseUri = this.getApiBase(base);
-    const payload = data ? JSON.stringify(data) : '';
+    const payload = data && typeof data === 'object' ? JSON.stringify(data) : data || '';
     return this.http.post(`${baseUri}${uri}`, payload, this.getHttpOptions(requestOptions));
   }
 

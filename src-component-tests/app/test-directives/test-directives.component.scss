@@ -1,0 +1,11 @@
+:host {
+  .resize {
+    resize: horizontal;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: inline-block;
+    padding: var(--app-pane-padding);
+    border: 1px solid var(--text-color-hint);
+  }
+}

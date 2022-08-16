@@ -1,4 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { BpmEvent, EventService, InboxService, Task, TaskRow, TranslateService } from '@yuuvis/core';
 import {
   arrowNext,
@@ -58,6 +59,8 @@ export class InboxComponent implements OnInit, OnDestroy {
 
   constructor(
     private inboxService: InboxService,
+    private route: ActivatedRoute,
+    private router: Router,
     private translateService: TranslateService,
     private formatProcessDataService: FormatProcessDataService,
     private iconRegistry: IconRegistryService,
@@ -97,6 +100,14 @@ export class InboxComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.route.queryParamMap.pipe(takeUntilDestroy(this)).subscribe((params) => {
+      if (params.has('filter')) {
+        this.filterTerm = params.get('filter');
+        // remove URL param once it has been processed
+        this.router.navigate([]);
+      }
+    });
+
     this.getInbox();
     this.eventService
       .on(BpmEvent.BPM_EVENT)

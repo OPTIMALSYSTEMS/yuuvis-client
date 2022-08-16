@@ -35,7 +35,6 @@
         <td *ngIf="dv.type !== 'date'">{{dv.value}}</td>
         <td *ngIf="dv.type === 'date'">{{(dv.value | localeDate)}}<br />({{dv.value}})</td>
     </tr>
-
     <ng-container *ngIf="isAdvancedUser">
         <tr>
             <th>{{'yuv.framework.process-details-summary.processDefinitionId'|translate}}</th>

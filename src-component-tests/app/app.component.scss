@@ -47,6 +47,7 @@
     nav {
       display: flex;
       grid-area: nav;
+      overflow-y: auto;
     }
     .body {
       grid-area: content;

@@ -13,14 +13,16 @@ import { YuvFormModule } from '../form/form.module';
 import { YuvGroupedSelectModule } from '../grouped-select/grouped-select.module';
 import { YuvObjectDetailsModule } from '../object-details/object-details.module';
 import { YuvObjectFormModule } from '../object-form/object-form.module';
+import { YuvComponentRegister } from './../shared/utils/utils';
 import { ObjectCreateComponent } from './object-create/object-create.component';
+
+YuvComponentRegister.register([ObjectCreateComponent]);
 
 /**
  * Module providing `ObjectCreateComponent`
  */
 @NgModule({
   declarations: [ObjectCreateComponent],
-  entryComponents: [ObjectCreateComponent],
   exports: [ObjectCreateComponent],
   imports: [
     CommonModule,

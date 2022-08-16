@@ -1,6 +1,6 @@
 import { Component, ContentChildren, EventEmitter, Input, OnInit, Output, QueryList, TemplateRef, ViewChild, ViewChildren } from '@angular/core';
 import { SystemService, Task, TaskType, TranslateService } from '@yuuvis/core';
-import { TabPanel } from 'primeng/tabview';
+import { TabPanelComponent } from '../../components/responsive-tab-container/tab-panel.component';
 
 @Component({
   selector: 'yuv-task-details',
@@ -8,11 +8,12 @@ import { TabPanel } from 'primeng/tabview';
   styleUrls: ['./task-details.component.scss']
 })
 export class TaskDetailsComponent implements OnInit {
-  @ContentChildren(TabPanel) externalPanels: QueryList<TabPanel>;
-  @ViewChildren(TabPanel) viewPanels: QueryList<TabPanel>;
+  @ContentChildren(TabPanelComponent) externalPanels: QueryList<TabPanelComponent>;
+  @ViewChildren(TabPanelComponent) viewPanels: QueryList<TabPanelComponent>;
   @ViewChild('taskTab') taskTab: TemplateRef<any>;
   @ViewChild('historyTab') historyTab: TemplateRef<any>;
   @ViewChild('attachmentsTab') attachmentsTab: TemplateRef<any>;
+  @ViewChild('commentsTab') commentsTab: TemplateRef<any>;
 
   _task: Task;
   header: {
@@ -39,7 +40,7 @@ export class TaskDetailsComponent implements OnInit {
         }
       : null;
   }
-  @Input() panelOrder = ['taskTab', 'historyTab', 'attachmentsTab'];
+  @Input() panelOrder = ['taskTab', 'historyTab', 'attachmentsTab', 'commentsTab'];
   _layoutOptionsKey: string;
   @Input() set layoutOptionsKey(k: string) {
     this._layoutOptionsKey = `${k}.task-details`;

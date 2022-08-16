@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { BaseObjectTypeField, DmsObject, DmsService, SearchQuery, SearchService, SystemType } from '@yuuvis/core';
 
 @Component({
@@ -8,14 +8,14 @@ import { BaseObjectTypeField, DmsObject, DmsService, SearchQuery, SearchService,
   styleUrls: ['./dms-object-picker.component.scss']
 })
 export class DmsObjectPickerComponent implements OnInit {
-  form: FormGroup;
+  form: UntypedFormGroup;
   error: string;
 
   // query to fetch item that should be selected upfront
   @Input() objectQuery: SearchQuery;
   @Output() dmsObject = new EventEmitter<DmsObject>();
 
-  constructor(private fb: FormBuilder, private searchService: SearchService, private dmsService: DmsService) {
+  constructor(private fb: UntypedFormBuilder, private searchService: SearchService, private dmsService: DmsService) {
     this.form = this.fb.group({
       objectId: ['', Validators.required]
     });

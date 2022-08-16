@@ -160,7 +160,20 @@ export class TaskDetailsTaskComponent implements OnInit {
     const formData: any = {};
     if (t.variables) {
       t.variables.forEach((v) => {
-        formData[v.name] = v.value;
+        const value = v.value;
+        if (v.type === 'json' && t.resolvedValues) {
+          // type 'json' means that variable is a table and the value is an array of rows
+          // apply resolved values
+          value.forEach((row) =>
+            Object.keys(row).forEach((k) => {
+              const resValue = t.resolvedValues[row[k]];
+              if (!!resValue) {
+                row[`${k}_title`] = resValue;
+              }
+            })
+          );
+        }
+        formData[v.name] = value;
       });
     }
     return formData;
@@ -418,6 +431,15 @@ export class TaskDetailsTaskComponent implements OnInit {
       }
       case 'table': {
         pv.type = 'json';
+        // remove resolved values
+        if (formValue)
+          formValue.forEach((row) =>
+            Object.keys(row).forEach((k) => {
+              if (k.endsWith('_title')) {
+                delete row[k];
+              }
+            })
+          );
         pv.value = formValue;
         break;
       }

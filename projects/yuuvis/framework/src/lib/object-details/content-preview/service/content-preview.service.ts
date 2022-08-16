@@ -79,6 +79,6 @@ export class ContentPreviewService {
   }
 
   resetSource() {
-    this.previewSrcSource.next();
+    this.previewSrcSource.next('');
   }
 }

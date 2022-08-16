@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { BpmEvent, EventService, InboxService, Process, ProcessService, Task, TranslateService, Utils } from '@yuuvis/core';
 import { of } from 'rxjs';
@@ -15,11 +15,11 @@ import { ActionComponent } from './../../../interfaces/action-component.interfac
   styleUrls: ['./follow-up.component.scss']
 })
 export class FollowUpComponent implements OnInit, OnDestroy, ActionComponent {
-  form: FormGroup;
+  form: UntypedFormGroup;
   currentFollowUp: Process;
   showDeleteTemp = false;
   folder = '';
-  secondForm: FormGroup;
+  secondForm: UntypedFormGroup;
   canConfirmTask = false;
   disabledForm = false;
   headline: string;
@@ -32,7 +32,7 @@ export class FollowUpComponent implements OnInit, OnDestroy, ActionComponent {
   constructor(
     private processService: ProcessService,
     private inboxService: InboxService,
-    private fb: FormBuilder,
+    private fb: UntypedFormBuilder,
     private activatedRoute: ActivatedRoute,
     private notificationService: NotificationService,
     private translate: TranslateService,

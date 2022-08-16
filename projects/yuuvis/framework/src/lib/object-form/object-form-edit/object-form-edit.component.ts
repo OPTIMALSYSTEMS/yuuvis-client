@@ -130,6 +130,7 @@ export class ObjectFormEditComponent implements OnDestroy {
     private notificationService: NotificationService,
     private backend: BackendService,
     private dmsService: DmsService,
+    private notificationService: NotificationService,
     private pendingChanges: PendingChangesService,
     public translate: TranslateService,
     private popoverService: PopoverService

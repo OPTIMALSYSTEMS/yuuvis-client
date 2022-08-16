@@ -354,7 +354,7 @@ export class Utils {
     }
   }
 
-  public static openWindow(url: string = '', target = '_blank', features?: string, replace?: boolean): Window {
-    return window.open(url.match(new RegExp('^/.+')) ? url.replace(new RegExp('^/'), '') : url, target, features, replace); // relative to host
+  public static openWindow(url: string = '', target = '_blank', features?: string): Window {
+    return window.open(url.match(new RegExp('^/.+')) ? url.replace(new RegExp('^/'), '') : url, target, features); // relative to host
   }
 }

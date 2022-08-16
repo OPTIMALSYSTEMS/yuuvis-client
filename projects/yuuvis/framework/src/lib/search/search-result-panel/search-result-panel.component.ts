@@ -6,7 +6,7 @@ import { ResponsiveDataTableOptions, ViewMode } from '../../components/responsiv
 import { PopoverConfig } from '../../popover/popover.interface';
 import { PopoverRef } from '../../popover/popover.ref';
 import { PopoverService } from '../../popover/popover.service';
-import { kebap, refresh, search } from '../../svg.generated';
+import { kebap, refresh, search, settings } from '../../svg.generated';
 import { FilterPanelConfig, SearchResultComponent } from '../search-result/search-result.component';
 /**
  * This component wraps a `SearchResultComponent`.
@@ -91,7 +91,7 @@ export class SearchResultPanelComponent {
     private dmsService: DmsService,
     private iconRegistry: IconRegistryService
   ) {
-    this.iconRegistry.registerIcons([search, refresh, kebap]);
+    this.iconRegistry.registerIcons([settings, search, refresh, kebap]);
   }
 
   refresh(applyColumnConfig?: boolean) {
