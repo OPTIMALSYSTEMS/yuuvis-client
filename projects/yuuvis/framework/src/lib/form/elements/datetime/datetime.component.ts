@@ -1,5 +1,5 @@
 import { Component, ElementRef, forwardRef, HostListener, Input, OnInit, TemplateRef, ViewChild } from '@angular/core';
-import { ControlValueAccessor, UntypedFormControl, NG_VALIDATORS, NG_VALUE_ACCESSOR, Validator } from '@angular/forms';
+import { ControlValueAccessor, NG_VALIDATORS, NG_VALUE_ACCESSOR, UntypedFormControl, Validator } from '@angular/forms';
 import { TranslateService } from '@yuuvis/core';
 import { IconRegistryService } from '../../../common/components/icon/service/iconRegistry.service';
 import { LocaleDatePipe } from '../../../pipes/locale-date.pipe';
@@ -177,6 +177,15 @@ export class DatetimeComponent implements OnInit, ControlValueAccessor, Validato
       this.innerValue = element.value = event.slice(0, -2) + (event.match(/ma$|mm$/) ? 'aa' : event.match(/p|P/) ? 'PM' : 'AM');
       element.setSelectionRange(caretPos, caretPos);
       this.setValueFromMask(); // hotfix: required for AM/PM changes
+    }
+
+    // hotfix for Korean time
+    if (event.match(/am|pm/) && event.match(/\d\d:\d\d/)) {
+      const element = this.elemRef.nativeElement.querySelector('input');
+      const caretPos = element.selectionStart;
+      element.value = event.replace('am', 'AM').replace('pm', 'PM');
+      element.setSelectionRange(caretPos, caretPos);
+      this.setValueFromMask();
     }
   }
 
