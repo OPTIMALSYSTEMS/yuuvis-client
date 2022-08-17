@@ -1,6 +1,6 @@
 {
   "name": "@yuuvis/framework",
-  "version": "4.0.0-beta.2",
+  "version": "4.0.0-beta.3",
   "author": "OPTIMAL SYSTEMS GmbH <npm@optimal-systems.de>",
   "license": "MIT",
   "scripts": {
@@ -31,7 +31,7 @@
     "ngx-drag-scroll": "^13.0.2",
     "ngx-toastr": "^15.0.0",
     "primeicons": "^5.0.0",
-    "primeng": "14.0.0-rc.1",
+    "primeng": "14.0.1",
     "take-until-destroy": "^2.1.0",
     "tslib": "^2.4.0"
   }
