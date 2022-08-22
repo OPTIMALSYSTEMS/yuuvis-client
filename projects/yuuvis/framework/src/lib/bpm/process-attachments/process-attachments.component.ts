@@ -130,10 +130,11 @@ export class ProcessAttachmentsComponent implements OnInit {
           if (this.attachedObjects.length > 0) {
             // select the first item that has no error
             const valid = this.attachedObjects.find((o) => !o.error);
-            if (valid) {
-              this.selectedObject = valid.id;
-            }
+            this.selectedObject = valid?.id || this.attachedObjects[0].id;
+          } else {
+            this.selectedObject = null;
           }
+          
           this.busy = false;
         },
         (err) => {
