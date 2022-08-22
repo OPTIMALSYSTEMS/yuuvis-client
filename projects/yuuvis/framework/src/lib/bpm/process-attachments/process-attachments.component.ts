@@ -143,8 +143,8 @@ export class ProcessAttachmentsComponent implements OnInit {
             const valid = this.attachedObjects.find((o) => !o.error);
             if (valid) {
               valid.preventRemove = this.keepPrimary === 'true';
-              this.selectedObject = valid.id;
             }
+            this.selectedObject = valid?.id || this.attachedObjects[0].id;
           }
           this.busy = false;
         },
