@@ -61,7 +61,7 @@
         border-color: rgba(255, 255, 255, 0.16);
       }
     }
-    .p-tabview.p-component > .p-tabview-nav li {
+    .p-tabview.p-component > .p-tabview-nav-container > .p-tabview-nav-content > .p-tabview-nav li {
       &.dirty-true:not(.invalid-true) {
         a .p-tabview-title {
           background-color: var(--color-dirty-background);
