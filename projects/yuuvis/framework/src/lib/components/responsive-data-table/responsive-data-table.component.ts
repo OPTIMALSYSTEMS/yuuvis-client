@@ -202,6 +202,10 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
   @HostListener('keydown.control.shift.c', ['$event'])
   @HostListener('keydown.control.alt.c', ['$event'])
   @HostListener('keydown.control.c', ['$event'])
+  @HostListener('keydown.meta.alt.shift.c', ['$event'])
+  @HostListener('keydown.meta.shift.c', ['$event'])
+  @HostListener('keydown.meta.alt.c', ['$event'])
+  @HostListener('keydown.meta.c', ['$event'])
   copyCellHandler(event: KeyboardEvent) {
     this.gridApi.copyToClipboard(event, this.gridOptions);
   }
@@ -411,7 +415,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
   private ensureVisibility(rowIndex = 0) {
     if (this.isVertical) {
       const shift = Math.floor(this.settings.size.newWidth / this.settings.colWidth.grid / 2);
-      this.gridOptions.api['gridPanel'].setCenterViewportScrollLeft(Math.max(0, (rowIndex - shift) * this.settings.colWidth.grid));
+      this.gridOptions.api['ctrlsService'].centerRowContainerCtrl.setCenterViewportScrollLeft(Math.max(0, (rowIndex - shift) * this.settings.colWidth.grid));
     } else if (this.isGrid) {
       this.gridOptions.api.ensureIndexVisible(Math.floor(rowIndex / Math.floor(this.settings.size.newWidth / this.settings.colWidth.grid)));
     } else {
