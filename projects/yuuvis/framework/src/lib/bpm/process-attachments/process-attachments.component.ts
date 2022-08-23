@@ -51,7 +51,7 @@ export class ProcessAttachmentsComponent implements OnInit {
   @Output() attachmentOpenExternal = new EventEmitter<string>();
 
   attachedObjects: ProcessAttachment[] = [];
-  selectedObject: string;
+  selectedObject: { id: string, leadingTypeId?: string, title?: string, error?: boolean };
   busy: boolean;
 
   private popoverRef: PopoverRef;
@@ -69,11 +69,11 @@ export class ProcessAttachmentsComponent implements OnInit {
   }
 
   // select an attachmemnt from the attachments list to show its details
-  selectAttachment(id: string, evt: MouseEvent) {
-    if (evt && evt.ctrlKey) {
-      this.attachmentOpenExternal.emit(id);
+  selectAttachment(o: any, evt: MouseEvent) {
+    if (!o?.error && evt?.ctrlKey) {
+      this.attachmentOpenExternal.emit(o.id);
     }
-    if (!this.pendingChanges.check()) this.selectedObject = id;
+    if (!this.pendingChanges.check()) this.selectedObject = o;
   }
 
   removeAttachment(id: string) {
@@ -144,7 +144,7 @@ export class ProcessAttachmentsComponent implements OnInit {
             if (valid) {
               valid.preventRemove = this.keepPrimary === 'true';
             }
-            this.selectedObject = valid?.id || this.attachedObjects[0].id;
+            this.selectedObject = valid || this.attachedObjects[0];
           }
           this.busy = false;
         },
