@@ -5,10 +5,12 @@
 
             <div class="attachment-list">
                 <div class="attachment" *ngFor="let o of attachedObjects"
-                    [ngClass]="{error: o.error, selected: o.id === selectedObject}">
-                    <yuv-icon class="error" icon="noFile" [title]="o.id" *ngIf="o.error; else tplAttachment"></yuv-icon>
+                    [ngClass]="{error: o.error, selected: o.id === selectedObject?.id}">
+                    <yuv-icon class="error" icon="noFile" [title]="o.id" (click)="selectAttachment(o, $event)"
+                        *ngIf="o.error; else tplAttachment"></yuv-icon>
+
                     <ng-template #tplAttachment>
-                        <button title="{{o.title}}" class="item" (click)="selectAttachment(o.id, $event)">
+                        <button title="{{o.title}}" class="item" (click)="selectAttachment(o, $event)">
                             <yuv-object-type-icon [objectTypeId]="o.objectTypeId"></yuv-object-type-icon>
                             <span>{{o.title}}</span>
                         </button>
@@ -30,8 +32,12 @@
                 </button>
             </div>
         </div>
-        <yuv-object-details *ngIf="selectedObject" [disableFileDrop]="true" [objectId]="selectedObject"
-            [layoutOptionsKey]="_layoutOptionsKey"></yuv-object-details>
+
+        <ng-container *ngIf="selectedObject">
+            <yuv-object-details [disableFileDrop]="true"
+                [objectId]="selectedObject.id" [layoutOptionsKey]="_layoutOptionsKey"></yuv-object-details>
+        </ng-container>
+
     </ng-container>
 
     <ng-template #tplEmpty>

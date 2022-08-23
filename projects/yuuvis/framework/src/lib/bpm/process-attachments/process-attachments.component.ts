@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, OnInit, Output, TemplateRef, ViewChild 
 import {
   BaseObjectTypeField,
   ClientDefaultsObjectTypeField,
+  PendingChangesService,
   SearchFilter,
   SearchFilterGroup,
   SearchQuery,
@@ -46,7 +47,7 @@ export class ProcessAttachmentsComponent implements OnInit {
   @Output() attachmentOpenExternal = new EventEmitter<string>();
 
   attachedObjects: ProcessAttachment[] = [];
-  selectedObject: string;
+  selectedObject: { id: string, leadingTypeId?: string, title?: string, error?: boolean };
   busy: boolean;
 
   private popoverRef: PopoverRef;
@@ -55,17 +56,18 @@ export class ProcessAttachmentsComponent implements OnInit {
     private translate: TranslateService,
     private iconRegistry: IconRegistryService,
     private searchService: SearchService,
-    private popoverService: PopoverService
+    private popoverService: PopoverService,
+    private pendingChanges: PendingChangesService
   ) {
     this.iconRegistry.registerIcons([dragHandle, sort, attachment, clear, noFile, addCircle]);
   }
 
   // select an attachmemnt from the attachments list to show its details
-  selectAttachment(id: string, evt: MouseEvent) {
-    if (evt && evt.ctrlKey) {
-      this.attachmentOpenExternal.emit(id);
+  selectAttachment(o: any, evt: MouseEvent) {
+    if (!o?.error && evt?.ctrlKey) {
+      this.attachmentOpenExternal.emit(o.id);
     }
-    this.selectedObject = id;
+    if (!this.pendingChanges.check()) this.selectedObject = o;
   }
 
   removeAttachment(id: string) {
@@ -130,9 +132,7 @@ export class ProcessAttachmentsComponent implements OnInit {
           if (this.attachedObjects.length > 0) {
             // select the first item that has no error
             const valid = this.attachedObjects.find((o) => !o.error);
-            this.selectedObject = valid?.id || this.attachedObjects[0].id;
-          } else {
-            this.selectedObject = null;
+            this.selectedObject = valid || this.attachedObjects[0];
           }
           
           this.busy = false;
