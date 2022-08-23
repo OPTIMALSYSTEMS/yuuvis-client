@@ -44,7 +44,7 @@ export class CellRenderer {
           .map((sot) => {
             if (sot && !sot.classification?.includes(Classification.SYSTEM_SOT)) {
               const cls = sot.classification?.includes(SecondaryObjectTypeClassification.PRIMARY) ? ' psot' : '';
-              return `<div class="chip${cls}">${Utils.escapeHtml(sot.label)}</div>`;
+              return `<div class="chip${cls}" data-sot-id="${sot.id}">${Utils.escapeHtml(sot.label)}</div>`;
             } else {
               return '';
             }
