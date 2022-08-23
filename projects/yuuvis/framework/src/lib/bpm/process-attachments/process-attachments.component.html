@@ -10,7 +10,7 @@
                         *ngIf="o.error; else tplAttachment"></yuv-icon>
 
                     <ng-template #tplAttachment>
-                        <button title="{{o.title}}" class="item" (click)="selectAttachment(o.id, $event)">
+                        <button title="{{o.title}}" class="item" (click)="selectAttachment(o, $event)">
                             <yuv-object-type-icon [objectTypeId]="o.leadingTypeId"></yuv-object-type-icon>
                             <span>{{o.title}}</span>
                         </button>
