@@ -1,4 +1,5 @@
-import { Component, Input, ViewEncapsulation } from '@angular/core';
+import { Component, Input, ViewChild, ViewEncapsulation } from '@angular/core';
+import { TabView } from 'primeng/tabview';
 import { ObjectFormControlWrapper, YuvFormGroup, YuvFormGroupWrapper } from '../object-form.interface';
 import { ObjectFormGroup } from '../object-form.model';
 import { Situation } from './../object-form.situation';
@@ -23,6 +24,8 @@ export class ObjectFormGroupComponent {
   isCore: boolean;
   isData: boolean;
 
+  @ViewChild('tabView') tabView: TabView;
+
   // form situation, if not set default will be 'EDIT'
   @Input() situation = Situation.EDIT;
 
@@ -33,6 +36,7 @@ export class ObjectFormGroupComponent {
       this.isCore = this.group._eoFormGroup && this.group._eoFormGroup.label === 'core';
       this.isData = this.group._eoFormGroup && this.group._eoFormGroup.label === 'data';
       this.groupType = this.getGroupType();
+      this.group.statusChanges.subscribe(() => this.tabView?.cd.markForCheck());
     } else {
       this.group = null;
     }
