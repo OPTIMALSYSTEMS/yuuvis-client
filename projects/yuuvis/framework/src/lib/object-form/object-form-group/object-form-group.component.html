@@ -7,7 +7,7 @@
   [formGroup]="group"
 >
   <!-- group stacks (tabs) -->
-  <p-tabView *ngSwitchCase="'stack'">
+  <p-tabView *ngSwitchCase="'stack'" #tabView>
     <p-tabPanel
       header="{{ getObjectFormGroup(group.controls[key]).label }}"
       headerStyleClass="dirty-{{ group.controls[key].dirty }} invalid-{{ group.controls[key].invalid }} "
