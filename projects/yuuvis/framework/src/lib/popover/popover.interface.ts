@@ -1,3 +1,5 @@
+import { OverlayConfig } from '@angular/cdk/overlay';
+
 export interface PopoverConfig<T = any> {
   /** @ignore */
   backdropClass?: string;
@@ -38,4 +40,5 @@ export interface ConfirmPopoverData {
   confirmLabel?: string;
   cancelLabel?: string;
   hideCancelButton?: boolean;
+  overlayConfig?: OverlayConfig;
 }
