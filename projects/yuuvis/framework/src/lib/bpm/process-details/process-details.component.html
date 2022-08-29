@@ -21,9 +21,7 @@
   <yuv-tab-panel [id]="'summaryTab'" [header]="'yuv.framework.process-details.tabs.summary.title' | translate"
     [headerStyleClass]="'task'">
     <ng-template pTemplate="content">
-
       <yuv-process-details-summary [displayVars]="displayVars" [process]="_process"></yuv-process-details-summary>
-
     </ng-template>
   </yuv-tab-panel>
 </ng-template>
@@ -33,6 +31,15 @@
     [headerStyleClass]="'history'">
     <ng-template pTemplate="content">
       <yuv-task-details-history [processInstanceId]="_process.id"></yuv-task-details-history>
+    </ng-template>
+  </yuv-tab-panel>
+</ng-template>
+
+<ng-template #commentsTab>
+  <yuv-tab-panel [id]="'commentsTab'" [header]="'yuv.framework.task-details.tabs.comments.title' | translate"
+    [headerStyleClass]="'comments'">
+    <ng-template pTemplate="content">
+      <yuv-task-details-comments [process]="_process"></yuv-task-details-comments>
     </ng-template>
   </yuv-tab-panel>
 </ng-template>
