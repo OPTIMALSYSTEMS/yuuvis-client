@@ -55,13 +55,14 @@ export class PopoverService {
 
   private openConfirmDialog(data: ConfirmPopoverData) {
     const positionStrategy = this.overlay.position().global().centerHorizontally().centerVertically();
-    const overlayRef = this.overlay.create({
+    const overlayConfig = {
       hasBackdrop: true,
       minWidth: 200,
       maxWidth: '90%',
       scrollStrategy: this.overlay.scrollStrategies.block(),
       positionStrategy
-    });
+    };
+    const overlayRef = this.overlay.create({ ...overlayConfig, ...(data.overlayConfig || {}) });
     const dialogRef = new ConfirmPopoverRef(overlayRef);
     const injectionTokens = new WeakMap();
     injectionTokens.set(ConfirmPopoverRef, dialogRef);
@@ -112,14 +113,7 @@ export class PopoverService {
     const popoverRef = new PopoverRef(overlayRef, popoverConfig);
 
     const popover = overlayRef.attach(
-      new ComponentPortal(
-        PopoverComponent,
-        null,
-        new PortalInjector(
-          this.injector,
-          new WeakMap<any, any>([[PopoverRef, popoverRef]])
-        )
-      )
+      new ComponentPortal(PopoverComponent, null, new PortalInjector(this.injector, new WeakMap<any, any>([[PopoverRef, popoverRef]])))
     ).instance;
 
     if (componentOrTemplate instanceof TemplateRef) {

@@ -1,6 +1,6 @@
 import { Component, ElementRef, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { BpmService, ProcessInstanceComment, Task } from '@yuuvis/core';
+import { BpmService, Process, ProcessInstanceComment, Task } from '@yuuvis/core';
 
 @Component({
   selector: 'yuv-task-details-comments',
@@ -11,10 +11,20 @@ export class TaskDetailsCommentsComponent implements OnInit {
   comments: ProcessInstanceComment[] = [];
   busy: boolean;
   error: string;
+  inputHidden: boolean;
 
   commentForm: FormGroup = this.fb.group({
     comment: ['', Validators.required]
   });
+
+  private _process: Process;
+  @Input() set process(p: Process) {
+    this._process = p;
+    if (p) {
+      this.inputHidden = true;
+      this.fetchComments(p.id);
+    }
+  }
 
   private _task: Task;
   @Input() set task(task: Task) {

@@ -8,7 +8,7 @@
         </div>
     </div>
 </div>
-<form [formGroup]="commentForm">
+<form [formGroup]="commentForm" *ngIf="!inputHidden">
     <div class="wrapper">
         <input type="text" formControlName="comment"
             [placeholder]="'yuv.framework.task-details-comments.form.message.placeholder' | translate" />
