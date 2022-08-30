@@ -4,7 +4,7 @@ import { Component, ElementRef, EventEmitter, HostBinding, HostListener, Input, 
 import { BaseObjectTypeField, DeviceService, PendingChangesService, Utils } from '@yuuvis/core';
 import { ResizedEvent } from 'angular-resize-event';
 import { Observable, ReplaySubject } from 'rxjs';
-import { debounceTime } from 'rxjs/operators';
+import { debounceTime, map } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { ObjectTypeIconComponent } from '../../common/components/object-type-icon/object-type-icon.component';
 import { LocaleDatePipe } from '../../pipes/locale-date.pipe';
@@ -84,15 +84,21 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
    * will be used to store component specific settings using the layout service.
    */
   private _layoutOptionsKey: string;
-  @Input() set layoutOptionsKey(lok: string) {
+  @Input()
+  set layoutOptionsKey(lok: string) {
     this._layoutOptionsKey = lok;
-    this.layoutService.loadLayoutOptions(lok, 'yuv-responsive-data-table').subscribe((o: ResponsiveDataTableOptions) => {
-      this._layoutOptions = o || {};
-      if (this._layoutOptions.viewMode) {
-        this.setupViewMode(this._layoutOptions.viewMode);
-      }
-      this.applyGridOption(true);
-    });
+    this.layoutService
+      .loadLayoutOptions(lok, 'yuv-responsive-data-table')
+      .pipe(
+        map((o: ResponsiveDataTableOptions) => {
+          this._layoutOptions = o || {};
+          if (this._layoutOptions.viewMode) {
+            this.setupViewMode(this._layoutOptions.viewMode);
+          }
+          this.applyGridOption(true);
+        })
+      )
+      .subscribe();
   }
 
   /**
@@ -101,11 +107,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
   @Input()
   set data(data: ResponsiveTableData) {
     this._data = data;
-    if (this.gridOptions) {
-      this.applyGridOption();
-    } else {
-      this.setupGridOptions();
-    }
+    this.gridOptions ? this.applyGridOption() : this.setupGridOptions();
   }
   get data(): ResponsiveTableData {
     return this._data;
@@ -333,6 +335,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
       this.gridOptions.api.setHeaderHeight(this.settings.headerHeight[this.currentViewMode]);
 
       const columns = this.applyColDefOptions(this.isSmall ? [this.getSmallSizeColDef()] : this._data.columns);
+
       if (JSON.stringify(this.gridOptions.columnDefs) !== JSON.stringify(columns)) {
         this.gridOptions.columnDefs = columns;
         this.gridOptions.api.setColumnDefs(columns);
@@ -503,7 +506,6 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
     if (colEl) {
       this.selectRows([colEl.parentElement.getAttribute('row-id')], colEl.getAttribute('col-id'), false);
       this.onSelectionChanged(null);
-      console.log(colEl.parentElement.getAttribute('row-id'));
     }
   }
 
