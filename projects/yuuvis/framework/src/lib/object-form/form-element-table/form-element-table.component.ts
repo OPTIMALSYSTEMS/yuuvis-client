@@ -78,6 +78,10 @@ export class FormElementTableComponent extends UnsubscribeOnDestroy implements C
   @HostListener('keydown.control.shift.c', ['$event'])
   @HostListener('keydown.control.alt.c', ['$event'])
   @HostListener('keydown.control.c', ['$event'])
+  @HostListener('keydown.meta.alt.shift.c', ['$event'])
+  @HostListener('keydown.meta.shift.c', ['$event'])
+  @HostListener('keydown.meta.alt.c', ['$event'])
+  @HostListener('keydown.meta.c', ['$event'])
   copyCellHandler(event: KeyboardEvent) {
     this.gridApi.copyToClipboard(event, this.gridOptions);
   }
@@ -99,7 +103,7 @@ export class FormElementTableComponent extends UnsubscribeOnDestroy implements C
       rowBuffer: 20,
       multiSortKey: 'ctrl',
       accentedSort: true,
-      suppressCellSelection: true,
+      suppressCellSelection: false,
       rowSelection: 'single',
       suppressMovableColumns: true,
       suppressNoRowsOverlay: true,
@@ -118,7 +122,7 @@ export class FormElementTableComponent extends UnsubscribeOnDestroy implements C
       rowBuffer: 20,
       multiSortKey: 'ctrl',
       accentedSort: true,
-      suppressCellSelection: true,
+      suppressCellSelection: false,
       rowSelection: 'single',
       suppressMovableColumns: true,
       suppressNoRowsOverlay: true,
