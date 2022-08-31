@@ -26,6 +26,10 @@ export class ExpandedTableComponent {
   @HostListener('keydown.control.shift.c', ['$event'])
   @HostListener('keydown.control.alt.c', ['$event'])
   @HostListener('keydown.control.c', ['$event'])
+  @HostListener('keydown.meta.alt.shift.c', ['$event'])
+  @HostListener('keydown.meta.shift.c', ['$event'])
+  @HostListener('keydown.meta.alt.c', ['$event'])
+  @HostListener('keydown.meta.c', ['$event'])
   copyCellHandler(event: KeyboardEvent) {
     this.gridApi.copyToClipboard(event, this.overlayGridOptions);
   }
