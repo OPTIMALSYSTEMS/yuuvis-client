@@ -466,9 +466,6 @@
   "yuv.client.state.retentions.list.filter.all": "All",
   "yuv.client.state.retentions.list.filter.destruct": "To be removed",
   "yuv.client.state.retentions.list.filter.next": "Next month",
-  "yuv.client.state.retentions.renderer.status.indestruct": "The object will be removed in {{d}} hour(s).",
-  "yuv.client.state.retentions.renderer.status.inretention": "{{p}}% of the retention period has elapsed",
-  "yuv.client.state.retentions.renderer.status.pastdestruct": "The object should have been removed {{d}} hour(s) ago.",
   "yuv.client.state.retentions.title": "Retention management",
   "yuv.client.state.settings.cache.clear.error": "Failed to clear application cache",
   "yuv.client.state.settings.cache.clear.success": "The application cache was cleared",
@@ -506,5 +503,10 @@
   "yuv.client.state.settings.title": "Settings",
   "yuv.client.state.title": "yuuvis® client",
   "yuv.client.state.versions.compare.label": "version {{version}}",
-  "yuv.client.state.versions.header.title": "Versions"
+  "yuv.client.state.versions.header.title": "Versions",
+  "yuv.state.retentions.renderer.chip.title.ended": "Retention ended {{diff}} ago",
+  "yuv.state.retentions.renderer.chip.title.running": "Under retention for the next {{diff}}",
+  "yuv.state.retentions.renderer.d": "day(s)",
+  "yuv.state.retentions.renderer.m": "month(s)",
+  "yuv.state.retentions.renderer.y": "year(s)"
 }
