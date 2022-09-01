@@ -1,6 +1,6 @@
 <div class="comments" [yuvBusyOverlay]="busy">
-    <div class="error" *ngIf="error">{{error.message}}</div>
-    <div class="empty" *ngIf="!comments?.length && !error">{{'yuv.framework.task-details-comments.empty'|translate}}</div>
+    <div class="error" *ngIf="errorMessage">{{errorMessage}}</div>
+    <div class="empty" *ngIf="!comments?.length && !errorMessage">{{'yuv.framework.task-details-comments.empty'|translate}}</div>
     <div class="wrapper">
         <div id="c{{c.id}}" class="comment" *ngFor="let c of comments; trackBy: trackByFn">
             <div class="time">{{c.time | localeDate}}</div>

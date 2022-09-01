@@ -12,7 +12,7 @@ import { catchError, map } from 'rxjs/operators';
 export class TaskDetailsCommentsComponent implements OnInit {
   comments: ProcessInstanceComment[] = [];
   busy: boolean;
-  error: string;
+  errorMessage: string;
   inputHidden: boolean;
 
   commentForm: FormGroup = this.fb.group({ comment: ['', Validators.required] });
@@ -47,7 +47,7 @@ export class TaskDetailsCommentsComponent implements OnInit {
    * @param focusId ID of the comment to be focused (scrolled into view to ensure visibility)
    */
   private fetchComments(processInstanceId: string, focusId?: string): void {
-    this.error = null;
+    this.errorMessage = null;
     this.busy = true;
     this.bpmService
       .getProcessComments(processInstanceId)
@@ -56,8 +56,8 @@ export class TaskDetailsCommentsComponent implements OnInit {
           this.comments = res;
           this.focusComment(focusId);
         }),
-        catchError((error) => {
-          this.error = error;
+        catchError((error: Error) => {
+          this.errorMessage = error.message;
           return EMPTY;
         })
       )
