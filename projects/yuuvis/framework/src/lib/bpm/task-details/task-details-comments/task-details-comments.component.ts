@@ -1,6 +1,8 @@
 import { Component, ElementRef, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { BpmService, Process, ProcessInstanceComment, Task } from '@yuuvis/core';
+import { EMPTY } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 
 @Component({
   selector: 'yuv-task-details-comments',
@@ -13,13 +15,10 @@ export class TaskDetailsCommentsComponent implements OnInit {
   error: string;
   inputHidden: boolean;
 
-  commentForm: FormGroup = this.fb.group({
-    comment: ['', Validators.required]
-  });
+  commentForm: FormGroup = this.fb.group({ comment: ['', Validators.required] });
 
-  private _process: Process;
-  @Input() set process(p: Process) {
-    this._process = p;
+  @Input()
+  set process(p: Process) {
     if (p) {
       this.inputHidden = true;
       this.fetchComments(p.id);
@@ -27,22 +26,19 @@ export class TaskDetailsCommentsComponent implements OnInit {
   }
 
   private _task: Task;
-  @Input() set task(task: Task) {
+  @Input()
+  set task(task: Task) {
     this._task = task;
-    if (task) {
-      this.fetchComments(task.processInstanceId);
-    } else {
-      this.comments = [];
-    }
+    this.fetchComments(task ? task.processInstanceId : null);
   }
 
   constructor(private bpmService: BpmService, private fb: FormBuilder, private elRef: ElementRef) {}
 
   addComment() {
-    this.bpmService.addProcessComment(this._task.id, this.commentForm.value.comment).subscribe((comment: ProcessInstanceComment) => {
-      this.commentForm.reset();
-      this.fetchComments(this._task.processInstanceId, comment.id);
-    });
+    this.bpmService
+      .addProcessComment(this._task.id, this.commentForm.value.comment)
+      .pipe(map((comment: ProcessInstanceComment) => this.fetchComments(this._task.processInstanceId, comment.id)))
+      .subscribe();
   }
 
   /**
@@ -50,27 +46,31 @@ export class TaskDetailsCommentsComponent implements OnInit {
    * @param processInstanceId ID of the process instance to fetch comments for
    * @param focusId ID of the comment to be focused (scrolled into view to ensure visibility)
    */
-  private fetchComments(processInstanceId: string, focusId?: string) {
+  private fetchComments(processInstanceId: string, focusId?: string): void {
     this.error = null;
     this.busy = true;
-    this.bpmService.getProcessComments(processInstanceId).subscribe(
-      (res: ProcessInstanceComment[]) => {
-        this.comments = res;
-        this.busy = false;
-        this.focusComment(focusId);
-      },
-      (err) => {
-        console.error(err);
-        this.error = err;
-        this.busy = false;
-      }
-    );
+    this.bpmService
+      .getProcessComments(processInstanceId)
+      .pipe(
+        map((res: ProcessInstanceComment[]) => {
+          this.comments = res;
+          this.focusComment(focusId);
+        }),
+        catchError((error) => {
+          this.error = error;
+          return EMPTY;
+        })
+      )
+      .subscribe({
+        complete: () => {
+          this.busy = false;
+          this.commentForm.reset();
+        }
+      });
   }
 
   private focusComment(id: string) {
-    setTimeout(() => {
-      this.elRef.nativeElement.querySelector(id ? `#c${id}` : `.comment:last-child`)?.scrollIntoView();
-    }, 200);
+    setTimeout(() => this.elRef.nativeElement.querySelector(id ? `#c${id}` : `.comment:last-child`)?.scrollIntoView(), 200);
   }
 
   trackByFn(index, item) {
