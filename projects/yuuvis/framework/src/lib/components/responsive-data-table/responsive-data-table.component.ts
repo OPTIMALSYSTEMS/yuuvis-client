@@ -328,8 +328,10 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
       this.gridOptions.api.setRowData(this._data.rows);
       this.gridOptions.api.setHeaderHeight(this.settings.headerHeight[this.currentViewMode]);
 
+      const _columnDefs = JSON.stringify(this.gridOptions.columnDefs);
       const columns = this.applyColDefOptions(this.isSmall ? [this.getSmallSizeColDef()] : this._data.columns);
-      if (JSON.stringify(this.gridOptions.columnDefs) !== JSON.stringify(columns)) {
+
+      if (_columnDefs !== JSON.stringify(columns)) {
         this.gridOptions.columnDefs = columns;
         this.gridOptions.api.setColumnDefs(columns);
         this.gridOptions.columnApi.resetColumnState();
