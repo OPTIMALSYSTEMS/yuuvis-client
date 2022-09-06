@@ -329,7 +329,7 @@
 	"yuv.framework.sequence-list.button.delete.tooltip": "Löschen",
 	"yuv.framework.sequence-list.button.edit.tooltip": "Bearbeiten",
 	"yuv.framework.sequence-list.button.templates": "Vorlagen",
-	"yuv.framework.sequence-list.entry.remove.confirm.message": "Sind Sie sicher, dass Sie die Aufgabe '{{task}}' entfernen wollen?",
+	"yuv.framework.sequence-list.entry.remove.confirm.message": "Sind Sie sicher, dass Sie die Aufgabe '{{task}}' entfernen möchten?",
 	"yuv.framework.sequence-list.form.assignee": "Empfänger",
 	"yuv.framework.sequence-list.form.button.add": "Hinzufügen",
 	"yuv.framework.sequence-list.form.button.cancel": "Abbrechen",
