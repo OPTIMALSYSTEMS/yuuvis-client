@@ -84,6 +84,8 @@ export class SearchResultComponent implements OnDestroy {
     return this._filterPanelConfig;
   }
 
+  @Input() plugins: Observable<any[]>;
+
   @Input() responsiveTableData: Partial<ResponsiveTableData>;
 
   tableData: ResponsiveTableData;

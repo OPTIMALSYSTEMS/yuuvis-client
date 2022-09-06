@@ -14,7 +14,7 @@
     (gutterDblClick)="setFilterPanelVisibility(false)">
     <as-split-area [size]="filterPanelConfig?.width" [minSize]="filterPanelSize.min" [order]="0"
       *ngIf="!disableFilterPanel && filterPanelConfig.open">
-      <yuv-search-filter [query]="query" [layoutOptionsKey]="layoutOptionsKey" (filterChange)="onFilterChanged($event)">
+      <yuv-search-filter [query]="query" [layoutOptionsKey]="layoutOptionsKey" (filterChange)="onFilterChanged($event)" [plugins]="plugins">
         <yuv-icon class="actions collapse btn" icon="doubleArrow" (click)="setFilterPanelVisibility(false)"></yuv-icon>
       </yuv-search-filter>
     </as-split-area>

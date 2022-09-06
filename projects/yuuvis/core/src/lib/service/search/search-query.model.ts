@@ -114,8 +114,11 @@ export class SearchQuery {
       // add to group
       const searchFilterGroup =
         groupProperty === SearchFilterGroup.DEFAULT ? this.filterGroup : this.filterGroup.groups.find((g) => g.property === groupProperty);
-      if (searchFilterGroup) {
+      if (searchFilterGroup?.operator === SearchFilterGroup.OPERATOR.AND) {
         searchFilterGroup.group.push(group);
+      }
+      if (searchFilterGroup?.operator === SearchFilterGroup.OPERATOR.OR) {
+        this.filterGroup = SearchFilterGroup.fromArray([this.filterGroup, group]);
       }
     }
   }
@@ -266,12 +269,12 @@ export class SearchQuery {
 
     if (this.filterGroup && !this.filterGroup.isEmpty()) {
       const fg = this.filterGroup.toShortQuery(combineFilters);
-      queryJson.filters = fg.filters.length > 1 && this.filterGroup.operator === SearchFilterGroup.OPERATOR.OR ? [fg] : fg.filters;
+      queryJson.filters = fg.filters.length > 1 && fg.lo === SearchFilterGroup.OPERATOR.OR ? [fg] : fg.filters;
     }
 
     if (this.hiddenFilterGroup && !this.hiddenFilterGroup.isEmpty()) {
       const fg = this.hiddenFilterGroup.toShortQuery(combineFilters);
-      const filters = fg.filters.length > 1 && this.hiddenFilterGroup.operator === SearchFilterGroup.OPERATOR.OR ? [fg] : fg.filters;
+      const filters = fg.filters.length > 1 && fg.lo === SearchFilterGroup.OPERATOR.OR ? [fg] : fg.filters;
       if (combineFilters) {
         queryJson.filters = filters.concat(queryJson.filters || []);
       } else {
@@ -406,7 +409,7 @@ export class SearchFilterGroup {
   }
 
   toShortQuery(resolved = false) {
-    return {
+    const query = {
       ...(this.property !== SearchFilterGroup.DEFAULT ? { property: this.property } : {}),
       ...(this.operator !== SearchFilterGroup.OPERATOR.AND ? { lo: this.operator } : {}),
       filters: this.group
@@ -419,6 +422,8 @@ export class SearchFilterGroup {
             : g[resolved ? 'toResolvedQuery' : 'toQuery']()
         )
     };
+
+    return query.filters?.length === 1 && query.filters[0].filters ? query.filters[0] : query;
   }
 
   toString() {
@@ -437,8 +442,10 @@ export class SearchFilter {
   public static OPERATOR = {
     /** equal */
     EQUAL: 'eq',
-    /** eequal */
+    /** exact equal */
     EEQUAL: 'eeq',
+    /** not equal */
+    NOT_EQUAL: 'neq',
     /** match at least one of the provided values (value has to be an array)  */
     IN: 'in',
     /** greater than */
@@ -452,7 +459,7 @@ export class SearchFilter {
     INTERVAL_INCLUDE_TO: 'gtlte', // interval include right
     INTERVAL_INCLUDE_FROM: 'gtelt', // interval include left
     RANGE: 'rg', // aggegation ranges
-    LIKE: 'like'
+    LIKE: 'like' // like
   };
 
   /**
@@ -461,6 +468,10 @@ export class SearchFilter {
   public static OPERATOR_LABEL = {
     /** equal */
     EQUAL: '=',
+    /** exact equal */
+    EEQUAL: '==',
+    /** not equal */
+    NOT_EQUAL: '!=',
     /** match at least one of the provided values (value has to be an array)  */
     IN: '~',
     /** greater than */
@@ -473,7 +484,8 @@ export class SearchFilter {
     INTERVAL_INCLUDE_BOTH: '-', // interval include left and right
     INTERVAL_INCLUDE_TO: '>-', // interval include right
     INTERVAL_INCLUDE_FROM: '-<', // interval include left
-    RANGE: '=' // aggegation ranges
+    RANGE: '=', // aggegation ranges
+    LIKE: '~' // like
   };
 
   /**
