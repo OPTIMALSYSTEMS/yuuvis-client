@@ -58,7 +58,8 @@ export class PluginsService {
     },
     {
       mimeType: ['text/plain'],
-      viewer: 'api/monaco/?path=${path}&mimeType=${mimeType}&fileExtension=${fileExtension}&lang=${lang}&theme=${theme}&accentColor=${accentColor}'
+      viewer:
+        'api/monaco/?path=${path}&mimeType=${mimeType}&fileExtension=${fileExtension}&lang=${lang}&theme=${theme}&accentColor=${accentColor}&language=plaintext'
     },
     {
       mimeType: ['text/xml', 'application/xml'],
@@ -70,7 +71,7 @@ export class PluginsService {
         'api/monaco/?path=${path}&mimeType=${mimeType}&fileExtension=${fileExtension}&lang=${lang}&theme=${theme}&accentColor=${accentColor}&language=java'
     },
     {
-      mimeType: ['text/javascript'],
+      mimeType: ['text/javascript', 'application/javascript'],
       viewer:
         'api/monaco/?path=${path}&mimeType=${mimeType}&fileExtension=${fileExtension}&lang=${lang}&theme=${theme}&accentColor=${accentColor}&language=javascript'
     },

@@ -12,6 +12,11 @@
       }
     }
   }
+  ::ng-deep {
+    .p-autocomplete-clearable .p-autocomplete {
+      display: flex;
+    }
+  }
 
   p-autocomplete {
     flex: 1;
