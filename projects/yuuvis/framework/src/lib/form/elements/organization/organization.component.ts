@@ -1,9 +1,9 @@
-import { AfterViewInit, Component, EventEmitter, forwardRef, HostBinding, HostListener, Input, Output, ViewChild } from '@angular/core';
-import { ControlValueAccessor, UntypedFormControl, NG_VALIDATORS, NG_VALUE_ACCESSOR, Validator } from '@angular/forms';
+import { AfterViewInit, Component, ElementRef, EventEmitter, forwardRef, HostBinding, HostListener, Input, Output, ViewChild } from '@angular/core';
+import { ControlValueAccessor, NG_VALIDATORS, NG_VALUE_ACCESSOR, UntypedFormControl, Validator } from '@angular/forms';
 import { Classification, SystemService, UserService, YuvUser } from '@yuuvis/core';
 import { AutoComplete } from 'primeng/autocomplete';
-import { forkJoin, of } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { EMPTY, forkJoin, of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 import { IconRegistryService } from '../../../common/components/icon/service/iconRegistry.service';
 import { organization } from '../../../svg.generated';
 
@@ -38,6 +38,7 @@ import { organization } from '../../../svg.generated';
 })
 export class OrganizationComponent implements ControlValueAccessor, Validator, AfterViewInit {
   @ViewChild('autocomplete') autoCompleteInput: AutoComplete;
+  inputElement: ElementRef;
   minLength = 2;
 
   private isValidInput = true;
@@ -164,16 +165,22 @@ export class OrganizationComponent implements ControlValueAccessor, Validator, A
 
   autocompleteFn(evt) {
     if (evt.query.length >= this.minLength) {
-      this.userService.queryUser(evt.query, this.excludeMe, this.filterRoles).subscribe(
-        (users: YuvUser[]) => {
-          this.autocompleteRes = users.filter((user) => !this.innerValue.some((value) => value.id === user.id));
-          this.propagateValidity(this.autocompleteRes.length > 0);
-        },
-        (e) => {
-          this.autocompleteRes = [];
-          this.propagateValidity(this.autocompleteRes.length > 0);
-        }
-      );
+      this.userService
+        .queryUser(evt.query, this.excludeMe, this.filterRoles)
+        .pipe(
+          catchError((e) => {
+            this.autocompleteRes = [];
+            this.propagateValidity(this.autocompleteRes.length > 0);
+            return EMPTY;
+          }),
+          map((users: YuvUser[]) => {
+            // console.log(users, this.innerValue);
+
+            this.autocompleteRes = users; //users.filter((user) => !this.innerValue.some((value) => value.id === user.id));
+            this.propagateValidity(this.autocompleteRes.length > 0);
+          })
+        )
+        .subscribe();
     } else {
       this.autocompleteRes = [];
     }
@@ -203,13 +210,20 @@ export class OrganizationComponent implements ControlValueAccessor, Validator, A
     this.propagate();
   }
 
+  private clearSingleValue(): void {
+    this.innerValue = [];
+    this.autoCompleteInput.inputEL.nativeElement.value = '';
+    this.propagateValidity(true);
+  }
+
   // handle selection changes to the model
   onUnselect(value) {
-    this.innerValue = this.innerValue.filter((v) => v.id !== value.id);
-    let _value = this.innerValue.map((v) => v.id);
-    this.value = this.multiselect ? _value : null;
-    if (!this.multiselect) {
-      this.clearInnerInput();
+    if (value && this.multiselect) {
+      this.innerValue = this.innerValue.filter((v) => v.id !== value.id);
+      this.value = this.innerValue.map((v) => v.id);
+    } else {
+      this.value = null;
+      this.clearSingleValue();
     }
     this.propagate();
   }
@@ -222,12 +236,20 @@ export class OrganizationComponent implements ControlValueAccessor, Validator, A
     if (this.autoCompleteInput.multiInputEL) {
       this.autoCompleteInput.multiInputEL.nativeElement.value = '';
       this.propagateValidity(true);
+    } else if (
+      this.autoCompleteInput.inputEL &&
+      this.autocompleteRes.length &&
+      !this.autocompleteRes.map((res) => res.username).includes(this.autoCompleteInput.inputEL.nativeElement.value)
+    ) {
+      this.clearSingleValue();
     }
   }
 
   ngAfterViewInit() {
+    this.inputElement = this.autoCompleteInput[this.multiselect ? 'multiInputEL' : 'inputEL'];
+
     if (this.autofocus) {
-      setTimeout(() => this.autoCompleteInput.multiInputEL?.nativeElement.focus());
+      setTimeout(() => this.inputElement?.nativeElement.focus());
     }
   }
 }
