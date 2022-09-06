@@ -39,7 +39,8 @@ export class DatepickerComponent implements OnInit {
 
   @Input() onlyFutureDates = false;
 
-  @Input() set date(date: any) {
+  @Input()
+  set date(date: any) {
     this.setCalenderDate(date, true, true);
   }
 
@@ -100,7 +101,6 @@ export class DatepickerComponent implements OnInit {
   setCalenderDate(date: Date | string | number, select = true, format = false) {
     const d = date ? new Date(date) : new Date();
     const _date = format ? new Date(this.withTime ? d.setSeconds(0, 0) : d.setHours(0, 0, 0, 0)) : d;
-
     if (!isNaN(_date.getTime())) {
       if (select) {
         const sd = this.selected && !format ? new Date(_date).setHours(this.selected.getHours(), this.selected.getMinutes()) : _date;
@@ -120,7 +120,7 @@ export class DatepickerComponent implements OnInit {
   }
 
   setMonth(month: number) {
-    this.setCalenderDate(new Date(this.selected).setMonth(month), false);
+    this.setCalenderDate(new Date(new Date(this.selected).setDate(1)).setMonth(month), false);
   }
 
   setTime(h = 0, m = 0) {

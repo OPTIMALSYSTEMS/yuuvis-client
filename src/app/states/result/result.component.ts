@@ -5,6 +5,7 @@ import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PendingChangesService, Screen, ScreenService, SearchQuery, TranslateService, Utils } from '@yuuvis/core';
 import { FilterPanelConfig, LayoutService, PluginsService } from '@yuuvis/framework';
+import { map } from 'rxjs';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { AppSearchService } from '../../service/app-search.service';
 
@@ -41,12 +42,18 @@ export class ResultComponent implements OnInit, OnDestroy {
     private router: Router,
     private pluginsService: PluginsService
   ) {
-    this.screenService.screenChange$.pipe(takeUntilDestroy(this)).subscribe((screen: Screen) => {
-      this.smallScreen = screen.mode === ScreenService.MODE.SMALL;
-    });
-    this.layoutService.loadLayoutOptions(this.LAYOUT_STORAGE_KEY, 'filterPanelConfig').subscribe((c: FilterPanelConfig) => {
-      this.filterPanelConfig = c;
-    });
+    this.screenService.screenChange$
+      .pipe(
+        takeUntilDestroy(this),
+        map((screen: Screen) => (this.smallScreen = screen.mode === ScreenService.MODE.SMALL))
+      )
+      .subscribe();
+
+    this.layoutService
+      .loadLayoutOptions(this.LAYOUT_STORAGE_KEY, 'filterPanelConfig')
+      .pipe(map((c: FilterPanelConfig) => (this.filterPanelConfig = c)))
+      .subscribe();
+
     this.plugins = this.pluginsService.getCustomPlugins('extensions', 'yuv-result');
   }
 
