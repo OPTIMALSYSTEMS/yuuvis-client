@@ -264,7 +264,6 @@ export class SearchResultComponent implements OnDestroy {
           });
 
         q.fields = [
-          ...q.fields,
           // required for SingleCellRendering allthough the object may not have those fields
           this.objectTypeBaseProperties.title,
           this.objectTypeBaseProperties.description,
