@@ -29,6 +29,7 @@ export class ResultComponent implements OnInit, OnDestroy {
   }
 
   plugins: any;
+  searchPlugins: any;
 
   constructor(
     private titleService: Title,
@@ -55,6 +56,7 @@ export class ResultComponent implements OnInit, OnDestroy {
       .subscribe();
 
     this.plugins = this.pluginsService.getCustomPlugins('extensions', 'yuv-result');
+    this.searchPlugins = this.pluginsService.getCustomPlugins('extensions', 'yuv-search-result');
   }
 
   closeDetails() {
