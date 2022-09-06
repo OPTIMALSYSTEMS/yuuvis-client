@@ -2,7 +2,7 @@ import { Component, ElementRef, Input, NgZone, OnDestroy, OnInit } from '@angula
 import { CommandPaletteService } from '@yuuvis/command-palette';
 import { DmsObject, TranslateService, UploadService } from '@yuuvis/core';
 import { fromEvent, Observable, of } from 'rxjs';
-import { switchMap, takeWhile, tap } from 'rxjs/operators';
+import { map, switchMap, takeWhile, tap } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { FileDropService } from '../../directives/file-drop/file-drop.service';
@@ -140,7 +140,12 @@ export class ContentPreviewComponent extends IFrameComponent implements OnInit, 
   }
 
   ngOnInit() {
-    this.previewSrc$.pipe(takeUntilDestroy(this)).subscribe((src) => this.open(src));
+    this.previewSrc$
+      .pipe(
+        takeUntilDestroy(this),
+        map((src) => this.open(src))
+      )
+      .subscribe();
     this.componentStateId = this.componentStateService.addComponentState('ContentPreviewComponent', {
       actions: [
         {
