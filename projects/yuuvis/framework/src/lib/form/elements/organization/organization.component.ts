@@ -217,7 +217,7 @@ export class OrganizationComponent implements ControlValueAccessor, Validator, A
   }
 
   // handle selection changes to the model
-  onUnselect(value) {
+  onUnselect(value = undefined) {
     if (value && this.multiselect) {
       this.innerValue = this.innerValue.filter((v) => v.id !== value.id);
       this.value = this.innerValue.map((v) => v.id);
