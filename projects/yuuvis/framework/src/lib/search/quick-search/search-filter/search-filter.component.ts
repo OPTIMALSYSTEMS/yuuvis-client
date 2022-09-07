@@ -110,6 +110,7 @@ export class SearchFilterComponent implements OnInit {
   }
 
   onToggle(group: SelectableGroup) {
+    this.aggregate();
     this.saveLayoutOptions({
       collapsedGroups: (this._layoutOptions.collapsedGroups || []).filter((id) => id !== group.id).concat(group.collapsed ? [group.id] : [])
     });
@@ -295,7 +296,7 @@ export class SearchFilterComponent implements OnInit {
 
   aggregate(skipTypes = false) {
     const queryNoLots = new SearchQuery({ ...this.filterQuery.toQueryJson(), lots: [] });
-    !skipTypes && this.quickSearchService.getActiveTypes(this.filterQuery).subscribe((types: any) => {
+    !skipTypes && !this.availableTypeGroups[0]?.collapsed && this.quickSearchService.getActiveTypes(this.filterQuery).subscribe((types: any) => {
       this.availableObjectTypes.forEach((i) => {
         const match = types.find((t) => t.id === i.id);
         i.count = match ? match.count : 0;
@@ -307,50 +308,17 @@ export class SearchFilterComponent implements OnInit {
 
     const sum = (r: any) => r?.aggregations?.[0].entries.reduce((p, c) => p + c.count, 0);
 
-    this.availableTypeGroups[1]?.items.filter(g => !g.value).forEach(g => {
+    !this.availableTypeGroups[1]?.collapsed && this.availableTypeGroups[1]?.items.filter(g => !g.value).forEach(g => {
       const q = new SearchQuery(this.filterQuery.toQueryJson(true));
       q.types = [g.id];
       this.searchService.aggregate(q, [BaseObjectTypeField.LEADING_OBJECT_TYPE_ID]).subscribe(r => (g.count = sum(r).toString() as any));
     });
 
-    this.availableTypeGroups[1]?.items.filter(g => g.value).forEach(g => {
+    !this.availableTypeGroups[1]?.collapsed && this.availableTypeGroups[1]?.items.filter(g => g.value).forEach(g => {
       const q = new SearchQuery(this.filterQuery.toQueryJson(true));
       q.addFilterGroup(g.value);
       this.searchService.aggregate(q, [BaseObjectTypeField.LEADING_OBJECT_TYPE_ID]).subscribe(r => (g.count = sum(r).toString() as any));
     });
-
-    const q = {
-      "extensions": [
-        {
-          "id": "yuv.plugin.search.filter.modifiedBy.me",
-          "label": "yuv.plugin.search.filter.modifiedBy.me",
-          "matchHook": "yuv-search-result",
-          "plugin": {
-            "component": "SearchFilterGroup",
-            "inputs": {
-              "filters": [{"f":"system:lastModifiedBy","o":"eq","v1":"$CURRENT_USER$|eq"}]
-            }
-          }
-        },
-        {
-          "id": "yuv.plugin.search.filter.createdBy.me",
-          "label": "yuv.plugin.search.filter.createdBy.me",
-          "matchHook": "yuv-search-result",
-          "plugin": {
-            "component": "SearchFilterGroup",
-            "inputs": {
-              "filters": [{ "lo": "OR", "filters": [{"f":"system:createdBy","o":"eq","v1":"$CURRENT_USER$|eq"},{"f":"system:creationDate","o":"lte","v1":"$TODAY$|lte"}]}]
-            }
-          }
-        }
-      ],
-      "translations": {
-        "en": {
-          "yuv.plugin.search.filter.modifiedBy.me": "Modified by ME",
-          "yuv.plugin.search.filter.createdBy.me": "Created by ME"
-        }
-      }
-    };
 
   }
 
