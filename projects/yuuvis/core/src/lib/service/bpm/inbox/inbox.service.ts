@@ -17,6 +17,7 @@ import { BpmService } from './../bpm/bpm.service';
 export class InboxService {
   private INBOX_PAGE_SIZE = 100;
 
+  private inboxData: Task[] = [];
   private inboxDataSource = new Subject<Task[]>();
   public inboxData$: Observable<Task[]> = this.inboxDataSource.asObservable();
 
@@ -39,7 +40,10 @@ export class InboxService {
   fetchTasks(includeProcessVar = true): void {
     this.getTasksPaged({ includeProcessVariables: includeProcessVar })
       .pipe(
-        tap((res: Task[]) => this.inboxDataSource.next(res.reverse())),
+        tap((res: Task[]) => {
+          this.inboxData = [...res.reverse()];
+          this.inboxDataSource.next(this.inboxData);
+        }),
         map((res: Task[]) => res)
       )
       .subscribe();
@@ -98,7 +102,17 @@ export class InboxService {
     const payload: any = {
       assignee: claim ? { id: this.userService.getCurrentUser().id } : null
     };
-    return this.putTask(taskId, ProcessAction.claim, payload || {});
+    const pl = { ...payload, action: ProcessAction.claim };
+    return this.backendService.put(`/bpm/tasks/${taskId}`, pl || {}, ApiBase.apiWeb).pipe(
+      tap((updatedTask: Task) => {
+        // update tasklist after claiming without actually fetching it again
+        const idx = this.inboxData.findIndex((t) => t.id === updatedTask.id);
+        if (idx !== -1) {
+          this.inboxData[idx] = { ...updatedTask };
+          this.inboxDataSource.next([...this.inboxData]);
+        }
+      })
+    );
   }
 
   /**
