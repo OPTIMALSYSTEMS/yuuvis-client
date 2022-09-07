@@ -504,7 +504,7 @@
   "yuv.client.state.title": "yuuvis® client",
   "yuv.client.state.versions.compare.label": "version {{version}}",
   "yuv.client.state.versions.header.title": "Versions",
-  "yuv.state.retentions.renderer.chip.title.ended": "Retention ended {{diff}} ago",
+  "yuv.state.retentions.renderer.chip.title.ended": "Retention ended {{diff}} ago.",
   "yuv.state.retentions.renderer.chip.title.running": "Under retention for the next {{diff}}",
   "yuv.state.retentions.renderer.d": "day(s)",
   "yuv.state.retentions.renderer.m": "month(s)",

@@ -2,7 +2,7 @@
 <yuv-responsive-master-slave class="state" [layoutOptionsKey]="layoutOptionsKey" (slaveClosed)="onSlaveClosed()"
   [slaveActive]="objectDetailsID">
   <yuv-search-result-panel class="yuv-master panel" [query]="searchQuery" [preSelectItems]="selectedItems"
-    (queryDescriptionChange)="onQueryDescriptionChange($event)"
+    (queryDescriptionChange)="onQueryDescriptionChange($event)" [plugins]="searchPlugins"
     [filterPanelConfig]="filterPanelConfig" [layoutOptionsKey]="layoutOptionsKey" (itemsSelected)="select($event)"
     (filterPanelConfigChanged)="onFilterPanelConfigChanged($event)" (rowDoubleClicked)="onRowDoubleClicked($event)">
   </yuv-search-result-panel>
