@@ -6,6 +6,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { CommandPaletteComponent, CommandPaletteModule } from '@yuuvis/command-palette';
 import { YuvColumnConfigModule, YuvCommonModule, YuvComponentRegister, YuvComponentsModule, YuvDirectivesModule, YuvFrameworkModule } from '@yuuvis/framework';
+import { YuvWidgetGridModule } from '@yuuvis/widget-grid';
 import { AccordionModule } from 'primeng/accordion';
 import { environment } from '../environments/environment';
 import { ActionsModule } from './actions/actions.module';
@@ -14,6 +15,7 @@ import { FrameComponent } from './components/frame/frame.component';
 import { AppRoutingModule } from './routing/app.routes.module';
 import { AuthInterceptor } from './service/auth.interceptor';
 import { AboutModule } from './states/about/about.module';
+import { CockpitComponent } from './states/cockpit/cockpit.component';
 import { ColumnConfigurationComponent } from './states/column-configuration/column-configuration.component';
 import { CreateComponent } from './states/create/create.component';
 import { DashboardComponent } from './states/dashboard/dashboard.component';
@@ -52,12 +54,13 @@ YuvComponentRegister.register(components);
 YuvComponentRegister.register([CommandPaletteComponent]);
 
 @NgModule({
-  declarations: [...components],
+  declarations: [...components, CockpitComponent],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
     FormsModule,
     AccordionModule,
+    YuvWidgetGridModule,
     CommandPaletteModule.forRoot({
       searchModeIndicator: '?'
     }),
