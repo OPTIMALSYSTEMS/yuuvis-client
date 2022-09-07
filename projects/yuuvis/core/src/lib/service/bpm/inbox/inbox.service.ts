@@ -113,7 +113,7 @@ export class InboxService {
         // update tasklist after claiming without actually fetching it again
         const idx = this.inboxData.findIndex((t) => t.id === updatedTask.id);
         if (idx !== -1) {
-          this.inboxData[idx] = { ...updatedTask, subject: 'Deine Mudda' };
+          this.inboxData[idx] = { ...updatedTask };
           this.inboxDataSource.next([...this.inboxData]);
         }
       })
