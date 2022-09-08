@@ -1,6 +1,7 @@
 import { RowEvent } from '@ag-grid-community/core';
 import { Component, EventEmitter, Input, Output, TemplateRef, ViewChild } from '@angular/core';
 import { ColumnConfig, DmsService, SearchQuery, SystemService, TranslateService } from '@yuuvis/core';
+import { Observable } from 'rxjs';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { ResponsiveDataTableOptions, ViewMode } from '../../components/responsive-data-table/responsive-data-table.component';
 import { PopoverConfig } from '../../popover/popover.interface';
@@ -58,6 +59,8 @@ export class SearchResultPanelComponent {
   @Input() layoutOptionsKey: string;
   @Input() filterPanelConfig: FilterPanelConfig;
   @Input() disableFilterPanel: boolean;
+
+  @Input() plugins: Observable<any[]>;
 
   /**
    * Emitted when column sizes of the contained result list table have been changed.

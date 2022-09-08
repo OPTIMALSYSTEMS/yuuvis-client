@@ -12,6 +12,7 @@ export class ProcessDetailsComponent {
   @ViewChildren(TabPanelComponent) viewPanels: QueryList<TabPanelComponent>;
   @ViewChild('summaryTab') summaryTab: TemplateRef<any>;
   @ViewChild('historyTab') historyTab: TemplateRef<any>;
+  @ViewChild('commentsTab') commentsTab: TemplateRef<any>;
   @ViewChild('attachmentsTab') attachmentsTab: TemplateRef<any>;
 
   _process: Process;
@@ -19,7 +20,7 @@ export class ProcessDetailsComponent {
     title: string;
     description: string;
   };
-  panelOrder = ['summaryTab', 'historyTab', 'attachmentsTab'];
+  panelOrder = ['summaryTab', 'historyTab', 'commentsTab', 'attachmentsTab'];
 
   @Input() set process(p: Process) {
     this._process = p;

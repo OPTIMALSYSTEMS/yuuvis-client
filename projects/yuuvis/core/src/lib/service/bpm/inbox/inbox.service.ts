@@ -107,7 +107,17 @@ export class InboxService {
     const payload: any = {
       assignee: claim ? { id: this.userService.getCurrentUser().id } : null
     };
-    return this.putTask(taskId, ProcessAction.claim, payload || {});
+    const pl = { ...payload, action: ProcessAction.claim };
+    return this.backendService.put(`/bpm/tasks/${taskId}`, pl || {}, ApiBase.apiWeb).pipe(
+      tap((updatedTask: Task) => {
+        // update tasklist after claiming without actually fetching it again
+        const idx = this.inboxData.findIndex((t) => t.id === updatedTask.id);
+        if (idx !== -1) {
+          this.inboxData[idx] = { ...updatedTask };
+          this.inboxDataSource.next([...this.inboxData]);
+        }
+      })
+    );
   }
 
   /**

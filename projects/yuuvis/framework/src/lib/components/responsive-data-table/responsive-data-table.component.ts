@@ -4,7 +4,7 @@ import { Component, ElementRef, EventEmitter, HostBinding, HostListener, Input, 
 import { BaseObjectTypeField, DeviceService, PendingChangesService, Utils } from '@yuuvis/core';
 import { ResizedEvent } from 'angular-resize-event';
 import { Observable, ReplaySubject } from 'rxjs';
-import { debounceTime } from 'rxjs/operators';
+import { debounceTime, map } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { ObjectTypeIconComponent } from '../../common/components/object-type-icon/object-type-icon.component';
 import { LocaleDatePipe } from '../../pipes/locale-date.pipe';
@@ -84,15 +84,21 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
    * will be used to store component specific settings using the layout service.
    */
   private _layoutOptionsKey: string;
-  @Input() set layoutOptionsKey(lok: string) {
+  @Input()
+  set layoutOptionsKey(lok: string) {
     this._layoutOptionsKey = lok;
-    this.layoutService.loadLayoutOptions(lok, 'yuv-responsive-data-table').subscribe((o: ResponsiveDataTableOptions) => {
-      this._layoutOptions = o || {};
-      if (this._layoutOptions.viewMode) {
-        this.setupViewMode(this._layoutOptions.viewMode);
-      }
-      this.applyGridOption(true);
-    });
+    this.layoutService
+      .loadLayoutOptions(lok, 'yuv-responsive-data-table')
+      .pipe(
+        map((o: ResponsiveDataTableOptions) => {
+          this._layoutOptions = o || {};
+          if (this._layoutOptions.viewMode) {
+            this.setupViewMode(this._layoutOptions.viewMode);
+          }
+          this.applyGridOption(true);
+        })
+      )
+      .subscribe();
   }
 
   /**
@@ -101,11 +107,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
   @Input()
   set data(data: ResponsiveTableData) {
     this._data = data;
-    if (this.gridOptions) {
-      this.applyGridOption();
-    } else {
-      this.setupGridOptions();
-    }
+    this.gridOptions ? this.applyGridOption() : this.setupGridOptions();
   }
   get data(): ResponsiveTableData {
     return this._data;
@@ -202,6 +204,10 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
   @HostListener('keydown.control.shift.c', ['$event'])
   @HostListener('keydown.control.alt.c', ['$event'])
   @HostListener('keydown.control.c', ['$event'])
+  @HostListener('keydown.meta.alt.shift.c', ['$event'])
+  @HostListener('keydown.meta.shift.c', ['$event'])
+  @HostListener('keydown.meta.alt.c', ['$event'])
+  @HostListener('keydown.meta.c', ['$event'])
   copyCellHandler(event: KeyboardEvent) {
     this.gridApi.copyToClipboard(event, this.gridOptions);
   }
@@ -352,6 +358,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
       // if the small state changed, a different set of rowData is applied to the grid
       // so we need to reselect the items that were selected before
       this.selectRows(this._currentSelection);
+      this.gridOptions.api.redrawRows();
     } else if (retry) {
       setTimeout(() => this.applyGridOption(false), 0);
     }
@@ -413,7 +420,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
   private ensureVisibility(rowIndex = 0) {
     if (this.isVertical) {
       const shift = Math.floor(this.settings.size.newWidth / this.settings.colWidth.grid / 2);
-      this.gridOptions.api['gridPanel'].setCenterViewportScrollLeft(Math.max(0, (rowIndex - shift) * this.settings.colWidth.grid));
+      this.gridOptions.api['ctrlsService'].centerRowContainerCtrl.setCenterViewportScrollLeft(Math.max(0, (rowIndex - shift) * this.settings.colWidth.grid));
     } else if (this.isGrid) {
       this.gridOptions.api.ensureIndexVisible(Math.floor(rowIndex / Math.floor(this.settings.size.newWidth / this.settings.colWidth.grid)));
     } else {
@@ -501,7 +508,6 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
     if (colEl) {
       this.selectRows([colEl.parentElement.getAttribute('row-id')], colEl.getAttribute('col-id'), false);
       this.onSelectionChanged(null);
-      console.log(colEl.parentElement.getAttribute('row-id'));
     }
   }
 

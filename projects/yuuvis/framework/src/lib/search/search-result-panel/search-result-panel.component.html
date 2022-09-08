@@ -12,7 +12,7 @@
   </yuv-action-menu-bar>
 
   <yuv-search-result class="content" [query]="_searchQuery" applyColumnConfig="true" [preSelectItems]="preSelectItems"
-    [disableFilterPanel]="disableFilterPanel" [layoutOptionsKey]="layoutOptionsKey"
+    [disableFilterPanel]="disableFilterPanel" [layoutOptionsKey]="layoutOptionsKey" [plugins]="plugins"
     (viewModeChanged)="onViewModeChanged($event)" [filterPanelConfig]="filterPanelConfig"
     (filterPanelConfigChanged)="onFilterPanelConfigChanged($event)" (itemsSelected)="onItemsSelected($event)"
     (queryChanged)="onQueryChangedFromWithin($event)" (rowDoubleClicked)="rowDoubleClicked.emit($event)">

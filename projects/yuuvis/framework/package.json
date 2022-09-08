@@ -1,6 +1,6 @@
 {
   "name": "@yuuvis/framework",
-  "version": "4.0.0-rc.10",
+  "version": "4.0.0-beta.4",
   "author": "OPTIMAL SYSTEMS GmbH <npm@optimal-systems.de>",
   "license": "MIT",
   "scripts": {
@@ -23,7 +23,7 @@
     "@ag-grid-community/csv-export": "~28.0.2",
     "@angular/cdk": "~14.0.4",
     "@yuuvis/command-palette": "^1.0.0",
-    "@yuuvis/core": "4.0.0-rc.10",
+    "@yuuvis/core": "4.0.0-beta.4",
     "@yuuvis/styles": "^1.0.5",
     "angular-resize-event": "^3.1.1",
     "angular-split": "^13.2.0",
@@ -31,7 +31,7 @@
     "ngx-drag-scroll": "^13.0.2",
     "ngx-toastr": "^15.0.0",
     "primeicons": "^5.0.0",
-    "primeng": "14.0.0-rc.1",
+    "primeng": "14.0.1",
     "take-until-destroy": "^2.1.0",
     "tslib": "^2.4.0"
   }

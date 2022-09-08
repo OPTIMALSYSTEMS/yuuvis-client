@@ -45,13 +45,13 @@ export class GridService {
     event.preventDefault();
     event.stopPropagation();
 
-    const viewport = gridOptions.api['gridPanel'].eCenterViewport;
+    const viewport = gridOptions.api['ctrlsService'].centerRowContainerCtrl.eViewport;
     const scrollLeft = viewport.scrollLeft;
 
     const focusedCell = gridOptions.api.getFocusedCell();
     const rows: RowNode[] = event.shiftKey ? gridOptions.api.getSelectedNodes() : [gridOptions.api.getDisplayedRowAtIndex(focusedCell.rowIndex)];
     const cols: Column[] = event.shiftKey ? gridOptions.columnApi.getAllDisplayedColumns() : [focusedCell.column];
-    const getCell = (col, row) => gridOptions.api['gridPanel'].eGui.querySelector(`div[row-index="${row.rowIndex}"] [col-id="${col.colId}"]`);
+    const getCell = (col, row) => viewport.parentElement.parentElement.querySelector(`div[row-index="${row.rowIndex}"] [col-id="${col.colId}"]`);
     const value = (col, row) => {
       gridOptions.api.ensureColumnVisible(col);
       const cell = getCell(col, row);
@@ -66,7 +66,7 @@ export class GridService {
     if (event.altKey) content += cols.map((col: Column) => col.getColDef().headerName).join('	') + '\n';
     content += rows.map((row) => cols.map((col: Column) => value(col, row)).join('	')).join('\n');
 
-    viewport.scrollLeft = scrollLeft;
+    viewport.scrollLeft = scrollLeft + 1;
     setTimeout(
       () =>
         rows.map((row) =>

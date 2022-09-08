@@ -20,6 +20,17 @@
   ::ng-deep {
     .ag-cell.aggDone {
       span {
+        display: flex;
+        align-items: center;
+        padding: 2px 4px;
+        font-size: var(--font-caption);
+        border-radius: 4px;
+        svg {
+          width: 18px;
+          height: 18px;
+          margin-right: calc(var(--app-pane-padding) / 3);
+        }
+
         &.red {
           color: #fff;
           background-color: var(--color-error);
