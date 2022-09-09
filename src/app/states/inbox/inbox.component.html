@@ -1,7 +1,7 @@
 <ng-container [yuvTitle]="('yuv.client.state.inbox.title' | translate)"></ng-container>
 <section class="inbox-wrapper" *ngIf="inboxData$ | async as inboxData">
-  <yuv-responsive-master-slave class="state" [layoutOptionsKey]="layoutOptionsKey" [slaveActive]="!!detailsTask"
-    (slaveClosed)="onSlaveClosed()">
+  <yuv-responsive-master-slave class="state" [layoutOptionsKey]="layoutOptionsKey"
+    [slaveActive]="!!detailsTaskInstanceID" (slaveClosed)="onSlaveClosed()">
     <yuv-process-list class="yuv-master panel" [showFooter]="true" [headerDetails]="headerDetails"
       [filterTerm]="filterTerm" [layoutOptionsKey]="layoutOptionsKey" [processData]="inboxData"
       (refreshList)="refreshList()" (selectedItem)="selectedItem($event)" [yuvBusyOverlay]="loading$ | async"
@@ -9,8 +9,9 @@
     <section class="yuv-slave panel">
 
 
-      <yuv-task-details [task]="detailsTask" (attachmentOpenExternal)="onAttachmentOpenExternal($event)"
-        [layoutOptionsKey]="layoutOptionsKey" [plugins]="plugins" [attachmentPlugins]="attachmentPlugins">
+      <yuv-task-details [processInstanceId]="detailsTaskInstanceID"
+        (attachmentOpenExternal)="onAttachmentOpenExternal($event)" [layoutOptionsKey]="layoutOptionsKey"
+        [plugins]="plugins" [attachmentPlugins]="attachmentPlugins">
       </yuv-task-details>
     </section>
   </yuv-responsive-master-slave>

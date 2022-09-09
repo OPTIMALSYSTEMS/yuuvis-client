@@ -38,8 +38,8 @@ export class InboxService {
   /**
    * updates inboxData$
    */
-  fetchTasks(includeProcessVar = true): void {
-    this.getTasksPaged({ includeProcessVariables: includeProcessVar })
+  fetchTasks(includeProcessVar = true, briefRepresentation = true): void {
+    this.getTasksPaged({ includeProcessVariables: includeProcessVar, briefRepresentation })
       .pipe(
         tap((res: Task[]) => {
           this.inboxData = [...res.reverse()];
@@ -53,7 +53,7 @@ export class InboxService {
     this.inboxDataSource.next(this.inboxData);
   }
 
-  private getTasksPaged(options?: { active?: boolean; includeProcessVariables?: boolean; processInstanceId?: string }) {
+  private getTasksPaged(options?: { active?: boolean; includeProcessVariables?: boolean; processInstanceId?: string; briefRepresentation?: boolean }) {
     let p = [];
     Object.keys(options).forEach((k) => {
       p.push(`${k}=${options[k]}`);
@@ -77,7 +77,7 @@ export class InboxService {
 
   private getPage(requestParams: string, index?: number) {
     const pageSize = this.config.get('core.app.inboxPageSize') || this.INBOX_PAGE_SIZE;
-    return this.bpmService.getProcesses(`/bpm/tasks?size=${pageSize}&sort=createTime&page=${index || 0}${requestParams}`);
+    return this.bpmService.getProcesses(`/bpm/tasks?size=${pageSize}&sort=createTime&page=${index || 0}${requestParams}`, true);
   }
 
   /**
@@ -85,7 +85,7 @@ export class InboxService {
    */
   getTask(processInstanceId: string, includeProcessVar = true): Observable<Task> {
     return this.bpmService
-      .getProcesses(`/bpm/tasks/${processInstanceId}${includeProcessVar ? '?includeProcessVariables=true' : ''}`)
+      .getProcesses(`/bpm/tasks/${processInstanceId}${includeProcessVar ? '?includeProcessVariables=true' : ''}`, true)
       .pipe(map((res) => res as Task));
   }
 
@@ -107,7 +107,17 @@ export class InboxService {
     const payload: any = {
       assignee: claim ? { id: this.userService.getCurrentUser().id } : null
     };
-    return this.putTask(taskId, ProcessAction.claim, payload || {});
+    const pl = { ...payload, action: ProcessAction.claim };
+    return this.backendService.put(`/bpm/tasks/${taskId}`, pl || {}, ApiBase.apiWeb).pipe(
+      tap((updatedTask: Task) => {
+        // update tasklist after claiming without actually fetching it again
+        const idx = this.inboxData.findIndex((t) => t.id === updatedTask.id);
+        if (idx !== -1) {
+          this.inboxData[idx] = { ...updatedTask };
+          this.inboxDataSource.next([...this.inboxData]);
+        }
+      })
+    );
   }
 
   /**

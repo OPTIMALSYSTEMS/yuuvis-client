@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
-import { BaseObjectTypeField, SearchFilter, SearchFilterGroup, SearchQuery, TranslateService } from '@yuuvis/core';
-import { forkJoin } from 'rxjs';
+import { BaseObjectTypeField, SearchFilter, SearchFilterGroup, SearchQuery, SearchService, TranslateService } from '@yuuvis/core';
+import { forkJoin, Observable } from 'rxjs';
 import { IconRegistryService } from '../../../common/components/icon/service/iconRegistry.service';
 import { Selectable } from '../../../grouped-select';
 import { SelectableGroup } from '../../../grouped-select/grouped-select/grouped-select.interface';
@@ -49,9 +49,14 @@ export class SearchFilterComponent implements OnInit {
   availableTypeGroups: SelectableGroup[] = [];
   availableObjectTypes: Selectable[] = [];
   typeSelection: string[] = [];
+  customTypeSelection: string[] = [];
 
   availableFilterGroups: SelectableGroup[] = [];
   availableObjectTypeFields: Selectable[] = [];
+
+  get mixedTypeSelection() {
+    return [...this.typeSelection, ...this.customTypeSelection];
+  }
 
   get filterSelection() {
     return (this.activeFilters || []).map((f) => f.id);
@@ -82,6 +87,8 @@ export class SearchFilterComponent implements OnInit {
     return this.availableObjectTypeFields.map((o) => ({ ...o, value: [new SearchFilter(o.id, o.defaultOperator, o.defaultValue)] }));
   }
 
+  @Input() plugins: Observable<any[]>;
+
   @Output() filterChange = new EventEmitter<SearchQuery>();
 
   constructor(
@@ -89,7 +96,8 @@ export class SearchFilterComponent implements OnInit {
     private iconRegistry: IconRegistryService,
     private quickSearchService: QuickSearchService,
     private popoverService: PopoverService,
-    private layoutService: LayoutService
+    private layoutService: LayoutService,
+    private searchService: SearchService
   ) {
     this.iconRegistry.registerIcons([settings, reset, favorite, listModeDefault, listModeSimple]);
   }
@@ -102,6 +110,7 @@ export class SearchFilterComponent implements OnInit {
   }
 
   onToggle(group: SelectableGroup) {
+    this.aggregate();
     this.saveLayoutOptions({
       collapsedGroups: (this._layoutOptions.collapsedGroups || []).filter((id) => id !== group.id).concat(group.collapsed ? [group.id] : [])
     });
@@ -145,15 +154,19 @@ export class SearchFilterComponent implements OnInit {
   }
 
   private setupExtensions() {
-    const { active, all } = this.quickSearchService.getActiveExtensions(this._query);
-    if (all.length) {
-      this.typeSelection = [...this.typeSelection, ...active];
-      this.availableTypeGroups[1] = {
-        id: 'extensions',
-        label: this.translate.instant('yuv.framework.search.filter.object.extensions'),
-        items: all
-      };
-    }
+    this.plugins.subscribe(plugins => {
+      const { active, all } = this.quickSearchService.getActiveExtensions(this._query);
+      const custom = plugins.map((o) => ({ id: o.id, label: o.label ? this.translate.instant(o.label) : o.id, value: new SearchFilterGroup(o.id, SearchFilterGroup.OPERATOR.AND, [SearchFilterGroup.fromQuery(o.plugin?.inputs)]), count: 0 }));
+      if (all.length || custom.length) {
+        this.typeSelection = [...this.typeSelection, ...active];
+        this.availableTypeGroups[1] = {
+          id: 'extensions',
+          label: this.translate.instant('yuv.framework.search.filter.object.extensions'),
+          items: [...all, ...custom]
+        };
+        this.aggregate(true);
+      }
+    });
   }
 
   private setupFilters(typeSelection: string[], activeFilters?: Selectable[]) {
@@ -260,14 +273,18 @@ export class SearchFilterComponent implements OnInit {
   }
 
   onTypeChange(res: Selectable[]) {
-    this.typeSelection = res.map((r) => r.id);
+    this.typeSelection = res.filter(r => !r.value).map((r) => r.id);
+    this.customTypeSelection = res.filter(r => r.value).map((r) => r.id);
+
     this.setupFilters(this.typeSelection, this.activeFilters);
-    const _types = [...this.filterQuery.types];
     this.quickSearchService.updateTypesAndLots(this.filterQuery, this.typeSelection);
+
+    const customGroups = this.filterQuery.filterGroup.groups.map(g => g.property).filter(property => property !== SearchFilterGroup.DEFAULT);
+    customGroups.forEach(g => this.filterQuery.removeFilterGroup(g));
+    res.forEach(r => r.value && this.filterQuery.addFilterGroup(r.value));
+
     this.filterChange.emit(this.filterQuery);
-    if (_types.sort().join() !== this.filterQuery.types.sort().join()) {
-      this.aggregate();
-    }
+    this.aggregate();
   }
 
   saveSearch() {}
@@ -277,9 +294,9 @@ export class SearchFilterComponent implements OnInit {
     this.filterChange.emit(new SearchQuery(this._query.toQueryJson()));
   }
 
-  aggregate() {
+  aggregate(skipTypes = false) {
     const queryNoLots = new SearchQuery({ ...this.filterQuery.toQueryJson(), lots: [] });
-    this.quickSearchService.getActiveTypes(queryNoLots).subscribe((types: any) => {
+    !skipTypes && !this.availableTypeGroups[0]?.collapsed && this.quickSearchService.getActiveTypes(this.filterQuery).subscribe((types: any) => {
       this.availableObjectTypes.forEach((i) => {
         const match = types.find((t) => t.id === i.id);
         i.count = match ? match.count : 0;
@@ -288,6 +305,21 @@ export class SearchFilterComponent implements OnInit {
       this.availableTypeGroups[0].items = this.availableObjectTypes.filter((t) => t.count || this._query.allTypes.includes(t.id));
       this.typeSelection = [...this.typeSelection];
     });
+
+    const sum = (r: any) => r?.aggregations?.[0].entries.reduce((p, c) => p + c.count, 0);
+
+    !this.availableTypeGroups[1]?.collapsed && this.availableTypeGroups[1]?.items.filter(g => !g.value).forEach(g => {
+      const q = new SearchQuery(this.filterQuery.toQueryJson(true));
+      q.types = [g.id];
+      this.searchService.aggregate(q, [BaseObjectTypeField.LEADING_OBJECT_TYPE_ID]).subscribe(r => (g.count = sum(r).toString() as any));
+    });
+
+    !this.availableTypeGroups[1]?.collapsed && this.availableTypeGroups[1]?.items.filter(g => g.value).forEach(g => {
+      const q = new SearchQuery(this.filterQuery.toQueryJson(true));
+      q.addFilterGroup(g.value);
+      this.searchService.aggregate(q, [BaseObjectTypeField.LEADING_OBJECT_TYPE_ID]).subscribe(r => (g.count = sum(r).toString() as any));
+    });
+
   }
 
   ngOnInit(): void {}

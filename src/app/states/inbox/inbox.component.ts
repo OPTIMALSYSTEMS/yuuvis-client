@@ -30,7 +30,7 @@ export class InboxComponent implements OnInit, OnDestroy {
   layoutOptionsKey = 'yuv.app.inbox';
   contextError: string;
   selectedTasks: TaskRow[];
-  detailsTask: Task;
+  detailsTaskInstanceID: string;
   inboxData$: Observable<ResponsiveTableData> = this.inboxService.inboxData$.pipe(
     map((taskData: Task[]) => {
       const td = this.filterTerm
@@ -80,7 +80,7 @@ export class InboxComponent implements OnInit, OnDestroy {
 
   selectedItem(items: TaskRow[]) {
     this.selectedTasks = items;
-    this.detailsTask = items && items.length ? items[items.length - 1].originalData : null;
+    this.detailsTaskInstanceID = items && items.length ? items[items.length - 1].id : null;
   }
 
   refreshList() {

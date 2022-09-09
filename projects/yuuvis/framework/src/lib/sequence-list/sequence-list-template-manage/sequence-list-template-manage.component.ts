@@ -172,6 +172,7 @@ export class SequenceListTemplateManageComponent implements OnInit, OnDestroy {
   private loadTemplates() {
     this.backend.get(`/users/settings/${this.storageSection}`).subscribe((res) => {
       this.templates = res ? res.templates || [] : [];
+      this.selectCurrentEntries();
     });
   }
 
