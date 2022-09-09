@@ -110,7 +110,7 @@ export class SearchResultComponent implements OnDestroy {
    * Query to be executed by the component.
    */
   @Input() set query(searchQuery: SearchQuery) {
-    if (this.dataTable?.gridOptions?.api.getSelectedNodes().length) {
+    if (this.dataTable?.gridOptions?.api?.getSelectedNodes().length) {
       this.itemsSelected.emit([]);
     }
 
