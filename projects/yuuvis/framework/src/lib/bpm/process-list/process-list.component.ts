@@ -30,7 +30,7 @@ export class ProcessListComponent {
     this._processData = data;
     this.totalNumItems = data ? data.rows?.length : 0;
 
-    let rowsToBeSelected: RowNode[] = this.dataTable?.gridOptions.api.getSelectedNodes();
+    let rowsToBeSelected: RowNode[] = this.dataTable?.gridOptions.api?.getSelectedNodes();
     if (rowsToBeSelected?.length) {
       // try to find index by ID first
       const rowNode = this.dataTable.gridOptions.api.getRowNode(rowsToBeSelected[0].data.id);
