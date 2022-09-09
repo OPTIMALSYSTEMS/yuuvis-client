@@ -356,6 +356,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
       // if the small state changed, a different set of rowData is applied to the grid
       // so we need to reselect the items that were selected before
       this.selectRows(this._currentSelection);
+      this.gridOptions.api.redrawRows();
     } else if (retry) {
       setTimeout(() => this.applyGridOption(false), 0);
     }
