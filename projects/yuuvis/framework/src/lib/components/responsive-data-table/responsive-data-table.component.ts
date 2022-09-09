@@ -255,7 +255,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
     });
 
     // subscribe to pending hanges
-    this.pendingChanges.tasks$.pipe(takeUntilDestroy(this)).subscribe((tasks) => this.gridOptions && (this.gridOptions.suppressCellSelection = !!tasks.length));
+    this.pendingChanges.tasks$.pipe(takeUntilDestroy(this)).subscribe((tasks) => this.gridOptions && (this.gridOptions.suppressCellFocus = !!tasks.length));
   }
 
   getRowHeight(params: RowHeightParams): number {
@@ -450,7 +450,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
       columnDefs: this._layoutOptionsKey ? [] : this._data.columns,
       headerHeight: this.settings.headerHeight.standard,
       rowHeight: this.settings.rowHeight.standard,
-      suppressCellSelection: false,
+      suppressCellFocus: false,
       rowSelection: this._data.selectType || 'single',
       suppressNoRowsOverlay: true,
       multiSortKey: 'ctrl',
@@ -491,9 +491,9 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
 
   onMouseDown($event: MouseEvent | any) {
     // TODO: find the solution for mobile / touch event
-    if (this.deviceService.isDesktop && $event.button === 0 && this.gridOptions && this.gridOptions.suppressCellSelection) {
+    if (this.deviceService.isDesktop && $event.button === 0 && this.gridOptions && this.gridOptions.suppressCellFocus) {
       if (!this.pendingChanges.check()) {
-        this.gridOptions.suppressCellSelection = false;
+        this.gridOptions.suppressCellFocus = false;
 
         this.selectEvent($event);
       } else {
