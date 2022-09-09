@@ -1,14 +1,21 @@
 import { Component, OnInit } from '@angular/core';
-import { AppCacheService } from '@yuuvis/core';
-import { GridItemEvent, WidgetGridItemConfig, WidgetGridRegistry, WidgetGridUtils } from '@yuuvis/widget-grid';
+import { NavigationExtras, Router } from '@angular/router';
+import { AppCacheService, SearchQuery } from '@yuuvis/core';
+import { IconRegistryService, settings } from '@yuuvis/framework';
+import { GridItemEvent, WidgetGridConfig, WidgetGridItemConfig, WidgetGridRegistry, WidgetGridUtils } from '@yuuvis/widget-grid';
 import {
   ChartsSetupComponent,
   ChartsWidgetComponent,
+  EVT_COUNT_TILE_CLICK,
+  EVT_LIST_ITEM_CLICK,
+  EVT_STORED_QUERY_EXECUTE,
   HitlistSetupComponent,
   HitlistWidgetComponent,
   StoredQuerySetupComponent,
   StoredQueryWidgetComponent
 } from '@yuuvis/widget-grid-widgets';
+import { AppSearchService } from '../../service/app-search.service';
+import { QuickSearchWidgetComponent } from '../../widgets/quick-search-widget/quick-search-widget.component';
 
 @Component({
   selector: 'yuv-cockpit',
@@ -22,11 +29,47 @@ export class CockpitComponent implements OnInit {
   private STORAGE_KEY = 'yuv.client.cockpit.widgetgrid';
   gridItemConfig: Array<WidgetGridItemConfig> = [];
   gridEditMode: boolean = false;
+  gridConfig: WidgetGridConfig = {
+    rows: 10,
+    columns: 10
+  };
 
-  constructor(private appCache: AppCacheService, private widgetGridRegistry: WidgetGridRegistry) {}
+  constructor(
+    private appCache: AppCacheService,
+    private router: Router,
+    private appSearch: AppSearchService,
+    private iconRegistry: IconRegistryService,
+    private widgetGridRegistry: WidgetGridRegistry
+  ) {
+    this.iconRegistry.registerIcons([settings]);
+  }
 
   onGridEvent(e: GridItemEvent) {
     console.log(e);
+
+    // TODO: handle events comming from the grid widgets
+    switch (e.action) {
+      case EVT_COUNT_TILE_CLICK: {
+        // emits SearchQuery object
+        this.openSearchResult(e.data as SearchQuery);
+        break;
+      }
+      case EVT_LIST_ITEM_CLICK: {
+        // emits ID of the clicked list item
+        this.router.navigate(['/object', e.data]);
+        break;
+      }
+      case EVT_STORED_QUERY_EXECUTE: {
+        this.openSearchResult(e.data as SearchQuery);
+        break;
+      }
+    }
+  }
+
+  private openSearchResult(query: SearchQuery) {
+    const navigationExtras: NavigationExtras = { queryParams: { query: JSON.stringify(query.toQueryJson()) } };
+    this.appSearch.setQuery(query);
+    this.router.navigate(['/result'], navigationExtras);
   }
 
   private registerWidgets() {
@@ -48,8 +91,18 @@ export class CockpitComponent implements OnInit {
         label: 'Charts',
         setupComponent: ChartsSetupComponent,
         widgetComponent: ChartsWidgetComponent
+      },
+      // own widgets
+      {
+        name: 'yuv.client.widget.quicksearch',
+        label: 'Search',
+        widgetComponent: QuickSearchWidgetComponent
       }
     ]);
+  }
+
+  onGridChange(grid: Array<WidgetGridItemConfig>) {
+    this.appCache.setItem(this.STORAGE_KEY, WidgetGridUtils.gridConfigStringify(grid)).subscribe();
   }
 
   ngOnInit(): void {

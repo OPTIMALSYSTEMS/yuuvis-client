@@ -30,6 +30,7 @@ import { ResultComponent } from './states/result/result.component';
 import { RetentionsComponent } from './states/retentions/retentions.component';
 import { SettingsComponent } from './states/settings/settings.component';
 import { VersionsComponent } from './states/versions/versions.component';
+import { YuvWidgetsModule } from './widgets/widgets.module';
 
 const components = [
   AppComponent,
@@ -60,6 +61,7 @@ YuvComponentRegister.register([CommandPaletteComponent]);
     BrowserAnimationsModule,
     FormsModule,
     AccordionModule,
+    YuvWidgetsModule,
     YuvWidgetGridModule,
     CommandPaletteModule.forRoot({
       searchModeIndicator: '?'

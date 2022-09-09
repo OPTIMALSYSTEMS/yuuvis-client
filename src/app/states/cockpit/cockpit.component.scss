@@ -4,6 +4,7 @@
   grid-template-rows: 1fr auto;
   grid-template-columns: 1fr;
   grid-template-areas: 'main' 'toolbar';
+  padding-top: var(--app-bar-height);
 
   .toolbar {
     display: flex;
@@ -29,6 +30,9 @@
   ::ng-deep {
     gridster {
       background-color: transparent;
+    }
+    gridster-item {
+      box-shadow: 0 0 1em rgba(0, 0, 0, 0.1);
     }
   }
 }

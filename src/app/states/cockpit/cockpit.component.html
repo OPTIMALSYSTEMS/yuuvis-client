@@ -1,6 +1,9 @@
-<yuv-widget-grid [gridItemConfig]="gridItemConfig" [editMode]="gridEditMode" (gridItemEvent)="onGridEvent($event)">
+<yuv-widget-grid [gridConfig]="gridConfig" [gridItemConfig]="gridItemConfig" [editMode]="gridEditMode"
+    (gridChange)="onGridChange($event)" (gridItemEvent)="onGridEvent($event)">
 </yuv-widget-grid>
 
 <div class="toolbar">
-    <button class="secondary" (click)="gridEditMode = !gridEditMode">édit</button>
+    <button class="secondary" (click)="gridEditMode = !gridEditMode">
+        <yuv-icon [icon]="'settings'"> </yuv-icon>
+    </button>
 </div>
