@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { NavigationExtras, Router } from '@angular/router';
-import { AppCacheService, SearchQuery } from '@yuuvis/core';
-import { IconRegistryService, settings } from '@yuuvis/framework';
+import { AppCacheService, IconRegistryService, SearchQuery, settings } from '@yuuvis/framework';
 import { GridItemEvent, WidgetGridConfig, WidgetGridItemConfig, WidgetGridRegistry, WidgetGridUtils } from '@yuuvis/widget-grid';
 import {
   ChartsSetupComponent,
@@ -14,18 +13,19 @@ import {
   StoredQuerySetupComponent,
   StoredQueryWidgetComponent
 } from '@yuuvis/widget-grid-widgets';
-import { AppSearchService } from '../../service/app-search.service';
-import { QuickSearchWidgetComponent } from '../../widgets/quick-search-widget/quick-search-widget.component';
+import { AppSearchService } from '../../../service/app-search.service';
+import { QuickSearchWidgetComponent } from '../../../widgets/quick-search-widget/quick-search-widget.component';
+import { WIDGET_EVT_QUICKSEARCH_EXECUTE } from '../../../widgets/widgets.events';
 
 @Component({
-  selector: 'yuv-cockpit',
-  templateUrl: './cockpit.component.html',
-  styleUrls: ['./cockpit.component.scss'],
+  selector: 'yuv-dashboard-widgets',
+  templateUrl: './dashboard-widgets.component.html',
+  styleUrls: ['./dashboard-widgets.component.scss'],
   host: {
     class: 'themeBackground'
   }
 })
-export class CockpitComponent implements OnInit {
+export class DashboardWidgetsComponent implements OnInit {
   private STORAGE_KEY = 'yuv.client.cockpit.widgetgrid';
   gridItemConfig: Array<WidgetGridItemConfig> = [];
   gridEditMode: boolean = false;
@@ -56,10 +56,14 @@ export class CockpitComponent implements OnInit {
       }
       case EVT_LIST_ITEM_CLICK: {
         // emits ID of the clicked list item
-        this.router.navigate(['/object', e.data]);
+        this.router.navigate(['/object', e.data.id]);
         break;
       }
       case EVT_STORED_QUERY_EXECUTE: {
+        this.openSearchResult(e.data as SearchQuery);
+        break;
+      }
+      case WIDGET_EVT_QUICKSEARCH_EXECUTE: {
         this.openSearchResult(e.data as SearchQuery);
         break;
       }

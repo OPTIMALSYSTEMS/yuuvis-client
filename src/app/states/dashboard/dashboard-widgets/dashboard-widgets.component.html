@@ -3,7 +3,9 @@
 </yuv-widget-grid>
 
 <div class="toolbar">
-    <button class="secondary" (click)="gridEditMode = !gridEditMode">
-        <yuv-icon [icon]="'settings'"> </yuv-icon>
-    </button>
+    <div class="actions" [ngClass]="{gridEditMode}">
+        <button (click)="gridEditMode = !gridEditMode">
+            <yuv-icon [icon]="'settings'"> </yuv-icon>
+        </button>
+    </div>
 </div>

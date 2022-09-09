@@ -1,6 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { SearchQuery } from '@yuuvis/core';
-import { IWidgetComponent } from '@yuuvis/widget-grid';
+import { IWidgetComponent, WidgetGridEventService } from '@yuuvis/widget-grid';
+import { WIDGET_EVT_QUICKSEARCH_EXECUTE } from '../widgets.events';
 
 @Component({
   selector: 'yuv-quick-search-widget',
@@ -10,7 +11,13 @@ import { IWidgetComponent } from '@yuuvis/widget-grid';
 export class QuickSearchWidgetComponent implements IWidgetComponent {
   @Input() widgetConfig: any;
 
+  constructor(private widgetGridEventService: WidgetGridEventService) {}
+
   onQuickSearchQuery(query: SearchQuery) {
     console.log(query);
+    this.widgetGridEventService.trigger({
+      action: WIDGET_EVT_QUICKSEARCH_EXECUTE,
+      data: query
+    });
   }
 }

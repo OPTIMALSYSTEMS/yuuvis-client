@@ -15,9 +15,10 @@ import { FrameComponent } from './components/frame/frame.component';
 import { AppRoutingModule } from './routing/app.routes.module';
 import { AuthInterceptor } from './service/auth.interceptor';
 import { AboutModule } from './states/about/about.module';
-import { CockpitComponent } from './states/cockpit/cockpit.component';
 import { ColumnConfigurationComponent } from './states/column-configuration/column-configuration.component';
 import { CreateComponent } from './states/create/create.component';
+import { DashboardDefaultComponent } from './states/dashboard/dashboard-default/dashboard-default.component';
+import { DashboardWidgetsComponent } from './states/dashboard/dashboard-widgets/dashboard-widgets.component';
 import { DashboardComponent } from './states/dashboard/dashboard.component';
 import { FilterConfigurationComponent } from './states/filter-configuration/filter-configuration.component';
 import { FollowUpsComponent } from './states/follow-ups/follow-ups.component';
@@ -48,14 +49,16 @@ const components = [
   FilterConfigurationComponent,
   ProcessesComponent,
   FollowUpsComponent,
-  RetentionsComponent
+  RetentionsComponent,
+  DashboardDefaultComponent,
+  DashboardWidgetsComponent
 ];
 
 YuvComponentRegister.register(components);
 YuvComponentRegister.register([CommandPaletteComponent]);
 
 @NgModule({
-  declarations: [...components, CockpitComponent],
+  declarations: [...components],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,

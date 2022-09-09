@@ -15,6 +15,7 @@ export class SettingsComponent implements OnInit {
   user$: Observable<Partial<YuvUser>>;
   darkMode: boolean;
   accentColor: string;
+  dashboardType: 'default' | 'widgets' = 'default';
   customDashboardBackground: boolean;
   clientLocales: any;
   showPermissions: boolean;
@@ -73,6 +74,10 @@ export class SettingsComponent implements OnInit {
 
   setAccentColor(rgb: string) {
     this.layoutService.setAccentColor(rgb);
+  }
+
+  setDashboardType(dType: 'default' | 'widgets') {
+    this.layoutService.setDashboardType(dType);
   }
 
   setBackgroundImage(e) {
@@ -164,6 +169,7 @@ export class SettingsComponent implements OnInit {
     this.layoutService.layoutSettings$.subscribe((settings: LayoutSettings) => {
       this.darkMode = settings.darkMode;
       this.accentColor = settings.accentColor;
+      this.dashboardType = settings.dashboardType;
       this.customDashboardBackground = !!settings.dashboardBackground;
     });
   }

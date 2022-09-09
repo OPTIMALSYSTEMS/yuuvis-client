@@ -38,8 +38,8 @@ export class InboxService {
   /**
    * updates inboxData$
    */
-  fetchTasks(includeProcessVar = true, briefRepresentation = true): void {
-    this.getTasksPaged({ includeProcessVariables: includeProcessVar, briefRepresentation })
+  fetchTasks(includeProcessVariables = true, briefRepresentation = true): void {
+    this.getTasksPaged({ includeProcessVariables, briefRepresentation })
       .pipe(
         tap((res: Task[]) => {
           this.inboxData = [...res.reverse()];

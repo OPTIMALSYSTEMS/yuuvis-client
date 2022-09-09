@@ -4,7 +4,6 @@ import { RouterModule, Routes } from '@angular/router';
 import { PendingChangesGuard } from '@yuuvis/core';
 import { PluginComponent, PluginGuard } from '@yuuvis/framework';
 import { AboutComponent } from '../states/about/component/about.component';
-import { CockpitComponent } from '../states/cockpit/cockpit.component';
 import { ColumnConfigurationComponent } from '../states/column-configuration/column-configuration.component';
 import { CreateComponent } from '../states/create/create.component';
 import { DashboardComponent } from '../states/dashboard/dashboard.component';
@@ -22,7 +21,6 @@ import { OfflineGuard } from './offline-guard/offline-guard.service';
 
 const routes: Routes = [
   { path: 'custom/:type', component: PluginComponent, canActivate: [PluginGuard], canDeactivate: [PluginGuard, OfflineGuard] },
-  { path: 'cockpit', component: CockpitComponent, canDeactivate: [OfflineGuard], data: { transparentAppBar: true } },
   { path: 'dashboard', component: DashboardComponent, canDeactivate: [OfflineGuard], data: { transparentAppBar: true } },
   { path: 'settings', component: SettingsComponent, canDeactivate: [OfflineGuard] },
   { path: 'config/column-config', component: ColumnConfigurationComponent, canDeactivate: [OfflineGuard] },
