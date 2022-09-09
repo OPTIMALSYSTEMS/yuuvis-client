@@ -1,5 +1,5 @@
 import { Component, ContentChildren, EventEmitter, Input, OnInit, Output, QueryList, TemplateRef, ViewChild, ViewChildren } from '@angular/core';
-import { SystemService, Task, TaskType, TranslateService } from '@yuuvis/core';
+import { InboxService, SystemService, Task, TaskType, TranslateService } from '@yuuvis/core';
 import { TabPanelComponent } from '../../components/responsive-tab-container/tab-panel.component';
 
 @Component({
@@ -16,6 +16,7 @@ export class TaskDetailsComponent implements OnInit {
   @ViewChild('commentsTab') commentsTab: TemplateRef<any>;
 
   _task: Task;
+  busy: boolean;
   header: {
     title: string;
     description: string;
@@ -24,6 +25,17 @@ export class TaskDetailsComponent implements OnInit {
     date: Date;
     overDue: boolean;
   };
+
+  @Input() set processInstanceId(id: string) {
+    if (id) {
+      this.busy = true;
+      this.inboxService.getTask(id).subscribe({
+        next: (t: Task) => (this.task = t),
+        complete: () => (this.busy = false)
+      });
+    }
+  }
+
   @Input() set task(t: Task) {
     this._task = t;
     this.dueDate =
@@ -49,7 +61,7 @@ export class TaskDetailsComponent implements OnInit {
   @Input() attachmentPlugins: any;
   @Output() attachmentOpenExternal = new EventEmitter<string>();
 
-  constructor(private system: SystemService, private translate: TranslateService) {}
+  constructor(private system: SystemService, private inboxService: InboxService, private translate: TranslateService) {}
 
   private getDescription(t: Task): string {
     let label = this.system.getLocalizedResource(`${t.name}_label`);

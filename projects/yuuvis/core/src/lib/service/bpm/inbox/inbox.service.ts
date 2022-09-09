@@ -38,8 +38,11 @@ export class InboxService {
   /**
    * updates inboxData$
    */
-  fetchTasks(includeProcessVar = true): void {
-    this.getTasksPaged({ includeProcessVariables: includeProcessVar })
+  fetchTasks(includeProcessVar = true, briefRepresentation = true): void {
+    this.getTasksPaged({
+      includeProcessVariables: includeProcessVar,
+      briefRepresentation
+    })
       .pipe(
         tap((res: Task[]) => {
           this.inboxData = [...res.reverse()];
@@ -53,7 +56,7 @@ export class InboxService {
     this.inboxDataSource.next(this.inboxData);
   }
 
-  private getTasksPaged(options?: { active?: boolean; includeProcessVariables?: boolean; processInstanceId?: string }) {
+  private getTasksPaged(options?: { active?: boolean; includeProcessVariables?: boolean; processInstanceId?: string; briefRepresentation?: boolean }) {
     let p = [];
     Object.keys(options).forEach((k) => {
       p.push(`${k}=${options[k]}`);
@@ -85,7 +88,7 @@ export class InboxService {
    */
   getTask(processInstanceId: string, includeProcessVar = true): Observable<Task> {
     return this.bpmService
-      .getProcesses(`/bpm/tasks/${processInstanceId}${includeProcessVar ? '?includeProcessVariables=true' : ''}`)
+      .getProcesses(`/bpm/tasks/${processInstanceId}${includeProcessVar ? '?includeProcessVariables=true' : ''}`, true)
       .pipe(map((res) => res as Task));
   }
 
