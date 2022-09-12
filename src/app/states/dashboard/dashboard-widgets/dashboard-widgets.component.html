@@ -2,10 +2,30 @@
     (gridChange)="onGridChange($event)" (gridItemEvent)="onGridEvent($event)">
 </yuv-widget-grid>
 
-<div class="toolbar">
-    <div class="actions" [ngClass]="{gridEditMode}">
+<div class="toolbar" [ngClass]="{editMode: gridEditMode}">
+
+    <div class="actions">
+        <button class="openedit" (click)="gridEditMode = !gridEditMode">
+            <yuv-icon icon="settings"> </yuv-icon>
+        </button>
+
+
+        <button class="doneedit" (click)="gridEditMode = !gridEditMode">
+            <yuv-icon icon="done"> </yuv-icon>
+        </button>
+
+
+
+    </div>
+
+
+
+</div>
+
+<ng-template #tplEditToolbar>
+    <div class="editToolbar">
         <button (click)="gridEditMode = !gridEditMode">
             <yuv-icon [icon]="'settings'"> </yuv-icon>
         </button>
     </div>
-</div>
+</ng-template>

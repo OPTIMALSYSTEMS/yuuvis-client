@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { NavigationExtras, Router } from '@angular/router';
-import { AppCacheService, IconRegistryService, SearchQuery, settings } from '@yuuvis/framework';
+import { AppCacheService, done, IconRegistryService, SearchQuery, settings } from '@yuuvis/framework';
 import { GridItemEvent, WidgetGridConfig, WidgetGridItemConfig, WidgetGridRegistry, WidgetGridUtils } from '@yuuvis/widget-grid';
 import {
   ChartsSetupComponent,
@@ -41,7 +41,7 @@ export class DashboardWidgetsComponent implements OnInit {
     private iconRegistry: IconRegistryService,
     private widgetGridRegistry: WidgetGridRegistry
   ) {
-    this.iconRegistry.registerIcons([settings]);
+    this.iconRegistry.registerIcons([settings, done]);
   }
 
   onGridEvent(e: GridItemEvent) {
