@@ -255,7 +255,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
     });
 
     // subscribe to pending hanges
-    this.pendingChanges.tasks$.pipe(takeUntilDestroy(this)).subscribe((tasks) => this.gridOptions && (this.gridOptions.suppressCellSelection = !!tasks.length));
+    this.pendingChanges.tasks$.pipe(takeUntilDestroy(this)).subscribe((tasks) => this.gridOptions && (this.gridOptions.suppressCellFocus = !!tasks.length));
   }
 
   getRowHeight(params: RowHeightParams): number {
@@ -398,9 +398,9 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
    * @param selection default is first row
    */
   selectRows(selection: number | string[] = 0, focusColId?: string, ensureVisibility: boolean = true) {
-    const _selection = this.gridOptions.api.getSelectedNodes().map((n) => n.id);
+    const _selection = this.gridOptions.api?.getSelectedNodes().map((n) => n.id) || [];
     const sel = typeof selection === 'number' ? [this._data.rows[selection]?.id] : selection || [];
-    if (sel.sort().join() === _selection.sort().join()) return;
+    if (!this.gridOptions.api || sel.sort().join() === _selection.sort().join()) return;
     this.gridOptions.api.clearFocusedCell();
     this.gridOptions.api.deselectAll();
     sel.forEach((id: string, index: number) => {
@@ -450,7 +450,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
       columnDefs: this._layoutOptionsKey ? [] : this._data.columns,
       headerHeight: this.settings.headerHeight.standard,
       rowHeight: this.settings.rowHeight.standard,
-      suppressCellSelection: false,
+      suppressCellFocus: false,
       rowSelection: this._data.selectType || 'single',
       suppressNoRowsOverlay: true,
       multiSortKey: 'ctrl',
@@ -465,7 +465,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
 
   onSelectionChanged(event) {
     const focused = this.gridOptions.api?.getFocusedCell() || { rowIndex: -1 };
-    const selection = this.gridOptions.api.getSelectedNodes().sort((n) => (n.rowIndex === focused.rowIndex ? -1 : 0));
+    const selection = this.gridOptions.api?.getSelectedNodes().sort((n) => (n.rowIndex === focused.rowIndex ? -1 : 0)) || [];
     if (this.selectionLimit && selection.length > this.selectionLimit) {
       selection.forEach((node, i) => i >= this.selectionLimit && node.setSelected(false));
     } else if (!event || selection.map((rowNode: RowNode) => rowNode.id).join() !== (this._currentSelection || []).join()) {
@@ -486,14 +486,14 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
 
   onGridReady(event) {
     this.setSortModel(this._data.sortModel || []);
-    this.gridOptions.api.setFocusedCell(0, this.focusField);
+    this.gridOptions.api?.setFocusedCell(0, this.focusField);
   }
 
   onMouseDown($event: MouseEvent | any) {
     // TODO: find the solution for mobile / touch event
-    if (this.deviceService.isDesktop && $event.button === 0 && this.gridOptions && this.gridOptions.suppressCellSelection) {
+    if (this.deviceService.isDesktop && $event.button === 0 && this.gridOptions && this.gridOptions.suppressCellFocus) {
       if (!this.pendingChanges.check()) {
-        this.gridOptions.suppressCellSelection = false;
+        this.gridOptions.suppressCellFocus = false;
 
         this.selectEvent($event);
       } else {
