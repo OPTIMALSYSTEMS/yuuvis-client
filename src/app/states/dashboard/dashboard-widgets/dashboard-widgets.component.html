@@ -1,25 +1,17 @@
 <yuv-widget-grid [gridConfig]="gridConfig" [gridItemConfig]="gridItemConfig" [editMode]="gridEditMode"
-    (gridChange)="onGridChange($event)" (gridItemEvent)="onGridEvent($event)">
+    (widgetPickerOpen)="onWidgetPickerOpen($event)" (gridChange)="onGridChange($event)"
+    (gridItemEvent)="onGridEvent($event)">
 </yuv-widget-grid>
 
-<div class="toolbar" [ngClass]="{editMode: gridEditMode}">
-
+<div class="toolbar" [ngClass]="{editMode: gridEditMode, disabled: widgetPickerOpen}">
     <div class="actions">
         <button class="openedit" (click)="gridEditMode = !gridEditMode">
             <yuv-icon icon="settings"> </yuv-icon>
         </button>
-
-
         <button class="doneedit" (click)="gridEditMode = !gridEditMode">
             <yuv-icon icon="done"> </yuv-icon>
         </button>
-
-
-
     </div>
-
-
-
 </div>
 
 <ng-template #tplEditToolbar>

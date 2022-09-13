@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { NavigationExtras, Router } from '@angular/router';
-import { AppCacheService, done, IconRegistryService, SearchQuery, settings } from '@yuuvis/framework';
+import { AppCacheService, done, IconRegistryService, SearchQuery, settings, TranslateService } from '@yuuvis/framework';
 import { GridItemEvent, WidgetGridConfig, WidgetGridItemConfig, WidgetGridRegistry, WidgetGridUtils } from '@yuuvis/widget-grid';
 import {
   ChartsSetupComponent,
@@ -29,6 +29,7 @@ export class DashboardWidgetsComponent implements OnInit {
   private STORAGE_KEY = 'yuv.client.cockpit.widgetgrid';
   gridItemConfig: Array<WidgetGridItemConfig> = [];
   gridEditMode: boolean = false;
+  widgetPickerOpen: boolean = false;
   gridConfig: WidgetGridConfig = {
     rows: 10,
     columns: 10
@@ -37,16 +38,20 @@ export class DashboardWidgetsComponent implements OnInit {
   constructor(
     private appCache: AppCacheService,
     private router: Router,
+    private translate: TranslateService,
     private appSearch: AppSearchService,
     private iconRegistry: IconRegistryService,
     private widgetGridRegistry: WidgetGridRegistry
   ) {
     this.iconRegistry.registerIcons([settings, done]);
+    this.translate.onLangChange.subscribe(() => this.updateWidgets());
+  }
+
+  onWidgetPickerOpen(open: boolean) {
+    this.widgetPickerOpen = open;
   }
 
   onGridEvent(e: GridItemEvent) {
-    console.log(e);
-
     // TODO: handle events comming from the grid widgets
     switch (e.action) {
       case EVT_COUNT_TILE_CLICK: {
@@ -76,30 +81,38 @@ export class DashboardWidgetsComponent implements OnInit {
     this.router.navigate(['/result'], navigationExtras);
   }
 
+  private updateWidgets() {
+    this.widgetGridRegistry.clearRegisteredWidget();
+    this.registerWidgets();
+  }
+
   private registerWidgets() {
     this.widgetGridRegistry.registerGridWidgets([
       {
         name: 'yuv.widget.hitlist',
-        label: 'Hitlist or count tile',
+        label: this.translate.instant('yuv.client.dashboard.widgets.hitlist.label'),
+        // label: 'Hitlist or count tile',
         setupComponent: HitlistSetupComponent,
         widgetComponent: HitlistWidgetComponent
       },
       {
         name: 'yuv.widget.storedquery',
-        label: 'Stored query',
+        label: this.translate.instant('yuv.client.dashboard.widgets.storedquery.label'),
+        // label: 'Stored query',
         setupComponent: StoredQuerySetupComponent,
         widgetComponent: StoredQueryWidgetComponent
       },
       {
         name: 'yuv.widget.charts',
-        label: 'Charts',
+        label: this.translate.instant('yuv.client.dashboard.widgets.charts.label'),
+        // label: 'Charts',
         setupComponent: ChartsSetupComponent,
         widgetComponent: ChartsWidgetComponent
       },
       // own widgets
       {
         name: 'yuv.client.widget.quicksearch',
-        label: 'Search',
+        label: this.translate.instant('yuv.client.dashboard.widgets.quicksearch.label'),
         widgetComponent: QuickSearchWidgetComponent
       }
     ]);

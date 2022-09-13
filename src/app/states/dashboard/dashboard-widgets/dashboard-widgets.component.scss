@@ -15,14 +15,21 @@
     border-top: 1px solid var(--panel-divider-color);
     padding: calc(var(--app-pane-padding) / 4);
 
+    &.disabled {
+      opacity: 0.3;
+      pointer-events: none;
+    }
+
     .doneedit {
       display: none;
+      background-color: transparent;
     }
 
     &.editMode {
       background-color: var(--color-accent);
       .doneedit {
         display: block;
+        color: #fff;
       }
       .openedit {
         display: none;
@@ -33,7 +40,7 @@
       display: flex;
 
       // gap: calc(var(--app-pane-padding) / 2);
-      background-color: var(--panel-background);
+      // background-color: var(--panel-background);
       border: var(--panel-divider-color);
       border-radius: 4px;
       button {
@@ -43,17 +50,17 @@
     }
   }
 
-  .editToolbar {
-    position: absolute;
-    top: 0;
-    right: 0;
-    left: 0;
-    z-index: 300;
-    height: var(--app-bar-height);
-    background-color: var(--color-admin-primary);
-    border-bottom: 1px solid var(--panel-divider-color);
-    color: #fff;
-  }
+  // .editToolbar {
+  //   position: absolute;
+  //   top: 0;
+  //   right: 0;
+  //   left: 0;
+  //   z-index: 300;
+  //   height: var(--app-bar-height);
+  //   background-color: var(--color-admin-primary);
+  //   border-bottom: 1px solid var(--panel-divider-color);
+  //   color: #fff;
+  // }
 
   yuv-widget-grid {
     grid-area: main;
@@ -62,10 +69,24 @@
   ::ng-deep {
     gridster {
       background-color: transparent;
+      .gridster-column,
+      .gridster-row {
+        border-color: var(--panel-divider-color);
+      }
     }
     gridster-item {
       box-shadow: 0 0 1em rgba(0, 0, 0, 0.1);
       background-color: var(--panel-background);
+
+      .toolbar {
+        .dragHandle,
+        button {
+          svg {
+            width: 18px;
+            height: 18px;
+          }
+        }
+      }
     }
   }
 }

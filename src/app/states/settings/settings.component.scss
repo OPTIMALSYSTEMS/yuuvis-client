@@ -226,6 +226,14 @@ $avatar-size-small: 80px;
             }
 
             button.dType {
+              display: flex;
+              flex-flow: column;
+
+              yuv-icon {
+                width: calc(var(--app-pane-padding) * 3);
+                height: calc(var(--app-pane-padding) * 3);
+              }
+
               &:disabled {
                 background-color: var(--color-accent);
                 color: #fff;

@@ -4,7 +4,7 @@ import { AppCacheService, BackendService, ConfigService, SystemService, Translat
 import { arrowDown, IconRegistryService, LayoutService, LayoutSettings, NotificationService, PluginsService } from '@yuuvis/framework';
 import { forkJoin, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { shield } from '../../../assets/default/svg/svg';
+import { dashboard, dashboardWidget, shield } from '../../../assets/default/svg/svg';
 
 @Component({
   selector: 'yuv-settings',
@@ -58,7 +58,7 @@ export class SettingsComponent implements OnInit {
     private notificationService: NotificationService,
     private pluginsService: PluginsService
   ) {
-    this.iconRegistry.registerIcons([shield, arrowDown]);
+    this.iconRegistry.registerIcons([shield, dashboard, dashboardWidget, arrowDown]);
     this.clientLocales = config.getClientLocales();
     this.enableConfig = this.route.snapshot.queryParamMap.get('config');
     this.enableConfig === 'old' && (ConfigService.GLOBAL_RESOURCES_PATH = (section) => UserService.GLOBAL_SETTINGS + encodeURIComponent(section));
