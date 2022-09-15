@@ -7,6 +7,9 @@
 }
 
 :host {
+  display: block;
+  height: 100%;
+
   &.aggregations {
     .bottom {
       opacity: 0.5;

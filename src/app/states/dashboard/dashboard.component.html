@@ -1,4 +1,4 @@
-<ng-container [ngSwitch]="dashboardType">
+<ng-container [ngSwitch]="dashboardConfig?.dashboardType">
   <yuv-dashboard-default *ngSwitchCase="'default'"></yuv-dashboard-default>
   <yuv-dashboard-widgets *ngSwitchCase="'widgets'"></yuv-dashboard-widgets>
 </ng-container>

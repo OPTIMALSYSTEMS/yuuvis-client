@@ -96,11 +96,6 @@ export class LayoutService {
     this.saveSettings();
   }
 
-  setDashboardType(dType: 'default' | 'widgets') {
-    this.layoutSettings.dashboardType = dType;
-    this.saveSettings();
-  }
-
   /**
    * Set selected mode to a dasboard component
    * @param dataUrl - url to your dasboard component
@@ -226,8 +221,4 @@ export interface LayoutSettings {
    * set a background in a dashboard
    */
   dashboardBackground?: string;
-  /**
-   * the type of dashboard to be used
-   */
-  dashboardType?: 'default' | 'widgets';
 }
