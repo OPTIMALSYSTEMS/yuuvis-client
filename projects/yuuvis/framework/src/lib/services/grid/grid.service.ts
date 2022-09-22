@@ -11,6 +11,7 @@ import {
   InternalFieldType,
   ObjectType,
   ObjectTypeField,
+  RetentionField,
   SearchService,
   SystemService,
   TranslateService,
@@ -344,34 +345,40 @@ export class GridService {
    * @returns enriched column definition object
    */
   private addColDefAttrsByField(colDef: ColDef, field: ObjectTypeField) {
-    switch (field.id) {
-      case BaseObjectTypeField.LEADING_OBJECT_TYPE_ID: {
-        colDef.cellRenderer = 'objectTypeCellRenderer';
-        colDef.width = 80;
-        colDef.cellClass = 'res-ico';
-        break;
-      }
-      case ContentStreamField.MIME_TYPE: {
-        colDef.width = 101;
-        break;
-      }
-      case BaseObjectTypeField.TAGS: {
-        colDef.cellRenderer = this.customContext(CellRenderer.systemTagsCellRenderer);
-        break;
-      }
-      case BaseObjectTypeField.VERSION_NUMBER: {
-        colDef.width = 80;
-        break;
-      }
-      case ContentStreamField.LENGTH: {
-        colDef.width = 100;
-        colDef.cellRenderer = this.customContext(CellRenderer.filesizeCellRenderer);
-        colDef.keyCreator = this.customContext(this.fileSizeKeyCreator);
-        break;
-      }
-      case BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS: {
-        colDef.cellRenderer = this.customContext(CellRenderer.sotCellRenderer);
-        break;
+    const dateOnlyFields = [RetentionField.DESTRUCTION_DATE, RetentionField.RETENTION_START, RetentionField.RETENTION_END];
+    if (dateOnlyFields.includes(field.id)) {
+      colDef.width = 150;
+      colDef.cellRenderer = this.dateTimeCellRenderer('date');
+    } else {
+      switch (field.id) {
+        case BaseObjectTypeField.LEADING_OBJECT_TYPE_ID: {
+          colDef.cellRenderer = 'objectTypeCellRenderer';
+          colDef.width = 80;
+          colDef.cellClass = 'res-ico';
+          break;
+        }
+        case ContentStreamField.MIME_TYPE: {
+          colDef.width = 101;
+          break;
+        }
+        case BaseObjectTypeField.TAGS: {
+          colDef.cellRenderer = this.customContext(CellRenderer.systemTagsCellRenderer);
+          break;
+        }
+        case BaseObjectTypeField.VERSION_NUMBER: {
+          colDef.width = 80;
+          break;
+        }
+        case ContentStreamField.LENGTH: {
+          colDef.width = 100;
+          colDef.cellRenderer = this.customContext(CellRenderer.filesizeCellRenderer);
+          colDef.keyCreator = this.customContext(this.fileSizeKeyCreator);
+          break;
+        }
+        case BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS: {
+          colDef.cellRenderer = this.customContext(CellRenderer.sotCellRenderer);
+          break;
+        }
       }
     }
     return colDef;

@@ -70,9 +70,15 @@ export class BpmService {
     return this.backendService.get(`/bpm/process-definitions?page=${index || 0}`);
   }
 
-  getProcesses(url: string): Observable<unknown> {
-    this.loadingBpmDataSource.next(true);
-    return this.backendService.get(url).pipe(finalize(() => setTimeout(() => this.loadingBpmDataSource.next(false), 200)));
+  getProcesses(url: string, silent = false): Observable<unknown> {
+    if (!silent) this.loadingBpmDataSource.next(true);
+    return this.backendService.get(url).pipe(
+      finalize(() =>
+        setTimeout(() => {
+          if (!silent) this.loadingBpmDataSource.next(false);
+        }, 200)
+      )
+    );
   }
 
   getProcessInstances(processDefinitionKey: string, options: FetchTaskOptions = { includeProcessVar: true }): Observable<Process[]> {

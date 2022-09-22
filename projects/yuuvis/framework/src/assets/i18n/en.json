@@ -336,7 +336,7 @@
 	"yuv.framework.sequence-list.form.button.edit": "Save",
 	"yuv.framework.sequence-list.form.datetime.futuredatesonly": "Only dates in the future are allowed.",
 	"yuv.framework.sequence-list.form.due-date": "Due date",
-	"yuv.framework.sequence-list.form.filter": "Filters",
+	"yuv.framework.sequence-list.form.filter": "Filter",
 	"yuv.framework.sequence-list.form.task": "Task",
 	"yuv.framework.sequence-list.form.templateName": "Name",
 	"yuv.framework.sequence-list.form.title.add": "Add recipient",

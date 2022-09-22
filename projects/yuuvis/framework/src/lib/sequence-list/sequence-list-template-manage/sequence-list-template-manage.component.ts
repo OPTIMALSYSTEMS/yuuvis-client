@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
-import { BackendService, PendingChangesService, TranslateService, Utils } from '@yuuvis/core';
+import { BackendService, PendingChangesService, Sort, TranslateService, Utils } from '@yuuvis/core';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { PopoverService } from '../../popover/popover.service';
 import { SequenceItem, SequenceListTemplate } from '../sequence-list/sequence-list.interface';
@@ -153,6 +153,7 @@ export class SequenceListTemplateManageComponent implements OnInit, OnDestroy {
 
   private saveTemplates(templateToBeSelectedAfterSave?: string) {
     this.busy = true;
+    this.templates.sort(Utils.sortValues('name', Sort.ASC));
     return this.backend.post(`/users/settings/${this.storageSection}`, { templates: this.templates }).subscribe(
       (res) => {
         this.busy = false;
@@ -172,6 +173,8 @@ export class SequenceListTemplateManageComponent implements OnInit, OnDestroy {
   private loadTemplates() {
     this.backend.get(`/users/settings/${this.storageSection}`).subscribe((res) => {
       this.templates = res ? res.templates || [] : [];
+      this.templates.sort(Utils.sortValues('name', Sort.ASC));
+      this.selectCurrentEntries();
     });
   }
 
