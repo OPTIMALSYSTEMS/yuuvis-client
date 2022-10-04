@@ -225,9 +225,9 @@
   }
 
   .day.disabled {
-    color: white;
     cursor: default;
-    @include shades-of-gray(0.1);
+    color: var(--text-color-hint);
+    background-color: var(--panel-divider-color);
     border-radius: 2px;
 
     &:hover {
