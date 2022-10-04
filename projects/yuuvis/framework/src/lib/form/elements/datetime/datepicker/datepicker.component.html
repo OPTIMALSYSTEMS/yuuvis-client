@@ -40,13 +40,16 @@
 
       <div class="week" *ngFor="let week of weeks; trackBy: trackByFn">
         <div *ngFor="let day of week.days; trackBy: trackByFn">
-          <span class="day" *ngIf="!day.disabled"
+          <span class="day" *ngIf="!day.disabled; else tplDayDisabled"
             [ngClass]="{ today: day.isToday, 'different-month': !day.isCurrentMonth, selected: isSelectedDay(day.date) }"
             (click)="setCalenderDate(day.date)" (dblclick)="setCalenderDate(day.date);selectValue()">{{ day.number
             }}</span>
-          <span class="day disabled" *ngIf="day.disabled"
-            [ngClass]="{ today: day.isToday, 'different-month': !day.isCurrentMonth, selected: isSelectedDay(day.date) }">{{
-            day.number }}</span>
+          <ng-template #tplDayDisabled>
+            <span class="day disabled"
+              [ngClass]="{ today: day.isToday, 'different-month': !day.isCurrentMonth, selected: isSelectedDay(day.date) }">{{
+              day.number }}</span>
+          </ng-template>
+
         </div>
       </div>
     </div>
