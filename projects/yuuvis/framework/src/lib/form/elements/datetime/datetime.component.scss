@@ -16,4 +16,38 @@
       background: transparent;
     }
   }
+  button.p-button {
+    background: transparent;
+    border: 0;
+    border-radius: 2px;
+    color: var(--text-color-caption);
+    cursor: pointer;
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    min-width: 20px;
+
+    &:enabled:active,
+    &:enabled:focus {
+      border: 0;
+      box-shadow: none;
+      background: var(--color-accent);
+      color: #fff;
+    }
+    &:enabled:active,
+    &:enabled:hover {
+      border: 0;
+      background: var(--color-accent);
+      color: #fff;
+    }
+    .fa {
+      color: currentColor !important;
+    }
+
+    yuv-icon {
+      width: 16px;
+      height: 16px;
+      margin: auto;
+    }
+  }
 }

@@ -7,6 +7,10 @@ import { Component, OnInit } from '@angular/core';
 })
 export class TestFormElementsComponent implements OnInit {
   cbIndeterminate: boolean = null;
+  datetime = {
+    default: null,
+    withTime: null
+  };
 
   constructor() {}
 

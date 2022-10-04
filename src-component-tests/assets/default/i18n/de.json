@@ -466,9 +466,6 @@
   "yuv.client.state.retentions.list.filter.all": "Alle",
   "yuv.client.state.retentions.list.filter.destruct": "Zu entfernen",
   "yuv.client.state.retentions.list.filter.next": "Nächster Monat",
-  "yuv.client.state.retentions.renderer.status.indestruct": "Das Objekt wird in {{d}} Stunde(n) ausgesondert.",
-  "yuv.client.state.retentions.renderer.status.inretention": "{{p}} % des Aufbewahrungszeitraums vergangen",
-  "yuv.client.state.retentions.renderer.status.pastdestruct": "Das Objekt hätte vor {{d}} Stunde(n) ausgesondert worden sein sollen.",
   "yuv.client.state.retentions.title": "Aufbewahrungsmanagement",
   "yuv.client.state.settings.cache.clear.error": "Anwendungscache konnte nicht geleert werden",
   "yuv.client.state.settings.cache.clear.success": "Der Anwendungscache wurde geleert",
@@ -506,5 +503,10 @@
   "yuv.client.state.settings.title": "Einstellungen",
   "yuv.client.state.title": "yuuvis® client",
   "yuv.client.state.versions.compare.label": "Version {{version}}",
-  "yuv.client.state.versions.header.title": "Versionen"
+  "yuv.client.state.versions.header.title": "Versionen",
+  "yuv.state.retentions.renderer.chip.title.ended": "Die Aufbewahrungsfrist ist vor {{diff}} abgelaufen.",
+  "yuv.state.retentions.renderer.chip.title.running": "Unter Aufbewahrung für die nächsten {{diff}}",
+  "yuv.state.retentions.renderer.d": "Tag(e)",
+  "yuv.state.retentions.renderer.m": "Monat(e)",
+  "yuv.state.retentions.renderer.y": "Jahr(e)"
 }
