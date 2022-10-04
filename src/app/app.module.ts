@@ -1,12 +1,19 @@
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { CommandPaletteComponent, CommandPaletteModule } from '@yuuvis/command-palette';
-import { YuvColumnConfigModule, YuvCommonModule, YuvComponentRegister, YuvComponentsModule, YuvDirectivesModule, YuvFrameworkModule } from '@yuuvis/framework';
-import { YuvWidgetGridModule } from '@yuuvis/widget-grid';
+import {
+  YuvColumnConfigModule,
+  YuvCommonModule,
+  YuvComponentRegister,
+  YuvComponentsModule,
+  YuvDashboardModule,
+  YuvDirectivesModule,
+  YuvFrameworkModule
+} from '@yuuvis/framework';
 import { AccordionModule } from 'primeng/accordion';
 import { environment } from '../environments/environment';
 import { ActionsModule } from './actions/actions.module';
@@ -18,7 +25,6 @@ import { AboutModule } from './states/about/about.module';
 import { ColumnConfigurationComponent } from './states/column-configuration/column-configuration.component';
 import { CreateComponent } from './states/create/create.component';
 import { DashboardDefaultComponent } from './states/dashboard/dashboard-default/dashboard-default.component';
-import { DashboardWidgetsComponent } from './states/dashboard/dashboard-widgets/dashboard-widgets.component';
 import { DashboardComponent } from './states/dashboard/dashboard.component';
 import { FilterConfigurationComponent } from './states/filter-configuration/filter-configuration.component';
 import { FollowUpsComponent } from './states/follow-ups/follow-ups.component';
@@ -31,7 +37,6 @@ import { ResultComponent } from './states/result/result.component';
 import { RetentionsComponent } from './states/retentions/retentions.component';
 import { SettingsComponent } from './states/settings/settings.component';
 import { VersionsComponent } from './states/versions/versions.component';
-import { YuvWidgetsModule } from './widgets/widgets.module';
 
 const components = [
   AppComponent,
@@ -50,8 +55,7 @@ const components = [
   ProcessesComponent,
   FollowUpsComponent,
   RetentionsComponent,
-  DashboardDefaultComponent,
-  DashboardWidgetsComponent
+  DashboardDefaultComponent
 ];
 
 YuvComponentRegister.register(components);
@@ -63,9 +67,8 @@ YuvComponentRegister.register([CommandPaletteComponent]);
     BrowserModule,
     BrowserAnimationsModule,
     FormsModule,
+    ReactiveFormsModule,
     AccordionModule,
-    YuvWidgetsModule,
-    YuvWidgetGridModule,
     CommandPaletteModule.forRoot({
       searchModeIndicator: '?'
     }),
@@ -109,6 +112,7 @@ YuvComponentRegister.register([CommandPaletteComponent]);
     YuvCommonModule,
     YuvColumnConfigModule,
     YuvDirectivesModule,
+    YuvDashboardModule,
     ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production })
   ],
   providers: [{ provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }],

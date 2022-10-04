@@ -4,7 +4,6 @@
   grid-template-rows: 1fr auto;
   grid-template-columns: 1fr;
   grid-template-areas: 'main' 'toolbar';
-  padding-top: var(--app-bar-height);
 
   .toolbar {
     display: flex;
@@ -14,10 +13,58 @@
     background-color: transparent;
     border-top: 1px solid var(--panel-divider-color);
     padding: calc(var(--app-pane-padding) / 4);
+    background-color: var(--panel-background);
 
     &.disabled {
       opacity: 0.3;
       pointer-events: none;
+    }
+    .workspaceEdit {
+      flex: 1;
+      color: #fff;
+    }
+    .workspaces {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      flex: 1;
+
+      button {
+        padding: 0;
+      }
+
+      > div {
+        display: flex;
+        align-items: stretch;
+        gap: 10px;
+        border-radius: 0.2em;
+        line-height: 1em;
+        background-color: var(--panel-background);
+        border: 1px solid var(--panel-divider-color);
+        margin: 0 2px;
+        color: var(--text-color-body);
+
+        span.workspace {
+          padding: calc(var(--app-pane-padding) / 8) calc(var(--app-pane-padding) / 2);
+          cursor: pointer;
+        }
+
+        yuv-icon {
+          width: 18px;
+          height: 18px;
+          opacity: 0.8;
+          display: none;
+        }
+
+        &.current {
+          color: #fff;
+          background-color: var(--color-accent);
+          border-color: #fff;
+          yuv-icon {
+            display: block;
+          }
+        }
+      }
     }
 
     .doneedit {
@@ -34,6 +81,9 @@
       .openedit {
         display: none;
       }
+      // .workspaces {
+      //   display: none;
+      // }
     }
 
     .actions {

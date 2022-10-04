@@ -1,0 +1,11 @@
+<form [formGroup]="editForm" (ngSubmit)="submit()">
+    <div class="fields">
+        <yuv-form-input [label]="'yuv.framework.dashboard-workspace.edit.label'">
+            <yuv-string formControlName="label" [autofocus]="true"></yuv-string>
+        </yuv-form-input>
+    </div>
+    <div class="buttons">
+        <button type="button" (click)="this.cancel.emit()">{{'yuv.framework.shared.cancel'|translate}}</button>
+        <button class="primary" type="submit">{{'yuv.framework.shared.ok'|translate}}</button>
+    </div>
+</form>

@@ -1,0 +1,48 @@
+<yuv-widget-grid [gridConfig]="gridConfig" [gridItemConfig]="gridItemConfig" [editMode]="gridEditMode"
+    (widgetPickerOpen)="onWidgetPickerOpen($event)" (gridChange)="onGridChange($event)"
+    (gridItemEvent)="onGridEvent($event)">
+</yuv-widget-grid>
+
+<div class="toolbar" [ngClass]="{editMode: gridEditMode, disabled: widgetPickerOpen}" *ngIf="dashboardConfig">
+
+
+    <div class="workspaces" *ngIf="!gridEditMode; else tplEditToolbar">
+
+        <button (click)="openWorkspaceEditOverlay()">
+            <yuv-icon icon="addCircle"> </yuv-icon>
+        </button>
+
+        <div *ngFor="let w of dashboardConfig.workspaces" (click)="setWorkspace(w.id)"
+            [ngClass]="{current: w.id === workspace.id}"><span class="workspace">{{w.label}}</span>
+            <yuv-icon icon="clear" (click)="removeWorkspace(w.id)" *ngIf="dashboardConfig.workspaces.length > 1">
+            </yuv-icon>
+            <yuv-icon icon="edit" (click)="openWorkspaceEditOverlay(w)"> </yuv-icon>
+        </div>
+    </div>
+
+    <div class="actions" *ngIf="gridItemConfig">
+        <button class="openedit" (click)="gridEditMode = !gridEditMode">
+            <yuv-icon icon="settings"> </yuv-icon>
+        </button>
+        <button class="doneedit" (click)="gridEditMode = !gridEditMode">
+            <yuv-icon icon="done"> </yuv-icon>
+        </button>
+    </div>
+</div>
+
+<!-- <ng-template #tplEditToolbar>
+    <div class="editToolbar">
+        <button (click)="gridEditMode = !gridEditMode">
+            <yuv-icon [icon]="'settings'"> </yuv-icon>
+        </button>
+    </div>
+</ng-template> -->
+<ng-template #tplEditToolbar>
+    <div class="workspaceEdit">{{workspace.label}}</div>
+</ng-template>
+
+<ng-template #tplWorkspaceEdit let-data let-popover="popover">
+    <yuv-workspace-edit [workspace]="data.workspace" (save)="onWorkspaceSave($event)"
+        (cancel)="onWorkspaceEditCancel()">
+    </yuv-workspace-edit>
+</ng-template>

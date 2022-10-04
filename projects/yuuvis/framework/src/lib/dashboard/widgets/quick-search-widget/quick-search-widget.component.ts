@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { SearchQuery } from '@yuuvis/core';
 import { IWidgetComponent, WidgetGridEventService } from '@yuuvis/widget-grid';
-import { WIDGET_EVT_QUICKSEARCH_EXECUTE } from '../widgets.events';
+import { WIDGET_EVT_QUICKSEARCH_EXECUTE } from '../../dashboard.interface';
 
 @Component({
   selector: 'yuv-quick-search-widget',

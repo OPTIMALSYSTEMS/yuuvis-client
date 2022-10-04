@@ -7,6 +7,7 @@ import {
   YuvColumnConfigModule,
   YuvComponentsModule,
   YuvContextModule,
+  YuvDashboardModule,
   YuvDirectivesModule,
   YuvFrameworkModule,
   YuvGroupedSelectModule,
@@ -24,6 +25,7 @@ import { TestAuditComponent } from './test-audit/test-audit.component';
 import { TestColumnConfigComponent } from './test-column-config/test-column-config.component';
 import { TestContentPreviewComponent } from './test-content-preview/test-content-preview.component';
 import { TestContextComponent } from './test-context/test-context.component';
+import { TestDashboardWorkspacesComponent } from './test-dashboard-workspaces/test-dashboard-workspaces.component';
 import { TestDirectivesComponent } from './test-directives/test-directives.component';
 import { TestFileDropComponent } from './test-file-drop/test-file-drop.component';
 import { TestFormElementsComponent } from './test-form-elements/test-form-elements.component';
@@ -88,7 +90,8 @@ import { TestVersionListComponent } from './test-version-list/test-version-list.
     TestFormElementsComponent,
     TestDirectivesComponent,
     TestProcessDetailsComponent,
-    TestSequenceListComponent
+    TestSequenceListComponent,
+    TestDashboardWorkspacesComponent
   ],
   imports: [
     HttpClientModule,
@@ -109,7 +112,8 @@ import { TestVersionListComponent } from './test-version-list/test-version-list.
     YuvColumnConfigModule,
     YuvContextModule,
     YuvObjectPickerModule,
-    YuvSequenceListModule
+    YuvSequenceListModule,
+    YuvDashboardModule
   ],
   providers: [],
   bootstrap: [AppComponent]

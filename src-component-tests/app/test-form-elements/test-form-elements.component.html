@@ -40,3 +40,18 @@
 <div class="row">
     <yuv-checkbox switch="true" [tristate]="true" [(ngModel)]="cbIndeterminate"></yuv-checkbox> Tri-state switch
 </div>
+
+<h2>Datepicker</h2>
+<form [formGroup]="datePickerForm">
+
+    <div class="row">
+        <yuv-form-input [label]="'Future dates only'" [skipToggle]="true" [skipToggle]="true">
+            <yuv-datetime [withTime]="true" [onlyFutureDates]="true" formControlName="futureOnly"></yuv-datetime>
+        </yuv-form-input>
+        <div *ngIf="datePickerForm.get('futureOnly').errors">
+            Name is required.
+            {{datePickerForm.get('futureOnly').errors | json}}
+        </div>
+    </div>
+
+</form>
