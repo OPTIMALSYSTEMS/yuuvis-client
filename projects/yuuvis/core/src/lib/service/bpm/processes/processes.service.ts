@@ -16,7 +16,7 @@ interface CreateFollowUpPayload {
   providedIn: 'root'
 })
 export class ProcessService {
-  private PROCESSES_PAGE_SIZE = 100;
+  private PROCESSES_PAGE_SIZE = 1000;
 
   private readonly bpmProcessUrl = '/bpm/processes';
 

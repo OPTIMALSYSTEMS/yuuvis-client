@@ -15,7 +15,7 @@ import { BpmService } from './../bpm/bpm.service';
   providedIn: 'root'
 })
 export class InboxService {
-  private INBOX_PAGE_SIZE = 100;
+  private INBOX_PAGE_SIZE = 1000;
 
   private inboxData: Task[] = [];
   private inboxDataSource = new Subject<Task[]>();
