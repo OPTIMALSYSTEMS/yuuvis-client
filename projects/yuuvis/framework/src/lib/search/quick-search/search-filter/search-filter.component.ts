@@ -287,7 +287,7 @@ export class SearchFilterComponent implements OnInit {
 
     const customGroups = this.filterQuery.filterGroup.groups.map(g => g.property).filter(property => property !== SearchFilterGroup.DEFAULT);
     customGroups.forEach(g => this.filterQuery.removeFilterGroup(g));
-    res.forEach(r => r.value && this.filterQuery.addFilterGroup(r.value));
+    res.forEach(r => r.value && this.filterQuery.addFilterGroup(r.value.clone(), r.value.property));
 
     this.filterChange.emit(this.filterQuery);
     this.aggregate();
@@ -317,7 +317,13 @@ export class SearchFilterComponent implements OnInit {
     this.availableTypeGroups?.forEach((group, i) => i > 0 && !group.collapsed && group.items?.forEach(g => {
       if (!g.class?.match('skipCount')) {
         const q = new SearchQuery(this.filterQuery.toQueryJson(true));
-        g.value ? q.addFilterGroup(g.value) : (q.types = [g.id]);
+        if (g.value) {
+          q.filterGroup = this.filterQuery.filterGroup.clone(false);
+          q.removeFilterGroup(g.value.property);
+          q.addFilterGroup(g.value.clone());
+        } else {
+          q.types = [g.id];
+        }
         this.searchService.aggregate(q, [BaseObjectTypeField.LEADING_OBJECT_TYPE_ID]).subscribe(r => (g.count = sum(r).toString() as any));
       }
     }));

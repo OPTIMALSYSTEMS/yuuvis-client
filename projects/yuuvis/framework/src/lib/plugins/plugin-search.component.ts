@@ -4,7 +4,7 @@ import { PluginExtensionConfig } from '@yuuvis/framework';
 import { Selectable, SelectableGroup } from '../grouped-select';
 import { PluginsService } from './plugins.service';
 
-type Inputs = { init?: string | Function, query?: any, array?: any[], skipCount?: boolean, skipTranslate?: boolean };
+type Inputs = { init?: string | Function, query?: any, array?: any[], skipCount?: boolean, skipTranslate?: boolean, operator?: 'AND' | 'OR'  };
 
 @Component({
   selector: 'yuv-plugin-search',
@@ -47,7 +47,7 @@ export class PluginSearchComponent {
     const field = this.parent.availableObjectTypeFields.find(f => f.id === id);
     const opts = field && !options ? this.pluginService['systemService'].getClassifications(field.value?.classifications)?.get('catalog')?.options : options;
     const items = opts?.map((o: any) => typeof o === 'string' ? {value: o, label: o} : o)
-                    .map(({value, label}) => this.toSelectable({id: id + value, label}, { array: [new SearchFilter(id, SearchFilter.OPERATOR.IN, [value])] }, true));
+                    .map(({value, label}) => this.toSelectable({id: id  + '__' + value, label}, { operator: 'OR', array: [new SearchFilter(id, SearchFilter.OPERATOR.EQUAL, value)] }, true));
     return items && { id, label: field.label, items };
   }
 
@@ -55,7 +55,7 @@ export class PluginSearchComponent {
     const group = inputs.query ? SearchFilterGroup.fromQuery(inputs.query) : inputs.array ? SearchFilterGroup.fromArray(inputs.array) : '';
     return group && { id: o.id,
       label: !skipTranslate && o.label ? this.pluginService.translate.instant(o.label) : o.label || o.id,
-      value: new SearchFilterGroup(o.id, SearchFilterGroup.OPERATOR.AND, [group]),
+      value: new SearchFilterGroup(inputs.operator === 'OR' ? o.id.replace(/__.*/, '') : o.id, inputs.operator === 'OR' ? inputs.operator : SearchFilterGroup.OPERATOR.AND, [group]),
       class: skipCount ? 'skipCount' : '',
       count: 0
     };
