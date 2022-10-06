@@ -5,6 +5,8 @@ import { IconRegistryService } from '../../../common/components/icon/service/ico
 import { Selectable } from '../../../grouped-select';
 import { SelectableGroup } from '../../../grouped-select/grouped-select/grouped-select.interface';
 import { FileSizePipe } from '../../../pipes/filesize.pipe';
+import { PluginSearchComponent } from '../../../plugins/plugin-search.component';
+import { PluginsService } from '../../../plugins/plugins.service';
 import { PopoverConfig } from '../../../popover/popover.interface';
 import { PopoverService } from '../../../popover/popover.service';
 import { favorite, reset, settings } from '../../../svg.generated';
@@ -97,7 +99,8 @@ export class SearchFilterComponent implements OnInit {
     private quickSearchService: QuickSearchService,
     private popoverService: PopoverService,
     private layoutService: LayoutService,
-    private searchService: SearchService
+    private searchService: SearchService,
+    private pluginsService: PluginsService
   ) {
     this.iconRegistry.registerIcons([settings, reset, favorite, listModeDefault, listModeSimple]);
   }
@@ -156,14 +159,17 @@ export class SearchFilterComponent implements OnInit {
   private setupExtensions() {
     this.plugins.subscribe(plugins => {
       const { active, all } = this.quickSearchService.getActiveExtensions(this._query);
-      const custom = plugins.map((o) => ({ id: o.id, label: o.label ? this.translate.instant(o.label) : o.id, value: new SearchFilterGroup(o.id, SearchFilterGroup.OPERATOR.AND, [SearchFilterGroup.fromQuery(o.plugin?.inputs)]), count: 0 }));
-      if (all.length || custom.length) {
-        this.typeSelection = [...this.typeSelection, ...active];
+      this.typeSelection = [...this.typeSelection, ...active];
+      this.availableObjectTypeFields = this.quickSearchService.getAvailableObjectTypesFields(this.typeSelection);
+      const extensions = PluginSearchComponent.parseExtensions(plugins, this, this.pluginsService);
+      
+      if (all.length || extensions.length) {
         this.availableTypeGroups[1] = {
           id: 'extensions',
           label: this.translate.instant('yuv.framework.search.filter.object.extensions'),
-          items: [...all, ...custom]
+          items: [...all, ...extensions.filter((e: any) => !e.items) as any]
         };
+        this.availableTypeGroups = [...this.availableTypeGroups, ...extensions.filter((e: any) => e.items) as any];
         this.aggregate(true);
       }
     });
@@ -308,17 +314,13 @@ export class SearchFilterComponent implements OnInit {
 
     const sum = (r: any) => r?.aggregations?.[0].entries.reduce((p, c) => p + c.count, 0);
 
-    !this.availableTypeGroups[1]?.collapsed && this.availableTypeGroups[1]?.items.filter(g => !g.value).forEach(g => {
-      const q = new SearchQuery(this.filterQuery.toQueryJson(true));
-      q.types = [g.id];
-      this.searchService.aggregate(q, [BaseObjectTypeField.LEADING_OBJECT_TYPE_ID]).subscribe(r => (g.count = sum(r).toString() as any));
-    });
-
-    !this.availableTypeGroups[1]?.collapsed && this.availableTypeGroups[1]?.items.filter(g => g.value).forEach(g => {
-      const q = new SearchQuery(this.filterQuery.toQueryJson(true));
-      q.addFilterGroup(g.value);
-      this.searchService.aggregate(q, [BaseObjectTypeField.LEADING_OBJECT_TYPE_ID]).subscribe(r => (g.count = sum(r).toString() as any));
-    });
+    this.availableTypeGroups?.forEach((group, i) => i > 0 && !group.collapsed && group.items?.forEach(g => {
+      if (!g.class?.match('skipCount')) {
+        const q = new SearchQuery(this.filterQuery.toQueryJson(true));
+        g.value ? q.addFilterGroup(g.value) : (q.types = [g.id]);
+        this.searchService.aggregate(q, [BaseObjectTypeField.LEADING_OBJECT_TYPE_ID]).subscribe(r => (g.count = sum(r).toString() as any));
+      }
+    }));
 
   }
 
