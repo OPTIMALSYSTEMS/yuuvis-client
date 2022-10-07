@@ -289,8 +289,8 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
         matchRow[k] = data[k];
       });
       matchRow.id = id;
-      const rowNode = this.gridOptions.api.getRowNode(id);
-      rowNode.setData(matchRow);
+      const rowNode = this.gridOptions.api?.getRowNode(id);
+      rowNode && rowNode.setData(matchRow);
     }
   }
 
@@ -301,7 +301,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
    * @returns
    */
   deleteRow(id: string): boolean {
-    const rowNode = this.gridOptions.api ? this.gridOptions.api.getRowNode(id) : undefined;
+    const rowNode = this.gridOptions.api?.getRowNode(id);
     if (rowNode) {
       this.gridOptions.api.applyTransaction({ remove: [rowNode] });
       return true;
@@ -388,7 +388,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
   }
 
   clearSelection() {
-    this.gridOptions.api.deselectAll();
+    this.gridOptions.api?.deselectAll();
   }
 
   /**
@@ -420,9 +420,9 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
       const shift = Math.floor(this.settings.size.newWidth / this.settings.colWidth.grid / 2);
       this.gridOptions.api['ctrlsService'].centerRowContainerCtrl.setCenterViewportScrollLeft(Math.max(0, (rowIndex - shift) * this.settings.colWidth.grid));
     } else if (this.isGrid) {
-      this.gridOptions.api.ensureIndexVisible(Math.floor(rowIndex / Math.floor(this.settings.size.newWidth / this.settings.colWidth.grid)));
+      this.gridOptions.api?.ensureIndexVisible(Math.floor(rowIndex / Math.floor(this.settings.size.newWidth / this.settings.colWidth.grid)));
     } else {
-      this.gridOptions.api.ensureIndexVisible(rowIndex);
+      this.gridOptions.api?.ensureIndexVisible(rowIndex);
     }
   }
 
