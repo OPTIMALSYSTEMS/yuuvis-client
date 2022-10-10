@@ -15,12 +15,10 @@
   <yuv-action-menu-bar class="status" [className]="'status'">
 
     <span class="chip"
-      *ngIf="!retentionDestructUntil && retentionEnd">{{'yuv.framework.object-details.status.retentionActive'|translate:
-      ({date: retentionEnd | localeDate: 'shortDate'})}}</span>
+      *ngIf="retentionEndDate && !retentionEnded">{{'yuv.framework.object-details.status.retentionActive'|translate:
+      ({date: retentionEndDate | localeDate: 'shortDate'})}}</span>
     <span class="chip error"
-      *ngIf="retentionEnd && retentionDestructUntil">{{'yuv.framework.object-details.status.retentionDestruction'|translate:
-      ({date:
-      retentionDestructUntil | localeDate: 'shortDate'})}}</span>
+      *ngIf="retentionEndDate && retentionEnded">{{'yuv.framework.object-details.status.retentionDestruction'|translate}}</span>
 
     <!--   <a class="content-link">
         <span translate>yuv.object.contentlink</span>
