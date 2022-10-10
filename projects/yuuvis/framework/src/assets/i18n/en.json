@@ -303,7 +303,7 @@
 	"yuv.framework.search.agg.time.thisyear": "This year",
 	"yuv.framework.search.agg.time.today": "Today",
 	"yuv.framework.search.agg.time.yesterday": "Yesterday",
-	"yuv.framework.search.filter.available.fields": "Available fields",
+	"yuv.framework.search.filter.available.fields": "Available metadata",
 	"yuv.framework.search.filter.configuration": "Filter configuration",
 	"yuv.framework.search.filter.create.new": "Create",
 	"yuv.framework.search.filter.custom.filters": "Custom filters",
