@@ -24,9 +24,6 @@
     display: flex;
     flex-flow: column;
     height: 100%;
-    padding-top: var(--app-bar-height);
-    box-sizing: border-box;
-    overflow: hidden;
 
     .top {
       display: flex;

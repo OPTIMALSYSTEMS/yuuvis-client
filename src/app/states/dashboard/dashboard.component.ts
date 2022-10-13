@@ -7,7 +7,8 @@ import { AppService } from '../../app.service';
 @Component({
   selector: 'yuv-dashboard',
   templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.scss']
+  styleUrls: ['./dashboard.component.scss'],
+  host: { class: 'themeBackground ' }
 })
 export class DashboardComponent implements OnInit, OnDestroy {
   dashboardConfig: DashboardConfig;
