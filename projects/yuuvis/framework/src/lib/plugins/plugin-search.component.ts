@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { SearchFilter, SearchFilterGroup } from '@yuuvis/core';
+import { ApiBase, SearchFilter, SearchFilterGroup } from '@yuuvis/core';
 import { Selectable, SelectableGroup } from '../grouped-select';
 import { PluginExtensionConfig } from './plugins.interface';
 import { PluginsService } from './plugins.service';
@@ -13,7 +13,10 @@ type Inputs = { init?: string | Function; query?: any; array?: any[]; skipCount?
 })
 export class PluginSearchComponent {
   static parseExtensions(plugins: any[], parent: any, pluginService: PluginsService) {
-    return plugins.map((p) => new PluginSearchComponent(pluginService).init(p, parent)).filter((g) => g);
+    return plugins.reduce((p, c) => {
+      const ext = new PluginSearchComponent(pluginService).init(c, parent);
+      return [...p, ...(Array.isArray(ext) ? ext : [ext])];
+    }, []).filter((g: any) => g);
   }
 
   @Input() parent: any;
@@ -35,28 +38,58 @@ export class PluginSearchComponent {
 
   constructor(private pluginService: PluginsService) {}
 
-  init(extension: PluginExtensionConfig, parent: any): Selectable | SelectableGroup {
+  init(extension: PluginExtensionConfig, parent: any): Selectable | SelectableGroup | SelectableGroup[] {
     this.extension = extension;
     this.parent = parent;
     return (this.selectable = !this.inputs.init
       ? this.toSelectable()
-      : this.pluginService.applyFunction(this.inputs.init, 'component, parent, SearchFilterGroup, SearchFilter', [
+      : this.pluginService.applyFunction(this.inputs.init, 'component, parent, PluginSearchComponent, SearchFilterGroup, SearchFilter', [
           this,
           this.parent,
+          PluginSearchComponent,
           SearchFilterGroup,
           SearchFilter
         ]));
   }
 
-  catalogToSelectableGroup(id: string, options?: string[] | { value: string; label: string }[]): SelectableGroup {
-    const field = this.parent.availableObjectTypeFields.find((f) => f.id === id);
-    const opts = field && !options ? this.pluginService['systemService'].getClassifications(field.value?.classifications)?.get('catalog')?.options : options;
-    const items = opts
+  findAvailableField(id: string) {
+    return this.parent.availableObjectTypeFields.find((f) => f.id === id);
+  }
+
+  getAvailableCatalogs() {
+    return this.parent.availableObjectTypeFields.filter((f) => f.value?._internalType?.match('string:catalog'));
+  }
+
+  getClassifications(field: any) {
+    return field && this.pluginService['systemService'].getClassifications(field.value?.classifications);
+  }
+
+  catalogToSelectableGroup(id: string, options?: string[] | { value: string; label: string }[] | Promise<any[]>): SelectableGroup {
+    const field = this.findAvailableField(id);
+    const classifications = !options && this.getClassifications(field);
+    const opts = options || classifications?.get('catalog')?.options || this.loadCatalogOptions(classifications?.get('dynamic:catalog')?.options[0]);
+    
+    const items = (opts instanceof Promise ? [] : opts)
       ?.map((o: any) => (typeof o === 'string' ? { value: o, label: o } : o))
       .map(({ value, label }) =>
         this.toSelectable({ id: id + '__' + value, label }, { operator: 'OR', array: [new SearchFilter(id, SearchFilter.OPERATOR.EQUAL, value)] }, true)
       );
-    return items && { id, label: field.label, items };
+
+    const group = field && items && { id, label: field.label || '', items };
+
+    if (group && opts instanceof Promise) {
+      opts.then((o: any[]) => {
+        group.items = this.catalogToSelectableGroup(id, o).items || [];
+        this.parent.aggregate(true, [id]);
+      });
+    }
+    
+    return group;
+  }
+
+  loadCatalogOptions(id: string) : Promise<string[]> {
+    return id && window['api'].http.get('/dms/catalogs/' + id, ApiBase.apiWeb)
+      .then((res: any) => res?.data?.entries?.filter((o: any) => !o.disabled).map((o: any) => o.name) || []);
   }
 
   toSelectable(o: any = this.extension, inputs = this.inputs, skipTranslate = this.skipTranslate, skipCount = this.skipCount): Selectable {
@@ -67,7 +100,7 @@ export class PluginSearchComponent {
         label: !skipTranslate && o.label ? this.pluginService.translate.instant(o.label) : o.label || o.id,
         value: new SearchFilterGroup(
           inputs.operator === 'OR' ? o.id.replace(/__.*/, '') : o.id,
-          inputs.operator === 'OR' ? inputs.operator : SearchFilterGroup.OPERATOR.AND,
+          inputs.operator === 'OR' ? SearchFilterGroup.OPERATOR.OR : SearchFilterGroup.OPERATOR.AND,
           [group]
         ),
         class: skipCount ? 'skipCount' : '',
