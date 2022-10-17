@@ -85,6 +85,8 @@ export class ContentPreviewComponent extends IFrameComponent implements OnInit, 
     switchMap((status) => (typeof status === 'boolean' && !status ? of(null) : this.contentPreviewService.previewSrc$))
   );
 
+  contentPlugins: Observable<any[]>;
+
   constructor(
     elRef: ElementRef,
     pluginsService: PluginsService,
@@ -102,6 +104,7 @@ export class ContentPreviewComponent extends IFrameComponent implements OnInit, 
     if (ContentPreviewService.undockWinActive()) {
       this.undock(false);
     }
+    this.contentPlugins = this.contentPreviewService.getContentPlugins();
   }
 
   undock(open = true) {

@@ -78,6 +78,10 @@ export class ContentPreviewService {
     });
   }
 
+  getContentPlugins() {
+    return this.pluginsService.getCustomPlugins('extensions', 'yuv-content-preview');
+  }
+
   resetSource() {
     this.previewSrcSource.next('');
   }
