@@ -15,16 +15,21 @@
             <yuv-organization formControlName="nextAssignee"> </yuv-organization>
         </yuv-form-input>
 
-        <yuv-form-input class="expiryDatetime" [invalid]="entryForm.controls['expiryDatetime'].invalid"
-            [skipToggle]="true" [label]="'yuv.framework.sequence-list.form.due-date' | translate" [skipToggle]="true">
-            <yuv-datetime [withTime]="true" [onlyFutureDates]="true" [formControlName]="'expiryDatetime'">
-            </yuv-datetime>
-        </yuv-form-input>
-        <div class="error"
-            *ngIf="entryForm.controls['expiryDatetime'].invalid && (entryForm.controls['expiryDatetime'].dirty || entryForm.controls['expiryDatetime'].touched)">
-            <ng-container *ngIf="entryForm.controls['expiryDatetime'].errors?.datecontrol"> {{
-                'yuv.framework.sequence-list.form.datetime.futuredatesonly' | translate }}</ng-container>
-        </div>
+        <ng-container *ngIf="!disableDueDate">
+            <yuv-form-input class="expiryDatetime" [invalid]="entryForm.controls['expiryDatetime'].invalid"
+                [skipToggle]="true" [label]="'yuv.framework.sequence-list.form.due-date' | translate"
+                [skipToggle]="true">
+                <yuv-datetime [withTime]="true" [onlyFutureDates]="true" [formControlName]="'expiryDatetime'">
+                </yuv-datetime>
+            </yuv-form-input>
+            <div class="error"
+                *ngIf="entryForm.controls['expiryDatetime'].invalid && (entryForm.controls['expiryDatetime'].dirty || entryForm.controls['expiryDatetime'].touched)">
+                <ng-container *ngIf="entryForm.controls['expiryDatetime'].errors?.datecontrol"> {{
+                    'yuv.framework.sequence-list.form.datetime.futuredatesonly' | translate }}</ng-container>
+            </div>
+        </ng-container>
+
+
         <div class="buttons">
             <button type="button" (click)="hideEntryForm()">{{ 'yuv.framework.sequence-list.form.button.cancel' |
                 translate

@@ -8,6 +8,10 @@ import { FormBuilder } from '@angular/forms';
 })
 export class TestFormElementsComponent implements OnInit {
   cbIndeterminate: boolean = null;
+  datetime = {
+    default: null,
+    withTime: null
+  };
 
   datePickerForm = this.fb.group({
     default: [],

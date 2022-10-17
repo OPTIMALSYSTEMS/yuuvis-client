@@ -79,8 +79,9 @@ export class ObjectDetailsComponent implements OnDestroy {
   fileDropLabel: string;
   contextError: string = null;
   objectTypeId: string;
-  retentionEnd: Date;
-  retentionDestructUntil: Date;
+  retentionEndDate: Date;
+  retentionEnded: boolean;
+
   _dmsObject: DmsObject;
   private _objectId: string;
 
@@ -114,10 +115,9 @@ export class ObjectDetailsComponent implements OnDestroy {
         this.objectTypeId = null;
       }
 
-      this.retentionEnd = object?.data[RetentionField.RETENTION_END] ? new Date(object.data[RetentionField.RETENTION_END]) : undefined;
-      const destructDate = object?.data[RetentionField.DESTRUCTION_DATE] ? new Date(object.data[RetentionField.DESTRUCTION_DATE]) : undefined;
+      this.retentionEndDate = object?.data[RetentionField.RETENTION_END] ? new Date(object.data[RetentionField.RETENTION_END]) : undefined;
       const today = new Date();
-      this.retentionDestructUntil = destructDate && today > this.retentionEnd ? destructDate : undefined;
+      this.retentionEnded = today > this.retentionEndDate;
 
       if (object) {
         if (!this.componentStateId) {

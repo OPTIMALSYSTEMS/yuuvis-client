@@ -83,6 +83,7 @@ export class SequenceListComponent implements ControlValueAccessor, Validator, O
 
   constructor(
     @Attribute('form-open') public formOpen: string,
+    @Attribute('disable-duedate') public disableDueDate: string,
     private elRef: ElementRef,
     private fb: FormBuilder,
     private popover: PopoverService,
@@ -101,6 +102,9 @@ export class SequenceListComponent implements ControlValueAccessor, Validator, O
 
   writeValue(value: SequenceItem[]): void {
     this.entries = value || [];
+    if (this.disableDueDate) {
+      this.entries.forEach((e) => delete e.expiryDatetime);
+    }
   }
 
   registerOnChange(fn: any): void {
@@ -149,7 +153,7 @@ export class SequenceListComponent implements ControlValueAccessor, Validator, O
       nextAssignee,
       nextAssignee_title: this.orgComponent._innerValue[0].getFullName()
     };
-    if (expiryDatetime?.length) {
+    if (!this.disableDueDate && expiryDatetime?.length) {
       entry.expiryDatetime = expiryDatetime;
     }
 

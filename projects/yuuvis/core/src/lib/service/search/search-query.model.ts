@@ -113,13 +113,12 @@ export class SearchQuery {
     if (group) {
       // add to group
       const searchFilterGroup =
-        groupProperty === SearchFilterGroup.DEFAULT ? this.filterGroup : this.filterGroup.groups.find((g) => g.property === groupProperty);
-      if (searchFilterGroup?.operator === SearchFilterGroup.OPERATOR.AND) {
-        searchFilterGroup.group.push(group);
-      }
-      if (searchFilterGroup?.operator === SearchFilterGroup.OPERATOR.OR) {
-        this.filterGroup = SearchFilterGroup.fromArray([this.filterGroup, group]);
-      }
+        groupProperty === SearchFilterGroup.DEFAULT ? this.filterGroup : this.filterGroup.groups.find((g) => g.property === groupProperty) || this.filterGroup;
+        if (searchFilterGroup !== this.filterGroup || searchFilterGroup?.operator === SearchFilterGroup.OPERATOR.AND) {
+          searchFilterGroup.group.push(group);
+        } else {
+          this.filterGroup = SearchFilterGroup.fromArray([this.filterGroup, group]);
+        }
     }
   }
 
@@ -130,7 +129,7 @@ export class SearchQuery {
     if (searchFilterGroup) {
       const parent = this.filterGroup.findParent(searchFilterGroup.id);
       if (parent) {
-        parent.group = parent.group.filter((f) => f.property !== groupProperty || (remove ? !remove(f as SearchFilterGroup) : false));
+        parent.group = parent.group.filter((f) => f !== searchFilterGroup || (remove ? !remove(f as SearchFilterGroup) : false));
         if (parent.isEmpty()) {
           this.filterGroup.remove(parent.id);
         }
@@ -316,10 +315,10 @@ export class SearchFilterGroup {
     OR: '|'
   };
 
-  public static fromQuery(query: any) {
+  public static fromQuery(query: any, short = true) {
     if (query) {
       const group = (Array.isArray(query) ? query : query.filters || []).map((g) => (g.filters ? SearchFilterGroup.fromQuery(g) : SearchFilter.fromQuery(g)));
-      const single = group.length === 1 && group[0].group && group[0];
+      const single = short && group.length === 1 && group[0].group && group[0];
       return new SearchFilterGroup(query.property, single?.operator || query.lo, single?.group || group);
     } else {
       return undefined;
@@ -337,7 +336,7 @@ export class SearchFilterGroup {
   id = Utils.uuid();
 
   clone(short = true) {
-    return SearchFilterGroup.fromQuery(short ? this.toShortQuery() : this.toQuery());
+    return SearchFilterGroup.fromQuery(short ? this.toShortQuery() : this.toQuery(), short);
   }
 
   find(id: string) {

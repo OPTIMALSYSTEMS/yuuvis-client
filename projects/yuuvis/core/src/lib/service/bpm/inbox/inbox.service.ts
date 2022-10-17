@@ -143,12 +143,29 @@ export class InboxService {
    * @param taskId ID of the taks to be updated
    * @param payload Data to be send with the complete request (may contain attachments, a new subject or variables)
    */
-  updateTask(taskId: string, payload?: ProcessPostPayload): Observable<any> {
-    return this.putTask(taskId, ProcessAction.save, payload || {});
+  updateTask(
+    taskId: string,
+    payload?: ProcessPostPayload,
+    options?: {
+      includeProcessVar: boolean;
+      briefRepresentation: boolean;
+    }
+  ): Observable<any> {
+    return this.putTask(taskId, ProcessAction.save, payload || {}, options);
   }
 
-  private putTask(taskId: string, action: string, payload: ProcessPostPayload) {
+  private putTask(
+    taskId: string,
+    action: string,
+    payload: ProcessPostPayload,
+    options?: {
+      includeProcessVar: boolean;
+      briefRepresentation: boolean;
+    }
+  ) {
     const pl = { ...payload, action: action };
-    return this.backendService.put(`/bpm/tasks/${taskId}`, pl, ApiBase.apiWeb).pipe(tap((_) => this.fetchTasks()));
+    return this.backendService
+      .put(`/bpm/tasks/${taskId}`, pl, ApiBase.apiWeb)
+      .pipe(tap((_) => (options ? this.fetchTasks(options.includeProcessVar, options.briefRepresentation) : this.fetchTasks())));
   }
 }

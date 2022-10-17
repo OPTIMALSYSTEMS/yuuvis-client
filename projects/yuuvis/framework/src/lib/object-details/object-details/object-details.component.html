@@ -1,5 +1,5 @@
 <yuv-panel *ngIf="dmsObject; else empty" class="object-details" [title]="_dmsObject.title"
-  (yuvFileDrop)="onFileDropped($event)" [yuvFileDropOptions]="{ disabled: disableFileDrop || fileDropOptions?.disabled || _dmsObject.contentStreamAllowed === 'notallowed' || !!retentionEnd || !!retentionDestructUntil, 
+  (yuvFileDrop)="onFileDropped($event)" [yuvFileDropOptions]="{ disabled: disableFileDrop || fileDropOptions?.disabled || _dmsObject.contentStreamAllowed === 'notallowed' || !!retentionEndDate, 
   label: fileDropOptions?.label || fileDropLabel, multiple: fileDropOptions?.multiple, maxSize: fileDropOptions?.maxSize, accept: fileDropOptions?.accept, 
   invalidError: fileDropOptions?.invalidError }" [description]="_dmsObject.description" [yuvBusyOverlay]="busy">
   <yuv-object-type-icon class="header-icon" [objectTypeId]="objectTypeId"></yuv-object-type-icon>
@@ -15,12 +15,10 @@
   <yuv-action-menu-bar class="status" [className]="'status'">
 
     <span class="chip"
-      *ngIf="!retentionDestructUntil && retentionEnd">{{'yuv.framework.object-details.status.retentionActive'|translate:
-      ({date: retentionEnd | localeDate: 'shortDate'})}}</span>
+      *ngIf="retentionEndDate && !retentionEnded">{{'yuv.framework.object-details.status.retentionActive'|translate:
+      ({date: retentionEndDate | localeDate: 'shortDate'})}}</span>
     <span class="chip error"
-      *ngIf="retentionEnd && retentionDestructUntil">{{'yuv.framework.object-details.status.retentionDestruction'|translate:
-      ({date:
-      retentionDestructUntil | localeDate: 'shortDate'})}}</span>
+      *ngIf="retentionEndDate && retentionEnded">{{'yuv.framework.object-details.status.retentionDestruction'|translate}}</span>
 
     <!--   <a class="content-link">
         <span translate>yuv.object.contentlink</span>

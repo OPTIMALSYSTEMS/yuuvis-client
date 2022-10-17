@@ -2,11 +2,19 @@
   display: block;
   width: 100%;
 
+  h2 {
+    padding: var(--app-pane-padding);
+    margin: 0;
+    color: var(--text-color-body);
+  }
+
   .row {
     display: flex;
     gap: 1em;
+    color: var(--text-color-body);
     border-bottom: 1px solid var(--panel-divider-color);
     padding: var(--app-pane-padding);
+    align-items: center;
 
     // &.indeterminate {
     //   pointer-events: none;
