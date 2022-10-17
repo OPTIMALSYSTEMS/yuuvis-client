@@ -7,7 +7,6 @@ export * from './lib/column-config/index';
 export * from './lib/common/index';
 export * from './lib/components/index';
 export * from './lib/context/index';
-export * from './lib/dashboard/index';
 export * from './lib/directives/index';
 export * from './lib/form/index';
 export * from './lib/framework.module';
@@ -29,3 +28,4 @@ export * from './lib/shared/utils/index';
 export * from './lib/svg.generated';
 export * from './lib/user/index';
 export * from './lib/versions/index';
+

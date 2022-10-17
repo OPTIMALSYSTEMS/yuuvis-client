@@ -16,7 +16,8 @@ export class DashboardWorkspacesComponent implements OnInit {
   workspaceConfig: WidgetGridWorkspaceConfig | undefined;
   // private _updatedWidgetGridWorkspaceConfig: WidgetGridWorkspaceConfig | undefined;
 
-  constructor(private widgetGridRegistry: WidgetGridRegistry, private userService: UserService, private translate: TranslateService) {}
+  constructor(private widgetGridRegistry: WidgetGridRegistry, private userService: UserService, 
+    private translate: TranslateService) {}
 
   onWorkspacesConfigChange(c: WidgetGridWorkspaceConfig) {
     // this.dirty = true;

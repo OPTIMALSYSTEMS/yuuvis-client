@@ -14,6 +14,7 @@ import {
   YuvDirectivesModule,
   YuvFrameworkModule
 } from '@yuuvis/framework';
+import { YuvWidgetGridModule } from '@yuuvis/widget-grid';
 import { AccordionModule } from 'primeng/accordion';
 import { environment } from '../environments/environment';
 import { ActionsModule } from './actions/actions.module';
@@ -26,6 +27,7 @@ import { ColumnConfigurationComponent } from './states/column-configuration/colu
 import { CreateComponent } from './states/create/create.component';
 import { DashboardDefaultComponent } from './states/dashboard/dashboard-default/dashboard-default.component';
 import { DashboardComponent } from './states/dashboard/dashboard.component';
+import { QuickSearchWidgetComponent } from './states/dashboard/widgets/quick-search-widget/quick-search-widget.component';
 import { FilterConfigurationComponent } from './states/filter-configuration/filter-configuration.component';
 import { FollowUpsComponent } from './states/follow-ups/follow-ups.component';
 import { InboxComponent } from './states/inbox/inbox.component';
@@ -55,7 +57,8 @@ const components = [
   ProcessesComponent,
   FollowUpsComponent,
   RetentionsComponent,
-  DashboardDefaultComponent
+  DashboardDefaultComponent,
+  QuickSearchWidgetComponent
 ];
 
 YuvComponentRegister.register(components);
@@ -113,6 +116,7 @@ YuvComponentRegister.register([CommandPaletteComponent]);
     YuvColumnConfigModule,
     YuvDirectivesModule,
     YuvDashboardModule,
+    YuvWidgetGridModule,
     ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production })
   ],
   providers: [{ provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }],
