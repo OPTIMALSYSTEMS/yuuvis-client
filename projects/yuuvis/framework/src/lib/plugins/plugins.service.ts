@@ -325,7 +325,10 @@ export class PluginsService {
     return {
       components: {
         get: (id) => this.componentRegister.get(id),
-        getParent: (id) => this.componentRegister.get(id)?.parent
+        getParent: (id) => this.componentRegister.get(id)?.parent,
+        all: () => [...this.componentRegister.values()],
+        activeForms: () => [...this.componentRegister.values()].filter((v) => v.id.startsWith('#form_')),
+        activeGrids: () => [...this.componentRegister.values()].filter((v) => v.id.startsWith('#grid_'))
       },
       router: {
         get: () => this.ngZone.run(() => this.router),

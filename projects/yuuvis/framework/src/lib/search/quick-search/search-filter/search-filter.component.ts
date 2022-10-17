@@ -300,7 +300,7 @@ export class SearchFilterComponent implements OnInit {
     this.filterChange.emit(new SearchQuery(this._query.toQueryJson()));
   }
 
-  aggregate(skipTypes = false) {
+  aggregate(skipTypes = false, groups?: string[]) {
     const queryNoLots = new SearchQuery({ ...this.filterQuery.toQueryJson(), lots: [] });
     !skipTypes && !this.availableTypeGroups[0]?.collapsed && this.quickSearchService.getActiveTypes(this.filterQuery).subscribe((types: any) => {
       this.availableObjectTypes.forEach((i) => {
@@ -314,7 +314,7 @@ export class SearchFilterComponent implements OnInit {
 
     const sum = (r: any) => r?.aggregations?.[0].entries.reduce((p, c) => p + c.count, 0);
 
-    this.availableTypeGroups?.forEach((group, i) => i > 0 && !group.collapsed && group.items?.forEach(g => {
+    this.availableTypeGroups?.forEach((group, i) => i > 0 && !group.collapsed && (!groups || groups.includes(group.id)) && group.items?.forEach(g => {
       if (!g.class?.match('skipCount')) {
         const q = new SearchQuery(this.filterQuery.toQueryJson(true));
         if (g.value) {
