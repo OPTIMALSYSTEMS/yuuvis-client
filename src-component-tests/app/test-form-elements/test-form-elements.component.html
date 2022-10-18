@@ -1,4 +1,4 @@
-<h2>Checkboxes and switches</h2>
+<h2>Checkboxes</h2>
 
 <div class="row">
     <yuv-checkbox (change)="checkboxChanged($event)"></yuv-checkbox> Regular checkbox (change)
@@ -28,6 +28,7 @@
 </div>
 
 <!-- switches -->
+<h2>Switches</h2>
 <div class="row">
     <yuv-checkbox switch="true"></yuv-checkbox> Regular switch
 </div>
@@ -39,4 +40,29 @@
 </div>
 <div class="row">
     <yuv-checkbox switch="true" [tristate]="true" [(ngModel)]="cbIndeterminate"></yuv-checkbox> Tri-state switch
+</div>
+
+<!-- datepicker -->
+<h2>Datepicker</h2>
+<div class="row">
+    <yuv-datetime [(ngModel)]="datetime.default"></yuv-datetime> Date
+</div>
+
+<div class="row">
+    <yuv-datetime [withTime]="true" [pickerTitle]="" [(ngModel)]="datetime.withTime"></yuv-datetime> Date with time
+</div>
+
+<div class="row">
+    <yuv-datetime [withTime]="true" [pickerTitle]="'Picker with a title'" [(ngModel)]="datetime.withTime">
+    </yuv-datetime> Date with time and picker title
+</div>
+
+<div class="row">
+    <yuv-datetime [onlyFutureDates]="true" [pickerTitle]="'Future dates only'" [(ngModel)]="datetime.default">
+    </yuv-datetime> Future dates only
+</div>
+
+<div class="row">
+    <yuv-datetime [onlyFutureDates]="true" [withTime]="true" [pickerTitle]="'Future dates only (with time)'"
+        [(ngModel)]="datetime.withTime"></yuv-datetime> Future dates only (with time)
 </div>

@@ -1,4 +1,5 @@
-<yuv-panel *ngIf="_task" class="task-details" [title]="header?.title" [description]="header?.description">
+<yuv-panel *ngIf="_task" class="task-details" [title]="header?.title" [yuvBusyOverlay]="busy"
+    [description]="header?.description">
 
     <div class="actions" *ngIf="dueDate">{{'yuv.framework.process-list.column.dueDate.label'|translate}}<span
             class="dueDate" [ngClass]="{overDue: dueDate.overDue}">{{dueDate.date|localeDate}}</span></div>
@@ -42,8 +43,8 @@
     <yuv-tab-panel [id]="'attachmentsTab'" [header]="'yuv.framework.task-details.tabs.attachments.title' | translate"
         [headerStyleClass]="'attachments'">
         <ng-template pTemplate="content">
-            <yuv-task-details-attachments [layoutOptionsKey]="_layoutOptionsKey" [task]="_task" [plugins]="attachmentPlugins"
-                (attachmentOpenExternal)="attachmentOpenExternal.emit($event)">
+            <yuv-task-details-attachments [layoutOptionsKey]="_layoutOptionsKey" [task]="_task"
+                [plugins]="attachmentPlugins" (attachmentOpenExternal)="attachmentOpenExternal.emit($event)">
             </yuv-task-details-attachments>
         </ng-template>
     </yuv-tab-panel>

@@ -289,8 +289,8 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
         matchRow[k] = data[k];
       });
       matchRow.id = id;
-      const rowNode = this.gridOptions.api.getRowNode(id);
-      rowNode.setData(matchRow);
+      const rowNode = this.gridOptions.api?.getRowNode(id);
+      rowNode && rowNode.setData(matchRow);
     }
   }
 
@@ -301,7 +301,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
    * @returns
    */
   deleteRow(id: string): boolean {
-    const rowNode = this.gridOptions.api ? this.gridOptions.api.getRowNode(id) : undefined;
+    const rowNode = this.gridOptions.api?.getRowNode(id);
     if (rowNode) {
       this.gridOptions.api.applyTransaction({ remove: [rowNode] });
       return true;
@@ -356,6 +356,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
       // if the small state changed, a different set of rowData is applied to the grid
       // so we need to reselect the items that were selected before
       this.selectRows(this._currentSelection);
+      this.gridOptions.api.redrawRows();
     } else if (retry) {
       setTimeout(() => this.applyGridOption(false), 0);
     }
@@ -387,7 +388,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
   }
 
   clearSelection() {
-    this.gridOptions.api.deselectAll();
+    this.gridOptions.api?.deselectAll();
   }
 
   /**
@@ -395,9 +396,9 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
    * @param selection default is first row
    */
   selectRows(selection: number | string[] = 0, focusColId?: string, ensureVisibility: boolean = true) {
-    const _selection = this.gridOptions.api.getSelectedNodes().map((n) => n.id);
+    const _selection = this.gridOptions.api?.getSelectedNodes().map((n) => n.id) || [];
     const sel = typeof selection === 'number' ? [this._data.rows[selection]?.id] : selection || [];
-    if (sel.sort().join() === _selection.sort().join()) return;
+    if (!this.gridOptions.api || sel.sort().join() === _selection.sort().join()) return;
     this.gridOptions.api.clearFocusedCell();
     this.gridOptions.api.deselectAll();
     sel.forEach((id: string, index: number) => {
@@ -419,9 +420,9 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
       const shift = Math.floor(this.settings.size.newWidth / this.settings.colWidth.grid / 2);
       this.gridOptions.api['ctrlsService'].centerRowContainerCtrl.setCenterViewportScrollLeft(Math.max(0, (rowIndex - shift) * this.settings.colWidth.grid));
     } else if (this.isGrid) {
-      this.gridOptions.api.ensureIndexVisible(Math.floor(rowIndex / Math.floor(this.settings.size.newWidth / this.settings.colWidth.grid)));
+      this.gridOptions.api?.ensureIndexVisible(Math.floor(rowIndex / Math.floor(this.settings.size.newWidth / this.settings.colWidth.grid)));
     } else {
-      this.gridOptions.api.ensureIndexVisible(rowIndex);
+      this.gridOptions.api?.ensureIndexVisible(rowIndex);
     }
   }
 
@@ -462,7 +463,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
 
   onSelectionChanged(event) {
     const focused = this.gridOptions.api?.getFocusedCell() || { rowIndex: -1 };
-    const selection = this.gridOptions.api.getSelectedNodes().sort((n) => (n.rowIndex === focused.rowIndex ? -1 : 0));
+    const selection = this.gridOptions.api?.getSelectedNodes().sort((n) => (n.rowIndex === focused.rowIndex ? -1 : 0)) || [];
     if (this.selectionLimit && selection.length > this.selectionLimit) {
       selection.forEach((node, i) => i >= this.selectionLimit && node.setSelected(false));
     } else if (!event || selection.map((rowNode: RowNode) => rowNode.id).join() !== (this._currentSelection || []).join()) {
@@ -483,7 +484,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
 
   onGridReady(event) {
     this.setSortModel(this._data.sortModel || []);
-    this.gridOptions.api.setFocusedCell(0, this.focusField);
+    this.gridOptions.api?.setFocusedCell(0, this.focusField);
   }
 
   onMouseDown($event: MouseEvent | any) {

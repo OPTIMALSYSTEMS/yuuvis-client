@@ -37,7 +37,18 @@ export class DatepickerComponent implements OnInit {
   @Input() withTime: boolean;
   @Input() withAmPm: boolean;
 
-  @Input() onlyFutureDates = false;
+  private _onlyFutureDates: boolean = false;
+  @Input() set onlyFutureDates(b: boolean) {
+    if (!!b !== this._onlyFutureDates) {
+      this._onlyFutureDates = b;
+      if (this.current) {
+        this.weeks = this.datepickerService.buildMonth(this.current, this.startDay, (dd) => this.isDisabledDate(dd, true));
+      }
+    }
+  }
+  get onlyFutureDates() {
+    return this._onlyFutureDates;
+  }
 
   @Input() set date(date: any) {
     this.setCalenderDate(date, true, true);

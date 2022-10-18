@@ -118,7 +118,8 @@ export class SearchService {
           if (o.properties[key].resolvedValues) {
             value.forEach((v) => {
               Object.keys(v).forEach((k) => {
-                const resValue = o.properties[key].resolvedValues[v[k]];
+                // const resValue = o.properties[key].resolvedValues[v[k]];
+                const resValue = Array.isArray(v[k]) ? v[k].map((i) => o.properties[key].resolvedValues[i]) : o.properties[key].resolvedValues[v[k]];
                 if (resValue) {
                   v[`${k}_title`] = resValue;
                 }

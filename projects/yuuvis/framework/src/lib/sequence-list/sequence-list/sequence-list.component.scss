@@ -19,6 +19,7 @@
 
   form.entryForm {
     display: grid;
+    color: var(--text-color-body);
     grid-template-rows: auto auto auto auto;
     grid-template-columns: 1fr;
     padding: calc(var(--app-pane-padding) / 2);
@@ -68,6 +69,7 @@
       padding: 0;
       margin: 0 calc(var(--app-pane-padding) * 0.75);
       flex: 1;
+      color: var(--text-color-body);
     }
 
     button {
@@ -78,6 +80,7 @@
 
   .entries {
     .entry {
+      color: var(--text-color-body);
       position: relative;
       transition: background-color 100ms ease-in-out;
       border: 1px solid var(--panel-divider-color);
