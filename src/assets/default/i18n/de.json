@@ -346,7 +346,7 @@
   "yuv.framework.sequence-list.template.button.delete": "Vorlage löschen",
   "yuv.framework.sequence-list.template.button.save": "Speichern",
   "yuv.framework.sequence-list.template.button.saveNew": "Als neue Vorlage speichern",
-  "yuv.framework.sequence-list.template.errors.forbiddenName": "Es ist bereits eine Vorlage mit diesem Namen vorhanden",
+  "yuv.framework.sequence-list.template.errors.forbiddenName": "Es ist bereits eine Vorlage mit diesem Namen vorhanden.",
   "yuv.framework.sequence-list.template.headline": "Vorlage bearbeiten",
   "yuv.framework.sequence-list.template.headlineNew": "Aktuelle Liste",
   "yuv.framework.sequence-list.template.pending-changes.alert": "Möchten Sie die ungespeicherten Änderungen verwerfen?",
