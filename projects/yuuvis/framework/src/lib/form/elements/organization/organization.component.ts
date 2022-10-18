@@ -2,7 +2,7 @@ import { AfterViewInit, Component, ElementRef, EventEmitter, forwardRef, HostBin
 import { ControlValueAccessor, NG_VALIDATORS, NG_VALUE_ACCESSOR, UntypedFormControl, Validator } from '@angular/forms';
 import { Classification, SystemService, UserService, YuvUser } from '@yuuvis/core';
 import { AutoComplete } from 'primeng/autocomplete';
-import { EMPTY, forkJoin, of } from 'rxjs';
+import { EMPTY, forkJoin, Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { IconRegistryService } from '../../../common/components/icon/service/iconRegistry.service';
 import { organization } from '../../../svg.generated';
@@ -137,26 +137,12 @@ export class OrganizationComponent implements ControlValueAccessor, Validator, A
     this.propagateChange(this.value);
   }
 
-  resolveFn(value: any) {
-    const map = (value instanceof Array ? value : [value]).map((v) => {
-      const match = this.innerValue.find((iv) => iv.id === v);
-      return match
-        ? of(match)
-        : this.userService.getUserById(v).pipe(
-            catchError((e) =>
-              of(
-                new YuvUser(
-                  {
-                    id: v,
-                    title: v,
-                    image: null
-                  },
-                  null
-                )
-              )
-            )
-          );
+  resolveFn(value: string | string[]) {
+    const map: Observable<YuvUser>[] = (Array.isArray(value) ? value : [value]).map((v: string) => {
+      const match = this.innerValue.find((iv: YuvUser) => iv.id === v);
+      return match ? of(match) : this.userService.getUserById(v).pipe(catchError((e) => of(new YuvUser({ id: v, title: v, image: null }, null))));
     });
+
     return forkJoin(map).subscribe((data) => {
       this.innerValue = data;
       setTimeout(() => this.autoCompleteInput.cd.markForCheck());
@@ -168,15 +154,13 @@ export class OrganizationComponent implements ControlValueAccessor, Validator, A
       this.userService
         .queryUser(evt.query, this.excludeMe, this.filterRoles)
         .pipe(
-          catchError((e) => {
+          catchError(() => {
             this.autocompleteRes = [];
             this.propagateValidity(this.autocompleteRes.length > 0);
             return EMPTY;
           }),
           map((users: YuvUser[]) => {
-            // console.log(users, this.innerValue);
-
-            this.autocompleteRes = users; //users.filter((user) => !this.innerValue.some((value) => value.id === user.id));
+            this.autocompleteRes = users.filter((user) => !this.innerValue.some((value) => value.id === user.id));
             this.propagateValidity(this.autocompleteRes.length > 0);
           })
         )
@@ -199,7 +183,7 @@ export class OrganizationComponent implements ControlValueAccessor, Validator, A
   }
 
   // handle selection changes to the model
-  onSelect(value) {
+  onSelect(value: unknown) {
     if (this.multiselect) {
       this.value = this.innerValue.map((v) => v.id);
     } else {
@@ -236,11 +220,7 @@ export class OrganizationComponent implements ControlValueAccessor, Validator, A
     if (this.autoCompleteInput.multiInputEL) {
       this.autoCompleteInput.multiInputEL.nativeElement.value = '';
       this.propagateValidity(true);
-    } else if (
-      this.autoCompleteInput.inputEL &&
-      this.autocompleteRes.length &&
-      !this.autocompleteRes.map((res) => res.username).includes(this.autoCompleteInput.inputEL.nativeElement.value)
-    ) {
+    } else if (this.autoCompleteInput.inputEL && !this.autocompleteRes.map((res) => res.title).includes(this.autoCompleteInput.inputEL.nativeElement.value)) {
       this.clearSingleValue();
     }
   }
