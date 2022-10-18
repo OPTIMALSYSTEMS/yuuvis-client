@@ -5,15 +5,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { CommandPaletteComponent, CommandPaletteModule } from '@yuuvis/command-palette';
-import {
-  YuvColumnConfigModule,
-  YuvCommonModule,
-  YuvComponentRegister,
-  YuvComponentsModule,
-  YuvDashboardModule,
-  YuvDirectivesModule,
-  YuvFrameworkModule
-} from '@yuuvis/framework';
+import { YuvColumnConfigModule, YuvCommonModule, YuvComponentRegister, YuvComponentsModule, YuvDirectivesModule, YuvFrameworkModule } from '@yuuvis/framework';
 import { YuvWidgetGridModule } from '@yuuvis/widget-grid';
 import { AccordionModule } from 'primeng/accordion';
 import { environment } from '../environments/environment';
@@ -115,7 +107,6 @@ YuvComponentRegister.register([CommandPaletteComponent]);
     YuvCommonModule,
     YuvColumnConfigModule,
     YuvDirectivesModule,
-    YuvDashboardModule,
     YuvWidgetGridModule,
     ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production })
   ],

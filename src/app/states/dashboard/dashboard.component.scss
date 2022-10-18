@@ -1,0 +1,22 @@
+:host {
+  display: flex;
+  flex-flow: column;
+  height: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+  padding-top: var(--app-bar-height);
+
+  ::ng-deep {
+    gridster {
+      background: transparent;
+
+      .gridster-row,
+      .gridster-column {
+        border-color: rgba(0, 0, 0, 0.2);
+        .dark & {
+          border-color: var(--panel-divider-color);
+        }
+      }
+    }
+  }
+}
