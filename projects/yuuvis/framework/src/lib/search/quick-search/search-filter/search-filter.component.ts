@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
 import { BaseObjectTypeField, SearchFilter, SearchFilterGroup, SearchQuery, SearchService, TranslateService } from '@yuuvis/core';
-import { forkJoin, Observable } from 'rxjs';
+import { forkJoin, Observable, of } from 'rxjs';
 import { IconRegistryService } from '../../../common/components/icon/service/iconRegistry.service';
 import { Selectable } from '../../../grouped-select';
 import { SelectableGroup } from '../../../grouped-select/grouped-select/grouped-select.interface';
@@ -157,7 +157,7 @@ export class SearchFilterComponent implements OnInit {
   }
 
   private setupExtensions() {
-    this.plugins.subscribe(plugins => {
+    (this.plugins || of([])).subscribe(plugins => {
       const { active, all } = this.quickSearchService.getActiveExtensions(this._query);
       this.typeSelection = [...this.typeSelection, ...active];
       this.availableObjectTypeFields = this.quickSearchService.getAvailableObjectTypesFields(this.typeSelection);
@@ -312,21 +312,29 @@ export class SearchFilterComponent implements OnInit {
       this.typeSelection = [...this.typeSelection];
     });
 
-    const sum = (r: any) => r?.aggregations?.[0].entries.reduce((p, c) => p + c.count, 0);
+    const isCatalog = (id: any) => this.availableObjectTypeFields.find((f) => f.id == id && f.value?._internalType?.match('string:catalog'));
+    const sum = (r: any, key?: string) => r?.aggregations?.[0].entries.filter(e => key ? e.key === key : true).reduce((p, c) => p + c.count, 0);
 
-    this.availableTypeGroups?.forEach((group, i) => i > 0 && !group.collapsed && (!groups || groups.includes(group.id)) && group.items?.forEach(g => {
-      if (!g.class?.match('skipCount')) {
+    this.availableTypeGroups?.filter((group, i) => i > 0 && group.items?.length && !group.collapsed && (!groups || groups.includes(group.id))).forEach((group) => {
+      if (isCatalog(group.id)) {
+        if (group.items[0].class?.match('skipCount')) return;
         const q = new SearchQuery(this.filterQuery.toQueryJson(true));
-        if (g.value) {
-          q.filterGroup = this.filterQuery.filterGroup.clone(false);
-          q.removeFilterGroup(g.value.property);
-          q.addFilterGroup(g.value.clone());
-        } else {
-          q.types = [g.id];
-        }
-        this.searchService.aggregate(q, [BaseObjectTypeField.LEADING_OBJECT_TYPE_ID]).subscribe(r => (g.count = sum(r).toString() as any));
+        this.searchService.aggregate(q, [group.id]).subscribe(r => group.items?.forEach(g => (g.count = sum(r, g.label).toString() as any)));
+      } else {
+        group.items.forEach(g => {
+          if (g.class?.match('skipCount')) return;
+          const q = new SearchQuery(this.filterQuery.toQueryJson(true));
+          if (g.value) {
+            q.filterGroup = this.filterQuery.filterGroup.clone(false);
+            q.removeFilterGroup(g.value.property);
+            q.addFilterGroup(g.value.clone());
+          } else {
+            q.types = [g.id];
+          }
+          this.searchService.aggregate(q, [BaseObjectTypeField.LEADING_OBJECT_TYPE_ID]).subscribe(r => (g.count = sum(r).toString() as any));
+        });
       }
-    }));
+    });
 
   }
 
