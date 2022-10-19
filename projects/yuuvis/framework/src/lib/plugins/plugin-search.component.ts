@@ -41,7 +41,7 @@ export class PluginSearchComponent {
   }
 
   get hideZeroCount() {
-    return this.inputs.hideZeroCount || true;
+    return this.inputs.hideZeroCount || false;
   }
 
   constructor(private pluginService: PluginsService) {}
