@@ -5,6 +5,9 @@
       background-color: var(--color-accent);
       color: #fff;
     }
+    .p-tabview > .p-tabview-panels {
+      overflow: auto;
+    }
     .p-tabview > .p-tabview-panels > p-tabpanel > .p-tabview-panel {
       height: 100%;
     }

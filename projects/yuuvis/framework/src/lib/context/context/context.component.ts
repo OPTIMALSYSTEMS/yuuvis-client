@@ -148,6 +148,7 @@ export class ContextComponent implements OnInit, OnDestroy {
   };
 
   @Input() plugins: Observable<any[]>;
+  @Input() searchPlugins: Observable<any[]>;
 
   constructor(
     private translate: TranslateService,

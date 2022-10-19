@@ -22,6 +22,7 @@ export class RetentionsComponent implements OnInit {
   filterPanelConfig: FilterPanelConfig;
   selectedItems: string[] = [];
   plugins: any;
+  searchPlugins: any;
   objectDetailsID: string;
   searchQuery: SearchQuery;
 
@@ -45,6 +46,7 @@ export class RetentionsComponent implements OnInit {
       this.filterPanelConfig = c;
     });
     this.plugins = this.pluginsService.getCustomPlugins('extensions', 'yuv-retentions');
+    this.searchPlugins = this.pluginsService.getCustomPlugins('extensions', 'yuv-search-result');
   }
 
   private setupColumnDefinition() {

@@ -33,7 +33,8 @@ export class ObjectComponent implements OnInit, OnDestroy {
   private contextId: string;
 
   plugins: any;
-  pluginsContext: any;
+  contextPlugins: any;
+  searchPlugins: any;
 
   constructor(
     private route: ActivatedRoute,
@@ -48,7 +49,8 @@ export class ObjectComponent implements OnInit, OnDestroy {
     private pluginsService: PluginsService
   ) {
     this.plugins = this.pluginsService.getCustomPlugins('extensions', 'yuv-object');
-    this.pluginsContext = this.pluginsService.getCustomPlugins('extensions', 'yuv-object-context');
+    this.contextPlugins = this.pluginsService.getCustomPlugins('extensions', 'yuv-object-context');
+    this.searchPlugins = this.pluginsService.getCustomPlugins('extensions', 'yuv-search-result');
   }
 
   onContextFilesDropped(files: File[]) {
