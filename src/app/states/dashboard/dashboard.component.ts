@@ -1,8 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { TranslateService, UserService } from '@yuuvis/core';
+import { NavigationExtras, Router } from '@angular/router';
+import { SearchQuery, TranslateService, UserService } from '@yuuvis/core';
 import { GridItemEvent, WidgetGridRegistry, WidgetGridWorkspaceConfig } from '@yuuvis/widget-grid';
-import { takeUntilDestroy } from 'take-until-destroy';
-
 import {
   ChartsSetupComponent,
   ChartsWidgetComponent,
@@ -14,9 +13,13 @@ import {
   StoredQuerySetupComponent,
   StoredQueryWidgetComponent
 } from '@yuuvis/widget-grid-widgets';
+import { takeUntilDestroy } from 'take-until-destroy';
+
 import { DashboardConfig } from '../../app.interface';
 import { AppService } from '../../app.service';
+import { AppSearchService } from '../../service/app-search.service';
 import { QuickSearchWidgetComponent } from './widgets/quick-search-widget/quick-search-widget.component';
+import { WIDGET_EVT_QUICKSEARCH_EXECUTE } from './widgets/widgets.events';
 
 @Component({
   selector: 'yuv-dashboard',
@@ -26,36 +29,49 @@ import { QuickSearchWidgetComponent } from './widgets/quick-search-widget/quick-
 })
 export class DashboardComponent implements OnInit, OnDestroy {
   private STORAGE_KEY = 'yuv.client.dashboard.workspaces';
-
+  busy: boolean = true;
   dashboardConfig: DashboardConfig;
   workspaceConfig: WidgetGridWorkspaceConfig | undefined;
 
   constructor(
     private appService: AppService,
+    private appSearchService: AppSearchService,
     private widgetGridRegistry: WidgetGridRegistry,
     private userService: UserService,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private router: Router
   ) {}
 
   onWorkspacesConfigChange(c: WidgetGridWorkspaceConfig) {
-    console.log('DASHBOARD CONFIG CHANGE', c);
-    // this.saveWorkspacesConfig(c);
+    this.saveWorkspacesConfig(c);
   }
 
   onGridEvent(e: GridItemEvent) {
     switch (e.action) {
       case EVT_LIST_ITEM_CLICK: {
-        console.log('LIC', e.data);
+        this.router.navigate(['object', e.data.id]);
         break;
       }
       case EVT_COUNT_TILE_CLICK: {
-        console.log('CTC', e.data);
+        this.openSearchResult(e.data, true);
         break;
       }
       case EVT_STORED_QUERY_EXECUTE: {
-        console.log('SQ', e.data);
+        this.openSearchResult(e.data, true);
         break;
       }
+      case WIDGET_EVT_QUICKSEARCH_EXECUTE: {
+        this.openSearchResult(e.data);
+        break;
+      }
+    }
+  }
+
+  private async openSearchResult(query: SearchQuery, preventAppSearchSet: boolean = false) {
+    const navigationExtras: NavigationExtras = { queryParams: { query: JSON.stringify(query.toQueryJson()) } };
+    await this.router.navigate(['/result'], navigationExtras);
+    if (!preventAppSearchSet) {
+      this.appSearchService.setQuery(query);
     }
   }
 
@@ -66,7 +82,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         if (res?.dashboardType === 'widgets') {
           this.registerWidgets();
           this.loadWorkspacesConfig();
-        }
+        } else this.busy = false;
       }
     });
   }
@@ -102,9 +118,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   private loadWorkspacesConfig() {
+    this.busy = true;
     this.userService.getSettings(this.STORAGE_KEY).subscribe({
       next: (res) => {
         this.workspaceConfig = res;
+        this.busy = false;
       }
     });
   }

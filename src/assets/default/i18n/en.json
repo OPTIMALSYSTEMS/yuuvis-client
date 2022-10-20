@@ -452,7 +452,7 @@
   "yuv.client.cmp.navigate.settings": "Navigation: Settings",
   "yuv.client.cmp.searchmode.explain": "Search mode: You are now searching for objects",
   "yuv.client.cmp.settings.darkmode": "Settings: Switch theme (light/dark)",
-  "yuv.client.dashboard.widgets.charts.label": "",
+  "yuv.client.dashboard.widgets.charts.label": "Chart",
   "yuv.client.frame.app-bar.change-tenant": "Switch tenant",
   "yuv.client.frame.app-bar.filedrop.label": "Create as a new object",
   "yuv.client.frame.app-bar.logout": "Log out",
