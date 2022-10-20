@@ -1,4 +1,5 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Location } from '@angular/common';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AppCacheService, DmsObject, DmsService, EventService, SearchQuery, TranslateService, YuvEventType } from '@yuuvis/core';
@@ -46,7 +47,8 @@ export class ObjectComponent implements OnInit, OnDestroy {
     private router: Router,
     private eventService: EventService,
     private appCacheService: AppCacheService,
-    private pluginsService: PluginsService
+    private pluginsService: PluginsService,
+    private location: Location
   ) {
     this.plugins = this.pluginsService.getCustomPlugins('extensions', 'yuv-object');
     this.contextPlugins = this.pluginsService.getCustomPlugins('extensions', 'yuv-object-context');
@@ -62,12 +64,11 @@ export class ObjectComponent implements OnInit, OnDestroy {
   }
 
   contextItemsSelected(ids: string[]) {
-    if (ids && ids.length === 0) {
-      ids = [this.contextId];
-    }
-    if (ids && ids.length === 1) {
-      this.router.navigate(['.'], { fragment: ids[0], replaceUrl: !!this.selectedItem, relativeTo: this.route, queryParamsHandling: 'preserve' });
-      this.addRecentItem(ids[0]);
+    const id = ids[0] || this.contextId;
+    if (id && ids.length <= 1) {
+      const url = this.router.createUrlTree(['.'], { fragment: id, relativeTo: this.route, queryParamsHandling: 'preserve' });
+      this.location.go(url.toString());
+      this.setupFragment(id);
     }
   }
 
@@ -127,9 +128,16 @@ export class ObjectComponent implements OnInit, OnDestroy {
       );
   }
 
+  private setupFragment(fragment: string) {
+    this._standalone = fragment === this.standaloneFragment ? this.contextId : null;
+    if (!this._standalone) {
+      this.setupSelectedItem(fragment || this.contextId);
+    }
+  }
+
   ngOnInit() {
     this.route.params.pipe(takeUntilDestroy(this)).subscribe((params: any) => {
-      if (params.id) {
+      if (params.id && this.contextId !== params.id) {
         // saving context ID in its own var, so while the dms object is loading
         // we are able to properly set the selected item when there is no fragment ist available.
         this.contextId = params.id;
@@ -142,12 +150,7 @@ export class ObjectComponent implements OnInit, OnDestroy {
       this.appSearch.setQuery(this.contextSearchQuery);
     });
     // fragments are used to identify the selected item within the context
-    this.route.fragment.pipe(takeUntilDestroy(this)).subscribe((fragment: any) => {
-      this._standalone = fragment === this.standaloneFragment ? this.contextId : null;
-      if (!this._standalone) {
-        this.setupSelectedItem(fragment || this.contextId);
-      }
-    });
+    this.route.fragment.pipe(takeUntilDestroy(this)).subscribe((fragment: any) => this.setupFragment(fragment));
 
     this.eventService
       .on(YuvEventType.DMS_OBJECT_DELETED)
