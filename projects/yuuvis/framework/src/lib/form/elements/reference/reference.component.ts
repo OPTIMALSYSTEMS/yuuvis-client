@@ -293,10 +293,15 @@ export class ReferenceComponent implements ControlValueAccessor, Validator, Afte
     this.propagate();
   }
 
+  private clearSingleValue(): void {
+    this.innerValue = [];
+    this.autoCompleteInput.inputEL.nativeElement.value = '';
+    this.propagateValidity(true);
+  }
+
   // handle selection changes to the model
   onUnselect(value) {
     this.innerValue = (Array.isArray(this.innerValue) ? this.innerValue : [this.innerValue])?.filter((v) => v.id !== value.id);
-    this.innerValue.filter((v) => v.id !== value.id);
     let _value = this.innerValue.map((v) => v.id);
     this.value = this.multiselect ? _value : null;
     if (!this.multiselect) {
@@ -313,6 +318,8 @@ export class ReferenceComponent implements ControlValueAccessor, Validator, Afte
     if (this.autoCompleteInput.multiInputEL) {
       this.autoCompleteInput.multiInputEL.nativeElement.value = '';
       this.propagateValidity(true);
+    } else if (this.autoCompleteInput.inputEL && !this.autocompleteRes.map((res) => res.title).includes(this.autoCompleteInput.inputEL.nativeElement.value)) {
+      this.clearSingleValue();
     }
   }
 
