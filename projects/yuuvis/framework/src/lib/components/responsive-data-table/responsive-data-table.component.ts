@@ -8,6 +8,7 @@ import { debounceTime, map } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
 import { ObjectTypeIconComponent } from '../../common/components/object-type-icon/object-type-icon.component';
 import { LocaleDatePipe } from '../../pipes/locale-date.pipe';
+import { PluginsService } from '../../plugins/plugins.service';
 import { ColumnSizes } from '../../services/grid/grid.interface';
 import { SingleCellRendererComponent } from '../../services/grid/renderer/single-cell-renderer/single-cell-renderer.component';
 import { LayoutService } from '../../services/layout/layout.service';
@@ -54,6 +55,7 @@ export interface ResponsiveDataTableOptions {
   providers: [LocaleDatePipe]
 })
 export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
+  private id = '#grid_' + Utils.uuid();
   // internal subject for element size changes used for debouncing resize events
   private resizeSource = new ReplaySubject<ResizedEvent>();
   public resize$: Observable<ResizedEvent> = this.resizeSource.asObservable();
@@ -218,8 +220,10 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
     public gridApi: GridService,
     private layoutService: LayoutService,
     private deviceService: DeviceService,
-    private _ngZone: NgZone
+    private _ngZone: NgZone,
+    private pluginsService: PluginsService
   ) {
+    this.pluginsService.register(this);
     // subscribe to the whole components size changing
     this.resize$
       .pipe(
@@ -525,5 +529,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
 
   ngOnInit() {}
 
-  ngOnDestroy() {}
+  ngOnDestroy() {
+    this.pluginsService.unregister(this);
+  }
 }

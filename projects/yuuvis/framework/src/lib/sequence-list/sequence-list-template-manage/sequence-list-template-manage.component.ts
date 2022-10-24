@@ -14,7 +14,7 @@ export class SequenceListTemplateManageComponent implements OnInit, OnDestroy {
   private DEFAULT_TEMPLATE_STORAGE_SECTION = 'sequencelist';
   CURRENT_ENTRIES_ID = 'current';
   TEMPLATE_NAME_MAX_LENGTH = 128;
-
+  disableSubmit: boolean = false;
   templates: SequenceListTemplate[] = [];
   filterTerm: string;
   pendingTaskId: string;

@@ -1,10 +1,12 @@
 import { Component, EventEmitter, Input, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
 import { BaseObjectTypeField, SearchFilter, SearchFilterGroup, SearchQuery, SearchService, TranslateService } from '@yuuvis/core';
-import { forkJoin, Observable } from 'rxjs';
+import { forkJoin, Observable, of } from 'rxjs';
 import { IconRegistryService } from '../../../common/components/icon/service/iconRegistry.service';
 import { Selectable } from '../../../grouped-select';
 import { SelectableGroup } from '../../../grouped-select/grouped-select/grouped-select.interface';
 import { FileSizePipe } from '../../../pipes/filesize.pipe';
+import { PluginSearchComponent } from '../../../plugins/plugin-search.component';
+import { PluginsService } from '../../../plugins/plugins.service';
 import { PopoverConfig } from '../../../popover/popover.interface';
 import { PopoverService } from '../../../popover/popover.service';
 import { favorite, reset, settings } from '../../../svg.generated';
@@ -97,7 +99,8 @@ export class SearchFilterComponent implements OnInit {
     private quickSearchService: QuickSearchService,
     private popoverService: PopoverService,
     private layoutService: LayoutService,
-    private searchService: SearchService
+    private searchService: SearchService,
+    private pluginsService: PluginsService
   ) {
     this.iconRegistry.registerIcons([settings, reset, favorite, listModeDefault, listModeSimple]);
   }
@@ -154,16 +157,19 @@ export class SearchFilterComponent implements OnInit {
   }
 
   private setupExtensions() {
-    this.plugins.subscribe(plugins => {
+    (this.plugins || of([])).subscribe(plugins => {
       const { active, all } = this.quickSearchService.getActiveExtensions(this._query);
-      const custom = plugins.map((o) => ({ id: o.id, label: o.label ? this.translate.instant(o.label) : o.id, value: new SearchFilterGroup(o.id, SearchFilterGroup.OPERATOR.AND, [SearchFilterGroup.fromQuery(o.plugin?.inputs)]), count: 0 }));
-      if (all.length || custom.length) {
-        this.typeSelection = [...this.typeSelection, ...active];
+      this.typeSelection = [...this.typeSelection, ...active];
+      this.availableObjectTypeFields = this.quickSearchService.getAvailableObjectTypesFields(this.typeSelection);
+      const extensions = PluginSearchComponent.parseExtensions(plugins, this, this.pluginsService);
+      
+      if (all.length || extensions.length) {
         this.availableTypeGroups[1] = {
           id: 'extensions',
           label: this.translate.instant('yuv.framework.search.filter.object.extensions'),
-          items: [...all, ...custom]
+          items: [...all, ...extensions.filter((e: any) => !e.items) as any]
         };
+        this.availableTypeGroups = [...this.availableTypeGroups, ...extensions.filter((e: any) => e.items) as any];
         this.aggregate(true);
       }
     });
@@ -281,7 +287,7 @@ export class SearchFilterComponent implements OnInit {
 
     const customGroups = this.filterQuery.filterGroup.groups.map(g => g.property).filter(property => property !== SearchFilterGroup.DEFAULT);
     customGroups.forEach(g => this.filterQuery.removeFilterGroup(g));
-    res.forEach(r => r.value && this.filterQuery.addFilterGroup(r.value));
+    res.forEach(r => r.value && this.filterQuery.addFilterGroup(r.value.clone(), r.value.property));
 
     this.filterChange.emit(this.filterQuery);
     this.aggregate();
@@ -294,7 +300,7 @@ export class SearchFilterComponent implements OnInit {
     this.filterChange.emit(new SearchQuery(this._query.toQueryJson()));
   }
 
-  aggregate(skipTypes = false) {
+  aggregate(skipTypes = false, groups?: string[]) {
     const queryNoLots = new SearchQuery({ ...this.filterQuery.toQueryJson(), lots: [] });
     !skipTypes && !this.availableTypeGroups[0]?.collapsed && this.quickSearchService.getActiveTypes(this.filterQuery).subscribe((types: any) => {
       this.availableObjectTypes.forEach((i) => {
@@ -306,18 +312,28 @@ export class SearchFilterComponent implements OnInit {
       this.typeSelection = [...this.typeSelection];
     });
 
-    const sum = (r: any) => r?.aggregations?.[0].entries.reduce((p, c) => p + c.count, 0);
+    const isCatalog = (id: any) => this.availableObjectTypeFields.find((f) => f.id == id && f.value?._internalType?.match('string:catalog'));
+    const sum = (r: any, key?: string) => r?.aggregations?.[0].entries.filter(e => key ? e.key === key : true).reduce((p, c) => p + c.count, 0);
 
-    !this.availableTypeGroups[1]?.collapsed && this.availableTypeGroups[1]?.items.filter(g => !g.value).forEach(g => {
-      const q = new SearchQuery(this.filterQuery.toQueryJson(true));
-      q.types = [g.id];
-      this.searchService.aggregate(q, [BaseObjectTypeField.LEADING_OBJECT_TYPE_ID]).subscribe(r => (g.count = sum(r).toString() as any));
-    });
-
-    !this.availableTypeGroups[1]?.collapsed && this.availableTypeGroups[1]?.items.filter(g => g.value).forEach(g => {
-      const q = new SearchQuery(this.filterQuery.toQueryJson(true));
-      q.addFilterGroup(g.value);
-      this.searchService.aggregate(q, [BaseObjectTypeField.LEADING_OBJECT_TYPE_ID]).subscribe(r => (g.count = sum(r).toString() as any));
+    this.availableTypeGroups?.filter((group, i) => i > 0 && group.items?.length && !group.collapsed && (!groups || groups.includes(group.id))).forEach((group) => {
+      if (isCatalog(group.id)) {
+        if (group.items[0].class?.match('skipCount')) return;
+        const q = new SearchQuery(this.filterQuery.toQueryJson(true));
+        this.searchService.aggregate(q, [group.id]).subscribe(r => group.items?.forEach(g => (g.count = sum(r, g.label).toString() as any)));
+      } else {
+        group.items.forEach(g => {
+          if (g.class?.match('skipCount')) return;
+          const q = new SearchQuery(this.filterQuery.toQueryJson(true));
+          if (g.value) {
+            q.filterGroup = this.filterQuery.filterGroup.clone(false);
+            q.removeFilterGroup(g.value.property);
+            q.addFilterGroup(g.value.clone());
+          } else {
+            q.types = [g.id];
+          }
+          this.searchService.aggregate(q, [BaseObjectTypeField.LEADING_OBJECT_TYPE_ID]).subscribe(r => (g.count = sum(r).toString() as any));
+        });
+      }
     });
 
   }

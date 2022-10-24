@@ -1,3 +1,9 @@
+:root {
+  /* xxx */
+  --ag-selected-row-background-color: var(--item-selected-background-color);
+  --ag-row-hover-color: var(--item-focus-background-color);
+}
+
 .ag-theme-yuv {
   font-size: var(--font-body);
   background-color: transparent;
@@ -29,10 +35,11 @@
   .ag-row {
     border-color: var(--panel-divider-color);
     color: var(--text-color-body);
+    background-color: transparent !important;
 
     &.ag-row-odd:not(.ag-row-selected),
     &.ag-row-even:not(.ag-row-selected) {
-      background-color: transparent;
+      background-color: transparent !important;
     }
 
     svg {
@@ -50,12 +57,12 @@
   .ag-row-odd {
     background-color: rgba(255, 255, 255, 0.1);
   }
-
-  .ag-row-hover {
-    background-color: var(--panel-background-grey) !important;
+  .ag-row-hover.ag-row-selected::before {
+    background: var(--ag-selected-row-background-color) !important;
   }
-  .ag-row-selected {
-    background-color: var(--item-selected-background-color);
+  .ag-row-selected,
+  .ag-row-selected::before {
+    background-image: none !important;
   }
 
   .ag-cell {

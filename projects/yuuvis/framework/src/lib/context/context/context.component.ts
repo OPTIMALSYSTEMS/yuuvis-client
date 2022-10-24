@@ -148,6 +148,7 @@ export class ContextComponent implements OnInit, OnDestroy {
   };
 
   @Input() plugins: Observable<any[]>;
+  @Input() searchPlugins: Observable<any[]>;
 
   constructor(
     private translate: TranslateService,
@@ -212,7 +213,6 @@ export class ContextComponent implements OnInit, OnDestroy {
       }
     ];
     this.contextChildrenQuery = ccq;
-
     this.onTabChange({ index: 0 }); // activate searchResult
   }
 
@@ -236,7 +236,7 @@ export class ContextComponent implements OnInit, OnDestroy {
           sortOptions: this.activeSearchResult.query && this.activeSearchResult.query.sortOptions
         };
       }
-    }, 0);
+    }, 200);
   }
 
   refresh(applyColumnConfig?: boolean) {

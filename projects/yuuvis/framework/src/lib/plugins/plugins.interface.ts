@@ -14,6 +14,9 @@ export interface PluginAPI {
   components: {
     get: (id: string) => any;
     getParent: (id: string) => any;
+    all(): any[];
+    activeForms(): any[];
+    activeGrids(): any[];
   };
   /**
    * Listen to a certain type of yuuvis event ({@link YuvEventType})
