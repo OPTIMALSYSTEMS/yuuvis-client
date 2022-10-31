@@ -81,31 +81,14 @@ export class RetentionsComponent implements OnInit {
 
     if (rtStart && rtEnd) {
       //  hours until retention end
-      let h = Math.round((rtEnd.getTime() - today.getTime()) / 1000 / 60 / 60);
-      const retentionEnded = h < 0;
-      h = retentionEnded ? h * -1 : h;
+      const  _h = (rtEnd.getTime() - new Date().getTime()) / 1000 / 60 / 60;
+      const retentionEnded = _h < 0;
+      const h = Math.floor(Math.abs(_h));
 
-      // days until retention end
-      const d = Math.round(h / 24);
-      // months until retention end
-      const m = Math.round(d / 30);
-
-      const n = {
-        d: this.translate.instant('yuv.state.retentions.renderer.d'),
-        m: this.translate.instant('yuv.state.retentions.renderer.m'),
-        y: this.translate.instant('yuv.state.retentions.renderer.y')
-      };
-      let label;
-
-      if (d > 30 && m < 12) {
-        // months
-        label = `${m} ${n.m}`;
-      } else if (m >= 12) {
-        label = `${Math.round((m / 12) * 10) / 10} ${n.y}`;
-      } else {
-        // days
-        label = `${d} ${n.d}`;
-      }
+      const label = h < 48 ? `${h} ${this.translate.instant('yuv.state.retentions.renderer.h')}` :
+                  h < 24 * 30 ? `${Math.floor(h / 24)} ${this.translate.instant('yuv.state.retentions.renderer.d')}` :
+                  h < 24 * 365 ? `${Math.floor(h / 24 / 30)} ${this.translate.instant('yuv.state.retentions.renderer.m')}` :
+                  `${Math.floor(h / 24 / 365)} ${this.translate.instant('yuv.state.retentions.renderer.y')}`;
 
       tpl = {
         icon: retentionEnded ? retentionEnd.data : retentionStart.data,

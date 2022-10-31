@@ -507,6 +507,7 @@
   "yuv.state.retentions.renderer.chip.title.ended": "Die Aufbewahrungsfrist ist vor {{diff}} abgelaufen.",
   "yuv.state.retentions.renderer.chip.title.running": "Unter Aufbewahrung für die nächsten {{diff}}",
   "yuv.state.retentions.renderer.d": "Tag(e)",
+  "yuv.state.retentions.renderer.h": "Stunde(n)",
   "yuv.state.retentions.renderer.m": "Monat(e)",
   "yuv.state.retentions.renderer.y": "Jahr(e)"
 }
