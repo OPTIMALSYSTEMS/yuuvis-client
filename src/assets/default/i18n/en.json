@@ -115,6 +115,7 @@
   "yuv.framework.dynamic-catalog-management.save.error": "Unable to save catalog.",
   "yuv.framework.dynamic-catalog.edit.tooltip": "Edit selection list",
   "yuv.framework.dynamic-catalog.remove-invalid.tooltip": "Remove invalid entries",
+  "yuv.framework.export.csv": "",
   "yuv.framework.filepicker.maxsize.exceeded.message": "The file size must not exceed {{max}}",
   "yuv.framework.filepicker.maxsize.exceeded.title": "Too large",
   "yuv.framework.floating-sot-select.prediction.tooltip": "Probability",
