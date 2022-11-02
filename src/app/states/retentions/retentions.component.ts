@@ -85,10 +85,22 @@ export class RetentionsComponent implements OnInit {
       const retentionEnded = _h < 0;
       const h = Math.floor(Math.abs(_h));
 
-      const label = h < 48 ? `${h} ${this.translate.instant('yuv.state.retentions.renderer.h')}` :
-                  h < 24 * 30 ? `${Math.floor(h / 24)} ${this.translate.instant('yuv.state.retentions.renderer.d')}` :
-                  h < 24 * 365 ? `${Math.floor(h / 24 / 30)} ${this.translate.instant('yuv.state.retentions.renderer.m')}` :
-                  `${Math.floor(h / 24 / 365)} ${this.translate.instant('yuv.state.retentions.renderer.y')}`;
+      // 0 - 48h - x hours
+      // 48h - 60h -> 2 days
+      // 60h - 84h -> 3 days
+      // 31d - 46d -> 1 month
+      // 46d - 76d -> 2 months
+      // 365d - 547d -> 1 year
+      // 547d - 912d -> 2 years
+
+      const label =
+        h < 48
+          ? `${h} ${this.translate.instant('yuv.state.retentions.renderer.h')}`
+          : h < 24 * 31
+          ? `${Math.round(h / 24)} ${this.translate.instant('yuv.state.retentions.renderer.d')}`
+          : h < 24 * 365
+          ? `${Math.round(h / 24 / 30)} ${this.translate.instant('yuv.state.retentions.renderer.m')}`
+          : `${Math.round(h / 24 / 365)} ${this.translate.instant('yuv.state.retentions.renderer.y')}`;
 
       tpl = {
         icon: retentionEnded ? retentionEnd.data : retentionStart.data,
@@ -148,6 +160,7 @@ export class RetentionsComponent implements OnInit {
       case 'next':
         // apply filter to only get the recent ending retention
         const d = new Date();
+        d.setHours(23,59,59,999);
         q.addFilter(new SearchFilter(RetentionField.RETENTION_END, SearchFilter.OPERATOR.LESS_OR_EQUAL, d.setDate(d.getDate() + 30)));
         q.addFilter(new SearchFilter(RetentionField.RETENTION_END, SearchFilter.OPERATOR.GREATER_OR_EQUAL, new Date()));
         break;
