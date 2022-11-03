@@ -23,6 +23,10 @@
     gridster {
       background: transparent;
 
+      gridster-item {
+        border: 1px solid var(--panel-divider-color);
+      }
+
       .gridster-row,
       .gridster-column {
         border-color: rgba(0, 0, 0, 0.2);

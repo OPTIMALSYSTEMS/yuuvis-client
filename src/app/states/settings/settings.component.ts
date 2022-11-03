@@ -18,6 +18,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
   user$: Observable<Partial<YuvUser>>;
   darkMode: boolean;
   accentColor: string;
+  enableDashboardTypeSettings: boolean = false;
   dashboardType: 'default' | 'widgets' = 'default';
   customDashboardBackground: boolean;
   clientLocales: any;
@@ -63,6 +64,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
     private appService: AppService
   ) {
     this.iconRegistry.registerIcons([shield, dashboard, dashboardWidget, arrowDown]);
+    this.enableDashboardTypeSettings = this.config.get('core.features.dashboardWorkspaces');
     this.clientLocales = config.getClientLocales();
     this.enableConfig = this.route.snapshot.queryParamMap.get('config');
     this.enableConfig === 'old' && (ConfigService.GLOBAL_RESOURCES_PATH = (section) => UserService.GLOBAL_SETTINGS + encodeURIComponent(section));

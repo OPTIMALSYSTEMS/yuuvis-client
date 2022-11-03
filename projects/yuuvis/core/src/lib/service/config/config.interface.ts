@@ -29,6 +29,10 @@ export interface YuvConfig {
     };
   };
   oidc?: OpenIdConfig;
+  features?: {
+    // set to true to enable customizable dashbord workspaces
+    dashboardWorkspaces?: boolean;
+  };
 }
 /**
  * interface providing localization of application

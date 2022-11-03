@@ -82,7 +82,7 @@
       </div>
 
       <!-- dashboard type -->
-      <div class="setting">
+      <div class="setting" *ngIf="enableDashboardTypeSettings">
         <div class="label">{{ 'yuv.client.state.settings.layout.dashboard.type' | translate }}</div>
         <div class="value">
           <button class="dType" [disabled]="dashboardType === 'default'" (click)="setDashboardType('default')">

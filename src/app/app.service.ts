@@ -19,7 +19,9 @@ export class AppService {
       .getItem(this.STORAGE_KEY)
       .pipe(
         tap((res) => {
-          this.cfg = res;
+          this.cfg = res || {
+            dashboardType: 'default'
+          };
           this.dashboardConfigSource.next(this.cfg);
         })
       )

@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NavigationExtras, Router } from '@angular/router';
-import { SearchQuery, TranslateService, UserService } from '@yuuvis/core';
-import { GridItemEvent, WidgetGridRegistry, WidgetGridWorkspaceConfig } from '@yuuvis/widget-grid';
+import { AppCacheService, ConfigService, SearchQuery, TranslateService, UserService } from '@yuuvis/core';
+import { GridItemEvent, WidgetGridRegistry, WidgetGridWorkspaceConfig, WidgetGridWorkspaceOptions } from '@yuuvis/widget-grid';
 import {
   ChartsSetupComponent,
   ChartsWidgetComponent,
@@ -13,8 +13,9 @@ import {
   StoredQuerySetupComponent,
   StoredQueryWidgetComponent
 } from '@yuuvis/widget-grid-widgets';
+import { forkJoin, of } from 'rxjs';
+import { catchError, map, switchMap } from 'rxjs/operators';
 import { takeUntilDestroy } from 'take-until-destroy';
-
 import { DashboardConfig } from '../../app.interface';
 import { AppService } from '../../app.service';
 import { AppSearchService } from '../../service/app-search.service';
@@ -29,17 +30,25 @@ import { WIDGET_EVT_QUICKSEARCH_EXECUTE } from './widgets/widgets.events';
 })
 export class DashboardComponent implements OnInit, OnDestroy {
   private STORAGE_KEY = 'yuv.client.dashboard.workspaces';
+  private LOCAL_STORAGE_KEY_CURRENT_WORKSPACE = 'yuv.client.dashboard.workspaces.current';
   busy: boolean = true;
   dashboardConfig: DashboardConfig;
   workspaceConfig: WidgetGridWorkspaceConfig | undefined;
+  workspaceOptions: WidgetGridWorkspaceOptions = {
+    gridConfig: {
+      rows: 25
+    }
+  };
 
   constructor(
     private appService: AppService,
+    private appCacheService: AppCacheService,
     private appSearchService: AppSearchService,
     private widgetGridRegistry: WidgetGridRegistry,
     private userService: UserService,
     private translate: TranslateService,
-    private router: Router
+    private router: Router,
+    private config: ConfigService
   ) {}
 
   onWorkspacesConfigChange(c: WidgetGridWorkspaceConfig) {
@@ -78,11 +87,18 @@ export class DashboardComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.appService.dashboardConfig$.pipe(takeUntilDestroy(this)).subscribe({
       next: (res) => {
-        this.dashboardConfig = res;
-        if (res?.dashboardType === 'widgets') {
-          this.registerWidgets();
-          this.loadWorkspacesConfig();
-        } else this.busy = false;
+        if (this.config.get('core.features.dashboardWorkspaces')) {
+          this.dashboardConfig = res;
+          if (res?.dashboardType === 'widgets') {
+            this.registerWidgets();
+            this.loadWorkspacesConfig();
+          } else this.busy = false;
+        } else {
+          this.dashboardConfig = {
+            dashboardType: 'default'
+          };
+          this.busy = false;
+        }
       }
     });
   }
@@ -119,16 +135,42 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   private loadWorkspacesConfig() {
     this.busy = true;
-    this.userService.getSettings(this.STORAGE_KEY).subscribe({
-      next: (res) => {
-        this.workspaceConfig = res;
-        this.busy = false;
-      }
-    });
+    // the selected workspace is saved on the device while the workspaces themselves are stored on the user service
+    forkJoin([
+      this.userService.getSettings(this.STORAGE_KEY).pipe(catchError((e) => of({ workspaces: [] }))),
+      this.appCacheService.getItem(this.LOCAL_STORAGE_KEY_CURRENT_WORKSPACE).pipe(catchError((e) => of(null)))
+    ])
+      .pipe(
+        map((res) => {
+          const workspaces = res[0] ? res[0].workspaces : [];
+          const currentWorkspace = res[1];
+          // check if current workspace still exists in workspaces array
+          let cws: string;
+          if (currentWorkspace && workspaces.map((w) => w.id).includes(currentWorkspace)) {
+            cws = currentWorkspace;
+          } else if (!!workspaces.length) {
+            cws = workspaces[0].id;
+          }
+          return {
+            currentWorkspace: cws,
+            workspaces
+          };
+        })
+      )
+      .subscribe({
+        next: (res) => {
+          this.workspaceConfig = res;
+          this.busy = false;
+        }
+      });
   }
 
   private saveWorkspacesConfig(c: WidgetGridWorkspaceConfig) {
-    this.userService.saveSettings(this.STORAGE_KEY, c).subscribe();
+    // the selected workspace is saved on the device while the workspaces themselves are stored on the user service
+    this.userService
+      .saveSettings(this.STORAGE_KEY, { workspaces: c.workspaces })
+      .pipe(switchMap(() => this.appCacheService.setItem(this.LOCAL_STORAGE_KEY_CURRENT_WORKSPACE, c.currentWorkspace)))
+      .subscribe();
   }
 
   ngOnDestroy(): void {}

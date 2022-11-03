@@ -1,6 +1,6 @@
 <ng-container [ngSwitch]="dashboardConfig?.dashboardType" *ngIf="!busy; else tplBusy">
   <yuv-dashboard-default *ngSwitchCase="'default'"></yuv-dashboard-default>
-  <yuv-widget-grid-workspaces *ngSwitchCase="'widgets'" [workspaceConfig]="workspaceConfig"
+  <yuv-widget-grid-workspaces *ngSwitchCase="'widgets'" [workspaceConfig]="workspaceConfig" [options]="workspaceOptions"
     (gridItemEvent)="onGridEvent($event)" (configChange)="onWorkspacesConfigChange($event)">
   </yuv-widget-grid-workspaces>
 </ng-container>
