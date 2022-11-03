@@ -1,7 +1,10 @@
 <yuv-panel class="search-result" [title]="'yuv.framework.search-result-panel.header.title' | translate"
-  [description]="queryDescription">
+  [description]="queryDescription" [yuvBusyOverlay]="downloadingCsv">
 
   <yuv-action-menu-bar class="actions" yuvOfflineDisabled>
+    <yuv-icon class="config" [ngClass]="{'badge': searchResultComponent?.sortOptionsChanged}" [icon]="'download'"
+      (click)="exportCSV()" [title]="'yuv.framework.form.table.options.btn.csv' | translate">
+    </yuv-icon>
     <yuv-icon class="config" [ngClass]="{'badge': searchResultComponent?.sortOptionsChanged}" [icon]="'settings'"
       (click)="showColumnConfigEditor()" [title]="'yuv.framework.list.configure.columns' | translate">
     </yuv-icon>

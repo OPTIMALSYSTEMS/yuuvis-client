@@ -2,12 +2,14 @@ import { RowEvent } from '@ag-grid-community/core';
 import { Component, EventEmitter, Input, Output, TemplateRef, ViewChild } from '@angular/core';
 import { ColumnConfig, DmsService, SearchQuery, SystemService, TranslateService } from '@yuuvis/core';
 import { Observable } from 'rxjs';
+import { finalize } from 'rxjs/operators';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { ResponsiveDataTableOptions, ViewMode } from '../../components/responsive-data-table/responsive-data-table.component';
 import { PopoverConfig } from '../../popover/popover.interface';
 import { PopoverRef } from '../../popover/popover.ref';
 import { PopoverService } from '../../popover/popover.service';
-import { kebap, refresh, search, settings } from '../../svg.generated';
+import { DownloadService } from '../../services/download/download.service';
+import { download, kebap, refresh, search, settings } from '../../svg.generated';
 import { FilterPanelConfig, SearchResultComponent } from '../search-result/search-result.component';
 /**
  * This component wraps a `SearchResultComponent`.
@@ -33,6 +35,7 @@ export class SearchResultPanelComponent {
   queryDescription: string;
   actionMenuVisible = false;
   actionMenuSelection = [];
+  downloadingCsv = false;
 
   loading: boolean;
 
@@ -92,9 +95,10 @@ export class SearchResultPanelComponent {
     private systemService: SystemService,
     private popoverService: PopoverService,
     private dmsService: DmsService,
-    private iconRegistry: IconRegistryService
+    private iconRegistry: IconRegistryService,
+    private downloadService: DownloadService
   ) {
-    this.iconRegistry.registerIcons([settings, search, refresh, kebap]);
+    this.iconRegistry.registerIcons([settings, search, refresh, kebap, download]);
   }
 
   refresh(applyColumnConfig?: boolean) {
@@ -179,5 +183,14 @@ export class SearchResultPanelComponent {
 
   columnConfigCanceled(popoverRef: PopoverRef) {
     popoverRef.close();
+  }
+
+  exportCSV() {
+    this.downloadingCsv = true;
+    const title = this._searchQuery.lots.length ? this._searchQuery.lots.join('_') : this.translate.instant('yuv.framework.quick-search.type.all');
+    this.downloadService
+      .exportSearchResult(this._searchQuery, `${title}.csv`)
+      .pipe(finalize(() => (this.downloadingCsv = false)))
+      .subscribe();
   }
 }
