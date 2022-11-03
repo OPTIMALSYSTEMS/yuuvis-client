@@ -222,6 +222,7 @@ export class ReferenceComponent implements ControlValueAccessor, Validator, Afte
       .pipe(map((res) => res.concat(this.innerValue || [])))
       .subscribe((items) => {
         this.innerValue = ids.map((id) => items.find((v) => v.id === id));
+        this.autocompleteRes.push(...this.innerValue);
         setTimeout(() => this.autoCompleteInput.cd.markForCheck());
       });
   }
@@ -252,18 +253,18 @@ export class ReferenceComponent implements ControlValueAccessor, Validator, Afte
       this.searchService
         .search(q instanceof SearchQuery ? q : new SearchQuery(q))
         .pipe(map((reference: any) => reference.items.map((i) => this.referenceItemFnc(i))))
-        .subscribe(
-          (reference) => {
+        .subscribe({
+          next: (reference) => {
             this.autocompleteRes = reference.filter(
               (ref) => !(Array.isArray(this.innerValue) ? this.innerValue : [this.innerValue]).some((value) => value.id === ref.id)
             );
             this.propagateValidity(this.autocompleteRes.length > 0);
           },
-          (e) => {
+          error: (e) => {
             this.autocompleteRes = [];
             this.propagateValidity(this.autocompleteRes.length > 0);
           }
-        );
+        });
     } else {
       this.autocompleteRes = [];
     }
@@ -314,11 +315,15 @@ export class ReferenceComponent implements ControlValueAccessor, Validator, Afte
     this.clearInnerInput();
   }
 
+  private validInput(result: ReferenceEntry | ReferenceEntry[] | any): boolean {
+    return result.map((res) => res.title).includes(this.autoCompleteInput.inputEL.nativeElement.value);
+  }
+
   private clearInnerInput() {
     if (this.autoCompleteInput.multiInputEL) {
       this.autoCompleteInput.multiInputEL.nativeElement.value = '';
       this.propagateValidity(true);
-    } else if (this.autoCompleteInput.inputEL && !this.autocompleteRes.map((res) => res.title).includes(this.autoCompleteInput.inputEL.nativeElement.value)) {
+    } else if (this.autoCompleteInput.inputEL && !this.validInput(this.autocompleteRes) && !this.validInput(this.innerValue)) {
       this.clearSingleValue();
     }
   }
