@@ -145,6 +145,7 @@ export class OrganizationComponent implements ControlValueAccessor, Validator, A
 
     return forkJoin(map).subscribe((data) => {
       this.innerValue = data;
+      this.autocompleteRes.push(...data);
       setTimeout(() => this.autoCompleteInput.cd.markForCheck());
     });
   }
@@ -216,11 +217,15 @@ export class OrganizationComponent implements ControlValueAccessor, Validator, A
     this.clearInnerInput();
   }
 
+  private validInput(result: YuvUser[]): boolean {
+    return result.map((res) => res.title).includes(this.autoCompleteInput.inputEL.nativeElement.value);
+  }
+
   private clearInnerInput() {
     if (this.autoCompleteInput.multiInputEL) {
       this.autoCompleteInput.multiInputEL.nativeElement.value = '';
       this.propagateValidity(true);
-    } else if (this.autoCompleteInput.inputEL && !this.autocompleteRes.map((res) => res.title).includes(this.autoCompleteInput.inputEL.nativeElement.value)) {
+    } else if (this.autoCompleteInput.inputEL && (!this.validInput(this.autocompleteRes) || !this.validInput(this.innerValue))) {
       this.clearSingleValue();
     }
   }
