@@ -28,7 +28,7 @@ export class UploadActionComponent extends DmsObjectTarget implements ComponentA
   }
 
   isExecutable(element: DmsObject) {
-    const { objectTypeId, rights, content } = element;
+    const { objectTypeId, content } = element;
     const objectType = this.system.getObjectType(objectTypeId);
     if (content) {
       this.label = this.translate.instant(`yuv.framework.action-menu.action.upload.dms.object.content.replace.label`);
@@ -37,8 +37,12 @@ export class UploadActionComponent extends DmsObjectTarget implements ComponentA
       this.label = this.translate.instant('yuv.framework.action-menu.action.upload.dms.object.content.add.label');
       this.description = this.translate.instant('yuv.framework.action-menu.action.upload.dms.object.content.add.description');
     }
-    const retentionState = element.getRetentionState();
-    let isRetentionActive = retentionState === RetentionState.ACTIVE;
-    return observableOf(element?.rights?.writeContent && objectType?.contentStreamAllowed !== ContentStreamAllowed.NOT_ALLOWED && !isRetentionActive);
+    const retentionState = element?.getRetentionState();
+    return observableOf(
+      element?.rights?.writeContent &&
+      objectType?.contentStreamAllowed !== ContentStreamAllowed.NOT_ALLOWED &&
+      retentionState !== RetentionState.ACTIVE &&
+      retentionState !== RetentionState.DESTRUCT
+    );
   }
 }
