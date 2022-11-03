@@ -11,7 +11,8 @@ import {
   IconRegistryService,
   LayoutService,
   PluginsService,
-  SearchResultComponent
+  SearchResultComponent,
+  SearchService
 } from '@yuuvis/framework';
 import { finalize } from 'rxjs';
 import { retentionEnd, retentionStart } from '../../../assets/default/svg/svg';
@@ -43,8 +44,6 @@ export class RetentionsComponent implements OnInit {
   columnConfig: ColDef[];
   loading: boolean;
 
-  executetQuery: SearchQuery;
-
   constructor(
     public translate: TranslateService,
     private dmsService: DmsService,
@@ -54,7 +53,8 @@ export class RetentionsComponent implements OnInit {
     private systemService: SystemService,
     private pluginsService: PluginsService,
     private iconRegistry: IconRegistryService,
-    private downloadService: DownloadService
+    private downloadService: DownloadService,
+    private searchService: SearchService
   ) {
     this.iconRegistry.registerIcons([download]);
     this.setupColumnDefinition();
@@ -179,17 +179,13 @@ export class RetentionsComponent implements OnInit {
     this.searchQuery = q;
   }
 
-  queryChanged(query) {
-    this.executetQuery = query;
-  }
-
   exportCSV() {
     this.loadingSpinner = true;
-
-    console.log(this.executetQuery);
-
     this.downloadService
-      .exportSearchResult(this.executetQuery, `${this.translate.instant('yuv.client.state.retentions.title').replace(' ', '_')}.csv`)
+      .exportSearchResult(
+        this.searchService.getLastSearchQuery().toQueryJson(),
+        `${this.translate.instant('yuv.client.state.retentions.title').replace(' ', '_')}.csv`
+      )
       .pipe(finalize(() => (this.loadingSpinner = false)))
       .subscribe();
   }

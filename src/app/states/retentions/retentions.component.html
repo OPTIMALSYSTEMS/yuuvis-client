@@ -16,7 +16,7 @@
 
       <yuv-action-menu-bar class="actions" yuvOfflineDisabled>
         <yuv-icon class="config" [ngClass]="{'badge': searchResultComponent?.sortOptionsChanged}" [icon]="'download'"
-          (click)="exportCSV()" [title]="'yuv.framework.export.csv' | translate">
+          (click)="exportCSV()" [title]="'yuv.framework.form.table.options.btn.csv' | translate">
         </yuv-icon>
         <yuv-icon (click)="refresh()" [title]="'yuv.framework.list.refresh' | translate" class="button refresh-button"
           [icon]="'refresh'"></yuv-icon>
@@ -27,7 +27,7 @@
 
       <yuv-search-result class="content" applyColumnConfig="true" [columnConfig]="columnConfig" [query]="searchQuery"
         [preSelectItems]="selectedItems" [layoutOptionsKey]="layoutOptionsKey" [disableFilterPanel]="true"
-        (itemsSelected)="select($event)" (rowDoubleClicked)="onRowDoubleClicked($event)" [plugins]="searchPlugins" (queryChanged)="queryChanged($event)">
+        (itemsSelected)="select($event)" (rowDoubleClicked)="onRowDoubleClicked($event)" [plugins]="searchPlugins">
       </yuv-search-result>
     </yuv-panel>
     <yuv-action-menu [selection]="actionMenuSelection" [(visible)]="actionMenuVisible" [dark]="true"></yuv-action-menu>
