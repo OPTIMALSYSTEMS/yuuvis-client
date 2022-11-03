@@ -1,5 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NavigationExtras, Router } from '@angular/router';
+import { LangChangeEvent } from '@ngx-translate/core';
 import { AppCacheService, ConfigService, SearchQuery, TranslateService, UserService } from '@yuuvis/core';
 import { GridItemEvent, WidgetGridRegistry, WidgetGridWorkspaceConfig, WidgetGridWorkspaceOptions } from '@yuuvis/widget-grid';
 import {
@@ -49,7 +50,23 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private translate: TranslateService,
     private router: Router,
     private config: ConfigService
-  ) {}
+  ) {
+    this.translate.onLangChange.pipe(takeUntilDestroy(this)).subscribe((e: LangChangeEvent) => {
+      // update language of the widget grid
+
+      this.widgetGridRegistry.updateWidgetGridLabels({
+        widgetPickerTitle: this.translate.instant('yuv.client.dashboard.widgetGrid.widgetPickerTitle'),
+        noopWidgetLabel: this.translate.instant('yuv.client.dashboard.widgetGrid.noopWidgetLabel'),
+        workspacesEmptyMessage: this.translate.instant('yuv.client.dashboard.widgetGrid.workspacesEmptyMessage'),
+        newWorkspaceDefaultLabel: this.translate.instant('yuv.client.dashboard.widgetGrid.newWorkspaceDefaultLabel'),
+        workspaceRemoveConfirmMessage: this.translate.instant('yuv.client.dashboard.widgetGrid.workspaceRemoveConfirmMessage'),
+        workspaceEditDone: this.translate.instant('yuv.client.dashboard.widgetGrid.workspaceEditDone'),
+        save: this.translate.instant('yuv.client.dashboard.widgetGrid.save'),
+        cancel: this.translate.instant('yuv.framework.shared.cancel'),
+        confirm: this.translate.instant('yuv.framework.shared.ok')
+      });
+    });
+  }
 
   onWorkspacesConfigChange(c: WidgetGridWorkspaceConfig) {
     this.saveWorkspacesConfig(c);
