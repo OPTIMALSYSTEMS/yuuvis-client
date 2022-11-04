@@ -180,8 +180,8 @@ export class ColumnConfigComponent implements OnInit {
   save(global = false, reset = false) {
     this.busy = true;
     this.error = null;
-    (reset ? this.userConfig.resetColumnConfig(this.columnConfig.type) : this.userConfig.saveColumnConfig(this.columnConfig, global)).subscribe(
-      (res) => {
+    (reset ? this.userConfig.resetColumnConfig(this.columnConfig.type) : this.userConfig.saveColumnConfig(this.columnConfig, global)).subscribe({
+      next: (res) => {
         this.busy = false;
         if (global) this.globalColumnConfig = this.columnConfig;
         this.hasGlobal = reset;
@@ -189,12 +189,12 @@ export class ColumnConfigComponent implements OnInit {
         this.configSaved.emit(this.columnConfig);
         this.columnConfigDirty = false;
       },
-      (err) => {
+      error: (err) => {
         this.busy = false;
         console.log(err);
         this.error = this.labels.error.save;
       }
-    );
+    });
   }
 
   private resetConfig(config: ColumnConfig) {
@@ -217,8 +217,8 @@ export class ColumnConfigComponent implements OnInit {
   private fetchColumnConfig(objectTypeId: string, sortOptions: SortOption[]): void {
     this.busy = true;
     this.error = null;
-    this.userConfig.getColumnConfig(objectTypeId).subscribe(
-      (res: ColumnConfig) => {
+    this.userConfig.getColumnConfig(objectTypeId).subscribe({
+      next: (res: ColumnConfig) => {
         // check global settings
         this.userConfig.getColumnConfig(objectTypeId, true).subscribe((global) => {
           this.globalColumnConfig = { type: global?.type, columns: this.filterColumns(global?.columns || []) };
@@ -246,7 +246,7 @@ export class ColumnConfigComponent implements OnInit {
           });
         }
       },
-      (err) => {
+      error: (err) => {
         console.error(err);
         this.busy = false;
         this.error = this.labels.error.load;
@@ -256,7 +256,7 @@ export class ColumnConfigComponent implements OnInit {
         });
         this.checkMoreColumnsAvailable();
       }
-    );
+    });
   }
 
   private getSelectables(fields: ObjectTypeField[]): Selectable[] {
