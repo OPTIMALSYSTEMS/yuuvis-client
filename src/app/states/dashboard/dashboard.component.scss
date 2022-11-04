@@ -20,6 +20,12 @@
   }
 
   ::ng-deep {
+    yuv-widget-grid-workspaces {
+      > .confirm {
+        position: fixed !important;
+      }
+    }
+
     gridster {
       background: transparent;
 
