@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NavigationExtras, Router } from '@angular/router';
 import { LangChangeEvent } from '@ngx-translate/core';
-import { AppCacheService, ConfigService, SearchQuery, TranslateService, UserService } from '@yuuvis/core';
+import { AppCacheService, ConfigService, SearchQuery, TranslateService, UserService, YuvUser } from '@yuuvis/core';
 import { GridItemEvent, WidgetGridRegistry, WidgetGridWorkspaceConfig, WidgetGridWorkspaceOptions } from '@yuuvis/widget-grid';
 import {
   ChartsSetupComponent,
@@ -31,7 +31,10 @@ import { WIDGET_EVT_QUICKSEARCH_EXECUTE } from './widgets/widgets.events';
 })
 export class DashboardComponent implements OnInit, OnDestroy {
   private STORAGE_KEY = 'yuv.client.dashboard.workspaces';
-  private LOCAL_STORAGE_KEY_CURRENT_WORKSPACE = 'yuv.client.dashboard.workspaces.current';
+  private get LOCAL_STORAGE_KEY_CURRENT_WORKSPACE() {
+    const u: YuvUser = this.userService.getCurrentUser();
+    return `${u.tenant}.${u.id}.yuv.client.dashboard.workspaces.current`;
+  }
   busy: boolean = true;
   dashboardConfig: DashboardConfig;
   workspaceConfig: WidgetGridWorkspaceConfig | undefined;
@@ -52,19 +55,22 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private config: ConfigService
   ) {
     this.translate.onLangChange.pipe(takeUntilDestroy(this)).subscribe((e: LangChangeEvent) => {
-      // update language of the widget grid
+      this.setWidgetGridLabels();
+    });
+    this.setWidgetGridLabels();
+  }
 
-      this.widgetGridRegistry.updateWidgetGridLabels({
-        widgetPickerTitle: this.translate.instant('yuv.client.dashboard.widgetGrid.widgetPickerTitle'),
-        noopWidgetLabel: this.translate.instant('yuv.client.dashboard.widgetGrid.noopWidgetLabel'),
-        workspacesEmptyMessage: this.translate.instant('yuv.client.dashboard.widgetGrid.workspacesEmptyMessage'),
-        newWorkspaceDefaultLabel: this.translate.instant('yuv.client.dashboard.widgetGrid.newWorkspaceDefaultLabel'),
-        workspaceRemoveConfirmMessage: this.translate.instant('yuv.client.dashboard.widgetGrid.workspaceRemoveConfirmMessage'),
-        workspaceEditDone: this.translate.instant('yuv.client.dashboard.widgetGrid.workspaceEditDone'),
-        save: this.translate.instant('yuv.client.dashboard.widgetGrid.save'),
-        cancel: this.translate.instant('yuv.framework.shared.cancel'),
-        confirm: this.translate.instant('yuv.framework.shared.ok')
-      });
+  private setWidgetGridLabels() {
+    this.widgetGridRegistry.updateWidgetGridLabels({
+      widgetPickerTitle: this.translate.instant('yuv.client.dashboard.widgetGrid.widgetPickerTitle'),
+      noopWidgetLabel: this.translate.instant('yuv.client.dashboard.widgetGrid.noopWidgetLabel'),
+      workspacesEmptyMessage: this.translate.instant('yuv.client.dashboard.widgetGrid.workspacesEmptyMessage'),
+      newWorkspaceDefaultLabel: this.translate.instant('yuv.client.dashboard.widgetGrid.newWorkspaceDefaultLabel'),
+      workspaceRemoveConfirmMessage: this.translate.instant('yuv.client.dashboard.widgetGrid.workspaceRemoveConfirmMessage'),
+      workspaceEditDone: this.translate.instant('yuv.client.dashboard.widgetGrid.workspaceEditDone'),
+      save: this.translate.instant('yuv.client.dashboard.widgetGrid.save'),
+      cancel: this.translate.instant('yuv.framework.shared.cancel'),
+      confirm: this.translate.instant('yuv.framework.shared.ok')
     });
   }
 
