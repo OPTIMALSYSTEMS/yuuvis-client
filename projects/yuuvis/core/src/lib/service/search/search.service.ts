@@ -1,13 +1,14 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
 import { RangeValue } from '../../model/range-value.model';
+import { Utils } from '../../util/utils';
 import { ApiBase } from '../backend/api.enum';
 import { BackendService } from '../backend/backend.service';
 import { BaseObjectTypeField, ContentStreamField } from '../system/system.enum';
 import { SystemService } from '../system/system.service';
 import { SearchFilter, SearchQuery } from './search-query.model';
-import { AggregateResult, Aggregation, SearchResult, SearchResultContent, SearchResultItem } from './search.service.interface';
+import { AggregateResult, Aggregation, SearchQueryProperties, SearchResult, SearchResultContent, SearchResultItem } from './search.service.interface';
 /**
  * Providing searching of dms objects.
  */
@@ -234,5 +235,11 @@ export class SearchService {
       }
     });
     return queryJson;
+  }
+
+  exportSearchResult(searchquery: SearchQueryProperties, title: string, mimetype: string = 'text/csv', charset: string = 'utf-8'): Observable<String> {
+    return this.backend
+      .post('/dms/objects/export', searchquery, ApiBase.apiWeb, { responseType: 'text' })
+      .pipe(tap((csv: any) => Utils.downloadBlob(csv, `${mimetype};charset=${charset}`, title)));
   }
 }
