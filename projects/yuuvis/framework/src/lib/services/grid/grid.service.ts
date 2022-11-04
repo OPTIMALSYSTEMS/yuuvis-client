@@ -176,11 +176,7 @@ export class GridService {
 
     colDef.suppressMovable = true;
     colDef.resizable = true;
-
-    // TODO: apply conditions whether or not the column should be sortable
-    if (GridService.isSortable(field)) {
-      colDef.sortable = true;
-    }
+    colDef.sortable = GridService.isSortable(field);
     return colDef;
   }
 
