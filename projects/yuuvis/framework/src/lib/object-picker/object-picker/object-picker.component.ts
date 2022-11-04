@@ -52,8 +52,8 @@ export class ObjectPickerComponent implements OnInit {
       }
 
       this.loading = true;
-      this.searchService.search(q).subscribe(
-        (res: SearchResult) => {
+      this.searchService.search(q).subscribe({
+        next: (res: SearchResult) => {
           this.total = res.totalNumItems;
           this.searchResult = res.items.map((i) => ({
             id: i.fields.get(BaseObjectTypeField.OBJECT_ID),
@@ -64,11 +64,11 @@ export class ObjectPickerComponent implements OnInit {
           this.keyManager = new FocusKeyManager(this.items);
           this.loading = false;
         },
-        (err) => {
+        error: (err) => {
           console.error(err);
           this.loading = false;
         }
-      );
+      });
     } else {
       this.onQuickSearchReset();
     }
