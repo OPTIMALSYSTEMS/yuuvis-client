@@ -22,7 +22,7 @@
         <yuv-search-result [filterPanelConfig]="filterPanelConfig"
           (filterPanelConfigChanged)="onFilterPanelConfigChanged($event)" class="content" [query]="contextChildrenQuery"
           [preSelectItems]="preSelectItems" applyColumnConfig="true" [layoutOptionsKey]="_layoutOptionsKeys.children"
-          (itemsSelected)="select($event)">
+          (itemsSelected)="select($event)" [plugins]="searchPlugins">
         </yuv-search-result>
       </ng-template>
     </p-tabPanel>
@@ -34,7 +34,7 @@
         <yuv-search-result [filterPanelConfig]="filterPanelConfig"
           (filterPanelConfigChanged)="onFilterPanelConfigChanged($event)" class="content" [query]="recentItemsQuery"
           [preSelectItems]="preSelectItems" applyColumnConfig="true" [layoutOptionsKey]="_layoutOptionsKeys.recent"
-          (itemsSelected)="select($event)">
+          (itemsSelected)="select($event)" [plugins]="searchPlugins">
         </yuv-search-result>
       </ng-template>
     </p-tabPanel>
@@ -46,7 +46,7 @@
         <yuv-search-result [filterPanelConfig]="filterPanelConfig"
           (filterPanelConfigChanged)="onFilterPanelConfigChanged($event)" class="content" [query]="contextSearchQuery"
           [preSelectItems]="preSelectItems" [layoutOptionsKey]="_layoutOptionsKeys.search" applyColumnConfig="true"
-          (itemsSelected)="select($event)">
+          (itemsSelected)="select($event)" [plugins]="searchPlugins">
         </yuv-search-result>
       </ng-template>
     </p-tabPanel>

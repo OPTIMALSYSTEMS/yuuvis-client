@@ -4,7 +4,7 @@ import { Selectable, SelectableGroup } from '../grouped-select';
 import { PluginExtensionConfig } from './plugins.interface';
 import { PluginsService } from './plugins.service';
 
-type Inputs = { init?: string | Function; query?: any; array?: any[]; skipCount?: boolean; skipTranslate?: boolean; operator?: 'AND' | 'OR' };
+type Inputs = { init?: string | Function; query?: any; array?: any[]; skipCount?: boolean; maxHeight?: number; hideZeroCount?: boolean; skipTranslate?: boolean; operator?: 'AND' | 'OR' };
 
 @Component({
   selector: 'yuv-plugin-search',
@@ -34,6 +34,14 @@ export class PluginSearchComponent {
 
   get skipTranslate() {
     return this.inputs.skipTranslate || false;
+  }
+
+  get maxHeight() {
+    return this.inputs.maxHeight || undefined;
+  }
+
+  get hideZeroCount() {
+    return this.inputs.hideZeroCount || false;
   }
 
   constructor(private pluginService: PluginsService) {}
@@ -75,7 +83,7 @@ export class PluginSearchComponent {
         this.toSelectable({ id: id + '__' + value, label }, { operator: 'OR', array: [new SearchFilter(id, SearchFilter.OPERATOR.EQUAL, value)] }, true)
       );
 
-    const group = field && items && { id, label: field.label || '', items };
+    const group = field && items && { id, label: field.label || '', items, maxHeight: this.maxHeight, hideZeroCount: this.hideZeroCount };
 
     if (group && opts instanceof Promise) {
       opts.then((o: any[]) => {
