@@ -5,7 +5,6 @@ import { TranslateService } from '@ngx-translate/core';
 import { BaseObjectTypeField, DmsService, RetentionField, SearchFilter, SearchQuery, SortOption, SystemService, SystemSOT, Utils } from '@yuuvis/core';
 import {
   download,
-  DownloadService,
   FilterPanelConfig,
   GridService,
   IconRegistryService,
@@ -53,7 +52,6 @@ export class RetentionsComponent implements OnInit {
     private systemService: SystemService,
     private pluginsService: PluginsService,
     private iconRegistry: IconRegistryService,
-    private downloadService: DownloadService,
     private searchService: SearchService
   ) {
     this.iconRegistry.registerIcons([download]);
@@ -182,11 +180,8 @@ export class RetentionsComponent implements OnInit {
 
   exportCSV() {
     this.loadingSpinner = true;
-    this.downloadService
-      .exportSearchResult(
-        this.searchService.getLastSearchQuery().toQueryJson(),
-        `${this.translate.instant('yuv.client.state.retentions.title').replace(' ', '_')}.csv`
-      )
+    this.searchService
+      .exportSearchResult(this.searchQuery.toQueryJson(), this.translate.instant('yuv.client.state.retentions.title').replace(' ', '_'))
       .pipe(finalize(() => (this.loadingSpinner = false)))
       .subscribe();
   }
