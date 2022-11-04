@@ -1,14 +1,12 @@
 import { RowEvent } from '@ag-grid-community/core';
 import { Component, EventEmitter, Input, Output, TemplateRef, ViewChild } from '@angular/core';
-import { ColumnConfig, DmsService, SearchQuery, SystemService, TranslateService } from '@yuuvis/core';
-import { Observable } from 'rxjs';
-import { finalize } from 'rxjs/operators';
+import { ColumnConfig, DmsService, SearchQuery, SearchService, SystemService, TranslateService } from '@yuuvis/core';
+import { finalize, Observable } from 'rxjs';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { ResponsiveDataTableOptions, ViewMode } from '../../components/responsive-data-table/responsive-data-table.component';
 import { PopoverConfig } from '../../popover/popover.interface';
 import { PopoverRef } from '../../popover/popover.ref';
 import { PopoverService } from '../../popover/popover.service';
-import { DownloadService } from '../../services/download/download.service';
 import { download, kebap, refresh, search, settings } from '../../svg.generated';
 import { FilterPanelConfig, SearchResultComponent } from '../search-result/search-result.component';
 /**
@@ -96,7 +94,7 @@ export class SearchResultPanelComponent {
     private popoverService: PopoverService,
     private dmsService: DmsService,
     private iconRegistry: IconRegistryService,
-    private downloadService: DownloadService
+    private searchService: SearchService
   ) {
     this.iconRegistry.registerIcons([settings, search, refresh, kebap, download]);
   }
@@ -188,8 +186,8 @@ export class SearchResultPanelComponent {
   exportCSV() {
     this.downloadingCsv = true;
     const title = this._searchQuery.lots.length ? this._searchQuery.lots.join('_') : this.translate.instant('yuv.framework.quick-search.type.all');
-    this.downloadService
-      .exportSearchResult(this._searchQuery, `${title}.csv`)
+    this.searchService
+      .exportSearchResult(this.searchService.getLastSearchQuery().toQueryJson(), title)
       .pipe(finalize(() => (this.downloadingCsv = false)))
       .subscribe();
   }
