@@ -3,7 +3,17 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { BaseObjectTypeField, DmsService, RetentionField, SearchFilter, SearchQuery, SortOption, SystemService, SystemSOT, Utils } from '@yuuvis/core';
-import { FilterPanelConfig, GridService, LayoutService, PluginsService, SearchResultComponent } from '@yuuvis/framework';
+import {
+  download,
+  FilterPanelConfig,
+  GridService,
+  IconRegistryService,
+  LayoutService,
+  PluginsService,
+  SearchResultComponent,
+  SearchService
+} from '@yuuvis/framework';
+import { finalize } from 'rxjs';
 import { retentionEnd, retentionStart } from '../../../assets/default/svg/svg';
 
 @Component({
@@ -18,6 +28,7 @@ export class RetentionsComponent implements OnInit {
   private LAYOUT_STORAGE_KEY = `${this.STORAGE_KEY}.layout`;
   layoutOptionsKey = this.STORAGE_KEY;
   currentFilter: string;
+  loadingSpinner = false;
 
   filterPanelConfig: FilterPanelConfig;
   selectedItems: string[] = [];
@@ -25,11 +36,11 @@ export class RetentionsComponent implements OnInit {
   searchPlugins: any;
   objectDetailsID: string;
   searchQuery: SearchQuery;
+  executedQuery: SearchQuery;
 
   actionMenuVisible = false;
   actionMenuSelection = [];
   columnConfig: ColDef[];
-
   loading: boolean;
 
   constructor(
@@ -39,8 +50,11 @@ export class RetentionsComponent implements OnInit {
     private layoutService: LayoutService,
     private router: Router,
     private systemService: SystemService,
-    private pluginsService: PluginsService
+    private pluginsService: PluginsService,
+    private iconRegistry: IconRegistryService,
+    private searchService: SearchService
   ) {
+    this.iconRegistry.registerIcons([download]);
     this.setupColumnDefinition();
     this.layoutService.loadLayoutOptions(this.LAYOUT_STORAGE_KEY, 'filterPanelConfig').subscribe((c: FilterPanelConfig) => {
       this.filterPanelConfig = c;
@@ -81,14 +95,18 @@ export class RetentionsComponent implements OnInit {
 
     if (rtStart && rtEnd) {
       //  hours until retention end
-      const  _h = (rtEnd.getTime() - new Date().getTime()) / 1000 / 60 / 60;
+      const _h = (rtEnd.getTime() - new Date().getTime()) / 1000 / 60 / 60;
       const retentionEnded = _h < 0;
       const h = Math.floor(Math.abs(_h));
 
-      const label = h < 48 ? `${h} ${this.translate.instant('yuv.state.retentions.renderer.h')}` :
-                  h < 24 * 30 ? `${Math.floor(h / 24)} ${this.translate.instant('yuv.state.retentions.renderer.d')}` :
-                  h < 24 * 365 ? `${Math.floor(h / 24 / 30)} ${this.translate.instant('yuv.state.retentions.renderer.m')}` :
-                  `${Math.floor(h / 24 / 365)} ${this.translate.instant('yuv.state.retentions.renderer.y')}`;
+      const label =
+        h < 48
+          ? `${h} ${this.translate.instant('yuv.state.retentions.renderer.h')}`
+          : h < 24 * 30
+          ? `${Math.floor(h / 24)} ${this.translate.instant('yuv.state.retentions.renderer.d')}`
+          : h < 24 * 365
+          ? `${Math.floor(h / 24 / 30)} ${this.translate.instant('yuv.state.retentions.renderer.m')}`
+          : `${Math.floor(h / 24 / 365)} ${this.translate.instant('yuv.state.retentions.renderer.y')}`;
 
       tpl = {
         icon: retentionEnded ? retentionEnd.data : retentionStart.data,
@@ -123,16 +141,14 @@ export class RetentionsComponent implements OnInit {
   openActionMenu() {
     if (this.selectedItems) {
       this.loading = true;
-      this.dmsService.getDmsObjects(this.selectedItems).subscribe(
-        (items) => {
+      this.dmsService.getDmsObjects(this.selectedItems).subscribe({
+        next: (items) => {
           this.actionMenuSelection = items;
           this.actionMenuVisible = true;
           this.loading = false;
         },
-        (err) => {
-          this.loading = false;
-        }
-      );
+        error: (err) => (this.loading = false)
+      });
     }
   }
 
@@ -148,6 +164,7 @@ export class RetentionsComponent implements OnInit {
       case 'next':
         // apply filter to only get the recent ending retention
         const d = new Date();
+        d.setHours(23, 59, 59, 999);
         q.addFilter(new SearchFilter(RetentionField.RETENTION_END, SearchFilter.OPERATOR.LESS_OR_EQUAL, d.setDate(d.getDate() + 30)));
         q.addFilter(new SearchFilter(RetentionField.RETENTION_END, SearchFilter.OPERATOR.GREATER_OR_EQUAL, new Date()));
         break;
@@ -159,6 +176,14 @@ export class RetentionsComponent implements OnInit {
 
     q.sortOptions = [new SortOption(RetentionField.RETENTION_END, 'asc')];
     this.searchQuery = q;
+  }
+
+  exportCSV() {
+    this.loadingSpinner = true;
+    this.searchService
+      .exportSearchResult(this.searchQuery.toQueryJson(), this.translate.instant('yuv.client.state.retentions.title').replace(' ', '_'))
+      .pipe(finalize(() => (this.loadingSpinner = false)))
+      .subscribe();
   }
 
   ngOnInit(): void {

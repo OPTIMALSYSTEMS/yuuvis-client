@@ -36,8 +36,12 @@ export class GridService {
 
   static AGGREGATED_COLUMN_PREFIX = 'agg:';
 
+  static get notSortableFields(): string[] {
+    return [BaseObjectTypeField.CREATED_BY, BaseObjectTypeField.MODIFIED_BY, BaseObjectTypeField.LEADING_OBJECT_TYPE_ID];
+  }
+
   static isSortable(field: ObjectTypeField): boolean {
-    const skipSort = [BaseObjectTypeField.CREATED_BY, BaseObjectTypeField.MODIFIED_BY].map((s) => s.toString());
+    const skipSort = GridService.notSortableFields.map((s) => s.toString());
     return field?.propertyType !== 'id' && !skipSort.includes(field?.id);
   }
 
@@ -176,11 +180,7 @@ export class GridService {
 
     colDef.suppressMovable = true;
     colDef.resizable = true;
-
-    // TODO: apply conditions whether or not the column should be sortable
-    if (GridService.isSortable(field)) {
-      colDef.sortable = true;
-    }
+    colDef.sortable = GridService.isSortable(field);
     return colDef;
   }
 

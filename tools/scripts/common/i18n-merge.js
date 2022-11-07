@@ -10,15 +10,21 @@ const mergeTranslations = async () => {
   console.log('i18n succesfull!');
 };
 
-const _merge = async lang => {
+const _merge = async (lang) => {
   const lisJsonPath = path.resolve(__dirname, '..', '..', '..', 'dist', 'yuuvis');
-  const resDe = await _readLanguageFiles(lisJsonPath, lang);
+  const resFw = await _readLanguageFiles(lisJsonPath, lang);
+  const widgetsJsonPath = path.resolve(__dirname, '..', '..', '..', 'node_modules', '@yuuvis', 'widget-grid-widgets');
+  const resWidgets = await _readLanguageFiles(widgetsJsonPath, lang);
+
   const appJsonPath = path.resolve(__dirname, '..', '..', '..', 'src', 'assets', 'default', 'i18n', lang + '.json');
-  let merged = JSON.parse(resDe),
+
+  let merged = {};
+  let yuuvisFramework = JSON.parse(resFw),
     __merged = {};
   if (fs.existsSync(appJsonPath)) {
     __merged = JSON.parse(fs.readFileSync(appJsonPath, { encoding: 'utf8' }));
-    merged = { ...merged, ...__merged };
+
+    merged = { ...JSON.parse(resWidgets), ...yuuvisFramework, ...__merged };
   }
 
   // copy the merged data to the apps language file
@@ -51,7 +57,7 @@ const _readLanguageFiles = (path, lang) => {
   });
 };
 
-process.argv.forEach(function(val, index, array) {
+process.argv.forEach(function (val, index, array) {
   if (val.indexOf('--run') !== -1) {
     mergeTranslations();
   }

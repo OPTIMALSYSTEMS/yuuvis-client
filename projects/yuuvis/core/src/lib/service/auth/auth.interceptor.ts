@@ -19,13 +19,13 @@ export class AuthInterceptor implements HttpInterceptor {
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     return next.handle(request).pipe(
-      tap(
-        (event: HttpEvent<any>) => {
+      tap({
+        next: (event: HttpEvent<any>) => {
           if (event instanceof HttpResponse) {
             // do stuff with response if you want
           }
         },
-        (error: any) => {
+        error: (error: any) => {
           if (error instanceof HttpErrorResponse || error.isHttpErrorResponse) {
             if (error.status === 401) {
               if (this.backend.authUsesOpenIdConnect()) {
@@ -36,7 +36,7 @@ export class AuthInterceptor implements HttpInterceptor {
             }
           }
         }
-      )
+      })
     );
   }
 }

@@ -21,7 +21,7 @@ import { OfflineGuard } from './offline-guard/offline-guard.service';
 
 const routes: Routes = [
   { path: 'custom/:type', component: PluginComponent, canActivate: [PluginGuard], canDeactivate: [PluginGuard, OfflineGuard] },
-  { path: 'dashboard', component: DashboardComponent, canDeactivate: [OfflineGuard] },
+  { path: 'dashboard', component: DashboardComponent, canDeactivate: [OfflineGuard], data: { transparentAppBar: true } },
   { path: 'settings', component: SettingsComponent, canDeactivate: [OfflineGuard] },
   { path: 'config/column-config', component: ColumnConfigurationComponent, canDeactivate: [OfflineGuard] },
   { path: 'config/filter-config', component: FilterConfigurationComponent, canDeactivate: [OfflineGuard] },

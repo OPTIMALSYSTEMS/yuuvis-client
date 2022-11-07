@@ -1,0 +1,31 @@
+:host {
+  display: grid;
+  height: 100%;
+  grid-template-rows: 1fr auto;
+  grid-template-columns: 1fr;
+  grid-template-areas: 'main' 'toolbar';
+
+  ::ng-deep {
+    gridster {
+      background-color: transparent;
+      .gridster-column,
+      .gridster-row {
+        border-color: var(--panel-divider-color);
+      }
+    }
+    gridster-item {
+      box-shadow: 0 0 1em rgba(0, 0, 0, 0.1);
+      background-color: var(--panel-background);
+
+      .toolbar {
+        .dragHandle,
+        button {
+          svg {
+            width: 18px;
+            height: 18px;
+          }
+        }
+      }
+    }
+  }
+}

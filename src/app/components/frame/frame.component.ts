@@ -1,5 +1,5 @@
 import { Component, HostBinding, HostListener, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
-import { ActivatedRoute, NavigationEnd, NavigationExtras, Router } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, NavigationExtras, Router, RoutesRecognized } from '@angular/router';
 import { SwUpdate } from '@angular/service-worker';
 import {
   AuthService,
@@ -325,6 +325,56 @@ export class FrameComponent implements OnInit, OnDestroy {
     }
   }
 
+  private processRouterRoutesRecognized(e: RoutesRecognized) {
+    // transparent app-bar?
+    this.tab = e.state.root?.firstChild?.data?.transparentAppBar;
+  }
+  private processRouterNavigationEnd(e: NavigationEnd) {
+    this.getContextFromURL(e.urlAfterRedirects);
+    // // transparent app-bar?
+    // this.tab = e.urlAfterRedirects.startsWith('/dashboard');
+    // disable fileDrop being on create state
+    this.disableFileDrop = this.disableCreate || e.urlAfterRedirects.startsWith('/create');
+
+    if (!this.checkedForLogoutRoute) {
+      this.checkedForLogoutRoute = true;
+      // redirect to the page the user logged out from the last time
+      // but only if current route is not a deep link
+      const ignoreRoutes = ['', 'dashboard', 'index.html'].map((s) => `${Utils.getBaseHref()}${s}`.replace('//', '/'));
+      const currentRoute = this.routeWithBaseHref(this.router.routerState.snapshot.url);
+
+      if (this.userService.getCurrentUser() && ignoreRoutes.includes(currentRoute)) {
+        // get persisted routes to decide where to redirect the logged in user to
+        forkJoin([
+          // route the user left the app the last time (on logout)
+          this.frameService.getRouteOnLogout(),
+          // route the user initially requested when entering the app (may be deep link from e.g. a link)
+          this.authService.getInitialRequestUri()
+        ])
+          .pipe(
+            switchMap((res) => this.authService.resetInitialRequestUri().pipe(map((_) => res))),
+            switchMap((res) => this.frameService.resetRouteOnLogout().pipe(map((_) => res)))
+          )
+          .subscribe((res: { uri: string; timestamp: number }[]) => {
+            const logoutRes = res[0];
+            const loginRes = res[1] && !ignoreRoutes.includes(res[1].uri) ? res[1] : null;
+
+            if (logoutRes && loginRes) {
+              // got logout and initial uri
+              // redirect will happen based on which one has been saved last
+              this.router.navigateByUrl((logoutRes.timestamp > loginRes.timestamp ? logoutRes : loginRes).uri);
+            } else if (logoutRes) {
+              // got only logout uri
+              this.router.navigateByUrl(logoutRes.uri);
+            } else if (loginRes) {
+              // got only initial uri
+              this.router.navigateByUrl(loginRes.uri);
+            }
+          });
+      }
+    }
+  }
+
   ngOnInit() {
     this.authService.authenticated$.subscribe((authenticated: boolean) => {
       if (!authenticated) {
@@ -337,50 +387,9 @@ export class FrameComponent implements OnInit, OnDestroy {
     this.appSearch.query$.subscribe((q: SearchQuery) => {
       this.appQuery = q;
     });
-    this.router.events.pipe(filter((e) => e instanceof NavigationEnd)).subscribe((e: NavigationEnd) => {
-      this.getContextFromURL(e.urlAfterRedirects);
-      // transparent app-bar?
-      this.tab = e.urlAfterRedirects.startsWith('/dashboard');
-      // disable fileDrop being on create state
-      this.disableFileDrop = this.disableCreate || e.urlAfterRedirects.startsWith('/create');
-
-      if (!this.checkedForLogoutRoute) {
-        this.checkedForLogoutRoute = true;
-        // redirect to the page the user logged out from the last time
-        // but only if current route is not a deep link
-        const ignoreRoutes = ['', 'dashboard', 'index.html'].map((s) => `${Utils.getBaseHref()}${s}`.replace('//', '/'));
-        const currentRoute = this.routeWithBaseHref(this.router.routerState.snapshot.url);
-
-        if (this.userService.getCurrentUser() && ignoreRoutes.includes(currentRoute)) {
-          // get persisted routes to decide where to redirect the logged in user to
-          forkJoin([
-            // route the user left the app the last time (on logout)
-            this.frameService.getRouteOnLogout(),
-            // route the user initially requested when entering the app (may be deep link from e.g. a link)
-            this.authService.getInitialRequestUri()
-          ])
-            .pipe(
-              switchMap((res) => this.authService.resetInitialRequestUri().pipe(map((_) => res))),
-              switchMap((res) => this.frameService.resetRouteOnLogout().pipe(map((_) => res)))
-            )
-            .subscribe((res: { uri: string; timestamp: number }[]) => {
-              const logoutRes = res[0];
-              const loginRes = res[1] && !ignoreRoutes.includes(res[1].uri) ? res[1] : null;
-
-              if (logoutRes && loginRes) {
-                // got logout and initial uri
-                // redirect will happen based on which one has been saved last
-                this.router.navigateByUrl((logoutRes.timestamp > loginRes.timestamp ? logoutRes : loginRes).uri);
-              } else if (logoutRes) {
-                // got only logout uri
-                this.router.navigateByUrl(logoutRes.uri);
-              } else if (loginRes) {
-                // got only initial uri
-                this.router.navigateByUrl(loginRes.uri);
-              }
-            });
-        }
-      }
+    this.router.events.pipe(filter((e) => e instanceof NavigationEnd || e instanceof RoutesRecognized)).subscribe((e: NavigationEnd | RoutesRecognized) => {
+      if (e instanceof NavigationEnd) this.processRouterNavigationEnd(e);
+      else if (e instanceof RoutesRecognized) this.processRouterRoutesRecognized(e);
     });
   }
 

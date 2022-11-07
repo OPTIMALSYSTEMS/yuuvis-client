@@ -1,3 +1,4 @@
+import { getLocaleFirstDayOfWeek } from '@angular/common';
 import { RangeValue } from './../../model/range-value.model';
 import { Utils } from './../../util/utils';
 import { SearchQueryProperties } from './search.service.interface';
@@ -379,11 +380,13 @@ export class SearchFilterGroup {
    * @param property The qualified name of the field this group should apply to.
    * @param operator Operator indicating how to handle the groups. See SearchFilterGroup.OPERATOR for available operators.
    * @param group Array of filters or other groups
+   * @param useNot Optional negation of filter
    */
   constructor(
     public property: string = SearchFilterGroup.DEFAULT,
     public operator: string = SearchFilterGroup.OPERATOR.AND,
-    public group: (SearchFilter | SearchFilterGroup)[] = []
+    public group: (SearchFilter | SearchFilterGroup)[] = [],
+    public useNot?: boolean
   ) {}
 
   /**
@@ -401,6 +404,7 @@ export class SearchFilterGroup {
     return {
       property: this.property,
       lo: this.operator,
+      useNot: this.useNot,
       filters: this.group
         .filter((g) => (g instanceof SearchFilterGroup ? g.filters.filter((f) => !f.excludeFromQuery).length : !g.excludeFromQuery))
         .map((g) => (g instanceof SearchFilterGroup ? g.toQuery() : g.toQuery()))
@@ -411,6 +415,7 @@ export class SearchFilterGroup {
     const query = {
       ...(this.property !== SearchFilterGroup.DEFAULT ? { property: this.property } : {}),
       ...(this.operator !== SearchFilterGroup.OPERATOR.AND ? { lo: this.operator } : {}),
+      ...(this.useNot ? { useNot: this.useNot } : {}),
       filters: this.group
         .filter((g) => (g instanceof SearchFilterGroup ? g.filters.filter((f) => !f.excludeFromQuery).length : !g.excludeFromQuery))
         .map((g) =>
@@ -497,16 +502,21 @@ export class SearchFilter {
     YESTERDAY: '$YESTERDAY$',
     THISWEEK: '$THISWEEK$',
     THISMONTH: '$THISMONTH$',
-    THISYEAR: '$THISYEAR$',
+    THISYEAR: '$THISYEAR$'
   };
 
-  public static parseVariable(value: string): { value: string, key: string, base: string, operator: string } {
-    return Object.values(SearchFilter.VARIABLES).includes(value?.replace && value.replace(new RegExp('\\|.*'), '')) 
-      && {
+  public static parseVariable(value: string): { value: string, key: string, base: string, offset: number, operator: string, range: any[] } {
+    if (!value || typeof value !== 'string') return;
+    const base = value.replace(new RegExp('\\|.*'), '');
+    const key = Object.keys(SearchFilter.VARIABLES).find(k => base.startsWith(SearchFilter.VARIABLES[k]));
+    const offset = parseFloat(base.replace(/.*\$/, ''));
+    return key && {
         value,
-        key: value?.replace(new RegExp('\\$', 'g'), '').replace(new RegExp('\\|.*'), ''),
-        base: value?.replace(new RegExp('\\|.*'), ''),
-        operator: value?.replace(new RegExp('.*\\|'), '') || SearchFilter.OPERATOR.EQUAL
+        base,
+        key,
+        offset,
+        operator: value.match('|') ? value.replace(new RegExp('.*\\|'), '') : SearchFilter.OPERATOR.EQUAL,
+        range: base.match(',') ? base.split(',').map(v => SearchFilter.parseVariable(v)) : null,
       };
   }
 
@@ -529,6 +539,7 @@ export class SearchFilter {
    * @param operator Operator indicating how to handle the filters value(s). See SearchFilter.OPERATOR for available operators.
    * @param firstValue The filters value
    * @param secondValue Optional second value for filters that for example define ranges of values
+   * @param useNot Optional negation of filter
    */
   constructor(public property: string, public operator: string, public firstValue: any, public secondValue?: any, public useNot?: boolean) {
     if (firstValue instanceof RangeValue) {
@@ -557,25 +568,40 @@ export class SearchFilter {
 
   toResolvedQuery() {
     const query = this.toQuery();
-    query.v1 = this.resloveValue(query.v1);
-    query.v2 = this.resloveValue(query.v2);
+    const variable = SearchFilter.parseVariable(query.v1);
+    const lte = !!query.o.match(/^lt(e)$/);
+    if (variable?.range) {
+      query.v1 = this.resloveVariable(variable.range[lte ? 1 : 0], lte);
+      query.v2 = query.o.match(/^eq$/) ? this.resloveVariable(variable.range[1], true) : query.v2;
+    } else if (variable) {
+      query.v1 = this.resloveVariable(variable, lte);
+    }
     return query;
   }
 
-  resloveValue(value: any) {
+  resloveVariable(variable: {key: string, offset: number}, lte = false) {
+    if (SearchFilter.VARIABLES[variable.key] === SearchFilter.VARIABLES.CURRENT_USER) return window['api'].session.user.get().id;
+
     const date = new Date();
     date.setHours(0, 0, 0, 0);
+    const startDay = getLocaleFirstDayOfWeek(window['api'].session.user.get().userSettings.locale || 'en');
 
-    switch(SearchFilter.parseVariable(value)?.base) {
-      case SearchFilter.VARIABLES.CURRENT_USER: return window['api'].session.user.get().id;
-      case SearchFilter.VARIABLES.NOW: return new Date().toISOString();
-      case SearchFilter.VARIABLES.TODAY: return date.toISOString();
-      case SearchFilter.VARIABLES.YESTERDAY: return date.setHours(-24) && date;
-      case SearchFilter.VARIABLES.THISWEEK: return  date.setHours(-24 * 7) && date;
-      case SearchFilter.VARIABLES.THISMONTH: return date.setMonth(date.getMonth() - 1) && date;
-      case SearchFilter.VARIABLES.THISYEAR: return date.setFullYear(date.getFullYear() - 1) && date;
+    const resolve = (v: any) => { switch(SearchFilter.VARIABLES[v.key]) {
+        case SearchFilter.VARIABLES.NOW: return new Date(new Date().setSeconds(0, 0));
+        case SearchFilter.VARIABLES.TODAY: return date;
+        case SearchFilter.VARIABLES.YESTERDAY: return date.setHours(-24) && date;
+        case SearchFilter.VARIABLES.THISWEEK: return  date.setHours(-24 * (date.getDay() - startDay + (startDay > date.getDay() ? 7 : 0))) && date;
+        case SearchFilter.VARIABLES.THISMONTH: return date.setDate(1) && date;
+        case SearchFilter.VARIABLES.THISYEAR: return date.setMonth(0, 1) && date;
+      }
+      return date;
     }
-    return value;
+
+    const val = resolve(variable);
+    variable.offset && val.setHours(variable.offset * 24);
+    lte && val.setHours(23, 59, 0, 0);
+    
+    return val.toISOString();
   }
 
   toQuery() {

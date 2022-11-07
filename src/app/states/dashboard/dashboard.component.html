@@ -1,21 +1,12 @@
-<ng-container [yuvTitle]="('yuv.client.state.title' | translate)"></ng-container>
-<div class="dashboard themeBackground" (yuvFileDrop)="onFilesDropped($event)"
-  [yuvFileDropOptions]="{ label: 'yuv.client.frame.app-bar.filedrop.label' | translate, disabled: disableFileDrop, multiple: true }">
+<ng-container [ngSwitch]="dashboardConfig?.dashboardType" *ngIf="!busy; else tplBusy">
+  <yuv-dashboard-default *ngSwitchCase="'default'"></yuv-dashboard-default>
+  <yuv-widget-grid-workspaces *ngSwitchCase="'widgets'" [workspaceConfig]="workspaceConfig" [options]="workspaceOptions"
+    (gridItemEvent)="onGridEvent($event)" (configChange)="onWorkspacesConfigChange($event)">
+  </yuv-widget-grid-workspaces>
+</ng-container>
 
-  <div class="top">
-    <yuv-quick-search *ngIf="reloadComponent" #quickSearch [query]="appQuery"
-      (typeAggregation)="onTypeAggregation($event)" (queryReset)="onQuickSearchReset()"
-      (querySubmit)="onQuickSearchQuery($event)" autofocus="true"></yuv-quick-search>
-
-    <yuv-grouped-select #aggs class="aggs" *ngIf="aggs?.length" [toggleable]="false" [enableSelectAll]="false"
-      [multiple]="false" [groups]="aggsGroups" (select)="applyAggregation($event)">
-    </yuv-grouped-select>
-
+<ng-template #tplBusy>
+  <div class="busy">
+    <div class="yuv-loader-straight"></div>
   </div>
-
-  <div class="bottom">
-    <yuv-recent-activities *ngIf="reloadComponent" id="ra-dashboard" (itemClick)="onRecentItemClicked($event)"
-      (showAll)="onShowAll($event)">
-    </yuv-recent-activities>
-  </div>
-</div>
+</ng-template>

@@ -1,6 +1,6 @@
 import { FocusKeyManager } from '@angular/cdk/a11y';
 import { Component, EventEmitter, HostListener, Input, OnInit, Output, QueryList, ViewChild, ViewChildren } from '@angular/core';
-import { BaseObjectTypeField, SearchQuery, SearchResult, SearchService, SystemService } from '@yuuvis/core';
+import { BaseObjectTypeField, SearchFilter, SearchQuery, SearchResult, SearchService, SystemService } from '@yuuvis/core';
 import { Selectable } from '../../grouped-select/grouped-select/grouped-select.interface';
 import { SelectableItemComponent } from '../../grouped-select/grouped-select/selectable-item/selectable-item.component';
 import { PopoverRef } from '../../popover/popover.ref';
@@ -46,9 +46,14 @@ export class ObjectPickerComponent implements OnInit {
     if (q.filterGroup.filters.length || q.term?.length || q.types.length || q.lots.length) {
       q.fields = [BaseObjectTypeField.OBJECT_ID, BaseObjectTypeField.OBJECT_TYPE_ID, bp.title, bp.description];
       q.size = 10;
+
+      if (this.skipTypes?.length) {
+        q.addFilter(new SearchFilter(BaseObjectTypeField.LEADING_OBJECT_TYPE_ID, SearchFilter.OPERATOR.IN, this.skipTypes, null, true));
+      }
+
       this.loading = true;
-      this.searchService.search(q).subscribe(
-        (res: SearchResult) => {
+      this.searchService.search(q).subscribe({
+        next: (res: SearchResult) => {
           this.total = res.totalNumItems;
           this.searchResult = res.items.map((i) => ({
             id: i.fields.get(BaseObjectTypeField.OBJECT_ID),
@@ -59,11 +64,11 @@ export class ObjectPickerComponent implements OnInit {
           this.keyManager = new FocusKeyManager(this.items);
           this.loading = false;
         },
-        (err) => {
+        error: (err) => {
           console.error(err);
           this.loading = false;
         }
-      );
+      });
     } else {
       this.onQuickSearchReset();
     }

@@ -81,6 +81,21 @@
         </div>
       </div>
 
+      <!-- dashboard type -->
+      <div class="setting" *ngIf="enableDashboardTypeSettings">
+        <div class="label">{{ 'yuv.client.state.settings.layout.dashboard.type' | translate }}</div>
+        <div class="value">
+          <button class="dType" [disabled]="dashboardType === 'default'" (click)="setDashboardType('default')">
+            <yuv-icon icon="dashboard"></yuv-icon>
+            {{'yuv.client.state.settings.layout.dashboard.type.default'|translate}}
+          </button>
+          <button class="dType" [disabled]="dashboardType === 'widgets'" (click)="setDashboardType('widgets')">
+            <yuv-icon icon="dashboardWidget"></yuv-icon>
+            {{'yuv.client.state.settings.layout.dashboard.type.widgets'|translate}}
+          </button>
+        </div>
+      </div>
+
       <!-- SECTION CONFIG -->
       <div class="settings-section">
         <h3>{{ 'yuv.client.state.settings.section.config' | translate }}</h3>

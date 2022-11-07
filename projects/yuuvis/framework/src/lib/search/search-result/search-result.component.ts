@@ -247,6 +247,7 @@ export class SearchResultComponent implements OnDestroy {
     this._searchQuery.from = 0; // always load 1st page
     (applyColumnConfig ? this.applyColumnConfiguration(this._searchQuery) : of(this._searchQuery))
       .pipe(
+        tap((q) => console.log(q, this._searchQuery)),
         tap((q) => this.queryChanged.emit(q)),
         switchMap((q: SearchQuery) => this.searchService.search(q))
       )
@@ -362,17 +363,11 @@ export class SearchResultComponent implements OnDestroy {
 
   goToPage(page: number) {
     this.busy = true;
-    this.searchService.getPage(this._searchQuery, page).subscribe(
-      (res: SearchResult) => {
-        this.createTableData(res, page);
-      },
-      (err) => {
-        // TODO: how should errors be handles in case hat loading pages fail
-      },
-      () => {
-        this.busy = false;
-      }
-    );
+    this.searchService.getPage(this._searchQuery, page).subscribe({
+      next: (res: SearchResult) => this.createTableData(res, page),
+      error: (err) => {}, // TODO: how should errors be handles in case hat loading pages fail
+      complete: () => (this.busy = false)
+    });
   }
 
   private setSelection(ids: string[]) {

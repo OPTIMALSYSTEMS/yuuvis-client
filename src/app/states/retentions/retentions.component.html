@@ -1,5 +1,5 @@
 <ng-container [yuvTitle]="'yuv.client.state.retentions.title' | translate"></ng-container>
-<yuv-responsive-master-slave class="state" [layoutOptionsKey]="layoutOptionsKey" [slaveActive]="objectDetailsID">
+<yuv-responsive-master-slave class="state" [layoutOptionsKey]="layoutOptionsKey" [slaveActive]="objectDetailsID" [yuvBusyOverlay]="loadingSpinner">
   <div class="retention-list yuv-master panel">
     <yuv-panel [title]="'yuv.client.state.retentions.title' | translate">
       <div class="status">
@@ -15,27 +15,24 @@
       </div>
 
       <yuv-action-menu-bar class="actions" yuvOfflineDisabled>
-        <yuv-icon (click)="refresh()" [title]="'yuv.framework.list.refresh' | translate" class="button refresh-button" [icon]="'refresh'"></yuv-icon>
+        <yuv-icon class="config" [ngClass]="{'badge': searchResultComponent?.sortOptionsChanged}" [icon]="'download'"
+          (click)="exportCSV()" [title]="'yuv.framework.form.table.options.btn.csv' | translate">
+        </yuv-icon>
+        <yuv-icon (click)="refresh()" [title]="'yuv.framework.list.refresh' | translate" class="button refresh-button"
+          [icon]="'refresh'"></yuv-icon>
 
-        <yuv-action-menu-button (click)="openActionMenu()" [loading]="loading" [disabled]="!selectedItems?.length"> </yuv-action-menu-button>
+        <yuv-action-menu-button (click)="openActionMenu()" [loading]="loading" [disabled]="!selectedItems?.length">
+        </yuv-action-menu-button>
       </yuv-action-menu-bar>
 
-      <yuv-search-result
-        class="content"
-        applyColumnConfig="true"
-        [columnConfig]="columnConfig"
-        [query]="searchQuery"
-        [preSelectItems]="selectedItems"
-        [layoutOptionsKey]="layoutOptionsKey"
-        [disableFilterPanel]="true"
-        (itemsSelected)="select($event)"
-        (rowDoubleClicked)="onRowDoubleClicked($event)"
-        [plugins]="searchPlugins"
-      >
+      <yuv-search-result class="content" applyColumnConfig="true" [columnConfig]="columnConfig" [query]="searchQuery"
+        [preSelectItems]="selectedItems" [layoutOptionsKey]="layoutOptionsKey" [disableFilterPanel]="true"
+        (itemsSelected)="select($event)" (rowDoubleClicked)="onRowDoubleClicked($event)" [plugins]="searchPlugins">
       </yuv-search-result>
     </yuv-panel>
     <yuv-action-menu [selection]="actionMenuSelection" [(visible)]="actionMenuVisible" [dark]="true"></yuv-action-menu>
   </div>
 
-  <yuv-object-details class="yuv-slave panel" [objectId]="objectDetailsID" [layoutOptionsKey]="layoutOptionsKey" [plugins]="plugins"> </yuv-object-details>
+  <yuv-object-details class="yuv-slave panel" [objectId]="objectDetailsID" [layoutOptionsKey]="layoutOptionsKey"
+    [plugins]="plugins"> </yuv-object-details>
 </yuv-responsive-master-slave>
