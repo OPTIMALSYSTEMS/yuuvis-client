@@ -380,11 +380,13 @@ export class SearchFilterGroup {
    * @param property The qualified name of the field this group should apply to.
    * @param operator Operator indicating how to handle the groups. See SearchFilterGroup.OPERATOR for available operators.
    * @param group Array of filters or other groups
+   * @param useNot Optional negation of filter
    */
   constructor(
     public property: string = SearchFilterGroup.DEFAULT,
     public operator: string = SearchFilterGroup.OPERATOR.AND,
-    public group: (SearchFilter | SearchFilterGroup)[] = []
+    public group: (SearchFilter | SearchFilterGroup)[] = [],
+    public useNot?: boolean
   ) {}
 
   /**
@@ -402,6 +404,7 @@ export class SearchFilterGroup {
     return {
       property: this.property,
       lo: this.operator,
+      useNot: this.useNot,
       filters: this.group
         .filter((g) => (g instanceof SearchFilterGroup ? g.filters.filter((f) => !f.excludeFromQuery).length : !g.excludeFromQuery))
         .map((g) => (g instanceof SearchFilterGroup ? g.toQuery() : g.toQuery()))
@@ -412,6 +415,7 @@ export class SearchFilterGroup {
     const query = {
       ...(this.property !== SearchFilterGroup.DEFAULT ? { property: this.property } : {}),
       ...(this.operator !== SearchFilterGroup.OPERATOR.AND ? { lo: this.operator } : {}),
+      ...(this.useNot ? { useNot: this.useNot } : {}),
       filters: this.group
         .filter((g) => (g instanceof SearchFilterGroup ? g.filters.filter((f) => !f.excludeFromQuery).length : !g.excludeFromQuery))
         .map((g) =>
@@ -535,6 +539,7 @@ export class SearchFilter {
    * @param operator Operator indicating how to handle the filters value(s). See SearchFilter.OPERATOR for available operators.
    * @param firstValue The filters value
    * @param secondValue Optional second value for filters that for example define ranges of values
+   * @param useNot Optional negation of filter
    */
   constructor(public property: string, public operator: string, public firstValue: any, public secondValue?: any, public useNot?: boolean) {
     if (firstValue instanceof RangeValue) {

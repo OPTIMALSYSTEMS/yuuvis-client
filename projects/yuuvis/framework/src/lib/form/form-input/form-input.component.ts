@@ -72,8 +72,14 @@ export class FormInputComponent implements AfterViewInit {
   @Input() variable: any;
 
   variables = SearchFilter.VARIABLES;
-  dateVariables: { key: string, value: string, offset?: number, title?: string }[] = Object.keys(SearchFilter.VARIABLES)
-      .reduce((p, c) => SearchFilter.VARIABLES[c] === SearchFilter.VARIABLES.CURRENT_USER ? p : [...p, { key: c, value : SearchFilter.VARIABLES[c] }], []);
+  dateVariables: { value: string, key?: string, offset?: number, title?: string }[] = [
+    { value: `${SearchFilter.VARIABLES.NOW}` },
+    { value: `${SearchFilter.VARIABLES.TODAY},${SearchFilter.VARIABLES.TODAY}` },
+    { value: `${SearchFilter.VARIABLES.YESTERDAY},${SearchFilter.VARIABLES.YESTERDAY}` },
+    { value: `${SearchFilter.VARIABLES.THISWEEK},${SearchFilter.VARIABLES.THISWEEK}+6` },
+    { value: `${SearchFilter.VARIABLES.THISMONTH},${SearchFilter.VARIABLES.THISMONTH}+${new Date(new Date().getFullYear(),new Date().getMonth() + 1,0).getDate() - 1}` },
+    { value: `${SearchFilter.VARIABLES.THISYEAR},${SearchFilter.VARIABLES.THISYEAR}+${(new Date().getFullYear() % 4 === 0 ? 366 : 365) - 1}` }
+  ];
 
   /**
    * Indicator that the wrapped form element is invalid. Will then render appropriate styles.
@@ -168,7 +174,7 @@ export class FormInputComponent implements AfterViewInit {
     const op = this.childComponent.searchOption = v.operator || SearchFilter.OPERATOR.EQUAL;
     const label = SearchFilter.OPERATOR_LABEL[Object.keys(SearchFilter.OPERATOR).find(k => SearchFilter.OPERATOR[k] === op)];
     const d = this.dateVariables.find(d => d.value === v.base) || v;
-    const title = d.title || this.pluginsService.translate.instant(`yuv.framework.search.agg.time.${d.key?.toLowerCase()}`);
+    const title = d.title || this.pluginsService.translate.instant(`yuv.framework.search.agg.time.${(d.key || v.key || '').toLowerCase()}`);
     const offset = d.offset ? ` ${d.offset > 0 ? '+' : '-'} ${Math.abs(d.offset)}` : '';
     return (label === SearchFilter.OPERATOR_LABEL.EQUAL ? '' : label) + title + offset;
   }
