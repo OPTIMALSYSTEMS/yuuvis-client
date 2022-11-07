@@ -181,7 +181,7 @@ export class RetentionsComponent implements OnInit {
   exportCSV() {
     this.loadingSpinner = true;
     this.searchService
-      .exportSearchResult(this.searchQuery.toQueryJson(), this.translate.instant('yuv.client.state.retentions.title').replace(' ', '_'))
+      .exportSearchResult(this.searchService.getLastSearchQuery().toQueryJson())
       .pipe(finalize(() => (this.loadingSpinner = false)))
       .subscribe();
   }

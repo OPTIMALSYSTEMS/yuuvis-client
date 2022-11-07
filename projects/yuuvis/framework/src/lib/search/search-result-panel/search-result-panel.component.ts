@@ -185,9 +185,8 @@ export class SearchResultPanelComponent {
 
   exportCSV() {
     this.downloadingCsv = true;
-    const title = this._searchQuery.lots.length ? this._searchQuery.lots.join('_') : this.translate.instant('yuv.framework.quick-search.type.all');
     this.searchService
-      .exportSearchResult(this.searchService.getLastSearchQuery().toQueryJson(), title)
+      .exportSearchResult(this.searchService.getLastSearchQuery().toQueryJson())
       .pipe(finalize(() => (this.downloadingCsv = false)))
       .subscribe();
   }
