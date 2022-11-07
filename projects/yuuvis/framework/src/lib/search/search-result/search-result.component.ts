@@ -228,7 +228,6 @@ export class SearchResultComponent implements OnDestroy {
   }
 
   gutterDragEnd(evt: any) {
-    console.log(evt);
     if (this._filterPanelConfig.width !== evt.sizes[0]) {
       this._filterPanelConfig.width = evt.sizes[0];
       this.filterPanelConfigChanged.emit(this._filterPanelConfig);
@@ -247,7 +246,6 @@ export class SearchResultComponent implements OnDestroy {
     this._searchQuery.from = 0; // always load 1st page
     (applyColumnConfig ? this.applyColumnConfiguration(this._searchQuery) : of(this._searchQuery))
       .pipe(
-        tap((q) => console.log(q, this._searchQuery)),
         tap((q) => this.queryChanged.emit(q)),
         switchMap((q: SearchQuery) => this.searchService.search(q))
       )

@@ -1,7 +1,7 @@
 import { RowEvent } from '@ag-grid-community/core';
 import { Component, EventEmitter, Input, Output, TemplateRef, ViewChild } from '@angular/core';
 import { ColumnConfig, DmsService, SearchQuery, SearchService, SystemService, TranslateService } from '@yuuvis/core';
-import { finalize, Observable } from 'rxjs';
+import { finalize, Observable, switchMap } from 'rxjs';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { ResponsiveDataTableOptions, ViewMode } from '../../components/responsive-data-table/responsive-data-table.component';
 import { PopoverConfig } from '../../popover/popover.interface';
@@ -9,6 +9,7 @@ import { PopoverRef } from '../../popover/popover.ref';
 import { PopoverService } from '../../popover/popover.service';
 import { download, kebap, refresh, search, settings } from '../../svg.generated';
 import { FilterPanelConfig, SearchResultComponent } from '../search-result/search-result.component';
+import { UserConfigService } from './../../../../../core/src/lib/service/user-config/user-config.service';
 /**
  * This component wraps a `SearchResultComponent`.
  *
@@ -94,7 +95,8 @@ export class SearchResultPanelComponent {
     private popoverService: PopoverService,
     private dmsService: DmsService,
     private iconRegistry: IconRegistryService,
-    private searchService: SearchService
+    private searchService: SearchService,
+    private userConfig: UserConfigService
   ) {
     this.iconRegistry.registerIcons([settings, search, refresh, kebap, download]);
   }
@@ -185,9 +187,15 @@ export class SearchResultPanelComponent {
 
   exportCSV() {
     this.downloadingCsv = true;
-    this.searchService
-      .exportSearchResult(this.searchService.getLastSearchQuery().toQueryJson())
-      .pipe(finalize(() => (this.downloadingCsv = false)))
+    this.userConfig
+      .getColumnConfig(this.columnConfigInput.type.id)
+      .pipe(
+        switchMap((conf) =>
+          this.searchService
+            .exportSearchResult({ ...this.searchService.getLastSearchQuery().toQueryJson(), fields: conf.columns.map((col) => col.id) }, null)
+            .pipe(finalize(() => (this.downloadingCsv = false)))
+        )
+      )
       .subscribe();
   }
 }

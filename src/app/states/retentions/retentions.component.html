@@ -15,7 +15,7 @@
       </div>
 
       <yuv-action-menu-bar class="actions" yuvOfflineDisabled>
-        <yuv-icon class="config" [ngClass]="{'badge': searchResultComponent?.sortOptionsChanged}" [icon]="'download'"
+        <yuv-icon class="export" [ngClass]="{'badge': searchResultComponent?.sortOptionsChanged}" [icon]="'download'"
           (click)="exportCSV()" [title]="'yuv.framework.form.table.options.btn.csv' | translate">
         </yuv-icon>
         <yuv-icon (click)="refresh()" [title]="'yuv.framework.list.refresh' | translate" class="button refresh-button"

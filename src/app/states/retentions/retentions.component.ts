@@ -181,7 +181,16 @@ export class RetentionsComponent implements OnInit {
   exportCSV() {
     this.loadingSpinner = true;
     this.searchService
-      .exportSearchResult(this.searchService.getLastSearchQuery().toQueryJson())
+      .exportSearchResult(
+        {
+          ...this.searchService.getLastSearchQuery().toQueryJson(),
+          fields: this.columnConfig
+            .filter((conf) => !conf.hide)
+            .map((conf) => conf.field)
+            .filter((conf) => conf)
+        },
+        null
+      )
       .pipe(finalize(() => (this.loadingSpinner = false)))
       .subscribe();
   }
