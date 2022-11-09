@@ -2,17 +2,19 @@ import { ColDef, RowEvent } from '@ag-grid-community/core';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { BaseObjectTypeField, DmsService, RetentionField, SearchFilter, SearchQuery, SortOption, SystemService, SystemSOT, Utils } from '@yuuvis/core';
 import {
-  download,
-  FilterPanelConfig,
-  GridService,
-  IconRegistryService,
-  LayoutService,
-  PluginsService,
-  SearchResultComponent,
-  SearchService
-} from '@yuuvis/framework';
+  BaseObjectTypeField,
+  DmsService,
+  RetentionField,
+  SearchFilter,
+  SearchQuery,
+  SearchService,
+  SortOption,
+  SystemService,
+  SystemSOT,
+  Utils
+} from '@yuuvis/core';
+import { download, FilterPanelConfig, GridService, IconRegistryService, LayoutService, PluginsService, SearchResultComponent } from '@yuuvis/framework';
 import { finalize } from 'rxjs';
 import { retentionEnd, retentionStart } from '../../../assets/default/svg/svg';
 
@@ -181,7 +183,13 @@ export class RetentionsComponent implements OnInit {
   exportCSV() {
     this.loadingSpinner = true;
     this.searchService
-      .exportSearchResult(this.searchQuery.toQueryJson(), this.translate.instant('yuv.client.state.retentions.title').replace(' ', '_'))
+      .exportSearchResult({
+        ...this.searchService.getLastSearchQuery().toQueryJson(),
+        fields: this.columnConfig
+          .filter((conf) => !conf.hide)
+          .map((conf) => conf.field)
+          .filter((conf) => conf)
+      })
       .pipe(finalize(() => (this.loadingSpinner = false)))
       .subscribe();
   }

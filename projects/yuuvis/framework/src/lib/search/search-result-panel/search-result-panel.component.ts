@@ -1,7 +1,7 @@
 import { RowEvent } from '@ag-grid-community/core';
 import { Component, EventEmitter, Input, Output, TemplateRef, ViewChild } from '@angular/core';
-import { ColumnConfig, DmsService, SearchQuery, SearchService, SystemService, TranslateService } from '@yuuvis/core';
-import { finalize, Observable } from 'rxjs';
+import { ColumnConfig, DmsService, SearchQuery, SearchService, SystemService, TranslateService, UserConfigService } from '@yuuvis/core';
+import { finalize, Observable, switchMap } from 'rxjs';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { ResponsiveDataTableOptions, ViewMode } from '../../components/responsive-data-table/responsive-data-table.component';
 import { PopoverConfig } from '../../popover/popover.interface';
@@ -94,7 +94,8 @@ export class SearchResultPanelComponent {
     private popoverService: PopoverService,
     private dmsService: DmsService,
     private iconRegistry: IconRegistryService,
-    private searchService: SearchService
+    private searchService: SearchService,
+    private userConfig: UserConfigService
   ) {
     this.iconRegistry.registerIcons([settings, search, refresh, kebap, download]);
   }
@@ -185,10 +186,15 @@ export class SearchResultPanelComponent {
 
   exportCSV() {
     this.downloadingCsv = true;
-    const title = this._searchQuery.lots.length ? this._searchQuery.lots.join('_') : this.translate.instant('yuv.framework.quick-search.type.all');
-    this.searchService
-      .exportSearchResult(this.searchService.getLastSearchQuery().toQueryJson(), title)
-      .pipe(finalize(() => (this.downloadingCsv = false)))
+    this.userConfig
+      .getColumnConfig(this.columnConfigInput.type.id)
+      .pipe(
+        switchMap((conf) =>
+          this.searchService
+            .exportSearchResult({ ...this.searchService.getLastSearchQuery().toQueryJson(), fields: conf.columns.map((col) => col.id) })
+            .pipe(finalize(() => (this.downloadingCsv = false)))
+        )
+      )
       .subscribe();
   }
 }
