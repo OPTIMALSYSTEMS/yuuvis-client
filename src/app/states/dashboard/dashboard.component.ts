@@ -2,15 +2,24 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NavigationExtras, Router } from '@angular/router';
 import { LangChangeEvent } from '@ngx-translate/core';
 import { AppCacheService, ConfigService, SearchQuery, TranslateService, UserService, YuvUser } from '@yuuvis/core';
-import { GridItemEvent, WidgetGridRegistry, WidgetGridWorkspaceConfig, WidgetGridWorkspaceOptions } from '@yuuvis/widget-grid';
+import {
+  GridItemEvent,
+  PictureWidgetComponent,
+  PictureWidgetSetupComponent,
+  WidgetGridRegistry,
+  WidgetGridWorkspaceConfig,
+  WidgetGridWorkspaceOptions
+} from '@yuuvis/widget-grid';
 import {
   ChartsSetupComponent,
   ChartsWidgetComponent,
   EVT_COUNT_TILE_CLICK,
   EVT_LIST_ITEM_CLICK,
+  EVT_QUICK_SEARCH_EXECUTE,
   EVT_STORED_QUERY_EXECUTE,
   HitlistSetupComponent,
   HitlistWidgetComponent,
+  QuickSearchWidgetComponent,
   StoredQuerySetupComponent,
   StoredQueryWidgetComponent
 } from '@yuuvis/widget-grid-widgets';
@@ -20,8 +29,6 @@ import { takeUntilDestroy } from 'take-until-destroy';
 import { DashboardConfig } from '../../app.interface';
 import { AppService } from '../../app.service';
 import { AppSearchService } from '../../service/app-search.service';
-import { QuickSearchWidgetComponent } from './widgets/quick-search-widget/quick-search-widget.component';
-import { WIDGET_EVT_QUICKSEARCH_EXECUTE } from './widgets/widgets.events';
 
 @Component({
   selector: 'yuv-dashboard',
@@ -92,7 +99,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.openSearchResult(e.data, true);
         break;
       }
-      case WIDGET_EVT_QUICKSEARCH_EXECUTE: {
+      case EVT_QUICK_SEARCH_EXECUTE: {
         this.openSearchResult(e.data);
         break;
       }
@@ -147,11 +154,16 @@ export class DashboardComponent implements OnInit, OnDestroy {
         setupComponent: ChartsSetupComponent,
         widgetComponent: ChartsWidgetComponent
       },
-      // own widgets
       {
         name: 'yuv.client.widget.quicksearch',
         label: this.translate.instant('yuv.client.dashboard.widgets.quicksearch.label'),
         widgetComponent: QuickSearchWidgetComponent
+      },
+      {
+        name: 'yuv.widget.picture',
+        label: 'Just a picture',
+        setupComponent: PictureWidgetSetupComponent,
+        widgetComponent: PictureWidgetComponent
       }
     ]);
   }

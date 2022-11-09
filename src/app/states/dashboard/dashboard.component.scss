@@ -29,7 +29,10 @@
     gridster {
       background: transparent;
 
-      gridster-item {
+      gridster-item:has(yuv-picture-widget) {
+        box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
+      }
+      .yuv-widget {
         border: 1px solid var(--panel-divider-color);
       }
 

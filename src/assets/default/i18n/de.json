@@ -19,6 +19,8 @@
   "yuvfc.widget-grid.widget.hitlist.form.label.threshold.success": "Schwellenwert für Erfolg",
   "yuvfc.widget-grid.widget.hitlist.form.label.threshold.warning": "Schwellenwert für Warnung",
   "yuvfc.widget-grid.widget.hitlist.form.label.titleField": "Titelfeld",
+  "yuvfc.widget-grid.widget.storedquery.aggregate.label": "Aktiviere 'Anzahl ermitteln'",
+  "yuvfc.widget-grid.widget.storedquery.button.aggregate": "Anzahl ermitteln",
   "yuvfc.widget-grid.widget.storedquery.button.execute": "Ausführen",
   "yuvfc.widget-grid.widget.storedquery.fulltext.label": "Volltext Suchbegriff",
   "yuvfc.widget-grid.widget.storedquery.setup.step0": "Objekttype auswählen",
