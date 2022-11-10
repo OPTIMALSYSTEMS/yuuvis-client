@@ -249,14 +249,14 @@ export class ObjectDetailsComponent implements OnDestroy {
       .pipe(takeUntilDestroy(this))
       .subscribe((e: YuvEvent) => {
         const dmsObject = e.data as DmsObject;
-        if (dmsObject.id === this._dmsObject.id) {
+        if (dmsObject?.id === this._dmsObject?.id) {
           this.dmsObject = dmsObject;
         }
       });
   }
 
   onFileDropped(files: File[]) {
-    if (files && files.length === 1 && this._dmsObject.rights && this._dmsObject.rights.writeContent) {
+    if (files?.length === 1 && this._dmsObject?.rights?.writeContent) {
       this.dmsService.uploadContent(this._dmsObject.id, files[0]).subscribe();
     }
   }
@@ -276,18 +276,18 @@ export class ObjectDetailsComponent implements OnDestroy {
     this.dmsService
       .getDmsObject(id)
       .pipe(finalize(() => (this.busy = false)))
-      .subscribe(
-        (dmsObject) => {
+      .subscribe({
+        next : (dmsObject) => {
           this.dmsObject = dmsObject;
           if (emitRefresh) {
             this.objectRefresh.emit();
           }
         },
-        (error) => {
+        error: (error) => {
           this.dmsObject = null;
           this.contextError = this.translate.instant('yuv.framework.object-details.context.load.error');
         }
-      );
+      });
   }
 
   refreshDetails() {
