@@ -105,7 +105,7 @@ export class DatepickerComponent implements OnInit {
     this.onCanceled.emit({});
   }
 
-  isDisabledDate(date: Date, startOfDay = false): boolean {
+  isDisabledDate(date: Date, startOfDay = !this.withTime): boolean {
     return this.onlyFutureDates && date ? new Date(date).getTime() < (startOfDay ? new Date().setHours(0, 0, 0, 0) : new Date().getTime()) : false;
   }
 

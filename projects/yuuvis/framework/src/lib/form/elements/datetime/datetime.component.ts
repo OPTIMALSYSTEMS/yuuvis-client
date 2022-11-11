@@ -196,7 +196,7 @@ export class DatetimeComponent implements OnInit, ControlValueAccessor, Validato
   private isValidDate(date: Date | string): boolean {
     const valid = !!date && !isNaN(new Date(date).getTime());
     // empty input is valid all the time
-    this.isValidInput = this.onlyFutureDates && valid ? new Date(date).getTime() >= new Date().getTime() : valid || !date;
+    this.isValidInput = this.onlyFutureDates && valid ? new Date((date as any).length === 10 ? date + 'T23:59:59.999' : date) > new Date() : valid || !date;
     return valid;
   }
 
