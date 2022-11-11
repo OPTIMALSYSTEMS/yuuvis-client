@@ -290,10 +290,17 @@ export class Utils {
   }
 
   /**
-   * Get the TimeZone Offsest as ISO String.
+   * Get the TimeZone Offsest as minutes
    */
   public static getTimezoneOffset(): number {
     return new Date().getTimezoneOffset();
+  }
+
+  /**
+   * Transform to date with yyyy-mm-dd format
+   */
+  public static transformDate(v: Date | string): string {
+    return v && new Date(new Date(v).getTime() - new Date(v).getTimezoneOffset() * 60 * 1000).toISOString().slice(0, 10);
   }
 
   public static isEdge(): boolean {
