@@ -207,9 +207,8 @@ export class SearchService {
       if (f.filters) return this.transformDateFilters(f);
 
       if (f.v1 && f.v1.length > 10 && this._dateFields.includes(f.f)) {
-        const format = (v: any) => v && new Date(new Date(v).getTime() - new Date(v).getTimezoneOffset() * 60 * 1000).toISOString().slice(0, 10);
-        f.v1 = format(f.v1);
-        f.v2 = f.v2 && format(f.v2);
+        f.v1 = Utils.transformDate(f.v1);
+        f.v2 = f.v2 && Utils.transformDate(f.v2);
         if (f.o === SearchFilter.OPERATOR.EQUAL && f.v2) f.o = SearchFilter.OPERATOR.INTERVAL_INCLUDE_BOTH;
       }
 

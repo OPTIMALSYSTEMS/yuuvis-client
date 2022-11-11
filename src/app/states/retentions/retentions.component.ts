@@ -97,18 +97,19 @@ export class RetentionsComponent implements OnInit {
 
     if (rtStart && rtEnd) {
       //  hours until retention end
-      const _h = (rtEnd.getTime() - new Date().getTime()) / 1000 / 60 / 60;
+      const _h = (rtEnd.getTime() - today.getTime()) / 1000 / 60 / 60;
       const retentionEnded = _h < 0;
-      const h = Math.floor(Math.abs(_h));
+      let diff = Math.floor(Math.abs(_h));
+      const monthDiff = (s: Date, e: Date) => e.getMonth() - s.getMonth() + 12 * (e.getFullYear() - s.getFullYear());
 
       const label =
-        h < 48
-          ? `${h} ${this.translate.instant('yuv.state.retentions.renderer.h')}`
-          : h < 24 * 30
-          ? `${Math.floor(h / 24)} ${this.translate.instant('yuv.state.retentions.renderer.d')}`
-          : h < 24 * 365
-          ? `${Math.floor(h / 24 / 30)} ${this.translate.instant('yuv.state.retentions.renderer.m')}`
-          : `${Math.floor(h / 24 / 365)} ${this.translate.instant('yuv.state.retentions.renderer.y')}`;
+        diff < 48
+          ? `${diff < 1 ? `≈1` : diff} ${this.translate.instant('yuv.state.retentions.renderer.h')}`
+          : (diff = Math.floor(diff / 24)) < 31
+          ? `${diff} ${this.translate.instant('yuv.state.retentions.renderer.d')}`
+          : (diff = retentionEnded ? monthDiff(rtEnd, today) : monthDiff(today, rtEnd)) < 12
+          ? `${diff} ${this.translate.instant('yuv.state.retentions.renderer.m')}`
+          : `${Math.abs(rtEnd.getFullYear() - today.getFullYear())} ${this.translate.instant('yuv.state.retentions.renderer.y')}`;
 
       tpl = {
         icon: retentionEnded ? retentionEnd.data : retentionStart.data,
