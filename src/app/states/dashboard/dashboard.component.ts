@@ -15,6 +15,7 @@ import {
   ChartsWidgetComponent,
   EVT_COUNT_TILE_CLICK,
   EVT_LIST_ITEM_CLICK,
+  EVT_LIST_QUERY_EMIT,
   EVT_QUICK_SEARCH_EXECUTE,
   EVT_STORED_QUERY_EXECUTE,
   HitlistSetupComponent,
@@ -89,6 +90,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
     switch (e.action) {
       case EVT_LIST_ITEM_CLICK: {
         this.router.navigate(['object', e.data.id]);
+        break;
+      }
+      case EVT_LIST_QUERY_EMIT: {
+        this.openSearchResult(e.data, true);
         break;
       }
       case EVT_COUNT_TILE_CLICK: {
