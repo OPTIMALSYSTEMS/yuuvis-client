@@ -6,6 +6,8 @@ import {
   GridItemEvent,
   PictureWidgetComponent,
   PictureWidgetSetupComponent,
+  TodoWidgetComponent,
+  TodoWidgetSetupComponent,
   WidgetGridRegistry,
   WidgetGridWorkspaceConfig,
   WidgetGridWorkspaceOptions
@@ -78,7 +80,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
       workspaceEditDone: this.translate.instant('yuv.client.dashboard.widgetGrid.workspaceEditDone'),
       save: this.translate.instant('yuv.client.dashboard.widgetGrid.save'),
       cancel: this.translate.instant('yuv.framework.shared.cancel'),
-      confirm: this.translate.instant('yuv.framework.shared.ok')
+      confirm: this.translate.instant('yuv.framework.shared.ok'),
+      widgetTodoHeadlineLabel: this.translate.instant('yuv.client.dashboard.widgetGrid.widgetTodoHeadlineLabel'),
+      widgetTodoTaskTitleLabel: this.translate.instant('yuv.client.dashboard.widgetGrid.widgetTodoTaskTitleLabel')
     });
   }
 
@@ -166,9 +170,15 @@ export class DashboardComponent implements OnInit, OnDestroy {
       },
       {
         name: 'yuv.widget.picture',
-        label: 'Just a picture',
+        label: this.translate.instant('yuv.client.dashboard.widgets.picture.label'),
         setupComponent: PictureWidgetSetupComponent,
         widgetComponent: PictureWidgetComponent
+      },
+      {
+        name: 'yuv.widget.todo',
+        label: this.translate.instant('yuv.client.dashboard.widgets.todo.label'),
+        setupComponent: TodoWidgetSetupComponent,
+        widgetComponent: TodoWidgetComponent
       }
     ]);
   }
