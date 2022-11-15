@@ -50,7 +50,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
   workspaceConfig: WidgetGridWorkspaceConfig | undefined;
   workspaceOptions: WidgetGridWorkspaceOptions = {
     gridConfig: {
-      rows: 25
+      rows: 25,
+      newItemWidth: 2,
+      newItemHeight: 5
     }
   };
 
@@ -78,6 +80,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       newWorkspaceDefaultLabel: this.translate.instant('yuv.client.dashboard.widgetGrid.newWorkspaceDefaultLabel'),
       workspaceRemoveConfirmMessage: this.translate.instant('yuv.client.dashboard.widgetGrid.workspaceRemoveConfirmMessage'),
       workspaceEditDone: this.translate.instant('yuv.client.dashboard.widgetGrid.workspaceEditDone'),
+      workspaceEditCancel: this.translate.instant('yuv.framework.shared.cancel'),
       save: this.translate.instant('yuv.client.dashboard.widgetGrid.save'),
       cancel: this.translate.instant('yuv.framework.shared.cancel'),
       confirm: this.translate.instant('yuv.framework.shared.ok'),
