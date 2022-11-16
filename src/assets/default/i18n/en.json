@@ -1,4 +1,5 @@
 {
+  "yuvfc.widget-grid.widget.aggregate.form.label.aggField": "add values of this property",
   "yuvfc.widget-grid.widget.charts.form.label.aggregation": "Aggregation",
   "yuvfc.widget-grid.widget.charts.form.label.chartType": "Chart type",
   "yuvfc.widget-grid.widget.charts.type.bar": "Bar chart",
