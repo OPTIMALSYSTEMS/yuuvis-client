@@ -1,6 +1,5 @@
-<ng-container *ngIf="multiselect; else single">
 <p-autoComplete [(ngModel)]="innerValue" #autocomplete [minLength]="minLength" (onSelect)="onSelect($event)"
-  [readonly]="_inputDisabled" (completeMethod)="autocompleteFn($event)" (onUnselect)="onUnselect($event)"
+  (completeMethod)="autocompleteFn($event)" (onUnselect)="onUnselect($event)"
   (onBlur)="onAutoCompleteBlur()" field="title" [suggestions]="autocompleteRes" [disabled]="readonly" [multiple]="true">
   <!-- template for the suggest list -->
   <ng-template let-item pTemplate="item">
@@ -27,11 +26,3 @@
 </p-autoComplete>
 <yuv-icon class="classify" icon="reference" [title]="'yuv.framework.form.reference.classify.icon.title' | translate">
 </yuv-icon>
-</ng-container>
-
-<ng-template #single>
-  <p-autoComplete [(ngModel)]="innerValue" #autocomplete [minLength]="minLength" (onSelect)="onSelect($event)"
-  (completeMethod)="autocompleteFn($event)" (onUnselect)="onUnselect($event)"
-  (onBlur)="onAutoCompleteBlur()" field="title" [suggestions]="autocompleteRes" [disabled]="readonly">
-  </p-autoComplete>
-</ng-template>

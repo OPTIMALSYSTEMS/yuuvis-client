@@ -1,20 +1,20 @@
-<ng-container *ngIf="multiselect; else single">
-  <p-autoComplete [(ngModel)]="innerValue" #autocomplete [minLength]="minLength" (onSelect)="onSelect($event)"
-    (completeMethod)="autocompleteFn($event)" (onUnselect)="onUnselect($event)" (onBlur)="onAutoCompleteBlur()"
-    field="title" [suggestions]="autocompleteRes" [disabled]="readonly" [multiple]="true">
-    <!-- template for the selected items -->
-    <ng-template let-item pTemplate="selectedItem">
-      <span class="p-autocomplete-token-label">{{ item.title }}</span>
-    </ng-template>
-  </p-autoComplete>
-</ng-container>
+<p-autoComplete
+  [(ngModel)]="innerValue"
+  #autocomplete
+  [minLength]="minLength"
+  (onSelect)="onSelect($event)"
+  (completeMethod)="autocompleteFn($event)"
+  (onUnselect)="onUnselect($event)"
+  (onBlur)="onAutoCompleteBlur()"
+  field="title"
+  [suggestions]="autocompleteRes"
+  [disabled]="readonly"
+  [multiple]="true"
+>
+  <!-- template for the selected items -->
+  <ng-template let-item pTemplate="selectedItem">
+    <span class="p-autocomplete-token-label">{{ item.title }}</span>
+  </ng-template>
+</p-autoComplete>
 
-<ng-template #single>
-  <p-autoComplete [(ngModel)]="innerValue[0]" #autocomplete [minLength]="minLength" (onSelect)="onSelect($event)"
-    (completeMethod)="autocompleteFn($event)" (onBlur)="onAutoCompleteBlur()" field="title" [showClear]="!!innerValue.length" (onClear)="onUnselect()"
-    [suggestions]="autocompleteRes" [disabled]="readonly">
-  </p-autoComplete>
-</ng-template>
-
-<yuv-icon class="classify" [title]="'yuv.framework.form.organization.classify.icon.title' | translate"
-  icon="organization"></yuv-icon>
+<yuv-icon class="classify" [title]="'yuv.framework.form.organization.classify.icon.title' | translate" icon="organization"></yuv-icon>

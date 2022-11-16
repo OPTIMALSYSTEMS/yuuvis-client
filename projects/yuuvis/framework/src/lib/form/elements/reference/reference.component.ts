@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, EventEmitter, forwardRef, HostBinding, HostListener, Inject, Input, Output, TemplateRef, ViewChild } from '@angular/core';
-import { ControlValueAccessor, NG_VALIDATORS, NG_VALUE_ACCESSOR, UntypedFormControl, Validator } from '@angular/forms';
+import { ControlValueAccessor, UntypedFormControl, NG_VALIDATORS, NG_VALUE_ACCESSOR, Validator } from '@angular/forms';
 import {
   BaseObjectTypeField,
   Classification,
@@ -54,8 +54,8 @@ export class ReferenceComponent implements ControlValueAccessor, Validator, Afte
 
   private isValidInput = true;
   value;
-  _innerValue: ReferenceEntry[] | ReferenceEntry = [];
-  set innerValue(iv: ReferenceEntry[] | ReferenceEntry) {
+  _innerValue: ReferenceEntry[] = [];
+  set innerValue(iv: ReferenceEntry[]) {
     this._innerValue = iv;
     this.objectSelect.emit(iv);
   }
@@ -162,7 +162,7 @@ export class ReferenceComponent implements ControlValueAccessor, Validator, Afte
   /**
    * Emitted once an object has been selected
    */
-  @Output() objectSelect = new EventEmitter<ReferenceEntry[] | ReferenceEntry>();
+  @Output() objectSelect = new EventEmitter<ReferenceEntry[]>();
 
   get queryJson(): SearchQueryProperties {
     return {
@@ -195,7 +195,6 @@ export class ReferenceComponent implements ControlValueAccessor, Validator, Afte
     if (value) {
       this.value = value;
       this.resolveFn(value);
-      this._inputDisabled = !this.multiselect && this.value.length >= 1;
     } else {
       this.value = null;
       this.innerValue = [];
@@ -207,21 +206,25 @@ export class ReferenceComponent implements ControlValueAccessor, Validator, Afte
   }
 
   registerOnTouched(fn: any): void {}
-
+  
   private propagate() {
-    this._inputDisabled = !this.multiselect && (Array.isArray(this.innerValue) ? this.innerValue.length === 1 : !!Object.keys(this.innerValue).length);
+    this.disableInput();
     this.propagateChange(this.value);
-    this.objectSelect.emit(this.innerValue);
+  }
+
+  private disableInput() {
+    this._inputDisabled = !this.multiselect && this.innerValue.length === 1;
   }
 
   private resolveFn(value: any) {
     const ids: string[] = !value || value instanceof Array ? value || [] : [value];
-    const resolveIds = ids.filter((id) => !(Array.isArray(this.innerValue) ? this.innerValue : [this.innerValue])?.find((v) => v.id === id));
+    const resolveIds = ids.filter((id) => !this.innerValue?.find((v) => v.id === id));
 
     return this.resolveRefEntries(resolveIds)
       .pipe(map((res) => res.concat(this.innerValue || [])))
       .subscribe((items) => {
         this.innerValue = ids.map((id) => items.find((v) => v.id === id));
+        this.disableInput();
         setTimeout(() => this.autoCompleteInput.cd.markForCheck());
       });
   }
@@ -235,13 +238,13 @@ export class ReferenceComponent implements ControlValueAccessor, Validator, Afte
       map((res: SearchResult) => {
         // some of the IDs could not be retrieved (no permission or deleted)
         const x = Utils.arrayToObject(res.items, (o) => o.fields.get(BaseObjectTypeField.OBJECT_ID));
-        return ids.map((id) => {
-          return this.referenceItemFnc(
+        return ids.map((id) =>
+          this.referenceItemFnc(
             x[id] || {
               fields: new Map(Object.entries({ [BaseObjectTypeField.OBJECT_ID]: id, [this.systemService.getBaseProperties().title]: this.noAccessTitle }))
             }
-          );
-        });
+          )
+        );
       })
     );
   }
@@ -251,12 +254,10 @@ export class ReferenceComponent implements ControlValueAccessor, Validator, Afte
       const q = this.searchFnc(evt.query);
       this.searchService
         .search(q instanceof SearchQuery ? q : new SearchQuery(q))
-        .pipe(map((reference: any) => reference.items.map((i) => this.referenceItemFnc(i))))
+        .pipe(map((reference) => reference.items.map((i) => this.referenceItemFnc(i))))
         .subscribe({
           next: (reference) => {
-            this.autocompleteRes = reference.filter(
-              (ref) => !(Array.isArray(this.innerValue) ? this.innerValue : [this.innerValue]).some((value) => value.id === ref.id)
-            );
+            this.autocompleteRes = reference.filter((ref) => !this.innerValue.some((value) => value.id === ref.id));
             this.propagateValidity(this.autocompleteRes.length > 0);
           },
           error: (e) => {
@@ -282,26 +283,21 @@ export class ReferenceComponent implements ControlValueAccessor, Validator, Afte
   }
 
   // handle selection changes to the model
-  onSelect(value: any) {
-    if (this.multiselect && Array.isArray(this.innerValue)) {
+  onSelect(value) {
+    if (this.multiselect) {
       this.value = this.innerValue.map((v) => v.id);
     } else {
       // internal autocomplete control is always set to multiselect
       // so the resolved value is always an array
-      this.value = !Array.isArray(this.innerValue) && this.innerValue.id;
+      this.innerValue = this.innerValue.slice(-1);
+      this.value = this.innerValue[0].id;
     }
     this.propagate();
   }
 
-  private clearSingleValue(): void {
-    this.innerValue = [];
-    this.autoCompleteInput.inputEL.nativeElement.value = '';
-    this.propagateValidity(true);
-  }
-
   // handle selection changes to the model
   onUnselect(value) {
-    this.innerValue = (Array.isArray(this.innerValue) ? this.innerValue : [this.innerValue])?.filter((v) => v.id !== value.id);
+    this.innerValue = this.innerValue.filter((v) => v.id !== value.id);
     let _value = this.innerValue.map((v) => v.id);
     this.value = this.multiselect ? _value : null;
     if (!this.multiselect) {
@@ -314,16 +310,10 @@ export class ReferenceComponent implements ControlValueAccessor, Validator, Afte
     this.clearInnerInput();
   }
 
-  private validInput(result: ReferenceEntry | ReferenceEntry[] | any): boolean {
-    return result.map((res) => res.title).includes(this.autoCompleteInput.inputEL.nativeElement.value);
-  }
-
   private clearInnerInput() {
     if (this.autoCompleteInput.multiInputEL) {
       this.autoCompleteInput.multiInputEL.nativeElement.value = '';
       this.propagateValidity(true);
-    } else if (this.autoCompleteInput.inputEL && !this.validInput(this.autocompleteRes) && !this.validInput(this.innerValue)) {
-      this.clearSingleValue();
     }
   }
 
