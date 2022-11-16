@@ -13,6 +13,8 @@ import {
   WidgetGridWorkspaceOptions
 } from '@yuuvis/widget-grid';
 import {
+  AggregateWidgetComponent,
+  AggregateWidgetSetupComponent,
   ChartsSetupComponent,
   ChartsWidgetComponent,
   EVT_COUNT_TILE_CLICK,
@@ -182,6 +184,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
         label: this.translate.instant('yuv.client.dashboard.widgets.todo.label'),
         setupComponent: TodoWidgetSetupComponent,
         widgetComponent: TodoWidgetComponent
+      },
+      {
+        name: 'yuv.widget.aggregate',
+        label: this.translate.instant('yuv.client.dashboard.widgets.aggregate.label'),
+        setupComponent: AggregateWidgetSetupComponent,
+        widgetComponent: AggregateWidgetComponent
       }
     ]);
   }

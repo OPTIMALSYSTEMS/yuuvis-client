@@ -470,6 +470,7 @@
   "yuv.client.dashboard.widgetGrid.workspaceEditDone": "Speichern",
   "yuv.client.dashboard.widgetGrid.workspaceRemoveConfirmMessage": "Sicher, dass der Arbeitsbereich '{{name}}' entfernt werden soll?",
   "yuv.client.dashboard.widgetGrid.workspacesEmptyMessage": "Keine Arbeitsbereiche",
+  "yuv.client.dashboard.widgets.aggregate.label": "Aufsummierung",
   "yuv.client.dashboard.widgets.charts.label": "Diagramm",
   "yuv.client.dashboard.widgets.hitlist.label": "Trefferliste oder Trefferanzahl",
   "yuv.client.dashboard.widgets.picture.label": "Bild",

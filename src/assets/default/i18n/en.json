@@ -470,6 +470,7 @@
   "yuv.client.dashboard.widgetGrid.workspaceEditDone": "Save",
   "yuv.client.dashboard.widgetGrid.workspaceRemoveConfirmMessage": "Are you sure you want to remove '{{name}}'?",
   "yuv.client.dashboard.widgetGrid.workspacesEmptyMessage": "No workspace so far",
+  "yuv.client.dashboard.widgets.aggregate.label": "Summation",
   "yuv.client.dashboard.widgets.charts.label": "Chart",
   "yuv.client.dashboard.widgets.hitlist.label": "Hitlist or count tile",
   "yuv.client.dashboard.widgets.picture.label": "A picture",
