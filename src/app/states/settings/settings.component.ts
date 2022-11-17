@@ -4,11 +4,12 @@ import { AppCacheService, BackendService, ConfigService, SystemService, Translat
 import { arrowDown, IconRegistryService, LayoutService, LayoutSettings, NotificationService, PluginsService } from '@yuuvis/framework';
 import { forkJoin, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { takeUntilDestroy } from 'take-until-destroy';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 
 import { dashboard, dashboardWidget, shield } from '../../../assets/default/svg/svg';
 import { AppService } from '../../app.service';
 
+@UntilDestroy()
 @Component({
   selector: 'yuv-settings',
   templateUrl: './settings.component.html',
@@ -171,7 +172,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.appService.dashboardConfig$.pipe(takeUntilDestroy(this)).subscribe({
+    this.appService.dashboardConfig$.pipe(untilDestroyed(this)).subscribe({
       next: (res) => {
         this.dashboardType = res?.dashboardType || 'default';
       }

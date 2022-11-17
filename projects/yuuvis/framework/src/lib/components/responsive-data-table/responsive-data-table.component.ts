@@ -5,7 +5,7 @@ import { BaseObjectTypeField, DeviceService, PendingChangesService, Utils } from
 import { ResizedEvent } from 'angular-resize-event';
 import { Observable, ReplaySubject } from 'rxjs';
 import { debounceTime, map } from 'rxjs/operators';
-import { takeUntilDestroy } from 'take-until-destroy';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { ObjectTypeIconComponent } from '../../common/components/object-type-icon/object-type-icon.component';
 import { LocaleDatePipe } from '../../pipes/locale-date.pipe';
 import { PluginsService } from '../../plugins/plugins.service';
@@ -47,6 +47,7 @@ export interface ResponsiveDataTableOptions {
             (viewModeChanged)="onViewModeChanged.emit($event)" (sortChanged)="onSortChanged($event)">
           </yuv-responsive-data-table>
  */
+@UntilDestroy()
 @Component({
   selector: 'yuv-responsive-data-table',
   templateUrl: './responsive-data-table.component.html',
@@ -227,7 +228,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
     // subscribe to the whole components size changing
     this.resize$
       .pipe(
-        takeUntilDestroy(this)
+        untilDestroyed(this)
         // debounceTime(500)
       )
       .subscribe(({ newRect }: ResizedEvent) => {
@@ -242,7 +243,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
         nodes?.length && this.ensureVisibility(nodes[0].rowIndex);
       });
     // subscribe to columns beeing resized
-    this.columnResize$.pipe(takeUntilDestroy(this), debounceTime(500)).subscribe(() => {
+    this.columnResize$.pipe(untilDestroyed(this), debounceTime(500)).subscribe(() => {
       if (this.isStandard) {
         this.columnResized.emit({
           columns: this.gridOptions.columnApi.getColumnState().map((columnState) => ({
@@ -259,7 +260,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
     });
 
     // subscribe to pending hanges
-    this.pendingChanges.tasks$.pipe(takeUntilDestroy(this)).subscribe((tasks) => this.gridOptions && (this.gridOptions.suppressCellFocus = !!tasks.length));
+    this.pendingChanges.tasks$.pipe(untilDestroyed(this)).subscribe((tasks) => this.gridOptions && (this.gridOptions.suppressCellFocus = !!tasks.length));
   }
 
   getRowHeight(params: RowHeightParams): number {

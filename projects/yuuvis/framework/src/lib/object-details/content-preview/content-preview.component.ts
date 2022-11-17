@@ -3,7 +3,7 @@ import { CommandPaletteService } from '@yuuvis/command-palette';
 import { DmsObject, TranslateService, UploadService } from '@yuuvis/core';
 import { fromEvent, Observable, of } from 'rxjs';
 import { map, switchMap, takeWhile, tap } from 'rxjs/operators';
-import { takeUntilDestroy } from 'take-until-destroy';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { FileDropService } from '../../directives/file-drop/file-drop.service';
 import { IFrameComponent } from '../../plugins/iframe.component';
@@ -20,7 +20,8 @@ import { ContentPreviewService } from './service/content-preview.service';
  * @example
  * <yuv-content-preview [dmsObject]="dmsObject"></yuv-content-preview>
  */
-@Component({
+ @UntilDestroy()
+ @Component({
   selector: 'yuv-content-preview',
   templateUrl: './content-preview.component.html',
   styleUrls: ['./content-preview.component.scss'],
@@ -145,7 +146,7 @@ export class ContentPreviewComponent extends IFrameComponent implements OnInit, 
   ngOnInit() {
     this.previewSrc$
       .pipe(
-        takeUntilDestroy(this),
+        untilDestroyed(this),
         map((src) => this.open(src))
       )
       .subscribe();

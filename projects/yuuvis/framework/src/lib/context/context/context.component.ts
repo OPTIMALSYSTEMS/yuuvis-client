@@ -15,7 +15,7 @@ import {
 } from '@yuuvis/core';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
-import { takeUntilDestroy } from 'take-until-destroy';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { FileDropOptions } from '../../directives/file-drop/file-drop.directive';
 import { LayoutService } from '../../services/layout/layout.service';
@@ -35,7 +35,8 @@ import { refresh, settings } from './../../svg.generated';
  * @example
  * <yuv-context [context]="ctx"></yuv-context>
  */
-@Component({
+ @UntilDestroy()
+ @Component({
   selector: 'yuv-context',
   templateUrl: './context.component.html',
   styleUrls: ['./context.component.scss']
@@ -169,7 +170,7 @@ export class ContextComponent implements OnInit, OnDestroy {
     this.eventService
       .on(YuvEventType.DMS_OBJECTS_MOVED, YuvEventType.DMS_OBJECT_UPDATED)
       .pipe(
-        takeUntilDestroy(this),
+        untilDestroyed(this),
         tap(({ type, data }) => (type === YuvEventType.DMS_OBJECT_UPDATED && data.id === this.context.id ? (this.context = data) : null))
       )
       .subscribe(() => this.refresh());

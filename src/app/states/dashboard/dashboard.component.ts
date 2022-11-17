@@ -30,11 +30,12 @@ import {
 } from '@yuuvis/widget-grid-widgets';
 import { forkJoin, of } from 'rxjs';
 import { catchError, map, switchMap } from 'rxjs/operators';
-import { takeUntilDestroy } from 'take-until-destroy';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DashboardConfig } from '../../app.interface';
 import { AppService } from '../../app.service';
 import { AppSearchService } from '../../service/app-search.service';
 
+@UntilDestroy()
 @Component({
   selector: 'yuv-dashboard',
   templateUrl: './dashboard.component.html',
@@ -68,7 +69,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private router: Router,
     private config: ConfigService
   ) {
-    this.translate.onLangChange.pipe(takeUntilDestroy(this)).subscribe((e: LangChangeEvent) => {
+    this.translate.onLangChange.pipe(untilDestroyed(this)).subscribe((e: LangChangeEvent) => {
       this.setWidgetGridLabels();
     });
     this.setWidgetGridLabels();
@@ -129,7 +130,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.appService.dashboardConfig$.pipe(takeUntilDestroy(this)).subscribe({
+    this.appService.dashboardConfig$.pipe(untilDestroyed(this)).subscribe({
       next: (res) => {
         if (this.config.get('core.features.dashboardWorkspaces')) {
           this.dashboardConfig = res;

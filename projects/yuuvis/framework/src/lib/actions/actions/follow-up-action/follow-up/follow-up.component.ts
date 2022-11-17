@@ -4,11 +4,12 @@ import { ActivatedRoute } from '@angular/router';
 import { BpmEvent, EventService, InboxService, Process, ProcessService, Task, TranslateService, Utils } from '@yuuvis/core';
 import { of } from 'rxjs';
 import { finalize, map, switchMap, tap } from 'rxjs/operators';
-import { takeUntilDestroy } from 'take-until-destroy';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { NotificationService } from '../../../../services/notification/notification.service';
 import { hasRequiredField } from '../../../../shared/utils';
 import { ActionComponent } from './../../../interfaces/action-component.interface';
 
+@UntilDestroy()
 @Component({
   selector: 'yuv-follow-up',
   templateUrl: './follow-up.component.html',
@@ -54,7 +55,7 @@ export class FollowUpComponent implements OnInit, OnDestroy, ActionComponent {
       .createFollowUp(this.selection[0].id, this.form.value.whatAbout, this.form.value.expiryDateTime)
       .pipe(
         finalize(() => (this.loading = false)),
-        takeUntilDestroy(this)
+        untilDestroyed(this)
       )
       .subscribe(() => {
         this.notificationService.success(
@@ -72,7 +73,7 @@ export class FollowUpComponent implements OnInit, OnDestroy, ActionComponent {
       .editFollowUp(this.selection[0].id, this.currentFollowUp.id, this.form.value.whatAbout, this.form.value.expiryDateTime)
       .pipe(
         finalize(() => (this.loading = false)),
-        takeUntilDestroy(this)
+        untilDestroyed(this)
       )
       .subscribe(() => {
         this.notificationService.success(
@@ -93,7 +94,7 @@ export class FollowUpComponent implements OnInit, OnDestroy, ActionComponent {
           this.loading = false;
           this.showDeleteTemp = false;
         }),
-        takeUntilDestroy(this)
+        untilDestroyed(this)
       )
       .subscribe(() => {
         this.notificationService.success(
@@ -119,7 +120,7 @@ export class FollowUpComponent implements OnInit, OnDestroy, ActionComponent {
           this.finished.emit();
           this.eventService.trigger(BpmEvent.BPM_EVENT);
         }),
-        takeUntilDestroy(this),
+        untilDestroyed(this),
         finalize(() => (this.loading = false))
       )
       .subscribe(
@@ -181,7 +182,7 @@ export class FollowUpComponent implements OnInit, OnDestroy, ActionComponent {
             : of({ process: null, task: null })
         ),
         map(({ process, task }: { process: Process; task: Task }) => this.processProcessData(process, task)),
-        takeUntilDestroy(this),
+        untilDestroyed(this),
         finalize(() => (this.loading = false))
       )
       .subscribe();

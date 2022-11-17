@@ -1,6 +1,6 @@
 import { ElementRef } from '@angular/core';
 import { fromEvent } from 'rxjs';
-import { takeUntilDestroy } from 'take-until-destroy';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { PluginsService } from './plugins.service';
 
 export abstract class IFrameComponent {
@@ -49,7 +49,7 @@ export abstract class IFrameComponent {
     if (iframe) {
       iframe._init ||
         fromEvent(this.setApi(iframe, true), 'load')
-          .pipe(takeUntilDestroy(this))
+          .pipe(untilDestroyed(this))
           .subscribe(() => {
             const win = this.setApi(iframe);
             onload && onload();
