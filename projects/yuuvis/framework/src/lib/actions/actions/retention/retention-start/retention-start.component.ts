@@ -38,8 +38,8 @@ export class RetentionStartComponent {
       const rtDestruct = group.controls['rmDestructionDate'];
 
       // start needs to be before end
-      if (rtEnd && rtStart >= rtEnd.value) {
-        group.setErrors({ endBeforeStart: true });
+      if (rtEnd.value && rtStart > rtEnd.value) {
+        rtEnd.setErrors({ endBeforeStart: true });
       }
       // destruct date ...
       if (rtDestruct.value) {
