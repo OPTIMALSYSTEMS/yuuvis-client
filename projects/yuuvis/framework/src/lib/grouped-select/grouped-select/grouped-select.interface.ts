@@ -23,6 +23,10 @@ export interface SelectableGroup {
    * hide items with zero count
    */
   hideZeroCount?: boolean;
+  /**
+   * aggregations list
+   */
+   aggregations?: string[];
 }
 /**
  * Interface for a selectable object, which is determined
