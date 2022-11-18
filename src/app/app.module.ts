@@ -19,7 +19,6 @@ import { ColumnConfigurationComponent } from './states/column-configuration/colu
 import { CreateComponent } from './states/create/create.component';
 import { DashboardDefaultComponent } from './states/dashboard/dashboard-default/dashboard-default.component';
 import { DashboardComponent } from './states/dashboard/dashboard.component';
-import { QuickSearchWidgetComponent } from './states/dashboard/widgets/quick-search-widget/quick-search-widget.component';
 import { FilterConfigurationComponent } from './states/filter-configuration/filter-configuration.component';
 import { FollowUpsComponent } from './states/follow-ups/follow-ups.component';
 import { InboxComponent } from './states/inbox/inbox.component';
@@ -49,8 +48,7 @@ const components = [
   ProcessesComponent,
   FollowUpsComponent,
   RetentionsComponent,
-  DashboardDefaultComponent,
-  QuickSearchWidgetComponent
+  DashboardDefaultComponent
 ];
 
 YuvComponentRegister.register(components);

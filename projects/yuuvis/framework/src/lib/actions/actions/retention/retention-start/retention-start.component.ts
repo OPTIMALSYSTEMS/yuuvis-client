@@ -1,7 +1,6 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
-import { BaseObjectTypeField, DmsObject, DmsService, RetentionField, SystemSOT } from '@yuuvis/core';
-import { NotificationService } from '../../../../services/notification/notification.service';
+import { BaseObjectTypeField, DmsObject, DmsService, EventService, RetentionField, SystemSOT, Utils } from '@yuuvis/core';
 
 @Component({
   selector: 'yuv-retention-start',
@@ -9,7 +8,7 @@ import { NotificationService } from '../../../../services/notification/notificat
   styleUrls: ['./retention-start.component.scss'],
   host: { class: 'yuv-action-component-form' }
 })
-export class RetentionStartComponent implements OnInit {
+export class RetentionStartComponent {
   rtStartForm: UntypedFormGroup;
   busy: boolean;
 
@@ -24,7 +23,7 @@ export class RetentionStartComponent implements OnInit {
   @Output() finished: EventEmitter<any> = new EventEmitter<any>();
   @Output() canceled: EventEmitter<any> = new EventEmitter<any>();
 
-  constructor(private fb: UntypedFormBuilder, private notificationService: NotificationService, private dms: DmsService) {
+  constructor(private fb: UntypedFormBuilder, private dms: DmsService, private eventService: EventService) {
     this.rtStartForm = this.fb.group({
       rmExpirationDate: ['', Validators.required],
       rmDestructionDate: ['']
@@ -34,13 +33,13 @@ export class RetentionStartComponent implements OnInit {
 
   public startFormValidator(): ValidatorFn {
     return (group: UntypedFormGroup): ValidationErrors => {
-      const rtStart = new Date();
+      const rtStart = Utils.transformDate(new Date());
       const rtEnd = group.controls['rmExpirationDate'];
       const rtDestruct = group.controls['rmDestructionDate'];
 
       // start needs to be before end
-      if (rtEnd && rtStart <= rtEnd.value) {
-        group.setErrors({ endBeforeStart: true });
+      if (rtEnd.value && rtStart > rtEnd.value) {
+        rtEnd.setErrors({ endBeforeStart: true });
       }
       // destruct date ...
       if (rtDestruct.value) {
@@ -65,28 +64,26 @@ export class RetentionStartComponent implements OnInit {
     this.selection.forEach((o) => {
       const data = {};
       data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS] = [...o.data[BaseObjectTypeField.SECONDARY_OBJECT_TYPE_IDS], SystemSOT.DESTRUCTION_RETENTION];
-      data[RetentionField.RETENTION_START] = new Date().toISOString();
-      data[RetentionField.RETENTION_END] = new Date(rmExpirationDate).toISOString();
-      if (rmDestructionDate) data[RetentionField.DESTRUCTION_DATE] = rmDestructionDate;
+      data[RetentionField.RETENTION_START] = new Date();
+      // rmExpirationDate will have format like '2022-10-2' so we add time part as well to stay in our own timezone
+      if (rmExpirationDate) data[RetentionField.RETENTION_END] = new Date(`${rmExpirationDate}T23:59:59.999`);
+      if (rmDestructionDate) data[RetentionField.DESTRUCTION_DATE] = new Date(`${rmDestructionDate}T23:59:59.999`);
       payload.push({ id: o.id, data });
     });
 
-    this.dms.updateDmsObjects(payload).subscribe(
-      (res) => {
+    this.dms.updateDmsObjects(payload).subscribe({
+      next: (res) => {
         this.busy = false;
         this.finished.emit();
       },
-      (err) => {
+      error: (err) => {
         console.error(err);
-        // this.notificationService.error(this.tra)
         this.busy = false;
       }
-    );
+    });
   }
 
   cancel() {
     this.canceled.emit();
   }
-
-  ngOnInit(): void {}
 }

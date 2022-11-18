@@ -2,17 +2,19 @@ import { ColDef, RowEvent } from '@ag-grid-community/core';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { BaseObjectTypeField, DmsService, RetentionField, SearchFilter, SearchQuery, SortOption, SystemService, SystemSOT, Utils } from '@yuuvis/core';
 import {
-  download,
-  FilterPanelConfig,
-  GridService,
-  IconRegistryService,
-  LayoutService,
-  PluginsService,
-  SearchResultComponent,
-  SearchService
-} from '@yuuvis/framework';
+  BaseObjectTypeField,
+  DmsService,
+  RetentionField,
+  SearchFilter,
+  SearchQuery,
+  SearchService,
+  SortOption,
+  SystemService,
+  SystemSOT,
+  Utils
+} from '@yuuvis/core';
+import { download, FilterPanelConfig, GridService, IconRegistryService, LayoutService, PluginsService, SearchResultComponent } from '@yuuvis/framework';
 import { finalize } from 'rxjs';
 import { retentionEnd, retentionStart } from '../../../assets/default/svg/svg';
 
@@ -95,18 +97,19 @@ export class RetentionsComponent implements OnInit {
 
     if (rtStart && rtEnd) {
       //  hours until retention end
-      const _h = (rtEnd.getTime() - new Date().getTime()) / 1000 / 60 / 60;
+      const _h = (rtEnd.getTime() - today.getTime()) / 1000 / 60 / 60;
       const retentionEnded = _h < 0;
-      const h = Math.floor(Math.abs(_h));
+      let diff = Math.floor(Math.abs(_h));
+      const monthDiff = (s: Date, e: Date) => e.getMonth() - s.getMonth() + 12 * (e.getFullYear() - s.getFullYear());
 
       const label =
-        h < 48
-          ? `${h} ${this.translate.instant('yuv.state.retentions.renderer.h')}`
-          : h < 24 * 30
-          ? `${Math.floor(h / 24)} ${this.translate.instant('yuv.state.retentions.renderer.d')}`
-          : h < 24 * 365
-          ? `${Math.floor(h / 24 / 30)} ${this.translate.instant('yuv.state.retentions.renderer.m')}`
-          : `${Math.floor(h / 24 / 365)} ${this.translate.instant('yuv.state.retentions.renderer.y')}`;
+        diff < 48
+          ? `${diff < 1 ? `≈1` : diff} ${this.translate.instant('yuv.state.retentions.renderer.h')}`
+          : (diff = Math.floor(diff / 24)) < 31
+          ? `${diff} ${this.translate.instant('yuv.state.retentions.renderer.d')}`
+          : (diff = retentionEnded ? monthDiff(rtEnd, today) : monthDiff(today, rtEnd)) < 12
+          ? `${diff} ${this.translate.instant('yuv.state.retentions.renderer.m')}`
+          : `${Math.abs(rtEnd.getFullYear() - today.getFullYear())} ${this.translate.instant('yuv.state.retentions.renderer.y')}`;
 
       tpl = {
         icon: retentionEnded ? retentionEnd.data : retentionStart.data,
@@ -165,7 +168,7 @@ export class RetentionsComponent implements OnInit {
         // apply filter to only get the recent ending retention
         const d = new Date();
         d.setHours(23, 59, 59, 999);
-        q.addFilter(new SearchFilter(RetentionField.RETENTION_END, SearchFilter.OPERATOR.LESS_OR_EQUAL, d.setDate(d.getDate() + 30)));
+        q.addFilter(new SearchFilter(RetentionField.RETENTION_END, SearchFilter.OPERATOR.LESS_OR_EQUAL, new Date(d.setDate(d.getDate() + 30))));
         q.addFilter(new SearchFilter(RetentionField.RETENTION_END, SearchFilter.OPERATOR.GREATER_OR_EQUAL, new Date()));
         break;
       case 'destruct':
@@ -181,7 +184,13 @@ export class RetentionsComponent implements OnInit {
   exportCSV() {
     this.loadingSpinner = true;
     this.searchService
-      .exportSearchResult(this.searchQuery.toQueryJson(), this.translate.instant('yuv.client.state.retentions.title').replace(' ', '_'))
+      .exportSearchResult({
+        ...this.searchService.getLastSearchQuery().toQueryJson(),
+        fields: this.columnConfig
+          .filter((conf) => !conf.hide)
+          .map((conf) => conf.field)
+          .filter((conf) => conf)
+      })
       .pipe(finalize(() => (this.loadingSpinner = false)))
       .subscribe();
   }

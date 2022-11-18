@@ -20,7 +20,7 @@ import {
 } from '@yuuvis/core';
 import { forkJoin, Observable, of } from 'rxjs';
 import { catchError, finalize, map, switchMap } from 'rxjs/operators';
-import { takeUntilDestroy } from 'take-until-destroy';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { FadeInAnimations } from '../../common/animations/fadein.animation';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { FloatingSotSelectInput } from '../../floating-sot-select/floating-sot-select.interface';
@@ -80,7 +80,8 @@ export enum AFOType {
  * @example
  * <yuv-object-create></yuv-object-create>
  */
-@Component({
+ @UntilDestroy()
+ @Component({
   selector: 'yuv-object-create',
   templateUrl: './object-create.component.html',
   styleUrls: ['./object-create.component.scss'],
@@ -403,7 +404,7 @@ export class ObjectCreateComponent implements OnDestroy {
 
     this.createObject(this.selectedObjectType.floatingParentType || this.selectedObjectType.id, data, this.files)
       .pipe(
-        takeUntilDestroy(this),
+        untilDestroyed(this),
         switchMap((res: string[]) => this.dmsService.getDmsObjects(res))
       )
       .subscribe(

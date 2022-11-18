@@ -34,12 +34,13 @@ import {
 } from '@yuuvis/framework';
 import { forkJoin, Observable } from 'rxjs';
 import { filter, map, switchMap } from 'rxjs/operators';
-import { takeUntilDestroy } from 'take-until-destroy';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { add, close, drawer, offline, refresh, search, userDisabled } from '../../../assets/default/svg/svg';
 import { AppSearchService } from '../../service/app-search.service';
 import { AboutService } from '../../states/about/service/about.service';
 import { FrameService } from './frame.service';
 
+@UntilDestroy()
 @Component({
   selector: 'yuv-frame',
   templateUrl: './frame.component.html',
@@ -149,7 +150,7 @@ export class FrameComponent implements OnInit, OnDestroy {
     });
     this.eventService
       .on(YuvEventType.DMS_OBJECTS_MOVED)
-      .pipe(takeUntilDestroy(this))
+      .pipe(untilDestroyed(this))
       .subscribe((event) => this.onObjetcsMove(event));
 
     this.eventService.on(YuvEventType.CLIENT_LOCALE_CHANGED).subscribe(() => {

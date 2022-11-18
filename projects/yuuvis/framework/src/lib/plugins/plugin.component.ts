@@ -1,5 +1,5 @@
 import { AfterViewInit, ChangeDetectorRef, Component, ComponentRef, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { takeUntilDestroy } from 'take-until-destroy';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { ActionComponent } from '../actions/interfaces/action-component.interface';
 import { ComponentAnchorDirective } from '../directives/component-anchor/component-anchor.directive';
 import { YuvComponentRegister } from './../shared/utils/utils';
@@ -7,6 +7,7 @@ import { IFrameComponent } from './iframe.component';
 import { PluginConfig } from './plugins.interface';
 import { PluginsService } from './plugins.service';
 
+@UntilDestroy()
 @Component({
   selector: 'yuv-plugin',
   template: `
@@ -44,6 +45,10 @@ export class PluginComponent extends IFrameComponent implements OnInit, OnDestro
     return this.componentRef.instance;
   }
 
+  get untilDestroyed() {
+    return untilDestroyed(this);
+  }
+
   private componentRef: ComponentRef<any>;
   private _afterViewInit = false;
 
@@ -60,8 +65,8 @@ export class PluginComponent extends IFrameComponent implements OnInit, OnDestro
 
         if (this.parent?.onCancel && this.parent?.onFinish) {
           (<ActionComponent>this.cmp).selection = this.parent.selection;
-          (<ActionComponent>this.cmp).canceled?.pipe(takeUntilDestroy(this)).subscribe(() => this.parent.onCancel());
-          (<ActionComponent>this.cmp).finished?.pipe(takeUntilDestroy(this)).subscribe(() => this.parent.onFinish());
+          (<ActionComponent>this.cmp).canceled?.pipe(untilDestroyed(this)).subscribe(() => this.parent.onCancel());
+          (<ActionComponent>this.cmp).finished?.pipe(untilDestroyed(this)).subscribe(() => this.parent.onFinish());
         }
 
         // map all input | output values to the instance
@@ -74,7 +79,7 @@ export class PluginComponent extends IFrameComponent implements OnInit, OnDestro
         );
         Object.keys(this.config?.plugin?.outputs || {}).forEach((opt) =>
           this.cmp[opt]
-            .pipe(takeUntilDestroy(this))
+            .pipe(untilDestroyed(this))
             .subscribe((event: any) =>
               typeof this.config.plugin.outputs[opt] === 'string'
                 ? this.pluginsService.applyFunction(this.config.plugin.outputs[opt], 'event, component, parent', [event, this, this.parent])

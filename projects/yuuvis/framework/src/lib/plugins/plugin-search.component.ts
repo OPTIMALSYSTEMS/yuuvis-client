@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { ApiBase, SearchFilter, SearchFilterGroup } from '@yuuvis/core';
+import { ApiBase, SearchFilter, SearchFilterGroup, SearchQuery } from '@yuuvis/core';
 import { Selectable, SelectableGroup } from '../grouped-select';
 import { PluginExtensionConfig } from './plugins.interface';
 import { PluginsService } from './plugins.service';
@@ -51,12 +51,13 @@ export class PluginSearchComponent {
     this.parent = parent;
     return (this.selectable = !this.inputs.init
       ? this.toSelectable()
-      : this.pluginService.applyFunction(this.inputs.init, 'component, parent, PluginSearchComponent, SearchFilterGroup, SearchFilter', [
+      : this.pluginService.applyFunction(this.inputs.init, 'component, parent, PluginSearchComponent, SearchFilterGroup, SearchFilter, SearchQuery', [
           this,
           this.parent,
           PluginSearchComponent,
           SearchFilterGroup,
-          SearchFilter
+          SearchFilter,
+          SearchQuery
         ]));
   }
 
@@ -83,7 +84,7 @@ export class PluginSearchComponent {
         this.toSelectable({ id: id + '__' + value, label }, { operator: 'OR', array: [new SearchFilter(id, SearchFilter.OPERATOR.EQUAL, value)] }, true)
       );
 
-    const group = field && items && { id, label: field.label || '', items, maxHeight: this.maxHeight, hideZeroCount: this.hideZeroCount };
+    const group = field && items && { id, label: field.label || '', items, maxHeight: this.maxHeight, hideZeroCount: this.hideZeroCount, aggregations: [id] };
 
     if (group && opts instanceof Promise) {
       opts.then((o: any[]) => {

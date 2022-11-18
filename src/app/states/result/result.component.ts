@@ -6,9 +6,10 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { PendingChangesService, Screen, ScreenService, SearchQuery, TranslateService, Utils } from '@yuuvis/core';
 import { FilterPanelConfig, LayoutService, PluginsService } from '@yuuvis/framework';
 import { map } from 'rxjs';
-import { takeUntilDestroy } from 'take-until-destroy';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { AppSearchService } from '../../service/app-search.service';
 
+@UntilDestroy()
 @Component({
   selector: 'yuv-result',
   templateUrl: './result.component.html',
@@ -45,7 +46,7 @@ export class ResultComponent implements OnInit, OnDestroy {
   ) {
     this.screenService.screenChange$
       .pipe(
-        takeUntilDestroy(this),
+        untilDestroyed(this),
         map((screen: Screen) => (this.smallScreen = screen.mode === ScreenService.MODE.SMALL))
       )
       .subscribe();
@@ -91,7 +92,7 @@ export class ResultComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     // extract the query from the route params
-    this.route.queryParamMap.pipe(takeUntilDestroy(this)).subscribe((params) => {
+    this.route.queryParamMap.pipe(untilDestroyed(this)).subscribe((params) => {
       this.searchQuery = params.get('query') ? new SearchQuery(JSON.parse(params.get('query'))) : null;
       // if the 'tmp' query param is est, the query will not be set
       // to the global app search

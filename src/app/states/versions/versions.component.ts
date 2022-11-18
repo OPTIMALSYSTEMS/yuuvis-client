@@ -3,8 +3,9 @@ import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DmsObject, PendingChangesService, Screen, ScreenService, TranslateService } from '@yuuvis/core';
 import { ObjectCompareInput, PluginsService, VersionListComponent } from '@yuuvis/framework';
-import { takeUntilDestroy } from 'take-until-destroy';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 
+@UntilDestroy()
 @Component({
   selector: 'yuv-versions',
   templateUrl: './versions.component.html',
@@ -39,7 +40,7 @@ export class VersionsComponent implements OnInit, OnDestroy {
     private router: Router,
     private pluginsService: PluginsService
   ) {
-    this.screenService.screenChange$.pipe(takeUntilDestroy(this)).subscribe((screen: Screen) => {
+    this.screenService.screenChange$.pipe(untilDestroyed(this)).subscribe((screen: Screen) => {
       this.smallScreen = screen.mode === ScreenService.MODE.SMALL;
     });
     this.plugins = this.pluginsService.getCustomPlugins('extensions', 'yuv-versions');
@@ -94,13 +95,13 @@ export class VersionsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.route.params.pipe(takeUntilDestroy(this)).subscribe((params: any) => {
+    this.route.params.pipe(untilDestroyed(this)).subscribe((params: any) => {
       if (params.id) {
         this.dmsObjectID = params.id;
       }
     });
     // extract the versions from the route params
-    this.route.queryParamMap.pipe(takeUntilDestroy(this)).subscribe((params) => {
+    this.route.queryParamMap.pipe(untilDestroyed(this)).subscribe((params) => {
       const vp = params.get('version');
       this.versions = vp ? vp.split(',').map((v) => parseInt(v)) : [];
     });

@@ -16,8 +16,9 @@ import {
 } from '@yuuvis/framework';
 import { Observable } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
-import { takeUntilDestroy } from 'take-until-destroy';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 
+@UntilDestroy()
 @Component({
   selector: 'yuv-processes',
   templateUrl: './processes.component.html',
@@ -105,7 +106,7 @@ export class ProcessesComponent implements OnInit, OnDestroy {
       .on(BpmEvent.BPM_EVENT)
       .pipe(
         tap(() => this.processService.fetchProcesses()),
-        takeUntilDestroy(this)
+        untilDestroyed(this)
       )
       .subscribe();
   }

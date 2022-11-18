@@ -1,6 +1,6 @@
 import { AfterViewInit, Directive, ElementRef, Input, OnDestroy } from '@angular/core';
 import { ConnectionService, ConnectionState } from '@yuuvis/core';
-import { takeUntilDestroy } from 'take-until-destroy';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 
 /**
  * Directive to disable an element if offline.
@@ -20,7 +20,8 @@ import { takeUntilDestroy } from 'take-until-destroy';
  *   <button>Cancel (stays active while being offline)</button>
  * </div>
  */
-@Directive({
+ @UntilDestroy()
+ @Directive({
   selector: '[yuvOfflineDisabled]'
 })
 export class OfflineDisabledDirective implements AfterViewInit, OnDestroy {
@@ -42,7 +43,7 @@ export class OfflineDisabledDirective implements AfterViewInit, OnDestroy {
     }
     const originalOpacity = el.style.opacity;
     const originalPointerEvents = el.style.pointerEvents;
-    this.connectionService.connection$.pipe(takeUntilDestroy(this)).subscribe((connectionState: ConnectionState) => {
+    this.connectionService.connection$.pipe(untilDestroyed(this)).subscribe((connectionState: ConnectionState) => {
       if (!connectionState.isOnline) {
         el.style.opacity = '0.5';
         el.style.pointerEvents = 'none';

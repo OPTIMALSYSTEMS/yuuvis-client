@@ -1,8 +1,9 @@
 import { Component, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
 import { UserService, YuvUser } from '@yuuvis/core';
-import { takeUntilDestroy } from 'take-until-destroy';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { PopoverRef } from '../../../../popover/popover.ref';
 
+@UntilDestroy()
 @Component({
   selector: 'yuv-task-delegate-picker',
   templateUrl: './task-delegate-picker.component.html',
@@ -16,7 +17,7 @@ export class TaskDelegatePickerComponent implements OnDestroy {
   @Output() assigneePicked = new EventEmitter<string>();
 
   constructor(private userService: UserService) {
-    this.userService.user$.pipe(takeUntilDestroy(this)).subscribe((u) => (this.user = u));
+    this.userService.user$.pipe(untilDestroyed(this)).subscribe((u) => (this.user = u));
   }
 
   ngOnDestroy(): void {}

@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Directive, ElementRef, EventEmitter, HostListener, Input, OnDestroy, Output, Renderer2 } from '@angular/core';
 import { Utils } from '@yuuvis/core';
-import { takeUntilDestroy } from 'take-until-destroy';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { FileDropService } from './file-drop.service';
 
 /**
@@ -10,7 +10,8 @@ import { FileDropService } from './file-drop.service';
  * host, this one will be marked as active and indicate that the user can drop the file
  * there.
  */
-@Directive({
+ @UntilDestroy()
+ @Directive({
   selector: '[yuvFileDrop]'
 })
 export class FileDropDirective implements OnDestroy {
@@ -97,7 +98,7 @@ export class FileDropDirective implements OnDestroy {
    */
   constructor(private elementRef: ElementRef, private cd: ChangeDetectorRef, private fileDropService: FileDropService, private renderer: Renderer2) {
     this.id = Utils.uuid();
-    this.fileDropService.activeDropzone$.pipe(takeUntilDestroy(this)).subscribe((activeZoneId) => {
+    this.fileDropService.activeDropzone$.pipe(untilDestroyed(this)).subscribe((activeZoneId) => {
       // some other dropzone received the files and cleared the file-drop-service
       if (activeZoneId === null) {
         this.fileOver = false;
@@ -106,7 +107,7 @@ export class FileDropDirective implements OnDestroy {
     });
     this.renderer.addClass(this.elementRef.nativeElement, 'yuv-file-drop');
 
-    this.fileDropService.fileDraggedOverApp$.pipe(takeUntilDestroy(this)).subscribe((b) => {
+    this.fileDropService.fileDraggedOverApp$.pipe(untilDestroyed(this)).subscribe((b) => {
       this.setHighlight(b);
     });
   }

@@ -1,8 +1,7 @@
 import { CurrencyPipe, DecimalPipe, PercentPipe } from '@angular/common';
 import { Pipe, PipeTransform } from '@angular/core';
 import { TranslateService } from '@yuuvis/core';
-import { takeUntil } from 'rxjs/operators';
-import { UnsubscribeOnDestroy } from '../common/util/unsubscribe.component';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 
 /**
  * @ignore
@@ -64,20 +63,20 @@ export class LocaleCurrencyPipe extends CurrencyPipe implements PipeTransform {
 /**
  * @ignore
  */
+@UntilDestroy()
 @Pipe({
   name: 'localeNumber',
   pure: false
 })
-export class LocaleNumberPipe extends UnsubscribeOnDestroy implements PipeTransform {
+export class LocaleNumberPipe implements PipeTransform {
   decimalPipe;
   decimalSeparator = '.';
   separator = ',';
 
   constructor(public translate: TranslateService) {
-    super();
     this.decimalPipe = new LocaleDecimalPipe(this.translate);
     this.updateSeparators(this.translate.currentLang);
-    this.translate.onLangChange.pipe(takeUntil(this.componentDestroyed$)).subscribe((currLang) => this.updateSeparators(currLang.lang));
+    this.translate.onLangChange.pipe(untilDestroyed(this)).subscribe((currLang) => this.updateSeparators(currLang.lang));
   }
 
   public transform(value: any, grouping?: boolean, pattern?: string, scale?: number, digits?: string, locale?: string): string | null {

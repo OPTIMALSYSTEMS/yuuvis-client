@@ -2,27 +2,41 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NavigationExtras, Router } from '@angular/router';
 import { LangChangeEvent } from '@ngx-translate/core';
 import { AppCacheService, ConfigService, SearchQuery, TranslateService, UserService, YuvUser } from '@yuuvis/core';
-import { GridItemEvent, WidgetGridRegistry, WidgetGridWorkspaceConfig, WidgetGridWorkspaceOptions } from '@yuuvis/widget-grid';
 import {
+  GridItemEvent,
+  PictureWidgetComponent,
+  PictureWidgetSetupComponent,
+  TodoWidgetComponent,
+  TodoWidgetSetupComponent,
+  WidgetGridRegistry,
+  WidgetGridWorkspaceConfig,
+  WidgetGridWorkspaceOptions
+} from '@yuuvis/widget-grid';
+import {
+  AggregateWidgetComponent,
+  AggregateWidgetSetupComponent,
   ChartsSetupComponent,
   ChartsWidgetComponent,
+  EVT_AGGREGATE_CLICK,
   EVT_COUNT_TILE_CLICK,
   EVT_LIST_ITEM_CLICK,
+  EVT_LIST_QUERY_EMIT,
+  EVT_QUICK_SEARCH_EXECUTE,
   EVT_STORED_QUERY_EXECUTE,
   HitlistSetupComponent,
   HitlistWidgetComponent,
+  QuickSearchWidgetComponent,
   StoredQuerySetupComponent,
   StoredQueryWidgetComponent
 } from '@yuuvis/widget-grid-widgets';
 import { forkJoin, of } from 'rxjs';
 import { catchError, map, switchMap } from 'rxjs/operators';
-import { takeUntilDestroy } from 'take-until-destroy';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DashboardConfig } from '../../app.interface';
 import { AppService } from '../../app.service';
 import { AppSearchService } from '../../service/app-search.service';
-import { QuickSearchWidgetComponent } from './widgets/quick-search-widget/quick-search-widget.component';
-import { WIDGET_EVT_QUICKSEARCH_EXECUTE } from './widgets/widgets.events';
 
+@UntilDestroy()
 @Component({
   selector: 'yuv-dashboard',
   templateUrl: './dashboard.component.html',
@@ -40,7 +54,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
   workspaceConfig: WidgetGridWorkspaceConfig | undefined;
   workspaceOptions: WidgetGridWorkspaceOptions = {
     gridConfig: {
-      rows: 25
+      rows: 25,
+      newItemWidth: 2,
+      newItemHeight: 5
     }
   };
 
@@ -54,7 +70,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private router: Router,
     private config: ConfigService
   ) {
-    this.translate.onLangChange.pipe(takeUntilDestroy(this)).subscribe((e: LangChangeEvent) => {
+    this.translate.onLangChange.pipe(untilDestroyed(this)).subscribe((e: LangChangeEvent) => {
       this.setWidgetGridLabels();
     });
     this.setWidgetGridLabels();
@@ -68,9 +84,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
       newWorkspaceDefaultLabel: this.translate.instant('yuv.client.dashboard.widgetGrid.newWorkspaceDefaultLabel'),
       workspaceRemoveConfirmMessage: this.translate.instant('yuv.client.dashboard.widgetGrid.workspaceRemoveConfirmMessage'),
       workspaceEditDone: this.translate.instant('yuv.client.dashboard.widgetGrid.workspaceEditDone'),
+      workspaceEditCancel: this.translate.instant('yuv.framework.shared.cancel'),
       save: this.translate.instant('yuv.client.dashboard.widgetGrid.save'),
       cancel: this.translate.instant('yuv.framework.shared.cancel'),
-      confirm: this.translate.instant('yuv.framework.shared.ok')
+      confirm: this.translate.instant('yuv.framework.shared.ok'),
+      widgetTodoHeadlineLabel: this.translate.instant('yuv.client.dashboard.widgetGrid.widgetTodoHeadlineLabel'),
+      widgetTodoTaskTitleLabel: this.translate.instant('yuv.client.dashboard.widgetGrid.widgetTodoTaskTitleLabel')
     });
   }
 
@@ -84,6 +103,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.router.navigate(['object', e.data.id]);
         break;
       }
+      case EVT_LIST_QUERY_EMIT: {
+        this.openSearchResult(e.data, true);
+        break;
+      }
       case EVT_COUNT_TILE_CLICK: {
         this.openSearchResult(e.data, true);
         break;
@@ -92,7 +115,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.openSearchResult(e.data, true);
         break;
       }
-      case WIDGET_EVT_QUICKSEARCH_EXECUTE: {
+      case EVT_QUICK_SEARCH_EXECUTE: {
+        this.openSearchResult(e.data);
+        break;
+      }
+      case EVT_AGGREGATE_CLICK: {
         this.openSearchResult(e.data);
         break;
       }
@@ -108,7 +135,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.appService.dashboardConfig$.pipe(takeUntilDestroy(this)).subscribe({
+    this.appService.dashboardConfig$.pipe(untilDestroyed(this)).subscribe({
       next: (res) => {
         if (this.config.get('core.features.dashboardWorkspaces')) {
           this.dashboardConfig = res;
@@ -147,11 +174,28 @@ export class DashboardComponent implements OnInit, OnDestroy {
         setupComponent: ChartsSetupComponent,
         widgetComponent: ChartsWidgetComponent
       },
-      // own widgets
       {
         name: 'yuv.client.widget.quicksearch',
         label: this.translate.instant('yuv.client.dashboard.widgets.quicksearch.label'),
         widgetComponent: QuickSearchWidgetComponent
+      },
+      {
+        name: 'yuv.widget.picture',
+        label: this.translate.instant('yuv.client.dashboard.widgets.picture.label'),
+        setupComponent: PictureWidgetSetupComponent,
+        widgetComponent: PictureWidgetComponent
+      },
+      {
+        name: 'yuv.widget.todo',
+        label: this.translate.instant('yuv.client.dashboard.widgets.todo.label'),
+        setupComponent: TodoWidgetSetupComponent,
+        widgetComponent: TodoWidgetComponent
+      },
+      {
+        name: 'yuv.widget.aggregate',
+        label: this.translate.instant('yuv.client.dashboard.widgets.aggregate.label'),
+        setupComponent: AggregateWidgetSetupComponent,
+        widgetComponent: AggregateWidgetComponent
       }
     ]);
   }

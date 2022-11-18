@@ -1,7 +1,4 @@
 {
-	"yuv.client.dashboard.widgets.hitlist.label": "",
-	"yuv.client.dashboard.widgets.quicksearch.label": "",
-	"yuv.client.dashboard.widgets.storedquery.label": "",
 	"yuv.framework.action-menu.action.delete.dms.object.confirm.message": "Are you sure you want to delete the object?",
 	"yuv.framework.action-menu.action.delete.dms.object.confirm.message.with.title": "Are you sure you want to delete '{{item}}'?",
 	"yuv.framework.action-menu.action.delete.dms.object.description": "Deletes the object.",
