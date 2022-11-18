@@ -1,9 +1,8 @@
 import { Component, ElementRef, EventEmitter, Input, Output, TemplateRef, ViewChild, ViewEncapsulation } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl } from '@angular/forms';
 import { PendingChangesService, TranslateService } from '@yuuvis/core';
-import { takeUntil } from 'rxjs/operators';
 import { IconRegistryService } from '../../../common/components/icon/service/iconRegistry.service';
-import { UnsubscribeOnDestroy } from '../../../common/util/unsubscribe.component';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { PluginComponent } from '../../../plugins/plugin.component';
 import { PopoverService } from '../../../popover/popover.service';
 import { clear, deleteIcon } from '../../../svg.generated';
@@ -13,13 +12,14 @@ import { EditRow, EditRowResult } from '../form-element-table.interface';
  * Component for editing a row from an object forms table.
  */
 
+@UntilDestroy()
 @Component({
   selector: 'yuv-row-edit',
   templateUrl: './row-edit.component.html',
   styleUrls: ['./row-edit.component.scss'],
   encapsulation: ViewEncapsulation.None
 })
-export class RowEditComponent extends UnsubscribeOnDestroy {
+export class RowEditComponent {
   @ViewChild('deleteOverlay') deleteOverlay: TemplateRef<any>;
   @ViewChild('confirmDelete') confirmDeleteButton: ElementRef;
 
@@ -76,10 +76,9 @@ export class RowEditComponent extends UnsubscribeOnDestroy {
     private popoverService: PopoverService,
     private translate: TranslateService
   ) {
-    super();
     this.iconRegistry.registerIcons([deleteIcon, clear]);
     this.createNewCheckbox = this.fb.control(this.createNewRow);
-    this.createNewCheckbox.valueChanges.pipe(takeUntil(this.componentDestroyed$)).subscribe((v) => (this.createNewRow = v));
+    this.createNewCheckbox.valueChanges.pipe(untilDestroyed(this)).subscribe((v) => (this.createNewRow = v));
   }
 
   onFormReady() {

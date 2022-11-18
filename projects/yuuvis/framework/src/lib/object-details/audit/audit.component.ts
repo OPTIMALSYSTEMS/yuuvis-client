@@ -19,7 +19,7 @@ import {
 } from '@yuuvis/core';
 import { Observable } from 'rxjs';
 import { map, switchMap, tap } from 'rxjs/operators';
-import { takeUntilDestroy } from 'take-until-destroy';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { ROUTES, YuvRoutes } from '../../routing/routes';
 import { arrowNext, filter } from '../../svg.generated';
@@ -37,7 +37,8 @@ import { arrowNext, filter } from '../../svg.generated';
  * <!-- skipping certain action codes -->
  * <yuv-audit [objectID]="'0815'" [skipActions]="[100, 200, 202]"></yuv-audit>
  */
-@Component({
+ @UntilDestroy()
+ @Component({
   selector: 'yuv-audit',
   templateUrl: './audit.component.html',
   styleUrls: ['./audit.component.scss']
@@ -136,7 +137,7 @@ export class AuditComponent implements OnInit, OnDestroy {
 
     this.eventService
       .on(YuvEventType.DMS_OBJECT_UPDATED)
-      .pipe(takeUntilDestroy(this))
+      .pipe(untilDestroyed(this))
       .subscribe((e: YuvEvent) => {
         const dmsObject = e.data as DmsObject;
         // reload audit entries when update belongs to the current dms object

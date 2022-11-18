@@ -1,11 +1,12 @@
 import { Component, EventEmitter, forwardRef, Input, OnDestroy, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
 import { ControlValueAccessor, FormBuilder, FormGroup, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { PendingChangesService } from '@yuuvis/core';
-import { takeUntilDestroy } from 'take-until-destroy';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { PopoverRef } from '../../popover/popover.ref';
 import { PopoverService } from '../../popover/popover.service';
 import { SequenceItem } from '../sequence-list/sequence-list.interface';
 
+@UntilDestroy()
 @Component({
   selector: 'yuv-sequence-list-templates',
   templateUrl: './sequence-list-templates.component.html',
@@ -37,7 +38,7 @@ export class SequenceListTemplatesComponent implements OnDestroy, OnInit, Contro
   @Output() itemEdit = new EventEmitter<boolean>();
 
   constructor(private fb: FormBuilder, private pendingChanges: PendingChangesService, private popover: PopoverService) {
-    this.form.valueChanges.pipe(takeUntilDestroy(this)).subscribe((res) => {
+    this.form.valueChanges.pipe(untilDestroyed(this)).subscribe((res) => {
       this.setEntries(res.sequence, false);
       this.propagate();
     });

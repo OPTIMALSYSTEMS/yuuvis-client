@@ -18,9 +18,10 @@ import {
 } from '@yuuvis/framework';
 import { Observable } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
-import { takeUntilDestroy } from 'take-until-destroy';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { FrameService } from '../../components/frame/frame.service';
 
+@UntilDestroy()
 @Component({
   selector: 'yuv-inbox',
   templateUrl: './inbox.component.html',
@@ -100,7 +101,7 @@ export class InboxComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.route.queryParamMap.pipe(takeUntilDestroy(this)).subscribe((params) => {
+    this.route.queryParamMap.pipe(untilDestroyed(this)).subscribe((params) => {
       if (params.has('filter')) {
         this.filterTerm = params.get('filter');
         // remove URL param once it has been processed
@@ -112,7 +113,7 @@ export class InboxComponent implements OnInit, OnDestroy {
     this.eventService
       .on(BpmEvent.BPM_EVENT)
       .pipe(
-        takeUntilDestroy(this),
+        untilDestroyed(this),
         tap(() => this.inboxService.fetchTasks())
       )
       .subscribe();

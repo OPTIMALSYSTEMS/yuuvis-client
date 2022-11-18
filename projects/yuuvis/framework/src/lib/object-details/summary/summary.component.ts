@@ -13,7 +13,7 @@ import {
   RetentionField,
   SystemService
 } from '@yuuvis/core';
-import { takeUntilDestroy } from 'take-until-destroy';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { CellRenderer } from '../../services/grid/grid.cellrenderer';
 import { GridService } from '../../services/grid/grid.service';
 import { Situation } from './../../object-form/object-form.situation';
@@ -40,7 +40,8 @@ import { Summary, SummaryEntry } from './summary.interface';
  * <!-- compare two dms object -->
  * <yuv-summary [compareObjects]="[dmsObject1, dmsObject2]"></yuv-summary>
  */
-@Component({
+ @UntilDestroy()
+ @Component({
   selector: 'yuv-summary',
   templateUrl: './summary.component.html',
   styleUrls: ['./summary.component.scss']
@@ -118,7 +119,7 @@ export class SummaryComponent implements OnInit, OnDestroy {
 
   onSectionVisibilityChange(k, visible: boolean) {
     this.visible[k] = visible;
-    this.appCacheService.setItem(this.STORAGE_KEY_SECTION_VISIBLE, this.visible).pipe(takeUntilDestroy(this)).subscribe();
+    this.appCacheService.setItem(this.STORAGE_KEY_SECTION_VISIBLE, this.visible).pipe(untilDestroyed(this)).subscribe();
   }
 
   private getSummaryConfiguration(dmsObject: DmsObject) {

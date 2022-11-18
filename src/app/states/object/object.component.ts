@@ -5,10 +5,11 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AppCacheService, DmsObject, DmsService, EventService, SearchQuery, TranslateService, YuvEventType } from '@yuuvis/core';
 import { ContextComponent, PluginsService } from '@yuuvis/framework';
 import { finalize } from 'rxjs/operators';
-import { takeUntilDestroy } from 'take-until-destroy';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { FrameService } from '../../components/frame/frame.service';
 import { AppSearchService } from '../../service/app-search.service';
 
+@UntilDestroy()
 @Component({
   selector: 'yuv-object',
   templateUrl: './object.component.html',
@@ -136,7 +137,7 @@ export class ObjectComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.route.params.pipe(takeUntilDestroy(this)).subscribe((params: any) => {
+    this.route.params.pipe(untilDestroyed(this)).subscribe((params: any) => {
       if (params.id && this.contextId !== params.id) {
         // saving context ID in its own var, so while the dms object is loading
         // we are able to properly set the selected item when there is no fragment ist available.
@@ -145,16 +146,16 @@ export class ObjectComponent implements OnInit, OnDestroy {
       }
     });
     // query params may provide a query to be executed within this state
-    this.route.queryParams.pipe(takeUntilDestroy(this)).subscribe((queryParams: any) => {
+    this.route.queryParams.pipe(untilDestroyed(this)).subscribe((queryParams: any) => {
       this.contextSearchQuery = !!queryParams.query ? new SearchQuery(JSON.parse(queryParams.query)) : null;
       this.appSearch.setQuery(this.contextSearchQuery);
     });
     // fragments are used to identify the selected item within the context
-    this.route.fragment.pipe(takeUntilDestroy(this)).subscribe((fragment: any) => this.setupFragment(fragment));
+    this.route.fragment.pipe(untilDestroyed(this)).subscribe((fragment: any) => this.setupFragment(fragment));
 
     this.eventService
       .on(YuvEventType.DMS_OBJECT_DELETED)
-      .pipe(takeUntilDestroy(this))
+      .pipe(untilDestroyed(this))
       .subscribe((event) => {
         if (this.route.snapshot.fragment && this.route.snapshot.fragment === event.data?.id) {
           // get rid of the fragment once the deleted item has the same ID

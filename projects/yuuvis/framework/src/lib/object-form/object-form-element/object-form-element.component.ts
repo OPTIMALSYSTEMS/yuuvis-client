@@ -1,6 +1,6 @@
 import { Component, ElementRef, Input, OnDestroy, Renderer2 } from '@angular/core';
 import { Classification, TranslateService } from '@yuuvis/core';
-import { takeUntilDestroy } from 'take-until-destroy';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { ObjectFormTranslateService } from '../object-form-translate.service';
 import { ObjectFormControlWrapper } from '../object-form.interface';
 import { Situation } from './../object-form.situation';
@@ -12,7 +12,8 @@ import { Situation } from './../object-form.situation';
  *<yuv-object-form-element [element]="someForm.controls[key]" [situation]="situation"></yuv-object-form-element>
  */
 
-@Component({
+ @UntilDestroy()
+ @Component({
   selector: 'yuv-object-form-element',
   templateUrl: './object-form-element.component.html',
   styleUrls: ['./object-form-element.component.scss']
@@ -64,7 +65,7 @@ export class ObjectFormElementComponent implements OnDestroy {
         this.labelToggled({ toggled: true, variable: this.formElementRef._eoFormElement.variable }, false);
       }
       this.fetchTags();
-      this.formElementRef?.valueChanges.pipe(takeUntilDestroy(this)).subscribe((_) => this.setupErrors());
+      this.formElementRef?.valueChanges.pipe(untilDestroyed(this)).subscribe((_) => this.setupErrors());
     }
   }
 
