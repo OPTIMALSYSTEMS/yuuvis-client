@@ -31,6 +31,7 @@
     align-items: flex-start;
     padding: calc(var(--app-pane-padding) / 4) calc(var(--app-pane-padding) / 4) 0 calc(var(--app-pane-padding) / 4);
     background-color: var(--panel-background-lightgrey);
+    overflow: auto hidden;
 
     .label {
       box-sizing: content-box;
