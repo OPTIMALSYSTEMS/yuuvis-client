@@ -17,6 +17,7 @@ import {
   AggregateWidgetSetupComponent,
   ChartsSetupComponent,
   ChartsWidgetComponent,
+  EVT_AGGREGATE_CLICK,
   EVT_COUNT_TILE_CLICK,
   EVT_LIST_ITEM_CLICK,
   EVT_LIST_QUERY_EMIT,
@@ -114,6 +115,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
         break;
       }
       case EVT_QUICK_SEARCH_EXECUTE: {
+        this.openSearchResult(e.data);
+        break;
+      }
+      case EVT_AGGREGATE_CLICK: {
         this.openSearchResult(e.data);
         break;
       }
