@@ -168,7 +168,7 @@ export class RetentionsComponent implements OnInit {
         // apply filter to only get the recent ending retention
         const d = new Date();
         d.setHours(23, 59, 59, 999);
-        q.addFilter(new SearchFilter(RetentionField.RETENTION_END, SearchFilter.OPERATOR.LESS_OR_EQUAL, d.setDate(d.getDate() + 30)));
+        q.addFilter(new SearchFilter(RetentionField.RETENTION_END, SearchFilter.OPERATOR.LESS_OR_EQUAL, new Date(d.setDate(d.getDate() + 30))));
         q.addFilter(new SearchFilter(RetentionField.RETENTION_END, SearchFilter.OPERATOR.GREATER_OR_EQUAL, new Date()));
         break;
       case 'destruct':
