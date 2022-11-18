@@ -187,7 +187,7 @@ export class SearchResultPanelComponent {
   exportCSV() {
     this.downloadingCsv = true;
     this.userConfig
-      .getColumnConfig(this.columnConfigInput.type.id)
+      .getColumnConfig(this.columnConfigInput.type)
       .pipe(
         switchMap((conf) =>
           this.searchService
