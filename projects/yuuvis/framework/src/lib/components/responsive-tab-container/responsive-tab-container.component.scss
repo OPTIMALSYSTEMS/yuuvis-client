@@ -11,16 +11,6 @@
 :host {
   as-split {
     padding: 0;
-    as-split-area.secondary > p-tabview {
-      ::ng-deep {
-        & > .p-tabview.p-component > .p-tabview-nav {
-          margin-right: 0;
-          & > li.p-highlight {
-            border-color: var(--panel-divider-color);
-          }
-        }
-      }
-    }
   }
 
   p-tabview {
@@ -33,25 +23,22 @@
       .tab-navigation {
         display: none;
       }
-      ::ng-deep {
-        .p-tabview .p-tabview-nav {
-          margin-right: 0;
-        }
-      }
     }
 
     .tab-navigation {
       position: absolute;
-      top: 1px;
-      right: 1px;
+      top: -1px;
+      right: -1px;
       display: flex;
       cursor: pointer;
       color: var(--text-color-hint);
-
+      background-color: var(--panel-background);
+      z-index: 5;
+      
       &:hover {
         color: var(--text-color-caption);
       }
-
+      
       yuv-icon {
         width: 24px;
         height: 24px;
@@ -61,24 +48,26 @@
     }
   }
 
-  // p-tabview.yuv-split-tab::ng-deep > .p-tabview > .p-tabview-panels > yuv-tab-panel > .p-tabview-panel {
-  //   @include frame(0);
-  //   top: 39px; // header height
-  // }
 }
+
+::ng-deep .as-split-area > p-tabview > .p-tabview > .p-tabview-nav-container .p-tabview-nav li.p-highlight {
+  border-color: var(--panel-divider-color);
+}
+
+::ng-deep .as-split-area:not(.secondary) > p-tabview:not(.noSplit) > .p-tabview > .p-tabview-nav-container .p-tabview-nav {
+  margin-right: 38px;
+  li.p-highlight {
+    border-color: var(--color-accent);
+  }
+}
+
+
 
 ::ng-deep p-tabview.yrt-tab {
   & > .p-tabview {
+    overflow: auto;
     border-radius: 0 !important;
     & > .p-tabview-nav-container .p-tabview-nav {
-      // flex-wrap: nowrap;
-      // overflow: auto hidden;
-      // display: flex;
-      margin-right: 28px;
-      :host-context(.screen-s) & {
-        margin-right: 0;
-      }
-
       li.p-disabled {
         display: none;
       }
@@ -87,11 +76,12 @@
     & > .p-tabview-panels > yuv-tab-panel > .p-tabview-panel {
       @include frame(0);
       top: 39px; // header height
-    }
-  }
+      overflow: auto;
 
-  :host-context(.screen-s) .p-tabview.p-tabview-bottom .p-tabview-nav {
-    margin-top: -35px;
+      .tab-navigation {
+        background-color: var(--panel-background-lightgrey);
+      }
+    }
   }
 
   .p-tabview-nav::-webkit-scrollbar {

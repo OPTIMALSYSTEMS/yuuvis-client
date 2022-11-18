@@ -132,7 +132,7 @@ export class ResponsiveTabContainerComponent implements OnInit, AfterContentInit
    */
   onChange(e: any) {
     if (e && e.originalEvent) {
-      e.originalEvent.target.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
+      setTimeout(() => e.originalEvent.target.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' }), 0);
     }
     this.savePanelOrder();
   }
