@@ -151,7 +151,6 @@ export class SearchFilterComponent implements OnInit {
     ];
 
     this.setupExtensions();
-
     this.setupCollapsedGroups();
     return this.setupFilters(this.typeSelection);
   }
@@ -162,13 +161,16 @@ export class SearchFilterComponent implements OnInit {
       this.typeSelection = [...this.typeSelection, ...active];
       this.availableObjectTypeFields = this.quickSearchService.getAvailableObjectTypesFields(this.typeSelection);
       const extensions = PluginSearchComponent.parseExtensions(plugins, this, this.pluginsService);
+
+      this.availableTypeGroups = this.availableTypeGroups.slice(0, 1);
       
       if (all.length || extensions.length) {
-        this.availableTypeGroups[1] = {
+        const items = [...all, ...extensions.filter((e: any) => !e.items) as any];
+        items.length && this.availableTypeGroups.push({
           id: 'extensions',
           label: this.translate.instant('yuv.framework.search.filter.object.extensions'),
-          items: [...all, ...extensions.filter((e: any) => !e.items) as any]
-        };
+          items
+        });
         this.availableTypeGroups = [...this.availableTypeGroups, ...extensions.filter((e: any) => e.items) as any];
         this.aggregate(true);
       }
@@ -272,7 +274,6 @@ export class SearchFilterComponent implements OnInit {
       }
     });
     this.filterQuery.filterGroup = SearchFilterGroup.fromQuery(q.filterGroup.toShortQuery());
-    console.log(this.filterQuery.toQueryJson());
 
     this.filterChange.emit(this.filterQuery);
     this.aggregate();
@@ -289,6 +290,8 @@ export class SearchFilterComponent implements OnInit {
     customGroups.forEach(g => this.filterQuery.removeFilterGroup(g));
     res.forEach(r => r.value && this.filterQuery.addFilterGroup(r.value.clone(), r.value.property));
 
+    this.setupExtensions();
+    this.setupCollapsedGroups();
     this.filterChange.emit(this.filterQuery);
     this.aggregate();
   }
@@ -312,14 +315,13 @@ export class SearchFilterComponent implements OnInit {
       this.typeSelection = [...this.typeSelection];
     });
 
-    const isCatalog = (id: any) => this.availableObjectTypeFields.find((f) => f.id == id && f.value?._internalType?.match('string:catalog'));
     const sum = (r: any, key?: string) => r?.aggregations?.[0].entries.filter(e => key ? e.key === key : true).reduce((p, c) => p + c.count, 0);
 
     this.availableTypeGroups?.filter((group, i) => i > 0 && group.items?.length && !group.collapsed && (!groups || groups.includes(group.id))).forEach((group) => {
-      if (isCatalog(group.id)) {
+      if (group.aggregations) {
         if (group.items[0].class?.match('skipCount')) return;
         const q = new SearchQuery(this.filterQuery.toQueryJson(true));
-        this.searchService.aggregate(q, [group.id]).subscribe(r => group.items?.forEach(g => (g.count = sum(r, g.label).toString() as any)));
+        this.searchService.aggregate(q, group.aggregations).subscribe(r => group.items?.forEach(g => (g.count = sum(r, g.label).toString() as any)));
       } else {
         group.items.forEach(g => {
           if (g.class?.match('skipCount')) return;

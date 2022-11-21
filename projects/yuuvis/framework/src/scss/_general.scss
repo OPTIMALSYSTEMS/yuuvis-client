@@ -147,6 +147,7 @@ span.yuv-process-status {
         padding: calc(var(--app-pane-padding) / 2) var(--app-pane-padding);
         color: var(--text-color-body);
         border: 1px solid var(--panel-divider-color);
+        min-width: 150px;
       }
     }
   }
