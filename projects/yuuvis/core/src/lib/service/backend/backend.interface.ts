@@ -29,3 +29,7 @@ export interface HttpOptions {
   responseType?: any;
   withCredentials?: boolean;
 }
+
+export interface HttpDeleteOptions extends HttpOptions {
+  body?: any;
+}
