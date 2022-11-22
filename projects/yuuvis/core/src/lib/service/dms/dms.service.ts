@@ -273,17 +273,16 @@ export class DmsService {
     return this.backend
       .delete('/dms/objects', ApiBase.core, {
         body: {
-          objects: [
-            ids.map((id) => ({
-              properties: {
-                'system:objectId': {
-                  value: id
-                }
+          objects: ids.map((id) => ({
+            properties: {
+              'system:objectId': {
+                value: id
               }
-            }))
-          ]
+            }
+          }))
         }
       })
+      .pipe(map((_) => ids))
       .pipe(this.triggerEvents(YuvEventType.DMS_OBJECT_DELETED, null, silent));
   }
 
