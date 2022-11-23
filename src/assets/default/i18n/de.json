@@ -14,7 +14,7 @@
   "yuvfc.widget-grid.widget.hitlist.form.label.countTileThresholdInvert": "Schwellenwerte umkehren (viel -> wenig)",
   "yuvfc.widget-grid.widget.hitlist.form.label.countType": "Anzahl",
   "yuvfc.widget-grid.widget.hitlist.form.label.descriptionField": "Beschreibungsfeld",
-  "yuvfc.widget-grid.widget.hitlist.form.label.enable.emit.query": "'Anfrage senden' aktivieren",
+  "yuvfc.widget-grid.widget.hitlist.form.label.enable.emit.query": "'In Trefferliste öffnen' aktivieren",
   "yuvfc.widget-grid.widget.hitlist.form.label.size": "Anzahl der Einträge",
   "yuvfc.widget-grid.widget.hitlist.form.label.sortField": "Sortieren nach",
   "yuvfc.widget-grid.widget.hitlist.form.label.sortRevert": "Sortierung umkehren",
