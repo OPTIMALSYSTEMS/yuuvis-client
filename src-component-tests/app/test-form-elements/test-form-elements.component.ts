@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { FormBuilder } from '@angular/forms';
 
 @Component({
   selector: 'yuv-test-form-elements',
@@ -12,7 +13,13 @@ export class TestFormElementsComponent implements OnInit {
     withTime: null
   };
 
-  constructor() {}
+  datePickerForm = this.fb.group({
+    default: [],
+    widthTime: [],
+    futureOnly: []
+  });
+
+  constructor(private fb: FormBuilder) {}
 
   checkboxChanged(e: any) {
     console.log(e);

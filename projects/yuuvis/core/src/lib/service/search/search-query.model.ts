@@ -1,3 +1,4 @@
+import { getLocaleFirstDayOfWeek } from '@angular/common';
 import { RangeValue } from './../../model/range-value.model';
 import { Utils } from './../../util/utils';
 import { SearchQueryProperties } from './search.service.interface';
@@ -113,10 +114,12 @@ export class SearchQuery {
     if (group) {
       // add to group
       const searchFilterGroup =
-        groupProperty === SearchFilterGroup.DEFAULT ? this.filterGroup : this.filterGroup.groups.find((g) => g.property === groupProperty);
-      if (searchFilterGroup) {
-        searchFilterGroup.group.push(group);
-      }
+        groupProperty === SearchFilterGroup.DEFAULT ? this.filterGroup : this.filterGroup.groups.find((g) => g.property === groupProperty) || this.filterGroup;
+        if (searchFilterGroup !== this.filterGroup || searchFilterGroup?.operator === SearchFilterGroup.OPERATOR.AND) {
+          searchFilterGroup.group.push(group);
+        } else {
+          this.filterGroup = SearchFilterGroup.fromArray([this.filterGroup, group]);
+        }
     }
   }
 
@@ -127,7 +130,7 @@ export class SearchQuery {
     if (searchFilterGroup) {
       const parent = this.filterGroup.findParent(searchFilterGroup.id);
       if (parent) {
-        parent.group = parent.group.filter((f) => f.property !== groupProperty || (remove ? !remove(f as SearchFilterGroup) : false));
+        parent.group = parent.group.filter((f) => f !== searchFilterGroup || (remove ? !remove(f as SearchFilterGroup) : false));
         if (parent.isEmpty()) {
           this.filterGroup.remove(parent.id);
         }
@@ -266,12 +269,12 @@ export class SearchQuery {
 
     if (this.filterGroup && !this.filterGroup.isEmpty()) {
       const fg = this.filterGroup.toShortQuery(combineFilters);
-      queryJson.filters = fg.filters.length > 1 && this.filterGroup.operator === SearchFilterGroup.OPERATOR.OR ? [fg] : fg.filters;
+      queryJson.filters = fg.filters.length > 1 && fg.lo === SearchFilterGroup.OPERATOR.OR ? [fg] : fg.filters;
     }
 
     if (this.hiddenFilterGroup && !this.hiddenFilterGroup.isEmpty()) {
       const fg = this.hiddenFilterGroup.toShortQuery(combineFilters);
-      const filters = fg.filters.length > 1 && this.hiddenFilterGroup.operator === SearchFilterGroup.OPERATOR.OR ? [fg] : fg.filters;
+      const filters = fg.filters.length > 1 && fg.lo === SearchFilterGroup.OPERATOR.OR ? [fg] : fg.filters;
       if (combineFilters) {
         queryJson.filters = filters.concat(queryJson.filters || []);
       } else {
@@ -313,10 +316,10 @@ export class SearchFilterGroup {
     OR: '|'
   };
 
-  public static fromQuery(query: any) {
+  public static fromQuery(query: any, short = true) {
     if (query) {
       const group = (Array.isArray(query) ? query : query.filters || []).map((g) => (g.filters ? SearchFilterGroup.fromQuery(g) : SearchFilter.fromQuery(g)));
-      const single = group.length === 1 && group[0].group && group[0];
+      const single = short && group.length === 1 && group[0].group && group[0];
       return new SearchFilterGroup(query.property, single?.operator || query.lo, single?.group || group);
     } else {
       return undefined;
@@ -334,7 +337,7 @@ export class SearchFilterGroup {
   id = Utils.uuid();
 
   clone(short = true) {
-    return SearchFilterGroup.fromQuery(short ? this.toShortQuery() : this.toQuery());
+    return SearchFilterGroup.fromQuery(short ? this.toShortQuery() : this.toQuery(), short);
   }
 
   find(id: string) {
@@ -377,11 +380,13 @@ export class SearchFilterGroup {
    * @param property The qualified name of the field this group should apply to.
    * @param operator Operator indicating how to handle the groups. See SearchFilterGroup.OPERATOR for available operators.
    * @param group Array of filters or other groups
+   * @param useNot Optional negation of filter
    */
   constructor(
     public property: string = SearchFilterGroup.DEFAULT,
     public operator: string = SearchFilterGroup.OPERATOR.AND,
-    public group: (SearchFilter | SearchFilterGroup)[] = []
+    public group: (SearchFilter | SearchFilterGroup)[] = [],
+    public useNot?: boolean
   ) {}
 
   /**
@@ -399,6 +404,7 @@ export class SearchFilterGroup {
     return {
       property: this.property,
       lo: this.operator,
+      useNot: this.useNot,
       filters: this.group
         .filter((g) => (g instanceof SearchFilterGroup ? g.filters.filter((f) => !f.excludeFromQuery).length : !g.excludeFromQuery))
         .map((g) => (g instanceof SearchFilterGroup ? g.toQuery() : g.toQuery()))
@@ -406,9 +412,10 @@ export class SearchFilterGroup {
   }
 
   toShortQuery(resolved = false) {
-    return {
+    const query = {
       ...(this.property !== SearchFilterGroup.DEFAULT ? { property: this.property } : {}),
       ...(this.operator !== SearchFilterGroup.OPERATOR.AND ? { lo: this.operator } : {}),
+      ...(this.useNot ? { useNot: this.useNot } : {}),
       filters: this.group
         .filter((g) => (g instanceof SearchFilterGroup ? g.filters.filter((f) => !f.excludeFromQuery).length : !g.excludeFromQuery))
         .map((g) =>
@@ -419,6 +426,8 @@ export class SearchFilterGroup {
             : g[resolved ? 'toResolvedQuery' : 'toQuery']()
         )
     };
+
+    return query.filters?.length === 1 && query.filters[0].filters ? query.filters[0] : query;
   }
 
   toString() {
@@ -437,8 +446,10 @@ export class SearchFilter {
   public static OPERATOR = {
     /** equal */
     EQUAL: 'eq',
-    /** eequal */
+    /** exact equal */
     EEQUAL: 'eeq',
+    /** not equal */
+    NOT_EQUAL: 'neq',
     /** match at least one of the provided values (value has to be an array)  */
     IN: 'in',
     /** greater than */
@@ -452,7 +463,7 @@ export class SearchFilter {
     INTERVAL_INCLUDE_TO: 'gtlte', // interval include right
     INTERVAL_INCLUDE_FROM: 'gtelt', // interval include left
     RANGE: 'rg', // aggegation ranges
-    LIKE: 'like'
+    LIKE: 'like' // like
   };
 
   /**
@@ -461,6 +472,10 @@ export class SearchFilter {
   public static OPERATOR_LABEL = {
     /** equal */
     EQUAL: '=',
+    /** exact equal */
+    EEQUAL: '==',
+    /** not equal */
+    NOT_EQUAL: '!=',
     /** match at least one of the provided values (value has to be an array)  */
     IN: '~',
     /** greater than */
@@ -473,7 +488,8 @@ export class SearchFilter {
     INTERVAL_INCLUDE_BOTH: '-', // interval include left and right
     INTERVAL_INCLUDE_TO: '>-', // interval include right
     INTERVAL_INCLUDE_FROM: '-<', // interval include left
-    RANGE: '=' // aggegation ranges
+    RANGE: '=', // aggegation ranges
+    LIKE: '~' // like
   };
 
   /**
@@ -486,16 +502,21 @@ export class SearchFilter {
     YESTERDAY: '$YESTERDAY$',
     THISWEEK: '$THISWEEK$',
     THISMONTH: '$THISMONTH$',
-    THISYEAR: '$THISYEAR$',
+    THISYEAR: '$THISYEAR$'
   };
 
-  public static parseVariable(value: string): { value: string, key: string, base: string, operator: string } {
-    return Object.values(SearchFilter.VARIABLES).includes(value?.replace && value.replace(new RegExp('\\|.*'), '')) 
-      && {
+  public static parseVariable(value: string): { value: string, key: string, base: string, offset: number, operator: string, range: any[] } {
+    if (!value || typeof value !== 'string') return;
+    const base = value.replace(new RegExp('\\|.*'), '');
+    const key = Object.keys(SearchFilter.VARIABLES).find(k => base.startsWith(SearchFilter.VARIABLES[k]));
+    const offset = parseFloat(base.replace(/.*\$/, ''));
+    return key && {
         value,
-        key: value?.replace(new RegExp('\\$', 'g'), '').replace(new RegExp('\\|.*'), ''),
-        base: value?.replace(new RegExp('\\|.*'), ''),
-        operator: value?.replace(new RegExp('.*\\|'), '') || SearchFilter.OPERATOR.EQUAL
+        base,
+        key,
+        offset,
+        operator: value.match('|') ? value.replace(new RegExp('.*\\|'), '') : SearchFilter.OPERATOR.EQUAL,
+        range: base.match(',') ? base.split(',').map(v => SearchFilter.parseVariable(v)) : null,
       };
   }
 
@@ -518,6 +539,7 @@ export class SearchFilter {
    * @param operator Operator indicating how to handle the filters value(s). See SearchFilter.OPERATOR for available operators.
    * @param firstValue The filters value
    * @param secondValue Optional second value for filters that for example define ranges of values
+   * @param useNot Optional negation of filter
    */
   constructor(public property: string, public operator: string, public firstValue: any, public secondValue?: any, public useNot?: boolean) {
     if (firstValue instanceof RangeValue) {
@@ -546,25 +568,40 @@ export class SearchFilter {
 
   toResolvedQuery() {
     const query = this.toQuery();
-    query.v1 = this.resloveValue(query.v1);
-    query.v2 = this.resloveValue(query.v2);
+    const variable = SearchFilter.parseVariable(query.v1);
+    const lte = !!query.o.match(/^lt(e)$/);
+    if (variable?.range) {
+      query.v1 = this.resloveVariable(variable.range[lte ? 1 : 0], lte);
+      query.v2 = query.o.match(/^eq$/) ? this.resloveVariable(variable.range[1], true) : query.v2;
+    } else if (variable) {
+      query.v1 = this.resloveVariable(variable, lte);
+    }
     return query;
   }
 
-  resloveValue(value: any) {
+  resloveVariable(variable: {key: string, offset: number}, lte = false) {
+    if (SearchFilter.VARIABLES[variable.key] === SearchFilter.VARIABLES.CURRENT_USER) return window['api'].session.user.get().id;
+
     const date = new Date();
     date.setHours(0, 0, 0, 0);
+    const startDay = getLocaleFirstDayOfWeek(window['api'].session.user.get().userSettings.locale || 'en');
 
-    switch(SearchFilter.parseVariable(value)?.base) {
-      case SearchFilter.VARIABLES.CURRENT_USER: return window['api'].session.user.get().id;
-      case SearchFilter.VARIABLES.NOW: return new Date().toISOString();
-      case SearchFilter.VARIABLES.TODAY: return date.toISOString();
-      case SearchFilter.VARIABLES.YESTERDAY: return date.setHours(-24) && date;
-      case SearchFilter.VARIABLES.THISWEEK: return  date.setHours(-24 * 7) && date;
-      case SearchFilter.VARIABLES.THISMONTH: return date.setMonth(date.getMonth() - 1) && date;
-      case SearchFilter.VARIABLES.THISYEAR: return date.setFullYear(date.getFullYear() - 1) && date;
+    const resolve = (v: any) => { switch(SearchFilter.VARIABLES[v.key]) {
+        case SearchFilter.VARIABLES.NOW: return new Date(new Date().setSeconds(0, 0));
+        case SearchFilter.VARIABLES.TODAY: return date;
+        case SearchFilter.VARIABLES.YESTERDAY: return date.setHours(-24) && date;
+        case SearchFilter.VARIABLES.THISWEEK: return  date.setHours(-24 * (date.getDay() - startDay + (startDay > date.getDay() ? 7 : 0))) && date;
+        case SearchFilter.VARIABLES.THISMONTH: return date.setDate(1) && date;
+        case SearchFilter.VARIABLES.THISYEAR: return date.setMonth(0, 1) && date;
+      }
+      return date;
     }
-    return value;
+
+    const val = resolve(variable);
+    variable.offset && val.setHours(variable.offset * 24);
+    lte && val.setHours(23, 59, 0, 0);
+    
+    return val.toISOString();
   }
 
   toQuery() {

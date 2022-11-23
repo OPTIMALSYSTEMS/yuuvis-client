@@ -1,10 +1,11 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Process, ProcessService, ProcessVariable, TranslateService, UserService } from '@yuuvis/core';
-import { takeUntilDestroy } from 'take-until-destroy';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { IconRegistryService } from '../../../common/components/icon/service/iconRegistry.service';
 import { PopoverService } from '../../../popover/popover.service';
 import { deleteIcon } from '../../../svg.generated';
 
+@UntilDestroy()
 @Component({
   selector: 'yuv-process-details-summary',
   templateUrl: './process-details-summary.component.html',
@@ -60,7 +61,7 @@ export class ProcessDetailsSummaryComponent implements OnInit, OnDestroy {
     private userService: UserService
   ) {
     this.iconRegistry.registerIcons([deleteIcon]);
-    this.userService.user$.pipe(takeUntilDestroy(this)).subscribe((_) => (this.isAdvancedUser = this.userService.isAdvancedUser));
+    this.userService.user$.pipe(untilDestroyed(this)).subscribe((_) => (this.isAdvancedUser = this.userService.isAdvancedUser));
   }
 
   private resolveDisplayVariables() {

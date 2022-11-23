@@ -16,9 +16,10 @@ import {
 } from '@yuuvis/framework';
 import { Observable } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
-import { takeUntilDestroy } from 'take-until-destroy';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { followUp } from './../../../../projects/yuuvis/framework/src/lib/svg.generated';
 
+@UntilDestroy()
 @Component({
   selector: 'yuv-follow-ups',
   templateUrl: './follow-ups.component.html',
@@ -94,7 +95,7 @@ export class FollowUpsComponent implements OnInit, OnDestroy {
       .on(BpmEvent.BPM_EVENT)
       .pipe(
         tap(() => this.fetchProcesses()),
-        takeUntilDestroy(this)
+        untilDestroyed(this)
       )
       .subscribe();
   }

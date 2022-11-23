@@ -3,12 +3,12 @@
   <label class="form-input__label" #label (click)="toggle()">{{_label}}</label>
   <div class="triggers">
     <ng-container *ngFor="let action of hiddenPlugins">
-      <yuv-plugin-trigger [action]="action" [parent]="this"></yuv-plugin-trigger>
+      <yuv-plugin-trigger [parent]="this" [action]="action"></yuv-plugin-trigger>
     </ng-container>
   </div>
   <div class="triggers visible">
     <ng-container *ngFor="let action of visiblePlugins">
-      <yuv-plugin-trigger [action]="action" [parent]="this"></yuv-plugin-trigger>
+      <yuv-plugin-trigger [parent]="this" [action]="action"></yuv-plugin-trigger>
     </ng-container>
   </div>
   <div class="control" [hidden]="toggled">

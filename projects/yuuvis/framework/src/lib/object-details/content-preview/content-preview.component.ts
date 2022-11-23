@@ -2,8 +2,8 @@ import { Component, ElementRef, Input, NgZone, OnDestroy, OnInit } from '@angula
 import { CommandPaletteService } from '@yuuvis/command-palette';
 import { DmsObject, TranslateService, UploadService } from '@yuuvis/core';
 import { fromEvent, Observable, of } from 'rxjs';
-import { switchMap, takeWhile, tap } from 'rxjs/operators';
-import { takeUntilDestroy } from 'take-until-destroy';
+import { map, switchMap, takeWhile, tap } from 'rxjs/operators';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { FileDropService } from '../../directives/file-drop/file-drop.service';
 import { IFrameComponent } from '../../plugins/iframe.component';
@@ -20,7 +20,8 @@ import { ContentPreviewService } from './service/content-preview.service';
  * @example
  * <yuv-content-preview [dmsObject]="dmsObject"></yuv-content-preview>
  */
-@Component({
+ @UntilDestroy()
+ @Component({
   selector: 'yuv-content-preview',
   templateUrl: './content-preview.component.html',
   styleUrls: ['./content-preview.component.scss'],
@@ -85,6 +86,8 @@ export class ContentPreviewComponent extends IFrameComponent implements OnInit, 
     switchMap((status) => (typeof status === 'boolean' && !status ? of(null) : this.contentPreviewService.previewSrc$))
   );
 
+  contentPlugins: Observable<any[]>;
+
   constructor(
     elRef: ElementRef,
     pluginsService: PluginsService,
@@ -102,6 +105,7 @@ export class ContentPreviewComponent extends IFrameComponent implements OnInit, 
     if (ContentPreviewService.undockWinActive()) {
       this.undock(false);
     }
+    this.contentPlugins = this.contentPreviewService.getContentPlugins();
   }
 
   undock(open = true) {
@@ -140,7 +144,12 @@ export class ContentPreviewComponent extends IFrameComponent implements OnInit, 
   }
 
   ngOnInit() {
-    this.previewSrc$.pipe(takeUntilDestroy(this)).subscribe((src) => this.open(src));
+    this.previewSrc$
+      .pipe(
+        untilDestroyed(this),
+        map((src) => this.open(src))
+      )
+      .subscribe();
     this.componentStateId = this.componentStateService.addComponentState('ContentPreviewComponent', {
       actions: [
         {

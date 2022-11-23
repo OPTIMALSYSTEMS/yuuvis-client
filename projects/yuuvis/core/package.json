@@ -1,6 +1,6 @@
 {
   "name": "@yuuvis/core",
-  "version": "4.0.21",
+  "version": "4.1.0-rc.8",
   "author": "OPTIMAL SYSTEMS GmbH <npm@optimal-systems.de>",
   "license": "MIT",
   "scripts": {

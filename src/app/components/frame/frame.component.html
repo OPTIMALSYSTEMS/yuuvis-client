@@ -31,11 +31,13 @@
     <div class="right">
       <yuv-upload-progress-overlay (resultItemClick)="onResultItemClick($event)"></yuv-upload-progress-overlay>
       <yuv-icon *ngIf="isOffline" class="offline-icon" [icon]="'offline'" title="offline"></yuv-icon>
+
       <a *ngIf="docuLink" class="action" href="{{ docuLink }}" target="_blank">
         <yuv-icon class="btn" icon="help" title="{{'yuv.client.state.about.documentation.link.label'|translate}}">
         </yuv-icon>
       </a>
-      <div yuvOfflineDisabled class="user" (click)="op.toggle($event)" (keyup.enter)="op.toggle($event)" tabindex="0" #userBtn>
+      <div yuvOfflineDisabled class="user" (click)="op.toggle($event)" (keyup.enter)="op.toggle($event)" tabindex="0"
+        #userBtn>
         <yuv-user-avatar [user]="user"></yuv-user-avatar>
       </div>
 

@@ -4,8 +4,7 @@ import { Logger, SystemService, UserService, Utils } from '@yuuvis/core';
 import { cloneDeep } from 'lodash-es';
 import { Observable, of, Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
-import { takeUntilDestroy } from 'take-until-destroy';
-import { UnsubscribeOnDestroy } from '../../common/util/unsubscribe.component';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { ObjectFormScriptService } from '../object-form-script/object-form-script.service';
 import { ObjectFormScriptingScope } from '../object-form-script/object-form-scripting-scope';
 import { FormStatusChangedEvent, IObjectForm, ObjectFormControlWrapper, ObjectFormModelChange, ObjectFormOptions } from '../object-form.interface';
@@ -28,13 +27,14 @@ import { Situation } from './../object-form.situation';
  * @example
  * <yuv-object-form [formOptions]="options" (statusChanged)="check($event)"></yuv-object-form>
  */
-@Component({
+ @UntilDestroy()
+ @Component({
   selector: 'yuv-object-form',
   templateUrl: './object-form.component.html',
   providers: [ObjectFormService, ObjectFormScriptService],
   styleUrls: ['./object-form.component.scss']
 })
-export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestroy, AfterViewInit, IObjectForm {
+export class ObjectFormComponent implements OnDestroy, AfterViewInit, IObjectForm {
   private skipTranslationsFor = ['core', 'data'];
   private id = '#form_' + Utils.uuid();
 
@@ -93,11 +93,10 @@ export class ObjectFormComponent extends UnsubscribeOnDestroy implements OnDestr
     private userService: UserService,
     private cdRef: ChangeDetectorRef
   ) {
-    super();
     this.pluginsService.register(this);
     this.pluginsService.api.events
       .on(PluginsService.EVENT_MODEL_CHANGED)
-      .pipe(takeUntilDestroy(this))
+      .pipe(untilDestroyed(this))
       .subscribe((event) => event.data && this.onScriptingModelChanged(event.data.formControlName, event.data.change));
   }
 

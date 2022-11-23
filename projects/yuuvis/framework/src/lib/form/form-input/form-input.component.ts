@@ -72,6 +72,14 @@ export class FormInputComponent implements AfterViewInit {
   @Input() variable: any;
 
   variables = SearchFilter.VARIABLES;
+  dateVariables: { value: string, key?: string, offset?: number, title?: string }[] = [
+    { value: `${SearchFilter.VARIABLES.NOW}` },
+    { value: `${SearchFilter.VARIABLES.TODAY},${SearchFilter.VARIABLES.TODAY}` },
+    { value: `${SearchFilter.VARIABLES.YESTERDAY},${SearchFilter.VARIABLES.YESTERDAY}` },
+    { value: `${SearchFilter.VARIABLES.THISWEEK},${SearchFilter.VARIABLES.THISWEEK}+6` },
+    { value: `${SearchFilter.VARIABLES.THISMONTH},${SearchFilter.VARIABLES.THISMONTH}+${new Date(new Date().getFullYear(),new Date().getMonth() + 1,0).getDate() - 1}` },
+    { value: `${SearchFilter.VARIABLES.THISYEAR},${SearchFilter.VARIABLES.THISYEAR}+${(new Date().getFullYear() % 4 === 0 ? 366 : 365) - 1}` }
+  ];
 
   /**
    * Indicator that the wrapped form element is invalid. Will then render appropriate styles.
@@ -147,7 +155,7 @@ export class FormInputComponent implements AfterViewInit {
       "group": "visible",
       "icon": "<svg style=\"width:1.2em;height:1.2em\" viewBox=\"0 0 24 24\"><path fill=\"currentColor\" d=\"M21 11.11V5C21 3.9 20.11 3 19 3H14.82C14.4 1.84 13.3 1 12 1S9.6 1.84 9.18 3H5C3.9 3 3 3.9 3 5V19C3 20.11 3.9 21 5 21H11.11C12.37 22.24 14.09 23 16 23C19.87 23 23 19.87 23 16C23 14.09 22.24 12.37 21 11.11M12 3C12.55 3 13 3.45 13 4S12.55 5 12 5 11 4.55 11 4 11.45 3 12 3M5 19V5H7V7H17V5H19V9.68C18.09 9.25 17.08 9 16 9H7V11H11.1C10.5 11.57 10.04 12.25 9.68 13H7V15H9.08C9.03 15.33 9 15.66 9 16C9 17.08 9.25 18.09 9.68 19H5M16 21C13.24 21 11 18.76 11 16S13.24 11 16 11 21 13.24 21 16 18.76 21 16 21M16.5 16.25L19.36 17.94L18.61 19.16L15 17V12H16.5V16.25Z\" /></svg>",
       "isExecutable": "(component) => { return component.parent.formControlName && component.parent.childComponent.searchOption !== 'gtelte' }",
-      "run": "(component) => { var values = Object.keys(component.parent.variables).filter(c => !c.match('CURRENT_USER')); var map = {}; values.forEach((v, i) => { map[v]= values[i+1]; }); map[values[values.length - 1]] = values[0]; component.parent.toggle(true, component.parent.variables[map[component.parent.parseVariable(component.parent.variable).key || values[values.length - 1]]] + '|' + (component.parent.childComponent.searchOption)); }"
+      "run": "(component) => { var vars = component.parent.dateVariables; var base = component.parent.parseVariable(component.parent.variable).base; var i = vars.findIndex(v => v.value === base); component.parent.toggle(true, vars[i + 1 < vars.length ? i + 1 : 0].value + '|' + (component.parent.childComponent.searchOption)); }"
     }
   ];
 
@@ -162,10 +170,13 @@ export class FormInputComponent implements AfterViewInit {
 
   variableTitle(variable: string) {
     const v = this.parseVariable(variable);
+    if (v.base === SearchFilter.VARIABLES.CURRENT_USER) return window['api'].session.user.get().title;
     const op = this.childComponent.searchOption = v.operator || SearchFilter.OPERATOR.EQUAL;
-    const labels = { [SearchFilter.OPERATOR.GREATER_OR_EQUAL] : SearchFilter.OPERATOR_LABEL.GREATER_OR_EQUAL, [SearchFilter.OPERATOR.LESS_OR_EQUAL] : SearchFilter.OPERATOR_LABEL.LESS_OR_EQUAL };
-    return v.base === SearchFilter.VARIABLES.CURRENT_USER ? window['api'].session.user.get().title : 
-        (labels[op] || '') + this.pluginsService.translate.instant(`yuv.framework.search.agg.time.${v.key?.toLowerCase()}`);
+    const label = SearchFilter.OPERATOR_LABEL[Object.keys(SearchFilter.OPERATOR).find(k => SearchFilter.OPERATOR[k] === op)];
+    const d = this.dateVariables.find(d => d.value === v.base) || v;
+    const title = d.title || this.pluginsService.translate.instant(`yuv.framework.search.agg.time.${(d.key || v.key || '').toLowerCase()}`);
+    const offset = d.offset ? ` ${d.offset > 0 ? '+' : '-'} ${Math.abs(d.offset)}` : '';
+    return (label === SearchFilter.OPERATOR_LABEL.EQUAL ? '' : label) + title + offset;
   }
 
   toggle(toggle = !this.toggled, variable = null) {

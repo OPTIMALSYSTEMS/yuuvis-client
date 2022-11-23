@@ -15,6 +15,18 @@ export interface SelectableGroup {
    * selectable items(objects)
    */
   items: Selectable[];
+  /**
+   * maximum height in pixels
+   */
+  maxHeight?: number;
+  /**
+   * hide items with zero count
+   */
+  hideZeroCount?: boolean;
+  /**
+   * aggregations list
+   */
+   aggregations?: string[];
 }
 /**
  * Interface for a selectable object, which is determined

@@ -114,4 +114,8 @@
       width: calc(50% - 16px);
     }
   }
+
+  .items.hideZeroCount .zeroCount:not(.selected) {
+    display: none;
+  }
 }

@@ -2,14 +2,19 @@
   display: flex;
   align-items: center;
 
-  &.inputDisabled {
-    ::ng-deep {
-      .p-autocomplete-multiple-container.p-inputtext {
-        cursor: default;
-      }
-      .p-autocomplete-input-token {
-        display: none !important;
-      }
+  &.inputDisabled ::ng-deep {
+    .p-autocomplete-input-token {
+      // display: none;
+    }
+    .p-autocomplete-multiple-container {
+      flex-flow: row;
+    }
+  }
+
+  ::ng-deep .p-autocomplete-multiple-container:not(.p-focus) {
+    .p-autocomplete-token + .p-autocomplete-input-token {
+      height: 0;
+      padding: 0!important;
     }
   }
   ::ng-deep {

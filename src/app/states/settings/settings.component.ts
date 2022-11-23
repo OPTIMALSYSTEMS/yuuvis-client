@@ -1,20 +1,26 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AppCacheService, BackendService, ConfigService, SystemService, TranslateService, UserConfigService, UserService, YuvUser } from '@yuuvis/core';
 import { arrowDown, IconRegistryService, LayoutService, LayoutSettings, NotificationService, PluginsService } from '@yuuvis/framework';
 import { forkJoin, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { shield } from '../../../assets/default/svg/svg';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 
+import { dashboard, dashboardWidget, shield } from '../../../assets/default/svg/svg';
+import { AppService } from '../../app.service';
+
+@UntilDestroy()
 @Component({
   selector: 'yuv-settings',
   templateUrl: './settings.component.html',
   styleUrls: ['./settings.component.scss']
 })
-export class SettingsComponent implements OnInit {
+export class SettingsComponent implements OnInit, OnDestroy {
   user$: Observable<Partial<YuvUser>>;
   darkMode: boolean;
   accentColor: string;
+  enableDashboardTypeSettings: boolean = false;
+  dashboardType: 'default' | 'widgets' = 'default';
   customDashboardBackground: boolean;
   clientLocales: any;
   showPermissions: boolean;
@@ -55,9 +61,11 @@ export class SettingsComponent implements OnInit {
     private backend: BackendService,
     private iconRegistry: IconRegistryService,
     private notificationService: NotificationService,
-    private pluginsService: PluginsService
+    private pluginsService: PluginsService,
+    private appService: AppService
   ) {
-    this.iconRegistry.registerIcons([shield, arrowDown]);
+    this.iconRegistry.registerIcons([shield, dashboard, dashboardWidget, arrowDown]);
+    this.enableDashboardTypeSettings = this.config.get('core.features.dashboardWorkspaces');
     this.clientLocales = config.getClientLocales();
     this.enableConfig = this.route.snapshot.queryParamMap.get('config');
     this.enableConfig === 'old' && (ConfigService.GLOBAL_RESOURCES_PATH = (section) => UserService.GLOBAL_SETTINGS + encodeURIComponent(section));
@@ -73,6 +81,10 @@ export class SettingsComponent implements OnInit {
 
   setAccentColor(rgb: string) {
     this.layoutService.setAccentColor(rgb);
+  }
+
+  setDashboardType(dType: 'default' | 'widgets') {
+    this.appService.setDashboardConfig({ dashboardType: dType });
   }
 
   setBackgroundImage(e) {
@@ -160,6 +172,11 @@ export class SettingsComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.appService.dashboardConfig$.pipe(untilDestroyed(this)).subscribe({
+      next: (res) => {
+        this.dashboardType = res?.dashboardType || 'default';
+      }
+    });
     this.user$ = this.userService.user$.pipe(map((user) => ({ ...user, authorities: user.authorities.sort() })));
     this.layoutService.layoutSettings$.subscribe((settings: LayoutSettings) => {
       this.darkMode = settings.darkMode;
@@ -167,4 +184,6 @@ export class SettingsComponent implements OnInit {
       this.customDashboardBackground = !!settings.dashboardBackground;
     });
   }
+
+  ngOnDestroy(): void {}
 }

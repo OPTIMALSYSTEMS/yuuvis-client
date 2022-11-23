@@ -1,105 +1,244 @@
-import { Component, HostBinding, HostListener, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NavigationExtras, Router } from '@angular/router';
-import { EventService, SearchQuery, Sort, SystemService, UserService, Utils, YuvEventType, YuvUser } from '@yuuvis/core';
-import { GroupedSelectComponent, ObjectTypeAggregation, QuickSearchComponent, RecentItem, Selectable, SelectableGroup } from '@yuuvis/framework';
-import { FrameService } from '../../components/frame/frame.service';
+import { LangChangeEvent } from '@ngx-translate/core';
+import { AppCacheService, ConfigService, SearchQuery, TranslateService, UserService, YuvUser } from '@yuuvis/core';
+import {
+  GridItemEvent,
+  PictureWidgetComponent,
+  PictureWidgetSetupComponent,
+  TodoWidgetComponent,
+  TodoWidgetSetupComponent,
+  WidgetGridRegistry,
+  WidgetGridWorkspaceConfig,
+  WidgetGridWorkspaceOptions
+} from '@yuuvis/widget-grid';
+import {
+  AggregateWidgetComponent,
+  AggregateWidgetSetupComponent,
+  ChartsSetupComponent,
+  ChartsWidgetComponent,
+  EVT_AGGREGATE_CLICK,
+  EVT_COUNT_TILE_CLICK,
+  EVT_LIST_ITEM_CLICK,
+  EVT_LIST_QUERY_EMIT,
+  EVT_QUICK_SEARCH_EXECUTE,
+  EVT_STORED_QUERY_EXECUTE,
+  HitlistSetupComponent,
+  HitlistWidgetComponent,
+  QuickSearchWidgetComponent,
+  StoredQuerySetupComponent,
+  StoredQueryWidgetComponent
+} from '@yuuvis/widget-grid-widgets';
+import { forkJoin, of } from 'rxjs';
+import { catchError, map, switchMap } from 'rxjs/operators';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { DashboardConfig } from '../../app.interface';
+import { AppService } from '../../app.service';
 import { AppSearchService } from '../../service/app-search.service';
+
+@UntilDestroy()
 @Component({
   selector: 'yuv-dashboard',
   templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.scss']
+  styleUrls: ['./dashboard.component.scss'],
+  host: { class: 'themeBackground ' }
 })
-export class DashboardComponent implements OnInit {
-  @ViewChild('quickSearch') quickSearchEl: QuickSearchComponent;
-  @ViewChild('aggs') aggsEl: GroupedSelectComponent;
-  // application wide search query
-  appQuery: SearchQuery;
-  aggs: ObjectTypeAggregation[];
-  aggsGroups: SelectableGroup[];
-  disableFileDrop: boolean;
-  @HostBinding('class.aggregations') hasAggs: boolean;
+export class DashboardComponent implements OnInit, OnDestroy {
+  private STORAGE_KEY = 'yuv.client.dashboard.workspaces';
+  private get LOCAL_STORAGE_KEY_CURRENT_WORKSPACE() {
+    const u: YuvUser = this.userService.getCurrentUser();
+    return `${u.tenant}.${u.id}.yuv.client.dashboard.workspaces.current`;
+  }
+  busy: boolean = true;
+  dashboardConfig: DashboardConfig;
+  workspaceConfig: WidgetGridWorkspaceConfig | undefined;
+  workspaceOptions: WidgetGridWorkspaceOptions = {
+    gridConfig: {
+      rows: 25,
+      newItemWidth: 2,
+      newItemHeight: 5
+    }
+  };
 
-  reloadComponent = true;
+  constructor(
+    private appService: AppService,
+    private appCacheService: AppCacheService,
+    private appSearchService: AppSearchService,
+    private widgetGridRegistry: WidgetGridRegistry,
+    private userService: UserService,
+    private translate: TranslateService,
+    private router: Router,
+    private config: ConfigService
+  ) {
+    this.translate.onLangChange.pipe(untilDestroyed(this)).subscribe((e: LangChangeEvent) => {
+      this.setWidgetGridLabels();
+    });
+    this.setWidgetGridLabels();
+  }
 
-  @HostListener('keydown.ArrowDown', ['$event']) onKeyDown(event) {
-    if (!event.defaultPrevented && this.aggsEl) {
-      this.aggsEl.focus();
-      return false;
+  private setWidgetGridLabels() {
+    this.widgetGridRegistry.updateWidgetGridLabels({
+      widgetPickerTitle: this.translate.instant('yuv.client.dashboard.widgetGrid.widgetPickerTitle'),
+      noopWidgetLabel: this.translate.instant('yuv.client.dashboard.widgetGrid.noopWidgetLabel'),
+      workspacesEmptyMessage: this.translate.instant('yuv.client.dashboard.widgetGrid.workspacesEmptyMessage'),
+      newWorkspaceDefaultLabel: this.translate.instant('yuv.client.dashboard.widgetGrid.newWorkspaceDefaultLabel'),
+      workspaceRemoveConfirmMessage: this.translate.instant('yuv.client.dashboard.widgetGrid.workspaceRemoveConfirmMessage'),
+      workspaceEditDone: this.translate.instant('yuv.client.dashboard.widgetGrid.workspaceEditDone'),
+      workspaceEditCancel: this.translate.instant('yuv.framework.shared.cancel'),
+      save: this.translate.instant('yuv.client.dashboard.widgetGrid.save'),
+      cancel: this.translate.instant('yuv.framework.shared.cancel'),
+      confirm: this.translate.instant('yuv.framework.shared.ok'),
+      widgetTodoHeadlineLabel: this.translate.instant('yuv.client.dashboard.widgetGrid.widgetTodoHeadlineLabel'),
+      widgetTodoTaskTitleLabel: this.translate.instant('yuv.client.dashboard.widgetGrid.widgetTodoTaskTitleLabel')
+    });
+  }
+
+  onWorkspacesConfigChange(c: WidgetGridWorkspaceConfig) {
+    this.saveWorkspacesConfig(c);
+  }
+
+  onGridEvent(e: GridItemEvent) {
+    switch (e.action) {
+      case EVT_LIST_ITEM_CLICK: {
+        this.router.navigate(['object', e.data.id]);
+        break;
+      }
+      case EVT_LIST_QUERY_EMIT: {
+        this.openSearchResult(e.data, true);
+        break;
+      }
+      case EVT_COUNT_TILE_CLICK: {
+        this.openSearchResult(e.data, true);
+        break;
+      }
+      case EVT_STORED_QUERY_EXECUTE: {
+        this.openSearchResult(e.data, true);
+        break;
+      }
+      case EVT_QUICK_SEARCH_EXECUTE: {
+        this.openSearchResult(e.data);
+        break;
+      }
+      case EVT_AGGREGATE_CLICK: {
+        this.openSearchResult(e.data);
+        break;
+      }
     }
   }
 
-  constructor(
-    private router: Router,
-    private userService: UserService,
-    private frameService: FrameService,
-    private appSearch: AppSearchService,
-    private eventService: EventService,
-    private systemService: SystemService
-  ) {
-    this.userService.user$.subscribe((user: YuvUser) => {
-      if (user) {
-        this.disableFileDrop = !this.userService.canCreateObjects;
-      }
-    });
-    this.eventService.on(YuvEventType.CLIENT_LOCALE_CHANGED).subscribe(() => {
-      this.reloadComponent = false;
-      setTimeout(() => (this.reloadComponent = true), 1);
-    });
-  }
-
-  onShowAll(q: SearchQuery) {
-    this.onQuickSearchQuery(q, true);
-  }
-
-  onFilesDropped(files: File[]) {
-    this.frameService.createObject(null, files);
-  }
-
-  onRecentItemClicked(recentItem: RecentItem) {
-    Utils.navigate(recentItem.newTab, this.router, ['object', recentItem.objectId]);
-  }
-
-  async onQuickSearchQuery(query: SearchQuery, preventAppSearchSet: boolean = false) {
+  private async openSearchResult(query: SearchQuery, preventAppSearchSet: boolean = false) {
     const navigationExtras: NavigationExtras = { queryParams: { query: JSON.stringify(query.toQueryJson()) } };
     await this.router.navigate(['/result'], navigationExtras);
     if (!preventAppSearchSet) {
-      this.appSearch.setQuery(query);
+      this.appSearchService.setQuery(query);
     }
   }
 
-  onQuickSearchReset() {
-    this.appSearch.setQuery(new SearchQuery());
-  }
-
-  onTypeAggregation(aggs: ObjectTypeAggregation[]) {
-    this.aggs = aggs;
-    this.hasAggs = aggs && aggs.length > 0;
-    this.aggsGroups = [
-      {
-        id: 'aggs',
-        label: '',
-        items: (this.aggs || [])
-          .map((a) => {
-            const ot = this.systemService.getObjectType(a.objectTypeId);
-            return {
-              id: a.objectTypeId,
-              highlight: ot ? ot.isFolder : false,
-              label: a.label || a.objectTypeId,
-              svgSrc: this.systemService.getObjectTypeIconUri(a.objectTypeId),
-              count: a.count,
-              value: a
-            };
-          })
-          .sort(Utils.sortValues('highlight', Sort.DESC))
+  ngOnInit(): void {
+    this.appService.dashboardConfig$.pipe(untilDestroyed(this)).subscribe({
+      next: (res) => {
+        if (this.config.get('core.features.dashboardWorkspaces')) {
+          this.dashboardConfig = res;
+          if (res?.dashboardType === 'widgets') {
+            this.registerWidgets();
+            this.loadWorkspacesConfig();
+          } else this.busy = false;
+        } else {
+          this.dashboardConfig = {
+            dashboardType: 'default'
+          };
+          this.busy = false;
+        }
       }
-    ];
+    });
   }
 
-  applyAggregation(item: Selectable) {
-    this.quickSearchEl?.applyTypeAggration(item.value as ObjectTypeAggregation, true);
+  // widget grid workspace
+  private registerWidgets() {
+    this.widgetGridRegistry.registerGridWidgets([
+      {
+        name: 'yuv.widget.hitlist',
+        label: this.translate.instant('yuv.client.dashboard.widgets.hitlist.label'),
+        setupComponent: HitlistSetupComponent,
+        widgetComponent: HitlistWidgetComponent
+      },
+      {
+        name: 'yuv.widget.storedquery',
+        label: this.translate.instant('yuv.client.dashboard.widgets.storedquery.label'),
+        setupComponent: StoredQuerySetupComponent,
+        widgetComponent: StoredQueryWidgetComponent
+      },
+      {
+        name: 'yuv.widget.charts',
+        label: this.translate.instant('yuv.client.dashboard.widgets.charts.label'),
+        setupComponent: ChartsSetupComponent,
+        widgetComponent: ChartsWidgetComponent
+      },
+      {
+        name: 'yuv.client.widget.quicksearch',
+        label: this.translate.instant('yuv.client.dashboard.widgets.quicksearch.label'),
+        widgetComponent: QuickSearchWidgetComponent
+      },
+      {
+        name: 'yuv.widget.picture',
+        label: this.translate.instant('yuv.client.dashboard.widgets.picture.label'),
+        setupComponent: PictureWidgetSetupComponent,
+        widgetComponent: PictureWidgetComponent
+      },
+      {
+        name: 'yuv.widget.todo',
+        label: this.translate.instant('yuv.client.dashboard.widgets.todo.label'),
+        setupComponent: TodoWidgetSetupComponent,
+        widgetComponent: TodoWidgetComponent
+      },
+      {
+        name: 'yuv.widget.aggregate',
+        label: this.translate.instant('yuv.client.dashboard.widgets.aggregate.label'),
+        setupComponent: AggregateWidgetSetupComponent,
+        widgetComponent: AggregateWidgetComponent
+      }
+    ]);
   }
 
-  ngOnInit() {
-    this.appQuery = new SearchQuery();
+  private loadWorkspacesConfig() {
+    this.busy = true;
+    // the selected workspace is saved on the device while the workspaces themselves are stored on the user service
+    forkJoin([
+      this.userService.getSettings(this.STORAGE_KEY).pipe(catchError((e) => of({ workspaces: [] }))),
+      this.appCacheService.getItem(this.LOCAL_STORAGE_KEY_CURRENT_WORKSPACE).pipe(catchError((e) => of(null)))
+    ])
+      .pipe(
+        map((res) => {
+          const workspaces = res[0] ? res[0].workspaces : [];
+          const currentWorkspace = res[1];
+          // check if current workspace still exists in workspaces array
+          let cws: string;
+          if (currentWorkspace && workspaces.map((w) => w.id).includes(currentWorkspace)) {
+            cws = currentWorkspace;
+          } else if (!!workspaces.length) {
+            cws = workspaces[0].id;
+          }
+          return {
+            currentWorkspace: cws,
+            workspaces
+          };
+        })
+      )
+      .subscribe({
+        next: (res) => {
+          this.workspaceConfig = res;
+          this.busy = false;
+        }
+      });
   }
+
+  private saveWorkspacesConfig(c: WidgetGridWorkspaceConfig) {
+    // the selected workspace is saved on the device while the workspaces themselves are stored on the user service
+    this.userService
+      .saveSettings(this.STORAGE_KEY, { workspaces: c.workspaces })
+      .pipe(switchMap(() => this.appCacheService.setItem(this.LOCAL_STORAGE_KEY_CURRENT_WORKSPACE, c.currentWorkspace)))
+      .subscribe();
+  }
+
+  ngOnDestroy(): void {}
 }

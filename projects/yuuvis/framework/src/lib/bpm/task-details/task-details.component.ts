@@ -25,7 +25,6 @@ export class TaskDetailsComponent implements OnInit {
     date: Date;
     overDue: boolean;
   };
-
   @Input() set processInstanceId(id: string) {
     if (id) {
       this.busy = true;

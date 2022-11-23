@@ -1,12 +1,13 @@
 import { RowEvent } from '@ag-grid-community/core';
 import { Component, EventEmitter, Input, Output, TemplateRef, ViewChild } from '@angular/core';
-import { ColumnConfig, DmsService, SearchQuery, SystemService, TranslateService } from '@yuuvis/core';
+import { ColumnConfig, DmsService, SearchQuery, SearchService, SystemService, TranslateService, UserConfigService } from '@yuuvis/core';
+import { finalize, Observable, switchMap } from 'rxjs';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { ResponsiveDataTableOptions, ViewMode } from '../../components/responsive-data-table/responsive-data-table.component';
 import { PopoverConfig } from '../../popover/popover.interface';
 import { PopoverRef } from '../../popover/popover.ref';
 import { PopoverService } from '../../popover/popover.service';
-import { kebap, refresh, search, settings } from '../../svg.generated';
+import { download, kebap, refresh, search, settings } from '../../svg.generated';
 import { FilterPanelConfig, SearchResultComponent } from '../search-result/search-result.component';
 /**
  * This component wraps a `SearchResultComponent`.
@@ -32,6 +33,7 @@ export class SearchResultPanelComponent {
   queryDescription: string;
   actionMenuVisible = false;
   actionMenuSelection = [];
+  downloadingCsv = false;
 
   loading: boolean;
 
@@ -58,6 +60,8 @@ export class SearchResultPanelComponent {
   @Input() layoutOptionsKey: string;
   @Input() filterPanelConfig: FilterPanelConfig;
   @Input() disableFilterPanel: boolean;
+
+  @Input() plugins: Observable<any[]>;
 
   /**
    * Emitted when column sizes of the contained result list table have been changed.
@@ -89,9 +93,11 @@ export class SearchResultPanelComponent {
     private systemService: SystemService,
     private popoverService: PopoverService,
     private dmsService: DmsService,
-    private iconRegistry: IconRegistryService
+    private iconRegistry: IconRegistryService,
+    private searchService: SearchService,
+    private userConfig: UserConfigService
   ) {
-    this.iconRegistry.registerIcons([settings, search, refresh, kebap]);
+    this.iconRegistry.registerIcons([settings, search, refresh, kebap, download]);
   }
 
   refresh(applyColumnConfig?: boolean) {
@@ -176,5 +182,19 @@ export class SearchResultPanelComponent {
 
   columnConfigCanceled(popoverRef: PopoverRef) {
     popoverRef.close();
+  }
+
+  exportCSV() {
+    this.downloadingCsv = true;
+    this.userConfig
+      .getColumnConfig(this.columnConfigInput.type)
+      .pipe(
+        switchMap((conf) =>
+          this.searchService
+            .exportSearchResult({ ...this.searchService.getLastSearchQuery().toQueryJson(), fields: conf.columns.map((col) => col.id) })
+            .pipe(finalize(() => (this.downloadingCsv = false)))
+        )
+      )
+      .subscribe();
   }
 }

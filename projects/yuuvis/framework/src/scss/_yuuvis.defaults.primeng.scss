@@ -216,7 +216,6 @@ body {
           color: var(--text-color-caption);
 
           .p-autocomplete-token-label {
-            margin-right: 24px;
             &.noAccess {
               color: var(--color-error);
               cursor: not-allowed;

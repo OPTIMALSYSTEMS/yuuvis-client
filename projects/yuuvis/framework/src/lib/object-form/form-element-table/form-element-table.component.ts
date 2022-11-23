@@ -4,9 +4,8 @@ import { CsvExportModule } from '@ag-grid-community/csv-export';
 import { Component, forwardRef, HostListener, Input, NgZone, TemplateRef, ViewChild } from '@angular/core';
 import { ControlValueAccessor, UntypedFormControl, NG_VALIDATORS, NG_VALUE_ACCESSOR, Validator } from '@angular/forms';
 import { Classification, PendingChangesService, SystemService } from '@yuuvis/core';
-import { takeUntil } from 'rxjs/operators';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
-import { UnsubscribeOnDestroy } from '../../common/util/unsubscribe.component';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { PopoverConfig } from '../../popover/popover.interface';
 import { GridService } from '../../services/grid/grid.service';
 import { addCircle, contentDownload, expand, sizeToFit } from '../../svg.generated';
@@ -14,6 +13,7 @@ import { PopoverService } from './../../popover/popover.service';
 import { EditRow, TableComponentParams } from './form-element-table.interface';
 import { RowEditComponent } from './row-edit/row-edit.component';
 
+@UntilDestroy()
 @Component({
   selector: 'yuv-table',
   templateUrl: './form-element-table.component.html',
@@ -31,7 +31,7 @@ import { RowEditComponent } from './row-edit/row-edit.component';
     }
   ]
 })
-export class FormElementTableComponent extends UnsubscribeOnDestroy implements ControlValueAccessor, Validator {
+export class FormElementTableComponent implements ControlValueAccessor, Validator {
   public modules: Module[] = [ClientSideRowModelModule, CsvExportModule];
 
   @ViewChild('rowEdit') rowEdit: RowEditComponent;
@@ -94,7 +94,6 @@ export class FormElementTableComponent extends UnsubscribeOnDestroy implements C
     private iconRegistry: IconRegistryService,
     private systemService: SystemService
   ) {
-    super();
     this.iconRegistry.registerIcons([expand, sizeToFit, contentDownload, addCircle]);
     this.gridOptions = <GridOptions>{
       context: {},
@@ -103,7 +102,7 @@ export class FormElementTableComponent extends UnsubscribeOnDestroy implements C
       rowBuffer: 20,
       multiSortKey: 'ctrl',
       accentedSort: true,
-      suppressCellSelection: false,
+      suppressCellFocus: false,
       rowSelection: 'single',
       suppressMovableColumns: true,
       suppressNoRowsOverlay: true,
@@ -122,7 +121,7 @@ export class FormElementTableComponent extends UnsubscribeOnDestroy implements C
       rowBuffer: 20,
       multiSortKey: 'ctrl',
       accentedSort: true,
-      suppressCellSelection: false,
+      suppressCellFocus: false,
       rowSelection: 'single',
       suppressMovableColumns: true,
       suppressNoRowsOverlay: true,
@@ -142,7 +141,7 @@ export class FormElementTableComponent extends UnsubscribeOnDestroy implements C
       }
     };
 
-    this.pendingChanges.tasks$.pipe(takeUntil(this.componentDestroyed$)).subscribe((tasks) => {
+    this.pendingChanges.tasks$.pipe(untilDestroyed(this)).subscribe((tasks) => {
       setTimeout(() => {
         this.overlayGridOptions.suppressRowClickSelection = !!this.rowEdit && !!tasks.find((task) => task.id === this.rowEdit.pendingTaskId);
       }, 0);
@@ -188,6 +187,7 @@ export class FormElementTableComponent extends UnsubscribeOnDestroy implements C
           if (el.labelkey) {
             el.label = this.systemService.getLocalizedResource(`${el.labelkey}_label`) || el.labelkey;
           }
+
           Object.assign(col, {
             rowDrag: dragEnabled && i === 0,
             headerName: el.label,

@@ -38,11 +38,8 @@ export class InboxService {
   /**
    * updates inboxData$
    */
-  fetchTasks(includeProcessVar = true, briefRepresentation = true): void {
-    this.getTasksPaged({
-      includeProcessVariables: includeProcessVar,
-      briefRepresentation
-    })
+  fetchTasks(includeProcessVariables = true, briefRepresentation = true): void {
+    this.getTasksPaged({ includeProcessVariables, briefRepresentation })
       .pipe(
         tap((res: Task[]) => {
           this.inboxData = [...res.reverse()];
@@ -80,7 +77,7 @@ export class InboxService {
 
   private getPage(requestParams: string, index?: number) {
     const pageSize = this.config.get('core.app.inboxPageSize') || this.INBOX_PAGE_SIZE;
-    return this.bpmService.getProcesses(`/bpm/tasks?size=${pageSize}&sort=createTime&page=${index || 0}${requestParams}`);
+    return this.bpmService.getProcesses(`/bpm/tasks?size=${pageSize}&sort=createTime&page=${index || 0}${requestParams}`, true);
   }
 
   /**

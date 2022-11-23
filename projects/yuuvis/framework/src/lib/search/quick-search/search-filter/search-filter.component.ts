@@ -1,10 +1,12 @@
 import { Component, EventEmitter, Input, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
-import { BaseObjectTypeField, SearchFilter, SearchFilterGroup, SearchQuery, TranslateService } from '@yuuvis/core';
-import { forkJoin } from 'rxjs';
+import { BaseObjectTypeField, SearchFilter, SearchFilterGroup, SearchQuery, SearchService, TranslateService } from '@yuuvis/core';
+import { forkJoin, Observable, of } from 'rxjs';
 import { IconRegistryService } from '../../../common/components/icon/service/iconRegistry.service';
 import { Selectable } from '../../../grouped-select';
 import { SelectableGroup } from '../../../grouped-select/grouped-select/grouped-select.interface';
 import { FileSizePipe } from '../../../pipes/filesize.pipe';
+import { PluginSearchComponent } from '../../../plugins/plugin-search.component';
+import { PluginsService } from '../../../plugins/plugins.service';
 import { PopoverConfig } from '../../../popover/popover.interface';
 import { PopoverService } from '../../../popover/popover.service';
 import { favorite, reset, settings } from '../../../svg.generated';
@@ -49,9 +51,14 @@ export class SearchFilterComponent implements OnInit {
   availableTypeGroups: SelectableGroup[] = [];
   availableObjectTypes: Selectable[] = [];
   typeSelection: string[] = [];
+  customTypeSelection: string[] = [];
 
   availableFilterGroups: SelectableGroup[] = [];
   availableObjectTypeFields: Selectable[] = [];
+
+  get mixedTypeSelection() {
+    return [...this.typeSelection, ...this.customTypeSelection];
+  }
 
   get filterSelection() {
     return (this.activeFilters || []).map((f) => f.id);
@@ -82,6 +89,8 @@ export class SearchFilterComponent implements OnInit {
     return this.availableObjectTypeFields.map((o) => ({ ...o, value: [new SearchFilter(o.id, o.defaultOperator, o.defaultValue)] }));
   }
 
+  @Input() plugins: Observable<any[]>;
+
   @Output() filterChange = new EventEmitter<SearchQuery>();
 
   constructor(
@@ -89,7 +98,9 @@ export class SearchFilterComponent implements OnInit {
     private iconRegistry: IconRegistryService,
     private quickSearchService: QuickSearchService,
     private popoverService: PopoverService,
-    private layoutService: LayoutService
+    private layoutService: LayoutService,
+    private searchService: SearchService,
+    private pluginsService: PluginsService
   ) {
     this.iconRegistry.registerIcons([settings, reset, favorite, listModeDefault, listModeSimple]);
   }
@@ -102,6 +113,7 @@ export class SearchFilterComponent implements OnInit {
   }
 
   onToggle(group: SelectableGroup) {
+    this.aggregate();
     this.saveLayoutOptions({
       collapsedGroups: (this._layoutOptions.collapsedGroups || []).filter((id) => id !== group.id).concat(group.collapsed ? [group.id] : [])
     });
@@ -139,21 +151,30 @@ export class SearchFilterComponent implements OnInit {
     ];
 
     this.setupExtensions();
-
     this.setupCollapsedGroups();
     return this.setupFilters(this.typeSelection);
   }
 
   private setupExtensions() {
-    const { active, all } = this.quickSearchService.getActiveExtensions(this._query);
-    if (all.length) {
+    (this.plugins || of([])).subscribe(plugins => {
+      const { active, all } = this.quickSearchService.getActiveExtensions(this._query);
       this.typeSelection = [...this.typeSelection, ...active];
-      this.availableTypeGroups[1] = {
-        id: 'extensions',
-        label: this.translate.instant('yuv.framework.search.filter.object.extensions'),
-        items: all
-      };
-    }
+      this.availableObjectTypeFields = this.quickSearchService.getAvailableObjectTypesFields(this.typeSelection);
+      const extensions = PluginSearchComponent.parseExtensions(plugins, this, this.pluginsService);
+
+      this.availableTypeGroups = this.availableTypeGroups.slice(0, 1);
+      
+      if (all.length || extensions.length) {
+        const items = [...all, ...extensions.filter((e: any) => !e.items) as any];
+        items.length && this.availableTypeGroups.push({
+          id: 'extensions',
+          label: this.translate.instant('yuv.framework.search.filter.object.extensions'),
+          items
+        });
+        this.availableTypeGroups = [...this.availableTypeGroups, ...extensions.filter((e: any) => e.items) as any];
+        this.aggregate(true);
+      }
+    });
   }
 
   private setupFilters(typeSelection: string[], activeFilters?: Selectable[]) {
@@ -253,21 +274,26 @@ export class SearchFilterComponent implements OnInit {
       }
     });
     this.filterQuery.filterGroup = SearchFilterGroup.fromQuery(q.filterGroup.toShortQuery());
-    console.log(this.filterQuery.toQueryJson());
 
     this.filterChange.emit(this.filterQuery);
     this.aggregate();
   }
 
   onTypeChange(res: Selectable[]) {
-    this.typeSelection = res.map((r) => r.id);
+    this.typeSelection = res.filter(r => !r.value).map((r) => r.id);
+    this.customTypeSelection = res.filter(r => r.value).map((r) => r.id);
+
     this.setupFilters(this.typeSelection, this.activeFilters);
-    const _types = [...this.filterQuery.types];
     this.quickSearchService.updateTypesAndLots(this.filterQuery, this.typeSelection);
+
+    const customGroups = this.filterQuery.filterGroup.groups.map(g => g.property).filter(property => property !== SearchFilterGroup.DEFAULT);
+    customGroups.forEach(g => this.filterQuery.removeFilterGroup(g));
+    res.forEach(r => r.value && this.filterQuery.addFilterGroup(r.value.clone(), r.value.property));
+
+    this.setupExtensions();
+    this.setupCollapsedGroups();
     this.filterChange.emit(this.filterQuery);
-    if (_types.sort().join() !== this.filterQuery.types.sort().join()) {
-      this.aggregate();
-    }
+    this.aggregate();
   }
 
   saveSearch() {}
@@ -277,9 +303,9 @@ export class SearchFilterComponent implements OnInit {
     this.filterChange.emit(new SearchQuery(this._query.toQueryJson()));
   }
 
-  aggregate() {
+  aggregate(skipTypes = false, groups?: string[]) {
     const queryNoLots = new SearchQuery({ ...this.filterQuery.toQueryJson(), lots: [] });
-    this.quickSearchService.getActiveTypes(queryNoLots).subscribe((types: any) => {
+    !skipTypes && !this.availableTypeGroups[0]?.collapsed && this.quickSearchService.getActiveTypes(this.filterQuery).subscribe((types: any) => {
       this.availableObjectTypes.forEach((i) => {
         const match = types.find((t) => t.id === i.id);
         i.count = match ? match.count : 0;
@@ -288,6 +314,30 @@ export class SearchFilterComponent implements OnInit {
       this.availableTypeGroups[0].items = this.availableObjectTypes.filter((t) => t.count || this._query.allTypes.includes(t.id));
       this.typeSelection = [...this.typeSelection];
     });
+
+    const sum = (r: any, key?: string) => r?.aggregations?.[0].entries.filter(e => key ? e.key === key : true).reduce((p, c) => p + c.count, 0);
+
+    this.availableTypeGroups?.filter((group, i) => i > 0 && group.items?.length && !group.collapsed && (!groups || groups.includes(group.id))).forEach((group) => {
+      if (group.aggregations) {
+        if (group.items[0].class?.match('skipCount')) return;
+        const q = new SearchQuery(this.filterQuery.toQueryJson(true));
+        this.searchService.aggregate(q, group.aggregations).subscribe(r => group.items?.forEach(g => (g.count = sum(r, g.label).toString() as any)));
+      } else {
+        group.items.forEach(g => {
+          if (g.class?.match('skipCount')) return;
+          const q = new SearchQuery(this.filterQuery.toQueryJson(true));
+          if (g.value) {
+            q.filterGroup = this.filterQuery.filterGroup.clone(false);
+            q.removeFilterGroup(g.value.property);
+            q.addFilterGroup(g.value.clone());
+          } else {
+            q.types = [g.id];
+          }
+          this.searchService.aggregate(q, [BaseObjectTypeField.LEADING_OBJECT_TYPE_ID]).subscribe(r => (g.count = sum(r).toString() as any));
+        });
+      }
+    });
+
   }
 
   ngOnInit(): void {}

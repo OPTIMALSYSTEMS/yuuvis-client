@@ -16,6 +16,13 @@
     color: var(--text-color-caption);
   }
 
+  .error {
+    background: var(--color-error);
+    text-align: center;
+    padding: 0.3rem;
+    margin-bottom: 1rem;
+  }
+
   .comments {
     grid-area: list;
     overflow-y: auto;

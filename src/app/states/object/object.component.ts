@@ -1,13 +1,15 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Location } from '@angular/common';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AppCacheService, DmsObject, DmsService, EventService, SearchQuery, TranslateService, YuvEventType } from '@yuuvis/core';
 import { ContextComponent, PluginsService } from '@yuuvis/framework';
 import { finalize } from 'rxjs/operators';
-import { takeUntilDestroy } from 'take-until-destroy';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { FrameService } from '../../components/frame/frame.service';
 import { AppSearchService } from '../../service/app-search.service';
 
+@UntilDestroy()
 @Component({
   selector: 'yuv-object',
   templateUrl: './object.component.html',
@@ -33,7 +35,8 @@ export class ObjectComponent implements OnInit, OnDestroy {
   private contextId: string;
 
   plugins: any;
-  pluginsContext: any;
+  contextPlugins: any;
+  searchPlugins: any;
 
   constructor(
     private route: ActivatedRoute,
@@ -45,10 +48,12 @@ export class ObjectComponent implements OnInit, OnDestroy {
     private router: Router,
     private eventService: EventService,
     private appCacheService: AppCacheService,
-    private pluginsService: PluginsService
+    private pluginsService: PluginsService,
+    private location: Location
   ) {
     this.plugins = this.pluginsService.getCustomPlugins('extensions', 'yuv-object');
-    this.pluginsContext = this.pluginsService.getCustomPlugins('extensions', 'yuv-object-context');
+    this.contextPlugins = this.pluginsService.getCustomPlugins('extensions', 'yuv-object-context');
+    this.searchPlugins = this.pluginsService.getCustomPlugins('extensions', 'yuv-search-result');
   }
 
   onContextFilesDropped(files: File[]) {
@@ -60,12 +65,11 @@ export class ObjectComponent implements OnInit, OnDestroy {
   }
 
   contextItemsSelected(ids: string[]) {
-    if (ids && ids.length === 0) {
-      ids = [this.contextId];
-    }
-    if (ids && ids.length === 1) {
-      this.router.navigate(['.'], { fragment: ids[0], replaceUrl: !!this.selectedItem, relativeTo: this.route, queryParamsHandling: 'preserve' });
-      this.addRecentItem(ids[0]);
+    const id = ids[0] || this.contextId;
+    if (id && ids.length <= 1) {
+      const url = this.router.createUrlTree(['.'], { fragment: id, relativeTo: this.route, queryParamsHandling: 'preserve' });
+      this.location.go(url.toString());
+      this.setupFragment(id);
     }
   }
 
@@ -125,9 +129,16 @@ export class ObjectComponent implements OnInit, OnDestroy {
       );
   }
 
+  private setupFragment(fragment: string) {
+    this._standalone = fragment === this.standaloneFragment ? this.contextId : null;
+    if (!this._standalone) {
+      this.setupSelectedItem(fragment || this.contextId);
+    }
+  }
+
   ngOnInit() {
-    this.route.params.pipe(takeUntilDestroy(this)).subscribe((params: any) => {
-      if (params.id) {
+    this.route.params.pipe(untilDestroyed(this)).subscribe((params: any) => {
+      if (params.id && this.contextId !== params.id) {
         // saving context ID in its own var, so while the dms object is loading
         // we are able to properly set the selected item when there is no fragment ist available.
         this.contextId = params.id;
@@ -135,21 +146,16 @@ export class ObjectComponent implements OnInit, OnDestroy {
       }
     });
     // query params may provide a query to be executed within this state
-    this.route.queryParams.pipe(takeUntilDestroy(this)).subscribe((queryParams: any) => {
+    this.route.queryParams.pipe(untilDestroyed(this)).subscribe((queryParams: any) => {
       this.contextSearchQuery = !!queryParams.query ? new SearchQuery(JSON.parse(queryParams.query)) : null;
       this.appSearch.setQuery(this.contextSearchQuery);
     });
     // fragments are used to identify the selected item within the context
-    this.route.fragment.pipe(takeUntilDestroy(this)).subscribe((fragment: any) => {
-      this._standalone = fragment === this.standaloneFragment ? this.contextId : null;
-      if (!this._standalone) {
-        this.setupSelectedItem(fragment || this.contextId);
-      }
-    });
+    this.route.fragment.pipe(untilDestroyed(this)).subscribe((fragment: any) => this.setupFragment(fragment));
 
     this.eventService
       .on(YuvEventType.DMS_OBJECT_DELETED)
-      .pipe(takeUntilDestroy(this))
+      .pipe(untilDestroyed(this))
       .subscribe((event) => {
         if (this.route.snapshot.fragment && this.route.snapshot.fragment === event.data?.id) {
           // get rid of the fragment once the deleted item has the same ID

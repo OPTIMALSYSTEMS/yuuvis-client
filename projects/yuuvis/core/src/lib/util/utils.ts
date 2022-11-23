@@ -1,5 +1,5 @@
 import { NavigationExtras, Router } from '@angular/router';
-import { EMPTY as observableEmpty, throwError as observableThrowError } from 'rxjs';
+import { EMPTY as observableEmpty, throwError } from 'rxjs';
 import { YuvError } from '../model/yuv-error.model';
 import { FormattedMailTo, Sort } from './utils.helper.enum';
 
@@ -202,7 +202,7 @@ export class Utils {
     const f = (error) => {
       const _error = callback && callback(error);
       const _skipNotification = skipNotification && skipNotification(error);
-      return observableThrowError(new YuvError(_error instanceof Error ? _error : error, name, message, _skipNotification));
+      return throwError(() => new YuvError(_error instanceof Error ? _error : error, name, message, _skipNotification));
     };
     return f;
   }
@@ -220,7 +220,7 @@ export class Utils {
   public static catch(callback?: (error) => any, name?: string, message?: string, skipNotification?: boolean) {
     const f = (error) => {
       const _error = callback && callback(error);
-      return observableThrowError(new YuvError(_error instanceof Error ? _error : error, name, message, skipNotification));
+      return throwError(() => new YuvError(_error instanceof Error ? _error : error, name, message, skipNotification));
     };
     return f;
   }
@@ -363,5 +363,15 @@ export class Utils {
 
   public static openWindow(url: string = '', target = '_blank', features?: string): Window {
     return window.open(url.match(new RegExp('^/.+')) ? url.replace(new RegExp('^/'), '') : url, target, features); // relative to host
+  }
+
+  public static downloadBlob(content: any, mimeType: string, filename: string): void {
+    const a = document.createElement('a');
+    const blob = new Blob([content], { type: mimeType });
+    const url = URL.createObjectURL(blob);
+    a.setAttribute('href', url);
+    a.setAttribute('download', filename);
+    a.click();
+    URL.revokeObjectURL(url);
   }
 }

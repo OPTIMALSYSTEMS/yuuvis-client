@@ -225,6 +225,17 @@ $avatar-size-small: 80px;
               }
             }
 
+            button.dType {
+              display: flex;
+              flex-flow: row nowrap;
+
+              &:disabled {
+                background-color: var(--color-accent);
+                color: #fff;
+                opacity: 1;
+              }
+            }
+
             ::ng-deep {
               button {
                 background-color: var(--panel-background-grey);

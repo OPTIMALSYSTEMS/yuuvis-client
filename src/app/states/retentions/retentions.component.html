@@ -1,39 +1,38 @@
-<ng-container [yuvTitle]="('yuv.client.state.retentions.title' | translate)"></ng-container>
-<yuv-responsive-master-slave class="state" [layoutOptionsKey]="layoutOptionsKey" [slaveActive]=" objectDetailsID">
+<ng-container [yuvTitle]="'yuv.client.state.retentions.title' | translate"></ng-container>
+<yuv-responsive-master-slave class="state" [layoutOptionsKey]="layoutOptionsKey" [slaveActive]="objectDetailsID" [yuvBusyOverlay]="loadingSpinner">
+  <div class="retention-list yuv-master panel">
+    <yuv-panel [title]="'yuv.client.state.retentions.title' | translate">
+      <div class="status">
+        <button class="toggle-btn" [ngClass]="{ active: !currentFilter }" (click)="setFilter(null)">
+          {{ 'yuv.client.state.retentions.list.filter.all' | translate }}
+        </button>
+        <button class="toggle-btn" [ngClass]="{ active: currentFilter === 'next' }" (click)="setFilter('next')">
+          {{ 'yuv.client.state.retentions.list.filter.next' | translate }}
+        </button>
+        <button class="toggle-btn" [ngClass]="{ active: currentFilter === 'destruct' }" (click)="setFilter('destruct')">
+          {{ 'yuv.client.state.retentions.list.filter.destruct' | translate }}
+        </button>
+      </div>
 
-    <div class="retention-list yuv-master panel">
-        <yuv-panel [title]="'yuv.client.state.retentions.title' | translate">
+      <yuv-action-menu-bar class="actions" yuvOfflineDisabled>
+        <yuv-icon class="export" [ngClass]="{'badge': searchResultComponent?.sortOptionsChanged}" [icon]="'download'"
+          (click)="exportCSV()" [title]="'yuv.framework.form.table.options.btn.csv' | translate">
+        </yuv-icon>
+        <yuv-icon (click)="refresh()" [title]="'yuv.framework.list.refresh' | translate" class="button refresh-button"
+          [icon]="'refresh'"></yuv-icon>
 
+        <yuv-action-menu-button (click)="openActionMenu()" [loading]="loading" [disabled]="!selectedItems?.length">
+        </yuv-action-menu-button>
+      </yuv-action-menu-bar>
 
-            <div class="status">
-                <button class="toggle-btn" [ngClass]="{active: !currentFilter}"
-                    (click)="setFilter(null)">{{'yuv.client.state.retentions.list.filter.all'|translate}}</button>
-                <button class="toggle-btn" [ngClass]="{active: currentFilter === 'next'}"
-                    (click)="setFilter('next')">{{'yuv.client.state.retentions.list.filter.next'|translate}}</button>
-                <button class="toggle-btn" [ngClass]="{active: currentFilter === 'destruct'}"
-                    (click)="setFilter('destruct')">{{'yuv.client.state.retentions.list.filter.destruct'|translate}}</button>
-            </div>
+      <yuv-search-result class="content" applyColumnConfig="true" [columnConfig]="columnConfig" [query]="searchQuery"
+        [preSelectItems]="selectedItems" [layoutOptionsKey]="layoutOptionsKey" [disableFilterPanel]="true"
+        (itemsSelected)="select($event)" (rowDoubleClicked)="onRowDoubleClicked($event)" [plugins]="searchPlugins">
+      </yuv-search-result>
+    </yuv-panel>
+    <yuv-action-menu [selection]="actionMenuSelection" [(visible)]="actionMenuVisible" [dark]="true"></yuv-action-menu>
+  </div>
 
-
-            <yuv-action-menu-bar class="actions" yuvOfflineDisabled>
-                <yuv-icon (click)="refresh()" [title]="'yuv.framework.list.refresh' | translate"
-                    class="button refresh-button" [icon]="'refresh'"></yuv-icon>
-
-                <yuv-action-menu-button (click)="openActionMenu()" [loading]="loading"
-                    [disabled]="!selectedItems?.length">
-                </yuv-action-menu-button>
-            </yuv-action-menu-bar>
-
-            <yuv-search-result class="content" [query]="searchQuery" applyColumnConfig="true"
-                [columnConfig]="columnConfig" [preSelectItems]="selectedItems" [layoutOptionsKey]="layoutOptionsKey"
-                [disableFilterPanel]="true" (itemsSelected)="select($event)"
-                (rowDoubleClicked)="onRowDoubleClicked($event)">
-            </yuv-search-result>
-        </yuv-panel>
-        <yuv-action-menu [selection]="actionMenuSelection" [(visible)]="actionMenuVisible" [dark]="true"></yuv-action-menu>
-    </div>
-
-    <yuv-object-details class="yuv-slave panel" [objectId]="objectDetailsID" [layoutOptionsKey]="layoutOptionsKey"
-        [plugins]="plugins">
-    </yuv-object-details>
+  <yuv-object-details class="yuv-slave panel" [objectId]="objectDetailsID" [layoutOptionsKey]="layoutOptionsKey"
+    [plugins]="plugins"> </yuv-object-details>
 </yuv-responsive-master-slave>

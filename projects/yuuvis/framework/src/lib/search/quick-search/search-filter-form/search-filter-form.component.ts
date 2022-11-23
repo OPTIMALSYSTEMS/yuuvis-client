@@ -13,7 +13,7 @@ import {
 } from '@yuuvis/core';
 import { Subject, Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
-import { takeUntilDestroy } from 'take-until-destroy';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { Selectable } from '../../../grouped-select';
 import { ObjectFormControl } from '../../../object-form/object-form.model';
 import { Situation } from '../../../object-form/object-form.situation';
@@ -23,6 +23,7 @@ import { IconRegistryService } from './../../../common/components/icon/service/i
 import { ObjectFormControlWrapper } from './../../../object-form/object-form.interface';
 import { clear, dragHandle } from './../../../svg.generated';
 
+@UntilDestroy()
 @Component({
   selector: 'yuv-search-filter-form',
   templateUrl: './search-filter-form.component.html',
@@ -98,7 +99,7 @@ export class SearchFilterFormComponent implements OnInit, OnDestroy {
   private initSearchFieldsForm() {
     // object type field form (form holding the query fields)
     this.searchFieldsForm = this.fb.group({});
-    this.formSubscription = this.searchFieldsForm.valueChanges.pipe(takeUntilDestroy(this)).subscribe((formValue) => {
+    this.formSubscription = this.searchFieldsForm.valueChanges.pipe(untilDestroyed(this)).subscribe((formValue) => {
       this.onSearchFieldFormChange();
     });
   }

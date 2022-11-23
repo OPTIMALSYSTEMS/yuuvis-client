@@ -1,9 +1,9 @@
-import { AfterViewInit, Component, ElementRef, EventEmitter, forwardRef, HostBinding, HostListener, Input, Output, ViewChild } from '@angular/core';
-import { ControlValueAccessor, NG_VALIDATORS, NG_VALUE_ACCESSOR, UntypedFormControl, Validator } from '@angular/forms';
+import { AfterViewInit, Component, EventEmitter, forwardRef, HostBinding, HostListener, Input, Output, ViewChild } from '@angular/core';
+import { ControlValueAccessor, UntypedFormControl, NG_VALIDATORS, NG_VALUE_ACCESSOR, Validator } from '@angular/forms';
 import { Classification, SystemService, UserService, YuvUser } from '@yuuvis/core';
 import { AutoComplete } from 'primeng/autocomplete';
-import { EMPTY, forkJoin, Observable, of } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { forkJoin, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { IconRegistryService } from '../../../common/components/icon/service/iconRegistry.service';
 import { organization } from '../../../svg.generated';
 
@@ -38,7 +38,6 @@ import { organization } from '../../../svg.generated';
 })
 export class OrganizationComponent implements ControlValueAccessor, Validator, AfterViewInit {
   @ViewChild('autocomplete') autoCompleteInput: AutoComplete;
-  inputElement: ElementRef;
   minLength = 2;
 
   private isValidInput = true;
@@ -133,39 +132,53 @@ export class OrganizationComponent implements ControlValueAccessor, Validator, A
   registerOnTouched(fn: any): void {}
 
   private propagate() {
-    this._inputDisabled = !this.multiselect && this.innerValue.length === 1;
+    this.disableInput();
     this.propagateChange(this.value);
   }
 
-  resolveFn(value: string | string[]) {
-    const map: Observable<YuvUser>[] = (Array.isArray(value) ? value : [value]).map((v: string) => {
-      const match = this.innerValue.find((iv: YuvUser) => iv.id === v);
-      return match ? of(match) : this.userService.getUserById(v).pipe(catchError((e) => of(new YuvUser({ id: v, title: v, image: null }, null))));
-    });
+  private disableInput() {
+    this._inputDisabled = !this.multiselect && this.innerValue.length === 1;
+  }
 
+  resolveFn(value: any) {
+    const map = (value instanceof Array ? value : [value]).map((v) => {
+      const match = this.innerValue.find((iv) => iv.id === v);
+      return match
+        ? of(match)
+        : this.userService.getUserById(v).pipe(
+            catchError((e) =>
+              of(
+                new YuvUser(
+                  {
+                    id: v,
+                    title: v,
+                    image: null
+                  },
+                  null
+                )
+              )
+            )
+          );
+    });
     return forkJoin(map).subscribe((data) => {
       this.innerValue = data;
-      this.autocompleteRes.push(...data);
+      this.disableInput();
       setTimeout(() => this.autoCompleteInput.cd.markForCheck());
     });
   }
 
   autocompleteFn(evt) {
     if (evt.query.length >= this.minLength) {
-      this.userService
-        .queryUser(evt.query, this.excludeMe, this.filterRoles)
-        .pipe(
-          catchError(() => {
-            this.autocompleteRes = [];
-            this.propagateValidity(this.autocompleteRes.length > 0);
-            return EMPTY;
-          }),
-          map((users: YuvUser[]) => {
-            this.autocompleteRes = users.filter((user) => !this.innerValue.some((value) => value.id === user.id));
-            this.propagateValidity(this.autocompleteRes.length > 0);
-          })
-        )
-        .subscribe();
+      this.userService.queryUser(evt.query, this.excludeMe, this.filterRoles).subscribe({
+        next: (users: YuvUser[]) => {
+          this.autocompleteRes = users.filter((user) => !this.innerValue.some((value) => value.id === user.id));
+          this.propagateValidity(this.autocompleteRes.length > 0);
+        },
+        error: (e) => {
+          this.autocompleteRes = [];
+          this.propagateValidity(this.autocompleteRes.length > 0);
+        }
+      });
     } else {
       this.autocompleteRes = [];
     }
@@ -184,31 +197,25 @@ export class OrganizationComponent implements ControlValueAccessor, Validator, A
   }
 
   // handle selection changes to the model
-  onSelect(value: unknown) {
+  onSelect(value) {
     if (this.multiselect) {
       this.value = this.innerValue.map((v) => v.id);
     } else {
       // internal autocomplete control is always set to multiselect
       // so the resolved value is always an array
+      this.innerValue = this.innerValue.slice(-1);
       this.value = this.innerValue[0].id;
     }
     this.propagate();
   }
 
-  private clearSingleValue(): void {
-    this.innerValue = [];
-    this.autoCompleteInput.inputEL.nativeElement.value = '';
-    this.propagateValidity(true);
-  }
-
   // handle selection changes to the model
-  onUnselect(value = undefined) {
-    if (value && this.multiselect) {
-      this.innerValue = this.innerValue.filter((v) => v.id !== value.id);
-      this.value = this.innerValue.map((v) => v.id);
-    } else {
-      this.value = null;
-      this.clearSingleValue();
+  onUnselect(value) {
+    this.innerValue = this.innerValue.filter((v) => v.id !== value.id);
+    let _value = this.innerValue.map((v) => v.id);
+    this.value = this.multiselect ? _value : null;
+    if (!this.multiselect) {
+      this.clearInnerInput();
     }
     this.propagate();
   }
@@ -217,24 +224,16 @@ export class OrganizationComponent implements ControlValueAccessor, Validator, A
     this.clearInnerInput();
   }
 
-  private validInput(result: YuvUser[]): boolean {
-    return result.map((res) => res.title).includes(this.autoCompleteInput.inputEL.nativeElement.value);
-  }
-
   private clearInnerInput() {
     if (this.autoCompleteInput.multiInputEL) {
       this.autoCompleteInput.multiInputEL.nativeElement.value = '';
       this.propagateValidity(true);
-    } else if (this.autoCompleteInput.inputEL && (!this.validInput(this.autocompleteRes) || !this.validInput(this.innerValue))) {
-      this.clearSingleValue();
     }
   }
 
   ngAfterViewInit() {
-    this.inputElement = this.autoCompleteInput[this.multiselect ? 'multiInputEL' : 'inputEL'];
-
     if (this.autofocus) {
-      setTimeout(() => this.inputElement?.nativeElement.focus());
+      setTimeout(() => this.autoCompleteInput.multiInputEL?.nativeElement.focus());
     }
   }
 }

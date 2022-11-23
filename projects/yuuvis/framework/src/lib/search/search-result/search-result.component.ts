@@ -18,7 +18,7 @@ import {
 } from '@yuuvis/core';
 import { Observable, of } from 'rxjs';
 import { switchMap, tap } from 'rxjs/operators';
-import { takeUntilDestroy } from 'take-until-destroy';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { ResponsiveDataTableComponent, ViewMode } from '../../components/responsive-data-table/responsive-data-table.component';
 import { ResponsiveTableData } from '../../components/responsive-data-table/responsive-data-table.interface';
@@ -38,7 +38,8 @@ export interface FilterPanelConfig {
  * @example
  * <yuv-search-result [query]="searchQuery" (itemsSelected)="select($event)"></yuv-search-result>
  */
-@Component({
+ @UntilDestroy()
+ @Component({
   selector: 'yuv-search-result',
   templateUrl: './search-result.component.html',
   styleUrls: ['./search-result.component.scss'],
@@ -83,6 +84,8 @@ export class SearchResultComponent implements OnDestroy {
   get filterPanelConfig() {
     return this._filterPanelConfig;
   }
+
+  @Input() plugins: Observable<any[]>;
 
   @Input() responsiveTableData: Partial<ResponsiveTableData>;
 
@@ -192,7 +195,7 @@ export class SearchResultComponent implements OnDestroy {
     this.eventService
       .on(YuvEventType.DMS_OBJECT_UPDATED, YuvEventType.DMS_OBJECT_DELETED)
       .pipe(
-        takeUntilDestroy(this),
+        untilDestroyed(this),
         tap((e) => this.objectEvent(e))
       )
       .subscribe((e: YuvEvent) => {});
@@ -226,7 +229,6 @@ export class SearchResultComponent implements OnDestroy {
   }
 
   gutterDragEnd(evt: any) {
-    console.log(evt);
     if (this._filterPanelConfig.width !== evt.sizes[0]) {
       this._filterPanelConfig.width = evt.sizes[0];
       this.filterPanelConfigChanged.emit(this._filterPanelConfig);
@@ -264,7 +266,6 @@ export class SearchResultComponent implements OnDestroy {
           });
 
         q.fields = [
-          ...q.fields,
           // required for SingleCellRendering allthough the object may not have those fields
           this.objectTypeBaseProperties.title,
           this.objectTypeBaseProperties.description,
@@ -361,17 +362,11 @@ export class SearchResultComponent implements OnDestroy {
 
   goToPage(page: number) {
     this.busy = true;
-    this.searchService.getPage(this._searchQuery, page).subscribe(
-      (res: SearchResult) => {
-        this.createTableData(res, page);
-      },
-      (err) => {
-        // TODO: how should errors be handles in case hat loading pages fail
-      },
-      () => {
-        this.busy = false;
-      }
-    );
+    this.searchService.getPage(this._searchQuery, page).subscribe({
+      next: (res: SearchResult) => this.createTableData(res, page),
+      error: (err) => {}, // TODO: how should errors be handles in case hat loading pages fail
+      complete: () => (this.busy = false)
+    });
   }
 
   private setSelection(ids: string[]) {

@@ -58,7 +58,8 @@ export class PluginsService {
     },
     {
       mimeType: ['text/plain'],
-      viewer: 'api/monaco/?path=${path}&mimeType=${mimeType}&fileExtension=${fileExtension}&lang=${lang}&theme=${theme}&accentColor=${accentColor}'
+      viewer:
+        'api/monaco/?path=${path}&mimeType=${mimeType}&fileExtension=${fileExtension}&lang=${lang}&theme=${theme}&accentColor=${accentColor}&language=plaintext'
     },
     {
       mimeType: ['text/xml', 'application/xml'],
@@ -70,7 +71,7 @@ export class PluginsService {
         'api/monaco/?path=${path}&mimeType=${mimeType}&fileExtension=${fileExtension}&lang=${lang}&theme=${theme}&accentColor=${accentColor}&language=java'
     },
     {
-      mimeType: ['text/javascript'],
+      mimeType: ['text/javascript', 'application/javascript'],
       viewer:
         'api/monaco/?path=${path}&mimeType=${mimeType}&fileExtension=${fileExtension}&lang=${lang}&theme=${theme}&accentColor=${accentColor}&language=javascript'
     },
@@ -324,7 +325,10 @@ export class PluginsService {
     return {
       components: {
         get: (id) => this.componentRegister.get(id),
-        getParent: (id) => this.componentRegister.get(id)?.parent
+        getParent: (id) => this.componentRegister.get(id)?.parent,
+        all: () => [...this.componentRegister.values()],
+        activeForms: () => [...this.componentRegister.values()].filter((v) => v.id.startsWith('#form_')),
+        activeGrids: () => [...this.componentRegister.values()].filter((v) => v.id.startsWith('#grid_'))
       },
       router: {
         get: () => this.ngZone.run(() => this.router),

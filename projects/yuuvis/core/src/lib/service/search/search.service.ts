@@ -1,13 +1,14 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Observable, tap } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 import { RangeValue } from '../../model/range-value.model';
+import { Utils } from '../../util/utils';
 import { ApiBase } from '../backend/api.enum';
 import { BackendService } from '../backend/backend.service';
 import { BaseObjectTypeField, ContentStreamField } from '../system/system.enum';
 import { SystemService } from '../system/system.service';
 import { SearchFilter, SearchQuery } from './search-query.model';
-import { AggregateResult, Aggregation, SearchResult, SearchResultContent, SearchResultItem } from './search.service.interface';
+import { AggregateResult, Aggregation, SearchQueryProperties, SearchResult, SearchResultContent, SearchResultItem } from './search.service.interface';
 /**
  * Providing searching of dms objects.
  */
@@ -17,6 +18,7 @@ import { AggregateResult, Aggregation, SearchResult, SearchResultContent, Search
 export class SearchService {
   private lastSearchQuery: SearchQuery;
   private _datetimeFields = [];
+  private _dateFields = [];
 
   /**
    * @ignore
@@ -25,6 +27,9 @@ export class SearchService {
     this.systemService.system$.subscribe((system) => {
       this._datetimeFields = Object.values(system.allFields)
         .filter((f: any) => f.resolution !== 'date' && f.propertyType === 'datetime')
+        .map((f: any) => f.id);
+      this._dateFields = Object.values(system.allFields)
+        .filter((f: any) => f.resolution === 'date' && f.propertyType === 'datetime')
         .map((f: any) => f.id);
     });
   }
@@ -118,7 +123,6 @@ export class SearchService {
           if (o.properties[key].resolvedValues) {
             value.forEach((v) => {
               Object.keys(v).forEach((k) => {
-                // const resValue = o.properties[key].resolvedValues[v[k]];
                 const resValue = Array.isArray(v[k]) ? v[k].map((i) => o.properties[key].resolvedValues[i]) : o.properties[key].resolvedValues[v[k]];
                 if (resValue) {
                   v[`${k}_title`] = resValue;
@@ -201,6 +205,13 @@ export class SearchService {
   private transformDateFilters(queryJson: any) {
     queryJson.filters?.forEach((f: any) => {
       if (f.filters) return this.transformDateFilters(f);
+
+      if (f.v1 && f.v1.length > 10 && this._dateFields.includes(f.f)) {
+        f.v1 = Utils.transformDate(f.v1);
+        f.v2 = f.v2 && Utils.transformDate(f.v2);
+        if (f.o === SearchFilter.OPERATOR.EQUAL && f.v2) f.o = SearchFilter.OPERATOR.INTERVAL_INCLUDE_BOTH;
+      }
+
       if (f.v1 && this._datetimeFields.includes(f.f)) {
         const from = (v: any) => v && new Date(v).toISOString(); // :00.000Z
         const to = (v: any) => v && new Date(new Date(v).getTime() + 60 * 1000 - 1).toISOString(); // :59.999Z
@@ -235,5 +246,15 @@ export class SearchService {
       }
     });
     return queryJson;
+  }
+
+  exportSearchResult(searchquery: SearchQueryProperties, title?: string): Observable<String> {
+    return this.backend.post('/dms/objects/export', searchquery, ApiBase.apiWeb, { responseType: 'text', observe: 'response' }).pipe(
+      tap(({ body, headers }: any) =>
+        Utils.downloadBlob(body, `${headers.get('content-type')}`, title ? title : headers.get('content-disposition').match(new RegExp(/([^=]+$)/, 'g'))[0])
+      ),
+      map(({ body }: any) => body as string),
+      catchError((error) => '')
+    );
   }
 }

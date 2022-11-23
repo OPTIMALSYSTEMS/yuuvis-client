@@ -27,7 +27,7 @@ import {
 import { TabPanel } from 'primeng/tabview';
 import { Observable } from 'rxjs';
 import { finalize } from 'rxjs/operators';
-import { takeUntilDestroy } from 'take-until-destroy';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { TabPanelComponent } from '../../components/responsive-tab-container/tab-panel.component';
 import { ComponentStateService } from '../../services/component-state/component-state.service';
@@ -55,7 +55,8 @@ import { FileDropOptions } from './../../directives/file-drop/file-drop.directiv
  * @example
  * <yuv-object-details [objectId]="'0815'"></yuv-object-details>
  */
-@Component({
+ @UntilDestroy()
+ @Component({
   selector: 'yuv-object-details',
   templateUrl: './object-details.component.html',
   styleUrls: ['./object-details.component.scss'],
@@ -82,7 +83,6 @@ export class ObjectDetailsComponent implements OnDestroy {
   retentionEndDate: Date;
   retentionEnded: boolean;
 
-  retentionDestructUntil: Date;
   _dmsObject: DmsObject;
   private _objectId: string;
 
@@ -246,7 +246,7 @@ export class ObjectDetailsComponent implements OnDestroy {
 
     this.eventService
       .on(YuvEventType.DMS_OBJECT_UPDATED)
-      .pipe(takeUntilDestroy(this))
+      .pipe(untilDestroyed(this))
       .subscribe((e: YuvEvent) => {
         const dmsObject = e.data as DmsObject;
         if (dmsObject?.id === this._dmsObject?.id) {

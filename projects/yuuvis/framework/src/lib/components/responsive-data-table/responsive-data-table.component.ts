@@ -4,10 +4,11 @@ import { Component, ElementRef, EventEmitter, HostBinding, HostListener, Input, 
 import { BaseObjectTypeField, DeviceService, PendingChangesService, Utils } from '@yuuvis/core';
 import { ResizedEvent } from 'angular-resize-event';
 import { Observable, ReplaySubject } from 'rxjs';
-import { debounceTime } from 'rxjs/operators';
-import { takeUntilDestroy } from 'take-until-destroy';
+import { debounceTime, map } from 'rxjs/operators';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { ObjectTypeIconComponent } from '../../common/components/object-type-icon/object-type-icon.component';
 import { LocaleDatePipe } from '../../pipes/locale-date.pipe';
+import { PluginsService } from '../../plugins/plugins.service';
 import { ColumnSizes } from '../../services/grid/grid.interface';
 import { SingleCellRendererComponent } from '../../services/grid/renderer/single-cell-renderer/single-cell-renderer.component';
 import { LayoutService } from '../../services/layout/layout.service';
@@ -46,6 +47,7 @@ export interface ResponsiveDataTableOptions {
             (viewModeChanged)="onViewModeChanged.emit($event)" (sortChanged)="onSortChanged($event)">
           </yuv-responsive-data-table>
  */
+@UntilDestroy()
 @Component({
   selector: 'yuv-responsive-data-table',
   templateUrl: './responsive-data-table.component.html',
@@ -54,6 +56,7 @@ export interface ResponsiveDataTableOptions {
   providers: [LocaleDatePipe]
 })
 export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
+  private id = '#grid_' + Utils.uuid();
   // internal subject for element size changes used for debouncing resize events
   private resizeSource = new ReplaySubject<ResizedEvent>();
   public resize$: Observable<ResizedEvent> = this.resizeSource.asObservable();
@@ -84,15 +87,21 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
    * will be used to store component specific settings using the layout service.
    */
   private _layoutOptionsKey: string;
-  @Input() set layoutOptionsKey(lok: string) {
+  @Input()
+  set layoutOptionsKey(lok: string) {
     this._layoutOptionsKey = lok;
-    this.layoutService.loadLayoutOptions(lok, 'yuv-responsive-data-table').subscribe((o: ResponsiveDataTableOptions) => {
-      this._layoutOptions = o || {};
-      if (this._layoutOptions.viewMode) {
-        this.setupViewMode(this._layoutOptions.viewMode);
-      }
-      this.applyGridOption(true);
-    });
+    this.layoutService
+      .loadLayoutOptions(lok, 'yuv-responsive-data-table')
+      .pipe(
+        map((o: ResponsiveDataTableOptions) => {
+          this._layoutOptions = o || {};
+          if (this._layoutOptions.viewMode) {
+            this.setupViewMode(this._layoutOptions.viewMode);
+          }
+          this.applyGridOption(true);
+        })
+      )
+      .subscribe();
   }
 
   /**
@@ -101,11 +110,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
   @Input()
   set data(data: ResponsiveTableData) {
     this._data = data;
-    if (this.gridOptions) {
-      this.applyGridOption();
-    } else {
-      this.setupGridOptions();
-    }
+    this.gridOptions ? this.applyGridOption() : this.setupGridOptions();
   }
   get data(): ResponsiveTableData {
     return this._data;
@@ -216,12 +221,14 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
     public gridApi: GridService,
     private layoutService: LayoutService,
     private deviceService: DeviceService,
-    private _ngZone: NgZone
+    private _ngZone: NgZone,
+    private pluginsService: PluginsService
   ) {
+    this.pluginsService.register(this);
     // subscribe to the whole components size changing
     this.resize$
       .pipe(
-        takeUntilDestroy(this)
+        untilDestroyed(this)
         // debounceTime(500)
       )
       .subscribe(({ newRect }: ResizedEvent) => {
@@ -236,7 +243,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
         nodes?.length && this.ensureVisibility(nodes[0].rowIndex);
       });
     // subscribe to columns beeing resized
-    this.columnResize$.pipe(takeUntilDestroy(this), debounceTime(500)).subscribe(() => {
+    this.columnResize$.pipe(untilDestroyed(this), debounceTime(500)).subscribe(() => {
       if (this.isStandard) {
         this.columnResized.emit({
           columns: this.gridOptions.columnApi.getColumnState().map((columnState) => ({
@@ -253,7 +260,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
     });
 
     // subscribe to pending hanges
-    this.pendingChanges.tasks$.pipe(takeUntilDestroy(this)).subscribe((tasks) => this.gridOptions && (this.gridOptions.suppressCellSelection = !!tasks.length));
+    this.pendingChanges.tasks$.pipe(untilDestroyed(this)).subscribe((tasks) => this.gridOptions && (this.gridOptions.suppressCellFocus = !!tasks.length));
   }
 
   getRowHeight(params: RowHeightParams): number {
@@ -448,7 +455,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
       columnDefs: this._layoutOptionsKey ? [] : this._data.columns,
       headerHeight: this.settings.headerHeight.standard,
       rowHeight: this.settings.rowHeight.standard,
-      suppressCellSelection: false,
+      suppressCellFocus: false,
       rowSelection: this._data.selectType || 'single',
       suppressNoRowsOverlay: true,
       multiSortKey: 'ctrl',
@@ -489,9 +496,9 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
 
   onMouseDown($event: MouseEvent | any) {
     // TODO: find the solution for mobile / touch event
-    if (this.deviceService.isDesktop && $event.button === 0 && this.gridOptions && this.gridOptions.suppressCellSelection) {
+    if (this.deviceService.isDesktop && $event.button === 0 && this.gridOptions && this.gridOptions.suppressCellFocus) {
       if (!this.pendingChanges.check()) {
-        this.gridOptions.suppressCellSelection = false;
+        this.gridOptions.suppressCellFocus = false;
 
         this.selectEvent($event);
       } else {
@@ -506,7 +513,6 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
     if (colEl) {
       this.selectRows([colEl.parentElement.getAttribute('row-id')], colEl.getAttribute('col-id'), false);
       this.onSelectionChanged(null);
-      console.log(colEl.parentElement.getAttribute('row-id'));
     }
   }
 
@@ -524,5 +530,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
 
   ngOnInit() {}
 
-  ngOnDestroy() {}
+  ngOnDestroy() {
+    this.pluginsService.unregister(this);
+  }
 }

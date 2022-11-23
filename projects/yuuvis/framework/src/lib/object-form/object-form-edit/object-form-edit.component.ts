@@ -15,7 +15,7 @@ import {
 } from '@yuuvis/core';
 import { Observable, of } from 'rxjs';
 import { finalize, map, switchMap } from 'rxjs/operators';
-import { takeUntilDestroy } from 'take-until-destroy';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { FloatingSotSelectInput, FloatingSotSelectItem } from '../../floating-sot-select/floating-sot-select.interface';
 import { PopoverConfig } from '../../popover/popover.interface';
 import { PopoverRef } from '../../popover/popover.ref';
@@ -35,7 +35,8 @@ import { ObjectFormComponent } from './../object-form/object-form.component';
  * <yuv-object-form-edit [dmsObject]="dmsObject" (indexDataSaved)="onIndexDataSaved($event)"></yuv-object-form-edit>
  */
 
-@Component({
+ @UntilDestroy()
+ @Component({
   selector: 'yuv-object-form-edit',
   templateUrl: './object-form-edit.component.html',
   styleUrls: ['./object-form-edit.component.scss']
@@ -135,7 +136,7 @@ export class ObjectFormEditComponent implements OnDestroy {
     private popoverService: PopoverService
   ) {
     this.setMessages();
-    this.translate.onLangChange.pipe(takeUntilDestroy(this)).subscribe((_) => {
+    this.translate.onLangChange.pipe(untilDestroyed(this)).subscribe((_) => {
       this.setMessages();
     });
   }

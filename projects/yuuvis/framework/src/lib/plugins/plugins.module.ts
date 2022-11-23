@@ -9,12 +9,13 @@ import { YuvPopoverModule } from './../popover/popover.module';
 import { YuvComponentRegister } from './../shared/utils/utils';
 import { PluginActionViewComponent } from './plugin-action-view.component';
 import { PluginActionComponent } from './plugin-action.component';
+import { PluginSearchComponent } from './plugin-search.component';
 import { PluginTriggerComponent } from './plugin-trigger.component';
 import { PluginComponent } from './plugin.component';
 import { PluginGuard } from './plugin.guard';
 import { PluginsService } from './plugins.service';
 
-const components = [PluginComponent, PluginActionComponent, PluginActionViewComponent, PluginTriggerComponent];
+const components = [PluginComponent, PluginActionComponent, PluginActionViewComponent, PluginSearchComponent, PluginTriggerComponent];
 
 YuvComponentRegister.register(components);
 
