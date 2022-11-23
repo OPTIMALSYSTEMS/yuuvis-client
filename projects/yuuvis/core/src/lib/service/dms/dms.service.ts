@@ -270,8 +270,19 @@ export class DmsService {
    * @param ids List of IDs of objects to be deleted
    */
   deleteDmsObjects(ids: string[], silent = false): Observable<string[]> {
-    return this.batchDelete(ids)
-      .pipe(map((_res: any[]) => _res.map((res, i) => (res?._error ? { ...res, id: ids[i] } : ids[i]))))
+    return this.backend
+      .delete('/dms/objects', ApiBase.core, {
+        body: {
+          objects: ids.map((id) => ({
+            properties: {
+              'system:objectId': {
+                value: id
+              }
+            }
+          }))
+        }
+      })
+      .pipe(map((_) => ids))
       .pipe(this.triggerEvents(YuvEventType.DMS_OBJECT_DELETED, null, silent));
   }
 

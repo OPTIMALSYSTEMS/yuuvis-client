@@ -5,7 +5,7 @@ import { catchError, finalize, shareReplay, tap } from 'rxjs/operators';
 import { ConfigService } from '../config/config.service';
 import { Logger } from '../logger/logger';
 import { ApiBase } from './api.enum';
-import { HttpOptions } from './backend.interface';
+import { HttpDeleteOptions, HttpOptions } from './backend.interface';
 
 /**
  * Service for providing an yuuvis Backend
@@ -118,7 +118,7 @@ export class BackendService {
    * @param requestOptions Additional request options
    * @returns The return value of the target DELETE endpoint
    */
-  public delete(uri: string, base?: string, requestOptions?: HttpOptions): Observable<any> {
+  public delete(uri: string, base?: string, requestOptions?: HttpDeleteOptions): Observable<any> {
     return this.http.delete(this.getApiBase(base) + uri, this.getHttpOptions(requestOptions));
   }
 
