@@ -55,7 +55,6 @@ export class ColumnConfigComponent implements OnInit {
   // Columns that are part of the current column configuration
   columnConfig: ColumnConfig;
   moreColumnsAvailable: boolean;
-  showCancelButton: boolean;
   columnConfigDirty: boolean;
   busy: boolean;
   hasGlobal: boolean = true;
@@ -272,7 +271,5 @@ export class ColumnConfigComponent implements OnInit {
       .sort(Utils.sortValues('label'));
   }
 
-  ngOnInit() {
-    this.showCancelButton = !!this.cancel.observers.length;
-  }
+  ngOnInit() {}
 }
