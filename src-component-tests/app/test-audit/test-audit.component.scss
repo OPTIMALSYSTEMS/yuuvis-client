@@ -14,10 +14,14 @@
       grid-template-columns: 1fr;
       grid-template-areas: 'header' 'main';
 
+      &:last-child {
+        border-right: 1px solid var(--panel-divider-color);
+      }
       h2 {
         grid-area: header;
         margin: 0;
         padding: var(--app-pane-padding);
+        background-color: var(--panel-divider-color);
       }
       yuv-audit {
         grid-area: main;

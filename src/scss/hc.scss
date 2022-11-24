@@ -1,5 +1,3 @@
-@import '~@yuuvis/framework/framework.css';
-
 .dark.contrast {
   --panels-background-rgb: 0, 0, 0;
   --panel-divider-color-rgb: 111, 195, 223;
@@ -33,56 +31,19 @@
   //   --button-secondary-background: rgba(255, 255, 255, 0.1);
   //   --button-secondary-background-hover: rgba(255, 255, 255, 0.15);
   //   --button-background-hover: rgba(255, 255, 255, 0.06);
-}
 
-body {
-  margin: 0;
-  padding: 0;
-  height: 100vh;
-}
-
-.yuv-test-container {
-  display: flex;
-  flex-flow: column;
-
-  .testing-controls {
-    // position: absolute;
-    // left: 0;
-    // top: 0;
-    padding: 10px;
-    margin-bottom: 20px;
-
-    .buttons {
-      display: flex;
-      flex-flow: row wrap;
-      padding: 4px;
-      margin-bottom: 8px;
-
-      button {
-        flex: 0 0 auto;
-        font-family: monospace;
-        background-color: rgba(0, 0, 0, 0.1);
-        margin: 2px;
-        &.current {
-          background-color: black;
-          color: white;
-        }
-      }
-    }
-
-    .group {
-      display: inline-block;
-      border: 1px dashed rgba(0, 0, 0, 0.2);
-      padding: 2px;
-      margin: 2px;
-      strong {
-        padding: 0 8px;
-      }
-    }
+  as-split .as-split-gutter {
+    border: 1px solid var(--panel-divider-color) !important;
+    border-width: 0 1px !important;
   }
 
-  .cmp {
-    display: block;
-    box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2);
+  yuv-popover {
+    border: 1px solid var(--panel-divider-color);
+  }
+  .cdk-overlay-dark-backdrop {
+    background-color: rgba(var(--color-primary-rgb), 0.95);
+  }
+  .yuv-busy-overlay {
+    background-color: rgba(var(--main-background), 0.8);
   }
 }

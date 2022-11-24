@@ -19,6 +19,7 @@
     grid-template-rows: auto 1fr;
     grid-template-areas: 'head' 'content';
     max-width: 100%;
+    color: var(--text-color-body);
 
     &.descriptionsEnabled {
       .action .row {

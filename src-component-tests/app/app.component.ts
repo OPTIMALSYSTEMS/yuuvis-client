@@ -13,8 +13,9 @@ export class AppComponent implements OnInit {
   accentColorRGB = ['255, 152, 0', '120, 144, 156', '124, 179, 66', '3,169,244', '126,87,194', '236,64,122'];
 
   uiSettings = {
+    highContrast: false,
     darkMode: false,
-    direction: Direction.LTR,
+    direction: 'ltr',
     accentColor: null
   };
 
@@ -22,10 +23,10 @@ export class AppComponent implements OnInit {
   @HostBinding('class.showNav') showNav: boolean;
 
   constructor(private router: Router, private appCache: AppCacheService, private userService: UserService) {
-    this.userService.user$.subscribe(u => {
+    this.userService.user$.subscribe((u) => {
       this.user = u;
     });
-    this.appCache.getItem(this.STORAGE_KEY).subscribe(res => {
+    this.appCache.getItem(this.STORAGE_KEY).subscribe((res) => {
       if (res) {
         this.uiSettings = res;
         this.applyUiSettings();
@@ -34,13 +35,31 @@ export class AppComponent implements OnInit {
   }
 
   toggleDirection() {
-    this.uiSettings.direction = this.uiSettings.direction === Direction.RTL ? Direction.LTR : Direction.RTL;
+    this.setDirection(this.uiSettings.direction === Direction.RTL ? Direction.LTR : Direction.RTL);
+  }
+
+  setDirection(dir: string) {
+    this.uiSettings.direction = dir;
     this.applyUiSettings();
     this.saveUiSettings();
   }
 
   toggleDarkMode() {
-    this.uiSettings.darkMode = !this.uiSettings.darkMode;
+    this.setDarkMode(!this.uiSettings.darkMode);
+  }
+
+  setDarkMode(darkMode: boolean) {
+    this.uiSettings.darkMode = darkMode;
+    this.applyUiSettings();
+    this.saveUiSettings();
+  }
+
+  toggleHighContrast() {
+    this.setHighContrast(!this.uiSettings.highContrast);
+  }
+
+  setHighContrast(hc: boolean) {
+    this.uiSettings.highContrast = hc;
     this.applyUiSettings();
     this.saveUiSettings();
   }
@@ -60,14 +79,19 @@ export class AppComponent implements OnInit {
   }
 
   private applyUiSettings() {
-    const bodyClasses = document.getElementsByTagName('body')[0].classList;
+    const root = document.getElementsByTagName('app-root')[0];
+    const bodyClasses = root.classList;
     if (this.uiSettings.darkMode) {
       bodyClasses.add('dark');
     } else {
       bodyClasses.remove('dark');
     }
-    const body = document.getElementsByTagName('body')[0];
-    body.setAttribute('dir', this.uiSettings.direction);
+    if (this.uiSettings.highContrast) {
+      bodyClasses.add('contrast');
+    } else {
+      bodyClasses.remove('contrast');
+    }
+    root.setAttribute('dir', this.uiSettings.direction);
     if (this.uiSettings.direction === Direction.RTL) {
       bodyClasses.add('yuv-rtl');
     } else {
@@ -81,6 +105,6 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.routes = this.router.config.map(c => c.path);
+    this.routes = this.router.config.map((c) => c.path);
   }
 }
