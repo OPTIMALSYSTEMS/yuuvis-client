@@ -303,7 +303,7 @@
   "yuv.framework.search.agg.time.thisyear": "This year",
   "yuv.framework.search.agg.time.today": "Today",
   "yuv.framework.search.agg.time.yesterday": "Yesterday",
-  "yuv.framework.search.filter.available.fields": "Available metadata",
+  "yuv.framework.search.filter.available.fields": "Available fields",
   "yuv.framework.search.filter.configuration": "Filter configuration",
   "yuv.framework.search.filter.create.new": "Create",
   "yuv.framework.search.filter.custom.filters": "Custom filters",
@@ -506,11 +506,5 @@
   "yuv.client.state.settings.title": "Settings",
   "yuv.client.state.title": "yuuvis® client",
   "yuv.client.state.versions.compare.label": "version {{version}}",
-  "yuv.client.state.versions.header.title": "Versions",
-  "yuv.state.retentions.renderer.chip.title.ended": "The retention period expired {{diff}} ago.",
-  "yuv.state.retentions.renderer.chip.title.running": "Will be retained for the next {{diff}}",
-  "yuv.state.retentions.renderer.d": "day(s)",
-  "yuv.state.retentions.renderer.h": "hour(s)",
-  "yuv.state.retentions.renderer.m": "month(s)",
-  "yuv.state.retentions.renderer.y": "year(s)"
+  "yuv.client.state.versions.header.title": "Versions"
 }

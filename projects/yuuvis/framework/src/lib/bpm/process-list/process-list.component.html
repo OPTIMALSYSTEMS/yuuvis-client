@@ -1,7 +1,7 @@
 <yuv-panel class="process-list" [title]="header?.title" [description]="header?.description">
   <yuv-icon class="header-icon" [icon]="header?.icon"></yuv-icon>
 
-  <div class="filters">
+  <div class="filters status">
 
     <form class="term-filter" [formGroup]="termFilterForm" (ngSubmit)="filterByTerm()" *ngIf="showTermFilter">
       <!-- TODO: add text input -->
