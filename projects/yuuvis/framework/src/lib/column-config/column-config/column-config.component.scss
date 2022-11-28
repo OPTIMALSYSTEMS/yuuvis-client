@@ -53,14 +53,14 @@
 
         > yuv-icon {
           transition: 200ms;
-          opacity: 0.26;
+          opacity: 0.75;
           padding: calc(var(--app-pane-padding) / 4) calc(var(--app-pane-padding) / 2);
           box-sizing: content-box;
           cursor: pointer;
           flex: 0 0 auto;
 
           &:hover {
-            opacity: 0.8;
+            opacity: 1;
           }
 
           &.handle {

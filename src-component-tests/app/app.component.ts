@@ -79,16 +79,20 @@ export class AppComponent implements OnInit {
   }
 
   private applyUiSettings() {
-    const root = document.getElementsByTagName('app-root')[0];
+    const root = document.getElementsByTagName('body')[0];
     const bodyClasses = root.classList;
     if (this.uiSettings.darkMode) {
+      root.setAttribute('dark', '');
       bodyClasses.add('dark');
     } else {
+      root.removeAttribute('dark');
       bodyClasses.remove('dark');
     }
     if (this.uiSettings.highContrast) {
+      root.setAttribute('contrast', '');
       bodyClasses.add('contrast');
     } else {
+      root.removeAttribute('contrast');
       bodyClasses.remove('contrast');
     }
     root.setAttribute('dir', this.uiSettings.direction);

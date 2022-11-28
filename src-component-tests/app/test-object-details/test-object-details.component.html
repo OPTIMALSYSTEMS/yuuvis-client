@@ -1,6 +1,6 @@
 <div class="testing-controls">
   <div class="object-picker">
-    <yuv-dms-object-picker (dmsObject)="setDmsObjectInput($event)"></yuv-dms-object-picker>
+    <yuv-dms-object-picker [objectQuery]="objectQuery" (dmsObject)="setDmsObjectInput($event)"></yuv-dms-object-picker>
   </div>
   <div class="buttons">
     <button (click)="contentDmsObjectInput()">with content</button>

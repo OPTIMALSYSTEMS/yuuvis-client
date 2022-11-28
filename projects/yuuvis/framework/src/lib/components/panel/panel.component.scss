@@ -49,10 +49,12 @@
   }
 
   > .header {
+    border-radius: 10px;
     display: grid;
     background-color: var(--panel-background);
     grid-area: header;
     color: var(--text-color-caption);
+    border-bottom: 1px solid var(--panel-divider-color);
 
     grid-template-columns: var(--app-pane-padding) auto 1fr auto var(--app-pane-padding);
     grid-template-rows: var(--app-pane-padding) 1fr auto auto var(--app-pane-padding);
