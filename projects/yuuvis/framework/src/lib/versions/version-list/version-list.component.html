@@ -5,8 +5,8 @@
 
   <div class="actions" yuvOfflineDisabled *ngIf="!error">
     <yuv-action-menu-bar class="actions">
-      <yuv-icon *ngIf="enableEdit" (click)="edit()" [title]="'yuv.framework.version-list.edit' | translate"
-        class="button" icon="edit"></yuv-icon>
+      <yuv-icon *ngIf="editRecentClick.observed" (click)="edit()"
+        [title]="'yuv.framework.version-list.edit' | translate" class="button" icon="edit"></yuv-icon>
       <yuv-icon (click)="refresh()" [title]="'yuv.framework.list.refresh' | translate" class="button refresh-button"
         icon="refresh"></yuv-icon>
     </yuv-action-menu-bar>

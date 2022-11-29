@@ -1,9 +1,10 @@
 <yuv-panel class="process-list" [title]="header?.title" [description]="header?.description">
   <yuv-icon class="header-icon" [icon]="header?.icon"></yuv-icon>
 
-  <div class="filters">
+  <div class="filters status">
 
-    <form class="term-filter" [formGroup]="termFilterForm" (ngSubmit)="filterByTerm()" *ngIf="showTermFilter">
+    <form class="term-filter" [formGroup]="termFilterForm" (ngSubmit)="filterByTerm()"
+      *ngIf="termFilterChange.observed">
       <!-- TODO: add text input -->
       <yuv-string formControlName="term"></yuv-string>
       <button type="button" class="clear" [ngClass]="{visible: !!appliedTermFilter}" (click)="resetTermFilter()">
@@ -12,7 +13,7 @@
       <button type="submit">{{'yuv.framework.process.status.termfilter.submit'|translate}}</button>
     </form>
 
-    <div class="status-filters" *ngIf="showStatusFilter">
+    <div class="status-filters" *ngIf="statusFilterChange.observed">
 
       <button class="toggle-btn" [ngClass]="{active: statusFilter === 'all'}"
         (click)="setStatusFilter('all')">{{'yuv.framework.process.status.all.label'|translate}}</button>

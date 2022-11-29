@@ -47,7 +47,7 @@ export class PanelComponent implements OnInit {
   }
 
   ngOnInit() {
-    this._titleClickable = !!this.titleClick.observers.length;
+    this._titleClickable = !!this.titleClick.observed;
   }
 
   ngOnChanges() {
