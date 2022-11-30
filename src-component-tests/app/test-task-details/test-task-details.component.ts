@@ -15,9 +15,14 @@ export class TestTaskDetailsComponent implements OnInit, OnDestroy {
   private tasks = [Task1, Task2];
   task: Task = Task1;
   allTasks: Task[] = [];
+  disableBriefRepresentation = this.inboxService.disableBriefRepresentation;
 
   constructor(private inboxService: InboxService) {
     this.inboxService.inboxData$.pipe(takeUntilDestroy(this)).subscribe((res) => (this.allTasks = res));
+  }
+
+  refreshList() {
+    this.inboxService.fetchTasks();
   }
 
   setTask(idx: number) {
@@ -26,6 +31,11 @@ export class TestTaskDetailsComponent implements OnInit, OnDestroy {
 
   setEmptyTask() {
     this.task = null;
+  }
+
+  toggleBriefRepresenation() {
+    this.disableBriefRepresentation = !this.inboxService.disableBriefRepresentation;
+    this.inboxService.disableBriefRepresentation = this.disableBriefRepresentation;
   }
 
   completeAllTasks() {
