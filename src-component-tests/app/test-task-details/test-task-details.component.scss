@@ -1,9 +1,30 @@
 :host {
-  yuv-task-details {
-    display: block;
-    height: 70vh;
-  }
-
   .cmp {
+    height: 80vh;
+    display: grid;
+    grid-template-rows: 1fr;
+    grid-template-columns: 200px 1fr;
+    grid-template-areas: 'list details';
+
+    .tasks {
+      grid-area: list;
+      border-right: 1px solid var(--panel-divider-color);
+      overflow-y: auto;
+
+      .task {
+        padding: var(--app-pane-padding);
+        border-bottom: 1px solid var(--panel-divider-color);
+
+        &.active {
+          background-color: var(--color-accent);
+          color: #fff;
+        }
+      }
+    }
+
+    yuv-task-details {
+      display: block;
+      grid-area: details;
+    }
   }
 }

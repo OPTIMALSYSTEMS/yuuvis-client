@@ -59,8 +59,6 @@ export class ProcessListComponent {
   get viewMode(): ViewMode {
     return this.dataTable ? this.dataTable.viewMode : null;
   }
-  showStatusFilter: boolean;
-  showTermFilter: boolean;
 
   @Input() showFooter = true;
   @Input() statusFilter: 'all' | 'running' | 'completed' = 'all';
@@ -109,8 +107,5 @@ export class ProcessListComponent {
     this.refreshList.emit();
   }
 
-  ngOnInit() {
-    this.showTermFilter = this.termFilterChange.observers && this.termFilterChange.observers.length > 0;
-    this.showStatusFilter = this.statusFilterChange.observers && this.statusFilterChange.observers.length > 0;
-  }
+  ngOnInit() {}
 }

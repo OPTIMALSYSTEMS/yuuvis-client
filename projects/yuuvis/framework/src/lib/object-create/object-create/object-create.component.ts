@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, OnDestroy, Output, TemplateRef, ViewChild } from '@angular/core';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import {
   AFO_STATE,
   ApiBase,
@@ -20,7 +21,7 @@ import {
 } from '@yuuvis/core';
 import { forkJoin, Observable, of } from 'rxjs';
 import { catchError, finalize, map, switchMap } from 'rxjs/operators';
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+
 import { FadeInAnimations } from '../../common/animations/fadein.animation';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { FloatingSotSelectInput } from '../../floating-sot-select/floating-sot-select.interface';
@@ -80,8 +81,8 @@ export enum AFOType {
  * @example
  * <yuv-object-create></yuv-object-create>
  */
- @UntilDestroy()
- @Component({
+@UntilDestroy()
+@Component({
   selector: 'yuv-object-create',
   templateUrl: './object-create.component.html',
   styleUrls: ['./object-create.component.scss'],
@@ -407,8 +408,8 @@ export class ObjectCreateComponent implements OnDestroy {
         untilDestroyed(this),
         switchMap((res: string[]) => this.dmsService.getDmsObjects(res))
       )
-      .subscribe(
-        (res: DmsObject[]) => {
+      .subscribe({
+        next: (res: DmsObject[]) => {
           this.objCreateService.setNewState({ currentStep: CurrentStep.AFO_INDEXDATA, busy: false });
           this.objCreateService.setNewBreadcrumb(CurrentStep.AFO_INDEXDATA, CurrentStep.AFO_UPLOAD);
 
@@ -434,15 +435,12 @@ export class ObjectCreateComponent implements OnDestroy {
           if (this.selectedObjectType.floatingParentType) {
             // floating types
             const sot = this.system.getSecondaryObjectType(this.selectedObjectType.id);
-            // const selectableSOTs = this.system.getPrimaryFSOTs(this.selectedObjectType.id, true);
-
             this.afoCreate = {
               dmsObject: { items: res, selected: res[0] },
               floatingSOT: { item: selectableSOTs }
             };
             this.afoSelectFloatingSOT({ id: sot.id, label: sot.label });
           } else {
-            // const selectableSOTs = this.system.getPrimaryFSOTs(this.selectedObjectType.id, true);
             this.afoCreate = {
               dmsObject: { items: res, selected: res[0] },
               floatingSOT: { item: selectableSOTs }
@@ -452,37 +450,9 @@ export class ObjectCreateComponent implements OnDestroy {
             }
           }
         },
-        (err) => {
-          this.objCreateService.setNewState({ busy: false });
-          this.notify.error(this.translate.instant('yuv.framework.object-create.notify.error'));
-        }
-      );
+        error: (e) => this.onCreateError(e)
+      });
   }
-
-  // private mapToSelectables(sots: SecondaryObjectType[]): Selectable[] {
-  //   return sots.map((sot) => {
-  //     // if we got files but the target FSOT does not support content
-  //     const contentRequiredButMissing = (!this.files || this.files.length === 0) && sot.contentStreamAllowed === ContentStreamAllowed.REQUIRED;
-  //     // if the target FSOT requires a file, but we don't have one
-  //     const contentButNotAllowed = this.files && this.files.length && sot.contentStreamAllowed === ContentStreamAllowed.NOT_ALLOWED;
-  //     const disabled = contentRequiredButMissing || contentButNotAllowed;
-
-  //     let selectable: Selectable = {
-  //       id: sot.id,
-  //       label: sot.label,
-  //       svgSrc: this.system.getObjectTypeIconUri(sot.id),
-  //       disabled: disabled,
-  //       value: sot
-  //     };
-  //     // add description to tell the user why a selectable is disabled
-  //     if (disabled) {
-  //       selectable.description = contentRequiredButMissing
-  //         ? this.translate.instant('yuv.framework.object-create.afo.type.select.disabled.content-missing')
-  //         : this.translate.instant('yuv.framework.object-create.afo.type.select.disabled.content-not-allowed');
-  //     }
-  //     return selectable;
-  //   });
-  // }
 
   afoCreateCancel() {
     this.resetState();
@@ -547,8 +517,8 @@ export class ObjectCreateComponent implements OnDestroy {
     }
     this.objCreateService.setNewState({ busy: true });
 
-    (!!this.afoType ? this.finishAFO(data) : this.createDefault(data)).subscribe(
-      (ids: string[]) => {
+    (!!this.afoType ? this.finishAFO(data) : this.createDefault(data)).subscribe({
+      next: (ids: string[]) => {
         this.objCreateService.setNewState({ busy: false });
         if (this.createAnother) {
           this.selectedObjectType = null;
@@ -560,11 +530,13 @@ export class ObjectCreateComponent implements OnDestroy {
           this.objectCreated.emit(ids);
         }
       },
-      (err) => {
-        this.objCreateService.setNewState({ busy: false });
-        this.notify.error(this.translate.instant('yuv.framework.object-create.notify.error'));
-      }
-    );
+      error: (e) => this.onCreateError(e)
+    });
+  }
+
+  private onCreateError(err: any) {
+    this.objCreateService.setNewState({ busy: false });
+    this.notify.error(this.translate.instant('yuv.framework.object-create.notify.error'), err.message);
   }
 
   openCancelDialog() {

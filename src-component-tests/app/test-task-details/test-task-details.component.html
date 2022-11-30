@@ -1,11 +1,19 @@
 <div class="testing-controls">
     <div class="buttons">
+        <button (click)="refreshList()">Refresh list</button>
         <button (click)="setTask(0)">Default Task</button>
         <button (click)="setTask(1)">Task with VARS</button>
         <button (click)="setEmptyTask()">Empty Task</button>
         <button class="primary" (click)="completeAllTasks()">Complete all inbox tasks</button>
+        <button
+            (click)="toggleBriefRepresenation()">'inboxService.disableBriefRepresentation={{disableBriefRepresentation}}'</button>
+
     </div>
 </div>
 <div class="cmp">
+    <div class="tasks">
+        <div class="task" *ngFor="let t of allTasks" (click)="task = t" [ngClass]="{active: t.id === task.id}">
+            {{t.subject}}</div>
+    </div>
     <yuv-task-details [task]="task"></yuv-task-details>
 </div>
