@@ -27,6 +27,8 @@ export class TestProcessDetailsComponent implements OnInit {
     this.processService.fetchProcesses();
   }
 
+  onStatusFilterChange(e) {}
+
   ngOnInit(): void {
     this.processService.fetchProcesses();
   }

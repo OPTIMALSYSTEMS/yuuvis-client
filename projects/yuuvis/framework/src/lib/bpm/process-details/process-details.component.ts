@@ -20,7 +20,7 @@ export class ProcessDetailsComponent {
     title: string;
     description: string;
   };
-  panelOrder = ['summaryTab', 'historyTab', 'commentsTab', 'attachmentsTab'];
+  @Input() panelOrder = ['summaryTab', 'historyTab', 'commentsTab', 'attachmentsTab'];
 
   @Input() set process(p: Process) {
     this._process = p;

@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import {
   BaseObjectTypeField,
   ContentStreamField,
@@ -13,7 +14,6 @@ import {
 } from '@yuuvis/core';
 import { forkJoin, Observable, of } from 'rxjs';
 import { tap } from 'rxjs/operators';
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { ResponsiveDataTableComponent, ViewMode } from '../../components';
 import { ResponsiveTableData } from '../../components/responsive-data-table/responsive-data-table.interface';
@@ -32,8 +32,8 @@ import { arrowNext, edit, listModeDefault, listModeGrid, listModeSimple, refresh
  *
  *
  */
- @UntilDestroy()
- @Component({
+@UntilDestroy()
+@Component({
   selector: 'yuv-version-list',
   templateUrl: './version-list.component.html',
   styleUrls: ['./version-list.component.scss']
@@ -132,7 +132,6 @@ export class VersionListComponent implements OnInit {
    * will trigger this emitter once it has been clicked
    */
   @Output() editRecentClick = new EventEmitter<string>();
-  enableEdit: boolean;
 
   constructor(
     public translate: TranslateService,
@@ -227,8 +226,6 @@ export class VersionListComponent implements OnInit {
   }
 
   ngOnInit() {
-    // only enable edit button if somone subscribed to the output emitter
-    this.enableEdit = !!this.editRecentClick.observers.length;
     this.eventService
       .on(YuvEventType.DMS_OBJECT_UPDATED)
       .pipe(untilDestroyed(this))

@@ -231,20 +231,18 @@ export class ContextComponent implements OnInit, OnDestroy {
     this.activeTabIndex = tab.index;
     setTimeout(() => {
       this.activeSearchResult = this.searchResultComponents.toArray()[tab.index];
-      if (this.activeSearchResult) {
-        this.columnConfigInput = {
-          type: (this.activeSearchResult.query && this.activeSearchResult.query.targetType) || this.systemService.getBaseType(true),
-          sortOptions: this.activeSearchResult.query && this.activeSearchResult.query.sortOptions
-        };
-      }
     }, 200);
   }
 
   refresh(applyColumnConfig?: boolean) {
-    return this.activeSearchResult && this.activeSearchResult.refresh(applyColumnConfig);
+    return this.activeSearchResult?.refresh(applyColumnConfig);
   }
 
   showColumnConfigEditor() {
+    this.columnConfigInput = {
+      type: this.activeSearchResult?.query?.targetType || this.systemService.getBaseType(true),
+      sortOptions: this.activeSearchResult?.query?.sortOptions
+    };
     const popoverConfig: PopoverConfig = {
       width: '55%',
       height: '70%',
