@@ -21,6 +21,12 @@ export class InboxService {
   private inboxData: Task[] = [];
   private inboxDataSource = new ReplaySubject<Task[]>(1);
   public inboxData$: Observable<Task[]> = this.inboxDataSource.asObservable();
+  /**
+   * By default fetching inbox items uses 'briefRepresentation' which means that only essential
+   * properties are loaded. You could disable this behaviour by setting this to 'true'. After
+   * that all inbox item properties are loaded by default.
+   */
+  public disableBriefRepresentation: boolean = false;
 
   constructor(private bpmService: BpmService, private config: ConfigService, private userService: UserService, private backendService: BackendService) {}
 
@@ -38,7 +44,7 @@ export class InboxService {
   /**
    * updates inboxData$
    */
-  fetchTasks(includeProcessVar = true, briefRepresentation = true): void {
+  fetchTasks(includeProcessVar = true, briefRepresentation = !this.disableBriefRepresentation): void {
     this.getTasksPaged({
       includeProcessVariables: includeProcessVar,
       briefRepresentation
