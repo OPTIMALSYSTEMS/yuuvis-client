@@ -17,7 +17,7 @@
     "@ngx-pwa/local-storage": "^13.0.3",
     "@ngx-translate/core": "^14.0.0",
     "angular-oauth2-oidc": "13.0.1",
-    "ngx-device-detector": "^3.0.0",
+    "ngx-device-detector": "^4.0.0",
     "tslib": "^2.4.0"
   }
 }
