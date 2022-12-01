@@ -93,7 +93,7 @@
     "angular-split": "^13.2.0",
     "core-js": "^3.23.2",
     "lodash-es": "^4.17.21",
-    "ngx-device-detector": "^3.0.0",
+    "ngx-device-detector": "^4.0.0",
     "ngx-drag-scroll": "14.0.1",
     "ngx-toastr": "^15.0.0",
     "primeicons": "^5.0.0",
