@@ -60,7 +60,8 @@ export class OrganizationComponent implements ControlValueAccessor, Validator, A
     event.stopPropagation();
   }
 
-  @HostBinding('class.inputDisabled') _inputDisabled: boolean;
+  @HostBinding('class.inputDisabled') get _inputDisabled() { return !this.multiselect && this.innerValue?.length === 1; };
+  @HostBinding('class.inputDirty') get _inputDirty() { return this.autoCompleteInput?.multiInputEL?.nativeElement?.value; };
 
   /**
    * Possibles values are `EDIT` (default),`SEARCH`,`CREATE`. In search situation validation of the form element will be turned off, so you are able to enter search terms that do not meet the elements validators.
@@ -132,12 +133,7 @@ export class OrganizationComponent implements ControlValueAccessor, Validator, A
   registerOnTouched(fn: any): void {}
 
   private propagate() {
-    this.disableInput();
     this.propagateChange(this.value);
-  }
-
-  private disableInput() {
-    this._inputDisabled = !this.multiselect && this.innerValue.length === 1;
   }
 
   resolveFn(value: any) {
@@ -162,7 +158,6 @@ export class OrganizationComponent implements ControlValueAccessor, Validator, A
     });
     return forkJoin(map).subscribe((data) => {
       this.innerValue = data;
-      this.disableInput();
       setTimeout(() => this.autoCompleteInput.cd.markForCheck());
     });
   }
