@@ -34,6 +34,13 @@ body {
   color: var(--text-color-body);
 }
 
+[contrast] {
+  .themeBackground {
+    background-image: none;
+    background-color: var(--main-background);
+  }
+}
+
 .themeBackground {
   background-color: var(--theme-background-color);
   background-image: var(--theme-background);

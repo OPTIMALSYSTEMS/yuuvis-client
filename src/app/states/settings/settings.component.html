@@ -66,8 +66,8 @@
       <div class="setting">
         <div class="label">{{ 'yuv.client.state.settings.theme.accentcolor' | translate }}</div>
         <div class="value">
-          <button class="color accent" *ngFor="let ac of accentColorRGB" [ngClass]="{ active: ac === accentColor }"
-            [ngStyle]="{ 'background-color': 'rgb(' + ac + ')' }" (click)="setAccentColor(ac)"></button>
+          <button class="color accent" *ngFor="let ac of accentColors" [ngClass]="{ active: ac === accentColor }"
+            [ngStyle]="{ 'background-color': 'rgb(var(' + ac.name + '))' }" (click)="setAccentColor(ac)"></button>
           <button class="color clear" *ngIf="accentColor" (click)="setAccentColor(null)">
             {{ 'yuv.client.state.settings.section.layout.reset' | translate }}
           </button>

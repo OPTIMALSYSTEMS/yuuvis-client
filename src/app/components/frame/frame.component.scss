@@ -312,7 +312,8 @@ $app-bar-icon: 32px;
         left: 0;
         background-color: rgba(0, 0, 0, 0.1);
         padding: calc(var(--app-pane-padding) / 2) calc(var(--app-pane-padding) / 2) calc(var(--app-pane-padding) / 2) 0;
-        color: #fff;
+
+        color: var(--color-accent-tone);
         display: flex;
         align-items: center;
 

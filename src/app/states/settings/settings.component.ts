@@ -7,6 +7,7 @@ import { forkJoin, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { dashboard, dashboardWidget, shield } from '../../../assets/default/svg/svg';
+import { AccentColor } from '../../app.interface';
 import { AppService } from '../../app.service';
 
 @UntilDestroy()
@@ -28,7 +29,26 @@ export class SettingsComponent implements OnInit, OnDestroy {
   bgImageSet: boolean;
   enableConfig: any = false;
 
-  accentColorRGB = ['255,152,0', '120,144,156', '124,179,66', '3,169,244', '126,87,194', '236,64,122'];
+  // accentColorRGB = ['255,152,0', '120,144,156', '124,179,66', '3,169,244', '126,87,194', '236,64,122'];
+
+  accentColors: AccentColor[] = [
+    { label: 'Orange', name: '--ac-orange-rgb', tone: '--ac-tone-dark' },
+    { label: 'Deep Orange', name: '--ac-deeporange-rgb', tone: '--ac-tone-dark' },
+    { label: 'Jungle', name: '--ac-jungle-rgb', tone: '--ac-tone-dark' },
+    { label: 'Light Green', name: '--ac-lightgreen-rgb', tone: '--ac-tone-dark' },
+    { label: 'Green', name: '--ac-green-rgb', tone: '--ac-tone-light' },
+    { label: 'Teal', name: '--ac-teal-rgb', tone: '--ac-tone-light' },
+    { label: 'Cyan', name: '--ac-cyan-rgb', tone: '--ac-tone-dark' },
+    { label: 'Blue', name: '--ac-blue-rgb', tone: '--ac-tone-light' },
+    { label: 'Dark Blue', name: '--ac-darkblue-rgb', tone: '--ac-tone-light' },
+    { label: 'Violet', name: '--ac-violet-rgb', tone: '--ac-tone-light' },
+    { label: 'Purple', name: '--ac-purple-rgb', tone: '--ac-tone-light' },
+    { label: 'Pink', name: '--ac-pink-rgb', tone: '--ac-tone-light' },
+    { label: 'Red', name: '--ac-red-rgb', tone: '--ac-tone-light' },
+    { label: 'Brown', name: '--ac-brown-rgb', tone: '--ac-tone-light' },
+    { label: 'Bluegray', name: '--ac-bluegray-rgb', tone: '--ac-tone-light' }
+  ];
+
   cache = {
     system: true,
     history: true,
@@ -84,8 +104,8 @@ export class SettingsComponent implements OnInit, OnDestroy {
     this.layoutService.setHighContrast(enabled);
   }
 
-  setAccentColor(rgb: string) {
-    this.layoutService.setAccentColor(rgb);
+  setAccentColor(ac: AccentColor) {
+    this.layoutService.setAccentColor(ac?.name, ac?.tone);
   }
 
   setDashboardType(dType: 'default' | 'widgets') {

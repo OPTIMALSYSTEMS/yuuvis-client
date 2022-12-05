@@ -82,11 +82,28 @@ export class LayoutService {
         bodyClassList.remove(highContrastClass);
       }
 
-      // if (bodyClassList.contains(darkModeClass) && !settings?.darkMode) {
-      //   bodyClassList.remove(darkModeClass);
-      // } else if (!bodyClassList.contains(darkModeClass) && settings?.darkMode) {
-      //   bodyClassList.add(darkModeClass);
-      // }
+      if (settings.accentColor) {
+        document.documentElement.style.setProperty(
+          '--color-accent-rgb',
+          settings.accentColor.startsWith('--') ? `var(${settings.accentColor})` : `rgb(${settings.accentColor})`
+        );
+        document.documentElement.style.setProperty(
+          '--color-accent',
+          settings.accentColor.startsWith('--') ? `rgb(var(${settings.accentColor}))` : `rgb(${settings.accentColor})`
+        );
+      } else {
+        document.documentElement.style.removeProperty('--color-accent-rgb');
+        document.documentElement.style.removeProperty('--color-accent');
+      }
+
+      if (settings.accentColorTone) {
+        document.documentElement.style.setProperty(
+          '--color-accent-tone',
+          settings.accentColorTone.startsWith('--') ? `var(${settings.accentColorTone})` : `rgb(${settings.accentColorTone})`
+        );
+      } else {
+        document.documentElement.style.removeProperty('--color-accent-tone');
+      }
     }
   }
   /**
@@ -117,10 +134,12 @@ export class LayoutService {
 
   /**
    * Providing specific accent color dipends on selected mode setting
-   * @param rgb - a color variable
+   * @param rgb A string containing RGB values (like '255, 0, 0') or the name of a CSS variable (like '--jungle')
+   * @param tone The color of text that is written on an accent color background (e.g. primary button). Could be RGB value or CSS variable
    */
-  setAccentColor(rgb: string) {
-    this.layoutSettings.accentColor = rgb;
+  setAccentColor(color: string, tone: string) {
+    this.layoutSettings.accentColor = color;
+    this.layoutSettings.accentColorTone = tone;
     this.saveSettings();
   }
 
@@ -244,8 +263,11 @@ export interface LayoutSettings {
   /**
    * set an accent color for a selected mode
    */
-
   accentColor?: string;
+  /**
+   * The color of text on an accent color background
+   */
+  accentColorTone?: string;
   /**
    * set a background in a dashboard
    */
