@@ -54,7 +54,11 @@
         <div class="value buttons">
           <button [ngClass]="{ active: !darkMode }" (click)="toggleTheme(false)">{{
             'yuv.client.state.settings.theme.light' | translate }}</button>
-          <button [ngClass]="{ active: darkMode }" (click)="toggleTheme(true)">{{ 'yuv.client.state.settings.theme.dark'
+          <button [ngClass]="{ active: darkMode && !highContrast }" (click)="toggleTheme(true)">{{
+            'yuv.client.state.settings.theme.dark'
+            | translate }}</button>
+          <button [ngClass]="{ active: highContrast }" (click)="setHighContrast(true)">{{
+            'yuv.client.state.settings.theme.dark.highContrast'
             | translate }}</button>
         </div>
       </div>

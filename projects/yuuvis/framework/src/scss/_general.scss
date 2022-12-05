@@ -17,6 +17,10 @@ body {
   }
 }
 
+yuv-panel.tabbed .header {
+  border: 0;
+}
+
 // basic styles for cdk-drag-drop
 .cdk-drag-preview {
   display: none;

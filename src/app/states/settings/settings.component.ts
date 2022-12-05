@@ -1,10 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { AppCacheService, BackendService, ConfigService, SystemService, TranslateService, UserConfigService, UserService, YuvUser } from '@yuuvis/core';
 import { arrowDown, IconRegistryService, LayoutService, LayoutSettings, NotificationService, PluginsService } from '@yuuvis/framework';
 import { forkJoin, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 
 import { dashboard, dashboardWidget, shield } from '../../../assets/default/svg/svg';
 import { AppService } from '../../app.service';
@@ -18,6 +18,7 @@ import { AppService } from '../../app.service';
 export class SettingsComponent implements OnInit, OnDestroy {
   user$: Observable<Partial<YuvUser>>;
   darkMode: boolean;
+  highContrast: boolean;
   accentColor: string;
   enableDashboardTypeSettings: boolean = false;
   dashboardType: 'default' | 'widgets' = 'default';
@@ -77,6 +78,10 @@ export class SettingsComponent implements OnInit, OnDestroy {
 
   toggleTheme(darkMode: boolean) {
     this.layoutService.setDarkMode(darkMode);
+  }
+
+  setHighContrast(enabled: boolean) {
+    this.layoutService.setHighContrast(enabled);
   }
 
   setAccentColor(rgb: string) {
@@ -180,6 +185,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
     this.user$ = this.userService.user$.pipe(map((user) => ({ ...user, authorities: user.authorities.sort() })));
     this.layoutService.layoutSettings$.subscribe((settings: LayoutSettings) => {
       this.darkMode = settings.darkMode;
+      this.highContrast = settings.highContrast;
       this.accentColor = settings.accentColor;
       this.customDashboardBackground = !!settings.dashboardBackground;
     });
