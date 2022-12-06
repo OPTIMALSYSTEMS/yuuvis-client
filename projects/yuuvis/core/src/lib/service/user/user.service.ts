@@ -133,6 +133,7 @@ export class UserService {
 
   fetchUserSettings(): Observable<UserSettings> {
     return this.backend.get('/dms/permissions').pipe(
+      catchError((e) => of(undefined)),
       switchMap((res) => {
         this.setUserPermissions(res);
         return this.backend.get(UserService.DEFAULT_SETTINGS);
