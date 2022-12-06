@@ -113,7 +113,7 @@ export class SearchFilterComponent implements OnInit {
   }
 
   onToggle(group: SelectableGroup) {
-    this.aggregate();
+    this.aggregate(false, [group.id]);
     this.saveLayoutOptions({
       collapsedGroups: (this._layoutOptions.collapsedGroups || []).filter((id) => id !== group.id).concat(group.collapsed ? [group.id] : [])
     });
@@ -150,15 +150,14 @@ export class SearchFilterComponent implements OnInit {
       }
     ];
 
-    this.setupExtensions();
-    this.setupCollapsedGroups();
+    this.setupExtensions(true);
     return this.setupFilters(this.typeSelection);
   }
 
-  private setupExtensions() {
+  private setupExtensions(update = false) {
     (this.plugins || of([])).subscribe(plugins => {
       const { active, all } = this.quickSearchService.getActiveExtensions(this._query);
-      this.typeSelection = [...this.typeSelection, ...active];
+      if (update) this.typeSelection = [...this.typeSelection, ...active];
       this.availableObjectTypeFields = this.quickSearchService.getAvailableObjectTypesFields(this.typeSelection);
       const extensions = PluginSearchComponent.parseExtensions(plugins, this, this.pluginsService);
 
@@ -172,6 +171,7 @@ export class SearchFilterComponent implements OnInit {
           items
         });
         this.availableTypeGroups = [...this.availableTypeGroups, ...extensions.filter((e: any) => e.items) as any];
+        this.setupCollapsedGroups();
         this.aggregate(true);
       }
     });
@@ -280,6 +280,7 @@ export class SearchFilterComponent implements OnInit {
   }
 
   onTypeChange(res: Selectable[]) {
+    const _typeSelection = [...this.typeSelection];
     this.typeSelection = res.filter(r => !r.value).map((r) => r.id);
     this.customTypeSelection = res.filter(r => r.value).map((r) => r.id);
 
@@ -290,8 +291,9 @@ export class SearchFilterComponent implements OnInit {
     customGroups.forEach(g => this.filterQuery.removeFilterGroup(g));
     res.forEach(r => r.value && this.filterQuery.addFilterGroup(r.value.clone(), r.value.property));
 
-    this.setupExtensions();
-    this.setupCollapsedGroups();
+    if (_typeSelection.join() !== this.typeSelection.join()) {
+      this.setupExtensions();
+    }
     this.filterChange.emit(this.filterQuery);
     this.aggregate();
   }
@@ -321,6 +323,8 @@ export class SearchFilterComponent implements OnInit {
       if (group.aggregations) {
         if (group.items[0].class?.match('skipCount')) return;
         const q = new SearchQuery(this.filterQuery.toQueryJson(true));
+        q.filterGroup = this.filterQuery.filterGroup.clone(false);
+        q.removeFilterGroup(group.id);
         this.searchService.aggregate(q, group.aggregations).subscribe(r => group.items?.forEach(g => (g.count = sum(r, g.label).toString() as any)));
       } else {
         group.items.forEach(g => {
