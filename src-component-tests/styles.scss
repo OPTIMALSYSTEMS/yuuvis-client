@@ -1,41 +1,5 @@
 @import '~@yuuvis/framework/framework.css';
 
-[dark][contrast],
-.dark.contrast {
-  --panels-background-rgb: 0, 0, 0;
-  --panel-divider-color-rgb: 111, 195, 223;
-
-  --main-background: rgb(var(--panels-background-rgb));
-  --panel-background: rgb(var(--panels-background-rgb));
-  --panel-background-grey: var(--main-background);
-  --panel-background-lightgrey: var(--main-background);
-  --panel-divider-color: rgb(var(--panel-divider-color-rgb));
-  --color-primary-rgb: 12, 20, 31;
-
-  //   --color-primary: rgb(var(--color-primary-rgb));
-
-  //   // form
-  //   --color-dirty-background: rgba(var(--color-accent-rgb), 0.4);
-  //   --color-dirty-font: #fff;
-
-  //   // panel background colors DARK MODE
-  //   // --panel-divider-color: rgba(255, 255, 255, 0.1);
-  //   --item-focus-background-color: rgba(255, 255, 255, 0.06);
-  //   --item-focus-border-color: rgba(255, 255, 255, 0.2);
-  //   --app-bar-background: var(--panel-background);
-  --scrollbar-thumb-color: rgba(var(--panel-divider-color-rgb), 0.8);
-  --scrollbar-thumb-color-hover: var(--panel-divider-color);
-
-  //   // text colors DARK MODE
-  //   --text-color-body: #fff;
-  //   --text-color-caption: rgba(255, 255, 255, 0.75);
-  //   --text-color-hint: rgba(255, 255, 255, 0.5);
-
-  //   --button-secondary-background: rgba(255, 255, 255, 0.1);
-  //   --button-secondary-background-hover: rgba(255, 255, 255, 0.15);
-  //   --button-background-hover: rgba(255, 255, 255, 0.06);
-}
-
 body {
   margin: 0;
   padding: 0;

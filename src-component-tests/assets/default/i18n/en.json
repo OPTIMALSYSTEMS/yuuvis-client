@@ -1,5 +1,6 @@
 {
   "yuvfc.widget-grid.widget.aggregate.form.label.aggField": "add values of this property",
+  "yuvfc.widget-grid.widget.aggregate.form.label.average": "calculate average",
   "yuvfc.widget-grid.widget.charts.form.label.aggregation": "Aggregation",
   "yuvfc.widget-grid.widget.charts.form.label.chartType": "Chart type",
   "yuvfc.widget-grid.widget.charts.type.bar": "Bar chart",
@@ -555,6 +556,7 @@
   "yuv.client.state.settings.theme.background": "Dashboard background image",
   "yuv.client.state.settings.theme.background.choose": "Select",
   "yuv.client.state.settings.theme.dark": "Dark",
+  "yuv.client.state.settings.theme.dark.highContrast": "High contrast",
   "yuv.client.state.settings.theme.light": "Light",
   "yuv.client.state.settings.title": "Settings",
   "yuv.client.state.title": "yuuvis® client",

@@ -267,7 +267,8 @@ $avatar-size-small: 80px;
 
                 width: 12px;
                 border-radius: 50%;
-                background-color: rgba(255, 255, 255, 0.5);
+                background-color: var(--color-accent-tone);
+                opacity: 0.7;
               }
 
               &.clear {
