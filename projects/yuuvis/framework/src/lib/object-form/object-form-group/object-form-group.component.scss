@@ -12,6 +12,11 @@
       border-color: rgba(255, 255, 255, 0.1);
     }
 
+    .contrast & {
+      background-color: transparent;
+      border-color: var(--panel-divider-color);
+    }
+
     .legend {
       margin-bottom: calc(var(--app-pane-padding) / 2);
 
@@ -24,6 +29,10 @@
         padding: calc(var(--app-pane-padding) / 8) calc(var(--app-pane-padding) / 4);
         .dark & {
           background-color: rgba(255, 255, 255, 0.22);
+        }
+        .contrast & {
+          background-color: var(--panel-divider-color);
+          color: var(--panel-background);
         }
       }
     }

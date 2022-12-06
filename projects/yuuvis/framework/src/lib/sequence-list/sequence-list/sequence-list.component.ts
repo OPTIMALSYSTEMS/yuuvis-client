@@ -11,7 +11,7 @@ import {
   Validator,
   Validators
 } from '@angular/forms';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService } from '@yuuvis/core';
 import { Subscription } from 'rxjs';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { OrganizationComponent } from '../../form/elements/organization/organization.component';
