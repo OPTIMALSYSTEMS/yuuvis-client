@@ -121,6 +121,7 @@ export class NotificationService {
    * @param string mode
    */
   private doToast(msg: string, title: string, options: any, mode?: string) {
+    if (this.silent) return;
     switch (mode) {
       case 'success': {
         this.toastrService.success(msg, title, options);
