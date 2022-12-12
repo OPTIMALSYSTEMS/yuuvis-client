@@ -10,8 +10,9 @@
   --color-primary-rgb: 12, 20, 31;
   --scrollbar-thumb-color: rgba(var(--panel-divider-color-rgb), 0.8);
   --scrollbar-thumb-color-hover: var(--panel-divider-color);
+  --item-focus-border-color: var(--panel-divider-color);
+  --item-focus-background-color: rgba(var(--panel-divider-color-rgb), 0.3);
   // TODO: remove once provided from @yuuvis/styles
-
   as-split .as-split-gutter {
     border: 1px solid var(--panel-divider-color) !important;
     border-width: 0 1px !important;

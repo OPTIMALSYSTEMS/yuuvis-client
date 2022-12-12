@@ -82,6 +82,12 @@
 
       .group-title {
         border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+        [contrast] & {
+          border-color: var(--panel-divider-color);
+          color: var(--panel-divider-color);
+        }
+
         font-size: var(--font-hint);
         padding: calc(var(--app-pane-padding) / 4) var(--app-pane-padding);
         @include transition();
@@ -126,6 +132,11 @@
 
     .action {
       border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+
+      [contrast] & {
+        border-color: var(--panel-divider-color);
+      }
+
       &.sub {
         padding-left: var(--app-pane-padding);
         padding-right: var(--app-pane-padding);

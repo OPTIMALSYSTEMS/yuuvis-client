@@ -48,6 +48,11 @@
       border: 1px solid rgba(255, 255, 255, 0.1);
     }
 
+    .contrast & {
+      background-color: transparent;
+      border-color: var(--panel-divider-color);
+    }
+
     .p-tabview.p-component .p-tabview-panels {
       background: #fff;
       overflow: initial;

@@ -37,7 +37,7 @@
             .yuv-combined-object-form {
               padding: calc(var(--app-pane-padding) / 2);
               background: var(--panel-background);
-              box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1);
+              border: 1px solid var(--panel-divider-color);
 
               .yuv-object-form {
                 padding: calc(var(--app-pane-padding) / 2);

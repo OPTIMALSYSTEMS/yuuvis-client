@@ -60,6 +60,14 @@ yuv-action-menu .action-menu {
   box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.3);
   background-color: rgba(var(--color-primary-rgb), 0.95);
   color: #fff;
+
+  [contrast] & {
+    // --panel-divider-color-rgb: 111, 195, 223;
+    --panel-divider-color: rgb(var(--panel-divider-color-rgb));
+    background-color: #000;
+    outline: 1px solid var(--panel-divider-color);
+    box-shadow: 0 0 50px 40px rgba(0, 0, 0, 1);
+  }
 }
 
 yuv-command-palette {
