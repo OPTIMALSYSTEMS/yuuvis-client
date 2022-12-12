@@ -191,7 +191,7 @@ export class SearchResultPanelComponent {
       .pipe(
         switchMap((conf) =>
           this.searchService
-            .exportSearchResult({ ...this.searchService.getLastSearchQuery().toQueryJson(), fields: conf.columns.map((col) => col.id) })
+            .exportSearchResult({ ...this.searchService.getLastSearchQuery().toQueryJson(true), fields: conf.columns.map((col) => col.id) })
             .pipe(finalize(() => (this.downloadingCsv = false)))
         )
       )
