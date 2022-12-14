@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, EventEmitter, forwardRef, HostBinding, HostListener, Inject, Input, Output, TemplateRef, ViewChild } from '@angular/core';
-import { ControlValueAccessor, UntypedFormControl, NG_VALIDATORS, NG_VALUE_ACCESSOR, Validator } from '@angular/forms';
+import { ControlValueAccessor, NG_VALIDATORS, NG_VALUE_ACCESSOR, UntypedFormControl, Validator } from '@angular/forms';
 import {
   BaseObjectTypeField,
   Classification,
@@ -56,8 +56,8 @@ export class ReferenceComponent implements ControlValueAccessor, Validator, Afte
   value;
   _innerValue: ReferenceEntry[] = [];
   set innerValue(iv: ReferenceEntry[]) {
-    this._innerValue = iv;
-    this.objectSelect.emit(iv);
+    this._innerValue = iv || [];
+    this.objectSelect.emit(this._innerValue);
   }
   get innerValue() {
     return this._innerValue;
@@ -72,8 +72,12 @@ export class ReferenceComponent implements ControlValueAccessor, Validator, Afte
     event.stopPropagation();
   }
 
-  @HostBinding('class.inputDisabled') get _inputDisabled() { return !this.multiselect && this.innerValue?.length === 1; };
-  @HostBinding('class.inputDirty') get _inputDirty() { return this.autoCompleteInput?.multiInputEL?.nativeElement?.value; };
+  @HostBinding('class.inputDisabled') get _inputDisabled() {
+    return !this.multiselect && this.innerValue?.length === 1;
+  }
+  @HostBinding('class.inputDirty') get _inputDirty() {
+    return this.autoCompleteInput?.multiInputEL?.nativeElement?.value;
+  }
 
   /**
    * Possibles values are `EDIT` (default),`SEARCH`,`CREATE`. In search situation validation of the form element will be turned off, so you are able to enter search terms that do not meet the elements validators.
@@ -208,7 +212,7 @@ export class ReferenceComponent implements ControlValueAccessor, Validator, Afte
   }
 
   registerOnTouched(fn: any): void {}
-  
+
   private propagate() {
     this.propagateChange(this.value);
   }
