@@ -17,6 +17,10 @@ body {
   }
 }
 
+yuv-panel.tabbed .header {
+  border: 0;
+}
+
 // basic styles for cdk-drag-drop
 .cdk-drag-preview {
   display: none;
@@ -36,7 +40,7 @@ span.yuv-process-status {
 
   &.running {
     background-color: var(--color-accent);
-    color: #fff;
+    color: var(--color-accent-tone);
   }
   &.completed {
     background-color: var(--color-success);
@@ -44,7 +48,7 @@ span.yuv-process-status {
   }
   &.suspended {
     background-color: var(--color-warning);
-    color: #fff;
+    color: #151515;
   }
 }
 

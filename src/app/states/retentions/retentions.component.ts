@@ -185,7 +185,7 @@ export class RetentionsComponent implements OnInit {
     this.loadingSpinner = true;
     this.searchService
       .exportSearchResult({
-        ...this.searchService.getLastSearchQuery().toQueryJson(),
+        ...this.searchService.getLastSearchQuery().toQueryJson(true),
         fields: this.columnConfig
           .filter((conf) => !conf.hide)
           .map((conf) => conf.field)

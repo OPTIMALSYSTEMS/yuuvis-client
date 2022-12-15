@@ -4,6 +4,7 @@
   height: 80%;
 
   yuv-object-details {
+    border: 1px solid var(--panel-divider-color);
     height: 100%;
     ::ng-deep {
       .p-tabview .p-tabview-panels {

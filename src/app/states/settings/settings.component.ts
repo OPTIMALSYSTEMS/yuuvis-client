@@ -1,12 +1,13 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { AppCacheService, BackendService, ConfigService, SystemService, TranslateService, UserConfigService, UserService, YuvUser } from '@yuuvis/core';
 import { arrowDown, IconRegistryService, LayoutService, LayoutSettings, NotificationService, PluginsService } from '@yuuvis/framework';
 import { forkJoin, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 
 import { dashboard, dashboardWidget, shield } from '../../../assets/default/svg/svg';
+import { AccentColor } from '../../app.interface';
 import { AppService } from '../../app.service';
 
 @UntilDestroy()
@@ -18,6 +19,7 @@ import { AppService } from '../../app.service';
 export class SettingsComponent implements OnInit, OnDestroy {
   user$: Observable<Partial<YuvUser>>;
   darkMode: boolean;
+  highContrast: boolean;
   accentColor: string;
   enableDashboardTypeSettings: boolean = false;
   dashboardType: 'default' | 'widgets' = 'default';
@@ -27,7 +29,26 @@ export class SettingsComponent implements OnInit, OnDestroy {
   bgImageSet: boolean;
   enableConfig: any = false;
 
-  accentColorRGB = ['255,152,0', '120,144,156', '124,179,66', '3,169,244', '126,87,194', '236,64,122'];
+  // accentColorRGB = ['255,152,0', '120,144,156', '124,179,66', '3,169,244', '126,87,194', '236,64,122'];
+
+  accentColors: AccentColor[] = [
+    { label: 'Orange', name: '--ac-orange-rgb', tone: '--ac-tone-dark' },
+    { label: 'Deep Orange', name: '--ac-deeporange-rgb', tone: '--ac-tone-dark' },
+    { label: 'Jungle', name: '--ac-jungle-rgb', tone: '--ac-tone-dark' },
+    { label: 'Light Green', name: '--ac-lightgreen-rgb', tone: '--ac-tone-dark' },
+    { label: 'Green', name: '--ac-green-rgb', tone: '--ac-tone-light' },
+    { label: 'Teal', name: '--ac-teal-rgb', tone: '--ac-tone-light' },
+    { label: 'Cyan', name: '--ac-cyan-rgb', tone: '--ac-tone-dark' },
+    { label: 'Blue', name: '--ac-blue-rgb', tone: '--ac-tone-light' },
+    { label: 'Dark Blue', name: '--ac-darkblue-rgb', tone: '--ac-tone-light' },
+    { label: 'Violet', name: '--ac-violet-rgb', tone: '--ac-tone-light' },
+    { label: 'Purple', name: '--ac-purple-rgb', tone: '--ac-tone-light' },
+    { label: 'Pink', name: '--ac-pink-rgb', tone: '--ac-tone-light' },
+    { label: 'Red', name: '--ac-red-rgb', tone: '--ac-tone-light' },
+    { label: 'Brown', name: '--ac-brown-rgb', tone: '--ac-tone-light' },
+    { label: 'Bluegray', name: '--ac-bluegray-rgb', tone: '--ac-tone-light' }
+  ];
+
   cache = {
     system: true,
     history: true,
@@ -79,8 +100,12 @@ export class SettingsComponent implements OnInit, OnDestroy {
     this.layoutService.setDarkMode(darkMode);
   }
 
-  setAccentColor(rgb: string) {
-    this.layoutService.setAccentColor(rgb);
+  setHighContrast(enabled: boolean) {
+    this.layoutService.setHighContrast(enabled);
+  }
+
+  setAccentColor(ac: AccentColor) {
+    this.layoutService.setAccentColor(ac?.name, ac?.tone);
   }
 
   setDashboardType(dType: 'default' | 'widgets') {
@@ -180,6 +205,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
     this.user$ = this.userService.user$.pipe(map((user) => ({ ...user, authorities: user.authorities.sort() })));
     this.layoutService.layoutSettings$.subscribe((settings: LayoutSettings) => {
       this.darkMode = settings.darkMode;
+      this.highContrast = settings.highContrast;
       this.accentColor = settings.accentColor;
       this.customDashboardBackground = !!settings.dashboardBackground;
     });

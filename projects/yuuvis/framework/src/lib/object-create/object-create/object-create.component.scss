@@ -201,7 +201,7 @@
         .content-select-list {
           margin: var(--app-pane-padding);
           background-color: var(--panel-background);
-          box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1);
+          border: 1px solid var(--panel-divider-color);
           z-index: 1;
 
           .files {
@@ -371,7 +371,7 @@
     yuv-object-form {
       position: relative;
       z-index: 1;
-      box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1);
+      border: 1px solid var(--panel-divider-color);
       margin: var(--app-pane-padding);
       max-width: 800px;
       min-width: 400px;

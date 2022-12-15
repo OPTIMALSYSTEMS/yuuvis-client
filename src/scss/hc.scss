@@ -1,0 +1,30 @@
+.dark.contrast {
+  // TODO: remove once provided from @yuuvis/styles
+  --panels-background-rgb: 0, 0, 0;
+  --panel-divider-color-rgb: 111, 195, 223;
+  --main-background: rgb(var(--panels-background-rgb));
+  --panel-background: rgb(var(--panels-background-rgb));
+  --panel-background-grey: var(--main-background);
+  --panel-background-lightgrey: var(--main-background);
+  --panel-divider-color: rgb(var(--panel-divider-color-rgb));
+  --color-primary-rgb: 12, 20, 31;
+  --scrollbar-thumb-color: rgba(var(--panel-divider-color-rgb), 0.8);
+  --scrollbar-thumb-color-hover: var(--panel-divider-color);
+  --item-focus-border-color: var(--panel-divider-color);
+  --item-focus-background-color: rgba(var(--panel-divider-color-rgb), 0.3);
+  // TODO: remove once provided from @yuuvis/styles
+  as-split .as-split-gutter {
+    border: 1px solid var(--panel-divider-color) !important;
+    border-width: 0 1px !important;
+  }
+
+  yuv-popover {
+    border: 1px solid var(--panel-divider-color);
+  }
+  .cdk-overlay-dark-backdrop {
+    background-color: rgba(var(--color-primary-rgb), 0.95);
+  }
+  .yuv-busy-overlay {
+    background-color: rgba(var(--color-primary-rgb), 0.8);
+  }
+}

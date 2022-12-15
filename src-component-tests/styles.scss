@@ -6,6 +6,12 @@ body {
   height: 100vh;
 }
 
+[contrast] .yuv-test-container {
+  .cmp {
+    border: 1px solid var(--panel-divider-color);
+  }
+}
+
 .yuv-test-container {
   display: flex;
   flex-flow: column;

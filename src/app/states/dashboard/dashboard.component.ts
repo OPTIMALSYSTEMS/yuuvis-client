@@ -1,5 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NavigationExtras, Router } from '@angular/router';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { LangChangeEvent } from '@ngx-translate/core';
 import { AppCacheService, ConfigService, SearchQuery, TranslateService, UserService, YuvUser } from '@yuuvis/core';
 import {
@@ -31,7 +32,6 @@ import {
 } from '@yuuvis/widget-grid-widgets';
 import { forkJoin, of } from 'rxjs';
 import { catchError, map, switchMap } from 'rxjs/operators';
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DashboardConfig } from '../../app.interface';
 import { AppService } from '../../app.service';
 import { AppSearchService } from '../../service/app-search.service';
@@ -44,7 +44,7 @@ import { AppSearchService } from '../../service/app-search.service';
   host: { class: 'themeBackground ' }
 })
 export class DashboardComponent implements OnInit, OnDestroy {
-  private STORAGE_KEY = 'yuv.client.dashboard.workspaces';
+  private STORAGE_KEY = encodeURIComponent('yuv.client.dashboard.workspaces');
   private get LOCAL_STORAGE_KEY_CURRENT_WORKSPACE() {
     const u: YuvUser = this.userService.getCurrentUser();
     return `${u.tenant}.${u.id}.yuv.client.dashboard.workspaces.current`;
