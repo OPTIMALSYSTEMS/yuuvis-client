@@ -2,12 +2,12 @@
   display: flex;
   align-items: center;
 
-  &.inputDisabled ::ng-deep {
-    .p-autocomplete-input-token {
-      // display: none;
-    }
-    .p-autocomplete-multiple-container {
+  &.inputDisabled {
+    ::ng-deep .p-autocomplete-multiple-container {
       flex-flow: row;
+    }
+    &.inputDirty ::ng-deep .p-autocomplete-token {
+      opacity: 0.5;
     }
   }
 

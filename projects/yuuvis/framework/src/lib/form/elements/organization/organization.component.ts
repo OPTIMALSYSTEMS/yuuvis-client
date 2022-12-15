@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, EventEmitter, forwardRef, HostBinding, HostListener, Input, Output, ViewChild } from '@angular/core';
-import { ControlValueAccessor, UntypedFormControl, NG_VALIDATORS, NG_VALUE_ACCESSOR, Validator } from '@angular/forms';
+import { ControlValueAccessor, NG_VALIDATORS, NG_VALUE_ACCESSOR, UntypedFormControl, Validator } from '@angular/forms';
 import { Classification, SystemService, UserService, YuvUser } from '@yuuvis/core';
 import { AutoComplete } from 'primeng/autocomplete';
 import { forkJoin, of } from 'rxjs';
@@ -44,8 +44,8 @@ export class OrganizationComponent implements ControlValueAccessor, Validator, A
   value;
   _innerValue: YuvUser[] = [];
   set innerValue(iv: YuvUser[]) {
-    this._innerValue = iv;
-    this.userSelect.emit(iv);
+    this._innerValue = iv || [];
+    this.userSelect.emit(this._innerValue);
   }
   get innerValue() {
     return this._innerValue;
@@ -60,7 +60,12 @@ export class OrganizationComponent implements ControlValueAccessor, Validator, A
     event.stopPropagation();
   }
 
-  @HostBinding('class.inputDisabled') _inputDisabled: boolean;
+  @HostBinding('class.inputDisabled') get _inputDisabled() {
+    return !this.multiselect && this.innerValue?.length === 1;
+  }
+  @HostBinding('class.inputDirty') get _inputDirty() {
+    return this.autoCompleteInput?.multiInputEL?.nativeElement?.value;
+  }
 
   /**
    * Possibles values are `EDIT` (default),`SEARCH`,`CREATE`. In search situation validation of the form element will be turned off, so you are able to enter search terms that do not meet the elements validators.
@@ -132,12 +137,7 @@ export class OrganizationComponent implements ControlValueAccessor, Validator, A
   registerOnTouched(fn: any): void {}
 
   private propagate() {
-    this.disableInput();
     this.propagateChange(this.value);
-  }
-
-  private disableInput() {
-    this._inputDisabled = !this.multiselect && this.innerValue.length === 1;
   }
 
   resolveFn(value: any) {
@@ -162,7 +162,6 @@ export class OrganizationComponent implements ControlValueAccessor, Validator, A
     });
     return forkJoin(map).subscribe((data) => {
       this.innerValue = data;
-      this.disableInput();
       setTimeout(() => this.autoCompleteInput.cd.markForCheck());
     });
   }
