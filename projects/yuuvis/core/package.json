@@ -4,9 +4,9 @@
   "author": "OPTIMAL SYSTEMS GmbH <npm@optimal-systems.de>",
   "license": "MIT",
   "scripts": {
-    "doc": "npx compodoc",
-    "doc:json": "npx compodoc -e json",
-    "doc:serve": "npx compodoc -s"
+    "doc": "../../../node_modules/.bin/compodoc",
+    "doc:json": "../../../node_modules/.bin/compodoc -e json",
+    "doc:serve": "../../../node_modules/.bin/compodoc -s"
   },
   "peerDependencies": {
     "@angular/common": "^14.0.6",
