@@ -10,6 +10,7 @@
   "disableGraph": true,
   "disableCoverage": true,
   "coverageTestThresholdFail": false,
+  "hideDarkModeToggle": true,
   "assetsFolder": "./../../../documentation/assets",
   "extTheme": "./../../../documentation/styles",
   "templates": "./../../../documentation/templates",
