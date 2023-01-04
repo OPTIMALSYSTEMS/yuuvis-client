@@ -285,7 +285,7 @@
   "yuv.framework.process-details-summary.vars.scope": "Geltungsbereich",
   "yuv.framework.process-details-summary.vars.type": "Typ",
   "yuv.framework.process-details-summary.vars.value": "Wert",
-  "yuv.framework.process-details.attachment-picker.headline": "",
+  "yuv.framework.process-details.attachment-picker.headline": "Anhänge hinzufügen",
   "yuv.framework.process-details.tabs.summary.title": "Übersicht",
   "yuv.framework.process-list.column.businessKey.label": "Objekt",
   "yuv.framework.process-list.column.createTime.label": "Erhalten am",
