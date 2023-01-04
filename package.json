@@ -108,7 +108,7 @@
     "@angular/compiler-cli": "^14.0.6",
     "@angular/language-service": "^14.0.6",
     "@bartholomej/ngx-translate-extract": "^8.0.2",
-    "@compodoc/compodoc": "^1.1.11",
+    "@compodoc/compodoc": "1.1.19",
     "@types/faker": "^4.1.11",
     "@types/jasmine": "~2.8.8",
     "@types/jasminewd2": "^2.0.8",
