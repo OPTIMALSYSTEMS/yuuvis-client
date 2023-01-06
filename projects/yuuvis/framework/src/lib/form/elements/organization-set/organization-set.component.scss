@@ -1,0 +1,44 @@
+:host {
+  display: flex;
+  align-items: center;
+
+  &.inputDisabled {
+    ::ng-deep .p-autocomplete-multiple-container {
+      flex-flow: row;
+    }
+    &.inputDirty ::ng-deep .p-autocomplete-token {
+      opacity: 0.5;
+    }
+  }
+
+  ::ng-deep {
+    .p-autocomplete-token-label {
+      display: inline-flex;
+      align-items: center;
+
+      > svg {
+        width: 18px;
+        height: 18px;
+        fill: currentColor;
+        margin-inline-end: calc(var(--app-pane-padding) / 4);
+      }
+    }
+    .p-autocomplete-multiple-container:not(.p-focus) {
+      .p-autocomplete-token + .p-autocomplete-input-token {
+        height: 0;
+        padding: 0 !important;
+      }
+    }
+  }
+
+  p-autocomplete {
+    flex: 1;
+  }
+
+  yuv-icon.classify {
+    width: 18px;
+    height: 18px;
+    padding: calc(var(--app-pane-padding) / 8);
+    color: var(--text-color-hint);
+  }
+}

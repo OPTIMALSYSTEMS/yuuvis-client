@@ -26,6 +26,7 @@ import { DynamicCatalogManagementComponent } from './elements/dynamic-catalog/dy
 import { DynamicCatalogComponent } from './elements/dynamic-catalog/dynamic-catalog.component';
 import { NumberRangeComponent } from './elements/number-range/number-range.component';
 import { NumberComponent } from './elements/number/number.component';
+import { OrganizationSetComponent } from './elements/organization-set/organization-set.component';
 import { OrganizationComponent } from './elements/organization/organization.component';
 import { ReferenceItemComponent } from './elements/reference/reference-item/reference-item.component';
 import { ReferenceComponent } from './elements/reference/reference.component';
@@ -46,7 +47,8 @@ const components = [
   OrganizationComponent,
   CatalogComponent,
   DynamicCatalogComponent,
-  DynamicCatalogManagementComponent
+  DynamicCatalogManagementComponent,
+  OrganizationSetComponent
 ];
 
 YuvComponentRegister.register(components);

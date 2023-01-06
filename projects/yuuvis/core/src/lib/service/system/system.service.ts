@@ -1002,6 +1002,8 @@ export class SystemService {
       return InternalFieldType.STRING_REFERENCE;
     } else if (field[typeProperty] === 'string' && classifications.has(Classification.STRING_ORGANIZATION)) {
       return InternalFieldType.STRING_ORGANIZATION;
+    } else if (field[typeProperty] === 'string' && classifications.has(Classification.STRING_ORGANIZATION_SET)) {
+      return InternalFieldType.STRING_ORGANIZATION_SET;
     } else if (field[typeProperty] === 'string' && classifications.has(Classification.STRING_CATALOG)) {
       return InternalFieldType.STRING_CATALOG;
     } else if (field[typeProperty] === 'boolean' && classifications.has(Classification.BOOLEAN_SWITCH)) {
