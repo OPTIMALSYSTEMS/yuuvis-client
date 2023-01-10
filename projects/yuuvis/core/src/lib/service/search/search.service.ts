@@ -249,7 +249,7 @@ export class SearchService {
   }
 
   exportSearchResult(searchquery: SearchQueryProperties, title?: string): Observable<String> {
-    return this.backend.post('/dms/objects/export', searchquery, ApiBase.apiWeb, { responseType: 'text', observe: 'response' }).pipe(
+    return this.backend.post('/dms/objects/export', this.transformDateFilters(searchquery), ApiBase.apiWeb, { responseType: 'text', observe: 'response' }).pipe(
       tap(({ body, headers }: any) =>
         Utils.downloadBlob(body, `${headers.get('content-type')}`, title ? title : headers.get('content-disposition').match(new RegExp(/([^=]+$)/, 'g'))[0])
       ),
