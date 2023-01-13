@@ -1,21 +1,33 @@
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { map, Observable } from 'rxjs';
+
+import { BackendService } from '../backend/backend.service';
 import { OrganizationSetEntry } from './idm.interface';
 
 @Injectable({
   providedIn: 'root'
 })
 export class IdmService {
-  constructor() {}
+  constructor(private backend: BackendService) {}
 
-  queryOrganizationEntity(term: string, targetTypes: string[]): Observable<OrganizationSetEntry[]> {
-    const dummyRes: OrganizationSetEntry[] = [
-      { id: '1', title: 'User Nr1', type: 'user' },
-      { id: '2', title: 'Role Nr2', type: 'role' },
-      { id: '3', title: 'Role Nr3', type: 'role' },
-      { id: '4', title: 'User Nr4', type: 'user' },
-      { id: '5', title: 'Role Nr5', type: 'role' }
-    ];
-    return of(dummyRes.filter((e) => targetTypes.includes(e.type)));
+  queryOrganizationEntity(term: string, targetTypes: string[], size?: number): Observable<OrganizationSetEntry[]> {
+    return this.backend.get(`/idm/search?search=${term}${size ? `&size=${size}` : ''}`).pipe(
+      map((res) => [
+        ...(targetTypes.includes('user')
+          ? res.users.map((u) => ({
+              id: u.id,
+              title: `${u.lastname}, ${u.firstname} (${u.username})`, // TODO: u.title,
+              type: 'user'
+            }))
+          : []),
+        ...(targetTypes.includes('role')
+          ? res.roles.map((u) => ({
+              id: u.name,
+              title: u.name,
+              type: 'role'
+            }))
+          : [])
+      ])
+    );
   }
 }
