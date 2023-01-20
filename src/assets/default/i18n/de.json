@@ -1,5 +1,5 @@
 {
-  "yuvfc.widget-grid.widget.aggregate.form.label.aggField": "addiere Werte dieses Attributes",
+  "yuvfc.widget-grid.widget.aggregate.form.label.aggField": "Werte dieses Attributs addieren",
   "yuvfc.widget-grid.widget.charts.form.label.aggregation": "Aggregation",
   "yuvfc.widget-grid.widget.charts.form.label.chartType": "Diagrammtyp",
   "yuvfc.widget-grid.widget.charts.type.bar": "Balkendiagramm",
@@ -8,7 +8,7 @@
   "yuvfc.widget-grid.widget.form.label.title": "Titel",
   "yuvfc.widget-grid.widget.form.step.next": "Weiter",
   "yuvfc.widget-grid.widget.form.step.previous": "Zurück",
-  "yuvfc.widget-grid.widget.hitlist.error.search": "Die Suche konnte nicht ausgeführt werden",
+  "yuvfc.widget-grid.widget.hitlist.error.search": "Die Suche konnte nicht ausgeführt werden.",
   "yuvfc.widget-grid.widget.hitlist.form.desc.threshold": "mehr als ...",
   "yuvfc.widget-grid.widget.hitlist.form.desc.threshold.inverted": "weniger als ...",
   "yuvfc.widget-grid.widget.hitlist.form.label.countTileThresholdInvert": "Schwellenwerte umkehren (viel -> wenig)",
