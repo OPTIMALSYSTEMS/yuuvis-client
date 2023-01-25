@@ -1,13 +1,13 @@
-@import '~@ag-grid-community/core/dist/styles/ag-grid.css';
-@import '~@ag-grid-community/core/dist/styles/ag-theme-balham.css';
+@import '@ag-grid-community/styles/ag-grid.css';
+@import '@ag-grid-community/styles/ag-theme-balham.css';
 
-@import '~@yuuvis/styles/yuuvis.min.css';
-@import '~@yuuvis/styles/yuuvis-theme-dark.min.css';
-@import '~@angular/cdk/overlay-prebuilt.css';
+@import '@yuuvis/styles/yuuvis.min.css';
+@import '@yuuvis/styles/yuuvis-theme-dark.min.css';
+@import '@angular/cdk/overlay-prebuilt.css';
 
-@import '~primeng/resources/primeng.min.css';
-@import '~primeicons/primeicons.css';
-@import '~primeng/resources/themes/nova/theme.css';
+@import 'primeng/resources/primeng.min.css';
+@import 'primeicons/primeicons.css';
+@import 'primeng/resources/themes/nova/theme.css';
 
 @import './general';
 @import './actions';

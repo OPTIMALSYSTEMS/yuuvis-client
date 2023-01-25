@@ -77,7 +77,7 @@
       (onToggleLabel)="labelToggled($event)" [invalid]="errors">
       <yuv-checkbox [formControlName]="element._eoFormControlWrapper.controlName"
         [attr.data-name]="element._eoFormControlWrapper.controlName" [readonly]="formElementRef._eoFormElement.readonly"
-        [tristate]="true"></yuv-checkbox>
+        [tristate]="formElementRef._eoFormElement.tristate === false ? false : true"></yuv-checkbox>
     </yuv-form-input>
 
     <!-- BOOLEAN:SWITCH -->
@@ -86,7 +86,7 @@
       [required]="formElementRef._eoFormElement.required" [variable]="formElementRef._eoFormElement.variable" (onToggleLabel)="labelToggled($event)" [invalid]="errors">
       <yuv-checkbox [formControlName]="element._eoFormControlWrapper.controlName" switch="true"
         [attr.data-name]="element._eoFormControlWrapper.controlName" [readonly]="formElementRef._eoFormElement.readonly"
-        [tristate]="true"></yuv-checkbox>
+        [tristate]="formElementRef._eoFormElement.tristate === false ? false : true"></yuv-checkbox>
     </yuv-form-input>
 
     <!-- DATE / DATETIME -->
