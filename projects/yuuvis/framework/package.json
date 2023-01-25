@@ -35,5 +35,10 @@
     "primeng": "15.1.1",
     "@ngneat/until-destroy": "^9.2.2",
     "tslib": "^2.4.0"
+  },
+  "exports": {
+    "./framework.css": {
+      "style": "./framework.css"
+    }
   }
 }
