@@ -1,4 +1,4 @@
-<yuv-panel *ngIf="_task" class="task-details" [title]="header?.title" [yuvBusyOverlay]="busy"
+<yuv-panel *ngIf="_task" class="task-details tabbed" [title]="header?.title" [yuvBusyOverlay]="busy"
     [description]="header?.description">
 
     <div class="actions" *ngIf="dueDate">{{'yuv.framework.process-list.column.dueDate.label'|translate}}<span

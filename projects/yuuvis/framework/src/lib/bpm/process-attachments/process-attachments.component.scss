@@ -33,6 +33,11 @@
     background-color: var(--panel-background-lightgrey);
     overflow: auto hidden;
 
+    [contrast] & {
+      background-color: var(--item-focus-background-color);
+      border-bottom: 1px solid var(--panel-divider-color);
+    }
+
     .label {
       box-sizing: content-box;
       flex: 0 0 auto;

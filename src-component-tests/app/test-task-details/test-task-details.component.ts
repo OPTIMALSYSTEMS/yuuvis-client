@@ -1,10 +1,11 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { InboxService, Task } from '@yuuvis/core';
 import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { takeUntilDestroy } from 'take-until-destroy';
 import { Task1, Task2 } from './task.data';
 
+@UntilDestroy()
 @Component({
   selector: 'yuv-test-task-details',
   templateUrl: './test-task-details.component.html',
@@ -18,7 +19,7 @@ export class TestTaskDetailsComponent implements OnInit, OnDestroy {
   disableBriefRepresentation = this.inboxService.disableBriefRepresentation;
 
   constructor(private inboxService: InboxService) {
-    this.inboxService.inboxData$.pipe(takeUntilDestroy(this)).subscribe((res) => (this.allTasks = res));
+    this.inboxService.inboxData$.pipe(untilDestroyed(this)).subscribe((res) => (this.allTasks = res));
   }
 
   refreshList() {

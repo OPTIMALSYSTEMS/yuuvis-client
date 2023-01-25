@@ -6,7 +6,8 @@
     <!-- STRING -->
     <yuv-form-input *ngSwitchCase="'string'" [tag]="tag" [label]="formElementRef._eoFormElement.label" [isNull]="isNull"
       [skipToggle]="shouldSkipToggle" (onToggleLabel)="labelToggled($event)"
-      [required]="formElementRef._eoFormElement.required" [variable]="formElementRef._eoFormElement.variable" [invalid]="errors">
+      [required]="formElementRef._eoFormElement.required" [variable]="formElementRef._eoFormElement.variable"
+      [invalid]="errors">
       <!-- *ngIf="!formElementRef._eoFormElement.reference && formElementRef._eoFormElement.classification !== 'selector' && formElementRef._eoFormElement.classification !== 'id:organization'" -->
       <yuv-string [situation]="element._eoFormControlWrapper.situation"
         [formControlName]="element._eoFormControlWrapper.controlName"
@@ -21,7 +22,8 @@
     <!-- STRING:REFERENCE -->
     <yuv-form-input *ngSwitchCase="'string:reference'" [tag]="tag" [label]="formElementRef._eoFormElement.label"
       [isNull]="isNull" [skipToggle]="shouldSkipToggle" (onToggleLabel)="labelToggled($event)"
-      [required]="formElementRef._eoFormElement.required" [variable]="formElementRef._eoFormElement.variable" [invalid]="errors">
+      [required]="formElementRef._eoFormElement.required" [variable]="formElementRef._eoFormElement.variable"
+      [invalid]="errors">
       <yuv-reference [situation]="element._eoFormControlWrapper.situation"
         [formControlName]="element._eoFormControlWrapper.controlName"
         [attr.data-name]="element._eoFormControlWrapper.controlName"
@@ -31,10 +33,25 @@
       </yuv-reference>
     </yuv-form-input>
 
+    <!-- STRING:ORGANIZATION:SET -->
+    <yuv-form-input *ngSwitchCase="'string:organization:set'" [tag]="tag" [label]="formElementRef._eoFormElement.label"
+      [isNull]="isNull" [skipToggle]="shouldSkipToggle" (onToggleLabel)="labelToggled($event)"
+      [required]="formElementRef._eoFormElement.required" [variable]="formElementRef._eoFormElement.variable"
+      [invalid]="errors">
+      <yuv-organization-set [situation]="element._eoFormControlWrapper.situation"
+        [multiselect]="formElementRef._eoFormElement.cardinality === 'multi' || situation === 'SEARCH'"
+        [formControlName]="element._eoFormControlWrapper.controlName"
+        [attr.data-name]="element._eoFormControlWrapper.controlName"
+        [classifications]="formElementRef._eoFormElement.classifications"
+        [readonly]="formElementRef._eoFormElement.readonly">
+      </yuv-organization-set>
+    </yuv-form-input>
+
     <!-- STRING:ORGANIZATION -->
     <yuv-form-input *ngSwitchCase="'string:organization'" [tag]="tag" [label]="formElementRef._eoFormElement.label"
       [isNull]="isNull" [skipToggle]="shouldSkipToggle" (onToggleLabel)="labelToggled($event)"
-      [required]="formElementRef._eoFormElement.required" [variable]="formElementRef._eoFormElement.variable" [invalid]="errors">
+      [required]="formElementRef._eoFormElement.required" [variable]="formElementRef._eoFormElement.variable"
+      [invalid]="errors">
       <yuv-organization [situation]="element._eoFormControlWrapper.situation"
         [multiselect]="formElementRef._eoFormElement.cardinality === 'multi' || situation === 'SEARCH'"
         (userSelect)="onDataMetaChange($event)" [formControlName]="element._eoFormControlWrapper.controlName"
@@ -47,7 +64,8 @@
     <!-- STRING:CATALOG -->
     <yuv-form-input *ngSwitchCase="'string:catalog'" [tag]="tag" [label]="formElementRef._eoFormElement.label"
       [isNull]="isNull" [skipToggle]="skipToggle || situation !== 'SEARCH'" (onToggleLabel)="labelToggled($event)"
-      [required]="formElementRef._eoFormElement.required" [variable]="formElementRef._eoFormElement.variable" [invalid]="errors">
+      [required]="formElementRef._eoFormElement.required" [variable]="formElementRef._eoFormElement.variable"
+      [invalid]="errors">
       <yuv-catalog [situation]="element._eoFormControlWrapper.situation"
         [formControlName]="element._eoFormControlWrapper.controlName"
         [attr.data-name]="element._eoFormControlWrapper.controlName"
@@ -61,7 +79,8 @@
     <!-- STRING:CATALOG:DYNAMIC -->
     <yuv-form-input *ngSwitchCase="'string:catalog:dynamic'" [tag]="tag" [label]="formElementRef._eoFormElement.label"
       [isNull]="isNull" [skipToggle]="skipToggle || situation !== 'SEARCH'" (onToggleLabel)="labelToggled($event)"
-      [required]="formElementRef._eoFormElement.required" [variable]="formElementRef._eoFormElement.variable" [invalid]="errors">
+      [required]="formElementRef._eoFormElement.required" [variable]="formElementRef._eoFormElement.variable"
+      [invalid]="errors">
       <yuv-dynamic-catalog [situation]="element._eoFormControlWrapper.situation"
         [formControlName]="element._eoFormControlWrapper.controlName"
         [attr.data-name]="element._eoFormControlWrapper.controlName"
@@ -73,8 +92,8 @@
 
     <!-- BOOLEAN -->
     <yuv-form-input *ngSwitchCase="'boolean'" [tag]="tag" class="checkbox" [label]="formElementRef._eoFormElement.label"
-      [isNull]="isNull" [skipToggle]="shouldSkipToggle" [required]="formElementRef._eoFormElement.required" [variable]="formElementRef._eoFormElement.variable"
-      (onToggleLabel)="labelToggled($event)" [invalid]="errors">
+      [isNull]="isNull" [skipToggle]="shouldSkipToggle" [required]="formElementRef._eoFormElement.required"
+      [variable]="formElementRef._eoFormElement.variable" (onToggleLabel)="labelToggled($event)" [invalid]="errors">
       <yuv-checkbox [formControlName]="element._eoFormControlWrapper.controlName"
         [attr.data-name]="element._eoFormControlWrapper.controlName" [readonly]="formElementRef._eoFormElement.readonly"
         [tristate]="formElementRef._eoFormElement.tristate === false ? false : true"></yuv-checkbox>
@@ -83,7 +102,8 @@
     <!-- BOOLEAN:SWITCH -->
     <yuv-form-input *ngSwitchCase="'boolean:switch'" [tag]="tag" class="checkbox"
       [label]="formElementRef._eoFormElement.label" [isNull]="isNull" [skipToggle]="shouldSkipToggle"
-      [required]="formElementRef._eoFormElement.required" [variable]="formElementRef._eoFormElement.variable" (onToggleLabel)="labelToggled($event)" [invalid]="errors">
+      [required]="formElementRef._eoFormElement.required" [variable]="formElementRef._eoFormElement.variable"
+      (onToggleLabel)="labelToggled($event)" [invalid]="errors">
       <yuv-checkbox [formControlName]="element._eoFormControlWrapper.controlName" switch="true"
         [attr.data-name]="element._eoFormControlWrapper.controlName" [readonly]="formElementRef._eoFormElement.readonly"
         [tristate]="formElementRef._eoFormElement.tristate === false ? false : true"></yuv-checkbox>
@@ -92,7 +112,8 @@
     <!-- DATE / DATETIME -->
     <yuv-form-input *ngSwitchCase="'datetime'" [tag]="tag" [label]="formElementRef._eoFormElement.label"
       [isNull]="isNull" [skipToggle]="shouldSkipToggle" (onToggleLabel)="labelToggled($event)"
-      [required]="formElementRef._eoFormElement.required" [variable]="formElementRef._eoFormElement.variable" [invalid]="errors">
+      [required]="formElementRef._eoFormElement.required" [variable]="formElementRef._eoFormElement.variable"
+      [invalid]="errors">
       <yuv-datetime *ngIf="situation !== 'SEARCH'; else tplDateTimeRange"
         [readonly]="formElementRef._eoFormElement.readonly"
         [withTime]="formElementRef._eoFormElement.resolution !== 'date'"
@@ -112,7 +133,8 @@
     <!-- INTERGER -->
     <yuv-form-input *ngSwitchCase="'integer'" [tag]="tag" [label]="formElementRef._eoFormElement.label"
       [isNull]="isNull" [skipToggle]="shouldSkipToggle" (onToggleLabel)="labelToggled($event)"
-      [required]="formElementRef._eoFormElement.required" [variable]="formElementRef._eoFormElement.variable" [invalid]="errors">
+      [required]="formElementRef._eoFormElement.required" [variable]="formElementRef._eoFormElement.variable"
+      [invalid]="errors">
       <yuv-number *ngIf="situation !== 'SEARCH'; else tplIntegerRange"
         [readonly]="formElementRef._eoFormElement.readonly" [precision]="formElementRef._eoFormElement.precision"
         [scale]="0" [grouping]="formElementRef._eoFormElement.grouping"
@@ -136,7 +158,8 @@
     <!-- DECIMAL -->
     <yuv-form-input *ngSwitchCase="'decimal'" [tag]="tag" [label]="formElementRef._eoFormElement.label"
       [isNull]="isNull" [skipToggle]="shouldSkipToggle" (onToggleLabel)="labelToggled($event)"
-      [required]="formElementRef._eoFormElement.required" [variable]="formElementRef._eoFormElement.variable" [invalid]="errors">
+      [required]="formElementRef._eoFormElement.required" [variable]="formElementRef._eoFormElement.variable"
+      [invalid]="errors">
       <yuv-number *ngIf="situation !== 'SEARCH'; else tplDecimalRange"
         [readonly]="formElementRef._eoFormElement.readonly" [precision]="formElementRef._eoFormElement.precision"
         [scale]="formElementRef._eoFormElement.scale" [grouping]="formElementRef._eoFormElement.grouping"

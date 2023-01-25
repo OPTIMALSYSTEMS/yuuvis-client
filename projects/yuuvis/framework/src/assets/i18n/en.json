@@ -247,6 +247,7 @@
 	"yuv.framework.process-details-summary.vars.scope": "Scope",
 	"yuv.framework.process-details-summary.vars.type": "Type",
 	"yuv.framework.process-details-summary.vars.value": "Value",
+	"yuv.framework.process-details.attachment-picker.headline": "Add attachments",
 	"yuv.framework.process-details.tabs.summary.title": "Summary",
 	"yuv.framework.process-list.column.businessKey.label": "Object",
 	"yuv.framework.process-list.column.createTime.label": "Received on",

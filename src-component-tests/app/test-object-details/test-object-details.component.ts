@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { DmsObject } from '@yuuvis/core';
+import { DmsObject, SearchQuery } from '@yuuvis/core';
 import { AppDataService } from '../add.data.service';
 
 @Component({
@@ -10,6 +10,9 @@ import { AppDataService } from '../add.data.service';
 })
 export class TestObjectDetailsComponent implements OnInit {
   summaryObject;
+  objectQuery = new SearchQuery({
+    types: ['tenKolibri:qadocallsinglefields']
+  });
 
   constructor(private data: AppDataService) {}
 

@@ -11,7 +11,7 @@ const deps = (p) => {
     const packageJsonDependencies = require(path.join(__dirname, '..', '..', '..', '..', 'node_modules', key, '/package.json'));
     return {
       name: key,
-      version: packageJsonDependencies.version,
+      // version: packageJsonDependencies.version,
       license: packageJsonDependencies.license || 'not specified'
     };
   });

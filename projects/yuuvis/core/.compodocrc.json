@@ -11,6 +11,7 @@
   "disableCoverage": true,
   "coverageTestThresholdFail": false,
   "hideGenerator": true,
+  "hideDarkModeToggle": true,
   "extTheme": "./../../../documentation/styles",
   "templates": "./../../../documentation/templates",
   "navTabConfig": [

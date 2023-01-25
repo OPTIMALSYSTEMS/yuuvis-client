@@ -366,13 +366,10 @@ export class Utils {
   }
 
   public static downloadBlob(content: any, mimeType: string, filename: string): void {
-    let bytes = new Uint8Array(content.length);
-    for (let i = 0; i < bytes.length; i++) {
-      bytes[i] = content.charCodeAt(i);
-    }
+    const bom = new Uint8Array([0xef, 0xbb, 0xbf]); // FORM BOM
+    const blob = new Blob([bom, content], { type: 'octet/stream' });
     const a = document.createElement('a');
-    const blob = new Blob([bytes], { type: mimeType });
-    const url = URL.createObjectURL(blob);
+    const url = window.URL.createObjectURL(blob);
     a.setAttribute('href', url);
     a.setAttribute('download', filename);
     a.click();

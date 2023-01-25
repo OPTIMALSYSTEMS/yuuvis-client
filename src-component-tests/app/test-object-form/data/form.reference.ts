@@ -5,7 +5,7 @@ export const referenceElements = [
     label: 'multiselect',
     description: 'multiselect',
     cardinality: 'multi',
-    classification: ['id:reference'],
+    classifications: ['id:reference'],
     type: 'string:reference',
     required: false
   },
@@ -15,7 +15,7 @@ export const referenceElements = [
     label: 'restricted',
     description: 'restricted to a certain target type',
     multiselect: false,
-    classification: ['id:reference[system:folder]'],
+    classifications: ['id:reference[system:folder]'],
     type: 'string:reference',
     required: false
   },
@@ -24,7 +24,7 @@ export const referenceElements = [
     name: 'id:reference:value',
     label: 'with initial value',
     description: 'with initial value',
-    classification: ['id:reference'],
+    classifications: ['id:reference'],
     multiselect: false,
     type: 'string:reference',
     required: false
@@ -34,7 +34,7 @@ export const referenceElements = [
     name: 'id:reference:readonly',
     label: 'readonly with initial value',
     description: 'readonly',
-    classification: ['id:reference'],
+    classifications: ['id:reference'],
     multiselect: false,
     type: 'string:reference',
     required: false

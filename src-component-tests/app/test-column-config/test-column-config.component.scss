@@ -6,11 +6,10 @@
     height: 70vh;
     yuv-column-config {
       flex: 1;
-      // overflow-y: auto;
+      border: 1px solid var(--panel-divider-color);
     }
-    yuv-column-config-select {
-      border-right: 1px solid var(--panel-divider-color);
-      overflow-y: auto;
-    }
+    // yuv-column-config-select {
+    //   overflow-y: auto;
+    // }
   }
 }

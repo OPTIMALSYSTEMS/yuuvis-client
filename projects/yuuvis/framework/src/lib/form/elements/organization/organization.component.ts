@@ -1,11 +1,11 @@
 import { AfterViewInit, Component, EventEmitter, forwardRef, HostBinding, HostListener, Input, Output, ViewChild } from '@angular/core';
-import { ControlValueAccessor, UntypedFormControl, NG_VALIDATORS, NG_VALUE_ACCESSOR, Validator } from '@angular/forms';
+import { ControlValueAccessor, NG_VALIDATORS, NG_VALUE_ACCESSOR, UntypedFormControl, Validator } from '@angular/forms';
 import { Classification, SystemService, UserService, YuvUser } from '@yuuvis/core';
 import { AutoComplete } from 'primeng/autocomplete';
 import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { IconRegistryService } from '../../../common/components/icon/service/iconRegistry.service';
-import { organization } from '../../../svg.generated';
+import { organization, organizationMulti } from '../../../svg.generated';
 
 /**
  * Creates form input for organisation values.
@@ -44,8 +44,8 @@ export class OrganizationComponent implements ControlValueAccessor, Validator, A
   value;
   _innerValue: YuvUser[] = [];
   set innerValue(iv: YuvUser[]) {
-    this._innerValue = iv;
-    this.userSelect.emit(iv);
+    this._innerValue = iv || [];
+    this.userSelect.emit(this._innerValue);
   }
   get innerValue() {
     return this._innerValue;
@@ -60,8 +60,12 @@ export class OrganizationComponent implements ControlValueAccessor, Validator, A
     event.stopPropagation();
   }
 
-  @HostBinding('class.inputDisabled') get _inputDisabled() { return !this.multiselect && this.innerValue?.length === 1; };
-  @HostBinding('class.inputDirty') get _inputDirty() { return this.autoCompleteInput?.multiInputEL?.nativeElement?.value; };
+  @HostBinding('class.inputDisabled') get _inputDisabled() {
+    return !this.multiselect && this.innerValue?.length === 1;
+  }
+  @HostBinding('class.inputDirty') get _inputDirty() {
+    return this.autoCompleteInput?.multiInputEL?.nativeElement?.value;
+  }
 
   /**
    * Possibles values are `EDIT` (default),`SEARCH`,`CREATE`. In search situation validation of the form element will be turned off, so you are able to enter search terms that do not meet the elements validators.
@@ -78,7 +82,6 @@ export class OrganizationComponent implements ControlValueAccessor, Validator, A
   @Input() set classifications(c: string[]) {
     this._classifications = c;
     if (c?.length) {
-      // check for roles classification (id:organization[roles:APPROVER1,APPROVER2])
       const classifications = this.system.getClassifications(c);
       if (classifications.has(Classification.STRING_ORGANIZATION)) {
         const options = classifications.get(Classification.STRING_ORGANIZATION).options;
@@ -111,7 +114,7 @@ export class OrganizationComponent implements ControlValueAccessor, Validator, A
   @Output() userSelect = new EventEmitter<YuvUser[]>();
 
   constructor(private iconRegistry: IconRegistryService, private system: SystemService, private userService: UserService) {
-    this.iconRegistry.registerIcons([organization]);
+    this.iconRegistry.registerIcons([organization, organizationMulti]);
   }
 
   propagateChange = (_: any) => {};

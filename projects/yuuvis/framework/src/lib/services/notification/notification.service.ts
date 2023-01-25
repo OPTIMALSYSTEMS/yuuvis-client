@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { AuthService, EventService, YuvEventType } from '@yuuvis/core';
 import { IndividualConfig, ToastrService } from 'ngx-toastr';
 
 /**
@@ -8,6 +9,11 @@ import { IndividualConfig, ToastrService } from 'ngx-toastr';
   providedIn: 'root'
 })
 export class NotificationService {
+  /**
+   * Set to true to suppress any notifications
+   */
+  silent: boolean = false;
+
   /**
    * Default Notofication Options
    *
@@ -22,7 +28,10 @@ export class NotificationService {
    *
    * @ignore
    */
-  constructor(private toastrService: ToastrService) {}
+  constructor(private toastrService: ToastrService, private authService: AuthService, private eventService: EventService) {
+    this.authService.authenticated$.subscribe((a) => (this.silent = !a));
+    this.eventService.on(YuvEventType.LOGOUT).subscribe(() => (this.silent = true));
+  }
 
   /**
    * Show info colored massage (blue)
@@ -112,6 +121,7 @@ export class NotificationService {
    * @param string mode
    */
   private doToast(msg: string, title: string, options: any, mode?: string) {
+    if (this.silent) return;
     switch (mode) {
       case 'success': {
         this.toastrService.success(msg, title, options);
