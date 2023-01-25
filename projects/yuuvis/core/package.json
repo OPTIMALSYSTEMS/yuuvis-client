@@ -1,6 +1,6 @@
 {
   "name": "@yuuvis/core",
-  "version": "4.0.0-beta.4",
+  "version": "5.0.0-beta.1",
   "author": "OPTIMAL SYSTEMS GmbH <npm@optimal-systems.de>",
   "license": "MIT",
   "scripts": {
@@ -9,8 +9,8 @@
     "doc:serve": "./node_modules/.bin/compodoc -s"
   },
   "peerDependencies": {
-    "@angular/common": "^15.0.2",
-    "@angular/core": "^15.0.2",
+    "@angular/common": "^15.1.2",
+    "@angular/core": "^15.1.2",
     "rxjs": "^7.8.0"
   },
   "dependencies": {
