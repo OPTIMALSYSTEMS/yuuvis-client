@@ -25,7 +25,7 @@ export class UserService {
   static USERS_SETTINGS = '/users/settings/';
   static DEFAULT_SETTINGS = '/users/settings';
 
-  USER_FETCH_URI = '/users/whoami';
+  USER_FETCH_URI = '/idm/whoami';
   private user: YuvUser = null;
   private userSource = new BehaviorSubject<YuvUser>(this.user);
   user$: Observable<YuvUser> = this.userSource.asObservable();
@@ -182,13 +182,11 @@ export class UserService {
   queryUser(term: string, excludeMe?: boolean, roles?: string[]): Observable<YuvUser[]> {
     const params = roles?.length ? roles.map((r) => `roles=${r}`) : [];
     if (excludeMe) params.push('excludeMe=true');
-    return this.backend
-      .get(`/users/users?search=${term}${`&${params.join('&')}`}`)
-      .pipe(map((users) => (!users ? [] : users.map((u) => new YuvUser(u, null)))));
+    return this.backend.get(`/idm/users?search=${term}${`&${params.join('&')}`}`).pipe(map((users) => (!users ? [] : users.map((u) => new YuvUser(u, null)))));
   }
 
   getUserById(id: string): Observable<YuvUser> {
-    return this.backend.get(`/users/${id}`).pipe(map((user) => new YuvUser(user, this.user.userSettings)));
+    return this.backend.get(`/idm/users/${id}`).pipe(map((user) => new YuvUser(user, this.user.userSettings)));
   }
 
   logout(redirRoute?: string): void {

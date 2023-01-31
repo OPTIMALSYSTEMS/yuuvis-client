@@ -3,7 +3,7 @@
   <yuv-responsive-master-slave class="state" [layoutOptionsKey]="layoutOptionsKey"
     #splitpane [slaveActive]="!!selectedProcess"
     (slaveClosed)="onSlaveClosed()">
-    <yuv-process-list class="yuv-master panel" [showFooter]="true" [headerDetails]="headerDetails"
+    <yuv-process-list class="yuv-master panel" [showFooter]="true" [headerDetails]="headerDetails" [yuvBusyOverlay]="loading$ | async"
       [layoutOptionsKey]="layoutOptionsKey" [processData]="processData" [statusFilter]="'running'"
       (statusFilterChange)="onStatusFilterChange($event)" (refreshList)="refreshList()"
       (selectedItem)="selectedItem($event)" (termFilterChange)="onTermFilterChange($event)"></yuv-process-list>

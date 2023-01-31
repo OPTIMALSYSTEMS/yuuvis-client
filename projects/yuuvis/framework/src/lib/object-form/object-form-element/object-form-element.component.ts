@@ -4,6 +4,7 @@ import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { ObjectFormTranslateService } from '../object-form-translate.service';
 import { ObjectFormControlWrapper } from '../object-form.interface';
 import { Situation } from './../object-form.situation';
+import { ObjectFormUtils } from '../object-form.utils';
 
 /**
  * Component rendering a single form element.
@@ -50,6 +51,10 @@ export class ObjectFormElementComponent implements OnDestroy {
       this.formElementRef._eoFormElement.readonly ||
       (this.formElementRef._eoFormElement._internalType || '').match('boolean')
     );
+  }
+
+  @Input() set formElement(el: {element: any, situation?: string}) {
+    this.elementSetter = el && ObjectFormUtils.elementToFormControl(el.element, el.situation);
   }
 
   /**

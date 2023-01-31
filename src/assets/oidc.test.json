@@ -1,7 +1,0 @@
-{
-  "host": "https://kolibri.enaioci.net",
-  "tenant": "kolibri",
-  "issuer": "https://auth.enaioci.net/auth/realms/kolibri",
-  "clientId": "spa-client",
-  "postLogoutRedirectUri": "https://www.optimal-systems.de"
-}

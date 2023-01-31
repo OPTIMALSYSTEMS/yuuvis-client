@@ -107,6 +107,7 @@ export enum Classification {
   STRING_CATALOG_DYNAMIC = 'dynamic:catalog',
   STRING_CATALOG = 'catalog',
   STRING_ORGANIZATION = 'id:organization',
+  STRING_ORGANIZATION_SET = 'id:organization:set',
   STRING_REFERENCE = 'id:reference',
   STRING_EMAIL = 'email',
   STRING_URL = 'url',
@@ -141,6 +142,7 @@ export enum SecondaryObjectTypeClassification {
 
 // special internal types of object type fields
 export const InternalFieldType = {
+  STRING_ORGANIZATION_SET: 'string:organization:set',
   STRING_ORGANIZATION: 'string:organization',
   STRING_REFERENCE: 'string:reference',
   STRING_CATALOG: 'string:catalog',

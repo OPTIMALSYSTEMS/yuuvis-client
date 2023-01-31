@@ -1,4 +1,3 @@
-import { RowNode } from '@ag-grid-community/core';
 import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
@@ -20,7 +19,6 @@ interface HeaderDetails {
 export class ProcessListComponent {
   @ViewChild('dataTable') dataTable: ResponsiveDataTableComponent;
   private _processData: any;
-  private _viewMode: ViewMode = 'horizontal';
   header: HeaderDetails;
   totalNumItems: number;
 
@@ -29,17 +27,6 @@ export class ProcessListComponent {
   set processData(data: ResponsiveTableData) {
     this._processData = data;
     this.totalNumItems = data ? data.rows?.length : 0;
-
-    let rowsToBeSelected: RowNode[] = this.dataTable?.gridOptions.api?.getSelectedNodes();
-    if (rowsToBeSelected?.length) {
-      // try to find index by ID first
-      const rowNode = this.dataTable.gridOptions.api.getRowNode(rowsToBeSelected[0].data.id);
-      let index = rowNode ? rowNode.rowIndex : rowsToBeSelected[0].rowIndex;
-      if (index >= data.rows.length) index = data.rows.length - 1;
-      setTimeout(() => {
-        this.dataTable.gridOptions.api?.selectIndex(index, false, false);
-      }, 50);
-    }
   }
   get processData() {
     return this._processData;

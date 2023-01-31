@@ -29,6 +29,8 @@ export * from './lib/service/dms/dms.service';
 export * from './lib/service/event/event.interface';
 export * from './lib/service/event/event.service';
 export * from './lib/service/event/events';
+export * from './lib/service/idm/idm.interface';
+export * from './lib/service/idm/idm.service';
 export * from './lib/service/logger/logger';
 export * from './lib/service/pending-changes/pending-changes-guard.service';
 export * from './lib/service/pending-changes/pending-changes.service';

@@ -1,6 +1,7 @@
 import { Component, ElementRef, forwardRef, HostListener, Input, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { ControlValueAccessor, NG_VALIDATORS, NG_VALUE_ACCESSOR, UntypedFormControl, Validator } from '@angular/forms';
 import { TranslateService } from '@yuuvis/core';
+import { Subscription } from 'rxjs';
 import { IconRegistryService } from '../../../common/components/icon/service/iconRegistry.service';
 import { LocaleDatePipe } from '../../../pipes/locale-date.pipe';
 import { PopoverConfig } from '../../../popover/popover.interface';
@@ -47,13 +48,14 @@ export class DatetimeComponent implements OnInit, ControlValueAccessor, Validato
   innerValue; // inner ng-model value
   locale;
   datePipe: LocaleDatePipe;
-  showPicker = false;
   private isValidInput = true;
   maskPattern: string;
   _datePattern: string;
   datePattern: string;
   _withTime: boolean;
   withAmPm: boolean;
+  private _popoverRef: PopoverRef | undefined;
+  private _pickerCloseSub: Subscription | undefined;
 
   @HostListener('document:keydown.enter', ['$event'])
   onKeydownHandler(event: KeyboardEvent) {
@@ -134,8 +136,7 @@ export class DatetimeComponent implements OnInit, ControlValueAccessor, Validato
   }
 
   openPicker() {
-    if (this.tplDatePicker['_projectedViews']?.length) return; // allows to open only one instance
-
+    if (!!this._pickerCloseSub) return; // already gou an open picker dialog
     const popoverConfig: PopoverConfig = {
       disableSmallScreenClose: true,
       data: {
@@ -145,7 +146,13 @@ export class DatetimeComponent implements OnInit, ControlValueAccessor, Validato
         onlyFutureDates: this.onlyFutureDates
       }
     };
-    this.popoverService.open(this.tplDatePicker, popoverConfig);
+    this._popoverRef = this.popoverService.open(this.tplDatePicker, popoverConfig);
+    this._pickerCloseSub = this._popoverRef.afterClosed().subscribe({
+      next: () => {
+        this._pickerCloseSub.unsubscribe();
+        this._pickerCloseSub = undefined;
+      }
+    });
   }
 
   setValueFromPicker(event, popoverRef?: PopoverRef) {
