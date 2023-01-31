@@ -2,7 +2,7 @@ import { ClientSideRowModelModule } from '@ag-grid-community/client-side-row-mod
 import { ColDef, GridOptions, Module, RowEvent, RowHeightParams, RowNode } from '@ag-grid-community/core';
 import { Component, ElementRef, EventEmitter, HostBinding, HostListener, Input, NgZone, OnDestroy, OnInit, Output } from '@angular/core';
 import { BaseObjectTypeField, DeviceService, PendingChangesService, Utils } from '@yuuvis/core';
-import { ResizedEvent } from 'angular-resize-event';
+import { NgxResize, NgxResizeResult } from 'ngx-resize';
 import { Observable, ReplaySubject } from 'rxjs';
 import { debounceTime, map } from 'rxjs/operators';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
@@ -53,13 +53,14 @@ export interface ResponsiveDataTableOptions {
   templateUrl: './responsive-data-table.component.html',
   styleUrls: ['./responsive-data-table.component.scss'],
   host: { class: 'yuv-responsive-data-table' },
+  hostDirectives: [{ directive: NgxResize, outputs: ['ngxResize'] }],
   providers: [LocaleDatePipe]
 })
 export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
   private id = '#grid_' + Utils.uuid();
   // internal subject for element size changes used for debouncing resize events
-  private resizeSource = new ReplaySubject<ResizedEvent>();
-  public resize$: Observable<ResizedEvent> = this.resizeSource.asObservable();
+  private resizeSource = new ReplaySubject<NgxResizeResult>();
+  public resize$: Observable<NgxResizeResult> = this.resizeSource.asObservable();
   // internal subject column size changes used for debouncing column resize events
   private columnResizeSource = new ReplaySubject<any>();
   public columnResize$: Observable<any> = this.columnResizeSource.asObservable();
@@ -231,9 +232,9 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
         untilDestroyed(this)
         // debounceTime(500)
       )
-      .subscribe(({ newRect }: ResizedEvent) => {
-        const newHeight = newRect.height;
-        const newWidth = newRect.width;
+      .subscribe((resize: NgxResizeResult) => {
+        const newHeight = resize.height;
+        const newWidth = resize.width;
         this.settings.size = { newHeight, newWidth };
         this._autoViewMode = newHeight < this.breakpoint ? 'grid' : newWidth < this.breakpoint ? 'horizontal' : 'standard';
         if (this.viewMode === 'auto') {
@@ -516,11 +517,8 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
     }
   }
 
-  /**
-   * custom event handler
-   * @param e
-   */
-  onResized(e: ResizedEvent) {
+  @HostListener('ngxResize', ['$event'])
+  onResized(e: NgxResizeResult) {
     this.resizeSource.next(e);
   }
 

@@ -14,7 +14,7 @@ import {
   ViewChildren
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { ResizedEvent } from 'angular-resize-event';
+import { NgxResize, NgxResizeResult } from 'ngx-resize';
 import { Observable, Subject, timer } from 'rxjs';
 import { debounce, tap } from 'rxjs/operators';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
@@ -44,6 +44,7 @@ import { SelectableItemComponent } from './selectable-item/selectable-item.compo
   selector: 'yuv-grouped-select',
   templateUrl: './grouped-select.component.html',
   styleUrls: ['./grouped-select.component.scss'],
+  hostDirectives: [{ directive: NgxResize, outputs: ['ngxResize'] }],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
@@ -232,9 +233,10 @@ export class GroupedSelectComponent implements AfterViewInit, ControlValueAccess
       group.collapsed = !group.collapsed;
     }
   }
-
-  onContainerResized(event: ResizedEvent) {
-    this.sizeSource.next(event.newRect);
+  
+  @HostListener('ngxResize', ['$event'])
+  onContainerResized(resize: NgxResizeResult) {
+    this.sizeSource.next(resize);
   }
 
   propagateChange = (_: any) => {};
