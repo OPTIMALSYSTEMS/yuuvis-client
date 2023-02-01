@@ -4,7 +4,7 @@
   "releaseDate": "Spring 2023",
   "description": "yuuvis® client",
   "author": "OPTIMAL SYSTEMS GmbH",
-  "license": "Apache-2.0",
+  "license": "BSD",
   "scripts": {
     "ng": "ng",
     "prebuild:about": "node ./tools/scripts/common/about/prebuild-about-state",
