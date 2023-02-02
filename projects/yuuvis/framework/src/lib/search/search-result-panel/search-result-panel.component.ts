@@ -3,10 +3,11 @@ import { Component, EventEmitter, Input, Output, TemplateRef, ViewChild } from '
 import { ColumnConfig, DmsService, SearchQuery, SearchService, SystemService, TranslateService, UserConfigService } from '@yuuvis/core';
 import { finalize, Observable, switchMap } from 'rxjs';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
-import { ResponsiveDataTableOptions, ViewMode } from '../../components/responsive-data-table/responsive-data-table.component';
+import { ResponsiveDataTableOptions } from '../../components/responsive-data-table/responsive-data-table.component';
 import { PopoverConfig } from '../../popover/popover.interface';
 import { PopoverRef } from '../../popover/popover.ref';
 import { PopoverService } from '../../popover/popover.service';
+import { ViewMode } from '../../shared/utils/utils';
 import { download, kebap, refresh, search, settings } from '../../svg.generated';
 import { FilterPanelConfig, SearchResultComponent } from '../search-result/search-result.component';
 /**
@@ -29,7 +30,7 @@ export class SearchResultPanelComponent {
   _searchQuery: SearchQuery;
   _options: ResponsiveDataTableOptions;
   columnConfigInput: any;
-  viewMode: ViewMode = 'standard';
+  viewMode: ViewMode = 'auto';
   queryDescription: string;
   actionMenuVisible = false;
   actionMenuSelection = [];

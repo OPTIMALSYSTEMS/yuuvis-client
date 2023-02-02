@@ -7,7 +7,7 @@ export { DmsObjectTileComponent } from './dms-object-tile/dms-object-tile.compon
 export { FilePickerComponent } from './file-picker/file-picker.component';
 export { PanelComponent } from './panel/panel.component';
 export { RecentActivitiesComponent, RecentActivitiesData, RecentItem } from './recent-activities/recent-activities.component';
-export { ResponsiveDataTableComponent, ResponsiveDataTableOptions, ViewMode } from './responsive-data-table/responsive-data-table.component';
+export { ResponsiveDataTableComponent, ResponsiveDataTableOptions } from './responsive-data-table/responsive-data-table.component';
 export { ResponsiveTableData } from './responsive-data-table/responsive-data-table.interface';
 export { ResponsiveMasterSlaveComponent } from './responsive-master-slave/responsive-master-slave.component';
 export { ResponsiveTabContainerComponent } from './responsive-tab-container/responsive-tab-container.component';

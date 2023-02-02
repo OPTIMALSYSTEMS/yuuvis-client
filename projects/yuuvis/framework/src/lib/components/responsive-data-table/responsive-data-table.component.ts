@@ -1,5 +1,5 @@
 import { ClientSideRowModelModule } from '@ag-grid-community/client-side-row-model';
-import { ColDef, GridOptions, Module, RowEvent, RowHeightParams, RowNode } from '@ag-grid-community/core';
+import { ColDef, GridOptions, Module, RowEvent, RowNode } from '@ag-grid-community/core';
 import { Component, ElementRef, EventEmitter, HostBinding, HostListener, Input, NgZone, OnDestroy, OnInit, Output } from '@angular/core';
 import { BaseObjectTypeField, DeviceService, PendingChangesService, Utils } from '@yuuvis/core';
 import { NgxResize, NgxResizeResult } from 'ngx-resize';
@@ -14,20 +14,12 @@ import { SingleCellRendererComponent } from '../../services/grid/renderer/single
 import { LayoutService } from '../../services/layout/layout.service';
 import { GridService } from './../../services/grid/grid.service';
 import { ResponsiveTableData } from './responsive-data-table.interface';
-
-/**
- * @ignore
- */
-export type ViewMode = 'standard' | 'horizontal' | 'grid' | 'auto';
+import { ViewMode } from '../../shared/utils/utils';
 
 /**
  * Input data for a `ResponsiveDataTableComponent`
  */
 export interface ResponsiveDataTableOptions {
-  /** View mode type of a data table.
-   * Can be `standard`, `horizontal`, `grid` or `auto`
-   */
-  viewMode?: ViewMode;
   /**
    * Object where the properties are the column IDs
    * and their values are the columns width.
@@ -71,7 +63,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
 
   private settings = {
     headerHeight: { standard: 37, horizontal: 0, grid: 0 },
-    rowHeight: { standard: 48, horizontal: 70, grid: 177 },
+    rowHeight: { standard: 70, horizontal: 70, grid: 177 },
     colWidth: { standard: 'auto', horizontal: 'auto', grid: 177 },
     size: { newHeight: 0, newWidth: 0 }
   };
@@ -96,9 +88,6 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
       .pipe(
         map((o: ResponsiveDataTableOptions) => {
           this._layoutOptions = o || {};
-          if (this._layoutOptions.viewMode) {
-            this.setupViewMode(this._layoutOptions.viewMode);
-          }
           this.applyGridOption(true);
         })
       )
@@ -127,41 +116,52 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
     }, 300);
   }
 
+  @Input()
+  set rowHeight(rowHeight: number) {
+    if (rowHeight && rowHeight !== this.settings.rowHeight.standard) {
+      this.settings.rowHeight.standard = rowHeight;
+      this.gridOptions?.api?.resetRowHeights();
+    }
+  }
+  get rowHeight() {
+    return this.settings.rowHeight.standard;
+  }
+
+  private _viewMode: ViewMode = 'auto';
+  private _currentViewMode: ViewMode = 'standard';
+  private _autoViewMode: ViewMode = 'standard';
+
   /**
    * view mode of the table
    */
-  @Input()
+  @Input() 
   set viewMode(viewMode: ViewMode) {
-    this.setupViewMode(viewMode);
-  }
-  get viewMode() {
-    return this._viewMode;
-  }
-
-  /**
-   * Limit the number of selected rows
-   */
-  @Input() selectionLimit;
-
-  set currentViewMode(viewMode: ViewMode) {
-    if (this.currentViewMode !== viewMode) {
-      this._currentViewMode = viewMode;
+    this._viewMode = viewMode || 'auto';
+    const currentViewMode = this._viewMode === 'auto' ? this._autoViewMode : this._viewMode;
+    if (this.currentViewMode !== currentViewMode) {
+      this._currentViewMode = currentViewMode;
       this.viewModeChanged.emit(this._currentViewMode);
       this.applyGridOption();
     }
+  }
+
+  get viewMode() {
+    return this._viewMode;
   }
 
   get currentViewMode() {
     return this._currentViewMode;
   }
 
+
+  /**
+   * Limit the number of selected rows
+   */
+   @Input() selectionLimit;
+
   private get focusField() {
     return this._data.columns[0] ? this._data.columns[0].field : BaseObjectTypeField.OBJECT_TYPE_ID;
   }
-
-  private _viewMode: ViewMode = 'standard';
-  private _currentViewMode: ViewMode = 'standard';
-  private _autoViewMode: ViewMode = 'standard';
 
   /**
    * width (number in pixel) of the table below which it should switch to small view
@@ -238,7 +238,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
         this.settings.size = { newHeight, newWidth };
         this._autoViewMode = newHeight < this.breakpoint ? 'grid' : newWidth < this.breakpoint ? 'horizontal' : 'standard';
         if (this.viewMode === 'auto') {
-          this.currentViewMode = this._autoViewMode;
+          this.viewMode = 'auto'; // force autoViewMode refresh
         }
         const nodes = this.gridOptions.api?.getSelectedNodes();
         nodes?.length && this.ensureVisibility(nodes[0].rowIndex);
@@ -253,7 +253,6 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
           }))
         });
         this._layoutOptions = {
-          viewMode: this.viewMode,
           columnWidths: Utils.arrayToObject(this.gridOptions.columnApi.getColumnState(), 'colId', 'width')
         };
         this.layoutService.saveLayoutOptions(this._layoutOptionsKey, 'yuv-responsive-data-table', { ...this._layoutOptions }).subscribe();
@@ -262,23 +261,6 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
 
     // subscribe to pending hanges
     this.pendingChanges.tasks$.pipe(untilDestroyed(this)).subscribe((tasks) => this.gridOptions && (this.gridOptions.suppressCellFocus = !!tasks.length));
-  }
-
-  getRowHeight(params: RowHeightParams): number {
-    return 70;
-  }
-
-  /**
-   * Set up the components view mode.
-   * @param viewMode The view mode to be set up
-   */
-  private setupViewMode(viewMode: ViewMode) {
-    this._layoutOptions.viewMode = viewMode;
-    if (this._viewMode && this._viewMode !== viewMode) {
-      this.layoutService.saveLayoutOptions(this._layoutOptionsKey, 'yuv-responsive-data-table', this._layoutOptions).subscribe();
-    }
-    this._viewMode = viewMode || 'standard';
-    this.currentViewMode = this._viewMode === 'auto' ? this._autoViewMode : this._viewMode;
   }
 
   /**
@@ -339,6 +321,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
       this.gridOptions.rowBuffer = this.isSmall ? 1000 : undefined;
       this.gridOptions.api.setRowData(this._data.rows);
       this.gridOptions.api.setHeaderHeight(this.settings.headerHeight[this.currentViewMode]);
+      this.gridOptions.api.resetRowHeights();
 
       const _columnDefs = JSON.stringify(this.gridOptions.columnDefs);
       const columns = this.applyColDefOptions(this.isSmall ? [this.getSmallSizeColDef()] : this._data.columns);

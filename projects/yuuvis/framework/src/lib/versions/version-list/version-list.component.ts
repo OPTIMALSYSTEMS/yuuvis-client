@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angu
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import {
   BaseObjectTypeField,
+  ConfigService,
   ContentStreamField,
   DmsObject,
   DmsService,
@@ -15,9 +16,10 @@ import {
 import { forkJoin, Observable, of } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
-import { ResponsiveDataTableComponent, ViewMode } from '../../components';
+import { ResponsiveDataTableComponent } from '../../components';
 import { ResponsiveTableData } from '../../components/responsive-data-table/responsive-data-table.interface';
 import { GridService } from '../../services/grid/grid.service';
+import { YuvGridOptions } from '../../shared/utils/utils';
 import { arrowNext, edit, listModeDefault, listModeGrid, listModeSimple, refresh, versions } from '../../svg.generated';
 
 /**
@@ -38,7 +40,7 @@ import { arrowNext, edit, listModeDefault, listModeGrid, listModeSimple, refresh
   templateUrl: './version-list.component.html',
   styleUrls: ['./version-list.component.scss']
 })
-export class VersionListComponent implements OnInit {
+export class VersionListComponent extends YuvGridOptions implements OnInit {
   @ViewChild('dataTable') dataTable: ResponsiveDataTableComponent;
 
   private objectTypeBaseProperties = this.system.getBaseProperties();
@@ -101,16 +103,6 @@ export class VersionListComponent implements OnInit {
   }
 
   /**
-   * Set the way the versions are visualized within the component. You may choose from
-   * the default list view, a table view and a more content focused tile view.
-   */
-  @Input() set viewMode(viewMode: ViewMode) {
-    if (this.dataTable) {
-      this.dataTable.viewMode = viewMode || 'horizontal';
-    }
-  }
-
-  /**
    * Providing a layout options key will enable the component to persist its layout settings
    * in relation to a host component. The key is basically a unique key for the host, which
    * will be used to store component specific settings using the layout service.
@@ -139,8 +131,10 @@ export class VersionListComponent implements OnInit {
     private dmsService: DmsService,
     private iconRegistry: IconRegistryService,
     private gridService: GridService,
-    private eventService: EventService
+    private eventService: EventService,
+    public config: ConfigService
   ) {
+    super(config);
     this.iconRegistry.registerIcons([edit, arrowNext, refresh, versions, listModeDefault, listModeGrid, listModeSimple]);
   }
 

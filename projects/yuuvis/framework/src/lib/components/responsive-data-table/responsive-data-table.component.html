@@ -1,5 +1,5 @@
 <div class="data-table-resizable">
-  <ag-grid-angular [modules]="modules" *ngIf="gridOptions" style="height: 100%" [getRowHeight]="getRowHeight" [gridOptions]="gridOptions"
+  <ag-grid-angular [modules]="modules" *ngIf="gridOptions" style="height: 100%" [gridOptions]="gridOptions"
     class="ag-theme-yuv ag-theme-balham" (mousedown)="onMouseDown($event)"
     (selectionChanged)="onSelectionChanged($event)" (rowDoubleClicked)="onRowDoubleClicked($event)"
     (columnResized)="onColumnResized($event)" (sortChanged)="onSortChanged($event)" (gridReady)="onGridReady($event)">

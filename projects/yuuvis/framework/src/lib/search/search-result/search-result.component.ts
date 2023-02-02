@@ -3,6 +3,7 @@ import { Attribute, Component, EventEmitter, Input, OnDestroy, Output, ViewChild
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import {
   BaseObjectTypeField,
+  ConfigService,
   DmsObject,
   EventService,
   SearchQuery,
@@ -11,7 +12,6 @@ import {
   SearchService,
   SortOption,
   SystemService,
-  UserConfigService,
   Utils,
   YuvEvent,
   YuvEventType
@@ -20,10 +20,11 @@ import { Observable, of } from 'rxjs';
 import { switchMap, tap } from 'rxjs/operators';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
-import { ResponsiveDataTableComponent, ViewMode } from '../../components/responsive-data-table/responsive-data-table.component';
+import { ResponsiveDataTableComponent } from '../../components/responsive-data-table/responsive-data-table.component';
 import { ResponsiveTableData } from '../../components/responsive-data-table/responsive-data-table.interface';
 import { GridService } from '../../services/grid/grid.service';
 import { arrowLast, arrowNext, clear, doubleArrow, filter, listModeDefault, listModeGrid, listModeSimple, search, settings } from '../../svg.generated';
+import { YuvGridOptions, ViewMode} from '../../shared/utils/utils';
 
 export interface FilterPanelConfig {
   open: boolean;
@@ -45,7 +46,7 @@ export interface FilterPanelConfig {
   styleUrls: ['./search-result.component.scss'],
   host: { class: 'yuv-search-result' }
 })
-export class SearchResultComponent implements OnDestroy {
+export class SearchResultComponent extends YuvGridOptions implements OnDestroy {
   // default and minimal size of the filter panel in pixel
   filterPanelSize = {
     default: 250,
@@ -160,19 +161,6 @@ export class SearchResultComponent implements OnDestroy {
    */
   @Output() filterPanelConfigChanged = new EventEmitter<FilterPanelConfig>();
 
-  /**
-   * view mode of the table
-   */
-  @Input() set viewMode(viewMode: ViewMode) {
-    if (this.dataTable) {
-      this.dataTable.viewMode = this.dataTable.viewMode !== viewMode ? viewMode : 'auto';
-    }
-  }
-
-  get viewMode() {
-    return this.dataTable ? this.dataTable.viewMode : null;
-  }
-
   get sortOptionsChanged() {
     return JSON.stringify(this._originalQuery?.sortOptions || []) !== JSON.stringify(this._searchQuery?.sortOptions || []);
   }
@@ -180,13 +168,14 @@ export class SearchResultComponent implements OnDestroy {
   constructor(
     @Attribute('applyColumnConfig') public applyColumnConfig: any, // string should be resolved
     private gridService: GridService,
-    private userConfig: UserConfigService,
+    public config: ConfigService,
     private system: SystemService,
     private eventService: EventService,
     private searchService: SearchService,
     private fb: UntypedFormBuilder,
     private iconRegistry: IconRegistryService
   ) {
+    super(config);
     this.applyColumnConfig = !applyColumnConfig || applyColumnConfig === 'false' ? false : true;
     this.iconRegistry.registerIcons([doubleArrow, filter, settings, clear, search, arrowNext, arrowLast, listModeDefault, listModeGrid, listModeSimple]);
 
@@ -235,6 +224,11 @@ export class SearchResultComponent implements OnDestroy {
     }
   }
 
+  setPageSize(limit: number) {
+    super.setPageSize(limit);
+    this.refresh();
+  }
+
   /**
    * re-run the current query
    */
@@ -245,6 +239,7 @@ export class SearchResultComponent implements OnDestroy {
   private executeQuery(applyColumnConfig?: boolean) {
     this.busy = true;
     this._searchQuery.from = 0; // always load 1st page
+    this._searchQuery.size = this.currentPageSize || this._searchQuery.size;
     (applyColumnConfig ? this.applyColumnConfiguration(this._searchQuery) : of(this._searchQuery))
       .pipe(
         tap((q) => this.queryChanged.emit(q)),
