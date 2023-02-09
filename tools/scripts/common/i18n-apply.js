@@ -38,7 +38,7 @@ function applyChanges() {
   }
 
   if(frameworkChanges > 0) {
-    saveJsonFile(enFrameworkPath, enFramework, 2);
+    saveJsonFile(enFrameworkPath, enFramework);
   }
 
   if(clientChanges > 0) {
