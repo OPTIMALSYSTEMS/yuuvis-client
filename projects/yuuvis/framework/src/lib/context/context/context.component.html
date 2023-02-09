@@ -6,7 +6,7 @@
 
   <yuv-action-menu-bar class="actions" yuvOfflineDisabled>
     <yuv-icon class="config" icon="settings" (click)="showColumnConfigEditor()"
-      *ngIf="activeSearchResult?.viewMode === 'standard'"> </yuv-icon>
+      *ngIf="activeSearchResult?.currentViewMode === 'standard'"> </yuv-icon>
     <yuv-icon (click)="refresh()" [title]="'yuv.framework.list.refresh' | translate" class="button refresh-button"
       [icon]="'refresh'"></yuv-icon>
     <yuv-action-menu-button (click)="openActionMenu()" [loading]="loading"

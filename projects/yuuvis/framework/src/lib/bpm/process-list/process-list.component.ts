@@ -1,9 +1,11 @@
 import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
+import { ConfigService } from '@yuuvis/core';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { ResponsiveTableData } from '../../components/responsive-data-table/responsive-data-table.interface';
+import { YuvGridOptions } from '../../shared/utils/utils';
 import { clear, listModeDefault, listModeSimple, refresh } from '../../svg.generated';
-import { ResponsiveDataTableComponent, ViewMode } from './../../components/responsive-data-table/responsive-data-table.component';
+import { ResponsiveDataTableComponent } from './../../components/responsive-data-table/responsive-data-table.component';
 
 interface HeaderDetails {
   title: string;
@@ -16,7 +18,7 @@ interface HeaderDetails {
   templateUrl: './process-list.component.html',
   styleUrls: ['./process-list.component.scss']
 })
-export class ProcessListComponent {
+export class ProcessListComponent  extends YuvGridOptions {
   @ViewChild('dataTable') dataTable: ResponsiveDataTableComponent;
   private _processData: any;
   header: HeaderDetails;
@@ -35,16 +37,6 @@ export class ProcessListComponent {
   @Input()
   set headerDetails({ title, description, icon }: HeaderDetails) {
     this.header = { title, description, icon };
-  }
-
-  @Input()
-  set viewMode(viewMode: ViewMode) {
-    if (this.dataTable) {
-      this.dataTable.viewMode = this.dataTable.viewMode !== viewMode ? viewMode : 'auto';
-    }
-  }
-  get viewMode(): ViewMode {
-    return this.dataTable ? this.dataTable.viewMode : null;
   }
 
   @Input() showFooter = true;
@@ -66,7 +58,8 @@ export class ProcessListComponent {
   });
   appliedTermFilter: string;
 
-  constructor(private iconRegistry: IconRegistryService) {
+  constructor(private iconRegistry: IconRegistryService, public config: ConfigService) {
+    super(config);
     this.iconRegistry.registerIcons([listModeDefault, listModeSimple, refresh, clear]);
   }
 

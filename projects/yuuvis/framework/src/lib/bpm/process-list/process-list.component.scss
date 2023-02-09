@@ -93,6 +93,24 @@
       min-height: 1em;
     }
 
+    yuv-responsive-data-table.grid .ag-row .ag-cell {
+      & > span {
+        border: 1px solid var(--panel-divider-color);
+        flex-flow: column;
+        justify-content: center;
+        margin: 0;
+        & > * {
+          align-self: center!important;
+          line-height: 2.5em;
+        }
+        .title {
+          width: 100%;
+          padding: 0 calc(var(--app-pane-padding) / 2);
+        }
+      }
+    }
+
+
     .rdt-row .main {
       .date {
         display: block !important;

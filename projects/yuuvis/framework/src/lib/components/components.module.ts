@@ -5,7 +5,6 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { TranslateModule } from '@yuuvis/core';
-import { AngularResizeEventModule } from 'angular-resize-event';
 import { AngularSplitModule } from 'angular-split';
 import { DragScrollModule } from 'ngx-drag-scroll';
 import { DialogModule } from 'primeng/dialog';
@@ -59,7 +58,6 @@ YuvComponentRegister.register(components);
     OverlayPanelModule,
     DragDropModule,
     CommonModule,
-    AngularResizeEventModule,
     CdkStepperModule,
     AngularSplitModule,
     AgGridModule,
