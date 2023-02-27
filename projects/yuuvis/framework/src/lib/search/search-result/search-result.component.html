@@ -29,7 +29,8 @@
 
           <yuv-responsive-data-table yuvOfflineDisabled #dataTable class="data-table" 
             [data]="tableData"
-            [breakpoint]="400"
+            [rowHeight]="currentRowHeight"
+            [viewMode]="currentViewMode"
             [layoutOptionsKey]="layoutOptionsKey"
             (selectionChanged)="onSelectionChanged($event)"
             (rowDoubleClicked)="rowDoubleClicked.emit($event)"
@@ -44,20 +45,38 @@
                 {{ 'yuv.framework.search-result.footer.hits' | translate: { count: totalNumItems } }}
               </div>
 
+              <!-- rowHeight controls -->
+              <div class="rowHeight" *ngIf="dataTable?.currentViewMode === 'standard'" [style.display]="'none'">
+                <button *ngFor="let rowHeight of rowHeightOptions"
+                  title="{{ 'yuv.framework.search-result.footer.config.mode.grid' | translate}}"
+                  [ngClass]="{'secondary': dataTable?.rowHeight === rowHeight}" (click)="setRowHeight(rowHeight)">
+                  {{ rowHeight }}
+                </button>
+              </div>
+
               <!-- list mode settings -->
               <div class="mode">
                 <yuv-icon class="mode" icon="listModeDefault"
                   title="{{ 'yuv.framework.search-result.footer.config.mode.default' | translate}}"
-                  [ngClass]="{'current': dataTable?.currentViewMode === 'standard'}" (click)="viewMode = 'standard'">
+                  [ngClass]="{'current': dataTable?.currentViewMode === 'standard'}" (click)="setViewMode('standard')">
                 </yuv-icon>
                 <yuv-icon class="mode" icon="listModeGrid"
                   title="{{ 'yuv.framework.search-result.footer.config.mode.grid' | translate}}"
-                  [ngClass]="{'current': dataTable?.currentViewMode === 'grid'}" (click)="viewMode = 'grid'"></yuv-icon>
+                  [ngClass]="{'current': dataTable?.currentViewMode === 'grid'}" (click)="setViewMode('grid')"></yuv-icon>
                 <yuv-icon class="mode" icon="listModeSimple"
                   title="{{ 'yuv.framework.search-result.footer.config.mode.horizontal' | translate}}"
                   [ngClass]="{'current': dataTable?.currentViewMode === 'horizontal'}"
-                  (click)="viewMode = 'horizontal'">
+                  (click)="setViewMode('horizontal')">
                 </yuv-icon>
+              </div>
+
+              <!-- pageSize controls -->
+              <div class="pageSize" [style.display]="'none'">
+                <button *ngFor="let size of pageSizeOptions"
+                  title="{{ 'yuv.framework.search-result.footer.config.mode.grid' | translate}}"
+                  [ngClass]="{'secondary': currentPageSize === size}" (click)="setPageSize(size)">
+                  {{ size }}
+                </button>
               </div>
 
               <!-- paging controls -->

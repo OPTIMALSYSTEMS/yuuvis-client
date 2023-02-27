@@ -36,6 +36,7 @@
 
       yuv-quick-search {
         order: 0;
+        border: 1px solid var(--panel-divider-color);
       }
       .aggs {
         order: 1;

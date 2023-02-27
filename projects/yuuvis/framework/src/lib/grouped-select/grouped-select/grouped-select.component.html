@@ -1,4 +1,4 @@
-<div class="container" [ngClass]="columns" (resized)="onContainerResized($event)">
+<div class="container" [ngClass]="columns">
   <p-panel [toggleable]="toggleable" [(collapsed)]="group.collapsed" (onAfterToggle)="groupToggled(group, $event)"
     [id]="group.id" class="group" *ngFor="let group of groups; let last = last" (focus)="groupFocused(group)"
     [ngClass]="{ last: last }" tabindex="0" [style.display]="!hideEmptyGroup || group.items?.length ? 'block' : 'none'">

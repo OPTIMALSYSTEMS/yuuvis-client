@@ -3,6 +3,7 @@
   <div class="title">
     yuuvis component playground
   </div>
+
   <div class="settings">
 
     <div class="colorpicker">
@@ -13,9 +14,34 @@
       </div>
       <div class="current-color"></div>
     </div>
-    <button class="toggle" (click)="toggleDirection()">{{uiSettings.direction === 'rtl' ? 'RTL' : 'LTR'}}</button>
-    <button class="toggle" (click)="toggleDarkMode()">{{uiSettings.darkMode ? 'DARK' : 'LIGHT'}}</button>
+
+
+    <section>
+      <span class="label">direction</span>
+      <button class="toggle" [ngClass]="{active: this.uiSettings.direction === 'rtl'}"
+        (click)="setDirection('rtl')">rtl</button>
+      <button class="toggle" [ngClass]="{active: this.uiSettings.direction === 'ltr'}"
+        (click)="setDirection('ltr')">ltr</button>
+    </section>
+    <section>
+      <span class="label">theme</span>
+      <button class="toggle" [ngClass]="{active: this.uiSettings.darkMode}" (click)="setDarkMode(true)">dark</button>
+      <button class="toggle" [ngClass]="{active: !this.uiSettings.darkMode}" (click)="setDarkMode(false)">light</button>
+    </section>
+    <section>
+      <span class="label">contrast</span>
+      <button class="toggle" [ngClass]="{active: this.uiSettings.highContrast}"
+        (click)="setHighContrast(true)">high</button>
+      <button class="toggle" [ngClass]="{active: !this.uiSettings.highContrast}"
+        (click)="setHighContrast(false)">default</button>
+    </section>
+
+
+
+    <!-- <button class="toggle" (click)="toggleDarkMode()">{{uiSettings.darkMode ? 'DARK' : 'LIGHT'}}</button>
+    <button class="toggle" (click)="toggleHighContrast()">{{uiSettings.highContrast ? 'HIGH CONTRAST' : 'DEFAULT'}}</button> -->
   </div>
+
   <div class="user" *ngIf="!!user; else tplNotLoggedIn">USER: '{{user?.username}}'</div>
   <ng-template #tplNotLoggedIn>
     <div class="user">Not logged in</div>

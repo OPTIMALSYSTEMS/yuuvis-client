@@ -24,6 +24,12 @@
     },
     "features": {
       "dashboardWorkspaces": false
+    },
+    "gridOptions": {
+      "rowHeight": 70,
+      "rowHeightOptions" : [50, 60, 70],
+      "pageSize": 50,
+      "pageSizeOptions" : [20, 50, 100]
     }
   },
   "client": {

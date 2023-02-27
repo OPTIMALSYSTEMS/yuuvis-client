@@ -1,10 +1,11 @@
-import { RowNode } from '@ag-grid-community/core';
 import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
+import { ConfigService } from '@yuuvis/core';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { ResponsiveTableData } from '../../components/responsive-data-table/responsive-data-table.interface';
+import { YuvGridOptions } from '../../shared/utils/utils';
 import { clear, listModeDefault, listModeSimple, refresh } from '../../svg.generated';
-import { ResponsiveDataTableComponent, ViewMode } from './../../components/responsive-data-table/responsive-data-table.component';
+import { ResponsiveDataTableComponent } from './../../components/responsive-data-table/responsive-data-table.component';
 
 interface HeaderDetails {
   title: string;
@@ -17,10 +18,9 @@ interface HeaderDetails {
   templateUrl: './process-list.component.html',
   styleUrls: ['./process-list.component.scss']
 })
-export class ProcessListComponent {
+export class ProcessListComponent  extends YuvGridOptions {
   @ViewChild('dataTable') dataTable: ResponsiveDataTableComponent;
   private _processData: any;
-  private _viewMode: ViewMode = 'horizontal';
   header: HeaderDetails;
   totalNumItems: number;
 
@@ -29,17 +29,6 @@ export class ProcessListComponent {
   set processData(data: ResponsiveTableData) {
     this._processData = data;
     this.totalNumItems = data ? data.rows?.length : 0;
-
-    let rowsToBeSelected: RowNode[] = this.dataTable?.gridOptions.api?.getSelectedNodes();
-    if (rowsToBeSelected?.length) {
-      // try to find index by ID first
-      const rowNode = this.dataTable.gridOptions.api.getRowNode(rowsToBeSelected[0].data.id);
-      let index = rowNode ? rowNode.rowIndex : rowsToBeSelected[0].rowIndex;
-      if (index >= data.rows.length) index = data.rows.length - 1;
-      setTimeout(() => {
-        this.dataTable.gridOptions.api?.selectIndex(index, false, false);
-      }, 50);
-    }
   }
   get processData() {
     return this._processData;
@@ -49,19 +38,6 @@ export class ProcessListComponent {
   set headerDetails({ title, description, icon }: HeaderDetails) {
     this.header = { title, description, icon };
   }
-
-  @Input()
-  set viewMode(viewMode: ViewMode) {
-    if (this.dataTable) {
-      this.dataTable.viewMode = this.dataTable.viewMode !== viewMode ? viewMode : 'auto';
-    }
-  }
-  get viewMode(): ViewMode {
-    return this.dataTable ? this.dataTable.viewMode : null;
-  }
-
-  showStatusFilter: boolean;
-  showTermFilter: boolean;
 
   @Input() showFooter = true;
   @Input() statusFilter: 'all' | 'running' | 'completed' = 'all';
@@ -82,7 +58,8 @@ export class ProcessListComponent {
   });
   appliedTermFilter: string;
 
-  constructor(private iconRegistry: IconRegistryService) {
+  constructor(private iconRegistry: IconRegistryService, public config: ConfigService) {
+    super(config);
     this.iconRegistry.registerIcons([listModeDefault, listModeSimple, refresh, clear]);
   }
 
@@ -110,8 +87,5 @@ export class ProcessListComponent {
     this.refreshList.emit();
   }
 
-  ngOnInit() {
-    this.showTermFilter = this.termFilterChange.observers && this.termFilterChange.observers.length > 0;
-    this.showStatusFilter = this.statusFilterChange.observers && this.statusFilterChange.observers.length > 0;
-  }
+  ngOnInit() {}
 }

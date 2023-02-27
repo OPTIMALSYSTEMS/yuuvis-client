@@ -3,7 +3,8 @@
 
   <div class="filters status">
 
-    <form class="term-filter" [formGroup]="termFilterForm" (ngSubmit)="filterByTerm()" *ngIf="showTermFilter">
+    <form class="term-filter" [formGroup]="termFilterForm" (ngSubmit)="filterByTerm()"
+      *ngIf="termFilterChange.observed">
       <!-- TODO: add text input -->
       <yuv-string formControlName="term"></yuv-string>
       <button type="button" class="clear" [ngClass]="{visible: !!appliedTermFilter}" (click)="resetTermFilter()">
@@ -12,7 +13,7 @@
       <button type="submit">{{'yuv.framework.process.status.termfilter.submit'|translate}}</button>
     </form>
 
-    <div class="status-filters" *ngIf="showStatusFilter">
+    <div class="status-filters" *ngIf="statusFilterChange.observed">
 
       <button class="toggle-btn" [ngClass]="{active: statusFilter === 'all'}"
         (click)="setStatusFilter('all')">{{'yuv.framework.process.status.all.label'|translate}}</button>
@@ -33,7 +34,7 @@
 
   <div class="content">
     <yuv-responsive-data-table yuvOfflineDisabled #dataTable class="data-table process" *ngIf="processData"
-      [layoutOptionsKey]="layoutOptionsKey" [viewMode]="viewMode" [data]="processData"
+      [layoutOptionsKey]="layoutOptionsKey" [viewMode]="currentViewMode" [rowHeight]="currentRowHeight" [data]="processData"
       (selectionChanged)="select($event)" [selection]="0">
     </yuv-responsive-data-table>
   </div>
@@ -43,14 +44,28 @@
       {{ 'yuv.framework.search-result.footer.hits' | translate: { count: totalNumItems } }}
     </div>
 
+    <!-- rowHeight controls -->
+    <div class="rowHeight" *ngIf="dataTable?.currentViewMode === 'standard'" [style.display]="'none'">
+      <button *ngFor="let rowHeight of rowHeightOptions"
+        title="{{ 'yuv.framework.search-result.footer.config.mode.grid' | translate}}"
+        [ngClass]="{'secondary': dataTable?.rowHeight === rowHeight}" (click)="setRowHeight(rowHeight)">
+        {{ rowHeight }}
+      </button>
+    </div>
+
+    <!-- list mode settings -->
     <div class="mode">
       <yuv-icon class="mode" icon="listModeDefault"
         title="{{ 'yuv.framework.search-result.footer.config.mode.default' | translate}}"
-        [ngClass]="{'current': viewMode === 'standard'}" (click)="viewMode = 'standard'">
+        [ngClass]="{'current': dataTable?.currentViewMode === 'standard'}" (click)="setViewMode('standard')">
       </yuv-icon>
+      <yuv-icon class="mode" icon="listModeGrid"
+        title="{{ 'yuv.framework.search-result.footer.config.mode.grid' | translate}}"
+        [ngClass]="{'current': dataTable?.currentViewMode === 'grid'}" (click)="setViewMode('grid')"></yuv-icon>
       <yuv-icon class="mode" icon="listModeSimple"
         title="{{ 'yuv.framework.search-result.footer.config.mode.horizontal' | translate}}"
-        [ngClass]="{'current': viewMode === 'horizontal'}" (click)="viewMode = 'horizontal'">
+        [ngClass]="{'current': dataTable?.currentViewMode === 'horizontal'}"
+        (click)="setViewMode('horizontal')">
       </yuv-icon>
     </div>
   </section>

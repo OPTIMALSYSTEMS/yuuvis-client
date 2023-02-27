@@ -1,5 +1,6 @@
 :host {
   height: 100%;
+  overflow: hidden;
   display: grid;
   grid-template-rows: auto auto 1fr auto;
   grid-template-columns: 1fr;
@@ -47,8 +48,11 @@
       border-radius: 2px;
     }
 
-    yuv-object-form.outcomeForm {
-      margin-top: var(--app-pane-padding);
+    yuv-object-form {
+      border: 1px solid var(--panel-divider-color);
+      &.outcomeForm {
+        margin-top: var(--app-pane-padding);
+      }
     }
   }
   ::ng-deep {

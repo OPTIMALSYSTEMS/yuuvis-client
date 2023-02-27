@@ -30,9 +30,9 @@
     // padding: calc(var(--app-pane-padding) / 4) var(--app-pane-padding);
     justify-content: flex-end;
     > button {
-      color: #fff;
+      color: var(--color-accent-tone);
       margin: calc(var(--app-pane-padding) / 4);
-      border: 1px solid #fff;
+      border: 1px solid var(--color-accent-tone);
       padding: calc(var(--app-pane-padding) / 4) calc(var(--app-pane-padding) / 2);
     }
   }

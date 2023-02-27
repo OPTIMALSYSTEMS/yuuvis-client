@@ -1,4 +1,4 @@
-import { ColDef, Column, CsvExportParams, GridOptions, RowNode } from '@ag-grid-community/core';
+import { ColDef, Column, CsvExportParams, GridOptions, IRowNode } from '@ag-grid-community/core';
 import { Inject, Injectable } from '@angular/core';
 import {
   AppCacheService,
@@ -54,7 +54,7 @@ export class GridService {
     const scrollLeft = viewport.scrollLeft;
 
     const focusedCell = gridOptions.api.getFocusedCell();
-    const rows: RowNode[] = event.shiftKey ? gridOptions.api.getSelectedNodes() : [gridOptions.api.getDisplayedRowAtIndex(focusedCell.rowIndex)];
+    const rows: IRowNode[] = event.shiftKey ? gridOptions.api.getSelectedNodes() : [gridOptions.api.getDisplayedRowAtIndex(focusedCell.rowIndex)];
     const cols: Column[] = event.shiftKey ? gridOptions.columnApi.getAllDisplayedColumns() : [focusedCell.column];
     const getCell = (col, row) => viewport.parentElement.parentElement.querySelector(`div[row-index="${row.rowIndex}"] [col-id="${col.colId}"]`);
     const value = (col, row) => {

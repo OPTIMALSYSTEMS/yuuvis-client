@@ -8,6 +8,7 @@ export { DynamicCatalogManagementComponent } from './elements/dynamic-catalog/dy
 export { DynamicCatalogComponent } from './elements/dynamic-catalog/dynamic-catalog.component';
 export { NumberRangeComponent } from './elements/number-range/number-range.component';
 export { NumberComponent } from './elements/number/number.component';
+export { OrganizationSetComponent } from './elements/organization-set/organization-set.component';
 export { OrganizationComponent } from './elements/organization/organization.component';
 export { ReferenceItemComponent } from './elements/reference/reference-item/reference-item.component';
 export { ReferenceComponent } from './elements/reference/reference.component';

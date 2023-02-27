@@ -12,6 +12,12 @@ export class DmsObjectPickerComponent implements OnInit {
   error: string;
 
   // query to fetch item that should be selected upfront
+  @Input() set objectId(id: string) {
+    if (!!id) {
+      this.form.patchValue({ objectId: id });
+      this.fetchDmsObject();
+    }
+  }
   @Input() objectQuery: SearchQuery;
   @Output() dmsObject = new EventEmitter<DmsObject>();
 
