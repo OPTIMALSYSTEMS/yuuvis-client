@@ -1,5 +1,5 @@
 import { NavigationExtras, Router } from '@angular/router';
-import { DmsObject, HttpOptions, YuvEvent, YuvUser } from '@yuuvis/core';
+import { DmsObject, HttpOptions, SearchFilter, SearchFilterGroup, SearchQuery, SearchQueryProperties, YuvEvent, YuvUser } from '@yuuvis/core';
 import { Observable } from 'rxjs';
 import { ObjectFormModelChange } from '../object-form/object-form.interface';
 
@@ -74,6 +74,28 @@ export interface PluginAPI {
      * @param dmsObjects Array of dms objects to download document files for
      */
     downloadContent(dmsObjects: DmsObject[]): void;
+    /**
+     * new SearchQuery object
+     * @param searchQueryProperties 
+     */
+    newSearchQuery(searchQueryProperties?: SearchQueryProperties): SearchQuery;
+    /**
+     * new SearchFilter object
+     * @param property 
+     * @param operator 
+     * @param firstValue 
+     * @param secondValue 
+     * @param useNot 
+     */
+    newSearchFilter(property: string, operator: string, firstValue: any, secondValue?: any, useNot?: boolean): SearchFilter;
+    /**
+     * new SearchFilterGroup object
+     * @param property 
+     * @param operator 
+     * @param group 
+     * @param useNot 
+     */
+    newSearchFilterGroup(property?: string, operator?: string, group?: (SearchFilter | SearchFilterGroup)[], useNot?: boolean): SearchFilterGroup;
   };
   /**
    * Execute a requests against yuuvis backend
