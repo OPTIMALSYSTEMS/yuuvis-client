@@ -12,7 +12,7 @@ import { PluginsService } from './plugins.service';
 @Component({
   selector: 'yuv-plugin-trigger',
   template: `
-    <yuv-icon *ngIf="action?.icon" [hidden]="!(isExecutable() | async)" [svg]="action.icon" (click)="run()" title="{{ action.label | translate }}"></yuv-icon>
+    <yuv-icon *ngIf="action?.icon" [hidden]="hidden" [svg]="action.icon" (click)="run()" title="{{ action.label | translate }}"></yuv-icon>
     <ng-template #popoverRef let-data let-popover="popover">
       <yuv-plugin-action-view
         *ngIf="data.component.action?.plugin"
@@ -60,7 +60,7 @@ export class PluginTriggerComponent implements SimpleCustomAction {
     this.iconSvg = action.icon || noFile.data;
     this.group = action.group || 'hidden';
     // autorun in case there is no icon to click on
-    !action.icon && this.isExecutable().subscribe((e) => e && this.run());
+    this.isExecutable().subscribe((e) => e && !action.icon && this.run());
   }
 
   get action() {
