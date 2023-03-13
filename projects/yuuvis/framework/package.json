@@ -1,6 +1,6 @@
 {
   "name": "@yuuvis/framework",
-  "version": "5.0.0",
+  "version": "5.0.1",
   "author": "OPTIMAL SYSTEMS GmbH <npm@optimal-systems.de>",
   "license": "MIT",
   "scripts": {
@@ -25,7 +25,7 @@
     "@angular/cdk": "~15.1.1",
     "@ngneat/until-destroy": "^9.2.2",
     "@yuuvis/command-palette": "^1.1.0",
-    "@yuuvis/core": "5.0.0",
+    "@yuuvis/core": "5.0.1",
     "@yuuvis/styles": "1.0.6",
     "angular-split": "^14.1.0",
     "lodash-es": "^4.17.21",
