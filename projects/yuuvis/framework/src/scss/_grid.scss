@@ -2,6 +2,10 @@
   --ag-selected-row-background-color: var(--item-selected-background-color);
   --ag-row-hover-color: var(--item-focus-background-color);
 
+  ::before {
+    --ag-row-hover-color: var(--item-focus-background-color);
+  }
+
   font-size: var(--font-body);
   background-color: transparent;
   color: var(--text-color-body);
