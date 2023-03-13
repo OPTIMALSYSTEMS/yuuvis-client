@@ -21,16 +21,11 @@ export abstract class IFrameComponent {
     // remove all special characters
     term = (term || '').replace(/[\"|\*]/g, '').trim();
     if (term && win?.PDFViewerApplication?.appConfig?.findBar) {
-      // win.PDFViewerApplication.findController.executeCommand('find', {
-      //   caseSensitive: false,
-      //   findPrevious: undefined,
-      //   highlightAll: true,
-      //   phraseSearch: true,
-      //   query: term
-      // });
       win.PDFViewerApplication.appConfig.findBar.findField.value = term;
       win.PDFViewerApplication.appConfig.findBar.highlightAllCheckbox.checked = true;
       win.PDFViewerApplication.appConfig.findBar.caseSensitiveCheckbox.checked = false;
+      // trigger find event on pdf.js load
+      // win.PDFViewerApplication.initializedPromise?.then(() => win.PDFViewerApplication.findBar.dispatchEvent());
     }
   }
 
