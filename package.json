@@ -94,7 +94,7 @@
     "core-js": "^3.23.2",
     "lodash-es": "^4.17.21",
     "ngx-device-detector": "^5.0.1",
-    "ngx-drag-scroll": "14.0.1",
+    "ngx-drag-scroll": "15.0.0",
     "ngx-resize": "^1.0.5",
     "ngx-toastr": "^16.0.2",
     "primeicons": "^6.0.1",

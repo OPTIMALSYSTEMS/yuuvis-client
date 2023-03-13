@@ -1,4 +1,5 @@
-:root {
+:root,
+::before {
   /* xxx */
   --ag-selected-row-background-color: var(--item-selected-background-color);
   --ag-row-hover-color: var(--item-focus-background-color);
