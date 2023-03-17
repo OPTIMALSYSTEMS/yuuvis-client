@@ -2,6 +2,11 @@
   display: block;
   position: relative;
 
+  &::before,
+  &::after {
+    pointer-events: none;
+  }
+
   input[type='checkbox'] {
     z-index: 2;
     opacity: 0;
@@ -62,7 +67,6 @@
       height: 50%;
       left: 35%;
       top: 10%;
-      pointer-events: none;
       background-color: transparent;
       border: var(--checkbox-border-width) solid var(--text-color-caption);
       border-width: 0 var(--checkbox-border-width) var(--checkbox-border-width) 0;

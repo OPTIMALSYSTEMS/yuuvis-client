@@ -26,10 +26,6 @@ export class TestTaskDetailsComponent implements OnInit, OnDestroy {
     this.inboxService.fetchTasks();
   }
 
-  refreshList() {
-    this.inboxService.fetchTasks();
-  }
-
   setTask(idx: number) {
     this.task = this.tasks[idx];
   }
