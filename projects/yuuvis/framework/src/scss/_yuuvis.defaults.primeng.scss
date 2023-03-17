@@ -214,11 +214,17 @@ body {
           border: 1px solid var(--item-focus-border-color);
           padding: 0 3px;
           color: var(--text-color-caption);
+          max-width: 100%;
 
           .p-autocomplete-token-label {
             &.noAccess {
               color: var(--color-error);
               cursor: not-allowed;
+            }
+
+            .label {
+              text-overflow: ellipsis;
+              overflow: hidden;
             }
           }
         }

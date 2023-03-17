@@ -6,6 +6,7 @@
       user-select: text;
       .label {
         padding: 0 calc(var(--app-pane-padding) / 4);
+        word-break: break-word;
       }
     }
   }
