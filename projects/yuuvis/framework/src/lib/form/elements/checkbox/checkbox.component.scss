@@ -2,6 +2,11 @@
   display: block;
   position: relative;
 
+  &::before,
+  &::after {
+    pointer-events: none;
+  }
+
   input[type='checkbox'] {
     z-index: 2;
     opacity: 0;
