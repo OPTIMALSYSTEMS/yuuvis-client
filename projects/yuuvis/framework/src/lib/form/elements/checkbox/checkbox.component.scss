@@ -2,6 +2,11 @@
   display: block;
   position: relative;
 
+  &::before,
+  &::after {
+    pointer-events: none;
+  }
+
   input[type='checkbox'] {
     z-index: 2;
     opacity: 0;
@@ -41,9 +46,14 @@
       }
     }
 
-    &:before {
+    &::after,
+    &::before {
       content: '';
       position: absolute;
+      pointer-events: none;
+    }
+
+    &:before {
       left: 0;
       top: 0;
       right: 0;
@@ -54,8 +64,6 @@
       padding: var(--checkbox-inner-padding);
     }
     &:after {
-      content: '';
-      position: absolute;
       transition: opacity 200ms ease-in-out;
       opacity: 0;
       width: 20%;

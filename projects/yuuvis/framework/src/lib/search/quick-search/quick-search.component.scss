@@ -244,8 +244,8 @@
 
         &.active {
           background-color: var(--color-accent);
+          color: var(--color-accent-tone);
           text-decoration: none;
-          color: #fff;
         }
       }
     }

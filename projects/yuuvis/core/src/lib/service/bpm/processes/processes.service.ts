@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, EMPTY, forkJoin, Observable } from 'rxjs';
-import { expand, map, skipWhile, tap } from 'rxjs/operators';
+import { BehaviorSubject, EMPTY, Observable } from 'rxjs';
+import { expand, map, skipWhile, switchMap, tap } from 'rxjs/operators';
 import { ConfigService } from '../../config/config.service';
 import { BpmService } from '../bpm/bpm.service';
 import { FetchProcessOptions, FetchTaskOptions, FollowUpVars, Process, ProcessCreatePayload, ProcessDefinitionKey, Task } from '../model/bpm.model';
@@ -123,9 +123,9 @@ export class ProcessService {
    */
   /** TODO: refactor once actual update is available  above */
   editFollowUp(documentId: string, processInstanceId: string, subject: string, expiryDateTime: string): Observable<any> {
-    const deleteProcess = this.bpmService.deleteProcess(this.bpmProcessUrl, processInstanceId);
-    const createProcess = this.updateFollowUp(documentId, subject, expiryDateTime, processInstanceId);
-    return forkJoin([deleteProcess, createProcess]);
+    return this.bpmService
+      .deleteProcess(this.bpmProcessUrl, processInstanceId)
+      .pipe(switchMap(() => this.updateFollowUp(documentId, subject, expiryDateTime, processInstanceId)));
   }
 
   /**

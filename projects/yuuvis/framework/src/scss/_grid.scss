@@ -1,10 +1,11 @@
-:root {
-  /* xxx */
+.ag-theme-yuv {
   --ag-selected-row-background-color: var(--item-selected-background-color);
   --ag-row-hover-color: var(--item-focus-background-color);
-}
 
-.ag-theme-yuv {
+  ::before {
+    --ag-row-hover-color: var(--item-focus-background-color);
+  }
+
   font-size: var(--font-body);
   background-color: transparent;
   color: var(--text-color-body);
@@ -15,7 +16,6 @@
   }
 
   .ag-header {
-    // background-color: var(--panel-background-grey);
     background-color: var(--panel-background);
     border-bottom: 1px solid var(--panel-divider-color);
   }

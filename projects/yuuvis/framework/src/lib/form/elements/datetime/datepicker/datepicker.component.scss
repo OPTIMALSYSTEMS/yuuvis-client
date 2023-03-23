@@ -28,7 +28,7 @@
 
       &.icon {
         background: rgba(0, 0, 0, 0);
-        color: #fff;
+        color: var(--color-accent-tone);
         padding: 0;
 
         &:focus {
@@ -50,8 +50,8 @@
 
   .select {
     grid-area: header;
-    background: var(--color-accent);
-    color: #fff;
+    background-color: var(--color-accent);
+    color: var(--color-accent-tone);
 
     .year {
       padding: var(--app-pane-padding);
@@ -93,7 +93,7 @@
         font-size: 50px;
         font-family: eoRoboto, sans-serif;
         font-weight: var(--font-weight-light);
-        color: #fff;
+        color: currentColor;
         border: 0;
         background: rgba(0, 0, 0, 0);
         width: 3em;
@@ -111,7 +111,7 @@
           margin: 0;
         }
         &:focus {
-          border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+          border-bottom: 1px solid var(--color-accent-tone);
         }
       }
     }
@@ -121,7 +121,7 @@
 
       span {
         font-size: var(--font-hint);
-        color: rgba(255, 255, 255, 0.5);
+        color: var(--color-accent-tone);
         font-weight: var(--font-weight-bold);
         display: inline-block;
         @include transition();
@@ -131,16 +131,17 @@
         padding: 4px 0;
         margin-bottom: 1px;
         cursor: pointer;
-        border-bottom: 2px solid rgba(0, 0, 0, 0);
+        border-bottom: 3px solid transparent;
+        opacity: 0.5;
 
         &:hover {
-          color: #fff;
-          border-color: rgba(255, 255, 255, 0.5);
+          border-color: var(--panel-background);
+          opacity: 0.8;
         }
 
         &.current {
-          color: #fff;
-          border-color: #fff;
+          border-color: var(--panel-background);
+          opacity: 1;
         }
       }
     }
@@ -216,19 +217,19 @@
     color: var(--text-color-body);
     display: inline-block;
     box-sizing: border-box;
-    border-bottom: 1px solid rgba(0, 0, 0, 0);
+    border: 1px solid transparent;
     @include transition(var(--app-default-transition-duration));
     width: 2em;
     text-align: center;
     padding: 0.25em 0;
     cursor: pointer;
+    border-radius: 2px;
   }
 
   .day.disabled {
     cursor: default;
     color: var(--text-color-hint);
     background-color: var(--panel-divider-color);
-    border-radius: 2px;
 
     &:hover {
       border-bottom: 0;
@@ -236,21 +237,19 @@
   }
 
   span:hover {
-    color: var(--color-accent);
-    border-bottom: 1px solid var(--color-accent);
+    background: var(--item-focus-background-color);
+    border-color: var(--item-focus-border-color);
   }
 
   span.today {
-    color: var(--color-accent);
     font-weight: var(--font-weight-bold);
-    border-bottom: 1px solid var(--color-accent);
+    border-color: var(--text-color-hint);
   }
 
   span.selected,
   span.selected:hover {
-    background: var(--color-accent);
-    color: #fff !important;
-    @include border-radius(2px);
+    background-color: var(--color-accent);
+    color: var(--color-accent-tone) !important;
   }
 
   span.different-month {
@@ -261,6 +260,6 @@
 .week.names {
   span {
     //text-transform: uppercase;
-    color: var(--color-accent);
+    // color: var(--color-accent);
   }
 }
