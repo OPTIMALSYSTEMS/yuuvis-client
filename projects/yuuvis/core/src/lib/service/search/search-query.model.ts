@@ -448,8 +448,6 @@ export class SearchFilter {
     EQUAL: 'eq',
     /** exact equal */
     EEQUAL: 'eeq',
-    /** not equal */
-    NOT_EQUAL: 'neq',
     /** match at least one of the provided values (value has to be an array)  */
     IN: 'in',
     /** greater than */
@@ -474,8 +472,6 @@ export class SearchFilter {
     EQUAL: '=',
     /** exact equal */
     EEQUAL: '==',
-    /** not equal */
-    NOT_EQUAL: '!=',
     /** match at least one of the provided values (value has to be an array)  */
     IN: '~',
     /** greater than */
