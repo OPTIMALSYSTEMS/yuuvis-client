@@ -461,7 +461,7 @@ export class QuickSearchService {
           id: '__' + MIME_TYPE.id + '#' + r,
           label: r.replace(/\*/g, ''),
           value: [
-            new SearchFilter(MIME_TYPE.id, SearchFilter.OPERATOR.IN, r === '*excel*' ? [r, '*sheet*'] : r === '*mail*' ? ['*message*', '*outlook*'] : [r])
+            new SearchFilter(MIME_TYPE.id, SearchFilter.OPERATOR.IN, r === '*excel*' ? [r, '*spreadsheet*'] : r === '*powerpoint*' ? [r, '*presentation*'] : r === '*mail*' ? ['*message*', '*outlook*'] : [r])
           ]
         }))
       },
