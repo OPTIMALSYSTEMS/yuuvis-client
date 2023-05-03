@@ -46,7 +46,7 @@
     .buttons {
       grid-area: buttons;
       display: flex;
-      justify-content: end;
+      justify-content: flex-end;
       margin: 0 -2px;
       button {
         margin: 0 2px;
@@ -69,8 +69,7 @@
       padding: 0;
       margin: 0 calc(var(--app-pane-padding) * 0.75);
       flex: 1;
-    color: var(--text-color-body);
-
+      color: var(--text-color-body);
     }
 
     button {
