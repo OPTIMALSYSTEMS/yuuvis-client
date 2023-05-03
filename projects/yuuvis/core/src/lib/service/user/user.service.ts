@@ -1,3 +1,4 @@
+import { HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { BehaviorSubject, forkJoin, Observable, of } from 'rxjs';
@@ -180,9 +181,9 @@ export class UserService {
    * @param roles narrow down the search results by certain roles
    */
   queryUser(term: string, excludeMe?: boolean, roles?: string[]): Observable<YuvUser[]> {
-    const params = roles?.length ? roles.map((r) => `roles=${r}`) : [];
-    if (excludeMe) params.push('excludeMe=true');
-    return this.backend.get(`/idm/users?search=${term}${`&${params.join('&')}`}`).pipe(map((users) => (!users ? [] : users.map((u) => new YuvUser(u, null)))));
+    let params = new HttpParams().set('search', term).set('excludeMe', `${!!excludeMe}`);
+    roles?.length && roles.map((r) => (params = params.append(`roles`, r)));
+    return this.backend.get(`/idm/users?${params}`).pipe(map((users) => (!users ? [] : users.map((u) => new YuvUser(u, null)))));
   }
 
   getUserById(id: string): Observable<YuvUser> {
