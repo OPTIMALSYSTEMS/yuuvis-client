@@ -1,5 +1,5 @@
 const path = require('path');
-const cpx = require('cpx');
+const cpx = require('cpx2');
 
 const copyLanguageFiles = library => {
   const sourcePath = path.resolve(__dirname, '..', '..', '..', 'projects', 'yuuvis', library, 'src', 'assets', 'i18n');

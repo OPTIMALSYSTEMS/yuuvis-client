@@ -1,5 +1,3 @@
-const path = require('path');
-const cpx = require('cpx');
 const { exec } = require('child_process');
 const { processSass } = require('../common/sass');
 const { copyToNodeModules } = require('../common/node-copy');
