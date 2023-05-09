@@ -1,6 +1,6 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { forkJoin, Observable, of } from 'rxjs';
+import { Observable, forkJoin, of } from 'rxjs';
 import { catchError, finalize, shareReplay, tap } from 'rxjs/operators';
 import { ConfigService } from '../config/config.service';
 import { Logger } from '../logger/logger';
@@ -30,7 +30,7 @@ export class BackendService {
   /**
    * OpenIdConnect authorization headers
    */
-  getAuthHeaders(): any {
+  getAuthHeaders() {
     return this.configService.getAuthHeaders();
   }
 
@@ -191,7 +191,10 @@ export class BackendService {
    * @ignore
    */
   getHttpOptions(requestOptions?: HttpOptions): HttpOptions {
-    Object.entries(this.getAuthHeaders()).forEach(([h, v]) => this.setHeader(h, v as string));
+    // Object.entries(this.getAuthHeaders()).forEach(([h, v]) => this.setHeader(h, v as string));
+    this.getAuthHeaders()
+      .keys()
+      .forEach((k) => this.setHeader(k, this.getAuthHeaders().get(k)));
     return Object.assign({ headers: this.headers }, requestOptions);
   }
 
