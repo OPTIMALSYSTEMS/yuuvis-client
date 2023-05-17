@@ -309,7 +309,7 @@ export class PluginsService {
     // validate/update authorization token
     const reg = new RegExp(encodeURIComponent('.*"(Bearer .*)"'));
     const token = src?.match(reg)?.[1];
-    const authorization = encodeURIComponent(this.configService.getAuthHeaders(true).authorization);
+    const authorization = encodeURIComponent(this.configService.getAuthHeaders(true).get('authorization'));
     return token && token !== authorization ? src.replace(new RegExp(token, 'g'), authorization) : src;
   }
 
@@ -358,8 +358,10 @@ export class PluginsService {
         getResult: (fields, type) => this.getResult(fields, type),
         downloadContent: (dmsObjects: DmsObject[]) => this.dmsService.downloadContent(dmsObjects),
         newSearchQuery: (searchQueryProperties?: SearchQueryProperties) => new SearchQuery(searchQueryProperties),
-        newSearchFilter: (property: string, operator: string, firstValue: any, secondValue?: any, useNot?: boolean) => new SearchFilter(property, operator, firstValue, secondValue, useNot),
-        newSearchFilterGroup: (property?: string, operator?: string, group?: (SearchFilter | SearchFilterGroup)[], useNot?: boolean) => new SearchFilterGroup(property, operator, group, useNot)
+        newSearchFilter: (property: string, operator: string, firstValue: any, secondValue?: any, useNot?: boolean) =>
+          new SearchFilter(property, operator, firstValue, secondValue, useNot),
+        newSearchFilterGroup: (property?: string, operator?: string, group?: (SearchFilter | SearchFilterGroup)[], useNot?: boolean) =>
+          new SearchFilterGroup(property, operator, group, useNot)
       },
       http: {
         get: (uri, base, options) => this.get(uri, base, options),

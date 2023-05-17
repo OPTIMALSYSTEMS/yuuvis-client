@@ -35,6 +35,10 @@ export class OrganizationSetComponent implements ControlValueAccessor, Validator
   @Input() readonly: boolean;
   @Input() autofocus: boolean;
   @Input() multiselect: boolean = false;
+  /**
+   * Will attch the overlay to this HTMLelement
+   */
+  @Input() appendTo = null;
 
   private _classifications: string[];
   @Input() set classifications(c: string[]) {

@@ -65,6 +65,10 @@ export class DynamicCatalogComponent implements ControlValueAccessor {
    * Will prevent the input from being changed (default: false)
    */
   @Input() readonly: boolean;
+  /**
+   * Will attch the overlay to this HTMLelement
+   */
+  @Input() appendTo = null;
 
   constructor(
     private systemService: SystemService,
