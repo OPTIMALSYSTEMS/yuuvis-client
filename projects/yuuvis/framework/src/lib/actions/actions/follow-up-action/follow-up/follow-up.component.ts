@@ -1,10 +1,10 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { BpmEvent, EventService, InboxService, Process, ProcessService, Task, TranslateService, Utils } from '@yuuvis/core';
 import { of } from 'rxjs';
 import { finalize, map, switchMap, tap } from 'rxjs/operators';
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { NotificationService } from '../../../../services/notification/notification.service';
 import { hasRequiredField } from '../../../../shared/utils';
 import { ActionComponent } from './../../../interfaces/action-component.interface';
@@ -123,20 +123,20 @@ export class FollowUpComponent implements OnInit, OnDestroy, ActionComponent {
         untilDestroyed(this),
         finalize(() => (this.loading = false))
       )
-      .subscribe(
-        () => {
+      .subscribe({
+        next: () => {
           this.notificationService.success(
             this.translate.instant('yuv.framework.action-menu.action.follow-up.label'),
             this.translate.instant('yuv.framework.action-menu.action.follow-up.confirm.success.message')
           );
         },
-        (error) => {
+        error: (error) => {
           this.notificationService.error(
             this.translate.instant('yuv.framework.action-menu.action.follow-up.label'),
             this.translate.instant('yuv.framework.action-menu.action.follow-up.confirm.error.message')
           );
         }
-      );
+      });
   }
 
   get hasCurrentFollowUp(): boolean {
