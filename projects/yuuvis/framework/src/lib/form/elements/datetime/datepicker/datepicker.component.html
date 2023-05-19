@@ -25,7 +25,7 @@
     </div>
 
     <div class="month">
-      <span *ngFor="let _month of monthsShort; let _i = index" (click)="setMonth(_i)"
+      <span *ngFor="let _month of monthsShort; let _i = index" (click)="setMonth(_i)" [title]="_month"
         [ngClass]="{ current: current.getMonth() == _i }">{{ _month }}</span>
     </div>
   </div>
