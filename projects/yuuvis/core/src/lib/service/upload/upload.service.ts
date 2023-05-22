@@ -1,4 +1,4 @@
-import { HttpClient, HttpErrorResponse, HttpEventType, HttpHeaders, HttpRequest, HttpResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpEventType, HttpRequest, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, ReplaySubject, Subject, throwError } from 'rxjs';
 import { catchError, filter, map, scan, tap } from 'rxjs/operators';
@@ -101,15 +101,12 @@ export class UploadService {
     // add request param to bypass the serviceworker
     url += `${url.indexOf('?') === -1 ? '?' : '&'}ngsw-bypass=1`;
 
-    const headers: any = this.backend.getAuthHeaders();
+    let headers = this.backend.getAuthHeaders();
     if (file) {
-      headers['Content-Disposition'] = `attachment; filename*=utf-8''${encodeURIComponent(file.name)}`;
+      headers = headers.set('Content-Disposition', `attachment; filename*=utf-8''${encodeURIComponent(file.name)}`);
     }
 
-    return new HttpRequest(method, url, file || formData, {
-      headers: new HttpHeaders(headers),
-      reportProgress
-    });
+    return new HttpRequest(method, url, file || formData, { headers, reportProgress });
   }
 
   /**

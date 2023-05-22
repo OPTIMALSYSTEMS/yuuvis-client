@@ -66,6 +66,12 @@ export class CatalogComponent implements ControlValueAccessor {
       this.options = ce.options;
     }
   }
+
+  /**
+   * Will attch the overlay to this HTMLelement
+   */
+  @Input() appendTo = null;
+
   /**
    * Will prevent the input from being changed (default: false)
    */

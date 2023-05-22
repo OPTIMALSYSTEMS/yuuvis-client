@@ -1,6 +1,7 @@
 import { FocusKeyManager } from '@angular/cdk/a11y';
 import { Component, EventEmitter, HostListener, Input, OnInit, Output, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { BaseObjectTypeField, SearchFilter, SearchQuery, SearchResult, SearchService, SystemService } from '@yuuvis/core';
+import { finalize, map } from 'rxjs/operators';
 import { Selectable } from '../../grouped-select/grouped-select/grouped-select.interface';
 import { SelectableItemComponent } from '../../grouped-select/grouped-select/selectable-item/selectable-item.component';
 import { PopoverRef } from '../../popover/popover.ref';
@@ -23,7 +24,8 @@ export class ObjectPickerComponent implements OnInit {
   @Output() objectSelect = new EventEmitter<string>();
   @Output() cancel = new EventEmitter();
 
-  @HostListener('keydown', ['$event']) onKeyDown(event) {
+  @HostListener('keydown', ['$event'])
+  onKeyDown(event) {
     // ENTER or SPACE
     if ((event.keyCode === 13 || event.keyCode === 32) && this.focusedResultItem) {
       this.onResultItemSelect(this.focusedResultItem);
@@ -41,34 +43,38 @@ export class ObjectPickerComponent implements OnInit {
 
   constructor(private searchService: SearchService, private system: SystemService) {}
 
-  onQuickSearchQueryChange(q: SearchQuery) {
-    const bp = this.system.getBaseProperties();
-    if (q.filterGroup.filters.length || q.term?.length || q.types.length || q.lots.length) {
-      q.fields = [BaseObjectTypeField.OBJECT_ID, BaseObjectTypeField.OBJECT_TYPE_ID, bp.title, bp.description];
-      q.size = 10;
+  onQuickSearchQueryChange(query: SearchQuery) {
+    const baseProps = this.system.getBaseProperties();
+    if (query.filterGroup.filters.length || query.term?.length || query.types.length || query.lots.length) {
+      query.fields = [
+        BaseObjectTypeField.OBJECT_ID,
+        BaseObjectTypeField.OBJECT_TYPE_ID,
+        BaseObjectTypeField.LEADING_OBJECT_TYPE_ID,
+        baseProps.title,
+        baseProps.description
+      ];
+      query.size = 10;
 
       if (this.skipTypes?.length) {
-        q.addFilter(new SearchFilter(BaseObjectTypeField.LEADING_OBJECT_TYPE_ID, SearchFilter.OPERATOR.IN, this.skipTypes, null, true));
+        query.addFilter(new SearchFilter(BaseObjectTypeField.LEADING_OBJECT_TYPE_ID, SearchFilter.OPERATOR.IN, this.skipTypes, null, true));
       }
 
       this.loading = true;
-      this.searchService.search(q).subscribe({
-        next: (res: SearchResult) => {
-          this.total = res.totalNumItems;
-          this.searchResult = res.items.map((i) => ({
-            id: i.fields.get(BaseObjectTypeField.OBJECT_ID),
-            svgSrc: this.system.getObjectTypeIconUri(i.fields.get(BaseObjectTypeField.OBJECT_TYPE_ID)),
-            label: i.fields.get(bp.title),
-            description: i.fields.get(bp.description)
-          }));
-          this.keyManager = new FocusKeyManager(this.items);
-          this.loading = false;
-        },
-        error: (err) => {
-          console.error(err);
-          this.loading = false;
-        }
-      });
+      this.searchService
+        .search(query)
+        .pipe(
+          map((res: SearchResult) => {
+            this.total = res.totalNumItems;
+            this.searchResult = res.items.map((item) => ({
+              id: item.fields.get(BaseObjectTypeField.OBJECT_ID),
+              svgSrc: this.system.getObjectTypeIconUri(item.fields.get(BaseObjectTypeField.LEADING_OBJECT_TYPE_ID)),
+              label: item.fields.get(baseProps.title),
+              description: item.fields.get(baseProps.description)
+            }));
+          }),
+          finalize(() => (this.loading = false))
+        )
+        .subscribe();
     } else {
       this.onQuickSearchReset();
     }

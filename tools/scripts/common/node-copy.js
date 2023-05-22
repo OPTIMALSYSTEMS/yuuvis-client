@@ -1,5 +1,5 @@
 const path = require('path');
-const cpx = require('cpx');
+const cpx = require('cpx2');
 
 const copyToNodeModules = library => {
   const sourcePath = path.resolve(__dirname, '..', '..', '..', 'dist', 'yuuvis', library);

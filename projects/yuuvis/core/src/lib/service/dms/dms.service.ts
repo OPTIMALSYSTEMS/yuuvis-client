@@ -282,7 +282,15 @@ export class DmsService {
           }))
         }
       })
-      .pipe(map((_) => ids))
+      .pipe(
+        map(res => res?.objects?.map((r: any) => {
+          const v = r.options?.['system:deletionResult'];
+          return {
+            id: r.properties?.['system:objectId']?.value,
+            ...(v?.httpStatusCode >= 400 ? {_error : { status: v.httpStatusCode, message: v.message }} : {})
+          };
+        }))
+      )
       .pipe(this.triggerEvents(YuvEventType.DMS_OBJECT_DELETED, null, silent));
   }
 

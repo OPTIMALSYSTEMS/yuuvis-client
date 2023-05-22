@@ -230,17 +230,12 @@ export class QuickSearchService {
   }
 
   getActiveFilters(query: SearchQuery, filters: Selectable[], availableObjectTypeFields: Selectable[]) {
-    return (query.filterGroup.operator === SearchFilterGroup.OPERATOR.AND ? query.filterGroup.group : [query.filterGroup])
-      .reduce((prev, cur) => {
-        const g = SearchFilterGroup.fromArray([cur]);
-        // spread groups (only AND) that have filters with same property
-        return [
-          ...prev,
-          ...(g.operator === SearchFilterGroup.OPERATOR.AND && g.group.every((f) => f.property === g.filters[0].property)
-            ? g.group.map((f) => SearchFilterGroup.fromArray([f]))
-            : [g])
-        ];
-      }, [])
+    const g = SearchFilterGroup.fromArray([query.filterGroup]);
+    const s = new Set(g.group.map((f) => f.property));
+    // spread groups that have filters with different property (only AND) or contains similar filters (only OR)
+    return (query.filterGroup.operator === SearchFilterGroup.OPERATOR.AND ? 
+      Array.from(s).map((prop) => SearchFilterGroup.fromArray(g.group.filter((f) => prop === f.property))) : 
+      s.size === 1 ? g.group.map(f => SearchFilterGroup.fromArray([f])) : [g])
       .filter((g) => !g.filters.find((f) => ColumnConfigSkipFields.includes(f.property)))
       .map((g) => {
         return (

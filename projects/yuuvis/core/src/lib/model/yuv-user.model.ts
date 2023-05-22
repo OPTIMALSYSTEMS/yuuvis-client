@@ -33,21 +33,14 @@ export class YuvUser {
     this.lastname = json.lastname;
     this.email = json.email;
     this.image = json.image;
-    this.title = json.title;
     this.tenant = json.tenant;
     this.domain = json.domain;
     this.authorities = json.authorities;
     this.substituteOf = json.substituteOf;
     this.enabled = json.enabled;
 
+    this.title = json.displayName || (this.firstname && this.lastname) ? `${this.lastname}, ${this.firstname} (${this.username})` : this.username;
     this.userSettings = userSettings || { locale: null };
-    this.setTitle();
-  }
-
-  private setTitle() {
-    if (!this.title) {
-      this.title = this.firstname && this.lastname ? `${this.lastname}, ${this.firstname} (${this.username})` : this.username;
-    }
   }
 
   /**
