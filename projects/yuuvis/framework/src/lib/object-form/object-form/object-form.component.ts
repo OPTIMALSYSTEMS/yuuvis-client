@@ -225,6 +225,7 @@ export class ObjectFormComponent implements OnDestroy, AfterViewInit, IObjectFor
     this.form = form;
 
     setTimeout(() => {
+      if (!this.form) return;
       this.initValidators(this.form);
       const formWatch = this.form.valueChanges.pipe(debounceTime(500)).subscribe(() => !formWatch.closed && this.emitFormChangedEvent());
       this.subscriptions.push(formWatch);

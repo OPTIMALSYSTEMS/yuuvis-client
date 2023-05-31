@@ -11,6 +11,7 @@ import {
   ViewChild,
   ViewChildren
 } from '@angular/core';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import {
   BaseObjectTypeField,
   ConfigService,
@@ -27,7 +28,6 @@ import {
 import { TabPanel } from 'primeng/tabview';
 import { Observable } from 'rxjs';
 import { finalize } from 'rxjs/operators';
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { TabPanelComponent } from '../../components/responsive-tab-container/tab-panel.component';
 import { ComponentStateService } from '../../services/component-state/component-state.service';
@@ -55,8 +55,8 @@ import { FileDropOptions } from './../../directives/file-drop/file-drop.directiv
  * @example
  * <yuv-object-details [objectId]="'0815'"></yuv-object-details>
  */
- @UntilDestroy()
- @Component({
+@UntilDestroy()
+@Component({
   selector: 'yuv-object-details',
   templateUrl: './object-details.component.html',
   styleUrls: ['./object-details.component.scss'],
@@ -277,7 +277,7 @@ export class ObjectDetailsComponent implements OnDestroy {
       .getDmsObject(id)
       .pipe(finalize(() => (this.busy = false)))
       .subscribe({
-        next : (dmsObject) => {
+        next: (dmsObject) => {
           this.dmsObject = dmsObject;
           if (emitRefresh) {
             this.objectRefresh.emit();

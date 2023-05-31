@@ -105,6 +105,11 @@ export class OrganizationComponent implements ControlValueAccessor, Validator, A
    * later and also try to be focused, they will 'win', because there can only be one focus.
    */
   @Input() autofocus: boolean;
+  
+  /**
+   * Will attch the overlay to this HTMLelement
+   */
+  @Input() appendTo = null;
 
   /**
    * Whether or not to exclude the current user from autocomplete result

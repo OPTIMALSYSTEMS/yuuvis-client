@@ -150,7 +150,7 @@ export class SearchResultPanelComponent {
   }
 
   openActionMenu() {
-    if (this.preSelectItems) {
+    if (this.preSelectItems?.length) {
       this.loading = true;
       this.dmsService.getDmsObjects(this.preSelectItems).subscribe((items) => {
         this.actionMenuSelection = items;

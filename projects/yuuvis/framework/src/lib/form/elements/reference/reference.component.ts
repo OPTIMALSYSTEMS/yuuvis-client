@@ -166,6 +166,11 @@ export class ReferenceComponent implements ControlValueAccessor, Validator, Afte
   };
 
   /**
+   * Will attch the overlay to this HTMLelement
+   */
+  @Input() appendTo = null;
+
+  /**
    * Emitted once an object has been selected
    */
   @Output() objectSelect = new EventEmitter<ReferenceEntry[]>();

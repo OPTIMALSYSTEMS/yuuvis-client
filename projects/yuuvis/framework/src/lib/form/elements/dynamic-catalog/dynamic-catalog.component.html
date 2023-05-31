@@ -2,7 +2,7 @@
     [filter]="enabledCatalogEntries?.length > enableFilterWhenOptionsExceed" [showTransitionOptions]="'0ms'"
     optionLabel="name" optionDisabled="disabled" [hideTransitionOptions]="'0ms'" placeholder=" "
     (ngModelChange)="onChange($event)" display="chip" [disabled]="readonly" [options]="enabledCatalogEntries"
-    [(ngModel)]="innerValue">
+    [(ngModel)]="innerValue" [appendTo]="appendTo">
 
     <ng-template let-items pTemplate="selectedItems">
         <span class="chip" [ngClass]="{missing: item.missing}" *ngFor="let item of items">{{item.name}}
@@ -15,7 +15,7 @@
     <p-dropdown [options]="enabledCatalogEntries" placeholder=" " [showTransitionOptions]="'0ms'" optionLabel="name"
         optionDisabled="disabled" [hideTransitionOptions]="'0ms'"
         [filter]="enabledCatalogEntries?.length > enableFilterWhenOptionsExceed" (ngModelChange)="onChange($event)"
-        [disabled]="readonly" [showClear]="!readonly" [(ngModel)]="innerValue">
+        [disabled]="readonly" [showClear]="!readonly" [(ngModel)]="innerValue" [appendTo]="appendTo">
     </p-dropdown>
 </ng-template>
 

@@ -46,9 +46,14 @@
       }
     }
 
-    &:before {
+    &::after,
+    &::before {
       content: '';
       position: absolute;
+      pointer-events: none;
+    }
+
+    &:before {
       left: 0;
       top: 0;
       right: 0;
@@ -59,8 +64,6 @@
       padding: var(--checkbox-inner-padding);
     }
     &:after {
-      content: '';
-      position: absolute;
       transition: opacity 200ms ease-in-out;
       opacity: 0;
       width: 20%;

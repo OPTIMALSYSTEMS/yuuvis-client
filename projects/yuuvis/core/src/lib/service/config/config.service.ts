@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { of } from 'rxjs';
@@ -120,13 +120,16 @@ export class ConfigService {
   /**
    * OpenIdConnect authorization headers
    */
-  getAuthHeaders(authorization = false): any {
-    return this.authUsesOpenIdConnect()
-      ? {
-          [TENANT_HEADER]: this.oidc.tenant,
-          ...(authorization ? { authorization: 'Bearer ' + localStorage.getItem('access_token') } : {})
-        }
-      : {};
+  getAuthHeaders(authorization = false): HttpHeaders {
+    if (this.authUsesOpenIdConnect()) {
+      let headers = new HttpHeaders().set(TENANT_HEADER, this.oidc.tenant);
+      if (authorization) {
+        headers = headers.set('authorization', 'Bearer ' + localStorage.getItem('access_token'));
+      }
+
+      return headers;
+    }
+    return new HttpHeaders();
   }
 
   /**

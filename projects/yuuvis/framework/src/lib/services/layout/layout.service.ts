@@ -137,7 +137,7 @@ export class LayoutService {
    * @param rgb A string containing RGB values (like '255, 0, 0') or the name of a CSS variable (like '--jungle')
    * @param tone The color of text that is written on an accent color background (e.g. primary button). Could be RGB value or CSS variable
    */
-  setAccentColor(color: string, tone: string) {
+  setAccentColor(color: string | null, tone: string | null) {
     this.layoutSettings.accentColor = color;
     this.layoutSettings.accentColorTone = tone;
     this.saveSettings();

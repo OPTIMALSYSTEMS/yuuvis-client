@@ -3,7 +3,8 @@
   yuv-panel ::ng-deep {
     .header {
       background-color: var(--color-accent);
-      color: #fff;
+      color: var(--color-accent-tone);
+      border: none;
     }
     .p-tabview > .p-tabview-panels {
       overflow: auto;
@@ -15,7 +16,7 @@
       &:not(.p-highlight):not(.p-disabled):hover {
         border-color: rgba(255, 255, 255, 0.5);
         a {
-          color: #fff;
+          color: var(--color-accent-tone);
         }
       }
 
@@ -27,7 +28,7 @@
       }
 
       a {
-        color: #fff;
+        color: var(--color-accent-tone);
       }
     }
     .p-tabview.p-component {

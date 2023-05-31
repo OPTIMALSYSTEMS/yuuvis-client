@@ -1,6 +1,6 @@
 <p-multiSelect *ngIf="multiselect; else tplSingleSelect" [filter]="_options?.length > enableFilterWhenOptionsExceed"
   [showTransitionOptions]="'0ms'" [hideTransitionOptions]="'0ms'" placeholder=" " (ngModelChange)="onChange($event)"
-  [disabled]="readonly" [options]="_options" [(ngModel)]="value">
+  [disabled]="readonly" [options]="_options" [(ngModel)]="value" [appendTo]="appendTo">
 
   <ng-template let-items pTemplate="selectedItems">
     <span class="chip" *ngFor="let item of items">{{getLabel(item)}}</span>
@@ -11,6 +11,6 @@
 <ng-template #tplSingleSelect>
   <p-dropdown [options]="_options" placeholder=" " [showTransitionOptions]="'0ms'" [hideTransitionOptions]="'0ms'"
     [filter]="_options?.length > enableFilterWhenOptionsExceed" (ngModelChange)="onChange($event)" [disabled]="readonly"
-    [showClear]="!readonly" [(ngModel)]="value">
+    [showClear]="!readonly" [(ngModel)]="value" [appendTo]="appendTo">
   </p-dropdown>
 </ng-template>
