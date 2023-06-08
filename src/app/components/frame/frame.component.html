@@ -23,7 +23,7 @@
       <ng-container *ngIf="!tab">
         <div class="app-bar-search">
           <yuv-quick-search *ngIf="reloadComponent" [inline]="true" [context]="context" [query]="appQuery"
-            (querySubmit)="onQuickSearchQuery($event)">
+            (querySubmit)="onQuickSearchQuery($event)" #qs [ngClass]="{ overflow: qsOverflow(qs) }">
           </yuv-quick-search>
         </div>
       </ng-container>
