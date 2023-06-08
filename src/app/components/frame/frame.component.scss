@@ -150,9 +150,9 @@ $app-bar-icon: 32px;
             width: 500px;
           }
 
-          &::ng-deep {
+          &.overflow::ng-deep {
             yuv-search-filter-form.extras {
-              max-height: 80vh;
+              max-height: calc(100vh - 60px);
               overflow: auto;
             }
           }

@@ -164,6 +164,10 @@ export class FrameComponent implements OnInit, OnDestroy {
     });
   }
 
+  qsOverflow(qs: any) {
+    return qs.extrasForm?.extrasForm?.nativeElement.offsetHeight > window.document.body.offsetHeight - 60;
+  }
+
   onObjetcsMove(event) {
     if (this.moveNoticeDialogSkip === null || this.moveNoticeDialogSkip === false) {
       const popoverConfig = {
