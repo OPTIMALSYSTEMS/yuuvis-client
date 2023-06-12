@@ -83,7 +83,7 @@ export class InboxService {
 
   private getPage(requestParams: string, index?: number) {
     const pageSize = this.config.get('core.app.inboxPageSize') || this.INBOX_PAGE_SIZE;
-    return this.bpmService.getProcesses(`/bpm/tasks?size=${pageSize}&sort=createTime&page=${index || 0}${requestParams}`, true);
+    return this.bpmService.getProcesses(`/bpm/tasks?size=${pageSize}&isCompleted=false&sort=createTime&page=${index || 0}${requestParams}`, true);
   }
 
   /**
