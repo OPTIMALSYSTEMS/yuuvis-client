@@ -1,6 +1,7 @@
 import { Component, HostBinding, HostListener, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, NavigationExtras, Router, RoutesRecognized } from '@angular/router';
 import { SwUpdate } from '@angular/service-worker';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import {
   AuthService,
   BackendService,
@@ -34,7 +35,6 @@ import {
 } from '@yuuvis/framework';
 import { forkJoin, Observable } from 'rxjs';
 import { filter, map, switchMap } from 'rxjs/operators';
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { add, close, drawer, offline, refresh, search, userDisabled } from '../../../assets/default/svg/svg';
 import { AppSearchService } from '../../service/app-search.service';
 import { AboutService } from '../../states/about/service/about.service';
@@ -162,6 +162,10 @@ export class FrameComponent implements OnInit, OnDestroy {
     this.translateService.onLangChange.subscribe((_) => {
       document.documentElement.setAttribute('lang', this.translateService.currentLang);
     });
+  }
+
+  qsOverflow(qs: any) {
+    return qs.extrasForm?.extrasForm?.nativeElement.offsetHeight > window.document.body.offsetHeight - 60;
   }
 
   onObjetcsMove(event) {
