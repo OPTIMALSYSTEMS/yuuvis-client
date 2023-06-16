@@ -7,7 +7,7 @@ import { Utils } from '@yuuvis/core';
  * <a [routerLink]="['/some-link', secondParameter]">open</a>
  */
 @Directive({
-  // tslint:disable-next-line: directive-selector
+  // eslint-disable-next-line @angular-eslint/directive-selector
   selector: 'a[routerLink]'
 })
 export class RouterLinkDirective {

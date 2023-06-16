@@ -85,9 +85,9 @@ export class FrameComponent implements OnInit, OnDestroy {
     e.preventDefault();
   }
 
-  // tslint:disable-next-line: member-ordering
+  // eslint-disable-next-line @typescript-eslint/member-ordering
   @HostBinding('class.transparentAppBar') tab: boolean;
-  // tslint:disable-next-line: member-ordering
+  // eslint-disable-next-line @typescript-eslint/member-ordering
   @HostBinding('class.offline') isOffline: boolean;
 
   constructor(
