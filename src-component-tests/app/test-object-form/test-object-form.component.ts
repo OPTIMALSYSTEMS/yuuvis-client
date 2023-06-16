@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { DmsObject, SystemService } from '@yuuvis/core';
 import { FormStatusChangedEvent } from '@yuuvis/framework';
+import { ObjectFormComponent } from '../../../projects/yuuvis/framework/src/lib/object-form';
 import { booleanElements } from './data/form.boolean';
 import { catalogElements } from './data/form.catalog';
 import { datetimeElements } from './data/form.datetime';
@@ -19,6 +20,7 @@ import { stringElements } from './data/form.string';
   host: { class: 'yuv-test-container' }
 })
 export class TestObjectFormComponent implements OnInit {
+  @ViewChild(ObjectFormComponent) form: ObjectFormComponent;
   showData: boolean;
   formModels = [
     {
@@ -133,6 +135,11 @@ export class TestObjectFormComponent implements OnInit {
 
   setModel(model) {
     this.currentModel = model;
+
+    // test reset of form.formControls
+    setTimeout(() => {
+      console.log(Object.keys(this.form.getFormElements()));
+    }, 200);
   }
 
   setDmsObject(dmsObject: DmsObject) {
