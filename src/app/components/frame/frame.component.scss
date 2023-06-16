@@ -149,6 +149,13 @@ $app-bar-icon: 32px;
           @media (min-width: 1250px) {
             width: 500px;
           }
+
+          &.overflow::ng-deep {
+            yuv-search-filter-form.extras {
+              max-height: calc(100vh - 60px);
+              overflow: auto;
+            }
+          }
         }
       }
     }

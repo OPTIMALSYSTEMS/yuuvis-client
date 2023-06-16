@@ -85,9 +85,9 @@ export class FrameComponent implements OnInit, OnDestroy {
     e.preventDefault();
   }
 
-  // tslint:disable-next-line: member-ordering
+  // eslint-disable-next-line @typescript-eslint/member-ordering
   @HostBinding('class.transparentAppBar') tab: boolean;
-  // tslint:disable-next-line: member-ordering
+  // eslint-disable-next-line @typescript-eslint/member-ordering
   @HostBinding('class.offline') isOffline: boolean;
 
   constructor(
@@ -162,6 +162,10 @@ export class FrameComponent implements OnInit, OnDestroy {
     this.translateService.onLangChange.subscribe((_) => {
       document.documentElement.setAttribute('lang', this.translateService.currentLang);
     });
+  }
+
+  qsOverflow(qs: any) {
+    return qs.extrasForm?.extrasForm?.nativeElement.offsetHeight > window.document.body.offsetHeight - 60;
   }
 
   onObjetcsMove(event) {

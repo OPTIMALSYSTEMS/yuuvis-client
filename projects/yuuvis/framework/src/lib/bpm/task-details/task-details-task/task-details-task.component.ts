@@ -161,7 +161,7 @@ export class TaskDetailsTaskComponent implements OnInit {
     if (t.variables) {
       t.variables.forEach((v) => {
         const value = v.value;
-        if (v.type === 'json' && t.resolvedValues) {
+        if (value && Array.isArray(value) && v.type === 'json' && t.resolvedValues) {
           // type 'json' means that variable is a table and the value is an array of rows
           // apply resolved values
           value.forEach((row) =>

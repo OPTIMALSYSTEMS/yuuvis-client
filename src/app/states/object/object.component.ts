@@ -88,7 +88,7 @@ export class ObjectComponent implements OnInit, OnDestroy {
 
   private addRecentItem(id: string) {
     if (id !== this.contextId) {
-      /* tslint:disable:tslint no-unused-expression */
+      /* eslint-disable no-unused-expressions, @typescript-eslint/no-unused-expressions */
       !this.recentItems.includes(id) && this.recentItems.push(id);
     }
     if (this.context) {

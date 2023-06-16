@@ -124,9 +124,9 @@ export class ProcessService {
    */
   /** TODO: refactor once actual update is available  above */
   editFollowUp(documentId: string, processInstanceId: string, subject: string, expiryDateTime: string): Observable<any> {
-    return this.updateFollowUp(documentId, subject, expiryDateTime, processInstanceId).pipe(
-      switchMap(() => this.bpmService.deleteProcess(this.bpmProcessUrl, processInstanceId))
-    );
+    return this.bpmService
+      .deleteProcess(this.bpmProcessUrl, processInstanceId)
+      .pipe(switchMap(() => this.updateFollowUp(documentId, subject, expiryDateTime, processInstanceId)));
   }
 
   /**
