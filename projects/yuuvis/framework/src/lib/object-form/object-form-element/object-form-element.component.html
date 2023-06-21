@@ -29,7 +29,7 @@
         [attr.data-name]="element._eoFormControlWrapper.controlName"
         [multiselect]="formElementRef._eoFormElement.cardinality === 'multi' || situation === 'SEARCH'"
         (objectSelect)="onDataMetaChange($event)" [classifications]="formElementRef._eoFormElement.classifications"
-        [readonly]="formElementRef._eoFormElement.readonly">
+        [readonly]="formElementRef._eoFormElement.readonly" [appendTo]="'body'">
       </yuv-reference>
     </yuv-form-input>
 
