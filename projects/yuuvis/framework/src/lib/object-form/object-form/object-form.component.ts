@@ -1,10 +1,10 @@
 import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
 import { ValidatorFn, Validators } from '@angular/forms';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { Logger, SystemService, UserService, Utils } from '@yuuvis/core';
 import { cloneDeep } from 'lodash-es';
 import { Observable, of, Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { ObjectFormScriptService } from '../object-form-script/object-form-script.service';
 import { ObjectFormScriptingScope } from '../object-form-script/object-form-scripting-scope';
 import { FormStatusChangedEvent, IObjectForm, ObjectFormControlWrapper, ObjectFormModelChange, ObjectFormOptions } from '../object-form.interface';
@@ -27,8 +27,8 @@ import { Situation } from './../object-form.situation';
  * @example
  * <yuv-object-form [formOptions]="options" (statusChanged)="check($event)"></yuv-object-form>
  */
- @UntilDestroy()
- @Component({
+@UntilDestroy()
+@Component({
   selector: 'yuv-object-form',
   templateUrl: './object-form.component.html',
   providers: [ObjectFormService, ObjectFormScriptService],
@@ -197,6 +197,7 @@ export class ObjectFormComponent implements OnDestroy, AfterViewInit, IObjectFor
   private buildReactiveForm(formOptions) {
     this.scriptingScope = null;
     this.scriptModel = {};
+    this.formControls = {};
     const formModel = this.dataToForm(formOptions.formModel, formOptions.data);
 
     if (!formModel) {
