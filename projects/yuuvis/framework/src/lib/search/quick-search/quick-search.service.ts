@@ -20,7 +20,7 @@ import {
   UserService,
   Utils
 } from '@yuuvis/core';
-import { forkJoin, Observable, of } from 'rxjs';
+import { Observable, forkJoin, of } from 'rxjs';
 import { map, switchMap, tap } from 'rxjs/operators';
 import { DynamicDate } from '../../form/elements/datetime/datepicker/datepicker.interface';
 import { DatepickerService } from '../../form/elements/datetime/datepicker/service/datepicker.service';
@@ -156,7 +156,7 @@ export class QuickSearchService {
   private getSharedFields(selectedTypes = [], shared = true): ObjectTypeField[] {
     const selectedObjectTypes = selectedTypes.map((id) => this.systemService.getResolvedType(id));
 
-    return shared
+    return shared && selectedObjectTypes.length
       ? selectedObjectTypes.reduce((prev, cur) => cur.fields.filter((f) => prev.find((p) => p.id === f.id)), [...selectedObjectTypes[0].fields])
       : selectedObjectTypes.reduce((prev, cur) => [...prev, ...cur.fields.filter((f) => !prev.find((p) => p.id === f.id))], []);
   }
@@ -233,9 +233,13 @@ export class QuickSearchService {
     const g = SearchFilterGroup.fromArray([query.filterGroup]);
     const s = new Set(g.group.map((f) => f.property));
     // spread groups that have filters with different property (only AND) or contains similar filters (only OR)
-    return (query.filterGroup.operator === SearchFilterGroup.OPERATOR.AND ? 
-      Array.from(s).map((prop) => SearchFilterGroup.fromArray(g.group.filter((f) => prop === f.property))) : 
-      s.size === 1 ? g.group.map(f => SearchFilterGroup.fromArray([f])) : [g])
+    return (
+      query.filterGroup.operator === SearchFilterGroup.OPERATOR.AND
+        ? Array.from(s).map((prop) => SearchFilterGroup.fromArray(g.group.filter((f) => prop === f.property)))
+        : s.size === 1
+        ? g.group.map((f) => SearchFilterGroup.fromArray([f]))
+        : [g]
+    )
       .filter((g) => !g.filters.find((f) => ColumnConfigSkipFields.includes(f.property)))
       .map((g) => {
         return (
@@ -456,7 +460,11 @@ export class QuickSearchService {
           id: '__' + MIME_TYPE.id + '#' + r,
           label: r.replace(/\*/g, ''),
           value: [
-            new SearchFilter(MIME_TYPE.id, SearchFilter.OPERATOR.IN, r === '*excel*' ? [r, '*spreadsheet*'] : r === '*powerpoint*' ? [r, '*presentation*'] : r === '*mail*' ? ['*message*', '*outlook*'] : [r])
+            new SearchFilter(
+              MIME_TYPE.id,
+              SearchFilter.OPERATOR.IN,
+              r === '*excel*' ? [r, '*spreadsheet*'] : r === '*powerpoint*' ? [r, '*presentation*'] : r === '*mail*' ? ['*message*', '*outlook*'] : [r]
+            )
           ]
         }))
       },
