@@ -1,6 +1,6 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { Process, ProcessService, ProcessVariable, TranslateService, UserService } from '@yuuvis/core';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { Process, ProcessService, ProcessVariable, TranslateService, UserService } from '@yuuvis/core';
 import { IconRegistryService } from '../../../common/components/icon/service/iconRegistry.service';
 import { PopoverService } from '../../../popover/popover.service';
 import { deleteIcon } from '../../../svg.generated';
@@ -79,6 +79,10 @@ export class ProcessDetailsSummaryComponent implements OnInit, OnDestroy {
           this.processService.deleteProcess(this._process.id).subscribe();
         }
       });
+  }
+
+  valueAsString(value: any) {
+    return Array.isArray(value) ? value.map((v) => JSON.stringify(v.title || v.id || v)).join(', ') : JSON.stringify(value);
   }
 
   ngOnInit(): void {}

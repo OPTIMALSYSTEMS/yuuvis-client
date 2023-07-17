@@ -71,14 +71,14 @@ export class AboutService {
   }
 
   getAboutData() {
-    this.http.get('assets/about.data.json').subscribe(
-      (response: AboutData) => {
+    this.http.get('assets/about.data.json').subscribe({
+      next: (response: AboutData) => {
         const { libraries, ...args } = response;
         this.generateLicenses(libraries);
         this.generateProductDetails(args);
       },
-      (error) => console.log({ error })
-    );
+      error: (error) => console.log({ error })
+    });
   }
 
   getDocumentationLink(): string {
