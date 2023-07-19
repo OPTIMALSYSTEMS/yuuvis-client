@@ -175,9 +175,8 @@ export class CellRenderer {
     }
     if (!Utils.isEmpty(value)) {
       text += `<div style="display: flex">`;
-      (Array.isArray(value) ? value : [value]).forEach((val, index) => {
+      (Array.isArray(value) ? value : [value]).forEach((title, index) => {
         const link = param.url ? param.url + '/' + (Array.isArray(param.value) ? param.value[index] : param.value) : null;
-        const title = Array.isArray(value) ? value[index] : value;
 
         // If the user is not allowed to see the reference object or the object was deleted, we don't show the link.
         text += `<div class="chip ref">
