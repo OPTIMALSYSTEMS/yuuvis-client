@@ -197,13 +197,19 @@ export class GridService {
       return undefined;
     }
     if (classification[0].startsWith(Classification.STRING_REFERENCE)) {
-      return CellRenderer.referenceCellRenderer;
+      const fn: any = this.customContext(CellRenderer.referenceCellRenderer, params);
+      fn._title = Classification.STRING_REFERENCE;
+      return fn;
     }
     if (classification[0].startsWith(Classification.STRING_ORGANIZATION_SET)) {
-      return CellRenderer.organizationSetCellRenderer;
+      const fn: any = this.customContext(CellRenderer.organizationSetCellRenderer, params);
+      fn._title = Classification.STRING_ORGANIZATION_SET;
+      return fn;
     }
     if (classification[0].startsWith(Classification.STRING_ORGANIZATION)) {
-      return CellRenderer.organizationCellRenderer;
+      const fn: any = this.customContext(CellRenderer.organizationCellRenderer, params);
+      fn._title = Classification.STRING_ORGANIZATION;
+      return fn;
     }
     switch (classification[0]) {
       case Classification.STRING_EMAIL: {
