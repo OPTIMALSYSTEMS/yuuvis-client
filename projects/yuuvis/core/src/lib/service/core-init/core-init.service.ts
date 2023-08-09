@@ -32,13 +32,13 @@ export class CoreInit {
     return new Promise((resolve, reject) => {
       this.authService.setInitialRequestUri();
       this.deviceService.init();
-      this.loadConfig().subscribe(
-        (res) => resolve(true),
-        (err) => {
+      this.loadConfig().subscribe({
+        next: (res) => resolve(true),
+        error: (err) => {
           this.logger.error(err);
           reject();
         }
-      );
+      });
     });
   }
 
