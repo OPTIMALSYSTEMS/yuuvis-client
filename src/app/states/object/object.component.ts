@@ -1,11 +1,11 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Location } from '@angular/common';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { AppCacheService, DmsObject, DmsService, EventService, SearchQuery, TranslateService, YuvEventType } from '@yuuvis/core';
 import { ContextComponent, PluginsService } from '@yuuvis/framework';
 import { finalize } from 'rxjs/operators';
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { FrameService } from '../../components/frame/frame.service';
 import { AppSearchService } from '../../service/app-search.service';
 
@@ -65,11 +65,9 @@ export class ObjectComponent implements OnInit, OnDestroy {
   }
 
   contextItemsSelected(ids: string[]) {
-    const id = ids[0] || this.contextId;
+    const id = ids[0];
     if (id && ids.length <= 1) {
-      const url = this.router.createUrlTree(['.'], { fragment: id, relativeTo: this.route, queryParamsHandling: 'preserve' });
-      this.location.go(url.toString());
-      this.setupFragment(id);
+      this.router.navigate(['.'], { fragment: id, relativeTo: this.route, queryParamsHandling: 'preserve' });
     }
   }
 
@@ -88,7 +86,7 @@ export class ObjectComponent implements OnInit, OnDestroy {
 
   private addRecentItem(id: string) {
     if (id !== this.contextId) {
-      /* tslint:disable:tslint no-unused-expression */
+      /* eslint-disable no-unused-expressions, @typescript-eslint/no-unused-expressions */
       !this.recentItems.includes(id) && this.recentItems.push(id);
     }
     if (this.context) {
@@ -100,13 +98,21 @@ export class ObjectComponent implements OnInit, OnDestroy {
     this.router.navigate(['/object', id], { fragment, replaceUrl: true });
   }
 
+  private resetContext() {
+    this.selectedItem = null;
+    this.contextId = null;
+    this.context = null;
+    this.contextSearchQuery = null;
+    this.contextError = null;
+  }
+
   private setupContext(contextID: string) {
     this.contextBusy = true;
     this.dmsService
       .getDmsObject(contextID)
       .pipe(finalize(() => (this.contextBusy = false)))
-      .subscribe(
-        (dmsObject: DmsObject) => {
+      .subscribe({
+        next: (dmsObject: DmsObject) => {
           if (!dmsObject) {
             return;
           } else if (!dmsObject?.isFolder) {
@@ -125,14 +131,20 @@ export class ObjectComponent implements OnInit, OnDestroy {
             this.loadRecentItems();
           }
         },
-        (error) => (this.contextError = this.translate.instant('yuv.framework.object-details.context.load.error'))
-      );
+        error: (error) => {
+          this.resetContext();
+          this.redirect(contextID, this.standaloneFragment); // force standalone mode to reset quick search
+          this.contextError = this.translate.instant('yuv.framework.object-details.context.load.error');
+        }
+      });
   }
 
   private setupFragment(fragment: string) {
     this._standalone = fragment === this.standaloneFragment ? this.contextId : null;
     if (!this._standalone) {
       this.setupSelectedItem(fragment || this.contextId);
+    } else {
+      this.resetContext();
     }
   }
 

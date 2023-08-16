@@ -2,7 +2,7 @@ import { AfterViewInit, Component, forwardRef, HostBinding, Input, ViewChild } f
 import { ControlValueAccessor, NG_VALIDATORS, NG_VALUE_ACCESSOR, UntypedFormControl, Validator } from '@angular/forms';
 import { Classification, IdmService, OrganizationSetEntry, SystemService } from '@yuuvis/core';
 import { AutoComplete } from 'primeng/autocomplete';
-import { IconRegistryService } from '../../../common';
+import { IconRegistryService } from '../../../common/components/icon/service/iconRegistry.service';
 import { organization, organizationMulti } from '../../../svg.generated';
 
 @Component({
@@ -25,7 +25,8 @@ import { organization, organizationMulti } from '../../../svg.generated';
 export class OrganizationSetComponent implements ControlValueAccessor, Validator, AfterViewInit {
   @ViewChild('autocomplete') autoCompleteInput: AutoComplete;
 
-  value: OrganizationSetEntry[] = [];
+  innerValue: OrganizationSetEntry[] = [];
+  value: any;
   private _isValidInput = true;
   private _targetTypes: string[] = [];
   autocompleteRes;
@@ -54,7 +55,7 @@ export class OrganizationSetComponent implements ControlValueAccessor, Validator
     return this._classifications;
   }
   @HostBinding('class.inputDisabled') get _inputDisabled() {
-    return !this.multiselect && this.value?.length === 1;
+    return !this.multiselect && this.innerValue?.length === 1;
   }
   @HostBinding('class.inputDirty') get _inputDirty() {
     return this.autoCompleteInput?.multiInputEL?.nativeElement?.value;
@@ -67,7 +68,12 @@ export class OrganizationSetComponent implements ControlValueAccessor, Validator
   propagateChange = (_: any) => {};
 
   writeValue(value: any): void {
-    this.value = value;
+    const val = Array.isArray(value) ? value.map((v) => (typeof v === 'string' ? JSON.parse(v) : v)) : value ? [JSON.parse(value)] : [];
+    this.innerValue = val;
+    this.value = val.map((v) => JSON.stringify(v));
+    if (!this.multiselect) {
+      this.value = this.value[0] || null;
+    }
   }
 
   registerOnChange(fn: any): void {
@@ -95,7 +101,7 @@ export class OrganizationSetComponent implements ControlValueAccessor, Validator
     if (evt.query.length >= this.autocompleteMinLength) {
       this.idmService.queryOrganizationEntity(evt.query, this._targetTypes).subscribe({
         next: (entries: OrganizationSetEntry[]) => {
-          this.autocompleteRes = entries.filter((e) => !this.value?.some((value) => value.id === e.id));
+          this.autocompleteRes = entries.filter((e) => !this.innerValue?.some((value) => value.id === e.id));
           this._propagateValidity(this.autocompleteRes.length > 0);
         },
         error: (e) => {
@@ -108,14 +114,15 @@ export class OrganizationSetComponent implements ControlValueAccessor, Validator
     }
   }
 
-  onSelect(value) {
-    if (!this.multiselect) {
-      this.value = this.value.slice(-1);
-    }
+  // handle selection changes to the model
+  onSelect(value: OrganizationSetEntry) {
+    this.writeValue(this.multiselect ? this.innerValue : this.innerValue.slice(-1));
     this._propagate();
   }
 
-  onUnselect(value) {
+  // handle selection changes to the model
+  onUnselect(value: OrganizationSetEntry) {
+    this.writeValue(this.innerValue.filter((v) => v.id !== value.id));
     if (!this.multiselect) {
       this._clearInnerInput();
     }

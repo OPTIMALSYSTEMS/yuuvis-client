@@ -86,15 +86,19 @@ export class CellRenderer {
   }
 
   static emailCellRenderer(param) {
-    return param.value ? `<a href="mailto:${Utils.formatMailTo(param?.value, true)}">${Utils.escapeHtml(param.value)}</a>` : '';
+    param.prefix = (v: any) => 'mailto:' + Utils.formatMailTo(v, true);
+    return CellRenderer.urlCellRenderer(param);
   }
 
   static phoneCellRenderer(param) {
-    return param.value ? `<a href="tel:${param.value}">${Utils.escapeHtml(param.value)}</a>` : '';
+    param.prefix = (v: any) => 'tel:' + v;
+    return CellRenderer.urlCellRenderer(param);
   }
 
   static urlCellRenderer(param) {
-    return param.value ? `<a target="_blank " href="${param.value}">${Utils.escapeHtml(param.value)}</a>` : '';
+    const { value } = param;
+    const transform = (val) => (val ? `<a target="_blank" href="${param.prefix ? param.prefix(val) : val}">${Utils.escapeHtml(val)}</a>` : '');
+    return Array.isArray(value) ? value.map((val) => transform(val)).join(', ') : transform(value);
   }
 
   static dateTimeCellRenderer(param) {
@@ -205,12 +209,23 @@ export class CellRenderer {
       value = param.data[param.colDef.field + '_title'];
     }
     if (!Utils.isEmpty(value)) {
-      text += `<div style="display: flex">`;
-      (Array.isArray(value) ? value : [value]).forEach((val, index) => {
-        const title = Array.isArray(value) ? value[index] : value;
-        text += `<div class="chip"><span>${Utils.escapeHtml(title)}</span></div>`;
+      const val = Array.isArray(value) ? value : [value];
+      text += CellRenderer.multiSelectCellRenderer(val);
+    }
+
+    return text || param.value;
+  }
+
+  static organizationSetCellRenderer(param) {
+    let text = '';
+    let value = param.value;
+    if (!Utils.isEmpty(value)) {
+      const val = (Array.isArray(value) ? value : [value]).map((v) => {
+        const vv = typeof v === 'string' ? JSON.parse(v) : v;
+        const title = vv.title || vv.id;
+        return vv.type === 'role' ? `*${title}*` : title;
       });
-      text += `</div>`;
+      text += CellRenderer.multiSelectCellRenderer(val);
     }
 
     return text || param.value;

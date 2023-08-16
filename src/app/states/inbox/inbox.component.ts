@@ -1,24 +1,24 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { BpmEvent, EventService, InboxService, Task, TaskRow, TranslateService } from '@yuuvis/core';
 import {
-  arrowNext,
-  edit,
   FormatProcessDataService,
   HeaderDetails,
   IconRegistryService,
+  PluginsService,
+  ResponsiveTableData,
+  SystemService,
+  arrowNext,
+  edit,
   inbox,
   listModeDefault,
   listModeGrid,
   listModeSimple,
-  PluginsService,
-  refresh,
-  ResponsiveTableData,
-  SystemService
+  refresh
 } from '@yuuvis/framework';
 import { Observable } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { FrameService } from '../../components/frame/frame.service';
 
 @UntilDestroy()

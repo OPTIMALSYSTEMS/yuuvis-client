@@ -201,12 +201,11 @@ export class GridService {
       fn._title = Classification.STRING_REFERENCE;
       return fn;
     }
-    // TODO: enable this code for autumn 2023!!
-    // if (classification[0].startsWith(Classification.STRING_ORGANIZATION_SET)) {
-    //   const fn: any = this.customContext(CellRenderer.organizationSetCellRenderer, params);
-    //   fn._title = Classification.STRING_ORGANIZATION_SET;
-    //   return fn;
-    // }
+    if (classification[0].startsWith(Classification.STRING_ORGANIZATION_SET)) {
+      const fn: any = this.customContext(CellRenderer.organizationSetCellRenderer, params);
+      fn._title = Classification.STRING_ORGANIZATION_SET;
+      return fn;
+    }
     if (classification[0].startsWith(Classification.STRING_ORGANIZATION)) {
       const fn: any = this.customContext(CellRenderer.organizationCellRenderer, params);
       fn._title = Classification.STRING_ORGANIZATION;
@@ -215,23 +214,15 @@ export class GridService {
     switch (classification[0]) {
       case Classification.STRING_EMAIL: {
         return CellRenderer.emailCellRenderer;
-        break;
       }
       case Classification.STRING_URL: {
         return CellRenderer.urlCellRenderer;
-        break;
       }
       case Classification.STRING_PHONE: {
         return CellRenderer.phoneCellRenderer;
-        break;
       }
       case Classification.NUMBER_DIGIT: {
         return this.customContext(CellRenderer.numberCellRenderer, params);
-        break;
-      }
-      case Classification.STRING_ORGANIZATION: {
-        return this.customContext(CellRenderer.organizationCellRenderer, params);
-        break;
       }
       default: {
         return undefined;
@@ -272,7 +263,8 @@ export class GridService {
         }
         break;
       }
-      case InternalFieldType.STRING_ORGANIZATION: {
+      case InternalFieldType.STRING_ORGANIZATION:
+      case InternalFieldType.STRING_ORGANIZATION_SET: {
         // TODO: Replace actual implementation. Right now it's like 'string'
         // colDef.cellRenderer = (params) => Utils.escapeHtml(params.value);
         // if (field.cardinality === 'multi') {
@@ -401,9 +393,9 @@ export class GridService {
     return (params) => fnc({ ...params, context: this.context, ...(mixin && mixin) });
   }
   /**
-   *Return a string key for a value. This string is used  searching within cell editor dropdowns. 
+   *Return a string key for a value. This string is used  searching within cell editor dropdowns.
     When filtering and searching the string is exposed to the user, so make sure to return a human-readable value.
-   * 
+   *
    */
   public fileSizeKeyCreator(param) {
     if (!param.value) {

@@ -1,3 +1,4 @@
+import { HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { EMPTY, Observable, ReplaySubject } from 'rxjs';
 import { expand, map, skipWhile, tap } from 'rxjs/operators';
@@ -5,7 +6,7 @@ import { ApiBase } from '../../backend/api.enum';
 import { BackendService } from '../../backend/backend.service';
 import { ConfigService } from '../../config/config.service';
 import { UserService } from '../../user/user.service';
-import { ProcessAction, ProcessPostPayload, Task } from '../model/bpm.model';
+import { ProcessAction, ProcessPostPayload, Task, TaskPageOptions } from '../model/bpm.model';
 import { BpmService } from './../bpm/bpm.service';
 
 /**
@@ -59,15 +60,11 @@ export class InboxService {
     this.inboxDataSource.next(this.inboxData);
   }
 
-  private getTasksPaged(options?: { active?: boolean; includeProcessVariables?: boolean; processInstanceId?: string; briefRepresentation?: boolean }) {
-    let p = [];
-    Object.keys(options).forEach((k) => {
-      p.push(`${k}=${options[k]}`);
-    });
-    return this.getAllPages(`&${p.join('&')}`);
+  private getTasksPaged(options?: TaskPageOptions) {
+    return this.getAllPages(options);
   }
 
-  private getAllPages(requestParams: string): Observable<Task[]> {
+  private getAllPages(requestParams: TaskPageOptions): Observable<Task[]> {
     let items = [];
     let i = 0;
     return this.getPage(requestParams, i).pipe(
@@ -81,18 +78,21 @@ export class InboxService {
     );
   }
 
-  private getPage(requestParams: string, index?: number) {
-    const pageSize = this.config.get('core.app.inboxPageSize') || this.INBOX_PAGE_SIZE;
-    return this.bpmService.getProcesses(`/bpm/tasks?size=${pageSize}&sort=createTime&page=${index || 0}${requestParams}`, true);
+  private getPage(requestParams: TaskPageOptions, index?: number) {
+    let params = new HttpParams()
+      .set('size', this.config.get('core.app.inboxPageSize') || this.INBOX_PAGE_SIZE)
+      .set('sort', 'createTime')
+      .set('page', index || 0);
+    Object.keys(requestParams).map((key) => (params = params.append(key, requestParams[key])));
+    return this.bpmService.getProcesses(`/bpm/inbox?${params}`, true);
   }
 
   /**
-   * get a specific task by processInstanceId
+   * get a specific task by processId
    */
-  getTask(processInstanceId: string, includeProcessVar = true): Observable<Task> {
-    return this.bpmService
-      .getProcesses(`/bpm/tasks/${processInstanceId}${includeProcessVar ? '?includeProcessVariables=true' : ''}`, true)
-      .pipe(map((res) => res as Task));
+  getTask(processId: string, includeProcessVar = true): Observable<Task> {
+    let params = includeProcessVar ? new HttpParams().set('includeProcessVariables', true) : '';
+    return this.bpmService.getProcesses(`/bpm/tasks/${processId}?${params}`, true).pipe(map((res) => res as Task));
   }
 
   /**

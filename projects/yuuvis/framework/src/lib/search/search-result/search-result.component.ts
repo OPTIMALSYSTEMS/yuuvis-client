@@ -1,6 +1,7 @@
 import { ColDef, RowEvent } from '@ag-grid-community/core';
 import { Attribute, Component, EventEmitter, Input, OnDestroy, Output, ViewChild } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import {
   BaseObjectTypeField,
   ConfigService,
@@ -18,13 +19,12 @@ import {
 } from '@yuuvis/core';
 import { Observable, of } from 'rxjs';
 import { switchMap, tap } from 'rxjs/operators';
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { ResponsiveDataTableComponent } from '../../components/responsive-data-table/responsive-data-table.component';
 import { ResponsiveTableData } from '../../components/responsive-data-table/responsive-data-table.interface';
 import { GridService } from '../../services/grid/grid.service';
+import { ViewMode, YuvGridOptions } from '../../shared/utils/utils';
 import { arrowLast, arrowNext, clear, doubleArrow, filter, listModeDefault, listModeGrid, listModeSimple, search, settings } from '../../svg.generated';
-import { YuvGridOptions, ViewMode} from '../../shared/utils/utils';
 
 export interface FilterPanelConfig {
   open: boolean;
@@ -39,8 +39,8 @@ export interface FilterPanelConfig {
  * @example
  * <yuv-search-result [query]="searchQuery" (itemsSelected)="select($event)"></yuv-search-result>
  */
- @UntilDestroy()
- @Component({
+@UntilDestroy()
+@Component({
   selector: 'yuv-search-result',
   templateUrl: './search-result.component.html',
   styleUrls: ['./search-result.component.scss'],
@@ -239,7 +239,7 @@ export class SearchResultComponent extends YuvGridOptions implements OnDestroy {
   private executeQuery(applyColumnConfig?: boolean) {
     this.busy = true;
     this._searchQuery.from = 0; // always load 1st page
-    this._searchQuery.size = this.currentPageSize || this._searchQuery.size;
+    this._searchQuery.size = this._searchQuery.size || this.currentPageSize;
     (applyColumnConfig ? this.applyColumnConfiguration(this._searchQuery) : of(this._searchQuery))
       .pipe(
         tap((q) => this.queryChanged.emit(q)),

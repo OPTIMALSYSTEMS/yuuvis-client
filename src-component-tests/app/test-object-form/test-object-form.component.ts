@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { DmsObject, SystemService } from '@yuuvis/core';
 import { FormStatusChangedEvent } from '@yuuvis/framework';
-import { ObjectFormComponent } from '../../../projects/yuuvis/framework/src/lib/object-form';
+import { ObjectFormComponent } from '../../../projects/yuuvis/framework/src/lib/object-form/object-form/object-form.component';
 import { booleanElements } from './data/form.boolean';
 import { catalogElements } from './data/form.catalog';
 import { datetimeElements } from './data/form.datetime';
