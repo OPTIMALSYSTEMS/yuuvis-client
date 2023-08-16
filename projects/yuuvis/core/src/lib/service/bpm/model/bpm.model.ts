@@ -55,6 +55,13 @@ export interface TaskMessage {
   message: string;
 }
 
+export interface TaskPageOptions {
+  active?: boolean;
+  includeProcessVariables?: boolean;
+  processInstanceId?: string;
+  briefRepresentation?: boolean;
+}
+
 /**
  * Tasks are basically activities defined by a process.
  * Processes may contain several tasks.
