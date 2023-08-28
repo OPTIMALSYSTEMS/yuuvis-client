@@ -13,6 +13,11 @@
       border: 1px solid var(--panel-divider-color);
       border-width: 0 1px;
     }
+
+    yuv-search-filter-form .p-overlay {
+      transform-origin: center bottom !important;
+      top: -98px !important;
+    }
   }
 
   .stored-filter {
