@@ -40,6 +40,7 @@ export class AuditService {
   // audit action codes that should be visible to admin users
   private adminAuditActions: number[] = [
     202, // marked for delete
+    220, // version deleted
     400, // content read
     401, // metadata read
     402, // rendition read (text)

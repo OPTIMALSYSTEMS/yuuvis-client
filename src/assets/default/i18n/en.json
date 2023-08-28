@@ -101,6 +101,7 @@
   "yuv.framework.audit.label.delete.content": "Document file was deleted",
   "yuv.framework.audit.label.delete.marked": "Object was marked for deletion",
   "yuv.framework.audit.label.delete.tag": "Tag was deleted",
+  "yuv.framework.audit.label.delete.version": "Document version was deleted",
   "yuv.framework.audit.label.get.content": "Document file was read",
   "yuv.framework.audit.label.get.custom": "All other events",
   "yuv.framework.audit.label.get.metadata": "Metadata was read",

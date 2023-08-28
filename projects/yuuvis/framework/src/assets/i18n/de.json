@@ -63,6 +63,7 @@
 	"yuv.framework.audit.label.delete.content": "Dokumentdatei wurde gelöscht",
 	"yuv.framework.audit.label.delete.marked": "Objekt wurde zur Löschung vorgesehen",
 	"yuv.framework.audit.label.delete.tag": "Tag wurde gelöscht",
+	"yuv.framework.audit.label.delete.version": "Dokumentversion wurde gelöscht",
 	"yuv.framework.audit.label.get.content": "Dokumentdatei wurde gelesen",
 	"yuv.framework.audit.label.get.custom": "Alle sonstigen Ereignisse",
 	"yuv.framework.audit.label.get.metadata": "Metadaten wurden gelesen",
