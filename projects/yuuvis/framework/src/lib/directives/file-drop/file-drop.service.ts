@@ -36,7 +36,7 @@ export class FileDropService {
         map((event: DragEvent) => {
           if (event.type === 'dragenter' && this.dragContainsFiles(event) > 0) {
             this.dragEventCount++;
-          } else if (event.type === 'dragleave') {
+          } else if (event.type === 'dragleave' && this.dragEventCount > 0) {
             this.dragEventCount--;
           } else if (event.type === 'drop') {
             this.dragEventCount = 0;
