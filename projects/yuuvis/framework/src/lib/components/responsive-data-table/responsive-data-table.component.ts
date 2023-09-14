@@ -1,20 +1,20 @@
 import { ClientSideRowModelModule } from '@ag-grid-community/client-side-row-model';
 import { ColDef, GridOptions, Module, RowEvent, RowNode } from '@ag-grid-community/core';
 import { Component, ElementRef, EventEmitter, HostBinding, HostListener, Input, NgZone, OnDestroy, OnInit, Output } from '@angular/core';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { BaseObjectTypeField, DeviceService, PendingChangesService, Utils } from '@yuuvis/core';
 import { NgxResize, NgxResizeResult } from 'ngx-resize';
 import { Observable, ReplaySubject } from 'rxjs';
 import { debounceTime, map } from 'rxjs/operators';
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { ObjectTypeIconComponent } from '../../common/components/object-type-icon/object-type-icon.component';
 import { LocaleDatePipe } from '../../pipes/locale-date.pipe';
 import { PluginsService } from '../../plugins/plugins.service';
 import { ColumnSizes } from '../../services/grid/grid.interface';
 import { SingleCellRendererComponent } from '../../services/grid/renderer/single-cell-renderer/single-cell-renderer.component';
 import { LayoutService } from '../../services/layout/layout.service';
+import { ViewMode } from '../../shared/utils/utils';
 import { GridService } from './../../services/grid/grid.service';
 import { ResponsiveTableData } from './responsive-data-table.interface';
-import { ViewMode } from '../../shared/utils/utils';
 
 /**
  * Input data for a `ResponsiveDataTableComponent`
@@ -134,7 +134,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
   /**
    * view mode of the table
    */
-  @Input() 
+  @Input()
   set viewMode(viewMode: ViewMode) {
     this._viewMode = viewMode || 'auto';
     const currentViewMode = this._viewMode === 'auto' ? this._autoViewMode : this._viewMode;
@@ -153,11 +153,10 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
     return this._currentViewMode;
   }
 
-
   /**
    * Limit the number of selected rows
    */
-   @Input() selectionLimit;
+  @Input() selectionLimit;
 
   private get focusField() {
     return this._data.columns[0] ? this._data.columns[0].field : BaseObjectTypeField.OBJECT_TYPE_ID;
@@ -245,7 +244,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
       });
     // subscribe to columns beeing resized
     this.columnResize$.pipe(untilDestroyed(this), debounceTime(500)).subscribe(() => {
-      if (this.isStandard) {
+      if (this.isStandard && this.gridOptions.columnApi) {
         this.columnResized.emit({
           columns: this.gridOptions.columnApi.getColumnState().map((columnState) => ({
             id: columnState.colId,
@@ -419,14 +418,14 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
 
   getSortModel() {
     return this.gridOptions.columnApi
-      .getColumnState()
+      ?.getColumnState()
       .map(({ colId, sort }) => ({ colId, sort }))
       .filter(({ sort }) => sort);
   }
 
   setSortModel(model: any[]) {
-    this.gridOptions.columnApi.applyColumnState({
-      state: this.gridOptions.columnApi.getColumnState().map((c) => ({ ...c, ...(model.find((m) => m.colId === c.colId) || { sort: null }) }))
+    this.gridOptions.columnApi?.applyColumnState({
+      state: this.gridOptions.columnApi?.getColumnState().map((c) => ({ ...c, ...(model.find((m) => m.colId === c.colId) || { sort: null }) }))
     });
   }
 
