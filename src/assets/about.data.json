@@ -1,1 +1,149 @@
-{"libraries":[{"name":"@ag-grid-community/angular","license":"MIT"},{"name":"@ag-grid-community/client-side-row-model","license":"MIT"},{"name":"@ag-grid-community/core","license":"MIT"},{"name":"@ag-grid-community/csv-export","license":"MIT"},{"name":"@ag-grid-community/styles","license":"MIT"},{"name":"@angular/animations","license":"MIT"},{"name":"@angular/cdk","license":"MIT"},{"name":"@angular/common","license":"MIT"},{"name":"@angular/compiler","license":"MIT"},{"name":"@angular/core","license":"MIT"},{"name":"@angular/forms","license":"MIT"},{"name":"@angular/platform-browser","license":"MIT"},{"name":"@angular/platform-browser-dynamic","license":"MIT"},{"name":"@angular/router","license":"MIT"},{"name":"@angular/service-worker","license":"MIT"},{"name":"@ngneat/until-destroy","license":"MIT"},{"name":"@ngx-pwa/local-storage","license":"MIT"},{"name":"@ngx-translate/core","license":"MIT"},{"name":"@yuuvis/command-palette","license":"MIT"},{"name":"@yuuvis/styles","license":"MIT"},{"name":"@yuuvis/widget-grid","license":"MIT"},{"name":"@yuuvis/widget-grid-widgets","license":"MIT"},{"name":"angular-oauth2-oidc","license":"MIT"},{"name":"angular-split","license":"Apache-2.0"},{"name":"core-js","license":"MIT"},{"name":"lodash-es","license":"MIT"},{"name":"ngx-device-detector","license":"MIT"},{"name":"ngx-drag-scroll","license":"MIT"},{"name":"ngx-resize","license":"MIT"},{"name":"ngx-toastr","license":"MIT"},{"name":"primeicons","license":"MIT"},{"name":"primeng","license":"MIT"},{"name":"rxjs","license":"Apache-2.0"},{"name":"tslib","license":"0BSD"},{"name":"zone.js","license":"MIT"}],"version":"5.0.0-beta.2","releasedate":"Spring 2023","author":"OPTIMAL SYSTEMS GmbH","product":"yuuvis® client"}
+{
+  "libraries": [
+    {
+      "name": "@ag-grid-community/angular",
+      "license": "MIT"
+    },
+    {
+      "name": "@ag-grid-community/client-side-row-model",
+      "license": "MIT"
+    },
+    {
+      "name": "@ag-grid-community/core",
+      "license": "MIT"
+    },
+    {
+      "name": "@ag-grid-community/csv-export",
+      "license": "MIT"
+    },
+    {
+      "name": "@ag-grid-community/styles",
+      "license": "MIT"
+    },
+    {
+      "name": "@angular/animations",
+      "license": "MIT"
+    },
+    {
+      "name": "@angular/cdk",
+      "license": "MIT"
+    },
+    {
+      "name": "@angular/common",
+      "license": "MIT"
+    },
+    {
+      "name": "@angular/compiler",
+      "license": "MIT"
+    },
+    {
+      "name": "@angular/core",
+      "license": "MIT"
+    },
+    {
+      "name": "@angular/forms",
+      "license": "MIT"
+    },
+    {
+      "name": "@angular/platform-browser",
+      "license": "MIT"
+    },
+    {
+      "name": "@angular/platform-browser-dynamic",
+      "license": "MIT"
+    },
+    {
+      "name": "@angular/router",
+      "license": "MIT"
+    },
+    {
+      "name": "@angular/service-worker",
+      "license": "MIT"
+    },
+    {
+      "name": "@ngneat/until-destroy",
+      "license": "MIT"
+    },
+    {
+      "name": "@ngx-pwa/local-storage",
+      "license": "MIT"
+    },
+    {
+      "name": "@ngx-translate/core",
+      "license": "MIT"
+    },
+    {
+      "name": "@yuuvis/command-palette",
+      "license": "MIT"
+    },
+    {
+      "name": "@yuuvis/styles",
+      "license": "MIT"
+    },
+    {
+      "name": "@yuuvis/widget-grid",
+      "license": "MIT"
+    },
+    {
+      "name": "@yuuvis/widget-grid-widgets",
+      "license": "MIT"
+    },
+    {
+      "name": "angular-oauth2-oidc",
+      "license": "MIT"
+    },
+    {
+      "name": "angular-split",
+      "license": "Apache-2.0"
+    },
+    {
+      "name": "core-js",
+      "license": "MIT"
+    },
+    {
+      "name": "lodash-es",
+      "license": "MIT"
+    },
+    {
+      "name": "ngx-device-detector",
+      "license": "MIT"
+    },
+    {
+      "name": "ngx-drag-scroll",
+      "license": "MIT"
+    },
+    {
+      "name": "ngx-resize",
+      "license": "MIT"
+    },
+    {
+      "name": "ngx-toastr",
+      "license": "MIT"
+    },
+    {
+      "name": "primeicons",
+      "license": "MIT"
+    },
+    {
+      "name": "primeng",
+      "license": "MIT"
+    },
+    {
+      "name": "rxjs",
+      "license": "Apache-2.0"
+    },
+    {
+      "name": "tslib",
+      "license": "0BSD"
+    },
+    {
+      "name": "zone.js",
+      "license": "MIT"
+    }
+  ],
+  "version": "5.2.0-beta.1",
+  "releasedate": "Winter 2023 LTS",
+  "author": "OPTIMAL SYSTEMS GmbH",
+  "product": "yuuvis® client",
+  "buildtime": "2023-09-15T21:11:24.962Z"
+}

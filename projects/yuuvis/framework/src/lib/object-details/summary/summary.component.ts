@@ -1,5 +1,6 @@
 import { ColDef, ICellRendererFunc } from '@ag-grid-community/core';
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import {
   AppCacheService,
   BaseObjectTypeField,
@@ -13,7 +14,6 @@ import {
   RetentionField,
   SystemService
 } from '@yuuvis/core';
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { CellRenderer } from '../../services/grid/grid.cellrenderer';
 import { GridService } from '../../services/grid/grid.service';
 import { Situation } from './../../object-form/object-form.situation';
@@ -40,8 +40,8 @@ import { Summary, SummaryEntry } from './summary.interface';
  * <!-- compare two dms object -->
  * <yuv-summary [compareObjects]="[dmsObject1, dmsObject2]"></yuv-summary>
  */
- @UntilDestroy()
- @Component({
+@UntilDestroy()
+@Component({
   selector: 'yuv-summary',
   templateUrl: './summary.component.html',
   styleUrls: ['./summary.component.scss']
@@ -291,13 +291,11 @@ export class SummaryComponent implements OnInit, OnDestroy {
         }
       });
     const bp = this.systemService.getBaseProperties();
-
+    const coreOrder = [bp.title, bp.description, ...this.coreFields];
     return {
       ...summary,
       base: summary.base.sort((a, b) => a.order - b.order),
-      core: summary.core
-        .sort((a, b) => (a.key === bp.description ? -1 : b.key === bp.description ? 1 : 0))
-        .sort((a, b) => (a.key === bp.title ? -1 : b.key === bp.title ? 1 : 0))
+      core: summary.core.sort((a, b) => coreOrder.indexOf(a.key) - coreOrder.indexOf(b.key))
     };
   }
 

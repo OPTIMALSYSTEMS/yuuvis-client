@@ -24,7 +24,8 @@ const aboutData = {
   version: helper.getVersion(),
   releasedate: helper.getReleaseDate(),
   author: helper.getCompany(),
-  product: helper.getDescription()
+  product: helper.getDescription(),
+  buildtime: new Date().toISOString()
 };
 
-writeStream.write(JSON.stringify(aboutData), (error) => (error ? console.log(error) : null));
+writeStream.write(JSON.stringify(aboutData, null, 2), (error) => (error ? console.log(error) : null));
