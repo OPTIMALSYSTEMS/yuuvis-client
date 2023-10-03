@@ -3,7 +3,6 @@ import {
   BaseObjectTypeField,
   PendingChangesService,
   SearchFilter,
-  SearchFilterGroup,
   SearchQuery,
   SearchResult,
   SearchService,
@@ -51,7 +50,7 @@ export class ProcessAttachmentsComponent implements OnInit {
   @Output() attachmentOpenExternal = new EventEmitter<string>();
 
   attachedObjects: ProcessAttachment[] = [];
-  selectedObject: { id: string, leadingTypeId?: string, title?: string, error?: boolean };
+  selectedObject: { id: string; leadingTypeId?: string; title?: string; error?: boolean };
   busy: boolean;
 
   private popoverRef: PopoverRef;
@@ -113,13 +112,13 @@ export class ProcessAttachmentsComponent implements OnInit {
       this.busy = true;
       const bp = this.system.getBaseProperties();
 
-      let query = new SearchQuery();
-      query.fields = [BaseObjectTypeField.OBJECT_ID, BaseObjectTypeField.LEADING_OBJECT_TYPE_ID, bp.title];
-      let group = SearchFilterGroup.fromArray(oids.map((id) => new SearchFilter(BaseObjectTypeField.OBJECT_ID, SearchFilter.OPERATOR.EEQUAL, id)));
-      group.operator = SearchFilterGroup.OPERATOR.OR;
-      query.addFilterGroup(group);
-      this.searchService.search(query).subscribe(
-        (res: SearchResult) => {
+      const query = new SearchQuery({
+        fields: [BaseObjectTypeField.OBJECT_ID, BaseObjectTypeField.LEADING_OBJECT_TYPE_ID, bp.title]
+      });
+      query.addFilter(new SearchFilter(BaseObjectTypeField.OBJECT_ID, SearchFilter.OPERATOR.IN, oids));
+
+      this.searchService.search(query).subscribe({
+        next: (res: SearchResult) => {
           // map result to maintain the correct order
           const qa: { [key: string]: any } = {};
           res.items.forEach((i) => {
@@ -148,11 +147,11 @@ export class ProcessAttachmentsComponent implements OnInit {
           }
           this.busy = false;
         },
-        (err) => {
+        error: (err) => {
           // TODO: handle error
           this.busy = false;
         }
-      );
+      });
     } else {
       this.attachedObjects = [];
     }
