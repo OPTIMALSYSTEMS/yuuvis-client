@@ -11,7 +11,7 @@ import {
   TaskType,
   TranslateService
 } from '@yuuvis/core';
-import { forkJoin, Observable, of } from 'rxjs';
+import { Observable, forkJoin, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { FormStatusChangedEvent, ObjectFormOptions } from '../../../object-form/object-form.interface';
 import { ObjectFormComponent } from '../../../object-form/object-form/object-form.component';
@@ -54,16 +54,19 @@ export class TaskDetailsTaskComponent implements OnInit {
 
     this.taskDescription = this.getDescription(t);
     this.getMessages(t);
+    const disabled = !t.assignee;
 
     if (t?.taskForm) {
       if (t.taskForm.model) {
         this.formOptions = {
           formModel: t.taskForm.model,
+          disabled,
           data: this.getFormDataFromProcessVars(t)
         };
       } else if (t.taskForm.schemaProperties) {
         this.formOptions = {
           formModel: this.getFormModelFromSchemaProperties(t.taskForm.schemaProperties),
+          disabled,
           data: this.getFormDataFromProcessVars(t)
         };
       }
@@ -71,8 +74,8 @@ export class TaskDetailsTaskComponent implements OnInit {
       if (t.taskForm.outcomes) {
         this.processOutcomes(t.taskForm.outcomes);
       }
-    } else if (t && t.formKey) {
-      this.createReferencedForm(t, !t.assignee);
+    } else if (t?.formKey) {
+      this.createReferencedForm(t, disabled);
     }
     // check for claiming ability
     // If there is no assignee yet you have to claim the task. If there is an assignee
@@ -90,6 +93,7 @@ export class TaskDetailsTaskComponent implements OnInit {
     this.outComeFormOptions = co
       ? {
           formModel: co.resolvedFormModel || {},
+          disabled: this.formOptions?.disabled,
           data: this.getFormDataFromProcessVars(this._task)
         }
       : undefined;
