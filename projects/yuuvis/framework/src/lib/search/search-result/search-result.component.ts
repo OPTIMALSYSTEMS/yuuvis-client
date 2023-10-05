@@ -387,6 +387,7 @@ export class SearchResultComponent extends YuvGridOptions implements OnDestroy {
     this._searchQuery.types = filterQuery.types;
     this._searchQuery.lots = filterQuery.lots;
     this._searchQuery.filterGroup = filterQuery.filterGroup;
+    this._searchQuery.scope = filterQuery.scope;
     this.executeQuery(applyColumnConfig);
   }
 

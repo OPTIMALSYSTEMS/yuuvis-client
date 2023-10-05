@@ -54,6 +54,7 @@ export interface SearchQueryProperties {
   hiddenFilters?: any; // hidden filters that will be combined with SearchQuery filters via search service
   sort?: any;
   tags?: any;
+  scope?: 'all' | 'metadata' | 'content';
 }
 
 /**
