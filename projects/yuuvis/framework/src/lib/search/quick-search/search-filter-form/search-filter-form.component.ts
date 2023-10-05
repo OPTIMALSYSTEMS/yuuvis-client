@@ -1,5 +1,6 @@
 import { Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import {
   BaseObjectTypeField,
   InternalFieldType,
@@ -13,7 +14,6 @@ import {
 } from '@yuuvis/core';
 import { Subject, Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { Selectable } from '../../../grouped-select';
 import { ObjectFormControl } from '../../../object-form/object-form.model';
 import { Situation } from '../../../object-form/object-form.situation';
@@ -125,7 +125,9 @@ export class SearchFilterFormComponent implements OnInit, OnDestroy {
         const variable = SearchFilter.parseVariable(fc._eoFormElement.variable) || null;
         const filter = new SearchFilter(
           fc._eoFormElement.name,
-          Array.isArray(fc.value) && !variable ? SearchFilter.OPERATOR.IN : variable?.operator || fc?.value?.operator || SearchFilter.OPERATOR.EQUAL,
+          variable?.operator ||
+            fc.value?.operator ||
+            (Array.isArray(fc.value) ? fc._eoFormElement._operator || this.quickSearchService.DEFAULT_SEARCH_FILTER_OPERATOR : SearchFilter.OPERATOR.EQUAL),
           fc._eoFormElement.isNotSetValue ? fc._eoFormElement.variable : fc.value
         );
         if (!filter.isEmpty() || fc._eoFormElement.isNotSetValue || fc._eoFormElement._internalType === 'boolean') {
@@ -164,12 +166,13 @@ export class SearchFilterFormComponent implements OnInit, OnDestroy {
         const field = otf.value as ObjectTypeField;
         const variable = SearchFilter.parseVariable(filter.firstValue) || null;
         const firstValue = variable?.value ? null : filter.firstValue;
+        const isEmpty = filter.operator && filter.isEmpty() && field._internalType !== 'boolean';
         if (filter.operator) {
           // setup values based on whether or not the type supports ranges
           const isRange = ['datetime', 'integer', 'decimal'].includes(field.propertyType);
           formPatch[filter.id] = { [otf.id]: !isRange ? firstValue : new RangeValue(variable?.operator || filter.operator, firstValue, filter.secondValue) };
         }
-        this.addFieldEntry(field, filter.operator && filter.isEmpty() && field._internalType !== 'boolean', variable?.value, filter.id, otf.label);
+        this.addFieldEntry(field, isEmpty, variable?.value, filter.id, otf.label, filter.operator);
       }
     });
 
@@ -182,7 +185,7 @@ export class SearchFilterFormComponent implements OnInit, OnDestroy {
    * Adds a new form field to the query
    * @param field The object type field to be added
    */
-  addFieldEntry(field: ObjectTypeField, isEmpty = false, variable = null, id?: string, label?: string, focus = true) {
+  addFieldEntry(field: ObjectTypeField, isEmpty = false, variable = null, id?: string, label?: string, operator?: string) {
     const fcID = `${id || field.id}`;
     if (!this.searchFieldsForm) {
       this.initSearchFieldsForm();
@@ -196,6 +199,7 @@ export class SearchFilterFormComponent implements OnInit, OnDestroy {
     formElement.variable = variable;
     formElement.readonly = this.disabled;
     formElement.label = label || formElement.label;
+    formElement._operator = operator;
 
     // TODO: refactor this crazy stuff - should be handled by FormElement class or service
     if (formElement.classification) {
