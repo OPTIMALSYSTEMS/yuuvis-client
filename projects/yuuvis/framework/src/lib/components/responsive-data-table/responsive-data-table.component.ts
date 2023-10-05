@@ -446,7 +446,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
       components: {
         objectTypeCellRenderer: ObjectTypeIconComponent,
         singleCellRenderer: SingleCellRendererComponent,
-        ...this._data?.gridOptions?.frameworkComponents
+        ...this._data?.gridOptions?.components
       }
     };
   }
