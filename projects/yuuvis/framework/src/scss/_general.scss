@@ -101,6 +101,7 @@ span.yuv-process-status {
     .meta {
       color: var(--text-color-caption);
       font-size: var(--font-caption);
+      word-break: break-word;
     }
 
     .created {

@@ -187,6 +187,7 @@
         display: flex;
         span {
           flex: 1;
+          word-break: break-word;
           &.version {
             flex: 0 0 auto;
             @include bidi-style(margin-right, calc(var(--app-pane-padding) / 2 * -1), margin-left, calc(var(--app-pane-padding) / 2 * -1));
