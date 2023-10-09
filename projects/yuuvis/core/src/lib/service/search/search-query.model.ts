@@ -14,6 +14,8 @@ export class SearchQuery {
   types: string[] = []; // mixed list of primary and secondary object types
   lots: string[] = []; // list of leading object types
   tags: any;
+  scope: 'all' | 'metadata' | 'content';
+
   get targetType(): string | null {
     if (this.allTypes.length > 1) {
       const deps = window['__objectTypeDeps'];
@@ -43,6 +45,10 @@ export class SearchQuery {
 
       if (searchQueryProperties.size) {
         this.size = searchQueryProperties.size;
+      }
+
+      if (searchQueryProperties.scope) {
+        this.scope = searchQueryProperties.scope;
       }
 
       if (searchQueryProperties.tags) {
@@ -115,11 +121,11 @@ export class SearchQuery {
       // add to group
       const searchFilterGroup =
         groupProperty === SearchFilterGroup.DEFAULT ? this.filterGroup : this.filterGroup.groups.find((g) => g.property === groupProperty) || this.filterGroup;
-        if (searchFilterGroup !== this.filterGroup || searchFilterGroup?.operator === SearchFilterGroup.OPERATOR.AND) {
-          searchFilterGroup.group.push(group);
-        } else {
-          this.filterGroup = SearchFilterGroup.fromArray([this.filterGroup, group]);
-        }
+      if (searchFilterGroup !== this.filterGroup || searchFilterGroup?.operator === SearchFilterGroup.OPERATOR.AND) {
+        searchFilterGroup.group.push(group);
+      } else {
+        this.filterGroup = SearchFilterGroup.fromArray([this.filterGroup, group]);
+      }
     }
   }
 
@@ -245,6 +251,10 @@ export class SearchQuery {
 
     if (this.term) {
       queryJson.term = this.term;
+    }
+
+    if (this.term && this.scope && this.scope !== 'all') {
+      queryJson.scope = this.scope;
     }
 
     if (this.tags) {
@@ -461,7 +471,8 @@ export class SearchFilter {
     INTERVAL_INCLUDE_TO: 'gtlte', // interval include right
     INTERVAL_INCLUDE_FROM: 'gtelt', // interval include left
     RANGE: 'rg', // aggegation ranges
-    LIKE: 'like' // like
+    LIKE: 'like', // like
+    CONTAINS: 'contains' // contains
   };
 
   /**
@@ -485,13 +496,14 @@ export class SearchFilter {
     INTERVAL_INCLUDE_TO: '>-', // interval include right
     INTERVAL_INCLUDE_FROM: '-<', // interval include left
     RANGE: '=', // aggegation ranges
-    LIKE: '~' // like
+    LIKE: '~', // like
+    CONTAINS: '~' // contains
   };
 
   /**
    * available variables for a search filter
    */
-   public static VARIABLES = {
+  public static VARIABLES = {
     CURRENT_USER: '$CURRENT_USER$',
     NOW: '$NOW$',
     TODAY: '$TODAY$',
@@ -501,19 +513,21 @@ export class SearchFilter {
     THISYEAR: '$THISYEAR$'
   };
 
-  public static parseVariable(value: string): { value: string, key: string, base: string, offset: number, operator: string, range: any[] } {
+  public static parseVariable(value: string): { value: string; key: string; base: string; offset: number; operator: string; range: any[] } {
     if (!value || typeof value !== 'string') return;
     const base = value.replace(new RegExp('\\|.*'), '');
-    const key = Object.keys(SearchFilter.VARIABLES).find(k => base.startsWith(SearchFilter.VARIABLES[k]));
+    const key = Object.keys(SearchFilter.VARIABLES).find((k) => base.startsWith(SearchFilter.VARIABLES[k]));
     const offset = parseFloat(base.replace(/.*\$/, ''));
-    return key && {
+    return (
+      key && {
         value,
         base,
         key,
         offset,
         operator: value.match('|') ? value.replace(new RegExp('.*\\|'), '') : SearchFilter.OPERATOR.EQUAL,
-        range: base.match(',') ? base.split(',').map(v => SearchFilter.parseVariable(v)) : null,
-      };
+        range: base.match(',') ? base.split(',').map((v) => SearchFilter.parseVariable(v)) : null
+      }
+    );
   }
 
   public static fromQuery(query: any) {
@@ -575,28 +589,35 @@ export class SearchFilter {
     return query;
   }
 
-  resloveVariable(variable: {key: string, offset: number}, lte = false) {
+  resloveVariable(variable: { key: string; offset: number }, lte = false) {
     if (SearchFilter.VARIABLES[variable.key] === SearchFilter.VARIABLES.CURRENT_USER) return window['api'].session.user.get().id;
 
     const date = new Date();
     date.setHours(0, 0, 0, 0);
     const startDay = getLocaleFirstDayOfWeek(window['api'].session.user.get().userSettings.locale || 'en');
 
-    const resolve = (v: any) => { switch(SearchFilter.VARIABLES[v.key]) {
-        case SearchFilter.VARIABLES.NOW: return new Date(new Date().setSeconds(0, 0));
-        case SearchFilter.VARIABLES.TODAY: return date;
-        case SearchFilter.VARIABLES.YESTERDAY: return date.setHours(-24) && date;
-        case SearchFilter.VARIABLES.THISWEEK: return  date.setHours(-24 * (date.getDay() - startDay + (startDay > date.getDay() ? 7 : 0))) && date;
-        case SearchFilter.VARIABLES.THISMONTH: return date.setDate(1) && date;
-        case SearchFilter.VARIABLES.THISYEAR: return date.setMonth(0, 1) && date;
+    const resolve = (v: any) => {
+      switch (SearchFilter.VARIABLES[v.key]) {
+        case SearchFilter.VARIABLES.NOW:
+          return new Date(new Date().setSeconds(0, 0));
+        case SearchFilter.VARIABLES.TODAY:
+          return date;
+        case SearchFilter.VARIABLES.YESTERDAY:
+          return date.setHours(-24) && date;
+        case SearchFilter.VARIABLES.THISWEEK:
+          return date.setHours(-24 * (date.getDay() - startDay + (startDay > date.getDay() ? 7 : 0))) && date;
+        case SearchFilter.VARIABLES.THISMONTH:
+          return date.setDate(1) && date;
+        case SearchFilter.VARIABLES.THISYEAR:
+          return date.setMonth(0, 1) && date;
       }
       return date;
-    }
+    };
 
     const val = resolve(variable);
     variable.offset && val.setHours(variable.offset * 24);
     lte && val.setHours(23, 59, 0, 0);
-    
+
     return val.toISOString();
   }
 

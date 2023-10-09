@@ -406,6 +406,8 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
       if (this._inline) {
         q.aggs = [];
       }
+      // setup scope for term search
+      q.scope = q.scope || this.quickSearchService.SEARCH_QUERY_SCOPE;
 
       this.searchQuery = q;
       this.searchForm.patchValue({ term: { label: q.term } }, { emitEvent: false });
