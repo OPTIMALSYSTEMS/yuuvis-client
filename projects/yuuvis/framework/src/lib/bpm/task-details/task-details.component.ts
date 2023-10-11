@@ -16,6 +16,7 @@ export class TaskDetailsComponent implements OnInit {
   @ViewChild('commentsTab') commentsTab: TemplateRef<any>;
 
   _task: Task;
+  _error: any;
   busy: boolean;
   header: {
     title: string;
@@ -30,6 +31,9 @@ export class TaskDetailsComponent implements OnInit {
       this.busy = true;
       this.inboxService.getTask(id).subscribe({
         next: (t: Task) => (this.task = t),
+        error: (e) => {
+          this._error = e;
+        },
         complete: () => (this.busy = false)
       });
     }
