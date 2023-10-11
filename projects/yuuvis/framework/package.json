@@ -1,6 +1,6 @@
 {
   "name": "@yuuvis/framework",
-  "version": "4.1.8",
+  "version": "4.1.9",
   "author": "OPTIMAL SYSTEMS GmbH <npm@optimal-systems.de>",
   "license": "MIT",
   "scripts": {
@@ -24,7 +24,7 @@
     "@angular/cdk": "~14.0.4",
     "@ngneat/until-destroy": "^9.2.2",
     "@yuuvis/command-palette": "^1.0.0",
-    "@yuuvis/core": "4.1.8",
+    "@yuuvis/core": "4.1.9",
     "@yuuvis/styles": "^1.0.5",
     "angular-resize-event": "^3.1.1",
     "angular-split": "^13.2.0",
