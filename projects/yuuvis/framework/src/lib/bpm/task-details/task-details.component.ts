@@ -16,6 +16,7 @@ export class TaskDetailsComponent implements OnInit {
   @ViewChild('commentsTab') commentsTab: TemplateRef<any>;
 
   _task: Task;
+  _error: any;
   busy: boolean;
   header: {
     title: string;
@@ -28,8 +29,11 @@ export class TaskDetailsComponent implements OnInit {
   @Input() set processInstanceId(id: string) {
     if (id) {
       this.busy = true;
-      this.inboxService.getTask(id).subscribe({
+      this.inboxService.getTask(id + '2').subscribe({
         next: (t: Task) => (this.task = t),
+        error: (e) => {
+          this._error = e;
+        },
         complete: () => (this.busy = false)
       });
     }
@@ -40,15 +44,15 @@ export class TaskDetailsComponent implements OnInit {
     this.dueDate =
       t && t.dueDate
         ? {
-            date: new Date(t.dueDate),
-            overDue: new Date(t.dueDate).getTime() < Date.now()
-          }
+          date: new Date(t.dueDate),
+          overDue: new Date(t.dueDate).getTime() < Date.now()
+        }
         : undefined;
     this.header = t
       ? {
-          title: t.subject,
-          description: this.getDescription(t)
-        }
+        title: t.subject,
+        description: this.getDescription(t)
+      }
       : null;
   }
   @Input() panelOrder = ['taskTab', 'historyTab', 'attachmentsTab', 'commentsTab'];
@@ -60,7 +64,7 @@ export class TaskDetailsComponent implements OnInit {
   @Input() attachmentPlugins: any;
   @Output() attachmentOpenExternal = new EventEmitter<string>();
 
-  constructor(private system: SystemService, private inboxService: InboxService, private translate: TranslateService) {}
+  constructor(private system: SystemService, private inboxService: InboxService, private translate: TranslateService) { }
 
   private getDescription(t: Task): string {
     let label = this.system.getLocalizedResource(`${t.name}_label`);
@@ -74,5 +78,5 @@ export class TaskDetailsComponent implements OnInit {
     this.task = task;
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void { }
 }

@@ -1,4 +1,23 @@
 :host {
+
+  .error {
+    height: 100%;
+    display: grid;
+    align-items: center;
+    justify-content: center;
+    padding: var(--app-pane-padding);
+
+    >div {
+      max-width: 40ch;
+      line-height: 1.5em;
+      color: var(--text-color-caption);
+
+      h2 {
+        font-size: var(--font-title);
+      }
+    }
+  }
+
   yuv-panel.task-details {
     background-color: var(--panel-background);
 
@@ -6,6 +25,7 @@
       display: flex;
       flex-flow: column;
       align-items: flex-end;
+
       span.dueDate {
         display: block;
         margin-top: 4px;
@@ -20,6 +40,8 @@
         }
       }
     }
+
+
 
     yuv-responsive-tab-container {
       background-color: transparent;

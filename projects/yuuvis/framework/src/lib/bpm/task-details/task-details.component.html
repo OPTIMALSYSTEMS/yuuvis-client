@@ -1,4 +1,4 @@
-<yuv-panel *ngIf="_task" class="task-details" [title]="header?.title" [yuvBusyOverlay]="busy"
+<yuv-panel *ngIf="_task; else tplNoTask" class="task-details" [title]="header?.title" [yuvBusyOverlay]="busy"
     [description]="header?.description">
 
     <div class="actions" *ngIf="dueDate">{{'yuv.framework.process-list.column.dueDate.label'|translate}}<span
@@ -61,4 +61,16 @@
 
 <ng-template #content>
     <ng-content></ng-content>
+</ng-template>
+
+<ng-template #tplNoTask>
+    <div class="error" *ngIf="_error" [ngSwitch]="_error.status">
+        <div class="notFound" *ngSwitchCase="404">
+            <h2 translate>yuv.framework.task-details.error.404.headline</h2>
+            <p translate>yuv.framework.task-details.error.404.text</p>
+        </div>
+        <div class="notFound" *ngSwitchDefault>
+            <p translate>yuv.framework.task-details.error.default.text</p>
+        </div>
+    </div>
 </ng-template>
