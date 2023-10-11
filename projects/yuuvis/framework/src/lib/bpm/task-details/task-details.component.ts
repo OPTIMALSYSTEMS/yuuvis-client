@@ -29,7 +29,7 @@ export class TaskDetailsComponent implements OnInit {
   @Input() set processInstanceId(id: string) {
     if (id) {
       this.busy = true;
-      this.inboxService.getTask(id + '2').subscribe({
+      this.inboxService.getTask(id).subscribe({
         next: (t: Task) => (this.task = t),
         error: (e) => {
           this._error = e;
