@@ -15,6 +15,7 @@ export class SearchQuery {
   lots: string[] = []; // list of leading object types
   tags: any;
   scope: 'all' | 'metadata' | 'content';
+  tableFilters: any[];
 
   get targetType(): string | null {
     if (this.allTypes.length > 1) {
@@ -42,6 +43,7 @@ export class SearchQuery {
       this.types = searchQueryProperties.types || [];
       this.lots = searchQueryProperties.lots || [];
       this.fields = searchQueryProperties.fields || [];
+      this.tableFilters = searchQueryProperties.tableFilters || [];
 
       if (searchQueryProperties.size) {
         this.size = searchQueryProperties.size;
@@ -292,6 +294,10 @@ export class SearchQuery {
       }
     }
 
+    if (this.tableFilters && this.tableFilters.length) {
+      queryJson.tableFilters = this.tableFilters;
+    }
+
     if (this.aggs && this.aggs.length) {
       queryJson.aggs = this.aggs;
     }
@@ -304,6 +310,11 @@ export class SearchQuery {
     }
 
     return queryJson;
+  }
+
+  public clone(combineFilters = false) {
+    const q = new SearchQuery(this.toQueryJson(combineFilters));
+    return q;
   }
 }
 
@@ -635,3 +646,75 @@ export class SearchFilter {
 export class SortOption {
   constructor(public field: string, public order: string, public missing?: string) {}
 }
+
+/**
+ * Transform date filters to support exact search with seconds & milliseconds
+ */
+export function transformDateFilters(queryJson: SearchQueryProperties, query: SearchQuery, allFields: any, field = 'filters') {
+  queryJson[field]?.forEach((f: any) => {
+    if (f[field]) return transformDateFilters(f, query, allFields, field);
+
+    if (f.v1 && f.v1.length > 10 && allFields.date.includes(f.f)) {
+      f.v1 = Utils.transformDate(f.v1);
+      f.v2 = f.v2 && Utils.transformDate(f.v2);
+      if (f.o === SearchFilter.OPERATOR.EQUAL && f.v2) f.o = SearchFilter.OPERATOR.INTERVAL_INCLUDE_BOTH;
+    }
+
+    if (f.v1 && allFields.datetime.includes(f.f)) {
+      const from = (v: any) => v && new Date(v).toISOString(); // :00.000Z
+      const to = (v: any) => v && new Date(new Date(v).getTime() + 60 * 1000 - 1).toISOString(); // :59.999Z
+      switch (f.o) {
+        case SearchFilter.OPERATOR.LESS_OR_EQUAL:
+        case SearchFilter.OPERATOR.GREATER_THAN:
+          f.v1 = to(f.v1);
+          break;
+        case SearchFilter.OPERATOR.LESS_THAN:
+        case SearchFilter.OPERATOR.GREATER_OR_EQUAL:
+          f.v1 = from(f.v1);
+          break;
+        case SearchFilter.OPERATOR.EQUAL:
+          f.o = SearchFilter.OPERATOR.INTERVAL_INCLUDE_BOTH;
+        case SearchFilter.OPERATOR.INTERVAL_INCLUDE_BOTH:
+          f.v1 = from(f.v1);
+          f.v2 = to(f.v2 || f.v1);
+          break;
+        case SearchFilter.OPERATOR.INTERVAL_INCLUDE_FROM:
+          f.v1 = from(f.v1);
+          f.v2 = from(f.v2);
+          break;
+        case SearchFilter.OPERATOR.INTERVAL_INCLUDE_TO:
+          f.v1 = to(f.v1);
+          f.v2 = to(f.v2);
+          break;
+        case SearchFilter.OPERATOR.INTERVAL:
+          f.v1 = to(f.v1);
+          f.v2 = from(f.v2);
+          break;
+      }
+    }
+  });
+  return queryJson;
+}
+
+/**
+ * Transform table filters to support exact search with same table row
+ */
+export function transformTableFilters(queryJson: SearchQueryProperties, query: SearchQuery, allFields: any, field = 'tableFilters') {
+  const tableFilters = queryJson.filters
+    ?.reduce((p, c) => [...p, ...(c.filters && !c.lo ? c.filters : [c])], [])
+    ?.reduce((p, c) => {
+      const m = c.f?.split('[*].');
+      if (m?.[1]) {
+        const v = { ...c, f: m[1] };
+        p.find((f) => f.table === m[0])?.columnFilters.push(v) || p.push({ table: m[0], columnFilters: [v] });
+      }
+      return p;
+    }, [])
+    .filter((v) => v.columnFilters.length > 1);
+
+  if (tableFilters?.length) queryJson[field] = tableFilters;
+
+  return queryJson;
+}
+
+export const transformFilters = [transformDateFilters, transformTableFilters];
