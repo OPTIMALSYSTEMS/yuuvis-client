@@ -8,7 +8,7 @@ import { BackendService } from '../backend/backend.service';
 import { BaseObjectTypeField, ContentStreamField } from '../system/system.enum';
 import { SystemService } from '../system/system.service';
 import { SearchQuery, transformFilters } from './search-query.model';
-import { AggregateResult, Aggregation, SearchQueryProperties, SearchResult, SearchResultContent, SearchResultItem } from './search.service.interface';
+import { AggregateResult, Aggregation, SearchResult, SearchResultContent, SearchResultItem } from './search.service.interface';
 /**
  * Providing searching of dms objects.
  */
@@ -65,7 +65,7 @@ export class SearchService {
 
   searchRaw(q: SearchQuery): Observable<any> {
     this.lastSearchQuery = q;
-    return this.backend.post(`/dms/objects/search`, this.transformSearchQuery(q.toQueryJson(true), q), ApiBase.apiWeb);
+    return this.backend.post(`/dms/objects/search`, this.transformSearchQuery(q), ApiBase.apiWeb);
   }
 
   /**
@@ -76,9 +76,7 @@ export class SearchService {
    */
   aggregate(q: SearchQuery, aggregations: string[]) {
     q.aggs = aggregations;
-    return this.backend
-      .post(`/dms/objects/search`, this.transformSearchQuery(q.toQueryJson(true), q), ApiBase.apiWeb)
-      .pipe(map((res) => this.toAggregateResult(res, aggregations)));
+    return this.backend.post(`/dms/objects/search`, this.transformSearchQuery(q), ApiBase.apiWeb).pipe(map((res) => this.toAggregateResult(res, aggregations)));
   }
 
   getLastSearchQuery() {
@@ -207,12 +205,14 @@ export class SearchService {
     return this.search(query);
   }
 
-  private transformSearchQuery(queryJson: SearchQueryProperties, query?: SearchQuery) {
-    return transformFilters.reduce((_queryJson, fn) => fn.call(this, _queryJson, query, this.allFields), queryJson);
+  private transformSearchQuery(query: SearchQuery) {
+    return transformFilters.reduce((q, fn) => fn.call(this, q, query, this.allFields), query.toQueryJson(true));
   }
 
-  exportSearchResult(queryJson: SearchQueryProperties, title?: string): Observable<String> {
-    return this.backend.post('/dms/objects/export', this.transformSearchQuery(queryJson), ApiBase.apiWeb, { responseType: 'text', observe: 'response' }).pipe(
+  exportSearchResult(query: SearchQuery, fields?: string[], title?: string): Observable<String> {
+    const q = query.clone(true);
+    q.fields = fields || q.fields;
+    return this.backend.post('/dms/objects/export', this.transformSearchQuery(q), ApiBase.apiWeb, { responseType: 'text', observe: 'response' }).pipe(
       tap(({ body, headers }: any) =>
         Utils.downloadBlob(body, `${headers.get('content-type')}`, title ? title : headers.get('content-disposition').match(new RegExp(/([^=]+$)/, 'g'))[0])
       ),
