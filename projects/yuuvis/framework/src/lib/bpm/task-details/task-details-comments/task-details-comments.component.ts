@@ -61,11 +61,10 @@ export class TaskDetailsCommentsComponent implements OnInit {
           return EMPTY;
         })
       )
-      .subscribe({
-        complete: () => {
-          this.busy = false;
-          this.commentForm.reset();
-        }
+      .subscribe()
+      .add(() => {
+        this.busy = false;
+        this.commentForm.reset();
       });
   }
 
