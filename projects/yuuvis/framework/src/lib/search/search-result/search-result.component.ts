@@ -357,11 +357,13 @@ export class SearchResultComponent extends YuvGridOptions implements OnDestroy {
 
   goToPage(page: number) {
     this.busy = true;
-    this.searchService.getPage(this._searchQuery, page).subscribe({
-      next: (res: SearchResult) => this.createTableData(res, page),
-      error: (err) => {}, // TODO: how should errors be handles in case hat loading pages fail
-      complete: () => (this.busy = false)
-    });
+    this.searchService
+      .getPage(this._searchQuery, page)
+      .subscribe({
+        next: (res: SearchResult) => this.createTableData(res, page),
+        error: (err) => {} // TODO: how should errors be handles in case hat loading pages fail
+      })
+      .add(() => (this.busy = false));
   }
 
   private setSelection(ids: string[]) {
