@@ -52,6 +52,7 @@ export interface SearchQueryProperties {
   lots?: string[]; // list of leading object types
   filters?: any;
   hiddenFilters?: any; // hidden filters that will be combined with SearchQuery filters via search service
+  tableFilters?: any; // table filters that allows to search complex queries
   sort?: any;
   tags?: any;
   scope?: 'all' | 'metadata' | 'content';

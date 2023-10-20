@@ -16,6 +16,7 @@ export class TaskDetailsComponent implements OnInit {
   @ViewChild('commentsTab') commentsTab: TemplateRef<any>;
 
   _task: Task;
+  _error: any;
   busy: boolean;
   header: {
     title: string;
@@ -28,10 +29,13 @@ export class TaskDetailsComponent implements OnInit {
   @Input() set processInstanceId(id: string) {
     if (id) {
       this.busy = true;
-      this.inboxService.getTask(id).subscribe({
-        next: (t: Task) => (this.task = t),
-        complete: () => (this.busy = false)
-      });
+      this.inboxService
+        .getTask(id)
+        .subscribe({
+          next: (t: Task) => (this.task = t),
+          error: (e) => (this._error = e)
+        })
+        .add(() => (this.busy = false));
     }
   }
 

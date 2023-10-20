@@ -7,8 +7,8 @@ import { ApiBase } from '../backend/api.enum';
 import { BackendService } from '../backend/backend.service';
 import { BaseObjectTypeField, ContentStreamField } from '../system/system.enum';
 import { SystemService } from '../system/system.service';
-import { SearchFilter, SearchQuery } from './search-query.model';
-import { AggregateResult, Aggregation, SearchQueryProperties, SearchResult, SearchResultContent, SearchResultItem } from './search.service.interface';
+import { SearchQuery, transformFilters } from './search-query.model';
+import { AggregateResult, Aggregation, SearchResult, SearchResultContent, SearchResultItem } from './search.service.interface';
 /**
  * Providing searching of dms objects.
  */
@@ -17,20 +17,28 @@ import { AggregateResult, Aggregation, SearchQueryProperties, SearchResult, Sear
 })
 export class SearchService {
   private lastSearchQuery: SearchQuery;
-  private _datetimeFields = [];
-  private _dateFields = [];
+  private allFields = {
+    datetime: [],
+    date: [],
+    table: [],
+    all: []
+  };
 
   /**
    * @ignore
    */
   constructor(private backend: BackendService, private systemService: SystemService) {
     this.systemService.system$.subscribe((system) => {
-      this._datetimeFields = Object.values(system.allFields)
-        .filter((f: any) => f.resolution !== 'date' && f.propertyType === 'datetime')
-        .map((f: any) => f.id);
-      this._dateFields = Object.values(system.allFields)
-        .filter((f: any) => f.resolution === 'date' && f.propertyType === 'datetime')
-        .map((f: any) => f.id);
+      this.allFields.all = Object.values(system.allFields);
+      this.allFields.all.forEach((f: any) => {
+        if (f.propertyType === 'datetime') this.allFields[f.resolution == 'date' ? 'date' : 'datetime'].push(f.id);
+        if (f.propertyType === 'table') {
+          this.allFields['table'].push(f.id);
+          f.columnDefinitions?.forEach((c) => {
+            if (c.propertyType === 'datetime') this.allFields[c.resolution == 'date' ? 'date' : 'datetime'].push(f.id + '[*].' + c.id);
+          });
+        }
+      });
     });
   }
 
@@ -57,7 +65,7 @@ export class SearchService {
 
   searchRaw(q: SearchQuery): Observable<any> {
     this.lastSearchQuery = q;
-    return this.backend.post(`/dms/objects/search`, this.transformDateFilters(q.toQueryJson(true)), ApiBase.apiWeb);
+    return this.backend.post(`/dms/objects/search`, this.transformSearchQuery(q), ApiBase.apiWeb);
   }
 
   /**
@@ -68,9 +76,7 @@ export class SearchService {
    */
   aggregate(q: SearchQuery, aggregations: string[]) {
     q.aggs = aggregations;
-    return this.backend
-      .post(`/dms/objects/search`, this.transformDateFilters(q.toQueryJson(true)), ApiBase.apiWeb)
-      .pipe(map((res) => this.toAggregateResult(res, aggregations)));
+    return this.backend.post(`/dms/objects/search`, this.transformSearchQuery(q), ApiBase.apiWeb).pipe(map((res) => this.toAggregateResult(res, aggregations)));
   }
 
   getLastSearchQuery() {
@@ -199,57 +205,14 @@ export class SearchService {
     return this.search(query);
   }
 
-  /**
-   * Transform date filters to support exact search with seconds & milliseconds
-   */
-  private transformDateFilters(queryJson: any) {
-    queryJson.filters?.forEach((f: any) => {
-      if (f.filters) return this.transformDateFilters(f);
-
-      if (f.v1 && f.v1.length > 10 && this._dateFields.includes(f.f)) {
-        f.v1 = Utils.transformDate(f.v1);
-        f.v2 = f.v2 && Utils.transformDate(f.v2);
-        if (f.o === SearchFilter.OPERATOR.EQUAL && f.v2) f.o = SearchFilter.OPERATOR.INTERVAL_INCLUDE_BOTH;
-      }
-
-      if (f.v1 && this._datetimeFields.includes(f.f)) {
-        const from = (v: any) => v && new Date(v).toISOString(); // :00.000Z
-        const to = (v: any) => v && new Date(new Date(v).getTime() + 60 * 1000 - 1).toISOString(); // :59.999Z
-        switch (f.o) {
-          case SearchFilter.OPERATOR.LESS_OR_EQUAL:
-          case SearchFilter.OPERATOR.GREATER_THAN:
-            f.v1 = to(f.v1);
-            break;
-          case SearchFilter.OPERATOR.LESS_THAN:
-          case SearchFilter.OPERATOR.GREATER_OR_EQUAL:
-            f.v1 = from(f.v1);
-            break;
-          case SearchFilter.OPERATOR.EQUAL:
-            f.o = SearchFilter.OPERATOR.INTERVAL_INCLUDE_BOTH;
-          case SearchFilter.OPERATOR.INTERVAL_INCLUDE_BOTH:
-            f.v1 = from(f.v1);
-            f.v2 = to(f.v2 || f.v1);
-            break;
-          case SearchFilter.OPERATOR.INTERVAL_INCLUDE_FROM:
-            f.v1 = from(f.v1);
-            f.v2 = from(f.v2);
-            break;
-          case SearchFilter.OPERATOR.INTERVAL_INCLUDE_TO:
-            f.v1 = to(f.v1);
-            f.v2 = to(f.v2);
-            break;
-          case SearchFilter.OPERATOR.INTERVAL:
-            f.v1 = to(f.v1);
-            f.v2 = from(f.v2);
-            break;
-        }
-      }
-    });
-    return queryJson;
+  private transformSearchQuery(query: SearchQuery) {
+    return transformFilters.reduce((q, fn) => fn.call(this, q, query, this.allFields), query.toQueryJson(true));
   }
 
-  exportSearchResult(searchquery: SearchQueryProperties, title?: string): Observable<String> {
-    return this.backend.post('/dms/objects/export', this.transformDateFilters(searchquery), ApiBase.apiWeb, { responseType: 'text', observe: 'response' }).pipe(
+  exportSearchResult(query: SearchQuery, fields?: string[], title?: string): Observable<String> {
+    const q = query.clone(true);
+    q.fields = fields || q.fields;
+    return this.backend.post('/dms/objects/export', this.transformSearchQuery(q), ApiBase.apiWeb, { responseType: 'text', observe: 'response' }).pipe(
       tap(({ body, headers }: any) =>
         Utils.downloadBlob(body, `${headers.get('content-type')}`, title ? title : headers.get('content-disposition').match(new RegExp(/([^=]+$)/, 'g'))[0])
       ),

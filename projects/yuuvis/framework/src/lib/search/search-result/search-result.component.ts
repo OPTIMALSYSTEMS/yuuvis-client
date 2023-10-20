@@ -116,8 +116,9 @@ export class SearchResultComponent extends YuvGridOptions implements OnDestroy {
       this.itemsSelected.emit([]);
     }
 
-    this._originalQuery = searchQuery && new SearchQuery(searchQuery.toQueryJson());
-    this._searchQuery = searchQuery && new SearchQuery(searchQuery.toQueryJson());
+    this._originalQuery = searchQuery?.clone();
+    this._searchQuery = searchQuery?.clone();
+
     if (searchQuery) {
       this.executeQuery(this.applyColumnConfig);
     } else {
@@ -273,7 +274,7 @@ export class SearchResultComponent extends YuvGridOptions implements OnDestroy {
         ];
 
         this._columns = colDefs;
-        this._originalQuery = new SearchQuery(q.toQueryJson());
+        this._originalQuery = q.clone();
       }),
       switchMap(() => of(q))
     );
@@ -357,11 +358,13 @@ export class SearchResultComponent extends YuvGridOptions implements OnDestroy {
 
   goToPage(page: number) {
     this.busy = true;
-    this.searchService.getPage(this._searchQuery, page).subscribe({
-      next: (res: SearchResult) => this.createTableData(res, page),
-      error: (err) => {}, // TODO: how should errors be handles in case hat loading pages fail
-      complete: () => (this.busy = false)
-    });
+    this.searchService
+      .getPage(this._searchQuery, page)
+      .subscribe({
+        next: (res: SearchResult) => this.createTableData(res, page),
+        error: (err) => {} // TODO: how should errors be handles in case hat loading pages fail
+      })
+      .add(() => (this.busy = false));
   }
 
   private setSelection(ids: string[]) {
