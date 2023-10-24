@@ -64,7 +64,7 @@
 </ng-template>
 
 <ng-template #tplNoTask>
-    <div class="error" *ngIf="_error" [ngSwitch]="_error.status">
+    <div class="error" *ngIf="_error" [ngSwitch]="_error.status" [yuvBusyOverlay]="busy">
         <div class="notFound" *ngSwitchCase="404">
             <h2 translate>yuv.framework.task-details.error.404.headline</h2>
             <p translate>yuv.framework.task-details.error.404.text</p>

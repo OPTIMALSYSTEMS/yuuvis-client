@@ -32,8 +32,14 @@ export class TaskDetailsComponent implements OnInit {
       this.inboxService
         .getTask(id)
         .subscribe({
-          next: (t: Task) => (this.task = t),
-          error: (e) => (this._error = e)
+          next: (t: Task) => {
+            this.task = t;
+            this._error = null;
+          },
+          error: (e) => {
+            this.task = null;
+            this._error = e;
+          }
         })
         .add(() => (this.busy = false));
     }
