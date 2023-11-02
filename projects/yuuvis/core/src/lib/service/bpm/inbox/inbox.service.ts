@@ -39,7 +39,7 @@ export class InboxService {
   }
 
   getTaskForm(formKey: string): any {
-    return this.backendService.get(`/resources/config/${formKey}`).pipe(map((res) => (res ? res.tenant : null)));
+    return this.backendService.get(`${ConfigService.GLOBAL_RESOURCES}${formKey}`).pipe(map((res) => ConfigService.PARSER(res)));
   }
 
   /**
