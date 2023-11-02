@@ -24,7 +24,7 @@
 <ng-template #taskTab>
     <yuv-tab-panel [id]="'taskTab'" [header]="'yuv.framework.task-details.tabs.task.title' | translate"
         [headerStyleClass]="'task'">
-        <ng-template pTemplate="contenconfigt">
+        <ng-template pTemplate="content">
             <yuv-task-details-task [task]="_task" (taskUpdated)="onTaskUpdated($event)"></yuv-task-details-task>
         </ng-template>
     </yuv-tab-panel>
