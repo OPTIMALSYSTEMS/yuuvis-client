@@ -76,8 +76,8 @@
             <!-- outcomes -->
             <ng-template #tplOutcomeActions>
                 <button class="{{o.outcome.secondary ? 'secondary' : 'primary'}}" *ngFor="let o of outcomes"
-                    [disabled]="error || formState?.invalid || formState?.dirty"
-                    (click)="triggerCurrentFormOutcome(o)">{{o.label}}</button>
+                    [disabled]="error || formState?.invalid"
+                    (click)="formState?.dirty ? update(o) : triggerCurrentFormOutcome(o)">{{o.label}}</button>
             </ng-template>
 
             <!-- resolve -->
