@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, ElementRef, ViewContainerRef } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, Input, ViewContainerRef } from '@angular/core';
 import { TabPanel, TabView } from 'primeng/tabview';
 
 // original TabPanel template should be copied in case of primeng update
@@ -25,6 +25,8 @@ import { TabPanel, TabView } from 'primeng/tabview';
   styleUrls: []
 })
 export class TabPanelComponent extends TabPanel {
+  @Input() loaded: boolean;
+
   constructor(viewContainer: ViewContainerRef, cd: ChangeDetectorRef, el: ElementRef) {
     // TabPanel is created with fake TabView
     super(new TabView(el, cd), viewContainer, cd);
