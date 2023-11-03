@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectorRef, Component, ComponentRef, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ComponentRef, DoCheck, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { ActionComponent } from '../actions/interfaces/action-component.interface';
 import { ComponentAnchorDirective } from '../directives/component-anchor/component-anchor.directive';
@@ -19,7 +19,7 @@ import { PluginsService } from './plugins.service';
   styleUrls: [],
   providers: []
 })
-export class PluginComponent extends IFrameComponent implements OnInit, OnDestroy, AfterViewInit {
+export class PluginComponent extends IFrameComponent implements OnInit, OnDestroy, AfterViewInit, DoCheck {
   @ViewChild(ComponentAnchorDirective) componentAnchor: ComponentAnchorDirective;
 
   @Input() parent: any; // PluginActionViewComponent | any;
@@ -42,7 +42,7 @@ export class PluginComponent extends IFrameComponent implements OnInit, OnDestro
   }
 
   get cmp() {
-    return this.componentRef.instance;
+    return this.componentRef?.instance;
   }
 
   get untilDestroyed() {
@@ -51,6 +51,7 @@ export class PluginComponent extends IFrameComponent implements OnInit, OnDestro
 
   private componentRef: ComponentRef<any>;
   private _afterViewInit = false;
+  private _inputs = {};
 
   constructor(elRef: ElementRef, pluginsService: PluginsService, private cdRef: ChangeDetectorRef) {
     super(elRef, pluginsService);
@@ -72,7 +73,7 @@ export class PluginComponent extends IFrameComponent implements OnInit, OnDestro
         // map all input | output values to the instance
         Object.keys(this.config?.plugin?.inputs || {}).forEach(
           (opt) =>
-            (this.cmp[opt] =
+            (this.cmp[opt] = this._inputs[opt] =
               typeof this.config.plugin.inputs[opt] === 'string'
                 ? this.pluginsService.applyFunction(this.config.plugin.inputs[opt], 'component, parent', [this, this.parent])
                 : this.config.plugin.inputs[opt])
@@ -115,5 +116,15 @@ export class PluginComponent extends IFrameComponent implements OnInit, OnDestro
   ngOnDestroy() {
     this.pluginsService.unregister(this);
     this.componentRef?.destroy();
+  }
+
+  ngDoCheck(): void {
+    if (this.parent && this.cmp && this.config?.plugin?.inputs?.doCheck)
+      this.config.plugin.inputs.doCheck.forEach((opt: any) => {
+        const v = this.pluginsService.applyFunction(this.config.plugin.inputs[opt], 'component, parent', [this, this.parent]);
+        if (this._inputs[opt] != v) {
+          this.cmp[opt] = this._inputs[opt] = v;
+        }
+      });
   }
 }
