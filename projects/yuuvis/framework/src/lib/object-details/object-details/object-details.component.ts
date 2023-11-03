@@ -302,7 +302,7 @@ export class ObjectDetailsComponent implements OnDestroy, OnInit {
       .on(YuvEventType.DMS_OBJECT_DELETED)
       .pipe(untilDestroyed(this))
       .subscribe((event) => {
-        if (event.data?.id === this._dmsObject.id) {
+        if (event.data?.id === this._dmsObject?.id) {
           this._dmsObject = null;
         }
       });
