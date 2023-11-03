@@ -1,22 +1,22 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { BpmEvent, EventService, Process, ProcessDefinitionKey, ProcessService, TranslateService } from '@yuuvis/core';
 import {
-  arrowNext,
-  edit,
   FormatProcessDataService,
   HeaderDetails,
   IconRegistryService,
+  PluginsService,
+  ProcessRow,
+  ResponsiveTableData,
+  arrowNext,
+  edit,
   listModeDefault,
   listModeGrid,
   listModeSimple,
-  PluginsService,
-  ProcessRow,
-  refresh,
-  ResponsiveTableData
+  refresh
 } from '@yuuvis/framework';
 import { Observable } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { followUp } from './../../../../projects/yuuvis/framework/src/lib/svg.generated';
 
 @UntilDestroy()
@@ -57,7 +57,7 @@ export class FollowUpsComponent implements OnInit, OnDestroy {
     private eventService: EventService,
     private pluginsService: PluginsService
   ) {
-    this.plugins = this.pluginsService.getCustomPlugins('extensions', 'yuv-processes');
+    this.plugins = this.pluginsService.getCustomPlugins('extensions', 'yuv-follow-ups');
     this.iconRegistry.registerIcons([edit, arrowNext, refresh, followUp, listModeDefault, listModeGrid, listModeSimple]);
   }
 

@@ -82,8 +82,8 @@ export class SearchFilterComponent implements OnInit {
 
   @Input() set query(q: SearchQuery) {
     if (q) {
-      this._query = new SearchQuery(q.toQueryJson());
-      this.filterQuery = new SearchQuery(q.toQueryJson());
+      this._query = q.clone();
+      this.filterQuery = q.clone();
       this.setupFilterPanel();
     } else {
       this._query = null;
@@ -127,8 +127,7 @@ export class SearchFilterComponent implements OnInit {
 
   onScopeChange(res: Selectable[]) {
     this.filterQuery.scope = (res.length === 2 ? 'all' : res.length === 1 ? res[0].id : undefined) as any;
-    this.filterChange.emit(this.filterQuery);
-    this.aggregate();
+    this.emitFilterChange();
   }
 
   modeChange(viewMode: FilterViewMode) {
@@ -215,7 +214,7 @@ export class SearchFilterComponent implements OnInit {
     this.availableObjectTypeFields = this.quickSearchService.getAvailableObjectTypesFields(typeSelection);
     const tagGroups = this.quickSearchService
       .groupFilters(this.customFilters)
-      .filter((g) => g.id !== 'available')
+      .filter((g) => g.id.startsWith(BaseObjectTypeField.TAGS))
       .map((g) => g.items.shift() && g);
 
     this.quickSearchService.getCurrentSettings().subscribe(([storedFilters, hiddenFilters, lastFilters]) => {
@@ -309,8 +308,7 @@ export class SearchFilterComponent implements OnInit {
     });
     this.filterQuery.filterGroup = SearchFilterGroup.fromQuery(q.filterGroup.toShortQuery());
 
-    this.filterChange.emit(this.filterQuery);
-    this.aggregate();
+    this.emitFilterChange();
   }
 
   onTypeChange(res: Selectable[]) {
@@ -328,22 +326,27 @@ export class SearchFilterComponent implements OnInit {
     if (_typeSelection.join() !== this.typeSelection.join()) {
       this.setupExtensions();
     }
-    this.filterChange.emit(this.filterQuery);
-    this.aggregate();
+    this.emitFilterChange();
   }
 
   saveSearch() {}
 
   resetFilters() {
-    this.query = new SearchQuery(this._query.toQueryJson());
-    this.filterChange.emit(new SearchQuery(this._query.toQueryJson()));
+    this.query = this._query.clone();
+    this.emitFilterChange(false);
+  }
+
+  emitFilterChange(aggregate = true) {
+    this.filterChange.emit(this.filterQuery);
+    if (aggregate) this.aggregate();
   }
 
   aggregate(skipTypes = false, groups?: string[]) {
-    const queryNoLots = new SearchQuery({ ...this.filterQuery.toQueryJson(), lots: [] });
+    const queryNoLots = this.filterQuery.clone();
+    queryNoLots.lots = [];
     !skipTypes &&
       !this.availableTypeGroups[0]?.collapsed &&
-      this.quickSearchService.getActiveTypes(this.filterQuery).subscribe((types: any) => {
+      this.quickSearchService.getActiveTypes(queryNoLots).subscribe((types: any) => {
         this.availableObjectTypes.forEach((i) => {
           const match = types.find((t) => t.id === i.id);
           i.count = match ? match.count : 0;
@@ -360,14 +363,14 @@ export class SearchFilterComponent implements OnInit {
       .forEach((group) => {
         if (group.aggregations) {
           if (group.items[0].class?.match('skipCount')) return;
-          const q = new SearchQuery(this.filterQuery.toQueryJson(true));
+          const q = this.filterQuery.clone(true);
           q.filterGroup = this.filterQuery.filterGroup.clone(false);
           q.removeFilterGroup(group.id);
           this.searchService.aggregate(q, group.aggregations).subscribe((r) => group.items?.forEach((g) => (g.count = sum(r, g.label).toString() as any)));
         } else {
           group.items.forEach((g) => {
             if (g.class?.match('skipCount')) return;
-            const q = new SearchQuery(this.filterQuery.toQueryJson(true));
+            const q = this.filterQuery.clone(true);
             if (g.value) {
               q.filterGroup = this.filterQuery.filterGroup.clone(false);
               q.removeFilterGroup(g.value.property);

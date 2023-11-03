@@ -1,7 +1,7 @@
 import { RowEvent } from '@ag-grid-community/core';
 import { Component, EventEmitter, Input, Output, TemplateRef, ViewChild } from '@angular/core';
 import { ColumnConfig, DmsService, SearchQuery, SearchService, SystemService, TranslateService, UserConfigService } from '@yuuvis/core';
-import { finalize, Observable, switchMap } from 'rxjs';
+import { Observable, finalize, switchMap } from 'rxjs';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { ResponsiveDataTableOptions } from '../../components/responsive-data-table/responsive-data-table.component';
 import { PopoverConfig } from '../../popover/popover.interface';
@@ -185,14 +185,17 @@ export class SearchResultPanelComponent {
     popoverRef.close();
   }
 
-  exportCSV() {
+  exportCSV(query: SearchQuery) {
     this.downloadingCsv = true;
     this.userConfig
       .getColumnConfig(this.columnConfigInput.type)
       .pipe(
         switchMap((conf) =>
           this.searchService
-            .exportSearchResult({ ...this.searchService.getLastSearchQuery().toQueryJson(true), fields: conf.columns.map((col) => col.id) })
+            .exportSearchResult(
+              query,
+              conf.columns.map((col) => col.id)
+            )
             .pipe(finalize(() => (this.downloadingCsv = false)))
         )
       )

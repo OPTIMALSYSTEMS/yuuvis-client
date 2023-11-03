@@ -3,7 +3,7 @@ import { ValidatorFn, Validators } from '@angular/forms';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { Logger, SystemService, UserService, Utils } from '@yuuvis/core';
 import { cloneDeep } from 'lodash-es';
-import { Observable, of, Subscription } from 'rxjs';
+import { Observable, Subscription, of } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import { ObjectFormScriptService } from '../object-form-script/object-form-script.service';
 import { ObjectFormScriptingScope } from '../object-form-script/object-form-scripting-scope';
@@ -603,7 +603,7 @@ export class ObjectFormComponent implements OnDestroy, AfterViewInit, IObjectFor
 
   // recursive method for adding values to model elements
   private setElementValues(elements, data) {
-    elements.forEach((element) => {
+    elements?.forEach((element) => {
       if (this.hasValue(data, element)) {
         element.value = this.getValue(data, element);
       } else {
