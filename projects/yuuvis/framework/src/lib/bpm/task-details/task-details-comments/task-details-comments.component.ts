@@ -1,4 +1,4 @@
-import { Component, ElementRef, Input, OnInit } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { BpmService, Process, ProcessInstanceComment, Task } from '@yuuvis/core';
 import { EMPTY } from 'rxjs';
@@ -18,26 +18,28 @@ export class TaskDetailsCommentsComponent implements OnInit {
   commentForm: FormGroup = this.fb.group({ comment: ['', Validators.required] });
 
   @Input()
-  set process(p: Process) {
-    if (p) {
-      this.inputHidden = true;
-      this.fetchComments(p.id);
-    }
+  set process(process: Process) {
+    this.inputHidden = !!process;
+    this.fetchComments(process?.id);
   }
 
   private _task: Task;
+
   @Input()
   set task(task: Task) {
     this._task = task;
-    this.fetchComments(task ? task.processInstanceId : null);
+    this.inputHidden = !task;
+    this.fetchComments(task?.processInstanceId);
   }
+
+  @Output() commentsUpdated = new EventEmitter<any>();
 
   constructor(private bpmService: BpmService, private fb: FormBuilder, private elRef: ElementRef) {}
 
   addComment() {
     this.bpmService
-      .addProcessComment(this._task.id, this.commentForm.value.comment)
-      .pipe(map((comment: ProcessInstanceComment) => this.fetchComments(this._task.processInstanceId, comment.id)))
+      .addProcessComment(this._task?.id, this.commentForm.value.comment)
+      .pipe(map((comment: ProcessInstanceComment) => this.fetchComments(this._task?.processInstanceId, comment.id)))
       .subscribe();
   }
 
@@ -48,12 +50,19 @@ export class TaskDetailsCommentsComponent implements OnInit {
    */
   private fetchComments(processInstanceId: string, focusId?: string): void {
     this.errorMessage = null;
+    if (!processInstanceId) {
+      this.comments = [];
+      this.commentForm.reset();
+      this.commentsUpdated.emit(this.comments);
+      return;
+    }
     this.busy = true;
     this.bpmService
       .getProcessComments(processInstanceId)
       .pipe(
         map((res: ProcessInstanceComment[]) => {
-          this.comments = res;
+          this.comments = res || [];
+          this.commentsUpdated.emit(this.comments);
           this.focusComment(focusId);
         }),
         catchError((error: Error) => {

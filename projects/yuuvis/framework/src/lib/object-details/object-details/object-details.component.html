@@ -16,7 +16,7 @@
 
     <span class="chip"
       *ngIf="retentionEndDate && !retentionEnded">{{'yuv.framework.object-details.status.retentionActive'|translate:
-      ({date: retentionEndDate | localeDate: 'shortDate'})}}</span>
+      ({date: retentionEndDate | localeDate: 'eoShortDate'})}}</span>
     <span class="chip error"
       *ngIf="retentionEndDate && retentionEnded">{{'yuv.framework.object-details.status.retentionDestruction'|translate}}</span>
 
