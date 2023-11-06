@@ -53,13 +53,13 @@
 
     <!-- PLUGINS -->
     <!-- <ng-container  *ngIf="(plugins | async) as resolvedPlugins"> -->
-    <yuv-tab-panel *ngFor="let config of resolvedPlugins" [id]="config.id" [header]="(config.label) | translate"
+    <p-tabPanel *ngFor="let config of resolvedPlugins" [id]="config.id" [header]="(config.label) | translate"
       [headerStyleClass]="config.id" class="{{config.id}}"
-      [cache]="!!config.plugin.cache" [loaded]="!!config.plugin.loaded">
+      [cache]="!!config.plugin.cache" #ytb data-loaded="{{loadTab(ytb, !!config.plugin.loaded)}}">
       <ng-template pTemplate="content">
         <yuv-plugin [config]="config" [parent]="this"></yuv-plugin>
       </ng-template>
-    </yuv-tab-panel>
+    </p-tabPanel>
     <!-- </ng-container> -->
 
     <ng-content></ng-content>
