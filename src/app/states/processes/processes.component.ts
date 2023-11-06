@@ -82,13 +82,10 @@ export class ProcessesComponent implements OnInit, OnDestroy {
   }
 
   private fetchProcesses(statusFilter: 'all' | 'running' | 'completed' = 'all') {
-    if (statusFilter === 'all') {
-      this.processService.fetchProcesses();
-    } else {
-      this.processService.fetchProcesses(null, {
-        isCompleted: statusFilter === 'completed'
-      });
-    }
+    this.processService.fetchProcesses(null, {
+      startedBy: this.pluginsService.getCurrentUser().id,
+      ...(statusFilter !== 'all' && { isCompleted: statusFilter === 'completed' })
+    });
   }
 
   remove() {

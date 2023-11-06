@@ -80,6 +80,7 @@ export class FollowUpsComponent implements OnInit, OnDestroy {
 
   private fetchProcesses() {
     this.processService.fetchProcesses(ProcessDefinitionKey.FOLLOW_UP, {
+      startedBy: this.pluginsService.getCurrentUser().id,
       isCompleted: false
     });
   }

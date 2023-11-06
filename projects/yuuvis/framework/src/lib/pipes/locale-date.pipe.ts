@@ -6,9 +6,9 @@ import { TranslateService } from '@yuuvis/core';
  * This pipe transforms its input (supposed to be a date) into a more human readable format like for example 'dd.MM.yyyy'
  * @example
  *  <div>{{ creationDate | localeDate }}</div>
- *  <div>{{ creationDate | localeDate:eoShortDate }}</div>
- *  <div>{{ creationDate | localeDate:eoShortTime }}</div>
- *  <div>{{ creationDate | localeDate:eoNiceShort }}</div>
+ *  <div>{{ creationDate | localeDate: 'eoShortDate' }}</div>
+ *  <div>{{ creationDate | localeDate: 'eoShortTime' }}</div>
+ *  <div>{{ creationDate | localeDate: 'eoNiceShort' }}</div>
  */
 @Pipe({
   name: 'localeDate',

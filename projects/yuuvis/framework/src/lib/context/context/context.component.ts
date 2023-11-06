@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, QueryList, TemplateRef, ViewChild, ViewChildren } from '@angular/core';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import {
   BaseObjectTypeField,
   ColumnConfig,
@@ -15,7 +16,6 @@ import {
 } from '@yuuvis/core';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { FileDropOptions } from '../../directives/file-drop/file-drop.directive';
 import { LayoutService } from '../../services/layout/layout.service';
@@ -35,8 +35,8 @@ import { refresh, settings } from './../../svg.generated';
  * @example
  * <yuv-context [context]="ctx"></yuv-context>
  */
- @UntilDestroy()
- @Component({
+@UntilDestroy()
+@Component({
   selector: 'yuv-context',
   templateUrl: './context.component.html',
   styleUrls: ['./context.component.scss']
@@ -260,6 +260,13 @@ export class ContextComponent implements OnInit, OnDestroy {
 
   columnConfigCanceled(popoverRef: PopoverRef) {
     popoverRef.close();
+  }
+
+  loadTab(tab: any, loaded = false) {
+    if (loaded && !tab.loaded) {
+      tab.loaded = loaded;
+    }
+    return loaded;
   }
 
   ngOnInit() {}
