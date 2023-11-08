@@ -65,9 +65,8 @@ export class ObjectComponent implements OnInit, OnDestroy {
   }
 
   contextItemsSelected(ids: string[]) {
-    const id = ids[0];
-    if (id && ids.length <= 1) {
-      this.router.navigate(['.'], { fragment: id, relativeTo: this.route, queryParamsHandling: 'preserve' });
+    if (ids?.length === 1 && this.route.snapshot.fragment !== ids[0]) {
+      this.router.navigate([], { fragment: ids[0], queryParamsHandling: 'preserve' });
     }
   }
 
