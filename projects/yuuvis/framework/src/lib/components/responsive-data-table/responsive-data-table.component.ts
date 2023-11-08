@@ -113,7 +113,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       this.selectRows(selection);
       this.onSelectionChanged(null);
-    }, 300);
+    }, 500);
   }
 
   @Input()
