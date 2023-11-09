@@ -1,5 +1,5 @@
 import { Component, forwardRef, Input } from '@angular/core';
-import { ControlValueAccessor, UntypedFormControl, NG_VALIDATORS, NG_VALUE_ACCESSOR, Validator } from '@angular/forms';
+import { ControlValueAccessor, NG_VALIDATORS, NG_VALUE_ACCESSOR, UntypedFormControl, Validator } from '@angular/forms';
 import { Classification, TranslateService, Utils } from '@yuuvis/core';
 import { LocaleNumberPipe } from '../../../pipes/locale-number.pipe';
 import { FileSizePipe } from './../../../pipes/filesize.pipe';
@@ -148,11 +148,12 @@ export class NumberComponent implements ControlValueAccessor, Validator {
     } else {
       // check precision
       const prePointDigits = this.precision - this.scale;
-      if (val.toFixed(0).length > prePointDigits) {
+      const split = evt.replaceAll(this.numberPipe.separator, '').split(this.numberPipe.decimalSeparator);
+      if (split[0]?.length > prePointDigits) {
         this.validationErrors.push({ key: 'precision', params: { prePointDigits } });
       }
       // check scale
-      if (val % 1 && val.toString().split('.')[1].length > this.scale) {
+      if (split[1]?.length > this.scale) {
         this.validationErrors.push({ key: 'scale', params: { scale: this.scale } });
       }
 
