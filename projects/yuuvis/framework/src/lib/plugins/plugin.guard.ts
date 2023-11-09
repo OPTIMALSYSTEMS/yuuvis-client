@@ -13,7 +13,7 @@ export class PluginGuard implements CanDeactivate<PluginComponent>, CanActivate 
   static updateRouter(router: Router, states: any[]) {
     (states || []).forEach((state: any) => {
       router.config.unshift({ path: state.path, component: PluginComponent, canActivate: [PluginGuard], canDeactivate: [PluginGuard] });
-      router.resetConfig(router.config);
+      // router.resetConfig(router.config);
     });
   }
 
