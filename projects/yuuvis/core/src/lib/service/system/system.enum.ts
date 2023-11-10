@@ -34,7 +34,9 @@ export enum RetentionState {
   // retention is active
   ACTIVE = 1,
   // supposed to be destructed
-  DESTRUCT = 2
+  DESTRUCT = 2,
+  // retention is not active yet
+  INACTIVE = 3
 }
 
 export const BaseObjectTypeField = {
