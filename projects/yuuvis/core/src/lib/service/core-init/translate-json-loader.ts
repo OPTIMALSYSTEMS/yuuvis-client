@@ -7,11 +7,17 @@ import localeAr from '@angular/common/locales/ar';
 import localeBn from '@angular/common/locales/bn';
 import localeDe from '@angular/common/locales/de';
 import localeDeCh from '@angular/common/locales/de-CH';
+import localeEnAu from '@angular/common/locales/en-AU';
+import localeEnCa from '@angular/common/locales/en-CA';
+import localeEnGb from '@angular/common/locales/en-GB';
 import localeEs from '@angular/common/locales/es';
 import localeExtraAr from '@angular/common/locales/extra/ar';
 import localeExtraBn from '@angular/common/locales/extra/bn';
 import localeExtraDe from '@angular/common/locales/extra/de';
 import localeExtraDeCh from '@angular/common/locales/extra/de-CH';
+import localeExtraEnAu from '@angular/common/locales/extra/en-AU';
+import localeExtraEnCa from '@angular/common/locales/extra/en-CA';
+import localeExtraEnGb from '@angular/common/locales/extra/en-GB';
 import localeExtraEs from '@angular/common/locales/extra/es';
 import localeExtraFi from '@angular/common/locales/extra/fi';
 import localeExtraFr from '@angular/common/locales/extra/fr';
@@ -89,6 +95,9 @@ export class EoxTranslateJsonLoader implements TranslateLoader {
     registerLocaleData(localeFi, 'fi', localeExtraFi); // Finnish
     registerLocaleData(localeSv, 'sv', localeExtraSv); // Swedish
     registerLocaleData(localeDeCh, 'de-CH', localeExtraDeCh); // German Swiss
+    registerLocaleData(localeEnCa, 'en-CA', localeExtraEnCa); // English Canadian
+    registerLocaleData(localeEnGb, 'en-GB', localeExtraEnGb); // English British
+    registerLocaleData(localeEnAu, 'en-AU', localeExtraEnAu); // English Australian
   }
 
   /**
