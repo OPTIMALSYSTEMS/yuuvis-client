@@ -258,6 +258,7 @@ export interface FetchProcessOptions {
   includeProcessVar?: boolean;
   isCompleted?: boolean;
   processDefinitionKey?: string;
+  startedBy?: string;
 }
 
 export interface TaskOutcome {

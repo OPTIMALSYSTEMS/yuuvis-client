@@ -84,7 +84,7 @@ export class InboxService {
       .set('sort', 'createTime')
       .set('page', index || 0);
     Object.keys(requestParams).map((key) => (params = params.append(key, requestParams[key])));
-    return this.bpmService.getProcesses(`/bpm/inbox?${params}`, true);
+    return this.bpmService.getProcesses(`/bpm/inbox?${params}`);
   }
 
   /**

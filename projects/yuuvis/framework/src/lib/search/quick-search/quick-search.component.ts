@@ -115,29 +115,17 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
    * ID of a context folder to restrict search to.
    */
   @Input() set context(c: string) {
-    if (c && c !== this.context) {
-      this._context = c;
-      // enable context search
-      const contextQuery = new SearchQuery();
-      contextQuery.addFilter(new SearchFilter(BaseObjectTypeField.PARENT_ID, SearchFilter.OPERATOR.EQUAL, c));
-      this.setQuery(contextQuery);
-    } else {
-      this._context = c;
-      if (this.searchQuery) {
-        this.searchQuery.removeFilter(BaseObjectTypeField.PARENT_ID);
-      }
-    }
+    const diff = c && c !== this.context;
+    this._context = c;
+    diff ? this.setQuery(new SearchQuery()) : this.updateContext();
   }
+
   get context() {
     return this._context;
   }
 
   // list of types (object type IDs) that should not be shown in the object type picker
   @Input() skipTypes: string[];
-
-  private get contextFilter() {
-    return new SearchFilter(BaseObjectTypeField.PARENT_ID, SearchFilter.OPERATOR.EQUAL, this.context);
-  }
 
   private get customFilters(): Selectable[] {
     return this.availableObjectTypeFields.map((o) => ({ ...o, value: [new SearchFilter(o.id, o.defaultOperator, o.defaultValue)] }));
@@ -353,9 +341,7 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
 
   onFilterChanged(res: Selectable) {
     this.searchQuery.filterGroup = SearchFilterGroup.fromArray(res.value).clone();
-    if (this.context && this.searchWithinContext) {
-      this.searchQuery.addFilter(this.contextFilter);
-    }
+    this.updateContext();
     this.aggregate();
   }
 
@@ -399,6 +385,13 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
     this.formOptions = { filter: { id: 'new', value: [this.searchQuery.filterGroup.clone()] }, availableObjectTypeFields: this.availableObjectTypeFields };
   }
 
+  updateContext() {
+    this.searchQuery?.removeFilter(BaseObjectTypeField.PARENT_ID);
+    if (this.context && this.searchWithinContext) {
+      this.searchQuery?.addFilter(new SearchFilter(BaseObjectTypeField.PARENT_ID, SearchFilter.OPERATOR.EQUAL, this.context));
+    }
+  }
+
   setQuery(q: SearchQuery) {
     if (q && JSON.stringify(q) !== JSON.stringify(this.searchQuery)) {
       this.settingUpQuery = true;
@@ -406,6 +399,8 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
       if (this._inline) {
         q.aggs = [];
       }
+      // setup scope for term search
+      q.scope = q.scope || this.quickSearchService.SEARCH_QUERY_SCOPE;
 
       this.searchQuery = q;
       this.searchForm.patchValue({ term: { label: q.term } }, { emitEvent: false });
@@ -416,9 +411,7 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
         false
       );
 
-      if (this.context && this.searchWithinContext) {
-        this.searchQuery.addFilter(this.contextFilter);
-      }
+      this.updateContext();
       this.settingUpQuery = false;
     }
   }
@@ -452,11 +445,7 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
 
   toggleSearchWithinContext() {
     this.searchWithinContext = !this.searchWithinContext;
-    this.searchQuery.removeFilter(BaseObjectTypeField.PARENT_ID);
-    if (this.searchWithinContext) {
-      this.searchQuery.addFilter(new SearchFilter(BaseObjectTypeField.PARENT_ID, SearchFilter.OPERATOR.EQUAL, this._context));
-    }
-    this.setQuery(this.searchQuery);
+    this.updateContext();
   }
 
   applyTypeAggration(agg: ObjectTypeAggregation, execute: boolean) {
@@ -470,14 +459,12 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
    * Reset the whole search form
    */
   reset() {
-    this.searchQuery = new SearchQuery();
-    if (this._context) {
-      this.searchQuery.addFilter(new SearchFilter(BaseObjectTypeField.PARENT_ID, SearchFilter.OPERATOR.EQUAL, this._context));
-    }
+    this.searchHasResults = false;
+    this.searchWithinContext = true;
+    this.error = false;
     this.resultCount = null;
     this.formValid = true;
-    this.onObjectTypesSelected([]);
-    this.searchForm.patchValue({ term: null }, { emitEvent: false });
+    this.setQuery(new SearchQuery());
     this.queryReset.emit();
   }
 

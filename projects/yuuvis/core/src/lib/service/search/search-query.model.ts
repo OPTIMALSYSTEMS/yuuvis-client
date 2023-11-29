@@ -14,6 +14,9 @@ export class SearchQuery {
   types: string[] = []; // mixed list of primary and secondary object types
   lots: string[] = []; // list of leading object types
   tags: any;
+  scope: 'all' | 'metadata' | 'content';
+  tableFilters: any[];
+
   get targetType(): string | null {
     if (this.allTypes.length > 1) {
       const deps = window['__objectTypeDeps'];
@@ -40,9 +43,14 @@ export class SearchQuery {
       this.types = searchQueryProperties.types || [];
       this.lots = searchQueryProperties.lots || [];
       this.fields = searchQueryProperties.fields || [];
+      this.tableFilters = searchQueryProperties.tableFilters || [];
 
       if (searchQueryProperties.size) {
         this.size = searchQueryProperties.size;
+      }
+
+      if (searchQueryProperties.scope) {
+        this.scope = searchQueryProperties.scope;
       }
 
       if (searchQueryProperties.tags) {
@@ -115,11 +123,11 @@ export class SearchQuery {
       // add to group
       const searchFilterGroup =
         groupProperty === SearchFilterGroup.DEFAULT ? this.filterGroup : this.filterGroup.groups.find((g) => g.property === groupProperty) || this.filterGroup;
-        if (searchFilterGroup !== this.filterGroup || searchFilterGroup?.operator === SearchFilterGroup.OPERATOR.AND) {
-          searchFilterGroup.group.push(group);
-        } else {
-          this.filterGroup = SearchFilterGroup.fromArray([this.filterGroup, group]);
-        }
+      if (searchFilterGroup !== this.filterGroup || searchFilterGroup?.operator === SearchFilterGroup.OPERATOR.AND) {
+        searchFilterGroup.group.push(group);
+      } else {
+        this.filterGroup = SearchFilterGroup.fromArray([this.filterGroup, group]);
+      }
     }
   }
 
@@ -247,6 +255,10 @@ export class SearchQuery {
       queryJson.term = this.term;
     }
 
+    if (this.term && this.scope && this.scope !== 'all') {
+      queryJson.scope = this.scope;
+    }
+
     if (this.tags) {
       queryJson.tags = this.tags;
     }
@@ -282,6 +294,10 @@ export class SearchQuery {
       }
     }
 
+    if (this.tableFilters && this.tableFilters.length) {
+      queryJson.tableFilters = this.tableFilters;
+    }
+
     if (this.aggs && this.aggs.length) {
       queryJson.aggs = this.aggs;
     }
@@ -294,6 +310,11 @@ export class SearchQuery {
     }
 
     return queryJson;
+  }
+
+  public clone(combineFilters = false) {
+    const q = new SearchQuery(this.toQueryJson(combineFilters));
+    return q;
   }
 }
 
@@ -461,7 +482,8 @@ export class SearchFilter {
     INTERVAL_INCLUDE_TO: 'gtlte', // interval include right
     INTERVAL_INCLUDE_FROM: 'gtelt', // interval include left
     RANGE: 'rg', // aggegation ranges
-    LIKE: 'like' // like
+    LIKE: 'like', // like
+    CONTAINS: 'contains' // contains
   };
 
   /**
@@ -485,13 +507,14 @@ export class SearchFilter {
     INTERVAL_INCLUDE_TO: '>-', // interval include right
     INTERVAL_INCLUDE_FROM: '-<', // interval include left
     RANGE: '=', // aggegation ranges
-    LIKE: '~' // like
+    LIKE: '~', // like
+    CONTAINS: '~' // contains
   };
 
   /**
    * available variables for a search filter
    */
-   public static VARIABLES = {
+  public static VARIABLES = {
     CURRENT_USER: '$CURRENT_USER$',
     NOW: '$NOW$',
     TODAY: '$TODAY$',
@@ -501,19 +524,21 @@ export class SearchFilter {
     THISYEAR: '$THISYEAR$'
   };
 
-  public static parseVariable(value: string): { value: string, key: string, base: string, offset: number, operator: string, range: any[] } {
+  public static parseVariable(value: string): { value: string; key: string; base: string; offset: number; operator: string; range: any[] } {
     if (!value || typeof value !== 'string') return;
     const base = value.replace(new RegExp('\\|.*'), '');
-    const key = Object.keys(SearchFilter.VARIABLES).find(k => base.startsWith(SearchFilter.VARIABLES[k]));
+    const key = Object.keys(SearchFilter.VARIABLES).find((k) => base.startsWith(SearchFilter.VARIABLES[k]));
     const offset = parseFloat(base.replace(/.*\$/, ''));
-    return key && {
+    return (
+      key && {
         value,
         base,
         key,
         offset,
         operator: value.match('|') ? value.replace(new RegExp('.*\\|'), '') : SearchFilter.OPERATOR.EQUAL,
-        range: base.match(',') ? base.split(',').map(v => SearchFilter.parseVariable(v)) : null,
-      };
+        range: base.match(',') ? base.split(',').map((v) => SearchFilter.parseVariable(v)) : null
+      }
+    );
   }
 
   public static fromQuery(query: any) {
@@ -575,28 +600,35 @@ export class SearchFilter {
     return query;
   }
 
-  resloveVariable(variable: {key: string, offset: number}, lte = false) {
+  resloveVariable(variable: { key: string; offset: number }, lte = false) {
     if (SearchFilter.VARIABLES[variable.key] === SearchFilter.VARIABLES.CURRENT_USER) return window['api'].session.user.get().id;
 
     const date = new Date();
     date.setHours(0, 0, 0, 0);
     const startDay = getLocaleFirstDayOfWeek(window['api'].session.user.get().userSettings.locale || 'en');
 
-    const resolve = (v: any) => { switch(SearchFilter.VARIABLES[v.key]) {
-        case SearchFilter.VARIABLES.NOW: return new Date(new Date().setSeconds(0, 0));
-        case SearchFilter.VARIABLES.TODAY: return date;
-        case SearchFilter.VARIABLES.YESTERDAY: return date.setHours(-24) && date;
-        case SearchFilter.VARIABLES.THISWEEK: return  date.setHours(-24 * (date.getDay() - startDay + (startDay > date.getDay() ? 7 : 0))) && date;
-        case SearchFilter.VARIABLES.THISMONTH: return date.setDate(1) && date;
-        case SearchFilter.VARIABLES.THISYEAR: return date.setMonth(0, 1) && date;
+    const resolve = (v: any) => {
+      switch (SearchFilter.VARIABLES[v.key]) {
+        case SearchFilter.VARIABLES.NOW:
+          return new Date(new Date().setSeconds(0, 0));
+        case SearchFilter.VARIABLES.TODAY:
+          return date;
+        case SearchFilter.VARIABLES.YESTERDAY:
+          return date.setHours(-24) && date;
+        case SearchFilter.VARIABLES.THISWEEK:
+          return date.setHours(-24 * (date.getDay() - startDay + (startDay > date.getDay() ? 7 : 0))) && date;
+        case SearchFilter.VARIABLES.THISMONTH:
+          return date.setDate(1) && date;
+        case SearchFilter.VARIABLES.THISYEAR:
+          return date.setMonth(0, 1) && date;
       }
       return date;
-    }
+    };
 
     const val = resolve(variable);
     variable.offset && val.setHours(variable.offset * 24);
     lte && val.setHours(23, 59, 0, 0);
-    
+
     return val.toISOString();
   }
 
@@ -614,3 +646,75 @@ export class SearchFilter {
 export class SortOption {
   constructor(public field: string, public order: string, public missing?: string) {}
 }
+
+/**
+ * Transform date filters to support exact search with seconds & milliseconds
+ */
+export function transformDateFilters(queryJson: SearchQueryProperties, query: SearchQuery, allFields: any, field = 'filters') {
+  queryJson[field]?.forEach((f: any) => {
+    if (f[field]) return transformDateFilters(f, query, allFields, field);
+
+    if (f.v1 && f.v1.length > 10 && allFields.date.includes(f.f)) {
+      f.v1 = Utils.transformDate(f.v1);
+      f.v2 = f.v2 && Utils.transformDate(f.v2);
+      if (f.o === SearchFilter.OPERATOR.EQUAL && f.v2) f.o = SearchFilter.OPERATOR.INTERVAL_INCLUDE_BOTH;
+    }
+
+    if (f.v1 && allFields.datetime.includes(f.f)) {
+      const from = (v: any) => v && new Date(v).toISOString(); // :00.000Z
+      const to = (v: any) => v && new Date(new Date(v).getTime() + 60 * 1000 - 1).toISOString(); // :59.999Z
+      switch (f.o) {
+        case SearchFilter.OPERATOR.LESS_OR_EQUAL:
+        case SearchFilter.OPERATOR.GREATER_THAN:
+          f.v1 = to(f.v1);
+          break;
+        case SearchFilter.OPERATOR.LESS_THAN:
+        case SearchFilter.OPERATOR.GREATER_OR_EQUAL:
+          f.v1 = from(f.v1);
+          break;
+        case SearchFilter.OPERATOR.EQUAL:
+          f.o = SearchFilter.OPERATOR.INTERVAL_INCLUDE_BOTH;
+        case SearchFilter.OPERATOR.INTERVAL_INCLUDE_BOTH:
+          f.v1 = from(f.v1);
+          f.v2 = to(f.v2 || f.v1);
+          break;
+        case SearchFilter.OPERATOR.INTERVAL_INCLUDE_FROM:
+          f.v1 = from(f.v1);
+          f.v2 = from(f.v2);
+          break;
+        case SearchFilter.OPERATOR.INTERVAL_INCLUDE_TO:
+          f.v1 = to(f.v1);
+          f.v2 = to(f.v2);
+          break;
+        case SearchFilter.OPERATOR.INTERVAL:
+          f.v1 = to(f.v1);
+          f.v2 = from(f.v2);
+          break;
+      }
+    }
+  });
+  return queryJson;
+}
+
+/**
+ * Transform table filters to support exact search with same table row
+ */
+export function transformTableFilters(queryJson: SearchQueryProperties, query: SearchQuery, allFields: any, field = 'tableFilters') {
+  const tableFilters = queryJson.filters
+    ?.reduce((p, c) => [...p, ...(c.filters && !c.lo ? c.filters : [c])], [])
+    ?.reduce((p, c) => {
+      const m = c.f?.split('[*].');
+      if (m?.[1]) {
+        const v = { ...c, f: m[1] };
+        p.find((f) => f.table === m[0])?.columnFilters.push(v) || p.push({ table: m[0], columnFilters: [v] });
+      }
+      return p;
+    }, [])
+    .filter((v) => v.columnFilters.length > 1);
+
+  if (tableFilters?.length) queryJson[field] = tableFilters;
+
+  return queryJson;
+}
+
+export const transformFilters = [transformDateFilters, transformTableFilters];

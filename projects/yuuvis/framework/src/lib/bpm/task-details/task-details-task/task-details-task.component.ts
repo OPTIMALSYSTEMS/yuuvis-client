@@ -242,6 +242,8 @@ export class TaskDetailsTaskComponent implements OnInit {
   }
 
   triggerCurrentFormOutcome(o: ResolvedTaskOutcome) {
+    // update formData in case that task have changed
+    o.formData = this.getFormDataFromProcessVars(this._task);
     if (o.resolvedFormModel) {
       this.currentFormOutcome = o;
     } else {
@@ -280,14 +282,16 @@ export class TaskDetailsTaskComponent implements OnInit {
     this.taskForm.resetForm();
   }
 
-  update() {
+  update(o?: ResolvedTaskOutcome) {
     this.busy = true;
     const data = this.inboxService.updateTask(this._task.id, this.getUpdatePayload()).subscribe(
       (res) => {
         this.busy = false;
         this.finishPending();
+        this._task.variables = res.variables;
         this.taskForm.defaultFormOptions = { ...this.taskForm.formOptions, data: this.taskForm.getFormData() };
         this.formState = null;
+        o && this.triggerCurrentFormOutcome(o);
       },
       (err) => {
         this.busy = false;

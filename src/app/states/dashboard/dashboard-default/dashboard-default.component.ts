@@ -84,6 +84,7 @@ export class DashboardDefaultComponent implements OnInit {
   }
 
   onQuickSearchReset() {
+    this.aggs = [];
     this.appSearch.setQuery(new SearchQuery());
   }
 

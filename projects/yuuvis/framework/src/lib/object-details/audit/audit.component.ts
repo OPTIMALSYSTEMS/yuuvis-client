@@ -1,5 +1,6 @@
 import { Component, Inject, Input, OnDestroy, OnInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import {
   ApiBase,
   AppCacheService,
@@ -19,7 +20,6 @@ import {
 } from '@yuuvis/core';
 import { Observable } from 'rxjs';
 import { map, switchMap, tap } from 'rxjs/operators';
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { ROUTES, YuvRoutes } from '../../routing/routes';
 import { arrowNext, filter } from '../../svg.generated';
@@ -37,8 +37,8 @@ import { arrowNext, filter } from '../../svg.generated';
  * <!-- skipping certain action codes -->
  * <yuv-audit [objectID]="'0815'" [skipActions]="[100, 200, 202]"></yuv-audit>
  */
- @UntilDestroy()
- @Component({
+@UntilDestroy()
+@Component({
   selector: 'yuv-audit',
   templateUrl: './audit.component.html',
   styleUrls: ['./audit.component.scss']
@@ -117,6 +117,7 @@ export class AuditComponent implements OnInit, OnDestroy {
       a201: this.translate.instant('yuv.framework.audit.label.delete.content'), // #v
       a202: this.translate.instant('yuv.framework.audit.label.delete.marked'),
       a210: this.translate.instant('yuv.framework.audit.label.delete.tag'), // #v
+      a220: this.translate.instant('yuv.framework.audit.label.delete.version'), // #v
 
       a300: this.translate.instant('yuv.framework.audit.label.update.metadata'),
       a301: this.translate.instant('yuv.framework.audit.label.update.content'),

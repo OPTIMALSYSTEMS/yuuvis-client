@@ -116,8 +116,9 @@ export class SearchResultComponent extends YuvGridOptions implements OnDestroy {
       this.itemsSelected.emit([]);
     }
 
-    this._originalQuery = searchQuery && new SearchQuery(searchQuery.toQueryJson());
-    this._searchQuery = searchQuery && new SearchQuery(searchQuery.toQueryJson());
+    this._originalQuery = searchQuery?.clone();
+    this._searchQuery = searchQuery?.clone();
+
     if (searchQuery) {
       this.executeQuery(this.applyColumnConfig);
     } else {
@@ -273,7 +274,7 @@ export class SearchResultComponent extends YuvGridOptions implements OnDestroy {
         ];
 
         this._columns = colDefs;
-        this._originalQuery = new SearchQuery(q.toQueryJson());
+        this._originalQuery = q.clone();
       }),
       switchMap(() => of(q))
     );
@@ -389,6 +390,7 @@ export class SearchResultComponent extends YuvGridOptions implements OnDestroy {
     this._searchQuery.types = filterQuery.types;
     this._searchQuery.lots = filterQuery.lots;
     this._searchQuery.filterGroup = filterQuery.filterGroup;
+    this._searchQuery.scope = filterQuery.scope;
     this.executeQuery(applyColumnConfig);
   }
 

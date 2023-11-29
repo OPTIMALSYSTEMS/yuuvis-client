@@ -1,5 +1,5 @@
 import { Component, ContentChildren, EventEmitter, Input, OnInit, Output, QueryList, TemplateRef, ViewChild, ViewChildren } from '@angular/core';
-import { InboxService, SystemService, Task, TaskType, TranslateService } from '@yuuvis/core';
+import { ConfigService, InboxService, SystemService, Task, TaskType, TranslateService } from '@yuuvis/core';
 import { TabPanelComponent } from '../../components/responsive-tab-container/tab-panel.component';
 
 @Component({
@@ -10,10 +10,10 @@ import { TabPanelComponent } from '../../components/responsive-tab-container/tab
 export class TaskDetailsComponent implements OnInit {
   @ContentChildren(TabPanelComponent) externalPanels: QueryList<TabPanelComponent>;
   @ViewChildren(TabPanelComponent) viewPanels: QueryList<TabPanelComponent>;
-  @ViewChild('taskTab') taskTab: TemplateRef<any>;
-  @ViewChild('historyTab') historyTab: TemplateRef<any>;
-  @ViewChild('attachmentsTab') attachmentsTab: TemplateRef<any>;
-  @ViewChild('commentsTab') commentsTab: TemplateRef<any>;
+  @ViewChild('summary') summary: TemplateRef<any>;
+  @ViewChild('history') history: TemplateRef<any>;
+  @ViewChild('attachments') attachments: TemplateRef<any>;
+  @ViewChild('comments') comments: TemplateRef<any>;
 
   _task: Task;
   _error: any;
@@ -61,7 +61,7 @@ export class TaskDetailsComponent implements OnInit {
         }
       : null;
   }
-  @Input() panelOrder = ['taskTab', 'historyTab', 'attachmentsTab', 'commentsTab'];
+  @Input() panelOrder = ['summary', 'history', 'attachments', 'comments'];
   _layoutOptionsKey: string;
   @Input() set layoutOptionsKey(k: string) {
     this._layoutOptionsKey = `${k}.task-details`;
@@ -70,7 +70,9 @@ export class TaskDetailsComponent implements OnInit {
   @Input() attachmentPlugins: any;
   @Output() attachmentOpenExternal = new EventEmitter<string>();
 
-  constructor(private system: SystemService, private inboxService: InboxService, private translate: TranslateService) {}
+  constructor(private system: SystemService, private inboxService: InboxService, private translate: TranslateService, private config: ConfigService) {
+    this.panelOrder = this.config.get('client.taskDetailsTabs') || this.panelOrder;
+  }
 
   private getDescription(t: Task): string {
     let label = this.system.getLocalizedResource(`${t.name}_label`);

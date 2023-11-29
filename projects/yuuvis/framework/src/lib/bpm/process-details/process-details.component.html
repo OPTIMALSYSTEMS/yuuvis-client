@@ -6,7 +6,8 @@
     <ng-container *ngFor="let templateID of panelOrder" [ngTemplateOutlet]="this[templateID]"></ng-container>
     <!-- PLUGINS -->
     <yuv-tab-panel *ngFor="let config of resolvedPlugins" [id]="config.id" [header]="(config.label) | translate"
-      [headerStyleClass]="config.id" class="{{config.id}}">
+      [headerStyleClass]="config.id" class="{{config.id}}"
+      [cache]="!!config.plugin.cache" [loaded]="!!config.plugin.loaded">
       <ng-template pTemplate="content">
         <yuv-plugin [config]="config" [parent]="this"></yuv-plugin>
       </ng-template>
@@ -17,35 +18,35 @@
 </yuv-panel>
 
 <!-- PANELS -->
-<ng-template #summaryTab>
-  <yuv-tab-panel [id]="'summaryTab'" [header]="'yuv.framework.process-details.tabs.summary.title' | translate"
-    [headerStyleClass]="'task'">
+<ng-template #summary>
+  <yuv-tab-panel [id]="'summary'" [header]="'yuv.framework.process-details.tabs.summary.title' | translate"
+    [headerStyleClass]="'summary'">
     <ng-template pTemplate="content">
       <yuv-process-details-summary [displayVars]="displayVars" [process]="_process"></yuv-process-details-summary>
     </ng-template>
   </yuv-tab-panel>
 </ng-template>
 
-<ng-template #historyTab>
-  <yuv-tab-panel [id]="'historyTab'" [header]="'yuv.framework.task-details.tabs.progress.title' | translate"
-    [headerStyleClass]="'history'">
+<ng-template #history>
+  <yuv-tab-panel [id]="'history'" [header]="'yuv.framework.task-details.tabs.progress.title' | translate"
+    [headerStyleClass]="'history'" [cache]="false">
     <ng-template pTemplate="content">
       <yuv-task-details-history [processInstanceId]="_process.id"></yuv-task-details-history>
     </ng-template>
   </yuv-tab-panel>
 </ng-template>
 
-<ng-template #commentsTab>
-  <yuv-tab-panel [id]="'commentsTab'" [header]="'yuv.framework.task-details.tabs.comments.title' | translate"
-    [headerStyleClass]="'comments'">
+<ng-template #comments>
+  <yuv-tab-panel [id]="'comments'" [header]="'yuv.framework.task-details.tabs.comments.title' | translate"
+    [headerStyleClass]="'comments'" [cache]="false">
     <ng-template pTemplate="content">
       <yuv-task-details-comments [process]="_process"></yuv-task-details-comments>
     </ng-template>
   </yuv-tab-panel>
 </ng-template>
 
-<ng-template #attachmentsTab>
-  <yuv-tab-panel [id]="'attachmentsTab'" [header]="'yuv.framework.task-details.tabs.attachments.title' | translate"
+<ng-template #attachments>
+  <yuv-tab-panel [id]="'attachments'" [header]="'yuv.framework.task-details.tabs.attachments.title' | translate"
     [headerStyleClass]="'attachments'">
     <ng-template pTemplate="content">
       <yuv-process-attachments keepPrimary="true" [layoutOptionsKey]="layoutOptionsKey"

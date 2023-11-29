@@ -76,24 +76,24 @@ export interface PluginAPI {
     downloadContent(dmsObjects: DmsObject[]): void;
     /**
      * new SearchQuery object
-     * @param searchQueryProperties 
+     * @param searchQueryProperties
      */
     newSearchQuery(searchQueryProperties?: SearchQueryProperties): SearchQuery;
     /**
      * new SearchFilter object
-     * @param property 
-     * @param operator 
-     * @param firstValue 
-     * @param secondValue 
-     * @param useNot 
+     * @param property
+     * @param operator
+     * @param firstValue
+     * @param secondValue
+     * @param useNot
      */
     newSearchFilter(property: string, operator: string, firstValue: any, secondValue?: any, useNot?: boolean): SearchFilter;
     /**
      * new SearchFilterGroup object
-     * @param property 
-     * @param operator 
-     * @param group 
-     * @param useNot 
+     * @param property
+     * @param operator
+     * @param group
+     * @param useNot
      */
     newSearchFilterGroup(property?: string, operator?: string, group?: (SearchFilter | SearchFilterGroup)[], useNot?: boolean): SearchFilterGroup;
   };
@@ -227,6 +227,8 @@ export interface PluginComponentConfig {
   inputs?: any;
   outputs?: any;
   popoverConfig?: any;
+  cache?: boolean;
+  loaded?: boolean;
 }
 
 /**

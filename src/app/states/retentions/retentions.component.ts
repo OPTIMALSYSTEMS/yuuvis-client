@@ -10,11 +10,11 @@ import {
   SearchQuery,
   SearchService,
   SortOption,
-  SystemService,
   SystemSOT,
+  SystemService,
   Utils
 } from '@yuuvis/core';
-import { download, FilterPanelConfig, GridService, IconRegistryService, LayoutService, PluginsService, SearchResultComponent } from '@yuuvis/framework';
+import { FilterPanelConfig, GridService, IconRegistryService, LayoutService, PluginsService, SearchResultComponent, download } from '@yuuvis/framework';
 import { finalize } from 'rxjs';
 import { retentionEnd, retentionStart } from '../../../assets/default/svg/svg';
 
@@ -181,16 +181,13 @@ export class RetentionsComponent implements OnInit {
     this.searchQuery = q;
   }
 
-  exportCSV() {
+  exportCSV(query: SearchQuery) {
     this.loadingSpinner = true;
     this.searchService
-      .exportSearchResult({
-        ...this.searchService.getLastSearchQuery().toQueryJson(true),
-        fields: this.columnConfig
-          .filter((conf) => !conf.hide)
-          .map((conf) => conf.field)
-          .filter((conf) => conf)
-      })
+      .exportSearchResult(
+        query,
+        this.columnConfig.filter((conf) => !conf.hide && conf.field).map((conf) => conf.field)
+      )
       .pipe(finalize(() => (this.loadingSpinner = false)))
       .subscribe();
   }

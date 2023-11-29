@@ -5,6 +5,7 @@ import {
   HostBinding,
   Input,
   OnDestroy,
+  OnInit,
   Output,
   QueryList,
   TemplateRef,
@@ -62,7 +63,7 @@ import { FileDropOptions } from './../../directives/file-drop/file-drop.directiv
   styleUrls: ['./object-details.component.scss'],
   providers: [ContentPreviewService]
 })
-export class ObjectDetailsComponent implements OnDestroy {
+export class ObjectDetailsComponent implements OnDestroy, OnInit {
   @ContentChildren(TabPanelComponent) externalPanels: QueryList<TabPanelComponent>;
   @ViewChildren(TabPanelComponent) viewPanels: QueryList<TabPanelComponent>;
   @ViewChild(ResponsiveTabContainerComponent) tabContainer: ResponsiveTabContainerComponent;
@@ -294,6 +295,17 @@ export class ObjectDetailsComponent implements OnDestroy {
     if (this._objectId) {
       this.getDmsObject(this._objectId, true);
     }
+  }
+
+  ngOnInit(): void {
+    this.eventService
+      .on(YuvEventType.DMS_OBJECT_DELETED)
+      .pipe(untilDestroyed(this))
+      .subscribe((event) => {
+        if (event.data?.id === this._dmsObject?.id) {
+          this._dmsObject = null;
+        }
+      });
   }
 
   ngOnDestroy() {

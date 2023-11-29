@@ -1,7 +1,7 @@
 <div class="yuv-datepicker">
-  <p-inputMask [mask]="maskPattern" [(ngModel)]="innerValue" (ngModelChange)="onMaskValueChange($event)"
-    (keyup.arrowDown)="openPicker()" (onComplete)="setValueFromMask()" [readonly]="readonly" [slotChar]="_datePattern"
-    characterPattern="[PAMpam]">
+  <p-inputMask #maskInput [mask]="maskPattern" [(ngModel)]="innerValue" (ngModelChange)="onMaskValueChange($event, maskInput)"
+    (keyup.arrowDown)="openPicker()" [readonly]="readonly" [slotChar]="_datePattern"
+    [characterPattern]="characterPattern">
   </p-inputMask>
 
   <button type="button" class="p-button" data-datepicker="icon" (click)="openPicker()" *ngIf="!readonly">
@@ -11,7 +11,7 @@
 
 <!-- date picker overlay -->
 <ng-template #tplDatePicker let-data let-popover="popover">
-  <yuv-datepicker [date]="data.value" [withTime]="data.withTime" [withAmPm]="data.withAmPm"
-    [onlyFutureDates]="data.onlyFutureDates" (onCanceled)="onPickerCancel(popover)"
+  <yuv-datepicker [withTime]="data.withTime" [withAmPm]="data.withAmPm"
+    [onlyFutureDates]="data.onlyFutureDates" [date]="data.value" (onCanceled)="onPickerCancel(popover)"
     (onDateChanged)="setValueFromPicker($event, popover)"></yuv-datepicker>
 </ng-template>
