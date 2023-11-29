@@ -176,7 +176,15 @@ export class ObjectComponent implements OnInit, OnDestroy {
           this.router.navigate(['/']);
         }
       });
+    this.eventService
+      .on(YuvEventType.DMS_OBJECTS_MOVED)
+      .pipe(untilDestroyed(this))
+      .subscribe((event) => {
+        if (this.route.snapshot.fragment && event.data?.succeeded.map((d: DmsObject) => d.id).includes(this.route.snapshot.fragment)) {
+          this.router.navigate([]);
+        }
+      });
   }
 
-  ngOnDestroy() {}
+  ngOnDestroy() { }
 }
