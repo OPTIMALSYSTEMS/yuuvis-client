@@ -13,4 +13,5 @@ export interface Catalog extends BaseCatalog {
 export interface CatalogEntry {
   name: string;
   disabled?: boolean;
+  missing?: boolean;
 }
