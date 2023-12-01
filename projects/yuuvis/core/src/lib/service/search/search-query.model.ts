@@ -351,8 +351,8 @@ export class SearchFilterGroup {
     return arr instanceof SearchFilterGroup
       ? arr
       : arr.length === 1 && arr[0] instanceof SearchFilterGroup
-      ? arr[0]
-      : new SearchFilterGroup(undefined, undefined, [...arr]);
+        ? arr[0]
+        : new SearchFilterGroup(undefined, undefined, [...arr]);
   }
 
   id = Utils.uuid();
@@ -408,7 +408,7 @@ export class SearchFilterGroup {
     public operator: string = SearchFilterGroup.OPERATOR.AND,
     public group: (SearchFilter | SearchFilterGroup)[] = [],
     public useNot?: boolean
-  ) {}
+  ) { }
 
   /**
    * @ignore
@@ -644,7 +644,7 @@ export class SearchFilter {
  * Sortig criteria of objects searching result
  */
 export class SortOption {
-  constructor(public field: string, public order: string, public missing?: string) {}
+  constructor(public field: string, public order: string, public missing?: string) { }
 }
 
 /**
@@ -717,4 +717,31 @@ export function transformTableFilters(queryJson: SearchQueryProperties, query: S
   return queryJson;
 }
 
-export const transformFilters = [transformDateFilters, transformTableFilters];
+/**
+ * Transform string filters: add missing quotes & escape invalid parentheses
+ */
+export function transformStringFilters(queryJson: SearchQueryProperties, query: SearchQuery, allFields: any, field = 'filters') {
+  const fix = (t: string) => {
+    if (!t?.match(/"|\(|\)/)) return t;
+    // add missing quote
+    const q = (t.match(/"/g)?.length | 0) % 2 ? t + '"' : t;
+    const quotes = q.split(/("[^"]*")/).map(s => {
+      if (/"/.test(s) || !/\(|\)/.test(s)) return s;
+      const parentheses = s.split(/(\([^()]*\))/).map(s => {
+        if (!/\(|\)/.test(s) || /^(\([^()\s]+\))$/.test(s)) return s;
+        return `"${s}"`; // escape invalid or empty parentheses
+      });
+      return parentheses.join('');
+    });
+    return quotes.join('');
+  };
+
+  queryJson[field]?.forEach((f: any) => {
+    if (f[field]) return transformStringFilters(f, query, allFields, field);
+    if (Array.isArray(f.v1)) f.v1 = f.v1.map(v => fix(v));
+  });
+  queryJson.term = fix(queryJson.term);
+  return queryJson;
+}
+
+export const transformFilters = [transformStringFilters, transformDateFilters, transformTableFilters];
