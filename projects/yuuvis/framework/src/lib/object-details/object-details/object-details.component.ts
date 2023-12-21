@@ -229,6 +229,11 @@ export class ObjectDetailsComponent implements OnDestroy, OnInit {
 
   @Output() objectRefresh = new EventEmitter();
 
+
+  get indexDataFormDisabled(): boolean {
+    return !!this.retentionEndDate
+  }
+
   constructor(
     private dmsService: DmsService,
     private userService: UserService,
