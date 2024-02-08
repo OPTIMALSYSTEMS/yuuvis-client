@@ -144,6 +144,7 @@ export class PluginsService {
   private pluginConfigs: { local: PluginConfigList; resolved: PluginConfigList; tenant: PluginConfigList; global: PluginConfigList };
   public customPlugins: PluginConfigList;
   private componentRegister = new Map<string, any>();
+  private onUnload: any;
 
   public get currentUrl() {
     return this.router.url;
@@ -163,8 +164,8 @@ export class PluginsService {
     const f = fnc.match(/^function|^\(.*\)\s*=>/)
       ? `return (${fnc}).apply(this,arguments)`
       : typeof value === 'string' && !fnc.startsWith("'")
-      ? `return '${fnc}'`
-      : `return ${fnc}`;
+        ? `return '${fnc}'`
+        : `return ${fnc}`;
     try {
       return new Function(...(params || 'api').split(',').map((a) => a.trim()), f).apply(this.api, args || [this.api]);
     } catch (error) {
@@ -245,6 +246,10 @@ export class PluginsService {
     this.eventService.on(YuvEventType.CLIENT_LOCALE_CHANGED).subscribe((event: any) => this.extendTranslations(event.data));
   }
 
+  unload() {
+    this.onUnload && this.run(this.onUnload);
+  }
+
   extendTranslations(lang: string = this.translate.currentLang) {
     const translations = this.customPlugins?.translations?.[lang] || this.customPlugins?.translations?.[lang.substring(0, 2)];
     translations && this.configService.extendTranslations(translations, lang);
@@ -264,7 +269,7 @@ export class PluginsService {
           if (!this.customPlugins || force) {
             this.customPlugins = { ...ConfigService.PARSER(p), ...p.local };
             this.extendTranslations(this.translate.currentLang);
-            this.run(this.customPlugins?.load);
+            this.onUnload = this.run(this.customPlugins?.load);
           }
           return this.customPlugins;
         })
