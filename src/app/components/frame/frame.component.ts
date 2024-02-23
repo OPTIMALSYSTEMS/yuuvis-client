@@ -1,6 +1,7 @@
 import { Component, HostBinding, HostListener, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, NavigationExtras, Router, RoutesRecognized } from '@angular/router';
 import { SwUpdate } from '@angular/service-worker';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import {
   AuthService,
   BackendService,
@@ -19,22 +20,21 @@ import {
   YuvUser
 } from '@yuuvis/core';
 import {
-  help,
   IconRegistryService,
   LayoutService,
   LayoutSettings,
-  openContext,
   PluginGuard,
   PluginsService,
   PopoverRef,
   PopoverService,
   Screen,
   ScreenService,
-  UploadResult
+  UploadResult,
+  help,
+  openContext
 } from '@yuuvis/framework';
-import { forkJoin, Observable } from 'rxjs';
+import { Observable, forkJoin } from 'rxjs';
 import { filter, map, switchMap } from 'rxjs/operators';
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { add, close, drawer, offline, refresh, search, userDisabled } from '../../../assets/default/svg/svg';
 import { AppSearchService } from '../../service/app-search.service';
 import { AboutService } from '../../states/about/service/about.service';
@@ -249,6 +249,7 @@ export class FrameComponent implements OnInit, OnDestroy {
     if (removeTenantCookie) {
       document.cookie = 'tenant=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
     }
+    this.pluginsService.unload();
     this.frameService.appLogout();
   }
 
@@ -383,6 +384,7 @@ export class FrameComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.authService.authenticated$.subscribe((authenticated: boolean) => {
       if (!authenticated) {
+        this.pluginsService.unload();
         const tenant = this.authService.getTenant();
         if (tenant) {
           (window as any).location.href = `${this.backend.getApiBase('oauth')}/${tenant}`;
@@ -402,5 +404,5 @@ export class FrameComponent implements OnInit, OnDestroy {
     return `${Utils.getBaseHref()}${r}`.replace('//', '/');
   }
 
-  ngOnDestroy() {}
+  ngOnDestroy() { }
 }
