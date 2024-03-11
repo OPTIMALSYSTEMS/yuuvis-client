@@ -88,7 +88,7 @@ export class FileDropService {
   dragContainsFiles(event: DragEvent): number {
     // do not allow to drop files/images from iframes
     if ((event.relatedTarget as Element)?.tagName.toLowerCase() === 'iframe') return 0;
-    return Array.from(event.dataTransfer.items || []).filter((i) => i.kind === 'file').length;
+    return Array.from(event.dataTransfer.items || []).filter((i) => i.kind === 'file' && i.type).length;
   }
 
   private setActive(id) {
