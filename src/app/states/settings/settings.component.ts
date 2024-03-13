@@ -2,8 +2,8 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { AppCacheService, BackendService, ConfigService, SystemService, TranslateService, UserConfigService, UserService, YuvUser } from '@yuuvis/core';
-import { arrowDown, IconRegistryService, LayoutService, LayoutSettings, NotificationService, PluginsService } from '@yuuvis/framework';
-import { forkJoin, Observable } from 'rxjs';
+import { IconRegistryService, LayoutService, LayoutSettings, NotificationService, PluginsService, arrowDown } from '@yuuvis/framework';
+import { Observable, forkJoin } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { dashboard, dashboardWidget, shield } from '../../../assets/default/svg/svg';
@@ -89,7 +89,6 @@ export class SettingsComponent implements OnInit, OnDestroy {
     this.enableDashboardTypeSettings = this.config.get('core.features.dashboardWorkspaces');
     this.clientLocales = config.getClientLocales();
     this.enableConfig = this.route.snapshot.queryParamMap.get('config');
-    this.enableConfig === 'old' && (ConfigService.GLOBAL_RESOURCES_PATH = (section) => UserService.GLOBAL_SETTINGS + encodeURIComponent(section));
   }
 
   changeClientLocale(iso: string) {
@@ -190,9 +189,9 @@ export class SettingsComponent implements OnInit, OnDestroy {
 
     return actions.length
       ? forkJoin(actions).subscribe(
-          () => this.notificationService.success(this.translate.instant('yuv.client.state.settings.cache.clear.success')),
-          () => this.notificationService.error(this.translate.instant('yuv.client.state.settings.cache.clear.error'))
-        )
+        () => this.notificationService.success(this.translate.instant('yuv.client.state.settings.cache.clear.success')),
+        () => this.notificationService.error(this.translate.instant('yuv.client.state.settings.cache.clear.error'))
+      )
       : false;
   }
 
@@ -211,5 +210,5 @@ export class SettingsComponent implements OnInit, OnDestroy {
     });
   }
 
-  ngOnDestroy(): void {}
+  ngOnDestroy(): void { }
 }

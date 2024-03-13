@@ -13,6 +13,7 @@ import { YuvPipesModule } from '../pipes/pipes.module';
 import { YuvPluginsModule } from '../plugins/plugins.module';
 import { YuvComponentRegister } from '../shared/utils/utils';
 import { FollowUpDetailsComponent } from './follow-up-details/follow-up-details.component';
+import { PluginBpmComponent } from './plugin-bpm.component';
 import { ProcessAttachmentsOrderComponent } from './process-attachments/process-attachments-order/process-attachments-order.component';
 import { ProcessAttachmentsComponent } from './process-attachments/process-attachments.component';
 import { ProcessDetailsSummaryComponent } from './process-details/process-details-summary/process-details-summary.component';
@@ -39,7 +40,8 @@ const components = [
   TaskDetailsHistoryComponent,
   TaskDetailsTaskComponent,
   TaskDelegatePickerComponent,
-  TaskDetailsCommentsComponent
+  TaskDetailsCommentsComponent,
+  PluginBpmComponent
 ];
 
 YuvComponentRegister.register(components);
@@ -64,4 +66,4 @@ YuvComponentRegister.register(components);
   declarations: [...components],
   exports: [...components]
 })
-export class YuvBpmModule {}
+export class YuvBpmModule { }

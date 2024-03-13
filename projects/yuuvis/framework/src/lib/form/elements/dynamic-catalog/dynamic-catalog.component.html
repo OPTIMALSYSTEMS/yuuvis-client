@@ -5,7 +5,7 @@
     [(ngModel)]="innerValue" [appendTo]="appendTo">
 
     <ng-template let-items pTemplate="selectedItems">
-        <span class="chip" [ngClass]="{missing: item.missing}" *ngFor="let item of items">{{item.name}}
+        <span class="chip" [ngClass]="{missing: item.missing || item.disabled}" *ngFor="let item of items">{{item.name}}
         </span>
     </ng-template>
 
@@ -14,6 +14,7 @@
 <ng-template #tplSingleSelect>
     <p-dropdown [options]="enabledCatalogEntries" placeholder=" " [showTransitionOptions]="'0ms'" optionLabel="name"
         optionDisabled="disabled" [hideTransitionOptions]="'0ms'"
+        [ngClass]="{missing: innerValue?.missing || innerValue?.disabled}"
         [filter]="enabledCatalogEntries?.length > enableFilterWhenOptionsExceed" (ngModelChange)="onChange($event)"
         [disabled]="readonly" [showClear]="!readonly" [(ngModel)]="innerValue" [appendTo]="appendTo">
     </p-dropdown>

@@ -4,7 +4,7 @@ import { Observable, of } from 'rxjs';
 import { ActionTarget } from '../actions/action-target';
 import { SimpleCustomAction } from '../actions/interfaces/action.interface';
 import { SelectionRange } from '../actions/selection-range.enum';
-import { noFile } from '../svg.generated';
+import { noFile, process } from '../svg.generated';
 import { PluginActionViewComponent } from './plugin-action-view.component';
 import { PluginsService } from './plugins.service';
 
@@ -36,8 +36,8 @@ export class PluginActionComponent implements SimpleCustomAction {
     this.description = this.pluginService.translate.instant(this._action.description);
     this.header = this._action.header && this.pluginService.translate.instant(this._action.header);
     this.priority = !Utils.isEmpty(action.priority) ? action.priority : -1;
-    this.iconSrc = action.icon || noFile.data;
     this.group = action.group || 'common';
+    this.iconSrc = action.icon || (this.group === 'common' ? noFile.data : process.data);
     this.range = action.range ? SelectionRange[action.range as string] : SelectionRange.MULTI_SELECT;
     if (action.getLink) {
       ['getLink', 'getParams', 'getFragment'].forEach(
@@ -52,7 +52,7 @@ export class PluginActionComponent implements SimpleCustomAction {
     }
   }
 
-  constructor(private pluginService: PluginsService) {}
+  constructor(private pluginService: PluginsService) { }
 
   isExecutable(item: any) {
     const val = this.pluginService.applyFunction(this._action.isExecutable, 'item', arguments);

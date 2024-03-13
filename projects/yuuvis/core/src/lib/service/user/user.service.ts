@@ -22,7 +22,6 @@ import { SystemService } from '../system/system.service';
   providedIn: 'root'
 })
 export class UserService {
-  static GLOBAL_SETTINGS = '/users/globalsettings/';
   static USERS_SETTINGS = '/users/settings/';
   static DEFAULT_SETTINGS = '/users/settings';
 
@@ -45,7 +44,7 @@ export class UserService {
     private oidc: OidcService,
     private eventService: EventService,
     private config: ConfigService
-  ) {}
+  ) { }
 
   private getUiDirection(iso: string): string {
     // languages that are read right to left
@@ -117,15 +116,15 @@ export class UserService {
       if (this.translate.currentLang !== iso || this.system.authData?.language !== iso) {
         const ob = persist
           ? forkJoin([
-              this.translate.use(iso),
-              this.system.updateLocalizations(iso),
-              this.backend.post(UserService.DEFAULT_SETTINGS, this.user.userSettings).pipe(
-                tap(() => {
-                  this.userSource.next(this.user);
-                  this.logger.debug('Loading system definitions i18n resources for new locale.');
-                })
-              )
-            ])
+            this.translate.use(iso),
+            this.system.updateLocalizations(iso),
+            this.backend.post(UserService.DEFAULT_SETTINGS, this.user.userSettings).pipe(
+              tap(() => {
+                this.userSource.next(this.user);
+                this.logger.debug('Loading system definitions i18n resources for new locale.');
+              })
+            )
+          ])
           : this.translate.use(iso);
         ob.subscribe(() => this.eventService.trigger(YuvEventType.CLIENT_LOCALE_CHANGED, iso));
       }
@@ -218,10 +217,10 @@ export class UserService {
     return setting
       ? of(setting)
       : this.backend.get(ConfigService.GLOBAL_RESOURCES_PATH(section)).pipe(
-          catchError(() => of({})),
-          map((data) => ConfigService.PARSER(data)),
-          tap((data) => this.globalSettings.set(section, data))
-        );
+        catchError(() => of({})),
+        map((data) => ConfigService.PARSER(data)),
+        tap((data) => this.globalSettings.set(section, data))
+      );
   }
 
   /**
