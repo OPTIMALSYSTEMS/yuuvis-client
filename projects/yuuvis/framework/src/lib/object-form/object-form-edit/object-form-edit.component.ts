@@ -1,4 +1,5 @@
 import { Attribute, Component, EventEmitter, Input, OnDestroy, Output, TemplateRef, ViewChild } from '@angular/core';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import {
   AFO_STATE,
   ApiBase,
@@ -15,7 +16,6 @@ import {
 } from '@yuuvis/core';
 import { Observable, of } from 'rxjs';
 import { finalize, map, switchMap } from 'rxjs/operators';
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { FloatingSotSelectInput, FloatingSotSelectItem } from '../../floating-sot-select/floating-sot-select.interface';
 import { PopoverConfig } from '../../popover/popover.interface';
 import { PopoverRef } from '../../popover/popover.ref';
@@ -35,8 +35,8 @@ import { ObjectFormComponent } from './../object-form/object-form.component';
  * <yuv-object-form-edit [dmsObject]="dmsObject" (indexDataSaved)="onIndexDataSaved($event)"></yuv-object-form-edit>
  */
 
- @UntilDestroy()
- @Component({
+@UntilDestroy()
+@Component({
   selector: 'yuv-object-form-edit',
   templateUrl: './object-form-edit.component.html',
   styleUrls: ['./object-form-edit.component.scss']
@@ -182,7 +182,7 @@ export class ObjectFormEditComponent implements OnDestroy {
   // save the current dms object
   save() {
     setTimeout(() => {
-      if (this.formState.dirty && !this.formState.invalid) {
+      if (!this.formState?.invalid && !this.controls.disabled) {
         this.controls.saving = true;
         const formData = (this.objectForm || this.afoObjectForm).getFormData();
         // also apply secondary objecttype IDs as they may have changed as well
@@ -197,8 +197,8 @@ export class ObjectFormEditComponent implements OnDestroy {
               // update DLM tag when a primary FSOT has been applied
               return this._sotChanged.assignedPrimaryFSOT
                 ? this.backend
-                    .post(`/dms/objects/${updatedObject.id}/tags/${ObjectTag.AFO}/state/${AFO_STATE.READY}?overwrite=true`, {}, ApiBase.core)
-                    .pipe(map((_) => updatedObject))
+                  .post(`/dms/objects/${updatedObject.id}/tags/${ObjectTag.AFO}/state/${AFO_STATE.READY}?overwrite=true`, {}, ApiBase.core)
+                  .pipe(map((_) => updatedObject))
                 : of(updatedObject);
             }),
             switchMap((updatedObject) => {
@@ -378,5 +378,5 @@ export class ObjectFormEditComponent implements OnDestroy {
     }
   }
 
-  ngOnDestroy() {}
+  ngOnDestroy() { }
 }
