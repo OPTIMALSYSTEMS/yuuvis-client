@@ -1,6 +1,6 @@
 import { ElementRef } from '@angular/core';
+import { untilDestroyed } from '@ngneat/until-destroy';
 import { fromEvent } from 'rxjs';
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { PluginsService } from './plugins.service';
 
 export abstract class IFrameComponent {
@@ -10,7 +10,7 @@ export abstract class IFrameComponent {
     return this.elRef.nativeElement.querySelector('iframe');
   }
 
-  constructor(public elRef: ElementRef, public pluginsService: PluginsService) {}
+  constructor(public elRef: ElementRef, public pluginsService: PluginsService) { }
 
   /**
    * Custom search inside PDF.JS based on search term
@@ -61,6 +61,8 @@ export abstract class IFrameComponent {
     // set api to iframe window
     const win = iframe?.contentWindow || iframe;
     win['api'] = window['api'];
+    // disable beforeunload popup (Reload site? Changes that you made may not be saved.)
+    win.addEventListener('beforeunload', (event: Event) => event.stopImmediatePropagation());
 
     if (init) {
       iframe._init = true;
