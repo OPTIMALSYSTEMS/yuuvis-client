@@ -550,7 +550,7 @@ export class ObjectCreateComponent implements OnDestroy {
   }
 
   createAfoCancel(withDelete = false) {
-    (withDelete ? this.deleteObjects() : this.finishAFO({})).subscribe(() => {
+    (withDelete ? this.deleteObjects() : this.finishAFO({}, true)).subscribe(() => {
       this.selectedObjectType = null;
       this.files = [];
       this.resetState();
@@ -579,7 +579,7 @@ export class ObjectCreateComponent implements OnDestroy {
    * @param data Data to be allied to the object
    * @returns List of IDs of finished objects
    */
-  private finishAFO(data: any): Observable<string[]> {
+  private finishAFO(data: any, keepAfoState = false): Observable<string[]> {
     const sotsToBeApplied = this.getSotsToBeApplied();
     const pFSOT = this.afoCreate?.floatingSOT?.selected;
     if (pFSOT && pFSOT.sot.id !== 'none') {
@@ -593,9 +593,9 @@ export class ObjectCreateComponent implements OnDestroy {
         this.dmsService.updateDmsObject(dmsObject.id, data).pipe(
           // update system tags
           switchMap((dmsObject: DmsObject) =>
-            this.backend
+            !keepAfoState ? this.backend
               .post(`/dms/objects/${dmsObject.id}/tags/${ObjectTag.AFO}/state/${AFO_STATE.READY}?overwrite=true`, {}, ApiBase.core)
-              .pipe(map((_) => dmsObject.id))
+              .pipe(map((_) => dmsObject.id)) : of(dmsObject.id)
           ),
           catchError((e) => {
             return of(null);
@@ -685,5 +685,5 @@ export class ObjectCreateComponent implements OnDestroy {
     return typeSelected && fileSelected && !!this.formState && !this.formState.invalid;
   }
 
-  ngOnDestroy() {}
+  ngOnDestroy() { }
 }
