@@ -29,6 +29,6 @@ export class TabPanelComponent extends TabPanel {
 
   constructor(viewContainer: ViewContainerRef, cd: ChangeDetectorRef, el: ElementRef) {
     // TabPanel is created with fake TabView
-    super(new TabView(el, cd), viewContainer, cd);
+    super(new TabView({}, el, cd), viewContainer, cd);
   }
 }
