@@ -1,6 +1,15 @@
 @import './../../../../../src/scss-shared/_vars';
 
 body {
+  // fix for new svg icons in primeNG
+  .p-icon-wrapper {
+    display: flex;
+    svg {
+      width: 14px;
+      height: 14px;
+    }
+  }
+
   .yuv-datetime-range,
   .yuv-number-range,
   .yuv-catalog {
