@@ -138,7 +138,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
   set viewMode(viewMode: ViewMode) {
     this._viewMode = viewMode || 'auto';
     const currentViewMode = this._viewMode === 'auto' ? this._autoViewMode : this._viewMode;
-    if (this.currentViewMode !== currentViewMode) {
+    if (this._viewMode === 'auto' || this.currentViewMode !== currentViewMode) {
       this._currentViewMode = currentViewMode;
       this.viewModeChanged.emit(this._currentViewMode);
       this.applyGridOption();
@@ -508,7 +508,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
     return !!(this.gridOptions && this.gridOptions.api);
   }
 
-  ngOnInit() {}
+  ngOnInit() { }
 
   ngOnDestroy() {
     this.pluginsService.unregister(this);
