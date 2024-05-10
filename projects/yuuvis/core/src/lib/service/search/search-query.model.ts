@@ -712,7 +712,8 @@ export function transformTableFilters(queryJson: SearchQueryProperties, query: S
     }, [])
     .filter((v) => v.columnFilters.length > 1);
 
-  if (tableFilters?.length) queryJson[field] = tableFilters;
+  // TODO: enable again once there is a concept of a more sophisticated search UI
+  // if (tableFilters?.length) queryJson[field] = tableFilters;
 
   return queryJson;
 }
