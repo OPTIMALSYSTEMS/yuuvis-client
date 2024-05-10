@@ -113,7 +113,11 @@ export class DmsObject {
       const retentionStart = new Date(this.data[RetentionField.RETENTION_START]);
       const retentionEnd = new Date(this.data[RetentionField.RETENTION_END]);
       const today = new Date();
-      return retentionStart <= today && today <= retentionEnd ? RetentionState.ACTIVE : RetentionState.DESTRUCT;
+      return retentionStart <= today && today <= retentionEnd
+        ? RetentionState.ACTIVE
+        : today < retentionStart
+        ? RetentionState.INACTIVE
+        : RetentionState.DESTRUCT;
     } else {
       return RetentionState.NONE;
     }

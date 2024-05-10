@@ -1,6 +1,7 @@
 export * from './bpm.module';
 export { FollowUpDetailsComponent } from './follow-up-details/follow-up-details.component';
 export * from './interface/bpm.interface';
+export { PluginBpmComponent } from './plugin-bpm.component';
 export { ProcessAttachmentsOrderComponent } from './process-attachments/process-attachments-order/process-attachments-order.component';
 export { ProcessAttachmentsComponent } from './process-attachments/process-attachments.component';
 export { ProcessDetailsSummaryComponent } from './process-details/process-details-summary/process-details-summary.component';
@@ -14,3 +15,4 @@ export { TaskDetailsHistoryComponent } from './task-details/task-details-history
 export { TaskDelegatePickerComponent } from './task-details/task-details-task/task-delegate-picker/task-delegate-picker.component';
 export { TaskDetailsTaskComponent } from './task-details/task-details-task/task-details-task.component';
 export { TaskDetailsComponent } from './task-details/task-details.component';
+

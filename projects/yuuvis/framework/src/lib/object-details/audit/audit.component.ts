@@ -1,5 +1,6 @@
 import { Component, Inject, Input, OnDestroy, OnInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import {
   ApiBase,
   AppCacheService,
@@ -17,9 +18,8 @@ import {
   YuvEvent,
   YuvEventType
 } from '@yuuvis/core';
-import { Observable } from 'rxjs';
-import { map, switchMap, tap } from 'rxjs/operators';
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { Observable, forkJoin } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { ROUTES, YuvRoutes } from '../../routing/routes';
 import { arrowNext, filter } from '../../svg.generated';
@@ -37,8 +37,8 @@ import { arrowNext, filter } from '../../svg.generated';
  * <!-- skipping certain action codes -->
  * <yuv-audit [objectID]="'0815'" [skipActions]="[100, 200, 202]"></yuv-audit>
  */
- @UntilDestroy()
- @Component({
+@UntilDestroy()
+@Component({
   selector: 'yuv-audit',
   templateUrl: './audit.component.html',
   styleUrls: ['./audit.component.scss']
@@ -117,6 +117,7 @@ export class AuditComponent implements OnInit, OnDestroy {
       a201: this.translate.instant('yuv.framework.audit.label.delete.content'), // #v
       a202: this.translate.instant('yuv.framework.audit.label.delete.marked'),
       a210: this.translate.instant('yuv.framework.audit.label.delete.tag'), // #v
+      a220: this.translate.instant('yuv.framework.audit.label.delete.version'), // #v
 
       a300: this.translate.instant('yuv.framework.audit.label.update.metadata'),
       a301: this.translate.instant('yuv.framework.audit.label.update.content'),
@@ -337,14 +338,8 @@ export class AuditComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    let filterSettings: any;
-    this.appCache
-      .getItem(this.FILTER_CACHE_KEY)
-      .pipe(
-        tap((fs) => (filterSettings = fs)),
-        switchMap((fs) => this.getCustomAuditFilterGroup())
-      )
-      .subscribe((customActionGroup: ActionGroup) => {
+    forkJoin([this.appCache.getItem(this.FILTER_CACHE_KEY), this.getCustomAuditFilterGroup()])
+      .subscribe(([filterSettings, customActionGroup]) => {
         let actionKeys = this.auditService.getAuditActions(this.allActions).map((a: number) => `a${a}`);
         if (this.skipActions) {
           const skipActionKeys = this.skipActions.map((a) => `a${a}`);
@@ -373,6 +368,10 @@ export class AuditComponent implements OnInit, OnDestroy {
           }
         });
         this.searchForm = this.fb.group(fbInput);
+        if (filterSettings?.dateRange) {
+          const { operator, firstValue, secondValue } = filterSettings.dateRange;
+          filterSettings.dateRange = new RangeValue(operator, firstValue, secondValue);
+        }
         if (filterSettings) this.searchForm.patchValue(filterSettings);
         if (!this.initialFetch) {
           this.query();
@@ -380,8 +379,7 @@ export class AuditComponent implements OnInit, OnDestroy {
         }
       });
   }
-
-  ngOnDestroy() {}
+  ngOnDestroy() { }
 }
 
 interface ReslovedAuditEntry extends AuditEntry {

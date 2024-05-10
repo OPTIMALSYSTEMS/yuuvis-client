@@ -19,7 +19,7 @@ import {
   TranslateService,
   Utils
 } from '@yuuvis/core';
-import { forkJoin, Observable, of } from 'rxjs';
+import { Observable, forkJoin, of } from 'rxjs';
 import { catchError, finalize, map, switchMap } from 'rxjs/operators';
 
 import { FadeInAnimations } from '../../common/animations/fadein.animation';
@@ -211,7 +211,7 @@ export class ObjectCreateComponent implements OnDestroy {
           .filter((ot) => ![SystemType.FOLDER, SystemType.DOCUMENT].includes(ot.id)) // types that should not be able to be created
           .map((ot: ObjectType) => ({
             id: ot.id,
-            label: this.system.getLocalizedResource(`${ot.id}_label`),
+            label: this.system.getLocalizedResource(`${ot.id}_label`) || ot.id,
             description: ot.isFolder ? '' : this.labels[ot.contentStreamAllowed],
             highlight: ot.isFolder,
             svgSrc: this.system.getObjectTypeIconUri(ot.id),
@@ -296,7 +296,7 @@ export class ObjectCreateComponent implements OnDestroy {
     }
     this.startPending();
     this.selectedObjectType = objectType;
-    this.title = objectType ? this.system.getLocalizedResource(`${objectType.id}_label`) : this.labels.defaultTitle;
+    this.title = objectType ? this.system.getLocalizedResource(`${objectType.id}_label`) || objectType.id : this.labels.defaultTitle;
     this.objCreateService.setNewState({ busy: true });
 
     if (!!objectType.floatingParentType || this.system.isFloatingObjectType(objectType)) {
@@ -380,7 +380,7 @@ export class ObjectCreateComponent implements OnDestroy {
     this.afoCreate.floatingSOT.selected = {
       sot: {
         id: sot?.id || 'none',
-        label: sot?.label || this.selectedObjectType.label
+        label: sot?.label || this.selectedObjectType.label || sot?.id
       }
     };
   }
@@ -439,14 +439,14 @@ export class ObjectCreateComponent implements OnDestroy {
               dmsObject: { items: res, selected: res[0] },
               floatingSOT: { item: selectableSOTs }
             };
-            this.afoSelectFloatingSOT({ id: sot.id, label: sot.label });
+            this.afoSelectFloatingSOT({ id: sot.id, label: sot.label || sot.id });
           } else {
             this.afoCreate = {
               dmsObject: { items: res, selected: res[0] },
               floatingSOT: { item: selectableSOTs }
             };
             if (selectableSOTs.sots.length === 1) {
-              this.afoSelectFloatingSOT({ id: selectableSOTs.sots[0].id, label: selectableSOTs.sots[0].label });
+              this.afoSelectFloatingSOT({ id: selectableSOTs.sots[0].id, label: selectableSOTs.sots[0].label || selectableSOTs.sots[0].id });
             }
           }
         },
@@ -550,7 +550,7 @@ export class ObjectCreateComponent implements OnDestroy {
   }
 
   createAfoCancel(withDelete = false) {
-    (withDelete ? this.deleteObjects() : this.finishAFO({})).subscribe(() => {
+    (withDelete ? this.deleteObjects() : this.finishAFO({}, true)).subscribe(() => {
       this.selectedObjectType = null;
       this.files = [];
       this.resetState();
@@ -579,7 +579,7 @@ export class ObjectCreateComponent implements OnDestroy {
    * @param data Data to be allied to the object
    * @returns List of IDs of finished objects
    */
-  private finishAFO(data: any): Observable<string[]> {
+  private finishAFO(data: any, keepAfoState = false): Observable<string[]> {
     const sotsToBeApplied = this.getSotsToBeApplied();
     const pFSOT = this.afoCreate?.floatingSOT?.selected;
     if (pFSOT && pFSOT.sot.id !== 'none') {
@@ -593,9 +593,9 @@ export class ObjectCreateComponent implements OnDestroy {
         this.dmsService.updateDmsObject(dmsObject.id, data).pipe(
           // update system tags
           switchMap((dmsObject: DmsObject) =>
-            this.backend
+            !keepAfoState ? this.backend
               .post(`/dms/objects/${dmsObject.id}/tags/${ObjectTag.AFO}/state/${AFO_STATE.READY}?overwrite=true`, {}, ApiBase.core)
-              .pipe(map((_) => dmsObject.id))
+              .pipe(map((_) => dmsObject.id)) : of(dmsObject.id)
           ),
           catchError((e) => {
             return of(null);
@@ -685,5 +685,5 @@ export class ObjectCreateComponent implements OnDestroy {
     return typeSelected && fileSelected && !!this.formState && !this.formState.invalid;
   }
 
-  ngOnDestroy() {}
+  ngOnDestroy() { }
 }

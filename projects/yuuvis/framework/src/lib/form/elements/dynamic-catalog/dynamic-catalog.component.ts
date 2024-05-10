@@ -93,8 +93,8 @@ export class DynamicCatalogComponent implements ControlValueAccessor {
 
   registerOnTouched(fn: any): void {}
 
-  onChange(value) {
-    this.value = value ? (Array.isArray(value) ? value.map((v) => v.name) : value.name) : null;
+  onChange(value: any) {
+    this.writeValue(value ? (Array.isArray(value) ? value.map((v) => v.name) : value.name) : null);
     this.propagateChange(this.value);
   }
 
@@ -116,24 +116,11 @@ export class DynamicCatalogComponent implements ControlValueAccessor {
    */
   catalogSaved(updatedCatalog: Catalog, popoverRef?: PopoverRef) {
     this.setCatalog(updatedCatalog);
-    if (popoverRef) {
-      popoverRef.close();
-    }
+    popoverRef?.close();
   }
 
   removeInvalidItems() {
-    if (Array.isArray(this.innerValue)) {
-      const fiv = [];
-      this.innerValue.forEach((iv) => {
-        if (iv.missing) {
-          this.value = (this.value as string[]).filter((v) => v !== iv.name);
-        } else {
-          fiv.push(iv);
-        }
-      });
-      this.innerValue = fiv;
-      this.hasInvalidItems = false;
-    }
+    this.onChange(Array.isArray(this.innerValue) ? this.innerValue.filter((i) => !i.missing && !i.disabled) : null);
   }
 
   private fetchCatalogEntries(ce: ClassificationEntry) {
@@ -142,7 +129,6 @@ export class DynamicCatalogComponent implements ControlValueAccessor {
       this.loadCatalog(ce).subscribe(
         (res: BaseCatalog) => {
           this.setCatalog(res);
-          this.setupInnerValue();
           this.editable =
             this.situation !== 'SEARCH' &&
             this.userService.hasManageSettingsRole &&
@@ -170,34 +156,32 @@ export class DynamicCatalogComponent implements ControlValueAccessor {
       : this.catalogService.getCatalog(ce.options[0]);
   }
 
+  private resolveEntry(value: string): CatalogEntry {
+    return (
+      this.catalog.entries?.find((e) => e.name === value) || {
+        name: value,
+        missing: true
+      }
+    );
+  }
+
   private setupInnerValue() {
     if (this.value && this.catalog) {
-      if (Array.isArray(this.value)) {
-        const iv = [];
-        this.value.forEach((v) => {
-          const ce = this.catalog.entries.find((e) => e.name === v);
-          iv.push(
-            ce || {
-              name: v,
-              missing: true
-            }
-          );
-          if (!ce) this.hasInvalidItems = true;
-        });
-        this.innerValue = iv;
-      } else {
-        const ce = this.catalog.entries.find((e) => e.name === this.value);
-        this.innerValue = ce || {
-          name: this.value,
-          missing: true
-        };
-        if (!ce) this.hasInvalidItems = true;
-      }
+      const value = Array.isArray(this.value) ? this.value : [this.value];
+      const innerValue = value.map((v) => this.resolveEntry(v));
+      this.hasInvalidItems = !!innerValue.find((i) => i.missing || i.disabled);
+      this.innerValue = Array.isArray(this.value) ? innerValue : innerValue[0];
+    } else {
+      this.hasInvalidItems = false;
+      this.innerValue = null;
     }
   }
 
   private setCatalog(catalog: BaseCatalog | Catalog) {
-    this.catalog = catalog;
-    this.enabledCatalogEntries = this.situation === 'SEARCH' ? catalog.entries : catalog.entries.filter((e) => !e.disabled);
+    this.catalog = catalog || { entries: [] };
+    this.situation === 'SEARCH' && this.catalog.entries?.forEach((e) => (e.disabled = false));
+    const value = Array.isArray(this.value) ? this.value : [this.value];
+    this.enabledCatalogEntries = this.catalog.entries?.filter((e) => !e.disabled || value.includes(e.name)) || [];
+    this.setupInnerValue();
   }
 }

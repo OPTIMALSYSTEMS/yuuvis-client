@@ -1,5 +1,5 @@
 import { Component, ContentChildren, EventEmitter, Input, Output, QueryList, TemplateRef, ViewChild, ViewChildren } from '@angular/core';
-import { Process, SystemService } from '@yuuvis/core';
+import { ConfigService, Process, SystemService } from '@yuuvis/core';
 import { TabPanelComponent } from '../../components/responsive-tab-container/tab-panel.component';
 
 @Component({
@@ -10,17 +10,17 @@ import { TabPanelComponent } from '../../components/responsive-tab-container/tab
 export class ProcessDetailsComponent {
   @ContentChildren(TabPanelComponent) externalPanels: QueryList<TabPanelComponent>;
   @ViewChildren(TabPanelComponent) viewPanels: QueryList<TabPanelComponent>;
-  @ViewChild('summaryTab') summaryTab: TemplateRef<any>;
-  @ViewChild('historyTab') historyTab: TemplateRef<any>;
-  @ViewChild('commentsTab') commentsTab: TemplateRef<any>;
-  @ViewChild('attachmentsTab') attachmentsTab: TemplateRef<any>;
+  @ViewChild('summary') summary: TemplateRef<any>;
+  @ViewChild('history') history: TemplateRef<any>;
+  @ViewChild('comments') comments: TemplateRef<any>;
+  @ViewChild('attachments') attachments: TemplateRef<any>;
 
   _process: Process;
   header: {
     title: string;
     description: string;
   };
-  @Input() panelOrder = ['summaryTab', 'historyTab', 'commentsTab', 'attachmentsTab'];
+  @Input() panelOrder = ['summary', 'history', 'attachments', 'comments'];
 
   @Input() set process(p: Process) {
     this._process = p;
@@ -40,5 +40,7 @@ export class ProcessDetailsComponent {
   @Input() displayVars: string[] = [];
   @Output() attachmentOpenExternal = new EventEmitter<string>();
 
-  constructor(private system: SystemService) {}
+  constructor(private system: SystemService, private config: ConfigService) {
+    this.panelOrder = this.config.get('client.processDetailsTabs') || this.panelOrder;
+  }
 }

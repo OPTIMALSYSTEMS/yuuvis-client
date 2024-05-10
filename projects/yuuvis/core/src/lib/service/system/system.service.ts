@@ -170,7 +170,7 @@ export class SystemService {
 
     const grouped = this.groupBy(
       types
-        .map((ot) => ({ ...ot, group: this.getLocalizedResource(`${ot.id}_description`) }))
+        .map((ot) => ({ ...ot, group: this.getLocalizedResource(`${ot.id}_description`) || ot.id }))
         .sort(Utils.sortValues('label'))
         .sort((x, y) => (x.isFolder === y.isFolder ? 0 : x.isFolder ? -1 : 1)),
       'group'

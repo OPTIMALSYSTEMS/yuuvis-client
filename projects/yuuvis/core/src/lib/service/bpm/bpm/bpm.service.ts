@@ -1,7 +1,7 @@
 import { HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, EMPTY, Observable } from 'rxjs';
-import { expand, finalize, map, skipWhile, tap } from 'rxjs/operators';
+import { expand, finalize, map, skipWhile, tap, throttleTime } from 'rxjs/operators';
 import { Utils } from '../../../util/utils';
 import { Sort } from '../../../util/utils.helper.enum';
 import { ApiBase } from '../../backend/api.enum';
@@ -28,7 +28,7 @@ export class BpmService {
   // private readonly bpmTaskUrl = '/bpm/tasks';
 
   private loadingBpmDataSource = new BehaviorSubject<boolean>(false);
-  public loadingBpmData$: Observable<boolean> = this.loadingBpmDataSource.asObservable();
+  public loadingBpmData$: Observable<boolean> = this.loadingBpmDataSource.asObservable().pipe(throttleTime(10));
 
   // TODO: Use later on to decide which processes could be started by the current user
   private availableProcessDefinitions: ProcessDefinition[] = [];
@@ -72,13 +72,7 @@ export class BpmService {
 
   getProcesses(url: string, silent = false): Observable<unknown> {
     if (!silent) this.loadingBpmDataSource.next(true);
-    return this.backendService.get(url).pipe(
-      finalize(() =>
-        setTimeout(() => {
-          if (!silent) this.loadingBpmDataSource.next(false);
-        }, 200)
-      )
-    );
+    return this.backendService.get(url).pipe(finalize(() => !silent && this.loadingBpmDataSource.next(false)));
   }
 
   getProcessInstances(processDefinitionKey: string, options: FetchTaskOptions = { includeProcessVar: true }): Observable<Process[]> {
@@ -110,7 +104,7 @@ export class BpmService {
   }
 
   getProcessHistory(processInstanceId: string): Observable<ProcessInstanceHistoryEntry[]> {
-    return this.backendService.get(`/bpm/processes/${processInstanceId}/history`).pipe(
+    return this.backendService.get(`${this.bpmProcessUrl}/${processInstanceId}/history`).pipe(
       map((res) =>
         res && res.tasks
           ? res.tasks
@@ -136,7 +130,7 @@ export class BpmService {
    * @returns List of comments
    */
   getProcessComments(processInstanceId: string): Observable<ProcessInstanceComment[]> {
-    return this.backendService.get(`/bpm/processes/${processInstanceId}/history?includeComments=true`).pipe(
+    return this.backendService.get(`${this.bpmProcessUrl}/${processInstanceId}/history?includeComments=true`).pipe(
       map((res) =>
         res && res.comments
           ? res.comments

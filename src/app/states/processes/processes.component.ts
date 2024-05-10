@@ -1,22 +1,22 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { BpmEvent, EventService, Process, ProcessRow, ProcessService, TranslateService } from '@yuuvis/core';
 import {
-  arrowNext,
-  edit,
   FormatProcessDataService,
   HeaderDetails,
   IconRegistryService,
+  PluginsService,
+  ResponsiveTableData,
+  arrowNext,
+  edit,
   listModeDefault,
   listModeGrid,
   listModeSimple,
-  PluginsService,
   process,
-  refresh,
-  ResponsiveTableData
+  refresh
 } from '@yuuvis/framework';
 import { Observable } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 
 @UntilDestroy()
 @Component({
@@ -39,7 +39,7 @@ export class ProcessesComponent implements OnInit, OnDestroy {
     })
   );
   loading$: Observable<boolean> = this.processService.loadingProcessData$;
-  statusFilter;
+  statusFilter: any = 'running';
 
   headerDetails: HeaderDetails = {
     title: this.translateService.instant('yuv.client.state.process.title'),
@@ -82,13 +82,10 @@ export class ProcessesComponent implements OnInit, OnDestroy {
   }
 
   private fetchProcesses(statusFilter: 'all' | 'running' | 'completed' = 'all') {
-    if (statusFilter === 'all') {
-      this.processService.fetchProcesses();
-    } else {
-      this.processService.fetchProcesses(null, {
-        isCompleted: statusFilter === 'completed'
-      });
-    }
+    this.processService.fetchProcesses(null, {
+      startedBy: this.pluginsService.getCurrentUser().id,
+      ...(statusFilter !== 'all' && { isCompleted: statusFilter === 'completed' })
+    });
   }
 
   remove() {
@@ -101,11 +98,11 @@ export class ProcessesComponent implements OnInit, OnDestroy {
   onSlaveClosed() {}
 
   ngOnInit(): void {
-    this.fetchProcesses('running');
+    this.fetchProcesses(this.statusFilter);
     this.eventService
       .on(BpmEvent.BPM_EVENT)
       .pipe(
-        tap(() => this.processService.fetchProcesses()),
+        tap(() => this.fetchProcesses(this.statusFilter)),
         untilDestroyed(this)
       )
       .subscribe();

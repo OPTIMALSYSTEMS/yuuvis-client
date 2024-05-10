@@ -3,7 +3,7 @@ import { ControlValueAccessor, NG_VALIDATORS, NG_VALUE_ACCESSOR, UntypedFormCont
 import { TranslateService } from '@yuuvis/core';
 import { Subscription } from 'rxjs';
 import { IconRegistryService } from '../../../common/components/icon/service/iconRegistry.service';
-import { LocaleDatePipe } from '../../../pipes/locale-date.pipe';
+import { fullDateFormat, LocaleDatePipe } from '../../../pipes/locale-date.pipe';
 import { PopoverConfig } from '../../../popover/popover.interface';
 import { PopoverRef } from '../../../popover/popover.ref';
 import { PopoverService } from '../../../popover/popover.service';
@@ -46,12 +46,11 @@ export class DatetimeComponent implements OnInit, ControlValueAccessor, Validato
   params;
   value; // model value
   innerValue; // inner ng-model value
-  locale;
   datePipe: LocaleDatePipe;
   private isValidInput = true;
   maskPattern: string;
+  characterPattern: string;
   _datePattern: string;
-  datePattern: string;
   _withTime: boolean;
   withAmPm: boolean;
   private _popoverRef: PopoverRef | undefined;
@@ -81,9 +80,11 @@ export class DatetimeComponent implements OnInit, ControlValueAccessor, Validato
   @Input()
   set withTime(value) {
     this._withTime = value;
-    this._datePattern = this.datePipe.format(this.withTime ? 'eoShort' : 'eoShortDate');
+    const format = this.withTime ? 'eoShort' : 'eoShortDate';
+    this._datePattern = fullDateFormat(this.datePipe.format(format), format);
     this.withAmPm = this._datePattern.includes('a');
-    this.maskPattern = this._datePattern.replace(/[mMdDyYhH]/g, '9');
+    this.maskPattern = this._datePattern.replace(/[mMdDyYhH]/g, '9').replace(/a+$/, 'aa');
+    this.characterPattern = `[ampAMP${this.datePipe.dayPeriods.join('').replace(/\./g, '')}]`;
   }
 
   get withTime() {
@@ -91,14 +92,13 @@ export class DatetimeComponent implements OnInit, ControlValueAccessor, Validato
   }
 
   constructor(
-    private translate: TranslateService,
+    public translate: TranslateService,
     private popoverService: PopoverService,
     private iconRegistry: IconRegistryService,
     private elemRef: ElementRef
   ) {
     this.iconRegistry.registerIcons([datepicker]);
     this.datePipe = new LocaleDatePipe(translate);
-    this.locale = this.translate.currentLang;
   }
 
   formatDate(value: Date | string) {
@@ -170,28 +170,18 @@ export class DatetimeComponent implements OnInit, ControlValueAccessor, Validato
     }
   }
 
-  onMaskValueChange(event: string) {
+  onMaskValueChange(event: string, maskInput: any) {
+    // hotfix for aa -> ma switch
+    if (this.withAmPm && this.characterPattern.includes('m')) {
+      maskInput.tests[this.maskPattern.indexOf('a')] = new RegExp(`[ap${this.datePipe.dayPeriods.map((p) => p[0] || '').join('')}]`, 'i');
+      maskInput.tests[this.maskPattern.indexOf('a') + 1] = new RegExp(`[m${this.datePipe.dayPeriods.map((p) => p[1] || '').join('')}]`, 'i');
+    }
+
     if (event === this._datePattern || (event.length === 0 && this.value !== null)) {
       this.value = null;
       this.isValidInput = true;
       this.propagate();
-    }
-
-    // fixed pm/am formatting
-    if (event.length && this.withAmPm && this._datePattern.match(/a$/) && !event.match(/aa$|AM$|PM$/)) {
-      const element = this.elemRef.nativeElement.querySelector('input');
-      const caretPos = element.selectionStart;
-      this.innerValue = element.value = event.slice(0, -2) + (event.match(/ma$|mm$/) ? 'aa' : event.match(/p|P/) ? 'PM' : 'AM');
-      element.setSelectionRange(caretPos, caretPos);
-      this.setValueFromMask(); // hotfix: required for AM/PM changes
-    }
-
-    // hotfix for Korean time
-    if (event.match(/am|pm/) && event.match(/\d\d:\d\d/)) {
-      const element = this.elemRef.nativeElement.querySelector('input');
-      const caretPos = element.selectionStart;
-      element.value = event.replace('am', 'AM').replace('pm', 'PM');
-      element.setSelectionRange(caretPos, caretPos);
+    } else if (maskInput.buffer.every((v: any, i: any) => (maskInput.tests[i] ? maskInput.tests[i].test(v) : true))) {
       this.setValueFromMask();
     }
   }

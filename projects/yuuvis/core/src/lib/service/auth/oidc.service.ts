@@ -1,6 +1,6 @@
 import { Inject, Injectable, Optional } from '@angular/core';
 import { AuthConfig, OAuthModuleConfig, OAuthService } from 'angular-oauth2-oidc';
-import { from, Observable, of } from 'rxjs';
+import { Observable, from, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { OpenIdConfig } from '../backend/backend.interface';
 import { CoreConfig } from '../config/core-config';
@@ -10,7 +10,7 @@ import { CORE_CONFIG } from '../config/core-config.tokens';
   providedIn: 'root'
 })
 export class OidcService {
-  constructor(@Optional() private oAuthConfig: OAuthModuleConfig, @Inject(CORE_CONFIG) public config: CoreConfig, private oauthService: OAuthService) {}
+  constructor(@Optional() private oAuthConfig: OAuthModuleConfig, @Inject(CORE_CONFIG) public config: CoreConfig, private oauthService: OAuthService) { }
 
   initOpenIdConnect(oidc: OpenIdConfig): Observable<OpenIdConfig> {
     oidc = this.config.oidc = oidc || this.config.oidc;
@@ -46,6 +46,8 @@ export class OidcService {
   }
 
   logout() {
+    // force logout on oidc iframe in case of tenant switch
+    document.querySelector("body > iframe#__oidc")?.setAttribute('src', this.config.oidc.host + '/logout');
     this.oauthService.logOut();
   }
 

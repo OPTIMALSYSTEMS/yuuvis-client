@@ -1,8 +1,9 @@
 import { HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BackendService, Logger } from '@yuuvis/core';
-import { forkJoin as observableForkJoin, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { assign, bind, camelCase, capitalize, ceil, chunk, clone, cloneDeep, concat, debounce, each, endsWith, entries, escape, every, extend, filter, find, findIndex, findKey, first, flatMap, floor, forEach, get, groupBy, has, includes, indexOf, isArray, isDate, isEmpty, isNaN, isNumber, isObject, isString, join, keys, map, orderBy, reduce, remove, replace, reverse, set, slice, some, sortBy, split, startsWith, sum, take, uniqBy, values } from 'lodash-es';
+import { Observable, forkJoin as observableForkJoin } from 'rxjs';
+import { map as _map } from 'rxjs/operators';
 import { ObjectFormScriptingScope } from './object-form-scripting-scope';
 
 export const moment = (date) => {
@@ -50,54 +51,14 @@ export const moment = (date) => {
   };
 };
 
-export const lodash = {
-  clone: (object) => JSON.parse(JSON.stringify(object)),
-  get: (object, key) => (typeof key === 'string' ? key.split('.') : key || []).reduce((o, k) => (o || {})[k], object),
-  sortBy(array, predicate, reverseOrder) {
-    const cb = typeof predicate === 'function' ? predicate : (o) => (predicate ? this.get(o, predicate) : o);
-    return array.sort((a: any, b: any) => {
-      let comparison: number;
-      const varA = cb(a);
-      const varB = cb(b);
-      if (typeof varA === 'number' && typeof varB === 'number') {
-        comparison = varA - varB;
-      } else {
-        const stringA = varA || varA === 0 ? varA.toString() : '';
-        const stringB = varB || varB === 0 ? varB.toString() : '';
-        comparison = stringA.localeCompare(stringB);
-      }
-      return reverseOrder ? comparison * -1 : comparison;
-    });
-  },
-  uniqBy(array, predicate) {
-    const cb = typeof predicate === 'function' ? predicate : (o) => (predicate ? this.get(o, predicate) : o);
-    return [
-      ...array
-        .reduce((m, item) => {
-          const key = item === null || item === undefined ? item : cb(item);
-          return (m.has(key) || m.set(key, item)) && m;
-        }, new Map())
-        .values()
-    ];
-  },
-  // map all Array functions
-  ...Object.getOwnPropertyNames(Array.prototype).reduce(
-    (o, k) => (typeof Array.prototype[k] === 'function' ? (o[k] = (object, ...args) => object[k](...args)) : {}) && o,
-    {}
-  ),
-  // map useful Object functions
-  ...['assign', 'keys', 'values', 'entries'].reduce(
-    (o, k) => (o[k] = (object, ...args) => (Array.isArray(object) ? object[k](...args) : Object[k](object, ...args))) && o,
-    {}
-  )
-};
+export const lodash = { assign, bind, camelCase, capitalize, ceil, chunk, clone, cloneDeep, concat, debounce, each, endsWith, entries, escape, every, extend, filter, find, findIndex, findKey, first, flatMap, floor, forEach, get, groupBy, has, includes, indexOf, isArray, isDate, isEmpty, isNaN, isNumber, isObject, isString, join, keys, map, orderBy, reduce, remove, replace, reverse, set, slice, some, sortBy, split, startsWith, sum, take, uniqBy, values };
 
 /**
  * @ignore
  */
 @Injectable()
 export class ObjectFormScriptService {
-  constructor(private logger: Logger, private backend: BackendService) {}
+  constructor(private logger: Logger, private backend: BackendService) { }
 
   /**
    * Run a form script.
@@ -190,7 +151,7 @@ export class ObjectFormScriptService {
     };
 
     return this.backend.get(`/script/${name}/script`, null, requestOptions).pipe(
-      map((res: any) => {
+      _map((res: any) => {
         // define the global function ...
         let globalScript = this.defineFunction('Global/' + name, res);
         // ... and run it

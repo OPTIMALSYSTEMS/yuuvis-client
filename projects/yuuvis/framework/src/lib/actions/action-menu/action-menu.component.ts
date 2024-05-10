@@ -1,8 +1,8 @@
 import { Component, EventEmitter, Input, OnDestroy, Output, Type, ViewChild, ViewContainerRef } from '@angular/core';
 import { NavigationStart, Router } from '@angular/router';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DmsObject } from '@yuuvis/core';
 import { filter, finalize, take, tap } from 'rxjs/operators';
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { ComponentAnchorDirective } from '../../directives/component-anchor/component-anchor.directive';
 import { PluginActionViewComponent } from '../../plugins/plugin-action-view.component';
@@ -22,8 +22,8 @@ import { ComponentAction, ExternalComponentAction, LinkAction, ListAction, Simpl
  * <yuv-action-menu [selection]="actionMenuSelection" [(visible)]="showActionMenu"></yuv-action-menu>
  *
  */
- @UntilDestroy()
- @Component({
+@UntilDestroy()
+@Component({
   selector: 'yuv-action-menu',
   templateUrl: './action-menu.component.html',
   styleUrls: ['./action-menu.component.scss'],
@@ -232,6 +232,7 @@ export class ActionMenuComponent implements OnDestroy {
     this.fullscreen = '';
     this.showComponent = false;
     this.subActionsList = null;
+    this.subActionsHeader = '';
     // this.actionDescription = null;
     this.activeAction = null;
     this.viewContainerRef.clear();

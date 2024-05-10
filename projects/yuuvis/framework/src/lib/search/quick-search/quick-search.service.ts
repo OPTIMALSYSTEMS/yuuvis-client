@@ -5,6 +5,7 @@ import {
   AppCacheService,
   BaseObjectTypeField,
   ColumnConfigSkipFields,
+  ConfigService,
   ContentStreamField,
   ObjectType,
   ObjectTypeClassification,
@@ -38,6 +39,9 @@ export class QuickSearchService {
   private STORAGE_KEY_FILTERS_LAST = 'yuv.framework.search.filters.last';
   private STORAGE_KEY_FILTERS = 'yuv.framework.search.filters';
 
+  public DEFAULT_SEARCH_FILTER_OPERATOR = SearchFilter.OPERATOR.IN; // 'in' or 'contains'
+  public SEARCH_QUERY_SCOPE; // 'all' or 'metadata' or 'content'
+
   private filters = {};
   private globalFilters = {};
   private filtersVisibility: { hidden: string[]; __visible: string[]; __hidden: string[] };
@@ -67,10 +71,11 @@ export class QuickSearchService {
     private datepickerService: DatepickerService,
     private appCacheService: AppCacheService,
     private userService: UserService,
-    private searchService: SearchService
+    private searchService: SearchService,
+    private config: ConfigService
   ) {
-    // this.saveFilters(true, {});
-    // this.saveFilters(false, {});
+    this.DEFAULT_SEARCH_FILTER_OPERATOR = this.config.get('core.app.strictSearchFilter') ? SearchFilter.OPERATOR.IN : SearchFilter.OPERATOR.CONTAINS;
+    this.SEARCH_QUERY_SCOPE = this.config.get('core.app.searchQueryScope') || this.SEARCH_QUERY_SCOPE;
 
     this.systemService.system$.subscribe(() => this.setupAvailableObjectTypes() && this.setupAvailableObjectTypeGroups());
   }

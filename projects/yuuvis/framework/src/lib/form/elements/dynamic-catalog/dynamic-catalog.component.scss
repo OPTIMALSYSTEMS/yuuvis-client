@@ -7,6 +7,7 @@
     flex: 1;
   }
 
+  p-dropdown.missing ::ng-deep .p-dropdown-label,
   .chip.missing {
     border-color: var(--color-error);
     color: var(--color-error);

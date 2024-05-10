@@ -8,3 +8,4 @@ export { PluginGuard } from './plugin.guard';
 export * from './plugins.interface';
 export * from './plugins.module';
 export { PluginsService, UNDOCK_WINDOW_NAME } from './plugins.service';
+
