@@ -26,6 +26,8 @@ export interface YuvConfig {
       // tasks are loaded in chunks. InboxPageSize defines the size of those chunks
       inboxPageSize?: number;
       processesPageSize?: number;
+      // use 'CONTAINS' for queries instead of the default 'EQ/IN'
+      containsSearchFilter?: boolean;
     };
   };
   oidc?: OpenIdConfig;
