@@ -33,7 +33,7 @@
     "ngx-resize": "^1.0.5",
     "ngx-toastr": "^16.0.2",
     "primeicons": "^6.0.1",
-    "primeng": "15.1.1",
+    "primeng": "15.4.1",
     "tslib": "^2.4.0"
   },
   "exports": {
