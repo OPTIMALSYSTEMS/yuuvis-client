@@ -19,6 +19,7 @@ import { tap } from 'rxjs/operators';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { FileDropOptions } from '../../directives/file-drop/file-drop.directive';
 import { LayoutService } from '../../services/layout/layout.service';
+import { ViewMode } from '../../shared/utils';
 import { edit, kebap } from '../../svg.generated';
 import { PopoverConfig } from './../../popover/popover.interface';
 import { PopoverRef } from './../../popover/popover.ref';
@@ -201,6 +202,10 @@ export class ContextComponent implements OnInit, OnDestroy {
     this.filesDropped.emit(files);
   }
 
+  onViewModeChanged(vm: ViewMode) {
+    if (this.activeSearchResult) this.activeSearchResult.currentViewMode = vm
+  }
+
   private setupContext() {
     // create context child query
     const ccq = new SearchQuery();
@@ -269,7 +274,7 @@ export class ContextComponent implements OnInit, OnDestroy {
     return loaded;
   }
 
-  ngOnInit() {}
+  ngOnInit() { }
 
-  ngOnDestroy() {}
+  ngOnDestroy() { }
 }
