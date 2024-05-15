@@ -1,11 +1,12 @@
-<p-sidebar #NavSideBar
+<p-sidebar
+  #NavSideBar
   [dismissible]="true"
   styleClass="sidebar"
   [(visible)]="display"
   [modal]="true"
   [style]="stylings"
   (onShow)="onShow()"
-  (onHide)="onHide(); NavSideBar.destroyModal()"
+  (onHide)="onHide()"
   [position]="position"
   [showCloseIcon]="false"
 >
