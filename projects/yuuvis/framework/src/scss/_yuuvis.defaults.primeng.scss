@@ -10,6 +10,34 @@ body {
     }
   }
 
+  .p-multiselect-panel {
+    background-color: var(--panel-background);
+    border-color: var(--panel-divider-color);
+    border-radius: 0;
+
+    .p-multiselect-header {
+      background-color: var(--panel-background);
+      border-color: var(--panel-divider-color);
+    }
+
+    .p-multiselect-items .p-multiselect-item {
+      color: var(--text-color-body);
+
+      &:focus {
+        box-shadow: none;
+      }
+
+      &.p-highlight {
+        background-color: var(--color-accent);
+      }
+
+      &:not(.p-highlight):not(.p-highlight):not(.p-disabled):hover {
+        background: var(--item-focus-background-color);
+        color: var(--text-color-body);
+      }
+    }
+  }
+
   .yuv-datetime-range,
   .yuv-number-range,
   .yuv-catalog {
