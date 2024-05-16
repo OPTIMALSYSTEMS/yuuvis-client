@@ -1,17 +1,6 @@
 @import './../../../../../src/scss-shared/_vars';
 
 body {
-
-  // fix for new svg icons in primeNG
-  .p-icon-wrapper {
-    display: flex;
-
-    svg {
-      width: 14px;
-      height: 14px;
-    }
-  }
-
   .yuv-datetime-range,
   .yuv-number-range,
   .yuv-catalog {
@@ -33,11 +22,9 @@ body {
         white-space: normal;
         padding-bottom: 2px; // ensure full text visibility
       }
-
       .p-dropdown-clear-icon {
         color: var(--text-color-caption);
       }
-
       .p-dropdown-trigger {
         color: var(--text-color-caption);
         background-color: transparent;
@@ -101,7 +88,6 @@ body {
       &:not(.p-disabled).p-focus {
         box-shadow: none;
       }
-
       .p-multiselect-label {
         padding: 0 24px 0 0;
         color: var(--text-color-body);
@@ -115,7 +101,6 @@ body {
         color: var(--text-color-caption);
         background-color: transparent;
       }
-
       .p-multiselect-panel {
         .p-multiselect-header {
           display: flex;
@@ -158,7 +143,6 @@ body {
           }
         }
       }
-
       .p-multiselect-label {
         display: flex;
         flex-flow: row wrap;
@@ -167,7 +151,6 @@ body {
   }
 
   .p-tabview {
-
     .p-tabview-panels,
     .p-tabview-panel {
       background-color: var(--panel-background-grey);
@@ -203,11 +186,9 @@ body {
       color: var(--text-color-body);
     }
   }
-
   .p-autocomplete {
     &.p-autocomplete-multiple {
       width: 100%;
-
       .p-autocomplete-multiple-container {
         padding: 0;
         background-color: transparent;
@@ -250,7 +231,6 @@ body {
       }
     }
   }
-
   .p-autocomplete-panel {
     background-color: var(--panel-background);
     border: 1px solid var(--panel-divider-color);
@@ -325,12 +305,10 @@ body {
   // -------------------------------------------------------------------
   // primeng accordion
   .p-accordion {
-
     // section head
     .p-accordion-header {
       margin: 0;
       outline: 0;
-
       a {
         outline: 0;
         color: var(--text-color-body);
@@ -347,14 +325,12 @@ body {
           order: 2;
           color: var(--text-color-caption);
         }
-
         .p-accordion-header-text {
           flex: 1;
           font-weight: normal;
           color: var(--text-color-body);
         }
       }
-
       &:not(.p-highlight):not(.p-disabled):hover a {
         background-color: var(--main-background);
         color: var(--text-color-body);
@@ -379,7 +355,6 @@ body {
           color: var(--text-color-caption);
         }
       }
-
       // accordion open hover
       &:not(.p-disabled).p-highlight:hover a {
         border: 1px solid var(--panel-background-grey);
@@ -406,7 +381,6 @@ body {
   // body .p-overlaypanel:before
   .p-overlaypanel {
     border: none;
-
     &::before,
     &::after {
       display: none;
@@ -436,8 +410,7 @@ body {
   // body .p-chips > ul.p-inputtext .p-chips-input-token input
   .p-chips {
     width: 100%;
-
-    >ul.p-inputtext {
+    > ul.p-inputtext {
       padding: 0;
 
       &.p-focus {
@@ -474,7 +447,6 @@ body {
   // -------------------------------------------------------------------
   // primeng tabs
   $p-tabs-border-size: 4px;
-
   .p-tabview.p-component {
     padding: 0;
     height: 100%;
@@ -507,7 +479,6 @@ body {
           color: var(--text-color-caption);
           background: transparent !important;
           border-width: 0 !important;
-
           &:focus {
             box-shadow: none !important;
           }
@@ -527,7 +498,6 @@ body {
             background-color: transparent;
             border-width: 0 0 $p-tabs-border-size 0;
             border-color: var(--color-accent);
-
             a {
               color: var(--text-color-body);
             }
@@ -613,11 +583,9 @@ body {
           content: '';
         }
       }
-
       .fa {
         transition: none;
       }
-
       .fa-close {
         display: none;
       }
@@ -654,7 +622,6 @@ body {
       }
     }
   }
-
   // // darkmode overrides
   // .dark {
   //   .p-checkbox .p-checkbox-box {
