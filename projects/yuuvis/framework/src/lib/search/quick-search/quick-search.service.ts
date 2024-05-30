@@ -74,7 +74,7 @@ export class QuickSearchService {
     private searchService: SearchService,
     private config: ConfigService
   ) {
-    this.DEFAULT_SEARCH_FILTER_OPERATOR = this.config.get('core.app.strictSearchFilter') ? SearchFilter.OPERATOR.IN : SearchFilter.OPERATOR.CONTAINS;
+    this.DEFAULT_SEARCH_FILTER_OPERATOR = this.config.get('core.app.containsSearchFilter') ? SearchFilter.OPERATOR.CONTAINS : SearchFilter.OPERATOR.IN;
     this.SEARCH_QUERY_SCOPE = this.config.get('core.app.searchQueryScope') || this.SEARCH_QUERY_SCOPE;
 
     this.systemService.system$.subscribe(() => this.setupAvailableObjectTypes() && this.setupAvailableObjectTypeGroups());
@@ -242,8 +242,8 @@ export class QuickSearchService {
       query.filterGroup.operator === SearchFilterGroup.OPERATOR.AND
         ? Array.from(s).map((prop) => SearchFilterGroup.fromArray(g.group.filter((f) => prop === f.property)))
         : s.size === 1
-        ? g.group.map((f) => SearchFilterGroup.fromArray([f]))
-        : [g]
+          ? g.group.map((f) => SearchFilterGroup.fromArray([f]))
+          : [g]
     )
       .filter((g) => !g.filters.find((f) => ColumnConfigSkipFields.includes(f.property)))
       .map((g) => {
@@ -275,11 +275,11 @@ export class QuickSearchService {
     ]).pipe(
       map(
         ([globalSettings, settings]) =>
-          (this.filtersVisibility = {
-            hidden: (settings || {}).hidden || [],
-            __visible: (settings || {}).__visible || [],
-            __hidden: (globalSettings || {}).__hidden || []
-          })
+        (this.filtersVisibility = {
+          hidden: (settings || {}).hidden || [],
+          __visible: (settings || {}).__visible || [],
+          __hidden: (globalSettings || {}).__hidden || []
+        })
       ),
       map((f: any) => (global ? [...this.filtersVisibility.__hidden] : this.filtersHidden))
     );
@@ -392,16 +392,16 @@ export class QuickSearchService {
         items: !items[0].id.startsWith(BaseObjectTypeField.TAGS)
           ? items
           : [
-              {
-                ...items[0],
-                value: [new SearchFilter(items[0].value[0].property, SearchFilter.OPERATOR.LESS_OR_EQUAL, items[0].defaultValue.slice(-1)[0])]
-              },
-              ...items[0].defaultValue.map((v) => ({
-                id: `${items[0].id}_${v}`,
-                label: this.getLocalizedTag(items[0].id, v),
-                value: [new SearchFilter(items[0].id, SearchFilter.OPERATOR.EQUAL, v)]
-              }))
-            ]
+            {
+              ...items[0],
+              value: [new SearchFilter(items[0].value[0].property, SearchFilter.OPERATOR.LESS_OR_EQUAL, items[0].defaultValue.slice(-1)[0])]
+            },
+            ...items[0].defaultValue.map((v) => ({
+              id: `${items[0].id}_${v}`,
+              label: this.getLocalizedTag(items[0].id, v),
+              value: [new SearchFilter(items[0].id, SearchFilter.OPERATOR.EQUAL, v)]
+            }))
+          ]
       }))
     ];
   }
