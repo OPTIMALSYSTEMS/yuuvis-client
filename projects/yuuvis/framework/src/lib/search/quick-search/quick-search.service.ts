@@ -135,7 +135,11 @@ export class QuickSearchService {
   }
 
   getActiveTypes(query: SearchQuery, aggregations = [BaseObjectTypeField.LEADING_OBJECT_TYPE_ID]) {
-    return this.searchService.aggregate(query, aggregations).pipe(
+
+    const q = new SearchQuery(query.toQueryJson());
+    q.fields = undefined;
+
+    return this.searchService.aggregate(q, aggregations).pipe(
       map((res: AggregateResult) => {
         return (
           (res.aggregations?.length && res.aggregations[0].entries.length && res.aggregations[0].entries) ||
