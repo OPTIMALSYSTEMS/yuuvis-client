@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { CanDeactivate } from '@angular/router';
+
 import { PendingChangesComponent } from './pending-changes-component.interface';
 import { PendingChangesService } from './pending-changes.service';
 /**
@@ -8,7 +8,7 @@ import { PendingChangesService } from './pending-changes.service';
 @Injectable({
   providedIn: 'root'
 })
-export class PendingChangesGuard implements CanDeactivate<PendingChangesComponent> {
+export class PendingChangesGuard  {
   constructor(private pendingChanges: PendingChangesService) {}
 
   canDeactivate(component: PendingChangesComponent): boolean {
