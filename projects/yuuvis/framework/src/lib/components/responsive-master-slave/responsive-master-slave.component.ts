@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, EventEmitter, HostBinding, Input, NgZone, OnDestroy, Output, ViewChild } from '@angular/core';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { Screen, ScreenService } from '@yuuvis/core';
 import { SplitComponent } from 'angular-split';
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { LayoutService } from '../../services/layout/layout.service';
 import { ResponsiveMasterSlaveOptions } from './responsive-master-slave.interface';
 
@@ -24,8 +24,8 @@ import { ResponsiveMasterSlaveOptions } from './responsive-master-slave.interfac
  </yuv-responsive-master-slave>
 
  */
- @UntilDestroy()
- @Component({
+@UntilDestroy()
+@Component({
   selector: 'yuv-responsive-master-slave',
   templateUrl: './responsive-master-slave.component.html',
   styleUrls: ['./responsive-master-slave.component.scss']
@@ -138,19 +138,19 @@ export class ResponsiveMasterSlaveComponent implements OnDestroy, AfterViewInit 
   ngAfterViewInit() {
     this.splitEl?.dragProgress$.pipe(untilDestroyed(this)).subscribe((x) => {
       const { masterMinSize, slaveMinSize } = this._layoutOptions;
-      if (x.sizes[0] < masterMinSize) {
+      if (x.sizes[0] as number < masterMinSize) {
         // automatic collapse/expand of master area
-        this.splitEl.displayedAreas[0].size = x.sizes[0] > masterMinSize / 2 ? masterMinSize : 0;
+        this.splitEl.displayedAreas[0].size = x.sizes[0] as number > masterMinSize / 2 ? masterMinSize : 0;
         this.splitEl.displayedAreas[1].size = 100 - this.splitEl.displayedAreas[0].size;
         this.splitEl['refreshStyleSizes']();
-      } else if (x.sizes[1] < slaveMinSize) {
+      } else if (x.sizes[1] as number < slaveMinSize) {
         // automatic collapse/expand of slave area
-        this.splitEl.displayedAreas[0].size = x.sizes[1] > slaveMinSize / 2 ? 100 - slaveMinSize : 100;
+        this.splitEl.displayedAreas[0].size = x.sizes[1] as number > slaveMinSize / 2 ? 100 - slaveMinSize : 100;
         this.splitEl.displayedAreas[1].size = 100 - this.splitEl.displayedAreas[0].size;
         this.splitEl['refreshStyleSizes']();
       }
     });
   }
 
-  ngOnDestroy() {}
+  ngOnDestroy() { }
 }

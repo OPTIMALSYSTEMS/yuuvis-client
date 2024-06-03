@@ -70,7 +70,6 @@ export class ResponsiveTabContainerComponent implements OnInit, AfterContentInit
 
   allPanels: TabPanel[] = [];
   splitPanels: TabPanel[] = [];
-  orientation = 'top';
   isSmallScreen$: Observable<boolean>;
   isBigScreen: Observable<boolean>;
 
