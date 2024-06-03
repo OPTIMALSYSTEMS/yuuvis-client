@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Directive, ElementRef, EventEmitter, HostListener, Input, OnDestroy, Output, Renderer2 } from '@angular/core';
-import { Utils } from '@yuuvis/core';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { Utils } from '@yuuvis/core';
 import { FileDropService } from './file-drop.service';
 
 /**
@@ -10,8 +10,8 @@ import { FileDropService } from './file-drop.service';
  * host, this one will be marked as active and indicate that the user can drop the file
  * there.
  */
- @UntilDestroy()
- @Directive({
+@UntilDestroy()
+@Directive({
   selector: '[yuvFileDrop]'
 })
 export class FileDropDirective implements OnDestroy {
@@ -75,7 +75,7 @@ export class FileDropDirective implements OnDestroy {
     }
     this.preventAndStop(evt);
     if (!this._invalid && this._options.maxSize) {
-      this._invalid = Array.from(transfer.files).reduce((p: any, c: File) => p + c.size, 0) > this._options.maxSize;
+      this._invalid = Array.from(transfer.files).reduce((p: any, c: File) => p + c.size, 0) as number > this._options.maxSize;
     }
     if (!this._invalid && this._options.accept) {
       this._invalid = !Array.from(transfer.files).every((c: File) => this._options.accept.find((a) => c.name?.endsWith(a)));
@@ -165,7 +165,7 @@ export class FileDropDirective implements OnDestroy {
     return event.dataTransfer ? event.dataTransfer : event.originalEvent.dataTransfer; // jQuery fix;
   }
 
-  ngOnDestroy() {}
+  ngOnDestroy() { }
 }
 
 /**
