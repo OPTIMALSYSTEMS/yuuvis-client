@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, DestroyRef, OnDestroy, OnInit, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BpmEvent, EventService, InboxService, Task, TaskRow, TranslateService } from '@yuuvis/core';
@@ -27,6 +27,8 @@ import { FrameService } from '../../components/frame/frame.service';
   styleUrls: ['./inbox.component.scss']
 })
 export class InboxComponent implements OnInit, OnDestroy {
+  destroyRef = inject(DestroyRef);
+
   layoutOptionsKey = 'yuv.app.inbox';
   contextError: string;
   selectedTasks: TaskRow[];
@@ -100,7 +102,7 @@ export class InboxComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.route.queryParamMap.pipe(takeUntilDestroyed()).subscribe((params) => {
+    this.route.queryParamMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
       if (params.has('filter')) {
         this.filterTerm = params.get('filter');
         // remove URL param once it has been processed
@@ -112,7 +114,7 @@ export class InboxComponent implements OnInit, OnDestroy {
     this.eventService
       .on(BpmEvent.BPM_EVENT)
       .pipe(
-        takeUntilDestroyed(),
+        takeUntilDestroyed(this.destroyRef),
         tap(() => this.inboxService.fetchTasks())
       )
       .subscribe();

@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, DestroyRef, OnDestroy, OnInit, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NavigationExtras, Router } from '@angular/router';
 import { LangChangeEvent } from '@ngx-translate/core';
@@ -58,6 +58,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       newItemHeight: 5
     }
   };
+  destroyRef = inject(DestroyRef);
 
   constructor(
     private appService: AppService,
@@ -69,7 +70,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private router: Router,
     private config: ConfigService
   ) {
-    this.translate.onLangChange.pipe(takeUntilDestroyed()).subscribe((e: LangChangeEvent) => {
+    this.translate.onLangChange.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((e: LangChangeEvent) => {
       this.setWidgetGridLabels();
     });
     this.setWidgetGridLabels();
@@ -134,7 +135,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.appService.dashboardConfig$.pipe(takeUntilDestroyed()).subscribe({
+    this.appService.dashboardConfig$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (res) => {
         if (this.config.get('core.features.dashboardWorkspaces')) {
           this.dashboardConfig = res;

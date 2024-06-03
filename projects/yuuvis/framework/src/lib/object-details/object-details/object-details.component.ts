@@ -1,6 +1,7 @@
 import {
   Component,
   ContentChildren,
+  DestroyRef,
   EventEmitter,
   HostBinding,
   Input,
@@ -10,7 +11,8 @@ import {
   QueryList,
   TemplateRef,
   ViewChild,
-  ViewChildren
+  ViewChildren,
+  inject
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
@@ -63,6 +65,7 @@ import { FileDropOptions } from './../../directives/file-drop/file-drop.directiv
   providers: [ContentPreviewService]
 })
 export class ObjectDetailsComponent implements OnDestroy, OnInit {
+  destroyRef = inject(DestroyRef);
   @ContentChildren(TabPanelComponent) externalPanels: QueryList<TabPanelComponent>;
   @ViewChildren(TabPanelComponent) viewPanels: QueryList<TabPanelComponent>;
   @ViewChild(ResponsiveTabContainerComponent) tabContainer: ResponsiveTabContainerComponent;
@@ -246,7 +249,7 @@ export class ObjectDetailsComponent implements OnDestroy, OnInit {
 
     this.eventService
       .on(YuvEventType.DMS_OBJECT_UPDATED)
-      .pipe(takeUntilDestroyed())
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((e: YuvEvent) => {
         const dmsObject = e.data as DmsObject;
         if (dmsObject?.id === this._dmsObject?.id) {
@@ -299,7 +302,7 @@ export class ObjectDetailsComponent implements OnDestroy, OnInit {
   ngOnInit(): void {
     this.eventService
       .on(YuvEventType.DMS_OBJECT_DELETED)
-      .pipe(takeUntilDestroyed())
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((event) => {
         if (event.data?.id === this._dmsObject?.id) {
           this._dmsObject = null;

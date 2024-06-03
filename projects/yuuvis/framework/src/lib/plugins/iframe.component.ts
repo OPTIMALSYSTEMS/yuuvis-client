@@ -1,9 +1,11 @@
-import { ElementRef } from '@angular/core';
+import { DestroyRef, ElementRef, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { fromEvent } from 'rxjs';
 import { PluginsService } from './plugins.service';
 
 export abstract class IFrameComponent {
+  destroyRef = inject(DestroyRef);
+
   loading = true;
 
   get iframe() {
@@ -44,7 +46,7 @@ export abstract class IFrameComponent {
     if (iframe) {
       iframe._init ||
         fromEvent(this.setApi(iframe, true), 'load')
-          .pipe(takeUntilDestroyed())
+          .pipe(takeUntilDestroyed(this.destroyRef))
           .subscribe(() => {
             const win = this.setApi(iframe);
             onload && onload();

@@ -1,5 +1,5 @@
 import { PlatformLocation } from '@angular/common';
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, DestroyRef, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DmsObject, PendingChangesService, Screen, ScreenService, TranslateService } from '@yuuvis/core';
@@ -11,6 +11,8 @@ import { ObjectCompareInput, PluginsService, VersionListComponent } from '@yuuvi
   styleUrls: ['./versions.component.scss']
 })
 export class VersionsComponent implements OnInit, OnDestroy {
+  destroyRef = inject(DestroyRef);
+
   private STORAGE_KEY = 'yuv.app.versions';
 
   @ViewChild('versionList', { static: true }) versionList: VersionListComponent;
@@ -39,7 +41,7 @@ export class VersionsComponent implements OnInit, OnDestroy {
     private router: Router,
     private pluginsService: PluginsService
   ) {
-    this.screenService.screenChange$.pipe(takeUntilDestroyed()).subscribe((screen: Screen) => {
+    this.screenService.screenChange$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((screen: Screen) => {
       this.smallScreen = screen.mode === ScreenService.MODE.SMALL;
     });
     this.plugins = this.pluginsService.getCustomPlugins('extensions', 'yuv-versions');
@@ -94,13 +96,13 @@ export class VersionsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.route.params.pipe(takeUntilDestroyed()).subscribe((params: any) => {
+    this.route.params.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params: any) => {
       if (params.id) {
         this.dmsObjectID = params.id;
       }
     });
     // extract the versions from the route params
-    this.route.queryParamMap.pipe(takeUntilDestroyed()).subscribe((params) => {
+    this.route.queryParamMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
       const vp = params.get('version');
       this.versions = vp ? vp.split(',').map((v) => parseInt(v)) : [];
     });

@@ -1,5 +1,5 @@
 import { Location } from '@angular/common';
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, DestroyRef, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -18,6 +18,8 @@ import { AppSearchService } from '../../service/app-search.service';
   }
 })
 export class ObjectComponent implements OnInit, OnDestroy {
+  destroyRef = inject(DestroyRef);
+
   layoutOptionsStorageKey = 'yuv.app.object';
   private standaloneFragment = 'standalone';
 
@@ -147,7 +149,7 @@ export class ObjectComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.route.params.pipe(takeUntilDestroyed()).subscribe((params: any) => {
+    this.route.params.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params: any) => {
       if (params.id && this.contextId !== params.id) {
         // saving context ID in its own var, so while the dms object is loading
         // we are able to properly set the selected item when there is no fragment ist available.
@@ -156,16 +158,16 @@ export class ObjectComponent implements OnInit, OnDestroy {
       }
     });
     // query params may provide a query to be executed within this state
-    this.route.queryParams.pipe(takeUntilDestroyed()).subscribe((queryParams: any) => {
+    this.route.queryParams.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((queryParams: any) => {
       this.contextSearchQuery = !!queryParams.query ? new SearchQuery(JSON.parse(queryParams.query)) : null;
       this.appSearch.setQuery(this.contextSearchQuery);
     });
     // fragments are used to identify the selected item within the context
-    this.route.fragment.pipe(takeUntilDestroyed()).subscribe((fragment: any) => this.setupFragment(fragment));
+    this.route.fragment.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((fragment: any) => this.setupFragment(fragment));
 
     this.eventService
       .on(YuvEventType.DMS_OBJECT_DELETED)
-      .pipe(takeUntilDestroyed())
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((event) => {
         if (this.route.snapshot.fragment && this.route.snapshot.fragment === event.data?.id) {
           // get rid of the fragment once the deleted item has the same ID
@@ -177,7 +179,7 @@ export class ObjectComponent implements OnInit, OnDestroy {
       });
     this.eventService
       .on(YuvEventType.DMS_OBJECTS_MOVED)
-      .pipe(takeUntilDestroyed())
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((event) => {
         if (this.route.snapshot.fragment && event.data?.succeeded.map((d: DmsObject) => d.id).includes(this.route.snapshot.fragment)) {
           this.router.navigate([]);

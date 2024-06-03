@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, DestroyRef, OnDestroy, OnInit, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { BpmEvent, EventService, Process, ProcessRow, ProcessService, TranslateService } from '@yuuvis/core';
 import {
@@ -24,6 +24,8 @@ import { map, tap } from 'rxjs/operators';
   styleUrls: ['./processes.component.scss']
 })
 export class ProcessesComponent implements OnInit, OnDestroy {
+  destroyRef = inject(DestroyRef);
+
   layoutOptionsKey = 'yuv.app.processes';
   contextError: string;
   selectedProcess: Process;
@@ -102,7 +104,7 @@ export class ProcessesComponent implements OnInit, OnDestroy {
       .on(BpmEvent.BPM_EVENT)
       .pipe(
         tap(() => this.fetchProcesses(this.statusFilter)),
-        takeUntilDestroyed()
+        takeUntilDestroyed(this.destroyRef)
       )
       .subscribe();
   }

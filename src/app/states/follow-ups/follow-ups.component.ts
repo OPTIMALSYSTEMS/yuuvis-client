@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, DestroyRef, OnDestroy, OnInit, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { BpmEvent, EventService, Process, ProcessDefinitionKey, ProcessService, TranslateService } from '@yuuvis/core';
 import {
@@ -25,6 +25,7 @@ import { followUp } from './../../../../projects/yuuvis/framework/src/lib/svg.ge
   styleUrls: ['./follow-ups.component.scss']
 })
 export class FollowUpsComponent implements OnInit, OnDestroy {
+  destroyRef = inject(DestroyRef);
   layoutOptionsKey = 'yuv.app.follow-ups';
   selectedFollowUp: Process;
   processData$: Observable<ResponsiveTableData> = this.processService.processData$.pipe(
@@ -95,7 +96,7 @@ export class FollowUpsComponent implements OnInit, OnDestroy {
       .on(BpmEvent.BPM_EVENT)
       .pipe(
         tap(() => this.fetchProcesses()),
-        takeUntilDestroyed()
+        takeUntilDestroyed(this.destroyRef)
       )
       .subscribe();
   }

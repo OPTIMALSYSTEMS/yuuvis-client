@@ -1,4 +1,4 @@
-import { Component, ElementRef, Input, NgZone, OnDestroy, OnInit } from '@angular/core';
+import { Component, DestroyRef, ElementRef, Input, NgZone, OnDestroy, OnInit, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommandPaletteService } from '@yuuvis/command-palette';
 import { DmsObject, TranslateService, UploadService } from '@yuuvis/core';
@@ -27,6 +27,8 @@ import { ContentPreviewService } from './service/content-preview.service';
   providers: [ContentPreviewService]
 })
 export class ContentPreviewComponent extends IFrameComponent implements OnInit, OnDestroy {
+  destroyRef = inject(DestroyRef);
+
   private CMP_KEY = 'yuv-content-preview.cmp.undock';
 
   private _dmsObject: DmsObject;
@@ -145,7 +147,7 @@ export class ContentPreviewComponent extends IFrameComponent implements OnInit, 
   ngOnInit() {
     this.previewSrc$
       .pipe(
-        takeUntilDestroyed(),
+        takeUntilDestroyed(this.destroyRef),
         map((src) => this.open(src))
       )
       .subscribe();
