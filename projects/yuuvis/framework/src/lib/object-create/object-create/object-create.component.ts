@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnDestroy, Output, TemplateRef, ViewChild } from '@angular/core';
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   AFO_STATE,
   ApiBase,
@@ -81,7 +81,6 @@ export enum AFOType {
  * @example
  * <yuv-object-create></yuv-object-create>
  */
-@UntilDestroy()
 @Component({
   selector: 'yuv-object-create',
   templateUrl: './object-create.component.html',
@@ -405,7 +404,7 @@ export class ObjectCreateComponent implements OnDestroy {
 
     this.createObject(this.selectedObjectType.floatingParentType || this.selectedObjectType.id, data, this.files)
       .pipe(
-        untilDestroyed(this),
+        takeUntilDestroyed(),
         switchMap((res: string[]) => this.dmsService.getDmsObjects(res))
       )
       .subscribe({

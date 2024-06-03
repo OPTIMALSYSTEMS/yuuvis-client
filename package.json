@@ -81,7 +81,6 @@
     "@angular/platform-browser-dynamic": "^17.3.10",
     "@angular/router": "^17.3.10",
     "@angular/service-worker": "^17.3.10",
-    "@ngneat/until-destroy": "^9.2.2",
     "@ngx-pwa/local-storage": "^17.0.0",
     "@ngx-translate/core": "^15.0.0",
     "@yuuvis/command-palette": "^1.1.0",

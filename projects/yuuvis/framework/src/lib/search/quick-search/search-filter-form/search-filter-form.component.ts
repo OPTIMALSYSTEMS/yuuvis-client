@@ -1,6 +1,6 @@
 import { Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import {
   BaseObjectTypeField,
   InternalFieldType,
@@ -23,7 +23,6 @@ import { IconRegistryService } from './../../../common/components/icon/service/i
 import { ObjectFormControlWrapper } from './../../../object-form/object-form.interface';
 import { clear, dragHandle } from './../../../svg.generated';
 
-@UntilDestroy()
 @Component({
   selector: 'yuv-search-filter-form',
   templateUrl: './search-filter-form.component.html',
@@ -99,7 +98,7 @@ export class SearchFilterFormComponent implements OnInit, OnDestroy {
   private initSearchFieldsForm() {
     // object type field form (form holding the query fields)
     this.searchFieldsForm = this.fb.group({});
-    this.formSubscription = this.searchFieldsForm.valueChanges.pipe(untilDestroyed(this)).subscribe((formValue) => {
+    this.formSubscription = this.searchFieldsForm.valueChanges.pipe(takeUntilDestroyed()).subscribe((formValue) => {
       this.onSearchFieldFormChange();
     });
   }
@@ -126,8 +125,8 @@ export class SearchFilterFormComponent implements OnInit, OnDestroy {
         const filter = new SearchFilter(
           fc._eoFormElement.name,
           variable?.operator ||
-            fc.value?.operator ||
-            (Array.isArray(fc.value) ? fc._eoFormElement._operator || this.quickSearchService.DEFAULT_SEARCH_FILTER_OPERATOR : SearchFilter.OPERATOR.EQUAL),
+          fc.value?.operator ||
+          (Array.isArray(fc.value) ? fc._eoFormElement._operator || this.quickSearchService.DEFAULT_SEARCH_FILTER_OPERATOR : SearchFilter.OPERATOR.EQUAL),
           fc._eoFormElement.isNotSetValue ? fc._eoFormElement.variable : fc.value
         );
         if (!filter.isEmpty() || fc._eoFormElement.isNotSetValue || fc._eoFormElement._internalType === 'boolean') {
@@ -263,9 +262,9 @@ export class SearchFilterFormComponent implements OnInit, OnDestroy {
     }
   }
 
-  ngOnInit() {}
+  ngOnInit() { }
 
-  ngOnDestroy() {}
+  ngOnDestroy() { }
 
   dragMoved(event: any) {
     const e = window.document.elementFromPoint(event.pointerPosition.x, event.pointerPosition.y);

@@ -1,7 +1,7 @@
 import { ClientSideRowModelModule } from '@ag-grid-community/client-side-row-model';
 import { ColDef, GridOptions, Module, RowEvent, RowNode } from '@ag-grid-community/core';
 import { Component, ElementRef, EventEmitter, HostBinding, HostListener, Input, NgZone, OnDestroy, OnInit, Output } from '@angular/core';
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { BaseObjectTypeField, DeviceService, PendingChangesService, Utils } from '@yuuvis/core';
 import { NgxResize, NgxResizeResult } from 'ngx-resize';
 import { Observable, ReplaySubject } from 'rxjs';
@@ -39,7 +39,6 @@ export interface ResponsiveDataTableOptions {
             (viewModeChanged)="onViewModeChanged.emit($event)" (sortChanged)="onSortChanged($event)">
           </yuv-responsive-data-table>
  */
-@UntilDestroy()
 @Component({
   selector: 'yuv-responsive-data-table',
   templateUrl: './responsive-data-table.component.html',
@@ -228,7 +227,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
     // subscribe to the whole components size changing
     this.resize$
       .pipe(
-        untilDestroyed(this)
+        takeUntilDestroyed()
         // debounceTime(500)
       )
       .subscribe((resize: NgxResizeResult) => {
@@ -243,7 +242,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
         nodes?.length && this.ensureVisibility(nodes[0].rowIndex);
       });
     // subscribe to columns beeing resized
-    this.columnResize$.pipe(untilDestroyed(this), debounceTime(500)).subscribe(() => {
+    this.columnResize$.pipe(takeUntilDestroyed(), debounceTime(500)).subscribe(() => {
       if (this.isStandard && this.gridOptions.columnApi) {
         this.columnResized.emit({
           columns: this.gridOptions.columnApi.getColumnState().map((columnState) => ({
@@ -259,7 +258,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
     });
 
     // subscribe to pending hanges
-    this.pendingChanges.tasks$.pipe(untilDestroyed(this)).subscribe((tasks) => this.gridOptions && (this.gridOptions.suppressCellFocus = !!tasks.length));
+    this.pendingChanges.tasks$.pipe(takeUntilDestroyed()).subscribe((tasks) => this.gridOptions && (this.gridOptions.suppressCellFocus = !!tasks.length));
   }
 
   /**

@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnDestroy, Output, Type, ViewChild, ViewContainerRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NavigationStart, Router } from '@angular/router';
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DmsObject } from '@yuuvis/core';
 import { filter, finalize, take, tap } from 'rxjs/operators';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
@@ -22,7 +22,6 @@ import { ComponentAction, ExternalComponentAction, LinkAction, ListAction, Simpl
  * <yuv-action-menu [selection]="actionMenuSelection" [(visible)]="showActionMenu"></yuv-action-menu>
  *
  */
-@UntilDestroy()
 @Component({
   selector: 'yuv-action-menu',
   templateUrl: './action-menu.component.html',
@@ -83,9 +82,9 @@ export class ActionMenuComponent implements OnDestroy {
     common: ActionListEntry[];
     further: ActionListEntry[];
   } = {
-    common: [],
-    further: []
-  };
+      common: [],
+      further: []
+    };
   subActionsHeader = '';
   subActionsList: ActionListEntry[];
   showComponent = false;
@@ -104,7 +103,7 @@ export class ActionMenuComponent implements OnDestroy {
     this.iconRegistry.registerIcons([clear]);
     this.router.events
       .pipe(
-        untilDestroyed(this),
+        takeUntilDestroyed(),
         filter((evt) => evt instanceof NavigationStart)
       )
       .subscribe(() => this.finish());
@@ -249,5 +248,5 @@ export class ActionMenuComponent implements OnDestroy {
     this.hideActionMenu();
   }
 
-  ngOnDestroy() {}
+  ngOnDestroy() { }
 }
