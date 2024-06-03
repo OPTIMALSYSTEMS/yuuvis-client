@@ -45,7 +45,7 @@ export class PluginComponent extends IFrameComponent implements OnInit, OnDestro
   }
 
   get untilDestroyed() {
-    return takeUntilDestroyed();
+    return takeUntilDestroyed(this.destroyRef);
   }
 
   private componentRef: ComponentRef<any>;
@@ -65,8 +65,8 @@ export class PluginComponent extends IFrameComponent implements OnInit, OnDestro
 
         if (this.parent?.onCancel && this.parent?.onFinish) {
           (<ActionComponent>this.cmp).selection = this.parent.selection;
-          (<ActionComponent>this.cmp).canceled?.pipe(takeUntilDestroyed()).subscribe(() => this.parent.onCancel());
-          (<ActionComponent>this.cmp).finished?.pipe(takeUntilDestroyed()).subscribe(() => this.parent.onFinish());
+          (<ActionComponent>this.cmp).canceled?.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => this.parent.onCancel());
+          (<ActionComponent>this.cmp).finished?.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => this.parent.onFinish());
         }
 
         // map all input | output values to the instance
@@ -79,7 +79,7 @@ export class PluginComponent extends IFrameComponent implements OnInit, OnDestro
         );
         Object.keys(this.config?.plugin?.outputs || {}).forEach((opt) =>
           this.cmp[opt]
-            .pipe(takeUntilDestroyed())
+            .pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe((event: any) =>
               typeof this.config.plugin.outputs[opt] === 'string'
                 ? this.pluginsService.applyFunction(this.config.plugin.outputs[opt], 'event, component, parent', [event, this, this.parent])

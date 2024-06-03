@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, DestroyRef, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import {
@@ -29,6 +29,8 @@ import { clear, dragHandle } from './../../../svg.generated';
   styleUrls: ['./search-filter-form.component.scss']
 })
 export class SearchFilterFormComponent implements OnInit, OnDestroy {
+  destroyRef = inject(DestroyRef);
+
   @ViewChild('extrasForm') extrasForm: ElementRef;
   operatorLabel: any;
   get filterGroup(): SearchFilterGroup {
@@ -98,7 +100,7 @@ export class SearchFilterFormComponent implements OnInit, OnDestroy {
   private initSearchFieldsForm() {
     // object type field form (form holding the query fields)
     this.searchFieldsForm = this.fb.group({});
-    this.formSubscription = this.searchFieldsForm.valueChanges.pipe(takeUntilDestroyed()).subscribe((formValue) => {
+    this.formSubscription = this.searchFieldsForm.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((formValue) => {
       this.onSearchFieldFormChange();
     });
   }

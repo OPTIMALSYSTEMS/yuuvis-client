@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, DestroyRef, OnDestroy, OnInit, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AppCacheService, BackendService, ConfigService, SystemService, TranslateService, UserConfigService, UserService, YuvUser } from '@yuuvis/core';
@@ -16,6 +16,8 @@ import { AppService } from '../../app.service';
   styleUrls: ['./settings.component.scss']
 })
 export class SettingsComponent implements OnInit, OnDestroy {
+  destroyRef = inject(DestroyRef);
+
   user$: Observable<Partial<YuvUser>>;
   darkMode: boolean;
   highContrast: boolean;
@@ -195,7 +197,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.appService.dashboardConfig$.pipe(takeUntilDestroyed()).subscribe({
+    this.appService.dashboardConfig$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (res) => {
         this.dashboardType = res?.dashboardType || 'default';
       }

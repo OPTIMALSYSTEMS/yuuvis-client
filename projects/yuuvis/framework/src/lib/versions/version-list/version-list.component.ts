@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, DestroyRef, EventEmitter, Input, OnInit, Output, ViewChild, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   BaseObjectTypeField,
@@ -40,6 +40,8 @@ import { arrowNext, edit, listModeDefault, listModeGrid, listModeSimple, refresh
   styleUrls: ['./version-list.component.scss']
 })
 export class VersionListComponent extends YuvGridOptions implements OnInit {
+  destroyRef = inject(DestroyRef);
+
   @ViewChild('dataTable') dataTable: ResponsiveDataTableComponent;
 
   private objectTypeBaseProperties = this.system.getBaseProperties();
@@ -221,7 +223,7 @@ export class VersionListComponent extends YuvGridOptions implements OnInit {
   ngOnInit() {
     this.eventService
       .on(YuvEventType.DMS_OBJECT_UPDATED)
-      .pipe(takeUntilDestroyed())
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((e: YuvEvent) => {
         const dmsObject = e.data as DmsObject;
         // reload versions when update belongs to the current dms object

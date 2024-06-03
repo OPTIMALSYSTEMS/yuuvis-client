@@ -1,5 +1,5 @@
 import { ColDef, ICellRendererFunc } from '@ag-grid-community/core';
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, DestroyRef, Input, OnDestroy, OnInit, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   AppCacheService,
@@ -46,6 +46,8 @@ import { Summary, SummaryEntry } from './summary.interface';
   styleUrls: ['./summary.component.scss']
 })
 export class SummaryComponent implements OnInit, OnDestroy {
+  destroyRef = inject(DestroyRef);
+
   private STORAGE_KEY_SECTION_VISIBLE = 'yuv.framework.summary.section.visibility';
   summary: Summary;
 
@@ -118,7 +120,7 @@ export class SummaryComponent implements OnInit, OnDestroy {
 
   onSectionVisibilityChange(k, visible: boolean) {
     this.visible[k] = visible;
-    this.appCacheService.setItem(this.STORAGE_KEY_SECTION_VISIBLE, this.visible).pipe(takeUntilDestroyed()).subscribe();
+    this.appCacheService.setItem(this.STORAGE_KEY_SECTION_VISIBLE, this.visible).pipe(takeUntilDestroyed(this.destroyRef)).subscribe();
   }
 
   private getSummaryConfiguration(dmsObject: DmsObject) {

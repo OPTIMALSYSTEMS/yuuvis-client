@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, EventEmitter, HostBinding, Input, NgZone, OnDestroy, Output, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, DestroyRef, EventEmitter, HostBinding, Input, NgZone, OnDestroy, Output, ViewChild, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Screen, ScreenService } from '@yuuvis/core';
 import { SplitComponent } from 'angular-split';
@@ -30,6 +30,7 @@ import { ResponsiveMasterSlaveOptions } from './responsive-master-slave.interfac
   styleUrls: ['./responsive-master-slave.component.scss']
 })
 export class ResponsiveMasterSlaveComponent implements OnDestroy, AfterViewInit {
+  destroyRef = inject(DestroyRef);
   @ViewChild(SplitComponent) splitEl: SplitComponent;
   useSmallDeviceLayout: boolean;
   visible = {
@@ -95,7 +96,7 @@ export class ResponsiveMasterSlaveComponent implements OnDestroy, AfterViewInit 
   @Output() slaveClosed = new EventEmitter();
 
   constructor(private screenService: ScreenService, private layoutService: LayoutService, private ngZone: NgZone) {
-    this.screenService.screenChange$.pipe(takeUntilDestroyed()).subscribe((screen: Screen) => {
+    this.screenService.screenChange$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((screen: Screen) => {
       const maximize = this.useSmallDeviceLayout === true && !screen.isSmall;
       this.useSmallDeviceLayout = screen.isSmall;
       this.setDirection(maximize ? 'horizontal' : this._direction, this._layoutOptions);
@@ -135,7 +136,7 @@ export class ResponsiveMasterSlaveComponent implements OnDestroy, AfterViewInit 
   }
 
   ngAfterViewInit() {
-    this.splitEl?.dragProgress$.pipe(takeUntilDestroyed()).subscribe((x) => {
+    this.splitEl?.dragProgress$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((x) => {
       const { masterMinSize, slaveMinSize } = this._layoutOptions;
       if (x.sizes[0] as number < masterMinSize) {
         // automatic collapse/expand of master area

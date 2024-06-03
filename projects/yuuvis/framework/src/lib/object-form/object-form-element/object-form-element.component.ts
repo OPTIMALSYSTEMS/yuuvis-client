@@ -1,4 +1,4 @@
-import { Component, ElementRef, Input, OnDestroy, Renderer2 } from '@angular/core';
+import { Component, DestroyRef, ElementRef, Input, OnDestroy, Renderer2, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Classification, TranslateService } from '@yuuvis/core';
 import { ObjectFormTranslateService } from '../object-form-translate.service';
@@ -19,6 +19,8 @@ import { Situation } from './../object-form.situation';
   styleUrls: ['./object-form-element.component.scss']
 })
 export class ObjectFormElementComponent implements OnDestroy {
+  destroyRef = inject(DestroyRef);
+
   formElementRef: any;
   element: ObjectFormControlWrapper;
   errors: string[];
@@ -69,7 +71,7 @@ export class ObjectFormElementComponent implements OnDestroy {
         this.labelToggled({ toggled: true, variable: this.formElementRef._eoFormElement.variable }, false);
       }
       this.fetchTags();
-      this.formElementRef?.valueChanges.pipe(takeUntilDestroyed()).subscribe((_) => this.setupErrors());
+      this.formElementRef?.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((_) => this.setupErrors());
     }
   }
 

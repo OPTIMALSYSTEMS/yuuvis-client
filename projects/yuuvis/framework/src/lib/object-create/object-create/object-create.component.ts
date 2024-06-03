@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnDestroy, Output, TemplateRef, ViewChild } from '@angular/core';
+import { Component, DestroyRef, EventEmitter, Input, OnDestroy, Output, TemplateRef, ViewChild, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   AFO_STATE,
@@ -89,6 +89,7 @@ export enum AFOType {
   providers: [ObjectCreateService]
 })
 export class ObjectCreateComponent implements OnDestroy {
+  destroyRef = inject(DestroyRef);
   private LAYOUT_OPTIONS_KEY = 'yuv.framework.object-create';
   private LAYOUT_OPTIONS_ELEMENT_KEY = 'yuv-object-create';
 
@@ -404,7 +405,7 @@ export class ObjectCreateComponent implements OnDestroy {
 
     this.createObject(this.selectedObjectType.floatingParentType || this.selectedObjectType.id, data, this.files)
       .pipe(
-        takeUntilDestroyed(),
+        takeUntilDestroyed(this.destroyRef),
         switchMap((res: string[]) => this.dmsService.getDmsObjects(res))
       )
       .subscribe({

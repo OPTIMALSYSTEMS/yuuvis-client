@@ -1,4 +1,4 @@
-import { AfterViewInit, Directive, ElementRef, Input, OnDestroy } from '@angular/core';
+import { AfterViewInit, DestroyRef, Directive, ElementRef, Input, OnDestroy, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ConnectionService, ConnectionState } from '@yuuvis/core';
 
@@ -29,6 +29,8 @@ export class OfflineDisabledDirective implements AfterViewInit, OnDestroy {
    */
   @Input() yuvOfflineDisabled = '';
 
+  destroyRef = inject(DestroyRef);
+
   /**
    *
    * @ignore
@@ -42,7 +44,7 @@ export class OfflineDisabledDirective implements AfterViewInit, OnDestroy {
     }
     const originalOpacity = el.style.opacity;
     const originalPointerEvents = el.style.pointerEvents;
-    this.connectionService.connection$.pipe(takeUntilDestroyed()).subscribe((connectionState: ConnectionState) => {
+    this.connectionService.connection$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((connectionState: ConnectionState) => {
       if (!connectionState.isOnline) {
         el.style.opacity = '0.5';
         el.style.pointerEvents = 'none';

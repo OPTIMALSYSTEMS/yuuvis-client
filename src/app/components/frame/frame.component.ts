@@ -139,7 +139,7 @@ export class FrameComponent implements OnInit, OnDestroy {
       }
       this.user = user;
     });
-    this.update.available.subscribe((update) => (this.swUpdateAvailable = true));
+    this.update.isEnabled && this.update.checkForUpdate().then((update) => (this.swUpdateAvailable = update));
     this.layoutService.layoutSettings$.subscribe((settings: LayoutSettings) => this.applyLayoutSettings(settings));
     this.connectionService.connection$.subscribe((connectionState: ConnectionState) => {
       this.isOffline = !connectionState.isOnline;
