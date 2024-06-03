@@ -6,7 +6,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { TranslateModule } from '@yuuvis/core';
 import { AngularSplitModule } from 'angular-split';
-import { DragScrollModule } from 'ngx-drag-scroll';
+import { DragScrollComponent, DragScrollItemDirective } from 'ngx-drag-scroll';
 import { DialogModule } from 'primeng/dialog';
 import { OverlayPanelModule } from 'primeng/overlaypanel';
 import { ProgressBarModule } from 'primeng/progressbar';
@@ -55,6 +55,8 @@ YuvComponentRegister.register(components);
   declarations: [...components, BusyOverlayDirective],
   exports: [...components, TabViewModule, BusyOverlayDirective],
   imports: [
+    DragScrollComponent,
+    DragScrollItemDirective,
     OverlayPanelModule,
     DragDropModule,
     CommonModule,
@@ -68,8 +70,7 @@ YuvComponentRegister.register(components);
     YuvPipesModule,
     YuvCommonModule,
     TranslateModule,
-    DragScrollModule,
     YuvDirectivesModule
   ]
 })
-export class YuvComponentsModule {}
+export class YuvComponentsModule { }

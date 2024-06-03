@@ -1,6 +1,6 @@
 {
-  "yuvfc.widget-grid.widget.aggregate.form.label.aggField": "add values of this property",
-  "yuvfc.widget-grid.widget.aggregate.form.label.average": "calculate average",
+  "yuvfc.widget-grid.widget.aggregate.form.label.aggField": "Add values of this property",
+  "yuvfc.widget-grid.widget.aggregate.form.label.average": "Calculate average",
   "yuvfc.widget-grid.widget.charts.form.label.aggregation": "Aggregation",
   "yuvfc.widget-grid.widget.charts.form.label.chartType": "Chart type",
   "yuvfc.widget-grid.widget.charts.type.bar": "Bar chart",
@@ -11,7 +11,7 @@
   "yuvfc.widget-grid.widget.form.step.previous": "Back",
   "yuvfc.widget-grid.widget.hitlist.error.search": "Unable to execute search.",
   "yuvfc.widget-grid.widget.hitlist.form.desc.threshold": "more than...",
-  "yuvfc.widget-grid.widget.hitlist.form.desc.threshold.inverted": "less than..",
+  "yuvfc.widget-grid.widget.hitlist.form.desc.threshold.inverted": "less than...",
   "yuvfc.widget-grid.widget.hitlist.form.label.countTileThresholdInvert": "Reverse threshold (many -> few)",
   "yuvfc.widget-grid.widget.hitlist.form.label.countType": "Count",
   "yuvfc.widget-grid.widget.hitlist.form.label.descriptionField": "Description field",
