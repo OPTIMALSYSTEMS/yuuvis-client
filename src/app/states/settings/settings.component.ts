@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { AppCacheService, BackendService, ConfigService, SystemService, TranslateService, UserConfigService, UserService, YuvUser } from '@yuuvis/core';
 import { IconRegistryService, LayoutService, LayoutSettings, NotificationService, PluginsService, arrowDown } from '@yuuvis/framework';
 import { Observable, forkJoin } from 'rxjs';
@@ -10,7 +10,6 @@ import { dashboard, dashboardWidget, shield } from '../../../assets/default/svg/
 import { AccentColor } from '../../app.interface';
 import { AppService } from '../../app.service';
 
-@UntilDestroy()
 @Component({
   selector: 'yuv-settings',
   templateUrl: './settings.component.html',
@@ -196,7 +195,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.appService.dashboardConfig$.pipe(untilDestroyed(this)).subscribe({
+    this.appService.dashboardConfig$.pipe(takeUntilDestroyed()).subscribe({
       next: (res) => {
         this.dashboardType = res?.dashboardType || 'default';
       }

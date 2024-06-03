@@ -1,7 +1,7 @@
 import { ColDef, RowEvent } from '@ag-grid-community/core';
 import { Attribute, Component, EventEmitter, Input, OnDestroy, Output, ViewChild } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import {
   BaseObjectTypeField,
   ConfigService,
@@ -39,7 +39,6 @@ export interface FilterPanelConfig {
  * @example
  * <yuv-search-result [query]="searchQuery" (itemsSelected)="select($event)"></yuv-search-result>
  */
-@UntilDestroy()
 @Component({
   selector: 'yuv-search-result',
   templateUrl: './search-result.component.html',
@@ -185,10 +184,10 @@ export class SearchResultComponent extends YuvGridOptions implements OnDestroy {
     this.eventService
       .on(YuvEventType.DMS_OBJECT_UPDATED, YuvEventType.DMS_OBJECT_DELETED)
       .pipe(
-        untilDestroyed(this),
+        takeUntilDestroyed(),
         tap((e) => this.objectEvent(e))
       )
-      .subscribe((e: YuvEvent) => {});
+      .subscribe((e: YuvEvent) => { });
   }
 
   private objectEvent({ type, data }: YuvEvent) {
@@ -362,7 +361,7 @@ export class SearchResultComponent extends YuvGridOptions implements OnDestroy {
       .getPage(this._searchQuery, page)
       .subscribe({
         next: (res: SearchResult) => this.createTableData(res, page),
-        error: (err) => {} // TODO: how should errors be handles in case hat loading pages fail
+        error: (err) => { } // TODO: how should errors be handles in case hat loading pages fail
       })
       .add(() => (this.busy = false));
   }
@@ -394,5 +393,5 @@ export class SearchResultComponent extends YuvGridOptions implements OnDestroy {
     this.executeQuery(applyColumnConfig);
   }
 
-  ngOnDestroy() {}
+  ngOnDestroy() { }
 }

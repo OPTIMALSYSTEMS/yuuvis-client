@@ -1,6 +1,6 @@
 import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ValidatorFn, Validators } from '@angular/forms';
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { Logger, SystemService, UserService, Utils } from '@yuuvis/core';
 import { cloneDeep } from 'lodash-es';
 import { Observable, Subscription, of } from 'rxjs';
@@ -27,7 +27,6 @@ import { Situation } from './../object-form.situation';
  * @example
  * <yuv-object-form [formOptions]="options" (statusChanged)="check($event)"></yuv-object-form>
  */
-@UntilDestroy()
 @Component({
   selector: 'yuv-object-form',
   templateUrl: './object-form.component.html',
@@ -96,7 +95,7 @@ export class ObjectFormComponent implements OnDestroy, AfterViewInit, IObjectFor
     this.pluginsService.register(this);
     this.pluginsService.api.events
       .on(PluginsService.EVENT_MODEL_CHANGED)
-      .pipe(untilDestroyed(this))
+      .pipe(takeUntilDestroyed())
       .subscribe((event) => event.data && this.onScriptingModelChanged(event.data.formControlName, event.data.change));
   }
 
@@ -472,8 +471,8 @@ export class ObjectFormComponent implements OnDestroy, AfterViewInit, IObjectFor
       value = formElement?.value
         ? this.patchFormValue(formElement?.value)
         : !Utils.isEmpty(formElement?.defaultvalue) && this.formOptions.formModel.situation === Situation.CREATE
-        ? this.patchFormValue(formElement?.defaultvalue)
-        : formElement?.value;
+          ? this.patchFormValue(formElement?.defaultvalue)
+          : formElement?.value;
 
       // create the actual form control
       const controlDisabled = this.formOptions.disabled || !!formElement.readonly;

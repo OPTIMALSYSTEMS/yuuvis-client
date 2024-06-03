@@ -1,5 +1,5 @@
 import { Attribute, Component, EventEmitter, Input, OnDestroy, Output, TemplateRef, ViewChild } from '@angular/core';
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   AFO_STATE,
   ApiBase,
@@ -35,7 +35,6 @@ import { ObjectFormComponent } from './../object-form/object-form.component';
  * <yuv-object-form-edit [dmsObject]="dmsObject" (indexDataSaved)="onIndexDataSaved($event)"></yuv-object-form-edit>
  */
 
-@UntilDestroy()
 @Component({
   selector: 'yuv-object-form-edit',
   templateUrl: './object-form-edit.component.html',
@@ -136,7 +135,7 @@ export class ObjectFormEditComponent implements OnDestroy {
     private popoverService: PopoverService
   ) {
     this.setMessages();
-    this.translate.onLangChange.pipe(untilDestroyed(this)).subscribe((_) => {
+    this.translate.onLangChange.pipe(takeUntilDestroyed()).subscribe((_) => {
       this.setMessages();
     });
   }

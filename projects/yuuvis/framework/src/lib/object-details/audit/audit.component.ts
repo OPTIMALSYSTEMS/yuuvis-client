@@ -1,6 +1,6 @@
 import { Component, Inject, Input, OnDestroy, OnInit } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import {
   ApiBase,
   AppCacheService,
@@ -37,7 +37,6 @@ import { arrowNext, filter } from '../../svg.generated';
  * <!-- skipping certain action codes -->
  * <yuv-audit [objectID]="'0815'" [skipActions]="[100, 200, 202]"></yuv-audit>
  */
-@UntilDestroy()
 @Component({
   selector: 'yuv-audit',
   templateUrl: './audit.component.html',
@@ -138,7 +137,7 @@ export class AuditComponent implements OnInit, OnDestroy {
 
     this.eventService
       .on(YuvEventType.DMS_OBJECT_UPDATED)
-      .pipe(untilDestroyed(this))
+      .pipe(takeUntilDestroyed())
       .subscribe((e: YuvEvent) => {
         const dmsObject = e.data as DmsObject;
         // reload audit entries when update belongs to the current dms object

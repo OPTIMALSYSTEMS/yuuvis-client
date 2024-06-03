@@ -1,11 +1,11 @@
 import { ClientSideRowModelModule } from '@ag-grid-community/client-side-row-model';
 import { ColDef, GridOptions, Module } from '@ag-grid-community/core';
 import { CsvExportModule } from '@ag-grid-community/csv-export';
-import { Component, forwardRef, HostListener, Input, NgZone, TemplateRef, ViewChild } from '@angular/core';
-import { ControlValueAccessor, UntypedFormControl, NG_VALIDATORS, NG_VALUE_ACCESSOR, Validator } from '@angular/forms';
+import { Component, HostListener, Input, NgZone, TemplateRef, ViewChild, forwardRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ControlValueAccessor, NG_VALIDATORS, NG_VALUE_ACCESSOR, UntypedFormControl, Validator } from '@angular/forms';
 import { Classification, PendingChangesService, SystemService } from '@yuuvis/core';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { PopoverConfig } from '../../popover/popover.interface';
 import { GridService } from '../../services/grid/grid.service';
 import { addCircle, contentDownload, expand, sizeToFit } from '../../svg.generated';
@@ -13,7 +13,6 @@ import { PopoverService } from './../../popover/popover.service';
 import { EditRow, TableComponentParams } from './form-element-table.interface';
 import { RowEditComponent } from './row-edit/row-edit.component';
 
-@UntilDestroy()
 @Component({
   selector: 'yuv-table',
   templateUrl: './form-element-table.component.html',
@@ -141,14 +140,14 @@ export class FormElementTableComponent implements ControlValueAccessor, Validato
       }
     };
 
-    this.pendingChanges.tasks$.pipe(untilDestroyed(this)).subscribe((tasks) => {
+    this.pendingChanges.tasks$.pipe(takeUntilDestroyed()).subscribe((tasks) => {
       setTimeout(() => {
         this.overlayGridOptions.suppressRowClickSelection = !!this.rowEdit && !!tasks.find((task) => task.id === this.rowEdit.pendingTaskId);
       }, 0);
     });
   }
 
-  propagateChange = (_: any) => {};
+  propagateChange = (_: any) => { };
 
   writeValue(value: any[]): void {
     this.value = value instanceof Array ? value : [];
@@ -173,7 +172,7 @@ export class FormElementTableComponent implements ControlValueAccessor, Validato
     this.propagateChange = fn;
   }
 
-  registerOnTouched(fn: any): void {}
+  registerOnTouched(fn: any): void { }
 
   /**
    * Create column definition from form element.
@@ -183,27 +182,27 @@ export class FormElementTableComponent implements ControlValueAccessor, Validato
     const hasElements = Array.isArray(this._elements);
     return hasElements
       ? this._elements.map((el, i) => {
-          let col: ColDef = this.gridApi.getColumnDefinition(el);
-          if (el.labelkey) {
-            el.label = this.systemService.getLocalizedResource(`${el.labelkey}_label`) || el.labelkey;
-          }
+        let col: ColDef = this.gridApi.getColumnDefinition(el);
+        if (el.labelkey) {
+          el.label = this.systemService.getLocalizedResource(`${el.labelkey}_label`) || el.labelkey;
+        }
 
-          Object.assign(col, {
-            rowDrag: dragEnabled && i === 0,
-            headerName: el.label,
-            suppressMenu: true,
-            filter: false,
-            sortable: true,
-            resizable: true,
-            field: el.name,
-            refData: {
-              ...col.refData,
-              _eoFormElement: el,
-              _situation: this._params.situation
-            }
-          });
-          return col;
-        })
+        Object.assign(col, {
+          rowDrag: dragEnabled && i === 0,
+          headerName: el.label,
+          suppressMenu: true,
+          filter: false,
+          sortable: true,
+          resizable: true,
+          field: el.name,
+          refData: {
+            ...col.refData,
+            _eoFormElement: el,
+            _situation: this._params.situation
+          }
+        });
+        return col;
+      })
       : [];
   }
 
@@ -358,10 +357,10 @@ export class FormElementTableComponent implements ControlValueAccessor, Validato
     return this.validateTableData()
       ? null
       : {
-          table: {
-            valid: false
-          }
-        };
+        table: {
+          valid: false
+        }
+      };
   }
 
   onMouseDown($event: any) {

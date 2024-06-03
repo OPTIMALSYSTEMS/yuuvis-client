@@ -1,15 +1,14 @@
 import { RowEvent } from '@ag-grid-community/core';
 import { PlatformLocation } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PendingChangesService, Screen, ScreenService, SearchQuery, TranslateService, Utils } from '@yuuvis/core';
 import { FilterPanelConfig, LayoutService, PluginsService } from '@yuuvis/framework';
 import { map } from 'rxjs';
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { AppSearchService } from '../../service/app-search.service';
 
-@UntilDestroy()
 @Component({
   selector: 'yuv-result',
   templateUrl: './result.component.html',
@@ -46,7 +45,7 @@ export class ResultComponent implements OnInit, OnDestroy {
   ) {
     this.screenService.screenChange$
       .pipe(
-        untilDestroyed(this),
+        takeUntilDestroyed(),
         map((screen: Screen) => (this.smallScreen = screen.mode === ScreenService.MODE.SMALL))
       )
       .subscribe();
@@ -92,7 +91,7 @@ export class ResultComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     // extract the query from the route params
-    this.route.queryParamMap.pipe(untilDestroyed(this)).subscribe((params) => {
+    this.route.queryParamMap.pipe(takeUntilDestroyed()).subscribe((params) => {
       this.searchQuery = params.get('query') ? new SearchQuery(JSON.parse(params.get('query'))) : null;
       // if the 'tmp' query param is est, the query will not be set
       // to the global app search
@@ -103,5 +102,5 @@ export class ResultComponent implements OnInit, OnDestroy {
     });
   }
 
-  ngOnDestroy() {}
+  ngOnDestroy() { }
 }

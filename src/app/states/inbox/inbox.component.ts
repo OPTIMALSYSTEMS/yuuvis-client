@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { BpmEvent, EventService, InboxService, Task, TaskRow, TranslateService } from '@yuuvis/core';
 import {
   FormatProcessDataService,
@@ -21,7 +21,6 @@ import { Observable } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import { FrameService } from '../../components/frame/frame.service';
 
-@UntilDestroy()
 @Component({
   selector: 'yuv-inbox',
   templateUrl: './inbox.component.html',
@@ -36,12 +35,12 @@ export class InboxComponent implements OnInit, OnDestroy {
     map((taskData: Task[]) => {
       const td = this.filterTerm
         ? taskData.filter((t: Task) => {
-            const l = this.system.getLocalizedResource(`${t.name}_label`);
-            return (
-              (t.subject && t.subject.toLowerCase().indexOf(this.filterTerm.toLowerCase()) !== -1) ||
-              (l && l.toLowerCase().indexOf(this.filterTerm.toLowerCase()) !== -1)
-            );
-          })
+          const l = this.system.getLocalizedResource(`${t.name}_label`);
+          return (
+            (t.subject && t.subject.toLowerCase().indexOf(this.filterTerm.toLowerCase()) !== -1) ||
+            (l && l.toLowerCase().indexOf(this.filterTerm.toLowerCase()) !== -1)
+          );
+        })
         : taskData;
       return this.formatProcessDataService.formatTaskDataForTable([...td]);
     })
@@ -88,7 +87,7 @@ export class InboxComponent implements OnInit, OnDestroy {
     this.inboxService.fetchTasks();
   }
 
-  onSlaveClosed() {}
+  onSlaveClosed() { }
 
   onAttachmentOpenExternal(id: string) {
     let uri = `${this.frameService.getAppRootPath()}object/${id}`;
@@ -101,7 +100,7 @@ export class InboxComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.route.queryParamMap.pipe(untilDestroyed(this)).subscribe((params) => {
+    this.route.queryParamMap.pipe(takeUntilDestroyed()).subscribe((params) => {
       if (params.has('filter')) {
         this.filterTerm = params.get('filter');
         // remove URL param once it has been processed
@@ -113,11 +112,11 @@ export class InboxComponent implements OnInit, OnDestroy {
     this.eventService
       .on(BpmEvent.BPM_EVENT)
       .pipe(
-        untilDestroyed(this),
+        takeUntilDestroyed(),
         tap(() => this.inboxService.fetchTasks())
       )
       .subscribe();
   }
 
-  ngOnDestroy() {}
+  ngOnDestroy() { }
 }
