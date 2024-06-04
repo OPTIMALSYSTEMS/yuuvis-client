@@ -18,6 +18,6 @@
     "@ngx-translate/core": "^15.0.0",
     "angular-oauth2-oidc": "17.0.2",
     "ngx-device-detector": "^7.0.0",
-    "tslib": "^2.4.0"
+    "tslib": "^2.6.2"
   }
 }
