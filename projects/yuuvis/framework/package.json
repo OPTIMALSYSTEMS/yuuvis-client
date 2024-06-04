@@ -1,6 +1,6 @@
 {
   "name": "@yuuvis/framework",
-  "version": "6.0.0-beta.1",
+  "version": "6.0.0-beta.3",
   "author": "OPTIMAL SYSTEMS GmbH <npm@optimal-systems.de>",
   "license": "MIT",
   "scripts": {
@@ -9,11 +9,11 @@
     "doc:serve": "../../../node_modules/.bin/compodoc -s"
   },
   "peerDependencies": {
-    "@angular/animations": "^17.3.10",
-    "@angular/common": "^17.3.10",
-    "@angular/core": "^17.3.10",
-    "@angular/forms": "^17.3.10",
-    "@angular/router": "^17.3.10",
+    "@angular/animations": "^18.0.1",
+    "@angular/common": "^18.0.1",
+    "@angular/core": "^18.0.1",
+    "@angular/forms": "^18.0.1",
+    "@angular/router": "^18.0.1",
     "rxjs": "^7.8.0"
   },
   "dependencies": {
@@ -22,15 +22,15 @@
     "@ag-grid-community/core": "~31.3.2",
     "@ag-grid-community/csv-export": "~31.3.2",
     "@ag-grid-community/styles": "~31.3.2",
-    "@angular/cdk": "^17.3.10",
-    "@yuuvis/command-palette": "^1.1.0",
-    "@yuuvis/core": "6.0.0-beta.1",
+    "@angular/cdk": "^18.0.1",
+    "@yuuvis/command-palette": "^18.0.0",
+    "@yuuvis/core": "6.0.0-beta.3",
     "@yuuvis/styles": "1.0.6",
     "angular-split": "^17.2.0",
     "lodash-es": "^4.17.21",
     "ngx-drag-scroll": "^17.0.1",
     "ngx-resize": "^2.0.0",
-    "ngx-toastr": "^17.0.0",
+    "ngx-toastr": "^19.0.0",
     "primeicons": "^7.0.0",
     "primeng": "^17.18.0",
     "tslib": "^2.6.2"
