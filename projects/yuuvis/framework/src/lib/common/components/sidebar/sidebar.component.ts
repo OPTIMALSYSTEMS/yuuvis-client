@@ -62,7 +62,7 @@ export class SidebarComponent implements AfterViewInit {
    */
   @Output() hide = new EventEmitter<any>();
 
-  constructor(private location: PlatformLocation, private cdRef: ChangeDetectorRef) {}
+  constructor(private location: PlatformLocation, private cdRef: ChangeDetectorRef) { }
 
   get externalHeaderStyle() {
     return { ...this.headerStyle };
@@ -74,11 +74,12 @@ export class SidebarComponent implements AfterViewInit {
     return { ...this.contentStyles };
   }
 
-  onShow() {
+  onShow(navSideBar?: any) {
     this.location.pushState({}, '', '');
   }
 
-  onHide() {
+  onHide(navSideBar?: any) {
+    navSideBar?.destroyModal();
     this.hide.emit();
   }
 
