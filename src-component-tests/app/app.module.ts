@@ -1,4 +1,4 @@
-import { HttpClientModule } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
@@ -90,9 +90,7 @@ import { TestVersionListComponent } from './test-version-list/test-version-list.
     TestProcessDetailsComponent,
     TestSequenceListComponent
   ],
-  imports: [
-    HttpClientModule,
-    BrowserModule,
+  bootstrap: [AppComponent], imports: [BrowserModule,
     BrowserAnimationsModule,
     AppRoutingModule,
     FormsModule,
@@ -109,9 +107,6 @@ import { TestVersionListComponent } from './test-version-list/test-version-list.
     YuvColumnConfigModule,
     YuvContextModule,
     YuvObjectPickerModule,
-    YuvSequenceListModule
-  ],
-  providers: [],
-  bootstrap: [AppComponent]
+    YuvSequenceListModule], providers: [provideHttpClient(withInterceptorsFromDi())]
 })
-export class AppModule {}
+export class AppModule { }

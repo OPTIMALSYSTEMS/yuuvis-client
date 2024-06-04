@@ -1,4 +1,4 @@
-import { HttpClient, HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClient, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { APP_INITIALIZER, ModuleWithProviders, NgModule, Optional, SkipSelf } from '@angular/core';
 import { MissingTranslationHandler, TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { OAuthModule, OAuthStorage } from 'angular-oauth2-oidc';
@@ -33,17 +33,13 @@ export function storageFactory(): OAuthStorage {
  */
 
 @NgModule({
-  imports: [
-    HttpClientModule,
-    OAuthModule.forRoot({
-      resourceServer: {
-        sendAccessToken: false,
-        allowedUrls: []
-      }
-    }),
-    TranslateModule.forRoot()
-  ],
-  exports: [YuvCoreSharedModule]
+  exports: [YuvCoreSharedModule], imports: [OAuthModule.forRoot({
+    resourceServer: {
+      sendAccessToken: false,
+      allowedUrls: []
+    }
+  }),
+  TranslateModule.forRoot()], providers: [provideHttpClient(withInterceptorsFromDi())]
 })
 export class YuvCoreModule {
   static forRoot(config?: CoreConfig): ModuleWithProviders<YuvCoreModule> {

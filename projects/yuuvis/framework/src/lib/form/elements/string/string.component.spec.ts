@@ -1,4 +1,4 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed, waitForAsync } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
@@ -7,6 +7,7 @@ import { AutoCompleteModule } from 'primeng/autocomplete';
 import { ChipsModule } from 'primeng/chips';
 import { of as observableOf } from 'rxjs';
 // import { ConfigStub, LoggerStub } from '../../../../../projects/eo-sdk/core/src/test/testStubs';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { StringComponent } from './string.component';
 
 describe('StringComponent', () => {
@@ -18,8 +19,8 @@ describe('StringComponent', () => {
     TestBed.configureTestingModule({
       schemas: [NO_ERRORS_SCHEMA],
       declarations: [StringComponent],
-      imports: [FormsModule, AutoCompleteModule, ChipsModule, HttpClientTestingModule],
-      providers: [BackendService, { provide: Logger, userClass: LoggerStub }, { provide: Config, userClass: ConfigStub }]
+      imports: [FormsModule, AutoCompleteModule, ChipsModule],
+      providers: [BackendService, { provide: Logger, userClass: LoggerStub }, { provide: Config, userClass: ConfigStub }, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
     }).compileComponents();
   }));
 

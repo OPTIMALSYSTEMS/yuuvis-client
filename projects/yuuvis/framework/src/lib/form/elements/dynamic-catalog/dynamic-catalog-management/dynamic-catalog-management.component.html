@@ -17,7 +17,7 @@
 
     <div class="entry" cdkDrag *ngFor="let e of _catalog.entries; let i = index" [ngClass]="{disabled: e.disabled}">
         <yuv-icon class="handle" cdkDragHandle [icon]="'dragHandle'"></yuv-icon>
-        <yuv-checkbox [(ngModel)]="!e.disabled"
+        <yuv-checkbox [ngModel]="!e.disabled"
             title="{{'yuv.framework.dynamic-catalog-management.checkbox.tooltip'| translate}}"
             [ngModelOptions]="{ standalone: true }" (ngModelChange)="setDisabled(i, $event)"></yuv-checkbox>
         <div class="value">{{e.name}}</div>
