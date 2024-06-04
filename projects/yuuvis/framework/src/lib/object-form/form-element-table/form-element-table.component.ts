@@ -1,3 +1,4 @@
+import { AgGridAngular } from '@ag-grid-community/angular';
 import { ClientSideRowModelModule } from '@ag-grid-community/client-side-row-model';
 import { ColDef, GridOptions, Module } from '@ag-grid-community/core';
 import { CsvExportModule } from '@ag-grid-community/csv-export';
@@ -10,6 +11,7 @@ import { PopoverConfig } from '../../popover/popover.interface';
 import { GridService } from '../../services/grid/grid.service';
 import { addCircle, contentDownload, expand, sizeToFit } from '../../svg.generated';
 import { PopoverService } from './../../popover/popover.service';
+import { ExpandedTableComponent } from './expanded-table/expanded-table.component';
 import { EditRow, TableComponentParams } from './form-element-table.interface';
 import { RowEditComponent } from './row-edit/row-edit.component';
 
@@ -33,8 +35,14 @@ import { RowEditComponent } from './row-edit/row-edit.component';
 export class FormElementTableComponent implements ControlValueAccessor, Validator {
   public modules: Module[] = [ClientSideRowModelModule, CsvExportModule];
 
+  @ViewChild('agGrid') agGrid!: AgGridAngular;
+  @ViewChild('overlayTable') overlayTable!: ExpandedTableComponent;
   @ViewChild('rowEdit') rowEdit: RowEditComponent;
   @ViewChild('overlay') overlay: TemplateRef<any>;
+
+  get overlayGrid(): AgGridAngular {
+    return this.overlayTable?.overlayGrid;
+  }
 
   @Input()
   set params(p: TableComponentParams) {
@@ -66,7 +74,7 @@ export class FormElementTableComponent implements ControlValueAccessor, Validato
 
   private onRowDragEnd = (e) => {
     const v = [];
-    this.gridOptions.api.forEachNode((rowNode, index) => {
+    this.agGrid?.api.forEachNode((rowNode, index) => {
       v.push(rowNode.data);
     });
     this.innerValue = v;
@@ -82,7 +90,7 @@ export class FormElementTableComponent implements ControlValueAccessor, Validato
   @HostListener('keydown.meta.alt.c', ['$event'])
   @HostListener('keydown.meta.c', ['$event'])
   copyCellHandler(event: KeyboardEvent) {
-    this.gridApi.copyToClipboard(event, this.gridOptions);
+    this.gridApi.copyToClipboard(event, this.agGrid, this.gridOptions);
   }
 
   constructor(
@@ -154,14 +162,14 @@ export class FormElementTableComponent implements ControlValueAccessor, Validato
     // create a clone of the actual value for internal usage
     this.innerValue = JSON.parse(JSON.stringify(this.value));
 
-    if (this.gridOptions.api) {
-      this.gridOptions.api.setRowData(this.innerValue);
+    if (this.agGrid?.api) {
+      this.agGrid.api.setGridOption('rowData', this.innerValue);
     } else {
       this.gridOptions.rowData = this.innerValue;
     }
 
-    if (this.overlayGridOptions.api) {
-      this.overlayGridOptions.api.setRowData(this.innerValue);
+    if (this.overlayGrid?.api) {
+      this.overlayGrid.api.setGridOption('rowData', this.innerValue);
       setTimeout(() => this.selectEditRow(), 0);
     } else {
       this.overlayGridOptions.rowData = this.innerValue;
@@ -242,12 +250,12 @@ export class FormElementTableComponent implements ControlValueAccessor, Validato
   }
 
   private selectEditRow() {
-    if (this.overlayGridOptions.api) {
-      this.overlayGridOptions.api.deselectAll();
+    if (this.overlayGrid?.api) {
+      this.overlayGrid?.api.deselectAll();
       if (this.editingRow.index !== -1) {
-        let rowNode = this.overlayGridOptions.api.getRowNode('' + this.editingRow.index);
+        let rowNode = this.overlayGrid?.api.getRowNode('' + this.editingRow.index);
         rowNode.setSelected(true, true);
-        this.overlayGridOptions.api.ensureNodeVisible(rowNode);
+        this.overlayGrid?.api.ensureNodeVisible(rowNode);
       }
     }
   }
@@ -259,9 +267,9 @@ export class FormElementTableComponent implements ControlValueAccessor, Validato
   }
 
   private updateTableValue() {
-    this.gridOptions.api.setRowData(this.innerValue);
-    if (this.overlayGridOptions.api) {
-      this.overlayGridOptions.api.setRowData(this.innerValue);
+    this.agGrid.api.updateGridOptions({ rowData: this.innerValue });
+    if (this.overlayGrid?.api) {
+      this.overlayGrid.api.updateGridOptions({ rowData: this.innerValue });
     } else {
       this.overlayGridOptions.rowData = this.innerValue;
     }
@@ -306,8 +314,8 @@ export class FormElementTableComponent implements ControlValueAccessor, Validato
       this.setEditRow(this.innerValue.length - 1, this.innerValue[this.innerValue.length - 1]);
     } else if (rowResult.createNewRow) {
       this.addRow();
-      let rowNode = this.overlayGridOptions.api.getRowNode('' + (this.innerValue.length - 1));
-      this.overlayGridOptions.api.ensureNodeVisible(rowNode);
+      let rowNode = this.overlayGrid.api.getRowNode('' + (this.innerValue.length - 1));
+      this.overlayGrid.api.ensureNodeVisible(rowNode);
     } else {
       this.setEditRow(rowResult.index, this.innerValue[rowResult.index]);
     }
@@ -338,14 +346,14 @@ export class FormElementTableComponent implements ControlValueAccessor, Validato
   }
 
   exportCSV() {
-    this.gridOptions.api.exportDataAsCsv({
+    this.agGrid.api.exportDataAsCsv({
       ...this.gridApi.csvExportParams,
       fileName: this._params.element.label
     });
   }
 
   sizeToFit(overlay?: boolean) {
-    this.gridOptions.api.sizeColumnsToFit();
+    this.agGrid.api.sizeColumnsToFit();
   }
 
   private validateTableData(): boolean {
@@ -370,7 +378,7 @@ export class FormElementTableComponent implements ControlValueAccessor, Validato
         this.rowEdit.finishPending();
         let rowIndex = this.getRowIndex($event.target, 'ag-body');
         if (rowIndex !== null) {
-          this.overlayGridOptions.api.getRowNode('' + rowIndex).setSelected(true, true);
+          this.overlayGrid.api.getRowNode('' + rowIndex).setSelected(true, true);
           $event.target.click();
         }
       } else {

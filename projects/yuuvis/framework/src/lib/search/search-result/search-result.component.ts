@@ -111,7 +111,7 @@ export class SearchResultComponent extends YuvGridOptions implements OnDestroy {
    * Query to be executed by the component.
    */
   @Input() set query(searchQuery: SearchQuery) {
-    if (this.dataTable?.gridOptions?.api?.getSelectedNodes().length) {
+    if (this.dataTable?.agGrid?.api?.getSelectedNodes().length) {
       this.itemsSelected.emit([]);
     }
 
