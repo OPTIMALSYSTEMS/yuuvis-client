@@ -7,18 +7,19 @@ import { TabPanel, TabView } from 'primeng/tabview';
 @Component({
   selector: 'yuv-tab-panel',
   template: `
-    <div
-      [attr.id]="id"
-      class="p-tabview-panel"
-      [hidden]="!selected"
-      role="tabpanel"
-      [attr.aria-hidden]="!selected"
-      [attr.aria-labelledby]="id + '-label'"
+      <div
       *ngIf="!closed"
+      class="p-tabview-panel"
+      role="tabpanel"
+      [hidden]="!selected"
+      [attr.id]="tabView.getTabContentId(id)"
+      [attr.aria-hidden]="!selected"
+      [attr.aria-labelledby]="tabView.getTabHeaderActionId(id)"
+      [attr.data-pc-name]="'tabpanel'"
     >
       <ng-content></ng-content>
       <ng-container *ngIf="contentTemplate && (cache ? loaded : selected)">
-        <ng-container *ngTemplateOutlet="contentTemplate"></ng-container>
+          <ng-container *ngTemplateOutlet="contentTemplate"></ng-container>
       </ng-container>
     </div>
   `,

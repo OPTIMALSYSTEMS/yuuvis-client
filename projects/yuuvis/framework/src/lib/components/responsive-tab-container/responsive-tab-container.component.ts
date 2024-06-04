@@ -176,7 +176,7 @@ export class ResponsiveTabContainerComponent implements OnInit, AfterContentInit
   open(panel: TabPanel | string) {
     const tab = panel instanceof TabPanel ? panel : this.allPanels.find((p) => this.pID(p) === panel);
     if (tab) {
-      const target = this.mainTabView.el.nativeElement.querySelector(`a#${tab.id}-label`);
+      const target = this.mainTabView.el.nativeElement.querySelector(`li.${tab.headerStyleClass} a`);
       if (target) {
         // use native event to trigger onChange
         target.click();
