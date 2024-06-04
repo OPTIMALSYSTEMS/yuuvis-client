@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { HttpClientModule } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { AccordionModule } from 'primeng/accordion';
 import { SidebarModule } from 'primeng/sidebar';
@@ -26,9 +26,7 @@ YuvComponentRegister.register(components);
  * It for example contains the `yuv-icon` component, responsible for rendering SVG-Icons.
  */
 @NgModule({
-  imports: [CommonModule, HttpClientModule, AccordionModule, SidebarModule],
-  declarations: [...components, ...directives],
-  exports: [...components, ...directives],
-  providers: [IconService, IconRegistryService]
+    declarations: [...components, ...directives],
+    exports: [...components, ...directives], imports: [CommonModule, AccordionModule, SidebarModule], providers: [IconService, IconRegistryService, provideHttpClient(withInterceptorsFromDi())]
 })
-export class YuvCommonModule {}
+export class YuvCommonModule { }
