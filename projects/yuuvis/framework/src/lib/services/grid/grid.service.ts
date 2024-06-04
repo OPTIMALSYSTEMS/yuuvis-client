@@ -51,7 +51,7 @@ export class GridService {
     event.preventDefault();
     event.stopPropagation();
 
-    const viewport = grid.api['gridBodyCtrl'].bodyScrollFeature.centerRowContainerCtrl.eViewport;
+    const viewport = grid.api['gridBodyCtrl'].bodyScrollFeature.centerRowsCtrl.eViewport;
     const scrollLeft = viewport.scrollLeft;
 
     const focusedCell = grid.api.getFocusedCell();
@@ -64,7 +64,7 @@ export class GridService {
       if (!cell) return '';
       const chips = cell.querySelectorAll('.chip') || [];
       const val = Array.from(chips.length ? chips : [cell]).map((c: any) => (c && c.textContent && c.textContent.trim()) || '');
-      const value = val.toString() || grid.api.getValue(col, row);
+      const value = val.toString() || grid.api.getCellValue({ colKey: col, rowNode: row, useFormatter: true });
       return !Utils.isEmpty(value) ? value.toString().replace(new RegExp('\n', 'g'), ' ') : '';
     };
 

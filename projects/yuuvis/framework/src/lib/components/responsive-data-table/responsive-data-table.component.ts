@@ -486,8 +486,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
     // TODO: find the solution for mobile / touch event
     if (this.deviceService.isDesktop && $event.button === 0 && this.api?.getGridOption('suppressCellFocus')) {
       if (!this.pendingChanges.check()) {
-        this.api?.setGridOption('suppressCellFocus', false);
-
+        // this.api?.setGridOption('suppressCellFocus', false);
         this.selectEvent($event);
       } else {
         $event.preventDefault();
@@ -499,7 +498,7 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
   private selectEvent($event: MouseEvent | any) {
     const colEl = ($event.composedPath ? $event.composedPath() : []).find((el) => el && el.getAttribute('col-id'));
     if (colEl) {
-      this.selectRows([colEl.parentElement.getAttribute('row-id')], colEl.getAttribute('col-id'), false);
+      this.selectRows([colEl.parentElement?.getAttribute('row-id')], colEl.getAttribute('col-id'), false);
       this.onSelectionChanged(null);
     }
   }

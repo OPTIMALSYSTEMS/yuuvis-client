@@ -16,7 +16,7 @@ import { TableComponentParams } from '../form-element-table.interface';
 export class ExpandedTableComponent {
   public modules: Module[] = [ClientSideRowModelModule, CsvExportModule];
 
-  @ViewChild('agGrid') overlayGrid!: AgGridAngular;
+  @ViewChild('overlayGrid') overlayGrid!: AgGridAngular;
 
   @Input() overlayGridOptions: GridOptions;
   @Input() params: TableComponentParams;

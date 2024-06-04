@@ -13,7 +13,7 @@
       </ng-container>
     </div>
     <div class="grid-body">
-      <ag-grid-angular #agGrid2 *ngIf="overlayGridOptions" class="ag-theme-yuv ag-theme-balham" [modules]="modules"
+      <ag-grid-angular #overlayGrid *ngIf="overlayGridOptions" class="ag-theme-yuv ag-theme-balham" [modules]="modules"
         [gridOptions]="overlayGridOptions" (cellClicked)="onCellClicked.emit($event)"
         (mousedown)="onMouseDown.emit($event)">
       </ag-grid-angular>

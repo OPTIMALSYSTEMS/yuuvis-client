@@ -227,9 +227,9 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
       !q.isTypes && !q.isTypeFields
         ? []
         : suggestions
-            .filter((t) => (t.label || '').toLowerCase().includes(q.text))
-            .map((t) => ({ ...t }))
-            .sort(Utils.sortValues('label'));
+          .filter((t) => (t.label || '').toLowerCase().includes(q.text))
+          .map((t) => ({ ...t }))
+          .sort(Utils.sortValues('label'));
   }
 
   autocompleteSelect(selection) {
@@ -337,7 +337,7 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
     return popoverRef && popoverRef.close();
   }
 
-  onControlRemoved(id: string) {}
+  onControlRemoved(id: string) { }
 
   onFilterChanged(res: Selectable) {
     this.searchQuery.filterGroup = SearchFilterGroup.fromArray(res.value).clone();
@@ -403,7 +403,7 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
       q.scope = q.scope || this.quickSearchService.SEARCH_QUERY_SCOPE;
 
       this.searchQuery = q;
-      this.searchForm.patchValue({ term: { label: q.term } }, { emitEvent: false });
+      this.searchForm.patchValue({ term: { label: q.term || '' } }, { emitEvent: false });
 
       // setup target object types
       this.onObjectTypesSelected(
@@ -478,7 +478,7 @@ export class QuickSearchComponent implements OnInit, AfterViewInit {
     }
   }
 
-  ngOnInit() {}
+  ngOnInit() { }
 }
 
 /**
