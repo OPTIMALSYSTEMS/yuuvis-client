@@ -32,7 +32,7 @@
   </div>
   <div class="overlay-body" style="padding: 16px; height: calc(100% - 80px); background-color: var(--main-background)">
     <yuv-responsive-master-slave [slaveActive]="!!editingRow" style="height: 100%">
-      <yuv-expanded-table class="yuv-master" [overlayGridOptions]="overlayGridOptions" [params]="params"
+      <yuv-expanded-table #overlayTable class="yuv-master" [overlayGridOptions]="overlayGridOptions" [params]="params"
         (onMouseDown)="onMouseDown($event)" (onCellClicked)="editRow($event)" (onAddRowButtonClicked)="addRow()"
         style="box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.2)"></yuv-expanded-table>
       <div class="yuv-slave" *ngIf="editingRow" style="box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.2)">
