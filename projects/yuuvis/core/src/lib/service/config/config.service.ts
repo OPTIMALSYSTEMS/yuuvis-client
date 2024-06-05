@@ -20,7 +20,7 @@ export class ConfigService {
   static GLOBAL_RESOURCES = '/resources/config/';
 
   static PARSER(c: any) {
-    return c?.resolved || c?.tenant || c?.global || c || {};
+    return c?.resolved || c?.tenant || c?.app || c?.global || c || {};
   }
 
   static GLOBAL_MAIN_CONFIG(prefix: 'system' | 'admin' | '' = '') {
