@@ -264,7 +264,8 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
     });
 
     // subscribe to pending hanges
-    this.pendingChanges.tasks$.pipe(takeUntilDestroyed()).subscribe((tasks) => this.api?.setGridOption('suppressCellFocus', !!tasks.length));
+    this.pendingChanges.tasks$.pipe(takeUntilDestroyed())
+      .subscribe((tasks) => this.api?.updateGridOptions({ suppressRowClickSelection: !!tasks.length, suppressCellFocus: !!tasks.length }));
   }
 
   /**
@@ -484,9 +485,9 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
 
   onMouseDown($event: MouseEvent | any) {
     // TODO: find the solution for mobile / touch event
-    if (this.deviceService.isDesktop && $event.button === 0 && this.api?.getGridOption('suppressCellFocus')) {
+    if (this.deviceService.isDesktop && $event.button === 0 && this.api?.getGridOption('suppressRowClickSelection')) {
       if (!this.pendingChanges.check()) {
-        // this.api?.setGridOption('suppressCellFocus', false);
+        this.api?.updateGridOptions({ suppressRowClickSelection: false, suppressCellFocus: false });
         this.selectEvent($event);
       } else {
         $event.preventDefault();
@@ -496,9 +497,10 @@ export class ResponsiveDataTableComponent implements OnInit, OnDestroy {
   }
 
   private selectEvent($event: MouseEvent | any) {
-    const colEl = ($event.composedPath ? $event.composedPath() : []).find((el) => el && el.getAttribute('col-id'));
-    if (colEl) {
-      this.selectRows([colEl.parentElement?.getAttribute('row-id')], colEl.getAttribute('col-id'), false);
+    const colId = $event.composedPath?.().find((el) => el?.getAttribute('col-id'))?.getAttribute('col-id');
+    const rowId = $event.composedPath?.().find((el) => el?.getAttribute('row-id'))?.getAttribute('row-id');
+    if (colId) {
+      this.selectRows([rowId], colId, false);
       this.onSelectionChanged(null);
     }
   }
