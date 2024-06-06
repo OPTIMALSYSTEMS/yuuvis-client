@@ -1,6 +1,6 @@
 {
   "name": "@yuuvis/core",
-  "version": "6.0.0-beta.3",
+  "version": "6.0.0-beta.4",
   "author": "OPTIMAL SYSTEMS GmbH <npm@optimal-systems.de>",
   "license": "MIT",
   "scripts": {
@@ -19,5 +19,11 @@
     "angular-oauth2-oidc": "17.0.2",
     "ngx-device-detector": "^7.0.0",
     "tslib": "^2.6.2"
+  },
+  "overrides": {
+    "ngx-device-detector": {
+        "@angular/common": "$@angular/common",
+        "@angular/core": "$@angular/core"
+    }
   }
 }

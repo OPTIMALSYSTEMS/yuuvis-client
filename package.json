@@ -1,6 +1,6 @@
 {
   "name": "yuuvis-flokfugl",
-  "version": "6.0.0-beta.3",
+  "version": "6.0.0-beta.4",
   "releaseDate": "Summer 2024",
   "description": "yuuvis® client",
   "author": "OPTIMAL SYSTEMS GmbH",
@@ -100,6 +100,20 @@
     "rxjs": "^7.8.0",
     "tslib": "^2.6.2",
     "zone.js": "~0.14.6"
+  },
+  "overrides": {
+    "ngx-device-detector": {
+        "@angular/common": "$@angular/common",
+        "@angular/core": "$@angular/core"
+    },
+    "ngx-drag-scroll": {
+      "@angular/common": "$@angular/common",
+      "@angular/core": "$@angular/core"
+    },
+    "ngx-resize": {
+      "@angular/common": "$@angular/common",
+      "@angular/core": "$@angular/core"
+    }
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^18.0.2",
