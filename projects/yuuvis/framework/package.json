@@ -1,6 +1,6 @@
 {
   "name": "@yuuvis/framework",
-  "version": "6.0.0-beta.3",
+  "version": "6.0.0-beta.4",
   "author": "OPTIMAL SYSTEMS GmbH <npm@optimal-systems.de>",
   "license": "MIT",
   "scripts": {
@@ -24,7 +24,7 @@
     "@ag-grid-community/styles": "~31.3.2",
     "@angular/cdk": "^18.0.1",
     "@yuuvis/command-palette": "^18.0.0",
-    "@yuuvis/core": "6.0.0-beta.3",
+    "@yuuvis/core": "6.0.0-beta.4",
     "@yuuvis/styles": "1.0.6",
     "angular-split": "^17.2.0",
     "lodash-es": "^4.17.21",
@@ -34,6 +34,16 @@
     "primeicons": "^7.0.0",
     "primeng": "^17.18.0",
     "tslib": "^2.6.2"
+  },
+  "overrides": {
+    "ngx-drag-scroll": {
+      "@angular/common": "$@angular/common",
+      "@angular/core": "$@angular/core"
+    },
+    "ngx-resize": {
+      "@angular/common": "$@angular/common",
+      "@angular/core": "$@angular/core"
+    }
   },
   "exports": {
     "./framework.css": {
