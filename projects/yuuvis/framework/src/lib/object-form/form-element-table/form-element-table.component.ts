@@ -6,6 +6,7 @@ import { Component, HostListener, Input, NgZone, TemplateRef, ViewChild, forward
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ControlValueAccessor, NG_VALIDATORS, NG_VALUE_ACCESSOR, UntypedFormControl, Validator } from '@angular/forms';
 import { Classification, PendingChangesService, SystemService } from '@yuuvis/core';
+import { debounceTime } from 'rxjs/operators';
 import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { PopoverConfig } from '../../popover/popover.interface';
 import { GridService } from '../../services/grid/grid.service';
@@ -148,10 +149,9 @@ export class FormElementTableComponent implements ControlValueAccessor, Validato
       }
     };
 
-    this.pendingChanges.tasks$.pipe(takeUntilDestroyed()).subscribe((tasks) => {
-      setTimeout(() => {
-        this.overlayGridOptions.suppressRowClickSelection = !!this.rowEdit && !!tasks.find((task) => task.id === this.rowEdit.pendingTaskId);
-      }, 0);
+    this.pendingChanges.tasks$.pipe(debounceTime(10), takeUntilDestroyed()).subscribe((tasks) => {
+      const s = this.overlayGridOptions.suppressRowClickSelection = !!this.rowEdit && !!tasks.find((task) => task.id === this.rowEdit.pendingTaskId);
+      this.overlayGrid?.api.updateGridOptions({ suppressRowClickSelection: s, suppressCellFocus: s });
     });
   }
 
@@ -372,15 +372,11 @@ export class FormElementTableComponent implements ControlValueAccessor, Validato
   }
 
   onMouseDown($event: any) {
-    if (this.overlayGridOptions.suppressRowClickSelection) {
+    if ($event.button === 0 && this.overlayGrid?.api.getGridOption('suppressRowClickSelection')) {
       if (!this.pendingChanges.checkForPendingTasks(this.rowEdit.pendingTaskId)) {
-        this.overlayGridOptions.suppressRowClickSelection = false;
+        this.overlayGrid?.api.updateGridOptions({ suppressRowClickSelection: false, suppressCellFocus: false });
         this.rowEdit.finishPending();
-        let rowIndex = this.getRowIndex($event.target, 'ag-body');
-        if (rowIndex !== null) {
-          this.overlayGrid.api.getRowNode('' + rowIndex).setSelected(true, true);
-          $event.target.click();
-        }
+        this.selectEvent($event);
       } else {
         $event.preventDefault();
         $event.stopImmediatePropagation();
@@ -388,11 +384,13 @@ export class FormElementTableComponent implements ControlValueAccessor, Validato
     }
   }
 
-  private getRowIndex(el, parentClass: string) {
-    return el && !el.classList.contains(parentClass)
-      ? el.getAttribute('row-index')
-        ? parseInt(el.getAttribute('row-index'), 10)
-        : this.getRowIndex(el.parentElement, parentClass)
-      : null;
+  private selectEvent($event: MouseEvent | any) {
+    const colId = $event.composedPath?.().find((el) => el?.getAttribute('col-id'))?.getAttribute('col-id');
+    const rowId = $event.composedPath?.().find((el) => el?.getAttribute('row-id'))?.getAttribute('row-id');
+    if (colId) {
+      const row = this.overlayGrid.api.getRowNode(rowId);
+      row.setSelected(true, true);
+      this.overlayGrid.api.setFocusedCell(row.rowIndex, colId);
+    }
   }
 }
