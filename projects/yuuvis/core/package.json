@@ -17,13 +17,7 @@
     "@ngx-pwa/local-storage": "^18.0.0",
     "@ngx-translate/core": "^15.0.0",
     "angular-oauth2-oidc": "17.0.2",
-    "ngx-device-detector": "^7.0.0",
+    "ngx-device-detector": "^8.0.0",
     "tslib": "^2.6.2"
-  },
-  "overrides": {
-    "ngx-device-detector": {
-        "@angular/common": "$@angular/common",
-        "@angular/core": "$@angular/core"
-    }
   }
 }

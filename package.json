@@ -91,8 +91,8 @@
     "angular-split": "^17.2.0",
     "core-js": "^3.23.2",
     "lodash-es": "^4.17.21",
-    "ngx-device-detector": "^7.0.0",
-    "ngx-drag-scroll": "^17.0.1",
+    "ngx-device-detector": "^8.0.0",
+    "ngx-drag-scroll": "^18.0.0",
     "ngx-resize": "^2.0.0",
     "ngx-toastr": "^19.0.0",
     "primeicons": "^7.0.0",
@@ -102,14 +102,6 @@
     "zone.js": "~0.14.6"
   },
   "overrides": {
-    "ngx-device-detector": {
-        "@angular/common": "$@angular/common",
-        "@angular/core": "$@angular/core"
-    },
-    "ngx-drag-scroll": {
-      "@angular/common": "$@angular/common",
-      "@angular/core": "$@angular/core"
-    },
     "ngx-resize": {
       "@angular/common": "$@angular/common",
       "@angular/core": "$@angular/core"
