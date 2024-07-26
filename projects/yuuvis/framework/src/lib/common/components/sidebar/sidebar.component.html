@@ -1,11 +1,12 @@
-<p-sidebar #navSideBar
+<p-sidebar
+  #NavSideBar
   [dismissible]="true"
   styleClass="sidebar"
   [(visible)]="display"
   [modal]="true"
   [style]="stylings"
-  (onShow)="onShow(navSideBar)"
-  (onHide)="onHide(navSideBar)"
+  (onShow)="onShow()"
+  (onHide)="onHide()"
   [position]="position"
   [showCloseIcon]="false"
 >
@@ -13,14 +14,13 @@
     <ng-content class="content" select=".header-content"></ng-content>
     <div class="close">
       <button class="icon light">
-        <yuv-icon (click)="onHide(navSideBar)" [svg]="closeIcon"></yuv-icon>
+        <yuv-icon (click)="onHide()" [svg]="closeIcon"></yuv-icon>
       </button>
     </div>
     <div id="logo-big"></div>
   </header>
 
-  <section class="sidebar-content" [ngStyle]="externalContentStyles"
-    (click)="onHide(navSideBar)">
+  <section class="sidebar-content" [ngStyle]="externalContentStyles">
     <ng-content select=".content"></ng-content>
   </section>
 </p-sidebar>

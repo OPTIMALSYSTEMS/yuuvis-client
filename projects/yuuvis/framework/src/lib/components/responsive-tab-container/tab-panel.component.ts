@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, ElementRef, Input, Renderer2, ViewContainerRef } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, Inject, Input, PLATFORM_ID, Renderer2, ViewContainerRef } from '@angular/core';
 import { TabPanel, TabView } from 'primeng/tabview';
 
 // original TabPanel template should be copied in case of primeng update
@@ -7,19 +7,18 @@ import { TabPanel, TabView } from 'primeng/tabview';
 @Component({
   selector: 'yuv-tab-panel',
   template: `
-      <div
-      *ngIf="!closed"
+    <div
+      [attr.id]="id"
       class="p-tabview-panel"
-      role="tabpanel"
       [hidden]="!selected"
-      [attr.id]="tabView.getTabContentId(id)"
+      role="tabpanel"
       [attr.aria-hidden]="!selected"
-      [attr.aria-labelledby]="tabView.getTabHeaderActionId(id)"
-      [attr.data-pc-name]="'tabpanel'"
+      [attr.aria-labelledby]="id + '-label'"
+      *ngIf="!closed"
     >
       <ng-content></ng-content>
       <ng-container *ngIf="contentTemplate && (cache ? loaded : selected)">
-          <ng-container *ngTemplateOutlet="contentTemplate"></ng-container>
+        <ng-container *ngTemplateOutlet="contentTemplate"></ng-container>
       </ng-container>
     </div>
   `,
@@ -28,8 +27,8 @@ import { TabPanel, TabView } from 'primeng/tabview';
 export class TabPanelComponent extends TabPanel {
   @Input() loaded: boolean;
 
-  constructor(viewContainer: ViewContainerRef, cd: ChangeDetectorRef, el: ElementRef, renderer: Renderer2) {
+  constructor(@Inject(PLATFORM_ID) private platformId: any, viewContainer: ViewContainerRef, cd: ChangeDetectorRef, el: ElementRef, private renderer: Renderer2) {
     // TabPanel is created with fake TabView
-    super(new TabView('id', el, cd, renderer), el, viewContainer, cd);
+    super(new TabView(platformId, el, cd), viewContainer, cd);
   }
 }
