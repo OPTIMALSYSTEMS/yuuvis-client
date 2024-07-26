@@ -28,7 +28,7 @@
     "@yuuvis/styles": "1.0.6",
     "angular-split": "^17.2.0",
     "lodash-es": "^4.17.21",
-    "ngx-drag-scroll": "^17.0.1",
+    "ngx-drag-scroll": "^18.0.0",
     "ngx-resize": "^2.0.0",
     "ngx-toastr": "^19.0.0",
     "primeicons": "^7.0.0",
@@ -36,10 +36,6 @@
     "tslib": "^2.6.2"
   },
   "overrides": {
-    "ngx-drag-scroll": {
-      "@angular/common": "$@angular/common",
-      "@angular/core": "$@angular/core"
-    },
     "ngx-resize": {
       "@angular/common": "$@angular/common",
       "@angular/core": "$@angular/core"
