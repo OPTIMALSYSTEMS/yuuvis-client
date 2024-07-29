@@ -29,6 +29,6 @@ export class TabPanelComponent extends TabPanel {
 
   constructor(@Inject(PLATFORM_ID) private platformId: any, viewContainer: ViewContainerRef, cd: ChangeDetectorRef, el: ElementRef, private renderer: Renderer2) {
     // TabPanel is created with fake TabView
-    super(new TabView(platformId, el, cd), viewContainer, cd);
+    super(new TabView(platformId, el, cd, renderer), el, viewContainer, cd);
   }
 }
