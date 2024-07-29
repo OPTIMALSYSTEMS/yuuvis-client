@@ -51,13 +51,14 @@ export class SummaryComponent implements OnInit, OnDestroy {
   private STORAGE_KEY_SECTION_VISIBLE = 'yuv.framework.summary.section.visibility';
   summary: Summary;
 
-  visible: any = {
+  private _visibleDefaults: any = {
     parent: true,
     core: true,
     data: false,
     baseparams: false,
     admin: true
   };
+  visible = this._visibleDefaults;
 
   dmsObjectID: string;
   coreFields: any[] = [];
@@ -320,9 +321,7 @@ export class SummaryComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     // TODO: store component state using a general service
     this.appCacheService.getItem(this.STORAGE_KEY_SECTION_VISIBLE).subscribe((visibility: number[]) => {
-      if (visibility !== null) {
-        this.visible = visibility;
-      }
+      this.visible = visibility || this._visibleDefaults;
     });
   }
 
