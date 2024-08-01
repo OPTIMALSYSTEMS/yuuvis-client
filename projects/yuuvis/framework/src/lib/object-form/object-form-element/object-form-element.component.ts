@@ -25,6 +25,7 @@ export class ObjectFormElementComponent implements OnDestroy {
   element: ObjectFormControlWrapper;
   errors: string[];
   isNull: boolean;
+  isNot: boolean;
   tag: {
     label: string;
     title: string;
@@ -70,6 +71,9 @@ export class ObjectFormElementComponent implements OnDestroy {
       if (this.formElementRef._eoFormElement.isNotSetValue) {
         this.labelToggled({ toggled: true, variable: this.formElementRef._eoFormElement.variable }, false);
       }
+      if (this.formElementRef._eoFormElement.useNot) {
+        this.useNot(true, false);
+      }
       this.fetchTags();
       this.formElementRef?.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((_) => this.setupErrors());
     }
@@ -96,15 +100,17 @@ export class ObjectFormElementComponent implements OnDestroy {
 
   labelToggled({ toggled, variable }, readonly = this.formElementRef._eoFormElement.readonly) {
     if (!this.skipToggle && this.situation === Situation.SEARCH && !readonly) {
-      const toggleClass = 'label-toggled';
       this.isNull = toggled;
-      if (toggled) {
-        this.renderer.addClass(this.el.nativeElement, toggleClass);
-      } else {
-        this.renderer.removeClass(this.el.nativeElement, toggleClass);
-      }
       this.formElementRef._eoFormElement.isNotSetValue = toggled;
       this.formElementRef._eoFormElement.variable = variable;
+      this.element.updateValueAndValidity();
+    }
+  }
+
+  useNot(useNot: boolean, readonly = this.formElementRef._eoFormElement.readonly) {
+    if (!this.skipToggle && this.situation === Situation.SEARCH && !readonly) {
+      this.isNot = useNot;
+      this.formElementRef._eoFormElement.useNot = useNot;
       this.element.updateValueAndValidity();
     }
   }

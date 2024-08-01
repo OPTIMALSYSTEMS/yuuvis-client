@@ -61,16 +61,12 @@
       "license": "MIT"
     },
     {
-      "name": "@ngneat/until-destroy",
-      "license": "MIT"
-    },
-    {
       "name": "@ngx-pwa/local-storage",
       "license": "MIT"
     },
     {
       "name": "@ngx-translate/core",
-      "license": "MIT"
+      "license": "SEE LICENSE IN LICENSE"
     },
     {
       "name": "@yuuvis/command-palette",
@@ -141,9 +137,9 @@
       "license": "MIT"
     }
   ],
-  "version": "5.2.0-beta.1",
-  "releasedate": "Winter 2023 LTS",
+  "version": "6.0.0-beta.4",
+  "releasedate": "Summer 2024",
   "author": "OPTIMAL SYSTEMS GmbH",
   "product": "yuuvis® client",
-  "buildtime": "2023-09-15T21:11:24.962Z"
+  "buildtime": "2024-08-01T10:44:11.782Z"
 }
