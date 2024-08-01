@@ -129,7 +129,7 @@ export class SearchFilterFormComponent implements OnInit, OnDestroy {
           variable?.operator ||
           fc.value?.operator ||
           (Array.isArray(fc.value) ? fc._eoFormElement._operator || this.quickSearchService.DEFAULT_SEARCH_FILTER_OPERATOR : SearchFilter.OPERATOR.EQUAL),
-          fc._eoFormElement.isNotSetValue ? fc._eoFormElement.variable : fc.value
+          fc._eoFormElement.isNotSetValue ? fc._eoFormElement.variable : fc.value, undefined, !!fc._eoFormElement.useNot
         );
         if (!filter.isEmpty() || fc._eoFormElement.isNotSetValue || fc._eoFormElement._internalType === 'boolean') {
           Object.assign(original, filter, { id: original.id, excludeFromQuery: false });
@@ -173,7 +173,7 @@ export class SearchFilterFormComponent implements OnInit, OnDestroy {
           const isRange = ['datetime', 'integer', 'decimal'].includes(field.propertyType);
           formPatch[filter.id] = { [otf.id]: !isRange ? firstValue : new RangeValue(variable?.operator || filter.operator, firstValue, filter.secondValue) };
         }
-        this.addFieldEntry(field, isEmpty, variable?.value, filter.id, otf.label, filter.operator);
+        this.addFieldEntry(field, isEmpty, variable?.value, filter.id, otf.label, filter.operator, filter.useNot);
       }
     });
 
@@ -186,7 +186,7 @@ export class SearchFilterFormComponent implements OnInit, OnDestroy {
    * Adds a new form field to the query
    * @param field The object type field to be added
    */
-  addFieldEntry(field: ObjectTypeField, isEmpty = false, variable = null, id?: string, label?: string, operator?: string) {
+  addFieldEntry(field: ObjectTypeField, isEmpty = false, variable = null, id?: string, label?: string, operator?: string, useNot = false) {
     const fcID = `${id || field.id}`;
     if (!this.searchFieldsForm) {
       this.initSearchFieldsForm();
@@ -197,6 +197,7 @@ export class SearchFilterFormComponent implements OnInit, OnDestroy {
     // disable descriptions as well in order to keep the UI clean
     formElement.description = null;
     formElement.isNotSetValue = isEmpty || !!variable;
+    formElement.useNot = useNot;
     formElement.variable = variable;
     formElement.readonly = this.disabled;
     formElement.label = label || formElement.label;

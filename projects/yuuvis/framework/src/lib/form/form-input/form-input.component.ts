@@ -14,7 +14,9 @@ import {
 } from '@angular/core';
 import { NG_VALUE_ACCESSOR } from '@angular/forms';
 import { SearchFilter, TranslateService } from '@yuuvis/core';
+import { IconRegistryService } from '../../common/components/icon/service/iconRegistry.service';
 import { PluginsService } from '../../plugins/plugins.service';
+import { kebap } from '../../svg.generated';
 import { PluginTriggerComponent } from './../../plugins/plugin-trigger.component';
 
 /**
@@ -38,6 +40,7 @@ export class FormInputComponent implements AfterViewInit {
   @ContentChild(NG_VALUE_ACCESSOR) childComponent: any;
 
   toggled = false;
+  useNot = false;
   _label: string;
 
   /**
@@ -64,10 +67,8 @@ export class FormInputComponent implements AfterViewInit {
   @Input()
   skipToggle: boolean;
 
-  @Input('isNull')
-  set isNull(n: boolean) {
-    this.toggled = n;
-  }
+  @Input('isNull') set isNull(n: boolean) { this.toggled = n; }
+  @Input('isNot') set isNot(n: boolean) { this.useNot = n; }
 
   @Input() variable: any;
 
@@ -77,7 +78,7 @@ export class FormInputComponent implements AfterViewInit {
     { value: `${SearchFilter.VARIABLES.TODAY},${SearchFilter.VARIABLES.TODAY}` },
     { value: `${SearchFilter.VARIABLES.YESTERDAY},${SearchFilter.VARIABLES.YESTERDAY}` },
     { value: `${SearchFilter.VARIABLES.THISWEEK},${SearchFilter.VARIABLES.THISWEEK}+6` },
-    { value: `${SearchFilter.VARIABLES.THISMONTH},${SearchFilter.VARIABLES.THISMONTH}+${new Date(new Date().getFullYear(),new Date().getMonth() + 1,0).getDate() - 1}` },
+    { value: `${SearchFilter.VARIABLES.THISMONTH},${SearchFilter.VARIABLES.THISMONTH}+${new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate() - 1}` },
     { value: `${SearchFilter.VARIABLES.THISYEAR},${SearchFilter.VARIABLES.THISYEAR}+${(new Date().getFullYear() % 4 === 0 ? 366 : 365) - 1}` }
   ];
 
@@ -118,7 +119,8 @@ export class FormInputComponent implements AfterViewInit {
   /**
    * Emits whether or not the input was set to 'Not set' state. Requires input `skipToggle` to be false.
    */
-  @Output() onToggleLabel = new EventEmitter<{toggled: boolean, variable: any}>();
+  @Output() onToggleLabel = new EventEmitter<{ toggled: boolean, variable: any }>();
+  @Output() onUseNotToggle = new EventEmitter<boolean>();
 
   @HostBinding('class.disabled') isDisabled;
   @HostBinding('class.invalid') isInvalid;
@@ -135,6 +137,11 @@ export class FormInputComponent implements AfterViewInit {
   get hook() {
     return this.childElement?.localName;
   }
+
+  get optionsEnabled() {
+    return !this.skipToggle && !this.isDisabled
+  }
+  showOptions = false;
 
   visiblePlugins = [];
   hiddenPlugins = [];
@@ -159,7 +166,10 @@ export class FormInputComponent implements AfterViewInit {
     }
   ];
 
-  constructor(private renderer: Renderer2, private elRef: ElementRef, private pluginsService: PluginsService, private translate: TranslateService) {
+  constructor(private renderer: Renderer2,
+    private iconRegistry: IconRegistryService,
+    private elRef: ElementRef, private pluginsService: PluginsService, private translate: TranslateService) {
+    this.iconRegistry.registerIcons([kebap]);
     this.translate.instant('yuv.framework.trigger.filter.variable.user');
     this.translate.instant('yuv.framework.trigger.filter.variable.date');
   }
@@ -179,11 +189,26 @@ export class FormInputComponent implements AfterViewInit {
     return (label === SearchFilter.OPERATOR_LABEL.EQUAL ? '' : label) + title + offset;
   }
 
+  openInputOptions() {
+    if (this.optionsEnabled) {
+      this.showOptions = !this.showOptions;
+    }
+  }
+
   toggle(toggle = !this.toggled, variable = null) {
-    if (!this.skipToggle && !this.isDisabled) {
+    if (this.optionsEnabled) {
       this.toggled = toggle;
+      if (this.toggled) this.useNot = false;
       this.variable = variable;
       this.onToggleLabel.emit({ toggled: this.toggled, variable });
+    }
+  }
+
+  toggleNot(toggle = !this.useNot) {
+    if (this.optionsEnabled) {
+      this.useNot = toggle;
+      if (this.useNot) this.toggled = false;
+      this.onUseNotToggle.emit(this.useNot);
     }
   }
 

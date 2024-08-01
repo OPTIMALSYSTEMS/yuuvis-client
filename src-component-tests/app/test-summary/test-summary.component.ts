@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { LocalStorage } from '@ngx-pwa/local-storage';
+import { StorageMap } from '@ngx-pwa/local-storage';
 import { DmsObject } from '@yuuvis/core';
 import { AppDataService } from '../add.data.service';
 
@@ -13,7 +13,7 @@ export class TestSummaryComponent implements OnInit {
   summaryObject;
   showExtras: boolean;
 
-  constructor(private data: AppDataService, private localStorage: LocalStorage) {}
+  constructor(private data: AppDataService, private localStorage: StorageMap) { }
 
   // setDmsObjectInput() {
   //   this.summaryObject = this.data.getDmsObject();
@@ -38,8 +38,8 @@ export class TestSummaryComponent implements OnInit {
   }
 
   clearStorage() {
-    this.localStorage.removeItem('yuv.framework.summary.section.visibility').subscribe();
+    this.localStorage.delete('yuv.framework.summary.section.visibility').subscribe();
   }
 
-  ngOnInit() {}
+  ngOnInit() { }
 }

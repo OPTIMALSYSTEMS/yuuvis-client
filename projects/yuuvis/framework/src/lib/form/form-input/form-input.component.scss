@@ -17,6 +17,15 @@
     padding: calc(var(--app-pane-padding) / 4) 0;
     border-bottom: 1px solid rgba(0, 0, 0, 0.15);
 
+    &.optionsEnabled {
+      > .form-input__label {
+        cursor: pointer;
+        yuv-icon {
+          display: block;
+        }
+      }
+    }
+
     &.focusWithin {
       border-color: var(--color-accent);
       > .form-input__label {
@@ -31,6 +40,11 @@
       // that's the size of buttons inside the controls (like datepicker)
       // not setting min-height would result in form elements not lining up
       min-height: 20px; // (16px icon height + 2*2px padding)
+
+      &.not {
+        display: flex;
+        gap: calc(var(--app-pane-padding) / 2);
+      }
 
       > span {
         display: inline-block;
@@ -54,6 +68,9 @@
       }
     }
     > .form-input__label {
+      display: flex;
+      align-items: center;
+      line-height: 1em;
       text-align: end;
       @include transition();
       user-select: none;
@@ -66,6 +83,13 @@
       font-size: var(--font-caption);
       &:hover + .triggers {
         display: flex;
+      }
+
+      yuv-icon {
+        width: 1rem;
+        height: 1rem;
+        flex: 0 0 auto;
+        display: none;
       }
     }
     > .tag {
@@ -89,6 +113,27 @@
 
   &.checkbox .fe-wrapper > .form-input__label {
     text-align: start;
+  }
+
+  .options {
+    display: flex;
+    align-items: center;
+    padding: calc(var(--app-pane-padding) / 8);
+    gap: calc(var(--app-pane-padding) / 4);
+    border: 1px solid var(--panel-divider-color);
+    border-radius: calc(var(--app-pane-padding) / 8);
+    margin-block-start: calc(var(--app-pane-padding) / 4);
+
+    button {
+      padding: calc(var(--app-pane-padding) / 8) calc(var(--app-pane-padding) / 4);
+      border: 1px solid var(--panel-divider-color);
+      font-size: var(--font-hint);
+
+      &.active {
+        border-color: var(--color-accent);
+        color: var(--color-accent);
+      }
+    }
   }
 
   .description {
