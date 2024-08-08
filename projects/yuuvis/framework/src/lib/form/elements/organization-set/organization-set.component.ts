@@ -58,14 +58,14 @@ export class OrganizationSetComponent implements ControlValueAccessor, Validator
     return !this.multiselect && this.innerValue?.length === 1;
   }
   @HostBinding('class.inputDirty') get _inputDirty() {
-    return this.autoCompleteInput?.multiInputEL?.nativeElement?.value;
+    return this.autoCompleteInput?.multiInputEl?.nativeElement?.value;
   }
 
   constructor(private iconRegistry: IconRegistryService, private idmService: IdmService, private system: SystemService) {
     this.iconRegistry.registerIcons([organization, organizationMulti]);
   }
 
-  propagateChange = (_: any) => {};
+  propagateChange = (_: any) => { };
 
   writeValue(value: any): void {
     const val = Array.isArray(value) ? value.map((v) => (typeof v === 'string' ? JSON.parse(v) : v)) : value ? [JSON.parse(value)] : [];
@@ -80,7 +80,7 @@ export class OrganizationSetComponent implements ControlValueAccessor, Validator
     this.propagateChange = fn;
   }
 
-  registerOnTouched(fn: any): void {}
+  registerOnTouched(fn: any): void { }
 
   private _propagate() {
     this.propagateChange(this.value);
@@ -134,15 +134,15 @@ export class OrganizationSetComponent implements ControlValueAccessor, Validator
   }
 
   private _clearInnerInput() {
-    if (this.autoCompleteInput.multiInputEL) {
-      this.autoCompleteInput.multiInputEL.nativeElement.value = '';
+    if (this.autoCompleteInput.multiInputEl) {
+      this.autoCompleteInput.multiInputEl.nativeElement.value = '';
       this._propagateValidity(true);
     }
   }
 
   ngAfterViewInit() {
     if (this.autofocus) {
-      setTimeout(() => this.autoCompleteInput.multiInputEL?.nativeElement.focus());
+      setTimeout(() => this.autoCompleteInput.multiInputEl?.nativeElement.focus());
     }
   }
 }

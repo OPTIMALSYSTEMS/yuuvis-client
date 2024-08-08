@@ -76,7 +76,7 @@ export class ReferenceComponent implements ControlValueAccessor, Validator, Afte
     return !this.multiselect && this.innerValue?.length === 1;
   }
   @HostBinding('class.inputDirty') get _inputDirty() {
-    return this.autoCompleteInput?.multiInputEL?.nativeElement?.value;
+    return this.autoCompleteInput?.multiInputEl?.nativeElement?.value;
   }
 
   /**
@@ -200,7 +200,7 @@ export class ReferenceComponent implements ControlValueAccessor, Validator, Afte
     this.iconRegistry.registerIcons([reference]);
     this.path = this.routes && this.routes.object ? this.routes.object.path : null;
   }
-  propagateChange = (_: any) => {};
+  propagateChange = (_: any) => { };
 
   writeValue(value: any): void {
     if (value) {
@@ -216,7 +216,7 @@ export class ReferenceComponent implements ControlValueAccessor, Validator, Afte
     this.propagateChange = fn;
   }
 
-  registerOnTouched(fn: any): void {}
+  registerOnTouched(fn: any): void { }
 
   private propagate() {
     this.propagateChange(this.value);
@@ -316,15 +316,15 @@ export class ReferenceComponent implements ControlValueAccessor, Validator, Afte
   }
 
   private clearInnerInput() {
-    if (this.autoCompleteInput.multiInputEL) {
-      this.autoCompleteInput.multiInputEL.nativeElement.value = '';
+    if (this.autoCompleteInput.multiInputEl) {
+      this.autoCompleteInput.multiInputEl.nativeElement.value = '';
       this.propagateValidity(true);
     }
   }
 
   ngAfterViewInit() {
     if (this.autofocus) {
-      setTimeout(() => this.autoCompleteInput.multiInputEL?.nativeElement.focus());
+      setTimeout(() => this.autoCompleteInput.multiInputEl?.nativeElement.focus());
     }
   }
 }

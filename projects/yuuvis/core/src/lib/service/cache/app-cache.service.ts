@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { LocalStorage, StorageMap } from '@ngx-pwa/local-storage';
+import { StorageMap } from '@ngx-pwa/local-storage';
 import { forkJoin, Observable, of } from 'rxjs';
 import { first, map, switchMap } from 'rxjs/operators';
 import { Utils } from '../../util/utils';
@@ -16,29 +16,29 @@ export class AppCacheService {
   /**
    * @ignore
    */
-  constructor(private storage: LocalStorage, private storageMap: StorageMap) {}
+  constructor(private storageMap: StorageMap) { }
 
   setItem(key: string, value: any): Observable<boolean> {
-    return this.storage.setItem(key, value);
+    return this.storageMap.set(key, value);
   }
 
   getItem(key: string): Observable<any> {
-    return this.storage.getItem(key);
+    return this.storageMap.get(key);
   }
 
   removeItem(key: string): Observable<boolean> {
-    return this.storage.removeItem(key);
+    return this.storageMap.delete(key);
   }
 
   public clear(filter?: (key) => boolean): Observable<boolean> {
     return filter
       ? this.getStorageKeys().pipe(
-          switchMap((keys) => {
-            const list = keys.filter((k) => filter(k)).map((k) => this.removeItem(k));
-            return list.length ? forkJoin(list).pipe(map(() => true)) : of(true);
-          })
-        )
-      : this.storage.clear();
+        switchMap((keys) => {
+          const list = keys.filter((k) => filter(k)).map((k) => this.removeItem(k));
+          return list.length ? forkJoin(list).pipe(map(() => true)) : of(true);
+        })
+      )
+      : this.storageMap.clear();
   }
 
   getStorageKeys(): Observable<any> {
@@ -56,12 +56,12 @@ export class AppCacheService {
       switchMap((keys) =>
         keys.length
           ? forkJoin(
-              Utils.arrayToObject(
-                keys,
-                (o) => o,
-                (k) => this.getItem(k)
-              )
+            Utils.arrayToObject(
+              keys,
+              (o) => o,
+              (k) => this.getItem(k)
             )
+          )
           : of({})
       )
     );
