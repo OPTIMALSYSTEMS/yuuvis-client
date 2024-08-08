@@ -1,21 +1,21 @@
 import { RowEvent } from '@ag-grid-community/core';
 import { PlatformLocation } from '@angular/common';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, DestroyRef, OnDestroy, OnInit, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PendingChangesService, Screen, ScreenService, SearchQuery, TranslateService, Utils } from '@yuuvis/core';
 import { FilterPanelConfig, LayoutService, PluginsService } from '@yuuvis/framework';
 import { map } from 'rxjs';
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { AppSearchService } from '../../service/app-search.service';
 
-@UntilDestroy()
 @Component({
   selector: 'yuv-result',
   templateUrl: './result.component.html',
   styleUrls: ['./result.component.scss']
 })
 export class ResultComponent implements OnInit, OnDestroy {
+  destroyRef = inject(DestroyRef);
   private STORAGE_KEY = 'yuv.app.result';
   private LAYOUT_STORAGE_KEY = `${this.STORAGE_KEY}.layout`;
   objectDetailsID: string;
@@ -46,7 +46,7 @@ export class ResultComponent implements OnInit, OnDestroy {
   ) {
     this.screenService.screenChange$
       .pipe(
-        untilDestroyed(this),
+        takeUntilDestroyed(this.destroyRef),
         map((screen: Screen) => (this.smallScreen = screen.mode === ScreenService.MODE.SMALL))
       )
       .subscribe();
@@ -92,7 +92,7 @@ export class ResultComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     // extract the query from the route params
-    this.route.queryParamMap.pipe(untilDestroyed(this)).subscribe((params) => {
+    this.route.queryParamMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
       this.searchQuery = params.get('query') ? new SearchQuery(JSON.parse(params.get('query'))) : null;
       // if the 'tmp' query param is est, the query will not be set
       // to the global app search
@@ -103,5 +103,5 @@ export class ResultComponent implements OnInit, OnDestroy {
     });
   }
 
-  ngOnDestroy() {}
+  ngOnDestroy() { }
 }

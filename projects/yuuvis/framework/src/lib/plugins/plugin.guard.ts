@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, CanActivate, CanDeactivate, Router, RouterStateSnapshot } from '@angular/router';
+import { ActivatedRouteSnapshot, Router, RouterStateSnapshot } from '@angular/router';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { PluginComponent } from './plugin.component';
@@ -9,7 +9,7 @@ import { PluginsService } from './plugins.service';
 @Injectable({
   providedIn: 'root'
 })
-export class PluginGuard implements CanDeactivate<PluginComponent>, CanActivate {
+export class PluginGuard  {
   static updateRouter(router: Router, states: any[]) {
     (states || []).forEach((state: any) => {
       router.config.unshift({ path: state.path, component: PluginComponent, canActivate: [PluginGuard], canDeactivate: [PluginGuard] });

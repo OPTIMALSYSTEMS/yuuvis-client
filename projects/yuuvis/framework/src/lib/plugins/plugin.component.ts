@@ -1,5 +1,5 @@
 import { AfterViewInit, ChangeDetectorRef, Component, ComponentRef, DoCheck, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActionComponent } from '../actions/interfaces/action-component.interface';
 import { ComponentAnchorDirective } from '../directives/component-anchor/component-anchor.directive';
 import { YuvComponentRegister } from './../shared/utils/utils';
@@ -7,7 +7,6 @@ import { IFrameComponent } from './iframe.component';
 import { PluginConfig } from './plugins.interface';
 import { PluginsService } from './plugins.service';
 
-@UntilDestroy()
 @Component({
   selector: 'yuv-plugin',
   template: `
@@ -46,7 +45,7 @@ export class PluginComponent extends IFrameComponent implements OnInit, OnDestro
   }
 
   get untilDestroyed() {
-    return untilDestroyed(this);
+    return takeUntilDestroyed(this.destroyRef);
   }
 
   private componentRef: ComponentRef<any>;
@@ -66,21 +65,21 @@ export class PluginComponent extends IFrameComponent implements OnInit, OnDestro
 
         if (this.parent?.onCancel && this.parent?.onFinish) {
           (<ActionComponent>this.cmp).selection = this.parent.selection;
-          (<ActionComponent>this.cmp).canceled?.pipe(untilDestroyed(this)).subscribe(() => this.parent.onCancel());
-          (<ActionComponent>this.cmp).finished?.pipe(untilDestroyed(this)).subscribe(() => this.parent.onFinish());
+          (<ActionComponent>this.cmp).canceled?.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => this.parent.onCancel());
+          (<ActionComponent>this.cmp).finished?.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => this.parent.onFinish());
         }
 
         // map all input | output values to the instance
         Object.keys(this.config?.plugin?.inputs || {}).forEach(
           (opt) =>
-            (this.cmp[opt] = this._inputs[opt] =
-              typeof this.config.plugin.inputs[opt] === 'string'
-                ? this.pluginsService.applyFunction(this.config.plugin.inputs[opt], 'component, parent', [this, this.parent])
-                : this.config.plugin.inputs[opt])
+          (this.cmp[opt] = this._inputs[opt] =
+            typeof this.config.plugin.inputs[opt] === 'string'
+              ? this.pluginsService.applyFunction(this.config.plugin.inputs[opt], 'component, parent', [this, this.parent])
+              : this.config.plugin.inputs[opt])
         );
         Object.keys(this.config?.plugin?.outputs || {}).forEach((opt) =>
           this.cmp[opt]
-            .pipe(untilDestroyed(this))
+            .pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe((event: any) =>
               typeof this.config.plugin.outputs[opt] === 'string'
                 ? this.pluginsService.applyFunction(this.config.plugin.outputs[opt], 'event, component, parent', [event, this, this.parent])

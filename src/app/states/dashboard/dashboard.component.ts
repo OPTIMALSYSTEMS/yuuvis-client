@@ -1,6 +1,6 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, DestroyRef, OnDestroy, OnInit, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NavigationExtras, Router } from '@angular/router';
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { LangChangeEvent } from '@ngx-translate/core';
 import { AppCacheService, ConfigService, SearchQuery, TranslateService, UserService, YuvUser } from '@yuuvis/core';
 import {
@@ -36,7 +36,6 @@ import { DashboardConfig } from '../../app.interface';
 import { AppService } from '../../app.service';
 import { AppSearchService } from '../../service/app-search.service';
 
-@UntilDestroy()
 @Component({
   selector: 'yuv-dashboard',
   templateUrl: './dashboard.component.html',
@@ -59,6 +58,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       newItemHeight: 5
     }
   };
+  destroyRef = inject(DestroyRef);
 
   constructor(
     private appService: AppService,
@@ -70,7 +70,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private router: Router,
     private config: ConfigService
   ) {
-    this.translate.onLangChange.pipe(untilDestroyed(this)).subscribe((e: LangChangeEvent) => {
+    this.translate.onLangChange.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((e: LangChangeEvent) => {
       this.setWidgetGridLabels();
     });
     this.setWidgetGridLabels();
@@ -135,7 +135,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.appService.dashboardConfig$.pipe(untilDestroyed(this)).subscribe({
+    this.appService.dashboardConfig$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (res) => {
         if (this.config.get('core.features.dashboardWorkspaces')) {
           this.dashboardConfig = res;
@@ -240,5 +240,5 @@ export class DashboardComponent implements OnInit, OnDestroy {
       .subscribe();
   }
 
-  ngOnDestroy(): void {}
+  ngOnDestroy(): void { }
 }

@@ -1,7 +1,8 @@
+import { AgGridAngular } from '@ag-grid-community/angular';
 import { ClientSideRowModelModule } from '@ag-grid-community/client-side-row-model';
 import { GridOptions, Module } from '@ag-grid-community/core';
 import { CsvExportModule } from '@ag-grid-community/csv-export';
-import { Component, EventEmitter, HostListener, Input, Output } from '@angular/core';
+import { Component, EventEmitter, HostListener, Input, Output, ViewChild } from '@angular/core';
 import { IconRegistryService } from '../../../common/components/icon/service/iconRegistry.service';
 import { GridService } from '../../../services/grid/grid.service';
 import { addCircle, contentDownload, sizeToFit } from '../../../svg.generated';
@@ -14,6 +15,8 @@ import { TableComponentParams } from '../form-element-table.interface';
 })
 export class ExpandedTableComponent {
   public modules: Module[] = [ClientSideRowModelModule, CsvExportModule];
+
+  @ViewChild('overlayGrid') overlayGrid!: AgGridAngular;
 
   @Input() overlayGridOptions: GridOptions;
   @Input() params: TableComponentParams;
@@ -31,7 +34,7 @@ export class ExpandedTableComponent {
   @HostListener('keydown.meta.alt.c', ['$event'])
   @HostListener('keydown.meta.c', ['$event'])
   copyCellHandler(event: KeyboardEvent) {
-    this.gridApi.copyToClipboard(event, this.overlayGridOptions);
+    this.gridApi.copyToClipboard(event, this.overlayGrid, this.overlayGridOptions);
   }
 
   constructor(public gridApi: GridService, private iconRegistry: IconRegistryService) {
@@ -39,13 +42,13 @@ export class ExpandedTableComponent {
   }
 
   exportCSV() {
-    this.overlayGridOptions.api.exportDataAsCsv({
+    this.overlayGrid.api.exportDataAsCsv({
       ...this.gridApi.csvExportParams,
       fileName: this.params.element.label
     });
   }
 
   sizeToFit() {
-    this.overlayGridOptions.api.sizeColumnsToFit();
+    this.overlayGrid.api.sizeColumnsToFit();
   }
 }

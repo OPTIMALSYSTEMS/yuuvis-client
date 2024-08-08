@@ -1,5 +1,5 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { Component, DestroyRef, OnDestroy, OnInit, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { BpmEvent, EventService, Process, ProcessRow, ProcessService, TranslateService } from '@yuuvis/core';
 import {
   FormatProcessDataService,
@@ -18,13 +18,14 @@ import {
 import { Observable } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 
-@UntilDestroy()
 @Component({
   selector: 'yuv-processes',
   templateUrl: './processes.component.html',
   styleUrls: ['./processes.component.scss']
 })
 export class ProcessesComponent implements OnInit, OnDestroy {
+  destroyRef = inject(DestroyRef);
+
   layoutOptionsKey = 'yuv.app.processes';
   contextError: string;
   selectedProcess: Process;
@@ -32,8 +33,8 @@ export class ProcessesComponent implements OnInit, OnDestroy {
     map((processData: Process[]) => {
       const pd = this.filterTerm
         ? processData.filter((t: Process) => {
-            return t.subject && t.subject.toLowerCase().indexOf(this.filterTerm.toLowerCase()) !== -1;
-          })
+          return t.subject && t.subject.toLowerCase().indexOf(this.filterTerm.toLowerCase()) !== -1;
+        })
         : processData;
       return this.formatProcessDataService.formatProcessDataForTable(pd, ['type', 'subject', 'startTime', 'status', 'endTime']);
     })
@@ -95,7 +96,7 @@ export class ProcessesComponent implements OnInit, OnDestroy {
       .subscribe();
   }
 
-  onSlaveClosed() {}
+  onSlaveClosed() { }
 
   ngOnInit(): void {
     this.fetchProcesses(this.statusFilter);
@@ -103,10 +104,10 @@ export class ProcessesComponent implements OnInit, OnDestroy {
       .on(BpmEvent.BPM_EVENT)
       .pipe(
         tap(() => this.fetchProcesses(this.statusFilter)),
-        untilDestroyed(this)
+        takeUntilDestroyed(this.destroyRef)
       )
       .subscribe();
   }
 
-  ngOnDestroy() {}
+  ngOnDestroy() { }
 }

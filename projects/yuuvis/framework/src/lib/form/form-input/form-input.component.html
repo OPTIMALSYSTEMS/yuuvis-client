@@ -1,6 +1,12 @@
-<div class="fe-wrapper" yuvFocusWithin>
-  <div class="tag" *ngIf="tag" title="{{tag.title}}">{{tag.label}}</div>
-  <label class="form-input__label" #label (click)="toggle()">{{_label}}</label>
+<div [ngClass]="{optionsEnabled}" class="fe-wrapper" yuvFocusWithin>
+  <div class="tag" *ngIf="tag" title="{{ tag.title }}">{{ tag.label }}</div>
+  <!-- <label class="form-input__label" #label (click)="toggle()"> -->
+  <label class="form-input__label" #label (click)="openInputOptions()">
+    {{ _label }}
+    @if(optionsEnabled) {
+    <yuv-icon icon="kebap"></yuv-icon>
+    }
+  </label>
   <div class="triggers">
     <ng-container *ngFor="let action of hiddenPlugins">
       <yuv-plugin-trigger [parent]="this" [action]="action"></yuv-plugin-trigger>
@@ -11,12 +17,19 @@
       <yuv-plugin-trigger [parent]="this" [action]="action"></yuv-plugin-trigger>
     </ng-container>
   </div>
-  <div class="control" [hidden]="toggled">
+  <div class="control" [ngClass]="{ not: useNot }" [hidden]="toggled">
+    @if(useNot){ <span translate>yuv.framework.form.form-input.not</span>}
     <ng-content></ng-content>
   </div>
-  <div class="control" *ngIf="toggled" [ngStyle]="{'min-width.px': 190}">
+  <div class="control" *ngIf="toggled" [ngStyle]="{ 'min-width.px': 190 }">
     <span *ngIf="variable">{{ variableTitle(variable) }}</span>
     <span *ngIf="!variable" translate>yuv.framework.form.form-input.null</span>
   </div>
 </div>
-<div class="description" *ngIf="description">{{description}}</div>
+@if(showOptions){
+<div class="options">
+  <button (click)="toggle()" [ngClass]="{ active: toggled }" translate>yuv.framework.form.form-input.null</button>
+  <button (click)="toggleNot()" [ngClass]="{ active: useNot }" translate>yuv.framework.form.form-input.not</button>
+</div>
+}
+<div class="description" *ngIf="description">{{ description }}</div>

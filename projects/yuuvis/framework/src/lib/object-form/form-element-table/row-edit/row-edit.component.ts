@@ -1,8 +1,8 @@
 import { Component, ElementRef, EventEmitter, Input, Output, TemplateRef, ViewChild, ViewEncapsulation } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { UntypedFormBuilder, UntypedFormControl } from '@angular/forms';
 import { PendingChangesService, TranslateService } from '@yuuvis/core';
 import { IconRegistryService } from '../../../common/components/icon/service/iconRegistry.service';
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { PluginComponent } from '../../../plugins/plugin.component';
 import { PopoverService } from '../../../popover/popover.service';
 import { clear, deleteIcon } from '../../../svg.generated';
@@ -12,7 +12,6 @@ import { EditRow, EditRowResult } from '../form-element-table.interface';
  * Component for editing a row from an object forms table.
  */
 
-@UntilDestroy()
 @Component({
   selector: 'yuv-row-edit',
   templateUrl: './row-edit.component.html',
@@ -78,7 +77,7 @@ export class RowEditComponent {
   ) {
     this.iconRegistry.registerIcons([deleteIcon, clear]);
     this.createNewCheckbox = this.fb.control(this.createNewRow);
-    this.createNewCheckbox.valueChanges.pipe(untilDestroyed(this)).subscribe((v) => (this.createNewRow = v));
+    this.createNewCheckbox.valueChanges.pipe(takeUntilDestroyed()).subscribe((v) => (this.createNewRow = v));
   }
 
   onFormReady() {

@@ -1,10 +1,10 @@
-import { Component, ElementRef, Input, OnDestroy, Renderer2 } from '@angular/core';
+import { Component, DestroyRef, ElementRef, Input, OnDestroy, Renderer2, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Classification, TranslateService } from '@yuuvis/core';
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { ObjectFormTranslateService } from '../object-form-translate.service';
 import { ObjectFormControlWrapper } from '../object-form.interface';
-import { Situation } from './../object-form.situation';
 import { ObjectFormUtils } from '../object-form.utils';
+import { Situation } from './../object-form.situation';
 
 /**
  * Component rendering a single form element.
@@ -13,17 +13,19 @@ import { ObjectFormUtils } from '../object-form.utils';
  *<yuv-object-form-element [element]="someForm.controls[key]" [situation]="situation"></yuv-object-form-element>
  */
 
- @UntilDestroy()
- @Component({
+@Component({
   selector: 'yuv-object-form-element',
   templateUrl: './object-form-element.component.html',
   styleUrls: ['./object-form-element.component.scss']
 })
 export class ObjectFormElementComponent implements OnDestroy {
+  destroyRef = inject(DestroyRef);
+
   formElementRef: any;
   element: ObjectFormControlWrapper;
   errors: string[];
   isNull: boolean;
+  isNot: boolean;
   tag: {
     label: string;
     title: string;
@@ -53,7 +55,7 @@ export class ObjectFormElementComponent implements OnDestroy {
     );
   }
 
-  @Input() set formElement(el: {element: any, situation?: string}) {
+  @Input() set formElement(el: { element: any, situation?: string }) {
     this.elementSetter = el && ObjectFormUtils.elementToFormControl(el.element, el.situation);
   }
 
@@ -69,8 +71,11 @@ export class ObjectFormElementComponent implements OnDestroy {
       if (this.formElementRef._eoFormElement.isNotSetValue) {
         this.labelToggled({ toggled: true, variable: this.formElementRef._eoFormElement.variable }, false);
       }
+      if (this.formElementRef._eoFormElement.useNot) {
+        this.useNot(true, false);
+      }
       this.fetchTags();
-      this.formElementRef?.valueChanges.pipe(untilDestroyed(this)).subscribe((_) => this.setupErrors());
+      this.formElementRef?.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((_) => this.setupErrors());
     }
   }
 
@@ -79,7 +84,7 @@ export class ObjectFormElementComponent implements OnDestroy {
     private formTranslateService: ObjectFormTranslateService,
     private renderer: Renderer2,
     private el: ElementRef
-  ) {}
+  ) { }
 
   /**
    * formating rules...
@@ -95,15 +100,17 @@ export class ObjectFormElementComponent implements OnDestroy {
 
   labelToggled({ toggled, variable }, readonly = this.formElementRef._eoFormElement.readonly) {
     if (!this.skipToggle && this.situation === Situation.SEARCH && !readonly) {
-      const toggleClass = 'label-toggled';
       this.isNull = toggled;
-      if (toggled) {
-        this.renderer.addClass(this.el.nativeElement, toggleClass);
-      } else {
-        this.renderer.removeClass(this.el.nativeElement, toggleClass);
-      }
       this.formElementRef._eoFormElement.isNotSetValue = toggled;
       this.formElementRef._eoFormElement.variable = variable;
+      this.element.updateValueAndValidity();
+    }
+  }
+
+  useNot(useNot: boolean, readonly = this.formElementRef._eoFormElement.readonly) {
+    if (!this.skipToggle && this.situation === Situation.SEARCH && !readonly) {
+      this.isNot = useNot;
+      this.formElementRef._eoFormElement.useNot = useNot;
       this.element.updateValueAndValidity();
     }
   }
@@ -117,13 +124,13 @@ export class ObjectFormElementComponent implements OnDestroy {
       this.tag =
         this.formElementRef._eoFormElement.defaultvaluefunction === 'EXTRACTION'
           ? {
-              label: 'ex',
-              title: this.translate.instant('yuv.framework.object-form-element.tag.ex')
-            }
+            label: 'ex',
+            title: this.translate.instant('yuv.framework.object-form-element.tag.ex')
+          }
           : {
-              label: 'df',
-              title: this.translate.instant('yuv.framework.object-form-element.tag.df')
-            };
+            label: 'df',
+            title: this.translate.instant('yuv.framework.object-form-element.tag.df')
+          };
     }
   }
 
@@ -143,5 +150,5 @@ export class ObjectFormElementComponent implements OnDestroy {
     }
   }
 
-  ngOnDestroy() {}
+  ngOnDestroy() { }
 }

@@ -1,5 +1,5 @@
 {
-  "yuvfc.widget-grid.widget.aggregate.form.label.aggField": "Sum this attribute’s values",
+  "yuvfc.widget-grid.widget.aggregate.form.label.aggField": "Add values of this property",
   "yuvfc.widget-grid.widget.aggregate.form.label.average": "Calculate average",
   "yuvfc.widget-grid.widget.charts.form.label.aggregation": "Aggregation",
   "yuvfc.widget-grid.widget.charts.form.label.chartType": "Chart type",
@@ -161,6 +161,7 @@
   "yuv.framework.follow-up-details.notfound.button.remove": "Remove follow-up",
   "yuv.framework.follow-up-details.notfound.message": "The object to which this follow-up refers has been deleted or its access rights have been changed.",
   "yuv.framework.form.datepicker.select": "Select",
+  "yuv.framework.form.form-input.not": "Not",
   "yuv.framework.form.form-input.null": "No value",
   "yuv.framework.form.organization.classify.icon.title": "Organization object",
   "yuv.framework.form.reference.classify.icon.title": "Object reference",

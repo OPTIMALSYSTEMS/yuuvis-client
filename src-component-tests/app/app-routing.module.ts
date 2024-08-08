@@ -9,6 +9,7 @@ import { TestContextComponent } from './test-context/test-context.component';
 import { TestDirectivesComponent } from './test-directives/test-directives.component';
 import { TestFileDropComponent } from './test-file-drop/test-file-drop.component';
 import { TestFormElementsComponent } from './test-form-elements/test-form-elements.component';
+import { TestFormInputComponent } from './test-form-input/test-form-input.component';
 import { TestGroupedSelectComponent } from './test-grouped-select/test-grouped-select.component';
 import { TestIconsComponent } from './test-icons/test-icons/test-icons.component';
 import { TestLoadingSpinnerComponent } from './test-loading-spinner/test-loading-spinner.component';
@@ -43,6 +44,7 @@ const routes: Routes = [
   { path: 'context', component: TestContextComponent },
   { path: 'directives', component: TestDirectivesComponent },
   { path: 'file-drop', component: TestFileDropComponent },
+  { path: 'form-input', component: TestFormInputComponent },
   { path: 'form-elements', component: TestFormElementsComponent },
   { path: 'grouped-select', component: TestGroupedSelectComponent },
   { path: 'loading spinner', component: TestLoadingSpinnerComponent },
@@ -74,4 +76,4 @@ const routes: Routes = [
   imports: [RouterModule.forRoot(routes, {})],
   exports: [RouterModule]
 })
-export class AppRoutingModule {}
+export class AppRoutingModule { }

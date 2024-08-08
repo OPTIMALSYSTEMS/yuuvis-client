@@ -1,6 +1,6 @@
-import { Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, DestroyRef, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import {
   BaseObjectTypeField,
   InternalFieldType,
@@ -23,13 +23,14 @@ import { IconRegistryService } from './../../../common/components/icon/service/i
 import { ObjectFormControlWrapper } from './../../../object-form/object-form.interface';
 import { clear, dragHandle } from './../../../svg.generated';
 
-@UntilDestroy()
 @Component({
   selector: 'yuv-search-filter-form',
   templateUrl: './search-filter-form.component.html',
   styleUrls: ['./search-filter-form.component.scss']
 })
 export class SearchFilterFormComponent implements OnInit, OnDestroy {
+  destroyRef = inject(DestroyRef);
+
   @ViewChild('extrasForm') extrasForm: ElementRef;
   operatorLabel: any;
   get filterGroup(): SearchFilterGroup {
@@ -99,7 +100,7 @@ export class SearchFilterFormComponent implements OnInit, OnDestroy {
   private initSearchFieldsForm() {
     // object type field form (form holding the query fields)
     this.searchFieldsForm = this.fb.group({});
-    this.formSubscription = this.searchFieldsForm.valueChanges.pipe(untilDestroyed(this)).subscribe((formValue) => {
+    this.formSubscription = this.searchFieldsForm.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((formValue) => {
       this.onSearchFieldFormChange();
     });
   }
@@ -126,9 +127,9 @@ export class SearchFilterFormComponent implements OnInit, OnDestroy {
         const filter = new SearchFilter(
           fc._eoFormElement.name,
           variable?.operator ||
-            fc.value?.operator ||
-            (Array.isArray(fc.value) ? fc._eoFormElement._operator || this.quickSearchService.DEFAULT_SEARCH_FILTER_OPERATOR : SearchFilter.OPERATOR.EQUAL),
-          fc._eoFormElement.isNotSetValue ? fc._eoFormElement.variable : fc.value
+          fc.value?.operator ||
+          (Array.isArray(fc.value) ? fc._eoFormElement._operator || this.quickSearchService.DEFAULT_SEARCH_FILTER_OPERATOR : SearchFilter.OPERATOR.EQUAL),
+          fc._eoFormElement.isNotSetValue ? fc._eoFormElement.variable : fc.value, undefined, !!fc._eoFormElement.useNot
         );
         if (!filter.isEmpty() || fc._eoFormElement.isNotSetValue || fc._eoFormElement._internalType === 'boolean') {
           Object.assign(original, filter, { id: original.id, excludeFromQuery: false });
@@ -172,7 +173,7 @@ export class SearchFilterFormComponent implements OnInit, OnDestroy {
           const isRange = ['datetime', 'integer', 'decimal'].includes(field.propertyType);
           formPatch[filter.id] = { [otf.id]: !isRange ? firstValue : new RangeValue(variable?.operator || filter.operator, firstValue, filter.secondValue) };
         }
-        this.addFieldEntry(field, isEmpty, variable?.value, filter.id, otf.label, filter.operator);
+        this.addFieldEntry(field, isEmpty, variable?.value, filter.id, otf.label, filter.operator, filter.useNot);
       }
     });
 
@@ -185,7 +186,7 @@ export class SearchFilterFormComponent implements OnInit, OnDestroy {
    * Adds a new form field to the query
    * @param field The object type field to be added
    */
-  addFieldEntry(field: ObjectTypeField, isEmpty = false, variable = null, id?: string, label?: string, operator?: string) {
+  addFieldEntry(field: ObjectTypeField, isEmpty = false, variable = null, id?: string, label?: string, operator?: string, useNot = false) {
     const fcID = `${id || field.id}`;
     if (!this.searchFieldsForm) {
       this.initSearchFieldsForm();
@@ -196,6 +197,7 @@ export class SearchFilterFormComponent implements OnInit, OnDestroy {
     // disable descriptions as well in order to keep the UI clean
     formElement.description = null;
     formElement.isNotSetValue = isEmpty || !!variable;
+    formElement.useNot = useNot;
     formElement.variable = variable;
     formElement.readonly = this.disabled;
     formElement.label = label || formElement.label;
@@ -263,9 +265,9 @@ export class SearchFilterFormComponent implements OnInit, OnDestroy {
     }
   }
 
-  ngOnInit() {}
+  ngOnInit() { }
 
-  ngOnDestroy() {}
+  ngOnDestroy() { }
 
   dragMoved(event: any) {
     const e = window.document.elementFromPoint(event.pointerPosition.x, event.pointerPosition.y);

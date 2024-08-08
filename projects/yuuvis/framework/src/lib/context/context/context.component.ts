@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, QueryList, TemplateRef, ViewChild, ViewChildren } from '@angular/core';
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   BaseObjectTypeField,
   ColumnConfig,
@@ -36,7 +36,6 @@ import { refresh, settings } from './../../svg.generated';
  * @example
  * <yuv-context [context]="ctx"></yuv-context>
  */
-@UntilDestroy()
 @Component({
   selector: 'yuv-context',
   templateUrl: './context.component.html',
@@ -171,7 +170,7 @@ export class ContextComponent implements OnInit, OnDestroy {
     this.eventService
       .on(YuvEventType.DMS_OBJECTS_MOVED, YuvEventType.DMS_OBJECT_UPDATED)
       .pipe(
-        untilDestroyed(this),
+        takeUntilDestroyed(),
         tap(({ type, data }) => (type === YuvEventType.DMS_OBJECT_UPDATED && data.id === this.context.id ? (this.context = data) : null))
       )
       .subscribe(() => this.refresh());
