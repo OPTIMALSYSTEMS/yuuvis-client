@@ -1,57 +1,71 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { DmsObject, DmsService, Process } from '@yuuvis/core';
-import { Observable } from 'rxjs';
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, Input, OnInit, output, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { DmsObject, DmsService, EventService, Process, YuvEventType } from '@yuuvis/core';
+import { Observable, tap } from 'rxjs';
 
 @Component({
   selector: 'yuv-follow-up-details',
   templateUrl: './follow-up-details.component.html',
-  styleUrls: ['./follow-up-details.component.scss']
+  styleUrls: ['./follow-up-details.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FollowUpDetailsComponent implements OnInit {
-  dmsObject: DmsObject;
-  busy: boolean;
-  notFound: boolean;
-  error: string;
-  private _process: Process;
+  readonly #eventService = inject(EventService);
+  readonly #dmsService = inject(DmsService);
+  readonly #destroyRef = inject(DestroyRef);
+
+
+  dmsObject = signal<DmsObject | null>(null);
+  busy = signal<boolean>(false);
+  notFound = signal<boolean>(false);
+  error = signal<string | null>(null);
+  #process: Process;
 
   @Input() set process(p: Process) {
-    this._process = p;
-    this.notFound = false;
-    this.dmsObject = null;
+    this.#process = p;
+    this.notFound.set(false);
+    this.dmsObject.set(null);
 
     if (p) {
       if (p.attachments?.length) {
         const id = p.attachments[0];
-        this.busy = true;
-        this.dmsService.getDmsObject(id).subscribe(
-          (o: DmsObject) => {
-            this.dmsObject = o;
-            this.busy = false;
+        this.busy.set(true);
+        this.#dmsService.getDmsObject(id).subscribe({
+          next: (o: DmsObject) => {
+            this.dmsObject.set(o);
+            this.busy.set(false);
           },
-          (err) => {
-            this.busy = false;
+          error: (err) => {
+            this.busy.set(false);
             if (err.status === 404) {
-              this.notFound = true;
+              this.notFound.set(true);
             } else {
               this.error = err;
             }
           }
-        );
+        });
       } else {
         // no attachment ?!?
-        this.notFound = true;
+        this.notFound.set(true);
       }
     }
   }
   @Input() layoutOptionsKey: string;
   @Input() plugins: Observable<any[]>;
-  @Output() removeFollowUp = new EventEmitter<string>();
+  removeFollowUp = output<string>();
 
-  constructor(private dmsService: DmsService) {}
 
   triggerRemoveFollowUp() {
-    this.removeFollowUp.emit(this._process.id);
+    this.removeFollowUp.emit(this.#process.id);
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.#eventService
+      .on(YuvEventType.DMS_OBJECT_DELETED)
+      .pipe(
+        tap(() => this.process = this.#process),
+        takeUntilDestroyed(this.#destroyRef)
+      )
+      .subscribe();
+  }
 }

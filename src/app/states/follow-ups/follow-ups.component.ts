@@ -1,4 +1,4 @@
-import { Component, DestroyRef, OnDestroy, OnInit, inject } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { BpmEvent, EventService, Process, ProcessDefinitionKey, ProcessService, TranslateService } from '@yuuvis/core';
 import {
@@ -24,7 +24,7 @@ import { followUp } from './../../../../projects/yuuvis/framework/src/lib/svg.ge
   templateUrl: './follow-ups.component.html',
   styleUrls: ['./follow-ups.component.scss']
 })
-export class FollowUpsComponent implements OnInit, OnDestroy {
+export class FollowUpsComponent implements OnInit {
   destroyRef = inject(DestroyRef);
   layoutOptionsKey = 'yuv.app.follow-ups';
   selectedFollowUp: Process;
@@ -100,6 +100,4 @@ export class FollowUpsComponent implements OnInit, OnDestroy {
       )
       .subscribe();
   }
-
-  ngOnDestroy() { }
 }
