@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { BehaviorSubject, EMPTY, Observable } from 'rxjs';
 import { expand, map, skipWhile, switchMap, tap } from 'rxjs/operators';
 import { ConfigService } from '../../config/config.service';
@@ -17,6 +17,9 @@ interface CreateFollowUpPayload {
   providedIn: 'root'
 })
 export class ProcessService {
+  readonly #bpmService = inject(BpmService);
+  readonly #config = inject(ConfigService)
+
   private PROCESSES_PAGE_SIZE = 100;
 
   private readonly bpmProcessUrl = '/bpm/processes';
@@ -25,13 +28,12 @@ export class ProcessService {
   private processSource = new BehaviorSubject<Process[]>([]);
   public processData$: Observable<Process[]> = this.processSource.asObservable();
 
-  constructor(private bpmService: BpmService, private config: ConfigService) {}
 
   /**
    * bpm Process data Loading status
    */
   get loadingProcessData$(): Observable<boolean> {
-    return this.bpmService.loadingBpmData$;
+    return this.#bpmService.loadingBpmData$;
   }
 
   /**
@@ -77,21 +79,20 @@ export class ProcessService {
   }
 
   private getPage(requestParams: string, index?: number) {
-    const pageSize = this.config.get('core.app.processesPageSize') || this.PROCESSES_PAGE_SIZE;
+    const pageSize = this.#config.get('core.app.processesPageSize') || this.PROCESSES_PAGE_SIZE;
 
-    return this.bpmService.getProcesses(`${this.bpmProcessUrl}?size=${pageSize}
-    &page=${index || 0}&${requestParams}`);
+    return this.#bpmService.getProcesses(`${this.bpmProcessUrl}?size=${pageSize}&page=${index || 0}&${requestParams}`);
   }
 
   /**
    * get a specific follow Up by bisinessKey
    */
   getFollowUp(businessKey: string, options?: FetchTaskOptions): Observable<Process> {
-    return this.bpmService.getProcessInstance(ProcessDefinitionKey.FOLLOW_UP, { ...options, businessKey });
+    return this.#bpmService.getProcessInstance(ProcessDefinitionKey.FOLLOW_UP, { ...options, businessKey });
   }
 
   getFollowUpTask(objectId: string): Observable<Task> {
-    return this.bpmService.getProcesses(`/bpm/tasks?businessKey=${objectId}&processDefinitionKey=${ProcessDefinitionKey.FOLLOW_UP}`).pipe(
+    return this.#bpmService.getProcesses(`/bpm/tasks?businessKey=${objectId}&processDefinitionKey=${ProcessDefinitionKey.FOLLOW_UP}`).pipe(
       map((res: any) => {
         const tasks = res.objects as Task[];
         return tasks.length ? tasks[0] : null;
@@ -103,12 +104,12 @@ export class ProcessService {
    * create a follow Up for a document
    */
   createFollowUp(documentId: string, subject: string, expiryDateTime: string): Observable<any> {
-    return this.bpmService.createProcess(this.followUpPayloadData(documentId, subject, expiryDateTime));
+    return this.#bpmService.createProcess(this.followUpPayloadData(documentId, subject, expiryDateTime));
   }
 
   private updateFollowUp(documentId: string, subject: string, expiryDateTime: string, processInstanceId: string): Observable<any> {
     const payloadData: ProcessCreatePayload = this.followUpPayloadData(documentId, subject, expiryDateTime);
-    return this.bpmService.createProcess(payloadData).pipe(
+    return this.#bpmService.createProcess(payloadData).pipe(
       tap((data) => {
         let currentValue = this.processSource.getValue();
         if (currentValue) {
@@ -124,7 +125,7 @@ export class ProcessService {
    */
   /** TODO: refactor once actual update is available  above */
   editFollowUp(documentId: string, processInstanceId: string, subject: string, expiryDateTime: string): Observable<any> {
-    return this.bpmService
+    return this.#bpmService
       .deleteProcess(this.bpmProcessUrl, processInstanceId)
       .pipe(switchMap(() => this.updateFollowUp(documentId, subject, expiryDateTime, processInstanceId)));
   }
@@ -133,7 +134,7 @@ export class ProcessService {
    * delete a follow Up by process Instance Id
    */
   deleteProcess(processInstanceId: string) {
-    return this.bpmService.deleteProcess(this.bpmProcessUrl, processInstanceId).pipe(
+    return this.#bpmService.deleteProcess(this.bpmProcessUrl, processInstanceId).pipe(
       tap((data) => {
         let currentValue = this.processSource.getValue();
         if (currentValue) {

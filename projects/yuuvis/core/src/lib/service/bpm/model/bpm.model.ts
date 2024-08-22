@@ -240,7 +240,7 @@ export class FollowUpRow extends ProcessRow {
 
   constructor(protected data: Process) {
     super(data);
-    const exDateVar = data.variables.find((v) => v.name === FollowUpVars.expiryDateTime);
+    const exDateVar = data?.variables?.find((v) => v.name === FollowUpVars.expiryDateTime);
     if (exDateVar) {
       this.expiryDateTime = new Date(exDateVar.value);
     }
