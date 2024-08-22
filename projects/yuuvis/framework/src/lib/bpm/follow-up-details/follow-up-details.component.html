@@ -1,19 +1,15 @@
-<div class="follow-up-details" [yuvBusyOverlay]="busy">
+<div class="follow-up-details" [yuvBusyOverlay]="busy()">
+  <yuv-object-details *ngIf="!notFound() && !error(); else tplNotFound" [dmsObject]="dmsObject()" [layoutOptionsKey]="layoutOptionsKey" [plugins]="plugins">
+  </yuv-object-details>
 
-    <yuv-object-details *ngIf="(!notFound && !error); else tplNotFound" [dmsObject]="dmsObject"
-        [layoutOptionsKey]="layoutOptionsKey" [plugins]="plugins">
-    </yuv-object-details>
+  <ng-template #tplNotFound>
+    <div class="notFound">
+      <div class="error" *ngIf="error()">{{ 'yuv.framework.follow-up-details.error.message' | translate }}</div>
 
-    <ng-template #tplNotFound>
-        <div class="notFound">
-            <div class="error" *ngIf="error">{{'yuv.framework.follow-up-details.error.message'|translate}}</div>
-
-            <ng-container *ngIf="notFound">
-                <p>{{'yuv.framework.follow-up-details.notfound.message'|translate}}</p>
-                <button class="secondary"
-                    (click)="triggerRemoveFollowUp()">{{'yuv.framework.follow-up-details.notfound.button.remove'|translate}}</button>
-            </ng-container>
-
-        </div>
-    </ng-template>
+      <ng-container *ngIf="notFound()">
+        <p>{{ 'yuv.framework.follow-up-details.notfound.message' | translate }}</p>
+        <button class="secondary" (click)="triggerRemoveFollowUp()">{{ 'yuv.framework.follow-up-details.notfound.button.remove' | translate }}</button>
+      </ng-container>
+    </div>
+  </ng-template>
 </div>
