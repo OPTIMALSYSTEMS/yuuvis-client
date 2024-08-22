@@ -1,7 +1,6 @@
 import { Component, DestroyRef, EventEmitter, Input, OnDestroy, OnInit, Output, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
 import { BpmEvent, EventService, InboxService, Process, ProcessService, Task, TranslateService, Utils } from '@yuuvis/core';
 import { of } from 'rxjs';
 import { finalize, map, switchMap, tap } from 'rxjs/operators';
@@ -34,7 +33,6 @@ export class FollowUpComponent implements OnInit, OnDestroy, ActionComponent {
     private processService: ProcessService,
     private inboxService: InboxService,
     private fb: UntypedFormBuilder,
-    private activatedRoute: ActivatedRoute,
     private notificationService: NotificationService,
     private translate: TranslateService,
     private eventService: EventService
