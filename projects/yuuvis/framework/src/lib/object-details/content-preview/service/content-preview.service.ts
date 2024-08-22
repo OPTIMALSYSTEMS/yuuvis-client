@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BackendService, DmsObject, DmsService } from '@yuuvis/core';
-import { Observable, ReplaySubject } from 'rxjs';
+import { Observable, ReplaySubject, tap } from 'rxjs';
 import { PluginsService, UNDOCK_WINDOW_NAME } from '../../../plugins/plugins.service';
 
 /**
@@ -60,8 +60,8 @@ export class ContentPreviewService {
     const fileExtension = fileName?.includes('.') ? fileName.split('.').pop() : '';
     const id = dmsObject?.id;
     const version = dmsObject?.version;
-    const path = size ? this.dmsService.getFullContentPath(id, version) : '';
-    const pathPdf = size ? this.dmsService.getFullContentPath(id, version, true) : '';
+    const path = this.dmsService.getFullContentPath(id, version);
+    const pathPdf = this.dmsService.getFullContentPath(id, version, true);
     return { mimeType, size, digest, fileName, fileExtension, id, version, path, pathPdf };
   }
 
@@ -71,11 +71,11 @@ export class ContentPreviewService {
   }
 
   createPreviewUrl(dmsObject: DmsObject, dmsObject2?: DmsObject, exclude?: Function): void {
-    this.pluginsService.getCustomPlugins('viewers').subscribe(() => {
+    this.pluginsService.getCustomPlugins('viewers').pipe(tap(() => {
       const params = [this.resolveCustomViewerConfig(dmsObject, exclude)];
       dmsObject2?.version && params.push(this.resolveCustomViewerConfig(dmsObject2, exclude));
       this.previewSrcSource.next(this.pluginsService.resolveUri(params));
-    });
+    })).subscribe();
   }
 
   getContentPlugins() {
