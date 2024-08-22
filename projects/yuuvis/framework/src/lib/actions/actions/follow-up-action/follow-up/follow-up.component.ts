@@ -1,6 +1,5 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { BpmEvent, EventService, InboxService, Process, ProcessService, Task, TranslateService, Utils } from '@yuuvis/core';
 import { of } from 'rxjs';
@@ -34,7 +33,6 @@ export class FollowUpComponent implements OnInit, OnDestroy, ActionComponent {
     private processService: ProcessService,
     private inboxService: InboxService,
     private fb: UntypedFormBuilder,
-    private activatedRoute: ActivatedRoute,
     private notificationService: NotificationService,
     private translate: TranslateService,
     private eventService: EventService
@@ -150,10 +148,10 @@ export class FollowUpComponent implements OnInit, OnDestroy, ActionComponent {
 
     this.hasCurrentFollowUp
       ? this.form.patchValue({
-          expiryDateTime: variables?.find((v) => v.name === 'expiryDateTime')?.value,
-          whatAbout: this.currentFollowUp.subject,
-          documentId
-        })
+        expiryDateTime: variables?.find((v) => v.name === 'expiryDateTime')?.value,
+        whatAbout: this.currentFollowUp.subject,
+        documentId
+      })
       : this.form.patchValue({ whatAbout: (title ? `${title}: ` : '') as string, documentId });
     this.headline = this.hasCurrentFollowUp
       ? this.translate.instant('yuv.framework.action-menu.action.follow-up.edit.title')
@@ -188,5 +186,5 @@ export class FollowUpComponent implements OnInit, OnDestroy, ActionComponent {
       .subscribe();
   }
 
-  ngOnDestroy() {}
+  ngOnDestroy() { }
 }
