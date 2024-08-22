@@ -12,10 +12,6 @@
     "target": "ES2022",
     "typeRoots": ["node_modules/@types"],
     "lib": ["es2018", "dom"],
-    "useDefineForClassFields": false,
-    "paths": {
-      "@yuuvis/core": ["./projects/yuuvis/core/src/public-api.ts"],
-      "@yuuvis/framework": ["./projects/yuuvis/framework/src/public-api.ts"]
-    }
+    "useDefineForClassFields": false
   }
 }
