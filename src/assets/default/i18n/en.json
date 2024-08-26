@@ -1,5 +1,5 @@
 {
-  "yuvfc.widget-grid.widget.aggregate.form.label.aggField": "Add values of this property",
+  "yuvfc.widget-grid.widget.aggregate.form.label.aggField": "Sum this attribute’s values",
   "yuvfc.widget-grid.widget.aggregate.form.label.average": "Calculate average",
   "yuvfc.widget-grid.widget.charts.form.label.aggregation": "Aggregation",
   "yuvfc.widget-grid.widget.charts.form.label.chartType": "Chart type",
