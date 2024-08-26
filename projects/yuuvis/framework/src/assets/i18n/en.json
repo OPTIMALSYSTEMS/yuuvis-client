@@ -123,6 +123,7 @@
 	"yuv.framework.follow-up-details.notfound.button.remove": "Remove follow-up",
 	"yuv.framework.follow-up-details.notfound.message": "The object to which this follow-up refers has been deleted or its access rights have been changed.",
 	"yuv.framework.form.datepicker.select": "Select",
+	"yuv.framework.form.form-input.not": "Not",
 	"yuv.framework.form.form-input.null": "No value",
 	"yuv.framework.form.organization.classify.icon.title": "Organization object",
 	"yuv.framework.form.reference.classify.icon.title": "Object reference",

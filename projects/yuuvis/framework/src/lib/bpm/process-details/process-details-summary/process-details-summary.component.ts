@@ -1,11 +1,10 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Process, ProcessService, ProcessVariable, TranslateService, UserService } from '@yuuvis/core';
 import { IconRegistryService } from '../../../common/components/icon/service/iconRegistry.service';
 import { PopoverService } from '../../../popover/popover.service';
 import { deleteIcon } from '../../../svg.generated';
 
-@UntilDestroy()
 @Component({
   selector: 'yuv-process-details-summary',
   templateUrl: './process-details-summary.component.html',
@@ -61,7 +60,7 @@ export class ProcessDetailsSummaryComponent implements OnInit, OnDestroy {
     private userService: UserService
   ) {
     this.iconRegistry.registerIcons([deleteIcon]);
-    this.userService.user$.pipe(untilDestroyed(this)).subscribe((_) => (this.isAdvancedUser = this.userService.isAdvancedUser));
+    this.userService.user$.pipe(takeUntilDestroyed()).subscribe((_) => (this.isAdvancedUser = this.userService.isAdvancedUser));
   }
 
   private resolveDisplayVariables() {
@@ -85,6 +84,6 @@ export class ProcessDetailsSummaryComponent implements OnInit, OnDestroy {
     return Array.isArray(value) ? value.map((v) => JSON.stringify(v.title || v.id || v)).join(', ') : JSON.stringify(value);
   }
 
-  ngOnInit(): void {}
-  ngOnDestroy(): void {}
+  ngOnInit(): void { }
+  ngOnDestroy(): void { }
 }

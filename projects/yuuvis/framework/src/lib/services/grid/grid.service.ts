@@ -1,3 +1,4 @@
+import { AgGridAngular } from '@ag-grid-community/angular';
 import { ColDef, Column, CsvExportParams, GridOptions, IRowNode } from '@ag-grid-community/core';
 import { Inject, Injectable } from '@angular/core';
 import {
@@ -46,24 +47,24 @@ export class GridService {
   }
 
   // copy content of either row or table cell to clipboard
-  public copyToClipboard(event: KeyboardEvent, gridOptions: GridOptions) {
+  public copyToClipboard(event: KeyboardEvent, grid: AgGridAngular, gridOptions?: GridOptions) {
     event.preventDefault();
     event.stopPropagation();
 
-    const viewport = gridOptions.api['ctrlsService'].centerRowContainerCtrl.eViewport;
+    const viewport = grid.api['gridBodyCtrl'].bodyScrollFeature.centerRowsCtrl.eViewport;
     const scrollLeft = viewport.scrollLeft;
 
-    const focusedCell = gridOptions.api.getFocusedCell();
-    const rows: IRowNode[] = event.shiftKey ? gridOptions.api.getSelectedNodes() : [gridOptions.api.getDisplayedRowAtIndex(focusedCell.rowIndex)];
-    const cols: Column[] = event.shiftKey ? gridOptions.columnApi.getAllDisplayedColumns() : [focusedCell.column];
-    const getCell = (col, row) => viewport.parentElement.parentElement.querySelector(`div[row-index="${row.rowIndex}"] [col-id="${col.colId}"]`);
+    const focusedCell = grid.api.getFocusedCell();
+    const rows: IRowNode[] = event.shiftKey ? grid.api.getSelectedNodes() : [grid.api.getDisplayedRowAtIndex(focusedCell.rowIndex)];
+    const cols: Column[] = event.shiftKey ? grid.api.getAllGridColumns().filter((c: any) => c.colId !== '__selectionField') : [focusedCell.column];
+    const getCell = (col, row) => viewport.querySelector(`div[row-index="${row.rowIndex}"] [col-id="${col.colId}"]`);
     const value = (col, row) => {
-      gridOptions.api.ensureColumnVisible(col);
+      grid.api.ensureColumnVisible(col);
       const cell = getCell(col, row);
       if (!cell) return '';
       const chips = cell.querySelectorAll('.chip') || [];
       const val = Array.from(chips.length ? chips : [cell]).map((c: any) => (c && c.textContent && c.textContent.trim()) || '');
-      const value = val.toString() || gridOptions.api.getValue(col, row);
+      const value = val.toString() || grid.api.getCellValue({ colKey: col, rowNode: row, useFormatter: true });
       return !Utils.isEmpty(value) ? value.toString().replace(new RegExp('\n', 'g'), ' ') : '';
     };
 
@@ -71,7 +72,8 @@ export class GridService {
     if (event.altKey) content += cols.map((col: Column) => col.getColDef().headerName).join('	') + '\n';
     content += rows.map((row) => cols.map((col: Column) => value(col, row)).join('	')).join('\n');
 
-    viewport.scrollLeft = scrollLeft + 1;
+    grid.api.ensureColumnVisible(focusedCell.column);
+    viewport.scrollLeft = scrollLeft;
     setTimeout(
       () =>
         rows.map((row) =>
@@ -84,7 +86,7 @@ export class GridService {
       100
     );
 
-    navigator.clipboard.writeText(content);
+    navigator.clipboard.writeText(content); // only if client runs https
   }
 
   /**

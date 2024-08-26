@@ -1,4 +1,4 @@
- {
+{
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
   "version": 1,
   "newProjectRoot": "projects",
@@ -22,18 +22,10 @@
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
             "tsConfig": "src/tsconfig.app.json",
-            "assets": [
-              "src/favicon.ico",
-              "src/assets",
-              "src/manifest.json"
-            ],
-            "styles": [
-              "src/styles.scss"
-            ],
+            "assets": ["src/favicon.ico", "src/assets", "src/manifest.json"],
+            "styles": ["src/styles.scss"],
             "stylePreprocessorOptions": {
-              "includePaths": [
-                "node_modules"
-              ]
+              "includePaths": ["node_modules"]
             },
             "scripts": [],
             "vendorChunk": true,
@@ -96,24 +88,26 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "yuuvis-flokfugl:build"
+            "buildTarget": "yuuvis-flokfugl:build",
+            "port": 4400,
+            "proxyConfig": "proxy.config.js"
           },
           "configurations": {
             "production": {
-              "browserTarget": "yuuvis-flokfugl:build:production"
+              "buildTarget": "yuuvis-flokfugl:build:production"
             },
             "dist": {
-              "browserTarget": "yuuvis-flokfugl:build:dist"
+              "buildTarget": "yuuvis-flokfugl:build:dist"
             },
             "dev": {
-              "browserTarget": "yuuvis-flokfugl:build:dev"
+              "buildTarget": "yuuvis-flokfugl:build:dev"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "yuuvis-flokfugl:build"
+            "buildTarget": "yuuvis-flokfugl:build"
           }
         },
         "test": {
@@ -229,13 +223,8 @@
             "main": "src-component-tests/main.ts",
             "polyfills": "src-component-tests/polyfills.ts",
             "tsConfig": "src-component-tests/tsconfig.test.json",
-            "assets": [
-              "src-component-tests/favicon.ico",
-              "src-component-tests/assets"
-            ],
-            "styles": [
-              "src-component-tests/styles.scss"
-            ],
+            "assets": ["src-component-tests/favicon.ico", "src-component-tests/assets"],
+            "styles": ["src-component-tests/styles.scss"],
             "scripts": [],
             "vendorChunk": true,
             "extractLicenses": false,
@@ -265,18 +254,18 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "component-tests:build"
+            "buildTarget": "component-tests:build"
           },
           "configurations": {
             "test": {
-              "browserTarget": "component-tests:build:test"
+              "buildTarget": "component-tests:build:test"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "component-tests:build"
+            "buildTarget": "component-tests:build"
           }
         }
       }
@@ -343,18 +332,18 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "tenant-login:build"
+            "buildTarget": "tenant-login:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "tenant-login:build:production"
+              "buildTarget": "tenant-login:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "tenant-login:build"
+            "buildTarget": "tenant-login:build"
           }
         },
         "test": {

@@ -1,7 +1,7 @@
 import { Component, HostBinding, HostListener, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, NavigationEnd, NavigationExtras, Router, RoutesRecognized } from '@angular/router';
 import { SwUpdate } from '@angular/service-worker';
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import {
   AuthService,
   BackendService,
@@ -40,7 +40,6 @@ import { AppSearchService } from '../../service/app-search.service';
 import { AboutService } from '../../states/about/service/about.service';
 import { FrameService } from './frame.service';
 
-@UntilDestroy()
 @Component({
   selector: 'yuv-frame',
   templateUrl: './frame.component.html',
@@ -140,7 +139,7 @@ export class FrameComponent implements OnInit, OnDestroy {
       }
       this.user = user;
     });
-    this.update.available.subscribe((update) => (this.swUpdateAvailable = true));
+    this.update.isEnabled && this.update.checkForUpdate().then((update) => (this.swUpdateAvailable = update));
     this.layoutService.layoutSettings$.subscribe((settings: LayoutSettings) => this.applyLayoutSettings(settings));
     this.connectionService.connection$.subscribe((connectionState: ConnectionState) => {
       this.isOffline = !connectionState.isOnline;
@@ -150,7 +149,7 @@ export class FrameComponent implements OnInit, OnDestroy {
     });
     this.eventService
       .on(YuvEventType.DMS_OBJECTS_MOVED)
-      .pipe(untilDestroyed(this))
+      .pipe(takeUntilDestroyed())
       .subscribe((event) => this.onObjetcsMove(event));
 
     this.eventService.on(YuvEventType.CLIENT_LOCALE_CHANGED).subscribe(() => {

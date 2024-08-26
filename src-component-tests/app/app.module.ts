@@ -1,4 +1,4 @@
-import { HttpClientModule } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
@@ -27,6 +27,7 @@ import { TestContextComponent } from './test-context/test-context.component';
 import { TestDirectivesComponent } from './test-directives/test-directives.component';
 import { TestFileDropComponent } from './test-file-drop/test-file-drop.component';
 import { TestFormElementsComponent } from './test-form-elements/test-form-elements.component';
+import { TestFormInputComponent } from './test-form-input/test-form-input.component';
 import { TestGroupedSelectComponent } from './test-grouped-select/test-grouped-select.component';
 import { TestIconsComponent } from './test-icons/test-icons/test-icons.component';
 import { TestLoadingSpinnerComponent } from './test-loading-spinner/test-loading-spinner.component';
@@ -71,6 +72,7 @@ import { TestVersionListComponent } from './test-version-list/test-version-list.
     TestObjectCreateComponent,
     TestUploadProgressOverlayComponent,
     TestFileDropComponent,
+    TestFormInputComponent,
     TestRecentActivitiesComponent,
     TestAnimatedIconsComponent,
     TestIconsComponent,
@@ -90,9 +92,7 @@ import { TestVersionListComponent } from './test-version-list/test-version-list.
     TestProcessDetailsComponent,
     TestSequenceListComponent
   ],
-  imports: [
-    HttpClientModule,
-    BrowserModule,
+  bootstrap: [AppComponent], imports: [BrowserModule,
     BrowserAnimationsModule,
     AppRoutingModule,
     FormsModule,
@@ -109,9 +109,6 @@ import { TestVersionListComponent } from './test-version-list/test-version-list.
     YuvColumnConfigModule,
     YuvContextModule,
     YuvObjectPickerModule,
-    YuvSequenceListModule
-  ],
-  providers: [],
-  bootstrap: [AppComponent]
+    YuvSequenceListModule], providers: [provideHttpClient(withInterceptorsFromDi())]
 })
-export class AppModule {}
+export class AppModule { }

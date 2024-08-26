@@ -1,6 +1,6 @@
 import { ColDef, ICellRendererFunc } from '@ag-grid-community/core';
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { Component, DestroyRef, Input, OnDestroy, OnInit, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   AppCacheService,
   BaseObjectTypeField,
@@ -40,23 +40,25 @@ import { Summary, SummaryEntry } from './summary.interface';
  * <!-- compare two dms object -->
  * <yuv-summary [compareObjects]="[dmsObject1, dmsObject2]"></yuv-summary>
  */
-@UntilDestroy()
 @Component({
   selector: 'yuv-summary',
   templateUrl: './summary.component.html',
   styleUrls: ['./summary.component.scss']
 })
 export class SummaryComponent implements OnInit, OnDestroy {
+  destroyRef = inject(DestroyRef);
+
   private STORAGE_KEY_SECTION_VISIBLE = 'yuv.framework.summary.section.visibility';
   summary: Summary;
 
-  visible: any = {
+  private _visibleDefaults: any = {
     parent: true,
     core: true,
     data: false,
     baseparams: false,
     admin: true
   };
+  visible = this._visibleDefaults;
 
   dmsObjectID: string;
   coreFields: any[] = [];
@@ -115,11 +117,11 @@ export class SummaryComponent implements OnInit, OnDestroy {
   // isEmpty = v => Utils.isEmpty(v);
   isVersion = (v) => v === BaseObjectTypeField.VERSION_NUMBER;
 
-  constructor(private systemService: SystemService, private gridService: GridService, private logger: Logger, private appCacheService: AppCacheService) {}
+  constructor(private systemService: SystemService, private gridService: GridService, private logger: Logger, private appCacheService: AppCacheService) { }
 
   onSectionVisibilityChange(k, visible: boolean) {
     this.visible[k] = visible;
-    this.appCacheService.setItem(this.STORAGE_KEY_SECTION_VISIBLE, this.visible).pipe(untilDestroyed(this)).subscribe();
+    this.appCacheService.setItem(this.STORAGE_KEY_SECTION_VISIBLE, this.visible).pipe(takeUntilDestroyed(this.destroyRef)).subscribe();
   }
 
   private getSummaryConfiguration(dmsObject: DmsObject) {
@@ -224,8 +226,8 @@ export class SummaryComponent implements OnInit, OnDestroy {
     return typeof renderer === 'function'
       ? renderer({ value: data[key], data: data, colDef: def } as any)
       : data[key + '_title']
-      ? data[key + '_title']
-      : data[key];
+        ? data[key + '_title']
+        : data[key];
   }
 
   private generateSummary(dmsObject: DmsObject) {
@@ -311,7 +313,7 @@ export class SummaryComponent implements OnInit, OnDestroy {
     }
     element.elements
       ? // && element.type !== 'table'
-        element.elements.forEach((el) => (fields = fields.concat(this.extractFields(el))))
+      element.elements.forEach((el) => (fields = fields.concat(this.extractFields(el))))
       : fields.push(element.name);
     return fields;
   }
@@ -319,11 +321,9 @@ export class SummaryComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     // TODO: store component state using a general service
     this.appCacheService.getItem(this.STORAGE_KEY_SECTION_VISIBLE).subscribe((visibility: number[]) => {
-      if (visibility !== null) {
-        this.visible = visibility;
-      }
+      this.visible = visibility || this._visibleDefaults;
     });
   }
 
-  ngOnDestroy() {}
+  ngOnDestroy() { }
 }

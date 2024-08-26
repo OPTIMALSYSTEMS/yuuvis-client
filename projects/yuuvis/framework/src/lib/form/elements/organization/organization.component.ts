@@ -64,7 +64,7 @@ export class OrganizationComponent implements ControlValueAccessor, Validator, A
     return !this.multiselect && this.innerValue?.length === 1;
   }
   @HostBinding('class.inputDirty') get _inputDirty() {
-    return this.autoCompleteInput?.multiInputEL?.nativeElement?.value;
+    return this.autoCompleteInput?.multiInputEl?.nativeElement?.value;
   }
 
   /**
@@ -105,7 +105,7 @@ export class OrganizationComponent implements ControlValueAccessor, Validator, A
    * later and also try to be focused, they will 'win', because there can only be one focus.
    */
   @Input() autofocus: boolean;
-  
+
   /**
    * Will attch the overlay to this HTMLelement
    */
@@ -122,7 +122,7 @@ export class OrganizationComponent implements ControlValueAccessor, Validator, A
     this.iconRegistry.registerIcons([organization, organizationMulti]);
   }
 
-  propagateChange = (_: any) => {};
+  propagateChange = (_: any) => { };
 
   writeValue(value: any): void {
     if (value) {
@@ -138,7 +138,7 @@ export class OrganizationComponent implements ControlValueAccessor, Validator, A
     this.propagateChange = fn;
   }
 
-  registerOnTouched(fn: any): void {}
+  registerOnTouched(fn: any): void { }
 
   private propagate() {
     this.propagateChange(this.value);
@@ -150,19 +150,19 @@ export class OrganizationComponent implements ControlValueAccessor, Validator, A
       return match
         ? of(match)
         : this.userService.getUserById(v).pipe(
-            catchError((e) =>
-              of(
-                new YuvUser(
-                  {
-                    id: v,
-                    title: v,
-                    image: null
-                  },
-                  null
-                )
+          catchError((e) =>
+            of(
+              new YuvUser(
+                {
+                  id: v,
+                  title: v,
+                  image: null
+                },
+                null
               )
             )
-          );
+          )
+        );
     });
     return forkJoin(map).subscribe((data) => {
       this.innerValue = data;
@@ -228,15 +228,15 @@ export class OrganizationComponent implements ControlValueAccessor, Validator, A
   }
 
   private clearInnerInput() {
-    if (this.autoCompleteInput.multiInputEL) {
-      this.autoCompleteInput.multiInputEL.nativeElement.value = '';
+    if (this.autoCompleteInput.multiInputEl) {
+      this.autoCompleteInput.multiInputEl.nativeElement.value = '';
       this.propagateValidity(true);
     }
   }
 
   ngAfterViewInit() {
     if (this.autofocus) {
-      setTimeout(() => this.autoCompleteInput.multiInputEL?.nativeElement.focus());
+      setTimeout(() => this.autoCompleteInput.multiInputEl?.nativeElement.focus());
     }
   }
 }

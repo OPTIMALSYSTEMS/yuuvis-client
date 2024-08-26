@@ -161,6 +161,7 @@
   "yuv.framework.follow-up-details.notfound.button.remove": "Wiedervorlage entfernen",
   "yuv.framework.follow-up-details.notfound.message": "Das Objekt, auf welches sich diese Wiedervorlage bezieht, wurde gelöscht oder seine Zugriffsrechte wurden geändert.",
   "yuv.framework.form.datepicker.select": "Auswählen",
+  "yuv.framework.form.form-input.not": "Nicht",
   "yuv.framework.form.form-input.null": "Ohne Wert",
   "yuv.framework.form.organization.classify.icon.title": "Organisationsobjekt",
   "yuv.framework.form.reference.classify.icon.title": "Objektreferenz",

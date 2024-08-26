@@ -1,11 +1,10 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { BackendService, PendingChangesService, Sort, TranslateService, Utils } from '@yuuvis/core';
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { PopoverService } from '../../popover/popover.service';
 import { SequenceItem, SequenceListTemplate } from '../sequence-list/sequence-list.interface';
 
-@UntilDestroy()
 @Component({
   selector: 'yuv-sequence-list-template-manage',
   templateUrl: './sequence-list-template-manage.component.html',
@@ -80,7 +79,7 @@ export class SequenceListTemplateManageComponent implements OnInit, OnDestroy {
     private fb: FormBuilder,
     private translate: TranslateService
   ) {
-    this.form.statusChanges.pipe(untilDestroyed(this)).subscribe((res) => {
+    this.form.statusChanges.pipe(takeUntilDestroyed()).subscribe((res) => {
       if (this.form.dirty && !this.pendingChanges.hasPendingTask(this.pendingTaskId || ' ')) {
         this.pendingTaskId = this.pendingChanges.startTask(this.translate.instant('yuv.framework.sequence-list.template.pending-changes.alert'));
       }
@@ -182,5 +181,5 @@ export class SequenceListTemplateManageComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.loadTemplates();
   }
-  ngOnDestroy(): void {}
+  ngOnDestroy(): void { }
 }
