@@ -48,6 +48,7 @@ export class GridService {
 
   // copy content of either row or table cell to clipboard
   public copyToClipboard(event: KeyboardEvent, grid: AgGridAngular, gridOptions?: GridOptions) {
+    if (!document.activeElement.classList.contains('ag-cell')) return;
     event.preventDefault();
     event.stopPropagation();
 
